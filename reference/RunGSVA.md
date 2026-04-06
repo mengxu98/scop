@@ -206,38 +206,38 @@ slot.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-03 10:03:35] Start standard processing workflow...
-#> ℹ [2026-04-03 10:03:35] Checking a list of <Seurat>...
-#> ! [2026-04-03 10:03:35] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-03 10:03:35] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-03 10:03:38] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-03 10:03:38] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-03 10:03:38] Number of available HVF: 2000
-#> ℹ [2026-04-03 10:03:38] Finished check
-#> ℹ [2026-04-03 10:03:39] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-03 10:03:39] Perform pca linear dimension reduction
-#> ℹ [2026-04-03 10:03:39] Use stored estimated dimensions 1:12 for Standardpca
-#> ℹ [2026-04-03 10:03:40] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-03 10:03:40] Reorder clusters...
-#> ℹ [2026-04-03 10:03:40] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-03 10:03:40] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-03 10:03:40] Perform umap nonlinear dimension reduction using Standardpca (1:12)
-#> ℹ [2026-04-03 10:03:45] Perform umap nonlinear dimension reduction using Standardpca (1:12)
-#> ✔ [2026-04-03 10:03:50] Standard processing workflow completed
+#> ℹ [2026-04-06 05:02:07] Start standard processing workflow...
+#> ℹ [2026-04-06 05:02:08] Checking a list of <Seurat>...
+#> ! [2026-04-06 05:02:08] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-06 05:02:08] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-06 05:02:10] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-06 05:02:11] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-06 05:02:11] Number of available HVF: 2000
+#> ℹ [2026-04-06 05:02:11] Finished check
+#> ℹ [2026-04-06 05:02:12] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-06 05:02:12] Perform pca linear dimension reduction
+#> ℹ [2026-04-06 05:02:12] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-04-06 05:02:13] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-06 05:02:13] Reorder clusters...
+#> ℹ [2026-04-06 05:02:13] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-06 05:02:13] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-06 05:02:13] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-06 05:02:17] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-04-06 05:02:22] Standard processing workflow completed
 
 pancreas_sub <- RunGSVA(
   pancreas_sub,
   group.by = "CellType",
   species = "Mus_musculus"
 )
-#> ℹ [2026-04-03 10:03:50] Start GSVA analysis
-#> ℹ [2026-04-03 10:03:50] Averaging expression by "CellType" ...
-#> ℹ [2026-04-03 10:03:50] Aggregated expression matrix: 15998 genes x 5 groups
-#> ℹ [2026-04-03 10:03:50] Species: "Mus_musculus"
-#> ℹ [2026-04-03 10:03:50] Loading cached: GO_BP version: 3.22.0 nterm:15169 created: 2026-04-03 09:10:33
-#> ℹ [2026-04-03 10:03:51] Processing database: "GO_BP" ...
-#> ℹ [2026-04-03 10:03:52] Initial overlap: 11182 genes out of 15998 expression genes and 16088 genes in gene sets
-#> ℹ [2026-04-03 10:03:55] Running GSVA for 5668 gene sets ...
+#> ℹ [2026-04-06 05:02:22] Start GSVA analysis
+#> ℹ [2026-04-06 05:02:22] Averaging expression by "CellType" ...
+#> ℹ [2026-04-06 05:02:22] Aggregated expression matrix: 15998 genes x 5 groups
+#> ℹ [2026-04-06 05:02:22] Species: "Mus_musculus"
+#> ℹ [2026-04-06 05:02:22] Loading cached: GO_BP version: 3.22.0 nterm:15169 created: 2026-04-06 04:12:06
+#> ℹ [2026-04-06 05:02:23] Processing database: "GO_BP" ...
+#> ℹ [2026-04-06 05:02:25] Initial overlap: 11182 genes out of 15998 expression genes and 16088 genes in gene sets
+#> ℹ [2026-04-06 05:02:28] Running GSVA for 5668 gene sets ...
 #> ℹ GSVA version 2.4.8
 #> ℹ Searching for rows with constant values
 #> ! 2 rows with constant values throughout the columns
@@ -250,8 +250,8 @@ pancreas_sub <- RunGSVA(
 #> ℹ GSVA dense (classical) algorithm
 #> ℹ Calculating GSVA scores
 #> ✔ Calculations finished
-#> ℹ [2026-04-03 10:05:24] GSVA results stored in `tools` slot: "GSVA_CellType_gsva"
-#> ✔ [2026-04-03 10:05:24] GSVA analysis done
+#> ℹ [2026-04-06 05:03:56] GSVA results stored in `tools` slot: "GSVA_CellType_gsva"
+#> ✔ [2026-04-06 05:03:56] GSVA analysis done
 ht <- GSVAPlot(
   pancreas_sub,
   group.by = "CellType",

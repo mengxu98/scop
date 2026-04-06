@@ -446,24 +446,24 @@ GSVAPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-03 09:21:01] Start standard processing workflow...
-#> ℹ [2026-04-03 09:21:01] Checking a list of <Seurat>...
-#> ! [2026-04-03 09:21:02] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-03 09:21:02] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-03 09:21:03] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-03 09:21:04] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-03 09:21:04] Number of available HVF: 2000
-#> ℹ [2026-04-03 09:21:04] Finished check
-#> ℹ [2026-04-03 09:21:04] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-03 09:21:05] Perform pca linear dimension reduction
-#> ℹ [2026-04-03 09:21:05] Use stored estimated dimensions 1:12 for Standardpca
-#> ℹ [2026-04-03 09:21:06] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-03 09:21:06] Reorder clusters...
-#> ℹ [2026-04-03 09:21:06] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-03 09:21:06] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-03 09:21:06] Perform umap nonlinear dimension reduction using Standardpca (1:12)
-#> ℹ [2026-04-03 09:21:10] Perform umap nonlinear dimension reduction using Standardpca (1:12)
-#> ✔ [2026-04-03 09:21:13] Standard processing workflow completed
+#> ℹ [2026-04-06 04:21:39] Start standard processing workflow...
+#> ℹ [2026-04-06 04:21:40] Checking a list of <Seurat>...
+#> ! [2026-04-06 04:21:40] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-06 04:21:40] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-06 04:21:42] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-06 04:21:42] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-06 04:21:42] Number of available HVF: 2000
+#> ℹ [2026-04-06 04:21:42] Finished check
+#> ℹ [2026-04-06 04:21:43] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-06 04:21:43] Perform pca linear dimension reduction
+#> ℹ [2026-04-06 04:21:44] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-04-06 04:21:44] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-06 04:21:44] Reorder clusters...
+#> ℹ [2026-04-06 04:21:44] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-06 04:21:44] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-06 04:21:44] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-06 04:21:48] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-04-06 04:21:51] Standard processing workflow completed
 pancreas_sub <- RunGSVA(
   pancreas_sub,
   db = "GO_BP",
@@ -472,14 +472,14 @@ pancreas_sub <- RunGSVA(
   method = "gsva",
   kcdf = "Gaussian"
 )
-#> ℹ [2026-04-03 09:21:13] Start GSVA analysis
-#> ℹ [2026-04-03 09:23:24] Averaging expression by "CellType" ...
-#> ℹ [2026-04-03 09:23:24] Aggregated expression matrix: 15998 genes x 5 groups
-#> ℹ [2026-04-03 09:23:24] Species: "Mus_musculus"
-#> ℹ [2026-04-03 09:23:24] Loading cached: GO_BP version: 3.22.0 nterm:15169 created: 2026-04-03 09:10:33
-#> ℹ [2026-04-03 09:23:26] Processing database: "GO_BP" ...
-#> ℹ [2026-04-03 09:23:27] Initial overlap: 11182 genes out of 15998 expression genes and 16088 genes in gene sets
-#> ℹ [2026-04-03 09:23:29] Running GSVA for 5668 gene sets ...
+#> ℹ [2026-04-06 04:21:51] Start GSVA analysis
+#> ℹ [2026-04-06 04:23:49] Averaging expression by "CellType" ...
+#> ℹ [2026-04-06 04:23:49] Aggregated expression matrix: 15998 genes x 5 groups
+#> ℹ [2026-04-06 04:23:49] Species: "Mus_musculus"
+#> ℹ [2026-04-06 04:23:49] Loading cached: GO_BP version: 3.22.0 nterm:15169 created: 2026-04-06 04:12:06
+#> ℹ [2026-04-06 04:23:50] Processing database: "GO_BP" ...
+#> ℹ [2026-04-06 04:23:52] Initial overlap: 11182 genes out of 15998 expression genes and 16088 genes in gene sets
+#> ℹ [2026-04-06 04:23:54] Running GSVA for 5668 gene sets ...
 #> ℹ GSVA version 2.4.8
 #> ℹ Searching for rows with constant values
 #> ! 2 rows with constant values throughout the columns
@@ -492,8 +492,8 @@ pancreas_sub <- RunGSVA(
 #> ℹ GSVA dense (classical) algorithm
 #> ℹ Calculating GSVA scores
 #> ✔ Calculations finished
-#> ℹ [2026-04-03 09:25:02] GSVA results stored in `tools` slot: "GSVA_CellType_gsva"
-#> ✔ [2026-04-03 09:25:02] GSVA analysis done
+#> ℹ [2026-04-06 04:25:26] GSVA results stored in `tools` slot: "GSVA_CellType_gsva"
+#> ✔ [2026-04-06 04:25:26] GSVA analysis done
 
 ht1 <- GSVAPlot(
   pancreas_sub,
@@ -553,7 +553,7 @@ GSVAPlot(
 #> Also defined by ‘BiocGenerics’
 #> Found more than one class "dist" in cache; using the first, from namespace 'spam'
 #> Also defined by ‘BiocGenerics’
-#> ◌ [2026-04-03 09:25:10] Installing: shadowtext...
+#> ◌ [2026-04-06 04:25:34] Installing: shadowtext...
 #>  
 #> → Will install 2 packages.
 #> → All 2 packages (0 B) are cached.
@@ -567,12 +567,12 @@ GSVAPlot(
 #> ℹ Installing system requirements
 #> ℹ Executing `sudo sh -c apt-get -y update`
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
 #> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
 #> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
 #> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Reading package lists...
 #> ℹ Executing `sudo sh -c apt-get -y install pandoc cmake make libuv1-dev libcairo2-dev libfontconfig1-dev libfreetype6-dev libpng-dev`
 #> Reading package lists...
@@ -586,11 +586,11 @@ GSVAPlot(
 #> libfontconfig1-dev is already the newest version (2.15.0-1.1ubuntu2).
 #> libfreetype-dev is already the newest version (2.13.2+dfsg-1ubuntu0.1).
 #> libpng-dev is already the newest version (1.6.43-5ubuntu0.5).
-#> 0 upgraded, 0 newly installed, 0 to remove and 82 not upgraded.
-#> ✔ Installed shadowtext 0.1.6  (1s)
-#> ✔ Installed prettydoc 0.4.1  (1.1s)
-#> ✔ 1 pkg + 56 deps: kept 54, added 2, dld 2 (1.23 MB) [5.3s]
-#> ✔ [2026-04-03 09:25:15] shadowtext installed successfully
+#> 0 upgraded, 0 newly installed, 0 to remove and 67 not upgraded.
+#> ✔ Installed shadowtext 0.1.6  (17ms)
+#> ✔ Installed prettydoc 0.4.1  (53ms)
+#> ✔ 1 pkg + 56 deps: kept 55, added 2, dld 2 (1.23 MB) [4.2s]
+#> ✔ [2026-04-06 04:25:38] shadowtext installed successfully
 
 
 GSVAPlot(

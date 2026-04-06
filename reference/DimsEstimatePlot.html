@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Dimension estimate diagnostic plot</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/DimsEstimate.R" class="external-link"><code>R/DimsEstimate.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/DimsEstimate.R" class="external-link"><code>R/DimsEstimate.R</code></a></small>
       <div class="d-none name"><code>DimsEstimatePlot.Rd</code></div>
     </div>
 
@@ -48,7 +48,7 @@
 <span>  <span class="va">srt</span>,</span>
 <span>  max_pcs <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  variance_thresholds <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.6</span>, <span class="fl">0.7</span>, <span class="fl">0.8</span>, <span class="fl">0.9</span><span class="op">)</span>,</span>
-<span>  reduction <span class="op">=</span> <span class="st">"pca"</span>,</span>
+<span>  reduction <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  palette <span class="op">=</span> <span class="st">"Chinese"</span>,</span>
 <span>  palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  aspect.ratio <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -69,7 +69,7 @@
 
 
 <dl><dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
-<dd><p>A <code>Seurat</code> object with PCA reduction computed.</p></dd>
+<dd><p>A <code>Seurat</code> object with a PCA-like reduction computed.</p></dd>
 
 
 <dt id="arg-max-pcs">max_pcs<a class="anchor" aria-label="anchor" href="#arg-max-pcs"></a></dt>
@@ -82,7 +82,9 @@ Default is <code>c(0.60, 0.70, 0.80, 0.90)</code>.</p></dd>
 
 
 <dt id="arg-reduction">reduction<a class="anchor" aria-label="anchor" href="#arg-reduction"></a></dt>
-<dd><p>Reduction name to inspect. Default is <code>"pca"</code>.</p></dd>
+<dd><p>Reduction name to inspect. Default is <code>NULL</code>, which
+automatically selects a PCA-like reduction via <code><a href="DefaultReduction.html">DefaultReduction()</a></code> with
+<code>pattern = "pca"</code>.</p></dd>
 
 
 <dt id="arg-palette">palette<a class="anchor" aria-label="anchor" href="#arg-palette"></a></dt>

@@ -331,7 +331,7 @@ PAGAPlot(
 
 [RunPAGA](https://mengxu98.github.io/scop/reference/RunPAGA.md),
 [CellDimPlot](https://mengxu98.github.io/scop/reference/CellDimPlot.md),
-[GraphPlot](https://mengxu98.github.io/scop/reference/GraphPlot.md)
+[thisplot::GraphPlot](https://mengxu98.github.io/thisplot/reference/GraphPlot.html)
 
 ## Examples
 

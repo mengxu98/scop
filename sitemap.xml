@@ -51,7 +51,6 @@
 <url><loc>https://mengxu98.github.io/scop/reference/GetAssayData5.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/GetFeaturesData.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/GetSimilarFeatures.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/GraphPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/GroupHeatmap.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/Harmony5_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/Harmony_integrate.html</loc></url>
@@ -67,6 +66,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/PrepareSCExplorer.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/ProjectionPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/ProportionTestPlot.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/PseudotimeProjectionPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RPCA_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RecoverCounts.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RemoveEnv.html</loc></url>
@@ -127,7 +127,6 @@
 <url><loc>https://mengxu98.github.io/scop/reference/VolcanoPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/adata_to_srt.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/check_python.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/compute_velocity_on_grid.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/db_DoubletDetection.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/db_Scrublet.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/db_scDblFinder.html</loc></url>

@@ -7,10 +7,10 @@ Estimate useful dimensions from a reduction
 ``` r
 RunDimsEstimate(
   srt,
-  reduction,
+  reduction = NULL,
   reduction_method = NULL,
   k = 20L,
-  min_dims = 10L,
+  min_dims = 20L,
   fallback_max_dims = 50L,
   skip_first = FALSE,
   use_stored = TRUE,
@@ -26,7 +26,10 @@ RunDimsEstimate(
 
 - reduction:
 
-  Name of the dimensional reduction to inspect.
+  Name of the dimensional reduction to inspect. Default is `NULL`, which
+  automatically selects a PCA-like reduction via
+  [`DefaultReduction()`](https://mengxu98.github.io/scop/reference/DefaultReduction.md)
+  with `pattern = "pca"`.
 
 - reduction_method:
 
@@ -41,7 +44,7 @@ RunDimsEstimate(
 - min_dims:
 
   Minimum number of dimensions kept when intrinsic-dimension estimation
-  succeeds. Default is `10`.
+  succeeds. Default is `20`.
 
 - fallback_max_dims:
 

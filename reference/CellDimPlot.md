@@ -661,24 +661,24 @@ CellDimPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-03 08:54:08] Start standard processing workflow...
-#> ℹ [2026-04-03 08:54:09] Checking a list of <Seurat>...
-#> ! [2026-04-03 08:54:09] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-03 08:54:09] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-03 08:54:11] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-03 08:54:11] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-03 08:54:11] Number of available HVF: 2000
-#> ℹ [2026-04-03 08:54:11] Finished check
-#> ℹ [2026-04-03 08:54:12] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-03 08:54:12] Perform pca linear dimension reduction
-#> ℹ [2026-04-03 08:54:13] Use stored estimated dimensions 1:12 for Standardpca
-#> ℹ [2026-04-03 08:54:14] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-03 08:54:14] Reorder clusters...
-#> ℹ [2026-04-03 08:54:14] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-03 08:54:14] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-03 08:54:14] Perform umap nonlinear dimension reduction using Standardpca (1:12)
-#> ℹ [2026-04-03 08:54:17] Perform umap nonlinear dimension reduction using Standardpca (1:12)
-#> ✔ [2026-04-03 08:54:20] Standard processing workflow completed
+#> ℹ [2026-04-06 03:56:03] Start standard processing workflow...
+#> ℹ [2026-04-06 03:56:04] Checking a list of <Seurat>...
+#> ! [2026-04-06 03:56:04] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-06 03:56:04] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-06 03:56:06] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-06 03:56:06] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-06 03:56:07] Number of available HVF: 2000
+#> ℹ [2026-04-06 03:56:07] Finished check
+#> ℹ [2026-04-06 03:56:07] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-06 03:56:07] Perform pca linear dimension reduction
+#> ℹ [2026-04-06 03:56:08] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-04-06 03:56:08] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-06 03:56:08] Reorder clusters...
+#> ℹ [2026-04-06 03:56:08] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-06 03:56:08] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-06 03:56:08] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-06 03:56:11] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-04-06 03:56:14] Standard processing workflow completed
 p1 <- CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -691,7 +691,7 @@ thisplot::panel_fix(
   p1,
   height = 2,
   raster = TRUE,
-  dpi = 30
+  dpi = 300
 )
 
 
@@ -932,7 +932,7 @@ CellDimPlot(
   reduction = "UMAP",
   hex = TRUE
 )
-#> Warning: Removed 3 rows containing missing values or values outside the scale range
+#> Warning: Removed 9 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
 
 
@@ -943,7 +943,7 @@ CellDimPlot(
   hex = TRUE,
   hex.bins = 20
 )
-#> Warning: Removed 6 rows containing missing values or values outside the scale range
+#> Warning: Removed 8 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
 
 
@@ -954,7 +954,7 @@ CellDimPlot(
   hex = TRUE,
   hex.count = FALSE
 )
-#> Warning: Removed 3 rows containing missing values or values outside the scale range
+#> Warning: Removed 9 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
 
 
@@ -997,9 +997,9 @@ CellDimPlot(
   reduction = "UMAP",
   lineages = paste0("Lineage", 1:2)
 )
-#> Warning: Removed 15 rows containing missing values or values outside the scale range
+#> Warning: Removed 9 rows containing missing values or values outside the scale range
 #> (`geom_path()`).
-#> Warning: Removed 15 rows containing missing values or values outside the scale range
+#> Warning: Removed 9 rows containing missing values or values outside the scale range
 #> (`geom_path()`).
 
 
@@ -1010,11 +1010,11 @@ CellDimPlot(
   lineages = paste0("Lineage", 1:2),
   lineages_whiskers = TRUE
 )
-#> Warning: Removed 15 rows containing missing values or values outside the scale range
+#> Warning: Removed 9 rows containing missing values or values outside the scale range
 #> (`geom_segment()`).
-#> Warning: Removed 15 rows containing missing values or values outside the scale range
+#> Warning: Removed 9 rows containing missing values or values outside the scale range
 #> (`geom_path()`).
-#> Warning: Removed 15 rows containing missing values or values outside the scale range
+#> Warning: Removed 9 rows containing missing values or values outside the scale range
 #> (`geom_path()`).
 
 
