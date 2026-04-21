@@ -30,7 +30,7 @@ RunCellTypist(
 \item{srt}{A Seurat object. Default is \code{NULL}.
 If provided, \code{adata} will be ignored.}
 
-\item{adata}{An anndata object. Default is \code{NULL}.}
+\item{adata}{Optional AnnData object used as input.}
 
 \item{assay}{Which assay to use.
 Default is \code{"RNA"}.}
