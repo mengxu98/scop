@@ -249,84 +249,85 @@
 #' )
 #' ht4$plot
 CellCorHeatmap <- function(
-    srt_query,
-    srt_ref = NULL,
-    bulk_ref = NULL,
-    query_group = NULL,
-    ref_group = NULL,
-    query_assay = NULL,
-    ref_assay = NULL,
-    query_reduction = NULL,
-    ref_reduction = NULL,
-    query_dims = 1:30,
-    ref_dims = 1:30,
-    query_collapsing = !is.null(query_group),
-    ref_collapsing = TRUE,
-    features = NULL,
-    features_type = c("HVF", "DE"),
-    feature_source = "both",
-    nfeatures = 2000,
-    DEtest_param = list(
-      max.cells.per.ident = 200,
-      test.use = "wilcox"
-    ),
-    DE_threshold = "p_val_adj < 0.05",
-    distance_metric = "cosine",
-    k = 30,
-    filter_lowfreq = 0,
-    prefix = "KNNPredict",
-    exp_legend_title = NULL,
-    border = TRUE,
-    flip = FALSE,
-    limits = NULL,
-    cluster_rows = FALSE,
-    cluster_columns = FALSE,
-    show_row_names = FALSE,
-    show_column_names = FALSE,
-    row_names_side = "left",
-    column_names_side = "top",
-    row_names_rot = 0,
-    column_names_rot = 90,
-    row_title = NULL,
-    column_title = NULL,
-    row_title_side = "left",
-    column_title_side = "top",
-    row_title_rot = 90,
-    column_title_rot = 0,
-    nlabel = 0,
-    label_cutoff = 0,
-    label_by = "row",
-    label_size = 10,
-    heatmap_palette = "RdBu",
-    heatmap_palcolor = NULL,
-    query_group_palette = "Chinese",
-    query_group_palcolor = NULL,
-    ref_group_palette = "simspec",
-    ref_group_palcolor = NULL,
-    query_annotation = NULL,
-    query_annotation_palette = "Chinese",
-    query_annotation_palcolor = NULL,
-    query_cell_annotation_params = if (flip) {
-      list(height = grid::unit(10, "mm"))
-    } else {
-      list(width = grid::unit(10, "mm"))
-    },
-    ref_annotation = NULL,
-    ref_annotation_palette = "Chinese",
-    ref_annotation_palcolor = NULL,
-    ref_cell_annotation_params = if (flip) {
-      list(width = grid::unit(10, "mm"))
-    } else {
-      list(height = grid::unit(10, "mm"))
-    },
-    use_raster = NULL,
-    raster_device = "png",
-    raster_by_magick = FALSE,
-    height = NULL,
-    width = NULL,
-    units = "inch",
-    seed = 11,
-    ht_params = list()) {
+  srt_query,
+  srt_ref = NULL,
+  bulk_ref = NULL,
+  query_group = NULL,
+  ref_group = NULL,
+  query_assay = NULL,
+  ref_assay = NULL,
+  query_reduction = NULL,
+  ref_reduction = NULL,
+  query_dims = 1:30,
+  ref_dims = 1:30,
+  query_collapsing = !is.null(query_group),
+  ref_collapsing = TRUE,
+  features = NULL,
+  features_type = c("HVF", "DE"),
+  feature_source = "both",
+  nfeatures = 2000,
+  DEtest_param = list(
+    max.cells.per.ident = 200,
+    test.use = "wilcox"
+  ),
+  DE_threshold = "p_val_adj < 0.05",
+  distance_metric = "cosine",
+  k = 30,
+  filter_lowfreq = 0,
+  prefix = "KNNPredict",
+  exp_legend_title = NULL,
+  border = TRUE,
+  flip = FALSE,
+  limits = NULL,
+  cluster_rows = FALSE,
+  cluster_columns = FALSE,
+  show_row_names = FALSE,
+  show_column_names = FALSE,
+  row_names_side = "left",
+  column_names_side = "top",
+  row_names_rot = 0,
+  column_names_rot = 90,
+  row_title = NULL,
+  column_title = NULL,
+  row_title_side = "left",
+  column_title_side = "top",
+  row_title_rot = 90,
+  column_title_rot = 0,
+  nlabel = 0,
+  label_cutoff = 0,
+  label_by = "row",
+  label_size = 10,
+  heatmap_palette = "RdBu",
+  heatmap_palcolor = NULL,
+  query_group_palette = "Chinese",
+  query_group_palcolor = NULL,
+  ref_group_palette = "simspec",
+  ref_group_palcolor = NULL,
+  query_annotation = NULL,
+  query_annotation_palette = "Chinese",
+  query_annotation_palcolor = NULL,
+  query_cell_annotation_params = if (flip) {
+    list(height = grid::unit(10, "mm"))
+  } else {
+    list(width = grid::unit(10, "mm"))
+  },
+  ref_annotation = NULL,
+  ref_annotation_palette = "Chinese",
+  ref_annotation_palcolor = NULL,
+  ref_cell_annotation_params = if (flip) {
+    list(width = grid::unit(10, "mm"))
+  } else {
+    list(height = grid::unit(10, "mm"))
+  },
+  use_raster = NULL,
+  raster_device = "png",
+  raster_by_magick = FALSE,
+  height = NULL,
+  width = NULL,
+  units = "inch",
+  seed = 11,
+  ht_params = list()
+) {
   set.seed(seed)
   if (isTRUE(raster_by_magick)) {
     check_r("magick", verbose = FALSE)
@@ -1499,7 +1500,7 @@ CellCorHeatmap <- function(
   }
 
   if (isTRUE(fix)) {
-    p <- thisplot::panel_fix_overall(
+    p <- panel_fix_overall(
       g_tree,
       width = as.numeric(ht_width),
       height = as.numeric(ht_height),
