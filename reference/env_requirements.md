@@ -17,6 +17,10 @@ env_requirements(version = "3.10-1", include_optional = FALSE)
 
   The Python version of the environment. Default is `"3.10-1"`.
 
+- include_optional:
+
+  Whether to include optional Python dependencies.
+
 ## Value
 
 A list containing:

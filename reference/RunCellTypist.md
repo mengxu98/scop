@@ -39,7 +39,7 @@ RunCellTypist(
 
 - adata:
 
-  An anndata object. Default is `NULL`.
+  Optional AnnData object used as input.
 
 - assay:
 

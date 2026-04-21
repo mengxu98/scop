@@ -103,6 +103,7 @@ AnnotateFeatures(
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 data(pancreas_sub)
 pancreas_sub <- AnnotateFeatures(
   pancreas_sub,
@@ -112,21 +113,12 @@ pancreas_sub <- AnnotateFeatures(
     "CSPA"
   )
 )
-#> ℹ [2026-04-06 09:55:47] Species: "Mus_musculus"
-#> ℹ [2026-04-06 09:55:47] Preparing database: TF
-#> ℹ [2026-04-06 09:55:59] Preparing database: CSPA
 head(
   GetFeaturesData(
     pancreas_sub
   )
 )
-#>               highly_variable_genes   TF CSPA
-#> Xkr4                          False <NA> <NA>
-#> Mrpl15                        False <NA> <NA>
-#> Npbwr1                         <NA> <NA> <NA>
-#> 4732440D04Rik                 False <NA> <NA>
-#> Gm26901                       False <NA> <NA>
-#> Sntg1                          True <NA> <NA>
+} # }
 
 if (FALSE) { # \dontrun{
 # Annotate features using a GTF file

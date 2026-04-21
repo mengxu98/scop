@@ -162,24 +162,24 @@ CellScoring(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-06 10:12:04] Start standard processing workflow...
-#> ℹ [2026-04-06 10:12:05] Checking a list of <Seurat>...
-#> ! [2026-04-06 10:12:05] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-06 10:12:05] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-06 10:12:06] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-06 10:12:07] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-06 10:12:07] Number of available HVF: 2000
-#> ℹ [2026-04-06 10:12:07] Finished check
-#> ℹ [2026-04-06 10:12:07] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-06 10:12:08] Perform pca linear dimension reduction
-#> ℹ [2026-04-06 10:12:08] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-06 10:12:08] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-06 10:12:08] Reorder clusters...
-#> ℹ [2026-04-06 10:12:09] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-06 10:12:09] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-06 10:12:09] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-06 10:12:12] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-04-06 10:12:15] Standard processing workflow completed
+#> ℹ [2026-04-21 06:31:15] Start standard processing workflow...
+#> ℹ [2026-04-21 06:31:15] Checking a list of <Seurat>...
+#> ! [2026-04-21 06:31:15] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-21 06:31:15] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-21 06:31:17] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-21 06:31:17] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-21 06:31:18] Number of available HVF: 2000
+#> ℹ [2026-04-21 06:31:18] Finished check
+#> ℹ [2026-04-21 06:31:18] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-21 06:31:18] Perform pca linear dimension reduction
+#> ℹ [2026-04-21 06:31:19] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-04-21 06:31:19] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-21 06:31:19] Reorder clusters...
+#> ℹ [2026-04-21 06:31:20] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-21 06:31:20] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-21 06:31:20] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-21 06:31:22] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-04-21 06:31:25] Standard processing workflow completed
 features_all <- rownames(pancreas_sub)
 pancreas_sub <- CellScoring(
   pancreas_sub,
@@ -190,15 +190,15 @@ pancreas_sub <- CellScoring(
   method = "Seurat",
   name = "test"
 )
-#> ℹ [2026-04-06 10:12:15] Start cell scoring
-#> ℹ [2026-04-06 10:12:15] Data type is log-normalized
-#> ℹ [2026-04-06 10:12:15] Number of feature lists to be scored: 2
-#> ℹ [2026-04-06 10:12:15] Using 1 core
-#> ⠙ [2026-04-06 10:12:15] Running for 1 [1/2] ■■■■■       50% | ETA:  0s
-#> ✔ [2026-04-06 10:12:15] Completed 2 tasks in 152ms
+#> ℹ [2026-04-21 06:31:25] Start cell scoring
+#> ℹ [2026-04-21 06:31:26] Data type is log-normalized
+#> ℹ [2026-04-21 06:31:26] Number of feature lists to be scored: 2
+#> ℹ [2026-04-21 06:31:26] Using 1 core
+#> ⠙ [2026-04-21 06:31:26] Running for 1 [1/2] ■■■■■       50% | ETA:  0s
+#> ✔ [2026-04-21 06:31:26] Completed 2 tasks in 145ms
 #> 
-#> ℹ [2026-04-06 10:12:15] Building results
-#> ✔ [2026-04-06 10:12:15] Cell scoring completed
+#> ℹ [2026-04-21 06:31:26] Building results
+#> ✔ [2026-04-21 06:31:26] Cell scoring completed
 CellDimPlot(pancreas_sub, "test_classification")
 
 

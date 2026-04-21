@@ -240,35 +240,35 @@ Returns Seurat object with the QC results stored in the meta.data layer.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-06 11:03:13] Start standard processing workflow...
-#> ℹ [2026-04-06 11:03:14] Checking a list of <Seurat>...
-#> ! [2026-04-06 11:03:14] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-06 11:03:14] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-06 11:03:16] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-06 11:03:17] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-06 11:03:17] Number of available HVF: 2000
-#> ℹ [2026-04-06 11:03:17] Finished check
-#> ℹ [2026-04-06 11:03:17] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-06 11:03:17] Perform pca linear dimension reduction
-#> ℹ [2026-04-06 11:03:18] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-06 11:03:18] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-06 11:03:18] Reorder clusters...
-#> ℹ [2026-04-06 11:03:18] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-06 11:03:18] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-06 11:03:18] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-06 11:03:22] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-04-06 11:03:26] Standard processing workflow completed
+#> ℹ [2026-04-21 07:18:13] Start standard processing workflow...
+#> ℹ [2026-04-21 07:18:13] Checking a list of <Seurat>...
+#> ! [2026-04-21 07:18:13] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-21 07:18:13] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-21 07:18:15] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-21 07:18:16] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-21 07:18:16] Number of available HVF: 2000
+#> ℹ [2026-04-21 07:18:16] Finished check
+#> ℹ [2026-04-21 07:18:16] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-21 07:18:17] Perform pca linear dimension reduction
+#> ℹ [2026-04-21 07:18:17] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-04-21 07:18:18] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-21 07:18:18] Reorder clusters...
+#> ℹ [2026-04-21 07:18:18] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-21 07:18:18] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-21 07:18:18] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-21 07:18:22] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-04-21 07:18:25] Standard processing workflow completed
 pancreas_sub <- RunCellQC(pancreas_sub)
-#> ℹ [2026-04-06 11:03:27] Data type is raw counts
-#> ℹ [2026-04-06 11:03:27] Data type is raw counts
-#> ℹ [2026-04-06 11:03:28] Data type is raw counts
-#> ℹ [2026-04-06 11:07:36] Data type is raw counts
-#> ℹ [2026-04-06 11:10:22] Running decontX
-#> ℹ [2026-04-06 11:10:34] decontX contamination (median/mean/max): 0.0136 / 0.1628 / 0.7465
-#> ℹ [2026-04-06 11:10:34] decontX assay stored as decontXcounts
-#> ✔ [2026-04-06 11:10:34] decontX decontamination completed
-#> ℹ [2026-04-06 11:10:34] decontX contamination estimates stored; no cells filtered because `decontX_threshold` is "NULL".
-#> ✔ [2026-04-06 11:10:34] ● Total cells: 1000
+#> ℹ [2026-04-21 07:18:26] Data type is raw counts
+#> ℹ [2026-04-21 07:18:26] Data type is raw counts
+#> ℹ [2026-04-21 07:18:27] Data type is raw counts
+#> ℹ [2026-04-21 07:22:33] Data type is raw counts
+#> ℹ [2026-04-21 07:25:22] Running decontX
+#> ℹ [2026-04-21 07:25:34] decontX contamination (median/mean/max): 0.0136 / 0.1628 / 0.7465
+#> ℹ [2026-04-21 07:25:34] decontX assay stored as decontXcounts
+#> ✔ [2026-04-21 07:25:34] decontX decontamination completed
+#> ℹ [2026-04-21 07:25:34] decontX contamination estimates stored; no cells filtered because `decontX_threshold` is "NULL".
+#> ✔ [2026-04-21 07:25:35] ● Total cells: 1000
 #> ✔                       ◉ 957 cells remained
 #> ✔                       ◯ 43 cells filtered out:
 #> ✔                       ◯   20 potential doublets
@@ -293,7 +293,11 @@ CellStatPlot(
   plot_type = "upset",
   stat_level = "Fail"
 )
-#> ! [2026-04-06 11:10:34] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-04-21 07:25:40] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+#> ℹ Please use `linewidth` instead.
+#> ℹ The deprecated feature was likely used in the ggupset package.
+#>   Please report the issue at <https://github.com/const-ae/ggupset/issues>.
 #> `geom_line()`: Each group consists of only one observation.
 #> ℹ Do you need to adjust the group aesthetic?
 #> `geom_line()`: Each group consists of only one observation.

@@ -43,26 +43,26 @@ ListDB(species = c("Homo_sapiens", "Mus_musculus"))
 #> 2 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7
 #> 3 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7
 #>                                 comment  timestamp                       date
-#> 1 3.22.0 nterm:15169|Mus_musculus-GO_BP 1775471506 2026-04-06 10:31:46.480011
-#> 2        CSPA nterm:1|Mus_musculus-CSPA 1775469361 2026-04-06 09:56:00.702366
-#> 3   AnimalTFDB4 nterm:2|Mus_musculus-TF 1775469348 2026-04-06 09:55:47.990268
+#> 1        CSPA nterm:1|Mus_musculus-CSPA 1776754187 2026-04-21 06:49:47.410705
+#> 2   AnimalTFDB4 nterm:2|Mus_musculus-TF 1776754182 2026-04-21 06:49:41.983492
+#> 3 3.22.0 nterm:15169|Mus_musculus-GO_BP 1776754035  2026-04-21 06:47:14.99923
 #>            db_version            db_name
-#> 1  3.22.0 nterm:15169 Mus_musculus-GO_BP
-#> 2        CSPA nterm:1  Mus_musculus-CSPA
-#> 3 AnimalTFDB4 nterm:2    Mus_musculus-TF
+#> 1        CSPA nterm:1  Mus_musculus-CSPA
+#> 2 AnimalTFDB4 nterm:2    Mus_musculus-TF
+#> 3  3.22.0 nterm:15169 Mus_musculus-GO_BP
 #>                                                                    file
-#> 1 /home/runner/.cache/R/R.cache/4363ecdce2b08b4d38a5c290b4f4ae60.Rcache
-#> 2 /home/runner/.cache/R/R.cache/267624ab3d48b245ce01deac5165a7b1.Rcache
-#> 3 /home/runner/.cache/R/R.cache/82f852e1d9ed5c0a5ad672b843c18742.Rcache
+#> 1 /home/runner/.cache/R/R.cache/267624ab3d48b245ce01deac5165a7b1.Rcache
+#> 2 /home/runner/.cache/R/R.cache/82f852e1d9ed5c0a5ad672b843c18742.Rcache
+#> 3 /home/runner/.cache/R/R.cache/4363ecdce2b08b4d38a5c290b4f4ae60.Rcache
 #>        Species    DB
-#> 1 Mus_musculus GO_BP
-#> 2 Mus_musculus  CSPA
-#> 3 Mus_musculus    TF
+#> 1 Mus_musculus  CSPA
+#> 2 Mus_musculus    TF
+#> 3 Mus_musculus GO_BP
 ListDB(species = "Mus_musculus", db = "GO_BP")
 #>                                                         identifier version
 #> 1 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7
-#>                                 comment  timestamp                       date
-#> 1 3.22.0 nterm:15169|Mus_musculus-GO_BP 1775471506 2026-04-06 10:31:46.480011
+#>                                 comment  timestamp                      date
+#> 1 3.22.0 nterm:15169|Mus_musculus-GO_BP 1776754035 2026-04-21 06:47:14.99923
 #>           db_version            db_name
 #> 1 3.22.0 nterm:15169 Mus_musculus-GO_BP
 #>                                                                    file

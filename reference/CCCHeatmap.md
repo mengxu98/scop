@@ -282,26 +282,9 @@ A ggplot / patchwork object wrapping the ComplexHeatmap grob.
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-06 09:56:02] Start standard processing workflow...
-#> ℹ [2026-04-06 09:56:04] Checking a list of <Seurat>...
-#> ! [2026-04-06 09:56:04] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-06 09:56:04] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-06 09:56:06] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-06 09:56:08] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-06 09:56:08] Number of available HVF: 2000
-#> ℹ [2026-04-06 09:56:08] Finished check
-#> ℹ [2026-04-06 09:56:09] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-06 09:56:09] Perform pca linear dimension reduction
-#> ℹ [2026-04-06 09:56:14] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-06 09:56:15] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-06 09:56:15] Reorder clusters...
-#> ℹ [2026-04-06 09:56:15] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-06 09:56:15] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-06 09:56:15] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-06 09:56:17] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-04-06 09:56:20] Standard processing workflow completed
 
 pc1 <- Seurat::Embeddings(pancreas_sub, "Standardpca")[, 1]
 ct <- as.character(pancreas_sub$CellType)
@@ -319,10 +302,6 @@ pancreas_sub <- RunCellChat(
   group_cmp = list(c("ConditionA", "ConditionB")),
   species = "Mus_musculus"
 )
-#> ℹ [2026-04-06 09:56:20] Start CellChat analysis
-#> ℹ [2026-04-06 09:59:33] Processing condition: "ConditionA"
-#> Warning: The following arguments are not used: drop
-#> Error in loadNamespace(x): there is no package called ‘CellChat’
 
 CCCHeatmap(
   pancreas_sub,
@@ -332,8 +311,6 @@ CCCHeatmap(
   display_by = "aggregation",
   top_n = 20
 )
-#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
-#> `condition`
 
 CCCHeatmap(
   pancreas_sub,
@@ -344,8 +321,6 @@ CCCHeatmap(
   facet_by = "sender",
   top_n = 20
 )
-#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
-#> `condition`
 
 CCCHeatmap(
   pancreas_sub,
@@ -356,8 +331,6 @@ CCCHeatmap(
   facet_by = "receiver",
   top_n = 20
 )
-#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
-#> `condition`
 
 CCCHeatmap(
   pancreas_sub,
@@ -367,8 +340,6 @@ CCCHeatmap(
   display_by = "aggregation",
   top_n = 20
 )
-#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
-#> `condition`
 
 CCCHeatmap(
   pancreas_sub,
@@ -379,8 +350,6 @@ CCCHeatmap(
   facet_by = "sender",
   top_n = 10
 )
-#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
-#> `condition`
 
 CCCHeatmap(
   pancreas_sub,
@@ -392,8 +361,6 @@ CCCHeatmap(
   color.by = "pvalue",
   top_n = 10
 )
-#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
-#> `condition`
 
 CCCHeatmap(
   pancreas_sub,
@@ -402,7 +369,6 @@ CCCHeatmap(
   plot_type = "bubble",
   top_n = 5
 )
-#> Error in use_cc_single_condition(srt, condition = condition): `condition` must be one of CellChat result names or comparison names
 
 CCCHeatmap(
   pancreas_sub,
@@ -411,7 +377,6 @@ CCCHeatmap(
   plot_type = "bubble",
   top_n = 5
 )
-#> Error in use_cc_single_condition(srt, condition = condition): `condition` must be one of CellChat result names or comparison names
 
 CCCHeatmap(
   pancreas_sub,
@@ -422,7 +387,6 @@ CCCHeatmap(
   width = 0.6,
   height = 2.5
 )
-#> Error in use_cc_single_condition(srt, condition = condition): `condition` must be one of CellChat result names or comparison names
 
 CCCHeatmap(
   pancreas_sub,
@@ -433,7 +397,6 @@ CCCHeatmap(
   width = 0.6,
   height = 2.5
 )
-#> Error in use_cc_single_condition(srt, condition = condition): `condition` must be one of CellChat result names or comparison names
 
 CCCHeatmap(
   pancreas_sub,
@@ -445,7 +408,6 @@ CCCHeatmap(
   width = 0.6,
   height = 3.5
 )
-#> Error in use_cc_single_condition(srt, condition = condition): `condition` must be one of CellChat result names or comparison names
 
 CCCHeatmap(
   pancreas_sub,
@@ -458,5 +420,5 @@ CCCHeatmap(
   width = 0.6,
   height = 3.5
 )
-#> Error in .cc_get_cmp(srt = srt, condition = condition): Comparison "ConditionA_vs_ConditionB" not found in CellChat results
+} # }
 ```
