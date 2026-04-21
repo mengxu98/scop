@@ -63,18 +63,19 @@ RunCytoTRACE <- function(object, ...) {
 #' @method RunCytoTRACE Seurat
 #' @export
 RunCytoTRACE.Seurat <- function(
-    object,
-    assay = NULL,
-    layer = c("counts", "data"),
-    species = c("Homo_sapiens", "Mus_musculus"),
-    batch_size = 10000,
-    smooth_batch_size = 1000,
-    parallelize_models = TRUE,
-    parallelize_smoothing = TRUE,
-    cores = 1,
-    seed = 11,
-    verbose = TRUE,
-    ...) {
+  object,
+  assay = NULL,
+  layer = c("counts", "data"),
+  species = c("Homo_sapiens", "Mus_musculus"),
+  batch_size = 10000,
+  smooth_batch_size = 1000,
+  parallelize_models = TRUE,
+  parallelize_smoothing = TRUE,
+  cores = 1,
+  seed = 11,
+  verbose = TRUE,
+  ...
+) {
   log_message(
     "Running {.pkg CytoTRACE2}",
     message_type = "running",
@@ -136,16 +137,17 @@ RunCytoTRACE.Seurat <- function(
 #' @method RunCytoTRACE default
 #' @export
 RunCytoTRACE.default <- function(
-    object,
-    species = c("Homo_sapiens", "Mus_musculus"),
-    batch_size = 10000,
-    smooth_batch_size = 1000,
-    parallelize_models = TRUE,
-    parallelize_smoothing = TRUE,
-    cores = 1,
-    seed = 11,
-    verbose = TRUE,
-    ...) {
+  object,
+  species = c("Homo_sapiens", "Mus_musculus"),
+  batch_size = 10000,
+  smooth_batch_size = 1000,
+  parallelize_models = TRUE,
+  parallelize_smoothing = TRUE,
+  cores = 1,
+  seed = 11,
+  verbose = TRUE,
+  ...
+) {
   log_message(
     "Running {.pkg CytoTRACE2}",
     message_type = "running",
