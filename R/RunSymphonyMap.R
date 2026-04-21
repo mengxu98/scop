@@ -34,19 +34,20 @@
 #'   ref_group = "celltype"
 #' )
 RunSymphonyMap <- function(
-    srt_query,
-    srt_ref,
-    query_assay = NULL,
-    ref_assay = srt_ref[[ref_pca]]@assay.used,
-    ref_pca = NULL,
-    ref_harmony = NULL,
-    ref_umap = NULL,
-    ref_group = NULL,
-    projection_method = c("model", "knn"),
-    nn_method = NULL,
-    k = 30,
-    distance_metric = "cosine",
-    vote_fun = "mean") {
+  srt_query,
+  srt_ref,
+  query_assay = NULL,
+  ref_assay = srt_ref[[ref_pca]]@assay.used,
+  ref_pca = NULL,
+  ref_harmony = NULL,
+  ref_umap = NULL,
+  ref_group = NULL,
+  projection_method = c("model", "knn"),
+  nn_method = NULL,
+  k = 30,
+  distance_metric = "cosine",
+  vote_fun = "mean"
+) {
   check_r("immunogenomics/symphony", verbose = FALSE)
   query_assay <- query_assay %||% SeuratObject::DefaultAssay(srt_query)
   ref_assay <- ref_assay %||% SeuratObject::DefaultAssay(srt_ref)
@@ -238,12 +239,13 @@ RunSymphonyMap <- function(
 }
 
 mapQuery <- function(
-    exp_query,
-    metadata_query,
-    ref_obj,
-    vars = NULL,
-    sigma = 0.1,
-    verbose = TRUE) {
+  exp_query,
+  metadata_query,
+  ref_obj,
+  vars = NULL,
+  sigma = 0.1,
+  verbose = TRUE
+) {
   log_message(
     "Scaling and synchronizing query gene expression",
     verbose = verbose
@@ -330,13 +332,14 @@ mapQuery <- function(
 }
 
 buildReferenceFromSeurat <- function(
-    obj,
-    assay = "RNA",
-    pca = "pca",
-    pca_dims = NULL,
-    harmony = "harmony",
-    umap = "umap",
-    verbose = TRUE) {
+  obj,
+  assay = "RNA",
+  pca = "pca",
+  pca_dims = NULL,
+  harmony = "harmony",
+  umap = "umap",
+  verbose = TRUE
+) {
   if (!assay %in% c("RNA", "SCT")) {
     log_message(
       "Only supported assays are RNA or SCT",

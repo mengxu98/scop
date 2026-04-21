@@ -20,13 +20,14 @@
 #'
 #' @export
 CreateDataFile <- function(
-    srt,
-    data_file,
-    name = NULL,
-    assays = "RNA",
-    layers = "data",
-    compression_level = 6,
-    overwrite = TRUE) {
+  srt,
+  data_file,
+  name = NULL,
+  assays = "RNA",
+  layers = "data",
+  compression_level = 6,
+  overwrite = TRUE
+) {
   if (missing(data_file) || is.null(data_file)) {
     data_file <- "data.hdf5"
   }
@@ -188,14 +189,15 @@ CreateDataFile <- function(
 #'
 #' @export
 CreateMetaFile <- function(
-    srt,
-    meta_file,
-    name = NULL,
-    write_tools = FALSE,
-    write_misc = FALSE,
-    ignore_nlevel = 100,
-    compression_level = 6,
-    overwrite = TRUE) {
+  srt,
+  meta_file,
+  name = NULL,
+  write_tools = FALSE,
+  write_misc = FALSE,
+  ignore_nlevel = 100,
+  compression_level = 6,
+  overwrite = TRUE
+) {
   if (missing(meta_file) || is.null(meta_file)) {
     meta_file <- "meta.hdf5"
   }
@@ -458,17 +460,18 @@ CreateMetaFile <- function(
 #' PrepareSCExplorer(pancreas_sub, base_dir = "./SCExplorer")
 #' }
 PrepareSCExplorer <- function(
-    object,
-    base_dir = "SCExplorer",
-    data_file = "data.hdf5",
-    meta_file = "meta.hdf5",
-    assays = "RNA",
-    layers = c("counts", "data"),
-    ignore_nlevel = 100,
-    write_tools = FALSE,
-    write_misc = FALSE,
-    compression_level = 6,
-    overwrite = FALSE) {
+  object,
+  base_dir = "SCExplorer",
+  data_file = "data.hdf5",
+  meta_file = "meta.hdf5",
+  assays = "RNA",
+  layers = c("counts", "data"),
+  ignore_nlevel = 100,
+  write_tools = FALSE,
+  write_misc = FALSE,
+  compression_level = 6,
+  overwrite = FALSE
+) {
   base_dir <- normalizePath(base_dir, mustWork = FALSE)
   if (!dir.exists(base_dir)) {
     log_message("Create SCExplorer base directory: {.file {base_dir}}")
@@ -596,14 +599,15 @@ PrepareSCExplorer <- function(
 #' )
 #' }
 FetchH5 <- function(
-    data_file,
-    meta_file,
-    name = NULL,
-    features = NULL,
-    layer = NULL,
-    assay = NULL,
-    metanames = NULL,
-    reduction = NULL) {
+  data_file,
+  meta_file,
+  name = NULL,
+  features = NULL,
+  layer = NULL,
+  assay = NULL,
+  metanames = NULL,
+  reduction = NULL
+) {
   if (missing(data_file) || missing(meta_file)) {
     log_message(
       "{.arg data_file} and {.arg meta_file} must be provided",
@@ -798,14 +802,15 @@ FetchH5 <- function(
 }
 
 CreateSeuratObject2 <- function(
-    counts,
-    assay = "RNA",
-    names.field = 1,
-    names.delim = "_",
-    meta.data = NULL,
-    project = "SeuratProject",
-    idents = "SeuratObject",
-    ...) {
+  counts,
+  assay = "RNA",
+  names.field = 1,
+  names.delim = "_",
+  meta.data = NULL,
+  project = "SeuratProject",
+  idents = "SeuratObject",
+  ...
+) {
   if (!is.null(meta.data)) {
     if (is.null(rownames(meta.data))) {
       log_message(
@@ -973,28 +978,29 @@ CreateSeuratObject2 <- function(
 #' # deployApp("./SCExplorer")
 #' }
 RunSCExplorer <- function(
-    base_dir = "SCExplorer",
-    data_file = "data.hdf5",
-    meta_file = "meta.hdf5",
-    title = "SCExplorer",
-    initial_dataset = NULL,
-    initial_reduction = NULL,
-    initial_group = NULL,
-    initial_feature = NULL,
-    initial_assay = NULL,
-    initial_slot = NULL,
-    initial_label = FALSE,
-    initial_cell_palette = "Chinese",
-    initial_feature_palette = "Spectral",
-    initial_theme = "theme_scop",
-    initial_size = 4,
-    initial_ncol = 3,
-    initial_arrange = NULL,
-    initial_raster = NULL,
-    create_script = TRUE,
-    style_script = TRUE,
-    overwrite = TRUE,
-    return_app = TRUE) {
+  base_dir = "SCExplorer",
+  data_file = "data.hdf5",
+  meta_file = "meta.hdf5",
+  title = "SCExplorer",
+  initial_dataset = NULL,
+  initial_reduction = NULL,
+  initial_group = NULL,
+  initial_feature = NULL,
+  initial_assay = NULL,
+  initial_slot = NULL,
+  initial_label = FALSE,
+  initial_cell_palette = "Chinese",
+  initial_feature_palette = "Spectral",
+  initial_theme = "theme_scop",
+  initial_size = 4,
+  initial_ncol = 3,
+  initial_arrange = NULL,
+  initial_raster = NULL,
+  create_script = TRUE,
+  style_script = TRUE,
+  overwrite = TRUE,
+  return_app = TRUE
+) {
   check_r(
     c(
       "rhdf5",
