@@ -748,7 +748,8 @@ FeatureDimPlot <- function(
                 x = .data[["x"]],
                 y = .data[["y"]],
                 color = .data[[names(colors)[i]]]
-              )
+              ),
+              shape = "circle"
             )
           )
           if (all(is.na(colors_list[[i]]))) {
@@ -955,6 +956,7 @@ FeatureDimPlot <- function(
                 color = .data[["color_blend"]]
               ),
               size = pt.size,
+              shape = "circle",
               alpha = pt.alpha
             ) +
             scale_color_identity() +
@@ -993,6 +995,7 @@ FeatureDimPlot <- function(
                   data = cell_df,
                   aes(x = .data[["x"]], y = .data[["y"]]),
                   color = cols.highlight,
+                  shape = "circle",
                   size = sizes.highlight + stroke.highlight,
                   alpha = alpha.highlight
                 ) +
@@ -1004,6 +1007,7 @@ FeatureDimPlot <- function(
                     color = .data[["color_blend"]]
                   ),
                   size = sizes.highlight,
+                  shape = "circle",
                   alpha = alpha.highlight
                 ) +
                 scale_color_identity() +
@@ -1036,6 +1040,7 @@ FeatureDimPlot <- function(
                   data = label_df,
                   mapping = aes(x = .data[["x"]], y = .data[["y"]]),
                   color = label_point_color,
+                  shape = "circle",
                   size = label_point_size
                 ) +
                 ggrepel::geom_text_repel(
@@ -1097,6 +1102,7 @@ FeatureDimPlot <- function(
                   data = label_df,
                   mapping = aes(x = .data[["x"]], y = .data[["y"]]),
                   color = "black",
+                  shape = "circle",
                   size = pt.size + 1
                 ) +
                 ggrepel::geom_text_repel(
@@ -1151,7 +1157,7 @@ FeatureDimPlot <- function(
               ) +
               guides(
                 colour = guide_legend(
-                  override.aes = list(color = colors[label_df$label]),
+                  override.aes = list(shape = "circle", color = colors[label_df$label]),
                   order = 1
                 )
               ) +
@@ -1523,6 +1529,7 @@ FeatureDimPlot <- function(
                 color = .data[["value"]]
               ),
               size = pt.size,
+              shape = "circle",
               alpha = pt.alpha
             )
         }
@@ -1556,6 +1563,7 @@ FeatureDimPlot <- function(
                   data = cell_df,
                   aes(x = .data[["x"]], y = .data[["y"]]),
                   color = cols.highlight,
+                  shape = "circle",
                   size = sizes.highlight + stroke.highlight,
                   alpha = alpha.highlight
                 ) +
@@ -1567,6 +1575,7 @@ FeatureDimPlot <- function(
                     color = .data[["value"]]
                   ),
                   size = sizes.highlight,
+                  shape = "circle",
                   alpha = alpha.highlight
                 )
             }
