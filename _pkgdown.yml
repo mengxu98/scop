@@ -79,6 +79,7 @@ reference:
   - LIGER_integrate
   - MNN_integrate
   - RPCA_integrate
+  - RunLISI
   - RunCSSMap
   - RunHarmony2
   - RunPCAMap
@@ -205,6 +206,7 @@ reference:
   - GroupHeatmap
   - GSEAPlot
   - GSVAPlot
+  - LISIPlot
   - LineagePlot
   - MetabolismPlot
   - PAGAPlot
