@@ -44,15 +44,16 @@
 #'   pancreas_sub
 #' )
 RunProportionTest <- function(
-    srt,
-    group.by,
-    split.by,
-    comparison = NULL,
-    n_permutations = 1000,
-    FDR_threshold = 0.05,
-    log2FD_threshold = log2(1.5),
-    include_all_cells = FALSE,
-    verbose = TRUE) {
+  srt,
+  group.by,
+  split.by,
+  comparison = NULL,
+  n_permutations = 1000,
+  FDR_threshold = 0.05,
+  log2FD_threshold = log2(1.5),
+  include_all_cells = FALSE,
+  verbose = TRUE
+) {
   meta_data <- srt@meta.data
   if (!split.by %in% colnames(meta_data)) {
     log_message(
@@ -169,13 +170,14 @@ RunProportionTest <- function(
 }
 
 .permutation_test <- function(
-    srt,
-    group.by,
-    split.by,
-    cluster_1,
-    cluster_2,
-    n_permutations,
-    include_all_cells = FALSE) {
+  srt,
+  group.by,
+  split.by,
+  cluster_1,
+  cluster_2,
+  n_permutations,
+  include_all_cells = FALSE
+) {
   meta_data <- srt@meta.data
   meta_data <- meta_data[, c(split.by, group.by)]
 
