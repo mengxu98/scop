@@ -40,15 +40,16 @@
 #' )
 #' }
 srt_to_adata <- function(
-    srt,
-    features = NULL,
-    assay_x = "RNA",
-    layer_x = "counts",
-    assay_y = c("spliced", "unspliced"),
-    layer_y = "counts",
-    convert_tools = FALSE,
-    convert_misc = FALSE,
-    verbose = TRUE) {
+  srt,
+  features = NULL,
+  assay_x = "RNA",
+  layer_x = "counts",
+  assay_y = c("spliced", "unspliced"),
+  layer_y = "counts",
+  convert_tools = FALSE,
+  convert_misc = FALSE,
+  verbose = TRUE
+) {
   PrepareEnv()
   check_python(c("scanpy", "numpy"))
 
@@ -257,8 +258,9 @@ srt_to_adata <- function(
 #' srt
 #' }
 adata_to_srt <- function(
-    adata,
-    verbose = TRUE) {
+  adata,
+  verbose = TRUE
+) {
   PrepareEnv()
   data_types <- c(
     "python.builtin.object", "AnnDataR6", "InMemoryAnnData", "AbstractAnnData"
@@ -544,9 +546,10 @@ adata_to_srt <- function(
 #' srt
 #' }
 h5ad_to_srt <- function(
-    path,
-    verbose = TRUE,
-    prepare_for_reticulate = TRUE) {
+  path,
+  verbose = TRUE,
+  prepare_for_reticulate = TRUE
+) {
   PrepareEnv()
   if (isTRUE(prepare_for_reticulate)) {
     check_python(c("scanpy", "numpy", "scipy"))
@@ -604,9 +607,10 @@ py_to_r2 <- function(x) {
 }
 
 get_adata_element <- function(
-    container,
-    key,
-    missing = c("error", "null")) {
+  container,
+  key,
+  missing = c("error", "null")
+) {
   missing <- match.arg(missing)
   if (is.function(container$get)) {
     result <- tryCatch(
@@ -672,8 +676,9 @@ get_adata_names <- function(adata, name_type = c("var", "obs")) {
 }
 
 check_python_element <- function(
-    x,
-    depth = max_depth(x)) {
+  x,
+  depth = max_depth(x)
+) {
   if (depth == 0 || !is.list(x) || !inherits(x, "python.builtin.object")) {
     if (inherits(x, "python.builtin.object")) {
       x_r <- tryCatch(
