@@ -51,6 +51,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #'
@@ -175,6 +176,7 @@
 #'   plot_type = "diff_network",
 #'   measure = "count"
 #' )
+#' }
 CCCNetworkPlot <- function(
   srt,
   method = NULL,
@@ -310,12 +312,10 @@ CCCNetworkPlot <- function(
         dataset = dataset
       )
       cellchat_object <- obj_info$object
-      plot_cellchat_circle <- function(
-        sig,
-        pairLR = NULL,
-        plot_title = NULL,
-        plot_subtitle = NULL
-      ) {
+      plot_cellchat_circle <- function(sig,
+                                       pairLR = NULL,
+                                       plot_title = NULL,
+                                       plot_subtitle = NULL) {
         ccc_cellchat_circle_network_plot(
           srt = srt,
           condition = condition,
@@ -920,8 +920,7 @@ bipartite_plot <- function(
 
   if (!is.null(receptor)) {
     df <- df[
-      as.character(df$receptor) %in% as.character(receptor),
-      ,
+      as.character(df$receptor) %in% as.character(receptor), ,
       drop = FALSE
     ]
   }
@@ -942,8 +941,7 @@ bipartite_plot <- function(
       seq_len(min(top_n, length(receiver_scores)))
     ]
     df <- df[
-      df$sender %in% top_senders & df$receiver %in% top_receivers,
-      ,
+      df$sender %in% top_senders & df$receiver %in% top_receivers, ,
       drop = FALSE
     ]
   }

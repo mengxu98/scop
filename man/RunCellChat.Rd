@@ -54,6 +54,7 @@ A \code{Seurat} object with \code{CellChat} results stored in \code{srt@tools[["
 Run CellChat analysis
 }
 \examples{
+\dontrun{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunCellChat(
@@ -80,6 +81,7 @@ CCCStatPlot(
   plot_type = "violin",
   top_n = 50
 )
+}
 }
 \references{
 \href{https://github.com/jinworks/CellChat}{CellChat}
