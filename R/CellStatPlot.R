@@ -23,6 +23,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' p1 <- CellStatPlot(
@@ -34,7 +35,8 @@
 #' p1
 #'
 #' thisplot::panel_fix(
-#'   p1, height = 2, width = 3
+#'   p1,
+#'   height = 2, width = 3
 #' )
 #'
 #' CellStatPlot(
@@ -272,60 +274,62 @@
 #'     pancreas_sub$Fancb_Expressed == "TRUE" &
 #'     pancreas_sub$Dlg3_Expressed == "FALSE"
 #' )
+#' }
 CellStatPlot <- function(
-    srt,
-    stat.by,
-    group.by = NULL,
-    split.by = NULL,
-    bg.by = NULL,
-    cells = NULL,
-    flip = FALSE,
-    NA_color = "grey",
-    NA_stat = TRUE,
-    keep_empty = FALSE,
-    individual = FALSE,
-    stat_level = NULL,
-    plot_type = c(
-      "bar",
-      "rose",
-      "ring",
-      "pie",
-      "trend",
-      "area",
-      "dot",
-      "sankey",
-      "chord",
-      "venn",
-      "upset"
-    ),
-    stat_type = c("percent", "count"),
-    position = c("stack", "dodge"),
-    palette = "Chinese",
-    palcolor = NULL,
-    alpha = 1,
-    bg_palette = "Chinese",
-    bg_palcolor = NULL,
-    bg_alpha = 0.2,
-    label = FALSE,
-    label.size = 3.5,
-    label.fg = "black",
-    label.bg = "white",
-    label.bg.r = 0.1,
-    aspect.ratio = NULL,
-    title = NULL,
-    subtitle = NULL,
-    xlab = NULL,
-    ylab = NULL,
-    legend.position = "right",
-    legend.direction = "vertical",
-    theme_use = "theme_scop",
-    theme_args = list(),
-    combine = TRUE,
-    nrow = NULL,
-    ncol = NULL,
-    byrow = TRUE,
-    force = FALSE,
-    seed = 11) {
+  srt,
+  stat.by,
+  group.by = NULL,
+  split.by = NULL,
+  bg.by = NULL,
+  cells = NULL,
+  flip = FALSE,
+  NA_color = "grey",
+  NA_stat = TRUE,
+  keep_empty = FALSE,
+  individual = FALSE,
+  stat_level = NULL,
+  plot_type = c(
+    "bar",
+    "rose",
+    "ring",
+    "pie",
+    "trend",
+    "area",
+    "dot",
+    "sankey",
+    "chord",
+    "venn",
+    "upset"
+  ),
+  stat_type = c("percent", "count"),
+  position = c("stack", "dodge"),
+  palette = "Chinese",
+  palcolor = NULL,
+  alpha = 1,
+  bg_palette = "Chinese",
+  bg_palcolor = NULL,
+  bg_alpha = 0.2,
+  label = FALSE,
+  label.size = 3.5,
+  label.fg = "black",
+  label.bg = "white",
+  label.bg.r = 0.1,
+  aspect.ratio = NULL,
+  title = NULL,
+  subtitle = NULL,
+  xlab = NULL,
+  ylab = NULL,
+  legend.position = "right",
+  legend.direction = "vertical",
+  theme_use = "theme_scop",
+  theme_args = list(),
+  combine = TRUE,
+  nrow = NULL,
+  ncol = NULL,
+  byrow = TRUE,
+  force = FALSE,
+  seed = 11
+) {
   cells <- cells %||% colnames(srt@assays[[1]])
   meta_data <- srt@meta.data[cells, , drop = FALSE]
   if (theme_use == "theme_scop") {

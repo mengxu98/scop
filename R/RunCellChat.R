@@ -24,6 +24,7 @@
 #' [CellChat](https://github.com/jinworks/CellChat)
 #'
 #' @examples
+#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunCellChat(
@@ -50,6 +51,7 @@
 #'   plot_type = "violin",
 #'   top_n = 50
 #' )
+#' }
 RunCellChat <- function(
   srt,
   group.by,
@@ -498,8 +500,7 @@ DoCellChat <- function(
     group.by = "label"
   )
 
-  object@DB <- switch(
-    species,
+  object@DB <- switch(species,
     "Mus_musculus" = CellChat::CellChatDB.mouse,
     "Homo_sapiens" = CellChat::CellChatDB.human,
     "zebrafish" = CellChat::CellChatDB.zebrafish,
@@ -605,8 +606,7 @@ DoCellChat <- function(
         if (net.j %in% c("prob", "pval")) {
           net[[net.j]] <- values[
             group_existing_index,
-            group_existing_index,
-            ,
+            group_existing_index, ,
             drop = FALSE
           ]
         }
@@ -666,8 +666,7 @@ DoCellChat <- function(
       if (net.j %in% c("prob", "pval")) {
         net[[net.j]] <- values[
           group_existing_index,
-          group_existing_index,
-          ,
+          group_existing_index, ,
           drop = FALSE
         ]
       }
