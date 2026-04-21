@@ -29,32 +29,33 @@
 #'   add_point = TRUE
 #' )
 FindExpressedMarkers <- function(
-    object,
-    ident.1 = NULL,
-    ident.2 = NULL,
-    cells.1 = NULL,
-    cells.2 = NULL,
-    features = NULL,
-    assay = NULL,
-    layer = "data",
-    min.expression = 0,
-    test.use = "wilcox",
-    logfc.threshold = 0.25,
-    base = 2,
-    pseudocount.use = 1,
-    mean.fxn = NULL,
-    fc.name = NULL,
-    min.pct = 0.1,
-    min.diff.pct = -Inf,
-    max.cells.per.ident = Inf,
-    latent.vars = NULL,
-    only.pos = FALSE,
-    min.cells.group = 3,
-    min.cells.feature = 3,
-    norm.method = "LogNormalize",
-    seed = 11,
-    verbose = TRUE,
-    ...) {
+  object,
+  ident.1 = NULL,
+  ident.2 = NULL,
+  cells.1 = NULL,
+  cells.2 = NULL,
+  features = NULL,
+  assay = NULL,
+  layer = "data",
+  min.expression = 0,
+  test.use = "wilcox",
+  logfc.threshold = 0.25,
+  base = 2,
+  pseudocount.use = 1,
+  mean.fxn = NULL,
+  fc.name = NULL,
+  min.pct = 0.1,
+  min.diff.pct = -Inf,
+  max.cells.per.ident = Inf,
+  latent.vars = NULL,
+  only.pos = FALSE,
+  min.cells.group = 3,
+  min.cells.feature = 3,
+  norm.method = "LogNormalize",
+  seed = 11,
+  verbose = TRUE,
+  ...
+) {
   assay <- assay %||% DefaultAssay(object)
 
   if (!is.null(cells.1)) {
@@ -284,38 +285,39 @@ FindExpressedMarkers <- function(
 }
 
 FindConservedMarkers2 <- function(
-    object,
-    grouping.var,
-    ident.1,
-    ident.2 = NULL,
-    cells.1 = NULL,
-    cells.2 = NULL,
-    features = NULL,
-    test.use = "wilcox",
-    logfc.threshold = 0.25,
-    base = 2,
-    pseudocount.use = 1,
-    mean.fxn = NULL,
-    min.pct = 0.1,
-    min.diff.pct = -Inf,
-    max.cells.per.ident = Inf,
-    latent.vars = NULL,
-    only.pos = FALSE,
-    assay = NULL,
-    layer = "data",
-    min.cells.group = 3,
-    min.cells.feature = 3,
-    meta.method = c(
-      "maximump",
-      "minimump",
-      "wilkinsonp",
-      "meanp",
-      "sump",
-      "votep"
-    ),
-    norm.method = "LogNormalize",
-    verbose = TRUE,
-    ...) {
+  object,
+  grouping.var,
+  ident.1,
+  ident.2 = NULL,
+  cells.1 = NULL,
+  cells.2 = NULL,
+  features = NULL,
+  test.use = "wilcox",
+  logfc.threshold = 0.25,
+  base = 2,
+  pseudocount.use = 1,
+  mean.fxn = NULL,
+  min.pct = 0.1,
+  min.diff.pct = -Inf,
+  max.cells.per.ident = Inf,
+  latent.vars = NULL,
+  only.pos = FALSE,
+  assay = NULL,
+  layer = "data",
+  min.cells.group = 3,
+  min.cells.feature = 3,
+  meta.method = c(
+    "maximump",
+    "minimump",
+    "wilkinsonp",
+    "meanp",
+    "sump",
+    "votep"
+  ),
+  norm.method = "LogNormalize",
+  verbose = TRUE,
+  ...
+) {
   meta.method <- match.arg(meta.method)
   object.var <- SeuratObject::FetchData(object = object, vars = grouping.var)
   levels.split <- names(x = sort(x = table(object.var[, 1])))
@@ -589,16 +591,17 @@ FindConservedMarkers2 <- function(
 }
 
 metap <- function(
-    p,
-    method = c(
-      "maximump",
-      "minimump",
-      "wilkinsonp",
-      "meanp",
-      "sump",
-      "votep"
-    ),
-    ...) {
+  p,
+  method = c(
+    "maximump",
+    "minimump",
+    "wilkinsonp",
+    "meanp",
+    "sump",
+    "votep"
+  ),
+  ...
+) {
   method <- match.arg(method)
   res <- do.call(method, args = list(p = p, ...))
   return(res)
