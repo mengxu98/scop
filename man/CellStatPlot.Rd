@@ -172,6 +172,7 @@ Default is \code{11}.}
 Statistical plot of cells
 }
 \examples{
+\dontrun{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 p1 <- CellStatPlot(
@@ -183,7 +184,8 @@ p1 <- CellStatPlot(
 p1
 
 thisplot::panel_fix(
-  p1, height = 2, width = 3
+  p1,
+  height = 2, width = 3
 )
 
 CellStatPlot(
@@ -421,6 +423,7 @@ sum(
     pancreas_sub$Fancb_Expressed == "TRUE" &
     pancreas_sub$Dlg3_Expressed == "FALSE"
 )
+}
 }
 \seealso{
 \link{FeatureStatPlot}
