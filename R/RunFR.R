@@ -43,22 +43,23 @@ RunFR <- function(object, ...) {
 #' @method RunFR Seurat
 #' @export
 RunFR.Seurat <- function(
-    object,
-    reduction = NULL,
-    dims = NULL,
-    features = NULL,
-    assay = NULL,
-    layer = "data",
-    graph = NULL,
-    neighbor = NULL,
-    k.param = 20,
-    ndim = 2,
-    niter = 500,
-    reduction.name = "FR",
-    reduction.key = "FR_",
-    verbose = TRUE,
-    seed.use = 11L,
-    ...) {
+  object,
+  reduction = NULL,
+  dims = NULL,
+  features = NULL,
+  assay = NULL,
+  layer = "data",
+  graph = NULL,
+  neighbor = NULL,
+  k.param = 20,
+  ndim = 2,
+  niter = 500,
+  reduction.name = "FR",
+  reduction.key = "FR_",
+  verbose = TRUE,
+  seed.use = 11L,
+  ...
+) {
   log_message(
     "Running force-directed layout",
     verbose = verbose
@@ -153,14 +154,15 @@ RunFR.Seurat <- function(
 #' @method RunFR default
 #' @export
 RunFR.default <- function(
-    object,
-    assay = NULL,
-    ndim = 2,
-    niter = 500,
-    reduction.key = "FR_",
-    verbose = TRUE,
-    seed.use = 11L,
-    ...) {
+  object,
+  assay = NULL,
+  ndim = 2,
+  niter = 500,
+  reduction.key = "FR_",
+  verbose = TRUE,
+  seed.use = 11L,
+  ...
+) {
   if (!is.null(seed.use)) {
     set.seed(seed = seed.use)
   }

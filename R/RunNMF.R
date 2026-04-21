@@ -59,23 +59,24 @@ RunNMF <- function(object, ...) {
 #' @method RunNMF Seurat
 #' @export
 RunNMF.Seurat <- function(
-    object,
-    assay = NULL,
-    layer = "data",
-    features = NULL,
-    nbes = 50,
-    nmf.method = "RcppML",
-    tol = 1e-5,
-    maxit = 100,
-    rev.nmf = FALSE,
-    ndims.print = 1:5,
-    nfeatures.print = 30,
-    reduction.name = "nmf",
-    reduction.key = "BE_",
-    verbose = TRUE,
-    seed.use = 11,
-    cores = 0,
-    ...) {
+  object,
+  assay = NULL,
+  layer = "data",
+  features = NULL,
+  nbes = 50,
+  nmf.method = "RcppML",
+  tol = 1e-5,
+  maxit = 100,
+  rev.nmf = FALSE,
+  ndims.print = 1:5,
+  nfeatures.print = 30,
+  reduction.name = "nmf",
+  reduction.key = "BE_",
+  verbose = TRUE,
+  seed.use = 11,
+  cores = 0,
+  ...
+) {
   log_message("Running {.pkg NMF}...", verbose = verbose)
   set.seed(seed = seed.use)
 
@@ -115,22 +116,23 @@ RunNMF.Seurat <- function(
 #' @method RunNMF Assay
 #' @export
 RunNMF.Assay <- function(
-    object,
-    assay = NULL,
-    layer = "data",
-    features = NULL,
-    nbes = 50,
-    nmf.method = "RcppML",
-    tol = 1e-5,
-    maxit = 100,
-    rev.nmf = FALSE,
-    ndims.print = 1:5,
-    nfeatures.print = 30,
-    reduction.key = "BE_",
-    verbose = TRUE,
-    seed.use = 11,
-    cores = 0,
-    ...) {
+  object,
+  assay = NULL,
+  layer = "data",
+  features = NULL,
+  nbes = 50,
+  nmf.method = "RcppML",
+  tol = 1e-5,
+  maxit = 100,
+  rev.nmf = FALSE,
+  ndims.print = 1:5,
+  nfeatures.print = 30,
+  reduction.key = "BE_",
+  verbose = TRUE,
+  seed.use = 11,
+  cores = 0,
+  ...
+) {
   features <- features %||% SeuratObject::VariableFeatures(object = object)
   data_use <- GetAssayData5(
     object = object,
@@ -166,22 +168,23 @@ RunNMF.Assay <- function(
 #' @method RunNMF Assay5
 #' @export
 RunNMF.Assay5 <- function(
-    object,
-    assay = NULL,
-    layer = "data",
-    features = NULL,
-    nbes = 50,
-    nmf.method = "RcppML",
-    tol = 1e-5,
-    maxit = 100,
-    rev.nmf = FALSE,
-    ndims.print = 1:5,
-    nfeatures.print = 30,
-    reduction.key = "BE_",
-    verbose = TRUE,
-    seed.use = 11,
-    cores = 0,
-    ...) {
+  object,
+  assay = NULL,
+  layer = "data",
+  features = NULL,
+  nbes = 50,
+  nmf.method = "RcppML",
+  tol = 1e-5,
+  maxit = 100,
+  rev.nmf = FALSE,
+  ndims.print = 1:5,
+  nfeatures.print = 30,
+  reduction.key = "BE_",
+  verbose = TRUE,
+  seed.use = 11,
+  cores = 0,
+  ...
+) {
   features <- features %||% SeuratObject::VariableFeatures(object = object)
   data_use <- GetAssayData5(
     object = object,
@@ -218,21 +221,22 @@ RunNMF.Assay5 <- function(
 #' @method RunNMF default
 #' @export
 RunNMF.default <- function(
-    object,
-    assay = NULL,
-    layer = "data",
-    nbes = 50,
-    nmf.method = "RcppML",
-    tol = 1e-5,
-    maxit = 100,
-    rev.nmf = FALSE,
-    ndims.print = 1:5,
-    nfeatures.print = 30,
-    reduction.key = "BE_",
-    verbose = TRUE,
-    cores = 0,
-    seed.use = 11,
-    ...) {
+  object,
+  assay = NULL,
+  layer = "data",
+  nbes = 50,
+  nmf.method = "RcppML",
+  tol = 1e-5,
+  maxit = 100,
+  rev.nmf = FALSE,
+  ndims.print = 1:5,
+  nfeatures.print = 30,
+  reduction.key = "BE_",
+  verbose = TRUE,
+  cores = 0,
+  seed.use = 11,
+  ...
+) {
   set.seed(seed = seed.use)
   if (rev.nmf) {
     object <- Matrix::t(x = object)

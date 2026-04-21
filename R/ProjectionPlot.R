@@ -51,19 +51,20 @@
 #'   ref_group = "celltype"
 #' )
 ProjectionPlot <- function(
-    srt_query,
-    srt_ref,
-    query_group = NULL,
-    ref_group = NULL,
-    query_reduction = "ref.embeddings",
-    ref_reduction = srt_query[[query_reduction]]@misc[["reduction.model"]] %||%
-      NULL,
-    query_param = list(palette = "Set1", cells.highlight = TRUE),
-    ref_param = list(palette = "Chinese"),
-    xlim = NULL,
-    ylim = NULL,
-    pt.size = 0.8,
-    stroke.highlight = 0.5) {
+  srt_query,
+  srt_ref,
+  query_group = NULL,
+  ref_group = NULL,
+  query_reduction = "ref.embeddings",
+  ref_reduction = srt_query[[query_reduction]]@misc[["reduction.model"]] %||%
+    NULL,
+  query_param = list(palette = "Set1", cells.highlight = TRUE),
+  ref_param = list(palette = "Chinese"),
+  xlim = NULL,
+  ylim = NULL,
+  pt.size = 0.8,
+  stroke.highlight = 0.5
+) {
   if (is.null(ref_reduction)) {
     log_message(
       "Please specify the ref_reduction.",

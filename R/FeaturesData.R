@@ -21,9 +21,10 @@ GetFeaturesData <- function(object, ...) {
 #' features <- GetFeaturesData(pancreas_sub)
 #' head(features)
 GetFeaturesData.Seurat <- function(
-    object,
-    assay = NULL,
-    ...) {
+  object,
+  assay = NULL,
+  ...
+) {
   assay <- assay %||% SeuratObject::DefaultAssay(object)
   assay_obj <- Seurat::GetAssay(
     object,
@@ -36,8 +37,9 @@ GetFeaturesData.Seurat <- function(
 #' @method GetFeaturesData Assay
 #' @export
 GetFeaturesData.Assay <- function(
-    object,
-    ...) {
+  object,
+  ...
+) {
   return(object@meta.features)
 }
 
@@ -45,8 +47,9 @@ GetFeaturesData.Assay <- function(
 #' @method GetFeaturesData Assay5
 #' @export
 GetFeaturesData.Assay5 <- function(
-    object,
-    ...) {
+  object,
+  ...
+) {
   return(object[[]])
 }
 
@@ -77,10 +80,11 @@ AddFeaturesData <- function(object, ...) {
 #' features <- GetFeaturesData(pancreas_sub)
 #' pancreas_sub <- AddFeaturesData(pancreas_sub, features)
 AddFeaturesData.Seurat <- function(
-    object,
-    features,
-    assay = NULL,
-    ...) {
+  object,
+  features,
+  assay = NULL,
+  ...
+) {
   assay <- assay %||% SeuratObject::DefaultAssay(object)
   assay_obj <- Seurat::GetAssay(
     object,
@@ -96,9 +100,10 @@ AddFeaturesData.Seurat <- function(
 #' @method AddFeaturesData Assay
 #' @export
 AddFeaturesData.Assay <- function(
-    object,
-    features,
-    ...) {
+  object,
+  features,
+  ...
+) {
   object@meta.features <- check_features_data(object, features)
   return(object)
 }
@@ -107,9 +112,10 @@ AddFeaturesData.Assay <- function(
 #' @method AddFeaturesData Assay5
 #' @export
 AddFeaturesData.Assay5 <- function(
-    object,
-    features,
-    ...) {
+  object,
+  features,
+  ...
+) {
   object[[]] <- check_features_data(object, features)
   return(object)
 }

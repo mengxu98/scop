@@ -57,26 +57,27 @@ RunPaCMAP <- function(object, ...) {
 #' @method RunPaCMAP Seurat
 #' @export
 RunPaCMAP.Seurat <- function(
-    object,
-    reduction = "pca",
-    dims = NULL,
-    features = NULL,
-    assay = NULL,
-    layer = "data",
-    n_components = 2,
-    n.neighbors = NULL,
-    MN_ratio = 0.5,
-    FP_ratio = 2,
-    distance_method = "euclidean",
-    lr = 1,
-    num_iters = 450L,
-    apply_pca = TRUE,
-    init = "random",
-    reduction.name = "pacmap",
-    reduction.key = "PaCMAP_",
-    verbose = TRUE,
-    seed.use = 11L,
-    ...) {
+  object,
+  reduction = "pca",
+  dims = NULL,
+  features = NULL,
+  assay = NULL,
+  layer = "data",
+  n_components = 2,
+  n.neighbors = NULL,
+  MN_ratio = 0.5,
+  FP_ratio = 2,
+  distance_method = "euclidean",
+  lr = 1,
+  num_iters = 450L,
+  apply_pca = TRUE,
+  init = "random",
+  reduction.name = "pacmap",
+  reduction.key = "PaCMAP_",
+  verbose = TRUE,
+  seed.use = 11L,
+  ...
+) {
   if (sum(c(is.null(dims), is.null(features))) < 1) {
     log_message(
       "Please specify only one of the following arguments: dims, features, or graph",
@@ -147,21 +148,22 @@ RunPaCMAP.Seurat <- function(
 #' @method RunPaCMAP default
 #' @export
 RunPaCMAP.default <- function(
-    object,
-    assay = NULL,
-    n_components = 2,
-    n.neighbors = NULL,
-    MN_ratio = 0.5,
-    FP_ratio = 2,
-    distance_method = "euclidean",
-    lr = 1,
-    num_iters = 450L,
-    apply_pca = TRUE,
-    init = "random",
-    reduction.key = "PaCMAP_",
-    verbose = TRUE,
-    seed.use = 11L,
-    ...) {
+  object,
+  assay = NULL,
+  n_components = 2,
+  n.neighbors = NULL,
+  MN_ratio = 0.5,
+  FP_ratio = 2,
+  distance_method = "euclidean",
+  lr = 1,
+  num_iters = 450L,
+  apply_pca = TRUE,
+  init = "random",
+  reduction.key = "PaCMAP_",
+  verbose = TRUE,
+  seed.use = 11L,
+  ...
+) {
   if (!is.null(seed.use)) {
     set.seed(seed = seed.use)
   }
