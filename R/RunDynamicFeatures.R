@@ -112,23 +112,24 @@
 #'   compare_features = FALSE
 #' )
 RunDynamicFeatures <- function(
-    srt,
-    lineages,
-    features = NULL,
-    suffix = lineages,
-    n_candidates = 1000,
-    minfreq = 5,
-    family = NULL,
-    layer = "counts",
-    assay = NULL,
-    libsize = NULL,
-    fit_method = c("gam", "pretsa"),
-    knot = 0,
-    max_knot_allowed = 10,
-    padjust_method = "fdr",
-    cores = 1,
-    verbose = TRUE,
-    seed = 11) {
+  srt,
+  lineages,
+  features = NULL,
+  suffix = lineages,
+  n_candidates = 1000,
+  minfreq = 5,
+  family = NULL,
+  layer = "counts",
+  assay = NULL,
+  libsize = NULL,
+  fit_method = c("gam", "pretsa"),
+  knot = 0,
+  max_knot_allowed = 10,
+  padjust_method = "fdr",
+  cores = 1,
+  verbose = TRUE,
+  seed = 11
+) {
   set.seed(seed)
   assay <- assay %||% DefaultAssay(srt)
   fit_method <- match.arg(fit_method)
@@ -364,17 +365,18 @@ RunDynamicFeatures <- function(
 }
 
 dynamic_features_gam <- function(
-    y_ordered,
-    t_ordered,
-    features,
-    gene,
-    meta,
-    family,
-    layer,
-    y_libsize,
-    padjust_method,
-    cores,
-    verbose) {
+  y_ordered,
+  t_ordered,
+  features,
+  gene,
+  meta,
+  family,
+  layer,
+  y_libsize,
+  padjust_method,
+  cores,
+  verbose
+) {
   l_libsize <- y_libsize[names(t_ordered)]
   gam_out <- parallelize_fun(
     rownames(y_ordered),
@@ -504,19 +506,20 @@ dynamic_features_gam <- function(
 }
 
 dynamic_features_pretsa <- function(
-    y_ordered,
-    t_ordered,
-    features,
-    gene,
-    meta,
-    gene_status,
-    layer,
-    y_libsize,
-    family,
-    knot,
-    max_knot_allowed,
-    padjust_method,
-    verbose) {
+  y_ordered,
+  t_ordered,
+  features,
+  gene,
+  meta,
+  gene_status,
+  layer,
+  y_libsize,
+  family,
+  knot,
+  max_knot_allowed,
+  padjust_method,
+  verbose
+) {
   gene_sub <- features[features %in% gene]
   meta_sub <- features[features %in% meta]
   pseudotime_vec <- stats::setNames(t_ordered, names(t_ordered))
@@ -636,13 +639,14 @@ dynamic_features_pretsa <- function(
 }
 
 pretsa_one_block <- function(
-    expr,
-    feats,
-    t_ordered,
-    pseudotime_vec,
-    knot,
-    max_knot_allowed,
-    padjust_method) {
+  expr,
+  feats,
+  t_ordered,
+  pseudotime_vec,
+  knot,
+  max_knot_allowed,
+  padjust_method
+) {
   test_res <- pretsa_temporal(
     expr,
     pseudotime_vec,
@@ -689,9 +693,10 @@ pretsa_one_block <- function(
 }
 
 pretsa_Calbic <- function(
-    numknot,
-    Blist,
-    expr) {
+  numknot,
+  Blist,
+  expr
+) {
   B <- Blist[[as.character(numknot)]][["B"]]
   tBB <- Blist[[as.character(numknot)]][["tBB"]]
   beta <- as.matrix(tcrossprod(chol2inv(chol(tBB)), B) %*% expr)
@@ -702,10 +707,11 @@ pretsa_Calbic <- function(
 }
 
 pretsa_Calfstat <- function(
-    expr,
-    pseudotime,
-    knot = 0,
-    max_knot_allowed = 10) {
+  expr,
+  pseudotime,
+  knot = 0,
+  max_knot_allowed = 10
+) {
   expr <- expr[, names(pseudotime), drop = FALSE]
   if (knot != "auto") {
     knotnum <- rep(knot, nrow(expr))
@@ -777,11 +783,12 @@ pretsa_Calfstat <- function(
 }
 
 pretsa_temporal <- function(
-    expr,
-    pseudotime,
-    knot,
-    max_knot_allowed,
-    padjust_method) {
+  expr,
+  pseudotime,
+  knot,
+  max_knot_allowed,
+  padjust_method
+) {
   expr <- expr[, names(pseudotime), drop = FALSE]
   if (knot != "auto") {
     knotnum <- rep(knot, nrow(expr))
@@ -892,10 +899,11 @@ pretsa_temporal <- function(
 }
 
 pretsa_temporalFit <- function(
-    expr,
-    pseudotime,
-    knot = 0,
-    max_knot_allowed = 10) {
+  expr,
+  pseudotime,
+  knot = 0,
+  max_knot_allowed = 10
+) {
   expr <- expr[, names(pseudotime), drop = FALSE]
   if (knot != "auto") {
     B <- splines::bs(pseudotime, intercept = FALSE, df = knot + 3)

@@ -1,0 +1,198 @@
+#' @title Run TriMap (Large-scale Dimensionality Reduction Using Triplets)
+#'
+#' @md
+#' @inheritParams thisutils::log_message
+#' @inheritParams RunUMAP2
+#' @inheritParams RunDM
+#' @param n_components A number of TriMap components.
+#' Default is `2`.
+#' @param n_inliers A number of nearest neighbors for forming the nearest neighbor triplets.
+#' Default is `12`.
+#' @param n_outliers A number of outliers for forming the nearest neighbor triplets.
+#' Default is `4`.
+#' @param n_random A number of random triplets per point.
+#' Default is `3`.
+#' @param distance_method A character string specifying the distance metric for TriMap.
+#' Options are: `"euclidean"`, `"manhattan"`, `"angular"`, `"cosine"`, `"hamming"`.
+#' Default is `"euclidean"`.
+#' @param lr The learning rate for TriMap.
+#' Default is `0.1`.
+#' @param n_iters A number of iterations for TriMap.
+#' Default is `400`.
+#' @param apply_pca Whether to apply PCA before the nearest-neighbor calculation.
+#' Default is `TRUE`.
+#' @param opt_method A character string specifying the optimization method for TriMap.
+#' Options are: `"dbd"`, `"sd"`, `"momentum"`.
+#' Default is `"dbd"`.
+#' @param reduction.name A character string specifying the name of the reduction to be stored in the Seurat object.
+#' Default is `"trimap"`.
+#' @param reduction.key A character string specifying the prefix for the column names of the TriMap embeddings.
+#' Default is `"TriMap_"`.
+#' @param ... Additional arguments to be passed to the trimap.TRIMAP function.
+#'
+#' @rdname RunTriMap
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunTriMap(
+#'   object = pancreas_sub,
+#'   features = SeuratObject::VariableFeatures(pancreas_sub)
+#' )
+#' CellDimPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   reduction = "trimap"
+#' )
+#' }
+RunTriMap <- function(object, ...) {
+  UseMethod(generic = "RunTriMap", object = object)
+}
+
+#' @rdname RunTriMap
+#' @method RunTriMap Seurat
+#' @export
+RunTriMap.Seurat <- function(
+  object,
+  reduction = "pca",
+  dims = NULL,
+  features = NULL,
+  assay = NULL,
+  layer = "data",
+  n_components = 2,
+  n_inliers = 12,
+  n_outliers = 4,
+  n_random = 3,
+  distance_method = "euclidean",
+  lr = 0.1,
+  n_iters = 400,
+  apply_pca = TRUE,
+  opt_method = "dbd",
+  reduction.name = "trimap",
+  reduction.key = "TriMap_",
+  verbose = TRUE,
+  seed.use = 11L,
+  ...
+) {
+  if (sum(c(is.null(dims), is.null(features))) == 2) {
+    log_message(
+      "Please specify only one of the following arguments: dims, features",
+      message_type = "error"
+    )
+  }
+  if (!is.null(features)) {
+    assay <- assay %||% DefaultAssay(object = object)
+    data.use <- as_matrix(
+      Matrix::t(
+        GetAssayData5(
+          object = object,
+          layer = layer,
+          assay = assay
+        )[features, ]
+      )
+    )
+    if (ncol(data.use) < n_components) {
+      log_message(
+        "Please provide as many or more features than n_components: ",
+        length(features),
+        " features provided, ",
+        n_components,
+        " TriMap components requested",
+        message_type = "error"
+      )
+    }
+  } else if (!is.null(dims)) {
+    data.use <- Embeddings(object[[reduction]])[, dims]
+    assay <- DefaultAssay(object = object[[reduction]])
+    if (length(dims) < n_components) {
+      log_message(
+        "Please provide as many or more dims than n_components: ",
+        length(dims),
+        " dims provided, ",
+        n_components,
+        " TriMap components requested",
+        message_type = "error"
+      )
+    }
+  } else {
+    log_message(
+      "Please specify one of dims, features",
+      message_type = "error"
+    )
+  }
+  object[[reduction.name]] <- RunTriMap(
+    object = data.use,
+    assay = assay,
+    n_components = n_components,
+    n_inliers = n_inliers,
+    n_outliers = n_outliers,
+    n_random = n_random,
+    distance_method = distance_method,
+    lr = lr,
+    n_iters = n_iters,
+    apply_pca = apply_pca,
+    opt_method = opt_method,
+    reduction.key = reduction.key,
+    verbose = verbose,
+    seed.use = seed.use
+  )
+  object <- Seurat::LogSeuratCommand(object = object)
+  return(object)
+}
+
+#' @rdname RunTriMap
+#' @method RunTriMap default
+#' @export
+RunTriMap.default <- function(
+  object,
+  assay = NULL,
+  n_components = 2,
+  n_inliers = 12,
+  n_outliers = 4,
+  n_random = 3,
+  distance_method = "euclidean",
+  lr = 0.1,
+  n_iters = 400,
+  apply_pca = TRUE,
+  opt_method = "dbd",
+  reduction.key = "TriMap_",
+  verbose = TRUE,
+  seed.use = 11L,
+  ...
+) {
+  set.seed(seed = seed.use)
+
+  PrepareEnv()
+  check_python("trimap", verbose = verbose)
+  trimap <- reticulate::import("trimap")
+
+  operator <- trimap$TRIMAP(
+    n_dims = as.integer(n_components),
+    n_inliers = as.integer(n_inliers),
+    n_outliers = as.integer(n_outliers),
+    n_random = as.integer(n_random),
+    distance = distance_method,
+    lr = lr,
+    n_iters = as.integer(n_iters),
+    apply_pca = apply_pca,
+    opt_method = opt_method,
+    verbose = verbose,
+    ...
+  )
+  embedding <- operator$fit_transform(object)
+  colnames(x = embedding) <- paste0(reduction.key, seq_len(ncol(embedding)))
+  if (inherits(x = object, what = "dist")) {
+    rownames(x = embedding) <- attr(object, "Labels")
+  } else {
+    rownames(x = embedding) <- rownames(object)
+  }
+  reduction <- Seurat::CreateDimReducObject(
+    embeddings = embedding,
+    key = reduction.key,
+    assay = assay,
+    global = TRUE
+  )
+  return(reduction)
+}

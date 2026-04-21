@@ -380,7 +380,7 @@ RunGSVA <- function(
       "Name"
     ]
     term_names[is.na(term_names)] <- term_ids[is.na(term_names)]
-    term_names <- thisutils::capitalize(
+    term_names <- capitalize(
       trimws(as.character(term_names)),
       force_tolower = TRUE
     )
