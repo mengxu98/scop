@@ -9,6 +9,8 @@ env_requirements(version = "3.10-1", include_optional = FALSE)
 \arguments{
 \item{version}{The Python version of the environment.
 Default is \code{"3.10-1"}.}
+
+\item{include_optional}{Whether to include optional Python dependencies.}
 }
 \value{
 A list containing:
