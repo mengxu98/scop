@@ -30,7 +30,8 @@
 #' @examples
 #' scop_logo()
 scop_logo <- function(
-    unicode = cli::is_utf8_output()) {
+  unicode = cli::is_utf8_output()
+) {
   logo <- c(
     "          0          1        2             3     4
                      _____ _________  ____
