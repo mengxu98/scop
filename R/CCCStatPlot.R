@@ -62,6 +62,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #'
@@ -183,6 +184,7 @@
 #'   idents.use = "Ductal",
 #'   plot_type = "role_change"
 #' )
+#' }
 CCCStatPlot <- function(
   srt,
   method = NULL,
@@ -749,8 +751,7 @@ ccc_lr_contribution_plot <- function(
     split(contrib_df, contrib_df$signaling),
     function(df_sig) {
       df_sig <- df_sig[
-        order(df_sig$contribution, decreasing = TRUE),
-        ,
+        order(df_sig$contribution, decreasing = TRUE), ,
         drop = FALSE
       ]
       df_sig$interaction <- factor(
@@ -1385,8 +1386,7 @@ ccc_generic_lr_contribution_plot <- function(
     split(contrib_df, contrib_df$signaling),
     function(df_sig) {
       df_sig <- df_sig[
-        order(df_sig$contribution, decreasing = TRUE),
-        ,
+        order(df_sig$contribution, decreasing = TRUE), ,
         drop = FALSE
       ]
       df_sig$interaction <- factor(
@@ -1884,8 +1884,7 @@ ccc_stat_comparison_plot <- function(
       rbind,
       lapply(seq_along(cc_cmp$object_list), function(i) {
         obj <- cc_cmp$object_list[[i]]
-        value <- switch(
-          measure,
+        value <- switch(measure,
           count = sum(obj@net$count, na.rm = TRUE),
           weight = sum(obj@net$weight, na.rm = TRUE)
         )
@@ -1930,14 +1929,12 @@ ccc_stat_comparison_plot <- function(
     rbind,
     lapply(seq_along(cc_cmp$object_list), function(i) {
       obj <- cc_cmp$object_list[[i]]
-      mat <- switch(
-        measure,
+      mat <- switch(measure,
         count = obj@net$count,
         weight = obj@net$weight
       )
       celltypes <- rownames(mat)
-      value <- switch(
-        pattern,
+      value <- switch(pattern,
         outgoing = rowSums(mat, na.rm = TRUE),
         incoming = colSums(mat, na.rm = TRUE),
         all = rowSums(mat, na.rm = TRUE) +

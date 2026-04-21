@@ -1019,8 +1019,7 @@ pair_plot_df <- function(df) {
     !is.na(df$sender) &
       nzchar(df$sender) &
       !is.na(df$receiver) &
-      nzchar(df$receiver),
-    ,
+      nzchar(df$receiver), ,
     drop = FALSE
   ]
   if (nrow(df_use) == 0L) {
@@ -1064,8 +1063,7 @@ interaction_plot_df <- function(df) {
       !is.na(df$receiver) &
       nzchar(df$receiver) &
       !is.na(df$interaction_label) &
-      nzchar(df$interaction_label),
-    ,
+      nzchar(df$interaction_label), ,
     drop = FALSE
   ]
   if (nrow(df_use) == 0L) {
@@ -2098,8 +2096,7 @@ ccc_flow_plot_df <- function(
       ))
     }
     plot_df <- plot_df[
-      is.finite(plot_df$score) & plot_df$score > edge_threshold,
-      ,
+      is.finite(plot_df$score) & plot_df$score > edge_threshold, ,
       drop = FALSE
     ]
     if (nrow(plot_df) == 0L) {
@@ -2174,8 +2171,7 @@ ccc_flow_plot_df <- function(
       ))
     }
     plot_df <- plot_df[
-      is.finite(plot_df[[edge_value]]) & plot_df[[edge_value]] > edge_threshold,
-      ,
+      is.finite(plot_df[[edge_value]]) & plot_df[[edge_value]] > edge_threshold, ,
       drop = FALSE
     ]
     if (nrow(plot_df) == 0L) {
@@ -2243,8 +2239,7 @@ ccc_flow_plot_df <- function(
     suffixes = c("_from", "_to")
   )
   edge_df <- edge_df[
-    !is.na(edge_df$x_from) & !is.na(edge_df$x_to),
-    ,
+    !is.na(edge_df$x_from) & !is.na(edge_df$x_to), ,
     drop = FALSE
   ]
   list(nodes = node_df, edges = edge_df, breaks = breaks, labels = labels)
@@ -2933,8 +2928,7 @@ ccc_chord_plot <- function(
   pair_plot <- pair_plot[
     is.finite(pair_plot[[pair_value_col]]) &
       pair_plot[[pair_value_col]] > 0 &
-      pair_plot[[pair_value_col]] >= edge_threshold,
-    ,
+      pair_plot[[pair_value_col]] >= edge_threshold, ,
     drop = FALSE
   ]
   if (nrow(pair_plot) == 0L) {
@@ -2963,8 +2957,7 @@ ccc_chord_plot <- function(
     na.rm = TRUE
   )
   strength_df <- strength_df[
-    order(strength_df$strength, decreasing = TRUE, na.last = TRUE),
-    ,
+    order(strength_df$strength, decreasing = TRUE, na.last = TRUE), ,
     drop = FALSE
   ]
   if (
@@ -2977,8 +2970,7 @@ ccc_chord_plot <- function(
     keep_cells <- utils::head(strength_df$cell, max.groups)
     pair_plot <- pair_plot[
       pair_plot$sender %in% keep_cells &
-        pair_plot$receiver %in% keep_cells,
-      ,
+        pair_plot$receiver %in% keep_cells, ,
       drop = FALSE
     ]
     if (nrow(pair_plot) == 0L) {
@@ -3164,7 +3156,7 @@ ccc_sankey_plot <- function(
     ylab_use <- "Interaction count"
   }
 
-  thisplot::StatPlot(
+  StatPlot(
     meta.data = meta_data,
     stat.by = stat_by,
     plot_type = "sankey",
@@ -3461,16 +3453,16 @@ ccc_dim_network_plot <- function(
     edge_threshold = edge_threshold,
     edge_size = edge_size,
     edge_color = edge_color,
-      edge_alpha = edge_alpha,
-      edge_line = edge_line,
-      edge_curvature = edge_curvature,
-      directed = directed,
-      arrow_type = arrow_type,
-      arrow_angle = arrow_angle,
-      arrow_length = arrow_length,
-      node_size = node_size,
-      node_alpha = node_alpha
-    )
+    edge_alpha = edge_alpha,
+    edge_line = edge_line,
+    edge_curvature = edge_curvature,
+    directed = directed,
+    arrow_type = arrow_type,
+    arrow_angle = arrow_angle,
+    arrow_length = arrow_length,
+    node_size = node_size,
+    node_alpha = node_alpha
+  )
   if (is.null(overlay)) {
     log_message(
       "No CCC edges are available for {.val plot_type = 'embedding_network'}",
@@ -3757,8 +3749,7 @@ ccc_dim_network_layers <- function(
   pair_df$receiver_key <- ccc_group_key(pair_df$receiver)
   edge_df <- pair_df[
     pair_df$sender_key %in% node_df$group_key &
-      pair_df$receiver_key %in% node_df$group_key,
-    ,
+      pair_df$receiver_key %in% node_df$group_key, ,
     drop = FALSE
   ]
   if (nrow(edge_df) == 0L) {
@@ -3804,8 +3795,7 @@ ccc_dim_network_layers <- function(
   edge_df$receiver_key <- ccc_group_key(edge_df$receiver)
 
   edge_df <- edge_df[
-    edge_df$weight >= edge_threshold,
-    ,
+    edge_df$weight >= edge_threshold, ,
     drop = FALSE
   ]
   if (nrow(edge_df) == 0L) {
@@ -3830,8 +3820,7 @@ ccc_dim_network_layers <- function(
     all.x = TRUE
   )
   edge_df <- edge_df[
-    !is.na(edge_df$x_from) & !is.na(edge_df$x_to),
-    ,
+    !is.na(edge_df$x_from) & !is.na(edge_df$x_to), ,
     drop = FALSE
   ]
   if (nrow(edge_df) == 0L) {
@@ -4279,15 +4268,13 @@ ccc_standardize_ligand_target_df <- function(
       context_keep <- context_df
       if (sender_requested) {
         context_keep <- context_keep[
-          context_keep$sender %in% sender.use,
-          ,
+          context_keep$sender %in% sender.use, ,
           drop = FALSE
         ]
       }
       if (receiver_requested) {
         context_keep <- context_keep[
-          context_keep$receiver %in% receiver.use,
-          ,
+          context_keep$receiver %in% receiver.use, ,
           drop = FALSE
         ]
       }
