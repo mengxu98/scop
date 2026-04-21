@@ -122,15 +122,17 @@ RunDynamicEnrichment <- function(
       mirror = mirror
     )
   } else {
-    colnames(TERM2GENE) <- c("Term", IDtype)
     db <- "custom"
-    db_list <- list()
-    db_list[[species]][[db]][["TERM2GENE"]] <- unique(TERM2GENE)
-    if (is.null(TERM2NAME)) {
-      TERM2NAME <- unique(TERM2GENE)[, c(1, 1)]
-      colnames(TERM2NAME) <- c("Term", "Name")
-    }
-    db_list[[species]][[db]][["TERM2NAME"]] <- unique(TERM2NAME)
+    custom_db <- create_custom_db_list(
+      species = species,
+      db = db,
+      TERM2GENE = TERM2GENE,
+      TERM2NAME = TERM2NAME,
+      IDtype = IDtype
+    )
+    db_list <- custom_db[["db_list"]]
+    TERM2GENE <- custom_db[["TERM2GENE"]]
+    TERM2NAME <- custom_db[["TERM2NAME"]]
   }
 
   for (i in seq_along(db)) {

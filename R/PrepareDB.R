@@ -2603,17 +2603,14 @@ PrepareDB <- function(
             )
           }
         }
-        TERM2GENE <- custom_TERM2GENE
-        colnames(TERM2GENE) <- c("Term", custom_IDtype)
-        if (is.null(custom_TERM2NAME)) {
-          TERM2NAME <- TERM2GENE[, c(1, 1)]
-        } else {
-          TERM2NAME <- custom_TERM2NAME
-        }
-        colnames(TERM2NAME) <- c("Term", "Name")
-
-        TERM2GENE <- stats::na.omit(unique(TERM2GENE))
-        TERM2NAME <- stats::na.omit(unique(TERM2NAME))
+        custom_db <- normalize_custom_db_input(
+          TERM2GENE = custom_TERM2GENE,
+          TERM2NAME = custom_TERM2NAME,
+          IDtype = custom_IDtype,
+          remove_na = TRUE
+        )
+        TERM2GENE <- custom_db[["TERM2GENE"]]
+        TERM2NAME <- custom_db[["TERM2NAME"]]
         db_list[[db_species[db]]][[db]][["TERM2GENE"]] <- TERM2GENE
         db_list[[db_species[db]]][[db]][["TERM2NAME"]] <- TERM2NAME
         db_list[[db_species[db]]][[db]][["version"]] <- custom_version
