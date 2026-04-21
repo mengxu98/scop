@@ -840,8 +840,7 @@ run_integration5 <- function(
     hvf_counts <- tryCatch(
       Matrix::colSums(
         GetAssayData5(srt_integrated, layer = "counts", assay = assay)[
-          HVF,
-          ,
+          HVF, ,
           drop = FALSE
         ]
       ),

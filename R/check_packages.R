@@ -326,8 +326,7 @@ version_satisfies_requirement <- function(
   }
 
   any(
-    switch(
-      operator,
+    switch(operator,
       "==" = comparison == 0L,
       "=" = comparison == 0L,
       ">=" = comparison >= 0L,

@@ -22,14 +22,15 @@
 #'   layer = "data"
 #' )
 srt_reorder <- function(
-    srt,
-    features = NULL,
-    reorder_by = NULL,
-    layer = "data",
-    assay = NULL,
-    log = TRUE,
-    distance_metric = "euclidean",
-    verbose = TRUE) {
+  srt,
+  features = NULL,
+  reorder_by = NULL,
+  layer = "data",
+  assay = NULL,
+  log = TRUE,
+  distance_metric = "euclidean",
+  verbose = TRUE
+) {
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   if (is.null(features)) {
     srt <- Seurat::FindVariableFeatures(
