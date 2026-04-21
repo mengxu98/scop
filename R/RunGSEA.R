@@ -118,36 +118,37 @@
 #' )
 #' }
 RunGSEA <- function(
-    srt = NULL,
-    group.by = NULL,
-    test.use = "wilcox",
-    DE_threshold = "p_val_adj < 0.05",
-    scoreType = "std",
-    geneID = NULL,
-    geneScore = NULL,
-    geneID_groups = NULL,
-    geneID_exclude = NULL,
-    IDtype = "symbol",
-    result_IDtype = "symbol",
-    species = "Homo_sapiens",
-    db = "GO_BP",
-    db_update = FALSE,
-    db_version = "latest",
-    db_combine = FALSE,
-    convert_species = TRUE,
-    Ensembl_version = NULL,
-    mirror = NULL,
-    TERM2GENE = NULL,
-    TERM2NAME = NULL,
-    minGSSize = 10,
-    maxGSSize = 500,
-    unlimited_db = c("Chromosome", "GeneType", "TF", "Enzyme", "CSPA"),
-    GO_simplify = FALSE,
-    GO_simplify_cutoff = "p.adjust < 0.05",
-    simplify_method = "Wang",
-    simplify_similarityCutoff = 0.7,
-    cores = 1,
-    verbose = TRUE) {
+  srt = NULL,
+  group.by = NULL,
+  test.use = "wilcox",
+  DE_threshold = "p_val_adj < 0.05",
+  scoreType = "std",
+  geneID = NULL,
+  geneScore = NULL,
+  geneID_groups = NULL,
+  geneID_exclude = NULL,
+  IDtype = "symbol",
+  result_IDtype = "symbol",
+  species = "Homo_sapiens",
+  db = "GO_BP",
+  db_update = FALSE,
+  db_version = "latest",
+  db_combine = FALSE,
+  convert_species = TRUE,
+  Ensembl_version = NULL,
+  mirror = NULL,
+  TERM2GENE = NULL,
+  TERM2NAME = NULL,
+  minGSSize = 10,
+  maxGSSize = 500,
+  unlimited_db = c("Chromosome", "GeneType", "TF", "Enzyme", "CSPA"),
+  GO_simplify = FALSE,
+  GO_simplify_cutoff = "p.adjust < 0.05",
+  simplify_method = "Wang",
+  simplify_similarityCutoff = 0.7,
+  cores = 1,
+  verbose = TRUE
+) {
   log_message("Start {.pkg GSEA} analysis", verbose = verbose)
 
   use_srt <- FALSE
@@ -342,6 +343,7 @@ RunGSEA <- function(
     stringsAsFactors = FALSE
   )
 
+  check_r("clusterProfiler", verbose = FALSE)
   res_list <- parallelize_fun(
     seq_len(nrow(comb)),
     function(i) {
