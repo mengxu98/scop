@@ -471,6 +471,7 @@ env_info <- function(conda, envname) {
 #' @md
 #' @param version The Python version of the environment.
 #' Default is `"3.10-1"`.
+#' @param include_optional Whether to include optional Python dependencies.
 #'
 #' @return
 #' A list containing:
@@ -1340,8 +1341,7 @@ conda_python <- function(
       ),
       x = normalizePath(conda_envs$python, mustWork = FALSE),
       fixed = TRUE
-    ),
-    ,
+    ), ,
     drop = FALSE
   ]
   env <- conda_envs[conda_envs$name == envname, , drop = FALSE]
