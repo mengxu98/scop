@@ -1212,6 +1212,7 @@ CellDimPlot <- function(
               y = .data[["y"]],
               color = .data[["group.by"]]
             ),
+            shape = "circle",
             size = pt.size,
             alpha = pt.alpha
           )
@@ -1246,6 +1247,7 @@ CellDimPlot <- function(
               geom_point(
                 data = cell_df,
                 aes(x = .data[["x"]], y = .data[["y"]]),
+                shape = "circle",
                 color = cols.highlight,
                 size = sizes.highlight + stroke.highlight,
                 alpha = alpha.highlight
@@ -1257,6 +1259,7 @@ CellDimPlot <- function(
                   y = .data[["y"]],
                   color = .data[["group.by"]]
                 ),
+                shape = "circle",
                 size = sizes.highlight,
                 alpha = alpha.highlight
               )
@@ -1273,7 +1276,7 @@ CellDimPlot <- function(
           guide = guide_legend(
             title.hjust = 0,
             order = 1,
-            override.aes = list(size = 4, alpha = 1)
+            override.aes = list(shape = "circle", size = 4, alpha = 1)
           )
         )
       if (isTRUE(hex)) {
@@ -1409,6 +1412,7 @@ CellDimPlot <- function(
               data = label_df,
               mapping = aes(x = .data[["x"]], y = .data[["y"]]),
               color = label_point_color,
+              shape = "circle",
               size = label_point_size
             ) +
             ggrepel::geom_text_repel(
