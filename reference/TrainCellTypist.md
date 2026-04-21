@@ -51,7 +51,11 @@ TrainCellTypist(
 
 - adata:
 
-  An anndata object. Default is `NULL`.
+  Optional AnnData object used as input.
+
+- h5ad:
+
+  Optional path to an input `.h5ad` file.
 
 - assay:
 
