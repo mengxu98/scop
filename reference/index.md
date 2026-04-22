@@ -79,8 +79,6 @@
   : The MNN integration function
 - [`RPCA_integrate()`](https://mengxu98.github.io/scop/reference/RPCA_integrate.md)
   : Seurat v5 RPCA integration
-- [`RunLISI()`](https://mengxu98.github.io/scop/reference/RunLISI.md) :
-  Compute LISI scores on a Seurat object
 - [`RunCSSMap()`](https://mengxu98.github.io/scop/reference/RunCSSMap.md)
   : Single-cell reference mapping with CSS method
 - [`RunHarmony2()`](https://mengxu98.github.io/scop/reference/RunHarmony2.md)
@@ -325,8 +323,6 @@
   : GSEA Plot
 - [`GSVAPlot()`](https://mengxu98.github.io/scop/reference/GSVAPlot.md)
   : Plots for GSVA (Gene Set Variation Analysis)
-- [`LISIPlot()`](https://mengxu98.github.io/scop/reference/LISIPlot.md)
-  : Plot LISI scores
 - [`LineagePlot()`](https://mengxu98.github.io/scop/reference/LineagePlot.md)
   : Lineage Plot
 - [`MetabolismPlot()`](https://mengxu98.github.io/scop/reference/MetabolismPlot.md)

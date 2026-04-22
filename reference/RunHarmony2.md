@@ -1,8 +1,7 @@
 # Run Harmony algorithm
 
-This is a modified version of
-[harmony::RunHarmony](https://rdrr.io/pkg/harmony/man/RunHarmony.html)
-specifically designed for compatibility with
+This is a modified version of harmony::RunHarmony specifically designed
+for compatibility with
 [RunSymphonyMap](https://mengxu98.github.io/scop/reference/RunSymphonyMap.md).
 
 ## Usage
@@ -81,24 +80,24 @@ RunHarmony2(
 ``` r
 data(panc8_sub)
 panc8_sub <- standard_scop(panc8_sub)
-#> ℹ [2026-04-21 07:40:16] Start standard processing workflow...
-#> ℹ [2026-04-21 07:40:17] Checking a list of <Seurat>...
-#> ! [2026-04-21 07:40:17] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-21 07:40:17] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-21 07:40:19] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-21 07:40:20] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-21 07:40:20] Number of available HVF: 2000
-#> ℹ [2026-04-21 07:40:20] Finished check
-#> ℹ [2026-04-21 07:40:20] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-21 07:40:21] Perform pca linear dimension reduction
-#> ℹ [2026-04-21 07:40:22] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-21 07:40:22] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-21 07:40:22] Reorder clusters...
-#> ℹ [2026-04-21 07:40:23] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-21 07:40:23] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-21 07:40:23] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-21 07:40:28] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-04-21 07:40:32] Standard processing workflow completed
+#> ℹ [2026-04-22 08:57:07] Start standard processing workflow...
+#> ℹ [2026-04-22 08:57:08] Checking a list of <Seurat>...
+#> ! [2026-04-22 08:57:08] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-22 08:57:08] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-22 08:57:10] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-22 08:57:11] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-22 08:57:11] Number of available HVF: 2000
+#> ℹ [2026-04-22 08:57:11] Finished check
+#> ℹ [2026-04-22 08:57:12] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-22 08:57:12] Perform pca linear dimension reduction
+#> ℹ [2026-04-22 08:57:13] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-04-22 08:57:13] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-22 08:57:13] Reorder clusters...
+#> ℹ [2026-04-22 08:57:14] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-22 08:57:14] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-22 08:57:14] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-22 08:57:19] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-04-22 08:57:24] Standard processing workflow completed
 panc8_sub <- RunHarmony2(
   panc8_sub,
   group.by.vars = "tech",
@@ -134,24 +133,24 @@ panc8_sub <- standard_scop(
   prefix = "Harmony",
   linear_reduction = "Harmony"
 )
-#> ℹ [2026-04-21 07:40:43] Start standard processing workflow...
-#> ℹ [2026-04-21 07:40:43] Checking a list of <Seurat>...
-#> ℹ [2026-04-21 07:40:44] Data 1/1 of the `srt_list` has been log-normalized
-#> ℹ [2026-04-21 07:40:44] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-21 07:40:44] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-21 07:40:44] Number of available HVF: 2000
-#> ℹ [2026-04-21 07:40:45] Finished check
-#> ℹ [2026-04-21 07:40:45] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-21 07:40:45] Perform Harmony linear dimension reduction
-#> ℹ [2026-04-21 07:40:45] `linear_reduction` Harmony is already existed. Skip calculation
-#> ℹ [2026-04-21 07:40:45] Use stored estimated dimensions 1:20 for HarmonyHarmony
-#> ℹ [2026-04-21 07:40:46] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-21 07:40:46] Reorder clusters...
-#> ℹ [2026-04-21 07:40:46] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-21 07:40:46] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-21 07:40:46] Perform umap nonlinear dimension reduction using HarmonyHarmony (1:20)
-#> ℹ [2026-04-21 07:40:51] Perform umap nonlinear dimension reduction using HarmonyHarmony (1:20)
-#> ✔ [2026-04-21 07:40:56] Standard processing workflow completed
+#> ℹ [2026-04-22 08:57:35] Start standard processing workflow...
+#> ℹ [2026-04-22 08:57:35] Checking a list of <Seurat>...
+#> ℹ [2026-04-22 08:57:36] Data 1/1 of the `srt_list` has been log-normalized
+#> ℹ [2026-04-22 08:57:36] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-22 08:57:36] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-22 08:57:36] Number of available HVF: 2000
+#> ℹ [2026-04-22 08:57:36] Finished check
+#> ℹ [2026-04-22 08:57:37] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-22 08:57:37] Perform Harmony linear dimension reduction
+#> ℹ [2026-04-22 08:57:37] `linear_reduction` Harmony is already existed. Skip calculation
+#> ℹ [2026-04-22 08:57:37] Use stored estimated dimensions 1:20 for HarmonyHarmony
+#> ℹ [2026-04-22 08:57:38] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-22 08:57:38] Reorder clusters...
+#> ℹ [2026-04-22 08:57:38] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-22 08:57:38] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-22 08:57:38] Perform umap nonlinear dimension reduction using HarmonyHarmony (1:20)
+#> ℹ [2026-04-22 08:57:44] Perform umap nonlinear dimension reduction using HarmonyHarmony (1:20)
+#> ✔ [2026-04-22 08:57:49] Standard processing workflow completed
 
 CellDimPlot(
   panc8_sub,

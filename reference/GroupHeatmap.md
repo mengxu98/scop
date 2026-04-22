@@ -722,24 +722,24 @@ A list with the following elements:
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-21 07:03:09] Start standard processing workflow...
-#> ℹ [2026-04-21 07:03:10] Checking a list of <Seurat>...
-#> ! [2026-04-21 07:03:10] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-21 07:03:10] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-21 07:03:12] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-21 07:03:12] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-21 07:03:13] Number of available HVF: 2000
-#> ℹ [2026-04-21 07:03:13] Finished check
-#> ℹ [2026-04-21 07:03:13] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-21 07:03:13] Perform pca linear dimension reduction
-#> ℹ [2026-04-21 07:03:14] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-21 07:03:14] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-21 07:03:14] Reorder clusters...
-#> ℹ [2026-04-21 07:03:14] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-21 07:03:14] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-21 07:03:15] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-21 07:03:18] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-04-21 07:03:22] Standard processing workflow completed
+#> ℹ [2026-04-22 08:18:31] Start standard processing workflow...
+#> ℹ [2026-04-22 08:18:32] Checking a list of <Seurat>...
+#> ! [2026-04-22 08:18:32] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-22 08:18:32] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-22 08:18:34] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-22 08:18:34] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-22 08:18:34] Number of available HVF: 2000
+#> ℹ [2026-04-22 08:18:35] Finished check
+#> ℹ [2026-04-22 08:18:35] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-22 08:18:35] Perform pca linear dimension reduction
+#> ℹ [2026-04-22 08:18:36] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-04-22 08:18:36] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-22 08:18:36] Reorder clusters...
+#> ℹ [2026-04-22 08:18:37] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-22 08:18:37] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-22 08:18:37] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-22 08:18:41] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-04-22 08:18:45] Standard processing workflow completed
 ht1 <- GroupHeatmap(
   pancreas_sub,
   features = c(
@@ -769,22 +769,22 @@ pancreas_sub <- AnnotateFeatures(
   species = "Mus_musculus",
   db = c("CSPA", "TF")
 )
-#> ℹ [2026-04-21 07:03:23] Species: "Mus_musculus"
-#> ℹ [2026-04-21 07:03:23] Loading cached: CSPA version: CSPA nterm:1 created: 2026-04-21 06:49:47
-#> ℹ [2026-04-21 07:03:24] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-04-21 06:49:41
+#> ℹ [2026-04-22 08:18:46] Species: "Mus_musculus"
+#> ℹ [2026-04-22 08:18:46] Loading cached: CSPA version: CSPA nterm:1 created: 2026-04-22 07:30:59
+#> ℹ [2026-04-22 08:18:47] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-04-22 07:30:46
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-04-21 07:03:25] Data type is log-normalized
-#> ℹ [2026-04-21 07:03:25] Start differential expression test
-#> ℹ [2026-04-21 07:03:25] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-04-21 07:03:25] Using 1 core
-#> ⠙ [2026-04-21 07:03:25] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ✔ [2026-04-21 07:03:25] Completed 5 tasks in 757ms
+#> ℹ [2026-04-22 08:18:48] Data type is log-normalized
+#> ℹ [2026-04-22 08:18:48] Start differential expression test
+#> ℹ [2026-04-22 08:18:48] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-04-22 08:18:48] Using 1 core
+#> ⠙ [2026-04-22 08:18:48] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ✔ [2026-04-22 08:18:48] Completed 5 tasks in 779ms
 #> 
-#> ℹ [2026-04-21 07:03:25] Building results
-#> ✔ [2026-04-21 07:03:26] Differential expression test completed
+#> ℹ [2026-04-22 08:18:48] Building results
+#> ✔ [2026-04-22 08:18:49] Differential expression test completed
 de_filter <- dplyr::filter(
   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
@@ -818,22 +818,22 @@ ht3 <- GroupHeatmap(
   anno_keys = TRUE,
   anno_features = TRUE
 )
-#> ℹ [2026-04-21 07:03:37] Start Enrichment analysis
-#> ℹ [2026-04-21 07:03:37] Species: "Mus_musculus"
-#> ℹ [2026-04-21 07:03:37] Loading cached: GO_BP version: 3.22.0 nterm:15169 created: 2026-04-21 06:47:14
-#> ℹ [2026-04-21 07:03:39] Permform enrichment...
-#> ℹ [2026-04-21 07:03:39] Using 1 core
-#> ⠙ [2026-04-21 07:03:39] Running for 1 [1/5] ■■          20% | ETA:  1m
-#> ⠹ [2026-04-21 07:03:39] Running for 2 [2/5] ■■■■        40% | ETA: 42s
-#> ⠸ [2026-04-21 07:03:39] Running for 3 [3/5] ■■■■■■      60% | ETA: 28s
-#> ⠼ [2026-04-21 07:03:39] Running for 4 [4/5] ■■■■■■■■    80% | ETA: 14s
-#> ✔ [2026-04-21 07:03:39] Completed 5 tasks in 1m 4s
+#> ℹ [2026-04-22 08:19:01] Start Enrichment analysis
+#> ℹ [2026-04-22 08:19:01] Species: "Mus_musculus"
+#> ℹ [2026-04-22 08:19:01] Loading cached: GO_BP version: 3.22.0 nterm:15169 created: 2026-04-22 08:03:10
+#> ℹ [2026-04-22 08:19:02] Permform enrichment...
+#> ℹ [2026-04-22 08:19:02] Using 1 core
+#> ⠙ [2026-04-22 08:19:02] Running for 1 [1/5] ■■          20% | ETA:  1m
+#> ⠹ [2026-04-22 08:19:02] Running for 2 [2/5] ■■■■        40% | ETA: 47s
+#> ⠸ [2026-04-22 08:19:02] Running for 3 [3/5] ■■■■■■      60% | ETA: 30s
+#> ⠼ [2026-04-22 08:19:02] Running for 4 [4/5] ■■■■■■■■    80% | ETA: 15s
+#> ✔ [2026-04-22 08:19:02] Completed 5 tasks in 1m 9.3s
 #> 
-#> ℹ [2026-04-21 07:03:39] Building results
-#> ✔ [2026-04-21 07:04:43] Enrichment analysis done
-#> ℹ [2026-04-21 07:05:20] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-04-21 07:05:20] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-04-21 07:05:20] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
+#> ℹ [2026-04-22 08:19:02] Building results
+#> ✔ [2026-04-22 08:20:12] Enrichment analysis done
+#> ℹ [2026-04-22 08:20:51] The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ [2026-04-22 08:20:51] The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ [2026-04-22 08:20:51] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 
 ht3$plot
 
@@ -868,28 +868,9 @@ ht4 <- GroupHeatmap(
   nlabel = 0,
   show_row_names = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
+#> Error in StatPlot(meta_data, stat.by = stat.by, group.by = group.by, split.by = split.by,     bg.by = bg.by, flip = flip, NA_color = NA_color, NA_stat = NA_stat,     keep_empty = keep_empty, individual = individual, stat_level = stat_level,     plot_type = plot_type, stat_type = stat_type, position = position,     palette = palette, palcolor = palcolor, alpha = alpha, bg_palette = bg_palette,     bg_palcolor = bg_palcolor, bg_alpha = bg_alpha, label = label,     label.size = label.size, label.fg = label.fg, label.bg = label.bg,     label.bg.r = label.bg.r, aspect.ratio = aspect.ratio, title = title,     subtitle = subtitle, xlab = xlab, ylab = ylab, legend.position = legend.position,     legend.direction = legend.direction, theme_use = theme_use,     theme_args = theme_args, grid_major = grid_major, grid_major_colour = grid_major_colour,     grid_major_linetype = grid_major_linetype, grid_major_linewidth = grid_major_linewidth,     combine = combine, nrow = nrow, ncol = ncol, byrow = byrow,     force = force, seed = seed): unused arguments (grid_major = grid_major, grid_major_colour = grid_major_colour, grid_major_linetype = grid_major_linetype, grid_major_linewidth = grid_major_linewidth)
 ht4$plot
-
+#> Error: object 'ht4' not found
 
 ht5 <- GroupHeatmap(
   pancreas_sub,
@@ -917,28 +898,9 @@ ht5 <- GroupHeatmap(
   nlabel = 0,
   show_row_names = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
+#> Error in StatPlot(meta_data, stat.by = stat.by, group.by = group.by, split.by = split.by,     bg.by = bg.by, flip = flip, NA_color = NA_color, NA_stat = NA_stat,     keep_empty = keep_empty, individual = individual, stat_level = stat_level,     plot_type = plot_type, stat_type = stat_type, position = position,     palette = palette, palcolor = palcolor, alpha = alpha, bg_palette = bg_palette,     bg_palcolor = bg_palcolor, bg_alpha = bg_alpha, label = label,     label.size = label.size, label.fg = label.fg, label.bg = label.bg,     label.bg.r = label.bg.r, aspect.ratio = aspect.ratio, title = title,     subtitle = subtitle, xlab = xlab, ylab = ylab, legend.position = legend.position,     legend.direction = legend.direction, theme_use = theme_use,     theme_args = theme_args, grid_major = grid_major, grid_major_colour = grid_major_colour,     grid_major_linetype = grid_major_linetype, grid_major_linewidth = grid_major_linewidth,     combine = combine, nrow = nrow, ncol = ncol, byrow = byrow,     force = force, seed = seed): unused arguments (grid_major = grid_major, grid_major_colour = grid_major_colour, grid_major_linetype = grid_major_linetype, grid_major_linewidth = grid_major_linewidth)
 ht5$plot
-
+#> Error: object 'ht5' not found
 
 ht6 <- GroupHeatmap(
   pancreas_sub,
