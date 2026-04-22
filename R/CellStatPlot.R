@@ -17,6 +17,11 @@
 #' @param label.fg The foreground color of the labels.
 #' @param label.bg The background color of the labels.
 #' @param label.bg.r The radius of the rounded corners of the label background.
+#' @param grid_major Whether to show major panel grid lines.
+#' Default is `TRUE`.
+#' @param grid_major_colour Color of major panel grid lines.
+#' @param grid_major_linetype Linetype of major panel grid lines.
+#' @param grid_major_linewidth Line width of major panel grid lines.
 #'
 #' @seealso [FeatureStatPlot]
 #'
@@ -320,6 +325,10 @@ CellStatPlot <- function(
     legend.direction = "vertical",
     theme_use = "theme_scop",
     theme_args = list(),
+    grid_major = TRUE,
+    grid_major_colour = "grey80",
+    grid_major_linetype = 2,
+    grid_major_linewidth = 0.3,
     combine = TRUE,
     nrow = NULL,
     ncol = NULL,
@@ -374,6 +383,10 @@ CellStatPlot <- function(
     legend.direction = legend.direction,
     theme_use = theme_use,
     theme_args = theme_args,
+    grid_major = grid_major,
+    grid_major_colour = grid_major_colour,
+    grid_major_linetype = grid_major_linetype,
+    grid_major_linewidth = grid_major_linewidth,
     combine = combine,
     nrow = nrow,
     ncol = ncol,
