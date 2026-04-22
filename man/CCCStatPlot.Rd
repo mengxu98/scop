@@ -46,6 +46,10 @@ CCCStatPlot(
   font.size = 10,
   theme_use = "theme_scop",
   theme_args = list(),
+  grid_major = TRUE,
+  grid_major_colour = "grey80",
+  grid_major_linetype = 2,
+  grid_major_linewidth = 0.3,
   combine = TRUE,
   nrow = NULL,
   ncol = NULL,
@@ -146,6 +150,15 @@ interactions).}
 \item{theme_use}{Theme function used for styling.}
 
 \item{theme_args}{Arguments passed to the theme function.}
+
+\item{grid_major}{Whether to show major panel grid lines for applicable statistical panels.
+Default is \code{TRUE}.}
+
+\item{grid_major_colour}{Color of major panel grid lines.}
+
+\item{grid_major_linetype}{Linetype of major panel grid lines.}
+
+\item{grid_major_linewidth}{Line width of major panel grid lines.}
 
 \item{combine}{Whether to combine multiple panels.}
 
