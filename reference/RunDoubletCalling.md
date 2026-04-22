@@ -51,30 +51,30 @@ prediction scores stored in the meta.data.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-21 07:31:09] Start standard processing workflow...
-#> ℹ [2026-04-21 07:31:10] Checking a list of <Seurat>...
-#> ! [2026-04-21 07:31:10] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-21 07:31:10] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-21 07:31:12] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-21 07:31:12] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-21 07:31:13] Number of available HVF: 2000
-#> ℹ [2026-04-21 07:31:13] Finished check
-#> ℹ [2026-04-21 07:31:13] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-21 07:31:13] Perform pca linear dimension reduction
-#> ℹ [2026-04-21 07:31:14] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-21 07:31:14] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-21 07:31:14] Reorder clusters...
-#> ℹ [2026-04-21 07:31:15] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-21 07:31:15] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-21 07:31:15] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-21 07:31:19] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-04-21 07:31:24] Standard processing workflow completed
+#> ℹ [2026-04-22 08:47:31] Start standard processing workflow...
+#> ℹ [2026-04-22 08:47:31] Checking a list of <Seurat>...
+#> ! [2026-04-22 08:47:32] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-22 08:47:32] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-22 08:47:34] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-22 08:47:34] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-22 08:47:34] Number of available HVF: 2000
+#> ℹ [2026-04-22 08:47:35] Finished check
+#> ℹ [2026-04-22 08:47:35] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-22 08:47:35] Perform pca linear dimension reduction
+#> ℹ [2026-04-22 08:47:36] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-04-22 08:47:36] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-22 08:47:36] Reorder clusters...
+#> ℹ [2026-04-22 08:47:38] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-22 08:47:38] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-22 08:47:38] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-22 08:47:43] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-04-22 08:47:48] Standard processing workflow completed
 pancreas_sub <- RunDoubletCalling(
   pancreas_sub,
   db_method = "scDblFinder"
 )
-#> ℹ [2026-04-21 07:31:24] Data type is raw counts
-#> ℹ [2026-04-21 07:31:25] Data type is raw counts
+#> ℹ [2026-04-22 08:47:48] Data type is raw counts
+#> ℹ [2026-04-22 08:47:48] Data type is raw counts
 #> Warning: Layer ‘data’ is empty
 #> Warning: Layer ‘scale.data’ is empty
 CellDimPlot(

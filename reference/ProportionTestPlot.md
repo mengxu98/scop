@@ -142,20 +142,20 @@ pancreas_sub <- RunProportionTest(
   group.by = "CellType",
   split.by = "Phase"
 )
-#> ℹ [2026-04-21 07:15:32] Start proportion test
-#> ℹ [2026-04-21 07:15:32] Running comparison: "G1" vs "S"
-#> ℹ [2026-04-21 07:15:39] Running comparison: "S" vs "G1"
-#> ℹ [2026-04-21 07:15:46] Running comparison: "G1" vs "G2M"
-#> ℹ [2026-04-21 07:15:53] Running comparison: "G2M" vs "G1"
-#> ℹ [2026-04-21 07:16:00] Running comparison: "S" vs "G1"
-#> ℹ [2026-04-21 07:16:07] Running comparison: "G1" vs "S"
-#> ℹ [2026-04-21 07:16:14] Running comparison: "S" vs "G2M"
-#> ℹ [2026-04-21 07:16:20] Running comparison: "G2M" vs "S"
-#> ℹ [2026-04-21 07:16:27] Running comparison: "G2M" vs "G1"
-#> ℹ [2026-04-21 07:16:34] Running comparison: "G1" vs "G2M"
-#> ℹ [2026-04-21 07:16:41] Running comparison: "G2M" vs "S"
-#> ℹ [2026-04-21 07:16:47] Running comparison: "S" vs "G2M"
-#> ✔ [2026-04-21 07:16:53] Proportion test completed
+#> ℹ [2026-04-22 08:31:04] Start proportion test
+#> ℹ [2026-04-22 08:31:04] Running comparison: "G1" vs "S"
+#> ℹ [2026-04-22 08:31:11] Running comparison: "S" vs "G1"
+#> ℹ [2026-04-22 08:31:18] Running comparison: "G1" vs "G2M"
+#> ℹ [2026-04-22 08:31:25] Running comparison: "G2M" vs "G1"
+#> ℹ [2026-04-22 08:31:32] Running comparison: "S" vs "G1"
+#> ℹ [2026-04-22 08:31:39] Running comparison: "G1" vs "S"
+#> ℹ [2026-04-22 08:31:46] Running comparison: "S" vs "G2M"
+#> ℹ [2026-04-22 08:31:52] Running comparison: "G2M" vs "S"
+#> ℹ [2026-04-22 08:31:59] Running comparison: "G2M" vs "G1"
+#> ℹ [2026-04-22 08:32:06] Running comparison: "G1" vs "G2M"
+#> ℹ [2026-04-22 08:32:12] Running comparison: "G2M" vs "S"
+#> ℹ [2026-04-22 08:32:19] Running comparison: "S" vs "G2M"
+#> ✔ [2026-04-22 08:32:25] Proportion test completed
 
 ProportionTestPlot(pancreas_sub)
 #> Warning: Removed 1 row containing missing values or values outside the scale range
