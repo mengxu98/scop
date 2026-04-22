@@ -122,6 +122,11 @@
 #' Default is `NULL`.
 #' @param ylab A string specifying the label of the y-axis.
 #' Default is `"Expression level"`.
+#' @param grid_major Whether to show major panel grid lines.
+#' Default is `TRUE`.
+#' @param grid_major_colour Color of major panel grid lines.
+#' @param grid_major_linetype Linetype of major panel grid lines.
+#' @param grid_major_linewidth Line width of major panel grid lines.
 #'
 #' @seealso
 #' [CellStatPlot]
@@ -473,6 +478,10 @@ FeatureStatPlot <- function(
     legend.title = NULL,
     theme_use = "theme_scop",
     theme_args = list(),
+    grid_major = TRUE,
+    grid_major_colour = "grey80",
+    grid_major_linetype = 2,
+    grid_major_linewidth = 0.3,
     combine = TRUE,
     nrow = NULL,
     ncol = NULL,
@@ -615,6 +624,10 @@ FeatureStatPlot <- function(
           legend.title = legend.title,
           theme_use = theme_use,
           theme_args = theme_args,
+          grid_major = grid_major,
+          grid_major_colour = grid_major_colour,
+          grid_major_linetype = grid_major_linetype,
+          grid_major_linewidth = grid_major_linewidth,
           force = force,
           seed = seed
         )
@@ -695,6 +708,10 @@ FeatureStatPlot <- function(
       legend.title = legend.title,
       theme_use = theme_use,
       theme_args = theme_args,
+      grid_major = grid_major,
+      grid_major_colour = grid_major_colour,
+      grid_major_linetype = grid_major_linetype,
+      grid_major_linewidth = grid_major_linewidth,
       force = force,
       seed = seed
     )
