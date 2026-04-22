@@ -70,6 +70,10 @@ ExpressionStatPlot <- function(
     legend.title = NULL,
     theme_use = "theme_scop",
     theme_args = list(),
+    grid_major = TRUE,
+    grid_major_colour = "grey80",
+    grid_major_linetype = 2,
+    grid_major_linewidth = 0.3,
     force = FALSE,
     seed = 11) {
   set.seed(seed)
@@ -79,6 +83,15 @@ ExpressionStatPlot <- function(
   fill.by <- match.arg(fill.by)
   sig_label <- match.arg(sig_label)
   add_stat <- match.arg(add_stat)
+  grid_major_element <- if (isTRUE(grid_major)) {
+    element_line(
+      colour = grid_major_colour,
+      linetype = grid_major_linetype,
+      linewidth = grid_major_linewidth
+    )
+  } else {
+    element_blank()
+  }
   if (!is.null(add_line)) {
     stopifnot(is.numeric(add_line))
   }
@@ -1123,7 +1136,8 @@ ExpressionStatPlot <- function(
               aspect.ratio = aspect.ratio,
               axis.text.x = element_text(angle = 90, hjust = 1),
               strip.text.x = element_text(angle = 90),
-              panel.grid.major.x = element_line(color = "grey", linetype = 2),
+              panel.grid.major = element_blank(),
+              panel.grid.major.x = grid_major_element,
               legend.position = legend.position,
               legend.direction = legend.direction
             ) +
@@ -1135,7 +1149,8 @@ ExpressionStatPlot <- function(
               aspect.ratio = aspect.ratio,
               axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
               strip.text.y = element_text(angle = 0),
-              panel.grid.major.x = element_line(color = "grey", linetype = 2),
+              panel.grid.major = element_blank(),
+              panel.grid.major.x = grid_major_element,
               legend.position = legend.position,
               legend.direction = legend.direction
             ) +
@@ -1148,7 +1163,8 @@ ExpressionStatPlot <- function(
             aspect.ratio = aspect.ratio,
             axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
             strip.text.y = element_text(angle = 0),
-            panel.grid.major.y = element_line(color = "grey", linetype = 2),
+            panel.grid.major = element_blank(),
+            panel.grid.major.y = grid_major_element,
             legend.position = legend.position,
             legend.direction = legend.direction
           ) +
