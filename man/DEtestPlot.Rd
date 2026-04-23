@@ -45,7 +45,18 @@ DEtestPlot(
   tile_height = 0.3,
   tile_gap = 0.1,
   ring_segments = TRUE,
-  seed = 11
+  seed = 11,
+  threshold_method = c("rectangular", "hyperbolic"),
+  hyperbola_c = 6,
+  annotate_enrichment = FALSE,
+  enrich_from = c("Enrichment", "GSEA", "GSVA"),
+  enrich_db = NULL,
+  enrich_terms = NULL,
+  enrich_top_terms = 3,
+  enrich_padj_cutoff = 0.05,
+  enrich_gsva_score_cutoff = NULL,
+  gsva_method = NULL,
+  enrich_nlabel = 15
 )
 }
 \arguments{
@@ -69,6 +80,43 @@ Default is \code{"avg_log2FC > 0 & p_val_adj < 0.05"}.}
 
 \item{x_metric}{A character string specifying the metric to use for the x-axis (only for volcano plot).
 Default is \code{"diff_pct"}.}
+
+\item{threshold_method}{Volcano significance threshold method.
+Options are \code{"rectangular"} (legacy DE_threshold) or \code{"hyperbolic"} (\code{|log2FC * -log10(padj)| > c}).
+Default is \code{"rectangular"}.}
+
+\item{hyperbola_c}{Numeric cutoff \code{c} for hyperbolic volcano threshold.
+Default is \code{6}.}
+
+\item{annotate_enrichment}{Whether to annotate enrichment-hit genes on volcano plots.
+Enrichment results are read from existing results in \code{srt@tools} only.
+Default is \code{FALSE}.}
+
+\item{enrich_from}{Character vector specifying enrichment result source(s) to annotate.
+Options are \code{"Enrichment"}, \code{"GSEA"}, \code{"GSVA"}.
+Default is \code{c("Enrichment", "GSEA", "GSVA")}.}
+
+\item{enrich_db}{Optional database filter for enrichment annotation, e.g. \code{"GO_BP"} or \code{"KEGG"}.
+Default is \code{NULL}.}
+
+\item{enrich_terms}{Optional whitelist of enrichment term IDs or names for annotation.
+Default is \code{NULL}.}
+
+\item{enrich_top_terms}{Number of top enriched terms selected per source/group/database.
+Default is \code{3}.}
+
+\item{enrich_padj_cutoff}{Adjusted p-value cutoff for \code{"Enrichment"} and \code{"GSEA"} annotation.
+Default is \code{0.05}.}
+
+\item{enrich_gsva_score_cutoff}{Optional absolute GSVA score cutoff for \code{"GSVA"} annotation.
+Default is \code{NULL}.}
+
+\item{gsva_method}{Optional GSVA method filter (e.g. \code{"gsva"} or \code{"ssgsea"}) when multiple GSVA tool slots exist.
+Default is \code{NULL}.}
+
+\item{enrich_nlabel}{Maximum number of enrichment-derived labels added per group.
+Labels from \code{features_label} are always retained.
+Default is \code{15}.}
 
 \item{y_metric}{A character string specifying the metric to use for the y-axis (only for Manhattan plot, not used currently).
 Options: \code{"p_val"} or \code{"p_val_adj"}. Default is \code{"p_val_adj"}.}

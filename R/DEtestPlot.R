@@ -15,6 +15,32 @@
 #' Default is `"avg_log2FC > 0 & p_val_adj < 0.05"`.
 #' @param x_metric A character string specifying the metric to use for the x-axis (only for volcano plot).
 #' Default is `"diff_pct"`.
+#' @param threshold_method Volcano significance threshold method.
+#' Options are `"rectangular"` (legacy DE_threshold) or `"hyperbolic"` (`|log2FC * -log10(padj)| > c`).
+#' Default is `"rectangular"`.
+#' @param hyperbola_c Numeric cutoff `c` for hyperbolic volcano threshold.
+#' Default is `6`.
+#' @param annotate_enrichment Whether to annotate enrichment-hit genes on volcano plots.
+#' Enrichment results are read from existing results in `srt@tools` only.
+#' Default is `FALSE`.
+#' @param enrich_from Character vector specifying enrichment result source(s) to annotate.
+#' Options are `"Enrichment"`, `"GSEA"`, `"GSVA"`.
+#' Default is `c("Enrichment", "GSEA", "GSVA")`.
+#' @param enrich_db Optional database filter for enrichment annotation, e.g. `"GO_BP"` or `"KEGG"`.
+#' Default is `NULL`.
+#' @param enrich_terms Optional whitelist of enrichment term IDs or names for annotation.
+#' Default is `NULL`.
+#' @param enrich_top_terms Number of top enriched terms selected per source/group/database.
+#' Default is `3`.
+#' @param enrich_padj_cutoff Adjusted p-value cutoff for `"Enrichment"` and `"GSEA"` annotation.
+#' Default is `0.05`.
+#' @param enrich_gsva_score_cutoff Optional absolute GSVA score cutoff for `"GSVA"` annotation.
+#' Default is `NULL`.
+#' @param gsva_method Optional GSVA method filter (e.g. `"gsva"` or `"ssgsea"`) when multiple GSVA tool slots exist.
+#' Default is `NULL`.
+#' @param enrich_nlabel Maximum number of enrichment-derived labels added per group.
+#' Labels from `features_label` are always retained.
+#' Default is `15`.
 #' @param y_metric A character string specifying the metric to use for the y-axis (only for Manhattan plot, not used currently).
 #' Options: `"p_val"` or `"p_val_adj"`. Default is `"p_val_adj"`.
 #' @param x_order A character string specifying how to order genes on x-axis (only for Manhattan plot, not used currently).
@@ -179,8 +205,20 @@ DEtestPlot <- function(
     tile_height = 0.3,
     tile_gap = 0.1,
     ring_segments = TRUE,
-    seed = 11) {
+    seed = 11,
+    threshold_method = c("rectangular", "hyperbolic"),
+    hyperbola_c = 6,
+    annotate_enrichment = FALSE,
+    enrich_from = c("Enrichment", "GSEA", "GSVA"),
+    enrich_db = NULL,
+    enrich_terms = NULL,
+    enrich_top_terms = 3,
+    enrich_padj_cutoff = 0.05,
+    enrich_gsva_score_cutoff = NULL,
+    gsva_method = NULL,
+    enrich_nlabel = 15) {
   plot_type <- match.arg(plot_type)
+  threshold_method <- match.arg(threshold_method)
   y_metric <- match.arg(y_metric)
   x_order <- match.arg(x_order)
 
@@ -193,6 +231,17 @@ DEtestPlot <- function(
         res = res,
         DE_threshold = DE_threshold,
         x_metric = x_metric,
+        threshold_method = threshold_method,
+        hyperbola_c = hyperbola_c,
+        annotate_enrichment = annotate_enrichment,
+        enrich_from = enrich_from,
+        enrich_db = enrich_db,
+        enrich_terms = enrich_terms,
+        enrich_top_terms = enrich_top_terms,
+        enrich_padj_cutoff = enrich_padj_cutoff,
+        enrich_gsva_score_cutoff = enrich_gsva_score_cutoff,
+        gsva_method = gsva_method,
+        enrich_nlabel = enrich_nlabel,
         palette = palette,
         palcolor = palcolor,
         pt.size = pt.size,
@@ -208,7 +257,11 @@ DEtestPlot <- function(
         label.bg.r = label.bg.r,
         label.size = label.size,
         aspect.ratio = aspect.ratio,
-        xlab = xlab %||% x_metric,
+        xlab = xlab %||% ifelse(
+          threshold_method == "hyperbolic",
+          "avg_log2FC",
+          x_metric
+        ),
         ylab = ylab %||% "-log10(p-adjust)",
         theme_use = theme_use,
         theme_args = theme_args,
@@ -450,6 +503,368 @@ add_volcano_plot_coords <- function(df, jitter_width = 0.2, jitter_height = 0.2,
   df[border_idx, "y_plot"] <- df[border_idx, "y"] + y_offset
 
   df
+}
+
+get_safe_neglog10 <- function(padj, p_floor = .Machine$double.xmin) {
+  p_floor <- max(as.numeric(p_floor), .Machine$double.xmin)
+  padj_num <- suppressWarnings(as.numeric(padj))
+  padj_num[is.na(padj_num)] <- NA_real_
+  padj_num[padj_num <= 0 & !is.na(padj_num)] <- p_floor
+  padj_num[padj_num > 1] <- 1
+  -log10(padj_num)
+}
+
+compute_hyperbolic_de_flags <- function(
+    avg_log2FC,
+    p_val_adj,
+    hyperbola_c = 6,
+    p_floor = .Machine$double.xmin) {
+  neglog10 <- get_safe_neglog10(padj = p_val_adj, p_floor = p_floor)
+  prod_value <- abs(as.numeric(avg_log2FC)) * neglog10
+  is.finite(prod_value) & (prod_value > as.numeric(hyperbola_c))
+}
+
+build_hyperbola_curve_df <- function(
+    x_range,
+    hyperbola_c = 6,
+    y_max = NULL,
+    n = 400,
+    x_eps = NULL) {
+  if (length(x_range) != 2 || any(!is.finite(x_range))) {
+    return(data.frame(x = numeric(0), y = numeric(0)))
+  }
+  xmin <- min(x_range)
+  xmax <- max(x_range)
+  if (xmin >= xmax) {
+    return(data.frame(x = numeric(0), y = numeric(0)))
+  }
+  x_eps <- x_eps %||% max((xmax - xmin) / n, 1e-4)
+  x_eps <- max(abs(x_eps), 1e-8)
+  x_left <- if (xmin < -x_eps) {
+    seq(xmin, -x_eps, length.out = max(10L, floor(n / 2)))
+  } else {
+    numeric(0)
+  }
+  x_right <- if (xmax > x_eps) {
+    seq(x_eps, xmax, length.out = max(10L, floor(n / 2)))
+  } else {
+    numeric(0)
+  }
+  x <- c(x_left, x_right)
+  if (length(x) == 0) {
+    return(data.frame(x = numeric(0), y = numeric(0)))
+  }
+  y <- as.numeric(hyperbola_c) / abs(x)
+  if (!is.null(y_max) && is.finite(y_max)) {
+    y[y > y_max] <- NA_real_
+  }
+  data.frame(x = x, y = y)
+}
+
+split_enrichment_genes <- function(gene_text) {
+  if (length(gene_text) == 0 || is.na(gene_text) || !nzchar(trimws(gene_text))) {
+    return(character(0))
+  }
+  genes <- unlist(strsplit(gene_text, "[/;,]"))
+  genes <- trimws(genes)
+  unique(genes[nzchar(genes)])
+}
+
+get_enrichment_overlay_colors <- function(keys) {
+  keys <- unique(as.character(keys))
+  if (length(keys) == 0) {
+    return(character(0))
+  }
+  # Dedicated pastel categorical colors for enrichment overlays.
+  # Keep away from the strong RdBu-like contrast used by volcano points.
+  base_cols <- c(
+    "#CFE8CC", # mint
+    "#E9D8A6", # sand
+    "#D9C2F0", # lavender
+    "#FAD4C0", # peach
+    "#C7EAE4", # aqua
+    "#E6D5B8", # beige
+    "#F4C6D7", # blush
+    "#D5E6F2", # ice blue
+    "#E3F0CC", # light lime
+    "#F2E2CE", # apricot cream
+    "#DCCFE6", # soft mauve
+    "#CCE3D9"  # sage
+  )
+  cols <- if (length(keys) <= length(base_cols)) {
+    base_cols[seq_along(keys)]
+  } else {
+    grDevices::colorRampPalette(base_cols)(length(keys))
+  }
+  names(cols) <- keys
+  cols
+}
+
+get_gsva_tool_names <- function(srt, group.by = NULL, gsva_method = NULL) {
+  tool_names <- grep("^GSVA_", names(srt@tools), value = TRUE)
+  if (length(tool_names) == 0) {
+    return(character(0))
+  }
+  if (!is.null(gsva_method)) {
+    tool_names <- tool_names[grepl(
+      pattern = paste0("_", gsva_method, "$"),
+      x = tool_names
+    )]
+  }
+  if (!is.null(group.by)) {
+    pattern1 <- paste0("^GSVA_", group.by, "_")
+    pattern2 <- paste0("^GSVA_.*_", group.by, "$")
+    tool_names <- tool_names[grepl(pattern1, tool_names) | grepl(pattern2, tool_names)]
+  }
+  unique(tool_names)
+}
+
+extract_volcano_enrichment_source <- function(
+    srt,
+    source = c("Enrichment", "GSEA", "GSVA"),
+    group.by = NULL,
+    test.use = "wilcox",
+    gsva_method = NULL) {
+  source <- match.arg(source)
+  group.by <- group.by %||% "custom"
+  output <- list()
+
+  if (source %in% c("Enrichment", "GSEA")) {
+    layer <- paste(source, group.by, test.use, sep = "_")
+    if (!layer %in% names(srt@tools)) {
+      return(data.frame())
+    }
+    enrichment <- srt@tools[[layer]][["enrichment"]]
+    if (is.null(enrichment) || nrow(enrichment) == 0) {
+      return(data.frame())
+    }
+    enrichment <- as.data.frame(enrichment)
+    gene_col <- if (source == "GSEA" && "core_enrichment" %in% colnames(enrichment)) {
+      "core_enrichment"
+    } else if ("geneID" %in% colnames(enrichment)) {
+      "geneID"
+    } else {
+      NULL
+    }
+    if (is.null(gene_col)) {
+      return(data.frame())
+    }
+    metric_col <- if ("p.adjust" %in% colnames(enrichment)) {
+      "p.adjust"
+    } else if ("pvalue" %in% colnames(enrichment)) {
+      "pvalue"
+    } else {
+      NULL
+    }
+    if (is.null(metric_col)) {
+      return(data.frame())
+    }
+    df <- data.frame(
+      source = source,
+      Groups = as.character(enrichment[["Groups"]]),
+      Database = as.character(enrichment[["Database"]]),
+      term_id = as.character(enrichment[["ID"]] %||% enrichment[["Description"]]),
+      term_name = as.character(enrichment[["Description"]] %||% enrichment[["ID"]]),
+      gene_text = as.character(enrichment[[gene_col]]),
+      metric_value = suppressWarnings(as.numeric(enrichment[[metric_col]])),
+      stringsAsFactors = FALSE
+    )
+    return(df)
+  }
+
+  tool_names <- get_gsva_tool_names(
+    srt = srt,
+    group.by = group.by,
+    gsva_method = gsva_method
+  )
+  if (length(tool_names) == 0) {
+    return(data.frame())
+  }
+  for (tool_name in tool_names) {
+    enrichment <- srt@tools[[tool_name]][["enrichment"]]
+    if (is.null(enrichment) || nrow(enrichment) == 0) {
+      next
+    }
+    enrichment <- as.data.frame(enrichment)
+    if (!"geneID" %in% colnames(enrichment)) {
+      next
+    }
+    if (!"GSVA_Score" %in% colnames(enrichment)) {
+      next
+    }
+    default_db <- srt@tools[[tool_name]][["db"]]
+    default_db <- default_db %||% "GSVA"
+    if (length(default_db) > 1) {
+      default_db <- default_db[1]
+    }
+    db_col <- enrichment[["Database"]] %||% rep(default_db, nrow(enrichment))
+    df <- data.frame(
+      source = "GSVA",
+      Groups = as.character(enrichment[["Groups"]]),
+      Database = as.character(db_col),
+      term_id = as.character(enrichment[["ID"]] %||% enrichment[["Description"]]),
+      term_name = as.character(enrichment[["Description"]] %||% enrichment[["ID"]]),
+      gene_text = as.character(enrichment[["geneID"]]),
+      metric_value = suppressWarnings(as.numeric(enrichment[["GSVA_Score"]])),
+      stringsAsFactors = FALSE
+    )
+    output[[tool_name]] <- df
+  }
+  if (length(output) == 0) {
+    return(data.frame())
+  }
+  do.call(rbind, output)
+}
+
+collect_volcano_enrichment_annotations <- function(
+    srt,
+    group.by = NULL,
+    test.use = "wilcox",
+    enrich_from = c("Enrichment", "GSEA", "GSVA"),
+    enrich_db = NULL,
+    enrich_terms = NULL,
+    enrich_top_terms = 3,
+    enrich_padj_cutoff = 0.05,
+    enrich_gsva_score_cutoff = NULL,
+    gsva_method = NULL) {
+  if (is.null(srt) || !inherits(srt, "Seurat")) {
+    return(data.frame())
+  }
+  enrich_from <- unique(intersect(
+    enrich_from,
+    c("Enrichment", "GSEA", "GSVA")
+  ))
+  if (length(enrich_from) == 0) {
+    return(data.frame())
+  }
+
+  res_list <- lapply(enrich_from, function(src) {
+    extract_volcano_enrichment_source(
+      srt = srt,
+      source = src,
+      group.by = group.by,
+      test.use = test.use,
+      gsva_method = gsva_method
+    )
+  })
+  res_list <- res_list[sapply(res_list, nrow) > 0]
+  if (length(res_list) == 0) {
+    return(data.frame())
+  }
+  enrichment <- do.call(rbind, res_list)
+  rownames(enrichment) <- NULL
+
+  if (!is.null(enrich_db)) {
+    enrichment <- enrichment[
+      enrichment[["Database"]] %in% enrich_db, ,
+      drop = FALSE
+    ]
+  }
+  if (!is.null(enrich_terms) && nrow(enrichment) > 0) {
+    terms_lower <- tolower(enrich_terms)
+    id_match <- tolower(as.character(enrichment[["term_id"]])) %in% terms_lower
+    name_match <- tolower(as.character(enrichment[["term_name"]])) %in% terms_lower
+    enrichment <- enrichment[id_match | name_match, , drop = FALSE]
+  }
+  if (nrow(enrichment) == 0) {
+    return(data.frame())
+  }
+
+  enrich_top_terms <- as.integer(enrich_top_terms)
+  if (is.na(enrich_top_terms) || enrich_top_terms <= 0) {
+    enrich_top_terms <- 1L
+  }
+
+  selected_terms <- list()
+  split_key <- paste(
+    enrichment[["source"]],
+    enrichment[["Groups"]],
+    enrichment[["Database"]],
+    sep = "|||"
+  )
+  split_df <- split(enrichment, split_key)
+  for (key in names(split_df)) {
+    df <- split_df[[key]]
+    if (nrow(df) == 0) {
+      next
+    }
+    if (df[["source"]][1] == "GSVA") {
+      metric <- abs(df[["metric_value"]])
+      if (!is.null(enrich_gsva_score_cutoff)) {
+        df <- df[metric >= abs(enrich_gsva_score_cutoff), , drop = FALSE]
+        metric <- abs(df[["metric_value"]])
+      }
+      if (nrow(df) == 0) {
+        next
+      }
+      ord <- order(metric, decreasing = TRUE, na.last = NA)
+    } else {
+      metric <- df[["metric_value"]]
+      df <- df[is.finite(metric), , drop = FALSE]
+      metric <- df[["metric_value"]]
+      df <- df[metric <= enrich_padj_cutoff, , drop = FALSE]
+      if (nrow(df) == 0) {
+        next
+      }
+      ord <- order(metric, decreasing = FALSE, na.last = NA)
+    }
+    df <- df[ord, , drop = FALSE]
+    df <- df[!duplicated(df[["term_id"]]), , drop = FALSE]
+    selected_terms[[key]] <- utils::head(df, enrich_top_terms)
+  }
+  if (length(selected_terms) == 0) {
+    return(data.frame())
+  }
+  selected_terms <- do.call(rbind, selected_terms)
+  rownames(selected_terms) <- NULL
+
+  gene_map <- lapply(seq_len(nrow(selected_terms)), function(i) {
+    term_row <- selected_terms[i, , drop = FALSE]
+    genes <- split_enrichment_genes(term_row[["gene_text"]])
+    if (length(genes) == 0) {
+      return(NULL)
+    }
+    data.frame(
+      source = term_row[["source"]],
+      group1 = term_row[["Groups"]],
+      Database = term_row[["Database"]],
+      term_id = term_row[["term_id"]],
+      term_name = term_row[["term_name"]],
+      metric_value = term_row[["metric_value"]],
+      gene = genes,
+      stringsAsFactors = FALSE
+    )
+  })
+  gene_map <- gene_map[!sapply(gene_map, is.null)]
+  if (length(gene_map) == 0) {
+    return(data.frame())
+  }
+  gene_map <- do.call(rbind, gene_map)
+  rownames(gene_map) <- NULL
+
+  source_priority <- c("Enrichment" = 1L, "GSEA" = 2L, "GSVA" = 3L)
+  gene_map[["source_priority"]] <- source_priority[gene_map[["source"]]]
+  gene_map[["source_priority"]][is.na(gene_map[["source_priority"]])] <- 99L
+  gene_map[["metric_order"]] <- ifelse(
+    gene_map[["source"]] == "GSVA",
+    -abs(gene_map[["metric_value"]]),
+    gene_map[["metric_value"]]
+  )
+  gene_map <- gene_map[order(
+    gene_map[["group1"]],
+    gene_map[["gene"]],
+    gene_map[["source_priority"]],
+    gene_map[["metric_order"]],
+    na.last = TRUE
+  ), , drop = FALSE]
+
+  gene_map <- gene_map[
+    !duplicated(paste(gene_map[["group1"]], gene_map[["gene"]], sep = "|||")),
+    ,
+    drop = FALSE
+  ]
+  rownames(gene_map) <- NULL
+  gene_map
 }
 
 #' @title DEtest Manhattan Plot
@@ -890,6 +1305,25 @@ DEtestRingPlot <- function(
 #'   x_metric = "avg_log2FC",
 #'   ncol = 2
 #' )
+#'
+#' \dontrun{
+#' pancreas_sub <- RunEnrichment(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   db = "GO_BP",
+#'   species = "Mus_musculus"
+#' )
+#' VolcanoPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   threshold_method = "hyperbolic",
+#'   hyperbola_c = 6,
+#'   annotate_enrichment = TRUE,
+#'   enrich_from = "Enrichment",
+#'   enrich_db = "GO_BP",
+#'   ncol = 2
+#' )
+#' }
 VolcanoPlot <- function(
     srt,
     group.by = NULL,
@@ -919,9 +1353,42 @@ VolcanoPlot <- function(
     combine = TRUE,
     nrow = NULL,
     ncol = NULL,
-    byrow = TRUE) {
+    byrow = TRUE,
+    threshold_method = c("rectangular", "hyperbolic"),
+    hyperbola_c = 6,
+    annotate_enrichment = FALSE,
+    enrich_from = c("Enrichment", "GSEA", "GSVA"),
+    enrich_db = NULL,
+    enrich_terms = NULL,
+    enrich_top_terms = 3,
+    enrich_padj_cutoff = 0.05,
+    enrich_gsva_score_cutoff = NULL,
+    gsva_method = NULL,
+    enrich_nlabel = 15) {
+  threshold_method <- match.arg(threshold_method)
+  if (!x_metric %in% c("diff_pct", "avg_log2FC")) {
+    log_message(
+      "'x_metric' must be either 'diff_pct' or 'avg_log2FC'",
+      message_type = "error"
+    )
+  }
+  if (threshold_method == "hyperbolic") {
+    x_metric <- "avg_log2FC"
+  }
+  enrich_nlabel <- as.integer(enrich_nlabel)[1]
+  if (!is.finite(enrich_nlabel) || is.na(enrich_nlabel) || enrich_nlabel < 0) {
+    enrich_nlabel <- 0L
+  }
+  enrich_from <- unique(intersect(
+    enrich_from,
+    c("Enrichment", "GSEA", "GSVA")
+  ))
+
   data_res <- get_de_data(srt, group.by, test.use, DE_threshold, res)
   de_df <- data_res$de_df
+  de_df[, "avg_log2FC_raw"] <- de_df[, "avg_log2FC"]
+  de_df[, "p_val_adj_raw"] <- de_df[, "p_val_adj"]
+  de_df[, "neglog10_padj"] <- get_safe_neglog10(de_df[, "p_val_adj"])
 
   clip_res <- clip_log2fc_symmetric(de_df)
   de_df <- clip_res$df
@@ -929,8 +1396,20 @@ VolcanoPlot <- function(
   x_lower <- clip_res$fc_lim[1]
   de_df[, "border"] <- (de_df[["avg_log2FC"]] >= x_upper) | (de_df[["avg_log2FC"]] <= x_lower)
 
-  de_df[, "y"] <- -log10(de_df[, "p_val_adj"])
-  if (x_metric == "diff_pct") {
+  if (threshold_method == "hyperbolic") {
+    de_df[, "DE"] <- compute_hyperbolic_de_flags(
+      avg_log2FC = de_df[, "avg_log2FC_raw"],
+      p_val_adj = de_df[, "p_val_adj_raw"],
+      hyperbola_c = hyperbola_c
+    )
+    de_df[, "x"] <- de_df[, "avg_log2FC"]
+    de_df[, "y"] <- de_df[, "neglog10_padj"]
+    de_df <- de_df[
+      order(abs(de_df[, "avg_log2FC_raw"]), decreasing = FALSE, na.last = FALSE), ,
+      drop = FALSE
+    ]
+  } else if (x_metric == "diff_pct") {
+    de_df[, "y"] <- de_df[, "neglog10_padj"]
     de_df[, "x"] <- de_df[, "diff_pct"]
     de_df[de_df[, "avg_log2FC"] < 0, "y"] <- -de_df[
       de_df[, "avg_log2FC"] < 0,
@@ -941,6 +1420,7 @@ VolcanoPlot <- function(
       drop = FALSE
     ]
   } else if (x_metric == "avg_log2FC") {
+    de_df[, "y"] <- de_df[, "neglog10_padj"]
     de_df[, "x"] <- de_df[, "avg_log2FC"]
     de_df[de_df[, "diff_pct"] < 0, "y"] <- -de_df[de_df[, "diff_pct"] < 0, "y"]
     de_df <- de_df[
@@ -950,6 +1430,33 @@ VolcanoPlot <- function(
   }
   de_df[, "distance"] <- de_df[, "x"]^2 + de_df[, "y"]^2
 
+  enrichment_map <- data.frame()
+  if (isTRUE(annotate_enrichment)) {
+    enrichment_map <- collect_volcano_enrichment_annotations(
+      srt = srt,
+      group.by = group.by,
+      test.use = test.use,
+      enrich_from = enrich_from,
+      enrich_db = enrich_db,
+      enrich_terms = enrich_terms,
+      enrich_top_terms = enrich_top_terms,
+      enrich_padj_cutoff = enrich_padj_cutoff,
+      enrich_gsva_score_cutoff = enrich_gsva_score_cutoff,
+      gsva_method = gsva_method
+    )
+  }
+  enrich_key_levels <- character(0)
+  enrich_colors <- NULL
+  if (nrow(enrichment_map) > 0) {
+    enrichment_map[["enrich_key"]] <- paste0(
+      enrichment_map[["source"]],
+      " | ",
+      enrichment_map[["Database"]]
+    )
+    enrich_key_levels <- unique(enrichment_map[["enrich_key"]])
+    enrich_colors <- get_enrichment_overlay_colors(enrich_key_levels)
+  }
+
   plist <- list()
   for (group in levels(de_df[["group1"]])) {
     df <- de_df[de_df[["group1"]] == group, , drop = FALSE]
@@ -957,21 +1464,83 @@ VolcanoPlot <- function(
       next
     }
     df <- add_volcano_plot_coords(df = df, jitter_width = 0.2, jitter_height = 0.2, seed = 11)
+    df_enrich <- enrichment_map[
+      enrichment_map[["group1"]] == group & enrichment_map[["gene"]] %in% df[["gene"]], ,
+      drop = FALSE
+    ]
+    if (nrow(df_enrich) > 0) {
+      match_idx <- match(df_enrich[["gene"]], df[["gene"]])
+      match_ok <- !is.na(match_idx)
+      df_enrich <- df_enrich[match_ok, , drop = FALSE]
+      match_idx <- match_idx[match_ok]
+      df_enrich[["x_plot"]] <- df[match_idx, "x_plot"]
+      df_enrich[["y_plot"]] <- df[match_idx, "y_plot"]
+      df_enrich[["enrich_key"]] <- factor(
+        as.character(df_enrich[["enrich_key"]]),
+        levels = enrich_key_levels
+      )
+    }
+
     x_nudge <- diff(range(df[, "x_plot"], na.rm = TRUE)) * 0.05
+    if (!is.finite(x_nudge) || x_nudge <= 0) {
+      x_nudge <- 0.1
+    }
     df[, "label"] <- FALSE
     if (is.null(features_label)) {
-      df[df[["y"]] >= 0, ][
-        utils::head(order(df[df[["y"]] >= 0, "distance"], decreasing = TRUE), nlabel),
-        "label"
-      ] <- TRUE
-      df[df[["y"]] < 0, ][
-        utils::head(order(df[df[["y"]] < 0, "distance"], decreasing = TRUE), nlabel),
-        "label"
-      ] <- TRUE
+      if (threshold_method == "hyperbolic") {
+        df[
+          utils::head(order(df[, "distance"], decreasing = TRUE), nlabel * 2),
+          "label"
+        ] <- TRUE
+      } else {
+        df[df[["y"]] >= 0, ][
+          utils::head(order(df[df[["y"]] >= 0, "distance"], decreasing = TRUE), nlabel),
+          "label"
+        ] <- TRUE
+        df[df[["y"]] < 0, ][
+          utils::head(order(df[df[["y"]] < 0, "distance"], decreasing = TRUE), nlabel),
+          "label"
+        ] <- TRUE
+      }
     } else {
       df[df[["gene"]] %in% features_label, "label"] <- TRUE
     }
+    if (nrow(df_enrich) > 0 && is.finite(enrich_nlabel) && enrich_nlabel > 0) {
+      enrich_genes <- df_enrich[order(
+        df_enrich[["source_priority"]],
+        df_enrich[["metric_order"]],
+        na.last = TRUE
+      ), "gene"]
+      enrich_genes <- unique(enrich_genes)
+      enrich_genes <- utils::head(enrich_genes, enrich_nlabel)
+      df[df[["gene"]] %in% enrich_genes, "label"] <- TRUE
+    }
+
     color_by <- ifelse(x_metric == "diff_pct", "avg_log2FC", "diff_pct")
+    color_metric <- suppressWarnings(as.numeric(df[, color_by]))
+    if (!any(is.finite(color_metric))) {
+      color_metric <- c(-1, 1)
+    }
+    color_values <- unique(c(
+      min(c(color_metric, 0), na.rm = TRUE),
+      0,
+      max(color_metric, na.rm = TRUE)
+    ))
+    if (length(color_values) == 1) {
+      color_values <- c(color_values - 1, color_values, color_values + 1)
+    }
+
+    label_df <- df[df[["label"]], , drop = FALSE]
+    label_nudge <- if (nrow(label_df) > 0) {
+      if (threshold_method == "hyperbolic") {
+        ifelse(label_df[["x_plot"]] >= 0, x_nudge, -x_nudge)
+      } else {
+        ifelse(label_df[["y_plot"]] >= 0, -x_nudge, x_nudge)
+      }
+    } else {
+      numeric(0)
+    }
+
     p <- ggplot() +
       geom_point(
         data = df[!df[["DE"]] & !df[["border"]], , drop = FALSE],
@@ -1014,7 +1583,7 @@ VolcanoPlot <- function(
       geom_hline(yintercept = 0, color = "black", linetype = 1) +
       geom_vline(xintercept = 0, color = "grey", linetype = 2) +
       ggrepel::geom_text_repel(
-        data = df[df[["label"]], , drop = FALSE],
+        data = label_df,
         aes(x = x_plot, y = y_plot, label = gene),
         min.segment.length = 0,
         max.overlaps = 100,
@@ -1024,27 +1593,62 @@ VolcanoPlot <- function(
         bg.r = label.bg.r,
         size = label.size,
         force = 20,
-        nudge_x = ifelse(df[df[["label"]], "y_plot"] >= 0, -x_nudge, x_nudge)
+        nudge_x = label_nudge
       ) +
       labs(x = xlab, y = ylab) +
       scale_color_gradientn(
         name = ifelse(x_metric == "diff_pct", "log2FC", "diff_pct"),
         colors = palette_colors(palette = palette, palcolor = palcolor),
-        values = scales::rescale(unique(c(
-          min(c(df[, color_by], 0), na.rm = TRUE),
-          0,
-          max(df[, color_by], na.rm = TRUE)
-        ))),
+        values = scales::rescale(color_values),
         guide = guide_colorbar(
           frame.colour = "black",
           ticks.colour = "black",
           title.hjust = 0,
           order = 1
         )
-      ) +
-      scale_y_continuous(labels = abs) +
+      )
+
+    if (threshold_method == "hyperbolic") {
+      curve_df <- build_hyperbola_curve_df(
+        x_range = range(df[, "x_plot"], na.rm = TRUE),
+        hyperbola_c = hyperbola_c,
+        y_max = max(df[, "y_plot"], na.rm = TRUE) * 1.05
+      )
+      if (nrow(curve_df) > 0) {
+        p <- p + geom_line(
+          data = curve_df,
+          aes(x = x, y = y),
+          linetype = "22",
+          color = "black",
+          linewidth = 0.4
+        )
+      }
+      p <- p + scale_y_continuous()
+    } else {
+      p <- p + scale_y_continuous(labels = abs)
+    }
+
+    if (nrow(df_enrich) > 0 && !is.null(enrich_colors)) {
+      p <- p +
+        geom_point(
+          data = df_enrich,
+          aes(x = x_plot, y = y_plot, fill = enrich_key),
+          shape = 21,
+          size = pt.size + 0.8,
+          stroke = 0.5,
+          color = "black",
+          alpha = 1
+        ) +
+        scale_fill_manual(
+          name = "Enrichment",
+          values = enrich_colors
+        )
+    }
+
+    p <- p +
       do.call(theme_use, theme_args) +
       theme(aspect.ratio = aspect.ratio)
+
     if (length(levels(de_df[["group1"]])) > 1) {
       p <- p + facet_wrap(~group1)
     }
