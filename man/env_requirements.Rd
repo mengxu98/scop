@@ -4,13 +4,20 @@
 \alias{env_requirements}
 \title{Python environment requirements}
 \usage{
-env_requirements(version = "3.10-1", include_optional = FALSE)
+env_requirements(version = "3.10-1", include_optional = FALSE, modules = NULL)
 }
 \arguments{
 \item{version}{The Python version of the environment.
 Default is \code{"3.10-1"}.}
 
 \item{include_optional}{Whether to include optional Python dependencies.}
+
+\item{modules}{Optional requirement modules to include. Supported values are
+\code{"scanpy"}, \code{"scvi"}, \code{"scanorama"}, \code{"bbknn"}, \code{"celltypist"},
+\code{"cellphonedb"}, \code{"magic"}, \code{"scrublet"}, \code{"doubletdetection"},
+\code{"doublet"}, \code{"palantir"}, \code{"scvelo"}, \code{"cellrank"}, \code{"wot"}, \code{"phate"},
+\code{"pacmap"}, \code{"trimap"}, \code{"multimap"}, and \code{"scomm"}. If \code{NULL}, the
+complete environment is returned.}
 }
 \value{
 A list containing:

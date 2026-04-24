@@ -187,7 +187,7 @@ RunPHATE.default <- function(
   ...
 ) {
   set.seed(seed = seed.use)
-  PrepareEnv()
+  PrepareEnv(modules = "phate")
   check_python("phate", verbose = verbose)
   phate <- reticulate::import("phate")
 

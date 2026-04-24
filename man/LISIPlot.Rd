@@ -83,6 +83,7 @@ If \code{combine = TRUE}, returns a combined \code{patchwork} plot.
 If \code{combine = FALSE}, returns a named list of ggplot objects.
 }
 \description{
+Backward-compatible wrapper around \code{\link[=BenchmarkPlot]{BenchmarkPlot()}} for LISI scores.
 Visualize LISI scores on a dimensional reduction and compare methods with a
 summary boxplot.
 }

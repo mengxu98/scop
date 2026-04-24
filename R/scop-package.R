@@ -155,7 +155,11 @@ print.scop_logo <- function(x, ...) {
             )
             return(invisible(NULL))
           }
-          set_python_env(conda = conda, envname = envname, verbose = FALSE)
+          python_path <- conda_python(
+            conda = conda,
+            envname = envname
+          )
+          configure_python_runtime(python_path)
 
           packageStartupMessage(
             cli::col_green("conda environment initialized successfully")

@@ -164,7 +164,7 @@ RunTriMap.default <- function(
 ) {
   set.seed(seed = seed.use)
 
-  PrepareEnv()
+  PrepareEnv(modules = "trimap")
   check_python("trimap", verbose = verbose)
   trimap <- reticulate::import("trimap")
 

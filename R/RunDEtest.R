@@ -268,6 +268,70 @@ RunDEtest_limma_voom <- function(
   out
 }
 
+RunDEtest_edgeR <- function(
+  count_matrix,
+  condition,
+  condition1 = NULL,
+  condition2 = NULL,
+  only.pos = TRUE,
+  logfc.threshold = 0,
+  p.adjust.method = "bonferroni"
+) {
+  check_r("edgeR", verbose = FALSE)
+
+  condition_all <- as.character(condition)
+  if (is.null(condition1) || is.null(condition2)) {
+    condition_levels <- unique(condition_all)
+    if (length(condition_levels) < 2) {
+      return(NULL)
+    }
+    condition1 <- condition1 %||% condition_levels[[1]]
+    condition2 <- condition2 %||% condition_levels[[2]]
+  }
+
+  keep <- condition_all %in% c(condition1, condition2)
+  count_matrix <- count_matrix[, keep, drop = FALSE]
+  condition <- factor(condition_all[keep], levels = c(condition1, condition2))
+  if (ncol(count_matrix) < 2 || any(table(condition) < 2)) {
+    return(NULL)
+  }
+
+  dge <- edgeR::DGEList(counts = count_matrix)
+  keep_features <- edgeR::filterByExpr(dge, group = condition)
+  if (!any(keep_features)) {
+    return(data.frame())
+  }
+  dge <- dge[keep_features, , keep.lib.sizes = FALSE]
+  dge <- edgeR::calcNormFactors(dge)
+  design <- stats::model.matrix(~condition)
+  dge <- edgeR::estimateDisp(dge, design = design)
+  fit <- edgeR::glmQLFit(dge, design = design, robust = TRUE)
+  qlf <- edgeR::glmQLFTest(fit, coef = ncol(design))
+  tt <- edgeR::topTags(qlf, n = Inf, sort.by = "none")$table
+  if (is.null(tt) || nrow(tt) == 0) {
+    return(data.frame())
+  }
+
+  detect <- dge$counts[rownames(tt), , drop = FALSE] > 0
+  pct.1 <- round(rowMeans(detect[, condition == condition1, drop = FALSE]), 3)
+  pct.2 <- round(rowMeans(detect[, condition == condition2, drop = FALSE]), 3)
+  out <- data.frame(
+    p_val = tt$PValue,
+    avg_log2FC = tt$logFC,
+    ave_expr = tt$logCPM,
+    pct.1 = pct.1,
+    pct.2 = pct.2,
+    row.names = rownames(tt)
+  )
+  out$p_val_adj <- stats::p.adjust(out$p_val, method = p.adjust.method)
+  if (isTRUE(only.pos)) {
+    out <- out[out$avg_log2FC >= logfc.threshold, , drop = FALSE]
+  } else {
+    out <- out[abs(out$avg_log2FC) >= logfc.threshold, , drop = FALSE]
+  }
+  out
+}
+
 RunDEtest_pseudobulk <- function(
   srt,
   group.by = NULL,
@@ -298,9 +362,9 @@ RunDEtest_pseudobulk <- function(
       message_type = "error"
     )
   }
-  if (!test.use %in% c("limma_voom")) {
+  if (!test.use %in% c("limma_voom", "edgeR")) {
     log_message(
-      "Pseudobulk differential testing currently supports only {.val limma_voom}.",
+      "Pseudobulk differential testing currently supports only {.val limma_voom} and {.val edgeR}.",
       message_type = "error"
     )
   }
@@ -346,6 +410,12 @@ RunDEtest_pseudobulk <- function(
     }
     condition1 <- condition1 %||% condition_levels_all[[1]]
     condition2 <- condition2 %||% condition_levels_all[[2]]
+  }
+  if (identical(condition1, condition2)) {
+    log_message(
+      "{.arg group1} and {.arg group2} must refer to two different condition labels in pseudobulk analysis",
+      message_type = "error"
+    )
   }
 
   target_groups <- if (is.null(group.by)) {
@@ -398,14 +468,26 @@ RunDEtest_pseudobulk <- function(
         sample_condition[[sample_col]]
       )
       condition_use <- condition_map[colnames(count_matrix)]
-      markers <- RunDEtest_limma_voom(
-        count_matrix = count_matrix,
-        condition = condition_use,
-        condition1 = condition1,
-        condition2 = condition2,
-        only.pos = only.pos,
-        logfc.threshold = log(fc.threshold, base = base),
-        p.adjust.method = p.adjust.method
+      markers <- switch(
+        test.use,
+        limma_voom = RunDEtest_limma_voom(
+          count_matrix = count_matrix,
+          condition = condition_use,
+          condition1 = condition1,
+          condition2 = condition2,
+          only.pos = only.pos,
+          logfc.threshold = log(fc.threshold, base = base),
+          p.adjust.method = p.adjust.method
+        ),
+        edgeR = RunDEtest_edgeR(
+          count_matrix = count_matrix,
+          condition = condition_use,
+          condition1 = condition1,
+          condition2 = condition2,
+          only.pos = only.pos,
+          logfc.threshold = log(fc.threshold, base = base),
+          p.adjust.method = p.adjust.method
+        )
       )
       if (is.null(markers) || nrow(markers) == 0) {
         return(NULL)
@@ -479,8 +561,10 @@ RunDEtest_pseudobulk <- function(
 #' If not provided, the function uses the "active.ident" variable in the Seurat object.
 #' @param group1 A vector of cell IDs or a character vector specifying the cells that belong to the first group.
 #' If both group.by and group1 are provided, group1 takes precedence.
+#' For pseudobulk analysis, this parameter is interpreted as the first condition label.
 #' @param group2 A vector of cell IDs or a character vector specifying the cells that belong to the second group.
 #' This parameter is only used when group.by or group1 is provided.
+#' For pseudobulk analysis, this parameter is interpreted as the second condition label.
 #' @param cells1 A vector of cell IDs specifying the cells that belong to group1. If provided, group1 is ignored.
 #' @param cells2 A vector of cell IDs specifying the cells that belong to group2.
 #' This parameter is only used when cells1 is provided.
@@ -492,6 +576,7 @@ RunDEtest_pseudobulk <- function(
 #' Default is `"cell"`.
 #' @param markers_type A character value specifying the type of markers to find.
 #' Possible values are "all", "paired", "conserved", and "disturbed".
+#' Pseudobulk analysis currently supports only `"all"`.
 #' @param grouping.var A character value specifying the grouping variable for finding conserved or disturbed markers.
 #' This parameter is only used when markers_type is "conserved" or "disturbed".
 #' @param fc.threshold A numeric value used to filter genes for testing based on their average fold change between/among the two groups.
@@ -501,9 +586,13 @@ RunDEtest_pseudobulk <- function(
 #' @param norm.method Normalization method for fold change calculation when layer is 'data'.
 #' Default is `"LogNormalize"`.
 #' @param sample_col Metadata column storing biological sample IDs for pseudobulk analysis.
+#' Required when `analysis_level = "pseudobulk"`.
 #' @param condition_col Metadata column storing condition labels for pseudobulk analysis.
+#' Required when `analysis_level = "pseudobulk"`.
 #' @param p.adjust.method A character value specifying the method to use for adjusting p-values.
 #' Default is `"bonferroni"`.
+#' @param test.use Differential testing method.
+#' For pseudobulk analysis, only `"limma_voom"` and `"edgeR"` are currently supported.
 #' @param ... Additional arguments to pass to the [Seurat::FindMarkers] function.
 #'
 #' @export
@@ -675,6 +764,40 @@ RunDEtest_pseudobulk <- function(
 #'   layer = "counts",
 #'   cores = 1
 #' )
+#' pbmc_small <- RunDEtest(
+#'   pbmc_small,
+#'   analysis_level = "pseudobulk",
+#'   sample_col = "sample",
+#'   condition_col = "condition",
+#'   test.use = "edgeR",
+#'   layer = "counts",
+#'   cores = 1
+#' )
+#' edgeR_markers <- pbmc_small@tools$DEtest_pseudobulk$AllMarkers_edgeR
+#'
+#' \donttest{
+#' data(pbmcmultiome_sub)
+#' pbmcmultiome_sub[["sample"]] <- rep(
+#'   c("S1", "S2", "S3", "S4"),
+#'   length.out = ncol(pbmcmultiome_sub)
+#' )
+#' pbmcmultiome_sub[["condition"]] <- rep(
+#'   c("ctrl", "ctrl", "case", "case"),
+#'   length.out = ncol(pbmcmultiome_sub)
+#' )
+#' pbmcmultiome_sub <- RunDEtest(
+#'   pbmcmultiome_sub,
+#'   assay = "peaks",
+#'   layer = "counts",
+#'   feature_type = "peak",
+#'   analysis_level = "pseudobulk",
+#'   sample_col = "sample",
+#'   condition_col = "condition",
+#'   test.use = "edgeR",
+#'   cores = 1
+#' )
+#' peak_markers <- pbmcmultiome_sub@tools$DEtest_pseudobulk$AllMarkers_edgeR
+#' }
 RunDEtest <- function(
   srt,
   group.by = NULL,
@@ -741,6 +864,18 @@ RunDEtest <- function(
   }
 
   if (analysis_level == "pseudobulk") {
+    if (!is.null(cells1) || !is.null(cells2)) {
+      log_message(
+        "{.arg cells1} and {.arg cells2} are not supported when {.arg analysis_level = 'pseudobulk'}. Use {.arg group1} and {.arg group2} to specify condition labels.",
+        message_type = "error"
+      )
+    }
+    if (!is.null(grouping.var)) {
+      log_message(
+        "{.arg grouping.var} is not supported when {.arg analysis_level = 'pseudobulk'}.",
+        message_type = "error"
+      )
+    }
     if (!identical(layer, "counts")) {
       log_message(
         "Pseudobulk differential testing uses the {.arg counts} layer. Reset {.arg layer = 'counts'}.",

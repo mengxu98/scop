@@ -179,7 +179,10 @@ RunCellRank <- function(
   return_seurat = !is.null(srt),
   verbose = TRUE
 ) {
-  PrepareEnv()
+  PrepareEnv(modules = c(
+    "cellrank",
+    if (isTRUE(magic_impute)) "magic"
+  ))
   check_python("cellrank", verbose = verbose)
   if (isTRUE(magic_impute)) {
     check_python("magic-impute", verbose = verbose)

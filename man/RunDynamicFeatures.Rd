@@ -51,7 +51,9 @@ Otherwise, family must have the same length as features.}
 Default is \code{"counts"}.}
 
 \item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.}
+If \code{NULL}, the default assay of the Seurat object will be used.
+When the object also contains \code{ChromatinAssay}, the default assay and
+additional \code{ChromatinAssay} will be preprocessed sequentially.}
 
 \item{libsize}{A numeric or numeric vector specifying the library size correction factors for each cell.
 If NULL, the library size correction factors will be calculated based on the expression matrix.

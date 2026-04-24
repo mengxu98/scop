@@ -1,362 +1,3 @@
-#' @title The integration workflow
-#'
-#' @description
-#' Integrate single-cell RNA-seq data using various integration methods.
-#'
-#' @md
-#' @inheritParams CheckDataList
-#' @inheritParams CheckDataMerge
-#' @inheritParams standard_scop
-#' @inheritParams thisutils::log_message
-#' @param scale_within_batch Whether to scale data within each batch.
-#' Only valid when the `integration_method` is one of `"Uncorrected"`,
-#' `"Seurat"`, `"MNN"`, `"Harmony"`, `"BBKNN"`, `"CSS"`, `"ComBat"`.
-#' @param integration_method A character vector specifying the integration method to use.
-#' Supported methods are: `"Uncorrected"`, `"Seurat"`, `"CCA"`, `"RPCA"`, `"scVI"`,
-#' `"scVI5"`, `"MNN"`, `"fastMNN"`, `"fastMNN5"`, `"Harmony"`, `"Harmony5"`,
-#' `"Scanorama"`, `"BBKNN"`, `"CSS"`, `"Coralysis"`, `"LIGER"`, `"Conos"`, `"ComBat"`.
-#' Default is `"Uncorrected"`.
-#' @param append Whether the integrated data will be appended to the original Seurat object (`srt_merge`).
-#' Default is `TRUE`.
-#' @param ... Additional arguments to be passed to the integration method functions.
-#'
-#' @return A `Seurat` object.
-#'
-#' @seealso
-#' [Seurat_integrate],
-#' [scVI_integrate],
-#' [MNN_integrate],
-#' [fastMNN_integrate],
-#' [Harmony_integrate],
-#' [Scanorama_integrate],
-#' [BBKNN_integrate],
-#' [CSS_integrate],
-#' [Coralysis_integrate],
-#' [LIGER_integrate],
-#' [Conos_integrate],
-#' [ComBat_integrate]
-#'
-#' @export
-#' @examples
-#' data(panc8_sub)
-#' panc8_sub <- integration_scop(
-#'   panc8_sub,
-#'   batch = "tech",
-#'   integration_method = "LIGER"
-#' )
-#' CellDimPlot(
-#'   panc8_sub,
-#'   group.by = c("tech", "celltype")
-#' )
-#'
-#' integration_methods <- c(
-#'   "Uncorrected", "Seurat", "CCA", "RPCA", "scVI", "scVI5",
-#'   "MNN", "fastMNN", "fastMNN5", "Harmony", "Harmony5",
-#'   "Scanorama", "BBKNN", "CSS", "Coralysis", "LIGER", "Conos", "ComBat"
-#' )
-#' p_list <- list()
-#' for (method in integration_methods) {
-#'   panc8_sub <- integration_scop(
-#'     panc8_sub,
-#'     batch = "tech",
-#'     integration_method = method,
-#'     linear_reduction_dims_use = 1:50,
-#'     nonlinear_reduction = "umap"
-#'   )
-#'   p_list[[method]] <- CellDimPlot(
-#'     panc8_sub,
-#'     group.by = c("tech", "celltype"),
-#'     reduction = paste0(method, "UMAP2D"),
-#'     xlab = "", ylab = "",
-#'     title = method,
-#'     legend.position = "none",
-#'     theme_use = "theme_blank"
-#'   )
-#' }
-#'
-#' nonlinear_reductions <- c(
-#'   "umap", "tsne", "dm", "phate",
-#'   "pacmap", "trimap", "largevis", "fr"
-#' )
-#' panc8_sub <- integration_scop(
-#'   panc8_sub,
-#'   batch = "tech",
-#'   integration_method = "Seurat",
-#'   linear_reduction_dims_use = 1:50,
-#'   nonlinear_reduction = nonlinear_reductions
-#' )
-#' for (nr in nonlinear_reductions) {
-#'   print(
-#'     CellDimPlot(
-#'       panc8_sub,
-#'       group.by = c("tech", "celltype"),
-#'       reduction = paste0("Seurat", nr, "2D"),
-#'       xlab = "", ylab = "", title = nr,
-#'       legend.position = "none", theme_use = "theme_blank"
-#'     )
-#'   )
-#' }
-integration_scop <- function(
-  srt_merge = NULL,
-  batch,
-  append = TRUE,
-  srt_list = NULL,
-  assay = NULL,
-  integration_method = c(
-    "Uncorrected",
-    "Seurat",
-    "CCA",
-    "RPCA",
-    "scVI",
-    "scVI5",
-    "MNN",
-    "fastMNN",
-    "fastMNN5",
-    "Harmony",
-    "Harmony5",
-    "Scanorama",
-    "BBKNN",
-    "CSS",
-    "Coralysis",
-    "LIGER",
-    "Conos",
-    "ComBat"
-  ),
-  do_normalization = NULL,
-  normalization_method = "LogNormalize",
-  do_HVF_finding = TRUE,
-  HVF_source = "separate",
-  HVF_method = "vst",
-  nHVF = 2000,
-  HVF_min_intersection = 1,
-  HVF = NULL,
-  do_scaling = TRUE,
-  vars_to_regress = NULL,
-  regression_model = "linear",
-  scale_within_batch = FALSE,
-  linear_reduction = "pca",
-  linear_reduction_dims = 50,
-  linear_reduction_dims_use = NULL,
-  linear_reduction_params = list(),
-  force_linear_reduction = FALSE,
-  nonlinear_reduction = "umap",
-  nonlinear_reduction_dims = c(2, 3),
-  nonlinear_reduction_params = list(),
-  force_nonlinear_reduction = TRUE,
-  neighbor_metric = "euclidean",
-  neighbor_k = 20L,
-  cluster_algorithm = "louvain",
-  cluster_resolution = 0.6,
-  seed = 11,
-  verbose = TRUE,
-  ...
-) {
-  log_message(
-    "Run integration workflow...",
-    message_type = "running",
-    text_color = "blue",
-    verbose = verbose
-  )
-
-  if (is.null(srt_list) && is.null(srt_merge)) {
-    log_message(
-      "{.arg srt_list} or {.arg srt_merge} must be provided",
-      message_type = "error"
-    )
-  }
-  integration_method <- match.arg(integration_method)
-
-  args <- as.list(match.call())[-1]
-  new_env <- new.env(parent = parent.frame())
-  args <- lapply(args, function(x) eval(x, envir = new_env))
-
-  formals <- mget(names(formals()))
-  formals <- formals[names(formals) != "..."]
-  args <- utils::modifyList(formals, args)
-
-  method_map <- list(
-    Uncorrected = Uncorrected_integrate,
-    Seurat = Seurat_integrate,
-    CCA = CCA_integrate,
-    RPCA = RPCA_integrate,
-    scVI = scVI_integrate,
-    scVI5 = scVI5_integrate,
-    MNN = MNN_integrate,
-    fastMNN = fastMNN_integrate,
-    fastMNN5 = fastMNN5_integrate,
-    Harmony = Harmony_integrate,
-    Harmony5 = Harmony5_integrate,
-    Scanorama = Scanorama_integrate,
-    BBKNN = BBKNN_integrate,
-    CSS = CSS_integrate,
-    Coralysis = Coralysis_integrate,
-    LIGER = LIGER_integrate,
-    Conos = Conos_integrate,
-    ComBat = ComBat_integrate
-  )
-  integrate_fun <- method_map[[integration_method]]
-  srt_integrated <- invoke_fun(
-    integrate_fun,
-    args[names(args) %in% names(formals(integrate_fun))]
-  )
-  log_message(
-    "{.pkg {integration_method}} integration completed",
-    message_type = "success",
-    text_color = "green",
-    verbose = verbose
-  )
-
-  return(srt_integrated)
-}
-
-find_neighbors_and_clusters <- function(
-  srt,
-  reduction,
-  dims_use,
-  graph_prefix,
-  graph_snn,
-  cluster_colname,
-  HVF,
-  neighbor_metric,
-  neighbor_k,
-  cluster_algorithm,
-  cluster_algorithm_index,
-  cluster_resolution,
-  run_find_neighbors = TRUE,
-  verbose
-) {
-  srt <- tryCatch(
-    {
-      if (isTRUE(run_find_neighbors)) {
-        srt <- Seurat::FindNeighbors(
-          object = srt,
-          reduction = reduction,
-          dims = dims_use,
-          annoy.metric = neighbor_metric,
-          k.param = neighbor_k,
-          graph.name = paste0(graph_prefix, c("KNN", "SNN")),
-          verbose = FALSE
-        )
-      }
-
-      log_message(
-        "Perform {.fn Seurat::FindClusters} with {.val {cluster_algorithm}}",
-        verbose = verbose
-      )
-      srt <- Seurat::FindClusters(
-        object = srt,
-        resolution = cluster_resolution,
-        algorithm = cluster_algorithm_index,
-        leiden_method = "igraph",
-        graph.name = graph_snn,
-        verbose = FALSE
-      )
-      log_message("Reorder clusters...")
-      srt <- srt_reorder(
-        srt,
-        features = HVF,
-        reorder_by = "seurat_clusters",
-        layer = "data"
-      )
-      srt[["seurat_clusters"]] <- NULL
-      srt[[cluster_colname]] <- SeuratObject::Idents(srt)
-      srt
-    },
-    error = function(error) {
-      err_msg <- conditionMessage(error)
-      err_msg <- gsub("{", "{{", err_msg, fixed = TRUE)
-      err_msg <- gsub("}", "}}", err_msg, fixed = TRUE)
-      log_message(err_msg, message_type = "warning", verbose = verbose)
-      log_message(
-        "Error when performing {.fn Seurat::FindClusters}. Skip this step",
-        message_type = "warning",
-        verbose = verbose
-      )
-      srt
-    }
-  )
-
-  return(srt)
-}
-
-resolve_linear_dims_use <- function(
-  srt,
-  reduction,
-  linear_reduction_dims_use = NULL,
-  normalization_method = "LogNormalize",
-  reduction_method = NULL,
-  verbose = FALSE
-) {
-  if (!is.null(linear_reduction_dims_use)) {
-    return(linear_reduction_dims_use)
-  }
-  RunDimsEstimate(
-    srt = srt,
-    reduction = reduction,
-    reduction_method = reduction_method,
-    skip_first = normalization_method == "TFIDF",
-    use_stored = TRUE,
-    verbose = verbose
-  )
-}
-
-run_nonlinear_reduction <- function(
-  srt,
-  prefix,
-  reduction_use = NULL,
-  reduction_dims = NULL,
-  graph_use = NULL,
-  neighbor_use = NULL,
-  nonlinear_reduction,
-  nonlinear_reduction_dims,
-  nonlinear_reduction_params,
-  force_nonlinear_reduction,
-  seed,
-  verbose
-) {
-  srt <- tryCatch(
-    {
-      for (nr in nonlinear_reduction) {
-        params_use <- nonlinear_reduction_params
-        if (nr %in% c("fr")) {
-          params_use[["n.neighbors"]] <- NULL
-        }
-        for (n in nonlinear_reduction_dims) {
-          srt <- RunDimsReduction(
-            srt,
-            prefix = prefix,
-            reduction_use = reduction_use,
-            reduction_dims = reduction_dims,
-            graph_use = graph_use,
-            neighbor_use = neighbor_use,
-            nonlinear_reduction = nr,
-            nonlinear_reduction_dims = n,
-            nonlinear_reduction_params = params_use,
-            force_nonlinear_reduction = force_nonlinear_reduction,
-            verbose = verbose,
-            seed = seed
-          )
-        }
-      }
-      srt
-    },
-    error = function(error) {
-      err_msg <- conditionMessage(error)
-      err_msg <- gsub("{", "{{", err_msg, fixed = TRUE)
-      err_msg <- gsub("}", "}}", err_msg, fixed = TRUE)
-      log_message(err_msg, message_type = "warning", verbose = verbose)
-      log_message(
-        "Error when performing nonlinear dimension reduction. Skip this step",
-        message_type = "warning",
-        verbose = verbose
-      )
-      srt
-    }
-  )
-
-  return(srt)
-}
-
 #' @title The Uncorrected integration function
 #'
 #' @inheritParams integration_scop
@@ -446,7 +87,7 @@ Uncorrected_integrate <- function(
     )
   }
   if (cluster_algorithm == "leiden") {
-    PrepareEnv()
+    PrepareEnv(modules = "scanpy")
     check_python("leidenalg")
   }
   cluster_algorithm_index <- switch(
@@ -638,6 +279,713 @@ Uncorrected_integrate <- function(
   }
 }
 
+#' @title The WNN integration function
+#'
+#' @inheritParams integration_scop
+#'
+#' @export
+WNN_integrate <- function(
+  srt_merge = NULL,
+  batch = NULL,
+  append = TRUE,
+  srt_list = NULL,
+  assay = NULL,
+  do_normalization = NULL,
+  normalization_method = "LogNormalize",
+  do_HVF_finding = TRUE,
+  HVF_source = "separate",
+  HVF_method = "vst",
+  nHVF = 2000,
+  HVF_min_intersection = 1,
+  HVF = NULL,
+  do_scaling = TRUE,
+  vars_to_regress = NULL,
+  regression_model = "linear",
+  scale_within_batch = FALSE,
+  linear_reduction = "pca",
+  linear_reduction_dims = 50,
+  linear_reduction_dims_use = NULL,
+  linear_reduction_params = list(),
+  force_linear_reduction = FALSE,
+  nonlinear_reduction = "umap",
+  nonlinear_reduction_dims = c(2, 3),
+  nonlinear_reduction_params = list(),
+  force_nonlinear_reduction = TRUE,
+  neighbor_metric = "euclidean",
+  neighbor_k = 20L,
+  cluster_algorithm = "louvain",
+  cluster_resolution = 0.6,
+  verbose = TRUE,
+  seed = 11
+) {
+  cluster_algorithms <- c("louvain", "slm", "leiden")
+  if (!cluster_algorithm %in% cluster_algorithms) {
+    log_message(
+      "{.arg cluster_algorithm} must be one of {.val {cluster_algorithms}}",
+      message_type = "error"
+    )
+  }
+  if (cluster_algorithm == "leiden") {
+    PrepareEnv(modules = "scanpy")
+    check_python("leidenalg")
+  }
+  cluster_algorithm_index <- switch(
+    EXPR = tolower(cluster_algorithm),
+    "louvain" = 1,
+    "louvain_refined" = 2,
+    "slm" = 3,
+    "leiden" = 4
+  )
+
+  set.seed(seed)
+  if (is.null(srt_merge) && is.null(srt_list)) {
+    log_message(
+      "{.arg srt_list} or {.arg srt_merge} must be provided",
+      message_type = "error"
+    )
+  }
+  if (!is.null(srt_list)) {
+    srt_merge <- Reduce(merge, srt_list)
+  }
+  srt_merge_raw <- srt_merge
+
+  assay_pair <- wnn_assays(
+    srt = srt_merge,
+    assay = assay
+  )
+  rna_assay <- assay_pair[["rna"]]
+  atac_assay <- assay_pair[["atac"]]
+  rna_prefix <- standard_scop_assay_prefix(srt = srt_merge, assay = rna_assay)
+  atac_prefix <- standard_scop_assay_prefix(srt = srt_merge, assay = atac_assay)
+
+  srt_merge <- standard_scop(
+    srt = srt_merge,
+    prefix = "Standard",
+    assay = c(rna_assay, atac_assay),
+    do_normalization = do_normalization,
+    normalization_method = normalization_method,
+    do_HVF_finding = do_HVF_finding,
+    HVF_method = HVF_method,
+    nHVF = nHVF,
+    HVF = HVF,
+    do_scaling = do_scaling,
+    vars_to_regress = vars_to_regress,
+    regression_model = regression_model,
+    linear_reduction = linear_reduction,
+    linear_reduction_dims = linear_reduction_dims,
+    linear_reduction_dims_use = linear_reduction_dims_use,
+    linear_reduction_params = linear_reduction_params,
+    force_linear_reduction = force_linear_reduction,
+    nonlinear_reduction = nonlinear_reduction,
+    nonlinear_reduction_dims = nonlinear_reduction_dims,
+    nonlinear_reduction_params = nonlinear_reduction_params,
+    force_nonlinear_reduction = force_nonlinear_reduction,
+    neighbor_metric = neighbor_metric,
+    neighbor_k = neighbor_k,
+    cluster_algorithm = cluster_algorithm,
+    cluster_resolution = cluster_resolution,
+    verbose = verbose,
+    seed = seed
+  )
+
+  rna_reduction <- paste0(rna_prefix, "pca")
+  atac_reduction <- paste0(atac_prefix, "lsi")
+  if (!all(c(rna_reduction, atac_reduction) %in% SeuratObject::Reductions(srt_merge))) {
+    log_message(
+      "WNN requires reductions {.val {c(rna_reduction, atac_reduction)}}",
+      message_type = "error"
+    )
+  }
+
+  rna_dims_use <- wnn_dims(
+    srt = srt_merge,
+    reduction = rna_reduction,
+    dims_use = linear_reduction_dims_use,
+    reduction_method = "pca",
+    normalization_method = "LogNormalize"
+  )
+  atac_dims_use <- wnn_dims(
+    srt = srt_merge,
+    reduction = atac_reduction,
+    dims_use = if (is.null(linear_reduction_dims_use)) NULL else linear_reduction_dims_use,
+    reduction_method = "svd",
+    normalization_method = "TFIDF"
+  )
+
+  neighbor_k_use <- min(as.integer(neighbor_k), max(1L, ncol(srt_merge) - 1L))
+  knn_range_use <- min(
+    max(neighbor_k_use + 1L, neighbor_k_use * 4L),
+    max(1L, ncol(srt_merge) - 1L)
+  )
+  if (!identical(neighbor_k_use, as.integer(neighbor_k))) {
+    log_message(
+      "Adjust neighbor k from {.val {neighbor_k}} to {.val {neighbor_k_use}} for small-sample WNN graph construction",
+      verbose = verbose
+    )
+  }
+  if (knn_range_use < 200L) {
+    log_message(
+      "Adjust WNN knn.range to {.val {knn_range_use}} for small-sample graph construction",
+      verbose = verbose
+    )
+  }
+
+  log_message(
+    "Perform {.pkg WNN} integration using {.pkg {rna_reduction}} and {.pkg {atac_reduction}}",
+    verbose = verbose
+  )
+  SeuratObject::DefaultAssay(srt_merge) <- rna_assay
+  srt_merge <- Seurat::FindMultiModalNeighbors(
+    object = srt_merge,
+    reduction.list = list(rna_reduction, atac_reduction),
+    dims.list = list(rna_dims_use, atac_dims_use),
+    k.nn = neighbor_k_use,
+    knn.range = knn_range_use,
+    knn.graph.name = "WNNKNN",
+    snn.graph.name = "WNNSNN",
+    weighted.nn.name = "WNN",
+    modality.weight.name = c(
+      paste0(rna_prefix, ".weight"),
+      paste0(atac_prefix, ".weight")
+    ),
+    verbose = verbose
+  )
+
+  hvf_use <- SeuratObject::VariableFeatures(srt_merge, assay = rna_assay)
+  if (length(hvf_use) == 0) {
+    hvf_use <- SeuratObject::VariableFeatures(srt_merge[[rna_assay]])
+  }
+  if (length(hvf_use) == 0) {
+    hvf_use <- utils::head(rownames(srt_merge[[rna_assay]]), 2000L)
+  }
+  srt_merge <- find_neighbors_and_clusters(
+    srt = srt_merge,
+    reduction = rna_reduction,
+    dims_use = rna_dims_use,
+    graph_prefix = "WNN_",
+    graph_snn = "WNNSNN",
+    cluster_colname = "WNNclusters",
+    HVF = hvf_use,
+    neighbor_metric = neighbor_metric,
+    neighbor_k = neighbor_k_use,
+    cluster_algorithm = cluster_algorithm,
+    cluster_algorithm_index = cluster_algorithm_index,
+    cluster_resolution = cluster_resolution,
+    run_find_neighbors = FALSE,
+    verbose = verbose
+  )
+
+  srt_merge <- run_wnn_reduction(
+    srt = srt_merge,
+    nonlinear_reduction = nonlinear_reduction,
+    nonlinear_reduction_dims = nonlinear_reduction_dims,
+    nonlinear_reduction_params = nonlinear_reduction_params,
+    force_nonlinear_reduction = force_nonlinear_reduction,
+    verbose = verbose,
+    seed = seed
+  )
+
+  wnn_reductions <- grep(
+    "^WNN(UMAP|FR)",
+    names(srt_merge@reductions),
+    value = TRUE
+  )
+  srt_merge@misc[["Default_reduction"]] <- if ("WNNUMAP2D" %in% names(srt_merge@reductions)) {
+    "WNNUMAP"
+  } else if (length(wnn_reductions) > 0) {
+    sub("(2D|3D)$", "", wnn_reductions[[1]])
+  } else {
+    srt_merge@misc[["Default_reduction"]] %||% NULL
+  }
+  srt_merge@misc[["WNN_reduction_list"]] <- c(rna_reduction, atac_reduction)
+  srt_merge@misc[["WNN_dims_list"]] <- list(
+    rna = rna_dims_use,
+    atac = atac_dims_use
+  )
+  SeuratObject::DefaultAssay(srt_merge) <- rna_assay
+
+  if (isTRUE(append) && !is.null(srt_merge_raw)) {
+    srt_merge_raw <- srt_append(
+      srt_raw = srt_merge_raw,
+      srt_append = srt_merge,
+      pattern = paste0(rna_assay, "|", atac_assay, "|WNN|Default_reduction"),
+      overwrite = TRUE,
+      verbose = FALSE
+    )
+    return(srt_merge_raw)
+  }
+
+  srt_merge
+}
+
+#' @title The MultiMAP integration function
+#'
+#' @inheritParams integration_scop
+#' @param gene_activity_assay Name of the gene activity assay used to provide
+#' a shared feature space for RNA-ATAC integration. Default is `"ACTIVITY"`.
+#' @param MultiMAP_params A list of parameters passed to `MultiMAP::Integration`.
+#' The following keys are managed internally and should not be supplied:
+#' `"adatas"`, `"use_reps"`, `"embedding"`, and `"seed"`.
+#' Default is `list()`.
+#'
+#' @export
+MultiMAP_integrate <- function(
+  srt_merge = NULL,
+  batch = NULL,
+  append = TRUE,
+  srt_list = NULL,
+  assay = NULL,
+  do_normalization = NULL,
+  normalization_method = "LogNormalize",
+  do_HVF_finding = TRUE,
+  HVF_source = "separate",
+  HVF_method = "vst",
+  nHVF = 2000,
+  HVF_min_intersection = 1,
+  HVF = NULL,
+  do_scaling = TRUE,
+  vars_to_regress = NULL,
+  regression_model = "linear",
+  scale_within_batch = FALSE,
+  linear_reduction = "pca",
+  linear_reduction_dims = 50,
+  linear_reduction_dims_use = NULL,
+  linear_reduction_params = list(),
+  force_linear_reduction = FALSE,
+  nonlinear_reduction = "umap",
+  nonlinear_reduction_dims = c(2, 3),
+  nonlinear_reduction_params = list(),
+  force_nonlinear_reduction = TRUE,
+  neighbor_metric = "euclidean",
+  neighbor_k = 20L,
+  cluster_algorithm = "louvain",
+  cluster_resolution = 0.6,
+  gene_activity_assay = "ACTIVITY",
+  MultiMAP_params = list(),
+  verbose = TRUE,
+  seed = 11
+) {
+  if (!is.list(MultiMAP_params)) {
+    log_message(
+      "{.arg MultiMAP_params} must be a list",
+      message_type = "error"
+    )
+  }
+  reserved_multimap_params <- c("adatas", "use_reps", "embedding", "seed")
+  invalid_multimap_params <- intersect(
+    names(MultiMAP_params),
+    reserved_multimap_params
+  )
+  if (length(invalid_multimap_params) > 0) {
+    log_message(
+      "{.arg MultiMAP_params} contains reserved keys managed by {.fn MultiMAP_integrate}: {.val {invalid_multimap_params}}",
+      message_type = "error"
+    )
+  }
+
+  cluster_algorithms <- c("louvain", "slm", "leiden")
+  if (!cluster_algorithm %in% cluster_algorithms) {
+    log_message(
+      "{.arg cluster_algorithm} must be one of {.val {cluster_algorithms}}",
+      message_type = "error"
+    )
+  }
+  if (cluster_algorithm == "leiden") {
+    PrepareEnv(modules = "scanpy")
+    check_python("leidenalg")
+  }
+  cluster_algorithm_index <- switch(
+    EXPR = tolower(cluster_algorithm),
+    "louvain" = 1,
+    "louvain_refined" = 2,
+    "slm" = 3,
+    "leiden" = 4
+  )
+
+  set.seed(seed)
+  if (is.null(srt_merge) && is.null(srt_list)) {
+    log_message(
+      "{.arg srt_list} or {.arg srt_merge} must be provided",
+      message_type = "error"
+    )
+  }
+  if (!is.null(srt_list)) {
+    srt_merge <- Reduce(merge, srt_list)
+  }
+  srt_merge_raw <- srt_merge
+
+  assay_pair <- wnn_assays(
+    srt = srt_merge,
+    assay = assay
+  )
+  rna_assay <- assay_pair[["rna"]]
+  atac_assay <- assay_pair[["atac"]]
+  rna_prefix <- standard_scop_assay_prefix(srt = srt_merge, assay = rna_assay)
+  atac_prefix <- standard_scop_assay_prefix(srt = srt_merge, assay = atac_assay)
+
+  PrepareEnv(modules = "multimap")
+  check_python(c("multimap", "scanpy"))
+
+  srt_merge <- atac_add_activity(
+    srt = srt_merge,
+    assay = atac_assay,
+    gene_activity_assay = gene_activity_assay,
+    verbose = verbose
+  )
+
+  srt_merge <- standard_scop(
+    srt = srt_merge,
+    prefix = "Standard",
+    assay = c(rna_assay, atac_assay),
+    do_normalization = do_normalization,
+    normalization_method = normalization_method,
+    do_HVF_finding = do_HVF_finding,
+    HVF_method = HVF_method,
+    nHVF = nHVF,
+    HVF = HVF,
+    do_scaling = do_scaling,
+    vars_to_regress = vars_to_regress,
+    regression_model = regression_model,
+    linear_reduction = linear_reduction,
+    linear_reduction_dims = linear_reduction_dims,
+    linear_reduction_dims_use = linear_reduction_dims_use,
+    linear_reduction_params = linear_reduction_params,
+    force_linear_reduction = force_linear_reduction,
+    nonlinear_reduction = nonlinear_reduction,
+    nonlinear_reduction_dims = nonlinear_reduction_dims,
+    nonlinear_reduction_params = nonlinear_reduction_params,
+    force_nonlinear_reduction = force_nonlinear_reduction,
+    neighbor_metric = neighbor_metric,
+    neighbor_k = neighbor_k,
+    cluster_algorithm = cluster_algorithm,
+    cluster_resolution = cluster_resolution,
+    verbose = verbose,
+    seed = seed
+  )
+
+  rna_reduction <- paste0(rna_prefix, "pca")
+  atac_reduction <- paste0(atac_prefix, "lsi")
+  if (!all(c(rna_reduction, atac_reduction) %in% SeuratObject::Reductions(srt_merge))) {
+    log_message(
+      "MultiMAP requires reductions {.val {c(rna_reduction, atac_reduction)}}",
+      message_type = "error"
+    )
+  }
+
+  rna_hvf <- SeuratObject::VariableFeatures(srt_merge, assay = rna_assay)
+  if (length(rna_hvf) == 0) {
+    rna_hvf <- SeuratObject::VariableFeatures(srt_merge[[rna_assay]])
+  }
+  shared_features <- intersect(
+    rna_hvf,
+    rownames(srt_merge[[gene_activity_assay]])
+  )
+  if (length(shared_features) < 50) {
+    shared_features <- intersect(
+      rownames(srt_merge[[rna_assay]]),
+      rownames(srt_merge[[gene_activity_assay]])
+    )
+  }
+  if (length(shared_features) < 50) {
+    log_message(
+      "Need at least 50 shared RNA/gene-activity features for {.pkg MultiMAP}",
+      message_type = "error"
+    )
+  }
+
+  rna_adata <- srt_to_adata(
+    srt = srt_merge,
+    features = shared_features,
+    assay_x = rna_assay,
+    layer_x = "counts",
+    assay_y = NULL,
+    reductions = rna_reduction,
+    graphs = character(0),
+    neighbors = character(0),
+    verbose = FALSE
+  )
+  atac_adata <- srt_to_adata(
+    srt = srt_merge,
+    features = shared_features,
+    assay_x = gene_activity_assay,
+    layer_x = "counts",
+    assay_y = NULL,
+    reductions = atac_reduction,
+    graphs = character(0),
+    neighbors = character(0),
+    verbose = FALSE
+  )
+
+  multimap <- tryCatch(
+    reticulate::import("MultiMAP", convert = FALSE),
+    error = function(...) reticulate::import("multimap", convert = FALSE)
+  )
+  rna_names <- paste0(colnames(srt_merge), "__RNA")
+  atac_names <- paste0(colnames(srt_merge), "__ATAC")
+  rna_adata$obs_names <- rna_names
+  atac_adata$obs_names <- atac_names
+  rna_adata$obs[["orig_cell"]] <- colnames(srt_merge)
+  atac_adata$obs[["orig_cell"]] <- colnames(srt_merge)
+  rna_adata$obs[["modality"]] <- "RNA"
+  atac_adata$obs[["modality"]] <- "ATAC"
+
+  multimap_params <- MultiMAP_params
+  multimap_params[["adatas"]] <- list(rna_adata, atac_adata)
+  multimap_params[["use_reps"]] <- c(rna_reduction, atac_reduction)
+  multimap_params[["embedding"]] <- multimap_params[["embedding"]] %||% TRUE
+  multimap_params[["seed"]] <- multimap_params[["seed"]] %||% as.integer(seed)
+  multimap_params[["n_components"]] <- multimap_params[["n_components"]] %||%
+    as.integer(max(10L, max(nonlinear_reduction_dims)))
+
+  adata_joint <- invoke_fun(
+    multimap$Integration,
+    multimap_params
+  )
+  embed <- as.matrix(
+    py_to_r2(
+      get_adata_element(adata_joint$obsm, "X_multimap")
+    )
+  )
+  obs_joint <- as.data.frame(py_to_r2(adata_joint$obs))
+  obs_names_joint <- get_adata_names(adata_joint, "obs")
+  if ("orig_cell" %in% colnames(obs_joint)) {
+    cell_order <- as.character(obs_joint[["orig_cell"]])
+  } else {
+    cell_order <- sub(
+      pattern = "__(RNA|ATAC)(-[0-9]+)?$",
+      replacement = "",
+      x = obs_names_joint,
+      perl = TRUE
+    )
+  }
+  cell_count <- rowsum(
+    matrix(1, nrow = nrow(embed), ncol = 1),
+    group = cell_order,
+    reorder = FALSE
+  )
+  if (!all(as.vector(cell_count[, 1]) == 2L)) {
+    log_message(
+      "Current {.pkg MultiMAP} integration supports paired RNA-ATAC inputs with exactly two modality observations per cell",
+      message_type = "error"
+    )
+  }
+  embed_mean <- rowsum(
+    embed,
+    group = cell_order,
+    reorder = FALSE
+  )
+  embed_mean <- embed_mean / as.vector(cell_count[, 1])
+  embed_mean <- embed_mean[colnames(srt_merge), , drop = FALSE]
+  colnames(embed_mean) <- paste0("MultiMAP_", seq_len(ncol(embed_mean)))
+
+  srt_merge[["MultiMAP"]] <- CreateDimReducObject(
+    embeddings = embed_mean,
+    key = "MultiMAP_",
+    assay = rna_assay
+  )
+  dims_use <- seq_len(ncol(embed_mean))
+  SeuratObject::DefaultAssay(srt_merge) <- rna_assay
+
+  hvf_use <- SeuratObject::VariableFeatures(srt_merge, assay = rna_assay)
+  if (length(hvf_use) == 0) {
+    hvf_use <- SeuratObject::VariableFeatures(srt_merge[[rna_assay]])
+  }
+  if (length(hvf_use) == 0) {
+    hvf_use <- shared_features
+  }
+  srt_merge <- find_neighbors_and_clusters(
+    srt = srt_merge,
+    reduction = "MultiMAP",
+    dims_use = dims_use,
+    graph_prefix = "MultiMAP_",
+    graph_snn = "MultiMAP_SNN",
+    cluster_colname = "MultiMAPclusters",
+    HVF = hvf_use,
+    neighbor_metric = neighbor_metric,
+    neighbor_k = neighbor_k,
+    cluster_algorithm = cluster_algorithm,
+    cluster_algorithm_index = cluster_algorithm_index,
+    cluster_resolution = cluster_resolution,
+    verbose = verbose
+  )
+
+  srt_merge <- run_nonlinear_reduction(
+    srt = srt_merge,
+    prefix = "MultiMAP",
+    reduction_use = "MultiMAP",
+    reduction_dims = dims_use,
+    graph_use = "MultiMAP_SNN",
+    nonlinear_reduction = nonlinear_reduction,
+    nonlinear_reduction_dims = nonlinear_reduction_dims,
+    nonlinear_reduction_params = nonlinear_reduction_params,
+    force_nonlinear_reduction = force_nonlinear_reduction,
+    seed = seed,
+    verbose = verbose
+  )
+
+  srt_merge@misc[["Default_reduction"]] <- if ("MultiMAPUMAP2D" %in% names(srt_merge@reductions)) {
+    "MultiMAPUMAP"
+  } else {
+    "MultiMAP"
+  }
+  srt_merge@misc[["MultiMAP_reduction_list"]] <- c(rna_reduction, atac_reduction)
+  srt_merge@misc[["MultiMAP_shared_features"]] <- shared_features
+  SeuratObject::DefaultAssay(srt_merge) <- rna_assay
+
+  if (isTRUE(append) && !is.null(srt_merge_raw)) {
+    srt_merge_raw <- srt_append(
+      srt_raw = srt_merge_raw,
+      srt_append = srt_merge,
+      pattern = paste0(
+        rna_assay,
+        "|",
+        atac_assay,
+        "|",
+        gene_activity_assay,
+        "|MultiMAP|Default_reduction"
+      ),
+      overwrite = TRUE,
+      verbose = FALSE
+    )
+    return(srt_merge_raw)
+  }
+
+  srt_merge
+}
+
+wnn_assays <- function(srt, assay = NULL) {
+  assays_available <- SeuratObject::Assays(srt)
+  chrom_assays <- assays_available[vapply(
+    assays_available,
+    function(x) inherits(srt[[x]], "ChromatinAssay"),
+    logical(1)
+  )]
+  rna_assays <- setdiff(assays_available, chrom_assays)
+  if (length(chrom_assays) == 0 || length(rna_assays) == 0) {
+    log_message(
+      "WNN requires at least one RNA assay and one {.cls ChromatinAssay}",
+      message_type = "error"
+    )
+  }
+  if (is.null(assay)) {
+    assay_default <- SeuratObject::DefaultAssay(srt)
+    rna_assay <- if (assay_default %in% rna_assays) assay_default else rna_assays[[1]]
+    atac_assay <- if ("peaks" %in% chrom_assays) "peaks" else chrom_assays[[1]]
+    return(list(rna = rna_assay, atac = atac_assay))
+  }
+
+  assay <- unique(as.character(assay))
+  if (length(assay) == 1) {
+    if (assay %in% chrom_assays) {
+      return(list(
+        rna = if ("RNA" %in% rna_assays) "RNA" else rna_assays[[1]],
+        atac = assay
+      ))
+    }
+    if (assay %in% rna_assays) {
+      return(list(
+        rna = assay,
+        atac = if ("peaks" %in% chrom_assays) "peaks" else chrom_assays[[1]]
+      ))
+    }
+  }
+
+  rna_assay <- assay[assay %in% rna_assays][[1]] %||% NULL
+  atac_assay <- assay[assay %in% chrom_assays][[1]] %||% NULL
+  if (is.null(rna_assay) || is.null(atac_assay)) {
+    log_message(
+      "{.arg assay} for WNN must include one RNA assay and one {.cls ChromatinAssay}",
+      message_type = "error"
+    )
+  }
+  list(rna = rna_assay, atac = atac_assay)
+}
+
+wnn_dims <- function(
+  srt,
+  reduction,
+  dims_use = NULL,
+  reduction_method,
+  normalization_method
+) {
+  dims_use <- dims_use %||% resolve_linear_dims_use(
+    srt = srt,
+    reduction = reduction,
+    linear_reduction_dims_use = NULL,
+    normalization_method = normalization_method,
+    reduction_method = reduction_method,
+    verbose = FALSE
+  )
+  available_dims <- seq_len(ncol(Seurat::Embeddings(srt, reduction = reduction)))
+  dims_use <- intersect(as.integer(dims_use), available_dims)
+  if (length(dims_use) == 0) {
+    log_message(
+      "No valid dimensions remain for {.pkg {reduction}}",
+      message_type = "error"
+    )
+  }
+  dims_use
+}
+
+run_wnn_reduction <- function(
+  srt,
+  nonlinear_reduction,
+  nonlinear_reduction_dims,
+  nonlinear_reduction_params,
+  force_nonlinear_reduction,
+  verbose,
+  seed
+) {
+  supported <- c("umap", "umap-naive", "fr")
+  unsupported <- setdiff(nonlinear_reduction, supported)
+  if (length(unsupported) > 0) {
+    log_message(
+      "WNN currently supports only {.val {supported}} nonlinear reductions. Skip {.val {unsupported}}",
+      message_type = "warning",
+      verbose = verbose
+    )
+  }
+  nonlinear_use <- intersect(nonlinear_reduction, supported)
+  if (length(nonlinear_use) == 0) {
+    log_message(
+      "No supported WNN nonlinear reduction was requested. Fall back to {.val umap}",
+      message_type = "warning",
+      verbose = verbose
+    )
+    nonlinear_use <- "umap"
+  }
+  for (nr in nonlinear_use) {
+    for (n in nonlinear_reduction_dims) {
+      if (identical(nr, "fr")) {
+        srt <- RunDimsReduction(
+          srt = srt,
+          prefix = "WNN",
+          graph_use = "WNNSNN",
+          nonlinear_reduction = nr,
+          nonlinear_reduction_dims = n,
+          nonlinear_reduction_params = nonlinear_reduction_params,
+          force_nonlinear_reduction = force_nonlinear_reduction,
+          verbose = verbose,
+          seed = seed
+        )
+      } else {
+        srt <- RunDimsReduction(
+          srt = srt,
+          prefix = "WNN",
+          neighbor_use = "WNN",
+          nonlinear_reduction = nr,
+          nonlinear_reduction_dims = n,
+          nonlinear_reduction_params = nonlinear_reduction_params,
+          force_nonlinear_reduction = force_nonlinear_reduction,
+          verbose = verbose,
+          seed = seed
+        )
+      }
+    }
+  }
+  srt
+}
+
 #' @title The Seurat integration function
 #'
 #' @inheritParams integration_scop
@@ -649,41 +997,42 @@ Uncorrected_integrate <- function(
 #' Default is `list()`.
 #' @export
 Seurat_integrate <- function(
-    srt_merge = NULL,
-    batch = NULL,
-    append = TRUE,
-    srt_list = NULL,
-    assay = NULL,
-    do_normalization = NULL,
-    normalization_method = "LogNormalize",
-    do_HVF_finding = TRUE,
-    HVF_source = "separate",
-    HVF_method = "vst",
-    nHVF = 2000,
-    HVF_min_intersection = 1,
-    HVF = NULL,
-    do_scaling = TRUE,
-    vars_to_regress = NULL,
-    regression_model = "linear",
-    scale_within_batch = FALSE,
-    linear_reduction = "pca",
-    linear_reduction_dims = 50,
-    linear_reduction_dims_use = NULL,
-    linear_reduction_params = list(),
-    force_linear_reduction = FALSE,
-    nonlinear_reduction = "umap",
-    nonlinear_reduction_dims = c(2, 3),
-    nonlinear_reduction_params = list(),
-    force_nonlinear_reduction = TRUE,
-    neighbor_metric = "euclidean",
-    neighbor_k = 20L,
-    cluster_algorithm = "louvain",
-    cluster_resolution = 0.6,
-    FindIntegrationAnchors_params = list(),
-    IntegrateData_params = list(),
-    IntegrateEmbeddings_params = list(),
-    verbose = TRUE,
-    seed = 11) {
+  srt_merge = NULL,
+  batch = NULL,
+  append = TRUE,
+  srt_list = NULL,
+  assay = NULL,
+  do_normalization = NULL,
+  normalization_method = "LogNormalize",
+  do_HVF_finding = TRUE,
+  HVF_source = "separate",
+  HVF_method = "vst",
+  nHVF = 2000,
+  HVF_min_intersection = 1,
+  HVF = NULL,
+  do_scaling = TRUE,
+  vars_to_regress = NULL,
+  regression_model = "linear",
+  scale_within_batch = FALSE,
+  linear_reduction = "pca",
+  linear_reduction_dims = 50,
+  linear_reduction_dims_use = NULL,
+  linear_reduction_params = list(),
+  force_linear_reduction = FALSE,
+  nonlinear_reduction = "umap",
+  nonlinear_reduction_dims = c(2, 3),
+  nonlinear_reduction_params = list(),
+  force_nonlinear_reduction = TRUE,
+  neighbor_metric = "euclidean",
+  neighbor_k = 20L,
+  cluster_algorithm = "louvain",
+  cluster_resolution = 0.6,
+  FindIntegrationAnchors_params = list(),
+  IntegrateData_params = list(),
+  IntegrateEmbeddings_params = list(),
+  verbose = TRUE,
+  seed = 11
+) {
   if (length(linear_reduction) > 1) {
     log_message(
       "Only the first method in the {.arg linear_reduction} will be used",
@@ -733,7 +1082,7 @@ Seurat_integrate <- function(
     )
   }
   if (cluster_algorithm == "leiden") {
-    PrepareEnv()
+    PrepareEnv(modules = "scanpy")
     check_python("leidenalg")
   }
   cluster_algorithm_index <- switch(
@@ -832,9 +1181,16 @@ Seurat_integrate <- function(
       "The cell count in some batches is lower than 50, which may not be suitable for the current integration method",
       message_type = "warning"
     )
-    answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
-    if (isFALSE(answer)) {
-      return(srt_merge)
+    if (interactive()) {
+      answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
+      if (isFALSE(answer)) {
+        return(srt_merge)
+      }
+    } else {
+      log_message(
+        "Non-interactive session detected. Continue integration after warning",
+        message_type = "warning"
+      )
     }
   }
 
@@ -846,10 +1202,16 @@ Seurat_integrate <- function(
     linear_reduction <- "svd"
     FindIntegrationAnchors_params[["reduction"]] <- "rlsi"
     if (is.null(FindIntegrationAnchors_params[["dims"]])) {
-      FindIntegrationAnchors_params[["dims"]] <- 2:min(
+      max_anchor_dim <- min(
         linear_reduction_dims,
-        30
+        30,
+        min(sapply(srt_list, ncol)) - 1L
       )
+      FindIntegrationAnchors_params[["dims"]] <- if (max_anchor_dim >= 2) {
+        2:max_anchor_dim
+      } else {
+        1L
+      }
     }
     srt_merge <- Signac::RunTFIDF(
       object = srt_merge,
@@ -1103,11 +1465,15 @@ Seurat_integrate <- function(
 #' @param scVI_dims_use A vector specifying the dimensions returned by scVI that will be utilized for downstream cell cluster finding and nonlinear reduction.
 #' If set to NULL, all the returned dimensions will be used by default.
 #' @param model A string indicating the scVI model to be used.
-#' Options are "SCVI" and "PEAKVI".
+#' Options are "SCVI", "PEAKVI", and "POISSONVI".
 #' Default is `"SCVI"`.
 #' @param SCVI_params A list of parameters for the SCVI model.
 #' Default is `list()`.
 #' @param PEAKVI_params A list of parameters for the PEAKVI model.
+#' Default is `list()`.
+#' @param POISSONVI_params A list of parameters for the POISSONVI model.
+#' Default is `list()`.
+#' @param train_params A list of parameters passed to the model `train()` method.
 #' Default is `list()`.
 #' @param cores An integer setting the number of threads for `scVI`.
 #' Default is `1`.
@@ -1138,10 +1504,19 @@ scVI_integrate <- function(
   model = "SCVI",
   SCVI_params = list(),
   PEAKVI_params = list(),
+  POISSONVI_params = list(),
+  train_params = list(),
   cores = 1,
   verbose = TRUE,
   seed = 11
 ) {
+  model <- toupper(model)
+  if (!model %in% c("SCVI", "PEAKVI", "POISSONVI")) {
+    log_message(
+      "{.arg model} must be one of {.val {c('SCVI', 'PEAKVI', 'POISSONVI')}}",
+      message_type = "error"
+    )
+  }
   nonlinear_reductions <- c(
     "umap",
     "umap-naive",
@@ -1167,18 +1542,17 @@ scVI_integrate <- function(
     )
   }
   if (cluster_algorithm == "leiden") {
-    PrepareEnv()
+    PrepareEnv(modules = "scanpy")
     check_python("leidenalg")
   }
-  cluster_algorithm_index <- switch(
-    tolower(cluster_algorithm),
+  cluster_algorithm_index <- switch(tolower(cluster_algorithm),
     "louvain" = 1,
     "louvain_refined" = 2,
     "slm" = 3,
     "leiden" = 4
   )
 
-  PrepareEnv()
+  PrepareEnv(modules = "scvi")
   check_python("scvi-tools")
   scvi <- reticulate::import("scvi")
   scipy <- reticulate::import("scipy")
@@ -1250,6 +1624,36 @@ scVI_integrate <- function(
     assay <- checked[["assay"]]
     type <- checked[["type"]]
   }
+  if (
+    identical(model, "PEAKVI") &&
+      !inherits(srt_merge[[assay]], "ChromatinAssay")
+  ) {
+    log_message(
+      "{.arg model = 'PEAKVI'} requires {.cls ChromatinAssay}",
+      message_type = "error"
+    )
+  }
+  if (
+    identical(model, "POISSONVI") &&
+      !inherits(srt_merge[[assay]], "ChromatinAssay")
+  ) {
+    log_message(
+      "{.arg model = 'POISSONVI'} requires {.cls ChromatinAssay}",
+      message_type = "error"
+    )
+  }
+
+  reduction_name <- switch(model,
+    SCVI = "scVI",
+    PEAKVI = "PeakVI",
+    POISSONVI = "PoissonVI"
+  )
+  reduction_key <- paste0(reduction_name, "_")
+  graph_prefix <- reduction_key
+  graph_snn <- paste0(reduction_name, "_SNN")
+  cluster_colname <- paste0(reduction_name, "clusters")
+  hvf_key <- paste0(reduction_name, "_HVF")
+  append_tag <- reduction_name
 
   adata <- srt_to_adata(
     srt_merge,
@@ -1262,14 +1666,14 @@ scVI_integrate <- function(
 
   if (model == "SCVI") {
     scvi$model$SCVI$setup_anndata(adata, batch_key = batch)
-    params <- list(
+    model_params <- list(
       adata = adata
     )
     for (nm in names(SCVI_params)) {
-      params[[nm]] <- SCVI_params[[nm]]
+      model_params[[nm]] <- SCVI_params[[nm]]
     }
-    model <- invoke_fun(scvi$model$SCVI, params)
-    model$train()
+    model <- invoke_fun(scvi$model$SCVI, model_params)
+    invoke_fun(model$train, train_params)
     srt_integrated <- srt_merge
     srt_merge <- NULL
     corrected <- Matrix::t(
@@ -1285,37 +1689,50 @@ scVI_integrate <- function(
   } else if (model == "PEAKVI") {
     log_message("Assay is ChromatinAssay. Using PeakVI workflow.")
     scvi$model$PEAKVI$setup_anndata(adata, batch_key = batch)
-    params <- list(
+    model_params <- list(
       adata = adata
     )
     for (nm in names(PEAKVI_params)) {
-      params[[nm]] <- PEAKVI_params[[nm]]
+      model_params[[nm]] <- PEAKVI_params[[nm]]
     }
-    model <- invoke_fun(scvi$model$PEAKVI, params)
-    model$train()
+    model <- invoke_fun(scvi$model$PEAKVI, model_params)
+    invoke_fun(model$train, train_params)
+    srt_integrated <- srt_merge
+    srt_merge <- NULL
+  } else if (model == "POISSONVI") {
+    log_message("Assay is ChromatinAssay. Using PoissonVI workflow.")
+    scvi$external$POISSONVI$setup_anndata(adata, batch_key = batch)
+    model_params <- list(
+      adata = adata
+    )
+    for (nm in names(POISSONVI_params)) {
+      model_params[[nm]] <- POISSONVI_params[[nm]]
+    }
+    model <- invoke_fun(scvi$external$POISSONVI, model_params)
+    invoke_fun(model$train, train_params)
     srt_integrated <- srt_merge
     srt_merge <- NULL
   }
 
   latent <- as_matrix(model$get_latent_representation())
   rownames(latent) <- colnames(srt_integrated)
-  colnames(latent) <- paste0("scVI_", seq_len(ncol(latent)))
-  srt_integrated[["scVI"]] <- CreateDimReducObject(
+  colnames(latent) <- paste0(reduction_key, seq_len(ncol(latent)))
+  srt_integrated[[reduction_name]] <- CreateDimReducObject(
     embeddings = latent,
-    key = "scVI_",
+    key = reduction_key,
     assay = SeuratObject::DefaultAssay(srt_integrated)
   )
   if (is.null(scVI_dims_use)) {
-    scVI_dims_use <- 1:ncol(srt_integrated[["scVI"]]@cell.embeddings)
+    scVI_dims_use <- 1:ncol(srt_integrated[[reduction_name]]@cell.embeddings)
   }
 
   srt_integrated <- find_neighbors_and_clusters(
     srt = srt_integrated,
-    reduction = "scVI",
+    reduction = reduction_name,
     dims_use = scVI_dims_use,
-    graph_prefix = "scVI_",
-    graph_snn = "scVI_SNN",
-    cluster_colname = "scVIclusters",
+    graph_prefix = graph_prefix,
+    graph_snn = graph_snn,
+    cluster_colname = cluster_colname,
     HVF = HVF,
     neighbor_metric = neighbor_metric,
     neighbor_k = neighbor_k,
@@ -1327,10 +1744,10 @@ scVI_integrate <- function(
 
   srt_integrated <- run_nonlinear_reduction(
     srt = srt_integrated,
-    prefix = "scVI",
-    reduction_use = "scVI",
+    prefix = reduction_name,
+    reduction_use = reduction_name,
     reduction_dims = scVI_dims_use,
-    graph_use = "scVI_SNN",
+    graph_use = graph_snn,
     nonlinear_reduction = nonlinear_reduction,
     nonlinear_reduction_dims = nonlinear_reduction_dims,
     nonlinear_reduction_params = nonlinear_reduction_params,
@@ -1340,15 +1757,13 @@ scVI_integrate <- function(
   )
 
   SeuratObject::DefaultAssay(srt_integrated) <- assay
-  SeuratObject::VariableFeatures(srt_integrated) <- srt_integrated@misc[[
-    "scVI_HVF"
-  ]] <- HVF
+  SeuratObject::VariableFeatures(srt_integrated) <- srt_integrated@misc[[hvf_key]] <- HVF
 
   if (isTRUE(append) && !is.null(srt_merge_raw)) {
     srt_merge_raw <- srt_append(
       srt_raw = srt_merge_raw,
       srt_append = srt_integrated,
-      pattern = paste0(assay, "|scVI|Default_reduction"),
+      pattern = paste0(assay, "|", append_tag, "|Default_reduction"),
       overwrite = TRUE,
       verbose = FALSE
     )
@@ -1447,11 +1862,10 @@ MNN_integrate <- function(
     )
   }
   if (cluster_algorithm == "leiden") {
-    PrepareEnv()
+    PrepareEnv(modules = "scanpy")
     check_python("leidenalg")
   }
-  cluster_algorithm_index <- switch(
-    tolower(cluster_algorithm),
+  cluster_algorithm_index <- switch(tolower(cluster_algorithm),
     "louvain" = 1,
     "louvain_refined" = 2,
     "slm" = 3,
@@ -1769,11 +2183,10 @@ fastMNN_integrate <- function(
     )
   }
   if (cluster_algorithm == "leiden") {
-    PrepareEnv()
+    PrepareEnv(modules = "scanpy")
     check_python("leidenalg")
   }
-  cluster_algorithm_index <- switch(
-    tolower(cluster_algorithm),
+  cluster_algorithm_index <- switch(tolower(cluster_algorithm),
     "louvain" = 1,
     "louvain_refined" = 2,
     "slm" = 3,
@@ -2071,7 +2484,7 @@ Harmony_integrate <- function(
     )
   }
   if (cluster_algorithm == "leiden") {
-    PrepareEnv()
+    PrepareEnv(modules = "scanpy")
     check_python("leidenalg")
   }
   cluster_algorithm_index <- switch(
@@ -2209,7 +2622,7 @@ Harmony_integrate <- function(
     verbose = verbose
   )
   log_message(
-    "Using {.val {paste0('CSS', linear_reduction)}} ({.val {min(linear_reduction_dims_use)}}:{.val {max(linear_reduction_dims_use)}}) as input",
+    "Using {.val {paste0('Harmony', linear_reduction)}} ({.val {min(linear_reduction_dims_use)}}:{.val {max(linear_reduction_dims_use)}}) as input",
     verbose = verbose
   )
   params <- list(
@@ -2335,7 +2748,7 @@ Scanorama_integrate <- function(
   verbose = TRUE,
   seed = 11
 ) {
-  PrepareEnv()
+  PrepareEnv(modules = "scanorama")
 
   nonlinear_reductions <- c(
     "umap",
@@ -2602,7 +3015,7 @@ BBKNN_integrate <- function(
   verbose = TRUE,
   seed = 11
 ) {
-  PrepareEnv()
+  PrepareEnv(modules = "bbknn")
 
   if (length(linear_reduction) > 1) {
     log_message(
@@ -3078,7 +3491,7 @@ CSS_integrate <- function(
     )
   }
   if (cluster_algorithm == "leiden") {
-    PrepareEnv()
+    PrepareEnv(modules = "scanpy")
     check_python("leidenalg")
   }
   cluster_algorithm_index <- switch(
@@ -3311,7 +3724,7 @@ LIGER_integrate <- function(
     )
   }
   if (cluster_algorithm == "leiden") {
-    PrepareEnv()
+    PrepareEnv(modules = "scanpy")
     check_python("leidenalg")
   }
   cluster_algorithm_index <- switch(
@@ -3636,7 +4049,7 @@ Conos_integrate <- function(
     )
   }
   if (cluster_algorithm == "leiden") {
-    PrepareEnv()
+    PrepareEnv(modules = "scanpy")
     check_python("leidenalg")
   }
   cluster_algorithm_index <- switch(
@@ -4009,7 +4422,7 @@ ComBat_integrate <- function(
     )
   }
   if (cluster_algorithm == "leiden") {
-    PrepareEnv()
+    PrepareEnv(modules = "scanpy")
     check_python("leidenalg")
   }
   cluster_algorithm_index <- switch(
@@ -4300,7 +4713,7 @@ Coralysis_integrate <- function(
     )
   }
   if (cluster_algorithm == "leiden") {
-    PrepareEnv()
+    PrepareEnv(modules = "scanpy")
     check_python("leidenalg")
   }
   cluster_algorithm_index <- switch(

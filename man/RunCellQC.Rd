@@ -2,7 +2,7 @@
 % Please edit documentation in R/RunCellQC.R
 \name{RunCellQC}
 \alias{RunCellQC}
-\title{Run cell-level quality control for single cell RNA-seq data.}
+\title{Run cell-level quality control}
 \usage{
 RunCellQC(
   srt,
@@ -10,7 +10,7 @@ RunCellQC(
   split.by = NULL,
   group.by = NULL,
   return_filtered = FALSE,
-  qc_metrics = c("doublets", "decontX", "outlier", "umi", "gene", "mito", "ribo",
+  qc_metrics = c("doublets", "decontX", "atac", "outlier", "umi", "gene", "mito", "ribo",
     "ribo_mito_ratio", "species"),
   db_method = "scDblFinder",
   db_rate = NULL,
@@ -24,6 +24,7 @@ RunCellQC(
   decontX_store_assay = FALSE,
   decontX_round_counts = TRUE,
   decontX_args = list(),
+  atac_args = list(),
   outlier_threshold = c("log10_nCount:lower:2.5", "log10_nCount:higher:5",
     "log10_nFeature:lower:2.5", "log10_nFeature:higher:5", "featurecount_dist:lower:2.5"),
   outlier_n = 1,
@@ -49,8 +50,9 @@ RunCellQC(
 \item{assay}{The name of the assay to be used for doublet-calling.
 Default is \code{"RNA"}.}
 
-\item{split.by}{Name of a column in meta.data column to split plot by.
-Default is \code{NULL}.}
+\item{split.by}{Name of a meta.data column used to split the object before QC.
+Default is \code{NULL}. When specified, QC and doublet-calling are performed
+separately within each split object and merged back afterward.}
 
 \item{group.by}{Group labels passed to \code{\link[=RunDecontX]{RunDecontX()}} when \code{"decontX"}
 is included in \code{qc_metrics}. Can be \code{NULL}, a meta.data column name, or a vector
@@ -60,13 +62,16 @@ aligned to cells. Default is \code{NULL}.}
 Default is \code{FALSE}.}
 
 \item{qc_metrics}{A character vector specifying the quality control metrics to be applied.
-Available metrics are \code{"doublets"}, \code{"decontX"}, \code{"outlier"}, \code{"umi"}, \code{"gene"},
+Available metrics are \code{"doublets"}, \code{"decontX"}, \code{"atac"}, \code{"outlier"}, \code{"umi"}, \code{"gene"},
 \code{"mito"}, \code{"ribo"}, \code{"ribo_mito_ratio"}, and \code{"species"}.
-Default is \code{c("doublets", "decontX", "outlier", "umi", "gene", "mito", "ribo", "ribo_mito_ratio", "species")}.}
+Default is \code{c("doublets", "decontX", "outlier", "umi", "gene", "mito", "ribo", "ribo_mito_ratio", "species")}.
+For \code{ChromatinAssay}, if \verb{.arg qc_metrics} is not supplied, the default is \code{"atac"}.}
 
 \item{db_method}{Method used for doublet-calling.
 Can be one of \code{"scDblFinder"}, \code{"Scrublet"}, \code{"DoubletDetection"},
-\code{"scds_cxds"}, \code{"scds_bcds"}, \code{"scds_hybrid"}.}
+\code{"scds_cxds"}, \code{"scds_bcds"}, \code{"scds_hybrid"}.
+The resulting doublet labels are aggregated afterward into \code{db_qc} and do not
+affect the thresholds used by the other QC metrics.}
 
 \item{db_rate}{The expected doublet rate.
 Default is calculated as \code{ncol(srt) / 1000 * 0.01}.}
@@ -107,28 +112,38 @@ Explicit \verb{decontX_*} parameters are preferred for common options and take
 precedence when both are supplied.
 Default is \code{list()}.}
 
+\item{atac_args}{A named list of additional arguments passed to \code{\link[=RunATACQC]{RunATACQC()}}
+when \code{"atac"} is included in \code{qc_metrics}. Threshold arguments from
+\code{\link[=RunATACQC]{RunATACQC()}} are used to label failed cells in \code{atac_qc}, but filtering is
+deferred to \code{\link[=RunCellQC]{RunCellQC()}}. Default is \code{list()}.}
+
 \item{outlier_threshold}{A character vector specifying the outlier threshold.
 Default is \code{c("log10_nCount:lower:2.5", "log10_nCount:higher:5", "log10_nFeature:lower:2.5", "log10_nFeature:higher:5", "featurecount_dist:lower:2.5")}.}
 
 \item{outlier_n}{Minimum number of outlier metrics that meet the conditions for determining outlier cells.
 Default is \code{1}.}
 
-\item{UMI_threshold}{UMI number threshold. Cells that exceed this threshold will be considered as kept.
+\item{UMI_threshold}{UMI number threshold.
+Cells that exceed this threshold will be considered as kept.
 Default is \code{3000}.}
 
-\item{gene_threshold}{Gene number threshold. Cells that exceed this threshold will be considered as kept.
+\item{gene_threshold}{Gene number threshold.
+Cells that exceed this threshold will be considered as kept.
 Default is \code{1000}.}
 
-\item{mito_threshold}{Percentage of UMI counts of mitochondrial genes. Cells that exceed this threshold will be considered as discarded.
+\item{mito_threshold}{Percentage of UMI counts of mitochondrial genes.
+Cells that exceed this threshold will be considered as discarded.
 Default is \code{20}.}
 
 \item{mito_pattern}{Regex patterns to match the mitochondrial genes.
 Default is \code{c("MT-", "Mt-", "mt-")}.}
 
-\item{mito_gene}{A defined mitochondrial genes. If features provided, will ignore the \code{mito_pattern} matching.
+\item{mito_gene}{A defined mitochondrial genes.
+If features provided, will ignore the \code{mito_pattern} matching.
 Default is \code{NULL}.}
 
-\item{ribo_threshold}{Percentage of UMI counts of ribosomal genes. Cells that exceed this threshold will be considered as discarded.
+\item{ribo_threshold}{Percentage of UMI counts of ribosomal genes.
+Cells that exceed this threshold will be considered as discarded.
 Default is \code{50}.}
 
 \item{ribo_pattern}{Regex patterns to match the ribosomal genes.
@@ -140,13 +155,15 @@ Default is \code{NULL}.}
 \item{ribo_mito_ratio_range}{A numeric vector specifying the range of ribosomal/mitochondrial gene expression ratios for ribo_mito_ratio outlier cells.
 Default is \code{c(1, Inf)}.}
 
-\item{species}{Species used as the suffix of the QC metrics. The first is the species of interest.
+\item{species}{Species used as the suffix of the QC metrics.
+The first is the species of interest.
 Default is \code{NULL}.}
 
 \item{species_gene_prefix}{Species gene prefix used to calculate QC metrics for each species.
 Default is \code{NULL}.}
 
-\item{species_percent}{Percentage of UMI counts of the first species. Cells that exceed this threshold will be considered as kept.
+\item{species_percent}{Percentage of UMI counts of the first species.
+Cells that exceed this threshold will be considered as kept.
 Default is \code{95}.}
 
 \item{seed}{Random seed for reproducibility.
@@ -156,21 +173,20 @@ Default is \code{11}.}
 Returns Seurat object with the QC results stored in the meta.data layer.
 }
 \description{
-Run cell-level quality control for single cell RNA-seq data.
+Run cell-level quality control
 }
 \examples{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-pancreas_sub <- RunCellQC(pancreas_sub)
+pancreas_sub <- RunCellQC(
+  pancreas_sub,
+  db_method = "scds_cxds"
+)
 
 CellStatPlot(
   pancreas_sub,
   stat.by = c(
-    "db_qc", "decontX_qc", "outlier_qc",
-    "umi_qc", "gene_qc",
-    "mito_qc", "ribo_qc",
-    "ribo_mito_ratio_qc",
-    "species_qc"
+    "db_qc", "outlier_qc"
   ),
   plot_type = "upset",
   stat_level = "Fail"

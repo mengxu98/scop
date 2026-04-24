@@ -372,7 +372,7 @@ scVI5_integrate <- function(
   verbose = TRUE,
   seed = 11
 ) {
-  PrepareEnv()
+  PrepareEnv(modules = "scvi")
   check_python("scvi-tools")
   check_r("satijalab/seurat-wrappers", verbose = FALSE)
 
@@ -595,7 +595,7 @@ run_integration5 <- function(
     )
   }
   if (cluster_algorithm == "leiden") {
-    PrepareEnv()
+    PrepareEnv(modules = "scanpy")
     check_python("leidenalg")
   }
   cluster_algorithm_index <- switch(

@@ -41,7 +41,9 @@ standard_scop(
 Default is \code{"Standard"}.}
 
 \item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.}
+If \code{NULL}, the default assay of the Seurat object will be used.
+When the object also contains \code{ChromatinAssay}, the default assay and
+additional \code{ChromatinAssay} will be preprocessed sequentially.}
 
 \item{do_normalization}{Whether to perform normalization.
 If \code{NULL}, normalization will be performed if the specified assay does not have scaled data.}

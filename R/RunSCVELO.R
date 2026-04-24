@@ -116,7 +116,10 @@ RunSCVELO <- function(
   return_seurat = !is.null(srt),
   verbose = TRUE
 ) {
-  PrepareEnv()
+  PrepareEnv(modules = c(
+    "scvelo",
+    if (isTRUE(magic_impute)) "magic"
+  ))
   check_python("scvelo", verbose = verbose)
   if (isTRUE(magic_impute)) {
     check_python("magic-impute", verbose = verbose)

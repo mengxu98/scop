@@ -168,7 +168,7 @@ RunPaCMAP.default <- function(
     set.seed(seed = seed.use)
   }
 
-  PrepareEnv()
+  PrepareEnv(modules = "pacmap")
   check_python("pacmap", verbose = verbose)
   pacmap <- reticulate::import("pacmap")
 

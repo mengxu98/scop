@@ -107,7 +107,7 @@ RunCellTypist <- function(
     "Running {.pkg CellTypist} annotation...",
     verbose = verbose
   )
-  PrepareEnv()
+  PrepareEnv(modules = "celltypist")
   check_python("celltypist==1.7.1", verbose = verbose)
   if (all(is.null(srt), is.null(adata))) {
     log_message(
@@ -363,7 +363,7 @@ TrainCellTypist <- function(
     "Training {.pkg CellTypist} model...",
     verbose = verbose
   )
-  PrepareEnv()
+  PrepareEnv(modules = "celltypist")
   check_python("celltypist==1.7.1", verbose = verbose)
 
   if (is.null(srt) && is.null(adata) && is.null(h5ad)) {
@@ -560,7 +560,7 @@ CellTypistModels <- function(
     "Running {.pkg CellTypist} model action: {.val {action}}",
     verbose = verbose
   )
-  PrepareEnv()
+  PrepareEnv(modules = "celltypist")
   check_python("celltypist==1.7.1", verbose = verbose)
   functions <- reticulate::import_from_path(
     "functions",

@@ -119,7 +119,7 @@ RunPAGA <- function(
   return_seurat = !is.null(srt),
   verbose = TRUE
 ) {
-  PrepareEnv()
+  PrepareEnv(modules = "scanpy")
 
   plot_format <- match.arg(plot_format)
 
