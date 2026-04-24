@@ -79,7 +79,7 @@ RunCellphoneDB <- function(
   keep_output = FALSE,
   verbose = TRUE
 ) {
-  PrepareEnv()
+  PrepareEnv(modules = "cellphonedb")
   check_python("cellphonedb==5.0.1", verbose = verbose)
 
   if (!inherits(srt, "Seurat")) {
@@ -197,7 +197,7 @@ build_cpdb_adata <- function(
   gene_id_from_IDtype = "symbol",
   verbose = TRUE
 ) {
-  PrepareEnv()
+  PrepareEnv(modules = "cellphonedb")
   check_python(c("scanpy", "numpy"), verbose = FALSE)
 
   mat <- GetAssayData5(srt, assay = assay, layer = layer)
@@ -258,7 +258,7 @@ build_cpdb_adata <- function(
 }
 
 matrix_to_adata <- function(mat, obs) {
-  PrepareEnv()
+  PrepareEnv(modules = "cellphonedb")
   check_python(c("scanpy", "numpy"), verbose = FALSE)
 
   sc <- reticulate::import("scanpy", convert = FALSE)

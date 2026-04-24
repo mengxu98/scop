@@ -17,13 +17,17 @@
 #' @param label.fg The foreground color of the labels.
 #' @param label.bg The background color of the labels.
 #' @param label.bg.r The radius of the rounded corners of the label background.
+#' @param grid_major Whether to show major panel grid lines.
+#' Default is `TRUE`.
+#' @param grid_major_colour Color of major panel grid lines.
+#' @param grid_major_linetype Linetype of major panel grid lines.
+#' @param grid_major_linewidth Line width of major panel grid lines.
 #'
 #' @seealso [FeatureStatPlot]
 #'
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' p1 <- CellStatPlot(
@@ -35,8 +39,7 @@
 #' p1
 #'
 #' thisplot::panel_fix(
-#'   p1,
-#'   height = 2, width = 3
+#'   p1, height = 2, width = 3
 #' )
 #'
 #' CellStatPlot(
@@ -274,62 +277,64 @@
 #'     pancreas_sub$Fancb_Expressed == "TRUE" &
 #'     pancreas_sub$Dlg3_Expressed == "FALSE"
 #' )
-#' }
 CellStatPlot <- function(
-  srt,
-  stat.by,
-  group.by = NULL,
-  split.by = NULL,
-  bg.by = NULL,
-  cells = NULL,
-  flip = FALSE,
-  NA_color = "grey",
-  NA_stat = TRUE,
-  keep_empty = FALSE,
-  individual = FALSE,
-  stat_level = NULL,
-  plot_type = c(
-    "bar",
-    "rose",
-    "ring",
-    "pie",
-    "trend",
-    "area",
-    "dot",
-    "sankey",
-    "chord",
-    "venn",
-    "upset"
-  ),
-  stat_type = c("percent", "count"),
-  position = c("stack", "dodge"),
-  palette = "Chinese",
-  palcolor = NULL,
-  alpha = 1,
-  bg_palette = "Chinese",
-  bg_palcolor = NULL,
-  bg_alpha = 0.2,
-  label = FALSE,
-  label.size = 3.5,
-  label.fg = "black",
-  label.bg = "white",
-  label.bg.r = 0.1,
-  aspect.ratio = NULL,
-  title = NULL,
-  subtitle = NULL,
-  xlab = NULL,
-  ylab = NULL,
-  legend.position = "right",
-  legend.direction = "vertical",
-  theme_use = "theme_scop",
-  theme_args = list(),
-  combine = TRUE,
-  nrow = NULL,
-  ncol = NULL,
-  byrow = TRUE,
-  force = FALSE,
-  seed = 11
-) {
+    srt,
+    stat.by,
+    group.by = NULL,
+    split.by = NULL,
+    bg.by = NULL,
+    cells = NULL,
+    flip = FALSE,
+    NA_color = "grey",
+    NA_stat = TRUE,
+    keep_empty = FALSE,
+    individual = FALSE,
+    stat_level = NULL,
+    plot_type = c(
+      "bar",
+      "rose",
+      "ring",
+      "pie",
+      "trend",
+      "area",
+      "dot",
+      "sankey",
+      "chord",
+      "venn",
+      "upset"
+    ),
+    stat_type = c("percent", "count"),
+    position = c("stack", "dodge"),
+    palette = "Chinese",
+    palcolor = NULL,
+    alpha = 1,
+    bg_palette = "Chinese",
+    bg_palcolor = NULL,
+    bg_alpha = 0.2,
+    label = FALSE,
+    label.size = 3.5,
+    label.fg = "black",
+    label.bg = "white",
+    label.bg.r = 0.1,
+    aspect.ratio = NULL,
+    title = NULL,
+    subtitle = NULL,
+    xlab = NULL,
+    ylab = NULL,
+    legend.position = "right",
+    legend.direction = "vertical",
+    theme_use = "theme_scop",
+    theme_args = list(),
+    grid_major = TRUE,
+    grid_major_colour = "grey80",
+    grid_major_linetype = 2,
+    grid_major_linewidth = 0.3,
+    combine = TRUE,
+    nrow = NULL,
+    ncol = NULL,
+    byrow = TRUE,
+    force = FALSE,
+    seed = 11) {
   cells <- cells %||% colnames(srt@assays[[1]])
   meta_data <- srt@meta.data[cells, , drop = FALSE]
   if (theme_use == "theme_scop") {
@@ -378,6 +383,10 @@ CellStatPlot <- function(
     legend.direction = legend.direction,
     theme_use = theme_use,
     theme_args = theme_args,
+    grid_major = grid_major,
+    grid_major_colour = grid_major_colour,
+    grid_major_linetype = grid_major_linetype,
+    grid_major_linewidth = grid_major_linewidth,
     combine = combine,
     nrow = nrow,
     ncol = ncol,
