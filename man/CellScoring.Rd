@@ -41,7 +41,9 @@ If \code{NULL}, \code{db} will be used to create features sets.}
 Default is \code{data}.}
 
 \item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.}
+If \code{NULL}, the default assay of the Seurat object will be used.
+When the object also contains \code{ChromatinAssay}, the default assay and
+additional \code{ChromatinAssay} will be preprocessed sequentially.}
 
 \item{split.by}{Name of a column in meta.data column to split plot by.
 Default is \code{NULL}.}

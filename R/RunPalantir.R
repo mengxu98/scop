@@ -86,7 +86,7 @@ RunPalantir <- function(
   return_seurat = !is.null(srt),
   verbose = TRUE
 ) {
-  PrepareEnv()
+  PrepareEnv(modules = "palantir")
   check_python("palantir", verbose = verbose)
   if (all(is.null(srt), is.null(adata))) {
     log_message(

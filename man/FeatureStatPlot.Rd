@@ -77,6 +77,10 @@ FeatureStatPlot(
   legend.title = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
+  grid_major = TRUE,
+  grid_major_colour = "grey80",
+  grid_major_linetype = 2,
+  grid_major_linewidth = 0.3,
   combine = TRUE,
   nrow = NULL,
   ncol = NULL,
@@ -113,7 +117,9 @@ Default is \code{NULL}.}
 Default is \code{data}.}
 
 \item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.}
+If \code{NULL}, the default assay of the Seurat object will be used.
+When the object also contains \code{ChromatinAssay}, the default assay and
+additional \code{ChromatinAssay} will be preprocessed sequentially.}
 
 \item{keep_empty}{Whether to keep empty levels in the plot.
 Default is \code{FALSE}.}
@@ -310,6 +316,15 @@ Default is \code{"theme_scop"}.}
 
 \item{theme_args}{Other arguments passed to the \code{theme_use}.
 Default is \code{list()}.}
+
+\item{grid_major}{Whether to show major panel grid lines.
+Default is \code{TRUE}.}
+
+\item{grid_major_colour}{Color of major panel grid lines.}
+
+\item{grid_major_linetype}{Linetype of major panel grid lines.}
+
+\item{grid_major_linewidth}{Line width of major panel grid lines.}
 
 \item{combine}{Combine plots into a single \code{patchwork} object.
 If \code{FALSE}, return a list of ggplot objects.}
