@@ -60,19 +60,20 @@
 #'   lineages_trim = c(0.05, 0.95)
 #' )
 RunSlingshot <- function(
-    srt,
-    group.by,
-    reduction = NULL,
-    dims = NULL,
-    start = NULL,
-    end = NULL,
-    prefix = NULL,
-    reverse = FALSE,
-    align_start = FALSE,
-    show_plot = TRUE,
-    lineage_palette = "Dark2",
-    seed = 11,
-    ...) {
+  srt,
+  group.by,
+  reduction = NULL,
+  dims = NULL,
+  start = NULL,
+  end = NULL,
+  prefix = NULL,
+  reverse = FALSE,
+  align_start = FALSE,
+  show_plot = TRUE,
+  lineage_palette = "Dark2",
+  seed = 11,
+  ...
+) {
   check_r("slingshot", verbose = FALSE)
   if (missing(group.by)) {
     log_message(

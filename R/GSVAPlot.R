@@ -439,7 +439,9 @@ GSVAPlot <- function(
         as.character(enrichment[["geneID"]]),
         function(x) {
           x <- trimws(x)
-          if (!nzchar(x)) return(0L)
+          if (!nzchar(x)) {
+            return(0L)
+          }
           length(unique(strsplit(x, "/", fixed = TRUE)[[1]]))
         },
         FUN.VALUE = integer(1)
@@ -526,50 +528,51 @@ GSVAPlot <- function(
 
     return(
       EnrichmentPlot(
-      srt = NULL,
-      res = list(enrichment = enrichment),
-      db = gsva_db,
-      plot_type = plot_type,
-      split_by = split_by,
-      color_by = color_by,
-      group_use = group_use,
-      id_use = id_use,
-      pvalueCutoff = pvalueCutoff %||% Inf,
-      padjustCutoff = padjustCutoff %||% Inf,
-      topTerm = topTerm,
-      topWord = topWord,
-      word_type = word_type,
-      word_size = word_size,
-      words_excluded = words_excluded,
-      character_width = character_width,
-      lineheight = lineheight,
-      palette = heatmap_palette,
-      palcolor = heatmap_palcolor,
-      network_layout = network_layout,
-      network_labelsize = network_labelsize,
-      network_blendmode = network_blendmode,
-      network_layoutadjust = network_layoutadjust,
-      network_adjscale = network_adjscale,
-      network_adjiter = network_adjiter,
-      enrichmap_layout = enrichmap_layout,
-      enrichmap_cluster = enrichmap_cluster,
-      enrichmap_label = enrichmap_label,
-      enrichmap_labelsize = enrichmap_labelsize,
-      enrlichmap_nlabel = enrlichmap_nlabel,
-      enrichmap_show_keyword = enrichmap_show_keyword,
-      enrichmap_mark = enrichmap_mark,
-      enrichmap_expand = enrichmap_expand,
-      aspect.ratio = aspect.ratio,
-      legend.position = legend.position,
-      legend.direction = legend.direction,
-      theme_use = theme_use,
-      theme_args = theme_args,
-      combine = combine,
-      nrow = nrow,
-      ncol = ncol,
-      byrow = byrow,
-      seed = seed
-    ))
+        srt = NULL,
+        res = list(enrichment = enrichment),
+        db = gsva_db,
+        plot_type = plot_type,
+        split_by = split_by,
+        color_by = color_by,
+        group_use = group_use,
+        id_use = id_use,
+        pvalueCutoff = pvalueCutoff %||% Inf,
+        padjustCutoff = padjustCutoff %||% Inf,
+        topTerm = topTerm,
+        topWord = topWord,
+        word_type = word_type,
+        word_size = word_size,
+        words_excluded = words_excluded,
+        character_width = character_width,
+        lineheight = lineheight,
+        palette = heatmap_palette,
+        palcolor = heatmap_palcolor,
+        network_layout = network_layout,
+        network_labelsize = network_labelsize,
+        network_blendmode = network_blendmode,
+        network_layoutadjust = network_layoutadjust,
+        network_adjscale = network_adjscale,
+        network_adjiter = network_adjiter,
+        enrichmap_layout = enrichmap_layout,
+        enrichmap_cluster = enrichmap_cluster,
+        enrichmap_label = enrichmap_label,
+        enrichmap_labelsize = enrichmap_labelsize,
+        enrlichmap_nlabel = enrlichmap_nlabel,
+        enrichmap_show_keyword = enrichmap_show_keyword,
+        enrichmap_mark = enrichmap_mark,
+        enrichmap_expand = enrichmap_expand,
+        aspect.ratio = aspect.ratio,
+        legend.position = legend.position,
+        legend.direction = legend.direction,
+        theme_use = theme_use,
+        theme_args = theme_args,
+        combine = combine,
+        nrow = nrow,
+        ncol = ncol,
+        byrow = byrow,
+        seed = seed
+      )
+    )
   }
 
   if (plot_type == "heatmap") {

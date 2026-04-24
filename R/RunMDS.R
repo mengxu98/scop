@@ -41,19 +41,20 @@ RunMDS <- function(object, ...) {
 #' @method RunMDS Seurat
 #' @export
 RunMDS.Seurat <- function(
-    object,
-    assay = NULL,
-    layer = "data",
-    features = NULL,
-    nmds = 50,
-    dist.method = "euclidean",
-    mds.method = "cmdscale",
-    rev.mds = FALSE,
-    reduction.name = "mds",
-    reduction.key = "MDS_",
-    verbose = TRUE,
-    seed.use = 11,
-    ...) {
+  object,
+  assay = NULL,
+  layer = "data",
+  features = NULL,
+  nmds = 50,
+  dist.method = "euclidean",
+  mds.method = "cmdscale",
+  rev.mds = FALSE,
+  reduction.name = "mds",
+  reduction.key = "MDS_",
+  verbose = TRUE,
+  seed.use = 11,
+  ...
+) {
   features <- features %||% SeuratObject::VariableFeatures(object = object)
   assay <- assay %||% SeuratObject::DefaultAssay(object = object)
   assay_data <- Seurat::GetAssay(
@@ -83,18 +84,19 @@ RunMDS.Seurat <- function(
 #' @method RunMDS Assay
 #' @export
 RunMDS.Assay <- function(
-    object,
-    assay = NULL,
-    layer = "data",
-    features = NULL,
-    nmds = 50,
-    dist.method = "euclidean",
-    mds.method = "cmdscale",
-    rev.mds = FALSE,
-    reduction.key = "MDS_",
-    verbose = TRUE,
-    seed.use = 11,
-    ...) {
+  object,
+  assay = NULL,
+  layer = "data",
+  features = NULL,
+  nmds = 50,
+  dist.method = "euclidean",
+  mds.method = "cmdscale",
+  rev.mds = FALSE,
+  reduction.key = "MDS_",
+  verbose = TRUE,
+  seed.use = 11,
+  ...
+) {
   features <- features %||% SeuratObject::VariableFeatures(object = object)
   data_use <- GetAssayData5(
     object = object,
@@ -127,18 +129,19 @@ RunMDS.Assay <- function(
 #' @method RunMDS Assay5
 #' @export
 RunMDS.Assay5 <- function(
-    object,
-    assay = NULL,
-    layer = "data",
-    features = NULL,
-    nmds = 50,
-    dist.method = "euclidean",
-    mds.method = "cmdscale",
-    rev.mds = FALSE,
-    reduction.key = "MDS_",
-    verbose = TRUE,
-    seed.use = 11,
-    ...) {
+  object,
+  assay = NULL,
+  layer = "data",
+  features = NULL,
+  nmds = 50,
+  dist.method = "euclidean",
+  mds.method = "cmdscale",
+  rev.mds = FALSE,
+  reduction.key = "MDS_",
+  verbose = TRUE,
+  seed.use = 11,
+  ...
+) {
   features <- features %||% SeuratObject::VariableFeatures(object = object)
   data_use <- GetAssayData5(
     object = object,
@@ -171,17 +174,18 @@ RunMDS.Assay5 <- function(
 #' @method RunMDS default
 #' @export
 RunMDS.default <- function(
-    object,
-    assay = NULL,
-    layer = "data",
-    nmds = 50,
-    dist.method = "euclidean",
-    mds.method = "cmdscale",
-    rev.mds = FALSE,
-    reduction.key = "MDS_",
-    verbose = TRUE,
-    seed.use = 11,
-    ...) {
+  object,
+  assay = NULL,
+  layer = "data",
+  nmds = 50,
+  dist.method = "euclidean",
+  mds.method = "cmdscale",
+  rev.mds = FALSE,
+  reduction.key = "MDS_",
+  verbose = TRUE,
+  seed.use = 11,
+  ...
+) {
   if (!is.null(seed.use)) {
     set.seed(seed = seed.use)
   }

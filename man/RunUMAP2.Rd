@@ -84,7 +84,9 @@ This can be a Seurat object, a matrix-like object, a Neighbor object, or a Graph
 \item{graph}{The name of the Graph object to be used. Default is \code{NULL}.}
 
 \item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.}
+If \code{NULL}, the default assay of the Seurat object will be used.
+When the object also contains \code{ChromatinAssay}, the default assay and
+additional \code{ChromatinAssay} will be preprocessed sequentially.}
 
 \item{layer}{Which layer to use.
 Default is \code{data}.}

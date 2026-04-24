@@ -76,7 +76,9 @@ RunMDS(object, ...)
 \item{...}{Additional arguments to be passed to \link[stats:cmdscale]{stats::cmdscale}, \link[MASS:isoMDS]{MASS::isoMDS} or \link[MASS:sammon]{MASS::sammon}.}
 
 \item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.}
+If \code{NULL}, the default assay of the Seurat object will be used.
+When the object also contains \code{ChromatinAssay}, the default assay and
+additional \code{ChromatinAssay} will be preprocessed sequentially.}
 
 \item{layer}{Which layer to use.
 Default is \code{data}.}
