@@ -10,6 +10,8 @@
 #' Default is `"Standard"`.
 #' @param assay Which assay to use.
 #' If `NULL`, the default assay of the Seurat object will be used.
+#' When the object also contains `ChromatinAssay`, the default assay and
+#' additional `ChromatinAssay` will be preprocessed sequentially.
 #' @param do_normalization Whether to perform normalization.
 #' If `NULL`, normalization will be performed if the specified assay does not have scaled data.
 #' @param normalization_method The method to use for normalization.
@@ -173,7 +175,85 @@ standard_scop <- function(
     )
   }
 
+  assays_to_run <- standard_scop_resolve_assays(
+    srt = srt,
+    assay = assay
+  )
+  if (length(assays_to_run) > 1) {
+    assay_default <- SeuratObject::DefaultAssay(srt)
+    log_message(
+      "Auto preprocess assays: {.val {assays_to_run}}",
+      verbose = verbose
+    )
+    for (i in seq_along(assays_to_run)) {
+      assay_i <- assays_to_run[[i]]
+      prefix_i <- standard_scop_resolve_prefix(
+        srt = srt,
+        assay = assay_i,
+        prefix = prefix,
+        multi_assay = TRUE,
+        primary_assay = assays_to_run[[1]]
+      )
+      srt <- standard_scop(
+        srt = srt,
+        prefix = prefix_i,
+        assay = assay_i,
+        do_normalization = do_normalization,
+        normalization_method = normalization_method,
+        do_HVF_finding = do_HVF_finding,
+        HVF_method = HVF_method,
+        nHVF = nHVF,
+        HVF = HVF,
+        do_scaling = do_scaling,
+        vars_to_regress = vars_to_regress,
+        regression_model = regression_model,
+        linear_reduction = linear_reduction,
+        linear_reduction_dims = linear_reduction_dims,
+        linear_reduction_dims_use = linear_reduction_dims_use,
+        linear_reduction_params = linear_reduction_params,
+        force_linear_reduction = force_linear_reduction,
+        nonlinear_reduction = nonlinear_reduction,
+        nonlinear_reduction_dims = nonlinear_reduction_dims,
+        nonlinear_reduction_params = nonlinear_reduction_params,
+        force_nonlinear_reduction = force_nonlinear_reduction,
+        neighbor_metric = neighbor_metric,
+        neighbor_k = neighbor_k,
+        cluster_algorithm = cluster_algorithm,
+        cluster_resolution = cluster_resolution,
+        verbose = verbose,
+        seed = seed
+      )
+    }
+    SeuratObject::DefaultAssay(srt) <- assay_default
+    return(srt)
+  }
+  assay <- assays_to_run[[1]]
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
+  is_atac_assay <- inherits(srt[[assay]], "ChromatinAssay")
+
+  if (is_atac_assay) {
+    atac_args <- atac_defaults(
+      prefix = prefix,
+      do_normalization = do_normalization,
+      normalization_method = normalization_method,
+      do_HVF_finding = do_HVF_finding,
+      nHVF = nHVF,
+      do_scaling = do_scaling,
+      linear_reduction = linear_reduction,
+      linear_reduction_dims_use = linear_reduction_dims_use,
+      neighbor_metric = neighbor_metric
+    )
+    prefix <- atac_args$prefix
+    do_normalization <- atac_args$do_normalization
+    normalization_method <- atac_args$normalization_method
+    do_HVF_finding <- atac_args$do_HVF_finding
+    nHVF <- atac_args$nHVF
+    do_scaling <- atac_args$do_scaling
+    linear_reduction <- atac_args$linear_reduction
+    linear_reduction_dims_use <- atac_args$linear_reduction_dims_use
+    neighbor_metric <- atac_args$neighbor_metric
+  }
+
   linear_reductions <- c(
     "pca",
     "svd",
@@ -223,7 +303,7 @@ standard_scop <- function(
     )
   }
   if (cluster_algorithm == "leiden") {
-    PrepareEnv()
+    PrepareEnv(modules = "scanpy")
     check_python("leidenalg")
   }
   cluster_algorithm_index <- switch(
@@ -434,6 +514,13 @@ standard_scop <- function(
   SeuratObject::DefaultAssay(srt) <- assay
   SeuratObject::VariableFeatures(srt) <- srt@misc[["Standard_HVF"]] <- HVF
 
+  if (is_atac_assay) {
+    srt <- standardize_atac(
+      srt = srt,
+      prefix = prefix
+    )
+  }
+
   log_message(
     "Standard processing workflow completed",
     message_type = "success",
@@ -442,4 +529,121 @@ standard_scop <- function(
   )
 
   return(srt)
+}
+
+standard_scop_resolve_assays <- function(srt, assay = NULL) {
+  assays_available <- SeuratObject::Assays(srt)
+  if (is.null(assay)) {
+    assay_default <- SeuratObject::DefaultAssay(srt)
+    chrom_assays <- assays_available[vapply(
+      assays_available,
+      function(x) inherits(srt[[x]], "ChromatinAssay"),
+      logical(1)
+    )]
+    return(unique(c(assay_default, setdiff(chrom_assays, assay_default))))
+  }
+  assay <- unique(assay)
+  if (any(!assay %in% assays_available)) {
+    log_message(
+      "{.arg assay} must be present in {.cls Seurat}: {.val {setdiff(assay, assays_available)}}",
+      message_type = "error"
+    )
+  }
+  assay
+}
+
+standard_scop_assay_prefix <- function(srt, assay) {
+  if (inherits(srt[[assay]], "ChromatinAssay")) {
+    if (identical(tolower(assay), "peaks")) {
+      return("ATAC")
+    }
+    return(assay)
+  }
+  assay
+}
+
+standard_scop_resolve_prefix <- function(
+  srt,
+  assay,
+  prefix = "Standard",
+  multi_assay = FALSE,
+  primary_assay = NULL
+) {
+  if (!multi_assay) {
+    return(prefix)
+  }
+  if (identical(prefix, "Standard")) {
+    return(standard_scop_assay_prefix(srt = srt, assay = assay))
+  }
+  if (!is.null(primary_assay) && identical(assay, primary_assay)) {
+    return(prefix)
+  }
+  standard_scop_assay_prefix(srt = srt, assay = assay)
+}
+
+atac_defaults <- function(
+  prefix,
+  do_normalization,
+  normalization_method,
+  do_HVF_finding,
+  nHVF,
+  do_scaling,
+  linear_reduction,
+  linear_reduction_dims_use,
+  neighbor_metric
+) {
+  list(
+    prefix = if (identical(prefix, "Standard")) "ATAC" else prefix,
+    do_normalization = if (is.null(do_normalization)) TRUE else do_normalization,
+    normalization_method = if (identical(normalization_method, "LogNormalize")) {
+      "TFIDF"
+    } else {
+      normalization_method
+    },
+    do_HVF_finding = if (is.null(do_HVF_finding)) TRUE else do_HVF_finding,
+    nHVF = if (identical(nHVF, 2000)) 20000 else nHVF,
+    do_scaling = if (isTRUE(do_scaling)) FALSE else do_scaling,
+    linear_reduction = if (identical(linear_reduction, "pca")) "svd" else linear_reduction,
+    linear_reduction_dims_use = if (is.null(linear_reduction_dims_use)) 2:30 else linear_reduction_dims_use,
+    neighbor_metric = if (identical(neighbor_metric, "euclidean")) "cosine" else neighbor_metric
+  )
+}
+
+standardize_atac <- function(srt, prefix = "ATAC") {
+  if (!inherits(srt, "Seurat")) {
+    return(srt)
+  }
+  assay <- SeuratObject::DefaultAssay(srt)
+  if (!inherits(srt[[assay]], "ChromatinAssay")) {
+    return(srt)
+  }
+
+  prefix <- prefix %||% ""
+  svd_name <- paste0(prefix, "svd")
+  lsi_name <- paste0(prefix, "lsi")
+  if (svd_name %in% names(srt@reductions) && !lsi_name %in% names(srt@reductions)) {
+    reduc <- srt@reductions[[svd_name]]
+    SeuratObject::Key(reduc) <- paste0(lsi_name, "_")
+    srt@reductions[[lsi_name]] <- reduc
+  }
+
+  svd_cluster <- paste0(prefix, "svdclusters")
+  lsi_cluster <- paste0(prefix, "lsiclusters")
+  if (svd_cluster %in% colnames(srt@meta.data) && !lsi_cluster %in% colnames(srt@meta.data)) {
+    srt[[lsi_cluster]] <- srt[[svd_cluster]]
+  }
+  prefix_cluster <- paste0(prefix, "clusters")
+  if (prefix_cluster %in% colnames(srt@meta.data) && !lsi_cluster %in% colnames(srt@meta.data)) {
+    srt[[lsi_cluster]] <- srt[[prefix_cluster]]
+  }
+
+  default_reduction <- srt@misc[["Default_reduction"]] %||% NULL
+  if (is.character(default_reduction) && length(default_reduction) == 1) {
+    default_reduction <- sub(paste0("^", prefix, "svd"), paste0(prefix, "lsi"), default_reduction)
+    srt@misc[["Default_reduction"]] <- default_reduction
+  }
+
+  srt@misc[["ATAC_default_linear_reduction"]] <- lsi_name
+  srt@misc[["ATAC_default_cluster_col"]] <- if (lsi_cluster %in% colnames(srt@meta.data)) lsi_cluster else NULL
+  srt
 }

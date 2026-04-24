@@ -9,6 +9,7 @@ RunDoubletCalling(
   assay = "RNA",
   db_rate = ncol(srt)/1000 * 0.01,
   db_method = "scDblFinder",
+  data_type = NULL,
   ...
 )
 }
@@ -24,6 +25,10 @@ Default is calculated as \code{ncol(srt) / 1000 * 0.01}.}
 \item{db_method}{Method used for doublet-calling.
 Can be one of \code{"scDblFinder"}, \code{"Scrublet"}, \code{"DoubletDetection"},
 \code{"scds_cxds"}, \code{"scds_bcds"}, \code{"scds_hybrid"}.}
+
+\item{data_type}{Optional precomputed result from \code{\link[=CheckDataType]{CheckDataType()}} for the
+input assay. Primarily used internally to avoid repeated scans of the same
+count matrix across nested QC calls.}
 
 \item{...}{Additional arguments to be passed to the corresponding doublet-calling method.}
 }

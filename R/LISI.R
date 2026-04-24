@@ -205,6 +205,7 @@ RunLISI <- function(
 #' @title Plot LISI scores
 #'
 #' @description
+#' Backward-compatible wrapper around [BenchmarkPlot()] for LISI scores.
 #' Visualize LISI scores on a dimensional reduction and compare methods with a
 #' summary boxplot.
 #'
@@ -251,212 +252,27 @@ LISIPlot <- function(
   verbose = TRUE,
   ...
 ) {
-  clean_lisi_method_label <- function(features) {
-    clean_method_label <- function(x) {
-      x <- gsub("_+", "_", x)
-      x <- gsub("^_+|_+$", "", x)
-      raw_index <- grepl(
-        "pca(UMAP2D|TSNE2D|DM2D|PHATE2D|PACMAP2D|TRIMAP2D|LARGEVIS2D|FR2D)?$",
-        x,
-        ignore.case = FALSE
-      )
-      x <- sub("UMAP2D$", "", x, ignore.case = TRUE)
-      x <- sub("TSNE2D$", "", x, ignore.case = TRUE)
-      x <- sub("DM2D$", "", x, ignore.case = TRUE)
-      x <- sub("PHATE2D$", "", x, ignore.case = TRUE)
-      x <- sub("PACMAP2D$", "", x, ignore.case = TRUE)
-      x <- sub("TRIMAP2D$", "", x, ignore.case = TRUE)
-      x <- sub("LARGEVIS2D$", "", x, ignore.case = TRUE)
-      x <- sub("FR2D$", "", x, ignore.case = TRUE)
-      x <- sub("(?<![A-Za-z])pca$", "", x, perl = TRUE)
-      x <- sub("(?<![A-Za-z])PCA$", "", x, perl = TRUE)
-      x <- sub("lsi$", "", x, ignore.case = FALSE)
-      x <- sub("LSI$", "", x, ignore.case = FALSE)
-      x <- gsub("^_+|_+$", "", x)
-      x[raw_index | grepl("^pca$", x, ignore.case = TRUE)] <- "Raw"
-      x[nchar(x) == 0] <- NA_character_
-      x
-    }
-
-    common_suffix <- function(x) {
-      if (length(x) == 0) {
-        return("")
-      }
-      rev_split <- lapply(x, function(val) {
-        strsplit(
-          paste(rev(strsplit(val, "")[[1]]), collapse = ""),
-          ""
-        )[[1]]
-      })
-      min_len <- min(vapply(rev_split, length, integer(1)))
-      chars <- character(0)
-      for (i in seq_len(min_len)) {
-        current <- vapply(rev_split, `[`, character(1), i)
-        if (length(unique(current)) != 1) {
-          break
-        }
-        chars <- c(chars, current[1])
-      }
-      if (length(chars) == 0) {
-        return("")
-      }
-      paste(rev(chars), collapse = "")
-    }
-
-    feature_suffix <- common_suffix(features)
-    feature_labels <- features
-    if (nzchar(feature_suffix)) {
-      feature_labels <- sub(
-        paste0(gsub("([][{}()+*^$|\\\\?.])", "\\\\\\1", feature_suffix), "$"),
-        "",
-        features
-      )
-    }
-    feature_labels <- gsub("_+$", "", feature_labels)
-    feature_labels <- clean_method_label(feature_labels)
-    feature_labels[is.na(feature_labels)] <- features[is.na(feature_labels)]
-    feature_labels[!nzchar(feature_labels)] <- features[!nzchar(feature_labels)]
-    stats::setNames(feature_labels, features)
-  }
-
-  if (!inherits(srt, "Seurat")) {
-    log_message(
-      "{.arg srt} must be a {.cls Seurat}",
-      message_type = "error"
-    )
-  }
-  tool_res <- NULL
-  if (!is.null(tool_name)) {
-    if (!tool_name %in% names(srt@tools)) {
-      log_message(
-        "Tool entry {.val {tool_name}} not found in {.cls Seurat}",
-        message_type = "error"
-      )
-    }
-    tool_res <- srt@tools[[tool_name]]
-  }
-
-  features_missing <- is.null(features)
-  if (features_missing) {
-    if (!is.null(tool_res) && "colnames" %in% names(tool_res)) {
-      features <- tool_res[["colnames"]]
-    } else {
-      features <- grep("_LISI$", colnames(srt@meta.data), value = TRUE)
-    }
-  }
-  features <- unique(features)
-  if (length(features) == 0) {
-    log_message(
-      "No LISI score columns found. Please run {.fn RunLISI} first or provide {.arg features}.",
-      message_type = "error"
-    )
-  }
-  if (!all(features %in% colnames(srt@meta.data))) {
-    missing_cols <- setdiff(features, colnames(srt@meta.data))
-    log_message(
-      "The following LISI columns are missing: {.val {missing_cols}}",
-      message_type = "error"
-    )
-  }
-
-  tool_reduction <- tool_res[["reduction"]] %||% tool_res[["reductions"]] %||% NULL
-  if (length(tool_reduction) > 1) {
-    tool_reduction <- NULL
-  }
-  reduction <- reduction %||% tool_reduction %||% DefaultReduction(srt)
-  if (!reduction %in% SeuratObject::Reductions(srt)) {
-    log_message(
-      "Reduction {.val {reduction}} not found in {.cls Seurat}",
-      message_type = "error"
-    )
-  }
-
-  if (
-    isTRUE(plot_boxplot) &&
-      length(features) < 2
-  ) {
-    plot_boxplot <- FALSE
-  }
-
-  if (
-    isTRUE(plot_boxplot) &&
-      isTRUE(features_missing) &&
-      !is.null(tool_res) &&
-      length(tool_res[["label_colnames"]] %||% character()) > 1
-  ) {
-    log_message(
-      "Skip default LISI boxplot because the selected tool contains multiple label types. Please provide comparable {.arg features}, e.g. batch LISI from multiple reductions.",
-      message_type = "warning",
-      verbose = verbose
-    )
-    plot_boxplot <- FALSE
-  }
-
-  feature_title_map <- clean_lisi_method_label(features)
-  feature_mean_df <- data.frame(
-    feature = features,
-    title = unname(feature_title_map[features]),
-    mean_lisi = vapply(
-      features,
-      function(feature) mean(srt@meta.data[[feature]], na.rm = TRUE),
-      numeric(1)
-    ),
-    stringsAsFactors = FALSE
-  )
-  feature_mean_df <- feature_mean_df[order(feature_mean_df$mean_lisi, decreasing = FALSE), , drop = FALSE]
-  feature_plot_features <- feature_mean_df$feature[!duplicated(feature_mean_df$title)]
-
-  plots <- list()
-  for (feature in feature_plot_features) {
-    plots[[feature]] <- FeatureDimPlot(
-      srt,
-      features = feature,
-      reduction = reduction,
-      pt.size = pt.size,
-      pt.alpha = pt.alpha,
-      combine = FALSE,
-      title = feature_title_map[[feature]],
-      subtitle = NULL,
-      show_stat = FALSE,
-      ...
-    )[[1]] +
-      ggplot2::labs(title = feature_title_map[[feature]], subtitle = NULL) +
-      ggplot2::theme(
-        plot.subtitle = ggplot2::element_blank(),
-        strip.text = ggplot2::element_blank(),
-        strip.background = ggplot2::element_blank()
-      )
-  }
-
-  if (isTRUE(plot_boxplot)) {
-    plots[["LISI_boxplot"]] <- lisi_feature_boxplot(
-      srt = srt,
-      features = features,
-      palette = palette,
-      palcolor = palcolor,
-      boxplot_jitter = boxplot_jitter,
-      theme_use = theme_use,
-      theme_args = theme_args,
-      verbose = verbose
-    )
-  }
-
-  if (!isTRUE(combine)) {
-    return(plots)
-  }
-
-  if (length(plots) == 1) {
-    return(plots[[1]])
-  }
-
-  wrap_args <- list(
-    plotlist = plots,
+  BenchmarkPlot(
+    srt = srt,
+    features = features,
+    tool_name = tool_name,
+    reduction = reduction,
+    plot_type = "auto",
+    plot_boxplot = plot_boxplot,
+    boxplot_jitter = boxplot_jitter,
+    combine = combine,
     nrow = nrow,
     ncol = ncol,
-    byrow = byrow
+    byrow = byrow,
+    pt.size = pt.size,
+    pt.alpha = pt.alpha,
+    palette = palette,
+    palcolor = palcolor,
+    theme_use = theme_use,
+    theme_args = theme_args,
+    verbose = verbose,
+    ...
   )
-
-  do.call(patchwork::wrap_plots, wrap_args)
 }
 
 lisi_feature_boxplot <- function(

@@ -153,7 +153,9 @@ Default is \code{FALSE}.}
 Default is \code{"counts"}.}
 
 \item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.}
+If \code{NULL}, the default assay of the Seurat object will be used.
+When the object also contains \code{ChromatinAssay}, the default assay and
+additional \code{ChromatinAssay} will be preprocessed sequentially.}
 
 \item{exp_method}{A character vector specifying the method for calculating expression values.
 Options are \code{"zscore"}, \code{"raw"}, \code{"fc"}, \code{"log2fc"}, or \code{"log1p"}.

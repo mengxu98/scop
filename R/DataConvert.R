@@ -11,6 +11,14 @@
 #' Default is `c("spliced", "unspliced")`.
 #' @param layer_y Layer names for the assay_y in the Seurat object.
 #' Default is `"counts"`.
+#' @param reductions Character vector specifying which Seurat reductions to
+#' convert into `obsm`. Default is `NULL`, which converts all available
+#' reductions.
+#' @param graphs Character vector specifying which Seurat graphs to convert into
+#' `obsp`. Default is `NULL`, which converts all available graphs.
+#' @param neighbors Character vector specifying which Seurat neighbor objects to
+#' convert into `obsp`. Default is `NULL`, which converts all available neighbor
+#' objects.
 #' @param convert_tools Whether to convert the tool-specific data.
 #' Default is `FALSE`.
 #' @param convert_misc Whether to convert the miscellaneous data.
@@ -46,12 +54,28 @@ srt_to_adata <- function(
   layer_x = "counts",
   assay_y = c("spliced", "unspliced"),
   layer_y = "counts",
+  reductions = NULL,
+  graphs = NULL,
+  neighbors = NULL,
   convert_tools = FALSE,
   convert_misc = FALSE,
   verbose = TRUE
 ) {
-  PrepareEnv()
-  check_python(c("scanpy", "numpy"))
+  if (!isTRUE(getOption("scop_skip_python_prepare", FALSE))) {
+    old_log_verbose <- getOption("log_message.verbose", TRUE)
+    if (!isTRUE(verbose)) {
+      options(log_message.verbose = FALSE)
+      on.exit(
+        options(log_message.verbose = old_log_verbose),
+        add = TRUE
+      )
+    }
+    PrepareEnv(modules = "scanpy")
+    check_python(
+      c("anndata", "numpy"),
+      verbose = FALSE
+    )
+  }
 
   if (!inherits(srt, "Seurat")) {
     log_message(
@@ -77,7 +101,7 @@ srt_to_adata <- function(
     )
   }
 
-  sc <- reticulate::import("scanpy", convert = FALSE)
+  ad <- reticulate::import("anndata", convert = FALSE)
   np <- reticulate::import("numpy", convert = FALSE)
 
   obs <- srt@meta.data
@@ -121,7 +145,7 @@ srt_to_adata <- function(
       layer = layer_x
     )[features, , drop = FALSE]
   )
-  adata <- sc$AnnData(
+  adata <- ad$AnnData(
     X = reticulate::np_array(X, dtype = np$float32),
     obs = obs,
     var = cbind(
@@ -166,19 +190,25 @@ srt_to_adata <- function(
     adata$layers <- layer_list
   }
 
+  reduction_names <- reductions %||% names(srt@reductions)
+  reduction_names <- intersect(reduction_names, names(srt@reductions))
   reduction_list <- list()
-  for (reduction in names(srt@reductions)) {
+  for (reduction in reduction_names) {
     reduction_list[[reduction]] <- srt[[reduction]]@cell.embeddings
   }
   if (length(reduction_list) > 0) {
     adata$obsm <- reduction_list
   }
 
+  graph_names <- graphs %||% names(srt@graphs)
+  graph_names <- intersect(graph_names, names(srt@graphs))
+  neighbor_names <- neighbors %||% names(srt@neighbors)
+  neighbor_names <- intersect(neighbor_names, names(srt@neighbors))
   obsp_list <- list()
-  for (graph in names(srt@graphs)) {
+  for (graph in graph_names) {
     obsp_list[[graph]] <- srt[[graph]]
   }
-  for (neighbor in names(srt@neighbors)) {
+  for (neighbor in neighbor_names) {
     obsp_list[[neighbor]] <- srt[[neighbor]]
   }
   if (length(obsp_list) > 0) {
@@ -261,7 +291,17 @@ adata_to_srt <- function(
   adata,
   verbose = TRUE
 ) {
-  PrepareEnv()
+  if (!isTRUE(getOption("scop_skip_python_prepare", FALSE))) {
+    old_log_verbose <- getOption("log_message.verbose", TRUE)
+    if (!isTRUE(verbose)) {
+      options(log_message.verbose = FALSE)
+      on.exit(
+        options(log_message.verbose = old_log_verbose),
+        add = TRUE
+      )
+    }
+    PrepareEnv(modules = "scanpy")
+  }
   data_types <- c(
     "python.builtin.object", "AnnDataR6", "InMemoryAnnData", "AbstractAnnData"
   )
@@ -528,7 +568,7 @@ adata_to_srt <- function(
 #'
 #' @md
 #' @inheritParams adata_to_srt
-#' @param path Path to an `.h5ad` file (passed to `scanpy.read_h5ad()`).
+#' @param path Path to an `.h5ad` file (passed to `anndata.read_h5ad()`).
 #' @param prepare_for_reticulate If `TRUE` (default), coerces `X` and each layer
 #'   matrix to CSR `float64` in Python (avoids invalid `dgRMatrix` conversion
 #'   via reticulate). Layers that still fail in [adata_to_srt()] are skipped and
@@ -550,11 +590,25 @@ h5ad_to_srt <- function(
   verbose = TRUE,
   prepare_for_reticulate = TRUE
 ) {
-  PrepareEnv()
+  old_log_verbose <- getOption("log_message.verbose", TRUE)
+  if (!isTRUE(verbose)) {
+    options(log_message.verbose = FALSE)
+    on.exit(
+      options(log_message.verbose = old_log_verbose),
+      add = TRUE
+    )
+  }
+  PrepareEnv(modules = "scanpy")
   if (isTRUE(prepare_for_reticulate)) {
-    check_python(c("scanpy", "numpy", "scipy"))
+    check_python(
+      c("anndata", "numpy", "scipy"),
+      verbose = FALSE
+    )
   } else {
-    check_python(c("scanpy", "numpy"))
+    check_python(
+      c("anndata", "numpy"),
+      verbose = FALSE
+    )
   }
 
   path <- normalizePath(path.expand(path), mustWork = TRUE, winslash = "/")
@@ -570,9 +624,9 @@ h5ad_to_srt <- function(
     reticulate::py_run_string(paste0(
       "
 import numpy as np
-import scanpy as sc
+import anndata as ad
 import __main__
-adata = sc.read_h5ad(r\"",
+adata = ad.read_h5ad(r\"",
       path_py,
       "\")
 
@@ -591,10 +645,16 @@ __main__.adata = adata
     main <- reticulate::import("__main__", convert = FALSE)
     adata <- main$adata
   } else {
-    sc <- reticulate::import("scanpy")
-    adata <- sc$read_h5ad(path)
+    ad <- reticulate::import("anndata", convert = FALSE)
+    adata <- ad$read_h5ad(path)
   }
 
+  old_skip_prepare <- getOption("scop_skip_python_prepare", FALSE)
+  options(scop_skip_python_prepare = TRUE)
+  on.exit(
+    options(scop_skip_python_prepare = old_skip_prepare),
+    add = TRUE
+  )
   adata_to_srt(adata, verbose = verbose)
 }
 

@@ -60,7 +60,9 @@ DynamicPlot(
 Default is \code{"counts"}.}
 
 \item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.}
+If \code{NULL}, the default assay of the Seurat object will be used.
+When the object also contains \code{ChromatinAssay}, the default assay and
+additional \code{ChromatinAssay} will be preprocessed sequentially.}
 
 \item{family}{A character specifying the model used to calculate the dynamic features if needed.
 By default, this parameter is set to \code{NULL}, and the appropriate family will be automatically determined.}

@@ -619,15 +619,57 @@ PrepareDB <- function(
             file.remove(paste0(tempdir, "/", gmt_files))
           }
           temp <- tempfile()
+          wiki_source_url <- if (is.null(mirror)) {
+            "https://data.wikipathways.org/current/gmt"
+          } else {
+            mirror
+          }
+          wiki_source_url <- sub("/+$", "", wiki_source_url)
+          wiki_file_url <- NULL
           download(
-            url = "https://wikipathways-data.wmcloud.org/current/gmt",
+            url = wiki_source_url,
             destfile = temp
           )
           lines <- paste0(readLines(temp, warn = FALSE), collapse = " ")
           gmtfiles <- unlist(regmatches(
             lines,
-            m = gregexpr("(?<=>)wikipathways-\\S+\\.gmt\\b", lines, perl = TRUE)
+            m = gregexpr(
+              "wikipathways-[^\"'<>[:space:]]+\\.gmt\\b",
+              lines,
+              perl = TRUE
+            )
           ))
+          gmtfiles <- unique(gmtfiles)
+          if (
+            length(gmtfiles) == 0 &&
+              identical(
+                wiki_source_url,
+                "https://wikipathways-data.wmcloud.org/current/gmt"
+              )
+          ) {
+            wiki_source_url <- "https://data.wikipathways.org/current/gmt"
+            download(
+              url = wiki_source_url,
+              destfile = temp
+            )
+            lines <- paste0(readLines(temp, warn = FALSE), collapse = " ")
+            gmtfiles <- unlist(regmatches(
+              lines,
+              m = gregexpr(
+                "wikipathways-[^\"'<>[:space:]]+\\.gmt\\b",
+                lines,
+                perl = TRUE
+              )
+            ))
+            gmtfiles <- unique(gmtfiles)
+          }
+          if (
+            length(gmtfiles) == 0 &&
+              grepl("\\.gmt([?#].*)?$", wiki_source_url, ignore.case = TRUE)
+          ) {
+            wiki_file_url <- sub("[?#].*$", "", wiki_source_url)
+            gmtfiles <- basename(wiki_file_url)
+          }
           wiki_sp <- sps
           gmtfile <- gmtfiles[grep(wiki_sp, gmtfiles, fixed = TRUE)]
           if (length(gmtfile) == 0) {
@@ -653,12 +695,27 @@ PrepareDB <- function(
               )
             }
           }
-          version <- strsplit(gmtfile, split = "-")[[1]][[2]]
+          if (length(gmtfile) == 0) {
+            log_message(
+              c(
+                "No {.pkg WikiPathway} GMT file is available for {.val {wiki_sp}}",
+                "Check whether {.arg mirror} points to a GMT file or a directory index"
+              ),
+              message_type = "error"
+            )
+          }
+          gmtfile <- gmtfile[[1]]
+          version_parts <- strsplit(gmtfile, split = "-", fixed = TRUE)[[1]]
+          version <- if (length(version_parts) >= 2) {
+            version_parts[[2]]
+          } else {
+            tools::file_path_sans_ext(gmtfile)
+          }
+          if (is.null(wiki_file_url)) {
+            wiki_file_url <- paste0(wiki_source_url, "/", gmtfile)
+          }
           download(
-            url = paste0(
-              "https://wikipathways-data.wmcloud.org/current/gmt/",
-              gmtfile
-            ),
+            url = wiki_file_url,
             destfile = temp
           )
           wiki_gmt <- clusterProfiler::read.gmt(temp)
