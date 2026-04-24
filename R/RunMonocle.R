@@ -93,24 +93,25 @@
 #'   )
 #' }
 RunMonocle2 <- function(
-    srt,
-    assay = NULL,
-    layer = "counts",
-    group.by = NULL,
-    expressionFamily = "negbinomial.size",
-    features = NULL,
-    feature_type = "HVF",
-    disp_filter = "mean_expression >= 0.1 & dispersion_empirical >= 1 * dispersion_fit",
-    max_components = 2,
-    reduction_method = "DDRTree",
-    norm_method = "log",
-    residualModelFormulaStr = NULL,
-    pseudo_expr = 1,
-    root_state = NULL,
-    xlab = NULL,
-    ylab = NULL,
-    seed = 11,
-    verbose = TRUE) {
+  srt,
+  assay = NULL,
+  layer = "counts",
+  group.by = NULL,
+  expressionFamily = "negbinomial.size",
+  features = NULL,
+  feature_type = "HVF",
+  disp_filter = "mean_expression >= 0.1 & dispersion_empirical >= 1 * dispersion_fit",
+  max_components = 2,
+  reduction_method = "DDRTree",
+  norm_method = "log",
+  residualModelFormulaStr = NULL,
+  pseudo_expr = 1,
+  root_state = NULL,
+  xlab = NULL,
+  ylab = NULL,
+  seed = 11,
+  verbose = TRUE
+) {
   log_message("Run {.pkg monocle2}...", verbose = verbose)
   set.seed(seed)
   check_r(
@@ -467,26 +468,27 @@ RunMonocle2 <- function(
 #'   ) + trajectory
 #' }
 RunMonocle3 <- function(
-    srt,
-    group.by = NULL,
-    assay = NULL,
-    layer = "counts",
-    reduction = NULL,
-    clusters = NULL,
-    graph = NULL,
-    partition_qval = 0.05,
-    k = 50,
-    cluster_method = "louvain",
-    num_iter = 2,
-    resolution = NULL,
-    use_partition = NULL,
-    close_loop = TRUE,
-    root_pr_nodes = NULL,
-    root_cells = NULL,
-    xlab = NULL,
-    ylab = NULL,
-    seed = 11,
-    verbose = TRUE) {
+  srt,
+  group.by = NULL,
+  assay = NULL,
+  layer = "counts",
+  reduction = NULL,
+  clusters = NULL,
+  graph = NULL,
+  partition_qval = 0.05,
+  k = 50,
+  cluster_method = "louvain",
+  num_iter = 2,
+  resolution = NULL,
+  use_partition = NULL,
+  close_loop = TRUE,
+  root_pr_nodes = NULL,
+  root_cells = NULL,
+  xlab = NULL,
+  ylab = NULL,
+  seed = 11,
+  verbose = TRUE
+) {
   log_message("Run {.pkg monocle3}...", verbose = verbose)
   set.seed(seed)
   check_r("cole-trapnell-lab/monocle3", verbose = FALSE)

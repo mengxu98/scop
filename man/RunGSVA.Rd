@@ -42,7 +42,9 @@ If specified, the genes and groups will be extracted from the Seurat object auto
 If not specified, the \code{geneID} and \code{geneID_groups} arguments must be provided.}
 
 \item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.}
+If \code{NULL}, the default assay of the Seurat object will be used.
+When the object also contains \code{ChromatinAssay}, the default assay and
+additional \code{ChromatinAssay} will be preprocessed sequentially.}
 
 \item{group.by}{Name of metadata column to group cells by for averaging expression.
 If provided, expression will be averaged within each group before GSVA analysis (cell-type level).

@@ -39,8 +39,9 @@
 #'
 #' @return A ggplot / patchwork object wrapping the ComplexHeatmap grob.
 #' @export
-#' 
+#'
 #' @examples
+#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #'
@@ -178,6 +179,7 @@
 #'   width = 0.6,
 #'   height = 3.5
 #' )
+#' }
 CCCHeatmap <- function(
   srt,
   method = NULL,
@@ -1416,7 +1418,7 @@ ccc_heatmap_full_plot <- function(
       legend.position = legend.position,
       has_title = !is.null(title) || !is.null(subtitle)
     )
-    p <- thisplot::panel_fix_overall(
+    p <- panel_fix_overall(
       g_tree,
       width = overall_size$width,
       height = overall_size$height,
@@ -2036,7 +2038,7 @@ ccc_ligand_target_heatmap <- function(
       legend.position = legend.position,
       has_title = !is.null(title) || !is.null(subtitle)
     )
-    p <- thisplot::panel_fix_overall(
+    p <- panel_fix_overall(
       g_tree,
       width = overall_size$width,
       height = overall_size$height,
@@ -2094,8 +2096,7 @@ ccc_matrix_bar_stats_from_values <- function(values_list, metrics = "sum") {
           if (length(v) == 0L) {
             return(0)
           }
-          switch(
-            metric,
+          switch(metric,
             count = sum(is.finite(v)),
             sum = sum(v, na.rm = TRUE),
             mean = mean(v, na.rm = TRUE),
@@ -2122,8 +2123,7 @@ ccc_matrix_summary_from_values <- function(values_list, metric = "mean") {
         if (length(v) == 0L) {
           return(NA_real_)
         }
-        switch(
-          metric,
+        switch(metric,
           mean = mean(v, na.rm = TRUE),
           max = max(v, na.rm = TRUE),
           sum = sum(v, na.rm = TRUE)
@@ -2690,7 +2690,7 @@ ccc_matrix_heatmap_plot <- function(
       legend.position = legend.position,
       has_title = !is.null(title) || !is.null(subtitle)
     )
-    p <- thisplot::panel_fix_overall(
+    p <- panel_fix_overall(
       g_tree,
       width = overall_size$width,
       height = overall_size$height,
@@ -2736,8 +2736,7 @@ ccc_cellchat_role_matrix <- function(
     outgoing[i, ] <- centr[[i]]$outdeg
     incoming[i, ] <- centr[[i]]$indeg
   }
-  mat <- switch(
-    pattern,
+  mat <- switch(pattern,
     outgoing = outgoing,
     incoming = incoming,
     all = outgoing + incoming
@@ -2799,10 +2798,19 @@ ccc_cellchat_role_heatmap_plot <- function(
   theme_args = list()
 ) {
   add_text_eff <- if (is.null(add_text)) FALSE else isTRUE(add_text)
-  build_role_heatmap <- function(mat, plot_title, plot_subtitle = NULL, symmetric = FALSE) {
+  build_role_heatmap <- function(
+    mat,
+    plot_title,
+    plot_subtitle = NULL,
+    symmetric = FALSE
+  ) {
     ccc_matrix_heatmap_plot(
       mat = mat,
-      value_label = if (isTRUE(symmetric)) "Difference" else "Relative strength",
+      value_label = if (isTRUE(symmetric)) {
+        "Difference"
+      } else {
+        "Relative strength"
+      },
       row_title = "Pathway",
       column_title = "Cell type",
       row_annotation_name = "Pathway",
@@ -2986,13 +2994,19 @@ ccc_cellchat_diff_heatmap_plot <- function(
   )
 }
 
-ccc_cellchat_heatmap_comparison <- function(srt, condition = NULL, comparison = c(1, 2), min_n = 1L) {
+ccc_cellchat_heatmap_comparison <- function(
+  srt,
+  condition = NULL,
+  comparison = c(1, 2),
+  min_n = 1L
+) {
   cmp <- .cc_get_cmp(srt = srt, condition = condition)
   comp_idx <- .cc_resolve_dataset_index(cmp, comparison = comparison)
   if (length(comp_idx) < min_n) {
     log_message(
       paste0(
-        "{.arg comparison} must contain at least ", min_n,
+        "{.arg comparison} must contain at least ",
+        min_n,
         " datasets for CellChat comparison heatmap plotting"
       ),
       message_type = "error"
@@ -3323,8 +3337,7 @@ ccc_build_distribution_annotation <- function(
   ) {
     type <- "box"
   }
-  anno <- switch(
-    type,
+  anno <- switch(type,
     box = ComplexHeatmap::anno_boxplot(
       values_use,
       which = which,
@@ -3424,8 +3437,7 @@ ccc_build_summary_annotation <- function(
   if (is.null(values) || is.null(fill_cols)) {
     return(NULL)
   }
-  anno <- switch(
-    type,
+  anno <- switch(type,
     point = ComplexHeatmap::anno_points(
       values,
       which = which,

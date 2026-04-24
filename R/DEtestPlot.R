@@ -346,11 +346,12 @@ DEtestPlot <- function(
 }
 
 get_de_data <- function(
-    srt,
-    group.by,
-    test.use,
-    DE_threshold,
-    res = NULL) {
+  srt,
+  group.by,
+  test.use,
+  DE_threshold,
+  res = NULL
+) {
   if (!is.null(res)) {
     de_df <- as.data.frame(res)
     if (!"gene" %in% colnames(de_df)) {
@@ -428,22 +429,8 @@ get_de_data <- function(
 }
 
 clip_log2fc_symmetric <- function(df, fc_col = "avg_log2FC") {
-  fc <- df[[fc_col]][is.finite(df[[fc_col]])]
-  if (length(fc) == 0) {
-    return(list(df = df, fc_lim = c(-1, 1)))
-  }
-  x_upper <- stats::quantile(fc, c(0.99, 1))
-  x_lower <- stats::quantile(fc, c(0.01, 0))
-  x_upper <- ifelse(x_upper[1] > 0, x_upper[1], x_upper[2])
-  x_lower <- ifelse(x_lower[1] < 0, x_lower[1], x_lower[2])
-  if (x_upper > 0 && x_lower < 0) {
-    value_range <- min(abs(c(x_upper, x_lower)), na.rm = TRUE)
-    x_upper <- value_range
-    x_lower <- -value_range
-  }
-  df[df[[fc_col]] > x_upper, fc_col] <- x_upper
-  df[df[[fc_col]] < x_lower, fc_col] <- x_lower
-  list(df = df, fc_lim = c(x_lower, x_upper))
+  res <- scop_clip_symmetric_range(data = df, value_col = fc_col)
+  list(df = res$data, fc_lim = res$limits)
 }
 
 filter_de_markers <- function(de_df, log2FC_cutoff, pvalue_cutoff) {
@@ -892,35 +879,36 @@ collect_volcano_enrichment_annotations <- function(
 #'   group.by = "CellType"
 #' )
 DEtestManhattanPlot <- function(
-    srt,
-    group.by = NULL,
-    test.use = "wilcox",
-    res = NULL,
-    DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
-    group_palette = "Chinese",
-    group_palcolor = NULL,
-    pt.size = 1,
-    pt.alpha = 1,
-    cols.highlight = "black",
-    sizes.highlight = 1,
-    alpha.highlight = 1,
-    stroke.highlight = 0.5,
-    nlabel = 5,
-    features_label = NULL,
-    label.fg = "black",
-    label.bg = "white",
-    label.bg.r = 0.1,
-    label.size = 4,
-    palette = "RdBu",
-    palcolor = NULL,
-    theme_use = "theme_scop",
-    theme_args = list(),
-    manhattan.bg = "white",
-    jitter_width = 0.5,
-    jitter_height = 0.4,
-    aspect.ratio = NULL,
-    xlab = NULL,
-    ylab = NULL) {
+  srt,
+  group.by = NULL,
+  test.use = "wilcox",
+  res = NULL,
+  DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
+  group_palette = "Chinese",
+  group_palcolor = NULL,
+  pt.size = 1,
+  pt.alpha = 1,
+  cols.highlight = "black",
+  sizes.highlight = 1,
+  alpha.highlight = 1,
+  stroke.highlight = 0.5,
+  nlabel = 5,
+  features_label = NULL,
+  label.fg = "black",
+  label.bg = "white",
+  label.bg.r = 0.1,
+  label.size = 4,
+  palette = "RdBu",
+  palcolor = NULL,
+  theme_use = "theme_scop",
+  theme_args = list(),
+  manhattan.bg = "white",
+  jitter_width = 0.5,
+  jitter_height = 0.4,
+  aspect.ratio = NULL,
+  xlab = NULL,
+  ylab = NULL
+) {
   if (is.null(group.by)) {
     group.by <- "custom"
   }
@@ -1087,34 +1075,35 @@ DEtestManhattanPlot <- function(
 #'   group.by = "CellType"
 #' )
 DEtestRingPlot <- function(
-    srt,
-    group.by = NULL,
-    test.use = "wilcox",
-    res = NULL,
-    DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
-    group_palette = "Chinese",
-    group_palcolor = NULL,
-    pt.size = 1,
-    pt.alpha = 1,
-    cols.highlight = "black",
-    sizes.highlight = 1,
-    alpha.highlight = 1,
-    stroke.highlight = 0.5,
-    nlabel = 5,
-    features_label = NULL,
-    label.fg = "black",
-    label.bg = "white",
-    label.bg.r = 0.1,
-    label.size = 4,
-    palette = "RdBu",
-    palcolor = NULL,
-    theme_use = "theme_scop",
-    theme_args = list(),
-    tile_height = 0.3,
-    tile_gap = 0.1,
-    jitter_width = 0.5,
-    ring_segments = TRUE,
-    seed = 11) {
+  srt,
+  group.by = NULL,
+  test.use = "wilcox",
+  res = NULL,
+  DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
+  group_palette = "Chinese",
+  group_palcolor = NULL,
+  pt.size = 1,
+  pt.alpha = 1,
+  cols.highlight = "black",
+  sizes.highlight = 1,
+  alpha.highlight = 1,
+  stroke.highlight = 0.5,
+  nlabel = 5,
+  features_label = NULL,
+  label.fg = "black",
+  label.bg = "white",
+  label.bg.r = 0.1,
+  label.size = 4,
+  palette = "RdBu",
+  palcolor = NULL,
+  theme_use = "theme_scop",
+  theme_args = list(),
+  tile_height = 0.3,
+  tile_gap = 0.1,
+  jitter_width = 0.5,
+  ring_segments = TRUE,
+  seed = 11
+) {
   check_r("geomtextpath", verbose = FALSE)
   if (is.null(group.by)) {
     group.by <- "custom"

@@ -42,21 +42,22 @@
 #'   plots$Boxplot
 #' }
 CytoTRACEPlot <- function(
-    srt,
-    reduction = NULL,
-    group.by = NULL,
-    combine = TRUE,
-    nrow = NULL,
-    ncol = NULL,
-    byrow = TRUE,
-    pt.size = NULL,
-    pt.alpha = 1,
-    palette = "Chinese",
-    palcolor = NULL,
-    theme_use = "theme_scop",
-    theme_args = list(),
-    verbose = TRUE,
-    ...) {
+  srt,
+  reduction = NULL,
+  group.by = NULL,
+  combine = TRUE,
+  nrow = NULL,
+  ncol = NULL,
+  byrow = TRUE,
+  pt.size = NULL,
+  pt.alpha = 1,
+  palette = "Chinese",
+  palcolor = NULL,
+  theme_use = "theme_scop",
+  theme_args = list(),
+  verbose = TRUE,
+  ...
+) {
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat}",
@@ -191,17 +192,18 @@ CytoTRACEPlot <- function(
 }
 
 potency_boxplot <- function(
-    srt,
-    group.by,
-    pt.alpha = 1,
-    theme_use = "theme_scop",
-    theme_args = list(
-      axis.text.x = ggplot2::element_text(
-        angle = 45, hjust = 1, vjust = 1
-      ),
-      aspect.ratio = 1
+  srt,
+  group.by,
+  pt.alpha = 1,
+  theme_use = "theme_scop",
+  theme_args = list(
+    axis.text.x = ggplot2::element_text(
+      angle = 45, hjust = 1, vjust = 1
     ),
-    verbose = TRUE) {
+    aspect.ratio = 1
+  ),
+  verbose = TRUE
+) {
   mtd <- srt@meta.data[, c(group.by, "CytoTRACE2_Score"), drop = FALSE]
   colnames(mtd)[1] <- "Phenotype_CT"
 

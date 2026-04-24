@@ -30,4 +30,3 @@ This is a permutation-based statistical test for compositional shift
 as uncertainty estimates for observed log2 fold-differences.
 }
 \seealso{\link{RunProportionTest}}
-

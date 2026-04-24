@@ -79,36 +79,37 @@ RunUMAP2 <- function(object, ...) {
 #' @method RunUMAP2 Seurat
 #' @export
 RunUMAP2.Seurat <- function(
-    object,
-    reduction = "pca",
-    dims = NULL,
-    features = NULL,
-    neighbor = NULL,
-    graph = NULL,
-    assay = NULL,
-    layer = "data",
-    umap.method = "uwot",
-    reduction.model = NULL,
-    n_threads = NULL,
-    return.model = FALSE,
-    n.neighbors = 30L,
-    n.components = 2L,
-    metric = "cosine",
-    n.epochs = 200L,
-    cores = 1,
-    min.dist = 0.3,
-    set.op.mix.ratio = 1,
-    local.connectivity = 1L,
-    negative.sample.rate = 5L,
-    a = NULL,
-    b = NULL,
-    learning.rate = 1,
-    repulsion.strength = 1,
-    reduction.name = "umap",
-    reduction.key = "UMAP_",
-    verbose = TRUE,
-    seed.use = 11,
-    ...) {
+  object,
+  reduction = "pca",
+  dims = NULL,
+  features = NULL,
+  neighbor = NULL,
+  graph = NULL,
+  assay = NULL,
+  layer = "data",
+  umap.method = "uwot",
+  reduction.model = NULL,
+  n_threads = NULL,
+  return.model = FALSE,
+  n.neighbors = 30L,
+  n.components = 2L,
+  metric = "cosine",
+  n.epochs = 200L,
+  cores = 1,
+  min.dist = 0.3,
+  set.op.mix.ratio = 1,
+  local.connectivity = 1L,
+  negative.sample.rate = 5L,
+  a = NULL,
+  b = NULL,
+  learning.rate = 1,
+  repulsion.strength = 1,
+  reduction.name = "umap",
+  reduction.key = "UMAP_",
+  verbose = TRUE,
+  seed.use = 11,
+  ...
+) {
   if (
     sum(c(
       is.null(dims),
@@ -215,31 +216,52 @@ RunUMAP2.Seurat <- function(
 #' @method RunUMAP2 default
 #' @export
 RunUMAP2.default <- function(
-    object,
-    assay = NULL,
-    umap.method = "uwot",
-    reduction.model = NULL,
-    n_threads = NULL,
-    return.model = FALSE,
-    n.neighbors = 30L,
-    n.components = 2L,
-    metric = "cosine",
-    n.epochs = 200L,
-    cores = 1,
-    min.dist = 0.3,
-    set.op.mix.ratio = 1,
-    local.connectivity = 1L,
-    negative.sample.rate = 5L,
-    a = NULL,
-    b = NULL,
-    learning.rate = 1,
-    repulsion.strength = 1,
-    reduction.key = "UMAP_",
-    verbose = TRUE,
-    seed.use = 11L,
-    ...) {
+  object,
+  assay = NULL,
+  umap.method = "uwot",
+  reduction.model = NULL,
+  n_threads = NULL,
+  return.model = FALSE,
+  n.neighbors = 30L,
+  n.components = 2L,
+  metric = "cosine",
+  n.epochs = 200L,
+  cores = 1,
+  min.dist = 0.3,
+  set.op.mix.ratio = 1,
+  local.connectivity = 1L,
+  negative.sample.rate = 5L,
+  a = NULL,
+  b = NULL,
+  learning.rate = 1,
+  repulsion.strength = 1,
+  reduction.key = "UMAP_",
+  verbose = TRUE,
+  seed.use = 11L,
+  ...
+) {
   if (!is.null(seed.use)) {
     set.seed(seed = seed.use)
+  }
+  object_size <- NA_integer_
+  if (
+    inherits(x = object, what = "matrix") ||
+      inherits(x = object, what = "Matrix") ||
+      inherits(x = object, what = "dist")
+  ) {
+    object_size <- nrow(object)
+  } else if (inherits(x = object, what = "list")) {
+    object_size <- nrow(object[["idx"]])
+  } else if (inherits(x = object, what = "Graph")) {
+    object_size <- nrow(object)
+  }
+  if (is.finite(object_size) && !is.na(object_size) && n.neighbors >= object_size) {
+    n.neighbors_use <- max(1L, object_size - 1L)
+    log_message(
+      "Adjust {.arg n.neighbors} from {.val {n.neighbors}} to {.val {n.neighbors_use}} for small-sample UMAP",
+      verbose = verbose
+    )
+    n.neighbors <- n.neighbors_use
   }
   if (return.model) {
     log_message(

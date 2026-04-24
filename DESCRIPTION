@@ -8,6 +8,8 @@ Authors@R:
     person(given = "Xu", family = "Meng", email = "mengxu98@qq.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-8300-1054")),
     person(given = "Hao", family = "Zhang", email = "haozhang@njmu.edu.cn", role = c("aut"))
     )
+Author: Xu Meng [aut, cre] (<https://orcid.org/0000-0002-8300-1054>),
+    Hao Zhang [aut]
 Maintainer: Meng Xu <mengxu98@qq.com>
 Description: An end-to-end Single-Cell Omics analysis Pipeline designed to facilitate comprehensive analysis and exploration of single-cell omics data.
 License: GPL (>= 3)
@@ -19,7 +21,9 @@ Depends:
 Imports:
     cli,
     ComplexHeatmap,
+    cluster,
     dplyr,
+    FNN,
     ggnewscale,
     ggrepel,
     ggforce,
@@ -52,6 +56,7 @@ Suggests:
     ggalluvial,
     ggridges,
     ggwordcloud,
+    funkyheatmap,
     geomtextpath,
     glmpca,
     GO.db,
@@ -63,6 +68,7 @@ Suggests:
     HDF5Array,
     htmlwidgets,
     intrinsicDimension,
+    labeling,
     limma,
     MatrixGenerics,
     metR,
@@ -71,6 +77,7 @@ Suggests:
     NMF,
     pak,
     patchwork,
+    keras,
     purrr,
     PFAM.db,
     plotly,
@@ -82,6 +89,7 @@ Suggests:
     reshape2,
     rliger,
     rhdf5,
+    scOMM,
     scales,
     simplifyEnrichment,
     slingshot,
@@ -89,6 +97,7 @@ Suggests:
     scds,
     scDblFinder,
     decontX,
+    edgeR,
     multinichenetr,
     nichenetr,
     scmap,
@@ -100,6 +109,8 @@ Suggests:
     SingleR,
     SingleCellExperiment,
     SummarizedExperiment,
+    testthat,
+    tensorflow,
     umap,
     UCell
 Remotes:

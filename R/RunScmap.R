@@ -62,15 +62,16 @@
 #'   group.by = "scmap_annotation"
 #' )
 RunScmap <- function(
-    srt_query,
-    srt_ref,
-    ref_group = NULL,
-    query_assay = "RNA",
-    ref_assay = "RNA",
-    method = "scmapCluster",
-    nfeatures = 500,
-    threshold = 0.5,
-    k = 10) {
+  srt_query,
+  srt_ref,
+  ref_group = NULL,
+  query_assay = "RNA",
+  ref_assay = "RNA",
+  method = "scmapCluster",
+  nfeatures = 500,
+  threshold = 0.5,
+  k = 10
+) {
   check_r("scmap", verbose = FALSE)
   if (!is.null(ref_group)) {
     if (length(ref_group) == ncol(srt_ref)) {

@@ -147,51 +147,52 @@
 #' )
 #' }
 PrepareDB <- function(
-    species = c("Homo_sapiens", "Mus_musculus"),
-    db = c(
-      "GO",
-      "GO_BP",
-      "GO_CC",
-      "GO_MF",
-      "KEGG",
-      "WikiPathway",
-      "Reactome",
-      "CORUM",
-      "MP",
-      "DO",
-      "HPO",
-      "PFAM",
-      "CSPA",
-      "Surfaceome",
-      "SPRomeDB",
-      "VerSeDa",
-      "TFLink",
-      "hTFtarget",
-      "TRRUST",
-      "JASPAR",
-      "ENCODE",
-      "MSigDB",
-      "CellTalk",
-      "CellChat",
-      "Chromosome",
-      "GeneType",
-      "Enzyme",
-      "TF"
-    ),
-    db_IDtypes = c("symbol", "entrez_id", "ensembl_id"),
-    db_version = "latest",
-    db_update = FALSE,
-    convert_species = TRUE,
-    Ensembl_version = NULL,
-    mirror = NULL,
-    biomart = NULL,
-    max_tries = 5,
-    custom_TERM2GENE = NULL,
-    custom_TERM2NAME = NULL,
-    custom_species = NULL,
-    custom_IDtype = NULL,
-    custom_version = NULL,
-    verbose = TRUE) {
+  species = c("Homo_sapiens", "Mus_musculus"),
+  db = c(
+    "GO",
+    "GO_BP",
+    "GO_CC",
+    "GO_MF",
+    "KEGG",
+    "WikiPathway",
+    "Reactome",
+    "CORUM",
+    "MP",
+    "DO",
+    "HPO",
+    "PFAM",
+    "CSPA",
+    "Surfaceome",
+    "SPRomeDB",
+    "VerSeDa",
+    "TFLink",
+    "hTFtarget",
+    "TRRUST",
+    "JASPAR",
+    "ENCODE",
+    "MSigDB",
+    "CellTalk",
+    "CellChat",
+    "Chromosome",
+    "GeneType",
+    "Enzyme",
+    "TF"
+  ),
+  db_IDtypes = c("symbol", "entrez_id", "ensembl_id"),
+  db_version = "latest",
+  db_update = FALSE,
+  convert_species = TRUE,
+  Ensembl_version = NULL,
+  mirror = NULL,
+  biomart = NULL,
+  max_tries = 5,
+  custom_TERM2GENE = NULL,
+  custom_TERM2NAME = NULL,
+  custom_species = NULL,
+  custom_IDtype = NULL,
+  custom_version = NULL,
+  verbose = TRUE
+) {
   check_r("R.cache", verbose = FALSE)
   db_list <- list()
   for (sps in species) {
@@ -618,15 +619,57 @@ PrepareDB <- function(
             file.remove(paste0(tempdir, "/", gmt_files))
           }
           temp <- tempfile()
+          wiki_source_url <- if (is.null(mirror)) {
+            "https://data.wikipathways.org/current/gmt"
+          } else {
+            mirror
+          }
+          wiki_source_url <- sub("/+$", "", wiki_source_url)
+          wiki_file_url <- NULL
           download(
-            url = "https://wikipathways-data.wmcloud.org/current/gmt",
+            url = wiki_source_url,
             destfile = temp
           )
           lines <- paste0(readLines(temp, warn = FALSE), collapse = " ")
           gmtfiles <- unlist(regmatches(
             lines,
-            m = gregexpr("(?<=>)wikipathways-\\S+\\.gmt\\b", lines, perl = TRUE)
+            m = gregexpr(
+              "wikipathways-[^\"'<>[:space:]]+\\.gmt\\b",
+              lines,
+              perl = TRUE
+            )
           ))
+          gmtfiles <- unique(gmtfiles)
+          if (
+            length(gmtfiles) == 0 &&
+              identical(
+                wiki_source_url,
+                "https://wikipathways-data.wmcloud.org/current/gmt"
+              )
+          ) {
+            wiki_source_url <- "https://data.wikipathways.org/current/gmt"
+            download(
+              url = wiki_source_url,
+              destfile = temp
+            )
+            lines <- paste0(readLines(temp, warn = FALSE), collapse = " ")
+            gmtfiles <- unlist(regmatches(
+              lines,
+              m = gregexpr(
+                "wikipathways-[^\"'<>[:space:]]+\\.gmt\\b",
+                lines,
+                perl = TRUE
+              )
+            ))
+            gmtfiles <- unique(gmtfiles)
+          }
+          if (
+            length(gmtfiles) == 0 &&
+              grepl("\\.gmt([?#].*)?$", wiki_source_url, ignore.case = TRUE)
+          ) {
+            wiki_file_url <- sub("[?#].*$", "", wiki_source_url)
+            gmtfiles <- basename(wiki_file_url)
+          }
           wiki_sp <- sps
           gmtfile <- gmtfiles[grep(wiki_sp, gmtfiles, fixed = TRUE)]
           if (length(gmtfile) == 0) {
@@ -652,12 +695,27 @@ PrepareDB <- function(
               )
             }
           }
-          version <- strsplit(gmtfile, split = "-")[[1]][[2]]
+          if (length(gmtfile) == 0) {
+            log_message(
+              c(
+                "No {.pkg WikiPathway} GMT file is available for {.val {wiki_sp}}",
+                "Check whether {.arg mirror} points to a GMT file or a directory index"
+              ),
+              message_type = "error"
+            )
+          }
+          gmtfile <- gmtfile[[1]]
+          version_parts <- strsplit(gmtfile, split = "-", fixed = TRUE)[[1]]
+          version <- if (length(version_parts) >= 2) {
+            version_parts[[2]]
+          } else {
+            tools::file_path_sans_ext(gmtfile)
+          }
+          if (is.null(wiki_file_url)) {
+            wiki_file_url <- paste0(wiki_source_url, "/", gmtfile)
+          }
           download(
-            url = paste0(
-              "https://wikipathways-data.wmcloud.org/current/gmt/",
-              gmtfile
-            ),
+            url = wiki_file_url,
             destfile = temp
           )
           wiki_gmt <- clusterProfiler::read.gmt(temp)
@@ -2603,17 +2661,14 @@ PrepareDB <- function(
             )
           }
         }
-        TERM2GENE <- custom_TERM2GENE
-        colnames(TERM2GENE) <- c("Term", custom_IDtype)
-        if (is.null(custom_TERM2NAME)) {
-          TERM2NAME <- TERM2GENE[, c(1, 1)]
-        } else {
-          TERM2NAME <- custom_TERM2NAME
-        }
-        colnames(TERM2NAME) <- c("Term", "Name")
-
-        TERM2GENE <- stats::na.omit(unique(TERM2GENE))
-        TERM2NAME <- stats::na.omit(unique(TERM2NAME))
+        custom_db <- normalize_custom_db_input(
+          TERM2GENE = custom_TERM2GENE,
+          TERM2NAME = custom_TERM2NAME,
+          IDtype = custom_IDtype,
+          remove_na = TRUE
+        )
+        TERM2GENE <- custom_db[["TERM2GENE"]]
+        TERM2NAME <- custom_db[["TERM2NAME"]]
         db_list[[db_species[db]]][[db]][["TERM2GENE"]] <- TERM2GENE
         db_list[[db_species[db]]][[db]][["TERM2NAME"]] <- TERM2NAME
         db_list[[db_species[db]]][[db]][["version"]] <- custom_version

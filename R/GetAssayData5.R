@@ -33,10 +33,11 @@ GetAssayData5 <- function(object, ...) {
 #' @method GetAssayData5 Seurat
 #' @export
 GetAssayData5.Seurat <- function(
-    object,
-    layer = "counts",
-    assay = NULL,
-    ...) {
+  object,
+  layer = "counts",
+  assay = NULL,
+  ...
+) {
   assay <- assay %||% SeuratObject::DefaultAssay(object = object)
   assay_obj <- Seurat::GetAssay(
     object = object,
@@ -55,9 +56,10 @@ GetAssayData5.Seurat <- function(
 #' @method GetAssayData5 Assay5
 #' @export
 GetAssayData5.Assay5 <- function(
-    object,
-    layer = "counts",
-    ...) {
+  object,
+  layer = "counts",
+  ...
+) {
   object <- SeuratObject::JoinLayers(object)
   data <- SeuratObject::GetAssayData(
     object,
@@ -72,9 +74,10 @@ GetAssayData5.Assay5 <- function(
 #' @method GetAssayData5 Assay
 #' @export
 GetAssayData5.Assay <- function(
-    object,
-    layer = "counts",
-    ...) {
+  object,
+  layer = "counts",
+  ...
+) {
   SeuratObject::GetAssayData(
     object,
     layer = layer,

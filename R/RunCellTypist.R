@@ -9,6 +9,7 @@
 #' @inheritParams thisutils::log_message
 #' @inheritParams RunCellRank
 #' @inheritParams FeatureDimPlot
+#' @param adata Optional AnnData object used as input.
 #' @param assay Which assay to use.
 #' Default is `"RNA"`.
 #' @param model Model name or path. Default is `"Immune_All_Low.pkl"`.
@@ -82,30 +83,31 @@
 #' )
 #' }
 RunCellTypist <- function(
-    srt = NULL,
-    adata = NULL,
-    assay = "RNA",
-    layer = "data",
-    model = "Immune_All_Low.pkl",
-    mode = "best match",
-    p_thres = 0.5,
-    majority_voting = FALSE,
-    over_clustering = NULL,
-    min_prop = 0,
-    use_GPU = FALSE,
-    insert_labels = TRUE,
-    insert_conf = TRUE,
-    insert_conf_by = "predicted_labels",
-    insert_prob = FALSE,
-    insert_decision = FALSE,
-    prefix = "celltypist_",
-    return_seurat = !is.null(srt),
-    verbose = TRUE) {
+  srt = NULL,
+  adata = NULL,
+  assay = "RNA",
+  layer = "data",
+  model = "Immune_All_Low.pkl",
+  mode = "best match",
+  p_thres = 0.5,
+  majority_voting = FALSE,
+  over_clustering = NULL,
+  min_prop = 0,
+  use_GPU = FALSE,
+  insert_labels = TRUE,
+  insert_conf = TRUE,
+  insert_conf_by = "predicted_labels",
+  insert_prob = FALSE,
+  insert_decision = FALSE,
+  prefix = "celltypist_",
+  return_seurat = !is.null(srt),
+  verbose = TRUE
+) {
   log_message(
     "Running {.pkg CellTypist} annotation...",
     verbose = verbose
   )
-  PrepareEnv()
+  PrepareEnv(modules = "celltypist")
   check_python("celltypist==1.7.1", verbose = verbose)
   if (all(is.null(srt), is.null(adata))) {
     log_message(
@@ -236,6 +238,7 @@ RunCellTypist <- function(
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams RunCellTypist
+#' @param h5ad Optional path to an input `.h5ad` file.
 #' @param labels Cell labels used for training. Can be a metadata column name when
 #' `srt`/`adata` is supplied, or a vector aligned with cells.
 #' @param genes Optional gene names. Usually inferred from the input object.
@@ -301,7 +304,7 @@ RunCellTypist <- function(
 #'   pancreas_sub,
 #'   group.by = c("SubCellType", "celltypist_predicted_labels")
 #' )
-#' 
+#'
 #' panc8_sub <- RunCellTypist(
 #'   srt = panc8_sub,
 #'   model = model_info
@@ -310,7 +313,7 @@ RunCellTypist <- function(
 #'   panc8_sub,
 #'   group.by = c("celltype", "celltypist_predicted_labels")
 #' )
-#' 
+#'
 #' ht <- CellCorHeatmap(
 #'   srt_query = panc8_sub,
 #'   srt_ref = panc8_sub,
@@ -322,44 +325,45 @@ RunCellTypist <- function(
 #' ht$plot
 #' }
 TrainCellTypist <- function(
-    srt = NULL,
-    adata = NULL,
-    h5ad = NULL,
-    assay = "RNA",
-    layer = "data",
-    labels,
-    genes = NULL,
-    transpose_input = FALSE,
-    with_mean = TRUE,
-    check_expression = TRUE,
-    C = 1,
-    solver = NULL,
-    max_iter = NULL,
-    n_jobs = 1,
-    use_SGD = FALSE,
-    alpha = 1e-04,
-    use_GPU = FALSE,
-    mini_batch = FALSE,
-    batch_number = 100,
-    batch_size = 1000,
-    epochs = 10,
-    balance_cell_type = FALSE,
-    feature_selection = FALSE,
-    top_genes = 300,
-    date = "",
-    details = "",
-    url = "",
-    source = "",
-    version = "",
-    model_path = NULL,
-    return = c("summary", "path", "model"),
-    verbose = TRUE) {
+  srt = NULL,
+  adata = NULL,
+  h5ad = NULL,
+  assay = "RNA",
+  layer = "data",
+  labels,
+  genes = NULL,
+  transpose_input = FALSE,
+  with_mean = TRUE,
+  check_expression = TRUE,
+  C = 1,
+  solver = NULL,
+  max_iter = NULL,
+  n_jobs = 1,
+  use_SGD = FALSE,
+  alpha = 1e-04,
+  use_GPU = FALSE,
+  mini_batch = FALSE,
+  batch_number = 100,
+  batch_size = 1000,
+  epochs = 10,
+  balance_cell_type = FALSE,
+  feature_selection = FALSE,
+  top_genes = 300,
+  date = "",
+  details = "",
+  url = "",
+  source = "",
+  version = "",
+  model_path = NULL,
+  return = c("summary", "path", "model"),
+  verbose = TRUE
+) {
   return <- match.arg(return)
   log_message(
     "Training {.pkg CellTypist} model...",
     verbose = verbose
   )
-  PrepareEnv()
+  PrepareEnv(modules = "celltypist")
   check_python("celltypist==1.7.1", verbose = verbose)
 
   if (is.null(srt) && is.null(adata) && is.null(h5ad)) {
@@ -530,24 +534,25 @@ TrainCellTypist <- function(
 #' )
 #' }
 CellTypistModels <- function(
-    action = c("list", "download", "info", "markers", "subset", "convert", "delete"),
-    on_the_fly = FALSE,
-    model = NULL,
-    force_update = FALSE,
-    cell_type = NULL,
-    top_n = 10,
-    only_positive = TRUE,
-    keep_cell_types = NULL,
-    exclude_cell_types = NULL,
-    output_model_path = NULL,
-    map_file = NULL,
-    sep = ",",
-    convert_from = NULL,
-    convert_to = NULL,
-    unique_only = TRUE,
-    collapse = c("average", "random"),
-    random_state = 0,
-    verbose = TRUE) {
+  action = c("list", "download", "info", "markers", "subset", "convert", "delete"),
+  on_the_fly = FALSE,
+  model = NULL,
+  force_update = FALSE,
+  cell_type = NULL,
+  top_n = 10,
+  only_positive = TRUE,
+  keep_cell_types = NULL,
+  exclude_cell_types = NULL,
+  output_model_path = NULL,
+  map_file = NULL,
+  sep = ",",
+  convert_from = NULL,
+  convert_to = NULL,
+  unique_only = TRUE,
+  collapse = c("average", "random"),
+  random_state = 0,
+  verbose = TRUE
+) {
   action <- match.arg(action)
   collapse <- match.arg(collapse)
 
@@ -555,7 +560,7 @@ CellTypistModels <- function(
     "Running {.pkg CellTypist} model action: {.val {action}}",
     verbose = verbose
   )
-  PrepareEnv()
+  PrepareEnv(modules = "celltypist")
   check_python("celltypist==1.7.1", verbose = verbose)
   functions <- reticulate::import_from_path(
     "functions",

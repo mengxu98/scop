@@ -16,6 +16,14 @@
 #' Default is `FALSE`.
 #' @param version The Python version.
 #' Default is `"3.10-1"` on macOS and Unix and `"3.11-1"` on Windows.
+#' @param modules Optional Python dependency modules to install in addition to
+#' the default scientific stack.
+#' Supported values are `"scanpy"`, `"scvi"`, `"glue"`, `"scanorama"`, `"bbknn"`,
+#' `"celltypist"`, `"cellphonedb"`, `"magic"`, `"scrublet"`,
+#' `"doubletdetection"`, `"doublet"`, `"palantir"`, `"scvelo"`,
+#' `"cellrank"`, `"wot"`, `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`,
+#' and `"scomm"`.
+#' If `NULL` or omitted in [PrepareEnv()], the complete environment is installed.
 #' @param pip_options Additional command line arguments to be passed to `uv`/`pip` when installing pip packages.
 #' @param ... Additional arguments passed to package installation functions.
 #'
@@ -26,6 +34,7 @@ PrepareEnv <- function(
   miniconda_repo = "https://repo.anaconda.com/miniconda",
   version = if (is_windows()) "3.11-1" else "3.10-1",
   force = FALSE,
+  modules = NULL,
   pip_options = character(),
   ...
 ) {
@@ -40,8 +49,12 @@ PrepareEnv <- function(
   }
 
   envname <- get_envname(envname)
+  modules <- normalize_env_modules(modules = modules)
   pip_options <- normalize_cli_args(pip_options)
-  requirements <- env_requirements(version = version)
+  requirements <- env_requirements(
+    version = version,
+    modules = modules
+  )
   python_version <- requirements[["python"]]
 
   log_message(
@@ -61,9 +74,27 @@ PrepareEnv <- function(
     envname = envname,
     python_version = python_version,
     conda = conda,
-    pip_options = pip_options
+    modules = modules,
+    pip_options = pip_options,
+    requirements = requirements
   )
   if (is_cached_env_valid(cache_spec) && isFALSE(force)) {
+    python_cached <- getOption("scop_env_cache", default = NULL)[["python"]] %||%
+      tryCatch(
+        conda_python(envname = envname, conda = conda),
+        error = function(...) NULL
+      )
+    if (!is.null(python_cached) && nzchar(python_cached) && file.exists(python_cached)) {
+      configure_python_runtime(python_cached)
+    }
+    if ("scomm" %in% modules) {
+      ensure_scomm_runtime_support(
+        envname = envname,
+        conda = conda,
+        pip_options = pip_options,
+        keep_jax = "scvi" %in% modules
+      )
+    }
     log_message(
       "{cli::col_green('Python environment completed')}\n",
       "{cli::col_grey('Until next loading, the environment will be cached')}",
@@ -109,7 +140,9 @@ PrepareEnv <- function(
         envname = envname,
         python_version = python_version,
         conda = conda,
-        pip_options = pip_options
+        modules = modules,
+        pip_options = pip_options,
+        requirements = requirements
       )
     }
 
@@ -184,6 +217,7 @@ PrepareEnv <- function(
       conda = conda,
       force = force,
       pip = FALSE,
+      verbose = FALSE,
       ...
     )
   }
@@ -205,6 +239,7 @@ PrepareEnv <- function(
       force = force,
       pip = TRUE,
       pip_options = pip_options,
+      verbose = FALSE,
       ...
     )
   }
@@ -216,7 +251,16 @@ PrepareEnv <- function(
     pip_options = pip_options
   )
 
-  set_python_env(conda = conda, envname = envname)
+  if ("scomm" %in% modules) {
+    ensure_scomm_runtime_support(
+      envname = envname,
+      conda = conda,
+      pip_options = pip_options,
+      keep_jax = "scvi" %in% modules
+    )
+  }
+
+  configure_python_runtime(python)
 
   log_message(
     "{cli::col_green('Python environment ready')}\n",
@@ -224,7 +268,11 @@ PrepareEnv <- function(
     message_type = "success"
   )
 
-  env_info(conda, envname)
+  env_info(
+    conda = conda,
+    envname = envname,
+    verbose = isTRUE(getOption("log_message.verbose", TRUE))
+  )
 
   set_env_cache(cache_spec, python)
 }
@@ -243,7 +291,135 @@ normalize_cli_args <- function(args) {
   args[nzchar(args)]
 }
 
-build_env_cache_spec <- function(envname, python_version, conda, pip_options) {
+supported_env_modules <- function() {
+  c(
+    "scanpy",
+    "scvi",
+    "glue",
+    "scanorama",
+    "bbknn",
+    "celltypist",
+    "cellphonedb",
+    "magic",
+    "scrublet",
+    "doubletdetection",
+    "palantir",
+    "scvelo",
+    "cellrank",
+    "wot",
+    "phate",
+    "pacmap",
+    "trimap",
+    "multimap",
+    "scomm"
+  )
+}
+
+optional_env_modules <- function() {
+  c(
+    "celltypist",
+    "cellphonedb",
+    "magic",
+    "scrublet",
+    "doubletdetection"
+  )
+}
+
+env_module_dependencies <- function() {
+  list(
+    celltypist = "scanpy",
+    cellphonedb = "scanpy",
+    palantir = "scanpy",
+    scvelo = "scanpy",
+    cellrank = c("scanpy", "scvelo"),
+    wot = "scanpy",
+    scvi = "scanpy",
+    glue = "scanpy",
+    scanorama = "scanpy",
+    bbknn = "scanpy",
+    multimap = "scanpy"
+  )
+}
+
+env_module_requirements <- function() {
+  list(
+    scanpy = scanpy_python_requirements(),
+    scvi = scvi_python_requirements(),
+    glue = glue_python_requirements(),
+    scanorama = scanorama_python_requirements(),
+    bbknn = bbknn_python_requirements(),
+    celltypist = celltypist_python_requirements(),
+    cellphonedb = cellphonedb_python_requirements(),
+    magic = magic_python_requirements(),
+    scrublet = scrublet_python_requirements(),
+    doubletdetection = doubletdetection_python_requirements(),
+    palantir = palantir_python_requirements(),
+    scvelo = scvelo_python_requirements(),
+    cellrank = cellrank_python_requirements(),
+    wot = wot_python_requirements(),
+    phate = phate_python_requirements(),
+    pacmap = pacmap_python_requirements(),
+    trimap = trimap_python_requirements(),
+    multimap = multimap_python_requirements(),
+    scomm = scomm_python_requirements()
+  )
+}
+
+normalize_env_modules <- function(modules = NULL, include_optional = FALSE) {
+  modules <- modules %||% character(0)
+  modules <- unlist(modules, use.names = FALSE)
+  modules <- trimws(as.character(modules))
+  modules <- modules[nzchar(modules)]
+
+  full_modules <- supported_env_modules()
+
+  if (length(modules) == 0) {
+    modules <- full_modules
+  }
+
+  if (isTRUE(include_optional)) {
+    modules <- c(modules, optional_env_modules())
+  }
+
+  if ("optional" %in% modules) {
+    modules <- c(setdiff(modules, "optional"), optional_env_modules())
+  }
+
+  if ("doublet" %in% modules) {
+    modules <- c(
+      setdiff(modules, "doublet"),
+      "scrublet",
+      "doubletdetection"
+    )
+  }
+
+  module_dependencies <- env_module_dependencies()
+  for (module in modules) {
+    deps <- module_dependencies[[module]]
+    if (!is.null(deps)) {
+      modules <- c(modules, deps)
+    }
+  }
+
+  modules <- unique(modules)
+  invalid_modules <- setdiff(modules, c(supported_env_modules(), "optional", "doublet"))
+  if (length(invalid_modules) > 0) {
+    log_message(
+      "{.arg modules} contains unsupported values: {.val {invalid_modules}}",
+      message_type = "error"
+    )
+  }
+  modules
+}
+
+build_env_cache_spec <- function(
+  envname,
+  python_version,
+  conda,
+  modules,
+  pip_options,
+  requirements = NULL
+) {
   conda_path <- if (is.null(conda) || identical(conda, "")) {
     NULL
   } else {
@@ -254,7 +430,9 @@ build_env_cache_spec <- function(envname, python_version, conda, pip_options) {
     envname = get_envname(envname),
     python_version = python_version,
     conda = conda_path,
-    pip_options = normalize_cli_args(pip_options)
+    modules = normalize_env_modules(modules = modules),
+    pip_options = normalize_cli_args(pip_options),
+    requirements = requirements[c("packages", "install_methods")]
   )
 }
 
@@ -274,7 +452,14 @@ set_env_cache <- function(spec, python = NULL) {
 
 is_cached_env_valid <- function(spec) {
   cache <- getOption("scop_env_cache", default = NULL)
-  required_fields <- c("envname", "python_version", "conda", "pip_options")
+  required_fields <- c(
+    "envname",
+    "python_version",
+    "conda",
+    "modules",
+    "pip_options",
+    "requirements"
+  )
 
   if (!is.list(cache) || !all(required_fields %in% names(cache))) {
     return(FALSE)
@@ -303,6 +488,77 @@ is_cached_env_valid <- function(spec) {
   !is.null(python) && file.exists(python)
 }
 
+prepend_path_var <- function(var, values) {
+  values <- values[nzchar(values)]
+  values <- values[file.exists(values)]
+  if (length(values) == 0) {
+    return(invisible(NULL))
+  }
+
+  values <- unique(normalizePath(values, mustWork = FALSE))
+  current <- Sys.getenv(var, unset = "")
+  current_values <- strsplit(current, .Platform$path.sep, fixed = TRUE)[[1]]
+  current_values <- current_values[nzchar(current_values)]
+  do.call(
+    Sys.setenv,
+    stats::setNames(
+      list(paste(unique(c(values, current_values)), collapse = .Platform$path.sep)),
+      var
+    )
+  )
+  invisible(NULL)
+}
+
+configure_python_runtime <- function(python_path) {
+  python_path <- normalizePath(python_path, mustWork = FALSE)
+  if (!nzchar(python_path) || !file.exists(python_path)) {
+    return(invisible(FALSE))
+  }
+
+  python_dir <- dirname(python_path)
+  env_path <- dirname(python_dir)
+
+  Sys.setenv(
+    RETICULATE_PYTHON = python_path,
+    PYTHONNOUSERSITE = "1",
+    PIP_USER = "0"
+  )
+  Sys.unsetenv("PYTHONPATH")
+
+  prepend_path_var(
+    "PATH",
+    c(
+      python_dir,
+      file.path(env_path, "bin"),
+      file.path(env_path, "Library", "bin"),
+      file.path(env_path, "Scripts")
+    )
+  )
+
+  if (is_linux()) {
+    prepend_path_var(
+      "LD_LIBRARY_PATH",
+      c(
+        file.path(env_path, "lib"),
+        file.path(env_path, "lib64"),
+        file.path(env_path, "Library", "lib")
+      )
+    )
+  }
+
+  if (is_osx()) {
+    prepend_path_var(
+      "DYLD_FALLBACK_LIBRARY_PATH",
+      c(
+        file.path(env_path, "lib"),
+        file.path(env_path, "lib64")
+      )
+    )
+  }
+
+  invisible(TRUE)
+}
+
 set_python_env <- function(conda, envname, verbose = TRUE) {
   Sys.unsetenv("RETICULATE_PYTHON")
   options(reticulate.miniconda.enabled = FALSE)
@@ -320,6 +576,8 @@ set_python_env <- function(conda, envname, verbose = TRUE) {
     conda = conda,
     envname = envname
   )
+
+  configure_python_runtime(python_path)
 
   reticulate::use_python(
     python_path,
@@ -357,6 +615,58 @@ except Exception:
     },
     error = function(e) {}
   )
+}
+
+ensure_scomm_runtime_support <- function(
+  envname,
+  conda,
+  pip_options = character(),
+  keep_jax = FALSE,
+  verbose = TRUE
+) {
+  installed <- tryCatch(
+    installed_python_pkgs(envname = envname, conda = conda),
+    error = function(...) NULL
+  )
+  if (is.null(installed) || is.null(installed$package)) {
+    return(invisible(FALSE))
+  }
+
+  removable <- if (isTRUE(keep_jax)) {
+    character()
+  } else {
+    intersect(c("jax", "jaxlib"), installed$package)
+  }
+  if (length(removable) > 0) {
+    log_message(
+      "Removing conflicting packages for {.pkg scOMM}: {.pkg {removable}}",
+      verbose = verbose
+    )
+    remove_python(
+      packages = removable,
+      envname = envname,
+      conda = conda,
+      pip = TRUE,
+      force = TRUE,
+      verbose = verbose
+    )
+  }
+
+  check_python(
+    packages = if (isTRUE(keep_jax)) {
+      "ml-dtypes>=0.3.2"
+    } else {
+      "ml-dtypes==0.3.2"
+    },
+    envname = envname,
+    conda = conda,
+    force = FALSE,
+    pip = TRUE,
+    pip_options = pip_options,
+    verbose = verbose
+  )
+
+  invisible(TRUE)
 }
 
 install_miniconda2 <- function(
@@ -430,11 +740,29 @@ install_miniconda2 <- function(
 
 #' @title Print environment information
 #' @inheritParams PrepareEnv
+#' @param verbose Whether to print environment information.
 #' @md
-env_info <- function(conda, envname) {
+env_info <- function(conda, envname, verbose = TRUE) {
+  if (!isTRUE(verbose)) {
+    return(invisible(NULL))
+  }
+
   envs_dir <- get_conda_envs_dir(conda = conda)
 
-  py_info <- utils::capture.output(reticulate::py_config())
+  python_path <- tryCatch(
+    conda_python(envname = envname, conda = conda),
+    error = function(...) NULL
+  )
+  python_path <- python_path %||% paste0(envs_dir, "/", get_envname(envname), "/bin/python")
+  py_version <- if (!is.null(python_path) && nzchar(python_path) && file.exists(python_path)) {
+    out <- tryCatch(
+      suppressWarnings(system2(python_path, "--version", stdout = TRUE, stderr = TRUE)),
+      error = function(...) character()
+    )
+    out[[1]] %||% "unknown"
+  } else {
+    "unknown"
+  }
 
   py_info_mesg <- c(
     cli::col_blue(
@@ -454,8 +782,12 @@ env_info <- function(conda, envname) {
       "Python config:"
     ),
     cli::col_grey(
-      " ",
-      py_info
+      " python:        ",
+      python_path
+    ),
+    cli::col_grey(
+      " version:       ",
+      py_version
     )
   )
   invisible(lapply(py_info_mesg, packageStartupMessage))
@@ -471,6 +803,13 @@ env_info <- function(conda, envname) {
 #' @md
 #' @param version The Python version of the environment.
 #' Default is `"3.10-1"`.
+#' @param include_optional Whether to include optional Python dependencies.
+#' @param modules Optional requirement modules to include. Supported values are
+#' `"scanpy"`, `"scvi"`, `"scanorama"`, `"bbknn"`, `"celltypist"`,
+#' `"cellphonedb"`, `"magic"`, `"scrublet"`, `"doubletdetection"`,
+#' `"doublet"`, `"palantir"`, `"scvelo"`, `"cellrank"`, `"wot"`, `"phate"`,
+#' `"pacmap"`, `"trimap"`, `"multimap"`, and `"scomm"`. If `NULL`, the
+#' complete environment is returned.
 #'
 #' @return
 #' A list containing:
@@ -483,108 +822,39 @@ env_info <- function(conda, envname) {
 #' @export
 #' @examples
 #' env_requirements("3.10-1")
-env_requirements <- function(version = "3.10-1", include_optional = FALSE) {
+env_requirements <- function(
+  version = "3.10-1",
+  include_optional = FALSE,
+  modules = NULL
+) {
   version <- match.arg(
     version,
     choices = c("3.10-1", "3.11-1")
   )
+  modules <- normalize_env_modules(
+    modules = modules,
+    include_optional = include_optional
+  )
 
-  tbb_install_method <- if (is_apple_silicon()) {
-    "pip"
-  } else {
-    "conda"
+  base_requirements <- core_python_requirements()
+  package_install_methods <- base_requirements$install_methods
+  package_versions <- base_requirements$packages
+  package_aliases <- base_requirements$package_aliases
+
+  module_requirements <- env_module_requirements()
+
+  for (module in modules) {
+    req_i <- module_requirements[[module]]
+    if (is.null(req_i)) {
+      next
+    }
+    package_install_methods <- c(package_install_methods, req_i$install_methods)
+    package_versions <- c(package_versions, req_i$packages)
+    package_aliases <- c(package_aliases, req_i$package_aliases)
   }
 
-  package_install_methods <- c(
-    "leidenalg" = "conda",
-    "tbb" = tbb_install_method,
-    "python-igraph" = if (is_apple_silicon()) {
-      "pip"
-    } else {
-      "conda"
-    },
-    "scvi-tools" = "conda",
-    "matplotlib" = "pip",
-    "numba" = "pip",
-    "llvmlite" = "pip",
-    "numpy" = "pip",
-    "packaging" = "pip",
-    "palantir" = "pip",
-    "pandas" = "pip",
-    "scanpy" = "pip",
-    "scikit-learn" = "pip",
-    "scipy" = "pip",
-    "scvelo" = "pip",
-    "wot" = "pip",
-    "trimap" = "pip",
-    "pacmap" = "pip",
-    "phate" = "pip",
-    "bbknn" = "pip",
-    "scanorama" = "pip",
-    "cellrank" = "pip",
-    if (is_apple_silicon()) {
-      c("llvm-openmp" = "conda")
-    } else {
-      NULL
-    }
-  )
-
-  package_versions <- c(
-    "leidenalg" = "leidenalg==0.10.2",
-    "tbb" = if (is_apple_silicon()) {
-      "pxr-tbb==2022.2.0"
-    } else {
-      "tbb==2022.2.0"
-    },
-    "python-igraph" = "python-igraph==0.11.9",
-    "matplotlib" = "matplotlib==3.10.8",
-    "numba" = "numba==0.59.1",
-    "llvmlite" = "llvmlite==0.42.0",
-    "numpy" = "numpy==1.26.4",
-    "packaging" = "packaging>=24.0",
-    "palantir" = "palantir==1.4.1",
-    "pandas" = "pandas==2.0.3",
-    "scanpy" = "scanpy==1.11.3",
-    "scikit-learn" = "scikit-learn==1.7.0",
-    "scipy" = "scipy==1.15.3",
-    "scvelo" = "scvelo==0.3.3",
-    "wot" = "wot==1.0.8.post2",
-    "trimap" = "trimap==1.1.4",
-    "pacmap" = "pacmap==0.8.0",
-    "phate" = "phate==1.0.11",
-    "bbknn" = "bbknn==1.6.0",
-    "scanorama" = "scanorama==1.7.4",
-    "scvi-tools" = "scvi-tools==1.2.1",
-    "cellrank" = "cellrank==2.0.7",
-    if (is_apple_silicon()) {
-      c("llvm-openmp" = "llvm-openmp>=17")
-    } else {
-      NULL
-    }
-  )
-
-  package_aliases <- list(
-    "python-igraph" = "igraph"
-  )
-
-  if (is_apple_silicon()) {
-    package_aliases[["tbb"]] <- "pxr-tbb"
-  }
-
-  if (isTRUE(include_optional)) {
-    optional_requirements <- optional_python_requirements()
-    package_install_methods <- c(
-      package_install_methods,
-      optional_requirements$install_methods
-    )
-    package_versions <- c(
-      package_versions,
-      optional_requirements$packages
-    )
-    package_aliases <- c(
-      package_aliases,
-      optional_requirements$package_aliases
-    )
+  if (all(c("scvi", "scomm") %in% modules) && "ml_dtypes" %in% names(package_versions)) {
+    package_versions[["ml_dtypes"]] <- "ml-dtypes>=0.3.2"
   }
 
   requirements <- list(
@@ -597,7 +867,181 @@ env_requirements <- function(version = "3.10-1", include_optional = FALSE) {
   return(requirements)
 }
 
-optional_python_requirements <- function() {
+core_python_requirements <- function() {
+  tbb_install_method <- if (is_apple_silicon()) {
+    "pip"
+  } else {
+    "conda"
+  }
+  list(
+    packages = c(
+      "leidenalg" = "leidenalg==0.10.2",
+      "tbb" = if (is_apple_silicon()) {
+        "pxr-tbb==2022.2.0"
+      } else {
+        "tbb==2022.2.0"
+      },
+      "python-igraph" = "python-igraph==0.11.9",
+      "matplotlib" = "matplotlib==3.10.8",
+      "numba" = "numba==0.59.1",
+      "llvmlite" = "llvmlite==0.42.0",
+      "numpy" = "numpy==1.26.4",
+      "packaging" = "packaging>=24.0",
+      "pandas" = "pandas==2.0.3",
+      "scikit-learn" = "scikit-learn==1.7.0",
+      "scipy" = "scipy==1.15.3",
+      if (is_apple_silicon()) {
+        c("llvm-openmp" = "llvm-openmp>=17")
+      } else {
+        NULL
+      }
+    ),
+    install_methods = c(
+      "leidenalg" = "conda",
+      "tbb" = tbb_install_method,
+      "python-igraph" = if (is_apple_silicon()) {
+        "pip"
+      } else {
+        "conda"
+      },
+      "matplotlib" = "pip",
+      "numba" = "pip",
+      "llvmlite" = "pip",
+      "numpy" = "pip",
+      "packaging" = "pip",
+      "pandas" = "pip",
+      "scikit-learn" = "pip",
+      "scipy" = "pip",
+      if (is_apple_silicon()) {
+        c("llvm-openmp" = "conda")
+      } else {
+        NULL
+      }
+    ),
+    package_aliases = c(
+      list("python-igraph" = "igraph"),
+      if (is_apple_silicon()) {
+        list("tbb" = "pxr-tbb")
+      } else {
+        list()
+      }
+    )
+  )
+}
+
+scanpy_python_requirements <- function() {
+  list(
+    packages = c(
+      "scanpy" = "scanpy==1.11.3"
+    ),
+    install_methods = c(
+      "scanpy" = "pip"
+    ),
+    package_aliases = list()
+  )
+}
+
+scvi_python_requirements <- function() {
+  list(
+    packages = c(
+      "scvi-tools" = "scvi-tools==1.2.1",
+      "jax" = "jax[cpu]==0.4.38"
+    ),
+    install_methods = c(
+      "scvi-tools" = "conda",
+      "jax" = "pip"
+    ),
+    package_aliases = list()
+  )
+}
+
+glue_python_requirements <- function() {
+  list(
+    packages = c(
+      "scglue" = "scglue==0.4.0",
+      "bedtools" = "bedtools"
+    ),
+    install_methods = c(
+      "scglue" = "pip",
+      "bedtools" = "conda"
+    ),
+    package_aliases = list()
+  )
+}
+
+scanorama_python_requirements <- function() {
+  list(
+    packages = c(
+      "scanorama" = "scanorama==1.7.4"
+    ),
+    install_methods = c(
+      "scanorama" = "pip"
+    ),
+    package_aliases = list()
+  )
+}
+
+bbknn_python_requirements <- function() {
+  list(
+    packages = c(
+      "bbknn" = "bbknn==1.6.0"
+    ),
+    install_methods = c(
+      "bbknn" = "pip"
+    ),
+    package_aliases = list()
+  )
+}
+
+celltypist_python_requirements <- function() {
+  list(
+    packages = c(
+      "celltypist" = "celltypist==1.7.1"
+    ),
+    install_methods = c(
+      "celltypist" = "pip"
+    ),
+    package_aliases = list()
+  )
+}
+
+cellphonedb_python_requirements <- function() {
+  list(
+    packages = c(
+      "cellphonedb" = "cellphonedb==5.0.1"
+    ),
+    install_methods = c(
+      "cellphonedb" = "pip"
+    ),
+    package_aliases = list()
+  )
+}
+
+magic_python_requirements <- function() {
+  list(
+    packages = c(
+      "magic-impute" = "magic-impute==3.0.0"
+    ),
+    install_methods = c(
+      "magic-impute" = "pip"
+    ),
+    package_aliases = list()
+  )
+}
+
+scrublet_python_requirements <- function() {
+  list(
+    packages = c(
+      "scrublet" = "scrublet==0.2.3"
+    ),
+    install_methods = c(
+      "scrublet" = "pip"
+    ),
+    package_aliases = list()
+  )
+}
+
+doubletdetection_python_requirements <- function() {
   list(
     packages = c(
       "celltypist" = "celltypist==1.7.1",
@@ -618,6 +1062,128 @@ optional_python_requirements <- function() {
       "louvain" = "pip"
     ),
     package_aliases = list()
+  )
+}
+
+palantir_python_requirements <- function() {
+  list(
+    packages = c(
+      "palantir" = "palantir==1.4.1"
+    ),
+    install_methods = c(
+      "palantir" = "pip"
+    ),
+    package_aliases = list()
+  )
+}
+
+scvelo_python_requirements <- function() {
+  list(
+    packages = c(
+      "scvelo" = "scvelo==0.3.3"
+    ),
+    install_methods = c(
+      "scvelo" = "pip"
+    ),
+    package_aliases = list()
+  )
+}
+
+cellrank_python_requirements <- function() {
+  list(
+    packages = c(
+      "cellrank" = "cellrank==2.0.7"
+    ),
+    install_methods = c(
+      "cellrank" = "pip"
+    ),
+    package_aliases = list()
+  )
+}
+
+wot_python_requirements <- function() {
+  list(
+    packages = c(
+      "wot" = "wot==1.0.8.post2"
+    ),
+    install_methods = c(
+      "wot" = "pip"
+    ),
+    package_aliases = list()
+  )
+}
+
+phate_python_requirements <- function() {
+  list(
+    packages = c(
+      "phate" = "phate==1.0.11"
+    ),
+    install_methods = c(
+      "phate" = "pip"
+    ),
+    package_aliases = list()
+  )
+}
+
+pacmap_python_requirements <- function() {
+  list(
+    packages = c(
+      "pacmap" = "pacmap==0.8.0"
+    ),
+    install_methods = c(
+      "pacmap" = "pip"
+    ),
+    package_aliases = list()
+  )
+}
+
+trimap_python_requirements <- function() {
+  list(
+    packages = c(
+      "trimap" = "trimap==1.1.4"
+    ),
+    install_methods = c(
+      "trimap" = "pip"
+    ),
+    package_aliases = list()
+  )
+}
+
+multimap_python_requirements <- function() {
+  list(
+    packages = c(
+      "multimap" = "git+https://github.com/Teichlab/MultiMAP.git"
+    ),
+    install_methods = c(
+      "multimap" = "pip"
+    ),
+    package_aliases = list(
+      "multimap" = "MultiMAP",
+      "MultiMAP" = "multimap"
+    )
+  )
+}
+
+scomm_python_requirements <- function() {
+  list(
+    packages = c(
+      "tensorflow" = "tensorflow==2.16.2",
+      "keras" = "keras==3.3.3",
+      "tf_keras" = "tf_keras==2.16.0",
+      "ml_dtypes" = "ml-dtypes==0.3.2"
+    ),
+    install_methods = c(
+      "tensorflow" = "pip",
+      "keras" = "pip",
+      "tf_keras" = "pip",
+      "ml_dtypes" = "pip"
+    ),
+    package_aliases = list(
+      "tf_keras" = "tf-keras",
+      "tf-keras" = "tf_keras",
+      "ml_dtypes" = "ml-dtypes",
+      "ml-dtypes" = "ml_dtypes"
+    )
   )
 }
 
@@ -645,13 +1211,20 @@ env_exist <- function(
       )
 
       if (is.null(conda_info)) {
-        return(FALSE)
+        envs_dir <- infer_conda_envs_dir(conda = conda)
+      } else {
+        envs_dir <- conda_info[["envs directories"]][1]
+        if (is.null(envs_dir) || length(envs_dir) == 0) {
+          envs_dir <- conda_info$envs_dirs[1]
+        }
       }
+      if (is.null(envs_dir) || length(envs_dir) == 0 || !dir.exists(envs_dir)) {
+        envs_dir <- infer_conda_envs_dir(conda = conda)
+      }
+    }
 
-      envs_dir <- conda_info[["envs directories"]][1]
-      if (is.null(envs_dir) || length(envs_dir) == 0) {
-        envs_dir <- conda_info$envs_dirs[1]
-      }
+    if (is.null(envs_dir) || length(envs_dir) == 0) {
+      return(FALSE)
     }
 
     env_path <- paste0(envs_dir, "/", envname)
@@ -692,7 +1265,22 @@ get_conda_envs_dir <- function(conda = "auto") {
   if (is.null(envs_dir) || length(envs_dir) == 0) {
     envs_dir <- conda_info$envs_dirs[1]
   }
+  if (is.null(envs_dir) || length(envs_dir) == 0 || !dir.exists(envs_dir)) {
+    envs_dir <- infer_conda_envs_dir(conda = conda)
+  }
   return(envs_dir)
+}
+
+infer_conda_envs_dir <- function(conda = "auto") {
+  conda <- resolve_conda(conda)
+  if (is.null(conda) || !file.exists(conda)) {
+    return(NULL)
+  }
+  envs_dir <- file.path(dirname(dirname(conda)), "envs")
+  if (!dir.exists(envs_dir)) {
+    return(NULL)
+  }
+  normalizePath(envs_dir, mustWork = FALSE)
 }
 
 find_conda <- function() {
@@ -1342,8 +1930,7 @@ conda_python <- function(
       ),
       x = normalizePath(conda_envs$python, mustWork = FALSE),
       fixed = TRUE
-    ),
-    ,
+    ), ,
     drop = FALSE
   ]
   env <- conda_envs[conda_envs$name == envname, , drop = FALSE]

@@ -42,20 +42,21 @@ RunGLMPCA <- function(object, ...) {
 #' @method RunGLMPCA Seurat
 #' @export
 RunGLMPCA.Seurat <- function(
-    object,
-    assay = NULL,
-    layer = "counts",
-    features = NULL,
-    L = 5,
-    fam = c("poi", "nb", "nb2", "binom", "mult", "bern"),
-    rev.gmlpca = FALSE,
-    ndims.print = 1:5,
-    nfeatures.print = 30,
-    reduction.name = "glmpca",
-    reduction.key = "GLMPC_",
-    verbose = TRUE,
-    seed.use = 11,
-    ...) {
+  object,
+  assay = NULL,
+  layer = "counts",
+  features = NULL,
+  L = 5,
+  fam = c("poi", "nb", "nb2", "binom", "mult", "bern"),
+  rev.gmlpca = FALSE,
+  ndims.print = 1:5,
+  nfeatures.print = 30,
+  reduction.name = "glmpca",
+  reduction.key = "GLMPC_",
+  verbose = TRUE,
+  seed.use = 11,
+  ...
+) {
   features <- features %||% SeuratObject::VariableFeatures(object = object)
   assay <- assay %||% SeuratObject::DefaultAssay(object = object)
   assay.data <- Seurat::GetAssay(object = object, assay = assay)
@@ -81,19 +82,20 @@ RunGLMPCA.Seurat <- function(
 #' @method RunGLMPCA Assay
 #' @export
 RunGLMPCA.Assay <- function(
-    object,
-    assay = NULL,
-    layer = "counts",
-    features = NULL,
-    L = 5,
-    fam = c("poi", "nb", "nb2", "binom", "mult", "bern"),
-    rev.gmlpca = FALSE,
-    ndims.print = 1:5,
-    nfeatures.print = 30,
-    reduction.key = "GLMPC_",
-    verbose = TRUE,
-    seed.use = 11,
-    ...) {
+  object,
+  assay = NULL,
+  layer = "counts",
+  features = NULL,
+  L = 5,
+  fam = c("poi", "nb", "nb2", "binom", "mult", "bern"),
+  rev.gmlpca = FALSE,
+  ndims.print = 1:5,
+  nfeatures.print = 30,
+  reduction.key = "GLMPC_",
+  verbose = TRUE,
+  seed.use = 11,
+  ...
+) {
   features <- features %||% SeuratObject::VariableFeatures(object = object)
   data.use <- GetAssayData5(
     object = object,
@@ -127,19 +129,20 @@ RunGLMPCA.Assay <- function(
 #' @method RunGLMPCA Assay5
 #' @export
 RunGLMPCA.Assay5 <- function(
-    object,
-    assay = NULL,
-    layer = "counts",
-    features = NULL,
-    L = 5,
-    fam = c("poi", "nb", "nb2", "binom", "mult", "bern"),
-    rev.gmlpca = FALSE,
-    ndims.print = 1:5,
-    nfeatures.print = 30,
-    reduction.key = "GLMPC_",
-    verbose = TRUE,
-    seed.use = 11,
-    ...) {
+  object,
+  assay = NULL,
+  layer = "counts",
+  features = NULL,
+  L = 5,
+  fam = c("poi", "nb", "nb2", "binom", "mult", "bern"),
+  rev.gmlpca = FALSE,
+  ndims.print = 1:5,
+  nfeatures.print = 30,
+  reduction.key = "GLMPC_",
+  verbose = TRUE,
+  seed.use = 11,
+  ...
+) {
   features <- features %||% SeuratObject::VariableFeatures(object = object)
   data.use <- GetAssayData5(
     object = object,
@@ -173,19 +176,20 @@ RunGLMPCA.Assay5 <- function(
 #' @method RunGLMPCA default
 #' @export
 RunGLMPCA.default <- function(
-    object,
-    assay = NULL,
-    layer = "counts",
-    features = NULL,
-    L = 5,
-    fam = c("poi", "nb", "nb2", "binom", "mult", "bern"),
-    rev.gmlpca = FALSE,
-    ndims.print = 1:5,
-    nfeatures.print = 30,
-    reduction.key = "GLMPC_",
-    verbose = TRUE,
-    seed.use = 11,
-    ...) {
+  object,
+  assay = NULL,
+  layer = "counts",
+  features = NULL,
+  L = 5,
+  fam = c("poi", "nb", "nb2", "binom", "mult", "bern"),
+  rev.gmlpca = FALSE,
+  ndims.print = 1:5,
+  nfeatures.print = 30,
+  reduction.key = "GLMPC_",
+  verbose = TRUE,
+  seed.use = 11,
+  ...
+) {
   check_r("glmpca", verbose = FALSE)
   if (inherits(object, "dgCMatrix")) {
     object <- as_matrix(object)

@@ -29,7 +29,9 @@ RunHarmony2(object, ...)
 \item{group.by.vars}{The batch variable name.}
 
 \item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.}
+If \code{NULL}, the default assay of the Seurat object will be used.
+When the object also contains \code{ChromatinAssay}, the default assay and
+additional \code{ChromatinAssay} will be preprocessed sequentially.}
 
 \item{reduction}{Which dimensionality reduction to use. Default is \code{"pca"}.}
 

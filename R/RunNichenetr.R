@@ -233,8 +233,7 @@ RunNichenetr <- function(
       potential_ligands = candidate_ligands
     )
     ligand_activities <- ligand_activities[
-      order(ligand_activities$pearson, decreasing = TRUE),
-      ,
+      order(ligand_activities$pearson, decreasing = TRUE), ,
       drop = FALSE
     ]
     top_ligands <- utils::head(ligand_activities$test_ligand, top_n_ligands)
@@ -251,8 +250,7 @@ RunNichenetr <- function(
       })
     )
     ligand_receptor_df <- lr_df[
-      lr_df$from %in% top_ligands & lr_df$to %in% receiver_expr,
-      ,
+      lr_df$from %in% top_ligands & lr_df$to %in% receiver_expr, ,
       drop = FALSE
     ]
     raw_result <- list(
@@ -798,8 +796,7 @@ standardize_nichenetr_result <- function(
       )] <- "weight"
     }
     ligand_target_table <- ligand_target_table[
-      order(ligand_target_table$weight, decreasing = TRUE),
-      ,
+      order(ligand_target_table$weight, decreasing = TRUE), ,
       drop = FALSE
     ]
     ligand_target_table <- utils::head(
@@ -878,8 +875,7 @@ standardize_multinichenetr_result <- function(
       "score" %in% colnames(lr_table)
   ) {
     lr_table <- lr_table[
-      order(lr_table$score, decreasing = TRUE),
-      ,
+      order(lr_table$score, decreasing = TRUE), ,
       drop = FALSE
     ]
     lr_table <- utils::head(lr_table, top_n_interactions)

@@ -110,7 +110,9 @@ Default is \code{NULL}.}
 Default is \code{data}.}
 
 \item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.}
+If \code{NULL}, the default assay of the Seurat object will be used.
+When the object also contains \code{ChromatinAssay}, the default assay and
+additional \code{ChromatinAssay} will be preprocessed sequentially.}
 
 \item{show_stat}{Whether to show statistical information on the plot.}
 

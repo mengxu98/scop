@@ -69,16 +69,17 @@
 #' homologs_counts[1:5, 1:5]
 #' }
 GeneConvert <- function(
-    geneID,
-    geneID_from_IDtype = "symbol",
-    geneID_to_IDtype = "entrez_id",
-    species_from = "Homo_sapiens",
-    species_to = NULL,
-    Ensembl_version = NULL,
-    biomart = NULL,
-    mirror = NULL,
-    max_tries = 5,
-    verbose = TRUE) {
+  geneID,
+  geneID_from_IDtype = "symbol",
+  geneID_to_IDtype = "entrez_id",
+  species_from = "Homo_sapiens",
+  species_to = NULL,
+  Ensembl_version = NULL,
+  biomart = NULL,
+  mirror = NULL,
+  max_tries = 5,
+  verbose = TRUE
+) {
   if (requireNamespace("httr", quietly = TRUE)) {
     httr::set_config(
       httr::config(

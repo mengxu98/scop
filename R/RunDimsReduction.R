@@ -218,8 +218,7 @@ RunDimsReduction <- function(
       }
       features <- SeuratObject::VariableFeatures(srt, assay = assay)
     }
-    fun_use <- switch(
-      linear_reduction,
+    fun_use <- switch(linear_reduction,
       "pca" = "RunPCA",
       "svd" = "RunSVD",
       "ica" = "RunICA",
@@ -227,8 +226,7 @@ RunDimsReduction <- function(
       "mds" = "RunMDS",
       "glmpca" = "RunGLMPCA"
     )
-    key_use <- switch(
-      linear_reduction,
+    key_use <- switch(linear_reduction,
       "pca" = "PC_",
       "svd" = "LSI_",
       "ica" = "IC_",
@@ -236,8 +234,7 @@ RunDimsReduction <- function(
       "mds" = "MDS_",
       "glmpca" = "GLMPC_"
     )
-    components_nm <- switch(
-      linear_reduction,
+    components_nm <- switch(linear_reduction,
       "pca" = "npcs",
       "svd" = "n",
       "ica" = "nics",

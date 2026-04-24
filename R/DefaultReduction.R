@@ -20,10 +20,11 @@
 #'
 #' DefaultReduction(pancreas_sub, pattern = "umap")
 DefaultReduction <- function(
-    srt,
-    pattern = NULL,
-    min_dim = 2,
-    max_distance = 0.1) {
+  srt,
+  pattern = NULL,
+  min_dim = 2,
+  max_distance = 0.1
+) {
   if (length(srt@reductions) == 0) {
     log_message(
       "Unable to find any reductions",
@@ -31,6 +32,14 @@ DefaultReduction <- function(
     )
   }
   pattern_default <- c(
+    "WNNUMAP",
+    "WNN",
+    "MultiomeUMAP",
+    "Multiome",
+    "ATACUMAP",
+    "ATAC",
+    "SpatialUMAP",
+    "Spatial",
     "umap",
     "tsne",
     "dm",

@@ -53,30 +53,31 @@
 #'   split_method = "kmeans-peaktime"
 #' )
 RunDynamicEnrichment <- function(
-    srt,
-    lineages,
-    score_method = "AUCell",
-    layer = "data",
-    assay = NULL,
-    min_expcells = 20,
-    r.sq = 0.2,
-    dev.expl = 0.2,
-    padjust = 0.05,
-    IDtype = "symbol",
-    species = "Homo_sapiens",
-    db = "GO_BP",
-    db_update = FALSE,
-    db_version = "latest",
-    convert_species = TRUE,
-    Ensembl_version = NULL,
-    mirror = NULL,
-    TERM2GENE = NULL,
-    TERM2NAME = NULL,
-    minGSSize = 10,
-    maxGSSize = 500,
-    cores = 1,
-    verbose = TRUE,
-    seed = 11) {
+  srt,
+  lineages,
+  score_method = "AUCell",
+  layer = "data",
+  assay = NULL,
+  min_expcells = 20,
+  r.sq = 0.2,
+  dev.expl = 0.2,
+  padjust = 0.05,
+  IDtype = "symbol",
+  species = "Homo_sapiens",
+  db = "GO_BP",
+  db_update = FALSE,
+  db_version = "latest",
+  convert_species = TRUE,
+  Ensembl_version = NULL,
+  mirror = NULL,
+  TERM2GENE = NULL,
+  TERM2NAME = NULL,
+  minGSSize = 10,
+  maxGSSize = 500,
+  cores = 1,
+  verbose = TRUE,
+  seed = 11
+) {
   set.seed(seed)
   assay <- assay %||% DefaultAssay(srt)
 
@@ -122,15 +123,17 @@ RunDynamicEnrichment <- function(
       mirror = mirror
     )
   } else {
-    colnames(TERM2GENE) <- c("Term", IDtype)
     db <- "custom"
-    db_list <- list()
-    db_list[[species]][[db]][["TERM2GENE"]] <- unique(TERM2GENE)
-    if (is.null(TERM2NAME)) {
-      TERM2NAME <- unique(TERM2GENE)[, c(1, 1)]
-      colnames(TERM2NAME) <- c("Term", "Name")
-    }
-    db_list[[species]][[db]][["TERM2NAME"]] <- unique(TERM2NAME)
+    custom_db <- create_custom_db_list(
+      species = species,
+      db = db,
+      TERM2GENE = TERM2GENE,
+      TERM2NAME = TERM2NAME,
+      IDtype = IDtype
+    )
+    db_list <- custom_db[["db_list"]]
+    TERM2GENE <- custom_db[["TERM2GENE"]]
+    TERM2NAME <- custom_db[["TERM2NAME"]]
   }
 
   for (i in seq_along(db)) {

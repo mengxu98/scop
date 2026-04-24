@@ -47,25 +47,26 @@
 #'   ref_group = "celltype"
 #' )
 RunSeuratMap <- function(
-    srt_query,
-    srt_ref,
-    query_assay = NULL,
-    ref_pca = NULL,
-    ref_assay = srt_ref[[ref_pca]]@assay.used,
-    ref_dims = 1:30,
-    ref_umap = NULL,
-    ref_group = NULL,
-    normalization.method = "LogNormalize",
-    reduction_project_method = "pcaproject",
-    k.anchor = 5,
-    k.filter = 200,
-    k.score = 30,
-    k.weight = 100,
-    projection_method = c("model", "knn"),
-    nn_method = NULL,
-    k = 30,
-    distance_metric = "cosine",
-    vote_fun = "mean") {
+  srt_query,
+  srt_ref,
+  query_assay = NULL,
+  ref_pca = NULL,
+  ref_assay = srt_ref[[ref_pca]]@assay.used,
+  ref_dims = 1:30,
+  ref_umap = NULL,
+  ref_group = NULL,
+  normalization.method = "LogNormalize",
+  reduction_project_method = "pcaproject",
+  k.anchor = 5,
+  k.filter = 200,
+  k.score = 30,
+  k.weight = 100,
+  projection_method = c("model", "knn"),
+  nn_method = NULL,
+  k = 30,
+  distance_metric = "cosine",
+  vote_fun = "mean"
+) {
   query_assay <- query_assay %||% SeuratObject::DefaultAssay(srt_query)
   ref_assay <- ref_assay %||% SeuratObject::DefaultAssay(srt_ref)
   weight_reduction <- switch(reduction_project_method,

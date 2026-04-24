@@ -84,43 +84,44 @@
 #'   density = TRUE
 #' )
 TACSPlot <- function(
-    srt,
-    ref_srt = NULL,
-    assay = "RNA",
-    layer = "data",
-    group.by = NULL,
-    feature1,
-    feature2,
-    cutoffs = NULL,
-    density = FALSE,
-    palette = "Chinese",
-    num_features_add = 100,
-    features_predetermined = FALSE,
-    aggregator = "sum",
-    remove_outliers = FALSE,
-    aspect.ratio = 1,
-    title = NULL,
-    subtitle = NULL,
-    xlab = NULL,
-    ylab = NULL,
-    suffix = " expression level",
-    legend.position = "right",
-    legend.direction = "vertical",
-    theme_use = "theme_scop",
-    theme_args = list(),
-    include_all = FALSE,
-    all_color = "grey20",
-    quadrants_line_color = "grey30",
-    quadrants_line_type = "solid",
-    quadrants_line_width = 0.3,
-    quadrants_label_size = 3,
-    density_alpha = NULL,
-    bins = 20,
-    h = NULL,
-    nrow = NULL,
-    ncol = NULL,
-    verbose = TRUE,
-    ...) {
+  srt,
+  ref_srt = NULL,
+  assay = "RNA",
+  layer = "data",
+  group.by = NULL,
+  feature1,
+  feature2,
+  cutoffs = NULL,
+  density = FALSE,
+  palette = "Chinese",
+  num_features_add = 100,
+  features_predetermined = FALSE,
+  aggregator = "sum",
+  remove_outliers = FALSE,
+  aspect.ratio = 1,
+  title = NULL,
+  subtitle = NULL,
+  xlab = NULL,
+  ylab = NULL,
+  suffix = " expression level",
+  legend.position = "right",
+  legend.direction = "vertical",
+  theme_use = "theme_scop",
+  theme_args = list(),
+  include_all = FALSE,
+  all_color = "grey20",
+  quadrants_line_color = "grey30",
+  quadrants_line_type = "solid",
+  quadrants_line_width = 0.3,
+  quadrants_label_size = 3,
+  density_alpha = NULL,
+  bins = 20,
+  h = NULL,
+  nrow = NULL,
+  ncol = NULL,
+  verbose = TRUE,
+  ...
+) {
   if (is.null(ref_srt)) {
     ref_srt <- srt
   }
@@ -299,147 +300,20 @@ TACSPlot <- function(
     )
 
   if (!is.null(cutoffs)) {
-    p <- add_quadrants(
-      p,
-      feature1_suffix = feature1_suffix,
-      feature2_suffix = feature2_suffix,
+    p <- scop_annotate_quadrants(
+      plot = p,
+      x = feature1_suffix,
+      y = feature2_suffix,
       cutoffs = cutoffs,
-      quadrants_line_color = quadrants_line_color,
-      quadrants_line_type = quadrants_line_type,
-      quadrants_line_width = quadrants_line_width,
-      quadrants_label_size = quadrants_label_size,
-      group.by = group.by
+      line_color = quadrants_line_color,
+      line_type = quadrants_line_type,
+      line_width = quadrants_line_width,
+      label_size = quadrants_label_size,
+      group = group.by
     )
   }
 
   return(p)
-}
-
-add_quadrants <- function(
-    p,
-    feature1_suffix,
-    feature2_suffix,
-    cutoffs,
-    quadrants_line_color = "grey30",
-    quadrants_line_type = "solid",
-    quadrants_line_width = 0.5,
-    quadrants_label_size = 3,
-    group.by = NULL) {
-  cutoffs_x <- NULL
-  cutoffs_y <- NULL
-  if (is.list(cutoffs)) {
-    cutoffs_x <- cutoffs[[1]]
-    cutoffs_y <- cutoffs[[2]]
-  } else if (is.numeric(cutoffs)) {
-    if (length(cutoffs) == 1) {
-      cutoffs_x <- cutoffs
-      cutoffs_y <- cutoffs
-    } else {
-      cutoffs_x <- cutoffs[1]
-      cutoffs_y <- cutoffs[2]
-    }
-  }
-
-  if (!is.null(cutoffs_x)) {
-    p <- p + geom_vline(
-      xintercept = cutoffs_x,
-      linetype = quadrants_line_type,
-      color = quadrants_line_color,
-      linewidth = quadrants_line_width
-    )
-  }
-  if (!is.null(cutoffs_y)) {
-    p <- p + geom_hline(
-      yintercept = cutoffs_y,
-      linetype = quadrants_line_type,
-      color = quadrants_line_color,
-      linewidth = quadrants_line_width
-    )
-  }
-
-  plot_data <- p$data
-  plot_limits <- ggplot_build(p)$layout$panel_params[[1]]
-
-  x_breaks <- c(plot_limits$x.range[1], cutoffs_x, plot_limits$x.range[2])
-  x_breaks <- unique(sort(x_breaks))
-  y_breaks <- c(plot_limits$y.range[1], cutoffs_y, plot_limits$y.range[2])
-  y_breaks <- unique(sort(y_breaks))
-
-  x_breaks <- x_breaks[x_breaks >= plot_limits$x.range[1] & x_breaks <= plot_limits$x.range[2]]
-  y_breaks <- y_breaks[y_breaks >= plot_limits$y.range[1] & y_breaks <= plot_limits$y.range[2]]
-  x_breaks <- unique(sort(x_breaks))
-  y_breaks <- unique(sort(y_breaks))
-
-  x_pos <- (utils::head(x_breaks, -1) + utils::tail(x_breaks, -1)) / 2
-  y_pos <- (utils::head(y_breaks, -1) + utils::tail(y_breaks, -1)) / 2
-
-  plot_data$x_cat <- as.integer(
-    cut(
-      plot_data[[feature1_suffix]],
-      breaks = x_breaks,
-      include.lowest = TRUE
-    )
-  )
-  plot_data$y_cat <- as.integer(
-    cut(
-      plot_data[[feature2_suffix]],
-      breaks = y_breaks,
-      include.lowest = TRUE
-    )
-  )
-
-  if (is.null(group.by)) {
-    counts <- as.data.frame(
-      table(
-        plot_data[, c("x_cat", "y_cat")]
-      ),
-      stringsAsFactors = FALSE
-    )
-    counts$value <- percentify(counts$Freq)
-  } else {
-    counts <- as.data.frame(
-      table(
-        plot_data[, c(group.by, "x_cat", "y_cat")]
-      ),
-      stringsAsFactors = FALSE
-    )
-    counts_list <- split(counts, counts[[group.by]])
-
-    percentages_list <- lapply(
-      counts_list, function(df) {
-        df$value <- percentify(df$Freq)
-        return(df)
-      }
-    )
-    counts <- do.call(rbind, percentages_list)
-  }
-
-  counts$x_cat <- as.integer(counts$x_cat)
-  counts$y_cat <- as.integer(counts$y_cat)
-
-  annot_df <- counts[counts$Freq > 0, ]
-  if (nrow(annot_df) == 0) {
-    return(p)
-  }
-  annot_df$x <- x_pos[annot_df$x_cat]
-  annot_df$y <- y_pos[annot_df$y_cat]
-  annot_df$label <- paste0(round(annot_df$value, 1), "%")
-
-  p <- p + geom_text(
-    data = annot_df,
-    aes(x = .data$x, y = .data$y, label = .data$label),
-    size = quadrants_label_size
-  )
-
-  return(p)
-}
-
-percentify <- function(x) {
-  return(100 * round(div_by_sum(x), 3))
-}
-
-div_by_sum <- function(x) {
-  if (sum(x) == 0) 0 * x else x / sum(x)
 }
 
 #' @title Find features with expression patterns similar to provided features
@@ -455,14 +329,15 @@ div_by_sum <- function(x) {
 #' @return character vector.
 #' @export
 GetSimilarFeatures <- function(
-    srt,
-    features,
-    n,
-    features_use = rownames(srt),
-    anticorr = FALSE,
-    aggregator = "sum",
-    assay = "RNA",
-    layer = "data") {
+  srt,
+  features,
+  n,
+  features_use = rownames(srt),
+  anticorr = FALSE,
+  aggregator = "sum",
+  assay = "RNA",
+  layer = "data"
+) {
   if (!all(features %in% rownames(srt))) {
     log_message(
       "Some of your features have no data available.",
@@ -529,12 +404,13 @@ GetSimilarFeatures <- function(
 #'
 #' @export
 FetchDataZero <- function(
-    srt,
-    features,
-    assay = "RNA",
-    layer = "data",
-    verbose = TRUE,
-    ...) {
+  srt,
+  features,
+  assay = "RNA",
+  layer = "data",
+  verbose = TRUE,
+  ...
+) {
   features <- features[stats::complete.cases(features)]
   avail <- intersect(features, rownames(srt))
   unavail <- setdiff(features, rownames(srt))

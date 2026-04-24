@@ -89,7 +89,7 @@ RunDimsEstimate <- function(
       )
       dims_source <- if (
         length(dims_use) == length(dims_use_stored) &&
-        identical(dims_use, dims_use_stored)
+          identical(dims_use, dims_use_stored)
       ) {
         "stored"
       } else {
@@ -401,7 +401,7 @@ pc_selection_stats <- function(
 #' @param subtitle Subtitle for the combined plot. Default is `NULL`.
 #' @param xlab X-axis label shared by all panels. Default is
 #' `"Principal component"`.
-#' @param theme_use Theme function used to style the plot. 
+#' @param theme_use Theme function used to style the plot.
 #' Default is `"theme_scop"`.
 #' @param theme_args Other arguments passed to the `theme_use`.
 #' @param combine Whether to combine the four panels into one plot. Default is
@@ -587,8 +587,7 @@ DimsEstimatePlot <- function(
   p4 <- apply_theme(
     ggplot2::ggplot(
       plot_data[
-        seq.int(min(3L, nrow(plot_data)), nrow(plot_data)),
-        ,
+        seq.int(min(3L, nrow(plot_data)), nrow(plot_data)), ,
         drop = FALSE
       ],
       ggplot2::aes(x = .data$PC, y = abs(.data$curvature))

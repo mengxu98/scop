@@ -62,7 +62,8 @@ check_python <- function(
     pkg_installed <- exist_python_pkgs(
       packages = packages,
       envname = envname,
-      conda = conda
+      conda = conda,
+      verbose = verbose
     )
   }
 
@@ -89,7 +90,8 @@ check_python <- function(
     pkg_installed <- exist_python_pkgs(
       packages = packages,
       envname = envname,
-      conda = conda
+      conda = conda,
+      verbose = verbose
     )
   }
 
@@ -108,7 +110,8 @@ check_python <- function(
 exist_python_pkgs <- function(
   packages,
   envname = NULL,
-  conda = "auto"
+  conda = "auto",
+  verbose = TRUE
 ) {
   envname <- get_envname(envname)
   conda <- resolve_conda(conda)
@@ -126,17 +129,23 @@ exist_python_pkgs <- function(
   }
 
   log_message(
-    "Checking {.val {length(packages)}} package{?s} in environment: {.file {envname}}"
+    "Checking {.val {length(packages)}} package{?s} in environment: {.file {envname}}",
+    verbose = verbose
   )
 
   all_installed <- tryCatch(
     {
-      installed_python_pkgs(envname = envname, conda = conda)
+      installed_python_pkgs(
+        envname = envname,
+        conda = conda,
+        verbose = verbose
+      )
     },
     error = function(e) {
       log_message(
         "Failed to get installed packages: {.val {e$message}}",
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
     }
   )
@@ -149,7 +158,9 @@ exist_python_pkgs <- function(
     return(packages_installed)
   }
 
-  requirements <- env_requirements(include_optional = TRUE)
+  requirements <- env_requirements(
+    include_optional = TRUE
+  )
   pkg_name_mapping <- requirements$package_aliases
 
   for (i in seq_along(packages)) {
@@ -197,16 +208,18 @@ exist_python_pkgs <- function(
         )
 
         if (version_match) {
-          log_message(
-            "{.pkg {pkg_name}} {.pkg {pkg_operator}} {.pkg {pkg_version}}",
-            message_type = "success"
-          )
-        } else {
-          log_message(
-            "{.pkg {pkg_name}} found but version mismatch: installed {.pkg {paste(installed_version, collapse = ', ')}}, required {.pkg {pkg_operator}} {.pkg {pkg_version}}",
-            message_type = "warning"
-          )
-        }
+        log_message(
+          "{.pkg {pkg_name}} {.pkg {pkg_operator}} {.pkg {pkg_version}}",
+          message_type = "success",
+          verbose = verbose
+        )
+      } else {
+        log_message(
+          "{.pkg {pkg_name}} found but version mismatch: installed {.pkg {paste(installed_version, collapse = ', ')}}, required {.pkg {pkg_operator}} {.pkg {pkg_version}}",
+          message_type = "warning",
+          verbose = verbose
+        )
+      }
 
         packages_installed[pkg] <- version_match
       } else {
@@ -216,14 +229,16 @@ exist_python_pkgs <- function(
         ])
         log_message(
           "{.pkg {pkg_name}} version: {.pkg {paste(installed_version, collapse = ', ')}}",
-          message_type = "success"
+          message_type = "success",
+          verbose = verbose
         )
       }
     } else {
       packages_installed[pkg] <- FALSE
       log_message(
         "{.pkg {pkg_name}} not found",
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
     }
   }
@@ -232,7 +247,9 @@ exist_python_pkgs <- function(
 }
 
 resolve_requested_python_packages <- function(packages) {
-  requirements <- env_requirements(include_optional = TRUE)
+  requirements <- env_requirements(
+    include_optional = TRUE
+  )
   package_versions <- requirements$packages
 
   resolved <- vapply(
@@ -256,8 +273,9 @@ resolve_requested_python_packages <- function(packages) {
 
 parse_python_requirement <- function(pkg, fallback_name = NULL) {
   if (grepl("^git\\+", pkg)) {
-    pkg_info <- strsplit(pkg, "/", fixed = TRUE)[[1]]
-    pkg_name <- fallback_name %||% pkg_info[length(pkg_info)]
+    pkg_name <- fallback_name %||%
+      basename(strsplit(pkg, "@", fixed = TRUE)[[1]][1])
+    pkg_name <- sub("\\.git$", "", pkg_name)
     return(list(
       name = pkg_name,
       operator = NA_character_,
@@ -326,8 +344,7 @@ version_satisfies_requirement <- function(
   }
 
   any(
-    switch(
-      operator,
+    switch(operator,
       "==" = comparison == 0L,
       "=" = comparison == 0L,
       ">=" = comparison >= 0L,
@@ -344,7 +361,8 @@ version_satisfies_requirement <- function(
 
 installed_python_pkgs <- function(
   envname = NULL,
-  conda = "auto"
+  conda = "auto",
+  verbose = TRUE
 ) {
   envname <- get_envname(envname)
   conda <- resolve_conda(conda)
@@ -362,7 +380,8 @@ installed_python_pkgs <- function(
   }
 
   log_message(
-    "Retrieving package list for environment: {.file {envname}}"
+    "Retrieving package list for environment: {.file {envname}}",
+    verbose = verbose
   )
 
   tryCatch(
@@ -375,13 +394,17 @@ installed_python_pkgs <- function(
         envname = envname,
         no_pip = FALSE
       )
-      log_message("Found {.val {nrow(all_installed)}} packages installed")
+      log_message(
+        "Found {.val {nrow(all_installed)}} packages installed",
+        verbose = verbose
+      )
       return(all_installed)
     },
     error = function(e) {
       log_message(
         "Failed to retrieve package list: {.val {e$message}}",
-        message_type = "error"
+        message_type = "error",
+        verbose = verbose
       )
     }
   )
@@ -692,7 +715,7 @@ remove_single_python_package <- function(
       verbose = verbose
     )
 
-    args <- c("pip", "uninstall", "-y")
+    args <- c("pip", "uninstall")
     if (uv != "python -m uv") {
       args <- c(args, "--python", python)
     }

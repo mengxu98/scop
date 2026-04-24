@@ -27,7 +27,9 @@ CheckDataMerge(
 \item{batch}{A character string specifying the batch variable name.}
 
 \item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.}
+If \code{NULL}, the default assay of the Seurat object will be used.
+When the object also contains \code{ChromatinAssay}, the default assay and
+additional \code{ChromatinAssay} will be preprocessed sequentially.}
 
 \item{do_normalization}{Whether data normalization should be performed.
 Default is \code{TRUE}.}

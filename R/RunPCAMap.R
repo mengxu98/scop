@@ -31,19 +31,20 @@
 #'   ref_group = "celltype"
 #' )
 RunPCAMap <- function(
-    srt_query,
-    srt_ref,
-    query_assay = NULL,
-    ref_assay = srt_ref[[ref_pca]]@assay.used,
-    ref_pca = NULL,
-    ref_dims = 1:30,
-    ref_umap = NULL,
-    ref_group = NULL,
-    projection_method = c("model", "knn"),
-    nn_method = NULL,
-    k = 30,
-    distance_metric = "cosine",
-    vote_fun = "mean") {
+  srt_query,
+  srt_ref,
+  query_assay = NULL,
+  ref_assay = srt_ref[[ref_pca]]@assay.used,
+  ref_pca = NULL,
+  ref_dims = 1:30,
+  ref_umap = NULL,
+  ref_group = NULL,
+  projection_method = c("model", "knn"),
+  nn_method = NULL,
+  k = 30,
+  distance_metric = "cosine",
+  vote_fun = "mean"
+) {
   query_assay <- query_assay %||% SeuratObject::DefaultAssay(srt_query)
   ref_assay <- ref_assay %||% SeuratObject::DefaultAssay(srt_ref)
   if (!is.null(ref_group)) {

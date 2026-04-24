@@ -79,7 +79,7 @@ RunCellphoneDB <- function(
   keep_output = FALSE,
   verbose = TRUE
 ) {
-  PrepareEnv()
+  PrepareEnv(modules = "cellphonedb")
   check_python("cellphonedb==5.0.1", verbose = verbose)
 
   if (!inherits(srt, "Seurat")) {
@@ -197,7 +197,7 @@ build_cpdb_adata <- function(
   gene_id_from_IDtype = "symbol",
   verbose = TRUE
 ) {
-  PrepareEnv()
+  PrepareEnv(modules = "cellphonedb")
   check_python(c("scanpy", "numpy"), verbose = FALSE)
 
   mat <- GetAssayData5(srt, assay = assay, layer = layer)
@@ -241,7 +241,7 @@ build_cpdb_adata <- function(
         message_type = "error"
       )
     }
-    mat <- aggregate_sparse_rows(
+    mat <- scop_collapse_sparse_rows(
       mat[map$from_geneID, , drop = FALSE],
       group = map$to_geneID
     )
@@ -258,7 +258,7 @@ build_cpdb_adata <- function(
 }
 
 matrix_to_adata <- function(mat, obs) {
-  PrepareEnv()
+  PrepareEnv(modules = "cellphonedb")
   check_python(c("scanpy", "numpy"), verbose = FALSE)
 
   sc <- reticulate::import("scanpy", convert = FALSE)
@@ -282,31 +282,6 @@ matrix_to_adata <- function(mat, obs) {
   )
   adata$var_names <- rownames(mat)
   adata
-}
-
-aggregate_sparse_rows <- function(mat, group) {
-  if (length(group) != nrow(mat)) {
-    log_message(
-      "{.arg group} length must match the number of rows of {.arg mat}",
-      message_type = "error"
-    )
-  }
-  group <- as.character(group)
-  keep <- !is.na(group) & nzchar(group)
-  mat <- mat[keep, , drop = FALSE]
-  group <- group[keep]
-
-  lv <- unique(group)
-  sm <- Matrix::summary(mat)
-  i_new <- match(group[sm$i], lv)
-  out <- Matrix::sparseMatrix(
-    i = i_new,
-    j = sm$j,
-    x = sm$x,
-    dims = c(length(lv), ncol(mat)),
-    dimnames = list(lv, colnames(mat))
-  )
-  out
 }
 
 standardize_cellphonedb_result <- function(

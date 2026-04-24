@@ -36,18 +36,19 @@
 #' )
 #' }
 RunCSSMap <- function(
-    srt_query,
-    srt_ref,
-    query_assay = NULL,
-    ref_assay = srt_ref[[ref_css]]@assay.used,
-    ref_css = NULL,
-    ref_umap = NULL,
-    ref_group = NULL,
-    projection_method = c("model", "knn"),
-    nn_method = NULL,
-    k = 30,
-    distance_metric = "cosine",
-    vote_fun = "mean") {
+  srt_query,
+  srt_ref,
+  query_assay = NULL,
+  ref_assay = srt_ref[[ref_css]]@assay.used,
+  ref_css = NULL,
+  ref_umap = NULL,
+  ref_group = NULL,
+  projection_method = c("model", "knn"),
+  nn_method = NULL,
+  k = 30,
+  distance_metric = "cosine",
+  vote_fun = "mean"
+) {
   check_r("quadbiolab/simspec", verbose = FALSE)
   query_assay <- query_assay %||% SeuratObject::DefaultAssay(srt_query)
   ref_assay <- ref_assay %||% SeuratObject::DefaultAssay(srt_ref)

@@ -4,7 +4,7 @@
 \alias{env_info}
 \title{Print environment information}
 \usage{
-env_info(conda, envname)
+env_info(conda, envname, verbose = TRUE)
 }
 \arguments{
 \item{conda}{The path to a conda executable.
@@ -13,6 +13,8 @@ Use \code{"auto"} to allow automatically finding an appropriate conda binary.}
 \item{envname}{The name of the conda environment.
 If \code{NULL}, the environment name will be set to \code{"scop_env"}.
 Default is \code{NULL}.}
+
+\item{verbose}{Whether to print environment information.}
 }
 \description{
 Print environment information

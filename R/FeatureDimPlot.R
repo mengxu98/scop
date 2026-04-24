@@ -280,89 +280,90 @@
 #'   label_insitu = TRUE
 #' )
 FeatureDimPlot <- function(
-    srt,
-    features,
-    reduction = NULL,
-    dims = c(1, 2),
-    split.by = NULL,
-    cells = NULL,
-    layer = "data",
-    assay = NULL,
-    show_stat = ifelse(identical(theme_use, "theme_blank"), FALSE, TRUE),
-    palette = ifelse(isTRUE(compare_features), "Set1", "Spectral"),
-    palcolor = NULL,
-    pt.size = NULL,
-    pt.alpha = 1,
-    bg_cutoff = 0,
-    bg_color = "grey80",
-    keep_scale = "feature",
-    lower_quantile = 0,
-    upper_quantile = 0.99,
-    lower_cutoff = NULL,
-    upper_cutoff = NULL,
-    add_density = FALSE,
-    density_color = "grey80",
-    density_filled = FALSE,
-    density_filled_palette = "Greys",
-    density_filled_palcolor = NULL,
-    cells.highlight = NULL,
-    cols.highlight = "black",
-    sizes.highlight = 1,
-    alpha.highlight = 1,
-    stroke.highlight = 0.5,
-    calculate_coexp = FALSE,
-    compare_features = FALSE,
-    color_blend_mode = c("blend", "average", "screen", "multiply"),
-    label = FALSE,
-    label.size = 4,
-    label.fg = "white",
-    label.bg = "black",
-    label.bg.r = 0.1,
-    label_insitu = FALSE,
-    label_repel = FALSE,
-    label_repulsion = 20,
-    label_point_size = 1,
-    label_point_color = "black",
-    label_segment_color = "black",
-    lineages = NULL,
-    lineages_trim = c(0.01, 0.99),
-    lineages_span = 0.75,
-    lineages_palette = "Dark2",
-    lineages_palcolor = NULL,
-    lineages_arrow = grid::arrow(length = grid::unit(0.1, "inches")),
-    lineages_linewidth = 1,
-    lineages_line_bg = "white",
-    lineages_line_bg_stroke = 0.5,
-    lineages_whiskers = FALSE,
-    lineages_whiskers_linewidth = 0.5,
-    lineages_whiskers_alpha = 0.5,
-    graph = NULL,
-    edge_size = c(0.05, 0.5),
-    edge_alpha = 0.1,
-    edge_color = "grey40",
-    hex = FALSE,
-    hex.linewidth = 0.5,
-    hex.color = "grey90",
-    hex.bins = 50,
-    hex.binwidth = NULL,
-    raster = NULL,
-    raster.dpi = c(512, 512),
-    aspect.ratio = 1,
-    title = NULL,
-    subtitle = NULL,
-    xlab = NULL,
-    ylab = NULL,
-    legend.position = "right",
-    legend.direction = "vertical",
-    legend.title = NULL,
-    theme_use = "theme_scop",
-    theme_args = list(),
-    combine = TRUE,
-    nrow = NULL,
-    ncol = NULL,
-    byrow = TRUE,
-    force = FALSE,
-    seed = 11) {
+  srt,
+  features,
+  reduction = NULL,
+  dims = c(1, 2),
+  split.by = NULL,
+  cells = NULL,
+  layer = "data",
+  assay = NULL,
+  show_stat = ifelse(identical(theme_use, "theme_blank"), FALSE, TRUE),
+  palette = ifelse(isTRUE(compare_features), "Set1", "Spectral"),
+  palcolor = NULL,
+  pt.size = NULL,
+  pt.alpha = 1,
+  bg_cutoff = 0,
+  bg_color = "grey80",
+  keep_scale = "feature",
+  lower_quantile = 0,
+  upper_quantile = 0.99,
+  lower_cutoff = NULL,
+  upper_cutoff = NULL,
+  add_density = FALSE,
+  density_color = "grey80",
+  density_filled = FALSE,
+  density_filled_palette = "Greys",
+  density_filled_palcolor = NULL,
+  cells.highlight = NULL,
+  cols.highlight = "black",
+  sizes.highlight = 1,
+  alpha.highlight = 1,
+  stroke.highlight = 0.5,
+  calculate_coexp = FALSE,
+  compare_features = FALSE,
+  color_blend_mode = c("blend", "average", "screen", "multiply"),
+  label = FALSE,
+  label.size = 4,
+  label.fg = "white",
+  label.bg = "black",
+  label.bg.r = 0.1,
+  label_insitu = FALSE,
+  label_repel = FALSE,
+  label_repulsion = 20,
+  label_point_size = 1,
+  label_point_color = "black",
+  label_segment_color = "black",
+  lineages = NULL,
+  lineages_trim = c(0.01, 0.99),
+  lineages_span = 0.75,
+  lineages_palette = "Dark2",
+  lineages_palcolor = NULL,
+  lineages_arrow = grid::arrow(length = grid::unit(0.1, "inches")),
+  lineages_linewidth = 1,
+  lineages_line_bg = "white",
+  lineages_line_bg_stroke = 0.5,
+  lineages_whiskers = FALSE,
+  lineages_whiskers_linewidth = 0.5,
+  lineages_whiskers_alpha = 0.5,
+  graph = NULL,
+  edge_size = c(0.05, 0.5),
+  edge_alpha = 0.1,
+  edge_color = "grey40",
+  hex = FALSE,
+  hex.linewidth = 0.5,
+  hex.color = "grey90",
+  hex.bins = 50,
+  hex.binwidth = NULL,
+  raster = NULL,
+  raster.dpi = c(512, 512),
+  aspect.ratio = 1,
+  title = NULL,
+  subtitle = NULL,
+  xlab = NULL,
+  ylab = NULL,
+  legend.position = "right",
+  legend.direction = "vertical",
+  legend.title = NULL,
+  theme_use = "theme_scop",
+  theme_args = list(),
+  combine = TRUE,
+  nrow = NULL,
+  ncol = NULL,
+  byrow = TRUE,
+  force = FALSE,
+  seed = 11
+) {
   set.seed(seed)
   color_blend_mode <- match.arg(color_blend_mode)
   if (!is.null(keep_scale)) {
@@ -748,7 +749,8 @@ FeatureDimPlot <- function(
                 x = .data[["x"]],
                 y = .data[["y"]],
                 color = .data[[names(colors)[i]]]
-              )
+              ),
+              shape = "circle"
             )
           )
           if (all(is.na(colors_list[[i]]))) {
@@ -954,6 +956,7 @@ FeatureDimPlot <- function(
                 y = .data[["y"]],
                 color = .data[["color_blend"]]
               ),
+              shape = "circle",
               size = pt.size,
               alpha = pt.alpha
             ) +
@@ -992,6 +995,7 @@ FeatureDimPlot <- function(
                 geom_point(
                   data = cell_df,
                   aes(x = .data[["x"]], y = .data[["y"]]),
+                  shape = "circle",
                   color = cols.highlight,
                   size = sizes.highlight + stroke.highlight,
                   alpha = alpha.highlight
@@ -1003,6 +1007,7 @@ FeatureDimPlot <- function(
                     y = .data[["y"]],
                     color = .data[["color_blend"]]
                   ),
+                  shape = "circle",
                   size = sizes.highlight,
                   alpha = alpha.highlight
                 ) +
@@ -1035,6 +1040,7 @@ FeatureDimPlot <- function(
                 geom_point(
                   data = label_df,
                   mapping = aes(x = .data[["x"]], y = .data[["y"]]),
+                  shape = "circle",
                   color = label_point_color,
                   size = label_point_size
                 ) +
@@ -1096,6 +1102,7 @@ FeatureDimPlot <- function(
                 geom_point(
                   data = label_df,
                   mapping = aes(x = .data[["x"]], y = .data[["y"]]),
+                  shape = "circle",
                   color = "black",
                   size = pt.size + 1
                 ) +
@@ -1151,7 +1158,7 @@ FeatureDimPlot <- function(
               ) +
               guides(
                 colour = guide_legend(
-                  override.aes = list(color = colors[label_df$label]),
+                  override.aes = list(shape = "circle", color = colors[label_df$label]),
                   order = 1
                 )
               ) +
@@ -1522,6 +1529,7 @@ FeatureDimPlot <- function(
                 y = .data[["y"]],
                 color = .data[["value"]]
               ),
+              shape = "circle",
               size = pt.size,
               alpha = pt.alpha
             )
@@ -1555,6 +1563,7 @@ FeatureDimPlot <- function(
                 geom_point(
                   data = cell_df,
                   aes(x = .data[["x"]], y = .data[["y"]]),
+                  shape = "circle",
                   color = cols.highlight,
                   size = sizes.highlight + stroke.highlight,
                   alpha = alpha.highlight
@@ -1566,6 +1575,7 @@ FeatureDimPlot <- function(
                     y = .data[["y"]],
                     color = .data[["value"]]
                   ),
+                  shape = "circle",
                   size = sizes.highlight,
                   alpha = alpha.highlight
                 )
@@ -1753,24 +1763,25 @@ FeatureDimPlot <- function(
 #'   reduction = "StandardpcaUMAP3D"
 #' )
 FeatureDimPlot3D <- function(
-    srt,
-    features,
-    reduction = NULL,
-    dims = c(1, 2, 3),
-    axis_labs = NULL,
-    split.by = NULL,
-    layer = "data",
-    assay = NULL,
-    calculate_coexp = FALSE,
-    pt.size = 1.5,
-    cells.highlight = NULL,
-    cols.highlight = "black",
-    shape.highlight = "circle-open",
-    sizes.highlight = 2,
-    width = NULL,
-    height = NULL,
-    save = NULL,
-    force = FALSE) {
+  srt,
+  features,
+  reduction = NULL,
+  dims = c(1, 2, 3),
+  axis_labs = NULL,
+  split.by = NULL,
+  layer = "data",
+  assay = NULL,
+  calculate_coexp = FALSE,
+  pt.size = 1.5,
+  cells.highlight = NULL,
+  cols.highlight = "black",
+  shape.highlight = "circle-open",
+  sizes.highlight = 2,
+  width = NULL,
+  height = NULL,
+  save = NULL,
+  force = FALSE
+) {
   cols.highlight <- col2hex(cols.highlight)
 
   if (is.list(features)) {

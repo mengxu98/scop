@@ -11,12 +11,13 @@
 #'
 #' @export
 srt_append <- function(
-    srt_raw,
-    srt_append,
-    slots = methods::slotNames(srt_append),
-    pattern = NULL,
-    overwrite = FALSE,
-    verbose = TRUE) {
+  srt_raw,
+  srt_append,
+  slots = methods::slotNames(srt_append),
+  pattern = NULL,
+  overwrite = FALSE,
+  verbose = TRUE
+) {
   if (!inherits(srt_raw, "Seurat") || !inherits(srt_append, "Seurat")) {
     log_message(
       "{.arg srt_raw} or {.arg srt_append} is not a {.cls Seurat}",

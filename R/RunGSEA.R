@@ -118,36 +118,37 @@
 #' )
 #' }
 RunGSEA <- function(
-    srt = NULL,
-    group.by = NULL,
-    test.use = "wilcox",
-    DE_threshold = "p_val_adj < 0.05",
-    scoreType = "std",
-    geneID = NULL,
-    geneScore = NULL,
-    geneID_groups = NULL,
-    geneID_exclude = NULL,
-    IDtype = "symbol",
-    result_IDtype = "symbol",
-    species = "Homo_sapiens",
-    db = "GO_BP",
-    db_update = FALSE,
-    db_version = "latest",
-    db_combine = FALSE,
-    convert_species = TRUE,
-    Ensembl_version = NULL,
-    mirror = NULL,
-    TERM2GENE = NULL,
-    TERM2NAME = NULL,
-    minGSSize = 10,
-    maxGSSize = 500,
-    unlimited_db = c("Chromosome", "GeneType", "TF", "Enzyme", "CSPA"),
-    GO_simplify = FALSE,
-    GO_simplify_cutoff = "p.adjust < 0.05",
-    simplify_method = "Wang",
-    simplify_similarityCutoff = 0.7,
-    cores = 1,
-    verbose = TRUE) {
+  srt = NULL,
+  group.by = NULL,
+  test.use = "wilcox",
+  DE_threshold = "p_val_adj < 0.05",
+  scoreType = "std",
+  geneID = NULL,
+  geneScore = NULL,
+  geneID_groups = NULL,
+  geneID_exclude = NULL,
+  IDtype = "symbol",
+  result_IDtype = "symbol",
+  species = "Homo_sapiens",
+  db = "GO_BP",
+  db_update = FALSE,
+  db_version = "latest",
+  db_combine = FALSE,
+  convert_species = TRUE,
+  Ensembl_version = NULL,
+  mirror = NULL,
+  TERM2GENE = NULL,
+  TERM2NAME = NULL,
+  minGSSize = 10,
+  maxGSSize = 500,
+  unlimited_db = c("Chromosome", "GeneType", "TF", "Enzyme", "CSPA"),
+  GO_simplify = FALSE,
+  GO_simplify_cutoff = "p.adjust < 0.05",
+  simplify_method = "Wang",
+  simplify_similarityCutoff = 0.7,
+  cores = 1,
+  verbose = TRUE
+) {
   log_message("Start {.pkg GSEA} analysis", verbose = verbose)
 
   use_srt <- FALSE
@@ -263,16 +264,18 @@ RunGSEA <- function(
       mirror = mirror
     )
   } else {
-    colnames(TERM2GENE) <- c("Term", IDtype)
     db <- "custom"
-    db_list <- list()
-    db_list[[species]][[db]][["TERM2GENE"]] <- unique(TERM2GENE)
-    if (is.null(TERM2NAME)) {
-      TERM2NAME <- unique(TERM2GENE)[, c(1, 1)]
-      colnames(TERM2NAME) <- c("Term", "Name")
-    }
-    db_list[[species]][[db]][["TERM2NAME"]] <- unique(TERM2NAME)
-    db_list[[species]][[db]][["version"]] <- "custom"
+    custom_db <- create_custom_db_list(
+      species = species,
+      db = db,
+      TERM2GENE = TERM2GENE,
+      TERM2NAME = TERM2NAME,
+      IDtype = IDtype,
+      version = "custom"
+    )
+    db_list <- custom_db[["db_list"]]
+    TERM2GENE <- custom_db[["TERM2GENE"]]
+    TERM2NAME <- custom_db[["TERM2NAME"]]
   }
   if (isTRUE(db_combine)) {
     log_message(
@@ -340,6 +343,7 @@ RunGSEA <- function(
     stringsAsFactors = FALSE
   )
 
+  check_r("clusterProfiler", verbose = FALSE)
   res_list <- parallelize_fun(
     seq_len(nrow(comb)),
     function(i) {
