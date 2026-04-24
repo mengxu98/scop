@@ -68,23 +68,24 @@
 #'   ref_group = "celltype"
 #' )
 RunKNNMap <- function(
-    srt_query,
-    srt_ref,
-    query_assay = NULL,
-    ref_assay = NULL,
-    ref_umap = NULL,
-    ref_group = NULL,
-    features = NULL,
-    nfeatures = 2000,
-    query_reduction = NULL,
-    ref_reduction = NULL,
-    query_dims = 1:30,
-    ref_dims = 1:30,
-    projection_method = c("model", "knn"),
-    nn_method = NULL,
-    k = 30,
-    distance_metric = "cosine",
-    vote_fun = "mean") {
+  srt_query,
+  srt_ref,
+  query_assay = NULL,
+  ref_assay = NULL,
+  ref_umap = NULL,
+  ref_group = NULL,
+  features = NULL,
+  nfeatures = 2000,
+  query_reduction = NULL,
+  ref_reduction = NULL,
+  query_dims = 1:30,
+  ref_dims = 1:30,
+  projection_method = c("model", "knn"),
+  nn_method = NULL,
+  k = 30,
+  distance_metric = "cosine",
+  vote_fun = "mean"
+) {
   query_assay <- query_assay %||% SeuratObject::DefaultAssay(srt_query)
   ref_assay <- ref_assay %||% SeuratObject::DefaultAssay(srt_ref)
   if (!is.null(ref_group)) {

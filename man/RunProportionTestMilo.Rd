@@ -36,4 +36,3 @@ is available, graph-ready neighborhood node/edge data are also stored under
 \code{details$milo_graph_data} for visualization.
 }
 \seealso{\link{RunProportionTest}}
-

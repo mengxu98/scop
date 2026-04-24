@@ -75,4 +75,3 @@ ProportionTestPlot(pancreas_sub)
 \link{RunProportionTestPropeller},
 \link{ProportionTestPlot}
 }
-

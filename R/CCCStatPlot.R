@@ -67,6 +67,7 @@
 #' @export
 #'
 #' @examples
+#' if (requireNamespace("CellChat", quietly = TRUE)) {
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #'
@@ -188,6 +189,7 @@
 #'   idents.use = "Ductal",
 #'   plot_type = "role_change"
 #' )
+#' }
 CCCStatPlot <- function(
   srt,
   method = NULL,

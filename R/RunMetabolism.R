@@ -278,8 +278,8 @@ RunMetabolism <- function(
     scores_mat <- Matrix::t(gsva_es)
   } else if (method == "VISION") {
     check_r("YosefLab/VISION", verbose = FALSE)
-    Vision_fun <- thisutils::get_namespace_fun("VISION", "Vision")
-    analyze_fun <- thisutils::get_namespace_fun("VISION", "analyze")
+    Vision_fun <- get_namespace_fun("VISION", "Vision")
+    analyze_fun <- get_namespace_fun("VISION", "analyze")
 
     n_umi <- Matrix::colSums(expr_counts)
     scaled_counts <- Matrix::t(
@@ -322,7 +322,7 @@ RunMetabolism <- function(
   term_ids <- rownames(scores_for_plot)
   term_labels <- term_names_final[term_ids]
   term_labels[is.na(term_labels) | !nzchar(trimws(term_labels))] <- term_ids[is.na(term_labels) | !nzchar(trimws(term_labels))]
-  term_names <- thisutils::capitalize(
+  term_names <- capitalize(
     trimws(as.character(term_labels)),
     force_tolower = TRUE
   )
@@ -420,7 +420,7 @@ load_scmetabolism_gmt <- function(url, db_name, verbose = TRUE) {
 
   tmp <- tempfile(fileext = ".gmt")
   on.exit(if (file.exists(tmp)) unlink(tmp), add = TRUE)
-  thisutils::download(url = url, destfile = tmp, quiet = !verbose)
+  download(url = url, destfile = tmp, quiet = !verbose)
   lines <- readLines(tmp, warn = FALSE)
   split_lines <- strsplit(lines, "\t", fixed = TRUE)
 

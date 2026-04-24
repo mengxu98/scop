@@ -50,13 +50,14 @@
 #' )
 #' identical(raw_counts, new_counts)
 RecoverCounts <- function(
-    srt,
-    assay = NULL,
-    trans = c("expm1", "exp", "none"),
-    min_count = c(1, 2, 3),
-    tolerance = 0.1,
-    sf = NULL,
-    verbose = TRUE) {
+  srt,
+  assay = NULL,
+  trans = c("expm1", "exp", "none"),
+  min_count = c(1, 2, 3),
+  tolerance = 0.1,
+  sf = NULL,
+  verbose = TRUE
+) {
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   counts <- GetAssayData5(
     srt,

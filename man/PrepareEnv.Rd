@@ -10,6 +10,7 @@ PrepareEnv(
   miniconda_repo = "https://repo.anaconda.com/miniconda",
   version = if (is_windows()) "3.11-1" else "3.10-1",
   force = FALSE,
+  modules = NULL,
   pip_options = character(),
   ...
 )
@@ -31,6 +32,15 @@ Default is \code{"3.10-1"} on macOS and Unix and \code{"3.11-1"} on Windows.}
 \item{force}{Whether to force recreation of the environment.
 If \code{TRUE}, the existing environment will be removed and recreated.
 Default is \code{FALSE}.}
+
+\item{modules}{Optional Python dependency modules to install in addition to
+the default scientific stack.
+Supported values are \code{"scanpy"}, \code{"scvi"}, \code{"glue"}, \code{"scanorama"}, \code{"bbknn"},
+\code{"celltypist"}, \code{"cellphonedb"}, \code{"magic"}, \code{"scrublet"},
+\code{"doubletdetection"}, \code{"doublet"}, \code{"palantir"}, \code{"scvelo"},
+\code{"cellrank"}, \code{"wot"}, \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"multimap"},
+and \code{"scomm"}.
+If \code{NULL} or omitted in \code{\link[=PrepareEnv]{PrepareEnv()}}, the complete environment is installed.}
 
 \item{pip_options}{Additional command line arguments to be passed to \code{uv}/\code{pip} when installing pip packages.}
 

@@ -126,30 +126,31 @@
 #' )
 #' }
 CellScoring <- function(
-    srt,
-    features = NULL,
-    layer = "data",
-    assay = NULL,
-    split.by = NULL,
-    IDtype = "symbol",
-    species = "Homo_sapiens",
-    db = "GO_BP",
-    termnames = NULL,
-    db_update = FALSE,
-    db_version = "latest",
-    convert_species = TRUE,
-    Ensembl_version = NULL,
-    mirror = NULL,
-    minGSSize = 10,
-    maxGSSize = 500,
-    method = "Seurat",
-    classification = TRUE,
-    name = "",
-    new_assay = FALSE,
-    seed = 11,
-    cores = 1,
-    verbose = TRUE,
-    ...) {
+  srt,
+  features = NULL,
+  layer = "data",
+  assay = NULL,
+  split.by = NULL,
+  IDtype = "symbol",
+  species = "Homo_sapiens",
+  db = "GO_BP",
+  termnames = NULL,
+  db_update = FALSE,
+  db_version = "latest",
+  convert_species = TRUE,
+  Ensembl_version = NULL,
+  mirror = NULL,
+  minGSSize = 10,
+  maxGSSize = 500,
+  method = "Seurat",
+  classification = TRUE,
+  name = "",
+  new_assay = FALSE,
+  seed = 11,
+  cores = 1,
+  verbose = TRUE,
+  ...
+) {
   log_message(
     "Start cell scoring",
     verbose = verbose
@@ -452,19 +453,20 @@ CellScoring <- function(
 }
 
 AddModuleScore2 <- function(
-    object,
-    features,
-    assay = NULL,
-    layer = "data",
-    pool = NULL,
-    nbin = 24,
-    ctrl = 100,
-    name = "Cluster",
-    seed = 11,
-    search = FALSE,
-    cores = 1,
-    verbose = TRUE,
-    ...) {
+  object,
+  features,
+  assay = NULL,
+  layer = "data",
+  pool = NULL,
+  nbin = 24,
+  ctrl = 100,
+  name = "Cluster",
+  seed = 11,
+  search = FALSE,
+  cores = 1,
+  verbose = TRUE,
+  ...
+) {
   set.seed(seed = seed)
   assay_raw <- SeuratObject::DefaultAssay(object = object)
   assay <- assay %||% assay_raw
@@ -602,8 +604,9 @@ AddModuleScore2 <- function(
 }
 
 check_length <- function(
-    values,
-    cutoff = 0) {
+  values,
+  cutoff = 0
+) {
   vapply(
     X = values,
     FUN = function(x) {

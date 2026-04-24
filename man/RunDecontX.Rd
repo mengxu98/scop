@@ -15,6 +15,7 @@ RunDecontX(
   assay_name = "decontXcounts",
   store_assay = TRUE,
   round_counts = FALSE,
+  data_type = NULL,
   seed = 11,
   ...
 )
@@ -54,6 +55,10 @@ Default is \code{TRUE}.}
 
 \item{round_counts}{Whether to round decontaminated counts before creating the assay.
 Default is \code{FALSE}.}
+
+\item{data_type}{Optional precomputed result from \code{\link[=CheckDataType]{CheckDataType()}} for the
+input assay. Primarily used internally to avoid repeated scans of the same
+count matrix across nested QC calls.}
 
 \item{seed}{Random seed for reproducibility.
 Default is \code{11}.}

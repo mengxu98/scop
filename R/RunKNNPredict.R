@@ -217,34 +217,35 @@
 #'   features = "KNNPredict_simil"
 #' )
 RunKNNPredict <- function(
-    srt_query,
-    srt_ref = NULL,
-    bulk_ref = NULL,
-    query_group = NULL,
-    ref_group = NULL,
-    query_assay = NULL,
-    ref_assay = NULL,
-    query_reduction = NULL,
-    ref_reduction = NULL,
-    query_dims = 1:30,
-    ref_dims = 1:30,
-    query_collapsing = !is.null(query_group),
-    ref_collapsing = TRUE,
-    return_full_distance_matrix = FALSE,
-    features = NULL,
-    features_type = c("HVF", "DE"),
-    feature_source = "both",
-    nfeatures = 2000,
-    DEtest_param = list(
-      max.cells.per.ident = 200,
-      test.use = "wilcox"
-    ),
-    DE_threshold = "p_val_adj < 0.05",
-    nn_method = NULL,
-    distance_metric = "cosine",
-    k = 30,
-    filter_lowfreq = 0,
-    prefix = "KNNPredict") {
+  srt_query,
+  srt_ref = NULL,
+  bulk_ref = NULL,
+  query_group = NULL,
+  ref_group = NULL,
+  query_assay = NULL,
+  ref_assay = NULL,
+  query_reduction = NULL,
+  ref_reduction = NULL,
+  query_dims = 1:30,
+  ref_dims = 1:30,
+  query_collapsing = !is.null(query_group),
+  ref_collapsing = TRUE,
+  return_full_distance_matrix = FALSE,
+  features = NULL,
+  features_type = c("HVF", "DE"),
+  feature_source = "both",
+  nfeatures = 2000,
+  DEtest_param = list(
+    max.cells.per.ident = 200,
+    test.use = "wilcox"
+  ),
+  DE_threshold = "p_val_adj < 0.05",
+  nn_method = NULL,
+  distance_metric = "cosine",
+  k = 30,
+  filter_lowfreq = 0,
+  prefix = "KNNPredict"
+) {
   query_assay <- query_assay %||% SeuratObject::DefaultAssay(srt_query)
   features_type <- match.arg(features_type)
   if (is.null(query_reduction) + is.null(ref_reduction) == 1) {

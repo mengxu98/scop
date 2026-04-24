@@ -12,6 +12,8 @@ RunDEtest(
   cells1 = NULL,
   cells2 = NULL,
   features = NULL,
+  feature_type = c("gene", "peak", "cCRE"),
+  analysis_level = c("cell", "pseudobulk"),
   markers_type = c("all", "paired", "conserved", "disturbed"),
   grouping.var = NULL,
   meta.method = c("maximump", "minimump", "wilkinsonp", "meanp", "sump", "votep"),
@@ -28,6 +30,8 @@ RunDEtest(
   min.cells.feature = 3,
   min.cells.group = 3,
   norm.method = "LogNormalize",
+  sample_col = NULL,
+  condition_col = NULL,
   p.adjust.method = "bonferroni",
   layer = "data",
   assay = NULL,
@@ -44,21 +48,30 @@ RunDEtest(
 If not provided, the function uses the "active.ident" variable in the Seurat object.}
 
 \item{group1}{A vector of cell IDs or a character vector specifying the cells that belong to the first group.
-If both group.by and group1 are provided, group1 takes precedence.}
+If both group.by and group1 are provided, group1 takes precedence.
+For pseudobulk analysis, this parameter is interpreted as the first condition label.}
 
 \item{group2}{A vector of cell IDs or a character vector specifying the cells that belong to the second group.
-This parameter is only used when group.by or group1 is provided.}
+This parameter is only used when group.by or group1 is provided.
+For pseudobulk analysis, this parameter is interpreted as the second condition label.}
 
 \item{cells1}{A vector of cell IDs specifying the cells that belong to group1. If provided, group1 is ignored.}
 
 \item{cells2}{A vector of cell IDs specifying the cells that belong to group2.
 This parameter is only used when cells1 is provided.}
 
-\item{features}{A vector of gene names specifying the features to consider for the differential test.
+\item{features}{A vector of feature names specifying the features to consider for the differential test.
 If not provided, all features in the dataset are considered.}
 
+\item{feature_type}{Feature type used for differential testing.
+Default is \code{"gene"}.}
+
+\item{analysis_level}{Analysis level used for differential testing.
+Default is \code{"cell"}.}
+
 \item{markers_type}{A character value specifying the type of markers to find.
-Possible values are "all", "paired", "conserved", and "disturbed".}
+Possible values are "all", "paired", "conserved", and "disturbed".
+Pseudobulk analysis currently supports only \code{"all"}.}
 
 \item{grouping.var}{A character value specifying the grouping variable for finding conserved or disturbed markers.
 This parameter is only used when markers_type is "conserved" or "disturbed".}
@@ -66,50 +79,8 @@ This parameter is only used when markers_type is "conserved" or "disturbed".}
 \item{meta.method}{A character value specifying the method to use for combining p-values in the conserved markers test.
 Possible values are "maximump", "minimump", "wilkinsonp", "meanp", "sump", and "votep".}
 
-\item{test.use}{Denotes which test to use. Available options are:
-\itemize{
- \item{"wilcox"} : Identifies differentially expressed genes between two
- groups of cells using a Wilcoxon Rank Sum test (default); will use a fast
- implementation by Presto if installed
- \item{"wilcox_limma"} : Identifies differentially expressed genes between two
- groups of cells using the limma implementation of the Wilcoxon Rank Sum test;
- set this option to reproduce results from Seurat v4
- \item{"bimod"} : Likelihood-ratio test for single cell gene expression,
- (McDavid et al., Bioinformatics, 2013)
- \item{"roc"} : Identifies 'markers' of gene expression using ROC analysis.
- For each gene, evaluates (using AUC) a classifier built on that gene alone,
- to classify between two groups of cells. An AUC value of 1 means that
- expression values for this gene alone can perfectly classify the two
- groupings (i.e. Each of the cells in cells.1 exhibit a higher level than
- each of the cells in cells.2). An AUC value of 0 also means there is perfect
- classification, but in the other direction. A value of 0.5 implies that
- the gene has no predictive power to classify the two groups. Returns a
- 'predictive power' (abs(AUC-0.5) * 2) ranked matrix of putative differentially
- expressed genes.
- \item{"t"} : Identify differentially expressed genes between two groups of
- cells using the Student's t-test.
- \item{"negbinom"} : Identifies differentially expressed genes between two
-  groups of cells using a negative binomial generalized linear model.
-  Use only for UMI-based datasets
- \item{"poisson"} : Identifies differentially expressed genes between two
-  groups of cells using a poisson generalized linear model.
-  Use only for UMI-based datasets
- \item{"LR"} : Uses a logistic regression framework to determine differentially
- expressed genes. Constructs a logistic regression model predicting group
- membership based on each feature individually and compares this to a null
- model with a likelihood ratio test.
- \item{"MAST"} : Identifies differentially expressed genes between two groups
- of cells using a hurdle model tailored to scRNA-seq data. Utilizes the MAST
- package to run the DE testing.
- \item{"DESeq2"} : Identifies differentially expressed genes between two groups
- of cells based on a model using DESeq2 which uses a negative binomial
- distribution (Love et al, Genome Biology, 2014).This test does not support
- pre-filtering of genes based on average difference (or percent detection rate)
- between cell groups. However, genes may be pre-filtered based on their
- minimum detection rate (min.pct) across both cell groups. To use this method,
- please install DESeq2, using the instructions at
- https://bioconductor.org/packages/release/bioc/html/DESeq2.html
-}}
+\item{test.use}{Differential testing method.
+For pseudobulk analysis, only \code{"limma_voom"} and \code{"edgeR"} are currently supported.}
 
 \item{only.pos}{Only return positive markers (FALSE by default)}
 
@@ -151,6 +122,12 @@ of the two groups, currently only used for poisson and negative binomial tests}
 
 \item{norm.method}{Normalization method for fold change calculation when layer is 'data'.
 Default is \code{"LogNormalize"}.}
+
+\item{sample_col}{Metadata column storing biological sample IDs for pseudobulk analysis.
+Required when \code{analysis_level = "pseudobulk"}.}
+
+\item{condition_col}{Metadata column storing condition labels for pseudobulk analysis.
+Required when \code{analysis_level = "pseudobulk"}.}
 
 \item{p.adjust.method}{A character value specifying the method to use for adjusting p-values.
 Default is \code{"bonferroni"}.}
@@ -326,6 +303,53 @@ ht7 <- GroupHeatmap(
   numerator = "smartseq2"
 )
 ht7$plot
+
+pbmc_small <- UpdateSeuratObject(pbmc_small)
+pbmc_small[["sample"]] <- rep(c("S1", "S2", "S3", "S4"), length.out = ncol(pbmc_small))
+pbmc_small[["condition"]] <- rep(c("ctrl", "ctrl", "case", "case"), length.out = ncol(pbmc_small))
+pbmc_small <- RunDEtest(
+  pbmc_small,
+  analysis_level = "pseudobulk",
+  sample_col = "sample",
+  condition_col = "condition",
+  test.use = "limma_voom",
+  layer = "counts",
+  cores = 1
+)
+pbmc_small <- RunDEtest(
+  pbmc_small,
+  analysis_level = "pseudobulk",
+  sample_col = "sample",
+  condition_col = "condition",
+  test.use = "edgeR",
+  layer = "counts",
+  cores = 1
+)
+edgeR_markers <- pbmc_small@tools$DEtest_pseudobulk$AllMarkers_edgeR
+
+\donttest{
+data(pbmcmultiome_sub)
+pbmcmultiome_sub[["sample"]] <- rep(
+  c("S1", "S2", "S3", "S4"),
+  length.out = ncol(pbmcmultiome_sub)
+)
+pbmcmultiome_sub[["condition"]] <- rep(
+  c("ctrl", "ctrl", "case", "case"),
+  length.out = ncol(pbmcmultiome_sub)
+)
+pbmcmultiome_sub <- RunDEtest(
+  pbmcmultiome_sub,
+  assay = "peaks",
+  layer = "counts",
+  feature_type = "peak",
+  analysis_level = "pseudobulk",
+  sample_col = "sample",
+  condition_col = "condition",
+  test.use = "edgeR",
+  cores = 1
+)
+peak_markers <- pbmcmultiome_sub@tools$DEtest_pseudobulk$AllMarkers_edgeR
+}
 }
 \seealso{
 \link{VolcanoPlot}, \link{RunEnrichment}, \link{RunGSEA}, \link{GroupHeatmap}
