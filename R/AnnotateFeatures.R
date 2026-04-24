@@ -29,21 +29,18 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' data(pancreas_sub)
-#' pancreas_sub <- AnnotateFeatures(
-#'   pancreas_sub,
-#'   species = "Mus_musculus",
-#'   db = c(
-#'     "TF",
-#'     "CSPA"
+#' if (requireNamespace("R.cache", quietly = TRUE)) {
+#'   data(pancreas_sub)
+#'   pancreas_sub <- AnnotateFeatures(
+#'     pancreas_sub,
+#'     species = "Mus_musculus",
+#'     db = "TF"
 #'   )
-#' )
-#' head(
-#'   GetFeaturesData(
-#'     pancreas_sub
+#'   head(
+#'     GetFeaturesData(
+#'       pancreas_sub
+#'     )
 #'   )
-#' )
 #' }
 #'
 #' \dontrun{

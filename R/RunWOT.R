@@ -83,7 +83,7 @@ RunWOT <- function(
   return_seurat = !is.null(srt),
   verbose = TRUE
 ) {
-  PrepareEnv()
+  PrepareEnv(modules = "wot")
   check_python("wot")
   if (all(is.null(srt), is.null(adata))) {
     log_message(

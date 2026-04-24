@@ -30,6 +30,8 @@ scVI_integrate(
   model = "SCVI",
   SCVI_params = list(),
   PEAKVI_params = list(),
+  POISSONVI_params = list(),
+  train_params = list(),
   cores = 1,
   verbose = TRUE,
   seed = 11
@@ -46,7 +48,9 @@ Default is \code{TRUE}.}
 \item{srt_list}{A list of \code{Seurat} objects to be checked and preprocessed.}
 
 \item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.}
+If \code{NULL}, the default assay of the Seurat object will be used.
+When the object also contains \code{ChromatinAssay}, the default assay and
+additional \code{ChromatinAssay} will be preprocessed sequentially.}
 
 \item{do_normalization}{Whether data normalization should be performed.
 Default is \code{TRUE}.}
@@ -109,13 +113,19 @@ Larger values result in fewer clusters.
 Default is \code{0.6}.}
 
 \item{model}{A string indicating the scVI model to be used.
-Options are "SCVI" and "PEAKVI".
+Options are "SCVI", "PEAKVI", and "POISSONVI".
 Default is `"SCVI"`.}
 
 \item{SCVI_params}{A list of parameters for the SCVI model.
 Default is `list()`.}
 
 \item{PEAKVI_params}{A list of parameters for the PEAKVI model.
+Default is `list()`.}
+
+\item{POISSONVI_params}{A list of parameters for the POISSONVI model.
+Default is `list()`.}
+
+\item{train_params}{A list of parameters passed to the model `train()` method.
 Default is `list()`.}
 
 \item{cores}{An integer setting the number of threads for `scVI`.

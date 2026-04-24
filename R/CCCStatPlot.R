@@ -49,6 +49,11 @@
 #' @param font.size Base font size.
 #' @param theme_use Theme function used for styling.
 #' @param theme_args Arguments passed to the theme function.
+#' @param grid_major Whether to show major panel grid lines for applicable statistical panels.
+#' Default is `TRUE`.
+#' @param grid_major_colour Color of major panel grid lines.
+#' @param grid_major_linetype Linetype of major panel grid lines.
+#' @param grid_major_linewidth Line width of major panel grid lines.
 #' @param verbose Whether to print messages.
 #' @param combine Whether to combine multiple panels.
 #' @param nrow Number of rows in combined layout.
@@ -62,7 +67,7 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' if (requireNamespace("CellChat", quietly = TRUE)) {
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #'
@@ -237,6 +242,10 @@ CCCStatPlot <- function(
   font.size = 10,
   theme_use = "theme_scop",
   theme_args = list(),
+  grid_major = TRUE,
+  grid_major_colour = "grey80",
+  grid_major_linetype = 2,
+  grid_major_linewidth = 0.3,
   combine = TRUE,
   nrow = NULL,
   ncol = NULL,
@@ -479,7 +488,11 @@ CCCStatPlot <- function(
       legend.direction = legend.direction,
       font.size = font.size,
       theme_use = theme_use,
-      theme_args = theme_args
+      theme_args = theme_args,
+      grid_major = grid_major,
+      grid_major_colour = grid_major_colour,
+      grid_major_linetype = grid_major_linetype,
+      grid_major_linewidth = grid_major_linewidth
     ))
   }
 
@@ -751,7 +764,8 @@ ccc_lr_contribution_plot <- function(
     split(contrib_df, contrib_df$signaling),
     function(df_sig) {
       df_sig <- df_sig[
-        order(df_sig$contribution, decreasing = TRUE), ,
+        order(df_sig$contribution, decreasing = TRUE),
+        ,
         drop = FALSE
       ]
       df_sig$interaction <- factor(
@@ -1386,7 +1400,8 @@ ccc_generic_lr_contribution_plot <- function(
     split(contrib_df, contrib_df$signaling),
     function(df_sig) {
       df_sig <- df_sig[
-        order(df_sig$contribution, decreasing = TRUE), ,
+        order(df_sig$contribution, decreasing = TRUE),
+        ,
         drop = FALSE
       ]
       df_sig$interaction <- factor(
@@ -1711,9 +1726,22 @@ ccc_stat_bar_plot <- function(
   legend.direction = "vertical",
   font.size = 10,
   theme_use = "theme_scop",
-  theme_args = list()
+  theme_args = list(),
+  grid_major = TRUE,
+  grid_major_colour = "grey80",
+  grid_major_linetype = 2,
+  grid_major_linewidth = 0.3
 ) {
   check_r("thisplot", verbose = FALSE)
+  grid_major_element <- if (isTRUE(grid_major)) {
+    ggplot2::element_line(
+      colour = grid_major_colour,
+      linetype = grid_major_linetype,
+      linewidth = grid_major_linewidth
+    )
+  } else {
+    ggplot2::element_blank()
+  }
   if (identical(stat_type, "count")) {
     agg <- group_summary(
       df = df,
@@ -1772,7 +1800,11 @@ ccc_stat_bar_plot <- function(
       legend.position = legend.position,
       legend.direction = legend.direction,
       theme_use = theme_use,
-      theme_args = theme_args
+      theme_args = theme_args,
+      grid_major = grid_major,
+      grid_major_colour = grid_major_colour,
+      grid_major_linetype = grid_major_linetype,
+      grid_major_linewidth = grid_major_linewidth
     )
     return(p)
   }
@@ -1806,7 +1838,8 @@ ccc_stat_bar_plot <- function(
     theme_use = theme_use,
     theme_args = theme_args,
     font.size = font.size
-  )
+  ) +
+    ggplot2::theme(panel.grid.major = grid_major_element)
 }
 
 ccc_stat_distribution_plot <- function(
@@ -1884,7 +1917,8 @@ ccc_stat_comparison_plot <- function(
       rbind,
       lapply(seq_along(cc_cmp$object_list), function(i) {
         obj <- cc_cmp$object_list[[i]]
-        value <- switch(measure,
+        value <- switch(
+          measure,
           count = sum(obj@net$count, na.rm = TRUE),
           weight = sum(obj@net$weight, na.rm = TRUE)
         )
@@ -1929,12 +1963,14 @@ ccc_stat_comparison_plot <- function(
     rbind,
     lapply(seq_along(cc_cmp$object_list), function(i) {
       obj <- cc_cmp$object_list[[i]]
-      mat <- switch(measure,
+      mat <- switch(
+        measure,
         count = obj@net$count,
         weight = obj@net$weight
       )
       celltypes <- rownames(mat)
-      value <- switch(pattern,
+      value <- switch(
+        pattern,
         outgoing = rowSums(mat, na.rm = TRUE),
         incoming = colSums(mat, na.rm = TRUE),
         all = rowSums(mat, na.rm = TRUE) +
