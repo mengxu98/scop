@@ -16,12 +16,15 @@
 #'
 #' @export
 #' @examples
-#' ListDB(species = "Homo_sapiens")
-#' ListDB(species = c("Homo_sapiens", "Mus_musculus"))
-#' ListDB(species = "Mus_musculus", db = "GO_BP")
+#' if (requireNamespace("R.cache", quietly = TRUE)) {
+#'   ListDB(species = "Homo_sapiens")
+#'   ListDB(species = c("Homo_sapiens", "Mus_musculus"))
+#'   ListDB(species = "Mus_musculus", db = "GO_BP")
+#' }
 ListDB <- function(
-    species = c("Homo_sapiens", "Mus_musculus"),
-    db = NULL) {
+  species = c("Homo_sapiens", "Mus_musculus"),
+  db = NULL
+) {
   pathnames <- dir(
     path = R.cache::getCacheRootPath(),
     pattern = "[.]Rcache$",

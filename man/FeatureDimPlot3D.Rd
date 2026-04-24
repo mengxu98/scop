@@ -45,7 +45,9 @@ Default is \code{NULL}.}
 Default is \code{data}.}
 
 \item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.}
+If \code{NULL}, the default assay of the Seurat object will be used.
+When the object also contains \code{ChromatinAssay}, the default assay and
+additional \code{ChromatinAssay} will be preprocessed sequentially.}
 
 \item{calculate_coexp}{Whether to calculate the co-expression value (geometric mean) of the features.}
 

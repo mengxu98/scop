@@ -9,6 +9,7 @@ db_DoubletDetection(
   assay = "RNA",
   db_rate = ncol(srt)/1000 * 0.01,
   cores = 1,
+  data_type = NULL,
   ...
 )
 }
@@ -23,6 +24,10 @@ Default is calculated as \code{ncol(srt) / 1000 * 0.01}.}
 
 \item{cores}{The number of CPU cores to use for \code{doubletdetection}.
 Default is \code{1}.}
+
+\item{data_type}{Optional precomputed result from \code{\link[=CheckDataType]{CheckDataType()}} for the
+input assay. Primarily used internally to avoid repeated scans of the same
+count matrix across nested QC calls.}
 
 \item{...}{Additional arguments to be passed to \href{https://github.com/JonathanShor/DoubletDetection}{doubletdetection.BoostClassifier}.}
 }

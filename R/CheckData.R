@@ -31,11 +31,12 @@ CheckDataType <- function(object, ...) {
 #' data(pancreas_sub)
 #' CheckDataType(pancreas_sub)
 CheckDataType.Seurat <- function(
-    object,
-    layer = "data",
-    assay = NULL,
-    verbose = TRUE,
-    ...) {
+  object,
+  layer = "data",
+  assay = NULL,
+  verbose = TRUE,
+  ...
+) {
   assay <- assay %||% SeuratObject::DefaultAssay(object)
   data <- GetAssayData5(
     object,
@@ -50,9 +51,10 @@ CheckDataType.Seurat <- function(
 #' @method CheckDataType default
 #' @export
 CheckDataType.default <- function(
-    object,
-    verbose = TRUE,
-    ...) {
+  object,
+  verbose = TRUE,
+  ...
+) {
   isfinite <- all(is.finite(range(object, na.rm = TRUE)))
   if (inherits(object, "dgCMatrix")) {
     isfloat <- any(object@x %% 1 != 0, na.rm = TRUE)
@@ -145,20 +147,21 @@ CheckDataType.default <- function(
 #'
 #' @export
 CheckDataList <- function(
-    srt_list,
-    batch,
-    assay = NULL,
-    do_normalization = NULL,
-    normalization_method = "LogNormalize",
-    do_HVF_finding = TRUE,
-    HVF_source = "separate",
-    HVF_method = "vst",
-    nHVF = 2000,
-    HVF_min_intersection = 1,
-    HVF = NULL,
-    vars_to_regress = NULL,
-    verbose = TRUE,
-    seed = 11) {
+  srt_list,
+  batch,
+  assay = NULL,
+  do_normalization = NULL,
+  normalization_method = "LogNormalize",
+  do_HVF_finding = TRUE,
+  HVF_source = "separate",
+  HVF_method = "vst",
+  nHVF = 2000,
+  HVF_min_intersection = 1,
+  HVF = NULL,
+  vars_to_regress = NULL,
+  verbose = TRUE,
+  seed = 11
+) {
   log_message(
     "Checking a list of {.cls Seurat}...",
     verbose = verbose
@@ -247,36 +250,51 @@ CheckDataList <- function(
   if (length(unique(features_list)) != 1) {
     if (type == "Chromatin") {
       log_message(
-        "The peaks in assay {.val {assay}} is different between batches. Creating a common set...",
+        "The peaks in assay {.val {assay}} differ between objects. Aligning to a merged union peak set...",
         message_type = "warning",
         verbose = verbose
       )
+      temp_col <- ".scop_align_id"
+      while (any(vapply(srt_list, function(srt) temp_col %in% colnames(srt@meta.data), logical(1)))) {
+        temp_col <- paste0(temp_col, "_x")
+      }
+      align_ids <- paste0(".scop_align_", seq_along(srt_list))
+      for (i in seq_along(srt_list)) {
+        srt_list[[i]][[temp_col]] <- align_ids[[i]]
+      }
       srt_merge <- Reduce(merge, srt_list)
-      srt_list <- Seurat::SplitObject(
+      srt_list_aligned <- Seurat::SplitObject(
         object = srt_merge,
-        split.by = batch
+        split.by = temp_col
       )
-    }
-    cf <- Reduce(
-      intersect,
-      lapply(
-        srt_list, function(srt) {
-          rownames(
-            Seurat::GetAssay(
-              srt,
-              assay = assay
-            )
-          )
+      srt_list <- unname(srt_list_aligned[align_ids])
+      for (i in seq_along(srt_list)) {
+        if (temp_col %in% colnames(srt_list[[i]]@meta.data)) {
+          srt_list[[i]]@meta.data[, temp_col] <- NULL
         }
+      }
+    } else {
+      cf <- Reduce(
+        intersect,
+        lapply(
+          srt_list, function(srt) {
+            rownames(
+              Seurat::GetAssay(
+                srt,
+                assay = assay
+              )
+            )
+          }
+        )
       )
-    )
-    log_message(
-      "{.arg srt_list} have different feature names! Will subset the common features ({.val {length(cf)}}) for downstream analysis",
-      message_type = "warning",
-      verbose = verbose
-    )
-    for (i in seq_along(srt_list)) {
-      srt_list[[i]][[assay]] <- subset(srt_list[[i]][[assay]], features = cf)
+      log_message(
+        "{.arg srt_list} have different feature names! Will subset the common features ({.val {length(cf)}}) for downstream analysis",
+        message_type = "warning",
+        verbose = verbose
+      )
+      for (i in seq_along(srt_list)) {
+        srt_list[[i]][[assay]] <- subset(srt_list[[i]][[assay]], features = cf)
+      }
     }
   }
 
@@ -498,44 +516,54 @@ CheckDataList <- function(
         verbose = verbose
       )
       srt_merge <- Reduce(merge, srt_list)
-      # if (type == "RNA") {
-      srt_merge <- Seurat::FindVariableFeatures(
-        srt_merge,
-        assay = SeuratObject::DefaultAssay(srt_merge),
-        nfeatures = nHVF,
-        selection.method = HVF_method,
-        verbose = FALSE
-      )
-      # }
-      # if (type == "Chromatin") {
-      #   srt_merge <- FindTopFeatures(srt_merge, assay = DefaultAssay(srt_merge), min.cutoff = HVF_min_cutoff, verbose = FALSE)
-      # }
-      HVF <- SeuratObject::VariableFeatures(srt_merge)
+      if (type == "RNA") {
+        srt_merge <- Seurat::FindVariableFeatures(
+          srt_merge,
+          assay = SeuratObject::DefaultAssay(srt_merge),
+          nfeatures = nHVF,
+          selection.method = HVF_method,
+          verbose = FALSE
+        )
+        HVF <- SeuratObject::VariableFeatures(srt_merge)
+      }
+      if (type == "Chromatin") {
+        srt_merge <- Signac::FindTopFeatures(
+          srt_merge,
+          assay = SeuratObject::DefaultAssay(srt_merge),
+          min.cutoff = "q5",
+          verbose = FALSE
+        )
+        HVF <- SeuratObject::VariableFeatures(srt_merge)
+      }
     }
     if (HVF_source == "separate") {
       log_message(
         "Use the separate HVF from {.arg srt_list}",
         verbose = verbose
       )
-      # if (type == "RNA") {
-      HVF <- Seurat::SelectIntegrationFeatures(
-        object.list = srt_list,
-        nfeatures = nHVF,
-        verbose = FALSE
-      )
       HVF_sort <- sort(
         table(unlist(lapply(srt_list, SeuratObject::VariableFeatures))),
         decreasing = TRUE
       )
       HVF_filter <- HVF_sort[HVF_sort >= HVF_min_intersection]
-      HVF <- intersect(HVF, names(HVF_filter))
-      # }
-      # if (type == "Chromatin") {
-      #   nHVF <- min(sapply(srt_list, function(srt) length(SeuratObject::VariableFeatures(srt))))
-      #   HVF_sort <- sort(table(unlist(lapply(srt_list, VariableFeatures))), decreasing = TRUE)
-      #   HVF_filter <- HVF_sort[HVF_sort >= HVF_min_intersection]
-      #   HVF <- names(utils::head(HVF_filter, nHVF))
-      # }
+      if (type == "RNA") {
+        HVF <- Seurat::SelectIntegrationFeatures(
+          object.list = srt_list,
+          nfeatures = nHVF,
+          verbose = FALSE
+        )
+        HVF <- intersect(HVF, names(HVF_filter))
+      }
+      if (type == "Chromatin") {
+        nHVF_use <- min(
+          nHVF,
+          min(sapply(
+            srt_list,
+            function(srt) length(SeuratObject::VariableFeatures(srt))
+          ))
+        )
+        HVF <- names(utils::head(HVF_filter, nHVF_use))
+      }
       if (length(HVF) == 0) {
         log_message(
           "No HVF available",
@@ -622,20 +650,21 @@ CheckDataList <- function(
 #'
 #' @export
 CheckDataMerge <- function(
-    srt_merge,
-    batch = NULL,
-    assay = NULL,
-    do_normalization = NULL,
-    normalization_method = "LogNormalize",
-    do_HVF_finding = TRUE,
-    HVF_source = "separate",
-    HVF_method = "vst",
-    nHVF = 2000,
-    HVF_min_intersection = 1,
-    HVF = NULL,
-    vars_to_regress = NULL,
-    verbose = TRUE,
-    seed = 11) {
+  srt_merge,
+  batch = NULL,
+  assay = NULL,
+  do_normalization = NULL,
+  normalization_method = "LogNormalize",
+  do_HVF_finding = TRUE,
+  HVF_source = "separate",
+  HVF_method = "vst",
+  nHVF = 2000,
+  HVF_min_intersection = 1,
+  HVF = NULL,
+  vars_to_regress = NULL,
+  verbose = TRUE,
+  seed = 11
+) {
   if (!inherits(srt_merge, "Seurat")) {
     log_message(
       "{.arg srt_merge} is not a {.cls Seurat}",
@@ -692,6 +721,32 @@ CheckDataMerge <- function(
   assay <- checked[["assay"]]
   type <- checked[["type"]]
   srt_merge <- Reduce(merge, srt_list)
+  if (type == "Chromatin") {
+    assay_obj <- Seurat::GetAssay(srt_merge, assay = assay)
+    feature_order <- rownames(assay_obj@counts)
+    if (
+      nrow(assay_obj@data) > 0 &&
+        setequal(rownames(assay_obj@data), feature_order) &&
+        !identical(rownames(assay_obj@data), feature_order)
+    ) {
+      assay_obj@data <- assay_obj@data[feature_order, , drop = FALSE]
+    }
+    if (
+      nrow(assay_obj@scale.data) > 0 &&
+        setequal(rownames(assay_obj@scale.data), feature_order) &&
+        !identical(rownames(assay_obj@scale.data), feature_order)
+    ) {
+      assay_obj@scale.data <- assay_obj@scale.data[feature_order, , drop = FALSE]
+    }
+    if (
+      nrow(assay_obj@meta.features) > 0 &&
+        setequal(rownames(assay_obj@meta.features), feature_order) &&
+        !identical(rownames(assay_obj@meta.features), feature_order)
+    ) {
+      assay_obj@meta.features <- assay_obj@meta.features[feature_order, , drop = FALSE]
+    }
+    srt_merge[[assay]] <- assay_obj
+  }
 
   srt_merge <- srt_append(
     srt_raw = srt_merge,

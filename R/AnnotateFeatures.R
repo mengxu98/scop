@@ -29,20 +29,19 @@
 #' @export
 #'
 #' @examples
-#' data(pancreas_sub)
-#' pancreas_sub <- AnnotateFeatures(
-#'   pancreas_sub,
-#'   species = "Mus_musculus",
-#'   db = c(
-#'     "TF",
-#'     "CSPA"
+#' if (requireNamespace("R.cache", quietly = TRUE)) {
+#'   data(pancreas_sub)
+#'   pancreas_sub <- AnnotateFeatures(
+#'     pancreas_sub,
+#'     species = "Mus_musculus",
+#'     db = "TF"
 #'   )
-#' )
-#' head(
-#'   GetFeaturesData(
-#'     pancreas_sub
+#'   head(
+#'     GetFeaturesData(
+#'       pancreas_sub
+#'     )
 #'   )
-#' )
+#' }
 #'
 #' \dontrun{
 #' # Annotate features using a GTF file
@@ -57,29 +56,30 @@
 #' )
 #' }
 AnnotateFeatures <- function(
-    srt,
-    species = "Homo_sapiens",
-    IDtype = c("symbol", "ensembl_id", "entrez_id"),
-    db = NULL,
-    db_update = FALSE,
-    db_version = "latest",
-    convert_species = TRUE,
-    Ensembl_version = NULL,
-    mirror = NULL,
-    gtf = NULL,
-    merge_gtf_by = "gene_name",
-    columns = c(
-      "seqname",
-      "feature",
-      "start",
-      "end",
-      "strand",
-      "gene_id",
-      "gene_name",
-      "gene_type"
-    ),
-    assays = "RNA",
-    overwrite = FALSE) {
+  srt,
+  species = "Homo_sapiens",
+  IDtype = c("symbol", "ensembl_id", "entrez_id"),
+  db = NULL,
+  db_update = FALSE,
+  db_version = "latest",
+  convert_species = TRUE,
+  Ensembl_version = NULL,
+  mirror = NULL,
+  gtf = NULL,
+  merge_gtf_by = "gene_name",
+  columns = c(
+    "seqname",
+    "feature",
+    "start",
+    "end",
+    "strand",
+    "gene_id",
+    "gene_name",
+    "gene_type"
+  ),
+  assays = "RNA",
+  overwrite = FALSE
+) {
   IDtype <- match.arg(IDtype)
   if (is.null(db) && is.null(gtf)) {
     log_message(
