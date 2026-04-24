@@ -1044,10 +1044,20 @@ scrublet_python_requirements <- function() {
 doubletdetection_python_requirements <- function() {
   list(
     packages = c(
+      "celltypist" = "celltypist==1.7.1",
+      "cellphonedb" = "cellphonedb==5.0.1",
+      "sccoda" = "sccoda>=0.1.9",
+      "magic-impute" = "magic-impute==3.0.0",
+      "scrublet" = "scrublet==0.2.3",
       "doubletdetection" = "doubletdetection==4.3.0.post1",
       "louvain" = "louvain==0.8.2"
     ),
     install_methods = c(
+      "celltypist" = "pip",
+      "cellphonedb" = "pip",
+      "sccoda" = "pip",
+      "magic-impute" = "pip",
+      "scrublet" = "pip",
       "doubletdetection" = "pip",
       "louvain" = "pip"
     ),
