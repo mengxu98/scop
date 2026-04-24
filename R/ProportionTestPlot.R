@@ -1396,4 +1396,3 @@ ProportionTestPlot <- function(
   }
   groups
 }
-

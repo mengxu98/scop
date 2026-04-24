@@ -9,6 +9,9 @@
 #' `"scds_cxds"`, `"scds_bcds"`, `"scds_hybrid"`.
 #' @param db_rate The expected doublet rate.
 #' Default is calculated as `ncol(srt) / 1000 * 0.01`.
+#' @param data_type Optional precomputed result from [CheckDataType()] for the
+#' input assay. Primarily used internally to avoid repeated scans of the same
+#' count matrix across nested QC calls.
 #' @param ... Additional arguments to be passed to the corresponding doublet-calling method.
 #'
 #' @return Returns a Seurat object with the doublet prediction results and prediction scores stored in the meta.data.
@@ -34,18 +37,20 @@
 #'   features = "db.scDblFinder_score"
 #' )
 RunDoubletCalling <- function(
-    srt,
-    assay = "RNA",
-    db_rate = ncol(srt) / 1000 * 0.01,
-    db_method = "scDblFinder",
-    ...) {
+  srt,
+  assay = "RNA",
+  db_rate = ncol(srt) / 1000 * 0.01,
+  db_method = "scDblFinder",
+  data_type = NULL,
+  ...
+) {
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} is not a {.cls Seurat}",
       message_type = "error"
     )
   }
-  status <- CheckDataType(srt, layer = "counts", assay = assay)
+  status <- data_type %||% CheckDataType(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
     log_message(
       "Data type is not raw counts",
@@ -109,17 +114,20 @@ RunDoubletCalling <- function(
 #'
 #' @export
 db_scDblFinder <- function(
-    srt,
-    assay = "RNA",
-    db_rate = ncol(srt) / 1000 * 0.01,
-    ...) {
+  srt,
+  assay = "RNA",
+  db_rate = ncol(srt) / 1000 * 0.01,
+  data_type = NULL,
+  ...
+) {
+  log_message("Running {.pkg scDblFinder}")
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} is not a {.cls Seurat}",
       message_type = "error"
     )
   }
-  status <- CheckDataType(srt, layer = "counts", assay = assay)
+  status <- data_type %||% CheckDataType(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
     log_message(
       "Data type is not raw counts",
@@ -159,18 +167,21 @@ db_scDblFinder <- function(
 #'   features = "db.scds_hybrid_score"
 #' )
 db_scds <- function(
-    srt,
-    assay = "RNA",
-    db_rate = ncol(srt) / 1000 * 0.01,
-    method = c("hybrid", "cxds", "bcds"),
-    ...) {
+  srt,
+  assay = "RNA",
+  db_rate = ncol(srt) / 1000 * 0.01,
+  method = c("hybrid", "cxds", "bcds"),
+  data_type = NULL,
+  ...
+) {
+  log_message("Running {.pkg scds} with method {.val {method}}")
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} is not a {.cls Seurat}",
       message_type = "error"
     )
   }
-  status <- CheckDataType(srt, layer = "counts", assay = assay)
+  status <- data_type %||% CheckDataType(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
     log_message(
       "Data type is not raw counts",
@@ -220,18 +231,21 @@ db_scds <- function(
 #' )
 #' }
 db_Scrublet <- function(
-    srt,
-    assay = "RNA",
-    db_rate = ncol(srt) / 1000 * 0.01,
-    ...) {
-  PrepareEnv()
+  srt,
+  assay = "RNA",
+  db_rate = ncol(srt) / 1000 * 0.01,
+  data_type = NULL,
+  ...
+) {
+  log_message("Running {.pkg Scrublet}")
+  PrepareEnv(modules = "scrublet")
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} is not a {.cls Seurat}",
       message_type = "error"
     )
   }
-  status <- CheckDataType(srt, layer = "counts", assay = assay)
+  status <- data_type %||% CheckDataType(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
     log_message(
       "Data type is not raw counts",
@@ -253,15 +267,30 @@ db_Scrublet <- function(
   res <- scrub$scrub_doublets()
   doublet_scores <- res[[1]]
   predicted_doublets <- res[[2]]
+  scrublet_threshold <- NA_real_
+  if (reticulate::py_has_attr(scrub, "threshold_")) {
+    scrublet_threshold <- suppressWarnings(
+      as.numeric(reticulate::py_to_r(scrub$threshold_))
+    )[1]
+  }
+  detected_doublet_rate <- mean(predicted_doublets)
 
   srt[["db.Scrublet_score"]] <- doublet_scores
+  srt[["db.Scrublet_threshold"]] <- rep(scrublet_threshold, ncol(srt))
+  srt[["db.Scrublet_detected_rate"]] <- rep(detected_doublet_rate, ncol(srt))
   srt[["db.Scrublet_class"]] <- sapply(
-    predicted_doublets, function(i) {
+    predicted_doublets,
+    function(i) {
       switch(as.character(i),
         "FALSE" = "singlet",
         "TRUE" = "doublet"
       )
     }
+  )
+  srt@tools[["Scrublet"]] <- list(
+    expected_doublet_rate = db_rate,
+    threshold = scrublet_threshold,
+    detected_doublet_rate = detected_doublet_rate
   )
   log_message(
     "{.pkg Scrublet} doublet calling completed",
@@ -298,14 +327,17 @@ db_Scrublet <- function(
 #' )
 #' }
 db_DoubletDetection <- function(
-    srt,
-    assay = "RNA",
-    db_rate = ncol(srt) / 1000 * 0.01,
-    cores = 1,
-    ...) {
-  Sys.setenv(NUMBA_NUM_THREADS = "1")
-  Sys.setenv(NUMBA_DISABLE_JIT = "0")
-  PrepareEnv()
+  srt,
+  assay = "RNA",
+  db_rate = ncol(srt) / 1000 * 0.01,
+  cores = 1,
+  data_type = NULL,
+  ...
+) {
+  log_message("Running {.pkg DoubletDetection}")
+  # Sys.setenv(NUMBA_NUM_THREADS = "1")
+  # Sys.setenv(NUMBA_DISABLE_JIT = "0")
+  PrepareEnv(modules = "doubletdetection")
 
   if (!inherits(srt, "Seurat")) {
     log_message(
@@ -313,7 +345,7 @@ db_DoubletDetection <- function(
       message_type = "error"
     )
   }
-  status <- CheckDataType(srt, layer = "counts", assay = assay)
+  status <- data_type %||% CheckDataType(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
     log_message(
       "Data type is not raw counts",
@@ -430,6 +462,9 @@ db_DoubletDetection <- function(
 #' Default is `TRUE`.
 #' @param round_counts Whether to round decontaminated counts before creating the assay.
 #' Default is `FALSE`.
+#' @param data_type Optional precomputed result from [CheckDataType()] for the
+#' input assay. Primarily used internally to avoid repeated scans of the same
+#' count matrix across nested QC calls.
 #' @param ... Additional arguments passed to [decontX::decontX()].
 #'
 #' @return Returns a Seurat object with decontX contamination estimates stored in the meta.data,
@@ -455,24 +490,30 @@ db_DoubletDetection <- function(
 #'   features = "decontX_contamination"
 #' )
 RunDecontX <- function(
-    srt,
-    assay = "RNA",
-    group.by = NULL,
-    batch = NULL,
-    background = NULL,
-    background_assay = NULL,
-    bg_batch = NULL,
-    assay_name = "decontXcounts",
-    store_assay = TRUE,
-    round_counts = FALSE,
-    seed = 11,
-    ...) {
+  srt,
+  assay = "RNA",
+  group.by = NULL,
+  batch = NULL,
+  background = NULL,
+  background_assay = NULL,
+  bg_batch = NULL,
+  assay_name = "decontXcounts",
+  store_assay = TRUE,
+  round_counts = FALSE,
+  data_type = NULL,
+  seed = 11,
+  ...
+) {
+  log_message("Running {.pkg decontX}")
+
   .decontx_get_meta <- function(object) {
     if (inherits(object, "Seurat")) {
       return(object@meta.data)
     }
-    if (inherits(object, "SingleCellExperiment") ||
-      inherits(object, "SummarizedExperiment")) {
+    if (
+      inherits(object, "SingleCellExperiment") ||
+        inherits(object, "SummarizedExperiment")
+    ) {
       return(as.data.frame(SummarizedExperiment::colData(object)))
     }
     NULL
@@ -485,10 +526,12 @@ RunDecontX <- function(
     meta <- .decontx_get_meta(object)
     cells <- colnames(object)
 
-    if (!is.null(meta) &&
-      is.character(value) &&
-      length(value) == 1 &&
-      value %in% colnames(meta)) {
+    if (
+      !is.null(meta) &&
+        is.character(value) &&
+        length(value) == 1 &&
+        value %in% colnames(meta)
+    ) {
       return(meta[[value]])
     }
 
@@ -509,7 +552,11 @@ RunDecontX <- function(
     )
   }
 
-  .decontx_as_input <- function(object, assay_name = NULL, arg_name = "background") {
+  .decontx_as_input <- function(
+    object,
+    assay_name = NULL,
+    arg_name = "background"
+  ) {
     if (is.null(object)) {
       return(NULL)
     }
@@ -548,7 +595,7 @@ RunDecontX <- function(
     )
   }
 
-  status <- CheckDataType(srt, layer = "counts", assay = assay)
+  status <- data_type %||% CheckDataType(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
     log_message(
       "Data type is not raw counts",
@@ -588,7 +635,11 @@ RunDecontX <- function(
       message_type = "error"
     )
   }
-  bg_batch_use <- .decontx_resolve_vector(background_input, bg_batch, "bg_batch")
+  bg_batch_use <- .decontx_resolve_vector(
+    background_input,
+    bg_batch,
+    "bg_batch"
+  )
 
   user_args <- list(...)
   decontx_args <- c(
@@ -610,7 +661,6 @@ RunDecontX <- function(
     decontx_args[["bgAssayName"]] <- bg_assay_name_use %||% "counts"
   }
 
-  log_message("Running {.pkg decontX}")
   sce <- do.call(decontX::decontX, args = decontx_args)
 
   metadata_to_add <- data.frame(
@@ -625,8 +675,10 @@ RunDecontX <- function(
   srt@tools[["decontX"]] <- S4Vectors::metadata(sce)[["decontX"]]
 
   decontX_contamination_values <- sce[["decontX_contamination"]]
-  if (length(decontX_contamination_values) > 0 &&
-    any(!is.na(decontX_contamination_values))) {
+  if (
+    length(decontX_contamination_values) > 0 &&
+      any(!is.na(decontX_contamination_values))
+  ) {
     decontX_contamination_summary <- sprintf(
       "%.4f / %.4f / %.4f",
       stats::median(decontX_contamination_values, na.rm = TRUE),
@@ -657,18 +709,27 @@ RunDecontX <- function(
   return(srt)
 }
 
-#' @title Run cell-level quality control for single cell RNA-seq data.
+#' @title Run cell-level quality control
 #'
 #' @md
 #' @inheritParams CellDimPlot
 #' @inheritParams RunDoubletCalling
 #' @inheritParams standard_scop
+#' @param split.by Name of a meta.data column used to split the object before QC.
+#' Default is `NULL`. When specified, QC and doublet-calling are performed
+#' separately within each split object and merged back afterward.
 #' @param return_filtered Logical indicating whether to return a cell-filtered Seurat object.
 #' Default is `FALSE`.
 #' @param qc_metrics A character vector specifying the quality control metrics to be applied.
-#' Available metrics are `"doublets"`, `"decontX"`, `"outlier"`, `"umi"`, `"gene"`,
+#' Available metrics are `"doublets"`, `"decontX"`, `"atac"`, `"outlier"`, `"umi"`, `"gene"`,
 #' `"mito"`, `"ribo"`, `"ribo_mito_ratio"`, and `"species"`.
 #' Default is `c("doublets", "decontX", "outlier", "umi", "gene", "mito", "ribo", "ribo_mito_ratio", "species")`.
+#' For `ChromatinAssay`, if `.arg qc_metrics` is not supplied, the default is `"atac"`.
+#' @param db_method Method used for doublet-calling.
+#' Can be one of `"scDblFinder"`, `"Scrublet"`, `"DoubletDetection"`,
+#' `"scds_cxds"`, `"scds_bcds"`, `"scds_hybrid"`.
+#' The resulting doublet labels are aggregated afterward into `db_qc` and do not
+#' affect the thresholds used by the other QC metrics.
 #' @param outlier_threshold A character vector specifying the outlier threshold.
 #' Default is `c("log10_nCount:lower:2.5", "log10_nCount:higher:5", "log10_nFeature:lower:2.5", "log10_nFeature:higher:5", "featurecount_dist:lower:2.5")`.
 #' @param db_coefficient The coefficient used to calculate the doublet rate.
@@ -700,19 +761,28 @@ RunDecontX <- function(
 #' Explicit `decontX_*` parameters are preferred for common options and take
 #' precedence when both are supplied.
 #' Default is `list()`.
+#' @param atac_args A named list of additional arguments passed to [RunATACQC()]
+#' when `"atac"` is included in `qc_metrics`. Threshold arguments from
+#' [RunATACQC()] are used to label failed cells in `atac_qc`, but filtering is
+#' deferred to [RunCellQC()]. Default is `list()`.
 #' @param outlier_n Minimum number of outlier metrics that meet the conditions for determining outlier cells.
 #' Default is `1`.
-#' @param UMI_threshold UMI number threshold. Cells that exceed this threshold will be considered as kept.
+#' @param UMI_threshold UMI number threshold.
+#' Cells that exceed this threshold will be considered as kept.
 #' Default is `3000`.
-#' @param gene_threshold Gene number threshold. Cells that exceed this threshold will be considered as kept.
+#' @param gene_threshold Gene number threshold.
+#' Cells that exceed this threshold will be considered as kept.
 #' Default is `1000`.
-#' @param mito_threshold Percentage of UMI counts of mitochondrial genes. Cells that exceed this threshold will be considered as discarded.
+#' @param mito_threshold Percentage of UMI counts of mitochondrial genes.
+#' Cells that exceed this threshold will be considered as discarded.
 #' Default is `20`.
 #' @param mito_pattern Regex patterns to match the mitochondrial genes.
 #' Default is `c("MT-", "Mt-", "mt-")`.
-#' @param mito_gene A defined mitochondrial genes. If features provided, will ignore the `mito_pattern` matching.
+#' @param mito_gene A defined mitochondrial genes.
+#' If features provided, will ignore the `mito_pattern` matching.
 #' Default is `NULL`.
-#' @param ribo_threshold Percentage of UMI counts of ribosomal genes. Cells that exceed this threshold will be considered as discarded.
+#' @param ribo_threshold Percentage of UMI counts of ribosomal genes.
+#' Cells that exceed this threshold will be considered as discarded.
 #' Default is `50`.
 #' @param ribo_pattern Regex patterns to match the ribosomal genes.
 #' Default is `c("RP[SL]\\d+\\w{0,1}\\d*$", "Rp[sl]\\d+\\w{0,1}\\d*$", "rp[sl]\\d+\\w{0,1}\\d*$")`.
@@ -720,11 +790,13 @@ RunDecontX <- function(
 #' Default is `NULL`.
 #' @param ribo_mito_ratio_range A numeric vector specifying the range of ribosomal/mitochondrial gene expression ratios for ribo_mito_ratio outlier cells.
 #' Default is `c(1, Inf)`.
-#' @param species Species used as the suffix of the QC metrics. The first is the species of interest.
+#' @param species Species used as the suffix of the QC metrics.
+#' The first is the species of interest.
 #' Default is `NULL`.
 #' @param species_gene_prefix Species gene prefix used to calculate QC metrics for each species.
 #' Default is `NULL`.
-#' @param species_percent Percentage of UMI counts of the first species. Cells that exceed this threshold will be considered as kept.
+#' @param species_percent Percentage of UMI counts of the first species.
+#' Cells that exceed this threshold will be considered as kept.
 #' Default is `95`.
 #'
 #' @return Returns Seurat object with the QC results stored in the meta.data layer.
@@ -734,75 +806,82 @@ RunDecontX <- function(
 #' @examples
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
-#' pancreas_sub <- RunCellQC(pancreas_sub)
+#' pancreas_sub <- RunCellQC(
+#'   pancreas_sub,
+#'   db_method = "scds_cxds"
+#' )
 #'
 #' CellStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c(
-#'     "db_qc", "decontX_qc", "outlier_qc",
-#'     "umi_qc", "gene_qc",
-#'     "mito_qc", "ribo_qc",
-#'     "ribo_mito_ratio_qc",
-#'     "species_qc"
+#'     "db_qc", "outlier_qc"
 #'   ),
 #'   plot_type = "upset",
 #'   stat_level = "Fail"
 #' )
 RunCellQC <- function(
-    srt,
-    assay = "RNA",
-    split.by = NULL,
-    group.by = NULL,
-    return_filtered = FALSE,
-    qc_metrics = c(
-      "doublets",
-      "decontX",
-      "outlier",
-      "umi",
-      "gene",
-      "mito",
-      "ribo",
-      "ribo_mito_ratio",
-      "species"
-    ),
-    db_method = "scDblFinder",
-    db_rate = NULL,
-    db_coefficient = 0.01,
-    decontX_threshold = NULL,
-    decontX_batch = NULL,
-    decontX_background = NULL,
-    decontX_background_assay = NULL,
-    decontX_bg_batch = NULL,
-    decontX_assay_name = "decontXcounts",
-    decontX_store_assay = FALSE,
-    decontX_round_counts = TRUE,
-    decontX_args = list(),
-    outlier_threshold = c(
-      "log10_nCount:lower:2.5",
-      "log10_nCount:higher:5",
-      "log10_nFeature:lower:2.5",
-      "log10_nFeature:higher:5",
-      "featurecount_dist:lower:2.5"
-    ),
-    outlier_n = 1,
-    UMI_threshold = 3000,
-    gene_threshold = 1000,
-    mito_threshold = 20,
-    mito_pattern = c("MT-", "Mt-", "mt-"),
-    mito_gene = NULL,
-    ribo_threshold = 50,
-    ribo_pattern = c(
-      "RP[SL]\\d+\\w{0,1}\\d*$",
-      "Rp[sl]\\d+\\w{0,1}\\d*$",
-      "rp[sl]\\d+\\w{0,1}\\d*$"
-    ),
-    ribo_gene = NULL,
-    ribo_mito_ratio_range = c(1, Inf),
-    species = NULL,
-    species_gene_prefix = NULL,
-    species_percent = 95,
-    seed = 11) {
+  srt,
+  assay = "RNA",
+  split.by = NULL,
+  group.by = NULL,
+  return_filtered = FALSE,
+  qc_metrics = c(
+    "doublets",
+    "decontX",
+    "atac",
+    "outlier",
+    "umi",
+    "gene",
+    "mito",
+    "ribo",
+    "ribo_mito_ratio",
+    "species"
+  ),
+  db_method = "scDblFinder",
+  db_rate = NULL,
+  db_coefficient = 0.01,
+  decontX_threshold = NULL,
+  decontX_batch = NULL,
+  decontX_background = NULL,
+  decontX_background_assay = NULL,
+  decontX_bg_batch = NULL,
+  decontX_assay_name = "decontXcounts",
+  decontX_store_assay = FALSE,
+  decontX_round_counts = TRUE,
+  decontX_args = list(),
+  atac_args = list(),
+  outlier_threshold = c(
+    "log10_nCount:lower:2.5",
+    "log10_nCount:higher:5",
+    "log10_nFeature:lower:2.5",
+    "log10_nFeature:higher:5",
+    "featurecount_dist:lower:2.5"
+  ),
+  outlier_n = 1,
+  UMI_threshold = 3000,
+  gene_threshold = 1000,
+  mito_threshold = 20,
+  mito_pattern = c("MT-", "Mt-", "mt-"),
+  mito_gene = NULL,
+  ribo_threshold = 50,
+  ribo_pattern = c(
+    "RP[SL]\\d+\\w{0,1}\\d*$",
+    "Rp[sl]\\d+\\w{0,1}\\d*$",
+    "rp[sl]\\d+\\w{0,1}\\d*$"
+  ),
+  ribo_gene = NULL,
+  ribo_mito_ratio_range = c(1, Inf),
+  species = NULL,
+  species_gene_prefix = NULL,
+  species_percent = 95,
+  seed = 11
+) {
+  log_message(
+    "Running cell-level quality control",
+    message_type = "running"
+  )
   set.seed(seed)
+
   group.by_missing <- missing(group.by)
   decontX_batch_missing <- missing(decontX_batch)
   decontX_background_missing <- missing(decontX_background)
@@ -833,8 +912,10 @@ RunCellQC <- function(
   if (length(species) == 0) {
     species <- species_gene_prefix <- NULL
   }
-  if (!is.null(decontX_threshold) &&
-    (!is.numeric(decontX_threshold) || length(decontX_threshold) != 1)) {
+  if (
+    !is.null(decontX_threshold) &&
+      (!is.numeric(decontX_threshold) || length(decontX_threshold) != 1)
+  ) {
     log_message(
       "{.arg decontX_threshold} must be NULL or a single numeric value.",
       message_type = "error"
@@ -845,6 +926,16 @@ RunCellQC <- function(
       "{.arg decontX_args} must be a named list.",
       message_type = "error"
     )
+  }
+  if (!is.list(atac_args)) {
+    log_message(
+      "{.arg atac_args} must be a named list.",
+      message_type = "error"
+    )
+  }
+  is_atac_assay <- inherits(srt[[assay]], "ChromatinAssay")
+  if (isTRUE(is_atac_assay) && missing(qc_metrics)) {
+    qc_metrics <- "atac"
   }
   decontX_assay_name_use <- decontX_args[["assay_name"]] %||% "decontXcounts"
   if (!decontX_assay_name_missing) {
@@ -880,7 +971,8 @@ RunCellQC <- function(
         srt,
         assay = assay,
         layer = "counts"
-      ) > 0
+      ) >
+        0
     )
   }
   srt_raw <- srt
@@ -900,20 +992,25 @@ RunCellQC <- function(
     db_qc <- c()
     if ("doublets" %in% qc_metrics) {
       if (!is.null(db_method)) {
-        if (is.null(db_rate)) {
-          db_rate <- ncol(srt) / 1000 * db_coefficient
+        db_rate_use <- db_rate
+        if (is.null(db_rate_use)) {
+          db_rate_use <- ncol(srt) / 1000 * db_coefficient
         }
-        if (db_rate >= 1) {
+        if (db_rate_use >= 1) {
           log_message(
             "The db_rate is equal to or greater than 1",
             message_type = "error"
           )
         }
         for (dbm in db_method) {
-          srt <- RunDoubletCalling(
-            srt = srt,
-            db_method = dbm,
-            db_rate = db_rate
+          srt <- do.call(
+            what = RunDoubletCalling,
+            args = list(
+              srt = srt,
+              db_method = dbm,
+              db_rate = db_rate_use,
+              data_type = status
+            )
           )
           db_qc <- unique(c(
             db_qc,
@@ -922,6 +1019,65 @@ RunCellQC <- function(
             ]
           ))
         }
+      }
+    }
+
+    atac_qc <- c()
+    if ("atac" %in% qc_metrics) {
+      if (!inherits(srt[[assay]], "ChromatinAssay")) {
+        log_message(
+          "Skip {.val atac} QC because {.arg assay = '{assay}'} is not a {.cls ChromatinAssay}",
+          message_type = "warning"
+        )
+      } else {
+        atac_args_use <- atac_args
+        min_pct_reads_in_peaks <- atac_args_use[["min_pct_reads_in_peaks"]] %||% NULL
+        min_TSS_enrichment <- atac_args_use[["min_TSS_enrichment"]] %||% NULL
+        max_nucleosome_signal <- atac_args_use[["max_nucleosome_signal"]] %||% NULL
+        max_blacklist_ratio <- atac_args_use[["max_blacklist_ratio"]] %||% NULL
+        atac_args_use[["min_pct_reads_in_peaks"]] <- NULL
+        atac_args_use[["min_TSS_enrichment"]] <- NULL
+        atac_args_use[["max_nucleosome_signal"]] <- NULL
+        atac_args_use[["max_blacklist_ratio"]] <- NULL
+        atac_args_use[["srt"]] <- srt
+        atac_args_use[["assay"]] <- assay
+        if (is.null(atac_args_use[["verbose"]])) {
+          atac_args_use[["verbose"]] <- TRUE
+        }
+        srt <- do.call(
+          what = RunATACQC,
+          args = atac_args_use
+        )
+        atac_fail <- rep(FALSE, ncol(srt))
+        names(atac_fail) <- colnames(srt)
+        if (
+          !is.null(min_pct_reads_in_peaks) &&
+            "pct_reads_in_peaks" %in% colnames(srt@meta.data)
+        ) {
+          atac_fail <- atac_fail | srt$pct_reads_in_peaks < min_pct_reads_in_peaks
+        }
+        if (
+          !is.null(min_TSS_enrichment) &&
+            "TSS.enrichment" %in% colnames(srt@meta.data)
+        ) {
+          atac_fail <- atac_fail | srt$TSS.enrichment < min_TSS_enrichment
+        }
+        if (
+          !is.null(max_nucleosome_signal) &&
+            "nucleosome_signal" %in% colnames(srt@meta.data)
+        ) {
+          atac_fail <- atac_fail | srt$nucleosome_signal > max_nucleosome_signal
+        }
+        if (
+          !is.null(max_blacklist_ratio) &&
+            "blacklist_ratio" %in% colnames(srt@meta.data)
+        ) {
+          atac_fail <- atac_fail | (
+            !is.na(srt$blacklist_ratio) &
+              srt$blacklist_ratio > max_blacklist_ratio
+          )
+        }
+        atac_qc <- names(atac_fail)[atac_fail]
       }
     }
 
@@ -943,16 +1099,22 @@ RunCellQC <- function(
       if (!decontX_bg_batch_missing) {
         decontX_args_use[["bg_batch"]] <- decontX_bg_batch
       }
-      if (!decontX_assay_name_missing ||
-        is.null(decontX_args_use[["assay_name"]])) {
+      if (
+        !decontX_assay_name_missing ||
+          is.null(decontX_args_use[["assay_name"]])
+      ) {
         decontX_args_use[["assay_name"]] <- decontX_assay_name_use
       }
-      if (!decontX_store_assay_missing ||
-        is.null(decontX_args_use[["store_assay"]])) {
+      if (
+        !decontX_store_assay_missing ||
+          is.null(decontX_args_use[["store_assay"]])
+      ) {
         decontX_args_use[["store_assay"]] <- decontX_store_assay_use
       }
-      if (!decontX_round_counts_missing ||
-        is.null(decontX_args_use[["round_counts"]])) {
+      if (
+        !decontX_round_counts_missing ||
+          is.null(decontX_args_use[["round_counts"]])
+      ) {
         decontX_args_use[["round_counts"]] <- decontX_round_counts_use
       }
       if (is.null(decontX_args_use[["seed"]])) {
@@ -960,6 +1122,7 @@ RunCellQC <- function(
       }
       decontX_args_use[["srt"]] <- srt
       decontX_args_use[["assay"]] <- assay
+      decontX_args_use[["data_type"]] <- status
       srt <- do.call(
         what = RunDecontX,
         args = decontX_args_use
@@ -969,10 +1132,6 @@ RunCellQC <- function(
         decontX_qc <- colnames(srt)[which(
           srt[["decontX_contamination", drop = TRUE]] > decontX_threshold
         )]
-      } else {
-        log_message(
-          "{.pkg decontX} contamination estimates stored; no cells filtered because {.arg decontX_threshold} is {.val NULL}."
-        )
       }
     }
 
@@ -1015,7 +1174,8 @@ RunCellQC <- function(
           srt,
           assay = assay,
           layer = "counts"
-        )[sp_genes, ] > 0
+        )[sp_genes, ] >
+          0
       )
       percent.mito <- srt[[paste0(
         c("percent.mito", sp),
@@ -1095,7 +1255,8 @@ RunCellQC <- function(
             )
           }
           outlier <- lapply(
-            strsplit(outlier_threshold, ":"), function(m) {
+            strsplit(outlier_threshold, ":"),
+            function(m) {
               colnames(srt)[is_outlier(
                 get(m[1]),
                 nmads = as.numeric(m[3]),
@@ -1180,6 +1341,7 @@ RunCellQC <- function(
     CellQC <- unique(
       c(
         db_qc,
+        atac_qc,
         decontX_qc,
         outlier_qc,
         umi_qc,
@@ -1194,17 +1356,36 @@ RunCellQC <- function(
       "{cli::symbol$record} Total cells: {.pkg {ntotal}}\n",
       "{cli::symbol$circle_filled} {.pkg {ntotal - length(CellQC)}} cells remained\n",
       "{cli::symbol$circle} {.pkg {length(CellQC)}} cells filtered out:\n",
-      "{cli::symbol$circle}   {.pkg {length(db_qc)}} potential doublets\n",
+      if ("doublets" %in% qc_metrics) {
+        "{cli::symbol$circle}   {.pkg {length(db_qc)}} potential doublets\n"
+      },
+      if ("atac" %in% qc_metrics) {
+        "{cli::symbol$circle}   {.pkg {length(atac_qc)}} ATAC QC failed cells\n"
+      },
       if ("decontX" %in% qc_metrics) {
         "{cli::symbol$circle}   {.pkg {length(decontX_qc)}} high-contamination cells\n"
       },
-      "{cli::symbol$circle}   {.pkg {length(outlier_qc)}} outlier cells\n",
-      "{cli::symbol$circle}   {.pkg {length(umi_qc)}} low-UMI cells\n",
-      "{cli::symbol$circle}   {.pkg {length(gene_qc)}} low-gene cells\n",
-      "{cli::symbol$circle}   {.pkg {length(mito_qc)}} high-mito cells\n",
-      "{cli::symbol$circle}   {.pkg {length(ribo_qc)}} high-ribo cells\n",
-      "{cli::symbol$circle}   {.pkg {length(ribo_mito_ratio_qc)}} ribo_mito_ratio outlier cells\n",
-      "{cli::symbol$circle}   {.pkg {length(species_qc)}} species-contaminated cells"
+      if ("outlier" %in% qc_metrics) {
+        "{cli::symbol$circle}   {.pkg {length(outlier_qc)}} outlier cells\n"
+      },
+      if ("umi" %in% qc_metrics) {
+        "{cli::symbol$circle}   {.pkg {length(umi_qc)}} low-UMI cells\n"
+      },
+      if ("gene" %in% qc_metrics) {
+        "{cli::symbol$circle}   {.pkg {length(gene_qc)}} low-gene cells\n"
+      },
+      if ("mito" %in% qc_metrics) {
+        "{cli::symbol$circle}   {.pkg {length(mito_qc)}} high-mito cells\n"
+      },
+      if ("ribo" %in% qc_metrics) {
+        "{cli::symbol$circle}   {.pkg {length(ribo_qc)}} high-ribo cells\n"
+      },
+      if ("ribo_mito_ratio" %in% qc_metrics) {
+        "{cli::symbol$circle}   {.pkg {length(ribo_mito_ratio_qc)}} ribo_mito_ratio outlier cells\n"
+      },
+      if ("species" %in% qc_metrics) {
+        "{cli::symbol$circle}   {.pkg {length(species_qc)}} species-contaminated cells"
+      }
     )
     qc_summary <- Filter(Negate(is.null), qc_summary)
     do.call(
@@ -1216,22 +1397,43 @@ RunCellQC <- function(
     )
 
     qc_nm <- c(
-      "db_qc",
+      if ("doublets" %in% qc_metrics) {
+        "db_qc"
+      },
+      if ("atac" %in% qc_metrics) {
+        "atac_qc"
+      },
       if ("decontX" %in% qc_metrics) {
         "decontX_qc"
       },
-      "outlier_qc",
-      "umi_qc",
-      "gene_qc",
-      "mito_qc",
-      "ribo_qc",
-      "ribo_mito_ratio_qc",
-      "species_qc",
+      if ("outlier" %in% qc_metrics) {
+        "outlier_qc"
+      },
+      if ("umi" %in% qc_metrics) {
+        "umi_qc"
+      },
+      if ("gene" %in% qc_metrics) {
+        "gene_qc"
+      },
+      if ("mito" %in% qc_metrics) {
+        "mito_qc"
+      },
+      if ("ribo" %in% qc_metrics) {
+        "ribo_qc"
+      },
+      if ("ribo_mito_ratio" %in% qc_metrics) {
+        "ribo_mito_ratio_qc"
+      },
+      if ("species" %in% qc_metrics) {
+        "species_qc"
+      },
       "CellQC"
     )
     for (qc in qc_nm) {
       srt[[qc]] <- ifelse(
-        colnames(srt) %in% get(qc), "Fail", "Pass"
+        colnames(srt) %in% get(qc),
+        "Fail",
+        "Pass"
       )
       srt[[qc]] <- factor(
         srt[[qc, drop = TRUE]],
@@ -1256,8 +1458,7 @@ RunCellQC <- function(
     metadata = meta.data
   )
 
-  if ("decontX" %in% qc_metrics &&
-    isTRUE(decontX_store_assay_use)) {
+  if ("decontX" %in% qc_metrics && isTRUE(decontX_store_assay_use)) {
     decontX_assay_name <- decontX_assay_name_use
     decontX_mats <- unname(lapply(srt_list, function(x) {
       if (decontX_assay_name %in% SeuratObject::Assays(x)) {
@@ -1303,6 +1504,18 @@ RunCellQC <- function(
     } else if (length(decontX_tools) > 1) {
       names(decontX_tools) <- names(srt_list)
       srt_raw@tools[["decontX"]] <- decontX_tools
+    }
+  }
+  if ("doublets" %in% qc_metrics && "Scrublet" %in% db_method) {
+    scrublet_tools <- unname(lapply(srt_list, function(x) {
+      x@tools[["Scrublet"]]
+    }))
+    scrublet_tools <- Filter(Negate(is.null), scrublet_tools)
+    if (length(scrublet_tools) == 1) {
+      srt_raw@tools[["Scrublet"]] <- scrublet_tools[[1]]
+    } else if (length(scrublet_tools) > 1) {
+      names(scrublet_tools) <- names(srt_list)[seq_along(scrublet_tools)]
+      srt_raw@tools[["Scrublet"]] <- scrublet_tools
     }
   }
 

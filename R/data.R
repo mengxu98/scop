@@ -126,6 +126,41 @@ NULL
 #' @name panc8_sub
 NULL
 
+#' @title A small human PBMC multiome example dataset
+#'
+#' @description
+#' A near-balanced 500-cell subset of the PBMC multiome dataset from SeuratData,
+#' containing paired `RNA` and `peaks` assays for package examples and tests.
+#' The dataset keeps approximately equal numbers of cells for each major PBMC cell type and retains the
+#' top 12000 accessible peaks by total counts within the selected cells.
+#' When available, the `peaks` assay stores a compact hg38 gene annotation
+#' derived from `EnsDb.Hsapiens.v86` and collapsed to the longest transcript
+#' per gene.
+#'
+#' @md
+#' @format A `Seurat` object.
+#' @concept data
+#' @source
+#' Derived from the PBMC multiome reference data distributed through
+#' \href{https://github.com/satijalab/seurat-data}{SeuratData} /
+#' `pbmcMultiome.SeuratData`, using the helper object
+#' `test/data/pbmc_multiome_1k.rds` in this repository.
+#'
+#' @examples
+#' \dontrun{
+#' if (interactive()) {
+#'   source("test/data/create_pbmcmultiome_sub.R")
+#'   pbmcmultiome_sub <- create_pbmcmultiome_sub()
+#'   usethis::use_data(
+#'     pbmcmultiome_sub,
+#'     compress = "xz",
+#'     overwrite = TRUE
+#'   )
+#' }
+#' }
+#' @name pbmcmultiome_sub
+NULL
+
 #' @title Excluded words in keyword enrichment analysis and extraction
 #'
 #' @md

@@ -21,7 +21,9 @@ CheckDataType(object, ...)
 Default is \code{data}.}
 
 \item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.}
+If \code{NULL}, the default assay of the Seurat object will be used.
+When the object also contains \code{ChromatinAssay}, the default assay and
+additional \code{ChromatinAssay} will be preprocessed sequentially.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

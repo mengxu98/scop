@@ -1,5 +1,12 @@
 # scop
 
+# scop 0.8.8
+
+* **fix**:
+  * `DynamicHeatmap()` / custom enrichment workflows: Fixed incorrect term label display when user-provided `TERM2GENE` / `TERM2NAME` use non-standard column names such as `term` / `name`. Custom term annotations are now normalized consistently so that heatmap term labels show readable term names instead of fallback IDs (e.g. GO IDs). Related issue #160 (@Pineapple-wen6, @mengxu98).
+  * Refactored repeated custom database input handling by introducing shared internal helpers for normalizing and assembling user-provided `TERM2GENE` / `TERM2NAME`, and applied them across `RunEnrichment()`, `RunDynamicEnrichment()`, `RunGSEA()`, `RunGSVA()`, and `PrepareDB()` to keep behavior consistent.
+  * `integration_scop()`: Improved `ChromatinAssay` handling by standardizing ATAC reductions after integration, avoiding non-interactive small-batch blocking, clipping `TFIDF/rlsi` anchor dims to available cells, auto-switching `Harmony5` to legacy `Harmony`, and rejecting unsupported `Seurat` / `RPCA` ATAC paths with explicit messages.
+
 # scop 0.8.7
 
 * **feat**:

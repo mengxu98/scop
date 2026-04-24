@@ -186,6 +186,7 @@ A ggplot / patchwork object wrapping the ComplexHeatmap grob.
 CCC heatmap and dot matrix plot
 }
 \examples{
+\dontrun{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 
@@ -323,4 +324,5 @@ CCCHeatmap(
   width = 0.6,
   height = 3.5
 )
+}
 }

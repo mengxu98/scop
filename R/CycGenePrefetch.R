@@ -24,12 +24,13 @@
 #' ccgenes <- CycGenePrefetch("Mus_musculus")
 #' str(ccgenes)
 CycGenePrefetch <- function(
-    species = "Homo_sapiens",
-    Ensembl_version = NULL,
-    mirror = NULL,
-    max_tries = 5,
-    use_cached_gene = TRUE,
-    verbose = TRUE) {
+  species = "Homo_sapiens",
+  Ensembl_version = NULL,
+  mirror = NULL,
+  max_tries = 5,
+  use_cached_gene = TRUE,
+  verbose = TRUE
+) {
   log_message(
     "Prefetching cell cycle genes for {.val {species}} ...",
     verbose = verbose
