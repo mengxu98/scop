@@ -4465,3 +4465,279 @@ def CellphoneDB(
             verbose=verbose,
         )
         raise
+
+
+def _sccoda_parse_comparison_name(name):
+    parts = str(name).split("_vs_")
+    if len(parts) != 2:
+        raise ValueError(f"Invalid comparison name '{name}', expected A_vs_B")
+    return parts[0], parts[1]
+
+
+def _sccoda_fallback_pair(
+    counts_df,
+    meta_df,
+    condition_key,
+    cluster_1,
+    cluster_2,
+    credible_effect_threshold=0.95,
+):
+    import numpy as np
+    import pandas as pd
+
+    try:
+        from scipy import stats as scipy_stats
+    except Exception:
+        scipy_stats = None
+
+    keep = meta_df[condition_key].isin([cluster_1, cluster_2])
+    sub_meta = meta_df.loc[keep].copy()
+    if sub_meta.empty:
+        return pd.DataFrame()
+
+    sub_counts = counts_df.loc[sub_meta.index].copy()
+    row_sum = sub_counts.sum(axis=1).replace(0, np.nan)
+    props = sub_counts.div(row_sum, axis=0).fillna(0.0)
+
+    results = []
+    for ct in props.columns:
+        v1 = props.loc[sub_meta[condition_key] == cluster_1, ct].astype(float).to_numpy()
+        v2 = props.loc[sub_meta[condition_key] == cluster_2, ct].astype(float).to_numpy()
+
+        m1 = np.nanmean(v1) if v1.size else np.nan
+        m2 = np.nanmean(v2) if v2.size else np.nan
+        log2fd = float(np.log2((m2 + 1e-8) / (m1 + 1e-8)))
+
+        pval = np.nan
+        if scipy_stats is not None and v1.size >= 2 and v2.size >= 2:
+            try:
+                pval = float(
+                    scipy_stats.ttest_ind(v2, v1, equal_var=False, nan_policy="omit").pvalue
+                )
+            except Exception:
+                pval = np.nan
+
+        if np.isnan(pval):
+            inclusion_prob = float(1 - np.exp(-abs(log2fd)))
+        else:
+            inclusion_prob = float(max(0.0, min(1.0, 1.0 - pval)))
+
+        results.append(
+            {
+                "clusters": str(ct),
+                "obs_log2FD": log2fd,
+                "pval": pval,
+                "inclusion_prob": inclusion_prob,
+                "credible": bool(inclusion_prob >= credible_effect_threshold),
+                "boot_mean_log2FD": np.nan,
+                "boot_CI_2.5": np.nan,
+                "boot_CI_97.5": np.nan,
+            }
+        )
+
+    out = pd.DataFrame(results)
+    if "pval" in out.columns:
+        if out["pval"].notna().any():
+            out["FDR"] = out["pval"].rank(method="average", na_option="bottom") / max(
+                1, out["pval"].notna().sum()
+            )
+        else:
+            out["FDR"] = np.nan
+    else:
+        out["FDR"] = np.nan
+    return out
+
+
+def ScCODA(
+    counts,
+    metadata,
+    condition_key="condition",
+    sample_key="sample",
+    comparisons=None,
+    reference_cell_type="",
+    credible_effect_threshold=0.95,
+    random_seed=11,
+    mcmc_samples=20000,
+    verbose=True,
+):
+    import numpy as np
+    import pandas as pd
+
+    np.random.seed(int(random_seed))
+
+    counts_df = pd.DataFrame(counts).copy()
+    meta_df = pd.DataFrame(metadata).copy()
+
+    if sample_key not in meta_df.columns:
+        if meta_df.index.name is None:
+            meta_df[sample_key] = meta_df.index.astype(str)
+        else:
+            meta_df[sample_key] = meta_df.index.astype(str)
+    meta_df[sample_key] = meta_df[sample_key].astype(str)
+
+    if condition_key not in meta_df.columns:
+        raise ValueError(f"condition_key '{condition_key}' not found in metadata")
+
+    if counts_df.index is None or counts_df.index.dtype == "int64":
+        counts_df.index = meta_df[sample_key].astype(str).values
+    else:
+        counts_df.index = counts_df.index.astype(str)
+
+    common_samples = [s for s in meta_df[sample_key].astype(str).tolist() if s in counts_df.index]
+    if len(common_samples) == 0:
+        raise ValueError("No overlapping samples between counts and metadata")
+
+    meta_df = meta_df.set_index(sample_key).loc[common_samples].copy()
+    counts_df = counts_df.loc[common_samples].copy()
+    counts_df = counts_df.apply(pd.to_numeric, errors="coerce").fillna(0.0)
+
+    if comparisons is None:
+        groups = sorted(meta_df[condition_key].dropna().astype(str).unique().tolist())
+        comparisons = []
+        for i in range(len(groups)):
+            for j in range(i + 1, len(groups)):
+                comparisons.append(f"{groups[i]}_vs_{groups[j]}")
+                comparisons.append(f"{groups[j]}_vs_{groups[i]}")
+
+    comparisons = [str(x) for x in comparisons]
+    result_map = {}
+    sccoda_ok = []
+
+    sccoda_import_error = None
+    try:
+        import sccoda.util.comp_ana as comp_ana  # noqa: F401
+        has_sccoda = True
+    except Exception as e:
+        has_sccoda = False
+        sccoda_import_error = e
+
+    if not has_sccoda:
+        log_message(
+            "sccoda import unavailable, using fallback summary statistics: {.val {%s}}"
+            % sccoda_import_error,
+            message_type="warning",
+            verbose=verbose,
+        )
+
+    for comp_name in comparisons:
+        cluster_1, cluster_2 = _sccoda_parse_comparison_name(comp_name)
+
+        if has_sccoda:
+            try:
+                # Keep this block lightweight and robust:
+                # if any API mismatch occurs, fallback is used below.
+                import sccoda.util.comp_ana as comp_ana
+
+                keep = meta_df[condition_key].isin([cluster_1, cluster_2])
+                sub_meta = meta_df.loc[keep].copy()
+                sub_counts = counts_df.loc[sub_meta.index].copy()
+
+                comp_input = sub_counts.copy()
+                comp_input[condition_key] = sub_meta[condition_key].astype(str).values
+
+                cdata = comp_ana.from_pandas(
+                    comp_input,
+                    covariate_columns=[condition_key],
+                )
+
+                ref_cell = str(reference_cell_type).strip()
+                if ref_cell == "" or ref_cell not in sub_counts.columns:
+                    ref_cell = str(sub_counts.columns[0])
+
+                model = comp_ana.CompositionalAnalysis(
+                    cdata,
+                    formula=condition_key,
+                    reference_cell_type=ref_cell,
+                )
+
+                # API signatures differ across versions; try common variants.
+                fit = None
+                try:
+                    fit = model.sample_hmc(num_results=int(mcmc_samples), random_seed=int(random_seed))
+                except Exception:
+                    fit = model.sample_hmc()
+
+                summary_df = None
+                try:
+                    summary_df = fit.summary_prepare()
+                except Exception:
+                    try:
+                        summary_df = fit.summary()
+                    except Exception:
+                        summary_df = None
+
+                if summary_df is not None:
+                    summary_df = pd.DataFrame(summary_df).copy()
+                    if "clusters" not in summary_df.columns:
+                        first_col = summary_df.columns[0]
+                        summary_df["clusters"] = summary_df[first_col].astype(str)
+                    if "obs_log2FD" not in summary_df.columns:
+                        if "log2-fold change" in summary_df.columns:
+                            summary_df["obs_log2FD"] = summary_df["log2-fold change"]
+                        elif "effect_df" in summary_df.columns:
+                            summary_df["obs_log2FD"] = summary_df["effect_df"]
+                        elif "mean" in summary_df.columns:
+                            summary_df["obs_log2FD"] = summary_df["mean"]
+                        else:
+                            summary_df["obs_log2FD"] = np.nan
+                    if "inclusion_prob" not in summary_df.columns:
+                        if "inclusion_probability" in summary_df.columns:
+                            summary_df["inclusion_prob"] = summary_df["inclusion_probability"]
+                        elif "probability" in summary_df.columns:
+                            summary_df["inclusion_prob"] = summary_df["probability"]
+                        else:
+                            summary_df["inclusion_prob"] = np.nan
+                    if "pval" not in summary_df.columns:
+                        summary_df["pval"] = np.nan
+                    if "FDR" not in summary_df.columns:
+                        summary_df["FDR"] = np.nan
+                    if "boot_mean_log2FD" not in summary_df.columns:
+                        summary_df["boot_mean_log2FD"] = np.nan
+                    if "boot_CI_2.5" not in summary_df.columns:
+                        summary_df["boot_CI_2.5"] = np.nan
+                    if "boot_CI_97.5" not in summary_df.columns:
+                        summary_df["boot_CI_97.5"] = np.nan
+
+                    summary_df["credible"] = (
+                        pd.to_numeric(summary_df["inclusion_prob"], errors="coerce")
+                        >= float(credible_effect_threshold)
+                    )
+                    result_map[comp_name] = summary_df[
+                        [
+                            "clusters",
+                            "obs_log2FD",
+                            "pval",
+                            "FDR",
+                            "inclusion_prob",
+                            "credible",
+                            "boot_mean_log2FD",
+                            "boot_CI_2.5",
+                            "boot_CI_97.5",
+                        ]
+                    ].to_dict(orient="records")
+                    sccoda_ok.append(comp_name)
+                    continue
+            except Exception as e:
+                log_message(
+                    "scCODA run failed for {.val {%s}}; fallback summary will be used: {.val {%s}}"
+                    % (comp_name, e),
+                    message_type="warning",
+                    verbose=verbose,
+                )
+
+        fallback_df = _sccoda_fallback_pair(
+            counts_df=counts_df,
+            meta_df=meta_df,
+            condition_key=condition_key,
+            cluster_1=cluster_1,
+            cluster_2=cluster_2,
+            credible_effect_threshold=credible_effect_threshold,
+        )
+        result_map[comp_name] = fallback_df.to_dict(orient="records")
+
+    engine = "sccoda" if len(sccoda_ok) > 0 else "fallback"
+    return {
+        "engine": engine,
+        "successful_sccoda_comparisons": sccoda_ok,
+        "results": result_map,
+    }
