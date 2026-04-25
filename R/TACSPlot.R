@@ -300,7 +300,7 @@ TACSPlot <- function(
     )
 
   if (!is.null(cutoffs)) {
-    p <- scop_annotate_quadrants(
+    p <- thisplot::annotate_quadrants(
       plot = p,
       x = feature1_suffix,
       y = feature2_suffix,
