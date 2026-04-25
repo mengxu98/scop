@@ -89,7 +89,6 @@ Suggests:
     reshape2,
     rliger,
     rhdf5,
-    scOMM,
     scales,
     simplifyEnrichment,
     slingshot,
