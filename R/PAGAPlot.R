@@ -178,9 +178,12 @@ PAGAPlot <- function(
 ) {
   if (is.null(paga)) {
     log_message(
-      "Cannot find the paga result.",
+      "Cannot find the paga result",
       message_type = "error"
     )
+  }
+  if (identical(theme_use, "theme_scop")) {
+    theme_use <- "theme_this"
   }
   if (type == "connectivities_tree") {
     use_triangular <- "both"
