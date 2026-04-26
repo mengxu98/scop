@@ -85,7 +85,18 @@
 <span>  tile_height <span class="op">=</span> <span class="fl">0.3</span>,</span>
 <span>  tile_gap <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>  ring_segments <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  seed <span class="op">=</span> <span class="fl">11</span></span>
+<span>  seed <span class="op">=</span> <span class="fl">11</span>,</span>
+<span>  threshold_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rectangular"</span>, <span class="st">"hyperbolic"</span><span class="op">)</span>,</span>
+<span>  hyperbola_c <span class="op">=</span> <span class="fl">6</span>,</span>
+<span>  annotate_enrichment <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  enrich_from <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Enrichment"</span>, <span class="st">"GSEA"</span>, <span class="st">"GSVA"</span><span class="op">)</span>,</span>
+<span>  enrich_db <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  enrich_terms <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  enrich_top_terms <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  enrich_padj_cutoff <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  enrich_gsva_score_cutoff <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  gsva_method <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  enrich_nlabel <span class="op">=</span> <span class="fl">15</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -126,6 +137,65 @@ Default is <code>"avg_log2FC &gt; 0 &amp; p_val_adj &lt; 0.05"</code>.</p></dd>
 <dt id="arg-x-metric">x_metric<a class="anchor" aria-label="anchor" href="#arg-x-metric"></a></dt>
 <dd><p>A character string specifying the metric to use for the x-axis (only for volcano plot).
 Default is <code>"diff_pct"</code>.</p></dd>
+
+
+<dt id="arg-threshold-method">threshold_method<a class="anchor" aria-label="anchor" href="#arg-threshold-method"></a></dt>
+<dd><p>Volcano significance threshold method.
+Options are <code>"rectangular"</code> (legacy DE_threshold) or <code>"hyperbolic"</code> (<code>|log2FC * -log10(padj)| &gt; c</code>).
+Default is <code>"rectangular"</code>.</p></dd>
+
+
+<dt id="arg-hyperbola-c">hyperbola_c<a class="anchor" aria-label="anchor" href="#arg-hyperbola-c"></a></dt>
+<dd><p>Numeric cutoff <code>c</code> for hyperbolic volcano threshold.
+Default is <code>6</code>.</p></dd>
+
+
+<dt id="arg-annotate-enrichment">annotate_enrichment<a class="anchor" aria-label="anchor" href="#arg-annotate-enrichment"></a></dt>
+<dd><p>Whether to annotate enrichment-hit genes on volcano plots.
+Enrichment results are read from existing results in <code>srt@tools</code> only.
+Default is <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-enrich-from">enrich_from<a class="anchor" aria-label="anchor" href="#arg-enrich-from"></a></dt>
+<dd><p>Character vector specifying enrichment result source(s) to annotate.
+Options are <code>"Enrichment"</code>, <code>"GSEA"</code>, <code>"GSVA"</code>.
+Default is <code>c("Enrichment", "GSEA", "GSVA")</code>.</p></dd>
+
+
+<dt id="arg-enrich-db">enrich_db<a class="anchor" aria-label="anchor" href="#arg-enrich-db"></a></dt>
+<dd><p>Optional database filter for enrichment annotation, e.g. <code>"GO_BP"</code> or <code>"KEGG"</code>.
+Default is <code>NULL</code>.</p></dd>
+
+
+<dt id="arg-enrich-terms">enrich_terms<a class="anchor" aria-label="anchor" href="#arg-enrich-terms"></a></dt>
+<dd><p>Optional whitelist of enrichment term IDs or names for annotation.
+Default is <code>NULL</code>.</p></dd>
+
+
+<dt id="arg-enrich-top-terms">enrich_top_terms<a class="anchor" aria-label="anchor" href="#arg-enrich-top-terms"></a></dt>
+<dd><p>Number of top enriched terms selected per source/group/database.
+Default is <code>3</code>.</p></dd>
+
+
+<dt id="arg-enrich-padj-cutoff">enrich_padj_cutoff<a class="anchor" aria-label="anchor" href="#arg-enrich-padj-cutoff"></a></dt>
+<dd><p>Adjusted p-value cutoff for <code>"Enrichment"</code> and <code>"GSEA"</code> annotation.
+Default is <code>0.05</code>.</p></dd>
+
+
+<dt id="arg-enrich-gsva-score-cutoff">enrich_gsva_score_cutoff<a class="anchor" aria-label="anchor" href="#arg-enrich-gsva-score-cutoff"></a></dt>
+<dd><p>Optional absolute GSVA score cutoff for <code>"GSVA"</code> annotation.
+Default is <code>NULL</code>.</p></dd>
+
+
+<dt id="arg-gsva-method">gsva_method<a class="anchor" aria-label="anchor" href="#arg-gsva-method"></a></dt>
+<dd><p>Optional GSVA method filter (e.g. <code>"gsva"</code> or <code>"ssgsea"</code>) when multiple GSVA tool slots exist.
+Default is <code>NULL</code>.</p></dd>
+
+
+<dt id="arg-enrich-nlabel">enrich_nlabel<a class="anchor" aria-label="anchor" href="#arg-enrich-nlabel"></a></dt>
+<dd><p>Maximum number of enrichment-derived labels added per group.
+Labels from <code>features_label</code> are always retained.
+Default is <code>15</code>.</p></dd>
 
 
 <dt id="arg-y-metric">y_metric<a class="anchor" aria-label="anchor" href="#arg-y-metric"></a></dt>
@@ -306,38 +376,38 @@ Default is <code>11</code>.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:50:23] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:50:24] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-22 07:50:24] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:50:24] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:50:26] Perform `Seurat::FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:50:26] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:50:26] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:50:27] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:50:27] Perform `Seurat::ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:50:27] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:50:28] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:50:28] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:50:28] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:50:28] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:50:28] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:50:28] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:50:32] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-04-22 07:50:35] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 01:00:40] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 01:00:41] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-26 01:00:41] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 01:00:41] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 01:00:43] Perform `Seurat::FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 01:00:43] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 01:00:43] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 01:00:43] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 01:00:44] Perform `Seurat::ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 01:00:44] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 01:00:44] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span> for <span style="color: #0000BB;">Standardpca</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 01:00:45] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 01:00:45] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 01:00:45] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 01:00:45] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 01:00:45] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 01:00:49] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-04-26 01:00:53] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunDEtest.html">RunDEtest</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
 <span class="r-in"><span>  only.pos <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:50:35] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:50:35] Start differential expression test</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:50:35] Find all markers(wilcox) among [1] 5 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:50:35] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-04-22 07:50:35] Running for <span style="color: #0000BB;">Ductal </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■</span>          20% | ETA: <span style="color: #0000BB;"> 1s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-04-22 07:50:35] Completed <span style="color: #0000BB;">5</span> tasks in <span style="color: #0000BB;">891ms</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 01:00:53] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 01:00:53] Start differential expression test</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 01:00:53] Find all markers(wilcox) among [1] 5 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 01:00:53] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-04-26 01:00:53] Running for <span style="color: #0000BB;">Ductal </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■</span>          20% | ETA: <span style="color: #0000BB;"> 1s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-04-26 01:00:53] Completed <span style="color: #0000BB;">5</span> tasks in <span style="color: #0000BB;">1s</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:50:35] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-04-22 07:50:36] Differential expression test completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 01:00:53] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-04-26 01:00:54] Differential expression test completed</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">DEtestPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>

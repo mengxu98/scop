@@ -50,6 +50,7 @@
 <span>  miniconda_repo <span class="op">=</span> <span class="st">"https://repo.anaconda.com/miniconda"</span>,</span>
 <span>  version <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="fu">is_windows</span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="st">"3.11-1"</span> <span class="kw">else</span> <span class="st">"3.10-1"</span>,</span>
 <span>  force <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  modules <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  pip_options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -84,6 +85,17 @@ Default is <code>"3.10-1"</code> on macOS and Unix and <code>"3.11-1"</code> on 
 <dd><p>Whether to force recreation of the environment.
 If <code>TRUE</code>, the existing environment will be removed and recreated.
 Default is <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-modules">modules<a class="anchor" aria-label="anchor" href="#arg-modules"></a></dt>
+<dd><p>Optional Python dependency modules to install in addition to
+the default scientific stack.
+Supported values are <code>"scanpy"</code>, <code>"scvi"</code>, <code>"glue"</code>, <code>"scanorama"</code>, <code>"bbknn"</code>,
+<code>"celltypist"</code>, <code>"cellphonedb"</code>, <code>"magic"</code>, <code>"scrublet"</code>,
+<code>"doubletdetection"</code>, <code>"doublet"</code>, <code>"palantir"</code>, <code>"scvelo"</code>,
+<code>"cellrank"</code>, <code>"wot"</code>, <code>"phate"</code>, <code>"pacmap"</code>, <code>"trimap"</code>, <code>"multimap"</code>,
+and <code>"scomm"</code>.
+If <code>NULL</code> or omitted in <code>PrepareEnv()</code>, the complete environment is installed.</p></dd>
 
 
 <dt id="arg-pip-options">pip_options<a class="anchor" aria-label="anchor" href="#arg-pip-options"></a></dt>

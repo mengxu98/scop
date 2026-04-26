@@ -71,7 +71,9 @@ FindExpressedMarkers(
 - assay:
 
   Which assay to use. If `NULL`, the default assay of the Seurat object
-  will be used.
+  will be used. When the object also contains `ChromatinAssay`, the
+  default assay and additional `ChromatinAssay` will be preprocessed
+  sequentially.
 
 - layer:
 
@@ -238,24 +240,24 @@ FindExpressedMarkers(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-22 08:12:43] Start standard processing workflow...
-#> ℹ [2026-04-22 08:12:44] Checking a list of <Seurat>...
-#> ! [2026-04-22 08:12:44] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-22 08:12:44] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-22 08:12:46] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-22 08:12:47] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-22 08:12:47] Number of available HVF: 2000
-#> ℹ [2026-04-22 08:12:47] Finished check
-#> ℹ [2026-04-22 08:12:48] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-22 08:12:48] Perform pca linear dimension reduction
-#> ℹ [2026-04-22 08:12:49] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-22 08:12:50] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-22 08:12:50] Reorder clusters...
-#> ℹ [2026-04-22 08:12:50] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-22 08:12:50] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-22 08:12:50] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-22 08:12:54] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-04-22 08:12:57] Standard processing workflow completed
+#> ℹ [2026-04-26 01:25:07] Start standard processing workflow...
+#> ℹ [2026-04-26 01:25:08] Checking a list of <Seurat>...
+#> ! [2026-04-26 01:25:08] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-26 01:25:08] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-26 01:25:10] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-26 01:25:11] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-26 01:25:11] Number of available HVF: 2000
+#> ℹ [2026-04-26 01:25:11] Finished check
+#> ℹ [2026-04-26 01:25:11] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-26 01:25:12] Perform pca linear dimension reduction
+#> ℹ [2026-04-26 01:25:12] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-04-26 01:25:12] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-26 01:25:13] Reorder clusters...
+#> ℹ [2026-04-26 01:25:13] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-26 01:25:13] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-26 01:25:13] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-26 01:25:17] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-04-26 01:25:21] Standard processing workflow completed
 markers <- FindExpressedMarkers(
   pancreas_sub,
   cells.1 = SeuratObject::WhichCells(
@@ -263,13 +265,12 @@ markers <- FindExpressedMarkers(
     expression = Phase == "G2M"
   )
 )
-#> ℹ [2026-04-22 08:12:58] Using 1 core
-#> ⠙ [2026-04-22 08:12:58] Running for 1 [1/6145]              0% | ETA: 44s
-#> ⠹ [2026-04-22 08:12:58] Running for 872 [872/6145] ■           14% | ETA:  3s
-#> ⠸ [2026-04-22 08:12:58] Running for 5684 [5684/6145] ■■■■■■■■■   92% | ETA:  0s
-#> ✔ [2026-04-22 08:12:58] Completed 6145 tasks in 3.8s
+#> ℹ [2026-04-26 01:25:22] Using 1 core
+#> ⠙ [2026-04-26 01:25:22] Running for 1 [1/6145]              0% | ETA: 44s
+#> ⠹ [2026-04-26 01:25:22] Running for 3015 [3015/6145] ■■■■        49% | ETA:  2s
+#> ✔ [2026-04-26 01:25:22] Completed 6145 tasks in 3.8s
 #> 
-#> ℹ [2026-04-22 08:12:58] Building results
+#> ℹ [2026-04-26 01:25:22] Building results
 head(markers)
 #>               p_val avg_log2FC pct.1 pct.2    p_val_adj
 #> Hmgb2  1.964385e-37  2.1638592 1.000 0.526 3.142624e-33

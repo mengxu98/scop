@@ -35,7 +35,18 @@ VolcanoPlot(
   combine = TRUE,
   nrow = NULL,
   ncol = NULL,
-  byrow = TRUE
+  byrow = TRUE,
+  threshold_method = c("rectangular", "hyperbolic"),
+  hyperbola_c = 6,
+  annotate_enrichment = FALSE,
+  enrich_from = c("Enrichment", "GSEA", "GSVA"),
+  enrich_db = NULL,
+  enrich_terms = NULL,
+  enrich_top_terms = 3,
+  enrich_padj_cutoff = 0.05,
+  enrich_gsva_score_cutoff = NULL,
+  gsva_method = NULL,
+  enrich_nlabel = 15
 )
 ```
 
@@ -73,6 +84,63 @@ VolcanoPlot(
 
   A character string specifying the metric to use for the x-axis (only
   for volcano plot). Default is `"diff_pct"`.
+
+- threshold_method:
+
+  Volcano significance threshold method. Options are `"rectangular"`
+  (legacy DE_threshold) or `"hyperbolic"`
+  (`|log2FC * -log10(padj)| > c`). Default is `"rectangular"`.
+
+- hyperbola_c:
+
+  Numeric cutoff `c` for hyperbolic volcano threshold. Default is `6`.
+
+- annotate_enrichment:
+
+  Whether to annotate enrichment-hit genes on volcano plots. Enrichment
+  results are read from existing results in `srt@tools` only. Default is
+  `FALSE`.
+
+- enrich_from:
+
+  Character vector specifying enrichment result source(s) to annotate.
+  Options are `"Enrichment"`, `"GSEA"`, `"GSVA"`. Default is
+  `c("Enrichment", "GSEA", "GSVA")`.
+
+- enrich_db:
+
+  Optional database filter for enrichment annotation, e.g. `"GO_BP"` or
+  `"KEGG"`. Default is `NULL`.
+
+- enrich_terms:
+
+  Optional whitelist of enrichment term IDs or names for annotation.
+  Default is `NULL`.
+
+- enrich_top_terms:
+
+  Number of top enriched terms selected per source/group/database.
+  Default is `3`.
+
+- enrich_padj_cutoff:
+
+  Adjusted p-value cutoff for `"Enrichment"` and `"GSEA"` annotation.
+  Default is `0.05`.
+
+- enrich_gsva_score_cutoff:
+
+  Optional absolute GSVA score cutoff for `"GSVA"` annotation. Default
+  is `NULL`.
+
+- gsva_method:
+
+  Optional GSVA method filter (e.g. `"gsva"` or `"ssgsea"`) when
+  multiple GSVA tool slots exist. Default is `NULL`.
+
+- enrich_nlabel:
+
+  Maximum number of enrichment-derived labels added per group. Labels
+  from `features_label` are always retained. Default is `15`.
 
 - palette:
 
@@ -187,37 +255,37 @@ VolcanoPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-22 09:14:30] Start standard processing workflow...
-#> ℹ [2026-04-22 09:14:31] Checking a list of <Seurat>...
-#> ! [2026-04-22 09:14:31] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-22 09:14:31] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-22 09:14:33] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-22 09:14:33] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-22 09:14:34] Number of available HVF: 2000
-#> ℹ [2026-04-22 09:14:34] Finished check
-#> ℹ [2026-04-22 09:14:34] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-22 09:14:34] Perform pca linear dimension reduction
-#> ℹ [2026-04-22 09:14:35] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-22 09:14:35] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-22 09:14:35] Reorder clusters...
-#> ℹ [2026-04-22 09:14:36] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-22 09:14:36] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-22 09:14:36] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-22 09:14:41] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-04-22 09:14:45] Standard processing workflow completed
+#> ℹ [2026-04-26 02:31:40] Start standard processing workflow...
+#> ℹ [2026-04-26 02:31:40] Checking a list of <Seurat>...
+#> ! [2026-04-26 02:31:41] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-26 02:31:41] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-26 02:31:43] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-26 02:31:44] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-26 02:31:44] Number of available HVF: 2000
+#> ℹ [2026-04-26 02:31:44] Finished check
+#> ℹ [2026-04-26 02:31:44] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-26 02:31:45] Perform pca linear dimension reduction
+#> ℹ [2026-04-26 02:31:45] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-04-26 02:31:46] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-26 02:31:46] Reorder clusters...
+#> ℹ [2026-04-26 02:31:46] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-26 02:31:46] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-26 02:31:46] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-26 02:31:52] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-04-26 02:31:57] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-04-22 09:14:46] Data type is log-normalized
-#> ℹ [2026-04-22 09:14:46] Start differential expression test
-#> ℹ [2026-04-22 09:14:46] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-04-22 09:14:46] Using 1 core
-#> ⠙ [2026-04-22 09:14:46] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ✔ [2026-04-22 09:14:46] Completed 5 tasks in 792ms
+#> ℹ [2026-04-26 02:31:58] Data type is log-normalized
+#> ℹ [2026-04-26 02:31:58] Start differential expression test
+#> ℹ [2026-04-26 02:31:58] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-04-26 02:31:58] Using 1 core
+#> ⠙ [2026-04-26 02:31:58] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ✔ [2026-04-26 02:31:58] Completed 5 tasks in 876ms
 #> 
-#> ℹ [2026-04-22 09:14:46] Building results
-#> ✔ [2026-04-22 09:14:47] Differential expression test completed
+#> ℹ [2026-04-26 02:31:58] Building results
+#> ✔ [2026-04-26 02:31:59] Differential expression test completed
 VolcanoPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -239,4 +307,24 @@ VolcanoPlot(
   x_metric = "avg_log2FC",
   ncol = 2
 )
+
+
+if (FALSE) { # \dontrun{
+pancreas_sub <- RunEnrichment(
+  pancreas_sub,
+  group.by = "CellType",
+  db = "GO_BP",
+  species = "Mus_musculus"
+)
+VolcanoPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  threshold_method = "hyperbolic",
+  hyperbola_c = 6,
+  annotate_enrichment = TRUE,
+  enrich_from = "Enrichment",
+  enrich_db = "GO_BP",
+  ncol = 2
+)
+} # }
 ```

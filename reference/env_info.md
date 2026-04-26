@@ -5,7 +5,7 @@ Print environment information
 ## Usage
 
 ``` r
-env_info(conda, envname)
+env_info(conda, envname, verbose = TRUE)
 ```
 
 ## Arguments
@@ -19,3 +19,7 @@ env_info(conda, envname)
 
   The name of the conda environment. If `NULL`, the environment name
   will be set to `"scop_env"`. Default is `NULL`.
+
+- verbose:
+
+  Whether to print environment information.

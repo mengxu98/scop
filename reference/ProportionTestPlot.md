@@ -1,7 +1,9 @@
 # Proportion Test Plot
 
-Generate proportion test plots based on the results from
+Generate differential abundance visualizations from outputs of
 [RunProportionTest](https://mengxu98.github.io/scop/reference/RunProportionTest.md).
+Main display styles are effect-size view and UMAP projection view, while
+legacy plot types remain callable for compatibility.
 
 ## Usage
 
@@ -9,13 +11,42 @@ Generate proportion test plots based on the results from
 ProportionTestPlot(
   srt,
   comparison = NULL,
+  proportion_method = NULL,
+  result_level = c("group", "neighborhood"),
+  plot_type = c(
+    "effect",
+    "umap",
+    "volcano",
+    "manhattan",
+    "ring",
+    "milo_beeswarm",
+    "milo_graph",
+    "sccoda_forest"
+  ),
+  umap_mode = c("discrete", "continuous"),
+  reduction = "UMAP",
+  projection_args = list(),
   FDR_threshold = 0.05,
   log2FD_threshold = log2(1.5),
   order_by = c("value", "name"),
+  palette = "RdBu",
+  palcolor = NULL,
+  group_palette = "Chinese",
+  group_palcolor = NULL,
   pt.size = 1,
   pt.alpha = 1,
   cols.sig = "red",
   cols.ns = "grey",
+  cols.increase = "#d7301f",
+  cols.decrease = "#2b8cbe",
+  effect_color_mode = c("directional", "classic"),
+  nlabel = 5,
+  features_label = NULL,
+  label = FALSE,
+  label.fg = "black",
+  label.bg = "white",
+  label.bg.r = 0.1,
+  label.size = 4,
   aspect.ratio = NULL,
   xlab = "Cell Type",
   ylab = "log2 (FD)",
@@ -27,7 +58,8 @@ ProportionTestPlot(
   combine = TRUE,
   nrow = NULL,
   ncol = NULL,
-  byrow = TRUE
+  byrow = TRUE,
+  seed = 11
 )
 ```
 
@@ -39,8 +71,38 @@ ProportionTestPlot(
 
 - comparison:
 
-  A character string specifying which comparison to plot. If NULL, plots
-  all comparisons.
+  A character vector specifying which comparisons to plot. If `NULL`,
+  all stored comparisons are plotted.
+
+- proportion_method:
+
+  Optional method to select from method-layer results. If `NULL`,
+  active/most recent method is used.
+
+- result_level:
+
+  Result level for plotting: `"group"` or `"neighborhood"`.
+
+- plot_type:
+
+  Plot type. Main recommended values are `"effect"` and `"umap"`. Legacy
+  values are retained for compatibility: `"volcano"`, `"manhattan"`,
+  `"ring"`, `"milo_beeswarm"`, `"milo_graph"`, and `"sccoda_forest"`.
+
+- umap_mode:
+
+  UMAP mapping mode when `plot_type = "umap"`. `"discrete"` maps cells
+  to `Increased/Decreased/NS`; `"continuous"` maps group-level
+  `obs_log2FD`.
+
+- reduction:
+
+  Reduction name used for UMAP projection.
+
+- projection_args:
+
+  Additional arguments passed through to `CellDimPlot` (discrete mode)
+  or `FeatureDimPlot` (continuous mode).
 
 - FDR_threshold:
 
@@ -52,155 +114,132 @@ ProportionTestPlot(
 
 - order_by:
 
-  Method to order clusters. Options: "name" (alphabetical), "value" (by
-  log2FD value).
+  Method to order clusters. Options: `"name"`, `"value"`.
+
+- palette:
+
+  Palette name for continuous effect coloring.
+
+- palcolor:
+
+  Custom colors for `palette`.
+
+- group_palette:
+
+  Palette name for cluster/group coloring.
+
+- group_palcolor:
+
+  Custom colors for `group_palette`.
 
 - pt.size:
 
-  The size of the points. Default is `1`.
+  Point size.
 
 - pt.alpha:
 
-  The transparency of the data points. Default is `1`.
+  Point transparency.
 
 - cols.sig:
 
-  Color for significant points and confidence intervals.
+  Legacy color for significant/credible points and intervals.
 
 - cols.ns:
 
-  Color for non-significant points and confidence intervals.
+  Color for non-significant points and intervals.
+
+- cols.increase:
+
+  Color for increased DA groups in directional effect mode.
+
+- cols.decrease:
+
+  Color for decreased DA groups in directional effect mode.
+
+- effect_color_mode:
+
+  Effect color style: `"directional"` (default) or `"classic"`.
+
+- nlabel:
+
+  Number of labels when `label = TRUE` and `features_label = NULL`.
+
+- features_label:
+
+  Character vector specifying labels to draw.
+
+- label:
+
+  Whether to draw labels.
+
+- label.fg:
+
+  Label foreground color.
+
+- label.bg:
+
+  Label background color.
+
+- label.bg.r:
+
+  Label background rounding radius.
+
+- label.size:
+
+  Label size.
 
 - aspect.ratio:
 
-  Aspect ratio of the panel.
+  Aspect ratio of each panel.
 
 - xlab:
 
-  A character string specifying the x-axis label. Default is
-  `"Cell Type"`.
+  X-axis label.
 
 - ylab:
 
-  A character string specifying the y-axis label. Default is
-  `"log2 (FD)"`.
+  Y-axis label.
 
 - theme_use:
 
-  Theme used. Can be a character string or a theme function. Default is
-  `"theme_scop"`.
+  Theme used. Can be a character string or a theme function.
 
 - theme_args:
 
-  Other arguments passed to the `theme_use`. Default is
-  [`list()`](https://rdrr.io/r/base/list.html).
+  Additional arguments passed to `theme_use`.
 
 - legend.position:
 
-  The position of legends, one of `"none"`, `"left"`, `"right"`,
-  `"bottom"`, `"top"`. Default is `"bottom"`.
+  Legend position.
 
 - legend.direction:
 
-  The direction of the legend in the plot. Can be one of `"vertical"` or
-  `"horizontal"`.
+  Legend direction.
 
 - legend.title:
 
-  Title of the legend.
+  Legend title.
 
 - combine:
 
-  Combine plots into a single `patchwork` object. If `FALSE`, return a
-  list of ggplot objects.
+  Whether to combine into one patchwork object.
 
 - nrow:
 
-  Number of rows in the combined plot. Default is `NULL`, which means
-  determined automatically based on the number of plots.
+  Number of rows for combined plot.
 
 - ncol:
 
-  Number of columns in the combined plot. Default is `NULL`, which means
-  determined automatically based on the number of plots.
+  Number of columns for combined plot.
 
 - byrow:
 
-  Whether to arrange the plots by row in the combined plot. Default is
-  `TRUE`.
+  Arrange panels by row.
+
+- seed:
+
+  Random seed used for jitter and label ranking ties.
 
 ## See also
 
 [RunProportionTest](https://mengxu98.github.io/scop/reference/RunProportionTest.md)
-
-## Examples
-
-``` r
-data(pancreas_sub)
-pancreas_sub <- RunProportionTest(
-  pancreas_sub,
-  group.by = "CellType",
-  split.by = "Phase"
-)
-#> ℹ [2026-04-22 08:31:04] Start proportion test
-#> ℹ [2026-04-22 08:31:04] Running comparison: "G1" vs "S"
-#> ℹ [2026-04-22 08:31:11] Running comparison: "S" vs "G1"
-#> ℹ [2026-04-22 08:31:18] Running comparison: "G1" vs "G2M"
-#> ℹ [2026-04-22 08:31:25] Running comparison: "G2M" vs "G1"
-#> ℹ [2026-04-22 08:31:32] Running comparison: "S" vs "G1"
-#> ℹ [2026-04-22 08:31:39] Running comparison: "G1" vs "S"
-#> ℹ [2026-04-22 08:31:46] Running comparison: "S" vs "G2M"
-#> ℹ [2026-04-22 08:31:52] Running comparison: "G2M" vs "S"
-#> ℹ [2026-04-22 08:31:59] Running comparison: "G2M" vs "G1"
-#> ℹ [2026-04-22 08:32:06] Running comparison: "G1" vs "G2M"
-#> ℹ [2026-04-22 08:32:12] Running comparison: "G2M" vs "S"
-#> ℹ [2026-04-22 08:32:19] Running comparison: "S" vs "G2M"
-#> ✔ [2026-04-22 08:32:25] Proportion test completed
-
-ProportionTestPlot(pancreas_sub)
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_segment()`).
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_segment()`).
-#> Warning: Removed 2 rows containing missing values or values outside the scale range
-#> (`geom_segment()`).
-#> Warning: Removed 2 rows containing missing values or values outside the scale range
-#> (`geom_segment()`).
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_segment()`).
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_segment()`).
-
-
-# Plot specific comparisons
-ProportionTestPlot(
-  pancreas_sub,
-  comparison = c("G2M_vs_G1", "G2M_vs_S")
-)
-#> Warning: Removed 2 rows containing missing values or values outside the scale range
-#> (`geom_segment()`).
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_segment()`).
-
-
-# Plot paired comparisons using list format
-ProportionTestPlot(
-  pancreas_sub,
-  comparison = list(c("G2M", "G1"))
-)
-#> Warning: Removed 2 rows containing missing values or values outside the scale range
-#> (`geom_segment()`).
-#> Warning: Removed 2 rows containing missing values or values outside the scale range
-#> (`geom_segment()`).
-
-
-ProportionTestPlot(
-  pancreas_sub,
-  cols.sig = "blue",
-  comparison = list(c("G2M", "G1"))
-)
-#> Warning: Removed 2 rows containing missing values or values outside the scale range
-#> (`geom_segment()`).
-#> Warning: Removed 2 rows containing missing values or values outside the scale range
-#> (`geom_segment()`).
-```

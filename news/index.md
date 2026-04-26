@@ -1,5 +1,34 @@
 # Changelog
 
+## scop 0.8.8
+
+- **fix**:
+  - [`DynamicHeatmap()`](https://mengxu98.github.io/scop/reference/DynamicHeatmap.md)
+    / custom enrichment workflows: Fixed incorrect term label display
+    when user-provided `TERM2GENE` / `TERM2NAME` use non-standard column
+    names such as `term` / `name`. Custom term annotations are now
+    normalized consistently so that heatmap term labels show readable
+    term names instead of fallback IDs (e.g. GO IDs). Related issue
+    [\#160](https://github.com/mengxu98/scop/issues/160)
+    ([@Pineapple-wen6](https://github.com/Pineapple-wen6),
+    [@mengxu98](https://github.com/mengxu98)).
+  - Refactored repeated custom database input handling by introducing
+    shared internal helpers for normalizing and assembling user-provided
+    `TERM2GENE` / `TERM2NAME`, and applied them across
+    [`RunEnrichment()`](https://mengxu98.github.io/scop/reference/RunEnrichment.md),
+    [`RunDynamicEnrichment()`](https://mengxu98.github.io/scop/reference/RunDynamicEnrichment.md),
+    [`RunGSEA()`](https://mengxu98.github.io/scop/reference/RunGSEA.md),
+    [`RunGSVA()`](https://mengxu98.github.io/scop/reference/RunGSVA.md),
+    and
+    [`PrepareDB()`](https://mengxu98.github.io/scop/reference/PrepareDB.md)
+    to keep behavior consistent.
+  - [`integration_scop()`](https://mengxu98.github.io/scop/reference/integration_scop.md):
+    Improved `ChromatinAssay` handling by standardizing ATAC reductions
+    after integration, avoiding non-interactive small-batch blocking,
+    clipping `TFIDF/rlsi` anchor dims to available cells, auto-switching
+    `Harmony5` to legacy `Harmony`, and rejecting unsupported `Seurat` /
+    `RPCA` ATAC paths with explicit messages.
+
 ## scop 0.8.7
 
 - **feat**:

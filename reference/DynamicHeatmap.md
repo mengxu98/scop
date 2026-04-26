@@ -221,7 +221,9 @@ DynamicHeatmap(
 - assay:
 
   Which assay to use. If `NULL`, the default assay of the Seurat object
-  will be used.
+  will be used. When the object also contains `ChromatinAssay`, the
+  default assay and additional `ChromatinAssay` will be preprocessed
+  sequentially.
 
 - exp_method:
 
@@ -746,24 +748,24 @@ DynamicHeatmap(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-22 07:51:28] Start standard processing workflow...
-#> ℹ [2026-04-22 07:51:28] Checking a list of <Seurat>...
-#> ! [2026-04-22 07:51:28] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-22 07:51:28] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-22 07:51:30] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-22 07:51:31] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-22 07:51:31] Number of available HVF: 2000
-#> ℹ [2026-04-22 07:51:31] Finished check
-#> ℹ [2026-04-22 07:51:31] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-22 07:51:31] Perform pca linear dimension reduction
-#> ℹ [2026-04-22 07:51:32] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-22 07:51:32] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-22 07:51:32] Reorder clusters...
-#> ℹ [2026-04-22 07:51:32] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-22 07:51:33] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-22 07:51:33] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-22 07:51:36] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-04-22 07:51:39] Standard processing workflow completed
+#> ℹ [2026-04-26 01:01:48] Start standard processing workflow...
+#> ℹ [2026-04-26 01:01:48] Checking a list of <Seurat>...
+#> ! [2026-04-26 01:01:49] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-26 01:01:49] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-26 01:01:50] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-26 01:01:51] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-26 01:01:51] Number of available HVF: 2000
+#> ℹ [2026-04-26 01:01:51] Finished check
+#> ℹ [2026-04-26 01:01:51] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-26 01:01:52] Perform pca linear dimension reduction
+#> ℹ [2026-04-26 01:01:52] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-04-26 01:01:53] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-26 01:01:53] Reorder clusters...
+#> ℹ [2026-04-26 01:01:53] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-26 01:01:53] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-26 01:01:53] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-26 01:01:57] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-04-26 01:02:01] Standard processing workflow completed
 
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
@@ -777,17 +779,17 @@ pancreas_sub <- RunSlingshot(
 
 pancreas_sub <- RunDynamicFeatures(
   pancreas_sub,
-  lineages = c("Lineage1", "Lineage2"),,
+  lineages = c("Lineage1", "Lineage2"), ,
   fit_method = "pretsa",
   n_candidates = 200
 )
-#> ℹ [2026-04-22 07:51:41] Start find dynamic features
-#> ℹ [2026-04-22 07:51:42] Data type is raw counts
-#> ℹ [2026-04-22 07:51:43] Number of candidate features (union): 236
-#> ℹ [2026-04-22 07:51:44] Data type is raw counts
-#> ℹ [2026-04-22 07:51:44] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-04-22 07:51:44] Calculating dynamic features for "Lineage2"...
-#> ✔ [2026-04-22 07:51:44] Find dynamic features done
+#> ℹ [2026-04-26 01:02:03] Start find dynamic features
+#> ℹ [2026-04-26 01:02:03] Data type is raw counts
+#> ℹ [2026-04-26 01:02:05] Number of candidate features (union): 236
+#> ℹ [2026-04-26 01:02:05] Data type is raw counts
+#> ℹ [2026-04-26 01:02:05] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-04-26 01:02:06] Calculating dynamic features for "Lineage2"...
+#> ✔ [2026-04-26 01:02:06] Find dynamic features done
 
 ht1 <- DynamicHeatmap(
   pancreas_sub,
@@ -799,7 +801,7 @@ ht1 <- DynamicHeatmap(
   width = 2,
   height = 3
 )
-#> ℹ [2026-04-22 07:52:11] [1] 154 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-04-26 01:02:38] [1] 154 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Iapp,Pyy,Rbp4,Chgb,Gast,Lrpprc,Slc38a5,Cck,Cdkn1a...
 
 ht1$plot
@@ -823,20 +825,20 @@ ht2 <- DynamicHeatmap(
   ),
   cell_annotation = "SubCellType"
 )
-#> ℹ [2026-04-22 07:52:15] Start find dynamic features
-#> ℹ [2026-04-22 07:52:16] Data type is raw counts
-#> ℹ [2026-04-22 07:52:16] Number of candidate features (union): 2
-#> ℹ [2026-04-22 07:52:17] Data type is raw counts
-#> ! [2026-04-22 07:52:17] Negative values detected
-#> ! [2026-04-22 07:52:17] Negative values detected
-#> ℹ [2026-04-22 07:52:17] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-04-22 07:52:17] Using 1 core
-#> ⠙ [2026-04-22 07:52:17] Running for S_score [1/2] ■■■■■       50% | ETA:  0s
-#> ✔ [2026-04-22 07:52:17] Completed 2 tasks in 76ms
+#> ℹ [2026-04-26 01:02:40] Start find dynamic features
+#> ℹ [2026-04-26 01:02:42] Data type is raw counts
+#> ℹ [2026-04-26 01:02:42] Number of candidate features (union): 2
+#> ℹ [2026-04-26 01:02:43] Data type is raw counts
+#> ! [2026-04-26 01:02:43] Negative values detected
+#> ! [2026-04-26 01:02:43] Negative values detected
+#> ℹ [2026-04-26 01:02:43] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-04-26 01:02:43] Using 1 core
+#> ⠙ [2026-04-26 01:02:43] Running for S_score [1/2] ■■■■■       50% | ETA:  0s
+#> ✔ [2026-04-26 01:02:43] Completed 2 tasks in 77ms
 #> 
-#> ℹ [2026-04-22 07:52:17] Building results
-#> ✔ [2026-04-22 07:52:17] Find dynamic features done
-#> ℹ [2026-04-22 07:52:17] Some features were missing in at least one lineage: 
+#> ℹ [2026-04-26 01:02:43] Building results
+#> ✔ [2026-04-26 01:02:43] Find dynamic features done
+#> ℹ [2026-04-26 01:02:43] Some features were missing in at least one lineage: 
 #> ℹ                       Isl1,Neurod2,Pyy,Rbp4,Sox9...
 ht2$plot
 
@@ -853,7 +855,7 @@ ht3 <- DynamicHeatmap(
   width = 1,
   height = 2
 )
-#> ℹ [2026-04-22 07:52:18] [1] 172 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-04-26 01:02:44] [1] 172 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Iapp,Pyy,Rbp4,Chgb,Gast,Lrpprc,Slc38a5,Cck,Cdkn1a...
 
 ht3$plot
@@ -874,46 +876,56 @@ ht4 <- DynamicHeatmap(
   width = 1,
   height = 2
 )
-#> ℹ [2026-04-22 07:52:22] [1] 172 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-04-26 01:02:49] [1] 172 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Iapp,Pyy,Rbp4,Chgb,Gast,Lrpprc,Slc38a5,Cck,Cdkn1a...
-#> ℹ [2026-04-22 07:52:25] Start Enrichment analysis
-#> ℹ [2026-04-22 07:56:57] Species: "Mus_musculus"
-#> ✔ [2026-04-22 08:00:53] org.Mm.eg.db installed successfully
-#> ℹ [2026-04-22 08:01:26] Preparing database: GO_BP
-#> ℹ [2026-04-22 08:01:47] Convert ID types for the GO_BP database
-#> ℹ [2026-04-22 08:01:47] Connect to the Ensembl archives...
-#> ℹ [2026-04-22 08:01:48] Using the 115 version of ensembl database...
-#> ℹ [2026-04-22 08:01:48] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
-#> ℹ [2026-04-22 08:01:49] Searching the dataset mmusculus ...
-#> ℹ [2026-04-22 08:01:50] Connecting to the dataset mmusculus_gene_ensembl ...
-#> ℹ [2026-04-22 08:01:53] Converting the geneIDs...
-#> ! [2026-04-22 08:01:53] <simpleError in .processResults(postRes, mart = mart, hostURLsep = sep, fullXmlQuery = fullXmlQuery,     quote = quote, numAttributes = length(attributes)): Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.
+#> ℹ [2026-04-26 01:02:52] Start Enrichment analysis
+#> ℹ [2026-04-26 01:07:42] Species: "Mus_musculus"
+#> ✔ [2026-04-26 01:12:03] org.Mm.eg.db installed successfully
+#> ℹ [2026-04-26 01:12:40] Preparing database: GO_BP
+#> ℹ [2026-04-26 01:13:09] Convert ID types for the GO_BP database
+#> ℹ [2026-04-26 01:13:09] Connect to the Ensembl archives...
+#> ℹ [2026-04-26 01:13:09] Using the 115 version of ensembl database...
+#> ℹ [2026-04-26 01:13:09] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
+#> ℹ [2026-04-26 01:13:12] Searching the dataset mmusculus ...
+#> ℹ [2026-04-26 01:13:13] Connecting to the dataset mmusculus_gene_ensembl ...
+#> ℹ [2026-04-26 01:13:17] Converting the geneIDs...
+#> ! [2026-04-26 01:13:29] <simpleError in .processResults(postRes, mart = mart, hostURLsep = sep, fullXmlQuery = fullXmlQuery,     quote = quote, numAttributes = length(attributes)): Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.
 #> !                       >
-#> ! [2026-04-22 08:01:53] Get errors when retrieving information from the BioMart database
-#> ! [2026-04-22 08:01:54] Retrying...
-#> ! [2026-04-22 08:01:56] <simpleError in .processResults(postRes, mart = mart, hostURLsep = sep, fullXmlQuery = fullXmlQuery,     quote = quote, numAttributes = length(attributes)): Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.
+#> ! [2026-04-26 01:13:29] Get errors when retrieving information from the BioMart database
+#> ! [2026-04-26 01:13:30] Retrying...
+#> ! [2026-04-26 01:13:33] <simpleError in .processResults(postRes, mart = mart, hostURLsep = sep, fullXmlQuery = fullXmlQuery,     quote = quote, numAttributes = length(attributes)): Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.
 #> !                       >
-#> ! [2026-04-22 08:01:56] Get errors when retrieving information from the BioMart database
-#> ! [2026-04-22 08:01:57] Retrying...
-#> ! [2026-04-22 08:01:58] <simpleError in .processResults(postRes, mart = mart, hostURLsep = sep, fullXmlQuery = fullXmlQuery,     quote = quote, numAttributes = length(attributes)): Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.
+#> ! [2026-04-26 01:13:33] Get errors when retrieving information from the BioMart database
+#> ! [2026-04-26 01:13:34] Retrying...
+#> ! [2026-04-26 01:13:37] <simpleError in .processResults(postRes, mart = mart, hostURLsep = sep, fullXmlQuery = fullXmlQuery,     quote = quote, numAttributes = length(attributes)): Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.
 #> !                       >
-#> ! [2026-04-22 08:01:58] Get errors when retrieving information from the BioMart database
-#> ! [2026-04-22 08:01:59] Retrying...
-#> ! [2026-04-22 08:02:00] <simpleError in .processResults(postRes, mart = mart, hostURLsep = sep, fullXmlQuery = fullXmlQuery,     quote = quote, numAttributes = length(attributes)): Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.
+#> ! [2026-04-26 01:13:37] Get errors when retrieving information from the BioMart database
+#> ! [2026-04-26 01:13:38] Retrying...
+#> ! [2026-04-26 01:13:39] <simpleError in .processResults(postRes, mart = mart, hostURLsep = sep, fullXmlQuery = fullXmlQuery,     quote = quote, numAttributes = length(attributes)): Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.
 #> !                       >
-#> ! [2026-04-22 08:02:00] Get errors when retrieving information from the BioMart database
-#> ! [2026-04-22 08:02:01] Retrying...
-#> ! [2026-04-22 08:02:03] <simpleError in .processResults(postRes, mart = mart, hostURLsep = sep, fullXmlQuery = fullXmlQuery,     quote = quote, numAttributes = length(attributes)): Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.
-#> !                       >
-#> ! [2026-04-22 08:02:03] Get errors when retrieving information from the BioMart database
-#> Error in try_get(expr = {    biomaRt::getBM(mart = mart1, attributes = unique(c("ensembl_gene_id",         from_attr, to_attr)), filters = from_attr, values = list(geneID))}, max_tries = max_tries, error_message = "Get errors when retrieving information from the BioMart database"): <simpleError in .processResults(postRes, mart = mart, hostURLsep = sep,
-#> fullXmlQuery = fullXmlQuery, quote = quote, numAttributes =
-#> length(attributes)): Query ERROR: caught BioMart::Exception::Database: Could
-#> not connect to mysql database ensembl_mart_115: DBI
-#> connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...)
-#> failed: Can't connect to MySQL server on '127.0.0.1' (111) at
-#> /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm
-#> line 98. >
+#> ! [2026-04-26 01:13:39] Get errors when retrieving information from the BioMart database
+#> ! [2026-04-26 01:13:40] Retrying...
+#> ℹ [2026-04-26 01:13:43] 23084 genes mapped with "entrez_id"
+#> ℹ [2026-04-26 01:13:43] ==============================
+#> ℹ                       23084 genes mapped
+#> ℹ                       2531 genes unmapped
+#> ℹ                       ==============================
+#> ℹ [2026-04-26 01:13:56] Permform enrichment...
+#> ℹ [2026-04-26 01:13:56] Using 1 core
+#> Registered S3 methods overwritten by 'callr':
+#>   method                    from
+#>   format.callr_status_error     
+#>   print.callr_status_error      
+#> Registered S3 method overwritten by 'ggtree':
+#>   method         from     
+#>   fortify.igraph ggnetwork
+#> ⠙ [2026-04-26 01:13:56] Running for 1 [1/3] ■■■         33% | ETA: 34s
+#> ⠹ [2026-04-26 01:13:56] Running for 2 [2/3] ■■■■■■      67% | ETA: 18s
+#> ✔ [2026-04-26 01:13:56] Completed 3 tasks in 51.6s
+#> 
+#> ℹ [2026-04-26 01:13:56] Building results
+#> ✔ [2026-04-26 01:14:48] Enrichment analysis done
+
 
 ht5 <- DynamicHeatmap(
   pancreas_sub,
@@ -938,37 +950,18 @@ ht5 <- DynamicHeatmap(
   features_width = grid::unit(0.5, "in"),
   features_fontsize = c(3, 6)
 )
-#> ℹ [2026-04-22 08:02:04] [1] 154 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-04-26 01:14:50] [1] 154 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Iapp,Pyy,Rbp4,Chgb,Gast,Lrpprc,Slc38a5,Cck,Cdkn1a...
-#> ℹ [2026-04-22 08:02:05] Start Enrichment analysis
-#> ℹ [2026-04-22 08:02:05] Species: "Mus_musculus"
-#> ℹ [2026-04-22 08:02:05] Loading cached: GO_BP version: 3.22.0 nterm:15169 created: 2026-04-22 08:01:47
-#> ℹ [2026-04-22 08:02:06] Convert ID types for the GO_BP database
-#> ℹ [2026-04-22 08:02:06] Connect to the Ensembl archives...
-#> ℹ [2026-04-22 08:02:06] Using the 115 version of ensembl database...
-#> ℹ [2026-04-22 08:02:06] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
-#> ℹ [2026-04-22 08:02:07] Searching the dataset mmusculus ...
-#> ℹ [2026-04-22 08:02:07] Connecting to the dataset mmusculus_gene_ensembl ...
-#> ℹ [2026-04-22 08:02:50] Converting the geneIDs...
-#> ! [2026-04-22 08:02:52] <simpleError in .processResults(postRes, mart = mart, hostURLsep = sep, fullXmlQuery = fullXmlQuery,     quote = quote, numAttributes = length(attributes)): Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.
-#> !                       >
-#> ! [2026-04-22 08:02:52] Get errors when retrieving information from the BioMart database
-#> ! [2026-04-22 08:02:54] Retrying...
-#> ℹ [2026-04-22 08:02:56] 23214 genes mapped with "entrez_id"
-#> ℹ [2026-04-22 08:02:56] ==============================
-#> ℹ                       23214 genes mapped
-#> ℹ                       2516 genes unmapped
-#> ℹ                       ==============================
-#> ℹ [2026-04-22 08:03:10] Permform enrichment...
-#> ℹ [2026-04-22 08:03:10] Using 2 cores
-#> Registered S3 method overwritten by 'ggtree':
-#>   method         from     
-#>   fortify.igraph ggnetwork
-#> ⠙ [2026-04-22 08:03:10] Running for 1... [1/2] ■■■■■       50% | ETA:  9s
-#> ✔ [2026-04-22 08:03:10] Completed 2 tasks in 16.7s
+#> ℹ [2026-04-26 01:14:51] Start Enrichment analysis
+#> ℹ [2026-04-26 01:14:51] Species: "Mus_musculus"
+#> ℹ [2026-04-26 01:14:51] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-04-26 01:13:56
+#> ℹ [2026-04-26 01:14:52] Permform enrichment...
+#> ℹ [2026-04-26 01:14:52] Using 2 cores
+#> ⠙ [2026-04-26 01:14:52] Running for 1... [1/2] ■■■■■       50% | ETA: 16s
+#> ✔ [2026-04-26 01:14:52] Completed 2 tasks in 31.1s
 #> 
-#> ℹ [2026-04-22 08:03:10] Building results
-#> ✔ [2026-04-22 08:03:27] Enrichment analysis done
+#> ℹ [2026-04-26 01:14:52] Building results
+#> ✔ [2026-04-26 01:15:23] Enrichment analysis done
 
 
 pancreas_sub <- AnnotateFeatures(
@@ -976,9 +969,9 @@ pancreas_sub <- AnnotateFeatures(
   species = "Mus_musculus",
   db = c("CSPA", "TF")
 )
-#> ℹ [2026-04-22 08:04:59] Species: "Mus_musculus"
-#> ℹ [2026-04-22 08:04:59] Loading cached: CSPA version: CSPA nterm:1 created: 2026-04-22 07:30:59
-#> ℹ [2026-04-22 08:05:00] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-04-22 07:30:46
+#> ℹ [2026-04-26 01:17:05] Species: "Mus_musculus"
+#> ℹ [2026-04-26 01:17:05] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-04-26 00:43:23
+#> ℹ [2026-04-26 01:17:10] Preparing database: CSPA
 ht6 <- DynamicHeatmap(
   pancreas_sub,
   exp_legend_title = "Z-score",
@@ -1014,30 +1007,30 @@ ht6 <- DynamicHeatmap(
   width = 1,
   height = 2
 )
-#> ℹ [2026-04-22 08:05:01] [1] 172 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-04-26 01:17:12] [1] 172 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Iapp,Pyy,Rbp4,Chgb,Gast,Lrpprc,Slc38a5,Cck,Cdkn1a...
-#> ℹ [2026-04-22 08:05:02] Start find dynamic features
-#> ℹ [2026-04-22 08:05:03] Data type is raw counts
-#> ℹ [2026-04-22 08:05:03] Number of candidate features (union): 2
-#> ℹ [2026-04-22 08:05:04] Data type is raw counts
-#> ℹ [2026-04-22 08:05:04] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-04-22 08:05:04] Using 1 core
-#> ⠙ [2026-04-22 08:05:04] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
-#> ✔ [2026-04-22 08:05:04] Completed 2 tasks in 143ms
+#> ℹ [2026-04-26 01:17:13] Start find dynamic features
+#> ℹ [2026-04-26 01:17:14] Data type is raw counts
+#> ℹ [2026-04-26 01:17:15] Number of candidate features (union): 2
+#> ℹ [2026-04-26 01:17:15] Data type is raw counts
+#> ℹ [2026-04-26 01:17:15] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-04-26 01:17:15] Using 1 core
+#> ⠙ [2026-04-26 01:17:15] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
+#> ✔ [2026-04-26 01:17:15] Completed 2 tasks in 145ms
 #> 
-#> ℹ [2026-04-22 08:05:04] Building results
-#> ✔ [2026-04-22 08:05:04] Find dynamic features done
-#> ℹ [2026-04-22 08:05:04] Start find dynamic features
-#> ℹ [2026-04-22 08:05:06] Data type is raw counts
-#> ℹ [2026-04-22 08:05:06] Number of candidate features (union): 2
-#> ℹ [2026-04-22 08:05:07] Data type is raw counts
-#> ℹ [2026-04-22 08:05:07] Calculating dynamic features for "Lineage2"...
-#> ℹ [2026-04-22 08:05:07] Using 1 core
-#> ⠙ [2026-04-22 08:05:07] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
-#> ✔ [2026-04-22 08:05:07] Completed 2 tasks in 120ms
+#> ℹ [2026-04-26 01:17:15] Building results
+#> ✔ [2026-04-26 01:17:15] Find dynamic features done
+#> ℹ [2026-04-26 01:17:16] Start find dynamic features
+#> ℹ [2026-04-26 01:17:17] Data type is raw counts
+#> ℹ [2026-04-26 01:17:18] Number of candidate features (union): 2
+#> ℹ [2026-04-26 01:17:18] Data type is raw counts
+#> ℹ [2026-04-26 01:17:18] Calculating dynamic features for "Lineage2"...
+#> ℹ [2026-04-26 01:17:18] Using 1 core
+#> ⠙ [2026-04-26 01:17:18] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
+#> ✔ [2026-04-26 01:17:18] Completed 2 tasks in 161ms
 #> 
-#> ℹ [2026-04-22 08:05:07] Building results
-#> ✔ [2026-04-22 08:05:07] Find dynamic features done
+#> ℹ [2026-04-26 01:17:18] Building results
+#> ✔ [2026-04-26 01:17:18] Find dynamic features done
 #> Picking joint bandwidth of 19.9
 #> Picking joint bandwidth of 21.7
 #> Picking joint bandwidth of 19.9
@@ -1077,30 +1070,30 @@ ht7 <- DynamicHeatmap(
   width = 2,
   height = 1
 )
-#> ℹ [2026-04-22 08:05:11] [1] 172 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-04-26 01:17:23] [1] 172 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Iapp,Pyy,Rbp4,Chgb,Gast,Lrpprc,Slc38a5,Cck,Cdkn1a...
-#> ℹ [2026-04-22 08:05:12] Start find dynamic features
-#> ℹ [2026-04-22 08:05:13] Data type is raw counts
-#> ℹ [2026-04-22 08:05:14] Number of candidate features (union): 2
-#> ℹ [2026-04-22 08:05:14] Data type is raw counts
-#> ℹ [2026-04-22 08:05:14] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-04-22 08:05:14] Using 1 core
-#> ⠙ [2026-04-22 08:05:14] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
-#> ✔ [2026-04-22 08:05:14] Completed 2 tasks in 155ms
+#> ℹ [2026-04-26 01:17:23] Start find dynamic features
+#> ℹ [2026-04-26 01:17:25] Data type is raw counts
+#> ℹ [2026-04-26 01:17:25] Number of candidate features (union): 2
+#> ℹ [2026-04-26 01:17:26] Data type is raw counts
+#> ℹ [2026-04-26 01:17:26] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-04-26 01:17:26] Using 1 core
+#> ⠙ [2026-04-26 01:17:26] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
+#> ✔ [2026-04-26 01:17:26] Completed 2 tasks in 160ms
 #> 
-#> ℹ [2026-04-22 08:05:14] Building results
-#> ✔ [2026-04-22 08:05:15] Find dynamic features done
-#> ℹ [2026-04-22 08:05:15] Start find dynamic features
-#> ℹ [2026-04-22 08:05:16] Data type is raw counts
-#> ℹ [2026-04-22 08:05:17] Number of candidate features (union): 2
-#> ℹ [2026-04-22 08:05:17] Data type is raw counts
-#> ℹ [2026-04-22 08:05:17] Calculating dynamic features for "Lineage2"...
-#> ℹ [2026-04-22 08:05:17] Using 1 core
-#> ⠙ [2026-04-22 08:05:17] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
-#> ✔ [2026-04-22 08:05:17] Completed 2 tasks in 187ms
+#> ℹ [2026-04-26 01:17:26] Building results
+#> ✔ [2026-04-26 01:17:26] Find dynamic features done
+#> ℹ [2026-04-26 01:17:26] Start find dynamic features
+#> ℹ [2026-04-26 01:17:28] Data type is raw counts
+#> ℹ [2026-04-26 01:17:28] Number of candidate features (union): 2
+#> ℹ [2026-04-26 01:17:29] Data type is raw counts
+#> ℹ [2026-04-26 01:17:29] Calculating dynamic features for "Lineage2"...
+#> ℹ [2026-04-26 01:17:29] Using 1 core
+#> ⠙ [2026-04-26 01:17:29] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
+#> ✔ [2026-04-26 01:17:29] Completed 2 tasks in 351ms
 #> 
-#> ℹ [2026-04-22 08:05:17] Building results
-#> ✔ [2026-04-22 08:05:18] Find dynamic features done
+#> ℹ [2026-04-26 01:17:29] Building results
+#> ✔ [2026-04-26 01:17:29] Find dynamic features done
 #> Picking joint bandwidth of 19.9
 #> Picking joint bandwidth of 21.7
 #> Picking joint bandwidth of 19.9

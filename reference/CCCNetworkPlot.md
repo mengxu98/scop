@@ -339,26 +339,9 @@ A ggplot, patchwork, or recorded plot object.
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-22 07:34:24] Start standard processing workflow...
-#> ℹ [2026-04-22 07:34:25] Checking a list of <Seurat>...
-#> ! [2026-04-22 07:34:25] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-22 07:34:25] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-22 07:34:26] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-22 07:34:27] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-22 07:34:27] Number of available HVF: 2000
-#> ℹ [2026-04-22 07:34:27] Finished check
-#> ℹ [2026-04-22 07:34:28] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-22 07:34:28] Perform pca linear dimension reduction
-#> ℹ [2026-04-22 07:34:29] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-22 07:34:29] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-22 07:34:29] Reorder clusters...
-#> ℹ [2026-04-22 07:34:30] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-22 07:34:30] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-22 07:34:30] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-22 07:34:32] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-04-22 07:34:34] Standard processing workflow completed
 
 pc1 <- Seurat::Embeddings(pancreas_sub, "Standardpca")[, 1]
 ct <- as.character(pancreas_sub$CellType)
@@ -376,26 +359,6 @@ pancreas_sub <- RunCellChat(
   group_cmp = list(c("ConditionA", "ConditionB")),
   species = "Mus_musculus"
 )
-#> ℹ [2026-04-22 07:34:34] Start CellChat analysis
-#> ℹ [2026-04-22 07:36:07] Processing condition: "ConditionA"
-#> [1] "Create a CellChat object from a data matrix"
-#> Set cell identities for the new CellChat object 
-#> The cell groups used for CellChat analysis are  Ductal, Ngn3-high-EP, Endocrine, Ngn3-low-EP, Pre-endocrine 
-#> The number of highly variable ligand-receptor pairs used for signaling inference is 542 
-#> triMean is used for calculating the average gene expression per cell group. 
-#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-04-22 07:36:08.646726]"
-#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-04-22 07:36:27.500782]"
-#> ℹ [2026-04-22 07:36:27] Processing condition: "ConditionB"
-#> [1] "Create a CellChat object from a data matrix"
-#> Set cell identities for the new CellChat object 
-#> The cell groups used for CellChat analysis are  Endocrine, Ngn3-high-EP, Ductal, Ngn3-low-EP, Pre-endocrine 
-#> The number of highly variable ligand-receptor pairs used for signaling inference is 601 
-#> triMean is used for calculating the average gene expression per cell group. 
-#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-04-22 07:36:28.68721]"
-#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-04-22 07:36:49.999789]"
-#> ℹ [2026-04-22 07:36:50] Merging CellChat objects for comparison "ConditionA_vs_ConditionB"
-#> Merge the following slots: 'data.signaling','images','net', 'netP','meta', 'idents', 'var.features' , 'DB', and 'LR'.
-#> ✔ [2026-04-22 07:36:50] CellChat analysis completed
 
 CCCNetworkPlot(
   pancreas_sub,
@@ -407,8 +370,6 @@ CCCNetworkPlot(
   top_n = 20
 )
 
-
-
 CCCNetworkPlot(
   pancreas_sub,
   method = "CellChat",
@@ -419,8 +380,6 @@ CCCNetworkPlot(
   top_n = 20
 )
 
-
-
 CCCNetworkPlot(
   pancreas_sub,
   method = "CellChat",
@@ -429,8 +388,6 @@ CCCNetworkPlot(
   display_by = "aggregation",
   top_n = 12
 )
-
-
 
 CCCNetworkPlot(
   pancreas_sub,
@@ -445,7 +402,6 @@ CCCNetworkPlot(
   top_n = 3
 )
 
-
 CCCNetworkPlot(
   pancreas_sub,
   method = "CellChat",
@@ -454,7 +410,6 @@ CCCNetworkPlot(
   display_by = "interaction",
   top_n = 20
 )
-
 
 CCCNetworkPlot(
   pancreas_sub,
@@ -465,7 +420,6 @@ CCCNetworkPlot(
   top_n = 20
 )
 
-
 CCCNetworkPlot(
   pancreas_sub,
   method = "CellChat",
@@ -474,7 +428,6 @@ CCCNetworkPlot(
   display_by = "aggregation",
   top_n = 20
 )
-
 
 CCCNetworkPlot(
   pancreas_sub,
@@ -487,7 +440,6 @@ CCCNetworkPlot(
   label = TRUE
 )
 
-
 CCCNetworkPlot(
   pancreas_sub,
   method = "CellChat",
@@ -495,8 +447,6 @@ CCCNetworkPlot(
   plot_type = "pathway",
   signaling = "MK"
 )
-
-
 
 CCCNetworkPlot(
   pancreas_sub,
@@ -507,8 +457,6 @@ CCCNetworkPlot(
   pairLR.use = "MDK_SDC1"
 )
 
-
-
 CCCNetworkPlot(
   pancreas_sub,
   method = "CellChat",
@@ -516,5 +464,5 @@ CCCNetworkPlot(
   plot_type = "diff_network",
   measure = "count"
 )
-
+} # }
 ```

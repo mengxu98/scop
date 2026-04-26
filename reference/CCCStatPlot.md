@@ -287,26 +287,9 @@ A ggplot or recorded base plot object.
 ## Examples
 
 ``` r
+if (requireNamespace("CellChat", quietly = TRUE)) {
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-22 07:36:59] Start standard processing workflow...
-#> ℹ [2026-04-22 07:37:00] Checking a list of <Seurat>...
-#> ! [2026-04-22 07:37:00] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-22 07:37:00] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-22 07:37:02] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-22 07:37:02] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-22 07:37:03] Number of available HVF: 2000
-#> ℹ [2026-04-22 07:37:03] Finished check
-#> ℹ [2026-04-22 07:37:04] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-22 07:37:04] Perform pca linear dimension reduction
-#> ℹ [2026-04-22 07:37:05] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-22 07:37:05] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-22 07:37:05] Reorder clusters...
-#> ℹ [2026-04-22 07:37:05] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-22 07:37:05] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-22 07:37:05] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-22 07:37:08] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-04-22 07:37:11] Standard processing workflow completed
 
 pc1 <- Seurat::Embeddings(pancreas_sub, "Standardpca")[, 1]
 ct <- as.character(pancreas_sub$CellType)
@@ -324,26 +307,6 @@ pancreas_sub <- RunCellChat(
   group_cmp = list(c("ConditionA", "ConditionB")),
   species = "Mus_musculus"
 )
-#> ℹ [2026-04-22 07:37:11] Start CellChat analysis
-#> ℹ [2026-04-22 07:37:11] Processing condition: "ConditionA"
-#> [1] "Create a CellChat object from a data matrix"
-#> Set cell identities for the new CellChat object 
-#> The cell groups used for CellChat analysis are  Ductal, Ngn3-high-EP, Endocrine, Ngn3-low-EP, Pre-endocrine 
-#> The number of highly variable ligand-receptor pairs used for signaling inference is 542 
-#> triMean is used for calculating the average gene expression per cell group. 
-#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-04-22 07:37:12.054444]"
-#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-04-22 07:37:30.376455]"
-#> ℹ [2026-04-22 07:37:30] Processing condition: "ConditionB"
-#> [1] "Create a CellChat object from a data matrix"
-#> Set cell identities for the new CellChat object 
-#> The cell groups used for CellChat analysis are  Endocrine, Ngn3-high-EP, Ductal, Ngn3-low-EP, Pre-endocrine 
-#> The number of highly variable ligand-receptor pairs used for signaling inference is 601 
-#> triMean is used for calculating the average gene expression per cell group. 
-#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-04-22 07:37:31.500595]"
-#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-04-22 07:37:51.429965]"
-#> ℹ [2026-04-22 07:37:51] Merging CellChat objects for comparison "ConditionA_vs_ConditionB"
-#> Merge the following slots: 'data.signaling','images','net', 'netP','meta', 'idents', 'var.features' , 'DB', and 'LR'.
-#> ✔ [2026-04-22 07:37:51] CellChat analysis completed
 
 CCCStatPlot(
   pancreas_sub,
@@ -353,8 +316,6 @@ CCCStatPlot(
   display_by = "aggregation",
   top_n = 20
 )
-#> ! [2026-04-22 07:38:00] `thisplot::StatPlot()` sankey is count-based. For `CCCStatPlot()` with `plot_type = 'sankey'`, `edge_value` is used to rank/filter pairs, but flow width is shown by interaction count.
-
 
 CCCStatPlot(
   pancreas_sub,
@@ -365,7 +326,6 @@ CCCStatPlot(
   top_n = 20
 )
 
-
 CCCStatPlot(
   pancreas_sub,
   method = "CellChat",
@@ -375,7 +335,6 @@ CCCStatPlot(
   top_n = 200
 )
 
-
 CCCStatPlot(
   pancreas_sub,
   method = "CellChat",
@@ -384,9 +343,6 @@ CCCStatPlot(
   facet_by = "receiver",
   top_n = 200
 )
-#> Warning: Groups with fewer than two datapoints have been dropped.
-#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
-
 
 CCCStatPlot(
   pancreas_sub,
@@ -397,14 +353,12 @@ CCCStatPlot(
   top_n = 100
 )
 
-
 CCCStatPlot(
   pancreas_sub,
   method = "CellChat",
   condition = "ConditionA",
   plot_type = "scatter"
 )
-
 
 CCCStatPlot(
   pancreas_sub,
@@ -414,7 +368,6 @@ CCCStatPlot(
   signaling = "MK"
 )
 
-
 CCCStatPlot(
   pancreas_sub,
   method = "CellChat",
@@ -422,8 +375,6 @@ CCCStatPlot(
   plot_type = "gene",
   signaling = "MK"
 )
-#> ℹ [2026-04-22 07:38:04] Setting `group.by` to "Features" as `plot.by` is set to "feature"
-
 
 CCCStatPlot(
   pancreas_sub,
@@ -433,7 +384,6 @@ CCCStatPlot(
   measure = "count",
   compare_by = "overall"
 )
-#> Error in ccc_stat_comparison_plot(srt = srt, method = method, condition = condition,     comparison = comparison, measure = measure, compare_by = compare_by,     pattern = pattern, title = title, subtitle = subtitle, palette = palette_cfg$cell_palette,     palcolor = palette_cfg$cell_palcolor, legend.position = legend.position,     legend.direction = legend.direction, font.size = font.size,     theme_use = theme_use, theme_args = theme_args, grid_major = grid_major,     grid_major_colour = grid_major_colour, grid_major_linetype = grid_major_linetype,     grid_major_linewidth = grid_major_linewidth): unused arguments (grid_major = grid_major, grid_major_colour = grid_major_colour, grid_major_linetype = grid_major_linetype, grid_major_linewidth = grid_major_linewidth)
 
 CCCStatPlot(
   pancreas_sub,
@@ -444,7 +394,6 @@ CCCStatPlot(
   compare_by = "celltype",
   pattern = "all"
 )
-#> Error in ccc_stat_comparison_plot(srt = srt, method = method, condition = condition,     comparison = comparison, measure = measure, compare_by = compare_by,     pattern = pattern, title = title, subtitle = subtitle, palette = palette_cfg$cell_palette,     palcolor = palette_cfg$cell_palcolor, legend.position = legend.position,     legend.direction = legend.direction, font.size = font.size,     theme_use = theme_use, theme_args = theme_args, grid_major = grid_major,     grid_major_colour = grid_major_colour, grid_major_linetype = grid_major_linetype,     grid_major_linewidth = grid_major_linewidth): unused arguments (grid_major = grid_major, grid_major_colour = grid_major_colour, grid_major_linetype = grid_major_linetype, grid_major_linewidth = grid_major_linewidth)
 
 CCCStatPlot(
   pancreas_sub,
@@ -453,7 +402,6 @@ CCCStatPlot(
   plot_type = "ranknet"
 )
 
-
 CCCStatPlot(
   pancreas_sub,
   method = "CellChat",
@@ -461,4 +409,46 @@ CCCStatPlot(
   idents.use = "Ductal",
   plot_type = "role_change"
 )
+}
+#> ℹ [2026-04-26 00:43:26] Start standard processing workflow...
+#> ℹ [2026-04-26 00:43:28] Checking a list of <Seurat>...
+#> ! [2026-04-26 00:43:28] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-26 00:43:28] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-26 00:43:31] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-26 00:43:32] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-26 00:43:32] Number of available HVF: 2000
+#> ℹ [2026-04-26 00:43:32] Finished check
+#> ℹ [2026-04-26 00:43:33] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-26 00:43:34] Perform pca linear dimension reduction
+#> ℹ [2026-04-26 00:43:42] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-04-26 00:43:42] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-26 00:43:42] Reorder clusters...
+#> ℹ [2026-04-26 00:43:42] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-26 00:43:42] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-26 00:43:42] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-26 00:43:45] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-04-26 00:43:48] Standard processing workflow completed
+#> ℹ [2026-04-26 00:43:48] Start CellChat analysis
+#> ℹ [2026-04-26 00:46:52] Processing condition: "ConditionA"
+#> [1] "Create a CellChat object from a data matrix"
+#> Set cell identities for the new CellChat object 
+#> The cell groups used for CellChat analysis are  Ductal, Ngn3-high-EP, Endocrine, Ngn3-low-EP, Pre-endocrine 
+#> The number of highly variable ligand-receptor pairs used for signaling inference is 542 
+#> triMean is used for calculating the average gene expression per cell group. 
+#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-04-26 00:46:53.712543]"
+#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-04-26 00:47:12.185159]"
+#> ℹ [2026-04-26 00:47:12] Processing condition: "ConditionB"
+#> [1] "Create a CellChat object from a data matrix"
+#> Set cell identities for the new CellChat object 
+#> The cell groups used for CellChat analysis are  Endocrine, Ngn3-high-EP, Ductal, Ngn3-low-EP, Pre-endocrine 
+#> The number of highly variable ligand-receptor pairs used for signaling inference is 601 
+#> triMean is used for calculating the average gene expression per cell group. 
+#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-04-26 00:47:13.315338]"
+#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-04-26 00:47:34.629431]"
+#> ℹ [2026-04-26 00:47:34] Merging CellChat objects for comparison "ConditionA_vs_ConditionB"
+#> Merge the following slots: 'data.signaling','images','net', 'netP','meta', 'idents', 'var.features' , 'DB', and 'LR'.
+#> ✔ [2026-04-26 00:47:34] CellChat analysis completed
+#> ! [2026-04-26 00:47:57] `thisplot::StatPlot()` sankey is count-based. For `CCCStatPlot()` with `plot_type = 'sankey'`, `edge_value` is used to rank/filter pairs, but flow width is shown by interaction count.
+#> ℹ [2026-04-26 00:48:00] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> Error in ccc_stat_comparison_plot(srt = srt, method = method, condition = condition,     comparison = comparison, measure = measure, compare_by = compare_by,     pattern = pattern, title = title, subtitle = subtitle, palette = palette_cfg$cell_palette,     palcolor = palette_cfg$cell_palcolor, legend.position = legend.position,     legend.direction = legend.direction, font.size = font.size,     theme_use = theme_use, theme_args = theme_args, grid_major = grid_major,     grid_major_colour = grid_major_colour, grid_major_linetype = grid_major_linetype,     grid_major_linewidth = grid_major_linewidth): unused arguments (grid_major = grid_major, grid_major_colour = grid_major_colour, grid_major_linetype = grid_major_linetype, grid_major_linewidth = grid_major_linewidth)
 ```
