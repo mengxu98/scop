@@ -143,7 +143,9 @@ This can be a Seurat object, a matrix-like object, a Neighbor object, or a Graph
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
 <dd><p>Which assay to use.
-If <code>NULL</code>, the default assay of the Seurat object will be used.</p></dd>
+If <code>NULL</code>, the default assay of the Seurat object will be used.
+When the object also contains <code>ChromatinAssay</code>, the default assay and
+additional <code>ChromatinAssay</code> will be preprocessed sequentially.</p></dd>
 
 
 <dt id="arg-layer">layer<a class="anchor" aria-label="anchor" href="#arg-layer"></a></dt>
@@ -267,24 +269,24 @@ Default is <code>11</code>.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 09:13:44] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 09:13:45] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-22 09:13:45] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 09:13:45] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 09:13:47] Perform `Seurat::FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 09:13:48] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 09:13:48] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 09:13:48] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 09:13:48] Perform `Seurat::ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 09:13:48] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 09:13:49] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 09:13:50] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 09:13:50] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 09:13:50] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 09:13:50] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 09:13:50] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 09:13:55] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-04-22 09:14:00] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 02:30:51] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 02:30:52] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-26 02:30:52] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 02:30:52] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 02:30:55] Perform `Seurat::FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 02:30:55] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 02:30:55] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 02:30:56] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 02:30:56] Perform `Seurat::ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 02:30:56] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 02:30:57] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span> for <span style="color: #0000BB;">Standardpca</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 02:30:57] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 02:30:57] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 02:30:57] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 02:30:57] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 02:30:57] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 02:31:03] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-04-26 02:31:09] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunUMAP2</span><span class="op">(</span><span class="va">pancreas_sub</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">30</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>

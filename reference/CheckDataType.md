@@ -33,7 +33,9 @@ CheckDataType(object, verbose = TRUE, ...)
 - assay:
 
   Which assay to use. If `NULL`, the default assay of the Seurat object
-  will be used.
+  will be used. When the object also contains `ChromatinAssay`, the
+  default assay and additional `ChromatinAssay` will be preprocessed
+  sequentially.
 
 - verbose:
 
@@ -54,6 +56,6 @@ CheckDataType(pancreas_sub)
 #> Warning: no non-missing arguments to min; returning Inf
 #> Warning: no non-missing arguments to max; returning -Inf
 #> Warning: no non-missing arguments to max; returning -Inf
-#> ! [2026-04-22 07:46:42] Infinite values detected
+#> ! [2026-04-26 00:57:22] Infinite values detected
 #> [1] "unknown"
 ```

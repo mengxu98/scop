@@ -16,6 +16,7 @@ RunDecontX(
   assay_name = "decontXcounts",
   store_assay = TRUE,
   round_counts = FALSE,
+  data_type = NULL,
   seed = 11,
   ...
 )
@@ -82,6 +83,13 @@ RunDecontX(
   Whether to round decontaminated counts before creating the assay.
   Default is `FALSE`.
 
+- data_type:
+
+  Optional precomputed result from
+  [`CheckDataType()`](https://mengxu98.github.io/scop/reference/CheckDataType.md)
+  for the input assay. Primarily used internally to avoid repeated scans
+  of the same count matrix across nested QC calls.
+
 - seed:
 
   Random seed for reproducibility. Default is `11`.
@@ -101,33 +109,39 @@ the meta.data, and optional decontaminated counts stored in a new assay.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-22 08:47:00] Start standard processing workflow...
-#> ℹ [2026-04-22 08:47:01] Checking a list of <Seurat>...
-#> ! [2026-04-22 08:47:01] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-22 08:47:01] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-22 08:47:03] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-22 08:47:04] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-22 08:47:04] Number of available HVF: 2000
-#> ℹ [2026-04-22 08:47:04] Finished check
-#> ℹ [2026-04-22 08:47:04] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-22 08:47:05] Perform pca linear dimension reduction
-#> ℹ [2026-04-22 08:47:05] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-22 08:47:06] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-22 08:47:06] Reorder clusters...
-#> ℹ [2026-04-22 08:47:06] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-22 08:47:06] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-22 08:47:06] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-22 08:47:11] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-04-22 08:47:15] Standard processing workflow completed
+#> ℹ [2026-04-26 02:04:39] Start standard processing workflow...
+#> ℹ [2026-04-26 02:04:40] Checking a list of <Seurat>...
+#> ! [2026-04-26 02:04:40] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-26 02:04:40] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-26 02:04:43] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-26 02:04:43] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-26 02:04:43] Number of available HVF: 2000
+#> ℹ [2026-04-26 02:04:44] Finished check
+#> ℹ [2026-04-26 02:04:44] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-26 02:04:44] Perform pca linear dimension reduction
+#> ℹ [2026-04-26 02:04:45] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-04-26 02:04:45] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-26 02:04:45] Reorder clusters...
+#> ℹ [2026-04-26 02:04:45] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-26 02:04:46] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-26 02:04:46] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-26 02:04:51] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-04-26 02:04:56] Standard processing workflow completed
 pancreas_sub <- RunDecontX(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-04-22 08:47:16] Data type is raw counts
-#> ℹ [2026-04-22 08:47:16] Running decontX
-#> ℹ [2026-04-22 08:47:29] decontX contamination (median/mean/max): 0.0272 / 0.0875 / 0.6737
-#> ℹ [2026-04-22 08:47:30] decontX assay stored as decontXcounts
-#> ✔ [2026-04-22 08:47:30] decontX decontamination completed
+#> ℹ [2026-04-26 02:04:56] Running decontX
+#> ℹ [2026-04-26 02:04:57] Data type is raw counts
+#> Warning: 'librarySizeFactors' is deprecated.
+#> Use 'scrapper::centerSizeFactors' instead.
+#> See help("Deprecated")
+#> Warning: 'normalizeCounts' is deprecated.
+#> Use 'scrapper::normalizeCounts' instead.
+#> See help("Deprecated")
+#> ℹ [2026-04-26 02:05:09] decontX contamination (median/mean/max): 0.0272 / 0.0875 / 0.6737
+#> ℹ [2026-04-26 02:05:09] decontX assay stored as decontXcounts
+#> ✔ [2026-04-26 02:05:09] decontX decontamination completed
 
 FeatureStatPlot(
   pancreas_sub,

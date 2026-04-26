@@ -31,6 +31,8 @@ scVI_integrate(
   model = "SCVI",
   SCVI_params = list(),
   PEAKVI_params = list(),
+  POISSONVI_params = list(),
+  train_params = list(),
   cores = 1,
   verbose = TRUE,
   seed = 11
@@ -59,7 +61,9 @@ scVI_integrate(
 - assay:
 
   Which assay to use. If `NULL`, the default assay of the Seurat object
-  will be used.
+  will be used. When the object also contains `ChromatinAssay`, the
+  default assay and additional `ChromatinAssay` will be preprocessed
+  sequentially.
 
 - do_normalization:
 
@@ -154,8 +158,8 @@ scVI_integrate(
 
 - model:
 
-  A string indicating the scVI model to be used. Options are "SCVI" and
-  "PEAKVI". Default is \`"SCVI"\`.
+  A string indicating the scVI model to be used. Options are "SCVI",
+  "PEAKVI", and "POISSONVI". Default is \`"SCVI"\`.
 
 - SCVI_params:
 
@@ -164,6 +168,15 @@ scVI_integrate(
 - PEAKVI_params:
 
   A list of parameters for the PEAKVI model. Default is \`list()\`.
+
+- POISSONVI_params:
+
+  A list of parameters for the POISSONVI model. Default is \`list()\`.
+
+- train_params:
+
+  A list of parameters passed to the model \`train()\` method. Default
+  is \`list()\`.
 
 - cores:
 

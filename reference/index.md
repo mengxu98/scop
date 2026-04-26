@@ -44,8 +44,10 @@
   Run doublet-calling with scds
 - [`db_Scrublet()`](https://mengxu98.github.io/scop/reference/db_Scrublet.md)
   : Run doublet-calling with Scrublet
+- [`RunATACQC()`](https://mengxu98.github.io/scop/reference/RunATACQC.md)
+  : Run scATAC quality control metrics
 - [`RunCellQC()`](https://mengxu98.github.io/scop/reference/RunCellQC.md)
-  : Run cell-level quality control for single cell RNA-seq data.
+  : Run cell-level quality control
 - [`RunDecontX()`](https://mengxu98.github.io/scop/reference/RunDecontX.md)
   : Run ambient RNA decontamination with decontX
 - [`RunDoubletCalling()`](https://mengxu98.github.io/scop/reference/RunDoubletCalling.md)
@@ -69,6 +71,8 @@
   : The fastMNN integration function
 - [`fastMNN5_integrate()`](https://mengxu98.github.io/scop/reference/fastMNN5_integrate.md)
   : Seurat v5 fastMNN integration
+- [`GLUE_integrate()`](https://mengxu98.github.io/scop/reference/GLUE_integrate.md)
+  : The GLUE integration function
 - [`Harmony_integrate()`](https://mengxu98.github.io/scop/reference/Harmony_integrate.md)
   : The Harmony integration function
 - [`Harmony5_integrate()`](https://mengxu98.github.io/scop/reference/Harmony5_integrate.md)
@@ -77,8 +81,12 @@
   : The LIGER integration function
 - [`MNN_integrate()`](https://mengxu98.github.io/scop/reference/MNN_integrate.md)
   : The MNN integration function
+- [`MultiMAP_integrate()`](https://mengxu98.github.io/scop/reference/MultiMAP_integrate.md)
+  : The MultiMAP integration function
 - [`RPCA_integrate()`](https://mengxu98.github.io/scop/reference/RPCA_integrate.md)
   : Seurat v5 RPCA integration
+- [`RunLISI()`](https://mengxu98.github.io/scop/reference/RunLISI.md) :
+  Compute LISI scores on a Seurat object
 - [`RunCSSMap()`](https://mengxu98.github.io/scop/reference/RunCSSMap.md)
   : Single-cell reference mapping with CSS method
 - [`RunHarmony2()`](https://mengxu98.github.io/scop/reference/RunHarmony2.md)
@@ -99,6 +107,8 @@
   : Seurat v5 scVI integration
 - [`Uncorrected_integrate()`](https://mengxu98.github.io/scop/reference/Uncorrected_integrate.md)
   : The Uncorrected integration function
+- [`WNN_integrate()`](https://mengxu98.github.io/scop/reference/WNN_integrate.md)
+  : The WNN integration function
 
 ### Dimensionality Reduction and Clustering
 
@@ -138,6 +148,12 @@
   : Single-cell reference mapping with KNN method
 - [`RunKNNPredict()`](https://mengxu98.github.io/scop/reference/RunKNNPredict.md)
   : Run KNN prediction
+- [`RunCoEmbedding()`](https://mengxu98.github.io/scop/reference/RunCoEmbedding.md)
+  : Co-embed reference and query cells
+- [`RunLabelTransfer()`](https://mengxu98.github.io/scop/reference/RunLabelTransfer.md)
+  : Transfer reference labels to query cells
+- [`RunReferenceMapping()`](https://mengxu98.github.io/scop/reference/RunReferenceMapping.md)
+  : Map query cells into a reference space
 - [`RunScmap()`](https://mengxu98.github.io/scop/reference/RunScmap.md)
   : Annotate single cells using scmap.
 - [`RunSingleR()`](https://mengxu98.github.io/scop/reference/RunSingleR.md)
@@ -153,6 +169,16 @@
   : Differential gene test
 - [`RunProportionTest()`](https://mengxu98.github.io/scop/reference/RunProportionTest.md)
   : Proportion Test
+- [`RunProportionTestMilo()`](https://mengxu98.github.io/scop/reference/RunProportionTestMilo.md)
+  : Milo differential abundance wrapper
+- [`RunProportionTestPermutation()`](https://mengxu98.github.io/scop/reference/RunProportionTestPermutation.md)
+  : Permutation-based proportion test
+- [`RunProportionTestPropeller()`](https://mengxu98.github.io/scop/reference/RunProportionTestPropeller.md)
+  : Propeller differential abundance wrapper
+- [`RunProportionTestScCODA()`](https://mengxu98.github.io/scop/reference/RunProportionTestScCODA.md)
+  : scCODA differential abundance wrapper
+- [`SimulateProportionData()`](https://mengxu98.github.io/scop/reference/SimulateProportionData.md)
+  : Simulate Single-Cell Data for Proportion Testing
 
 ### Enrichment Analysis
 
@@ -202,6 +228,8 @@
   : Run NicheNet analysis
 - [`RunMultiNichenetr()`](https://mengxu98.github.io/scop/reference/RunMultiNichenetr.md)
   : Run MultiNicheNet analysis
+- [`RunscOMM()`](https://mengxu98.github.io/scop/reference/RunscOMM.md)
+  : Run scOMM label prediction
 
 ### Data Conversion
 
@@ -281,6 +309,8 @@
   : CCC network and flow plots
 - [`CCCStatPlot()`](https://mengxu98.github.io/scop/reference/CCCStatPlot.md)
   : CCC statistical distribution and summary plots
+- [`BenchmarkPlot()`](https://mengxu98.github.io/scop/reference/BenchmarkPlot.md)
+  : Plot benchmark metrics
 - [`CellDimPlot()`](https://mengxu98.github.io/scop/reference/CellDimPlot.md)
   : Cell Dimensional Plot
 - [`CellDimPlot3D()`](https://mengxu98.github.io/scop/reference/CellDimPlot3D.md)
@@ -291,6 +321,8 @@
   : The Cell Correlation Heatmap
 - [`CellStatPlot()`](https://mengxu98.github.io/scop/reference/CellStatPlot.md)
   : Statistical plot of cells
+- [`CoverageTrackPlot()`](https://mengxu98.github.io/scop/reference/CoverageTrackPlot.md)
+  : Coverage track plot for ATAC data
 - [`CytoTRACEPlot()`](https://mengxu98.github.io/scop/reference/CytoTRACEPlot.md)
   : Plot CytoTRACE 2 Results
 - [`DEtestPlot()`](https://mengxu98.github.io/scop/reference/DEtestPlot.md)
@@ -323,6 +355,8 @@
   : GSEA Plot
 - [`GSVAPlot()`](https://mengxu98.github.io/scop/reference/GSVAPlot.md)
   : Plots for GSVA (Gene Set Variation Analysis)
+- [`LISIPlot()`](https://mengxu98.github.io/scop/reference/LISIPlot.md)
+  : Plot LISI scores
 - [`LineagePlot()`](https://mengxu98.github.io/scop/reference/LineagePlot.md)
   : Lineage Plot
 - [`MetabolismPlot()`](https://mengxu98.github.io/scop/reference/MetabolismPlot.md)
@@ -368,6 +402,8 @@
   : A subsetted version of human 'panc8' datasets
 - [`pancreas_sub`](https://mengxu98.github.io/scop/reference/pancreas_sub.md)
   : A subsetted version of mouse 'pancreas' datasets
+- [`pbmcmultiome_sub`](https://mengxu98.github.io/scop/reference/pbmcmultiome_sub.md)
+  : A small human PBMC multiome example dataset
 - [`ref_scMCA`](https://mengxu98.github.io/scop/reference/ref_scMCA.md)
   : Reference datasets for cell type annotation in single-cell RNA data
 - [`words_excluded`](https://mengxu98.github.io/scop/reference/words_excluded.md)

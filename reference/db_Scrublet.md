@@ -5,7 +5,13 @@ Run doublet-calling with Scrublet
 ## Usage
 
 ``` r
-db_Scrublet(srt, assay = "RNA", db_rate = ncol(srt)/1000 * 0.01, ...)
+db_Scrublet(
+  srt,
+  assay = "RNA",
+  db_rate = ncol(srt)/1000 * 0.01,
+  data_type = NULL,
+  ...
+)
 ```
 
 ## Arguments
@@ -23,6 +29,13 @@ db_Scrublet(srt, assay = "RNA", db_rate = ncol(srt)/1000 * 0.01, ...)
 
   The expected doublet rate. Default is calculated as
   `ncol(srt) / 1000 * 0.01`.
+
+- data_type:
+
+  Optional precomputed result from
+  [`CheckDataType()`](https://mengxu98.github.io/scop/reference/CheckDataType.md)
+  for the input assay. Primarily used internally to avoid repeated scans
+  of the same count matrix across nested QC calls.
 
 - ...:
 

@@ -12,6 +12,9 @@ srt_to_adata(
   layer_x = "counts",
   assay_y = c("spliced", "unspliced"),
   layer_y = "counts",
+  reductions = NULL,
+  graphs = NULL,
+  neighbors = NULL,
   convert_tools = FALSE,
   convert_misc = FALSE,
   verbose = TRUE
@@ -47,6 +50,22 @@ srt_to_adata(
 
   Layer names for the assay_y in the Seurat object. Default is
   `"counts"`.
+
+- reductions:
+
+  Character vector specifying which Seurat reductions to convert into
+  `obsm`. Default is `NULL`, which converts all available reductions.
+
+- graphs:
+
+  Character vector specifying which Seurat graphs to convert into
+  `obsp`. Default is `NULL`, which converts all available graphs.
+
+- neighbors:
+
+  Character vector specifying which Seurat neighbor objects to convert
+  into `obsp`. Default is `NULL`, which converts all available neighbor
+  objects.
 
 - convert_tools:
 

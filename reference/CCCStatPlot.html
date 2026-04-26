@@ -317,26 +317,9 @@ Default is <code>TRUE</code>.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"CellChat"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:36:59] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:37:00] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-22 07:37:00] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:37:00] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:37:02] Perform `Seurat::FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:37:02] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:37:03] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:37:03] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:37:04] Perform `Seurat::ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:37:04] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:37:05] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:37:05] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:37:05] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:37:05] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:37:05] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:37:05] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:37:08] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-04-22 07:37:11] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">pc1</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/Embeddings.html" class="external-link">Embeddings</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, <span class="st">"Standardpca"</span><span class="op">)</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">ct</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">$</span><span class="va">CellType</span><span class="op">)</span></span></span>
@@ -354,26 +337,6 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  group_cmp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ConditionA"</span>, <span class="st">"ConditionB"</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:37:11] Start <span style="color: #0000BB;">CellChat</span> analysis</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:37:11] Processing condition: <span style="color: #0000BB;">"ConditionA"</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Create a CellChat object from a data matrix"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Set cell identities for the new CellChat object </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> The cell groups used for CellChat analysis are  Ductal, Ngn3-high-EP, Endocrine, Ngn3-low-EP, Pre-endocrine </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> The number of highly variable ligand-receptor pairs used for signaling inference is 542 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> triMean is used for calculating the average gene expression per cell group. </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "&gt;&gt;&gt; Run CellChat on sc/snRNA-seq data &lt;&lt;&lt; [2026-04-22 07:37:12.054444]"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "&gt;&gt;&gt; CellChat inference is done. Parameter values are stored in `object@options$parameter` &lt;&lt;&lt; [2026-04-22 07:37:30.376455]"</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:37:30] Processing condition: <span style="color: #0000BB;">"ConditionB"</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Create a CellChat object from a data matrix"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Set cell identities for the new CellChat object </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> The cell groups used for CellChat analysis are  Endocrine, Ngn3-high-EP, Ductal, Ngn3-low-EP, Pre-endocrine </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> The number of highly variable ligand-receptor pairs used for signaling inference is 601 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> triMean is used for calculating the average gene expression per cell group. </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "&gt;&gt;&gt; Run CellChat on sc/snRNA-seq data &lt;&lt;&lt; [2026-04-22 07:37:31.500595]"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "&gt;&gt;&gt; CellChat inference is done. Parameter values are stored in `object@options$parameter` &lt;&lt;&lt; [2026-04-22 07:37:51.429965]"</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:37:51] Merging CellChat objects for comparison <span style="color: #0000BB;">"ConditionA_vs_ConditionB"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Merge the following slots: 'data.signaling','images','net', 'netP','meta', 'idents', 'var.features' , 'DB', and 'LR'.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-04-22 07:37:51] <span style="color: #0000BB;">CellChat</span> analysis completed</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CCCStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -383,8 +346,6 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  display_by <span class="op">=</span> <span class="st">"aggregation"</span>,</span></span>
 <span class="r-in"><span>  top_n <span class="op">=</span> <span class="fl">20</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-22 07:38:00] `thisplot::StatPlot()` sankey is count-based. For `CCCStatPlot()` with `plot_type = 'sankey'`, `edge_value` is used to rank/filter pairs, but flow width is shown by interaction count.</span>
-<span class="r-plt img"><img src="CCCStatPlot-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CCCStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -394,7 +355,6 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  display_by <span class="op">=</span> <span class="st">"interaction"</span>,</span></span>
 <span class="r-in"><span>  top_n <span class="op">=</span> <span class="fl">20</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CCCStatPlot-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CCCStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -404,7 +364,6 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  facet_by <span class="op">=</span> <span class="st">"sender"</span>,</span></span>
 <span class="r-in"><span>  top_n <span class="op">=</span> <span class="fl">200</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CCCStatPlot-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CCCStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -414,9 +373,6 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  facet_by <span class="op">=</span> <span class="st">"receiver"</span>,</span></span>
 <span class="r-in"><span>  top_n <span class="op">=</span> <span class="fl">200</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Groups with fewer than two datapoints have been dropped.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Set `drop = FALSE` to consider such groups for position adjustment purposes.</span>
-<span class="r-plt img"><img src="CCCStatPlot-4.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CCCStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -426,7 +382,6 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  palette <span class="op">=</span> <span class="st">"Paired"</span>,</span></span>
 <span class="r-in"><span>  top_n <span class="op">=</span> <span class="fl">100</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CCCStatPlot-5.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CCCStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -434,7 +389,6 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  condition <span class="op">=</span> <span class="st">"ConditionA"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"scatter"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CCCStatPlot-6.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CCCStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -443,7 +397,6 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"lr_contribution"</span>,</span></span>
 <span class="r-in"><span>  signaling <span class="op">=</span> <span class="st">"MK"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CCCStatPlot-7.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CCCStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -452,8 +405,6 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"gene"</span>,</span></span>
 <span class="r-in"><span>  signaling <span class="op">=</span> <span class="st">"MK"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-22 07:38:04] Setting `group.by` to <span style="color: #0000BB;">"Features"</span> as `plot.by` is set to <span style="color: #0000BB;">"feature"</span></span>
-<span class="r-plt img"><img src="CCCStatPlot-8.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CCCStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -463,7 +414,6 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  measure <span class="op">=</span> <span class="st">"count"</span>,</span></span>
 <span class="r-in"><span>  compare_by <span class="op">=</span> <span class="st">"overall"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in ccc_stat_comparison_plot(srt = srt, method = method, condition = condition,     comparison = comparison, measure = measure, compare_by = compare_by,     pattern = pattern, title = title, subtitle = subtitle, palette = palette_cfg$cell_palette,     palcolor = palette_cfg$cell_palcolor, legend.position = legend.position,     legend.direction = legend.direction, font.size = font.size,     theme_use = theme_use, theme_args = theme_args, grid_major = grid_major,     grid_major_colour = grid_major_colour, grid_major_linetype = grid_major_linetype,     grid_major_linewidth = grid_major_linewidth):</span> unused arguments (grid_major = grid_major, grid_major_colour = grid_major_colour, grid_major_linetype = grid_major_linetype, grid_major_linewidth = grid_major_linewidth)</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CCCStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -474,7 +424,6 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  compare_by <span class="op">=</span> <span class="st">"celltype"</span>,</span></span>
 <span class="r-in"><span>  pattern <span class="op">=</span> <span class="st">"all"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in ccc_stat_comparison_plot(srt = srt, method = method, condition = condition,     comparison = comparison, measure = measure, compare_by = compare_by,     pattern = pattern, title = title, subtitle = subtitle, palette = palette_cfg$cell_palette,     palcolor = palette_cfg$cell_palcolor, legend.position = legend.position,     legend.direction = legend.direction, font.size = font.size,     theme_use = theme_use, theme_args = theme_args, grid_major = grid_major,     grid_major_colour = grid_major_colour, grid_major_linetype = grid_major_linetype,     grid_major_linewidth = grid_major_linewidth):</span> unused arguments (grid_major = grid_major, grid_major_colour = grid_major_colour, grid_major_linetype = grid_major_linetype, grid_major_linewidth = grid_major_linewidth)</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CCCStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -482,7 +431,6 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  condition <span class="op">=</span> <span class="st">"ConditionA_vs_ConditionB"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"ranknet"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CCCStatPlot-9.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CCCStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -491,7 +439,48 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  idents.use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"role_change"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CCCStatPlot-10.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 00:43:26] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 00:43:28] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-26 00:43:28] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 00:43:28] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 00:43:31] Perform `Seurat::FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 00:43:32] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 00:43:32] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 00:43:32] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 00:43:33] Perform `Seurat::ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 00:43:34] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 00:43:42] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span> for <span style="color: #0000BB;">Standardpca</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 00:43:42] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 00:43:42] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 00:43:42] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 00:43:42] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 00:43:42] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 00:43:45] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-04-26 00:43:48] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 00:43:48] Start <span style="color: #0000BB;">CellChat</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 00:46:52] Processing condition: <span style="color: #0000BB;">"ConditionA"</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Create a CellChat object from a data matrix"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Set cell identities for the new CellChat object </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> The cell groups used for CellChat analysis are  Ductal, Ngn3-high-EP, Endocrine, Ngn3-low-EP, Pre-endocrine </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> The number of highly variable ligand-receptor pairs used for signaling inference is 542 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> triMean is used for calculating the average gene expression per cell group. </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "&gt;&gt;&gt; Run CellChat on sc/snRNA-seq data &lt;&lt;&lt; [2026-04-26 00:46:53.712543]"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "&gt;&gt;&gt; CellChat inference is done. Parameter values are stored in `object@options$parameter` &lt;&lt;&lt; [2026-04-26 00:47:12.185159]"</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 00:47:12] Processing condition: <span style="color: #0000BB;">"ConditionB"</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Create a CellChat object from a data matrix"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Set cell identities for the new CellChat object </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> The cell groups used for CellChat analysis are  Endocrine, Ngn3-high-EP, Ductal, Ngn3-low-EP, Pre-endocrine </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> The number of highly variable ligand-receptor pairs used for signaling inference is 601 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> triMean is used for calculating the average gene expression per cell group. </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "&gt;&gt;&gt; Run CellChat on sc/snRNA-seq data &lt;&lt;&lt; [2026-04-26 00:47:13.315338]"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "&gt;&gt;&gt; CellChat inference is done. Parameter values are stored in `object@options$parameter` &lt;&lt;&lt; [2026-04-26 00:47:34.629431]"</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 00:47:34] Merging CellChat objects for comparison <span style="color: #0000BB;">"ConditionA_vs_ConditionB"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Merge the following slots: 'data.signaling','images','net', 'netP','meta', 'idents', 'var.features' , 'DB', and 'LR'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-04-26 00:47:34] <span style="color: #0000BB;">CellChat</span> analysis completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-26 00:47:57] `thisplot::StatPlot()` sankey is count-based. For `CCCStatPlot()` with `plot_type = 'sankey'`, `edge_value` is used to rank/filter pairs, but flow width is shown by interaction count.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-26 00:48:00] Setting `group.by` to <span style="color: #0000BB;">"Features"</span> as `plot.by` is set to <span style="color: #0000BB;">"feature"</span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in ccc_stat_comparison_plot(srt = srt, method = method, condition = condition,     comparison = comparison, measure = measure, compare_by = compare_by,     pattern = pattern, title = title, subtitle = subtitle, palette = palette_cfg$cell_palette,     palcolor = palette_cfg$cell_palcolor, legend.position = legend.position,     legend.direction = legend.direction, font.size = font.size,     theme_use = theme_use, theme_args = theme_args, grid_major = grid_major,     grid_major_colour = grid_major_colour, grid_major_linetype = grid_major_linetype,     grid_major_linewidth = grid_major_linewidth):</span> unused arguments (grid_major = grid_major, grid_major_colour = grid_major_colour, grid_major_linetype = grid_major_linetype, grid_major_linewidth = grid_major_linewidth)</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

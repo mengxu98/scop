@@ -750,6 +750,29 @@ DEtestPlot(
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunDEtest-1.png)
 
 ``` r
+# Hyperbolic volcano with enrichment annotation
+pancreas_sub <- RunEnrichment(
+  pancreas_sub,
+  group.by = "CellType",
+  db = "GO_BP",
+  species = "Mus_musculus"
+)
+DEtestPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "volcano",
+  threshold_method = "hyperbolic",
+  hyperbola_c = 6,
+  annotate_enrichment = TRUE,
+  enrich_from = "Enrichment",
+  enrich_db = "GO_BP",
+  enrich_top_terms = 3,
+  enrich_nlabel = 15,
+  label.size = 2
+)
+```
+
+``` r
 DEtestPlot(
   pancreas_sub,
   group.by = "CellType",

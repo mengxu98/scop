@@ -125,7 +125,9 @@ This can be a Seurat object, a matrix-like object, a Neighbor object, or a Graph
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
 <dd><p>Which assay to use.
-If <code>NULL</code>, the default assay of the Seurat object will be used.</p></dd>
+If <code>NULL</code>, the default assay of the Seurat object will be used.
+When the object also contains <code>ChromatinAssay</code>, the default assay and
+additional <code>ChromatinAssay</code> will be preprocessed sequentially.</p></dd>
 
 
 <dt id="arg-layer">layer<a class="anchor" aria-label="anchor" href="#arg-layer"></a></dt>

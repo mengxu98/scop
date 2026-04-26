@@ -12,6 +12,7 @@ PrepareEnv(
   miniconda_repo = "https://repo.anaconda.com/miniconda",
   version = if (is_windows()) "3.11-1" else "3.10-1",
   force = FALSE,
+  modules = NULL,
   pip_options = character(),
   ...
 )
@@ -44,6 +45,16 @@ PrepareEnv(
   Whether to force recreation of the environment. If `TRUE`, the
   existing environment will be removed and recreated. Default is
   `FALSE`.
+
+- modules:
+
+  Optional Python dependency modules to install in addition to the
+  default scientific stack. Supported values are `"scanpy"`, `"scvi"`,
+  `"glue"`, `"scanorama"`, `"bbknn"`, `"celltypist"`, `"cellphonedb"`,
+  `"magic"`, `"scrublet"`, `"doubletdetection"`, `"doublet"`,
+  `"palantir"`, `"scvelo"`, `"cellrank"`, `"wot"`, `"phate"`,
+  `"pacmap"`, `"trimap"`, `"multimap"`, and `"scomm"`. If `NULL` or
+  omitted in `PrepareEnv()`, the complete environment is installed.
 
 - pip_options:
 

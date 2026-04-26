@@ -103,30 +103,28 @@ AnnotateFeatures(
 ## Examples
 
 ``` r
-data(pancreas_sub)
-pancreas_sub <- AnnotateFeatures(
-  pancreas_sub,
-  species = "Mus_musculus",
-  db = c(
-    "TF",
-    "CSPA"
+if (requireNamespace("R.cache", quietly = TRUE)) {
+  data(pancreas_sub)
+  pancreas_sub <- AnnotateFeatures(
+    pancreas_sub,
+    species = "Mus_musculus",
+    db = "TF"
   )
-)
-#> ℹ [2026-04-22 07:30:46] Species: "Mus_musculus"
-#> ℹ [2026-04-22 07:30:46] Preparing database: TF
-#> ℹ [2026-04-22 07:30:59] Preparing database: CSPA
-head(
-  GetFeaturesData(
-    pancreas_sub
+  head(
+    GetFeaturesData(
+      pancreas_sub
+    )
   )
-)
-#>               highly_variable_genes   TF CSPA
-#> Xkr4                          False <NA> <NA>
-#> Mrpl15                        False <NA> <NA>
-#> Npbwr1                         <NA> <NA> <NA>
-#> 4732440D04Rik                 False <NA> <NA>
-#> Gm26901                       False <NA> <NA>
-#> Sntg1                          True <NA> <NA>
+}
+#> ℹ [2026-04-26 00:43:22] Species: "Mus_musculus"
+#> ℹ [2026-04-26 00:43:22] Preparing database: TF
+#>               highly_variable_genes   TF
+#> Xkr4                          False <NA>
+#> Mrpl15                        False <NA>
+#> Npbwr1                         <NA> <NA>
+#> 4732440D04Rik                 False <NA>
+#> Gm26901                       False <NA>
+#> Sntg1                          True <NA>
 
 if (FALSE) { # \dontrun{
 # Annotate features using a GTF file

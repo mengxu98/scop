@@ -46,7 +46,18 @@ DEtestPlot(
   tile_height = 0.3,
   tile_gap = 0.1,
   ring_segments = TRUE,
-  seed = 11
+  seed = 11,
+  threshold_method = c("rectangular", "hyperbolic"),
+  hyperbola_c = 6,
+  annotate_enrichment = FALSE,
+  enrich_from = c("Enrichment", "GSEA", "GSVA"),
+  enrich_db = NULL,
+  enrich_terms = NULL,
+  enrich_top_terms = 3,
+  enrich_padj_cutoff = 0.05,
+  enrich_gsva_score_cutoff = NULL,
+  gsva_method = NULL,
+  enrich_nlabel = 15
 )
 ```
 
@@ -89,6 +100,63 @@ DEtestPlot(
 
   A character string specifying the metric to use for the x-axis (only
   for volcano plot). Default is `"diff_pct"`.
+
+- threshold_method:
+
+  Volcano significance threshold method. Options are `"rectangular"`
+  (legacy DE_threshold) or `"hyperbolic"`
+  (`|log2FC * -log10(padj)| > c`). Default is `"rectangular"`.
+
+- hyperbola_c:
+
+  Numeric cutoff `c` for hyperbolic volcano threshold. Default is `6`.
+
+- annotate_enrichment:
+
+  Whether to annotate enrichment-hit genes on volcano plots. Enrichment
+  results are read from existing results in `srt@tools` only. Default is
+  `FALSE`.
+
+- enrich_from:
+
+  Character vector specifying enrichment result source(s) to annotate.
+  Options are `"Enrichment"`, `"GSEA"`, `"GSVA"`. Default is
+  `c("Enrichment", "GSEA", "GSVA")`.
+
+- enrich_db:
+
+  Optional database filter for enrichment annotation, e.g. `"GO_BP"` or
+  `"KEGG"`. Default is `NULL`.
+
+- enrich_terms:
+
+  Optional whitelist of enrichment term IDs or names for annotation.
+  Default is `NULL`.
+
+- enrich_top_terms:
+
+  Number of top enriched terms selected per source/group/database.
+  Default is `3`.
+
+- enrich_padj_cutoff:
+
+  Adjusted p-value cutoff for `"Enrichment"` and `"GSEA"` annotation.
+  Default is `0.05`.
+
+- enrich_gsva_score_cutoff:
+
+  Optional absolute GSVA score cutoff for `"GSVA"` annotation. Default
+  is `NULL`.
+
+- gsva_method:
+
+  Optional GSVA method filter (e.g. `"gsva"` or `"ssgsea"`) when
+  multiple GSVA tool slots exist. Default is `NULL`.
+
+- enrich_nlabel:
+
+  Maximum number of enrichment-derived labels added per group. Labels
+  from `features_label` are always retained. Default is `15`.
 
 - y_metric:
 
@@ -256,38 +324,38 @@ DEtestPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-22 07:50:23] Start standard processing workflow...
-#> ℹ [2026-04-22 07:50:24] Checking a list of <Seurat>...
-#> ! [2026-04-22 07:50:24] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-22 07:50:24] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-22 07:50:26] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-22 07:50:26] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-22 07:50:26] Number of available HVF: 2000
-#> ℹ [2026-04-22 07:50:27] Finished check
-#> ℹ [2026-04-22 07:50:27] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-22 07:50:27] Perform pca linear dimension reduction
-#> ℹ [2026-04-22 07:50:28] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-22 07:50:28] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-22 07:50:28] Reorder clusters...
-#> ℹ [2026-04-22 07:50:28] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-22 07:50:28] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-22 07:50:28] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-22 07:50:32] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-04-22 07:50:35] Standard processing workflow completed
+#> ℹ [2026-04-26 01:00:40] Start standard processing workflow...
+#> ℹ [2026-04-26 01:00:41] Checking a list of <Seurat>...
+#> ! [2026-04-26 01:00:41] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-26 01:00:41] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-26 01:00:43] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-26 01:00:43] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-26 01:00:43] Number of available HVF: 2000
+#> ℹ [2026-04-26 01:00:43] Finished check
+#> ℹ [2026-04-26 01:00:44] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-26 01:00:44] Perform pca linear dimension reduction
+#> ℹ [2026-04-26 01:00:44] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-04-26 01:00:45] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-26 01:00:45] Reorder clusters...
+#> ℹ [2026-04-26 01:00:45] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-26 01:00:45] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-26 01:00:45] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-26 01:00:49] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-04-26 01:00:53] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
   only.pos = FALSE
 )
-#> ℹ [2026-04-22 07:50:35] Data type is log-normalized
-#> ℹ [2026-04-22 07:50:35] Start differential expression test
-#> ℹ [2026-04-22 07:50:35] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-04-22 07:50:35] Using 1 core
-#> ⠙ [2026-04-22 07:50:35] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ✔ [2026-04-22 07:50:35] Completed 5 tasks in 891ms
+#> ℹ [2026-04-26 01:00:53] Data type is log-normalized
+#> ℹ [2026-04-26 01:00:53] Start differential expression test
+#> ℹ [2026-04-26 01:00:53] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-04-26 01:00:53] Using 1 core
+#> ⠙ [2026-04-26 01:00:53] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ✔ [2026-04-26 01:00:53] Completed 5 tasks in 1s
 #> 
-#> ℹ [2026-04-22 07:50:35] Building results
-#> ✔ [2026-04-22 07:50:36] Differential expression test completed
+#> ℹ [2026-04-26 01:00:53] Building results
+#> ✔ [2026-04-26 01:00:54] Differential expression test completed
 
 DEtestPlot(
   pancreas_sub,

@@ -1,6 +1,6 @@
-# Run cell-level quality control for single cell RNA-seq data.
+# Run cell-level quality control
 
-Run cell-level quality control for single cell RNA-seq data.
+Run cell-level quality control
 
 ## Usage
 
@@ -11,7 +11,7 @@ RunCellQC(
   split.by = NULL,
   group.by = NULL,
   return_filtered = FALSE,
-  qc_metrics = c("doublets", "decontX", "outlier", "umi", "gene", "mito", "ribo",
+  qc_metrics = c("doublets", "decontX", "atac", "outlier", "umi", "gene", "mito", "ribo",
     "ribo_mito_ratio", "species"),
   db_method = "scDblFinder",
   db_rate = NULL,
@@ -25,6 +25,7 @@ RunCellQC(
   decontX_store_assay = FALSE,
   decontX_round_counts = TRUE,
   decontX_args = list(),
+  atac_args = list(),
   outlier_threshold = c("log10_nCount:lower:2.5", "log10_nCount:higher:5",
     "log10_nFeature:lower:2.5", "log10_nFeature:higher:5", "featurecount_dist:lower:2.5"),
   outlier_n = 1,
@@ -58,8 +59,9 @@ RunCellQC(
 
 - split.by:
 
-  Name of a column in meta.data column to split plot by. Default is
-  `NULL`.
+  Name of a meta.data column used to split the object before QC. Default
+  is `NULL`. When specified, QC and doublet-calling are performed
+  separately within each split object and merged back afterward.
 
 - group.by:
 
@@ -77,16 +79,20 @@ RunCellQC(
 - qc_metrics:
 
   A character vector specifying the quality control metrics to be
-  applied. Available metrics are `"doublets"`, `"decontX"`, `"outlier"`,
-  `"umi"`, `"gene"`, `"mito"`, `"ribo"`, `"ribo_mito_ratio"`, and
-  `"species"`. Default is
+  applied. Available metrics are `"doublets"`, `"decontX"`, `"atac"`,
+  `"outlier"`, `"umi"`, `"gene"`, `"mito"`, `"ribo"`,
+  `"ribo_mito_ratio"`, and `"species"`. Default is
   `c("doublets", "decontX", "outlier", "umi", "gene", "mito", "ribo", "ribo_mito_ratio", "species")`.
+  For `ChromatinAssay`, if `.arg qc_metrics` is not supplied, the
+  default is `"atac"`.
 
 - db_method:
 
   Method used for doublet-calling. Can be one of `"scDblFinder"`,
   `"Scrublet"`, `"DoubletDetection"`, `"scds_cxds"`, `"scds_bcds"`,
-  `"scds_hybrid"`.
+  `"scds_hybrid"`. The resulting doublet labels are aggregated afterward
+  into `db_qc` and do not affect the thresholds used by the other QC
+  metrics.
 
 - db_rate:
 
@@ -154,6 +160,16 @@ RunCellQC(
   when `"decontX"` is included in `qc_metrics`. Explicit `decontX_*`
   parameters are preferred for common options and take precedence when
   both are supplied. Default is
+  [`list()`](https://rdrr.io/r/base/list.html).
+
+- atac_args:
+
+  A named list of additional arguments passed to
+  [`RunATACQC()`](https://mengxu98.github.io/scop/reference/RunATACQC.md)
+  when `"atac"` is included in `qc_metrics`. Threshold arguments from
+  [`RunATACQC()`](https://mengxu98.github.io/scop/reference/RunATACQC.md)
+  are used to label failed cells in `atac_qc`, but filtering is deferred
+  to `RunCellQC()`. Default is
   [`list()`](https://rdrr.io/r/base/list.html).
 
 - outlier_threshold:
@@ -240,38 +256,50 @@ Returns Seurat object with the QC results stored in the meta.data layer.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-22 08:34:29] Start standard processing workflow...
-#> ℹ [2026-04-22 08:34:30] Checking a list of <Seurat>...
-#> ! [2026-04-22 08:34:30] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-22 08:34:30] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-22 08:34:32] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-22 08:34:32] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-22 08:34:32] Number of available HVF: 2000
-#> ℹ [2026-04-22 08:34:33] Finished check
-#> ℹ [2026-04-22 08:34:33] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-22 08:34:33] Perform pca linear dimension reduction
-#> ℹ [2026-04-22 08:34:34] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-22 08:34:34] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-22 08:34:34] Reorder clusters...
-#> ℹ [2026-04-22 08:34:34] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-22 08:34:34] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-22 08:34:34] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-22 08:34:39] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-04-22 08:34:43] Standard processing workflow completed
-pancreas_sub <- RunCellQC(pancreas_sub)
-#> ℹ [2026-04-22 08:34:43] Data type is raw counts
-#> ℹ [2026-04-22 08:34:43] Data type is raw counts
-#> ℹ [2026-04-22 08:34:44] Data type is raw counts
-#> ℹ [2026-04-22 08:38:52] Data type is raw counts
-#> ℹ [2026-04-22 08:41:42] Running decontX
-#> ℹ [2026-04-22 08:41:55] decontX contamination (median/mean/max): 0.0136 / 0.1628 / 0.7465
-#> ℹ [2026-04-22 08:41:55] decontX assay stored as decontXcounts
-#> ✔ [2026-04-22 08:41:55] decontX decontamination completed
-#> ℹ [2026-04-22 08:41:55] decontX contamination estimates stored; no cells filtered because `decontX_threshold` is "NULL".
-#> ✔ [2026-04-22 08:41:55] ● Total cells: 1000
-#> ✔                       ◉ 957 cells remained
-#> ✔                       ◯ 43 cells filtered out:
-#> ✔                       ◯   20 potential doublets
+#> ℹ [2026-04-26 01:53:35] Start standard processing workflow...
+#> ℹ [2026-04-26 01:53:36] Checking a list of <Seurat>...
+#> ! [2026-04-26 01:53:36] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-26 01:53:36] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-26 01:53:38] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-26 01:53:39] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-26 01:53:39] Number of available HVF: 2000
+#> ℹ [2026-04-26 01:53:39] Finished check
+#> ℹ [2026-04-26 01:53:39] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-26 01:53:40] Perform pca linear dimension reduction
+#> ℹ [2026-04-26 01:53:40] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-04-26 01:53:41] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-26 01:53:41] Reorder clusters...
+#> ℹ [2026-04-26 01:53:41] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-26 01:53:41] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-26 01:53:41] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-26 01:53:46] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-04-26 01:53:50] Standard processing workflow completed
+pancreas_sub <- RunCellQC(
+  pancreas_sub,
+  db_method = "scds_cxds"
+)
+#> ◌ [2026-04-26 01:53:50] Running cell-level quality control
+#> ℹ [2026-04-26 01:53:51] Data type is raw counts
+#> ℹ [2026-04-26 01:53:51] Running scds with method "cxds"
+#> Registered S3 method overwritten by 'pROC':
+#>   method   from            
+#>   plot.roc spatstat.explore
+#> ! [2026-04-26 01:54:58] Skip "atac" QC because `assay = 'RNA'` is not a <ChromatinAssay>
+#> ℹ [2026-04-26 01:54:58] Running decontX
+#> Warning: 'librarySizeFactors' is deprecated.
+#> Use 'scrapper::centerSizeFactors' instead.
+#> See help("Deprecated")
+#> Warning: 'normalizeCounts' is deprecated.
+#> Use 'scrapper::normalizeCounts' instead.
+#> See help("Deprecated")
+#> ℹ [2026-04-26 01:59:16] decontX contamination (median/mean/max): 0.0136 / 0.1628 / 0.7465
+#> ℹ [2026-04-26 01:59:16] decontX assay stored as decontXcounts
+#> ✔ [2026-04-26 01:59:16] decontX decontamination completed
+#> ✔ [2026-04-26 01:59:17] ● Total cells: 1000
+#> ✔                       ◉ 967 cells remained
+#> ✔                       ◯ 33 cells filtered out:
+#> ✔                       ◯   10 potential doublets
+#> ✔                       ◯   0 ATAC QC failed cells
 #> ✔                       ◯   0 high-contamination cells
 #> ✔                       ◯   23 outlier cells
 #> ✔                       ◯   0 low-UMI cells
@@ -284,11 +312,7 @@ pancreas_sub <- RunCellQC(pancreas_sub)
 CellStatPlot(
   pancreas_sub,
   stat.by = c(
-    "db_qc", "decontX_qc", "outlier_qc",
-    "umi_qc", "gene_qc",
-    "mito_qc", "ribo_qc",
-    "ribo_mito_ratio_qc",
-    "species_qc"
+    "db_qc", "outlier_qc"
   ),
   plot_type = "upset",
   stat_level = "Fail"

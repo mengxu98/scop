@@ -50,7 +50,7 @@ All packages will be installed using uv as the primary tool.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">env_requirements</span><span class="op">(</span>version <span class="op">=</span> <span class="st">"3.10-1"</span>, include_optional <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">env_requirements</span><span class="op">(</span>version <span class="op">=</span> <span class="st">"3.10-1"</span>, include_optional <span class="op">=</span> <span class="cn">FALSE</span>, modules <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -60,6 +60,19 @@ All packages will be installed using uv as the primary tool.</p>
 <dl><dt id="arg-version">version<a class="anchor" aria-label="anchor" href="#arg-version"></a></dt>
 <dd><p>The Python version of the environment.
 Default is <code>"3.10-1"</code>.</p></dd>
+
+
+<dt id="arg-include-optional">include_optional<a class="anchor" aria-label="anchor" href="#arg-include-optional"></a></dt>
+<dd><p>Whether to include optional Python dependencies.</p></dd>
+
+
+<dt id="arg-modules">modules<a class="anchor" aria-label="anchor" href="#arg-modules"></a></dt>
+<dd><p>Optional requirement modules to include. Supported values are
+<code>"scanpy"</code>, <code>"scvi"</code>, <code>"scanorama"</code>, <code>"bbknn"</code>, <code>"celltypist"</code>,
+<code>"cellphonedb"</code>, <code>"magic"</code>, <code>"scrublet"</code>, <code>"doubletdetection"</code>,
+<code>"doublet"</code>, <code>"palantir"</code>, <code>"scvelo"</code>, <code>"cellrank"</code>, <code>"wot"</code>, <code>"phate"</code>,
+<code>"pacmap"</code>, <code>"trimap"</code>, <code>"multimap"</code>, and <code>"scomm"</code>. If <code>NULL</code>, the
+complete environment is returned.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -83,38 +96,134 @@ Default is <code>"3.10-1"</code>.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "3.10-1"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $packages</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               leidenalg                     tbb           python-igraph </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "leidenalg==0.10.2"         "tbb==2022.2.0" "python-igraph==0.11.9" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              matplotlib                   numba                llvmlite </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    "matplotlib==3.10.8"         "numba==0.59.1"      "llvmlite==0.42.0" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   numpy               packaging                palantir </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         "numpy==1.26.4"       "packaging&gt;=24.0"       "palantir==1.4.1" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  pandas                  scanpy            scikit-learn </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         "pandas==2.0.3"        "scanpy==1.11.3"   "scikit-learn==1.7.0" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   scipy                  scvelo                     wot </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         "scipy==1.15.3"         "scvelo==0.3.3"      "wot==1.0.8.post2" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  trimap                  pacmap                   phate </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         "trimap==1.1.4"         "pacmap==0.8.0"         "phate==1.0.11" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   bbknn               scanorama              scvi-tools </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          "bbknn==1.6.0"      "scanorama==1.7.4"     "scvi-tools==1.2.1" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                cellrank </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       "cellrank==2.0.7" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                      leidenalg </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                            "leidenalg==0.10.2" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                            tbb </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                "tbb==2022.2.0" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                  python-igraph </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                        "python-igraph==0.11.9" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                     matplotlib </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                           "matplotlib==3.10.8" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                          numba </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                "numba==0.59.1" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                       llvmlite </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                             "llvmlite==0.42.0" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                          numpy </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                "numpy==1.26.4" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                      packaging </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                              "packaging&gt;=24.0" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                         pandas </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                "pandas==2.0.3" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                   scikit-learn </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                          "scikit-learn==1.7.0" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                          scipy </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                "scipy==1.15.3" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                         scanpy </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                               "scanpy==1.11.3" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                     scvi-tools </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                            "scvi-tools==1.2.1" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                            jax </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                             "jax[cpu]==0.4.38" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                         scglue </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                "scglue==0.4.0" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                       bedtools </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                     "bedtools" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                      scanorama </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                             "scanorama==1.7.4" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                          bbknn </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                 "bbknn==1.6.0" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                     celltypist </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                            "celltypist==1.7.1" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                    cellphonedb </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                           "cellphonedb==5.0.1" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                   magic-impute </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                          "magic-impute==3.0.0" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                       scrublet </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                              "scrublet==0.2.3" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                     celltypist </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                            "celltypist==1.7.1" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                    cellphonedb </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                           "cellphonedb==5.0.1" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                         sccoda </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                "sccoda&gt;=0.1.9" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                   magic-impute </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                          "magic-impute==3.0.0" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                       scrublet </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                              "scrublet==0.2.3" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                               doubletdetection </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                "doubletdetection==4.3.0.post1" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                        louvain </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                               "louvain==0.8.2" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                       palantir </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                              "palantir==1.4.1" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                         scvelo </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                "scvelo==0.3.3" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                       cellrank </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                              "cellrank==2.0.7" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                            wot </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                             "wot==1.0.8.post2" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                          phate </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                "phate==1.0.11" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                         pacmap </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                "pacmap==0.8.0" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                         trimap </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                "trimap==1.1.4" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                       multimap </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> "git+https://github.com/Teichlab/MultiMAP.git" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                     tensorflow </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                           "tensorflow==2.16.2" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                          keras </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                 "keras==3.3.3" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                       tf_keras </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                             "tf_keras==2.16.0" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                      ml_dtypes </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                             "ml-dtypes&gt;=0.3.2" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $install_methods</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     leidenalg           tbb python-igraph    scvi-tools    matplotlib </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       "conda"       "conda"       "conda"       "conda"         "pip" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         numba      llvmlite         numpy     packaging      palantir </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         "pip"         "pip"         "pip"         "pip"         "pip" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        pandas        scanpy  scikit-learn         scipy        scvelo </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         "pip"         "pip"         "pip"         "pip"         "pip" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           wot        trimap        pacmap         phate         bbknn </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         "pip"         "pip"         "pip"         "pip"         "pip" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     scanorama      cellrank </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         "pip"         "pip" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        leidenalg              tbb    python-igraph       matplotlib </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          "conda"          "conda"          "conda"            "pip" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            numba         llvmlite            numpy        packaging </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            "pip"            "pip"            "pip"            "pip" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           pandas     scikit-learn            scipy           scanpy </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            "pip"            "pip"            "pip"            "pip" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       scvi-tools              jax           scglue         bedtools </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          "conda"            "pip"            "pip"          "conda" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        scanorama            bbknn       celltypist      cellphonedb </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            "pip"            "pip"            "pip"            "pip" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     magic-impute         scrublet       celltypist      cellphonedb </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            "pip"            "pip"            "pip"            "pip" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           sccoda     magic-impute         scrublet doubletdetection </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            "pip"            "pip"            "pip"            "pip" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          louvain         palantir           scvelo         cellrank </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            "pip"            "pip"            "pip"            "pip" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              wot            phate           pacmap           trimap </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            "pip"            "pip"            "pip"            "pip" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         multimap       tensorflow            keras         tf_keras </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            "pip"            "pip"            "pip"            "pip" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        ml_dtypes </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            "pip" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $package_aliases</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $package_aliases$`python-igraph`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "igraph"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $package_aliases$multimap</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "MultiMAP"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $package_aliases$MultiMAP</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "multimap"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $package_aliases$tf_keras</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "tf-keras"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $package_aliases$`tf-keras`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "tf_keras"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $package_aliases$ml_dtypes</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ml-dtypes"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $package_aliases$`ml-dtypes`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ml_dtypes"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>

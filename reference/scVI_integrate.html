@@ -70,6 +70,8 @@
 <span>  model <span class="op">=</span> <span class="st">"SCVI"</span>,</span>
 <span>  SCVI_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  PEAKVI_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  POISSONVI_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  train_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  cores <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">11</span></span>
@@ -99,7 +101,9 @@ Default is <code>TRUE</code>.</p></dd>
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
 <dd><p>Which assay to use.
-If <code>NULL</code>, the default assay of the Seurat object will be used.</p></dd>
+If <code>NULL</code>, the default assay of the Seurat object will be used.
+When the object also contains <code>ChromatinAssay</code>, the default assay and
+additional <code>ChromatinAssay</code> will be preprocessed sequentially.</p></dd>
 
 
 <dt id="arg-do-normalization">do_normalization<a class="anchor" aria-label="anchor" href="#arg-do-normalization"></a></dt>
@@ -198,7 +202,7 @@ Default is <code>0.6</code>.</p></dd>
 
 <dt id="arg-model">model<a class="anchor" aria-label="anchor" href="#arg-model"></a></dt>
 <dd><p>A string indicating the scVI model to be used.
-Options are "SCVI" and "PEAKVI".
+Options are "SCVI", "PEAKVI", and "POISSONVI".
 Default is `"SCVI"`.</p></dd>
 
 
@@ -209,6 +213,16 @@ Default is `list()`.</p></dd>
 
 <dt id="arg-peakvi-params">PEAKVI_params<a class="anchor" aria-label="anchor" href="#arg-peakvi-params"></a></dt>
 <dd><p>A list of parameters for the PEAKVI model.
+Default is `list()`.</p></dd>
+
+
+<dt id="arg-poissonvi-params">POISSONVI_params<a class="anchor" aria-label="anchor" href="#arg-poissonvi-params"></a></dt>
+<dd><p>A list of parameters for the POISSONVI model.
+Default is `list()`.</p></dd>
+
+
+<dt id="arg-train-params">train_params<a class="anchor" aria-label="anchor" href="#arg-train-params"></a></dt>
+<dd><p>A list of parameters passed to the model `train()` method.
 Default is `list()`.</p></dd>
 
 

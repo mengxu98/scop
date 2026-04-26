@@ -38,6 +38,17 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.8.8" id="scop-088">scop 0.8.8<a class="anchor" aria-label="anchor" href="#scop-088"></a></h2>
+<ul><li>
+<strong>fix</strong>:
+<ul><li>
+<code><a href="../reference/DynamicHeatmap.html">DynamicHeatmap()</a></code> / custom enrichment workflows: Fixed incorrect term label display when user-provided <code>TERM2GENE</code> / <code>TERM2NAME</code> use non-standard column names such as <code>term</code> / <code>name</code>. Custom term annotations are now normalized consistently so that heatmap term labels show readable term names instead of fallback IDs (e.g. GO IDs). Related issue <a href="https://github.com/mengxu98/scop/issues/160" class="external-link">#160</a> (<a href="https://github.com/Pineapple-wen6" class="external-link">@Pineapple-wen6</a>, <a href="https://github.com/mengxu98" class="external-link">@mengxu98</a>).</li>
+<li>Refactored repeated custom database input handling by introducing shared internal helpers for normalizing and assembling user-provided <code>TERM2GENE</code> / <code>TERM2NAME</code>, and applied them across <code><a href="../reference/RunEnrichment.html">RunEnrichment()</a></code>, <code><a href="../reference/RunDynamicEnrichment.html">RunDynamicEnrichment()</a></code>, <code><a href="../reference/RunGSEA.html">RunGSEA()</a></code>, <code><a href="../reference/RunGSVA.html">RunGSVA()</a></code>, and <code><a href="../reference/PrepareDB.html">PrepareDB()</a></code> to keep behavior consistent.</li>
+<li>
+<code><a href="../reference/integration_scop.html">integration_scop()</a></code>: Improved <code>ChromatinAssay</code> handling by standardizing ATAC reductions after integration, avoiding non-interactive small-batch blocking, clipping <code>TFIDF/rlsi</code> anchor dims to available cells, auto-switching <code>Harmony5</code> to legacy <code>Harmony</code>, and rejecting unsupported <code>Seurat</code> / <code>RPCA</code> ATAC paths with explicit messages.</li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.8.7" id="scop-087">scop 0.8.7<a class="anchor" aria-label="anchor" href="#scop-087"></a></h2>
 <ul><li>
 <strong>feat</strong>:

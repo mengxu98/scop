@@ -1,7 +1,7 @@
 # Proportion Test
 
-RunProportionTest performs a Monte-carlo permutation test to quantify
-the cell proportion differences between each condition.
+RunProportionTest performs differential abundance testing for cell
+proportions through a unified dispatcher.
 
 ## Usage
 
@@ -11,11 +11,15 @@ RunProportionTest(
   group.by,
   split.by,
   comparison = NULL,
+  proportion_method,
+  sample.by = NULL,
   n_permutations = 1000,
   FDR_threshold = 0.05,
   log2FD_threshold = log2(1.5),
   include_all_cells = FALSE,
-  verbose = TRUE
+  seed = 11,
+  verbose = TRUE,
+  ...
 )
 ```
 
@@ -27,20 +31,32 @@ RunProportionTest(
 
 - group.by:
 
-  Name of one or more meta.data columns to group (color) cells by.
+  Name of a metadata column for cell type/group labels.
 
 - split.by:
 
-  Name of a column in meta.data column to split plot by. Default is
-  `NULL`.
+  Name of a metadata column defining conditions to compare.
 
 - comparison:
 
-  Optional: specify comparisons to perform.
+  Optional comparisons to perform. Supports `list(c("A", "B"))` or
+  character values like `"A_vs_B"`.
+
+- proportion_method:
+
+  Differential abundance method. Canonical values are `"permutation"`,
+  `"milo"`, `"sccoda"`, and `"propeller"`. Alias values (for example
+  `"permutation_test"` or `"perm"`) are accepted and normalized to
+  `"permutation"`.
+
+- sample.by:
+
+  Metadata column for biological sample IDs. Required for `"milo"`,
+  `"sccoda"`, and `"propeller"`.
 
 - n_permutations:
 
-  Number of permutations for the test.
+  Number of permutations for permutation mode.
 
 - FDR_threshold:
 
@@ -52,56 +68,43 @@ RunProportionTest(
 
 - include_all_cells:
 
-  Whether to include all cell types in the complete grid (default:
-  FALSE).
+  Whether to include all cell types in permutation complete grid.
+
+- seed:
+
+  Random seed.
 
 - verbose:
 
-  Whether to print the message. Default is `TRUE`.
+  Whether to print messages.
 
-## References
+- ...:
 
-[Miller et al. paper](https://doi.org/10.1158/0008-5472.can-20-3562),
-[scProportionTest](https://github.com/rpolicastro/scProportionTest)
+  Additional arguments passed to the selected method function.
 
 ## See also
 
+[RunProportionTestPermutation](https://mengxu98.github.io/scop/reference/RunProportionTestPermutation.md),
+[RunProportionTestMilo](https://mengxu98.github.io/scop/reference/RunProportionTestMilo.md),
+[RunProportionTestScCODA](https://mengxu98.github.io/scop/reference/RunProportionTestScCODA.md),
+[RunProportionTestPropeller](https://mengxu98.github.io/scop/reference/RunProportionTestPropeller.md),
 [ProportionTestPlot](https://mengxu98.github.io/scop/reference/ProportionTestPlot.md)
 
 ## Examples
 
 ``` r
 data(pancreas_sub)
-# Default behavior: only include cell types present in comparison groups
 pancreas_sub <- RunProportionTest(
   pancreas_sub,
   group.by = "CellType",
   split.by = "Phase",
+  proportion_method = "permutation",
   comparison = list(c("G2M", "G1"))
 )
-#> ℹ [2026-04-22 09:01:48] Start proportion test
-#> ℹ [2026-04-22 09:01:48] Running comparison: "G1" vs "G2M"
-#> ℹ [2026-04-22 09:01:55] Running comparison: "G2M" vs "G1"
-#> ✔ [2026-04-22 09:02:02] Proportion test completed
+#> ℹ [2026-04-26 02:25:03] Start proportion test ("permutation")
+#> ℹ [2026-04-26 02:25:03] Running comparison: "G1" vs "G2M"
+#> ℹ [2026-04-26 02:25:10] Running comparison: "G2M" vs "G1"
+#> ✔ [2026-04-26 02:25:17] Proportion test completed ("permutation")
 
-# Include all cell types from the dataset
-pancreas_sub <- RunProportionTest(
-  pancreas_sub,
-  group.by = "CellType",
-  split.by = "Phase",
-  comparison = list(c("G2M", "G1")),
-  include_all_cells = TRUE
-)
-#> ℹ [2026-04-22 09:02:02] Start proportion test
-#> ℹ [2026-04-22 09:02:02] Running comparison: "G1" vs "G2M"
-#> ℹ [2026-04-22 09:02:10] Running comparison: "G2M" vs "G1"
-#> ✔ [2026-04-22 09:02:17] Proportion test completed
-
-ProportionTestPlot(
-  pancreas_sub
-)
-#> Warning: Removed 2 rows containing missing values or values outside the scale range
-#> (`geom_segment()`).
-#> Warning: Removed 2 rows containing missing values or values outside the scale range
-#> (`geom_segment()`).
+ProportionTestPlot(pancreas_sub)
 ```

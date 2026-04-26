@@ -89,7 +89,9 @@ RunMDS(
 - assay:
 
   Which assay to use. If `NULL`, the default assay of the Seurat object
-  will be used.
+  will be used. When the object also contains `ChromatinAssay`, the
+  default assay and additional `ChromatinAssay` will be preprocessed
+  sequentially.
 
 - layer:
 
@@ -143,24 +145,24 @@ RunMDS(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-22 08:59:57] Start standard processing workflow...
-#> ℹ [2026-04-22 09:00:00] Checking a list of <Seurat>...
-#> ! [2026-04-22 09:00:00] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-22 09:00:00] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-22 09:00:02] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-22 09:00:03] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-22 09:00:03] Number of available HVF: 2000
-#> ℹ [2026-04-22 09:00:04] Finished check
-#> ℹ [2026-04-22 09:00:04] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-22 09:00:04] Perform pca linear dimension reduction
-#> ℹ [2026-04-22 09:00:05] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-22 09:00:05] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-22 09:00:05] Reorder clusters...
-#> ℹ [2026-04-22 09:00:06] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-22 09:00:06] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-22 09:00:06] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-22 09:00:11] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-04-22 09:00:15] Standard processing workflow completed
+#> ℹ [2026-04-26 02:23:04] Start standard processing workflow...
+#> ℹ [2026-04-26 02:23:05] Checking a list of <Seurat>...
+#> ! [2026-04-26 02:23:05] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-26 02:23:05] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-26 02:23:08] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-26 02:23:08] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-26 02:23:08] Number of available HVF: 2000
+#> ℹ [2026-04-26 02:23:08] Finished check
+#> ℹ [2026-04-26 02:23:09] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-26 02:23:09] Perform pca linear dimension reduction
+#> ℹ [2026-04-26 02:23:10] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-04-26 02:23:10] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-26 02:23:10] Reorder clusters...
+#> ℹ [2026-04-26 02:23:10] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-26 02:23:10] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-26 02:23:10] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-26 02:23:16] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-04-26 02:23:22] Standard processing workflow completed
 pancreas_sub <- RunMDS(pancreas_sub)
 CellDimPlot(
   pancreas_sub,

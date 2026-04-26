@@ -1,7 +1,9 @@
 # Plot LISI scores
 
-Visualize LISI scores on a dimensional reduction and compare methods
-with a summary boxplot.
+Backward-compatible wrapper around
+[`BenchmarkPlot()`](https://mengxu98.github.io/scop/reference/BenchmarkPlot.md)
+for LISI scores. Visualize LISI scores on a dimensional reduction and
+compare methods with a summary boxplot.
 
 ## Usage
 
