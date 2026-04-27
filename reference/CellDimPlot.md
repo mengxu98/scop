@@ -661,24 +661,24 @@ CellDimPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-26 00:55:50] Start standard processing workflow...
-#> ℹ [2026-04-26 00:55:51] Checking a list of <Seurat>...
-#> ! [2026-04-26 00:55:51] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-26 00:55:51] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-26 00:55:53] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-26 00:55:54] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-26 00:55:54] Number of available HVF: 2000
-#> ℹ [2026-04-26 00:55:54] Finished check
-#> ℹ [2026-04-26 00:55:54] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-26 00:55:55] Perform pca linear dimension reduction
-#> ℹ [2026-04-26 00:55:55] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-26 00:55:56] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-26 00:55:56] Reorder clusters...
-#> ℹ [2026-04-26 00:55:56] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-26 00:55:56] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-26 00:55:56] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-26 00:55:59] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-04-26 00:56:03] Standard processing workflow completed
+#> ℹ [2026-04-27 13:16:24] Start standard processing workflow...
+#> ℹ [2026-04-27 13:16:25] Checking a list of <Seurat>...
+#> ! [2026-04-27 13:16:25] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-27 13:16:25] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-27 13:16:27] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-27 13:16:27] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-27 13:16:28] Number of available HVF: 2000
+#> ℹ [2026-04-27 13:16:28] Finished check
+#> ℹ [2026-04-27 13:16:28] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-27 13:16:28] Perform pca linear dimension reduction
+#> ℹ [2026-04-27 13:16:29] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-04-27 13:16:29] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-27 13:16:29] Reorder clusters...
+#> ℹ [2026-04-27 13:16:30] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-27 13:16:30] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-27 13:16:30] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-27 13:16:33] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-04-27 13:16:37] Standard processing workflow completed
 p1 <- CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -877,7 +877,7 @@ CellDimPlot(
   reduction = "UMAP",
   stat.by = "Phase"
 )
-#> Error in StatPlot(meta_data, stat.by = stat.by, group.by = group.by, split.by = split.by,     bg.by = bg.by, flip = flip, NA_color = NA_color, NA_stat = NA_stat,     keep_empty = keep_empty, individual = individual, stat_level = stat_level,     plot_type = plot_type, stat_type = stat_type, position = position,     palette = palette, palcolor = palcolor, alpha = alpha, bg_palette = bg_palette,     bg_palcolor = bg_palcolor, bg_alpha = bg_alpha, label = label,     label.size = label.size, label.fg = label.fg, label.bg = label.bg,     label.bg.r = label.bg.r, aspect.ratio = aspect.ratio, title = title,     subtitle = subtitle, xlab = xlab, ylab = ylab, legend.position = legend.position,     legend.direction = legend.direction, theme_use = theme_use,     theme_args = theme_args, grid_major = grid_major, grid_major_colour = grid_major_colour,     grid_major_linetype = grid_major_linetype, grid_major_linewidth = grid_major_linewidth,     combine = combine, nrow = nrow, ncol = ncol, byrow = byrow,     force = force, seed = seed): unused arguments (grid_major = grid_major, grid_major_colour = grid_major_colour, grid_major_linetype = grid_major_linetype, grid_major_linewidth = grid_major_linewidth)
+
 
 CellDimPlot(
   pancreas_sub,
@@ -888,7 +888,31 @@ CellDimPlot(
   stat_plot_label = TRUE,
   stat_plot_size = 0.15
 )
-#> Error in StatPlot(meta_data, stat.by = stat.by, group.by = group.by, split.by = split.by,     bg.by = bg.by, flip = flip, NA_color = NA_color, NA_stat = NA_stat,     keep_empty = keep_empty, individual = individual, stat_level = stat_level,     plot_type = plot_type, stat_type = stat_type, position = position,     palette = palette, palcolor = palcolor, alpha = alpha, bg_palette = bg_palette,     bg_palcolor = bg_palcolor, bg_alpha = bg_alpha, label = label,     label.size = label.size, label.fg = label.fg, label.bg = label.bg,     label.bg.r = label.bg.r, aspect.ratio = aspect.ratio, title = title,     subtitle = subtitle, xlab = xlab, ylab = ylab, legend.position = legend.position,     legend.direction = legend.direction, theme_use = theme_use,     theme_args = theme_args, grid_major = grid_major, grid_major_colour = grid_major_colour,     grid_major_linetype = grid_major_linetype, grid_major_linewidth = grid_major_linewidth,     combine = combine, nrow = nrow, ncol = ncol, byrow = byrow,     force = force, seed = seed): unused arguments (grid_major = grid_major, grid_major_colour = grid_major_colour, grid_major_linetype = grid_major_linetype, grid_major_linewidth = grid_major_linewidth)
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_text_repel()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_text_repel()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_text_repel()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_text_repel()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_text_repel()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_text_repel()`).
+
 
 CellDimPlot(
   pancreas_sub,
@@ -899,7 +923,7 @@ CellDimPlot(
   stat_type = "count",
   stat_plot_position = "dodge"
 )
-#> Error in StatPlot(meta_data, stat.by = stat.by, group.by = group.by, split.by = split.by,     bg.by = bg.by, flip = flip, NA_color = NA_color, NA_stat = NA_stat,     keep_empty = keep_empty, individual = individual, stat_level = stat_level,     plot_type = plot_type, stat_type = stat_type, position = position,     palette = palette, palcolor = palcolor, alpha = alpha, bg_palette = bg_palette,     bg_palcolor = bg_palcolor, bg_alpha = bg_alpha, label = label,     label.size = label.size, label.fg = label.fg, label.bg = label.bg,     label.bg.r = label.bg.r, aspect.ratio = aspect.ratio, title = title,     subtitle = subtitle, xlab = xlab, ylab = ylab, legend.position = legend.position,     legend.direction = legend.direction, theme_use = theme_use,     theme_args = theme_args, grid_major = grid_major, grid_major_colour = grid_major_colour,     grid_major_linetype = grid_major_linetype, grid_major_linewidth = grid_major_linewidth,     combine = combine, nrow = nrow, ncol = ncol, byrow = byrow,     force = force, seed = seed): unused arguments (grid_major = grid_major, grid_major_colour = grid_major_colour, grid_major_linetype = grid_major_linetype, grid_major_linewidth = grid_major_linewidth)
+
 
 # Chane the plot type from point to the hexagonal bin
 CellDimPlot(

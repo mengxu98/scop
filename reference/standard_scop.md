@@ -192,24 +192,24 @@ A `Seurat` object.
 library(Matrix)
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-26 02:39:23] Start standard processing workflow...
-#> ℹ [2026-04-26 02:39:24] Checking a list of <Seurat>...
-#> ! [2026-04-26 02:39:24] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-26 02:39:24] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-26 02:39:26] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-26 02:39:27] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-26 02:39:27] Number of available HVF: 2000
-#> ℹ [2026-04-26 02:39:27] Finished check
-#> ℹ [2026-04-26 02:39:27] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-26 02:39:28] Perform pca linear dimension reduction
-#> ℹ [2026-04-26 02:39:28] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-26 02:39:29] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-26 02:39:29] Reorder clusters...
-#> ℹ [2026-04-26 02:39:29] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-26 02:39:29] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-26 02:39:29] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-26 02:39:35] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-04-26 02:39:41] Standard processing workflow completed
+#> ℹ [2026-04-27 15:02:24] Start standard processing workflow...
+#> ℹ [2026-04-27 15:02:24] Checking a list of <Seurat>...
+#> ! [2026-04-27 15:02:24] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-27 15:02:24] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-27 15:02:27] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-27 15:02:27] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-27 15:02:28] Number of available HVF: 2000
+#> ℹ [2026-04-27 15:02:28] Finished check
+#> ℹ [2026-04-27 15:02:28] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-27 15:02:28] Perform pca linear dimension reduction
+#> ℹ [2026-04-27 15:02:29] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-04-27 15:02:29] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-27 15:02:30] Reorder clusters...
+#> ℹ [2026-04-27 15:02:30] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-27 15:02:30] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-27 15:02:30] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-27 15:02:36] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-04-27 15:02:42] Standard processing workflow completed
 CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType"
@@ -226,26 +226,26 @@ pancreas_sub <- standard_scop(
   linear_reduction = linear_reductions,
   nonlinear_reduction = "umap"
 )
-#> ℹ [2026-04-26 02:39:41] Start standard processing workflow...
-#> ℹ [2026-04-26 02:39:41] Checking a list of <Seurat>...
-#> ℹ [2026-04-26 02:39:42] Data 1/1 of the `srt_list` has been log-normalized
-#> ℹ [2026-04-26 02:39:42] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-26 02:39:42] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-26 02:39:42] Number of available HVF: 2000
-#> ℹ [2026-04-26 02:39:42] Finished check
-#> ℹ [2026-04-26 02:39:42] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-26 02:39:43] Perform pca linear dimension reduction
-#> ℹ [2026-04-26 02:39:43] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-26 02:39:44] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-26 02:39:44] Reorder clusters...
-#> ℹ [2026-04-26 02:39:44] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-26 02:39:44] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-26 02:39:44] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-27 15:02:42] Start standard processing workflow...
+#> ℹ [2026-04-27 15:02:42] Checking a list of <Seurat>...
+#> ℹ [2026-04-27 15:02:43] Data 1/1 of the `srt_list` has been log-normalized
+#> ℹ [2026-04-27 15:02:43] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-27 15:02:43] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-27 15:02:43] Number of available HVF: 2000
+#> ℹ [2026-04-27 15:02:44] Finished check
+#> ℹ [2026-04-27 15:02:44] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-27 15:02:44] Perform pca linear dimension reduction
+#> ℹ [2026-04-27 15:02:45] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-04-27 15:02:45] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-27 15:02:45] Reorder clusters...
+#> ℹ [2026-04-27 15:02:45] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-27 15:02:45] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-27 15:02:45] Perform umap nonlinear dimension reduction using Standardpca (1:20)
 #> Warning: Key ‘StandardpcaUMAP2D_’ taken, using ‘standardpcaumap2d_’ instead
-#> ℹ [2026-04-26 02:39:50] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-27 15:02:52] Perform umap nonlinear dimension reduction using Standardpca (1:20)
 #> Warning: Key ‘StandardpcaUMAP3D_’ taken, using ‘standardpcaumap3d_’ instead
-#> ℹ [2026-04-26 02:39:56] Perform nmf linear dimension reduction
-#> ℹ [2026-04-26 02:39:56] Running NMF...
+#> ℹ [2026-04-27 15:02:58] Perform nmf linear dimension reduction
+#> ℹ [2026-04-27 15:02:58] Running NMF...
 #> ℹ StandardBE_ 1 
 #> ℹ Positive:  Ccnd1, Spp1, Mdk, Rps2, Ldha, Pebp1, Cd24a, Dlk1, Krt8, Mgst1 
 #> ℹ      Clu, Gapdh, Eno1, Prdx1, Cldn10, Mif, Cldn7, Npm1, Dbi, Vim 
@@ -281,23 +281,23 @@ pancreas_sub <- standard_scop(
 #> ℹ Negative:  1110002L01Rik, Aacs, Wipi1, B830012L14Rik, Tmcc3, Trib1, Fgf12, Plekho1, Ppp2r2b, Lama1 
 #> ℹ      Tenm4, Trf, Gm5420, Man1c1, Jam3, Mgst2, Kcnip3, Tnr, Gm15915, Cbfa2t2 
 #> ℹ      Sh2d4a, Bbc3, Fkbp9, Ano6, Prkcb, Megf6, Fam46d, Slc52a3, Ankrd2, Tox2 
-#> ✔ [2026-04-26 02:40:00] NMF compute completed
-#> ℹ [2026-04-26 02:40:00] Use stored estimated dimensions 1:50 for Standardnmf
-#> ℹ [2026-04-26 02:40:00] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-26 02:40:00] Reorder clusters...
-#> ℹ [2026-04-26 02:40:00] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-26 02:40:00] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-26 02:40:00] Perform umap nonlinear dimension reduction using Standardnmf (1:50)
-#> ℹ [2026-04-26 02:40:06] Perform umap nonlinear dimension reduction using Standardnmf (1:50)
-#> ℹ [2026-04-26 02:40:12] Perform mds linear dimension reduction
-#> ℹ [2026-04-26 02:40:13] Use stored estimated dimensions 1:20 for Standardmds
-#> ℹ [2026-04-26 02:40:14] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-26 02:40:14] Reorder clusters...
-#> ℹ [2026-04-26 02:40:14] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-26 02:40:14] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-26 02:40:14] Perform umap nonlinear dimension reduction using Standardmds (1:20)
-#> ℹ [2026-04-26 02:40:20] Perform umap nonlinear dimension reduction using Standardmds (1:20)
-#> ✔ [2026-04-26 02:40:25] Standard processing workflow completed
+#> ✔ [2026-04-27 15:03:02] NMF compute completed
+#> ℹ [2026-04-27 15:03:02] Use stored estimated dimensions 1:50 for Standardnmf
+#> ℹ [2026-04-27 15:03:02] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-27 15:03:03] Reorder clusters...
+#> ℹ [2026-04-27 15:03:03] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-27 15:03:03] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-27 15:03:03] Perform umap nonlinear dimension reduction using Standardnmf (1:50)
+#> ℹ [2026-04-27 15:03:09] Perform umap nonlinear dimension reduction using Standardnmf (1:50)
+#> ℹ [2026-04-27 15:03:15] Perform mds linear dimension reduction
+#> ℹ [2026-04-27 15:03:16] Use stored estimated dimensions 1:20 for Standardmds
+#> ℹ [2026-04-27 15:03:17] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-27 15:03:17] Reorder clusters...
+#> ℹ [2026-04-27 15:03:17] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-27 15:03:17] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-27 15:03:17] Perform umap nonlinear dimension reduction using Standardmds (1:20)
+#> ℹ [2026-04-27 15:03:23] Perform umap nonlinear dimension reduction using Standardmds (1:20)
+#> ✔ [2026-04-27 15:03:29] Standard processing workflow completed
 plist1 <- lapply(
   linear_reductions, function(lr) {
     CellDimPlot(
@@ -324,29 +324,29 @@ pancreas_sub <- standard_scop(
   linear_reduction = "pca",
   nonlinear_reduction = nonlinear_reductions
 )
-#> ℹ [2026-04-26 02:40:26] Start standard processing workflow...
-#> ℹ [2026-04-26 02:40:26] Checking a list of <Seurat>...
-#> ℹ [2026-04-26 02:40:26] Data 1/1 of the `srt_list` has been log-normalized
-#> ℹ [2026-04-26 02:40:26] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-26 02:40:27] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-26 02:40:27] Number of available HVF: 2000
-#> ℹ [2026-04-26 02:40:27] Finished check
-#> ℹ [2026-04-26 02:40:27] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-26 02:40:28] Perform pca linear dimension reduction
-#> ℹ [2026-04-26 02:40:28] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-26 02:40:29] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-26 02:40:29] Reorder clusters...
-#> ℹ [2026-04-26 02:40:29] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-26 02:40:29] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-26 02:40:29] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-26 02:40:35] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-26 02:40:40] Perform tsne nonlinear dimension reduction
-#> ℹ [2026-04-26 02:40:41] Perform tsne nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-26 02:40:42] Perform tsne nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-26 02:40:45] Perform fr nonlinear dimension reduction
-#> ℹ [2026-04-26 02:40:45] Perform fr nonlinear dimension reduction using Standardpca_SNN
-#> ℹ [2026-04-26 02:40:47] Perform fr nonlinear dimension reduction using Standardpca_SNN
-#> ✔ [2026-04-26 02:40:48] Standard processing workflow completed
+#> ℹ [2026-04-27 15:03:30] Start standard processing workflow...
+#> ℹ [2026-04-27 15:03:30] Checking a list of <Seurat>...
+#> ℹ [2026-04-27 15:03:30] Data 1/1 of the `srt_list` has been log-normalized
+#> ℹ [2026-04-27 15:03:30] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-27 15:03:31] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-27 15:03:31] Number of available HVF: 2000
+#> ℹ [2026-04-27 15:03:31] Finished check
+#> ℹ [2026-04-27 15:03:31] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-27 15:03:32] Perform pca linear dimension reduction
+#> ℹ [2026-04-27 15:03:32] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-04-27 15:03:33] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-27 15:03:33] Reorder clusters...
+#> ℹ [2026-04-27 15:03:33] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-27 15:03:33] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-27 15:03:33] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-27 15:03:39] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-27 15:03:45] Perform tsne nonlinear dimension reduction
+#> ℹ [2026-04-27 15:03:45] Perform tsne nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-27 15:03:47] Perform tsne nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-27 15:03:50] Perform fr nonlinear dimension reduction
+#> ℹ [2026-04-27 15:03:50] Perform fr nonlinear dimension reduction using Standardpca_SNN
+#> ℹ [2026-04-27 15:03:52] Perform fr nonlinear dimension reduction using Standardpca_SNN
+#> ✔ [2026-04-27 15:03:53] Standard processing workflow completed
 plist2 <- lapply(
   nonlinear_reductions, function(nr) {
     CellDimPlot(

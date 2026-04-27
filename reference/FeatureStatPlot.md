@@ -484,24 +484,24 @@ FeatureStatPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-26 01:23:44] Start standard processing workflow...
-#> ℹ [2026-04-26 01:23:44] Checking a list of <Seurat>...
-#> ! [2026-04-26 01:23:44] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-26 01:23:44] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-26 01:23:47] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-26 01:23:47] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-26 01:23:47] Number of available HVF: 2000
-#> ℹ [2026-04-26 01:23:47] Finished check
-#> ℹ [2026-04-26 01:23:48] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-26 01:23:48] Perform pca linear dimension reduction
-#> ℹ [2026-04-26 01:23:49] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-26 01:23:49] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-26 01:23:49] Reorder clusters...
-#> ℹ [2026-04-26 01:23:49] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-26 01:23:49] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-26 01:23:49] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-26 01:23:53] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-04-26 01:23:58] Standard processing workflow completed
+#> ℹ [2026-04-27 13:44:00] Start standard processing workflow...
+#> ℹ [2026-04-27 13:44:01] Checking a list of <Seurat>...
+#> ! [2026-04-27 13:44:01] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-27 13:44:01] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-27 13:44:03] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-27 13:44:04] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-27 13:44:04] Number of available HVF: 2000
+#> ℹ [2026-04-27 13:44:04] Finished check
+#> ℹ [2026-04-27 13:44:04] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-27 13:44:05] Perform pca linear dimension reduction
+#> ℹ [2026-04-27 13:44:05] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-04-27 13:44:06] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-27 13:44:06] Reorder clusters...
+#> ℹ [2026-04-27 13:44:06] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-27 13:44:06] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-27 13:44:06] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-27 13:44:10] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-04-27 13:44:15] Standard processing workflow completed
 FeatureStatPlot(
   pancreas_sub,
   stat.by = c("G2M_score", "Fev"),
@@ -542,20 +542,8 @@ FeatureStatPlot(
   group.by = "SubCellType",
   plot_type = "bar"
 )
-#> Warning: Computation failed in `stat_summary()`.
-#> Caused by error in `fun.data()`:
-#> ! The package "Hmisc" is required.
-#> Warning: Computation failed in `stat_summary()`.
-#> Caused by error in `fun.data()`:
-#> ! The package "Hmisc" is required.
-#> Warning: Computation failed in `stat_summary()`.
-#> Caused by error in `fun.data()`:
-#> ! The package "Hmisc" is required.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
-#> Warning: Computation failed in `stat_summary()`.
-#> Caused by error in `fun.data()`:
-#> ! The package "Hmisc" is required.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
 
@@ -649,8 +637,8 @@ FeatureStatPlot(
   group.by = "SubCellType",
   split.by = "Phase"
 )
-#> ! [2026-04-26 01:24:07] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
-#> ! [2026-04-26 01:24:07] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
+#> ! [2026-04-27 13:44:24] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
+#> ! [2026-04-27 13:44:24] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
@@ -665,8 +653,8 @@ FeatureStatPlot(
   add_box = TRUE,
   add_trend = TRUE
 )
-#> ! [2026-04-26 01:24:07] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
-#> ! [2026-04-26 01:24:08] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
+#> ! [2026-04-27 13:44:25] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
+#> ! [2026-04-27 13:44:25] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
@@ -680,10 +668,10 @@ FeatureStatPlot(
   split.by = "Phase",
   comparisons = TRUE
 )
-#> ! [2026-04-26 01:24:16] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
-#> ℹ [2026-04-26 01:24:16] Detected more than 2 groups. Use "kruskal.test" for comparison
-#> ! [2026-04-26 01:24:17] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
-#> ℹ [2026-04-26 01:24:17] Detected more than 2 groups. Use "kruskal.test" for comparison
+#> ! [2026-04-27 13:44:54] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
+#> ℹ [2026-04-27 13:44:54] Detected more than 2 groups. Use "kruskal.test" for comparison
+#> ! [2026-04-27 13:44:54] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
+#> ℹ [2026-04-27 13:44:54] Detected more than 2 groups. Use "kruskal.test" for comparison
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
@@ -751,10 +739,10 @@ FeatureStatPlot(
   comparisons = TRUE,
   y.max = 5
 )
-#> ! [2026-04-26 01:24:22] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
-#> ℹ [2026-04-26 01:24:22] Detected more than 2 groups. Use "kruskal.test" for comparison
-#> ! [2026-04-26 01:24:23] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
-#> ℹ [2026-04-26 01:24:23] Detected more than 2 groups. Use "kruskal.test" for comparison
+#> ! [2026-04-27 13:45:00] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
+#> ℹ [2026-04-27 13:45:00] Detected more than 2 groups. Use "kruskal.test" for comparison
+#> ! [2026-04-27 13:45:00] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
+#> ℹ [2026-04-27 13:45:01] Detected more than 2 groups. Use "kruskal.test" for comparison
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
@@ -835,7 +823,7 @@ FeatureStatPlot(
   group.by = "CellType",
   plot.by = "feature"
 )
-#> ℹ [2026-04-26 01:24:34] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ℹ [2026-04-27 13:45:12] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
@@ -857,7 +845,7 @@ FeatureStatPlot(
   sig_label = "p.format",
   sig_labelsize = 4
 )
-#> ℹ [2026-04-26 01:24:36] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ℹ [2026-04-27 13:45:14] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
@@ -881,7 +869,7 @@ FeatureStatPlot(
   ),
   stack = TRUE
 )
-#> ℹ [2026-04-26 01:24:39] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ℹ [2026-04-27 13:45:17] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 
 
 FeatureStatPlot(pancreas_sub,
@@ -901,7 +889,7 @@ FeatureStatPlot(pancreas_sub,
   plot.by = "feature",
   stack = TRUE
 )
-#> ℹ [2026-04-26 01:24:42] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ℹ [2026-04-27 13:45:19] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 
 
 data <- GetAssayData5(
