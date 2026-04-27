@@ -380,7 +380,7 @@ CellScoring <- function(
         Matrix::t(
           AUCell::getAUC(cells_auc)
         )
-      )[, names(features_keep)]
+      )[, names(features_keep), drop = FALSE]
     }
     colnames(scores) <- make.names(
       paste(name, names(features_nm), sep = "_")
