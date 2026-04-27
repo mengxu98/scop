@@ -142,24 +142,24 @@ https://doi.org/10.1186/s13059-026-03994-3
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-27 14:34:55] Start standard processing workflow...
-#> ℹ [2026-04-27 14:34:56] Checking a list of <Seurat>...
-#> ! [2026-04-27 14:34:56] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-27 14:34:56] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-27 14:34:59] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-27 14:34:59] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-27 14:34:59] Number of available HVF: 2000
-#> ℹ [2026-04-27 14:35:00] Finished check
-#> ℹ [2026-04-27 14:35:00] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-27 14:35:00] Perform pca linear dimension reduction
-#> ℹ [2026-04-27 14:35:01] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-27 14:35:01] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-27 14:35:01] Reorder clusters...
-#> ℹ [2026-04-27 14:35:01] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-27 14:35:01] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-27 14:35:01] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-27 14:35:07] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-04-27 14:35:13] Standard processing workflow completed
+#> ℹ [2026-04-27 16:43:20] Start standard processing workflow...
+#> ℹ [2026-04-27 16:43:21] Checking a list of <Seurat>...
+#> ! [2026-04-27 16:43:21] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-27 16:43:21] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-27 16:43:24] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-27 16:43:24] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-27 16:43:24] Number of available HVF: 2000
+#> ℹ [2026-04-27 16:43:25] Finished check
+#> ℹ [2026-04-27 16:43:25] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-27 16:43:25] Perform pca linear dimension reduction
+#> ℹ [2026-04-27 16:43:26] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-04-27 16:43:26] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-27 16:43:26] Reorder clusters...
+#> ℹ [2026-04-27 16:43:26] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-27 16:43:26] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-27 16:43:26] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-27 16:43:31] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-04-27 16:43:36] Standard processing workflow completed
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -177,29 +177,29 @@ pancreas_sub <- RunDynamicFeatures(
   n_candidates = 200,
   fit_method = "gam"
 )
-#> ℹ [2026-04-27 14:35:15] Start find dynamic features
-#> ℹ [2026-04-27 14:35:16] Data type is raw counts
-#> ℹ [2026-04-27 14:35:18] Number of candidate features (union): 236
-#> ℹ [2026-04-27 14:35:19] Data type is raw counts
-#> ℹ [2026-04-27 14:35:19] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-04-27 14:35:19] Using 1 core
-#> ⠙ [2026-04-27 14:35:19] Running for Gcg [1/236]              0% | ETA:  9s
-#> ⠹ [2026-04-27 14:35:19] Running for Ppp1r14a [69/236] ■■          29% | ETA:  5s
-#> ⠸ [2026-04-27 14:35:19] Running for Hhex [156/236] ■■■■■■      66% | ETA:  3s
-#> ⠼ [2026-04-27 14:35:19] Running for Tubb2a [234/236] ■■■■■■■■■   99% | ETA:  0s
-#> ✔ [2026-04-27 14:35:19] Completed 236 tasks in 8.3s
+#> ℹ [2026-04-27 16:43:39] Start find dynamic features
+#> ℹ [2026-04-27 16:43:40] Data type is raw counts
+#> ℹ [2026-04-27 16:43:42] Number of candidate features (union): 236
+#> ℹ [2026-04-27 16:43:42] Data type is raw counts
+#> ℹ [2026-04-27 16:43:42] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-04-27 16:43:42] Using 1 core
+#> ⠙ [2026-04-27 16:43:42] Running for Gcg [1/236]              0% | ETA:  9s
+#> ⠹ [2026-04-27 16:43:42] Running for Cdca8 [76/236] ■■■         32% | ETA:  5s
+#> ⠸ [2026-04-27 16:43:42] Running for Lig1 [162/236] ■■■■■■      69% | ETA:  3s
+#> ✔ [2026-04-27 16:43:42] Completed 236 tasks in 8.1s
 #> 
-#> ℹ [2026-04-27 14:35:19] Building results
-#> ℹ [2026-04-27 14:35:27] Calculating dynamic features for "Lineage2"...
-#> ℹ [2026-04-27 14:35:27] Using 1 core
-#> ⠙ [2026-04-27 14:35:27] Running for Nnat [57/236] ■■          24% | ETA:  9s
-#> ⠹ [2026-04-27 14:35:27] Running for Mafb [94/236] ■■■         40% | ETA:  9s
-#> ⠸ [2026-04-27 14:35:27] Running for Pbk [150/236] ■■■■■■      64% | ETA:  5s
-#> ⠼ [2026-04-27 14:35:27] Running for Npy [202/236] ■■■■■■■■    86% | ETA:  2s
-#> ✔ [2026-04-27 14:35:27] Completed 236 tasks in 13.7s
+#> ℹ [2026-04-27 16:43:42] Building results
+#> ℹ [2026-04-27 16:43:50] Calculating dynamic features for "Lineage2"...
+#> ℹ [2026-04-27 16:43:50] Using 1 core
+#> ⠙ [2026-04-27 16:43:50] Running for Slc38a5 [10/236]              4% | ETA:  7s
+#> ⠹ [2026-04-27 16:43:50] Running for Irs4 [61/236] ■■          26% | ETA: 11s
+#> ⠸ [2026-04-27 16:43:50] Running for Mki67 [106/236] ■■■■        45% | ETA:  8s
+#> ⠼ [2026-04-27 16:43:50] Running for Pou3f1 [157/236] ■■■■■■      67% | ETA:  5s
+#> ⠴ [2026-04-27 16:43:50] Running for G6pc2 [213/236] ■■■■■■■■■   90% | ETA:  1s
+#> ✔ [2026-04-27 16:43:50] Completed 236 tasks in 13.7s
 #> 
-#> ℹ [2026-04-27 14:35:27] Building results
-#> ✔ [2026-04-27 14:35:41] Find dynamic features done
+#> ℹ [2026-04-27 16:43:50] Building results
+#> ✔ [2026-04-27 16:44:04] Find dynamic features done
 
 names(
   pancreas_sub@tools$DynamicFeatures_Lineage1
@@ -230,9 +230,9 @@ ht <- DynamicHeatmap(
   n_split = 3,
   reverse_ht = "Lineage1"
 )
-#> ℹ [2026-04-27 14:35:41] [1] 183 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-04-27 16:44:04] [1] 183 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Ghrl,Iapp,Pyy,Rbp4,Chgb,Lrpprc,Slc38a5,Cck,Cdkn1a...
-#> ℹ [2026-04-27 14:35:42] 
+#> ℹ [2026-04-27 16:44:05] 
 #> ℹ                       The size of the heatmap is fixed because certain elements are not scalable.
 #> ℹ                       The width and height of the heatmap are determined by the size of the current viewport.
 #> ℹ                       If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
@@ -248,28 +248,28 @@ DynamicPlot(
   compare_lineages = TRUE,
   compare_features = FALSE
 )
-#> ℹ [2026-04-27 14:35:44] Start find dynamic features
-#> ℹ [2026-04-27 14:35:46] Data type is raw counts
-#> ℹ [2026-04-27 14:35:46] Number of candidate features (union): 2
-#> ℹ [2026-04-27 14:35:47] Data type is raw counts
-#> ℹ [2026-04-27 14:35:47] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-04-27 14:35:47] Using 1 core
-#> ⠙ [2026-04-27 14:35:47] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
-#> ✔ [2026-04-27 14:35:47] Completed 2 tasks in 167ms
+#> ℹ [2026-04-27 16:44:08] Start find dynamic features
+#> ℹ [2026-04-27 16:44:09] Data type is raw counts
+#> ℹ [2026-04-27 16:44:10] Number of candidate features (union): 2
+#> ℹ [2026-04-27 16:44:10] Data type is raw counts
+#> ℹ [2026-04-27 16:44:10] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-04-27 16:44:10] Using 1 core
+#> ⠙ [2026-04-27 16:44:10] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
+#> ✔ [2026-04-27 16:44:10] Completed 2 tasks in 164ms
 #> 
-#> ℹ [2026-04-27 14:35:47] Building results
-#> ✔ [2026-04-27 14:35:47] Find dynamic features done
-#> ℹ [2026-04-27 14:35:47] Start find dynamic features
-#> ℹ [2026-04-27 14:35:48] Data type is raw counts
-#> ℹ [2026-04-27 14:35:49] Number of candidate features (union): 2
-#> ℹ [2026-04-27 14:35:49] Data type is raw counts
-#> ℹ [2026-04-27 14:35:49] Calculating dynamic features for "Lineage2"...
-#> ℹ [2026-04-27 14:35:49] Using 1 core
-#> ⠙ [2026-04-27 14:35:49] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
-#> ✔ [2026-04-27 14:35:49] Completed 2 tasks in 190ms
+#> ℹ [2026-04-27 16:44:10] Building results
+#> ✔ [2026-04-27 16:44:11] Find dynamic features done
+#> ℹ [2026-04-27 16:44:11] Start find dynamic features
+#> ℹ [2026-04-27 16:44:12] Data type is raw counts
+#> ℹ [2026-04-27 16:44:12] Number of candidate features (union): 2
+#> ℹ [2026-04-27 16:44:13] Data type is raw counts
+#> ℹ [2026-04-27 16:44:13] Calculating dynamic features for "Lineage2"...
+#> ℹ [2026-04-27 16:44:13] Using 1 core
+#> ⠙ [2026-04-27 16:44:13] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
+#> ✔ [2026-04-27 16:44:13] Completed 2 tasks in 147ms
 #> 
-#> ℹ [2026-04-27 14:35:49] Building results
-#> ✔ [2026-04-27 14:35:50] Find dynamic features done
+#> ℹ [2026-04-27 16:44:13] Building results
+#> ✔ [2026-04-27 16:44:13] Find dynamic features done
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's fill values.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
@@ -284,13 +284,13 @@ pancreas_sub <- RunDynamicFeatures(
   n_candidates = 200,
   fit_method = "pretsa"
 )
-#> ℹ [2026-04-27 14:35:53] Start find dynamic features
-#> ℹ [2026-04-27 14:35:53] Data type is raw counts
-#> ℹ [2026-04-27 14:35:55] Number of candidate features (union): 236
-#> ℹ [2026-04-27 14:35:56] Data type is raw counts
-#> ℹ [2026-04-27 14:35:56] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-04-27 14:35:56] Calculating dynamic features for "Lineage2"...
-#> ✔ [2026-04-27 14:35:56] Find dynamic features done
+#> ℹ [2026-04-27 16:44:15] Start find dynamic features
+#> ℹ [2026-04-27 16:44:15] Data type is raw counts
+#> ℹ [2026-04-27 16:44:17] Number of candidate features (union): 236
+#> ℹ [2026-04-27 16:44:18] Data type is raw counts
+#> ℹ [2026-04-27 16:44:18] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-04-27 16:44:18] Calculating dynamic features for "Lineage2"...
+#> ✔ [2026-04-27 16:44:18] Find dynamic features done
 head(
   pancreas_sub@tools$DynamicFeatures_Lineage1$DynamicFeatures
 )
@@ -315,9 +315,9 @@ ht <- DynamicHeatmap(
   n_split = 3,
   reverse_ht = "Lineage1"
 )
-#> ℹ [2026-04-27 14:35:56] [1] 172 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-04-27 16:44:18] [1] 172 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Iapp,Pyy,Rbp4,Chgb,Gast,Lrpprc,Slc38a5,Cck,Cdkn1a...
-#> ℹ [2026-04-27 14:35:57] 
+#> ℹ [2026-04-27 16:44:19] 
 #> ℹ                       The size of the heatmap is fixed because certain elements are not scalable.
 #> ℹ                       The width and height of the heatmap are determined by the size of the current viewport.
 #> ℹ                       If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
@@ -333,28 +333,28 @@ DynamicPlot(
   compare_lineages = TRUE,
   compare_features = FALSE
 )
-#> ℹ [2026-04-27 14:35:59] Start find dynamic features
-#> ℹ [2026-04-27 14:36:01] Data type is raw counts
-#> ℹ [2026-04-27 14:36:01] Number of candidate features (union): 2
-#> ℹ [2026-04-27 14:36:02] Data type is raw counts
-#> ℹ [2026-04-27 14:36:02] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-04-27 14:36:02] Using 1 core
-#> ⠙ [2026-04-27 14:36:02] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
-#> ✔ [2026-04-27 14:36:02] Completed 2 tasks in 164ms
+#> ℹ [2026-04-27 16:44:22] Start find dynamic features
+#> ℹ [2026-04-27 16:44:23] Data type is raw counts
+#> ℹ [2026-04-27 16:44:24] Number of candidate features (union): 2
+#> ℹ [2026-04-27 16:44:24] Data type is raw counts
+#> ℹ [2026-04-27 16:44:24] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-04-27 16:44:24] Using 1 core
+#> ⠙ [2026-04-27 16:44:24] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
+#> ✔ [2026-04-27 16:44:24] Completed 2 tasks in 174ms
 #> 
-#> ℹ [2026-04-27 14:36:02] Building results
-#> ✔ [2026-04-27 14:36:02] Find dynamic features done
-#> ℹ [2026-04-27 14:36:02] Start find dynamic features
-#> ℹ [2026-04-27 14:36:03] Data type is raw counts
-#> ℹ [2026-04-27 14:36:04] Number of candidate features (union): 2
-#> ℹ [2026-04-27 14:36:05] Data type is raw counts
-#> ℹ [2026-04-27 14:36:05] Calculating dynamic features for "Lineage2"...
-#> ℹ [2026-04-27 14:36:05] Using 1 core
-#> ⠙ [2026-04-27 14:36:05] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
-#> ✔ [2026-04-27 14:36:05] Completed 2 tasks in 189ms
+#> ℹ [2026-04-27 16:44:24] Building results
+#> ✔ [2026-04-27 16:44:25] Find dynamic features done
+#> ℹ [2026-04-27 16:44:25] Start find dynamic features
+#> ℹ [2026-04-27 16:44:26] Data type is raw counts
+#> ℹ [2026-04-27 16:44:26] Number of candidate features (union): 2
+#> ℹ [2026-04-27 16:44:27] Data type is raw counts
+#> ℹ [2026-04-27 16:44:27] Calculating dynamic features for "Lineage2"...
+#> ℹ [2026-04-27 16:44:27] Using 1 core
+#> ⠙ [2026-04-27 16:44:27] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
+#> ✔ [2026-04-27 16:44:27] Completed 2 tasks in 152ms
 #> 
-#> ℹ [2026-04-27 14:36:05] Building results
-#> ✔ [2026-04-27 14:36:05] Find dynamic features done
+#> ℹ [2026-04-27 16:44:27] Building results
+#> ✔ [2026-04-27 16:44:27] Find dynamic features done
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's fill values.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
