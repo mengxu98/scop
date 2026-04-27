@@ -108,7 +108,8 @@ RunNichenetr(
 
 - cutoff_visualization:
 
-  Cutoff passed to `nichenetr::prepare_ligand_target_visualization()`.
+  Cutoff passed to
+  [`nichenetr::prepare_ligand_target_visualization()`](https://rdrr.io/pkg/nichenetr/man/prepare_ligand_target_visualization.html).
 
 - lfc_cutoff:
 

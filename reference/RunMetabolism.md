@@ -135,24 +135,24 @@ tools slot `Metabolism_<group.by>_<method>` for
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-26 02:23:25] Start standard processing workflow...
-#> ℹ [2026-04-26 02:23:26] Checking a list of <Seurat>...
-#> ! [2026-04-26 02:23:26] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-26 02:23:26] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-26 02:23:29] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-26 02:23:29] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-26 02:23:29] Number of available HVF: 2000
-#> ℹ [2026-04-26 02:23:29] Finished check
-#> ℹ [2026-04-26 02:23:30] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-26 02:23:30] Perform pca linear dimension reduction
-#> ℹ [2026-04-26 02:23:31] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-26 02:23:31] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-26 02:23:31] Reorder clusters...
-#> ℹ [2026-04-26 02:23:31] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-26 02:23:31] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-26 02:23:31] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-26 02:23:37] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-04-26 02:23:43] Standard processing workflow completed
+#> ℹ [2026-04-27 14:45:53] Start standard processing workflow...
+#> ℹ [2026-04-27 14:45:54] Checking a list of <Seurat>...
+#> ! [2026-04-27 14:45:54] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-27 14:45:54] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-27 14:45:57] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-27 14:45:57] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-27 14:45:57] Number of available HVF: 2000
+#> ℹ [2026-04-27 14:45:57] Finished check
+#> ℹ [2026-04-27 14:45:58] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-27 14:45:58] Perform pca linear dimension reduction
+#> ℹ [2026-04-27 14:45:59] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-04-27 14:45:59] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-27 14:45:59] Reorder clusters...
+#> ℹ [2026-04-27 14:45:59] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-27 14:45:59] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-27 14:45:59] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-27 14:46:05] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-04-27 14:46:12] Standard processing workflow completed
 pancreas_sub <- RunMetabolism(
   pancreas_sub,
   assay = "RNA",
@@ -162,13 +162,13 @@ pancreas_sub <- RunMetabolism(
   species = "Mus_musculus",
   method = "AUCell"
 )
-#> ℹ [2026-04-26 02:23:43] Start metabolism pathway scoring
-#> ℹ [2026-04-26 02:23:43] Data type is raw counts
-#> ℹ [2026-04-26 02:23:43] Averaging expression by "CellType" ...
-#> ℹ [2026-04-26 02:23:43] Aggregated expression: 15998 genes x 5 groups
-#> ℹ [2026-04-26 02:23:43] Using raw scMetabolism gene sets directly; `PrepareDB()` / BioMart-based ID rebuilding is skipped
-#> ℹ [2026-04-26 02:23:43] Total metabolism gene sets to score: 127
-#> ✔ [2026-04-26 02:23:43] Metabolism scores stored in tools slot "Metabolism_CellType_AUCell"
+#> ℹ [2026-04-27 14:46:12] Start metabolism pathway scoring
+#> ℹ [2026-04-27 14:46:12] Data type is raw counts
+#> ℹ [2026-04-27 14:46:12] Averaging expression by "CellType" ...
+#> ℹ [2026-04-27 14:46:12] Aggregated expression: 15998 genes x 5 groups
+#> ℹ [2026-04-27 14:46:12] Using raw scMetabolism gene sets directly; `PrepareDB()` / BioMart-based ID rebuilding is skipped
+#> ℹ [2026-04-27 14:46:12] Total metabolism gene sets to score: 127
+#> ✔ [2026-04-27 14:46:12] Metabolism scores stored in tools slot "Metabolism_CellType_AUCell"
 ht <- MetabolismPlot(
   pancreas_sub,
   group.by = "CellType",
