@@ -240,24 +240,24 @@ FindExpressedMarkers(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-27 13:45:31] Start standard processing workflow...
-#> ℹ [2026-04-27 13:45:32] Checking a list of <Seurat>...
-#> ! [2026-04-27 13:45:32] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-27 13:45:32] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-27 13:45:35] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-27 13:45:35] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-27 13:45:35] Number of available HVF: 2000
-#> ℹ [2026-04-27 13:45:36] Finished check
-#> ℹ [2026-04-27 13:45:36] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-27 13:45:36] Perform pca linear dimension reduction
-#> ℹ [2026-04-27 13:45:37] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-27 13:45:37] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-27 13:45:38] Reorder clusters...
-#> ℹ [2026-04-27 13:45:38] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-27 13:45:38] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-27 13:45:38] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-27 13:45:42] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-04-27 13:45:47] Standard processing workflow completed
+#> ℹ [2026-04-27 15:55:57] Start standard processing workflow...
+#> ℹ [2026-04-27 15:55:57] Checking a list of <Seurat>...
+#> ! [2026-04-27 15:55:58] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-27 15:55:58] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-27 15:56:00] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-27 15:56:00] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-27 15:56:00] Number of available HVF: 2000
+#> ℹ [2026-04-27 15:56:01] Finished check
+#> ℹ [2026-04-27 15:56:01] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-27 15:56:01] Perform pca linear dimension reduction
+#> ℹ [2026-04-27 15:56:02] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-04-27 15:56:02] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-27 15:56:02] Reorder clusters...
+#> ℹ [2026-04-27 15:56:02] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-27 15:56:02] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-27 15:56:02] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-27 15:56:06] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-04-27 15:56:10] Standard processing workflow completed
 markers <- FindExpressedMarkers(
   pancreas_sub,
   cells.1 = SeuratObject::WhichCells(
@@ -265,13 +265,13 @@ markers <- FindExpressedMarkers(
     expression = Phase == "G2M"
   )
 )
-#> ℹ [2026-04-27 13:45:47] Using 1 core
-#> ⠙ [2026-04-27 13:45:47] Running for 1 [1/6145]              0% | ETA: 50s
-#> ⠹ [2026-04-27 13:45:47] Running for 799 [799/6145] ■           13% | ETA:  3s
-#> ⠸ [2026-04-27 13:45:47] Running for 5638 [5638/6145] ■■■■■■■■■   92% | ETA:  0s
-#> ✔ [2026-04-27 13:45:47] Completed 6145 tasks in 3.8s
+#> ℹ [2026-04-27 15:56:11] Using 1 core
+#> ⠙ [2026-04-27 15:56:11] Running for 1 [1/6145]              0% | ETA: 47s
+#> ⠹ [2026-04-27 15:56:11] Running for 1130 [1130/6145] ■           18% | ETA:  3s
+#> ⠸ [2026-04-27 15:56:11] Running for 5564 [5564/6145] ■■■■■■■■■   91% | ETA:  0s
+#> ✔ [2026-04-27 15:56:11] Completed 6145 tasks in 4.1s
 #> 
-#> ℹ [2026-04-27 13:45:47] Building results
+#> ℹ [2026-04-27 15:56:11] Building results
 head(markers)
 #>               p_val avg_log2FC pct.1 pct.2    p_val_adj
 #> Hmgb2  1.964385e-37  2.1638592 1.000 0.526 3.142624e-33
