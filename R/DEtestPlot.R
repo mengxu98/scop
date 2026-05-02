@@ -430,6 +430,20 @@ get_de_data <- function(
   res = NULL,
   group_use = NULL
 ) {
+  if (is.null(res) && !is.null(srt) && (is.null(group.by) || identical(group.by, "Bulk"))) {
+    bulk_res <- get_bulk_de_plot_data(srt)
+    if (!is.null(bulk_res)) {
+      return(get_de_data(
+        srt = NULL,
+        group.by = group.by,
+        test.use = test.use,
+        DE_threshold = DE_threshold,
+        res = bulk_res,
+        group_use = group_use
+      ))
+    }
+  }
+
   if (!is.null(res)) {
     de_df <- as.data.frame(res)
     if (!"gene" %in% colnames(de_df)) {
@@ -455,6 +469,32 @@ get_de_data <- function(
         de_df[, "group1"] <- de_df[, "cluster"]
       } else {
         de_df[, "group1"] <- "All"
+      }
+    }
+    # For custom DE tables, keep subgroup/comparison labels distinct when present.
+    if ("comparison" %in% colnames(de_df)) {
+      comparison <- as.character(de_df[["comparison"]])
+      has_comparison <- !is.na(comparison) & nzchar(comparison)
+      if (any(has_comparison)) {
+        de_df[has_comparison, "group1"] <- comparison[has_comparison]
+      }
+    } else if ("group2" %in% colnames(de_df)) {
+      g1_levels <- unique(as.character(de_df[["group1"]]))
+      g1_levels <- g1_levels[!is.na(g1_levels) & nzchar(g1_levels)]
+      g2_levels <- unique(as.character(de_df[["group2"]]))
+      g2_levels <- g2_levels[!is.na(g2_levels) & nzchar(g2_levels)]
+      if (length(g1_levels) <= 1 && length(g2_levels) >= 1) {
+        de_df[, "group1"] <- as.character(de_df[["group2"]])
+      } else if (length(g2_levels) > 1) {
+        g1 <- as.character(de_df[["group1"]])
+        g2 <- as.character(de_df[["group2"]])
+        has_g2 <- !is.na(g2) & nzchar(g2)
+        has_g1 <- !is.na(g1) & nzchar(g1)
+        de_df[has_g2, "group1"] <- ifelse(
+          has_g1[has_g2],
+          paste0(g1[has_g2], "::", g2[has_g2]),
+          g2[has_g2]
+        )
       }
     }
     if (!is.factor(de_df[["group1"]])) {
@@ -536,6 +576,10 @@ filter_de_data_group_use <- function(de_df, group_use = NULL) {
   ]
   de_df[["group1"]] <- factor(as.character(de_df[["group1"]]), levels = group_use)
   de_df
+}
+
+get_bulk_de_plot_data <- function(srt) {
+  .bulk_get_de_results(srt)
 }
 
 clip_log2fc_symmetric <- function(df, fc_col = "avg_log2FC") {
@@ -1034,6 +1078,7 @@ DEtestManhattanPlot <- function(
     "sigDown"
   )
   cluster_levels <- levels(de_df_marker[["group1"]])
+  show_group_track <- length(cluster_levels) > 1
   n_m <- nrow(de_df_marker)
   de_df_marker[, "x_num"] <- as.numeric(de_df_marker[, "group1"])
   de_df_marker[, "x_plot"] <- de_df_marker[, "x_num"] + (stats::runif(n_m) - 0.5) * jitter_width
@@ -1124,22 +1169,6 @@ DEtestManhattanPlot <- function(
       aspect.ratio = aspect.ratio
     )
   p4 <- p3 +
-    geom_tile(
-      aes(x = x, y = y, fill = group1),
-      color = "black",
-      height = 0.5,
-      show.legend = FALSE,
-      inherit.aes = FALSE,
-      data = tile_data
-    ) +
-    scale_fill_manual(values = tile_colors) +
-    geom_text(
-      aes(x = x, y = y, label = group1),
-      inherit.aes = FALSE,
-      data = tile_data,
-      size = 3,
-      color = "black"
-    ) +
     ggrepel::geom_text_repel(
       data = top_marker,
       aes(x = x_plot, y = y_plot, label = gene),
@@ -1153,6 +1182,25 @@ DEtestManhattanPlot <- function(
       size = label.size,
       force = 20
     )
+  if (isTRUE(show_group_track)) {
+    p4 <- p4 +
+      geom_tile(
+        aes(x = x, y = y, fill = group1),
+        color = "black",
+        height = 0.5,
+        show.legend = FALSE,
+        inherit.aes = FALSE,
+        data = tile_data
+      ) +
+      scale_fill_manual(values = tile_colors) +
+      geom_text(
+        aes(x = x, y = y, label = group1),
+        inherit.aes = FALSE,
+        data = tile_data,
+        size = 3,
+        color = "black"
+      )
+  }
   p4 +
     theme(
       axis.line.x = element_blank(),
@@ -1230,6 +1278,7 @@ DEtestRingPlot <- function(
     de_df_marker, cluster_levels, nlabel, features_label
   )
   n_grp <- length(cluster_levels)
+  show_group_track <- n_grp > 1
   ring_r0 <- 2
   max_abs_fc <- max(abs(de_df_marker[, "avg_log2FC"]), na.rm = TRUE)
   ring_k <- if (max_abs_fc > 0) 1.2 / max_abs_fc else 0.2
@@ -1273,7 +1322,7 @@ DEtestRingPlot <- function(
     )
   }))
   p_ring <- ggplot(de_df_marker, aes(x = x_angle, y = y_radius))
-  if (isTRUE(ring_segments)) {
+  if (isTRUE(ring_segments) && isTRUE(show_group_track)) {
     p_ring <- p_ring +
       geom_vline(
         xintercept = seq(0.5, n_grp - 0.5, by = 1),
@@ -1319,23 +1368,6 @@ DEtestRingPlot <- function(
     ) +
     scale_y_continuous(limits = c(0, NA), n.breaks = 5) +
     coord_polar(theta = "x", start = -pi / 2, direction = 1) +
-    geom_tile(
-      data = tile_data,
-      aes(x = x, y = y, fill = group1),
-      color = "black",
-      height = tile_height,
-      show.legend = FALSE,
-      inherit.aes = FALSE
-    ) +
-    scale_fill_manual(values = tile_colors) +
-    geomtextpath::geom_textpath(
-      aes(x = x, y = y, label = label, group = group),
-      data = path_df,
-      inherit.aes = FALSE,
-      size = 3,
-      color = "black",
-      upright = TRUE
-    ) +
     ggrepel::geom_text_repel(
       data = top_marker,
       aes(x = x_angle, y = y_radius, label = gene),
@@ -1365,6 +1397,26 @@ DEtestRingPlot <- function(
       legend.position = "right",
       legend.background = element_blank()
     )
+  if (isTRUE(show_group_track)) {
+    p_ring <- p_ring +
+      geom_tile(
+        data = tile_data,
+        aes(x = x, y = y, fill = group1),
+        color = "black",
+        height = tile_height,
+        show.legend = FALSE,
+        inherit.aes = FALSE
+      ) +
+      scale_fill_manual(values = tile_colors) +
+      geomtextpath::geom_textpath(
+        aes(x = x, y = y, label = label, group = group),
+        data = path_df,
+        inherit.aes = FALSE,
+        size = 3,
+        color = "black",
+        upright = TRUE
+      )
+  }
   p_ring
 }
 
@@ -1546,6 +1598,10 @@ VolcanoPlot <- function(
   x_upper <- clip_res$fc_lim[2]
   x_lower <- clip_res$fc_lim[1]
   de_df[, "border"] <- (de_df[["avg_log2FC"]] >= x_upper) | (de_df[["avg_log2FC"]] <= x_lower)
+  volcano_groups <- unique(as.character(de_df[["group1"]]))
+  volcano_groups <- volcano_groups[!is.na(volcano_groups) & nzchar(volcano_groups)]
+  single_group_volcano <- length(volcano_groups) <= 1
+  signed_diff_pct_volcano <- FALSE
 
   if (threshold_method == "hyperbolic") {
     de_df[, "DE"] <- compute_hyperbolic_de_flags(
@@ -1562,10 +1618,13 @@ VolcanoPlot <- function(
   } else if (x_metric == "diff_pct") {
     de_df[, "y"] <- de_df[, "neglog10_pvalue"]
     de_df[, "x"] <- de_df[, "diff_pct"]
-    de_df[de_df[, "avg_log2FC"] < 0, "y"] <- -de_df[
-      de_df[, "avg_log2FC"] < 0,
-      "y"
-    ]
+    signed_diff_pct_volcano <- !isTRUE(single_group_volcano)
+    if (isTRUE(signed_diff_pct_volcano)) {
+      de_df[de_df[, "avg_log2FC"] < 0, "y"] <- -de_df[
+        de_df[, "avg_log2FC"] < 0,
+        "y"
+      ]
+    }
     de_df <- de_df[
       order(abs(de_df[, "avg_log2FC"]), decreasing = FALSE, na.last = FALSE), ,
       drop = FALSE
@@ -1655,9 +1714,22 @@ VolcanoPlot <- function(
             utils::head(order(df[left_idx, "distance"], decreasing = TRUE), nlabel)
           ], "label"] <- TRUE
         }
-      } else {
+      } else if (isTRUE(signed_diff_pct_volcano)) {
         up_idx <- which(df[["y"]] >= 0)
         down_idx <- which(df[["y"]] < 0)
+        if (length(up_idx) > 0) {
+          df[up_idx[
+            utils::head(order(df[up_idx, "distance"], decreasing = TRUE), nlabel)
+          ], "label"] <- TRUE
+        }
+        if (length(down_idx) > 0) {
+          df[down_idx[
+            utils::head(order(df[down_idx, "distance"], decreasing = TRUE), nlabel)
+          ], "label"] <- TRUE
+        }
+      } else {
+        up_idx <- which(df[["avg_log2FC_raw"]] >= 0)
+        down_idx <- which(df[["avg_log2FC_raw"]] < 0)
         if (length(up_idx) > 0) {
           df[up_idx[
             utils::head(order(df[up_idx, "distance"], decreasing = TRUE), nlabel)
@@ -1699,7 +1771,7 @@ VolcanoPlot <- function(
 
     label_df <- df[df[["label"]], , drop = FALSE]
     label_nudge <- if (nrow(label_df) > 0) {
-      if (threshold_method == "hyperbolic" || traditional_volcano) {
+      if (threshold_method == "hyperbolic" || traditional_volcano || !isTRUE(signed_diff_pct_volcano)) {
         ifelse(label_df[["x_plot"]] >= 0, x_nudge, -x_nudge)
       } else {
         ifelse(label_df[["y_plot"]] >= 0, -x_nudge, x_nudge)
@@ -1793,8 +1865,10 @@ VolcanoPlot <- function(
         )
       }
       p <- p + scale_y_continuous()
-    } else {
+    } else if (isTRUE(signed_diff_pct_volcano)) {
       p <- p + scale_y_continuous(labels = abs)
+    } else {
+      p <- p + scale_y_continuous()
     }
 
     if (nrow(df_enrich) > 0 && !is.null(enrich_colors)) {

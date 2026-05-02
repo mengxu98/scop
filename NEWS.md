@@ -28,6 +28,15 @@
   * Added 5 dim-reduction optimization consistency tests (`test_dim_reduction_optimizations.R`) covering UMAP isSymmetric, scale.data rownames, MDS sparse distance, uwot-predict C++ topk, and PCA centering with features parameter.
   * Added 10 Seurat v4 compatibility tests (`test_seurat_v4_compat.R`) run against a real Seurat v4.4.0 + SeuratObject v4.1.4 installation, verifying Assay object handling, `GetAssayData` slot access, PCA centering fallback, `JoinLayers` guard, sparse matrix operations, and UMAP/MDS execution.
 
+* **feat**:
+  * Added `RunBulk()` as a unified bulk-strategy entrypoint with method-vector selection for bulk DE, deconvolution, and cell-type-specific DE workflows.
+  * Added method-specific bulk runners for `de_limma_voom`, `de_edgeR_qlf`, `de_DESeq2`, `de_dream`, `deconv_MuSiC`, `deconv_BisqueRNA`, `deconv_BayesPrism`, and `csde_TOAST`.
+  * Standardized bulk results under `Bulk$results$de`, `Bulk$results$deconv`, and `Bulk$results$csde`, keeping DE outputs compatible with existing `DEtestPlot()`, `RunEnrichment()`, `RunGSEA()`, `GroupHeatmap()`, and `FeatureHeatmap()` data flows.
+  * `RunBulk(run_enrichment = TRUE, run_gsea = TRUE)` now filters bulk DE rows with pathway thresholds and mirrors successful pathway results to `Enrichment_Bulk_wilcox` and `GSEA_Bulk_wilcox`, so `EnrichmentPlot()` and `GSEAPlot()` can read them through the standard `srt@tools` contract.
+  * Deconvolution and CSDE bundles now record their computational `engine` in `details`; the current deconvolution runners use explicit `backend = "internal"` SCOP profile fitting and `csde_TOAST` uses explicit `backend = "limma_interaction"`, so native package backends can be wired in later without pretending to call external packages.
+  * Added explicit `Remotes` entries for `mengxu98/thisplot` and `mengxu98/thisutils` so source installs can resolve the minimum imported versions required by SCOP. Optional bulk engines such as `DESeq2` and `variancePartition` are installed on demand through `check_r()` and called lazily through `get_namespace_fun()`.
+  * Added `method_args` to expose method-specific tuning parameters without expanding the public API surface.
+
 # scop 0.8.8
 
 * **deps**:
