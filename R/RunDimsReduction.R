@@ -277,13 +277,18 @@ RunDimsReduction <- function(
     }
     if (linear_reduction == "pca") {
       pca_out <- srt[[paste0(prefix, linear_reduction)]]
-      center <- rowMeans(
-        GetAssayData5(
-          object = srt,
-          layer = "scale.data",
-          assay = assay
-        )[features, , drop = FALSE]
-      )
+      if (inherits(srt[[assay]], "Assay5")) {
+        center <- rowMeans(
+          SeuratObject::LayerData(
+            object = srt[[assay]],
+            layer = "scale.data",
+            features = features
+          )
+        )[features]
+      } else {
+        scale_data <- GetAssayData5(srt, assay = assay, layer = "scale.data")
+        center <- rowMeans(scale_data[features, , drop = FALSE])
+      }
       model <- list(
         sdev = pca_out@stdev,
         rotation = pca_out@feature.loadings,

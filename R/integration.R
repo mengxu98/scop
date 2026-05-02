@@ -284,6 +284,17 @@ Uncorrected_integrate <- function(
 #' @inheritParams integration_scop
 #'
 #' @export
+#' @examples
+#' \dontrun{
+#' data("pbmcmultiome_sub", package = "scop")
+#' pbmcmultiome_sub$batch <- rep(c("batch1", "batch2"), length.out = ncol(pbmcmultiome_sub))
+#' pbmcmultiome_sub <- WNN_integrate(
+#'   srt_merge = pbmcmultiome_sub,
+#'   batch = "batch",
+#'   linear_reduction_dims = 20,
+#'   linear_reduction_dims_use = 1:10
+#' )
+#' }
 WNN_integrate <- function(
   srt_merge = NULL,
   batch = NULL,
@@ -529,6 +540,17 @@ WNN_integrate <- function(
 #' Default is `list()`.
 #'
 #' @export
+#' @examples
+#' \dontrun{
+#' data("pbmcmultiome_sub", package = "scop")
+#' pbmcmultiome_sub$batch <- rep(c("batch1", "batch2"), length.out = ncol(pbmcmultiome_sub))
+#' pbmcmultiome_sub <- MultiMAP_integrate(
+#'   srt_merge = pbmcmultiome_sub,
+#'   batch = "batch",
+#'   linear_reduction_dims = 20,
+#'   linear_reduction_dims_use = 1:10
+#' )
+#' }
 MultiMAP_integrate <- function(
   srt_merge = NULL,
   batch = NULL,
@@ -716,10 +738,6 @@ MultiMAP_integrate <- function(
     verbose = FALSE
   )
 
-  multimap <- tryCatch(
-    reticulate::import("MultiMAP", convert = FALSE),
-    error = function(...) reticulate::import("multimap", convert = FALSE)
-  )
   rna_names <- paste0(colnames(srt_merge), "__RNA")
   atac_names <- paste0(colnames(srt_merge), "__ATAC")
   rna_adata$obs_names <- rna_names
@@ -737,17 +755,15 @@ MultiMAP_integrate <- function(
   multimap_params[["n_components"]] <- multimap_params[["n_components"]] %||%
     as.integer(max(10L, max(nonlinear_reduction_dims)))
 
-  adata_joint <- invoke_fun(
-    multimap$Integration,
-    multimap_params
+  multimap_result <- run_multimap_python(
+    rna_adata = rna_adata,
+    atac_adata = atac_adata,
+    MultiMAP_params = multimap_params,
+    verbose = verbose
   )
-  embed <- as.matrix(
-    py_to_r2(
-      get_adata_element(adata_joint$obsm, "X_multimap")
-    )
-  )
-  obs_joint <- as.data.frame(py_to_r2(adata_joint$obs))
-  obs_names_joint <- get_adata_names(adata_joint, "obs")
+  embed <- multimap_result[["embedding"]]
+  obs_joint <- multimap_result[["obs"]]
+  obs_names_joint <- multimap_result[["obs_names"]]
   if ("orig_cell" %in% colnames(obs_joint)) {
     cell_order <- as.character(obs_joint[["orig_cell"]])
   } else {
@@ -851,6 +867,140 @@ MultiMAP_integrate <- function(
   }
 
   srt_merge
+}
+
+run_multimap_python <- function(
+  rna_adata,
+  atac_adata,
+  MultiMAP_params = list(),
+  verbose = TRUE
+) {
+  env_cache <- getOption("scop_env_cache", default = NULL)
+  python <- env_cache[["python"]] %||%
+    tryCatch(
+      conda_python(envname = get_envname(), conda = resolve_conda("auto")),
+      error = function(...) NULL
+    )
+  if (is.null(python) || !file.exists(python)) {
+    log_message(
+      "Unable to resolve python executable for {.pkg MultiMAP}",
+      message_type = "error"
+    )
+  }
+
+  workdir <- tempfile(pattern = "multimap_run_")
+  dir.create(workdir, recursive = TRUE, showWarnings = FALSE)
+  numba_cache_dir <- file.path(workdir, "numba_cache")
+  mpl_config_dir <- file.path(workdir, "matplotlib")
+  dir.create(numba_cache_dir, recursive = TRUE, showWarnings = FALSE)
+  dir.create(mpl_config_dir, recursive = TRUE, showWarnings = FALSE)
+
+  rna_path <- file.path(workdir, "rna.h5ad")
+  atac_path <- file.path(workdir, "atac.h5ad")
+  embed_out <- file.path(workdir, "multimap_embedding.csv")
+  obs_out <- file.path(workdir, "multimap_obs.csv")
+  script_path <- file.path(workdir, "run_multimap.py")
+  stdout_path <- file.path(workdir, "multimap_stdout.log")
+  stderr_path <- file.path(workdir, "multimap_stderr.log")
+
+  rna_adata$write_h5ad(rna_path, compression = "gzip")
+  atac_adata$write_h5ad(atac_path, compression = "gzip")
+
+  params <- MultiMAP_params
+  params[["adatas"]] <- NULL
+  script_body <- c(
+    "import anndata as ad",
+    "import pandas as pd",
+    "",
+    "try:",
+    "    import MultiMAP as multimap",
+    "except ImportError:",
+    "    import multimap",
+    "",
+    sprintf("rna = ad.read_h5ad(%s)", glue_python_literal(rna_path)),
+    sprintf("atac = ad.read_h5ad(%s)", glue_python_literal(atac_path)),
+    sprintf("params = %s", glue_python_literal(params)),
+    "params['adatas'] = [rna, atac]",
+    "adata_joint = multimap.Integration(**params)",
+    "if 'X_multimap' not in adata_joint.obsm:",
+    "    raise ValueError('MultiMAP did not produce obsm[\"X_multimap\"]')",
+    "embed = pd.DataFrame(adata_joint.obsm['X_multimap'], index=adata_joint.obs_names)",
+    "obs = adata_joint.obs.copy()",
+    "obs.insert(0, 'obs_name', adata_joint.obs_names.astype(str))",
+    sprintf("embed.to_csv(%s)", glue_python_literal(embed_out)),
+    sprintf("obs.to_csv(%s, index=False)", glue_python_literal(obs_out))
+  )
+  script_lines <- c(
+    "def main():",
+    paste0("    ", script_body),
+    "",
+    "if __name__ == '__main__':",
+    "    main()"
+  )
+  writeLines(script_lines, con = script_path, useBytes = TRUE)
+
+  status <- system2(
+    command = python,
+    args = script_path,
+    env = c(
+      "PYTHONNOUSERSITE=1",
+      "KMP_DUPLICATE_LIB_OK=TRUE",
+      "KMP_WARNINGS=0",
+      "OMP_NUM_THREADS=1",
+      "OPENBLAS_NUM_THREADS=1",
+      "MKL_NUM_THREADS=1",
+      "VECLIB_MAXIMUM_THREADS=1",
+      "NUMEXPR_NUM_THREADS=1",
+      sprintf("NUMBA_CACHE_DIR=%s", numba_cache_dir),
+      sprintf("MPLCONFIGDIR=%s", mpl_config_dir)
+    ),
+    stdout = stdout_path,
+    stderr = stderr_path
+  )
+  if (!identical(status, 0L)) {
+    stderr_lines <- if (file.exists(stderr_path)) {
+      readLines(stderr_path, warn = FALSE)
+    } else {
+      character(0)
+    }
+    stdout_lines <- if (file.exists(stdout_path)) {
+      readLines(stdout_path, warn = FALSE)
+    } else {
+      character(0)
+    }
+    error_lines <- c(utils::tail(stderr_lines, 20), utils::tail(stdout_lines, 20))
+    if (length(error_lines) == 0) {
+      error_lines <- sprintf("<no output captured; workdir: %s>", workdir)
+    }
+    log_message(
+      "{.pkg MultiMAP} python runner failed:\n{.code {paste(error_lines, collapse = '\n')}}",
+      message_type = "error"
+    )
+  }
+  if (!file.exists(embed_out) || !file.exists(obs_out)) {
+    log_message(
+      "{.pkg MultiMAP} python runner did not produce embedding files. Logs are in {.file {workdir}}",
+      message_type = "error"
+    )
+  }
+
+  log_message(
+    "MultiMAP python runner completed",
+    verbose = verbose
+  )
+
+  obs <- utils::read.csv(obs_out, check.names = FALSE, stringsAsFactors = FALSE)
+  if (!"obs_name" %in% colnames(obs)) {
+    log_message(
+      "{.pkg MultiMAP} python runner output is missing {.field obs_name}",
+      message_type = "error"
+    )
+  }
+  list(
+    embedding = as.matrix(utils::read.csv(embed_out, row.names = 1, check.names = FALSE)),
+    obs = obs,
+    obs_names = as.character(obs[["obs_name"]])
+  )
 }
 
 wnn_assays <- function(srt, assay = NULL) {
@@ -1478,6 +1628,25 @@ Seurat_integrate <- function(
 #' @param cores An integer setting the number of threads for `scVI`.
 #' Default is `1`.
 #' @export
+#' @examples
+#' \dontrun{
+#' data("pbmcmultiome_sub", package = "scop")
+#' pbmcmultiome_sub$batch <- rep(c("batch1", "batch2"), length.out = ncol(pbmcmultiome_sub))
+#' pbmcmultiome_sub <- scVI_integrate(
+#'   srt_merge = pbmcmultiome_sub,
+#'   batch = "batch",
+#'   assay = "peaks",
+#'   model = "PEAKVI",
+#'   train_params = list(max_epochs = 2L)
+#' )
+#' pbmcmultiome_sub <- scVI_integrate(
+#'   srt_merge = pbmcmultiome_sub,
+#'   batch = "batch",
+#'   assay = "peaks",
+#'   model = "POISSONVI",
+#'   train_params = list(max_epochs = 2L)
+#' )
+#' }
 scVI_integrate <- function(
   srt_merge = NULL,
   batch = NULL,
@@ -2288,15 +2457,9 @@ fastMNN_integrate <- function(
         layer = "counts",
         assay = SeuratObject::DefaultAssay(srt)
       )
-      if (inherits(data_matrix, "dgCMatrix")) {
-        data_matrix <- as_matrix(data_matrix)
-      }
       data_matrix <- log1p(data_matrix)
     }
     data_matrix <- data_matrix[HVF, , drop = FALSE]
-    if (inherits(data_matrix, "dgCMatrix")) {
-      data_matrix <- as_matrix(data_matrix)
-    }
     if (nrow(data_matrix) == 0 || ncol(data_matrix) == 0) {
       log_message(
         "No available features/cells for fastMNN after preparing {.val {'logcounts'}} matrix.",
@@ -2326,7 +2489,7 @@ fastMNN_integrate <- function(
   srt_integrated <- srt_merge
   srt_merge <- NULL
   srt_integrated[["fastMNNcorrected"]] <- CreateAssayObject(
-    counts = as_matrix(out@assays@data$reconstructed)
+    counts = out@assays@data$reconstructed
   )
   SeuratObject::DefaultAssay(srt_integrated) <- "fastMNNcorrected"
   SeuratObject::VariableFeatures(srt_integrated[["fastMNNcorrected"]]) <- HVF
@@ -2631,7 +2794,8 @@ Harmony_integrate <- function(
     assay = SeuratObject::DefaultAssay(srt_merge),
     reduction = paste0("Harmony", linear_reduction),
     dims.use = linear_reduction_dims_use,
-    reduction.save = "Harmony",
+    reduction.name = "Harmony",
+    reduction.key = "Harmony_",
     verbose = FALSE
   )
   feature_num <- nrow(
@@ -2644,22 +2808,28 @@ Harmony_integrate <- function(
   if (feature_num == 0) {
     params[["project.dim"]] <- FALSE
   }
+  if (!is.null(RunHarmony_params[["reduction.save"]])) {
+    RunHarmony_params[["reduction.name"]] <- RunHarmony_params[["reduction.name"]] %||%
+      RunHarmony_params[["reduction.save"]]
+    RunHarmony_params[["reduction.save"]] <- NULL
+  }
   for (nm in names(RunHarmony_params)) {
     params[[nm]] <- RunHarmony_params[[nm]]
   }
   srt_integrated <- invoke_fun(RunHarmony2, params)
+  harmony_reduction <- params[["reduction.name"]] %||% "Harmony"
 
   if (is.null(harmony_dims_use)) {
     harmony_dims_use <- seq_len(
       ncol(
-        srt_integrated[["Harmony"]]@cell.embeddings
+        srt_integrated[[harmony_reduction]]@cell.embeddings
       )
     )
   }
 
   srt_integrated <- find_neighbors_and_clusters(
     srt = srt_integrated,
-    reduction = "Harmony",
+    reduction = harmony_reduction,
     dims_use = harmony_dims_use,
     graph_prefix = "Harmony_",
     graph_snn = "Harmony_SNN",
@@ -2676,7 +2846,7 @@ Harmony_integrate <- function(
   srt_integrated <- run_nonlinear_reduction(
     srt = srt_integrated,
     prefix = "Harmony",
-    reduction_use = "Harmony",
+    reduction_use = harmony_reduction,
     reduction_dims = harmony_dims_use,
     graph_use = "Harmony_SNN",
     nonlinear_reduction = nonlinear_reduction,
@@ -3566,8 +3736,12 @@ CSS_integrate <- function(
     "Using {.val {paste0('CSS', linear_reduction)}} ({.val {min(linear_reduction_dims_use)}}:{.val {max(linear_reduction_dims_use)}}) as input",
     verbose = verbose
   )
+  srt_css <- srt_merge
+  if (inherits(Seurat::GetAssay(srt_css, assay = SeuratObject::DefaultAssay(srt_css)), "Assay5")) {
+    srt_css <- SeuratObject::JoinLayers(srt_css)
+  }
   params <- list(
-    object = SeuratObject::JoinLayers(srt_merge),
+    object = srt_css,
     use_dr = paste0("CSS", linear_reduction),
     dims_use = linear_reduction_dims_use,
     var_genes = HVF,

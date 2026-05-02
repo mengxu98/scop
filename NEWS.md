@@ -1,8 +1,62 @@
 # scop
 
+# scop 0.8.9
+
+* **perf**:
+  * `RunGSVA()`: Removed redundant dense `as.matrix()` conversion in single-cell mode for `backend = "r"`; sparse expression matrices now stay sparse through row filtering, reducing peak memory and avoiding unnecessary dense materialization.
+  * `RunCellQC()`: Replaced `Seurat::SplitObject()` with lazy cell-name-based subsetting, avoiding full-object duplication per split group. Added caching of `GetAssay()` gene names, `GetAssayData5()` counts, and per-cell QC metrics (`nCount` / `nFeature`) outside the species-check loop to eliminate repeated data extraction.
+  * `RunDEtest()`: Pre-computed cell index mapping (`split(names(cell_group), cell_group)`) for paired-marker tests, replacing per-pair `which()` calls with O(1) list lookups.
+  * `AnnotateFeatures()`: Replaced per-detail `sapply(… "[")` with type-stable `vapply(…, character(1))` to avoid implicit list-to-character coercion.
+  * `run_scomm()`: Deferred dense conversion for reference and query subsetting by removing premature `as.matrix()` calls; sparse matrices are subset first, then densified only when required.
+  * `RunUMAP2()`: Replaced `isSymmetric(as.matrix(graph))` with sparse-native `Matrix::isSymmetric(graph)` in symmetry checks and graph subset sampling, avoiding dense materialization of large neighbor graphs.
+  * `RunUMAP2()`: Replaced `apply(as.matrix(graph), 2, order)` in the uwot-predict path with the internal C++ sparse column top-k helper (`run_sparse_topk_by_column_cpp()`), avoiding full dense conversion and column-wise R-level `apply()`.
+  * `RunDimsReduction()` (PCA centering): Uses `SeuratObject::LayerData(…, features = features)` to read only HVF rows from `scale.data` instead of loading the full matrix followed by manual subsetting.
+  * `RunMDS()`: Removed `as.matrix()` before `Matrix::t()`; `proxyC::dist` now receives the sparse matrix directly, avoiding dense conversion of large count matrices.
+  * `integration.R` (fastMNN): Removed three `as.matrix()` calls passed to `batchelor::fastMNN()`, which accepts sparse matrices natively via `SingleCellExperiment`.
+
+* **memory**:
+  * `standard_scop()`: Replaced full `scale.data` matrix load (via `GetAssayData5()`) with direct layer access (`SeuratObject::GetAssayData` for Assay5; `@scale.data` for Assay) to retrieve only rownames when checking whether HVFs have been scaled, substantially reducing peak memory during the ScaleData decision step.
+
+* **compat**:
+  * `GetAssayData5.Assay()`: Fixed parameter naming to use positional matching for the slot/layer argument, so `GetAssayData5()` correctly retrieves `counts`, `data`, and `scale.data` layers in both Seurat v4 (`slot`) and v5 (`layer`). Previously the named `layer` argument was silently dropped by SeuratObject v4, always returning the `data` slot regardless of the requested layer.
+  * `CSS_integrate()`: Added `Assay5` guard before `SeuratObject::JoinLayers()` to avoid errors with Seurat v4 `Assay` objects, which do not support layered storage.
+  * `RunDimsReduction()`: Added Seurat v4 fallback for PCA centering — `SeuratObject::LayerData(…, features = …)` is Assay5-only; v4 `Assay` objects now use `GetAssayData5()` with manual feature subsetting.
+  * `integration_scop()`: Added early detection for v5-only integration methods (`CCA`, `RPCA`, `fastMNN5`, `Harmony5`, `scVI5`) to provide a clear, actionable error message when used with Seurat v4 `Assay` objects, rather than failing deep in the call stack.
+
+* **test**:
+  * Added 22 consistency tests (`test_optimizations_v2.R`) covering GSVA sparse, RunCellQC caching, DEtest cell_index, AnnotateFeatures vapply, run_scomm sparse, RunDynamicFeatures solve, and cccplot validations.
+  * Added 5 dim-reduction optimization consistency tests (`test_dim_reduction_optimizations.R`) covering UMAP isSymmetric, scale.data rownames, MDS sparse distance, uwot-predict C++ topk, and PCA centering with features parameter.
+  * Added 10 Seurat v4 compatibility tests (`test_seurat_v4_compat.R`) run against a real Seurat v4.4.0 + SeuratObject v4.1.4 installation, verifying Assay object handling, `GetAssayData` slot access, PCA centering fallback, `JoinLayers` guard, sparse matrix operations, and UMAP/MDS execution.
+
 # scop 0.8.8
 
+* **deps**:
+  * Updated the minimum dependency versions to `thisplot (>= 0.3.8)` and `thisutils (>= 0.4.5)`, and removed local copies of helpers now provided upstream (`thisplot::annotate_quadrants()`, `thisplot::clip_symmetric_range()`, `thisutils::collapse_sparse_rows()`).
+
+* **docs**:
+  * Updated pkgdown reference grouping for the cell-cycle workflow.
+
 * **fix**:
+  * Added optional wrappers for `RunDorothea()`, `RunBayesSpace()`, and experimental `RunScTenifoldKnk()`. `RunScTenifoldKnk()` keeps the upstream `scTenifoldNet` workflow but fixes the QC gene-filter assignment in the local path, uses a native equivalent covariance/downdate path with direct sparse matrix construction, selection-based quantile thresholding, and controlled per-gene eigensolver parallelism for large `pcNet()` network construction, and uses native helpers for tensor decomposition, manifold matrix construction, directionality, and differential-regulation distance calculations. The native tensor-decomposition path now computes MTTKRP updates directly instead of materializing four dense unfolding matrices.
+  * `PrepareEnv()`: Added explicit support for `mamba` and `micromamba` executables in addition to `conda`, including command-name resolution, automatic package-managed micromamba download when `conda = "micromamba"` is requested and the command is not on `PATH`, manager-aware logging, micromamba env path detection, and ToS handling that only runs for standard conda. Package-managed micromamba environments now use a no-space cache root to avoid `micromamba run -p` path parsing failures. `PrepareEnv()` now also stops early if reticulate has already initialized a different Python executable, avoiding unsafe in-session switches between conda and micromamba. The Python stack now also pins `setuptools < 81` so legacy packages such as `trimap` can still import `pkg_resources`.
+  * `PrepareEnv()`: The default `modules = NULL` environment no longer includes `scomm`; install it explicitly with `modules = "scomm"` because the TensorFlow/scOMM stack conflicts with the default JAX/scVI stack through incompatible `ml-dtypes` requirements.
+  * `CheckDataList()` / `standard_scop()`: Removed an unnecessary all-feature `ScaleData()` call immediately after `LogNormalize`. Downstream workflows still scale the selected HVFs before PCA, but large raw-count inputs no longer create a dense all-gene `scale.data` intermediate during checking.
+  * `srt_reorder()`: Replaced per-cluster repeated sparse subsetting and `rowMeans()` with a single sparse group-membership matrix multiplication, speeding the cluster-reordering step used by `standard_scop()` while preserving average expression values.
+  * `FindExpressedMarkers()`: Added a sparse fold-change and detection-rate prefilter path for common sparse RNA inputs, avoiding dense all-feature expression materialization before marker filtering while preserving default results. Supplied features are now intersected with the active layer before dense fallback scoring, which also keeps `scale.data` and partial-feature layers from passing absent rows into fold-change calculation.
+  * C++-accelerated backends are now the default where available: `RunMetabolism()`, `RunGSVA()`, `CellScoring()`, `RunDynamicEnrichment()`, `RunEnrichment()`, and `RunProportionTestPermutation()` now prefer `backend = "cpp"` while retaining `backend = "r"` for exact legacy/package behavior. Unsupported C++ methods such as metabolism `VISION` and cell scoring `UCell` automatically fall back to R when `backend` is not explicitly set.
+  * `RunMetabolism()` and `RunGSVA()`: Added a reusable C++ gene-set scoring backend for `ssGSEA`, `zscore`, and `plage`; `RunGSVA()` can now use `backend = "cpp"` for `method = "ssgsea"`, `method = "zscore"`, `method = "plage"`, and Gaussian- or Poisson-kernel `method = "gsva"`. PLAGE scores are oriented by the gene set mean z-score to avoid backend-dependent sign flips.
+  * `RunMetabolism()` and `RunGSVA()`: Added `cpp_chunk_size` for the C++ GSVA kernel paths to reduce peak dense intermediate memory on large cell counts; `NULL` now auto-selects a chunk size for large matrices.
+  * `RunEnrichment()`: Added an experimental `backend = "cpp"` ORA path using a native hypergeometric implementation for faster enrichment tables while keeping `backend = "r"` available as the clusterProfiler-compatible path.
+  * `CellScoring()`: Added experimental `backend = "cpp"` support for Seurat-style module scoring by keeping control-gene sampling in R and moving sparse mean calculations to native code.
+  * `RunProportionTestPermutation()`: Added experimental `backend = "cpp"` for faster permutation and bootstrap loops.
+  * `RunUMAP2()`: Added an internal C++ sparse column top-k helper for Graph inputs to speed extraction of precomputed neighbor indices/connectivities before calling `uwot`.
+  * `RunKNNMap()` and `RunKNNPredict()`: Added an internal C++ dense column top-k helper for the raw KNN fallback to speed nearest-neighbor extraction from precomputed distance matrices.
+  * `PseudotimeProjectionPlot()`: Reused the internal dense top-k helper for pseudotime KNN/gradient neighbor extraction from distance matrices.
+  * Mapping/integration metrics: Added an internal C++ contingency-table helper for `metric_accuracy()`, `metric_macro_f1()`, `metric_purity()`, `metric_nmi()`, `metric_ari()`, `metric_weighted_recall()`, and `collect_mapping_metrics()`.
+  * `RunMetabolism()`: Added a C++ backend for `method = "GSVA"` that keeps the Poisson-kernel GSVA scoring path but accelerates repeated count-kernel calculations.
+  * `RunMetabolism()` and `CellScoring()`: Added an experimental C++ backend for AUCell scoring via `backend = "cpp"` with selectable `cpp_strategy` values (`"sparse"`, `"topk"`, `"full"`), while keeping the original R/AUCell implementation available via `backend = "r"` for exact package output. `RunDynamicEnrichment()` now passes this backend through to AUCell-based scoring.
+  * `CellScoring(method = "AUCell")`: Fixed score-name assignment when only one feature list is scored, avoiding vector dropping before metadata column names are applied.
+  * `RunMetabolism(method = "VISION")`: Fixed signature construction so in-memory gene sets are passed as `VISION::Signature` objects instead of being interpreted as file paths.
   * `DynamicHeatmap()` / custom enrichment workflows: Fixed incorrect term label display when user-provided `TERM2GENE` / `TERM2NAME` use non-standard column names such as `term` / `name`. Custom term annotations are now normalized consistently so that heatmap term labels show readable term names instead of fallback IDs (e.g. GO IDs). Related issue #160 (@Pineapple-wen6, @mengxu98).
   * Refactored repeated custom database input handling by introducing shared internal helpers for normalizing and assembling user-provided `TERM2GENE` / `TERM2NAME`, and applied them across `RunEnrichment()`, `RunDynamicEnrichment()`, `RunGSEA()`, `RunGSVA()`, and `PrepareDB()` to keep behavior consistent.
   * `integration_scop()`: Improved `ChromatinAssay` handling by standardizing ATAC reductions after integration, avoiding non-interactive small-batch blocking, clipping `TFIDF/rlsi` anchor dims to available cells, auto-switching `Harmony5` to legacy `Harmony`, and rejecting unsupported `Seurat` / `RPCA` ATAC paths with explicit messages.
