@@ -52,8 +52,8 @@ run_scomm <- function(
       message_type = "error"
     )
   }
-  ref_mat <- as.matrix(ref_mat[features, , drop = FALSE])
-  query_mat <- as.matrix(query_mat[features, , drop = FALSE])
+  ref_mat <- ref_mat[features, , drop = FALSE]
+  query_mat <- query_mat[features, , drop = FALSE]
   labels <- factor(reference[[reference_label, drop = TRUE]])
   names(labels) <- colnames(reference)
   split_data <- prepare_scomm_data(
@@ -80,7 +80,6 @@ run_scomm <- function(
     ))
   }
   patch_keras_categorical()
-  patch_scomm_keras()
   if (
     requireNamespace("keras", quietly = TRUE) &&
       "py_require_legacy_keras" %in% getNamespaceExports("keras")
@@ -183,7 +182,7 @@ run_scomm_subprocess <- function(
     )
   }
 
-  train_x <- as.matrix(split_data$train_x)
+  train_x <- split_data$train_x
   class_names <- as.character(split_data$classes)
   query_x <- t(as.matrix(query_mat))
   missing_features <- setdiff(colnames(train_x), colnames(query_x))
@@ -371,67 +370,6 @@ scomm_subprocess_env <- function(python) {
   unname(paste(names(env), env, sep = "="))
 }
 
-patch_scomm_keras <- function() {
-  if (!requireNamespace("scOMM", quietly = TRUE)) {
-    return(invisible(NULL))
-  }
-  to_categorical_compat <- function(y = NULL, x = y, num_classes = NULL, dtype = "float32") {
-    vec <- as.integer(y %||% x)
-    keep <- !is.na(vec)
-    vec_use <- vec[keep]
-    if (length(vec_use) == 0) {
-      return(matrix(numeric(0), nrow = 0))
-    }
-    if (is.null(num_classes)) {
-      num_classes <- max(vec_use)
-    }
-    tf <- reticulate::import("tensorflow", delay_load = FALSE)
-    res <- tryCatch(
-      tf$keras$utils$to_categorical(
-        as.integer(vec_use - 1L),
-        num_classes = as.integer(num_classes),
-        dtype = dtype
-      ),
-      error = function(...) {
-        tf$keras$utils$to_categorical(
-          as.integer(vec_use - 1L),
-          num_classes = as.integer(num_classes)
-        )
-      }
-    )
-    out <- reticulate::py_to_r(res)
-    if (!all(keep)) {
-      full_out <- matrix(0, nrow = length(vec), ncol = ncol(out))
-      full_out[keep, ] <- out
-      return(full_out)
-    }
-    out
-  }
-  for (pkg in c("keras", "scOMM")) {
-    if (!requireNamespace(pkg, quietly = TRUE)) {
-      next
-    }
-    env_candidates <- unique(list(
-      asNamespace(pkg),
-      parent.env(asNamespace(pkg))
-    ))
-    for (ns in env_candidates) {
-      if (!exists("to_categorical", envir = ns, inherits = FALSE)) {
-        next
-      }
-      tryCatch(
-        {
-          unlockBinding("to_categorical", ns)
-          assign("to_categorical", to_categorical_compat, envir = ns)
-          lockBinding("to_categorical", ns)
-        },
-        error = function(...) NULL
-      )
-    }
-  }
-  invisible(NULL)
-}
-
 patch_keras_categorical <- function() {
   if (!requireNamespace("keras", quietly = TRUE)) {
     return(invisible(NULL))
@@ -479,9 +417,9 @@ patch_keras_categorical <- function() {
     }
     tryCatch(
       {
-        unlockBinding("to_categorical", env_i)
+        get("unlockBinding", envir = baseenv())("to_categorical", env_i)
         assign("to_categorical", to_categorical_compat, envir = env_i)
-        lockBinding("to_categorical", env_i)
+        get("lockBinding", envir = baseenv())("to_categorical", env_i)
       },
       error = function(...) NULL
     )
@@ -610,13 +548,8 @@ predict_scomm <- function(
   }
 
   if (identical(threshold, "AUTO")) {
-    if (!exists("find_optimal_thresholds", envir = asNamespace("scOMM"), inherits = FALSE)) {
-      log_message(
-        "Automatic thresholding is unavailable for {.val method = 'scOMM'} in the current environment.",
-        message_type = "error"
-      )
-    }
-    threshold_vec <- get("find_optimal_thresholds", envir = asNamespace("scOMM"))(
+    check_r("mereulab/scOMM", verbose = FALSE)
+    threshold_vec <- get_namespace_fun("scOMM", "find_optimal_thresholds")(
       dnn_model = dnn_model,
       model.data = model.data
     )
