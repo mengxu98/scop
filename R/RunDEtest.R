@@ -44,6 +44,7 @@ PerformDE <- function(
   verbose,
   min.cells.feature,
   latent.vars,
+  min.expression = 0,
   ...
 ) {
   if (
@@ -62,7 +63,11 @@ PerformDE <- function(
     c(cells.1, cells.2),
     drop = FALSE
   ]
-  data.use <- as_matrix(data.use)
+  dense_data_use <- function() {
+    data.use_dense <- as_matrix(data.use)
+    data.use_dense[data.use_dense <= min.expression] <- NA
+    data.use_dense
+  }
 
   de.results <- switch(
     EXPR = test.use,
@@ -70,13 +75,14 @@ PerformDE <- function(
       data.use = data.use,
       cells.1 = cells.1,
       cells.2 = cells.2,
+      min.expression = min.expression,
       verbose = verbose,
       ...
     ),
     "bimod" = get_namespace_fun(
       "Seurat", "DiffExpTest"
     )(
-      data.use = data.use,
+      data.use = dense_data_use(),
       cells.1 = cells.1,
       cells.2 = cells.2,
       verbose = verbose
@@ -84,7 +90,7 @@ PerformDE <- function(
     "roc" = get_namespace_fun(
       "Seurat", "MarkerTest"
     )(
-      data.use = data.use,
+      data.use = dense_data_use(),
       cells.1 = cells.1,
       cells.2 = cells.2,
       verbose = verbose
@@ -92,7 +98,7 @@ PerformDE <- function(
     "t" = get_namespace_fun(
       "Seurat", "DiffTTest"
     )(
-      data.use = data.use,
+      data.use = dense_data_use(),
       cells.1 = cells.1,
       cells.2 = cells.2,
       verbose = verbose
@@ -100,7 +106,7 @@ PerformDE <- function(
     "negbinom" = get_namespace_fun(
       "Seurat", "GLMDETest"
     )(
-      data.use = data.use,
+      data.use = dense_data_use(),
       cells.1 = cells.1,
       cells.2 = cells.2,
       min.cells = min.cells.feature,
@@ -111,7 +117,7 @@ PerformDE <- function(
     "poisson" = get_namespace_fun(
       "Seurat", "GLMDETest"
     )(
-      data.use = data.use,
+      data.use = dense_data_use(),
       cells.1 = cells.1,
       cells.2 = cells.2,
       min.cells = min.cells.feature,
@@ -122,7 +128,7 @@ PerformDE <- function(
     "MAST" = get_namespace_fun(
       "Seurat", "MASTDETest"
     )(
-      data.use = data.use,
+      data.use = dense_data_use(),
       cells.1 = cells.1,
       cells.2 = cells.2,
       latent.vars = latent.vars,
@@ -132,7 +138,7 @@ PerformDE <- function(
     "DESeq2" = get_namespace_fun(
       "Seurat", "DESeq2DETest"
     )(
-      data.use = data.use,
+      data.use = dense_data_use(),
       cells.1 = cells.1,
       cells.2 = cells.2,
       verbose = verbose,
@@ -141,7 +147,7 @@ PerformDE <- function(
     "LR" = get_namespace_fun(
       "Seurat", "LRDETest"
     )(
-      data.use = data.use,
+      data.use = dense_data_use(),
       cells.1 = cells.1,
       cells.2 = cells.2,
       latent.vars = latent.vars,
@@ -159,10 +165,29 @@ WilcoxDETest <- function(
   data.use,
   cells.1,
   cells.2,
+  min.expression = 0,
   verbose = TRUE,
   ...
 ) {
   data.use <- data.use[, c(cells.1, cells.2), drop = FALSE]
+  if (
+    inherits(data.use, "sparseMatrix") &&
+      isTRUE(min.expression >= 0) &&
+      run_sparse_wilcox_cpp_available()
+  ) {
+    p_val <- run_sparse_wilcox_cpp(
+      x = data.use,
+      n_group1 = length(cells.1),
+      min.expression = min.expression
+    )
+    return(data.frame(
+      p_val = p_val,
+      row.names = names(p_val)
+    ))
+  }
+
+  data.use <- as_matrix(data.use)
+  data.use[data.use <= min.expression] <- NA
   check_r("limma", verbose = FALSE)
   p_val <- parallelize_fun(
     seq_len(nrow(data.use)),
@@ -187,6 +212,269 @@ WilcoxDETest <- function(
   )
 }
 
+RunDEtestFindMarkers <- function(
+  srt,
+  assay,
+  layer,
+  cells.1,
+  cells.2,
+  features,
+  test.use,
+  logfc.threshold,
+  base,
+  min.pct,
+  min.diff.pct,
+  max.cells.per.ident,
+  min.cells.feature,
+  min.cells.group,
+  latent.vars,
+  only.pos,
+  norm.method,
+  pseudocount.use,
+  mean.fxn,
+  verbose,
+  random.seed = 1,
+  ...
+) {
+  extra_args <- list(...)
+  use_sparse_wilcox <- identical(test.use, "wilcox") &&
+    is.null(latent.vars) &&
+    is.null(mean.fxn) &&
+    layer %in% c("data", "counts") &&
+    identical(norm.method, "LogNormalize") &&
+    length(extra_args) == 0 &&
+    !requireNamespace("presto", quietly = TRUE) &&
+    run_sparse_wilcox_all_cells_cpp_available()
+  if (isTRUE(use_sparse_wilcox)) {
+    return(RunDEtestSparseWilcoxMarkers(
+      srt = srt,
+      assay = assay,
+      layer = layer,
+      cells.1 = cells.1,
+      cells.2 = cells.2,
+      features = features,
+      logfc.threshold = logfc.threshold,
+      base = base,
+      min.pct = min.pct,
+      min.diff.pct = min.diff.pct,
+      max.cells.per.ident = max.cells.per.ident,
+      min.cells.group = min.cells.group,
+      only.pos = only.pos,
+      pseudocount.use = pseudocount.use,
+      random.seed = random.seed,
+      verbose = verbose
+    ))
+  }
+
+  do.call(
+    Seurat::FindMarkers,
+    c(
+      list(
+        object = Seurat::GetAssay(srt, assay),
+        layer = layer,
+        cells.1 = cells.1,
+        cells.2 = cells.2,
+        features = features,
+        test.use = test.use,
+        logfc.threshold = logfc.threshold,
+        base = base,
+        min.pct = min.pct,
+        min.diff.pct = min.diff.pct,
+        max.cells.per.ident = max.cells.per.ident,
+        min.cells.feature = min.cells.feature,
+        min.cells.group = min.cells.group,
+        latent.vars = latent.vars,
+        only.pos = only.pos,
+        norm.method = norm.method,
+        pseudocount.use = pseudocount.use,
+        mean.fxn = mean.fxn,
+        verbose = verbose,
+        random.seed = random.seed
+      ),
+      extra_args
+    )
+  )
+}
+
+RunDEtestSparseWilcoxMarkers <- function(
+  srt,
+  assay,
+  layer,
+  cells.1,
+  cells.2,
+  features,
+  logfc.threshold,
+  base,
+  min.pct,
+  min.diff.pct,
+  max.cells.per.ident,
+  min.cells.group,
+  only.pos,
+  pseudocount.use,
+  random.seed,
+  verbose
+) {
+  data.use <- GetAssayData5(
+    object = srt,
+    assay = assay,
+    layer = layer
+  )
+  features <- features %||% rownames(data.use)
+  missing_features <- setdiff(features, rownames(data.use))
+  if (length(missing_features) > 0) {
+    log_message(
+      "{.arg features} contains features not present in the selected assay/layer",
+      message_type = "error"
+    )
+  }
+
+  ValidateCellGroups <- get_namespace_fun("Seurat", "ValidateCellGroups")
+  ValidateCellGroups(
+    object = data.use,
+    cells.1 = cells.1,
+    cells.2 = cells.2,
+    min.cells.group = min.cells.group
+  )
+
+  fc.results <- RunDEtestSparseFoldChange(
+    object = data.use,
+    cells.1 = cells.1,
+    cells.2 = cells.2,
+    features = features,
+    layer = layer,
+    pseudocount.use = pseudocount.use,
+    base = base
+  )
+
+  alpha.min <- pmax(fc.results$pct.1, fc.results$pct.2)
+  names(alpha.min) <- rownames(fc.results)
+  features <- names(alpha.min)[alpha.min >= min.pct]
+  if (length(features) == 0) {
+    return(fc.results[features, , drop = FALSE])
+  }
+  alpha.diff <- alpha.min - pmin(fc.results$pct.1, fc.results$pct.2)
+  features <- names(alpha.min)[alpha.min >= min.pct & alpha.diff >= min.diff.pct]
+  if (length(features) == 0) {
+    return(fc.results[features, , drop = FALSE])
+  }
+
+  fc_col <- colnames(fc.results)[1]
+  total.diff <- fc.results[[fc_col]]
+  names(total.diff) <- rownames(fc.results)
+  features.diff <- if (isTRUE(only.pos)) {
+    names(total.diff)[total.diff >= logfc.threshold]
+  } else {
+    names(total.diff)[abs(total.diff) >= logfc.threshold]
+  }
+  features <- intersect(features, features.diff)
+  if (length(features) == 0) {
+    return(fc.results[features, , drop = FALSE])
+  }
+
+  if (max.cells.per.ident < Inf) {
+    if (!is.null(random.seed)) {
+      set.seed(random.seed)
+    }
+    if (length(cells.1) > max.cells.per.ident) {
+      cells.1 <- sample(cells.1, size = max.cells.per.ident)
+    }
+    if (length(cells.2) > max.cells.per.ident) {
+      cells.2 <- sample(cells.2, size = max.cells.per.ident)
+    }
+  }
+
+  data.de <- data.use[features, c(cells.1, cells.2), drop = FALSE]
+  p_val <- run_sparse_wilcox_all_cells_cpp(
+    x = data.de,
+    n_group1 = length(cells.1)
+  )
+  de.results <- data.frame(
+    p_val = p_val,
+    row.names = names(p_val)
+  )
+  de.results <- cbind(
+    de.results,
+    fc.results[rownames(de.results), , drop = FALSE]
+  )
+  de.results <- de.results[order(de.results$p_val, -de.results[[fc_col]]), ]
+  de.results$p_val_adj <- stats::p.adjust(
+    p = de.results$p_val,
+    method = "bonferroni",
+    n = nrow(data.use)
+  )
+  de.results
+}
+
+RunDEtestSparseFoldChange <- function(
+  object,
+  cells.1,
+  cells.2,
+  features,
+  layer,
+  pseudocount.use,
+  base
+) {
+  base.text <- ifelse(base == exp(1), "", base)
+  fc.name <- ifelse(
+    layer == "scale.data",
+    "avg_diff",
+    paste0("avg_log", base.text, "FC")
+  )
+  group1 <- RunDEtestSparseGroupStats(
+    object = object,
+    features = features,
+    cells = cells.1,
+    layer = layer,
+    pseudocount.use = pseudocount.use,
+    base = base
+  )
+  group2 <- RunDEtestSparseGroupStats(
+    object = object,
+    features = features,
+    cells = cells.2,
+    layer = layer,
+    pseudocount.use = pseudocount.use,
+    base = base
+  )
+  fc.results <- as.data.frame(
+    cbind(
+      group1[["mean"]] - group2[["mean"]],
+      group1[["pct"]],
+      group2[["pct"]]
+    )
+  )
+  rownames(fc.results) <- features
+  colnames(fc.results) <- c(fc.name, "pct.1", "pct.2")
+  fc.results
+}
+
+RunDEtestSparseGroupStats <- function(
+  object,
+  features,
+  cells,
+  layer,
+  pseudocount.use,
+  base
+) {
+  mat <- object[features, cells, drop = FALSE]
+  mat <- methods::as(mat, "dgCMatrix")
+  detected <- Matrix::rowSums(mat > 0)
+  pct <- round(detected / length(cells), digits = 3)
+
+  if (identical(layer, "data")) {
+    mat_sum <- mat
+    mat_sum@x <- expm1(mat_sum@x)
+    sum_vals <- Matrix::rowSums(mat_sum)
+    mean_vals <- log((sum_vals + pseudocount.use) / length(cells), base = base)
+  } else {
+    sum_vals <- Matrix::rowSums(mat)
+    mean_vals <- log((sum_vals + pseudocount.use) / length(cells), base = base)
+  }
+  names(mean_vals) <- features
+  names(pct) <- features
+  list(mean = mean_vals, pct = pct)
+}
+
 aggregate_counts_by_group <- function(counts, groups) {
   groups <- as.character(groups)
   groups <- groups[!is.na(groups)]
@@ -203,7 +491,7 @@ aggregate_counts_by_group <- function(counts, groups) {
   agg
 }
 
-RunDEtest_limma_voom <- function(
+RunDEtest_limma <- function(
   count_matrix,
   condition,
   condition1 = NULL,
@@ -340,7 +628,7 @@ RunDEtest_pseudobulk <- function(
   features = NULL,
   feature_type = "gene",
   markers_type = "all",
-  test.use = "limma_voom",
+  test.use = "limma",
   only.pos = TRUE,
   fc.threshold = 1.5,
   base = 2,
@@ -358,31 +646,31 @@ RunDEtest_pseudobulk <- function(
   }
   if (!markers_type %in% c("all")) {
     log_message(
-      "Pseudobulk differential testing currently supports only {.val all} markers.",
+      "Sample-level differential testing currently supports only {.val all} markers.",
       message_type = "error"
     )
   }
-  if (!test.use %in% c("limma_voom", "edgeR")) {
+  if (!test.use %in% c("limma", "edgeR")) {
     log_message(
-      "Pseudobulk differential testing currently supports only {.val limma_voom} and {.val edgeR}.",
+      "Sample-level differential testing currently supports only {.val limma} and {.val edgeR}.",
       message_type = "error"
     )
   }
   if (is.null(sample_col) || !sample_col %in% colnames(srt@meta.data)) {
     log_message(
-      "{.arg sample_col} must be a metadata column in {.cls Seurat} for pseudobulk analysis",
+      "{.arg sample_col} must be a metadata column in {.cls Seurat} for sample-level differential testing",
       message_type = "error"
     )
   }
   if (is.null(condition_col) || !condition_col %in% colnames(srt@meta.data)) {
     log_message(
-      "{.arg condition_col} must be a metadata column in {.cls Seurat} for pseudobulk analysis",
+      "{.arg condition_col} must be a metadata column in {.cls Seurat} for sample-level differential testing",
       message_type = "error"
     )
   }
   if (!is.null(group.by) && !group.by %in% colnames(srt@meta.data)) {
     log_message(
-      "{.arg group.by} must be a metadata column in {.cls Seurat} for pseudobulk analysis",
+      "{.arg group.by} must be a metadata column in {.cls Seurat} for sample-level differential testing",
       message_type = "error"
     )
   }
@@ -392,7 +680,7 @@ RunDEtest_pseudobulk <- function(
   features <- intersect(features, rownames(counts))
   if (length(features) == 0) {
     log_message(
-      "No valid features available for pseudobulk differential testing",
+      "No valid features available for sample-level differential testing",
       message_type = "error"
     )
   }
@@ -404,7 +692,7 @@ RunDEtest_pseudobulk <- function(
   if (is.null(condition1) || is.null(condition2)) {
     if (length(condition_levels_all) < 2) {
       log_message(
-        "Pseudobulk differential testing requires at least two condition levels",
+        "Sample-level differential testing requires at least two condition levels",
         message_type = "error"
       )
     }
@@ -413,7 +701,7 @@ RunDEtest_pseudobulk <- function(
   }
   if (identical(condition1, condition2)) {
     log_message(
-      "{.arg group1} and {.arg group2} must refer to two different condition labels in pseudobulk analysis",
+      "{.arg group1} and {.arg group2} must refer to two different condition labels in sample-level differential testing",
       message_type = "error"
     )
   }
@@ -425,7 +713,7 @@ RunDEtest_pseudobulk <- function(
   }
 
   log_message(
-    "Start pseudobulk differential testing",
+    "Start sample-level differential testing",
     verbose = verbose
   )
 
@@ -453,7 +741,7 @@ RunDEtest_pseudobulk <- function(
       sample_tab <- table(meta_use[[sample_col]], meta_use[[condition_col]])
       if (any(rowSums(sample_tab > 0) > 1)) {
         log_message(
-          "Each sample must map to a single condition in pseudobulk analysis",
+          "Each sample must map to a single condition in sample-level differential testing",
           message_type = "error"
         )
       }
@@ -470,7 +758,7 @@ RunDEtest_pseudobulk <- function(
       condition_use <- condition_map[colnames(count_matrix)]
       markers <- switch(
         test.use,
-        limma_voom = RunDEtest_limma_voom(
+        limma = RunDEtest_limma(
           count_matrix = count_matrix,
           condition = condition_use,
           condition1 = condition1,
@@ -509,7 +797,6 @@ RunDEtest_pseudobulk <- function(
   if (is.null(srt@tools[[tool_name]])) {
     srt@tools[[tool_name]] <- list()
   }
-  srt@tools[[tool_name]][["analysis_level"]] <- "pseudobulk"
   srt@tools[[tool_name]][["feature_type"]] <- feature_type
   srt@tools[[tool_name]][["sample_col"]] <- sample_col
   srt@tools[[tool_name]][["condition_col"]] <- condition_col
@@ -539,7 +826,7 @@ RunDEtest_pseudobulk <- function(
   }
 
   log_message(
-    "Pseudobulk differential testing completed",
+    "Sample-level differential testing completed",
     message_type = "success",
     verbose = verbose
   )
@@ -561,10 +848,10 @@ RunDEtest_pseudobulk <- function(
 #' If not provided, the function uses the "active.ident" variable in the Seurat object.
 #' @param group1 A vector of cell IDs or a character vector specifying the cells that belong to the first group.
 #' If both group.by and group1 are provided, group1 takes precedence.
-#' For pseudobulk analysis, this parameter is interpreted as the first condition label.
+#' For sample-level methods (`"edgeR"` and `"limma"`), this parameter is interpreted as the first condition label.
 #' @param group2 A vector of cell IDs or a character vector specifying the cells that belong to the second group.
 #' This parameter is only used when group.by or group1 is provided.
-#' For pseudobulk analysis, this parameter is interpreted as the second condition label.
+#' For sample-level methods (`"edgeR"` and `"limma"`), this parameter is interpreted as the second condition label.
 #' @param cells1 A vector of cell IDs specifying the cells that belong to group1. If provided, group1 is ignored.
 #' @param cells2 A vector of cell IDs specifying the cells that belong to group2.
 #' This parameter is only used when cells1 is provided.
@@ -572,11 +859,9 @@ RunDEtest_pseudobulk <- function(
 #' If not provided, all features in the dataset are considered.
 #' @param feature_type Feature type used for differential testing.
 #' Default is `"gene"`.
-#' @param analysis_level Analysis level used for differential testing.
-#' Default is `"cell"`.
 #' @param markers_type A character value specifying the type of markers to find.
 #' Possible values are "all", "paired", "conserved", and "disturbed".
-#' Pseudobulk analysis currently supports only `"all"`.
+#' Sample-level methods (`"edgeR"` and `"limma"`) currently support only `"all"`.
 #' @param grouping.var A character value specifying the grouping variable for finding conserved or disturbed markers.
 #' This parameter is only used when markers_type is "conserved" or "disturbed".
 #' @param fc.threshold A numeric value used to filter genes for testing based on their average fold change between/among the two groups.
@@ -585,14 +870,14 @@ RunDEtest_pseudobulk <- function(
 #' Possible values are "maximump", "minimump", "wilkinsonp", "meanp", "sump", and "votep".
 #' @param norm.method Normalization method for fold change calculation when layer is 'data'.
 #' Default is `"LogNormalize"`.
-#' @param sample_col Metadata column storing biological sample IDs for pseudobulk analysis.
-#' Required when `analysis_level = "pseudobulk"`.
-#' @param condition_col Metadata column storing condition labels for pseudobulk analysis.
-#' Required when `analysis_level = "pseudobulk"`.
+#' @param sample_col Metadata column storing biological sample IDs.
+#' Required when `test.use` is `"edgeR"` or `"limma"`.
+#' @param condition_col Metadata column storing condition labels.
+#' Required when `test.use` is `"edgeR"` or `"limma"`.
 #' @param p.adjust.method A character value specifying the method to use for adjusting p-values.
 #' Default is `"bonferroni"`.
 #' @param test.use Differential testing method.
-#' For pseudobulk analysis, only `"limma_voom"` and `"edgeR"` are currently supported.
+#' `"edgeR"` and `"limma"` run sample-level pseudobulk differential testing.
 #' @param ... Additional arguments to pass to the [Seurat::FindMarkers] function.
 #'
 #' @export
@@ -605,7 +890,8 @@ RunDEtest_pseudobulk <- function(
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunDEtest(
 #'   pancreas_sub,
-#'   group.by = "SubCellType"
+#'   group.by = "SubCellType",
+#'   only.pos = FALSE
 #' )
 #' AllMarkers <- dplyr::filter(
 #'   pancreas_sub@tools$DEtest_SubCellType$AllMarkers_wilcox,
@@ -752,52 +1038,60 @@ RunDEtest_pseudobulk <- function(
 #' )
 #' ht7$plot
 #'
-#' pbmc_small <- UpdateSeuratObject(pbmc_small)
-#' pbmc_small[["sample"]] <- rep(c("S1", "S2", "S3", "S4"), length.out = ncol(pbmc_small))
-#' pbmc_small[["condition"]] <- rep(c("ctrl", "ctrl", "case", "case"), length.out = ncol(pbmc_small))
-#' pbmc_small <- RunDEtest(
-#'   pbmc_small,
-#'   analysis_level = "pseudobulk",
+#' cell_index <- ave(
+#'   seq_along(pancreas_sub$CellType),
+#'   pancreas_sub$CellType,
+#'   FUN = seq_along
+#' )
+#' pancreas_sub[["sample"]] <- paste0(
+#'   "S",
+#'   (cell_index - 1) %% 4 + 1
+#' )
+#' pancreas_sub[["condition"]] <- ifelse(
+#'   pancreas_sub$sample %in% c("S1", "S2"),
+#'   "ctrl",
+#'   "case"
+#' )
+#' pancreas_sub <- RunDEtest(
+#'   pancreas_sub,
+#'   group.by = "CellType",
 #'   sample_col = "sample",
 #'   condition_col = "condition",
-#'   test.use = "limma_voom",
+#'   test.use = "limma",
+#'   fc.threshold = 1,
 #'   layer = "counts",
-#'   cores = 1
+#'   only.pos = FALSE
 #' )
-#' pbmc_small <- RunDEtest(
-#'   pbmc_small,
-#'   analysis_level = "pseudobulk",
-#'   sample_col = "sample",
-#'   condition_col = "condition",
-#'   test.use = "edgeR",
-#'   layer = "counts",
-#'   cores = 1
+#' DEtestPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   test.use = "limma",
+#'   group_use = "Ductal",
+#'   plot_type = "volcano",
+#'   x_metric = "avg_log2FC",
+#'   y_metric = "p_val"
 #' )
-#' edgeR_markers <- pbmc_small@tools$DEtest_pseudobulk$AllMarkers_edgeR
 #'
-#' \donttest{
-#' data(pbmcmultiome_sub)
-#' pbmcmultiome_sub[["sample"]] <- rep(
-#'   c("S1", "S2", "S3", "S4"),
-#'   length.out = ncol(pbmcmultiome_sub)
-#' )
-#' pbmcmultiome_sub[["condition"]] <- rep(
-#'   c("ctrl", "ctrl", "case", "case"),
-#'   length.out = ncol(pbmcmultiome_sub)
-#' )
-#' pbmcmultiome_sub <- RunDEtest(
-#'   pbmcmultiome_sub,
-#'   assay = "peaks",
-#'   layer = "counts",
-#'   feature_type = "peak",
-#'   analysis_level = "pseudobulk",
+#' pancreas_sub <- RunDEtest(
+#'   pancreas_sub,
+#'   group.by = "CellType",
 #'   sample_col = "sample",
 #'   condition_col = "condition",
 #'   test.use = "edgeR",
-#'   cores = 1
+#'   layer = "counts",
+#'   fc.threshold = 1,
+#'   only.pos = FALSE
 #' )
-#' peak_markers <- pbmcmultiome_sub@tools$DEtest_pseudobulk$AllMarkers_edgeR
-#' }
+#' DEtestPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   test.use = "edgeR",
+#'   group_use = "Ductal",
+#'   plot_type = "volcano",
+#'   x_metric = "avg_log2FC",
+#'   y_metric = "p_val",
+#'   DE_threshold = "abs(avg_log2FC) > log2(1.5) & p_val < 0.05"
+#' )
 RunDEtest <- function(
   srt,
   group.by = NULL,
@@ -807,7 +1101,6 @@ RunDEtest <- function(
   cells2 = NULL,
   features = NULL,
   feature_type = c("gene", "peak", "cCRE"),
-  analysis_level = c("cell", "pseudobulk"),
   markers_type = c(
     "all",
     "paired",
@@ -848,37 +1141,36 @@ RunDEtest <- function(
 ) {
   set.seed(seed)
   feature_type <- match.arg(feature_type)
-  analysis_level <- match.arg(analysis_level)
   markers_type <- match.arg(markers_type)
   meta.method <- match.arg(meta.method)
-  if (markers_type %in% c("conserved", "disturbed")) {
-    if (is.null(grouping.var)) {
-      log_message(
-        "'grouping.var' must be provided when finding conserved or disturbed markers",
-        message_type = "error"
-      )
-    }
-  }
   if (is.null(assay)) {
     assay <- SeuratObject::DefaultAssay(srt)
   }
 
-  if (analysis_level == "pseudobulk") {
+  sample_level_methods <- c("edgeR", "limma")
+  is_sample_level <- test.use %in% sample_level_methods
+  if (is_sample_level) {
+    if (markers_type != "all") {
+      log_message(
+        "Sample-level differential testing currently supports only {.val all} markers.",
+        message_type = "error"
+      )
+    }
     if (!is.null(cells1) || !is.null(cells2)) {
       log_message(
-        "{.arg cells1} and {.arg cells2} are not supported when {.arg analysis_level = 'pseudobulk'}. Use {.arg group1} and {.arg group2} to specify condition labels.",
+        "{.arg cells1} and {.arg cells2} are not supported for sample-level differential testing. Use {.arg group1} and {.arg group2} to specify condition labels.",
         message_type = "error"
       )
     }
     if (!is.null(grouping.var)) {
       log_message(
-        "{.arg grouping.var} is not supported when {.arg analysis_level = 'pseudobulk'}.",
+        "{.arg grouping.var} is not supported for sample-level differential testing.",
         message_type = "error"
       )
     }
     if (!identical(layer, "counts")) {
       log_message(
-        "Pseudobulk differential testing uses the {.arg counts} layer. Reset {.arg layer = 'counts'}.",
+        "Sample-level differential testing uses the {.arg counts} layer. Reset {.arg layer = 'counts'}.",
         message_type = "warning",
         verbose = verbose
       )
@@ -907,7 +1199,35 @@ RunDEtest <- function(
     ))
   }
 
-  check_r("immunogenomics/presto", verbose = FALSE)
+  if (!is.null(sample_col) || !is.null(condition_col)) {
+    log_message(
+      "{.arg sample_col} and {.arg condition_col} are only used by {.val edgeR} and {.val limma}. Ignoring them for cell-level differential testing.",
+      message_type = "warning",
+      verbose = verbose
+    )
+    sample_col <- NULL
+    condition_col <- NULL
+  }
+  if (markers_type %in% c("conserved", "disturbed")) {
+    if (is.null(grouping.var)) {
+      log_message(
+        "'grouping.var' must be provided when finding conserved or disturbed markers",
+        message_type = "error"
+      )
+    }
+  }
+
+  skip_presto_check <- identical(test.use, "wilcox") &&
+    markers_type %in% c("all", "paired") &&
+    is.null(latent.vars) &&
+    is.null(mean.fxn) &&
+    layer %in% c("data", "counts") &&
+    identical(norm.method, "LogNormalize") &&
+    length(list(...)) == 0 &&
+    run_sparse_wilcox_all_cells_cpp_available()
+  if (!isTRUE(skip_presto_check)) {
+    check_r("immunogenomics/presto", verbose = FALSE)
+  }
 
   status <- CheckDataType(srt, layer = layer, assay = assay)
   if (layer == "counts" && status != "raw_counts") {
@@ -1009,8 +1329,9 @@ RunDEtest <- function(
     )
 
     if (markers_type == "all") {
-      markers <- Seurat::FindMarkers(
-        object = Seurat::GetAssay(srt, assay),
+      markers <- RunDEtestFindMarkers(
+        srt = srt,
+        assay = assay,
         layer = layer,
         cells.1 = cells1,
         cells.2 = cells2,
@@ -1243,7 +1564,8 @@ RunDEtest <- function(
     )
 
     args1 <- list(
-      object = Seurat::GetAssay(srt, assay),
+      srt = srt,
+      assay = assay,
       layer = layer,
       features = features,
       test.use = test.use,
@@ -1285,7 +1607,7 @@ RunDEtest <- function(
           } else {
             args1[["cells.1"]] <- cells.1
             args1[["cells.2"]] <- cells.2
-            markers <- do.call(FindMarkers, args1)
+            markers <- do.call(RunDEtestFindMarkers, args1)
             if (!is.null(markers) && nrow(markers) > 0) {
               markers[, "gene"] <- rownames(markers)
               markers[, "group1"] <- as.character(group)
@@ -1340,17 +1662,18 @@ RunDEtest <- function(
     if (markers_type == "paired") {
       pair <- expand.grid(x = levels(cell_group), y = levels(cell_group))
       pair <- pair[pair[, 1] != pair[, 2], , drop = FALSE]
+      cell_index <- split(names(cell_group), cell_group)
       PairedMarkers <- parallelize_fun(
         seq_len(nrow(pair)),
         function(i) {
-          cells.1 <- names(cell_group)[which(cell_group == pair[i, 1])]
-          cells.2 <- names(cell_group)[which(cell_group == pair[i, 2])]
+          cells.1 <- cell_index[[as.character(pair[i, 1])]]
+          cells.2 <- cell_index[[as.character(pair[i, 2])]]
           if (length(cells.1) < 3 || length(cells.2) < 3) {
             return(NULL)
           } else {
             args1[["cells.1"]] <- cells.1
             args1[["cells.2"]] <- cells.2
-            markers <- do.call(FindMarkers, args1)
+            markers <- do.call(RunDEtestFindMarkers, args1)
             if (!is.null(markers) && nrow(markers) > 0) {
               markers[, "gene"] <- rownames(markers)
               markers[, "group1"] <- as.character(pair[i, 1])

@@ -80,7 +80,7 @@ GetAssayData5.Assay <- function(
 ) {
   SeuratObject::GetAssayData(
     object,
-    layer = layer,
+    layer,
     ...
   )
 }

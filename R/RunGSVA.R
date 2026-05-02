@@ -15,6 +15,15 @@
 #' @param method The method to use for GSVA.
 #' Options are `"gsva"`, `"ssgsea"`, `"zscore"`, or `"plage"`.
 #' Default is `"gsva"`.
+#' @param backend Scoring backend. `"cpp"` is the default and supports all
+#' current `method` values. `"r"` uses the original [GSVA::gsva()]
+#' implementation. `"cpp"` supports `method = "ssgsea"`,
+#' `method = "zscore"`, `method = "plage"`, and `method = "gsva"` with
+#' `kcdf = "Gaussian"` or `kcdf = "Poisson"`. PLAGE scores are oriented to have non-negative
+#' dot product with the gene set mean z-score so SVD signs are deterministic.
+#' @param cpp_chunk_size Optional cell chunk size for C++ GSVA kernels. `NULL`
+#' or `"auto"` automatically chunks large matrices to reduce peak dense
+#' intermediate memory; positive values set the chunk size manually.
 #' @param kcdf The kernel cumulative distribution function used for GSVA.
 #' Options are `"Gaussian"` (for continuous data) or `"Poisson"` (for count data).
 #' Default is `"Gaussian"`.
@@ -75,6 +84,8 @@ RunGSVA <- function(
   maxGSSize = 500,
   unlimited_db = c("Chromosome", "GeneType", "TF", "Enzyme", "CSPA"),
   method = c("gsva", "ssgsea", "zscore", "plage"),
+  backend = c("cpp", "r"),
+  cpp_chunk_size = NULL,
   kcdf = c("Gaussian", "Poisson"),
   abs.ranking = FALSE,
   min.sz = 10,
@@ -85,10 +96,20 @@ RunGSVA <- function(
   verbose = TRUE
 ) {
   log_message("Start {.pkg GSVA} analysis", verbose = verbose)
-  check_r("GSVA", verbose = FALSE)
 
   method <- match.arg(method)
+  backend <- match.arg(backend)
   kcdf <- match.arg(kcdf)
+  if (identical(backend, "cpp")) {
+    if (!method %in% c("gsva", "ssgsea", "zscore", "plage")) {
+      log_message(
+        "{.arg backend = 'cpp'} currently supports {.arg method = 'gsva'}, {.arg method = 'ssgsea'}, {.arg method = 'zscore'}, and {.arg method = 'plage'} only",
+        message_type = "error"
+      )
+    }
+  } else {
+    gene_set_scoring_require_namespace("GSVA")
+  }
 
   if (is.null(srt)) {
     log_message(
@@ -114,8 +135,8 @@ RunGSVA <- function(
     if (!inherits(expr, c("dgCMatrix", "matrix", "Matrix"))) {
       expr <- as_matrix(expr)
     }
-    expr <- as_matrix(expr)
-    expr <- expr[rowSums(expr) > 0, , drop = FALSE]
+    expr_row_sums <- if (inherits(expr, "Matrix")) Matrix::rowSums(expr) else rowSums(expr)
+    expr <- expr[expr_row_sums > 0, , drop = FALSE]
     if (nrow(expr) == 0 || ncol(expr) == 0) {
       log_message(
         "No expression values available for single-cell GSVA",
@@ -166,13 +187,8 @@ RunGSVA <- function(
         message_type = "error"
       )
     }
-    if (inherits(expr, "dgCMatrix") || inherits(expr, "sparseMatrix")) {
-      expr <- as.matrix(expr)
-    }
-    if (!is.matrix(expr)) {
-      expr <- as.matrix(expr)
-    }
-    expr <- expr[rowSums(expr) > 0, , drop = FALSE]
+    expr_row_sums <- if (inherits(expr, "Matrix")) Matrix::rowSums(expr) else rowSums(expr)
+    expr <- expr[expr_row_sums > 0, , drop = FALSE]
     if (nrow(expr) == 0 || ncol(expr) == 0) {
       log_message(
         "No aggregated expression values available for {.val {group.by}}",
@@ -325,53 +341,100 @@ RunGSVA <- function(
       verbose = verbose
     )
 
-    if (method == "gsva") {
-      param <- GSVA::gsvaParam(
-        exprData = expr_filtered,
-        geneSets = gene_sets_filtered,
-        minSize = min_size,
-        maxSize = max_size,
-        kcdf = kcdf,
-        tau = tau,
-        maxDiff = mx.diff,
-        absRanking = abs.ranking
-      )
-    } else if (method == "ssgsea") {
-      param <- GSVA::ssgseaParam(
-        exprData = expr_filtered,
-        geneSets = gene_sets_filtered,
-        minSize = min_size,
-        maxSize = max_size,
-        alpha = tau,
-        normalize = ssgsea.norm,
+    if (identical(backend, "cpp")) {
+      if (identical(method, "gsva")) {
+        gsva_scores <- Matrix::t(run_gsva_cpp_scores(
+          expr_counts = expr_filtered,
+          gene_sets = gene_sets_filtered,
+          kcdf = kcdf,
+          min_gs_size = min_size,
+          max_gs_size = max_size,
+          max_diff = mx.diff,
+          abs_ranking = abs.ranking,
+          tau = tau,
+          chunk_size = cpp_chunk_size
+        ))
+      } else if (identical(method, "ssgsea")) {
+        gsva_scores <- Matrix::t(run_ssgsea_cpp_scores(
+          expr_counts = expr_filtered,
+          gene_sets = gene_sets_filtered,
+          min_gs_size = min_size,
+          max_gs_size = max_size,
+          alpha = tau,
+          normalize = ssgsea.norm
+        ))
+      } else if (identical(method, "zscore")) {
+        gsva_scores <- Matrix::t(run_zscore_cpp_scores(
+          expr_counts = expr_filtered,
+          gene_sets = gene_sets_filtered,
+          min_gs_size = min_size,
+          max_gs_size = max_size
+        ))
+      } else {
+        gsva_scores <- Matrix::t(run_plage_cpp_scores(
+          expr_counts = expr_filtered,
+          gene_sets = gene_sets_filtered,
+          min_gs_size = min_size,
+          max_gs_size = max_size
+        ))
+      }
+      gsva_scores <- as_matrix(gsva_scores)
+    } else {
+      if (method == "gsva") {
+        param <- GSVA::gsvaParam(
+          exprData = expr_filtered,
+          geneSets = gene_sets_filtered,
+          minSize = min_size,
+          maxSize = max_size,
+          kcdf = kcdf,
+          tau = tau,
+          maxDiff = mx.diff,
+          absRanking = abs.ranking
+        )
+      } else if (method == "ssgsea") {
+        param <- GSVA::ssgseaParam(
+          exprData = expr_filtered,
+          geneSets = gene_sets_filtered,
+          minSize = min_size,
+          maxSize = max_size,
+          alpha = tau,
+          normalize = ssgsea.norm,
+          verbose = verbose
+        )
+      } else if (method == "zscore") {
+        param <- GSVA::zscoreParam(
+          exprData = expr_filtered,
+          geneSets = gene_sets_filtered,
+          minSize = min_size,
+          maxSize = max_size
+        )
+      } else if (method == "plage") {
+        param <- GSVA::plageParam(
+          exprData = expr_filtered,
+          geneSets = gene_sets_filtered,
+          minSize = min_size,
+          maxSize = max_size
+        )
+      }
+
+      gsva_scores <- GSVA::gsva(
+        param = param,
         verbose = verbose
       )
-    } else if (method == "zscore") {
-      param <- GSVA::zscoreParam(
-        exprData = expr_filtered,
-        geneSets = gene_sets_filtered,
-        minSize = min_size,
-        maxSize = max_size
-      )
-    } else if (method == "plage") {
-      param <- GSVA::plageParam(
-        exprData = expr_filtered,
-        geneSets = gene_sets_filtered,
-        minSize = min_size,
-        maxSize = max_size
-      )
-    }
 
-    gsva_scores <- GSVA::gsva(
-      param = param,
-      verbose = verbose
-    )
-
-    if (inherits(gsva_scores, "SummarizedExperiment")) {
-      gsva_scores <- SummarizedExperiment::assay(gsva_scores)
-    }
-    if (!is.matrix(gsva_scores)) {
-      gsva_scores <- as.matrix(gsva_scores)
+      if (inherits(gsva_scores, "SummarizedExperiment")) {
+        gsva_scores <- SummarizedExperiment::assay(gsva_scores)
+      }
+      if (!is.matrix(gsva_scores)) {
+        gsva_scores <- as.matrix(gsva_scores)
+      }
+      if (identical(method, "plage")) {
+        gsva_scores <- orient_plage_scores(
+          scores = gsva_scores,
+          expr = expr_filtered,
+          gene_sets = gene_sets_filtered
+        )
+      }
     }
 
     term_ids <- rownames(gsva_scores)
@@ -396,18 +459,18 @@ RunGSVA <- function(
     rownames(gsva_scores) <- term_names
 
     gsva_results[[term]] <- gsva_scores
-    enrichment_results[[term]] <- do.call(rbind, lapply(colnames(gsva_scores), function(group) {
-      data.frame(
-        ID = term_ids,
-        Description = term_names,
-        geneID = term_gene_ids,
-        Groups = group,
-        Database = term,
-        Version = as.character(db_list[[species]][[term]][["version"]]),
-        GSVA_Score = as.numeric(gsva_scores[, group]),
-        stringsAsFactors = FALSE
-      )
-    }))
+    n_terms <- length(term_ids)
+    n_groups <- ncol(gsva_scores)
+    enrichment_results[[term]] <- data.frame(
+      ID = rep(term_ids, times = n_groups),
+      Description = rep(term_names, times = n_groups),
+      geneID = rep(term_gene_ids, times = n_groups),
+      Groups = rep(colnames(gsva_scores), each = n_terms),
+      Database = term,
+      Version = as.character(db_list[[species]][[term]][["version"]]),
+      GSVA_Score = as.numeric(gsva_scores),
+      stringsAsFactors = FALSE
+    )
   }
 
   if (length(gsva_results) == 0) {
@@ -432,6 +495,7 @@ RunGSVA <- function(
     input = expr,
     group.by = group.by,
     method = method,
+    backend = backend,
     kcdf = kcdf,
     db = unique(enrichment[["Database"]]),
     species = species
