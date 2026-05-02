@@ -92,18 +92,30 @@
 #' panc8_sub <- integration_scop(
 #'   panc8_sub,
 #'   batch = "tech",
-#'   integration_method = "LIGER"
+#'   integration_method = "Uncorrected",
+#'   nHVF = 500,
+#'   linear_reduction_dims = 20,
+#'   linear_reduction_dims_use = 1:10,
+#'   nonlinear_reduction_dims = 2,
+#'   compute_lisi = TRUE,
+#'   lisi_label_colnames = "tech",
+#'   lisi_perplexity = 10
 #' )
 #' CellDimPlot(
 #'   panc8_sub,
-#'   group.by = c("tech", "celltype")
+#'   group.by = c("tech", "celltype"),
+#'   reduction = "UncorrectedUMAP2D"
 #' )
+#' LISIPlot(
+#'   panc8_sub,
+#'   features = c("UncorrectedpcaUMAP2D_tech_LISI", "UncorrectedUMAP2D_tech_LISI")
+#' )
+#'
+#' \dontrun{
 #' panc8_sub <- integration_scop(
 #'   panc8_sub,
 #'   batch = "tech",
-#'   integration_method = "Uncorrected",
-#'   compute_lisi = TRUE,
-#'   lisi_label_colnames = "tech"
+#'   integration_method = "LIGER"
 #' )
 #' panc8_sub <- integration_scop(
 #'   panc8_sub,
@@ -114,7 +126,7 @@
 #' )
 #' LISIPlot(
 #'   panc8_sub,
-#'   features = c("pca_tech_LISI", "Harmony5UMAP2D_tech_LISI")
+#'   features = c("HarmonypcaUMAP2D_tech_LISI", "HarmonyUMAP2D_tech_LISI")
 #' )
 #'
 #' if (requireNamespace("Signac", quietly = TRUE)) {
@@ -175,6 +187,7 @@
 #'       legend.position = "none", theme_use = "theme_blank"
 #'     )
 #'   )
+#' }
 #' }
 integration_scop <- function(
   srt_merge = NULL,
@@ -426,6 +439,25 @@ integration_scop <- function(
     Conos = Conos_integrate,
     ComBat = ComBat_integrate
   )
+
+  assay_use <- args[["assay"]] %||% (
+    if (!is.null(args[["srt_merge"]])) {
+      SeuratObject::DefaultAssay(args[["srt_merge"]])
+    } else if (!is.null(args[["srt_list"]]) && length(args[["srt_list"]]) > 0) {
+      SeuratObject::DefaultAssay(args[["srt_list"]][[1]])
+    }
+  )
+  is_assay5 <- !is.null(assay_use) &&
+    inherits(assay_source, "Seurat") &&
+    inherits(Seurat::GetAssay(assay_source, assay = assay_use), "Assay5")
+  v5_only_methods <- c("CCA", "RPCA", "fastMNN5", "Harmony5", "scVI5")
+  if (integration_method %in% v5_only_methods && !isTRUE(is_assay5)) {
+    log_message(
+      "{.arg integration_method = '{integration_method}'} requires an {.cls Assay5} (Seurat v5) assay, but the assay {.val {assay_use}} is not Assay5. Please upgrade to Seurat v5 or use an alternative integration method.",
+      message_type = "error"
+    )
+  }
+
   integrate_fun <- method_map[[integration_method]]
   append_requested <- isTRUE(args[["append"]])
   srt_merge_raw <- args[["srt_merge"]] %||% NULL

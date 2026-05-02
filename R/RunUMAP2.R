@@ -394,7 +394,7 @@ RunUMAP2.default <- function(
       } else {
         obs_sample <- 1:ncol(object)
       }
-      if (!isSymmetric(as_matrix(object[obs_sample, obs_sample]))) {
+      if (!Matrix::isSymmetric(object[obs_sample, obs_sample])) {
         log_message(
           "Graph must be a symmetric matrix.",
           message_type = "error"
@@ -553,33 +553,43 @@ RunUMAP2.default <- function(
       } else {
         obs_sample <- 1:ncol(object)
       }
-      if (!isSymmetric(as_matrix(object[obs_sample, obs_sample]))) {
+      if (!Matrix::isSymmetric(object[obs_sample, obs_sample])) {
         log_message(
           "Graph must be a symmetric matrix.",
           message_type = "error"
         )
       }
-      val <- split(object@x, rep(1:ncol(object), diff(object@p)))
-      pos <- split(object@i + 1, rep(1:ncol(object), diff(object@p)))
-      idx <- Matrix::t(mapply(
-        function(x, y) {
-          out <- y[utils::head(order(x, decreasing = TRUE), n.neighbors)]
-          length(out) <- n.neighbors
-          return(out)
-        },
-        x = val,
-        y = pos
-      ))
-      connectivity <- Matrix::t(mapply(
-        function(x, y) {
-          out <- y[utils::head(order(x, decreasing = TRUE), n.neighbors)]
-          length(out) <- n.neighbors
-          out[is.na(out)] <- 0
-          return(out)
-        },
-        x = val,
-        y = val
-      ))
+      if (run_sparse_topk_by_column_cpp_available()) {
+        graph_topk <- run_sparse_topk_by_column_cpp(
+          x = object,
+          k = n.neighbors,
+          decreasing = TRUE
+        )
+        idx <- graph_topk[["idx"]]
+        connectivity <- graph_topk[["value"]]
+      } else {
+        val <- split(object@x, rep(1:ncol(object), diff(object@p)))
+        pos <- split(object@i + 1, rep(1:ncol(object), diff(object@p)))
+        idx <- Matrix::t(mapply(
+          function(x, y) {
+            out <- y[utils::head(order(x, decreasing = TRUE), n.neighbors)]
+            length(out) <- n.neighbors
+            return(out)
+          },
+          x = val,
+          y = pos
+        ))
+        connectivity <- Matrix::t(mapply(
+          function(x, y) {
+            out <- y[utils::head(order(x, decreasing = TRUE), n.neighbors)]
+            length(out) <- n.neighbors
+            out[is.na(out)] <- 0
+            return(out)
+          },
+          x = val,
+          y = val
+        ))
+      }
       idx[is.na(idx)] <- sample(
         1:nrow(object),
         size = sum(is.na(idx)),
@@ -737,16 +747,26 @@ RunUMAP2.default <- function(
       return(reduction)
     }
     if (inherits(x = object, what = "Graph")) {
-      match_k <- Matrix::t(as_matrix(apply(
-        object,
-        2,
-        function(x) order(x, decreasing = TRUE)[1:n.neighbors]
-      )))
-      match_k_connectivity <- Matrix::t(as_matrix(apply(
-        object,
-        2,
-        function(x) x[order(x, decreasing = TRUE)[1:n.neighbors]]
-      )))
+      if (run_sparse_topk_by_column_cpp_available()) {
+        graph_topk <- run_sparse_topk_by_column_cpp(
+          x = object,
+          k = n.neighbors,
+          decreasing = TRUE
+        )
+        match_k <- graph_topk[["idx"]]
+        match_k_connectivity <- graph_topk[["value"]]
+      } else {
+        match_k <- Matrix::t(as_matrix(apply(
+          object,
+          2,
+          function(x) order(x, decreasing = TRUE)[1:n.neighbors]
+        )))
+        match_k_connectivity <- Matrix::t(as_matrix(apply(
+          object,
+          2,
+          function(x) x[order(x, decreasing = TRUE)[1:n.neighbors]]
+        )))
+      }
       object <- list(
         idx = match_k,
         dist = max(match_k_connectivity) - match_k_connectivity
