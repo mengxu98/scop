@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>CCC network and flow plots</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/CCCNetworkPlot.R" class="external-link"><code>R/CCCNetworkPlot.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/CCCNetworkPlot.R" class="external-link"><code>R/CCCNetworkPlot.R</code></a></small>
       <div class="d-none name"><code>CCCNetworkPlot.Rd</code></div>
     </div>
 
@@ -50,8 +50,9 @@
 <span>  condition <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  dataset <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  comparison <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,</span>
-<span>  plot_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"circle"</span>, <span class="st">"chord"</span>, <span class="st">"pathway"</span>, <span class="st">"individual_lr"</span>, <span class="st">"arrow"</span>, <span class="st">"sigmoid"</span>,</span>
-<span>    <span class="st">"bipartite"</span>, <span class="st">"embedding_network"</span>, <span class="st">"diff_network"</span><span class="op">)</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"circle"</span>, <span class="st">"circle_focused"</span>, <span class="st">"chord"</span>, <span class="st">"lr_chord"</span>, <span class="st">"gene_chord"</span>, <span class="st">"pathway"</span>,</span>
+<span>    <span class="st">"individual_lr"</span>, <span class="st">"individual"</span>, <span class="st">"individual_outgoing"</span>, <span class="st">"individual_incoming"</span>, <span class="st">"arrow"</span>,</span>
+<span>    <span class="st">"sigmoid"</span>, <span class="st">"bipartite"</span>, <span class="st">"embedding_network"</span>, <span class="st">"diff_network"</span>, <span class="st">"diffusion"</span><span class="op">)</span>,</span>
 <span>  display_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"aggregation"</span>, <span class="st">"interaction"</span><span class="op">)</span>,</span>
 <span>  sender.use <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  receiver.use <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -65,8 +66,8 @@
 <span>  pairLR.use <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  slot.name <span class="op">=</span> <span class="st">"net"</span>,</span>
 <span>  thresh <span class="op">=</span> <span class="fl">0.05</span>,</span>
-<span>  measure <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"count"</span>, <span class="st">"weight"</span><span class="op">)</span>,</span>
-<span>  value <span class="op">=</span> <span class="st">"score"</span>,</span>
+<span>  measure <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"weight"</span>, <span class="st">"count"</span><span class="op">)</span>,</span>
+<span>  value <span class="op">=</span> <span class="st">"sum"</span>,</span>
 <span>  top_n <span class="op">=</span> <span class="fl">20</span>,</span>
 <span>  ligand <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  receptor <span class="op">=</span> <span class="cn">NULL</span>,</span>
