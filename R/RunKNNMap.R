@@ -368,7 +368,23 @@ RunKNNMap <- function(
         use_nan = TRUE
       )
     }
-    if (k == 1) {
+    if (run_dense_topk_by_column_cpp_available()) {
+      knn_topk <- run_dense_topk_by_column_cpp(
+        x = d,
+        k = k,
+        decreasing = FALSE
+      )
+      match_k <- knn_topk[["idx"]]
+      rownames(match_k) <- colnames(d)
+      match_k_cell <- matrix(
+        rownames(d)[match_k],
+        nrow = nrow(match_k),
+        ncol = ncol(match_k),
+        dimnames = list(colnames(d), NULL)
+      )
+      match_k_distance <- knn_topk[["value"]]
+      rownames(match_k_distance) <- colnames(d)
+    } else if (k == 1) {
       match_k <- as_matrix(apply(
         d,
         2,

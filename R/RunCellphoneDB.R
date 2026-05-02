@@ -241,7 +241,7 @@ build_cpdb_adata <- function(
         message_type = "error"
       )
     }
-    mat <- scop_collapse_sparse_rows(
+    mat <- thisutils::collapse_sparse_rows(
       mat[map$from_geneID, , drop = FALSE],
       group = map$to_geneID
     )
@@ -358,14 +358,13 @@ cpdb_tables_to_long <- function(tables, separator = "|") {
     df[["receiver"]] <- receiver
     df[["pair"]] <- pair_col
     df[["means"]] <- means_df[[pair_col]]
-    df[["score"]] <- if (
+    df[["score"]] <- means_df[[pair_col]]
+    df[["interaction_score"]] <- if (
       !is.null(scores_df) && pair_col %in% colnames(scores_df)
     ) {
       scores_df[[pair_col]]
-    } else if (!is.null(sig_df) && pair_col %in% colnames(sig_df)) {
-      sig_df[[pair_col]]
     } else {
-      means_df[[pair_col]]
+      NA_real_
     }
     df[["pvalue"]] <- if (
       !is.null(pvalues_df) && pair_col %in% colnames(pvalues_df)
@@ -444,13 +443,20 @@ aggregate_ccc_long <- function(df) {
   )
   score <- df[[score_col]]
   score[is.na(score)] <- 0
+  significant <- if ("significant" %in% colnames(df)) {
+    suppressWarnings(as.numeric(df$significant))
+  } else if ("pvalue" %in% colnames(df)) {
+    pvalue <- suppressWarnings(as.numeric(df$pvalue))
+    ifelse(is.finite(pvalue), as.numeric(pvalue < 0.05), as.numeric(is.finite(score) & score > 0))
+  } else {
+    as.numeric(is.finite(score) & score > 0)
+  }
+  significant[!is.finite(significant)] <- 0
 
   sum_vec <- tapply(score, pair_key, sum, na.rm = TRUE)
   mean_vec <- tapply(score, pair_key, mean, na.rm = TRUE)
   max_vec <- tapply(score, pair_key, max, na.rm = TRUE)
-  count_vec <- tapply(score, pair_key, function(x) {
-    sum(is.finite(x) & x > 0, na.rm = TRUE)
-  })
+  count_vec <- tapply(significant, pair_key, sum, na.rm = TRUE)
 
   keys <- names(sum_vec)
   parts <- strsplit(

@@ -185,14 +185,21 @@ CCCNetworkPlot <- function(
   comparison = c(1, 2),
   plot_type = c(
     "circle",
+    "circle_focused",
     "chord",
+    "lr_chord",
+    "gene_chord",
     "pathway",
     "individual_lr",
+    "individual",
+    "individual_outgoing",
+    "individual_incoming",
     "arrow",
     "sigmoid",
     "bipartite",
     "embedding_network",
-    "diff_network"
+    "diff_network",
+    "diffusion"
   ),
   display_by = c("aggregation", "interaction"),
   sender.use = NULL,
@@ -207,8 +214,8 @@ CCCNetworkPlot <- function(
   pairLR.use = NULL,
   slot.name = "net",
   thresh = 0.05,
-  measure = c("count", "weight"),
-  value = "score",
+  measure = c("weight", "count"),
+  value = "sum",
   top_n = 20,
   ligand = NULL,
   receptor = NULL,
@@ -272,21 +279,151 @@ CCCNetworkPlot <- function(
   layout <- match.arg(layout)
   edge_value <- match.arg(edge_value)
   edge_line <- match.arg(edge_line)
+  plot_type_requested <- plot_type
   if (identical(plot_type, "circle") && identical(layout, "chord")) {
     plot_type <- "chord"
   }
   dots <- list(...)
+  finish_plot <- function(plot) {
+    plot
+  }
+  finish_base_plot <- function(expr) {
+    force(expr)
+  }
   label.enable <- isTRUE(dots[["label"]])
   label.size <- dots[["label.size"]] %||% 4
   label.fg <- dots[["label.fg"]] %||% "white"
   label.bg <- dots[["label.bg"]] %||% "black"
   label.bg.r <- dots[["label.bg.r"]] %||% 0.1
   dots[c("label", "label.size", "label.fg", "label.bg", "label.bg.r")] <- NULL
+  ncols <- dots[["ncols"]] %||% dots[["ncol"]] %||% NULL
+  nrows <- dots[["nrows"]] %||% dots[["nrow"]] %||% NULL
+  combine_panels <- if ("combine" %in% names(dots)) {
+    isTRUE(dots[["combine"]])
+  } else {
+    TRUE
+  }
+  sender.use <- ccc_alias_arg(dots, "sender_use", sender.use)
+  receiver.use <- ccc_alias_arg(dots, "receiver_use", receiver.use)
+  ligand.use <- ccc_alias_arg(dots, "ligand_use", ligand.use)
+  receptor.use <- ccc_alias_arg(dots, "receptor_use", receptor.use)
+  interaction.use <- ccc_alias_arg(dots, "interaction_use", interaction.use)
+  pairLR.use <- ccc_alias_arg(dots, "pair_lr_use", pairLR.use)
+  thresh <- ccc_alias_arg(dots, "pvalue_threshold", thresh)
+  min_interaction_threshold <- ccc_alias_arg(
+    dots,
+    "min_interaction_threshold",
+    NULL
+  )
   reduce <- if (is.null(dots[["reduce"]])) TRUE else isTRUE(dots[["reduce"]])
   max.groups <- dots[["max.groups"]] %||% 8
   small.gap <- dots[["small.gap"]] %||% 1
   big.gap <- dots[["big.gap"]] %||% 8
   lab.cex <- dots[["lab.cex"]] %||% 0.6
+  if (identical(plot_type, "circle_focused")) {
+    ccc_assert_unsupported(
+      plot_type = "circle_focused",
+      interaction.use = interaction.use,
+      pairLR.use = pairLR.use,
+      ligand.use = ligand.use,
+      receptor.use = receptor.use,
+      ligand = ligand,
+      receptor = receptor
+    )
+    if (is.null(signaling)) {
+      ccc_assert_unsupported(
+        plot_type = "circle_focused",
+        sender.use = sender.use,
+        receiver.use = receiver.use
+      )
+    }
+    plot_type <- "circle"
+    if (!is.null(min_interaction_threshold) && edge_threshold == 0) {
+      edge_threshold <- min_interaction_threshold
+    }
+  }
+  if (plot_type %in% c("individual_outgoing", "individual_incoming")) {
+    ccc_assert_unsupported(
+      plot_type = plot_type,
+      signaling = signaling,
+      interaction.use = interaction.use,
+      pairLR.use = pairLR.use,
+      ligand.use = ligand.use,
+      receptor.use = receptor.use,
+      ligand = ligand,
+      receptor = receptor
+    )
+  }
+  if (identical(plot_type, "pathway")) {
+    ccc_assert_unsupported(
+      plot_type = "pathway",
+      interaction.use = interaction.use,
+      pairLR.use = pairLR.use,
+      ligand.use = ligand.use,
+      receptor.use = receptor.use,
+      ligand = ligand,
+      receptor = receptor
+    )
+  }
+  if (identical(plot_type, "chord")) {
+    ccc_assert_unsupported(
+      plot_type = "chord",
+      interaction.use = interaction.use,
+      pairLR.use = pairLR.use,
+      ligand.use = ligand.use,
+      receptor.use = receptor.use,
+      ligand = ligand,
+      receptor = receptor
+    )
+  }
+  if (identical(plot_type, "gene_chord")) {
+    ccc_assert_unsupported(
+      plot_type = "gene_chord",
+      interaction.use = interaction.use,
+      pairLR.use = pairLR.use,
+      ligand.use = ligand.use,
+      receptor.use = receptor.use,
+      ligand = ligand,
+      receptor = receptor
+    )
+  }
+  if (identical(plot_type, "lr_chord")) {
+    ccc_assert_unsupported(
+      plot_type = "lr_chord",
+      signaling = signaling,
+      ligand.use = ligand.use,
+      receptor.use = receptor.use,
+      ligand = ligand,
+      receptor = receptor
+    )
+  }
+  if (plot_type %in% c("individual", "individual_lr")) {
+    ccc_assert_unsupported(
+      plot_type = plot_type,
+      ligand.use = ligand.use,
+      receptor.use = receptor.use,
+      ligand = ligand,
+      receptor = receptor
+    )
+  }
+  if (identical(plot_type, "diffusion")) {
+    ccc_assert_unsupported(
+      plot_type = "diffusion",
+      sender.use = sender.use,
+      receiver.use = receiver.use,
+      signaling = signaling,
+      interaction.use = interaction.use,
+      pairLR.use = pairLR.use,
+      ligand.use = ligand.use,
+      receptor.use = receptor.use,
+      ligand = ligand,
+      receptor = receptor
+    )
+    log_message(
+      "{.val plot_type = 'diffusion'} has no direct R backend in {.pkg scop}; use {.val plot_type = 'circle'} or {.val plot_type = 'diff_network'}",
+      message_type = "error"
+    )
+  }
   palette_cfg <- ccc_palettes(
     palette = palette,
     palcolor = palcolor,
@@ -298,7 +435,14 @@ CCCNetworkPlot <- function(
 
   method <- detect_method(srt = srt, method = method)
 
-  if (plot_type %in% c("pathway", "individual_lr")) {
+  if (identical(plot_type, "pathway") && is.null(signaling)) {
+    log_message(
+      "{.arg signaling} must be provided for {.val plot_type = 'pathway'}",
+      message_type = "error"
+    )
+  }
+
+  if (plot_type %in% c("pathway", "individual", "individual_lr")) {
     if (identical(method, "CellChat")) {
       if (!identical(layout, "circle")) {
         log_message(
@@ -373,16 +517,16 @@ CCCNetworkPlot <- function(
             plot_subtitle = if (length(pathways_to_show) == 1L) subtitle else NULL
           )
         })
-        return(simplify_cc_plot_list(plots))
+        return(finish_plot(simplify_cc_plot_list(plots)))
       }
 
       if (is.null(signaling)) {
         log_message(
-          "{.arg signaling} must be provided for {.val plot_type = 'individual_lr'}",
+          "{.arg signaling} must be provided for {.val plot_type = {plot_type_requested}}",
           message_type = "error"
         )
       }
-      if (is.null(pairLR.use)) {
+      if (identical(plot_type, "individual_lr") && is.null(pairLR.use)) {
         log_message(
           "{.arg pairLR.use} must be provided for {.val plot_type = 'individual_lr'}",
           message_type = "error"
@@ -392,16 +536,19 @@ CCCNetworkPlot <- function(
         plot_cellchat_circle(
           sig = sig,
           pairLR = pairLR.use,
-          plot_title = title %||%
+          plot_title = title %||% if (is.null(pairLR.use)) {
+            sig
+          } else {
             paste(
               sig,
               paste(as.character(pairLR.use), collapse = ", "),
               sep = ": "
-            ),
+            )
+          },
           plot_subtitle = subtitle
         )
       })
-      return(simplify_cc_plot_list(plots))
+      return(finish_plot(simplify_cc_plot_list(plots)))
     }
 
     if (!identical(layout, "circle")) {
@@ -428,14 +575,14 @@ CCCNetworkPlot <- function(
       )
     }
 
-    if (identical(plot_type, "individual_lr")) {
+    if (plot_type %in% c("individual", "individual_lr")) {
       if (is.null(signaling)) {
         log_message(
-          "{.arg signaling} must be provided for {.val plot_type = 'individual_lr'}",
+          "{.arg signaling} must be provided for {.val plot_type = {plot_type_requested}}",
           message_type = "error"
         )
       }
-      if (is.null(pairLR.use)) {
+      if (identical(plot_type, "individual_lr") && is.null(pairLR.use)) {
         log_message(
           "{.arg pairLR.use} must be provided for {.val plot_type = 'individual_lr'}",
           message_type = "error"
@@ -527,7 +674,7 @@ CCCNetworkPlot <- function(
         message_type = "error"
       )
     }
-    return(simplify_cc_plot_list(plots))
+    return(finish_plot(simplify_cc_plot_list(plots)))
   }
 
   if (identical(plot_type, "diff_network")) {
@@ -538,7 +685,7 @@ CCCNetworkPlot <- function(
       )
     }
     layout_use <- if (layout %in% c("hierarchy", "chord")) "circle" else layout
-    return(ccc_diff_network_plot(
+    return(finish_plot(ccc_diff_network_plot(
       srt = srt,
       condition = condition,
       comparison = comparison,
@@ -567,7 +714,7 @@ CCCNetworkPlot <- function(
       font.size = font.size,
       theme_use = theme_use,
       theme_args = theme_args
-    ))
+    )))
   }
 
   if (identical(method, "CellChat")) {
@@ -600,6 +747,7 @@ CCCNetworkPlot <- function(
   )
 
   df <- ccc_assign_plot_score(df = df, value = value)
+  df <- ccc_mark_significance(df, thresh = thresh)
   df <- prepare_plot_df(df)
   pair_df <- pair_plot_df(df)
   interaction_df <- interaction_plot_df(df)
@@ -625,8 +773,112 @@ CCCNetworkPlot <- function(
     label.bg.r = label.bg.r
   )
 
+  if (identical(plot_type, "lr_chord")) {
+    if (is.null(pairLR.use) && is.null(interaction.use)) {
+      log_message(
+        "{.arg pairLR.use} or {.arg interaction.use} must be provided for {.val plot_type = 'lr_chord'}",
+        message_type = "error"
+      )
+    }
+    dots_chord <- dots
+    dots_chord[c("reduce", "max.groups", "small.gap", "big.gap", "lab.cex")] <- NULL
+    return(finish_base_plot(do.call(
+      ccc_chord_plot,
+      c(
+        list(
+          pair_df = pair_df,
+          interaction_df = interaction_df,
+          display_by = "interaction",
+          top_n = top_n,
+          edge_value = edge_value,
+          edge_threshold = edge_threshold,
+          link_alpha = link_alpha,
+          reduce = reduce,
+          max.groups = max.groups,
+          small.gap = small.gap,
+          big.gap = big.gap,
+          lab.cex = lab.cex
+        ),
+        network_plot_args,
+        dots_chord
+      )
+    )))
+  }
+
+  if (identical(plot_type, "gene_chord")) {
+    return(finish_base_plot(do.call(
+      ccc_gene_chord_plot,
+      c(
+        list(
+          df = df,
+          top_n = top_n,
+          edge_threshold = edge_threshold,
+          link_alpha = link_alpha,
+          small.gap = small.gap,
+          big.gap = big.gap,
+          lab.cex = lab.cex
+        ),
+        network_plot_args
+      )
+    )))
+  }
+
+  if (plot_type %in% c("individual_outgoing", "individual_incoming")) {
+    split_var <- if (identical(plot_type, "individual_outgoing")) {
+      "sender"
+    } else {
+      "receiver"
+    }
+    group_levels <- unique(as.character(df[[split_var]]))
+    group_levels <- group_levels[!is.na(group_levels) & nzchar(group_levels)]
+    if (length(group_levels) == 0L) {
+      log_message(
+        "No cell groups are available for individual network plotting",
+        message_type = "error"
+      )
+    }
+    grid <- ccc_panel_grid(
+      n_panels = length(group_levels),
+      ncols = ncols %||% min(4L, length(group_levels)),
+      nrows = nrows,
+      context = paste0(plot_type, " network plot")
+    )
+    plots <- lapply(group_levels, function(group_i) {
+      df_i <- df[df[[split_var]] == group_i, , drop = FALSE]
+      pair_df_i <- pair_plot_df(df_i)
+      interaction_df_i <- interaction_plot_df(df_i)
+      plot_args_i <- network_plot_args
+      plot_args_i$title <- title %||% group_i
+      do.call(
+        ccc_circle_plot,
+        c(
+          list(
+            pair_df = pair_df_i,
+            interaction_df = interaction_df_i,
+            display_by = display_by,
+            top_n = top_n,
+            value = value,
+            edge_threshold = edge_threshold,
+            edge_size = edge_size,
+            node_size = node_size,
+            node_alpha = node_alpha,
+            link_alpha = link_alpha
+          ),
+          plot_args_i,
+          label_plot_args
+        )
+      )
+    })
+    return(finish_plot(plot_cc_list(
+      plots,
+      combine = combine_panels,
+      ncol = grid$ncols,
+      nrow = grid$nrows
+    )))
+  }
+
   if (identical(plot_type, "circle")) {
-    return(do.call(
+    return(finish_base_plot(do.call(
       ccc_circle_plot,
       c(
         list(
@@ -644,13 +896,13 @@ CCCNetworkPlot <- function(
         network_plot_args,
         label_plot_args
       )
-    ))
+    )))
   }
 
   if (identical(plot_type, "chord")) {
     dots_chord <- dots
     dots_chord[c("reduce", "max.groups", "small.gap", "big.gap", "lab.cex")] <- NULL
-    return(do.call(
+    return(finish_base_plot(do.call(
       ccc_chord_plot,
       c(
         list(
@@ -670,11 +922,11 @@ CCCNetworkPlot <- function(
         network_plot_args,
         dots_chord
       )
-    ))
+    )))
   }
 
   if (plot_type %in% c("arrow", "sigmoid")) {
-    return(do.call(
+    return(finish_plot(do.call(
       ccc_flow_network_plot,
       c(
         list(
@@ -699,7 +951,7 @@ CCCNetworkPlot <- function(
         network_plot_args,
         label_plot_args
       )
-    ))
+    )))
   }
 
   if (identical(plot_type, "bipartite")) {
@@ -711,7 +963,7 @@ CCCNetworkPlot <- function(
         reg_vec <- NULL
       }
     }
-    return(bipartite_plot(
+    return(finish_plot(bipartite_plot(
       df = df,
       ligand = ligand,
       receptor = receptor,
@@ -741,11 +993,11 @@ CCCNetworkPlot <- function(
       font.size = font.size,
       theme_use = theme_use,
       theme_args = theme_args
-    ))
+    )))
   }
 
   if (identical(plot_type, "embedding_network")) {
-    return(do.call(
+    return(finish_plot(do.call(
       ccc_dim_network_plot,
       c(
         list(
@@ -773,7 +1025,7 @@ CCCNetworkPlot <- function(
         label_plot_args,
         dots
       )
-    ))
+    )))
   }
 
   log_message(
@@ -833,6 +1085,7 @@ ccc_cellchat_circle_network_plot <- function(
     pairLR.use = pairLR.use
   )
   df <- ccc_assign_plot_score(df = df, value = value)
+  df <- ccc_mark_significance(df, thresh = thresh)
   df <- prepare_plot_df(df)
   pair_df <- pair_plot_df(df)
   interaction_df <- interaction_plot_df(df)
@@ -917,6 +1170,19 @@ bipartite_plot <- function(
     ligand <- names(which.max(lig_scores))
   }
   df <- df[as.character(df$ligand) == as.character(ligand), , drop = FALSE]
+  sender_chr <- as.character(df$sender)
+  receptor_chr <- as.character(df$receptor)
+  receiver_chr <- as.character(df$receiver)
+  df <- df[
+    !is.na(sender_chr) &
+      nzchar(sender_chr) &
+      !is.na(receptor_chr) &
+      nzchar(receptor_chr) &
+      !is.na(receiver_chr) &
+      nzchar(receiver_chr),
+    ,
+    drop = FALSE
+  ]
 
   if (!is.null(receptor)) {
     df <- df[
@@ -933,15 +1199,22 @@ bipartite_plot <- function(
 
   if (is.numeric(top_n) && top_n > 0L) {
     sender_scores <- tapply(df$score, df$sender, sum, na.rm = TRUE)
+    receptor_scores <- tapply(df$score, df$receptor, sum, na.rm = TRUE)
     receiver_scores <- tapply(df$score, df$receiver, sum, na.rm = TRUE)
     top_senders <- names(sort(sender_scores, decreasing = TRUE))[
       seq_len(min(top_n, length(sender_scores)))
+    ]
+    top_receptors <- names(sort(receptor_scores, decreasing = TRUE))[
+      seq_len(min(top_n, length(receptor_scores)))
     ]
     top_receivers <- names(sort(receiver_scores, decreasing = TRUE))[
       seq_len(min(top_n, length(receiver_scores)))
     ]
     df <- df[
-      df$sender %in% top_senders & df$receiver %in% top_receivers, ,
+      df$sender %in% top_senders &
+        df$receptor %in% top_receptors &
+        df$receiver %in% top_receivers,
+      ,
       drop = FALSE
     ]
   }
@@ -952,15 +1225,20 @@ bipartite_plot <- function(
     )
   }
 
-  senders <- unique(as.character(df$sender))
-  receptors <- unique(as.character(df$receptor))
-  receivers <- unique(as.character(df$receiver))
+  rank_stage <- function(column) {
+    scores <- tapply(df$score, df[[column]], sum, na.rm = TRUE)
+    names(sort(scores, decreasing = TRUE))
+  }
+  senders <- rank_stage("sender")
+  receptors <- rank_stage("receptor")
+  receivers <- rank_stage("receiver")
   pretty_label <- function(x, node_type = c("cell", "ligand", "receptor")) {
     node_type <- match.arg(node_type)
     x <- as.character(x)
     if (identical(node_type, "cell")) {
       return(x)
     }
+    x <- ccc_display_gene(x)
     x <- gsub("_", "\n", x, fixed = TRUE)
     x
   }
