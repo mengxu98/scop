@@ -21,6 +21,7 @@ test
 .codex
 *.o
 *.so
+*.dll
 dev
 paper
 plan
