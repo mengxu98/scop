@@ -15,12 +15,12 @@
 #' @param do_normalization Whether to perform normalization.
 #' If `NULL`, normalization will be performed if the specified assay does not have scaled data.
 #' @param normalization_method The method to use for normalization.
-#' Options are `"LogNormalize"`, `"SCT"`, or `"TFIDF"`.
+#' Options are `"LogNormalize"`, `"SCT"`, `"TFIDF"`, or `"scran"`.
 #' Default is `"LogNormalize"`.
 #' @param do_HVF_finding Whether to perform high variable feature finding.
 #' If `TRUE`, the function will force to find the highly variable features (HVF) using the specified HVF method.
 #' @param HVF_method The method to use for finding highly variable features.
-#' Options are `"vst"`, `"mvp"`, or `"disp"`.
+#' Options are `"vst"`, `"mvp"`, `"disp"`, or `"scran"`.
 #' Default is `"vst"`.
 #' @param nHVF The number of highly variable features to select.
 #' If NULL, all highly variable features will be used.
@@ -133,6 +133,29 @@
 #'   }
 #' )
 #' patchwork::wrap_plots(plist2)
+#'
+#' if (requireNamespace("scran", quietly = TRUE)) {
+#'   data(pancreas_sub)
+#'   pancreas_scran <- pancreas_sub[, 1:80]
+#'   pancreas_scran <- standard_scop(
+#'     pancreas_scran,
+#'     assay = "RNA",
+#'     do_normalization = TRUE,
+#'     normalization_method = "scran",
+#'     do_HVF_finding = TRUE,
+#'     HVF_method = "scran",
+#'     nHVF = 100,
+#'     linear_reduction_dims = 10,
+#'     linear_reduction_dims_use = 1:5,
+#'     nonlinear_reduction = "umap",
+#'     nonlinear_reduction_dims = 2
+#'   )
+#'   CellDimPlot(
+#'     pancreas_scran,
+#'     reduction = "StandardUMAP2D",
+#'     group.by = "Standardclusters"
+#'   )
+#' }
 standard_scop <- function(
   srt,
   prefix = "Standard",
@@ -345,12 +368,18 @@ standard_scop <- function(
     do_scaling <- FALSE
     linear_reduction <- "svd"
   }
-  scale_features <- GetAssayData5(
-    srt,
-    layer = "scale.data",
-    assay = assay
-  ) |>
-    rownames()
+  assay_obj <- srt[[assay]]
+  scale_features <- if (inherits(assay_obj, "Assay5")) {
+    if ("scale.data" %in% names(assay_obj@layers)) {
+      # Assay5 layers are stored without dimnames; GetAssayData adds them
+      rownames(SeuratObject::GetAssayData(assay_obj, layer = "scale.data"))
+    } else {
+      character(0)
+    }
+  } else {
+    sc <- assay_obj@scale.data
+    if (!is.null(sc) && nrow(sc) > 0) rownames(sc) else character(0)
+  }
   if (
     isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))
   ) {
