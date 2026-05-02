@@ -131,6 +131,8 @@ LinkingTo:
     RSpectra
 Remotes:
     jinworks/CellChat,
+    mengxu98/thisplot,
+    mengxu98/thisutils,
     saeyslab/multinichenetr,
     saeyslab/nichenetr
 RoxygenNote: 7.3.3

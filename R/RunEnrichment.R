@@ -197,6 +197,22 @@ RunEnrichment <- function(
   }
   use_srt <- FALSE
   if (is.null(geneID)) {
+    if (!is.null(srt) && (is.null(group.by) || identical(group.by, "Bulk"))) {
+      de_use <- .bulk_prepare_de_for_downstream(
+        srt = srt,
+        DE_threshold = DE_threshold,
+        require_score = FALSE
+      )
+      if (!is.null(de_use) && nrow(de_use) > 0) {
+        geneID <- de_use$gene
+        geneID_groups <- de_use$comparison
+        group.by <- "Bulk"
+        use_srt <- TRUE
+      }
+    }
+  }
+
+  if (is.null(geneID)) {
     if (is.null(group.by)) {
       group.by <- "custom"
     }

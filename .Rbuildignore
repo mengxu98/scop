@@ -29,5 +29,6 @@
 ^\.\.Rcheck$
 ^.*\.Rcheck$
 ^.*\.tar\.gz$
+^.*\.dll$
 ^\.git$
 ^\.gitignore$

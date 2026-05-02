@@ -132,6 +132,7 @@ reference:
 - subtitle: "Differential Analysis"
 - contents:
   - FindExpressedMarkers
+  - RunBulk
   - RunDEtest
   - RunScTenifoldKnk
   - RunProportionTest
