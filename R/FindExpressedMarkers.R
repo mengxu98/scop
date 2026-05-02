@@ -57,6 +57,7 @@ FindExpressedMarkers <- function(
   ...
 ) {
   assay <- assay %||% DefaultAssay(object)
+  srt_object <- object
 
   if (!is.null(cells.1)) {
     if (is.null(cells.2)) {
@@ -95,20 +96,24 @@ FindExpressedMarkers <- function(
     no = layer
   )
 
-  data.use <- data.use[Matrix::rowSums(data.use) > 0, ]
-  data.use <- as_matrix(data.use)
-  data.use[data.use <= min.expression] <- NA
+  features_detected <- rownames(data.use)[Matrix::rowSums(data.use) > 0]
+  data.use <- data.use[features_detected, , drop = FALSE]
+  n_features_total <- nrow(data.use)
   counts <- switch(
     EXPR = data_layer,
     "scale.data" = GetAssayData5(
-      object = object,
-      layer = "counts"
+      object = srt_object,
+      layer = "counts",
+      assay = assay
     ),
     numeric()
   )
 
   ########## FoldChange.Assay ##########
-  features <- features %||% rownames(x = data.use)
+  features <- intersect(
+    features %||% rownames(x = data.use),
+    rownames(x = data.use)
+  )
   layer <- data_layer
 
   # By default run as if LogNormalize is done
@@ -152,6 +157,7 @@ FindExpressedMarkers <- function(
       log1pdata.mean.fxn
     )
   }
+  mean_fxn_custom <- !is.null(mean.fxn)
   mean.fxn <- mean.fxn %||% new.mean.fxn
   # Omit the decimal value of e from the column name if base == exp(1)
   base.text <- ifelse(
@@ -165,14 +171,36 @@ FindExpressedMarkers <- function(
       yes = "avg_diff",
       no = paste0("avg_log", base.text, "FC")
     )
-  fc.results <- FoldChange.default(
-    object = data.use,
-    cells.1 = cells.1,
-    cells.2 = cells.2,
-    features = features,
-    mean.fxn = mean.fxn,
-    fc.name = fc.name
-  )
+  use_sparse_fc <- inherits(data.use, "sparseMatrix") &&
+    !isTRUE(mean_fxn_custom) &&
+    !identical(layer, "scale.data") &&
+    isTRUE(min.expression >= 0)
+  if (isTRUE(use_sparse_fc)) {
+    fc.results <- find_expressed_markers_sparse_fc(
+      object = data.use,
+      cells.1 = cells.1,
+      cells.2 = cells.2,
+      features = features,
+      layer = layer,
+      data_layer = data_layer,
+      norm.method = norm.method,
+      min.expression = min.expression,
+      pseudocount.use = pseudocount.use,
+      base = base,
+      fc.name = fc.name
+    )
+  } else {
+    data.use <- as_matrix(data.use)
+    data.use[data.use <= min.expression] <- NA
+    fc.results <- FoldChange.default(
+      object = data.use,
+      cells.1 = cells.1,
+      cells.2 = cells.2,
+      features = features,
+      mean.fxn = mean.fxn,
+      fc.name = fc.name
+    )
+  }
 
   ########## FindMarkers.default ##########
 
@@ -252,8 +280,9 @@ FindExpressedMarkers <- function(
     }
   }
 
+  object_de <- object[features, c(cells.1, cells.2), drop = FALSE]
   de.results <- PerformDE(
-    object = object,
+    object = object_de,
     cells.1 = cells.1,
     cells.2 = cells.2,
     features = features,
@@ -261,6 +290,7 @@ FindExpressedMarkers <- function(
     verbose = verbose,
     min.cells.feature = min.cells.feature,
     latent.vars = latent.vars,
+    min.expression = min.expression,
     ...
   )
   de.results <- cbind(
@@ -277,11 +307,102 @@ FindExpressedMarkers <- function(
     de.results$p_val_adj <- stats::p.adjust(
       p = de.results$p_val,
       method = "bonferroni",
-      n = nrow(x = object)
+      n = n_features_total
     )
   }
 
   return(de.results)
+}
+
+find_expressed_markers_sparse_fc <- function(
+  object,
+  cells.1,
+  cells.2,
+  features,
+  layer,
+  data_layer,
+  norm.method,
+  min.expression,
+  pseudocount.use,
+  base,
+  fc.name
+) {
+  features <- intersect(features %||% rownames(object), rownames(object))
+  group1 <- find_expressed_markers_sparse_group_stats(
+    object = object,
+    features = features,
+    cells = cells.1,
+    min.expression = min.expression,
+    layer = layer,
+    data_layer = data_layer,
+    norm.method = norm.method,
+    pseudocount.use = pseudocount.use,
+    base = base
+  )
+  group2 <- find_expressed_markers_sparse_group_stats(
+    object = object,
+    features = features,
+    cells = cells.2,
+    min.expression = min.expression,
+    layer = layer,
+    data_layer = data_layer,
+    norm.method = norm.method,
+    pseudocount.use = pseudocount.use,
+    base = base
+  )
+  fc.results <- as.data.frame(
+    cbind(
+      group1[["mean"]] - group2[["mean"]],
+      group1[["pct"]],
+      group2[["pct"]]
+    )
+  )
+  rownames(fc.results) <- features
+  colnames(fc.results) <- c(fc.name, "pct.1", "pct.2")
+  fc.results
+}
+
+find_expressed_markers_sparse_group_stats <- function(
+  object,
+  features,
+  cells,
+  min.expression,
+  layer,
+  data_layer,
+  norm.method,
+  pseudocount.use,
+  base
+) {
+  mat <- object[features, cells, drop = FALSE]
+  mat <- methods::as(mat, "dgCMatrix")
+  if (isTRUE(min.expression > 0)) {
+    mat@x[mat@x <= min.expression] <- 0
+    mat <- Matrix::drop0(mat)
+  }
+  detected <- Matrix::rowSums(mat > min.expression)
+  pct <- round(detected / length(cells), digits = 3)
+
+  use_counts_mean <- !is.null(norm.method) && !identical(norm.method, "LogNormalize")
+  if (isTRUE(use_counts_mean) || identical(data_layer, "counts")) {
+    sum_vals <- Matrix::rowSums(mat)
+    mean_vals <- sum_vals / detected
+    mean_vals[detected == 0] <- NaN
+    mean_vals <- log(mean_vals + pseudocount.use, base = base)
+  } else if (identical(layer, "data")) {
+    mat_sum <- mat
+    mat_sum@x <- expm1(mat_sum@x)
+    sum_vals <- Matrix::rowSums(mat_sum)
+    mean_vals <- sum_vals / detected
+    mean_vals[detected == 0] <- NaN
+    mean_vals <- log(mean_vals + pseudocount.use, base = base)
+  } else {
+    sum_vals <- Matrix::rowSums(mat)
+    mean_vals <- sum_vals / detected
+    mean_vals[detected == 0] <- NaN
+  }
+  names(mean_vals) <- features
+  names(pct) <- features
+  list(mean = mean_vals, pct = pct)
 }
 
 FindConservedMarkers2 <- function(
@@ -517,7 +638,7 @@ FindConservedMarkers2 <- function(
       sep = "_"
     )
   }
-  markers.combined <- Reduce(cbind, markers.conserved)
+  markers.combined <- do.call(cbind, markers.conserved)
   fc <- Seurat::FoldChange(
     Seurat::GetAssay(object, assay),
     layer = layer,

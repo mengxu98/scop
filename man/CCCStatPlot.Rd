@@ -10,8 +10,9 @@ CCCStatPlot(
   condition = NULL,
   dataset = 1,
   comparison = c(1, 2),
-  plot_type = c("bar", "sankey", "box", "violin", "comparison", "lr_contribution",
-    "gene", "ranknet", "scatter", "role_change"),
+  plot_type = c("bar", "sankey", "box", "violin", "role_scatter", "role_network",
+    "role_network_marsilea", "pathway_summary", "comparison", "lr_contribution", "gene",
+    "ranknet", "scatter", "role_change"),
   display_by = c("aggregation", "interaction"),
   sender.use = NULL,
   receiver.use = NULL,
@@ -70,7 +71,8 @@ CCCStatPlot(
 
 \item{plot_type}{Plot type. One of:
 \itemize{
-\item \code{"bar"} — horizontal bar chart of top interactions by aggregated score.
+\item \code{"bar"} — horizontal bar chart of top pairs or interactions according to
+\code{display_by}.
 \item \code{"sankey"} — alluvial/sankey flow diagram.
 \item \code{"box"} / \code{"violin"} — distribution of interaction scores across sender-receiver pairs.
 \item \code{"comparison"} — comparison bars at overall or celltype level.
@@ -169,6 +171,10 @@ Default is \code{TRUE}.}
 \item{verbose}{Whether to print messages.}
 
 \item{...}{Additional plot-specific options.}
+
+\item{min_receiver_flow}{For \code{"sankey"}: minimum total receiver-side flow
+retained after top-N ranking. Useful when many small receiver nodes make
+the right side unreadable.}
 }
 \value{
 A ggplot or recorded base plot object.

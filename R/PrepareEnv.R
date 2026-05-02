@@ -4,11 +4,14 @@
 #' Prepare the python environment by installing the required dependencies and setting up the environment.
 #'
 #' @md
-#' @param envname The name of the conda environment.
+#' @param envname The name of the conda-compatible Python environment.
 #' If `NULL`, the environment name will be set to `"scop_env"`.
 #' Default is `NULL`.
-#' @param conda The path to a conda executable.
-#' Use `"auto"` to allow automatically finding an appropriate conda binary.
+#' @param conda The path or command name of a conda-compatible executable
+#' (`conda`, `mamba`, or `micromamba`). Use `"auto"` to allow automatically
+#' finding an appropriate environment manager. If `"micromamba"` is requested
+#' and micromamba is not available on `PATH`, a package-managed micromamba is
+#' downloaded automatically.
 #' @param miniconda_repo Repository URL for miniconda.
 #' Default is \url{https://repo.anaconda.com/miniconda}.
 #' @param force Whether to force recreation of the environment.
@@ -23,7 +26,10 @@
 #' `"doubletdetection"`, `"doublet"`, `"palantir"`, `"scvelo"`,
 #' `"cellrank"`, `"wot"`, `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`,
 #' and `"scomm"`.
-#' If `NULL` or omitted in [PrepareEnv()], the complete environment is installed.
+#' If `NULL` or omitted in [PrepareEnv()], the default environment is installed.
+#' The default excludes `"scomm"` because its TensorFlow stack is not compatible
+#' with the default JAX/scVI stack in the same environment; request
+#' `modules = "scomm"` explicitly for scOMM workflows.
 #' @param pip_options Additional command line arguments to be passed to `uv`/`pip` when installing pip packages.
 #' @param ... Additional arguments passed to package installation functions.
 #'
@@ -38,16 +44,6 @@ PrepareEnv <- function(
   pip_options = character(),
   ...
 ) {
-  log_message(
-    "Preparing python environment...",
-    text_color = "blue",
-    message_type = "running"
-  )
-
-  if (!is.null(envname)) {
-    options(scop_envname = envname)
-  }
-
   envname <- get_envname(envname)
   modules <- normalize_env_modules(modules = modules)
   pip_options <- normalize_cli_args(pip_options)
@@ -57,16 +53,8 @@ PrepareEnv <- function(
   )
   python_version <- requirements[["python"]]
 
-  log_message(
-    "Environment name: {.file {envname}} and python version: {.pkg {python_version}}"
-  )
-
-  conda_info <- get_namespace_fun("reticulate", "conda_info")
-
+  conda_auto <- identical(conda, "auto")
   if (!is.null(conda)) {
-    if (identical(conda, "auto")) {
-      log_message("Auto-detecting conda...")
-    }
     conda <- resolve_conda(conda)
   }
 
@@ -87,6 +75,7 @@ PrepareEnv <- function(
     if (!is.null(python_cached) && nzchar(python_cached) && file.exists(python_cached)) {
       configure_python_runtime(python_cached)
     }
+    remember_python_environment(envname = envname, conda = conda)
     if ("scomm" %in% modules) {
       ensure_scomm_runtime_support(
         envname = envname,
@@ -103,14 +92,41 @@ PrepareEnv <- function(
     return(invisible(NULL))
   }
 
+  log_message(
+    "Preparing python environment...",
+    text_color = "blue",
+    message_type = "running"
+  )
+
+  log_message(
+    "Environment name: {.file {envname}} and python version: {.pkg {python_version}}"
+  )
+
+  if (isTRUE(conda_auto)) {
+    log_message("Auto-detecting conda-compatible environment manager...")
+  }
+  if (!is.null(conda)) {
+    log_message(
+      "Using {.pkg {conda_manager_label(conda)}} executable: {.file {conda}}"
+    )
+  }
+
   if (is.null(conda)) {
     env <- FALSE
     log_message(
-      "Conda not found, will install miniconda",
+      "Conda-compatible environment manager not found, will install miniconda",
       message_type = "warning"
     )
   } else {
     envs_dir <- get_conda_envs_dir(conda = conda)
+    env_path <- conda_env_path(
+      envname = envname,
+      conda = conda,
+      envs_dir = envs_dir
+    )
+    if (!is.null(env_path)) {
+      assert_python_runtime_switchable(conda_env_python_path(env_path))
+    }
     env <- env_exist(
       conda = conda,
       envname = envname,
@@ -119,13 +135,13 @@ PrepareEnv <- function(
 
     if (isTRUE(force) && isTRUE(env)) {
       log_message("Force recreating environment...")
-      unlink(paste0(envs_dir, "/", envname), recursive = TRUE)
+      unlink(env_path, recursive = TRUE)
       env <- FALSE
     }
 
     if (isTRUE(env)) {
       log_message(
-        "Using existing environment: {.file {paste0(envs_dir, '/', envname)}}"
+        "Using existing environment: {.file {env_path}}"
       )
     }
   }
@@ -136,6 +152,9 @@ PrepareEnv <- function(
     if (is.null(conda)) {
       log_message("Installing miniconda...")
       conda <- install_miniconda2(miniconda_repo)
+      log_message(
+        "Using {.pkg {conda_manager_label(conda)}} executable: {.file {conda}}"
+      )
       cache_spec <- build_env_cache_spec(
         envname = envname,
         python_version = python_version,
@@ -147,14 +166,14 @@ PrepareEnv <- function(
     }
 
     log_message(
-      "Creating conda environment with python {.val {python_version}}..."
+      "Creating Python environment with python {.val {python_version}} using {.pkg {conda_manager_label(conda)}}..."
     )
 
     accept_conda_tos(conda = conda)
 
-    base_packages <- c("pip", "setuptools", "wheel")
+    base_packages <- c("pip", "setuptools<81", "wheel")
 
-    python_path <- reticulate::conda_create(
+    python_path <- create_conda_env(
       conda = conda,
       envname = envname,
       python_version = python_version,
@@ -163,8 +182,8 @@ PrepareEnv <- function(
 
     python <- conda_python(envname = envname, conda = conda)
 
-    envs_dir <- get_conda_envs_dir(conda = conda)
-    env_path <- paste0(envs_dir, "/", envname)
+    env_path <- conda_env_path(envname = envname, conda = conda) %||%
+      dirname(dirname(python_path))
     env <- file.exists(env_path)
 
     if (isFALSE(env)) {
@@ -172,11 +191,12 @@ PrepareEnv <- function(
         "Environment creation failed",
         message_type = "warning"
       )
-      print(conda_info(conda = conda))
+      print(conda_info_json(conda = conda))
       print(reticulate::conda_list(conda = conda))
       log_message(
         "Unable to find environment under the expected path: {.file {env_path}}\n",
-        "conda: {.pkg {conda}}\n",
+        "manager: {.pkg {conda_manager_label(conda)}}\n",
+        "executable: {.file {conda}}\n",
         "python: {.file {python_path}}",
         message_type = "error"
       )
@@ -207,11 +227,12 @@ PrepareEnv <- function(
     "{.val {length(packages)}} package{?s} to install, {.val {length(conda_packages)}} conda packages and {.val {length(pip_packages)}} pip packages"
   )
 
+  install_ok <- TRUE
   if (length(conda_packages) > 0) {
     log_message(
       "Installing {.val {length(conda_packages)}} {.pkg conda} packages"
     )
-    check_python(
+    install_ok <- isTRUE(check_python(
       packages = conda_packages,
       envname = envname,
       conda = conda,
@@ -219,7 +240,7 @@ PrepareEnv <- function(
       pip = FALSE,
       verbose = FALSE,
       ...
-    )
+    )) && install_ok
   }
 
   if (length(pip_packages) > 0) {
@@ -232,7 +253,7 @@ PrepareEnv <- function(
         "Installing {.val {length(pip_packages)}} {.pkg pip} packages"
       )
     }
-    check_python(
+    install_ok <- isTRUE(check_python(
       packages = pip_packages,
       envname = envname,
       conda = conda,
@@ -241,7 +262,7 @@ PrepareEnv <- function(
       pip_options = pip_options,
       verbose = FALSE,
       ...
-    )
+    )) && install_ok
   }
 
   ensure_windows_scvi_support(
@@ -261,12 +282,20 @@ PrepareEnv <- function(
   }
 
   configure_python_runtime(python)
+  remember_python_environment(envname = envname, conda = conda)
 
-  log_message(
-    "{cli::col_green('Python environment ready')}\n",
-    "{cli::col_grey('Until next loading, the environment will be cached')}",
-    message_type = "success"
-  )
+  if (isTRUE(install_ok)) {
+    log_message(
+      "{cli::col_green('Python environment ready')}\n",
+      "{cli::col_grey('Until next loading, the environment will be cached')}",
+      message_type = "success"
+    )
+  } else {
+    log_message(
+      "Python environment setup completed with missing packages. Review the warnings above before using modules that require them.",
+      message_type = "warning"
+    )
+  }
 
   env_info(
     conda = conda,
@@ -313,6 +342,10 @@ supported_env_modules <- function() {
     "multimap",
     "scomm"
   )
+}
+
+default_env_modules <- function() {
+  setdiff(supported_env_modules(), "scomm")
 }
 
 optional_env_modules <- function() {
@@ -371,10 +404,8 @@ normalize_env_modules <- function(modules = NULL, include_optional = FALSE) {
   modules <- trimws(as.character(modules))
   modules <- modules[nzchar(modules)]
 
-  full_modules <- supported_env_modules()
-
   if (length(modules) == 0) {
-    modules <- full_modules
+    modules <- default_env_modules()
   }
 
   if (isTRUE(include_optional)) {
@@ -438,6 +469,16 @@ build_env_cache_spec <- function(
 
 clear_env_cache <- function() {
   options(scop_env_cache = NULL)
+  invisible(NULL)
+}
+
+remember_python_environment <- function(envname, conda) {
+  opts <- list(scop_envname = envname)
+  if (!is.null(conda)) {
+    opts[["scop_conda"]] <- conda
+    opts[["reticulate.conda_binary"]] <- conda
+  }
+  do.call(options, opts)
   invisible(NULL)
 }
 
@@ -509,11 +550,62 @@ prepend_path_var <- function(var, values) {
   invisible(NULL)
 }
 
+normalize_python_runtime_path <- function(path) {
+  path <- as.character(path %||% "")
+  if (length(path) == 0 || !nzchar(path[[1]])) {
+    return(NULL)
+  }
+  normalizePath(path[[1]], winslash = "/", mustWork = FALSE)
+}
+
+same_python_runtime <- function(x, y) {
+  x <- normalize_python_runtime_path(x)
+  y <- normalize_python_runtime_path(y)
+  if (is.null(x) || is.null(y)) {
+    return(FALSE)
+  }
+  if (identical(x, y)) {
+    return(TRUE)
+  }
+
+  x_base <- tolower(basename(x))
+  y_base <- tolower(basename(y))
+  identical(dirname(x), dirname(y)) &&
+    startsWith(x_base, "python") &&
+    startsWith(y_base, "python")
+}
+
+active_python_runtime <- function() {
+  if (isFALSE(reticulate::py_available(initialize = FALSE))) {
+    return(NULL)
+  }
+
+  config <- tryCatch(
+    reticulate::py_config(),
+    error = function(...) NULL
+  )
+  normalize_python_runtime_path(config[["python"]])
+}
+
+assert_python_runtime_switchable <- function(python_path) {
+  active_python <- active_python_runtime()
+  if (is.null(active_python) || same_python_runtime(active_python, python_path)) {
+    return(invisible(TRUE))
+  }
+
+  log_message(
+    "Python is already initialized with {.file {active_python}} and cannot be switched to {.file {python_path}} in the same R session. Restart R, then run {.code PrepareEnv(...)} and the downstream analysis with the same {.arg envname} and {.arg conda}.",
+    message_type = "error"
+  )
+}
+
 configure_python_runtime <- function(python_path) {
   python_path <- normalizePath(python_path, mustWork = FALSE)
   if (!nzchar(python_path) || !file.exists(python_path)) {
     return(invisible(FALSE))
   }
+
+  assert_python_runtime_switchable(python_path)
 
   python_dir <- dirname(python_path)
   env_path <- dirname(python_dir)
@@ -521,9 +613,17 @@ configure_python_runtime <- function(python_path) {
   Sys.setenv(
     RETICULATE_PYTHON = python_path,
     PYTHONNOUSERSITE = "1",
-    PIP_USER = "0"
+    PIP_USER = "0",
+    MPLBACKEND = "Agg"
   )
   Sys.unsetenv("PYTHONPATH")
+
+  if (isFALSE(reticulate::py_available(initialize = FALSE))) {
+    tryCatch(
+      reticulate::use_python(python_path, required = TRUE),
+      error = function(...) NULL
+    )
+  }
 
   prepend_path_var(
     "PATH",
@@ -738,6 +838,147 @@ install_miniconda2 <- function(
   conda
 }
 
+micromamba_platform <- function() {
+  machine <- tolower(Sys.info()[["machine"]])
+  if (is_windows()) {
+    if (machine %in% c("x86_64", "amd64")) {
+      return("win-64")
+    }
+  } else if (is_osx()) {
+    if (machine %in% c("arm64", "aarch64")) {
+      return("osx-arm64")
+    }
+    if (machine %in% c("x86_64", "amd64")) {
+      return("osx-64")
+    }
+  } else if (is_linux()) {
+    if (machine %in% c("aarch64", "arm64")) {
+      return("linux-aarch64")
+    }
+    if (machine %in% c("x86_64", "amd64")) {
+      return("linux-64")
+    }
+  }
+
+  log_message(
+    "Unsupported platform for automatic micromamba installation: {.val {Sys.info()[['sysname']]}} {.val {machine}}",
+    message_type = "error"
+  )
+}
+
+managed_micromamba_dir <- function() {
+  file.path(
+    tools::R_user_dir("scop", which = "cache"),
+    "micromamba",
+    micromamba_platform()
+  )
+}
+
+managed_micromamba_root <- function() {
+  file.path(
+    tools::R_user_dir("scop", which = "cache"),
+    "micromamba-root"
+  )
+}
+
+legacy_managed_micromamba_roots <- function() {
+  file.path(
+    tools::R_user_dir("scop", which = "data"),
+    "micromamba-root"
+  )
+}
+
+find_managed_micromamba <- function() {
+  install_dir <- managed_micromamba_dir()
+  candidates <- file.path(
+    install_dir,
+    c(
+      if (is_windows()) "Library/bin/micromamba.exe" else "bin/micromamba",
+      if (is_windows()) "micromamba.exe" else "micromamba"
+    )
+  )
+  candidates <- candidates[file.exists(candidates)]
+  if (length(candidates) == 0) {
+    return(NULL)
+  }
+  normalizePath(candidates[[1]], winslash = "/", mustWork = TRUE)
+}
+
+configure_managed_micromamba_root <- function() {
+  root <- managed_micromamba_root()
+  current <- Sys.getenv("MAMBA_ROOT_PREFIX", unset = "")
+  current_norm <- normalize_conda_paths(current)
+  managed_roots <- normalize_conda_paths(c(root, legacy_managed_micromamba_roots()))
+
+  if (
+    !nzchar(current) ||
+      length(current_norm) == 0 ||
+      current_norm %in% managed_roots ||
+      grepl("\\s", current_norm)
+  ) {
+    dir.create(root, recursive = TRUE, showWarnings = FALSE)
+    Sys.setenv(MAMBA_ROOT_PREFIX = root)
+  }
+  invisible(Sys.getenv("MAMBA_ROOT_PREFIX"))
+}
+
+install_micromamba <- function(timeout = 600) {
+  existing <- find_managed_micromamba()
+  if (!is.null(existing)) {
+    configure_managed_micromamba_root()
+    return(existing)
+  }
+
+  platform <- micromamba_platform()
+  install_dir <- managed_micromamba_dir()
+  archive <- file.path(tempdir(), sprintf("micromamba-%s.tar.bz2", platform))
+  url <- sprintf(
+    "https://micro.mamba.pm/api/micromamba/%s/latest",
+    platform
+  )
+
+  log_message(
+    "Installing micromamba for platform {.val {platform}}..."
+  )
+  log_message(
+    "Downloading micromamba from: {.url {url}}"
+  )
+
+  dir.create(install_dir, recursive = TRUE, showWarnings = FALSE)
+  options(timeout = timeout)
+  status <- tryCatch(
+    utils::download.file(url, archive, mode = "wb", quiet = FALSE),
+    error = function(e) e
+  )
+  if (inherits(status, "error") || !identical(status, 0L)) {
+    msg <- if (inherits(status, "error")) status$message else status
+    log_message(
+      "Failed to download micromamba: {.val {msg}}",
+      message_type = "error"
+    )
+  }
+
+  unlink(install_dir, recursive = TRUE, force = TRUE)
+  dir.create(install_dir, recursive = TRUE, showWarnings = FALSE)
+  utils::untar(archive, exdir = install_dir)
+
+  micromamba <- find_managed_micromamba()
+  if (is.null(micromamba)) {
+    log_message(
+      "Micromamba installation completed but executable was not found under {.file {install_dir}}",
+      message_type = "error"
+    )
+  }
+
+  Sys.chmod(micromamba, mode = "0755")
+  configure_managed_micromamba_root()
+  log_message(
+    "Micromamba installed at: {.file {micromamba}}"
+  )
+
+  micromamba
+}
+
 #' @title Print environment information
 #' @inheritParams PrepareEnv
 #' @param verbose Whether to print environment information.
@@ -747,13 +988,31 @@ env_info <- function(conda, envname, verbose = TRUE) {
     return(invisible(NULL))
   }
 
-  envs_dir <- get_conda_envs_dir(conda = conda)
+  manager <- conda_manager_label(conda = conda)
+  env_path <- conda_env_path(envname = envname, conda = conda)
+  envs_dir <- if (!is.null(env_path)) {
+    dirname(env_path)
+  } else {
+    get_conda_envs_dir(conda = conda)
+  }
 
   python_path <- tryCatch(
     conda_python(envname = envname, conda = conda),
     error = function(...) NULL
   )
-  python_path <- python_path %||% paste0(envs_dir, "/", get_envname(envname), "/bin/python")
+  env_display <- env_path %||% if (!is.null(envs_dir)) {
+    file.path(envs_dir, get_envname(envname))
+  } else {
+    get_envname(envname)
+  }
+  python_path <- python_path %||% if (!is.null(env_display) && nzchar(env_display)) {
+    file.path(
+      env_display,
+      if (is_windows()) "python.exe" else "bin/python"
+    )
+  } else {
+    NULL
+  }
   py_version <- if (!is.null(python_path) && nzchar(python_path) && file.exists(python_path)) {
     out <- tryCatch(
       suppressWarnings(system2(python_path, "--version", stdout = TRUE, stderr = TRUE)),
@@ -766,17 +1025,19 @@ env_info <- function(conda, envname, verbose = TRUE) {
 
   py_info_mesg <- c(
     cli::col_blue(
-      "Conda config:"
+      "Environment manager config:"
     ),
     cli::col_grey(
-      " Conda:         ",
+      " Manager:       ",
+      manager
+    ),
+    cli::col_grey(
+      " Executable:    ",
       conda
     ),
     cli::col_grey(
       " Environment:   ",
-      envs_dir,
-      "/",
-      get_envname(envname)
+      env_display
     ),
     cli::col_blue(
       "Python config:"
@@ -809,7 +1070,9 @@ env_info <- function(conda, envname, verbose = TRUE) {
 #' `"cellphonedb"`, `"magic"`, `"scrublet"`, `"doubletdetection"`,
 #' `"doublet"`, `"palantir"`, `"scvelo"`, `"cellrank"`, `"wot"`, `"phate"`,
 #' `"pacmap"`, `"trimap"`, `"multimap"`, and `"scomm"`. If `NULL`, the
-#' complete environment is returned.
+#' default environment is returned. The default excludes `"scomm"` because its
+#' TensorFlow stack is not compatible with the default JAX/scVI stack in the
+#' same environment.
 #'
 #' @return
 #' A list containing:
@@ -875,9 +1138,10 @@ core_python_requirements <- function() {
   }
   list(
     packages = c(
+      "setuptools" = "setuptools<81",
       "leidenalg" = "leidenalg==0.10.2",
       "tbb" = if (is_apple_silicon()) {
-        "pxr-tbb==2022.2.0"
+        "pxr-tbb==2022.2.0.0"
       } else {
         "tbb==2022.2.0"
       },
@@ -897,6 +1161,7 @@ core_python_requirements <- function() {
       }
     ),
     install_methods = c(
+      "setuptools" = "pip",
       "leidenalg" = "conda",
       "tbb" = tbb_install_method,
       "python-igraph" = if (is_apple_silicon()) {
@@ -1196,52 +1461,46 @@ env_exist <- function(
   conda <- resolve_conda(conda)
 
   if (!is.null(conda)) {
-    if (is.null(envs_dir)) {
-      conda_info <- tryCatch(
-        {
-          get_namespace_fun("reticulate", "conda_info")(conda = conda)
-        },
-        error = function(e) {
-          log_message(
-            "Failed to get conda info: {.val {e$message}}",
-            message_type = "warning"
-          )
-          NULL
-        }
-      )
+    env_paths <- conda_env_paths(
+      envname = envname,
+      conda = conda,
+      envs_dir = envs_dir
+    )
 
-      if (is.null(conda_info)) {
-        envs_dir <- infer_conda_envs_dir(conda = conda)
-      } else {
-        envs_dir <- conda_info[["envs directories"]][1]
-        if (is.null(envs_dir) || length(envs_dir) == 0) {
-          envs_dir <- conda_info$envs_dirs[1]
-        }
+    if (length(env_paths) > 0) {
+      existing_paths <- env_paths[file.exists(env_paths)]
+      valid_paths <- existing_paths[valid_conda_env_paths(existing_paths)]
+      if (length(valid_paths) > 0) {
+        return(TRUE)
       }
-      if (is.null(envs_dir) || length(envs_dir) == 0 || !dir.exists(envs_dir)) {
-        envs_dir <- infer_conda_envs_dir(conda = conda)
-      }
-    }
-
-    if (is.null(envs_dir) || length(envs_dir) == 0) {
-      return(FALSE)
-    }
-
-    env_path <- paste0(envs_dir, "/", envname)
-    exist <- file.exists(env_path)
-
-    if (exist) {
-      conda_meta_path <- file.path(env_path, "conda-meta")
-      if (!dir.exists(conda_meta_path)) {
+      if (length(existing_paths) > 0) {
         log_message(
-          "Environment directory exists but appears invalid: {.file {env_path}}",
+          "Environment directory exists but appears invalid: {.file {existing_paths[1]}}",
           message_type = "warning"
         )
         return(FALSE)
       }
     }
 
-    return(exist)
+    envs_dirs <- envs_dir %||% get_conda_envs_dirs(conda = conda)
+    envs <- tryCatch(
+      reticulate::conda_list(conda = conda),
+      error = function(...) NULL
+    )
+    envs <- filter_conda_env_table(
+      conda_envs = envs,
+      envs_dirs = envs_dirs,
+      root_prefix = conda_root_prefix(conda = conda)
+    )
+    if (
+      is.data.frame(envs) &&
+        nrow(envs) > 0 &&
+        any(envs$name == envname & file.exists(envs$python))
+    ) {
+      return(TRUE)
+    }
+
+    return(FALSE)
   } else {
     return(FALSE)
   }
@@ -1256,39 +1515,323 @@ get_envname <- function(envname = NULL) {
   return(envname)
 }
 
+normalize_conda_paths <- function(paths, must_exist = FALSE) {
+  paths <- unlist(paths, use.names = FALSE)
+  paths <- as.character(paths)
+  paths <- paths[!is.na(paths) & nzchar(paths)]
+  if (length(paths) == 0) {
+    return(character())
+  }
+  paths <- path.expand(paths)
+  if (isTRUE(must_exist)) {
+    paths <- paths[dir.exists(paths)]
+  }
+  if (length(paths) == 0) {
+    return(character())
+  }
+  unique(normalizePath(paths, winslash = "/", mustWork = FALSE))
+}
+
+normalize_conda_paths_vector <- function(paths) {
+  paths <- as.character(paths)
+  invalid <- is.na(paths) | !nzchar(paths)
+  paths <- path.expand(paths)
+  paths[!invalid] <- normalizePath(
+    paths[!invalid],
+    winslash = "/",
+    mustWork = FALSE
+  )
+  paths[invalid] <- NA_character_
+  paths
+}
+
+conda_env_python_suffix <- function() {
+  if (is_windows()) "python.exe" else "bin/python"
+}
+
+conda_env_python_path <- function(env_path) {
+  file.path(env_path, conda_env_python_suffix())
+}
+
+valid_conda_env_paths <- function(env_paths) {
+  env_paths <- normalize_conda_paths_vector(env_paths)
+  if (length(env_paths) == 0) {
+    return(logical())
+  }
+
+  !is.na(env_paths) &
+    dir.exists(file.path(env_paths, "conda-meta")) &
+    file.exists(conda_env_python_path(env_paths))
+}
+
+conda_env_path_in_dirs <- function(env_paths, envs_dirs, root_prefix = NULL) {
+  env_paths <- normalize_conda_paths_vector(env_paths)
+  envs_dirs <- normalize_conda_paths(envs_dirs)
+  root_prefix <- normalize_conda_paths(root_prefix)
+
+  if (length(env_paths) == 0) {
+    return(logical())
+  }
+
+  keep <- rep(FALSE, length(env_paths))
+  if (length(envs_dirs) > 0) {
+    keep <- keep | dirname(env_paths) %in% envs_dirs
+  }
+  if (length(root_prefix) > 0) {
+    keep <- keep | env_paths %in% root_prefix
+  }
+
+  keep
+}
+
+filter_conda_env_table <- function(conda_envs, envs_dirs = NULL, root_prefix = NULL) {
+  if (!is.data.frame(conda_envs) || nrow(conda_envs) == 0) {
+    return(conda_envs)
+  }
+  if (!all(c("name", "python") %in% names(conda_envs))) {
+    return(conda_envs[0, , drop = FALSE])
+  }
+
+  env_paths <- normalize_conda_paths_vector(dirname(dirname(conda_envs$python)))
+  keep <- file.exists(conda_envs$python) & valid_conda_env_paths(env_paths)
+
+  scoped <- conda_env_path_in_dirs(
+    env_paths = env_paths,
+    envs_dirs = envs_dirs,
+    root_prefix = root_prefix
+  )
+  if (any(scoped)) {
+    keep <- keep & scoped
+  }
+
+  conda_envs[keep, , drop = FALSE]
+}
+
+parse_conda_json_output <- function(output) {
+  if (is.null(output) || length(output) == 0) {
+    return(NULL)
+  }
+  output <- output[nzchar(output)]
+  if (length(output) == 0) {
+    return(NULL)
+  }
+  text <- paste(output, collapse = "\n")
+  json_start <- regexpr("[\\[{]", text, perl = TRUE)[1]
+  if (is.na(json_start) || json_start < 1) {
+    return(NULL)
+  }
+  text <- substring(text, json_start)
+
+  tryCatch(
+    get_namespace_fun("jsonlite", "fromJSON")(text, simplifyVector = TRUE),
+    error = function(...) NULL
+  )
+}
+
+run_conda_json <- function(conda, args) {
+  output <- tryCatch(
+    suppressWarnings(system2(conda, args, stdout = TRUE, stderr = FALSE)),
+    error = function(...) NULL
+  )
+  status <- attr(output, "status") %||% 0L
+  if (!identical(status, 0L)) {
+    return(NULL)
+  }
+  parse_conda_json_output(output)
+}
+
+conda_info_json <- function(conda = "auto") {
+  conda <- resolve_conda(conda)
+  if (is.null(conda)) {
+    return(NULL)
+  }
+
+  info <- run_conda_json(conda, c("info", "--json"))
+  if (!is.null(info)) {
+    return(info)
+  }
+
+  info <- tryCatch(
+    get_namespace_fun("reticulate", "conda_info")(conda = conda),
+    error = function(...) NULL
+  )
+  if (!is.null(info)) {
+    return(info)
+  }
+
+  NULL
+}
+
+conda_env_list_json <- function(conda = "auto") {
+  conda <- resolve_conda(conda)
+  if (is.null(conda)) {
+    return(NULL)
+  }
+  run_conda_json(conda, c("env", "list", "--json"))
+}
+
+conda_manager_type <- function(conda = "auto") {
+  if (identical(conda, "auto")) {
+    conda <- resolve_conda(conda)
+  }
+  if (is.null(conda)) {
+    return("conda")
+  }
+  exe <- tolower(basename(as.character(conda[[1]])))
+  if (startsWith(exe, "micromamba")) {
+    return("micromamba")
+  }
+  if (startsWith(exe, "mamba")) {
+    return("mamba")
+  }
+  "conda"
+}
+
+conda_manager_label <- function(conda = "auto") {
+  conda_manager_type(conda = conda)
+}
+
+conda_root_prefix <- function(conda = "auto", info = NULL) {
+  conda <- resolve_conda(conda)
+  if (is.null(conda)) {
+    return(NULL)
+  }
+
+  info <- info %||% conda_info_json(conda = conda)
+  root <- NULL
+  if (!is.null(info)) {
+    root <- info[["root_prefix"]] %||%
+      info[["root prefix"]] %||%
+      info[["base environment"]] %||%
+      info[["base_prefix"]]
+  }
+
+  if (is.null(root) && identical(conda_manager_type(conda), "micromamba")) {
+    root_env <- Sys.getenv("MAMBA_ROOT_PREFIX", unset = "")
+    if (nzchar(root_env)) {
+      root <- root_env
+    }
+  }
+
+  if (is.null(root) && file.exists(conda)) {
+    root <- dirname(dirname(conda))
+  }
+
+  root <- normalize_conda_paths(root)
+  if (length(root) == 0) {
+    return(NULL)
+  }
+  root[[1]]
+}
+
+get_conda_envs_dirs <- function(conda = "auto") {
+  conda <- resolve_conda(conda)
+  if (is.null(conda)) {
+    return(NULL)
+  }
+
+  info <- conda_info_json(conda = conda)
+  dirs <- character()
+  if (!is.null(info)) {
+    dirs <- c(
+      dirs,
+      info[["envs directories"]],
+      info[["envs_dirs"]]
+    )
+  }
+
+  root <- conda_root_prefix(conda = conda, info = info)
+  if (!is.null(root)) {
+    dirs <- c(dirs, file.path(root, "envs"))
+  }
+
+  dirs <- normalize_conda_paths(dirs)
+  if (length(dirs) == 0) {
+    return(NULL)
+  }
+
+  existing_dirs <- dirs[dir.exists(dirs)]
+  if (length(existing_dirs) > 0) {
+    return(existing_dirs)
+  }
+  dirs
+}
+
 get_conda_envs_dir <- function(conda = "auto") {
-  conda_info <- get_namespace_fun(
-    "reticulate",
-    "conda_info"
-  )(conda = conda)
-  envs_dir <- conda_info[["envs directories"]][1]
-  if (is.null(envs_dir) || length(envs_dir) == 0) {
-    envs_dir <- conda_info$envs_dirs[1]
+  envs_dirs <- get_conda_envs_dirs(conda = conda)
+  envs_dirs[[1]] %||% NULL
+}
+
+conda_env_paths <- function(
+  envname = NULL,
+  conda = "auto",
+  envs_dir = NULL
+) {
+  envname <- get_envname(envname)
+  if (grepl("[/\\\\]", envname)) {
+    return(normalize_conda_paths(envname))
   }
-  if (is.null(envs_dir) || length(envs_dir) == 0 || !dir.exists(envs_dir)) {
-    envs_dir <- infer_conda_envs_dir(conda = conda)
+
+  envs_dirs <- envs_dir %||% get_conda_envs_dirs(conda = conda)
+  if (is.null(envs_dirs) || length(envs_dirs) == 0) {
+    return(character())
   }
-  return(envs_dir)
+
+  normalize_conda_paths(file.path(envs_dirs, envname))
+}
+
+conda_env_path <- function(
+  envname = NULL,
+  conda = "auto",
+  envs_dir = NULL
+) {
+  paths <- conda_env_paths(
+    envname = envname,
+    conda = conda,
+    envs_dir = envs_dir
+  )
+  if (length(paths) == 0) {
+    return(NULL)
+  }
+  existing <- paths[file.exists(paths)]
+  if (length(existing) > 0) {
+    return(existing[[1]])
+  }
+  paths[[1]]
 }
 
 infer_conda_envs_dir <- function(conda = "auto") {
-  conda <- resolve_conda(conda)
-  if (is.null(conda) || !file.exists(conda)) {
+  envs_dir <- get_conda_envs_dir(conda = conda)
+  if (is.null(envs_dir)) {
     return(NULL)
   }
-  envs_dir <- file.path(dirname(dirname(conda)), "envs")
-  if (!dir.exists(envs_dir)) {
-    return(NULL)
-  }
-  normalizePath(envs_dir, mustWork = FALSE)
+  normalizePath(envs_dir, winslash = "/", mustWork = FALSE)
 }
 
 find_conda <- function() {
+  for (candidate in c(
+    getOption("scop_conda", default = NULL),
+    getOption("reticulate.conda_binary", default = NULL),
+    Sys.getenv("RETICULATE_CONDA", unset = NA)
+  )) {
+    resolved <- resolve_conda_executable(
+      candidate,
+      error_if_missing = FALSE
+    )
+    if (!is.null(resolved)) {
+      return(resolved)
+    }
+  }
+
   conda <- tryCatch(
     reticulate::conda_binary(conda = "auto"),
     error = identity
   )
   conda_exist <- !inherits(conda, "error")
+  if (isTRUE(conda_exist)) {
+    return(normalizePath(conda, winslash = "/", mustWork = FALSE))
+  }
+
   if (isFALSE(conda_exist)) {
     if (!is.na(Sys.getenv("USER", unset = NA))) {
       miniconda_path <- gsub(
@@ -1318,15 +1861,92 @@ find_conda <- function() {
       conda <- NULL
     }
   }
+
+  if (!is.null(conda)) {
+    return(normalizePath(conda, winslash = "/", mustWork = FALSE))
+  }
+
+  for (candidate in c("micromamba", "mamba", "conda")) {
+    resolved <- resolve_conda_executable(
+      candidate,
+      error_if_missing = FALSE
+    )
+    if (!is.null(resolved)) {
+      return(resolved)
+    }
+  }
+
   return(conda)
+}
+
+resolve_conda_executable <- function(
+  conda,
+  error_if_missing = TRUE,
+  install_if_missing = FALSE
+) {
+  if (is.null(conda) || length(conda) == 0 || is.na(conda[[1]])) {
+    return(NULL)
+  }
+
+  input <- path.expand(as.character(conda[[1]]))
+  if (!nzchar(input)) {
+    return(NULL)
+  }
+
+  candidate <- input
+  if (!grepl("[/\\\\]", candidate)) {
+    found <- Sys.which(candidate)
+    if (nzchar(found)) {
+      candidate <- found
+    } else if (
+      identical(candidate, "micromamba") &&
+        isTRUE(install_if_missing)
+    ) {
+      candidate <- install_micromamba()
+    } else if (identical(candidate, "micromamba")) {
+      managed <- find_managed_micromamba()
+      if (!is.null(managed)) {
+        candidate <- managed
+        configure_managed_micromamba_root()
+      }
+    }
+  }
+
+  resolved <- tryCatch(
+    reticulate::conda_binary(candidate),
+    error = identity
+  )
+  if (inherits(resolved, "error")) {
+    if (isTRUE(error_if_missing)) {
+      log_message(
+        "Unable to find conda-compatible executable {.val {input}}: {.val {resolved$message}}",
+        message_type = "error"
+      )
+    }
+    return(NULL)
+  }
+
+  resolved <- normalizePath(resolved, winslash = "/", mustWork = FALSE)
+  if (identical(conda_manager_type(resolved), "micromamba")) {
+    managed <- find_managed_micromamba()
+    if (!is.null(managed) && identical(resolved, managed)) {
+      configure_managed_micromamba_root()
+    }
+  }
+
+  resolved
 }
 
 resolve_conda <- function(conda = "auto") {
   if (identical(conda, "auto")) {
     conda <- find_conda()
   } else {
-    options(reticulate.conda_binary = conda)
-    conda <- find_conda()
+    conda_name <- as.character(conda[[1]])
+    conda <- resolve_conda_executable(
+      conda,
+      error_if_missing = TRUE,
+      install_if_missing = identical(conda_name, "micromamba")
+    )
   }
   return(conda)
 }
@@ -1334,7 +1954,10 @@ resolve_conda <- function(conda = "auto") {
 ensure_conda <- function(conda, error_if_missing = TRUE) {
   if (is.null(conda)) {
     if (error_if_missing) {
-      log_message("Conda not found", message_type = "error")
+      log_message(
+        "Conda-compatible environment manager not found",
+        message_type = "error"
+      )
     }
     return(FALSE)
   }
@@ -1361,7 +1984,7 @@ get_conda_version <- function(conda) {
 
   version_line <- paste(version_output, collapse = " ")
   version_match <- regexec(
-    "\\bconda\\s+([0-9]+(?:\\.[0-9]+){1,})\\b",
+    "\\b(?:conda|mamba|micromamba)\\s+([0-9]+(?:\\.[0-9]+){1,})\\b",
     version_line,
     perl = TRUE
   )
@@ -1381,6 +2004,9 @@ get_conda_version <- function(conda) {
 conda_supports_tos <- function(conda) {
   conda <- resolve_conda(conda)
   if (!ensure_conda(conda, error_if_missing = FALSE)) {
+    return(FALSE)
+  }
+  if (!identical(conda_manager_type(conda), "conda")) {
     return(FALSE)
   }
 
@@ -1530,6 +2156,70 @@ find_uv <- function(
   return(NULL)
 }
 
+create_conda_env <- function(
+  conda,
+  envname,
+  python_version = NULL,
+  packages = character(),
+  forge = TRUE,
+  channel = character()
+) {
+  manager <- conda_manager_type(conda)
+  if (identical(manager, "conda")) {
+    return(reticulate::conda_create(
+      conda = conda,
+      envname = envname,
+      python_version = python_version,
+      packages = packages,
+      forge = forge,
+      channel = channel
+    ))
+  }
+
+  envname <- get_namespace_fun(
+    "reticulate",
+    "condaenv_resolve"
+  )(envname)
+  conda_args <- get_namespace_fun(
+    "reticulate",
+    "conda_args"
+  )
+  system2t <- get_namespace_fun(
+    "reticulate",
+    "system2t"
+  )
+
+  python_package <- if (is.null(python_version)) {
+    "python"
+  } else {
+    sprintf("python=%s", python_version)
+  }
+
+  args <- conda_args("create", envname, c(python_package, packages))
+  args <- c(args, "--quiet")
+
+  channels <- if (length(channel)) {
+    channel
+  } else if (forge) {
+    "conda-forge"
+  } else {
+    character()
+  }
+  for (ch in channels) {
+    args <- c(args, "-c", ch)
+  }
+
+  result <- system2t(conda, shQuote(args))
+  if (result != 0L) {
+    log_message(
+      "Error creating Python environment {.file {envname}} with {.pkg {manager}} [exit code {.val {result}}]",
+      message_type = "error"
+    )
+  }
+
+  conda_python(envname = envname, conda = conda)
+}
+
 conda_install <- function(
   envname = NULL,
   packages,
@@ -1576,14 +2266,18 @@ conda_install <- function(
     }
   }
 
-  conda <- reticulate::conda_binary(conda)
+  conda <- resolve_conda(conda)
+  if (!ensure_conda(conda)) {
+    return(invisible(packages))
+  }
+  manager <- conda_manager_label(conda)
   envname <- get_namespace_fun(
     "reticulate",
     "condaenv_resolve"
   )(envname)
 
   log_message(
-    "Installing {.val {length(packages)}} packages into environment: {.file {envname}}"
+    "Installing {.val {length(packages)}} packages into environment: {.file {envname}} using {.pkg {manager}}"
   )
 
   python_package <- if (is.null(python_version)) {
@@ -1604,12 +2298,13 @@ conda_install <- function(
       "Python environment does not exist, creating: {.file {envname}}"
     )
     accept_conda_tos(conda = conda)
-    reticulate::conda_create(
+    create_conda_env(
+      conda = conda,
       envname = envname,
-      packages = python_package %||% "python",
+      python_version = python_version,
+      packages = character(),
       forge = forge,
-      channel = channel,
-      conda = conda
+      channel = channel
     )
     python <- conda_python(envname = envname, conda = conda)
     log_message(
@@ -1648,7 +2343,7 @@ conda_install <- function(
     return(invisible(packages))
   }
 
-  log_message("Installing packages via {.pkg conda}...")
+  log_message("Installing packages via {.pkg {manager}}...")
   args <- conda_args("install", envname)
 
   channels <- if (length(channel)) {
@@ -1676,14 +2371,14 @@ conda_install <- function(
 
   if (result != 0L) {
     log_message(
-      "Conda installation failed with error code: {.val {result}}",
+      "{.pkg {manager}} installation failed with error code: {.val {result}}",
       message_type = "warning"
     )
   } else {
     log_message(
-      "{.pkg conda} installation completed successfully",
-      message_type = "success"
-    )
+        "{.pkg {manager}} installation completed successfully",
+        message_type = "success"
+      )
   }
 
   invisible(packages)
@@ -1905,42 +2600,58 @@ conda_python <- function(
   all = FALSE
 ) {
   envname <- get_envname(envname)
+  conda <- resolve_conda(conda)
+  if (!ensure_conda(conda)) {
+    return(NULL)
+  }
   envname <- get_namespace_fun(
     "reticulate",
     "python_environment_resolve"
   )(envname)
   if (grepl("[/\\\\]", envname)) {
-    suffix <- if (is_windows()) "python.exe" else "bin/python"
-    path <- file.path(envname, suffix)
+    path <- conda_env_python_path(envname)
     if (file.exists(path)) {
       return(path)
     }
     log_message(
-      "no conda environment exists at path {.file {envname}}",
+      "No conda-compatible Python environment exists at path {.file {envname}}",
       message_type = "error"
     )
   }
-  conda_envs <- reticulate::conda_list(conda = conda)
-  envs_dir <- get_conda_envs_dir(conda = conda)
-  conda_envs <- conda_envs[
-    grep(
-      normalizePath(
-        envs_dir,
-        mustWork = FALSE
-      ),
-      x = normalizePath(conda_envs$python, mustWork = FALSE),
-      fixed = TRUE
-    ), ,
-    drop = FALSE
-  ]
+  envs_dirs <- get_conda_envs_dirs(conda = conda)
+  for (env_path in conda_env_paths(
+    envname = envname,
+    conda = conda,
+    envs_dir = envs_dirs
+  )) {
+    python_path <- conda_env_python_path(env_path)
+
+    if (file.exists(python_path) && valid_conda_env_paths(env_path)) {
+      return(normalizePath(python_path, mustWork = FALSE))
+    }
+  }
+
+  conda_envs <- tryCatch(
+    reticulate::conda_list(conda = conda),
+    error = function(...) data.frame(name = character(), python = character())
+  )
+  conda_envs <- filter_conda_env_table(
+    conda_envs = conda_envs,
+    envs_dirs = envs_dirs,
+    root_prefix = conda_root_prefix(conda = conda)
+  )
   env <- conda_envs[conda_envs$name == envname, , drop = FALSE]
   if (nrow(env) == 0) {
-    env_path <- file.path(envs_dir, envname)
-    suffix <- if (is_windows()) "python.exe" else "bin/python"
-    python_path <- file.path(env_path, suffix)
+    for (env_path in conda_env_paths(
+      envname = envname,
+      conda = conda,
+      envs_dir = envs_dirs
+    )) {
+      python_path <- conda_env_python_path(env_path)
 
-    if (file.exists(python_path)) {
-      return(normalizePath(python_path, mustWork = FALSE))
+      if (file.exists(python_path)) {
+        return(normalizePath(python_path, mustWork = FALSE))
+      }
     }
 
     log_message(
@@ -1952,7 +2663,7 @@ conda_python <- function(
   return(normalizePath(as.character(python), mustWork = FALSE))
 }
 
-#' @title Remove a conda environment
+#' @title Remove a conda-compatible Python environment
 #'
 #' @md
 #' @inheritParams PrepareEnv
@@ -1981,14 +2692,15 @@ RemoveEnv <- function(
 ) {
   envname <- get_envname(envname)
 
-  log_message(
-    "Removing conda environment: {.file {envname}}"
-  )
-
   conda <- resolve_conda(conda)
   if (!ensure_conda(conda)) {
     return(invisible(FALSE))
   }
+  manager <- conda_manager_label(conda)
+
+  log_message(
+    "Removing environment: {.file {envname}} using {.pkg {manager}}"
+  )
 
   env_exists <- env_exist(envname = envname, conda = conda)
   if (isFALSE(env_exists)) {
@@ -1999,8 +2711,7 @@ RemoveEnv <- function(
     return(invisible(FALSE))
   }
 
-  envs_dir <- get_conda_envs_dir(conda = conda)
-  env_path <- file.path(envs_dir, envname)
+  env_path <- conda_env_path(envname = envname, conda = conda)
 
   if (!force) {
     log_message(
@@ -2051,7 +2762,7 @@ RemoveEnv <- function(
     },
     error = function(e) {
       log_message(
-        "{.fn reticulate::conda_remove} failed: {.val {e$message}}",
+        "{.fn reticulate::conda_remove} failed for {.pkg {manager}}: {.val {e$message}}",
         message_type = "warning"
       )
       FALSE
@@ -2097,6 +2808,23 @@ RemoveEnv <- function(
         FALSE
       }
     )
+  } else if (!is.null(env_path) && dir.exists(env_path)) {
+    log_message(
+      "Removing leftover environment directory: {.file {env_path}}"
+    )
+    result <- tryCatch(
+      {
+        unlink(env_path, recursive = TRUE, force = TRUE)
+        !dir.exists(env_path)
+      },
+      error = function(e) {
+        log_message(
+          "Direct cleanup failed: {.val {e$message}}",
+          message_type = "warning"
+        )
+        FALSE
+      }
+    )
   }
 
   if (result) {
@@ -2116,11 +2844,11 @@ RemoveEnv <- function(
   return(invisible(result))
 }
 
-#' @title List conda environments
+#' @title List conda-compatible Python environments
 #'
 #' @md
 #' @inheritParams PrepareEnv
-#' @return A data frame of conda environments.
+#' @return A data frame of conda-compatible Python environments.
 #' @export
 ListEnv <- function(conda = "auto") {
   conda <- resolve_conda(conda)
@@ -2128,10 +2856,20 @@ ListEnv <- function(conda = "auto") {
     return(invisible(NULL))
   }
 
-  conda_envs <- reticulate::conda_list(conda = conda)
-
-  envs_dir <- get_conda_envs_dir(conda = conda)
-  if (!is.null(envs_dir) && dir.exists(envs_dir)) {
+  envs_dirs <- get_conda_envs_dirs(conda = conda)
+  conda_envs <- tryCatch(
+    reticulate::conda_list(conda = conda),
+    error = function(...) data.frame(name = character(), python = character())
+  )
+  conda_envs <- filter_conda_env_table(
+    conda_envs = conda_envs,
+    envs_dirs = envs_dirs,
+    root_prefix = conda_root_prefix(conda = conda)
+  )
+  for (envs_dir in envs_dirs) {
+    if (is.null(envs_dir) || !dir.exists(envs_dir)) {
+      next
+    }
     existing_names <- conda_envs$name
 
     env_dirs <- list.dirs(envs_dir, full.names = FALSE, recursive = FALSE)
@@ -2141,11 +2879,11 @@ ListEnv <- function(conda = "auto") {
         env_path <- file.path(envs_dir, env_dir)
         python_path <- file.path(
           env_path,
-          if (is_windows()) "python.exe" else "bin/python"
+          conda_env_python_suffix()
         )
 
         if (
-          dir.exists(file.path(env_path, "conda-meta")) &&
+          valid_conda_env_paths(env_path) &&
             file.exists(python_path)
         ) {
           new_row <- data.frame(
@@ -2169,6 +2907,14 @@ ListEnv <- function(conda = "auto") {
 accept_conda_tos <- function(conda = "auto") {
   conda <- resolve_conda(conda)
   if (!ensure_conda(conda, error_if_missing = FALSE)) {
+    return(invisible(FALSE))
+  }
+
+  manager <- conda_manager_type(conda)
+  if (!identical(manager, "conda")) {
+    log_message(
+      "Skipping conda Terms of Service acceptance for {.pkg {manager}}."
+    )
     return(invisible(FALSE))
   }
 

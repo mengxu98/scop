@@ -49,14 +49,14 @@ additional \code{ChromatinAssay} will be preprocessed sequentially.}
 If \code{NULL}, normalization will be performed if the specified assay does not have scaled data.}
 
 \item{normalization_method}{The method to use for normalization.
-Options are \code{"LogNormalize"}, \code{"SCT"}, or \code{"TFIDF"}.
+Options are \code{"LogNormalize"}, \code{"SCT"}, \code{"TFIDF"}, or \code{"scran"}.
 Default is \code{"LogNormalize"}.}
 
 \item{do_HVF_finding}{Whether to perform high variable feature finding.
 If \code{TRUE}, the function will force to find the highly variable features (HVF) using the specified HVF method.}
 
 \item{HVF_method}{The method to use for finding highly variable features.
-Options are \code{"vst"}, \code{"mvp"}, or \code{"disp"}.
+Options are \code{"vst"}, \code{"mvp"}, \code{"disp"}, or \code{"scran"}.
 Default is \code{"vst"}.}
 
 \item{nHVF}{The number of highly variable features to select.
@@ -192,4 +192,27 @@ plist2 <- lapply(
   }
 )
 patchwork::wrap_plots(plist2)
+
+if (requireNamespace("scran", quietly = TRUE)) {
+  data(pancreas_sub)
+  pancreas_scran <- pancreas_sub[, 1:80]
+  pancreas_scran <- standard_scop(
+    pancreas_scran,
+    assay = "RNA",
+    do_normalization = TRUE,
+    normalization_method = "scran",
+    do_HVF_finding = TRUE,
+    HVF_method = "scran",
+    nHVF = 100,
+    linear_reduction_dims = 10,
+    linear_reduction_dims_use = 1:5,
+    nonlinear_reduction = "umap",
+    nonlinear_reduction_dims = 2
+  )
+  CellDimPlot(
+    pancreas_scran,
+    reduction = "StandardUMAP2D",
+    group.by = "Standardclusters"
+  )
+}
 }

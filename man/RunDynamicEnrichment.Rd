@@ -26,6 +26,8 @@ RunDynamicEnrichment(
   TERM2NAME = NULL,
   minGSSize = 10,
   maxGSSize = 500,
+  backend = c("cpp", "r"),
+  cpp_strategy = c("sparse", "topk", "full"),
   cores = 1,
   verbose = TRUE,
   seed = 11
@@ -91,6 +93,15 @@ The first column should contain the term IDs, and the second column should conta
 \item{minGSSize}{The minimum size of a gene set to be considered in the enrichment analysis.}
 
 \item{maxGSSize}{The maximum size of a gene set to be considered in the enrichment analysis.}
+
+\item{backend}{Enrichment backend. \code{"cpp"} is the default and uses a fast native
+hypergeometric ORA implementation and returns the enrichment table without
+\code{enrichResult} objects. \code{"r"} uses \code{\link[clusterProfiler:enricher]{clusterProfiler::enricher()}} and returns
+\code{enrichResult} objects in \code{results}. \code{GO_simplify = TRUE} currently uses the R backend.}
+
+\item{cpp_strategy}{C++ AUCell ranking strategy. \code{"sparse"} ranks non-zero
+genes and approximates zero ties, \code{"topk"} ranks only genes that can contribute
+to AUCell AUC, and \code{"full"} ranks all genes.}
 
 \item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
 Default is \code{1}.}

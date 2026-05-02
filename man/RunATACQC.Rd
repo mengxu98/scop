@@ -42,3 +42,13 @@ A \code{Seurat} object with QC metadata added.
 \description{
 Calculate common scATAC QC metrics and optionally filter cells by thresholds.
 }
+\examples{
+\donttest{
+data("pbmcmultiome_sub", package = "scop")
+pbmcmultiome_sub <- RunATACQC(
+  pbmcmultiome_sub,
+  assay = "peaks",
+  fast = TRUE
+)
+}
+}

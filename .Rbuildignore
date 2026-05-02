@@ -20,4 +20,14 @@
 ^scripts$
 ^\.codex$
 ^plan$
+^paper$
+^dev$
 ^Rplots\.pdf$
+(^|/)\.DS_Store$
+^\.Rhistory$
+^\.Rprofile$
+^\.\.Rcheck$
+^.*\.Rcheck$
+^.*\.tar\.gz$
+^\.git$
+^\.gitignore$

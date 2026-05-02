@@ -9,6 +9,7 @@
 .Ruserdata
 .Rprofile
 ..Rcheck
+*.Rcheck
 
 # directories and files
 SCExplorer
@@ -18,6 +19,11 @@ test
 *.h5ad
 *.pyc
 .codex
+*.o
+*.so
+dev
+paper
 plan
 deepscore_logs
 *.pdf
+*.tar.gz

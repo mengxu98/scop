@@ -9,6 +9,7 @@ DEtestRingPlot(
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,
+  group_use = NULL,
   DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
   group_palette = "Chinese",
   group_palcolor = NULL,
@@ -48,8 +49,12 @@ When \code{res} is provided, \code{srt} will be ignored.
 The data.frame must contain columns: \code{gene}, \code{group1} (factor or character),
 \code{avg_log2FC}, \code{p_val_adj}, and optionally \code{pct.1} and \code{pct.2} for calculating \code{diff_pct}.}
 
+\item{group_use}{Groups to plot.
+Default is \code{NULL} (all groups).}
+
 \item{DE_threshold}{A character string specifying the threshold for differential expression (used to highlight significant genes in all plot types).
-Default is \code{"avg_log2FC > 0 & p_val_adj < 0.05"}.}
+Default is \code{"p_val < 0.05"} for sample-level methods (\code{"edgeR"} and \code{"limma"})
+and \code{"avg_log2FC > 0 & p_val_adj < 0.05"} otherwise.}
 
 \item{group_palette}{Palette for cell types (groups) in Manhattan plot.
 Default is \code{"Chinese"}.}

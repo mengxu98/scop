@@ -147,7 +147,7 @@ computation. Default is \code{15}.}
 Default is \code{TRUE}.}
 
 \item{normalization_method}{The normalization method to be used.
-Possible values are \code{"LogNormalize"}, \code{"SCT"}, and \code{"TFIDF"}.
+Possible values are \code{"LogNormalize"}, \code{"SCT"}, \code{"TFIDF"}, and \code{"scran"}.
 Default is \code{"LogNormalize"}.}
 
 \item{do_HVF_finding}{Whether to perform high variable feature finding.
@@ -158,7 +158,7 @@ Possible values are \code{"global"} and \code{"separate"}.
 Default is \code{"separate"}.}
 
 \item{HVF_method}{The method to use for finding highly variable features.
-Options are \code{"vst"}, \code{"mvp"}, or \code{"disp"}.
+Options are \code{"vst"}, \code{"mvp"}, \code{"disp"}, or \code{"scran"}.
 Default is \code{"vst"}.}
 
 \item{nHVF}{The number of highly variable features to select.
@@ -256,18 +256,30 @@ data(panc8_sub)
 panc8_sub <- integration_scop(
   panc8_sub,
   batch = "tech",
-  integration_method = "LIGER"
+  integration_method = "Uncorrected",
+  nHVF = 500,
+  linear_reduction_dims = 20,
+  linear_reduction_dims_use = 1:10,
+  nonlinear_reduction_dims = 2,
+  compute_lisi = TRUE,
+  lisi_label_colnames = "tech",
+  lisi_perplexity = 10
 )
 CellDimPlot(
   panc8_sub,
-  group.by = c("tech", "celltype")
+  group.by = c("tech", "celltype"),
+  reduction = "UncorrectedUMAP2D"
 )
+LISIPlot(
+  panc8_sub,
+  features = c("UncorrectedpcaUMAP2D_tech_LISI", "UncorrectedUMAP2D_tech_LISI")
+)
+
+\dontrun{
 panc8_sub <- integration_scop(
   panc8_sub,
   batch = "tech",
-  integration_method = "Uncorrected",
-  compute_lisi = TRUE,
-  lisi_label_colnames = "tech"
+  integration_method = "LIGER"
 )
 panc8_sub <- integration_scop(
   panc8_sub,
@@ -278,7 +290,7 @@ panc8_sub <- integration_scop(
 )
 LISIPlot(
   panc8_sub,
-  features = c("pca_tech_LISI", "Harmony5UMAP2D_tech_LISI")
+  features = c("HarmonypcaUMAP2D_tech_LISI", "HarmonyUMAP2D_tech_LISI")
 )
 
 if (requireNamespace("Signac", quietly = TRUE)) {
@@ -339,6 +351,7 @@ for (nr in nonlinear_reductions) {
       legend.position = "none", theme_use = "theme_blank"
     )
   )
+}
 }
 }
 \seealso{

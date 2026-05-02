@@ -1,0 +1,1527 @@
+// [[Rcpp::depends(RcppArmadillo)]]
+#include <RcppArmadillo.h>
+#include <algorithm>
+#include <cmath>
+#include <map>
+#include <numeric>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
+
+using namespace Rcpp;
+
+struct AucEntry {
+  int gene;
+  double value;
+  double random;
+};
+
+static bool aucell_entry_before(const AucEntry& a, const AucEntry& b) {
+  if (a.value > b.value) {
+    return true;
+  }
+  if (a.value < b.value) {
+    return false;
+  }
+  return a.random < b.random;
+}
+
+static double aucell_max_auc(int n_genes, int auc_threshold, bool norm_auc) {
+  if (!norm_auc) {
+    return static_cast<double>(auc_threshold) * static_cast<double>(n_genes);
+  }
+
+  const int m = std::min(n_genes, auc_threshold - 1);
+  if (m <= 0) {
+    return 0.0;
+  }
+
+  double out = 0.0;
+  for (int i = 1; i < m; ++i) {
+    out += static_cast<double>(i);
+  }
+  out += static_cast<double>(auc_threshold - m) * static_cast<double>(m);
+  return out;
+}
+
+static double aucell_auc_from_ranks(
+  const std::vector<int>& ranks,
+  int auc_threshold,
+  double max_auc
+) {
+  if (max_auc <= 0.0) {
+    return R_NaN;
+  }
+
+  std::vector<int> x;
+  x.reserve(ranks.size());
+  for (std::vector<int>::const_iterator it = ranks.begin(); it != ranks.end(); ++it) {
+    if (*it > 0 && *it < auc_threshold) {
+      x.push_back(*it);
+    }
+  }
+  if (x.empty()) {
+    return 0.0;
+  }
+  std::sort(x.begin(), x.end());
+
+  double auc = 0.0;
+  int prev = x[0];
+  for (std::size_t i = 1; i < x.size(); ++i) {
+    auc += static_cast<double>(x[i] - prev) * static_cast<double>(i);
+    prev = x[i];
+  }
+  auc += static_cast<double>(auc_threshold - prev) * static_cast<double>(x.size());
+  return auc / max_auc;
+}
+
+// [[Rcpp::export]]
+NumericMatrix aucell_auc_sparse_cpp(
+  S4 expr,
+  List gene_sets,
+  int auc_max_rank,
+  bool norm_auc = true,
+  int strategy = 1
+) {
+  IntegerVector dims = expr.slot("Dim");
+  const int n_genes = dims[0];
+  const int n_cells = dims[1];
+  const int n_sets = gene_sets.size();
+  const int auc_threshold = std::max(1, auc_max_rank);
+
+  IntegerVector row_idx = expr.slot("i");
+  IntegerVector col_ptr = expr.slot("p");
+  NumericVector values = expr.slot("x");
+
+  std::vector<std::vector<int> > sets(n_sets);
+  std::vector<double> max_auc(n_sets);
+  std::vector<int> set_gene_union;
+  set_gene_union.reserve(n_sets * 64);
+
+  for (int set_i = 0; set_i < n_sets; ++set_i) {
+    IntegerVector genes = gene_sets[set_i];
+    sets[set_i].reserve(genes.size());
+    for (int gene_i = 0; gene_i < genes.size(); ++gene_i) {
+      const int gene = genes[gene_i] - 1;
+      if (gene >= 0 && gene < n_genes) {
+        sets[set_i].push_back(gene);
+        set_gene_union.push_back(gene);
+      }
+    }
+    std::sort(sets[set_i].begin(), sets[set_i].end());
+    sets[set_i].erase(std::unique(sets[set_i].begin(), sets[set_i].end()), sets[set_i].end());
+    max_auc[set_i] = aucell_max_auc(static_cast<int>(sets[set_i].size()), auc_threshold, norm_auc);
+  }
+  std::sort(set_gene_union.begin(), set_gene_union.end());
+  set_gene_union.erase(std::unique(set_gene_union.begin(), set_gene_union.end()), set_gene_union.end());
+
+  NumericMatrix scores(n_cells, n_sets);
+  std::vector<int> rank_by_gene(n_genes, 0);
+  std::vector<double> value_by_gene(n_genes, 0.0);
+  std::vector<int> touched_values;
+  std::vector<int> touched_ranks;
+  std::vector<AucEntry> entries;
+  entries.reserve(n_genes);
+  const int top_n = std::max(0, std::min(n_genes, auc_threshold - 1));
+
+  for (int cell = 0; cell < n_cells; ++cell) {
+    touched_values.clear();
+    touched_ranks.clear();
+    entries.clear();
+
+    for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
+      const int gene = row_idx[ptr];
+      const double value = values[ptr];
+      if (!R_finite(value) || value == 0.0) {
+        continue;
+      }
+      if (strategy == 2) {
+        entries.push_back(AucEntry{gene, value, unif_rand()});
+      } else {
+        value_by_gene[gene] = value;
+        touched_values.push_back(gene);
+      }
+    }
+
+    if (strategy == 2) {
+      std::sort(entries.begin(), entries.end(), aucell_entry_before);
+
+      for (std::size_t rank_i = 0; rank_i < entries.size(); ++rank_i) {
+        const int gene = entries[rank_i].gene;
+        rank_by_gene[gene] = static_cast<int>(rank_i) + 1;
+        touched_ranks.push_back(gene);
+      }
+
+      if (static_cast<int>(entries.size()) < auc_threshold) {
+        const int n_zero = n_genes - static_cast<int>(entries.size());
+        for (std::vector<int>::const_iterator it = set_gene_union.begin(); it != set_gene_union.end(); ++it) {
+          const int gene = *it;
+          if (rank_by_gene[gene] == 0 && n_zero > 0) {
+            rank_by_gene[gene] = static_cast<int>(entries.size()) + 1 + static_cast<int>(unif_rand() * n_zero);
+            touched_ranks.push_back(gene);
+          }
+        }
+      }
+    } else {
+      for (int gene = 0; gene < n_genes; ++gene) {
+        entries.push_back(AucEntry{gene, value_by_gene[gene], unif_rand()});
+      }
+
+      if (strategy == 1 && top_n < static_cast<int>(entries.size())) {
+        if (top_n > 0) {
+          std::nth_element(entries.begin(), entries.begin() + top_n, entries.end(), aucell_entry_before);
+          entries.resize(top_n);
+          std::sort(entries.begin(), entries.end(), aucell_entry_before);
+        } else {
+          entries.clear();
+        }
+      } else {
+        std::sort(entries.begin(), entries.end(), aucell_entry_before);
+      }
+
+      for (std::size_t rank_i = 0; rank_i < entries.size(); ++rank_i) {
+        const int gene = entries[rank_i].gene;
+        rank_by_gene[gene] = static_cast<int>(rank_i) + 1;
+        touched_ranks.push_back(gene);
+      }
+    }
+
+    for (int set_i = 0; set_i < n_sets; ++set_i) {
+      std::vector<int> ranks;
+      ranks.reserve(sets[set_i].size());
+      for (std::vector<int>::const_iterator it = sets[set_i].begin(); it != sets[set_i].end(); ++it) {
+        const int rank = rank_by_gene[*it];
+        if (rank > 0) {
+          ranks.push_back(rank);
+        }
+      }
+      scores(cell, set_i) = aucell_auc_from_ranks(ranks, auc_threshold, max_auc[set_i]);
+    }
+
+    for (std::vector<int>::const_iterator it = touched_ranks.begin(); it != touched_ranks.end(); ++it) {
+      rank_by_gene[*it] = 0;
+    }
+    for (std::vector<int>::const_iterator it = touched_values.begin(); it != touched_values.end(); ++it) {
+      value_by_gene[*it] = 0.0;
+    }
+  }
+
+  return scores;
+}
+
+// [[Rcpp::export]]
+DataFrame ora_hypergeom_cpp(
+  CharacterVector genes,
+  CharacterVector term_ids,
+  CharacterVector term_genes,
+  CharacterVector term_name_ids,
+  CharacterVector term_names,
+  int min_size = 10,
+  int max_size = 2147483647
+) {
+  if (term_ids.size() != term_genes.size()) {
+    stop("term_ids and term_genes must have the same length");
+  }
+
+  std::unordered_map<std::string, std::unordered_set<std::string> > term_to_genes;
+  std::unordered_map<std::string, std::string> term_to_name;
+  std::vector<std::string> term_order;
+  std::unordered_set<std::string> term_seen;
+  std::unordered_set<std::string> universe;
+
+  for (int i = 0; i < term_name_ids.size() && i < term_names.size(); ++i) {
+    if (CharacterVector::is_na(term_name_ids[i]) || CharacterVector::is_na(term_names[i])) {
+      continue;
+    }
+    term_to_name[as<std::string>(term_name_ids[i])] = as<std::string>(term_names[i]);
+  }
+
+  for (int i = 0; i < term_ids.size(); ++i) {
+    if (CharacterVector::is_na(term_ids[i]) || CharacterVector::is_na(term_genes[i])) {
+      continue;
+    }
+    const std::string term = as<std::string>(term_ids[i]);
+    const std::string gene = as<std::string>(term_genes[i]);
+    if (term.empty() || gene.empty()) {
+      continue;
+    }
+    if (term_seen.insert(term).second) {
+      term_order.push_back(term);
+    }
+    term_to_genes[term].insert(gene);
+    universe.insert(gene);
+  }
+
+  std::vector<std::string> query_order;
+  std::unordered_set<std::string> query_seen;
+  query_order.reserve(genes.size());
+  for (int i = 0; i < genes.size(); ++i) {
+    if (CharacterVector::is_na(genes[i])) {
+      continue;
+    }
+    const std::string gene = as<std::string>(genes[i]);
+    if (gene.empty() || universe.find(gene) == universe.end()) {
+      continue;
+    }
+    if (query_seen.insert(gene).second) {
+      query_order.push_back(gene);
+    }
+  }
+
+  const int universe_size = static_cast<int>(universe.size());
+  const int query_size = static_cast<int>(query_order.size());
+  std::vector<std::string> out_id;
+  std::vector<std::string> out_description;
+  std::vector<std::string> out_gene_id;
+  std::vector<int> out_count;
+  std::vector<int> out_query_size;
+  std::vector<int> out_term_size;
+  std::vector<int> out_universe_size;
+  std::vector<double> out_pvalue;
+
+  if (universe_size <= 0 || query_size <= 0) {
+    return DataFrame::create(
+      _["ID"] = CharacterVector(0),
+      _["Description"] = CharacterVector(0),
+      _["geneID"] = CharacterVector(0),
+      _["Count"] = IntegerVector(0),
+      _["query_size"] = IntegerVector(0),
+      _["term_size"] = IntegerVector(0),
+      _["universe_size"] = IntegerVector(0),
+      _["pvalue"] = NumericVector(0),
+      _["stringsAsFactors"] = false
+    );
+  }
+
+  for (std::vector<std::string>::const_iterator term_it = term_order.begin(); term_it != term_order.end(); ++term_it) {
+    const std::string& term = *term_it;
+    const std::unordered_set<std::string>& term_set = term_to_genes[term];
+    const int term_size = static_cast<int>(term_set.size());
+    if (term_size < min_size || term_size > max_size || term_size <= 0 || term_size >= universe_size) {
+      continue;
+    }
+
+    std::vector<std::string> hits;
+    hits.reserve(std::min(term_size, query_size));
+    for (std::vector<std::string>::const_iterator gene_it = query_order.begin(); gene_it != query_order.end(); ++gene_it) {
+      if (term_set.find(*gene_it) != term_set.end()) {
+        hits.push_back(*gene_it);
+      }
+    }
+    const int count = static_cast<int>(hits.size());
+    if (count <= 0) {
+      continue;
+    }
+
+    std::string hit_text;
+    for (std::size_t hit_i = 0; hit_i < hits.size(); ++hit_i) {
+      if (hit_i > 0) {
+        hit_text += "/";
+      }
+      hit_text += hits[hit_i];
+    }
+
+    const double pvalue = R::phyper(
+      static_cast<double>(count - 1),
+      static_cast<double>(term_size),
+      static_cast<double>(universe_size - term_size),
+      static_cast<double>(query_size),
+      false,
+      false
+    );
+
+    out_id.push_back(term);
+    std::unordered_map<std::string, std::string>::const_iterator name_it = term_to_name.find(term);
+    out_description.push_back(name_it == term_to_name.end() ? term : name_it->second);
+    out_gene_id.push_back(hit_text);
+    out_count.push_back(count);
+    out_query_size.push_back(query_size);
+    out_term_size.push_back(term_size);
+    out_universe_size.push_back(universe_size);
+    out_pvalue.push_back(pvalue);
+  }
+
+  return DataFrame::create(
+    _["ID"] = out_id,
+    _["Description"] = out_description,
+    _["geneID"] = out_gene_id,
+    _["Count"] = out_count,
+    _["query_size"] = out_query_size,
+    _["term_size"] = out_term_size,
+    _["universe_size"] = out_universe_size,
+    _["pvalue"] = out_pvalue,
+    _["stringsAsFactors"] = false
+  );
+}
+
+// [[Rcpp::export]]
+NumericMatrix module_score_sparse_cpp(
+  S4 expr,
+  List feature_sets,
+  List control_sets
+) {
+  IntegerVector dims = expr.slot("Dim");
+  const int n_genes = dims[0];
+  const int n_cells = dims[1];
+  const int n_sets = feature_sets.size();
+  if (control_sets.size() != n_sets) {
+    stop("feature_sets and control_sets must have the same length");
+  }
+
+  IntegerVector row_idx = expr.slot("i");
+  IntegerVector col_ptr = expr.slot("p");
+  NumericVector values = expr.slot("x");
+
+  NumericMatrix scores(n_cells, n_sets);
+  std::vector<double> value_by_gene(n_genes, 0.0);
+  std::vector<int> touched_values;
+
+  std::vector<std::vector<int> > features(n_sets);
+  std::vector<std::vector<int> > controls(n_sets);
+  for (int set_i = 0; set_i < n_sets; ++set_i) {
+    IntegerVector feature_idx = feature_sets[set_i];
+    IntegerVector control_idx = control_sets[set_i];
+    features[set_i].reserve(feature_idx.size());
+    controls[set_i].reserve(control_idx.size());
+
+    for (int i = 0; i < feature_idx.size(); ++i) {
+      const int gene = feature_idx[i] - 1;
+      if (gene >= 0 && gene < n_genes) {
+        features[set_i].push_back(gene);
+      }
+    }
+    for (int i = 0; i < control_idx.size(); ++i) {
+      const int gene = control_idx[i] - 1;
+      if (gene >= 0 && gene < n_genes) {
+        controls[set_i].push_back(gene);
+      }
+    }
+  }
+
+  for (int cell = 0; cell < n_cells; ++cell) {
+    touched_values.clear();
+    for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
+      const int gene = row_idx[ptr];
+      const double value = values[ptr];
+      if (!R_finite(value) || value == 0.0) {
+        continue;
+      }
+      value_by_gene[gene] = value;
+      touched_values.push_back(gene);
+    }
+
+    for (int set_i = 0; set_i < n_sets; ++set_i) {
+      const std::vector<int>& feature_set = features[set_i];
+      const std::vector<int>& control_set = controls[set_i];
+      if (feature_set.empty() || control_set.empty()) {
+        scores(cell, set_i) = R_NaN;
+        continue;
+      }
+
+      double feature_sum = 0.0;
+      for (std::vector<int>::const_iterator it = feature_set.begin(); it != feature_set.end(); ++it) {
+        feature_sum += value_by_gene[*it];
+      }
+      double control_sum = 0.0;
+      for (std::vector<int>::const_iterator it = control_set.begin(); it != control_set.end(); ++it) {
+        control_sum += value_by_gene[*it];
+      }
+
+      scores(cell, set_i) = feature_sum / static_cast<double>(feature_set.size()) -
+        control_sum / static_cast<double>(control_set.size());
+    }
+
+    for (std::vector<int>::const_iterator it = touched_values.begin(); it != touched_values.end(); ++it) {
+      value_by_gene[*it] = 0.0;
+    }
+  }
+
+  return scores;
+}
+
+static double quantile_type7(std::vector<double>& x, double prob) {
+  if (x.empty()) {
+    return R_NaN;
+  }
+  std::sort(x.begin(), x.end());
+  if (x.size() == 1) {
+    return x[0];
+  }
+  const double h = 1.0 + (static_cast<double>(x.size()) - 1.0) * prob;
+  const int h_floor = static_cast<int>(std::floor(h));
+  const double frac = h - static_cast<double>(h_floor);
+  const double lower = x[static_cast<std::size_t>(h_floor - 1)];
+  if (h_floor >= static_cast<int>(x.size())) {
+    return lower;
+  }
+  const double upper = x[static_cast<std::size_t>(h_floor)];
+  return lower + frac * (upper - lower);
+}
+
+static double log2_fraction_diff(
+  int count_1,
+  int total_1,
+  int count_2,
+  int total_2,
+  double pseudocount
+) {
+  const double frac_1 = static_cast<double>(count_1) / static_cast<double>(total_1);
+  const double frac_2 = static_cast<double>(count_2) / static_cast<double>(total_2);
+  return std::log((frac_2 + pseudocount) / (frac_1 + pseudocount)) / std::log(2.0);
+}
+
+// [[Rcpp::export]]
+DataFrame proportion_permutation_cpp(
+  IntegerVector sample_ids,
+  IntegerVector cluster_ids,
+  CharacterVector cluster_levels,
+  int n_permutations,
+  double pseudocount = 1e-8
+) {
+  if (sample_ids.size() != cluster_ids.size()) {
+    stop("sample_ids and cluster_ids must have the same length");
+  }
+  const int n_cells = sample_ids.size();
+  const int n_clusters = cluster_levels.size();
+  if (n_cells == 0 || n_clusters == 0) {
+    return DataFrame::create(
+      _["clusters"] = CharacterVector(0),
+      _["fraction_1"] = NumericVector(0),
+      _["fraction_2"] = NumericVector(0),
+      _["obs_log2FD"] = NumericVector(0),
+      _["pval"] = NumericVector(0),
+      _["boot_mean_log2FD"] = NumericVector(0),
+      _["boot_CI_2.5"] = NumericVector(0),
+      _["boot_CI_97.5"] = NumericVector(0),
+      _["stringsAsFactors"] = false
+    );
+  }
+
+  std::vector<int> labels(n_cells);
+  std::vector<int> clusters(n_cells);
+  std::vector<int> group1_clusters;
+  std::vector<int> group2_clusters;
+  int total_1 = 0;
+  int total_2 = 0;
+  for (int i = 0; i < n_cells; ++i) {
+    const int label = sample_ids[i];
+    const int cluster = cluster_ids[i] - 1;
+    if ((label != 1 && label != 2) || cluster < 0 || cluster >= n_clusters) {
+      stop("sample_ids must be 1/2 and cluster_ids must be within cluster_levels");
+    }
+    labels[i] = label;
+    clusters[i] = cluster;
+    if (label == 1) {
+      ++total_1;
+      group1_clusters.push_back(cluster);
+    } else {
+      ++total_2;
+      group2_clusters.push_back(cluster);
+    }
+  }
+  if (total_1 == 0 || total_2 == 0) {
+    stop("Both comparison groups must contain cells");
+  }
+
+  std::vector<int> obs_1(n_clusters, 0);
+  std::vector<int> obs_2(n_clusters, 0);
+  for (int i = 0; i < n_cells; ++i) {
+    if (labels[i] == 1) {
+      ++obs_1[clusters[i]];
+    } else {
+      ++obs_2[clusters[i]];
+    }
+  }
+
+  std::vector<double> obs_log2(n_clusters);
+  std::vector<int> increased(n_clusters, 0);
+  std::vector<int> decreased(n_clusters, 0);
+  for (int k = 0; k < n_clusters; ++k) {
+    obs_log2[k] = log2_fraction_diff(obs_1[k], total_1, obs_2[k], total_2, pseudocount);
+  }
+
+  std::vector<int> perm_labels(labels);
+  std::vector<int> perm_1(n_clusters, 0);
+  std::vector<int> perm_2(n_clusters, 0);
+  for (int perm = 0; perm < n_permutations; ++perm) {
+    perm_labels = labels;
+    for (int i = n_cells - 1; i > 0; --i) {
+      const int j = static_cast<int>(std::floor(unif_rand() * static_cast<double>(i + 1)));
+      std::swap(perm_labels[i], perm_labels[j]);
+    }
+    std::fill(perm_1.begin(), perm_1.end(), 0);
+    std::fill(perm_2.begin(), perm_2.end(), 0);
+    for (int i = 0; i < n_cells; ++i) {
+      if (perm_labels[i] == 1) {
+        ++perm_1[clusters[i]];
+      } else {
+        ++perm_2[clusters[i]];
+      }
+    }
+    for (int k = 0; k < n_clusters; ++k) {
+      const double perm_log2 = log2_fraction_diff(perm_1[k], total_1, perm_2[k], total_2, pseudocount);
+      if (obs_log2[k] <= perm_log2) {
+        ++increased[k];
+      }
+      if (obs_log2[k] >= perm_log2) {
+        ++decreased[k];
+      }
+    }
+  }
+
+  std::vector<double> boot_values(static_cast<std::size_t>(n_clusters) * std::max(1, n_permutations), R_NaN);
+  std::vector<int> boot_1(n_clusters, 0);
+  std::vector<int> boot_2(n_clusters, 0);
+  for (int perm = 0; perm < n_permutations; ++perm) {
+    std::fill(boot_1.begin(), boot_1.end(), 0);
+    std::fill(boot_2.begin(), boot_2.end(), 0);
+    for (int i = 0; i < total_1; ++i) {
+      const int draw = static_cast<int>(std::floor(unif_rand() * static_cast<double>(total_1)));
+      ++boot_1[group1_clusters[draw]];
+    }
+    for (int i = 0; i < total_2; ++i) {
+      const int draw = static_cast<int>(std::floor(unif_rand() * static_cast<double>(total_2)));
+      ++boot_2[group2_clusters[draw]];
+    }
+    for (int k = 0; k < n_clusters; ++k) {
+      boot_values[static_cast<std::size_t>(k) * n_permutations + perm] =
+        log2_fraction_diff(boot_1[k], total_1, boot_2[k], total_2, pseudocount);
+    }
+  }
+
+  NumericVector fraction_1(n_clusters);
+  NumericVector fraction_2(n_clusters);
+  NumericVector pval(n_clusters);
+  NumericVector boot_mean(n_clusters);
+  NumericVector boot_low(n_clusters);
+  NumericVector boot_high(n_clusters);
+
+  for (int k = 0; k < n_clusters; ++k) {
+    fraction_1[k] = static_cast<double>(obs_1[k]) / static_cast<double>(total_1);
+    fraction_2[k] = static_cast<double>(obs_2[k]) / static_cast<double>(total_2);
+    pval[k] = obs_log2[k] > 0.0 ?
+      (static_cast<double>(increased[k] + 1) / static_cast<double>(n_permutations + 1)) :
+      (static_cast<double>(decreased[k] + 1) / static_cast<double>(n_permutations + 1));
+
+    std::vector<double> one_cluster;
+    one_cluster.reserve(n_permutations);
+    double sum = 0.0;
+    for (int perm = 0; perm < n_permutations; ++perm) {
+      const double value = boot_values[static_cast<std::size_t>(k) * n_permutations + perm];
+      if (R_finite(value)) {
+        one_cluster.push_back(value);
+        sum += value;
+      }
+    }
+    if (one_cluster.empty()) {
+      boot_mean[k] = R_NaN;
+      boot_low[k] = R_NaN;
+      boot_high[k] = R_NaN;
+    } else {
+      boot_mean[k] = sum / static_cast<double>(one_cluster.size());
+      std::vector<double> q_values = one_cluster;
+      boot_low[k] = quantile_type7(q_values, 0.025);
+      q_values = one_cluster;
+      boot_high[k] = quantile_type7(q_values, 0.975);
+    }
+  }
+
+  return DataFrame::create(
+    _["clusters"] = cluster_levels,
+    _["fraction_1"] = fraction_1,
+    _["fraction_2"] = fraction_2,
+    _["obs_log2FD"] = obs_log2,
+    _["pval"] = pval,
+    _["boot_mean_log2FD"] = boot_mean,
+    _["boot_CI_2.5"] = boot_low,
+    _["boot_CI_97.5"] = boot_high,
+    _["stringsAsFactors"] = false
+  );
+}
+
+// [[Rcpp::export]]
+NumericMatrix ssgsea_rank_dense_cpp(
+  S4 expr,
+  List gene_sets,
+  double alpha = 0.25,
+  bool normalize = true
+) {
+  IntegerVector dims = expr.slot("Dim");
+  const int n_genes = dims[0];
+  const int n_cells = dims[1];
+  const int n_sets = gene_sets.size();
+
+  IntegerVector row_idx = expr.slot("i");
+  IntegerVector col_ptr = expr.slot("p");
+  NumericVector values = expr.slot("x");
+
+  std::vector<std::vector<int> > sets(n_sets);
+  for (int set_i = 0; set_i < n_sets; ++set_i) {
+    IntegerVector genes = gene_sets[set_i];
+    sets[set_i].reserve(genes.size());
+    for (int gene_i = 0; gene_i < genes.size(); ++gene_i) {
+      const int gene = genes[gene_i] - 1;
+      if (gene >= 0 && gene < n_genes) {
+        sets[set_i].push_back(gene);
+      }
+    }
+    std::sort(sets[set_i].begin(), sets[set_i].end());
+    sets[set_i].erase(std::unique(sets[set_i].begin(), sets[set_i].end()), sets[set_i].end());
+  }
+
+  NumericMatrix scores(n_cells, n_sets);
+  std::vector<double> value_by_gene(n_genes, 0.0);
+  std::vector<int> touched_values;
+  std::vector<int> order(n_genes);
+  std::vector<int> ranking(n_genes);
+  std::vector<int> rank_by_gene(n_genes);
+  std::vector<int> position_by_gene(n_genes);
+  std::vector<double> rank_weight_by_gene(n_genes);
+  double min_score = R_PosInf;
+  double max_score = R_NegInf;
+
+  std::iota(order.begin(), order.end(), 0);
+
+  for (int cell = 0; cell < n_cells; ++cell) {
+    touched_values.clear();
+
+    for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
+      const int gene = row_idx[ptr];
+      const double value = values[ptr];
+      if (!R_finite(value) || value == 0.0) {
+        continue;
+      }
+      value_by_gene[gene] = value;
+      touched_values.push_back(gene);
+    }
+
+    std::iota(order.begin(), order.end(), 0);
+    std::sort(
+      order.begin(),
+      order.end(),
+      [&](int a, int b) {
+        const double va = value_by_gene[a];
+        const double vb = value_by_gene[b];
+        if (va < vb) {
+          return true;
+        }
+        if (va > vb) {
+          return false;
+        }
+        return a < b;
+      }
+    );
+
+    int tie_start = 0;
+    while (tie_start < n_genes) {
+      int tie_end = tie_start + 1;
+      const double tie_value = value_by_gene[order[tie_start]];
+      while (
+        tie_end < n_genes &&
+        value_by_gene[order[tie_end]] == tie_value
+      ) {
+        ++tie_end;
+      }
+      const int rank_value = static_cast<int>(
+        (static_cast<double>(tie_start + 1) + static_cast<double>(tie_end)) / 2.0
+      );
+      const double rank_weight = std::pow(std::fabs(static_cast<double>(rank_value)), alpha);
+      for (int pos = tie_start; pos < tie_end; ++pos) {
+        const int gene = order[pos];
+        rank_by_gene[gene] = rank_value;
+        rank_weight_by_gene[gene] = rank_weight;
+      }
+      tie_start = tie_end;
+    }
+
+    std::iota(ranking.begin(), ranking.end(), 0);
+    std::sort(
+      ranking.begin(),
+      ranking.end(),
+      [&](int a, int b) {
+        const int ra = rank_by_gene[a];
+        const int rb = rank_by_gene[b];
+        if (ra > rb) {
+          return true;
+        }
+        if (ra < rb) {
+          return false;
+        }
+        return a < b;
+      }
+    );
+    for (int pos = 0; pos < n_genes; ++pos) {
+      position_by_gene[ranking[pos]] = pos + 1;
+    }
+
+    for (int set_i = 0; set_i < n_sets; ++set_i) {
+      const std::vector<int>& set = sets[set_i];
+      const int set_size = static_cast<int>(set.size());
+      if (set_size <= 0 || set_size >= n_genes) {
+        scores(cell, set_i) = R_NaN;
+        continue;
+      }
+
+      double in_weight_sum = 0.0;
+      double in_weighted_position_sum = 0.0;
+      double in_position_sum = 0.0;
+      for (std::vector<int>::const_iterator it = set.begin(); it != set.end(); ++it) {
+        const int gene = *it;
+        const double inverse_position = static_cast<double>(n_genes - position_by_gene[gene] + 1);
+        const double gene_weight = rank_weight_by_gene[gene];
+        in_weight_sum += gene_weight;
+        in_weighted_position_sum += gene_weight * inverse_position;
+        in_position_sum += inverse_position;
+      }
+
+      if (in_weight_sum <= 0.0 || n_genes == set_size) {
+        scores(cell, set_i) = R_NaN;
+        continue;
+      }
+
+      const double in_step = in_weighted_position_sum / in_weight_sum;
+      const double total_position_sum = static_cast<double>(n_genes) *
+        static_cast<double>(n_genes + 1) / 2.0;
+      const double out_step = (total_position_sum - in_position_sum) /
+        static_cast<double>(n_genes - set_size);
+      const double score = in_step - out_step;
+      scores(cell, set_i) = score;
+      if (R_finite(score)) {
+        if (score < min_score) {
+          min_score = score;
+        }
+        if (score > max_score) {
+          max_score = score;
+        }
+      }
+    }
+
+    for (std::vector<int>::const_iterator it = touched_values.begin(); it != touched_values.end(); ++it) {
+      value_by_gene[*it] = 0.0;
+    }
+  }
+
+  if (normalize) {
+    const double range = max_score - min_score;
+    for (int set_i = 0; set_i < n_sets; ++set_i) {
+      for (int cell = 0; cell < n_cells; ++cell) {
+        scores(cell, set_i) = scores(cell, set_i) / range;
+      }
+    }
+  }
+
+  return scores;
+}
+
+// [[Rcpp::export]]
+NumericMatrix zscore_dense_cpp(
+  S4 expr,
+  List gene_sets,
+  int min_size = 1,
+  int max_size = 2147483647
+) {
+  IntegerVector dims = expr.slot("Dim");
+  const int n_genes = dims[0];
+  const int n_cells = dims[1];
+  const int n_sets = gene_sets.size();
+
+  IntegerVector row_idx = expr.slot("i");
+  IntegerVector col_ptr = expr.slot("p");
+  NumericVector values = expr.slot("x");
+
+  std::vector<int> row_counts(n_genes, 0);
+  std::vector<double> row_sums(n_genes, 0.0);
+  std::vector<double> row_sq_sums(n_genes, 0.0);
+
+  for (int cell = 0; cell < n_cells; ++cell) {
+    for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
+      const int gene = row_idx[ptr];
+      const double value = values[ptr];
+      if (R_finite(value) && value != 0.0) {
+        ++row_counts[gene];
+        row_sums[gene] += value;
+        row_sq_sums[gene] += value * value;
+      }
+    }
+  }
+
+  std::vector<int> row_ptr(n_genes + 1, 0);
+  for (int gene = 0; gene < n_genes; ++gene) {
+    row_ptr[gene + 1] = row_ptr[gene] + row_counts[gene];
+  }
+  const int nnz = row_ptr[n_genes];
+  std::vector<int> row_cursor(row_ptr);
+  std::vector<int> row_cells(nnz);
+  std::vector<double> row_values(nnz);
+
+  for (int cell = 0; cell < n_cells; ++cell) {
+    for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
+      const int gene = row_idx[ptr];
+      const double value = values[ptr];
+      if (R_finite(value) && value != 0.0) {
+        const int out = row_cursor[gene]++;
+        row_cells[out] = cell;
+        row_values[out] = value;
+      }
+    }
+  }
+  std::vector<int>().swap(row_counts);
+  std::vector<int>().swap(row_cursor);
+
+  std::vector<double> row_means(n_genes, R_NaN);
+  std::vector<double> row_sds(n_genes, R_NaN);
+  std::vector<unsigned char> row_valid(n_genes, 0);
+  if (n_cells > 1) {
+    for (int gene = 0; gene < n_genes; ++gene) {
+      const double mean = row_sums[gene] / static_cast<double>(n_cells);
+      double var = (row_sq_sums[gene] - static_cast<double>(n_cells) * mean * mean) /
+        static_cast<double>(n_cells - 1);
+      if (var < 0.0 && var > -1e-12) {
+        var = 0.0;
+      }
+      if (R_finite(var) && var > 0.0) {
+        row_means[gene] = mean;
+        row_sds[gene] = std::sqrt(var);
+        row_valid[gene] = 1;
+      }
+    }
+  }
+
+  std::vector<std::vector<int> > sets(n_sets);
+  for (int set_i = 0; set_i < n_sets; ++set_i) {
+    IntegerVector genes = gene_sets[set_i];
+    sets[set_i].reserve(genes.size());
+    for (int gene_i = 0; gene_i < genes.size(); ++gene_i) {
+      const int gene = genes[gene_i] - 1;
+      if (gene >= 0 && gene < n_genes) {
+        sets[set_i].push_back(gene);
+      }
+    }
+    std::sort(sets[set_i].begin(), sets[set_i].end());
+    sets[set_i].erase(std::unique(sets[set_i].begin(), sets[set_i].end()), sets[set_i].end());
+  }
+
+  NumericMatrix scores(n_cells, n_sets);
+  for (int set_i = 0; set_i < n_sets; ++set_i) {
+    const std::vector<int>& set = sets[set_i];
+    int effective_size = 0;
+    double zero_sum = 0.0;
+
+    for (std::vector<int>::const_iterator it = set.begin(); it != set.end(); ++it) {
+      const int gene = *it;
+      if (row_valid[gene]) {
+        ++effective_size;
+        zero_sum += -row_means[gene] / row_sds[gene];
+      }
+    }
+
+    if (effective_size < min_size || effective_size > max_size) {
+      for (int cell = 0; cell < n_cells; ++cell) {
+        scores(cell, set_i) = R_NaN;
+      }
+      continue;
+    }
+
+    for (int cell = 0; cell < n_cells; ++cell) {
+      scores(cell, set_i) = zero_sum;
+    }
+
+    for (std::vector<int>::const_iterator it = set.begin(); it != set.end(); ++it) {
+      const int gene = *it;
+      if (!row_valid[gene]) {
+        continue;
+      }
+      const double z_zero = -row_means[gene] / row_sds[gene];
+      const int row_start = row_ptr[gene];
+      const int row_end = row_ptr[gene + 1];
+      for (int ptr = row_start; ptr < row_end; ++ptr) {
+        const int cell = row_cells[ptr];
+        const double z_value = (row_values[ptr] - row_means[gene]) / row_sds[gene];
+        scores(cell, set_i) += z_value - z_zero;
+      }
+    }
+
+    const double denom = std::sqrt(static_cast<double>(effective_size));
+    for (int cell = 0; cell < n_cells; ++cell) {
+      scores(cell, set_i) /= denom;
+    }
+  }
+
+  return scores;
+}
+
+// [[Rcpp::export]]
+NumericMatrix plage_dense_cpp(
+  S4 expr,
+  List gene_sets,
+  int min_size = 1,
+  int max_size = 2147483647
+) {
+  IntegerVector dims = expr.slot("Dim");
+  const int n_genes = dims[0];
+  const int n_cells = dims[1];
+  const int n_sets = gene_sets.size();
+
+  IntegerVector row_idx = expr.slot("i");
+  IntegerVector col_ptr = expr.slot("p");
+  NumericVector values = expr.slot("x");
+
+  std::vector<int> row_counts(n_genes, 0);
+  std::vector<double> row_sums(n_genes, 0.0);
+  std::vector<double> row_sq_sums(n_genes, 0.0);
+
+  for (int cell = 0; cell < n_cells; ++cell) {
+    for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
+      const int gene = row_idx[ptr];
+      const double value = values[ptr];
+      if (R_finite(value) && value != 0.0) {
+        ++row_counts[gene];
+        row_sums[gene] += value;
+        row_sq_sums[gene] += value * value;
+      }
+    }
+  }
+
+  std::vector<int> row_ptr(n_genes + 1, 0);
+  for (int gene = 0; gene < n_genes; ++gene) {
+    row_ptr[gene + 1] = row_ptr[gene] + row_counts[gene];
+  }
+  const int nnz = row_ptr[n_genes];
+  std::vector<int> row_cursor(row_ptr);
+  std::vector<int> row_cells(nnz);
+  std::vector<double> row_values(nnz);
+
+  for (int cell = 0; cell < n_cells; ++cell) {
+    for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
+      const int gene = row_idx[ptr];
+      const double value = values[ptr];
+      if (R_finite(value) && value != 0.0) {
+        const int out = row_cursor[gene]++;
+        row_cells[out] = cell;
+        row_values[out] = value;
+      }
+    }
+  }
+  std::vector<int>().swap(row_counts);
+  std::vector<int>().swap(row_cursor);
+
+  std::vector<double> row_means(n_genes, R_NaN);
+  std::vector<double> row_sds(n_genes, R_NaN);
+  std::vector<unsigned char> row_valid(n_genes, 0);
+  if (n_cells > 1) {
+    for (int gene = 0; gene < n_genes; ++gene) {
+      const double mean = row_sums[gene] / static_cast<double>(n_cells);
+      double var = (row_sq_sums[gene] - static_cast<double>(n_cells) * mean * mean) /
+        static_cast<double>(n_cells - 1);
+      if (var < 0.0 && var > -1e-12) {
+        var = 0.0;
+      }
+      if (R_finite(var) && var > 0.0) {
+        row_means[gene] = mean;
+        row_sds[gene] = std::sqrt(var);
+        row_valid[gene] = 1;
+      }
+    }
+  }
+
+  std::vector<std::vector<int> > sets(n_sets);
+  for (int set_i = 0; set_i < n_sets; ++set_i) {
+    IntegerVector genes = gene_sets[set_i];
+    sets[set_i].reserve(genes.size());
+    for (int gene_i = 0; gene_i < genes.size(); ++gene_i) {
+      const int gene = genes[gene_i] - 1;
+      if (gene >= 0 && gene < n_genes) {
+        sets[set_i].push_back(gene);
+      }
+    }
+    std::sort(sets[set_i].begin(), sets[set_i].end());
+    sets[set_i].erase(std::unique(sets[set_i].begin(), sets[set_i].end()), sets[set_i].end());
+  }
+
+  NumericMatrix scores(n_cells, n_sets);
+  for (int set_i = 0; set_i < n_sets; ++set_i) {
+    const std::vector<int>& set = sets[set_i];
+    std::vector<int> valid_genes;
+    valid_genes.reserve(set.size());
+    for (std::vector<int>::const_iterator it = set.begin(); it != set.end(); ++it) {
+      if (row_valid[*it]) {
+        valid_genes.push_back(*it);
+      }
+    }
+
+    const int effective_size = static_cast<int>(valid_genes.size());
+    if (effective_size < min_size || effective_size > max_size || n_cells <= 1) {
+      for (int cell = 0; cell < n_cells; ++cell) {
+        scores(cell, set_i) = R_NaN;
+      }
+      continue;
+    }
+
+    arma::mat z(static_cast<arma::uword>(effective_size), static_cast<arma::uword>(n_cells));
+    for (int row = 0; row < effective_size; ++row) {
+      const int gene = valid_genes[row];
+      const double z_zero = -row_means[gene] / row_sds[gene];
+      z.row(row).fill(z_zero);
+      const int row_start = row_ptr[gene];
+      const int row_end = row_ptr[gene + 1];
+      for (int ptr = row_start; ptr < row_end; ++ptr) {
+        const int cell = row_cells[ptr];
+        z(static_cast<arma::uword>(row), static_cast<arma::uword>(cell)) =
+          (row_values[ptr] - row_means[gene]) / row_sds[gene];
+      }
+    }
+
+    arma::mat u;
+    arma::vec s;
+    arma::mat v;
+    const bool ok = arma::svd_econ(
+      u,
+      s,
+      v,
+      z,
+      "right",
+      "dc"
+    );
+
+    if (!ok || v.n_cols == 0) {
+      for (int cell = 0; cell < n_cells; ++cell) {
+        scores(cell, set_i) = R_NaN;
+      }
+      continue;
+    }
+
+    double direction = 1.0;
+    double dot = 0.0;
+    for (int cell = 0; cell < n_cells; ++cell) {
+      double mean_z = 0.0;
+      for (int row = 0; row < effective_size; ++row) {
+        mean_z += z(static_cast<arma::uword>(row), static_cast<arma::uword>(cell));
+      }
+      mean_z /= static_cast<double>(effective_size);
+      dot += v(static_cast<arma::uword>(cell), 0) * mean_z;
+    }
+    if (R_finite(dot) && dot < 0.0) {
+      direction = -1.0;
+    }
+
+    for (int cell = 0; cell < n_cells; ++cell) {
+      scores(cell, set_i) = direction * v(static_cast<arma::uword>(cell), 0);
+    }
+  }
+
+  return scores;
+}
+
+static double gsva_sample_sd_from_freq(
+  const std::map<double, int>& freq,
+  int n
+) {
+  if (n < 2) {
+    return R_NaN;
+  }
+
+  long double sum = 0.0;
+  for (std::map<double, int>::const_iterator it = freq.begin(); it != freq.end(); ++it) {
+    sum += static_cast<long double>(it->first) * static_cast<long double>(it->second);
+  }
+
+  long double mean = sum / static_cast<long double>(n);
+  if (R_finite(static_cast<double>(mean))) {
+    sum = 0.0;
+    for (std::map<double, int>::const_iterator it = freq.begin(); it != freq.end(); ++it) {
+      sum += (static_cast<long double>(it->first) - mean) * static_cast<long double>(it->second);
+    }
+    mean += sum / static_cast<long double>(n);
+  }
+
+  sum = 0.0;
+  for (std::map<double, int>::const_iterator it = freq.begin(); it != freq.end(); ++it) {
+    const long double diff = static_cast<long double>(it->first) - mean;
+    sum += diff * diff * static_cast<long double>(it->second);
+  }
+
+  return std::sqrt(static_cast<double>(sum / static_cast<long double>(n - 1)));
+}
+
+static void gsva_score_z_chunk(
+  const std::vector<double>& z,
+  int chunk_start,
+  int chunk_len,
+  int n_genes,
+  const std::vector<std::vector<int> >& sets,
+  bool max_diff,
+  bool abs_ranking,
+  double tau,
+  NumericMatrix& scores
+) {
+  std::vector<int> order(n_genes);
+  std::vector<int> gene_at_desc_pos(n_genes);
+  std::vector<double> sym_rank_stat(n_genes);
+  std::vector<int> in_set(n_genes, 0);
+
+  for (int local_cell = 0; local_cell < chunk_len; ++local_cell) {
+    std::iota(order.begin(), order.end(), 0);
+    const std::size_t col_offset = static_cast<std::size_t>(local_cell) * n_genes;
+    std::sort(
+      order.begin(),
+      order.end(),
+      [&](int a, int b) {
+        const double za = z[col_offset + a];
+        const double zb = z[col_offset + b];
+        if (za < zb) {
+          return true;
+        }
+        if (za > zb) {
+          return false;
+        }
+        return a > b;
+      }
+    );
+
+    for (int rank_i = 0; rank_i < n_genes; ++rank_i) {
+      const int gene = order[rank_i];
+      const int rank = rank_i + 1;
+      const int desc_pos = n_genes - rank;
+      gene_at_desc_pos[desc_pos] = gene;
+      sym_rank_stat[gene] = std::fabs(static_cast<double>(n_genes) / 2.0 - static_cast<double>(rank));
+    }
+
+    const int cell = chunk_start + local_cell;
+    for (int set_i = 0; set_i < static_cast<int>(sets.size()); ++set_i) {
+      const std::vector<int>& set = sets[set_i];
+      const int set_size = static_cast<int>(set.size());
+      if (set_size <= 0 || set_size >= n_genes) {
+        scores(cell, set_i) = R_NaN;
+        continue;
+      }
+
+      double sum_in = 0.0;
+      for (std::vector<int>::const_iterator it = set.begin(); it != set.end(); ++it) {
+        in_set[*it] = 1;
+        sum_in += (tau == 1.0) ? sym_rank_stat[*it] : std::pow(sym_rank_stat[*it], tau);
+      }
+
+      double walk_pos = 0.0;
+      double walk_neg = 0.0;
+      double in_cdf = 0.0;
+      double out_cdf = 0.0;
+      const double out_step = 1.0 / static_cast<double>(n_genes - set_size);
+      if (sum_in > 0.0) {
+        for (int pos = 0; pos < n_genes; ++pos) {
+          const int gene = gene_at_desc_pos[pos];
+          if (in_set[gene]) {
+            const double weight = (tau == 1.0) ? sym_rank_stat[gene] : std::pow(sym_rank_stat[gene], tau);
+            in_cdf += weight / sum_in;
+          } else {
+            out_cdf += out_step;
+          }
+          const double walk = in_cdf - out_cdf;
+          if (walk > walk_pos) {
+            walk_pos = walk;
+          }
+          if (walk < walk_neg) {
+            walk_neg = walk;
+          }
+        }
+        if (max_diff) {
+          scores(cell, set_i) = abs_ranking ? (walk_pos - walk_neg) : (walk_pos + walk_neg);
+        } else {
+          scores(cell, set_i) = (walk_pos > std::fabs(walk_neg)) ? walk_pos : walk_neg;
+        }
+      } else {
+        scores(cell, set_i) = R_NaN;
+      }
+
+      for (std::vector<int>::const_iterator it = set.begin(); it != set.end(); ++it) {
+        in_set[*it] = 0;
+      }
+    }
+  }
+}
+
+static NumericMatrix gsva_score_transformed_rows(
+  int n_genes,
+  int n_cells,
+  const std::vector<std::vector<int> >& sets,
+  const std::vector<int>& row_ptr,
+  const std::vector<int>& row_cells,
+  const std::vector<double>& row_z_values,
+  const std::vector<double>& row_z_zero,
+  bool max_diff,
+  bool abs_ranking,
+  double tau,
+  int chunk_size
+) {
+  NumericMatrix scores(n_cells, sets.size());
+  const int chunk_n = (chunk_size > 0 && chunk_size < n_cells) ? chunk_size : n_cells;
+  std::vector<double> z(static_cast<std::size_t>(n_genes) * chunk_n);
+
+  for (int chunk_start = 0; chunk_start < n_cells; chunk_start += chunk_n) {
+    const int chunk_end = std::min(chunk_start + chunk_n, n_cells);
+    const int chunk_len = chunk_end - chunk_start;
+
+    for (int local_cell = 0; local_cell < chunk_len; ++local_cell) {
+      const std::size_t col_offset = static_cast<std::size_t>(local_cell) * n_genes;
+      for (int gene = 0; gene < n_genes; ++gene) {
+        z[col_offset + gene] = row_z_zero[gene];
+      }
+    }
+
+    for (int gene = 0; gene < n_genes; ++gene) {
+      const int row_start = row_ptr[gene];
+      const int row_end = row_ptr[gene + 1];
+      for (int ptr = row_start; ptr < row_end; ++ptr) {
+        const int cell = row_cells[ptr];
+        if (cell < chunk_start) {
+          continue;
+        }
+        if (cell >= chunk_end) {
+          break;
+        }
+        const int local_cell = cell - chunk_start;
+        z[static_cast<std::size_t>(local_cell) * n_genes + gene] = row_z_values[ptr];
+      }
+    }
+
+    gsva_score_z_chunk(
+      z,
+      chunk_start,
+      chunk_len,
+      n_genes,
+      sets,
+      max_diff,
+      abs_ranking,
+      tau,
+      scores
+    );
+  }
+
+  return scores;
+}
+
+// [[Rcpp::export]]
+NumericMatrix gsva_gaussian_dense_cpp(
+  S4 expr,
+  List gene_sets,
+  bool max_diff = true,
+  bool abs_ranking = false,
+  double tau = 1.0,
+  int chunk_size = 0
+) {
+  IntegerVector dims = expr.slot("Dim");
+  const int n_genes = dims[0];
+  const int n_cells = dims[1];
+  const int n_sets = gene_sets.size();
+
+  IntegerVector row_idx = expr.slot("i");
+  IntegerVector col_ptr = expr.slot("p");
+  NumericVector values = expr.slot("x");
+
+  std::vector<int> row_counts(n_genes, 0);
+  for (int cell = 0; cell < n_cells; ++cell) {
+    for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
+      const int gene = row_idx[ptr];
+      const double value = values[ptr];
+      if (R_finite(value) && value != 0.0) {
+        ++row_counts[gene];
+      }
+    }
+  }
+
+  std::vector<int> row_ptr(n_genes + 1, 0);
+  for (int gene = 0; gene < n_genes; ++gene) {
+    row_ptr[gene + 1] = row_ptr[gene] + row_counts[gene];
+  }
+  const int nnz = row_ptr[n_genes];
+  std::vector<int> row_cursor(row_ptr);
+  std::vector<int> row_cells(nnz);
+  std::vector<double> row_values(nnz);
+
+  for (int cell = 0; cell < n_cells; ++cell) {
+    for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
+      const int gene = row_idx[ptr];
+      const double value = values[ptr];
+      if (R_finite(value) && value != 0.0) {
+        const int out = row_cursor[gene]++;
+        row_cells[out] = cell;
+        row_values[out] = value;
+      }
+    }
+  }
+  std::vector<int>().swap(row_counts);
+  std::vector<int>().swap(row_cursor);
+
+  std::vector<std::vector<int> > sets(n_sets);
+  for (int set_i = 0; set_i < n_sets; ++set_i) {
+    IntegerVector genes = gene_sets[set_i];
+    sets[set_i].reserve(genes.size());
+    for (int gene_i = 0; gene_i < genes.size(); ++gene_i) {
+      const int gene = genes[gene_i] - 1;
+      if (gene >= 0 && gene < n_genes) {
+        sets[set_i].push_back(gene);
+      }
+    }
+    std::sort(sets[set_i].begin(), sets[set_i].end());
+    sets[set_i].erase(std::unique(sets[set_i].begin(), sets[set_i].end()), sets[set_i].end());
+  }
+
+  std::vector<double> row_z_zero(n_genes, R_NaN);
+  std::vector<double> row_z_values(nnz, R_NaN);
+  for (int gene = 0; gene < n_genes; ++gene) {
+    std::map<double, int> freq;
+    const int row_start = row_ptr[gene];
+    const int row_end = row_ptr[gene + 1];
+    freq[0.0] = n_cells - (row_end - row_start);
+    for (int ptr = row_start; ptr < row_end; ++ptr) {
+      ++freq[row_values[ptr]];
+    }
+
+    double bw = gsva_sample_sd_from_freq(freq, n_cells) / 4.0;
+    if (!R_finite(bw) || bw == 0.0) {
+      bw = 0.001;
+    }
+
+    std::map<double, double> z_by_value;
+    for (std::map<double, int>::const_iterator y_it = freq.begin(); y_it != freq.end(); ++y_it) {
+      const double y = y_it->first;
+      double left_tail = 0.0;
+      for (std::map<double, int>::const_iterator x_it = freq.begin(); x_it != freq.end(); ++x_it) {
+        left_tail += static_cast<double>(x_it->second) *
+          R::pnorm(y - x_it->first, 0.0, bw, true, false);
+      }
+      left_tail /= static_cast<double>(n_cells);
+      z_by_value[y] = -std::log((1.0 - left_tail) / left_tail);
+    }
+
+    row_z_zero[gene] = z_by_value[0.0];
+    for (int ptr = row_start; ptr < row_end; ++ptr) {
+      row_z_values[ptr] = z_by_value[row_values[ptr]];
+    }
+  }
+  std::vector<double>().swap(row_values);
+
+  return gsva_score_transformed_rows(
+    n_genes,
+    n_cells,
+    sets,
+    row_ptr,
+    row_cells,
+    row_z_values,
+    row_z_zero,
+    max_diff,
+    abs_ranking,
+    tau,
+    chunk_size
+  );
+}
+
+// [[Rcpp::export]]
+NumericMatrix gsva_poisson_dense_cpp(
+  S4 expr,
+  List gene_sets,
+  bool max_diff = true,
+  bool abs_ranking = false,
+  double tau = 1.0,
+  int chunk_size = 0
+) {
+  IntegerVector dims = expr.slot("Dim");
+  const int n_genes = dims[0];
+  const int n_cells = dims[1];
+  const int n_sets = gene_sets.size();
+
+  IntegerVector row_idx = expr.slot("i");
+  IntegerVector col_ptr = expr.slot("p");
+  NumericVector values = expr.slot("x");
+
+  std::vector<int> row_counts(n_genes, 0);
+  for (int cell = 0; cell < n_cells; ++cell) {
+    for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
+      const int gene = row_idx[ptr];
+      const double value = values[ptr];
+      if (R_finite(value) && value != 0.0) {
+        ++row_counts[gene];
+      }
+    }
+  }
+
+  std::vector<int> row_ptr(n_genes + 1, 0);
+  for (int gene = 0; gene < n_genes; ++gene) {
+    row_ptr[gene + 1] = row_ptr[gene] + row_counts[gene];
+  }
+  const int nnz = row_ptr[n_genes];
+  std::vector<int> row_cursor(row_ptr);
+  std::vector<int> row_cells(nnz);
+  std::vector<double> row_values(nnz);
+
+  for (int cell = 0; cell < n_cells; ++cell) {
+    for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
+      const int gene = row_idx[ptr];
+      const double value = values[ptr];
+      if (R_finite(value) && value != 0.0) {
+        const int out = row_cursor[gene]++;
+        row_cells[out] = cell;
+        row_values[out] = value;
+      }
+    }
+  }
+  std::vector<int>().swap(row_counts);
+  std::vector<int>().swap(row_cursor);
+
+  std::vector<std::vector<int> > sets(n_sets);
+  for (int set_i = 0; set_i < n_sets; ++set_i) {
+    IntegerVector genes = gene_sets[set_i];
+    sets[set_i].reserve(genes.size());
+    for (int gene_i = 0; gene_i < genes.size(); ++gene_i) {
+      const int gene = genes[gene_i] - 1;
+      if (gene >= 0 && gene < n_genes) {
+        sets[set_i].push_back(gene);
+      }
+    }
+    std::sort(sets[set_i].begin(), sets[set_i].end());
+    sets[set_i].erase(std::unique(sets[set_i].begin(), sets[set_i].end()), sets[set_i].end());
+  }
+
+  std::vector<double> row_z_zero(n_genes, R_NaN);
+  std::vector<double> row_z_values(nnz, R_NaN);
+  for (int gene = 0; gene < n_genes; ++gene) {
+    std::map<double, int> freq;
+    const int row_start = row_ptr[gene];
+    const int row_end = row_ptr[gene + 1];
+    freq[0.0] = n_cells - (row_end - row_start);
+    for (int ptr = row_start; ptr < row_end; ++ptr) {
+      ++freq[row_values[ptr]];
+    }
+
+    std::map<double, double> z_by_value;
+    for (std::map<double, int>::const_iterator y_it = freq.begin(); y_it != freq.end(); ++y_it) {
+      const double y = y_it->first;
+      double left_tail = 0.0;
+      for (std::map<double, int>::const_iterator x_it = freq.begin(); x_it != freq.end(); ++x_it) {
+        left_tail += static_cast<double>(x_it->second) * R::ppois(y, x_it->first + 0.5, true, false);
+      }
+      left_tail /= static_cast<double>(n_cells);
+      z_by_value[y] = -std::log((1.0 - left_tail) / left_tail);
+    }
+
+    row_z_zero[gene] = z_by_value[0.0];
+    for (int ptr = row_start; ptr < row_end; ++ptr) {
+      row_z_values[ptr] = z_by_value[row_values[ptr]];
+    }
+  }
+  std::vector<double>().swap(row_values);
+
+  return gsva_score_transformed_rows(
+    n_genes,
+    n_cells,
+    sets,
+    row_ptr,
+    row_cells,
+    row_z_values,
+    row_z_zero,
+    max_diff,
+    abs_ranking,
+    tau,
+    chunk_size
+  );
+}

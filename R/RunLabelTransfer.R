@@ -39,6 +39,33 @@
 #'
 #' @return A `Seurat` object with prediction metadata added.
 #' @export
+#' @examples
+#' \dontrun{
+#' data("pbmcmultiome_sub", package = "scop")
+#' pbmcmultiome_sub <- standard_scop(
+#'   pbmcmultiome_sub,
+#'   assay = "RNA",
+#'   linear_reduction_dims = 20
+#' )
+#' reference <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[1:250])
+#' query <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[251:350])
+#' query <- standard_scop(
+#'   query,
+#'   assay = "peaks",
+#'   normalization_method = "TFIDF",
+#'   linear_reduction_dims = 20
+#' )
+#' query <- RunLabelTransfer(
+#'   srt = query,
+#'   reference = reference,
+#'   assay = "peaks",
+#'   reference_assay = "RNA",
+#'   reference_reduction = "Standardpca",
+#'   reference_label = "CellType",
+#'   reference_dims = 1:10,
+#'   dims = 2:10
+#' )
+#' }
 RunLabelTransfer <- function(
   srt,
   reference,
@@ -345,41 +372,10 @@ atac_add_activity <- function(
   )
 
   if (inherits(ga, "error")) {
-    fallback_assays <- setdiff(SeuratObject::Assays(srt), c(assay, gene_activity_assay))
-    fallback_assays <- fallback_assays[vapply(
-      fallback_assays,
-      function(x) !inherits(srt[[x]], "ChromatinAssay"),
-      logical(1)
-    )]
-    if (length(fallback_assays) == 0) {
-      log_message(
-        "Unable to calculate gene activity assay: {.val {conditionMessage(ga)}}. Please provide a valid ATAC annotation or a fallback expression assay.",
-        message_type = "error"
-      )
-    }
-
-    fallback_assay <- fallback_assays[[1]]
-    fallback_counts <- tryCatch(
-      GetAssayData5(
-        srt,
-        assay = fallback_assay,
-        layer = "counts"
-      ),
-      error = function(...) NULL
-    )
-    if (is.null(fallback_counts)) {
-      fallback_counts <- GetAssayData5(
-        srt,
-        assay = fallback_assay,
-        layer = "data"
-      )
-    }
     log_message(
-      "Gene activity failed: {.val {conditionMessage(ga)}}. Use {.val {fallback_assay}} as fallback for {.val {gene_activity_assay}}.",
-      message_type = "warning",
-      verbose = verbose
+      "Unable to calculate gene activity assay: {.val {conditionMessage(ga)}}. Please provide a valid ATAC annotation.",
+      message_type = "error"
     )
-    ga <- fallback_counts
   }
 
   srt[[gene_activity_assay]] <- Seurat::CreateAssayObject(counts = ga)

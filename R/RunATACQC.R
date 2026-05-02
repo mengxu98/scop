@@ -13,6 +13,15 @@
 #'
 #' @return A `Seurat` object with QC metadata added.
 #' @export
+#' @examples
+#' \donttest{
+#' data("pbmcmultiome_sub", package = "scop")
+#' pbmcmultiome_sub <- RunATACQC(
+#'   pbmcmultiome_sub,
+#'   assay = "peaks",
+#'   fast = TRUE
+#' )
+#' }
 RunATACQC <- function(
   srt,
   assay = NULL,

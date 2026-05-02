@@ -8,6 +8,18 @@
 #' @param layer Data layer to use, usually `"counts"` for count matrix.
 #' @param db Databases to use for metabolism pathways. One or both of `"KEGG"`, `"REACTOME"`.
 #' @param method Scoring method, one of `"AUCell"`, `"GSVA"`, `"ssGSEA"`, `"VISION"`.
+#' @param backend Scoring backend. `"cpp"` is the default for supported methods.
+#' `"r"` uses the original R package implementation. `"cpp"` currently supports
+#' `method = "AUCell"`, `method = "GSVA"`, and `method = "ssGSEA"`.
+#' `method = "VISION"` falls back to `"r"` when `backend` is not explicitly set.
+#' AUCell C++ scores may differ from the R backend when tied expression values
+#' are randomly ranked.
+#' @param cpp_strategy C++ AUCell ranking strategy. `"sparse"` ranks non-zero
+#' genes and approximates zero ties, `"topk"` ranks only genes that can contribute
+#' to AUCell AUC, and `"full"` ranks all genes.
+#' @param cpp_chunk_size Optional cell chunk size for C++ GSVA kernels. `NULL`
+#' or `"auto"` automatically chunks large matrices to reduce peak dense
+#' intermediate memory; positive values set the chunk size manually.
 #' @param group.by Name of metadata column to group cells by. If `NULL`, single-cell scoring.
 #' If provided, expression is averaged by group before scoring (cell-type level).
 #' @param assay_name Name of the assay to store metabolism scores when `new_assay = TRUE`.
@@ -54,6 +66,9 @@ RunMetabolism <- function(
   Ensembl_version = NULL,
   mirror = NULL,
   method = c("AUCell", "GSVA", "ssGSEA", "VISION"),
+  backend = c("cpp", "r"),
+  cpp_strategy = c("sparse", "topk", "full"),
+  cpp_chunk_size = NULL,
   minGSSize = 10,
   maxGSSize = 500,
   assay_name = "METABOLISM",
@@ -86,7 +101,25 @@ RunMetabolism <- function(
     }
   }
 
+  backend_missing <- missing(backend)
   method <- match.arg(method)
+  backend <- match.arg(backend)
+  cpp_strategy <- match.arg(cpp_strategy)
+  if (!identical(backend, "r") && !method %in% c("AUCell", "GSVA", "ssGSEA")) {
+    if (isTRUE(backend_missing)) {
+      log_message(
+        "{.arg method = 'VISION'} does not have a C++ backend yet; using {.arg backend = 'r'} for this run.",
+        message_type = "warning",
+        verbose = verbose
+      )
+      backend <- "r"
+    } else {
+      log_message(
+        "{.arg backend = 'cpp'} currently supports {.arg method = 'AUCell'}, {.arg method = 'GSVA'}, and {.arg method = 'ssGSEA'} only",
+        message_type = "error"
+      )
+    }
+  }
   db <- intersect(toupper(db), c("KEGG", "REACTOME"))
   if (length(db) == 0) {
     log_message(
@@ -235,51 +268,78 @@ RunMetabolism <- function(
   scores_mat <- NULL
 
   if (method == "AUCell") {
-    check_r("AUCell", verbose = FALSE)
-    expr_rank <- AUCell::AUCell_buildRankings(
-      as_matrix(expr_counts),
-      plotStats = FALSE
-    )
-    cells_auc <- AUCell::AUCell_calcAUC(
-      geneSets = gene_sets,
-      rankings = expr_rank
-    )
-    auc_mat <- AUCell::getAUC(cells_auc)
-    scores_mat <- Matrix::t(auc_mat)
-    scores_mat <- as_matrix(scores_mat)
-    colnames(scores_mat) <- rownames(auc_mat)
-  } else if (method %in% c("GSVA", "ssGSEA")) {
-    check_r("GSVA", verbose = FALSE)
-    expr_mat <- as_matrix(expr_counts)
-    expr_mat <- expr_mat[rowSums(expr_mat) > 0, , drop = FALSE]
-    gene_sets_filt <- lapply(gene_sets, function(gs) intersect(gs, rownames(expr_mat)))
-    gene_sets_filt <- gene_sets_filt[lengths(gene_sets_filt) >= minGSSize]
-    if (identical(method, "ssGSEA")) {
-      param <- GSVA::ssgseaParam(
-        exprData = expr_mat,
-        geneSets = gene_sets_filt,
-        minSize = minGSSize,
-        maxSize = maxGSSize
+    if (identical(backend, "cpp")) {
+      scores_mat <- run_aucell_cpp_scores(
+        expr_counts = expr_counts,
+        gene_sets = gene_sets,
+        strategy = cpp_strategy
       )
     } else {
-      param <- GSVA::gsvaParam(
-        exprData = expr_mat,
-        geneSets = gene_sets_filt,
-        minSize = minGSSize,
-        maxSize = maxGSSize,
-        kcdf = "Poisson"
+      gene_set_scoring_require_namespace("AUCell")
+      expr_rank <- AUCell::AUCell_buildRankings(
+        as_matrix(expr_counts),
+        plotStats = FALSE
       )
+      cells_auc <- AUCell::AUCell_calcAUC(
+        geneSets = gene_sets,
+        rankings = expr_rank
+      )
+      auc_mat <- AUCell::getAUC(cells_auc)
+      scores_mat <- Matrix::t(auc_mat)
+      scores_mat <- as_matrix(scores_mat)
+      colnames(scores_mat) <- rownames(auc_mat)
     }
-    gsva_es <- GSVA::gsva(param = param, verbose = verbose)
-    if (inherits(gsva_es, "SummarizedExperiment")) {
-      gsva_es <- SummarizedExperiment::assay(gsva_es)
+  } else if (method %in% c("GSVA", "ssGSEA")) {
+    if (identical(backend, "cpp")) {
+      if (identical(method, "GSVA")) {
+        scores_mat <- run_gsva_cpp_scores(
+          expr_counts = expr_counts,
+          gene_sets = gene_sets,
+          min_gs_size = minGSSize,
+          max_gs_size = maxGSSize,
+          chunk_size = cpp_chunk_size
+        )
+      } else {
+        scores_mat <- run_ssgsea_cpp_scores(
+          expr_counts = expr_counts,
+          gene_sets = gene_sets,
+          min_gs_size = minGSSize,
+          max_gs_size = maxGSSize
+        )
+      }
+    } else {
+      gene_set_scoring_require_namespace("GSVA")
+      expr_mat <- as_matrix(expr_counts)
+      expr_mat <- expr_mat[rowSums(expr_mat) > 0, , drop = FALSE]
+      gene_sets_filt <- lapply(gene_sets, function(gs) intersect(gs, rownames(expr_mat)))
+      gene_sets_filt <- gene_sets_filt[lengths(gene_sets_filt) >= minGSSize]
+      if (identical(method, "ssGSEA")) {
+        param <- GSVA::ssgseaParam(
+          exprData = expr_mat,
+          geneSets = gene_sets_filt,
+          minSize = minGSSize,
+          maxSize = maxGSSize
+        )
+      } else {
+        param <- GSVA::gsvaParam(
+          exprData = expr_mat,
+          geneSets = gene_sets_filt,
+          minSize = minGSSize,
+          maxSize = maxGSSize,
+          kcdf = "Poisson"
+        )
+      }
+      gsva_es <- GSVA::gsva(param = param, verbose = verbose)
+      if (inherits(gsva_es, "SummarizedExperiment")) {
+        gsva_es <- SummarizedExperiment::assay(gsva_es)
+      }
+      gsva_es <- as.matrix(gsva_es)
+      scores_mat <- Matrix::t(gsva_es)
     }
-    gsva_es <- as.matrix(gsva_es)
-    scores_mat <- Matrix::t(gsva_es)
   } else if (method == "VISION") {
-    check_r("YosefLab/VISION", verbose = FALSE)
+    gene_set_scoring_require_namespace("VISION", install_hint = "YosefLab/VISION")
     Vision_fun <- get_namespace_fun("VISION", "Vision")
-    analyze_fun <- get_namespace_fun("VISION", "analyze")
+    calc_signature_scores_fun <- get_namespace_fun("VISION", "calcSignatureScores")
 
     n_umi <- Matrix::colSums(expr_counts)
     scaled_counts <- Matrix::t(
@@ -296,14 +356,28 @@ RunMetabolism <- function(
         message_type = "error"
       )
     }
+    signatures <- Map(
+      function(sig_name, sig_genes) {
+        VISION::createGeneSignature(
+          sig_name,
+          stats::setNames(rep(1, length(sig_genes)), sig_genes)
+        )
+      },
+      names(signatures),
+      signatures
+    )
 
     vis <- Vision_fun(
       scaled_counts,
-      signatures = signatures
+      signatures = signatures,
+      projection_methods = character()
     )
-    vis <- analyze_fun(vis)
+    vis <- calc_signature_scores_fun(
+      vis,
+      sig_gene_importance = FALSE
+    )
     sig_scores <- vis@SigScores
-    scores_mat <- Matrix::t(as_matrix(sig_scores))
+    scores_mat <- as_matrix(sig_scores)
   }
 
   if (is.null(scores_mat)) {
@@ -388,6 +462,8 @@ RunMetabolism <- function(
     species = species,
     assay = assay,
     layer = layer,
+    backend = backend,
+    cpp_strategy = if (identical(backend, "cpp") && identical(method, "AUCell")) cpp_strategy else NA_character_,
     db_version = db_version,
     db_update = db_update,
     convert_species = convert_species,
