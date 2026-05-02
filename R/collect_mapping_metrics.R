@@ -14,7 +14,12 @@ collect_mapping_metrics <- function(
   if (!is.null(probability_col) && probability_col %in% colnames(srt@meta.data)) {
     probability <- srt[[probability_col, drop = TRUE]][keep]
   }
-  per_class <- metric_class_table(predicted = predicted, truth = truth)
+  metrics <- classification_metrics_compute(
+    predicted = predicted,
+    truth = truth,
+    rare_threshold = rare_threshold
+  )
+  per_class <- metrics[["class_table"]]
   summary <- data.frame(
     metric = c(
       "accuracy",
@@ -26,17 +31,13 @@ collect_mapping_metrics <- function(
       "rare_recall"
     ),
     value = c(
-      metric_accuracy(predicted = predicted, truth = truth),
-      metric_macro_f1(predicted = predicted, truth = truth),
-      metric_purity(predicted = predicted, truth = truth),
-      metric_nmi(predicted = predicted, truth = truth),
-      metric_ari(predicted = predicted, truth = truth),
+      metrics[["accuracy"]],
+      metrics[["macro_f1"]],
+      metrics[["purity"]],
+      metrics[["nmi"]],
+      metrics[["ari"]],
       if (is.null(probability)) NA_real_ else mean(probability, na.rm = TRUE),
-      metric_weighted_recall(
-        predicted = predicted,
-        truth = truth,
-        rare_threshold = rare_threshold
-      )
+      metrics[["rare_recall"]]
     ),
     stringsAsFactors = FALSE
   )

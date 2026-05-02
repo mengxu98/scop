@@ -16,12 +16,15 @@ PrepareEnv(
 )
 }
 \arguments{
-\item{envname}{The name of the conda environment.
+\item{envname}{The name of the conda-compatible Python environment.
 If \code{NULL}, the environment name will be set to \code{"scop_env"}.
 Default is \code{NULL}.}
 
-\item{conda}{The path to a conda executable.
-Use \code{"auto"} to allow automatically finding an appropriate conda binary.}
+\item{conda}{The path or command name of a conda-compatible executable
+(\code{conda}, \code{mamba}, or \code{micromamba}). Use \code{"auto"} to allow automatically
+finding an appropriate environment manager. If \code{"micromamba"} is requested
+and micromamba is not available on \code{PATH}, a package-managed micromamba is
+downloaded automatically.}
 
 \item{miniconda_repo}{Repository URL for miniconda.
 Default is \url{https://repo.anaconda.com/miniconda}.}
@@ -40,7 +43,10 @@ Supported values are \code{"scanpy"}, \code{"scvi"}, \code{"glue"}, \code{"scano
 \code{"doubletdetection"}, \code{"doublet"}, \code{"palantir"}, \code{"scvelo"},
 \code{"cellrank"}, \code{"wot"}, \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"multimap"},
 and \code{"scomm"}.
-If \code{NULL} or omitted in \code{\link[=PrepareEnv]{PrepareEnv()}}, the complete environment is installed.}
+If \code{NULL} or omitted in \code{\link[=PrepareEnv]{PrepareEnv()}}, the default environment is installed.
+The default excludes \code{"scomm"} because its TensorFlow stack is not compatible
+with the default JAX/scVI stack in the same environment; request
+\code{modules = "scomm"} explicitly for scOMM workflows.}
 
 \item{pip_options}{Additional command line arguments to be passed to \code{uv}/\code{pip} when installing pip packages.}
 

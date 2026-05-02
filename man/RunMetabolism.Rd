@@ -18,6 +18,9 @@ RunMetabolism(
   Ensembl_version = NULL,
   mirror = NULL,
   method = c("AUCell", "GSVA", "ssGSEA", "VISION"),
+  backend = c("cpp", "r"),
+  cpp_strategy = c("sparse", "topk", "full"),
+  cpp_chunk_size = NULL,
   minGSSize = 10,
   maxGSSize = 500,
   assay_name = "METABOLISM",
@@ -60,6 +63,21 @@ Default is \code{NULL}. If \code{NULL}, the latest version will be used.}
 \item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are \code{"www"}, \code{"uswest"}, \code{"useast"}, \code{"asia"}.}
 
 \item{method}{Scoring method, one of \code{"AUCell"}, \code{"GSVA"}, \code{"ssGSEA"}, \code{"VISION"}.}
+
+\item{backend}{Scoring backend. \code{"cpp"} is the default for supported methods.
+\code{"r"} uses the original R package implementation. \code{"cpp"} currently supports
+\code{method = "AUCell"}, \code{method = "GSVA"}, and \code{method = "ssGSEA"}.
+\code{method = "VISION"} falls back to \code{"r"} when \code{backend} is not explicitly set.
+AUCell C++ scores may differ from the R backend when tied expression values
+are randomly ranked.}
+
+\item{cpp_strategy}{C++ AUCell ranking strategy. \code{"sparse"} ranks non-zero
+genes and approximates zero ties, \code{"topk"} ranks only genes that can contribute
+to AUCell AUC, and \code{"full"} ranks all genes.}
+
+\item{cpp_chunk_size}{Optional cell chunk size for C++ GSVA kernels. \code{NULL}
+or \code{"auto"} automatically chunks large matrices to reduce peak dense
+intermediate memory; positive values set the chunk size manually.}
 
 \item{minGSSize}{The minimum size of a gene set to be considered in the enrichment analysis.}
 

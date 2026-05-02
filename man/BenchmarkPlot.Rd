@@ -116,12 +116,12 @@ if (requireNamespace("labeling", quietly = TRUE)) {
     plot_type = "bar"
   )
 
-  pbmc_small <- UpdateSeuratObject(pbmc_small)
-  pbmc_small[["Raw_batch_LISI"]] <- seq_len(ncol(pbmc_small)) / ncol(pbmc_small)
-  pbmc_small[["Harmony_batch_LISI"]] <- rev(pbmc_small[["Raw_batch_LISI", drop = TRUE]])
+  data("pbmcmultiome_sub", package = "scop")
+  pbmcmultiome_sub[["MethodA_batch_LISI"]] <- seq_len(ncol(pbmcmultiome_sub)) / ncol(pbmcmultiome_sub)
+  pbmcmultiome_sub[["MethodB_batch_LISI"]] <- rev(pbmcmultiome_sub[["MethodA_batch_LISI", drop = TRUE]])
   BenchmarkPlot(
-    pbmc_small,
-    features = c("Raw_batch_LISI", "Harmony_batch_LISI"),
+    pbmcmultiome_sub,
+    features = c("MethodA_batch_LISI", "MethodB_batch_LISI"),
     plot_type = "boxplot"
   )
 }

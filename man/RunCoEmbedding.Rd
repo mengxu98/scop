@@ -79,3 +79,31 @@ reference and query cells, and compute PCA/UMAP on the shared expression
 space. The current implementation mirrors the Seurat ATAC integration
 vignette for ATAC query and RNA reference.
 }
+\examples{
+\dontrun{
+data("pbmcmultiome_sub", package = "scop")
+pbmcmultiome_sub <- standard_scop(
+  pbmcmultiome_sub,
+  assay = "RNA",
+  linear_reduction_dims = 20
+)
+reference <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[1:250])
+query <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[251:350])
+query <- standard_scop(
+  query,
+  assay = "peaks",
+  normalization_method = "TFIDF",
+  linear_reduction_dims = 20
+)
+coembed <- RunCoEmbedding(
+  srt = query,
+  reference = reference,
+  assay = "peaks",
+  reference_assay = "RNA",
+  reference_reduction = "Standardpca",
+  reference_dims = 1:10,
+  dims = 2:10,
+  umap_dims = 1:10
+)
+}
+}
