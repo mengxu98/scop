@@ -17,7 +17,9 @@ Default is \code{"3.10-1"}.}
 \code{"cellphonedb"}, \code{"magic"}, \code{"scrublet"}, \code{"doubletdetection"},
 \code{"doublet"}, \code{"palantir"}, \code{"scvelo"}, \code{"cellrank"}, \code{"wot"}, \code{"phate"},
 \code{"pacmap"}, \code{"trimap"}, \code{"multimap"}, and \code{"scomm"}. If \code{NULL}, the
-complete environment is returned.}
+default environment is returned. The default excludes \code{"scomm"} because its
+TensorFlow stack is not compatible with the default JAX/scVI stack in the
+same environment.}
 }
 \value{
 A list containing:

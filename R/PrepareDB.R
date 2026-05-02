@@ -1672,7 +1672,8 @@ PrepareDB <- function(
           url <- "https://raw.githubusercontent.com/mengxu98/datasets/main/CSPA/S1_File.xlsx"
           download(
             url = url,
-            destfile = temp
+            destfile = temp,
+            mode = "wb"
           )
           surfacepro <- get_namespace_fun(
             "openxlsx", "read.xlsx"

@@ -18,6 +18,10 @@
 #' This argument is used to convert the gene IDs to a different type if `IDtype` is different from `result_IDtype`.
 #' @param result_IDtype A character vector specifying the desired type of gene ID to be used in the output.
 #' This argument is used to convert the gene IDs from `IDtype` to `result_IDtype`.
+#' @param backend Enrichment backend. `"cpp"` is the default and uses a fast native
+#' hypergeometric ORA implementation and returns the enrichment table without
+#' `enrichResult` objects. `"r"` uses [clusterProfiler::enricher()] and returns
+#' `enrichResult` objects in `results`. `GO_simplify = TRUE` currently uses the R backend.
 #' @param db_combine Whether to combine multiple databases into one.
 #' If `TRUE`, all database specified by `db` will be combined as one named "Combined".
 #' @param TERM2GENE A data frame specifying the gene-term mapping for a custom database.
@@ -157,6 +161,7 @@ RunEnrichment <- function(
   geneID_exclude = NULL,
   IDtype = "symbol",
   result_IDtype = "symbol",
+  backend = c("cpp", "r"),
   species = "Homo_sapiens",
   db = "GO_BP",
   db_update = FALSE,
@@ -178,7 +183,18 @@ RunEnrichment <- function(
   verbose = TRUE
 ) {
   log_message("Start {.pkg Enrichment} analysis", verbose = verbose)
-  check_r("clusterProfiler", verbose = FALSE)
+  backend <- match.arg(backend)
+  if (identical(backend, "cpp") && isTRUE(GO_simplify)) {
+    log_message(
+      "{.arg GO_simplify = TRUE} requires {.pkg clusterProfiler} result objects; using {.arg backend = 'r'} for this run.",
+      message_type = "warning",
+      verbose = verbose
+    )
+    backend <- "r"
+  }
+  if (identical(backend, "r")) {
+    check_r("clusterProfiler", verbose = FALSE)
+  }
   use_srt <- FALSE
   if (is.null(geneID)) {
     if (is.null(group.by)) {
@@ -343,20 +359,32 @@ RunEnrichment <- function(
         TERM2NAME_tmp[["Term"]] %in% TERM2GENE_tmp[["Term"]], ,
         drop = FALSE
       ]
-      enrich_res <- clusterProfiler::enricher(
-        gene = gene,
-        minGSSize = ifelse(term %in% unlimited_db, 1, minGSSize),
-        maxGSSize = ifelse(term %in% unlimited_db, Inf, maxGSSize),
-        pAdjustMethod = "BH",
-        pvalueCutoff = Inf,
-        qvalueCutoff = Inf,
-        universe = NULL,
-        TERM2GENE = TERM2GENE_tmp,
-        TERM2NAME = TERM2NAME_tmp
-      )
+      if (identical(backend, "cpp")) {
+        result <- run_ora_cpp_result(
+          gene = gene,
+          TERM2GENE = TERM2GENE_tmp,
+          TERM2NAME = TERM2NAME_tmp,
+          IDtype = IDtype,
+          min_gs_size = ifelse(term %in% unlimited_db, 1, minGSSize),
+          max_gs_size = ifelse(term %in% unlimited_db, Inf, maxGSSize)
+        )
+        enrich_res <- result
+      } else {
+        enrich_res <- clusterProfiler::enricher(
+          gene = gene,
+          minGSSize = ifelse(term %in% unlimited_db, 1, minGSSize),
+          maxGSSize = ifelse(term %in% unlimited_db, Inf, maxGSSize),
+          pAdjustMethod = "BH",
+          pvalueCutoff = Inf,
+          qvalueCutoff = Inf,
+          universe = NULL,
+          TERM2GENE = TERM2GENE_tmp,
+          TERM2NAME = TERM2NAME_tmp
+        )
+        result <- if (!is.null(enrich_res)) enrich_res@result else NULL
+      }
 
-      if (!is.null(enrich_res) && nrow(enrich_res@result) > 0) {
-        result <- enrich_res@result
+      if (!is.null(result) && nrow(result) > 0) {
         result[["Groups"]] <- group
         result[["Database"]] <- term
         result[["Version"]] <- as.character(db_list[[species]][[term]][[
@@ -377,11 +405,16 @@ RunEnrichment <- function(
           }
           return(paste0(x_result, collapse = "/"))
         }))
-        enrich_res@result <- result
-        enrich_res@gene2Symbol <- as.character(gene_mapid)
+        if (identical(backend, "cpp")) {
+          enrich_res <- result
+        } else {
+          enrich_res@result <- result
+          enrich_res@gene2Symbol <- as.character(gene_mapid)
+        }
 
         if (
-          isTRUE(GO_simplify) && term %in% c("GO", "GO_BP", "GO_CC", "GO_MF")
+          identical(backend, "r") &&
+            isTRUE(GO_simplify) && term %in% c("GO", "GO_BP", "GO_CC", "GO_MF")
         ) {
           sim_res <- enrich_res
           if (term == "GO") {
@@ -447,14 +480,24 @@ RunEnrichment <- function(
   )
 
   nm <- paste(comb$group, comb$term, sep = "-")
-  sim_index <- sapply(res_list, function(x) length(x) == 2)
-  sim_list <- unlist(res_list[sim_index], recursive = FALSE)
-  raw_list <- res_list[!sim_index]
-  names(raw_list) <- nm[!sim_index]
-  results <- c(raw_list, sim_list)
-  results <- results[!sapply(results, is.null)]
-  results <- results[intersect(c(nm, paste0(nm, "_sim")), names(results))]
-  enrichment <- do.call(rbind, lapply(results, function(x) x@result))
+  if (identical(backend, "cpp")) {
+    names(res_list) <- nm
+    results <- res_list[!sapply(res_list, is.null)]
+    results <- results[intersect(nm, names(results))]
+    enrichment <- do.call(rbind, results)
+  } else {
+    sim_index <- sapply(res_list, function(x) length(x) == 2)
+    sim_list <- unlist(res_list[sim_index], recursive = FALSE)
+    raw_list <- res_list[!sim_index]
+    names(raw_list) <- nm[!sim_index]
+    results <- c(raw_list, sim_list)
+    results <- results[!sapply(results, is.null)]
+    results <- results[intersect(c(nm, paste0(nm, "_sim")), names(results))]
+    enrichment <- do.call(rbind, lapply(results, function(x) x@result))
+  }
+  if (is.null(enrichment)) {
+    enrichment <- data.frame()
+  }
   rownames(enrichment) <- NULL
 
   log_message(
@@ -466,7 +509,8 @@ RunEnrichment <- function(
     enrichment = enrichment,
     results = results,
     geneMap = geneMap,
-    input = input
+    input = input,
+    backend = backend
   )
   if (isTRUE(use_srt)) {
     res[["DE_threshold"]] <- DE_threshold

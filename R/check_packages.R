@@ -7,7 +7,8 @@
 #' Use `"<package>==<version>"` to request a specific version.
 #' @param force Whether to force package reinstallation.
 #' Default is `FALSE`.
-#' @param pip Whether to use `pip`/`uv` (`TRUE`) or `conda` (`FALSE`) for installation.
+#' @param pip Whether to use `pip`/`uv` (`TRUE`) or the configured
+#' conda-compatible environment manager (`FALSE`) for installation.
 #' Default is `TRUE`. When `TRUE`, uv is used as the primary installer with pip as fallback.
 #' @param pip_options Additional command line arguments to be passed to `uv`/`pip` when `pip = TRUE`.
 #' @param ... Other arguments to be passed to other functions.
@@ -102,8 +103,9 @@ check_python <- function(
       message_type = "warning",
       verbose = verbose
     )
+    return(invisible(FALSE))
   } else {
-    return(invisible(NULL))
+    return(invisible(TRUE))
   }
 }
 
@@ -123,7 +125,7 @@ exist_python_pkgs <- function(
   env <- env_exist(conda = conda, envname = envname)
   if (isFALSE(env)) {
     log_message(
-      "Cannot find the conda environment: {.file {envname}}",
+      "Cannot find the conda-compatible Python environment: {.file {envname}}",
       message_type = "error"
     )
   }
@@ -374,7 +376,7 @@ installed_python_pkgs <- function(
   env <- env_exist(conda = conda, envname = envname)
   if (isFALSE(env)) {
     log_message(
-      "Cannot find the conda environment: {.file {envname}}",
+      "Cannot find the conda-compatible Python environment: {.file {envname}}",
       message_type = "error"
     )
   }
@@ -384,7 +386,7 @@ installed_python_pkgs <- function(
     verbose = verbose
   )
 
-  tryCatch(
+  all_installed <- tryCatch(
     {
       all_installed <- get_namespace_fun(
         "reticulate",
@@ -398,19 +400,155 @@ installed_python_pkgs <- function(
         "Found {.val {nrow(all_installed)}} packages installed",
         verbose = verbose
       )
-      return(all_installed)
+      normalize_installed_package_table(all_installed)
     },
     error = function(e) {
       log_message(
-        "Failed to retrieve package list: {.val {e$message}}",
-        message_type = "error",
+        "Failed to retrieve package list via reticulate: {.val {e$message}}",
+        message_type = "warning",
         verbose = verbose
       )
+      NULL
     }
+  )
+
+  pip_installed <- installed_python_pkgs_pip(
+    envname = envname,
+    conda = conda
+  )
+
+  if (!is.null(all_installed)) {
+    return(merge_installed_package_tables(all_installed, pip_installed))
+  }
+
+  all_installed <- installed_python_pkgs_cli(
+    envname = envname,
+    conda = conda
+  )
+  if (!is.null(all_installed)) {
+    all_installed <- merge_installed_package_tables(all_installed, pip_installed)
+    log_message(
+      "Found {.val {nrow(all_installed)}} packages installed",
+      verbose = verbose
+    )
+    return(all_installed)
+  }
+
+  log_message(
+    "Failed to retrieve package list from environment: {.file {envname}}",
+    message_type = "error",
+    verbose = verbose
   )
 }
 
-#' @title Remove Python packages from conda environment
+normalize_installed_package_table <- function(packages) {
+  if (is.null(packages) || !is.data.frame(packages) || nrow(packages) == 0) {
+    return(NULL)
+  }
+
+  package <- packages[["package"]] %||% packages[["name"]]
+  version <- packages[["version"]] %||% rep(NA_character_, length(package))
+  if (is.null(package)) {
+    return(NULL)
+  }
+
+  data.frame(
+    package = as.character(package),
+    version = as.character(version),
+    stringsAsFactors = FALSE
+  )
+}
+
+merge_installed_package_tables <- function(...) {
+  tables <- list(...)
+  tables <- lapply(tables, normalize_installed_package_table)
+  tables <- tables[!vapply(tables, is.null, logical(1))]
+  if (length(tables) == 0) {
+    return(NULL)
+  }
+
+  merged <- do.call(rbind, tables)
+  key <- tolower(merged$package)
+  merged <- merged[!duplicated(key, fromLast = TRUE), , drop = FALSE]
+  rownames(merged) <- NULL
+  merged
+}
+
+installed_python_pkgs_cli <- function(envname, conda) {
+  env_path <- conda_env_path(envname = envname, conda = conda)
+  list_args <- list()
+  if (!is.null(env_path) && dir.exists(env_path)) {
+    list_args <- c(list_args, list(c("list", "--prefix", env_path, "--json")))
+  }
+  list_args <- c(list_args, list(c("list", "--name", envname, "--json")))
+
+  for (args in list_args) {
+    packages <- normalize_installed_package_table(
+      run_conda_json(conda, args)
+    )
+    if (!is.null(packages)) {
+      return(packages)
+    }
+  }
+
+  python <- resolve_python_executable(
+    envname = envname,
+    conda = conda,
+    error_if_missing = FALSE
+  )
+  if (is.null(python) || !file.exists(python)) {
+    return(NULL)
+  }
+
+  output <- tryCatch(
+    suppressWarnings(system2(
+      python,
+      c("-m", "pip", "list", "--format=json"),
+      stdout = TRUE,
+      stderr = FALSE
+    )),
+    error = function(...) NULL
+  )
+  status <- attr(output, "status") %||% 0L
+  if (!identical(status, 0L)) {
+    return(NULL)
+  }
+
+  normalize_installed_package_table(
+    parse_conda_json_output(output)
+  )
+}
+
+installed_python_pkgs_pip <- function(envname, conda) {
+  python <- resolve_python_executable(
+    envname = envname,
+    conda = conda,
+    error_if_missing = FALSE
+  )
+  if (is.null(python) || !file.exists(python)) {
+    return(NULL)
+  }
+
+  output <- tryCatch(
+    suppressWarnings(system2(
+      python,
+      c("-m", "pip", "list", "--format=json"),
+      stdout = TRUE,
+      stderr = FALSE
+    )),
+    error = function(...) NULL
+  )
+  status <- attr(output, "status") %||% 0L
+  if (!identical(status, 0L)) {
+    return(NULL)
+  }
+
+  normalize_installed_package_table(
+    parse_conda_json_output(output)
+  )
+}
+
+#' @title Remove Python packages from a conda-compatible Python environment
 #'
 #' @md
 #' @inheritParams thisutils::log_message
@@ -458,6 +596,7 @@ remove_python <- function(
   )
 
   conda <- resolve_conda(conda)
+  manager <- conda_manager_label(conda)
   if (!ensure_conda(conda)) {
     return(invisible(FALSE))
   }
@@ -465,7 +604,7 @@ remove_python <- function(
   env_exists <- env_exist(envname = envname, conda = conda)
   if (isFALSE(env_exists)) {
     log_message(
-      "Cannot find the conda environment: {.file {envname}}",
+      "Cannot find the conda-compatible Python environment: {.file {envname}}",
       message_type = "error"
     )
     return(invisible(FALSE))
@@ -529,7 +668,7 @@ remove_python <- function(
     )
   } else {
     log_message(
-      "Removing {.pkg {packages}} via {.pkg conda}...",
+      "Removing {.pkg {packages}} via {.pkg {manager}}...",
       verbose = verbose
     )
 
@@ -543,14 +682,14 @@ remove_python <- function(
 
         if (status != 0L) {
           log_message(
-            "{.pkg {packages}} removal failed via {.pkg conda} with error code: {.val {status}}",
+            "{.pkg {packages}} removal failed via {.pkg {manager}} with error code: {.val {status}}",
             message_type = "warning",
             verbose = verbose
           )
           FALSE
         } else {
           log_message(
-            "{.pkg {packages}} removed successfully via {.pkg conda}",
+            "{.pkg {packages}} removed successfully via {.pkg {manager}}",
             message_type = "success",
             verbose = verbose
           )
@@ -559,7 +698,7 @@ remove_python <- function(
       },
       error = function(e) {
         log_message(
-          "Conda removal failed: {.val {e$message}}",
+          "{.pkg {manager}} removal failed: {.val {e$message}}",
           message_type = "warning",
           verbose = verbose
         )
@@ -569,7 +708,7 @@ remove_python <- function(
 
     if (!result && !pip) {
       log_message(
-        "{.pkg {packages}} removal failed via {.pkg conda}, trying {.pkg uv} as fallback...",
+        "{.pkg {packages}} removal failed via {.pkg {manager}}, trying {.pkg uv} as fallback...",
         message_type = "warning",
         verbose = verbose
       )

@@ -13,7 +13,6 @@ RunDEtest(
   cells2 = NULL,
   features = NULL,
   feature_type = c("gene", "peak", "cCRE"),
-  analysis_level = c("cell", "pseudobulk"),
   markers_type = c("all", "paired", "conserved", "disturbed"),
   grouping.var = NULL,
   meta.method = c("maximump", "minimump", "wilkinsonp", "meanp", "sump", "votep"),
@@ -49,11 +48,11 @@ If not provided, the function uses the "active.ident" variable in the Seurat obj
 
 \item{group1}{A vector of cell IDs or a character vector specifying the cells that belong to the first group.
 If both group.by and group1 are provided, group1 takes precedence.
-For pseudobulk analysis, this parameter is interpreted as the first condition label.}
+For sample-level methods (\code{"edgeR"} and \code{"limma"}), this parameter is interpreted as the first condition label.}
 
 \item{group2}{A vector of cell IDs or a character vector specifying the cells that belong to the second group.
 This parameter is only used when group.by or group1 is provided.
-For pseudobulk analysis, this parameter is interpreted as the second condition label.}
+For sample-level methods (\code{"edgeR"} and \code{"limma"}), this parameter is interpreted as the second condition label.}
 
 \item{cells1}{A vector of cell IDs specifying the cells that belong to group1. If provided, group1 is ignored.}
 
@@ -66,12 +65,9 @@ If not provided, all features in the dataset are considered.}
 \item{feature_type}{Feature type used for differential testing.
 Default is \code{"gene"}.}
 
-\item{analysis_level}{Analysis level used for differential testing.
-Default is \code{"cell"}.}
-
 \item{markers_type}{A character value specifying the type of markers to find.
 Possible values are "all", "paired", "conserved", and "disturbed".
-Pseudobulk analysis currently supports only \code{"all"}.}
+Sample-level methods (\code{"edgeR"} and \code{"limma"}) currently support only \code{"all"}.}
 
 \item{grouping.var}{A character value specifying the grouping variable for finding conserved or disturbed markers.
 This parameter is only used when markers_type is "conserved" or "disturbed".}
@@ -80,7 +76,7 @@ This parameter is only used when markers_type is "conserved" or "disturbed".}
 Possible values are "maximump", "minimump", "wilkinsonp", "meanp", "sump", and "votep".}
 
 \item{test.use}{Differential testing method.
-For pseudobulk analysis, only \code{"limma_voom"} and \code{"edgeR"} are currently supported.}
+\code{"edgeR"} and \code{"limma"} run sample-level pseudobulk differential testing.}
 
 \item{only.pos}{Only return positive markers (FALSE by default)}
 
@@ -123,11 +119,11 @@ of the two groups, currently only used for poisson and negative binomial tests}
 \item{norm.method}{Normalization method for fold change calculation when layer is 'data'.
 Default is \code{"LogNormalize"}.}
 
-\item{sample_col}{Metadata column storing biological sample IDs for pseudobulk analysis.
-Required when \code{analysis_level = "pseudobulk"}.}
+\item{sample_col}{Metadata column storing biological sample IDs.
+Required when \code{test.use} is \code{"edgeR"} or \code{"limma"}.}
 
-\item{condition_col}{Metadata column storing condition labels for pseudobulk analysis.
-Required when \code{analysis_level = "pseudobulk"}.}
+\item{condition_col}{Metadata column storing condition labels.
+Required when \code{test.use} is \code{"edgeR"} or \code{"limma"}.}
 
 \item{p.adjust.method}{A character value specifying the method to use for adjusting p-values.
 Default is \code{"bonferroni"}.}
@@ -157,7 +153,8 @@ data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunDEtest(
   pancreas_sub,
-  group.by = "SubCellType"
+  group.by = "SubCellType",
+  only.pos = FALSE
 )
 AllMarkers <- dplyr::filter(
   pancreas_sub@tools$DEtest_SubCellType$AllMarkers_wilcox,
@@ -304,52 +301,60 @@ ht7 <- GroupHeatmap(
 )
 ht7$plot
 
-pbmc_small <- UpdateSeuratObject(pbmc_small)
-pbmc_small[["sample"]] <- rep(c("S1", "S2", "S3", "S4"), length.out = ncol(pbmc_small))
-pbmc_small[["condition"]] <- rep(c("ctrl", "ctrl", "case", "case"), length.out = ncol(pbmc_small))
-pbmc_small <- RunDEtest(
-  pbmc_small,
-  analysis_level = "pseudobulk",
+cell_index <- ave(
+  seq_along(pancreas_sub$CellType),
+  pancreas_sub$CellType,
+  FUN = seq_along
+)
+pancreas_sub[["sample"]] <- paste0(
+  "S",
+  (cell_index - 1) \%\% 4 + 1
+)
+pancreas_sub[["condition"]] <- ifelse(
+  pancreas_sub$sample \%in\% c("S1", "S2"),
+  "ctrl",
+  "case"
+)
+pancreas_sub <- RunDEtest(
+  pancreas_sub,
+  group.by = "CellType",
   sample_col = "sample",
   condition_col = "condition",
-  test.use = "limma_voom",
+  test.use = "limma",
+  fc.threshold = 1,
   layer = "counts",
-  cores = 1
+  only.pos = FALSE
 )
-pbmc_small <- RunDEtest(
-  pbmc_small,
-  analysis_level = "pseudobulk",
-  sample_col = "sample",
-  condition_col = "condition",
-  test.use = "edgeR",
-  layer = "counts",
-  cores = 1
+DEtestPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  test.use = "limma",
+  group_use = "Ductal",
+  plot_type = "volcano",
+  x_metric = "avg_log2FC",
+  y_metric = "p_val"
 )
-edgeR_markers <- pbmc_small@tools$DEtest_pseudobulk$AllMarkers_edgeR
 
-\donttest{
-data(pbmcmultiome_sub)
-pbmcmultiome_sub[["sample"]] <- rep(
-  c("S1", "S2", "S3", "S4"),
-  length.out = ncol(pbmcmultiome_sub)
-)
-pbmcmultiome_sub[["condition"]] <- rep(
-  c("ctrl", "ctrl", "case", "case"),
-  length.out = ncol(pbmcmultiome_sub)
-)
-pbmcmultiome_sub <- RunDEtest(
-  pbmcmultiome_sub,
-  assay = "peaks",
-  layer = "counts",
-  feature_type = "peak",
-  analysis_level = "pseudobulk",
+pancreas_sub <- RunDEtest(
+  pancreas_sub,
+  group.by = "CellType",
   sample_col = "sample",
   condition_col = "condition",
   test.use = "edgeR",
-  cores = 1
+  layer = "counts",
+  fc.threshold = 1,
+  only.pos = FALSE
 )
-peak_markers <- pbmcmultiome_sub@tools$DEtest_pseudobulk$AllMarkers_edgeR
-}
+DEtestPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  test.use = "edgeR",
+  group_use = "Ductal",
+  plot_type = "volcano",
+  x_metric = "avg_log2FC",
+  y_metric = "p_val",
+  DE_threshold = "abs(avg_log2FC) > log2(1.5) & p_val < 0.05"
+)
 }
 \seealso{
 \link{VolcanoPlot}, \link{RunEnrichment}, \link{RunGSEA}, \link{GroupHeatmap}

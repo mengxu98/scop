@@ -1128,13 +1128,15 @@ GroupHeatmap <- function(
   }
 
   mat_split <- do.call(cbind, mat_list[feature_split_by])
+  combined_mat <- do.call(cbind, mat_list)
+  col_groups <- rep(names(mat_list), times = vapply(mat_list, ncol, integer(1)))
 
   if (is.null(limits)) {
     if (!is.function(exp_method) && exp_method %in% c("zscore", "log2fc")) {
       b <- ceiling(
         min(
           abs(
-            stats::quantile(do.call(cbind, mat_list), c(0.01, 0.99), na.rm = TRUE)
+            stats::quantile(combined_mat, c(0.01, 0.99), na.rm = TRUE)
           ),
           na.rm = TRUE
         ) * 2
@@ -1145,7 +1147,7 @@ GroupHeatmap <- function(
         palette_colors(palette = heatmap_palette, palcolor = heatmap_palcolor)
       )
     } else {
-      b <- stats::quantile(do.call(cbind, mat_list), c(0.01, 0.99), na.rm = TRUE)
+      b <- stats::quantile(combined_mat, c(0.01, 0.99), na.rm = TRUE)
       if (!all(is.finite(b)) || b[1] == b[2]) b <- c(0, 1)
       colors <- circlize::colorRamp2(
         seq(b[1], b[2], length = 100),
@@ -1716,7 +1718,8 @@ GroupHeatmap <- function(
   }
 
   if (isTRUE(cluster_rows) && !is.null(cluster_features_by)) {
-    mat_cluster <- do.call(cbind, mat_list[cluster_features_by])
+    # Preserve order of cluster_features_by (same as do.call(cbind, mat_list[cluster_features_by]))
+    mat_cluster <- combined_mat[, unlist(lapply(cluster_features_by, function(g) which(col_groups == g))), drop = FALSE]
     if (is.null(row_split)) {
       dend <- stats::as.dendrogram(
         stats::hclust(

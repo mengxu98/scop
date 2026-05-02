@@ -11,10 +11,14 @@
 #' Default is `"wilcox"`.
 #' @param plot_type Type of plot to create. Options: `"volcano"`, `"manhattan"`, or `"ring"`.
 #' Default is `"volcano"`.
+#' @param group_use Groups to plot.
+#' Default is `NULL` (all groups).
 #' @param DE_threshold A character string specifying the threshold for differential expression (used to highlight significant genes in all plot types).
-#' Default is `"avg_log2FC > 0 & p_val_adj < 0.05"`.
+#' Default is `"p_val < 0.05"` for sample-level methods (`"edgeR"` and `"limma"`)
+#' and `"avg_log2FC > 0 & p_val_adj < 0.05"` otherwise.
 #' @param x_metric A character string specifying the metric to use for the x-axis (only for volcano plot).
-#' Default is `"diff_pct"`.
+#' Default is `NULL`, which uses `"avg_log2FC"` for sample-level methods (`"edgeR"` and `"limma"`)
+#' and `"diff_pct"` otherwise.
 #' @param threshold_method Volcano significance threshold method.
 #' Options are `"rectangular"` (legacy DE_threshold) or `"hyperbolic"` (`|log2FC * -log10(padj)| > c`).
 #' Default is `"rectangular"`.
@@ -41,8 +45,9 @@
 #' @param enrich_nlabel Maximum number of enrichment-derived labels added per group.
 #' Labels from `features_label` are always retained.
 #' Default is `15`.
-#' @param y_metric A character string specifying the metric to use for the y-axis (only for Manhattan plot, not used currently).
-#' Options: `"p_val"` or `"p_val_adj"`. Default is `"p_val_adj"`.
+#' @param y_metric A character string specifying the metric to use for the y-axis.
+#' Options: `"p_val"` or `"p_val_adj"`.
+#' Default is `"p_val"` for sample-level methods (`"edgeR"` and `"limma"`) and `"p_val_adj"` otherwise.
 #' @param x_order A character string specifying how to order genes on x-axis (only for Manhattan plot, not used currently).
 #' Options: `"gene"` (alphabetical by gene name) or `"index"` (by data order). Default is `"gene"`.
 #' @param palette Color palette name.
@@ -54,6 +59,8 @@
 #' Default is `NULL`.
 #' @param pt.size The size of the points.
 #' Default is `1`.
+#' @param cols.background A character string specifying the color for non-DE background points in volcano plots.
+#' Default is `"grey80"`.
 #' @param cols.highlight A character string specifying the color for highlighted points.
 #' Default is `"black"`.
 #' @param sizes.highlight The size of the highlighted points.
@@ -128,6 +135,45 @@
 #' DEtestPlot(
 #'   pancreas_sub,
 #'   group.by = "CellType",
+#'   plot_type = "volcano",
+#'   group_use = c("Ductal", "Endocrine"),
+#'   ncol = 2
+#' )
+#'
+#' DEtestPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   plot_type = "volcano",
+#'   threshold_method = "hyperbolic",
+#'   hyperbola_c = 6,
+#'   ncol = 2
+#' )
+#'
+#' \dontrun{
+#' pancreas_sub <- RunEnrichment(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   db = "GO_BP",
+#'   species = "Mus_musculus"
+#' )
+#' DEtestPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   plot_type = "volcano",
+#'   threshold_method = "hyperbolic",
+#'   hyperbola_c = 6,
+#'   annotate_enrichment = TRUE,
+#'   enrich_from = "Enrichment",
+#'   enrich_db = "GO_BP",
+#'   enrich_top_terms = 3,
+#'   enrich_nlabel = 15,
+#'   ncol = 2
+#' )
+#' }
+#'
+#' DEtestPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
 #'   plot_type = "manhattan"
 #' )
 #'
@@ -170,8 +216,9 @@ DEtestPlot <- function(
     test.use = "wilcox",
     res = NULL,
     plot_type = c("volcano", "manhattan", "ring"),
+    group_use = NULL,
     DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
-    x_metric = "diff_pct",
+    x_metric = NULL,
     y_metric = c("p_val_adj", "p_val"),
     x_order = c("gene", "index"),
     palette = "RdBu",
@@ -180,6 +227,7 @@ DEtestPlot <- function(
     group_palcolor = NULL,
     pt.size = 1,
     pt.alpha = 1,
+    cols.background = "grey80",
     cols.highlight = "black",
     sizes.highlight = 1,
     alpha.highlight = 1,
@@ -217,20 +265,42 @@ DEtestPlot <- function(
     enrich_gsva_score_cutoff = NULL,
     gsva_method = NULL,
     enrich_nlabel = 15) {
+  DE_threshold_missing <- missing(DE_threshold)
+  y_metric_missing <- missing(y_metric)
   plot_type <- match.arg(plot_type)
   threshold_method <- match.arg(threshold_method)
   y_metric <- match.arg(y_metric)
   x_order <- match.arg(x_order)
 
   if (plot_type == "volcano") {
+    DE_threshold_use <- if (
+      DE_threshold_missing &&
+        test.use %in% c("edgeR", "limma")
+    ) {
+      "p_val < 0.05"
+    } else {
+      DE_threshold
+    }
+    x_metric_use <- x_metric %||% ifelse(
+      test.use %in% c("edgeR", "limma") || threshold_method == "hyperbolic",
+      "avg_log2FC",
+      "diff_pct"
+    )
+    y_metric_use <- if (y_metric_missing) {
+      ifelse(test.use %in% c("edgeR", "limma"), "p_val", "p_val_adj")
+    } else {
+      y_metric
+    }
     return(
       VolcanoPlot(
         srt = srt,
         group.by = group.by,
         test.use = test.use,
         res = res,
-        DE_threshold = DE_threshold,
-        x_metric = x_metric,
+        group_use = group_use,
+        DE_threshold = DE_threshold_use,
+        x_metric = x_metric_use,
+        y_metric = y_metric_use,
         threshold_method = threshold_method,
         hyperbola_c = hyperbola_c,
         annotate_enrichment = annotate_enrichment,
@@ -246,6 +316,7 @@ DEtestPlot <- function(
         palcolor = palcolor,
         pt.size = pt.size,
         pt.alpha = pt.alpha,
+        cols.background = cols.background,
         cols.highlight = cols.highlight,
         sizes.highlight = sizes.highlight,
         alpha.highlight = alpha.highlight,
@@ -260,9 +331,13 @@ DEtestPlot <- function(
         xlab = xlab %||% ifelse(
           threshold_method == "hyperbolic",
           "avg_log2FC",
-          x_metric
+          x_metric_use
         ),
-        ylab = ylab %||% "-log10(p-adjust)",
+        ylab = ylab %||% ifelse(
+          y_metric_use == "p_val",
+          "-log10(p-value)",
+          "-log10(p-adjust)"
+        ),
         theme_use = theme_use,
         theme_args = theme_args,
         combine = combine,
@@ -280,6 +355,7 @@ DEtestPlot <- function(
         group.by = group.by,
         test.use = test.use,
         res = res,
+        group_use = group_use,
         DE_threshold = DE_threshold,
         group_palette = group_palette,
         group_palcolor = group_palcolor,
@@ -315,6 +391,7 @@ DEtestPlot <- function(
         group.by = group.by,
         test.use = test.use,
         res = res,
+        group_use = group_use,
         DE_threshold = DE_threshold,
         group_palette = group_palette,
         group_palcolor = group_palcolor,
@@ -350,7 +427,8 @@ get_de_data <- function(
   group.by,
   test.use,
   DE_threshold,
-  res = NULL
+  res = NULL,
+  group_use = NULL
 ) {
   if (!is.null(res)) {
     de_df <- as.data.frame(res)
@@ -385,6 +463,7 @@ get_de_data <- function(
         levels = unique(de_df[["group1"]])
       )
     }
+    de_df <- filter_de_data_group_use(de_df, group_use = group_use)
     if ("pct.1" %in% colnames(de_df) && "pct.2" %in% colnames(de_df)) {
       de_df[, "diff_pct"] <- de_df[, "pct.1"] - de_df[, "pct.2"]
     } else {
@@ -421,6 +500,7 @@ get_de_data <- function(
   }
   de <- names(srt@tools[[layer]])[index]
   de_df <- srt@tools[[layer]][[de]]
+  de_df <- filter_de_data_group_use(de_df, group_use = group_use)
   de_df[, "diff_pct"] <- de_df[, "pct.1"] - de_df[, "pct.2"]
   de_df[, "-log10padj"] <- -log10(de_df[, "p_val_adj"])
   de_df[, "DE"] <- FALSE
@@ -428,8 +508,38 @@ get_de_data <- function(
   list(de_df = de_df)
 }
 
+filter_de_data_group_use <- function(de_df, group_use = NULL) {
+  if (is.null(group_use)) {
+    return(de_df)
+  }
+
+  available_groups <- unique(as.character(de_df[["group1"]]))
+  group_levels <- if (is.factor(de_df[["group1"]])) {
+    levels(de_df[["group1"]])
+  } else {
+    available_groups
+  }
+  group_levels <- group_levels[group_levels %in% available_groups]
+  group_use <- unique(as.character(group_use))
+  group_use <- group_use[nzchar(group_use)]
+  group_use <- intersect(group_use, group_levels)
+  if (length(group_use) == 0) {
+    log_message(
+      "No matching groups found in DEtest results",
+      message_type = "error"
+    )
+  }
+
+  de_df <- de_df[
+    as.character(de_df[["group1"]]) %in% group_use, ,
+    drop = FALSE
+  ]
+  de_df[["group1"]] <- factor(as.character(de_df[["group1"]]), levels = group_use)
+  de_df
+}
+
 clip_log2fc_symmetric <- function(df, fc_col = "avg_log2FC") {
-  res <- scop_clip_symmetric_range(data = df, value_col = fc_col)
+  res <- thisplot::clip_symmetric_range(data = df, value_col = fc_col)
   list(df = res$data, fc_lim = res$limits)
 }
 
@@ -883,6 +993,7 @@ DEtestManhattanPlot <- function(
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,
+  group_use = NULL,
   DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
   group_palette = "Chinese",
   group_palcolor = NULL,
@@ -912,7 +1023,7 @@ DEtestManhattanPlot <- function(
   if (is.null(group.by)) {
     group.by <- "custom"
   }
-  data_res <- get_de_data(srt, group.by, test.use, DE_threshold, res)
+  data_res <- get_de_data(srt, group.by, test.use, DE_threshold, res, group_use)
   de_df <- data_res$de_df
   clip_res <- clip_log2fc_symmetric(de_df)
   de_df_marker <- clip_res$df
@@ -1079,6 +1190,7 @@ DEtestRingPlot <- function(
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,
+  group_use = NULL,
   DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
   group_palette = "Chinese",
   group_palcolor = NULL,
@@ -1108,7 +1220,7 @@ DEtestRingPlot <- function(
   if (is.null(group.by)) {
     group.by <- "custom"
   }
-  data_res <- get_de_data(srt, group.by, test.use, DE_threshold, res)
+  data_res <- get_de_data(srt, group.by, test.use, DE_threshold, res, group_use)
   de_df <- data_res$de_df
   clip_res <- clip_log2fc_symmetric(de_df)
   de_df_marker <- clip_res$df
@@ -1284,6 +1396,13 @@ DEtestRingPlot <- function(
 #' VolcanoPlot(
 #'   pancreas_sub,
 #'   group.by = "CellType",
+#'   group_use = c("Ductal", "Endocrine"),
+#'   ncol = 2
+#' )
+#'
+#' VolcanoPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
 #'   DE_threshold = "abs(diff_pct) > 0.3 & p_val_adj < 0.05",
 #'   ncol = 2
 #' )
@@ -1292,6 +1411,16 @@ DEtestRingPlot <- function(
 #'   pancreas_sub,
 #'   group.by = "CellType",
 #'   x_metric = "avg_log2FC",
+#'   y_metric = "p_val",
+#'   DE_threshold = "abs(avg_log2FC) > log2(1.5) & p_val < 0.05",
+#'   ncol = 2
+#' )
+#'
+#' VolcanoPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   threshold_method = "hyperbolic",
+#'   hyperbola_c = 6,
 #'   ncol = 2
 #' )
 #'
@@ -1318,12 +1447,15 @@ VolcanoPlot <- function(
     group.by = NULL,
     test.use = "wilcox",
     res = NULL,
+    group_use = NULL,
     DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
-    x_metric = "diff_pct",
+    x_metric = NULL,
+    y_metric = NULL,
     palette = "RdBu",
     palcolor = NULL,
     pt.size = 1,
     pt.alpha = 1,
+    cols.background = "grey80",
     cols.highlight = "black",
     sizes.highlight = 1,
     alpha.highlight = 1,
@@ -1335,8 +1467,8 @@ VolcanoPlot <- function(
     label.bg.r = 0.1,
     label.size = 4,
     aspect.ratio = NULL,
-    xlab = x_metric,
-    ylab = "-log10(p-adjust)",
+    xlab = NULL,
+    ylab = NULL,
     theme_use = "theme_scop",
     theme_args = list(),
     combine = TRUE,
@@ -1354,16 +1486,46 @@ VolcanoPlot <- function(
     enrich_gsva_score_cutoff = NULL,
     gsva_method = NULL,
     enrich_nlabel = 15) {
+  DE_threshold_missing <- missing(DE_threshold)
   threshold_method <- match.arg(threshold_method)
+  if (
+    DE_threshold_missing &&
+      test.use %in% c("edgeR", "limma")
+  ) {
+    DE_threshold <- "p_val < 0.05"
+  }
+  x_metric <- x_metric %||% ifelse(
+    test.use %in% c("edgeR", "limma") || threshold_method == "hyperbolic",
+    "avg_log2FC",
+    "diff_pct"
+  )
+  y_metric <- y_metric %||% ifelse(
+    test.use %in% c("edgeR", "limma"),
+    "p_val",
+    "p_val_adj"
+  )
   if (!x_metric %in% c("diff_pct", "avg_log2FC")) {
     log_message(
       "'x_metric' must be either 'diff_pct' or 'avg_log2FC'",
       message_type = "error"
     )
   }
+  if (!y_metric %in% c("p_val", "p_val_adj")) {
+    log_message(
+      "'y_metric' must be either 'p_val' or 'p_val_adj'",
+      message_type = "error"
+    )
+  }
   if (threshold_method == "hyperbolic") {
     x_metric <- "avg_log2FC"
   }
+  traditional_volcano <- x_metric == "avg_log2FC"
+  xlab <- xlab %||% x_metric
+  ylab <- ylab %||% ifelse(
+    y_metric == "p_val",
+    "-log10(p-value)",
+    "-log10(p-adjust)"
+  )
   enrich_nlabel <- as.integer(enrich_nlabel)[1]
   if (!is.finite(enrich_nlabel) || is.na(enrich_nlabel) || enrich_nlabel < 0) {
     enrich_nlabel <- 0L
@@ -1373,11 +1535,11 @@ VolcanoPlot <- function(
     c("Enrichment", "GSEA", "GSVA")
   ))
 
-  data_res <- get_de_data(srt, group.by, test.use, DE_threshold, res)
+  data_res <- get_de_data(srt, group.by, test.use, DE_threshold, res, group_use)
   de_df <- data_res$de_df
   de_df[, "avg_log2FC_raw"] <- de_df[, "avg_log2FC"]
   de_df[, "p_val_adj_raw"] <- de_df[, "p_val_adj"]
-  de_df[, "neglog10_padj"] <- get_safe_neglog10(de_df[, "p_val_adj"])
+  de_df[, "neglog10_pvalue"] <- get_safe_neglog10(de_df[, y_metric])
 
   clip_res <- clip_log2fc_symmetric(de_df)
   de_df <- clip_res$df
@@ -1392,13 +1554,13 @@ VolcanoPlot <- function(
       hyperbola_c = hyperbola_c
     )
     de_df[, "x"] <- de_df[, "avg_log2FC"]
-    de_df[, "y"] <- de_df[, "neglog10_padj"]
+    de_df[, "y"] <- de_df[, "neglog10_pvalue"]
     de_df <- de_df[
       order(abs(de_df[, "avg_log2FC_raw"]), decreasing = FALSE, na.last = FALSE), ,
       drop = FALSE
     ]
   } else if (x_metric == "diff_pct") {
-    de_df[, "y"] <- de_df[, "neglog10_padj"]
+    de_df[, "y"] <- de_df[, "neglog10_pvalue"]
     de_df[, "x"] <- de_df[, "diff_pct"]
     de_df[de_df[, "avg_log2FC"] < 0, "y"] <- -de_df[
       de_df[, "avg_log2FC"] < 0,
@@ -1409,11 +1571,10 @@ VolcanoPlot <- function(
       drop = FALSE
     ]
   } else if (x_metric == "avg_log2FC") {
-    de_df[, "y"] <- de_df[, "neglog10_padj"]
+    de_df[, "y"] <- de_df[, "neglog10_pvalue"]
     de_df[, "x"] <- de_df[, "avg_log2FC"]
-    de_df[de_df[, "diff_pct"] < 0, "y"] <- -de_df[de_df[, "diff_pct"] < 0, "y"]
     de_df <- de_df[
-      order(abs(de_df[, "diff_pct"]), decreasing = FALSE, na.last = FALSE), ,
+      order(abs(de_df[, "avg_log2FC"]), decreasing = FALSE, na.last = FALSE), ,
       drop = FALSE
     ]
   }
@@ -1481,15 +1642,32 @@ VolcanoPlot <- function(
           utils::head(order(df[, "distance"], decreasing = TRUE), nlabel * 2),
           "label"
         ] <- TRUE
+      } else if (traditional_volcano) {
+        right_idx <- which(df[["x"]] >= 0)
+        left_idx <- which(df[["x"]] < 0)
+        if (length(right_idx) > 0) {
+          df[right_idx[
+            utils::head(order(df[right_idx, "distance"], decreasing = TRUE), nlabel)
+          ], "label"] <- TRUE
+        }
+        if (length(left_idx) > 0) {
+          df[left_idx[
+            utils::head(order(df[left_idx, "distance"], decreasing = TRUE), nlabel)
+          ], "label"] <- TRUE
+        }
       } else {
-        df[df[["y"]] >= 0, ][
-          utils::head(order(df[df[["y"]] >= 0, "distance"], decreasing = TRUE), nlabel),
-          "label"
-        ] <- TRUE
-        df[df[["y"]] < 0, ][
-          utils::head(order(df[df[["y"]] < 0, "distance"], decreasing = TRUE), nlabel),
-          "label"
-        ] <- TRUE
+        up_idx <- which(df[["y"]] >= 0)
+        down_idx <- which(df[["y"]] < 0)
+        if (length(up_idx) > 0) {
+          df[up_idx[
+            utils::head(order(df[up_idx, "distance"], decreasing = TRUE), nlabel)
+          ], "label"] <- TRUE
+        }
+        if (length(down_idx) > 0) {
+          df[down_idx[
+            utils::head(order(df[down_idx, "distance"], decreasing = TRUE), nlabel)
+          ], "label"] <- TRUE
+        }
       }
     } else {
       df[df[["gene"]] %in% features_label, "label"] <- TRUE
@@ -1505,7 +1683,7 @@ VolcanoPlot <- function(
       df[df[["gene"]] %in% enrich_genes, "label"] <- TRUE
     }
 
-    color_by <- ifelse(x_metric == "diff_pct", "avg_log2FC", "diff_pct")
+    color_by <- "avg_log2FC"
     color_metric <- suppressWarnings(as.numeric(df[, color_by]))
     if (!any(is.finite(color_metric))) {
       color_metric <- c(-1, 1)
@@ -1521,7 +1699,7 @@ VolcanoPlot <- function(
 
     label_df <- df[df[["label"]], , drop = FALSE]
     label_nudge <- if (nrow(label_df) > 0) {
-      if (threshold_method == "hyperbolic") {
+      if (threshold_method == "hyperbolic" || traditional_volcano) {
         ifelse(label_df[["x_plot"]] >= 0, x_nudge, -x_nudge)
       } else {
         ifelse(label_df[["y_plot"]] >= 0, -x_nudge, x_nudge)
@@ -1533,13 +1711,15 @@ VolcanoPlot <- function(
     p <- ggplot() +
       geom_point(
         data = df[!df[["DE"]] & !df[["border"]], , drop = FALSE],
-        aes(x = x_plot, y = y_plot, color = .data[[color_by]]),
+        aes(x = x_plot, y = y_plot),
+        color = cols.background,
         size = pt.size,
         alpha = pt.alpha
       ) +
       geom_point(
         data = df[!df[["DE"]] & df[["border"]], , drop = FALSE],
-        aes(x = x_plot, y = y_plot, color = .data[[color_by]]),
+        aes(x = x_plot, y = y_plot),
+        color = cols.background,
         size = pt.size,
         alpha = pt.alpha
       ) +
@@ -1586,7 +1766,7 @@ VolcanoPlot <- function(
       ) +
       labs(x = xlab, y = ylab) +
       scale_color_gradientn(
-        name = ifelse(x_metric == "diff_pct", "log2FC", "diff_pct"),
+        name = "log2FC",
         colors = palette_colors(palette = palette, palcolor = palcolor),
         values = scales::rescale(color_values),
         guide = guide_colorbar(
