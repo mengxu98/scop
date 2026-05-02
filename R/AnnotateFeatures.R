@@ -193,7 +193,7 @@ AnnotateFeatures <- function(
       gtf_attribute, function(x) {
         detail <- strsplit(x, " ")
         out <- lapply(detail, function(x) x[2:length(x)])
-        names(out) <- sapply(detail, function(x) x[1])
+        names(out) <- vapply(detail, function(x) x[1], character(1))
         out[intersect(columns, names(out))]
       }
     )
