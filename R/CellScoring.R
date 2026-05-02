@@ -14,6 +14,13 @@
 #' If `NULL`, `db` will be used to create features sets.
 #' @param termnames A vector of term names to be used from the database. Default is `NULL`, in which case all features from the database are used.
 #' @param method The method to use for scoring. Can be "Seurat", "AUCell", or "UCell". Default is `"Seurat"`.
+#' @param backend Scoring backend. `"cpp"` is the default for supported methods.
+#' `"r"` uses the original package implementation. `"cpp"` currently supports
+#' `method = "Seurat"` and `method = "AUCell"`. `method = "UCell"` falls back to
+#' `"r"` when `backend` is not explicitly set.
+#' @param cpp_strategy C++ AUCell ranking strategy. `"sparse"` ranks non-zero
+#' genes and approximates zero ties, `"topk"` ranks only genes that can contribute
+#' to AUCell AUC, and `"full"` ranks all genes.
 #' @param classification Whether to perform classification based on the scores. Default is `TRUE`.
 #' @param name The name of the assay to store the scores in. Only used if new_assay is TRUE. Default is `""`.
 #' @param new_assay Whether to create a new assay for storing the scores. Default is `FALSE`.
@@ -143,6 +150,8 @@ CellScoring <- function(
   minGSSize = 10,
   maxGSSize = 500,
   method = "Seurat",
+  backend = c("cpp", "r"),
+  cpp_strategy = c("sparse", "topk", "full"),
   classification = TRUE,
   name = "",
   new_assay = FALSE,
@@ -164,6 +173,25 @@ CellScoring <- function(
       message_type = "error",
       verbose = verbose
     )
+  }
+  backend_missing <- missing(backend)
+  backend <- match.arg(backend)
+  cpp_strategy <- match.arg(cpp_strategy)
+  if (!identical(backend, "r") && !method %in% c("Seurat", "AUCell")) {
+    if (isTRUE(backend_missing)) {
+      log_message(
+        "{.arg method = 'UCell'} does not have a C++ backend yet; using {.arg backend = 'r'} for this run.",
+        message_type = "warning",
+        verbose = verbose
+      )
+      backend <- "r"
+    } else {
+      log_message(
+        "{.arg backend = 'cpp'} currently supports {.arg method = 'Seurat'} and {.arg method = 'AUCell'} only",
+        message_type = "error",
+        verbose = verbose
+      )
+    }
   }
   assay <- assay %||% DefaultAssay(srt)
   if (layer == "counts") {
@@ -305,25 +333,57 @@ CellScoring <- function(
   }
   scores_list <- list()
   features_nm_list <- list()
+  dots <- list(...)
   for (i in seq_along(split_list)) {
     srt_sp <- split_list[[i]]
     if (method == "Seurat") {
-      srt_tmp <- AddModuleScore2(
-        srt_sp,
-        features = features,
-        name = name,
-        layer = layer,
-        assay = assay,
-        cores = cores,
-        verbose = verbose,
-        ...
-      )
-      if (name != "") {
-        scores <- srt_tmp[[paste0(name, seq_along(features))]]
+      if (identical(backend, "cpp")) {
+        expr_sp <- GetAssayData5(
+          srt_sp,
+          layer = layer,
+          assay = assay
+        )
+        module_scores <- run_seurat_module_cpp_scores(
+          expr_data = expr_sp,
+          features = features,
+          pool = dots[["pool"]] %||% NULL,
+          nbin = dots[["nbin"]] %||% 24,
+          ctrl = dots[["ctrl"]] %||% 100,
+          seed = seed
+        )
+        filtered <- names(features)[
+          !names(features) %in% colnames(module_scores)
+        ]
+        if (length(filtered) > 0) {
+          log_message(
+            "The following features were filtered when scoring: {.val {filtered}}",
+            message_type = "warning",
+            verbose = verbose
+          )
+        }
+        features_keep <- features[!names(features) %in% filtered]
+        features_nm <- features_raw[!names(features) %in% filtered]
+        scores <- as.data.frame(
+          as_matrix(module_scores)
+        )[, names(features_keep), drop = FALSE]
       } else {
-        scores <- srt_tmp[[paste0("X", seq_along(features))]]
+        srt_tmp <- AddModuleScore2(
+          srt_sp,
+          features = features,
+          name = name,
+          layer = layer,
+          assay = assay,
+          cores = cores,
+          verbose = verbose,
+          ...
+        )
+        if (name != "") {
+          scores <- srt_tmp[[paste0(name, seq_along(features))]]
+        } else {
+          scores <- srt_tmp[[paste0("X", seq_along(features))]]
+        }
+        features_nm <- features_raw
       }
-      features_nm <- features_raw
     } else if (method == "UCell") {
       check_r("UCell", verbose = FALSE)
       srt_tmp <- UCell::AddModuleScore_UCell(
@@ -348,25 +408,36 @@ CellScoring <- function(
       features_nm <- features_raw[!names(features) %in% filtered]
       scores <- srt_tmp[[paste0(names(features_keep), name)]]
     } else if (method == "AUCell") {
-      check_r("AUCell", verbose = FALSE)
-      cell_rank <- AUCell::AUCell_buildRankings(
-        as_matrix(
-          GetAssayData5(
-            srt_sp,
-            layer = layer,
-            assay = assay
-          )
-        ),
-        plotStats = FALSE
+      expr_sp <- GetAssayData5(
+        srt_sp,
+        layer = layer,
+        assay = assay
       )
-      cells_auc <- AUCell::AUCell_calcAUC(
-        geneSets = features,
-        rankings = cell_rank,
-        ...
-      )
-      filtered <- names(features)[
-        !names(features) %in% rownames(AUCell::getAUC(cells_auc))
-      ]
+      if (identical(backend, "cpp")) {
+        auc_scores <- run_aucell_cpp_scores(
+          expr_counts = expr_sp,
+          gene_sets = features,
+          strategy = cpp_strategy
+        )
+        filtered <- names(features)[
+          !names(features) %in% colnames(auc_scores)
+        ]
+      } else {
+        gene_set_scoring_require_namespace("AUCell")
+        cell_rank <- AUCell::AUCell_buildRankings(
+          as_matrix(expr_sp),
+          plotStats = FALSE
+        )
+        cells_auc <- AUCell::AUCell_calcAUC(
+          geneSets = features,
+          rankings = cell_rank,
+          ...
+        )
+        auc_scores <- Matrix::t(AUCell::getAUC(cells_auc))
+        filtered <- names(features)[
+          !names(features) %in% colnames(auc_scores)
+        ]
+      }
       if (length(filtered) > 0) {
         log_message(
           "The following features were filtered when scoring: {.val {filtered}}",
@@ -377,9 +448,7 @@ CellScoring <- function(
       features_keep <- features[!names(features) %in% filtered]
       features_nm <- features_raw[!names(features) %in% filtered]
       scores <- as.data.frame(
-        Matrix::t(
-          AUCell::getAUC(cells_auc)
-        )
+        as_matrix(auc_scores)
       )[, names(features_keep), drop = FALSE]
     }
     colnames(scores) <- make.names(
@@ -585,8 +654,8 @@ AddModuleScore2 <- function(
     cores = cores,
     verbose = verbose
   )
-  ctrl_scores <- do.call(rbind, lapply(scores, function(x) x[[1]]))
-  features_scores <- do.call(rbind, lapply(scores, function(x) x[[2]]))
+  ctrl_scores <- do.call(rbind, lapply(scores, `[[`, 1))
+  features_scores <- do.call(rbind, lapply(scores, `[[`, 2))
 
   features_scores_use <- features_scores - ctrl_scores
   if (name == "") {

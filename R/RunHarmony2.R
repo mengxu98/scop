@@ -12,6 +12,8 @@
 #' Default is `1:30`.
 #' @param reduction.name The name of the reduction to be stored in the Seurat object.
 #' Default is `"Harmony"`.
+#' @param reduction.save Deprecated alias for `reduction.name`, retained for
+#' compatibility with `harmony::RunHarmony.Seurat`.
 #' @param reduction.key The prefix for the column names of the Harmony embeddings.
 #' Default is `"Harmony_"`.
 #' @param project.dim Whether to project dimension reduction loadings.
@@ -74,6 +76,7 @@ RunHarmony2.Seurat <- function(
   dims.use = 1:30,
   project.dim = TRUE,
   reduction.name = "Harmony",
+  reduction.save = NULL,
   reduction.key = "Harmony_",
   verbose = TRUE,
   seed.use = 11,
@@ -82,6 +85,12 @@ RunHarmony2.Seurat <- function(
   check_r("harmony", verbose = FALSE)
   if (!is.null(seed.use)) {
     set.seed(seed = seed.use)
+  }
+  if (!is.null(reduction.save)) {
+    reduction.name <- reduction.save
+    if (identical(reduction.key, "Harmony_")) {
+      reduction.key <- paste0(reduction.name, "_")
+    }
   }
   if (length(dims.use) == 1) {
     log_message(

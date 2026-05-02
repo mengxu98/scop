@@ -714,7 +714,21 @@ RunKNNPredict <- function(
         use_nan = TRUE
       )
     }
-    if (k == 1) {
+    if (run_dense_topk_by_column_cpp_available()) {
+      knn_topk <- run_dense_topk_by_column_cpp(
+        x = d,
+        k = k,
+        decreasing = FALSE
+      )
+      match_k_cell <- matrix(
+        rownames(d)[knn_topk[["idx"]]],
+        nrow = nrow(knn_topk[["idx"]]),
+        ncol = ncol(knn_topk[["idx"]]),
+        dimnames = list(colnames(d), NULL)
+      )
+      match_k_distance <- knn_topk[["value"]]
+      rownames(match_k_distance) <- colnames(d)
+    } else if (k == 1) {
       match_k_cell <- as_matrix(
         apply(d, 2, function(x) {
           names(x)[order(x, decreasing = FALSE)[1]]

@@ -65,6 +65,11 @@ reference:
   - RunDecontX
   - RunDoubletCalling
 
+- subtitle: "Cell Cycle Analysis"
+- contents:
+  - RunCellCycle
+  - CycGenePrefetch
+
 - subtitle: "Data Integration and Batch Effect Removal"
 - contents:
   - BBKNN_integrate
@@ -97,6 +102,7 @@ reference:
 
 - subtitle: "Dimensionality Reduction and Clustering"
 - contents:
+  - RunBayesSpace
   - RunDimsEstimate
   - RunDimsReduction
   - RunDM
@@ -127,6 +133,7 @@ reference:
 - contents:
   - FindExpressedMarkers
   - RunDEtest
+  - RunScTenifoldKnk
   - RunProportionTest
   - RunProportionTestMilo
   - RunProportionTestPermutation
@@ -137,6 +144,7 @@ reference:
 - subtitle: "Enrichment Analysis"
 - contents:
   - CellScoring
+  - RunDorothea
   - RunDynamicEnrichment
   - RunEnrichment
   - RunGSEA
@@ -160,9 +168,12 @@ reference:
 - contents:
   - RunCellChat
   - RunCellphoneDB
+  - RunLIANA
   - RunNichenetr
   - RunMultiNichenetr
   - RunscOMM
+  - ccc_to_adata
+  - ccc_to_liana
 
 - subtitle: "Data Conversion"
 - contents:
@@ -175,7 +186,6 @@ reference:
   - CheckDataType
   - CheckDataList
   - CheckDataMerge
-  - CycGenePrefetch
   - DefaultReduction
   - FetchDataZero
   - GeneConvert
@@ -229,6 +239,7 @@ reference:
   - ProportionTestPlot
   - PseudotimeProjectionPlot
   - TACSPlot
+  - theme_omicverse
   - VelocityPlot
   - VolcanoPlot
 

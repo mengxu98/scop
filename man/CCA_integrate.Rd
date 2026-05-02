@@ -58,7 +58,7 @@ additional \code{ChromatinAssay} will be preprocessed sequentially.}
 Default is \code{TRUE}.}
 
 \item{normalization_method}{The normalization method to be used.
-Possible values are \code{"LogNormalize"}, \code{"SCT"}, and \code{"TFIDF"}.
+Possible values are \code{"LogNormalize"}, \code{"SCT"}, \code{"TFIDF"}, and \code{"scran"}.
 Default is \code{"LogNormalize"}.}
 
 \item{do_HVF_finding}{Whether to perform high variable feature finding.
@@ -69,7 +69,7 @@ Possible values are \code{"global"} and \code{"separate"}.
 Default is \code{"separate"}.}
 
 \item{HVF_method}{The method to use for finding highly variable features.
-Options are \code{"vst"}, \code{"mvp"}, or \code{"disp"}.
+Options are \code{"vst"}, \code{"mvp"}, \code{"disp"}, or \code{"scran"}.
 Default is \code{"vst"}.}
 
 \item{nHVF}{The number of highly variable features to select.

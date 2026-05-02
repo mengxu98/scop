@@ -47,12 +47,12 @@
 #'     plot_type = "bar"
 #'   )
 #'
-#'   pbmc_small <- UpdateSeuratObject(pbmc_small)
-#'   pbmc_small[["Raw_batch_LISI"]] <- seq_len(ncol(pbmc_small)) / ncol(pbmc_small)
-#'   pbmc_small[["Harmony_batch_LISI"]] <- rev(pbmc_small[["Raw_batch_LISI", drop = TRUE]])
+#'   data("pbmcmultiome_sub", package = "scop")
+#'   pbmcmultiome_sub[["MethodA_batch_LISI"]] <- seq_len(ncol(pbmcmultiome_sub)) / ncol(pbmcmultiome_sub)
+#'   pbmcmultiome_sub[["MethodB_batch_LISI"]] <- rev(pbmcmultiome_sub[["MethodA_batch_LISI", drop = TRUE]])
 #'   BenchmarkPlot(
-#'     pbmc_small,
-#'     features = c("Raw_batch_LISI", "Harmony_batch_LISI"),
+#'     pbmcmultiome_sub,
+#'     features = c("MethodA_batch_LISI", "MethodB_batch_LISI"),
 #'     plot_type = "boxplot"
 #'   )
 #' }
@@ -210,18 +210,6 @@ benchmark_feature_plot <- function(
     )
   }
 
-  tool_reduction <- tool_res[["reduction"]] %||% tool_res[["reductions"]] %||% NULL
-  if (length(tool_reduction) > 1) {
-    tool_reduction <- NULL
-  }
-  reduction <- reduction %||% tool_reduction %||% DefaultReduction(srt)
-  if (!reduction %in% SeuratObject::Reductions(srt)) {
-    log_message(
-      "Reduction {.val {reduction}} not found in {.cls Seurat}",
-      message_type = "error"
-    )
-  }
-
   if (
     identical(plot_type, "auto") &&
       length(features) < 2
@@ -254,6 +242,18 @@ benchmark_feature_plot <- function(
       theme_args = theme_args,
       verbose = verbose
     ))
+  }
+
+  tool_reduction <- tool_res[["reduction"]] %||% tool_res[["reductions"]] %||% NULL
+  if (length(tool_reduction) > 1) {
+    tool_reduction <- NULL
+  }
+  reduction <- reduction %||% tool_reduction %||% DefaultReduction(srt)
+  if (!reduction %in% SeuratObject::Reductions(srt)) {
+    log_message(
+      "Reduction {.val {reduction}} not found in {.cls Seurat}",
+      message_type = "error"
+    )
   }
 
   feature_title_map <- benchmark_clean_feature_labels(features)

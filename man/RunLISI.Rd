@@ -52,10 +52,8 @@ Defaults to \code{0}.}
 Defaults to \code{TRUE}.}
 
 \item{nn_method}{Nearest-neighbor backend. Defaults to \code{"auto"},
-which uses a simple heuristic: low-dimensional inputs use the package's exact C++ search,
-while larger/higher-dimensional inputs fall back to \code{RANN}, then \code{FNN},
-then the built-in exact C++ backend.
-Set to \code{"hnsw"} to use \code{RcppHNSW} for a faster, approximate search.}
+which prefers the package's exact C++ search only for very small problems.
+Larger inputs fall back to \code{RANN}, then \code{FNN}, and only use the exact backend as a last resort.}
 
 \item{tol}{Tolerance used in the binary search for the target perplexity.
 Defaults to \code{1e-5}.}

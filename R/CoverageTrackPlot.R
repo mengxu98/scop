@@ -18,6 +18,17 @@
 #'
 #' @return A coverage plot object.
 #' @export
+#' @examples
+#' \dontrun{
+#' data("pbmcmultiome_sub", package = "scop")
+#' # Coverage plotting requires an ATAC object with valid fragment information.
+#' CoverageTrackPlot(
+#'   pbmcmultiome_sub,
+#'   region = rownames(pbmcmultiome_sub[["peaks"]])[1],
+#'   assay = "peaks",
+#'   group.by = "CellType"
+#' )
+#' }
 CoverageTrackPlot <- function(
   srt,
   region,

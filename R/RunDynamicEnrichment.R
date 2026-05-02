@@ -74,11 +74,32 @@ RunDynamicEnrichment <- function(
   TERM2NAME = NULL,
   minGSSize = 10,
   maxGSSize = 500,
+  backend = c("cpp", "r"),
+  cpp_strategy = c("sparse", "topk", "full"),
   cores = 1,
   verbose = TRUE,
   seed = 11
 ) {
   set.seed(seed)
+  backend_missing <- missing(backend)
+  backend <- match.arg(backend)
+  cpp_strategy <- match.arg(cpp_strategy)
+  if (!identical(backend, "r") && !score_method %in% c("AUCell", "Seurat")) {
+    if (isTRUE(backend_missing)) {
+      log_message(
+        "{.arg score_method = 'UCell'} does not have a C++ backend yet; using {.arg backend = 'r'} for this run.",
+        message_type = "warning",
+        verbose = verbose
+      )
+      backend <- "r"
+    } else {
+      log_message(
+        "{.arg backend = 'cpp'} currently supports {.arg score_method = 'AUCell'} and {.arg score_method = 'Seurat'} only",
+        message_type = "error",
+        verbose = verbose
+      )
+    }
+  }
   assay <- assay %||% DefaultAssay(srt)
 
   feature_union <- c()
@@ -184,6 +205,8 @@ RunDynamicEnrichment <- function(
       assay = assay,
       name = term,
       new_assay = TRUE,
+      backend = backend,
+      cpp_strategy = cpp_strategy,
       cores = cores,
       verbose = verbose
     )

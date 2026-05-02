@@ -9,12 +9,15 @@ VolcanoPlot(
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,
+  group_use = NULL,
   DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
-  x_metric = "diff_pct",
+  x_metric = NULL,
+  y_metric = NULL,
   palette = "RdBu",
   palcolor = NULL,
   pt.size = 1,
   pt.alpha = 1,
+  cols.background = "grey80",
   cols.highlight = "black",
   sizes.highlight = 1,
   alpha.highlight = 1,
@@ -26,8 +29,8 @@ VolcanoPlot(
   label.bg.r = 0.1,
   label.size = 4,
   aspect.ratio = NULL,
-  xlab = x_metric,
-  ylab = "-log10(p-adjust)",
+  xlab = NULL,
+  ylab = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
   combine = TRUE,
@@ -60,48 +63,20 @@ When \code{res} is provided, \code{srt} will be ignored.
 The data.frame must contain columns: \code{gene}, \code{group1} (factor or character),
 \code{avg_log2FC}, \code{p_val_adj}, and optionally \code{pct.1} and \code{pct.2} for calculating \code{diff_pct}.}
 
+\item{group_use}{Groups to plot.
+Default is \code{NULL} (all groups).}
+
 \item{DE_threshold}{A character string specifying the threshold for differential expression (used to highlight significant genes in all plot types).
-Default is \code{"avg_log2FC > 0 & p_val_adj < 0.05"}.}
+Default is \code{"p_val < 0.05"} for sample-level methods (\code{"edgeR"} and \code{"limma"})
+and \code{"avg_log2FC > 0 & p_val_adj < 0.05"} otherwise.}
 
 \item{x_metric}{A character string specifying the metric to use for the x-axis (only for volcano plot).
-Default is \code{"diff_pct"}.}
+Default is \code{NULL}, which uses \code{"avg_log2FC"} for sample-level methods (\code{"edgeR"} and \code{"limma"})
+and \code{"diff_pct"} otherwise.}
 
-\item{threshold_method}{Volcano significance threshold method.
-Options are \code{"rectangular"} (legacy DE_threshold) or \code{"hyperbolic"} (\code{|log2FC * -log10(padj)| > c}).
-Default is \code{"rectangular"}.}
-
-\item{hyperbola_c}{Numeric cutoff \code{c} for hyperbolic volcano threshold.
-Default is \code{6}.}
-
-\item{annotate_enrichment}{Whether to annotate enrichment-hit genes on volcano plots.
-Enrichment results are read from existing results in \code{srt@tools} only.
-Default is \code{FALSE}.}
-
-\item{enrich_from}{Character vector specifying enrichment result source(s) to annotate.
-Options are \code{"Enrichment"}, \code{"GSEA"}, \code{"GSVA"}.
-Default is \code{c("Enrichment", "GSEA", "GSVA")}.}
-
-\item{enrich_db}{Optional database filter for enrichment annotation, e.g. \code{"GO_BP"} or \code{"KEGG"}.
-Default is \code{NULL}.}
-
-\item{enrich_terms}{Optional whitelist of enrichment term IDs or names for annotation.
-Default is \code{NULL}.}
-
-\item{enrich_top_terms}{Number of top enriched terms selected per source/group/database.
-Default is \code{3}.}
-
-\item{enrich_padj_cutoff}{Adjusted p-value cutoff for \code{"Enrichment"} and \code{"GSEA"} annotation.
-Default is \code{0.05}.}
-
-\item{enrich_gsva_score_cutoff}{Optional absolute GSVA score cutoff for \code{"GSVA"} annotation.
-Default is \code{NULL}.}
-
-\item{gsva_method}{Optional GSVA method filter (e.g. \code{"gsva"} or \code{"ssgsea"}) when multiple GSVA tool slots exist.
-Default is \code{NULL}.}
-
-\item{enrich_nlabel}{Maximum number of enrichment-derived labels added per group.
-Labels from \code{features_label} are always retained.
-Default is \code{15}.}
+\item{y_metric}{A character string specifying the metric to use for the y-axis.
+Options: \code{"p_val"} or \code{"p_val_adj"}.
+Default is \code{"p_val"} for sample-level methods (\code{"edgeR"} and \code{"limma"}) and \code{"p_val_adj"} otherwise.}
 
 \item{palette}{Color palette name.
 Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
@@ -115,6 +90,9 @@ Default is \code{1}.}
 
 \item{pt.alpha}{The transparency of the data points.
 Default is \code{1}.}
+
+\item{cols.background}{A character string specifying the color for non-DE background points in volcano plots.
+Default is \code{"grey80"}.}
 
 \item{cols.highlight}{A character string specifying the color for highlighted points.
 Default is \code{"black"}.}
@@ -170,6 +148,43 @@ Default is \code{NULL}.}
 
 \item{byrow}{Whether to fill plots by row.
 Default is \code{TRUE}.}
+
+\item{threshold_method}{Volcano significance threshold method.
+Options are \code{"rectangular"} (legacy DE_threshold) or \code{"hyperbolic"} (\verb{|log2FC * -log10(padj)| > c}).
+Default is \code{"rectangular"}.}
+
+\item{hyperbola_c}{Numeric cutoff \code{c} for hyperbolic volcano threshold.
+Default is \code{6}.}
+
+\item{annotate_enrichment}{Whether to annotate enrichment-hit genes on volcano plots.
+Enrichment results are read from existing results in \code{srt@tools} only.
+Default is \code{FALSE}.}
+
+\item{enrich_from}{Character vector specifying enrichment result source(s) to annotate.
+Options are \code{"Enrichment"}, \code{"GSEA"}, \code{"GSVA"}.
+Default is \code{c("Enrichment", "GSEA", "GSVA")}.}
+
+\item{enrich_db}{Optional database filter for enrichment annotation, e.g. \code{"GO_BP"} or \code{"KEGG"}.
+Default is \code{NULL}.}
+
+\item{enrich_terms}{Optional whitelist of enrichment term IDs or names for annotation.
+Default is \code{NULL}.}
+
+\item{enrich_top_terms}{Number of top enriched terms selected per source/group/database.
+Default is \code{3}.}
+
+\item{enrich_padj_cutoff}{Adjusted p-value cutoff for \code{"Enrichment"} and \code{"GSEA"} annotation.
+Default is \code{0.05}.}
+
+\item{enrich_gsva_score_cutoff}{Optional absolute GSVA score cutoff for \code{"GSVA"} annotation.
+Default is \code{NULL}.}
+
+\item{gsva_method}{Optional GSVA method filter (e.g. \code{"gsva"} or \code{"ssgsea"}) when multiple GSVA tool slots exist.
+Default is \code{NULL}.}
+
+\item{enrich_nlabel}{Maximum number of enrichment-derived labels added per group.
+Labels from \code{features_label} are always retained.
+Default is \code{15}.}
 }
 \description{
 Generate a volcano plot based on differential expression analysis results.
@@ -190,6 +205,13 @@ VolcanoPlot(
 VolcanoPlot(
   pancreas_sub,
   group.by = "CellType",
+  group_use = c("Ductal", "Endocrine"),
+  ncol = 2
+)
+
+VolcanoPlot(
+  pancreas_sub,
+  group.by = "CellType",
   DE_threshold = "abs(diff_pct) > 0.3 & p_val_adj < 0.05",
   ncol = 2
 )
@@ -198,6 +220,16 @@ VolcanoPlot(
   pancreas_sub,
   group.by = "CellType",
   x_metric = "avg_log2FC",
+  y_metric = "p_val",
+  DE_threshold = "abs(avg_log2FC) > log2(1.5) & p_val < 0.05",
+  ncol = 2
+)
+
+VolcanoPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  threshold_method = "hyperbolic",
+  hyperbola_c = 6,
   ncol = 2
 )
 

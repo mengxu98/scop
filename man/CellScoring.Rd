@@ -22,6 +22,8 @@ CellScoring(
   minGSSize = 10,
   maxGSSize = 500,
   method = "Seurat",
+  backend = c("cpp", "r"),
+  cpp_strategy = c("sparse", "topk", "full"),
   classification = TRUE,
   name = "",
   new_assay = FALSE,
@@ -79,6 +81,15 @@ Default is \code{NULL}. If \code{NULL}, the latest version will be used.}
 \item{maxGSSize}{The maximum size of a gene set to be considered in the enrichment analysis.}
 
 \item{method}{The method to use for scoring. Can be "Seurat", "AUCell", or "UCell". Default is \code{"Seurat"}.}
+
+\item{backend}{Scoring backend. \code{"cpp"} is the default for supported methods.
+\code{"r"} uses the original package implementation. \code{"cpp"} currently supports
+\code{method = "Seurat"} and \code{method = "AUCell"}. \code{method = "UCell"} falls back to
+\code{"r"} when \code{backend} is not explicitly set.}
+
+\item{cpp_strategy}{C++ AUCell ranking strategy. \code{"sparse"} ranks non-zero
+genes and approximates zero ties, \code{"topk"} ranks only genes that can contribute
+to AUCell AUC, and \code{"full"} ranks all genes.}
 
 \item{classification}{Whether to perform classification based on the scores. Default is \code{TRUE}.}
 

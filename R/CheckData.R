@@ -130,7 +130,7 @@ CheckDataType.default <- function(
 #' @param do_normalization Whether data normalization should be performed.
 #' Default is `TRUE`.
 #' @param normalization_method The normalization method to be used.
-#' Possible values are `"LogNormalize"`, `"SCT"`, and `"TFIDF"`.
+#' Possible values are `"LogNormalize"`, `"SCT"`, `"TFIDF"`, and `"scran"`.
 #' Default is `"LogNormalize"`.
 #' @param HVF_source The source of highly variable features.
 #' Possible values are `"global"` and `"separate"`.
@@ -174,7 +174,7 @@ CheckDataList <- function(
       message_type = "error"
     )
   }
-  normalization_methods <- c("LogNormalize", "SCT", "TFIDF")
+  normalization_methods <- c("LogNormalize", "SCT", "TFIDF", "scran")
   if (!normalization_method %in% normalization_methods) {
     log_message(
       "{.arg normalization_method} must be one of: {.val {normalization_methods}}",
@@ -233,6 +233,12 @@ CheckDataList <- function(
     } else {
       type <- "Unknown"
     }
+  }
+  if (type != "RNA" && (normalization_method == "scran" || HVF_method == "scran")) {
+    log_message(
+      "{.pkg scran} normalization and HVF selection are only supported for RNA assays",
+      message_type = "error"
+    )
   }
 
   features_list <- lapply(
@@ -398,11 +404,6 @@ CheckDataList <- function(
           normalization.method = "LogNormalize",
           verbose = FALSE
         )
-        srt_list[[i]] <- ScaleData(
-          object = srt_list[[i]],
-          assay = assay,
-          verbose = FALSE
-        )
       }
       if (normalization_method == "TFIDF") {
         log_message(
@@ -415,6 +416,17 @@ CheckDataList <- function(
           verbose = FALSE
         )
       }
+      if (normalization_method == "scran") {
+        log_message(
+          "Perform {.pkg scran} deconvolution normalization on {.val {i}}/{.val {length(srt_list)}} of {.arg srt_list}...",
+          verbose = verbose
+        )
+        srt_list[[i]] <- normalize_scran_seurat(
+          srt = srt_list[[i]],
+          assay = assay,
+          verbose = verbose
+        )
+      }
     }
 
     if (is.null(HVF)) {
@@ -423,7 +435,7 @@ CheckDataList <- function(
           is.null(do_HVF_finding) ||
           length(SeuratObject::VariableFeatures(srt_list[[i]], assay = assay)) == 0
       ) {
-        if (type == "RNA") {
+        if (type == "RNA" && HVF_method != "scran") {
           log_message(
             "Perform {.fn Seurat::FindVariableFeatures} on {.val {i}}/{.val {length(srt_list)}} of {.arg srt_list}...",
             verbose = verbose
@@ -435,6 +447,20 @@ CheckDataList <- function(
             selection.method = HVF_method,
             verbose = FALSE
           )
+        }
+        if (type == "RNA" && HVF_method == "scran") {
+          log_message(
+            "Perform {.pkg scran} highly variable feature selection on {.val {i}}/{.val {length(srt_list)}} of {.arg srt_list}...",
+            verbose = verbose
+          )
+          hvf_res <- find_hvf_scran_seurat(
+            srt = srt_list[[i]],
+            assay = assay,
+            nHVF = nHVF,
+            verbose = verbose
+          )
+          srt_list[[i]] <- hvf_res[["srt"]]
+          SeuratObject::VariableFeatures(srt_list[[i]], assay = assay) <- hvf_res[["HVF"]]
         }
         if (type == "Chromatin") {
           log_message(
@@ -517,14 +543,24 @@ CheckDataList <- function(
       )
       srt_merge <- Reduce(merge, srt_list)
       if (type == "RNA") {
-        srt_merge <- Seurat::FindVariableFeatures(
-          srt_merge,
-          assay = SeuratObject::DefaultAssay(srt_merge),
-          nfeatures = nHVF,
-          selection.method = HVF_method,
-          verbose = FALSE
-        )
-        HVF <- SeuratObject::VariableFeatures(srt_merge)
+        if (HVF_method == "scran") {
+          hvf_res <- find_hvf_scran_seurat(
+            srt = srt_merge,
+            assay = SeuratObject::DefaultAssay(srt_merge),
+            nHVF = nHVF,
+            verbose = verbose
+          )
+          HVF <- hvf_res[["HVF"]]
+        } else {
+          srt_merge <- Seurat::FindVariableFeatures(
+            srt_merge,
+            assay = SeuratObject::DefaultAssay(srt_merge),
+            nfeatures = nHVF,
+            selection.method = HVF_method,
+            verbose = FALSE
+          )
+          HVF <- SeuratObject::VariableFeatures(srt_merge)
+        }
       }
       if (type == "Chromatin") {
         srt_merge <- Signac::FindTopFeatures(
@@ -547,12 +583,16 @@ CheckDataList <- function(
       )
       HVF_filter <- HVF_sort[HVF_sort >= HVF_min_intersection]
       if (type == "RNA") {
-        HVF <- Seurat::SelectIntegrationFeatures(
-          object.list = srt_list,
-          nfeatures = nHVF,
-          verbose = FALSE
-        )
-        HVF <- intersect(HVF, names(HVF_filter))
+        if (HVF_method == "scran") {
+          HVF <- names(utils::head(HVF_filter, n = nHVF %||% length(HVF_filter)))
+        } else {
+          HVF <- Seurat::SelectIntegrationFeatures(
+            object.list = srt_list,
+            nfeatures = nHVF,
+            verbose = FALSE
+          )
+          HVF <- intersect(HVF, names(HVF_filter))
+        }
       }
       if (type == "Chromatin") {
         nHVF_use <- min(
@@ -633,6 +673,86 @@ CheckDataList <- function(
       HVF = HVF,
       assay = assay,
       type = type
+    )
+  )
+}
+
+normalize_scran_seurat <- function(
+  srt,
+  assay,
+  verbose = TRUE
+) {
+  check_r(c("scran", "scuttle"), verbose = FALSE)
+  sce <- Seurat::as.SingleCellExperiment(srt, assay = assay)
+  clusters <- scran::quickCluster(
+    sce,
+    min.size = min(100L, ncol(sce))
+  )
+  sce <- scran::computeSumFactors(sce, clusters = clusters)
+  sce <- scuttle::logNormCounts(sce)
+  logcounts <- SummarizedExperiment::assay(sce, "logcounts")
+  srt <- SeuratObject::SetAssayData(
+    object = srt,
+    assay = assay,
+    layer = "data",
+    new.data = logcounts
+  )
+  size_factors <- SingleCellExperiment::sizeFactors(sce)
+  names(size_factors) <- colnames(srt)
+  srt[["scran_size_factor"]] <- size_factors
+  log_message(
+    "{.pkg scran} normalization completed",
+    message_type = "success",
+    verbose = verbose
+  )
+  return(srt)
+}
+
+find_hvf_scran_seurat <- function(
+  srt,
+  assay,
+  nHVF = 2000,
+  verbose = TRUE
+) {
+  check_r(c("scran", "scuttle"), verbose = FALSE)
+  sce <- Seurat::as.SingleCellExperiment(srt, assay = assay)
+  if (!"logcounts" %in% SummarizedExperiment::assayNames(sce)) {
+    logcounts <- tryCatch(
+      GetAssayData5(srt, layer = "data", assay = assay),
+      error = function(e) NULL
+    )
+    if (is.null(logcounts) || nrow(logcounts) == 0 || ncol(logcounts) == 0) {
+      sce <- scuttle::logNormCounts(sce)
+    } else {
+      SummarizedExperiment::assay(sce, "logcounts") <- logcounts
+    }
+  }
+  dec <- scran::modelGeneVar(sce)
+  if (is.null(nHVF)) {
+    HVF <- scran::getTopHVGs(dec, var.threshold = 0)
+  } else {
+    HVF <- scran::getTopHVGs(dec, n = min(nHVF, nrow(dec)))
+  }
+  dec_df <- as.data.frame(dec)
+  colnames(dec_df) <- paste0("scran_", colnames(dec_df))
+  feature_data <- GetFeaturesData(srt, assay = assay)
+  feature_data <- feature_data[, setdiff(colnames(feature_data), colnames(dec_df)), drop = FALSE]
+  feature_data <- cbind(feature_data, dec_df[rownames(feature_data), , drop = FALSE])
+  srt <- AddFeaturesData(
+    object = srt,
+    features = feature_data,
+    assay = assay
+  )
+  log_message(
+    "{.pkg scran} selected {.val {length(HVF)}} highly variable feature{?s}",
+    message_type = "success",
+    verbose = verbose
+  )
+  return(
+    list(
+      srt = srt,
+      HVF = HVF,
+      stats = dec
     )
   )
 }
