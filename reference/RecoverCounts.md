@@ -63,24 +63,24 @@ RecoverCounts(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-27 16:23:05] Start standard processing workflow...
-#> ℹ [2026-04-27 16:23:06] Checking a list of <Seurat>...
-#> ! [2026-04-27 16:23:06] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-27 16:23:06] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-27 16:23:08] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-27 16:23:08] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-27 16:23:09] Number of available HVF: 2000
-#> ℹ [2026-04-27 16:23:09] Finished check
-#> ℹ [2026-04-27 16:23:09] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-27 16:23:09] Perform pca linear dimension reduction
-#> ℹ [2026-04-27 16:23:11] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-27 16:23:12] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-27 16:23:12] Reorder clusters...
-#> ℹ [2026-04-27 16:23:12] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-27 16:23:12] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-27 16:23:12] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-27 16:23:16] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-04-27 16:23:20] Standard processing workflow completed
+#> ℹ [2026-05-02 04:52:03] Start standard processing workflow...
+#> ℹ [2026-05-02 04:52:04] Checking a list of <Seurat>...
+#> ! [2026-05-02 04:52:04] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-02 04:52:04] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-02 04:52:06] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-02 04:52:07] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-02 04:52:07] Number of available HVF: 2000
+#> ℹ [2026-05-02 04:52:07] Finished check
+#> ℹ [2026-05-02 04:52:07] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-02 04:52:07] Perform pca linear dimension reduction
+#> ℹ [2026-05-02 04:52:08] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-05-02 04:52:08] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-02 04:52:08] Reorder clusters...
+#> ℹ [2026-05-02 04:52:09] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-02 04:52:09] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-02 04:52:09] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-05-02 04:52:12] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-05-02 04:52:16] Standard processing workflow completed
 raw_counts <- GetAssayData5(
   pancreas_sub,
   assay = "RNA",
@@ -105,9 +105,9 @@ new_pancreas_sub <- SeuratObject::SetAssayData(
 )
 # Recover the counts and compare with the raw counts matrix
 pancreas_sub <- RecoverCounts(new_pancreas_sub)
-#> ℹ [2026-04-27 16:23:22] Data type is log-normalized
-#> ℹ [2026-04-27 16:23:22] The data is presumed to be log-normalized
-#> ℹ [2026-04-27 16:23:22] Perform "expm1" on the raw data
+#> ℹ [2026-05-02 04:52:18] Data type is log-normalized
+#> ℹ [2026-05-02 04:52:18] The data is presumed to be log-normalized
+#> ℹ [2026-05-02 04:52:18] Perform "expm1" on the raw data
 new_counts <- GetAssayData5(
   pancreas_sub,
   assay = "RNA",

@@ -50,24 +50,24 @@ MetabolismPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-27 16:20:29] Start standard processing workflow...
-#> ℹ [2026-04-27 16:20:29] Checking a list of <Seurat>...
-#> ! [2026-04-27 16:20:29] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-27 16:20:29] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-27 16:20:32] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-27 16:20:32] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-27 16:20:32] Number of available HVF: 2000
-#> ℹ [2026-04-27 16:20:32] Finished check
-#> ℹ [2026-04-27 16:20:33] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-27 16:20:33] Perform pca linear dimension reduction
-#> ℹ [2026-04-27 16:20:33] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-27 16:20:34] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-27 16:20:34] Reorder clusters...
-#> ℹ [2026-04-27 16:20:34] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-27 16:20:34] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-27 16:20:34] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-27 16:20:38] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-04-27 16:20:42] Standard processing workflow completed
+#> ℹ [2026-05-02 04:49:00] Start standard processing workflow...
+#> ℹ [2026-05-02 04:49:01] Checking a list of <Seurat>...
+#> ! [2026-05-02 04:49:01] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-02 04:49:01] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-02 04:49:03] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-02 04:49:04] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-02 04:49:04] Number of available HVF: 2000
+#> ℹ [2026-05-02 04:49:04] Finished check
+#> ℹ [2026-05-02 04:49:04] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-02 04:49:04] Perform pca linear dimension reduction
+#> ℹ [2026-05-02 04:49:05] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-05-02 04:49:05] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-02 04:49:05] Reorder clusters...
+#> ℹ [2026-05-02 04:49:05] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-02 04:49:05] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-02 04:49:05] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-05-02 04:49:09] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-05-02 04:49:13] Standard processing workflow completed
 pancreas_sub <- RunMetabolism(
   pancreas_sub,
   db = c("KEGG", "REACTOME"),
@@ -75,13 +75,13 @@ pancreas_sub <- RunMetabolism(
   species = "Mus_musculus",
   method = "AUCell"
 )
-#> ℹ [2026-04-27 16:20:42] Start metabolism pathway scoring
-#> ℹ [2026-04-27 16:20:43] Data type is raw counts
-#> ℹ [2026-04-27 16:20:43] Averaging expression by "CellType" ...
-#> ℹ [2026-04-27 16:20:43] Aggregated expression: 15998 genes x 5 groups
-#> ℹ [2026-04-27 16:20:43] Using raw scMetabolism gene sets directly; `PrepareDB()` / BioMart-based ID rebuilding is skipped
-#> ℹ [2026-04-27 16:20:44] Total metabolism gene sets to score: 127
-#> ✔ [2026-04-27 16:21:07] Metabolism scores stored in tools slot "Metabolism_CellType_AUCell"
+#> ℹ [2026-05-02 04:49:13] Start metabolism pathway scoring
+#> ℹ [2026-05-02 04:49:13] Data type is raw counts
+#> ℹ [2026-05-02 04:49:13] Averaging expression by "CellType" ...
+#> ℹ [2026-05-02 04:49:13] Aggregated expression: 15998 genes x 5 groups
+#> ℹ [2026-05-02 04:49:13] Using raw scMetabolism gene sets directly; `PrepareDB()` / BioMart-based ID rebuilding is skipped
+#> ℹ [2026-05-02 04:49:14] Total metabolism gene sets to score: 127
+#> ✔ [2026-05-02 04:49:52] Metabolism scores stored in tools slot "Metabolism_CellType_AUCell"
 
 ht1 <- MetabolismPlot(
   pancreas_sub,
@@ -138,7 +138,48 @@ MetabolismPlot(
   plot_type = "network",
   topTerm = 3
 )
-#> ✔ [2026-04-27 16:21:13] shadowtext installed successfully
+#> Found more than one class "dist" in cache; using the first, from namespace 'spam'
+#> Also defined by ‘BiocGenerics’
+#> Found more than one class "dist" in cache; using the first, from namespace 'spam'
+#> Also defined by ‘BiocGenerics’
+#> ◌ [2026-05-02 04:49:57] Installing: shadowtext...
+#>  
+#> → Will install 2 packages.
+#> → All 2 packages (0 B) are cached.
+#> + prettydoc    0.4.1  + ✔ pandoc
+#> + shadowtext   0.1.6 
+#> ✔ All system requirements are already installed.
+#>   
+#> ℹ No downloads are needed, 2 pkgs are cached
+#> ✔ Got prettydoc 0.4.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.00 MB)
+#> ℹ Installing system requirements
+#> ℹ Executing `sudo sh -c apt-get -y update`
+#> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
+#> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
+#> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
+#> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
+#> Hit:8 https://dl.google.com/linux/chrome-stable/deb stable InRelease
+#> Reading package lists...
+#> ℹ Executing `sudo sh -c apt-get -y install pandoc cmake make libuv1-dev libcairo2-dev libfontconfig1-dev libfreetype6-dev libpng-dev`
+#> Reading package lists...
+#> Building dependency tree...
+#> Reading state information...
+#> pandoc is already the newest version (3.1.3+ds-2).
+#> cmake is already the newest version (3.28.3-1build7).
+#> make is already the newest version (4.3-4.1build2).
+#> libuv1-dev is already the newest version (1.48.0-1.1build1).
+#> libcairo2-dev is already the newest version (1.18.0-3build1).
+#> libfontconfig1-dev is already the newest version (2.15.0-1.1ubuntu2).
+#> libfreetype-dev is already the newest version (2.13.2+dfsg-1ubuntu0.1).
+#> libpng-dev is already the newest version (1.6.43-5ubuntu0.5).
+#> 0 upgraded, 0 newly installed, 0 to remove and 52 not upgraded.
+#> ✔ Installed shadowtext 0.1.6  (20ms)
+#> ✔ Installed prettydoc 0.4.1  (60ms)
+#> ✔ 1 pkg + 56 deps: kept 55, added 2, dld 1 (1.00 MB) [4.4s]
+#> ✔ [2026-05-02 04:50:02] shadowtext installed successfully
 
 
 MetabolismPlot(
@@ -165,12 +206,12 @@ pancreas_sub <- RunMetabolism(
   db = c("KEGG", "REACTOME"),
   species = "Mus_musculus"
 )
-#> ℹ [2026-04-27 16:21:18] Start metabolism pathway scoring
-#> ℹ [2026-04-27 16:21:18] Data type is raw counts
-#> ℹ [2026-04-27 16:21:19] Using raw scMetabolism gene sets directly; `PrepareDB()` / BioMart-based ID rebuilding is skipped
-#> ℹ [2026-04-27 16:21:19] Total metabolism gene sets to score: 127
-#> ✔ [2026-04-27 16:21:24] Metabolism scores stored in tools slot "Metabolism_AUCell"
-#> ℹ [2026-04-27 16:21:24] Metabolism scores also stored in assay "METABOLISM"
+#> ℹ [2026-05-02 04:50:12] Start metabolism pathway scoring
+#> ℹ [2026-05-02 04:50:12] Data type is raw counts
+#> ℹ [2026-05-02 04:50:13] Using raw scMetabolism gene sets directly; `PrepareDB()` / BioMart-based ID rebuilding is skipped
+#> ℹ [2026-05-02 04:50:13] Total metabolism gene sets to score: 127
+#> ✔ [2026-05-02 04:50:17] Metabolism scores stored in tools slot "Metabolism_AUCell"
+#> ℹ [2026-05-02 04:50:17] Metabolism scores also stored in assay "METABOLISM"
 
 FeatureDimPlot(
   pancreas_sub,
@@ -201,5 +242,5 @@ ht <- GroupHeatmap(
   width = 1,
   height = 2
 )
-#> ! [2026-04-27 16:21:25] The values in the "counts" layer are non-integer. Set the library size to "1"
+#> ! [2026-05-02 04:50:18] The values in the "counts" layer are non-integer. Set the library size to "1"
 ```

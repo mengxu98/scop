@@ -324,38 +324,30 @@ DEtestPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-27 15:32:19] Start standard processing workflow...
-#> ℹ [2026-04-27 15:32:20] Checking a list of <Seurat>...
-#> ! [2026-04-27 15:32:20] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-27 15:32:20] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-27 15:32:22] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-27 15:32:22] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-27 15:32:23] Number of available HVF: 2000
-#> ℹ [2026-04-27 15:32:23] Finished check
-#> ℹ [2026-04-27 15:32:23] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-27 15:32:23] Perform pca linear dimension reduction
-#> ℹ [2026-04-27 15:32:24] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-27 15:32:24] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-27 15:32:24] Reorder clusters...
-#> ℹ [2026-04-27 15:32:24] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-27 15:32:24] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-27 15:32:24] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-27 15:32:28] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-04-27 15:32:31] Standard processing workflow completed
+#> ℹ [2026-05-02 04:22:22] Start standard processing workflow...
+#> ℹ [2026-05-02 04:22:23] Checking a list of <Seurat>...
+#> ! [2026-05-02 04:22:23] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-02 04:22:23] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-02 04:22:25] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-02 04:22:25] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-02 04:22:25] Number of available HVF: 2000
+#> ℹ [2026-05-02 04:22:26] Finished check
+#> ℹ [2026-05-02 04:22:26] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-02 04:22:26] Perform pca linear dimension reduction
+#> ℹ [2026-05-02 04:22:26] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-05-02 04:22:27] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-02 04:22:27] Reorder clusters...
+#> ℹ [2026-05-02 04:22:27] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-02 04:22:27] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-02 04:22:27] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-05-02 04:22:30] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-05-02 04:22:34] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
   only.pos = FALSE
 )
-#> ℹ [2026-04-27 15:32:32] Data type is log-normalized
-#> ℹ [2026-04-27 15:32:32] Start differential expression test
-#> ℹ [2026-04-27 15:32:32] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-04-27 15:32:32] Using 1 core
-#> ⠙ [2026-04-27 15:32:32] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ✔ [2026-04-27 15:32:32] Completed 5 tasks in 951ms
-#> 
-#> ℹ [2026-04-27 15:32:32] Building results
-#> ✔ [2026-04-27 15:32:33] Differential expression test completed
+#> Error in run_sparse_wilcox_all_cells_cpp_available(): could not find function "run_sparse_wilcox_all_cells_cpp_available"
 
 DEtestPlot(
   pancreas_sub,
@@ -363,21 +355,24 @@ DEtestPlot(
   plot_type = "volcano",
   ncol = 2
 )
-
+#> Error in get_de_data(srt, group.by, test.use, DE_threshold, res): Cannot find the DEtest result for the group "CellType". Perform
+#> `RunDEtest()` first
 
 DEtestPlot(
   pancreas_sub,
   group.by = "CellType",
   plot_type = "manhattan"
 )
-
+#> Error in get_de_data(srt, group.by, test.use, DE_threshold, res): Cannot find the DEtest result for the group "CellType". Perform
+#> `RunDEtest()` first
 
 DEtestPlot(
   pancreas_sub,
   group.by = "CellType",
   plot_type = "ring"
 )
-
+#> Error in get_de_data(srt, group.by, test.use, DE_threshold, res): Cannot find the DEtest result for the group "CellType". Perform
+#> `RunDEtest()` first
 
 de_results1 <- pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox
 DEtestPlot(
@@ -385,7 +380,7 @@ DEtestPlot(
   plot_type = "volcano",
   ncol = 2
 )
-
+#> Error in DEtestPlot(res = de_results1, plot_type = "volcano", ncol = 2): argument "srt" is missing, with no default
 
 de_results2 <- Seurat::FindMarkers(
   pancreas_sub,

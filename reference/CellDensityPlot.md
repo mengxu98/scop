@@ -194,24 +194,24 @@ CellDensityPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-27 15:20:05] Start standard processing workflow...
-#> ℹ [2026-04-27 15:20:05] Checking a list of <Seurat>...
-#> ! [2026-04-27 15:20:05] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-27 15:20:05] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-27 15:20:07] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-27 15:20:08] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-27 15:20:08] Number of available HVF: 2000
-#> ℹ [2026-04-27 15:20:08] Finished check
-#> ℹ [2026-04-27 15:20:08] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-27 15:20:09] Perform pca linear dimension reduction
-#> ℹ [2026-04-27 15:20:10] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-27 15:20:10] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-27 15:20:10] Reorder clusters...
-#> ℹ [2026-04-27 15:20:10] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-27 15:20:10] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-27 15:20:10] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-27 15:20:13] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-04-27 15:20:16] Standard processing workflow completed
+#> ℹ [2026-05-02 04:11:04] Start standard processing workflow...
+#> ℹ [2026-05-02 04:11:05] Checking a list of <Seurat>...
+#> ! [2026-05-02 04:11:05] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-02 04:11:05] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-02 04:11:08] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-02 04:11:08] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-02 04:11:08] Number of available HVF: 2000
+#> ℹ [2026-05-02 04:11:09] Finished check
+#> ℹ [2026-05-02 04:11:09] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-02 04:11:09] Perform pca linear dimension reduction
+#> ℹ [2026-05-02 04:11:10] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-05-02 04:11:10] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-02 04:11:10] Reorder clusters...
+#> ℹ [2026-05-02 04:11:10] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-02 04:11:10] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-02 04:11:10] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-05-02 04:11:13] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-05-02 04:11:15] Standard processing workflow completed
 CellDensityPlot(
   pancreas_sub,
   features = "Sox9",

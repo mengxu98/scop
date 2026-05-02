@@ -150,6 +150,7 @@ You can install the latest version of
 [GitHub](https://github.com/mengxu98/scop) with:
 
 ``` r
+
 if (!require("pak", quietly = TRUE)) {
   install.packages("pak")
 }
@@ -174,6 +175,7 @@ to create the python environment for
 found, it will automatically download and install miniconda.
 
 ``` r
+
 scop::PrepareEnv()
 ```
 
@@ -182,6 +184,7 @@ conda binary, it is recommended to set `reticulate.conda_binary` R
 option:
 
 ``` r
+
 options(reticulate.conda_binary = "/path/to/conda")
 scop::PrepareEnv()
 ```
@@ -190,6 +193,7 @@ If the download of miniconda or pip packages is slow, you can specify
 the miniconda repo and PyPI mirror according to your network region.
 
 ``` r
+
 scop::PrepareEnv(
   miniconda_repo = "https://mirrors.bfsu.edu.cn/anaconda/miniconda",
   pip_options = "-i https://pypi.tuna.tsinghua.edu.cn/simple"
@@ -223,6 +227,7 @@ The analysis is based on a subsetted version of [mouse pancreas
 data](https://doi.org/10.1242/dev.173849).
 
 ``` r
+
 library(scop)
 data(pancreas_sub)
 print(pancreas_sub)
@@ -234,6 +239,7 @@ print(pancreas_sub)
 ```
 
 ``` r
+
 pancreas_sub <- standard_scop(pancreas_sub)
 print(pancreas_sub)
 #>  An object of class Seurat 
@@ -245,6 +251,7 @@ print(pancreas_sub)
 ```
 
 ``` r
+
 CellDimPlot(
   pancreas_sub,
   group.by = c("CellType", "SubCellType"),
@@ -257,6 +264,7 @@ CellDimPlot(
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-1.png)
 
 ``` r
+
 CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -271,6 +279,7 @@ CellDimPlot(
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-2.png)
 
 ``` r
+
 FeatureDimPlot(
   pancreas_sub,
   features = c("Sox9", "Neurog3", "Fev", "Rbp4"),
@@ -284,6 +293,7 @@ FeatureDimPlot(
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-3.png)
 
 ``` r
+
 FeatureDimPlot(
   pancreas_sub,
   features = c("Ins1", "Gcg", "Sst", "Ghrl"),
@@ -300,6 +310,7 @@ FeatureDimPlot(
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-4.png)
 
 ``` r
+
 ht <- GroupHeatmap(
   pancreas_sub,
   features = c(
@@ -329,6 +340,7 @@ print(ht$plot)
 ### Quality control
 
 ``` r
+
 pancreas_sub <- RunCellQC(pancreas_sub)
 CellDimPlot(
   pancreas_sub,
@@ -340,6 +352,7 @@ CellDimPlot(
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-1.png)
 
 ``` r
+
 CellStatPlot(
   pancreas_sub,
   stat.by = "CellQC",
@@ -350,6 +363,7 @@ CellStatPlot(
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-2.png)
 
 ``` r
+
 CellStatPlot(
   pancreas_sub,
   stat.by = c(
@@ -371,6 +385,7 @@ Example data for integration is a subsetted version of [panc8(eight
 human pancreas datasets)](https://github.com/satijalab/seurat-data)
 
 ``` r
+
 data(panc8_sub)
 panc8_sub <- integration_scop(
   srt_merge = panc8_sub,
@@ -392,6 +407,7 @@ CellDimPlot(
 #### Cell projection between single-cell datasets
 
 ``` r
+
 genenames <- make.unique(
   thisutils::capitalize(
     rownames(panc8_sub[["RNA"]]),
@@ -426,6 +442,7 @@ ProjectionPlot(
 #### Cell annotation using bulk RNA-seq datasets
 
 ``` r
+
 data(ref_scMCA)
 pancreas_sub <- RunKNNPredict(
   srt_query = pancreas_sub,
@@ -447,6 +464,7 @@ CellDimPlot(
 #### Cell annotation using single-cell datasets
 
 ``` r
+
 pancreas_sub <- RunKNNPredict(
   srt_query = pancreas_sub,
   srt_ref = panc8_rename,
@@ -466,6 +484,7 @@ CellDimPlot(
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-scrna-1.png)
 
 ``` r
+
 ht <- CellCorHeatmap(
   srt_query = pancreas_sub,
   srt_ref = panc8_rename,
@@ -488,6 +507,7 @@ print(ht$plot)
 #### CytoTRACE 2
 
 ``` r
+
 pancreas_sub <- RunCytoTRACE(
   pancreas_sub,
   species = "Mus_musculus"
@@ -513,6 +533,7 @@ required in the Seurat object. You can generate these matrices using
 [alevin](https://combine-lab.github.io/alevin-fry-tutorials/2021/alevin-fry-velocity/).
 
 ``` r
+
 pancreas_sub <- RunSCVELO(
   pancreas_sub,
   group.by = "SubCellType",
@@ -531,6 +552,7 @@ VelocityPlot(
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSCVELO-1.png)
 
 ``` r
+
 VelocityPlot(
   pancreas_sub,
   reduction = "UMAP",
@@ -545,6 +567,7 @@ VelocityPlot(
 #### PAGA
 
 ``` r
+
 pancreas_sub <- RunPAGA(
   pancreas_sub,
   group.by = "SubCellType",
@@ -569,6 +592,7 @@ PAGAPlot(
 #### Slingshot
 
 ``` r
+
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -589,6 +613,7 @@ CellDimPlot(
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSlingshot-1.png)
 
 ``` r
+
 FeatureDimPlot(
   pancreas_sub,
   features = paste0("Lineage", 1:2),
@@ -604,6 +629,7 @@ FeatureDimPlot(
 #### Monocle3
 
 ``` r
+
 pancreas_sub <- RunMonocle3(
   pancreas_sub,
   group.by = "SubCellType"
@@ -653,6 +679,7 @@ CellDimPlot(
 ### Dynamic features
 
 ``` r
+
 pancreas_sub <- RunDynamicFeatures(
   pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
@@ -698,6 +725,7 @@ print(ht$plot)
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/DynamicHeatmap-1.png)
 
 ``` r
+
 DynamicPlot(
   pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
@@ -712,6 +740,7 @@ DynamicPlot(
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/DynamicPlot-1.png)
 
 ``` r
+
 FeatureStatPlot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -733,6 +762,7 @@ FeatureStatPlot(
 ### Differential expression analysis
 
 ``` r
+
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
@@ -750,6 +780,7 @@ DEtestPlot(
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunDEtest-1.png)
 
 ``` r
+
 # Hyperbolic volcano with enrichment annotation
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
@@ -773,6 +804,7 @@ DEtestPlot(
 ```
 
 ``` r
+
 DEtestPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -784,6 +816,7 @@ DEtestPlot(
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunDEtest-2.png)
 
 ``` r
+
 DEtestPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -795,6 +828,7 @@ DEtestPlot(
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunDEtest-3.png)
 
 ``` r
+
 DEGs <- pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox
 DEGs <- DEGs[with(DEGs, avg_log2FC > 1 & p_val_adj < 0.05), ]
 
@@ -825,6 +859,7 @@ print(ht$plot)
 #### Over-representation
 
 ``` r
+
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
   group.by = "CellType",
@@ -844,6 +879,7 @@ EnrichmentPlot(
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-1.png)
 
 ``` r
+
 EnrichmentPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -855,6 +891,7 @@ EnrichmentPlot(
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-2.png)
 
 ``` r
+
 EnrichmentPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -867,6 +904,7 @@ EnrichmentPlot(
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-3.png)
 
 ``` r
+
 EnrichmentPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -881,6 +919,7 @@ To ensure that labels are visible, you can adjust the size of the viewer
 panel on Rstudio IDE.
 
 ``` r
+
 EnrichmentPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -892,6 +931,7 @@ EnrichmentPlot(
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_enrichmap-1.png)
 
 ``` r
+
 EnrichmentPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -903,6 +943,7 @@ EnrichmentPlot(
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_comparison-1.png)
 
 ``` r
+
 EnrichmentPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -916,6 +957,7 @@ EnrichmentPlot(
 #### GSEA
 
 ``` r
+
 pancreas_sub <- RunGSEA(
   pancreas_sub,
   group.by = "CellType",
@@ -935,6 +977,7 @@ GSEAPlot(
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunGSEA-1.png)
 
 ``` r
+
 GSEAPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -950,6 +993,7 @@ GSEAPlot(
 ### Interactive data visualization with SCExplorer
 
 ``` r
+
 PrepareSCExplorer(
   list(
     mouse_pancreas = pancreas_sub,

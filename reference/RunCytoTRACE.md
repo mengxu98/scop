@@ -138,25 +138,25 @@ if (thisutils::check_ci_env()) {
     group.by = "CellType"
   )
 }
-#> ℹ [2026-04-27 16:29:26] Start standard processing workflow...
-#> ℹ [2026-04-27 16:29:27] Checking a list of <Seurat>...
-#> ! [2026-04-27 16:29:27] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-27 16:29:27] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-27 16:29:29] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-27 16:29:30] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-27 16:29:30] Number of available HVF: 2000
-#> ℹ [2026-04-27 16:29:30] Finished check
-#> ℹ [2026-04-27 16:29:30] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-27 16:29:31] Perform pca linear dimension reduction
-#> ℹ [2026-04-27 16:29:31] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-27 16:29:32] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-27 16:29:32] Reorder clusters...
-#> ℹ [2026-04-27 16:29:32] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-27 16:29:32] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-27 16:29:32] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-27 16:29:36] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-04-27 16:29:41] Standard processing workflow completed
-#> ◌ [2026-04-27 16:29:41] Running CytoTRACE2
+#> ℹ [2026-05-02 04:58:25] Start standard processing workflow...
+#> ℹ [2026-05-02 04:58:26] Checking a list of <Seurat>...
+#> ! [2026-05-02 04:58:26] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-02 04:58:26] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-02 04:58:28] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-02 04:58:29] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-02 04:58:29] Number of available HVF: 2000
+#> ℹ [2026-05-02 04:58:29] Finished check
+#> ℹ [2026-05-02 04:58:29] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-02 04:58:30] Perform pca linear dimension reduction
+#> ℹ [2026-05-02 04:58:30] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-05-02 04:58:31] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-02 04:58:31] Reorder clusters...
+#> ℹ [2026-05-02 04:58:31] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-02 04:58:31] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-02 04:58:31] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-05-02 04:58:35] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-05-02 04:58:39] Standard processing workflow completed
+#> ◌ [2026-05-02 04:58:39] Running CytoTRACE2
 #> cytotrace2: Started loading data
 #> Dataset contains 15998 genes and 1000 cells.
 #> The number of cells in your dataset is less than 1000. Fast mode has been disabled.
@@ -172,5 +172,5 @@ if (thisutils::check_ci_env()) {
 #> cytotrace2: Running with slow mode (subsamples are processed sequentially)
 #> Number of cores for KNN: 1
 #> cytotrace2: Finished
-#> ✔ [2026-04-27 16:30:54] CytoTRACE2 computed successfully
+#> ✔ [2026-05-02 04:59:52] CytoTRACE2 computed successfully
 ```

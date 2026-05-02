@@ -1,8 +1,256 @@
 # Changelog
 
+## scop 0.8.9
+
+- **perf**:
+  - [`RunGSVA()`](https://mengxu98.github.io/scop/reference/RunGSVA.md):
+    Removed redundant dense
+    [`as.matrix()`](https://rdrr.io/r/base/matrix.html) conversion in
+    single-cell mode for `backend = "r"`; sparse expression matrices now
+    stay sparse through row filtering, reducing peak memory and avoiding
+    unnecessary dense materialization.
+  - [`RunCellQC()`](https://mengxu98.github.io/scop/reference/RunCellQC.md):
+    Replaced
+    [`Seurat::SplitObject()`](https://satijalab.org/seurat/reference/SplitObject.html)
+    with lazy cell-name-based subsetting, avoiding full-object
+    duplication per split group. Added caching of
+    [`GetAssay()`](https://satijalab.org/seurat/reference/GetAssay.html)
+    gene names,
+    [`GetAssayData5()`](https://mengxu98.github.io/scop/reference/GetAssayData5.md)
+    counts, and per-cell QC metrics (`nCount` / `nFeature`) outside the
+    species-check loop to eliminate repeated data extraction.
+  - [`RunDEtest()`](https://mengxu98.github.io/scop/reference/RunDEtest.md):
+    Pre-computed cell index mapping
+    (`split(names(cell_group), cell_group)`) for paired-marker tests,
+    replacing per-pair [`which()`](https://rdrr.io/r/base/which.html)
+    calls with O(1) list lookups.
+  - [`AnnotateFeatures()`](https://mengxu98.github.io/scop/reference/AnnotateFeatures.md):
+    Replaced per-detail `sapply(… "[")` with type-stable
+    `vapply(…, character(1))` to avoid implicit list-to-character
+    coercion.
+  - `run_scomm()`: Deferred dense conversion for reference and query
+    subsetting by removing premature
+    [`as.matrix()`](https://rdrr.io/r/base/matrix.html) calls; sparse
+    matrices are subset first, then densified only when required.
+  - [`RunUMAP2()`](https://mengxu98.github.io/scop/reference/RunUMAP2.md):
+    Replaced `isSymmetric(as.matrix(graph))` with sparse-native
+    `Matrix::isSymmetric(graph)` in symmetry checks and graph subset
+    sampling, avoiding dense materialization of large neighbor graphs.
+  - [`RunUMAP2()`](https://mengxu98.github.io/scop/reference/RunUMAP2.md):
+    Replaced `apply(as.matrix(graph), 2, order)` in the uwot-predict
+    path with the internal C++ sparse column top-k helper
+    (`run_sparse_topk_by_column_cpp()`), avoiding full dense conversion
+    and column-wise R-level
+    [`apply()`](https://rdrr.io/r/base/apply.html).
+  - [`RunDimsReduction()`](https://mengxu98.github.io/scop/reference/RunDimsReduction.md)
+    (PCA centering): Uses
+    `SeuratObject::LayerData(…, features = features)` to read only HVF
+    rows from `scale.data` instead of loading the full matrix followed
+    by manual subsetting.
+  - [`RunMDS()`](https://mengxu98.github.io/scop/reference/RunMDS.md):
+    Removed [`as.matrix()`](https://rdrr.io/r/base/matrix.html) before
+    `Matrix::t()`;
+    [`proxyC::dist`](https://koheiw.github.io/proxyC/reference/simil.html)
+    now receives the sparse matrix directly, avoiding dense conversion
+    of large count matrices.
+  - `integration.R` (fastMNN): Removed three
+    [`as.matrix()`](https://rdrr.io/r/base/matrix.html) calls passed to
+    [`batchelor::fastMNN()`](https://rdrr.io/pkg/batchelor/man/fastMNN.html),
+    which accepts sparse matrices natively via `SingleCellExperiment`.
+- **memory**:
+  - [`standard_scop()`](https://mengxu98.github.io/scop/reference/standard_scop.md):
+    Replaced full `scale.data` matrix load (via
+    [`GetAssayData5()`](https://mengxu98.github.io/scop/reference/GetAssayData5.md))
+    with direct layer access
+    ([`SeuratObject::GetAssayData`](https://satijalab.github.io/seurat-object/reference/AssayData.html)
+    for Assay5; `@scale.data` for Assay) to retrieve only rownames when
+    checking whether HVFs have been scaled, substantially reducing peak
+    memory during the ScaleData decision step.
+- **compat**:
+  - [`GetAssayData5.Assay()`](https://mengxu98.github.io/scop/reference/GetAssayData5.md):
+    Fixed parameter naming to use positional matching for the slot/layer
+    argument, so
+    [`GetAssayData5()`](https://mengxu98.github.io/scop/reference/GetAssayData5.md)
+    correctly retrieves `counts`, `data`, and `scale.data` layers in
+    both Seurat v4 (`slot`) and v5 (`layer`). Previously the named
+    `layer` argument was silently dropped by SeuratObject v4, always
+    returning the `data` slot regardless of the requested layer.
+  - [`CSS_integrate()`](https://mengxu98.github.io/scop/reference/CSS_integrate.md):
+    Added `Assay5` guard before
+    [`SeuratObject::JoinLayers()`](https://satijalab.github.io/seurat-object/reference/SplitLayers.html)
+    to avoid errors with Seurat v4 `Assay` objects, which do not support
+    layered storage.
+  - [`RunDimsReduction()`](https://mengxu98.github.io/scop/reference/RunDimsReduction.md):
+    Added Seurat v4 fallback for PCA centering —
+    `SeuratObject::LayerData(…, features = …)` is Assay5-only; v4
+    `Assay` objects now use
+    [`GetAssayData5()`](https://mengxu98.github.io/scop/reference/GetAssayData5.md)
+    with manual feature subsetting.
+  - [`integration_scop()`](https://mengxu98.github.io/scop/reference/integration_scop.md):
+    Added early detection for v5-only integration methods (`CCA`,
+    `RPCA`, `fastMNN5`, `Harmony5`, `scVI5`) to provide a clear,
+    actionable error message when used with Seurat v4 `Assay` objects,
+    rather than failing deep in the call stack.
+- **test**:
+  - Added 22 consistency tests (`test_optimizations_v2.R`) covering GSVA
+    sparse, RunCellQC caching, DEtest cell_index, AnnotateFeatures
+    vapply, run_scomm sparse, RunDynamicFeatures solve, and cccplot
+    validations.
+  - Added 5 dim-reduction optimization consistency tests
+    (`test_dim_reduction_optimizations.R`) covering UMAP isSymmetric,
+    scale.data rownames, MDS sparse distance, uwot-predict C++ topk, and
+    PCA centering with features parameter.
+  - Added 10 Seurat v4 compatibility tests (`test_seurat_v4_compat.R`)
+    run against a real Seurat v4.4.0 + SeuratObject v4.1.4 installation,
+    verifying Assay object handling, `GetAssayData` slot access, PCA
+    centering fallback, `JoinLayers` guard, sparse matrix operations,
+    and UMAP/MDS execution.
+
 ## scop 0.8.8
 
+- **deps**:
+  - Updated the minimum dependency versions to `thisplot (>= 0.3.8)` and
+    `thisutils (>= 0.4.5)`, and removed local copies of helpers now
+    provided upstream
+    ([`thisplot::annotate_quadrants()`](https://mengxu98.github.io/thisplot/reference/annotate_quadrants.html),
+    [`thisplot::clip_symmetric_range()`](https://mengxu98.github.io/thisplot/reference/clip_symmetric_range.html),
+    [`thisutils::collapse_sparse_rows()`](https://mengxu98.github.io/thisutils/reference/collapse_sparse_rows.html)).
+- **docs**:
+  - Updated pkgdown reference grouping for the cell-cycle workflow.
 - **fix**:
+  - Added optional wrappers for `RunDorothea()`, `RunBayesSpace()`, and
+    experimental `RunScTenifoldKnk()`. `RunScTenifoldKnk()` keeps the
+    upstream `scTenifoldNet` workflow but fixes the QC gene-filter
+    assignment in the local path, uses a native equivalent
+    covariance/downdate path with direct sparse matrix construction,
+    selection-based quantile thresholding, and controlled per-gene
+    eigensolver parallelism for large `pcNet()` network construction,
+    and uses native helpers for tensor decomposition, manifold matrix
+    construction, directionality, and differential-regulation distance
+    calculations. The native tensor-decomposition path now computes
+    MTTKRP updates directly instead of materializing four dense
+    unfolding matrices.
+  - [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md):
+    Added explicit support for `mamba` and `micromamba` executables in
+    addition to `conda`, including command-name resolution, automatic
+    package-managed micromamba download when `conda = "micromamba"` is
+    requested and the command is not on `PATH`, manager-aware logging,
+    micromamba env path detection, and ToS handling that only runs for
+    standard conda. Package-managed micromamba environments now use a
+    no-space cache root to avoid `micromamba run -p` path parsing
+    failures.
+    [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md)
+    now also stops early if reticulate has already initialized a
+    different Python executable, avoiding unsafe in-session switches
+    between conda and micromamba. The Python stack now also pins
+    `setuptools < 81` so legacy packages such as `trimap` can still
+    import `pkg_resources`.
+  - [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md):
+    The default `modules = NULL` environment no longer includes `scomm`;
+    install it explicitly with `modules = "scomm"` because the
+    TensorFlow/scOMM stack conflicts with the default JAX/scVI stack
+    through incompatible `ml-dtypes` requirements.
+  - [`CheckDataList()`](https://mengxu98.github.io/scop/reference/CheckDataList.md)
+    /
+    [`standard_scop()`](https://mengxu98.github.io/scop/reference/standard_scop.md):
+    Removed an unnecessary all-feature
+    [`ScaleData()`](https://satijalab.org/seurat/reference/ScaleData.html)
+    call immediately after `LogNormalize`. Downstream workflows still
+    scale the selected HVFs before PCA, but large raw-count inputs no
+    longer create a dense all-gene `scale.data` intermediate during
+    checking.
+  - [`srt_reorder()`](https://mengxu98.github.io/scop/reference/srt_reorder.md):
+    Replaced per-cluster repeated sparse subsetting and
+    [`rowMeans()`](https://rdrr.io/pkg/Matrix/man/colSums-methods.html)
+    with a single sparse group-membership matrix multiplication,
+    speeding the cluster-reordering step used by
+    [`standard_scop()`](https://mengxu98.github.io/scop/reference/standard_scop.md)
+    while preserving average expression values.
+  - [`FindExpressedMarkers()`](https://mengxu98.github.io/scop/reference/FindExpressedMarkers.md):
+    Added a sparse fold-change and detection-rate prefilter path for
+    common sparse RNA inputs, avoiding dense all-feature expression
+    materialization before marker filtering while preserving default
+    results. Supplied features are now intersected with the active layer
+    before dense fallback scoring, which also keeps `scale.data` and
+    partial-feature layers from passing absent rows into fold-change
+    calculation.
+  - C++-accelerated backends are now the default where available:
+    [`RunMetabolism()`](https://mengxu98.github.io/scop/reference/RunMetabolism.md),
+    [`RunGSVA()`](https://mengxu98.github.io/scop/reference/RunGSVA.md),
+    [`CellScoring()`](https://mengxu98.github.io/scop/reference/CellScoring.md),
+    [`RunDynamicEnrichment()`](https://mengxu98.github.io/scop/reference/RunDynamicEnrichment.md),
+    [`RunEnrichment()`](https://mengxu98.github.io/scop/reference/RunEnrichment.md),
+    and
+    [`RunProportionTestPermutation()`](https://mengxu98.github.io/scop/reference/RunProportionTestPermutation.md)
+    now prefer `backend = "cpp"` while retaining `backend = "r"` for
+    exact legacy/package behavior. Unsupported C++ methods such as
+    metabolism `VISION` and cell scoring `UCell` automatically fall back
+    to R when `backend` is not explicitly set.
+  - [`RunMetabolism()`](https://mengxu98.github.io/scop/reference/RunMetabolism.md)
+    and
+    [`RunGSVA()`](https://mengxu98.github.io/scop/reference/RunGSVA.md):
+    Added a reusable C++ gene-set scoring backend for `ssGSEA`,
+    `zscore`, and `plage`;
+    [`RunGSVA()`](https://mengxu98.github.io/scop/reference/RunGSVA.md)
+    can now use `backend = "cpp"` for `method = "ssgsea"`,
+    `method = "zscore"`, `method = "plage"`, and Gaussian- or
+    Poisson-kernel `method = "gsva"`. PLAGE scores are oriented by the
+    gene set mean z-score to avoid backend-dependent sign flips.
+  - [`RunMetabolism()`](https://mengxu98.github.io/scop/reference/RunMetabolism.md)
+    and
+    [`RunGSVA()`](https://mengxu98.github.io/scop/reference/RunGSVA.md):
+    Added `cpp_chunk_size` for the C++ GSVA kernel paths to reduce peak
+    dense intermediate memory on large cell counts; `NULL` now
+    auto-selects a chunk size for large matrices.
+  - [`RunEnrichment()`](https://mengxu98.github.io/scop/reference/RunEnrichment.md):
+    Added an experimental `backend = "cpp"` ORA path using a native
+    hypergeometric implementation for faster enrichment tables while
+    keeping `backend = "r"` available as the clusterProfiler-compatible
+    path.
+  - [`CellScoring()`](https://mengxu98.github.io/scop/reference/CellScoring.md):
+    Added experimental `backend = "cpp"` support for Seurat-style module
+    scoring by keeping control-gene sampling in R and moving sparse mean
+    calculations to native code.
+  - [`RunProportionTestPermutation()`](https://mengxu98.github.io/scop/reference/RunProportionTestPermutation.md):
+    Added experimental `backend = "cpp"` for faster permutation and
+    bootstrap loops.
+  - [`RunUMAP2()`](https://mengxu98.github.io/scop/reference/RunUMAP2.md):
+    Added an internal C++ sparse column top-k helper for Graph inputs to
+    speed extraction of precomputed neighbor indices/connectivities
+    before calling `uwot`.
+  - [`RunKNNMap()`](https://mengxu98.github.io/scop/reference/RunKNNMap.md)
+    and
+    [`RunKNNPredict()`](https://mengxu98.github.io/scop/reference/RunKNNPredict.md):
+    Added an internal C++ dense column top-k helper for the raw KNN
+    fallback to speed nearest-neighbor extraction from precomputed
+    distance matrices.
+  - [`PseudotimeProjectionPlot()`](https://mengxu98.github.io/scop/reference/PseudotimeProjectionPlot.md):
+    Reused the internal dense top-k helper for pseudotime KNN/gradient
+    neighbor extraction from distance matrices.
+  - Mapping/integration metrics: Added an internal C++ contingency-table
+    helper for `metric_accuracy()`, `metric_macro_f1()`,
+    `metric_purity()`, `metric_nmi()`, `metric_ari()`,
+    `metric_weighted_recall()`, and `collect_mapping_metrics()`.
+  - [`RunMetabolism()`](https://mengxu98.github.io/scop/reference/RunMetabolism.md):
+    Added a C++ backend for `method = "GSVA"` that keeps the
+    Poisson-kernel GSVA scoring path but accelerates repeated
+    count-kernel calculations.
+  - [`RunMetabolism()`](https://mengxu98.github.io/scop/reference/RunMetabolism.md)
+    and
+    [`CellScoring()`](https://mengxu98.github.io/scop/reference/CellScoring.md):
+    Added an experimental C++ backend for AUCell scoring via
+    `backend = "cpp"` with selectable `cpp_strategy` values (`"sparse"`,
+    `"topk"`, `"full"`), while keeping the original R/AUCell
+    implementation available via `backend = "r"` for exact package
+    output.
+    [`RunDynamicEnrichment()`](https://mengxu98.github.io/scop/reference/RunDynamicEnrichment.md)
+    now passes this backend through to AUCell-based scoring.
+  - `CellScoring(method = "AUCell")`: Fixed score-name assignment when
+    only one feature list is scored, avoiding vector dropping before
+    metadata column names are applied.
+  - `RunMetabolism(method = "VISION")`: Fixed signature construction so
+    in-memory gene sets are passed as `VISION::Signature` objects
+    instead of being interpreted as file paths.
   - [`DynamicHeatmap()`](https://mengxu98.github.io/scop/reference/DynamicHeatmap.md)
     / custom enrichment workflows: Fixed incorrect term label display
     when user-provided `TERM2GENE` / `TERM2NAME` use non-standard column
