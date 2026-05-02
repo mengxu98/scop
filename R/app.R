@@ -1104,7 +1104,7 @@ if (is.null(initial_raster)) {
 
 palette_list <- thisplot::palette_list
 theme_list <- list(
-  scop = c("theme_scop", "theme_blank"),
+  scop = c("theme_scop", "theme_omicverse", "theme_blank"),
   ggplot2 = c(
     "theme_classic", "theme_linedraw", "theme_minimal",
     "theme_void", "theme_grey", "theme_dark", "theme_light"

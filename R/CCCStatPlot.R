@@ -4,7 +4,8 @@
 #' @param srt A `Seurat` object.
 #' @param method Communication result type to use.
 #' @param plot_type Plot type. One of:
-#' - `"bar"` — horizontal bar chart of top interactions by aggregated score.
+#' - `"bar"` — horizontal bar chart of top pairs or interactions according to
+#'   `display_by`.
 #' - `"sankey"` — alluvial/sankey flow diagram.
 #' - `"box"` / `"violin"` — distribution of interaction scores across sender-receiver pairs.
 #' - `"comparison"` — comparison bars at overall or celltype level.
@@ -33,6 +34,9 @@
 #' @param top_n Number of top records to retain.
 #' @param x_text_angle Rotation angle for x-axis labels.
 #' @param facet_by Faceting variable for interaction-level plots.
+#' @param min_receiver_flow For `"sankey"`: minimum total receiver-side flow
+#'   retained after top-N ranking. Useful when many small receiver nodes make
+#'   the right side unreadable.
 #' @param edge_value Aggregation statistic for network edges.
 #' @param edge_threshold Minimum edge value to keep.
 #' @param link_alpha Alpha used for network edges.
@@ -201,6 +205,10 @@ CCCStatPlot <- function(
     "sankey",
     "box",
     "violin",
+    "role_scatter",
+    "role_network",
+    "role_network_marsilea",
+    "pathway_summary",
     "comparison",
     "lr_contribution",
     "gene",
@@ -278,10 +286,51 @@ CCCStatPlot <- function(
 
   method <- detect_method(srt = srt, method = method)
   dots <- list(...)
+  finish_plot <- function(plot) {
+    plot
+  }
   return.data <- isTRUE(dots[["return.data"]])
   idents.use <- dots[["idents.use"]] %||% NULL
+  idents.use <- ccc_alias_arg(dots, "idents_use", idents.use)
+  sender.use <- ccc_alias_arg(dots, "sender_use", sender.use)
+  receiver.use <- ccc_alias_arg(dots, "receiver_use", receiver.use)
+  ligand.use <- ccc_alias_arg(dots, "ligand_use", ligand.use)
+  receptor.use <- ccc_alias_arg(dots, "receptor_use", receptor.use)
+  interaction.use <- ccc_alias_arg(dots, "interaction_use", interaction.use)
+  pairLR.use <- ccc_alias_arg(dots, "pair_lr_use", pairLR.use)
+  thresh <- ccc_alias_arg(dots, "pvalue_threshold", thresh)
   signaling.exclude <- dots[["signaling.exclude"]] %||% NULL
   aspect.ratio <- dots[["aspect.ratio"]] %||% NULL
+  min_receiver_flow <- dots[["min_receiver_flow"]] %||% 0
+
+  if (identical(plot_type, "role_scatter")) {
+    plot_type <- "scatter"
+  }
+  if (plot_type %in% c("role_network", "role_network_marsilea")) {
+    return(finish_plot(CCCHeatmap(
+      srt = srt,
+      method = method,
+      condition = condition,
+      dataset = dataset,
+      comparison = comparison,
+      plot_type = "role_heatmap",
+      signaling = signaling,
+      pattern = pattern,
+      top_n = top_n,
+      title = title,
+      subtitle = subtitle,
+      palette = palette,
+      palcolor = palcolor,
+      cell_palette = cell_palette,
+      cell_palcolor = cell_palcolor,
+      legend.position = legend.position,
+      legend.direction = legend.direction,
+      font.size = font.size,
+      theme_use = theme_use,
+      theme_args = theme_args,
+      verbose = verbose
+    )))
+  }
 
   if (plot_type %in% c("ranknet", "role_change")) {
     if (!identical(method, "CellChat")) {
@@ -294,7 +343,7 @@ CCCStatPlot <- function(
       )
     }
     if (identical(plot_type, "ranknet")) {
-      return(ccc_cellchat_ranknet_plot(
+      return(finish_plot(ccc_cellchat_ranknet_plot(
         srt = srt,
         condition = condition,
         comparison = comparison,
@@ -312,7 +361,7 @@ CCCStatPlot <- function(
         theme_use = theme_use,
         theme_args = theme_args,
         font.size = font.size
-      ))
+      )))
     }
 
     if (is.null(idents.use)) {
@@ -321,7 +370,7 @@ CCCStatPlot <- function(
         message_type = "error"
       )
     }
-    return(ccc_cellchat_role_change_plot(
+    return(finish_plot(ccc_cellchat_role_change_plot(
       srt = srt,
       condition = condition,
       comparison = comparison,
@@ -339,18 +388,61 @@ CCCStatPlot <- function(
       theme_args = theme_args,
       aspect.ratio = aspect.ratio,
       font.size = font.size
-    ))
+    )))
   }
 
   if (identical(plot_type, "lr_contribution")) {
     if (is.null(signaling)) {
-      log_message(
-        "{.arg signaling} must be provided for {.val plot_type = 'lr_contribution'}",
-        message_type = "error"
+      df <- if (identical(method, "CellChat")) {
+        extract_long_table(
+          srt = srt,
+          condition = condition,
+          dataset = dataset,
+          slot.name = slot.name,
+          signaling = signaling,
+          pairLR.use = pairLR.use,
+          sources.use = sender.use,
+          targets.use = receiver.use,
+          thresh = thresh
+        )
+      } else {
+        bundle <- get_bundle(srt, method = method)
+        bundle$long_table %||% data.frame()
+      }
+      df <- standardize_long_df(df)
+      df <- filter_long_df(
+        df = df,
+        sender.use = sender.use,
+        receiver.use = receiver.use,
+        ligand.use = ligand.use,
+        receptor.use = receptor.use,
+        interaction.use = interaction.use,
+        signaling = signaling,
+        pairLR.use = pairLR.use
       )
+      df <- ccc_assign_plot_score(df = df, value = value)
+      df <- ccc_mark_significance(df, thresh = thresh)
+      df <- prepare_plot_df(df)
+      return(finish_plot(ccc_stat_bar_plot(
+        df = df,
+        pair_df = pair_plot_df(df),
+        stat_type = if (identical(value, "count")) "count" else "score",
+        display_by = "interaction",
+        value = value,
+        top_n = top_n,
+        title = title,
+        subtitle = subtitle,
+        link_palette = palette_cfg$link_palette,
+        link_palcolor = palette_cfg$link_palcolor,
+        legend.position = legend.position,
+        legend.direction = legend.direction,
+        font.size = font.size,
+        theme_use = theme_use,
+        theme_args = theme_args
+      )))
     }
     if (!identical(method, "CellChat")) {
-      return(ccc_generic_lr_contribution_plot(
+      return(finish_plot(ccc_generic_lr_contribution_plot(
         srt = srt,
         method = method,
         signaling = signaling,
@@ -375,9 +467,9 @@ CCCStatPlot <- function(
         combine = combine,
         nrow = nrow,
         ncol = ncol
-      ))
+      )))
     }
-    return(ccc_lr_contribution_plot(
+    return(finish_plot(ccc_lr_contribution_plot(
       srt = srt,
       condition = condition,
       dataset = dataset,
@@ -399,11 +491,11 @@ CCCStatPlot <- function(
       combine = combine,
       nrow = nrow,
       ncol = ncol
-    ))
+    )))
   }
 
   if (identical(plot_type, "gene")) {
-    return(
+    return(finish_plot(
       ccc_feature_plot(
         srt = srt,
         method = method,
@@ -434,7 +526,7 @@ CCCStatPlot <- function(
         ncol = ncol,
         dots = dots
       )
-    )
+    ))
   }
 
   if (identical(method, "CellChat")) {
@@ -467,12 +559,34 @@ CCCStatPlot <- function(
   )
 
   df <- ccc_assign_plot_score(df = df, value = value)
+  df <- ccc_mark_significance(df, thresh = thresh)
   df <- prepare_plot_df(df)
   pair_df <- pair_plot_df(df)
   interaction_df <- interaction_plot_df(df)
 
+  if (identical(plot_type, "pathway_summary")) {
+    return(finish_plot(ccc_pathway_summary_plot(
+      df = df,
+      value = value,
+      top_n = top_n,
+      title = title,
+      subtitle = subtitle,
+      palette = palette_cfg$link_palette,
+      palcolor = palette_cfg$link_palcolor,
+      legend.position = legend.position,
+      legend.direction = legend.direction,
+      font.size = font.size,
+      theme_use = theme_use,
+      theme_args = theme_args,
+      grid_major = grid_major,
+      grid_major_colour = grid_major_colour,
+      grid_major_linetype = grid_major_linetype,
+      grid_major_linewidth = grid_major_linewidth
+    )))
+  }
+
   if (identical(plot_type, "comparison")) {
-    return(ccc_stat_comparison_plot(
+    return(finish_plot(ccc_stat_comparison_plot(
       srt = srt,
       method = method,
       condition = condition,
@@ -488,20 +602,18 @@ CCCStatPlot <- function(
       legend.direction = legend.direction,
       font.size = font.size,
       theme_use = theme_use,
-      theme_args = theme_args,
-      grid_major = grid_major,
-      grid_major_colour = grid_major_colour,
-      grid_major_linetype = grid_major_linetype,
-      grid_major_linewidth = grid_major_linewidth
-    ))
+      theme_args = theme_args
+    )))
   }
 
   # --- bar ---
   if (identical(plot_type, "bar")) {
-    return(ccc_stat_bar_plot(
+    return(finish_plot(ccc_stat_bar_plot(
       df = df,
       pair_df = pair_df,
       stat_type = stat_type,
+      display_by = display_by,
+      value = value,
       top_n = top_n,
       title = title,
       subtitle = subtitle,
@@ -511,18 +623,23 @@ CCCStatPlot <- function(
       legend.direction = legend.direction,
       font.size = font.size,
       theme_use = theme_use,
-      theme_args = theme_args
-    ))
+      theme_args = theme_args,
+      grid_major = grid_major,
+      grid_major_colour = grid_major_colour,
+      grid_major_linetype = grid_major_linetype,
+      grid_major_linewidth = grid_major_linewidth
+    )))
   }
 
   # --- sankey ---
   if (identical(plot_type, "sankey")) {
-    return(ccc_sankey_plot(
+    return(finish_plot(ccc_sankey_plot(
       pair_df = pair_df,
       interaction_df = interaction_df,
       display_by = display_by,
       top_n = top_n,
       edge_value = edge_value,
+      min_receiver_flow = min_receiver_flow,
       cell_palette = palette_cfg$cell_palette,
       cell_palcolor = palette_cfg$cell_palcolor,
       link_palette = palette_cfg$link_palette,
@@ -534,15 +651,17 @@ CCCStatPlot <- function(
       font.size = font.size,
       theme_use = theme_use,
       theme_args = theme_args
-    ))
+    )))
   }
 
   # --- box / violin ---
   if (plot_type %in% c("box", "violin")) {
-    return(ccc_stat_distribution_plot(
+    return(finish_plot(ccc_stat_distribution_plot(
       interaction_df = interaction_df,
       plot_type = plot_type,
       top_n = top_n,
+      interaction.use = interaction.use,
+      pairLR.use = pairLR.use,
       facet_by = facet_by,
       x_text_angle = x_text_angle,
       cell_palette = palette_cfg$cell_palette,
@@ -554,12 +673,12 @@ CCCStatPlot <- function(
       font.size = font.size,
       theme_use = theme_use,
       theme_args = theme_args
-    ))
+    )))
   }
 
   # --- scatter ---
   if (identical(plot_type, "scatter")) {
-    return(ccc_scatter_plot(
+    return(finish_plot(ccc_scatter_plot(
       srt = srt,
       method = method,
       pair_df = pair_df,
@@ -578,7 +697,7 @@ CCCStatPlot <- function(
       theme_use = theme_use,
       theme_args = theme_args,
       ...
-    ))
+    )))
   }
 
   log_message(
@@ -1717,6 +1836,8 @@ ccc_stat_bar_plot <- function(
   df,
   pair_df,
   stat_type = "score",
+  display_by = "aggregation",
+  value = "sum",
   top_n = 20,
   title = NULL,
   subtitle = NULL,
@@ -1732,7 +1853,6 @@ ccc_stat_bar_plot <- function(
   grid_major_linetype = 2,
   grid_major_linewidth = 0.3
 ) {
-  check_r("thisplot", verbose = FALSE)
   grid_major_element <- if (isTRUE(grid_major)) {
     ggplot2::element_line(
       colour = grid_major_colour,
@@ -1742,96 +1862,99 @@ ccc_stat_bar_plot <- function(
   } else {
     ggplot2::element_blank()
   }
-  if (identical(stat_type, "count")) {
-    agg <- group_summary(
-      df = df,
-      group_cols = c("sender", "receiver"),
-      value_col = "score",
-      out_col = "value",
-      fun = function(x) {
-        sum(is.finite(as.numeric(x)) & as.numeric(x) > 0, na.rm = TRUE)
-      }
-    )
-    value_label <- "Interaction count"
+  display_by <- match.arg(display_by, c("aggregation", "interaction"))
+  value_use <- if (identical(stat_type, "count")) "count" else value
+  if (identical(display_by, "aggregation")) {
+    if (is.null(pair_df) || nrow(pair_df) == 0L) {
+      log_message(
+        "No aggregated sender-receiver communication records remain after filtering",
+        message_type = "error"
+      )
+    }
+    if (!"pair" %in% colnames(pair_df)) {
+      pair_df$pair <- paste(pair_df$sender, pair_df$receiver, sep = " -> ")
+    }
+    value_col <- value_use
+    if (!value_col %in% colnames(pair_df)) {
+      value_col <- c("sum", "score", "mean", "max", "count")[
+        c("sum", "score", "mean", "max", "count") %in% colnames(pair_df)
+      ][1]
+    }
+    if (is.null(value_col) || is.na(value_col)) {
+      log_message(
+        "No communication score column was found in aggregated CCC results",
+        message_type = "error"
+      )
+    }
+    plot_group <- as.character(pair_df$pair)
+    metric <- suppressWarnings(as.numeric(pair_df[[value_col]]))
+    value_use <- value_col
   } else {
-    agg <- stats::aggregate(
-      x = df$score,
-      by = list(
-        interaction_name = df$interaction_name,
-        sender = df$sender,
-        receiver = df$receiver
-      ),
-      FUN = sum,
-      na.rm = TRUE
-    )
-    colnames(agg)[colnames(agg) == "x"] <- "value"
-    value_label <- "Aggregated score"
+    if (is.null(df) || nrow(df) == 0L) {
+      log_message(
+        "No interaction-level communication records remain after filtering",
+        message_type = "error"
+      )
+    }
+    df <- ccc_mark_significance(df)
+    df <- prepare_plot_df(df)
+    plot_group <- as.character(df$interaction_label)
+    metric <- if (identical(value_use, "count")) {
+      as.numeric(df$significant)
+    } else {
+      suppressWarnings(as.numeric(df$score))
+    }
   }
-
-  agg <- agg[order(agg$value, decreasing = TRUE), , drop = FALSE]
-  agg <- utils::head(agg, top_n)
-  agg$pair <- paste(agg$sender, "->", agg$receiver)
-
-  if (identical(stat_type, "count")) {
-    meta_df <- agg[, c("pair", "value"), drop = FALSE]
-    colnames(meta_df) <- c("pair", "score")
-    meta_expanded <- do.call(
-      rbind,
-      lapply(seq_len(nrow(meta_df)), function(i) {
-        n <- max(1L, round(meta_df$score[i]))
-        data.frame(
-          pair = meta_df$pair[i],
-          score = meta_df$score[i],
-          stringsAsFactors = FALSE
-        )
-      })
+  plot_group[is.na(plot_group) | !nzchar(plot_group)] <- "Unclassified"
+  metric[!is.finite(metric)] <- 0
+  summary <- switch(value_use,
+    mean = tapply(metric, plot_group, mean, na.rm = TRUE),
+    max = tapply(metric, plot_group, max, na.rm = TRUE),
+    count = tapply(metric, plot_group, sum, na.rm = TRUE),
+    tapply(metric, plot_group, sum, na.rm = TRUE)
+  )
+  summary <- sort(summary, decreasing = TRUE)
+  summary <- utils::head(summary, top_n)
+  if (length(summary) == 0L) {
+    log_message(
+      "No communication groups remain after summarizing",
+      message_type = "error"
     )
-    p <- StatPlot(
-      meta.data = meta_expanded,
-      stat.by = "pair",
-      plot_type = "bar",
-      stat_type = "count",
-      flip = TRUE,
-      palette = link_palette,
-      palcolor = link_palcolor,
-      title = title,
-      subtitle = subtitle,
-      ylab = value_label,
-      legend.position = legend.position,
-      legend.direction = legend.direction,
-      theme_use = theme_use,
-      theme_args = theme_args,
-      grid_major = grid_major,
-      grid_major_colour = grid_major_colour,
-      grid_major_linetype = grid_major_linetype,
-      grid_major_linewidth = grid_major_linewidth
-    )
-    return(p)
   }
-
-  if (!"interaction_name" %in% colnames(agg)) {
-    agg$interaction_name <- paste(agg$sender, agg$receiver, sep = " -> ")
-  }
+  plot_df <- data.frame(
+    group = names(summary),
+    value = as.numeric(summary),
+    stringsAsFactors = FALSE
+  )
+  plot_df$group <- factor(plot_df$group, levels = rev(plot_df$group))
   cols <- palette_colors(
-    unique(agg$pair),
+    as.character(plot_df$group),
     palette = link_palette,
     palcolor = link_palcolor
   )
+  value_label <- if (identical(value_use, "count")) {
+    "Significant interactions"
+  } else if (identical(value_use, "mean")) {
+    "Mean communication score"
+  } else if (identical(value_use, "max")) {
+    "Max communication score"
+  } else {
+    "Communication score"
+  }
   p <- ggplot2::ggplot(
-    agg,
-    ggplot2::aes(
-      x = stats::reorder(interaction_name, value),
-      y = value,
-      fill = pair
-    )
+    plot_df,
+    ggplot2::aes(x = group, y = value, fill = group)
   ) +
-    ggplot2::geom_col() +
+    ggplot2::geom_col(width = 0.75) +
     ggplot2::coord_flip() +
-    ggplot2::scale_fill_manual(values = cols) +
-    ggplot2::labs(x = NULL, y = value_label, fill = "Pair")
-  finalize_cc_plot(
+    ggplot2::scale_fill_manual(values = cols, guide = "none") +
+    ggplot2::labs(x = NULL, y = value_label)
+  return(finalize_cc_plot(
     p,
-    title = title,
+    title = title %||% paste0(
+      "Top communication ",
+      if (identical(display_by, "aggregation")) "pairs" else "interactions"
+    ),
     subtitle = subtitle,
     legend.position = legend.position,
     legend.direction = legend.direction,
@@ -1839,13 +1962,15 @@ ccc_stat_bar_plot <- function(
     theme_args = theme_args,
     font.size = font.size
   ) +
-    ggplot2::theme(panel.grid.major = grid_major_element)
+    ggplot2::theme(panel.grid.major = grid_major_element))
 }
 
 ccc_stat_distribution_plot <- function(
   interaction_df,
   plot_type = c("box", "violin"),
   top_n = 20,
+  interaction.use = NULL,
+  pairLR.use = NULL,
   facet_by = NULL,
   x_text_angle = 90,
   cell_palette = "Chinese",
@@ -1862,6 +1987,8 @@ ccc_stat_distribution_plot <- function(
     interaction_df = interaction_df,
     plot_type = plot_type,
     top_n = top_n,
+    interaction.use = interaction.use,
+    pairLR.use = pairLR.use,
     facet_by = facet_by,
     x_text_angle = x_text_angle,
     cell_palette = cell_palette,
@@ -1874,6 +2001,121 @@ ccc_stat_distribution_plot <- function(
     theme_use = theme_use,
     theme_args = theme_args
   )
+}
+
+ccc_pathway_summary_plot <- function(
+  df,
+  value = "sum",
+  top_n = 20,
+  title = NULL,
+  subtitle = NULL,
+  palette = "Dark2",
+  palcolor = NULL,
+  legend.position = "right",
+  legend.direction = "vertical",
+  font.size = 10,
+  theme_use = "theme_scop",
+  theme_args = list(),
+  grid_major = TRUE,
+  grid_major_colour = "grey80",
+  grid_major_linetype = 2,
+  grid_major_linewidth = 0.3
+) {
+  if (is.null(df) || nrow(df) == 0L) {
+    log_message(
+      "No communication records remain after filtering",
+      message_type = "error"
+    )
+  }
+  df <- ccc_mark_significance(df)
+  pathway <- as.character(df$pathway_name)
+  pathway[is.na(pathway) | !nzchar(pathway)] <- "Unclassified"
+  score <- suppressWarnings(as.numeric(df$score))
+  score[!is.finite(score)] <- 0
+  metric <- if (identical(value, "count")) {
+    as.numeric(df$significant)
+  } else {
+    score
+  }
+  total_strength <- switch(value,
+    mean = tapply(metric, pathway, mean, na.rm = TRUE),
+    max = tapply(metric, pathway, max, na.rm = TRUE),
+    count = tapply(metric, pathway, sum, na.rm = TRUE),
+    tapply(metric, pathway, sum, na.rm = TRUE)
+  )
+  sig_pairs <- tapply(as.numeric(df$significant), pathway, sum, na.rm = TRUE)
+  active_pairs <- tapply(score > 0, pathway, sum, na.rm = TRUE)
+  summary <- data.frame(
+    pathway = names(total_strength),
+    total_strength = as.numeric(total_strength),
+    n_significant_pairs = as.numeric(sig_pairs[names(total_strength)]),
+    n_active_cell_pairs = as.numeric(active_pairs[names(total_strength)]),
+    stringsAsFactors = FALSE
+  )
+  summary$n_significant_pairs[is.na(summary$n_significant_pairs)] <- 0
+  summary$n_active_cell_pairs[is.na(summary$n_active_cell_pairs)] <- 0
+  summary$is_significant <- summary$n_significant_pairs > 0
+  summary <- summary[
+    order(summary$is_significant, summary$total_strength, decreasing = TRUE),
+    ,
+    drop = FALSE
+  ]
+  summary <- utils::head(summary, top_n)
+  if (nrow(summary) == 0L) {
+    log_message(
+      "No pathway communication records remain after summarizing",
+      message_type = "error"
+    )
+  }
+  summary$pathway <- factor(summary$pathway, levels = rev(summary$pathway))
+  cols <- palette_colors(
+    as.character(summary$pathway),
+    palette = palette,
+    palcolor = palcolor
+  )
+  bar_cols <- cols[as.character(summary$pathway)]
+  bar_cols[!summary$is_significant] <- "#D9D9D9"
+  summary$label <- paste0(
+    as.integer(summary$n_significant_pairs),
+    "/",
+    as.integer(summary$n_active_cell_pairs),
+    " sig"
+  )
+  grid_major_element <- if (isTRUE(grid_major)) {
+    ggplot2::element_line(
+      colour = grid_major_colour,
+      linetype = grid_major_linetype,
+      linewidth = grid_major_linewidth
+    )
+  } else {
+    ggplot2::element_blank()
+  }
+  p <- ggplot2::ggplot(
+    summary,
+    ggplot2::aes(x = pathway, y = total_strength, fill = pathway)
+  ) +
+    ggplot2::geom_col(width = 0.75) +
+    ggplot2::geom_text(
+      ggplot2::aes(label = label),
+      hjust = -0.08,
+      size = max(3, font.size * 0.28)
+    ) +
+    ggplot2::coord_flip(clip = "off") +
+    ggplot2::scale_fill_manual(values = bar_cols, guide = "none") +
+    ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0, 0.18))) +
+    ggplot2::labs(x = NULL, y = "Total pathway communication strength")
+
+  finalize_cc_plot(
+    p,
+    title = title %||% "Significant pathway communication summary",
+    subtitle = subtitle,
+    legend.position = legend.position,
+    legend.direction = legend.direction,
+    theme_use = theme_use,
+    theme_args = theme_args,
+    font.size = font.size
+  ) +
+    ggplot2::theme(panel.grid.major = grid_major_element)
 }
 
 ccc_stat_comparison_plot <- function(

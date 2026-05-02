@@ -188,10 +188,20 @@ CCCHeatmap <- function(
   comparison = c(1, 2),
   plot_type = c(
     "heatmap",
+    "focused_heatmap",
     "dot",
+    "matrix_dot",
+    "tile",
+    "source_target_dot",
+    "source_target_tile",
+    "sample_dot",
     "bubble",
+    "bubble_lr",
+    "pathway_bubble",
     "ligand_target",
     "role_heatmap",
+    "role_network",
+    "role_network_marsilea",
     "diff_heatmap"
   ),
   display_by = c("aggregation", "interaction"),
@@ -253,12 +263,37 @@ CCCHeatmap <- function(
   } else {
     isTRUE(dots[["remove.isolate"]])
   }
+  finish_plot <- function(plot) {
+    plot
+  }
   bubble_color.by <- dots[["bubble_color.by"]] %||% "prob"
   bubble_size.range <- dots[["bubble_size.range"]] %||% c(1.5, 8)
   angle.x <- dots[["angle.x"]] %||% x_text_angle
   hjust.x <- dots[["hjust.x"]] %||% 1
   vjust.x <- dots[["vjust.x"]] %||% 1
   aspect.ratio <- dots[["aspect.ratio"]] %||% NULL
+  sender.use <- ccc_alias_arg(dots, "sender_use", sender.use)
+  receiver.use <- ccc_alias_arg(dots, "receiver_use", receiver.use)
+  ligand.use <- ccc_alias_arg(dots, "ligand_use", ligand.use)
+  receptor.use <- ccc_alias_arg(dots, "receptor_use", receptor.use)
+  interaction.use <- ccc_alias_arg(dots, "interaction_use", interaction.use)
+  pairLR.use <- ccc_alias_arg(dots, "pair_lr_use", pairLR.use)
+  thresh <- ccc_alias_arg(dots, "pvalue_threshold", thresh)
+  color.by <- ccc_alias_arg(dots, "color_by", color.by)
+  show_column_names <- ccc_alias_arg(
+    dots,
+    c("show_col_names", "show_column_names"),
+    show_column_names
+  )
+  ncols <- ccc_alias_arg(dots, "ncols", NULL)
+  nrows <- ccc_alias_arg(dots, "nrows", NULL)
+  top_n_pairs <- ccc_alias_arg(dots, "top_n_pairs", NULL)
+  sample_key <- ccc_alias_arg(dots, "sample_key", "sample")
+  min_interaction_threshold <- ccc_alias_arg(
+    dots,
+    "min_interaction_threshold",
+    0
+  )
 
   if ("add_dot" %in% dot_names) {
     log_message(
@@ -276,10 +311,97 @@ CCCHeatmap <- function(
 
   display_by <- match.arg(display_by)
   plot_type <- match.arg(plot_type)
+  plot_type_requested <- plot_type
   measure <- match.arg(measure)
   pattern <- match.arg(pattern)
   edge_value <- match.arg(edge_value)
   color.by <- match.arg(color.by)
+  if (identical(plot_type, "matrix_dot")) {
+    log_message(
+      "{.val plot_type = 'matrix_dot'} has been removed. Use {.val plot_type = 'dot'} for the OV-style interaction dot plot.",
+      message_type = "error"
+    )
+  }
+  if (identical(plot_type, "source_target_dot")) {
+    log_message(
+      "{.val plot_type = 'source_target_dot'} is a compatibility alias of {.val plot_type = 'dot'}",
+      message_type = "warning"
+    )
+    plot_type <- "dot"
+  }
+  if (identical(plot_type, "source_target_tile")) {
+    log_message(
+      "{.val plot_type = 'source_target_tile'} is a compatibility alias of {.val plot_type = 'tile'}",
+      message_type = "warning"
+    )
+    plot_type <- "tile"
+  }
+  if (identical(plot_type, "focused_heatmap")) {
+    if (!identical(display_by, "aggregation")) {
+      log_message(
+        "{.val plot_type = 'focused_heatmap'} only supports {.arg display_by = 'aggregation'}",
+        message_type = "error"
+      )
+    }
+    ccc_assert_unsupported(
+      plot_type = "focused_heatmap",
+      sender.use = sender.use,
+      receiver.use = receiver.use,
+      interaction.use = interaction.use,
+      pairLR.use = pairLR.use,
+      facet_by = facet_by
+    )
+    ccc_assert_allowed_metrics(
+      plot_type = "focused_heatmap",
+      color.by = color.by,
+      allowed_color.by = "score",
+      value = value,
+      allowed_value = c("sum", "mean")
+    )
+    plot_type <- "heatmap"
+  }
+  if (plot_type %in% c("role_network", "role_network_marsilea")) {
+    log_message(
+      "{.val plot_type = {plot_type}} is rendered with the CellChat role heatmap backend in {.pkg scop}",
+      message_type = "warning"
+    )
+    plot_type <- "role_heatmap"
+  }
+  if (plot_type %in% c("bubble_lr", "pathway_bubble")) {
+    if (identical(plot_type, "bubble_lr")) {
+      ccc_assert_unsupported(
+        plot_type = "bubble_lr",
+        signaling = signaling,
+        facet_by = facet_by
+      )
+    } else {
+      ccc_assert_unsupported(
+        plot_type = "pathway_bubble",
+        interaction.use = interaction.use,
+        pairLR.use = pairLR.use,
+        facet_by = facet_by
+      )
+    }
+    plot_type <- "bubble"
+  }
+  if (identical(plot_type, "dot") && !identical(display_by, "interaction")) {
+    log_message(
+      "{.val plot_type = 'dot'} only supports {.arg display_by = 'interaction'}",
+      message_type = "error"
+    )
+  }
+  if (identical(plot_type, "dot") && !is.null(facet_by)) {
+    log_message(
+      "{.arg facet_by} is not used by the OV-style dot plot; filter with {.arg sender.use}/{.arg receiver.use} instead",
+      message_type = "error"
+    )
+  }
+  if (identical(plot_type, "dot") && !is.null(top_n_pairs)) {
+    log_message(
+      "{.arg top_n_pairs} is not used by the OV-style source-target dot plot",
+      message_type = "error"
+    )
+  }
   default_bar_source <- if (isTRUE(value_supplied)) {
     value
   } else if (isTRUE(edge_value_supplied)) {
@@ -300,10 +422,30 @@ CCCHeatmap <- function(
     choices = c("count", "sum", "mean", "max"),
     several.ok = TRUE
   )
+  default_top_bar <- identical(top_anno, "bar")
+  default_left_bar <- identical(left_anno, "bar")
+  default_bottom_cell <- identical(bottom_anno, "cell")
+  default_right_cell <- identical(right_anno, "cell")
   top_anno <- ccc_match_side_anno(top_anno)
   right_anno <- ccc_match_side_anno(right_anno)
   left_anno <- ccc_match_side_anno(left_anno)
   bottom_anno <- ccc_match_side_anno(bottom_anno)
+  if (plot_type %in% c("heatmap", "bubble") && isTRUE(default_top_bar)) {
+    top_anno <- c("bar", "cell")
+  }
+  if (
+    plot_type %in% c("heatmap", "bubble") &&
+      identical(display_by, "aggregation") &&
+      isTRUE(default_left_bar)
+  ) {
+    left_anno <- c("bar", "cell")
+  }
+  if (plot_type %in% c("heatmap", "bubble") && isTRUE(default_bottom_cell)) {
+    bottom_anno <- NULL
+  }
+  if (plot_type %in% c("heatmap", "bubble") && isTRUE(default_right_cell)) {
+    right_anno <- NULL
+  }
 
   if ("add_top_bar" %in% dot_names) {
     top_anno <- ccc_update_side_anno_legacy(
@@ -318,7 +460,7 @@ CCCHeatmap <- function(
     )
   }
 
-  # Allow palette/palcolor as shorthand for cell_palette/cell_palcolor
+  # Allow palette/palcolor as shorthand for cell_palette/cell_palcolor.
   if (is.null(cell_palette) || identical(cell_palette, "Chinese")) {
     cell_palette <- palette
     cell_palcolor <- palcolor
@@ -335,6 +477,44 @@ CCCHeatmap <- function(
 
   method <- detect_method(srt = srt, method = method)
 
+  if (
+    identical(plot_type_requested, "bubble_lr") &&
+      is.null(pairLR.use) &&
+      is.null(interaction.use)
+  ) {
+    log_message(
+      "{.arg pairLR.use} or {.arg interaction.use} must be provided for {.val plot_type = 'bubble_lr'}",
+      message_type = "error"
+    )
+  }
+  if (
+    identical(plot_type_requested, "pathway_bubble") &&
+      is.null(signaling) &&
+      identical(method, "CellChat")
+  ) {
+    info_pathway <- get_dataset_object(
+      srt = srt,
+      condition = condition,
+      dataset = dataset
+    )
+    signaling <- info_pathway$object@netP$pathways %||% NULL
+    signaling <- signaling[!is.na(signaling) & nzchar(signaling)]
+    if (
+      !is.null(signaling) &&
+        is.numeric(top_n) &&
+        length(top_n) == 1L &&
+        top_n > 0L
+    ) {
+      signaling <- utils::head(signaling, top_n)
+    }
+    if (is.null(signaling) || length(signaling) == 0L) {
+      log_message(
+        "{.arg signaling} is required when {.val plot_type = 'pathway_bubble'} and no pathways can be auto-selected",
+        message_type = "error"
+      )
+    }
+  }
+
   if (plot_type %in% c("role_heatmap", "diff_heatmap")) {
     if (!identical(method, "CellChat")) {
       log_message(
@@ -346,7 +526,7 @@ CCCHeatmap <- function(
       )
     }
     if (identical(plot_type, "role_heatmap")) {
-      return(ccc_cellchat_role_heatmap_plot(
+      return(finish_plot(ccc_cellchat_role_heatmap_plot(
         srt = srt,
         condition = condition,
         dataset = dataset,
@@ -379,9 +559,9 @@ CCCHeatmap <- function(
         font.size = font.size,
         theme_use = theme_use,
         theme_args = theme_args
-      ))
+      )))
     }
-    return(ccc_cellchat_diff_heatmap_plot(
+    return(finish_plot(ccc_cellchat_diff_heatmap_plot(
       srt = srt,
       condition = condition,
       comparison = comparison,
@@ -413,16 +593,12 @@ CCCHeatmap <- function(
       font.size = font.size,
       theme_use = theme_use,
       theme_args = theme_args
-    ))
+    )))
   }
 
-  if (identical(plot_type, "bubble")) {
-    if (!identical(method, "CellChat")) {
-      log_message(
-        "{.val plot_type = 'bubble'} is currently only supported for {.pkg CellChat} results",
-        message_type = "error"
-      )
-    }
+  if (identical(plot_type, "bubble") && identical(method, "CellChat")) {
+    explicit_lr_filter <- !is.null(pairLR.use) || !is.null(interaction.use)
+    bubble_top_n <- if (isTRUE(explicit_lr_filter)) NULL else top_n
     if (use_cc_single_condition(srt, condition = condition)) {
       cond1 <- resolve_single_cc_condition(srt, condition = condition)
       obj1 <- get_single_cc_obj(srt, condition = cond1)
@@ -435,13 +611,24 @@ CCCHeatmap <- function(
         targets.use = resolve_group_index_single(obj1, receiver.use),
         thresh = thresh,
         dataset = NULL,
-        top_n = top_n,
+        top_n = bubble_top_n,
         remove.isolate = remove.isolate
       )
+      df_bubble <- ccc_filter_bubble_df(
+        df = df_bubble,
+        interaction.use = interaction.use,
+        pairLR.use = pairLR.use
+      )
+      if (is.null(df_bubble) || nrow(df_bubble) == 0L) {
+        log_message(
+          "No communication records found under the current filtering conditions",
+          message_type = "error"
+        )
+      }
       if (isTRUE(return.data)) {
         return(df_bubble)
       }
-      return(custom_cc_bubble_plot(
+      return(finish_plot(custom_cc_bubble_plot(
         df = df_bubble,
         title = title %||% cond1,
         subtitle = subtitle,
@@ -461,7 +648,7 @@ CCCHeatmap <- function(
         theme_args = theme_args,
         aspect.ratio = aspect.ratio,
         remove.isolate = remove.isolate
-      ))
+      )))
     }
 
     cmp <- .cc_get_cmp(srt = srt, condition = condition)
@@ -469,7 +656,7 @@ CCCHeatmap <- function(
     obj.list <- cmp$object.list
     df_list <- lapply(names(obj.list)[comp_idx], function(ds) {
       obj <- obj.list[[ds]]
-      prepare_cc_bubble_data(
+      df_i <- prepare_cc_bubble_data(
         object = obj,
         slot.name = slot.name,
         signaling = signaling,
@@ -478,9 +665,15 @@ CCCHeatmap <- function(
         targets.use = resolve_group_index_single(obj, receiver.use),
         thresh = thresh,
         dataset = ds,
-        top_n = top_n,
+        top_n = bubble_top_n,
         remove.isolate = remove.isolate
       )
+      df_i <- ccc_filter_bubble_df(
+        df = df_i,
+        interaction.use = interaction.use,
+        pairLR.use = pairLR.use
+      )
+      df_i
     })
     names(df_list) <- names(obj.list)[comp_idx]
     if (isTRUE(return.data)) {
@@ -494,7 +687,7 @@ CCCHeatmap <- function(
       )
     }
     df_bubble <- do.call(rbind, df_list)
-    return(custom_cc_bubble_plot(
+    return(finish_plot(custom_cc_bubble_plot(
       df = df_bubble,
       title = title %||% cmp_cc_label(cmp, comp_idx),
       subtitle = subtitle,
@@ -514,7 +707,7 @@ CCCHeatmap <- function(
       theme_args = theme_args,
       aspect.ratio = aspect.ratio,
       remove.isolate = remove.isolate
-    ))
+    )))
   }
 
   # --- ligand_target: special path (NicheNet/MultiNicheNet only) ---
@@ -537,7 +730,7 @@ CCCHeatmap <- function(
     }
     bundle <- get_bundle(srt, method = ligand_method)
     ligand_target_df <- bundle$ligand_target_df %||% data.frame()
-    return(ccc_ligand_target_heatmap(
+    return(finish_plot(ccc_ligand_target_heatmap(
       df = ligand_target_df,
       top_n = top_n,
       sender.use = sender.use,
@@ -575,7 +768,7 @@ CCCHeatmap <- function(
       font.size = font.size,
       theme_use = theme_use,
       theme_args = theme_args
-    ))
+    )))
   }
 
   if (identical(method, "CellChat")) {
@@ -596,6 +789,33 @@ CCCHeatmap <- function(
   }
 
   df <- standardize_long_df(df)
+  if (
+    identical(plot_type_requested, "pathway_bubble") &&
+      is.null(signaling)
+  ) {
+    pathway_score_df <- ccc_assign_plot_score(df = df, value = value)
+    pathway_score_df <- ccc_mark_significance(pathway_score_df, thresh = thresh)
+    pathway <- as.character(pathway_score_df$pathway_name)
+    pathway[is.na(pathway) | !nzchar(pathway)] <- "Unclassified"
+    score <- suppressWarnings(as.numeric(pathway_score_df$score))
+    score[!is.finite(score)] <- 0
+    pathway_rank <- sort(tapply(score, pathway, sum, na.rm = TRUE), decreasing = TRUE)
+    signaling <- names(pathway_rank)
+    if (
+      is.numeric(top_n) &&
+        length(top_n) == 1L &&
+        top_n > 0L
+    ) {
+      signaling <- utils::head(signaling, top_n)
+    }
+    signaling <- signaling[!is.na(signaling) & nzchar(signaling)]
+    if (length(signaling) == 0L) {
+      log_message(
+        "{.arg signaling} is required when {.val plot_type = 'pathway_bubble'} and no pathways can be auto-selected",
+        message_type = "error"
+      )
+    }
+  }
   df <- filter_long_df(
     df = df,
     sender.use = sender.use,
@@ -621,23 +841,108 @@ CCCHeatmap <- function(
     df$pvalue <- if ("pval" %in% colnames(df)) df$pval else NA_real_
   }
   df$score <- df[[score_col]]
+  if (
+    identical(plot_type_requested, "focused_heatmap") &&
+      is.numeric(min_interaction_threshold) &&
+      length(min_interaction_threshold) == 1L &&
+      is.finite(min_interaction_threshold) &&
+      min_interaction_threshold > 0
+  ) {
+    score_num <- suppressWarnings(as.numeric(df$score))
+    df <- df[
+      is.finite(score_num) & score_num >= min_interaction_threshold,
+      ,
+      drop = FALSE
+    ]
+    if (nrow(df) == 0L) {
+      log_message(
+        "No communication records remain after applying {.arg min_interaction_threshold}",
+        message_type = "error"
+      )
+    }
+  }
+  df <- ccc_mark_significance(df, thresh = thresh)
   df <- prepare_plot_df(df)
 
   pair_df <- pair_plot_df(df)
   interaction_df <- interaction_plot_df(df)
 
-  add_dot_eff <- identical(plot_type, "dot")
+  if (identical(plot_type, "dot")) {
+    return(finish_plot(ccc_source_target_dot_plot(
+      interaction_df = interaction_df,
+      top_n = top_n,
+      color.by = color.by,
+      interaction.use = interaction.use,
+      pairLR.use = pairLR.use,
+      ncols = ncols,
+      nrows = nrows,
+      title = title,
+      subtitle = subtitle,
+      value_palette = palette_cfg$value_palette,
+      value_palcolor = palette_cfg$value_palcolor,
+      legend.position = legend.position,
+      legend.direction = legend.direction,
+      font.size = font.size,
+      theme_use = theme_use,
+      theme_args = theme_args
+    )))
+  }
+
+  if (identical(plot_type, "tile")) {
+    return(finish_plot(ccc_source_target_tile_plot(
+      interaction_df = interaction_df,
+      top_n = top_n,
+      color.by = color.by,
+      interaction.use = interaction.use,
+      pairLR.use = pairLR.use,
+      title = title,
+      subtitle = subtitle,
+      value_palette = palette_cfg$value_palette,
+      value_palcolor = palette_cfg$value_palcolor,
+      legend.position = legend.position,
+      legend.direction = legend.direction,
+      font.size = font.size,
+      theme_use = theme_use,
+      theme_args = theme_args
+    )))
+  }
+
+  if (identical(plot_type, "sample_dot")) {
+    return(finish_plot(ccc_sample_dot_plot(
+      df = df,
+      sample_key = sample_key,
+      top_n = top_n,
+      top_n_pairs = top_n_pairs,
+      color.by = color.by,
+      interaction.use = interaction.use,
+      pairLR.use = pairLR.use,
+      ncols = ncols,
+      nrows = nrows,
+      title = title,
+      subtitle = subtitle,
+      value_palette = palette_cfg$value_palette,
+      value_palcolor = palette_cfg$value_palcolor,
+      legend.position = legend.position,
+      legend.direction = legend.direction,
+      font.size = font.size,
+      theme_use = theme_use,
+      theme_args = theme_args
+    )))
+  }
+
+  add_dot_eff <- identical(plot_type, "bubble")
   value_use <- value
   if (!isTRUE(value_supplied) && isTRUE(edge_value_supplied)) {
     value_use <- edge_value
   }
 
-  ccc_heatmap_full_plot(
+  finish_plot(ccc_heatmap_full_plot(
     df = df,
     pair_df = pair_df,
     interaction_df = interaction_df,
     display_by = display_by,
     top_n = top_n,
+    top_n_pairs = top_n_pairs,
     add_dot = add_dot_eff,
     top_anno = top_anno,
     right_anno = right_anno,
@@ -669,7 +974,7 @@ CCCHeatmap <- function(
     font.size = font.size,
     theme_use = theme_use,
     theme_args = theme_args
-  )
+  ))
 }
 
 # Internal: full ComplexHeatmap rendering
@@ -679,6 +984,7 @@ ccc_heatmap_full_plot <- function(
   interaction_df,
   display_by = "aggregation",
   top_n = 20,
+  top_n_pairs = NULL,
   add_dot = FALSE,
   top_anno = "bar",
   right_anno = "cell",
@@ -737,25 +1043,71 @@ ccc_heatmap_full_plot <- function(
       )
     }
 
-    # Build matrix: rows = pair or receiver/sender, cols = interaction_label
-    if (is.null(facet_by)) {
-      row_var <- "pair"
-      row_title_str <- "Pair"
-    } else if (identical(facet_by, "sender")) {
-      row_var <- "receiver"
-      row_title_str <- "Receiver"
-    } else {
-      row_var <- "sender"
-      row_title_str <- "Sender"
-    }
-
     score_var <- plot_value$var
     val_label <- plot_value$label
+    row_var <- "interaction_label"
+    row_title_str <- "Interaction"
+    if (is.null(facet_by)) {
+      col_var <- "pair"
+      col_title_str <- "Sender -> Receiver"
+    } else if (identical(facet_by, "sender")) {
+      plot_pairs <- unique(plot_df[, c("sender", "receiver", "pair"), drop = FALSE])
+      plot_pairs <- plot_pairs[order(plot_pairs$sender, plot_pairs$receiver), , drop = FALSE]
+      plot_df$plot_pair <- factor(plot_df$pair, levels = unique(plot_pairs$pair))
+      col_var <- "plot_pair"
+      col_title_str <- "Sender -> Receiver"
+    } else if (identical(facet_by, "receiver")) {
+      plot_pairs <- unique(plot_df[, c("receiver", "sender", "pair"), drop = FALSE])
+      plot_pairs <- plot_pairs[order(plot_pairs$receiver, plot_pairs$sender), , drop = FALSE]
+      plot_df$plot_pair <- factor(plot_df$pair, levels = unique(plot_pairs$pair))
+      col_var <- "plot_pair"
+      col_title_str <- "Sender -> Receiver"
+    } else {
+      log_message(
+        "{.arg facet_by} must be one of {.val sender}, {.val receiver}, or NULL",
+        message_type = "error"
+      )
+    }
+
+    interaction_order <- unique(as.character(plot_df$interaction_label))
+    interaction_order <- interaction_order[!is.na(interaction_order) & nzchar(interaction_order)]
+    plot_df$interaction_label <- factor(plot_df$interaction_label, levels = interaction_order)
+    if (
+      !is.null(top_n_pairs) &&
+        is.numeric(top_n_pairs) &&
+        length(top_n_pairs) == 1L &&
+        is.finite(top_n_pairs) &&
+        top_n_pairs > 0L
+    ) {
+      pair_scores <- sort(
+        tapply(
+          suppressWarnings(as.numeric(plot_df[[score_var]])),
+          as.character(plot_df[[col_var]]),
+          sum,
+          na.rm = TRUE
+        ),
+        decreasing = TRUE
+      )
+      keep_pairs <- names(pair_scores)[seq_len(min(as.integer(top_n_pairs), length(pair_scores)))]
+      if (is.factor(plot_df[[col_var]])) {
+        keep_pairs <- levels(plot_df[[col_var]])[levels(plot_df[[col_var]]) %in% keep_pairs]
+      }
+      plot_df <- plot_df[as.character(plot_df[[col_var]]) %in% keep_pairs, , drop = FALSE]
+      if (nrow(plot_df) == 0L) {
+        log_message(
+          "No interaction-level CCC records remain after {.arg top_n_pairs} filtering",
+          message_type = "error"
+        )
+      }
+      if (is.factor(plot_df[[col_var]])) {
+        plot_df[[col_var]] <- factor(as.character(plot_df[[col_var]]), levels = keep_pairs)
+      }
+    }
 
     mat <- ccc_pivot_matrix(
       df = plot_df,
       row_var = row_var,
-      col_var = "interaction_label",
+      col_var = col_var,
       val_var = score_var
     )
 
@@ -765,7 +1117,7 @@ ccc_heatmap_full_plot <- function(
     if (ccc_side_has_bar(top_anno, bottom_anno)) {
       top_bar_vec <- ccc_collect_bar_stats(
         values = plot_df[[score_var]],
-        groups = plot_df$interaction_label,
+        groups = plot_df[[col_var]],
         ordered_levels = colnames(mat),
         metrics = bar_value
       )
@@ -775,7 +1127,7 @@ ccc_heatmap_full_plot <- function(
     if (ccc_side_has_distribution(top_anno, bottom_anno)) {
       top_box_vec <- ccc_collect_group_values(
         values = plot_df[[score_var]],
-        groups = plot_df$interaction_label,
+        groups = plot_df[[col_var]],
         ordered_levels = colnames(mat)
       )
     } else {
@@ -784,7 +1136,7 @@ ccc_heatmap_full_plot <- function(
     if (ccc_side_has_summary(top_anno, bottom_anno)) {
       top_summary_vec <- ccc_collect_group_summary(
         values = plot_df[[score_var]],
-        groups = plot_df$interaction_label,
+        groups = plot_df[[col_var]],
         ordered_levels = colnames(mat),
         metric = "mean"
       )
@@ -821,8 +1173,6 @@ ccc_heatmap_full_plot <- function(
     } else {
       right_summary_vec <- NULL
     }
-
-    col_title_str <- "Interaction"
   } else {
     # aggregation: sender × receiver
     plot_value <- ccc_heatmap_value_spec(
@@ -3587,8 +3937,18 @@ ccc_heatmap_capture_size <- function(
 }
 
 ccc_pivot_matrix <- function(df, row_var, col_var, val_var) {
-  rows <- sort(unique(as.character(df[[row_var]])))
-  cols <- sort(unique(as.character(df[[col_var]])))
+  ordered_levels <- function(x) {
+    if (is.factor(x)) {
+      lev <- levels(x)
+      lev[lev %in% as.character(x)]
+    } else {
+      unique(as.character(x))
+    }
+  }
+  rows <- ordered_levels(df[[row_var]])
+  cols <- ordered_levels(df[[col_var]])
+  rows <- rows[!is.na(rows) & nzchar(rows)]
+  cols <- cols[!is.na(cols) & nzchar(cols)]
   mat <- matrix(
     NA_real_,
     nrow = length(rows),

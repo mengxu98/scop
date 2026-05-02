@@ -15,6 +15,7 @@ RunHarmony2(object, ...)
   dims.use = 1:30,
   project.dim = TRUE,
   reduction.name = "Harmony",
+  reduction.save = NULL,
   reduction.key = "Harmony_",
   verbose = TRUE,
   seed.use = 11,
@@ -43,6 +44,9 @@ Default is \code{TRUE}.}
 
 \item{reduction.name}{The name of the reduction to be stored in the Seurat object.
 Default is \code{"Harmony"}.}
+
+\item{reduction.save}{Deprecated alias for \code{reduction.name}, retained for
+compatibility with \code{harmony::RunHarmony.Seurat}.}
 
 \item{reduction.key}{The prefix for the column names of the Harmony embeddings.
 Default is \code{"Harmony_"}.}

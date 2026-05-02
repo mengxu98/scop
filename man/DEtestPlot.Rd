@@ -10,8 +10,9 @@ DEtestPlot(
   test.use = "wilcox",
   res = NULL,
   plot_type = c("volcano", "manhattan", "ring"),
+  group_use = NULL,
   DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
-  x_metric = "diff_pct",
+  x_metric = NULL,
   y_metric = c("p_val_adj", "p_val"),
   x_order = c("gene", "index"),
   palette = "RdBu",
@@ -20,6 +21,7 @@ DEtestPlot(
   group_palcolor = NULL,
   pt.size = 1,
   pt.alpha = 1,
+  cols.background = "grey80",
   cols.highlight = "black",
   sizes.highlight = 1,
   alpha.highlight = 1,
@@ -75,51 +77,20 @@ The data.frame must contain columns: \code{gene}, \code{group1} (factor or chara
 \item{plot_type}{Type of plot to create. Options: \code{"volcano"}, \code{"manhattan"}, or \code{"ring"}.
 Default is \code{"volcano"}.}
 
+\item{group_use}{Groups to plot.
+Default is \code{NULL} (all groups).}
+
 \item{DE_threshold}{A character string specifying the threshold for differential expression (used to highlight significant genes in all plot types).
-Default is \code{"avg_log2FC > 0 & p_val_adj < 0.05"}.}
+Default is \code{"p_val < 0.05"} for sample-level methods (\code{"edgeR"} and \code{"limma"})
+and \code{"avg_log2FC > 0 & p_val_adj < 0.05"} otherwise.}
 
 \item{x_metric}{A character string specifying the metric to use for the x-axis (only for volcano plot).
-Default is \code{"diff_pct"}.}
+Default is \code{NULL}, which uses \code{"avg_log2FC"} for sample-level methods (\code{"edgeR"} and \code{"limma"})
+and \code{"diff_pct"} otherwise.}
 
-\item{threshold_method}{Volcano significance threshold method.
-Options are \code{"rectangular"} (legacy DE_threshold) or \code{"hyperbolic"} (\code{|log2FC * -log10(padj)| > c}).
-Default is \code{"rectangular"}.}
-
-\item{hyperbola_c}{Numeric cutoff \code{c} for hyperbolic volcano threshold.
-Default is \code{6}.}
-
-\item{annotate_enrichment}{Whether to annotate enrichment-hit genes on volcano plots.
-Enrichment results are read from existing results in \code{srt@tools} only.
-Default is \code{FALSE}.}
-
-\item{enrich_from}{Character vector specifying enrichment result source(s) to annotate.
-Options are \code{"Enrichment"}, \code{"GSEA"}, \code{"GSVA"}.
-Default is \code{c("Enrichment", "GSEA", "GSVA")}.}
-
-\item{enrich_db}{Optional database filter for enrichment annotation, e.g. \code{"GO_BP"} or \code{"KEGG"}.
-Default is \code{NULL}.}
-
-\item{enrich_terms}{Optional whitelist of enrichment term IDs or names for annotation.
-Default is \code{NULL}.}
-
-\item{enrich_top_terms}{Number of top enriched terms selected per source/group/database.
-Default is \code{3}.}
-
-\item{enrich_padj_cutoff}{Adjusted p-value cutoff for \code{"Enrichment"} and \code{"GSEA"} annotation.
-Default is \code{0.05}.}
-
-\item{enrich_gsva_score_cutoff}{Optional absolute GSVA score cutoff for \code{"GSVA"} annotation.
-Default is \code{NULL}.}
-
-\item{gsva_method}{Optional GSVA method filter (e.g. \code{"gsva"} or \code{"ssgsea"}) when multiple GSVA tool slots exist.
-Default is \code{NULL}.}
-
-\item{enrich_nlabel}{Maximum number of enrichment-derived labels added per group.
-Labels from \code{features_label} are always retained.
-Default is \code{15}.}
-
-\item{y_metric}{A character string specifying the metric to use for the y-axis (only for Manhattan plot, not used currently).
-Options: \code{"p_val"} or \code{"p_val_adj"}. Default is \code{"p_val_adj"}.}
+\item{y_metric}{A character string specifying the metric to use for the y-axis.
+Options: \code{"p_val"} or \code{"p_val_adj"}.
+Default is \code{"p_val"} for sample-level methods (\code{"edgeR"} and \code{"limma"}) and \code{"p_val_adj"} otherwise.}
 
 \item{x_order}{A character string specifying how to order genes on x-axis (only for Manhattan plot, not used currently).
 Options: \code{"gene"} (alphabetical by gene name) or \code{"index"} (by data order). Default is \code{"gene"}.}
@@ -142,6 +113,9 @@ Default is \code{1}.}
 
 \item{pt.alpha}{The transparency of the data points.
 Default is \code{1}.}
+
+\item{cols.background}{A character string specifying the color for non-DE background points in volcano plots.
+Default is \code{"grey80"}.}
 
 \item{cols.highlight}{A character string specifying the color for highlighted points.
 Default is \code{"black"}.}
@@ -218,6 +192,43 @@ Default is \code{TRUE}.}
 
 \item{seed}{Random seed for jitter in ring plot.
 Default is \code{11}.}
+
+\item{threshold_method}{Volcano significance threshold method.
+Options are \code{"rectangular"} (legacy DE_threshold) or \code{"hyperbolic"} (\verb{|log2FC * -log10(padj)| > c}).
+Default is \code{"rectangular"}.}
+
+\item{hyperbola_c}{Numeric cutoff \code{c} for hyperbolic volcano threshold.
+Default is \code{6}.}
+
+\item{annotate_enrichment}{Whether to annotate enrichment-hit genes on volcano plots.
+Enrichment results are read from existing results in \code{srt@tools} only.
+Default is \code{FALSE}.}
+
+\item{enrich_from}{Character vector specifying enrichment result source(s) to annotate.
+Options are \code{"Enrichment"}, \code{"GSEA"}, \code{"GSVA"}.
+Default is \code{c("Enrichment", "GSEA", "GSVA")}.}
+
+\item{enrich_db}{Optional database filter for enrichment annotation, e.g. \code{"GO_BP"} or \code{"KEGG"}.
+Default is \code{NULL}.}
+
+\item{enrich_terms}{Optional whitelist of enrichment term IDs or names for annotation.
+Default is \code{NULL}.}
+
+\item{enrich_top_terms}{Number of top enriched terms selected per source/group/database.
+Default is \code{3}.}
+
+\item{enrich_padj_cutoff}{Adjusted p-value cutoff for \code{"Enrichment"} and \code{"GSEA"} annotation.
+Default is \code{0.05}.}
+
+\item{enrich_gsva_score_cutoff}{Optional absolute GSVA score cutoff for \code{"GSVA"} annotation.
+Default is \code{NULL}.}
+
+\item{gsva_method}{Optional GSVA method filter (e.g. \code{"gsva"} or \code{"ssgsea"}) when multiple GSVA tool slots exist.
+Default is \code{NULL}.}
+
+\item{enrich_nlabel}{Maximum number of enrichment-derived labels added per group.
+Labels from \code{features_label} are always retained.
+Default is \code{15}.}
 }
 \description{
 Differential Expression Test Plot
@@ -237,6 +248,45 @@ DEtestPlot(
   plot_type = "volcano",
   ncol = 2
 )
+
+DEtestPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "volcano",
+  group_use = c("Ductal", "Endocrine"),
+  ncol = 2
+)
+
+DEtestPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "volcano",
+  threshold_method = "hyperbolic",
+  hyperbola_c = 6,
+  ncol = 2
+)
+
+\dontrun{
+pancreas_sub <- RunEnrichment(
+  pancreas_sub,
+  group.by = "CellType",
+  db = "GO_BP",
+  species = "Mus_musculus"
+)
+DEtestPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "volcano",
+  threshold_method = "hyperbolic",
+  hyperbola_c = 6,
+  annotate_enrichment = TRUE,
+  enrich_from = "Enrichment",
+  enrich_db = "GO_BP",
+  enrich_top_terms = 3,
+  enrich_nlabel = 15,
+  ncol = 2
+)
+}
 
 DEtestPlot(
   pancreas_sub,

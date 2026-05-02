@@ -103,14 +103,16 @@ srt_reorder <- function(
   }
 
   ident_use <- factor(as.character(ident_use))
-  data_avg <- vapply(
-    X = levels(ident_use),
-    FUN = function(group_name) {
-      group_cells <- which(ident_use == group_name)
-      Matrix::rowMeans(data_use[, group_cells, drop = FALSE])
-    },
-    FUN.VALUE = numeric(length(features))
+  group_index <- as.integer(ident_use)
+  group_size <- tabulate(group_index, nbins = nlevels(ident_use))
+  group_weights <- 1 / group_size[group_index]
+  group_matrix <- Matrix::sparseMatrix(
+    i = seq_along(group_index),
+    j = group_index,
+    x = group_weights,
+    dims = c(length(group_index), nlevels(ident_use))
   )
+  data_avg <- as.matrix(data_use %*% group_matrix)
   rownames(data_avg) <- features
   colnames(data_avg) <- levels(ident_use)
 
