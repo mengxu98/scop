@@ -113,3 +113,32 @@ current implementation computes gene activity for ATAC query cells, finds
 anchors to an RNA reference, integrates the query into the reference embedding
 space, transfers labels, and projects query cells to the reference UMAP.
 }
+\examples{
+\dontrun{
+data("pbmcmultiome_sub", package = "scop")
+pbmcmultiome_sub <- standard_scop(
+  pbmcmultiome_sub,
+  assay = "RNA",
+  linear_reduction_dims = 20
+)
+reference <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[1:250])
+query <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[251:350])
+query <- standard_scop(
+  query,
+  assay = "peaks",
+  normalization_method = "TFIDF",
+  linear_reduction_dims = 20
+)
+query <- RunReferenceMapping(
+  srt = query,
+  reference = reference,
+  assay = "peaks",
+  reference_assay = "RNA",
+  reference_reduction = "Standardpca",
+  ref_umap = "StandardUMAP2D",
+  reference_label = "CellType",
+  reference_dims = 1:10,
+  dims = 2:10
+)
+}
+}

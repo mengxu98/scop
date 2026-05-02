@@ -176,6 +176,10 @@ RunProportionTest <- function(
 #'
 #' @md
 #' @inheritParams RunProportionTest
+#' @param backend Permutation backend. `"cpp"` is the default and uses a native
+#' permutation/bootstrap loop. `"r"` uses the original R implementation. The C++
+#' backend is statistically equivalent but does not reproduce the exact random
+#' draws from R's `sample()`.
 #'
 #' @return A method result bundle used internally by [RunProportionTest].
 #'
@@ -187,7 +191,9 @@ RunProportionTestPermutation <- function(
     comparison = NULL,
     n_permutations = 1000,
     include_all_cells = FALSE,
+    backend = c("cpp", "r"),
     verbose = TRUE) {
+  backend <- match.arg(backend)
   meta_data <- .validate_proportion_inputs(
     srt = srt,
     group.by = group.by,
@@ -213,15 +219,27 @@ RunProportionTestPermutation <- function(
       verbose = verbose
     )
 
-    test_result <- .permutation_test(
-      srt = srt,
-      group.by = group.by,
-      split.by = split.by,
-      cluster_1 = cluster_1,
-      cluster_2 = cluster_2,
-      n_permutations = n_permutations,
-      include_all_cells = include_all_cells
-    )
+    if (identical(backend, "cpp")) {
+      test_result <- .permutation_test_cpp(
+        srt = srt,
+        group.by = group.by,
+        split.by = split.by,
+        cluster_1 = cluster_1,
+        cluster_2 = cluster_2,
+        n_permutations = n_permutations,
+        include_all_cells = include_all_cells
+      )
+    } else {
+      test_result <- .permutation_test(
+        srt = srt,
+        group.by = group.by,
+        split.by = split.by,
+        cluster_1 = cluster_1,
+        cluster_2 = cluster_2,
+        n_permutations = n_permutations,
+        include_all_cells = include_all_cells
+      )
+    }
 
     results_list[[comparison_name]] <- .standardize_proportion_result(
       test_result,
@@ -239,7 +257,8 @@ RunProportionTestPermutation <- function(
     details = list(),
     parameters = list(
       n_permutations = n_permutations,
-      include_all_cells = include_all_cells
+      include_all_cells = include_all_cells,
+      backend = backend
     )
   )
 }
@@ -384,6 +403,7 @@ RunProportionTestMilo <- function(
 #' @param credible_effect_threshold Inclusion probability threshold for
 #' credible effects.
 #' @param n_mcmc_samples Number of MCMC samples requested in scCODA.
+#' @param n_bootstrap Number of bootstrap iterations used by fallback summary.
 #'
 #' @return A method result bundle used internally by [RunProportionTest].
 #'
@@ -830,23 +850,43 @@ RunProportionTestPropeller <- function(
       error = function(e) NA_real_
     )
 
-    boot <- rep(NA_real_, max(1, n_bootstrap))
+    # Bootstrap computation - use C++ when available
     if (n_bootstrap > 0 && length(v1) > 0 && length(v2) > 0) {
-      for (b in seq_len(n_bootstrap)) {
-        b1 <- sample(v1, size = length(v1), replace = TRUE)
-        b2 <- sample(v2, size = length(v2), replace = TRUE)
-        boot[b] <- log2((mean(b2, na.rm = TRUE) + pseudocount) /
-          (mean(b1, na.rm = TRUE) + pseudocount))
+      if (run_proportion_bootstrap_stats_cpp_available()) {
+        boot_result <- run_proportion_bootstrap_stats_cpp(
+          v1 = v1,
+          v2 = v2,
+          n_bootstrap = n_bootstrap,
+          pseudocount = pseudocount
+        )
+        boot_mean_log2FD <- boot_result[["boot_mean_log2FD"]]
+        boot_CI_2.5 <- boot_result[["boot_CI_2.5"]]
+        boot_CI_97.5 <- boot_result[["boot_CI_97.5"]]
+      } else {
+        boot <- rep(NA_real_, n_bootstrap)
+        for (b in seq_len(n_bootstrap)) {
+          b1 <- sample(v1, size = length(v1), replace = TRUE)
+          b2 <- sample(v2, size = length(v2), replace = TRUE)
+          boot[b] <- log2((mean(b2, na.rm = TRUE) + pseudocount) /
+            (mean(b1, na.rm = TRUE) + pseudocount))
+        }
+        boot_mean_log2FD <- mean(boot, na.rm = TRUE)
+        boot_CI_2.5 <- stats::quantile(boot, probs = 0.025, na.rm = TRUE, names = FALSE)
+        boot_CI_97.5 <- stats::quantile(boot, probs = 0.975, na.rm = TRUE, names = FALSE)
       }
+    } else {
+      boot_mean_log2FD <- NA_real_
+      boot_CI_2.5 <- NA_real_
+      boot_CI_97.5 <- NA_real_
     }
 
     data.frame(
       clusters = ct,
       obs_log2FD = obs_log2FD,
       pval = pval,
-      boot_mean_log2FD = mean(boot, na.rm = TRUE),
-      boot_CI_2.5 = stats::quantile(boot, probs = 0.025, na.rm = TRUE, names = FALSE),
-      boot_CI_97.5 = stats::quantile(boot, probs = 0.975, na.rm = TRUE, names = FALSE),
+      boot_mean_log2FD = boot_mean_log2FD,
+      boot_CI_2.5 = boot_CI_2.5,
+      boot_CI_97.5 = boot_CI_97.5,
       stringsAsFactors = FALSE
     )
   })
@@ -1474,4 +1514,56 @@ RunProportionTestPropeller <- function(
   colnames(boot_ci) <- c("boot_CI_2.5", "boot_CI_97.5")
 
   cbind(obs_diff_wide, boot_ci)
+}
+
+.permutation_test_cpp_available <- function() {
+  exists("proportion_permutation_cpp", mode = "function") &&
+    isTRUE(is.loaded("_scop_proportion_permutation_cpp"))
+}
+
+.permutation_test_cpp <- function(
+    srt,
+    group.by,
+    split.by,
+    cluster_1,
+    cluster_2,
+    n_permutations,
+    include_all_cells = FALSE,
+    pseudocount = 1e-8) {
+  if (!.permutation_test_cpp_available()) {
+    log_message(
+      "{.arg backend = 'cpp'} requires the compiled {.pkg scop} shared library. Reinstall the package to build native code.",
+      message_type = "error"
+    )
+  }
+
+  meta_data <- srt@meta.data[, c(split.by, group.by), drop = FALSE]
+  colnames(meta_data) <- c("samples", "clusters")
+  meta_data[["clusters"]] <- as.character(meta_data[["clusters"]])
+  comparison_data <- meta_data[
+    meta_data[["samples"]] %in% c(cluster_1, cluster_2), ,
+    drop = FALSE
+  ]
+  if (isTRUE(include_all_cells)) {
+    cluster_cases <- unique(meta_data[["clusters"]])
+  } else {
+    cluster_cases <- unique(comparison_data[["clusters"]])
+  }
+
+  sample_ids <- ifelse(comparison_data[["samples"]] == cluster_1, 1L, 2L)
+  cluster_ids <- match(comparison_data[["clusters"]], cluster_cases)
+  res <- proportion_permutation_cpp(
+    sample_ids = as.integer(sample_ids),
+    cluster_ids = as.integer(cluster_ids),
+    cluster_levels = as.character(cluster_cases),
+    n_permutations = as.integer(n_permutations),
+    pseudocount = pseudocount
+  )
+  colnames(res)[colnames(res) == "fraction_1"] <- cluster_1
+  colnames(res)[colnames(res) == "fraction_2"] <- cluster_2
+  res[["FDR"]] <- stats::p.adjust(res[["pval"]], "fdr")
+  res[, c(
+    "clusters", cluster_1, cluster_2, "obs_log2FD", "pval", "FDR",
+    "boot_mean_log2FD", "boot_CI_2.5", "boot_CI_97.5"
+  ), drop = FALSE]
 }
