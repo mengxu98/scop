@@ -14,6 +14,7 @@ RunEnrichment(
   geneID_exclude = NULL,
   IDtype = "symbol",
   result_IDtype = "symbol",
+  backend = c("cpp", "r"),
   species = "Homo_sapiens",
   db = "GO_BP",
   db_update = FALSE,
@@ -59,6 +60,11 @@ This argument is used to convert the gene IDs to a different type if \code{IDtyp
 
 \item{result_IDtype}{A character vector specifying the desired type of gene ID to be used in the output.
 This argument is used to convert the gene IDs from \code{IDtype} to \code{result_IDtype}.}
+
+\item{backend}{Enrichment backend. \code{"cpp"} is the default and uses a fast native
+hypergeometric ORA implementation and returns the enrichment table without
+\code{enrichResult} objects. \code{"r"} uses \code{\link[clusterProfiler:enricher]{clusterProfiler::enricher()}} and returns
+\code{enrichResult} objects in \code{results}. \code{GO_simplify = TRUE} currently uses the R backend.}
 
 \item{species}{A character vector specifying the species for which the gene annotation databases should be prepared.
 Can be \code{"Homo_sapiens"} or \code{"Mus_musculus"}.}

@@ -2,17 +2,20 @@
 % Please edit documentation in R/PrepareEnv.R
 \name{ListEnv}
 \alias{ListEnv}
-\title{List conda environments}
+\title{List conda-compatible Python environments}
 \usage{
 ListEnv(conda = "auto")
 }
 \arguments{
-\item{conda}{The path to a conda executable.
-Use \code{"auto"} to allow automatically finding an appropriate conda binary.}
+\item{conda}{The path or command name of a conda-compatible executable
+(\code{conda}, \code{mamba}, or \code{micromamba}). Use \code{"auto"} to allow automatically
+finding an appropriate environment manager. If \code{"micromamba"} is requested
+and micromamba is not available on \code{PATH}, a package-managed micromamba is
+downloaded automatically.}
 }
 \value{
-A data frame of conda environments.
+A data frame of conda-compatible Python environments.
 }
 \description{
-List conda environments
+List conda-compatible Python environments
 }

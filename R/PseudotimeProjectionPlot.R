@@ -661,16 +661,43 @@ compute_pseudotime_on_knn <- function(
       method = "euclidean",
       use_nan = TRUE
     )
-    neighbors_list <- lapply(seq_len(ncol(d)), function(i) {
-      neighbors <- order(d[, i], decreasing = FALSE)[
-        seq_len(min(k, ncol(d) - 1)) + 1
-      ]
-      neighbors
-    })
+    k_use <- min(k, ncol(d) - 1)
+    if (k_use > 0 && run_dense_topk_by_column_cpp_available()) {
+      topk <- run_dense_topk_by_column_cpp(
+        x = d,
+        k = k_use + 1L,
+        decreasing = FALSE
+      )[["idx"]]
+      neighbors_list <- lapply(seq_len(nrow(topk)), function(i) {
+        topk[i, seq_len(k_use) + 1L]
+      })
+    } else {
+      neighbors_list <- lapply(seq_len(ncol(d)), function(i) {
+        neighbors <- order(d[, i], decreasing = FALSE)[
+          seq_len(k_use) + 1
+        ]
+        neighbors
+      })
+    }
   }
 
   n_cells <- nrow(x_emb)
   n_dims <- ncol(x_emb)
+
+  # Try C++ accelerated path
+  k_use <- min(k, max(vapply(neighbors_list, length, integer(1)), 0))
+  if (k_use > 0 && run_pseudotime_velocity_knn_cpp_available()) {
+    neighbors_mat <- .neighbors_list_to_matrix(neighbors_list, k_use)
+    v_emb <- run_pseudotime_velocity_knn_cpp(
+      x_emb = x_emb,
+      pseudotime = pseudotime,
+      neighbors = neighbors_mat,
+      normalize = TRUE
+    )
+    rownames(v_emb) <- cell_names
+    return(v_emb)
+  }
+
   v_emb <- matrix(0, nrow = n_cells, ncol = n_dims)
 
   for (i in seq_len(n_cells)) {
@@ -723,7 +750,6 @@ compute_pseudotime_on_gradient <- function(
 ) {
   n_cells <- nrow(x_emb)
   n_dims <- ncol(x_emb)
-  v_emb <- matrix(0, nrow = n_cells, ncol = n_dims)
 
   d <- proxyC::dist(
     x = SeuratObject::as.sparse(x_emb),
@@ -733,9 +759,56 @@ compute_pseudotime_on_gradient <- function(
   )
 
   k_local <- max(10, ceiling(n_cells * smooth / 100))
+  k_use <- min(k_local, n_cells - 1L)
+
+  # Try C++ accelerated path
+  if (k_use > 0 && run_pseudotime_velocity_gradient_cpp_available()) {
+    if (run_dense_topk_by_column_cpp_available()) {
+      neighbors_matrix <- run_dense_topk_by_column_cpp(
+        x = d,
+        k = k_use + 1L,
+        decreasing = FALSE
+      )[["idx"]]
+      neighbors_matrix <- neighbors_matrix[, seq_len(k_use) + 1L, drop = FALSE]
+    } else {
+      neighbors_matrix <- matrix(NA_integer_, nrow = n_cells, ncol = k_use)
+      for (i in seq_len(n_cells)) {
+        nb <- order(d[, i], decreasing = FALSE)[seq_len(k_use) + 1L]
+        n_take <- min(length(nb), k_use)
+        if (n_take > 0) {
+          neighbors_matrix[i, seq_len(n_take)] <- as.integer(nb[seq_len(n_take)])
+        }
+      }
+    }
+    v_emb <- run_pseudotime_velocity_gradient_cpp(
+      x_emb = x_emb,
+      pseudotime = pseudotime,
+      neighbors = neighbors_matrix,
+      smooth = smooth,
+      normalize = TRUE
+    )
+    rownames(v_emb) <- rownames(x_emb)
+    return(v_emb)
+  }
+
+  v_emb <- matrix(0, nrow = n_cells, ncol = n_dims)
+
+  if (k_use > 0 && run_dense_topk_by_column_cpp_available()) {
+    neighbors_matrix <- run_dense_topk_by_column_cpp(
+      x = d,
+      k = k_use + 1L,
+      decreasing = FALSE
+    )[["idx"]]
+  } else {
+    neighbors_matrix <- NULL
+  }
 
   for (i in seq_len(n_cells)) {
-    neighbors <- order(d[, i], decreasing = FALSE)[2:(k_local + 1)]
+    neighbors <- if (!is.null(neighbors_matrix)) {
+      neighbors_matrix[i, seq_len(k_use) + 1L]
+    } else {
+      order(d[, i], decreasing = FALSE)[2:(k_local + 1)]
+    }
 
     if (length(neighbors) == 0) {
       next

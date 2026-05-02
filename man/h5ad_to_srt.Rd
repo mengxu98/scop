@@ -7,7 +7,7 @@
 h5ad_to_srt(path, verbose = TRUE, prepare_for_reticulate = TRUE)
 }
 \arguments{
-\item{path}{Path to an \code{.h5ad} file (passed to \code{scanpy.read_h5ad()}).}
+\item{path}{Path to an \code{.h5ad} file (passed to \code{anndata.read_h5ad()}).}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

@@ -2,17 +2,20 @@
 % Please edit documentation in R/PrepareEnv.R
 \name{RemoveEnv}
 \alias{RemoveEnv}
-\title{Remove a conda environment}
+\title{Remove a conda-compatible Python environment}
 \usage{
 RemoveEnv(envname = NULL, conda = "auto", force = FALSE)
 }
 \arguments{
-\item{envname}{The name of the conda environment.
+\item{envname}{The name of the conda-compatible Python environment.
 If \code{NULL}, the environment name will be set to \code{"scop_env"}.
 Default is \code{NULL}.}
 
-\item{conda}{The path to a conda executable.
-Use \code{"auto"} to allow automatically finding an appropriate conda binary.}
+\item{conda}{The path or command name of a conda-compatible executable
+(\code{conda}, \code{mamba}, or \code{micromamba}). Use \code{"auto"} to allow automatically
+finding an appropriate environment manager. If \code{"micromamba"} is requested
+and micromamba is not available on \code{PATH}, a package-managed micromamba is
+downloaded automatically.}
 
 \item{force}{Whether to force removal without confirmation.
 Default is \code{FALSE}.}
@@ -21,7 +24,7 @@ Default is \code{FALSE}.}
 Invisibly returns \code{TRUE} if successful, \code{FALSE} otherwise.
 }
 \description{
-Remove a conda environment
+Remove a conda-compatible Python environment
 }
 \examples{
 \dontrun{

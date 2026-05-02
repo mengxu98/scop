@@ -9,8 +9,8 @@
 ## Introduction
 The [scop](https://github.com/mengxu98/scop) package provides a unified and extensible framework for single-cell omics data processing and downstream analysis in [Seurat](https://github.com/satijalab/seurat):
 
-- Integrated single-cell quality control methods, including doublet detection methods ([scDblFinder](https://github.com/plger/scDblFinder), [scds](https://github.com/kostkalab/scds), [Scrublet](https://github.com/swolock/scrublet), [DoubletDetection](https://github.com/JonathanShor/DoubletDetection)) and ambient RNA decontamination via [decontX](https://github.com/campbio/decontX).
-- Pipelines embedded with multiple methods for normalization, feature reduction (PCA, ICA, NMF, MDS, [GLMPCA](https://github.com/willtownes/glmpca), [UMAP](https://github.com/lmcinnes/umap), [TriMap](https://github.com/eamid/trimap), [LargeVis](https://github.com/lferry007/LargeVis), [PaCMAP](https://github.com/YingfanWang/PaCMAP), [PHATE](https://github.com/KrishnaswamyLab/PHATE), [DM](https://bioconductor.org/packages/release/bioc/html/destiny.html), FR), and cell population identification.
+- Integrated single-cell quality control methods, including cell cycle analysis: Seurat gene-set scoring, [scran::cyclone](https://bioconductor.org/packages/release/bioc/html/scran.html), and [tricycle](https://bioconductor.org/packages/release/bioc/html/tricycle.html) for discrete or continuous cell cycle state estimation, doublet detection methods ([scDblFinder](https://github.com/plger/scDblFinder), [scds](https://github.com/kostkalab/scds), [Scrublet](https://github.com/swolock/scrublet), [DoubletDetection](https://github.com/JonathanShor/DoubletDetection)) and ambient RNA decontamination via [decontX](https://github.com/campbio/decontX).
+- Pipelines embedded with multiple methods for normalization, highly variable feature selection, feature reduction (PCA, ICA, NMF, MDS, [GLMPCA](https://github.com/willtownes/glmpca), [UMAP](https://github.com/lmcinnes/umap), [TriMap](https://github.com/eamid/trimap), [LargeVis](https://github.com/lferry007/LargeVis), [PaCMAP](https://github.com/YingfanWang/PaCMAP), [PHATE](https://github.com/KrishnaswamyLab/PHATE), [DM](https://bioconductor.org/packages/release/bioc/html/destiny.html), FR), and cell population identification, including optional [scran](https://bioconductor.org/packages/release/bioc/html/scran.html)-based deconvolution normalization and HVF modeling.
 - Pipelines embedded with multiple integration methods for scRNA-seq, including Uncorrected, [Seurat](https://github.com/satijalab/seurat), [scVI](https://github.com/scverse/scvi-tools), [MNN](http://www.bioconductor.org/packages/release/bioc/html/batchelor.html), [fastMNN](http://www.bioconductor.org/packages/release/bioc/html/batchelor.html), [Harmony](https://github.com/immunogenomics/harmony), [Scanorama](https://github.com/brianhie/scanorama), [BBKNN](https://github.com/Teichlab/bbknn), [CSS](https://github.com/quadbiolab/simspec), [Coralysis](https://github.com/elolab/Coralysis), [LIGER](https://github.com/welch-lab/liger), [Conos](https://github.com/kharchenkolab/conos), [ComBat](https://bioconductor.org/packages/release/bioc/html/sva.html).
 - Multiple methods for automatic annotation of single-cell data ([CellTypist](https://github.com/Teichlab/celltypist), [SingleR](https://github.com/dviraran/SingleR), [Scmap](https://github.com/hemberg-lab/scmap), KNNPredict) and methods for projection between single-cell datasets (CSSMap, PCAMap, SeuratMap, [SymphonyMap](https://github.com/immunogenomics/symphony)).
 - Multiple single-cell downstream analyses:
@@ -61,7 +61,7 @@ The [scop](https://github.com/mengxu98/scop) package is developed based on the [
 
 1. Compatibility: full support for [Seurat v5](https://github.com/satijalab/seurat).
 2. Stability: a large number of known issues have been fixed, and all functions have passed `devtools::check()`.
-3. Usability: the *Python* environment setup workflow has been improved, allowing a new complete environment to be deployed within minutes; standardized console messages via `thisutils::log_message` for consistent, readable function outputs.
+3. Usability: the *Python* environment setup workflow has been improved, with support for conda-compatible managers including conda, mamba, and micromamba; standardized console messages via `thisutils::log_message` for consistent, readable function outputs.
 4. Performance: a new parallel framework has been developed based on `thisutils::parallelize_fun`, providing a consistent experience across *Linux*, *macOS*, and *Windows*.
 5. Functionality: more analysis methods have been added, including [CellRank](https://github.com/scverse/cellrank), [CellTypist](https://github.com/Teichlab/celltypist), [CytoTRACE 2](https://github.com/digitalcytometry/cytotrace2), [CellChat](https://github.com/jinworks/CellChat), [GSVA](https://github.com/rcastelo/GSVA), [scMetabolism](https://github.com/wu-yc/scMetabolism) and [scProportionTest](https://github.com/rpolicastro/scProportionTest).
 
@@ -82,17 +82,20 @@ pak::pak("mengxu98/scop")
 
 ### *Python* environment
 
-To run functions such as `RunPAGA()`, `RunSCVELO()`, [scop](https://github.com/mengxu98/scop) requires [conda](https://docs.conda.io/en/latest/miniconda.html) to create a separate environment. The default environment name is `"scop_env"`. You can specify the environment name for scop by setting `options(scop_envname = "new_name")`.
+To run functions such as `RunPAGA()`, `RunSCVELO()`, [scop](https://github.com/mengxu98/scop) requires a conda-compatible environment manager ([conda](https://docs.conda.io/en/latest/miniconda.html), [mamba](https://mamba.readthedocs.io/), or [micromamba](https://mamba.readthedocs.io/en/latest/user_guide/micromamba.html)) to create a separate environment. The default environment name is `"scop_env"`. You can specify the environment name for scop by setting `options(scop_envname = "new_name")`.
 
-Now, you can run `PrepareEnv()` to create the python environment for [scop](https://github.com/mengxu98/scop). If the conda binary is not found, it will automatically download and install miniconda.
+Now, you can run `PrepareEnv()` to create the python environment for [scop](https://github.com/mengxu98/scop). If no conda-compatible executable is found, it will automatically download and install miniconda. If you explicitly request `conda = "micromamba"` and micromamba is not available on `PATH`, [scop](https://github.com/mengxu98/scop) downloads a package-managed micromamba automatically.
 
 ``` r
 scop::PrepareEnv()
 ```
 
-To force [scop](https://github.com/mengxu98/scop) to use a specific conda binary, it is recommended to set `reticulate.conda_binary` R option:
+To force [scop](https://github.com/mengxu98/scop) to use a specific environment manager, pass the executable path or command name to `PrepareEnv()` or set the `reticulate.conda_binary` R option:
 
 ``` r
+scop::PrepareEnv(conda = "mamba")
+scop::PrepareEnv(conda = "micromamba")
+
 options(reticulate.conda_binary = "/path/to/conda")
 scop::PrepareEnv()
 ```
