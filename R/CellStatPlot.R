@@ -337,7 +337,7 @@ CellStatPlot <- function(
     seed = 11) {
   cells <- cells %||% colnames(srt@assays[[1]])
   meta_data <- srt@meta.data[cells, , drop = FALSE]
-  if (theme_use == "theme_scop") {
+  if (identical(theme_use, "theme_scop")) {
     theme_use <- "theme_this"
   }
   plot_type <- match.arg(plot_type)
@@ -383,10 +383,6 @@ CellStatPlot <- function(
     legend.direction = legend.direction,
     theme_use = theme_use,
     theme_args = theme_args,
-    grid_major = grid_major,
-    grid_major_colour = grid_major_colour,
-    grid_major_linetype = grid_major_linetype,
-    grid_major_linewidth = grid_major_linewidth,
     combine = combine,
     nrow = nrow,
     ncol = ncol,
@@ -394,6 +390,50 @@ CellStatPlot <- function(
     force = force,
     seed = seed
   )
+  plot <- add_major_grid_theme(
+    plot = plot,
+    grid_major = grid_major,
+    grid_major_colour = grid_major_colour,
+    grid_major_linetype = grid_major_linetype,
+    grid_major_linewidth = grid_major_linewidth
+  )
 
   return(plot)
+}
+
+add_major_grid_theme <- function(
+  plot,
+  grid_major = TRUE,
+  grid_major_colour = "grey80",
+  grid_major_linetype = 2,
+  grid_major_linewidth = 0.3
+) {
+  grid_theme <- ggplot2::theme(
+    panel.grid.major = if (isTRUE(grid_major)) {
+      ggplot2::element_line(
+        colour = grid_major_colour,
+        linetype = grid_major_linetype,
+        linewidth = grid_major_linewidth
+      )
+    } else {
+      ggplot2::element_blank()
+    }
+  )
+  if (inherits(plot, c("gg", "ggplot"))) {
+    return(plot + grid_theme)
+  }
+  if (inherits(plot, "patchwork")) {
+    return(plot & grid_theme)
+  }
+  if (is.list(plot)) {
+    return(lapply(
+      plot,
+      add_major_grid_theme,
+      grid_major = grid_major,
+      grid_major_colour = grid_major_colour,
+      grid_major_linetype = grid_major_linetype,
+      grid_major_linewidth = grid_major_linewidth
+    ))
+  }
+  plot
 }
