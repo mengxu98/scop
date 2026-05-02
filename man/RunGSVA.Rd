@@ -26,6 +26,8 @@ RunGSVA(
   maxGSSize = 500,
   unlimited_db = c("Chromosome", "GeneType", "TF", "Enzyme", "CSPA"),
   method = c("gsva", "ssgsea", "zscore", "plage"),
+  backend = c("cpp", "r"),
+  cpp_chunk_size = NULL,
   kcdf = c("Gaussian", "Poisson"),
   abs.ranking = FALSE,
   min.sz = 10,
@@ -100,6 +102,17 @@ The first column should contain the term IDs, and the second column should conta
 \item{method}{The method to use for GSVA.
 Options are \code{"gsva"}, \code{"ssgsea"}, \code{"zscore"}, or \code{"plage"}.
 Default is \code{"gsva"}.}
+
+\item{backend}{Scoring backend. \code{"cpp"} is the default and supports all
+current \code{method} values. \code{"r"} uses the original \code{\link[GSVA:gsva]{GSVA::gsva()}}
+implementation. \code{"cpp"} supports \code{method = "ssgsea"},
+\code{method = "zscore"}, \code{method = "plage"}, and \code{method = "gsva"} with
+\code{kcdf = "Gaussian"} or \code{kcdf = "Poisson"}. PLAGE scores are oriented to have non-negative
+dot product with the gene set mean z-score so SVD signs are deterministic.}
+
+\item{cpp_chunk_size}{Optional cell chunk size for C++ GSVA kernels. \code{NULL}
+or \code{"auto"} automatically chunks large matrices to reduce peak dense
+intermediate memory; positive values set the chunk size manually.}
 
 \item{kcdf}{The kernel cumulative distribution function used for GSVA.
 Options are \code{"Gaussian"} (for continuous data) or \code{"Poisson"} (for count data).

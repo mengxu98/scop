@@ -134,7 +134,7 @@ print.scop_logo <- function(x, ...) {
           if (is.null(conda)) {
             packageStartupMessage(
               cli::col_grey(
-                "Conda not found. Run: PrepareEnv() to create the environment"
+                "Conda-compatible environment manager not found. Run: PrepareEnv() to create the environment"
               )
             )
             return(invisible(NULL))
@@ -162,7 +162,7 @@ print.scop_logo <- function(x, ...) {
           configure_python_runtime(python_path)
 
           packageStartupMessage(
-            cli::col_green("conda environment initialized successfully")
+            cli::col_green("Python environment initialized successfully")
           )
 
           env_info(conda = conda, envname = envname)
@@ -170,7 +170,7 @@ print.scop_logo <- function(x, ...) {
           packageStartupMessage(
             "\n",
             cli::col_grey(
-              "Configure conda path: options(reticulate.conda_binary = \"/path/to/conda\")"
+              "Configure conda/mamba/micromamba path: options(reticulate.conda_binary = \"/path/to/micromamba\")"
             ),
             "\n",
             cli::col_grey(

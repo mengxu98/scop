@@ -674,7 +674,7 @@ run_glue_python <- function(
 
   fit_params <- GLUE_params
   fit_params[["skip_balance"]] <- fit_params[["skip_balance"]] %||% FALSE
-  script_lines <- c(
+  script_body <- c(
     "import anndata as ad",
     "import pandas as pd",
     "import scglue",
@@ -712,6 +712,13 @@ run_glue_python <- function(
     sprintf("atac_glue.to_csv(%s)", glue_python_literal(atac_out)),
     sprintf("with open(%s, 'w', encoding='utf-8') as fh:", glue_python_literal(meta_out)),
     "    fh.write('\\n'.join(hvf_nodes))"
+  )
+  script_lines <- c(
+    "def main():",
+    paste0("    ", script_body),
+    "",
+    "if __name__ == '__main__':",
+    "    main()"
   )
   writeLines(script_lines, con = script_path, useBytes = TRUE)
 

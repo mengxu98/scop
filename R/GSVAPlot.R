@@ -387,16 +387,18 @@ GSVAPlot <- function(
 
   if (plot_type != "heatmap") {
     if (is.null(enrichment)) {
-      enrichment <- do.call(rbind, lapply(colnames(gsva_scores), function(group) {
-        data.frame(
-          ID = rownames(gsva_scores),
-          Description = rownames(gsva_scores),
-          Groups = group,
-          Database = if (length(gsva_db) == 1) gsva_db else gsva_db[1],
-          GSVA_Score = as.numeric(gsva_scores[, group]),
-          stringsAsFactors = FALSE
-        )
-      }))
+      n_terms <- nrow(gsva_scores)
+      n_groups <- ncol(gsva_scores)
+      term_names <- rownames(gsva_scores)
+      db_value <- if (length(gsva_db) == 1) gsva_db else gsva_db[1]
+      enrichment <- data.frame(
+        ID = rep(term_names, times = n_groups),
+        Description = rep(term_names, times = n_groups),
+        Groups = rep(colnames(gsva_scores), each = n_terms),
+        Database = db_value,
+        GSVA_Score = as.numeric(gsva_scores),
+        stringsAsFactors = FALSE
+      )
     }
 
     if (!"GSVA_Score" %in% colnames(enrichment)) {
