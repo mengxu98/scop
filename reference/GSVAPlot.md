@@ -446,24 +446,24 @@ GSVAPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-27 15:56:17] Start standard processing workflow...
-#> ℹ [2026-04-27 15:56:17] Checking a list of <Seurat>...
-#> ! [2026-04-27 15:56:18] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-27 15:56:18] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-27 15:56:20] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-27 15:56:20] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-27 15:56:20] Number of available HVF: 2000
-#> ℹ [2026-04-27 15:56:20] Finished check
-#> ℹ [2026-04-27 15:56:21] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-27 15:56:21] Perform pca linear dimension reduction
-#> ℹ [2026-04-27 15:56:22] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-27 15:56:22] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-27 15:56:22] Reorder clusters...
-#> ℹ [2026-04-27 15:56:22] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-27 15:56:22] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-27 15:56:22] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-27 15:56:26] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-04-27 15:56:30] Standard processing workflow completed
+#> ℹ [2026-05-02 04:40:47] Start standard processing workflow...
+#> ℹ [2026-05-02 04:40:48] Checking a list of <Seurat>...
+#> ! [2026-05-02 04:40:48] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-02 04:40:48] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-02 04:40:50] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-02 04:40:50] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-02 04:40:51] Number of available HVF: 2000
+#> ℹ [2026-05-02 04:40:51] Finished check
+#> ℹ [2026-05-02 04:40:51] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-02 04:40:51] Perform pca linear dimension reduction
+#> ℹ [2026-05-02 04:40:52] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-05-02 04:40:52] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-02 04:40:52] Reorder clusters...
+#> ℹ [2026-05-02 04:40:52] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-02 04:40:52] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-02 04:40:52] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-05-02 04:40:56] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-05-02 04:41:00] Standard processing workflow completed
 pancreas_sub <- RunGSVA(
   pancreas_sub,
   db = "GO_BP",
@@ -472,28 +472,15 @@ pancreas_sub <- RunGSVA(
   method = "gsva",
   kcdf = "Gaussian"
 )
-#> ℹ [2026-04-27 15:56:30] Start GSVA analysis
-#> ℹ [2026-04-27 16:04:56] Averaging expression by "CellType" ...
-#> ℹ [2026-04-27 16:04:56] Aggregated expression matrix: 15998 genes x 5 groups
-#> ℹ [2026-04-27 16:04:56] Species: "Mus_musculus"
-#> ℹ [2026-04-27 16:04:56] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-04-27 15:44:35
-#> ℹ [2026-04-27 16:04:58] Processing database: "GO_BP" ...
-#> ℹ [2026-04-27 16:04:59] Initial overlap: 11280 genes out of 15998 expression genes and 16186 genes in gene sets
-#> ℹ [2026-04-27 16:05:02] Running GSVA for 5637 gene sets ...
-#> ℹ GSVA version 2.5.41
-#> ℹ Searching for rows with constant values
-#> ! 2 rows with constant values throughout the columns
-#> ! Rows with constant values are discarded
-#> ℹ Calculating GSVA ranks
-#> ℹ GSVA dense (classical) algorithm
-#> ℹ Row-wise ECDF estimation with Gaussian kernels
-#> ℹ Calculating row ECDFs
-#> ℹ Calculating column ranks
-#> ℹ GSVA dense (classical) algorithm
-#> ℹ Calculating GSVA scores for 5637 gene sets
-#> ✔ Calculations finished
-#> ℹ [2026-04-27 16:07:01] GSVA results stored in `tools` slot: "GSVA_CellType_gsva"
-#> ✔ [2026-04-27 16:07:01] GSVA analysis done
+#> ℹ [2026-05-02 04:41:00] Start GSVA analysis
+#> ℹ [2026-05-02 04:41:00] Averaging expression by "CellType" ...
+#> ℹ [2026-05-02 04:41:00] Aggregated expression matrix: 15998 genes x 5 groups
+#> ℹ [2026-05-02 04:41:00] Species: "Mus_musculus"
+#> ℹ [2026-05-02 04:41:00] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-02 04:33:18
+#> ℹ [2026-05-02 04:41:02] Processing database: "GO_BP" ...
+#> ℹ [2026-05-02 04:41:03] Initial overlap: 11280 genes out of 15998 expression genes and 16186 genes in gene sets
+#> ℹ [2026-05-02 04:41:07] Running GSVA for 5637 gene sets ...
+#> Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 't': could not find function "run_gsva_cpp_scores"
 
 ht1 <- GSVAPlot(
   pancreas_sub,
@@ -503,10 +490,9 @@ ht1 <- GSVAPlot(
   width = 1,
   height = 2
 )
-#> Warning: Data is of class matrix. Coercing to dgCMatrix.
-
+#> Error in GSVAPlot(pancreas_sub, plot_type = "heatmap", group.by = "CellType",     topTerm = 10, width = 1, height = 2): GSVA results not found. Please run RunGSVA first
 ht1$plot
-
+#> Error: object 'ht1' not found
 
 ht2 <- GSVAPlot(
   pancreas_sub,
@@ -518,10 +504,9 @@ ht2 <- GSVAPlot(
   width = 1,
   height = 2
 )
-#> Warning: Data is of class matrix. Coercing to dgCMatrix.
-
+#> Error in GSVAPlot(pancreas_sub, group.by = "CellType", plot_type = "heatmap",     n_split = 3, topTerm = 100, use_raster = TRUE, width = 1,     height = 2): GSVA results not found. Please run RunGSVA first
 ht2$plot
-
+#> Error: object 'ht2' not found
 
 GSVAPlot(
   srt = pancreas_sub,
@@ -530,7 +515,7 @@ GSVAPlot(
   plot_type = "comparison",
   topTerm = 1
 )
-
+#> Error in GSVAPlot(srt = pancreas_sub, group.by = "CellType", db = "GO_BP",     plot_type = "comparison", topTerm = 1): GSVA results not found. Please run RunGSVA first
 
 GSVAPlot(
   srt = pancreas_sub,
@@ -540,7 +525,7 @@ GSVAPlot(
   plot_type = "bar",
   topTerm = 5
 )
-
+#> Error in GSVAPlot(srt = pancreas_sub, group.by = "CellType", db = "GO_BP",     group_use = "Ductal", plot_type = "bar", topTerm = 5): GSVA results not found. Please run RunGSVA first
 
 GSVAPlot(
   srt = pancreas_sub,
@@ -549,50 +534,7 @@ GSVAPlot(
   db = "GO_BP",
   plot_type = "network"
 )
-#> Found more than one class "dist" in cache; using the first, from namespace 'spam'
-#> Also defined by ‘BiocGenerics’
-#> Found more than one class "dist" in cache; using the first, from namespace 'spam'
-#> Also defined by ‘BiocGenerics’
-#> ◌ [2026-04-27 16:07:10] Installing: shadowtext...
-#>  
-#> → Will install 2 packages.
-#> → All 2 packages (0 B) are cached.
-#> + prettydoc    0.4.1  + ✔ pandoc
-#> + shadowtext   0.1.6 
-#> ✔ All system requirements are already installed.
-#>   
-#> ℹ No downloads are needed, 2 pkgs are cached
-#> ✔ Got prettydoc 0.4.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.00 MB)
-#> ✔ Got shadowtext 0.1.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (243.58 kB)
-#> ℹ Installing system requirements
-#> ℹ Executing `sudo sh -c apt-get -y update`
-#> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-#> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
-#> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
-#> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
-#> Hit:8 https://dl.google.com/linux/chrome-stable/deb stable InRelease
-#> Reading package lists...
-#> ℹ Executing `sudo sh -c apt-get -y install pandoc cmake make libuv1-dev libcairo2-dev libfontconfig1-dev libfreetype6-dev libpng-dev`
-#> Reading package lists...
-#> Building dependency tree...
-#> Reading state information...
-#> pandoc is already the newest version (3.1.3+ds-2).
-#> cmake is already the newest version (3.28.3-1build7).
-#> make is already the newest version (4.3-4.1build2).
-#> libuv1-dev is already the newest version (1.48.0-1.1build1).
-#> libcairo2-dev is already the newest version (1.18.0-3build1).
-#> libfontconfig1-dev is already the newest version (2.15.0-1.1ubuntu2).
-#> libfreetype-dev is already the newest version (2.13.2+dfsg-1ubuntu0.1).
-#> libpng-dev is already the newest version (1.6.43-5ubuntu0.5).
-#> 0 upgraded, 0 newly installed, 0 to remove and 42 not upgraded.
-#> ✔ Installed shadowtext 0.1.6  (1s)
-#> ✔ Installed prettydoc 0.4.1  (1.1s)
-#> ✔ 1 pkg + 56 deps: kept 55, added 2, dld 2 (1.25 MB) [5.2s]
-#> ✔ [2026-04-27 16:07:15] shadowtext installed successfully
-
+#> Error in GSVAPlot(srt = pancreas_sub, group.by = "CellType", group_use = "Ductal",     db = "GO_BP", plot_type = "network"): GSVA results not found. Please run RunGSVA first
 
 GSVAPlot(
   srt = pancreas_sub,
@@ -601,7 +543,7 @@ GSVAPlot(
   db = "GO_BP",
   plot_type = "enrichmap"
 )
-
+#> Error in GSVAPlot(srt = pancreas_sub, group.by = "CellType", group_use = "Ductal",     db = "GO_BP", plot_type = "enrichmap"): GSVA results not found. Please run RunGSVA first
 
 GSVAPlot(
   pancreas_sub,
@@ -611,12 +553,7 @@ GSVAPlot(
   plot_type = "wordcloud",
   topWord = 50
 )
-#> Warning: Some words could not fit on page. They have been removed.
-#> Warning: Some words could not fit on page. They have been removed.
-#> Warning: Some words could not fit on page. They have been removed.
-#> Warning: Some words could not fit on page. They have been removed.
-#> Warning: Some words could not fit on page. They have been removed.
-
+#> Error in GSVAPlot(pancreas_sub, group.by = "CellType", db = "GO_BP", nrow = 2,     plot_type = "wordcloud", topWord = 50): GSVA results not found. Please run RunGSVA first
 
 GSVAPlot(
   pancreas_sub,
@@ -626,7 +563,7 @@ GSVAPlot(
   plot_type = "wordcloud",
   word_type = "feature"
 )
-
+#> Error in GSVAPlot(pancreas_sub, group.by = "CellType", group_use = "Ductal",     db = "GO_BP", plot_type = "wordcloud", word_type = "feature"): GSVA results not found. Please run RunGSVA first
 
 if (FALSE) { # \dontrun{
 pancreas_sub <- RunGSVA(
