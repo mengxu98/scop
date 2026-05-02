@@ -977,15 +977,19 @@ RunCellQC <- function(
   }
   srt_raw <- srt
   if (!is.null(split.by)) {
-    srt_list <- Seurat::SplitObject(srt, split.by = split.by)
+    split_cells <- split(colnames(srt), srt@meta.data[[split.by]])
   } else {
-    srt_list <- list(srt)
+    split_cells <- list(colnames(srt))
   }
+  srt_list <- vector("list", length(split_cells))
+  names(srt_list) <- names(split_cells)
 
-  for (i in seq_along(srt_list)) {
-    srt <- srt_list[[i]]
+  for (i in seq_along(split_cells)) {
     if (!is.null(split.by)) {
+      srt <- srt_raw[, split_cells[[i]]]
       log_message("Running QC for {.val {srt@meta.data[[split.by]][1]}}")
+    } else {
+      srt <- srt_raw
     }
     ntotal <- ncol(srt)
 
@@ -1135,6 +1139,8 @@ RunCellQC <- function(
       }
     }
 
+    assay_genes <- rownames(Seurat::GetAssay(srt, assay = assay))
+    counts_mat <- GetAssayData5(srt, assay = assay, layer = "counts")
     outlier_qc <- c()
     for (n in 1:length(species)) {
       if (n == 0) {
@@ -1142,39 +1148,18 @@ RunCellQC <- function(
       }
       sp <- species[n]
       prefix <- species_gene_prefix[n]
-      sp_genes <- rownames(
-        Seurat::GetAssay(
-          srt,
-          assay = assay
-        )
-      )[grep(
-        pattern = paste0("^", prefix),
-        x = rownames(
-          Seurat::GetAssay(
-            srt,
-            assay = assay
-          )
-        )
-      )]
+      sp_genes <- assay_genes[grep(pattern = paste0("^", prefix), x = assay_genes)]
       nCount <- srt[[paste0(
         c(paste0("nCount_", assay), sp),
         collapse = "."
       )]] <- Matrix::colSums(
-        GetAssayData5(
-          srt,
-          assay = assay,
-          layer = "counts"
-        )[sp_genes, ]
+        counts_mat[sp_genes, , drop = FALSE]
       )
       nFeature <- srt[[paste0(
         c(paste0("nFeature_", assay), sp),
         collapse = "."
       )]] <- Matrix::colSums(
-        GetAssayData5(
-          srt,
-          assay = assay,
-          layer = "counts"
-        )[sp_genes, ] >
+        counts_mat[sp_genes, , drop = FALSE] >
           0
       )
       percent.mito <- srt[[paste0(
