@@ -61,7 +61,9 @@ Default is \code{"GSVA"}.}
 \item{new_assay}{Whether to create a new assay for GSVA scores when \code{group.by = NULL}. Default is \code{TRUE}.}
 
 \item{db}{A character vector specifying the annotation sources to be included in the gene annotation databases.
-Can be one or more of \verb{"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF"}.}
+Can be one or more of \verb{"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF", "CytoTRACE2"}.
+Note: \code{"CytoTRACE2"} is species-independent and downloads pre-trained model data
+required by \link{RunCytoTRACE}.}
 
 \item{species}{A character vector specifying the species for which the gene annotation databases should be prepared.
 Can be \code{"Homo_sapiens"} or \code{"Mus_musculus"}.}

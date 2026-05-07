@@ -15,10 +15,9 @@ RunCytoTRACE(object, ...)
   species = c("Homo_sapiens", "Mus_musculus"),
   batch_size = 10000,
   smooth_batch_size = 1000,
-  parallelize_models = TRUE,
-  parallelize_smoothing = TRUE,
   cores = 1,
-  seed = 11,
+  seed = 14,
+  data_dir = NULL,
   verbose = TRUE,
   ...
 )
@@ -28,10 +27,9 @@ RunCytoTRACE(object, ...)
   species = c("Homo_sapiens", "Mus_musculus"),
   batch_size = 10000,
   smooth_batch_size = 1000,
-  parallelize_models = TRUE,
-  parallelize_smoothing = TRUE,
   cores = 1,
-  seed = 11,
+  seed = 14,
+  data_dir = NULL,
   verbose = TRUE,
   ...
 )
@@ -40,7 +38,7 @@ RunCytoTRACE(object, ...)
 \item{object}{An object.
 This can be a Seurat object or a matrix-like object (genes as rows, cells as columns).}
 
-\item{...}{Additional arguments to be passed to \code{CytoTRACE2::cytotrace2}.}
+\item{...}{Additional arguments (reserved for future use).}
 
 \item{assay}{Which assay to use.
 If \code{NULL}, the default assay of the Seurat object will be used.
@@ -51,29 +49,28 @@ additional \code{ChromatinAssay} will be preprocessed sequentially.}
 Default is \code{"counts"}.}
 
 \item{species}{The species of the input data.
-Currently supported values are \code{"human"} and \code{"mouse"}.
-Default is \code{"human"}.}
+Currently supported values are \code{"Homo_sapiens"} and \code{"Mus_musculus"}.
+Default is \code{"Homo_sapiens"}.}
 
-\item{batch_size}{The number of cells to process at once,
-including subsampling for KNN smoothing.
-No subsampling if \code{NULL}.
-Default is \code{10000} (recommended for input data size > 10K cells).}
+\item{batch_size}{The number of cells to process at once.
+For datasets with more cells than this value, cells are randomly split
+into batches and processed independently.
+No batching if \code{NULL}.
+Default is \code{10000}.}
 
-\item{smooth_batch_size}{The number of cells to subsample further within the batch_size for the smoothing by diffusion step of the pipeline.
-No subsampling if \code{NULL}.
-Default is \code{1000} (recommended for input data size > 1K cells).}
+\item{smooth_batch_size}{The number of cells per subsample for the
+diffusion smoothing step.
+No diffusion subsampling if \code{NULL}.
+Default is \code{1000}.}
 
-\item{parallelize_models}{Whether to run the prediction function on models in parallel on multiple threads.
-Default is \code{TRUE}.}
-
-\item{parallelize_smoothing}{Whether to run the smoothing function on subsamples in parallel on multiple threads.
-Default is \code{TRUE}.}
-
-\item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
+\item{cores}{Number of cores for parallel processing.
 Default is \code{1}.}
 
-\item{seed}{Random seed for reproducibility.
-Default is \code{11}.}
+\item{seed}{Random seed for reproducibility. Default is \code{14}.}
+
+\item{data_dir}{Path to the directory containing CytoTRACE2 model data files.
+If \code{NULL}, uses data prepared by \code{PrepareDB()}, the user data cache, or
+auto-downloads from the datasets repository. Default is \code{NULL}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
@@ -95,19 +92,52 @@ the function returns a data.frame with the same columns as above,
 with cell IDs as row names.
 }
 \description{
-Run CytoTRACE 2
+Predicts cellular developmental potential from single-cell RNA-seq data
+using the CytoTRACE 2 algorithm (Kang et al., 2025).
+This is a native scop implementation with C++ acceleration.
+
+The algorithm consists of five stages:
+\enumerate{
+\item \strong{Preprocessing}: Gene orthology mapping, feature selection,
+ranking, and log2-CPM transformation.
+\item \strong{GSBN Ensemble Prediction}: 19 pre-trained Gene Set Binary
+Network models predict a continuous developmental potency score (0-1)
+and a discrete potency category.
+\item \strong{Diffusion Smoothing}: A Markov random-walk-with-restart on
+a cell-cell similarity graph smooths the raw scores.
+\item \strong{Binning}: Within each potency category, cells are ranked
+and linearly scaled to corresponding segments of the unit interval.
+\item \strong{Adaptive kNN Smoothing}: PCA-based nearest-neighbor
+consensus refinement of the final scores.
 }
+}
+\section{License}{
+
+The CytoTRACE 2 model and associated data files are provided under the
+Stanford Non-Commercial Software License Agreement.
+Commercial entities wishing to use this software should contact
+Stanford University's Office of Technology Licensing (docket S24-057).
+See \url{https://github.com/mengxu98/datasets/blob/main/CytoTRACE2/LICENSE}
+for complete terms.
+}
+
 \examples{
-if (thisutils::check_ci_env()) {
-  data(pancreas_sub)
-  pancreas_sub <- standard_scop(pancreas_sub)
-  pancreas_sub <- RunCytoTRACE(
-    pancreas_sub,
-    species = "Mus_musculus"
-  )
-  CytoTRACEPlot(
-    pancreas_sub,
-    group.by = "CellType"
-  )
+data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunCytoTRACE(
+  pancreas_sub,
+  species = "Mus_musculus"
+)
+CytoTRACEPlot(
+  pancreas_sub,
+  group.by = "CellType"
+)
 }
+\references{
+Kang, M., Brown, E., Almagro Armenteros, J.J. et al.
+"Improved reconstruction of single-cell developmental potential
+with CytoTRACE 2." \emph{Nature Methods} (2025).
+\doi{10.1038/s41592-025-02857-2}
+
+Model data: \url{https://github.com/mengxu98/datasets/tree/main/CytoTRACE2}
 }

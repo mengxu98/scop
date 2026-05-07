@@ -37,6 +37,7 @@ Imports:
     mgcv,
     Matrix,
     Rcpp,
+    Rfast,
     Signac,
     Seurat,
     SeuratObject,

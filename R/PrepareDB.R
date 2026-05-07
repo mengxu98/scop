@@ -14,7 +14,9 @@
 #' Can be one or more of `"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome",
 #' "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa",
 #' "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB",
-#' "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF"`.
+#' "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF", "CytoTRACE2"`.
+#' Note: `"CytoTRACE2"` is species-independent and downloads pre-trained model data
+#' required by [RunCytoTRACE].
 #' @param db_IDtypes A character vector specifying the desired ID types to be used for gene identifiers in the gene annotation databases.
 #' Default is `c("symbol", "entrez_id", "ensembl_id")`.
 #' @param db_version A character vector specifying the version of the gene annotation databases to be retrieved.
@@ -176,7 +178,8 @@ PrepareDB <- function(
     "Chromosome",
     "GeneType",
     "Enzyme",
-    "TF"
+    "TF",
+    "CytoTRACE2"
   ),
   db_IDtypes = c("symbol", "entrez_id", "ensembl_id"),
   db_version = "latest",
@@ -195,6 +198,118 @@ PrepareDB <- function(
 ) {
   check_r("R.cache", verbose = FALSE)
   db_list <- list()
+
+  # ---- CytoTRACE2 (species-independent) ----
+  if ("CytoTRACE2" %in% db) {
+    db <- setdiff(db, "CytoTRACE2")
+    cyto_version <- "1.1.0"
+    cyto_cache_key <- list(cyto_version, "CytoTRACE2", "CytoTRACE2")
+    cyto_data_dir <- file.path(
+      tools::R_user_dir("scop", "data"),
+      "CytoTRACE2"
+    )
+    cyto_files <- c(
+      "model_parameters.rds",
+      "features_model_training_17.csv",
+      "mt_dict_human_to_mouse.csv",
+      "mt_human_alias.csv",
+      "mt_mouse_alias.csv"
+    )
+    cyto_url <- "https://raw.githubusercontent.com/mengxu98/datasets/main/CytoTRACE2"
+
+    if (isFALSE(db_update)) {
+      cyto_cached <- R.cache::loadCache(key = cyto_cache_key)
+      cyto_cached_dir <- if (!is.null(cyto_cached$data_dir)) {
+        normalizePath(cyto_cached$data_dir, mustWork = FALSE)
+      } else {
+        NULL
+      }
+      cyto_data_dir_norm <- normalizePath(cyto_data_dir, mustWork = FALSE)
+      if (
+        !is.null(cyto_cached) &&
+          identical(cyto_cached_dir, cyto_data_dir_norm) &&
+          dir.exists(cyto_cached_dir) &&
+          all(file.exists(file.path(cyto_cached_dir, cyto_files)))
+      ) {
+        log_message(
+          "Loading cached: {.pkg CytoTRACE2} version: {.pkg {cyto_version}}",
+          verbose = verbose
+        )
+        db_list[["CytoTRACE2"]] <- cyto_cached
+      } else if (!is.null(cyto_cached_dir) && dir.exists(cyto_cached_dir)) {
+        log_message(
+          "Ignoring legacy CytoTRACE2 cache outside the datasets cache: {.path {cyto_cached_dir}}",
+          message_type = "info",
+          verbose = verbose
+        )
+      }
+    }
+
+    if (is.null(db_list[["CytoTRACE2"]])) {
+      log_message(
+        "Preparing {.pkg CytoTRACE2} database",
+        verbose = verbose
+      )
+
+      if (!dir.exists(cyto_data_dir) ||
+          !all(file.exists(file.path(cyto_data_dir, cyto_files))) ||
+          isTRUE(db_update)) {
+        log_message(
+          "Downloading CytoTRACE2 model data from datasets GitHub repository...",
+          message_type = "info",
+          verbose = verbose
+        )
+        dir.create(cyto_data_dir, showWarnings = FALSE, recursive = TRUE)
+        old_timeout <- getOption("timeout")
+        options(timeout = max(600, old_timeout))
+        on.exit(options(timeout = old_timeout), add = TRUE)
+        for (fname in cyto_files) {
+          url <- paste0(cyto_url, "/", fname)
+          dest <- file.path(cyto_data_dir, fname)
+          log_message(
+            "  Downloading {.path {fname}} ...",
+            message_type = "info",
+            verbose = verbose
+          )
+          utils::download.file(
+            url = url,
+            destfile = dest,
+            mode = "wb",
+            quiet = !verbose
+          )
+        }
+        log_message(
+          "CytoTRACE2 data cached at {.path {cyto_data_dir}}",
+          message_type = "success",
+          verbose = verbose
+        )
+      } else {
+        log_message(
+          "Using cached CytoTRACE2 data from {.path {cyto_data_dir}}",
+          message_type = "info",
+          verbose = verbose
+        )
+      }
+
+      cyto_cache <- list(
+        data_dir = cyto_data_dir,
+        files = cyto_files,
+        version = cyto_version
+      )
+      R.cache::saveCache(
+        cyto_cache,
+        key = cyto_cache_key,
+        comment = paste0(
+          cyto_version,
+          " nterm:",
+          length(cyto_files),
+          "|CytoTRACE2-CytoTRACE2"
+        )
+      )
+      db_list[["CytoTRACE2"]] <- cyto_cache
+    }
+  }
+
   for (sps in species) {
     log_message(
       "Species: {.val {sps}}",

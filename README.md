@@ -16,7 +16,7 @@ The [scop](https://github.com/mengxu98/scop) package provides a unified and exte
 - Multiple single-cell downstream analyses:
   - Differential expression analysis: identification of differential features, expressed marker identification.
   - Enrichment analysis: over-representation analysis, [GSEA](https://www.gsea-msigdb.org/gsea/index.jsp) analysis, dynamic enrichment analysis.
-  - Cellular potency: [CytoTRACE 2](https://github.com/digitalcytometry/cytotrace2) for predicting cellular differentiation potential.
+  - Cellular potency: native `scop` CytoTRACE 2 implementation for predicting cellular differentiation potential.
   - RNA velocity: [RNA velocity](https://github.com/theislab/scvelo), [PAGA](https://github.com/theislab/paga), [Palantir](https://github.com/dpeerlab/Palantir), [CellRank](https://github.com/theislab/cellrank), [WOT](https://github.com/broadinstitute/wot).
   - Trajectory inference: [Slingshot](https://bioconductor.org/packages/release/bioc/html/slingshot.html), [Monocle2](https://github.com/mengxu98/monocle), [Monocle3](https://github.com/cole-trapnell-lab/monocle3), identification of dynamic features.
   - Cell-Cell Communication: [CellChat](https://github.com/jinworks/CellChat), [CellphoneDB](https://github.com/ventolab/CellphoneDB), [NicheNet](https://github.com/saeyslab/nichenetr), and [MultiNicheNet](https://github.com/saeyslab/multinichenetr).
@@ -63,7 +63,7 @@ The [scop](https://github.com/mengxu98/scop) package is developed based on the [
 2. Stability: a large number of known issues have been fixed, and all functions have passed `devtools::check()`.
 3. Usability: the *Python* environment setup workflow has been improved, with support for conda-compatible managers including conda, mamba, and micromamba; standardized console messages via `thisutils::log_message` for consistent, readable function outputs.
 4. Performance: a new parallel framework has been developed based on `thisutils::parallelize_fun`, providing a consistent experience across *Linux*, *macOS*, and *Windows*.
-5. Functionality: more analysis methods have been added, including [CellRank](https://github.com/scverse/cellrank), [CellTypist](https://github.com/Teichlab/celltypist), [CytoTRACE 2](https://github.com/digitalcytometry/cytotrace2), [CellChat](https://github.com/jinworks/CellChat), [GSVA](https://github.com/rcastelo/GSVA), [scMetabolism](https://github.com/wu-yc/scMetabolism) and [scProportionTest](https://github.com/rpolicastro/scProportionTest).
+5. Functionality: more analysis methods have been added, including [CellRank](https://github.com/scverse/cellrank), [CellTypist](https://github.com/Teichlab/celltypist), native `scop` CytoTRACE 2, [CellChat](https://github.com/jinworks/CellChat), [GSVA](https://github.com/rcastelo/GSVA), [scMetabolism](https://github.com/wu-yc/scMetabolism) and [scProportionTest](https://github.com/rpolicastro/scProportionTest).
 
 ## Installation
 
