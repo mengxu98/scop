@@ -5,6 +5,26 @@ classification_metrics_cpp <- function(predicted, truth, classes, rare_threshold
     .Call(`_scop_classification_metrics_cpp`, predicted, truth, classes, rare_threshold)
 }
 
+cytotrace2_ensemble_predict <- function(rank_data, log2_data, parameter_dict, cores = 1L) {
+    .Call(`_scop_cytotrace2_ensemble_predict`, rank_data, log2_data, parameter_dict, cores)
+}
+
+cytotrace2_diffusion_smooth <- function(log2_data, raw_scores, smooth_groups) {
+    .Call(`_scop_cytotrace2_diffusion_smooth`, log2_data, raw_scores, smooth_groups)
+}
+
+cytotrace2_bin_data <- function(smoothed_scores, categories, category_labels) {
+    .Call(`_scop_cytotrace2_bin_data`, smoothed_scores, categories, category_labels)
+}
+
+cytotrace2_knn_smooth <- function(pca_coords, preKNN_scores, preKNN_potency, cores = 1L, seed = 14L) {
+    .Call(`_scop_cytotrace2_knn_smooth`, pca_coords, preKNN_scores, preKNN_potency, cores, seed)
+}
+
+cytotrace2_main <- function(rank_data, log2_data, parameter_dict, smooth_groups, cores, seed, pca_coords) {
+    .Call(`_scop_cytotrace2_main`, rank_data, log2_data, parameter_dict, smooth_groups, cores, seed, pca_coords)
+}
+
 aucell_auc_sparse_cpp <- function(expr, gene_sets, auc_max_rank, norm_auc = TRUE, strategy = 1L) {
     .Call(`_scop_aucell_auc_sparse_cpp`, expr, gene_sets, auc_max_rank, norm_auc, strategy)
 }
