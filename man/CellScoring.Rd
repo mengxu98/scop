@@ -57,7 +57,9 @@ This argument is used to convert the gene IDs to a different type if \code{IDtyp
 Can be \code{"Homo_sapiens"} or \code{"Mus_musculus"}.}
 
 \item{db}{A character vector specifying the annotation sources to be included in the gene annotation databases.
-Can be one or more of \verb{"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF"}.}
+Can be one or more of \verb{"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF", "CytoTRACE2"}.
+Note: \code{"CytoTRACE2"} is species-independent and downloads pre-trained model data
+required by \link{RunCytoTRACE}.}
 
 \item{termnames}{A vector of term names to be used from the database. Default is \code{NULL}, in which case all features from the database are used.}
 

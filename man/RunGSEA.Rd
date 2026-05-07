@@ -75,7 +75,9 @@ This argument is used to convert the gene IDs from \code{IDtype} to \code{result
 Can be \code{"Homo_sapiens"} or \code{"Mus_musculus"}.}
 
 \item{db}{A character vector specifying the annotation sources to be included in the gene annotation databases.
-Can be one or more of \verb{"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF"}.}
+Can be one or more of \verb{"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF", "CytoTRACE2"}.
+Note: \code{"CytoTRACE2"} is species-independent and downloads pre-trained model data
+required by \link{RunCytoTRACE}.}
 
 \item{db_update}{Whether the gene annotation databases should be forcefully updated.
 If set to FALSE, the function will attempt to load the cached databases instead.
