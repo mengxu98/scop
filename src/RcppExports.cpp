@@ -26,6 +26,78 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cytotrace2_ensemble_predict
+List cytotrace2_ensemble_predict(const arma::mat& rank_data, const arma::mat& log2_data, const List& parameter_dict, int cores);
+RcppExport SEXP _scop_cytotrace2_ensemble_predict(SEXP rank_dataSEXP, SEXP log2_dataSEXP, SEXP parameter_dictSEXP, SEXP coresSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type rank_data(rank_dataSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type log2_data(log2_dataSEXP);
+    Rcpp::traits::input_parameter< const List& >::type parameter_dict(parameter_dictSEXP);
+    Rcpp::traits::input_parameter< int >::type cores(coresSEXP);
+    rcpp_result_gen = Rcpp::wrap(cytotrace2_ensemble_predict(rank_data, log2_data, parameter_dict, cores));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cytotrace2_diffusion_smooth
+arma::vec cytotrace2_diffusion_smooth(const arma::mat& log2_data, const arma::vec& raw_scores, const IntegerVector& smooth_groups);
+RcppExport SEXP _scop_cytotrace2_diffusion_smooth(SEXP log2_dataSEXP, SEXP raw_scoresSEXP, SEXP smooth_groupsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type log2_data(log2_dataSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type raw_scores(raw_scoresSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type smooth_groups(smooth_groupsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cytotrace2_diffusion_smooth(log2_data, raw_scores, smooth_groups));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cytotrace2_bin_data
+List cytotrace2_bin_data(const arma::vec& smoothed_scores, const IntegerVector& categories, const StringVector& category_labels);
+RcppExport SEXP _scop_cytotrace2_bin_data(SEXP smoothed_scoresSEXP, SEXP categoriesSEXP, SEXP category_labelsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type smoothed_scores(smoothed_scoresSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type categories(categoriesSEXP);
+    Rcpp::traits::input_parameter< const StringVector& >::type category_labels(category_labelsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cytotrace2_bin_data(smoothed_scores, categories, category_labels));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cytotrace2_knn_smooth
+List cytotrace2_knn_smooth(const arma::mat& pca_coords, const arma::vec& preKNN_scores, const StringVector& preKNN_potency, int cores, int seed);
+RcppExport SEXP _scop_cytotrace2_knn_smooth(SEXP pca_coordsSEXP, SEXP preKNN_scoresSEXP, SEXP preKNN_potencySEXP, SEXP coresSEXP, SEXP seedSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type pca_coords(pca_coordsSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type preKNN_scores(preKNN_scoresSEXP);
+    Rcpp::traits::input_parameter< const StringVector& >::type preKNN_potency(preKNN_potencySEXP);
+    Rcpp::traits::input_parameter< int >::type cores(coresSEXP);
+    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
+    rcpp_result_gen = Rcpp::wrap(cytotrace2_knn_smooth(pca_coords, preKNN_scores, preKNN_potency, cores, seed));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cytotrace2_main
+List cytotrace2_main(const arma::mat& rank_data, const arma::mat& log2_data, const List& parameter_dict, const IntegerVector& smooth_groups, int cores, int seed, const arma::mat& pca_coords);
+RcppExport SEXP _scop_cytotrace2_main(SEXP rank_dataSEXP, SEXP log2_dataSEXP, SEXP parameter_dictSEXP, SEXP smooth_groupsSEXP, SEXP coresSEXP, SEXP seedSEXP, SEXP pca_coordsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type rank_data(rank_dataSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type log2_data(log2_dataSEXP);
+    Rcpp::traits::input_parameter< const List& >::type parameter_dict(parameter_dictSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type smooth_groups(smooth_groupsSEXP);
+    Rcpp::traits::input_parameter< int >::type cores(coresSEXP);
+    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type pca_coords(pca_coordsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cytotrace2_main(rank_data, log2_data, parameter_dict, smooth_groups, cores, seed, pca_coords));
+    return rcpp_result_gen;
+END_RCPP
+}
 // aucell_auc_sparse_cpp
 NumericMatrix aucell_auc_sparse_cpp(S4 expr, List gene_sets, int auc_max_rank, bool norm_auc, int strategy);
 RcppExport SEXP _scop_aucell_auc_sparse_cpp(SEXP exprSEXP, SEXP gene_setsSEXP, SEXP auc_max_rankSEXP, SEXP norm_aucSEXP, SEXP strategySEXP) {
@@ -355,6 +427,11 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_scop_classification_metrics_cpp", (DL_FUNC) &_scop_classification_metrics_cpp, 4},
+    {"_scop_cytotrace2_ensemble_predict", (DL_FUNC) &_scop_cytotrace2_ensemble_predict, 4},
+    {"_scop_cytotrace2_diffusion_smooth", (DL_FUNC) &_scop_cytotrace2_diffusion_smooth, 3},
+    {"_scop_cytotrace2_bin_data", (DL_FUNC) &_scop_cytotrace2_bin_data, 3},
+    {"_scop_cytotrace2_knn_smooth", (DL_FUNC) &_scop_cytotrace2_knn_smooth, 5},
+    {"_scop_cytotrace2_main", (DL_FUNC) &_scop_cytotrace2_main, 7},
     {"_scop_aucell_auc_sparse_cpp", (DL_FUNC) &_scop_aucell_auc_sparse_cpp, 5},
     {"_scop_ora_hypergeom_cpp", (DL_FUNC) &_scop_ora_hypergeom_cpp, 7},
     {"_scop_module_score_sparse_cpp", (DL_FUNC) &_scop_module_score_sparse_cpp, 3},

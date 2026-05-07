@@ -240,7 +240,6 @@ reference:
   - ProportionTestPlot
   - PseudotimeProjectionPlot
   - TACSPlot
-  - theme_omicverse
   - VelocityPlot
   - VolcanoPlot
 
