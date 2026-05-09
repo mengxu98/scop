@@ -658,6 +658,267 @@ __main__.adata = adata
   adata_to_srt(adata, verbose = verbose)
 }
 
+#' @title Read a `.loom` file as an AnnData object
+#'
+#' @md
+#' @inheritParams thisutils::log_message
+#' @param path Path to a `.loom` file (passed to `scanpy.read_loom()`).
+#' @param ... Additional arguments passed to `scanpy.read_loom()`.
+#'
+#' @return A Python `anndata.AnnData` object.
+#'
+#' @details
+#' This is a Python-backed wrapper and requires `reticulate` plus a Python
+#' environment with `scanpy` and `loompy` available. It is independent from
+#' [loom_to_srt()], which reads loom files directly in R without initializing
+#' Python.
+#'
+#' @export
+#'
+#' @seealso [loom_to_srt], [adata_to_srt], [srt_to_adata]
+#'
+#' @examples
+#' \dontrun{
+#' adata <- loom_to_adata("path/to/data.loom")
+#' adata
+#' }
+loom_to_adata <- function(
+  path,
+  verbose = TRUE,
+  ...
+) {
+  old_log_verbose <- getOption("log_message.verbose", TRUE)
+  if (!isTRUE(verbose)) {
+    options(log_message.verbose = FALSE)
+    on.exit(
+      options(log_message.verbose = old_log_verbose),
+      add = TRUE
+    )
+  }
+  PrepareEnv(modules = "scanpy")
+  check_python(
+    c("scanpy", "loompy"),
+    verbose = FALSE
+  )
+
+  path <- normalizePath(path.expand(path), mustWork = TRUE, winslash = "/")
+  if (!length(path) || !nzchar(path[1L])) {
+    log_message(
+      "{.arg path} must be a non-empty path",
+      message_type = "error"
+    )
+  }
+
+  log_message(
+    "Reading {.file {path}} as {.cls AnnData} via {.pkg scanpy}",
+    verbose = verbose
+  )
+  sc <- reticulate::import("scanpy", convert = FALSE)
+  adata <- sc$read_loom(path, ...)
+  log_message(
+    "Read {.file {path}} as {.cls AnnData} completed",
+    message_type = "success",
+    verbose = verbose
+  )
+  adata
+}
+
+#' @title Read a `.loom` file and convert to a `Seurat`
+#'
+#' @md
+#' @inheritParams thisutils::log_message
+#' @param path Path to a `.loom` file.
+#' @param layers Character vector of loom layers to import as additional Seurat
+#' assays. Missing layers are skipped with a warning. Default is
+#' `c("spliced", "unspliced")`.
+#' @param chunk_rows Number of feature rows to read from each matrix dataset per
+#' chunk. Larger values can be faster but use more memory.
+#'
+#' @return A `Seurat` object.
+#'
+#' @details
+#' This function reads loom/HDF5 files directly in R using `rhdf5`; it does not
+#' call `reticulate`, `scanpy`, or [loom_to_adata()]. The loom `/matrix` dataset
+#' is imported as the `RNA` assay. Requested `/layers/*` datasets are imported
+#' as additional assays, which is useful for velocity-style loom files with
+#' `spliced` and `unspliced` layers.
+#'
+#' @export
+#'
+#' @seealso [loom_to_adata], [adata_to_srt], [srt_to_adata]
+#'
+#' @examples
+#' \dontrun{
+#' srt <- loom_to_srt("path/to/data.loom")
+#' srt
+#' }
+loom_to_srt <- function(
+  path,
+  layers = c("spliced", "unspliced"),
+  verbose = TRUE,
+  chunk_rows = 1000
+) {
+  old_log_verbose <- getOption("log_message.verbose", TRUE)
+  if (!isTRUE(verbose)) {
+    options(log_message.verbose = FALSE)
+    on.exit(
+      options(log_message.verbose = old_log_verbose),
+      add = TRUE
+    )
+  }
+  check_r("rhdf5", verbose = FALSE)
+
+  path <- normalizePath(path.expand(path), mustWork = TRUE, winslash = "/")
+  if (!length(path) || !nzchar(path[1L])) {
+    log_message(
+      "{.arg path} must be a non-empty path",
+      message_type = "error"
+    )
+  }
+  if (!is.numeric(chunk_rows) || length(chunk_rows) != 1 || is.na(chunk_rows) || chunk_rows < 1) {
+    log_message(
+      "{.arg chunk_rows} must be a positive number",
+      message_type = "error"
+    )
+  }
+  chunk_rows <- as.integer(chunk_rows)
+  layers <- unique(as.character(layers %||% character(0)))
+  layers <- layers[nzchar(layers)]
+
+  log_message(
+    "Reading {.file {path}} as {.cls Seurat} directly from loom/HDF5",
+    verbose = verbose
+  )
+
+  paths <- loom_h5_paths(path)
+  if (!loom_h5_exists(paths, "/matrix")) {
+    log_message(
+      "{.file {path}} does not contain the required {.val /matrix} dataset",
+      message_type = "error"
+    )
+  }
+
+  matrix_dim <- loom_h5_dim(paths, "/matrix")
+  if (length(matrix_dim) != 2) {
+    log_message(
+      "{.val /matrix} must be a two-dimensional dataset",
+      message_type = "error"
+    )
+  }
+  n_features <- loom_h5_length(
+    paths,
+    c("/row_attrs/Gene", "/row_attrs/gene", "/row_attrs/Accession")
+  )
+  n_cells <- loom_h5_length(
+    paths,
+    c("/col_attrs/CellID", "/col_attrs/cell_id", "/col_attrs/CellID_1")
+  )
+  if (is.na(n_features) || is.na(n_cells)) {
+    n_features <- matrix_dim[[1]]
+    n_cells <- matrix_dim[[2]]
+  }
+  matrix_orientation <- loom_matrix_orientation(
+    matrix_dim = matrix_dim,
+    n_features = n_features,
+    n_cells = n_cells
+  )
+
+  features <- loom_read_names(
+    path = path,
+    paths = paths,
+    candidates = c("/row_attrs/Gene", "/row_attrs/gene", "/row_attrs/Accession"),
+    n = n_features,
+    fallback_prefix = "feature"
+  )
+  cells <- loom_read_names(
+    path = path,
+    paths = paths,
+    candidates = c("/col_attrs/CellID", "/col_attrs/cell_id", "/col_attrs/CellID_1"),
+    n = n_cells,
+    fallback_prefix = "cell"
+  )
+
+  counts <- loom_read_matrix_sparse(
+    path = path,
+    paths = paths,
+    dataset = "/matrix",
+    orientation = matrix_orientation,
+    features = features,
+    cells = cells,
+    chunk_rows = chunk_rows
+  )
+  col_metadata <- loom_read_attrs_dataframe(
+    path = path,
+    paths = paths,
+    group = "/col_attrs",
+    n = n_cells,
+    rownames = cells
+  )
+  feature_metadata <- loom_read_attrs_dataframe(
+    path = path,
+    paths = paths,
+    group = "/row_attrs",
+    n = n_features,
+    rownames = features
+  )
+
+  srt <- Seurat::CreateSeuratObject(
+    counts = counts,
+    assay = "RNA",
+    meta.data = col_metadata
+  )
+  if (ncol(feature_metadata) > 0) {
+    srt[["RNA"]] <- Seurat::AddMetaData(
+      object = srt[["RNA"]],
+      metadata = feature_metadata
+    )
+  }
+
+  for (layer in layers) {
+    layer_path <- paste0("/layers/", layer)
+    if (!loom_h5_exists(paths, layer_path)) {
+      log_message(
+        "Loom layer {.val {layer}} was not found and will be skipped",
+        message_type = "warning",
+        verbose = verbose
+      )
+      next
+    }
+    layer_dim <- loom_h5_dim(paths, layer_path)
+    if (!identical(as.integer(layer_dim), as.integer(matrix_dim))) {
+      log_message(
+        "Loom layer {.val {layer}} has dimensions {.val {paste(layer_dim, collapse = ' x ')}} and will be skipped",
+        message_type = "warning",
+        verbose = verbose
+      )
+      next
+    }
+    layer_counts <- loom_read_matrix_sparse(
+      path = path,
+      paths = paths,
+      dataset = layer_path,
+      orientation = matrix_orientation,
+      features = features,
+      cells = cells,
+      chunk_rows = chunk_rows
+    )
+    srt[[layer]] <- Seurat::CreateAssayObject(counts = layer_counts)
+    if (ncol(feature_metadata) > 0) {
+      srt[[layer]] <- Seurat::AddMetaData(
+        object = srt[[layer]],
+        metadata = feature_metadata
+      )
+    }
+  }
+
+  log_message(
+    "Read {.file {path}} as {.cls Seurat} completed",
+    message_type = "success",
+    verbose = verbose
+  )
+  srt
+}
+
 py_to_r2 <- function(x) {
   if (inherits(x, "python.builtin.object")) {
     reticulate::py_to_r(x)
@@ -779,4 +1040,214 @@ check_python_element <- function(
     x_checked <- lapply(x, check_python_element, depth - 1)
     return(x_checked)
   }
+}
+
+loom_h5_paths <- function(path) {
+  h5 <- rhdf5::h5ls(path, recursive = TRUE)
+  h5[["full_path"]] <- ifelse(
+    h5[["group"]] == "/",
+    paste0("/", h5[["name"]]),
+    paste0(h5[["group"]], "/", h5[["name"]])
+  )
+  h5[["full_path"]] <- gsub("//+", "/", h5[["full_path"]])
+  h5
+}
+
+loom_h5_exists <- function(paths, name) {
+  name <- gsub("//+", "/", name)
+  name %in% paths[["full_path"]]
+}
+
+loom_h5_dim <- function(paths, name) {
+  name <- gsub("//+", "/", name)
+  i <- match(name, paths[["full_path"]])
+  if (is.na(i)) {
+    return(integer(0))
+  }
+  dim_raw <- paths[["dim"]][[i]]
+  if (is.null(dim_raw) || length(dim_raw) == 0 || anyNA(dim_raw)) {
+    return(integer(0))
+  }
+  if (is.numeric(dim_raw)) {
+    return(as.integer(dim_raw))
+  }
+  dim_raw <- gsub(",", "", as.character(dim_raw))
+  dim_raw <- trimws(unlist(strsplit(dim_raw, " x ", fixed = TRUE)))
+  as.integer(dim_raw[nzchar(dim_raw)])
+}
+
+loom_h5_length <- function(paths, candidates) {
+  for (candidate in candidates) {
+    dims <- loom_h5_dim(paths, candidate)
+    if (length(dims) > 0 && all(!is.na(dims))) {
+      return(prod(dims))
+    }
+  }
+  NA_integer_
+}
+
+loom_matrix_orientation <- function(
+  matrix_dim,
+  n_features,
+  n_cells
+) {
+  if (identical(as.integer(matrix_dim), as.integer(c(n_features, n_cells)))) {
+    return("features_by_cells")
+  }
+  if (identical(as.integer(matrix_dim), as.integer(c(n_cells, n_features)))) {
+    return("cells_by_features")
+  }
+  log_message(
+    "{.val /matrix} dimensions do not match loom row/column attributes",
+    message_type = "error"
+  )
+}
+
+loom_read_names <- function(
+  path,
+  paths,
+  candidates,
+  n,
+  fallback_prefix
+) {
+  for (candidate in candidates) {
+    if (!loom_h5_exists(paths, candidate)) {
+      next
+    }
+    values <- tryCatch(
+      as.vector(rhdf5::h5read(path, name = candidate)),
+      error = function(e) NULL
+    )
+    if (!is.null(values) && length(values) == n) {
+      values <- as.character(values)
+      values[is.na(values) | !nzchar(values)] <- paste0(
+        fallback_prefix,
+        "_",
+        which(is.na(values) | !nzchar(values))
+      )
+      return(make.unique(values))
+    }
+  }
+  make.unique(paste0(fallback_prefix, "_", seq_len(n)))
+}
+
+loom_read_attrs_dataframe <- function(
+  path,
+  paths,
+  group,
+  n,
+  rownames
+) {
+  group <- sub("/+$", "", group)
+  rows <- paths[paths[["group"]] == group & paths[["otype"]] == "H5I_DATASET", , drop = FALSE]
+  if (nrow(rows) == 0) {
+    out <- data.frame(row.names = rownames)
+    return(out)
+  }
+
+  attrs <- list()
+  for (i in seq_len(nrow(rows))) {
+    attr_path <- rows[["full_path"]][[i]]
+    attr_name <- make.names(rows[["name"]][[i]])
+    values <- tryCatch(
+      as.vector(rhdf5::h5read(path, name = attr_path)),
+      error = function(e) NULL
+    )
+    if (is.null(values) || length(values) != n) {
+      next
+    }
+    if (is.raw(values) || is.list(values)) {
+      next
+    }
+    attrs[[attr_name]] <- values
+  }
+
+  if (length(attrs) == 0) {
+    out <- data.frame(row.names = rownames)
+    return(out)
+  }
+  out <- as.data.frame(attrs, stringsAsFactors = FALSE, check.names = TRUE)
+  rownames(out) <- rownames
+  out
+}
+
+loom_read_matrix_sparse <- function(
+  path,
+  paths,
+  dataset,
+  orientation,
+  features,
+  cells,
+  chunk_rows
+) {
+  dims <- loom_h5_dim(paths, dataset)
+  if (length(dims) != 2) {
+    log_message(
+      "{.val {dataset}} must be a two-dimensional dataset",
+      message_type = "error"
+    )
+  }
+  n_features <- dims[[1]]
+  n_cells <- dims[[2]]
+  if (identical(orientation, "cells_by_features")) {
+    n_features <- dims[[2]]
+    n_cells <- dims[[1]]
+  }
+  if (length(features) != n_features || length(cells) != n_cells) {
+    log_message(
+      "The supplied dimnames do not match {.val {dataset}}",
+      message_type = "error"
+    )
+  }
+
+  triplet_i <- integer(0)
+  triplet_j <- integer(0)
+  triplet_x <- numeric(0)
+  feature_starts <- seq.int(1L, n_features, by = chunk_rows)
+  for (start in feature_starts) {
+    end <- min(start + chunk_rows - 1L, n_features)
+    if (identical(orientation, "features_by_cells")) {
+      block <- rhdf5::h5read(
+        file = path,
+        name = dataset,
+        index = list(start:end, seq_len(n_cells))
+      )
+      if (!is.matrix(block)) {
+        block <- matrix(block, nrow = end - start + 1L, ncol = n_cells)
+      }
+      sparse_block <- Matrix::Matrix(block, sparse = TRUE)
+    } else if (identical(orientation, "cells_by_features")) {
+      block <- rhdf5::h5read(
+        file = path,
+        name = dataset,
+        index = list(seq_len(n_cells), start:end)
+      )
+      if (!is.matrix(block)) {
+        block <- matrix(block, nrow = n_cells, ncol = end - start + 1L)
+      }
+      sparse_block <- Matrix::t(Matrix::Matrix(block, sparse = TRUE))
+    } else {
+      log_message(
+        "{.arg orientation} is invalid",
+        message_type = "error"
+      )
+    }
+    sparse_block <- Matrix::drop0(sparse_block)
+    if (length(sparse_block@x) == 0) {
+      next
+    }
+    summary_block <- Matrix::summary(sparse_block)
+    triplet_i <- c(triplet_i, as.integer(summary_block[["i"]]) + start - 1L)
+    triplet_j <- c(triplet_j, as.integer(summary_block[["j"]]))
+    triplet_x <- c(triplet_x, as.numeric(summary_block[["x"]]))
+  }
+
+  mat <- Matrix::sparseMatrix(
+    i = triplet_i,
+    j = triplet_j,
+    x = triplet_x,
+    dims = c(n_features, n_cells),
+    dimnames = list(features, cells)
+  )
+  methods::as(mat, "dgCMatrix")
 }
