@@ -1197,10 +1197,12 @@ core_python_requirements <- function() {
 scanpy_python_requirements <- function() {
   list(
     packages = c(
-      "scanpy" = "scanpy==1.11.3"
+      "scanpy" = "scanpy==1.11.3",
+      "loompy" = "loompy"
     ),
     install_methods = c(
-      "scanpy" = "pip"
+      "scanpy" = "pip",
+      "loompy" = "pip"
     ),
     package_aliases = list()
   )
