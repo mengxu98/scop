@@ -29,6 +29,7 @@
   * Added 10 Seurat v4 compatibility tests (`test_seurat_v4_compat.R`) run against a real Seurat v4.4.0 + SeuratObject v4.1.4 installation, verifying Assay object handling, `GetAssayData` slot access, PCA centering fallback, `JoinLayers` guard, sparse matrix operations, and UMAP/MDS execution.
 
 * **feat**:
+  * Added `loom_to_srt()` for pure-R loom-to-Seurat conversion via `rhdf5`, preserving velocity-style `spliced` and `unspliced` layers as assays without initializing Python, and added Python-backed `loom_to_adata()` for users who need AnnData output.
   * Added `RunBulk()` as a unified bulk-strategy entrypoint with method-vector selection for bulk DE, deconvolution, and cell-type-specific DE workflows.
   * Added method-specific bulk runners for `de_limma_voom`, `de_edgeR_qlf`, `de_DESeq2`, `de_dream`, `deconv_MuSiC`, `deconv_BisqueRNA`, `deconv_BayesPrism`, and `csde_TOAST`.
   * Standardized bulk results under `Bulk$results$de`, `Bulk$results$deconv`, and `Bulk$results$csde`, keeping DE outputs compatible with existing `DEtestPlot()`, `RunEnrichment()`, `RunGSEA()`, `GroupHeatmap()`, and `FeatureHeatmap()` data flows.
