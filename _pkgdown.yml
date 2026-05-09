@@ -180,6 +180,8 @@ reference:
 - contents:
   - adata_to_srt
   - h5ad_to_srt
+  - loom_to_adata
+  - loom_to_srt
   - srt_to_adata
 
 - subtitle: "Data Processing"
