@@ -664,7 +664,9 @@ cytotrace2_preprocess <- function(
     }
 
     idx <- match(gene_names, colnames(ortho_dict))
-    mapping <- ifelse(is.na(idx), gene_names, as.character(ortho_dict[1, idx]))
+    mapping <- gene_names
+    mapped_idx <- !is.na(idx)
+    mapping[mapped_idx] <- as.character(ortho_dict[1, idx[mapped_idx]])
 
     if (!is.null(alias_dict)) {
       map_df <- data.frame(
