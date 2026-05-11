@@ -80,26 +80,26 @@ If \code{combine = FALSE}, returns a named list of ggplot objects:
 Plot CytoTRACE 2 Results
 }
 \examples{
-if (thisutils::check_ci_env()) {
-  data(pancreas_sub)
-  pancreas_sub <- standard_scop(pancreas_sub)
-  pancreas_sub <- RunCytoTRACE(
-    pancreas_sub,
-    species = "Mus_musculus"
-  )
+data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunCytoTRACE(
+  pancreas_sub,
+  species = "Mus_musculus"
+)
 
-  CytoTRACEPlot(
-    pancreas_sub,
-    group.by = "CellType"
-  )
+CytoTRACEPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  xlab = "UMAP_1",
+  ylab = "UMAP_2"
+)
 
-  plots <- CytoTRACEPlot(
-    pancreas_sub,
-    group.by = "CellType",
-    combine = FALSE
-  )
-  plots$Boxplot
-}
+plots <- CytoTRACEPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  combine = FALSE
+)
+plots$Boxplot
 }
 \seealso{
 \link{RunCytoTRACE}, \link{CellDimPlot}, \link{FeatureDimPlot}
