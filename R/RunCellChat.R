@@ -24,7 +24,6 @@
 #' [CellChat](https://github.com/jinworks/CellChat)
 #'
 #' @examples
-#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunCellChat(
@@ -51,7 +50,6 @@
 #'   plot_type = "violin",
 #'   top_n = 50
 #' )
-#' }
 RunCellChat <- function(
   srt,
   group.by,
@@ -175,6 +173,12 @@ RunCellChat <- function(
   )
 
   srt@tools[["CellChat"]] <- bundle
+  srt <- ccc_update_unified_bundle(
+    srt = srt,
+    method = "CellChat",
+    bundle = bundle,
+    thresh = thresh
+  )
 
   log_message(
     "{.pkg CellChat} analysis completed",
