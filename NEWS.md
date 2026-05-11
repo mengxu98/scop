@@ -20,9 +20,7 @@
   * Refreshed examples to use bundled real package data and removed unnecessary `dontrun` wrappers from examples that do not require Python or external command-line tools.
 
 * **data**:
-  * Added `visium_human_pancreas_sub`, a Visium human pancreas spatial example dataset with spatial image data and CODA-derived annotations, for spatial analysis and CytoSPACE examples.
-  * Removed `visium_mouse_brain_sub` and replaced spatial examples with `visium_human_pancreas_sub`.
-  * Removed `SimulateProportionData()` and its documentation from the public package surface.
+  * Added `visium_human_pancreas_sub`, a Visium human pancreas spatial example dataset ([GSE254829](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE254829)) with spatial image data and CODA-derived annotations, for spatial analysis.
 
 # scop 0.8.9
 
