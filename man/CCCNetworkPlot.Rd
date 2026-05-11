@@ -217,7 +217,6 @@ A ggplot, patchwork, or recorded plot object.
 CCC network and flow plots
 }
 \examples{
-\dontrun{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 
@@ -342,5 +341,4 @@ CCCNetworkPlot(
   plot_type = "diff_network",
   measure = "count"
 )
-}
 }

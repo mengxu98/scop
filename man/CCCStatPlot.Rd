@@ -30,6 +30,7 @@ CCCStatPlot(
   stat_type = c("score", "count"),
   top_n = 20,
   x_text_angle = 90,
+  min_receiver_flow = 0,
   link_alpha = 0.6,
   facet_by = NULL,
   edge_value = c("sum", "mean", "max", "count"),
@@ -119,6 +120,10 @@ interactions).}
 
 \item{x_text_angle}{Rotation angle for x-axis labels.}
 
+\item{min_receiver_flow}{For \code{"sankey"}: minimum total receiver-side flow
+retained after top-N ranking. Useful when many small receiver nodes make
+the right side unreadable.}
+
 \item{link_alpha}{Alpha used for network edges.}
 
 \item{facet_by}{Faceting variable for interaction-level plots.}
@@ -171,10 +176,6 @@ Default is \code{TRUE}.}
 \item{verbose}{Whether to print messages.}
 
 \item{...}{Additional plot-specific options.}
-
-\item{min_receiver_flow}{For \code{"sankey"}: minimum total receiver-side flow
-retained after top-N ranking. Useful when many small receiver nodes make
-the right side unreadable.}
 }
 \value{
 A ggplot or recorded base plot object.
