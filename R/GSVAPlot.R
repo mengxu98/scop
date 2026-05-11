@@ -117,7 +117,6 @@
 #'   word_type = "feature"
 #' )
 #'
-#' \dontrun{
 #' pancreas_sub <- RunGSVA(
 #'   pancreas_sub,
 #'   assay_name = "GSVA",
@@ -148,7 +147,6 @@
 #'   width = 1,
 #'   height = 2
 #' )
-#' }
 GSVAPlot <- function(
   srt = NULL,
   res = NULL,
@@ -241,6 +239,10 @@ GSVAPlot <- function(
   split_method <- match.arg(split_method)
   enrichmap_label <- match.arg(enrichmap_label)
   enrichmap_mark <- match.arg(enrichmap_mark)
+  if (plot_type == "wordcloud") {
+    check_r("ggwordcloud", verbose = FALSE)
+    check_r("simplifyEnrichment", verbose = FALSE)
+  }
   words_excluded <- words_excluded %||% scop::words_excluded
   if (is.null(topTerm) && !plot_type %in% c("heatmap", "wordcloud")) {
     topTerm <- if (plot_type == "enrichmap") 100 else 6

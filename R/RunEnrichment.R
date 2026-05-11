@@ -81,7 +81,6 @@
 #'   plot_type = "comparison"
 #' )
 #'
-#' \dontrun{
 #' pancreas_sub <- RunEnrichment(
 #'   pancreas_sub,
 #'   group.by = "CellType",
@@ -150,7 +149,6 @@
 #'   group.by = "CellType",
 #'   plot_type = "comparison"
 #' )
-#' }
 RunEnrichment <- function(
   srt = NULL,
   group.by = NULL,
@@ -376,7 +374,7 @@ RunEnrichment <- function(
         drop = FALSE
       ]
       if (identical(backend, "cpp")) {
-        result <- run_ora_cpp_result(
+        result <- run_ora_result(
           gene = gene,
           TERM2GENE = TERM2GENE_tmp,
           TERM2NAME = TERM2NAME_tmp,
