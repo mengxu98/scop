@@ -280,7 +280,7 @@ mapQuery <- function(
     verbose = verbose
   )
   Z_pca_query_cos <- get_namespace_fun(
-    "symphony", "cosine_normalize_cpp"
+    "symphony", "cosine_normalize"
   )(
     V = Z_pca_query,
     dim = 2
@@ -443,7 +443,7 @@ buildReferenceFromSeurat <- function(
   )
   res$centroids <- Matrix::t(
     get_namespace_fun(
-      "symphony", "cosine_normalize_cpp"
+      "symphony", "cosine_normalize"
     )(
       V = res$R %*% Matrix::t(res$Z_corr),
       dim = 1

@@ -275,7 +275,6 @@ LISIPlot(
   features = c("UncorrectedpcaUMAP2D_tech_LISI", "UncorrectedUMAP2D_tech_LISI")
 )
 
-\dontrun{
 panc8_sub <- integration_scop(
   panc8_sub,
   batch = "tech",
@@ -303,7 +302,6 @@ if (requireNamespace("Signac", quietly = TRUE)) {
     integration_method = "Harmony5",
     normalization_method = "TFIDF"
   )
-}
 
 integration_methods <- c(
   "Uncorrected", "Seurat", "CCA", "RPCA", "scVI", "scVI5",
