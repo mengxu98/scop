@@ -1,9 +1,9 @@
-run_ora_cpp_available <- function() {
-  exists("ora_hypergeom_cpp", mode = "function") &&
-    isTRUE(is.loaded("_scop_ora_hypergeom_cpp"))
+run_ora_available <- function() {
+  exists("ora_hypergeom", mode = "function") &&
+    isTRUE(is.loaded("_scop_ora_hypergeom"))
 }
 
-run_ora_cpp_result <- function(
+run_ora_result <- function(
   gene,
   TERM2GENE,
   TERM2NAME,
@@ -11,7 +11,7 @@ run_ora_cpp_result <- function(
   min_gs_size = 10,
   max_gs_size = 500
 ) {
-  if (!run_ora_cpp_available()) {
+  if (!run_ora_available()) {
     log_message(
       "{.arg backend = 'cpp'} requires the compiled {.pkg scop} shared library. Reinstall the package to build native code.",
       message_type = "error"
@@ -28,7 +28,7 @@ run_ora_cpp_result <- function(
     term_names[["Name"]] <- term_names[["Term"]]
   }
 
-  res <- ora_hypergeom_cpp(
+  res <- ora_hypergeom(
     genes = as.character(gene),
     term_ids = as.character(TERM2GENE[["Term"]]),
     term_genes = as.character(TERM2GENE[[IDtype]]),
