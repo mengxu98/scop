@@ -23,13 +23,13 @@
 #' the default scientific stack.
 #' Supported values are `"scanpy"`, `"scvi"`, `"glue"`, `"scanorama"`, `"bbknn"`,
 #' `"celltypist"`, `"cellphonedb"`, `"magic"`, `"scrublet"`,
-#' `"doubletdetection"`, `"doublet"`, `"palantir"`, `"scvelo"`,
+#' `"sccoda"`, `"doubletdetection"`, `"doublet"`, `"palantir"`, `"scvelo"`,
 #' `"cellrank"`, `"wot"`, `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`,
 #' and `"scomm"`.
 #' If `NULL` or omitted in [PrepareEnv()], the default environment is installed.
-#' The default excludes `"scomm"` because its TensorFlow stack is not compatible
-#' with the default JAX/scVI stack in the same environment; request
-#' `modules = "scomm"` explicitly for scOMM workflows.
+#' The default excludes `"sccoda"` and `"scomm"` because their TensorFlow stacks
+#' are not compatible with the default JAX/scVI stack in the same environment;
+#' request them explicitly for scCODA/scOMM workflows.
 #' @param pip_options Additional command line arguments to be passed to `uv`/`pip` when installing pip packages.
 #' @param ... Additional arguments passed to package installation functions.
 #'
@@ -331,6 +331,7 @@ supported_env_modules <- function() {
     "cellphonedb",
     "magic",
     "scrublet",
+    "sccoda",
     "doubletdetection",
     "palantir",
     "scvelo",
@@ -345,7 +346,7 @@ supported_env_modules <- function() {
 }
 
 default_env_modules <- function() {
-  setdiff(supported_env_modules(), "scomm")
+  setdiff(supported_env_modules(), c("sccoda", "scomm"))
 }
 
 optional_env_modules <- function() {
@@ -362,6 +363,7 @@ env_module_dependencies <- function() {
   list(
     celltypist = "scanpy",
     cellphonedb = "scanpy",
+    sccoda = "scanpy",
     palantir = "scanpy",
     scvelo = "scanpy",
     cellrank = c("scanpy", "scvelo"),
@@ -385,6 +387,7 @@ env_module_requirements <- function() {
     cellphonedb = cellphonedb_python_requirements(),
     magic = magic_python_requirements(),
     scrublet = scrublet_python_requirements(),
+    sccoda = sccoda_python_requirements(),
     doubletdetection = doubletdetection_python_requirements(),
     palantir = palantir_python_requirements(),
     scvelo = scvelo_python_requirements(),
@@ -550,6 +553,45 @@ prepend_path_var <- function(var, values) {
   invisible(NULL)
 }
 
+find_conda_shared_library <- function(env_path, names) {
+  library_dirs <- file.path(
+    env_path,
+    c("lib", "lib64", file.path("Library", "lib"), file.path("Library", "bin"))
+  )
+  candidates <- as.vector(outer(library_dirs, names, file.path))
+  candidates <- candidates[file.exists(candidates)]
+  if (length(candidates) == 0) {
+    return(NULL)
+  }
+
+  normalizePath(candidates[[1]], mustWork = FALSE)
+}
+
+configure_linux_cpp_runtime <- function(env_path) {
+  if (isFALSE(is_linux())) {
+    return(invisible(FALSE))
+  }
+
+  libgcc <- find_conda_shared_library(env_path, c("libgcc_s.so.1", "libgcc_s.so"))
+  libstdcpp <- find_conda_shared_library(env_path, c("libstdc++.so.6", "libstdc++.so"))
+  runtime_libs <- c(libgcc, libstdcpp)
+  runtime_libs <- runtime_libs[nzchar(runtime_libs)]
+  if (length(runtime_libs) == 0) {
+    return(invisible(FALSE))
+  }
+
+  prepend_path_var("LD_PRELOAD", runtime_libs)
+
+  for (lib in runtime_libs) {
+    tryCatch(
+      dyn.load(lib, local = FALSE, now = TRUE),
+      error = function(...) NULL
+    )
+  }
+
+  invisible(TRUE)
+}
+
 normalize_python_runtime_path <- function(path) {
   path <- as.character(path %||% "")
   if (length(path) == 0 || !nzchar(path[[1]])) {
@@ -644,6 +686,7 @@ configure_python_runtime <- function(python_path) {
         file.path(env_path, "Library", "lib")
       )
     )
+    configure_linux_cpp_runtime(env_path)
   }
 
   if (is_osx()) {
@@ -1068,11 +1111,11 @@ env_info <- function(conda, envname, verbose = TRUE) {
 #' @param modules Optional requirement modules to include. Supported values are
 #' `"scanpy"`, `"scvi"`, `"scanorama"`, `"bbknn"`, `"celltypist"`,
 #' `"cellphonedb"`, `"magic"`, `"scrublet"`, `"doubletdetection"`,
-#' `"doublet"`, `"palantir"`, `"scvelo"`, `"cellrank"`, `"wot"`, `"phate"`,
-#' `"pacmap"`, `"trimap"`, `"multimap"`, and `"scomm"`. If `NULL`, the
-#' default environment is returned. The default excludes `"scomm"` because its
-#' TensorFlow stack is not compatible with the default JAX/scVI stack in the
-#' same environment.
+#' `"sccoda"`, `"doublet"`, `"palantir"`, `"scvelo"`, `"cellrank"`, `"wot"`,
+#' `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`, and `"scomm"`. If `NULL`,
+#' the default environment is returned. The default excludes `"sccoda"` and
+#' `"scomm"` because their TensorFlow stacks are not compatible with the
+#' default JAX/scVI stack in the same environment.
 #'
 #' @return
 #' A list containing:
@@ -1308,23 +1351,34 @@ scrublet_python_requirements <- function() {
   )
 }
 
+sccoda_python_requirements <- function() {
+  list(
+    packages = c(
+      "tensorflow" = "tensorflow==2.16.2",
+      "tensorflow-probability" = "tensorflow-probability==0.24.0",
+      "tf-keras" = "tf-keras==2.16.0",
+      "sccoda" = "sccoda==0.1.9"
+    ),
+    install_methods = c(
+      "tensorflow" = "pip",
+      "tensorflow-probability" = "pip",
+      "tf-keras" = "pip",
+      "sccoda" = "pip"
+    ),
+    package_aliases = list(
+      "sccoda" = "scCODA",
+      "tf-keras" = "tf_keras"
+    )
+  )
+}
+
 doubletdetection_python_requirements <- function() {
   list(
     packages = c(
-      "celltypist" = "celltypist==1.7.1",
-      "cellphonedb" = "cellphonedb==5.0.1",
-      "sccoda" = "sccoda>=0.1.9",
-      "magic-impute" = "magic-impute==3.0.0",
-      "scrublet" = "scrublet==0.2.3",
       "doubletdetection" = "doubletdetection==4.3.0.post1",
       "louvain" = "louvain==0.8.2"
     ),
     install_methods = c(
-      "celltypist" = "pip",
-      "cellphonedb" = "pip",
-      "sccoda" = "pip",
-      "magic-impute" = "pip",
-      "scrublet" = "pip",
       "doubletdetection" = "pip",
       "louvain" = "pip"
     ),
