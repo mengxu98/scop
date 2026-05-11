@@ -117,8 +117,10 @@ if (requireNamespace("labeling", quietly = TRUE)) {
   )
 
   data("pbmcmultiome_sub", package = "scop")
-  pbmcmultiome_sub[["MethodA_batch_LISI"]] <- seq_len(ncol(pbmcmultiome_sub)) / ncol(pbmcmultiome_sub)
-  pbmcmultiome_sub[["MethodB_batch_LISI"]] <- rev(pbmcmultiome_sub[["MethodA_batch_LISI", drop = TRUE]])
+  pbmcmultiome_sub[["MethodA_batch_LISI"]] <-
+    seq_len(ncol(pbmcmultiome_sub)) / ncol(pbmcmultiome_sub)
+  pbmcmultiome_sub[["MethodB_batch_LISI"]] <-
+    rev(pbmcmultiome_sub[["MethodA_batch_LISI", drop = TRUE]])
   BenchmarkPlot(
     pbmcmultiome_sub,
     features = c("MethodA_batch_LISI", "MethodB_batch_LISI"),
