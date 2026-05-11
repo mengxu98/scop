@@ -15,11 +15,11 @@ Default is \code{"3.10-1"}.}
 \item{modules}{Optional requirement modules to include. Supported values are
 \code{"scanpy"}, \code{"scvi"}, \code{"scanorama"}, \code{"bbknn"}, \code{"celltypist"},
 \code{"cellphonedb"}, \code{"magic"}, \code{"scrublet"}, \code{"doubletdetection"},
-\code{"doublet"}, \code{"palantir"}, \code{"scvelo"}, \code{"cellrank"}, \code{"wot"}, \code{"phate"},
-\code{"pacmap"}, \code{"trimap"}, \code{"multimap"}, and \code{"scomm"}. If \code{NULL}, the
-default environment is returned. The default excludes \code{"scomm"} because its
-TensorFlow stack is not compatible with the default JAX/scVI stack in the
-same environment.}
+\code{"sccoda"}, \code{"doublet"}, \code{"palantir"}, \code{"scvelo"}, \code{"cellrank"}, \code{"wot"},
+\code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"multimap"}, and \code{"scomm"}. If \code{NULL},
+the default environment is returned. The default excludes \code{"sccoda"} and
+\code{"scomm"} because their TensorFlow stacks are not compatible with the
+default JAX/scVI stack in the same environment.}
 }
 \value{
 A list containing:
