@@ -3,6 +3,7 @@
 #' @md
 #' @inheritParams standard_scop
 #' @inheritParams thisutils::log_message
+#' @param layer Assay layer used as the count matrix.
 #' @param gKO Gene symbol or symbols to knock out. All genes must be present
 #' after optional feature and QC filtering.
 #' @param features Optional genes to retain before running network construction.
@@ -19,12 +20,11 @@
 #' `scTenifoldNet::manifoldAlignment()`.
 #' @param cores Number of cores used by native network-construction workers and
 #' forwarded to downstream linear algebra where applicable.
-#' @param backend `optimized` uses the local scop implementation with native
-#' equivalent covariance-based network construction, direct sparse network
-#' assembly, controlled per-gene eigensolver parallelism, and helpers for
-#' tensor decomposition, manifold matrix construction, directionality, and
+#' @param backend `cpp` is a native equivalent covariance-based network construction,
+#' direct sparse network assembly, controlled per-gene eigensolver parallelism,
+#' and helpers for tensor decomposition, manifold matrix construction, directionality, and
 #' distance calculation.
-#' `upstream` calls `scTenifoldKnk::scTenifoldKnk()` directly for comparison.
+#' `scTenifoldKnk` calls `scTenifoldKnk::scTenifoldKnk()` directly for comparison.
 #' @param store_networks Whether to keep WT/KO tensor networks in
 #' `srt@tools`.
 #' @param store_manifold Whether to keep manifold-alignment coordinates in
@@ -34,7 +34,31 @@
 #' @return A `Seurat` object with scTenifoldKnk results stored in
 #' `srt@tools[[tool_name]]`.
 #' @export
-RunScTenifoldKnk <- function(
+#'
+#' @examples
+#' data(pancreas_sub)
+#' gene_use <- "Pdx1"
+#' counts <- GetAssayData5(pancreas_sub, assay = "RNA", layer = "counts")
+#' detected <- names(sort(Matrix::rowSums(counts > 0), decreasing = TRUE))
+#' features_use <- unique(c(gene_use, head(detected, 300)))
+#'
+#' pancreas_sub <- RunscTenifoldKnk(
+#'   pancreas_sub,
+#'   gKO = gene_use,
+#'   features = features_use,
+#'   qc = FALSE,
+#'   nc_nNet = 3,
+#'   nc_nCells = 200,
+#'   td_maxIter = 200,
+#'   store_networks = FALSE,
+#'   store_manifold = TRUE
+#' )
+#'
+#' dr <- pancreas_sub@tools$scTenifoldKnk$diffRegulation
+#' head(dr)
+#'
+#' scTenifoldKnkPlot(pancreas_sub, plot_type = "effect")
+RunscTenifoldKnk <- function(
   srt,
   gKO,
   assay = NULL,
@@ -57,7 +81,7 @@ RunScTenifoldKnk <- function(
   td_nDecimal = 3,
   ma_nDim = 2,
   cores = 1,
-  backend = c("optimized", "upstream"),
+  backend = c("cpp", "scTenifoldKnk"),
   store_networks = TRUE,
   store_manifold = TRUE,
   tool_name = "scTenifoldKnk",
@@ -79,28 +103,92 @@ RunScTenifoldKnk <- function(
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   gKO <- unique(as.character(gKO))
 
-  sctenifold_validate_parameters(
-    nc_lambda = nc_lambda,
-    nc_nNet = nc_nNet,
-    nc_nCells = nc_nCells,
-    nc_nComp = nc_nComp,
-    nc_q = nc_q,
-    td_K = td_K,
-    td_maxIter = td_maxIter,
-    td_maxError = td_maxError,
-    td_nDecimal = td_nDecimal,
-    ma_nDim = ma_nDim,
-    cores = cores
+  numeric_params <- list(
+    nc_lambda = c(value = nc_lambda, lower = 0, upper = 1),
+    nc_q = c(value = nc_q, lower = 0, upper = 1),
+    td_maxError = c(value = td_maxError, lower = 0, upper = 1)
   )
+  for (param_name in names(numeric_params)) {
+    param <- numeric_params[[param_name]]
+    if (
+      length(param[["value"]]) != 1L ||
+        !is.numeric(param[["value"]]) ||
+        is.na(param[["value"]]) ||
+        param[["value"]] < param[["lower"]] ||
+        param[["value"]] > param[["upper"]]
+    ) {
+      log_message(
+        "{.arg {param_name}} must be a single number between {.val {param[['lower']]}} and {.val {param[['upper']]}}",
+        message_type = "error"
+      )
+    }
+  }
+  integer_params <- list(
+    nc_nNet = c(value = nc_nNet, lower = 1),
+    nc_nCells = c(value = nc_nCells, lower = 1),
+    nc_nComp = c(value = nc_nComp, lower = 3),
+    td_K = c(value = td_K, lower = 1),
+    td_maxIter = c(value = td_maxIter, lower = 1),
+    td_nDecimal = c(value = td_nDecimal, lower = 0),
+    ma_nDim = c(value = ma_nDim, lower = 1),
+    cores = c(value = cores, lower = 1)
+  )
+  for (param_name in names(integer_params)) {
+    param <- integer_params[[param_name]]
+    if (
+      length(param[["value"]]) != 1L ||
+        !is.numeric(param[["value"]]) ||
+        is.na(param[["value"]]) ||
+        param[["value"]] < param[["lower"]] ||
+        param[["value"]] != as.integer(param[["value"]])
+    ) {
+      log_message(
+        "{.arg {param_name}} must be a single integer greater than or equal to {.val {param[['lower']]}}",
+        message_type = "error"
+      )
+    }
+  }
 
-  count_matrix <- sctenifold_get_count_matrix(
-    srt = srt,
-    assay = assay,
-    layer = layer,
-    features = features,
-    gKO = gKO,
-    verbose = verbose
-  )
+  count_matrix <- GetAssayData5(srt, assay = assay, layer = layer)
+  if (is.null(rownames(count_matrix)) || is.null(colnames(count_matrix))) {
+    log_message(
+      "{.arg layer} must contain feature and cell names",
+      message_type = "error"
+    )
+  }
+
+  missing_ko <- setdiff(gKO, rownames(count_matrix))
+  if (length(missing_ko) > 0L) {
+    log_message(
+      "{.arg gKO} genes are absent from the selected assay/layer: {.val {missing_ko}}",
+      message_type = "error"
+    )
+  }
+
+  if (!is.null(features)) {
+    features <- unique(c(as.character(features), gKO))
+    missing_features <- setdiff(features, rownames(count_matrix))
+    features <- intersect(features, rownames(count_matrix))
+    if (length(features) == 0L) {
+      log_message(
+        "No requested {.arg features} are present in the selected assay/layer",
+        message_type = "error"
+      )
+    }
+    if (length(missing_features) > 0L) {
+      log_message(
+        "Ignoring {.val {length(missing_features)}} requested features absent from the selected assay/layer",
+        message_type = "warning",
+        verbose = verbose
+      )
+    }
+    count_matrix <- count_matrix[features, , drop = FALSE]
+  }
+
+  if (!inherits(count_matrix, "Matrix")) {
+    count_matrix <- Matrix::Matrix(as.matrix(count_matrix), sparse = TRUE)
+  }
+  count_matrix <- methods::as(count_matrix, "dgCMatrix")
   qc_summary <- list(
     before = c(genes = nrow(count_matrix), cells = ncol(count_matrix)),
     after = c(genes = nrow(count_matrix), cells = ncol(count_matrix)),
@@ -119,12 +207,24 @@ RunScTenifoldKnk <- function(
     qc_summary <- qc_res$summary
   }
 
-  sctenifold_validate_matrix_for_run(
-    count_matrix = count_matrix,
-    gKO = gKO,
-    nc_nCells = nc_nCells,
-    nc_nComp = nc_nComp
-  )
+  if (!all(gKO %in% rownames(count_matrix))) {
+    log_message(
+      "{.arg gKO} must be present in the retained count matrix",
+      message_type = "error"
+    )
+  }
+  if (nrow(count_matrix) <= nc_nComp) {
+    log_message(
+      "{.arg nc_nComp} must be lower than the number of retained genes",
+      message_type = "error"
+    )
+  }
+  if (length(gKO) >= nrow(count_matrix)) {
+    log_message(
+      "{.arg gKO} cannot cover all retained genes",
+      message_type = "error"
+    )
+  }
 
   log_message(
     "Run {.pkg scTenifoldKnk} knockout for {.val {paste(gKO, collapse = ', ')}} using {.val {backend}} backend",
@@ -133,7 +233,7 @@ RunScTenifoldKnk <- function(
 
   result <- switch(
     backend,
-    optimized = sctenifold_run_optimized(
+    cpp = sctenifold_run_optimized(
       count_matrix = count_matrix,
       gKO = gKO,
       nc_lambda = nc_lambda,
@@ -151,7 +251,7 @@ RunScTenifoldKnk <- function(
       cores = cores,
       verbose = verbose
     ),
-    upstream = sctenifold_run_upstream(
+    scTenifoldKnk = sctenifold_run_upstream(
       count_matrix = count_matrix,
       gKO = gKO,
       qc = FALSE,
@@ -173,6 +273,12 @@ RunScTenifoldKnk <- function(
       cores = cores
     )
   )
+  if (!is.list(result) || is.null(result$diffRegulation)) {
+    log_message(
+      "{.pkg scTenifoldKnk} backend {.val {backend}} did not return a valid {.field diffRegulation} table",
+      message_type = "error"
+    )
+  }
 
   if (!isTRUE(store_networks)) {
     result$tensorNetworks <- NULL
@@ -221,92 +327,6 @@ RunScTenifoldKnk <- function(
   srt
 }
 
-sctenifold_validate_parameters <- function(
-  nc_lambda,
-  nc_nNet,
-  nc_nCells,
-  nc_nComp,
-  nc_q,
-  td_K,
-  td_maxIter,
-  td_maxError,
-  td_nDecimal,
-  ma_nDim,
-  cores
-) {
-  sctenifold_validate_scalar(nc_lambda, "nc_lambda", lower = 0, upper = 1)
-  sctenifold_validate_scalar(nc_q, "nc_q", lower = 0, upper = 1)
-  sctenifold_validate_scalar(td_maxError, "td_maxError", lower = 0, upper = 1)
-  sctenifold_validate_integer(nc_nNet, "nc_nNet", lower = 1)
-  sctenifold_validate_integer(nc_nCells, "nc_nCells", lower = 1)
-  sctenifold_validate_integer(nc_nComp, "nc_nComp", lower = 3)
-  sctenifold_validate_integer(td_K, "td_K", lower = 1)
-  sctenifold_validate_integer(td_maxIter, "td_maxIter", lower = 1)
-  sctenifold_validate_integer(td_nDecimal, "td_nDecimal", lower = 0)
-  sctenifold_validate_integer(ma_nDim, "ma_nDim", lower = 1)
-  sctenifold_validate_integer(cores, "cores", lower = 1)
-}
-
-sctenifold_validate_scalar <- function(x, name, lower = -Inf, upper = Inf) {
-  if (length(x) != 1L || !is.numeric(x) || is.na(x) || x < lower || x > upper) {
-    log_message(
-      "{.arg {name}} must be a single number between {.val {lower}} and {.val {upper}}",
-      message_type = "error"
-    )
-  }
-}
-
-sctenifold_validate_integer <- function(x, name, lower = -Inf, upper = Inf) {
-  if (length(x) != 1L || !is.numeric(x) || is.na(x) || x < lower || x > upper || x != as.integer(x)) {
-    log_message(
-      "{.arg {name}} must be a single integer between {.val {lower}} and {.val {upper}}",
-      message_type = "error"
-    )
-  }
-}
-
-sctenifold_get_count_matrix <- function(srt, assay, layer, features, gKO, verbose = TRUE) {
-  count_matrix <- GetAssayData5(srt, assay = assay, layer = layer)
-  if (is.null(rownames(count_matrix)) || is.null(colnames(count_matrix))) {
-    log_message(
-      "{.arg layer} must contain feature and cell names",
-      message_type = "error"
-    )
-  }
-
-  missing_ko <- setdiff(gKO, rownames(count_matrix))
-  if (length(missing_ko) > 0L) {
-    log_message(
-      "{.arg gKO} genes are absent from the selected assay/layer: {.val {missing_ko}}",
-      message_type = "error"
-    )
-  }
-
-  if (!is.null(features)) {
-    features <- unique(c(as.character(features), gKO))
-    missing_features <- setdiff(features, rownames(count_matrix))
-    features <- intersect(features, rownames(count_matrix))
-    if (length(features) == 0L) {
-      log_message(
-        "No requested {.arg features} are present in the selected assay/layer",
-        message_type = "error"
-      )
-    }
-    if (length(missing_features) > 0L) {
-      log_message(
-        "Ignoring {.val {length(missing_features)}} requested features absent from the selected assay/layer",
-        message_type = "warning",
-        verbose = verbose
-      )
-    }
-    count_matrix <- count_matrix[features, , drop = FALSE]
-  }
-
-  if (!inherits(count_matrix, "Matrix")) {
-    count_matrix <- Matrix::Matrix(as.matrix(count_matrix), sparse = TRUE)
-  }
-  methods::as(count_matrix, "dgCMatrix")
-}
 
 sctenifold_qc_filter <- function(
   count_matrix,
@@ -345,20 +365,16 @@ sctenifold_qc_filter <- function(
       data.frame(library_size = library_size),
       interval = "prediction"
     ))
-    selected_cells <- (
-      mt_counts > mt_pred$lwr &
-        mt_counts < mt_pred$upr &
-        n_genes > genes_pred$lwr &
-        n_genes < genes_pred$upr &
-        mt_proportion <= mt_threshold &
-        library_size < 2 * mean(library_size)
-    )
-  } else {
-    selected_cells <- (
+    selected_cells <- (mt_counts > mt_pred$lwr &
+      mt_counts < mt_pred$upr &
       n_genes > genes_pred$lwr &
-        n_genes < genes_pred$upr &
-        library_size < 2 * mean(library_size)
-    )
+      n_genes < genes_pred$upr &
+      mt_proportion <= mt_threshold &
+      library_size < 2 * mean(library_size))
+  } else {
+    selected_cells <- (n_genes > genes_pred$lwr &
+      n_genes < genes_pred$upr &
+      library_size < 2 * mean(library_size))
   }
 
   count_matrix <- count_matrix[, selected_cells, drop = FALSE]
@@ -392,27 +408,6 @@ sctenifold_qc_filter <- function(
   )
 }
 
-sctenifold_validate_matrix_for_run <- function(count_matrix, gKO, nc_nCells, nc_nComp) {
-  if (!all(gKO %in% rownames(count_matrix))) {
-    log_message(
-      "{.arg gKO} must be present in the retained count matrix",
-      message_type = "error"
-    )
-  }
-  if (nrow(count_matrix) <= nc_nComp) {
-    log_message(
-      "{.arg nc_nComp} must be lower than the number of retained genes",
-      message_type = "error"
-    )
-  }
-  if (length(gKO) >= nrow(count_matrix)) {
-    log_message(
-      "{.arg gKO} cannot cover all retained genes",
-      message_type = "error"
-    )
-  }
-}
-
 sctenifold_run_optimized <- function(
   count_matrix,
   gKO,
@@ -438,7 +433,7 @@ sctenifold_run_optimized <- function(
       message_type = "error"
     )
   }
-  sctenifold_check_cpp()
+  sctenifold_check()
 
   log_message(
     "Construct scTenifoldNet network ensemble",
@@ -462,16 +457,17 @@ sctenifold_run_optimized <- function(
     "Denoise network ensemble with tensor decomposition",
     verbose = verbose
   )
-  wt <- sctenifold_tensor_decomposition(
+  wt <- sctenifold_tensor_decomposition_scnet(
     xList = wt,
     K = as.integer(td_K),
     maxError = td_maxError,
     maxIter = as.integer(td_maxIter),
-    nDecimal = as.integer(td_nDecimal)
+    nDecimal = as.integer(td_nDecimal),
+    verbose = verbose
   )
 
   wt <- as.matrix(wt$X)
-  wt <- sctenifold_strict_direction_cpp(
+  wt <- sctenifold_strict_direction(
     x = wt,
     lambda = nc_lambda
   )
@@ -648,7 +644,7 @@ sctenifold_pcnet_covariance <- function(
   gNames <- rownames(X)
   RhpcBLASctl::omp_set_num_threads(1L)
   RhpcBLASctl::blas_set_num_threads(1L)
-  A <- sctenifold_pcnet_covariance_sparse_cpp(
+  A <- sctenifold_pcnet_covariance_sparse(
     x = as.matrix(X),
     n_comp = as.integer(nComp),
     scale_scores = isTRUE(scaleScores),
@@ -660,35 +656,36 @@ sctenifold_pcnet_covariance <- function(
   A
 }
 
-sctenifold_check_cpp <- function() {
-  ok <- exists("sctenifold_strict_direction_cpp", mode = "function") &&
-    exists("sctenifold_pair_distances_cpp", mode = "function") &&
-    exists("sctenifold_tensor_decomposition_cpp", mode = "function") &&
-    exists("sctenifold_manifold_matrix_cpp", mode = "function") &&
-    exists("sctenifold_pcnet_covariance_raw_cpp", mode = "function") &&
-    exists("sctenifold_pcnet_covariance_sparse_cpp", mode = "function") &&
-    isTRUE(is.loaded("_scop_sctenifold_strict_direction_cpp")) &&
-    isTRUE(is.loaded("_scop_sctenifold_pair_distances_cpp")) &&
-    isTRUE(is.loaded("_scop_sctenifold_tensor_decomposition_cpp")) &&
-    isTRUE(is.loaded("_scop_sctenifold_manifold_matrix_cpp")) &&
-    isTRUE(is.loaded("_scop_sctenifold_pcnet_covariance_raw_cpp")) &&
-    isTRUE(is.loaded("_scop_sctenifold_pcnet_covariance_sparse_cpp"))
+sctenifold_check <- function() {
+  ok <- exists("sctenifold_strict_direction", mode = "function") &&
+    exists("sctenifold_pair_distances", mode = "function") &&
+    exists("sctenifold_tensor_decomposition", mode = "function") &&
+    exists("sctenifold_manifold_matrix", mode = "function") &&
+    exists("sctenifold_pcnet_covariance_raw", mode = "function") &&
+    exists("sctenifold_pcnet_covariance_sparse", mode = "function") &&
+    isTRUE(is.loaded("_scop_sctenifold_strict_direction")) &&
+    isTRUE(is.loaded("_scop_sctenifold_pair_distances")) &&
+    isTRUE(is.loaded("_scop_sctenifold_tensor_decomposition")) &&
+    isTRUE(is.loaded("_scop_sctenifold_manifold_matrix")) &&
+    isTRUE(is.loaded("_scop_sctenifold_pcnet_covariance_raw")) &&
+    isTRUE(is.loaded("_scop_sctenifold_pcnet_covariance_sparse"))
   if (!ok) {
     log_message(
-      "{.arg backend = 'optimized'} requires the compiled {.pkg scop} shared library. Reinstall the package to build native code.",
+      "{.arg backend = 'cpp'} requires the compiled {.pkg scop} shared library. Reinstall the package to build native code.",
       message_type = "error"
     )
   }
 }
 
-sctenifold_tensor_decomposition <- function(
+sctenifold_tensor_decomposition_scnet <- function(
   xList,
   nDecimal = 1,
   K = 5,
   maxError = 1e-05,
-  maxIter = 1000
+  maxIter = 1000,
+  verbose = TRUE
 ) {
-  sctenifold_check_cpp()
+  sctenifold_check()
   if (!is.list(xList) || length(xList) == 0L) {
     log_message(
       "{.arg xList} must contain at least one network",
@@ -740,11 +737,12 @@ sctenifold_tensor_decomposition <- function(
     }
   )
 
-  out <- sctenifold_tensor_decomposition_cpp(
+  out <- sctenifold_tensor_decomposition(
     x_list = x_dense,
     init_u = init_u,
     max_iter = as.integer(maxIter),
-    tol = maxError
+    tol = maxError,
+    verbose = verbose
   )
   out <- round(out, digits = nDecimal)
   out <- Matrix::Matrix(out, sparse = TRUE)
@@ -752,13 +750,18 @@ sctenifold_tensor_decomposition <- function(
   list(X = out)
 }
 
-sctenifold_manifold_alignment <- function(X, Y, d = 30, nCores = parallel::detectCores()) {
-  sctenifold_check_cpp()
+sctenifold_manifold_alignment <- function(
+  X,
+  Y,
+  d = 30,
+  nCores = parallel::detectCores()
+) {
+  sctenifold_check()
   sharedGenes <- intersect(rownames(X), rownames(Y))
   X <- X[sharedGenes, sharedGenes]
   Y <- Y[sharedGenes, sharedGenes]
   check_r("RSpectra", verbose = FALSE)
-  W <- sctenifold_manifold_matrix_cpp(
+  W <- sctenifold_manifold_matrix(
     x = as.matrix(X),
     y = as.matrix(Y)
   )
@@ -773,12 +776,15 @@ sctenifold_manifold_alignment <- function(X, Y, d = 30, nCores = parallel::detec
   E$vectors <- E$vectors[, E$values > 1e-08]
   alignedNet <- E$vectors[, seq_len(d)]
   colnames(alignedNet) <- paste0("NLMA ", seq_len(d))
-  rownames(alignedNet) <- c(paste0("X_", sharedGenes), paste0("Y_", sharedGenes))
+  rownames(alignedNet) <- c(
+    paste0("X_", sharedGenes),
+    paste0("Y_", sharedGenes)
+  )
   alignedNet
 }
 
 sctenifold_diff_regulation <- function(manifold_output, gKO) {
-  sctenifold_check_cpp()
+  sctenifold_check()
   aligned <- as.matrix(manifold_output)
   if (nrow(aligned) %% 2L != 0L || is.null(rownames(aligned))) {
     log_message(
@@ -793,16 +799,18 @@ sctenifold_diff_regulation <- function(manifold_output, gKO) {
   gene_list <- sub("^X_", "", x_names)
   expected_gene_list <- sub("^Y_", "", y_names)
 
-  if (!all(grepl("^X_", x_names)) ||
+  if (
+    !all(grepl("^X_", x_names)) ||
       !all(grepl("^Y_", y_names)) ||
-      !identical(gene_list, expected_gene_list)) {
+      !identical(gene_list, expected_gene_list)
+  ) {
     log_message(
       "Genes are not ordered as expected in scTenifoldNet manifold output",
       message_type = "error"
     )
   }
 
-  distances <- sctenifold_pair_distances_cpp(aligned)
+  distances <- sctenifold_pair_distances(aligned)
   names(distances) <- gene_list
 
   positive <- distances[is.finite(distances) & distances > 0]
