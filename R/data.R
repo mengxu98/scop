@@ -53,7 +53,8 @@
 #'   pancreas_sub$SubCellType <- gsub(" ", "-", pancreas_sub$SubCellType)
 #'   pancreas_sub@reductions$X_pca <- NULL
 #'   pancreas_sub@reductions$X_umap <- NULL
-#'   usethis::use_data(
+#'   use_data <- get_namespace_fun("usethis", "use_data")
+#'   use_data(
 #'     pancreas_sub,
 #'     compress = "xz",
 #'     overwrite = TRUE
@@ -81,14 +82,11 @@ NULL
 #' \href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE86469}{GSE86469}
 #'
 #' @examples
-#' \dontrun{
 #' if (interactive()) {
 #'   data(pancreas_sub)
-#'   if (!require("SeuratData", quietly = TRUE)) {
-#'     pak::pak("satijalab/seurat-data")
-#'   }
-#'   library(SeuratData)
+#'   check_r("satijalab/seurat-data")
 #'   library(Seurat)
+#'   InstallData <- get_namespace_fun("SeuratData", "InstallData")
 #'   InstallData("panc8")
 #'   data(panc8)
 #'   panc8 <- UpdateSeuratObject(panc8)
@@ -116,12 +114,12 @@ NULL
 #'   ), ]
 #'   panc8_sub$celltype <- gsub("_", "-", panc8_sub$celltype)
 #'   panc8_sub$celltype <- gsub(" ", "-", panc8_sub$celltype)
-#'   usethis::use_data(
+#'   use_data <- get_namespace_fun("usethis", "use_data")
+#'   use_data(
 #'     panc8_sub,
 #'     compress = "xz",
 #'     overwrite = TRUE
 #'   )
-#' }
 #' }
 #' @name panc8_sub
 NULL
@@ -147,18 +145,53 @@ NULL
 #' `test/data/pbmc_multiome_1k.rds` in this repository.
 #'
 #' @examples
-#' \dontrun{
 #' if (interactive()) {
 #'   source("test/data/create_pbmcmultiome_sub.R")
 #'   pbmcmultiome_sub <- create_pbmcmultiome_sub()
-#'   usethis::use_data(
+#'   use_data <- get_namespace_fun("usethis", "use_data")
+#'   use_data(
 #'     pbmcmultiome_sub,
 #'     compress = "xz",
 #'     overwrite = TRUE
 #'   )
 #' }
-#' }
 #' @name pbmcmultiome_sub
+NULL
+
+#' @title A human pancreas Visium spatial example dataset
+#'
+#' @description
+#' A compact gene-filtered version of a human pancreatic intraepithelial
+#' neoplasia (PanIN) 10x Visium dataset from GSE254829. The object keeps the
+#' 1986 non-background tissue spots from sample GSM8058244 (PanIN-LG2), with a
+#' `Spatial` assay, a `slice1` Visium image, and tissue coordinates in metadata
+#' columns `x` and `y`. Metadata column `coda_label` stores the dominant CODA
+#' microanatomical component for each spot, and `coda_score` stores its
+#' percentage. Component percentage columns are stored with the `coda_` prefix,
+#' and the matched CODA table is stored in `@tools$GSE254829_coda_table`. To
+#' keep the package data small and directly usable with the bundled `panc8_sub`
+#' reference, the object retains the top 5000 genes shared with `panc8_sub`,
+#' ranked by total spatial counts.
+#'
+#' @md
+#' @format A `Seurat` object with 5000 genes, 1986 spots, and one Visium image
+#' named `slice1`.
+#' @concept data
+#' @source
+#' Derived from the GSE254829 human PanIN 10x
+#' Visium dataset:
+#' \href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE254829}{GSE254829}.
+#' The package object uses the GEO supplementary files
+#' `GSM8058244_PanIN-LG2.tar.gz` and
+#' `GSE254829_codatable_may202024.csv.gz`.
+#'
+#' @examples
+#' data(visium_human_pancreas_sub)
+#' SeuratObject::Images(visium_human_pancreas_sub)
+#' head(visium_human_pancreas_sub@meta.data[, c("x", "y")])
+#' SpatialDimPlot(visium_human_pancreas_sub, group.by = "coda_label")
+#'
+#' @name visium_human_pancreas_sub
 NULL
 
 #' @title Excluded words in keyword enrichment analysis and extraction
@@ -170,7 +203,6 @@ NULL
 #'
 #' @concept data
 #' @examples
-#' \dontrun{
 #' if (interactive()) {
 #'   words_excluded <- c(
 #'     "the", "is", "and", "or", "a",
@@ -183,8 +215,8 @@ NULL
 #'     "regulation", "regulated", "positive", "negative",
 #'     "response", "process", "processing", "small", "large", "change"
 #'   )
-#'   usethis::use_data(words_excluded, compress = "xz")
-#' }
+#'   use_data <- get_namespace_fun("usethis", "use_data")
+#'   use_data(words_excluded, compress = "xz")
 #' }
 #' @name words_excluded
 NULL
@@ -195,15 +227,13 @@ NULL
 #' @source
 #' \href{https://github.com/ggjlab/scMCA}{scMCA}
 #' @examples
-#' \dontrun{
 #' if (interactive()) {
 #'   library(Seurat)
 #'   check_r(c("ggjlab/scMCA"))
-#'   ref_scMCA <- NormalizeData(scMCA::ref.expr)
+#'   ref_scMCA <- NormalizeData(get("ref.expr", envir = asNamespace("scMCA")))
 #'   Encoding(colnames(ref_scMCA)) <- "latin1"
 #'   colnames(ref_scMCA) <- iconv(colnames(ref_scMCA), "latin1", "UTF-8")
-#'   # usethis::use_data(ref_scMCA, compress = "xz")
-#' }
+#'   # get_namespace_fun("usethis", "use_data")(ref_scMCA, compress = "xz")
 #' }
 #' @name ref_scMCA
 NULL
