@@ -38,82 +38,77 @@
 #'     A = features_all[1:100],
 #'     B = features_all[101:200]
 #'   ),
-#'   method = "Seurat",
+#'   method = "AUCell",
 #'   name = "test"
 #' )
 #' CellDimPlot(pancreas_sub, "test_classification")
 #'
 #' FeatureDimPlot(pancreas_sub, "test_A")
 #'
-#' \dontrun{
 #' data(panc8_sub)
-#' panc8_sub <- integration_scop(
-#'   panc8_sub,
-#'   batch = "tech",
-#'   integration_method = "Seurat"
-#' )
-#' CellDimPlot(
-#'   panc8_sub,
-#'   group.by = c("tech", "celltype")
-#' )
+#'   panc8_sub <- integration_scop(
+#'     panc8_sub,
+#'     batch = "tech",
+#'     integration_method = "Harmony"
+#'   )
 #'
-#' panc8_sub <- CellScoring(
-#'   panc8_sub,
-#'   layer = "data",
-#'   assay = "RNA",
-#'   db = "GO_BP",
-#'   species = "Homo_sapiens",
-#'   minGSSize = 10,
-#'   maxGSSize = 100,
-#'   method = "Seurat",
-#'   name = "GO",
-#'   new_assay = TRUE
-#' )
+#'   panc8_sub <- CellScoring(
+#'     panc8_sub,
+#'     layer = "data",
+#'     assay = "RNA",
+#'     db = "GO_BP",
+#'     species = "Homo_sapiens",
+#'     minGSSize = 10,
+#'     maxGSSize = 100,
+#'     method = "AUCell",
+#'     name = "GO",
+#'     new_assay = TRUE
+#'   )
 #'
-#' panc8_sub <- integration_scop(
-#'   panc8_sub,
-#'   assay = "GO",
-#'   batch = "tech",
-#'   integration_method = "Seurat"
-#' )
-#' CellDimPlot(
-#'   panc8_sub,
-#'   group.by = c("tech", "celltype")
-#' )
+#'   panc8_sub <- integration_scop(
+#'     panc8_sub,
+#'     assay = "GO",
+#'     batch = "tech",
+#'     integration_method = "Harmony"
+#'   )
+#'   CellDimPlot(
+#'     panc8_sub,
+#'     group.by = c("tech", "celltype")
+#'   )
 #'
-#' pancreas_sub <- CellScoring(
-#'   pancreas_sub,
-#'   layer = "data",
-#'   assay = "RNA",
-#'   db = "GO_BP",
-#'   species = "Mus_musculus",
-#'   termnames = panc8_sub[["GO"]]@meta.features[, "termnames"],
-#'   method = "Seurat",
-#'   name = "GO",
-#'   new_assay = TRUE
-#' )
-#' pancreas_sub <- standard_scop(
-#'   pancreas_sub,
-#'   assay = "GO"
-#' )
-#' CellDimPlot(pancreas_sub, "SubCellType")
+#'   pancreas_sub <- CellScoring(
+#'     pancreas_sub,
+#'     layer = "data",
+#'     assay = "RNA",
+#'     db = "GO_BP",
+#'     species = "Mus_musculus",
+#'     termnames = panc8_sub[["GO"]]@meta.features[, "termnames"],
+#'     method = "AUCell",
+#'     name = "GO",
+#'     new_assay = TRUE
+#'   )
+#'   pancreas_sub <- standard_scop(
+#'     pancreas_sub,
+#'     assay = "GO"
+#'   )
 #'
-#' pancreas_sub[["tech"]] <- "Mouse"
-#' panc_merge <- integration_scop(
-#'   srt_list = list(panc8_sub, pancreas_sub),
-#'   assay = "GO",
-#'   batch = "tech", integration_method = "Seurat"
-#' )
-#' CellDimPlot(
-#'   srt = panc_merge,
-#'   group.by = c("tech", "celltype", "SubCellType", "Phase")
-#' )
+#'   pancreas_sub[["tech"]] <- "Mouse"
+#'   panc_merge <- integration_scop(
+#'     srt_list = list(panc8_sub, pancreas_sub),
+#'     assay = "GO",
+#'     batch = "tech",
+#'     integration_method = "Harmony"
+#'   )
+#'   CellDimPlot(
+#'     srt = panc_merge,
+#'     group.by = c("tech", "celltype", "SubCellType", "Phase")
+#'   )
 #'
 #' genenames <- make.unique(
 #'   thisutils::capitalize(
-#'     rownames(panc8_sub[["RNA"]])
-#'   ),
-#'   force_tolower = TRUE
+#'     rownames(panc8_sub[["RNA"]]),
+#'     force_tolower = TRUE
+#'   )
 #' )
 #' names(genenames) <- rownames(panc8_sub)
 #' panc8_sub <- RenameFeatures(
@@ -121,17 +116,16 @@
 #'   newnames = genenames,
 #'   assay = "RNA"
 #' )
-#' head(rownames(panc8_sub))
 #' panc_merge <- integration_scop(
 #'   srt_list = list(panc8_sub, pancreas_sub),
 #'   assay = "RNA",
-#'   batch = "tech", integration_method = "Seurat"
+#'   batch = "tech",
+#'   integration_method = "Harmony"
 #' )
 #' CellDimPlot(
 #'   srt = panc_merge,
 #'   group.by = c("tech", "celltype", "SubCellType", "Phase")
 #' )
-#' }
 CellScoring <- function(
   srt,
   features = NULL,
@@ -343,7 +337,7 @@ CellScoring <- function(
           layer = layer,
           assay = assay
         )
-        module_scores <- run_seurat_module_cpp_scores(
+        module_scores <- run_seurat_module_scores(
           expr_data = expr_sp,
           features = features,
           pool = dots[["pool"]] %||% NULL,
@@ -414,7 +408,7 @@ CellScoring <- function(
         assay = assay
       )
       if (identical(backend, "cpp")) {
-        auc_scores <- run_aucell_cpp_scores(
+        auc_scores <- run_aucell_scores(
           expr_counts = expr_sp,
           gene_sets = features,
           strategy = cpp_strategy

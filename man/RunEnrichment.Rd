@@ -160,7 +160,6 @@ EnrichmentPlot(
   plot_type = "comparison"
 )
 
-\dontrun{
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
   group.by = "CellType",
@@ -229,7 +228,6 @@ EnrichmentPlot(
   group.by = "CellType",
   plot_type = "comparison"
 )
-}
 }
 \seealso{
 \link{PrepareDB}, \link{ListDB}, \link{EnrichmentPlot}, \link{RunGSEA}, \link{GSEAPlot}
