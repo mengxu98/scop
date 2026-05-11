@@ -82,9 +82,6 @@ Suggests:
     miloR,
     MASS,
     NMF,
-    org.Hs.eg.db,
-    org.Mm.eg.db,
-    openxlsx,
     pak,
     patchwork,
     keras,
@@ -130,7 +127,6 @@ Suggests:
     torch,
     tricycle,
     umap,
-    presto,
     UCell
 LinkingTo:
     cli,
@@ -140,8 +136,6 @@ LinkingTo:
     RSpectra
 Remotes:
     jinworks/CellChat,
-    mengxu98/thisplot,
-    mengxu98/thisutils,
     saeyslab/multinichenetr,
     saeyslab/nichenetr
 RoxygenNote: 7.3.3
