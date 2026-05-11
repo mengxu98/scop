@@ -80,30 +80,28 @@ space. The current implementation mirrors the Seurat ATAC integration
 vignette for ATAC query and RNA reference.
 }
 \examples{
-\dontrun{
-data("pbmcmultiome_sub", package = "scop")
+data(pbmcmultiome_sub)
 pbmcmultiome_sub <- standard_scop(
   pbmcmultiome_sub,
-  assay = "RNA",
-  linear_reduction_dims = 20
-)
-reference <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[1:250])
-query <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[251:350])
-query <- standard_scop(
-  query,
-  assay = "peaks",
-  normalization_method = "TFIDF",
+  assay = c("RNA", "peaks"),
   linear_reduction_dims = 20
 )
 coembed <- RunCoEmbedding(
-  srt = query,
-  reference = reference,
+  srt = pbmcmultiome_sub,
+  reference = pbmcmultiome_sub,
   assay = "peaks",
   reference_assay = "RNA",
+  gene_activity_assay = "RNA",
   reference_reduction = "Standardpca",
   reference_dims = 1:10,
   dims = 2:10,
   umap_dims = 1:10
 )
-}
+
+CellDimPlot(
+  coembed,
+  group.by = c("modality", "CellType"),
+  xlab = "CoEmbedUMAP_1",
+  ylab = "CoEmbedUMAP_2"
+)
 }
