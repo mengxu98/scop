@@ -74,6 +74,8 @@ before writing to \code{layers[["pvalues"]]}.}
 
 \item{h5ad_path}{Optional output path. If provided, the AnnData object is
 written to this file before being returned.}
+
+\item{verbose}{Whether to print progress messages.}
 }
 \value{
 A Python \code{anndata.AnnData} communication object compatible with

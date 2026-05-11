@@ -27,6 +27,8 @@ If \code{NULL}, the default assay of the Seurat object will be used.
 When the object also contains \code{ChromatinAssay}, the default assay and
 additional \code{ChromatinAssay} will be preprocessed sequentially.}
 
+\item{layer}{Assay layer used as the expression matrix.}
+
 \item{species}{Species used to select bundled DoRothEA regulons.}
 
 \item{confidence}{DoRothEA confidence levels to keep.}

@@ -19,6 +19,7 @@
 #' Required when `.arg method` includes `"de"` or `"csde"`.
 #' Optional for deconvolution-only runs.
 #' @param group.by Optional metadata column used to stratify DE by subgroup.
+#' @param layer Layer name in `srt` used for pseudobulk counts.
 #' @param ref_srt Optional `Seurat` reference for deconvolution/CSDE.
 #' If omitted in pseudobulk mode, `srt` is used as reference.
 #' @param celltype.by Metadata column in `ref_srt` defining reference cell types.

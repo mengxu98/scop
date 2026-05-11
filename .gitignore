@@ -19,12 +19,14 @@ test
 *.h5ad
 *.pyc
 .codex
+.cc-connect
 *.o
 *.so
 *.dll
-dev
 paper
 plan
 deepscore_logs
 *.pdf
 *.tar.gz
+tmp
+omnipathr-log
