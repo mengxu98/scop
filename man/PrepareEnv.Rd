@@ -40,13 +40,13 @@ Default is \code{FALSE}.}
 the default scientific stack.
 Supported values are \code{"scanpy"}, \code{"scvi"}, \code{"glue"}, \code{"scanorama"}, \code{"bbknn"},
 \code{"celltypist"}, \code{"cellphonedb"}, \code{"magic"}, \code{"scrublet"},
-\code{"doubletdetection"}, \code{"doublet"}, \code{"palantir"}, \code{"scvelo"},
+\code{"sccoda"}, \code{"doubletdetection"}, \code{"doublet"}, \code{"palantir"}, \code{"scvelo"},
 \code{"cellrank"}, \code{"wot"}, \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"multimap"},
 and \code{"scomm"}.
 If \code{NULL} or omitted in \code{\link[=PrepareEnv]{PrepareEnv()}}, the default environment is installed.
-The default excludes \code{"scomm"} because its TensorFlow stack is not compatible
-with the default JAX/scVI stack in the same environment; request
-\code{modules = "scomm"} explicitly for scOMM workflows.}
+The default excludes \code{"sccoda"} and \code{"scomm"} because their TensorFlow stacks
+are not compatible with the default JAX/scVI stack in the same environment;
+request them explicitly for scCODA/scOMM workflows.}
 
 \item{pip_options}{Additional command line arguments to be passed to \code{uv}/\code{pip} when installing pip packages.}
 
