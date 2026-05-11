@@ -102,7 +102,6 @@ reference:
 
 - subtitle: "Dimensionality Reduction and Clustering"
 - contents:
-  - RunBayesSpace
   - RunDimsEstimate
   - RunDimsReduction
   - RunDM
@@ -116,6 +115,11 @@ reference:
   - RunPHATE
   - RunLargeVis
 
+- subtitle: "Spatial Analysis"
+- contents:
+  - RunBayesSpace
+  - RunCytoSPACE
+
 - subtitle: "Cell Type Annotation"
 - contents:
   - CellTypistModels
@@ -126,21 +130,24 @@ reference:
   - RunLabelTransfer
   - RunReferenceMapping
   - RunScmap
+  - RunSciBet
   - RunSingleR
   - TrainCellTypist
 
-- subtitle: "Differential Analysis"
+- subtitle: "Differential Expression and Perturbation"
 - contents:
   - FindExpressedMarkers
-  - RunBulk
   - RunDEtest
-  - RunScTenifoldKnk
+  - RunscTenifoldKnk
+
+- subtitle: "Bulk and Composition Analysis"
+- contents:
+  - RunBulk
+  - RunMilo
+  - RunPermutation
+  - RunPropeller
   - RunProportionTest
-  - RunProportionTestMilo
-  - RunProportionTestPermutation
-  - RunProportionTestPropeller
-  - RunProportionTestScCODA
-  - SimulateProportionData
+  - RunscCODA
 
 - subtitle: "Enrichment Analysis"
 - contents:
@@ -192,6 +199,7 @@ reference:
   - DefaultReduction
   - FetchDataZero
   - GeneConvert
+  - ConvertHomologs
   - GetAssayData5
   - RecoverCounts
   - RenameClusters
@@ -206,44 +214,67 @@ reference:
   - GetSimilarFeatures
   - RenameFeatures
 
-- subtitle: "Visualization Functions"
+- subtitle: "Embedding and Projection Plots"
+- contents:
+  - CellDimPlot
+  - CellDimPlot3D
+  - CellDensityPlot
+  - FeatureDimPlot
+  - FeatureDimPlot3D
+  - ProjectionPlot
+
+- subtitle: "Heatmap and Correlation Plots"
+- contents:
+  - CellCorHeatmap
+  - FeatureCorPlot
+  - FeatureHeatmap
+  - GroupHeatmap
+
+- subtitle: "Statistical and Composition Plots"
+- contents:
+  - CellStatPlot
+  - FeatureStatPlot
+  - ProportionTestPlot
+
+- subtitle: "Differential and Enrichment Plots"
+- contents:
+  - DEtestPlot
+  - DEtestManhattanPlot
+  - DEtestRingPlot
+  - VolcanoPlot
+  - EnrichmentPlot
+  - GSEAPlot
+  - GSVAPlot
+  - MetabolismPlot
+
+- subtitle: "Trajectory and Dynamic Plots"
+- contents:
+  - BranchStreamPlot
+  - CytoTRACEPlot
+  - DynamicPlot
+  - DynamicHeatmap
+  - LineagePlot
+  - PAGAPlot
+  - PseudotimeProjectionPlot
+  - VelocityPlot
+
+- subtitle: "Spatial Visualization"
+- contents:
+  - SpatialDimPlot
+
+- subtitle: "Cell-Cell Communication Plots"
 - contents:
   - CCCHeatmap
   - CCCNetworkPlot
   - CCCStatPlot
+
+- subtitle: "Benchmark and Genomic Track Plots"
+- contents:
   - BenchmarkPlot
-  - CellDimPlot
-  - CellDimPlot3D
-  - CellDensityPlot
-  - CellCorHeatmap
-  - CellStatPlot
   - CoverageTrackPlot
-  - CytoTRACEPlot
-  - DEtestPlot
-  - DEtestManhattanPlot
-  - DEtestRingPlot
   - DimsEstimatePlot
-  - DynamicPlot
-  - DynamicHeatmap
-  - EnrichmentPlot
-  - FeatureDimPlot
-  - FeatureDimPlot3D
-  - FeatureHeatmap
-  - FeatureCorPlot
-  - FeatureStatPlot
-  - GroupHeatmap
-  - GSEAPlot
-  - GSVAPlot
   - LISIPlot
-  - LineagePlot
-  - MetabolismPlot
-  - PAGAPlot
-  - ProjectionPlot
-  - ProportionTestPlot
-  - PseudotimeProjectionPlot
   - TACSPlot
-  - VelocityPlot
-  - VolcanoPlot
 
 - subtitle: "SCExplorer"
 - contents:
@@ -264,4 +295,5 @@ reference:
   - pancreas_sub
   - pbmcmultiome_sub
   - ref_scMCA
+  - visium_human_pancreas_sub
   - words_excluded
