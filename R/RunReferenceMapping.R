@@ -29,7 +29,6 @@
 #' @return A query `Seurat` object mapped into the RNA reference space.
 #' @export
 #' @examples
-#' \dontrun{
 #' data("pbmcmultiome_sub", package = "scop")
 #' pbmcmultiome_sub <- standard_scop(
 #'   pbmcmultiome_sub,
@@ -55,7 +54,6 @@
 #'   reference_dims = 1:10,
 #'   dims = 2:10
 #' )
-#' }
 RunReferenceMapping <- function(
   srt,
   reference,

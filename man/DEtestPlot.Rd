@@ -266,7 +266,6 @@ DEtestPlot(
   ncol = 2
 )
 
-\dontrun{
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
   group.by = "CellType",
@@ -286,7 +285,6 @@ DEtestPlot(
   enrich_nlabel = 15,
   ncol = 2
 )
-}
 
 DEtestPlot(
   pancreas_sub,

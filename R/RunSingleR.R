@@ -23,7 +23,6 @@
 #'
 #' @examples
 #' data(panc8_sub)
-#' # Simply convert genes from human to mouse and preprocess the data
 #' genenames <- make.unique(
 #'   thisutils::capitalize(
 #'     rownames(panc8_sub),
