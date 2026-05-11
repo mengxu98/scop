@@ -7,10 +7,11 @@
 RunProportionTest(
   srt,
   group.by,
-  split.by,
+  split.by = NULL,
   comparison = NULL,
   proportion_method,
   sample.by = NULL,
+  pseudo_sample_n = 3L,
   n_permutations = 1000,
   FDR_threshold = 0.05,
   log2FD_threshold = log2(1.5),
@@ -25,8 +26,10 @@ RunProportionTest(
 
 \item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
 
-\item{split.by}{Name of a column in meta.data column to split plot by.
-Default is \code{NULL}.}
+\item{split.by}{Metadata column that identifies the condition groups to
+compare. For sample-level methods, if \code{split.by} is omitted and \code{sample.by}
+is provided, \code{sample.by} is treated as the condition column and virtual
+samples are created within each condition.}
 
 \item{comparison}{Optional: specify comparisons to perform.}
 
@@ -37,10 +40,14 @@ Alias values such as \code{"permutation_test"} and \code{"perm"} are accepted an
 normalized to \code{"permutation"}.}
 
 \item{sample.by}{Metadata column that identifies biological samples.
-Required for \code{"milo"}, \code{"sccoda"}, and \code{"propeller"}.}
+For \code{"milo"}, \code{"sccoda"}, and \code{"propeller"}, when \code{sample.by} is omitted
+or identical to \code{split.by}, virtual samples are created within each
+\code{split.by} group for convenience.}
 
-\item{n_permutations}{Number of permutations for permutation-based test.
-Also used as default bootstrap iterations in method fallbacks.}
+\item{pseudo_sample_n}{Number of virtual samples per \code{split.by} group when
+a sample-level method has no usable \code{sample.by}.}
+
+\item{n_permutations}{Number of permutations for permutation-based test.}
 
 \item{FDR_threshold}{FDR value cutoff for significance.}
 
@@ -83,6 +90,6 @@ ProportionTestPlot(
 \href{https://bioconductor.org/packages/speckle}{propeller/speckle}
 }
 \seealso{
-\link{RunProportionTestPermutation}, \link{RunProportionTestMilo},
-\link{RunProportionTestScCODA}, \link{RunProportionTestPropeller}, \link{ProportionTestPlot}
+\link{RunPermutation}, \link{RunMilo}, \link{RunscCODA}, \link{RunPropeller},
+\link{ProportionTestPlot}
 }
