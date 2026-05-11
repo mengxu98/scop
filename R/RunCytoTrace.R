@@ -88,9 +88,12 @@
 #'   pancreas_sub,
 #'   species = "Mus_musculus"
 #' )
+#'
 #' CytoTRACEPlot(
 #'   pancreas_sub,
-#'   group.by = "CellType"
+#'   xlab = "UMAP_1",
+#'   ylab = "UMAP_2",
+#'   ncol = 2
 #' )
 RunCytoTRACE <- function(object, ...) {
   UseMethod(generic = "RunCytoTRACE", object = object)
@@ -113,7 +116,7 @@ RunCytoTRACE.Seurat <- function(
   ...
 ) {
   log_message(
-    "Running {.pkg CytoTRACE2} (native scop implementation)",
+    "Running {.pkg CytoTRACE2}",
     message_type = "running",
     verbose = verbose
   )

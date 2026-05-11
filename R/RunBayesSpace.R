@@ -6,7 +6,9 @@
 #' @param q Number of BayesSpace clusters.
 #' @param platform Spatial sequencing platform.
 #' @param image Name of the Seurat spatial image used to recover spot
-#' coordinates when they are not already present in metadata.
+#' coordinates when they are not already present in metadata. For regular
+#' Visium data with only pixel `x`/`y` coordinates, BayesSpace array
+#' coordinates are inferred from the spatial grid.
 #' @param use_reduction Optional Seurat reduction to pass to BayesSpace as PCA.
 #' @param dims Dimensions from `use_reduction` to use.
 #' @param preprocess Whether to run `BayesSpace::spatialPreprocess()`.
@@ -23,7 +25,25 @@
 #'
 #' @return A `Seurat` object with BayesSpace clusters in metadata and raw
 #' results in `srt@tools[["BayesSpace"]]`.
+#'
 #' @export
+#' @examples
+#' data(visium_human_pancreas_sub)
+#' spatial <- RunBayesSpace(
+#'   visium_human_pancreas_sub,
+#'   q = 3,
+#'   n.PCs = 5,
+#'   n.HVGs = 200,
+#'   store_sce = FALSE,
+#'   spatial_cluster_params = list(
+#'     nrep = 200,
+#'     burn.in = 50,
+#'     thin = 10,
+#'     save.chain = FALSE
+#'   )
+#' )
+#' table(spatial$BayesSpace_cluster)
+#' SpatialDimPlot(spatial, group.by = "BayesSpace_cluster")
 RunBayesSpace <- function(
   srt,
   q,
@@ -71,7 +91,8 @@ RunBayesSpace <- function(
   sce <- bayesspace_add_spatial_coords(
     srt = srt,
     sce = sce,
-    image = image
+    image = image,
+    platform = platform
   )
 
   use_dimred <- "PCA"
@@ -182,7 +203,12 @@ RunBayesSpace <- function(
   srt
 }
 
-bayesspace_add_spatial_coords <- function(srt, sce, image = NULL) {
+bayesspace_add_spatial_coords <- function(
+  srt,
+  sce,
+  image = NULL,
+  platform = "Visium"
+) {
   cdata <- as.data.frame(SummarizedExperiment::colData(sce))
   if (all(c("array_row", "array_col") %in% colnames(cdata))) {
     return(sce)
@@ -190,13 +216,10 @@ bayesspace_add_spatial_coords <- function(srt, sce, image = NULL) {
 
   coords <- bayesspace_get_seurat_coords(srt, image = image)
   if (is.null(coords)) {
-    log_message(
-      "BayesSpace requires spatial coordinates. Provide a Seurat object with image coordinates or metadata columns {.val array_row}/{.val array_col}.",
-      message_type = "error"
-    )
+    coords <- cdata
   }
 
-  coords <- bayesspace_normalize_coords(coords)
+  coords <- bayesspace_normalize_coords(coords, platform = platform)
   common <- intersect(colnames(sce), rownames(coords))
   if (length(common) == 0L) {
     log_message(
@@ -235,7 +258,7 @@ bayesspace_get_seurat_coords <- function(srt, image = NULL) {
   coords
 }
 
-bayesspace_normalize_coords <- function(coords) {
+bayesspace_normalize_coords <- function(coords, platform = "Visium") {
   coords <- as.data.frame(coords)
   row_col <- bayesspace_pick_col(coords, c("array_row", "row", "arrayrow"))
   col_col <- bayesspace_pick_col(coords, c("array_col", "col", "arraycol"))
@@ -248,8 +271,26 @@ bayesspace_normalize_coords <- function(coords) {
     c("pxl_col_in_fullres", "imagecol", "image_col", "x")
   )
   if (is.null(row_col) || is.null(col_col)) {
+    coords <- bayesspace_infer_array_coords_from_pixels(
+      coords = coords,
+      platform = platform,
+      pxl_row_col = pxl_row_col,
+      pxl_col_col = pxl_col_col
+    )
+    row_col <- "array_row"
+    col_col <- "array_col"
+    pxl_row_col <- bayesspace_pick_col(
+      coords,
+      c("pxl_row_in_fullres", "imagerow", "image_row", "y")
+    )
+    pxl_col_col <- bayesspace_pick_col(
+      coords,
+      c("pxl_col_in_fullres", "imagecol", "image_col", "x")
+    )
+  }
+  if (is.null(row_col) || is.null(col_col)) {
     log_message(
-      "BayesSpace coordinate table must contain array row/column coordinates",
+      "BayesSpace coordinate table must contain array row/column coordinates or regular pixel coordinates",
       message_type = "error"
     )
   }
@@ -267,6 +308,107 @@ bayesspace_normalize_coords <- function(coords) {
     out$pxl_col_in_fullres <- coords[[pxl_col_col]]
   }
   out
+}
+
+bayesspace_infer_array_coords_from_pixels <- function(
+  coords,
+  platform = "Visium",
+  pxl_row_col = NULL,
+  pxl_col_col = NULL
+) {
+  if (is.null(pxl_row_col) || is.null(pxl_col_col)) {
+    log_message(
+      "BayesSpace coordinate table must contain array row/column coordinates or pixel coordinate columns such as {.val x}/{.val y}",
+      message_type = "error"
+    )
+  }
+  pxl_row <- suppressWarnings(as.numeric(coords[[pxl_row_col]]))
+  pxl_col <- suppressWarnings(as.numeric(coords[[pxl_col_col]]))
+  keep <- is.finite(pxl_row) & is.finite(pxl_col)
+  if (sum(keep) < 3L) {
+    log_message(
+      "At least three finite spatial coordinate pairs are required to infer BayesSpace array coordinates",
+      message_type = "error"
+    )
+  }
+  platform <- match.arg(platform, c("Visium", "VisiumHD", "ST"))
+  if (platform == "Visium") {
+    array_row <- bayesspace_infer_axis_index(pxl_row)
+    same_row_diffs <- unlist(tapply(pxl_col, array_row, function(x) {
+      diff(sort(unique(x[is.finite(x)])))
+    }))
+    col_pair_step <- bayesspace_nearest_regular_step(same_row_diffs)
+    if (!is.finite(col_pair_step) || col_pair_step <= 0) {
+      log_message(
+        "Unable to infer Visium array columns from pixel coordinates",
+        message_type = "error"
+      )
+    }
+    array_col <- round((pxl_col - min(pxl_col, na.rm = TRUE)) /
+      (col_pair_step / 2))
+  } else {
+    array_row <- bayesspace_infer_axis_index(pxl_row)
+    array_col <- bayesspace_infer_axis_index(pxl_col)
+  }
+  if (any(!is.finite(array_row[keep])) || any(!is.finite(array_col[keep]))) {
+    log_message(
+      "Unable to infer BayesSpace array coordinates from pixel coordinates",
+      message_type = "error"
+    )
+  }
+  out <- data.frame(
+    array_row = as.integer(array_row),
+    array_col = as.integer(array_col),
+    row = as.integer(array_row),
+    col = as.integer(array_col),
+    pxl_row_in_fullres = pxl_row,
+    pxl_col_in_fullres = pxl_col,
+    row.names = rownames(coords),
+    stringsAsFactors = FALSE
+  )
+  out
+}
+
+bayesspace_infer_axis_index <- function(values) {
+  values <- suppressWarnings(as.numeric(values))
+  step <- bayesspace_regular_step(diff(sort(unique(values[is.finite(values)]))))
+  if (!is.finite(step) || step <= 0) {
+    log_message(
+      "Unable to infer regular spatial grid spacing from pixel coordinates",
+      message_type = "error"
+    )
+  }
+  round((values - min(values, na.rm = TRUE)) / step)
+}
+
+bayesspace_regular_step <- function(diffs) {
+  diffs <- as.numeric(diffs)
+  diffs <- diffs[is.finite(diffs) & diffs > 0]
+  if (length(diffs) == 0L) {
+    return(NA_real_)
+  }
+  baseline <- stats::median(diffs, na.rm = TRUE)
+  large <- diffs[diffs > baseline * 3]
+  if (length(large) == 0L) {
+    large <- diffs[diffs > max(1, baseline)]
+  }
+  if (length(large) == 0L) {
+    large <- diffs
+  }
+  stats::median(large, na.rm = TRUE)
+}
+
+bayesspace_nearest_regular_step <- function(diffs) {
+  diffs <- as.numeric(diffs)
+  diffs <- diffs[is.finite(diffs) & diffs > 0]
+  if (length(diffs) == 0L) {
+    return(NA_real_)
+  }
+  low <- diffs[diffs <= stats::quantile(diffs, 0.25, na.rm = TRUE)]
+  if (length(low) == 0L) {
+    low <- diffs
+  }
+  stats::median(low, na.rm = TRUE)
 }
 
 bayesspace_pick_col <- function(x, candidates) {

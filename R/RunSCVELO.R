@@ -120,10 +120,6 @@ RunSCVELO <- function(
     "scvelo",
     if (isTRUE(magic_impute)) "magic"
   ))
-  check_python("scvelo", verbose = verbose)
-  if (isTRUE(magic_impute)) {
-    check_python("magic-impute", verbose = verbose)
-  }
 
   plot_format <- match.arg(plot_format)
 
@@ -213,12 +209,19 @@ RunSCVELO <- function(
   args <- args[!names(args) %in% params]
 
   if (!is.null(srt)) {
+    old_skip_python_prepare <- getOption("scop_skip_python_prepare", FALSE)
+    options(scop_skip_python_prepare = TRUE)
+    on.exit(
+      options(scop_skip_python_prepare = old_skip_python_prepare),
+      add = TRUE
+    )
     args[["adata"]] <- srt_to_adata(
       srt = srt,
       assay_x = assay_x,
       layer_x = layer_x,
       assay_y = assay_y,
-      layer_y = layer_y
+      layer_y = layer_y,
+      verbose = verbose
     )
   }
 

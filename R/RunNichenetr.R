@@ -282,6 +282,11 @@ RunNichenetr <- function(
   )
 
   srt@tools[["Nichenetr"]] <- bundle
+  srt <- ccc_update_unified_bundle(
+    srt = srt,
+    method = "Nichenetr",
+    bundle = bundle
+  )
   log_message(
     "{.pkg NicheNet} analysis completed",
     message_type = "success",
@@ -475,6 +480,11 @@ RunMultiNichenetr <- function(
   )
 
   srt@tools[["MultiNichenetr"]] <- bundle
+  srt <- ccc_update_unified_bundle(
+    srt = srt,
+    method = "MultiNichenetr",
+    bundle = bundle
+  )
   log_message(
     "{.pkg MultiNicheNet} analysis completed",
     message_type = "success",

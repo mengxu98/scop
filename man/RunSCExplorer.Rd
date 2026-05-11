@@ -101,14 +101,13 @@ Default is \code{TRUE}.}
 Run SCExplorer
 }
 \examples{
-\dontrun{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 data(panc8_sub)
 panc8_sub <- integration_scop(
   panc8_sub,
   batch = "tech",
-  integration_method = "Seurat"
+  integration_method = "Harmony"
 )
 panc8_sub <- standard_scop(panc8_sub)
 
@@ -133,7 +132,7 @@ list.files("./SCExplorer")
 # Run shiny app
 if (interactive()) {
   check_r("shiny")
-  shiny::runApp(app)
+  get_namespace_fun("shiny", "runApp")(app)
 }
 # Note: If scop installed in the isolated environment using renv,
 # add `renv::activate(project = "path/to/scop_env")` to the app.R script.
@@ -155,7 +154,6 @@ if (interactive()) {
 
 ### step2: deploy the app
 # deployApp("./SCExplorer")
-}
 }
 \seealso{
 \link{CreateDataFile}, \link{CreateMetaFile}, \link{PrepareSCExplorer}, \link{FetchH5}
