@@ -90,7 +90,6 @@ It retrieves the necessary information from various annotation packages or exter
 The list contains the annotation data for each specified annotation source.
 }
 \examples{
-\dontrun{
 db_list <- PrepareDB(
   species = "Homo_sapiens",
   db = "GO_BP"
@@ -105,22 +104,25 @@ head(
 
 # Based on homologous gene conversion,
 # prepare a gene annotation database that originally does not exist in the species.
-db_list <- PrepareDB(
-  species = "Homo_sapiens",
-  db = "MP"
-)
-ListDB(
-  species = "Homo_sapiens",
-  db = "MP"
-)
-head(
-  db_list[["Homo_sapiens"]][["MP"]][["TERM2GENE"]]
-)
+if (interactive()) {
+  db_list <- PrepareDB(
+    species = "Homo_sapiens",
+    db = "MP"
+  )
+  ListDB(
+    species = "Homo_sapiens",
+    db = "MP"
+  )
+  head(
+    db_list[["Homo_sapiens"]][["MP"]][["TERM2GENE"]]
+  )
+}
 
 # Prepare databases for other species
 db_list <- PrepareDB(
   species = "Macaca_fascicularis",
-  db = "GO_BP"
+  db = "GO_BP",
+  convert_species = TRUE
 )
 ListDB(
   species = "Macaca_fascicularis",
@@ -186,7 +188,6 @@ db_list <- PrepareDB(species = "Mus_musculus", db = "CellCycle")
 head(
   db_list[["Mus_musculus"]][["CellCycle"]][["TERM2GENE"]]
 )
-}
 }
 \seealso{
 \link{ListDB}

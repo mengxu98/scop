@@ -51,7 +51,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' db_list <- PrepareDB(
 #'   species = "Homo_sapiens",
 #'   db = "GO_BP"
@@ -66,22 +65,25 @@
 #'
 #' # Based on homologous gene conversion,
 #' # prepare a gene annotation database that originally does not exist in the species.
-#' db_list <- PrepareDB(
-#'   species = "Homo_sapiens",
-#'   db = "MP"
-#' )
-#' ListDB(
-#'   species = "Homo_sapiens",
-#'   db = "MP"
-#' )
-#' head(
-#'   db_list[["Homo_sapiens"]][["MP"]][["TERM2GENE"]]
-#' )
+#' if (interactive()) {
+#'   db_list <- PrepareDB(
+#'     species = "Homo_sapiens",
+#'     db = "MP"
+#'   )
+#'   ListDB(
+#'     species = "Homo_sapiens",
+#'     db = "MP"
+#'   )
+#'   head(
+#'     db_list[["Homo_sapiens"]][["MP"]][["TERM2GENE"]]
+#'   )
+#' }
 #'
 #' # Prepare databases for other species
 #' db_list <- PrepareDB(
 #'   species = "Macaca_fascicularis",
-#'   db = "GO_BP"
+#'   db = "GO_BP",
+#'   convert_species = TRUE
 #' )
 #' ListDB(
 #'   species = "Macaca_fascicularis",
@@ -147,7 +149,6 @@
 #' head(
 #'   db_list[["Mus_musculus"]][["CellCycle"]][["TERM2GENE"]]
 #' )
-#' }
 PrepareDB <- function(
   species = c("Homo_sapiens", "Mus_musculus"),
   db = c(
@@ -450,13 +451,11 @@ PrepareDB <- function(
         "Enzyme"
       )
       if (any(orgdb_dependent %in% db)) {
-        status <- tryCatch(
-          {
-            check_r(c(org_sp, "GO.db", "GOSemSim"), verbose = FALSE)
-          },
+        tryCatch(
+          check_r(c(org_sp, "GO.db", "GOSemSim"), verbose = FALSE),
           error = identity
         )
-        if (inherits(status, "error")) {
+        if (!requireNamespace(org_sp, quietly = TRUE)) {
           log_message(
             "Annotation package {.pkg {org_sp}} does not exist",
             message_type = "warning"
@@ -473,6 +472,11 @@ PrepareDB <- function(
             log_message(
               "Stop the preparation",
               message_type = "error"
+            )
+            stop(
+              "Required annotation package is not available: ",
+              org_sp,
+              call. = FALSE
             )
           }
         }
@@ -2921,18 +2925,37 @@ PrepareDB <- function(
           )
           rownames(map) <- map[, 1]
         } else {
-          res <- GeneConvert(
+          map <- preparedb_local_orgdb_id_map(
             geneID = as.character(unique(TERM2GENE[, 2])),
             geneID_from_IDtype = IDtype,
             geneID_to_IDtype = IDtypes,
-            species_from = sps,
-            species_to = sps,
-            Ensembl_version = Ensembl_version,
-            mirror = mirror,
-            biomart = biomart,
-            max_tries = max_tries
+            org_sp = org_sp,
+            org_key = org_key,
+            verbose = verbose
           )
-          if (is.null(res$geneID_res)) {
+          if (is.null(map)) {
+            res <- GeneConvert(
+              geneID = as.character(unique(TERM2GENE[, 2])),
+              geneID_from_IDtype = IDtype,
+              geneID_to_IDtype = IDtypes,
+              species_from = sps,
+              species_to = sps,
+              Ensembl_version = Ensembl_version,
+              mirror = mirror,
+              biomart = biomart,
+              max_tries = max_tries
+            )
+            if (is.null(res$geneID_res)) {
+              log_message(
+                "Failed to convert ID types for the database: {.val {term}}",
+                message_type = "warning",
+                verbose = verbose
+              )
+              next
+            }
+            map <- res$geneID_collapse
+          }
+          if (is.null(map) || nrow(map) == 0) {
             log_message(
               "Failed to convert ID types for the database: {.val {term}}",
               message_type = "warning",
@@ -2940,7 +2963,6 @@ PrepareDB <- function(
             )
             next
           }
-          map <- res$geneID_collapse
         }
         for (type in IDtypes) {
           TERM2GENE[[type]] <- map[as.character(TERM2GENE[, 2]), type]
@@ -2965,6 +2987,91 @@ PrepareDB <- function(
     }
   }
   return(db_list)
+}
+
+preparedb_local_orgdb_id_map <- function(
+  geneID,
+  geneID_from_IDtype,
+  geneID_to_IDtype,
+  org_sp,
+  org_key,
+  verbose = TRUE
+) {
+  if (is.null(org_sp) || !requireNamespace(org_sp, quietly = TRUE)) {
+    return(NULL)
+  }
+  idtype_to_orgdb_column <- function(idtype) {
+    switch(tolower(idtype),
+      "symbol" = "SYMBOL",
+      "ensembl_id" = "ENSEMBL",
+      "entrez_id" = org_key,
+      "tair_locus" = "TAIR",
+      "sgd_gene" = "SGD",
+      NA_character_
+    )
+  }
+  from_column <- idtype_to_orgdb_column(geneID_from_IDtype)
+  to_columns <- stats::setNames(
+    vapply(geneID_to_IDtype, idtype_to_orgdb_column, character(1)),
+    geneID_to_IDtype
+  )
+  if (is.na(from_column) || any(is.na(to_columns))) {
+    return(NULL)
+  }
+  orgdb <- get(org_sp, envir = asNamespace(org_sp))
+  columns_available <- AnnotationDbi::columns(orgdb)
+  columns_needed <- unique(c(from_column, to_columns))
+  if (any(!columns_needed %in% columns_available)) {
+    return(NULL)
+  }
+  geneID <- unique(stats::na.omit(as.character(geneID)))
+  geneID <- geneID[nzchar(geneID)]
+  if (length(geneID) == 0) {
+    return(NULL)
+  }
+  map <- tryCatch(
+    {
+      suppressMessages(
+        AnnotationDbi::select(
+          orgdb,
+          keys = geneID,
+          keytype = from_column,
+          columns = unique(to_columns)
+        )
+      )
+    },
+    error = function(e) NULL
+  )
+  if (is.null(map) || nrow(map) == 0) {
+    return(NULL)
+  }
+  map <- map[
+    !is.na(map[[from_column]]) & map[[from_column]] %in% geneID, ,
+    drop = FALSE
+  ]
+  if (nrow(map) == 0) {
+    return(NULL)
+  }
+  for (type in names(to_columns)) {
+    if (!identical(type, to_columns[[type]])) {
+      map[[type]] <- map[[to_columns[[type]]]]
+    }
+  }
+  map <- map[, unique(c(from_column, names(to_columns))), drop = FALSE]
+  map <- stats::aggregate(
+    map[, names(to_columns), drop = FALSE],
+    by = list(map[[from_column]]),
+    FUN = function(x) {
+      list(unique(x[!is.na(x) & nzchar(as.character(x))]))
+    }
+  )
+  rownames(map) <- map[, 1]
+  map <- map[, -1, drop = FALSE]
+  log_message(
+    "Converted ID types using local annotation package {.pkg {org_sp}}",
+    verbose = verbose
+  )
+  map
 }
 
 kegg_get <- function(url) {
