@@ -78,8 +78,8 @@ gene_set_scoring_normalize_chunk_size <- function(
   as.integer(chunk_size_num)
 }
 
-run_aucell_cpp_scores <- function(expr_counts, gene_sets, strategy = c("sparse", "topk", "full")) {
-  if (!run_aucell_cpp_available()) {
+run_aucell_scores <- function(expr_counts, gene_sets, strategy = c("sparse", "topk", "full")) {
+  if (!run_aucell_available()) {
     log_message(
       "{.arg backend = 'cpp'} requires the compiled {.pkg scop} shared library. Reinstall the package to build native code.",
       message_type = "error"
@@ -102,7 +102,7 @@ run_aucell_cpp_scores <- function(expr_counts, gene_sets, strategy = c("sparse",
 
   expr_counts <- gene_set_scoring_to_dgC(expr_counts)
   auc_max_rank <- ceiling(0.05 * nrow(expr_counts))
-  scores <- aucell_auc_sparse_cpp(
+  scores <- aucell_auc_sparse(
     expr = expr_counts,
     gene_sets = gene_set_idx,
     auc_max_rank = as.integer(auc_max_rank),
@@ -113,7 +113,7 @@ run_aucell_cpp_scores <- function(expr_counts, gene_sets, strategy = c("sparse",
   scores
 }
 
-run_seurat_module_cpp_scores <- function(
+run_seurat_module_scores <- function(
   expr_data,
   features,
   pool = NULL,
@@ -121,7 +121,7 @@ run_seurat_module_cpp_scores <- function(
   ctrl = 100,
   seed = 11
 ) {
-  if (!run_seurat_module_cpp_available()) {
+  if (!run_seurat_module_available()) {
     log_message(
       "{.arg backend = 'cpp'} requires the compiled {.pkg scop} shared library. Reinstall the package to build native code.",
       message_type = "error"
@@ -186,7 +186,7 @@ run_seurat_module_cpp_scores <- function(
     as.integer(idx[!is.na(idx)])
   })
 
-  scores <- module_score_sparse_cpp(
+  scores <- module_score_sparse(
     expr = expr_data,
     feature_sets = feature_idx,
     control_sets = control_idx
@@ -195,7 +195,7 @@ run_seurat_module_cpp_scores <- function(
   scores
 }
 
-run_gsva_cpp_scores <- function(
+run_gsva_scores <- function(
   expr_counts,
   gene_sets,
   kcdf = c("Poisson", "Gaussian"),
@@ -207,7 +207,7 @@ run_gsva_cpp_scores <- function(
   chunk_size = NULL
 ) {
   kcdf <- match.arg(kcdf)
-  if (!run_gsva_cpp_available(kcdf = kcdf)) {
+  if (!run_gsva_available(kcdf = kcdf)) {
     log_message(
       "{.arg backend = 'cpp'} requires the compiled {.pkg scop} shared library. Reinstall the package to build native code.",
       message_type = "error"
@@ -239,7 +239,7 @@ run_gsva_cpp_scores <- function(
 
   scores <- switch(
     kcdf,
-    Gaussian = gsva_gaussian_dense_cpp(
+    Gaussian = gsva_gaussian_dense(
       expr = expr_counts,
       gene_sets = gene_set_idx,
       max_diff = max_diff,
@@ -247,7 +247,7 @@ run_gsva_cpp_scores <- function(
       tau = tau,
       chunk_size = chunk_size
     ),
-    Poisson = gsva_poisson_dense_cpp(
+    Poisson = gsva_poisson_dense(
       expr = expr_counts,
       gene_sets = gene_set_idx,
       max_diff = max_diff,
@@ -260,7 +260,7 @@ run_gsva_cpp_scores <- function(
   scores
 }
 
-run_ssgsea_cpp_scores <- function(
+run_ssgsea_scores <- function(
   expr_counts,
   gene_sets,
   min_gs_size = 10,
@@ -268,7 +268,7 @@ run_ssgsea_cpp_scores <- function(
   alpha = 0.25,
   normalize = TRUE
 ) {
-  if (!run_ssgsea_cpp_available()) {
+  if (!run_ssgsea_available()) {
     log_message(
       "{.arg backend = 'cpp'} requires the compiled {.pkg scop} shared library. Reinstall the package to build native code.",
       message_type = "error"
@@ -293,7 +293,7 @@ run_ssgsea_cpp_scores <- function(
     )
   }
 
-  scores <- ssgsea_rank_dense_cpp(
+  scores <- ssgsea_rank_dense(
     expr = expr_counts,
     gene_sets = gene_set_idx,
     alpha = alpha,
@@ -303,13 +303,13 @@ run_ssgsea_cpp_scores <- function(
   scores
 }
 
-run_zscore_cpp_scores <- function(
+run_zscore_scores <- function(
   expr_counts,
   gene_sets,
   min_gs_size = 10,
   max_gs_size = 500
 ) {
-  if (!run_zscore_cpp_available()) {
+  if (!run_zscore_available()) {
     log_message(
       "{.arg backend = 'cpp'} requires the compiled {.pkg scop} shared library. Reinstall the package to build native code.",
       message_type = "error"
@@ -339,7 +339,7 @@ run_zscore_cpp_scores <- function(
   } else {
     .Machine$integer.max
   }
-  scores <- zscore_dense_cpp(
+  scores <- zscore_dense(
     expr = expr_counts,
     gene_sets = gene_set_idx,
     min_size = as.integer(min_gs_size),
@@ -349,13 +349,13 @@ run_zscore_cpp_scores <- function(
   gene_set_scoring_drop_invalid_score_sets(scores)
 }
 
-run_plage_cpp_scores <- function(
+run_plage_scores <- function(
   expr_counts,
   gene_sets,
   min_gs_size = 10,
   max_gs_size = 500
 ) {
-  if (!run_plage_cpp_available()) {
+  if (!run_plage_available()) {
     log_message(
       "{.arg backend = 'cpp'} requires the compiled {.pkg scop} shared library. Reinstall the package to build native code.",
       message_type = "error"
@@ -385,7 +385,7 @@ run_plage_cpp_scores <- function(
   } else {
     .Machine$integer.max
   }
-  scores <- plage_dense_cpp(
+  scores <- plage_dense(
     expr = expr_counts,
     gene_sets = gene_set_idx,
     min_size = as.integer(min_gs_size),
@@ -423,44 +423,44 @@ orient_plage_scores <- function(scores, expr, gene_sets) {
   scores
 }
 
-run_aucell_cpp_available <- function() {
-  exists("aucell_auc_sparse_cpp", mode = "function") &&
-    isTRUE(is.loaded("_scop_aucell_auc_sparse_cpp"))
+run_aucell_available <- function() {
+  exists("aucell_auc_sparse", mode = "function") &&
+    isTRUE(is.loaded("_scop_aucell_auc_sparse"))
 }
 
-run_seurat_module_cpp_available <- function() {
-  exists("module_score_sparse_cpp", mode = "function") &&
-    isTRUE(is.loaded("_scop_module_score_sparse_cpp"))
+run_seurat_module_available <- function() {
+  exists("module_score_sparse", mode = "function") &&
+    isTRUE(is.loaded("_scop_module_score_sparse"))
 }
 
-run_gsva_cpp_available <- function(kcdf = c("Poisson", "Gaussian")) {
+run_gsva_available <- function(kcdf = c("Poisson", "Gaussian")) {
   kcdf <- match.arg(kcdf)
   if (identical(kcdf, "Gaussian")) {
-    exists("gsva_gaussian_dense_cpp", mode = "function") &&
-      isTRUE(is.loaded("_scop_gsva_gaussian_dense_cpp"))
+    exists("gsva_gaussian_dense", mode = "function") &&
+      isTRUE(is.loaded("_scop_gsva_gaussian_dense"))
   } else {
-    exists("gsva_poisson_dense_cpp", mode = "function") &&
-      isTRUE(is.loaded("_scop_gsva_poisson_dense_cpp"))
+    exists("gsva_poisson_dense", mode = "function") &&
+      isTRUE(is.loaded("_scop_gsva_poisson_dense"))
   }
 }
 
-run_ssgsea_cpp_available <- function() {
-  exists("ssgsea_rank_dense_cpp", mode = "function") &&
-    isTRUE(is.loaded("_scop_ssgsea_rank_dense_cpp"))
+run_ssgsea_available <- function() {
+  exists("ssgsea_rank_dense", mode = "function") &&
+    isTRUE(is.loaded("_scop_ssgsea_rank_dense"))
 }
 
-run_zscore_cpp_available <- function() {
-  exists("zscore_dense_cpp", mode = "function") &&
-    isTRUE(is.loaded("_scop_zscore_dense_cpp"))
+run_zscore_available <- function() {
+  exists("zscore_dense", mode = "function") &&
+    isTRUE(is.loaded("_scop_zscore_dense"))
 }
 
-run_plage_cpp_available <- function() {
-  exists("plage_dense_cpp", mode = "function") &&
-    isTRUE(is.loaded("_scop_plage_dense_cpp"))
+run_plage_available <- function() {
+  exists("plage_dense", mode = "function") &&
+    isTRUE(is.loaded("_scop_plage_dense"))
 }
 
-run_metabolism_auc_cpp <- function(expr_counts, gene_sets, strategy = c("sparse", "topk", "full")) {
-  run_aucell_cpp_scores(
+run_metabolism_auc <- function(expr_counts, gene_sets, strategy = c("sparse", "topk", "full")) {
+  run_aucell_scores(
     expr_counts = expr_counts,
     gene_sets = gene_sets,
     strategy = strategy
