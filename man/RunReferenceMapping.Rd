@@ -114,7 +114,6 @@ anchors to an RNA reference, integrates the query into the reference embedding
 space, transfers labels, and projects query cells to the reference UMAP.
 }
 \examples{
-\dontrun{
 data("pbmcmultiome_sub", package = "scop")
 pbmcmultiome_sub <- standard_scop(
   pbmcmultiome_sub,
@@ -140,5 +139,4 @@ query <- RunReferenceMapping(
   reference_dims = 1:10,
   dims = 2:10
 )
-}
 }

@@ -150,7 +150,6 @@ Default is \code{11}.}
 The WNN integration function
 }
 \examples{
-\dontrun{
 data("pbmcmultiome_sub", package = "scop")
 pbmcmultiome_sub$batch <- rep(c("batch1", "batch2"), length.out = ncol(pbmcmultiome_sub))
 pbmcmultiome_sub <- WNN_integrate(
@@ -159,5 +158,4 @@ pbmcmultiome_sub <- WNN_integrate(
   linear_reduction_dims = 20,
   linear_reduction_dims_use = 1:10
 )
-}
 }

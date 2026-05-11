@@ -233,7 +233,6 @@ VolcanoPlot(
   ncol = 2
 )
 
-\dontrun{
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
   group.by = "CellType",
@@ -250,7 +249,6 @@ VolcanoPlot(
   enrich_db = "GO_BP",
   ncol = 2
 )
-}
 }
 \seealso{
 \link{DEtestPlot}, \link{RunDEtest}, \link{DEtestManhattanPlot}, \link{DEtestRingPlot}
