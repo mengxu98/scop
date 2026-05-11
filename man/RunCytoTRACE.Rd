@@ -128,9 +128,12 @@ pancreas_sub <- RunCytoTRACE(
   pancreas_sub,
   species = "Mus_musculus"
 )
+
 CytoTRACEPlot(
   pancreas_sub,
-  group.by = "CellType"
+  xlab = "UMAP_1",
+  ylab = "UMAP_2",
+  ncol = 2
 )
 }
 \references{

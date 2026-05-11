@@ -37,7 +37,9 @@ additional \code{ChromatinAssay} will be preprocessed sequentially.}
 \item{platform}{Spatial sequencing platform.}
 
 \item{image}{Name of the Seurat spatial image used to recover spot
-coordinates when they are not already present in metadata.}
+coordinates when they are not already present in metadata. For regular
+Visium data with only pixel \code{x}/\code{y} coordinates, BayesSpace array
+coordinates are inferred from the spatial grid.}
 
 \item{use_reduction}{Optional Seurat reduction to pass to BayesSpace as PCA.}
 
@@ -71,4 +73,22 @@ results in \code{srt@tools[["BayesSpace"]]}.
 }
 \description{
 Run BayesSpace spatial clustering
+}
+\examples{
+data(visium_human_pancreas_sub)
+spatial <- RunBayesSpace(
+  visium_human_pancreas_sub,
+  q = 3,
+  n.PCs = 5,
+  n.HVGs = 200,
+  store_sce = FALSE,
+  spatial_cluster_params = list(
+    nrep = 200,
+    burn.in = 50,
+    thin = 10,
+    save.chain = FALSE
+  )
+)
+table(spatial$BayesSpace_cluster)
+SpatialDimPlot(spatial, group.by = "BayesSpace_cluster")
 }
