@@ -1,6 +1,5 @@
-^requirements\.txt$
-^renv$
 ^renv\.lock$
+^renv$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^_pkgdown\.yml$
@@ -19,9 +18,12 @@
 ^test.R$
 ^scripts$
 ^\.codex$
+^\.cc-connect$
+^omnipathr-log$
 ^plan$
 ^paper$
 ^dev$
+^tmp$
 ^Rplots\.pdf$
 (^|/)\.DS_Store$
 ^\.Rhistory$

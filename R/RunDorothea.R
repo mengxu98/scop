@@ -3,6 +3,7 @@
 #' @md
 #' @inheritParams standard_scop
 #' @inheritParams thisutils::log_message
+#' @param layer Assay layer used as the expression matrix.
 #' @param species Species used to select bundled DoRothEA regulons.
 #' @param confidence DoRothEA confidence levels to keep.
 #' @param regulons Optional regulon table with `tf`, `target`, `mor`, and
