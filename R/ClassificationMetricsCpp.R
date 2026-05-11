@@ -18,8 +18,8 @@ classification_metrics_compute <- function(predicted, truth, rare_threshold = 0.
   }
 
   classes <- sort(unique(c(predicted, truth)))
-  if (classification_metrics_cpp_available()) {
-    classification_metrics_cpp(
+  if (classification_metrics_available()) {
+    classification_metrics(
       predicted = predicted,
       truth = truth,
       classes = classes,
@@ -86,7 +86,7 @@ classification_metrics_class_table_r <- function(predicted, truth, classes = sor
   do.call(rbind, res)
 }
 
-classification_metrics_cpp_available <- function() {
-  exists("classification_metrics_cpp", mode = "function") &&
-    isTRUE(is.loaded("_scop_classification_metrics_cpp"))
+classification_metrics_available <- function() {
+  exists("classification_metrics", mode = "function") &&
+    isTRUE(is.loaded("_scop_classification_metrics"))
 }

@@ -8,7 +8,7 @@
 
 using namespace Rcpp;
 
-static double metric_choose2_cpp(double x) {
+static double metric_choose2(double x) {
   return x * (x - 1.0) / 2.0;
 }
 
@@ -44,7 +44,7 @@ static double metric_mean_na_rm_std(const std::vector<double>& x) {
   return total / static_cast<double>(n);
 }
 
-static double metric_entropy_cpp(const std::vector<double>& counts, double n) {
+static double metric_entropy(const std::vector<double>& counts, double n) {
   if (n <= 0.0) {
     return 0.0;
   }
@@ -59,7 +59,7 @@ static double metric_entropy_cpp(const std::vector<double>& counts, double n) {
 }
 
 // [[Rcpp::export]]
-List classification_metrics_cpp(
+List classification_metrics(
   CharacterVector predicted,
   CharacterVector truth,
   CharacterVector classes,
@@ -163,16 +163,16 @@ List classification_metrics_cpp(
 
   double sum_nij = 0.0;
   for (std::size_t i = 0; i < tab.size(); ++i) {
-    sum_nij += metric_choose2_cpp(tab[i]);
+    sum_nij += metric_choose2(tab[i]);
   }
   double sum_a = 0.0;
   double sum_b = 0.0;
   for (int cls = 0; cls < n_classes; ++cls) {
-    sum_a += metric_choose2_cpp(row_sum[cls]);
-    sum_b += metric_choose2_cpp(col_sum[cls]);
+    sum_a += metric_choose2(row_sum[cls]);
+    sum_b += metric_choose2(col_sum[cls]);
   }
 
-  const double choose_n = metric_choose2_cpp(n);
+  const double choose_n = metric_choose2(n);
   double ari = NA_REAL;
   if (choose_n > 0.0) {
     const double expected = sum_a * sum_b / choose_n;
@@ -194,8 +194,8 @@ List classification_metrics_cpp(
       }
     }
   }
-  const double hx = metric_entropy_cpp(row_sum, n);
-  const double hy = metric_entropy_cpp(col_sum, n);
+  const double hx = metric_entropy(row_sum, n);
+  const double hy = metric_entropy(col_sum, n);
   const double nmi = (hx + hy) == 0.0 ? NA_REAL : 2.0 * mi / (hx + hy);
 
   std::vector<double> rare_recalls;

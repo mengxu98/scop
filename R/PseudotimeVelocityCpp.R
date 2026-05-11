@@ -1,8 +1,8 @@
 # C++-accelerated pseudotime velocity computation
 # Internal helper functions
 
-run_pseudotime_velocity_knn_cpp <- function(x_emb, pseudotime, neighbors, normalize = TRUE) {
-  if (!run_pseudotime_velocity_knn_cpp_available()) {
+run_pseudotime_velocity_knn <- function(x_emb, pseudotime, neighbors, normalize = TRUE) {
+  if (!run_pseudotime_velocity_knn_available()) {
     log_message(
       "{.arg backend = 'cpp'} requires the compiled {.pkg scop} shared library. Reinstall the package to build native code.",
       message_type = "error"
@@ -16,7 +16,7 @@ run_pseudotime_velocity_knn_cpp <- function(x_emb, pseudotime, neighbors, normal
     neighbors <- as.matrix(neighbors)
   }
   storage.mode(neighbors) <- "integer"
-  pseudotime_velocity_knn_cpp(
+  pseudotime_velocity_knn(
     x_emb = x_emb,
     pseudotime = as.numeric(pseudotime),
     neighbors = neighbors,
@@ -24,13 +24,13 @@ run_pseudotime_velocity_knn_cpp <- function(x_emb, pseudotime, neighbors, normal
   )
 }
 
-run_pseudotime_velocity_knn_cpp_available <- function() {
-  exists("pseudotime_velocity_knn_cpp", mode = "function") &&
-    isTRUE(is.loaded("_scop_pseudotime_velocity_knn_cpp"))
+run_pseudotime_velocity_knn_available <- function() {
+  exists("pseudotime_velocity_knn", mode = "function") &&
+    isTRUE(is.loaded("_scop_pseudotime_velocity_knn"))
 }
 
-run_pseudotime_velocity_gradient_cpp <- function(x_emb, pseudotime, neighbors, smooth = 0.5, normalize = TRUE) {
-  if (!run_pseudotime_velocity_gradient_cpp_available()) {
+run_pseudotime_velocity_gradient <- function(x_emb, pseudotime, neighbors, smooth = 0.5, normalize = TRUE) {
+  if (!run_pseudotime_velocity_gradient_available()) {
     log_message(
       "{.arg backend = 'cpp'} requires the compiled {.pkg scop} shared library. Reinstall the package to build native code.",
       message_type = "error"
@@ -44,7 +44,7 @@ run_pseudotime_velocity_gradient_cpp <- function(x_emb, pseudotime, neighbors, s
     neighbors <- as.matrix(neighbors)
   }
   storage.mode(neighbors) <- "integer"
-  pseudotime_velocity_gradient_cpp(
+  pseudotime_velocity_gradient(
     x_emb = x_emb,
     pseudotime = as.numeric(pseudotime),
     neighbors = neighbors,
@@ -53,9 +53,9 @@ run_pseudotime_velocity_gradient_cpp <- function(x_emb, pseudotime, neighbors, s
   )
 }
 
-run_pseudotime_velocity_gradient_cpp_available <- function() {
-  exists("pseudotime_velocity_gradient_cpp", mode = "function") &&
-    isTRUE(is.loaded("_scop_pseudotime_velocity_gradient_cpp"))
+run_pseudotime_velocity_gradient_available <- function() {
+  exists("pseudotime_velocity_gradient", mode = "function") &&
+    isTRUE(is.loaded("_scop_pseudotime_velocity_gradient"))
 }
 
 .neighbors_list_to_matrix <- function(neighbors_list, k) {

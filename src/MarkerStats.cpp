@@ -238,7 +238,7 @@ static double sparse_wilcox_two_sided_p_all_cells(
 }
 
 // [[Rcpp::export]]
-NumericVector wilcox_rank_sum_sparse_cpp(
+NumericVector wilcox_rank_sum_sparse(
   S4 mat,
   int n_group1,
   double min_expression = 0.0
@@ -274,7 +274,7 @@ NumericVector wilcox_rank_sum_sparse_cpp(
 }
 
 // [[Rcpp::export]]
-NumericVector wilcox_rank_sum_sparse_all_cells_cpp(
+NumericVector wilcox_rank_sum_sparse_all_cells(
   S4 mat,
   int n_group1
 ) {

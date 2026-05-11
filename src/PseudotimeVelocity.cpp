@@ -245,7 +245,7 @@ void normalize_velocity_rows(arma::mat& v_emb) {
 }  // namespace
 
 // [[Rcpp::export]]
-NumericMatrix pseudotime_velocity_knn_cpp(
+NumericMatrix pseudotime_velocity_knn(
     NumericMatrix x_emb,
     NumericVector pseudotime,
     IntegerMatrix neighbors,
@@ -293,7 +293,7 @@ NumericMatrix pseudotime_velocity_knn_cpp(
 }
 
 // [[Rcpp::export]]
-NumericMatrix pseudotime_velocity_gradient_cpp(
+NumericMatrix pseudotime_velocity_gradient(
     NumericMatrix x_emb,
     NumericVector pseudotime,
     IntegerMatrix neighbors,

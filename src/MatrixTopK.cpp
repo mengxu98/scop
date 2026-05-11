@@ -46,7 +46,7 @@ static bool column_topk_asc(const ColumnTopKEntry& a, const ColumnTopKEntry& b) 
 }
 
 // [[Rcpp::export]]
-List sparse_topk_by_column_cpp(S4 mat, int k, bool decreasing = true) {
+List sparse_topk_by_column(S4 mat, int k, bool decreasing = true) {
   if (k < 1) {
     stop("k must be positive");
   }
@@ -109,7 +109,7 @@ List sparse_topk_by_column_cpp(S4 mat, int k, bool decreasing = true) {
 }
 
 // [[Rcpp::export]]
-List dense_topk_by_column_cpp(NumericMatrix mat, int k, bool decreasing = false) {
+List dense_topk_by_column(NumericMatrix mat, int k, bool decreasing = false) {
   if (k < 1) {
     stop("k must be positive");
   }
