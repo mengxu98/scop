@@ -178,6 +178,11 @@ RunCellphoneDB <- function(
   }
 
   srt@tools[["CellphoneDB"]] <- bundle
+  srt <- ccc_update_unified_bundle(
+    srt = srt,
+    method = "CellphoneDB",
+    bundle = bundle
+  )
 
   log_message(
     "{.pkg CellphoneDB} analysis completed",
@@ -211,39 +216,13 @@ build_cpdb_adata <- function(
       "Converting {.val {species}} genes to human ortholog symbols for {.pkg CellphoneDB}",
       verbose = verbose
     )
-    conv <- GeneConvert(
-      geneID = rownames(mat),
+    mat <- ConvertHomologs(
+      object = mat,
       geneID_from_IDtype = gene_id_from_IDtype,
       geneID_to_IDtype = "symbol",
       species_from = species,
       species_to = "Homo_sapiens",
       verbose = verbose
-    )
-    map <- conv$geneID_expand
-    to_col <- setdiff(
-      colnames(map),
-      c("from_IDtype", "from_geneID", "to_IDtype")
-    )
-    to_col <- to_col[1]
-    if (is.null(to_col) || is.na(to_col)) {
-      log_message(
-        "Failed to infer converted gene symbol column from {.fn GeneConvert}",
-        message_type = "error"
-      )
-    }
-    map <- map[, c("from_geneID", to_col), drop = FALSE]
-    colnames(map) <- c("from_geneID", "to_geneID")
-    map <- map[!is.na(map$to_geneID) & nzchar(map$to_geneID), , drop = FALSE]
-    map <- map[map$from_geneID %in% rownames(mat), , drop = FALSE]
-    if (nrow(map) == 0L) {
-      log_message(
-        "No orthologs remained after gene conversion",
-        message_type = "error"
-      )
-    }
-    mat <- thisutils::collapse_sparse_rows(
-      mat[map$from_geneID, , drop = FALSE],
-      group = map$to_geneID
     )
     converted <- TRUE
   }
