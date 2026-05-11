@@ -63,6 +63,8 @@ If \code{NULL}, the default assay of the Seurat object will be used.
 When the object also contains \code{ChromatinAssay}, the default assay and
 additional \code{ChromatinAssay} will be preprocessed sequentially.}
 
+\item{layer}{Layer name in \code{srt} used for pseudobulk counts.}
+
 \item{bulk_assay}{Assay name in \code{bulk_se} used as counts matrix.}
 
 \item{ref_assay}{Assay name in \code{ref_srt} for reference profiles.}
