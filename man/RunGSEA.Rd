@@ -143,7 +143,6 @@ Enrichment result is a list with the following component:
 Perform the enrichment analysis (GSEA) on the genes
 }
 \examples{
-\dontrun{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunDEtest(
@@ -231,7 +230,6 @@ GSEAPlot(
   group.by = "CellType",
   plot_type = "comparison"
 )
-}
 }
 \seealso{
 \link{PrepareDB}, \link{ListDB}, \link{GSEAPlot}, \link{RunEnrichment}, \link{EnrichmentPlot}
