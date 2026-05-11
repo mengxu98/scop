@@ -11,6 +11,7 @@ DEtestRingPlot(
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,
+  group_use = NULL,
   DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
   group_palette = "Chinese",
   group_palcolor = NULL,
@@ -62,11 +63,16 @@ DEtestRingPlot(
   `p_val_adj`, and optionally `pct.1` and `pct.2` for calculating
   `diff_pct`.
 
+- group_use:
+
+  Groups to plot. Default is `NULL` (all groups).
+
 - DE_threshold:
 
   A character string specifying the threshold for differential
   expression (used to highlight significant genes in all plot types).
-  Default is `"avg_log2FC > 0 & p_val_adj < 0.05"`.
+  Default is `"p_val < 0.05"` for sample-level methods (`"edgeR"` and
+  `"limma"`) and `"avg_log2FC > 0 & p_val_adj < 0.05"` otherwise.
 
 - group_palette:
 
@@ -186,34 +192,41 @@ DEtestRingPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-02 04:22:40] Start standard processing workflow...
-#> ℹ [2026-05-02 04:22:40] Checking a list of <Seurat>...
-#> ! [2026-05-02 04:22:40] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-02 04:22:40] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-02 04:22:42] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-02 04:22:43] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-02 04:22:43] Number of available HVF: 2000
-#> ℹ [2026-05-02 04:22:43] Finished check
-#> ℹ [2026-05-02 04:22:43] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-02 04:22:44] Perform pca linear dimension reduction
-#> ℹ [2026-05-02 04:22:44] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-05-02 04:22:44] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-02 04:22:44] Reorder clusters...
-#> ℹ [2026-05-02 04:22:45] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-02 04:22:45] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-02 04:22:45] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-05-02 04:22:48] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-05-02 04:22:51] Standard processing workflow completed
+#> ℹ [2026-05-11 14:50:44] Start standard processing workflow...
+#> ℹ [2026-05-11 14:50:44] Checking a list of <Seurat>...
+#> ! [2026-05-11 14:50:44] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-11 14:50:44] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 14:50:46] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 14:50:46] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-11 14:50:46] Number of available HVF: 2000
+#> ℹ [2026-05-11 14:50:47] Finished check
+#> ℹ [2026-05-11 14:50:47] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-11 14:50:47] Perform pca linear dimension reduction
+#> ℹ [2026-05-11 14:50:47] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-05-11 14:50:48] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-11 14:50:48] Reorder clusters...
+#> ℹ [2026-05-11 14:50:48] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-11 14:50:48] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-11 14:50:48] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-05-11 14:50:52] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-05-11 14:50:55] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
   only.pos = FALSE
 )
-#> Error in run_sparse_wilcox_all_cells_cpp_available(): could not find function "run_sparse_wilcox_all_cells_cpp_available"
+#> ℹ [2026-05-11 14:50:55] Data type is log-normalized
+#> ℹ [2026-05-11 14:50:55] Start differential expression test
+#> ℹ [2026-05-11 14:50:55] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-05-11 14:50:55] Using 1 core
+#> ⠙ [2026-05-11 14:50:55] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ⠹ [2026-05-11 14:50:55] Running for Ngn3-high-EP [2/5] ■■■■        40% | ETA:  …
+#> ✔ [2026-05-11 14:50:55] Completed 5 tasks in 1.1s
+#> 
+#> ℹ [2026-05-11 14:50:55] Building results
+#> ✔ [2026-05-11 14:50:57] Differential expression test completed
 DEtestRingPlot(
   pancreas_sub,
   group.by = "CellType"
 )
-#> Error in get_de_data(srt, group.by, test.use, DE_threshold, res): Cannot find the DEtest result for the group "CellType". Perform
-#> `RunDEtest()` first
 ```

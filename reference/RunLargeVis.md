@@ -552,17 +552,41 @@ RunLargeVis(
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
+#> ℹ [2026-05-11 16:13:51] Start standard processing workflow...
+#> ℹ [2026-05-11 16:13:52] Checking a list of <Seurat>...
+#> ! [2026-05-11 16:13:52] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-11 16:13:52] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 16:13:53] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 16:13:54] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-11 16:13:54] Number of available HVF: 2000
+#> ℹ [2026-05-11 16:13:54] Finished check
+#> ℹ [2026-05-11 16:13:54] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-11 16:13:55] Perform pca linear dimension reduction
+#> ℹ [2026-05-11 16:13:55] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-05-11 16:13:55] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-11 16:13:56] Reorder clusters...
+#> ℹ [2026-05-11 16:13:56] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-11 16:13:56] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-11 16:13:56] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-05-11 16:14:01] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-05-11 16:14:05] Standard processing workflow completed
 pancreas_sub <- RunLargeVis(
   object = pancreas_sub,
   features = SeuratObject::VariableFeatures(pancreas_sub)
 )
+#> 16:14:06 Read 1000 rows and found 2000 numeric columns
+#> 16:14:06 Normalizing by max-abs
+#> 16:14:06 Using FNN for neighbor search, n_neighbors = 150
+#> 16:14:09 Commencing calibration for perplexity = 50 using 2 threads
+#> 16:14:12 Initializing from random Gaussian with sd = 1e-4
+#> 16:14:12 Commencing optimization for 254033 epochs, with 194344 positive edges
+#> 16:14:12 Using rng type: pcg
+#> 16:16:40 Optimization finished
 CellDimPlot(
   pancreas_sub,
   group.by = "CellType",
   reduction = "largevis"
 )
-} # }
 ```

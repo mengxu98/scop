@@ -57,7 +57,8 @@ if (interactive()) {
   pancreas_sub$SubCellType <- gsub(" ", "-", pancreas_sub$SubCellType)
   pancreas_sub@reductions$X_pca <- NULL
   pancreas_sub@reductions$X_umap <- NULL
-  usethis::use_data(
+  use_data <- get_namespace_fun("usethis", "use_data")
+  use_data(
     pancreas_sub,
     compress = "xz",
     overwrite = TRUE

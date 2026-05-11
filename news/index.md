@@ -1,8 +1,71 @@
 # Changelog
 
+## scop 0.9.0
+
+- **feat**:
+  - Added
+    [`ConvertHomologs()`](https://mengxu98.github.io/scop/reference/ConvertHomologs.md)
+    for homologous feature conversion in `Seurat`, `matrix`, and
+    `Matrix` objects. The function uses
+    [`GeneConvert()`](https://mengxu98.github.io/scop/reference/GeneConvert.md)
+    for arbitrary Ensembl/biomaRt-supported species pairs, collapses
+    duplicated target homologs by summing expression values, preserves
+    Seurat cell metadata and spatial images, and stores the mapping
+    table in `@tools$ConvertHomologs`.
+  - Added
+    [`RunCytoSPACE()`](https://mengxu98.github.io/scop/reference/RunCytoSPACE.md),
+    a native R/C++ implementation of the default CytoSPACE spot-level
+    assignment workflow. The native backend uses spot-capacity graph
+    construction and precomputed Pearson correlation matrices, stores
+    detailed results in `srt@tools[["CytoSPACE"]]`, and writes summary
+    metadata columns with the requested prefix.
+  - Added
+    [`SpatialDimPlot()`](https://mengxu98.github.io/scop/reference/SpatialDimPlot.md)
+    for spatial visualization, including examples that show both tissue
+    annotations and downstream CytoSPACE assignment results.
+  - Added a shared native progress helper in `src/log_message.h` for
+    long-running C++ loops. CytoSPACE assignment, scTenifold tensor
+    decomposition, proportion permutation/bootstrap, and sample-level
+    proportion bootstrap now report progress with the same timestamped
+    information style as
+    [`thisutils::log_message()`](https://mengxu98.github.io/thisutils/reference/log_message.html).
+- **fix**:
+  - [`RunCellphoneDB()`](https://mengxu98.github.io/scop/reference/RunCellphoneDB.md):
+    Replaced the internal manual homolog-expression conversion path with
+    [`ConvertHomologs()`](https://mengxu98.github.io/scop/reference/ConvertHomologs.md),
+    keeping expression-object conversion behavior consistent across the
+    package.
+  - [`GeneConvert()`](https://mengxu98.github.io/scop/reference/GeneConvert.md)
+    examples now direct expression-object homolog conversion to
+    [`ConvertHomologs()`](https://mengxu98.github.io/scop/reference/ConvertHomologs.md)
+    instead of showing manual `geneID_expand` aggregation.
+  - Cleaned up package-check issues by declaring missing namespace
+    imports and aligning Rd argument documentation for recently updated
+    wrappers.
+  - Optional wrapper dependencies are checked at function entry with
+    `check_r()` instead of silently skipping examples or adding
+    unnecessary hard dependencies.
+- **docs**:
+  - Updated the pkgdown reference grouping for spatial analysis, spatial
+    visualization, data conversion, and composition-analysis functions.
+  - Updated
+    [`RunCytoSPACE()`](https://mengxu98.github.io/scop/reference/RunCytoSPACE.md)
+    examples to use real bundled data, convert mouse reference data with
+    [`ConvertHomologs()`](https://mengxu98.github.io/scop/reference/ConvertHomologs.md),
+    and visualize assignment results.
+  - Refreshed examples to use bundled real package data and removed
+    unnecessary `dontrun` wrappers from examples that do not require
+    Python or external command-line tools.
+- **data**:
+  - Added `visium_human_pancreas_sub`, a Visium human pancreas spatial
+    example dataset
+    ([GSE254829](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE254829))
+    with spatial image data and CODA-derived annotations, for spatial
+    analysis.
+
 ## scop 0.8.9
 
-- **perf**:
+- **fix**:
   - [`RunGSVA()`](https://mengxu98.github.io/scop/reference/RunGSVA.md):
     Removed redundant dense
     [`as.matrix()`](https://rdrr.io/r/base/matrix.html) conversion in
@@ -39,9 +102,8 @@
   - [`RunUMAP2()`](https://mengxu98.github.io/scop/reference/RunUMAP2.md):
     Replaced `apply(as.matrix(graph), 2, order)` in the uwot-predict
     path with the internal C++ sparse column top-k helper
-    (`run_sparse_topk_by_column_cpp()`), avoiding full dense conversion
-    and column-wise R-level
-    [`apply()`](https://rdrr.io/r/base/apply.html).
+    (`run_sparse_topk_by_column()`), avoiding full dense conversion and
+    column-wise R-level [`apply()`](https://rdrr.io/r/base/apply.html).
   - [`RunDimsReduction()`](https://mengxu98.github.io/scop/reference/RunDimsReduction.md)
     (PCA centering): Uses
     `SeuratObject::LayerData(…, features = features)` to read only HVF
@@ -57,7 +119,6 @@
     [`as.matrix()`](https://rdrr.io/r/base/matrix.html) calls passed to
     [`batchelor::fastMNN()`](https://rdrr.io/pkg/batchelor/man/fastMNN.html),
     which accepts sparse matrices natively via `SingleCellExperiment`.
-- **memory**:
   - [`standard_scop()`](https://mengxu98.github.io/scop/reference/standard_scop.md):
     Replaced full `scale.data` matrix load (via
     [`GetAssayData5()`](https://mengxu98.github.io/scop/reference/GetAssayData5.md))
@@ -66,7 +127,6 @@
     for Assay5; `@scale.data` for Assay) to retrieve only rownames when
     checking whether HVFs have been scaled, substantially reducing peak
     memory during the ScaleData decision step.
-- **compat**:
   - [`GetAssayData5.Assay()`](https://mengxu98.github.io/scop/reference/GetAssayData5.md):
     Fixed parameter naming to use positional matching for the slot/layer
     argument, so
@@ -91,20 +151,51 @@
     `RPCA`, `fastMNN5`, `Harmony5`, `scVI5`) to provide a clear,
     actionable error message when used with Seurat v4 `Assay` objects,
     rather than failing deep in the call stack.
-- **test**:
-  - Added 22 consistency tests (`test_optimizations_v2.R`) covering GSVA
-    sparse, RunCellQC caching, DEtest cell_index, AnnotateFeatures
-    vapply, run_scomm sparse, RunDynamicFeatures solve, and cccplot
-    validations.
-  - Added 5 dim-reduction optimization consistency tests
-    (`test_dim_reduction_optimizations.R`) covering UMAP isSymmetric,
-    scale.data rownames, MDS sparse distance, uwot-predict C++ topk, and
-    PCA centering with features parameter.
-  - Added 10 Seurat v4 compatibility tests (`test_seurat_v4_compat.R`)
-    run against a real Seurat v4.4.0 + SeuratObject v4.1.4 installation,
-    verifying Assay object handling, `GetAssayData` slot access, PCA
-    centering fallback, `JoinLayers` guard, sparse matrix operations,
-    and UMAP/MDS execution.
+- **feat**:
+  - Added
+    [`loom_to_srt()`](https://mengxu98.github.io/scop/reference/loom_to_srt.md)
+    for pure-R loom-to-Seurat conversion via `rhdf5`, preserving
+    velocity-style `spliced` and `unspliced` layers as assays without
+    initializing Python, and added Python-backed
+    [`loom_to_adata()`](https://mengxu98.github.io/scop/reference/loom_to_adata.md)
+    for users who need AnnData output.
+  - Added
+    [`RunBulk()`](https://mengxu98.github.io/scop/reference/RunBulk.md)
+    as a unified bulk-strategy entrypoint with method-vector selection
+    for bulk DE, deconvolution, and cell-type-specific DE workflows.
+  - Added method-specific bulk runners for `de_limma_voom`,
+    `de_edgeR_qlf`, `de_DESeq2`, `de_dream`, `deconv_MuSiC`,
+    `deconv_BisqueRNA`, `deconv_BayesPrism`, and `csde_TOAST`.
+  - Standardized bulk results under `Bulk$results$de`,
+    `Bulk$results$deconv`, and `Bulk$results$csde`, keeping DE outputs
+    compatible with existing
+    [`DEtestPlot()`](https://mengxu98.github.io/scop/reference/DEtestPlot.md),
+    [`RunEnrichment()`](https://mengxu98.github.io/scop/reference/RunEnrichment.md),
+    [`RunGSEA()`](https://mengxu98.github.io/scop/reference/RunGSEA.md),
+    [`GroupHeatmap()`](https://mengxu98.github.io/scop/reference/GroupHeatmap.md),
+    and
+    [`FeatureHeatmap()`](https://mengxu98.github.io/scop/reference/FeatureHeatmap.md)
+    data flows.
+  - `RunBulk(run_enrichment = TRUE, run_gsea = TRUE)` now filters bulk
+    DE rows with pathway thresholds and mirrors successful pathway
+    results to `Enrichment_Bulk_wilcox` and `GSEA_Bulk_wilcox`, so
+    [`EnrichmentPlot()`](https://mengxu98.github.io/scop/reference/EnrichmentPlot.md)
+    and
+    [`GSEAPlot()`](https://mengxu98.github.io/scop/reference/GSEAPlot.md)
+    can read them through the standard `srt@tools` contract.
+  - Deconvolution and CSDE bundles now record their computational
+    `engine` in `details`; the current deconvolution runners use
+    explicit `backend = "internal"` SCOP profile fitting and
+    `csde_TOAST` uses explicit `backend = "limma_interaction"`, so
+    native package backends can be wired in later without pretending to
+    call external packages.
+  - Added explicit `Remotes` entries for `mengxu98/thisplot` and
+    `mengxu98/thisutils` so source installs can resolve the minimum
+    imported versions required by SCOP. Optional bulk engines such as
+    `DESeq2` and `variancePartition` are installed on demand through
+    `check_r()` and called lazily through `get_namespace_fun()`.
+  - Added `method_args` to expose method-specific tuning parameters
+    without expanding the public API surface.
 
 ## scop 0.8.8
 
@@ -118,10 +209,14 @@
 - **docs**:
   - Updated pkgdown reference grouping for the cell-cycle workflow.
 - **fix**:
-  - Added optional wrappers for `RunDorothea()`, `RunBayesSpace()`, and
-    experimental `RunScTenifoldKnk()`. `RunScTenifoldKnk()` keeps the
-    upstream `scTenifoldNet` workflow but fixes the QC gene-filter
-    assignment in the local path, uses a native equivalent
+  - Added optional wrappers for
+    [`RunDorothea()`](https://mengxu98.github.io/scop/reference/RunDorothea.md),
+    [`RunBayesSpace()`](https://mengxu98.github.io/scop/reference/RunBayesSpace.md),
+    and experimental
+    [`RunscTenifoldKnk()`](https://mengxu98.github.io/scop/reference/RunScTenifoldKnk.md).
+    [`RunscTenifoldKnk()`](https://mengxu98.github.io/scop/reference/RunScTenifoldKnk.md)
+    keeps the upstream `scTenifoldNet` workflow but fixes the QC
+    gene-filter assignment in the local path, uses a native equivalent
     covariance/downdate path with direct sparse matrix construction,
     selection-based quantile thresholding, and controlled per-gene
     eigensolver parallelism for large `pcNet()` network construction,
@@ -179,13 +274,12 @@
     [`RunGSVA()`](https://mengxu98.github.io/scop/reference/RunGSVA.md),
     [`CellScoring()`](https://mengxu98.github.io/scop/reference/CellScoring.md),
     [`RunDynamicEnrichment()`](https://mengxu98.github.io/scop/reference/RunDynamicEnrichment.md),
-    [`RunEnrichment()`](https://mengxu98.github.io/scop/reference/RunEnrichment.md),
     and
-    [`RunProportionTestPermutation()`](https://mengxu98.github.io/scop/reference/RunProportionTestPermutation.md)
+    [`RunEnrichment()`](https://mengxu98.github.io/scop/reference/RunEnrichment.md)
     now prefer `backend = "cpp"` while retaining `backend = "r"` for
-    exact legacy/package behavior. Unsupported C++ methods such as
-    metabolism `VISION` and cell scoring `UCell` automatically fall back
-    to R when `backend` is not explicitly set.
+    exact legacy/package behavior.
+    [`RunPermutation()`](https://mengxu98.github.io/scop/reference/RunPermutation.md)
+    now uses its validated native implementation directly.
   - [`RunMetabolism()`](https://mengxu98.github.io/scop/reference/RunMetabolism.md)
     and
     [`RunGSVA()`](https://mengxu98.github.io/scop/reference/RunGSVA.md):
@@ -211,9 +305,11 @@
     Added experimental `backend = "cpp"` support for Seurat-style module
     scoring by keeping control-gene sampling in R and moving sparse mean
     calculations to native code.
-  - [`RunProportionTestPermutation()`](https://mengxu98.github.io/scop/reference/RunProportionTestPermutation.md):
-    Added experimental `backend = "cpp"` for faster permutation and
-    bootstrap loops.
+  - [`RunPermutation()`](https://mengxu98.github.io/scop/reference/RunPermutation.md):
+    Uses the native C++ permutation and bootstrap loops directly after
+    validating they match the legacy R calculation for observed
+    fractions and log2 fold-differences while running substantially
+    faster.
   - [`RunUMAP2()`](https://mengxu98.github.io/scop/reference/RunUMAP2.md):
     Added an internal C++ sparse column top-k helper for Graph inputs to
     speed extraction of precomputed neighbor indices/connectivities
@@ -636,14 +732,12 @@
     analysis with support for cell ordering, trajectory learning, and
     pseudotime computation.
   - [`RunCytoTRACE()`](https://mengxu98.github.io/scop/reference/RunCytoTRACE.md):
-    New function for running [CytoTRACE
-    2](https://github.com/digitalcytometry/cytotrace2) analysis to
+    New native `scop` implementation for running CytoTRACE 2 analysis to
     predict cellular potency scores and categories (Differentiated,
     Unipotent, Oligopotent, Multipotent, Pluripotent, Totipotent) with
     support for human and mouse species.
   - [`CytoTRACEPlot()`](https://mengxu98.github.io/scop/reference/CytoTRACEPlot.md):
-    New function for visualizing [CytoTRACE
-    2](https://github.com/digitalcytometry/cytotrace2) analysis results.
+    New function for visualizing CytoTRACE 2 analysis results.
 
 ## scop 0.7.9
 
@@ -827,7 +921,7 @@
     configuration to work with both `shiny` 1.6.0 and 1.7.0+, addressing
     compatibility errors reported in
     [\#87](https://github.com/mengxu98/scop/issues/87).
-- **refactor**:
+- **fix**:
   - Improved code formatting and consistency across multiple functions.
   - Enhanced Python functions in `inst/python/functions.py` with better
     error handling and message formatting.
@@ -855,7 +949,7 @@
   - [`integration_scop()`](https://mengxu98.github.io/scop/reference/integration_scop.md):
     Enhanced `integration_method` parameter definition with explicit
     method list for better code clarity.
-- **refactor**:
+- **fix**:
   - Moved `exist_python_pkgs()` function to `check_package.R` for better
     code organization.
   - Replaced direct `conda_info()$envs_dirs[1]` calls with
@@ -894,7 +988,7 @@
     `ggsankey::geom_sankey()` for better Sankey diagram support.
   - Multiple functions: Replaced `:::` operator with
     `get_namespace_fun()` for safer namespace access.
-- **refactor**:
+- **fix**:
   - Removed `RunMonocle()` function and related documentation
     (`RunMonocle2.Rd`, `RunMonocle3.Rd`).
   - Removed `projection_functions.R` file (functions moved to other
@@ -967,7 +1061,7 @@
     [`RunWOT()`](https://mengxu98.github.io/scop/reference/RunWOT.md))
     and added `verbose` parameter inheritance and improved message
     formatting using cli-style formatting.
-- **refactor**:
+- **fix**:
   - Delete `harmonizomeapi.py` file.
   - Move `scop_analysis.py` into a single `functions.py` file in
     `inst/python/` for better code organization and maintainability.
@@ -1000,7 +1094,7 @@
   - Enhanced documentation for cell communication analysis functions.
   - Improved error messages and user guidance across integration
     functions.
-- **refactor**:
+- **fix**:
   - Removed some example figures to optimize package installation size.
 
 ## scop 0.4.0

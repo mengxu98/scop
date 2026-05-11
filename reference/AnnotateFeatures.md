@@ -46,7 +46,10 @@ AnnotateFeatures(
 
   A character vector specifying the annotation sources to be included in
   the gene annotation databases. Can be one or more of
-  `"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF"`.
+  `"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF", "CytoTRACE2"`.
+  Note: `"CytoTRACE2"` is species-independent and downloads pre-trained
+  model data required by
+  [RunCytoTRACE](https://mengxu98.github.io/scop/reference/RunCytoTRACE.md).
 
 - db_update:
 
@@ -116,8 +119,8 @@ if (requireNamespace("R.cache", quietly = TRUE)) {
     )
   )
 }
-#> ℹ [2026-05-02 04:05:33] Species: "Mus_musculus"
-#> ℹ [2026-05-02 04:05:33] Preparing database: TF
+#> ℹ [2026-05-11 14:17:51] Species: "Mus_musculus"
+#> ℹ [2026-05-11 14:17:51] Preparing database: TF
 #>               highly_variable_genes   TF
 #> Xkr4                          False <NA>
 #> Mrpl15                        False <NA>
@@ -126,16 +129,17 @@ if (requireNamespace("R.cache", quietly = TRUE)) {
 #> Gm26901                       False <NA>
 #> Sntg1                          True <NA>
 
-if (FALSE) { # \dontrun{
 # Annotate features using a GTF file
-pancreas_sub <- AnnotateFeatures(
-  pancreas_sub,
-  gtf = "/refdata-gex-mm10-2020-A/genes/genes.gtf"
-)
-head(
-  GetFeaturesData(
-    pancreas_sub
+gtf_file <- "/refdata-gex-mm10-2020-A/genes/genes.gtf"
+if (file.exists(gtf_file)) {
+  pancreas_sub <- AnnotateFeatures(
+    pancreas_sub,
+    gtf = gtf_file
   )
-)
-} # }
+  head(
+    GetFeaturesData(
+      pancreas_sub
+    )
+  )
+}
 ```

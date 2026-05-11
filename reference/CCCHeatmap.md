@@ -11,8 +11,10 @@ CCCHeatmap(
   condition = NULL,
   dataset = 1,
   comparison = c(1, 2),
-  plot_type = c("heatmap", "dot", "bubble", "ligand_target", "role_heatmap",
-    "diff_heatmap"),
+  plot_type = c("heatmap", "focused_heatmap", "dot", "matrix_dot", "tile",
+    "source_target_dot", "source_target_tile", "sample_dot", "bubble", "bubble_lr",
+    "pathway_bubble", "ligand_target", "role_heatmap", "role_network",
+    "role_network_marsilea", "diff_heatmap"),
   display_by = c("aggregation", "interaction"),
   sender.use = NULL,
   receiver.use = NULL,
@@ -282,9 +284,26 @@ A ggplot / patchwork object wrapping the ComplexHeatmap grob.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
+#> ℹ [2026-05-11 14:17:56] Start standard processing workflow...
+#> ℹ [2026-05-11 14:17:57] Checking a list of <Seurat>...
+#> ! [2026-05-11 14:17:57] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-11 14:17:57] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 14:17:58] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 14:17:58] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-11 14:17:59] Number of available HVF: 2000
+#> ℹ [2026-05-11 14:17:59] Finished check
+#> ℹ [2026-05-11 14:17:59] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-11 14:17:59] Perform pca linear dimension reduction
+#> ℹ [2026-05-11 14:18:08] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-05-11 14:18:08] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-11 14:18:08] Reorder clusters...
+#> ℹ [2026-05-11 14:18:09] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-11 14:18:09] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-11 14:18:09] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-05-11 14:18:11] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-05-11 14:18:13] Standard processing workflow completed
 
 pc1 <- Seurat::Embeddings(pancreas_sub, "Standardpca")[, 1]
 ct <- as.character(pancreas_sub$CellType)
@@ -302,35 +321,26 @@ pancreas_sub <- RunCellChat(
   group_cmp = list(c("ConditionA", "ConditionB")),
   species = "Mus_musculus"
 )
-
-CCCHeatmap(
-  pancreas_sub,
-  method = "CellChat",
-  condition = "ConditionA",
-  plot_type = "dot",
-  display_by = "aggregation",
-  top_n = 20
-)
-
-CCCHeatmap(
-  pancreas_sub,
-  method = "CellChat",
-  condition = "ConditionA",
-  plot_type = "dot",
-  display_by = "interaction",
-  facet_by = "sender",
-  top_n = 20
-)
-
-CCCHeatmap(
-  pancreas_sub,
-  method = "CellChat",
-  condition = "ConditionA",
-  plot_type = "dot",
-  display_by = "interaction",
-  facet_by = "receiver",
-  top_n = 20
-)
+#> ℹ [2026-05-11 14:18:13] Start CellChat analysis
+#> ℹ [2026-05-11 14:21:02] Processing condition: "ConditionA"
+#> [1] "Create a CellChat object from a data matrix"
+#> Set cell identities for the new CellChat object 
+#> The cell groups used for CellChat analysis are  Ductal, Ngn3-high-EP, Endocrine, Ngn3-low-EP, Pre-endocrine 
+#> The number of highly variable ligand-receptor pairs used for signaling inference is 542 
+#> triMean is used for calculating the average gene expression per cell group. 
+#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-05-11 14:21:04.308394]"
+#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-05-11 14:21:21.707989]"
+#> ℹ [2026-05-11 14:21:21] Processing condition: "ConditionB"
+#> [1] "Create a CellChat object from a data matrix"
+#> Set cell identities for the new CellChat object 
+#> The cell groups used for CellChat analysis are  Endocrine, Ngn3-high-EP, Ductal, Ngn3-low-EP, Pre-endocrine 
+#> The number of highly variable ligand-receptor pairs used for signaling inference is 601 
+#> triMean is used for calculating the average gene expression per cell group. 
+#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-05-11 14:21:22.908262]"
+#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-05-11 14:21:41.818509]"
+#> ℹ [2026-05-11 14:21:41] Merging CellChat objects for comparison "ConditionA_vs_ConditionB"
+#> Merge the following slots: 'data.signaling','images','net', 'netP','meta', 'idents', 'var.features' , 'DB', and 'LR'.
+#> ✔ [2026-05-11 14:21:42] CellChat analysis completed
 
 CCCHeatmap(
   pancreas_sub,
@@ -340,6 +350,39 @@ CCCHeatmap(
   display_by = "aggregation",
   top_n = 20
 )
+
+
+CCCHeatmap(
+  pancreas_sub,
+  method = "CellChat",
+  condition = "ConditionA",
+  plot_type = "dot",
+  display_by = "interaction",
+  sender.use = "Ductal",
+  top_n = 20
+)
+
+
+CCCHeatmap(
+  pancreas_sub,
+  method = "CellChat",
+  condition = "ConditionA",
+  plot_type = "dot",
+  display_by = "interaction",
+  receiver.use = "Ngn3-low-EP",
+  top_n = 20
+)
+
+
+CCCHeatmap(
+  pancreas_sub,
+  method = "CellChat",
+  condition = "ConditionA",
+  plot_type = "heatmap",
+  display_by = "aggregation",
+  top_n = 20
+)
+
 
 CCCHeatmap(
   pancreas_sub,
@@ -350,6 +393,7 @@ CCCHeatmap(
   facet_by = "sender",
   top_n = 10
 )
+
 
 CCCHeatmap(
   pancreas_sub,
@@ -362,6 +406,7 @@ CCCHeatmap(
   top_n = 10
 )
 
+
 CCCHeatmap(
   pancreas_sub,
   method = "CellChat",
@@ -370,6 +415,7 @@ CCCHeatmap(
   top_n = 5
 )
 
+
 CCCHeatmap(
   pancreas_sub,
   method = "CellChat",
@@ -377,6 +423,7 @@ CCCHeatmap(
   plot_type = "bubble",
   top_n = 5
 )
+
 
 CCCHeatmap(
   pancreas_sub,
@@ -388,6 +435,7 @@ CCCHeatmap(
   height = 2.5
 )
 
+
 CCCHeatmap(
   pancreas_sub,
   method = "CellChat",
@@ -397,6 +445,7 @@ CCCHeatmap(
   width = 0.6,
   height = 2.5
 )
+
 
 CCCHeatmap(
   pancreas_sub,
@@ -409,6 +458,7 @@ CCCHeatmap(
   height = 3.5
 )
 
+
 CCCHeatmap(
   pancreas_sub,
   method = "CellChat",
@@ -420,5 +470,4 @@ CCCHeatmap(
   width = 0.6,
   height = 3.5
 )
-} # }
 ```

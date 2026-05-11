@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Gene ID conversion function using biomart</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/GeneConvert.R" class="external-link"><code>R/GeneConvert.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/GeneConvert.R" class="external-link"><code>R/GeneConvert.R</code></a></small>
       <div class="d-none name"><code>GeneConvert.Rd</code></div>
     </div>
 
@@ -117,46 +117,58 @@ Default is <code>TRUE</code>.</p></dd>
 </ul></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><a href="AnnotateFeatures.html">AnnotateFeatures</a></p></div>
+    <div class="dont-index"><p><a href="AnnotateFeatures.html">AnnotateFeatures</a>, <a href="ConvertHomologs.html">ConvertHomologs</a></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">GeneConvert</span><span class="op">(</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">GeneConvert</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  geneID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CDK1"</span>, <span class="st">"MKI67"</span>, <span class="st">"TOP2A"</span>, <span class="st">"AURKA"</span>, <span class="st">"CTCF"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  species_from <span class="op">=</span> <span class="st">"Homo_sapiens"</span>,</span></span>
 <span class="r-in"><span>  species_to <span class="op">=</span> <span class="st">"Mus_musculus"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-11 15:13:09] Connect to the Ensembl archives...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-11 15:13:10] Using the <span style="color: #0000BB;">115</span> version of ensembl database...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-11 15:13:10] Downloading the ensembl database from <span style="color: #0000BB;">https://sep2025.archive.ensembl.org</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-11 15:13:39] Searching the dataset <span style="color: #0000BB;">hsapiens</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-11 15:13:41] Connecting to the dataset <span style="color: #0000BB;">hsapiens_gene_ensembl</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-11 15:13:53] Searching the dataset <span style="color: #0000BB;">mmusculus</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-11 15:14:02] Connecting to the dataset <span style="color: #0000BB;">mmusculus_gene_ensembl</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-11 15:14:03] Converting the geneIDs...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-11 15:14:08] <span style="color: #0000BB;">5</span> genes mapped with <span style="color: #0000BB;">"ensembl_symbol"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-11 15:14:08] ==============================</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       <span style="color: #00BB00;">5 genes mapped</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       <span style="color: #BB0000;">0 genes unmapped</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       ==============================</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Convert the human genes to mouse homologs,</span></span></span>
-<span class="r-in"><span><span class="co"># and replace the raw counts in a Seurat object.</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="GetAssayData5.html">GetAssayData5</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"RNA"</span>,</span></span>
-<span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"counts"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">GeneConvert</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  geneID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  geneID_from_IDtype <span class="op">=</span> <span class="st">"symbol"</span>,</span></span>
-<span class="r-in"><span>  geneID_to_IDtype <span class="op">=</span> <span class="st">"symbol"</span>,</span></span>
-<span class="r-in"><span>  species_from <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span></span>
-<span class="r-in"><span>  species_to <span class="op">=</span> <span class="st">"Homo_sapiens"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">homologs_counts</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  x <span class="op">=</span> <span class="va">counts</span><span class="op">[</span><span class="va">res</span><span class="op">$</span><span class="va">geneID_expand</span><span class="op">[</span>, <span class="st">"from_geneID"</span><span class="op">]</span>, <span class="op">]</span>,</span></span>
-<span class="r-in"><span>  by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">geneID_expand</span><span class="op">[</span>, <span class="st">"symbol"</span><span class="op">]</span><span class="op">)</span>, FUN <span class="op">=</span> <span class="va">sum</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">homologs_counts</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">homologs_counts</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">homologs_counts</span> <span class="op">&lt;-</span> <span class="fu">methods</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/methods/as.html" class="external-link">as</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu">thisutils</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisutils/reference/as_matrix.html" class="external-link">as_matrix</a></span><span class="op">(</span><span class="va">homologs_counts</span><span class="op">[</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  <span class="st">"dgCMatrix"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">homologs_counts</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> List of 7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ geneID_res     :'data.frame':	5 obs. of  4 variables:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ from_IDtype: chr [1:5] "ensembl_symbol" "ensembl_symbol" "ensembl_symbol" "ensembl_symbol" ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ from_geneID: chr [1:5] "CTCF" "CDK1" "TOP2A" "AURKA" ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ to_IDtype  : chr [1:5] "entrez_id" "entrez_id" "entrez_id" "entrez_id" ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ to_geneID  : int [1:5] 13018 12534 21973 20878 17345</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ geneID_collapse:'data.frame':	5 obs. of  2 variables:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ from_geneID: chr [1:5] "AURKA" "CDK1" "CTCF" "MKI67" ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ entrez_id  :List of 5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ : int 20878</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ : int 12534</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ : int 13018</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ : int 17345</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ : int 21973</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..- attr(*, "class")= chr "AsIs"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ geneID_expand  :'data.frame':	5 obs. of  2 variables:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ from_geneID: chr [1:5] "AURKA" "CDK1" "CTCF" "MKI67" ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ entrez_id  : int [1:5] 20878 12534 13018 17345 21973</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ Ensembl_version: chr "115"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ Datasets       :'data.frame':	213 obs. of  3 variables:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ dataset    : 'AsIs' chr [1:213] "abrachyrhynchus_gene_ensembl" "acalliptera_gene_ensembl" "acarolinensis_gene_ensembl" "acchrysaetos_gene_ensembl" ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ description: 'AsIs' chr [1:213] "Pink-footed goose genes (ASM259213v1)" "Eastern happy genes (fAstCal1.3)" "Green anole genes (AnoCar2.0v2)" "Golden eagle genes (bAquChr1.2)" ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ version    : 'AsIs' chr [1:213] "ASM259213v1" "fAstCal1.3" "AnoCar2.0v2" "bAquChr1.2" ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ Attributes     :'data.frame':	3170 obs. of  3 variables:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ name       : chr [1:3170] "ensembl_gene_id" "ensembl_gene_id_version" "ensembl_transcript_id" "ensembl_transcript_id_version" ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ description: chr [1:3170] "Gene stable ID" "Gene stable ID version" "Transcript stable ID" "Transcript stable ID version" ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ page       : chr [1:3170] "feature_page" "feature_page" "feature_page" "feature_page" ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ geneID_unmapped: chr(0) </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

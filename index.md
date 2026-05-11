@@ -6,7 +6,19 @@ The [scop](https://github.com/mengxu98/scop) package provides a unified
 and extensible framework for single-cell omics data processing and
 downstream analysis in [Seurat](https://github.com/satijalab/seurat):
 
-- Integrated single-cell quality control methods, including doublet
+> Documentation: <https://mengxu98.github.io/scop/>
+>
+> Function reference and examples:
+> <https://mengxu98.github.io/scop/reference/>
+>
+> Changelog: <https://mengxu98.github.io/scop/news/index.html>
+
+- Integrated single-cell quality control methods, including cell cycle
+  analysis: Seurat gene-set scoring,
+  [scran::cyclone](https://bioconductor.org/packages/release/bioc/html/scran.html),
+  and
+  [tricycle](https://bioconductor.org/packages/release/bioc/html/tricycle.html)
+  for discrete or continuous cell cycle state estimation, doublet
   detection methods
   ([scDblFinder](https://github.com/plger/scDblFinder),
   [scds](https://github.com/kostkalab/scds),
@@ -14,8 +26,8 @@ downstream analysis in [Seurat](https://github.com/satijalab/seurat):
   [DoubletDetection](https://github.com/JonathanShor/DoubletDetection))
   and ambient RNA decontamination via
   [decontX](https://github.com/campbio/decontX).
-- Pipelines embedded with multiple methods for normalization, feature
-  reduction (PCA, ICA, NMF, MDS,
+- Pipelines embedded with multiple methods for normalization, highly
+  variable feature selection, feature reduction (PCA, ICA, NMF, MDS,
   [GLMPCA](https://github.com/willtownes/glmpca),
   [UMAP](https://github.com/lmcinnes/umap),
   [TriMap](https://github.com/eamid/trimap),
@@ -23,9 +35,12 @@ downstream analysis in [Seurat](https://github.com/satijalab/seurat):
   [PaCMAP](https://github.com/YingfanWang/PaCMAP),
   [PHATE](https://github.com/KrishnaswamyLab/PHATE),
   [DM](https://bioconductor.org/packages/release/bioc/html/destiny.html),
-  FR), and cell population identification.
-- Pipelines embedded with multiple integration methods for scRNA-seq,
-  including Uncorrected, [Seurat](https://github.com/satijalab/seurat),
+  FR), and cell population identification, including optional
+  [scran](https://bioconductor.org/packages/release/bioc/html/scran.html)-based
+  deconvolution normalization and HVF modeling.
+- Pipelines embedded with multiple integration methods for scRNA-seq and
+  multimodal data, including Uncorrected,
+  [Seurat](https://github.com/satijalab/seurat),
   [scVI](https://github.com/scverse/scvi-tools),
   [MNN](http://www.bioconductor.org/packages/release/bioc/html/batchelor.md),
   [fastMNN](http://www.bioconductor.org/packages/release/bioc/html/batchelor.md),
@@ -36,18 +51,37 @@ downstream analysis in [Seurat](https://github.com/satijalab/seurat):
   [Coralysis](https://github.com/elolab/Coralysis),
   [LIGER](https://github.com/welch-lab/liger),
   [Conos](https://github.com/kharchenkolab/conos),
-  [ComBat](https://bioconductor.org/packages/release/bioc/html/sva.html).
+  [ComBat](https://bioconductor.org/packages/release/bioc/html/sva.html),
+  [GLUE](https://github.com/gao-lab/GLUE),
+  [MultiMAP](https://github.com/Teichlab/MultiMAP), and WNN-based
+  integration and co-embedding.
 - Multiple methods for automatic annotation of single-cell data
   ([CellTypist](https://github.com/Teichlab/celltypist),
+  [SciBet](https://github.com/PaulingLiu/scibet),
   [SingleR](https://github.com/dviraran/SingleR),
   [Scmap](https://github.com/hemberg-lab/scmap), KNNPredict) and methods
   for projection between single-cell datasets (CSSMap, PCAMap,
   SeuratMap, [SymphonyMap](https://github.com/immunogenomics/symphony)).
+- Bulk transcriptomics workflows, including differential expression via
+  [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html),
+  [edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html),
+  [limma-voom](https://bioconductor.org/packages/release/bioc/html/limma.html),
+  and
+  [dream](https://bioconductor.org/packages/release/bioc/html/variancePartition.html),
+  deconvolution via [MuSiC](https://github.com/xuranw/MuSiC),
+  [BisqueRNA](https://cran.r-project.org/package=BisqueRNA), and
+  [BayesPrism](https://github.com/Danko-Lab/BayesPrism), and
+  cell-type-specific differential expression via
+  [TOAST](https://bioconductor.org/packages/release/bioc/html/TOAST.html).
 - Multiple single-cell downstream analyses:
   - Differential expression analysis: identification of differential
     features, expressed marker identification.
-  - Enrichment analysis: over-representation analysis,
-    [GSEA](https://www.gsea-msigdb.org/gsea/index.jsp) analysis, dynamic
+  - Enrichment, and functional scoring: over-representation analysis,
+    [GSEA](https://www.gsea-msigdb.org/gsea/index.jsp) analysis,
+    [GSVA](https://github.com/rcastelo/GSVA), metabolic pathway activity
+    inference via [scMetabolism](https://github.com/wu-yc/scMetabolism).
+  - Transcription factor activity analysis via
+    [DoRothEA](https://github.com/saezlab/dorothea), and dynamic
     enrichment analysis.
   - Cellular potency: [CytoTRACE
     2](https://github.com/digitalcytometry/cytotrace2) for predicting
@@ -62,11 +96,18 @@ downstream analysis in [Seurat](https://github.com/satijalab/seurat):
     [Monocle2](https://github.com/mengxu98/monocle),
     [Monocle3](https://github.com/cole-trapnell-lab/monocle3),
     identification of dynamic features.
-  - Cell-Cell Communication:
+  - Cell-cell communication:
     [CellChat](https://github.com/jinworks/CellChat),
     [CellphoneDB](https://github.com/ventolab/CellphoneDB),
-    [NicheNet](https://github.com/saeyslab/nichenetr), and
-    [MultiNicheNet](https://github.com/saeyslab/multinichenetr).
+    [NicheNet](https://github.com/saeyslab/nichenetr),
+    [MultiNicheNet](https://github.com/saeyslab/multinichenetr), and
+    [LIANA](https://github.com/saezlab/liana).
+  - Cellular composition and perturbation analysis:
+    [scProportionTest](https://github.com/rpolicastro/scProportionTest)
+    and [scTenifoldKnk](https://github.com/cailab-tamu/scTenifoldKnk).
+  - Spatial analysis:
+    [BayesSpace](https://github.com/edward130603/BayesSpace) and
+    [CytoSPACE](https://github.com/digitalcytometry/cytospace).
 - High-quality data visualization methods.
 - Fast deployment of single-cell data into SCExplorer, a
   [shiny](https://shiny.rstudio.com/) app that provides an interactive
@@ -121,22 +162,15 @@ following major improvements:
 2.  Stability: a large number of known issues have been fixed, and all
     functions have passed `devtools::check()`.
 3.  Usability: the *Python* environment setup workflow has been
-    improved, allowing a new complete environment to be deployed within
-    minutes; standardized console messages via
+    improved, with support for conda-compatible managers including
+    conda, mamba, and micromamba; standardized console messages via
     [`thisutils::log_message`](https://mengxu98.github.io/thisutils/reference/log_message.html)
     for consistent, readable function outputs.
 4.  Performance: a new parallel framework has been developed based on
     [`thisutils::parallelize_fun`](https://mengxu98.github.io/thisutils/reference/parallelize_fun.html),
     providing a consistent experience across *Linux*, *macOS*, and
     *Windows*.
-5.  Functionality: more analysis methods have been added, including
-    [CellRank](https://github.com/scverse/cellrank),
-    [CellTypist](https://github.com/Teichlab/celltypist), [CytoTRACE
-    2](https://github.com/digitalcytometry/cytotrace2),
-    [CellChat](https://github.com/jinworks/CellChat),
-    [GSVA](https://github.com/rcastelo/GSVA),
-    [scMetabolism](https://github.com/wu-yc/scMetabolism) and
-    [scProportionTest](https://github.com/rpolicastro/scProportionTest).
+5.  Functionality: more analysis methods have been added.
 
 ## Installation
 
@@ -162,17 +196,24 @@ pak::pak("mengxu98/scop")
 To run functions such as
 [`RunPAGA()`](https://mengxu98.github.io/scop/reference/RunPAGA.md),
 [`RunSCVELO()`](https://mengxu98.github.io/scop/reference/RunSCVELO.md),
-[scop](https://github.com/mengxu98/scop) requires
-[conda](https://docs.conda.io/en/latest/miniconda.html) to create a
-separate environment. The default environment name is `"scop_env"`. You
-can specify the environment name for scop by setting
+[scop](https://github.com/mengxu98/scop) requires a conda-compatible
+environment manager
+([conda](https://docs.conda.io/en/latest/miniconda.html),
+[mamba](https://mamba.readthedocs.io/), or
+[micromamba](https://mamba.readthedocs.io/en/latest/user_guide/micromamba.html))
+to create a separate environment. The default environment name is
+`"scop_env"`. You can specify the environment name for scop by setting
 `options(scop_envname = "new_name")`.
 
 Now, you can run
 [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md)
 to create the python environment for
-[scop](https://github.com/mengxu98/scop). If the conda binary is not
-found, it will automatically download and install miniconda.
+[scop](https://github.com/mengxu98/scop). If no conda-compatible
+executable is found, it will automatically download and install
+miniconda. If you explicitly request `conda = "micromamba"` and
+micromamba is not available on `PATH`,
+[scop](https://github.com/mengxu98/scop) downloads a package-managed
+micromamba automatically.
 
 ``` r
 
@@ -180,10 +221,14 @@ scop::PrepareEnv()
 ```
 
 To force [scop](https://github.com/mengxu98/scop) to use a specific
-conda binary, it is recommended to set `reticulate.conda_binary` R
-option:
+environment manager, pass the executable path or command name to
+[`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md)
+or set the `reticulate.conda_binary` R option:
 
 ``` r
+
+scop::PrepareEnv(conda = "mamba")
+scop::PrepareEnv(conda = "micromamba")
 
 options(reticulate.conda_binary = "/path/to/conda")
 scop::PrepareEnv()

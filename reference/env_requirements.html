@@ -38,7 +38,7 @@ All packages will be installed using uv as the primary tool."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Python environment requirements</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/PrepareEnv.R" class="external-link"><code>R/PrepareEnv.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/PrepareEnv.R" class="external-link"><code>R/PrepareEnv.R</code></a></small>
       <div class="d-none name"><code>env_requirements.Rd</code></div>
     </div>
 
@@ -70,9 +70,11 @@ Default is <code>"3.10-1"</code>.</p></dd>
 <dd><p>Optional requirement modules to include. Supported values are
 <code>"scanpy"</code>, <code>"scvi"</code>, <code>"scanorama"</code>, <code>"bbknn"</code>, <code>"celltypist"</code>,
 <code>"cellphonedb"</code>, <code>"magic"</code>, <code>"scrublet"</code>, <code>"doubletdetection"</code>,
-<code>"doublet"</code>, <code>"palantir"</code>, <code>"scvelo"</code>, <code>"cellrank"</code>, <code>"wot"</code>, <code>"phate"</code>,
-<code>"pacmap"</code>, <code>"trimap"</code>, <code>"multimap"</code>, and <code>"scomm"</code>. If <code>NULL</code>, the
-complete environment is returned.</p></dd>
+<code>"sccoda"</code>, <code>"doublet"</code>, <code>"palantir"</code>, <code>"scvelo"</code>, <code>"cellrank"</code>, <code>"wot"</code>,
+<code>"phate"</code>, <code>"pacmap"</code>, <code>"trimap"</code>, <code>"multimap"</code>, and <code>"scomm"</code>. If <code>NULL</code>,
+the default environment is returned. The default excludes <code>"sccoda"</code> and
+<code>"scomm"</code> because their TensorFlow stacks are not compatible with the
+default JAX/scVI stack in the same environment.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -96,6 +98,8 @@ complete environment is returned.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "3.10-1"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $packages</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                     setuptools </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                "setuptools&lt;81" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                      leidenalg </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                            "leidenalg==0.10.2" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                            tbb </span>
@@ -120,6 +124,8 @@ complete environment is returned.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                "scipy==1.15.3" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                         scanpy </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                               "scanpy==1.11.3" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                         loompy </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                       "loompy" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                     scvi-tools </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                            "scvi-tools==1.2.1" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                            jax </span>
@@ -136,16 +142,6 @@ complete environment is returned.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                            "celltypist==1.7.1" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                    cellphonedb </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                           "cellphonedb==5.0.1" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                   magic-impute </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                          "magic-impute==3.0.0" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                       scrublet </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                              "scrublet==0.2.3" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                     celltypist </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                            "celltypist==1.7.1" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                    cellphonedb </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                           "cellphonedb==5.0.1" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                         sccoda </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                "sccoda&gt;=0.1.9" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                   magic-impute </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                          "magic-impute==3.0.0" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                       scrublet </span>
@@ -170,38 +166,26 @@ complete environment is returned.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                "trimap==1.1.4" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                       multimap </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> "git+https://github.com/Teichlab/MultiMAP.git" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                     tensorflow </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                           "tensorflow==2.16.2" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                          keras </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                 "keras==3.3.3" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                       tf_keras </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                             "tf_keras==2.16.0" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                      ml_dtypes </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                             "ml-dtypes&gt;=0.3.2" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $install_methods</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        leidenalg              tbb    python-igraph       matplotlib </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          "conda"          "conda"          "conda"            "pip" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            numba         llvmlite            numpy        packaging </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       setuptools        leidenalg              tbb    python-igraph </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            "pip"          "conda"          "conda"          "conda" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       matplotlib            numba         llvmlite            numpy </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            "pip"            "pip"            "pip"            "pip" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           pandas     scikit-learn            scipy           scanpy </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        packaging           pandas     scikit-learn            scipy </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            "pip"            "pip"            "pip"            "pip" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       scvi-tools              jax           scglue         bedtools </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          "conda"            "pip"            "pip"          "conda" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        scanorama            bbknn       celltypist      cellphonedb </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           scanpy           loompy       scvi-tools              jax </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            "pip"            "pip"          "conda"            "pip" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           scglue         bedtools        scanorama            bbknn </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            "pip"          "conda"            "pip"            "pip" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       celltypist      cellphonedb     magic-impute         scrublet </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            "pip"            "pip"            "pip"            "pip" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     magic-impute         scrublet       celltypist      cellphonedb </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> doubletdetection          louvain         palantir           scvelo </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            "pip"            "pip"            "pip"            "pip" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           sccoda     magic-impute         scrublet doubletdetection </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         cellrank              wot            phate           pacmap </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            "pip"            "pip"            "pip"            "pip" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          louvain         palantir           scvelo         cellrank </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            "pip"            "pip"            "pip"            "pip" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              wot            phate           pacmap           trimap </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            "pip"            "pip"            "pip"            "pip" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         multimap       tensorflow            keras         tf_keras </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            "pip"            "pip"            "pip"            "pip" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        ml_dtypes </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            "pip" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           trimap         multimap </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            "pip"            "pip" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $package_aliases</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $package_aliases$`python-igraph`</span>
@@ -212,18 +196,6 @@ complete environment is returned.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $package_aliases$MultiMAP</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "multimap"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $package_aliases$tf_keras</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "tf-keras"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $package_aliases$`tf-keras`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "tf_keras"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $package_aliases$ml_dtypes</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ml-dtypes"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $package_aliases$`ml-dtypes`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ml_dtypes"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>

@@ -26,9 +26,12 @@ env_requirements(version = "3.10-1", include_optional = FALSE, modules = NULL)
   Optional requirement modules to include. Supported values are
   `"scanpy"`, `"scvi"`, `"scanorama"`, `"bbknn"`, `"celltypist"`,
   `"cellphonedb"`, `"magic"`, `"scrublet"`, `"doubletdetection"`,
-  `"doublet"`, `"palantir"`, `"scvelo"`, `"cellrank"`, `"wot"`,
-  `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`, and `"scomm"`. If
-  `NULL`, the complete environment is returned.
+  `"sccoda"`, `"doublet"`, `"palantir"`, `"scvelo"`, `"cellrank"`,
+  `"wot"`, `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`, and
+  `"scomm"`. If `NULL`, the default environment is returned. The default
+  excludes `"sccoda"` and `"scomm"` because their TensorFlow stacks are
+  not compatible with the default JAX/scVI stack in the same
+  environment.
 
 ## Value
 
@@ -54,6 +57,8 @@ env_requirements("3.10-1")
 #> [1] "3.10-1"
 #> 
 #> $packages
+#>                                     setuptools 
+#>                                "setuptools<81" 
 #>                                      leidenalg 
 #>                            "leidenalg==0.10.2" 
 #>                                            tbb 
@@ -78,6 +83,8 @@ env_requirements("3.10-1")
 #>                                "scipy==1.15.3" 
 #>                                         scanpy 
 #>                               "scanpy==1.11.3" 
+#>                                         loompy 
+#>                                       "loompy" 
 #>                                     scvi-tools 
 #>                            "scvi-tools==1.2.1" 
 #>                                            jax 
@@ -94,16 +101,6 @@ env_requirements("3.10-1")
 #>                            "celltypist==1.7.1" 
 #>                                    cellphonedb 
 #>                           "cellphonedb==5.0.1" 
-#>                                   magic-impute 
-#>                          "magic-impute==3.0.0" 
-#>                                       scrublet 
-#>                              "scrublet==0.2.3" 
-#>                                     celltypist 
-#>                            "celltypist==1.7.1" 
-#>                                    cellphonedb 
-#>                           "cellphonedb==5.0.1" 
-#>                                         sccoda 
-#>                                "sccoda>=0.1.9" 
 #>                                   magic-impute 
 #>                          "magic-impute==3.0.0" 
 #>                                       scrublet 
@@ -128,38 +125,26 @@ env_requirements("3.10-1")
 #>                                "trimap==1.1.4" 
 #>                                       multimap 
 #> "git+https://github.com/Teichlab/MultiMAP.git" 
-#>                                     tensorflow 
-#>                           "tensorflow==2.16.2" 
-#>                                          keras 
-#>                                 "keras==3.3.3" 
-#>                                       tf_keras 
-#>                             "tf_keras==2.16.0" 
-#>                                      ml_dtypes 
-#>                             "ml-dtypes>=0.3.2" 
 #> 
 #> $install_methods
-#>        leidenalg              tbb    python-igraph       matplotlib 
-#>          "conda"          "conda"          "conda"            "pip" 
-#>            numba         llvmlite            numpy        packaging 
+#>       setuptools        leidenalg              tbb    python-igraph 
+#>            "pip"          "conda"          "conda"          "conda" 
+#>       matplotlib            numba         llvmlite            numpy 
 #>            "pip"            "pip"            "pip"            "pip" 
-#>           pandas     scikit-learn            scipy           scanpy 
+#>        packaging           pandas     scikit-learn            scipy 
 #>            "pip"            "pip"            "pip"            "pip" 
-#>       scvi-tools              jax           scglue         bedtools 
-#>          "conda"            "pip"            "pip"          "conda" 
-#>        scanorama            bbknn       celltypist      cellphonedb 
+#>           scanpy           loompy       scvi-tools              jax 
+#>            "pip"            "pip"          "conda"            "pip" 
+#>           scglue         bedtools        scanorama            bbknn 
+#>            "pip"          "conda"            "pip"            "pip" 
+#>       celltypist      cellphonedb     magic-impute         scrublet 
 #>            "pip"            "pip"            "pip"            "pip" 
-#>     magic-impute         scrublet       celltypist      cellphonedb 
+#> doubletdetection          louvain         palantir           scvelo 
 #>            "pip"            "pip"            "pip"            "pip" 
-#>           sccoda     magic-impute         scrublet doubletdetection 
+#>         cellrank              wot            phate           pacmap 
 #>            "pip"            "pip"            "pip"            "pip" 
-#>          louvain         palantir           scvelo         cellrank 
-#>            "pip"            "pip"            "pip"            "pip" 
-#>              wot            phate           pacmap           trimap 
-#>            "pip"            "pip"            "pip"            "pip" 
-#>         multimap       tensorflow            keras         tf_keras 
-#>            "pip"            "pip"            "pip"            "pip" 
-#>        ml_dtypes 
-#>            "pip" 
+#>           trimap         multimap 
+#>            "pip"            "pip" 
 #> 
 #> $package_aliases
 #> $package_aliases$`python-igraph`
@@ -170,18 +155,6 @@ env_requirements("3.10-1")
 #> 
 #> $package_aliases$MultiMAP
 #> [1] "multimap"
-#> 
-#> $package_aliases$tf_keras
-#> [1] "tf-keras"
-#> 
-#> $package_aliases$`tf-keras`
-#> [1] "tf_keras"
-#> 
-#> $package_aliases$ml_dtypes
-#> [1] "ml-dtypes"
-#> 
-#> $package_aliases$`ml-dtypes`
-#> [1] "ml_dtypes"
 #> 
 #> 
 ```

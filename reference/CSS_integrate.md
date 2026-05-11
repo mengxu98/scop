@@ -76,7 +76,8 @@ CSS_integrate(
 - normalization_method:
 
   The normalization method to be used. Possible values are
-  `"LogNormalize"`, `"SCT"`, and `"TFIDF"`. Default is `"LogNormalize"`.
+  `"LogNormalize"`, `"SCT"`, `"TFIDF"`, and `"scran"`. Default is
+  `"LogNormalize"`.
 
 - do_HVF_finding:
 
@@ -92,7 +93,7 @@ CSS_integrate(
 - HVF_method:
 
   The method to use for finding highly variable features. Options are
-  `"vst"`, `"mvp"`, or `"disp"`. Default is `"vst"`.
+  `"vst"`, `"mvp"`, `"disp"`, or `"scran"`. Default is `"vst"`.
 
 - nHVF:
 

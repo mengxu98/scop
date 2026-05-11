@@ -446,24 +446,24 @@ GSVAPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-02 04:40:47] Start standard processing workflow...
-#> ℹ [2026-05-02 04:40:48] Checking a list of <Seurat>...
-#> ! [2026-05-02 04:40:48] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-02 04:40:48] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-02 04:40:50] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-02 04:40:50] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-02 04:40:51] Number of available HVF: 2000
-#> ℹ [2026-05-02 04:40:51] Finished check
-#> ℹ [2026-05-02 04:40:51] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-02 04:40:51] Perform pca linear dimension reduction
-#> ℹ [2026-05-02 04:40:52] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-05-02 04:40:52] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-02 04:40:52] Reorder clusters...
-#> ℹ [2026-05-02 04:40:52] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-02 04:40:52] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-02 04:40:52] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-05-02 04:40:56] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-05-02 04:41:00] Standard processing workflow completed
+#> ℹ [2026-05-11 15:03:46] Start standard processing workflow...
+#> ℹ [2026-05-11 15:03:47] Checking a list of <Seurat>...
+#> ! [2026-05-11 15:03:47] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-11 15:03:47] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 15:03:48] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 15:03:49] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-11 15:03:49] Number of available HVF: 2000
+#> ℹ [2026-05-11 15:03:49] Finished check
+#> ℹ [2026-05-11 15:03:49] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-11 15:03:49] Perform pca linear dimension reduction
+#> ℹ [2026-05-11 15:03:50] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-05-11 15:03:50] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-11 15:03:50] Reorder clusters...
+#> ℹ [2026-05-11 15:03:50] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-11 15:03:50] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-11 15:03:50] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-05-11 15:03:55] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-05-11 15:03:59] Standard processing workflow completed
 pancreas_sub <- RunGSVA(
   pancreas_sub,
   db = "GO_BP",
@@ -472,15 +472,16 @@ pancreas_sub <- RunGSVA(
   method = "gsva",
   kcdf = "Gaussian"
 )
-#> ℹ [2026-05-02 04:41:00] Start GSVA analysis
-#> ℹ [2026-05-02 04:41:00] Averaging expression by "CellType" ...
-#> ℹ [2026-05-02 04:41:00] Aggregated expression matrix: 15998 genes x 5 groups
-#> ℹ [2026-05-02 04:41:00] Species: "Mus_musculus"
-#> ℹ [2026-05-02 04:41:00] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-02 04:33:18
-#> ℹ [2026-05-02 04:41:02] Processing database: "GO_BP" ...
-#> ℹ [2026-05-02 04:41:03] Initial overlap: 11280 genes out of 15998 expression genes and 16186 genes in gene sets
-#> ℹ [2026-05-02 04:41:07] Running GSVA for 5637 gene sets ...
-#> Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 't': could not find function "run_gsva_cpp_scores"
+#> ℹ [2026-05-11 15:03:59] Start GSVA analysis
+#> ℹ [2026-05-11 15:03:59] Averaging expression by "CellType" ...
+#> ℹ [2026-05-11 15:03:59] Aggregated expression matrix: 15998 genes x 5 groups
+#> ℹ [2026-05-11 15:03:59] Species: "Mus_musculus"
+#> ℹ [2026-05-11 15:03:59] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-11 14:55:43
+#> ℹ [2026-05-11 15:04:00] Processing database: "GO_BP" ...
+#> ℹ [2026-05-11 15:04:02] Initial overlap: 11277 genes out of 15998 expression genes and 16594 genes in gene sets
+#> ℹ [2026-05-11 15:04:06] Running GSVA for 5633 gene sets ...
+#> ℹ [2026-05-11 15:06:04] GSVA results stored in `tools` slot: "GSVA_CellType_gsva"
+#> ✔ [2026-05-11 15:06:04] GSVA analysis done
 
 ht1 <- GSVAPlot(
   pancreas_sub,
@@ -490,9 +491,10 @@ ht1 <- GSVAPlot(
   width = 1,
   height = 2
 )
-#> Error in GSVAPlot(pancreas_sub, plot_type = "heatmap", group.by = "CellType",     topTerm = 10, width = 1, height = 2): GSVA results not found. Please run RunGSVA first
+#> Warning: Data is of class matrix. Coercing to dgCMatrix.
+
 ht1$plot
-#> Error: object 'ht1' not found
+
 
 ht2 <- GSVAPlot(
   pancreas_sub,
@@ -504,9 +506,10 @@ ht2 <- GSVAPlot(
   width = 1,
   height = 2
 )
-#> Error in GSVAPlot(pancreas_sub, group.by = "CellType", plot_type = "heatmap",     n_split = 3, topTerm = 100, use_raster = TRUE, width = 1,     height = 2): GSVA results not found. Please run RunGSVA first
+#> Warning: Data is of class matrix. Coercing to dgCMatrix.
+
 ht2$plot
-#> Error: object 'ht2' not found
+
 
 GSVAPlot(
   srt = pancreas_sub,
@@ -515,7 +518,7 @@ GSVAPlot(
   plot_type = "comparison",
   topTerm = 1
 )
-#> Error in GSVAPlot(srt = pancreas_sub, group.by = "CellType", db = "GO_BP",     plot_type = "comparison", topTerm = 1): GSVA results not found. Please run RunGSVA first
+
 
 GSVAPlot(
   srt = pancreas_sub,
@@ -525,7 +528,7 @@ GSVAPlot(
   plot_type = "bar",
   topTerm = 5
 )
-#> Error in GSVAPlot(srt = pancreas_sub, group.by = "CellType", db = "GO_BP",     group_use = "Ductal", plot_type = "bar", topTerm = 5): GSVA results not found. Please run RunGSVA first
+
 
 GSVAPlot(
   srt = pancreas_sub,
@@ -534,7 +537,8 @@ GSVAPlot(
   db = "GO_BP",
   plot_type = "network"
 )
-#> Error in GSVAPlot(srt = pancreas_sub, group.by = "CellType", group_use = "Ductal",     db = "GO_BP", plot_type = "network"): GSVA results not found. Please run RunGSVA first
+#> ✔ [2026-05-11 15:06:12] shadowtext installed successfully
+
 
 GSVAPlot(
   srt = pancreas_sub,
@@ -543,7 +547,7 @@ GSVAPlot(
   db = "GO_BP",
   plot_type = "enrichmap"
 )
-#> Error in GSVAPlot(srt = pancreas_sub, group.by = "CellType", group_use = "Ductal",     db = "GO_BP", plot_type = "enrichmap"): GSVA results not found. Please run RunGSVA first
+
 
 GSVAPlot(
   pancreas_sub,
@@ -553,7 +557,12 @@ GSVAPlot(
   plot_type = "wordcloud",
   topWord = 50
 )
-#> Error in GSVAPlot(pancreas_sub, group.by = "CellType", db = "GO_BP", nrow = 2,     plot_type = "wordcloud", topWord = 50): GSVA results not found. Please run RunGSVA first
+#> Warning: Some words could not fit on page. They have been removed.
+#> Warning: Some words could not fit on page. They have been removed.
+#> Warning: Some words could not fit on page. They have been removed.
+#> Warning: Some words could not fit on page. They have been removed.
+#> Warning: Some words could not fit on page. They have been removed.
+
 
 GSVAPlot(
   pancreas_sub,
@@ -563,15 +572,24 @@ GSVAPlot(
   plot_type = "wordcloud",
   word_type = "feature"
 )
-#> Error in GSVAPlot(pancreas_sub, group.by = "CellType", group_use = "Ductal",     db = "GO_BP", plot_type = "wordcloud", word_type = "feature"): GSVA results not found. Please run RunGSVA first
 
-if (FALSE) { # \dontrun{
+
 pancreas_sub <- RunGSVA(
   pancreas_sub,
   assay_name = "GSVA",
   db = "GO_BP",
   species = "Mus_musculus"
 )
+#> ℹ [2026-05-11 15:07:17] Start GSVA analysis
+#> ℹ [2026-05-11 15:07:17] Single-cell GSVA mode: using expression matrix directly ...
+#> ℹ [2026-05-11 15:07:17] Expression matrix: 15998 genes x 1000 cells
+#> ℹ [2026-05-11 15:07:17] Species: "Mus_musculus"
+#> ℹ [2026-05-11 15:07:17] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-11 14:55:43
+#> ℹ [2026-05-11 15:07:18] Processing database: "GO_BP" ...
+#> ℹ [2026-05-11 15:07:20] Initial overlap: 11277 genes out of 15998 expression genes and 16594 genes in gene sets
+#> ℹ [2026-05-11 15:07:25] Running GSVA for 5633 gene sets ...
+#> ℹ [2026-05-11 15:12:56] GSVA results stored in assay "GSVA" and tools slot "GSVA_cell_gsva"
+#> ✔ [2026-05-11 15:12:56] GSVA analysis done
 
 FeatureDimPlot(
   pancreas_sub,
@@ -580,12 +598,18 @@ FeatureDimPlot(
   reduction = "umap"
 )
 
+
 FeatureStatPlot(
   pancreas_sub,
   stat.by = rownames(pancreas_sub[["GSVA"]])[1:2],
   group.by = "CellType",
   assay = "GSVA"
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+
 
 ht <- GroupHeatmap(
   pancreas_sub,
@@ -596,5 +620,4 @@ ht <- GroupHeatmap(
   width = 1,
   height = 2
 )
-} # }
 ```

@@ -269,24 +269,24 @@ CellStatPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-02 04:18:33] Start standard processing workflow...
-#> ℹ [2026-05-02 04:18:33] Checking a list of <Seurat>...
-#> ! [2026-05-02 04:18:33] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-02 04:18:33] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-02 04:18:35] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-02 04:18:36] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-02 04:18:36] Number of available HVF: 2000
-#> ℹ [2026-05-02 04:18:36] Finished check
-#> ℹ [2026-05-02 04:18:36] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-02 04:18:36] Perform pca linear dimension reduction
-#> ℹ [2026-05-02 04:18:37] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-05-02 04:18:37] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-02 04:18:37] Reorder clusters...
-#> ℹ [2026-05-02 04:18:38] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-02 04:18:38] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-02 04:18:38] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-05-02 04:18:40] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-05-02 04:18:44] Standard processing workflow completed
+#> ℹ [2026-05-11 14:46:38] Start standard processing workflow...
+#> ℹ [2026-05-11 14:46:39] Checking a list of <Seurat>...
+#> ! [2026-05-11 14:46:39] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-11 14:46:39] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 14:46:41] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 14:46:41] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-11 14:46:41] Number of available HVF: 2000
+#> ℹ [2026-05-11 14:46:42] Finished check
+#> ℹ [2026-05-11 14:46:42] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-11 14:46:42] Perform pca linear dimension reduction
+#> ℹ [2026-05-11 14:46:42] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-05-11 14:46:43] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-11 14:46:43] Reorder clusters...
+#> ℹ [2026-05-11 14:46:43] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-11 14:46:43] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-11 14:46:43] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-05-11 14:46:46] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-05-11 14:46:50] Standard processing workflow completed
 p1 <- CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
@@ -516,7 +516,7 @@ CellStatPlot(
   stat.by = c("CellType", "Phase"),
   plot_type = "sankey"
 )
-#> ! [2026-05-02 04:18:56] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-05-11 14:47:01] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 
 
 CellStatPlot(
@@ -524,64 +524,65 @@ CellStatPlot(
   stat.by = c("CellType", "Phase"),
   plot_type = "chord"
 )
-#> ! [2026-05-02 04:18:57] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-05-11 14:47:02] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 
 
-CellStatPlot(
-  pancreas_sub,
-  stat.by = c("CellType", "Phase"),
-  plot_type = "venn",
-  stat_level = list(
-    CellType = c("Ductal", "Ngn3-low-EP"),
-    Phase = "S"
+  CellStatPlot(
+    pancreas_sub,
+    stat.by = c("CellType", "Phase"),
+    plot_type = "venn",
+    stat_level = list(
+      CellType = c("Ductal", "Ngn3-low-EP"),
+      Phase = "S"
+    )
   )
-)
-#> ! [2026-05-02 04:18:57] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-05-11 14:47:02] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 
 
-pancreas_sub$Progenitor <- pancreas_sub$CellType %in% c("Ngn3-low-EP", "Ngn3-high-EP")
-pancreas_sub$G2M <- pancreas_sub$Phase == "G2M"
-pancreas_sub$Fancb_Expressed <- GetAssayData5(
-  pancreas_sub,
-  assay = "RNA",
-  layer = "counts"
-)["Fancb", ] > 0
-pancreas_sub$Dlg3_Expressed <- GetAssayData5(
-  pancreas_sub,
-  assay = "RNA",
-  layer = "counts"
-)["Dlg3", ] > 0
-CellStatPlot(
-  pancreas_sub,
-  stat.by = c(
-    "Progenitor", "G2M", "Fancb_Expressed", "Dlg3_Expressed"
-  ),
-  plot_type = "venn",
-  stat_level = "TRUE"
-)
-#> ! [2026-05-02 04:18:58] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+  pancreas_sub$Progenitor <- pancreas_sub$CellType %in% c("Ngn3-low-EP", "Ngn3-high-EP")
+  pancreas_sub$G2M <- pancreas_sub$Phase == "G2M"
+  pancreas_sub$Fancb_Expressed <- GetAssayData5(
+    pancreas_sub,
+    assay = "RNA",
+    layer = "counts"
+  )["Fancb", ] > 0
+  pancreas_sub$Dlg3_Expressed <- GetAssayData5(
+    pancreas_sub,
+    assay = "RNA",
+    layer = "counts"
+  )["Dlg3", ] > 0
+
+  CellStatPlot(
+    pancreas_sub,
+    stat.by = c(
+      "Progenitor", "G2M", "Fancb_Expressed", "Dlg3_Expressed"
+    ),
+    plot_type = "venn",
+    stat_level = "TRUE"
+  )
+#> ! [2026-05-11 14:47:03] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 
 
-CellStatPlot(
-  pancreas_sub,
-  stat.by = c(
-    "Progenitor", "G2M", "Fancb_Expressed", "Dlg3_Expressed"
-  ),
-  plot_type = "upset",
-  stat_level = "TRUE"
-)
-#> ! [2026-05-02 04:18:58] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+  CellStatPlot(
+    pancreas_sub,
+    stat.by = c(
+      "Progenitor", "G2M", "Fancb_Expressed", "Dlg3_Expressed"
+    ),
+    plot_type = "upset",
+    stat_level = "TRUE"
+  )
+#> ! [2026-05-11 14:47:03] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 #> Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
 #> ℹ Please use `linewidth` instead.
 #> ℹ The deprecated feature was likely used in the ggupset package.
 #>   Please report the issue at <https://github.com/const-ae/ggupset/issues>.
 
 
-sum(
-  pancreas_sub$Progenitor == "FALSE" &
-    pancreas_sub$G2M == "FALSE" &
-    pancreas_sub$Fancb_Expressed == "TRUE" &
-    pancreas_sub$Dlg3_Expressed == "FALSE"
-)
+  sum(
+    pancreas_sub$Progenitor == "FALSE" &
+      pancreas_sub$G2M == "FALSE" &
+      pancreas_sub$Fancb_Expressed == "TRUE" &
+      pancreas_sub$Dlg3_Expressed == "FALSE"
+  )
 #> [1] 6
 ```

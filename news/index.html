@@ -34,13 +34,42 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/mengxu98/scop/blob/dev/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/mengxu98/scop/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.9.0" id="scop-090">scop 0.9.0<a class="anchor" aria-label="anchor" href="#scop-090"></a></h2>
+<ul><li>
+<strong>feat</strong>:
+<ul><li>Added <code><a href="../reference/ConvertHomologs.html">ConvertHomologs()</a></code> for homologous feature conversion in <code>Seurat</code>, <code>matrix</code>, and <code>Matrix</code> objects. The function uses <code><a href="../reference/GeneConvert.html">GeneConvert()</a></code> for arbitrary Ensembl/biomaRt-supported species pairs, collapses duplicated target homologs by summing expression values, preserves Seurat cell metadata and spatial images, and stores the mapping table in <code>@tools$ConvertHomologs</code>.</li>
+<li>Added <code><a href="../reference/RunCytoSPACE.html">RunCytoSPACE()</a></code>, a native R/C++ implementation of the default CytoSPACE spot-level assignment workflow. The native backend uses spot-capacity graph construction and precomputed Pearson correlation matrices, stores detailed results in <code>srt@tools[["CytoSPACE"]]</code>, and writes summary metadata columns with the requested prefix.</li>
+<li>Added <code><a href="../reference/SpatialDimPlot.html">SpatialDimPlot()</a></code> for spatial visualization, including examples that show both tissue annotations and downstream CytoSPACE assignment results.</li>
+<li>Added a shared native progress helper in <code>src/log_message.h</code> for long-running C++ loops. CytoSPACE assignment, scTenifold tensor decomposition, proportion permutation/bootstrap, and sample-level proportion bootstrap now report progress with the same timestamped information style as <code><a href="https://mengxu98.github.io/thisutils/reference/log_message.html" class="external-link">thisutils::log_message()</a></code>.</li>
+</ul></li>
+<li>
+<strong>fix</strong>:
+<ul><li>
+<code><a href="../reference/RunCellphoneDB.html">RunCellphoneDB()</a></code>: Replaced the internal manual homolog-expression conversion path with <code><a href="../reference/ConvertHomologs.html">ConvertHomologs()</a></code>, keeping expression-object conversion behavior consistent across the package.</li>
+<li>
+<code><a href="../reference/GeneConvert.html">GeneConvert()</a></code> examples now direct expression-object homolog conversion to <code><a href="../reference/ConvertHomologs.html">ConvertHomologs()</a></code> instead of showing manual <code>geneID_expand</code> aggregation.</li>
+<li>Cleaned up package-check issues by declaring missing namespace imports and aligning Rd argument documentation for recently updated wrappers.</li>
+<li>Optional wrapper dependencies are checked at function entry with <code>check_r()</code> instead of silently skipping examples or adding unnecessary hard dependencies.</li>
+</ul></li>
+<li>
+<strong>docs</strong>:
+<ul><li>Updated the pkgdown reference grouping for spatial analysis, spatial visualization, data conversion, and composition-analysis functions.</li>
+<li>Updated <code><a href="../reference/RunCytoSPACE.html">RunCytoSPACE()</a></code> examples to use real bundled data, convert mouse reference data with <code><a href="../reference/ConvertHomologs.html">ConvertHomologs()</a></code>, and visualize assignment results.</li>
+<li>Refreshed examples to use bundled real package data and removed unnecessary <code>dontrun</code> wrappers from examples that do not require Python or external command-line tools.</li>
+</ul></li>
+<li>
+<strong>data</strong>:
+<ul><li>Added <code>visium_human_pancreas_sub</code>, a Visium human pancreas spatial example dataset (<a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE254829" class="external-link">GSE254829</a>) with spatial image data and CODA-derived annotations, for spatial analysis.</li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.8.9" id="scop-089">scop 0.8.9<a class="anchor" aria-label="anchor" href="#scop-089"></a></h2>
 <ul><li>
-<strong>perf</strong>:
+<strong>fix</strong>:
 <ul><li>
 <code><a href="../reference/RunGSVA.html">RunGSVA()</a></code>: Removed redundant dense <code><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix()</a></code> conversion in single-cell mode for <code>backend = "r"</code>; sparse expression matrices now stay sparse through row filtering, reducing peak memory and avoiding unnecessary dense materialization.</li>
 <li>
@@ -54,22 +83,16 @@
 <li>
 <code><a href="../reference/RunUMAP2.html">RunUMAP2()</a></code>: Replaced <code>isSymmetric(as.matrix(graph))</code> with sparse-native <code>Matrix::isSymmetric(graph)</code> in symmetry checks and graph subset sampling, avoiding dense materialization of large neighbor graphs.</li>
 <li>
-<code><a href="../reference/RunUMAP2.html">RunUMAP2()</a></code>: Replaced <code>apply(as.matrix(graph), 2, order)</code> in the uwot-predict path with the internal C++ sparse column top-k helper (<code>run_sparse_topk_by_column_cpp()</code>), avoiding full dense conversion and column-wise R-level <code><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply()</a></code>.</li>
+<code><a href="../reference/RunUMAP2.html">RunUMAP2()</a></code>: Replaced <code>apply(as.matrix(graph), 2, order)</code> in the uwot-predict path with the internal C++ sparse column top-k helper (<code>run_sparse_topk_by_column()</code>), avoiding full dense conversion and column-wise R-level <code><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply()</a></code>.</li>
 <li>
 <code><a href="../reference/RunDimsReduction.html">RunDimsReduction()</a></code> (PCA centering): Uses <code>SeuratObject::LayerData(…, features = features)</code> to read only HVF rows from <code>scale.data</code> instead of loading the full matrix followed by manual subsetting.</li>
 <li>
 <code><a href="../reference/RunMDS.html">RunMDS()</a></code>: Removed <code><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix()</a></code> before <code>Matrix::t()</code>; <code><a href="https://koheiw.github.io/proxyC/reference/simil.html" class="external-link">proxyC::dist</a></code> now receives the sparse matrix directly, avoiding dense conversion of large count matrices.</li>
 <li>
 <code>integration.R</code> (fastMNN): Removed three <code><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix()</a></code> calls passed to <code><a href="https://rdrr.io/pkg/batchelor/man/fastMNN.html" class="external-link">batchelor::fastMNN()</a></code>, which accepts sparse matrices natively via <code>SingleCellExperiment</code>.</li>
-</ul></li>
 <li>
-<strong>memory</strong>:
-<ul><li>
 <code><a href="../reference/standard_scop.html">standard_scop()</a></code>: Replaced full <code>scale.data</code> matrix load (via <code><a href="../reference/GetAssayData5.html">GetAssayData5()</a></code>) with direct layer access (<code><a href="https://satijalab.github.io/seurat-object/reference/AssayData.html" class="external-link">SeuratObject::GetAssayData</a></code> for Assay5; <code>@scale.data</code> for Assay) to retrieve only rownames when checking whether HVFs have been scaled, substantially reducing peak memory during the ScaleData decision step.</li>
-</ul></li>
 <li>
-<strong>compat</strong>:
-<ul><li>
 <code><a href="../reference/GetAssayData5.html">GetAssayData5.Assay()</a></code>: Fixed parameter naming to use positional matching for the slot/layer argument, so <code><a href="../reference/GetAssayData5.html">GetAssayData5()</a></code> correctly retrieves <code>counts</code>, <code>data</code>, and <code>scale.data</code> layers in both Seurat v4 (<code>slot</code>) and v5 (<code>layer</code>). Previously the named <code>layer</code> argument was silently dropped by SeuratObject v4, always returning the <code>data</code> slot regardless of the requested layer.</li>
 <li>
 <code><a href="../reference/CSS_integrate.html">CSS_integrate()</a></code>: Added <code>Assay5</code> guard before <code><a href="https://satijalab.github.io/seurat-object/reference/SplitLayers.html" class="external-link">SeuratObject::JoinLayers()</a></code> to avoid errors with Seurat v4 <code>Assay</code> objects, which do not support layered storage.</li>
@@ -79,10 +102,16 @@
 <code><a href="../reference/integration_scop.html">integration_scop()</a></code>: Added early detection for v5-only integration methods (<code>CCA</code>, <code>RPCA</code>, <code>fastMNN5</code>, <code>Harmony5</code>, <code>scVI5</code>) to provide a clear, actionable error message when used with Seurat v4 <code>Assay</code> objects, rather than failing deep in the call stack.</li>
 </ul></li>
 <li>
-<strong>test</strong>:
-<ul><li>Added 22 consistency tests (<code>test_optimizations_v2.R</code>) covering GSVA sparse, RunCellQC caching, DEtest cell_index, AnnotateFeatures vapply, run_scomm sparse, RunDynamicFeatures solve, and cccplot validations.</li>
-<li>Added 5 dim-reduction optimization consistency tests (<code>test_dim_reduction_optimizations.R</code>) covering UMAP isSymmetric, scale.data rownames, MDS sparse distance, uwot-predict C++ topk, and PCA centering with features parameter.</li>
-<li>Added 10 Seurat v4 compatibility tests (<code>test_seurat_v4_compat.R</code>) run against a real Seurat v4.4.0 + SeuratObject v4.1.4 installation, verifying Assay object handling, <code>GetAssayData</code> slot access, PCA centering fallback, <code>JoinLayers</code> guard, sparse matrix operations, and UMAP/MDS execution.</li>
+<strong>feat</strong>:
+<ul><li>Added <code><a href="../reference/loom_to_srt.html">loom_to_srt()</a></code> for pure-R loom-to-Seurat conversion via <code>rhdf5</code>, preserving velocity-style <code>spliced</code> and <code>unspliced</code> layers as assays without initializing Python, and added Python-backed <code><a href="../reference/loom_to_adata.html">loom_to_adata()</a></code> for users who need AnnData output.</li>
+<li>Added <code><a href="../reference/RunBulk.html">RunBulk()</a></code> as a unified bulk-strategy entrypoint with method-vector selection for bulk DE, deconvolution, and cell-type-specific DE workflows.</li>
+<li>Added method-specific bulk runners for <code>de_limma_voom</code>, <code>de_edgeR_qlf</code>, <code>de_DESeq2</code>, <code>de_dream</code>, <code>deconv_MuSiC</code>, <code>deconv_BisqueRNA</code>, <code>deconv_BayesPrism</code>, and <code>csde_TOAST</code>.</li>
+<li>Standardized bulk results under <code>Bulk$results$de</code>, <code>Bulk$results$deconv</code>, and <code>Bulk$results$csde</code>, keeping DE outputs compatible with existing <code><a href="../reference/DEtestPlot.html">DEtestPlot()</a></code>, <code><a href="../reference/RunEnrichment.html">RunEnrichment()</a></code>, <code><a href="../reference/RunGSEA.html">RunGSEA()</a></code>, <code><a href="../reference/GroupHeatmap.html">GroupHeatmap()</a></code>, and <code><a href="../reference/FeatureHeatmap.html">FeatureHeatmap()</a></code> data flows.</li>
+<li>
+<code>RunBulk(run_enrichment = TRUE, run_gsea = TRUE)</code> now filters bulk DE rows with pathway thresholds and mirrors successful pathway results to <code>Enrichment_Bulk_wilcox</code> and <code>GSEA_Bulk_wilcox</code>, so <code><a href="../reference/EnrichmentPlot.html">EnrichmentPlot()</a></code> and <code><a href="../reference/GSEAPlot.html">GSEAPlot()</a></code> can read them through the standard <code>srt@tools</code> contract.</li>
+<li>Deconvolution and CSDE bundles now record their computational <code>engine</code> in <code>details</code>; the current deconvolution runners use explicit <code>backend = "internal"</code> SCOP profile fitting and <code>csde_TOAST</code> uses explicit <code>backend = "limma_interaction"</code>, so native package backends can be wired in later without pretending to call external packages.</li>
+<li>Added explicit <code>Remotes</code> entries for <code>mengxu98/thisplot</code> and <code>mengxu98/thisutils</code> so source installs can resolve the minimum imported versions required by SCOP. Optional bulk engines such as <code>DESeq2</code> and <code>variancePartition</code> are installed on demand through <code>check_r()</code> and called lazily through <code>get_namespace_fun()</code>.</li>
+<li>Added <code>method_args</code> to expose method-specific tuning parameters without expanding the public API surface.</li>
 </ul></li>
 </ul></div>
     <div class="section level2">
@@ -97,7 +126,7 @@
 </ul></li>
 <li>
 <strong>fix</strong>:
-<ul><li>Added optional wrappers for <code>RunDorothea()</code>, <code>RunBayesSpace()</code>, and experimental <code>RunScTenifoldKnk()</code>. <code>RunScTenifoldKnk()</code> keeps the upstream <code>scTenifoldNet</code> workflow but fixes the QC gene-filter assignment in the local path, uses a native equivalent covariance/downdate path with direct sparse matrix construction, selection-based quantile thresholding, and controlled per-gene eigensolver parallelism for large <code>pcNet()</code> network construction, and uses native helpers for tensor decomposition, manifold matrix construction, directionality, and differential-regulation distance calculations. The native tensor-decomposition path now computes MTTKRP updates directly instead of materializing four dense unfolding matrices.</li>
+<ul><li>Added optional wrappers for <code><a href="../reference/RunDorothea.html">RunDorothea()</a></code>, <code><a href="../reference/RunBayesSpace.html">RunBayesSpace()</a></code>, and experimental <code><a href="../reference/RunScTenifoldKnk.html">RunscTenifoldKnk()</a></code>. <code><a href="../reference/RunScTenifoldKnk.html">RunscTenifoldKnk()</a></code> keeps the upstream <code>scTenifoldNet</code> workflow but fixes the QC gene-filter assignment in the local path, uses a native equivalent covariance/downdate path with direct sparse matrix construction, selection-based quantile thresholding, and controlled per-gene eigensolver parallelism for large <code>pcNet()</code> network construction, and uses native helpers for tensor decomposition, manifold matrix construction, directionality, and differential-regulation distance calculations. The native tensor-decomposition path now computes MTTKRP updates directly instead of materializing four dense unfolding matrices.</li>
 <li>
 <code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code>: Added explicit support for <code>mamba</code> and <code>micromamba</code> executables in addition to <code>conda</code>, including command-name resolution, automatic package-managed micromamba download when <code>conda = "micromamba"</code> is requested and the command is not on <code>PATH</code>, manager-aware logging, micromamba env path detection, and ToS handling that only runs for standard conda. Package-managed micromamba environments now use a no-space cache root to avoid <code>micromamba run -p</code> path parsing failures. <code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code> now also stops early if reticulate has already initialized a different Python executable, avoiding unsafe in-session switches between conda and micromamba. The Python stack now also pins <code>setuptools &lt; 81</code> so legacy packages such as <code>trimap</code> can still import <code>pkg_resources</code>.</li>
 <li>
@@ -108,7 +137,7 @@
 <code><a href="../reference/srt_reorder.html">srt_reorder()</a></code>: Replaced per-cluster repeated sparse subsetting and <code><a href="https://rdrr.io/pkg/Matrix/man/colSums-methods.html" class="external-link">rowMeans()</a></code> with a single sparse group-membership matrix multiplication, speeding the cluster-reordering step used by <code><a href="../reference/standard_scop.html">standard_scop()</a></code> while preserving average expression values.</li>
 <li>
 <code><a href="../reference/FindExpressedMarkers.html">FindExpressedMarkers()</a></code>: Added a sparse fold-change and detection-rate prefilter path for common sparse RNA inputs, avoiding dense all-feature expression materialization before marker filtering while preserving default results. Supplied features are now intersected with the active layer before dense fallback scoring, which also keeps <code>scale.data</code> and partial-feature layers from passing absent rows into fold-change calculation.</li>
-<li>C++-accelerated backends are now the default where available: <code><a href="../reference/RunMetabolism.html">RunMetabolism()</a></code>, <code><a href="../reference/RunGSVA.html">RunGSVA()</a></code>, <code><a href="../reference/CellScoring.html">CellScoring()</a></code>, <code><a href="../reference/RunDynamicEnrichment.html">RunDynamicEnrichment()</a></code>, <code><a href="../reference/RunEnrichment.html">RunEnrichment()</a></code>, and <code><a href="../reference/RunProportionTestPermutation.html">RunProportionTestPermutation()</a></code> now prefer <code>backend = "cpp"</code> while retaining <code>backend = "r"</code> for exact legacy/package behavior. Unsupported C++ methods such as metabolism <code>VISION</code> and cell scoring <code>UCell</code> automatically fall back to R when <code>backend</code> is not explicitly set.</li>
+<li>C++-accelerated backends are now the default where available: <code><a href="../reference/RunMetabolism.html">RunMetabolism()</a></code>, <code><a href="../reference/RunGSVA.html">RunGSVA()</a></code>, <code><a href="../reference/CellScoring.html">CellScoring()</a></code>, <code><a href="../reference/RunDynamicEnrichment.html">RunDynamicEnrichment()</a></code>, and <code><a href="../reference/RunEnrichment.html">RunEnrichment()</a></code> now prefer <code>backend = "cpp"</code> while retaining <code>backend = "r"</code> for exact legacy/package behavior. <code><a href="../reference/RunPermutation.html">RunPermutation()</a></code> now uses its validated native implementation directly.</li>
 <li>
 <code><a href="../reference/RunMetabolism.html">RunMetabolism()</a></code> and <code><a href="../reference/RunGSVA.html">RunGSVA()</a></code>: Added a reusable C++ gene-set scoring backend for <code>ssGSEA</code>, <code>zscore</code>, and <code>plage</code>; <code><a href="../reference/RunGSVA.html">RunGSVA()</a></code> can now use <code>backend = "cpp"</code> for <code>method = "ssgsea"</code>, <code>method = "zscore"</code>, <code>method = "plage"</code>, and Gaussian- or Poisson-kernel <code>method = "gsva"</code>. PLAGE scores are oriented by the gene set mean z-score to avoid backend-dependent sign flips.</li>
 <li>
@@ -118,7 +147,7 @@
 <li>
 <code><a href="../reference/CellScoring.html">CellScoring()</a></code>: Added experimental <code>backend = "cpp"</code> support for Seurat-style module scoring by keeping control-gene sampling in R and moving sparse mean calculations to native code.</li>
 <li>
-<code><a href="../reference/RunProportionTestPermutation.html">RunProportionTestPermutation()</a></code>: Added experimental <code>backend = "cpp"</code> for faster permutation and bootstrap loops.</li>
+<code><a href="../reference/RunPermutation.html">RunPermutation()</a></code>: Uses the native C++ permutation and bootstrap loops directly after validating they match the legacy R calculation for observed fractions and log2 fold-differences while running substantially faster.</li>
 <li>
 <code><a href="../reference/RunUMAP2.html">RunUMAP2()</a></code>: Added an internal C++ sparse column top-k helper for Graph inputs to speed extraction of precomputed neighbor indices/connectivities before calling <code>uwot</code>.</li>
 <li>
@@ -301,9 +330,9 @@ Related issus <a href="https://github.com/mengxu98/scop/issues/76" class="extern
 <li>
 <code><a href="../reference/RunMonocle3.html">RunMonocle3()</a></code>: New function for performing <a href="https://github.com/cole-trapnell-lab/monocle3" class="external-link">Monocle3</a> trajectory analysis with support for cell ordering, trajectory learning, and pseudotime computation.</li>
 <li>
-<code><a href="../reference/RunCytoTRACE.html">RunCytoTRACE()</a></code>: New function for running <a href="https://github.com/digitalcytometry/cytotrace2" class="external-link">CytoTRACE 2</a> analysis to predict cellular potency scores and categories (Differentiated, Unipotent, Oligopotent, Multipotent, Pluripotent, Totipotent) with support for human and mouse species.</li>
+<code><a href="../reference/RunCytoTRACE.html">RunCytoTRACE()</a></code>: New native <code>scop</code> implementation for running CytoTRACE 2 analysis to predict cellular potency scores and categories (Differentiated, Unipotent, Oligopotent, Multipotent, Pluripotent, Totipotent) with support for human and mouse species.</li>
 <li>
-<code><a href="../reference/CytoTRACEPlot.html">CytoTRACEPlot()</a></code>: New function for visualizing <a href="https://github.com/digitalcytometry/cytotrace2" class="external-link">CytoTRACE 2</a> analysis results.</li>
+<code><a href="../reference/CytoTRACEPlot.html">CytoTRACEPlot()</a></code>: New function for visualizing CytoTRACE 2 analysis results.</li>
 </ul></li>
 </ul></div>
     <div class="section level2">
@@ -440,7 +469,7 @@ Related issus <a href="https://github.com/mengxu98/scop/issues/76" class="extern
 <code><a href="../reference/PrepareSCExplorer.html">PrepareSCExplorer()</a></code>: Fixed package version dependency issues with <code>shiny</code> and <code>bslib</code> compatibility. The function now properly handles <code>bslib</code> theme configuration to work with both <code>shiny</code> 1.6.0 and 1.7.0+, addressing compatibility errors reported in <a href="https://github.com/mengxu98/scop/issues/87" class="external-link">#87</a>.</li>
 </ul></li>
 <li>
-<strong>refactor</strong>:
+<strong>fix</strong>:
 <ul><li>Improved code formatting and consistency across multiple functions.</li>
 <li>Enhanced Python functions in <code>inst/python/functions.py</code> with better error handling and message formatting.</li>
 </ul></li>
@@ -472,7 +501,7 @@ Related issus <a href="https://github.com/mengxu98/scop/issues/76" class="extern
 <code><a href="../reference/integration_scop.html">integration_scop()</a></code>: Enhanced <code>integration_method</code> parameter definition with explicit method list for better code clarity.</li>
 </ul></li>
 <li>
-<strong>refactor</strong>:
+<strong>fix</strong>:
 <ul><li>Moved <code>exist_python_pkgs()</code> function to <code>check_package.R</code> for better code organization.</li>
 <li>Replaced direct <code>conda_info()$envs_dirs[1]</code> calls with <code>get_conda_envs_dir()</code> helper function for consistency.</li>
 <li>
@@ -497,7 +526,7 @@ Related issus <a href="https://github.com/mengxu98/scop/issues/76" class="extern
 <li>Multiple functions: Replaced <code>:::</code> operator with <code>get_namespace_fun()</code> for safer namespace access.</li>
 </ul></li>
 <li>
-<strong>refactor</strong>:
+<strong>fix</strong>:
 <ul><li>Removed <code>RunMonocle()</code> function and related documentation (<code>RunMonocle2.Rd</code>, <code>RunMonocle3.Rd</code>).</li>
 <li>Removed <code>projection_functions.R</code> file (functions moved to other locations).</li>
 <li>Replaced custom theme functions with <code><a href="https://mengxu98.github.io/thisplot/reference/theme_this.html" class="external-link">thisplot::theme_this()</a></code> (exported as <code>theme_scop()</code>).</li>
@@ -542,7 +571,7 @@ Related issus <a href="https://github.com/mengxu98/scop/issues/76" class="extern
 <li>Added <em>Python</em> version <code>log_message()</code> for Python-based functions (<code><a href="../reference/RunSCVELO.html">RunSCVELO()</a></code>, <code><a href="../reference/RunPAGA.html">RunPAGA()</a></code>, <code><a href="../reference/RunPalantir.html">RunPalantir()</a></code>, <code><a href="../reference/RunCellRank.html">RunCellRank()</a></code>, <code><a href="../reference/RunWOT.html">RunWOT()</a></code>) and added <code>verbose</code> parameter inheritance and improved message formatting using cli-style formatting.</li>
 </ul></li>
 <li>
-<strong>refactor</strong>:
+<strong>fix</strong>:
 <ul><li>Delete <code>harmonizomeapi.py</code> file.</li>
 <li>Move <code>scop_analysis.py</code> into a single <code>functions.py</code> file in <code>inst/python/</code> for better code organization and maintainability.</li>
 </ul></li>
@@ -580,7 +609,7 @@ Related issus <a href="https://github.com/mengxu98/scop/issues/76" class="extern
 <li>Improved error messages and user guidance across integration functions.</li>
 </ul></li>
 <li>
-<strong>refactor</strong>:
+<strong>fix</strong>:
 <ul><li>Removed some example figures to optimize package installation size.</li>
 </ul></li>
 </ul></div>

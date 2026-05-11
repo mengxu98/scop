@@ -12,13 +12,16 @@ env_info(conda, envname, verbose = TRUE)
 
 - conda:
 
-  The path to a conda executable. Use `"auto"` to allow automatically
-  finding an appropriate conda binary.
+  The path or command name of a conda-compatible executable (`conda`,
+  `mamba`, or `micromamba`). Use `"auto"` to allow automatically finding
+  an appropriate environment manager. If `"micromamba"` is requested and
+  micromamba is not available on `PATH`, a package-managed micromamba is
+  downloaded automatically.
 
 - envname:
 
-  The name of the conda environment. If `NULL`, the environment name
-  will be set to `"scop_env"`. Default is `NULL`.
+  The name of the conda-compatible Python environment. If `NULL`, the
+  environment name will be set to `"scop_env"`. Default is `NULL`.
 
 - verbose:
 

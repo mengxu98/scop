@@ -27,6 +27,8 @@ RunGSVA(
   maxGSSize = 500,
   unlimited_db = c("Chromosome", "GeneType", "TF", "Enzyme", "CSPA"),
   method = c("gsva", "ssgsea", "zscore", "plage"),
+  backend = c("cpp", "r"),
+  cpp_chunk_size = NULL,
   kcdf = c("Gaussian", "Poisson"),
   abs.ranking = FALSE,
   min.sz = 10,
@@ -80,7 +82,10 @@ RunGSVA(
 
   A character vector specifying the annotation sources to be included in
   the gene annotation databases. Can be one or more of
-  `"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF"`.
+  `"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF", "CytoTRACE2"`.
+  Note: `"CytoTRACE2"` is species-independent and downloads pre-trained
+  model data required by
+  [RunCytoTRACE](https://mengxu98.github.io/scop/reference/RunCytoTRACE.md).
 
 - species:
 
@@ -157,6 +162,23 @@ RunGSVA(
   The method to use for GSVA. Options are `"gsva"`, `"ssgsea"`,
   `"zscore"`, or `"plage"`. Default is `"gsva"`.
 
+- backend:
+
+  Scoring backend. `"cpp"` is the default and supports all current
+  `method` values. `"r"` uses the original
+  [`GSVA::gsva()`](https://rdrr.io/pkg/GSVA/man/gsva.html)
+  implementation. `"cpp"` supports `method = "ssgsea"`,
+  `method = "zscore"`, `method = "plage"`, and `method = "gsva"` with
+  `kcdf = "Gaussian"` or `kcdf = "Poisson"`. PLAGE scores are oriented
+  to have non-negative dot product with the gene set mean z-score so SVD
+  signs are deterministic.
+
+- cpp_chunk_size:
+
+  Optional cell chunk size for C++ GSVA kernels. `NULL` or `"auto"`
+  automatically chunks large matrices to reduce peak dense intermediate
+  memory; positive values set the chunk size manually.
+
 - kcdf:
 
   The kernel cumulative distribution function used for GSVA. Options are
@@ -208,39 +230,40 @@ slot.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-02 05:12:06] Start standard processing workflow...
-#> ℹ [2026-05-02 05:12:07] Checking a list of <Seurat>...
-#> ! [2026-05-02 05:12:07] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-02 05:12:07] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-02 05:12:09] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-02 05:12:10] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-02 05:12:10] Number of available HVF: 2000
-#> ℹ [2026-05-02 05:12:10] Finished check
-#> ℹ [2026-05-02 05:12:10] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-02 05:12:11] Perform pca linear dimension reduction
-#> ℹ [2026-05-02 05:12:11] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-05-02 05:12:12] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-02 05:12:12] Reorder clusters...
-#> ℹ [2026-05-02 05:12:12] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-02 05:12:12] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-02 05:12:12] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-05-02 05:12:16] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-05-02 05:12:21] Standard processing workflow completed
+#> ℹ [2026-05-11 16:08:39] Start standard processing workflow...
+#> ℹ [2026-05-11 16:08:39] Checking a list of <Seurat>...
+#> ! [2026-05-11 16:08:39] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-11 16:08:39] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 16:08:41] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 16:08:42] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-11 16:08:42] Number of available HVF: 2000
+#> ℹ [2026-05-11 16:08:42] Finished check
+#> ℹ [2026-05-11 16:08:42] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-11 16:08:43] Perform pca linear dimension reduction
+#> ℹ [2026-05-11 16:08:43] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-05-11 16:08:43] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-11 16:08:44] Reorder clusters...
+#> ℹ [2026-05-11 16:08:44] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-11 16:08:44] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-11 16:08:44] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-05-11 16:08:48] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-05-11 16:08:53] Standard processing workflow completed
 
 pancreas_sub <- RunGSVA(
   pancreas_sub,
   group.by = "CellType",
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-02 05:12:21] Start GSVA analysis
-#> ℹ [2026-05-02 05:12:21] Averaging expression by "CellType" ...
-#> ℹ [2026-05-02 05:12:21] Aggregated expression matrix: 15998 genes x 5 groups
-#> ℹ [2026-05-02 05:12:21] Species: "Mus_musculus"
-#> ℹ [2026-05-02 05:12:21] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-02 04:33:18
-#> ℹ [2026-05-02 05:12:23] Processing database: "GO_BP" ...
-#> ℹ [2026-05-02 05:12:24] Initial overlap: 11280 genes out of 15998 expression genes and 16186 genes in gene sets
-#> ℹ [2026-05-02 05:12:27] Running GSVA for 5637 gene sets ...
-#> Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 't': could not find function "run_gsva_cpp_scores"
+#> ℹ [2026-05-11 16:08:53] Start GSVA analysis
+#> ℹ [2026-05-11 16:08:53] Averaging expression by "CellType" ...
+#> ℹ [2026-05-11 16:08:53] Aggregated expression matrix: 15998 genes x 5 groups
+#> ℹ [2026-05-11 16:08:53] Species: "Mus_musculus"
+#> ℹ [2026-05-11 16:08:53] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-11 14:55:43
+#> ℹ [2026-05-11 16:08:54] Processing database: "GO_BP" ...
+#> ℹ [2026-05-11 16:08:56] Initial overlap: 11277 genes out of 15998 expression genes and 16594 genes in gene sets
+#> ℹ [2026-05-11 16:08:59] Running GSVA for 5633 gene sets ...
+#> ℹ [2026-05-11 16:11:02] GSVA results stored in `tools` slot: "GSVA_CellType_gsva"
+#> ✔ [2026-05-11 16:11:02] GSVA analysis done
 ht <- GSVAPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -249,5 +272,5 @@ ht <- GSVAPlot(
   width = 1,
   height = 2
 )
-#> Error in GSVAPlot(pancreas_sub, group.by = "CellType", plot_type = "heatmap",     topTerm = 10, width = 1, height = 2): GSVA results not found. Please run RunGSVA first
+#> Warning: Data is of class matrix. Coercing to dgCMatrix.
 ```
