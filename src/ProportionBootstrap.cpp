@@ -1,5 +1,6 @@
-// [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::depends(RcppArmadillo, cli)]]
 #include <RcppArmadillo.h>
+#include "log_message.h"
 #include <cmath>
 #include <random>
 #include <vector>
@@ -75,11 +76,12 @@ double bootstrap_sample_mean(
 }  // namespace
 
 // [[Rcpp::export]]
-NumericVector proportion_bootstrap_log2fd_cpp(
+NumericVector proportion_bootstrap_log2fd(
     NumericVector v1,
     NumericVector v2,
     int n_bootstrap = 1000,
-    double pseudocount = 1e-5
+    double pseudocount = 1e-5,
+    bool verbose = false
 ) {
   int n1 = v1.size();
   int n2 = v2.size();
@@ -101,8 +103,17 @@ NumericVector proportion_bootstrap_log2fd_cpp(
   std::mt19937 rng(seed);
 
   NumericVector boot(n_bootstrap);
+  scop::CliProgress progress(
+    n_bootstrap,
+    verbose,
+    "Bootstrap proportion log2 fold differences"
+  );
 
   for (int b = 0; b < n_bootstrap; ++b) {
+    if (scop::should_check_interrupt(b, n_bootstrap, verbose)) {
+      Rcpp::checkUserInterrupt();
+    }
+    progress.set(b);
     double mean1 = bootstrap_sample_mean(vec1, n1, rng);
     double mean2 = bootstrap_sample_mean(vec2, n2, rng);
 
@@ -113,18 +124,20 @@ NumericVector proportion_bootstrap_log2fd_cpp(
       boot[b] = std::log2((mean2 + pseudocount) / (mean1 + pseudocount));
     }
   }
+  progress.set(n_bootstrap, true);
 
   return boot;
 }
 
 // [[Rcpp::export]]
-List proportion_bootstrap_stats_cpp(
+List proportion_bootstrap_stats(
     NumericVector v1,
     NumericVector v2,
     int n_bootstrap = 1000,
-    double pseudocount = 1e-5
+    double pseudocount = 1e-5,
+    bool verbose = false
 ) {
-  NumericVector boot = proportion_bootstrap_log2fd_cpp(v1, v2, n_bootstrap, pseudocount);
+  NumericVector boot = proportion_bootstrap_log2fd(v1, v2, n_bootstrap, pseudocount, verbose);
 
   // Copy to std::vector for quantile computation
   std::vector<double> boot_vec(boot.size());

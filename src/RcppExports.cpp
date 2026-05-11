@@ -12,9 +12,9 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// classification_metrics_cpp
-List classification_metrics_cpp(CharacterVector predicted, CharacterVector truth, CharacterVector classes, double rare_threshold);
-RcppExport SEXP _scop_classification_metrics_cpp(SEXP predictedSEXP, SEXP truthSEXP, SEXP classesSEXP, SEXP rare_thresholdSEXP) {
+// classification_metrics
+List classification_metrics(CharacterVector predicted, CharacterVector truth, CharacterVector classes, double rare_threshold);
+RcppExport SEXP _scop_classification_metrics(SEXP predictedSEXP, SEXP truthSEXP, SEXP classesSEXP, SEXP rare_thresholdSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -22,7 +22,23 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< CharacterVector >::type truth(truthSEXP);
     Rcpp::traits::input_parameter< CharacterVector >::type classes(classesSEXP);
     Rcpp::traits::input_parameter< double >::type rare_threshold(rare_thresholdSEXP);
-    rcpp_result_gen = Rcpp::wrap(classification_metrics_cpp(predicted, truth, classes, rare_threshold));
+    rcpp_result_gen = Rcpp::wrap(classification_metrics(predicted, truth, classes, rare_threshold));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cytospace_assign
+List cytospace_assign(NumericMatrix sc_expr, NumericMatrix st_expr, IntegerVector spot_capacities, int seed, bool upstream_tie_break, bool verbose);
+RcppExport SEXP _scop_cytospace_assign(SEXP sc_exprSEXP, SEXP st_exprSEXP, SEXP spot_capacitiesSEXP, SEXP seedSEXP, SEXP upstream_tie_breakSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type sc_expr(sc_exprSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type st_expr(st_exprSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type spot_capacities(spot_capacitiesSEXP);
+    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
+    Rcpp::traits::input_parameter< bool >::type upstream_tie_break(upstream_tie_breakSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(cytospace_assign(sc_expr, st_expr, spot_capacities, seed, upstream_tie_break, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -98,9 +114,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// aucell_auc_sparse_cpp
-NumericMatrix aucell_auc_sparse_cpp(S4 expr, List gene_sets, int auc_max_rank, bool norm_auc, int strategy);
-RcppExport SEXP _scop_aucell_auc_sparse_cpp(SEXP exprSEXP, SEXP gene_setsSEXP, SEXP auc_max_rankSEXP, SEXP norm_aucSEXP, SEXP strategySEXP) {
+// aucell_auc_sparse
+NumericMatrix aucell_auc_sparse(S4 expr, List gene_sets, int auc_max_rank, bool norm_auc, int strategy);
+RcppExport SEXP _scop_aucell_auc_sparse(SEXP exprSEXP, SEXP gene_setsSEXP, SEXP auc_max_rankSEXP, SEXP norm_aucSEXP, SEXP strategySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -109,13 +125,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type auc_max_rank(auc_max_rankSEXP);
     Rcpp::traits::input_parameter< bool >::type norm_auc(norm_aucSEXP);
     Rcpp::traits::input_parameter< int >::type strategy(strategySEXP);
-    rcpp_result_gen = Rcpp::wrap(aucell_auc_sparse_cpp(expr, gene_sets, auc_max_rank, norm_auc, strategy));
+    rcpp_result_gen = Rcpp::wrap(aucell_auc_sparse(expr, gene_sets, auc_max_rank, norm_auc, strategy));
     return rcpp_result_gen;
 END_RCPP
 }
-// ora_hypergeom_cpp
-DataFrame ora_hypergeom_cpp(CharacterVector genes, CharacterVector term_ids, CharacterVector term_genes, CharacterVector term_name_ids, CharacterVector term_names, int min_size, int max_size);
-RcppExport SEXP _scop_ora_hypergeom_cpp(SEXP genesSEXP, SEXP term_idsSEXP, SEXP term_genesSEXP, SEXP term_name_idsSEXP, SEXP term_namesSEXP, SEXP min_sizeSEXP, SEXP max_sizeSEXP) {
+// ora_hypergeom
+DataFrame ora_hypergeom(CharacterVector genes, CharacterVector term_ids, CharacterVector term_genes, CharacterVector term_name_ids, CharacterVector term_names, int min_size, int max_size);
+RcppExport SEXP _scop_ora_hypergeom(SEXP genesSEXP, SEXP term_idsSEXP, SEXP term_genesSEXP, SEXP term_name_idsSEXP, SEXP term_namesSEXP, SEXP min_sizeSEXP, SEXP max_sizeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -126,26 +142,26 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< CharacterVector >::type term_names(term_namesSEXP);
     Rcpp::traits::input_parameter< int >::type min_size(min_sizeSEXP);
     Rcpp::traits::input_parameter< int >::type max_size(max_sizeSEXP);
-    rcpp_result_gen = Rcpp::wrap(ora_hypergeom_cpp(genes, term_ids, term_genes, term_name_ids, term_names, min_size, max_size));
+    rcpp_result_gen = Rcpp::wrap(ora_hypergeom(genes, term_ids, term_genes, term_name_ids, term_names, min_size, max_size));
     return rcpp_result_gen;
 END_RCPP
 }
-// module_score_sparse_cpp
-NumericMatrix module_score_sparse_cpp(S4 expr, List feature_sets, List control_sets);
-RcppExport SEXP _scop_module_score_sparse_cpp(SEXP exprSEXP, SEXP feature_setsSEXP, SEXP control_setsSEXP) {
+// module_score_sparse
+NumericMatrix module_score_sparse(S4 expr, List feature_sets, List control_sets);
+RcppExport SEXP _scop_module_score_sparse(SEXP exprSEXP, SEXP feature_setsSEXP, SEXP control_setsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< S4 >::type expr(exprSEXP);
     Rcpp::traits::input_parameter< List >::type feature_sets(feature_setsSEXP);
     Rcpp::traits::input_parameter< List >::type control_sets(control_setsSEXP);
-    rcpp_result_gen = Rcpp::wrap(module_score_sparse_cpp(expr, feature_sets, control_sets));
+    rcpp_result_gen = Rcpp::wrap(module_score_sparse(expr, feature_sets, control_sets));
     return rcpp_result_gen;
 END_RCPP
 }
-// proportion_permutation_cpp
-DataFrame proportion_permutation_cpp(IntegerVector sample_ids, IntegerVector cluster_ids, CharacterVector cluster_levels, int n_permutations, double pseudocount);
-RcppExport SEXP _scop_proportion_permutation_cpp(SEXP sample_idsSEXP, SEXP cluster_idsSEXP, SEXP cluster_levelsSEXP, SEXP n_permutationsSEXP, SEXP pseudocountSEXP) {
+// proportion_permutation
+DataFrame proportion_permutation(IntegerVector sample_ids, IntegerVector cluster_ids, CharacterVector cluster_levels, int n_permutations, double pseudocount, bool verbose);
+RcppExport SEXP _scop_proportion_permutation(SEXP sample_idsSEXP, SEXP cluster_idsSEXP, SEXP cluster_levelsSEXP, SEXP n_permutationsSEXP, SEXP pseudocountSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -154,13 +170,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< CharacterVector >::type cluster_levels(cluster_levelsSEXP);
     Rcpp::traits::input_parameter< int >::type n_permutations(n_permutationsSEXP);
     Rcpp::traits::input_parameter< double >::type pseudocount(pseudocountSEXP);
-    rcpp_result_gen = Rcpp::wrap(proportion_permutation_cpp(sample_ids, cluster_ids, cluster_levels, n_permutations, pseudocount));
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(proportion_permutation(sample_ids, cluster_ids, cluster_levels, n_permutations, pseudocount, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
-// ssgsea_rank_dense_cpp
-NumericMatrix ssgsea_rank_dense_cpp(S4 expr, List gene_sets, double alpha, bool normalize);
-RcppExport SEXP _scop_ssgsea_rank_dense_cpp(SEXP exprSEXP, SEXP gene_setsSEXP, SEXP alphaSEXP, SEXP normalizeSEXP) {
+// ssgsea_rank_dense
+NumericMatrix ssgsea_rank_dense(S4 expr, List gene_sets, double alpha, bool normalize);
+RcppExport SEXP _scop_ssgsea_rank_dense(SEXP exprSEXP, SEXP gene_setsSEXP, SEXP alphaSEXP, SEXP normalizeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -168,13 +185,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< List >::type gene_sets(gene_setsSEXP);
     Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
     Rcpp::traits::input_parameter< bool >::type normalize(normalizeSEXP);
-    rcpp_result_gen = Rcpp::wrap(ssgsea_rank_dense_cpp(expr, gene_sets, alpha, normalize));
+    rcpp_result_gen = Rcpp::wrap(ssgsea_rank_dense(expr, gene_sets, alpha, normalize));
     return rcpp_result_gen;
 END_RCPP
 }
-// zscore_dense_cpp
-NumericMatrix zscore_dense_cpp(S4 expr, List gene_sets, int min_size, int max_size);
-RcppExport SEXP _scop_zscore_dense_cpp(SEXP exprSEXP, SEXP gene_setsSEXP, SEXP min_sizeSEXP, SEXP max_sizeSEXP) {
+// zscore_dense
+NumericMatrix zscore_dense(S4 expr, List gene_sets, int min_size, int max_size);
+RcppExport SEXP _scop_zscore_dense(SEXP exprSEXP, SEXP gene_setsSEXP, SEXP min_sizeSEXP, SEXP max_sizeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -182,13 +199,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< List >::type gene_sets(gene_setsSEXP);
     Rcpp::traits::input_parameter< int >::type min_size(min_sizeSEXP);
     Rcpp::traits::input_parameter< int >::type max_size(max_sizeSEXP);
-    rcpp_result_gen = Rcpp::wrap(zscore_dense_cpp(expr, gene_sets, min_size, max_size));
+    rcpp_result_gen = Rcpp::wrap(zscore_dense(expr, gene_sets, min_size, max_size));
     return rcpp_result_gen;
 END_RCPP
 }
-// plage_dense_cpp
-NumericMatrix plage_dense_cpp(S4 expr, List gene_sets, int min_size, int max_size);
-RcppExport SEXP _scop_plage_dense_cpp(SEXP exprSEXP, SEXP gene_setsSEXP, SEXP min_sizeSEXP, SEXP max_sizeSEXP) {
+// plage_dense
+NumericMatrix plage_dense(S4 expr, List gene_sets, int min_size, int max_size);
+RcppExport SEXP _scop_plage_dense(SEXP exprSEXP, SEXP gene_setsSEXP, SEXP min_sizeSEXP, SEXP max_sizeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -196,13 +213,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< List >::type gene_sets(gene_setsSEXP);
     Rcpp::traits::input_parameter< int >::type min_size(min_sizeSEXP);
     Rcpp::traits::input_parameter< int >::type max_size(max_sizeSEXP);
-    rcpp_result_gen = Rcpp::wrap(plage_dense_cpp(expr, gene_sets, min_size, max_size));
+    rcpp_result_gen = Rcpp::wrap(plage_dense(expr, gene_sets, min_size, max_size));
     return rcpp_result_gen;
 END_RCPP
 }
-// gsva_gaussian_dense_cpp
-NumericMatrix gsva_gaussian_dense_cpp(S4 expr, List gene_sets, bool max_diff, bool abs_ranking, double tau, int chunk_size);
-RcppExport SEXP _scop_gsva_gaussian_dense_cpp(SEXP exprSEXP, SEXP gene_setsSEXP, SEXP max_diffSEXP, SEXP abs_rankingSEXP, SEXP tauSEXP, SEXP chunk_sizeSEXP) {
+// gsva_gaussian_dense
+NumericMatrix gsva_gaussian_dense(S4 expr, List gene_sets, bool max_diff, bool abs_ranking, double tau, int chunk_size);
+RcppExport SEXP _scop_gsva_gaussian_dense(SEXP exprSEXP, SEXP gene_setsSEXP, SEXP max_diffSEXP, SEXP abs_rankingSEXP, SEXP tauSEXP, SEXP chunk_sizeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -212,13 +229,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type abs_ranking(abs_rankingSEXP);
     Rcpp::traits::input_parameter< double >::type tau(tauSEXP);
     Rcpp::traits::input_parameter< int >::type chunk_size(chunk_sizeSEXP);
-    rcpp_result_gen = Rcpp::wrap(gsva_gaussian_dense_cpp(expr, gene_sets, max_diff, abs_ranking, tau, chunk_size));
+    rcpp_result_gen = Rcpp::wrap(gsva_gaussian_dense(expr, gene_sets, max_diff, abs_ranking, tau, chunk_size));
     return rcpp_result_gen;
 END_RCPP
 }
-// gsva_poisson_dense_cpp
-NumericMatrix gsva_poisson_dense_cpp(S4 expr, List gene_sets, bool max_diff, bool abs_ranking, double tau, int chunk_size);
-RcppExport SEXP _scop_gsva_poisson_dense_cpp(SEXP exprSEXP, SEXP gene_setsSEXP, SEXP max_diffSEXP, SEXP abs_rankingSEXP, SEXP tauSEXP, SEXP chunk_sizeSEXP) {
+// gsva_poisson_dense
+NumericMatrix gsva_poisson_dense(S4 expr, List gene_sets, bool max_diff, bool abs_ranking, double tau, int chunk_size);
+RcppExport SEXP _scop_gsva_poisson_dense(SEXP exprSEXP, SEXP gene_setsSEXP, SEXP max_diffSEXP, SEXP abs_rankingSEXP, SEXP tauSEXP, SEXP chunk_sizeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -228,64 +245,64 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type abs_ranking(abs_rankingSEXP);
     Rcpp::traits::input_parameter< double >::type tau(tauSEXP);
     Rcpp::traits::input_parameter< int >::type chunk_size(chunk_sizeSEXP);
-    rcpp_result_gen = Rcpp::wrap(gsva_poisson_dense_cpp(expr, gene_sets, max_diff, abs_ranking, tau, chunk_size));
+    rcpp_result_gen = Rcpp::wrap(gsva_poisson_dense(expr, gene_sets, max_diff, abs_ranking, tau, chunk_size));
     return rcpp_result_gen;
 END_RCPP
 }
-// wilcox_rank_sum_sparse_cpp
-NumericVector wilcox_rank_sum_sparse_cpp(S4 mat, int n_group1, double min_expression);
-RcppExport SEXP _scop_wilcox_rank_sum_sparse_cpp(SEXP matSEXP, SEXP n_group1SEXP, SEXP min_expressionSEXP) {
+// wilcox_rank_sum_sparse
+NumericVector wilcox_rank_sum_sparse(S4 mat, int n_group1, double min_expression);
+RcppExport SEXP _scop_wilcox_rank_sum_sparse(SEXP matSEXP, SEXP n_group1SEXP, SEXP min_expressionSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< S4 >::type mat(matSEXP);
     Rcpp::traits::input_parameter< int >::type n_group1(n_group1SEXP);
     Rcpp::traits::input_parameter< double >::type min_expression(min_expressionSEXP);
-    rcpp_result_gen = Rcpp::wrap(wilcox_rank_sum_sparse_cpp(mat, n_group1, min_expression));
+    rcpp_result_gen = Rcpp::wrap(wilcox_rank_sum_sparse(mat, n_group1, min_expression));
     return rcpp_result_gen;
 END_RCPP
 }
-// wilcox_rank_sum_sparse_all_cells_cpp
-NumericVector wilcox_rank_sum_sparse_all_cells_cpp(S4 mat, int n_group1);
-RcppExport SEXP _scop_wilcox_rank_sum_sparse_all_cells_cpp(SEXP matSEXP, SEXP n_group1SEXP) {
+// wilcox_rank_sum_sparse_all_cells
+NumericVector wilcox_rank_sum_sparse_all_cells(S4 mat, int n_group1);
+RcppExport SEXP _scop_wilcox_rank_sum_sparse_all_cells(SEXP matSEXP, SEXP n_group1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< S4 >::type mat(matSEXP);
     Rcpp::traits::input_parameter< int >::type n_group1(n_group1SEXP);
-    rcpp_result_gen = Rcpp::wrap(wilcox_rank_sum_sparse_all_cells_cpp(mat, n_group1));
+    rcpp_result_gen = Rcpp::wrap(wilcox_rank_sum_sparse_all_cells(mat, n_group1));
     return rcpp_result_gen;
 END_RCPP
 }
-// sparse_topk_by_column_cpp
-List sparse_topk_by_column_cpp(S4 mat, int k, bool decreasing);
-RcppExport SEXP _scop_sparse_topk_by_column_cpp(SEXP matSEXP, SEXP kSEXP, SEXP decreasingSEXP) {
+// sparse_topk_by_column
+List sparse_topk_by_column(S4 mat, int k, bool decreasing);
+RcppExport SEXP _scop_sparse_topk_by_column(SEXP matSEXP, SEXP kSEXP, SEXP decreasingSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< S4 >::type mat(matSEXP);
     Rcpp::traits::input_parameter< int >::type k(kSEXP);
     Rcpp::traits::input_parameter< bool >::type decreasing(decreasingSEXP);
-    rcpp_result_gen = Rcpp::wrap(sparse_topk_by_column_cpp(mat, k, decreasing));
+    rcpp_result_gen = Rcpp::wrap(sparse_topk_by_column(mat, k, decreasing));
     return rcpp_result_gen;
 END_RCPP
 }
-// dense_topk_by_column_cpp
-List dense_topk_by_column_cpp(NumericMatrix mat, int k, bool decreasing);
-RcppExport SEXP _scop_dense_topk_by_column_cpp(SEXP matSEXP, SEXP kSEXP, SEXP decreasingSEXP) {
+// dense_topk_by_column
+List dense_topk_by_column(NumericMatrix mat, int k, bool decreasing);
+RcppExport SEXP _scop_dense_topk_by_column(SEXP matSEXP, SEXP kSEXP, SEXP decreasingSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type mat(matSEXP);
     Rcpp::traits::input_parameter< int >::type k(kSEXP);
     Rcpp::traits::input_parameter< bool >::type decreasing(decreasingSEXP);
-    rcpp_result_gen = Rcpp::wrap(dense_topk_by_column_cpp(mat, k, decreasing));
+    rcpp_result_gen = Rcpp::wrap(dense_topk_by_column(mat, k, decreasing));
     return rcpp_result_gen;
 END_RCPP
 }
-// proportion_bootstrap_log2fd_cpp
-NumericVector proportion_bootstrap_log2fd_cpp(NumericVector v1, NumericVector v2, int n_bootstrap, double pseudocount);
-RcppExport SEXP _scop_proportion_bootstrap_log2fd_cpp(SEXP v1SEXP, SEXP v2SEXP, SEXP n_bootstrapSEXP, SEXP pseudocountSEXP) {
+// proportion_bootstrap_log2fd
+NumericVector proportion_bootstrap_log2fd(NumericVector v1, NumericVector v2, int n_bootstrap, double pseudocount, bool verbose);
+RcppExport SEXP _scop_proportion_bootstrap_log2fd(SEXP v1SEXP, SEXP v2SEXP, SEXP n_bootstrapSEXP, SEXP pseudocountSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -293,13 +310,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type v2(v2SEXP);
     Rcpp::traits::input_parameter< int >::type n_bootstrap(n_bootstrapSEXP);
     Rcpp::traits::input_parameter< double >::type pseudocount(pseudocountSEXP);
-    rcpp_result_gen = Rcpp::wrap(proportion_bootstrap_log2fd_cpp(v1, v2, n_bootstrap, pseudocount));
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(proportion_bootstrap_log2fd(v1, v2, n_bootstrap, pseudocount, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
-// proportion_bootstrap_stats_cpp
-List proportion_bootstrap_stats_cpp(NumericVector v1, NumericVector v2, int n_bootstrap, double pseudocount);
-RcppExport SEXP _scop_proportion_bootstrap_stats_cpp(SEXP v1SEXP, SEXP v2SEXP, SEXP n_bootstrapSEXP, SEXP pseudocountSEXP) {
+// proportion_bootstrap_stats
+List proportion_bootstrap_stats(NumericVector v1, NumericVector v2, int n_bootstrap, double pseudocount, bool verbose);
+RcppExport SEXP _scop_proportion_bootstrap_stats(SEXP v1SEXP, SEXP v2SEXP, SEXP n_bootstrapSEXP, SEXP pseudocountSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -307,13 +325,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type v2(v2SEXP);
     Rcpp::traits::input_parameter< int >::type n_bootstrap(n_bootstrapSEXP);
     Rcpp::traits::input_parameter< double >::type pseudocount(pseudocountSEXP);
-    rcpp_result_gen = Rcpp::wrap(proportion_bootstrap_stats_cpp(v1, v2, n_bootstrap, pseudocount));
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(proportion_bootstrap_stats(v1, v2, n_bootstrap, pseudocount, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
-// pseudotime_velocity_knn_cpp
-NumericMatrix pseudotime_velocity_knn_cpp(NumericMatrix x_emb, NumericVector pseudotime, IntegerMatrix neighbors, bool normalize);
-RcppExport SEXP _scop_pseudotime_velocity_knn_cpp(SEXP x_embSEXP, SEXP pseudotimeSEXP, SEXP neighborsSEXP, SEXP normalizeSEXP) {
+// pseudotime_velocity_knn
+NumericMatrix pseudotime_velocity_knn(NumericMatrix x_emb, NumericVector pseudotime, IntegerMatrix neighbors, bool normalize);
+RcppExport SEXP _scop_pseudotime_velocity_knn(SEXP x_embSEXP, SEXP pseudotimeSEXP, SEXP neighborsSEXP, SEXP normalizeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -321,13 +340,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type pseudotime(pseudotimeSEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type neighbors(neighborsSEXP);
     Rcpp::traits::input_parameter< bool >::type normalize(normalizeSEXP);
-    rcpp_result_gen = Rcpp::wrap(pseudotime_velocity_knn_cpp(x_emb, pseudotime, neighbors, normalize));
+    rcpp_result_gen = Rcpp::wrap(pseudotime_velocity_knn(x_emb, pseudotime, neighbors, normalize));
     return rcpp_result_gen;
 END_RCPP
 }
-// pseudotime_velocity_gradient_cpp
-NumericMatrix pseudotime_velocity_gradient_cpp(NumericMatrix x_emb, NumericVector pseudotime, IntegerMatrix neighbors, double smooth, bool normalize);
-RcppExport SEXP _scop_pseudotime_velocity_gradient_cpp(SEXP x_embSEXP, SEXP pseudotimeSEXP, SEXP neighborsSEXP, SEXP smoothSEXP, SEXP normalizeSEXP) {
+// pseudotime_velocity_gradient
+NumericMatrix pseudotime_velocity_gradient(NumericMatrix x_emb, NumericVector pseudotime, IntegerMatrix neighbors, double smooth, bool normalize);
+RcppExport SEXP _scop_pseudotime_velocity_gradient(SEXP x_embSEXP, SEXP pseudotimeSEXP, SEXP neighborsSEXP, SEXP smoothSEXP, SEXP normalizeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -336,13 +355,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< IntegerMatrix >::type neighbors(neighborsSEXP);
     Rcpp::traits::input_parameter< double >::type smooth(smoothSEXP);
     Rcpp::traits::input_parameter< bool >::type normalize(normalizeSEXP);
-    rcpp_result_gen = Rcpp::wrap(pseudotime_velocity_gradient_cpp(x_emb, pseudotime, neighbors, smooth, normalize));
+    rcpp_result_gen = Rcpp::wrap(pseudotime_velocity_gradient(x_emb, pseudotime, neighbors, smooth, normalize));
     return rcpp_result_gen;
 END_RCPP
 }
-// sctenifold_pcnet_covariance_raw_cpp
-NumericMatrix sctenifold_pcnet_covariance_raw_cpp(NumericMatrix x, int n_comp, int ncv, int maxit, double tol, int n_threads);
-RcppExport SEXP _scop_sctenifold_pcnet_covariance_raw_cpp(SEXP xSEXP, SEXP n_compSEXP, SEXP ncvSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP n_threadsSEXP) {
+// sctenifold_pcnet_covariance_raw
+NumericMatrix sctenifold_pcnet_covariance_raw(NumericMatrix x, int n_comp, int ncv, int maxit, double tol, int n_threads);
+RcppExport SEXP _scop_sctenifold_pcnet_covariance_raw(SEXP xSEXP, SEXP n_compSEXP, SEXP ncvSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP n_threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -352,13 +371,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP);
     Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
     Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(sctenifold_pcnet_covariance_raw_cpp(x, n_comp, ncv, maxit, tol, n_threads));
+    rcpp_result_gen = Rcpp::wrap(sctenifold_pcnet_covariance_raw(x, n_comp, ncv, maxit, tol, n_threads));
     return rcpp_result_gen;
 END_RCPP
 }
-// sctenifold_pcnet_covariance_sparse_cpp
-S4 sctenifold_pcnet_covariance_sparse_cpp(NumericMatrix x, int n_comp, bool scale_scores, bool symmetric, double q, int ncv, int maxit, double tol, int n_threads);
-RcppExport SEXP _scop_sctenifold_pcnet_covariance_sparse_cpp(SEXP xSEXP, SEXP n_compSEXP, SEXP scale_scoresSEXP, SEXP symmetricSEXP, SEXP qSEXP, SEXP ncvSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP n_threadsSEXP) {
+// sctenifold_pcnet_covariance_sparse
+S4 sctenifold_pcnet_covariance_sparse(NumericMatrix x, int n_comp, bool scale_scores, bool symmetric, double q, int ncv, int maxit, double tol, int n_threads);
+RcppExport SEXP _scop_sctenifold_pcnet_covariance_sparse(SEXP xSEXP, SEXP n_compSEXP, SEXP scale_scoresSEXP, SEXP symmetricSEXP, SEXP qSEXP, SEXP ncvSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP n_threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -371,13 +390,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP);
     Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
     Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(sctenifold_pcnet_covariance_sparse_cpp(x, n_comp, scale_scores, symmetric, q, ncv, maxit, tol, n_threads));
+    rcpp_result_gen = Rcpp::wrap(sctenifold_pcnet_covariance_sparse(x, n_comp, scale_scores, symmetric, q, ncv, maxit, tol, n_threads));
     return rcpp_result_gen;
 END_RCPP
 }
-// sctenifold_tensor_decomposition_cpp
-NumericMatrix sctenifold_tensor_decomposition_cpp(List x_list, List init_u, int max_iter, double tol);
-RcppExport SEXP _scop_sctenifold_tensor_decomposition_cpp(SEXP x_listSEXP, SEXP init_uSEXP, SEXP max_iterSEXP, SEXP tolSEXP) {
+// sctenifold_tensor_decomposition
+NumericMatrix sctenifold_tensor_decomposition(List x_list, List init_u, int max_iter, double tol, bool verbose);
+RcppExport SEXP _scop_sctenifold_tensor_decomposition(SEXP x_listSEXP, SEXP init_uSEXP, SEXP max_iterSEXP, SEXP tolSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -385,76 +404,109 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< List >::type init_u(init_uSEXP);
     Rcpp::traits::input_parameter< int >::type max_iter(max_iterSEXP);
     Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
-    rcpp_result_gen = Rcpp::wrap(sctenifold_tensor_decomposition_cpp(x_list, init_u, max_iter, tol));
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(sctenifold_tensor_decomposition(x_list, init_u, max_iter, tol, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
-// sctenifold_strict_direction_cpp
-NumericMatrix sctenifold_strict_direction_cpp(NumericMatrix x, double lambda);
-RcppExport SEXP _scop_sctenifold_strict_direction_cpp(SEXP xSEXP, SEXP lambdaSEXP) {
+// sctenifold_strict_direction
+NumericMatrix sctenifold_strict_direction(NumericMatrix x, double lambda);
+RcppExport SEXP _scop_sctenifold_strict_direction(SEXP xSEXP, SEXP lambdaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
     Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
-    rcpp_result_gen = Rcpp::wrap(sctenifold_strict_direction_cpp(x, lambda));
+    rcpp_result_gen = Rcpp::wrap(sctenifold_strict_direction(x, lambda));
     return rcpp_result_gen;
 END_RCPP
 }
-// sctenifold_manifold_matrix_cpp
-NumericMatrix sctenifold_manifold_matrix_cpp(NumericMatrix x, NumericMatrix y);
-RcppExport SEXP _scop_sctenifold_manifold_matrix_cpp(SEXP xSEXP, SEXP ySEXP) {
+// sctenifold_manifold_matrix
+NumericMatrix sctenifold_manifold_matrix(NumericMatrix x, NumericMatrix y);
+RcppExport SEXP _scop_sctenifold_manifold_matrix(SEXP xSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(sctenifold_manifold_matrix_cpp(x, y));
+    rcpp_result_gen = Rcpp::wrap(sctenifold_manifold_matrix(x, y));
     return rcpp_result_gen;
 END_RCPP
 }
-// sctenifold_pair_distances_cpp
-NumericVector sctenifold_pair_distances_cpp(NumericMatrix aligned);
-RcppExport SEXP _scop_sctenifold_pair_distances_cpp(SEXP alignedSEXP) {
+// sctenifold_pair_distances
+NumericVector sctenifold_pair_distances(NumericMatrix aligned);
+RcppExport SEXP _scop_sctenifold_pair_distances(SEXP alignedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type aligned(alignedSEXP);
-    rcpp_result_gen = Rcpp::wrap(sctenifold_pair_distances_cpp(aligned));
+    rcpp_result_gen = Rcpp::wrap(sctenifold_pair_distances(aligned));
+    return rcpp_result_gen;
+END_RCPP
+}
+// scibet_fit_predict
+List scibet_fit_predict(NumericMatrix ref, NumericMatrix query, IntegerVector labels, int n_labels, int n_top, int additional_per_label);
+RcppExport SEXP _scop_scibet_fit_predict(SEXP refSEXP, SEXP querySEXP, SEXP labelsSEXP, SEXP n_labelsSEXP, SEXP n_topSEXP, SEXP additional_per_labelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type ref(refSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type query(querySEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type labels(labelsSEXP);
+    Rcpp::traits::input_parameter< int >::type n_labels(n_labelsSEXP);
+    Rcpp::traits::input_parameter< int >::type n_top(n_topSEXP);
+    Rcpp::traits::input_parameter< int >::type additional_per_label(additional_per_labelSEXP);
+    rcpp_result_gen = Rcpp::wrap(scibet_fit_predict(ref, query, labels, n_labels, n_top, additional_per_label));
+    return rcpp_result_gen;
+END_RCPP
+}
+// scibet_predict
+NumericMatrix scibet_predict(NumericMatrix query, NumericMatrix core, IntegerVector feature_index);
+RcppExport SEXP _scop_scibet_predict(SEXP querySEXP, SEXP coreSEXP, SEXP feature_indexSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type query(querySEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type core(coreSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type feature_index(feature_indexSEXP);
+    rcpp_result_gen = Rcpp::wrap(scibet_predict(query, core, feature_index));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_scop_classification_metrics_cpp", (DL_FUNC) &_scop_classification_metrics_cpp, 4},
+    {"_scop_classification_metrics", (DL_FUNC) &_scop_classification_metrics, 4},
+    {"_scop_cytospace_assign", (DL_FUNC) &_scop_cytospace_assign, 6},
     {"_scop_cytotrace2_ensemble_predict", (DL_FUNC) &_scop_cytotrace2_ensemble_predict, 4},
     {"_scop_cytotrace2_diffusion_smooth", (DL_FUNC) &_scop_cytotrace2_diffusion_smooth, 3},
     {"_scop_cytotrace2_bin_data", (DL_FUNC) &_scop_cytotrace2_bin_data, 3},
     {"_scop_cytotrace2_knn_smooth", (DL_FUNC) &_scop_cytotrace2_knn_smooth, 5},
     {"_scop_cytotrace2_main", (DL_FUNC) &_scop_cytotrace2_main, 7},
-    {"_scop_aucell_auc_sparse_cpp", (DL_FUNC) &_scop_aucell_auc_sparse_cpp, 5},
-    {"_scop_ora_hypergeom_cpp", (DL_FUNC) &_scop_ora_hypergeom_cpp, 7},
-    {"_scop_module_score_sparse_cpp", (DL_FUNC) &_scop_module_score_sparse_cpp, 3},
-    {"_scop_proportion_permutation_cpp", (DL_FUNC) &_scop_proportion_permutation_cpp, 5},
-    {"_scop_ssgsea_rank_dense_cpp", (DL_FUNC) &_scop_ssgsea_rank_dense_cpp, 4},
-    {"_scop_zscore_dense_cpp", (DL_FUNC) &_scop_zscore_dense_cpp, 4},
-    {"_scop_plage_dense_cpp", (DL_FUNC) &_scop_plage_dense_cpp, 4},
-    {"_scop_gsva_gaussian_dense_cpp", (DL_FUNC) &_scop_gsva_gaussian_dense_cpp, 6},
-    {"_scop_gsva_poisson_dense_cpp", (DL_FUNC) &_scop_gsva_poisson_dense_cpp, 6},
-    {"_scop_wilcox_rank_sum_sparse_cpp", (DL_FUNC) &_scop_wilcox_rank_sum_sparse_cpp, 3},
-    {"_scop_wilcox_rank_sum_sparse_all_cells_cpp", (DL_FUNC) &_scop_wilcox_rank_sum_sparse_all_cells_cpp, 2},
-    {"_scop_sparse_topk_by_column_cpp", (DL_FUNC) &_scop_sparse_topk_by_column_cpp, 3},
-    {"_scop_dense_topk_by_column_cpp", (DL_FUNC) &_scop_dense_topk_by_column_cpp, 3},
-    {"_scop_proportion_bootstrap_log2fd_cpp", (DL_FUNC) &_scop_proportion_bootstrap_log2fd_cpp, 4},
-    {"_scop_proportion_bootstrap_stats_cpp", (DL_FUNC) &_scop_proportion_bootstrap_stats_cpp, 4},
-    {"_scop_pseudotime_velocity_knn_cpp", (DL_FUNC) &_scop_pseudotime_velocity_knn_cpp, 4},
-    {"_scop_pseudotime_velocity_gradient_cpp", (DL_FUNC) &_scop_pseudotime_velocity_gradient_cpp, 5},
-    {"_scop_sctenifold_pcnet_covariance_raw_cpp", (DL_FUNC) &_scop_sctenifold_pcnet_covariance_raw_cpp, 6},
-    {"_scop_sctenifold_pcnet_covariance_sparse_cpp", (DL_FUNC) &_scop_sctenifold_pcnet_covariance_sparse_cpp, 9},
-    {"_scop_sctenifold_tensor_decomposition_cpp", (DL_FUNC) &_scop_sctenifold_tensor_decomposition_cpp, 4},
-    {"_scop_sctenifold_strict_direction_cpp", (DL_FUNC) &_scop_sctenifold_strict_direction_cpp, 2},
-    {"_scop_sctenifold_manifold_matrix_cpp", (DL_FUNC) &_scop_sctenifold_manifold_matrix_cpp, 2},
-    {"_scop_sctenifold_pair_distances_cpp", (DL_FUNC) &_scop_sctenifold_pair_distances_cpp, 1},
+    {"_scop_aucell_auc_sparse", (DL_FUNC) &_scop_aucell_auc_sparse, 5},
+    {"_scop_ora_hypergeom", (DL_FUNC) &_scop_ora_hypergeom, 7},
+    {"_scop_module_score_sparse", (DL_FUNC) &_scop_module_score_sparse, 3},
+    {"_scop_proportion_permutation", (DL_FUNC) &_scop_proportion_permutation, 6},
+    {"_scop_ssgsea_rank_dense", (DL_FUNC) &_scop_ssgsea_rank_dense, 4},
+    {"_scop_zscore_dense", (DL_FUNC) &_scop_zscore_dense, 4},
+    {"_scop_plage_dense", (DL_FUNC) &_scop_plage_dense, 4},
+    {"_scop_gsva_gaussian_dense", (DL_FUNC) &_scop_gsva_gaussian_dense, 6},
+    {"_scop_gsva_poisson_dense", (DL_FUNC) &_scop_gsva_poisson_dense, 6},
+    {"_scop_wilcox_rank_sum_sparse", (DL_FUNC) &_scop_wilcox_rank_sum_sparse, 3},
+    {"_scop_wilcox_rank_sum_sparse_all_cells", (DL_FUNC) &_scop_wilcox_rank_sum_sparse_all_cells, 2},
+    {"_scop_sparse_topk_by_column", (DL_FUNC) &_scop_sparse_topk_by_column, 3},
+    {"_scop_dense_topk_by_column", (DL_FUNC) &_scop_dense_topk_by_column, 3},
+    {"_scop_proportion_bootstrap_log2fd", (DL_FUNC) &_scop_proportion_bootstrap_log2fd, 5},
+    {"_scop_proportion_bootstrap_stats", (DL_FUNC) &_scop_proportion_bootstrap_stats, 5},
+    {"_scop_pseudotime_velocity_knn", (DL_FUNC) &_scop_pseudotime_velocity_knn, 4},
+    {"_scop_pseudotime_velocity_gradient", (DL_FUNC) &_scop_pseudotime_velocity_gradient, 5},
+    {"_scop_sctenifold_pcnet_covariance_raw", (DL_FUNC) &_scop_sctenifold_pcnet_covariance_raw, 6},
+    {"_scop_sctenifold_pcnet_covariance_sparse", (DL_FUNC) &_scop_sctenifold_pcnet_covariance_sparse, 9},
+    {"_scop_sctenifold_tensor_decomposition", (DL_FUNC) &_scop_sctenifold_tensor_decomposition, 5},
+    {"_scop_sctenifold_strict_direction", (DL_FUNC) &_scop_sctenifold_strict_direction, 2},
+    {"_scop_sctenifold_manifold_matrix", (DL_FUNC) &_scop_sctenifold_manifold_matrix, 2},
+    {"_scop_sctenifold_pair_distances", (DL_FUNC) &_scop_sctenifold_pair_distances, 1},
+    {"_scop_scibet_fit_predict", (DL_FUNC) &_scop_scibet_fit_predict, 6},
+    {"_scop_scibet_predict", (DL_FUNC) &_scop_scibet_predict, 3},
     {NULL, NULL, 0}
 };
 

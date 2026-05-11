@@ -6,12 +6,10 @@ Date: 2026-05-02
 Authors@R:
     c(
     person(given = "Xu", family = "Meng", email = "mengxu98@qq.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-8300-1054")),
-    person(given = "Hao", family = "Zhang", email = "haozhang@njmu.edu.cn", role = c("aut")),
-    person(given = "Haoliang", family = "Zhu", email = "hurry060215@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0009-0004-9766-5179"))
+    person(given = "Hao", family = "Zhang", email = "haozhang@njmu.edu.cn", role = c("aut"))
     )
 Author: Xu Meng [aut, cre] (<https://orcid.org/0000-0002-8300-1054>),
-    Hao Zhang [aut],
-    Haoliang Zhu [aut, cre] (<https://orcid.org/0009-0004-9766-5179>)
+    Hao Zhang [aut]
 Maintainer: Meng Xu <mengxu98@qq.com>
 Description: An end-to-end Single-Cell Omics analysis Pipeline designed to facilitate comprehensive analysis and exploration of single-cell omics data.
 License: GPL (>= 3)
@@ -61,6 +59,8 @@ Suggests:
     dorothea,
     ggpubr,
     ggalluvial,
+    ggupset,
+    ggVennDiagram,
     ggridges,
     ggwordcloud,
     funkyheatmap,
@@ -82,6 +82,9 @@ Suggests:
     miloR,
     MASS,
     NMF,
+    org.Hs.eg.db,
+    org.Mm.eg.db,
+    openxlsx,
     pak,
     patchwork,
     keras,
@@ -124,10 +127,13 @@ Suggests:
     SummarizedExperiment,
     testthat,
     tensorflow,
+    torch,
     tricycle,
     umap,
+    presto,
     UCell
 LinkingTo:
+    cli,
     Rcpp,
     RcppArmadillo,
     RcppEigen,

@@ -1,5 +1,6 @@
-// [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::depends(RcppArmadillo, cli)]]
 #include <RcppArmadillo.h>
+#include "log_message.h"
 #include <algorithm>
 #include <cmath>
 #include <map>
@@ -77,7 +78,7 @@ static double aucell_auc_from_ranks(
 }
 
 // [[Rcpp::export]]
-NumericMatrix aucell_auc_sparse_cpp(
+NumericMatrix aucell_auc_sparse(
   S4 expr,
   List gene_sets,
   int auc_max_rank,
@@ -211,7 +212,7 @@ NumericMatrix aucell_auc_sparse_cpp(
 }
 
 // [[Rcpp::export]]
-DataFrame ora_hypergeom_cpp(
+DataFrame ora_hypergeom(
   CharacterVector genes,
   CharacterVector term_ids,
   CharacterVector term_genes,
@@ -356,7 +357,7 @@ DataFrame ora_hypergeom_cpp(
 }
 
 // [[Rcpp::export]]
-NumericMatrix module_score_sparse_cpp(
+NumericMatrix module_score_sparse(
   S4 expr,
   List feature_sets,
   List control_sets
@@ -472,12 +473,13 @@ static double log2_fraction_diff(
 }
 
 // [[Rcpp::export]]
-DataFrame proportion_permutation_cpp(
+DataFrame proportion_permutation(
   IntegerVector sample_ids,
   IntegerVector cluster_ids,
   CharacterVector cluster_levels,
   int n_permutations,
-  double pseudocount = 1e-8
+  double pseudocount = 1e-8,
+  bool verbose = false
 ) {
   if (sample_ids.size() != cluster_ids.size()) {
     stop("sample_ids and cluster_ids must have the same length");
@@ -544,7 +546,16 @@ DataFrame proportion_permutation_cpp(
   std::vector<int> perm_labels(labels);
   std::vector<int> perm_1(n_clusters, 0);
   std::vector<int> perm_2(n_clusters, 0);
+  scop::CliProgress progress(
+    2 * n_permutations,
+    verbose,
+    "Run proportion permutation and bootstrap"
+  );
   for (int perm = 0; perm < n_permutations; ++perm) {
+    if (scop::should_check_interrupt(perm, 2 * n_permutations, verbose)) {
+      Rcpp::checkUserInterrupt();
+    }
+    progress.set(perm);
     perm_labels = labels;
     for (int i = n_cells - 1; i > 0; --i) {
       const int j = static_cast<int>(std::floor(unif_rand() * static_cast<double>(i + 1)));
@@ -569,11 +580,17 @@ DataFrame proportion_permutation_cpp(
       }
     }
   }
+  progress.set(n_permutations);
 
   std::vector<double> boot_values(static_cast<std::size_t>(n_clusters) * std::max(1, n_permutations), R_NaN);
   std::vector<int> boot_1(n_clusters, 0);
   std::vector<int> boot_2(n_clusters, 0);
   for (int perm = 0; perm < n_permutations; ++perm) {
+    const int progress_value = n_permutations + perm;
+    if (scop::should_check_interrupt(progress_value, 2 * n_permutations, verbose)) {
+      Rcpp::checkUserInterrupt();
+    }
+    progress.set(progress_value);
     std::fill(boot_1.begin(), boot_1.end(), 0);
     std::fill(boot_2.begin(), boot_2.end(), 0);
     for (int i = 0; i < total_1; ++i) {
@@ -589,6 +606,7 @@ DataFrame proportion_permutation_cpp(
         log2_fraction_diff(boot_1[k], total_1, boot_2[k], total_2, pseudocount);
     }
   }
+  progress.set(2 * n_permutations, true);
 
   NumericVector fraction_1(n_clusters);
   NumericVector fraction_2(n_clusters);
@@ -641,7 +659,7 @@ DataFrame proportion_permutation_cpp(
 }
 
 // [[Rcpp::export]]
-NumericMatrix ssgsea_rank_dense_cpp(
+NumericMatrix ssgsea_rank_dense(
   S4 expr,
   List gene_sets,
   double alpha = 0.25,
@@ -815,7 +833,7 @@ NumericMatrix ssgsea_rank_dense_cpp(
 }
 
 // [[Rcpp::export]]
-NumericMatrix zscore_dense_cpp(
+NumericMatrix zscore_dense(
   S4 expr,
   List gene_sets,
   int min_size = 1,
@@ -952,7 +970,7 @@ NumericMatrix zscore_dense_cpp(
 }
 
 // [[Rcpp::export]]
-NumericMatrix plage_dense_cpp(
+NumericMatrix plage_dense(
   S4 expr,
   List gene_sets,
   int min_size = 1,
@@ -1301,7 +1319,7 @@ static NumericMatrix gsva_score_transformed_rows(
 }
 
 // [[Rcpp::export]]
-NumericMatrix gsva_gaussian_dense_cpp(
+NumericMatrix gsva_gaussian_dense(
   S4 expr,
   List gene_sets,
   bool max_diff = true,
@@ -1417,7 +1435,7 @@ NumericMatrix gsva_gaussian_dense_cpp(
 }
 
 // [[Rcpp::export]]
-NumericMatrix gsva_poisson_dense_cpp(
+NumericMatrix gsva_poisson_dense(
   S4 expr,
   List gene_sets,
   bool max_diff = true,

@@ -1,4 +1,5 @@
 #include <RcppArmadillo.h>
+#include "log_message.h"
 #include <Spectra/SymEigsSolver.h>
 #include <algorithm>
 #include <atomic>
@@ -10,7 +11,7 @@
 
 using namespace Rcpp;
 
-// [[Rcpp::depends(RcppArmadillo, RcppEigen, RSpectra)]]
+// [[Rcpp::depends(RcppArmadillo, RcppEigen, RSpectra, cli)]]
 
 class SctenifoldDowndatedSymMatProd {
 private:
@@ -411,7 +412,7 @@ static S4 sctenifold_dgCMatrix_from_dense_threshold(
 }
 
 // [[Rcpp::export]]
-NumericMatrix sctenifold_pcnet_covariance_raw_cpp(
+NumericMatrix sctenifold_pcnet_covariance_raw(
   NumericMatrix x,
   int n_comp = 3,
   int ncv = 0,
@@ -437,7 +438,7 @@ NumericMatrix sctenifold_pcnet_covariance_raw_cpp(
 }
 
 // [[Rcpp::export]]
-S4 sctenifold_pcnet_covariance_sparse_cpp(
+S4 sctenifold_pcnet_covariance_sparse(
   NumericMatrix x,
   int n_comp = 3,
   bool scale_scores = true,
@@ -465,11 +466,12 @@ S4 sctenifold_pcnet_covariance_sparse_cpp(
 }
 
 // [[Rcpp::export]]
-NumericMatrix sctenifold_tensor_decomposition_cpp(
+NumericMatrix sctenifold_tensor_decomposition(
   List x_list,
   List init_u,
   int max_iter = 1000,
-  double tol = 1e-5
+  double tol = 1e-5,
+  bool verbose = false
 ) {
   const int n_net_int = x_list.size();
   if (n_net_int < 1) {
@@ -517,8 +519,17 @@ NumericMatrix sctenifold_tensor_decomposition_cpp(
   double prev_resid = NA_REAL;
   bool converged = false;
   int curr_iter = 1;
+  scop::CliProgress progress(
+    max_iter,
+    verbose,
+    "Denoise network ensemble with tensor decomposition"
+  );
 
   while (curr_iter < max_iter && !converged) {
+    if (scop::should_check_interrupt(curr_iter, max_iter, verbose)) {
+      Rcpp::checkUserInterrupt();
+    }
+    progress.set(curr_iter);
     for (int mode = 1; mode <= 4; ++mode) {
       arma::mat v(k, k, arma::fill::ones);
       if (mode != 1) v %= sctenifold_crossprod(u1);
@@ -559,6 +570,7 @@ NumericMatrix sctenifold_tensor_decomposition_cpp(
       ++curr_iter;
     }
   }
+  progress.set(curr_iter, true);
 
   arma::mat out = sctenifold_tensor_average(n_genes, n_net, u1, u2, u3, u4, lambdas);
   NumericMatrix result = wrap(out);
@@ -566,7 +578,7 @@ NumericMatrix sctenifold_tensor_decomposition_cpp(
 }
 
 // [[Rcpp::export]]
-NumericMatrix sctenifold_strict_direction_cpp(NumericMatrix x, double lambda = 1.0) {
+NumericMatrix sctenifold_strict_direction(NumericMatrix x, double lambda = 1.0) {
   const R_xlen_t nr = x.nrow();
   const R_xlen_t nc = x.ncol();
   if (nr != nc) {
@@ -593,7 +605,7 @@ NumericMatrix sctenifold_strict_direction_cpp(NumericMatrix x, double lambda = 1
 }
 
 // [[Rcpp::export]]
-NumericMatrix sctenifold_manifold_matrix_cpp(NumericMatrix x, NumericMatrix y) {
+NumericMatrix sctenifold_manifold_matrix(NumericMatrix x, NumericMatrix y) {
   const R_xlen_t n = x.nrow();
   if (n != x.ncol() || n != y.nrow() || n != y.ncol()) {
     stop("x and y must be square matrices with matching dimensions");
@@ -635,7 +647,7 @@ NumericMatrix sctenifold_manifold_matrix_cpp(NumericMatrix x, NumericMatrix y) {
 }
 
 // [[Rcpp::export]]
-NumericVector sctenifold_pair_distances_cpp(NumericMatrix aligned) {
+NumericVector sctenifold_pair_distances(NumericMatrix aligned) {
   const R_xlen_t nr = aligned.nrow();
   const R_xlen_t nc = aligned.ncol();
   if (nr % 2 != 0) {
