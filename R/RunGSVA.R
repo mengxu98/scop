@@ -343,7 +343,7 @@ RunGSVA <- function(
 
     if (identical(backend, "cpp")) {
       if (identical(method, "gsva")) {
-        gsva_scores <- Matrix::t(run_gsva_cpp_scores(
+        gsva_scores <- Matrix::t(run_gsva_scores(
           expr_counts = expr_filtered,
           gene_sets = gene_sets_filtered,
           kcdf = kcdf,
@@ -355,7 +355,7 @@ RunGSVA <- function(
           chunk_size = cpp_chunk_size
         ))
       } else if (identical(method, "ssgsea")) {
-        gsva_scores <- Matrix::t(run_ssgsea_cpp_scores(
+        gsva_scores <- Matrix::t(run_ssgsea_scores(
           expr_counts = expr_filtered,
           gene_sets = gene_sets_filtered,
           min_gs_size = min_size,
@@ -364,14 +364,14 @@ RunGSVA <- function(
           normalize = ssgsea.norm
         ))
       } else if (identical(method, "zscore")) {
-        gsva_scores <- Matrix::t(run_zscore_cpp_scores(
+        gsva_scores <- Matrix::t(run_zscore_scores(
           expr_counts = expr_filtered,
           gene_sets = gene_sets_filtered,
           min_gs_size = min_size,
           max_gs_size = max_size
         ))
       } else {
-        gsva_scores <- Matrix::t(run_plage_cpp_scores(
+        gsva_scores <- Matrix::t(run_plage_scores(
           expr_counts = expr_filtered,
           gene_sets = gene_sets_filtered,
           min_gs_size = min_size,
