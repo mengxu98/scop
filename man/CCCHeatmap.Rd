@@ -188,7 +188,6 @@ A ggplot / patchwork object wrapping the ComplexHeatmap grob.
 CCC heatmap and dot matrix plot
 }
 \examples{
-\dontrun{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 
@@ -213,7 +212,7 @@ CCCHeatmap(
   pancreas_sub,
   method = "CellChat",
   condition = "ConditionA",
-  plot_type = "dot",
+  plot_type = "heatmap",
   display_by = "aggregation",
   top_n = 20
 )
@@ -224,7 +223,7 @@ CCCHeatmap(
   condition = "ConditionA",
   plot_type = "dot",
   display_by = "interaction",
-  facet_by = "sender",
+  sender.use = "Ductal",
   top_n = 20
 )
 
@@ -234,7 +233,7 @@ CCCHeatmap(
   condition = "ConditionA",
   plot_type = "dot",
   display_by = "interaction",
-  facet_by = "receiver",
+  receiver.use = "Ngn3-low-EP",
   top_n = 20
 )
 
@@ -326,5 +325,4 @@ CCCHeatmap(
   width = 0.6,
   height = 3.5
 )
-}
 }

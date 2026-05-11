@@ -26,7 +26,7 @@ RunLIANA <- function(
   verbose = TRUE,
   ...
 ) {
-  check_r("saezlab/liana", verbose = FALSE)
+  check_r(c("saezlab/liana", "SingleCellExperiment"), verbose = FALSE)
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",
@@ -45,16 +45,43 @@ RunLIANA <- function(
     verbose = verbose
   )
 
-  res <- getExportedValue("liana", "liana_wrap")(
-    sce = srt,
-    method = method,
-    resource = resource,
-    idents_col = group.by,
-    assay = assay,
-    min_cells = min_cells,
-    return_all = return_all,
-    verbose = verbose,
-    ...
+  counts <- GetAssayData5(
+    object = srt,
+    assay = assay %||% SeuratObject::DefaultAssay(srt),
+    layer = "counts"
+  )
+  logcounts <- GetAssayData5(
+    object = srt,
+    assay = assay %||% SeuratObject::DefaultAssay(srt),
+    layer = "data"
+  )
+  sce <- SingleCellExperiment::SingleCellExperiment(
+    assays = list(
+      counts = counts,
+      logcounts = logcounts
+    ),
+    colData = srt[[]]
+  )
+
+  dots <- list(...)
+  if (is.null(dots$base)) {
+    dots$base <- exp(1)
+  }
+  res <- do.call(
+    getExportedValue("liana", "liana_wrap"),
+    c(
+      list(
+        sce = sce,
+        method = method,
+        resource = resource,
+        idents_col = group.by,
+        assay = NULL,
+        min_cells = min_cells,
+        return_all = return_all,
+        verbose = verbose
+      ),
+      dots
+    )
   )
 
   long_table <- standardize_liana_result(res)
@@ -75,6 +102,11 @@ RunLIANA <- function(
       min_cells = min_cells,
       return_all = return_all
     )
+  )
+  srt <- ccc_update_unified_bundle(
+    srt = srt,
+    method = "LIANA",
+    bundle = srt@tools[["LIANA"]]
   )
 
   log_message(
@@ -136,6 +168,13 @@ ccc_to_liana <- function(
     interaction.use = interaction.use,
     thresh = thresh
   )
+  if (
+    is.null(sample_col) &&
+      "method" %in% colnames(df) &&
+      length(unique(as.character(df$method))) > 1L
+  ) {
+    sample_col <- "method"
+  }
   ccc_long_to_liana(
     df = df,
     aggregate = aggregate,
@@ -157,6 +196,7 @@ ccc_to_liana <- function(
 #' to larger communication strengths. Useful for rank-like metrics.
 #' @param inverse_pvalue Whether smaller `pvalue_key` values should be inverted
 #' before writing to `layers[["pvalues"]]`.
+#' @param verbose Whether to print progress messages.
 #' @param h5ad_path Optional output path. If provided, the AnnData object is
 #' written to this file before being returned.
 #'
@@ -398,22 +438,18 @@ ccc_result_long_table <- function(
   thresh = 0.05
 ) {
   method <- detect_method(srt = srt, method = method)
-  if (identical(method, "CellChat")) {
-    df <- extract_long_table(
-      srt = srt,
-      condition = condition,
-      dataset = dataset,
-      slot.name = slot.name,
-      signaling = signaling,
-      pairLR.use = pairLR.use,
-      sources.use = sender.use,
-      targets.use = receiver.use,
-      thresh = thresh
-    )
-  } else {
-    bundle <- get_bundle(srt, method = method)
-    df <- bundle$long_table %||% data.frame()
-  }
+  df <- ccc_long_table_for_method(
+    srt = srt,
+    method = method,
+    condition = condition,
+    dataset = dataset,
+    slot.name = slot.name,
+    signaling = signaling,
+    pairLR.use = pairLR.use,
+    sources.use = sender.use,
+    targets.use = receiver.use,
+    thresh = thresh
+  )
   df <- standardize_long_df(df)
   if (nrow(df) == 0L) {
     return(df)
@@ -582,7 +618,11 @@ standardize_liana_result <- function(res) {
       "lrscore",
       "magnitude",
       "lr_means",
+      "lr.mean",
+      "lr_mean",
       "expr_prod",
+      "ligand.expr",
+      "receptor.expr",
       "weight",
       "specificity"
     )

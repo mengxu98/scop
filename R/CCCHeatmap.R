@@ -41,7 +41,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #'
@@ -66,7 +65,7 @@
 #'   pancreas_sub,
 #'   method = "CellChat",
 #'   condition = "ConditionA",
-#'   plot_type = "dot",
+#'   plot_type = "heatmap",
 #'   display_by = "aggregation",
 #'   top_n = 20
 #' )
@@ -77,7 +76,7 @@
 #'   condition = "ConditionA",
 #'   plot_type = "dot",
 #'   display_by = "interaction",
-#'   facet_by = "sender",
+#'   sender.use = "Ductal",
 #'   top_n = 20
 #' )
 #'
@@ -87,7 +86,7 @@
 #'   condition = "ConditionA",
 #'   plot_type = "dot",
 #'   display_by = "interaction",
-#'   facet_by = "receiver",
+#'   receiver.use = "Ngn3-low-EP",
 #'   top_n = 20
 #' )
 #'
@@ -179,7 +178,6 @@
 #'   width = 0.6,
 #'   height = 3.5
 #' )
-#' }
 CCCHeatmap <- function(
   srt,
   method = NULL,
@@ -771,22 +769,18 @@ CCCHeatmap <- function(
     )))
   }
 
-  if (identical(method, "CellChat")) {
-    df <- extract_long_table(
-      srt = srt,
-      condition = condition,
-      dataset = dataset,
-      slot.name = slot.name,
-      signaling = signaling,
-      pairLR.use = pairLR.use,
-      sources.use = sender.use,
-      targets.use = receiver.use,
-      thresh = thresh
-    )
-  } else {
-    bundle <- get_bundle(srt, method = method)
-    df <- bundle$long_table %||% data.frame()
-  }
+  df <- ccc_long_table_for_method(
+    srt = srt,
+    method = method,
+    condition = condition,
+    dataset = dataset,
+    slot.name = slot.name,
+    signaling = signaling,
+    pairLR.use = pairLR.use,
+    sources.use = sender.use,
+    targets.use = receiver.use,
+    thresh = thresh
+  )
 
   df <- standardize_long_df(df)
   if (

@@ -51,7 +51,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #'
@@ -176,7 +175,6 @@
 #'   plot_type = "diff_network",
 #'   measure = "count"
 #' )
-#' }
 CCCNetworkPlot <- function(
   srt,
   method = NULL,
@@ -558,8 +556,15 @@ CCCNetworkPlot <- function(
       )
     }
 
-    bundle <- get_bundle(srt, method = method)
-    long_df <- standardize_long_df(bundle$long_table %||% data.frame())
+    long_df <- ccc_long_table_for_method(
+      srt = srt,
+      method = method,
+      condition = condition,
+      dataset = dataset,
+      slot.name = slot.name,
+      thresh = thresh
+    )
+    long_df <- standardize_long_df(long_df)
     available_pathways <- unique(as.character(long_df$pathway_name))
     available_pathways <- available_pathways[
       !is.na(available_pathways) & nzchar(available_pathways)
@@ -717,22 +722,18 @@ CCCNetworkPlot <- function(
     )))
   }
 
-  if (identical(method, "CellChat")) {
-    df <- extract_long_table(
-      srt = srt,
-      condition = condition,
-      dataset = dataset,
-      slot.name = slot.name,
-      signaling = signaling,
-      pairLR.use = pairLR.use,
-      sources.use = sender.use,
-      targets.use = receiver.use,
-      thresh = thresh
-    )
-  } else {
-    bundle <- get_bundle(srt, method = method)
-    df <- bundle$long_table %||% data.frame()
-  }
+  df <- ccc_long_table_for_method(
+    srt = srt,
+    method = method,
+    condition = condition,
+    dataset = dataset,
+    slot.name = slot.name,
+    signaling = signaling,
+    pairLR.use = pairLR.use,
+    sources.use = sender.use,
+    targets.use = receiver.use,
+    thresh = thresh
+  )
 
   df <- standardize_long_df(df)
   df <- filter_long_df(

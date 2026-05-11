@@ -779,8 +779,13 @@ custom_cc_bubble_plot <- function(
   )
 }
 
-detect_method <- function(srt, method = NULL) {
+ccc_method_candidates <- function() {
+  c("CellphoneDB", "Nichenetr", "MultiNichenetr", "LIANA", "CellChat")
+}
+
+normalize_ccc_method <- function(method) {
   alias_map <- c(
+    "CCC" = "CCC",
     "CellPhoneDB" = "CellphoneDB",
     "CellphoneDB" = "CellphoneDB",
     "Liana" = "LIANA",
@@ -789,6 +794,8 @@ detect_method <- function(srt, method = NULL) {
     "MultiNicheNet" = "MultiNichenetr"
   )
   alias_map_lower <- c(
+    "ccc" = "CCC",
+    "unified" = "CCC",
     "cellchat" = "CellChat",
     "cellphonedb" = "CellphoneDB",
     "cellphone_db" = "CellphoneDB",
@@ -799,28 +806,35 @@ detect_method <- function(srt, method = NULL) {
     "multinichenet" = "MultiNichenetr",
     "multinichenetr" = "MultiNichenetr"
   )
-  if (!is.null(method)) {
-    method_chr <- as.character(method)[1]
-    if (is.na(method_chr) || !nzchar(method_chr)) {
-      log_message(
-        "{.arg method} must be a non-empty string or NULL to auto-detect",
-        message_type = "error"
-      )
-    }
-    method_chr <- trimws(method_chr)
-    if (method_chr %in% names(alias_map)) {
-      return(unname(alias_map[[method_chr]]))
-    }
-    key <- tolower(method_chr)
-    if (key %in% names(alias_map_lower)) {
-      return(unname(alias_map_lower[[key]]))
-    }
-    return(method_chr)
+  method_chr <- as.character(method)[1]
+  if (is.na(method_chr) || !nzchar(method_chr)) {
+    log_message(
+      "{.arg method} must be a non-empty string or NULL to auto-detect",
+      message_type = "error"
+    )
   }
-  candidates <- c("CellphoneDB", "Nichenetr", "MultiNichenetr", "LIANA", "CellChat")
+  method_chr <- trimws(method_chr)
+  if (method_chr %in% names(alias_map)) {
+    return(unname(alias_map[[method_chr]]))
+  }
+  key <- tolower(method_chr)
+  if (key %in% names(alias_map_lower)) {
+    return(unname(alias_map_lower[[key]]))
+  }
+  method_chr
+}
+
+detect_method <- function(srt, method = NULL) {
+  if (!is.null(method)) {
+    return(normalize_ccc_method(method))
+  }
+  candidates <- ccc_method_candidates()
   available <- candidates[candidates %in% names(srt@tools)]
   if (length(available) == 1L) {
     return(available[1])
+  }
+  if ("CCC" %in% names(srt@tools)) {
+    return("CCC")
   }
   if (length(available) == 0L) {
     log_message(
@@ -845,8 +859,262 @@ get_bundle <- function(srt, method) {
   x
 }
 
+ccc_unified_methods <- function(srt) {
+  bundle <- srt@tools[["CCC"]]
+  if (is.null(bundle)) {
+    return(character(0))
+  }
+  methods <- bundle$methods %||% NULL
+  if (is.null(methods) && is.data.frame(bundle$long_table) && "method" %in% colnames(bundle$long_table)) {
+    methods <- unique(as.character(bundle$long_table$method))
+  }
+  methods <- unique(as.character(methods %||% character(0)))
+  methods[!is.na(methods) & nzchar(methods)]
+}
+
+ccc_has_unified_method <- function(srt, method = NULL) {
+  if (!inherits(srt, "Seurat") || is.null(srt@tools[["CCC"]])) {
+    return(FALSE)
+  }
+  if (is.null(method)) {
+    return(TRUE)
+  }
+  method <- normalize_ccc_method(method)
+  identical(method, "CCC") || method %in% ccc_unified_methods(srt)
+}
+
+ccc_long_table_for_method <- function(
+  srt,
+  method,
+  condition = NULL,
+  dataset = 1,
+  slot.name = "net",
+  signaling = NULL,
+  pairLR.use = NULL,
+  sources.use = NULL,
+  targets.use = NULL,
+  thresh = 0.05
+) {
+  method <- detect_method(srt = srt, method = method)
+  if (identical(method, "CCC") || ccc_has_unified_method(srt, method = method)) {
+    filter_method <- if (identical(method, "CCC")) NULL else method
+    return(ccc_get_unified_long_table(
+      srt = srt,
+      method = filter_method,
+      thresh = thresh
+    ))
+  }
+  if (identical(method, "CellChat")) {
+    return(extract_long_table(
+      srt = srt,
+      condition = condition,
+      dataset = dataset,
+      slot.name = slot.name,
+      signaling = signaling,
+      pairLR.use = pairLR.use,
+      sources.use = sources.use,
+      targets.use = targets.use,
+      thresh = thresh
+    ))
+  }
+  bundle <- get_bundle(srt, method = method)
+  bundle$long_table %||% data.frame()
+}
+
+ccc_available_methods <- function(srt) {
+  if (!inherits(srt, "Seurat")) {
+    log_message(
+      "{.arg srt} must be a {.cls Seurat} object",
+      message_type = "error"
+    )
+  }
+  methods <- ccc_method_candidates()
+  methods[methods %in% names(srt@tools)]
+}
+
+ccc_build_cellchat_long_table <- function(srt, thresh = 0.05) {
+  store <- get_cc_obj(srt)
+  if (is.null(store) || is.null(store$results) || length(store$results) == 0L) {
+    return(data.frame())
+  }
+  pieces <- lapply(names(store$results), function(condition) {
+    obj <- store$results[[condition]]$cellchat_object
+    if (is.null(obj)) {
+      return(data.frame())
+    }
+    out <- tryCatch(
+      subset_cc_table(
+        object = obj,
+        slot.name = "net",
+        thresh = thresh,
+        dataset = condition
+      ),
+      error = function(e) data.frame()
+    )
+    if (is.null(out) || nrow(out) == 0L) {
+      return(data.frame())
+    }
+    out
+  })
+  pieces <- Filter(function(x) is.data.frame(x) && nrow(x) > 0L, pieces)
+  if (length(pieces) == 0L) {
+    return(data.frame())
+  }
+  df <- do.call(rbind, pieces)
+  rownames(df) <- NULL
+  df <- standardize_long_df(df)
+  df <- ccc_mark_significance(df, thresh = thresh)
+  df$method <- "CellChat"
+  df
+}
+
+ccc_bundle_long_table <- function(srt, method, bundle = NULL, thresh = 0.05) {
+  method <- normalize_ccc_method(method)
+  if (identical(method, "CellChat")) {
+    return(ccc_build_cellchat_long_table(srt, thresh = thresh))
+  }
+  bundle <- bundle %||% get_bundle(srt, method = method)
+  df <- standardize_long_df(bundle$long_table %||% data.frame())
+  if (nrow(df) == 0L) {
+    return(df)
+  }
+  if (!"method" %in% colnames(df)) {
+    df$method <- method
+  }
+  df$method <- method
+  ccc_mark_significance(df, thresh = thresh)
+}
+
+ccc_build_unified_bundle <- function(srt, methods = NULL, thresh = 0.05) {
+  methods <- methods %||% ccc_available_methods(srt)
+  methods <- unique(vapply(methods, normalize_ccc_method, character(1)))
+  methods <- setdiff(methods, "CCC")
+  pieces <- lapply(methods, function(method) {
+    ccc_bundle_long_table(
+      srt = srt,
+      method = method,
+      bundle = srt@tools[[method]],
+      thresh = thresh
+    )
+  })
+  pieces <- Filter(function(x) is.data.frame(x) && nrow(x) > 0L, pieces)
+  long_table <- if (length(pieces) == 0L) {
+    data.frame()
+  } else {
+    common <- Reduce(union, lapply(pieces, colnames))
+    pieces <- lapply(pieces, function(x) {
+      missing <- setdiff(common, colnames(x))
+      for (nm in missing) {
+        x[[nm]] <- NA
+      }
+      x[, common, drop = FALSE]
+    })
+    out <- do.call(rbind, pieces)
+    rownames(out) <- NULL
+    out
+  }
+  long_table <- standardize_long_df(long_table)
+  pair_table <- aggregate_ccc_long(long_table)
+  liana_sample_col <- if ("method" %in% colnames(long_table)) "method" else NULL
+  liana_table <- ccc_long_to_liana(long_table, sample_col = liana_sample_col)
+  list(
+    method = "CCC",
+    methods = sort(unique(as.character(long_table$method %||% methods))),
+    long_table = long_table,
+    pair_table = pair_table,
+    liana_table = liana_table,
+    metadata = list(
+      methods = methods,
+      updated_at = as.character(Sys.time()),
+      schema = "scop_ccc_unified_v1"
+    )
+  )
+}
+
+ccc_update_unified_bundle <- function(srt, method, bundle = NULL, thresh = 0.05) {
+  method <- normalize_ccc_method(method)
+  new_long <- ccc_bundle_long_table(
+    srt = srt,
+    method = method,
+    bundle = bundle,
+    thresh = thresh
+  )
+  old <- srt@tools[["CCC"]]
+  old_long <- if (!is.null(old)) {
+    standardize_long_df(old$long_table %||% data.frame())
+  } else {
+    data.frame()
+  }
+  if (nrow(old_long) > 0L && "method" %in% colnames(old_long)) {
+    old_long <- old_long[as.character(old_long$method) != method, , drop = FALSE]
+  }
+  pieces <- Filter(function(x) is.data.frame(x) && nrow(x) > 0L, list(old_long, new_long))
+  long_table <- if (length(pieces) == 0L) {
+    data.frame()
+  } else {
+    common <- Reduce(union, lapply(pieces, colnames))
+    pieces <- lapply(pieces, function(x) {
+      missing <- setdiff(common, colnames(x))
+      for (nm in missing) {
+        x[[nm]] <- NA
+      }
+      x[, common, drop = FALSE]
+    })
+    out <- do.call(rbind, pieces)
+    rownames(out) <- NULL
+    out
+  }
+  long_table <- standardize_long_df(long_table)
+  old_methods <- if (!is.null(old$methods)) {
+    setdiff(as.character(old$methods), method)
+  } else {
+    character(0)
+  }
+  methods <- sort(unique(c(
+    old_methods,
+    method,
+    as.character(long_table$method %||% character(0))
+  )))
+  srt@tools[["CCC"]] <- list(
+    method = "CCC",
+    methods = methods,
+    long_table = long_table,
+    pair_table = aggregate_ccc_long(long_table),
+    liana_table = ccc_long_to_liana(
+      long_table,
+      sample_col = if ("method" %in% colnames(long_table)) "method" else NULL
+    ),
+    metadata = list(
+      methods = methods,
+      updated_method = method,
+      updated_at = as.character(Sys.time()),
+      schema = "scop_ccc_unified_v1"
+    )
+  )
+  srt
+}
+
+ccc_get_unified_long_table <- function(srt, method = NULL, thresh = 0.05) {
+  method <- if (is.null(method)) NULL else normalize_ccc_method(method)
+  bundle <- srt@tools[["CCC"]]
+  if (is.null(bundle)) {
+    bundle <- ccc_build_unified_bundle(srt = srt, thresh = thresh)
+  }
+  df <- standardize_long_df(bundle$long_table %||% data.frame())
+  if (nrow(df) == 0L) {
+    return(df)
+  }
+  if (!is.null(method) && !"CCC" %in% method && "method" %in% colnames(df)) {
+    df <- df[as.character(df$method) %in% method, , drop = FALSE]
+  }
+  ccc_mark_significance(df, thresh = thresh)
+}
+
 get_group_by <- function(srt, method) {
   method <- detect_method(srt = srt, method = method)
+  if (identical(method, "CCC")) {
+    return(NULL)
+  }
   if (identical(method, "CellChat")) {
     store <- get_cc_obj(srt)
     return(store$parameters$group.by %||% NULL)
@@ -868,25 +1136,298 @@ ccc_pair_table <- function(
   thresh = 0.05
 ) {
   method <- detect_method(srt = srt, method = method)
-  if (identical(method, "CellChat")) {
-    df <- extract_long_table(
-      srt = srt,
-      condition = condition,
-      dataset = dataset,
-      slot.name = slot.name,
-      signaling = signaling,
-      pairLR.use = pairLR.use,
-      sources.use = sources.use,
-      targets.use = targets.use,
-      thresh = thresh
-    )
-  } else {
-    bundle <- get_bundle(srt, method = method)
-    df <- bundle$long_table %||% data.frame()
-  }
+  df <- ccc_long_table_for_method(
+    srt = srt,
+    method = method,
+    condition = condition,
+    dataset = dataset,
+    slot.name = slot.name,
+    signaling = signaling,
+    pairLR.use = pairLR.use,
+    sources.use = sources.use,
+    targets.use = targets.use,
+    thresh = thresh
+  )
   df <- standardize_long_df(df)
+  df <- filter_long_df(
+    df = df,
+    sender.use = sources.use,
+    receiver.use = targets.use,
+    signaling = signaling,
+    pairLR.use = pairLR.use
+  )
   df <- ccc_mark_significance(df, thresh = thresh)
   aggregate_ccc_long(df)
+}
+
+ccc_plot_data <- function(
+  srt,
+  method = NULL,
+  condition = NULL,
+  dataset = 1,
+  slot.name = "net",
+  signaling = NULL,
+  pairLR.use = NULL,
+  sender.use = NULL,
+  receiver.use = NULL,
+  ligand.use = NULL,
+  receptor.use = NULL,
+  interaction.use = NULL,
+  value = "score",
+  thresh = 0.05
+) {
+  method <- detect_method(srt = srt, method = method)
+  long_df <- ccc_long_table_for_method(
+    srt = srt,
+    method = method,
+    condition = condition,
+    dataset = dataset,
+    slot.name = slot.name,
+    signaling = signaling,
+    pairLR.use = pairLR.use,
+    sources.use = sender.use,
+    targets.use = receiver.use,
+    thresh = thresh
+  )
+  long_df <- standardize_long_df(long_df)
+  long_df <- filter_long_df(
+    df = long_df,
+    sender.use = sender.use,
+    receiver.use = receiver.use,
+    ligand.use = ligand.use,
+    receptor.use = receptor.use,
+    interaction.use = interaction.use,
+    signaling = signaling,
+    pairLR.use = pairLR.use
+  )
+  long_df <- ccc_assign_plot_score(df = long_df, value = value)
+  long_df <- ccc_mark_significance(long_df, thresh = thresh)
+  long_df <- prepare_plot_df(long_df)
+  list(
+    method = method,
+    long_df = long_df,
+    pair_df = pair_plot_df(long_df),
+    interaction_df = interaction_plot_df(long_df)
+  )
+}
+
+ccc_context_column <- function(df, sample_col = NULL) {
+  sample_col <- ccc_resolve_sample_col(df, sample_col = sample_col)
+  if (!is.null(sample_col)) {
+    return(list(column = sample_col, type = sample_col))
+  }
+  if ("method" %in% colnames(df)) {
+    methods <- unique(as.character(df$method))
+    methods <- methods[!is.na(methods) & nzchar(methods)]
+    if (length(methods) > 1L) {
+      return(list(column = "method", type = "method"))
+    }
+  }
+  list(column = NULL, type = NULL)
+}
+
+ccc_resolve_context_spec <- function(df, comparison = c(1, 2), sample_col = NULL) {
+  context <- ccc_context_column(df, sample_col = sample_col)
+  context_col <- context$column
+  if (is.null(context_col)) {
+    log_message(
+      paste0(
+        "CCC comparison plotting requires a context column. Add one of ",
+        "{.val sample}, {.val context}, {.val condition}, or {.val dataset}; ",
+        "pass {.arg sample_col}; or compare a unified CCC table with multiple ",
+        "{.arg method} values."
+      ),
+      message_type = "error"
+    )
+  }
+
+  context_values <- as.character(df[[context_col]])
+  context_values[is.na(context_values)] <- ""
+  context_names <- unique(context_values[nzchar(context_values)])
+  if (length(context_names) == 0L) {
+    log_message(
+      "The CCC comparison context column {.val {context_col}} does not contain any non-empty labels",
+      message_type = "error"
+    )
+  }
+
+  if (is.numeric(comparison)) {
+    comp_idx <- suppressWarnings(as.integer(comparison))
+    if (
+      any(is.na(comp_idx)) ||
+        any(comp_idx < 1L) ||
+        any(comp_idx > length(context_names))
+    ) {
+      log_message(
+        "comparison indices out of range for available contexts: {.val {context_names}}",
+        message_type = "error"
+      )
+    }
+    return(list(
+      names = context_names[comp_idx],
+      column = context_col,
+      type = context$type
+    ))
+  }
+
+  comparison <- as.character(comparison)
+  missing <- setdiff(comparison, context_names)
+  if (length(missing) > 0L) {
+    log_message(
+      "comparison names not found: {.val {missing}}. Available contexts: {.val {context_names}}",
+      message_type = "error"
+    )
+  }
+  list(
+    names = comparison,
+    column = context_col,
+    type = context$type
+  )
+}
+
+ccc_pair_matrix <- function(pair_df, value_col = "sum", all_groups = NULL) {
+  if (is.null(pair_df) || nrow(pair_df) == 0L) {
+    groups <- all_groups %||% character(0)
+    return(matrix(
+      0,
+      nrow = length(groups),
+      ncol = length(groups),
+      dimnames = list(groups, groups)
+    ))
+  }
+
+  groups <- unique(c(
+    all_groups %||% character(0),
+    as.character(pair_df$sender),
+    as.character(pair_df$receiver)
+  ))
+  groups <- groups[!is.na(groups) & nzchar(groups)]
+  mat <- matrix(
+    0,
+    nrow = length(groups),
+    ncol = length(groups),
+    dimnames = list(groups, groups)
+  )
+  idx <- cbind(
+    match(as.character(pair_df$sender), groups),
+    match(as.character(pair_df$receiver), groups)
+  )
+  values <- suppressWarnings(as.numeric(pair_df[[value_col]]))
+  values[!is.finite(values)] <- 0
+  mat[idx] <- values
+  mat
+}
+
+ccc_context_comparison_data <- function(
+  long_df,
+  comparison = c(1, 2),
+  sample_col = NULL,
+  measure = c("count", "weight"),
+  compare_by = c("overall", "celltype"),
+  pattern = c("all", "outgoing", "incoming")
+) {
+  measure <- match.arg(measure)
+  compare_by <- match.arg(compare_by)
+  pattern <- match.arg(pattern)
+  if (is.null(long_df) || nrow(long_df) == 0L) {
+    log_message(
+      "No CCC records are available for comparison plotting",
+      message_type = "error"
+    )
+  }
+
+  context <- ccc_resolve_context_spec(
+    df = long_df,
+    comparison = comparison,
+    sample_col = sample_col
+  )
+  context_names <- context$names
+  context_col <- context$column
+  ylab <- if (identical(measure, "count")) {
+    "Number of inferred interactions"
+  } else {
+    "Interaction strength"
+  }
+
+  if (identical(compare_by, "overall")) {
+    plot_df <- do.call(
+      rbind,
+      lapply(context_names, function(context_name) {
+        context_df <- long_df[as.character(long_df[[context_col]]) == context_name, , drop = FALSE]
+        value <- if (identical(measure, "count")) {
+          sum(as.numeric(context_df$significant), na.rm = TRUE)
+        } else {
+          sum(suppressWarnings(as.numeric(context_df$score)), na.rm = TRUE)
+        }
+        data.frame(
+          dataset = context_name,
+          group = context_name,
+          value = value,
+          context_type = context$type,
+          stringsAsFactors = FALSE
+        )
+      })
+    )
+    rownames(plot_df) <- NULL
+    return(list(
+      data = plot_df,
+      context_names = context_names,
+      context_col = context_col,
+      context_type = context$type,
+      measure = measure,
+      compare_by = compare_by,
+      pattern = pattern,
+      ylab = ylab
+    ))
+  }
+
+  pair_tables <- lapply(context_names, function(context_name) {
+    context_df <- long_df[as.character(long_df[[context_col]]) == context_name, , drop = FALSE]
+    aggregate_ccc_long(context_df)
+  })
+  all_celltypes <- unique(unlist(lapply(pair_tables, function(x) {
+    unique(c(as.character(x$sender), as.character(x$receiver)))
+  }), use.names = FALSE))
+  all_celltypes <- all_celltypes[!is.na(all_celltypes) & nzchar(all_celltypes)]
+
+  plot_df <- do.call(
+    rbind,
+    lapply(seq_along(context_names), function(i) {
+      value_col <- if (identical(measure, "count")) "count" else "sum"
+      mat <- ccc_pair_matrix(
+        pair_df = pair_tables[[i]],
+        value_col = value_col,
+        all_groups = all_celltypes
+      )
+      value <- switch(
+        pattern,
+        outgoing = rowSums(mat, na.rm = TRUE),
+        incoming = colSums(mat, na.rm = TRUE),
+        all = rowSums(mat, na.rm = TRUE) +
+          colSums(mat, na.rm = TRUE) -
+          diag(mat)
+      )
+      data.frame(
+        dataset = context_names[i],
+        group = context_names[i],
+        celltype = all_celltypes,
+        value = as.numeric(value),
+        context_type = context$type,
+        stringsAsFactors = FALSE
+      )
+    })
+  )
+  rownames(plot_df) <- NULL
+  list(
+    data = plot_df,
+    context_names = context_names,
+    context_col = context_col,
+    context_type = context$type,
+    measure = measure,
+    compare_by = compare_by,
+    pattern = pattern,
+    ylab = ylab
+  )
 }
 
 extract_long_table <- function(

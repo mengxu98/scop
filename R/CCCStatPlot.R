@@ -233,6 +233,7 @@ CCCStatPlot <- function(
   stat_type = c("score", "count"),
   top_n = 20,
   x_text_angle = 90,
+  min_receiver_flow = 0,
   link_alpha = 0.6,
   facet_by = NULL,
   edge_value = c("sum", "mean", "max", "count"),
@@ -301,7 +302,12 @@ CCCStatPlot <- function(
   thresh <- ccc_alias_arg(dots, "pvalue_threshold", thresh)
   signaling.exclude <- dots[["signaling.exclude"]] %||% NULL
   aspect.ratio <- dots[["aspect.ratio"]] %||% NULL
-  min_receiver_flow <- dots[["min_receiver_flow"]] %||% 0
+  sample_col <- dots[["sample_col"]] %||% NULL
+  sample_col <- ccc_alias_arg(
+    dots,
+    c("context_col", "condition_col", "dataset_col"),
+    sample_col
+  )
 
   if (identical(plot_type, "role_scatter")) {
     plot_type <- "scatter"
@@ -393,22 +399,18 @@ CCCStatPlot <- function(
 
   if (identical(plot_type, "lr_contribution")) {
     if (is.null(signaling)) {
-      df <- if (identical(method, "CellChat")) {
-        extract_long_table(
-          srt = srt,
-          condition = condition,
-          dataset = dataset,
-          slot.name = slot.name,
-          signaling = signaling,
-          pairLR.use = pairLR.use,
-          sources.use = sender.use,
-          targets.use = receiver.use,
-          thresh = thresh
-        )
-      } else {
-        bundle <- get_bundle(srt, method = method)
-        bundle$long_table %||% data.frame()
-      }
+      df <- ccc_long_table_for_method(
+        srt = srt,
+        method = method,
+        condition = condition,
+        dataset = dataset,
+        slot.name = slot.name,
+        signaling = signaling,
+        pairLR.use = pairLR.use,
+        sources.use = sender.use,
+        targets.use = receiver.use,
+        thresh = thresh
+      )
       df <- standardize_long_df(df)
       df <- filter_long_df(
         df = df,
@@ -529,22 +531,18 @@ CCCStatPlot <- function(
     ))
   }
 
-  if (identical(method, "CellChat")) {
-    df <- extract_long_table(
-      srt = srt,
-      condition = condition,
-      dataset = dataset,
-      slot.name = slot.name,
-      signaling = signaling,
-      pairLR.use = pairLR.use,
-      sources.use = sender.use,
-      targets.use = receiver.use,
-      thresh = thresh
-    )
-  } else {
-    bundle <- get_bundle(srt, method = method)
-    df <- bundle$long_table %||% data.frame()
-  }
+  df <- ccc_long_table_for_method(
+    srt = srt,
+    method = method,
+    condition = condition,
+    dataset = dataset,
+    slot.name = slot.name,
+    signaling = signaling,
+    pairLR.use = pairLR.use,
+    sources.use = sender.use,
+    targets.use = receiver.use,
+    thresh = thresh
+  )
 
   df <- standardize_long_df(df)
   df <- filter_long_df(
@@ -591,6 +589,15 @@ CCCStatPlot <- function(
       method = method,
       condition = condition,
       comparison = comparison,
+      sender.use = sender.use,
+      receiver.use = receiver.use,
+      ligand.use = ligand.use,
+      receptor.use = receptor.use,
+      interaction.use = interaction.use,
+      signaling = signaling,
+      pairLR.use = pairLR.use,
+      thresh = thresh,
+      sample_col = sample_col,
       measure = measure,
       compare_by = compare_by,
       pattern = pattern,
@@ -1417,8 +1424,11 @@ ccc_generic_lr_contribution_plot <- function(
   nrow = NULL,
   ncol = NULL
 ) {
-  bundle <- get_bundle(srt, method = method)
-  long_df <- standardize_long_df(bundle$long_table %||% data.frame())
+  long_df <- ccc_long_table_for_method(
+    srt = srt,
+    method = method
+  )
+  long_df <- standardize_long_df(long_df)
   available_pathways <- unique(as.character(long_df$pathway_name))
   available_pathways <- available_pathways[
     !is.na(available_pathways) & nzchar(available_pathways)
@@ -1583,8 +1593,18 @@ ccc_generic_feature_genes <- function(
   thresh = 0.05,
   top_n = 20
 ) {
-  bundle <- get_bundle(srt, method = method)
-  long_df <- bundle$long_table %||% data.frame()
+  long_df <- ccc_long_table_for_method(
+    srt = srt,
+    method = method,
+    condition = condition,
+    dataset = dataset,
+    slot.name = slot.name,
+    signaling = signaling,
+    pairLR.use = pairLR.use,
+    sources.use = sender.use,
+    targets.use = receiver.use,
+    thresh = thresh
+  )
   long_df <- standardize_long_df(long_df)
   long_df <- filter_long_df(
     df = long_df,
@@ -2123,6 +2143,15 @@ ccc_stat_comparison_plot <- function(
   method,
   condition = NULL,
   comparison = c(1, 2),
+  sender.use = NULL,
+  receiver.use = NULL,
+  ligand.use = NULL,
+  receptor.use = NULL,
+  interaction.use = NULL,
+  signaling = NULL,
+  pairLR.use = NULL,
+  thresh = 0.05,
+  sample_col = NULL,
   measure = "count",
   compare_by = "overall",
   pattern = "all",
@@ -2137,10 +2166,32 @@ ccc_stat_comparison_plot <- function(
   theme_args = list()
 ) {
   if (!identical(method, "CellChat")) {
-    log_message(
-      "{.val plot_type = 'comparison'} is currently only supported for {.pkg CellChat}",
-      message_type = "error"
-    )
+    return(ccc_generic_stat_comparison_plot(
+      srt = srt,
+      method = method,
+      comparison = comparison,
+      sender.use = sender.use,
+      receiver.use = receiver.use,
+      ligand.use = ligand.use,
+      receptor.use = receptor.use,
+      interaction.use = interaction.use,
+      signaling = signaling,
+      pairLR.use = pairLR.use,
+      thresh = thresh,
+      sample_col = sample_col,
+      measure = measure,
+      compare_by = compare_by,
+      pattern = pattern,
+      title = title,
+      subtitle = subtitle,
+      palette = palette,
+      palcolor = palcolor,
+      legend.position = legend.position,
+      legend.direction = legend.direction,
+      font.size = font.size,
+      theme_use = theme_use,
+      theme_args = theme_args
+    ))
   }
   cc_cmp <- ccc_cellchat_stat_comparison(
     srt = srt,
@@ -2250,6 +2301,122 @@ ccc_stat_comparison_plot <- function(
     p,
     title = title %||%
       paste0(cmp_cc_label(cc_cmp$cmp, cc_cmp$comp_idx), ": ", pattern),
+    subtitle = subtitle,
+    legend.position = legend.position,
+    legend.direction = legend.direction,
+    theme_use = theme_use,
+    theme_args = theme_args,
+    font.size = font.size
+  )
+}
+
+ccc_generic_stat_comparison_plot <- function(
+  srt,
+  method,
+  comparison = c(1, 2),
+  sender.use = NULL,
+  receiver.use = NULL,
+  ligand.use = NULL,
+  receptor.use = NULL,
+  interaction.use = NULL,
+  signaling = NULL,
+  pairLR.use = NULL,
+  thresh = 0.05,
+  sample_col = NULL,
+  measure = "count",
+  compare_by = "overall",
+  pattern = "all",
+  title = NULL,
+  subtitle = NULL,
+  palette = "Chinese",
+  palcolor = NULL,
+  legend.position = "right",
+  legend.direction = "vertical",
+  font.size = 10,
+  theme_use = "theme_scop",
+  theme_args = list()
+) {
+  plot_data <- ccc_plot_data(
+    srt = srt,
+    method = method,
+    condition = NULL,
+    dataset = 1,
+    signaling = signaling,
+    pairLR.use = pairLR.use,
+    sender.use = sender.use,
+    receiver.use = receiver.use,
+    ligand.use = ligand.use,
+    receptor.use = receptor.use,
+    interaction.use = interaction.use,
+    value = if (identical(measure, "count")) "count" else "score",
+    thresh = thresh
+  )
+  long_df <- plot_data$long_df
+  if (nrow(long_df) == 0L) {
+    log_message(
+      "No CCC records are available for generic comparison plotting",
+      message_type = "error"
+    )
+  }
+
+  cmp_data <- ccc_context_comparison_data(
+    long_df = long_df,
+    comparison = comparison,
+    sample_col = sample_col,
+    measure = measure,
+    compare_by = compare_by,
+    pattern = pattern
+  )
+  context_names <- cmp_data$context_names
+  cols <- palette_colors(
+    context_names,
+    palette = palette,
+    palcolor = palcolor
+  )
+
+  if (identical(compare_by, "overall")) {
+    df <- cmp_data$data
+    p <- ggplot2::ggplot(
+      df,
+      ggplot2::aes(x = dataset, y = value, fill = group)
+    ) +
+      ggplot2::geom_col(width = 0.65) +
+      ggplot2::geom_text(
+        ggplot2::aes(label = signif(value, 3)),
+        vjust = -0.25,
+        size = 3
+      ) +
+      ggplot2::scale_fill_manual(values = cols, drop = FALSE) +
+      ggplot2::labs(x = NULL, y = cmp_data$ylab, fill = NULL)
+    return(finalize_cc_plot(
+      p,
+      title = title %||% paste(context_names, collapse = " vs "),
+      subtitle = subtitle,
+      legend.position = legend.position,
+      legend.direction = legend.direction,
+      theme_use = theme_use,
+      theme_args = theme_args,
+      font.size = font.size
+    ))
+  }
+
+  df <- cmp_data$data
+  p <- ggplot2::ggplot(
+    df,
+    ggplot2::aes(x = group, y = value, fill = group)
+  ) +
+    ggplot2::geom_col(width = 0.65) +
+    ggplot2::geom_text(
+      ggplot2::aes(label = signif(value, 3)),
+      vjust = -0.25,
+      size = 2.6
+    ) +
+    ggplot2::facet_wrap(~celltype, scales = "free_y") +
+    ggplot2::scale_fill_manual(values = cols, drop = FALSE) +
+    ggplot2::labs(x = NULL, y = cmp_data$ylab, fill = NULL)
+  finalize_cc_plot(
+    p,
+    title = title %||% paste0(paste(context_names, collapse = " vs "), ": ", pattern),
     subtitle = subtitle,
     legend.position = legend.position,
     legend.direction = legend.direction,
