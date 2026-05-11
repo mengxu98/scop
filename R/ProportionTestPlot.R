@@ -13,14 +13,8 @@
 #' @param proportion_method Optional method to select from
 #' `srt@tools[['ProportionTest']][['methods']]`.
 #' If `NULL`, uses the active/most recent method.
-#' @param result_level Result level to draw.
-#' Use `"group"` for standardized cell-type summary and `"neighborhood"` for
-#' Milo neighborhood-level outputs when available.
-#' @param plot_type Plot type. Recommended values are `"effect"` and `"umap"`.
-#' Legacy plot types are retained for backward compatibility.
-#' Full options are `"effect"`, `"umap"`, `"volcano"`,
-#' `"manhattan"`, `"ring"`, `"milo_beeswarm"`, `"milo_graph"`, and
-#' `"sccoda_forest"`.
+#' @param result_level Result level to draw. Currently only `"group"` is used.
+#' @param plot_type Plot type. One of `"effect"` or `"umap"`.
 #' @param umap_mode UMAP projection mode for `plot_type = "umap"`.
 #' `"discrete"` maps cells to DA direction categories;
 #' `"continuous"` maps cells to group-level `obs_log2FD`.
@@ -54,8 +48,10 @@
 #' @param label.bg.r Label background radius.
 #' @param label.size Label text size.
 #' @param aspect.ratio Aspect ratio of the panel.
-#' @param xlab A character string specifying the x-axis label.
-#' @param ylab A character string specifying the y-axis label.
+#' @param xlab A character string specifying the x-axis label. For
+#' `plot_type = "umap"`, this is forwarded to the projection plot when set.
+#' @param ylab A character string specifying the y-axis label. For
+#' `plot_type = "umap"`, this is forwarded to the projection plot when set.
 #' @param legend.position The position of legends,
 #' one of `"none"`, `"left"`, `"right"`, `"bottom"`, `"top"`.
 #' @param legend.title Title of the legend.
@@ -66,6 +62,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunProportionTest(
 #'   pancreas_sub,
 #'   group.by = "CellType",
@@ -74,15 +71,20 @@
 #' )
 #'
 #' ProportionTestPlot(pancreas_sub)
+#'
+#' ProportionTestPlot(
+#'  pancreas_sub,
+#'  reduction = "UMAP",
+#'  plot_type = "umap",
+#'  xlab = "UMAP_1",
+#'  ylab = "UMAP_2"
+#' )
 ProportionTestPlot <- function(
     srt,
     comparison = NULL,
     proportion_method = NULL,
-    result_level = c("group", "neighborhood"),
-    plot_type = c(
-      "effect", "umap", "volcano", "manhattan", "ring",
-      "milo_beeswarm", "milo_graph", "sccoda_forest"
-    ),
+    result_level = c("group"),
+    plot_type = c("effect", "umap"),
     umap_mode = c("discrete", "continuous"),
     reduction = "UMAP",
     projection_args = list(),
@@ -126,11 +128,8 @@ ProportionTestPlot <- function(
   effect_color_mode <- match.arg(effect_color_mode)
 
   target_level <- match.arg(result_level)
-  if (plot_type %in% c("milo_beeswarm", "milo_graph")) {
-    target_level <- "neighborhood"
-  }
 
-  resolved <- .get_proportion_plot_results(
+  resolved <- get_proportion_plot_results(
     srt = srt,
     proportion_method = proportion_method,
     result_level = target_level
@@ -139,21 +138,8 @@ ProportionTestPlot <- function(
   method_used <- resolved$method
   method_bundle <- resolved$method_bundle
 
-  if (plot_type %in% c("milo_beeswarm", "milo_graph") && !identical(method_used, "milo")) {
-    log_message(
-      "{.arg plot_type} {.val {plot_type}} requires {.val proportion_method = 'milo'}",
-      message_type = "error"
-    )
-  }
-  if (identical(plot_type, "sccoda_forest") && !identical(method_used, "sccoda")) {
-    log_message(
-      "{.arg plot_type} {.val sccoda_forest} requires {.val proportion_method = 'sccoda'}",
-      message_type = "error"
-    )
-  }
-
   if (!is.null(comparison)) {
-    comparison <- .normalize_plot_comparison_input(comparison)
+    comparison <- normalize_plot_comparison_input(comparison)
     missing_comparisons <- comparison[!comparison %in% names(results)]
     if (length(missing_comparisons) > 0) {
       log_message(
@@ -173,15 +159,15 @@ ProportionTestPlot <- function(
 
   std_results <- list()
   for (comp_name in names(results)) {
-    comp_groups <- .plot_comparison_groups(comp_name)
-    plot_data <- .standardize_proportion_result(
+    comp_groups <- plot_comparison_groups(comp_name)
+    plot_data <- standardize_proportion_result(
       results[[comp_name]],
       cluster_1 = comp_groups[1],
       cluster_2 = comp_groups[2],
       comparison_name = comp_name,
       method = method_used
     )
-    plot_data <- .prepare_proportion_plot_data(
+    plot_data <- prepare_proportion_plot_data(
       plot_data,
       FDR_threshold = FDR_threshold,
       log2FD_threshold = log2FD_threshold,
@@ -225,8 +211,8 @@ ProportionTestPlot <- function(
 
   plist <- switch(
     plot_type,
-    effect = lapply(std_results, function(df) do.call(.plot_proportion_effect, c(list(df = df), plot_args))),
-    umap = .plot_proportion_umap(
+    effect = lapply(std_results, function(df) do.call(plot_proportion_effect, c(list(df = df), plot_args))),
+    umap = plot_proportion_umap(
       srt = srt,
       std_results = std_results,
       method_bundle = method_bundle,
@@ -240,42 +226,19 @@ ProportionTestPlot <- function(
       cols.ns = cols.ns,
       palette = palette,
       palcolor = palcolor,
+      xlab = if (identical(xlab, "Cell Type")) NULL else xlab,
+      ylab = if (identical(ylab, "log2 (FD)")) NULL else ylab,
       legend.title = legend.title,
       theme_use = theme_use,
       theme_args = theme_args
-    ),
-    volcano = lapply(std_results, function(df) do.call(.plot_proportion_volcano, c(list(df = df), plot_args))),
-    manhattan = lapply(std_results, function(df) do.call(.plot_proportion_manhattan, c(list(df = df), plot_args))),
-    ring = lapply(std_results, function(df) do.call(.plot_proportion_ring, c(list(df = df), plot_args))),
-    milo_beeswarm = lapply(std_results, function(df) do.call(.plot_proportion_milo_beeswarm, c(list(df = df), plot_args))),
-    milo_graph = .plot_proportion_milo_graph(
-      std_results = std_results,
-      method_bundle = method_bundle,
-      palette = palette,
-      palcolor = palcolor,
-      pt.size = pt.size,
-      pt.alpha = pt.alpha,
-      label = label,
-      label.fg = label.fg,
-      label.bg = label.bg,
-      label.bg.r = label.bg.r,
-      label.size = label.size,
-      aspect.ratio = aspect.ratio,
-      legend.position = legend.position,
-      legend.direction = legend.direction,
-      theme_use = theme_use,
-      theme_args = theme_args,
-      nlabel = nlabel,
-      features_label = features_label
-    ),
-    sccoda_forest = lapply(std_results, function(df) do.call(.plot_proportion_sccoda_forest, c(list(df = df), plot_args)))
+    )
   )
 
   if (!isTRUE(combine)) {
     return(plist)
   }
 
-  .combine_proportion_plots(
+  combine_proportion_plots(
     plist = plist,
     nrow = nrow,
     ncol = ncol,
@@ -286,7 +249,7 @@ ProportionTestPlot <- function(
   )
 }
 
-.prepare_proportion_plot_data <- function(
+prepare_proportion_plot_data <- function(
     plot_data,
     FDR_threshold,
     log2FD_threshold,
@@ -307,7 +270,7 @@ ProportionTestPlot <- function(
   plot_data$hdi_97.5 <- suppressWarnings(as.numeric(plot_data$hdi_97.5))
   plot_data$inclusion_prob <- suppressWarnings(as.numeric(plot_data$inclusion_prob))
 
-  sig_label <- .proportion_sig_label(FDR_threshold, log2FD_threshold)
+  sig_label <- proportion_sig_label(FDR_threshold, log2FD_threshold)
   plot_data$significance <- ifelse(
     !is.na(plot_data$FDR) &
       !is.na(plot_data$obs_log2FD) &
@@ -379,7 +342,7 @@ ProportionTestPlot <- function(
   plot_data
 }
 
-.plot_proportion_effect <- function(
+plot_proportion_effect <- function(
     df,
     FDR_threshold,
     log2FD_threshold,
@@ -401,7 +364,7 @@ ProportionTestPlot <- function(
     ...
 ) {
   effect_color_mode <- match.arg(effect_color_mode)
-  sig_label <- .proportion_sig_label(FDR_threshold, log2FD_threshold)
+  sig_label <- proportion_sig_label(FDR_threshold, log2FD_threshold)
   has_ci <- any(is.finite(df$boot_CI_2.5) & is.finite(df$boot_CI_97.5))
 
   p <- ggplot(df, aes(x = clusters, y = obs_log2FD))
@@ -465,12 +428,12 @@ ProportionTestPlot <- function(
   p +
     geom_hline(yintercept = c(-log2FD_threshold, 0, log2FD_threshold), linetype = c(2, 1, 2), color = c("grey", "black", "grey")) +
     labs(
-      title = .proportion_title(df),
+      title = proportion_title(df),
       x = xlab,
       y = ylab
     ) +
     coord_flip() +
-    .proportion_theme(theme_use, theme_args) +
+    proportion_theme(theme_use, theme_args) +
     theme(
       aspect.ratio = aspect.ratio,
       legend.position = legend.position,
@@ -478,7 +441,7 @@ ProportionTestPlot <- function(
     )
 }
 
-.plot_proportion_umap <- function(
+plot_proportion_umap <- function(
     srt,
     std_results,
     method_bundle,
@@ -492,12 +455,18 @@ ProportionTestPlot <- function(
     cols.ns = "grey80",
     palette = "RdBu",
     palcolor = NULL,
+    xlab = NULL,
+    ylab = NULL,
     legend.title = NULL,
     theme_use = "theme_scop",
     theme_args = list()
 ) {
   umap_mode <- match.arg(umap_mode)
-  reduction_use <- .resolve_proportion_reduction(srt, reduction)
+  reduction_use <- if (is.null(reduction)) {
+    DefaultReduction(srt)
+  } else {
+    DefaultReduction(srt, pattern = reduction)
+  }
 
   group.by <- method_bundle[["parameters"]][["group.by"]] %||%
     srt@tools[["ProportionTest"]][["parameters"]][["group.by"]]
@@ -531,7 +500,7 @@ ProportionTestPlot <- function(
 
   for (comp_name in names(std_results)) {
     df_comp <- std_results[[comp_name]]
-    proj_df <- .summarize_proportion_projection(
+    proj_df <- summarize_proportion_projection(
       df = df_comp,
       FDR_threshold = FDR_threshold,
       log2FD_threshold = log2FD_threshold
@@ -540,7 +509,7 @@ ProportionTestPlot <- function(
     effect_map <- stats::setNames(proj_df$obs_log2FD, proj_df$clusters)
     direction_map <- stats::setNames(as.character(proj_df$direction), proj_df$clusters)
 
-    suffix <- .proportion_projection_suffix(comp_name)
+    suffix <- proportion_projection_suffix(comp_name)
     direction_col <- paste0(".proportion_da_direction_", suffix)
     effect_col <- paste0(".proportion_da_log2fd_", suffix)
 
@@ -554,11 +523,7 @@ ProportionTestPlot <- function(
     srt@meta.data[[effect_col]] <- effect_map[cluster_by_cell]
     srt@meta.data[[effect_col]][is.na(srt@meta.data[[effect_col]])] <- 0
 
-    title_use <- .proportion_title(df_comp)
-    subtitle_use <- .proportion_umap_subtitle(
-      comparison_name = comp_name,
-      umap_mode = umap_mode
-    )
+    title_use <- proportion_title(df_comp)
     if (identical(umap_mode, "discrete")) {
       plot_call <- utils::modifyList(
         projection_args,
@@ -570,7 +535,9 @@ ProportionTestPlot <- function(
           palcolor = c(cols.increase, cols.decrease, cols.ns),
           show_stat = FALSE,
           title = title_use,
-          subtitle = subtitle_use,
+          subtitle = NULL,
+          xlab = xlab,
+          ylab = ylab,
           legend.title = legend_discrete,
           theme_use = theme_use,
           theme_args = theme_args,
@@ -593,7 +560,9 @@ ProportionTestPlot <- function(
           bg_cutoff = -Inf,
           show_stat = FALSE,
           title = title_use,
-          subtitle = subtitle_use,
+          subtitle = NULL,
+          xlab = xlab,
+          ylab = ylab,
           legend.title = legend_continuous,
           theme_use = theme_use,
           theme_args = theme_args,
@@ -612,32 +581,7 @@ ProportionTestPlot <- function(
   plist
 }
 
-.resolve_proportion_reduction <- function(srt, reduction = "UMAP") {
-  reduction <- reduction %||% "UMAP"
-  reduction_names <- names(srt@reductions)
-  if (length(reduction_names) == 0) {
-    log_message(
-      "No reduction found in {.cls Seurat}; {.val plot_type = 'umap'} requires a dimensional reduction",
-      message_type = "error"
-    )
-  }
-
-  if (reduction %in% reduction_names) {
-    return(reduction)
-  }
-
-  hit <- which(tolower(reduction_names) == tolower(reduction))
-  if (length(hit) > 0) {
-    return(reduction_names[hit[1]])
-  }
-
-  log_message(
-    "Cannot find reduction {.val {reduction}} in {.cls Seurat}. Available reductions: {.val {reduction_names}}",
-    message_type = "error"
-  )
-}
-
-.summarize_proportion_projection <- function(
+summarize_proportion_projection <- function(
     df,
     FDR_threshold,
     log2FD_threshold
@@ -698,7 +642,7 @@ ProportionTestPlot <- function(
   merged
 }
 
-.proportion_projection_suffix <- function(comparison_name) {
+proportion_projection_suffix <- function(comparison_name) {
   out <- gsub("[^A-Za-z0-9]+", "_", comparison_name)
   out <- gsub("^_+|_+$", "", out)
   if (!nzchar(out)) {
@@ -707,498 +651,11 @@ ProportionTestPlot <- function(
   out
 }
 
-.proportion_umap_subtitle <- function(
-    comparison_name,
-    umap_mode = c("discrete", "continuous")
-) {
-  umap_mode <- match.arg(umap_mode)
-  if (identical(umap_mode, "discrete")) {
-    paste0(comparison_name, " | Direction")
-  } else {
-    paste0(comparison_name, " | log2FD")
-  }
-}
-
-.plot_proportion_volcano <- function(
-    df,
-    FDR_threshold,
-    log2FD_threshold,
-    pt.size,
-    pt.alpha,
-    cols.sig,
-    cols.ns,
-    label,
-    label.fg,
-    label.bg,
-    label.bg.r,
-    label.size,
-    xlab,
-    ylab,
-    aspect.ratio,
-    legend.position,
-    legend.direction,
-    legend.title,
-    theme_use,
-    theme_args,
-    ...
-) {
-  sig_label <- .proportion_sig_label(FDR_threshold, log2FD_threshold)
-
-  p <- ggplot(df, aes(x = obs_log2FD, y = minus_log10)) +
-    geom_point(aes(color = significance), size = pt.size * 1.6, alpha = pt.alpha, na.rm = TRUE) +
-    geom_vline(xintercept = c(-log2FD_threshold, log2FD_threshold), linetype = 2, color = "grey") +
-    geom_hline(yintercept = -log10(FDR_threshold), linetype = 2, color = "grey") +
-    scale_color_manual(
-      name = legend.title,
-      labels = c(sig_label, "n.s."),
-      values = c(cols.sig, cols.ns)
-    ) +
-    labs(
-      title = .proportion_title(df),
-      x = xlab %||% "log2 (FD)",
-      y = ylab %||% "-log10(FDR/p)"
-    ) +
-    .proportion_theme(theme_use, theme_args) +
-    theme(
-      aspect.ratio = aspect.ratio,
-      legend.position = legend.position,
-      legend.direction = legend.direction
-    )
-
-  if (isTRUE(label) && any(df$label)) {
-    p <- p +
-      ggrepel::geom_text_repel(
-        data = df[df$label, , drop = FALSE],
-        aes(label = label_id),
-        color = label.fg,
-        bg.color = label.bg,
-        bg.r = label.bg.r,
-        size = label.size,
-        max.overlaps = Inf
-      )
-  }
-
-  p
-}
-
-.plot_proportion_manhattan <- function(
-    df,
-    palette,
-    palcolor,
-    group_palette,
-    group_palcolor,
-    pt.size,
-    pt.alpha,
-    label,
-    label.fg,
-    label.bg,
-    label.bg.r,
-    label.size,
-    xlab,
-    ylab,
-    aspect.ratio,
-    legend.position,
-    legend.direction,
-    theme_use,
-    theme_args,
-    ...
-) {
-  df <- df[order(df$clusters), , drop = FALSE]
-  df$idx <- seq_len(nrow(df))
-
-  track <- do.call(
-    rbind,
-    lapply(split(df$idx, df$clusters), function(x) {
-      data.frame(
-        xmin = min(x) - 0.5,
-        xmax = max(x) + 0.5,
-        xmid = mean(range(x)),
-        stringsAsFactors = FALSE
-      )
-    })
-  )
-  track$clusters <- names(split(df$idx, df$clusters))
-
-  ymax <- max(df$minus_log10, na.rm = TRUE)
-  if (!is.finite(ymax) || ymax <= 0) {
-    ymax <- 1
-  }
-  tile_h <- ymax * 0.08
-
-  cluster_cols <- palette_colors(unique(track$clusters), palette = group_palette, palcolor = group_palcolor)
-  effect_cols <- palette_colors(palette = palette, palcolor = palcolor, n = 11)
-
-  p <- ggplot(df, aes(x = idx, y = minus_log10)) +
-    geom_rect(
-      data = track,
-      aes(xmin = xmin, xmax = xmax, ymin = -tile_h, ymax = 0, fill = clusters),
-      inherit.aes = FALSE,
-      alpha = 0.9,
-      color = NA
-    ) +
-    geom_point(aes(color = obs_log2FD), size = pt.size * 1.4, alpha = pt.alpha, position = position_jitter(width = 0.18, height = 0)) +
-    scale_fill_manual(values = cluster_cols, drop = FALSE) +
-    scale_color_gradientn(colors = effect_cols) +
-    scale_x_continuous(
-      breaks = track$xmid,
-      labels = track$clusters,
-      expand = c(0, 0)
-    ) +
-    labs(
-      title = .proportion_title(df),
-      x = xlab %||% "Cell Type",
-      y = ylab %||% "-log10(FDR/p)",
-      fill = "Cluster",
-      color = "log2 (FD)"
-    ) +
-    .proportion_theme(theme_use, theme_args) +
-    theme(
-      axis.text.x = element_text(angle = 60, hjust = 1, vjust = 1),
-      aspect.ratio = aspect.ratio,
-      legend.position = legend.position,
-      legend.direction = legend.direction
-    )
-
-  if (isTRUE(label) && any(df$label)) {
-    p <- p +
-      ggrepel::geom_text_repel(
-        data = df[df$label, , drop = FALSE],
-        aes(label = label_id),
-        color = label.fg,
-        bg.color = label.bg,
-        bg.r = label.bg.r,
-        size = label.size,
-        max.overlaps = Inf
-      )
-  }
-
-  p
-}
-
-.plot_proportion_ring <- function(
-    df,
-    palette,
-    palcolor,
-    group_palette,
-    group_palcolor,
-    pt.size,
-    pt.alpha,
-    xlab,
-    ylab,
-    aspect.ratio,
-    legend.position,
-    legend.direction,
-    theme_use,
-    theme_args,
-    ...
-) {
-  df <- df[order(df$clusters), , drop = FALSE]
-  df$idx <- seq_len(nrow(df))
-
-  ymax <- max(df$minus_log10, na.rm = TRUE)
-  if (!is.finite(ymax) || ymax <= 0) {
-    ymax <- 1
-  }
-  track_height <- max(0.3, ymax * 0.1)
-
-  track <- data.frame(
-    idx = df$idx,
-    clusters = df$clusters,
-    y = track_height,
-    stringsAsFactors = FALSE
-  )
-
-  cluster_cols <- palette_colors(levels(df$clusters), palette = group_palette, palcolor = group_palcolor)
-  effect_cols <- palette_colors(palette = palette, palcolor = palcolor, n = 11)
-
-  ggplot() +
-    geom_col(
-      data = track,
-      aes(x = idx, y = y, fill = clusters),
-      width = 1,
-      alpha = 0.9,
-      inherit.aes = FALSE
-    ) +
-    geom_point(
-      data = df,
-      aes(x = idx, y = minus_log10 + track_height + 0.03 * ymax, color = obs_log2FD),
-      size = pt.size * 1.5,
-      alpha = pt.alpha
-    ) +
-    scale_fill_manual(values = cluster_cols, drop = FALSE) +
-    scale_color_gradientn(colors = effect_cols) +
-    coord_polar() +
-    labs(
-      title = .proportion_title(df),
-      x = xlab %||% "",
-      y = ylab %||% "-log10(FDR/p)",
-      fill = "Cluster",
-      color = "log2 (FD)"
-    ) +
-    .proportion_theme(theme_use, theme_args) +
-    theme(
-      axis.text = element_blank(),
-      axis.ticks = element_blank(),
-      axis.title = element_blank(),
-      aspect.ratio = aspect.ratio,
-      legend.position = legend.position,
-      legend.direction = legend.direction
-    )
-}
-
-.plot_proportion_milo_beeswarm <- function(
-    df,
-    FDR_threshold,
-    log2FD_threshold,
-    pt.size,
-    pt.alpha,
-    cols.sig,
-    cols.ns,
-    xlab,
-    ylab,
-    aspect.ratio,
-    legend.position,
-    legend.direction,
-    legend.title,
-    theme_use,
-    theme_args,
-    ...
-) {
-  sig_label <- .proportion_sig_label(FDR_threshold, log2FD_threshold)
-
-  ggplot(df, aes(x = clusters, y = obs_log2FD)) +
-    geom_hline(yintercept = c(-log2FD_threshold, 0, log2FD_threshold), linetype = c(2, 1, 2), color = c("grey", "black", "grey")) +
-    geom_point(
-      aes(color = significance),
-      position = position_jitter(width = 0.25, height = 0),
-      size = pt.size * 1.4,
-      alpha = pt.alpha,
-      na.rm = TRUE
-    ) +
-    scale_color_manual(
-      name = legend.title,
-      labels = c(sig_label, "n.s."),
-      values = c(cols.sig, cols.ns)
-    ) +
-    labs(
-      title = .proportion_title(df),
-      x = xlab,
-      y = ylab
-    ) +
-    .proportion_theme(theme_use, theme_args) +
-    theme(
-      axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
-      aspect.ratio = aspect.ratio,
-      legend.position = legend.position,
-      legend.direction = legend.direction
-    )
-}
-
-.plot_proportion_milo_graph <- function(
-    std_results,
-    method_bundle,
-    palette,
-    palcolor,
-    pt.size,
-    pt.alpha,
-    label,
-    label.fg,
-    label.bg,
-    label.bg.r,
-    label.size,
-    aspect.ratio,
-    legend.position,
-    legend.direction,
-    theme_use,
-    theme_args,
-    nlabel,
-    features_label
-) {
-  graph_data <- method_bundle[["details"]][["milo_graph_data"]]
-  if (is.null(graph_data) || length(graph_data) == 0) {
-    log_message(
-      "Milo graph data is not available. Re-run with {.pkg miloR} to enable {.val plot_type = 'milo_graph'}",
-      message_type = "error"
-    )
-  }
-
-  effect_cols <- palette_colors(palette = palette, palcolor = palcolor, n = 11)
-  plist <- list()
-
-  for (comp_name in names(std_results)) {
-    graph_comp <- graph_data[[comp_name]]
-    if (is.null(graph_comp) || is.null(graph_comp$nodes)) {
-      log_message(
-        "Milo graph data missing for comparison {.val {comp_name}}",
-        message_type = "error"
-      )
-    }
-
-    df <- std_results[[comp_name]]
-    nodes <- as.data.frame(graph_comp$nodes, stringsAsFactors = FALSE)
-    if (!"neighborhood" %in% colnames(nodes)) {
-      log_message(
-        "Invalid Milo graph data for comparison {.val {comp_name}}",
-        message_type = "error"
-      )
-    }
-
-    node_plot <- merge(
-      nodes,
-      df,
-      by = "neighborhood",
-      all.x = TRUE,
-      sort = FALSE
-    )
-
-    if (!all(c("x", "y") %in% colnames(node_plot))) {
-      theta <- seq(0, 2 * pi, length.out = nrow(node_plot) + 1)[seq_len(nrow(node_plot))]
-      node_plot$x <- cos(theta)
-      node_plot$y <- sin(theta)
-    }
-
-    edge_df <- as.data.frame(graph_comp$edges %||% data.frame(from = character(0), to = character(0)), stringsAsFactors = FALSE)
-    edge_plot <- NULL
-    if (nrow(edge_df) > 0) {
-      edge_plot <- merge(edge_df, node_plot[, c("neighborhood", "x", "y")], by.x = "from", by.y = "neighborhood", all.x = TRUE)
-      colnames(edge_plot)[colnames(edge_plot) %in% c("x", "y")] <- c("x_from", "y_from")
-      edge_plot <- merge(edge_plot, node_plot[, c("neighborhood", "x", "y")], by.x = "to", by.y = "neighborhood", all.x = TRUE)
-      colnames(edge_plot)[colnames(edge_plot) %in% c("x", "y")] <- c("x_to", "y_to")
-    }
-
-    p <- ggplot() +
-      coord_equal()
-
-    if (!is.null(edge_plot) && nrow(edge_plot) > 0) {
-      p <- p +
-        geom_segment(
-          data = edge_plot,
-          aes(x = x_from, y = y_from, xend = x_to, yend = y_to),
-          color = "grey85",
-          linewidth = 0.3,
-          alpha = 0.8
-        )
-    }
-
-    p <- p +
-      geom_point(
-        data = node_plot,
-        aes(x = x, y = y, color = obs_log2FD, size = minus_log10),
-        alpha = pt.alpha,
-        na.rm = TRUE
-      ) +
-      scale_color_gradientn(colors = effect_cols) +
-      labs(
-        title = .proportion_title(node_plot),
-        color = "log2 (FD)",
-        size = "-log10(FDR/p)"
-      ) +
-      .proportion_theme(theme_use, theme_args) +
-      theme(
-        aspect.ratio = aspect.ratio,
-        legend.position = legend.position,
-        legend.direction = legend.direction,
-        axis.title = element_blank(),
-        axis.text = element_blank(),
-        axis.ticks = element_blank()
-      )
-
-    if (isTRUE(label)) {
-      node_plot$label <- FALSE
-      if (!is.null(features_label)) {
-        node_plot$label <- node_plot$label_id %in% features_label
-      } else {
-        ord <- order(node_plot$minus_log10, decreasing = TRUE)
-        top_idx <- utils::head(ord[is.finite(node_plot$minus_log10[ord])], nlabel)
-        node_plot$label[top_idx] <- TRUE
-      }
-
-      if (any(node_plot$label)) {
-        p <- p +
-          ggrepel::geom_text_repel(
-            data = node_plot[node_plot$label, , drop = FALSE],
-            aes(x = x, y = y, label = label_id),
-            color = label.fg,
-            bg.color = label.bg,
-            bg.r = label.bg.r,
-            size = label.size,
-            max.overlaps = Inf
-          )
-      }
-    }
-
-    plist[[comp_name]] <- p
-  }
-
-  plist
-}
-
-.plot_proportion_sccoda_forest <- function(
-    df,
-    pt.size,
-    pt.alpha,
-    cols.sig,
-    cols.ns,
-    xlab,
-    ylab,
-    aspect.ratio,
-    legend.position,
-    legend.direction,
-    legend.title,
-    theme_use,
-    theme_args,
-    ...
-) {
-  df$credible <- as.logical(df$credible)
-  df$credible_label <- ifelse(df$credible, "credible", "not_credible")
-  df$credible_label <- factor(df$credible_label, levels = c("credible", "not_credible"))
-
-  effect <- ifelse(is.finite(df$effect), df$effect, df$obs_log2FD)
-  df$effect_use <- effect
-
-  ord <- order(df$effect_use, decreasing = TRUE, na.last = TRUE)
-  df <- df[ord, , drop = FALSE]
-  df$clusters <- factor(df$clusters, levels = unique(df$clusters))
-
-  p <- ggplot(df, aes(y = clusters, x = effect_use)) +
-    geom_vline(xintercept = 0, color = "grey", linetype = 2)
-
-  has_hdi <- any(is.finite(df$hdi_2.5) & is.finite(df$hdi_97.5))
-  if (has_hdi) {
-    p <- p +
-      geom_segment(
-        aes(x = hdi_2.5, xend = hdi_97.5, y = clusters, yend = clusters, color = credible_label),
-        linewidth = pt.size,
-        alpha = pt.alpha,
-        na.rm = TRUE
-      )
-  }
-
-  p +
-    geom_point(aes(color = credible_label), size = pt.size * 1.8, alpha = pt.alpha, na.rm = TRUE) +
-    scale_color_manual(
-      name = legend.title %||% "Credible",
-      values = c(credible = cols.sig, not_credible = cols.ns),
-      labels = c(credible = "credible", not_credible = "not credible")
-    ) +
-    labs(
-      title = .proportion_title(df),
-      x = xlab %||% "scCODA effect",
-      y = ylab %||% "Cell Type"
-    ) +
-    .proportion_theme(theme_use, theme_args) +
-    theme(
-      aspect.ratio = aspect.ratio,
-      legend.position = legend.position,
-      legend.direction = legend.direction
-    )
-}
-
-.proportion_sig_label <- function(FDR_threshold, log2FD_threshold) {
+proportion_sig_label <- function(FDR_threshold, log2FD_threshold) {
   paste("FDR <", FDR_threshold, "& abs(Log2FD) >", round(log2FD_threshold, 2))
 }
 
-.proportion_theme <- function(theme_use, theme_args) {
+proportion_theme <- function(theme_use, theme_args) {
   tryCatch(
     {
       if (is.function(theme_use)) {
@@ -1212,7 +669,7 @@ ProportionTestPlot <- function(
   )
 }
 
-.proportion_title <- function(df) {
+proportion_title <- function(df) {
   if (!is.null(df$group1) && !is.null(df$group2) && !all(is.na(df$group1)) && !all(is.na(df$group2))) {
     paste0(df$group2[1], " vs ", df$group1[1])
   } else if (!is.null(df$comparison) && !all(is.na(df$comparison))) {
@@ -1222,7 +679,7 @@ ProportionTestPlot <- function(
   }
 }
 
-.combine_proportion_plots <- function(
+combine_proportion_plots <- function(
     plist,
     nrow,
     ncol,
@@ -1252,7 +709,7 @@ ProportionTestPlot <- function(
       if (used[i]) {
         next
       }
-      groups <- .plot_comparison_groups(plot_names[i])
+      groups <- plot_comparison_groups(plot_names[i])
       if (all(!is.na(groups))) {
         reverse_name <- paste0(groups[2], "_vs_", groups[1])
         j <- which(plot_names == reverse_name)[1]
@@ -1291,7 +748,7 @@ ProportionTestPlot <- function(
     )
 }
 
-.get_proportion_plot_results <- function(
+get_proportion_plot_results <- function(
     srt,
     proportion_method = NULL,
     result_level = c("group", "neighborhood")
@@ -1321,7 +778,7 @@ ProportionTestPlot <- function(
 
   method_use <- proportion_method
   if (!is.null(method_use)) {
-    method_use <- .normalize_proportion_method(method_use)
+    method_use <- normalize_proportion_method(method_use)
   } else {
     method_use <- pt[["active_method"]] %||% pt[["parameters"]][["proportion_method"]]
     if (is.null(method_use) || !method_use %in% names(methods_store)) {
@@ -1370,7 +827,7 @@ ProportionTestPlot <- function(
   )
 }
 
-.normalize_plot_comparison_input <- function(comparison) {
+normalize_plot_comparison_input <- function(comparison) {
   if (is.list(comparison)) {
     if (all(vapply(comparison, function(x) is.character(x) && length(x) == 2, logical(1)))) {
       comparison_names <- c()
@@ -1389,7 +846,7 @@ ProportionTestPlot <- function(
   unique(as.character(comparison))
 }
 
-.plot_comparison_groups <- function(comparison_name) {
+plot_comparison_groups <- function(comparison_name) {
   groups <- strsplit(comparison_name, "_vs_", fixed = TRUE)[[1]]
   if (length(groups) != 2) {
     return(c(NA_character_, NA_character_))

@@ -8,9 +8,8 @@ ProportionTestPlot(
   srt,
   comparison = NULL,
   proportion_method = NULL,
-  result_level = c("group", "neighborhood"),
-  plot_type = c("effect", "umap", "volcano", "manhattan", "ring", "milo_beeswarm",
-    "milo_graph", "sccoda_forest"),
+  result_level = c("group"),
+  plot_type = c("effect", "umap"),
   umap_mode = c("discrete", "continuous"),
   reduction = "UMAP",
   projection_args = list(),
@@ -60,15 +59,9 @@ If \code{NULL}, plots all comparisons.}
 \code{srt@tools[['ProportionTest']][['methods']]}.
 If \code{NULL}, uses the active/most recent method.}
 
-\item{result_level}{Result level to draw.
-Use \code{"group"} for standardized cell-type summary and \code{"neighborhood"} for
-Milo neighborhood-level outputs when available.}
+\item{result_level}{Result level to draw. Currently only \code{"group"} is used.}
 
-\item{plot_type}{Plot type. Recommended values are \code{"effect"} and \code{"umap"}.
-Legacy plot types are retained for backward compatibility.
-Full options are \code{"effect"}, \code{"umap"}, \code{"volcano"},
-\code{"manhattan"}, \code{"ring"}, \code{"milo_beeswarm"}, \code{"milo_graph"}, and
-\code{"sccoda_forest"}.}
+\item{plot_type}{Plot type. One of \code{"effect"} or \code{"umap"}.}
 
 \item{umap_mode}{UMAP projection mode for \code{plot_type = "umap"}.
 \code{"discrete"} maps cells to DA direction categories;
@@ -128,9 +121,11 @@ or \code{"classic"} for legacy significant/non-significant coloring.}
 
 \item{aspect.ratio}{Aspect ratio of the panel.}
 
-\item{xlab}{A character string specifying the x-axis label.}
+\item{xlab}{A character string specifying the x-axis label. For
+\code{plot_type = "umap"}, this is forwarded to the projection plot when set.}
 
-\item{ylab}{A character string specifying the y-axis label.}
+\item{ylab}{A character string specifying the y-axis label. For
+\code{plot_type = "umap"}, this is forwarded to the projection plot when set.}
 
 \item{theme_use}{Theme used. Can be a character string or a theme function.
 Default is \code{"theme_scop"}.}
@@ -168,6 +163,7 @@ proportion-test workflow.
 }
 \examples{
 data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunProportionTest(
   pancreas_sub,
   group.by = "CellType",
@@ -176,6 +172,14 @@ pancreas_sub <- RunProportionTest(
 )
 
 ProportionTestPlot(pancreas_sub)
+
+ProportionTestPlot(
+ pancreas_sub,
+ reduction = "UMAP",
+ plot_type = "umap",
+ xlab = "UMAP_1",
+ ylab = "UMAP_2"
+)
 }
 \seealso{
 \link{RunProportionTest}

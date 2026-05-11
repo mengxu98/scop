@@ -206,7 +206,6 @@ Default is \code{11}.}
 This function generates various types of plots for enrichment (over-representation) analysis.
 }
 \examples{
-\dontrun{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunDEtest(
@@ -446,21 +445,22 @@ EnrichmentPlot(
   theme_args = list(add_coord = FALSE)
 ) |> thisplot::panel_fix(height = 4)
 
-pancreas_sub <- RunEnrichment(
-  pancreas_sub,
-  db = c("MP", "DO"),
-  group.by = "CellType",
-  convert_species = TRUE,
-  species = "Mus_musculus"
-)
+if (interactive()) {
+  pancreas_sub <- RunEnrichment(
+    pancreas_sub,
+    db = c("MP", "DO"),
+    group.by = "CellType",
+    convert_species = TRUE,
+    species = "Mus_musculus"
+  )
 
-EnrichmentPlot(
-  pancreas_sub,
-  db = c("MP", "DO"),
-  group.by = "CellType",
-  group_use = "Ductal",
-  ncol = 1
-)
+  EnrichmentPlot(
+    pancreas_sub,
+    db = c("MP", "DO"),
+    group.by = "CellType",
+    group_use = "Ductal",
+    ncol = 1
+  )
 }
 }
 \seealso{

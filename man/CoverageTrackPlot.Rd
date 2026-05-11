@@ -63,14 +63,14 @@ A coverage plot object.
 Thin wrapper around \code{Signac::CoveragePlot} with scop defaults.
 }
 \examples{
-\dontrun{
 data("pbmcmultiome_sub", package = "scop")
 # Coverage plotting requires an ATAC object with valid fragment information.
-CoverageTrackPlot(
-  pbmcmultiome_sub,
-  region = rownames(pbmcmultiome_sub[["peaks"]])[1],
-  assay = "peaks",
-  group.by = "CellType"
-)
+if (length(Signac::Fragments(pbmcmultiome_sub[["peaks"]])) > 0) {
+  CoverageTrackPlot(
+    pbmcmultiome_sub,
+    region = rownames(pbmcmultiome_sub[["peaks"]])[1],
+    assay = "peaks",
+    group.by = "CellType"
+  )
 }
 }
