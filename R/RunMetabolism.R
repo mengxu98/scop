@@ -269,7 +269,7 @@ RunMetabolism <- function(
 
   if (method == "AUCell") {
     if (identical(backend, "cpp")) {
-      scores_mat <- run_aucell_cpp_scores(
+      scores_mat <- run_aucell_scores(
         expr_counts = expr_counts,
         gene_sets = gene_sets,
         strategy = cpp_strategy
@@ -292,7 +292,7 @@ RunMetabolism <- function(
   } else if (method %in% c("GSVA", "ssGSEA")) {
     if (identical(backend, "cpp")) {
       if (identical(method, "GSVA")) {
-        scores_mat <- run_gsva_cpp_scores(
+        scores_mat <- run_gsva_scores(
           expr_counts = expr_counts,
           gene_sets = gene_sets,
           min_gs_size = minGSSize,
@@ -300,7 +300,7 @@ RunMetabolism <- function(
           chunk_size = cpp_chunk_size
         )
       } else {
-        scores_mat <- run_ssgsea_cpp_scores(
+        scores_mat <- run_ssgsea_scores(
           expr_counts = expr_counts,
           gene_sets = gene_sets,
           min_gs_size = minGSSize,
@@ -356,9 +356,10 @@ RunMetabolism <- function(
         message_type = "error"
       )
     }
+    create_gene_signature_fun <- get_namespace_fun("VISION", "createGeneSignature")
     signatures <- Map(
       function(sig_name, sig_genes) {
-        VISION::createGeneSignature(
+        create_gene_signature_fun(
           sig_name,
           stats::setNames(rep(1, length(sig_genes)), sig_genes)
         )
