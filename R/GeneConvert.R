@@ -28,46 +28,17 @@
 #'   }
 #'
 #' @seealso
-#' [AnnotateFeatures]
+#' [AnnotateFeatures], [ConvertHomologs]
 #'
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' res <- GeneConvert(
 #'   geneID = c("CDK1", "MKI67", "TOP2A", "AURKA", "CTCF"),
 #'   species_from = "Homo_sapiens",
 #'   species_to = "Mus_musculus"
 #' )
 #' str(res)
-#'
-#' # Convert the human genes to mouse homologs,
-#' # and replace the raw counts in a Seurat object.
-#' data(pancreas_sub)
-#' counts <- GetAssayData5(
-#'   pancreas_sub,
-#'   assay = "RNA",
-#'   layer = "counts"
-#' )
-#' res <- GeneConvert(
-#'   geneID = rownames(counts),
-#'   geneID_from_IDtype = "symbol",
-#'   geneID_to_IDtype = "symbol",
-#'   species_from = "Mus_musculus",
-#'   species_to = "Homo_sapiens"
-#' )
-#'
-#' homologs_counts <- stats::aggregate(
-#'   x = counts[res$geneID_expand[, "from_geneID"], ],
-#'   by = list(res$geneID_expand[, "symbol"]), FUN = sum
-#' )
-#' rownames(homologs_counts) <- homologs_counts[, 1]
-#' homologs_counts <- methods::as(
-#'   thisutils::as_matrix(homologs_counts[, -1]),
-#'   "dgCMatrix"
-#' )
-#' homologs_counts[1:5, 1:5]
-#' }
 GeneConvert <- function(
   geneID,
   geneID_from_IDtype = "symbol",
