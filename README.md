@@ -12,6 +12,8 @@ The [scop](https://github.com/mengxu98/scop) package provides a unified and exte
 > Documentation: https://mengxu98.github.io/scop/
 >
 > Function reference and examples: https://mengxu98.github.io/scop/reference/
+>
+> Changelog: https://mengxu98.github.io/scop/news/index.html
 
 - Integrated single-cell quality control methods, including cell cycle analysis: Seurat gene-set scoring, [scran::cyclone](https://bioconductor.org/packages/release/bioc/html/scran.html), and [tricycle](https://bioconductor.org/packages/release/bioc/html/tricycle.html) for discrete or continuous cell cycle state estimation, doublet detection methods ([scDblFinder](https://github.com/plger/scDblFinder), [scds](https://github.com/kostkalab/scds), [Scrublet](https://github.com/swolock/scrublet), [DoubletDetection](https://github.com/JonathanShor/DoubletDetection)) and ambient RNA decontamination via [decontX](https://github.com/campbio/decontX).
 - Pipelines embedded with multiple methods for normalization, highly variable feature selection, feature reduction (PCA, ICA, NMF, MDS, [GLMPCA](https://github.com/willtownes/glmpca), [UMAP](https://github.com/lmcinnes/umap), [TriMap](https://github.com/eamid/trimap), [LargeVis](https://github.com/lferry007/LargeVis), [PaCMAP](https://github.com/YingfanWang/PaCMAP), [PHATE](https://github.com/KrishnaswamyLab/PHATE), [DM](https://bioconductor.org/packages/release/bioc/html/destiny.html), FR), and cell population identification, including optional [scran](https://bioconductor.org/packages/release/bioc/html/scran.html)-based deconvolution normalization and HVF modeling.
