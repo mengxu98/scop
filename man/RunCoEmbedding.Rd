@@ -92,7 +92,7 @@ coembed <- RunCoEmbedding(
   assay = "peaks",
   reference_assay = "RNA",
   gene_activity_assay = "RNA",
-  reference_reduction = "Standardpca",
+  reference_reduction = "RNApca",
   reference_dims = 1:10,
   dims = 2:10,
   umap_dims = 1:10
