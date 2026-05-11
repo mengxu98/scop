@@ -285,7 +285,6 @@ Uncorrected_integrate <- function(
 #'
 #' @export
 #' @examples
-#' \dontrun{
 #' data("pbmcmultiome_sub", package = "scop")
 #' pbmcmultiome_sub$batch <- rep(c("batch1", "batch2"), length.out = ncol(pbmcmultiome_sub))
 #' pbmcmultiome_sub <- WNN_integrate(
@@ -294,7 +293,6 @@ Uncorrected_integrate <- function(
 #'   linear_reduction_dims = 20,
 #'   linear_reduction_dims_use = 1:10
 #' )
-#' }
 WNN_integrate <- function(
   srt_merge = NULL,
   batch = NULL,
