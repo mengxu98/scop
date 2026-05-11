@@ -246,6 +246,7 @@ reference:
   - GSEAPlot
   - GSVAPlot
   - MetabolismPlot
+  - scTenifoldKnkPlot
 
 - subtitle: "Trajectory and Dynamic Plots"
 - contents:
