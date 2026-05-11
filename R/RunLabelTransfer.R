@@ -40,7 +40,6 @@
 #' @return A `Seurat` object with prediction metadata added.
 #' @export
 #' @examples
-#' \dontrun{
 #' data("pbmcmultiome_sub", package = "scop")
 #' pbmcmultiome_sub <- standard_scop(
 #'   pbmcmultiome_sub,
@@ -65,7 +64,6 @@
 #'   reference_dims = 1:10,
 #'   dims = 2:10
 #' )
-#' }
 RunLabelTransfer <- function(
   srt,
   reference,

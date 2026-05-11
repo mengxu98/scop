@@ -102,7 +102,6 @@ The current implementation is optimized for scATAC query objects mapped to a
 scRNA-seq reference via gene activity.
 }
 \examples{
-\dontrun{
 data("pbmcmultiome_sub", package = "scop")
 pbmcmultiome_sub <- standard_scop(
   pbmcmultiome_sub,
@@ -127,5 +126,4 @@ query <- RunLabelTransfer(
   reference_dims = 1:10,
   dims = 2:10
 )
-}
 }

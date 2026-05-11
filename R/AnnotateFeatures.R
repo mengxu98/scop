@@ -43,17 +43,18 @@
 #'   )
 #' }
 #'
-#' \dontrun{
 #' # Annotate features using a GTF file
-#' pancreas_sub <- AnnotateFeatures(
-#'   pancreas_sub,
-#'   gtf = "/refdata-gex-mm10-2020-A/genes/genes.gtf"
-#' )
-#' head(
-#'   GetFeaturesData(
-#'     pancreas_sub
+#' gtf_file <- "/refdata-gex-mm10-2020-A/genes/genes.gtf"
+#' if (file.exists(gtf_file)) {
+#'   pancreas_sub <- AnnotateFeatures(
+#'     pancreas_sub,
+#'     gtf = gtf_file
 #'   )
-#' )
+#'   head(
+#'     GetFeaturesData(
+#'       pancreas_sub
+#'     )
+#'   )
 #' }
 AnnotateFeatures <- function(
   srt,

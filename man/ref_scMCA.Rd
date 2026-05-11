@@ -10,15 +10,13 @@
 Reference datasets for cell type annotation in single-cell RNA data
 }
 \examples{
-\dontrun{
 if (interactive()) {
   library(Seurat)
   check_r(c("ggjlab/scMCA"))
-  ref_scMCA <- NormalizeData(scMCA::ref.expr)
+  ref_scMCA <- NormalizeData(get("ref.expr", envir = asNamespace("scMCA")))
   Encoding(colnames(ref_scMCA)) <- "latin1"
   colnames(ref_scMCA) <- iconv(colnames(ref_scMCA), "latin1", "UTF-8")
-  # usethis::use_data(ref_scMCA, compress = "xz")
-}
+  # get_namespace_fun("usethis", "use_data")(ref_scMCA, compress = "xz")
 }
 }
 \concept{data}

@@ -57,11 +57,9 @@ It takes a \code{Seurat} object or a list of \code{Seurat} objects as input and 
 one for the data and one for the metadata.
 }
 \examples{
-\dontrun{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 PrepareSCExplorer(pancreas_sub, base_dir = "./SCExplorer")
-}
 }
 \seealso{
 \link{CreateDataFile}, \link{CreateMetaFile}, \link{FetchH5}, \link{RunSCExplorer}

@@ -43,7 +43,6 @@ A Seurat object with the fetched data.
 Fetch data from the hdf5 file and returns a Seurat object
 }
 \examples{
-\dontrun{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 PrepareSCExplorer(pancreas_sub, base_dir = "./SCExplorer")
@@ -64,7 +63,6 @@ FeatureDimPlot(
   features = c("Ins1", "Ghrl"),
   reduction = "UMAP"
 )
-}
 }
 \seealso{
 \link{CreateDataFile}, \link{CreateMetaFile}, \link{PrepareSCExplorer}, \link{RunSCExplorer}

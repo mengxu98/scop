@@ -149,7 +149,6 @@
 #'   ncol = 2
 #' )
 #'
-#' \dontrun{
 #' pancreas_sub <- RunEnrichment(
 #'   pancreas_sub,
 #'   group.by = "CellType",
@@ -169,7 +168,6 @@
 #'   enrich_nlabel = 15,
 #'   ncol = 2
 #' )
-#' }
 #'
 #' DEtestPlot(
 #'   pancreas_sub,
@@ -1476,7 +1474,6 @@ DEtestRingPlot <- function(
 #'   ncol = 2
 #' )
 #'
-#' \dontrun{
 #' pancreas_sub <- RunEnrichment(
 #'   pancreas_sub,
 #'   group.by = "CellType",
@@ -1493,7 +1490,6 @@ DEtestRingPlot <- function(
 #'   enrich_db = "GO_BP",
 #'   ncol = 2
 #' )
-#' }
 VolcanoPlot <- function(
     srt,
     group.by = NULL,
