@@ -173,9 +173,9 @@ WilcoxDETest <- function(
   if (
     inherits(data.use, "sparseMatrix") &&
       isTRUE(min.expression >= 0) &&
-      run_sparse_wilcox_cpp_available()
+      run_sparse_wilcox_available()
   ) {
-    p_val <- run_sparse_wilcox_cpp(
+    p_val <- run_sparse_wilcox(
       x = data.use,
       n_group1 = length(cells.1),
       min.expression = min.expression
@@ -244,7 +244,7 @@ RunDEtestFindMarkers <- function(
     identical(norm.method, "LogNormalize") &&
     length(extra_args) == 0 &&
     !requireNamespace("presto", quietly = TRUE) &&
-    run_sparse_wilcox_all_cells_cpp_available()
+    run_sparse_wilcox_all_cells_available()
   if (isTRUE(use_sparse_wilcox)) {
     return(RunDEtestSparseWilcoxMarkers(
       srt = srt,
@@ -384,7 +384,7 @@ RunDEtestSparseWilcoxMarkers <- function(
   }
 
   data.de <- data.use[features, c(cells.1, cells.2), drop = FALSE]
-  p_val <- run_sparse_wilcox_all_cells_cpp(
+  p_val <- run_sparse_wilcox_all_cells(
     x = data.de,
     n_group1 = length(cells.1)
   )
@@ -1224,7 +1224,7 @@ RunDEtest <- function(
     layer %in% c("data", "counts") &&
     identical(norm.method, "LogNormalize") &&
     length(list(...)) == 0 &&
-    run_sparse_wilcox_all_cells_cpp_available()
+    run_sparse_wilcox_all_cells_available()
   if (!isTRUE(skip_presto_check)) {
     check_r("immunogenomics/presto", verbose = FALSE)
   }

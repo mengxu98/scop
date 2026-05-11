@@ -559,8 +559,8 @@ RunUMAP2.default <- function(
           message_type = "error"
         )
       }
-      if (run_sparse_topk_by_column_cpp_available()) {
-        graph_topk <- run_sparse_topk_by_column_cpp(
+      if (run_sparse_topk_by_column_available()) {
+        graph_topk <- run_sparse_topk_by_column(
           x = object,
           k = n.neighbors,
           decreasing = TRUE
@@ -747,8 +747,8 @@ RunUMAP2.default <- function(
       return(reduction)
     }
     if (inherits(x = object, what = "Graph")) {
-      if (run_sparse_topk_by_column_cpp_available()) {
-        graph_topk <- run_sparse_topk_by_column_cpp(
+      if (run_sparse_topk_by_column_available()) {
+        graph_topk <- run_sparse_topk_by_column(
           x = object,
           k = n.neighbors,
           decreasing = TRUE

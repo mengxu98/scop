@@ -368,8 +368,8 @@ RunKNNMap <- function(
         use_nan = TRUE
       )
     }
-    if (run_dense_topk_by_column_cpp_available()) {
-      knn_topk <- run_dense_topk_by_column_cpp(
+    if (run_dense_topk_by_column_available()) {
+      knn_topk <- run_dense_topk_by_column(
         x = d,
         k = k,
         decreasing = FALSE
