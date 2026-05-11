@@ -4,9 +4,12 @@
 #' @importFrom Signac RunSVD
 #' @importFrom ggforce geom_mark_ellipse geom_mark_hull geom_mark_rect geom_mark_circle
 #' @importFrom dplyr "%>%" %>% .data
+#' @importFrom grDevices as.raster
+#' @importFrom methods slot
 #' @export
 dplyr::`%>%`
 
+#' @importFrom utils read.csv
 #' @importFrom rlang %||%
 #' @export
 rlang::`%||%`
@@ -24,6 +27,9 @@ utils::globalVariables(
     "block_graphics",
     "boot_CI_2.5",
     "boot_CI_97.5",
+    "build_composition_input",
+    "bundle",
+    "cell_type",
     "celltype",
     "cluster",
     "clusters",
@@ -41,6 +47,7 @@ utils::globalVariables(
     "dx",
     "dy",
     "error",
+    "extract_sccoda_comparison",
     "fill",
     "Freq",
     "from_dim1",
@@ -113,19 +120,26 @@ utils::globalVariables(
     "outgoing",
     "outgoing_diff",
     "pair",
+    "parse_proportion_comparisons",
     "pathway",
+    "plot_metric",
     "prob",
+    "permutation_test",
     "receiver",
     "reg",
+    "run_sccoda_python",
+    "sample_level_proportion_test",
     "sender",
     "sender_display",
     "size_scaled",
     "specificity",
+    "standardize_proportion_result",
     "target",
     "total_links",
     "value_1",
     "value_2",
     "x_from",
+    "validate_proportion_inputs",
     "x_from_lr",
     "x_from_rr",
     "x_from_sl",

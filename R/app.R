@@ -454,11 +454,9 @@ CreateMetaFile <- function(
 #'
 #' @export
 #' @examples
-#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' PrepareSCExplorer(pancreas_sub, base_dir = "./SCExplorer")
-#' }
 PrepareSCExplorer <- function(
   object,
   base_dir = "SCExplorer",
@@ -576,7 +574,6 @@ PrepareSCExplorer <- function(
 #'
 #' @export
 #' @examples
-#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' PrepareSCExplorer(pancreas_sub, base_dir = "./SCExplorer")
@@ -597,7 +594,6 @@ PrepareSCExplorer <- function(
 #'   features = c("Ins1", "Ghrl"),
 #'   reduction = "UMAP"
 #' )
-#' }
 FetchH5 <- function(
   data_file,
   meta_file,
@@ -922,14 +918,13 @@ CreateSeuratObject2 <- function(
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' data(panc8_sub)
 #' panc8_sub <- integration_scop(
 #'   panc8_sub,
 #'   batch = "tech",
-#'   integration_method = "Seurat"
+#'   integration_method = "Harmony"
 #' )
 #' panc8_sub <- standard_scop(panc8_sub)
 #'
@@ -954,7 +949,7 @@ CreateSeuratObject2 <- function(
 #' # Run shiny app
 #' if (interactive()) {
 #'   check_r("shiny")
-#'   shiny::runApp(app)
+#'   get_namespace_fun("shiny", "runApp")(app)
 #' }
 #' # Note: If scop installed in the isolated environment using renv,
 #' # add `renv::activate(project = "path/to/scop_env")` to the app.R script.
@@ -976,7 +971,6 @@ CreateSeuratObject2 <- function(
 #'
 #' ### step2: deploy the app
 #' # deployApp("./SCExplorer")
-#' }
 RunSCExplorer <- function(
   base_dir = "SCExplorer",
   data_file = "data.hdf5",
