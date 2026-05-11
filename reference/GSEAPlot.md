@@ -331,25 +331,73 @@ GSEAPlot(
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
+#> ℹ [2026-05-11 15:02:46] Start standard processing workflow...
+#> ℹ [2026-05-11 15:02:46] Checking a list of <Seurat>...
+#> ! [2026-05-11 15:02:47] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-11 15:02:47] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 15:02:48] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 15:02:48] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-11 15:02:48] Number of available HVF: 2000
+#> ℹ [2026-05-11 15:02:49] Finished check
+#> ℹ [2026-05-11 15:02:49] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-11 15:02:49] Perform pca linear dimension reduction
+#> ℹ [2026-05-11 15:02:49] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-05-11 15:02:50] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-11 15:02:50] Reorder clusters...
+#> ℹ [2026-05-11 15:02:50] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-11 15:02:50] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-11 15:02:50] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-05-11 15:02:54] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-05-11 15:02:58] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
+#> ℹ [2026-05-11 15:02:59] Data type is log-normalized
+#> ℹ [2026-05-11 15:02:59] Start differential expression test
+#> ℹ [2026-05-11 15:02:59] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-05-11 15:02:59] Using 1 core
+#> ⠙ [2026-05-11 15:02:59] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ⠹ [2026-05-11 15:02:59] Running for Ngn3-high-EP [2/5] ■■■■        40% | ETA:  …
+#> ✔ [2026-05-11 15:02:59] Completed 5 tasks in 976ms
+#> 
+#> ℹ [2026-05-11 15:02:59] Building results
+#> ✔ [2026-05-11 15:03:00] Differential expression test completed
 pancreas_sub <- RunGSEA(
   pancreas_sub,
   group.by = "CellType",
   db = "GO_BP",
   species = "Mus_musculus"
 )
+#> ℹ [2026-05-11 15:03:00] Start GSEA analysis
+#> ! [2026-05-11 15:03:00] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
+#> ℹ [2026-05-11 15:03:00] Species: "Mus_musculus"
+#> ℹ [2026-05-11 15:03:00] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-11 14:55:43
+#> ℹ [2026-05-11 15:03:01] Using 1 core
+#> Registered S3 methods overwritten by 'callr':
+#>   method                    from
+#>   format.callr_status_error     
+#>   print.callr_status_error      
+#> Registered S3 method overwritten by 'ggtree':
+#>   method         from     
+#>   fortify.igraph ggnetwork
+#> ⠙ [2026-05-11 15:03:01] Running for 1 [1/5] ■■          20% | ETA: 37s
+#> ⠹ [2026-05-11 15:03:01] Running for 2 [2/5] ■■■■        40% | ETA: 18s
+#> ⠸ [2026-05-11 15:03:01] Running for 3 [3/5] ■■■■■■      60% | ETA: 11s
+#> ⠼ [2026-05-11 15:03:01] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  5s
+#> ✔ [2026-05-11 15:03:01] Completed 5 tasks in 22.8s
+#> 
+#> ℹ [2026-05-11 15:03:01] Building results
+#> ✔ [2026-05-11 15:03:24] GSEA analysis done
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
   group.by = "CellType",
   group_use = "Ductal"
 )
+
 
 p1 <- GSEAPlot(
   pancreas_sub,
@@ -358,9 +406,12 @@ p1 <- GSEAPlot(
   group_use = "Ductal",
   id_use = "GO:0006412"
 )
+#> Error in `.rowNamesDF<-`(x, value = value): missing values in 'row.names' are not allowed
 p1
+#> Error: object 'p1' not found
 
 thisplot::panel_fix_overall(p1, height = 6)
+#> Error: object 'p1' not found
 
 GSEAPlot(
   pancreas_sub,
@@ -369,6 +420,11 @@ GSEAPlot(
   topTerm = 3,
   plot_type = "comparison"
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's alpha values.
+#> Warning: Removed 9786 rows containing missing values or values outside the scale range
+#> (`geom_point()`).
+
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -377,6 +433,11 @@ GSEAPlot(
   plot_type = "comparison",
   direction = "pos"
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's alpha values.
+#> Warning: Removed 9786 rows containing missing values or values outside the scale range
+#> (`geom_point()`).
+
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -385,12 +446,18 @@ GSEAPlot(
   plot_type = "comparison",
   compare_only_sig = TRUE
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's alpha values.
+#> Warning: Removed 9786 rows containing missing values or values outside the scale range
+#> (`geom_point()`).
+
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
   group.by = "CellType",
   plot_type = "bar"
 )
+#> Error in `.rowNamesDF<-`(x, value = value): missing values in 'row.names' are not allowed
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -398,6 +465,7 @@ GSEAPlot(
   plot_type = "bar",
   direction = "both"
 )
+#> Error in `.rowNamesDF<-`(x, value = value): missing values in 'row.names' are not allowed
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -409,6 +477,7 @@ GSEAPlot(
   palcolor = c("red3", "steelblue")
 )
 
+
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -416,6 +485,8 @@ GSEAPlot(
   group_use = "Ductal",
   plot_type = "network"
 )
+#> ✔ [2026-05-11 15:03:27] shadowtext installed successfully
+
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -423,6 +494,7 @@ GSEAPlot(
   group_use = "Ductal",
   plot_type = "enrichmap"
 )
+
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -430,6 +502,7 @@ GSEAPlot(
   group_use = "Ductal",
   plot_type = "wordcloud"
 )
+
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -438,5 +511,4 @@ GSEAPlot(
   plot_type = "wordcloud",
   word_type = "feature"
 )
-} # }
 ```

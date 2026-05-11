@@ -72,7 +72,8 @@ scVI_integrate(
 - normalization_method:
 
   The normalization method to be used. Possible values are
-  `"LogNormalize"`, `"SCT"`, and `"TFIDF"`. Default is `"LogNormalize"`.
+  `"LogNormalize"`, `"SCT"`, `"TFIDF"`, and `"scran"`. Default is
+  `"LogNormalize"`.
 
 - do_HVF_finding:
 
@@ -88,7 +89,7 @@ scVI_integrate(
 - HVF_method:
 
   The method to use for finding highly variable features. Options are
-  `"vst"`, `"mvp"`, or `"disp"`. Default is `"vst"`.
+  `"vst"`, `"mvp"`, `"disp"`, or `"scran"`. Default is `"vst"`.
 
 - nHVF:
 
@@ -190,3 +191,26 @@ scVI_integrate(
 - seed:
 
   Random seed for reproducibility. Default is `11`.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+data("pbmcmultiome_sub", package = "scop")
+pbmcmultiome_sub$batch <- rep(c("batch1", "batch2"), length.out = ncol(pbmcmultiome_sub))
+pbmcmultiome_sub <- scVI_integrate(
+  srt_merge = pbmcmultiome_sub,
+  batch = "batch",
+  assay = "peaks",
+  model = "PEAKVI",
+  train_params = list(max_epochs = 2L)
+)
+pbmcmultiome_sub <- scVI_integrate(
+  srt_merge = pbmcmultiome_sub,
+  batch = "batch",
+  assay = "peaks",
+  model = "POISSONVI",
+  train_params = list(max_epochs = 2L)
+)
+} # }
+```

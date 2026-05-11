@@ -12,7 +12,7 @@ h5ad_to_srt(path, verbose = TRUE, prepare_for_reticulate = TRUE)
 
 - path:
 
-  Path to an `.h5ad` file (passed to `scanpy.read_h5ad()`).
+  Path to an `.h5ad` file (passed to `anndata.read_h5ad()`).
 
 - verbose:
 

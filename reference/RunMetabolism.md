@@ -19,6 +19,9 @@ RunMetabolism(
   Ensembl_version = NULL,
   mirror = NULL,
   method = c("AUCell", "GSVA", "ssGSEA", "VISION"),
+  backend = c("cpp", "r"),
+  cpp_strategy = c("sparse", "topk", "full"),
+  cpp_chunk_size = NULL,
   minGSSize = 10,
   maxGSSize = 500,
   assay_name = "METABOLISM",
@@ -95,6 +98,27 @@ RunMetabolism(
 
   Scoring method, one of `"AUCell"`, `"GSVA"`, `"ssGSEA"`, `"VISION"`.
 
+- backend:
+
+  Scoring backend. `"cpp"` is the default for supported methods. `"r"`
+  uses the original R package implementation. `"cpp"` currently supports
+  `method = "AUCell"`, `method = "GSVA"`, and `method = "ssGSEA"`.
+  `method = "VISION"` falls back to `"r"` when `backend` is not
+  explicitly set. AUCell C++ scores may differ from the R backend when
+  tied expression values are randomly ranked.
+
+- cpp_strategy:
+
+  C++ AUCell ranking strategy. `"sparse"` ranks non-zero genes and
+  approximates zero ties, `"topk"` ranks only genes that can contribute
+  to AUCell AUC, and `"full"` ranks all genes.
+
+- cpp_chunk_size:
+
+  Optional cell chunk size for C++ GSVA kernels. `NULL` or `"auto"`
+  automatically chunks large matrices to reduce peak dense intermediate
+  memory; positive values set the chunk size manually.
+
 - minGSSize:
 
   The minimum size of a gene set to be considered in the enrichment
@@ -135,24 +159,24 @@ tools slot `Metabolism_<group.by>_<method>` for
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-02 05:15:33] Start standard processing workflow...
-#> ℹ [2026-05-02 05:15:34] Checking a list of <Seurat>...
-#> ! [2026-05-02 05:15:34] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-02 05:15:34] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-02 05:15:36] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-02 05:15:37] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-02 05:15:37] Number of available HVF: 2000
-#> ℹ [2026-05-02 05:15:37] Finished check
-#> ℹ [2026-05-02 05:15:37] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-02 05:15:38] Perform pca linear dimension reduction
-#> ℹ [2026-05-02 05:15:38] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-05-02 05:15:39] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-02 05:15:39] Reorder clusters...
-#> ℹ [2026-05-02 05:15:39] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-02 05:15:39] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-02 05:15:39] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-05-02 05:15:43] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-05-02 05:15:48] Standard processing workflow completed
+#> ℹ [2026-05-11 16:17:01] Start standard processing workflow...
+#> ℹ [2026-05-11 16:17:02] Checking a list of <Seurat>...
+#> ! [2026-05-11 16:17:02] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-11 16:17:02] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 16:17:03] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 16:17:04] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-11 16:17:04] Number of available HVF: 2000
+#> ℹ [2026-05-11 16:17:04] Finished check
+#> ℹ [2026-05-11 16:17:04] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-11 16:17:05] Perform pca linear dimension reduction
+#> ℹ [2026-05-11 16:17:05] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-05-11 16:17:05] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-11 16:17:06] Reorder clusters...
+#> ℹ [2026-05-11 16:17:06] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-11 16:17:06] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-11 16:17:06] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-05-11 16:17:11] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-05-11 16:17:15] Standard processing workflow completed
 pancreas_sub <- RunMetabolism(
   pancreas_sub,
   assay = "RNA",
@@ -162,13 +186,13 @@ pancreas_sub <- RunMetabolism(
   species = "Mus_musculus",
   method = "AUCell"
 )
-#> ℹ [2026-05-02 05:15:48] Start metabolism pathway scoring
-#> ℹ [2026-05-02 05:15:48] Data type is raw counts
-#> ℹ [2026-05-02 05:15:48] Averaging expression by "CellType" ...
-#> ℹ [2026-05-02 05:15:49] Aggregated expression: 15998 genes x 5 groups
-#> ℹ [2026-05-02 05:15:49] Using raw scMetabolism gene sets directly; `PrepareDB()` / BioMart-based ID rebuilding is skipped
-#> ℹ [2026-05-02 05:15:49] Total metabolism gene sets to score: 127
-#> ✔ [2026-05-02 05:15:49] Metabolism scores stored in tools slot "Metabolism_CellType_AUCell"
+#> ℹ [2026-05-11 16:17:15] Start metabolism pathway scoring
+#> ℹ [2026-05-11 16:17:16] Data type is raw counts
+#> ℹ [2026-05-11 16:17:16] Averaging expression by "CellType" ...
+#> ℹ [2026-05-11 16:17:16] Aggregated expression: 15998 genes x 5 groups
+#> ℹ [2026-05-11 16:17:16] Using raw scMetabolism gene sets directly; `PrepareDB()` / BioMart-based ID rebuilding is skipped
+#> ℹ [2026-05-11 16:17:16] Total metabolism gene sets to score: 127
+#> ✔ [2026-05-11 16:17:16] Metabolism scores stored in tools slot "Metabolism_CellType_AUCell"
 ht <- MetabolismPlot(
   pancreas_sub,
   group.by = "CellType",

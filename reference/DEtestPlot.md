@@ -11,8 +11,9 @@ DEtestPlot(
   test.use = "wilcox",
   res = NULL,
   plot_type = c("volcano", "manhattan", "ring"),
+  group_use = NULL,
   DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
-  x_metric = "diff_pct",
+  x_metric = NULL,
   y_metric = c("p_val_adj", "p_val"),
   x_order = c("gene", "index"),
   palette = "RdBu",
@@ -21,6 +22,7 @@ DEtestPlot(
   group_palcolor = NULL,
   pt.size = 1,
   pt.alpha = 1,
+  cols.background = "grey80",
   cols.highlight = "black",
   sizes.highlight = 1,
   alpha.highlight = 1,
@@ -90,79 +92,30 @@ DEtestPlot(
   Type of plot to create. Options: `"volcano"`, `"manhattan"`, or
   `"ring"`. Default is `"volcano"`.
 
+- group_use:
+
+  Groups to plot. Default is `NULL` (all groups).
+
 - DE_threshold:
 
   A character string specifying the threshold for differential
   expression (used to highlight significant genes in all plot types).
-  Default is `"avg_log2FC > 0 & p_val_adj < 0.05"`.
+  Default is `"p_val < 0.05"` for sample-level methods (`"edgeR"` and
+  `"limma"`) and `"avg_log2FC > 0 & p_val_adj < 0.05"` otherwise.
 
 - x_metric:
 
   A character string specifying the metric to use for the x-axis (only
-  for volcano plot). Default is `"diff_pct"`.
-
-- threshold_method:
-
-  Volcano significance threshold method. Options are `"rectangular"`
-  (legacy DE_threshold) or `"hyperbolic"`
-  (`|log2FC * -log10(padj)| > c`). Default is `"rectangular"`.
-
-- hyperbola_c:
-
-  Numeric cutoff `c` for hyperbolic volcano threshold. Default is `6`.
-
-- annotate_enrichment:
-
-  Whether to annotate enrichment-hit genes on volcano plots. Enrichment
-  results are read from existing results in `srt@tools` only. Default is
-  `FALSE`.
-
-- enrich_from:
-
-  Character vector specifying enrichment result source(s) to annotate.
-  Options are `"Enrichment"`, `"GSEA"`, `"GSVA"`. Default is
-  `c("Enrichment", "GSEA", "GSVA")`.
-
-- enrich_db:
-
-  Optional database filter for enrichment annotation, e.g. `"GO_BP"` or
-  `"KEGG"`. Default is `NULL`.
-
-- enrich_terms:
-
-  Optional whitelist of enrichment term IDs or names for annotation.
-  Default is `NULL`.
-
-- enrich_top_terms:
-
-  Number of top enriched terms selected per source/group/database.
-  Default is `3`.
-
-- enrich_padj_cutoff:
-
-  Adjusted p-value cutoff for `"Enrichment"` and `"GSEA"` annotation.
-  Default is `0.05`.
-
-- enrich_gsva_score_cutoff:
-
-  Optional absolute GSVA score cutoff for `"GSVA"` annotation. Default
-  is `NULL`.
-
-- gsva_method:
-
-  Optional GSVA method filter (e.g. `"gsva"` or `"ssgsea"`) when
-  multiple GSVA tool slots exist. Default is `NULL`.
-
-- enrich_nlabel:
-
-  Maximum number of enrichment-derived labels added per group. Labels
-  from `features_label` are always retained. Default is `15`.
+  for volcano plot). Default is `NULL`, which uses `"avg_log2FC"` for
+  sample-level methods (`"edgeR"` and `"limma"`) and `"diff_pct"`
+  otherwise.
 
 - y_metric:
 
-  A character string specifying the metric to use for the y-axis (only
-  for Manhattan plot, not used currently). Options: `"p_val"` or
-  `"p_val_adj"`. Default is `"p_val_adj"`.
+  A character string specifying the metric to use for the y-axis.
+  Options: `"p_val"` or `"p_val_adj"`. Default is `"p_val"` for
+  sample-level methods (`"edgeR"` and `"limma"`) and `"p_val_adj"`
+  otherwise.
 
 - x_order:
 
@@ -197,6 +150,11 @@ DEtestPlot(
 - pt.alpha:
 
   The transparency of the data points. Default is `1`.
+
+- cols.background:
+
+  A character string specifying the color for non-DE background points
+  in volcano plots. Default is `"grey80"`.
 
 - cols.highlight:
 
@@ -312,6 +270,63 @@ DEtestPlot(
 
   Random seed for jitter in ring plot. Default is `11`.
 
+- threshold_method:
+
+  Volcano significance threshold method. Options are `"rectangular"`
+  (legacy DE_threshold) or `"hyperbolic"`
+  (`|log2FC * -log10(padj)| > c`). Default is `"rectangular"`.
+
+- hyperbola_c:
+
+  Numeric cutoff `c` for hyperbolic volcano threshold. Default is `6`.
+
+- annotate_enrichment:
+
+  Whether to annotate enrichment-hit genes on volcano plots. Enrichment
+  results are read from existing results in `srt@tools` only. Default is
+  `FALSE`.
+
+- enrich_from:
+
+  Character vector specifying enrichment result source(s) to annotate.
+  Options are `"Enrichment"`, `"GSEA"`, `"GSVA"`. Default is
+  `c("Enrichment", "GSEA", "GSVA")`.
+
+- enrich_db:
+
+  Optional database filter for enrichment annotation, e.g. `"GO_BP"` or
+  `"KEGG"`. Default is `NULL`.
+
+- enrich_terms:
+
+  Optional whitelist of enrichment term IDs or names for annotation.
+  Default is `NULL`.
+
+- enrich_top_terms:
+
+  Number of top enriched terms selected per source/group/database.
+  Default is `3`.
+
+- enrich_padj_cutoff:
+
+  Adjusted p-value cutoff for `"Enrichment"` and `"GSEA"` annotation.
+  Default is `0.05`.
+
+- enrich_gsva_score_cutoff:
+
+  Optional absolute GSVA score cutoff for `"GSVA"` annotation. Default
+  is `NULL`.
+
+- gsva_method:
+
+  Optional GSVA method filter (e.g. `"gsva"` or `"ssgsea"`) when
+  multiple GSVA tool slots exist. Default is `NULL`.
+
+- enrich_nlabel:
+
+  Maximum number of enrichment-derived labels added per group. Labels
+  from `features_label` are always retained. Default is `15`.
+
 ## See also
 
 [RunDEtest](https://mengxu98.github.io/scop/reference/RunDEtest.md),
@@ -324,30 +339,38 @@ DEtestPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-02 04:22:22] Start standard processing workflow...
-#> ℹ [2026-05-02 04:22:23] Checking a list of <Seurat>...
-#> ! [2026-05-02 04:22:23] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-02 04:22:23] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-02 04:22:25] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-02 04:22:25] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-02 04:22:25] Number of available HVF: 2000
-#> ℹ [2026-05-02 04:22:26] Finished check
-#> ℹ [2026-05-02 04:22:26] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-02 04:22:26] Perform pca linear dimension reduction
-#> ℹ [2026-05-02 04:22:26] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-05-02 04:22:27] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-02 04:22:27] Reorder clusters...
-#> ℹ [2026-05-02 04:22:27] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-02 04:22:27] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-02 04:22:27] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-05-02 04:22:30] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-05-02 04:22:34] Standard processing workflow completed
+#> ℹ [2026-05-11 14:49:46] Start standard processing workflow...
+#> ℹ [2026-05-11 14:49:46] Checking a list of <Seurat>...
+#> ! [2026-05-11 14:49:46] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-11 14:49:46] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 14:49:48] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 14:49:48] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-11 14:49:48] Number of available HVF: 2000
+#> ℹ [2026-05-11 14:49:48] Finished check
+#> ℹ [2026-05-11 14:49:48] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-11 14:49:49] Perform pca linear dimension reduction
+#> ℹ [2026-05-11 14:49:49] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-05-11 14:49:50] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-11 14:49:50] Reorder clusters...
+#> ℹ [2026-05-11 14:49:50] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-11 14:49:50] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-11 14:49:50] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-05-11 14:49:53] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-05-11 14:49:57] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
   only.pos = FALSE
 )
-#> Error in run_sparse_wilcox_all_cells_cpp_available(): could not find function "run_sparse_wilcox_all_cells_cpp_available"
+#> ℹ [2026-05-11 14:49:57] Data type is log-normalized
+#> ℹ [2026-05-11 14:49:57] Start differential expression test
+#> ℹ [2026-05-11 14:49:57] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-05-11 14:49:57] Using 1 core
+#> ⠙ [2026-05-11 14:49:57] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ✔ [2026-05-11 14:49:57] Completed 5 tasks in 1.1s
+#> 
+#> ℹ [2026-05-11 14:49:57] Building results
+#> ✔ [2026-05-11 14:49:58] Differential expression test completed
 
 DEtestPlot(
   pancreas_sub,
@@ -355,24 +378,74 @@ DEtestPlot(
   plot_type = "volcano",
   ncol = 2
 )
-#> Error in get_de_data(srt, group.by, test.use, DE_threshold, res): Cannot find the DEtest result for the group "CellType". Perform
-#> `RunDEtest()` first
+
+
+DEtestPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "volcano",
+  group_use = c("Ductal", "Endocrine"),
+  ncol = 2
+)
+
+
+DEtestPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "volcano",
+  threshold_method = "hyperbolic",
+  hyperbola_c = 6,
+  ncol = 2
+)
+
+
+pancreas_sub <- RunEnrichment(
+  pancreas_sub,
+  group.by = "CellType",
+  db = "GO_BP",
+  species = "Mus_musculus"
+)
+#> ℹ [2026-05-11 14:50:03] Start Enrichment analysis
+#> ℹ [2026-05-11 14:50:03] Species: "Mus_musculus"
+#> ℹ [2026-05-11 14:50:03] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-11 14:46:14
+#> ℹ [2026-05-11 14:50:05] Permform enrichment...
+#> ℹ [2026-05-11 14:50:05] Using 1 core
+#> ⠙ [2026-05-11 14:50:05] Running for 1 [1/5] ■■          20% | ETA: 18s
+#> ⠹ [2026-05-11 14:50:05] Running for 2 [2/5] ■■■■        40% | ETA: 11s
+#> ⠸ [2026-05-11 14:50:05] Running for 3 [3/5] ■■■■■■      60% | ETA:  7s
+#> ⠼ [2026-05-11 14:50:05] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  3s
+#> ✔ [2026-05-11 14:50:05] Completed 5 tasks in 15.3s
+#> 
+#> ℹ [2026-05-11 14:50:05] Building results
+#> ✔ [2026-05-11 14:50:20] Enrichment analysis done
+DEtestPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "volcano",
+  threshold_method = "hyperbolic",
+  hyperbola_c = 6,
+  annotate_enrichment = TRUE,
+  enrich_from = "Enrichment",
+  enrich_db = "GO_BP",
+  enrich_top_terms = 3,
+  enrich_nlabel = 15,
+  ncol = 2
+)
+
 
 DEtestPlot(
   pancreas_sub,
   group.by = "CellType",
   plot_type = "manhattan"
 )
-#> Error in get_de_data(srt, group.by, test.use, DE_threshold, res): Cannot find the DEtest result for the group "CellType". Perform
-#> `RunDEtest()` first
+
 
 DEtestPlot(
   pancreas_sub,
   group.by = "CellType",
   plot_type = "ring"
 )
-#> Error in get_de_data(srt, group.by, test.use, DE_threshold, res): Cannot find the DEtest result for the group "CellType". Perform
-#> `RunDEtest()` first
+
 
 de_results1 <- pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox
 DEtestPlot(
@@ -380,7 +453,7 @@ DEtestPlot(
   plot_type = "volcano",
   ncol = 2
 )
-#> Error in DEtestPlot(res = de_results1, plot_type = "volcano", ncol = 2): argument "srt" is missing, with no default
+
 
 de_results2 <- Seurat::FindMarkers(
   pancreas_sub,

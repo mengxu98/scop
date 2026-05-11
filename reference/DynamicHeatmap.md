@@ -748,24 +748,24 @@ DynamicHeatmap(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-02 04:23:03] Start standard processing workflow...
-#> ℹ [2026-05-02 04:23:03] Checking a list of <Seurat>...
-#> ! [2026-05-02 04:23:03] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-02 04:23:03] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-02 04:23:05] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-02 04:23:06] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-02 04:23:06] Number of available HVF: 2000
-#> ℹ [2026-05-02 04:23:06] Finished check
-#> ℹ [2026-05-02 04:23:06] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-02 04:23:06] Perform pca linear dimension reduction
-#> ℹ [2026-05-02 04:23:07] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-05-02 04:23:07] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-02 04:23:07] Reorder clusters...
-#> ℹ [2026-05-02 04:23:08] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-02 04:23:08] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-02 04:23:08] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-05-02 04:23:11] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-05-02 04:23:14] Standard processing workflow completed
+#> ℹ [2026-05-11 14:51:11] Start standard processing workflow...
+#> ℹ [2026-05-11 14:51:11] Checking a list of <Seurat>...
+#> ! [2026-05-11 14:51:12] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-11 14:51:12] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 14:51:13] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 14:51:13] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-11 14:51:13] Number of available HVF: 2000
+#> ℹ [2026-05-11 14:51:13] Finished check
+#> ℹ [2026-05-11 14:51:13] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-11 14:51:14] Perform pca linear dimension reduction
+#> ℹ [2026-05-11 14:51:14] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-05-11 14:51:15] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-11 14:51:15] Reorder clusters...
+#> ℹ [2026-05-11 14:51:15] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-11 14:51:15] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-11 14:51:15] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-05-11 14:51:18] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-05-11 14:51:22] Standard processing workflow completed
 
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
@@ -783,13 +783,13 @@ pancreas_sub <- RunDynamicFeatures(
   fit_method = "pretsa",
   n_candidates = 200
 )
-#> ℹ [2026-05-02 04:23:16] Start find dynamic features
-#> ℹ [2026-05-02 04:23:16] Data type is raw counts
-#> ℹ [2026-05-02 04:23:18] Number of candidate features (union): 236
-#> ℹ [2026-05-02 04:23:18] Data type is raw counts
-#> ℹ [2026-05-02 04:23:18] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-05-02 04:23:19] Calculating dynamic features for "Lineage2"...
-#> ✔ [2026-05-02 04:23:19] Find dynamic features done
+#> ℹ [2026-05-11 14:51:23] Start find dynamic features
+#> ℹ [2026-05-11 14:51:24] Data type is raw counts
+#> ℹ [2026-05-11 14:51:26] Number of candidate features (union): 236
+#> ℹ [2026-05-11 14:51:26] Data type is raw counts
+#> ℹ [2026-05-11 14:51:26] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-05-11 14:51:27] Calculating dynamic features for "Lineage2"...
+#> ✔ [2026-05-11 14:51:27] Find dynamic features done
 
 ht1 <- DynamicHeatmap(
   pancreas_sub,
@@ -801,7 +801,7 @@ ht1 <- DynamicHeatmap(
   width = 2,
   height = 3
 )
-#> ℹ [2026-05-02 04:23:46] [1] 154 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-05-11 14:51:27] [1] 154 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Iapp,Pyy,Rbp4,Chgb,Gast,Lrpprc,Slc38a5,Cck,Cdkn1a...
 
 ht1$plot
@@ -825,20 +825,20 @@ ht2 <- DynamicHeatmap(
   ),
   cell_annotation = "SubCellType"
 )
-#> ℹ [2026-05-02 04:23:48] Start find dynamic features
-#> ℹ [2026-05-02 04:23:50] Data type is raw counts
-#> ℹ [2026-05-02 04:23:50] Number of candidate features (union): 2
-#> ℹ [2026-05-02 04:23:51] Data type is raw counts
-#> ! [2026-05-02 04:23:51] Negative values detected
-#> ! [2026-05-02 04:23:51] Negative values detected
-#> ℹ [2026-05-02 04:23:51] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-05-02 04:23:51] Using 1 core
-#> ⠙ [2026-05-02 04:23:51] Running for S_score [1/2] ■■■■■       50% | ETA:  0s
-#> ✔ [2026-05-02 04:23:51] Completed 2 tasks in 96ms
+#> ℹ [2026-05-11 14:51:29] Start find dynamic features
+#> ℹ [2026-05-11 14:51:31] Data type is raw counts
+#> ℹ [2026-05-11 14:51:31] Number of candidate features (union): 2
+#> ℹ [2026-05-11 14:51:32] Data type is raw counts
+#> ! [2026-05-11 14:51:32] Negative values detected
+#> ! [2026-05-11 14:51:32] Negative values detected
+#> ℹ [2026-05-11 14:51:32] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-05-11 14:51:32] Using 1 core
+#> ⠙ [2026-05-11 14:51:32] Running for S_score [1/2] ■■■■■       50% | ETA:  0s
+#> ✔ [2026-05-11 14:51:32] Completed 2 tasks in 86ms
 #> 
-#> ℹ [2026-05-02 04:23:51] Building results
-#> ✔ [2026-05-02 04:23:51] Find dynamic features done
-#> ℹ [2026-05-02 04:23:51] Some features were missing in at least one lineage: 
+#> ℹ [2026-05-11 14:51:32] Building results
+#> ✔ [2026-05-11 14:51:32] Find dynamic features done
+#> ℹ [2026-05-11 14:51:32] Some features were missing in at least one lineage: 
 #> ℹ                       Isl1,Neurod2,Pyy,Rbp4,Sox9...
 ht2$plot
 
@@ -855,7 +855,7 @@ ht3 <- DynamicHeatmap(
   width = 1,
   height = 2
 )
-#> ℹ [2026-05-02 04:23:52] [1] 172 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-05-11 14:51:33] [1] 172 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Iapp,Pyy,Rbp4,Chgb,Gast,Lrpprc,Slc38a5,Cck,Cdkn1a...
 
 ht3$plot
@@ -876,47 +876,19 @@ ht4 <- DynamicHeatmap(
   width = 1,
   height = 2
 )
-#> ℹ [2026-05-02 04:23:56] [1] 172 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-05-11 14:51:37] [1] 172 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Iapp,Pyy,Rbp4,Chgb,Gast,Lrpprc,Slc38a5,Cck,Cdkn1a...
-#> ℹ [2026-05-02 04:23:58] Start Enrichment analysis
-#> ℹ [2026-05-02 04:28:04] Species: "Mus_musculus"
-#> ✔ [2026-05-02 04:31:41] org.Mm.eg.db installed successfully
-#> ℹ [2026-05-02 04:32:15] Preparing database: GO_BP
-#> ℹ [2026-05-02 04:32:47] Convert ID types for the GO_BP database
-#> ℹ [2026-05-02 04:32:47] Connect to the Ensembl archives...
-#> ℹ [2026-05-02 04:32:47] Using the 115 version of ensembl database...
-#> ℹ [2026-05-02 04:32:47] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
-#> ℹ [2026-05-02 04:32:49] Searching the dataset mmusculus ...
-#> ℹ [2026-05-02 04:32:49] Connecting to the dataset mmusculus_gene_ensembl ...
-#> ℹ [2026-05-02 04:32:51] Converting the geneIDs...
-#> ! [2026-05-02 04:32:51] <simpleError in .processResults(postRes, mart = mart, hostURLsep = sep, fullXmlQuery = fullXmlQuery,     quote = quote, numAttributes = length(attributes)): Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.
-#> !                       >
-#> ! [2026-05-02 04:32:51] Get errors when retrieving information from the BioMart database
-#> ! [2026-05-02 04:32:52] Retrying...
-#> ! [2026-05-02 04:33:01] <simpleError in .processResults(postRes, mart = mart, hostURLsep = sep, fullXmlQuery = fullXmlQuery,     quote = quote, numAttributes = length(attributes)): Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.
-#> !                       >
-#> ! [2026-05-02 04:33:01] Get errors when retrieving information from the BioMart database
-#> ! [2026-05-02 04:33:02] Retrying...
-#> ℹ [2026-05-02 04:33:06] 23084 genes mapped with "entrez_id"
-#> ℹ [2026-05-02 04:33:06] ==============================
-#> ℹ                       23084 genes mapped
-#> ℹ                       2531 genes unmapped
-#> ℹ                       ==============================
-#> ℹ [2026-05-02 04:33:19] Permform enrichment...
-#> ℹ [2026-05-02 04:33:19] Using 1 core
-#> Registered S3 methods overwritten by 'callr':
-#>   method                    from
-#>   format.callr_status_error     
-#>   print.callr_status_error      
-#> Registered S3 method overwritten by 'ggtree':
-#>   method         from     
-#>   fortify.igraph ggnetwork
-#> ⠙ [2026-05-02 04:33:19] Running for 1 [1/3] ■■■         33% | ETA: 42s
-#> ⠹ [2026-05-02 04:33:19] Running for 2 [2/3] ■■■■■■      67% | ETA: 21s
-#> ✔ [2026-05-02 04:33:19] Completed 3 tasks in 1m 3.1s
+#> ℹ [2026-05-11 14:51:40] Start Enrichment analysis
+#> ℹ [2026-05-11 14:51:40] Species: "Mus_musculus"
+#> ℹ [2026-05-11 14:51:40] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-11 14:46:14
+#> ℹ [2026-05-11 14:51:41] Permform enrichment...
+#> ℹ [2026-05-11 14:51:41] Using 1 core
+#> ⠙ [2026-05-11 14:51:41] Running for 1 [1/3] ■■■         33% | ETA:  4s
+#> ⠹ [2026-05-11 14:51:41] Running for 2 [2/3] ■■■■■■      67% | ETA:  2s
+#> ✔ [2026-05-11 14:51:41] Completed 3 tasks in 6s
 #> 
-#> ℹ [2026-05-02 04:33:19] Building results
-#> ✔ [2026-05-02 04:34:22] Enrichment analysis done
+#> ℹ [2026-05-11 14:51:41] Building results
+#> ✔ [2026-05-11 14:51:47] Enrichment analysis done
 
 
 ht5 <- DynamicHeatmap(
@@ -942,147 +914,150 @@ ht5 <- DynamicHeatmap(
   features_width = grid::unit(0.5, "in"),
   features_fontsize = c(3, 6)
 )
-#> ℹ [2026-05-02 04:34:24] [1] 154 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-05-11 14:51:50] [1] 154 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Iapp,Pyy,Rbp4,Chgb,Gast,Lrpprc,Slc38a5,Cck,Cdkn1a...
-#> ℹ [2026-05-02 04:34:25] Start Enrichment analysis
-#> ℹ [2026-05-02 04:34:25] Species: "Mus_musculus"
-#> ℹ [2026-05-02 04:34:25] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-02 04:33:18
-#> ℹ [2026-05-02 04:34:27] Permform enrichment...
-#> ℹ [2026-05-02 04:34:27] Using 2 cores
-#> ⠙ [2026-05-02 04:34:27] Running for 1 [1/2] ■■■■■       50% | ETA: 24s
-#> ✔ [2026-05-02 04:34:27] Completed 2 tasks in 24.8s
+#> ℹ [2026-05-11 14:51:51] Start Enrichment analysis
+#> ℹ [2026-05-11 14:51:51] Species: "Mus_musculus"
+#> ℹ [2026-05-11 14:51:51] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-11 14:46:14
+#> ℹ [2026-05-11 14:51:52] Permform enrichment...
+#> ℹ [2026-05-11 14:51:52] Using 2 cores
+#> ⠙ [2026-05-11 14:51:52] Running for 1 [1/2] ■■■■■       50% | ETA:  3s
+#> ✔ [2026-05-11 14:51:52] Completed 2 tasks in 3.7s
 #> 
-#> ℹ [2026-05-02 04:34:27] Building results
-#> ✔ [2026-05-02 04:34:52] Enrichment analysis done
+#> ℹ [2026-05-11 14:51:52] Building results
+#> ✔ [2026-05-11 14:51:56] Enrichment analysis done
 
 
-pancreas_sub <- AnnotateFeatures(
-  pancreas_sub,
-  species = "Mus_musculus",
-  db = c("CSPA", "TF")
-)
-#> ℹ [2026-05-02 04:36:30] Species: "Mus_musculus"
-#> ℹ [2026-05-02 04:36:30] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-05-02 04:05:33
-#> ℹ [2026-05-02 04:36:35] Preparing database: CSPA
-ht6 <- DynamicHeatmap(
-  pancreas_sub,
-  exp_legend_title = "Z-score",
-  lineages = c("Lineage1", "Lineage2"),
-  reverse_ht = "Lineage1",
-  use_fitted = TRUE,
-  n_split = 3,
-  nlabel = 10,
-  split_method = "mfuzz",
-  heatmap_palette = "viridis",
-  cell_annotation = c(
-    "SubCellType", "Phase", "G2M_score"
-  ),
-  cell_annotation_palette = c(
-    "Chinese", "simspec", "Purples"
-  ),
-  separate_annotation = list(
-    "SubCellType", c("Arxes1", "Ncoa2")
-  ),
-  separate_annotation_palette = c(
-    "Chinese", "Set1"
-  ),
-  separate_annotation_params = list(
-    height = grid::unit(10, "mm")
-  ),
-  feature_annotation = c("TF", "CSPA"),
-  feature_annotation_palcolor = list(
-    c("gold", "steelblue"),
-    c("forestgreen")
-  ),
-  pseudotime_label = 25,
-  pseudotime_label_color = "red",
-  width = 1,
-  height = 2
-)
-#> ℹ [2026-05-02 04:36:37] [1] 172 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+  pancreas_sub <- AnnotateFeatures(
+    pancreas_sub,
+    species = "Mus_musculus",
+    db = c("CSPA", "TF")
+  )
+#> ℹ [2026-05-11 14:53:35] Species: "Mus_musculus"
+#> ℹ [2026-05-11 14:53:35] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-05-11 14:17:51
+#> ℹ [2026-05-11 14:53:41] Preparing database: CSPA
+  ht6 <- DynamicHeatmap(
+    pancreas_sub,
+    exp_legend_title = "Z-score",
+    lineages = c("Lineage1", "Lineage2"),
+    reverse_ht = "Lineage1",
+    use_fitted = TRUE,
+    n_split = 3,
+    nlabel = 10,
+    split_method = "mfuzz",
+    heatmap_palette = "viridis",
+    cell_annotation = c(
+      "SubCellType", "Phase", "G2M_score"
+    ),
+    cell_annotation_palette = c(
+      "Chinese", "simspec", "Purples"
+    ),
+    separate_annotation = list(
+      "SubCellType", c("Arxes1", "Ncoa2")
+    ),
+    separate_annotation_palette = c(
+      "Chinese", "Set1"
+    ),
+    separate_annotation_params = list(
+      height = grid::unit(10, "mm")
+    ),
+    feature_annotation = c("TF", "CSPA"),
+    feature_annotation_palcolor = list(
+      c("gold", "steelblue"),
+      c("forestgreen")
+    ),
+    pseudotime_label = 25,
+    pseudotime_label_color = "red",
+    width = 1,
+    height = 2
+  )
+#> ℹ [2026-05-11 14:53:43] [1] 172 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Iapp,Pyy,Rbp4,Chgb,Gast,Lrpprc,Slc38a5,Cck,Cdkn1a...
-#> ℹ [2026-05-02 04:36:37] Start find dynamic features
-#> ℹ [2026-05-02 04:36:39] Data type is raw counts
-#> ℹ [2026-05-02 04:36:39] Number of candidate features (union): 2
-#> ℹ [2026-05-02 04:36:40] Data type is raw counts
-#> ℹ [2026-05-02 04:36:40] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-05-02 04:36:40] Using 1 core
-#> ⠙ [2026-05-02 04:36:40] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
-#> ✔ [2026-05-02 04:36:40] Completed 2 tasks in 252ms
+#> ℹ [2026-05-11 14:53:43] Start find dynamic features
+#> ℹ [2026-05-11 14:53:45] Data type is raw counts
+#> ℹ [2026-05-11 14:53:45] Number of candidate features (union): 2
+#> ℹ [2026-05-11 14:53:46] Data type is raw counts
+#> ℹ [2026-05-11 14:53:46] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-05-11 14:53:46] Using 1 core
+#> ⠙ [2026-05-11 14:53:46] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
+#> ✔ [2026-05-11 14:53:46] Completed 2 tasks in 171ms
 #> 
-#> ℹ [2026-05-02 04:36:40] Building results
-#> ✔ [2026-05-02 04:36:40] Find dynamic features done
-#> ℹ [2026-05-02 04:36:40] Start find dynamic features
-#> ℹ [2026-05-02 04:36:42] Data type is raw counts
-#> ℹ [2026-05-02 04:36:42] Number of candidate features (union): 2
-#> ℹ [2026-05-02 04:36:42] Data type is raw counts
-#> ℹ [2026-05-02 04:36:43] Calculating dynamic features for "Lineage2"...
-#> ℹ [2026-05-02 04:36:43] Using 1 core
-#> ℹ [2026-05-02 04:36:43] Building results
-#> ✔ [2026-05-02 04:36:43] Find dynamic features done
+#> ℹ [2026-05-11 14:53:46] Building results
+#> ✔ [2026-05-11 14:53:46] Find dynamic features done
+#> ℹ [2026-05-11 14:53:46] Start find dynamic features
+#> ℹ [2026-05-11 14:53:48] Data type is raw counts
+#> ℹ [2026-05-11 14:53:48] Number of candidate features (union): 2
+#> ℹ [2026-05-11 14:53:49] Data type is raw counts
+#> ℹ [2026-05-11 14:53:49] Calculating dynamic features for "Lineage2"...
+#> ℹ [2026-05-11 14:53:49] Using 1 core
+#> ⠙ [2026-05-11 14:53:49] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
+#> ✔ [2026-05-11 14:53:49] Completed 2 tasks in 173ms
+#> 
+#> ℹ [2026-05-11 14:53:49] Building results
+#> ✔ [2026-05-11 14:53:49] Find dynamic features done
 #> Picking joint bandwidth of 19.9
 #> Picking joint bandwidth of 21.7
 #> Picking joint bandwidth of 19.9
 #> Picking joint bandwidth of 21.7
 
 
-ht7 <- DynamicHeatmap(
-  pancreas_sub,
-  exp_legend_title = "Z-score",
-  lineages = c("Lineage1", "Lineage2"),
-  reverse_ht = "Lineage1",
-  use_fitted = TRUE,
-  n_split = 3,
-  nlabel = 10,
-  split_method = "mfuzz",
-  heatmap_palette = "viridis",
-  cell_annotation = c(
-    "SubCellType", "Phase", "G2M_score"
-  ),
-  cell_annotation_palette = c(
-    "Chinese", "simspec", "Purples"
-  ),
-  separate_annotation = list(
-    "SubCellType", c("Arxes1", "Ncoa2")
-  ),
-  separate_annotation_palette = c("Chinese", "Set1"),
-  separate_annotation_params = list(width = grid::unit(10, "mm")),
-  feature_annotation = c("TF", "CSPA"),
-  feature_annotation_palcolor = list(
-    c("gold", "steelblue"),
-    c("forestgreen")
-  ),
-  pseudotime_label = 25,
-  pseudotime_label_color = "red",
-  flip = TRUE,
-  column_title_rot = 90,
-  width = 2,
-  height = 1
-)
-#> ℹ [2026-05-02 04:36:47] [1] 172 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+  ht7 <- DynamicHeatmap(
+    pancreas_sub,
+    exp_legend_title = "Z-score",
+    lineages = c("Lineage1", "Lineage2"),
+    reverse_ht = "Lineage1",
+    use_fitted = TRUE,
+    n_split = 3,
+    nlabel = 10,
+    split_method = "mfuzz",
+    heatmap_palette = "viridis",
+    cell_annotation = c(
+      "SubCellType", "Phase", "G2M_score"
+    ),
+    cell_annotation_palette = c(
+      "Chinese", "simspec", "Purples"
+    ),
+    separate_annotation = list(
+      "SubCellType", c("Arxes1", "Ncoa2")
+    ),
+    separate_annotation_palette = c("Chinese", "Set1"),
+    separate_annotation_params = list(width = grid::unit(10, "mm")),
+    feature_annotation = c("TF", "CSPA"),
+    feature_annotation_palcolor = list(
+      c("gold", "steelblue"),
+      c("forestgreen")
+    ),
+    pseudotime_label = 25,
+    pseudotime_label_color = "red",
+    flip = TRUE,
+    column_title_rot = 90,
+    width = 2,
+    height = 1
+  )
+#> ℹ [2026-05-11 14:53:53] [1] 172 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Iapp,Pyy,Rbp4,Chgb,Gast,Lrpprc,Slc38a5,Cck,Cdkn1a...
-#> ℹ [2026-05-02 04:36:48] Start find dynamic features
-#> ℹ [2026-05-02 04:36:49] Data type is raw counts
-#> ℹ [2026-05-02 04:36:49] Number of candidate features (union): 2
-#> ℹ [2026-05-02 04:36:50] Data type is raw counts
-#> ℹ [2026-05-02 04:36:50] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-05-02 04:36:50] Using 1 core
-#> ⠙ [2026-05-02 04:36:50] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
-#> ✔ [2026-05-02 04:36:50] Completed 2 tasks in 184ms
+#> ℹ [2026-05-11 14:53:54] Start find dynamic features
+#> ℹ [2026-05-11 14:53:56] Data type is raw counts
+#> ℹ [2026-05-11 14:53:57] Number of candidate features (union): 2
+#> ℹ [2026-05-11 14:53:57] Data type is raw counts
+#> ℹ [2026-05-11 14:53:57] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-05-11 14:53:57] Using 1 core
+#> ⠙ [2026-05-11 14:53:57] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
+#> ✔ [2026-05-11 14:53:57] Completed 2 tasks in 183ms
 #> 
-#> ℹ [2026-05-02 04:36:50] Building results
-#> ✔ [2026-05-02 04:36:50] Find dynamic features done
-#> ℹ [2026-05-02 04:36:51] Start find dynamic features
-#> ℹ [2026-05-02 04:36:52] Data type is raw counts
-#> ℹ [2026-05-02 04:36:53] Number of candidate features (union): 2
-#> ℹ [2026-05-02 04:36:53] Data type is raw counts
-#> ℹ [2026-05-02 04:36:53] Calculating dynamic features for "Lineage2"...
-#> ℹ [2026-05-02 04:36:53] Using 1 core
-#> ⠙ [2026-05-02 04:36:53] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
-#> ✔ [2026-05-02 04:36:53] Completed 2 tasks in 226ms
+#> ℹ [2026-05-11 14:53:57] Building results
+#> ✔ [2026-05-11 14:53:58] Find dynamic features done
+#> ℹ [2026-05-11 14:53:58] Start find dynamic features
+#> ℹ [2026-05-11 14:53:59] Data type is raw counts
+#> ℹ [2026-05-11 14:54:00] Number of candidate features (union): 2
+#> ℹ [2026-05-11 14:54:00] Data type is raw counts
+#> ℹ [2026-05-11 14:54:00] Calculating dynamic features for "Lineage2"...
+#> ℹ [2026-05-11 14:54:00] Using 1 core
+#> ⠙ [2026-05-11 14:54:00] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
+#> ✔ [2026-05-11 14:54:00] Completed 2 tasks in 158ms
 #> 
-#> ℹ [2026-05-02 04:36:53] Building results
-#> ✔ [2026-05-02 04:36:54] Find dynamic features done
+#> ℹ [2026-05-11 14:54:00] Building results
+#> ✔ [2026-05-11 14:54:01] Find dynamic features done
 #> Picking joint bandwidth of 19.9
 #> Picking joint bandwidth of 21.7
 #> Picking joint bandwidth of 19.9

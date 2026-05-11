@@ -97,44 +97,57 @@ A list with the following elements:
 
 ## See also
 
-[AnnotateFeatures](https://mengxu98.github.io/scop/reference/AnnotateFeatures.md)
+[AnnotateFeatures](https://mengxu98.github.io/scop/reference/AnnotateFeatures.md),
+[ConvertHomologs](https://mengxu98.github.io/scop/reference/ConvertHomologs.md)
 
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 res <- GeneConvert(
   geneID = c("CDK1", "MKI67", "TOP2A", "AURKA", "CTCF"),
   species_from = "Homo_sapiens",
   species_to = "Mus_musculus"
 )
+#> ℹ [2026-05-11 15:13:09] Connect to the Ensembl archives...
+#> ℹ [2026-05-11 15:13:10] Using the 115 version of ensembl database...
+#> ℹ [2026-05-11 15:13:10] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
+#> ℹ [2026-05-11 15:13:39] Searching the dataset hsapiens ...
+#> ℹ [2026-05-11 15:13:41] Connecting to the dataset hsapiens_gene_ensembl ...
+#> ℹ [2026-05-11 15:13:53] Searching the dataset mmusculus ...
+#> ℹ [2026-05-11 15:14:02] Connecting to the dataset mmusculus_gene_ensembl ...
+#> ℹ [2026-05-11 15:14:03] Converting the geneIDs...
+#> ℹ [2026-05-11 15:14:08] 5 genes mapped with "ensembl_symbol"
+#> ℹ [2026-05-11 15:14:08] ==============================
+#> ℹ                       5 genes mapped
+#> ℹ                       0 genes unmapped
+#> ℹ                       ==============================
 str(res)
-
-# Convert the human genes to mouse homologs,
-# and replace the raw counts in a Seurat object.
-data(pancreas_sub)
-counts <- GetAssayData5(
-  pancreas_sub,
-  assay = "RNA",
-  layer = "counts"
-)
-res <- GeneConvert(
-  geneID = rownames(counts),
-  geneID_from_IDtype = "symbol",
-  geneID_to_IDtype = "symbol",
-  species_from = "Mus_musculus",
-  species_to = "Homo_sapiens"
-)
-
-homologs_counts <- stats::aggregate(
-  x = counts[res$geneID_expand[, "from_geneID"], ],
-  by = list(res$geneID_expand[, "symbol"]), FUN = sum
-)
-rownames(homologs_counts) <- homologs_counts[, 1]
-homologs_counts <- methods::as(
-  thisutils::as_matrix(homologs_counts[, -1]),
-  "dgCMatrix"
-)
-homologs_counts[1:5, 1:5]
-} # }
+#> List of 7
+#>  $ geneID_res     :'data.frame': 5 obs. of  4 variables:
+#>   ..$ from_IDtype: chr [1:5] "ensembl_symbol" "ensembl_symbol" "ensembl_symbol" "ensembl_symbol" ...
+#>   ..$ from_geneID: chr [1:5] "CTCF" "CDK1" "TOP2A" "AURKA" ...
+#>   ..$ to_IDtype  : chr [1:5] "entrez_id" "entrez_id" "entrez_id" "entrez_id" ...
+#>   ..$ to_geneID  : int [1:5] 13018 12534 21973 20878 17345
+#>  $ geneID_collapse:'data.frame': 5 obs. of  2 variables:
+#>   ..$ from_geneID: chr [1:5] "AURKA" "CDK1" "CTCF" "MKI67" ...
+#>   ..$ entrez_id  :List of 5
+#>   .. ..$ : int 20878
+#>   .. ..$ : int 12534
+#>   .. ..$ : int 13018
+#>   .. ..$ : int 17345
+#>   .. ..$ : int 21973
+#>   .. ..- attr(*, "class")= chr "AsIs"
+#>  $ geneID_expand  :'data.frame': 5 obs. of  2 variables:
+#>   ..$ from_geneID: chr [1:5] "AURKA" "CDK1" "CTCF" "MKI67" ...
+#>   ..$ entrez_id  : int [1:5] 20878 12534 13018 17345 21973
+#>  $ Ensembl_version: chr "115"
+#>  $ Datasets       :'data.frame': 213 obs. of  3 variables:
+#>   ..$ dataset    : 'AsIs' chr [1:213] "abrachyrhynchus_gene_ensembl" "acalliptera_gene_ensembl" "acarolinensis_gene_ensembl" "acchrysaetos_gene_ensembl" ...
+#>   ..$ description: 'AsIs' chr [1:213] "Pink-footed goose genes (ASM259213v1)" "Eastern happy genes (fAstCal1.3)" "Green anole genes (AnoCar2.0v2)" "Golden eagle genes (bAquChr1.2)" ...
+#>   ..$ version    : 'AsIs' chr [1:213] "ASM259213v1" "fAstCal1.3" "AnoCar2.0v2" "bAquChr1.2" ...
+#>  $ Attributes     :'data.frame': 3170 obs. of  3 variables:
+#>   ..$ name       : chr [1:3170] "ensembl_gene_id" "ensembl_gene_id_version" "ensembl_transcript_id" "ensembl_transcript_id_version" ...
+#>   ..$ description: chr [1:3170] "Gene stable ID" "Gene stable ID version" "Transcript stable ID" "Transcript stable ID version" ...
+#>   ..$ page       : chr [1:3170] "feature_page" "feature_page" "feature_page" "feature_page" ...
+#>  $ geneID_unmapped: chr(0) 
 ```

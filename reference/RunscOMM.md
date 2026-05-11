@@ -97,3 +97,25 @@ RunscOMM(
 
 A `Seurat` object with `scOMM` predictions stored in metadata and
 `tools`.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+data("pbmcmultiome_sub", package = "scop")
+pbmcmultiome_sub <- Seurat::NormalizeData(pbmcmultiome_sub, assay = "RNA")
+pbmcmultiome_sub <- Seurat::FindVariableFeatures(pbmcmultiome_sub, assay = "RNA")
+ref_cells <- colnames(pbmcmultiome_sub)[1:250]
+query_cells <- colnames(pbmcmultiome_sub)[251:350]
+reference <- subset(pbmcmultiome_sub, cells = ref_cells)
+query <- subset(pbmcmultiome_sub, cells = query_cells)
+query <- RunscOMM(
+  srt = query,
+  reference = reference,
+  reference_assay = "RNA",
+  query_assay = "RNA",
+  reference_label = "CellType",
+  scomm_epochs = 2
+)
+} # }
+```

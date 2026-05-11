@@ -21,14 +21,11 @@ A `Seurat` object.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 if (interactive()) {
   data(pancreas_sub)
-  if (!require("SeuratData", quietly = TRUE)) {
-    pak::pak("satijalab/seurat-data")
-  }
-  library(SeuratData)
+  check_r("satijalab/seurat-data")
   library(Seurat)
+  InstallData <- get_namespace_fun("SeuratData", "InstallData")
   InstallData("panc8")
   data(panc8)
   panc8 <- UpdateSeuratObject(panc8)
@@ -56,11 +53,11 @@ if (interactive()) {
   ), ]
   panc8_sub$celltype <- gsub("_", "-", panc8_sub$celltype)
   panc8_sub$celltype <- gsub(" ", "-", panc8_sub$celltype)
-  usethis::use_data(
+  use_data <- get_namespace_fun("usethis", "use_data")
+  use_data(
     panc8_sub,
     compress = "xz",
     overwrite = TRUE
   )
 }
-} # }
 ```

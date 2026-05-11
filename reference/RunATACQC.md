@@ -59,3 +59,20 @@ RunATACQC(
 ## Value
 
 A `Seurat` object with QC metadata added.
+
+## Examples
+
+``` r
+# \donttest{
+data("pbmcmultiome_sub", package = "scop")
+pbmcmultiome_sub <- RunATACQC(
+  pbmcmultiome_sub,
+  assay = "peaks",
+  fast = TRUE
+)
+#> ℹ [2026-05-11 15:35:21] Calculating ATAC QC metrics...
+#> ! [2026-05-11 15:35:21] Skip nucleosome signal: "No fragment files present in assay"
+#> ! [2026-05-11 15:35:21] Skip FRiP calculation: no total fragment count column or local fragments available
+#> ✔ [2026-05-11 15:35:21] ATAC QC completed
+# }
+```

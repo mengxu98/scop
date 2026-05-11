@@ -1,6 +1,26 @@
 # Run CytoTRACE 2
 
-Run CytoTRACE 2
+Predicts cellular developmental potential from single-cell RNA-seq data
+using the CytoTRACE 2 algorithm (Kang et al., 2025). This is a native
+scop implementation with C++ acceleration.
+
+The algorithm consists of five stages:
+
+1.  **Preprocessing**: Gene orthology mapping, feature selection,
+    ranking, and log2-CPM transformation.
+
+2.  **GSBN Ensemble Prediction**: 19 pre-trained Gene Set Binary Network
+    models predict a continuous developmental potency score (0-1) and a
+    discrete potency category.
+
+3.  **Diffusion Smoothing**: A Markov random-walk-with-restart on a
+    cell-cell similarity graph smooths the raw scores.
+
+4.  **Binning**: Within each potency category, cells are ranked and
+    linearly scaled to corresponding segments of the unit interval.
+
+5.  **Adaptive kNN Smoothing**: PCA-based nearest-neighbor consensus
+    refinement of the final scores.
 
 ## Usage
 
@@ -15,10 +35,9 @@ RunCytoTRACE(
   species = c("Homo_sapiens", "Mus_musculus"),
   batch_size = 10000,
   smooth_batch_size = 1000,
-  parallelize_models = TRUE,
-  parallelize_smoothing = TRUE,
   cores = 1,
-  seed = 11,
+  seed = 14,
+  data_dir = NULL,
   verbose = TRUE,
   ...
 )
@@ -29,10 +48,9 @@ RunCytoTRACE(
   species = c("Homo_sapiens", "Mus_musculus"),
   batch_size = 10000,
   smooth_batch_size = 1000,
-  parallelize_models = TRUE,
-  parallelize_smoothing = TRUE,
   cores = 1,
-  seed = 11,
+  seed = 14,
+  data_dir = NULL,
   verbose = TRUE,
   ...
 )
@@ -47,8 +65,7 @@ RunCytoTRACE(
 
 - ...:
 
-  Additional arguments to be passed to
-  [`CytoTRACE2::cytotrace2`](https://rdrr.io/pkg/CytoTRACE2/man/cytotrace2.html).
+  Additional arguments (reserved for future use).
 
 - assay:
 
@@ -64,39 +81,34 @@ RunCytoTRACE(
 - species:
 
   The species of the input data. Currently supported values are
-  `"human"` and `"mouse"`. Default is `"human"`.
+  `"Homo_sapiens"` and `"Mus_musculus"`. Default is `"Homo_sapiens"`.
 
 - batch_size:
 
-  The number of cells to process at once, including subsampling for KNN
-  smoothing. No subsampling if `NULL`. Default is `10000` (recommended
-  for input data size \> 10K cells).
+  The number of cells to process at once. For datasets with more cells
+  than this value, cells are randomly split into batches and processed
+  independently. No batching if `NULL`. Default is `10000`.
 
 - smooth_batch_size:
 
-  The number of cells to subsample further within the batch_size for the
-  smoothing by diffusion step of the pipeline. No subsampling if `NULL`.
-  Default is `1000` (recommended for input data size \> 1K cells).
-
-- parallelize_models:
-
-  Whether to run the prediction function on models in parallel on
-  multiple threads. Default is `TRUE`.
-
-- parallelize_smoothing:
-
-  Whether to run the smoothing function on subsamples in parallel on
-  multiple threads. Default is `TRUE`.
+  The number of cells per subsample for the diffusion smoothing step. No
+  diffusion subsampling if `NULL`. Default is `1000`.
 
 - cores:
 
-  The number of cores to use for parallelization with
-  [foreach::foreach](https://rdrr.io/pkg/foreach/man/foreach.html).
-  Default is `1`.
+  Number of cores for parallel processing. Default is `1`.
 
 - seed:
 
-  Random seed for reproducibility. Default is `11`.
+  Random seed for reproducibility. Default is `14`.
+
+- data_dir:
+
+  Path to the directory containing CytoTRACE2 model data files. If
+  `NULL`, uses data prepared by
+  [`PrepareDB()`](https://mengxu98.github.io/scop/reference/PrepareDB.md),
+  the user data cache, or auto-downloads from the datasets repository.
+  Default is `NULL`.
 
 - verbose:
 
@@ -123,54 +135,66 @@ with the following metadata columns added:
 When the input is a matrix or data.frame, the function returns a
 data.frame with the same columns as above, with cell IDs as row names.
 
+## License
+
+The CytoTRACE 2 model and associated data files are provided under the
+Stanford Non-Commercial Software License Agreement. Commercial entities
+wishing to use this software should contact Stanford University's Office
+of Technology Licensing (docket S24-057). See
+<https://github.com/mengxu98/datasets/blob/main/CytoTRACE2/LICENSE> for
+complete terms.
+
+## References
+
+Kang, M., Brown, E., Almagro Armenteros, J.J. et al. "Improved
+reconstruction of single-cell developmental potential with CytoTRACE 2."
+*Nature Methods* (2025).
+[doi:10.1038/s41592-025-02857-2](https://doi.org/10.1038/s41592-025-02857-2)
+
+Model data: <https://github.com/mengxu98/datasets/tree/main/CytoTRACE2>
+
 ## Examples
 
 ``` r
-if (thisutils::check_ci_env()) {
-  data(pancreas_sub)
-  pancreas_sub <- standard_scop(pancreas_sub)
-  pancreas_sub <- RunCytoTRACE(
-    pancreas_sub,
-    species = "Mus_musculus"
-  )
-  CytoTRACEPlot(
-    pancreas_sub,
-    group.by = "CellType"
-  )
-}
-#> ℹ [2026-05-02 04:58:25] Start standard processing workflow...
-#> ℹ [2026-05-02 04:58:26] Checking a list of <Seurat>...
-#> ! [2026-05-02 04:58:26] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-02 04:58:26] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-02 04:58:28] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-02 04:58:29] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-02 04:58:29] Number of available HVF: 2000
-#> ℹ [2026-05-02 04:58:29] Finished check
-#> ℹ [2026-05-02 04:58:29] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-02 04:58:30] Perform pca linear dimension reduction
-#> ℹ [2026-05-02 04:58:30] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-05-02 04:58:31] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-02 04:58:31] Reorder clusters...
-#> ℹ [2026-05-02 04:58:31] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-02 04:58:31] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-02 04:58:31] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-05-02 04:58:35] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-05-02 04:58:39] Standard processing workflow completed
-#> ◌ [2026-05-02 04:58:39] Running CytoTRACE2
-#> cytotrace2: Started loading data
-#> Dataset contains 15998 genes and 1000 cells.
-#> The number of cells in your dataset is less than 1000. Fast mode has been disabled.
-#> The passed subsample size is greater than the number of cells in dataset.
-#> Now setting subsample size to 1000
-#> cytotrace2: Running on 1 subsample(s) approximately of length 1000
-#> cytotrace2: Started running on subsample(s). This will take a few minutes.
-#> cytotrace2: Started preprocessing.
-#> 12486 input genes mapped to model genes.
-#> cytotrace2: Started prediction.
-#> This section will run using  1 / 4 core(s).
-#> cytotrace2: Started postprocessing.
-#> cytotrace2: Running with slow mode (subsamples are processed sequentially)
-#> Number of cores for KNN: 1
-#> cytotrace2: Finished
-#> ✔ [2026-05-02 04:59:52] CytoTRACE2 computed successfully
+data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
+#> ℹ [2026-05-11 15:46:58] Start standard processing workflow...
+#> ℹ [2026-05-11 15:46:59] Checking a list of <Seurat>...
+#> ! [2026-05-11 15:46:59] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-11 15:46:59] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 15:47:00] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 15:47:01] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-11 15:47:01] Number of available HVF: 2000
+#> ℹ [2026-05-11 15:47:01] Finished check
+#> ℹ [2026-05-11 15:47:01] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-11 15:47:02] Perform pca linear dimension reduction
+#> ℹ [2026-05-11 15:47:02] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-05-11 15:47:03] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-11 15:47:03] Reorder clusters...
+#> ℹ [2026-05-11 15:47:03] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-11 15:47:03] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-11 15:47:03] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-05-11 15:47:07] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-05-11 15:47:12] Standard processing workflow completed
+pancreas_sub <- RunCytoTRACE(
+  pancreas_sub,
+  species = "Mus_musculus"
+)
+#> ◌ [2026-05-11 15:47:12] Running CytoTRACE2
+#> ℹ [2026-05-11 15:47:12] Extracting expression matrix from `assay = RNA, layer = counts`
+#> ℹ [2026-05-11 15:47:12] Loading CytoTRACE2 model data from /home/runner/.local/share/R/scop/CytoTRACE2
+#> ℹ [2026-05-11 15:47:15] Dataset contains 15998 genes and 1000 cells.
+#> ℹ [2026-05-11 15:47:15] Running on 1 subsample(s)
+#> ℹ [2026-05-11 15:47:15] Preprocessing subsample (1000 cells)
+#> ℹ [2026-05-11 15:47:15] 12486 input genes mapped to model genes.
+#> ℹ [2026-05-11 15:47:18] Running ensemble prediction and postprocessing
+#> ℹ [2026-05-11 15:47:18] Computing PCA for kNN smoothing
+#> ✔ [2026-05-11 15:48:06] CytoTRACE2 computed successfully
+
+CytoTRACEPlot(
+  pancreas_sub,
+  xlab = "UMAP_1",
+  ylab = "UMAP_2",
+  ncol = 2
+)
 ```

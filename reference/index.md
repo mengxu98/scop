@@ -19,13 +19,13 @@
 - [`env_requirements()`](https://mengxu98.github.io/scop/reference/env_requirements.md)
   : Python environment requirements
 - [`ListEnv()`](https://mengxu98.github.io/scop/reference/ListEnv.md) :
-  List conda environments
+  List conda-compatible Python environments
 - [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md)
   : Prepare the python environment
 - [`remove_python()`](https://mengxu98.github.io/scop/reference/remove_python.md)
-  : Remove Python packages from conda environment
+  : Remove Python packages from a conda-compatible Python environment
 - [`RemoveEnv()`](https://mengxu98.github.io/scop/reference/RemoveEnv.md)
-  : Remove a conda environment
+  : Remove a conda-compatible Python environment
 
 ### scop pipeline
 
@@ -52,6 +52,13 @@
   : Run ambient RNA decontamination with decontX
 - [`RunDoubletCalling()`](https://mengxu98.github.io/scop/reference/RunDoubletCalling.md)
   : Run doublet-calling for single cell RNA-seq data.
+
+### Cell Cycle Analysis
+
+- [`RunCellCycle()`](https://mengxu98.github.io/scop/reference/RunCellCycle.md)
+  : Run cell cycle scoring
+- [`CycGenePrefetch()`](https://mengxu98.github.io/scop/reference/CycGenePrefetch.md)
+  : Prefetch cell cycle genes
 
 ### Data Integration and Batch Effect Removal
 
@@ -138,6 +145,13 @@
 - [`RunLargeVis()`](https://mengxu98.github.io/scop/reference/RunLargeVis.md)
   : Run LargeVis (Dimensionality Reduction with a LargeVis-like method)
 
+### Spatial Analysis
+
+- [`RunBayesSpace()`](https://mengxu98.github.io/scop/reference/RunBayesSpace.md)
+  : Run BayesSpace spatial clustering
+- [`RunCytoSPACE()`](https://mengxu98.github.io/scop/reference/RunCytoSPACE.md)
+  : Run CytoSPACE spatial assignment
+
 ### Cell Type Annotation
 
 - [`CellTypistModels()`](https://mengxu98.github.io/scop/reference/CellTypistModels.md)
@@ -156,34 +170,43 @@
   : Map query cells into a reference space
 - [`RunScmap()`](https://mengxu98.github.io/scop/reference/RunScmap.md)
   : Annotate single cells using scmap.
+- [`RunSciBet()`](https://mengxu98.github.io/scop/reference/RunSciBet.md)
+  : Annotate single cells using native SciBet
 - [`RunSingleR()`](https://mengxu98.github.io/scop/reference/RunSingleR.md)
   : Annotate single cells using SingleR
 - [`TrainCellTypist()`](https://mengxu98.github.io/scop/reference/TrainCellTypist.md)
   : Train a CellTypist model
 
-### Differential Analysis
+### Differential Expression and Perturbation
 
 - [`FindExpressedMarkers()`](https://mengxu98.github.io/scop/reference/FindExpressedMarkers.md)
   : Find Expressed Markers
 - [`RunDEtest()`](https://mengxu98.github.io/scop/reference/RunDEtest.md)
   : Differential gene test
+- [`RunscTenifoldKnk()`](https://mengxu98.github.io/scop/reference/RunScTenifoldKnk.md)
+  : Run scTenifoldKnk in-silico knockout analysis
+
+### Bulk and Composition Analysis
+
+- [`RunBulk()`](https://mengxu98.github.io/scop/reference/RunBulk.md) :
+  Unified bulk analysis entrypoint
+- [`RunMilo()`](https://mengxu98.github.io/scop/reference/RunMilo.md) :
+  Milo differential abundance wrapper
+- [`RunPermutation()`](https://mengxu98.github.io/scop/reference/RunPermutation.md)
+  : Permutation-based proportion test
+- [`RunPropeller()`](https://mengxu98.github.io/scop/reference/RunPropeller.md)
+  : Propeller differential abundance wrapper
 - [`RunProportionTest()`](https://mengxu98.github.io/scop/reference/RunProportionTest.md)
   : Proportion Test
-- [`RunProportionTestMilo()`](https://mengxu98.github.io/scop/reference/RunProportionTestMilo.md)
-  : Milo differential abundance wrapper
-- [`RunProportionTestPermutation()`](https://mengxu98.github.io/scop/reference/RunProportionTestPermutation.md)
-  : Permutation-based proportion test
-- [`RunProportionTestPropeller()`](https://mengxu98.github.io/scop/reference/RunProportionTestPropeller.md)
-  : Propeller differential abundance wrapper
-- [`RunProportionTestScCODA()`](https://mengxu98.github.io/scop/reference/RunProportionTestScCODA.md)
-  : scCODA differential abundance wrapper
-- [`SimulateProportionData()`](https://mengxu98.github.io/scop/reference/SimulateProportionData.md)
-  : Simulate Single-Cell Data for Proportion Testing
+- [`RunscCODA()`](https://mengxu98.github.io/scop/reference/RunscCODA.md)
+  : scCODA differential abundance
 
 ### Enrichment Analysis
 
 - [`CellScoring()`](https://mengxu98.github.io/scop/reference/CellScoring.md)
   : Cell scoring
+- [`RunDorothea()`](https://mengxu98.github.io/scop/reference/RunDorothea.md)
+  : Run DoRothEA transcription factor activity inference
 - [`RunDynamicEnrichment()`](https://mengxu98.github.io/scop/reference/RunDynamicEnrichment.md)
   : RunDynamicEnrichment
 - [`RunEnrichment()`](https://mengxu98.github.io/scop/reference/RunEnrichment.md)
@@ -224,12 +247,18 @@
   : Run CellChat analysis
 - [`RunCellphoneDB()`](https://mengxu98.github.io/scop/reference/RunCellphoneDB.md)
   : Run CellphoneDB analysis
+- [`RunLIANA()`](https://mengxu98.github.io/scop/reference/RunLIANA.md)
+  : Run LIANA cell-cell communication analysis
 - [`RunNichenetr()`](https://mengxu98.github.io/scop/reference/RunNichenetr.md)
   : Run NicheNet analysis
 - [`RunMultiNichenetr()`](https://mengxu98.github.io/scop/reference/RunMultiNichenetr.md)
   : Run MultiNicheNet analysis
 - [`RunscOMM()`](https://mengxu98.github.io/scop/reference/RunscOMM.md)
   : Run scOMM label prediction
+- [`ccc_to_adata()`](https://mengxu98.github.io/scop/reference/ccc_to_adata.md)
+  : Convert CCC results to OmicVerse communication AnnData
+- [`ccc_to_liana()`](https://mengxu98.github.io/scop/reference/ccc_to_liana.md)
+  : Convert CCC results to a LIANA-like table
 
 ### Data Conversion
 
@@ -240,6 +269,16 @@
   :
 
   Read an `.h5ad` file and convert to a `Seurat`
+
+- [`loom_to_adata()`](https://mengxu98.github.io/scop/reference/loom_to_adata.md)
+  :
+
+  Read a `.loom` file as an AnnData object
+
+- [`loom_to_srt()`](https://mengxu98.github.io/scop/reference/loom_to_srt.md)
+  :
+
+  Read a `.loom` file and convert to a `Seurat`
 
 - [`srt_to_adata()`](https://mengxu98.github.io/scop/reference/srt_to_adata.md)
   : Convert a Seurat object to an AnnData object
@@ -259,9 +298,6 @@
 - [`CheckDataMerge()`](https://mengxu98.github.io/scop/reference/CheckDataMerge.md)
   : Check and preprocess a merged seurat object
 
-- [`CycGenePrefetch()`](https://mengxu98.github.io/scop/reference/CycGenePrefetch.md)
-  : Prefetch cell cycle genes
-
 - [`DefaultReduction()`](https://mengxu98.github.io/scop/reference/DefaultReduction.md)
   : Find the default reduction name in a Seurat object
 
@@ -270,6 +306,9 @@
 
 - [`GeneConvert()`](https://mengxu98.github.io/scop/reference/GeneConvert.md)
   : Gene ID conversion function using biomart
+
+- [`ConvertHomologs()`](https://mengxu98.github.io/scop/reference/ConvertHomologs.md)
+  : Convert homologous gene symbols in expression objects
 
 - [`GetAssayData5()`](https://mengxu98.github.io/scop/reference/GetAssayData5.md)
   :
@@ -301,7 +340,87 @@
 - [`RenameFeatures()`](https://mengxu98.github.io/scop/reference/RenameFeatures.md)
   : Rename features for the Seurat object
 
-### Visualization Functions
+### Embedding and Projection Plots
+
+- [`CellDimPlot()`](https://mengxu98.github.io/scop/reference/CellDimPlot.md)
+  : Cell Dimensional Plot
+- [`CellDimPlot3D()`](https://mengxu98.github.io/scop/reference/CellDimPlot3D.md)
+  : 3D-Dimensional reduction plot for cell classification visualization.
+- [`CellDensityPlot()`](https://mengxu98.github.io/scop/reference/CellDensityPlot.md)
+  : Cell density plot
+- [`FeatureDimPlot()`](https://mengxu98.github.io/scop/reference/FeatureDimPlot.md)
+  : Visualize feature values on a 2-dimensional reduction plot
+- [`FeatureDimPlot3D()`](https://mengxu98.github.io/scop/reference/FeatureDimPlot3D.md)
+  : 3D-Dimensional reduction plot for gene expression visualization.
+- [`ProjectionPlot()`](https://mengxu98.github.io/scop/reference/ProjectionPlot.md)
+  : Projection Plot
+
+### Heatmap and Correlation Plots
+
+- [`CellCorHeatmap()`](https://mengxu98.github.io/scop/reference/CellCorHeatmap.md)
+  : The Cell Correlation Heatmap
+- [`FeatureCorPlot()`](https://mengxu98.github.io/scop/reference/FeatureCorPlot.md)
+  : Features correlation plot
+- [`FeatureHeatmap()`](https://mengxu98.github.io/scop/reference/FeatureHeatmap.md)
+  : Feature Heatmap
+- [`GroupHeatmap()`](https://mengxu98.github.io/scop/reference/GroupHeatmap.md)
+  : The Group Heatmap
+
+### Statistical and Composition Plots
+
+- [`CellStatPlot()`](https://mengxu98.github.io/scop/reference/CellStatPlot.md)
+  : Statistical plot of cells
+- [`FeatureStatPlot()`](https://mengxu98.github.io/scop/reference/FeatureStatPlot.md)
+  : Statistical plot of features
+- [`ProportionTestPlot()`](https://mengxu98.github.io/scop/reference/ProportionTestPlot.md)
+  : Proportion Test Plot
+
+### Differential and Enrichment Plots
+
+- [`DEtestPlot()`](https://mengxu98.github.io/scop/reference/DEtestPlot.md)
+  : Differential Expression Test Plot
+- [`DEtestManhattanPlot()`](https://mengxu98.github.io/scop/reference/DEtestManhattanPlot.md)
+  : DEtest Manhattan Plot
+- [`DEtestRingPlot()`](https://mengxu98.github.io/scop/reference/DEtestRingPlot.md)
+  : DEtest Ring Plot
+- [`VolcanoPlot()`](https://mengxu98.github.io/scop/reference/VolcanoPlot.md)
+  : Volcano Plot
+- [`EnrichmentPlot()`](https://mengxu98.github.io/scop/reference/EnrichmentPlot.md)
+  : Enrichment Plot
+- [`GSEAPlot()`](https://mengxu98.github.io/scop/reference/GSEAPlot.md)
+  : GSEA Plot
+- [`GSVAPlot()`](https://mengxu98.github.io/scop/reference/GSVAPlot.md)
+  : Plots for GSVA (Gene Set Variation Analysis)
+- [`MetabolismPlot()`](https://mengxu98.github.io/scop/reference/MetabolismPlot.md)
+  : Plots for metabolism pathway scoring
+- [`scTenifoldKnkPlot()`](https://mengxu98.github.io/scop/reference/scTenifoldKnkPlot.md)
+  : scTenifoldKnk Plot
+
+### Trajectory and Dynamic Plots
+
+- [`BranchStreamPlot()`](https://mengxu98.github.io/scop/reference/BranchStreamPlot.md)
+  : Branch Stream Plot
+- [`CytoTRACEPlot()`](https://mengxu98.github.io/scop/reference/CytoTRACEPlot.md)
+  : Plot CytoTRACE 2 Results
+- [`DynamicPlot()`](https://mengxu98.github.io/scop/reference/DynamicPlot.md)
+  : Plot dynamic features across pseudotime
+- [`DynamicHeatmap()`](https://mengxu98.github.io/scop/reference/DynamicHeatmap.md)
+  : Heatmap plot for dynamic features along lineages
+- [`LineagePlot()`](https://mengxu98.github.io/scop/reference/LineagePlot.md)
+  : Lineage Plot
+- [`PAGAPlot()`](https://mengxu98.github.io/scop/reference/PAGAPlot.md)
+  : PAGA plot
+- [`PseudotimeProjectionPlot()`](https://mengxu98.github.io/scop/reference/PseudotimeProjectionPlot.md)
+  : Pseudotime Projection Plot
+- [`VelocityPlot()`](https://mengxu98.github.io/scop/reference/VelocityPlot.md)
+  : Velocity Plot
+
+### Spatial Visualization
+
+- [`SpatialDimPlot()`](https://mengxu98.github.io/scop/reference/SpatialDimPlot.md)
+  : Spatial dimensional plot
+
+### Cell-Cell Communication Plots
 
 - [`CCCHeatmap()`](https://mengxu98.github.io/scop/reference/CCCHeatmap.md)
   : CCC heatmap and dot matrix plot
@@ -309,72 +428,19 @@
   : CCC network and flow plots
 - [`CCCStatPlot()`](https://mengxu98.github.io/scop/reference/CCCStatPlot.md)
   : CCC statistical distribution and summary plots
+
+### Benchmark and Genomic Track Plots
+
 - [`BenchmarkPlot()`](https://mengxu98.github.io/scop/reference/BenchmarkPlot.md)
   : Plot benchmark metrics
-- [`CellDimPlot()`](https://mengxu98.github.io/scop/reference/CellDimPlot.md)
-  : Cell Dimensional Plot
-- [`CellDimPlot3D()`](https://mengxu98.github.io/scop/reference/CellDimPlot3D.md)
-  : 3D-Dimensional reduction plot for cell classification visualization.
-- [`CellDensityPlot()`](https://mengxu98.github.io/scop/reference/CellDensityPlot.md)
-  : Cell density plot
-- [`CellCorHeatmap()`](https://mengxu98.github.io/scop/reference/CellCorHeatmap.md)
-  : The Cell Correlation Heatmap
-- [`CellStatPlot()`](https://mengxu98.github.io/scop/reference/CellStatPlot.md)
-  : Statistical plot of cells
 - [`CoverageTrackPlot()`](https://mengxu98.github.io/scop/reference/CoverageTrackPlot.md)
   : Coverage track plot for ATAC data
-- [`CytoTRACEPlot()`](https://mengxu98.github.io/scop/reference/CytoTRACEPlot.md)
-  : Plot CytoTRACE 2 Results
-- [`DEtestPlot()`](https://mengxu98.github.io/scop/reference/DEtestPlot.md)
-  : Differential Expression Test Plot
-- [`DEtestManhattanPlot()`](https://mengxu98.github.io/scop/reference/DEtestManhattanPlot.md)
-  : DEtest Manhattan Plot
-- [`DEtestRingPlot()`](https://mengxu98.github.io/scop/reference/DEtestRingPlot.md)
-  : DEtest Ring Plot
 - [`DimsEstimatePlot()`](https://mengxu98.github.io/scop/reference/DimsEstimatePlot.md)
   : Dimension estimate diagnostic plot
-- [`DynamicPlot()`](https://mengxu98.github.io/scop/reference/DynamicPlot.md)
-  : Plot dynamic features across pseudotime
-- [`DynamicHeatmap()`](https://mengxu98.github.io/scop/reference/DynamicHeatmap.md)
-  : Heatmap plot for dynamic features along lineages
-- [`EnrichmentPlot()`](https://mengxu98.github.io/scop/reference/EnrichmentPlot.md)
-  : Enrichment Plot
-- [`FeatureDimPlot()`](https://mengxu98.github.io/scop/reference/FeatureDimPlot.md)
-  : Visualize feature values on a 2-dimensional reduction plot
-- [`FeatureDimPlot3D()`](https://mengxu98.github.io/scop/reference/FeatureDimPlot3D.md)
-  : 3D-Dimensional reduction plot for gene expression visualization.
-- [`FeatureHeatmap()`](https://mengxu98.github.io/scop/reference/FeatureHeatmap.md)
-  : Feature Heatmap
-- [`FeatureCorPlot()`](https://mengxu98.github.io/scop/reference/FeatureCorPlot.md)
-  : Features correlation plot
-- [`FeatureStatPlot()`](https://mengxu98.github.io/scop/reference/FeatureStatPlot.md)
-  : Statistical plot of features
-- [`GroupHeatmap()`](https://mengxu98.github.io/scop/reference/GroupHeatmap.md)
-  : The Group Heatmap
-- [`GSEAPlot()`](https://mengxu98.github.io/scop/reference/GSEAPlot.md)
-  : GSEA Plot
-- [`GSVAPlot()`](https://mengxu98.github.io/scop/reference/GSVAPlot.md)
-  : Plots for GSVA (Gene Set Variation Analysis)
 - [`LISIPlot()`](https://mengxu98.github.io/scop/reference/LISIPlot.md)
   : Plot LISI scores
-- [`LineagePlot()`](https://mengxu98.github.io/scop/reference/LineagePlot.md)
-  : Lineage Plot
-- [`MetabolismPlot()`](https://mengxu98.github.io/scop/reference/MetabolismPlot.md)
-  : Plots for metabolism pathway scoring
-- [`PAGAPlot()`](https://mengxu98.github.io/scop/reference/PAGAPlot.md)
-  : PAGA plot
-- [`ProjectionPlot()`](https://mengxu98.github.io/scop/reference/ProjectionPlot.md)
-  : Projection Plot
-- [`ProportionTestPlot()`](https://mengxu98.github.io/scop/reference/ProportionTestPlot.md)
-  : Proportion Test Plot
-- [`PseudotimeProjectionPlot()`](https://mengxu98.github.io/scop/reference/PseudotimeProjectionPlot.md)
-  : Pseudotime Projection Plot
 - [`TACSPlot()`](https://mengxu98.github.io/scop/reference/TACSPlot.md)
   : Transcript-averaged cell scoring (TACS)
-- [`VelocityPlot()`](https://mengxu98.github.io/scop/reference/VelocityPlot.md)
-  : Velocity Plot
-- [`VolcanoPlot()`](https://mengxu98.github.io/scop/reference/VolcanoPlot.md)
-  : Volcano Plot
 
 ### SCExplorer
 
@@ -406,5 +472,7 @@
   : A small human PBMC multiome example dataset
 - [`ref_scMCA`](https://mengxu98.github.io/scop/reference/ref_scMCA.md)
   : Reference datasets for cell type annotation in single-cell RNA data
+- [`visium_human_pancreas_sub`](https://mengxu98.github.io/scop/reference/visium_human_pancreas_sub.md)
+  : A human pancreas Visium spatial example dataset
 - [`words_excluded`](https://mengxu98.github.io/scop/reference/words_excluded.md)
   : Excluded words in keyword enrichment analysis and extraction

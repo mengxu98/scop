@@ -127,121 +127,59 @@ If `combine = FALSE`, returns a named list of ggplot objects:
 ## Examples
 
 ``` r
-if (thisutils::check_ci_env()) {
-  data(pancreas_sub)
-  pancreas_sub <- standard_scop(pancreas_sub)
-  pancreas_sub <- RunCytoTRACE(
-    pancreas_sub,
-    species = "Mus_musculus"
-  )
+data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
+#> ℹ [2026-05-11 14:48:18] Start standard processing workflow...
+#> ℹ [2026-05-11 14:48:19] Checking a list of <Seurat>...
+#> ! [2026-05-11 14:48:19] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-11 14:48:19] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 14:48:21] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 14:48:21] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-11 14:48:21] Number of available HVF: 2000
+#> ℹ [2026-05-11 14:48:22] Finished check
+#> ℹ [2026-05-11 14:48:22] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-11 14:48:22] Perform pca linear dimension reduction
+#> ℹ [2026-05-11 14:48:22] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-05-11 14:48:23] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-11 14:48:23] Reorder clusters...
+#> ℹ [2026-05-11 14:48:23] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-11 14:48:23] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-11 14:48:23] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-05-11 14:48:27] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-05-11 14:48:30] Standard processing workflow completed
+pancreas_sub <- RunCytoTRACE(
+  pancreas_sub,
+  species = "Mus_musculus"
+)
+#> ◌ [2026-05-11 14:48:30] Running CytoTRACE2
+#> ℹ [2026-05-11 14:48:30] Extracting expression matrix from `assay = RNA, layer = counts`
+#> ℹ [2026-05-11 14:48:30] Downloading CytoTRACE2 model data from GitHub repository...
+#> ℹ [2026-05-11 14:48:30]   Downloading model_parameters.rds ...
+#> ℹ [2026-05-11 14:48:32]   Downloading features_model_training_17.csv ...
+#> ℹ [2026-05-11 14:48:32]   Downloading mt_dict_human_to_mouse.csv ...
+#> ℹ [2026-05-11 14:48:33]   Downloading mt_human_alias.csv ...
+#> ℹ [2026-05-11 14:48:33]   Downloading mt_mouse_alias.csv ...
+#> ℹ [2026-05-11 14:48:33] Loading CytoTRACE2 model data from /home/runner/.local/share/R/scop/CytoTRACE2
+#> ℹ [2026-05-11 14:48:36] Dataset contains 15998 genes and 1000 cells.
+#> ℹ [2026-05-11 14:48:36] Running on 1 subsample(s)
+#> ℹ [2026-05-11 14:48:36] Preprocessing subsample (1000 cells)
+#> ℹ [2026-05-11 14:48:36] 12486 input genes mapped to model genes.
+#> ℹ [2026-05-11 14:48:40] Running ensemble prediction and postprocessing
+#> ℹ [2026-05-11 14:48:40] Computing PCA for kNN smoothing
+#> ✔ [2026-05-11 14:49:28] CytoTRACE2 computed successfully
 
-  CytoTRACEPlot(
-    pancreas_sub,
-    group.by = "CellType"
-  )
+CytoTRACEPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  xlab = "UMAP_1",
+  ylab = "UMAP_2"
+)
 
-  plots <- CytoTRACEPlot(
-    pancreas_sub,
-    group.by = "CellType",
-    combine = FALSE
-  )
-  plots$Boxplot
-}
-#> ℹ [2026-05-02 04:19:49] Start standard processing workflow...
-#> ℹ [2026-05-02 04:19:50] Checking a list of <Seurat>...
-#> ! [2026-05-02 04:19:50] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-02 04:19:50] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-02 04:19:52] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-02 04:19:53] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-02 04:19:53] Number of available HVF: 2000
-#> ℹ [2026-05-02 04:19:53] Finished check
-#> ℹ [2026-05-02 04:19:53] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-02 04:19:54] Perform pca linear dimension reduction
-#> ℹ [2026-05-02 04:19:54] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-05-02 04:19:54] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-02 04:19:55] Reorder clusters...
-#> ℹ [2026-05-02 04:19:55] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-02 04:19:55] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-02 04:19:55] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-05-02 04:19:58] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-05-02 04:20:01] Standard processing workflow completed
-#> ◌ [2026-05-02 04:20:01] Running CytoTRACE2
-#> ℹ [2026-05-02 04:20:01] Package CytoTRACE2 is not installed. Installing from GitHub...
-#>  
-#> → Will install 6 packages.
-#> → All 6 packages (0 B) are cached.
-#> + CytoTRACE2     1.1.0    [bld][cmp] (GitHub: 4a398a4)
-#> + HiClimR        2.2.1     + ✔ libnetcdf-dev
-#> + RcppParallel   5.1.11-2  + ✔ make
-#> + Rfast          2.1.5.2  
-#> + ncdf4          1.24      + ✔ libnetcdf-dev
-#> + zigg           0.0.2    
-#> ✔ All system requirements are already installed.
-#>   
-#> ℹ No downloads are needed, 6 pkgs are cached
-#> ✔ Got zigg 0.0.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (31.59 kB)
-#> ✔ Got ncdf4 1.24 (x86_64-pc-linux-gnu-ubuntu-24.04) (282.95 kB)
-#> ✔ Got HiClimR 2.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (585.13 kB)
-#> ✔ Got Rfast 2.1.5.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.00 MB)
-#> ✔ Got CytoTRACE2 1.1.0 (source) (182.95 MB)
-#> ℹ Installing system requirements
-#> ℹ Executing `sudo sh -c apt-get -y update`
-#> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
-#> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
-#> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
-#> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Hit:8 https://dl.google.com/linux/chrome-stable/deb stable InRelease
-#> Reading package lists...
-#> ℹ Executing `sudo sh -c apt-get -y install libnetcdf-dev make libcurl4-openssl-dev libssl-dev cmake libuv1-dev zlib1g-dev libglpk-dev libxml2-dev pandoc libpng-dev python3 libicu-dev`
-#> Reading package lists...
-#> Building dependency tree...
-#> Reading state information...
-#> libnetcdf-dev is already the newest version (1:4.9.2-5ubuntu4).
-#> libnetcdf-dev set to manually installed.
-#> make is already the newest version (4.3-4.1build2).
-#> libcurl4-openssl-dev is already the newest version (8.5.0-2ubuntu10.8).
-#> libssl-dev is already the newest version (3.0.13-0ubuntu3.9).
-#> cmake is already the newest version (3.28.3-1build7).
-#> libuv1-dev is already the newest version (1.48.0-1.1build1).
-#> zlib1g-dev is already the newest version (1:1.3.dfsg-3.1ubuntu2.1).
-#> libglpk-dev is already the newest version (5.0-1build2).
-#> libxml2-dev is already the newest version (2.9.14+dfsg-1.3ubuntu3.7).
-#> pandoc is already the newest version (3.1.3+ds-2).
-#> libpng-dev is already the newest version (1.6.43-5ubuntu0.5).
-#> python3 is already the newest version (3.12.3-0ubuntu2.1).
-#> libicu-dev is already the newest version (74.2-1ubuntu3.1).
-#> 0 upgraded, 0 newly installed, 0 to remove and 52 not upgraded.
-#> ✔ Installed HiClimR 2.2.1  (49ms)
-#> ✔ Installed ncdf4 1.24  (71ms)
-#> ✔ Installed RcppParallel 5.1.11-2  (111ms)
-#> ✔ Installed Rfast 2.1.5.2  (134ms)
-#> ✔ Installed zigg 0.0.2  (111ms)
-#> ℹ Packaging CytoTRACE2 1.1.0
-#> ✔ Packaged CytoTRACE2 1.1.0 (2.7s)
-#> ℹ Building CytoTRACE2 1.1.0
-#> ✔ Built CytoTRACE2 1.1.0 (9.2s)
-#> ✔ Installed CytoTRACE2 1.1.0 (github::digitalcytometry/cytotrace2@4a398a4) (129ms)
-#> ✔ 1 pkg + 143 deps: kept 138, added 6, dld 5 (NA B) [29.6s]
-#> Warning: replacing previous import ‘data.table::first’ by ‘dplyr::first’ when loading ‘CytoTRACE2’
-#> Warning: replacing previous import ‘data.table::between’ by ‘dplyr::between’ when loading ‘CytoTRACE2’
-#> Warning: replacing previous import ‘data.table::last’ by ‘dplyr::last’ when loading ‘CytoTRACE2’
-#> cytotrace2: Started loading data
-#> Dataset contains 15998 genes and 1000 cells.
-#> The number of cells in your dataset is less than 1000. Fast mode has been disabled.
-#> The passed subsample size is greater than the number of cells in dataset.
-#> Now setting subsample size to 1000
-#> cytotrace2: Running on 1 subsample(s) approximately of length 1000
-#> cytotrace2: Started running on subsample(s). This will take a few minutes.
-#> cytotrace2: Started preprocessing.
-#> 12486 input genes mapped to model genes.
-#> cytotrace2: Started prediction.
-#> This section will run using  1 / 4 core(s).
-#> cytotrace2: Started postprocessing.
-#> cytotrace2: Running with slow mode (subsamples are processed sequentially)
-#> Number of cores for KNN: 1
-#> cytotrace2: Finished
-#> ✔ [2026-05-02 04:22:09] CytoTRACE2 computed successfully
+
+plots <- CytoTRACEPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  combine = FALSE
+)
+plots$Boxplot
 ```

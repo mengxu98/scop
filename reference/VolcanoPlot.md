@@ -11,12 +11,15 @@ VolcanoPlot(
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,
+  group_use = NULL,
   DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
-  x_metric = "diff_pct",
+  x_metric = NULL,
+  y_metric = NULL,
   palette = "RdBu",
   palcolor = NULL,
   pt.size = 1,
   pt.alpha = 1,
+  cols.background = "grey80",
   cols.highlight = "black",
   sizes.highlight = 1,
   alpha.highlight = 1,
@@ -28,8 +31,8 @@ VolcanoPlot(
   label.bg.r = 0.1,
   label.size = 4,
   aspect.ratio = NULL,
-  xlab = x_metric,
-  ylab = "-log10(p-adjust)",
+  xlab = NULL,
+  ylab = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
   combine = TRUE,
@@ -74,73 +77,30 @@ VolcanoPlot(
   `p_val_adj`, and optionally `pct.1` and `pct.2` for calculating
   `diff_pct`.
 
+- group_use:
+
+  Groups to plot. Default is `NULL` (all groups).
+
 - DE_threshold:
 
   A character string specifying the threshold for differential
   expression (used to highlight significant genes in all plot types).
-  Default is `"avg_log2FC > 0 & p_val_adj < 0.05"`.
+  Default is `"p_val < 0.05"` for sample-level methods (`"edgeR"` and
+  `"limma"`) and `"avg_log2FC > 0 & p_val_adj < 0.05"` otherwise.
 
 - x_metric:
 
   A character string specifying the metric to use for the x-axis (only
-  for volcano plot). Default is `"diff_pct"`.
+  for volcano plot). Default is `NULL`, which uses `"avg_log2FC"` for
+  sample-level methods (`"edgeR"` and `"limma"`) and `"diff_pct"`
+  otherwise.
 
-- threshold_method:
+- y_metric:
 
-  Volcano significance threshold method. Options are `"rectangular"`
-  (legacy DE_threshold) or `"hyperbolic"`
-  (`|log2FC * -log10(padj)| > c`). Default is `"rectangular"`.
-
-- hyperbola_c:
-
-  Numeric cutoff `c` for hyperbolic volcano threshold. Default is `6`.
-
-- annotate_enrichment:
-
-  Whether to annotate enrichment-hit genes on volcano plots. Enrichment
-  results are read from existing results in `srt@tools` only. Default is
-  `FALSE`.
-
-- enrich_from:
-
-  Character vector specifying enrichment result source(s) to annotate.
-  Options are `"Enrichment"`, `"GSEA"`, `"GSVA"`. Default is
-  `c("Enrichment", "GSEA", "GSVA")`.
-
-- enrich_db:
-
-  Optional database filter for enrichment annotation, e.g. `"GO_BP"` or
-  `"KEGG"`. Default is `NULL`.
-
-- enrich_terms:
-
-  Optional whitelist of enrichment term IDs or names for annotation.
-  Default is `NULL`.
-
-- enrich_top_terms:
-
-  Number of top enriched terms selected per source/group/database.
-  Default is `3`.
-
-- enrich_padj_cutoff:
-
-  Adjusted p-value cutoff for `"Enrichment"` and `"GSEA"` annotation.
-  Default is `0.05`.
-
-- enrich_gsva_score_cutoff:
-
-  Optional absolute GSVA score cutoff for `"GSVA"` annotation. Default
-  is `NULL`.
-
-- gsva_method:
-
-  Optional GSVA method filter (e.g. `"gsva"` or `"ssgsea"`) when
-  multiple GSVA tool slots exist. Default is `NULL`.
-
-- enrich_nlabel:
-
-  Maximum number of enrichment-derived labels added per group. Labels
-  from `features_label` are always retained. Default is `15`.
+  A character string specifying the metric to use for the y-axis.
+  Options: `"p_val"` or `"p_val_adj"`. Default is `"p_val"` for
+  sample-level methods (`"edgeR"` and `"limma"`) and `"p_val_adj"`
+  otherwise.
 
 - palette:
 
@@ -159,6 +119,11 @@ VolcanoPlot(
 - pt.alpha:
 
   The transparency of the data points. Default is `1`.
+
+- cols.background:
+
+  A character string specifying the color for non-DE background points
+  in volcano plots. Default is `"grey80"`.
 
 - cols.highlight:
 
@@ -243,6 +208,63 @@ VolcanoPlot(
 
   Whether to fill plots by row. Default is `TRUE`.
 
+- threshold_method:
+
+  Volcano significance threshold method. Options are `"rectangular"`
+  (legacy DE_threshold) or `"hyperbolic"`
+  (`|log2FC * -log10(padj)| > c`). Default is `"rectangular"`.
+
+- hyperbola_c:
+
+  Numeric cutoff `c` for hyperbolic volcano threshold. Default is `6`.
+
+- annotate_enrichment:
+
+  Whether to annotate enrichment-hit genes on volcano plots. Enrichment
+  results are read from existing results in `srt@tools` only. Default is
+  `FALSE`.
+
+- enrich_from:
+
+  Character vector specifying enrichment result source(s) to annotate.
+  Options are `"Enrichment"`, `"GSEA"`, `"GSVA"`. Default is
+  `c("Enrichment", "GSEA", "GSVA")`.
+
+- enrich_db:
+
+  Optional database filter for enrichment annotation, e.g. `"GO_BP"` or
+  `"KEGG"`. Default is `NULL`.
+
+- enrich_terms:
+
+  Optional whitelist of enrichment term IDs or names for annotation.
+  Default is `NULL`.
+
+- enrich_top_terms:
+
+  Number of top enriched terms selected per source/group/database.
+  Default is `3`.
+
+- enrich_padj_cutoff:
+
+  Adjusted p-value cutoff for `"Enrichment"` and `"GSEA"` annotation.
+  Default is `0.05`.
+
+- enrich_gsva_score_cutoff:
+
+  Optional absolute GSVA score cutoff for `"GSVA"` annotation. Default
+  is `NULL`.
+
+- gsva_method:
+
+  Optional GSVA method filter (e.g. `"gsva"` or `"ssgsea"`) when
+  multiple GSVA tool slots exist. Default is `NULL`.
+
+- enrich_nlabel:
+
+  Maximum number of enrichment-derived labels added per group. Labels
+  from `features_label` are always retained. Default is `15`.
+
 ## See also
 
 [DEtestPlot](https://mengxu98.github.io/scop/reference/DEtestPlot.md),
@@ -255,36 +277,51 @@ VolcanoPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-02 05:30:02] Start standard processing workflow...
-#> ℹ [2026-05-02 05:30:02] Checking a list of <Seurat>...
-#> ! [2026-05-02 05:30:02] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-02 05:30:02] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-02 05:30:05] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-02 05:30:05] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-02 05:30:05] Number of available HVF: 2000
-#> ℹ [2026-05-02 05:30:06] Finished check
-#> ℹ [2026-05-02 05:30:06] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-02 05:30:06] Perform pca linear dimension reduction
-#> ℹ [2026-05-02 05:30:06] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-05-02 05:30:07] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-02 05:30:07] Reorder clusters...
-#> ℹ [2026-05-02 05:30:07] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-02 05:30:07] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-02 05:30:07] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-05-02 05:30:12] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-05-02 05:30:17] Standard processing workflow completed
+#> ℹ [2026-05-11 16:32:56] Start standard processing workflow...
+#> ℹ [2026-05-11 16:32:56] Checking a list of <Seurat>...
+#> ! [2026-05-11 16:32:57] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-11 16:32:57] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 16:32:58] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 16:32:59] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-11 16:32:59] Number of available HVF: 2000
+#> ℹ [2026-05-11 16:32:59] Finished check
+#> ℹ [2026-05-11 16:32:59] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-11 16:32:59] Perform pca linear dimension reduction
+#> ℹ [2026-05-11 16:33:00] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-05-11 16:33:00] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-11 16:33:01] Reorder clusters...
+#> ℹ [2026-05-11 16:33:01] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-11 16:33:01] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-11 16:33:01] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-05-11 16:33:06] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-05-11 16:33:10] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> Error in run_sparse_wilcox_all_cells_cpp_available(): could not find function "run_sparse_wilcox_all_cells_cpp_available"
+#> ℹ [2026-05-11 16:33:11] Data type is log-normalized
+#> ℹ [2026-05-11 16:33:11] Start differential expression test
+#> ℹ [2026-05-11 16:33:11] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-05-11 16:33:11] Using 1 core
+#> ⠙ [2026-05-11 16:33:11] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ✔ [2026-05-11 16:33:11] Completed 5 tasks in 887ms
+#> 
+#> ℹ [2026-05-11 16:33:11] Building results
+#> ✔ [2026-05-11 16:33:12] Differential expression test completed
 VolcanoPlot(
   pancreas_sub,
   group.by = "CellType",
   ncol = 2
 )
-#> Error in get_de_data(srt, group.by, test.use, DE_threshold, res): Cannot find the DEtest result for the group "CellType". Perform
-#> `RunDEtest()` first
+
+
+VolcanoPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  group_use = c("Ductal", "Endocrine"),
+  ncol = 2
+)
+
 
 VolcanoPlot(
   pancreas_sub,
@@ -292,25 +329,55 @@ VolcanoPlot(
   DE_threshold = "abs(diff_pct) > 0.3 & p_val_adj < 0.05",
   ncol = 2
 )
-#> Error in get_de_data(srt, group.by, test.use, DE_threshold, res): Cannot find the DEtest result for the group "CellType". Perform
-#> `RunDEtest()` first
+
 
 VolcanoPlot(
   pancreas_sub,
   group.by = "CellType",
   x_metric = "avg_log2FC",
+  y_metric = "p_val",
+  DE_threshold = "abs(avg_log2FC) > log2(1.5) & p_val < 0.05",
   ncol = 2
 )
-#> Error in get_de_data(srt, group.by, test.use, DE_threshold, res): Cannot find the DEtest result for the group "CellType". Perform
-#> `RunDEtest()` first
 
-if (FALSE) { # \dontrun{
+
+VolcanoPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  threshold_method = "hyperbolic",
+  hyperbola_c = 6,
+  ncol = 2
+)
+#> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> (`geom_line()`).
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
+#> (`geom_line()`).
+#> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> (`geom_line()`).
+#> Warning: Removed 11 rows containing missing values or values outside the scale range
+#> (`geom_line()`).
+#> Warning: Removed 5 rows containing missing values or values outside the scale range
+#> (`geom_line()`).
+
+
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
   group.by = "CellType",
   db = "GO_BP",
   species = "Mus_musculus"
 )
+#> ℹ [2026-05-11 16:33:20] Start Enrichment analysis
+#> ℹ [2026-05-11 16:33:20] Species: "Mus_musculus"
+#> ℹ [2026-05-11 16:33:20] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-11 14:55:43
+#> ℹ [2026-05-11 16:33:21] Permform enrichment...
+#> ℹ [2026-05-11 16:33:21] Using 1 core
+#> ⠙ [2026-05-11 16:33:21] Running for 1 [1/5] ■■          20% | ETA: 19s
+#> ⠹ [2026-05-11 16:33:21] Running for 3 [3/5] ■■■■■■      60% | ETA:  7s
+#> ⠸ [2026-05-11 16:33:21] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  3s
+#> ✔ [2026-05-11 16:33:21] Completed 5 tasks in 16.6s
+#> 
+#> ℹ [2026-05-11 16:33:21] Building results
+#> ✔ [2026-05-11 16:33:38] Enrichment analysis done
 VolcanoPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -321,5 +388,14 @@ VolcanoPlot(
   enrich_db = "GO_BP",
   ncol = 2
 )
-} # }
+#> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> (`geom_line()`).
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
+#> (`geom_line()`).
+#> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> (`geom_line()`).
+#> Warning: Removed 11 rows containing missing values or values outside the scale range
+#> (`geom_line()`).
+#> Warning: Removed 5 rows containing missing values or values outside the scale range
+#> (`geom_line()`).
 ```

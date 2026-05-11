@@ -19,6 +19,7 @@ RunHarmony2(
   dims.use = 1:30,
   project.dim = TRUE,
   reduction.name = "Harmony",
+  reduction.save = NULL,
   reduction.key = "Harmony_",
   verbose = TRUE,
   seed.use = 11,
@@ -65,6 +66,11 @@ RunHarmony2(
   The name of the reduction to be stored in the Seurat object. Default
   is `"Harmony"`.
 
+- reduction.save:
+
+  Deprecated alias for `reduction.name`, retained for compatibility with
+  [`harmony::RunHarmony.Seurat`](https://pati-ni.github.io/harmony/reference/RunHarmony.Seurat.html).
+
 - reduction.key:
 
   The prefix for the column names of the Harmony embeddings. Default is
@@ -83,24 +89,24 @@ RunHarmony2(
 ``` r
 data(panc8_sub)
 panc8_sub <- standard_scop(panc8_sub)
-#> ℹ [2026-05-02 05:12:28] Start standard processing workflow...
-#> ℹ [2026-05-02 05:12:28] Checking a list of <Seurat>...
-#> ! [2026-05-02 05:12:29] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-02 05:12:29] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-02 05:12:31] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-02 05:12:32] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-02 05:12:32] Number of available HVF: 2000
-#> ℹ [2026-05-02 05:12:32] Finished check
-#> ℹ [2026-05-02 05:12:32] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-02 05:12:33] Perform pca linear dimension reduction
-#> ℹ [2026-05-02 05:12:34] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-05-02 05:12:34] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-02 05:12:34] Reorder clusters...
-#> ℹ [2026-05-02 05:12:35] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-02 05:12:35] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-02 05:12:35] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-05-02 05:12:40] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-05-02 05:12:46] Standard processing workflow completed
+#> ℹ [2026-05-11 16:11:06] Start standard processing workflow...
+#> ℹ [2026-05-11 16:11:06] Checking a list of <Seurat>...
+#> ! [2026-05-11 16:11:06] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-11 16:11:06] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 16:11:08] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 16:11:09] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-11 16:11:09] Number of available HVF: 2000
+#> ℹ [2026-05-11 16:11:09] Finished check
+#> ℹ [2026-05-11 16:11:09] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-11 16:11:09] Perform pca linear dimension reduction
+#> ℹ [2026-05-11 16:11:10] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-05-11 16:11:11] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-11 16:11:11] Reorder clusters...
+#> ℹ [2026-05-11 16:11:11] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-11 16:11:11] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-11 16:11:11] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-05-11 16:11:16] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-05-11 16:11:21] Standard processing workflow completed
 panc8_sub <- RunHarmony2(
   panc8_sub,
   group.by.vars = "tech",
@@ -142,7 +148,7 @@ panc8_sub <- standard_scop(
   prefix = "Harmony",
   linear_reduction = "Harmony"
 )
-#> ℹ [2026-05-02 05:12:56] Start standard processing workflow...
+#> ℹ [2026-05-11 16:11:22] Start standard processing workflow...
 #> Error in standard_scop(panc8_sub, prefix = "Harmony", linear_reduction = "Harmony"): `linear_reduction` must be one of: "pca", "svd", "ica", "nmf", "mds",
 #> and "glmpca"
 

@@ -76,7 +76,8 @@ MultiMAP_integrate(
 - normalization_method:
 
   The normalization method to be used. Possible values are
-  `"LogNormalize"`, `"SCT"`, and `"TFIDF"`. Default is `"LogNormalize"`.
+  `"LogNormalize"`, `"SCT"`, `"TFIDF"`, and `"scran"`. Default is
+  `"LogNormalize"`.
 
 - do_HVF_finding:
 
@@ -92,7 +93,7 @@ MultiMAP_integrate(
 - HVF_method:
 
   The method to use for finding highly variable features. Options are
-  `"vst"`, `"mvp"`, or `"disp"`. Default is `"vst"`.
+  `"vst"`, `"mvp"`, `"disp"`, or `"scran"`. Default is `"vst"`.
 
 - nHVF:
 
@@ -223,3 +224,18 @@ MultiMAP_integrate(
 - seed:
 
   Random seed for reproducibility. Default is `11`.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+data("pbmcmultiome_sub", package = "scop")
+pbmcmultiome_sub$batch <- rep(c("batch1", "batch2"), length.out = ncol(pbmcmultiome_sub))
+pbmcmultiome_sub <- MultiMAP_integrate(
+  srt_merge = pbmcmultiome_sub,
+  batch = "batch",
+  linear_reduction_dims = 20,
+  linear_reduction_dims_use = 1:10
+)
+} # }
+```

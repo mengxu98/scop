@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Coverage track plot for ATAC data</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/CoverageTrackPlot.R" class="external-link"><code>R/CoverageTrackPlot.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/CoverageTrackPlot.R" class="external-link"><code>R/CoverageTrackPlot.R</code></a></small>
       <div class="d-none name"><code>CoverageTrackPlot.Rd</code></div>
     </div>
 
@@ -133,6 +133,20 @@ Default is <code>NULL</code>.</p></dd>
     <p>A coverage plot object.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"pbmcmultiome_sub"</span>, package <span class="op">=</span> <span class="st">"scop"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Coverage plotting requires an ATAC object with valid fragment information.</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu">Signac</span><span class="fu">::</span><span class="fu"><a href="https://stuartlab.org/signac/reference/Fragments.html" class="external-link">Fragments</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span><span class="op">[[</span><span class="st">"peaks"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu">CoverageTrackPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">pbmcmultiome_sub</span>,</span></span>
+<span class="r-in"><span>    region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span><span class="op">[[</span><span class="st">"peaks"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>    assay <span class="op">=</span> <span class="st">"peaks"</span>,</span></span>
+<span class="r-in"><span>    group.by <span class="op">=</span> <span class="st">"CellType"</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

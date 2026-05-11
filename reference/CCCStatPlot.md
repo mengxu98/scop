@@ -11,8 +11,9 @@ CCCStatPlot(
   condition = NULL,
   dataset = 1,
   comparison = c(1, 2),
-  plot_type = c("bar", "sankey", "box", "violin", "comparison", "lr_contribution",
-    "gene", "ranknet", "scatter", "role_change"),
+  plot_type = c("bar", "sankey", "box", "violin", "role_scatter", "role_network",
+    "role_network_marsilea", "pathway_summary", "comparison", "lr_contribution", "gene",
+    "ranknet", "scatter", "role_change"),
   display_by = c("aggregation", "interaction"),
   sender.use = NULL,
   receiver.use = NULL,
@@ -30,6 +31,7 @@ CCCStatPlot(
   stat_type = c("score", "count"),
   top_n = 20,
   x_text_angle = 90,
+  min_receiver_flow = 0,
   link_alpha = 0.6,
   facet_by = NULL,
   edge_value = c("sum", "mean", "max", "count"),
@@ -85,8 +87,8 @@ CCCStatPlot(
 
   Plot type. One of:
 
-  - `"bar"` — horizontal bar chart of top interactions by aggregated
-    score.
+  - `"bar"` — horizontal bar chart of top pairs or interactions
+    according to `display_by`.
 
   - `"sankey"` — alluvial/sankey flow diagram.
 
@@ -174,6 +176,12 @@ CCCStatPlot(
 - x_text_angle:
 
   Rotation angle for x-axis labels.
+
+- min_receiver_flow:
+
+  For `"sankey"`: minimum total receiver-side flow retained after top-N
+  ranking. Useful when many small receiver nodes make the right side
+  unreadable.
 
 - link_alpha:
 
@@ -410,45 +418,44 @@ CCCStatPlot(
   plot_type = "role_change"
 )
 }
-#> ℹ [2026-05-02 04:05:37] Start standard processing workflow...
-#> ℹ [2026-05-02 04:05:38] Checking a list of <Seurat>...
-#> ! [2026-05-02 04:05:39] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-02 04:05:39] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-02 04:05:41] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-02 04:05:42] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-02 04:05:42] Number of available HVF: 2000
-#> ℹ [2026-05-02 04:05:42] Finished check
-#> ℹ [2026-05-02 04:05:42] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-02 04:05:43] Perform pca linear dimension reduction
-#> ℹ [2026-05-02 04:05:51] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-05-02 04:05:51] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-02 04:05:51] Reorder clusters...
-#> ℹ [2026-05-02 04:05:52] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-02 04:05:52] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-02 04:05:52] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-05-02 04:05:54] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-05-02 04:05:57] Standard processing workflow completed
-#> ℹ [2026-05-02 04:05:57] Start CellChat analysis
-#> ℹ [2026-05-02 04:08:45] Processing condition: "ConditionA"
+#> ℹ [2026-05-11 14:26:05] Start standard processing workflow...
+#> ℹ [2026-05-11 14:26:06] Checking a list of <Seurat>...
+#> ! [2026-05-11 14:26:06] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-11 14:26:06] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 14:26:07] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 14:26:08] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-11 14:26:08] Number of available HVF: 2000
+#> ℹ [2026-05-11 14:26:08] Finished check
+#> ℹ [2026-05-11 14:26:08] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-11 14:26:08] Perform pca linear dimension reduction
+#> ℹ [2026-05-11 14:26:09] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-05-11 14:26:09] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-11 14:26:09] Reorder clusters...
+#> ℹ [2026-05-11 14:26:10] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-11 14:26:10] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-11 14:26:10] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-05-11 14:26:12] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-05-11 14:26:14] Standard processing workflow completed
+#> ℹ [2026-05-11 14:26:14] Start CellChat analysis
+#> ℹ [2026-05-11 14:26:14] Processing condition: "ConditionA"
 #> [1] "Create a CellChat object from a data matrix"
 #> Set cell identities for the new CellChat object 
 #> The cell groups used for CellChat analysis are  Ductal, Ngn3-high-EP, Endocrine, Ngn3-low-EP, Pre-endocrine 
 #> The number of highly variable ligand-receptor pairs used for signaling inference is 542 
 #> triMean is used for calculating the average gene expression per cell group. 
-#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-05-02 04:08:46.26782]"
-#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-05-02 04:09:03.476787]"
-#> ℹ [2026-05-02 04:09:03] Processing condition: "ConditionB"
+#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-05-11 14:26:15.811634]"
+#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-05-11 14:26:33.528361]"
+#> ℹ [2026-05-11 14:26:33] Processing condition: "ConditionB"
 #> [1] "Create a CellChat object from a data matrix"
 #> Set cell identities for the new CellChat object 
 #> The cell groups used for CellChat analysis are  Endocrine, Ngn3-high-EP, Ductal, Ngn3-low-EP, Pre-endocrine 
 #> The number of highly variable ligand-receptor pairs used for signaling inference is 601 
 #> triMean is used for calculating the average gene expression per cell group. 
-#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-05-02 04:09:04.519347]"
-#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-05-02 04:09:25.046541]"
-#> ℹ [2026-05-02 04:09:25] Merging CellChat objects for comparison "ConditionA_vs_ConditionB"
+#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-05-11 14:26:34.524143]"
+#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-05-11 14:26:52.685784]"
+#> ℹ [2026-05-11 14:26:52] Merging CellChat objects for comparison "ConditionA_vs_ConditionB"
 #> Merge the following slots: 'data.signaling','images','net', 'netP','meta', 'idents', 'var.features' , 'DB', and 'LR'.
-#> ✔ [2026-05-02 04:09:25] CellChat analysis completed
-#> ! [2026-05-02 04:09:45] `thisplot::StatPlot()` sankey is count-based. For `CCCStatPlot()` with `plot_type = 'sankey'`, `edge_value` is used to rank/filter pairs, but flow width is shown by interaction count.
-#> ℹ [2026-05-02 04:09:47] Setting `group.by` to "Features" as `plot.by` is set to "feature"
-#> Error in ccc_stat_comparison_plot(srt = srt, method = method, condition = condition,     comparison = comparison, measure = measure, compare_by = compare_by,     pattern = pattern, title = title, subtitle = subtitle, palette = palette_cfg$cell_palette,     palcolor = palette_cfg$cell_palcolor, legend.position = legend.position,     legend.direction = legend.direction, font.size = font.size,     theme_use = theme_use, theme_args = theme_args, grid_major = grid_major,     grid_major_colour = grid_major_colour, grid_major_linetype = grid_major_linetype,     grid_major_linewidth = grid_major_linewidth): unused arguments (grid_major = grid_major, grid_major_colour = grid_major_colour, grid_major_linetype = grid_major_linetype, grid_major_linewidth = grid_major_linewidth)
+#> ✔ [2026-05-11 14:26:53] CellChat analysis completed
+#> ! [2026-05-11 14:26:59] `thisplot::StatPlot()` sankey is count-based. For `CCCStatPlot()` with `plot_type = 'sankey'`, `edge_value` is used to rank/filter pairs, but flow width is shown by interaction count.
+#> ℹ [2026-05-11 14:27:02] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 ```

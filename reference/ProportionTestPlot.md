@@ -1,9 +1,9 @@
 # Proportion Test Plot
 
-Generate differential abundance visualizations from outputs of
+Generate differential-abundance plots based on results from
 [RunProportionTest](https://mengxu98.github.io/scop/reference/RunProportionTest.md).
-Main display styles are effect-size view and UMAP projection view, while
-legacy plot types remain callable for compatibility.
+Supports both legacy storage and method-layer storage from the
+multi-method proportion-test workflow.
 
 ## Usage
 
@@ -12,17 +12,8 @@ ProportionTestPlot(
   srt,
   comparison = NULL,
   proportion_method = NULL,
-  result_level = c("group", "neighborhood"),
-  plot_type = c(
-    "effect",
-    "umap",
-    "volcano",
-    "manhattan",
-    "ring",
-    "milo_beeswarm",
-    "milo_graph",
-    "sccoda_forest"
-  ),
+  result_level = c("group"),
+  plot_type = c("effect", "umap"),
   umap_mode = c("discrete", "continuous"),
   reduction = "UMAP",
   projection_args = list(),
@@ -67,42 +58,44 @@ ProportionTestPlot(
 
 - srt:
 
-  A Seurat object containing proportion test results.
+  A Seurat object containing proportion-test results.
 
 - comparison:
 
-  A character vector specifying which comparisons to plot. If `NULL`,
-  all stored comparisons are plotted.
+  A character string specifying which comparison to plot. If `NULL`,
+  plots all comparisons.
 
 - proportion_method:
 
-  Optional method to select from method-layer results. If `NULL`,
-  active/most recent method is used.
+  Optional method to select from
+  `srt@tools[['ProportionTest']][['methods']]`. If `NULL`, uses the
+  active/most recent method.
 
 - result_level:
 
-  Result level for plotting: `"group"` or `"neighborhood"`.
+  Result level to draw. Currently only `"group"` is used.
 
 - plot_type:
 
-  Plot type. Main recommended values are `"effect"` and `"umap"`. Legacy
-  values are retained for compatibility: `"volcano"`, `"manhattan"`,
-  `"ring"`, `"milo_beeswarm"`, `"milo_graph"`, and `"sccoda_forest"`.
+  Plot type. One of `"effect"` or `"umap"`.
 
 - umap_mode:
 
-  UMAP mapping mode when `plot_type = "umap"`. `"discrete"` maps cells
-  to `Increased/Decreased/NS`; `"continuous"` maps group-level
+  UMAP projection mode for `plot_type = "umap"`. `"discrete"` maps cells
+  to DA direction categories; `"continuous"` maps cells to group-level
   `obs_log2FD`.
 
 - reduction:
 
-  Reduction name used for UMAP projection.
+  Reduction name used by UMAP projection.
 
 - projection_args:
 
-  Additional arguments passed through to `CellDimPlot` (discrete mode)
-  or `FeatureDimPlot` (continuous mode).
+  Additional arguments passed to
+  [CellDimPlot](https://mengxu98.github.io/scop/reference/CellDimPlot.md)
+  (`umap_mode = "discrete"`) or
+  [FeatureDimPlot](https://mengxu98.github.io/scop/reference/FeatureDimPlot.md)
+  (`umap_mode = "continuous"`).
 
 - FDR_threshold:
 
@@ -114,11 +107,12 @@ ProportionTestPlot(
 
 - order_by:
 
-  Method to order clusters. Options: `"name"`, `"value"`.
+  Method to order clusters. Options: `"name"` (alphabetical), `"value"`
+  (by log2FD value).
 
 - palette:
 
-  Palette name for continuous effect coloring.
+  Color palette name for continuous effect coloring.
 
 - palcolor:
 
@@ -126,7 +120,7 @@ ProportionTestPlot(
 
 - group_palette:
 
-  Palette name for cluster/group coloring.
+  Palette for cluster/group coloring.
 
 - group_palcolor:
 
@@ -134,7 +128,7 @@ ProportionTestPlot(
 
 - pt.size:
 
-  Point size.
+  The size of the points.
 
 - pt.alpha:
 
@@ -142,7 +136,7 @@ ProportionTestPlot(
 
 - cols.sig:
 
-  Legacy color for significant/credible points and intervals.
+  Color for significant/credible points and intervals.
 
 - cols.ns:
 
@@ -150,27 +144,30 @@ ProportionTestPlot(
 
 - cols.increase:
 
-  Color for increased DA groups in directional effect mode.
+  Default color for increased DA groups.
 
 - cols.decrease:
 
-  Color for decreased DA groups in directional effect mode.
+  Default color for decreased DA groups.
 
 - effect_color_mode:
 
-  Effect color style: `"directional"` (default) or `"classic"`.
+  Coloring mode for `plot_type = "effect"`. Use `"directional"`
+  (default) for increased/decreased/NS colors, or `"classic"` for legacy
+  significant/non-significant coloring.
 
 - nlabel:
 
-  Number of labels when `label = TRUE` and `features_label = NULL`.
+  Number of labels added when `label = TRUE` and
+  `features_label = NULL`.
 
 - features_label:
 
-  Character vector specifying labels to draw.
+  Character vector specifying points to label.
 
 - label:
 
-  Whether to draw labels.
+  Whether to add labels.
 
 - label.fg:
 
@@ -182,64 +179,126 @@ ProportionTestPlot(
 
 - label.bg.r:
 
-  Label background rounding radius.
+  Label background radius.
 
 - label.size:
 
-  Label size.
+  Label text size.
 
 - aspect.ratio:
 
-  Aspect ratio of each panel.
+  Aspect ratio of the panel.
 
 - xlab:
 
-  X-axis label.
+  A character string specifying the x-axis label. For
+  `plot_type = "umap"`, this is forwarded to the projection plot when
+  set.
 
 - ylab:
 
-  Y-axis label.
+  A character string specifying the y-axis label. For
+  `plot_type = "umap"`, this is forwarded to the projection plot when
+  set.
 
 - theme_use:
 
-  Theme used. Can be a character string or a theme function.
+  Theme used. Can be a character string or a theme function. Default is
+  `"theme_scop"`.
 
 - theme_args:
 
-  Additional arguments passed to `theme_use`.
+  Other arguments passed to the `theme_use`. Default is
+  [`list()`](https://rdrr.io/r/base/list.html).
 
 - legend.position:
 
-  Legend position.
+  The position of legends, one of `"none"`, `"left"`, `"right"`,
+  `"bottom"`, `"top"`.
 
 - legend.direction:
 
-  Legend direction.
+  The direction of the legend in the plot. Can be one of `"vertical"` or
+  `"horizontal"`.
 
 - legend.title:
 
-  Legend title.
+  Title of the legend.
 
 - combine:
 
-  Whether to combine into one patchwork object.
+  Combine plots into a single `patchwork` object. If `FALSE`, return a
+  list of ggplot objects.
 
 - nrow:
 
-  Number of rows for combined plot.
+  Number of rows in the combined plot. Default is `NULL`, which means
+  determined automatically based on the number of plots.
 
 - ncol:
 
-  Number of columns for combined plot.
+  Number of columns in the combined plot. Default is `NULL`, which means
+  determined automatically based on the number of plots.
 
 - byrow:
 
-  Arrange panels by row.
+  Whether to arrange the plots by row in the combined plot. Default is
+  `TRUE`.
 
 - seed:
 
-  Random seed used for jitter and label ranking ties.
+  Random seed for reproducibility. Default is `11`.
 
 ## See also
 
 [RunProportionTest](https://mengxu98.github.io/scop/reference/RunProportionTest.md)
+
+## Examples
+
+``` r
+data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
+#> ℹ [2026-05-11 15:34:02] Start standard processing workflow...
+#> ℹ [2026-05-11 15:34:03] Checking a list of <Seurat>...
+#> ! [2026-05-11 15:34:03] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-11 15:34:03] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 15:34:04] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-11 15:34:05] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-11 15:34:05] Number of available HVF: 2000
+#> ℹ [2026-05-11 15:34:05] Finished check
+#> ℹ [2026-05-11 15:34:05] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-11 15:34:05] Perform pca linear dimension reduction
+#> ℹ [2026-05-11 15:34:06] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-05-11 15:34:06] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-11 15:34:06] Reorder clusters...
+#> ℹ [2026-05-11 15:34:06] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-11 15:34:06] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-11 15:34:06] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-05-11 15:34:11] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-05-11 15:34:15] Standard processing workflow completed
+pancreas_sub <- RunProportionTest(
+  pancreas_sub,
+  group.by = "CellType",
+  split.by = "Phase",
+  proportion_method = "permutation"
+)
+#> ℹ [2026-05-11 15:34:15] Start proportion test ("permutation")
+#> ℹ [2026-05-11 15:34:15] Running comparison: "S" vs "G1"
+#> ℹ [2026-05-11 15:34:16] Running comparison: "G2M" vs "G1"
+#> ℹ [2026-05-11 15:34:18] Running comparison: "G2M" vs "S"
+#> ℹ [2026-05-11 15:34:18] Running comparison: "G1" vs "S"
+#> ℹ [2026-05-11 15:34:18] Running comparison: "G1" vs "G2M"
+#> ℹ [2026-05-11 15:34:18] Running comparison: "S" vs "G2M"
+#> ✔ [2026-05-11 15:34:18] Proportion test completed ("permutation")
+
+ProportionTestPlot(pancreas_sub)
+
+
+ProportionTestPlot(
+ pancreas_sub,
+ reduction = "UMAP",
+ plot_type = "umap",
+ xlab = "UMAP_1",
+ ylab = "UMAP_2"
+)
+```

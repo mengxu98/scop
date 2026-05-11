@@ -445,13 +445,6 @@
 
       <dl><dt>
 
-          <code><a href="RunBayesSpace.html">RunBayesSpace()</a></code>
-
-        </dt>
-        <dd>Run BayesSpace spatial clustering</dd>
-
-        <dt>
-
           <code><a href="RunDimsEstimate.html">RunDimsEstimate()</a></code>
 
         </dt>
@@ -535,6 +528,29 @@
         <dd>Run LargeVis (Dimensionality Reduction with a LargeVis-like method)</dd>
       </dl></div><div class="section level2">
 
+      <h3 id="spatial-analysis">Spatial Analysis<a class="anchor" aria-label="anchor" href="#spatial-analysis"></a></h3>
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="RunBayesSpace.html">RunBayesSpace()</a></code>
+
+        </dt>
+        <dd>Run BayesSpace spatial clustering</dd>
+
+        <dt>
+
+          <code><a href="RunCytoSPACE.html">RunCytoSPACE()</a></code>
+
+        </dt>
+        <dd>Run CytoSPACE spatial assignment</dd>
+      </dl></div><div class="section level2">
+
       <h3 id="cell-type-annotation">Cell Type Annotation<a class="anchor" aria-label="anchor" href="#cell-type-annotation"></a></h3>
 
 
@@ -601,6 +617,13 @@
 
         <dt>
 
+          <code><a href="RunSciBet.html">RunSciBet()</a></code>
+
+        </dt>
+        <dd>Annotate single cells using native SciBet</dd>
+
+        <dt>
+
           <code><a href="RunSingleR.html">RunSingleR()</a></code>
 
         </dt>
@@ -614,7 +637,7 @@
         <dd>Train a CellTypist model</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="differential-analysis">Differential Analysis<a class="anchor" aria-label="anchor" href="#differential-analysis"></a></h3>
+      <h3 id="differential-expression-and-perturbation">Differential Expression and Perturbation<a class="anchor" aria-label="anchor" href="#differential-expression-and-perturbation"></a></h3>
 
 
       <dl></dl></div><div class="section level2">
@@ -631,13 +654,6 @@
 
         <dt>
 
-          <code><a href="RunBulk.html">RunBulk()</a></code>
-
-        </dt>
-        <dd>Unified bulk analysis entrypoint</dd>
-
-        <dt>
-
           <code><a href="RunDEtest.html">RunDEtest()</a></code>
 
         </dt>
@@ -645,10 +661,47 @@
 
         <dt>
 
-          <code><a href="RunScTenifoldKnk.html">RunScTenifoldKnk()</a></code>
+          <code><a href="RunScTenifoldKnk.html">RunscTenifoldKnk()</a></code>
 
         </dt>
         <dd>Run scTenifoldKnk in-silico knockout analysis</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="bulk-and-composition-analysis">Bulk and Composition Analysis<a class="anchor" aria-label="anchor" href="#bulk-and-composition-analysis"></a></h3>
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="RunBulk.html">RunBulk()</a></code>
+
+        </dt>
+        <dd>Unified bulk analysis entrypoint</dd>
+
+        <dt>
+
+          <code><a href="RunMilo.html">RunMilo()</a></code>
+
+        </dt>
+        <dd>Milo differential abundance wrapper</dd>
+
+        <dt>
+
+          <code><a href="RunPermutation.html">RunPermutation()</a></code>
+
+        </dt>
+        <dd>Permutation-based proportion test</dd>
+
+        <dt>
+
+          <code><a href="RunPropeller.html">RunPropeller()</a></code>
+
+        </dt>
+        <dd>Propeller differential abundance wrapper</dd>
 
         <dt>
 
@@ -659,38 +712,10 @@
 
         <dt>
 
-          <code><a href="RunProportionTestMilo.html">RunProportionTestMilo()</a></code>
+          <code><a href="RunscCODA.html">RunscCODA()</a></code>
 
         </dt>
-        <dd>Milo differential abundance wrapper</dd>
-
-        <dt>
-
-          <code><a href="RunProportionTestPermutation.html">RunProportionTestPermutation()</a></code>
-
-        </dt>
-        <dd>Permutation-based proportion test</dd>
-
-        <dt>
-
-          <code><a href="RunProportionTestPropeller.html">RunProportionTestPropeller()</a></code>
-
-        </dt>
-        <dd>Propeller differential abundance wrapper</dd>
-
-        <dt>
-
-          <code><a href="RunProportionTestScCODA.html">RunProportionTestScCODA()</a></code>
-
-        </dt>
-        <dd>scCODA differential abundance wrapper</dd>
-
-        <dt>
-
-          <code><a href="SimulateProportionData.html">SimulateProportionData()</a></code>
-
-        </dt>
-        <dd>Simulate Single-Cell Data for Proportion Testing</dd>
+        <dd>scCODA differential abundance</dd>
       </dl></div><div class="section level2">
 
       <h3 id="enrichment-analysis">Enrichment Analysis<a class="anchor" aria-label="anchor" href="#enrichment-analysis"></a></h3>
@@ -991,6 +1016,13 @@
 
         <dt>
 
+          <code><a href="ConvertHomologs.html">ConvertHomologs()</a></code>
+
+        </dt>
+        <dd>Convert homologous gene symbols in expression objects</dd>
+
+        <dt>
+
           <code><a href="GetAssayData5.html">GetAssayData5()</a></code>
 
         </dt>
@@ -1069,7 +1101,278 @@
         <dd>Rename features for the Seurat object</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="visualization-functions">Visualization Functions<a class="anchor" aria-label="anchor" href="#visualization-functions"></a></h3>
+      <h3 id="embedding-and-projection-plots">Embedding and Projection Plots<a class="anchor" aria-label="anchor" href="#embedding-and-projection-plots"></a></h3>
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="CellDimPlot.html">CellDimPlot()</a></code>
+
+        </dt>
+        <dd>Cell Dimensional Plot</dd>
+
+        <dt>
+
+          <code><a href="CellDimPlot3D.html">CellDimPlot3D()</a></code>
+
+        </dt>
+        <dd>3D-Dimensional reduction plot for cell classification visualization.</dd>
+
+        <dt>
+
+          <code><a href="CellDensityPlot.html">CellDensityPlot()</a></code>
+
+        </dt>
+        <dd>Cell density plot</dd>
+
+        <dt>
+
+          <code><a href="FeatureDimPlot.html">FeatureDimPlot()</a></code>
+
+        </dt>
+        <dd>Visualize feature values on a 2-dimensional reduction plot</dd>
+
+        <dt>
+
+          <code><a href="FeatureDimPlot3D.html">FeatureDimPlot3D()</a></code>
+
+        </dt>
+        <dd>3D-Dimensional reduction plot for gene expression visualization.</dd>
+
+        <dt>
+
+          <code><a href="ProjectionPlot.html">ProjectionPlot()</a></code>
+
+        </dt>
+        <dd>Projection Plot</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="heatmap-and-correlation-plots">Heatmap and Correlation Plots<a class="anchor" aria-label="anchor" href="#heatmap-and-correlation-plots"></a></h3>
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="CellCorHeatmap.html">CellCorHeatmap()</a></code>
+
+        </dt>
+        <dd>The Cell Correlation Heatmap</dd>
+
+        <dt>
+
+          <code><a href="FeatureCorPlot.html">FeatureCorPlot()</a></code>
+
+        </dt>
+        <dd>Features correlation plot</dd>
+
+        <dt>
+
+          <code><a href="FeatureHeatmap.html">FeatureHeatmap()</a></code>
+
+        </dt>
+        <dd>Feature Heatmap</dd>
+
+        <dt>
+
+          <code><a href="GroupHeatmap.html">GroupHeatmap()</a></code>
+
+        </dt>
+        <dd>The Group Heatmap</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="statistical-and-composition-plots">Statistical and Composition Plots<a class="anchor" aria-label="anchor" href="#statistical-and-composition-plots"></a></h3>
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="CellStatPlot.html">CellStatPlot()</a></code>
+
+        </dt>
+        <dd>Statistical plot of cells</dd>
+
+        <dt>
+
+          <code><a href="FeatureStatPlot.html">FeatureStatPlot()</a></code>
+
+        </dt>
+        <dd>Statistical plot of features</dd>
+
+        <dt>
+
+          <code><a href="ProportionTestPlot.html">ProportionTestPlot()</a></code>
+
+        </dt>
+        <dd>Proportion Test Plot</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="differential-and-enrichment-plots">Differential and Enrichment Plots<a class="anchor" aria-label="anchor" href="#differential-and-enrichment-plots"></a></h3>
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="DEtestPlot.html">DEtestPlot()</a></code>
+
+        </dt>
+        <dd>Differential Expression Test Plot</dd>
+
+        <dt>
+
+          <code><a href="DEtestManhattanPlot.html">DEtestManhattanPlot()</a></code>
+
+        </dt>
+        <dd>DEtest Manhattan Plot</dd>
+
+        <dt>
+
+          <code><a href="DEtestRingPlot.html">DEtestRingPlot()</a></code>
+
+        </dt>
+        <dd>DEtest Ring Plot</dd>
+
+        <dt>
+
+          <code><a href="VolcanoPlot.html">VolcanoPlot()</a></code>
+
+        </dt>
+        <dd>Volcano Plot</dd>
+
+        <dt>
+
+          <code><a href="EnrichmentPlot.html">EnrichmentPlot()</a></code>
+
+        </dt>
+        <dd>Enrichment Plot</dd>
+
+        <dt>
+
+          <code><a href="GSEAPlot.html">GSEAPlot()</a></code>
+
+        </dt>
+        <dd>GSEA Plot</dd>
+
+        <dt>
+
+          <code><a href="GSVAPlot.html">GSVAPlot()</a></code>
+
+        </dt>
+        <dd>Plots for GSVA (Gene Set Variation Analysis)</dd>
+
+        <dt>
+
+          <code><a href="MetabolismPlot.html">MetabolismPlot()</a></code>
+
+        </dt>
+        <dd>Plots for metabolism pathway scoring</dd>
+
+        <dt>
+
+          <code><a href="scTenifoldKnkPlot.html">scTenifoldKnkPlot()</a></code>
+
+        </dt>
+        <dd>scTenifoldKnk Plot</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="trajectory-and-dynamic-plots">Trajectory and Dynamic Plots<a class="anchor" aria-label="anchor" href="#trajectory-and-dynamic-plots"></a></h3>
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="BranchStreamPlot.html">BranchStreamPlot()</a></code>
+
+        </dt>
+        <dd>Branch Stream Plot</dd>
+
+        <dt>
+
+          <code><a href="CytoTRACEPlot.html">CytoTRACEPlot()</a></code>
+
+        </dt>
+        <dd>Plot CytoTRACE 2 Results</dd>
+
+        <dt>
+
+          <code><a href="DynamicPlot.html">DynamicPlot()</a></code>
+
+        </dt>
+        <dd>Plot dynamic features across pseudotime</dd>
+
+        <dt>
+
+          <code><a href="DynamicHeatmap.html">DynamicHeatmap()</a></code>
+
+        </dt>
+        <dd>Heatmap plot for dynamic features along lineages</dd>
+
+        <dt>
+
+          <code><a href="LineagePlot.html">LineagePlot()</a></code>
+
+        </dt>
+        <dd>Lineage Plot</dd>
+
+        <dt>
+
+          <code><a href="PAGAPlot.html">PAGAPlot()</a></code>
+
+        </dt>
+        <dd>PAGA plot</dd>
+
+        <dt>
+
+          <code><a href="PseudotimeProjectionPlot.html">PseudotimeProjectionPlot()</a></code>
+
+        </dt>
+        <dd>Pseudotime Projection Plot</dd>
+
+        <dt>
+
+          <code><a href="VelocityPlot.html">VelocityPlot()</a></code>
+
+        </dt>
+        <dd>Velocity Plot</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="spatial-visualization">Spatial Visualization<a class="anchor" aria-label="anchor" href="#spatial-visualization"></a></h3>
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="SpatialDimPlot.html">SpatialDimPlot()</a></code>
+
+        </dt>
+        <dd>Spatial dimensional plot</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="cell-cell-communication-plots">Cell-Cell Communication Plots<a class="anchor" aria-label="anchor" href="#cell-cell-communication-plots"></a></h3>
 
 
       <dl></dl></div><div class="section level2">
@@ -1097,48 +1400,22 @@
 
         </dt>
         <dd>CCC statistical distribution and summary plots</dd>
+      </dl></div><div class="section level2">
 
-        <dt>
+      <h3 id="benchmark-and-genomic-track-plots">Benchmark and Genomic Track Plots<a class="anchor" aria-label="anchor" href="#benchmark-and-genomic-track-plots"></a></h3>
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
 
           <code><a href="BenchmarkPlot.html">BenchmarkPlot()</a></code>
 
         </dt>
         <dd>Plot benchmark metrics</dd>
-
-        <dt>
-
-          <code><a href="CellDimPlot.html">CellDimPlot()</a></code>
-
-        </dt>
-        <dd>Cell Dimensional Plot</dd>
-
-        <dt>
-
-          <code><a href="CellDimPlot3D.html">CellDimPlot3D()</a></code>
-
-        </dt>
-        <dd>3D-Dimensional reduction plot for cell classification visualization.</dd>
-
-        <dt>
-
-          <code><a href="CellDensityPlot.html">CellDensityPlot()</a></code>
-
-        </dt>
-        <dd>Cell density plot</dd>
-
-        <dt>
-
-          <code><a href="CellCorHeatmap.html">CellCorHeatmap()</a></code>
-
-        </dt>
-        <dd>The Cell Correlation Heatmap</dd>
-
-        <dt>
-
-          <code><a href="CellStatPlot.html">CellStatPlot()</a></code>
-
-        </dt>
-        <dd>Statistical plot of cells</dd>
 
         <dt>
 
@@ -1149,115 +1426,10 @@
 
         <dt>
 
-          <code><a href="CytoTRACEPlot.html">CytoTRACEPlot()</a></code>
-
-        </dt>
-        <dd>Plot CytoTRACE 2 Results</dd>
-
-        <dt>
-
-          <code><a href="DEtestPlot.html">DEtestPlot()</a></code>
-
-        </dt>
-        <dd>Differential Expression Test Plot</dd>
-
-        <dt>
-
-          <code><a href="DEtestManhattanPlot.html">DEtestManhattanPlot()</a></code>
-
-        </dt>
-        <dd>DEtest Manhattan Plot</dd>
-
-        <dt>
-
-          <code><a href="DEtestRingPlot.html">DEtestRingPlot()</a></code>
-
-        </dt>
-        <dd>DEtest Ring Plot</dd>
-
-        <dt>
-
           <code><a href="DimsEstimatePlot.html">DimsEstimatePlot()</a></code>
 
         </dt>
         <dd>Dimension estimate diagnostic plot</dd>
-
-        <dt>
-
-          <code><a href="DynamicPlot.html">DynamicPlot()</a></code>
-
-        </dt>
-        <dd>Plot dynamic features across pseudotime</dd>
-
-        <dt>
-
-          <code><a href="DynamicHeatmap.html">DynamicHeatmap()</a></code>
-
-        </dt>
-        <dd>Heatmap plot for dynamic features along lineages</dd>
-
-        <dt>
-
-          <code><a href="EnrichmentPlot.html">EnrichmentPlot()</a></code>
-
-        </dt>
-        <dd>Enrichment Plot</dd>
-
-        <dt>
-
-          <code><a href="FeatureDimPlot.html">FeatureDimPlot()</a></code>
-
-        </dt>
-        <dd>Visualize feature values on a 2-dimensional reduction plot</dd>
-
-        <dt>
-
-          <code><a href="FeatureDimPlot3D.html">FeatureDimPlot3D()</a></code>
-
-        </dt>
-        <dd>3D-Dimensional reduction plot for gene expression visualization.</dd>
-
-        <dt>
-
-          <code><a href="FeatureHeatmap.html">FeatureHeatmap()</a></code>
-
-        </dt>
-        <dd>Feature Heatmap</dd>
-
-        <dt>
-
-          <code><a href="FeatureCorPlot.html">FeatureCorPlot()</a></code>
-
-        </dt>
-        <dd>Features correlation plot</dd>
-
-        <dt>
-
-          <code><a href="FeatureStatPlot.html">FeatureStatPlot()</a></code>
-
-        </dt>
-        <dd>Statistical plot of features</dd>
-
-        <dt>
-
-          <code><a href="GroupHeatmap.html">GroupHeatmap()</a></code>
-
-        </dt>
-        <dd>The Group Heatmap</dd>
-
-        <dt>
-
-          <code><a href="GSEAPlot.html">GSEAPlot()</a></code>
-
-        </dt>
-        <dd>GSEA Plot</dd>
-
-        <dt>
-
-          <code><a href="GSVAPlot.html">GSVAPlot()</a></code>
-
-        </dt>
-        <dd>Plots for GSVA (Gene Set Variation Analysis)</dd>
 
         <dt>
 
@@ -1268,66 +1440,10 @@
 
         <dt>
 
-          <code><a href="LineagePlot.html">LineagePlot()</a></code>
-
-        </dt>
-        <dd>Lineage Plot</dd>
-
-        <dt>
-
-          <code><a href="MetabolismPlot.html">MetabolismPlot()</a></code>
-
-        </dt>
-        <dd>Plots for metabolism pathway scoring</dd>
-
-        <dt>
-
-          <code><a href="PAGAPlot.html">PAGAPlot()</a></code>
-
-        </dt>
-        <dd>PAGA plot</dd>
-
-        <dt>
-
-          <code><a href="ProjectionPlot.html">ProjectionPlot()</a></code>
-
-        </dt>
-        <dd>Projection Plot</dd>
-
-        <dt>
-
-          <code><a href="ProportionTestPlot.html">ProportionTestPlot()</a></code>
-
-        </dt>
-        <dd>Proportion Test Plot</dd>
-
-        <dt>
-
-          <code><a href="PseudotimeProjectionPlot.html">PseudotimeProjectionPlot()</a></code>
-
-        </dt>
-        <dd>Pseudotime Projection Plot</dd>
-
-        <dt>
-
           <code><a href="TACSPlot.html">TACSPlot()</a></code>
 
         </dt>
         <dd>Transcript-averaged cell scoring (TACS)</dd>
-
-        <dt>
-
-          <code><a href="VelocityPlot.html">VelocityPlot()</a></code>
-
-        </dt>
-        <dd>Velocity Plot</dd>
-
-        <dt>
-
-          <code><a href="VolcanoPlot.html">VolcanoPlot()</a></code>
-
-        </dt>
-        <dd>Volcano Plot</dd>
       </dl></div><div class="section level2">
 
       <h3 id="scexplorer">SCExplorer<a class="anchor" aria-label="anchor" href="#scexplorer"></a></h3>
@@ -1435,6 +1551,13 @@
 
         <dt>
 
+          <code><a href="visium_human_pancreas_sub.html">visium_human_pancreas_sub</a></code>
+
+        </dt>
+        <dd>A human pancreas Visium spatial example dataset</dd>
+
+        <dt>
+
           <code><a href="words_excluded.html">words_excluded</a></code>
 
         </dt>
@@ -1445,7 +1568,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Xu Meng, Hao Zhang, Haoliang Zhu.</p>
+  <p>Developed by Xu Meng, Hao Zhang.</p>
 </div>
 
 <div class="pkgdown-footer-right">

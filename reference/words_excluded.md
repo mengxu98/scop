@@ -7,7 +7,6 @@ mainly include words that are excessively redundant or of little value.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 if (interactive()) {
   words_excluded <- c(
     "the", "is", "and", "or", "a",
@@ -20,7 +19,7 @@ if (interactive()) {
     "regulation", "regulated", "positive", "negative",
     "response", "process", "processing", "small", "large", "change"
   )
-  usethis::use_data(words_excluded, compress = "xz")
+  use_data <- get_namespace_fun("usethis", "use_data")
+  use_data(words_excluded, compress = "xz")
 }
-} # }
 ```

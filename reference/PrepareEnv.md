@@ -22,13 +22,16 @@ PrepareEnv(
 
 - envname:
 
-  The name of the conda environment. If `NULL`, the environment name
-  will be set to `"scop_env"`. Default is `NULL`.
+  The name of the conda-compatible Python environment. If `NULL`, the
+  environment name will be set to `"scop_env"`. Default is `NULL`.
 
 - conda:
 
-  The path to a conda executable. Use `"auto"` to allow automatically
-  finding an appropriate conda binary.
+  The path or command name of a conda-compatible executable (`conda`,
+  `mamba`, or `micromamba`). Use `"auto"` to allow automatically finding
+  an appropriate environment manager. If `"micromamba"` is requested and
+  micromamba is not available on `PATH`, a package-managed micromamba is
+  downloaded automatically.
 
 - miniconda_repo:
 
@@ -51,10 +54,14 @@ PrepareEnv(
   Optional Python dependency modules to install in addition to the
   default scientific stack. Supported values are `"scanpy"`, `"scvi"`,
   `"glue"`, `"scanorama"`, `"bbknn"`, `"celltypist"`, `"cellphonedb"`,
-  `"magic"`, `"scrublet"`, `"doubletdetection"`, `"doublet"`,
-  `"palantir"`, `"scvelo"`, `"cellrank"`, `"wot"`, `"phate"`,
-  `"pacmap"`, `"trimap"`, `"multimap"`, and `"scomm"`. If `NULL` or
-  omitted in `PrepareEnv()`, the complete environment is installed.
+  `"magic"`, `"scrublet"`, `"sccoda"`, `"doubletdetection"`,
+  `"doublet"`, `"palantir"`, `"scvelo"`, `"cellrank"`, `"wot"`,
+  `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`, and `"scomm"`. If
+  `NULL` or omitted in `PrepareEnv()`, the default environment is
+  installed. The default excludes `"sccoda"` and `"scomm"` because their
+  TensorFlow stacks are not compatible with the default JAX/scVI stack
+  in the same environment; request them explicitly for scCODA/scOMM
+  workflows.
 
 - pip_options:
 
