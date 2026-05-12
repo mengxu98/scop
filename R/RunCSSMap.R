@@ -155,13 +155,20 @@ RunCSSMap <- function(
 
   log_message("Run {.pkg CSS} projection")
   CSSmodel <- srt_ref[[ref_css]]@misc$model
-  raw_assay <- SeuratObject::DefaultAssay(srt_query)
-  SeuratObject::DefaultAssay(srt_query) <- query_assay
-  srt_query <- invoke_fun(
+  css_proj <- invoke_fun(
     .fn = get("css_project", envir = getNamespace("simspec")),
-    .args = list(object = srt_query, model = CSSmodel)
+    .args = list(
+      object = GetAssayData5(srt_query, layer = "data", assay = query_assay),
+      model = CSSmodel
+    )
   )
-  SeuratObject::DefaultAssay(srt_query) <- raw_assay
+  rownames(css_proj) <- colnames(srt_query)
+  colnames(css_proj) <- paste0("CSSPROJ_", seq_len(ncol(css_proj)))
+  srt_query[["css_proj"]] <- SeuratObject::CreateDimReducObject(
+    embeddings = css_proj,
+    key = "CSSPROJ_",
+    assay = query_assay
+  )
 
   log_message("Run {.pkg UMAP} projection")
   ref_dims <- seq_len(dim(srt_ref[[ref_css]])[2])
