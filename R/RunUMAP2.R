@@ -132,7 +132,7 @@ RunUMAP2.Seurat <- function(
           object = object,
           layer = layer,
           assay = assay
-        )[features, ]
+        )[features, , drop = FALSE]
       )
     )
     if (ncol(data.use) < n.components) {

@@ -189,7 +189,7 @@ NULL
 #' data(visium_human_pancreas_sub)
 #' SeuratObject::Images(visium_human_pancreas_sub)
 #' head(visium_human_pancreas_sub@meta.data[, c("x", "y")])
-#' SpatialDimPlot(visium_human_pancreas_sub, group.by = "coda_label")
+#' SpatialSpotPlot(visium_human_pancreas_sub, group.by = "coda_label")
 #'
 #' @name visium_human_pancreas_sub
 NULL

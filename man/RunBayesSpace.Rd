@@ -90,5 +90,5 @@ spatial <- RunBayesSpace(
   )
 )
 table(spatial$BayesSpace_cluster)
-SpatialDimPlot(spatial, group.by = "BayesSpace_cluster")
+SpatialSpotPlot(spatial, group.by = "BayesSpace_cluster")
 }

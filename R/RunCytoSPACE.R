@@ -54,13 +54,13 @@
 #'   verbose = FALSE
 #' )
 #'
-#' SpatialDimPlot(
+#' SpatialSpotPlot(
 #'   visium_human_pancreas_sub,
 #'   group.by = "coda_label",
 #'   theme_use = "theme_scop"
 #' )
 #'
-#' SpatialDimPlot(
+#' SpatialSpotPlot(
 #'   spatial,
 #'   group.by = "CytoSPACE_dominant_type",
 #'   theme_use = "theme_scop"
