@@ -428,7 +428,7 @@ load_cytotrace2_data <- function(data_dir, verbose) {
   data_dir <- resolve_cytotrace2_dir(data_dir, verbose)
 
   log_message(
-    "Loading CytoTRACE2 model data from {.path {data_dir}}",
+    "Loading model from {.path {data_dir}}",
     message_type = "info",
     verbose = verbose
   )
