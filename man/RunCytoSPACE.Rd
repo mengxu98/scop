@@ -87,23 +87,26 @@ data(pancreas_sub)
 pancreas_human <- ConvertHomologs(
   pancreas_sub,
   species_from = "Mus_musculus",
-  species_to = "Homo_sapiens"
+  species_to = "Homo_sapiens",
+  verbose = FALSE
 )
 spatial <- RunCytoSPACE(
   visium_human_pancreas_sub,
   reference = pancreas_human,
   reference_label = "CellType",
-  mean_cell_numbers = 1
+  mean_cell_numbers = 1,
+  verbose = FALSE
 )
 
 SpatialDimPlot(
   visium_human_pancreas_sub,
-  group.by = "coda_label"
+  group.by = "coda_label",
+  theme_use = "theme_scop"
 )
 
 SpatialDimPlot(
   spatial,
   group.by = "CytoSPACE_dominant_type",
-  palette = "ChineseSet8"
+  theme_use = "theme_scop"
 )
 }
