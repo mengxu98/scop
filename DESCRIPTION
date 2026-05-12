@@ -49,6 +49,7 @@ Suggests:
     AUCell,
     BayesSpace,
     batchelor,
+    BiocNeighbors,
     biomaRt,
     CellChat,
     Coralysis,
@@ -124,7 +125,6 @@ Suggests:
     SummarizedExperiment,
     testthat,
     tensorflow,
-    torch,
     tricycle,
     umap,
     UCell
