@@ -1873,6 +1873,14 @@ DynamicHeatmap <- function(
   )
   width_sum <- rendersize[["width_sum"]]
   height_sum <- rendersize[["height_sum"]]
+  pseudotime_slices <- 1L
+  if (!is.null(row_split)) {
+    pseudotime_slices <- if (length(row_split) == 1L && is.numeric(row_split)) {
+      seq_len(max(as.integer(row_split), 1L))
+    } else {
+      seq_len(max(length(unique(row_split[!is.na(row_split)])), 1L))
+    }
+  }
 
   if (isTRUE(fix)) {
     fixsize <- heatmap_fixsize(
@@ -1920,7 +1928,7 @@ DynamicHeatmap <- function(
             lty <- pseudotime_label_linetype[n]
             lwd <- pseudotime_label_linewidth[n]
             for (l in lineages) {
-              for (slice in 1:max(nlevels(row_split), 1)) {
+              for (slice in pseudotime_slices) {
                 ComplexHeatmap::decorate_heatmap_body(
                   l,
                   {
@@ -1999,7 +2007,7 @@ DynamicHeatmap <- function(
             lty <- pseudotime_label_linetype[n]
             lwd <- pseudotime_label_linewidth[n]
             for (l in lineages) {
-              for (slice in 1:max(nlevels(row_split), 1)) {
+              for (slice in pseudotime_slices) {
                 ComplexHeatmap::decorate_heatmap_body(
                   l,
                   {
