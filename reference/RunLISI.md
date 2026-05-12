@@ -16,9 +16,7 @@ RunLISI(
   prefix = NULL,
   tool_name = NULL,
   perplexity = 30,
-  nn_eps = 0,
-  use_rann = TRUE,
-  nn_method = c("auto", "rann", "fnn", "exact"),
+  nn_method = c("auto", "exact"),
   tol = 1e-05,
   max_iter = 50,
   overwrite = TRUE,
@@ -66,37 +64,24 @@ RunLISI(
 
 - perplexity:
 
-  Effective neighborhood size. Defaults to `30`.
-
-- nn_eps:
-
-  Approximation factor passed to
-  [RANN::nn2](https://jefferislab.github.io/RANN/reference/nn2.html)
-  when `RANN` is available and `use_rann = TRUE`. Defaults to `0`.
-
-- use_rann:
-
-  Whether to prefer
-  [RANN::nn2](https://jefferislab.github.io/RANN/reference/nn2.html)
-  over [`FNN::get.knn`](https://rdrr.io/pkg/FNN/man/get.knn.html) when
-  `nn_method = "auto"` decides not to use the package's built-in exact
-  C++ backend. Defaults to `TRUE`.
+  Effective neighborhood size. Default is `30`.
 
 - nn_method:
 
-  Nearest-neighbor backend. Defaults to `"auto"`, which prefers the
-  package's exact C++ search only for very small problems. Larger inputs
-  fall back to `RANN`, then `FNN`, and only use the exact backend as a
-  last resort.
+  Nearest-neighbor backend. One of `"auto"` or `"exact"`. Default is
+  `"auto"`, which uses the exact C++ backend from `thisutils`. Requires
+  the accelerated
+  [`thisutils::compute_lisi()`](https://mengxu98.github.io/thisutils/reference/compute_lisi.html)
+  interface that exposes `nn_method = c("auto", "exact")`.
 
 - tol:
 
-  Tolerance used in the binary search for the target perplexity.
-  Defaults to `1e-5`.
+  Tolerance used in the binary search for the target perplexity. Default
+  is `1e-5`.
 
 - max_iter:
 
-  Maximum number of binary-search iterations. Defaults to `50`.
+  Maximum number of binary-search iterations. Default is `50`.
 
 - overwrite:
 
@@ -124,26 +109,26 @@ panc8_sub <- integration_scop(
   batch = "tech",
   integration_method = "Harmony5"
 )
-#> ◌ [2026-05-12 05:07:06] Run integration workflow...
+#> ◌ [2026-05-12 15:47:58] Run integration workflow...
 #> Warning: No layers found matching search pattern provided
-#> ℹ [2026-05-12 05:07:07] Perform `Seurat::NormalizeData()` on split layers for Seurat v5 integration
-#> ℹ [2026-05-12 05:07:09] Perform `Seurat::FindVariableFeatures()` per batch (`HVF_source = 'separate'`)
-#> ℹ [2026-05-12 05:07:11] Number of available HVF: 2000
+#> ℹ [2026-05-12 15:47:59] Perform `Seurat::NormalizeData()` on split layers for Seurat v5 integration
+#> ℹ [2026-05-12 15:48:01] Perform `Seurat::FindVariableFeatures()` per batch (`HVF_source = 'separate'`)
+#> ℹ [2026-05-12 15:48:03] Number of available HVF: 2000
 #> Warning: Layer ‘scale.data’ is empty
-#> ℹ [2026-05-12 05:07:12] Perform `Seurat::ScaleData()` on split layers for Seurat v5 integration
-#> ℹ [2026-05-12 05:07:13] Perform PCA on split layers before `Seurat::IntegrateLayers()`
-#> ℹ [2026-05-12 05:07:13] Perform Seurat v5 integration with `HarmonyIntegration()`
+#> ℹ [2026-05-12 15:48:04] Perform `Seurat::ScaleData()` on split layers for Seurat v5 integration
+#> ℹ [2026-05-12 15:48:05] Perform PCA on split layers before `Seurat::IntegrateLayers()`
+#> ℹ [2026-05-12 15:48:05] Perform Seurat v5 integration with `HarmonyIntegration()`
 #> The `features` argument is ignored by `HarmonyIntegration`.
 #> This message is displayed once per session.
-#> ℹ [2026-05-12 05:07:15] Estimated dimensions 1:20 for Harmony5
-#> ℹ [2026-05-12 05:07:15] Adjust neighbor k from 20 to 20 for small-sample clustering
-#> ℹ [2026-05-12 05:07:15] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-05-12 05:07:15] Reorder clusters...
-#> ℹ [2026-05-12 05:07:16] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-12 05:07:16] Perform umap nonlinear dimension reduction using Harmony5 (1:20)
-#> ℹ [2026-05-12 05:07:21] Perform umap nonlinear dimension reduction using Harmony5 (1:20)
-#> ℹ [2026-05-12 05:07:27] Perform umap nonlinear dimension reduction using pca (1:20)
-#> ✔ [2026-05-12 05:07:33] Harmony5 integration completed
+#> ℹ [2026-05-12 15:48:08] Estimated dimensions 1:20 for Harmony5
+#> ℹ [2026-05-12 15:48:08] Adjust neighbor k from 20 to 20 for small-sample clustering
+#> ℹ [2026-05-12 15:48:09] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-05-12 15:48:09] Reorder clusters...
+#> ℹ [2026-05-12 15:48:09] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-12 15:48:09] Perform umap nonlinear dimension reduction using Harmony5 (1:20)
+#> ℹ [2026-05-12 15:48:16] Perform umap nonlinear dimension reduction using Harmony5 (1:20)
+#> ℹ [2026-05-12 15:48:23] Perform umap nonlinear dimension reduction using pca (1:20)
+#> ✔ [2026-05-12 15:48:30] Harmony5 integration completed
 names(panc8_sub@reductions)
 #> [1] "pca"            "Harmony5"       "Harmony5UMAP2D" "Harmony5UMAP3D"
 #> [5] "pcaUMAP2D"     
@@ -152,11 +137,9 @@ panc8_sub <- RunLISI(
   panc8_sub,
   reductions = c("pcaUMAP2D", "Harmony5UMAP2D")
 )
-#> ℹ [2026-05-12 05:07:33] Compute LISI scores from reduction "pcaUMAP2D"
-#> ◌ [2026-05-12 05:07:33] Using "rann" nearest-neighbor backend for compute_lisi
-#> ℹ [2026-05-12 05:07:33] Compute LISI scores from reduction "Harmony5UMAP2D"
-#> ◌ [2026-05-12 05:07:33] Using "rann" nearest-neighbor backend for compute_lisi
-#> ✔ [2026-05-12 05:07:33] Stored LISI scores in metadata: "pcaUMAP2D_tech_LISI" and "Harmony5UMAP2D_tech_LISI"
+#> ℹ [2026-05-12 15:48:30] Compute LISI scores from reduction "pcaUMAP2D"
+#> ℹ [2026-05-12 15:48:30] Compute LISI scores from reduction "Harmony5UMAP2D"
+#> ✔ [2026-05-12 15:48:30] Stored LISI scores in metadata: "pcaUMAP2D_tech_LISI" and "Harmony5UMAP2D_tech_LISI"
 LISIPlot(
   panc8_sub,
   combine = TRUE

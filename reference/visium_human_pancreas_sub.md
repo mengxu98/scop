@@ -40,6 +40,6 @@ head(visium_human_pancreas_sub@meta.data[, c("x", "y")])
 #> CTGGTCCTAACTTGGC-1 4024 662
 #> ATAGTCTTTGACGTGC-1 4079 662
 #> GGGTGGTCCAGCCTGT-1 4134 662
-SpatialDimPlot(visium_human_pancreas_sub, group.by = "coda_label")
+SpatialSpotPlot(visium_human_pancreas_sub, group.by = "coda_label")
 
 ```

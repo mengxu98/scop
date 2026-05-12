@@ -191,22 +191,22 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  store_networks <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>  store_manifold <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 05:14:18] Run <span style="color: #0000BB;">scTenifoldKnk</span> knockout for <span style="color: #0000BB;">"Pdx1"</span> using <span style="color: #0000BB;">"cpp"</span> backend</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 05:14:22] Construct scTenifoldNet network ensemble</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 05:14:22] Denoise network ensemble with tensor decomposition</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ℹ [2026-05-12 05:14:22] Denoise network ensemble with tensor decomposition  <span style="color: #00BB00;">■■ </span>…</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 05:14:23] Align WT and KO network manifolds</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-05-12 05:14:23] <span style="color: #0000BB;">scTenifoldKnk</span> results stored in `srt@tools[[scTenifoldKnk]]`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 15:55:57] Run <span style="color: #0000BB;">scTenifoldKnk</span> knockout for <span style="color: #0000BB;">"Pdx1"</span> using <span style="color: #0000BB;">"cpp"</span> backend</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 15:56:02] Construct scTenifoldNet network ensemble</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 15:56:02] Denoise network ensemble with tensor decomposition</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ℹ [2026-05-12 15:56:02] Denoise network ensemble with tensor decomposition  <span style="color: #00BB00;">■■ </span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 15:56:02] Align WT and KO network manifolds</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-05-12 15:56:02] <span style="color: #0000BB;">scTenifoldKnk</span> results stored in `srt@tools[[scTenifoldKnk]]`</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">dr</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">scTenifoldKnk</span><span class="op">$</span><span class="va">diffRegulation</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dr</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     gene     distance        Z          FC      p.value        p.adj</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1   Pdx1 9.304567e-04 4.569367 12059.91897 0.000000e+00 0.000000e+00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2   Gnas 4.887597e-05 2.058208    33.27690 7.992633e-09 1.202891e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3   Ssr2 4.386627e-05 1.985523    26.80486 2.250708e-07 2.258210e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4   Ssr4 4.132486e-05 1.945911    23.78893 1.074990e-06 8.089300e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 Sec61b 4.074745e-05 1.936623    23.12879 1.515051e-06 9.120607e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6   Dad1 3.408756e-05 1.820516    16.18616 5.741213e-05 2.880175e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   Pdx1 9.304567e-04 4.568187 12059.91897 0.000000e+00 0.000000e+00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   Gnas 4.887597e-05 2.057742    33.27690 7.992633e-09 1.202891e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3   Ssr2 4.386627e-05 1.985077    26.80486 2.250708e-07 2.258210e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4   Ssr4 4.132486e-05 1.945477    23.78893 1.074990e-06 8.089300e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 Sec61b 4.074745e-05 1.936192    23.12879 1.515051e-06 9.120607e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6   Dad1 3.408756e-05 1.820118    16.18616 5.741213e-05 2.880175e-03</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="scTenifoldKnkPlot.html">scTenifoldKnkPlot</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"effect"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="RunScTenifoldKnk-1.png" alt="" width="700" height="433"></span>

@@ -333,48 +333,48 @@ GSEAPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-12 03:57:14] Start standard processing workflow...
-#> ℹ [2026-05-12 03:57:15] Checking a list of <Seurat>...
-#> ! [2026-05-12 03:57:15] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-12 03:57:15] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-12 03:57:16] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-12 03:57:17] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-12 03:57:17] Number of available HVF: 2000
-#> ℹ [2026-05-12 03:57:17] Finished check
-#> ℹ [2026-05-12 03:57:17] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-12 03:57:18] Perform pca linear dimension reduction
-#> ℹ [2026-05-12 03:57:18] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-05-12 03:57:19] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-12 03:57:19] Reorder clusters...
-#> ℹ [2026-05-12 03:57:19] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-12 03:57:19] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-12 03:57:19] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-05-12 03:57:23] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-05-12 03:57:26] Standard processing workflow completed
+#> ℹ [2026-05-12 14:33:20] Start standard processing workflow...
+#> ℹ [2026-05-12 14:33:21] Checking a list of <Seurat>...
+#> ! [2026-05-12 14:33:21] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-12 14:33:21] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-12 14:33:22] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-12 14:33:23] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-12 14:33:23] Number of available HVF: 2000
+#> ℹ [2026-05-12 14:33:23] Finished check
+#> ℹ [2026-05-12 14:33:23] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-12 14:33:23] Perform pca linear dimension reduction
+#> ℹ [2026-05-12 14:33:24] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-05-12 14:33:24] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-12 14:33:24] Reorder clusters...
+#> ℹ [2026-05-12 14:33:24] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-12 14:33:25] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-12 14:33:25] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-05-12 14:33:29] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-05-12 14:33:34] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-05-12 03:57:27] Data type is log-normalized
-#> ℹ [2026-05-12 03:57:27] Start differential expression test
-#> ℹ [2026-05-12 03:57:27] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-05-12 03:57:27] Using 1 core
-#> ⠙ [2026-05-12 03:57:27] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ✔ [2026-05-12 03:57:27] Completed 5 tasks in 958ms
+#> ℹ [2026-05-12 14:33:35] Data type is log-normalized
+#> ℹ [2026-05-12 14:33:35] Start differential expression test
+#> ℹ [2026-05-12 14:33:35] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-05-12 14:33:35] Using 1 core
+#> ⠙ [2026-05-12 14:33:35] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ✔ [2026-05-12 14:33:35] Completed 5 tasks in 940ms
 #> 
-#> ℹ [2026-05-12 03:57:27] Building results
-#> ✔ [2026-05-12 03:57:28] Differential expression test completed
+#> ℹ [2026-05-12 14:33:35] Building results
+#> ✔ [2026-05-12 14:33:36] Differential expression test completed
 pancreas_sub <- RunGSEA(
   pancreas_sub,
   group.by = "CellType",
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-12 03:57:28] Start GSEA analysis
-#> ! [2026-05-12 03:57:28] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
-#> ℹ [2026-05-12 03:57:28] Species: "Mus_musculus"
-#> ℹ [2026-05-12 03:57:28] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-12 03:50:03
-#> ℹ [2026-05-12 03:57:29] Using 1 core
+#> ℹ [2026-05-12 14:33:36] Start GSEA analysis
+#> ! [2026-05-12 14:33:36] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
+#> ℹ [2026-05-12 14:33:36] Species: "Mus_musculus"
+#> ℹ [2026-05-12 14:33:36] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-12 14:25:21
+#> ℹ [2026-05-12 14:33:37] Using 1 core
 #> Registered S3 methods overwritten by 'callr':
 #>   method                    from
 #>   format.callr_status_error     
@@ -382,14 +382,14 @@ pancreas_sub <- RunGSEA(
 #> Registered S3 method overwritten by 'ggtree':
 #>   method         from     
 #>   fortify.igraph ggnetwork
-#> ⠙ [2026-05-12 03:57:29] Running for 1 [1/5] ■■          20% | ETA: 32s
-#> ⠹ [2026-05-12 03:57:29] Running for 2 [2/5] ■■■■        40% | ETA: 17s
-#> ⠸ [2026-05-12 03:57:29] Running for 3 [3/5] ■■■■■■      60% | ETA: 10s
-#> ⠼ [2026-05-12 03:57:29] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  5s
-#> ✔ [2026-05-12 03:57:29] Completed 5 tasks in 21.7s
+#> ⠙ [2026-05-12 14:33:37] Running for 1 [1/5] ■■          20% | ETA: 34s
+#> ⠹ [2026-05-12 14:33:37] Running for 2 [2/5] ■■■■        40% | ETA: 17s
+#> ⠸ [2026-05-12 14:33:37] Running for 3 [3/5] ■■■■■■      60% | ETA: 11s
+#> ⠼ [2026-05-12 14:33:37] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  5s
+#> ✔ [2026-05-12 14:33:37] Completed 5 tasks in 22.7s
 #> 
-#> ℹ [2026-05-12 03:57:29] Building results
-#> ✔ [2026-05-12 03:57:51] GSEA analysis done
+#> ℹ [2026-05-12 14:33:37] Building results
+#> ✔ [2026-05-12 14:34:00] GSEA analysis done
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -484,7 +484,7 @@ GSEAPlot(
   group_use = "Ductal",
   plot_type = "network"
 )
-#> ✔ [2026-05-12 03:57:54] shadowtext installed successfully
+#> ✔ [2026-05-12 14:34:03] shadowtext installed successfully
 
 GSEAPlot(
   pancreas_sub,

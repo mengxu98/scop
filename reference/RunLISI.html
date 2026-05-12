@@ -59,9 +59,7 @@ of a <code>Seurat</code> object.</p>
 <span>  prefix <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  tool_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  perplexity <span class="op">=</span> <span class="fl">30</span>,</span>
-<span>  nn_eps <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  use_rann <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  nn_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auto"</span>, <span class="st">"rann"</span>, <span class="st">"fnn"</span>, <span class="st">"exact"</span><span class="op">)</span>,</span>
+<span>  nn_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auto"</span>, <span class="st">"exact"</span><span class="op">)</span>,</span>
 <span>  tol <span class="op">=</span> <span class="fl">1e-05</span>,</span>
 <span>  max_iter <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -108,33 +106,23 @@ Default is <code>"LISI"</code> when multiple reductions are provided, otherwise
 
 
 <dt id="arg-perplexity">perplexity<a class="anchor" aria-label="anchor" href="#arg-perplexity"></a></dt>
-<dd><p>Effective neighborhood size. Defaults to <code>30</code>.</p></dd>
-
-
-<dt id="arg-nn-eps">nn_eps<a class="anchor" aria-label="anchor" href="#arg-nn-eps"></a></dt>
-<dd><p>Approximation factor passed to <a href="https://jefferislab.github.io/RANN/reference/nn2.html" class="external-link">RANN::nn2</a> when <code>RANN</code> is available and <code>use_rann = TRUE</code>.
-Defaults to <code>0</code>.</p></dd>
-
-
-<dt id="arg-use-rann">use_rann<a class="anchor" aria-label="anchor" href="#arg-use-rann"></a></dt>
-<dd><p>Whether to prefer <a href="https://jefferislab.github.io/RANN/reference/nn2.html" class="external-link">RANN::nn2</a> over <code><a href="https://rdrr.io/pkg/FNN/man/get.knn.html" class="external-link">FNN::get.knn</a></code> when <code>nn_method = "auto"</code> decides not to use the package's built-in exact C++ backend.
-Defaults to <code>TRUE</code>.</p></dd>
+<dd><p>Effective neighborhood size. Default is <code>30</code>.</p></dd>
 
 
 <dt id="arg-nn-method">nn_method<a class="anchor" aria-label="anchor" href="#arg-nn-method"></a></dt>
-<dd><p>Nearest-neighbor backend. Defaults to <code>"auto"</code>,
-which prefers the package's exact C++ search only for very small problems.
-Larger inputs fall back to <code>RANN</code>, then <code>FNN</code>, and only use the exact backend as a last resort.</p></dd>
+<dd><p>Nearest-neighbor backend. One of <code>"auto"</code> or <code>"exact"</code>.
+Default is <code>"auto"</code>, which uses the exact C++ backend from <code>thisutils</code>.
+Requires the accelerated <code><a href="https://mengxu98.github.io/thisutils/reference/compute_lisi.html" class="external-link">thisutils::compute_lisi()</a></code> interface that exposes
+<code>nn_method = c("auto", "exact")</code>.</p></dd>
 
 
 <dt id="arg-tol">tol<a class="anchor" aria-label="anchor" href="#arg-tol"></a></dt>
 <dd><p>Tolerance used in the binary search for the target perplexity.
-Defaults to <code>1e-5</code>.</p></dd>
+Default is <code>1e-5</code>.</p></dd>
 
 
 <dt id="arg-max-iter">max_iter<a class="anchor" aria-label="anchor" href="#arg-max-iter"></a></dt>
-<dd><p>Maximum number of binary-search iterations.
-Defaults to <code>50</code>.</p></dd>
+<dd><p>Maximum number of binary-search iterations. Default is <code>50</code>.</p></dd>
 
 
 <dt id="arg-overwrite">overwrite<a class="anchor" aria-label="anchor" href="#arg-overwrite"></a></dt>
@@ -163,26 +151,26 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  batch <span class="op">=</span> <span class="st">"tech"</span>,</span></span>
 <span class="r-in"><span>  integration_method <span class="op">=</span> <span class="st">"Harmony5"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">◌</span> [2026-05-12 05:07:06] <span style="color: #0000BB;">Run integration workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">◌</span> [2026-05-12 15:47:58] <span style="color: #0000BB;">Run integration workflow...</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No layers found matching search pattern provided</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 05:07:07] Perform `Seurat::NormalizeData()` on split layers for Seurat v5 integration</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 05:07:09] Perform `Seurat::FindVariableFeatures()` per batch (`HVF_source = 'separate'`)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 05:07:11] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 15:47:59] Perform `Seurat::NormalizeData()` on split layers for Seurat v5 integration</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 15:48:01] Perform `Seurat::FindVariableFeatures()` per batch (`HVF_source = 'separate'`)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 15:48:03] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘scale.data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 05:07:12] Perform `Seurat::ScaleData()` on split layers for Seurat v5 integration</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 05:07:13] Perform <span style="color: #0000BB;">PCA</span> on split layers before `Seurat::IntegrateLayers()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 05:07:13] Perform <span style="color: #0000BB;">Seurat v5</span> integration with `HarmonyIntegration()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 15:48:04] Perform `Seurat::ScaleData()` on split layers for Seurat v5 integration</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 15:48:05] Perform <span style="color: #0000BB;">PCA</span> on split layers before `Seurat::IntegrateLayers()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 15:48:05] Perform <span style="color: #0000BB;">Seurat v5</span> integration with `HarmonyIntegration()`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The `features` argument is ignored by `HarmonyIntegration`.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">This message is displayed once per session.</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 05:07:15] Estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span> for <span style="color: #0000BB;">Harmony5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 05:07:15] Adjust neighbor k from <span style="color: #0000BB;">20</span> to <span style="color: #0000BB;">20</span> for small-sample clustering</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 05:07:15] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">"louvain"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 05:07:15] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 05:07:16] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 05:07:16] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Harmony5</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 05:07:21] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Harmony5</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 05:07:27] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">pca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-05-12 05:07:33] <span style="color: #0000BB;">Harmony5</span> integration completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 15:48:08] Estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span> for <span style="color: #0000BB;">Harmony5</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 15:48:08] Adjust neighbor k from <span style="color: #0000BB;">20</span> to <span style="color: #0000BB;">20</span> for small-sample clustering</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 15:48:09] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">"louvain"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 15:48:09] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 15:48:09] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 15:48:09] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Harmony5</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 15:48:16] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Harmony5</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 15:48:23] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">pca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-05-12 15:48:30] <span style="color: #0000BB;">Harmony5</span> integration completed</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">@</span><span class="va">reductions</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "pca"            "Harmony5"       "Harmony5UMAP2D" "Harmony5UMAP3D"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [5] "pcaUMAP2D"     </span>
@@ -191,11 +179,9 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
 <span class="r-in"><span>  reductions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pcaUMAP2D"</span>, <span class="st">"Harmony5UMAP2D"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 05:07:33] Compute <span style="color: #0000BB;">LISI</span> scores from reduction <span style="color: #0000BB;">"pcaUMAP2D"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">◌</span> [2026-05-12 05:07:33] Using <span style="color: #0000BB;">"rann"</span> nearest-neighbor backend for <span style="color: #0000BB;">compute_lisi</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 05:07:33] Compute <span style="color: #0000BB;">LISI</span> scores from reduction <span style="color: #0000BB;">"Harmony5UMAP2D"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">◌</span> [2026-05-12 05:07:33] Using <span style="color: #0000BB;">"rann"</span> nearest-neighbor backend for <span style="color: #0000BB;">compute_lisi</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-05-12 05:07:33] <span style="color: #00BB00;">Stored </span><span style="color: #0000BB;">LISI</span> scores in metadata: <span style="color: #0000BB;">"pcaUMAP2D_tech_LISI"</span> and <span style="color: #0000BB;">"Harmony5UMAP2D_tech_LISI"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 15:48:30] Compute <span style="color: #0000BB;">LISI</span> scores from reduction <span style="color: #0000BB;">"pcaUMAP2D"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-12 15:48:30] Compute <span style="color: #0000BB;">LISI</span> scores from reduction <span style="color: #0000BB;">"Harmony5UMAP2D"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-05-12 15:48:30] <span style="color: #00BB00;">Stored </span><span style="color: #0000BB;">LISI</span> scores in metadata: <span style="color: #0000BB;">"pcaUMAP2D_tech_LISI"</span> and <span style="color: #0000BB;">"Harmony5UMAP2D_tech_LISI"</span></span>
 <span class="r-in"><span><span class="fu"><a href="LISIPlot.html">LISIPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
 <span class="r-in"><span>  combine <span class="op">=</span> <span class="cn">TRUE</span></span></span>
