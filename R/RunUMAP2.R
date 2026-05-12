@@ -559,37 +559,13 @@ RunUMAP2.default <- function(
           message_type = "error"
         )
       }
-      if (run_sparse_topk_by_column_available()) {
-        graph_topk <- run_sparse_topk_by_column(
-          x = object,
-          k = n.neighbors,
-          decreasing = TRUE
-        )
-        idx <- graph_topk[["idx"]]
-        connectivity <- graph_topk[["value"]]
-      } else {
-        val <- split(object@x, rep(1:ncol(object), diff(object@p)))
-        pos <- split(object@i + 1, rep(1:ncol(object), diff(object@p)))
-        idx <- Matrix::t(mapply(
-          function(x, y) {
-            out <- y[utils::head(order(x, decreasing = TRUE), n.neighbors)]
-            length(out) <- n.neighbors
-            return(out)
-          },
-          x = val,
-          y = pos
-        ))
-        connectivity <- Matrix::t(mapply(
-          function(x, y) {
-            out <- y[utils::head(order(x, decreasing = TRUE), n.neighbors)]
-            length(out) <- n.neighbors
-            out[is.na(out)] <- 0
-            return(out)
-          },
-          x = val,
-          y = val
-        ))
-      }
+      graph_topk <- run_sparse_topk_by_column(
+        x = object,
+        k = n.neighbors,
+        decreasing = TRUE
+      )
+      idx <- graph_topk[["idx"]]
+      connectivity <- graph_topk[["value"]]
       idx[is.na(idx)] <- sample(
         1:nrow(object),
         size = sum(is.na(idx)),
@@ -747,26 +723,13 @@ RunUMAP2.default <- function(
       return(reduction)
     }
     if (inherits(x = object, what = "Graph")) {
-      if (run_sparse_topk_by_column_available()) {
-        graph_topk <- run_sparse_topk_by_column(
-          x = object,
-          k = n.neighbors,
-          decreasing = TRUE
-        )
-        match_k <- graph_topk[["idx"]]
-        match_k_connectivity <- graph_topk[["value"]]
-      } else {
-        match_k <- Matrix::t(as_matrix(apply(
-          object,
-          2,
-          function(x) order(x, decreasing = TRUE)[1:n.neighbors]
-        )))
-        match_k_connectivity <- Matrix::t(as_matrix(apply(
-          object,
-          2,
-          function(x) x[order(x, decreasing = TRUE)[1:n.neighbors]]
-        )))
-      }
+      graph_topk <- run_sparse_topk_by_column(
+        x = object,
+        k = n.neighbors,
+        decreasing = TRUE
+      )
+      match_k <- graph_topk[["idx"]]
+      match_k_connectivity <- graph_topk[["value"]]
       object <- list(
         idx = match_k,
         dist = max(match_k_connectivity) - match_k_connectivity

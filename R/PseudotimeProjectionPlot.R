@@ -655,38 +655,34 @@ compute_pseudotime_on_knn <- function(
     log_message(
       "Computing KNN graph from embedding..."
     )
-    d <- proxyC::dist(
-      x = SeuratObject::as.sparse(x_emb),
-      y = SeuratObject::as.sparse(x_emb),
-      method = "euclidean",
-      use_nan = TRUE
-    )
-    k_use <- min(k, ncol(d) - 1)
-    if (k_use > 0 && run_dense_topk_by_column_available()) {
-      topk <- run_dense_topk_by_column(
-        x = d,
-        k = k_use + 1L,
-        decreasing = FALSE
+    k_use <- min(k, nrow(x_emb) - 1L)
+    if (k_use > 0) {
+      topk <- run_knn_topk(
+        reference = x_emb,
+        k = k_use,
+        metric = "euclidean",
+        backend = "cpp",
+        exclude_self = TRUE
       )[["idx"]]
       neighbors_list <- lapply(seq_len(nrow(topk)), function(i) {
-        topk[i, seq_len(k_use) + 1L]
+        topk[i, !is.na(topk[i, ])]
       })
     } else {
-      neighbors_list <- lapply(seq_len(ncol(d)), function(i) {
-        neighbors <- order(d[, i], decreasing = FALSE)[
-          seq_len(k_use) + 1
-        ]
-        neighbors
-      })
+      d <- proxyC::dist(
+        x = SeuratObject::as.sparse(x_emb),
+        y = SeuratObject::as.sparse(x_emb),
+        method = "euclidean",
+        use_nan = TRUE
+      )
+      neighbors_list <- vector("list", nrow(x_emb))
     }
   }
 
   n_cells <- nrow(x_emb)
   n_dims <- ncol(x_emb)
 
-  # Try C++ accelerated path
   k_use <- min(k, max(vapply(neighbors_list, length, integer(1)), 0))
-  if (k_use > 0 && run_pseudotime_velocity_knn_available()) {
+  if (k_use > 0) {
     neighbors_mat <- .neighbors_list_to_matrix(neighbors_list, k_use)
     v_emb <- run_pseudotime_velocity_knn(
       x_emb = x_emb,
@@ -751,34 +747,33 @@ compute_pseudotime_on_gradient <- function(
   n_cells <- nrow(x_emb)
   n_dims <- ncol(x_emb)
 
-  d <- proxyC::dist(
-    x = SeuratObject::as.sparse(x_emb),
-    y = SeuratObject::as.sparse(x_emb),
-    method = "euclidean",
-    use_nan = TRUE
-  )
-
   k_local <- max(10, ceiling(n_cells * smooth / 100))
   k_use <- min(k_local, n_cells - 1L)
+  neighbors_matrix <- NULL
+  if (k_use > 0) {
+    neighbors_matrix <- run_knn_topk(
+      reference = x_emb,
+      k = k_use,
+      metric = "euclidean",
+      backend = "cpp",
+      exclude_self = TRUE
+    )[["idx"]]
+  }
 
-  # Try C++ accelerated path
-  if (k_use > 0 && run_pseudotime_velocity_gradient_available()) {
-    if (run_dense_topk_by_column_available()) {
+  if (k_use > 0) {
+    if (is.null(neighbors_matrix)) {
+      d <- proxyC::dist(
+        x = SeuratObject::as.sparse(x_emb),
+        y = SeuratObject::as.sparse(x_emb),
+        method = "euclidean",
+        use_nan = TRUE
+      )
       neighbors_matrix <- run_dense_topk_by_column(
         x = d,
         k = k_use + 1L,
         decreasing = FALSE
       )[["idx"]]
       neighbors_matrix <- neighbors_matrix[, seq_len(k_use) + 1L, drop = FALSE]
-    } else {
-      neighbors_matrix <- matrix(NA_integer_, nrow = n_cells, ncol = k_use)
-      for (i in seq_len(n_cells)) {
-        nb <- order(d[, i], decreasing = FALSE)[seq_len(k_use) + 1L]
-        n_take <- min(length(nb), k_use)
-        if (n_take > 0) {
-          neighbors_matrix[i, seq_len(n_take)] <- as.integer(nb[seq_len(n_take)])
-        }
-      }
     }
     v_emb <- run_pseudotime_velocity_gradient(
       x_emb = x_emb,
@@ -793,22 +788,39 @@ compute_pseudotime_on_gradient <- function(
 
   v_emb <- matrix(0, nrow = n_cells, ncol = n_dims)
 
-  if (k_use > 0 && run_dense_topk_by_column_available()) {
+  if (is.null(neighbors_matrix) && k_use > 0) {
+    d <- proxyC::dist(
+      x = SeuratObject::as.sparse(x_emb),
+      y = SeuratObject::as.sparse(x_emb),
+      method = "euclidean",
+      use_nan = TRUE
+    )
     neighbors_matrix <- run_dense_topk_by_column(
       x = d,
       k = k_use + 1L,
       decreasing = FALSE
     )[["idx"]]
-  } else {
-    neighbors_matrix <- NULL
   }
 
   for (i in seq_len(n_cells)) {
     neighbors <- if (!is.null(neighbors_matrix)) {
-      neighbors_matrix[i, seq_len(k_use) + 1L]
+      if (ncol(neighbors_matrix) == k_use) {
+        neighbors_matrix[i, seq_len(k_use)]
+      } else {
+        neighbors_matrix[i, seq_len(k_use) + 1L]
+      }
     } else {
-      order(d[, i], decreasing = FALSE)[2:(k_local + 1)]
+      if (!exists("d", inherits = FALSE)) {
+        d <- proxyC::dist(
+          x = SeuratObject::as.sparse(x_emb),
+          y = SeuratObject::as.sparse(x_emb),
+          method = "euclidean",
+          use_nan = TRUE
+        )
+      }
+      order(d[, i], decreasing = FALSE)[seq_len(k_use) + 1L]
     }
+    neighbors <- neighbors[!is.na(neighbors)]
 
     if (length(neighbors) == 0) {
       next
