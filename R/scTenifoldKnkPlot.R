@@ -217,17 +217,10 @@ sctenifold_plot_theme <- function(theme_use, theme_args = list()) {
   if (inherits(theme_use, "theme")) {
     return(theme_use)
   }
-  theme_fun <- if (is.character(theme_use)) {
-    get(theme_use, mode = "function", inherits = TRUE)
-  } else if (is.function(theme_use)) {
-    theme_use
-  } else {
-    log_message(
-      "{.arg theme_use} must be a theme object, function, function name, or NULL",
-      message_type = "error"
-    )
+  if (identical(theme_use, "theme_scop")) {
+    theme_use <- thisplot::theme_this
   }
-  do.call(theme_fun, theme_args)
+  do.call(theme_use, theme_args)
 }
 
 sctenifold_status_colors <- function(cols.sig, cols.ns, cols.ko) {
@@ -440,6 +433,13 @@ sctenifold_plot_network <- function(
   edge_df <- edge_df[edge_df$from %in% rownames(edge_mat) & edge_df$to %in% colnames(edge_mat), , drop = FALSE]
   edge_mat[cbind(edge_df$from, edge_df$to)] <- edge_df$abs_weight
 
+  graph_theme_use <- if (inherits(theme_use, "theme")) {
+    function(...) theme_use
+  } else if (identical(theme_use, "theme_scop")) {
+    thisplot::theme_this
+  } else {
+    theme_use
+  }
   p <- thisplot::GraphPlot(
     node = node_plot,
     edge = edge_mat,
@@ -462,7 +462,7 @@ sctenifold_plot_network <- function(
     xlab = NULL,
     ylab = NULL,
     legend.position = "right",
-    theme_use = theme_use,
+    theme_use = graph_theme_use,
     theme_args = theme_args
   )
   if (isTRUE(label)) {
