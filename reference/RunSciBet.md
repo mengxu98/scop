@@ -111,7 +111,7 @@ panc8_sub <- RenameFeatures(
   panc8_sub,
   newnames = genenames
 )
-#> ℹ [2026-05-11 16:20:11] Rename features for the assay: RNA
+#> ℹ [2026-05-12 05:14:24] Rename features for the assay: RNA
 
 data(pancreas_sub)
 pancreas_sub <- RunSciBet(
@@ -120,10 +120,10 @@ pancreas_sub <- RunSciBet(
   ref_group = "celltype",
   nfeatures = 200
 )
-#> ℹ [2026-05-11 16:20:12] Run native SciBet with 12928 candidate features and 13 reference classes
-#> ℹ [2026-05-11 16:20:13] SciBet annotations stored in metadata column "scibet_annotation"
+#> ℹ [2026-05-12 05:14:25] Run native SciBet with 12928 candidate features and 13 reference classes
+#> ℹ [2026-05-12 05:14:26] SciBet annotations stored in metadata column "scibet_annotation"
 pancreas_sub <- standard_scop(pancreas_sub, verbose = FALSE)
-#> ℹ [2026-05-11 16:20:17] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-12 05:14:30] Skip `log1p()` because `layer = data` is not "counts"
 CellDimPlot(
   pancreas_sub,
   group.by = c("SubCellType", "scibet_annotation"),
@@ -140,13 +140,13 @@ ht <- CellCorHeatmap(
   width = 3,
   height = 3
 )
-#> ℹ [2026-05-11 16:20:28] Use the HVF to calculate distance metric
-#> ℹ [2026-05-11 16:20:28] Use [1] 2000 features to calculate distance.
-#> ℹ [2026-05-11 16:20:28] Detected query data type: "log_normalized_counts"
-#> ℹ [2026-05-11 16:20:28] Detected reference data type: "log_normalized_counts"
-#> ℹ [2026-05-11 16:20:28] Calculate similarity...
-#> ℹ [2026-05-11 16:20:28] Use raw method to find neighbors
-#> ℹ [2026-05-11 16:20:28] Predict cell type...
+#> ℹ [2026-05-12 05:14:41] Use the HVF to calculate distance metric
+#> ℹ [2026-05-12 05:14:41] Use [1] 2000 features to calculate distance.
+#> ℹ [2026-05-12 05:14:41] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-05-12 05:14:41] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-05-12 05:14:41] Calculate similarity...
+#> ℹ [2026-05-12 05:14:41] Use raw method to find neighbors
+#> ℹ [2026-05-12 05:14:41] Predict cell type...
 
 ht$plot
 ```

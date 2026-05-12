@@ -189,12 +189,12 @@ pancreas_sub <- RunscTenifoldKnk(
   store_networks = TRUE,
   store_manifold = TRUE
 )
-#> ℹ [2026-05-11 16:36:40] Run scTenifoldKnk knockout for "Pdx1" using "cpp" backend
-#> ℹ [2026-05-11 16:36:40] Construct scTenifoldNet network ensemble
-#> ℹ [2026-05-11 16:36:40] Denoise network ensemble with tensor decomposition
-#> ℹ [2026-05-11 16:36:40] Denoise network ensemble with tensor decomposition  ■■■…
-#> ℹ [2026-05-11 16:36:40] Align WT and KO network manifolds
-#> ✔ [2026-05-11 16:36:40] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
+#> ℹ [2026-05-12 05:31:25] Run scTenifoldKnk knockout for "Pdx1" using "cpp" backend
+#> ℹ [2026-05-12 05:31:25] Construct scTenifoldNet network ensemble
+#> ℹ [2026-05-12 05:31:26] Denoise network ensemble with tensor decomposition
+#> ℹ [2026-05-12 05:31:26] Denoise network ensemble with tensor decomposition  ■■■…
+#> ℹ [2026-05-12 05:31:26] Align WT and KO network manifolds
+#> ✔ [2026-05-12 05:31:26] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
 
 scTenifoldKnkPlot(pancreas_sub, plot_type = "qq")
 
@@ -203,7 +203,7 @@ scTenifoldKnkPlot(pancreas_sub, plot_type = "effect")
 
 
 scTenifoldKnkPlot(pancreas_sub, plot_type = "network")
-#> Error in theme_scop(): could not find function "theme_scop"
+
 
 scTenifoldKnkPlot(pancreas_sub, plot_type = "manifold")
 ```
