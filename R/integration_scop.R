@@ -36,12 +36,8 @@
 #' Default is `NULL`, which uses `paste0(lisi_prefix, "_LISI")`.
 #' @param lisi_perplexity Effective neighborhood size used by LISI.
 #' Default is `30`.
-#' @param lisi_nn_eps Approximation factor passed to nearest-neighbor search when
-#' applicable. Default is `0`.
-#' @param lisi_use_rann Whether to prefer `RANN` as the approximate nearest-neighbor
-#' backend when `lisi_nn_method = "auto"`. Default is `TRUE`.
 #' @param lisi_nn_method Nearest-neighbor backend passed to [RunLISI()].
-#' One of `"auto"`, `"rann"`, `"fnn"`, `"exact"`. Default is `"auto"`.
+#' One of `"auto"` or `"exact"`. Default is `"auto"`.
 #' @param lisi_tol Tolerance used in the LISI binary search. Default is `1e-5`.
 #' @param lisi_max_iter Maximum iterations used in the LISI binary search.
 #' Default is `50`.
@@ -225,9 +221,7 @@ integration_scop <- function(
   lisi_prefix = NULL,
   lisi_tool_name = NULL,
   lisi_perplexity = 30,
-  lisi_nn_eps = 0,
-  lisi_use_rann = TRUE,
-  lisi_nn_method = c("auto", "rann", "fnn", "exact"),
+  lisi_nn_method = c("auto", "exact"),
   lisi_tol = 1e-5,
   lisi_max_iter = 50,
   compute_metrics = FALSE,
@@ -617,8 +611,6 @@ integration_scop <- function(
       prefix = lisi_prefix_use,
       tool_name = lisi_tool_name_use,
       perplexity = lisi_perplexity,
-      nn_eps = lisi_nn_eps,
-      use_rann = lisi_use_rann,
       nn_method = lisi_nn_method,
       tol = lisi_tol,
       max_iter = lisi_max_iter,

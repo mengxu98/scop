@@ -5,7 +5,7 @@
 * **feat**:
   * Added `ConvertHomologs()` for homologous feature conversion in `Seurat`, `matrix`, and `Matrix` objects. The function uses `GeneConvert()` for arbitrary Ensembl/biomaRt-supported species pairs, collapses duplicated target homologs by summing expression values, preserves Seurat cell metadata and spatial images, and stores the mapping table in `@tools$ConvertHomologs`.
   * Added `RunCytoSPACE()`, a native R/C++ implementation of the default CytoSPACE spot-level assignment workflow. The native backend uses spot-capacity graph construction and precomputed Pearson correlation matrices, stores detailed results in `srt@tools[["CytoSPACE"]]`, and writes summary metadata columns with the requested prefix.
-  * Added `SpatialDimPlot()` for spatial visualization, including examples that show both tissue annotations and downstream CytoSPACE assignment results.
+  * Added `SpatialSpotPlot()` for spatial visualization, including examples that show both tissue annotations and downstream CytoSPACE assignment results.
   * Added a shared native progress helper in `src/log_message.h` for long-running C++ loops. CytoSPACE assignment, scTenifold tensor decomposition, proportion permutation/bootstrap, and sample-level proportion bootstrap now report progress with the same timestamped information style as `thisutils::log_message()`.
 
 * **fix**:

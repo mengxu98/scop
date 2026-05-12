@@ -102,13 +102,7 @@ RunMDS.Assay <- function(
     object = object,
     layer = layer
   )
-  features_var <- apply(
-    X = data_use[features, ],
-    MARGIN = 1,
-    FUN = stats::var
-  )
-  features_keep <- features[features_var > 0]
-  data_use <- data_use[features_keep, ]
+  data_use <- filter_nonzero_variance_features(data_use, features)
   reduction_data <- RunMDS(
     object = data_use,
     assay = assay,
@@ -147,13 +141,7 @@ RunMDS.Assay5 <- function(
     object = object,
     layer = layer
   )
-  features_var <- apply(
-    X = data_use[features, ],
-    MARGIN = 1,
-    FUN = stats::var
-  )
-  features_keep <- features[features_var > 0]
-  data_use <- data_use[features_keep, ]
+  data_use <- filter_nonzero_variance_features(data_use, features)
   reduction_data <- RunMDS(
     object = data_use,
     assay = assay,

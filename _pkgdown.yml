@@ -261,7 +261,7 @@ reference:
 
 - subtitle: "Spatial Visualization"
 - contents:
-  - SpatialDimPlot
+  - SpatialSpotPlot
 
 - subtitle: "Cell-Cell Communication Plots"
 - contents:

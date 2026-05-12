@@ -13,9 +13,7 @@ RunLISI(
   prefix = NULL,
   tool_name = NULL,
   perplexity = 30,
-  nn_eps = 0,
-  use_rann = TRUE,
-  nn_method = c("auto", "rann", "fnn", "exact"),
+  nn_method = c("auto", "exact"),
   tol = 1e-05,
   max_iter = 50,
   overwrite = TRUE,
@@ -43,23 +41,17 @@ If \code{NULL}, the reduction names are used.}
 Default is \code{"LISI"} when multiple reductions are provided, otherwise
 \code{paste0(prefix, "_LISI")}.}
 
-\item{perplexity}{Effective neighborhood size. Defaults to \code{30}.}
+\item{perplexity}{Effective neighborhood size. Default is \code{30}.}
 
-\item{nn_eps}{Approximation factor passed to \link[RANN:nn2]{RANN::nn2} when \code{RANN} is available and \code{use_rann = TRUE}.
-Defaults to \code{0}.}
-
-\item{use_rann}{Whether to prefer \link[RANN:nn2]{RANN::nn2} over \code{FNN::get.knn} when \code{nn_method = "auto"} decides not to use the package's built-in exact C++ backend.
-Defaults to \code{TRUE}.}
-
-\item{nn_method}{Nearest-neighbor backend. Defaults to \code{"auto"},
-which prefers the package's exact C++ search only for very small problems.
-Larger inputs fall back to \code{RANN}, then \code{FNN}, and only use the exact backend as a last resort.}
+\item{nn_method}{Nearest-neighbor backend. One of \code{"auto"} or \code{"exact"}.
+Default is \code{"auto"}, which uses the exact C++ backend from \code{thisutils}.
+Requires the accelerated \code{thisutils::compute_lisi()} interface that exposes
+\code{nn_method = c("auto", "exact")}.}
 
 \item{tol}{Tolerance used in the binary search for the target perplexity.
-Defaults to \code{1e-5}.}
+Default is \code{1e-5}.}
 
-\item{max_iter}{Maximum number of binary-search iterations.
-Defaults to \code{50}.}
+\item{max_iter}{Maximum number of binary-search iterations. Default is \code{50}.}
 
 \item{overwrite}{Whether to overwrite existing metadata columns. Default is \code{TRUE}.}
 
