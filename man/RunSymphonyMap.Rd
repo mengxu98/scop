@@ -49,11 +49,12 @@ Options are "model" and "knn". If "model" is selected, the function will try to 
 If "knn" is selected, the function will directly find the nearest neighbors using the distance metric.}
 
 \item{nn_method}{A character string specifying the nearest neighbor search method to use.
-Options are "raw", "annoy", and "rann".
+Options are "raw", "annoy", "rann", and "cpp".
 If "raw" is selected, the function will use the brute-force method to find the nearest neighbors.
 If "annoy" is selected, the function will use the Annoy library for approximate nearest neighbor search.
 If "rann" is selected, the function will use the RANN library for approximate nearest neighbor search.
-If not provided, the function will choose the search method based on the size of the query and reference datasets.}
+If "cpp" is selected, the function will use the compiled exact top-k search.
+If not provided, the function will use "cpp" for Euclidean or cosine distance, otherwise it will choose the search method based on the size of the query and reference datasets.}
 
 \item{k}{A number of nearest neighbors to find for each cell in the query object.}
 

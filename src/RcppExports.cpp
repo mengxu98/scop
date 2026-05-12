@@ -249,6 +249,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// knn_topk_cpp
+List knn_topk_cpp(NumericMatrix reference, NumericMatrix query, int k, std::string metric, bool exclude_self, int n_threads);
+RcppExport SEXP _scop_knn_topk_cpp(SEXP referenceSEXP, SEXP querySEXP, SEXP kSEXP, SEXP metricSEXP, SEXP exclude_selfSEXP, SEXP n_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type reference(referenceSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type query(querySEXP);
+    Rcpp::traits::input_parameter< int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< std::string >::type metric(metricSEXP);
+    Rcpp::traits::input_parameter< bool >::type exclude_self(exclude_selfSEXP);
+    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(knn_topk_cpp(reference, query, k, metric, exclude_self, n_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
 // wilcox_rank_sum_sparse
 NumericVector wilcox_rank_sum_sparse(S4 mat, int n_group1, double min_expression);
 RcppExport SEXP _scop_wilcox_rank_sum_sparse(SEXP matSEXP, SEXP n_group1SEXP, SEXP min_expressionSEXP) {
@@ -491,6 +507,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_plage_dense", (DL_FUNC) &_scop_plage_dense, 4},
     {"_scop_gsva_gaussian_dense", (DL_FUNC) &_scop_gsva_gaussian_dense, 6},
     {"_scop_gsva_poisson_dense", (DL_FUNC) &_scop_gsva_poisson_dense, 6},
+    {"_scop_knn_topk_cpp", (DL_FUNC) &_scop_knn_topk_cpp, 6},
     {"_scop_wilcox_rank_sum_sparse", (DL_FUNC) &_scop_wilcox_rank_sum_sparse, 3},
     {"_scop_wilcox_rank_sum_sparse_all_cells", (DL_FUNC) &_scop_wilcox_rank_sum_sparse_all_cells, 2},
     {"_scop_sparse_topk_by_column", (DL_FUNC) &_scop_sparse_topk_by_column, 3},
