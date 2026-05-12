@@ -65,6 +65,10 @@ gsva_poisson_dense <- function(expr, gene_sets, max_diff = TRUE, abs_ranking = F
     .Call(`_scop_gsva_poisson_dense`, expr, gene_sets, max_diff, abs_ranking, tau, chunk_size)
 }
 
+knn_topk_cpp <- function(reference, query, k, metric = "euclidean", exclude_self = FALSE, n_threads = 0L) {
+    .Call(`_scop_knn_topk_cpp`, reference, query, k, metric, exclude_self, n_threads)
+}
+
 wilcox_rank_sum_sparse <- function(mat, n_group1, min_expression = 0.0) {
     .Call(`_scop_wilcox_rank_sum_sparse`, mat, n_group1, min_expression)
 }

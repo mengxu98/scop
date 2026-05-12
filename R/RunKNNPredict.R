@@ -43,11 +43,12 @@
 #' If using "roc" test, `DE_threshold` should be needs to be reassigned. e.g. "power > 0.5".
 #' Default is `"p_val < 0.05"`.
 #' @param nn_method A character string specifying the nearest neighbor search method to use.
-#' Options are "raw", "annoy", and "rann".
+#' Options are "raw", "annoy", "rann", and "cpp".
 #' If "raw" is selected, the function will use the brute-force method to find the nearest neighbors.
 #' If "annoy" is selected, the function will use the Annoy library for approximate nearest neighbor search.
 #' If "rann" is selected, the function will use the RANN library for approximate nearest neighbor search.
-#' If not provided, the function will choose the search method based on the size of the query and reference datasets.
+#' If "cpp" is selected, the function will use the compiled exact top-k search.
+#' If not provided, the function will use "cpp" for Euclidean or cosine distance, otherwise it will choose the search method based on the size of the query and reference datasets.
 #' @param distance_metric A character vector specifying the distance metric to be used for calculating similarity between cells.
 #' Must be one of "cosine", "euclidean", "manhattan", or "hamming".
 #' Default is `"cosine"`.
@@ -618,15 +619,23 @@ RunKNNPredict <- function(
   log_message("Calculate similarity...")
 
   if (is.null(nn_method)) {
-    if (as.numeric(nrow(query)) * as.numeric(nrow(ref)) >= 1e8) {
+    if (distance_metric %in% c("euclidean", "cosine")) {
+      nn_method <- "cpp"
+    } else if (as.numeric(nrow(query)) * as.numeric(nrow(ref)) >= 1e8) {
       nn_method <- "annoy"
     } else {
       nn_method <- "raw"
     }
   }
   log_message("Use {.pkg {nn_method}} method to find neighbors")
-  if (!nn_method %in% c("raw", "annoy", "rann")) {
-    log_message("nn_method must be one of raw, rann and annoy",
+  if (!nn_method %in% c("raw", "annoy", "rann", "cpp")) {
+    log_message("nn_method must be one of raw, rann, annoy, and cpp",
+      message_type = "error"
+    )
+  }
+  if (identical(nn_method, "cpp") && !distance_metric %in% c("euclidean", "cosine")) {
+    log_message(
+      "distance_metric must be one of euclidean and cosine when nn_method is 'cpp'",
       message_type = "error"
     )
   }
@@ -676,7 +685,27 @@ RunKNNPredict <- function(
     )
   }
 
-  if (nn_method %in% c("annoy", "rann")) {
+  if (identical(nn_method, "cpp")) {
+    query.neighbor <- run_knn_topk(
+      reference = ref,
+      query = query,
+      k = k,
+      metric = distance_metric,
+      backend = nn_method,
+      exclude_self = FALSE
+    )
+    match_k <- query.neighbor[["idx"]]
+    k <- ncol(match_k)
+    rownames(match_k) <- rownames(query)
+    match_k_cell <- matrix(
+      rownames(ref)[match_k],
+      nrow = nrow(match_k),
+      ncol = ncol(match_k),
+      dimnames = list(rownames(query), NULL)
+    )
+    match_k_distance <- query.neighbor[["dist"]]
+    rownames(match_k_distance) <- rownames(query)
+  } else if (nn_method %in% c("annoy", "rann")) {
     query.neighbor <- Seurat::FindNeighbors(
       query = query,
       object = ref,
@@ -714,41 +743,19 @@ RunKNNPredict <- function(
         use_nan = TRUE
       )
     }
-    if (run_dense_topk_by_column_available()) {
-      knn_topk <- run_dense_topk_by_column(
-        x = d,
-        k = k,
-        decreasing = FALSE
-      )
-      match_k_cell <- matrix(
-        rownames(d)[knn_topk[["idx"]]],
-        nrow = nrow(knn_topk[["idx"]]),
-        ncol = ncol(knn_topk[["idx"]]),
-        dimnames = list(colnames(d), NULL)
-      )
-      match_k_distance <- knn_topk[["value"]]
-      rownames(match_k_distance) <- colnames(d)
-    } else if (k == 1) {
-      match_k_cell <- as_matrix(
-        apply(d, 2, function(x) {
-          names(x)[order(x, decreasing = FALSE)[1]]
-        })
-      )
-      match_k_distance <- as_matrix(
-        apply(d, 2, function(x) x[order(x, decreasing = FALSE)[1]])
-      )
-    } else {
-      match_k_cell <- Matrix::t(
-        as_matrix(
-          apply(d, 2, function(x) names(x)[order(x, decreasing = FALSE)[1:k]])
-        )
-      )
-      match_k_distance <- Matrix::t(
-        as_matrix(
-          apply(d, 2, function(x) x[order(x, decreasing = FALSE)[1:k]])
-        )
-      )
-    }
+    knn_topk <- run_dense_topk_by_column(
+      x = d,
+      k = k,
+      decreasing = FALSE
+    )
+    match_k_cell <- matrix(
+      rownames(d)[knn_topk[["idx"]]],
+      nrow = nrow(knn_topk[["idx"]]),
+      ncol = ncol(knn_topk[["idx"]]),
+      dimnames = list(colnames(d), NULL)
+    )
+    match_k_distance <- knn_topk[["value"]]
+    rownames(match_k_distance) <- colnames(d)
   }
 
   log_message("Predict cell type...")
