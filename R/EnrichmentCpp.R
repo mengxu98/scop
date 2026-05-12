@@ -1,8 +1,3 @@
-run_ora_available <- function() {
-  exists("ora_hypergeom", mode = "function") &&
-    isTRUE(is.loaded("_scop_ora_hypergeom"))
-}
-
 run_ora_result <- function(
   gene,
   TERM2GENE,
@@ -11,13 +6,6 @@ run_ora_result <- function(
   min_gs_size = 10,
   max_gs_size = 500
 ) {
-  if (!run_ora_available()) {
-    log_message(
-      "{.arg backend = 'cpp'} requires the compiled {.pkg scop} shared library. Reinstall the package to build native code.",
-      message_type = "error"
-    )
-  }
-
   max_size <- if (is.finite(max_gs_size)) {
     as.integer(max_gs_size)
   } else {
