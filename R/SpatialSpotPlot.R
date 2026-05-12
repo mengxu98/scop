@@ -1,8 +1,4 @@
-#' @title Spatial dimensional plot
-#'
-#' @description
-#' Visualize spatial spots on tissue coordinates, optionally overlaying a Seurat
-#' spatial image.
+#' @title Spatial spot plot
 #'
 #' @md
 #' @inheritParams CellDimPlot
@@ -36,17 +32,17 @@
 #'
 #' @examples
 #' data(visium_human_pancreas_sub)
-#' SpatialDimPlot(
+#' SpatialSpotPlot(
 #'   visium_human_pancreas_sub,
 #'   group.by = "coda_label"
 #' )
 #'
-#' SpatialDimPlot(
+#' SpatialSpotPlot(
 #'   visium_human_pancreas_sub,
 #'   features = rownames(visium_human_pancreas_sub)[1:2],
 #'   layer = "counts"
 #' )
-SpatialDimPlot <- function(
+SpatialSpotPlot <- function(
   srt,
   group.by = NULL,
   features = NULL,

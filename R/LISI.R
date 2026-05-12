@@ -6,7 +6,6 @@
 #' of a `Seurat` object.
 #'
 #' @md
-#' @inheritParams thisutils::compute_lisi
 #' @inheritParams thisutils::log_message
 #' @inheritParams CellDimPlot
 #' @param srt A `Seurat` object.
@@ -22,6 +21,14 @@
 #' @param tool_name Name used to store detailed results in `srt@tools`.
 #' Default is `"LISI"` when multiple reductions are provided, otherwise
 #' `paste0(prefix, "_LISI")`.
+#' @param perplexity Effective neighborhood size. Default is `30`.
+#' @param nn_method Nearest-neighbor backend. One of `"auto"` or `"exact"`.
+#' Default is `"auto"`, which uses the exact C++ backend from `thisutils`.
+#' Requires the accelerated `thisutils::compute_lisi()` interface that exposes
+#' `nn_method = c("auto", "exact")`.
+#' @param tol Tolerance used in the binary search for the target perplexity.
+#' Default is `1e-5`.
+#' @param max_iter Maximum number of binary-search iterations. Default is `50`.
 #' @param overwrite Whether to overwrite existing metadata columns. Default is `TRUE`.
 #'
 #' @return A modified `Seurat` object.
@@ -56,9 +63,7 @@ RunLISI <- function(
   prefix = NULL,
   tool_name = NULL,
   perplexity = 30,
-  nn_eps = 0,
-  use_rann = TRUE,
-  nn_method = c("auto", "rann", "fnn", "exact"),
+  nn_method = c("auto", "exact"),
   tol = 1e-5,
   max_iter = 50,
   overwrite = TRUE,
@@ -99,6 +104,16 @@ RunLISI <- function(
     )
   }
   nn_method <- match.arg(nn_method)
+  compute_lisi_args <- names(formals(thisutils::compute_lisi))
+  if (
+    any(c("nn_eps", "use_rann") %in% compute_lisi_args) ||
+      !("nn_method" %in% compute_lisi_args)
+  ) {
+    log_message(
+      "{.fn RunLISI} requires the accelerated {.fn thisutils::compute_lisi} interface with {.arg nn_method = c('auto', 'exact')}. Please install the updated {.pkg thisutils}.",
+      message_type = "error"
+    )
+  }
 
   if (is.null(prefix)) {
     prefix <- reductions
@@ -162,8 +177,6 @@ RunLISI <- function(
       meta_data = srt@meta.data,
       label_colnames = label_colnames,
       perplexity = perplexity,
-      nn_eps = nn_eps,
-      use_rann = use_rann,
       nn_method = nn_method,
       tol = tol,
       max_iter = max_iter
@@ -186,8 +199,6 @@ RunLISI <- function(
     label_colnames = label_colnames,
     colnames = lisi_cols_all,
     perplexity = perplexity,
-    nn_eps = nn_eps,
-    use_rann = use_rann,
     nn_method = nn_method,
     tol = tol,
     max_iter = max_iter

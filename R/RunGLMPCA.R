@@ -64,6 +64,7 @@ RunGLMPCA.Seurat <- function(
     object = assay.data,
     assay = assay,
     layer = layer,
+    features = features,
     L = L,
     fam = fam,
     rev.gmlpca = rev.gmlpca,
@@ -102,13 +103,7 @@ RunGLMPCA.Assay <- function(
     layer = layer,
     ...
   )
-  features.var <- apply(
-    X = data.use[features, ],
-    MARGIN = 1,
-    FUN = stats::var
-  )
-  features.keep <- features[features.var > 0]
-  data.use <- data.use[features.keep, ]
+  data.use <- filter_nonzero_variance_features(data.use, features)
   reduction.data <- RunGLMPCA(
     object = data.use,
     assay = assay,
@@ -149,13 +144,7 @@ RunGLMPCA.Assay5 <- function(
     layer = layer,
     ...
   )
-  features.var <- apply(
-    X = data.use[features, ],
-    MARGIN = 1,
-    FUN = stats::var
-  )
-  features.keep <- features[features.var > 0]
-  data.use <- data.use[features.keep, ]
+  data.use <- filter_nonzero_variance_features(data.use, features)
   reduction.data <- RunGLMPCA(
     object = data.use,
     assay = assay,
