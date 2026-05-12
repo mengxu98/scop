@@ -20,7 +20,7 @@
     detailed results in `srt@tools[["CytoSPACE"]]`, and writes summary
     metadata columns with the requested prefix.
   - Added
-    [`SpatialDimPlot()`](https://mengxu98.github.io/scop/reference/SpatialDimPlot.md)
+    [`SpatialSpotPlot()`](https://mengxu98.github.io/scop/reference/SpatialSpotPlot.md)
     for spatial visualization, including examples that show both tissue
     annotations and downstream CytoSPACE assignment results.
   - Added a shared native progress helper in `src/log_message.h` for

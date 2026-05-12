@@ -417,8 +417,8 @@
 
 ### Spatial Visualization
 
-- [`SpatialDimPlot()`](https://mengxu98.github.io/scop/reference/SpatialDimPlot.md)
-  : Spatial dimensional plot
+- [`SpatialSpotPlot()`](https://mengxu98.github.io/scop/reference/SpatialSpotPlot.md)
+  : Spatial spot plot
 
 ### Cell-Cell Communication Plots
 

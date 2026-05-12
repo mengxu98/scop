@@ -129,17 +129,16 @@ spatial <- RunCytoSPACE(
   verbose = FALSE
 )
 
-SpatialDimPlot(
+SpatialSpotPlot(
   visium_human_pancreas_sub,
   group.by = "coda_label",
   theme_use = "theme_scop"
 )
-#> Error in SpatialDimPlot(visium_human_pancreas_sub, group.by = "coda_label",     theme_use = "theme_scop"): unused argument (theme_use = "theme_scop")
 
-SpatialDimPlot(
+
+SpatialSpotPlot(
   spatial,
   group.by = "CytoSPACE_dominant_type",
   theme_use = "theme_scop"
 )
-#> Error in SpatialDimPlot(spatial, group.by = "CytoSPACE_dominant_type",     theme_use = "theme_scop"): unused argument (theme_use = "theme_scop")
 ```

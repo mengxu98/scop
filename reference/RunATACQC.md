@@ -70,9 +70,9 @@ pbmcmultiome_sub <- RunATACQC(
   assay = "peaks",
   fast = TRUE
 )
-#> ℹ [2026-05-12 04:28:57] Calculating ATAC QC metrics...
-#> ! [2026-05-12 04:28:57] Skip nucleosome signal: "No fragment files present in assay"
-#> ! [2026-05-12 04:28:57] Skip FRiP calculation: no total fragment count column or local fragments available
-#> ✔ [2026-05-12 04:28:57] ATAC QC completed
+#> ℹ [2026-05-12 15:09:15] Calculating ATAC QC metrics...
+#> ! [2026-05-12 15:09:15] Skip nucleosome signal: "No fragment files present in assay"
+#> ! [2026-05-12 15:09:15] Skip FRiP calculation: no total fragment count column or local fragments available
+#> ✔ [2026-05-12 15:09:15] ATAC QC completed
 # }
 ```

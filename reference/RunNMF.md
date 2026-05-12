@@ -187,62 +187,62 @@ library(Matrix)
 #>     expand
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-12 05:11:29] Start standard processing workflow...
-#> ℹ [2026-05-12 05:11:29] Checking a list of <Seurat>...
-#> ! [2026-05-12 05:11:29] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-12 05:11:29] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-12 05:11:31] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-12 05:11:32] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-12 05:11:32] Number of available HVF: 2000
-#> ℹ [2026-05-12 05:11:32] Finished check
-#> ℹ [2026-05-12 05:11:32] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-12 05:11:32] Perform pca linear dimension reduction
-#> ℹ [2026-05-12 05:11:33] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-05-12 05:11:33] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-12 05:11:33] Reorder clusters...
-#> ℹ [2026-05-12 05:11:33] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-12 05:11:34] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-12 05:11:34] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-05-12 05:11:39] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-05-12 05:11:43] Standard processing workflow completed
+#> ℹ [2026-05-12 15:52:47] Start standard processing workflow...
+#> ℹ [2026-05-12 15:52:48] Checking a list of <Seurat>...
+#> ! [2026-05-12 15:52:48] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-12 15:52:48] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-12 15:52:50] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-12 15:52:51] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-12 15:52:51] Number of available HVF: 2000
+#> ℹ [2026-05-12 15:52:51] Finished check
+#> ℹ [2026-05-12 15:52:51] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-12 15:52:51] Perform pca linear dimension reduction
+#> ℹ [2026-05-12 15:52:52] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-05-12 15:52:52] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-12 15:52:52] Reorder clusters...
+#> ℹ [2026-05-12 15:52:52] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-12 15:52:52] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-12 15:52:52] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-05-12 15:52:59] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-05-12 15:53:05] Standard processing workflow completed
 pancreas_sub <- RunNMF(pancreas_sub)
-#> ℹ [2026-05-12 05:11:43] Running NMF...
+#> ℹ [2026-05-12 15:53:05] Running NMF...
 #> ℹ BE_ 1 
 #> ℹ Positive:  Ccnd1, Spp1, Mdk, Rps2, Ldha, Pebp1, Cd24a, Dlk1, Krt8, Mgst1 
 #> ℹ      Clu, Gapdh, Eno1, Prdx1, Cldn10, Mif, Cldn7, Npm1, Dbi, Vim 
 #> ℹ      Sox9, Rpl12, Aldh1b1, Rplp1, Wfdc2, Krt18, Tkt, Aldoa, Hspe1, Ptma 
-#> ℹ Negative:  Tmem108, Poc1a, Epn3, Wipi1, Tmcc3, Nhsl1, Fgf12, Tecpr2, Zbtb4, Plekho1 
-#> ℹ      Gm10941, Trf, Man1c1, Hmgcs1, Nipal1, Jam3, Pgap1, Alpl, Tnr, Kcnip3 
+#> ℹ Negative:  Tmem108, Poc1a, Epn3, Wipi1, Tmcc3, Nhsl1, Fgf12, Plekho1, Tecpr2, Zbtb4 
+#> ℹ      Gm10941, Trf, Man1c1, Hmgcs1, Nipal1, Jam3, Pgap1, Alpl, Kcnip3, Tnr 
 #> ℹ      Gm15915, Rbp2, Cbfa2t2, Sh2d4a, Bbc3, Megf6, Naaladl2, Fam46d, Hist2h2ac, Tox2 
 #> ℹ BE_ 2 
 #> ℹ Positive:  Spp1, Gsta3, Sparc, Vim, Atp1b1, Mt1, Dbi, Anxa2, Rps2, Id2 
 #> ℹ      Rpl22l1, Rplp1, Mgst1, Clu, Sox9, Cldn6, Mdk, Pdzk1ip1, Bicc1, 1700011H14Rik 
 #> ℹ      Rps12, S100a10, Cldn3, Rpl36a, Ppp1r1b, Adamts1, Serpinh1, Mt2, Ifitm2, Rpl39 
-#> ℹ Negative:  Rpa3, Aacs, Tmem108, Poc1a, Epn3, Wipi1, B830012L14Rik, Tmcc3, Wsb1, Tecpr2 
-#> ℹ      Zbtb4, Plekho1, Ppp2r2b, Haus8, Trf, Gm5420, Man1c1, Hmgcs1, Nipal1, Jam3 
-#> ℹ      Tcerg1, Pgap1, Snrpa1, Alpl, Larp1b, Tnr, Kcnip3, Lsm12, Ptbp3, Gm15915 
+#> ℹ Negative:  Rpa3, Aacs, Tmem108, Poc1a, Epn3, Wipi1, B830012L14Rik, Tmcc3, Wsb1, Plekho1 
+#> ℹ      Ppp2r2b, Tecpr2, Zbtb4, Haus8, Trf, Gm5420, Man1c1, Hmgcs1, Nipal1, Jam3 
+#> ℹ      Tcerg1, Pgap1, Snrpa1, Alpl, Larp1b, Kcnip3, Tnr, Lsm12, Ptbp3, Gm15915 
 #> ℹ BE_ 3 
 #> ℹ Positive:  Cck, Mdk, Gadd45a, Neurog3, Selm, Sox4, Btbd17, Tmsb4x, Btg2, Cldn6 
 #> ℹ      Cotl1, Ptma, Jun, Ppp1r14a, Rps2, Ifitm2, Neurod2, Igfbpl1, Gnas, Krt7 
 #> ℹ      Nkx6-1, Aplp1, Ppp3ca, Lrpap1, Rplp1, Hn1, Rps12, Mfng, BC023829, Smarcd2 
 #> ℹ Negative:  Elovl6, Tmem108, Poc1a, Epn3, Nop56, Wipi1, B830012L14Rik, Rrp15, Rfc1, Fgf12 
-#> ℹ      Lama1, Slc20a1, Tecpr2, Zbtb4, Ppp2r2b, Eif1ax, Fam162a, P4ha3, Gm10941, Tenm4 
-#> ℹ      Pde4b, Gm5420, Man1c1, Hmgcs1, Pgap1, Mgst2, Larp1b, Tnr, Kcnip3, Lsm12 
+#> ℹ      Slc20a1, Ppp2r2b, Lama1, Tecpr2, Zbtb4, Eif1ax, Fam162a, P4ha3, Gm10941, Tenm4 
+#> ℹ      Pde4b, Gm5420, Man1c1, Hmgcs1, Pgap1, Mgst2, Larp1b, Kcnip3, Tnr, Lsm12 
 #> ℹ BE_ 4 
 #> ℹ Positive:  Spp1, Cyr61, Krt18, Tpm1, Krt8, Myl12a, Vim, Jun, Anxa5, Tnfrsf12a 
 #> ℹ      Csrp1, Sparc, Cldn7, Nudt19, Anxa2, Clu, Myl9, Atp1b1, Cldn3, Tagln2 
 #> ℹ      S100a10, 1700011H14Rik, Cd24a, Rps2, Dbi, Id2, Lurap1l, Rplp1, Myl12b, Klf6 
-#> ℹ Negative:  Rpa3, Elovl6, Aacs, Tmem108, Poc1a, Tmcc3, Rfc1, Lama1, Slc20a1, Tecpr2 
-#> ℹ      Plekho1, Ppp2r2b, Gm10941, Tenm4, Pde4b, Man1c1, Nipal1, Jam3, Pgap1, Alpl 
-#> ℹ      Mgst2, Tnr, Kcnip3, Ptbp3, Gm15915, Cntln, Ocln, Fras1, Rbp2, Cbfa2t2 
+#> ℹ Negative:  Rpa3, Elovl6, Aacs, Tmem108, Poc1a, Tmcc3, Rfc1, Plekho1, Slc20a1, Ppp2r2b 
+#> ℹ      Lama1, Tecpr2, Gm10941, Tenm4, Pde4b, Man1c1, Nipal1, Jam3, Pgap1, Alpl 
+#> ℹ      Mgst2, Kcnip3, Tnr, Ptbp3, Gm15915, Cntln, Ocln, Fras1, Rbp2, Cbfa2t2 
 #> ℹ BE_ 5 
 #> ℹ Positive:  2810417H13Rik, Rrm2, Hmgb2, Dut, Pcna, Lig1, H2afz, Tipin, Tuba1b, Tk1 
 #> ℹ      Mcm5, Dek, Tyms, Gmnn, Ran, Tubb5, Rfc2, Srsf2, Ranbp1, Orc6 
 #> ℹ      Mcm3, Uhrf1, Gins2, Dnajc9, Mcm6, Siva1, Rfc3, Mcm7, Rpa2, Ptma 
-#> ℹ Negative:  1110002L01Rik, Aacs, Wipi1, B830012L14Rik, Tmcc3, Trib1, Fgf12, Lama1, Plekho1, Ppp2r2b 
-#> ℹ      Tenm4, Trf, Gm5420, Man1c1, Jam3, Mgst2, Tnr, Kcnip3, Gm15915, Cbfa2t2 
-#> ℹ      Sh2d4a, Bbc3, Fkbp9, Ano6, Megf6, Prkcb, Fam46d, Tox2, Slc52a3, Ankrd2 
-#> ✔ [2026-05-12 05:11:49] NMF compute completed
+#> ℹ Negative:  1110002L01Rik, Aacs, Wipi1, B830012L14Rik, Tmcc3, Trib1, Fgf12, Plekho1, Ppp2r2b, Lama1 
+#> ℹ      Tenm4, Trf, Gm5420, Man1c1, Jam3, Mgst2, Kcnip3, Tnr, Gm15915, Cbfa2t2 
+#> ℹ      Sh2d4a, Bbc3, Fkbp9, Ano6, Prkcb, Megf6, Fam46d, Slc52a3, Ankrd2, Tox2 
+#> ✔ [2026-05-12 15:53:09] NMF compute completed
 CellDimPlot(
   pancreas_sub,
   group.by = "CellType",
