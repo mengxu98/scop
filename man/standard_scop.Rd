@@ -50,6 +50,8 @@ If \code{NULL}, normalization will be performed if the specified assay does not 
 
 \item{normalization_method}{The method to use for normalization.
 Options are \code{"LogNormalize"}, \code{"SCT"}, \code{"TFIDF"}, or \code{"scran"}.
+When \code{"SCT"} is used on an RNA assay, downstream reductions and clustering
+are run on the generated \code{"SCT"} assay.
 Default is \code{"LogNormalize"}.}
 
 \item{do_HVF_finding}{Whether to perform high variable feature finding.

@@ -16,6 +16,8 @@
 #' If `NULL`, normalization will be performed if the specified assay does not have scaled data.
 #' @param normalization_method The method to use for normalization.
 #' Options are `"LogNormalize"`, `"SCT"`, `"TFIDF"`, or `"scran"`.
+#' When `"SCT"` is used on an RNA assay, downstream reductions and clustering
+#' are run on the generated `"SCT"` assay.
 #' Default is `"LogNormalize"`.
 #' @param do_HVF_finding Whether to perform high variable feature finding.
 #' If `TRUE`, the function will force to find the highly variable features (HVF) using the specified HVF method.
@@ -359,6 +361,11 @@ standard_scop <- function(
   assay <- checked[["assay"]]
   type <- checked[["type"]]
   rm(checked)
+
+  if (normalization_method == "SCT" && type == "RNA") {
+    assay <- "SCT"
+    SeuratObject::DefaultAssay(srt) <- assay
+  }
 
   if (normalization_method == "TFIDF") {
     log_message(
