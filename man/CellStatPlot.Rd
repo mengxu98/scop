@@ -17,8 +17,8 @@ CellStatPlot(
   keep_empty = FALSE,
   individual = FALSE,
   stat_level = NULL,
-  plot_type = c("bar", "rose", "ring", "pie", "trend", "area", "dot", "sankey", "chord",
-    "venn", "upset"),
+  plot_type = c("bar", "rose", "ring", "pie", "trend", "trend_alluvial", "area",
+    "dot", "sankey", "chord", "venn", "upset"),
   stat_type = c("percent", "count"),
   position = c("stack", "dodge"),
   palette = "Chinese",
@@ -87,8 +87,9 @@ Default is \code{FALSE}.}
 Default is \code{NULL}.}
 
 \item{plot_type}{A string specifying the type of plot to create.
-Possible values are \code{"violin"}, \code{"box"}, \code{"bar"}, \code{"dot"}, or \code{"col"}.
-Default is \code{"violin"}.}
+Can be one of \code{"bar"}, \code{"rose"}, \code{"ring"}, \code{"pie"}, \code{"trend"},
+\code{"trend_alluvial"}, \code{"area"}, \code{"dot"}, \code{"sankey"}, \code{"chord"},
+\code{"venn"}, or \code{"upset"}.}
 
 \item{stat_type}{The type of statistic to compute for the plot.
 Can be one of \code{"percent"} or \code{"count"}.}
@@ -288,6 +289,13 @@ CellStatPlot(
   stat.by = "Phase",
   group.by = "CellType",
   plot_type = "trend"
+)
+
+CellStatPlot(
+  pancreas_sub,
+  stat.by = "Phase",
+  group.by = "CellType",
+  plot_type = "trend_alluvial"
 )
 
 CellStatPlot(
