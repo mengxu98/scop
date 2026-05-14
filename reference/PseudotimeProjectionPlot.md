@@ -301,24 +301,24 @@ PseudotimeProjectionPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-12 15:08:08] Start standard processing workflow...
-#> ℹ [2026-05-12 15:08:09] Checking a list of <Seurat>...
-#> ! [2026-05-12 15:08:09] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-12 15:08:09] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-12 15:08:11] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-12 15:08:11] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-12 15:08:12] Number of available HVF: 2000
-#> ℹ [2026-05-12 15:08:12] Finished check
-#> ℹ [2026-05-12 15:08:12] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-12 15:08:12] Perform pca linear dimension reduction
-#> ℹ [2026-05-12 15:08:12] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-05-12 15:08:13] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-12 15:08:13] Reorder clusters...
-#> ℹ [2026-05-12 15:08:13] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-12 15:08:13] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-12 15:08:13] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-05-12 15:08:18] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-05-12 15:08:24] Standard processing workflow completed
+#> ℹ [2026-05-14 06:46:46] Start standard processing workflow...
+#> ℹ [2026-05-14 06:46:46] Checking a list of <Seurat>...
+#> ! [2026-05-14 06:46:46] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-14 06:46:46] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-14 06:46:48] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-14 06:46:49] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-14 06:46:49] Number of available HVF: 2000
+#> ℹ [2026-05-14 06:46:49] Finished check
+#> ℹ [2026-05-14 06:46:49] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-14 06:46:49] Perform pca linear dimension reduction
+#> ℹ [2026-05-14 06:46:50] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-05-14 06:46:50] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-14 06:46:50] Reorder clusters...
+#> ℹ [2026-05-14 06:46:50] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-14 06:46:50] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-14 06:46:50] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-05-14 06:46:55] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-05-14 06:47:01] Standard processing workflow completed
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   reduction = "UMAP",
@@ -338,7 +338,7 @@ PseudotimeProjectionPlot(
   method = "gradient",
   plot_type = "raw"
 )
-#> ! [2026-05-12 15:08:26] Removed 339 cells with NA pseudotime values
+#> ! [2026-05-14 06:47:02] Removed 339 cells with NA pseudotime values
 
 
 PseudotimeProjectionPlot(
@@ -350,8 +350,8 @@ PseudotimeProjectionPlot(
   show_cells = TRUE,
   label = TRUE
 )
-#> ! [2026-05-12 15:08:26] Removed 339 cells with NA pseudotime values
-#> ℹ [2026-05-12 15:08:26] Computing KNN graph from embedding...
+#> ! [2026-05-14 06:47:03] Removed 339 cells with NA pseudotime values
+#> ℹ [2026-05-14 06:47:03] Computing KNN graph from embedding...
 
 
 PseudotimeProjectionPlot(
@@ -360,8 +360,8 @@ PseudotimeProjectionPlot(
   time_key = "Lineage2",
   plot_type = "grid"
 )
-#> ! [2026-05-12 15:08:35] Removed 185 cells with NA pseudotime values
-#> ℹ [2026-05-12 15:08:35] Computing KNN graph from embedding...
+#> ! [2026-05-14 06:47:11] Removed 185 cells with NA pseudotime values
+#> ℹ [2026-05-14 06:47:11] Computing KNN graph from embedding...
 
 
 PseudotimeProjectionPlot(
@@ -371,5 +371,5 @@ PseudotimeProjectionPlot(
   method = "gradient",
   plot_type = "raw"
 )
-#> ! [2026-05-12 15:08:37] Removed 339 cells with NA pseudotime values
+#> ! [2026-05-14 06:47:13] Removed 339 cells with NA pseudotime values
 ```

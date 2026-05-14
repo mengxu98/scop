@@ -142,10 +142,10 @@ db_list <- PrepareDB(
   species = "Homo_sapiens",
   db = "GO_BP"
 )
-#> ℹ [2026-05-12 14:57:43] Species: "Homo_sapiens"
-#> ℹ [2026-05-12 14:57:43] Loading cached: GO_BP version: 3.23.1 nterm:14209 created: 2026-05-12 14:11:04
-#> ℹ [2026-05-12 14:57:44] Convert ID types for the GO_BP database
-#> ℹ [2026-05-12 14:57:45] Converted ID types using local annotation package org.Hs.eg.db
+#> ℹ [2026-05-14 06:36:42] Species: "Homo_sapiens"
+#> ℹ [2026-05-14 06:36:42] Loading cached: GO_BP version: 3.23.1 nterm:14209 created: 2026-05-14 05:50:31
+#> ℹ [2026-05-14 06:36:43] Convert ID types for the GO_BP database
+#> ℹ [2026-05-14 06:36:43] Converted ID types using local annotation package org.Hs.eg.db
 ListDB(
   species = "Homo_sapiens",
   db = "GO_BP"
@@ -153,7 +153,7 @@ ListDB(
 #>                                                         identifier version
 #> 1 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7
 #>                                 comment  timestamp                       date
-#> 1 3.23.1 nterm:14209|Homo_sapiens-GO_BP 1778597866 2026-05-12 14:57:45.994858
+#> 1 3.23.1 nterm:14209|Homo_sapiens-GO_BP 1778740604 2026-05-14 06:36:44.344281
 #>           db_version            db_name
 #> 1 3.23.1 nterm:14209 Homo_sapiens-GO_BP
 #>                                                                    file
@@ -193,32 +193,32 @@ db_list <- PrepareDB(
   db = "GO_BP",
   convert_species = TRUE
 )
-#> ℹ [2026-05-12 14:57:46] Species: "Macaca_fascicularis"
-#> ! [2026-05-12 14:57:49] Annotation package org.Mf.eg.db does not exist
-#> ! [2026-05-12 14:57:49] Use the human annotation to create the GO_BP database for "Macaca_fascicularis"
-#> ✔ [2026-05-12 14:57:49] org.Hs.eg.db installed successfully
-#> ℹ [2026-05-12 14:58:14] Preparing database: GO_BP
-#> ℹ [2026-05-12 14:58:22] Convert species for the GO_BP database
-#> ℹ [2026-05-12 14:58:22] Connect to the Ensembl archives...
-#> ℹ [2026-05-12 14:58:23] Using the 115 version of ensembl database...
-#> ℹ [2026-05-12 14:58:23] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
-#> ℹ [2026-05-12 14:58:25] Searching the dataset hsapiens ...
-#> ℹ [2026-05-12 14:58:25] Connecting to the dataset hsapiens_gene_ensembl ...
-#> ℹ [2026-05-12 14:58:27] Converting the geneIDs...
-#> ℹ [2026-05-12 14:58:41] 18209 genes mapped with "entrez_id"
-#> ℹ [2026-05-12 14:58:42] ==============================
+#> ℹ [2026-05-14 06:36:44] Species: "Macaca_fascicularis"
+#> ! [2026-05-14 06:36:47] Annotation package org.Mf.eg.db does not exist
+#> ! [2026-05-14 06:36:47] Use the human annotation to create the GO_BP database for "Macaca_fascicularis"
+#> ✔ [2026-05-14 06:36:47] org.Hs.eg.db installed successfully
+#> ℹ [2026-05-14 06:37:10] Preparing database: GO_BP
+#> ℹ [2026-05-14 06:37:21] Convert species for the GO_BP database
+#> ℹ [2026-05-14 06:37:21] Connect to the Ensembl archives...
+#> ℹ [2026-05-14 06:37:21] Using the 115 version of ensembl database...
+#> ℹ [2026-05-14 06:37:21] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
+#> ℹ [2026-05-14 06:37:24] Searching the dataset hsapiens ...
+#> ℹ [2026-05-14 06:37:24] Connecting to the dataset hsapiens_gene_ensembl ...
+#> ℹ [2026-05-14 06:37:25] Converting the geneIDs...
+#> ℹ [2026-05-14 06:37:44] 18209 genes mapped with "entrez_id"
+#> ℹ [2026-05-14 06:37:44] ==============================
 #> ℹ                       18209 genes mapped
 #> ℹ                       633 genes unmapped
 #> ℹ                       ==============================
-#> ℹ [2026-05-12 14:59:03] Convert ID types for the GO_BP database
-#> ℹ [2026-05-12 14:59:03] Connect to the Ensembl archives...
-#> ℹ [2026-05-12 14:59:04] Using the 115 version of ensembl database...
-#> ℹ [2026-05-12 14:59:04] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
-#> ℹ [2026-05-12 14:59:04] Searching the dataset mfascicularis ...
-#> ℹ [2026-05-12 14:59:04] Connecting to the dataset mfascicularis_gene_ensembl ...
-#> ℹ [2026-05-12 14:59:05] Converting the geneIDs...
-#> ℹ [2026-05-12 14:59:16] 15880 genes mapped with "ensembl_id"
-#> ℹ [2026-05-12 14:59:16] ==============================
+#> ℹ [2026-05-14 06:38:04] Convert ID types for the GO_BP database
+#> ℹ [2026-05-14 06:38:04] Connect to the Ensembl archives...
+#> ℹ [2026-05-14 06:38:04] Using the 115 version of ensembl database...
+#> ℹ [2026-05-14 06:38:04] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
+#> ℹ [2026-05-14 06:38:05] Searching the dataset mfascicularis ...
+#> ℹ [2026-05-14 06:38:05] Connecting to the dataset mfascicularis_gene_ensembl ...
+#> ℹ [2026-05-14 06:38:05] Converting the geneIDs...
+#> ℹ [2026-05-14 06:38:16] 15880 genes mapped with "ensembl_id"
+#> ℹ [2026-05-14 06:38:16] ==============================
 #> ℹ                       15880 genes mapped
 #> ℹ                       0 genes unmapped
 #> ℹ                       ==============================
@@ -231,7 +231,7 @@ ListDB(
 #>                                                                     comment
 #> 1 3.23.1(converted from Homo_sapiens) nterm:13988|Macaca_fascicularis-GO_BP
 #>    timestamp                       date
-#> 1 1778597980 2026-05-12 14:59:40.218613
+#> 1 1778740722 2026-05-14 06:38:42.131725
 #>                                        db_version                   db_name
 #> 1 3.23.1(converted from Homo_sapiens) nterm:13988 Macaca_fascicularis-GO_BP
 #>                                                                    file
@@ -253,19 +253,19 @@ db_list <- PrepareDB(
   species = "Saccharomyces_cerevisiae",
   db = "GO_BP"
 )
-#> ℹ [2026-05-12 14:59:40] Species: "Saccharomyces_cerevisiae"
+#> ℹ [2026-05-14 06:38:42] Species: "Saccharomyces_cerevisiae"
 #> 
-#> ✔ [2026-05-12 15:00:30] org.Sc.sgd.db installed successfully
-#> ℹ [2026-05-12 15:00:39] Preparing database: GO_BP
-#> ℹ [2026-05-12 15:00:43] Convert ID types for the GO_BP database
-#> ℹ [2026-05-12 15:00:43] Connect to the Ensembl archives...
-#> ℹ [2026-05-12 15:00:43] Using the 115 version of ensembl database...
-#> ℹ [2026-05-12 15:00:43] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
-#> ℹ [2026-05-12 15:00:44] Searching the dataset scerevisiae ...
-#> ℹ [2026-05-12 15:00:44] Connecting to the dataset scerevisiae_gene_ensembl ...
-#> ℹ [2026-05-12 15:00:45] Converting the geneIDs...
-#> ℹ [2026-05-12 15:00:47] 5793 genes mapped with "entrez_id"
-#> ℹ [2026-05-12 15:00:47] ==============================
+#> ✔ [2026-05-14 06:39:31] org.Sc.sgd.db installed successfully
+#> ℹ [2026-05-14 06:39:41] Preparing database: GO_BP
+#> ℹ [2026-05-14 06:39:45] Convert ID types for the GO_BP database
+#> ℹ [2026-05-14 06:39:45] Connect to the Ensembl archives...
+#> ℹ [2026-05-14 06:39:45] Using the 115 version of ensembl database...
+#> ℹ [2026-05-14 06:39:45] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
+#> ℹ [2026-05-14 06:39:46] Searching the dataset scerevisiae ...
+#> ℹ [2026-05-14 06:39:46] Connecting to the dataset scerevisiae_gene_ensembl ...
+#> ℹ [2026-05-14 06:39:46] Converting the geneIDs...
+#> ℹ [2026-05-14 06:39:49] 5793 genes mapped with "entrez_id"
+#> ℹ [2026-05-14 06:39:49] ==============================
 #> ℹ                       5793 genes mapped
 #> ℹ                       656 genes unmapped
 #> ℹ                       ==============================
@@ -276,9 +276,9 @@ ListDB(
 #>                                                         identifier version
 #> 1 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7
 #>                                            comment  timestamp
-#> 1 3.22.0 nterm:4474|Saccharomyces_cerevisiae-GO_BP 1778598052
+#> 1 3.22.0 nterm:4474|Saccharomyces_cerevisiae-GO_BP 1778740795
 #>                         date        db_version                        db_name
-#> 1 2026-05-12 15:00:52.498016 3.22.0 nterm:4474 Saccharomyces_cerevisiae-GO_BP
+#> 1 2026-05-14 06:39:55.098693 3.22.0 nterm:4474 Saccharomyces_cerevisiae-GO_BP
 #>                                                                    file
 #> 1 /home/runner/.cache/R/R.cache/526227780e9714f17fb7fabf51d9fd1b.Rcache
 #>                    Species    DB
@@ -303,72 +303,72 @@ db_list <- PrepareDB(
   ),
   biomart = "plants_mart"
 )
-#> ℹ [2026-05-12 15:00:52] Species: "Arabidopsis_thaliana"
+#> ℹ [2026-05-14 06:39:55] Species: "Arabidopsis_thaliana"
 #> 
-#> ✔ [2026-05-12 15:03:11] org.At.tair.db installed successfully
-#> ℹ [2026-05-12 15:03:21] Preparing database: GO_BP
-#> ℹ [2026-05-12 15:03:26] Preparing database: GO_CC
-#> ℹ [2026-05-12 15:03:28] Preparing database: GO_MF
-#> ℹ [2026-05-12 15:03:33] Preparing KEGG database
-#> ℹ [2026-05-12 15:03:47] Preparing WikiPathway database
-#> ℹ [2026-05-12 15:03:48] Preparing Chromosome database
-#> ℹ [2026-05-12 15:03:48] Convert ID types for the GO_BP database
-#> ℹ [2026-05-12 15:03:48] Connecting to the ensembl database...
-#> ℹ [2026-05-12 15:03:48] Searching the dataset athaliana ...
-#> ℹ [2026-05-12 15:03:49] Connecting to the dataset athaliana_eg_gene ...
-#> ℹ [2026-05-12 15:03:49] Converting the geneIDs...
-#> ℹ [2026-05-12 15:03:59] 21184 genes mapped with "tair_locus"
-#> ℹ [2026-05-12 15:03:59] ==============================
+#> ✔ [2026-05-14 06:42:11] org.At.tair.db installed successfully
+#> ℹ [2026-05-14 06:42:21] Preparing database: GO_BP
+#> ℹ [2026-05-14 06:42:27] Preparing database: GO_CC
+#> ℹ [2026-05-14 06:42:28] Preparing database: GO_MF
+#> ℹ [2026-05-14 06:42:35] Preparing KEGG database
+#> ℹ [2026-05-14 06:42:50] Preparing WikiPathway database
+#> ℹ [2026-05-14 06:42:51] Preparing Chromosome database
+#> ℹ [2026-05-14 06:42:51] Convert ID types for the GO_BP database
+#> ℹ [2026-05-14 06:42:51] Connecting to the ensembl database...
+#> ℹ [2026-05-14 06:42:51] Searching the dataset athaliana ...
+#> ℹ [2026-05-14 06:42:52] Connecting to the dataset athaliana_eg_gene ...
+#> ℹ [2026-05-14 06:42:52] Converting the geneIDs...
+#> ℹ [2026-05-14 06:42:58] 21184 genes mapped with "tair_locus"
+#> ℹ [2026-05-14 06:42:58] ==============================
 #> ℹ                       21184 genes mapped
 #> ℹ                       8 genes unmapped
 #> ℹ                       ==============================
-#> ℹ [2026-05-12 15:04:25] Convert ID types for the GO_CC database
-#> ℹ [2026-05-12 15:04:25] Connecting to the ensembl database...
-#> ℹ [2026-05-12 15:04:25] Searching the dataset athaliana ...
-#> ℹ [2026-05-12 15:04:25] Connecting to the dataset athaliana_eg_gene ...
-#> ℹ [2026-05-12 15:04:25] Converting the geneIDs...
-#> ℹ [2026-05-12 15:04:34] 26896 genes mapped with "tair_locus"
-#> ℹ [2026-05-12 15:04:34] ==============================
+#> ℹ [2026-05-14 06:43:23] Convert ID types for the GO_CC database
+#> ℹ [2026-05-14 06:43:23] Connecting to the ensembl database...
+#> ℹ [2026-05-14 06:43:23] Searching the dataset athaliana ...
+#> ℹ [2026-05-14 06:43:23] Connecting to the dataset athaliana_eg_gene ...
+#> ℹ [2026-05-14 06:43:23] Converting the geneIDs...
+#> ℹ [2026-05-14 06:43:30] 26896 genes mapped with "tair_locus"
+#> ℹ [2026-05-14 06:43:30] ==============================
 #> ℹ                       26896 genes mapped
 #> ℹ                       6 genes unmapped
 #> ℹ                       ==============================
-#> ℹ [2026-05-12 15:05:05] Convert ID types for the GO_MF database
-#> ℹ [2026-05-12 15:05:05] Connecting to the ensembl database...
-#> ℹ [2026-05-12 15:05:05] Searching the dataset athaliana ...
-#> ℹ [2026-05-12 15:05:05] Connecting to the dataset athaliana_eg_gene ...
-#> ℹ [2026-05-12 15:05:05] Converting the geneIDs...
-#> ℹ [2026-05-12 15:05:13] 26716 genes mapped with "tair_locus"
-#> ℹ [2026-05-12 15:05:13] ==============================
+#> ℹ [2026-05-14 06:44:01] Convert ID types for the GO_MF database
+#> ℹ [2026-05-14 06:44:01] Connecting to the ensembl database...
+#> ℹ [2026-05-14 06:44:01] Searching the dataset athaliana ...
+#> ℹ [2026-05-14 06:44:02] Connecting to the dataset athaliana_eg_gene ...
+#> ℹ [2026-05-14 06:44:02] Converting the geneIDs...
+#> ℹ [2026-05-14 06:44:08] 26716 genes mapped with "tair_locus"
+#> ℹ [2026-05-14 06:44:08] ==============================
 #> ℹ                       26716 genes mapped
 #> ℹ                       6 genes unmapped
 #> ℹ                       ==============================
-#> ℹ [2026-05-12 15:05:46] Convert ID types for the KEGG database
-#> ℹ [2026-05-12 15:05:46] Connecting to the ensembl database...
-#> ℹ [2026-05-12 15:05:46] Searching the dataset athaliana ...
-#> ℹ [2026-05-12 15:05:46] Connecting to the dataset athaliana_eg_gene ...
-#> ℹ [2026-05-12 15:05:46] Converting the geneIDs...
-#> ℹ [2026-05-12 15:05:49] 5651 genes mapped with "entrez_id"
-#> ℹ [2026-05-12 15:05:49] ==============================
+#> ℹ [2026-05-14 06:44:39] Convert ID types for the KEGG database
+#> ℹ [2026-05-14 06:44:39] Connecting to the ensembl database...
+#> ℹ [2026-05-14 06:44:39] Searching the dataset athaliana ...
+#> ℹ [2026-05-14 06:44:39] Connecting to the dataset athaliana_eg_gene ...
+#> ℹ [2026-05-14 06:44:40] Converting the geneIDs...
+#> ℹ [2026-05-14 06:44:41] 5651 genes mapped with "entrez_id"
+#> ℹ [2026-05-14 06:44:41] ==============================
 #> ℹ                       5651 genes mapped
 #> ℹ                       699 genes unmapped
 #> ℹ                       ==============================
-#> ℹ [2026-05-12 15:05:54] Convert ID types for the WikiPathway database
-#> ℹ [2026-05-12 15:05:54] Connecting to the ensembl database...
-#> ℹ [2026-05-12 15:05:54] Searching the dataset athaliana ...
-#> ℹ [2026-05-12 15:05:54] Connecting to the dataset athaliana_eg_gene ...
-#> ℹ [2026-05-12 15:05:54] Converting the geneIDs...
-#> ℹ [2026-05-12 15:05:55] 626 genes mapped with "entrez_id"
-#> ℹ [2026-05-12 15:05:55] ==============================
+#> ℹ [2026-05-14 06:44:45] Convert ID types for the WikiPathway database
+#> ℹ [2026-05-14 06:44:45] Connecting to the ensembl database...
+#> ℹ [2026-05-14 06:44:45] Searching the dataset athaliana ...
+#> ℹ [2026-05-14 06:44:45] Connecting to the dataset athaliana_eg_gene ...
+#> ℹ [2026-05-14 06:44:45] Converting the geneIDs...
+#> ℹ [2026-05-14 06:44:46] 626 genes mapped with "entrez_id"
+#> ℹ [2026-05-14 06:44:46] ==============================
 #> ℹ                       626 genes mapped
 #> ℹ                       0 genes unmapped
 #> ℹ                       ==============================
-#> ℹ [2026-05-12 15:05:55] Convert ID types for the Chromosome database
-#> ℹ [2026-05-12 15:05:55] Connecting to the ensembl database...
-#> ℹ [2026-05-12 15:05:56] Searching the dataset athaliana ...
-#> ℹ [2026-05-12 15:05:56] Connecting to the dataset athaliana_eg_gene ...
-#> ℹ [2026-05-12 15:05:56] Converting the geneIDs...
-#> ℹ [2026-05-12 15:06:04] 26925 genes mapped with "tair_locus"
-#> ℹ [2026-05-12 15:06:04] ==============================
+#> ℹ [2026-05-14 06:44:46] Convert ID types for the Chromosome database
+#> ℹ [2026-05-14 06:44:46] Connecting to the ensembl database...
+#> ℹ [2026-05-14 06:44:46] Searching the dataset athaliana ...
+#> ℹ [2026-05-14 06:44:47] Connecting to the dataset athaliana_eg_gene ...
+#> ℹ [2026-05-14 06:44:47] Converting the geneIDs...
+#> ℹ [2026-05-14 06:44:53] 26925 genes mapped with "tair_locus"
+#> ℹ [2026-05-14 06:44:53] ==============================
 #> ℹ                       26925 genes mapped
 #> ℹ                       491 genes unmapped
 #> ℹ                       ==============================
@@ -379,14 +379,14 @@ head(
 #> 1 ath00190    839579         PPa1  AT1G01050
 #> 2 ath04712    839341          LHY  AT1G01060
 #> 3 ath00010    839429 PDH-E1 ALPHA  AT1G01090
-#> 4 ath01210    839429 PDH-E1 ALPHA  AT1G01090
-#> 5 ath01200    839429 PDH-E1 ALPHA  AT1G01090
-#> 6 ath01100    839429 PDH-E1 ALPHA  AT1G01090
+#> 4 ath00620    839429 PDH-E1 ALPHA  AT1G01090
+#> 5 ath01210    839429 PDH-E1 ALPHA  AT1G01090
+#> 6 ath01200    839429 PDH-E1 ALPHA  AT1G01090
 
 # You can also build a custom database based on the gene sets you have
 ccgenes <- CycGenePrefetch("Homo_sapiens")
-#> ℹ [2026-05-12 15:06:37] Prefetching cell cycle genes for "Homo_sapiens" ...
-#> ✔ [2026-05-12 15:06:37] Cell cycle gene prefetching completed "Homo_sapiens"
+#> ℹ [2026-05-14 06:45:19] Prefetching cell cycle genes for "Homo_sapiens" ...
+#> ✔ [2026-05-14 06:45:19] Cell cycle gene prefetching completed "Homo_sapiens"
 custom_TERM2GENE <- rbind(
   data.frame(
     term = "S_genes",
@@ -412,7 +412,7 @@ db_list <- PrepareDB(
   custom_IDtype = "symbol",
   custom_version = "Seurat_v5"
 )
-#> ℹ [2026-05-12 15:06:37] Species: "Homo_sapiens"
+#> ℹ [2026-05-14 06:45:19] Species: "Homo_sapiens"
 #> Error: object 'custom_TERM2GENE' not found
 ListDB(db = "CellCycle")
 #>  [1] identifier version    comment    timestamp  date       db_version
@@ -420,7 +420,7 @@ ListDB(db = "CellCycle")
 #> <0 rows> (or 0-length row.names)
 
 db_list <- PrepareDB(species = "Mus_musculus", db = "CellCycle")
-#> ℹ [2026-05-12 15:06:37] Species: "Mus_musculus"
+#> ℹ [2026-05-14 06:45:19] Species: "Mus_musculus"
 head(
   db_list[["Mus_musculus"]][["CellCycle"]][["TERM2GENE"]]
 )

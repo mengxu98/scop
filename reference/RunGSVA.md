@@ -230,40 +230,40 @@ slot.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-12 15:43:17] Start standard processing workflow...
-#> ℹ [2026-05-12 15:43:17] Checking a list of <Seurat>...
-#> ! [2026-05-12 15:43:17] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-12 15:43:17] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-12 15:43:20] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-12 15:43:20] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-12 15:43:20] Number of available HVF: 2000
-#> ℹ [2026-05-12 15:43:20] Finished check
-#> ℹ [2026-05-12 15:43:20] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-12 15:43:21] Perform pca linear dimension reduction
-#> ℹ [2026-05-12 15:43:21] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-05-12 15:43:22] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-12 15:43:22] Reorder clusters...
-#> ℹ [2026-05-12 15:43:22] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-12 15:43:22] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-12 15:43:22] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-05-12 15:43:28] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-05-12 15:43:34] Standard processing workflow completed
+#> ℹ [2026-05-14 07:24:49] Start standard processing workflow...
+#> ℹ [2026-05-14 07:24:50] Checking a list of <Seurat>...
+#> ! [2026-05-14 07:24:50] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-14 07:24:50] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-14 07:24:52] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-14 07:24:53] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-14 07:24:53] Number of available HVF: 2000
+#> ℹ [2026-05-14 07:24:53] Finished check
+#> ℹ [2026-05-14 07:24:53] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-14 07:24:53] Perform pca linear dimension reduction
+#> ℹ [2026-05-14 07:24:54] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-05-14 07:24:54] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-14 07:24:54] Reorder clusters...
+#> ℹ [2026-05-14 07:24:54] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-14 07:24:54] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-14 07:24:54] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-05-14 07:25:00] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-05-14 07:25:06] Standard processing workflow completed
 
 pancreas_sub <- RunGSVA(
   pancreas_sub,
   group.by = "CellType",
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-12 15:43:34] Start GSVA analysis
-#> ℹ [2026-05-12 15:43:34] Averaging expression by "CellType" ...
-#> ℹ [2026-05-12 15:43:34] Aggregated expression matrix: 15998 genes x 5 groups
-#> ℹ [2026-05-12 15:43:34] Species: "Mus_musculus"
-#> ℹ [2026-05-12 15:43:34] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-12 14:25:21
-#> ℹ [2026-05-12 15:43:35] Processing database: "GO_BP" ...
-#> ℹ [2026-05-12 15:43:37] Initial overlap: 11277 genes out of 15998 expression genes and 16594 genes in gene sets
-#> ℹ [2026-05-12 15:43:40] Running GSVA for 5633 gene sets ...
-#> ℹ [2026-05-12 15:45:40] GSVA results stored in `tools` slot: "GSVA_CellType_gsva"
-#> ✔ [2026-05-12 15:45:40] GSVA analysis done
+#> ℹ [2026-05-14 07:25:06] Start GSVA analysis
+#> ℹ [2026-05-14 07:25:06] Averaging expression by "CellType" ...
+#> ℹ [2026-05-14 07:25:06] Aggregated expression matrix: 15998 genes x 5 groups
+#> ℹ [2026-05-14 07:25:06] Species: "Mus_musculus"
+#> ℹ [2026-05-14 07:25:06] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-14 06:04:39
+#> ℹ [2026-05-14 07:25:07] Processing database: "GO_BP" ...
+#> ℹ [2026-05-14 07:25:09] Initial overlap: 11277 genes out of 15998 expression genes and 16594 genes in gene sets
+#> ℹ [2026-05-14 07:25:12] Running GSVA for 5633 gene sets ...
+#> ℹ [2026-05-14 07:27:10] GSVA results stored in `tools` slot: "GSVA_CellType_gsva"
+#> ✔ [2026-05-14 07:27:10] GSVA analysis done
 ht <- GSVAPlot(
   pancreas_sub,
   group.by = "CellType",
