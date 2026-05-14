@@ -9,6 +9,10 @@
 #' Default is `NULL`.
 #' @param stat_type The type of statistic to compute for the plot.
 #' Can be one of `"percent"` or `"count"`.
+#' @param plot_type The type of plot to create.
+#' Can be one of `"bar"`, `"rose"`, `"ring"`, `"pie"`, `"trend"`,
+#' `"trend_alluvial"`, `"area"`, `"dot"`, `"sankey"`, `"chord"`,
+#' `"venn"`, or `"upset"`.
 #' @param position The position adjustment for the plot.
 #' Can be one of `"stack"` or `"dodge"`.
 #' @param label Whether to add labels on the plot.
@@ -131,6 +135,13 @@
 #'   stat.by = "Phase",
 #'   group.by = "CellType",
 #'   plot_type = "trend"
+#' )
+#'
+#' CellStatPlot(
+#'   pancreas_sub,
+#'   stat.by = "Phase",
+#'   group.by = "CellType",
+#'   plot_type = "trend_alluvial"
 #' )
 #'
 #' CellStatPlot(
@@ -297,6 +308,7 @@ CellStatPlot <- function(
       "ring",
       "pie",
       "trend",
+      "trend_alluvial",
       "area",
       "dot",
       "sankey",
