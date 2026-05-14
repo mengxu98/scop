@@ -136,7 +136,7 @@ LinkingTo:
     RSpectra
 Remotes:
     jinworks/CellChat,
-    mengxu98/thisplot,
+    hurry060215-tech/thisplot@codex/bump-thisplot-039,
     mengxu98/thisutils,
     saeyslab/multinichenetr,
     saeyslab/nichenetr
