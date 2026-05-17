@@ -25,11 +25,13 @@
 #' `"celltypist"`, `"cellphonedb"`, `"magic"`, `"scrublet"`,
 #' `"sccoda"`, `"doubletdetection"`, `"doublet"`, `"palantir"`, `"scvelo"`,
 #' `"cellrank"`, `"wot"`, `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`,
-#' and `"scomm"`.
+#' `"scomm"`, and `"pyscenic"`.
 #' If `NULL` or omitted in [PrepareEnv()], the default environment is installed.
 #' The default excludes `"sccoda"` and `"scomm"` because their TensorFlow stacks
 #' are not compatible with the default JAX/scVI stack in the same environment;
-#' request them explicitly for scCODA/scOMM workflows.
+#' request them explicitly for scCODA/scOMM workflows. `"pyscenic"` is also
+#' excluded from the default environment and is prepared in `"pyscenic_env"` by
+#' default because pySCENIC requires an older Python/numpy stack.
 #' @param pip_options Additional command line arguments to be passed to `uv`/`pip` when installing pip packages.
 #' @param ... Additional arguments passed to package installation functions.
 #'
@@ -44,8 +46,30 @@ PrepareEnv <- function(
   pip_options = character(),
   ...
 ) {
-  envname <- get_envname(envname)
   modules <- normalize_env_modules(modules = modules)
+  if ("pyscenic" %in% modules) {
+    if (length(modules) > 1) {
+      log_message(
+        "{.arg modules = 'pyscenic'} must be prepared as a standalone environment. Run {.code PrepareEnv(envname = 'pyscenic_env', modules = 'pyscenic')}.",
+        message_type = "error"
+      )
+    }
+    if (is.null(envname)) {
+      envname <- "pyscenic_env"
+    }
+    log_message(
+      "{.pkg pySCENIC} pins {.pkg numpy} to {.val 1.23.5}. Prepare it in an isolated environment such as {.val {envname}}; installing it into an environment shared with {.pkg scanpy}, {.pkg scvi}, or {.pkg scvelo} may downgrade dependencies and break those workflows.",
+      message_type = "warning"
+    )
+    if (!identical(version, "3.10-1")) {
+      log_message(
+        "{.pkg pySCENIC} requires Python 3.10 in {.pkg scop}; using {.val 3.10-1} for {.arg modules = 'pyscenic'}.",
+        message_type = "warning"
+      )
+      version <- "3.10-1"
+    }
+  }
+  envname <- get_envname(envname)
   pip_options <- normalize_cli_args(pip_options)
   requirements <- env_requirements(
     version = version,
@@ -73,6 +97,12 @@ PrepareEnv <- function(
         error = function(...) NULL
       )
     if (!is.null(python_cached) && nzchar(python_cached) && file.exists(python_cached)) {
+      if ("pyscenic" %in% modules) {
+        assert_python_runtime_switchable(
+          python_cached,
+          restart_hint = pyscenic_runtime_restart_hint(envname = envname)
+        )
+      }
       configure_python_runtime(python_cached)
     }
     remember_python_environment(envname = envname, conda = conda)
@@ -125,7 +155,14 @@ PrepareEnv <- function(
       envs_dir = envs_dir
     )
     if (!is.null(env_path)) {
-      assert_python_runtime_switchable(conda_env_python_path(env_path))
+      assert_python_runtime_switchable(
+        conda_env_python_path(env_path),
+        restart_hint = if ("pyscenic" %in% modules) {
+          pyscenic_runtime_restart_hint(envname = envname)
+        } else {
+          NULL
+        }
+      )
     }
     env <- env_exist(
       conda = conda,
@@ -281,6 +318,12 @@ PrepareEnv <- function(
     )
   }
 
+  if ("pyscenic" %in% modules) {
+    assert_python_runtime_switchable(
+      python,
+      restart_hint = pyscenic_runtime_restart_hint(envname = envname)
+    )
+  }
   configure_python_runtime(python)
   remember_python_environment(envname = envname, conda = conda)
 
@@ -341,12 +384,13 @@ supported_env_modules <- function() {
     "pacmap",
     "trimap",
     "multimap",
-    "scomm"
+    "scomm",
+    "pyscenic"
   )
 }
 
 default_env_modules <- function() {
-  setdiff(supported_env_modules(), c("sccoda", "scomm"))
+  setdiff(supported_env_modules(), c("sccoda", "scomm", "pyscenic"))
 }
 
 optional_env_modules <- function() {
@@ -397,7 +441,8 @@ env_module_requirements <- function() {
     pacmap = pacmap_python_requirements(),
     trimap = trimap_python_requirements(),
     multimap = multimap_python_requirements(),
-    scomm = scomm_python_requirements()
+    scomm = scomm_python_requirements(),
+    pyscenic = pyscenic_python_requirements()
   )
 }
 
@@ -629,15 +674,27 @@ active_python_runtime <- function() {
   normalize_python_runtime_path(config[["python"]])
 }
 
-assert_python_runtime_switchable <- function(python_path) {
+assert_python_runtime_switchable <- function(python_path, restart_hint = NULL) {
   active_python <- active_python_runtime()
   if (is.null(active_python) || same_python_runtime(active_python, python_path)) {
     return(invisible(TRUE))
   }
 
+  if (is.null(restart_hint)) {
+    restart_hint <- "Restart R, then run {.code PrepareEnv(...)} and the downstream analysis with the same {.arg envname} and {.arg conda}."
+  }
+
   log_message(
-    "Python is already initialized with {.file {active_python}} and cannot be switched to {.file {python_path}} in the same R session. Restart R, then run {.code PrepareEnv(...)} and the downstream analysis with the same {.arg envname} and {.arg conda}.",
+    "Python is already initialized with {.file {active_python}} and cannot be switched to {.file {python_path}} in the same R session. {restart_hint}",
     message_type = "error"
+  )
+}
+
+pyscenic_runtime_restart_hint <- function(envname = "pyscenic_env") {
+  paste0(
+    "Restart R, then run ",
+    "PrepareEnv(envname = \"", envname, "\", modules = \"pyscenic\") ",
+    "before RunPyscenic()."
   )
 }
 
@@ -1112,10 +1169,10 @@ env_info <- function(conda, envname, verbose = TRUE) {
 #' `"scanpy"`, `"scvi"`, `"scanorama"`, `"bbknn"`, `"celltypist"`,
 #' `"cellphonedb"`, `"magic"`, `"scrublet"`, `"doubletdetection"`,
 #' `"sccoda"`, `"doublet"`, `"palantir"`, `"scvelo"`, `"cellrank"`, `"wot"`,
-#' `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`, and `"scomm"`. If `NULL`,
-#' the default environment is returned. The default excludes `"sccoda"` and
-#' `"scomm"` because their TensorFlow stacks are not compatible with the
-#' default JAX/scVI stack in the same environment.
+#' `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`, `"scomm"`, and
+#' `"pyscenic"`. If `NULL`, the default environment is returned. The default
+#' excludes `"sccoda"`, `"scomm"`, and `"pyscenic"` because these workflows
+#' require dependency stacks that should be prepared explicitly.
 #'
 #' @return
 #' A list containing:
@@ -1142,7 +1199,11 @@ env_requirements <- function(
     include_optional = include_optional
   )
 
-  base_requirements <- core_python_requirements()
+  base_requirements <- if (identical(modules, "pyscenic")) {
+    pyscenic_core_python_requirements()
+  } else {
+    core_python_requirements()
+  }
   package_install_methods <- base_requirements$install_methods
   package_versions <- base_requirements$packages
   package_aliases <- base_requirements$package_aliases
@@ -1161,6 +1222,9 @@ env_requirements <- function(
 
   if (all(c("scvi", "scomm") %in% modules) && "ml_dtypes" %in% names(package_versions)) {
     package_versions[["ml_dtypes"]] <- "ml-dtypes>=0.3.2"
+  }
+  if ("pyscenic" %in% modules && "numpy" %in% names(package_versions)) {
+    package_versions[["numpy"]] <- "numpy==1.23.5"
   }
 
   requirements <- list(
@@ -1234,6 +1298,18 @@ core_python_requirements <- function() {
         list()
       }
     )
+  )
+}
+
+pyscenic_core_python_requirements <- function() {
+  list(
+    packages = c(
+      "setuptools" = "setuptools<81"
+    ),
+    install_methods = c(
+      "setuptools" = "pip"
+    ),
+    package_aliases = list()
   )
 }
 
@@ -1405,6 +1481,30 @@ scvelo_python_requirements <- function() {
     ),
     install_methods = c(
       "scvelo" = "pip"
+    ),
+    package_aliases = list()
+  )
+}
+
+pyscenic_python_requirements <- function() {
+  list(
+    packages = c(
+      "pyscenic" = "pyscenic==0.12.1",
+      "arboreto" = "arboreto==0.1.6",
+      "ctxcore" = "ctxcore==0.2.0",
+      "numpy" = "numpy==1.23.5",
+      "dask" = "dask==2024.2.1",
+      "distributed" = "distributed==2024.2.1",
+      "pyarrow" = "pyarrow"
+    ),
+    install_methods = c(
+      "pyscenic" = "pip",
+      "arboreto" = "pip",
+      "ctxcore" = "pip",
+      "numpy" = "pip",
+      "dask" = "pip",
+      "distributed" = "pip",
+      "pyarrow" = "pip"
     ),
     package_aliases = list()
   )
