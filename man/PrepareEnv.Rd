@@ -42,11 +42,13 @@ Supported values are \code{"scanpy"}, \code{"scvi"}, \code{"glue"}, \code{"scano
 \code{"celltypist"}, \code{"cellphonedb"}, \code{"magic"}, \code{"scrublet"},
 \code{"sccoda"}, \code{"doubletdetection"}, \code{"doublet"}, \code{"palantir"}, \code{"scvelo"},
 \code{"cellrank"}, \code{"wot"}, \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"multimap"},
-and \code{"scomm"}.
+\code{"scomm"}, and \code{"pyscenic"}.
 If \code{NULL} or omitted in \code{\link[=PrepareEnv]{PrepareEnv()}}, the default environment is installed.
 The default excludes \code{"sccoda"} and \code{"scomm"} because their TensorFlow stacks
 are not compatible with the default JAX/scVI stack in the same environment;
-request them explicitly for scCODA/scOMM workflows.}
+request them explicitly for scCODA/scOMM workflows. \code{"pyscenic"} is also
+excluded from the default environment and is prepared in \code{"pyscenic_env"} by
+default because pySCENIC requires an older Python/numpy stack.}
 
 \item{pip_options}{Additional command line arguments to be passed to \code{uv}/\code{pip} when installing pip packages.}
 

@@ -4687,3 +4687,252 @@ def ScCODA(
         "successful_sccoda_comparisons": sccoda_ok,
         "results": result_map,
     }
+
+
+def PyscenicRankingGenes(ranking_db):
+    """Return gene columns from a cisTarget feather ranking database."""
+    import pyarrow.feather as feather
+    import pyarrow.ipc as ipc
+
+    ranking_db = str(Path(ranking_db).expanduser())
+    try:
+        with ipc.open_file(ranking_db) as reader:
+            return list(reader.schema.names)
+    except Exception:
+        table = feather.read_table(ranking_db, memory_map=True)
+        return list(table.schema.names)
+
+
+def _pyscenic_find_executable(names):
+    import shutil
+    import sys
+
+    for name in names:
+        found = shutil.which(name)
+        if found:
+            return found
+
+    bin_dir = Path(sys.executable).resolve().parent
+    for name in names:
+        candidate = bin_dir / name
+        if candidate.exists():
+            return str(candidate)
+
+    raise FileNotFoundError("Cannot find executable: " + ", ".join(names))
+
+
+def _pyscenic_run_command(cmd, verbose=True, label="pySCENIC command"):
+    import subprocess
+
+    log_message(
+        "Running %s" % label,
+        message_type="running",
+        verbose=verbose,
+    )
+    proc = subprocess.run(
+        [str(x) for x in cmd],
+        check=False,
+        text=True,
+        stdout=None if verbose else subprocess.PIPE,
+        stderr=None if verbose else subprocess.PIPE,
+    )
+    if proc.returncode != 0:
+        details = ""
+        if proc.stdout:
+            details += "\nSTDOUT:\n" + proc.stdout
+        if proc.stderr:
+            details += "\nSTDERR:\n" + proc.stderr
+        raise RuntimeError(
+            "pySCENIC command failed with exit code "
+            + str(proc.returncode)
+            + details
+        )
+
+
+def _pyscenic_motif_logo(regulon):
+    base_url = "http://motifcollections.aertslab.org/v10nr_clust/logos/"
+    for elem in regulon.context:
+        elem = str(elem)
+        if elem.endswith(".png"):
+            return base_url + elem
+    return ""
+
+
+def PyscenicRegulonsToFiles(regulon_file, gmt_file, txt_file, min_regulon_size=10):
+    """Convert pySCENIC ctx output to GMT and tab-delimited regulon files."""
+    from pyscenic.cli.utils import load_signatures
+
+    regulons = load_signatures(str(regulon_file))
+    min_regulon_size = int(min_regulon_size)
+    with open(gmt_file, "w") as gmt_out, open(txt_file, "w") as txt_out:
+        for regulon in regulons:
+            if len(regulon.genes) < min_regulon_size:
+                continue
+            motif = _pyscenic_motif_logo(regulon)
+            tf = "%s(%sg)" % (regulon.transcription_factor, len(regulon.genes))
+            genes = [str(x) for x in regulon.genes]
+            gmt_out.write("%s\t%s\t%s\n" % (tf, motif, "\t".join(genes)))
+            txt_out.write("%s\t%s\t%s\n" % (tf, motif, ",".join(genes)))
+
+    return {
+        "gmt_file": str(gmt_file),
+        "txt_file": str(txt_file),
+    }
+
+
+def RunPyscenicGrn(
+    expression_mtx,
+    tf_list,
+    adj_output,
+    cores=1,
+    seed=1234,
+    force=False,
+    verbose=True,
+):
+    """Run GRNBoost2 with arboreto multiprocessing."""
+    expression_mtx = str(Path(expression_mtx).expanduser())
+    tf_list = str(Path(tf_list).expanduser())
+    adj_output = str(Path(adj_output).expanduser())
+    Path(adj_output).parent.mkdir(parents=True, exist_ok=True)
+
+    if force or not Path(adj_output).exists():
+        arboreto = _pyscenic_find_executable(
+            ["arboreto_with_multiprocessing.py", "arboreto_with_multiprocessing"]
+        )
+        _pyscenic_run_command(
+            [
+                arboreto,
+                expression_mtx,
+                tf_list,
+                "--method",
+                "grnboost2",
+                "--output",
+                adj_output,
+                "--num_workers",
+                int(cores),
+                "--seed",
+                int(seed),
+            ],
+            verbose=verbose,
+            label="GRNBoost2",
+        )
+    else:
+        log_message(
+            "Reusing existing GRNBoost2 output",
+            verbose=verbose,
+        )
+
+    return {"adj_output": adj_output}
+
+
+def RunPyscenicCtx(
+    expression_mtx,
+    ranking_dbs,
+    motif_annotations,
+    adj_output,
+    ctx_output,
+    cores=1,
+    force=False,
+    verbose=True,
+):
+    """Run pySCENIC cisTarget pruning."""
+    expression_mtx = str(Path(expression_mtx).expanduser())
+    motif_annotations = str(Path(motif_annotations).expanduser())
+    ranking_dbs = [str(Path(x).expanduser()) for x in ranking_dbs]
+    adj_output = str(Path(adj_output).expanduser())
+    ctx_output = str(Path(ctx_output).expanduser())
+    Path(ctx_output).parent.mkdir(parents=True, exist_ok=True)
+
+    if force or not Path(ctx_output).exists():
+        pyscenic = _pyscenic_find_executable(["pyscenic"])
+        _pyscenic_run_command(
+            [
+                pyscenic,
+                "ctx",
+                adj_output,
+                *ranking_dbs,
+                "--annotations_fname",
+                motif_annotations,
+                "--expression_mtx_fname",
+                expression_mtx,
+                "--output",
+                ctx_output,
+                "--num_workers",
+                int(cores),
+            ],
+            verbose=verbose,
+            label="pySCENIC cisTarget pruning",
+        )
+    else:
+        log_message(
+            "Reusing existing pySCENIC ctx output",
+            verbose=verbose,
+        )
+
+    return {"ctx_output": ctx_output}
+
+
+def RunPyscenicCli(
+    expression_mtx,
+    tf_list,
+    ranking_dbs,
+    motif_annotations,
+    adj_output,
+    ctx_output,
+    gmt_output,
+    txt_output,
+    min_regulon_size=10,
+    cores=1,
+    seed=1234,
+    force=False,
+    verbose=True,
+):
+    """Run GRNBoost2, pySCENIC ctx, and regulon conversion."""
+    expression_mtx = str(Path(expression_mtx).expanduser())
+    tf_list = str(Path(tf_list).expanduser())
+    motif_annotations = str(Path(motif_annotations).expanduser())
+    ranking_dbs = [str(Path(x).expanduser()) for x in ranking_dbs]
+    adj_output = str(Path(adj_output).expanduser())
+    ctx_output = str(Path(ctx_output).expanduser())
+    gmt_output = str(Path(gmt_output).expanduser())
+    txt_output = str(Path(txt_output).expanduser())
+
+    RunPyscenicGrn(
+        expression_mtx=expression_mtx,
+        tf_list=tf_list,
+        adj_output=adj_output,
+        cores=cores,
+        seed=seed,
+        force=force,
+        verbose=verbose,
+    )
+    RunPyscenicCtx(
+        expression_mtx=expression_mtx,
+        ranking_dbs=ranking_dbs,
+        motif_annotations=motif_annotations,
+        adj_output=adj_output,
+        ctx_output=ctx_output,
+        cores=cores,
+        force=force,
+        verbose=verbose,
+    )
+
+    if force or not Path(gmt_output).exists() or not Path(txt_output).exists():
+        PyscenicRegulonsToFiles(
+            ctx_output,
+            gmt_output,
+            txt_output,
+            min_regulon_size=min_regulon_size,
+        )
+    else:
+        log_message(
+            "Reusing existing pySCENIC regulon files",
+            verbose=verbose,
+        )
+
+    return {
+        "adj_output": adj_output,
+        "ctx_output": ctx_output,
+        "gmt_output": gmt_output,
+        "txt_output": txt_output,
+    }
