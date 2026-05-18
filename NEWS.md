@@ -3,6 +3,9 @@
 # scop 0.9.0
 
 * **feat**:
+  * Added `RunPyscenic()` for a pySCENIC workflow from Seurat objects, including optional metacell GRN input, GRNBoost2/`pyscenic ctx` execution, regulon conversion, multi-core AUCell batch scoring, and storage of regulon activity scores as a Seurat assay plus detailed results in `@tools`.
+  * Added `PyscenicRSSPlot()` to calculate regulon specificity scores from pySCENIC activity and plot the top regulons for each metadata group.
+  * `PrepareEnv()` now supports `modules = "pyscenic"` as a standalone Python 3.10 environment (`pyscenic_env` by default) with pySCENIC 0.12.1 and numpy 1.23.5, avoiding conflicts with the default `scop_env`.
   * Added `ConvertHomologs()` for homologous feature conversion in `Seurat`, `matrix`, and `Matrix` objects. The function uses `GeneConvert()` for arbitrary Ensembl/biomaRt-supported species pairs, collapses duplicated target homologs by summing expression values, preserves Seurat cell metadata and spatial images, and stores the mapping table in `@tools$ConvertHomologs`.
   * Added `RunCytoSPACE()`, a native R/C++ implementation of the default CytoSPACE spot-level assignment workflow. The native backend uses spot-capacity graph construction and precomputed Pearson correlation matrices, stores detailed results in `srt@tools[["CytoSPACE"]]`, and writes summary metadata columns with the requested prefix.
   * Added `SpatialSpotPlot()` for spatial visualization, including examples that show both tissue annotations and downstream CytoSPACE assignment results.

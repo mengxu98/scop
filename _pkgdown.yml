@@ -159,6 +159,8 @@ reference:
   - RunGSEA
   - RunGSVA
   - RunMetabolism
+  - RunPyscenic
+  - PyscenicRSSPlot
 
 - subtitle: "Dynamic Trajectory Analysis"
 - contents:
