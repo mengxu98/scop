@@ -4,12 +4,12 @@
 \name{scop-package}
 \alias{scop}
 \alias{scop-package}
-\title{Single-Cell Omics analysis Pipeline}
+\title{Spatial and single-cell omics analysis pipeline}
 \source{
 \url{https://github.com/mengxu98/scop}
 }
 \description{
-An end-to-end Single-Cell Omics analysis Pipeline designed to facilitate comprehensive analysis and exploration of single-cell omics data.
+An R package for spatial and single-cell omics analysis, integration, visualization, and interactive exploration.
 }
 \seealso{
 Useful links:

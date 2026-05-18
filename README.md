@@ -1,4 +1,4 @@
-# scop: Single-Cell Omics analysis Pipeline
+# scop: Spatial and single-cell omics analysis pipeline
 
 <!-- badges: start -->
 
@@ -7,7 +7,7 @@
 <!-- badges: end -->
 
 ## Introduction
-The [scop](https://github.com/mengxu98/scop) package provides a unified and extensible framework for single-cell omics data processing and downstream analysis in [Seurat](https://github.com/satijalab/seurat):
+[scop](https://github.com/mengxu98/scop) is an *R* package for comprehensive spatial and single-cell omics analysis, providing modular workflows for analyzing, integrating, visualizing, and interactively exploring spatial, and single-cell omics data.
 
 > Documentation: https://mengxu98.github.io/scop/
 >
@@ -35,7 +35,7 @@ The [scop](https://github.com/mengxu98/scop) package provides a unified and exte
 
 ## Table of Contents
 
-- [scop: Single-Cell Omics analysis Pipeline](#scop-single-cell-omics-analysis-pipeline)
+- [scop: Spatial and Cellular Omics analysis Pipeline](#scop-single-cell-omics-analysis-pipeline)
   - [Introduction](#introduction)
   - [Table of Contents](#table-of-contents)
   - [Credits](#credits)

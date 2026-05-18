@@ -8,8 +8,8 @@ RunDimsEstimate(
   srt,
   reduction = NULL,
   reduction_method = NULL,
-  k = 20L,
-  min_dims = 20L,
+  k = 30L,
+  min_dims = 5L,
   fallback_max_dims = 50L,
   skip_first = FALSE,
   use_stored = TRUE,
@@ -27,10 +27,10 @@ Default is \code{NULL}, which automatically selects a PCA-like reduction via
 When set to \code{"nmf"} or \code{"glmpca"}, all available dimensions will be retained.}
 
 \item{k}{Number of neighbors used by \link[intrinsicDimension:maxLik]{intrinsicDimension::maxLikGlobalDimEst}.
-Default is \code{20}.}
+Default is \code{30}.}
 
 \item{min_dims}{Minimum number of dimensions kept when intrinsic-dimension estimation succeeds.
-Default is \code{20}.}
+Default is \code{5}.}
 
 \item{fallback_max_dims}{Maximum number of dimensions kept when no valid estimate is available.
 Default is \code{50}.}
@@ -49,4 +49,14 @@ An integer vector of dimensions to use.
 }
 \description{
 Estimate useful dimensions from a reduction
+}
+\examples{
+data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
+RunDimsEstimate(pancreas_sub)
+
+DimsEstimatePlot(pancreas_sub)
+}
+\seealso{
+\link{DimsEstimatePlot}
 }

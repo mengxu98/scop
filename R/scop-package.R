@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-#' @title Single-Cell Omics analysis Pipeline
+#' @title Spatial and single-cell omics analysis pipeline
 #'
 #' @description
-#' An end-to-end Single-Cell Omics analysis Pipeline designed to facilitate comprehensive analysis and exploration of single-cell omics data.
+#' An R package for spatial and single-cell omics analysis, integration, visualization, and interactive exploration.
 #'
 #' @author Meng xu (Maintainer), \email{mengxu98@qq.com}
 #'

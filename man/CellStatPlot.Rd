@@ -17,8 +17,8 @@ CellStatPlot(
   keep_empty = FALSE,
   individual = FALSE,
   stat_level = NULL,
-  plot_type = c("bar", "rose", "ring", "pie", "trend", "trend_alluvial", "area",
-    "dot", "sankey", "chord", "venn", "upset"),
+  plot_type = c("bar", "rose", "ring", "pie", "trend", "trend_alluvial", "area", "dot",
+    "sankey", "chord", "venn", "upset"),
   stat_type = c("percent", "count"),
   position = c("stack", "dodge"),
   palette = "Chinese",
@@ -86,7 +86,7 @@ Default is \code{FALSE}.}
 \item{stat_level}{The level(s) of the variable(s) specified in \code{stat.by} to include in the plot.
 Default is \code{NULL}.}
 
-\item{plot_type}{A string specifying the type of plot to create.
+\item{plot_type}{The type of plot to create.
 Can be one of \code{"bar"}, \code{"rose"}, \code{"ring"}, \code{"pie"}, \code{"trend"},
 \code{"trend_alluvial"}, \code{"area"}, \code{"dot"}, \code{"sankey"}, \code{"chord"},
 \code{"venn"}, or \code{"upset"}.}
