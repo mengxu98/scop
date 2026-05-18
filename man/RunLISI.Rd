@@ -44,7 +44,8 @@ Default is \code{"LISI"} when multiple reductions are provided, otherwise
 \item{perplexity}{Effective neighborhood size. Default is \code{30}.}
 
 \item{nn_method}{Nearest-neighbor backend. One of \code{"auto"} or \code{"exact"}.
-Default is \code{"auto"}, which uses the exact C++ backend from \code{thisutils}.
+Default is \code{"auto"}, which lets \code{thisutils} choose the fastest exact
+backend available.
 Requires the accelerated \code{thisutils::compute_lisi()} interface that exposes
 \code{nn_method = c("auto", "exact")}.}
 

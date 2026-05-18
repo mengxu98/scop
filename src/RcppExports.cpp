@@ -12,6 +12,38 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// bayesprism_gibbs_initial_cpp
+List bayesprism_gibbs_initial_cpp(NumericMatrix mixture, NumericMatrix phi, IntegerVector gibbs_idx, double alpha, int seed, int n_threads);
+RcppExport SEXP _scop_bayesprism_gibbs_initial_cpp(SEXP mixtureSEXP, SEXP phiSEXP, SEXP gibbs_idxSEXP, SEXP alphaSEXP, SEXP seedSEXP, SEXP n_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type mixture(mixtureSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type phi(phiSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type gibbs_idx(gibbs_idxSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
+    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(bayesprism_gibbs_initial_cpp(mixture, phi, gibbs_idx, alpha, seed, n_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// bayesprism_gibbs_final_cpp
+List bayesprism_gibbs_final_cpp(NumericMatrix mixture, NumericMatrix phi, IntegerVector gibbs_idx, double alpha, int seed, int n_threads);
+RcppExport SEXP _scop_bayesprism_gibbs_final_cpp(SEXP mixtureSEXP, SEXP phiSEXP, SEXP gibbs_idxSEXP, SEXP alphaSEXP, SEXP seedSEXP, SEXP n_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type mixture(mixtureSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type phi(phiSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type gibbs_idx(gibbs_idxSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
+    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(bayesprism_gibbs_final_cpp(mixture, phi, gibbs_idx, alpha, seed, n_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
 // classification_metrics
 List classification_metrics(CharacterVector predicted, CharacterVector truth, CharacterVector classes, double rare_threshold);
 RcppExport SEXP _scop_classification_metrics(SEXP predictedSEXP, SEXP truthSEXP, SEXP classesSEXP, SEXP rare_thresholdSEXP) {
@@ -476,6 +508,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// scibet_fit_predict_sparse
+List scibet_fit_predict_sparse(S4 ref, S4 query, IntegerVector labels, int n_labels, int n_top, int additional_per_label);
+RcppExport SEXP _scop_scibet_fit_predict_sparse(SEXP refSEXP, SEXP querySEXP, SEXP labelsSEXP, SEXP n_labelsSEXP, SEXP n_topSEXP, SEXP additional_per_labelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< S4 >::type ref(refSEXP);
+    Rcpp::traits::input_parameter< S4 >::type query(querySEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type labels(labelsSEXP);
+    Rcpp::traits::input_parameter< int >::type n_labels(n_labelsSEXP);
+    Rcpp::traits::input_parameter< int >::type n_top(n_topSEXP);
+    Rcpp::traits::input_parameter< int >::type additional_per_label(additional_per_labelSEXP);
+    rcpp_result_gen = Rcpp::wrap(scibet_fit_predict_sparse(ref, query, labels, n_labels, n_top, additional_per_label));
+    return rcpp_result_gen;
+END_RCPP
+}
 // scibet_predict
 NumericMatrix scibet_predict(NumericMatrix query, NumericMatrix core, IntegerVector feature_index);
 RcppExport SEXP _scop_scibet_predict(SEXP querySEXP, SEXP coreSEXP, SEXP feature_indexSEXP) {
@@ -491,6 +539,8 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_scop_bayesprism_gibbs_initial_cpp", (DL_FUNC) &_scop_bayesprism_gibbs_initial_cpp, 6},
+    {"_scop_bayesprism_gibbs_final_cpp", (DL_FUNC) &_scop_bayesprism_gibbs_final_cpp, 6},
     {"_scop_classification_metrics", (DL_FUNC) &_scop_classification_metrics, 4},
     {"_scop_cytospace_assign", (DL_FUNC) &_scop_cytospace_assign, 6},
     {"_scop_cytotrace2_ensemble_predict", (DL_FUNC) &_scop_cytotrace2_ensemble_predict, 4},
@@ -523,6 +573,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_sctenifold_manifold_matrix", (DL_FUNC) &_scop_sctenifold_manifold_matrix, 2},
     {"_scop_sctenifold_pair_distances", (DL_FUNC) &_scop_sctenifold_pair_distances, 1},
     {"_scop_scibet_fit_predict", (DL_FUNC) &_scop_scibet_fit_predict, 6},
+    {"_scop_scibet_fit_predict_sparse", (DL_FUNC) &_scop_scibet_fit_predict_sparse, 6},
     {"_scop_scibet_predict", (DL_FUNC) &_scop_scibet_predict, 3},
     {NULL, NULL, 0}
 };
