@@ -62,7 +62,7 @@
     - [Enrichment analysis](#enrichment-analysis)
       - [Over-representation](#over-representation)
       - [GSEA](#gsea)
-    - [Gene regulatory network analysis with pySCENIC](#gene-regulatory-network-analysis-with-pyscenic)
+    - [Gene regulatory network analysis with SCENIC](#gene-regulatory-network-analysis-with-scenic)
     - [Interactive data visualization with SCExplorer](#interactive-data-visualization-with-scexplorer)
     - [Other visualization examples](#other-visualization-examples)
 
@@ -865,18 +865,18 @@ GSEAPlot(
 
 <img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/GSEA_bar-1.png" width="100%" style="display: block; margin: auto;"/>
 
-### Gene regulatory network analysis with pySCENIC
+### Gene regulatory network analysis with SCENIC
 
 ``` r
 pancreas_sub <- RunSCENIC(
   pancreas_sub,
   ranking_dbs = c(
-    "./pyscenic_mm10/mm10_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather",
-    "./pyscenic_mm10/mm10_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"
+    "./scenic_mm10/mm10_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather",
+    "./scenic_mm10/mm10_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"
   ),
-  motif_annotations = "./pyscenic_mm10/motifs-v10nr_clust-nr.mgi-m0.001-o0.0.tbl",
-  tf_list = "./pyscenic_mm10/allTFs_mm10_from_mgi_motif_annotation.txt",
-  work_dir = "./pyscenic",
+  motif_annotations = "./scenic_mm10/motifs-v10nr_clust-nr.mgi-m0.001-o0.0.tbl",
+  tf_list = "./scenic_mm10/allTFs_mm10_from_mgi_motif_annotation.txt",
+  work_dir = "./scenic",
   metacell_reduction = "pca",
   cores = 8
 )

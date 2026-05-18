@@ -42,13 +42,13 @@ Supported values are \code{"scanpy"}, \code{"scvi"}, \code{"glue"}, \code{"scano
 \code{"celltypist"}, \code{"cellphonedb"}, \code{"magic"}, \code{"scrublet"},
 \code{"sccoda"}, \code{"doubletdetection"}, \code{"doublet"}, \code{"palantir"}, \code{"scvelo"},
 \code{"cellrank"}, \code{"wot"}, \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"multimap"},
-\code{"scomm"}, and \code{"pyscenic"}.
+\code{"scomm"}, and \code{"scenic"}.
 If \code{NULL} or omitted in \code{\link[=PrepareEnv]{PrepareEnv()}}, the default environment is installed.
 The default excludes \code{"sccoda"} and \code{"scomm"} because their TensorFlow stacks
 are not compatible with the default JAX/scVI stack in the same environment;
-request them explicitly for scCODA/scOMM workflows. \code{"pyscenic"} is also
-excluded from the default environment and is prepared in \code{"pyscenic_env"} by
-default because pySCENIC requires an older Python/numpy stack. On Windows, the
+request them explicitly for scCODA/scOMM workflows. \code{"scenic"} is also
+excluded from the default environment and is prepared in \code{"scenic_env"} by
+default because SCENIC requires an older Python/numpy stack. On Windows, the
 default also excludes \code{"scvi"}, \code{"glue"}, and \code{"multimap"} because
 those upstream stacks are more reliable when requested explicitly for
 method-specific workflows.}
