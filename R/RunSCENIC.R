@@ -29,7 +29,7 @@
 #' @param metacell_reduction Reduction used to build the metacell neighbor graph.
 #' The default `"pca"` keeps the original behavior and recomputes PCA from the
 #' selected assay. To use an already batch-corrected embedding such as Harmony,
-#' run it before `RunPyscenic()` and set `metacell_reduction = "Harmony"`.
+#' run it before `RunSCENIC()` and set `metacell_reduction = "Harmony"`.
 #' Only the metacell grouping uses this reduction; GRNBoost2 still uses raw
 #' count sums per metacell.
 #' @param metacell_dims Dimensions used for metacell overclustering.
@@ -59,7 +59,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' srt <- RunPyscenic(
+#' srt <- RunSCENIC(
 #'   srt,
 #'   ranking_dbs = c(
 #'     "/path/to/hg38_500bp_up_100bp_down.genes_vs_motifs.rankings.feather",
@@ -71,7 +71,7 @@
 #'   cores = 8
 #' )
 #' }
-RunPyscenic <- function(
+RunSCENIC <- function(
   srt,
   assay = NULL,
   layer = "counts",
@@ -367,7 +367,7 @@ RunPyscenic <- function(
     label = "Running GRNBoost2",
     verbose = verbose
   )
-  functions$RunPyscenicGrn(
+  functions$RunSCENICGrn(
     expression_mtx = expr_csv,
     tf_list = tf_list,
     adj_output = adj_file,
@@ -383,7 +383,7 @@ RunPyscenic <- function(
     label = "Running pySCENIC cisTarget pruning",
     verbose = verbose
   )
-  functions$RunPyscenicCtx(
+  functions$RunSCENICCtx(
     expression_mtx = expr_csv,
     ranking_dbs = as.list(ranking_dbs),
     motif_annotations = motif_annotations,
@@ -759,7 +759,7 @@ pyscenic_build_metacell_counts <- function(
         "none"
       }
       log_message(
-        "{.arg metacell_reduction} {.val {metacell_reduction}} is not present in {.arg srt}. Run the batch-corrected reduction before {.fn RunPyscenic} or use {.val {'pca'}}. Available reductions: {.val {available_reductions_text}}",
+        "{.arg metacell_reduction} {.val {metacell_reduction}} is not present in {.arg srt}. Run the batch-corrected reduction before {.fn RunSCENIC} or use {.val {'pca'}}. Available reductions: {.val {available_reductions_text}}",
         message_type = "error"
       )
     }
