@@ -6,7 +6,7 @@
 #'
 #' @md
 #' @param srt A Seurat object containing pySCENIC results from
-#' [RunPyscenic()].
+#' [RunSCENIC()].
 #' @param group.by Metadata column used as the cell group annotation.
 #' @param tool_name Name of the `srt@tools` entry storing pySCENIC results.
 #' @param assay Assay used as a fallback source of regulon activity.
@@ -36,7 +36,7 @@
 #' and `plot` when `return_data = TRUE`; otherwise a plot object or list of
 #' plots.
 #' @export
-PyscenicRSSPlot <- function(
+SCENICPlot <- function(
   srt,
   group.by,
   tool_name = "Pyscenic",

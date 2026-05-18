@@ -868,7 +868,7 @@ GSEAPlot(
 ### Gene regulatory network analysis with pySCENIC
 
 ``` r
-pancreas_sub <- RunPyscenic(
+pancreas_sub <- RunSCENIC(
   pancreas_sub,
   ranking_dbs = c(
     "./pyscenic_mm10/mm10_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather",
@@ -882,14 +882,14 @@ pancreas_sub <- RunPyscenic(
 )
 ```
 
-`RunPyscenic()` uses `metacell_reduction = "pca"` by default, which recomputes
+`RunSCENIC()` uses `metacell_reduction = "pca"` by default, which recomputes
 PCA before metacell over-clustering. For multi-sample data with clear batch
 effects, run your batch-corrected reduction first and pass it here, for example
 `metacell_reduction = "Harmony"`. This reduction is only used to group cells
 into metacells; GRNBoost2 still uses raw count sums per metacell.
 
 ``` r
-rss_plot <- PyscenicRSSPlot(
+rss_plot <- SCENICPlot(
   pancreas_sub,
   group.by = "SubCellType",
   top_n = 12,
@@ -898,10 +898,10 @@ rss_plot <- PyscenicRSSPlot(
 rss_plot$plots$Ductal
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/PyscenicRSSPlot-1.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/SCENICPlot-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
-rss_plot <- PyscenicRSSPlot(
+rss_plot <- SCENICPlot(
   pancreas_sub,
   group.by = "SubCellType",
   top_n = 12,
@@ -911,10 +911,10 @@ rss_plot <- PyscenicRSSPlot(
 rss_plot$plot
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/PyscenicRSSPlot-2.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/SCENICPlot-2.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
-rss_plot <- PyscenicRSSPlot(
+rss_plot <- SCENICPlot(
   pancreas_sub,
   group.by = "SubCellType",
   top_n = 12,
@@ -925,7 +925,7 @@ rss_plot <- PyscenicRSSPlot(
 rss_plot$plot
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/PyscenicRSSPlot-3.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/SCENICPlot-3.png" width="100%" style="display: block; margin: auto;"/>
 
 ### Interactive data visualization with SCExplorer
 

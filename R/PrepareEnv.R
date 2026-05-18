@@ -703,7 +703,7 @@ pyscenic_runtime_restart_hint <- function(envname = "pyscenic_env") {
   paste0(
     "Restart R, then run ",
     "PrepareEnv(envname = \"", envname, "\", modules = \"pyscenic\") ",
-    "before RunPyscenic()."
+    "before RunSCENIC()."
   )
 }
 
