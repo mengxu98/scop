@@ -21,7 +21,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunPAGA(
@@ -29,6 +28,7 @@
 #'   group.by = "SubCellType",
 #'   linear_reduction = "PCA",
 #'   nonlinear_reduction = "UMAP",
+#'   backend = "cpp",
 #'   return_seurat = TRUE
 #' )
 #'
@@ -46,7 +46,7 @@
 #'
 #' PAGAPlot(
 #'   pancreas_sub,
-#'   reduction = "PAGAUMAP2D"
+#'   reduction = "UMAP"
 #' )
 #'
 #' PAGAPlot(
@@ -95,26 +95,6 @@
 #'     sep = "-"
 #'   )
 #' )
-#'
-#' pancreas_sub <- RunSCVELO(
-#'   pancreas_sub,
-#'   group.by = "SubCellType",
-#'   linear_reduction = "PCA",
-#'   nonlinear_reduction = "UMAP",
-#'   return_seurat = TRUE
-#' )
-#'
-#' PAGAPlot(
-#'   pancreas_sub,
-#'   show_transition = TRUE
-#' )
-#'
-#' PAGAPlot(
-#'   pancreas_sub,
-#'   show_transition = TRUE,
-#'   transition_offset = 0.02
-#' )
-#' }
 PAGAPlot <- function(
   srt,
   paga = srt@misc$paga,
