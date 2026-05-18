@@ -4780,7 +4780,7 @@ def PyscenicRegulonsToFiles(regulon_file, gmt_file, txt_file, min_regulon_size=1
     }
 
 
-def RunPyscenicGrn(
+def RunSCENICGrn(
     expression_mtx,
     tf_list,
     adj_output,
@@ -4825,7 +4825,7 @@ def RunPyscenicGrn(
     return {"adj_output": adj_output}
 
 
-def RunPyscenicCtx(
+def RunSCENICCtx(
     expression_mtx,
     ranking_dbs,
     motif_annotations,
@@ -4872,7 +4872,7 @@ def RunPyscenicCtx(
     return {"ctx_output": ctx_output}
 
 
-def RunPyscenicCli(
+def RunSCENICCli(
     expression_mtx,
     tf_list,
     ranking_dbs,
@@ -4897,7 +4897,7 @@ def RunPyscenicCli(
     gmt_output = str(Path(gmt_output).expanduser())
     txt_output = str(Path(txt_output).expanduser())
 
-    RunPyscenicGrn(
+    RunSCENICGrn(
         expression_mtx=expression_mtx,
         tf_list=tf_list,
         adj_output=adj_output,
@@ -4906,7 +4906,7 @@ def RunPyscenicCli(
         force=force,
         verbose=verbose,
     )
-    RunPyscenicCtx(
+    RunSCENICCtx(
         expression_mtx=expression_mtx,
         ranking_dbs=ranking_dbs,
         motif_annotations=motif_annotations,
