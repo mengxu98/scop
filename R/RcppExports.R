@@ -93,6 +93,10 @@ dense_topk_by_column <- function(mat, k, decreasing = FALSE) {
     .Call(`_scop_dense_topk_by_column`, mat, k, decreasing)
 }
 
+paga_connectivities_cpp <- function(knn_idx, groups, n_groups) {
+    .Call(`_scop_paga_connectivities_cpp`, knn_idx, groups, n_groups)
+}
+
 proportion_bootstrap_log2fd <- function(v1, v2, n_bootstrap = 1000L, pseudocount = 1e-5, verbose = FALSE) {
     .Call(`_scop_proportion_bootstrap_log2fd`, v1, v2, n_bootstrap, pseudocount, verbose)
 }
@@ -107,6 +111,10 @@ pseudotime_velocity_knn <- function(x_emb, pseudotime, neighbors, normalize = TR
 
 pseudotime_velocity_gradient <- function(x_emb, pseudotime, neighbors, smooth = 0.5, normalize = TRUE) {
     .Call(`_scop_pseudotime_velocity_gradient`, x_emb, pseudotime, neighbors, smooth, normalize)
+}
+
+scvelo_stochastic_embedding_cpp <- function(spliced, unspliced, knn_idx, embedding) {
+    .Call(`_scop_scvelo_stochastic_embedding_cpp`, spliced, unspliced, knn_idx, embedding)
 }
 
 sctenifold_pcnet_covariance_raw <- function(x, n_comp = 3L, ncv = 0L, maxit = 1000L, tol = 1e-10, n_threads = 1L) {
