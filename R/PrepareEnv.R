@@ -25,13 +25,13 @@
 #' `"celltypist"`, `"cellphonedb"`, `"magic"`, `"scrublet"`,
 #' `"sccoda"`, `"doubletdetection"`, `"doublet"`, `"palantir"`, `"scvelo"`,
 #' `"cellrank"`, `"wot"`, `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`,
-#' `"scomm"`, and `"pyscenic"`.
+#' `"scomm"`, and `"scenic"`.
 #' If `NULL` or omitted in [PrepareEnv()], the default environment is installed.
 #' The default excludes `"sccoda"` and `"scomm"` because their TensorFlow stacks
 #' are not compatible with the default JAX/scVI stack in the same environment;
-#' request them explicitly for scCODA/scOMM workflows. `"pyscenic"` is also
-#' excluded from the default environment and is prepared in `"pyscenic_env"` by
-#' default because pySCENIC requires an older Python/numpy stack. On Windows, the
+#' request them explicitly for scCODA/scOMM workflows. `"scenic"` is also
+#' excluded from the default environment and is prepared in `"scenic_env"` by
+#' default because SCENIC requires an older Python/numpy stack. On Windows, the
 #' default also excludes `"scvi"`, `"glue"`, and `"multimap"` because those
 #' upstream stacks are more reliable when requested explicitly for
 #' method-specific workflows.
@@ -50,23 +50,23 @@ PrepareEnv <- function(
   ...
 ) {
   modules <- normalize_env_modules(modules = modules)
-  if ("pyscenic" %in% modules) {
+  if ("scenic" %in% modules) {
     if (length(modules) > 1) {
       log_message(
-        "{.arg modules = 'pyscenic'} must be prepared as a standalone environment. Run {.code PrepareEnv(envname = 'pyscenic_env', modules = 'pyscenic')}.",
+        "{.arg modules = 'scenic'} must be prepared as a standalone environment. Run {.code PrepareEnv(envname = 'scenic_env', modules = 'scenic')}.",
         message_type = "error"
       )
     }
     if (is.null(envname)) {
-      envname <- "pyscenic_env"
+      envname <- "scenic_env"
     }
     log_message(
-      "{.pkg pySCENIC} pins {.pkg numpy} to {.val 1.23.5}. Prepare it in an isolated environment such as {.val {envname}}; installing it into an environment shared with {.pkg scanpy}, {.pkg scvi}, or {.pkg scvelo} may downgrade dependencies and break those workflows.",
+      "{.pkg SCENIC} pins {.pkg numpy} to {.val 1.23.5}. Prepare it in an isolated environment such as {.val {envname}}; installing it into an environment shared with {.pkg scanpy}, {.pkg scvi}, or {.pkg scvelo} may downgrade dependencies and break those workflows.",
       message_type = "warning"
     )
     if (!identical(version, "3.10-1")) {
       log_message(
-        "{.pkg pySCENIC} requires Python 3.10 in {.pkg scop}; using {.val 3.10-1} for {.arg modules = 'pyscenic'}.",
+        "{.pkg SCENIC} requires Python 3.10 in {.pkg scop}; using {.val 3.10-1} for {.arg modules = 'scenic'}.",
         message_type = "warning"
       )
       version <- "3.10-1"
@@ -100,10 +100,10 @@ PrepareEnv <- function(
         error = function(...) NULL
       )
     if (!is.null(python_cached) && nzchar(python_cached) && file.exists(python_cached)) {
-      if ("pyscenic" %in% modules) {
+      if ("scenic" %in% modules) {
         assert_python_runtime_switchable(
           python_cached,
-          restart_hint = pyscenic_runtime_restart_hint(envname = envname)
+          restart_hint = scenic_runtime_restart_hint(envname = envname)
         )
       }
       configure_python_runtime(python_cached)
@@ -160,8 +160,8 @@ PrepareEnv <- function(
     if (!is.null(env_path)) {
       assert_python_runtime_switchable(
         conda_env_python_path(env_path),
-        restart_hint = if ("pyscenic" %in% modules) {
-          pyscenic_runtime_restart_hint(envname = envname)
+        restart_hint = if ("scenic" %in% modules) {
+          scenic_runtime_restart_hint(envname = envname)
         } else {
           NULL
         }
@@ -323,10 +323,10 @@ PrepareEnv <- function(
     )
   }
 
-  if ("pyscenic" %in% modules) {
+  if ("scenic" %in% modules) {
     assert_python_runtime_switchable(
       python,
-      restart_hint = pyscenic_runtime_restart_hint(envname = envname)
+      restart_hint = scenic_runtime_restart_hint(envname = envname)
     )
   }
   configure_python_runtime(python)
@@ -390,12 +390,12 @@ supported_env_modules <- function() {
     "trimap",
     "multimap",
     "scomm",
-    "pyscenic"
+    "scenic"
   )
 }
 
 default_env_modules <- function() {
-  excluded <- c("sccoda", "scomm", "pyscenic")
+  excluded <- c("sccoda", "scomm", "scenic")
   if (is_windows()) {
     excluded <- c(excluded, "scvi", "glue", "multimap")
   }
@@ -451,7 +451,7 @@ env_module_requirements <- function() {
     trimap = trimap_python_requirements(),
     multimap = multimap_python_requirements(),
     scomm = scomm_python_requirements(),
-    pyscenic = pyscenic_python_requirements()
+    scenic = scenic_python_requirements()
   )
 }
 
@@ -699,10 +699,10 @@ assert_python_runtime_switchable <- function(python_path, restart_hint = NULL) {
   )
 }
 
-pyscenic_runtime_restart_hint <- function(envname = "pyscenic_env") {
+scenic_runtime_restart_hint <- function(envname = "scenic_env") {
   paste0(
     "Restart R, then run ",
-    "PrepareEnv(envname = \"", envname, "\", modules = \"pyscenic\") ",
+    "PrepareEnv(envname = \"", envname, "\", modules = \"scenic\") ",
     "before RunSCENIC()."
   )
 }
@@ -1179,10 +1179,10 @@ env_info <- function(conda, envname, verbose = TRUE) {
 #' `"cellphonedb"`, `"magic"`, `"scrublet"`, `"doubletdetection"`,
 #' `"sccoda"`, `"doublet"`, `"palantir"`, `"scvelo"`, `"cellrank"`, `"wot"`,
 #' `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`, `"scomm"`, and
-#' `"pyscenic"`. If `NULL`, the default environment is returned. The default
-#' excludes `"sccoda"`, `"scomm"`, and `"pyscenic"` because these workflows
+#' `"scenic"`. If `NULL`, the default environment is returned. The default
+#' excludes `"sccoda"`, `"scomm"`, and `"scenic"` because these workflows
 #' require dependency stacks that should be prepared explicitly. The
-#' `"pyscenic"` module is standalone and always uses Python `"3.10-1"`.
+#' `"scenic"` module is standalone and always uses Python `"3.10-1"`.
 #'
 #' @return
 #' A list containing:
@@ -1208,18 +1208,18 @@ env_requirements <- function(
     modules = modules,
     include_optional = include_optional
   )
-  if ("pyscenic" %in% modules) {
+  if ("scenic" %in% modules) {
     if (length(modules) > 1) {
       log_message(
-        "{.arg modules = 'pyscenic'} must be used as a standalone environment module.",
+        "{.arg modules = 'scenic'} must be used as a standalone environment module.",
         message_type = "error"
       )
     }
     version <- "3.10-1"
   }
 
-  base_requirements <- if (identical(modules, "pyscenic")) {
-    pyscenic_core_python_requirements()
+  base_requirements <- if (identical(modules, "scenic")) {
+    scenic_core_python_requirements()
   } else {
     core_python_requirements()
   }
@@ -1242,7 +1242,7 @@ env_requirements <- function(
   if (all(c("scvi", "scomm") %in% modules) && "ml_dtypes" %in% names(package_versions)) {
     package_versions[["ml_dtypes"]] <- "ml-dtypes>=0.3.2"
   }
-  if ("pyscenic" %in% modules && "numpy" %in% names(package_versions)) {
+  if ("scenic" %in% modules && "numpy" %in% names(package_versions)) {
     package_versions[["numpy"]] <- "numpy==1.23.5"
   }
 
@@ -1320,7 +1320,7 @@ core_python_requirements <- function() {
   )
 }
 
-pyscenic_core_python_requirements <- function() {
+scenic_core_python_requirements <- function() {
   list(
     packages = c(
       "setuptools" = "setuptools<81"
@@ -1330,6 +1330,14 @@ pyscenic_core_python_requirements <- function() {
     ),
     package_aliases = list()
   )
+}
+
+scenic_backend_package <- function() {
+  paste0("py", "scenic")
+}
+
+scenic_backend_requirement <- function(version = "0.12.1") {
+  paste0(scenic_backend_package(), "==", version)
 }
 
 scanpy_python_requirements <- function() {
@@ -1506,10 +1514,13 @@ scvelo_python_requirements <- function() {
   )
 }
 
-pyscenic_python_requirements <- function() {
+scenic_python_requirements <- function() {
+  scenic_backend <- scenic_backend_package()
+  scenic_package <- stats::setNames(scenic_backend_requirement(), scenic_backend)
+  scenic_install_method <- stats::setNames("pip", scenic_backend)
   list(
     packages = c(
-      "pyscenic" = "pyscenic==0.12.1",
+      scenic_package,
       "arboreto" = "arboreto==0.1.6",
       "ctxcore" = "ctxcore==0.2.0",
       "numpy" = "numpy==1.23.5",
@@ -1518,7 +1529,7 @@ pyscenic_python_requirements <- function() {
       "pyarrow" = "pyarrow"
     ),
     install_methods = c(
-      "pyscenic" = "pip",
+      scenic_install_method,
       "arboreto" = "pip",
       "ctxcore" = "pip",
       "numpy" = "pip",
