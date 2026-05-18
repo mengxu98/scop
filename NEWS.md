@@ -4,7 +4,11 @@
 
 * **feat**:
   * Added `RunSCENIC()` for a SCENIC workflow from Seurat objects, including optional metacell GRN input, GRNBoost2/`scenic ctx` execution, regulon conversion, multi-core AUCell batch scoring, and storage of regulon activity scores as a Seurat assay plus detailed results in `@tools`.
+  * `RunSCENIC()` now supports `aucell_backend = "cpp"` for regulon activity scoring through the package C++ AUCell implementation, while keeping `aucell_backend = "r"` as the default for exact AUCell package behavior.
   * Added `SCENICPlot()` to calculate regulon specificity scores from SCENIC activity and plot the top regulons for each metadata group.
+  * `RunPAGA()` now supports a native C++ backend for the standard PAGA connectivity graph and uses it by default; `backend = "python"` remains available for RNA-velocity transitions, PAGA-initialized embeddings, plotting side effects, and DPT pseudotime.
+  * `RunSCVELO()` now includes an optimized C++ backend for stochastic velocity embedding, compatible with `VelocityPlot()` and substantially faster than the equivalent R reference calculation. The Python backend remains the default for the full scVelo workflow.
+  * `VelocityPlot()` raw, grid, and stream visualizations were validated with the native `RunSCVELO(backend = "cpp")` velocity embeddings.
   * `PrepareEnv()` now supports `modules = "scenic"` as a standalone Python 3.10 environment (`scenic_env` by default) with SCENIC 0.12.1 and numpy 1.23.5, avoiding conflicts with the default `scop_env`.
   * Added `ConvertHomologs()` for homologous feature conversion in `Seurat`, `matrix`, and `Matrix` objects. The function uses `GeneConvert()` for arbitrary Ensembl/biomaRt-supported species pairs, collapses duplicated target homologs by summing expression values, preserves Seurat cell metadata and spatial images, and stores the mapping table in `@tools$ConvertHomologs`.
   * Added `RunCytoSPACE()`, a native R/C++ implementation of the default CytoSPACE spot-level assignment workflow. The native backend uses spot-capacity graph construction and precomputed Pearson correlation matrices, stores detailed results in `srt@tools[["CytoSPACE"]]`, and writes summary metadata columns with the requested prefix.
