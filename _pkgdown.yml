@@ -293,6 +293,7 @@ reference:
 
 - subtitle: "Data"
 - contents:
+  - islet_bulk
   - panc8_sub
   - pancreas_sub
   - pbmcmultiome_sub
