@@ -70,3 +70,11 @@ or a named list of ggplot objects when \code{combine = FALSE}.
 \description{
 Dimension estimate diagnostic plot
 }
+\examples{
+data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
+DimsEstimatePlot(pancreas_sub)
+}
+\seealso{
+\link{RunDimsEstimate}
+}
