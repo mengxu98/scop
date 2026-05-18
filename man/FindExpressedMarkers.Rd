@@ -160,7 +160,7 @@ Default is \code{11}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Arguments passed to other methods and to specific DE methods}
+\item{...}{Additional parameters to pass to the dimensionality reduction methods.}
 }
 \description{
 Find Expressed Markers

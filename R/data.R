@@ -194,6 +194,35 @@ NULL
 #' @name visium_human_pancreas_sub
 NULL
 
+#' @title Human pancreatic islet bulk RNA-seq example dataset
+#'
+#' @description
+#' A full human pancreatic islet bulk RNA-seq `SummarizedExperiment` derived
+#' from a brefeldin A perturbation study. The object keeps all samples from the
+#' published islet arm and stores a symbol-level count matrix that can be used
+#' directly in bulk DE and deconvolution examples together with the
+#' bundled `panc8_sub` reference.
+#'
+#' @md
+#' @format A `SummarizedExperiment` object with 19876 genes and 8 bulk RNA-seq
+#' samples.
+#' @concept data
+#' @source
+#' Derived from
+#' \href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE152615}{GSE152615}.
+#' The bundled object is built from the supplementary matrix
+#' `GSE152615_Rawcounts_filtered.txt.gz`. The published non-integer count values
+#' are rounded to the nearest integer for count-based example workflows.
+#'
+#' @examples
+#' data(islet_bulk)
+#' SummarizedExperiment::assayNames(islet_bulk)
+#' head(rownames(islet_bulk))
+#' table(SummarizedExperiment::colData(islet_bulk)$condition)
+#'
+#' @name islet_bulk
+NULL
+
 #' @title Excluded words in keyword enrichment analysis and extraction
 #'
 #' @md

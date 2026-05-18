@@ -37,7 +37,8 @@ DEtestRingPlot(
 )
 }
 \arguments{
-\item{srt}{An object of class \code{Seurat} containing the results of differential expression analysis.}
+\item{srt}{A \code{Seurat} object or \code{SummarizedExperiment} object containing the
+results of differential expression analysis.}
 
 \item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
 

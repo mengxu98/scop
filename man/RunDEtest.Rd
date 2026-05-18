@@ -2,10 +2,56 @@
 % Please edit documentation in R/RunDEtest.R
 \name{RunDEtest}
 \alias{RunDEtest}
+\alias{RunDEtest.Seurat}
+\alias{RunDEtest.SummarizedExperiment}
 \title{Differential gene test}
 \usage{
-RunDEtest(
-  srt,
+RunDEtest(object, ...)
+
+\method{RunDEtest}{Seurat}(
+  object,
+  group.by = NULL,
+  group1 = NULL,
+  group2 = NULL,
+  ident.1 = NULL,
+  ident.2 = NULL,
+  cells1 = NULL,
+  cells2 = NULL,
+  cells.1 = NULL,
+  cells.2 = NULL,
+  features = NULL,
+  feature_type = c("gene", "peak", "cCRE"),
+  markers_type = c("all", "paired", "conserved", "disturbed"),
+  grouping.var = NULL,
+  meta.method = c("maximump", "minimump", "wilkinsonp", "meanp", "sump", "votep"),
+  test.use = "wilcox",
+  only.pos = TRUE,
+  fc.threshold = 1.5,
+  logfc.threshold = NULL,
+  base = 2,
+  pseudocount.use = 1,
+  mean.fxn = NULL,
+  min.pct = 0.1,
+  min.diff.pct = -Inf,
+  max.cells.per.ident = Inf,
+  latent.vars = NULL,
+  min.cells.feature = 3,
+  min.cells.group = 3,
+  norm.method = "LogNormalize",
+  sample_col = NULL,
+  condition_col = NULL,
+  bulk_assay = "counts",
+  p.adjust.method = "bonferroni",
+  layer = "data",
+  assay = NULL,
+  seed = 11,
+  verbose = TRUE,
+  cores = 1,
+  ...
+)
+
+\method{RunDEtest}{SummarizedExperiment}(
+  object,
   group.by = NULL,
   group1 = NULL,
   group2 = NULL,
@@ -16,7 +62,7 @@ RunDEtest(
   markers_type = c("all", "paired", "conserved", "disturbed"),
   grouping.var = NULL,
   meta.method = c("maximump", "minimump", "wilkinsonp", "meanp", "sump", "votep"),
-  test.use = "wilcox",
+  test.use = "edgeR",
   only.pos = TRUE,
   fc.threshold = 1.5,
   base = 2,
@@ -31,8 +77,9 @@ RunDEtest(
   norm.method = "LogNormalize",
   sample_col = NULL,
   condition_col = NULL,
+  bulk_assay = "counts",
   p.adjust.method = "bonferroni",
-  layer = "data",
+  layer = "counts",
   assay = NULL,
   seed = 11,
   verbose = TRUE,
@@ -41,23 +88,31 @@ RunDEtest(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{object}{A \code{Seurat} object or a \code{SummarizedExperiment} object.}
+
+\item{...}{Additional arguments to pass to the \link[Seurat:FindMarkers]{Seurat::FindMarkers} function.}
 
 \item{group.by}{A grouping variable in the dataset to define the groups or conditions for the differential test.
 If not provided, the function uses the "active.ident" variable in the Seurat object.}
 
 \item{group1}{A vector of cell IDs or a character vector specifying the cells that belong to the first group.
 If both group.by and group1 are provided, group1 takes precedence.
-For sample-level methods (\code{"edgeR"} and \code{"limma"}), this parameter is interpreted as the first condition label.}
+For sample-level methods (\code{"edgeR"}, \code{"limma"}, \code{"DESeq2"}, and \code{"dream"}),
+this parameter is interpreted as the first condition label.}
 
 \item{group2}{A vector of cell IDs or a character vector specifying the cells that belong to the second group.
 This parameter is only used when group.by or group1 is provided.
-For sample-level methods (\code{"edgeR"} and \code{"limma"}), this parameter is interpreted as the second condition label.}
+For sample-level methods (\code{"edgeR"}, \code{"limma"}, \code{"DESeq2"}, and \code{"dream"}),
+this parameter is interpreted as the second condition label.}
+
+\item{ident.1, ident.2}{Seurat-style aliases for \code{group1} and \code{group2}.}
 
 \item{cells1}{A vector of cell IDs specifying the cells that belong to group1. If provided, group1 is ignored.}
 
 \item{cells2}{A vector of cell IDs specifying the cells that belong to group2.
 This parameter is only used when cells1 is provided.}
+
+\item{cells.1, cells.2}{Seurat-style aliases for \code{cells1} and \code{cells2}.}
 
 \item{features}{A vector of feature names specifying the features to consider for the differential test.
 If not provided, all features in the dataset are considered.}
@@ -67,7 +122,8 @@ Default is \code{"gene"}.}
 
 \item{markers_type}{A character value specifying the type of markers to find.
 Possible values are "all", "paired", "conserved", and "disturbed".
-Sample-level methods (\code{"edgeR"} and \code{"limma"}) currently support only \code{"all"}.}
+Sample-level methods (\code{"edgeR"}, \code{"limma"}, \code{"DESeq2"}, and \code{"dream"})
+currently support only \code{"all"}.}
 
 \item{grouping.var}{A character value specifying the grouping variable for finding conserved or disturbed markers.
 This parameter is only used when markers_type is "conserved" or "disturbed".}
@@ -76,12 +132,17 @@ This parameter is only used when markers_type is "conserved" or "disturbed".}
 Possible values are "maximump", "minimump", "wilkinsonp", "meanp", "sump", and "votep".}
 
 \item{test.use}{Differential testing method.
-\code{"edgeR"} and \code{"limma"} run sample-level pseudobulk differential testing.}
+\code{"edgeR"}, \code{"limma"}, \code{"DESeq2"}, and \code{"dream"} run sample-level
+pseudobulk differential testing on \code{Seurat} input and bulk DE on
+\code{SummarizedExperiment} input.}
 
 \item{only.pos}{Only return positive markers (FALSE by default)}
 
 \item{fc.threshold}{A numeric value used to filter genes for testing based on their average fold change between/among the two groups.
 Default is \code{1.5}.}
+
+\item{logfc.threshold}{Seurat-style log fold-change threshold. When provided,
+it is converted to \code{fc.threshold = base^logfc.threshold}.}
 
 \item{base}{The base with respect to which logarithms are computed.}
 
@@ -120,10 +181,14 @@ of the two groups, currently only used for poisson and negative binomial tests}
 Default is \code{"LogNormalize"}.}
 
 \item{sample_col}{Metadata column storing biological sample IDs.
-Required when \code{test.use} is \code{"edgeR"} or \code{"limma"}.}
+Required when \code{test.use} is a sample-level pseudobulk method on \code{Seurat}.}
 
 \item{condition_col}{Metadata column storing condition labels.
-Required when \code{test.use} is \code{"edgeR"} or \code{"limma"}.}
+Required when \code{test.use} is a sample-level pseudobulk method on \code{Seurat}, and
+required for \code{SummarizedExperiment} input.}
+
+\item{bulk_assay}{Assay name used as the bulk counts matrix for
+\code{SummarizedExperiment} input.}
 
 \item{p.adjust.method}{A character value specifying the method to use for adjusting p-values.
 Default is \code{"bonferroni"}.}
@@ -141,12 +206,12 @@ Default is \code{TRUE}.}
 
 \item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
 Default is \code{1}.}
-
-\item{...}{Additional arguments to pass to the \link[Seurat:FindMarkers]{Seurat::FindMarkers} function.}
 }
 \description{
-This function utilizes the Seurat package to perform a differential expression (DE) test on gene expression data.
-Users have the flexibility to specify custom cell groups, marker types, and various options for DE analysis.
+Perform differential expression testing on a \code{Seurat} object or a
+\code{SummarizedExperiment} bulk object.
+Users have the flexibility to specify custom cell groups, marker types, and
+various options for DE analysis.
 }
 \examples{
 data(pancreas_sub)
@@ -354,6 +419,24 @@ DEtestPlot(
   x_metric = "avg_log2FC",
   y_metric = "p_val",
   DE_threshold = "abs(avg_log2FC) > log2(1.5) & p_val < 0.05"
+)
+
+data(islet_bulk)
+bulk_out <- RunDEtest(
+  islet_bulk,
+  condition_col = "condition",
+  group1 = "control",
+  group2 = "bfa",
+  test.use = "edgeR",
+  only.pos = FALSE,
+  fc.threshold = 1
+)
+DEtestPlot(
+  bulk_out,
+  test.use = "edgeR",
+  plot_type = "volcano",
+  x_metric = "avg_log2FC",
+  y_metric = "p_val"
 )
 }
 \seealso{
