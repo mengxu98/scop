@@ -33,7 +33,7 @@ navbar:
       href: reference/index.html
 
 reference:
-- subtitle: "Single-Cell Omics analysis Pipeline"
+- subtitle: "Spatial and Cellular Omics analysis Pipeline"
 - contents:
   - scop-package
   - scop_logo
@@ -142,7 +142,8 @@ reference:
 
 - subtitle: "Bulk and Composition Analysis"
 - contents:
-  - RunBulk
+  - RunDeconvolution
+  - DeconvolutionPlot
   - RunMilo
   - RunPermutation
   - RunPropeller
