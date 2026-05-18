@@ -151,7 +151,6 @@ PAGA is a graph-based method used to infer cellular trajectories.
 This function runs the PAGA analysis on a Seurat object.
 }
 \examples{
-\dontrun{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunPAGA(
@@ -159,12 +158,13 @@ pancreas_sub <- RunPAGA(
   assay_x = "RNA",
   group.by = "SubCellType",
   linear_reduction = "PCA",
-  nonlinear_reduction = "UMAP"
+  nonlinear_reduction = "UMAP",
+  backend = "cpp"
 )
 CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
-  reduction = "draw_graph_fr"
+  reduction = "UMAP"
 )
 
 PAGAPlot(pancreas_sub, reduction = "UMAP")
@@ -175,32 +175,6 @@ CellDimPlot(
   reduction = "UMAP",
   paga = pancreas_sub@misc$paga
 )
-
-pancreas_sub <- RunPAGA(
-  pancreas_sub,
-  group.by = "SubCellType",
-  linear_reduction = "PCA",
-  nonlinear_reduction = "UMAP",
-  embedded_with_PAGA = TRUE,
-  infer_pseudotime = TRUE,
-  root_group = "Ductal"
-)
-
-FeatureDimPlot(
-  pancreas_sub,
-  features = "dpt_pseudotime",
-  reduction = "PAGAUMAP2D"
-)
-
-PAGAPlot(pancreas_sub, reduction = "PAGAUMAP2D")
-
-CellDimPlot(
-  pancreas_sub,
-  group.by = "SubCellType",
-  reduction = "PAGAUMAP2D",
-  paga = pancreas_sub@misc$paga
-)
-}
 }
 \seealso{
 \link{PAGAPlot}, \link{CellDimPlot}, \link{RunSCVELO}
