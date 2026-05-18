@@ -1,14 +1,14 @@
-#' @title Plot top regulon specificity scores from pySCENIC results
+#' @title Plot top regulon specificity scores from SCENIC results
 #'
 #' @description
-#' Calculate regulon specificity score (RSS) from pySCENIC regulon activity and
+#' Calculate regulon specificity score (RSS) from SCENIC regulon activity and
 #' plot the top regulons for each group.
 #'
 #' @md
-#' @param srt A Seurat object containing pySCENIC results from
+#' @param srt A Seurat object containing SCENIC results from
 #' [RunSCENIC()].
 #' @param group.by Metadata column used as the cell group annotation.
-#' @param tool_name Name of the `srt@tools` entry storing pySCENIC results.
+#' @param tool_name Name of the `srt@tools` entry storing SCENIC results.
 #' @param assay Assay used as a fallback source of regulon activity.
 #' @param layer Assay layer used as a fallback source of regulon activity.
 #' @param top_n Number of top regulons labeled for each group.
@@ -39,8 +39,8 @@
 SCENICPlot <- function(
   srt,
   group.by,
-  tool_name = "Pyscenic",
-  assay = "pyscenic",
+  tool_name = "SCENIC",
+  assay = "scenic",
   layer = "data",
   top_n = 12,
   combine = TRUE,
@@ -85,7 +85,7 @@ SCENICPlot <- function(
     }
   }
 
-  auc_mat <- pyscenic_get_rss_auc_matrix(
+  auc_mat <- scenic_get_rss_auc_matrix(
     srt = srt,
     tool_name = tool_name,
     assay = assay,
@@ -97,7 +97,7 @@ SCENICPlot <- function(
   common_cells <- intersect(colnames(auc_mat), names(group_annotation))
   if (length(common_cells) == 0) {
     log_message(
-      "No shared cells between pySCENIC regulon activity and {.arg srt} metadata",
+      "No shared cells between SCENIC regulon activity and {.arg srt} metadata",
       message_type = "error"
     )
   }
@@ -121,10 +121,10 @@ SCENICPlot <- function(
   group_annotation <- as.character(group_annotation)
 
   log_message(
-    "Calculating pySCENIC RSS for {.val {nrow(auc_mat)}} regulons across {.val {length(group_names)}} group{?s}",
+    "Calculating SCENIC RSS for {.val {nrow(auc_mat)}} regulons across {.val {length(group_names)}} group{?s}",
     verbose = verbose
   )
-  rss_matrix <- pyscenic_calc_rss_matrix(
+  rss_matrix <- scenic_calc_rss_matrix(
     auc_mat = auc_mat,
     cell_annotation = group_annotation,
     cell_types = group_names
@@ -275,10 +275,10 @@ SCENICPlot <- function(
   )
 }
 
-pyscenic_get_rss_auc_matrix <- function(
+scenic_get_rss_auc_matrix <- function(
   srt,
-  tool_name = "Pyscenic",
-  assay = "pyscenic",
+  tool_name = "SCENIC",
+  assay = "scenic",
   layer = "data"
 ) {
   if (!is.null(srt@tools[[tool_name]][["scores_cells_by_regulon"]])) {
@@ -295,7 +295,7 @@ pyscenic_get_rss_auc_matrix <- function(
 
   if (!assay %in% SeuratObject::Assays(srt)) {
     log_message(
-      "Cannot find pySCENIC results in tools slot {.val {tool_name}} or assay {.val {assay}}",
+      "Cannot find SCENIC results in tools slot {.val {tool_name}} or assay {.val {assay}}",
       message_type = "error"
     )
   }
@@ -310,7 +310,7 @@ pyscenic_get_rss_auc_matrix <- function(
   auc_mat
 }
 
-pyscenic_calc_rss_matrix <- function(
+scenic_calc_rss_matrix <- function(
   auc_mat,
   cell_annotation,
   cell_types = NULL
@@ -333,7 +333,7 @@ pyscenic_calc_rss_matrix <- function(
     vapply(
       seq_len(nrow(norm_auc)),
       function(regulon_idx) {
-        pyscenic_calc_one_rss(norm_auc[regulon_idx, ], p_cell_type)
+        scenic_calc_one_rss(norm_auc[regulon_idx, ], p_cell_type)
       },
       numeric(1)
     )
@@ -344,17 +344,17 @@ pyscenic_calc_rss_matrix <- function(
   rss
 }
 
-pyscenic_calc_one_rss <- function(p_regulon, p_cell_type) {
-  jsd <- pyscenic_calc_jsd(p_regulon, p_cell_type)
+scenic_calc_one_rss <- function(p_regulon, p_cell_type) {
+  jsd <- scenic_calc_jsd(p_regulon, p_cell_type)
   1 - sqrt(jsd)
 }
 
-pyscenic_calc_jsd <- function(p_regulon, p_cell_type) {
-  pyscenic_entropy((p_regulon + p_cell_type) / 2) -
-    ((pyscenic_entropy(p_regulon) + pyscenic_entropy(p_cell_type)) / 2)
+scenic_calc_jsd <- function(p_regulon, p_cell_type) {
+  scenic_entropy((p_regulon + p_cell_type) / 2) -
+    ((scenic_entropy(p_regulon) + scenic_entropy(p_cell_type)) / 2)
 }
 
-pyscenic_entropy <- function(p_vector) {
+scenic_entropy <- function(p_vector) {
   p_vector <- p_vector[p_vector > 0]
   -sum(p_vector * log2(p_vector))
 }

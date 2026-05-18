@@ -2,13 +2,13 @@
 % Please edit documentation in R/SCENICPlot.R
 \name{SCENICPlot}
 \alias{SCENICPlot}
-\title{Plot top regulon specificity scores from pySCENIC results}
+\title{Plot top regulon specificity scores from SCENIC results}
 \usage{
 SCENICPlot(
   srt,
   group.by,
-  tool_name = "Pyscenic",
-  assay = "pyscenic",
+  tool_name = "SCENIC",
+  assay = "scenic",
   layer = "data",
   top_n = 12,
   combine = TRUE,
@@ -28,12 +28,12 @@ SCENICPlot(
 )
 }
 \arguments{
-\item{srt}{A Seurat object containing pySCENIC results from
+\item{srt}{A Seurat object containing SCENIC results from
 \code{\link[=RunSCENIC]{RunSCENIC()}}.}
 
 \item{group.by}{Metadata column used as the cell group annotation.}
 
-\item{tool_name}{Name of the \code{srt@tools} entry storing pySCENIC results.}
+\item{tool_name}{Name of the \code{srt@tools} entry storing SCENIC results.}
 
 \item{assay}{Assay used as a fallback source of regulon activity.}
 
@@ -80,6 +80,6 @@ and \code{plot} when \code{return_data = TRUE}; otherwise a plot object or list 
 plots.
 }
 \description{
-Calculate regulon specificity score (RSS) from pySCENIC regulon activity and
+Calculate regulon specificity score (RSS) from SCENIC regulon activity and
 plot the top regulons for each group.
 }

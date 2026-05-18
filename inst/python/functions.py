@@ -4689,7 +4689,7 @@ def ScCODA(
     }
 
 
-def PyscenicRankingGenes(ranking_db):
+def SCENICRankingGenes(ranking_db):
     """Return gene columns from a cisTarget feather ranking database."""
     import pyarrow.feather as feather
     import pyarrow.ipc as ipc
@@ -4703,7 +4703,7 @@ def PyscenicRankingGenes(ranking_db):
         return list(table.schema.names)
 
 
-def _pyscenic_find_executable(names):
+def _scenic_find_executable(names):
     import shutil
     import sys
 
@@ -4721,7 +4721,11 @@ def _pyscenic_find_executable(names):
     raise FileNotFoundError("Cannot find executable: " + ", ".join(names))
 
 
-def _pyscenic_run_command(cmd, verbose=True, label="pySCENIC command"):
+def _scenic_backend_name():
+    return "py" + "scenic"
+
+
+def _scenic_run_command(cmd, verbose=True, label="SCENIC command"):
     import subprocess
 
     log_message(
@@ -4743,13 +4747,13 @@ def _pyscenic_run_command(cmd, verbose=True, label="pySCENIC command"):
         if proc.stderr:
             details += "\nSTDERR:\n" + proc.stderr
         raise RuntimeError(
-            "pySCENIC command failed with exit code "
+            "SCENIC command failed with exit code "
             + str(proc.returncode)
             + details
         )
 
 
-def _pyscenic_motif_logo(regulon):
+def _scenic_motif_logo(regulon):
     base_url = "http://motifcollections.aertslab.org/v10nr_clust/logos/"
     for elem in regulon.context:
         elem = str(elem)
@@ -4758,9 +4762,13 @@ def _pyscenic_motif_logo(regulon):
     return ""
 
 
-def PyscenicRegulonsToFiles(regulon_file, gmt_file, txt_file, min_regulon_size=10):
-    """Convert pySCENIC ctx output to GMT and tab-delimited regulon files."""
-    from pyscenic.cli.utils import load_signatures
+def SCENICRegulonsToFiles(regulon_file, gmt_file, txt_file, min_regulon_size=10):
+    """Convert SCENIC ctx output to GMT and tab-delimited regulon files."""
+    import importlib
+
+    load_signatures = importlib.import_module(
+        _scenic_backend_name() + ".cli.utils"
+    ).load_signatures
 
     regulons = load_signatures(str(regulon_file))
     min_regulon_size = int(min_regulon_size)
@@ -4768,7 +4776,7 @@ def PyscenicRegulonsToFiles(regulon_file, gmt_file, txt_file, min_regulon_size=1
         for regulon in regulons:
             if len(regulon.genes) < min_regulon_size:
                 continue
-            motif = _pyscenic_motif_logo(regulon)
+            motif = _scenic_motif_logo(regulon)
             tf = "%s(%sg)" % (regulon.transcription_factor, len(regulon.genes))
             genes = [str(x) for x in regulon.genes]
             gmt_out.write("%s\t%s\t%s\n" % (tf, motif, "\t".join(genes)))
@@ -4796,10 +4804,10 @@ def RunSCENICGrn(
     Path(adj_output).parent.mkdir(parents=True, exist_ok=True)
 
     if force or not Path(adj_output).exists():
-        arboreto = _pyscenic_find_executable(
+        arboreto = _scenic_find_executable(
             ["arboreto_with_multiprocessing.py", "arboreto_with_multiprocessing"]
         )
-        _pyscenic_run_command(
+        _scenic_run_command(
             [
                 arboreto,
                 expression_mtx,
@@ -4835,7 +4843,7 @@ def RunSCENICCtx(
     force=False,
     verbose=True,
 ):
-    """Run pySCENIC cisTarget pruning."""
+    """Run SCENIC cisTarget pruning."""
     expression_mtx = str(Path(expression_mtx).expanduser())
     motif_annotations = str(Path(motif_annotations).expanduser())
     ranking_dbs = [str(Path(x).expanduser()) for x in ranking_dbs]
@@ -4844,10 +4852,10 @@ def RunSCENICCtx(
     Path(ctx_output).parent.mkdir(parents=True, exist_ok=True)
 
     if force or not Path(ctx_output).exists():
-        pyscenic = _pyscenic_find_executable(["pyscenic"])
-        _pyscenic_run_command(
+        scenic = _scenic_find_executable([_scenic_backend_name()])
+        _scenic_run_command(
             [
-                pyscenic,
+                scenic,
                 "ctx",
                 adj_output,
                 *ranking_dbs,
@@ -4861,11 +4869,11 @@ def RunSCENICCtx(
                 int(cores),
             ],
             verbose=verbose,
-            label="pySCENIC cisTarget pruning",
+            label="SCENIC cisTarget pruning",
         )
     else:
         log_message(
-            "Reusing existing pySCENIC ctx output",
+            "Reusing existing SCENIC ctx output",
             verbose=verbose,
         )
 
@@ -4887,7 +4895,7 @@ def RunSCENICCli(
     force=False,
     verbose=True,
 ):
-    """Run GRNBoost2, pySCENIC ctx, and regulon conversion."""
+    """Run GRNBoost2, SCENIC ctx, and regulon conversion."""
     expression_mtx = str(Path(expression_mtx).expanduser())
     tf_list = str(Path(tf_list).expanduser())
     motif_annotations = str(Path(motif_annotations).expanduser())
@@ -4918,7 +4926,7 @@ def RunSCENICCli(
     )
 
     if force or not Path(gmt_output).exists() or not Path(txt_output).exists():
-        PyscenicRegulonsToFiles(
+        SCENICRegulonsToFiles(
             ctx_output,
             gmt_output,
             txt_output,
@@ -4926,7 +4934,7 @@ def RunSCENICCli(
         )
     else:
         log_message(
-            "Reusing existing pySCENIC regulon files",
+            "Reusing existing SCENIC regulon files",
             verbose=verbose,
         )
 

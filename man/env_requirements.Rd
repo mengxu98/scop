@@ -17,10 +17,10 @@ Default is \code{"3.10-1"}.}
 \code{"cellphonedb"}, \code{"magic"}, \code{"scrublet"}, \code{"doubletdetection"},
 \code{"sccoda"}, \code{"doublet"}, \code{"palantir"}, \code{"scvelo"}, \code{"cellrank"}, \code{"wot"},
 \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"multimap"}, \code{"scomm"}, and
-\code{"pyscenic"}. If \code{NULL}, the default environment is returned. The default
-excludes \code{"sccoda"}, \code{"scomm"}, and \code{"pyscenic"} because these workflows
+\code{"scenic"}. If \code{NULL}, the default environment is returned. The default
+excludes \code{"sccoda"}, \code{"scomm"}, and \code{"scenic"} because these workflows
 require dependency stacks that should be prepared explicitly. The
-\code{"pyscenic"} module is standalone and always uses Python \code{"3.10-1"}.}
+\code{"scenic"} module is standalone and always uses Python \code{"3.10-1"}.}
 }
 \value{
 A list containing:
