@@ -1,3 +1,708 @@
+# Internal sample-level and bulk DE method implementations for RunDEtest().
+NULL
+
+RunLimmaVoom <- function(
+  count_matrix,
+  condition,
+  condition1 = NULL,
+  condition2 = NULL,
+  only.pos = FALSE,
+  logfc.threshold = 0,
+  p.adjust.method = "BH",
+  verbose = TRUE
+) {
+  check_r(c("limma", "edgeR"), verbose = FALSE)
+
+  pair <- tryCatch(
+    resolve_condition_pair(
+      condition = condition,
+      condition1 = condition1,
+      condition2 = condition2,
+      strict_two_levels = TRUE
+    ),
+    error = function(e) e
+  )
+  if (inherits(pair, "error")) {
+    return(list(
+      status = "failed",
+      reason = pair$message,
+      results = data.frame(),
+      details = list(),
+      parameters = list()
+    ))
+  }
+
+  out <- tryCatch(
+    RunDEtest_limma(
+      count_matrix = count_matrix,
+      condition = condition,
+      condition1 = pair$condition1,
+      condition2 = pair$condition2,
+      only.pos = only.pos,
+      logfc.threshold = logfc.threshold,
+      p.adjust.method = p.adjust.method
+    ),
+    error = function(e) e
+  )
+  if (inherits(out, "error")) {
+    return(list(
+      status = "failed",
+      reason = out$message,
+      results = data.frame(),
+      details = list(),
+      parameters = list()
+    ))
+  }
+  if (is.null(out) || nrow(out) == 0) {
+    return(list(
+      status = "success",
+      reason = NULL,
+      results = data.frame(),
+      details = list(condition_pair = pair),
+      parameters = list(
+        only.pos = only.pos,
+        logfc.threshold = logfc.threshold,
+        p.adjust.method = p.adjust.method
+      )
+    ))
+  }
+
+  list(
+    status = "success",
+    reason = NULL,
+    results = out,
+    details = list(condition_pair = pair),
+    parameters = list(
+      only.pos = only.pos,
+      logfc.threshold = logfc.threshold,
+      p.adjust.method = p.adjust.method
+    )
+  )
+}
+
+
+RunEdgeR <- function(
+  count_matrix,
+  condition,
+  condition1 = NULL,
+  condition2 = NULL,
+  only.pos = FALSE,
+  logfc.threshold = 0,
+  p.adjust.method = "BH",
+  verbose = TRUE
+) {
+  check_r("edgeR", verbose = FALSE)
+
+  pair <- tryCatch(
+    resolve_condition_pair(
+      condition = condition,
+      condition1 = condition1,
+      condition2 = condition2,
+      strict_two_levels = TRUE
+    ),
+    error = function(e) e
+  )
+  if (inherits(pair, "error")) {
+    return(list(
+      status = "failed",
+      reason = pair$message,
+      results = data.frame(),
+      details = list(),
+      parameters = list()
+    ))
+  }
+
+  out <- tryCatch(
+    RunDEtest_edgeR(
+      count_matrix = count_matrix,
+      condition = condition,
+      condition1 = pair$condition1,
+      condition2 = pair$condition2,
+      only.pos = only.pos,
+      logfc.threshold = logfc.threshold,
+      p.adjust.method = p.adjust.method
+    ),
+    error = function(e) e
+  )
+  if (inherits(out, "error")) {
+    return(list(
+      status = "failed",
+      reason = out$message,
+      results = data.frame(),
+      details = list(),
+      parameters = list()
+    ))
+  }
+  if (is.null(out) || nrow(out) == 0) {
+    return(list(
+      status = "success",
+      reason = NULL,
+      results = data.frame(),
+      details = list(condition_pair = pair),
+      parameters = list(
+        only.pos = only.pos,
+        logfc.threshold = logfc.threshold,
+        p.adjust.method = p.adjust.method
+      )
+    ))
+  }
+
+  list(
+    status = "success",
+    reason = NULL,
+    results = out,
+    details = list(condition_pair = pair),
+    parameters = list(
+      only.pos = only.pos,
+      logfc.threshold = logfc.threshold,
+      p.adjust.method = p.adjust.method
+    )
+  )
+}
+
+
+RunDESeq2 <- function(
+  count_matrix,
+  condition,
+  condition1 = NULL,
+  condition2 = NULL,
+  only.pos = FALSE,
+  logfc.threshold = 0,
+  p.adjust.method = "BH",
+  verbose = TRUE
+) {
+  check_r("DESeq2", verbose = FALSE)
+
+  pair <- tryCatch(
+    resolve_condition_pair(
+      condition = condition,
+      condition1 = condition1,
+      condition2 = condition2,
+      strict_two_levels = TRUE
+    ),
+    error = function(e) e
+  )
+  if (inherits(pair, "error")) {
+    return(list(
+      status = "failed",
+      reason = pair$message,
+      results = data.frame(),
+      details = list(),
+      parameters = list()
+    ))
+  }
+
+  cond <- as.character(condition)
+  keep <- cond %in% c(pair$condition1, pair$condition2)
+  count_use <- as.matrix(count_matrix[, keep, drop = FALSE])
+  cond_use <- factor(cond[keep], levels = c(pair$condition1, pair$condition2))
+  if (ncol(count_use) < 2 || any(table(cond_use) < 2)) {
+    return(list(
+      status = "failed",
+      reason = "DESeq2 requires at least 2 samples per condition.",
+      details = list(condition_pair = pair),
+      results = data.frame(),
+      parameters = list()
+    ))
+  }
+
+  out <- tryCatch(
+    RunDEtest_DESeq2(
+      count_matrix = count_use,
+      condition = cond_use,
+      condition1 = pair$condition1,
+      condition2 = pair$condition2,
+      only.pos = only.pos,
+      logfc.threshold = logfc.threshold,
+      p.adjust.method = p.adjust.method
+    ),
+    error = function(e) e
+  )
+  if (inherits(out, "error")) {
+    return(list(
+      status = "failed",
+      reason = out$message,
+      results = data.frame(),
+      details = list(),
+      parameters = list()
+    ))
+  }
+  if (is.null(out) || nrow(out) == 0) {
+    return(list(
+      status = "success",
+      reason = NULL,
+      results = data.frame(),
+      details = list(condition_pair = pair),
+      parameters = list(
+        only.pos = only.pos,
+        logfc.threshold = logfc.threshold,
+        p.adjust.method = p.adjust.method
+      )
+    ))
+  }
+
+  list(
+    status = "success",
+    reason = NULL,
+    results = out,
+    details = list(condition_pair = pair),
+    parameters = list(
+      only.pos = only.pos,
+      logfc.threshold = logfc.threshold,
+      p.adjust.method = p.adjust.method
+    )
+  )
+}
+
+
+RunDream <- function(
+  count_matrix,
+  condition,
+  sample_data = NULL,
+  condition1 = NULL,
+  condition2 = NULL,
+  dream_formula = NULL,
+  only.pos = FALSE,
+  logfc.threshold = 0,
+  p.adjust.method = "BH",
+  verbose = TRUE
+) {
+  check_r(c("variancePartition", "limma", "edgeR"), verbose = FALSE)
+
+  pair <- tryCatch(
+    resolve_condition_pair(
+      condition = condition,
+      condition1 = condition1,
+      condition2 = condition2,
+      strict_two_levels = TRUE
+    ),
+    error = function(e) e
+  )
+  if (inherits(pair, "error")) {
+    return(list(
+      status = "failed",
+      reason = pair$message,
+      results = data.frame(),
+      details = list(),
+      parameters = list()
+    ))
+  }
+
+  cond <- as.character(condition)
+  keep <- cond %in% c(pair$condition1, pair$condition2)
+  count_use <- as.matrix(count_matrix[, keep, drop = FALSE])
+  cond_use <- factor(cond[keep], levels = c(pair$condition1, pair$condition2))
+  if (ncol(count_use) < 2 || any(table(cond_use) < 2)) {
+    return(list(
+      status = "failed",
+      reason = "dream requires at least 2 samples per condition.",
+      details = list(condition_pair = pair),
+      results = data.frame(),
+      parameters = list()
+    ))
+  }
+
+  if (!is.null(sample_data)) {
+    if (is.null(rownames(sample_data)) || any(rownames(sample_data) == "")) {
+      return(list(
+        status = "failed",
+        reason = "{.arg sample_data} must contain row names matching sample IDs.",
+        results = data.frame(),
+        details = list(),
+        parameters = list()
+      ))
+    }
+    if (!all(colnames(count_use) %in% rownames(sample_data))) {
+      return(list(
+        status = "failed",
+        reason = "{.arg sample_data} row names must cover all bulk sample IDs.",
+        results = data.frame(),
+        details = list(),
+        parameters = list()
+      ))
+    }
+  }
+
+  if (is.null(dream_formula)) {
+    dream_formula <- stats::as.formula("~ condition")
+  } else if (is.character(dream_formula) && length(dream_formula) == 1) {
+    dream_formula <- stats::as.formula(dream_formula)
+  }
+  if (!inherits(dream_formula, "formula")) {
+    return(list(
+      status = "failed",
+      reason = "{.arg dream_formula} must be a formula or a one-length character.",
+      results = data.frame(),
+      details = list(),
+      parameters = list()
+    ))
+  }
+  if (!"condition" %in% all.vars(dream_formula)) {
+    return(list(
+      status = "failed",
+      reason = "{.arg dream_formula} must include the {.val condition} term.",
+      results = data.frame(),
+      details = list(),
+      parameters = list()
+    ))
+  }
+
+  out <- tryCatch(
+    RunDEtest_dream(
+      count_matrix = count_use,
+      condition = cond_use,
+      condition1 = pair$condition1,
+      condition2 = pair$condition2,
+      sample_data = sample_data,
+      dream_formula = dream_formula,
+      only.pos = only.pos,
+      logfc.threshold = logfc.threshold,
+      p.adjust.method = p.adjust.method
+    ),
+    error = function(e) e
+  )
+  if (inherits(out, "error")) {
+    return(list(
+      status = "failed",
+      reason = out$message,
+      results = data.frame(),
+      details = list(),
+      parameters = list()
+    ))
+  }
+  if (is.null(out) || nrow(out) == 0) {
+    return(list(
+      status = "success",
+      reason = NULL,
+      results = data.frame(),
+      details = list(condition_pair = pair),
+      parameters = list(
+        dream_formula = deparse(dream_formula),
+        only.pos = only.pos,
+        logfc.threshold = logfc.threshold,
+        p.adjust.method = p.adjust.method
+      )
+    ))
+  }
+
+  list(
+    status = "success",
+    reason = NULL,
+    results = out,
+    details = list(condition_pair = pair),
+    parameters = list(
+      dream_formula = deparse(dream_formula),
+      only.pos = only.pos,
+      logfc.threshold = logfc.threshold,
+      p.adjust.method = p.adjust.method
+    )
+  )
+}
+
+
+dispatch_de <- function(
+  ctx,
+  method_name,
+  condition1 = NULL,
+  condition2 = NULL,
+  de_markers_type = "single",
+  de_args = list(),
+  verbose = TRUE
+) {
+  method_map <- list(
+    de_limma_voom = RunLimmaVoom,
+    de_edgeR_qlf = RunEdgeR,
+    de_DESeq2 = RunDESeq2,
+    de_dream = RunDream
+  )
+  method_fun <- method_map[[method_name]]
+  if (is.null(method_fun)) {
+    log_message(
+      paste0("Unsupported DE method: ", method_name),
+      message_type = "error"
+    )
+  }
+
+  per_group <- list()
+  results_list <- list()
+  fail_messages <- character(0)
+
+  for (grp in names(ctx$counts_by_group)) {
+    condition_vec <- ctx$condition_by_group[[grp]]
+    comparison_specs <- tryCatch(
+      prepare_de_comparisons(
+        condition = condition_vec,
+        condition1 = condition1,
+        condition2 = condition2,
+        markers_type = de_markers_type
+      ),
+      error = function(e) e
+    )
+    if (inherits(comparison_specs, "error")) {
+      fail_messages <- c(
+        fail_messages,
+        paste0(grp, ": ", comparison_specs$message)
+      )
+      next
+    }
+
+    group_bundles <- list()
+    for (spec in comparison_specs) {
+      args <- utils::modifyList(
+        list(
+          count_matrix = ctx$counts_by_group[[grp]],
+          condition = spec$condition,
+          sample_data = ctx$sample_meta_by_group[[grp]],
+          condition1 = spec$condition1,
+          condition2 = spec$condition2,
+          verbose = verbose
+        ),
+        de_args
+      )
+      bundle <- tryCatch(
+        invoke_fun(
+          method_fun,
+          args[names(args) %in% names(formals(method_fun))]
+        ),
+        error = function(e) {
+          list(
+            status = "failed",
+            reason = e$message,
+            results = data.frame(),
+            details = list(),
+            parameters = list()
+          )
+        }
+      )
+      if (!is.list(bundle) || is.null(bundle$status)) {
+        bundle <- list(
+          status = "failed",
+          reason = "Method did not return a valid bundle.",
+          results = data.frame(),
+          details = list(),
+          parameters = list()
+        )
+      }
+      group_bundles[[spec$label]] <- bundle
+
+      if (identical(bundle$status, "success")) {
+        df <- as.data.frame(bundle$results)
+        if (nrow(df) > 0) {
+          if (!"gene" %in% colnames(df)) {
+            df$gene <- rownames(df)
+          }
+          df$group1 <- grp
+          df$group2 <- spec$label
+          df$comparison <- compose_comparison_label(grp, spec$label)
+          df$method <- method_name
+          results_list[[paste0(
+            grp,
+            "::",
+            spec$label
+          )]] <- coerce_de_schema(df)
+        }
+      } else {
+        fail_messages <- c(
+          fail_messages,
+          paste0(grp, "[", spec$label, "]: ", bundle$reason %||% "failed")
+        )
+      }
+    }
+
+    per_group[[grp]] <- list(
+      markers_type = de_markers_type,
+      comparisons = group_bundles
+    )
+  }
+
+  results <- if (length(results_list) == 0) {
+    data.frame(
+      gene = character(),
+      group1 = character(),
+      group2 = character(),
+      avg_log2FC = numeric(),
+      p_val = numeric(),
+      p_val_adj = numeric(),
+      method = character(),
+      stringsAsFactors = FALSE
+    )
+  } else {
+    out <- do.call(rbind, results_list)
+    rownames(out) <- NULL
+    out
+  }
+
+  if (nrow(results) > 0) {
+    list(
+      status = "success",
+      reason = NULL,
+      results = results,
+      details = list(groups = per_group),
+      parameters = list(
+        method = method_name,
+        de_markers_type = de_markers_type
+      )
+    )
+  } else {
+    list(
+      status = "failed",
+      reason = paste(fail_messages, collapse = "; "),
+      details = list(groups = per_group),
+      parameters = list(
+        method = method_name,
+        de_markers_type = de_markers_type
+      ),
+      results = data.frame(
+        gene = character(),
+        group1 = character(),
+        group2 = character(),
+        avg_log2FC = numeric(),
+        p_val = numeric(),
+        p_val_adj = numeric(),
+        method = character(),
+        stringsAsFactors = FALSE
+      )
+    )
+  }
+}
+
+
+prepare_de_comparisons <- function(
+  condition,
+  condition1 = NULL,
+  condition2 = NULL,
+  markers_type = "single"
+) {
+  markers_type <- normalize_de_markers_type(markers_type)
+  cond <- as.character(condition)
+  cond_use <- cond[!is.na(cond)]
+  levels_use <- unique(cond_use)
+
+  if (identical(markers_type, "single")) {
+    pair <- resolve_condition_pair(
+      condition = cond,
+      condition1 = condition1,
+      condition2 = condition2,
+      strict_two_levels = TRUE
+    )
+    return(list(list(
+      condition = cond,
+      condition1 = pair$condition1,
+      condition2 = pair$condition2,
+      label = paste0(pair$condition2, "_vs_", pair$condition1)
+    )))
+  }
+
+  if (length(levels_use) < 2) {
+    log_message(
+      "At least two condition levels are required for DE comparison.",
+      message_type = "error"
+    )
+  }
+
+  if (identical(markers_type, "all")) {
+    return(lapply(levels_use, function(lv) {
+      cond_binary <- ifelse(!is.na(cond) & cond == lv, lv, "others")
+      list(
+        condition = cond_binary,
+        condition1 = "others",
+        condition2 = lv,
+        label = paste0(lv, "_vs_others")
+      )
+    }))
+  }
+
+  pairs <- utils::combn(levels_use, 2, simplify = FALSE)
+  lapply(pairs, function(pr) {
+    list(
+      condition = cond,
+      condition1 = pr[[1]],
+      condition2 = pr[[2]],
+      label = paste0(pr[[2]], "_vs_", pr[[1]])
+    )
+  })
+}
+
+
+normalize_de_markers_type <- function(markers_type) {
+  if (!is.character(markers_type) || length(markers_type) != 1) {
+    log_message(
+      "{.arg de_markers_type} must be a single string.",
+      message_type = "error"
+    )
+  }
+  key <- gsub("[^a-z]", "", tolower(markers_type))
+  map <- c(
+    single = "single",
+    all = "all",
+    onevsrest = "all",
+    onevsall = "all",
+    paired = "paired",
+    pairwise = "paired"
+  )
+  out <- unname(map[[key]])
+  if (is.null(out) || is.na(out)) {
+    log_message(
+      "Unsupported {.arg de_markers_type}. Use one of {.val single}, {.val all}, or {.val paired}.",
+      message_type = "error"
+    )
+  }
+  out
+}
+
+
+coerce_de_schema <- function(df) {
+  if (is.null(df) || nrow(df) == 0) {
+    return(data.frame(
+      gene = character(),
+      group1 = character(),
+      group2 = character(),
+      avg_log2FC = numeric(),
+      p_val = numeric(),
+      p_val_adj = numeric(),
+      method = character(),
+      stringsAsFactors = FALSE
+    ))
+  }
+  if (!"gene" %in% colnames(df)) {
+    df$gene <- rownames(df)
+  }
+  required <- c(
+    "group1",
+    "group2",
+    "avg_log2FC",
+    "p_val",
+    "p_val_adj",
+    "method"
+  )
+  missing <- setdiff(required, colnames(df))
+  if (length(missing) > 0) {
+    for (nm in missing) {
+      if (nm %in% c("avg_log2FC", "p_val", "p_val_adj")) {
+        df[[nm]] <- NA_real_
+      } else {
+        df[[nm]] <- NA_character_
+      }
+    }
+  }
+  keep <- c(
+    "gene",
+    "group1",
+    "group2",
+    "avg_log2FC",
+    "p_val",
+    "p_val_adj",
+    "method"
+  )
+  optional <- intersect(
+    c("pct.1", "pct.2", "ave_expr", "comparison"),
+    colnames(df)
+  )
+  out <- df[, c(keep, optional), drop = FALSE]
+  rownames(out) <- NULL
+  out
+}
+
 #' @export
 FoldChange.default <- function(
   object,
@@ -773,6 +1478,24 @@ RunDEtest_pseudobulk <- function(
           only.pos = only.pos,
           logfc.threshold = log(fc.threshold, base = base),
           p.adjust.method = p.adjust.method
+        ),
+        DESeq2 = RunDEtest_DESeq2(
+          count_matrix = count_matrix,
+          condition = condition_use,
+          condition1 = condition1,
+          condition2 = condition2,
+          only.pos = only.pos,
+          logfc.threshold = log(fc.threshold, base = base),
+          p.adjust.method = p.adjust.method
+        ),
+        dream = RunDEtest_dream(
+          count_matrix = count_matrix,
+          condition = condition_use,
+          condition1 = condition1,
+          condition2 = condition2,
+          only.pos = only.pos,
+          logfc.threshold = log(fc.threshold, base = base),
+          p.adjust.method = p.adjust.method
         )
       )
       if (is.null(markers) || nrow(markers) == 0) {
@@ -834,48 +1557,63 @@ RunDEtest_pseudobulk <- function(
 #' @title Differential gene test
 #'
 #' @description
-#' This function utilizes the Seurat package to perform a differential expression (DE) test on gene expression data.
-#' Users have the flexibility to specify custom cell groups, marker types, and various options for DE analysis.
+#' Perform differential expression testing on a `Seurat` object or a
+#' `SummarizedExperiment` bulk object.
+#' Users have the flexibility to specify custom cell groups, marker types, and
+#' various options for DE analysis.
 #'
 #' @md
 #' @inheritParams thisutils::parallelize_fun
 #' @inheritParams Seurat::FindMarkers
 #' @inheritParams standard_scop
 #' @inheritParams FeatureDimPlot
+#' @param object A `Seurat` object or a `SummarizedExperiment` object.
 #' @param group.by A grouping variable in the dataset to define the groups or conditions for the differential test.
 #' If not provided, the function uses the "active.ident" variable in the Seurat object.
 #' @param group1 A vector of cell IDs or a character vector specifying the cells that belong to the first group.
 #' If both group.by and group1 are provided, group1 takes precedence.
-#' For sample-level methods (`"edgeR"` and `"limma"`), this parameter is interpreted as the first condition label.
+#' For sample-level methods (`"edgeR"`, `"limma"`, `"DESeq2"`, and `"dream"`),
+#' this parameter is interpreted as the first condition label.
 #' @param group2 A vector of cell IDs or a character vector specifying the cells that belong to the second group.
 #' This parameter is only used when group.by or group1 is provided.
-#' For sample-level methods (`"edgeR"` and `"limma"`), this parameter is interpreted as the second condition label.
+#' For sample-level methods (`"edgeR"`, `"limma"`, `"DESeq2"`, and `"dream"`),
+#' this parameter is interpreted as the second condition label.
+#' @param ident.1,ident.2 Seurat-style aliases for `group1` and `group2`.
 #' @param cells1 A vector of cell IDs specifying the cells that belong to group1. If provided, group1 is ignored.
 #' @param cells2 A vector of cell IDs specifying the cells that belong to group2.
 #' This parameter is only used when cells1 is provided.
+#' @param cells.1,cells.2 Seurat-style aliases for `cells1` and `cells2`.
 #' @param features A vector of feature names specifying the features to consider for the differential test.
 #' If not provided, all features in the dataset are considered.
 #' @param feature_type Feature type used for differential testing.
 #' Default is `"gene"`.
 #' @param markers_type A character value specifying the type of markers to find.
 #' Possible values are "all", "paired", "conserved", and "disturbed".
-#' Sample-level methods (`"edgeR"` and `"limma"`) currently support only `"all"`.
+#' Sample-level methods (`"edgeR"`, `"limma"`, `"DESeq2"`, and `"dream"`)
+#' currently support only `"all"`.
 #' @param grouping.var A character value specifying the grouping variable for finding conserved or disturbed markers.
 #' This parameter is only used when markers_type is "conserved" or "disturbed".
 #' @param fc.threshold A numeric value used to filter genes for testing based on their average fold change between/among the two groups.
 #' Default is `1.5`.
+#' @param logfc.threshold Seurat-style log fold-change threshold. When provided,
+#' it is converted to `fc.threshold = base^logfc.threshold`.
 #' @param meta.method A character value specifying the method to use for combining p-values in the conserved markers test.
 #' Possible values are "maximump", "minimump", "wilkinsonp", "meanp", "sump", and "votep".
 #' @param norm.method Normalization method for fold change calculation when layer is 'data'.
 #' Default is `"LogNormalize"`.
 #' @param sample_col Metadata column storing biological sample IDs.
-#' Required when `test.use` is `"edgeR"` or `"limma"`.
+#' Required when `test.use` is a sample-level pseudobulk method on `Seurat`.
 #' @param condition_col Metadata column storing condition labels.
-#' Required when `test.use` is `"edgeR"` or `"limma"`.
+#' Required when `test.use` is a sample-level pseudobulk method on `Seurat`, and
+#' required for `SummarizedExperiment` input.
+#' @param bulk_assay Assay name used as the bulk counts matrix for
+#' `SummarizedExperiment` input.
 #' @param p.adjust.method A character value specifying the method to use for adjusting p-values.
 #' Default is `"bonferroni"`.
 #' @param test.use Differential testing method.
-#' `"edgeR"` and `"limma"` run sample-level pseudobulk differential testing.
+#' `"edgeR"`, `"limma"`, `"DESeq2"`, and `"dream"` run sample-level
+#' pseudobulk differential testing on `Seurat` input and bulk DE on
+#' `SummarizedExperiment` input.
 #' @param ... Additional arguments to pass to the [Seurat::FindMarkers] function.
 #'
 #' @export
@@ -1090,13 +1828,47 @@ RunDEtest_pseudobulk <- function(
 #'   y_metric = "p_val",
 #'   DE_threshold = "abs(avg_log2FC) > log2(1.5) & p_val < 0.05"
 #' )
+#'
+#' data(islet_bulk)
+#' bulk_out <- RunDEtest(
+#'   islet_bulk,
+#'   condition_col = "condition",
+#'   group1 = "control",
+#'   group2 = "bfa",
+#'   test.use = "edgeR",
+#'   only.pos = FALSE,
+#'   fc.threshold = 1
+#' )
+#' DEtestPlot(
+#'   bulk_out,
+#'   test.use = "edgeR",
+#'   plot_type = "volcano",
+#'   x_metric = "avg_log2FC",
+#'   y_metric = "p_val"
+#' )
 RunDEtest <- function(
-  srt,
+  object,
+  ...
+) {
+  if (methods::is(object, "SummarizedExperiment")) {
+    return(RunDEtest.SummarizedExperiment(object, ...))
+  }
+  UseMethod(generic = "RunDEtest", object = object)
+}
+
+#' @rdname RunDEtest
+#' @export
+RunDEtest.Seurat <- function(
+  object,
   group.by = NULL,
   group1 = NULL,
   group2 = NULL,
+  ident.1 = NULL,
+  ident.2 = NULL,
   cells1 = NULL,
   cells2 = NULL,
+  cells.1 = NULL,
+  cells.2 = NULL,
   features = NULL,
   feature_type = c("gene", "peak", "cCRE"),
   markers_type = c(
@@ -1117,6 +1889,7 @@ RunDEtest <- function(
   test.use = "wilcox",
   only.pos = TRUE,
   fc.threshold = 1.5,
+  logfc.threshold = NULL,
   base = 2,
   pseudocount.use = 1,
   mean.fxn = NULL,
@@ -1129,6 +1902,7 @@ RunDEtest <- function(
   norm.method = "LogNormalize",
   sample_col = NULL,
   condition_col = NULL,
+  bulk_assay = "counts",
   p.adjust.method = "bonferroni",
   layer = "data",
   assay = NULL,
@@ -1137,6 +1911,7 @@ RunDEtest <- function(
   cores = 1,
   ...
 ) {
+  srt <- object
   set.seed(seed)
   feature_type <- match.arg(feature_type)
   markers_type <- match.arg(markers_type)
@@ -1144,8 +1919,58 @@ RunDEtest <- function(
   if (is.null(assay)) {
     assay <- SeuratObject::DefaultAssay(srt)
   }
+  if (!is.null(ident.1)) {
+    if (!is.null(group1) && !identical(as.character(group1), as.character(ident.1))) {
+      log_message(
+        "Both {.arg group1} and Seurat-style {.arg ident.1} were provided; using {.arg ident.1}.",
+        message_type = "warning",
+        verbose = verbose
+      )
+    }
+    group1 <- ident.1
+  }
+  if (!is.null(ident.2)) {
+    if (!is.null(group2) && !identical(as.character(group2), as.character(ident.2))) {
+      log_message(
+        "Both {.arg group2} and Seurat-style {.arg ident.2} were provided; using {.arg ident.2}.",
+        message_type = "warning",
+        verbose = verbose
+      )
+    }
+    group2 <- ident.2
+  }
+  if (!is.null(cells.1)) {
+    if (!is.null(cells1) && !identical(as.character(cells1), as.character(cells.1))) {
+      log_message(
+        "Both {.arg cells1} and Seurat-style {.arg cells.1} were provided; using {.arg cells.1}.",
+        message_type = "warning",
+        verbose = verbose
+      )
+    }
+    cells1 <- cells.1
+  }
+  if (!is.null(cells.2)) {
+    if (!is.null(cells2) && !identical(as.character(cells2), as.character(cells.2))) {
+      log_message(
+        "Both {.arg cells2} and Seurat-style {.arg cells.2} were provided; using {.arg cells.2}.",
+        message_type = "warning",
+        verbose = verbose
+      )
+    }
+    cells2 <- cells.2
+  }
+  if (!is.null(logfc.threshold)) {
+    if (!missing(fc.threshold)) {
+      log_message(
+        "Both {.arg fc.threshold} and Seurat-style {.arg logfc.threshold} were provided; using {.arg logfc.threshold}.",
+        message_type = "warning",
+        verbose = verbose
+      )
+    }
+    fc.threshold <- base^logfc.threshold
+  }
 
-  sample_level_methods <- c("edgeR", "limma")
+  sample_level_methods <- c("edgeR", "limma", "DESeq2", "dream")
   is_sample_level <- test.use %in% sample_level_methods
   if (is_sample_level) {
     if (markers_type != "all") {
@@ -1952,4 +2777,571 @@ RunDEtest <- function(
   )
 
   return(srt)
+}
+
+#' @rdname RunDEtest
+#' @export
+RunDEtest.SummarizedExperiment <- function(
+  object,
+  group.by = NULL,
+  group1 = NULL,
+  group2 = NULL,
+  cells1 = NULL,
+  cells2 = NULL,
+  features = NULL,
+  feature_type = c("gene", "peak", "cCRE"),
+  markers_type = c(
+    "all",
+    "paired",
+    "conserved",
+    "disturbed"
+  ),
+  grouping.var = NULL,
+  meta.method = c(
+    "maximump",
+    "minimump",
+    "wilkinsonp",
+    "meanp",
+    "sump",
+    "votep"
+  ),
+  test.use = "edgeR",
+  only.pos = TRUE,
+  fc.threshold = 1.5,
+  base = 2,
+  pseudocount.use = 1,
+  mean.fxn = NULL,
+  min.pct = 0.1,
+  min.diff.pct = -Inf,
+  max.cells.per.ident = Inf,
+  latent.vars = NULL,
+  min.cells.feature = 3,
+  min.cells.group = 3,
+  norm.method = "LogNormalize",
+  sample_col = NULL,
+  condition_col = NULL,
+  bulk_assay = "counts",
+  p.adjust.method = "bonferroni",
+  layer = "counts",
+  assay = NULL,
+  seed = 11,
+  verbose = TRUE,
+  cores = 1,
+  ...
+) {
+  set.seed(seed)
+  feature_type <- match.arg(feature_type)
+  markers_type <- match.arg(markers_type)
+  meta.method <- match.arg(meta.method)
+  bulk_se <- object
+
+  if (!identical(feature_type, "gene")) {
+    log_message(
+      "{.arg feature_type} currently supports only {.val gene} for {.cls SummarizedExperiment} input.",
+      message_type = "error"
+    )
+  }
+  if (markers_type %in% c("conserved", "disturbed")) {
+    log_message(
+      "{.arg markers_type} values {.val conserved} and {.val disturbed} are not supported for {.cls SummarizedExperiment} input.",
+      message_type = "error"
+    )
+  }
+  if (!is.null(cells1) || !is.null(cells2)) {
+    log_message(
+      "{.arg cells1} and {.arg cells2} are not supported for {.cls SummarizedExperiment} input.",
+      message_type = "error"
+    )
+  }
+  if (!is.null(sample_col)) {
+    log_message(
+      "{.arg sample_col} is ignored for {.cls SummarizedExperiment} input because bulk sample IDs are taken from column names.",
+      message_type = "warning",
+      verbose = verbose
+    )
+  }
+  if (!identical(layer, "counts")) {
+    log_message(
+      "{.arg layer} is ignored for {.cls SummarizedExperiment} input. Use {.arg bulk_assay} instead.",
+      message_type = "warning",
+      verbose = verbose
+    )
+  }
+  if (!is.null(assay)) {
+    log_message(
+      "{.arg assay} is ignored for {.cls SummarizedExperiment} input. Use {.arg bulk_assay} instead.",
+      message_type = "warning",
+      verbose = verbose
+    )
+  }
+  if (!is.null(grouping.var)) {
+    log_message(
+      "{.arg grouping.var} is not supported for {.cls SummarizedExperiment} input.",
+      message_type = "warning",
+      verbose = verbose
+    )
+  }
+  if (
+    !is.null(latent.vars) ||
+      !isTRUE(identical(norm.method, "LogNormalize")) ||
+      !isTRUE(identical(pseudocount.use, 1)) ||
+      !isTRUE(identical(min.pct, 0.1)) ||
+      !isTRUE(identical(min.diff.pct, -Inf)) ||
+      !isTRUE(identical(max.cells.per.ident, Inf)) ||
+      !isTRUE(identical(min.cells.group, 3)) ||
+      !isTRUE(identical(meta.method, "maximump")) ||
+      !is.null(mean.fxn)
+  ) {
+    log_message(
+      "Several cell-level specific DE arguments are ignored for {.cls SummarizedExperiment} input.",
+      message_type = "warning",
+      verbose = verbose
+    )
+  }
+  if (is.null(condition_col) || !nzchar(condition_col)) {
+    log_message(
+      "{.arg condition_col} is required for {.cls SummarizedExperiment} input.",
+      message_type = "error"
+    )
+  }
+  if (!test.use %in% detest_sample_methods()) {
+    log_message(
+      paste0(
+        "{.arg test.use} must be one of ",
+        paste(detest_sample_methods(), collapse = ", "),
+        " for {.cls SummarizedExperiment} input."
+      ),
+      message_type = "error"
+    )
+  }
+  if (fc.threshold < 1) {
+    log_message(
+      "{.arg fc.threshold} must be greater than or equal to 1",
+      message_type = "error"
+    )
+  }
+
+  ctx <- build_context(
+    mode = "pure_bulk",
+    bulk_se = bulk_se,
+    condition.by = condition_col,
+    group.by = group.by,
+    bulk_assay = bulk_assay
+  )
+  if (!is.null(features)) {
+    features <- intersect(as.character(features), rownames(ctx$counts_global))
+    if (length(features) == 0) {
+      log_message(
+        "No requested {.arg features} were found in the bulk assay.",
+        message_type = "error"
+      )
+    }
+    ctx$counts_global <- ctx$counts_global[features, , drop = FALSE]
+    ctx$counts_by_group <- lapply(
+      ctx$counts_by_group,
+      function(x) x[features, , drop = FALSE]
+    )
+  }
+
+  de_markers_type <- if (identical(markers_type, "paired")) {
+    "paired"
+  } else {
+    unique_condition <- unique(as.character(ctx$condition_global))
+    if (
+      !is.null(group1) || !is.null(group2) ||
+        length(unique_condition) <= 2
+    ) {
+      "single"
+    } else {
+      "all"
+    }
+  }
+  method_name <- detest_method_key(test.use)
+  bundle <- dispatch_de(
+    ctx = ctx,
+    method_name = method_name,
+    condition1 = group1,
+    condition2 = group2,
+    de_markers_type = de_markers_type,
+    de_args = utils::modifyList(
+      list(
+        only.pos = only.pos,
+        logfc.threshold = log(fc.threshold, base = base),
+        p.adjust.method = p.adjust.method
+      ),
+      list(...)
+    ),
+    verbose = verbose
+  )
+  bundle$results <- coerce_de_schema(bundle$results)
+  store <- list(
+    input = list(
+      condition_col = condition_col,
+      group.by = group.by,
+      bulk_assay = bulk_assay,
+      features = features
+    ),
+    active_method = method_name,
+    test.use = test.use,
+    methods = stats::setNames(list(bundle), method_name),
+    results = bundle$results,
+    parameters = utils::modifyList(
+      bundle$parameters %||% list(),
+      list(
+        test.use = test.use,
+        condition1 = group1,
+        condition2 = group2,
+        markers_type = de_markers_type
+      )
+    ),
+    status = list(
+      method = method_name,
+      status = bundle$status %||% "failed",
+      reason = bundle$reason %||% NULL
+    )
+  )
+  store_meta(bulk_se, "DEtest", store)
+}
+
+RunDEtest_DESeq2 <- function(
+    count_matrix,
+    condition,
+    condition1 = NULL,
+    condition2 = NULL,
+    only.pos = TRUE,
+    logfc.threshold = 0,
+    p.adjust.method = "bonferroni") {
+  check_r("DESeq2", verbose = FALSE)
+  DESeqDataSetFromMatrix <- get_namespace_fun("DESeq2", "DESeqDataSetFromMatrix")
+  DESeq <- get_namespace_fun("DESeq2", "DESeq")
+  DESeq_results <- get_namespace_fun("DESeq2", "results")
+
+  condition_all <- as.character(condition)
+  if (is.null(condition1) || is.null(condition2)) {
+    condition_levels <- unique(condition_all)
+    if (length(condition_levels) < 2) {
+      return(NULL)
+    }
+    condition1 <- condition1 %||% condition_levels[[1]]
+    condition2 <- condition2 %||% condition_levels[[2]]
+  }
+
+  keep <- condition_all %in% c(condition1, condition2)
+  count_use <- as.matrix(count_matrix[, keep, drop = FALSE])
+  cond_use <- factor(condition_all[keep], levels = c(condition1, condition2))
+  if (ncol(count_use) < 2 || any(table(cond_use) < 2)) {
+    return(NULL)
+  }
+
+  out <- tryCatch(
+    {
+      col_data <- data.frame(
+        condition = cond_use,
+        row.names = colnames(count_use),
+        stringsAsFactors = FALSE
+      )
+      dds <- DESeqDataSetFromMatrix(
+        countData = round(count_use),
+        colData = col_data,
+        design = ~condition
+      )
+      dds <- DESeq(dds, quiet = TRUE)
+      res <- DESeq_results(
+        dds,
+        contrast = c("condition", condition2, condition1)
+      )
+      res_df <- as.data.frame(res)
+      if (nrow(res_df) == 0) {
+        return(data.frame())
+      }
+      detect <- count_use[rownames(res_df), , drop = FALSE] > 0
+      pct.1 <- round(
+        rowMeans(detect[, cond_use == condition1, drop = FALSE]),
+        3
+      )
+      pct.2 <- round(
+        rowMeans(detect[, cond_use == condition2, drop = FALSE]),
+        3
+      )
+      out_df <- data.frame(
+        p_val = res_df$pvalue,
+        avg_log2FC = res_df$log2FoldChange,
+        ave_expr = log10(res_df$baseMean + 1),
+        pct.1 = pct.1,
+        pct.2 = pct.2,
+        p_val_adj = res_df$padj,
+        row.names = rownames(res_df)
+      )
+      out_df <- out_df[!is.na(out_df$p_val), , drop = FALSE]
+      out_df$p_val_adj <- stats::p.adjust(out_df$p_val, method = p.adjust.method)
+      if (isTRUE(only.pos)) {
+        out_df <- out_df[out_df$avg_log2FC >= logfc.threshold, , drop = FALSE]
+      } else {
+        out_df <- out_df[abs(out_df$avg_log2FC) >= logfc.threshold, , drop = FALSE]
+      }
+      out_df
+    },
+    error = function(e) NULL
+  )
+  out
+}
+
+RunDEtest_dream <- function(
+    count_matrix,
+    condition,
+    condition1 = NULL,
+    condition2 = NULL,
+    sample_data = NULL,
+    dream_formula = NULL,
+    only.pos = TRUE,
+    logfc.threshold = 0,
+    p.adjust.method = "bonferroni") {
+  check_r(c("variancePartition", "limma", "edgeR"), verbose = FALSE)
+  DGEList <- get_namespace_fun("edgeR", "DGEList")
+  filterByExpr <- get_namespace_fun("edgeR", "filterByExpr")
+  calcNormFactors <- get_namespace_fun("edgeR", "calcNormFactors")
+  voomWithDreamWeights <- get_namespace_fun(
+    "variancePartition", "voomWithDreamWeights"
+  )
+  dream <- get_namespace_fun("variancePartition", "dream")
+  eBayes <- get_namespace_fun("limma", "eBayes")
+  topTable <- get_namespace_fun("limma", "topTable")
+
+  condition_all <- as.character(condition)
+  if (is.null(condition1) || is.null(condition2)) {
+    condition_levels <- unique(condition_all)
+    if (length(condition_levels) < 2) {
+      return(NULL)
+    }
+    condition1 <- condition1 %||% condition_levels[[1]]
+    condition2 <- condition2 %||% condition_levels[[2]]
+  }
+
+  keep <- condition_all %in% c(condition1, condition2)
+  count_use <- as.matrix(count_matrix[, keep, drop = FALSE])
+  cond_use <- factor(condition_all[keep], levels = c(condition1, condition2))
+  if (ncol(count_use) < 2 || any(table(cond_use) < 2)) {
+    return(NULL)
+  }
+
+  sample_df <- if (is.null(sample_data)) {
+    data.frame(row.names = colnames(count_use))
+  } else {
+    if (!all(colnames(count_use) %in% rownames(sample_data))) {
+      return(NULL)
+    }
+    sample_data[colnames(count_use), , drop = FALSE]
+  }
+  sample_df$condition <- cond_use
+  sample_df$sample <- rownames(sample_df)
+
+  if (is.null(dream_formula)) {
+    dream_formula <- stats::as.formula("~ condition")
+  } else if (is.character(dream_formula) && length(dream_formula) == 1) {
+    dream_formula <- stats::as.formula(dream_formula)
+  }
+  if (!inherits(dream_formula, "formula") ||
+        !"condition" %in% all.vars(dream_formula)) {
+    return(NULL)
+  }
+
+  out <- tryCatch(
+    {
+      dge <- DGEList(counts = count_use)
+      keep_features <- filterByExpr(dge, group = sample_df$condition)
+      if (!any(keep_features)) {
+        return(data.frame())
+      }
+      dge <- dge[keep_features, , keep.lib.sizes = FALSE]
+      dge <- calcNormFactors(dge)
+      vobj <- voomWithDreamWeights(
+        dge, formula = dream_formula, data = sample_df
+      )
+      fit <- dream(exprObj = vobj, formula = dream_formula, data = sample_df)
+      fit <- eBayes(fit)
+      coef_names <- colnames(fit$coefficients)
+      coef_use <- grep(
+        pattern = paste0("^condition", make.names(condition2), "$"),
+        x = coef_names,
+        value = TRUE
+      )
+      if (length(coef_use) == 0) {
+        coef_use <- grep("^condition", coef_names, value = TRUE)
+      }
+      if (length(coef_use) == 0) {
+        stop("Cannot find condition coefficient in dream model.")
+      }
+      tt <- topTable(
+        fit = fit, coef = coef_use[[1]],
+        number = Inf, sort.by = "none"
+      )
+      if (nrow(tt) == 0) {
+        return(data.frame())
+      }
+      detect <- dge$counts[rownames(tt), , drop = FALSE] > 0
+      pct.1 <- round(
+        rowMeans(detect[, sample_df$condition == condition1, drop = FALSE]),
+        3
+      )
+      pct.2 <- round(
+        rowMeans(detect[, sample_df$condition == condition2, drop = FALSE]),
+        3
+      )
+      out_df <- data.frame(
+        p_val = tt$P.Value,
+        avg_log2FC = tt$logFC,
+        ave_expr = tt$AveExpr,
+        pct.1 = pct.1,
+        pct.2 = pct.2,
+        row.names = rownames(tt)
+      )
+      out_df$p_val_adj <- stats::p.adjust(out_df$p_val, method = p.adjust.method)
+      if (isTRUE(only.pos)) {
+        out_df <- out_df[out_df$avg_log2FC >= logfc.threshold, , drop = FALSE]
+      } else {
+        out_df <- out_df[abs(out_df$avg_log2FC) >= logfc.threshold, , drop = FALSE]
+      }
+      out_df
+    },
+    error = function(e) NULL
+  )
+  out
+}
+
+detest_sample_methods <- function() {
+  c("edgeR", "limma", "DESeq2", "dream")
+}
+
+detest_method_key <- function(test.use) {
+  key <- tolower(as.character(test.use) %||% "")
+  method_map <- c(
+    limma = "de_limma_voom",
+    edger = "de_edgeR_qlf",
+    deseq2 = "de_DESeq2",
+    dream = "de_dream"
+  )
+  out <- unname(method_map[[key]])
+  if (is.null(out) || is.na(out)) {
+    log_message(
+      paste0(
+        "Unsupported bulk DE {.arg test.use}: ",
+        test.use,
+        ". Use one of limma, edgeR, DESeq2, or dream."
+      ),
+      message_type = "error"
+    )
+  }
+  out
+}
+
+detest_key_method <- function(method_name) {
+  key <- as.character(method_name) %||% ""
+  method_map <- c(
+    de_limma_voom = "limma",
+    de_edgeR_qlf = "edgeR",
+    de_DESeq2 = "DESeq2",
+    de_dream = "dream"
+  )
+  unname(method_map[[key]]) %||% key
+}
+
+store_meta <- function(object, name, value) {
+  meta <- S4Vectors::metadata(object)
+  meta[[name]] <- value
+  S4Vectors::metadata(object) <- meta
+  object
+}
+
+detest_res <- function(res) {
+  if (is.null(res)) {
+    return(coerce_de_schema(data.frame()))
+  }
+  out <- as.data.frame(res, stringsAsFactors = FALSE)
+  if (!"gene" %in% colnames(out) && nrow(out) > 0 && !is.null(rownames(out))) {
+    out$gene <- rownames(out)
+  }
+  coerce_de_schema(out)
+}
+
+resolve_detest_result <- function(
+  object = NULL,
+  group.by = NULL,
+  test.use = "wilcox",
+  res = NULL
+) {
+  if (!is.null(res)) {
+    return(detest_res(res))
+  }
+
+  if (inherits(object, "Seurat")) {
+    group.by <- group.by %||% "custom"
+    layer <- paste0("DEtest_", group.by)
+    if (
+      !layer %in% names(object@tools) ||
+        length(grep(pattern = "AllMarkers", names(object@tools[[layer]]))) == 0
+    ) {
+      log_message(
+        "Cannot find the DEtest result for the group {.val {group.by}}. Perform {.fn RunDEtest} first",
+        message_type = "error"
+      )
+    }
+    index <- grep(
+      pattern = paste0("AllMarkers_", test.use),
+      names(object@tools[[layer]])
+    )[1]
+    if (is.na(index)) {
+      log_message(
+        "Cannot find the {.val AllMarkers_{test.use}} in the DEtest result",
+        message_type = "error"
+      )
+    }
+    return(detest_res(object@tools[[layer]][[index]]))
+  }
+
+  if (inherits(object, "SummarizedExperiment")) {
+    bundle <- S4Vectors::metadata(object)[["DEtest"]]
+    if (is.null(bundle)) {
+      log_message(
+        "Cannot find bulk DEtest results in {.fn S4Vectors::metadata(object)[['DEtest']]}",
+        message_type = "error"
+      )
+    }
+    if (!is.null(bundle$results) && nrow(bundle$results) > 0) {
+      return(detest_res(bundle$results))
+    }
+    if (!is.null(bundle$methods) && length(bundle$methods) > 0) {
+      methods <- bundle$methods
+      method_use <- detest_method_key(test.use)
+      if (!method_use %in% names(methods)) {
+        method_use <- names(methods)[1]
+      }
+      return(detest_res(methods[[method_use]][["results"]]))
+    }
+    return(detest_res(data.frame()))
+  }
+
+  log_message(
+    "{.arg object} must be a {.cls Seurat} or {.cls SummarizedExperiment} object when {.arg res} is NULL.",
+    message_type = "error"
+  )
+}
+
+resolve_deconvolution_result <- function(object = NULL, res = NULL) {
+  if (!is.null(res)) {
+    return(deconv_schema(as.data.frame(res, stringsAsFactors = FALSE)))
+  }
+  if (!inherits(object, "SummarizedExperiment")) {
+    log_message(
+      "{.arg object} must be a {.cls SummarizedExperiment} object when {.arg res} is NULL.",
+      message_type = "error"
+    )
+  }
+  bundle <- S4Vectors::metadata(object)[["Deconvolution"]]
+  if (is.null(bundle)) {
+    log_message(
+      "Cannot find deconvolution results in {.fn S4Vectors::metadata(object)[['Deconvolution']]}",
+      message_type = "error"
+    )
+  }
+  deconv_schema(bundle$results %||% data.frame())
 }
