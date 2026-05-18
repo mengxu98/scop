@@ -2,7 +2,8 @@
 #'
 #' @md
 #' @inheritParams CellDimPlot
-#' @param srt An object of class `Seurat` containing the results of differential expression analysis.
+#' @param srt A `Seurat` object or `SummarizedExperiment` object containing the
+#' results of differential expression analysis.
 #' @param res A `data.frame` or `data.table` with differential expression results.
 #' When `res` is provided, `srt` will be ignored.
 #' The data.frame must contain columns: `gene`, `group1` (factor or character),
@@ -428,118 +429,56 @@ get_de_data <- function(
   res = NULL,
   group_use = NULL
 ) {
-  if (is.null(res) && !is.null(srt) && (is.null(group.by) || identical(group.by, "Bulk"))) {
-    bulk_res <- get_bulk_de_plot_data(srt)
-    if (!is.null(bulk_res)) {
-      return(get_de_data(
-        srt = NULL,
-        group.by = group.by,
-        test.use = test.use,
-        DE_threshold = DE_threshold,
-        res = bulk_res,
-        group_use = group_use
-      ))
-    }
-  }
-
-  if (!is.null(res)) {
-    de_df <- as.data.frame(res)
-    if (!"gene" %in% colnames(de_df)) {
-      if (nrow(de_df) > 0 && !is.null(rownames(de_df))) {
-        de_df[, "gene"] <- rownames(de_df)
-      } else {
-        log_message(
-          "Missing required column: {.val gene}. Please provide gene names in a 'gene' column or as row names.",
-          message_type = "error"
-        )
-      }
-    }
-    required_cols <- c("avg_log2FC", "p_val_adj")
-    missing_cols <- setdiff(required_cols, colnames(de_df))
-    if (length(missing_cols) > 0) {
-      log_message(
-        "Missing required columns in data.frame: {.val {missing_cols}}",
-        message_type = "error"
-      )
-    }
-    if (!"group1" %in% colnames(de_df)) {
-      if ("cluster" %in% colnames(de_df)) {
-        de_df[, "group1"] <- de_df[, "cluster"]
-      } else {
-        de_df[, "group1"] <- "All"
-      }
-    }
-    # For custom DE tables, keep subgroup/comparison labels distinct when present.
-    if ("comparison" %in% colnames(de_df)) {
-      comparison <- as.character(de_df[["comparison"]])
-      has_comparison <- !is.na(comparison) & nzchar(comparison)
-      if (any(has_comparison)) {
-        de_df[has_comparison, "group1"] <- comparison[has_comparison]
-      }
-    } else if ("group2" %in% colnames(de_df)) {
-      g1_levels <- unique(as.character(de_df[["group1"]]))
-      g1_levels <- g1_levels[!is.na(g1_levels) & nzchar(g1_levels)]
-      g2_levels <- unique(as.character(de_df[["group2"]]))
-      g2_levels <- g2_levels[!is.na(g2_levels) & nzchar(g2_levels)]
-      if (length(g1_levels) <= 1 && length(g2_levels) >= 1) {
-        de_df[, "group1"] <- as.character(de_df[["group2"]])
-      } else if (length(g2_levels) > 1) {
-        g1 <- as.character(de_df[["group1"]])
-        g2 <- as.character(de_df[["group2"]])
-        has_g2 <- !is.na(g2) & nzchar(g2)
-        has_g1 <- !is.na(g1) & nzchar(g1)
-        de_df[has_g2, "group1"] <- ifelse(
-          has_g1[has_g2],
-          paste0(g1[has_g2], "::", g2[has_g2]),
-          g2[has_g2]
-        )
-      }
-    }
-    if (!is.factor(de_df[["group1"]])) {
-      de_df[["group1"]] <- factor(
-        de_df[["group1"]],
-        levels = unique(de_df[["group1"]])
-      )
-    }
-    de_df <- filter_de_data_group_use(de_df, group_use = group_use)
-    if ("pct.1" %in% colnames(de_df) && "pct.2" %in% colnames(de_df)) {
-      de_df[, "diff_pct"] <- de_df[, "pct.1"] - de_df[, "pct.2"]
+  de_df <- resolve_detest_result(
+    object = srt,
+    group.by = group.by,
+    test.use = test.use,
+    res = res
+  )
+  if (!"group1" %in% colnames(de_df)) {
+    if ("cluster" %in% colnames(de_df)) {
+      de_df[, "group1"] <- de_df[, "cluster"]
     } else {
-      de_df[, "diff_pct"] <- 0
+      de_df[, "group1"] <- "All"
     }
-    de_df[, "-log10padj"] <- -log10(de_df[, "p_val_adj"])
-    de_df[, "DE"] <- FALSE
-    de_df[with(de_df, eval(rlang::parse_expr(DE_threshold))), "DE"] <- TRUE
-    return(list(de_df = de_df))
   }
-
-  if (is.null(group.by)) {
-    group.by <- "custom"
+  if ("comparison" %in% colnames(de_df)) {
+    comparison <- as.character(de_df[["comparison"]])
+    has_comparison <- !is.na(comparison) & nzchar(comparison)
+    if (any(has_comparison)) {
+      de_df[has_comparison, "group1"] <- comparison[has_comparison]
+    }
+  } else if ("group2" %in% colnames(de_df)) {
+    g1_levels <- unique(as.character(de_df[["group1"]]))
+    g1_levels <- g1_levels[!is.na(g1_levels) & nzchar(g1_levels)]
+    g2_levels <- unique(as.character(de_df[["group2"]]))
+    g2_levels <- g2_levels[!is.na(g2_levels) & nzchar(g2_levels)]
+    if (length(g1_levels) <= 1 && length(g2_levels) >= 1) {
+      de_df[, "group1"] <- as.character(de_df[["group2"]])
+    } else if (length(g2_levels) > 1) {
+      g1 <- as.character(de_df[["group1"]])
+      g2 <- as.character(de_df[["group2"]])
+      has_g2 <- !is.na(g2) & nzchar(g2)
+      has_g1 <- !is.na(g1) & nzchar(g1)
+      de_df[has_g2, "group1"] <- ifelse(
+        has_g1[has_g2],
+        paste0(g1[has_g2], "::", g2[has_g2]),
+        g2[has_g2]
+      )
+    }
   }
-  layer <- paste0("DEtest_", group.by)
-  if (
-    !layer %in% names(srt@tools) ||
-      length(grep(pattern = "AllMarkers", names(srt@tools[[layer]]))) == 0
-  ) {
-    log_message(
-      "Cannot find the DEtest result for the group {.val {group.by}}. Perform {.fn RunDEtest} first",
-      message_type = "error"
+  if (!is.factor(de_df[["group1"]])) {
+    de_df[["group1"]] <- factor(
+      de_df[["group1"]],
+      levels = unique(de_df[["group1"]])
     )
   }
-  index <- grep(
-    pattern = paste0("AllMarkers_", test.use),
-    names(srt@tools[[layer]])
-  )[1]
-  if (is.na(index)) {
-    log_message(
-      "Cannot find the {.val AllMarkers_{test.use}} in the DEtest result",
-      message_type = "error"
-    )
-  }
-  de <- names(srt@tools[[layer]])[index]
-  de_df <- srt@tools[[layer]][[de]]
   de_df <- filter_de_data_group_use(de_df, group_use = group_use)
-  de_df[, "diff_pct"] <- de_df[, "pct.1"] - de_df[, "pct.2"]
+  if ("pct.1" %in% colnames(de_df) && "pct.2" %in% colnames(de_df)) {
+    de_df[, "diff_pct"] <- de_df[, "pct.1"] - de_df[, "pct.2"]
+  } else {
+    de_df[, "diff_pct"] <- 0
+  }
   de_df[, "-log10padj"] <- -log10(de_df[, "p_val_adj"])
   de_df[, "DE"] <- FALSE
   de_df[with(de_df, eval(rlang::parse_expr(DE_threshold))), "DE"] <- TRUE
@@ -577,7 +516,7 @@ filter_de_data_group_use <- function(de_df, group_use = NULL) {
 }
 
 get_bulk_de_plot_data <- function(srt) {
-  .bulk_get_de_results(srt)
+  resolve_detest_result(object = srt)
 }
 
 clip_log2fc_symmetric <- function(df, fc_col = "avg_log2FC") {
