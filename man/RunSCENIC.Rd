@@ -2,7 +2,7 @@
 % Please edit documentation in R/RunSCENIC.R
 \name{RunSCENIC}
 \alias{RunSCENIC}
-\title{Run pySCENIC gene regulatory network analysis}
+\title{Run SCENIC gene regulatory network analysis}
 \usage{
 RunSCENIC(
   srt,
@@ -12,7 +12,7 @@ RunSCENIC(
   motif_annotations,
   tf_list,
   work_dir,
-  prefix = "pyscenic",
+  prefix = "scenic",
   metacell = TRUE,
   metacell.by = NULL,
   metacell_resolution = NULL,
@@ -26,8 +26,8 @@ RunSCENIC(
   aucell_batch_size = 500,
   seed = 1234,
   force = FALSE,
-  assay_name = "pyscenic",
-  tool_name = "Pyscenic",
+  assay_name = "scenic",
+  tool_name = "SCENIC",
   return_seurat = TRUE,
   envname = NULL,
   conda = "auto",
@@ -48,13 +48,13 @@ additional \code{ChromatinAssay} will be preprocessed sequentially.}
 
 \item{ranking_dbs}{Character vector of cisTarget ranking feather files.}
 
-\item{motif_annotations}{Motif annotation table used by \verb{pyscenic ctx}.}
+\item{motif_annotations}{Motif annotation table used by \verb{scenic ctx}.}
 
 \item{tf_list}{Transcription-factor list used by GRNBoost2.}
 
-\item{work_dir}{Directory used for pySCENIC input and output files.}
+\item{work_dir}{Directory used for SCENIC input and output files.}
 
-\item{prefix}{Prefix for pySCENIC output files.}
+\item{prefix}{Prefix for SCENIC output files.}
 
 \item{metacell}{Whether to build a metacell count matrix for GRNBoost2.}
 
@@ -84,9 +84,9 @@ count sums per metacell.}
 \item{min_expr_cells}{Minimum number of cells or metacells where a gene must
 be detected before GRNBoost2.}
 
-\item{min_regulon_size}{Minimum regulon size kept after \verb{pyscenic ctx}.}
+\item{min_regulon_size}{Minimum regulon size kept after \verb{scenic ctx}.}
 
-\item{cores}{Number of workers used by GRNBoost2, \verb{pyscenic ctx}, and
+\item{cores}{Number of workers used by GRNBoost2, \verb{scenic ctx}, and
 AUCell batch scoring. If multicore execution is not supported, this is
 automatically reduced to one core.}
 
@@ -94,7 +94,7 @@ automatically reduced to one core.}
 
 \item{seed}{Random seed used by GRNBoost2 and Seurat overclustering.}
 
-\item{force}{Whether to rebuild existing pySCENIC outputs.}
+\item{force}{Whether to rebuild existing SCENIC outputs.}
 
 \item{assay_name}{Name of the assay used to store regulon activity scores.}
 
@@ -103,12 +103,12 @@ automatically reduced to one core.}
 \item{return_seurat}{Whether to return the modified Seurat object. If
 \code{FALSE}, a result list is returned.}
 
-\item{envname}{Python environment used for pySCENIC. If \code{NULL}, the isolated
-\code{"pyscenic_env"} environment is used.}
+\item{envname}{Python environment used for SCENIC. If \code{NULL}, the isolated
+\code{"scenic_env"} environment is used.}
 
 \item{conda}{The path or command name of a conda-compatible executable.}
 
-\item{prepare_env}{Whether to prepare and configure the pySCENIC Python
+\item{prepare_env}{Whether to prepare and configure the SCENIC Python
 environment before running.}
 
 \item{progress}{Whether to show a stage-level progress bar.}
@@ -117,11 +117,11 @@ environment before running.}
 Default is \code{TRUE}.}
 }
 \value{
-A Seurat object with pySCENIC results, or a result list when
+A Seurat object with SCENIC results, or a result list when
 \code{return_seurat = FALSE}.
 }
 \description{
-Run pySCENIC from a Seurat object. The GRN and cisTarget steps use a
+Run SCENIC from a Seurat object. The GRN and cisTarget steps use a
 metacell count matrix by default, while AUCell scores are calculated on the
 original single-cell count matrix.
 }
@@ -135,7 +135,7 @@ srt <- RunSCENIC(
   ),
   motif_annotations = "/path/to/motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl",
   tf_list = "/path/to/hsa_hgnc_tfs.motifs-v10.txt",
-  work_dir = "./pyscenic",
+  work_dir = "./scenic",
   cores = 8
 )
 }
