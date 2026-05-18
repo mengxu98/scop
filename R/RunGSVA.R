@@ -12,8 +12,13 @@
 #' @param assay_name Name of the assay to store GSVA scores when `group.by = NULL` and `new_assay = TRUE`.
 #' Default is `"GSVA"`.
 #' @param new_assay Whether to create a new assay for GSVA scores when `group.by = NULL`. Default is `TRUE`.
+#' @param store_metadata Whether to also store single-cell GSVA scores in `meta.data`.
+#' When `NULL`, custom `features` or `TERM2GENE` input is stored in `meta.data`
+#' by default, while database-derived results stay assay-only when `new_assay = TRUE`.
 #' @param method The method to use for GSVA.
 #' Options are `"gsva"`, `"ssgsea"`, `"zscore"`, or `"plage"`.
+#' Multiple methods can be supplied at once; in single-cell mode they will be
+#' stored in method-suffixed assays such as `"GSVA_gsva"` and `"GSVA_ssgsea"`.
 #' Default is `"gsva"`.
 #' @param backend Scoring backend. `"cpp"` is the default and supports all
 #' current `method` values. `"r"` uses the original [GSVA::gsva()]
@@ -41,7 +46,8 @@
 #'
 #' @return
 #' Returns the modified `Seurat` object. When `group.by` is provided, GSVA scores are stored in the `tools` slot.
-#' When `group.by = NULL`, scores are stored in a new assay (if `new_assay = TRUE`) and in the `tools` slot.
+#' When `group.by = NULL`, scores are stored in the `tools` slot, optionally in a new assay,
+#' and optionally in `meta.data` for direct use with [FeatureDimPlot()] and [FeatureStatPlot()].
 #'
 #' @export
 #'
@@ -62,6 +68,30 @@
 #'   width = 1,
 #'   height = 2
 #' )
+#'
+#' features_all <- rownames(pancreas_sub)
+#' pancreas_sub <- RunGSVA(
+#'   pancreas_sub,
+#'   features = list(
+#'     A = features_all[1:20],
+#'     B = features_all[21:40]
+#'   ),
+#'   method = c("gsva", "ssgsea")
+#' )
+#' FeatureDimPlot(
+#'   pancreas_sub,
+#'   features = "GSVA_gsva_A",
+#'   add_density = TRUE
+#' )
+#' FeatureStatPlot(
+#'   pancreas_sub,
+#'   stat.by = c("GSVA_gsva_A", "GSVA_ssgsea_A"),
+#'   group.by = "CellType",
+#'   plot.by = "feature",
+#'   plot_type = "violin",
+#'   stack = TRUE,
+#'   flip = TRUE
+#' )
 RunGSVA <- function(
   srt = NULL,
   assay = NULL,
@@ -69,6 +99,7 @@ RunGSVA <- function(
   layer = "data",
   assay_name = "GSVA",
   new_assay = TRUE,
+  store_metadata = NULL,
   db = "GO_BP",
   species = "Homo_sapiens",
   IDtype = "symbol",
@@ -78,6 +109,7 @@ RunGSVA <- function(
   convert_species = TRUE,
   Ensembl_version = NULL,
   mirror = NULL,
+  features = NULL,
   TERM2GENE = NULL,
   TERM2NAME = NULL,
   minGSSize = 10,
@@ -97,6 +129,71 @@ RunGSVA <- function(
 ) {
   log_message("Start {.pkg GSVA} analysis", verbose = verbose)
 
+  method <- unique(tolower(as.character(method)))
+  valid_methods <- c("gsva", "ssgsea", "zscore", "plage")
+  if (!all(method %in% valid_methods)) {
+    log_message(
+      "{.arg method} must be one of {.val {valid_methods}}",
+      message_type = "error"
+    )
+  }
+  single_cell_mode <- is.null(group.by)
+  custom_input_supplied <- !is.null(features) || !is.null(TERM2GENE)
+  if (is.null(store_metadata)) {
+    store_metadata <- isTRUE(custom_input_supplied) || !isTRUE(new_assay)
+  } else {
+    if (!is.logical(store_metadata) || length(store_metadata) != 1L || is.na(store_metadata)) {
+      log_message(
+        "{.arg store_metadata} must be TRUE, FALSE, or NULL",
+        message_type = "error"
+      )
+    }
+  }
+  if (length(method) > 1L) {
+    for (method_i in method) {
+      assay_name_i <- if (single_cell_mode) {
+        paste(assay_name, method_i, sep = "_")
+      } else {
+        assay_name
+      }
+      srt <- RunGSVA(
+        srt = srt,
+        assay = assay,
+        group.by = group.by,
+        layer = layer,
+        assay_name = assay_name_i,
+        new_assay = new_assay,
+        store_metadata = store_metadata,
+        db = db,
+        species = species,
+        IDtype = IDtype,
+        db_update = db_update,
+        db_version = db_version,
+        db_combine = db_combine,
+        convert_species = convert_species,
+        Ensembl_version = Ensembl_version,
+        mirror = mirror,
+        features = features,
+        TERM2GENE = TERM2GENE,
+        TERM2NAME = TERM2NAME,
+        minGSSize = minGSSize,
+        maxGSSize = maxGSSize,
+        unlimited_db = unlimited_db,
+        method = method_i,
+        backend = backend,
+        cpp_chunk_size = cpp_chunk_size,
+        kcdf = kcdf,
+        abs.ranking = abs.ranking,
+        min.sz = min.sz,
+        max.sz = max.sz,
+        mx.diff = mx.diff,
+        tau = tau,
+        ssgsea.norm = ssgsea.norm,
+        verbose = verbose
+      )
+    }
+    return(srt)
+  }
   method <- match.arg(method)
   backend <- match.arg(backend)
   kcdf <- match.arg(kcdf)
@@ -118,7 +215,6 @@ RunGSVA <- function(
     )
   }
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
-  single_cell_mode <- is.null(group.by)
   if (single_cell_mode && isTRUE(new_assay) && is.null(assay_name)) {
     log_message(
       "{.arg assay_name} must be specified when {.arg group.by = NULL} and {.arg new_assay = TRUE}",
@@ -160,48 +256,23 @@ RunGSVA <- function(
         message_type = "error"
       )
     }
-    log_message(
-      "Averaging expression by {.val {group.by}} ...",
-      verbose = verbose
-    )
-    features <- rownames(srt[[assay]])
-    expr_avg_result <- Seurat::AggregateExpression(
-      object = srt,
-      features = features,
-      assays = assay,
-      group.by = group.by,
-      verbose = FALSE
-    )
-    if (is.list(expr_avg_result) && length(expr_avg_result) > 0) {
-      if (assay %in% names(expr_avg_result)) {
-        expr <- expr_avg_result[[assay]]
-      } else {
-        expr <- expr_avg_result[[1]]
-      }
-    } else {
-      expr <- expr_avg_result
-    }
-    if (is.null(dim(expr)) || length(dim(expr)) < 2) {
-      log_message(
-        "Failed to extract aggregated expression matrix. Result type: {.val {class(expr)}}, dimensions: {.val {dim(expr)}}",
-        message_type = "error"
-      )
-    }
-    expr_row_sums <- if (inherits(expr, "Matrix")) Matrix::rowSums(expr) else rowSums(expr)
-    expr <- expr[expr_row_sums > 0, , drop = FALSE]
-    if (nrow(expr) == 0 || ncol(expr) == 0) {
-      log_message(
-        "No aggregated expression values available for {.val {group.by}}",
-        message_type = "error"
-      )
-    }
-    log_message(
-      "Aggregated expression matrix: {.val {nrow(expr)}} genes x {.val {ncol(expr)}} groups",
-      verbose = verbose
-    )
+    assay_features <- rownames(srt[[assay]])
+    expr <- NULL
   }
 
-  if (is.null(TERM2GENE)) {
+  if (!is.null(features)) {
+    db <- "custom"
+    custom_db <- create_custom_db_list_from_features(
+      species = species,
+      db = db,
+      features = features,
+      IDtype = IDtype,
+      version = "custom"
+    )
+    db_list <- custom_db[["db_list"]]
+    TERM2GENE <- custom_db[["TERM2GENE"]]
+    TERM2NAME <- custom_db[["TERM2NAME"]]
+  } else if (is.null(TERM2GENE)) {
     db_list <- PrepareDB(
       species = species,
       db = db,
@@ -263,6 +334,47 @@ RunGSVA <- function(
     db_list[[species]][[db]][["version"]] <- unique(version)
   }
 
+  if (!single_cell_mode) {
+    log_message(
+      "Averaging expression by {.val {group.by}} ...",
+      verbose = verbose
+    )
+    expr_avg_result <- Seurat::AggregateExpression(
+      object = srt,
+      features = assay_features,
+      assays = assay,
+      group.by = group.by,
+      verbose = FALSE
+    )
+    if (is.list(expr_avg_result) && length(expr_avg_result) > 0) {
+      if (assay %in% names(expr_avg_result)) {
+        expr <- expr_avg_result[[assay]]
+      } else {
+        expr <- expr_avg_result[[1]]
+      }
+    } else {
+      expr <- expr_avg_result
+    }
+    if (is.null(dim(expr)) || length(dim(expr)) < 2) {
+      log_message(
+        "Failed to extract aggregated expression matrix. Result type: {.val {class(expr)}}, dimensions: {.val {dim(expr)}}",
+        message_type = "error"
+      )
+    }
+    expr_row_sums <- if (inherits(expr, "Matrix")) Matrix::rowSums(expr) else rowSums(expr)
+    expr <- expr[expr_row_sums > 0, , drop = FALSE]
+    if (nrow(expr) == 0 || ncol(expr) == 0) {
+      log_message(
+        "No aggregated expression values available for {.val {group.by}}",
+        message_type = "error"
+      )
+    }
+    log_message(
+      "Aggregated expression matrix: {.val {nrow(expr)}} genes x {.val {ncol(expr)}} groups",
+      verbose = verbose
+    )
+  }
+
   gsva_results <- list()
   enrichment_results <- list()
 
@@ -278,22 +390,28 @@ RunGSVA <- function(
     )]
     TERM2NAME_tmp <- db_list[[species]][[term]][["TERM2NAME"]]
 
-    dup <- duplicated(TERM2GENE_tmp)
-    na <- Matrix::rowSums(is.na(TERM2GENE_tmp)) > 0
-    TERM2GENE_tmp <- TERM2GENE_tmp[!(dup | na), , drop = FALSE]
+    keep_term_gene <- !duplicated(TERM2GENE_tmp) &
+      stats::complete.cases(TERM2GENE_tmp)
+    TERM2GENE_tmp <- TERM2GENE_tmp[keep_term_gene, , drop = FALSE]
     TERM2NAME_tmp <- TERM2NAME_tmp[
       TERM2NAME_tmp[["Term"]] %in% TERM2GENE_tmp[["Term"]], ,
       drop = FALSE
     ]
 
-    gene_sets <- split(
-      TERM2GENE_tmp[[IDtype]],
-      TERM2GENE_tmp[["Term"]]
-    )
-    gs_size <- lengths(gene_sets)
     min_size <- ifelse(term %in% unlimited_db, 1, max(minGSSize, min.sz))
     max_size <- ifelse(term %in% unlimited_db, Inf, min(maxGSSize, max.sz))
-    gene_sets <- gene_sets[gs_size >= min_size & gs_size <= max_size]
+
+    term_ids_vector <- as.character(TERM2GENE_tmp[["Term"]])
+    gene_ids_vector <- as.character(TERM2GENE_tmp[[IDtype]])
+    term_levels <- unique(term_ids_vector)
+    term_index <- match(term_ids_vector, term_levels)
+    term_sizes <- tabulate(term_index, nbins = length(term_levels))
+    kept_terms <- term_levels[term_sizes >= min_size & term_sizes <= max_size]
+    keep_initial <- term_ids_vector %in% kept_terms
+    gene_sets <- split(
+      gene_ids_vector[keep_initial],
+      term_ids_vector[keep_initial]
+    )
 
     if (length(gene_sets) == 0) {
       log_message(
@@ -304,10 +422,13 @@ RunGSVA <- function(
       next
     }
 
-    genes_in_sets <- unique(unlist(gene_sets))
-    overlap <- intersect(rownames(expr), genes_in_sets)
+    feature_names <- rownames(expr)
+    feature_idx <- match(gene_ids_vector, feature_names)
+    keep_overlap <- keep_initial & !is.na(feature_idx)
+    overlap <- feature_names[sort(unique(feature_idx[keep_overlap]))]
+    n_genes_in_sets <- length(unique(gene_ids_vector[keep_initial]))
     log_message(
-      "Initial overlap: {.val {length(overlap)}} genes out of {.val {nrow(expr)}} expression genes and {.val {length(genes_in_sets)}} genes in gene sets",
+      "Initial overlap: {.val {length(overlap)}} genes out of {.val {nrow(expr)}} expression genes and {.val {n_genes_in_sets}} genes in gene sets",
       verbose = verbose
     )
 
@@ -321,9 +442,10 @@ RunGSVA <- function(
     }
 
     expr_filtered <- expr[overlap, , drop = FALSE]
-    gene_sets_filtered <- lapply(gene_sets, function(gs) {
-      intersect(gs, rownames(expr_filtered))
-    })
+    gene_sets_filtered <- split(
+      gene_ids_vector[keep_overlap],
+      term_ids_vector[keep_overlap]
+    )
     keep <- lengths(gene_sets_filtered) >= min_size
     gene_sets_filtered <- gene_sets_filtered[keep]
 
@@ -343,7 +465,7 @@ RunGSVA <- function(
 
     if (identical(backend, "cpp")) {
       if (identical(method, "gsva")) {
-        gsva_scores <- Matrix::t(run_gsva_scores(
+        gsva_scores <- t(run_gsva_scores(
           expr_counts = expr_filtered,
           gene_sets = gene_sets_filtered,
           kcdf = kcdf,
@@ -355,7 +477,7 @@ RunGSVA <- function(
           chunk_size = cpp_chunk_size
         ))
       } else if (identical(method, "ssgsea")) {
-        gsva_scores <- Matrix::t(run_ssgsea_scores(
+        gsva_scores <- t(run_ssgsea_scores(
           expr_counts = expr_filtered,
           gene_sets = gene_sets_filtered,
           min_gs_size = min_size,
@@ -364,21 +486,30 @@ RunGSVA <- function(
           normalize = ssgsea.norm
         ))
       } else if (identical(method, "zscore")) {
-        gsva_scores <- Matrix::t(run_zscore_scores(
+        gsva_scores <- t(run_zscore_scores(
           expr_counts = expr_filtered,
           gene_sets = gene_sets_filtered,
           min_gs_size = min_size,
           max_gs_size = max_size
         ))
       } else {
-        gsva_scores <- Matrix::t(run_plage_scores(
+        gsva_scores <- t(run_plage_scores(
           expr_counts = expr_filtered,
           gene_sets = gene_sets_filtered,
           min_gs_size = min_size,
           max_gs_size = max_size
         ))
       }
-      gsva_scores <- as_matrix(gsva_scores)
+      if (!is.matrix(gsva_scores)) {
+        gsva_scores <- as_matrix(gsva_scores)
+      }
+      if (identical(method, "plage")) {
+        gsva_scores <- orient_plage_scores(
+          scores = gsva_scores,
+          expr = expr_filtered,
+          gene_sets = gene_sets_filtered
+        )
+      }
     } else {
       if (method == "gsva") {
         param <- GSVA::gsvaParam(
@@ -438,19 +569,24 @@ RunGSVA <- function(
     }
 
     term_ids <- rownames(gsva_scores)
-    term_names <- TERM2NAME_tmp[
-      match(term_ids, TERM2NAME_tmp[["Term"]]),
-      "Name"
-    ]
+    term_name_lookup <- stats::setNames(
+      as.character(TERM2NAME_tmp[["Name"]]),
+      TERM2NAME_tmp[["Term"]]
+    )
+    term_names <- unname(term_name_lookup[term_ids])
     term_names[is.na(term_names)] <- term_ids[is.na(term_names)]
     term_names <- capitalize(
       trimws(as.character(term_names)),
       force_tolower = TRUE
     )
+    term_gene_lookup <- gene_sets
     term_gene_ids <- vapply(
       term_ids,
       function(x) {
-        genes <- TERM2GENE_tmp[TERM2GENE_tmp[["Term"]] %in% x, IDtype]
+        genes <- term_gene_lookup[[x]]
+        if (is.null(genes)) {
+          genes <- gene_sets_filtered[[x]]
+        }
         genes <- unique(as.character(genes[!is.na(genes)]))
         paste0(genes, collapse = "/")
       },
@@ -512,6 +648,11 @@ RunGSVA <- function(
     scores_mat <- Matrix::t(as_matrix(gsva_scores_combined))
     scores_mat <- scores_mat[intersect(rownames(scores_mat), colnames(srt)), , drop = FALSE]
     scores_mat <- scores_mat[colnames(srt), , drop = FALSE]
+    colnames(scores_mat) <- gene_set_scoring_make_score_colnames(
+      feature_names = rownames(gsva_scores_combined),
+      prefix = assay_name,
+      fallback = "GSVA"
+    )
     if (isTRUE(new_assay)) {
       srt[[assay_name]] <- Seurat::CreateAssayObject(
         counts = Matrix::t(as_matrix(scores_mat))
@@ -523,12 +664,21 @@ RunGSVA <- function(
           row.names = rownames(gsva_scores_combined)
         )
       )
+    }
+    if (isTRUE(store_metadata)) {
+      srt <- Seurat::AddMetaData(object = srt, metadata = as.data.frame(scores_mat))
+    }
+    if (isTRUE(new_assay) && isTRUE(store_metadata)) {
+      log_message(
+        "{.pkg GSVA} results stored in assay {.val {assay_name}}, meta.data, and tools slot {.val {tool_name}}",
+        verbose = verbose
+      )
+    } else if (isTRUE(new_assay)) {
       log_message(
         "{.pkg GSVA} results stored in assay {.val {assay_name}} and tools slot {.val {tool_name}}",
         verbose = verbose
       )
-    } else {
-      srt <- Seurat::AddMetaData(object = srt, metadata = as.data.frame(scores_mat))
+    } else if (isTRUE(store_metadata)) {
       log_message(
         "{.pkg GSVA} results stored in meta.data and tools slot {.val {tool_name}}",
         verbose = verbose
