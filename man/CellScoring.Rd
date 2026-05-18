@@ -27,6 +27,7 @@ CellScoring(
   classification = TRUE,
   name = "",
   new_assay = FALSE,
+  store_metadata = NULL,
   seed = 11,
   cores = 1,
   verbose = TRUE,
@@ -82,12 +83,18 @@ Default is \code{NULL}. If \code{NULL}, the latest version will be used.}
 
 \item{maxGSSize}{The maximum size of a gene set to be considered in the enrichment analysis.}
 
-\item{method}{The method to use for scoring. Can be "Seurat", "AUCell", or "UCell". Default is \code{"Seurat"}.}
+\item{method}{The method to use for scoring. Can be \code{"Seurat"}, \code{"AUCell"},
+\code{"UCell"}, \code{"GSVA"}, \code{"ssGSEA"}, \code{"zscore"}, \code{"PLAGE"}, or \code{"VISION"}.
+Multiple methods can be supplied at once; in that case each method is run
+separately and stored with a method suffix such as \code{"GO_AUCell"} or
+\code{"GO_GSVA"}. Default is \code{"Seurat"}.}
 
 \item{backend}{Scoring backend. \code{"cpp"} is the default for supported methods.
 \code{"r"} uses the original package implementation. \code{"cpp"} currently supports
-\code{method = "Seurat"} and \code{method = "AUCell"}. \code{method = "UCell"} falls back to
-\code{"r"} when \code{backend} is not explicitly set.}
+\code{method = "Seurat"}, \code{method = "AUCell"}, \code{method = "GSVA"},
+\code{method = "ssGSEA"}, \code{method = "zscore"}, and \code{method = "PLAGE"}.
+\code{method = "UCell"} and \code{method = "VISION"} fall back to \code{"r"} when
+\code{backend} is not explicitly set.}
 
 \item{cpp_strategy}{C++ AUCell ranking strategy. \code{"sparse"} ranks non-zero
 genes and approximates zero ties, \code{"topk"} ranks only genes that can contribute
@@ -98,6 +105,10 @@ to AUCell AUC, and \code{"full"} ranks all genes.}
 \item{name}{The name of the assay to store the scores in. Only used if new_assay is TRUE. Default is \code{""}.}
 
 \item{new_assay}{Whether to create a new assay for storing the scores. Default is \code{FALSE}.}
+
+\item{store_metadata}{Whether to also store score columns in \code{meta.data}.
+When \code{NULL}, manual \code{features = list(...)} input is stored in \code{meta.data} by default,
+while database-derived results stay assay-only when \code{new_assay = TRUE}.}
 
 \item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
@@ -112,7 +123,8 @@ Default is \code{TRUE}.}
 }
 \description{
 This function performs cell scoring on a Seurat object.
-It calculates scores for a given set of features and adds the scores as metadata to the Seurat object.
+It calculates scores for a given set of features and stores them in \code{meta.data}
+and/or a score assay, depending on \code{new_assay} and \code{store_metadata}.
 }
 \examples{
 data(pancreas_sub)
@@ -129,66 +141,96 @@ pancreas_sub <- CellScoring(
 )
 CellDimPlot(pancreas_sub, "test_classification")
 
-FeatureDimPlot(pancreas_sub, "test_A")
+FeatureDimPlot(
+  pancreas_sub,
+  features = "test_A"
+)
+
+pancreas_sub <- CellScoring(
+  pancreas_sub,
+  features = list(A = features_all[1:100]),
+  method = c("AUCell", "GSVA")
+)
+FeatureStatPlot(
+  pancreas_sub,
+  stat.by = c("AUCell_A", "GSVA_A"),
+  group.by = "CellType",
+  plot.by = "feature",
+  plot_type = "violin",
+  stack = TRUE
+)
+
+FeatureDimPlot(
+  pancreas_sub,
+  features = c("AUCell_A", "GSVA_A"),
+  xlab = "UMAP_1",
+  ylab = "UMAP_2"
+)
+
+GroupHeatmap(
+ pancreas_sub,
+ features = c("AUCell_A", "GSVA_A", "Sox9", "Anxa2", "Bicc1"),
+ group.by = "CellType"
+)
 
 data(panc8_sub)
-  panc8_sub <- integration_scop(
-    panc8_sub,
-    batch = "tech",
-    integration_method = "Harmony"
-  )
+panc8_sub <- integration_scop(
+  panc8_sub,
+  batch = "tech",
+  integration_method = "Harmony"
+)
 
-  panc8_sub <- CellScoring(
-    panc8_sub,
-    layer = "data",
-    assay = "RNA",
-    db = "GO_BP",
-    species = "Homo_sapiens",
-    minGSSize = 10,
-    maxGSSize = 100,
-    method = "AUCell",
-    name = "GO",
-    new_assay = TRUE
-  )
+panc8_sub <- CellScoring(
+  panc8_sub,
+  layer = "data",
+  assay = "RNA",
+  db = "GO_BP",
+  species = "Homo_sapiens",
+  minGSSize = 10,
+  maxGSSize = 100,
+  method = "AUCell",
+  name = "GO",
+  new_assay = TRUE
+)
 
-  panc8_sub <- integration_scop(
-    panc8_sub,
-    assay = "GO",
-    batch = "tech",
-    integration_method = "Harmony"
-  )
-  CellDimPlot(
-    panc8_sub,
-    group.by = c("tech", "celltype")
-  )
+panc8_sub <- integration_scop(
+  panc8_sub,
+  assay = "GO",
+  batch = "tech",
+  integration_method = "Harmony"
+)
+CellDimPlot(
+  panc8_sub,
+  group.by = c("tech", "celltype")
+)
 
-  pancreas_sub <- CellScoring(
-    pancreas_sub,
-    layer = "data",
-    assay = "RNA",
-    db = "GO_BP",
-    species = "Mus_musculus",
-    termnames = panc8_sub[["GO"]]@meta.features[, "termnames"],
-    method = "AUCell",
-    name = "GO",
-    new_assay = TRUE
-  )
-  pancreas_sub <- standard_scop(
-    pancreas_sub,
-    assay = "GO"
-  )
+pancreas_sub <- CellScoring(
+  pancreas_sub,
+  layer = "data",
+  assay = "RNA",
+  db = "GO_BP",
+  species = "Mus_musculus",
+  termnames = panc8_sub[["GO"]]@meta.features[, "termnames"],
+  method = "AUCell",
+  name = "GO",
+  new_assay = TRUE
+)
+pancreas_sub <- standard_scop(
+  pancreas_sub,
+  assay = "GO"
+)
 
-  pancreas_sub[["tech"]] <- "Mouse"
-  panc_merge <- integration_scop(
-    srt_list = list(panc8_sub, pancreas_sub),
-    assay = "GO",
-    batch = "tech",
-    integration_method = "Harmony"
-  )
-  CellDimPlot(
-    srt = panc_merge,
-    group.by = c("tech", "celltype", "SubCellType", "Phase")
-  )
+pancreas_sub[["tech"]] <- "Mouse"
+panc_merge <- integration_scop(
+  srt_list = list(panc8_sub, pancreas_sub),
+  assay = "GO",
+  batch = "tech",
+  integration_method = "Harmony"
+)
+CellDimPlot(
+  srt = panc_merge,
+  group.by = c("tech", "celltype", "SubCellType", "Phase")
+)
 
 genenames <- make.unique(
   thisutils::capitalize(

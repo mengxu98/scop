@@ -11,6 +11,7 @@ RunGSVA(
   layer = "data",
   assay_name = "GSVA",
   new_assay = TRUE,
+  store_metadata = NULL,
   db = "GO_BP",
   species = "Homo_sapiens",
   IDtype = "symbol",
@@ -20,6 +21,7 @@ RunGSVA(
   convert_species = TRUE,
   Ensembl_version = NULL,
   mirror = NULL,
+  features = NULL,
   TERM2GENE = NULL,
   TERM2NAME = NULL,
   minGSSize = 10,
@@ -39,8 +41,9 @@ RunGSVA(
 )
 }
 \arguments{
-\item{srt}{A Seurat object containing the results of differential expression analysis (RunDEtest).
-If specified, the genes and groups will be extracted from the Seurat object automatically.
+\item{srt}{A \code{Seurat} object or \code{SummarizedExperiment} object containing the
+results of differential expression analysis (\code{\link[=RunDEtest]{RunDEtest()}}).
+If specified, the genes and groups will be extracted from the object automatically.
 If not specified, the \code{geneID} and \code{geneID_groups} arguments must be provided.}
 
 \item{assay}{Which assay to use.
@@ -59,6 +62,10 @@ Default is \code{"data"}.}
 Default is \code{"GSVA"}.}
 
 \item{new_assay}{Whether to create a new assay for GSVA scores when \code{group.by = NULL}. Default is \code{TRUE}.}
+
+\item{store_metadata}{Whether to also store single-cell GSVA scores in \code{meta.data}.
+When \code{NULL}, custom \code{features} or \code{TERM2GENE} input is stored in \code{meta.data}
+by default, while database-derived results stay assay-only when \code{new_assay = TRUE}.}
 
 \item{db}{A character vector specifying the annotation sources to be included in the gene annotation databases.
 Can be one or more of \verb{"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF", "CytoTRACE2"}.
@@ -89,6 +96,9 @@ Default is \code{NULL}. If \code{NULL}, the latest version will be used.}
 
 \item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are \code{"www"}, \code{"uswest"}, \code{"useast"}, \code{"asia"}.}
 
+\item{features}{A named list of feature lists for custom enrichment gene sets.
+If provided, it takes precedence over \code{TERM2GENE} and \code{db}.}
+
 \item{TERM2GENE}{A data frame specifying the gene-term mapping for a custom database.
 The first column should contain the term IDs, and the second column should contain the gene IDs.}
 
@@ -103,6 +113,8 @@ The first column should contain the term IDs, and the second column should conta
 
 \item{method}{The method to use for GSVA.
 Options are \code{"gsva"}, \code{"ssgsea"}, \code{"zscore"}, or \code{"plage"}.
+Multiple methods can be supplied at once; in single-cell mode they will be
+stored in method-suffixed assays such as \code{"GSVA_gsva"} and \code{"GSVA_ssgsea"}.
 Default is \code{"gsva"}.}
 
 \item{backend}{Scoring backend. \code{"cpp"} is the default and supports all
@@ -142,7 +154,8 @@ Default is \code{TRUE}.}
 }
 \value{
 Returns the modified \code{Seurat} object. When \code{group.by} is provided, GSVA scores are stored in the \code{tools} slot.
-When \code{group.by = NULL}, scores are stored in a new assay (if \code{new_assay = TRUE}) and in the \code{tools} slot.
+When \code{group.by = NULL}, scores are stored in the \code{tools} slot, optionally in a new assay,
+and optionally in \code{meta.data} for direct use with \code{\link[=FeatureDimPlot]{FeatureDimPlot()}} and \code{\link[=FeatureStatPlot]{FeatureStatPlot()}}.
 }
 \description{
 Perform Gene Set Variation Analysis (GSVA)
@@ -163,5 +176,29 @@ ht <- GSVAPlot(
   topTerm = 10,
   width = 1,
   height = 2
+)
+
+features_all <- rownames(pancreas_sub)
+pancreas_sub <- RunGSVA(
+  pancreas_sub,
+  features = list(
+    A = features_all[1:20],
+    B = features_all[21:40]
+  ),
+  method = c("gsva", "ssgsea")
+)
+FeatureDimPlot(
+  pancreas_sub,
+  features = "GSVA_gsva_A",
+  add_density = TRUE
+)
+FeatureStatPlot(
+  pancreas_sub,
+  stat.by = c("GSVA_gsva_A", "GSVA_ssgsea_A"),
+  group.by = "CellType",
+  plot.by = "feature",
+  plot_type = "violin",
+  stack = TRUE,
+  flip = TRUE
 )
 }

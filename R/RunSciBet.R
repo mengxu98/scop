@@ -19,6 +19,9 @@
 #' @param prefix Prefix for metadata columns.
 #' @param store_model Whether to store the SciBet core and probabilities in
 #' `srt_query@tools`.
+#' @param return_object Whether to return the annotated `Seurat` query object.
+#' If `FALSE`, return a lightweight list with annotations, scores,
+#' probabilities, and model components without copying `srt_query`.
 #'
 #' @return A `Seurat` object with SciBet annotations in metadata and results in
 #' `srt_query@tools[["SciBet"]]`.
@@ -77,6 +80,7 @@ RunSciBet <- function(
   input_transform = c("auto", "none", "expm1"),
   prefix = "scibet",
   store_model = TRUE,
+  return_object = TRUE,
   verbose = TRUE
 ) {
   if (!inherits(srt_query, "Seurat")) {
@@ -173,17 +177,17 @@ RunSciBet <- function(
     features = common_features,
     input_transform = input_transform
   )
-  query_expr <- scibet_expr_matrix(
-    srt = srt_query,
-    assay = query_assay,
-    layer = query_layer,
-    features = common_features,
-    input_transform = input_transform
-  )
-
-  query_expr_run <- query_expr
-  query_run_index <- colnames(query_expr)
-  if (!is.null(query_labels)) {
+  if (is.null(query_labels)) {
+    query_expr <- scibet_expr_matrix(
+      srt = srt_query,
+      assay = query_assay,
+      layer = query_layer,
+      features = common_features,
+      input_transform = input_transform
+    )
+    query_expr_run <- query_expr
+    query_run_index <- colnames(query_expr)
+  } else {
     keep_query <- !is.na(query_labels)
     if (!all(keep_query)) {
       log_message(
@@ -199,23 +203,63 @@ RunSciBet <- function(
         message_type = "error"
       )
     }
-    design <- stats::model.matrix(~ 0 + group)
+    query_expr <- GetAssayData5(
+      object = srt_query,
+      assay = query_assay,
+      layer = query_layer
+    )[common_features, keep_query, drop = FALSE]
+    query_transform <- input_transform
+    if (query_transform == "auto") {
+      query_transform <- if (identical(query_layer, "data")) "expm1" else "none"
+    }
+    if (query_transform == "expm1") {
+      if (inherits(query_expr, "sparseMatrix")) {
+        query_expr@x <- expm1(query_expr@x)
+      } else {
+        query_expr <- expm1(query_expr)
+      }
+    }
+    if (inherits(query_expr, "sparseMatrix")) {
+      query_expr@x[!is.finite(query_expr@x) | query_expr@x < 0] <- 0
+    } else {
+      query_expr[!is.finite(query_expr) | query_expr < 0] <- 0
+    }
+    design <- Matrix::sparse.model.matrix(~ 0 + group)
     colnames(design) <- levels(group)
-    query_expr_run <- query_expr[, keep_query, drop = FALSE] %*% design
+    query_expr_run <- query_expr %*% design
     query_expr_run <- sweep(query_expr_run, 2, as.numeric(table(group)), "/")
-    query_expr_run <- as.matrix(query_expr_run)
-    storage.mode(query_expr_run) <- "double"
+    if (inherits(query_expr_run, "sparseMatrix")) {
+      query_expr_run <- methods::as(query_expr_run, "dgCMatrix")
+      query_expr_run <- Matrix::drop0(query_expr_run)
+    } else {
+      query_expr_run <- as.matrix(query_expr_run)
+      storage.mode(query_expr_run) <- "double"
+    }
     query_run_index <- colnames(query_expr_run)
   }
 
-  result <- scibet_fit_predict(
-    ref = ref_expr,
-    query = query_expr_run,
-    labels = as.integer(ref_labels),
-    n_labels = nlevels(ref_labels),
-    n_top = as.integer(nfeatures),
-    additional_per_label = as.integer(additional_features_per_class)
-  )
+  result <- if (
+    inherits(ref_expr, "dgCMatrix") &&
+      inherits(query_expr_run, "dgCMatrix")
+  ) {
+    scibet_fit_predict_sparse(
+      ref = ref_expr,
+      query = query_expr_run,
+      labels = as.integer(ref_labels),
+      n_labels = nlevels(ref_labels),
+      n_top = as.integer(nfeatures),
+      additional_per_label = as.integer(additional_features_per_class)
+    )
+  } else {
+    scibet_fit_predict(
+      ref = as.matrix(ref_expr),
+      query = as.matrix(query_expr_run),
+      labels = as.integer(ref_labels),
+      n_labels = nlevels(ref_labels),
+      n_top = as.integer(nfeatures),
+      additional_per_label = as.integer(additional_features_per_class)
+    )
+  }
 
   classes <- levels(ref_labels)
   prob_run <- result[["probabilities"]]
@@ -242,8 +286,6 @@ RunSciBet <- function(
 
   annotation_col <- paste0(prefix, "_annotation")
   score_col <- paste0(prefix, "_score")
-  srt_query[[annotation_col]] <- unname(predicted)
-  srt_query[[score_col]] <- unname(score)
 
   core <- result[["core"]]
   feature_index <- result[["feature_index"]]
@@ -251,26 +293,37 @@ RunSciBet <- function(
   rownames(core) <- selected_features
   colnames(core) <- classes
 
-  if (isTRUE(store_model)) {
-    srt_query@tools[["SciBet"]] <- list(
-      probabilities = prob_store,
-      model = core,
-      features = selected_features,
-      candidate_features = common_features,
-      classes = classes,
-      parameters = list(
-        query_assay = query_assay,
-        ref_assay = ref_assay,
-        query_layer = query_layer,
-        ref_layer = ref_layer,
-        query_group = query_group,
-        ref_group = ref_group,
-        nfeatures = nfeatures,
-        additional_features_per_class = additional_features_per_class,
-        input_transform = input_transform,
-        prefix = prefix
-      )
+  payload <- list(
+    annotation = predicted,
+    score = score,
+    probabilities = prob_store,
+    model = core,
+    features = selected_features,
+    candidate_features = common_features,
+    classes = classes,
+    parameters = list(
+      query_assay = query_assay,
+      ref_assay = ref_assay,
+      query_layer = query_layer,
+      ref_layer = ref_layer,
+      query_group = query_group,
+      ref_group = ref_group,
+      nfeatures = nfeatures,
+      additional_features_per_class = additional_features_per_class,
+      input_transform = input_transform,
+      prefix = prefix
     )
+  )
+
+  if (!isTRUE(return_object)) {
+    return(payload)
+  }
+
+  srt_query[[annotation_col]] <- unname(predicted)
+  srt_query[[score_col]] <- unname(score)
+
+  if (isTRUE(store_model)) {
+    srt_query@tools[["SciBet"]] <- payload[setdiff(names(payload), c("annotation", "score"))]
   }
 
   log_message(
@@ -293,13 +346,24 @@ scibet_expr_matrix <- function(
     assay = assay,
     layer = layer
   )[features, , drop = FALSE]
-  x <- as.matrix(x)
-  storage.mode(x) <- "double"
 
   transform_use <- input_transform
   if (transform_use == "auto") {
     transform_use <- if (identical(layer, "data")) "expm1" else "none"
   }
+  if (inherits(x, "sparseMatrix")) {
+    if (!inherits(x, "dgCMatrix")) {
+      x <- methods::as(x, "dgCMatrix")
+    }
+    if (transform_use == "expm1") {
+      x@x <- expm1(x@x)
+    }
+    x@x[!is.finite(x@x) | x@x < 0] <- 0
+    return(Matrix::drop0(x))
+  }
+
+  x <- as.matrix(x)
+  storage.mode(x) <- "double"
   if (transform_use == "expm1") {
     x <- expm1(x)
   }
