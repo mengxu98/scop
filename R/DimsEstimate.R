@@ -9,9 +9,9 @@
 #' @param reduction_method Optional reduction method name.
 #' When set to `"nmf"` or `"glmpca"`, all available dimensions will be retained.
 #' @param k Number of neighbors used by [intrinsicDimension::maxLikGlobalDimEst].
-#' Default is `20`.
+#' Default is `30`.
 #' @param min_dims Minimum number of dimensions kept when intrinsic-dimension estimation succeeds.
-#' Default is `20`.
+#' Default is `5`.
 #' @param fallback_max_dims Maximum number of dimensions kept when no valid estimate is available.
 #' Default is `50`.
 #' @param skip_first Whether to drop the first dimension from the returned result.
@@ -22,12 +22,20 @@
 #' @return An integer vector of dimensions to use.
 #'
 #' @export
+#' @seealso [DimsEstimatePlot]
+#'
+#' @examples
+#' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
+#' RunDimsEstimate(pancreas_sub)
+#'
+#' DimsEstimatePlot(pancreas_sub)
 RunDimsEstimate <- function(
   srt,
   reduction = NULL,
   reduction_method = NULL,
-  k = 20L,
-  min_dims = 20L,
+  k = 30L,
+  min_dims = 5L,
   fallback_max_dims = 50L,
   skip_first = FALSE,
   use_stored = TRUE,
@@ -414,6 +422,13 @@ pc_selection_stats <- function(
 #' or a named list of ggplot objects when `combine = FALSE`.
 #'
 #' @export
+#'
+#' @seealso [RunDimsEstimate]
+#'
+#' @examples
+#' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
+#' DimsEstimatePlot(pancreas_sub)
 DimsEstimatePlot <- function(
   srt,
   max_pcs = 50,
@@ -495,7 +510,10 @@ DimsEstimatePlot <- function(
       )
   }
 
-  p1 <- ggplot2::ggplot(plot_data, ggplot2::aes(x = .data$PC, y = .data$stdev)) +
+  p1 <- ggplot2::ggplot(
+    plot_data,
+    ggplot2::aes(x = .data$PC, y = .data$stdev)
+  ) +
     ggplot2::geom_line(color = main_colors[1], linewidth = 0.9) +
     ggplot2::geom_point(color = main_colors[2], size = 1.6) +
     ggplot2::geom_vline(
@@ -535,7 +553,10 @@ DimsEstimatePlot <- function(
       )
   )
 
-  p2 <- ggplot2::ggplot(plot_data, ggplot2::aes(x = .data$PC, y = .data$cumulative_var)) +
+  p2 <- ggplot2::ggplot(
+    plot_data,
+    ggplot2::aes(x = .data$PC, y = .data$cumulative_var)
+  ) +
     ggplot2::geom_line(color = main_colors[3], linewidth = 0.9) +
     ggplot2::geom_point(color = main_colors[4], size = 1.4) +
     ggplot2::geom_vline(
@@ -564,7 +585,10 @@ DimsEstimatePlot <- function(
   )
 
   p3 <- apply_theme(
-    ggplot2::ggplot(plot_data, ggplot2::aes(x = .data$PC, y = .data$marginal_gain)) +
+    ggplot2::ggplot(
+      plot_data,
+      ggplot2::aes(x = .data$PC, y = .data$marginal_gain)
+    ) +
       ggplot2::geom_col(fill = main_colors[5], alpha = 0.85, width = 0.85) +
       ggplot2::geom_hline(
         yintercept = 0.5,
@@ -587,7 +611,8 @@ DimsEstimatePlot <- function(
   p4 <- apply_theme(
     ggplot2::ggplot(
       plot_data[
-        seq.int(min(3L, nrow(plot_data)), nrow(plot_data)), ,
+        seq.int(min(3L, nrow(plot_data)), nrow(plot_data)),
+        ,
         drop = FALSE
       ],
       ggplot2::aes(x = .data$PC, y = abs(.data$curvature))
