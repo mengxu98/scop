@@ -49,8 +49,8 @@ are not compatible with the default JAX/scVI stack in the same environment;
 request them explicitly for scCODA/scOMM workflows. \code{"scenic"} is also
 excluded from the default environment and is prepared in \code{"scenic_env"} by
 default because SCENIC requires an older Python/numpy stack. On Windows, the
-default also excludes \code{"scvi"}, \code{"glue"}, and \code{"multimap"} because
-those upstream stacks are more reliable when requested explicitly for
+default also excludes \code{"scvi"}, \code{"glue"}, and \code{"multimap"} because those
+upstream stacks are more reliable when requested explicitly for
 method-specific workflows.}
 
 \item{pip_options}{Additional command line arguments to be passed to \code{uv}/\code{pip} when installing pip packages.}

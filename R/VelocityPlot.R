@@ -62,7 +62,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunSCVELO(
@@ -70,6 +69,7 @@
 #'   group.by = "SubCellType",
 #'   linear_reduction = "pca",
 #'   nonlinear_reduction = "umap",
+#'   backend = "cpp",
 #'   return_seurat = TRUE
 #' )
 #' VelocityPlot(
@@ -109,7 +109,6 @@
 #'   streamline_color = "black",
 #'   arrow_color = "red"
 #' )
-#' }
 VelocityPlot <- function(
   srt,
   reduction,

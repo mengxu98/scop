@@ -72,8 +72,7 @@ islet_bulk <- RunDeconvolution(
   islet_bulk,
   reference = panc8_sub,
   method = "MuSiC",
-  group.by = "celltype",
-  backend = "r"
+  group.by = "celltype"
 )
 DeconvolutionPlot(islet_bulk, plot_type = "bar")
 ht <- DeconvolutionPlot(

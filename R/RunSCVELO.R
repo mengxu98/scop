@@ -31,7 +31,6 @@
 #'
 #' @export
 #' @examples
-#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunSCVELO(
@@ -39,15 +38,15 @@
 #'   assay_x = "RNA",
 #'   group.by = "SubCellType",
 #'   linear_reduction = "PCA",
-#'   nonlinear_reduction = "UMAP"
+#'   nonlinear_reduction = "UMAP",
+#'   backend = "cpp"
 #' )
 #'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   c(
 #'     "stochastic_length",
-#'     "stochastic_confidence",
-#'     "stochastic_pseudotime"
+#'     "stochastic_confidence"
 #'   )
 #' )
 #'
@@ -64,7 +63,6 @@
 #'   pt.size = NA,
 #'   velocity = "stochastic"
 #' )
-#' }
 RunSCVELO <- function(
   srt = NULL,
   adata = NULL,
