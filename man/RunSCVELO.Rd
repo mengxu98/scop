@@ -55,6 +55,7 @@ RunSCVELO(
   plot_dpi = 300,
   plot_prefix = "scvelo",
   dirpath = "./scvelo",
+  backend = c("python", "cpp"),
   return_seurat = !is.null(srt),
   verbose = TRUE
 )
@@ -187,6 +188,10 @@ Default is \code{FALSE}.}
 \item{plot_prefix}{Prefix for saved plot filenames. Default is "cellrank".}
 
 \item{dirpath}{The directory to save the plots. Default is \code{"./cellrank"}.}
+
+\item{backend}{Backend used to compute RNA velocity. \code{"python"} keeps the
+original scVelo workflow. \code{"cpp"} uses the package C++ implementation for a
+stochastic velocity embedding that is compatible with \link{VelocityPlot}.}
 
 \item{return_seurat}{Whether to return a Seurat object instead of an anndata object.
 Default is \code{TRUE}.}

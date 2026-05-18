@@ -24,6 +24,8 @@ RunSCENIC(
   min_regulon_size = 10,
   cores = 1,
   aucell_batch_size = 500,
+  aucell_backend = c("r", "cpp"),
+  aucell_cpp_strategy = c("full", "sparse", "topk"),
   seed = 1234,
   force = FALSE,
   assay_name = "scenic",
@@ -91,6 +93,13 @@ AUCell batch scoring. If multicore execution is not supported, this is
 automatically reduced to one core.}
 
 \item{aucell_batch_size}{Number of cells scored in each AUCell batch.}
+
+\item{aucell_backend}{Backend used for AUCell regulon activity scoring.
+\code{"r"} uses the AUCell package. \code{"cpp"} uses the package C++ gene-set scoring
+implementation.}
+
+\item{aucell_cpp_strategy}{C++ AUCell ranking strategy passed to the package
+gene-set scoring backend.}
 
 \item{seed}{Random seed used by GRNBoost2 and Seurat overclustering.}
 

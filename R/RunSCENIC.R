@@ -40,6 +40,11 @@
 #' AUCell batch scoring. If multicore execution is not supported, this is
 #' automatically reduced to one core.
 #' @param aucell_batch_size Number of cells scored in each AUCell batch.
+#' @param aucell_backend Backend used for AUCell regulon activity scoring.
+#' `"r"` uses the AUCell package. `"cpp"` uses the package C++ gene-set scoring
+#' implementation.
+#' @param aucell_cpp_strategy C++ AUCell ranking strategy passed to the package
+#' gene-set scoring backend.
 #' @param seed Random seed used by GRNBoost2 and Seurat overclustering.
 #' @param force Whether to rebuild existing SCENIC outputs.
 #' @param assay_name Name of the assay used to store regulon activity scores.
@@ -91,6 +96,8 @@ RunSCENIC <- function(
   min_regulon_size = 10,
   cores = 1,
   aucell_batch_size = 500,
+  aucell_backend = c("r", "cpp"),
+  aucell_cpp_strategy = c("full", "sparse", "topk"),
   seed = 1234,
   force = FALSE,
   assay_name = "scenic",
@@ -162,6 +169,8 @@ RunSCENIC <- function(
     cores <- 1L
   }
   aucell_batch_size <- max(1L, as.integer(aucell_batch_size))
+  aucell_backend <- match.arg(aucell_backend)
+  aucell_cpp_strategy <- match.arg(aucell_cpp_strategy)
 
   envname <- envname %||% "scenic_env"
   scenic_python_packages <- c(
@@ -445,6 +454,8 @@ RunSCENIC <- function(
       min_regulon_size = min_regulon_size,
       batch_size = aucell_batch_size,
       cores = cores,
+      backend = aucell_backend,
+      cpp_strategy = aucell_cpp_strategy,
       verbose = verbose
     )
     saveRDS(ras_mat, ras_file)
@@ -495,6 +506,8 @@ RunSCENIC <- function(
       min_regulon_size = min_regulon_size,
       cores = cores,
       aucell_batch_size = aucell_batch_size,
+      aucell_backend = aucell_backend,
+      aucell_cpp_strategy = aucell_cpp_strategy,
       seed = seed,
       assay_name = assay_name,
       tool_name = tool_name,
@@ -1001,9 +1014,12 @@ scenic_compute_aucell_score <- function(
   min_regulon_size = 10,
   batch_size = 500,
   cores = 1,
+  backend = c("r", "cpp"),
+  cpp_strategy = c("full", "sparse", "topk"),
   verbose = TRUE
 ) {
-  check_r("AUCell", verbose = FALSE)
+  backend <- match.arg(backend)
+  cpp_strategy <- match.arg(cpp_strategy)
   regulon_list <- lapply(regulon_list, intersect, rownames(counts))
   regulon_list <- regulon_list[lengths(regulon_list) >= min_regulon_size]
   if (length(regulon_list) == 0) {
@@ -1013,6 +1029,20 @@ scenic_compute_aucell_score <- function(
     )
   }
 
+  if (identical(backend, "cpp")) {
+    log_message(
+      "Calculating AUCell regulon activity scores with {.arg backend = 'cpp'} and {.arg cpp_strategy} = {.val {cpp_strategy}}",
+      verbose = verbose
+    )
+    scores <- run_aucell_scores(
+      expr_counts = counts,
+      gene_sets = regulon_list,
+      strategy = cpp_strategy
+    )
+    return(as.data.frame(scores, check.names = FALSE)[colnames(counts), , drop = FALSE])
+  }
+
+  check_r("AUCell", verbose = FALSE)
   batches <- split(
     seq_len(ncol(counts)),
     ceiling(seq_along(colnames(counts)) / batch_size)
