@@ -62,6 +62,7 @@
     - [Enrichment analysis](#enrichment-analysis)
       - [Over-representation](#over-representation)
       - [GSEA](#gsea)
+    - [Gene regulatory network analysis with pySCENIC](#gene-regulatory-network-analysis-with-pyscenic)
     - [Interactive data visualization with SCExplorer](#interactive-data-visualization-with-scexplorer)
     - [Other visualization examples](#other-visualization-examples)
 
@@ -863,6 +864,68 @@ GSEAPlot(
 ```
 
 <img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/GSEA_bar-1.png" width="100%" style="display: block; margin: auto;"/>
+
+### Gene regulatory network analysis with pySCENIC
+
+``` r
+pancreas_sub <- RunPyscenic(
+  pancreas_sub,
+  ranking_dbs = c(
+    "./pyscenic_mm10/mm10_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather",
+    "./pyscenic_mm10/mm10_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"
+  ),
+  motif_annotations = "./pyscenic_mm10/motifs-v10nr_clust-nr.mgi-m0.001-o0.0.tbl",
+  tf_list = "./pyscenic_mm10/allTFs_mm10_from_mgi_motif_annotation.txt",
+  work_dir = "./pyscenic",
+  metacell_reduction = "pca",
+  cores = 8
+)
+```
+
+`RunPyscenic()` uses `metacell_reduction = "pca"` by default, which recomputes
+PCA before metacell over-clustering. For multi-sample data with clear batch
+effects, run your batch-corrected reduction first and pass it here, for example
+`metacell_reduction = "Harmony"`. This reduction is only used to group cells
+into metacells; GRNBoost2 still uses raw count sums per metacell.
+
+``` r
+rss_plot <- PyscenicRSSPlot(
+  pancreas_sub,
+  group.by = "SubCellType",
+  top_n = 12,
+  combine = FALSE
+)
+rss_plot$plots$Ductal
+```
+
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/PyscenicRSSPlot-1.png" width="100%" style="display: block; margin: auto;"/>
+
+``` r
+rss_plot <- PyscenicRSSPlot(
+  pancreas_sub,
+  group.by = "SubCellType",
+  top_n = 12,
+  combine = TRUE,
+  ncol = 3
+)
+rss_plot$plot
+```
+
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/PyscenicRSSPlot-2.png" width="100%" style="display: block; margin: auto;"/>
+
+``` r
+rss_plot <- PyscenicRSSPlot(
+  pancreas_sub,
+  group.by = "SubCellType",
+  top_n = 12,
+  highlight_tf = "Sox9",
+  combine = TRUE,
+  ncol = 3
+)
+rss_plot$plot
+```
+
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/PyscenicRSSPlot-3.png" width="100%" style="display: block; margin: auto;"/>
 
 ### Interactive data visualization with SCExplorer
 
