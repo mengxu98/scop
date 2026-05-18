@@ -864,37 +864,18 @@ NumericMatrix zscore_dense(
     }
   }
 
-  std::vector<int> row_ptr(n_genes + 1, 0);
-  for (int gene = 0; gene < n_genes; ++gene) {
-    row_ptr[gene + 1] = row_ptr[gene] + row_counts[gene];
-  }
-  const int nnz = row_ptr[n_genes];
-  std::vector<int> row_cursor(row_ptr);
-  std::vector<int> row_cells(nnz);
-  std::vector<double> row_values(nnz);
-
-  for (int cell = 0; cell < n_cells; ++cell) {
-    for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
-      const int gene = row_idx[ptr];
-      const double value = values[ptr];
-      if (R_finite(value) && value != 0.0) {
-        const int out = row_cursor[gene]++;
-        row_cells[out] = cell;
-        row_values[out] = value;
-      }
-    }
-  }
-  std::vector<int>().swap(row_counts);
-  std::vector<int>().swap(row_cursor);
-
   std::vector<double> row_means(n_genes, R_NaN);
   std::vector<double> row_sds(n_genes, R_NaN);
   std::vector<unsigned char> row_valid(n_genes, 0);
   if (n_cells > 1) {
     for (int gene = 0; gene < n_genes; ++gene) {
-      const double mean = row_sums[gene] / static_cast<double>(n_cells);
-      double var = (row_sq_sums[gene] - static_cast<double>(n_cells) * mean * mean) /
-        static_cast<double>(n_cells - 1);
+      const int nz = row_counts[gene];
+      if (nz <= 1) {
+        continue;
+      }
+      const double mean = row_sums[gene] / static_cast<double>(nz);
+      double var = (row_sq_sums[gene] - static_cast<double>(nz) * mean * mean) /
+        static_cast<double>(nz - 1);
       if (var < 0.0 && var > -1e-12) {
         var = 0.0;
       }
@@ -905,8 +886,12 @@ NumericMatrix zscore_dense(
       }
     }
   }
+  std::vector<int>().swap(row_counts);
 
   std::vector<std::vector<int> > sets(n_sets);
+  std::vector<int> effective_sizes(n_sets, 0);
+  std::vector<double> inv_denom(n_sets, R_NaN);
+  std::vector<std::vector<int> > gene_to_sets(n_genes);
   for (int set_i = 0; set_i < n_sets; ++set_i) {
     IntegerVector genes = gene_sets[set_i];
     sets[set_i].reserve(genes.size());
@@ -918,51 +903,56 @@ NumericMatrix zscore_dense(
     }
     std::sort(sets[set_i].begin(), sets[set_i].end());
     sets[set_i].erase(std::unique(sets[set_i].begin(), sets[set_i].end()), sets[set_i].end());
-  }
-
-  NumericMatrix scores(n_cells, n_sets);
-  for (int set_i = 0; set_i < n_sets; ++set_i) {
     const std::vector<int>& set = sets[set_i];
     int effective_size = 0;
-    double zero_sum = 0.0;
 
     for (std::vector<int>::const_iterator it = set.begin(); it != set.end(); ++it) {
       const int gene = *it;
       if (row_valid[gene]) {
         ++effective_size;
-        zero_sum += -row_means[gene] / row_sds[gene];
       }
     }
+    effective_sizes[set_i] = effective_size;
 
+    if (effective_size < min_size || effective_size > max_size) {
+      continue;
+    }
+
+    inv_denom[set_i] = 1.0 / std::sqrt(static_cast<double>(effective_size));
+    for (std::vector<int>::const_iterator it = set.begin(); it != set.end(); ++it) {
+      const int gene = *it;
+      if (row_valid[gene]) {
+        gene_to_sets[gene].push_back(set_i);
+      }
+    }
+  }
+
+  NumericMatrix scores(n_cells, n_sets);
+  for (int set_i = 0; set_i < n_sets; ++set_i) {
+    const int effective_size = effective_sizes[set_i];
     if (effective_size < min_size || effective_size > max_size) {
       for (int cell = 0; cell < n_cells; ++cell) {
         scores(cell, set_i) = R_NaN;
       }
-      continue;
     }
+  }
 
-    for (int cell = 0; cell < n_cells; ++cell) {
-      scores(cell, set_i) = zero_sum;
-    }
-
-    for (std::vector<int>::const_iterator it = set.begin(); it != set.end(); ++it) {
-      const int gene = *it;
-      if (!row_valid[gene]) {
+  for (int cell = 0; cell < n_cells; ++cell) {
+    for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
+      const int gene = row_idx[ptr];
+      if (!row_valid[gene] || gene_to_sets[gene].empty()) {
         continue;
       }
-      const double z_zero = -row_means[gene] / row_sds[gene];
-      const int row_start = row_ptr[gene];
-      const int row_end = row_ptr[gene + 1];
-      for (int ptr = row_start; ptr < row_end; ++ptr) {
-        const int cell = row_cells[ptr];
-        const double z_value = (row_values[ptr] - row_means[gene]) / row_sds[gene];
-        scores(cell, set_i) += z_value - z_zero;
+      const double value = values[ptr];
+      if (!R_finite(value) || value == 0.0) {
+        continue;
       }
-    }
-
-    const double denom = std::sqrt(static_cast<double>(effective_size));
-    for (int cell = 0; cell < n_cells; ++cell) {
-      scores(cell, set_i) /= denom;
+      const double z_value = (value - row_means[gene]) / row_sds[gene];
+      const std::vector<int>& memberships = gene_to_sets[gene];
+      for (std::vector<int>::const_iterator it = memberships.begin(); it != memberships.end(); ++it) {
+        const int set_i = *it;
+        scores(cell, set_i) += z_value * inv_denom[set_i];
+      }
     }
   }
 
@@ -1021,17 +1011,34 @@ NumericMatrix plage_dense(
       }
     }
   }
-  std::vector<int>().swap(row_counts);
   std::vector<int>().swap(row_cursor);
 
   std::vector<double> row_means(n_genes, R_NaN);
   std::vector<double> row_sds(n_genes, R_NaN);
   std::vector<unsigned char> row_valid(n_genes, 0);
+  std::vector<double> orient_row_means(n_genes, R_NaN);
+  std::vector<double> orient_row_sds(n_genes, R_NaN);
+  std::vector<unsigned char> orient_row_valid(n_genes, 0);
   if (n_cells > 1) {
     for (int gene = 0; gene < n_genes; ++gene) {
-      const double mean = row_sums[gene] / static_cast<double>(n_cells);
-      double var = (row_sq_sums[gene] - static_cast<double>(n_cells) * mean * mean) /
-        static_cast<double>(n_cells - 1);
+      const int nz = row_counts[gene];
+      if (nz <= 1) {
+        const double full_mean = row_sums[gene] / static_cast<double>(n_cells);
+        double full_var = (row_sq_sums[gene] - static_cast<double>(n_cells) * full_mean * full_mean) /
+          static_cast<double>(n_cells - 1);
+        if (full_var < 0.0 && full_var > -1e-12) {
+          full_var = 0.0;
+        }
+        if (R_finite(full_var) && full_var > 0.0) {
+          orient_row_means[gene] = full_mean;
+          orient_row_sds[gene] = std::sqrt(full_var);
+          orient_row_valid[gene] = 1;
+        }
+        continue;
+      }
+      const double mean = row_sums[gene] / static_cast<double>(nz);
+      double var = (row_sq_sums[gene] - static_cast<double>(nz) * mean * mean) /
+        static_cast<double>(nz - 1);
       if (var < 0.0 && var > -1e-12) {
         var = 0.0;
       }
@@ -1040,8 +1047,20 @@ NumericMatrix plage_dense(
         row_sds[gene] = std::sqrt(var);
         row_valid[gene] = 1;
       }
+      const double full_mean = row_sums[gene] / static_cast<double>(n_cells);
+      double full_var = (row_sq_sums[gene] - static_cast<double>(n_cells) * full_mean * full_mean) /
+        static_cast<double>(n_cells - 1);
+      if (full_var < 0.0 && full_var > -1e-12) {
+        full_var = 0.0;
+      }
+      if (R_finite(full_var) && full_var > 0.0) {
+        orient_row_means[gene] = full_mean;
+        orient_row_sds[gene] = std::sqrt(full_var);
+        orient_row_valid[gene] = 1;
+      }
     }
   }
+  std::vector<int>().swap(row_counts);
 
   std::vector<std::vector<int> > sets(n_sets);
   for (int set_i = 0; set_i < n_sets; ++set_i) {
@@ -1076,11 +1095,13 @@ NumericMatrix plage_dense(
       continue;
     }
 
-    arma::mat z(static_cast<arma::uword>(effective_size), static_cast<arma::uword>(n_cells));
+    arma::mat z(
+      static_cast<arma::uword>(effective_size),
+      static_cast<arma::uword>(n_cells),
+      arma::fill::zeros
+    );
     for (int row = 0; row < effective_size; ++row) {
       const int gene = valid_genes[row];
-      const double z_zero = -row_means[gene] / row_sds[gene];
-      z.row(row).fill(z_zero);
       const int row_start = row_ptr[gene];
       const int row_end = row_ptr[gene + 1];
       for (int ptr = row_start; ptr < row_end; ++ptr) {
@@ -1090,19 +1111,34 @@ NumericMatrix plage_dense(
       }
     }
 
-    arma::mat u;
-    arma::vec s;
-    arma::mat v;
-    const bool ok = arma::svd_econ(
-      u,
-      s,
-      v,
-      z,
-      "right",
-      "dc"
-    );
+    arma::vec first_v;
+    bool ok = false;
+    if (n_cells <= 256) {
+      arma::mat crossprod = z.t() * z;
+      arma::vec eigval;
+      arma::mat eigvec;
+      ok = arma::eig_sym(eigval, eigvec, crossprod);
+      if (ok && eigvec.n_cols > 0) {
+        first_v = eigvec.col(eigvec.n_cols - 1);
+      }
+    } else {
+      arma::mat u;
+      arma::vec s;
+      arma::mat v;
+      ok = arma::svd_econ(
+        u,
+        s,
+        v,
+        z,
+        "right",
+        "dc"
+      );
+      if (ok && v.n_cols > 0) {
+        first_v = v.col(0);
+      }
+    }
 
-    if (!ok || v.n_cols == 0) {
+    if (!ok || first_v.n_elem == 0) {
       for (int cell = 0; cell < n_cells; ++cell) {
         scores(cell, set_i) = R_NaN;
       }
@@ -1111,20 +1147,36 @@ NumericMatrix plage_dense(
 
     double direction = 1.0;
     double dot = 0.0;
-    for (int cell = 0; cell < n_cells; ++cell) {
-      double mean_z = 0.0;
-      for (int row = 0; row < effective_size; ++row) {
-        mean_z += z(static_cast<arma::uword>(row), static_cast<arma::uword>(cell));
+    std::vector<double> mean_z_by_cell(n_cells, 0.0);
+    int orient_size = 0;
+    for (std::vector<int>::const_iterator it = set.begin(); it != set.end(); ++it) {
+      const int gene = *it;
+      if (!orient_row_valid[gene]) {
+        continue;
       }
-      mean_z /= static_cast<double>(effective_size);
-      dot += v(static_cast<arma::uword>(cell), 0) * mean_z;
+      ++orient_size;
+      const double base_z = -orient_row_means[gene] / orient_row_sds[gene];
+      for (int cell = 0; cell < n_cells; ++cell) {
+        mean_z_by_cell[cell] += base_z;
+      }
+      const int row_start = row_ptr[gene];
+      const int row_end = row_ptr[gene + 1];
+      for (int ptr = row_start; ptr < row_end; ++ptr) {
+        mean_z_by_cell[row_cells[ptr]] += row_values[ptr] / orient_row_sds[gene];
+      }
+    }
+    if (orient_size > 0) {
+      for (int cell = 0; cell < n_cells; ++cell) {
+        const double mean_z = mean_z_by_cell[cell] / static_cast<double>(orient_size);
+        dot += first_v(static_cast<arma::uword>(cell)) * mean_z;
+      }
     }
     if (R_finite(dot) && dot < 0.0) {
       direction = -1.0;
     }
 
     for (int cell = 0; cell < n_cells; ++cell) {
-      scores(cell, set_i) = direction * v(static_cast<arma::uword>(cell), 0);
+      scores(cell, set_i) = direction * first_v(static_cast<arma::uword>(cell));
     }
   }
 
@@ -1160,6 +1212,334 @@ static double gsva_sample_sd_from_freq(
   }
 
   return std::sqrt(static_cast<double>(sum / static_cast<long double>(n - 1)));
+}
+
+struct GsvaRankEntry {
+  int gene;
+  double value;
+};
+
+static bool gsva_rank_entry_before(const GsvaRankEntry& a, const GsvaRankEntry& b) {
+  if (a.value < b.value) {
+    return true;
+  }
+  if (a.value > b.value) {
+    return false;
+  }
+  return a.gene > b.gene;
+}
+
+static double gsva_sample_sd_from_values(
+  const std::vector<double>& values,
+  int start,
+  int end
+) {
+  const int n = end - start;
+  if (n < 2) {
+    return R_NaN;
+  }
+
+  long double mean = 0.0;
+  for (int i = start; i < end; ++i) {
+    mean += static_cast<long double>(values[i]);
+  }
+  mean /= static_cast<long double>(n);
+
+  long double ss = 0.0;
+  for (int i = start; i < end; ++i) {
+    const long double diff = static_cast<long double>(values[i]) - mean;
+    ss += diff * diff;
+  }
+  return std::sqrt(static_cast<double>(ss / static_cast<long double>(n - 1)));
+}
+
+static std::vector<std::vector<int> > gsva_sets_from_list(List gene_sets, int n_genes) {
+  const int n_sets = gene_sets.size();
+  std::vector<std::vector<int> > sets(n_sets);
+  for (int set_i = 0; set_i < n_sets; ++set_i) {
+    IntegerVector genes = gene_sets[set_i];
+    sets[set_i].reserve(genes.size());
+    for (int gene_i = 0; gene_i < genes.size(); ++gene_i) {
+      const int gene = genes[gene_i] - 1;
+      if (gene >= 0 && gene < n_genes) {
+        sets[set_i].push_back(gene);
+      }
+    }
+    std::sort(sets[set_i].begin(), sets[set_i].end());
+    sets[set_i].erase(std::unique(sets[set_i].begin(), sets[set_i].end()), sets[set_i].end());
+  }
+  return sets;
+}
+
+static void gsva_sparse_rows_from_dgc(
+  S4 expr,
+  int n_genes,
+  int n_cells,
+  std::vector<int>& row_ptr,
+  std::vector<int>& row_cells,
+  std::vector<double>& row_values
+) {
+  IntegerVector row_idx = expr.slot("i");
+  IntegerVector col_ptr = expr.slot("p");
+  NumericVector values = expr.slot("x");
+
+  std::vector<int> row_counts(n_genes, 0);
+  for (int cell = 0; cell < n_cells; ++cell) {
+    for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
+      const int gene = row_idx[ptr];
+      const double value = values[ptr];
+      if (R_finite(value) && value != 0.0) {
+        ++row_counts[gene];
+      }
+    }
+  }
+
+  row_ptr.assign(n_genes + 1, 0);
+  for (int gene = 0; gene < n_genes; ++gene) {
+    row_ptr[gene + 1] = row_ptr[gene] + row_counts[gene];
+  }
+  const int nnz = row_ptr[n_genes];
+  row_cells.assign(nnz, 0);
+  row_values.assign(nnz, 0.0);
+
+  std::vector<int> row_cursor(row_ptr);
+  for (int cell = 0; cell < n_cells; ++cell) {
+    for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
+      const int gene = row_idx[ptr];
+      const double value = values[ptr];
+      if (R_finite(value) && value != 0.0) {
+        const int out = row_cursor[gene]++;
+        row_cells[out] = cell;
+        row_values[out] = value;
+      }
+    }
+  }
+}
+
+static std::vector<double> gsva_sparse_kcdf_values(
+  const std::vector<int>& row_ptr,
+  const std::vector<double>& row_values,
+  int n_genes,
+  bool gaussian
+) {
+  std::vector<double> row_kcdf(row_values.size(), R_NaN);
+
+  for (int gene = 0; gene < n_genes; ++gene) {
+    const int row_start = row_ptr[gene];
+    const int row_end = row_ptr[gene + 1];
+    const int nv = row_end - row_start;
+    if (nv <= 0) {
+      continue;
+    }
+
+    double bw = gaussian ? gsva_sample_sd_from_values(row_values, row_start, row_end) / 4.0 : 0.5;
+    if (!R_finite(bw) || bw == 0.0) {
+      bw = 0.001;
+    }
+
+    std::map<double, double> cdf_by_value;
+    for (int y_i = row_start; y_i < row_end; ++y_i) {
+      const double y = row_values[y_i];
+      if (cdf_by_value.find(y) != cdf_by_value.end()) {
+        row_kcdf[y_i] = cdf_by_value[y];
+        continue;
+      }
+      double left_tail = 0.0;
+      for (int x_i = row_start; x_i < row_end; ++x_i) {
+        const double x = row_values[x_i];
+        left_tail += gaussian ?
+          R::pnorm(y - x, 0.0, bw, true, false) :
+          R::ppois(y, x + bw, true, false);
+      }
+      left_tail /= static_cast<double>(nv);
+      cdf_by_value[y] = left_tail;
+      row_kcdf[y_i] = left_tail;
+    }
+  }
+
+  return row_kcdf;
+}
+
+static NumericMatrix gsva_score_sparse_kcdf(
+  int n_genes,
+  int n_cells,
+  const std::vector<std::vector<int> >& sets,
+  const std::vector<int>& row_ptr,
+  const std::vector<int>& row_cells,
+  const std::vector<double>& row_kcdf,
+  bool max_diff,
+  bool abs_ranking,
+  double tau
+) {
+  NumericMatrix scores(n_cells, sets.size());
+
+  std::vector<int> col_counts(n_cells, 0);
+  for (std::size_t ptr = 0; ptr < row_cells.size(); ++ptr) {
+    ++col_counts[row_cells[ptr]];
+  }
+  std::vector<std::vector<GsvaRankEntry> > columns(n_cells);
+  for (int cell = 0; cell < n_cells; ++cell) {
+    columns[cell].reserve(col_counts[cell]);
+  }
+  for (int gene = 0; gene < n_genes; ++gene) {
+    for (int ptr = row_ptr[gene]; ptr < row_ptr[gene + 1]; ++ptr) {
+      const double value = row_kcdf[ptr];
+      if (R_finite(value)) {
+        columns[row_cells[ptr]].push_back(GsvaRankEntry{gene, value});
+      }
+    }
+  }
+
+  std::vector<int> rank_by_gene(n_genes, 0);
+  std::vector<int> zero_rank_by_gene(n_genes, 0);
+  std::vector<double> weight_by_pos(n_genes, 0.0);
+  std::vector<unsigned char> in_pos(n_genes, 0);
+  std::vector<int> touched_genes;
+  std::vector<int> touched_pos;
+
+  for (int cell = 0; cell < n_cells; ++cell) {
+    std::vector<GsvaRankEntry>& entries = columns[cell];
+    std::sort(entries.begin(), entries.end(), gsva_rank_entry_before);
+    touched_genes.clear();
+    touched_genes.reserve(entries.size());
+    for (std::size_t i = 0; i < entries.size(); ++i) {
+      const int gene = entries[i].gene;
+      rank_by_gene[gene] = static_cast<int>(i) + 1;
+      touched_genes.push_back(gene);
+    }
+
+    const int nonzero_count = static_cast<int>(entries.size());
+    const int zero_count = n_genes - nonzero_count;
+    if (zero_count > 0) {
+      int zero_rank = 0;
+      for (int gene = 0; gene < n_genes; ++gene) {
+        if (rank_by_gene[gene] == 0) {
+          zero_rank_by_gene[gene] = ++zero_rank;
+        }
+      }
+    }
+    const double sparse_mid = (static_cast<double>(nonzero_count) + 1.0) / 2.0;
+    const double zero_sym_rank = std::fabs(sparse_mid - 1.0);
+    const double dense_mid = static_cast<double>(n_genes) / 2.0;
+
+    for (int set_i = 0; set_i < static_cast<int>(sets.size()); ++set_i) {
+      const std::vector<int>& set = sets[set_i];
+      const int set_size = static_cast<int>(set.size());
+      if (set_size <= 0 || set_size >= n_genes) {
+        scores(cell, set_i) = R_NaN;
+        continue;
+      }
+
+      touched_pos.clear();
+      touched_pos.reserve(set.size());
+      double sum_in = 0.0;
+      for (std::vector<int>::const_iterator it = set.begin(); it != set.end(); ++it) {
+        const int gene = *it;
+        const int rank = rank_by_gene[gene];
+        int pos = 0;
+        double sym_rank = 0.0;
+        if (zero_count > 0) {
+          if (rank > 0) {
+            pos = nonzero_count - rank + 1;
+            sym_rank = std::fabs(sparse_mid - static_cast<double>(rank + 1));
+          } else {
+            pos = n_genes - zero_rank_by_gene[gene] + 1;
+            sym_rank = zero_sym_rank;
+          }
+        } else {
+          pos = n_genes - rank + 1;
+          sym_rank = std::fabs(dense_mid - static_cast<double>(rank));
+        }
+        if (pos < 1 || pos > n_genes) {
+          continue;
+        }
+        const int pos_idx = pos - 1;
+        const double weight = (tau == 1.0) ? sym_rank : std::pow(sym_rank, tau);
+        in_pos[pos_idx] = 1;
+        weight_by_pos[pos_idx] = weight;
+        touched_pos.push_back(pos_idx);
+        sum_in += weight;
+      }
+
+      double walk_pos = 0.0;
+      double walk_neg = 0.0;
+      double in_cdf = 0.0;
+      double out_cdf = 0.0;
+      const double out_step = 1.0 / static_cast<double>(n_genes - set_size);
+      const bool can_scale_in = sum_in > 0.0;
+      for (int pos = 0; pos < n_genes; ++pos) {
+        if (in_pos[pos]) {
+          if (can_scale_in) {
+            in_cdf += weight_by_pos[pos] / sum_in;
+          }
+        } else {
+          out_cdf += out_step;
+        }
+        const double walk = in_cdf - out_cdf;
+        if (walk > walk_pos) {
+          walk_pos = walk;
+        }
+        if (walk < walk_neg) {
+          walk_neg = walk;
+        }
+      }
+      if (max_diff) {
+        scores(cell, set_i) = abs_ranking ? (walk_pos - walk_neg) : (walk_pos + walk_neg);
+      } else {
+        scores(cell, set_i) = (walk_pos > std::fabs(walk_neg)) ? walk_pos : walk_neg;
+      }
+
+      for (std::vector<int>::const_iterator it = touched_pos.begin(); it != touched_pos.end(); ++it) {
+        weight_by_pos[*it] = 0.0;
+        in_pos[*it] = 0;
+      }
+    }
+
+    for (std::vector<int>::const_iterator it = touched_genes.begin(); it != touched_genes.end(); ++it) {
+      rank_by_gene[*it] = 0;
+    }
+    if (zero_count > 0) {
+      for (int gene = 0; gene < n_genes; ++gene) {
+        if (zero_rank_by_gene[gene] != 0) {
+          zero_rank_by_gene[gene] = 0;
+        }
+      }
+    }
+  }
+
+  return scores;
+}
+
+static NumericMatrix gsva_sparse_exact(
+  S4 expr,
+  List gene_sets,
+  bool gaussian,
+  bool max_diff,
+  bool abs_ranking,
+  double tau
+) {
+  IntegerVector dims = expr.slot("Dim");
+  const int n_genes = dims[0];
+  const int n_cells = dims[1];
+
+  std::vector<int> row_ptr;
+  std::vector<int> row_cells;
+  std::vector<double> row_values;
+  gsva_sparse_rows_from_dgc(expr, n_genes, n_cells, row_ptr, row_cells, row_values);
+  std::vector<std::vector<int> > sets = gsva_sets_from_list(gene_sets, n_genes);
+  std::vector<double> row_kcdf = gsva_sparse_kcdf_values(row_ptr, row_values, n_genes, gaussian);
+
+  return gsva_score_sparse_kcdf(
+    n_genes,
+    n_cells,
+    sets,
+    row_ptr,
+    row_cells,
+    row_kcdf,
+    max_diff,
+    abs_ranking,
+    tau
+  );
 }
 
 static void gsva_score_z_chunk(
@@ -1327,6 +1707,16 @@ NumericMatrix gsva_gaussian_dense(
   double tau = 1.0,
   int chunk_size = 0
 ) {
+  (void) chunk_size;
+  return gsva_sparse_exact(
+    expr,
+    gene_sets,
+    true,
+    max_diff,
+    abs_ranking,
+    tau
+  );
+
   IntegerVector dims = expr.slot("Dim");
   const int n_genes = dims[0];
   const int n_cells = dims[1];
@@ -1443,6 +1833,16 @@ NumericMatrix gsva_poisson_dense(
   double tau = 1.0,
   int chunk_size = 0
 ) {
+  (void) chunk_size;
+  return gsva_sparse_exact(
+    expr,
+    gene_sets,
+    false,
+    max_diff,
+    abs_ranking,
+    tau
+  );
+
   IntegerVector dims = expr.slot("Dim");
   const int n_genes = dims[0];
   const int n_cells = dims[1];
