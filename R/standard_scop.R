@@ -70,6 +70,7 @@
 #' Default is `0.6`.
 #' @param seed Random seed for reproducibility.
 #' Default is `11`.
+#' @param ... Additional parameters to pass to the dimensionality reduction methods.
 #'
 #' @return A `Seurat` object.
 #'
@@ -185,7 +186,8 @@ standard_scop <- function(
   cluster_algorithm = "louvain",
   cluster_resolution = 0.6,
   verbose = TRUE,
-  seed = 11
+  seed = 11,
+  ...
 ) {
   log_message(
     "Start standard processing workflow...",
@@ -378,7 +380,6 @@ standard_scop <- function(
   assay_obj <- srt[[assay]]
   scale_features <- if (inherits(assay_obj, "Assay5")) {
     if ("scale.data" %in% names(assay_obj@layers)) {
-      # Assay5 layers are stored without dimnames; GetAssayData adds them
       rownames(SeuratObject::GetAssayData(assay_obj, layer = "scale.data"))
     } else {
       character(0)
@@ -433,7 +434,8 @@ standard_scop <- function(
         reduction_method = lr,
         skip_first = normalization_method == "TFIDF",
         use_stored = TRUE,
-        verbose = verbose
+        verbose = verbose,
+        ...
       )
     } else {
       linear_reduction_dims_use_current <- linear_reduction_dims_use
@@ -630,8 +632,14 @@ atac_defaults <- function(
 ) {
   list(
     prefix = if (identical(prefix, "Standard")) "ATAC" else prefix,
-    do_normalization = if (is.null(do_normalization)) TRUE else do_normalization,
-    normalization_method = if (identical(normalization_method, "LogNormalize")) {
+    do_normalization = if (is.null(do_normalization)) {
+      TRUE
+    } else {
+      do_normalization
+    },
+    normalization_method = if (
+      identical(normalization_method, "LogNormalize")
+    ) {
       "TFIDF"
     } else {
       normalization_method
@@ -639,9 +647,21 @@ atac_defaults <- function(
     do_HVF_finding = if (is.null(do_HVF_finding)) TRUE else do_HVF_finding,
     nHVF = if (identical(nHVF, 2000)) 20000 else nHVF,
     do_scaling = if (isTRUE(do_scaling)) FALSE else do_scaling,
-    linear_reduction = if (identical(linear_reduction, "pca")) "svd" else linear_reduction,
-    linear_reduction_dims_use = if (is.null(linear_reduction_dims_use)) 2:30 else linear_reduction_dims_use,
-    neighbor_metric = if (identical(neighbor_metric, "euclidean")) "cosine" else neighbor_metric
+    linear_reduction = if (identical(linear_reduction, "pca")) {
+      "svd"
+    } else {
+      linear_reduction
+    },
+    linear_reduction_dims_use = if (is.null(linear_reduction_dims_use)) {
+      2:30
+    } else {
+      linear_reduction_dims_use
+    },
+    neighbor_metric = if (identical(neighbor_metric, "euclidean")) {
+      "cosine"
+    } else {
+      neighbor_metric
+    }
   )
 }
 
@@ -657,7 +677,9 @@ standardize_atac <- function(srt, prefix = "ATAC") {
   prefix <- prefix %||% ""
   svd_name <- paste0(prefix, "svd")
   lsi_name <- paste0(prefix, "lsi")
-  if (svd_name %in% names(srt@reductions) && !lsi_name %in% names(srt@reductions)) {
+  if (
+    svd_name %in% names(srt@reductions) && !lsi_name %in% names(srt@reductions)
+  ) {
     reduc <- srt@reductions[[svd_name]]
     SeuratObject::Key(reduc) <- paste0(lsi_name, "_")
     srt@reductions[[lsi_name]] <- reduc
@@ -665,21 +687,39 @@ standardize_atac <- function(srt, prefix = "ATAC") {
 
   svd_cluster <- paste0(prefix, "svdclusters")
   lsi_cluster <- paste0(prefix, "lsiclusters")
-  if (svd_cluster %in% colnames(srt@meta.data) && !lsi_cluster %in% colnames(srt@meta.data)) {
+  if (
+    svd_cluster %in%
+      colnames(srt@meta.data) &&
+      !lsi_cluster %in% colnames(srt@meta.data)
+  ) {
     srt[[lsi_cluster]] <- srt[[svd_cluster]]
   }
   prefix_cluster <- paste0(prefix, "clusters")
-  if (prefix_cluster %in% colnames(srt@meta.data) && !lsi_cluster %in% colnames(srt@meta.data)) {
+  if (
+    prefix_cluster %in%
+      colnames(srt@meta.data) &&
+      !lsi_cluster %in% colnames(srt@meta.data)
+  ) {
     srt[[lsi_cluster]] <- srt[[prefix_cluster]]
   }
 
   default_reduction <- srt@misc[["Default_reduction"]] %||% NULL
   if (is.character(default_reduction) && length(default_reduction) == 1) {
-    default_reduction <- sub(paste0("^", prefix, "svd"), paste0(prefix, "lsi"), default_reduction)
+    default_reduction <- sub(
+      paste0("^", prefix, "svd"),
+      paste0(prefix, "lsi"),
+      default_reduction
+    )
     srt@misc[["Default_reduction"]] <- default_reduction
   }
 
   srt@misc[["ATAC_default_linear_reduction"]] <- lsi_name
-  srt@misc[["ATAC_default_cluster_col"]] <- if (lsi_cluster %in% colnames(srt@meta.data)) lsi_cluster else NULL
+  srt@misc[["ATAC_default_cluster_col"]] <- if (
+    lsi_cluster %in% colnames(srt@meta.data)
+  ) {
+    lsi_cluster
+  } else {
+    NULL
+  }
   srt
 }
