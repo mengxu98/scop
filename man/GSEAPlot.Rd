@@ -63,7 +63,7 @@ GSEAPlot(
 )
 }
 \arguments{
-\item{srt}{A Seurat object containing the results of RunDEtest and RunGSEA.
+\item{srt}{A \code{Seurat} object containing the results of RunDEtest and RunGSEA.
 If specified, GSEA results will be extracted from the Seurat object automatically.
 If not specified, the \code{res} arguments must be provided.}
 
