@@ -31,7 +31,8 @@ standard_scop(
   cluster_algorithm = "louvain",
   cluster_resolution = 0.6,
   verbose = TRUE,
-  seed = 11
+  seed = 11,
+  ...
 )
 }
 \arguments{
@@ -127,6 +128,8 @@ Default is \code{TRUE}.}
 
 \item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
+
+\item{...}{Additional parameters to pass to the dimensionality reduction methods.}
 }
 \value{
 A \code{Seurat} object.
