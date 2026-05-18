@@ -1,7 +1,7 @@
-#' @title Run pySCENIC gene regulatory network analysis
+#' @title Run SCENIC gene regulatory network analysis
 #'
 #' @description
-#' Run pySCENIC from a Seurat object. The GRN and cisTarget steps use a
+#' Run SCENIC from a Seurat object. The GRN and cisTarget steps use a
 #' metacell count matrix by default, while AUCell scores are calculated on the
 #' original single-cell count matrix.
 #'
@@ -11,10 +11,10 @@
 #' @param srt A Seurat object.
 #' @param layer Assay layer used as the count matrix.
 #' @param ranking_dbs Character vector of cisTarget ranking feather files.
-#' @param motif_annotations Motif annotation table used by `pyscenic ctx`.
+#' @param motif_annotations Motif annotation table used by `scenic ctx`.
 #' @param tf_list Transcription-factor list used by GRNBoost2.
-#' @param work_dir Directory used for pySCENIC input and output files.
-#' @param prefix Prefix for pySCENIC output files.
+#' @param work_dir Directory used for SCENIC input and output files.
+#' @param prefix Prefix for SCENIC output files.
 #' @param metacell Whether to build a metacell count matrix for GRNBoost2.
 #' @param metacell.by Optional metadata column(s) used to keep metacells within
 #' groups such as samples or cell types.
@@ -35,25 +35,25 @@
 #' @param metacell_dims Dimensions used for metacell overclustering.
 #' @param min_expr_cells Minimum number of cells or metacells where a gene must
 #' be detected before GRNBoost2.
-#' @param min_regulon_size Minimum regulon size kept after `pyscenic ctx`.
-#' @param cores Number of workers used by GRNBoost2, `pyscenic ctx`, and
+#' @param min_regulon_size Minimum regulon size kept after `scenic ctx`.
+#' @param cores Number of workers used by GRNBoost2, `scenic ctx`, and
 #' AUCell batch scoring. If multicore execution is not supported, this is
 #' automatically reduced to one core.
 #' @param aucell_batch_size Number of cells scored in each AUCell batch.
 #' @param seed Random seed used by GRNBoost2 and Seurat overclustering.
-#' @param force Whether to rebuild existing pySCENIC outputs.
+#' @param force Whether to rebuild existing SCENIC outputs.
 #' @param assay_name Name of the assay used to store regulon activity scores.
 #' @param tool_name Name of the `srt@tools` entry.
 #' @param return_seurat Whether to return the modified Seurat object. If
 #' `FALSE`, a result list is returned.
-#' @param envname Python environment used for pySCENIC. If `NULL`, the isolated
-#' `"pyscenic_env"` environment is used.
+#' @param envname Python environment used for SCENIC. If `NULL`, the isolated
+#' `"scenic_env"` environment is used.
 #' @param conda The path or command name of a conda-compatible executable.
-#' @param prepare_env Whether to prepare and configure the pySCENIC Python
+#' @param prepare_env Whether to prepare and configure the SCENIC Python
 #' environment before running.
 #' @param progress Whether to show a stage-level progress bar.
 #'
-#' @return A Seurat object with pySCENIC results, or a result list when
+#' @return A Seurat object with SCENIC results, or a result list when
 #' `return_seurat = FALSE`.
 #' @export
 #'
@@ -67,7 +67,7 @@
 #'   ),
 #'   motif_annotations = "/path/to/motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl",
 #'   tf_list = "/path/to/hsa_hgnc_tfs.motifs-v10.txt",
-#'   work_dir = "./pyscenic",
+#'   work_dir = "./scenic",
 #'   cores = 8
 #' )
 #' }
@@ -79,7 +79,7 @@ RunSCENIC <- function(
   motif_annotations,
   tf_list,
   work_dir,
-  prefix = "pyscenic",
+  prefix = "scenic",
   metacell = TRUE,
   metacell.by = NULL,
   metacell_resolution = NULL,
@@ -93,8 +93,8 @@ RunSCENIC <- function(
   aucell_batch_size = 500,
   seed = 1234,
   force = FALSE,
-  assay_name = "pyscenic",
-  tool_name = "Pyscenic",
+  assay_name = "scenic",
+  tool_name = "SCENIC",
   return_seurat = TRUE,
   envname = NULL,
   conda = "auto",
@@ -126,12 +126,12 @@ RunSCENIC <- function(
   tf_list <- normalizePath(tf_list, mustWork = TRUE)
   work_dir <- normalizePath(work_dir, mustWork = FALSE)
   dir.create(work_dir, recursive = TRUE, showWarnings = FALSE)
-  progress_state <- pyscenic_progress_init(progress = progress, verbose = verbose)
-  on.exit(pyscenic_progress_close(progress_state), add = TRUE)
-  pyscenic_progress_step(
+  progress_state <- scenic_progress_init(progress = progress, verbose = verbose)
+  on.exit(scenic_progress_close(progress_state), add = TRUE)
+  scenic_progress_step(
     progress_state,
     value = 5,
-    label = "Validated pySCENIC inputs",
+    label = "Validated SCENIC inputs",
     verbose = verbose
   )
 
@@ -163,9 +163,9 @@ RunSCENIC <- function(
   }
   aucell_batch_size <- max(1L, as.integer(aucell_batch_size))
 
-  envname <- envname %||% "pyscenic_env"
-  pyscenic_python_packages <- c(
-    "pyscenic==0.12.1",
+  envname <- envname %||% "scenic_env"
+  scenic_python_packages <- c(
+    scenic_backend_requirement(),
     "arboreto==0.1.6",
     "ctxcore==0.2.0",
     "numpy==1.23.5",
@@ -174,10 +174,10 @@ RunSCENIC <- function(
     "pyarrow"
   )
   if (isTRUE(prepare_env)) {
-    pyscenic_progress_step(
+    scenic_progress_step(
       progress_state,
       value = 10,
-      label = "Checking pySCENIC Python environment",
+      label = "Checking SCENIC Python environment",
       verbose = verbose
     )
     env_ready <- FALSE
@@ -188,66 +188,66 @@ RunSCENIC <- function(
     if (env_exists) {
       pkg_installed <- tryCatch(
         exist_python_pkgs(
-          packages = pyscenic_python_packages,
+          packages = scenic_python_packages,
           envname = envname,
           conda = conda,
           verbose = FALSE
         ),
         error = function(...) {
-          stats::setNames(rep(FALSE, length(pyscenic_python_packages)), pyscenic_python_packages)
+          stats::setNames(rep(FALSE, length(scenic_python_packages)), scenic_python_packages)
         }
       )
       env_ready <- all(pkg_installed)
     }
     if (isTRUE(env_ready)) {
       log_message(
-        "{.pkg pySCENIC} Python environment already has the required packages; skipping {.fn PrepareEnv}",
+        "{.pkg SCENIC} Python environment already has the required packages; skipping {.fn PrepareEnv}",
         verbose = verbose
       )
     } else {
       if (isTRUE(env_exists)) {
         missing_packages <- names(pkg_installed)[!pkg_installed]
         log_message(
-          "{.pkg pySCENIC} Python environment is missing {.val {length(missing_packages)}} package{?s}; preparing environment",
+          "{.pkg SCENIC} Python environment is missing {.val {length(missing_packages)}} package{?s}; preparing environment",
           verbose = verbose
         )
       }
-      pyscenic_progress_step(
+      scenic_progress_step(
         progress_state,
         value = 10,
-        label = "Preparing pySCENIC Python environment",
+        label = "Preparing SCENIC Python environment",
         verbose = verbose
       )
       PrepareEnv(
         envname = envname,
         conda = conda,
         version = "3.10-1",
-        modules = "pyscenic"
+        modules = "scenic"
       )
     }
   }
-  pyscenic_progress_step(
+  scenic_progress_step(
     progress_state,
     value = 15,
-    label = "Checking pySCENIC Python packages",
+    label = "Checking SCENIC Python packages",
     verbose = verbose
   )
   check_python(
-    packages = pyscenic_python_packages,
+    packages = scenic_python_packages,
     envname = envname,
     conda = conda,
     verbose = verbose
   )
   conda_resolved <- resolve_conda(conda)
-  pyscenic_python <- conda_python(
+  scenic_python <- conda_python(
     conda = conda_resolved,
     envname = envname
   )
   assert_python_runtime_switchable(
-    pyscenic_python,
-    restart_hint = pyscenic_runtime_restart_hint(envname = envname)
+    scenic_python,
+    restart_hint = scenic_runtime_restart_hint(envname = envname)
   )
-  configure_python_runtime(pyscenic_python)
+  configure_python_runtime(scenic_python)
 
   functions <- reticulate::import_from_path(
     "functions",
@@ -256,10 +256,10 @@ RunSCENIC <- function(
   )
 
   log_message(
-    "Preparing {.pkg pySCENIC} input matrix",
+    "Preparing {.pkg SCENIC} input matrix",
     verbose = verbose
   )
-  pyscenic_progress_step(
+  scenic_progress_step(
     progress_state,
     value = 20,
     label = "Loading expression counts",
@@ -269,23 +269,23 @@ RunSCENIC <- function(
   counts <- counts[, colnames(srt), drop = FALSE]
   if (nrow(counts) == 0 || ncol(counts) == 0) {
     log_message(
-      "No expression values available for {.pkg pySCENIC}",
+      "No expression values available for {.pkg SCENIC}",
       message_type = "error"
     )
   }
   log_message(
-    "{.pkg pySCENIC} expression input: assay {.val {assay}}, layer {.val {layer}}, {.val {nrow(counts)}} genes x {.val {ncol(counts)}} cells",
+    "{.pkg SCENIC} expression input: assay {.val {assay}}, layer {.val {layer}}, {.val {nrow(counts)}} genes x {.val {ncol(counts)}} cells",
     verbose = verbose
   )
 
   if (isTRUE(metacell)) {
-    pyscenic_progress_step(
+    scenic_progress_step(
       progress_state,
       value = 30,
       label = "Building metacell counts for GRNBoost2",
       verbose = verbose
     )
-    metacell_result <- pyscenic_build_metacell_counts(
+    metacell_result <- scenic_build_metacell_counts(
       srt = srt,
       counts = counts,
       assay = assay,
@@ -303,7 +303,7 @@ RunSCENIC <- function(
   } else {
     grn_counts <- counts
     metacell_info <- NULL
-    pyscenic_progress_step(
+    scenic_progress_step(
       progress_state,
       value = 30,
       label = "Using single-cell counts for GRNBoost2",
@@ -313,28 +313,28 @@ RunSCENIC <- function(
   grn_count_source <- if (isTRUE(metacell)) "metacell matrix" else "single-cell matrix"
   grn_count_unit <- if (isTRUE(metacell)) "cells/metacells" else "cells"
   log_message(
-    "{.pkg pySCENIC} GRN count source: {.val {grn_count_source}}, {.val {nrow(grn_counts)}} genes x {.val {ncol(grn_counts)}} {grn_count_unit}",
+    "{.pkg SCENIC} GRN count source: {.val {grn_count_source}}, {.val {nrow(grn_counts)}} genes x {.val {ncol(grn_counts)}} {grn_count_unit}",
     verbose = verbose
   )
 
-  pyscenic_progress_step(
+  scenic_progress_step(
     progress_state,
     value = 40,
     label = "Reading cisTarget ranking database genes",
     verbose = verbose
   )
   ranking_gene_lists <- lapply(ranking_dbs, function(db) {
-    as.character(unlist(functions$PyscenicRankingGenes(db), use.names = FALSE))
+    as.character(unlist(functions$SCENICRankingGenes(db), use.names = FALSE))
   })
   ranking_genes <- Reduce(intersect, ranking_gene_lists)
-  grn_matrix <- pyscenic_prepare_grn_matrix(
+  grn_matrix <- scenic_prepare_grn_matrix(
     counts = grn_counts,
     ranking_genes = ranking_genes,
     min_expr_cells = min_expr_cells,
     verbose = verbose
   )
 
-  pyscenic_progress_step(
+  scenic_progress_step(
     progress_state,
     value = 48,
     label = "Writing GRNBoost2 expression matrix",
@@ -349,7 +349,7 @@ RunSCENIC <- function(
     )
   } else {
     log_message(
-      "Reusing existing {.pkg pySCENIC} expression matrix: {.file {expr_csv}}",
+      "Reusing existing {.pkg SCENIC} expression matrix: {.file {expr_csv}}",
       verbose = verbose
     )
   }
@@ -361,7 +361,7 @@ RunSCENIC <- function(
   ras_file <- file.path(work_dir, paste0(prefix, "_regulon_activity_score.rds"))
   regulon_list_file <- file.path(work_dir, paste0(prefix, "_regulon_list.rds"))
 
-  pyscenic_progress_step(
+  scenic_progress_step(
     progress_state,
     value = 55,
     label = "Running GRNBoost2",
@@ -377,10 +377,10 @@ RunSCENIC <- function(
     verbose = isTRUE(verbose)
   )
 
-  pyscenic_progress_step(
+  scenic_progress_step(
     progress_state,
     value = 70,
-    label = "Running pySCENIC cisTarget pruning",
+    label = "Running SCENIC cisTarget pruning",
     verbose = verbose
   )
   functions$RunSCENICCtx(
@@ -394,14 +394,14 @@ RunSCENIC <- function(
     verbose = isTRUE(verbose)
   )
 
-  pyscenic_progress_step(
+  scenic_progress_step(
     progress_state,
     value = 82,
-    label = "Converting pySCENIC regulons",
+    label = "Converting SCENIC regulons",
     verbose = verbose
   )
   if (isTRUE(force) || !file.exists(gmt_file) || !file.exists(txt_file)) {
-    functions$PyscenicRegulonsToFiles(
+    functions$SCENICRegulonsToFiles(
       regulon_file = ctx_file,
       gmt_file = gmt_file,
       txt_file = txt_file,
@@ -409,19 +409,19 @@ RunSCENIC <- function(
     )
   } else {
     log_message(
-      "Reusing existing pySCENIC regulon files",
+      "Reusing existing SCENIC regulon files",
       verbose = verbose
     )
   }
 
-  pyscenic_progress_step(
+  scenic_progress_step(
     progress_state,
     value = 88,
     label = "Reading regulon target lists",
     verbose = verbose
   )
-  regulon_tbl <- pyscenic_read_regulon_txt(txt_file)
-  regulon_list <- pyscenic_regulon_list(regulon_tbl)
+  regulon_tbl <- scenic_read_regulon_txt(txt_file)
+  regulon_list <- scenic_regulon_list(regulon_tbl)
   if (!file.exists(regulon_list_file) || isTRUE(force)) {
     saveRDS(regulon_list, regulon_list_file)
   }
@@ -433,13 +433,13 @@ RunSCENIC <- function(
     )
     ras_mat <- readRDS(ras_file)
   } else {
-    pyscenic_progress_step(
+    scenic_progress_step(
       progress_state,
       value = 92,
       label = "Calculating AUCell regulon activity scores",
       verbose = verbose
     )
-    ras_mat <- pyscenic_compute_aucell_score(
+    ras_mat <- scenic_compute_aucell_score(
       counts = counts,
       regulon_list = regulon_list,
       min_regulon_size = min_regulon_size,
@@ -451,10 +451,10 @@ RunSCENIC <- function(
   }
   ras_mat <- ras_mat[colnames(srt), , drop = FALSE]
 
-  pyscenic_progress_step(
+  scenic_progress_step(
     progress_state,
     value = 96,
-    label = "Collecting pySCENIC result files",
+    label = "Collecting SCENIC result files",
     verbose = verbose
   )
   adjacency <- if (file.exists(adj_file)) {
@@ -504,10 +504,10 @@ RunSCENIC <- function(
   )
 
   if (isFALSE(return_seurat)) {
-    pyscenic_progress_step(
+    scenic_progress_step(
       progress_state,
       value = 100,
-      label = "Finished pySCENIC",
+      label = "Finished SCENIC",
       verbose = verbose
     )
     return(result)
@@ -524,20 +524,20 @@ RunSCENIC <- function(
     )
   )
   srt@tools[[tool_name]] <- result
-  pyscenic_progress_step(
+  scenic_progress_step(
     progress_state,
     value = 100,
-    label = "Stored pySCENIC results",
+    label = "Stored SCENIC results",
     verbose = verbose
   )
   log_message(
-    "{.pkg pySCENIC} results stored in assay {.val {assay_name}} and tools slot {.val {tool_name}}",
+    "{.pkg SCENIC} results stored in assay {.val {assay_name}} and tools slot {.val {tool_name}}",
     verbose = verbose
   )
   srt
 }
 
-pyscenic_progress_init <- function(progress = TRUE, verbose = TRUE) {
+scenic_progress_init <- function(progress = TRUE, verbose = TRUE) {
   if (!isTRUE(progress) || !isTRUE(verbose)) {
     return(NULL)
   }
@@ -547,7 +547,7 @@ pyscenic_progress_init <- function(progress = TRUE, verbose = TRUE) {
   progress_state
 }
 
-pyscenic_progress_step <- function(progress_state, value, label, verbose = TRUE) {
+scenic_progress_step <- function(progress_state, value, label, verbose = TRUE) {
   value <- max(0L, min(100L, as.integer(value)))
   if (!is.null(progress_state)) {
     value <- max(progress_state$value, value)
@@ -562,14 +562,14 @@ pyscenic_progress_step <- function(progress_state, value, label, verbose = TRUE)
   invisible(progress_state)
 }
 
-pyscenic_progress_close <- function(progress_state) {
+scenic_progress_close <- function(progress_state) {
   if (!is.null(progress_state)) {
     close(progress_state$pb)
   }
   invisible(NULL)
 }
 
-pyscenic_default_target_metacells <- function(n_cells) {
+scenic_default_target_metacells <- function(n_cells) {
   n_cells <- as.integer(n_cells)
   if (length(n_cells) != 1 || is.na(n_cells) || n_cells <= 0) {
     log_message(
@@ -603,7 +603,7 @@ pyscenic_default_target_metacells <- function(n_cells) {
   as.integer(target)
 }
 
-pyscenic_metacell_labels <- function(cluster_vec, group_df = NULL) {
+scenic_metacell_labels <- function(cluster_vec, group_df = NULL) {
   cluster_vec <- as.character(cluster_vec)
   if (!is.null(group_df)) {
     group_df[] <- lapply(group_df, as.character)
@@ -616,7 +616,7 @@ pyscenic_metacell_labels <- function(cluster_vec, group_df = NULL) {
   factor(cluster_vec)
 }
 
-pyscenic_resolution_summary <- function(
+scenic_resolution_summary <- function(
   srt,
   cluster_cols,
   resolution_candidates,
@@ -637,7 +637,7 @@ pyscenic_resolution_summary <- function(
 
     cluster_col <- cluster_cols[[resolution_idx[[length(resolution_idx)]]]]
     cluster_vec <- as.character(srt[[cluster_col]][, 1])
-    metacell_labels <- pyscenic_metacell_labels(cluster_vec, group_df = group_df)
+    metacell_labels <- scenic_metacell_labels(cluster_vec, group_df = group_df)
     cell_counts <- lengths(split(colnames(srt), metacell_labels))
 
     data.frame(
@@ -655,7 +655,7 @@ pyscenic_resolution_summary <- function(
   do.call(rbind, summary_list)
 }
 
-pyscenic_select_metacell_resolution <- function(resolution_summary, target_metacells) {
+scenic_select_metacell_resolution <- function(resolution_summary, target_metacells) {
   if (is.null(resolution_summary) || nrow(resolution_summary) == 0) {
     log_message(
       "Cannot summarize metacell candidates from {.fn Seurat::FindClusters}",
@@ -679,7 +679,7 @@ pyscenic_select_metacell_resolution <- function(resolution_summary, target_metac
   )
 }
 
-pyscenic_build_metacell_counts <- function(
+scenic_build_metacell_counts <- function(
   srt,
   counts,
   assay,
@@ -694,7 +694,7 @@ pyscenic_build_metacell_counts <- function(
 ) {
   set.seed(seed)
   log_message(
-    "Building metacells for {.pkg pySCENIC} GRN input",
+    "Building metacells for {.pkg SCENIC} GRN input",
     verbose = verbose
   )
   metacell_reduction <- as.character(metacell_reduction)
@@ -726,7 +726,7 @@ pyscenic_build_metacell_counts <- function(
     max_pca_dims <- min(length(pca_features), ncol(srt) - 1L)
     if (max_pca_dims < 1L) {
       log_message(
-        "At least two cells and one variable feature are required to build pySCENIC metacells with PCA",
+        "At least two cells and one variable feature are required to build SCENIC metacells with PCA",
         message_type = "error"
       )
     }
@@ -771,7 +771,7 @@ pyscenic_build_metacell_counts <- function(
       )
     }
     log_message(
-      "Using existing reduction {.val {metacell_reduction}} for {.pkg pySCENIC} metacell overclustering",
+      "Using existing reduction {.val {metacell_reduction}} for {.pkg SCENIC} metacell overclustering",
       verbose = verbose
     )
   }
@@ -799,7 +799,7 @@ pyscenic_build_metacell_counts <- function(
         vapply(group_df, function(x) any(is.na(x)), logical(1))
       ]
       log_message(
-        "{.arg metacell.by} contains missing values in {.val {sum(missing_group)}} cell{?s} across column{?s} {.val {missing_group_cols}}; fill or remove missing annotations before building pySCENIC metacells.",
+        "{.arg metacell.by} contains missing values in {.val {sum(missing_group)}} cell{?s} across column{?s} {.val {missing_group_cols}}; fill or remove missing annotations before building SCENIC metacells.",
         message_type = "error"
       )
     }
@@ -807,7 +807,7 @@ pyscenic_build_metacell_counts <- function(
 
   auto_resolution <- is.null(metacell_resolution)
   if (isTRUE(auto_resolution)) {
-    metacell_target <- metacell_target %||% pyscenic_default_target_metacells(ncol(srt))
+    metacell_target <- metacell_target %||% scenic_default_target_metacells(ncol(srt))
     metacell_target <- max(1L, as.integer(metacell_target))
     metacell_resolution_candidates <- unique(as.numeric(metacell_resolution_candidates))
     metacell_resolution_candidates <- metacell_resolution_candidates[
@@ -820,7 +820,7 @@ pyscenic_build_metacell_counts <- function(
       )
     }
     log_message(
-      "Auto {.pkg pySCENIC} target metacells: {.val {metacell_target}} for {.val {ncol(srt)}} cells",
+      "Auto {.pkg SCENIC} target metacells: {.val {metacell_target}} for {.val {ncol(srt)}} cells",
       verbose = verbose
     )
   } else {
@@ -850,7 +850,7 @@ pyscenic_build_metacell_counts <- function(
       message_type = "error"
     )
   }
-  resolution_summary <- pyscenic_resolution_summary(
+  resolution_summary <- scenic_resolution_summary(
     srt = srt,
     cluster_cols = cluster_cols,
     resolution_candidates = metacell_resolution_candidates,
@@ -858,7 +858,7 @@ pyscenic_build_metacell_counts <- function(
   )
 
   if (isTRUE(auto_resolution)) {
-    selection <- pyscenic_select_metacell_resolution(
+    selection <- scenic_select_metacell_resolution(
       resolution_summary = resolution_summary,
       target_metacells = metacell_target
     )
@@ -874,7 +874,7 @@ pyscenic_build_metacell_counts <- function(
       collapse = ", "
     )
     log_message(
-      "{.pkg pySCENIC} metacell resolution scan (resolution:n_metacells): {metacell_scan}",
+      "{.pkg SCENIC} metacell resolution scan (resolution:n_metacells): {metacell_scan}",
       verbose = verbose
     )
   } else {
@@ -883,7 +883,7 @@ pyscenic_build_metacell_counts <- function(
   }
 
   cluster_vec <- as.character(srt[[cluster_col]][, 1])
-  metacell_labels <- pyscenic_metacell_labels(cluster_vec, group_df = group_df)
+  metacell_labels <- scenic_metacell_labels(cluster_vec, group_df = group_df)
 
   metacells <- split(colnames(srt), metacell_labels)
   metacell_names <- paste0("metacell_", seq_along(metacells))
@@ -891,11 +891,11 @@ pyscenic_build_metacell_counts <- function(
   names(metacells) <- metacell_names
   metacell_sizes <- lengths(metacells)
   log_message(
-    "{.pkg pySCENIC} selected metacell resolution {.val {selected_resolution}} with {.val {length(metacells)}} metacells",
+    "{.pkg SCENIC} selected metacell resolution {.val {selected_resolution}} with {.val {length(metacells)}} metacells",
     verbose = verbose
   )
   log_message(
-    "{.pkg pySCENIC} metacell size summary: min {.val {min(metacell_sizes)}}, median {.val {stats::median(metacell_sizes)}}, mean {.val {round(mean(metacell_sizes), 2)}}, max {.val {max(metacell_sizes)}} cells",
+    "{.pkg SCENIC} metacell size summary: min {.val {min(metacell_sizes)}}, median {.val {stats::median(metacell_sizes)}}, mean {.val {round(mean(metacell_sizes), 2)}}, max {.val {max(metacell_sizes)}} cells",
     verbose = verbose
   )
 
@@ -937,7 +937,7 @@ pyscenic_build_metacell_counts <- function(
   list(counts = meta_counts, info = info)
 }
 
-pyscenic_prepare_grn_matrix <- function(
+scenic_prepare_grn_matrix <- function(
   counts,
   ranking_genes,
   min_expr_cells = 3,
@@ -954,16 +954,16 @@ pyscenic_prepare_grn_matrix <- function(
     )
   }
   log_message(
-    "{.pkg pySCENIC} GRN input matrix: {.val {nrow(grn_matrix)}} cells/metacells x {.val {ncol(grn_matrix)}} genes",
+    "{.pkg SCENIC} GRN input matrix: {.val {nrow(grn_matrix)}} cells/metacells x {.val {ncol(grn_matrix)}} genes",
     verbose = verbose
   )
   grn_matrix
 }
 
-pyscenic_read_regulon_txt <- function(txt_file) {
+scenic_read_regulon_txt <- function(txt_file) {
   if (!file.exists(txt_file)) {
     log_message(
-      "Cannot find pySCENIC regulon table: {.file {txt_file}}",
+      "Cannot find SCENIC regulon table: {.file {txt_file}}",
       message_type = "error"
     )
   }
@@ -977,7 +977,7 @@ pyscenic_read_regulon_txt <- function(txt_file) {
   )
   if (ncol(regulons) < 3) {
     log_message(
-      "pySCENIC regulon table must contain regulon, motif, and target columns",
+      "SCENIC regulon table must contain regulon, motif, and target columns",
       message_type = "error"
     )
   }
@@ -985,7 +985,7 @@ pyscenic_read_regulon_txt <- function(txt_file) {
   regulons[, 1:3, drop = FALSE]
 }
 
-pyscenic_regulon_list <- function(regulon_tbl) {
+scenic_regulon_list <- function(regulon_tbl) {
   rgnames <- unique(regulon_tbl[["regulon"]])
   regulon_list <- lapply(rgnames, function(rg) {
     target <- regulon_tbl[regulon_tbl[["regulon"]] == rg, "target"]
@@ -995,7 +995,7 @@ pyscenic_regulon_list <- function(regulon_tbl) {
   regulon_list
 }
 
-pyscenic_compute_aucell_score <- function(
+scenic_compute_aucell_score <- function(
   counts,
   regulon_list,
   min_regulon_size = 10,
@@ -1022,7 +1022,7 @@ pyscenic_compute_aucell_score <- function(
     verbose = verbose
   )
   calc_auc <- function(cells_idx) {
-    pyscenic_calc_auc_batch(
+    scenic_calc_auc_batch(
       counts = counts[, cells_idx, drop = FALSE],
       regulon_list = regulon_list
     )
@@ -1050,7 +1050,7 @@ pyscenic_compute_aucell_score <- function(
   scores[colnames(counts), , drop = FALSE]
 }
 
-pyscenic_calc_auc_batch <- function(counts, regulon_list) {
+scenic_calc_auc_batch <- function(counts, regulon_list) {
   rankings <- AUCell::AUCell_buildRankings(
     counts,
     nCores = 1,
