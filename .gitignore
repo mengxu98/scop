@@ -2,31 +2,32 @@
 .DS_Store
 
 # R
-.cache
-.Rproj.user
-.Rhistory
-.RData
-.Ruserdata
-.Rprofile
 ..Rcheck
+.cache
+.RData
+.Rhistory
+.Rproj.user
+.Rprofile
+.Ruserdata
 *.Rcheck
 
 # directories and files
-SCExplorer
-docs
-tmaps
-test
-*.h5ad
-*.pyc
-.codex
 .cc-connect
-*.o
-*.so
+.codex
 *.dll
+*.h5ad
+*.o
+*.pdf
+*.pyc
+*.so
+*.tar.gz
+deepscore_logs
+dev
+docs
+omnipathr-log
 paper
 plan
-deepscore_logs
-*.pdf
-*.tar.gz
+SCExplorer
+test
+tmaps
 tmp
-omnipathr-log
