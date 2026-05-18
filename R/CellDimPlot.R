@@ -438,13 +438,13 @@
 #'   lineages_span = 0.1
 #' )
 #'
-#' \dontrun{
 #' # Show PAGA results on the plot
 #' pancreas_sub <- RunPAGA(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
 #'   linear_reduction = "PCA",
 #'   nonlinear_reduction = "UMAP",
+#'   backend = "cpp",
 #'   return_seurat = TRUE
 #' )
 #'
@@ -488,6 +488,7 @@
 #'   linear_reduction = "PCA",
 #'   nonlinear_reduction = "UMAP",
 #'   mode = "stochastic",
+#'   backend = "cpp",
 #'   return_seurat = TRUE
 #' )
 #'
@@ -495,15 +496,6 @@
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
 #'   reduction = "UMAP",
-#'   paga = pancreas_sub@misc$paga,
-#'   paga_show_transition = TRUE
-#' )
-#'
-#' CellDimPlot(
-#'   pancreas_sub,
-#'   group.by = "SubCellType",
-#'   reduction = "UMAP",
-#'   pt.size = NA,
 #'   velocity = "stochastic"
 #' )
 #'
@@ -556,7 +548,6 @@
 #'   legend.position = "none",
 #'   theme_use = "theme_blank"
 #' )
-#' }
 CellDimPlot <- function(
   srt,
   group.by,

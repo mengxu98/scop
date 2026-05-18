@@ -204,7 +204,6 @@ Defaults is \code{FALSE}.}
 This function generates a PAGA plot based on the given Seurat object and PAGA result.
 }
 \examples{
-\dontrun{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunPAGA(
@@ -212,6 +211,7 @@ pancreas_sub <- RunPAGA(
   group.by = "SubCellType",
   linear_reduction = "PCA",
   nonlinear_reduction = "UMAP",
+  backend = "cpp",
   return_seurat = TRUE
 )
 
@@ -229,7 +229,7 @@ PAGAPlot(
 
 PAGAPlot(
   pancreas_sub,
-  reduction = "PAGAUMAP2D"
+  reduction = "UMAP"
 )
 
 PAGAPlot(
@@ -278,26 +278,6 @@ PAGAPlot(
     sep = "-"
   )
 )
-
-pancreas_sub <- RunSCVELO(
-  pancreas_sub,
-  group.by = "SubCellType",
-  linear_reduction = "PCA",
-  nonlinear_reduction = "UMAP",
-  return_seurat = TRUE
-)
-
-PAGAPlot(
-  pancreas_sub,
-  show_transition = TRUE
-)
-
-PAGAPlot(
-  pancreas_sub,
-  show_transition = TRUE,
-  transition_offset = 0.02
-)
-}
 }
 \seealso{
 \link{RunPAGA}, \link{CellDimPlot}, \link[thisplot:GraphPlot]{thisplot::GraphPlot}
