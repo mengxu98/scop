@@ -45,8 +45,10 @@ Supported values are \code{"scanpy"}, \code{"scvi"}, \code{"glue"}, \code{"scano
 and \code{"scomm"}.
 If \code{NULL} or omitted in \code{\link[=PrepareEnv]{PrepareEnv()}}, the default environment is installed.
 The default excludes \code{"sccoda"} and \code{"scomm"} because their TensorFlow stacks
-are not compatible with the default JAX/scVI stack in the same environment;
-request them explicitly for scCODA/scOMM workflows.}
+are not compatible with the default JAX/scVI stack in the same environment.
+On Windows, the default also excludes \code{"scvi"}, \code{"glue"}, and \code{"multimap"}
+because those upstream stacks are more reliable when requested explicitly for
+method-specific workflows.}
 
 \item{pip_options}{Additional command line arguments to be passed to \code{uv}/\code{pip} when installing pip packages.}
 
