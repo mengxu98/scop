@@ -24,6 +24,7 @@ RunGSEA(
   convert_species = TRUE,
   Ensembl_version = NULL,
   mirror = NULL,
+  features = NULL,
   TERM2GENE = NULL,
   TERM2NAME = NULL,
   minGSSize = 10,
@@ -38,8 +39,9 @@ RunGSEA(
 )
 }
 \arguments{
-\item{srt}{A Seurat object containing the results of differential expression analysis (RunDEtest).
-If specified, the genes and groups will be extracted from the Seurat object automatically.
+\item{srt}{A \code{Seurat} object or \code{SummarizedExperiment} object containing the
+results of differential expression analysis (\code{\link[=RunDEtest]{RunDEtest()}}).
+If specified, the genes and groups will be extracted from the object automatically.
 If not specified, the \code{geneID} and \code{geneID_groups} arguments must be provided.}
 
 \item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
@@ -96,6 +98,9 @@ Default is \code{TRUE}.}
 Default is \code{NULL}. If \code{NULL}, the latest version will be used.}
 
 \item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are \code{"www"}, \code{"uswest"}, \code{"useast"}, \code{"asia"}.}
+
+\item{features}{A named list of feature lists for custom enrichment gene sets.
+If provided, it takes precedence over \code{TERM2GENE} and \code{db}.}
 
 \item{TERM2GENE}{A data frame specifying the gene-term mapping for a custom database.
 The first column should contain the term IDs, and the second column should contain the gene IDs.}

@@ -2,7 +2,7 @@ metric_graph_connectivity <- function(
   embeddings,
   labels,
   k = 15,
-  backend = c("auto", "cpp", "bioc_kmknn", "fnn")
+  backend = c("cpp", "r")
 ) {
   backend <- match.arg(backend)
 
@@ -28,40 +28,24 @@ metric_graph_connectivity <- function(
     return(NA_real_)
   }
 
-  backend <- metric_graph_connectivity_resolve_backend(
-    backend = backend
-  )
   edges <- switch(backend,
-    cpp = metric_graph_connectivity_edges_cpp(
+    cpp = graph_conn_edges_cpp(
       embeddings = embeddings,
       k = k_use
     ),
-    bioc_kmknn = metric_graph_connectivity_edges_bioc_kmknn(
-      embeddings = embeddings,
-      k = k_use
-    ),
-    fnn = metric_graph_connectivity_edges_fnn(
+    r = graph_conn_edges_r(
       embeddings = embeddings,
       k = k_use
     )
   )
 
-  metric_graph_connectivity_from_edges(
+  graph_conn_score(
     edges = edges,
     labels = labels
   )
 }
 
-metric_graph_connectivity_resolve_backend <- function(
-  backend
-) {
-  if (!identical(backend, "auto")) {
-    return(backend)
-  }
-  "cpp"
-}
-
-metric_graph_connectivity_edges_from_index <- function(
+graph_conn_edges_from_index <- function(
   index,
   k,
   remove_self = TRUE
@@ -82,27 +66,7 @@ metric_graph_connectivity_edges_from_index <- function(
   )
 }
 
-metric_graph_connectivity_edges_fnn <- function(embeddings, k) {
-  metric_graph_connectivity_check_fnn()
-
-  knn <- FNN::get.knn(embeddings, k = k)
-  cbind(
-    rep(seq_len(nrow(embeddings)), each = k),
-    as.vector(t(knn$nn.index))
-  )
-}
-
-metric_graph_connectivity_check_fnn <- function() {
-  if (!requireNamespace("FNN", quietly = TRUE)) {
-    log_message(
-      "{.pkg FNN} is required to compute graph connectivity metrics.",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
-}
-
-metric_graph_connectivity_edges_bioc_kmknn <- function(embeddings, k) {
+graph_conn_edges_r <- function(embeddings, k) {
   check_r("BiocNeighbors", verbose = FALSE)
 
   knn <- BiocNeighbors::findKNN(
@@ -111,14 +75,14 @@ metric_graph_connectivity_edges_bioc_kmknn <- function(embeddings, k) {
     BNPARAM = BiocNeighbors::KmknnParam(distance = "Euclidean"),
     num.threads = 1L
   )
-  metric_graph_connectivity_edges_from_index(
+  graph_conn_edges_from_index(
     index = knn$index,
     k = k,
     remove_self = FALSE
   )
 }
 
-metric_graph_connectivity_edges_cpp <- function(embeddings, k) {
+graph_conn_edges_cpp <- function(embeddings, k) {
   knn <- run_knn_topk(
     reference = embeddings,
     k = k,
@@ -126,14 +90,14 @@ metric_graph_connectivity_edges_cpp <- function(embeddings, k) {
     backend = "cpp",
     exclude_self = TRUE
   )
-  metric_graph_connectivity_edges_from_index(
+  graph_conn_edges_from_index(
     index = knn[["idx"]],
     k = k,
     remove_self = FALSE
   )
 }
 
-metric_graph_connectivity_from_edges <- function(edges, labels) {
+graph_conn_score <- function(edges, labels) {
   if (is.null(edges) || nrow(edges) == 0L) {
     return(NA_real_)
   }

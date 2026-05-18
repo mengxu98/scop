@@ -23,7 +23,8 @@
 #' `paste0(prefix, "_LISI")`.
 #' @param perplexity Effective neighborhood size. Default is `30`.
 #' @param nn_method Nearest-neighbor backend. One of `"auto"` or `"exact"`.
-#' Default is `"auto"`, which uses the exact C++ backend from `thisutils`.
+#' Default is `"auto"`, which lets `thisutils` choose the fastest exact
+#' backend available.
 #' Requires the accelerated `thisutils::compute_lisi()` interface that exposes
 #' `nn_method = c("auto", "exact")`.
 #' @param tol Tolerance used in the binary search for the target perplexity.

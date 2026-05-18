@@ -19,6 +19,7 @@ RunSciBet(
   input_transform = c("auto", "none", "expm1"),
   prefix = "scibet",
   store_model = TRUE,
+  return_object = TRUE,
   verbose = TRUE
 )
 }
@@ -55,6 +56,10 @@ transform otherwise.}
 
 \item{store_model}{Whether to store the SciBet core and probabilities in
 \code{srt_query@tools}.}
+
+\item{return_object}{Whether to return the annotated \code{Seurat} query object.
+If \code{FALSE}, return a lightweight list with annotations, scores,
+probabilities, and model components without copying \code{srt_query}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

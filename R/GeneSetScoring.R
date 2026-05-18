@@ -10,6 +10,70 @@ gene_set_scoring_to_dgC <- function(expr) {
   }
 }
 
+normalize_gene_set_scoring_method <- function(method, arg_name = "method") {
+  method_map <- c(
+    "seurat" = "Seurat",
+    "aucell" = "AUCell",
+    "ucell" = "UCell",
+    "gsva" = "GSVA",
+    "ssgsea" = "ssGSEA",
+    "zscore" = "zscore",
+    "plage" = "PLAGE",
+    "vision" = "VISION"
+  )
+  method_key <- tolower(as.character(method[[1]]))
+  if (!method_key %in% names(method_map)) {
+    log_message(
+      "{.arg {arg_name}} must be one of {.val {unname(method_map)}}",
+      message_type = "error"
+    )
+  }
+  unname(method_map[[method_key]])
+}
+
+gene_set_scoring_make_score_prefix <- function(prefix = NULL, fallback = NULL) {
+  prefix_use <- prefix %||% ""
+  prefix_use <- as.character(prefix_use[[1]])
+  if (!is.na(prefix_use) && nzchar(prefix_use)) {
+    return(prefix_use)
+  }
+  fallback_use <- fallback %||% ""
+  fallback_use <- as.character(fallback_use[[1]])
+  if (!is.na(fallback_use) && nzchar(fallback_use)) {
+    return(fallback_use)
+  }
+  ""
+}
+
+gene_set_scoring_make_score_colnames <- function(
+  feature_names,
+  prefix = NULL,
+  fallback = NULL
+) {
+  prefix_use <- gene_set_scoring_make_score_prefix(
+    prefix = prefix,
+    fallback = fallback
+  )
+  if (nzchar(prefix_use)) {
+    return(make.names(paste(prefix_use, feature_names, sep = "_")))
+  }
+  make.names(feature_names)
+}
+
+gene_set_scoring_make_classification_colname <- function(
+  prefix = NULL,
+  fallback = NULL
+) {
+  prefix_use <- gene_set_scoring_make_score_prefix(
+    prefix = prefix,
+    fallback = fallback
+  )
+  if (nzchar(prefix_use)) {
+    return(make.names(paste0(prefix_use, "_classification")))
+  }
+  "classification"
+}
+
 gene_set_scoring_indices <- function(gene_sets, feature_names) {
   feature_idx <- stats::setNames(seq_along(feature_names), feature_names)
   stats::setNames(
@@ -35,6 +99,30 @@ gene_set_scoring_require_namespace <- function(pkg, install_hint = pkg) {
 gene_set_scoring_drop_invalid_score_sets <- function(scores) {
   keep <- colSums(!is.na(scores)) > 0
   scores[, keep, drop = FALSE]
+}
+
+gene_set_scoring_keep_variable_rows <- function(expr) {
+  if (inherits(expr, "dgCMatrix")) {
+    keep <- rep(FALSE, nrow(expr))
+    if (length(expr@x) > 0L) {
+      values_by_row <- split(expr@x, expr@i + 1L)
+      keep[as.integer(names(values_by_row))] <- vapply(
+        values_by_row,
+        function(x) {
+          x <- x[is.finite(x)]
+          length(x) > 1L && diff(range(x)) > 0
+        },
+        logical(1)
+      )
+    }
+    return(expr[keep, , drop = FALSE])
+  }
+  expr_mat <- as_matrix(expr)
+  keep <- apply(expr_mat, 1L, function(x) {
+    x <- x[is.finite(x)]
+    length(x) > 1L && diff(range(x)) > 0
+  })
+  expr[keep, , drop = FALSE]
 }
 
 gene_set_scoring_normalize_chunk_size <- function(
@@ -196,8 +284,7 @@ run_gsva_scores <- function(
   kcdf <- match.arg(kcdf)
 
   expr_counts <- gene_set_scoring_to_dgC(expr_counts)
-  keep_features <- Matrix::rowSums(expr_counts) > 0
-  expr_counts <- expr_counts[keep_features, , drop = FALSE]
+  expr_counts <- gene_set_scoring_keep_variable_rows(expr_counts)
   gene_set_idx <- gene_set_scoring_indices(
     gene_sets = gene_sets,
     feature_names = rownames(expr_counts)
@@ -284,8 +371,7 @@ run_zscore_scores <- function(
   max_gs_size = 500
 ) {
   expr_counts <- gene_set_scoring_to_dgC(expr_counts)
-  keep_features <- Matrix::rowSums(expr_counts) > 0
-  expr_counts <- expr_counts[keep_features, , drop = FALSE]
+  expr_counts <- gene_set_scoring_keep_variable_rows(expr_counts)
   gene_set_idx <- gene_set_scoring_indices(
     gene_sets = gene_sets,
     feature_names = rownames(expr_counts)
@@ -323,8 +409,7 @@ run_plage_scores <- function(
   max_gs_size = 500
 ) {
   expr_counts <- gene_set_scoring_to_dgC(expr_counts)
-  keep_features <- Matrix::rowSums(expr_counts) > 0
-  expr_counts <- expr_counts[keep_features, , drop = FALSE]
+  expr_counts <- gene_set_scoring_keep_variable_rows(expr_counts)
   gene_set_idx <- gene_set_scoring_indices(
     gene_sets = gene_sets,
     feature_names = rownames(expr_counts)
@@ -359,21 +444,39 @@ orient_plage_scores <- function(scores, expr, gene_sets) {
   if (is.null(scores) || length(gene_sets) == 0L) {
     return(scores)
   }
-  expr <- as_matrix(expr)
-  scores <- as_matrix(scores)
+  expr <- gene_set_scoring_to_dgC(expr)
+  if (!is.matrix(scores)) {
+    scores <- as_matrix(scores)
+  }
   feature_names <- rownames(expr)
+  n_cells <- ncol(expr)
+  if (n_cells <= 1L) {
+    return(scores)
+  }
+
+  row_sum <- Matrix::rowSums(expr)
+  expr_sq <- expr
+  expr_sq@x <- expr_sq@x * expr_sq@x
+  row_sq_sum <- Matrix::rowSums(expr_sq)
+  row_mean <- row_sum / n_cells
+  row_var <- (row_sq_sum - n_cells * row_mean * row_mean) / (n_cells - 1L)
+  row_var[row_var < 0 & row_var > -1e-12] <- 0
+  row_sd <- sqrt(row_var)
+  valid_rows <- is.finite(row_sd) & row_sd > 0
 
   for (set_name in intersect(rownames(scores), names(gene_sets))) {
-    genes <- intersect(gene_sets[[set_name]], feature_names)
-    if (length(genes) == 0L) {
+    idx <- match(gene_sets[[set_name]], feature_names)
+    idx <- unique(idx[!is.na(idx)])
+    idx <- idx[valid_rows[idx]]
+    if (length(idx) == 0L) {
       next
     }
-    z <- t(scale(t(expr[genes, , drop = FALSE])))
-    z <- z[stats::complete.cases(z), , drop = FALSE]
-    if (nrow(z) == 0L) {
-      next
-    }
-    ref <- colMeans(z)
+    inv_sd <- 1 / row_sd[idx]
+    ref <- rep(sum(-row_mean[idx] * inv_sd), n_cells)
+    ref <- ref + as.numeric(Matrix::colSums(
+      Matrix::Diagonal(x = inv_sd) %*% expr[idx, , drop = FALSE]
+    ))
+    ref <- ref / length(idx)
     score <- as.numeric(scores[set_name, ])
     dot <- sum(score * ref, na.rm = TRUE)
     if (is.finite(dot) && dot < 0) {
@@ -389,6 +492,57 @@ run_metabolism_auc <- function(expr_counts, gene_sets, strategy = c("sparse", "t
     gene_sets = gene_sets,
     strategy = strategy
   )
+}
+
+run_vision_scores <- function(
+  expr_counts,
+  gene_sets,
+  scale_by_library = FALSE,
+  sig_gene_importance = FALSE
+) {
+  gene_set_scoring_require_namespace("VISION", install_hint = "YosefLab/VISION")
+  Vision_fun <- get_namespace_fun("VISION", "Vision")
+  calc_signature_scores_fun <- get_namespace_fun("VISION", "calcSignatureScores")
+  create_gene_signature_fun <- get_namespace_fun("VISION", "createGeneSignature")
+
+  expr_mat <- as_matrix(expr_counts)
+  if (isTRUE(scale_by_library)) {
+    n_umi <- Matrix::colSums(expr_counts)
+    expr_mat <- Matrix::t(Matrix::t(expr_mat) / n_umi) * stats::median(n_umi)
+  }
+
+  signatures <- lapply(gene_sets, function(gs) {
+    intersect(gs, rownames(expr_mat))
+  })
+  signatures <- signatures[lengths(signatures) > 0L]
+  if (length(signatures) == 0L) {
+    log_message(
+      "No gene sets retain genes after intersecting with the expression matrix",
+      message_type = "error"
+    )
+  }
+
+  signatures <- Map(
+    function(sig_name, sig_genes) {
+      create_gene_signature_fun(
+        sig_name,
+        stats::setNames(rep(1, length(sig_genes)), sig_genes)
+      )
+    },
+    names(signatures),
+    signatures
+  )
+
+  vis <- Vision_fun(
+    expr_mat,
+    signatures = signatures,
+    projection_methods = character()
+  )
+  vis <- calc_signature_scores_fun(
+    vis,
+    sig_gene_importance = sig_gene_importance
+  )
+  as_matrix(vis@SigScores)
 }
 
 run_metabolism_gene_set_indices <- gene_set_scoring_indices

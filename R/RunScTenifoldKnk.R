@@ -24,7 +24,7 @@
 #' direct sparse network assembly, controlled per-gene eigensolver parallelism,
 #' and helpers for tensor decomposition, manifold matrix construction, directionality, and
 #' distance calculation.
-#' `scTenifoldKnk` calls `scTenifoldKnk::scTenifoldKnk()` directly for comparison.
+#' `r` calls `scTenifoldKnk::scTenifoldKnk()` directly for comparison.
 #' @param store_networks Whether to keep WT/KO tensor networks in
 #' `srt@tools`.
 #' @param store_manifold Whether to keep manifold-alignment coordinates in
@@ -81,7 +81,7 @@ RunscTenifoldKnk <- function(
   td_nDecimal = 3,
   ma_nDim = 2,
   cores = 1,
-  backend = c("cpp", "scTenifoldKnk"),
+  backend = c("cpp", "r"),
   store_networks = TRUE,
   store_manifold = TRUE,
   tool_name = "scTenifoldKnk",
@@ -251,7 +251,7 @@ RunscTenifoldKnk <- function(
       cores = cores,
       verbose = verbose
     ),
-    scTenifoldKnk = sctenifold_run_upstream(
+    r = sctenifold_run_upstream(
       count_matrix = count_matrix,
       gKO = gKO,
       qc = FALSE,
@@ -580,7 +580,9 @@ sctenifold_make_networks <- function(
       Z <- sample(x = seq_len(nCol), size = nCells, replace = TRUE)
       Z <- as.matrix(X[, Z])
       Z <- Z[apply(Z, 1, sum) > 0, , drop = FALSE]
-      if (nrow(Z) >= ncol(Z)) {
+      use_native_pcnet <- !identical(tolower(Sys.getenv("SCOP_SCTENIFOLD_UPSTREAM_PCNET", "false")), "true") &&
+        !isTRUE(getOption("scop.sctenifold.upstream_pcnet", FALSE))
+      if (isTRUE(use_native_pcnet)) {
         Z <- sctenifold_pcnet_covariance(
           X = Z,
           nComp = nComp,

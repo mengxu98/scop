@@ -22,6 +22,7 @@ RunDynamicEnrichment(
   convert_species = TRUE,
   Ensembl_version = NULL,
   mirror = NULL,
+  features = NULL,
   TERM2GENE = NULL,
   TERM2NAME = NULL,
   minGSSize = 10,
@@ -30,19 +31,23 @@ RunDynamicEnrichment(
   cpp_strategy = c("sparse", "topk", "full"),
   cores = 1,
   verbose = TRUE,
-  seed = 11
+  seed = 11,
+  ...
 )
 }
 \arguments{
-\item{srt}{A Seurat object containing the results of differential expression analysis (RunDEtest).
-If specified, the genes and groups will be extracted from the Seurat object automatically.
+\item{srt}{A \code{Seurat} object or \code{SummarizedExperiment} object containing the
+results of differential expression analysis (\code{\link[=RunDEtest]{RunDEtest()}}).
+If specified, the genes and groups will be extracted from the object automatically.
 If not specified, the \code{geneID} and \code{geneID_groups} arguments must be provided.}
 
 \item{lineages}{A character vector specifying the lineage names for which dynamic features should be calculated.}
 
 \item{score_method}{The method to use for scoring.
-Can be \code{"Seurat"}, \code{"AUCell"}, or \code{"UCell"}.
-Default is \code{"Seurat"}.}
+Can be \code{"Seurat"}, \code{"AUCell"}, \code{"UCell"}, \code{"GSVA"}, \code{"ssGSEA"},
+\code{"zscore"}, \code{"PLAGE"}, or \code{"VISION"}.
+Multiple methods can be supplied at once; each method will be written to a
+method-suffixed assay before dynamic-feature fitting. Default is \code{"AUCell"}.}
 
 \item{layer}{Which layer to use.
 Default is \code{"counts"}.}
@@ -86,6 +91,9 @@ Default is \code{NULL}. If \code{NULL}, the latest version will be used.}
 
 \item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are \code{"www"}, \code{"uswest"}, \code{"useast"}, \code{"asia"}.}
 
+\item{features}{A named list of feature lists for custom enrichment gene sets.
+If provided, it takes precedence over \code{TERM2GENE} and \code{db}.}
+
 \item{TERM2GENE}{A data frame specifying the gene-term mapping for a custom database.
 The first column should contain the term IDs, and the second column should contain the gene IDs.}
 
@@ -113,6 +121,8 @@ Default is \code{TRUE}.}
 
 \item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
+
+\item{...}{Additional arguments to be passed to the scoring methods.}
 }
 \description{
 This function calculates gene-set scores from the specified database (\code{db}) for each lineage using the specified scoring method (\code{score_method}).

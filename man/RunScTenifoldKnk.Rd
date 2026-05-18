@@ -27,7 +27,7 @@ RunscTenifoldKnk(
   td_nDecimal = 3,
   ma_nDim = 2,
   cores = 1,
-  backend = c("cpp", "scTenifoldKnk"),
+  backend = c("cpp", "r"),
   store_networks = TRUE,
   store_manifold = TRUE,
   tool_name = "scTenifoldKnk",
@@ -73,7 +73,7 @@ forwarded to downstream linear algebra where applicable.}
 direct sparse network assembly, controlled per-gene eigensolver parallelism,
 and helpers for tensor decomposition, manifold matrix construction, directionality, and
 distance calculation.
-\code{scTenifoldKnk} calls \code{scTenifoldKnk::scTenifoldKnk()} directly for comparison.}
+\code{r} calls \code{scTenifoldKnk::scTenifoldKnk()} directly for comparison.}
 
 \item{store_networks}{Whether to keep WT/KO tensor networks in
 \code{srt@tools}.}

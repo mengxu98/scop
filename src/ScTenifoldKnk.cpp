@@ -1,5 +1,6 @@
 #include <RcppArmadillo.h>
 #include "log_message.h"
+#include <Spectra/MatOp/DenseSymMatProd.h>
 #include <Spectra/SymEigsSolver.h>
 #include <algorithm>
 #include <atomic>
@@ -55,6 +56,48 @@ public:
   ~SctenifoldEigenThreadGuard() {
     if (active_) {
       Eigen::setNbThreads(old_threads_);
+    }
+  }
+};
+
+class SctenifoldSubmatrixSymMatProd {
+private:
+  typedef Eigen::Index Index;
+  typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Matrix;
+  typedef Eigen::Matrix<double, Eigen::Dynamic, 1> Vector;
+  typedef Eigen::Map<const Eigen::Matrix<double, Eigen::Dynamic, 1> > MapConstVec;
+  typedef Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic, 1> > MapVec;
+
+  const Matrix& matrix_;
+  int excluded_;
+  mutable Vector full_x_;
+  mutable Vector full_y_;
+
+  inline int source_index(Index i) const {
+    return i < excluded_ ? static_cast<int>(i) : static_cast<int>(i) + 1;
+  }
+
+public:
+  SctenifoldSubmatrixSymMatProd(const Matrix& matrix, int excluded) :
+    matrix_(matrix),
+    excluded_(excluded),
+    full_x_(Vector::Zero(matrix.rows())),
+    full_y_(Vector::Zero(matrix.rows())) {}
+
+  Index rows() const { return matrix_.rows() - 1; }
+  Index cols() const { return matrix_.cols() - 1; }
+
+  void perform_op(const double* x_in, double* y_out) const {
+    const Index n = rows();
+    MapConstVec x(x_in, n);
+    MapVec out(y_out, n);
+    full_x_.setZero();
+    for (Index i = 0; i < n; ++i) {
+      full_x_(source_index(i)) = x(i);
+    }
+    full_y_.noalias() = matrix_ * full_x_;
+    for (Index i = 0; i < n; ++i) {
+      out(i) = full_y_(source_index(i));
     }
   }
 };
@@ -191,21 +234,11 @@ static arma::mat sctenifold_tensor_average(
   return out;
 }
 
-static Eigen::MatrixXd sctenifold_pcnet_covariance_raw_eigen(
-  NumericMatrix x,
-  int n_comp,
-  int ncv,
-  int maxit,
-  double tol,
-  int n_threads
-) {
+static Eigen::MatrixXd sctenifold_scaled_cell_gene_matrix(NumericMatrix x) {
   const int n_genes = x.nrow();
   const int n_cells = x.ncol();
   if (n_cells < 3) {
     stop("x must contain at least three cells");
-  }
-  if (n_comp < 2 || n_comp >= n_genes || n_comp >= n_cells) {
-    stop("n_comp must be >= 2 and lower than the number of genes and cells");
   }
 
   Eigen::MatrixXd scaled(n_cells, n_genes);
@@ -229,11 +262,41 @@ static Eigen::MatrixXd sctenifold_pcnet_covariance_raw_eigen(
       scaled(c, g) = (x(g, c) - mean) / scale;
     }
   }
+  return scaled;
+}
+
+static int sctenifold_ncv_eff(int requested, int n_comp, int dimension) {
+  if (dimension <= n_comp) {
+    stop("n_comp must be lower than the decomposition dimension");
+  }
+  if (requested > n_comp) {
+    return std::min(requested, dimension);
+  }
+  return std::min(dimension, std::max(2 * n_comp + 1, 20));
+}
+
+static Eigen::MatrixXd sctenifold_pcnet_dual_raw_eigen(
+  NumericMatrix x,
+  int n_comp,
+  int ncv,
+  int maxit,
+  double tol,
+  int n_threads
+) {
+  const int n_genes = x.nrow();
+  const int n_cells = x.ncol();
+  if (n_cells < 3) {
+    stop("x must contain at least three cells");
+  }
+  if (n_comp < 2 || n_comp >= n_genes || n_comp >= n_cells) {
+    stop("n_comp must be >= 2 and lower than the number of genes and cells");
+  }
+
+  const Eigen::MatrixXd scaled = sctenifold_scaled_cell_gene_matrix(x);
 
   const Eigen::MatrixXd covariance = scaled * scaled.transpose();
   Eigen::MatrixXd out = Eigen::MatrixXd::Zero(n_genes, n_genes);
-  const int ncv_eff = ncv > n_comp ? std::min(ncv, n_cells) :
-    std::min(n_cells, std::max(2 * n_comp + 1, 20));
+  const int ncv_eff = sctenifold_ncv_eff(ncv, n_comp, n_cells);
 
   auto compute_gene = [&] (int g) {
     const Eigen::VectorXd y = scaled.col(g);
@@ -316,6 +379,197 @@ static Eigen::MatrixXd sctenifold_pcnet_covariance_raw_eigen(
   }
 
   return out;
+}
+
+static Eigen::MatrixXd sctenifold_pcnet_primal_raw_eigen(
+  NumericMatrix x,
+  int n_comp,
+  int ncv,
+  int maxit,
+  double tol,
+  int n_threads
+) {
+  const int n_genes = x.nrow();
+  const int n_cells = x.ncol();
+  if (n_cells < 3) {
+    stop("x must contain at least three cells");
+  }
+  if (n_comp < 2 || n_comp >= n_genes) {
+    stop("n_comp must be >= 2 and lower than the number of genes");
+  }
+
+  const Eigen::MatrixXd scaled = sctenifold_scaled_cell_gene_matrix(x);
+  const Eigen::MatrixXd gram = scaled.transpose() * scaled;
+  Eigen::MatrixXd out = Eigen::MatrixXd::Zero(n_genes, n_genes);
+  const int ncv_eff = sctenifold_ncv_eff(ncv, n_comp, n_genes - 1);
+
+  auto compute_gene = [&] (int g) {
+    SctenifoldSubmatrixSymMatProd op(gram, g);
+    Spectra::SymEigsSolver<
+      double,
+      Spectra::LARGEST_ALGE,
+      SctenifoldSubmatrixSymMatProd
+    > eigs(&op, n_comp, ncv_eff);
+    eigs.init();
+    const int nconv = eigs.compute(maxit, tol, Spectra::LARGEST_ALGE);
+    if (eigs.info() != Spectra::SUCCESSFUL || nconv < n_comp) {
+      throw std::runtime_error(
+        "Spectra failed to converge while constructing pcNet at gene index " +
+          std::to_string(g + 1)
+      );
+    }
+
+    Eigen::VectorXd cross(n_genes - 1);
+    for (int i = 0; i < n_genes - 1; ++i) {
+      const int source = i < g ? i : i + 1;
+      cross(i) = gram(source, g);
+    }
+    const Eigen::VectorXd values = eigs.eigenvalues();
+    const Eigen::MatrixXd vectors = eigs.eigenvectors();
+    Eigen::VectorXd projection = vectors.transpose() * cross;
+    projection.array() /= values.array();
+    const Eigen::VectorXd beta = vectors * projection;
+    for (int i = 0; i < n_genes - 1; ++i) {
+      const int source = i < g ? i : i + 1;
+      out(g, source) = beta(i);
+    }
+  };
+
+  const int n_workers = sctenifold_worker_count(n_threads, n_genes);
+  if (n_workers == 1) {
+    for (int g = 0; g < n_genes; ++g) {
+      compute_gene(g);
+    }
+  } else {
+    SctenifoldEigenThreadGuard eigen_threads(1);
+    std::atomic<int> next_gene(0);
+    std::atomic<int> failed(0);
+    std::vector<std::string> errors(static_cast<std::size_t>(n_workers));
+    std::vector<std::thread> workers;
+    workers.reserve(static_cast<std::size_t>(n_workers));
+
+    for (int worker = 0; worker < n_workers; ++worker) {
+      workers.emplace_back([&, worker] {
+        while (failed.load(std::memory_order_relaxed) == 0) {
+          const int g = next_gene.fetch_add(1, std::memory_order_relaxed);
+          if (g >= n_genes) {
+            break;
+          }
+          try {
+            compute_gene(g);
+          } catch (const std::exception& e) {
+            errors[static_cast<std::size_t>(worker)] = e.what();
+            failed.store(1, std::memory_order_relaxed);
+            break;
+          } catch (...) {
+            errors[static_cast<std::size_t>(worker)] =
+              "Unknown error while constructing pcNet";
+            failed.store(1, std::memory_order_relaxed);
+            break;
+          }
+        }
+      });
+    }
+
+    for (std::thread& worker : workers) {
+      worker.join();
+    }
+
+    if (failed.load(std::memory_order_relaxed) != 0) {
+      for (const std::string& error : errors) {
+        if (!error.empty()) {
+          stop(error);
+        }
+      }
+      stop("Unknown error while constructing pcNet");
+    }
+  }
+  return out;
+}
+
+static Eigen::MatrixXd sctenifold_pcnet_global_raw_eigen(
+  NumericMatrix x,
+  int n_comp,
+  int ncv,
+  int maxit,
+  double tol
+) {
+  const int n_genes = x.nrow();
+  const int n_cells = x.ncol();
+  if (n_cells < 3) {
+    stop("x must contain at least three cells");
+  }
+  if (n_comp < 2 || n_comp >= n_genes) {
+    stop("n_comp must be >= 2 and lower than the number of genes");
+  }
+
+  const Eigen::MatrixXd scaled = sctenifold_scaled_cell_gene_matrix(x);
+  const Eigen::MatrixXd gram = scaled.transpose() * scaled;
+  const int ncv_eff = sctenifold_ncv_eff(ncv, n_comp, n_genes);
+  Spectra::DenseSymMatProd<double> op(gram);
+  Spectra::SymEigsSolver<
+    double,
+    Spectra::LARGEST_ALGE,
+    Spectra::DenseSymMatProd<double>
+  > eigs(&op, n_comp, ncv_eff);
+  eigs.init();
+  const int nconv = eigs.compute(maxit, tol, Spectra::LARGEST_ALGE);
+  if (eigs.info() != Spectra::SUCCESSFUL || nconv < n_comp) {
+    stop("Spectra failed to converge while constructing fast pcNet");
+  }
+
+  const Eigen::VectorXd values = eigs.eigenvalues();
+  Eigen::MatrixXd vectors = eigs.eigenvectors();
+  for (int k = 0; k < values.size(); ++k) {
+    if (!std::isfinite(values(k)) || std::abs(values(k)) <= 1e-12) {
+      vectors.col(k).setZero();
+    } else {
+      vectors.col(k) /= std::sqrt(values(k));
+    }
+  }
+  Eigen::MatrixXd coefficients = vectors * (vectors.transpose() * gram);
+  Eigen::MatrixXd out = coefficients.transpose();
+  out.diagonal().setZero();
+  return out;
+}
+
+static Eigen::MatrixXd sctenifold_pcnet_raw_eigen(
+  NumericMatrix x,
+  int n_comp,
+  int ncv,
+  int maxit,
+  double tol,
+  int n_threads
+) {
+  const int n_genes = x.nrow();
+  const int n_cells = x.ncol();
+  if (n_cells < n_genes) {
+    return sctenifold_pcnet_dual_raw_eigen(
+      x,
+      n_comp,
+      ncv,
+      maxit,
+      tol,
+      n_threads
+    );
+  }
+  if (n_cells == n_genes) {
+    return sctenifold_pcnet_global_raw_eigen(
+      x,
+      n_comp,
+      ncv,
+      maxit,
+      tol
+    );
+  }
+  return sctenifold_pcnet_primal_raw_eigen(
+    x,
+    n_comp,
+    ncv,
+    maxit,
+    tol,
+    n_threads
+  );
 }
 
 static double sctenifold_order_statistic(std::vector<double>& values, std::size_t k) {
@@ -420,7 +674,7 @@ NumericMatrix sctenifold_pcnet_covariance_raw(
   double tol = 1e-10,
   int n_threads = 1
 ) {
-  Eigen::MatrixXd coefficients = sctenifold_pcnet_covariance_raw_eigen(
+  Eigen::MatrixXd coefficients = sctenifold_pcnet_raw_eigen(
     x,
     n_comp,
     ncv,
@@ -449,7 +703,7 @@ S4 sctenifold_pcnet_covariance_sparse(
   double tol = 1e-10,
   int n_threads = 1
 ) {
-  Eigen::MatrixXd coefficients = sctenifold_pcnet_covariance_raw_eigen(
+  Eigen::MatrixXd coefficients = sctenifold_pcnet_raw_eigen(
     x,
     n_comp,
     ncv,

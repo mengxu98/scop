@@ -135,6 +135,7 @@ RunGSEA <- function(
   convert_species = TRUE,
   Ensembl_version = NULL,
   mirror = NULL,
+  features = NULL,
   TERM2GENE = NULL,
   TERM2NAME = NULL,
   minGSSize = 10,
@@ -149,58 +150,30 @@ RunGSEA <- function(
 ) {
   log_message("Start {.pkg GSEA} analysis", verbose = verbose)
 
-  use_srt <- FALSE
-  if (is.null(geneID)) {
-    if (!is.null(srt) && (is.null(group.by) || identical(group.by, "Bulk"))) {
-      de_use <- .bulk_prepare_de_for_downstream(
-        srt = srt,
-        DE_threshold = DE_threshold,
-        require_score = TRUE
-      )
-      if (!is.null(de_use) && nrow(de_use) > 0) {
-        geneID <- de_use$gene
-        geneScore <- de_use$avg_log2FC
-        geneID_groups <- de_use$comparison
-        group.by <- "Bulk"
-        use_srt <- TRUE
-      }
-    }
-  }
-
-  if (is.null(geneID)) {
-    if (is.null(group.by)) {
-      group.by <- "custom"
-    }
-    layer <- paste0("DEtest_", group.by)
-    if (!layer %in% names(srt@tools) || length(grep(pattern = "AllMarkers", names(srt@tools[[layer]]))) == 0) {
+  use_object <- !is.null(srt)
+  if (is.null(geneID) && !is.null(srt)) {
+    de_df <- resolve_detest_result(
+      object = srt,
+      group.by = group.by,
+      test.use = test.use
+    )
+    de_df <- filter_de_results(
+      de_results = de_df,
+      DE_threshold = DE_threshold
+    )
+    de_use <- prepare_de_for_pathway(
+      de_results = de_df,
+      require_score = TRUE
+    )
+    if (is.null(de_use) || nrow(de_use) == 0) {
       log_message(
-        "Cannot find the DEtest result for {.val {group.by}}. Perform {.fn RunDEtest} first",
+        "Cannot find filtered DEtest results. You may perform {.fn RunDEtest} first or relax {.arg DE_threshold}.",
         message_type = "error"
       )
     }
-    markers_name <- paste0("AllMarkers_", test.use)
-    index <- grep(
-      pattern = markers_name,
-      names(srt@tools[[layer]])
-    )[1]
-    if (is.na(index)) {
-      log_message(
-        "Cannot find the {.val {markers_name}} in the DEtest result",
-        message_type = "error"
-      )
-    }
-    de <- names(srt@tools[[layer]])[index]
-    de_df <- srt@tools[[layer]][[de]]
-    de_df <- de_df[
-      with(de_df, eval(rlang::parse_expr(DE_threshold))), ,
-      drop = FALSE
-    ]
-    rownames(de_df) <- seq_len(nrow(de_df))
-
-    geneID <- de_df[["gene"]]
-    geneScore <- de_df[["avg_log2FC"]]
-    geneID_groups <- de_df[["group1"]]
-    use_srt <- TRUE
+    geneID <- de_use$gene
+    geneScore <- de_use$avg_log2FC
+    geneID_groups <- de_use$comparison
   }
 
   if (is.null(geneID_groups)) {
@@ -267,7 +240,19 @@ RunGSEA <- function(
   names(geneID_groups) <- geneID
   names(geneScore) <- paste(geneID, geneID_groups, sep = ".")
 
-  if (is.null(TERM2GENE)) {
+  if (!is.null(features)) {
+    db <- "custom"
+    custom_db <- create_custom_db_list_from_features(
+      species = species,
+      db = db,
+      features = features,
+      IDtype = IDtype,
+      version = "custom"
+    )
+    db_list <- custom_db[["db_list"]]
+    TERM2GENE <- custom_db[["TERM2GENE"]]
+    TERM2NAME <- custom_db[["TERM2NAME"]]
+  } else if (is.null(TERM2GENE)) {
     db_list <- PrepareDB(
       species = species,
       db = db,
@@ -505,10 +490,20 @@ RunGSEA <- function(
     geneMap = geneMap,
     input = input
   )
-  if (isTRUE(use_srt)) {
-    res[["DE_threshold"]] <- DE_threshold
-    srt@tools[[paste("GSEA", group.by, test.use, sep = "_")]] <- res
+  if (isTRUE(use_object) && inherits(srt, "Seurat")) {
+    group.by <- group.by %||% "custom"
+    srt@tools[[paste("GSEA", group.by, test.use, sep = "_")]] <-
+      utils::modifyList(res, list(DE_threshold = DE_threshold))
     return(srt)
+  }
+  if (isTRUE(use_object) && inherits(srt, "SummarizedExperiment")) {
+    return(
+      store_meta(
+        srt,
+        "GSEA",
+        utils::modifyList(res, list(DE_threshold = DE_threshold))
+      )
+    )
   } else {
     return(res)
   }
