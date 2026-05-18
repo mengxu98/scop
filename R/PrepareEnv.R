@@ -28,8 +28,10 @@
 #' and `"scomm"`.
 #' If `NULL` or omitted in [PrepareEnv()], the default environment is installed.
 #' The default excludes `"sccoda"` and `"scomm"` because their TensorFlow stacks
-#' are not compatible with the default JAX/scVI stack in the same environment;
-#' request them explicitly for scCODA/scOMM workflows.
+#' are not compatible with the default JAX/scVI stack in the same environment.
+#' On Windows, the default also excludes `"scvi"`, `"glue"`, and `"multimap"`
+#' because those upstream stacks are more reliable when requested explicitly for
+#' method-specific workflows.
 #' @param pip_options Additional command line arguments to be passed to `uv`/`pip` when installing pip packages.
 #' @param ... Additional arguments passed to package installation functions.
 #'
@@ -265,12 +267,14 @@ PrepareEnv <- function(
     )) && install_ok
   }
 
-  ensure_windows_scvi_support(
-    envname = envname,
-    conda = conda,
-    force = force,
-    pip_options = pip_options
-  )
+  if ("scvi" %in% modules) {
+    ensure_windows_scvi_support(
+      envname = envname,
+      conda = conda,
+      force = force,
+      pip_options = pip_options
+    )
+  }
 
   if ("scomm" %in% modules) {
     ensure_scomm_runtime_support(
@@ -346,7 +350,11 @@ supported_env_modules <- function() {
 }
 
 default_env_modules <- function() {
-  setdiff(supported_env_modules(), c("sccoda", "scomm"))
+  excluded <- c("sccoda", "scomm")
+  if (is_windows()) {
+    excluded <- c(excluded, "scvi", "glue", "multimap")
+  }
+  setdiff(supported_env_modules(), excluded)
 }
 
 optional_env_modules <- function() {
@@ -1252,13 +1260,14 @@ scanpy_python_requirements <- function() {
 }
 
 scvi_python_requirements <- function() {
+  scvi_install_method <- if (is_windows()) "pip" else "conda"
   list(
     packages = c(
       "scvi-tools" = "scvi-tools==1.2.1",
       "jax" = "jax[cpu]==0.4.38"
     ),
     install_methods = c(
-      "scvi-tools" = "conda",
+      "scvi-tools" = scvi_install_method,
       "jax" = "pip"
     ),
     package_aliases = list()
@@ -2577,77 +2586,42 @@ ensure_windows_scvi_support <- function(
     return(invisible(FALSE))
   }
 
+  jax_requirement <- c("jax" = "jax[cpu]==0.4.38")
+
   if (
     !isTRUE(force) &&
-      isTRUE(exist_python_pkgs("jax==0.3.20", envname = envname, conda = conda))
+      isTRUE(exist_python_pkgs(
+        jax_requirement,
+        envname = envname,
+        conda = conda
+      ))
   ) {
     return(invisible(TRUE))
   }
-
-  python <- resolve_python_executable(
-    envname = envname,
-    conda = conda,
-    error_if_missing = FALSE
-  )
-  if (is.null(python)) {
-    return(invisible(FALSE))
-  }
-
   pip_options <- normalize_cli_args(pip_options)
-  uv <- find_uv(
-    python = python,
+  status <- isTRUE(check_python(
+    packages = jax_requirement,
     envname = envname,
     conda = conda,
-    auto_install = TRUE,
-    pip_options = pip_options
-  )
+    force = force,
+    pip = TRUE,
+    pip_options = pip_options,
+    verbose = FALSE
+  ))
 
-  args <- c("pip", "install")
-  if (!is.null(uv) && uv != "python -m uv") {
-    args <- c(args, "--python", python)
-  }
-  args <- c(
-    args,
-    pip_options,
-    if (isTRUE(force)) "--reinstall",
-    "jax[cpu]==0.3.20",
-    "-f",
-    "https://whls.blob.core.windows.net/unstable/index.html",
-    "--use-deprecated",
-    "legacy-resolver"
-  )
-
-  if (!is.null(uv)) {
-    status <- run_uv_command(uv, python, args)
-  } else {
-    status <- run_pip_command(
-      python,
-      c(
-        "install",
-        pip_options,
-        if (isTRUE(force)) "--force-reinstall",
-        "jax[cpu]==0.3.20",
-        "-f",
-        "https://whls.blob.core.windows.net/unstable/index.html",
-        "--use-deprecated",
-        "legacy-resolver"
-      )
-    )
-  }
-
-  if (identical(status, 0L)) {
+  if (isTRUE(status)) {
     log_message(
-      "{.pkg jax[cpu]} installed successfully for Windows {.pkg scvi-tools} support",
+      "{.pkg jax[cpu]} verified for Windows {.pkg scvi-tools} support",
       message_type = "success"
     )
   } else {
     log_message(
-      "Failed to install {.pkg jax[cpu]} for Windows {.pkg scvi-tools} support [error code {.val {status}}]",
+      "Failed to verify {.pkg jax[cpu]} for Windows {.pkg scvi-tools} support",
       message_type = "warning"
     )
   }
 
-  invisible(TRUE)
+  invisible(status)
 }
 
 conda_python <- function(
