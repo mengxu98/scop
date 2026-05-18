@@ -348,6 +348,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// paga_connectivities_cpp
+List paga_connectivities_cpp(IntegerMatrix knn_idx, IntegerVector groups, int n_groups);
+RcppExport SEXP _scop_paga_connectivities_cpp(SEXP knn_idxSEXP, SEXP groupsSEXP, SEXP n_groupsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type knn_idx(knn_idxSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type groups(groupsSEXP);
+    Rcpp::traits::input_parameter< int >::type n_groups(n_groupsSEXP);
+    rcpp_result_gen = Rcpp::wrap(paga_connectivities_cpp(knn_idx, groups, n_groups));
+    return rcpp_result_gen;
+END_RCPP
+}
 // proportion_bootstrap_log2fd
 NumericVector proportion_bootstrap_log2fd(NumericVector v1, NumericVector v2, int n_bootstrap, double pseudocount, bool verbose);
 RcppExport SEXP _scop_proportion_bootstrap_log2fd(SEXP v1SEXP, SEXP v2SEXP, SEXP n_bootstrapSEXP, SEXP pseudocountSEXP, SEXP verboseSEXP) {
@@ -404,6 +417,20 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type smooth(smoothSEXP);
     Rcpp::traits::input_parameter< bool >::type normalize(normalizeSEXP);
     rcpp_result_gen = Rcpp::wrap(pseudotime_velocity_gradient(x_emb, pseudotime, neighbors, smooth, normalize));
+    return rcpp_result_gen;
+END_RCPP
+}
+// scvelo_stochastic_embedding_cpp
+List scvelo_stochastic_embedding_cpp(NumericMatrix spliced, NumericMatrix unspliced, IntegerMatrix knn_idx, NumericMatrix embedding);
+RcppExport SEXP _scop_scvelo_stochastic_embedding_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP, SEXP knn_idxSEXP, SEXP embeddingSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type spliced(splicedSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type unspliced(unsplicedSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type knn_idx(knn_idxSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type embedding(embeddingSEXP);
+    rcpp_result_gen = Rcpp::wrap(scvelo_stochastic_embedding_cpp(spliced, unspliced, knn_idx, embedding));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -562,10 +589,12 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_wilcox_rank_sum_sparse_all_cells", (DL_FUNC) &_scop_wilcox_rank_sum_sparse_all_cells, 2},
     {"_scop_sparse_topk_by_column", (DL_FUNC) &_scop_sparse_topk_by_column, 3},
     {"_scop_dense_topk_by_column", (DL_FUNC) &_scop_dense_topk_by_column, 3},
+    {"_scop_paga_connectivities_cpp", (DL_FUNC) &_scop_paga_connectivities_cpp, 3},
     {"_scop_proportion_bootstrap_log2fd", (DL_FUNC) &_scop_proportion_bootstrap_log2fd, 5},
     {"_scop_proportion_bootstrap_stats", (DL_FUNC) &_scop_proportion_bootstrap_stats, 5},
     {"_scop_pseudotime_velocity_knn", (DL_FUNC) &_scop_pseudotime_velocity_knn, 4},
     {"_scop_pseudotime_velocity_gradient", (DL_FUNC) &_scop_pseudotime_velocity_gradient, 5},
+    {"_scop_scvelo_stochastic_embedding_cpp", (DL_FUNC) &_scop_scvelo_stochastic_embedding_cpp, 4},
     {"_scop_sctenifold_pcnet_covariance_raw", (DL_FUNC) &_scop_sctenifold_pcnet_covariance_raw, 6},
     {"_scop_sctenifold_pcnet_covariance_sparse", (DL_FUNC) &_scop_sctenifold_pcnet_covariance_sparse, 9},
     {"_scop_sctenifold_tensor_decomposition", (DL_FUNC) &_scop_sctenifold_tensor_decomposition, 5},
