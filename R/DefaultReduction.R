@@ -110,9 +110,14 @@ DefaultReduction <- function(
     }
   }
   if (length(default_reduc) > 1) {
+    pattern_match <- if (!is.null(pattern_original) && length(pattern_original) == 1) {
+      pattern_default[tolower(pattern_default) == tolower(pattern_original)]
+    } else {
+      character()
+    }
     if (!is.null(pattern_original) && length(pattern_original) == 1 &&
-      pattern_original %in% pattern_default) {
-      other_reductions <- setdiff(pattern_default, pattern_original)
+      length(pattern_match) > 0L) {
+      other_reductions <- setdiff(pattern_default, pattern_match[[1]])
       default_reduc_clean <- default_reduc[!sapply(default_reduc, function(x) {
         any(sapply(other_reductions, function(pr) {
           grepl(pattern = pr, x = x, ignore.case = TRUE)
