@@ -136,6 +136,7 @@ LinkingTo:
 Remotes:
     jinworks/CellChat,
     mengxu98/thisutils,
+    mengxu98/thisplot,
     saeyslab/multinichenetr,
     saeyslab/nichenetr
 RoxygenNote: 7.3.3
