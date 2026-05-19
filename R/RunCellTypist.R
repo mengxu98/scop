@@ -199,19 +199,27 @@ RunCellTypist <- function(
       args[["over_clustering"]] <- as.character(srt[[over_clustering]][, 1])
     }
   }
+  direct_obs_return <- !is.null(srt) &&
+    isTRUE(return_seurat) &&
+    !isTRUE(insert_prob) &&
+    !isTRUE(insert_decision)
+  args[["return_obs"]] <- direct_obs_return
 
   functions <- reticulate::import_from_path(
     "functions",
     path = system.file("python", package = "scop", mustWork = TRUE),
     convert = TRUE
   )
-  adata <- do.call(functions$CellTypist, args)
+  celltypist_result <- do.call(functions$CellTypist, args)
 
   if (isTRUE(return_seurat)) {
-    srt_out <- adata_to_srt(adata)
     if (is.null(srt)) {
+      adata <- celltypist_result
+      srt_out <- adata_to_srt(adata)
       return(srt_out)
-    } else {
+    } else if (isTRUE(insert_prob) || isTRUE(insert_decision)) {
+      adata <- celltypist_result
+      srt_out <- adata_to_srt(adata)
       srt_out1 <- srt_append(
         srt_raw = srt,
         srt_append = srt_out
@@ -224,9 +232,27 @@ RunCellTypist <- function(
         verbose = FALSE
       )
       return(srt_out2)
+    } else {
+      obs <- as.data.frame(py_to_r2(celltypist_result))
+      append_cols <- if (nzchar(prefix)) {
+        grep(paste0("^", prefix), colnames(obs), value = TRUE)
+      } else {
+        colnames(obs)
+      }
+      missing_cells <- setdiff(colnames(srt), rownames(obs))
+      if (length(missing_cells) > 0L) {
+        log_message(
+          "Unable to align {.pkg CellTypist} annotations to Seurat cells",
+          message_type = "error"
+        )
+      }
+      for (col in append_cols) {
+        srt[[col]] <- obs[colnames(srt), col, drop = TRUE]
+      }
+      return(srt)
     }
   } else {
-    return(adata)
+    return(celltypist_result)
   }
 }
 
