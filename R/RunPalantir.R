@@ -86,6 +86,15 @@ RunPalantir <- function(
   return_seurat = !is.null(srt),
   verbose = TRUE
 ) {
+  Sys.setenv(
+    OMP_NUM_THREADS = "1",
+    OPENBLAS_NUM_THREADS = "1",
+    MKL_NUM_THREADS = "1",
+    VECLIB_MAXIMUM_THREADS = "1",
+    NUMEXPR_NUM_THREADS = "1",
+    KMP_WARNINGS = "0",
+    KMP_DUPLICATE_LIB_OK = "TRUE"
+  )
   PrepareEnv(modules = "palantir")
   check_python("palantir", verbose = verbose)
   if (all(is.null(srt), is.null(adata))) {

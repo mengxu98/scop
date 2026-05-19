@@ -79,45 +79,6 @@
 #'   )
 #' }
 #'
-#' # Prepare databases for other species
-#' db_list <- PrepareDB(
-#'   species = "Macaca_fascicularis",
-#'   db = "GO_BP",
-#'   convert_species = TRUE
-#' )
-#' ListDB(
-#'   species = "Macaca_fascicularis",
-#'   db = "GO_BP"
-#' )
-#' head(
-#'   db_list[["Macaca_fascicularis"]][["GO_BP"]][["TERM2GENE"]]
-#' )
-#'
-#' db_list <- PrepareDB(
-#'   species = "Saccharomyces_cerevisiae",
-#'   db = "GO_BP"
-#' )
-#' ListDB(
-#'   species = "Saccharomyces_cerevisiae",
-#'   db = "GO_BP"
-#' )
-#' head(
-#'   db_list[["Saccharomyces_cerevisiae"]][["GO_BP"]][["TERM2GENE"]]
-#' )
-#'
-#' # Prepare databases for Arabidopsis (plant)
-#' db_list <- PrepareDB(
-#'   species = "Arabidopsis_thaliana",
-#'   db = c(
-#'     "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway",
-#'     "ENZYME", "Chromosome"
-#'   ),
-#'   biomart = "plants_mart"
-#' )
-#' head(
-#'   db_list[["Arabidopsis_thaliana"]][["KEGG"]][["TERM2GENE"]]
-#' )
-#'
 #' # You can also build a custom database based on the gene sets you have
 #' ccgenes <- CycGenePrefetch("Homo_sapiens")
 #' custom_TERM2GENE <- rbind(

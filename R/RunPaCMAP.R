@@ -106,6 +106,7 @@ RunPaCMAP.Seurat <- function(
       )
     }
   } else if (!is.null(dims)) {
+    reduction <- DefaultReduction(object, pattern = reduction)
     data.use <- Embeddings(object[[reduction]])[, dims]
     assay <- DefaultAssay(object = object[[reduction]])
     if (length(dims) < n_components) {

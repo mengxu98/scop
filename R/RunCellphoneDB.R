@@ -80,7 +80,7 @@ RunCellphoneDB <- function(
   verbose = TRUE
 ) {
   PrepareEnv(modules = "cellphonedb")
-  check_python("cellphonedb==5.0.1", verbose = verbose)
+  check_python(c("cellphonedb==5.0.1", "scanpy"), verbose = verbose)
 
   if (!inherits(srt, "Seurat")) {
     log_message(
@@ -202,9 +202,6 @@ build_cpdb_adata <- function(
   gene_id_from_IDtype = "symbol",
   verbose = TRUE
 ) {
-  PrepareEnv(modules = "cellphonedb")
-  check_python(c("scanpy", "numpy"), verbose = FALSE)
-
   mat <- GetAssayData5(srt, assay = assay, layer = layer)
   obs <- srt[[]]
   obs[[group.by]] <- as.character(obs[[group.by]])
@@ -237,11 +234,7 @@ build_cpdb_adata <- function(
 }
 
 matrix_to_adata <- function(mat, obs) {
-  PrepareEnv(modules = "cellphonedb")
-  check_python(c("scanpy", "numpy"), verbose = FALSE)
-
   sc <- reticulate::import("scanpy", convert = FALSE)
-  np <- reticulate::import("numpy", convert = FALSE)
 
   if (!inherits(mat, "Matrix")) {
     mat <- methods::as(mat, "dgCMatrix")
@@ -328,41 +321,38 @@ cpdb_tables_to_long <- function(tables, separator = "|") {
   }
 
   info_cols <- setdiff(names(means_df), pair_cols)
-  long_list <- lapply(pair_cols, function(pair_col) {
-    split_pair <- strsplit(pair_col, split = separator, fixed = TRUE)[[1]]
-    sender <- split_pair[1] %||% pair_col
-    receiver <- split_pair[2] %||% pair_col
-    df <- means_df[, info_cols, drop = FALSE]
-    df[["sender"]] <- sender
-    df[["receiver"]] <- receiver
-    df[["pair"]] <- pair_col
-    df[["means"]] <- means_df[[pair_col]]
-    df[["score"]] <- means_df[[pair_col]]
-    df[["interaction_score"]] <- if (
-      !is.null(scores_df) && pair_col %in% colnames(scores_df)
-    ) {
-      scores_df[[pair_col]]
-    } else {
-      NA_real_
-    }
-    df[["pvalue"]] <- if (
-      !is.null(pvalues_df) && pair_col %in% colnames(pvalues_df)
-    ) {
-      pvalues_df[[pair_col]]
-    } else {
-      NA_real_
-    }
-    df[["significant_mean"]] <- if (
-      !is.null(sig_df) && pair_col %in% colnames(sig_df)
-    ) {
-      sig_df[[pair_col]]
-    } else {
-      NA_real_
-    }
-    df
-  })
+  n_interactions <- nrow(means_df)
+  n_pairs <- length(pair_cols)
+  pair_parts <- strsplit(pair_cols, split = separator, fixed = TRUE)
+  sender <- vapply(pair_parts, function(x) x[1] %||% NA_character_, character(1))
+  receiver <- vapply(pair_parts, function(x) x[2] %||% NA_character_, character(1))
+  sender[is.na(sender)] <- pair_cols[is.na(sender)]
+  receiver[is.na(receiver)] <- pair_cols[is.na(receiver)]
 
-  out <- do.call(rbind, long_list)
+  table_values <- function(df, default = NA_real_) {
+    out <- matrix(default, nrow = n_interactions, ncol = n_pairs)
+    if (!is.null(df)) {
+      available <- intersect(pair_cols, colnames(df))
+      if (length(available) > 0L) {
+        out[, match(available, pair_cols)] <- as.matrix(df[, available, drop = FALSE])
+      }
+    }
+    as.vector(out)
+  }
+
+  out <- means_df[
+    rep(seq_len(n_interactions), times = n_pairs),
+    info_cols,
+    drop = FALSE
+  ]
+  out[["sender"]] <- rep(sender, each = n_interactions)
+  out[["receiver"]] <- rep(receiver, each = n_interactions)
+  out[["pair"]] <- rep(pair_cols, each = n_interactions)
+  out[["means"]] <- table_values(means_df)
+  out[["score"]] <- out[["means"]]
+  out[["interaction_score"]] <- table_values(scores_df)
+  out[["pvalue"]] <- table_values(pvalues_df)
+  out[["significant_mean"]] <- table_values(sig_df)
   rownames(out) <- NULL
 
   ligand_col <- intersect(

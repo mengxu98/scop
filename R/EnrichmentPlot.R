@@ -455,15 +455,6 @@ EnrichmentPlot <- function(
       levels = unique(enrichment[["Groups"]])
     )
   }
-  if (length(db[!db %in% enrichment[["Database"]]]) > 0) {
-    log_message(
-      paste0(
-        db[!db %in% enrichment[["Database"]]],
-        " is not in the enrichment result"
-      ),
-      message_type = "error"
-    )
-  }
   if (!is.factor(enrichment[["Database"]])) {
     enrichment[["Database"]] <- factor(
       enrichment[["Database"]],
@@ -476,6 +467,7 @@ EnrichmentPlot <- function(
       drop = FALSE
     ]
   }
+  db <- resolve_enrichment_plot_db(db = db, enrichment = enrichment)
   if (length(id_use) > 0) {
     topTerm <- Inf
     if (is.list(id_use)) {
@@ -1642,6 +1634,47 @@ EnrichmentPlot <- function(
   } else {
     return(plist)
   }
+}
+
+resolve_enrichment_plot_db <- function(
+  db,
+  enrichment,
+  aliases = enrichment_plot_db_aliases()
+) {
+  db <- as.character(db)
+  available_db <- unique(as.character(enrichment[["Database"]]))
+
+  db <- unlist(
+    lapply(db, function(x) {
+      if (x %in% available_db) {
+        return(x)
+      }
+      if (x %in% names(aliases)) {
+        expanded <- intersect(aliases[[x]], available_db)
+        if (length(expanded) > 0) {
+          return(expanded)
+        }
+      }
+      x
+    }),
+    use.names = FALSE
+  )
+
+  missing_db <- db[!db %in% available_db]
+  if (length(missing_db) > 0) {
+    log_message(
+      paste0(unique(missing_db), " is not in the enrichment result"),
+      message_type = "error"
+    )
+  }
+  unique(db)
+}
+
+enrichment_plot_db_aliases <- function() {
+  list(
+    GO = c("GO_BP", "GO_CC", "GO_MF"),
+    GO_sim = c("GO_BP_sim", "GO_CC_sim", "GO_MF_sim")
+  )
 }
 
 EnrichmentHeatmap <- function(

@@ -140,6 +140,17 @@
 #'   group_use = c("Ductal", "Endocrine"),
 #'   ncol = 2
 #' )
+#' 
+#' DEtestPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   test.use = "wilcox",
+#'   plot_type = "volcano",
+#'   x_metric = "avg_log2FC",
+#'   y_metric = "p_val_adj",
+#'   group_use = c("Ductal", "Endocrine"),
+#'   DE_threshold = "abs(avg_log2FC) > 0.25 & p_val_adj < 0.05"
+#' )
 #'
 #' DEtestPlot(
 #'   pancreas_sub,
