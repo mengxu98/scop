@@ -10,10 +10,19 @@
 #' When set to `"nmf"` or `"glmpca"`, all available dimensions will be retained.
 #' @param k Number of neighbors used by [intrinsicDimension::maxLikGlobalDimEst].
 #' Default is `30`.
+#' @param method Dimension-selection method. `"scree"` uses PCA standard
+#' deviations with broken-stick, elbow, cumulative-variance, and marginal-gain
+#' criteria. `"intrinsic"` uses [intrinsicDimension::maxLikGlobalDimEst].
+#' `"ensemble"` keeps the larger recommendation from both methods when both are
+#' available. Default is `"scree"`.
 #' @param min_dims Minimum number of dimensions kept when intrinsic-dimension estimation succeeds.
 #' Default is `5`.
 #' @param fallback_max_dims Maximum number of dimensions kept when no valid estimate is available.
 #' Default is `50`.
+#' @param variance_threshold Cumulative variance threshold used by
+#' `method = "scree"`. Default is `0.8`.
+#' @param marginal_gain_threshold Stop point for marginal variance gain
+#' (percentage points) used by `method = "scree"`. Default is `0.5`.
 #' @param skip_first Whether to drop the first dimension from the returned result.
 #' Useful for `TFIDF/LSI` workflows. Default is `FALSE`.
 #' @param use_stored Whether to use `misc$dims_estimate` already stored in the reduction when available.
@@ -35,8 +44,11 @@ RunDimsEstimate <- function(
   reduction = NULL,
   reduction_method = NULL,
   k = 30L,
+  method = c("scree", "intrinsic", "ensemble"),
   min_dims = 5L,
   fallback_max_dims = 50L,
+  variance_threshold = 0.8,
+  marginal_gain_threshold = 0.5,
   skip_first = FALSE,
   use_stored = TRUE,
   verbose = TRUE
@@ -47,7 +59,7 @@ RunDimsEstimate <- function(
       message_type = "error"
     )
   }
-  check_r("intrinsicDimension", verbose = FALSE)
+  method <- match.arg(method)
   if (is.null(reduction)) {
     reduction <- DefaultReduction(
       srt = srt,
@@ -115,42 +127,60 @@ RunDimsEstimate <- function(
       )
       dims_source <- "all"
     } else {
-      dim_est <- tryCatch(
-        expr = {
-          min(
-            intrinsicDimension::maxLikGlobalDimEst(
-              data = Embeddings(srt, reduction = reduction),
-              k = as.integer(k)
-            )[["dim.est"]],
-            reduction_ncol
-          )
-        },
-        error = function(e) {
-          log_message(
-            "Can not estimate intrinsic dimensions with {.pkg maxLikGlobalDimEst}",
-            message_type = "warning",
-            verbose = verbose
-          )
-          NA_real_
-        }
-      )
-
-      if (!is.na(dim_est)) {
-        scree_lower_bound <- dims_estimate_scree_lower_bound(
+      dim_est <- NA_real_
+      scree_est <- NA_integer_
+      if (method %in% c("scree", "ensemble")) {
+        scree_est <- dims_estimate_scree_recommendation(
           stdev = reduction_obj@stdev,
           max_pcs = min(50L, reduction_ncol),
+          variance_threshold = variance_threshold,
+          marginal_gain_threshold = marginal_gain_threshold,
+          min_dims = min_dims,
           skip_first = skip_first
         )
+      }
+      if (method %in% c("intrinsic", "ensemble")) {
+        check_r("intrinsicDimension", verbose = FALSE)
+        dim_est <- dims_estimate_intrinsic(
+          srt = srt,
+          reduction = reduction,
+          k = k,
+          reduction_ncol = reduction_ncol,
+          verbose = verbose
+        )
+      }
+
+      if (method == "scree" && !is.na(scree_est)) {
+        dims_use <- dims_estimate_validate(
+          dims_use = seq_len(scree_est),
+          reduction_ncol = reduction_ncol,
+          skip_first = skip_first
+        )
+        dims_source <- "scree"
+      } else if (method == "intrinsic" && !is.na(dim_est)) {
         dims_use <- dims_estimate_validate(
           dims_use = seq_len(max(
-            scree_lower_bound,
             min(reduction_ncol, as.integer(min_dims)),
             ceiling(dim_est)
           )),
           reduction_ncol = reduction_ncol,
           skip_first = skip_first
         )
-        dims_source <- "estimated"
+        dims_source <- "intrinsic"
+      } else if (method == "ensemble") {
+        estimate_candidates <- c(scree_est, ceiling(dim_est))
+        estimate_candidates <- estimate_candidates[!is.na(estimate_candidates)]
+        if (length(estimate_candidates) > 0L) {
+          dims_use <- dims_estimate_validate(
+            dims_use = seq_len(max(
+              min(reduction_ncol, as.integer(min_dims)),
+              estimate_candidates
+            )),
+            reduction_ncol = reduction_ncol,
+            skip_first = skip_first
+          )
+          dims_source <- "ensemble"
+        }
       }
     }
   }
@@ -182,9 +212,9 @@ RunDimsEstimate <- function(
         "Use adjusted stored dimensions {.val {min(dims_use)}}:{.val {max(dims_use)}} for {.pkg {reduction}}",
         verbose = verbose
       )
-    } else if (dims_source == "estimated") {
+    } else if (dims_source %in% c("scree", "intrinsic", "ensemble")) {
       log_message(
-        "Estimated dimensions {.val {min(dims_use)}}:{.val {max(dims_use)}} for {.pkg {reduction}}",
+        "Estimated dimensions {.val {min(dims_use)}}:{.val {max(dims_use)}} for {.pkg {reduction}} with {.val {dims_source}} method",
         verbose = verbose
       )
     } else if (dims_source == "all") {
@@ -302,6 +332,88 @@ dims_estimate_scree_lower_bound <- function(
   }
 
   max(lower_bound, broken_stick_point, elbow_point)
+}
+
+dims_estimate_scree_recommendation <- function(
+  stdev,
+  max_pcs = 50L,
+  variance_threshold = 0.8,
+  marginal_gain_threshold = 0.5,
+  min_dims = 5L,
+  skip_first = FALSE
+) {
+  lower_bound <- if (isTRUE(skip_first)) 2L else 1L
+  if (is.null(stdev) || length(stdev) == 0L) {
+    return(NA_integer_)
+  }
+
+  stdev <- as.numeric(stdev)
+  stdev <- stdev[is.finite(stdev)]
+  if (length(stdev) == 0L) {
+    return(NA_integer_)
+  }
+
+  max_pcs <- min(as.integer(max_pcs), length(stdev))
+  if (is.na(max_pcs) || max_pcs < lower_bound) {
+    return(NA_integer_)
+  }
+
+  stdev_use <- stdev[seq_len(max_pcs)]
+  variance <- stdev_use^2
+  total_var <- sum(stdev^2)
+  if (!is.finite(total_var) || total_var <= 0) {
+    return(NA_integer_)
+  }
+
+  cumulative_var <- cumsum(variance) / total_var
+  marginal_gain <- variance / total_var * 100
+  variance_point <- which(cumulative_var >= variance_threshold)[1]
+  if (is.na(variance_point)) {
+    variance_point <- max_pcs
+  }
+  marginal_point <- which(marginal_gain < marginal_gain_threshold)[1]
+  if (is.na(marginal_point)) {
+    marginal_point <- max_pcs
+  }
+
+  max(
+    lower_bound,
+    min(max_pcs, as.integer(min_dims)),
+    dims_estimate_scree_lower_bound(
+      stdev = stdev,
+      max_pcs = max_pcs,
+      skip_first = skip_first
+    ),
+    min(variance_point, marginal_point)
+  )
+}
+
+dims_estimate_intrinsic <- function(
+  srt,
+  reduction,
+  k = 30L,
+  reduction_ncol,
+  verbose = TRUE
+) {
+  tryCatch(
+    expr = {
+      min(
+        intrinsicDimension::maxLikGlobalDimEst(
+          data = Seurat::Embeddings(srt, reduction = reduction),
+          k = as.integer(k)
+        )[["dim.est"]],
+        reduction_ncol
+      )
+    },
+    error = function(e) {
+      log_message(
+        "Can not estimate intrinsic dimensions with {.pkg maxLikGlobalDimEst}",
+        message_type = "warning",
+        verbose = verbose
+      )
+      NA_real_
+    }
+  )
 }
 
 pc_selection_stats <- function(

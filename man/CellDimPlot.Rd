@@ -741,7 +741,6 @@ CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
   reduction = "UMAP",
-  pt.size = NA,
   velocity = "stochastic"
 )
 

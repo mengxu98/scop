@@ -233,6 +233,13 @@ GSEAPlot <- function(
     res <- res[["results"]]
   }
   group_use <- group_use %||% unique(enrichment[["Groups"]])
+  db <- resolve_enrichment_plot_db(
+    db = db,
+    enrichment = enrichment[
+      enrichment[["Groups"]] %in% group_use, ,
+      drop = FALSE
+    ]
+  )
   comb <- expand.grid(group_use, db)
   use <- names(res)[names(res) %in% paste(comb$Var1, comb$Var2, sep = "-")]
   if (length(use) == 0) {
