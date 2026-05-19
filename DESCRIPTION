@@ -42,7 +42,7 @@ Imports:
     Seurat,
     SeuratObject,
     SummarizedExperiment,
-    thisplot (>= 0.3.8),
+    thisplot (>= 0.3.9),
     thisutils (>= 0.4.5),
     uwot
 Suggests:
@@ -135,6 +135,7 @@ LinkingTo:
     RSpectra
 Remotes:
     jinworks/CellChat,
+    mengxu98/thisplot,
     mengxu98/thisutils,
     saeyslab/multinichenetr,
     saeyslab/nichenetr
