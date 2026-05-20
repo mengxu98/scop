@@ -17,6 +17,7 @@
 
 * **fix**:
   * `RunHarmony2()`: Added compatibility with Harmony 2.0 objects by directly trying both legacy fields (`Z_corr` / `R`) and callable methods (`getZcorr()` / `getR()`), including module methods that are not listed by `ls()`.
+  * `srt_append()`: Align variable-feature metadata by feature name when appending into an existing Assay5 with a different feature universe, avoiding row-count replacement errors after integration workflows.
   * `EnrichmentPlot()` and `GSEAPlot()`: Resolve database aliases before applying `group_use`, and report selected groups with no enrichment rows directly instead of misreporting the database as missing.
   * `RunCellphoneDB()`: Replaced the internal manual homolog-expression conversion path with `ConvertHomologs()`, keeping expression-object conversion behavior consistent across the package.
   * `GeneConvert()` examples now direct expression-object homolog conversion to `ConvertHomologs()` instead of showing manual `geneID_expand` aggregation.
