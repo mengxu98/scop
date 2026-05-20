@@ -126,7 +126,19 @@ RunHarmony2.Seurat <- function(
     ...
   )
 
-  harmonyEmbed <- Matrix::t(as_matrix(harmonyObject$Z_corr))
+  harmonyFields <- ls(harmonyObject)
+  if ("Z_corr" %in% harmonyFields) {
+    harmonyZcorr <- harmonyObject$Z_corr
+  } else if ("getZcorr" %in% harmonyFields) {
+    harmonyZcorr <- harmonyObject$getZcorr()
+  } else {
+    log_message(
+      "Cannot extract corrected embeddings from {.pkg harmony} result. ",
+      "Expected field {.field Z_corr} or method {.fn getZcorr}.",
+      message_type = "error"
+    )
+  }
+  harmonyEmbed <- Matrix::t(as_matrix(harmonyZcorr))
   rownames(harmonyEmbed) <- row.names(data_use)
   colnames(harmonyEmbed) <- paste0(
     reduction.name,
@@ -134,7 +146,18 @@ RunHarmony2.Seurat <- function(
     seq_len(ncol(harmonyEmbed))
   )
 
-  harmonyClusters <- Matrix::t(harmonyObject$R)
+  if ("R" %in% harmonyFields) {
+    harmonyR <- harmonyObject$R
+  } else if ("getR" %in% harmonyFields) {
+    harmonyR <- harmonyObject$getR()
+  } else {
+    log_message(
+      "Cannot extract soft cluster assignments from {.pkg harmony} result. ",
+      "Expected field {.field R} or method {.fn getR}.",
+      message_type = "error"
+    )
+  }
+  harmonyClusters <- Matrix::t(harmonyR)
   rownames(harmonyClusters) <- row.names(data_use)
   colnames(harmonyClusters) <- paste0("R", seq_len(ncol(harmonyClusters)))
 
