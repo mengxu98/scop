@@ -91,6 +91,7 @@ Suggests:
     PFAM.db,
     plotly,
     proxyC,
+    RareQ,
     reactome.db,
     RcppML,
     R.cache,
@@ -134,6 +135,7 @@ LinkingTo:
     RcppEigen,
     RSpectra
 Remotes:
+    fabotao/RareQ,
     jinworks/CellChat,
     mengxu98/thisutils,
     mengxu98/thisplot,
