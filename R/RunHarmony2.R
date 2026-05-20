@@ -126,18 +126,12 @@ RunHarmony2.Seurat <- function(
     ...
   )
 
-  harmonyFields <- ls(harmonyObject)
-  if ("Z_corr" %in% harmonyFields) {
-    harmonyZcorr <- harmonyObject$Z_corr
-  } else if ("getZcorr" %in% harmonyFields) {
-    harmonyZcorr <- harmonyObject$getZcorr()
-  } else {
-    log_message(
-      "Cannot extract corrected embeddings from {.pkg harmony} result. ",
-      "Expected field {.field Z_corr} or method {.fn getZcorr}.",
-      message_type = "error"
-    )
-  }
+  harmonyZcorr <- extract_harmony_component(
+    harmonyObject,
+    field = "Z_corr",
+    method = "getZcorr",
+    label = "corrected embeddings"
+  )
   harmonyEmbed <- Matrix::t(as_matrix(harmonyZcorr))
   rownames(harmonyEmbed) <- row.names(data_use)
   colnames(harmonyEmbed) <- paste0(
@@ -146,17 +140,12 @@ RunHarmony2.Seurat <- function(
     seq_len(ncol(harmonyEmbed))
   )
 
-  if ("R" %in% harmonyFields) {
-    harmonyR <- harmonyObject$R
-  } else if ("getR" %in% harmonyFields) {
-    harmonyR <- harmonyObject$getR()
-  } else {
-    log_message(
-      "Cannot extract soft cluster assignments from {.pkg harmony} result. ",
-      "Expected field {.field R} or method {.fn getR}.",
-      message_type = "error"
-    )
-  }
+  harmonyR <- extract_harmony_component(
+    harmonyObject,
+    field = "R",
+    method = "getR",
+    label = "soft cluster assignments"
+  )
   harmonyClusters <- Matrix::t(harmonyR)
   rownames(harmonyClusters) <- row.names(data_use)
   colnames(harmonyClusters) <- paste0("R", seq_len(ncol(harmonyClusters)))
@@ -183,4 +172,42 @@ RunHarmony2.Seurat <- function(
   }
   object <- Seurat::LogSeuratCommand(object = object)
   return(object)
+}
+
+extract_harmony_component <- function(
+  object,
+  field,
+  method,
+  label
+) {
+  value <- tryCatch(
+    do.call("$", list(object, field)),
+    error = function(e) NULL
+  )
+  if (!is.null(value)) {
+    return(value)
+  }
+
+  method_fun <- tryCatch(
+    do.call("$", list(object, method)),
+    error = function(e) NULL
+  )
+  value <- if (is.function(method_fun)) {
+    tryCatch(
+      method_fun(),
+      error = function(e) NULL
+    )
+  } else {
+    NULL
+  }
+  if (!is.null(value)) {
+    return(value)
+  }
+
+  log_message(
+    "Cannot extract ",
+    label,
+    " from {.pkg harmony} result. Expected field {.field {field}} or method {.fn {method}}.",
+    message_type = "error"
+  )
 }
