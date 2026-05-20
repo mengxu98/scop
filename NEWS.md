@@ -16,6 +16,7 @@
   * Added a shared native progress helper in `src/log_message.h` for long-running C++ loops. CytoSPACE assignment, scTenifold tensor decomposition, proportion permutation/bootstrap, and sample-level proportion bootstrap now report progress with the same timestamped information style as `thisutils::log_message()`.
 
 * **fix**:
+  * `RunHarmony2()`: Added compatibility with Harmony 2.0 objects by reading corrected embeddings and soft cluster assignments through `getZcorr()` / `getR()` when the legacy `Z_corr` / `R` fields are not exposed.
   * `RunCellphoneDB()`: Replaced the internal manual homolog-expression conversion path with `ConvertHomologs()`, keeping expression-object conversion behavior consistent across the package.
   * `GeneConvert()` examples now direct expression-object homolog conversion to `ConvertHomologs()` instead of showing manual `geneID_expand` aggregation.
   * Cleaned up package-check issues by declaring missing namespace imports and aligning Rd argument documentation for recently updated wrappers.
