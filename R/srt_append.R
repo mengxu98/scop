@@ -85,11 +85,21 @@ srt_append <- function(
                 )
               )
               if (inherits(Seurat::GetAssay(srt_raw, assay = info), "Assay5")) {
-                srt_raw@assays[[info]]@key <- srt_append@assays[[info]]@key
-                srt_raw@assays[[info]]@meta.data$var.features <- srt_append@assays[[info]]@meta.data$var.features
+                assay_raw <- srt_raw@assays[[info]]
+                assay_raw@key <- srt_append@assays[[info]]@key
+                assay_raw <- sync_assay_variable_features(
+                  assay_raw = assay_raw,
+                  assay_append = srt_append@assays[[info]]
+                )
+                srt_raw@assays[[info]] <- assay_raw
               } else {
-                srt_raw[[info]]@key <- srt_append[[info]]@key
-                srt_raw[[info]]@var.features <- srt_append[[info]]@var.features
+                assay_raw <- srt_raw[[info]]
+                assay_raw@key <- srt_append[[info]]@key
+                assay_raw <- sync_assay_variable_features(
+                  assay_raw = assay_raw,
+                  assay_append = srt_append[[info]]
+                )
+                srt_raw[[info]] <- assay_raw
               }
               srt_raw[[info]]@misc <- srt_append[[info]]@misc
               meta_features <- cbind(
@@ -127,4 +137,14 @@ srt_append <- function(
     }
   }
   return(srt_raw)
+}
+
+sync_assay_variable_features <- function(
+  assay_raw,
+  assay_append
+) {
+  variable_features <- SeuratObject::VariableFeatures(assay_append)
+  variable_features <- intersect(variable_features, rownames(assay_raw))
+  SeuratObject::VariableFeatures(assay_raw) <- variable_features
+  assay_raw
 }
