@@ -789,7 +789,7 @@ def SCVELO(
     return adata
 
 
-def compute_transition_matrix(kernel, verbose=True):
+def compute_transition_matrix(kernel, verbose=True, **kwargs):
     """
     Compute transition matrix
 
@@ -806,7 +806,7 @@ def compute_transition_matrix(kernel, verbose=True):
         True if matrix was computed, False otherwise
     """
     try:
-        kernel.compute_transition_matrix()
+        kernel.compute_transition_matrix(**kwargs)
         return fix_transition_matrix(kernel, verbose=verbose)
     except ValueError as e:
         if "not row stochastic" in str(e):
@@ -1088,6 +1088,10 @@ def CellRank(
     verbose=True,
     kernel_type="velocity",
     time_key="dpt_pseudotime",
+    time_field="Time",
+    growth_iters=3,
+    tmap_out="tmaps/tmap_out",
+    recalculate=False,
     estimator_type="GPCCA",
     use_connectivity_kernel=True,
     velocity_weight=0.8,
@@ -1232,6 +1236,7 @@ def CellRank(
         use_velocity = False
         use_pseudotime = False
         use_cytotrace = False
+        use_wot = False
 
         if kernel_type == "velocity":
             has_velocity_data = (
@@ -1339,6 +1344,14 @@ def CellRank(
             use_cytotrace = True
             log_message(
                 "Using {.pkg CytoTRACEKernel} for RNA-only data...",
+                message_type="info",
+                verbose=verbose,
+            )
+
+        elif kernel_type == "wot":
+            use_wot = True
+            log_message(
+                "Using {.pkg RealTimeKernel} from {.pkg Waddington-OT} transport maps...",
                 message_type="info",
                 verbose=verbose,
             )
@@ -1458,6 +1471,106 @@ def CellRank(
                     verbose=verbose,
                 )
                 use_cytotrace = False
+
+        elif use_wot:
+            log_message(
+                "Creating {.pkg RealTimeKernel} from {.pkg Waddington-OT} with {.arg time_field}={.val {time_field}}...",
+                message_type="info",
+                verbose=verbose,
+            )
+            try:
+                if not hasattr(cr.kernels, "RealTimeKernel"):
+                    raise AttributeError(
+                        "cellrank.kernels.RealTimeKernel is not available in the installed CellRank version"
+                    )
+                if time_field is None or time_field not in adata.obs:
+                    log_message(
+                        "{.arg time_field} must be a column in {.val adata.obs} when {.arg kernel_type}={.val wot}",
+                        message_type="error",
+                        verbose=verbose,
+                    )
+                    exit()
+
+                import wot
+
+                wot_time_key = "cellrank_wot_time"
+                time_values = adata.obs[time_field]
+                if pd.api.types.is_categorical_dtype(time_values):
+                    adata.obs[wot_time_key] = time_values.cat.codes.replace(
+                        -1, np.nan
+                    ).astype(float)
+                elif not pd.api.types.is_numeric_dtype(time_values):
+                    try:
+                        adata.obs[wot_time_key] = time_values.astype(float)
+                    except ValueError:
+                        log_message(
+                            "Unable to convert {.arg time_field}={.val {time_field}} to numeric time values for {.pkg WOT}",
+                            message_type="error",
+                            verbose=verbose,
+                        )
+                        exit()
+                else:
+                    adata.obs[wot_time_key] = time_values.astype(float)
+                adata.obs[wot_time_key] = adata.obs[wot_time_key].astype("category")
+
+                n_time_points = adata.obs[wot_time_key].dropna().nunique()
+                if n_time_points < 2:
+                    log_message(
+                        "{.arg time_field} must contain at least 2 time points for {.pkg WOT}",
+                        message_type="error",
+                        verbose=verbose,
+                    )
+                    exit()
+
+                expanded_tmap_out = os.path.expanduser(tmap_out)
+                ot_model = wot.ot.OTModel(
+                    adata,
+                    growth_iters=int(growth_iters),
+                    day_field=wot_time_key,
+                )
+
+                if recalculate is True:
+                    log_message(
+                        "Recomputing {.pkg WOT} transport maps at {.val {expanded_tmap_out}}...",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+                    ot_model.compute_all_transport_maps(tmap_out=expanded_tmap_out)
+                else:
+                    try:
+                        wot.tmap.TransportMapModel.from_directory(expanded_tmap_out)
+                        log_message(
+                            "Using existing {.pkg WOT} transport maps at {.val {expanded_tmap_out}}",
+                            message_type="info",
+                            verbose=verbose,
+                        )
+                    except (FileNotFoundError, ValueError):
+                        log_message(
+                            "Computing {.pkg WOT} transport maps at {.val {expanded_tmap_out}}...",
+                            message_type="info",
+                            verbose=verbose,
+                        )
+                        ot_model.compute_all_transport_maps(tmap_out=expanded_tmap_out)
+
+                rtk = cr.kernels.RealTimeKernel.from_wot(
+                    adata,
+                    path=expanded_tmap_out,
+                    time_key=wot_time_key,
+                )
+                compute_transition_matrix(rtk, verbose=verbose)
+                main_kernel = rtk
+                log_message(
+                    "{.pkg RealTimeKernel} from {.pkg Waddington-OT} created successfully",
+                    message_type="success",
+                    verbose=verbose,
+                )
+            except Exception as e:
+                log_message(
+                    "{.pkg RealTimeKernel} from {.pkg Waddington-OT} failed: {.val {e}}",
+                    message_type="error",
+                    verbose=verbose,
+                )
+                raise
 
         elif use_velocity:
             if velocity_weight <= 0 and connectivity_weight <= 0:
