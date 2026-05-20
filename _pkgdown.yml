@@ -138,6 +138,7 @@ reference:
 - contents:
   - FindExpressedMarkers
   - RunDEtest
+  - RunRareQ
   - RunscTenifoldKnk
 
 - subtitle: "Bulk and Composition Analysis"
