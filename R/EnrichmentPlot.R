@@ -449,6 +449,7 @@ EnrichmentPlot <- function(
       message_type = "error"
     )
   }
+  db <- resolve_enrichment_plot_db(db = db, enrichment = enrichment)
   if (!is.factor(enrichment["Groups"])) {
     enrichment[["Groups"]] <- factor(
       enrichment[["Groups"]],
@@ -462,12 +463,11 @@ EnrichmentPlot <- function(
     )
   }
   if (!is.null(group_use)) {
-    enrichment <- enrichment[
-      enrichment[["Groups"]] %in% group_use, ,
-      drop = FALSE
-    ]
+    enrichment <- filter_enrichment_plot_groups(
+      enrichment = enrichment,
+      group_use = group_use
+    )
   }
-  db <- resolve_enrichment_plot_db(db = db, enrichment = enrichment)
   if (length(id_use) > 0) {
     topTerm <- Inf
     if (is.list(id_use)) {
@@ -1675,6 +1675,30 @@ enrichment_plot_db_aliases <- function() {
     GO = c("GO_BP", "GO_CC", "GO_MF"),
     GO_sim = c("GO_BP_sim", "GO_CC_sim", "GO_MF_sim")
   )
+}
+
+filter_enrichment_plot_groups <- function(
+  enrichment,
+  group_use
+) {
+  if (is.null(group_use)) {
+    return(enrichment)
+  }
+  enrichment_sub <- enrichment[
+    as.character(enrichment[["Groups"]]) %in% group_use, ,
+    drop = FALSE
+  ]
+  if (nrow(enrichment_sub) == 0) {
+    available_groups <- unique(as.character(enrichment[["Groups"]]))
+    log_message(
+      "No enrichment result found for selected groups: ",
+      paste0(unique(group_use), collapse = ", "),
+      ". Available groups in the enrichment result: ",
+      paste0(available_groups, collapse = ", "),
+      message_type = "error"
+    )
+  }
+  enrichment_sub
 }
 
 EnrichmentHeatmap <- function(

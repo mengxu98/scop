@@ -235,24 +235,23 @@ GSEAPlot <- function(
   group_use <- group_use %||% unique(enrichment[["Groups"]])
   db <- resolve_enrichment_plot_db(
     db = db,
-    enrichment = enrichment[
-      enrichment[["Groups"]] %in% group_use, ,
-      drop = FALSE
-    ]
+    enrichment = enrichment
   )
+  enrichment <- filter_enrichment_plot_groups(
+    enrichment = enrichment,
+    group_use = group_use
+  )
+  group_use <- unique(as.character(enrichment[["Groups"]]))
   comb <- expand.grid(group_use, db)
   use <- names(res)[names(res) %in% paste(comb$Var1, comb$Var2, sep = "-")]
   if (length(use) == 0) {
     log_message(
-      paste0(db, " is not in the enrichment result."),
+      "No enrichment result object found for selected groups and databases: ",
+      paste0(paste(comb$Var1, comb$Var2, sep = "-"), collapse = ", "),
       message_type = "error"
     )
   }
   res <- res[use]
-  enrichment <- enrichment[
-    enrichment[["Groups"]] %in% group_use, ,
-    drop = FALSE
-  ]
 
   if (is.null(pvalueCutoff) && is.null(padjustCutoff)) {
     log_message(

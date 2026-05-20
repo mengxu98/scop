@@ -17,6 +17,7 @@
 
 * **fix**:
   * `RunHarmony2()`: Added compatibility with Harmony 2.0 objects by reading corrected embeddings and soft cluster assignments through `getZcorr()` / `getR()` when the legacy `Z_corr` / `R` fields are not exposed.
+  * `EnrichmentPlot()` and `GSEAPlot()`: Resolve database aliases before applying `group_use`, and report selected groups with no enrichment rows directly instead of misreporting the database as missing.
   * `RunCellphoneDB()`: Replaced the internal manual homolog-expression conversion path with `ConvertHomologs()`, keeping expression-object conversion behavior consistent across the package.
   * `GeneConvert()` examples now direct expression-object homolog conversion to `ConvertHomologs()` instead of showing manual `geneID_expand` aggregation.
   * Cleaned up package-check issues by declaring missing namespace imports and aligning Rd argument documentation for recently updated wrappers.
