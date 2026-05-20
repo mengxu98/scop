@@ -55,10 +55,17 @@
 #' @param kinetics Boolean flag indicating whether to estimate RNA kinetics.
 #' @param kernel_type Type of kernel to use: `"velocity"` (default, requires spliced/unspliced),
 #' `"pseudotime"` (requires pre-computed pseudotime or auto-computes DPT),
-#' or `"cytotrace"` (auto-computes CytoTRACE score, suitable for RNA-only data).
+#' `"cytotrace"` (auto-computes CytoTRACE score, suitable for RNA-only data),
+#' or `"wot"` (uses Waddington-OT transport maps through CellRank's RealTimeKernel).
 #' @param time_key Key in metadata for pseudotime. Used when `kernel_type = "pseudotime"`.
 #' If the key doesn't exist, DPT pseudotime will be computed automatically.
 #' Default is `"dpt_pseudotime"`.
+#' @param time_field Key in metadata for experimental time. Used when `kernel_type = "wot"`.
+#' @param growth_iters Number of growth iterations passed to `wot.ot.OTModel`.
+#' Default is `3`.
+#' @param tmap_out Directory used to store or read Waddington-OT transport maps.
+#' @param recalculate Whether to recompute Waddington-OT transport maps even when
+#' `tmap_out` already exists. Default is `FALSE`.
 #' @param estimator_type Type of estimator to use: `"GPCCA"` (default) or `"CFLARE"`.
 #' GPCCA provides coarse-grained analysis and Schur decomposition.
 #' @param use_connectivity_kernel Whether to combine the main kernel with ConnectivityKernel.
@@ -157,8 +164,12 @@ RunCellRank <- function(
   calculate_velocity_genes = FALSE,
   denoise = FALSE,
   kinetics = FALSE,
-  kernel_type = c("velocity", "pseudotime", "cytotrace"),
+  kernel_type = c("velocity", "pseudotime", "cytotrace", "wot"),
   time_key = "dpt_pseudotime",
+  time_field = "Time",
+  growth_iters = 3L,
+  tmap_out = "tmaps/tmap_out",
+  recalculate = FALSE,
   estimator_type = c("GPCCA", "CFLARE"),
   use_connectivity_kernel = TRUE,
   velocity_weight = 0.8,
@@ -179,11 +190,16 @@ RunCellRank <- function(
   return_seurat = !is.null(srt),
   verbose = TRUE
 ) {
+  kernel_type <- match.arg(kernel_type)
   PrepareEnv(modules = c(
     "cellrank",
+    if (kernel_type == "wot") "wot",
     if (isTRUE(magic_impute)) "magic"
   ))
   check_python("cellrank", verbose = verbose)
+  if (kernel_type == "wot") {
+    check_python("wot", verbose = verbose)
+  }
   if (isTRUE(magic_impute)) {
     check_python("magic-impute", verbose = verbose)
   }
@@ -200,7 +216,6 @@ RunCellRank <- function(
     )
   }
 
-  kernel_type <- match.arg(kernel_type)
   estimator_type <- match.arg(estimator_type)
   schur_method <- match.arg(schur_method)
   plot_format <- match.arg(plot_format)

@@ -32,8 +32,12 @@ RunCellRank(
   calculate_velocity_genes = FALSE,
   denoise = FALSE,
   kinetics = FALSE,
-  kernel_type = c("velocity", "pseudotime", "cytotrace"),
+  kernel_type = c("velocity", "pseudotime", "cytotrace", "wot"),
   time_key = "dpt_pseudotime",
+  time_field = "Time",
+  growth_iters = 3L,
+  tmap_out = "tmaps/tmap_out",
+  recalculate = FALSE,
   estimator_type = c("GPCCA", "CFLARE"),
   use_connectivity_kernel = TRUE,
   velocity_weight = 0.8,
@@ -135,11 +139,22 @@ Default is \code{5}.}
 
 \item{kernel_type}{Type of kernel to use: \code{"velocity"} (default, requires spliced/unspliced),
 \code{"pseudotime"} (requires pre-computed pseudotime or auto-computes DPT),
-or \code{"cytotrace"} (auto-computes CytoTRACE score, suitable for RNA-only data).}
+\code{"cytotrace"} (auto-computes CytoTRACE score, suitable for RNA-only data),
+or \code{"wot"} (uses Waddington-OT transport maps through CellRank's RealTimeKernel).}
 
 \item{time_key}{Key in metadata for pseudotime. Used when \code{kernel_type = "pseudotime"}.
 If the key doesn't exist, DPT pseudotime will be computed automatically.
 Default is \code{"dpt_pseudotime"}.}
+
+\item{time_field}{Key in metadata for experimental time. Used when \code{kernel_type = "wot"}.}
+
+\item{growth_iters}{Number of growth iterations passed to \code{wot.ot.OTModel}.
+Default is \code{3}.}
+
+\item{tmap_out}{Directory used to store or read Waddington-OT transport maps.}
+
+\item{recalculate}{Whether to recompute Waddington-OT transport maps even when
+\code{tmap_out} already exists. Default is \code{FALSE}.}
 
 \item{estimator_type}{Type of estimator to use: \code{"GPCCA"} (default) or \code{"CFLARE"}.
 GPCCA provides coarse-grained analysis and Schur decomposition.}
