@@ -152,3 +152,100 @@ scibet_fit_predict_sparse <- function(ref, query, labels, n_labels, n_top, addit
 scibet_predict <- function(query, core, feature_index) {
     .Call(`_scop_scibet_predict`, query, core, feature_index)
 }
+
+scaleC <- function(X) {
+    .Call(`_scop_scaleC`, X)
+}
+
+OmegaC <- function(Omega, sgn) {
+    .Call(`_scop_OmegaC`, Omega, sgn)
+}
+
+OmegaSC <- function(OmegaS, sgn) {
+    .Call(`_scop_OmegaSC`, OmegaS, sgn)
+}
+
+maxLambdaLmC <- function(X, y, alpha, wbeta, N0, p) {
+    .Call(`_scop_maxLambdaLmC`, X, y, alpha, wbeta, N0, p)
+}
+
+cvTrimLmC <- function(beta, nn, nn2, loco, XF, yF, NF, a0) {
+    .Call(`_scop_cvTrimLmC`, beta, nn, nn2, loco, XF, yF, NF, a0)
+}
+
+EnetLmC <- function(X, y, alpha, lambda, nlambda, ilambda, wbeta, p, N0, thresh, maxit, thresh2) {
+    .Call(`_scop_EnetLmC`, X, y, alpha, lambda, nlambda, ilambda, wbeta, p, N0, thresh, maxit, thresh2)
+}
+
+cvEnetLmC <- function(X, y, alpha, lambda, nlambda, wbeta, N, p, thresh, maxit, XF, yF, NF, thresh2) {
+    .Call(`_scop_cvEnetLmC`, X, y, alpha, lambda, nlambda, wbeta, N, p, thresh, maxit, XF, yF, NF, thresh2)
+}
+
+NetLmC <- function(X, y, alpha, lambda, nlambda, ilambda, wbeta, Omega, loc, nadj, p, N0, thresh, maxit, thresh2) {
+    .Call(`_scop_NetLmC`, X, y, alpha, lambda, nlambda, ilambda, wbeta, Omega, loc, nadj, p, N0, thresh, maxit, thresh2)
+}
+
+cvNetLmC <- function(X, y, alpha, lambda, nlambda, wbeta, Omega, loc, nadj, N, p, thresh, maxit, XF, yF, NF, thresh2) {
+    .Call(`_scop_cvNetLmC`, X, y, alpha, lambda, nlambda, wbeta, Omega, loc, nadj, N, p, thresh, maxit, XF, yF, NF, thresh2)
+}
+
+maxLambdaCoxC <- function(X, tevent, N, nevent, nevent1, loc1, n, alpha, wbeta, N0, p) {
+    .Call(`_scop_maxLambdaCoxC`, X, tevent, N, nevent, nevent1, loc1, n, alpha, wbeta, N0, p)
+}
+
+pletaCm <- function(xb, exb, nevent, nevent1, loc1, n, ifast, itwo) {
+    .Call(`_scop_pletaCm`, xb, exb, nevent, nevent1, loc1, n, ifast, itwo)
+}
+
+cvTrimCoxC <- function(beta, nn, nn2, loco, XF, NF, neventF, nevent1F, loc1F, nF, X, N, nevent, nevent1, loc1, n, ifast, itwo) {
+    .Call(`_scop_cvTrimCoxC`, beta, nn, nn2, loco, XF, NF, neventF, nevent1F, loc1F, nF, X, N, nevent, nevent1, loc1, n, ifast, itwo)
+}
+
+EnetCoxC <- function(X, tevent, alpha, lambda, nlambda, ilambda, wbeta, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast) {
+    .Call(`_scop_EnetCoxC`, X, tevent, alpha, lambda, nlambda, ilambda, wbeta, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast)
+}
+
+cvEnetCoxC <- function(X, tevent, alpha, lambda, nlambda, wbeta, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast, XF, NF, neventF, nevent1F, loc1F, nF) {
+    .Call(`_scop_cvEnetCoxC`, X, tevent, alpha, lambda, nlambda, wbeta, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast, XF, NF, neventF, nevent1F, loc1F, nF)
+}
+
+NetCoxC <- function(X, tevent, alpha, lambda, nlambda, ilambda, wbeta, Omega, loc, nadj, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast) {
+    .Call(`_scop_NetCoxC`, X, tevent, alpha, lambda, nlambda, ilambda, wbeta, Omega, loc, nadj, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast)
+}
+
+cvNetCoxC <- function(X, tevent, alpha, lambda, nlambda, wbeta, Omega, loc, nadj, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast, XF, NF, neventF, nevent1F, loc1F, nF) {
+    .Call(`_scop_cvNetCoxC`, X, tevent, alpha, lambda, nlambda, wbeta, Omega, loc, nadj, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast, XF, NF, neventF, nevent1F, loc1F, nF)
+}
+
+maxLambdaLogC <- function(X, Z, alpha, wbeta, N0, p) {
+    .Call(`_scop_maxLambdaLogC`, X, Z, alpha, wbeta, N0, p)
+}
+
+cvTrimLogC <- function(beta, nn, nn2, loco, XF, yF, NF, threshP) {
+    .Call(`_scop_cvTrimLogC`, beta, nn, nn2, loco, XF, yF, NF, threshP)
+}
+
+EnetLogC <- function(X, y, alpha, lambda, nlambda, ilambda, wbeta, wbetai, p, N0, thresh, maxit, threshP) {
+    .Call(`_scop_EnetLogC`, X, y, alpha, lambda, nlambda, ilambda, wbeta, wbetai, p, N0, thresh, maxit, threshP)
+}
+
+cvEnetLogC <- function(X, y, alpha, lambda, nlambda, wbeta, wbetai, p, N0, thresh, maxit, XF, yF, NF, threshP) {
+    .Call(`_scop_cvEnetLogC`, X, y, alpha, lambda, nlambda, wbeta, wbetai, p, N0, thresh, maxit, XF, yF, NF, threshP)
+}
+
+NetLogC <- function(X, y, alpha, lambda, nlambda, ilambda, wbeta, wbetai, Omega, loc, nadj, p, N0, thresh, maxit, threshP) {
+    .Call(`_scop_NetLogC`, X, y, alpha, lambda, nlambda, ilambda, wbeta, wbetai, Omega, loc, nadj, p, N0, thresh, maxit, threshP)
+}
+
+cvNetLogC <- function(X, y, alpha, lambda, nlambda, wbeta, wbetai, Omega, loc, nadj, p, N0, thresh, maxit, XF, yF, NF, threshP) {
+    .Call(`_scop_cvNetLogC`, X, y, alpha, lambda, nlambda, wbeta, wbetai, Omega, loc, nadj, p, N0, thresh, maxit, XF, yF, NF, threshP)
+}
+
+scissor_gaussian_net_fit_cpp <- function(x, y, omega, alpha, lambda = NULL, nlambda = 100L, foldid = NULL, inzero = TRUE, isd = FALSE, thresh = 1e-7, maxit = 100000L, threshP = 1e-5) {
+    .Call(`_scop_scissor_gaussian_net_fit_cpp`, x, y, omega, alpha, lambda, nlambda, foldid, inzero, isd, thresh, maxit, threshP)
+}
+
+scissor_binomial_net_fit_cpp <- function(x, y, omega, alpha, lambda = NULL, nlambda = 100L, foldid = NULL, inzero = TRUE, isd = FALSE, thresh = 1e-7, maxit = 100000L, threshP = 1e-5) {
+    .Call(`_scop_scissor_binomial_net_fit_cpp`, x, y, omega, alpha, lambda, nlambda, foldid, inzero, isd, thresh, maxit, threshP)
+}
+

@@ -139,6 +139,7 @@ reference:
   - FindExpressedMarkers
   - RunDEtest
   - RunRareQ
+  - RunScissor
   - RunscTenifoldKnk
 
 - subtitle: "Bulk and Composition Analysis"
@@ -250,6 +251,7 @@ reference:
   - GSEAPlot
   - GSVAPlot
   - MetabolismPlot
+  - ScissorPlot
   - scTenifoldKnkPlot
 
 - subtitle: "Trajectory and Dynamic Plots"
