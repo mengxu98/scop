@@ -3,10 +3,13 @@
 # scop 0.9.0
 
 * **feat**:
+  * `RunDimsEstimate()`: Switched the default dimension-selection route to a scree-based ensemble of broken-stick, elbow, cumulative-variance, and marginal-gain criteria; the previous `intrinsicDimension` route remains available via `method = "intrinsic"` or can be combined with `method = "ensemble"`.
   * Added `RunRareQ()` for RareQ rare-cell population detection from Seurat objects, including automatic neighbor construction through `DefaultReduction()`, metadata writeback, `CellDimPlot()` examples, and detailed result storage in `srt@tools[["RareQ"]]`.
   * Added `RunSCENIC()` for a SCENIC workflow from Seurat objects, including optional metacell GRN input, GRNBoost2/`scenic ctx` execution, regulon conversion, multi-core AUCell batch scoring, and storage of regulon activity scores as a Seurat assay plus detailed results in `@tools`.
   * `RunSCENIC()` now supports `aucell_backend = "cpp"` for regulon activity scoring through the package C++ AUCell implementation, while keeping `aucell_backend = "r"` as the default for exact AUCell package behavior.
   * Added `SCENICPlot()` to calculate regulon specificity scores from SCENIC activity and plot the top regulons for each metadata group.
+  * Added `RunScissor()` and `ScissorPlot()` for Scissor phenotype-associated cell selection from Seurat and bulk/SummarizedExperiment inputs, with a native optimized backend, upstream-package backend, Seurat metadata/tool writeback, embedding plots, heatmaps, and status-composition summaries.
+  * `RunscTenifoldKnk()` now uses the optimized native path directly for QC, network-ensemble construction, tensor denoising, manifold alignment, and differential-regulation summaries; `scTenifoldKnkPlot()` includes QQ, effect-size, network, manifold, volcano, and upset-style result views.
   * `RunPAGA()` now supports a native C++ backend for the standard PAGA connectivity graph and uses it by default; `backend = "python"` remains available for RNA-velocity transitions, PAGA-initialized embeddings, plotting side effects, and DPT pseudotime.
   * `RunSCVELO()` now includes an optimized C++ backend for stochastic velocity embedding, compatible with `VelocityPlot()` and substantially faster than the equivalent R reference calculation. The Python backend remains the default for the full scVelo workflow.
   * `VelocityPlot()` raw, grid, and stream visualizations were validated with the native `RunSCVELO(backend = "cpp")` velocity embeddings.
@@ -20,6 +23,8 @@
   * `RunHarmony2()`: Added compatibility with Harmony 2.0 objects by directly trying both legacy fields (`Z_corr` / `R`) and callable methods (`getZcorr()` / `getR()`), including module methods that are not listed by `ls()`.
   * `srt_append()`: Align variable-feature metadata by feature name when appending into an existing Assay5 with a different feature universe, avoiding row-count replacement errors after integration workflows.
   * `EnrichmentPlot()` and `GSEAPlot()`: Resolve database aliases before applying `group_use`, and report selected groups with no enrichment rows directly instead of misreporting the database as missing.
+  * `RunPalantir()`: Avoided a macOS/Apple Silicon crash caused by `umap-learn` importing TensorFlow's ParametricUMAP path during Palantir diffusion-map construction.
+  * `RunCellTypist()`: Avoided a full AnnData-to-Seurat roundtrip for the common metadata-only annotation path; `RunCellphoneDB()` now avoids repeated Python environment checks and expands result tables with a vectorized path.
   * `RunCellphoneDB()`: Replaced the internal manual homolog-expression conversion path with `ConvertHomologs()`, keeping expression-object conversion behavior consistent across the package.
   * `GeneConvert()` examples now direct expression-object homolog conversion to `ConvertHomologs()` instead of showing manual `geneID_expand` aggregation.
   * Cleaned up package-check issues by declaring missing namespace imports and aligning Rd argument documentation for recently updated wrappers.
