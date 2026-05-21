@@ -303,7 +303,7 @@ PrepareDB <- function(
       "TRRUST" = "symbol",
       "JASPAR" = "symbol",
       "ENCODE" = "symbol",
-      "MSigDB" = c("symbol", "ensembl_id"),
+      "MSigDB" = "symbol",
       "CellTalk" = "symbol",
       "CellChat" = "symbol"
     )
@@ -2443,10 +2443,7 @@ PrepareDB <- function(
           TERM2NAME <- df[, c(1, 2, 4)]
           TERM2GENE <- df[, c(1, 3)]
           colnames(TERM2NAME) <- c("Term", "Name", "Collection")
-          colnames(TERM2GENE) <- c(
-            "Term",
-            paste0(default_id_types[["MSigDB"]], collapse = ".")
-          )
+          colnames(TERM2GENE) <- c("Term", default_id_types[["MSigDB"]])
           TERM2NAME <- stats::na.omit(unique(TERM2NAME))
           TERM2GENE <- stats::na.omit(unique(TERM2GENE))
 
@@ -2779,13 +2776,16 @@ PrepareDB <- function(
         )
         sp_from <- db_species[term]
         db_info <- db_list[[sp_from]][[names(sp_from)]]
-        TERM2GENE <- db_info[["TERM2GENE"]]
+        TERM2GENE <- preparedb_normalize_term2gene_id_columns(
+          db_info[["TERM2GENE"]]
+        )
+        db_info[["TERM2GENE"]] <- TERM2GENE
         TERM2NAME <- db_info[["TERM2NAME"]]
-        if (is.na(default_id_types[term])) {
-          IDtype <- colnames(TERM2GENE)[2]
-        } else {
-          IDtype <- default_id_types[[term]]
-        }
+        IDtype <- preparedb_source_idtype(
+          term = term,
+          TERM2GENE = TERM2GENE,
+          default_id_types = default_id_types
+        )
         if (grepl("MSigDB_", term)) {
           TERM2GENE_map <- db_list[[sps]][["MSigDB"]][["TERM2GENE"]]
           TERM2GENE <- TERM2GENE_map[
@@ -2862,6 +2862,10 @@ PrepareDB <- function(
     }
 
     for (term in names(db_list[[sps]])) {
+      db_list[[sps]][[term]][["TERM2GENE"]] <-
+        preparedb_normalize_term2gene_id_columns(
+          db_list[[sps]][[term]][["TERM2GENE"]]
+        )
       IDtypes <- db_IDtypes[
         !db_IDtypes %in% colnames(db_list[[sps]][[term]][["TERM2GENE"]])
       ]
@@ -2872,11 +2876,11 @@ PrepareDB <- function(
         )
         TERM2GENE <- db_list[[sps]][[term]][["TERM2GENE"]]
         TERM2NAME <- db_list[[sps]][[term]][["TERM2NAME"]]
-        if (is.na(default_id_types[term])) {
-          IDtype <- colnames(TERM2GENE)[2]
-        } else {
-          IDtype <- default_id_types[[term]]
-        }
+        IDtype <- preparedb_source_idtype(
+          term = term,
+          TERM2GENE = TERM2GENE,
+          default_id_types = default_id_types
+        )
         if (grepl("MSigDB_", term)) {
           map <- db_list[[sps]][["MSigDB"]][["TERM2GENE"]][, -1, drop = FALSE]
           map <- stats::aggregate(
@@ -2950,6 +2954,28 @@ PrepareDB <- function(
   return(db_list)
 }
 
+preparedb_normalize_term2gene_id_columns <- function(TERM2GENE) {
+  legacy_msigdb_col <- "symbol.ensembl_id"
+  if (
+    legacy_msigdb_col %in% colnames(TERM2GENE) &&
+      !"symbol" %in% colnames(TERM2GENE)
+  ) {
+    colnames(TERM2GENE)[colnames(TERM2GENE) == legacy_msigdb_col] <- "symbol"
+  }
+  TERM2GENE
+}
+
+preparedb_source_idtype <- function(term, TERM2GENE, default_id_types) {
+  default_idtype <- default_id_types[[term]]
+  if (length(default_idtype) > 0 && !all(is.na(default_idtype))) {
+    default_idtype <- default_idtype[default_idtype %in% colnames(TERM2GENE)]
+    if (length(default_idtype) > 0) {
+      return(default_idtype[[1]])
+    }
+  }
+  colnames(TERM2GENE)[[2]]
+}
+
 preparedb_local_orgdb_id_map <- function(
   geneID,
   geneID_from_IDtype,
@@ -2962,6 +2988,9 @@ preparedb_local_orgdb_id_map <- function(
     return(NULL)
   }
   idtype_to_orgdb_column <- function(idtype) {
+    if (length(idtype) != 1) {
+      return(NA_character_)
+    }
     switch(tolower(idtype),
       "symbol" = "SYMBOL",
       "ensembl_id" = "ENSEMBL",
