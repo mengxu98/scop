@@ -4,6 +4,7 @@
 #' Prepare the python environment by installing the required dependencies and setting up the environment.
 #'
 #' @md
+#' @inheritParams thisutils::log_message
 #' @param envname The name of the conda-compatible Python environment.
 #' If `NULL`, the environment name will be set to `"scop_env"`.
 #' Default is `NULL`.
@@ -47,6 +48,7 @@ PrepareEnv <- function(
   force = FALSE,
   modules = NULL,
   pip_options = character(),
+  verbose = TRUE,
   ...
 ) {
   modules <- normalize_env_modules(modules = modules)
@@ -707,12 +709,24 @@ scenic_runtime_restart_hint <- function(envname = "scenic_env") {
   )
 }
 
+configure_python_thread_env <- function() {
+  Sys.setenv(OMP_NUM_THREADS = "1")
+  Sys.setenv(OPENBLAS_NUM_THREADS = "1")
+  Sys.setenv(MKL_NUM_THREADS = "1")
+  Sys.setenv(VECLIB_MAXIMUM_THREADS = "1")
+  Sys.setenv(NUMEXPR_NUM_THREADS = "1")
+  Sys.setenv(KMP_WARNINGS = "0")
+  Sys.setenv(KMP_DUPLICATE_LIB_OK = "TRUE")
+  Sys.setenv(NUMBA_NUM_THREADS = "1")
+}
+
 configure_python_runtime <- function(python_path) {
   python_path <- normalizePath(python_path, mustWork = FALSE)
   if (!nzchar(python_path) || !file.exists(python_path)) {
     return(invisible(FALSE))
   }
 
+  configure_python_thread_env()
   assert_python_runtime_switchable(python_path)
 
   python_dir <- dirname(python_path)
@@ -772,14 +786,7 @@ set_python_env <- function(conda, envname, verbose = TRUE) {
   Sys.unsetenv("RETICULATE_PYTHON")
   options(reticulate.miniconda.enabled = FALSE)
 
-  Sys.setenv(OMP_NUM_THREADS = "1")
-  Sys.setenv(OPENBLAS_NUM_THREADS = "1")
-  Sys.setenv(MKL_NUM_THREADS = "1")
-  Sys.setenv(VECLIB_MAXIMUM_THREADS = "1")
-  Sys.setenv(NUMEXPR_NUM_THREADS = "1")
-  Sys.setenv(KMP_WARNINGS = "0")
-  Sys.setenv(KMP_DUPLICATE_LIB_OK = "TRUE")
-  Sys.setenv(NUMBA_NUM_THREADS = "1")
+  configure_python_thread_env()
 
   python_path <- conda_python(
     conda = conda,
@@ -1178,8 +1185,8 @@ env_info <- function(conda, envname, verbose = TRUE) {
 #' `"scanpy"`, `"scvi"`, `"scanorama"`, `"bbknn"`, `"celltypist"`,
 #' `"cellphonedb"`, `"magic"`, `"scrublet"`, `"doubletdetection"`,
 #' `"sccoda"`, `"doublet"`, `"palantir"`, `"scvelo"`, `"cellrank"`, `"wot"`,
-#' `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`, `"scomm"`, and
-#' `"scenic"`. If `NULL`, the default environment is returned. The default
+#' `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`,
+#' `"scomm"`, and `"scenic"`. If `NULL`, the default environment is returned. The default
 #' excludes `"sccoda"`, `"scomm"`, and `"scenic"` because these workflows
 #' require dependency stacks that should be prepared explicitly. The
 #' `"scenic"` module is standalone and always uses Python `"3.10-1"`.
