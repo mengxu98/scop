@@ -42,7 +42,10 @@ def configure_apple_silicon_env(
         os.environ["NUMBA_DISABLE_JIT"] = "1"
     if numba_threading:
         os.environ["NUMBA_NUM_THREADS"] = "1"
-        os.environ["NUMBA_THREADING_LAYER"] = "tbb"
+        threading_layer = "tbb"
+        if importlib.util.find_spec("tbb") is None:
+            threading_layer = "workqueue"
+        os.environ["NUMBA_THREADING_LAYER"] = threading_layer
         os.environ["NUMBA_DEFAULT_NUM_THREADS"] = "1"
 
     if configure_numba_runtime:
@@ -1491,7 +1494,24 @@ def CellRank(
                     )
                     exit()
 
-                import wot
+                import sys
+                import importlib.abc
+
+                class BlockTensorflowForWOT(importlib.abc.MetaPathFinder):
+                    def find_spec(self, fullname, path=None, target=None):
+                        if fullname == "tensorflow" or fullname.startswith(
+                            "tensorflow."
+                        ):
+                            raise ImportError("blocked tensorflow for WOT/POT import")
+                        return None
+
+                tensorflow_blocker = BlockTensorflowForWOT()
+                sys.meta_path.insert(0, tensorflow_blocker)
+                try:
+                    import wot
+                finally:
+                    if tensorflow_blocker in sys.meta_path:
+                        sys.meta_path.remove(tensorflow_blocker)
 
                 wot_time_key = "cellrank_wot_time"
                 time_values = adata.obs[time_field]
@@ -1522,7 +1542,11 @@ def CellRank(
                     )
                     exit()
 
-                expanded_tmap_out = os.path.expanduser(tmap_out)
+                expanded_tmap_out = os.path.abspath(os.path.expanduser(tmap_out))
+                os.makedirs(expanded_tmap_out, exist_ok=True)
+                wot_tmap_out = expanded_tmap_out
+                if not wot_tmap_out.endswith(os.sep):
+                    wot_tmap_out = wot_tmap_out + os.sep
                 ot_model = wot.ot.OTModel(
                     adata,
                     growth_iters=int(growth_iters),
@@ -1535,29 +1559,37 @@ def CellRank(
                         message_type="info",
                         verbose=verbose,
                     )
-                    ot_model.compute_all_transport_maps(tmap_out=expanded_tmap_out)
+                    ot_model.compute_all_transport_maps(tmap_out=wot_tmap_out)
                 else:
-                    try:
-                        wot.tmap.TransportMapModel.from_directory(expanded_tmap_out)
+                    existing_tmaps = [
+                        fname
+                        for fname in os.listdir(expanded_tmap_out)
+                        if fname.endswith(".h5ad")
+                    ]
+                    if existing_tmaps:
                         log_message(
                             "Using existing {.pkg WOT} transport maps at {.val {expanded_tmap_out}}",
                             message_type="info",
                             verbose=verbose,
                         )
-                    except (FileNotFoundError, ValueError):
+                    else:
                         log_message(
                             "Computing {.pkg WOT} transport maps at {.val {expanded_tmap_out}}...",
                             message_type="info",
                             verbose=verbose,
                         )
-                        ot_model.compute_all_transport_maps(tmap_out=expanded_tmap_out)
+                        ot_model.compute_all_transport_maps(tmap_out=wot_tmap_out)
 
                 rtk = cr.kernels.RealTimeKernel.from_wot(
                     adata,
                     path=expanded_tmap_out,
                     time_key=wot_time_key,
                 )
-                compute_transition_matrix(rtk, verbose=verbose)
+                compute_transition_matrix(
+                    rtk,
+                    verbose=verbose,
+                    self_transitions="diagonal",
+                )
                 main_kernel = rtk
                 log_message(
                     "{.pkg RealTimeKernel} from {.pkg Waddington-OT} created successfully",
@@ -2057,7 +2089,7 @@ def CellRank(
             )
             estimator.compute_eigendecomposition()
 
-            predict_method = "leiden"
+            predict_method = "kmeans" if kernel_type == "wot" else "leiden"
             log_message(
                 "Predicting terminal states (use={.val {n_macrostates}}, method={.val {predict_method}})...",
                 message_type="info",
@@ -2084,30 +2116,88 @@ def CellRank(
         log_message(
             "Computing fate probabilities...", message_type="info", verbose=verbose
         )
-        estimator.compute_fate_probabilities()
-
-        log_message(
-            "Computing lineage drivers for {.arg cluster_key}={.val {group_by}}...",
-            message_type="info",
-            verbose=verbose,
-        )
+        fate_probabilities_available = True
         try:
-            estimator.compute_lineage_drivers(cluster_key=group_by, use_raw=False)
-        except RuntimeError as e:
-            if "Compute `.fate_probabilities`" in str(e):
+            if kernel_type == "wot":
+                estimator.compute_fate_probabilities(solver="direct")
+            else:
+                estimator.compute_fate_probabilities()
+        except ValueError as e:
+            if "do not sum to 1" not in str(e):
+                raise
+            if kernel_type == "wot":
+                fate_probabilities_available = False
                 log_message(
-                    "Skipping lineage drivers computation (fate probabilities not available)",
+                    "Skipping fate probabilities for {.pkg Waddington-OT} kernel because CellRank could not normalize absorption probabilities: {.val {e}}",
                     message_type="warning",
                     verbose=verbose,
                 )
             else:
-                raise
+                log_message(
+                    "Fate probabilities did not normalize with the iterative solver. Retrying with {.val direct} solver...",
+                    message_type="warning",
+                    verbose=verbose,
+                )
+                estimator.compute_fate_probabilities(solver="direct")
+
+        if fate_probabilities_available:
+            log_message(
+                "Computing lineage drivers for {.arg cluster_key}={.val {group_by}}...",
+                message_type="info",
+                verbose=verbose,
+            )
+            try:
+                estimator.compute_lineage_drivers(cluster_key=group_by, use_raw=False)
+            except RuntimeError as e:
+                if "Compute `.fate_probabilities`" in str(e):
+                    log_message(
+                        "Skipping lineage drivers computation (fate probabilities not available)",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
+                else:
+                    raise
+        else:
+            log_message(
+                "Skipping lineage drivers computation because fate probabilities are not available",
+                message_type="warning",
+                verbose=verbose,
+            )
 
         log_message(
             "{.pkg CellRank} analysis completed",
             message_type="success",
             verbose=verbose,
         )
+
+        def write_cellrank_states(attr_name, obs_key, empty_label):
+            states = getattr(estimator, attr_name, None)
+            if states is None:
+                return
+            try:
+                import pandas as pd
+
+                if hasattr(states, "to_series"):
+                    states_series = states.to_series()
+                else:
+                    states_series = pd.Series(states, index=adata.obs_names)
+                states_series = states_series.reindex(adata.obs_names).astype("object")
+                states_series[pd.isna(states_series)] = empty_label
+                adata.obs[obs_key] = pd.Categorical(states_series)
+                log_message(
+                    "Stored {.pkg CellRank} {.val {attr_name}} in {.val {obs_key}}",
+                    message_type="info",
+                    verbose=verbose,
+                )
+            except Exception as e:
+                log_message(
+                    "Failed to store {.pkg CellRank} {.val {attr_name}}: {.val {e}}",
+                    message_type="warning",
+                    verbose=verbose,
+                )
+
+        write_cellrank_states("macrostates", "macrostates_fwd", "unassigned")
+        write_cellrank_states("terminal_states", "term_states_fwd", "transient")
 
         if "cellrank_pseudotime" not in adata.obs:
             if "to_terminal_states" in adata.obsm or "lineages_fwd" in adata.obsm:
@@ -3149,6 +3239,23 @@ def Palantir(
     import matplotlib
     import statistics
     from math import hypot
+    import sys
+    import importlib.abc
+
+    class BlockTensorflowForUmap(importlib.abc.MetaPathFinder):
+        def find_spec(self, fullname, path=None, target=None):
+            if fullname == "tensorflow" or fullname.startswith("tensorflow."):
+                raise ImportError("blocked tensorflow for non-parametric umap")
+            return None
+
+    tensorflow_blocker = BlockTensorflowForUmap()
+    sys.meta_path.insert(0, tensorflow_blocker)
+    try:
+        import umap  # noqa: F401
+    finally:
+        if tensorflow_blocker in sys.meta_path:
+            sys.meta_path.remove(tensorflow_blocker)
+
     import scanpy as sc
     import numpy as np
     import pandas as pd
@@ -3475,7 +3582,22 @@ def WOT(
     import statistics
     import pandas as pd
     from math import hypot
-    import wot
+    import sys
+    import importlib.abc
+
+    class BlockTensorflowForWOT(importlib.abc.MetaPathFinder):
+        def find_spec(self, fullname, path=None, target=None):
+            if fullname == "tensorflow" or fullname.startswith("tensorflow."):
+                raise ImportError("blocked tensorflow for WOT/POT import")
+            return None
+
+    tensorflow_blocker = BlockTensorflowForWOT()
+    sys.meta_path.insert(0, tensorflow_blocker)
+    try:
+        import wot
+    finally:
+        if tensorflow_blocker in sys.meta_path:
+            sys.meta_path.remove(tensorflow_blocker)
 
     import warnings
 
@@ -3602,7 +3724,9 @@ def WOT(
                 index=transition_table.obs_names,
                 columns=transition_table.var_names,
             )
-            adata.uns["transition_" + str(time_from) + "_to_" + str(time_to)] = fates_df
+            adata.uns["transition_" + str(time_from) + "_to_" + str(time_to)] = (
+                transition_df
+            )
             if get_coupling is True:
                 coupling = tmap_model.get_coupling(
                     time_dict[time_from], time_dict[time_to]
@@ -4021,6 +4145,7 @@ def CellTypist(
     insert_prob=False,
     insert_decision=False,
     prefix="",
+    return_obs=False,
     verbose=True,
 ):
     """
@@ -4065,6 +4190,9 @@ def CellTypist(
         Whether to insert decision matrix. Default is False.
     prefix : str
         Prefix for inserted columns. Default is empty string.
+    return_obs : bool
+        Whether to return only ``adata.obs`` after inserting predictions.
+        Default is False.
     verbose : bool
         Whether to show detailed information. Default is True.
 
@@ -4309,6 +4437,8 @@ def CellTypist(
             verbose=verbose,
         )
 
+        if return_obs:
+            return adata.obs
         return adata
 
     except Exception as e:
@@ -5057,3 +5187,4 @@ def RunSCENICCli(
         "gmt_output": gmt_output,
         "txt_output": txt_output,
     }
+

@@ -12,6 +12,7 @@ PrepareEnv(
   force = FALSE,
   modules = NULL,
   pip_options = character(),
+  verbose = TRUE,
   ...
 )
 }
@@ -54,6 +55,9 @@ upstream stacks are more reliable when requested explicitly for
 method-specific workflows.}
 
 \item{pip_options}{Additional command line arguments to be passed to \code{uv}/\code{pip} when installing pip packages.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{...}{Additional arguments passed to package installation functions.}
 }
