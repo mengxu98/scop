@@ -96,8 +96,15 @@ Run scTenifoldKnk in-silico knockout analysis
 \examples{
 data(pancreas_sub)
 gene_use <- "Pdx1"
-counts <- GetAssayData5(pancreas_sub, assay = "RNA", layer = "counts")
-detected <- names(sort(Matrix::rowSums(counts > 0), decreasing = TRUE))
+counts <- GetAssayData5(
+  pancreas_sub,
+  assay = "RNA",
+  layer = "counts"
+)
+detected <- names(
+  sort(Matrix::rowSums(counts > 0),
+  decreasing = TRUE)
+)
 features_use <- unique(c(gene_use, head(detected, 300)))
 
 pancreas_sub <- RunscTenifoldKnk(

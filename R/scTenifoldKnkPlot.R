@@ -274,7 +274,10 @@ sctenifold_plot_qq <- function(
       linewidth = 0.4
     ) +
     ggplot2::geom_point(size = pt.size, alpha = pt.alpha) +
-    ggplot2::scale_color_manual(values = sctenifold_status_colors(cols.sig, cols.ns, cols.ko), drop = FALSE) +
+    ggplot2::scale_color_manual(
+      values = sctenifold_status_colors(cols.sig, cols.ns, cols.ko),
+      drop = FALSE
+    ) +
     ggplot2::labs(
       x = xlab %||% "Expected chi-square quantiles",
       y = ylab %||% "Observed FC",
@@ -283,17 +286,22 @@ sctenifold_plot_qq <- function(
     ) +
     sctenifold_plot_theme(theme_use, theme_args)
   if (isTRUE(label)) {
-    label_df <- dr[dr$gene %in% sctenifold_label_genes(dr, features, min(nlabel, top_n)), , drop = FALSE]
+    label_df <- dr[
+      dr$gene %in% sctenifold_label_genes(dr, features, min(nlabel, top_n)),
+      ,
+      drop = FALSE
+    ]
     if (nrow(label_df) > 0L) {
-      p <- p + ggrepel::geom_text_repel(
-        data = label_df,
-        ggplot2::aes(x = chisq_quantile, y = FC, label = gene),
-        inherit.aes = FALSE,
-        size = label.size,
-        max.overlaps = Inf,
-        box.padding = 0.35,
-        show.legend = FALSE
-      )
+      p <- p +
+        ggrepel::geom_text_repel(
+          data = label_df,
+          ggplot2::aes(x = chisq_quantile, y = FC, label = gene),
+          inherit.aes = FALSE,
+          size = label.size,
+          max.overlaps = Inf,
+          box.padding = 0.35,
+          show.legend = FALSE
+        )
     }
   }
   p
@@ -322,14 +330,20 @@ sctenifold_plot_effect <- function(
   plot_df <- dr[dr$gene %in% genes_use, , drop = FALSE]
   plot_df <- plot_df[order(plot_df$FC, decreasing = FALSE), , drop = FALSE]
   plot_df$gene <- factor(plot_df$gene, levels = plot_df$gene)
-  p <- ggplot2::ggplot(plot_df, ggplot2::aes(x = FC, y = gene, color = status)) +
+  p <- ggplot2::ggplot(
+    plot_df,
+    ggplot2::aes(x = FC, y = gene, color = status)
+  ) +
     ggplot2::geom_segment(
       ggplot2::aes(x = 0, xend = FC, yend = gene),
       linewidth = 0.5,
       color = "grey75"
     ) +
     ggplot2::geom_point(size = pt.size + 0.8) +
-    ggplot2::scale_color_manual(values = sctenifold_status_colors(cols.sig, cols.ns, cols.ko), drop = FALSE) +
+    ggplot2::scale_color_manual(
+      values = sctenifold_status_colors(cols.sig, cols.ns, cols.ko),
+      drop = FALSE
+    ) +
     ggplot2::labs(
       x = xlab %||% "FC",
       y = ylab %||% NULL,
@@ -338,12 +352,13 @@ sctenifold_plot_effect <- function(
     ) +
     sctenifold_plot_theme(theme_use, theme_args)
   if (isTRUE(label)) {
-    p <- p + ggplot2::geom_text(
-      ggplot2::aes(label = sprintf("%.2f", FC)),
-      hjust = -0.15,
-      size = label.size,
-      show.legend = FALSE
-    ) +
+    p <- p +
+      ggplot2::geom_text(
+        ggplot2::aes(label = sprintf("%.2f", FC)),
+        hjust = -0.15,
+        size = label.size,
+        show.legend = FALSE
+      ) +
       ggplot2::expand_limits(x = max(plot_df$FC, na.rm = TRUE) * 1.12)
   }
   p
@@ -376,7 +391,10 @@ sctenifold_plot_network <- function(
     )
   }
   wt <- as.matrix(wt)
-  genes_use <- unique(c(bundle$parameters$gKO, sctenifold_label_genes(dr, features, top_n)))
+  genes_use <- unique(c(
+    bundle$parameters$gKO,
+    sctenifold_label_genes(dr, features, top_n)
+  ))
   genes_use <- intersect(genes_use, intersect(rownames(wt), colnames(wt)))
   if (length(genes_use) < 2L) {
     log_message(
@@ -397,7 +415,11 @@ sctenifold_plot_network <- function(
   if (!is.null(edge_threshold)) {
     edge_df <- edge_df[edge_df$abs_weight >= edge_threshold, , drop = FALSE]
   }
-  edge_df <- edge_df[order(edge_df$abs_weight, decreasing = TRUE), , drop = FALSE]
+  edge_df <- edge_df[
+    order(edge_df$abs_weight, decreasing = TRUE),
+    ,
+    drop = FALSE
+  ]
   edge_df <- head(edge_df, edge_top_n)
   if (nrow(edge_df) == 0L) {
     log_message(
@@ -405,9 +427,17 @@ sctenifold_plot_network <- function(
       message_type = "error"
     )
   }
-  node_df <- dr[match(genes_use, dr$gene), c("gene", "status", "FC"), drop = FALSE]
+  node_df <- dr[
+    match(genes_use, dr$gene),
+    c("gene", "status", "FC"),
+    drop = FALSE
+  ]
   node_df <- node_df[!is.na(node_df$gene), , drop = FALSE]
-  graph <- igraph::graph_from_data_frame(edge_df, directed = TRUE, vertices = node_df)
+  graph <- igraph::graph_from_data_frame(
+    edge_df,
+    directed = TRUE,
+    vertices = node_df
+  )
   layout <- igraph::layout_with_fr(graph, weights = igraph::E(graph)$abs_weight)
   node_plot <- data.frame(
     gene = igraph::V(graph)$name,
@@ -415,12 +445,22 @@ sctenifold_plot_network <- function(
     y = layout[, 2],
     stringsAsFactors = FALSE
   )
-  node_plot <- merge(node_plot, node_df, by = "gene", all.x = TRUE, sort = FALSE)
+  node_plot <- merge(
+    node_plot,
+    node_df,
+    by = "gene",
+    all.x = TRUE,
+    sort = FALSE
+  )
   fc_range <- range(node_plot$FC, na.rm = TRUE)
   if (!all(is.finite(fc_range)) || diff(fc_range) == 0) {
     node_plot$node_size <- pt.size + 3
   } else {
-    node_plot$node_size <- (node_plot$FC - fc_range[1]) / diff(fc_range) * 4 + pt.size + 1
+    node_plot$node_size <- (node_plot$FC - fc_range[1]) /
+      diff(fc_range) *
+      4 +
+      pt.size +
+      1
   }
   rownames(node_plot) <- node_plot$gene
 
@@ -430,7 +470,11 @@ sctenifold_plot_network <- function(
     ncol = nrow(node_plot),
     dimnames = list(rownames(node_plot), rownames(node_plot))
   )
-  edge_df <- edge_df[edge_df$from %in% rownames(edge_mat) & edge_df$to %in% colnames(edge_mat), , drop = FALSE]
+  edge_df <- edge_df[
+    edge_df$from %in% rownames(edge_mat) & edge_df$to %in% colnames(edge_mat),
+    ,
+    drop = FALSE
+  ]
   edge_mat[cbind(edge_df$from, edge_df$to)] <- edge_df$abs_weight
 
   graph_theme_use <- if (inherits(theme_use, "theme")) {
@@ -466,18 +510,19 @@ sctenifold_plot_network <- function(
     theme_args = theme_args
   )
   if (isTRUE(label)) {
-    p <- p + ggrepel::geom_text_repel(
-      data = node_plot,
-      ggplot2::aes(x = x, y = y, label = gene),
-      inherit.aes = FALSE,
-      size = label.size,
-      color = "black",
-      bg.color = "white",
-      bg.r = 0.1,
-      max.overlaps = Inf,
-      box.padding = 0.35,
-      show.legend = FALSE
-    )
+    p <- p +
+      ggrepel::geom_text_repel(
+        data = node_plot,
+        ggplot2::aes(x = x, y = y, label = gene),
+        inherit.aes = FALSE,
+        size = label.size,
+        color = "black",
+        bg.color = "white",
+        bg.r = 0.1,
+        max.overlaps = Inf,
+        box.padding = 0.35,
+        show.legend = FALSE
+      )
   }
   p
 }
@@ -537,8 +582,17 @@ sctenifold_plot_manifold <- function(
     yend = ma[seq.int(n_genes + 1L, nrow(ma)), 2],
     stringsAsFactors = FALSE
   )
-  plot_df <- merge(plot_df, dr[, c("gene", "status", "FC")], by = "gene", all.x = TRUE, sort = FALSE)
-  genes_use <- unique(c(bundle$parameters$gKO, sctenifold_label_genes(dr, features, top_n)))
+  plot_df <- merge(
+    plot_df,
+    dr[, c("gene", "status", "FC")],
+    by = "gene",
+    all.x = TRUE,
+    sort = FALSE
+  )
+  genes_use <- unique(c(
+    bundle$parameters$gKO,
+    sctenifold_label_genes(dr, features, top_n)
+  ))
   plot_df <- plot_df[plot_df$gene %in% genes_use, , drop = FALSE]
   if (nrow(plot_df) == 0L) {
     log_message(
@@ -549,7 +603,10 @@ sctenifold_plot_manifold <- function(
   p <- ggplot2::ggplot(plot_df) +
     ggplot2::geom_segment(
       ggplot2::aes(x = x, y = y, xend = xend, yend = yend),
-      arrow = grid::arrow(length = grid::unit(arrow.length, "inches"), type = "closed"),
+      arrow = grid::arrow(
+        length = grid::unit(arrow.length, "inches"),
+        type = "closed"
+      ),
       linewidth = arrow.linewidth,
       color = "grey35",
       alpha = arrow.alpha,
@@ -563,9 +620,18 @@ sctenifold_plot_manifold <- function(
       stroke = 0.7,
       size = start.pt.size
     ) +
-    ggplot2::geom_point(ggplot2::aes(x = xend, y = yend, color = status, size = FC), alpha = 0.95) +
-    ggplot2::scale_color_manual(values = sctenifold_status_colors(cols.sig, cols.ns, cols.ko), drop = FALSE) +
-    ggplot2::scale_size_continuous(range = c(end.pt.size, end.pt.size + 4), guide = "none") +
+    ggplot2::geom_point(
+      ggplot2::aes(x = xend, y = yend, color = status, size = FC),
+      alpha = 0.95
+    ) +
+    ggplot2::scale_color_manual(
+      values = sctenifold_status_colors(cols.sig, cols.ns, cols.ko),
+      drop = FALSE
+    ) +
+    ggplot2::scale_size_continuous(
+      range = c(end.pt.size, end.pt.size + 4),
+      guide = "none"
+    ) +
     ggplot2::labs(
       x = xlab %||% "NLMA 1",
       y = ylab %||% "NLMA 2",
@@ -575,13 +641,14 @@ sctenifold_plot_manifold <- function(
     sctenifold_plot_theme(theme_use, theme_args) +
     ggplot2::theme(aspect.ratio = manifold.aspect.ratio)
   if (isTRUE(label)) {
-    p <- p + ggrepel::geom_text_repel(
-      ggplot2::aes(x = xend, y = yend, label = gene),
-      size = label.size,
-      max.overlaps = Inf,
-      box.padding = 0.35,
-      show.legend = FALSE
-    )
+    p <- p +
+      ggrepel::geom_text_repel(
+        ggplot2::aes(x = xend, y = yend, label = gene),
+        size = label.size,
+        max.overlaps = Inf,
+        box.padding = 0.35,
+        show.legend = FALSE
+      )
   }
   p
 }
