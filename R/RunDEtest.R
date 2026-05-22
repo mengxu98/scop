@@ -2313,7 +2313,7 @@ RunDEtest.Seurat <- function(
         cells1
       )] <- NA
       srt_tmp <- RunDEtest(
-        srt = srt_tmp,
+        object = srt_tmp,
         assay = assay,
         layer = layer,
         group.by = grouping.var,
@@ -2686,7 +2686,7 @@ RunDEtest.Seurat <- function(
             return(NULL)
           } else {
             srt_tmp <- RunDEtest(
-              srt = srt_tmp,
+              object = srt_tmp,
               assay = assay,
               layer = layer,
               group.by = grouping.var,
