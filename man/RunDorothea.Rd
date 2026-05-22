@@ -9,6 +9,10 @@ RunDorothea(
   assay = NULL,
   layer = "data",
   species = c("Homo_sapiens", "Mus_musculus"),
+  input_species = NULL,
+  geneID_from_IDtype = "symbol",
+  geneID_to_IDtype = "symbol",
+  homolog_params = list(),
   confidence = c("A", "B", "C"),
   regulons = NULL,
   method = c("ulm", "viper", "wmean"),
@@ -29,7 +33,23 @@ additional \code{ChromatinAssay} will be preprocessed sequentially.}
 
 \item{layer}{Assay layer used as the expression matrix.}
 
-\item{species}{Species used to select bundled DoRothEA regulons.}
+\item{species}{Species used to select bundled DoRothEA regulons. DoRothEA
+only provides human and mouse regulons. For other input species, set
+\code{input_species} and project expression values to this regulon species through
+homologous gene conversion before activity inference.}
+
+\item{input_species}{Species of the input expression features. If \code{NULL},
+the input is assumed to use the same gene namespace as \code{species}. When this
+differs from \code{species}, expression features are converted with
+\link{ConvertHomologs} before DoRothEA activity inference.}
+
+\item{geneID_from_IDtype, geneID_to_IDtype}{Gene identifier types passed to
+\link{ConvertHomologs} for cross-species projection. For bundled DoRothEA
+regulons, \code{geneID_to_IDtype} should normally remain \code{"symbol"}.}
+
+\item{homolog_params}{Additional named arguments passed to \link{ConvertHomologs}
+when \code{input_species} differs from \code{species}, such as \code{Ensembl_version},
+\code{biomart}, \code{mirror}, \code{max_tries}, \code{multi_mapping}, and \code{collapse_fun}.}
 
 \item{confidence}{DoRothEA confidence levels to keep.}
 
@@ -53,8 +73,55 @@ Default is \code{TRUE}.}
 }
 \value{
 A \code{Seurat} object with DoRothEA results stored in
-\code{srt@tools[["Dorothea"]]}.
+\code{srt@tools[["Dorothea"]]}. For cross-species runs, the homolog projection
+summary is stored in \code{srt@tools[["Dorothea"]]$homolog_conversion}.
 }
 \description{
 Run DoRothEA transcription factor activity inference
+}
+\examples{
+data(pancreas_sub)
+pancreas_sub <- standard_scop(
+  pancreas_sub,
+  verbose = FALSE
+)
+
+pancreas_sub <- RunDorothea(
+  pancreas_sub,
+  layer = "counts",
+  species = "Mus_musculus",
+  confidence = c("A", "B", "C"),
+  method = "ulm",
+  minsize = 5,
+  new_assay = FALSE
+)
+
+pancreas_sub@tools$Dorothea$regulon_summary
+head(pancreas_sub@tools$Dorothea$result)
+
+activity_cols <- head(
+  grep("^dorothea_", colnames(pancreas_sub@meta.data), value = TRUE),
+  2
+)
+head(pancreas_sub@meta.data[, activity_cols, drop = FALSE])
+
+FeatureDimPlot(
+  pancreas_sub,
+  features = activity_cols,
+  reduction = "StandardUMAP2D",
+  ncol = 2
+)
+}
+\references{
+Garcia-Alonso, L., Holland, C.H., Ibrahim, M.M., Turei, D.,
+and Saez-Rodriguez, J. (2019). Benchmark and integration of
+resources for the estimation of human transcription factor activities.
+\emph{Genome Research}, 29, 1363-1375. \doi{10.1101/gr.240663.118}
+
+Badia-i-Mompel, P., Velez Santiago, J., Braunger, J., Geiss, C.,
+Dimitrov, D., Muller-Dott, S., Taus, P., Dugourd, A., Holland, C.H.,
+Ramirez Flores, R.O., and Saez-Rodriguez, J. (2022). decoupleR:
+ensemble of computational methods to infer biological activities from
+omics data. \emph{Bioinformatics Advances}, 2, vbac016.
+\doi{10.1093/bioadv/vbac016}
 }
