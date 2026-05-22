@@ -33,13 +33,13 @@ navbar:
       href: reference/index.html
 
 reference:
-- subtitle: "Spatial and Cellular Omics analysis Pipeline"
+- subtitle: "Spatial and Cellular Omics Analysis Pipeline"
 - contents:
   - scop-package
   - scop_logo
   - print.scop_logo
 
-- subtitle: "Package Management"
+- subtitle: "Package and Environment Management"
 - contents:
   - check_python
   - env_info
@@ -49,10 +49,22 @@ reference:
   - remove_python
   - RemoveEnv
 
-- subtitle: "scop pipeline"
+- subtitle: "Feature Processing"
 - contents:
-  - integration_scop
-  - standard_scop
+  - AddFeaturesData
+  - AnnotateFeatures
+  - GetFeaturesData
+  - GetSimilarFeatures
+  - RenameFeatures
+
+- subtitle: "Feature and Statistical Plots"
+- contents:
+  - CellCorHeatmap
+  - CellStatPlot
+  - FeatureCorPlot
+  - FeatureHeatmap
+  - FeatureStatPlot
+  - GroupHeatmap
 
 - subtitle: "Quality Control"
 - contents:
@@ -67,38 +79,46 @@ reference:
 
 - subtitle: "Cell Cycle Analysis"
 - contents:
-  - RunCellCycle
   - CycGenePrefetch
+  - RunCellCycle
+
+- subtitle: "scop Pipeline"
+- contents:
+  - standard_scop
+  - integration_scop
 
 - subtitle: "Data Integration and Batch Effect Removal"
 - contents:
-  - BBKNN_integrate
+  - Uncorrected_integrate
+  - Seurat_integrate
   - CCA_integrate
-  - Coralysis_integrate
-  - CSS_integrate
-  - ComBat_integrate
-  - Conos_integrate
+  - RPCA_integrate
   - fastMNN_integrate
   - fastMNN5_integrate
-  - GLUE_integrate
   - Harmony_integrate
   - Harmony5_integrate
-  - LIGER_integrate
   - MNN_integrate
+  - Scanorama_integrate
+  - BBKNN_integrate
+  - CSS_integrate
+  - GLUE_integrate
+  - LIGER_integrate
+  - scVI_integrate
+  - scVI5_integrate
   - MultiMAP_integrate
-  - RPCA_integrate
-  - RunLISI
+  - Conos_integrate
+  - ComBat_integrate
+  - Coralysis_integrate
+  - WNN_integrate
+
+- subtitle: "Integration Mapping"
+- contents:
   - RunCSSMap
   - RunHarmony2
+  - RunLISI
   - RunPCAMap
   - RunSeuratMap
   - RunSymphonyMap
-  - Scanorama_integrate
-  - Seurat_integrate
-  - scVI_integrate
-  - scVI5_integrate
-  - Uncorrected_integrate
-  - WNN_integrate
 
 - subtitle: "Dimensionality Reduction and Clustering"
 - contents:
@@ -115,18 +135,33 @@ reference:
   - RunPHATE
   - RunLargeVis
 
+- subtitle: "Dimensionality Reduction Plots"
+- contents:
+  - CellDimPlot
+  - CellDimPlot3D
+  - CellDensityPlot
+  - DimsEstimatePlot
+  - FeatureDimPlot
+  - FeatureDimPlot3D
+  - ProjectionPlot
+  - TACSPlot
+
 - subtitle: "Spatial Analysis"
 - contents:
   - RunBayesSpace
   - RunCytoSPACE
 
+- subtitle: "Spatial Visualization"
+- contents:
+  - SpatialSpotPlot
+
 - subtitle: "Cell Type Annotation"
 - contents:
   - CellTypistModels
   - RunCellTypist
+  - RunCoEmbedding
   - RunKNNMap
   - RunKNNPredict
-  - RunCoEmbedding
   - RunLabelTransfer
   - RunReferenceMapping
   - RunScmap
@@ -142,15 +177,28 @@ reference:
   - RunScissor
   - RunscTenifoldKnk
 
+- subtitle: "Differential Expression and Perturbation Plots"
+- contents:
+  - DEtestPlot
+  - DEtestManhattanPlot
+  - DEtestRingPlot
+  - VolcanoPlot
+  - ScissorPlot
+  - scTenifoldKnkPlot
+
 - subtitle: "Bulk and Composition Analysis"
 - contents:
   - RunDeconvolution
-  - DeconvolutionPlot
   - RunMilo
   - RunPermutation
   - RunPropeller
   - RunProportionTest
   - RunscCODA
+
+- subtitle: "Bulk and Composition Plots"
+- contents:
+  - DeconvolutionPlot
+  - ProportionTestPlot
 
 - subtitle: "Enrichment Analysis"
 - contents:
@@ -162,6 +210,14 @@ reference:
   - RunGSVA
   - RunMetabolism
   - RunSCENIC
+
+- subtitle: "Enrichment Analysis Plot"
+- contents:
+  - DorotheaPlot
+  - EnrichmentPlot
+  - GSEAPlot
+  - GSVAPlot
+  - MetabolismPlot
   - SCENICPlot
 
 - subtitle: "Dynamic Trajectory Analysis"
@@ -177,6 +233,17 @@ reference:
   - RunWOT
   - RunDynamicFeatures
 
+- subtitle: "Dynamic Trajectory Plots"
+- contents:
+  - BranchStreamPlot
+  - CytoTRACEPlot
+  - DynamicPlot
+  - DynamicHeatmap
+  - LineagePlot
+  - PAGAPlot
+  - PseudotimeProjectionPlot
+  - VelocityPlot
+
 - subtitle: "Cell-Cell Communication Analysis"
 - contents:
   - RunCellChat
@@ -187,6 +254,26 @@ reference:
   - RunscOMM
   - ccc_to_adata
   - ccc_to_liana
+
+- subtitle: "Cell-Cell Communication Plots"
+- contents:
+  - CCCHeatmap
+  - CCCNetworkPlot
+  - CCCStatPlot
+
+- subtitle: "Benchmark and Genomic Track Plots"
+- contents:
+  - BenchmarkPlot
+  - CoverageTrackPlot
+  - LISIPlot
+
+- subtitle: "SCExplorer"
+- contents:
+  - CreateDataFile
+  - CreateMetaFile
+  - FetchH5
+  - PrepareSCExplorer
+  - RunSCExplorer
 
 - subtitle: "Data Conversion"
 - contents:
@@ -210,86 +297,6 @@ reference:
   - RenameClusters
   - srt_append
   - srt_reorder
-
-- subtitle: "Feature Processing"
-- contents:
-  - AddFeaturesData
-  - AnnotateFeatures
-  - GetFeaturesData
-  - GetSimilarFeatures
-  - RenameFeatures
-
-- subtitle: "Embedding and Projection Plots"
-- contents:
-  - CellDimPlot
-  - CellDimPlot3D
-  - CellDensityPlot
-  - FeatureDimPlot
-  - FeatureDimPlot3D
-  - ProjectionPlot
-
-- subtitle: "Heatmap and Correlation Plots"
-- contents:
-  - CellCorHeatmap
-  - FeatureCorPlot
-  - FeatureHeatmap
-  - GroupHeatmap
-
-- subtitle: "Statistical and Composition Plots"
-- contents:
-  - CellStatPlot
-  - FeatureStatPlot
-  - ProportionTestPlot
-
-- subtitle: "Differential and Enrichment Plots"
-- contents:
-  - DEtestPlot
-  - DEtestManhattanPlot
-  - DEtestRingPlot
-  - VolcanoPlot
-  - EnrichmentPlot
-  - GSEAPlot
-  - GSVAPlot
-  - MetabolismPlot
-  - ScissorPlot
-  - scTenifoldKnkPlot
-
-- subtitle: "Trajectory and Dynamic Plots"
-- contents:
-  - BranchStreamPlot
-  - CytoTRACEPlot
-  - DynamicPlot
-  - DynamicHeatmap
-  - LineagePlot
-  - PAGAPlot
-  - PseudotimeProjectionPlot
-  - VelocityPlot
-
-- subtitle: "Spatial Visualization"
-- contents:
-  - SpatialSpotPlot
-
-- subtitle: "Cell-Cell Communication Plots"
-- contents:
-  - CCCHeatmap
-  - CCCNetworkPlot
-  - CCCStatPlot
-
-- subtitle: "Benchmark and Genomic Track Plots"
-- contents:
-  - BenchmarkPlot
-  - CoverageTrackPlot
-  - DimsEstimatePlot
-  - LISIPlot
-  - TACSPlot
-
-- subtitle: "SCExplorer"
-- contents:
-  - CreateDataFile
-  - CreateMetaFile
-  - FetchH5
-  - PrepareSCExplorer
-  - RunSCExplorer
 
 - subtitle: "Database Operations"
 - contents:
