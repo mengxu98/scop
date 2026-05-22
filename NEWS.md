@@ -155,7 +155,7 @@
 
 * **fix**:
   * `PrepareDB()`: 
-    * TF database now uses [AnimalTFDB4](https://github.com/mengxu98/AnimalTFDB4) as the data source.
+    * TF database now uses [AnimalTFDB4](https://github.com/mengxu98/datasets/tree/main/AnimalTFDB4) as the data source.
     * MP database - the Web Archive URL year is now dynamically determined from the current date, and the archive snapshot date for all MP-related file downloads (`VOC_MammalianPhenotype.rpt`, `MGI_Gene_Model_Coord.rpt`, `MGI_GenePheno.rpt`) is extracted from the server index page to ensure consistent versioning.
     * hTFtarget data download URL has been changed from `"http://bioinfo.life.hust.edu.cn/static/hTFtarget/file_download/tf-target-infomation.txt"` to `"https://guolab.wchscu.cn/static/hTFtarget/file_download/tf-target-infomation.txt"`.
     * CSPA data download URL has been changed from `"https://wlab.ethz.ch/cspa/data/S1_File.xlsx"` to `"https://raw.githubusercontent.com/mengxu98/CSPA/main/S1_File.xlsx"`.
