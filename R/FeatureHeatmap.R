@@ -1290,6 +1290,7 @@ FeatureHeatmap <- function(
       palette <- feature_annotation_palette[i]
       palcolor <- feature_annotation_palcolor[[i]]
       featan_values <- feature_metadata[, featan]
+      featan_values <- compact_heatmap_feature_annotation(featan_values, featan)
       if (!is.numeric(featan_values)) {
         if (is.logical(featan_values)) {
           featan_values <- factor(featan_values, levels = c(TRUE, FALSE))
@@ -1321,18 +1322,24 @@ FeatureHeatmap <- function(
         } else {
           ha_right <- c(ha_right, ha_feature)
         }
-        lgd[[featan]] <- ComplexHeatmap::Legend(
-          title = featan,
-          labels = levels(featan_values),
-          legend_gp = grid::gpar(
-            fill = palette_colors(
-              featan_values,
-              palette = palette,
-              palcolor = palcolor
-            )
-          ),
-          border = TRUE
-        )
+        featan_levels <- levels(featan_values)
+        featan_levels <- featan_levels[!is.na(featan_levels) & nzchar(featan_levels)]
+        if (length(featan_levels) > 0) {
+          lgd[[featan]] <- ComplexHeatmap::Legend(
+            title = featan,
+            labels = featan_levels,
+            legend_gp = grid::gpar(
+              fill = palette_colors(
+                featan_levels,
+                palette = palette,
+                palcolor = palcolor
+              )
+            ),
+            border = TRUE
+          )
+        } else {
+          lgd[[featan]] <- NULL
+        }
       } else {
         col_fun <- circlize::colorRamp2(
           breaks = seq(
