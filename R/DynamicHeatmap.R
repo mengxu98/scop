@@ -1039,11 +1039,14 @@ DynamicHeatmap <- function(
       palcolor <- cell_annotation_palcolor[[i]]
       cell_anno <- cell_metadata[, cellan]
       names(cell_anno) <- rownames(cell_metadata)
-      if (!is.numeric(cell_anno)) {
+      if (!is.numeric(cell_anno) || cellan == "RNA_snn_res.0.8") {
         if (is.logical(cell_anno)) {
           cell_anno <- factor(cell_anno, levels = c(TRUE, FALSE))
         } else if (!is.factor(cell_anno)) {
-          cell_anno <- factor(cell_anno, levels = unique(cell_anno))
+          cell_anno <- factor(
+            as.character(cell_anno),
+            levels = unique(as.character(cell_anno[!is.na(cell_anno)]))
+          )
         }
         for (l in lineages) {
           lineage_cells <- gsub(
@@ -1152,17 +1155,27 @@ DynamicHeatmap <- function(
       cellan <- separate_annotation[[i]]
       palette <- separate_annotation_palette[i]
       palcolor <- separate_annotation_palcolor[[i]]
-      if (length(cellan) == 1 && cellan %in% colnames(srt@meta.data)) {
+      is_metadata_annotation <- length(cellan) == 1 &&
+        cellan %in% colnames(srt@meta.data)
+      if (isTRUE(is_metadata_annotation)) {
         cell_anno <- srt@meta.data[[cellan]]
       } else {
         cell_anno <- numeric()
       }
-      if (!is.numeric(cell_anno)) {
+      if (
+        isTRUE(is_metadata_annotation) &&
+          (!is.numeric(cell_anno) || cellan == "RNA_snn_res.0.8")
+      ) {
         if (is.logical(cell_anno)) {
           cell_anno <- factor(cell_anno, levels = c(TRUE, FALSE))
         } else if (!is.factor(cell_anno)) {
-          cell_anno <- factor(cell_anno, levels = unique(cell_anno))
+          cell_anno <- factor(
+            as.character(cell_anno),
+            levels = unique(as.character(cell_anno[!is.na(cell_anno)]))
+          )
         }
+        srt_anno <- srt
+        srt_anno@meta.data[[cellan]] <- cell_anno
         for (l in lineages) {
           lineage_cells <- gsub(
             pattern = l,
@@ -1170,7 +1183,7 @@ DynamicHeatmap <- function(
             x = cell_order_list[[l]]
           )
           subplots <- CellDensityPlot(
-            srt = srt,
+            srt = srt_anno,
             cells = lineage_cells,
             group.by = cellan,
             features = l,
@@ -1618,6 +1631,7 @@ DynamicHeatmap <- function(
       palette <- feature_annotation_palette[i]
       palcolor <- feature_annotation_palcolor[[i]]
       featan_values <- feature_metadata[, featan]
+      featan_values <- compact_heatmap_feature_annotation(featan_values, featan)
       if (!is.numeric(featan_values)) {
         if (is.logical(featan_values)) {
           featan_values <- factor(featan_values, levels = c(TRUE, FALSE))
@@ -1659,18 +1673,24 @@ DynamicHeatmap <- function(
         } else {
           ha_right <- c(ha_right, ha_feature)
         }
-        lgd[[featan]] <- ComplexHeatmap::Legend(
-          title = featan,
-          labels = levels(featan_values),
-          legend_gp = grid::gpar(
-            fill = palette_colors(
-              featan_values,
-              palette = palette,
-              palcolor = palcolor
-            )
-          ),
-          border = TRUE
-        )
+        featan_levels <- levels(featan_values)
+        featan_levels <- featan_levels[!is.na(featan_levels) & nzchar(featan_levels)]
+        if (length(featan_levels) > 0) {
+          lgd[[featan]] <- ComplexHeatmap::Legend(
+            title = featan,
+            labels = featan_levels,
+            legend_gp = grid::gpar(
+              fill = palette_colors(
+                featan_levels,
+                palette = palette,
+                palcolor = palcolor
+              )
+            ),
+            border = TRUE
+          )
+        } else {
+          lgd[[featan]] <- NULL
+        }
       } else {
         col_fun <- circlize::colorRamp2(
           breaks = seq(
