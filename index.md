@@ -1,10 +1,11 @@
-# scop: Single-Cell Omics analysis Pipeline
+# scop: Spatial and single-cell omics analysis pipeline
 
 ## Introduction
 
-The [scop](https://github.com/mengxu98/scop) package provides a unified
-and extensible framework for single-cell omics data processing and
-downstream analysis in [Seurat](https://github.com/satijalab/seurat):
+[scop](https://github.com/mengxu98/scop) is an *R* package for
+comprehensive spatial and single-cell omics analysis, providing modular
+workflows for analyzing, integrating, visualizing, and interactively
+exploring spatial, and single-cell omics data.
 
 > Documentation: <https://mengxu98.github.io/scop/>
 >
@@ -13,8 +14,9 @@ downstream analysis in [Seurat](https://github.com/satijalab/seurat):
 >
 > Changelog: <https://mengxu98.github.io/scop/news/index.html>
 
-- Integrated single-cell quality control methods, including cell cycle
-  analysis: Seurat gene-set scoring,
+- Integrated quality control methods for single-cell RNA-seq and
+  single-cell ATAC-seq, including cell cycle analysis: Seurat gene-set
+  scoring,
   [scran::cyclone](https://bioconductor.org/packages/release/bioc/html/scran.html),
   and
   [tricycle](https://bioconductor.org/packages/release/bioc/html/tricycle.html)
@@ -38,9 +40,9 @@ downstream analysis in [Seurat](https://github.com/satijalab/seurat):
   FR), and cell population identification, including optional
   [scran](https://bioconductor.org/packages/release/bioc/html/scran.html)-based
   deconvolution normalization and HVF modeling.
-- Pipelines embedded with multiple integration methods for scRNA-seq and
-  multimodal data, including Uncorrected,
-  [Seurat](https://github.com/satijalab/seurat),
+- Pipelines embedded with multiple integration methods for scRNA-seq
+  data, including Uncorrected,
+  [Seurat](https://github.com/satijalab/seurat) CCA/RPCA workflows,
   [scVI](https://github.com/scverse/scvi-tools),
   [MNN](http://www.bioconductor.org/packages/release/bioc/html/batchelor.md),
   [fastMNN](http://www.bioconductor.org/packages/release/bioc/html/batchelor.md),
@@ -50,11 +52,13 @@ downstream analysis in [Seurat](https://github.com/satijalab/seurat):
   [CSS](https://github.com/quadbiolab/simspec),
   [Coralysis](https://github.com/elolab/Coralysis),
   [LIGER](https://github.com/welch-lab/liger),
-  [Conos](https://github.com/kharchenkolab/conos),
-  [ComBat](https://bioconductor.org/packages/release/bioc/html/sva.html),
+  [Conos](https://github.com/kharchenkolab/conos), and
+  [ComBat](https://bioconductor.org/packages/release/bioc/html/sva.html).
+- Pipelines embedded with RNA + ATAC and multimodal integration methods,
+  including Seurat v5 integration, WNN-based integration,
   [GLUE](https://github.com/gao-lab/GLUE),
-  [MultiMAP](https://github.com/Teichlab/MultiMAP), and WNN-based
-  integration and co-embedding.
+  [MultiMAP](https://github.com/Teichlab/MultiMAP), and cross-modality
+  co-embedding workflows.
 - Multiple methods for automatic annotation of single-cell data
   ([CellTypist](https://github.com/Teichlab/celltypist),
   [SciBet](https://github.com/PaulingLiu/scibet),
@@ -62,7 +66,8 @@ downstream analysis in [Seurat](https://github.com/satijalab/seurat):
   [Scmap](https://github.com/hemberg-lab/scmap), KNNPredict) and methods
   for projection between single-cell datasets (CSSMap, PCAMap,
   SeuratMap, [SymphonyMap](https://github.com/immunogenomics/symphony)).
-- Bulk transcriptomics workflows, including differential expression via
+- Bulk transcriptomics and cellular composition workflows, including
+  differential expression via
   [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html),
   [edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html),
   [limma-voom](https://bioconductor.org/packages/release/bioc/html/limma.html),
@@ -70,12 +75,22 @@ downstream analysis in [Seurat](https://github.com/satijalab/seurat):
   [dream](https://bioconductor.org/packages/release/bioc/html/variancePartition.html),
   deconvolution via [MuSiC](https://github.com/xuranw/MuSiC),
   [BisqueRNA](https://cran.r-project.org/package=BisqueRNA), and
-  [BayesPrism](https://github.com/Danko-Lab/BayesPrism), and
+  [BayesPrism](https://github.com/Danko-Lab/BayesPrism),
   cell-type-specific differential expression via
-  [TOAST](https://bioconductor.org/packages/release/bioc/html/TOAST.html).
+  [TOAST](https://bioconductor.org/packages/release/bioc/html/TOAST.html),
+  and composition analysis with
+  [Milo](https://bioconductor.org/packages/release/bioc/html/miloR.html),
+  [propeller](https://bioconductor.org/packages/release/bioc/html/speckle.html),
+  [scCODA](https://github.com/theislab/scCODA), permutation-based tests,
+  and
+  [scProportionTest](https://github.com/rpolicastro/scProportionTest).
 - Multiple single-cell downstream analyses:
-  - Differential expression analysis: identification of differential
-    features, expressed marker identification.
+  - Differential expression and perturbation analysis: identification of
+    differential features, expressed marker identification, rare-cell
+    population detection with RareQ, phenotype-associated cell selection
+    with [Scissor](https://github.com/sunduanchen/Scissor), and
+    in-silico perturbation analysis with
+    [scTenifoldKnk](https://github.com/cailab-tamu/scTenifoldKnk).
   - Enrichment, and functional scoring: over-representation analysis,
     [GSEA](https://www.gsea-msigdb.org/gsea/index.jsp) analysis,
     [GSVA](https://github.com/rcastelo/GSVA), metabolic pathway activity
@@ -102,9 +117,8 @@ downstream analysis in [Seurat](https://github.com/satijalab/seurat):
     [NicheNet](https://github.com/saeyslab/nichenetr),
     [MultiNicheNet](https://github.com/saeyslab/multinichenetr), and
     [LIANA](https://github.com/saezlab/liana).
-  - Cellular composition and perturbation analysis:
-    [scProportionTest](https://github.com/rpolicastro/scProportionTest)
-    and [scTenifoldKnk](https://github.com/cailab-tamu/scTenifoldKnk).
+  - Cellular composition analysis: differential abundance and proportion
+    testing across conditions.
   - Spatial analysis:
     [BayesSpace](https://github.com/edward130603/BayesSpace) and
     [CytoSPACE](https://github.com/digitalcytometry/cytospace).
@@ -115,7 +129,7 @@ downstream analysis in [Seurat](https://github.com/satijalab/seurat):
 
 ## Table of Contents
 
-- [scop: Single-Cell Omics analysis
+- [scop: Spatial and Cellular Omics analysis
   Pipeline](#scop-single-cell-omics-analysis-pipeline)
   - [Introduction](#introduction)
   - [Table of Contents](#table-of-contents)
@@ -147,6 +161,8 @@ downstream analysis in [Seurat](https://github.com/satijalab/seurat):
     - [Enrichment analysis](#enrichment-analysis)
       - [Over-representation](#over-representation)
       - [GSEA](#gsea)
+    - [Gene regulatory network analysis with
+      SCENIC](#gene-regulatory-network-analysis-with-scenic)
     - [Interactive data visualization with
       SCExplorer](#interactive-data-visualization-with-scexplorer)
     - [Other visualization examples](#other-visualization-examples)

@@ -41,6 +41,7 @@ RunPAGA(
   plot_dpi = 300,
   plot_prefix = "paga",
   dirpath = "./paga",
+  backend = c("cpp", "python"),
   return_seurat = !is.null(srt),
   verbose = TRUE
 )
@@ -202,6 +203,13 @@ RunPAGA(
 
   The directory to save the plots. Default is `"./cellrank"`.
 
+- backend:
+
+  Backend used to compute PAGA. `"cpp"` uses the native C++
+  implementation for the standard connectivity graph. `"python"` keeps
+  the original scanpy workflow for RNA-velocity transitions,
+  PAGA-initialized embeddings, plotting side effects, or DPT pseudotime.
+
 - return_seurat:
 
   Whether to return a Seurat object instead of an anndata object.
@@ -220,23 +228,45 @@ RunPAGA(
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
+#> ℹ [2026-05-22 17:42:22] Start standard processing workflow...
+#> ℹ [2026-05-22 17:42:23] Checking a list of <Seurat>...
+#> ! [2026-05-22 17:42:23] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-22 17:42:23] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-22 17:42:25] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-22 17:42:25] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-22 17:42:26] Number of available HVF: 2000
+#> ℹ [2026-05-22 17:42:26] Finished check
+#> ℹ [2026-05-22 17:42:26] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-22 17:42:26] Perform pca linear dimension reduction
+#> ℹ [2026-05-22 17:42:26] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-22 17:42:27] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-22 17:42:27] Reorder clusters...
+#> ℹ [2026-05-22 17:42:27] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-22 17:42:27] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-22 17:42:27] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-22 17:42:33] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-22 17:42:38] Standard processing workflow completed
 pancreas_sub <- RunPAGA(
   pancreas_sub,
   assay_x = "RNA",
   group.by = "SubCellType",
   linear_reduction = "PCA",
-  nonlinear_reduction = "UMAP"
+  nonlinear_reduction = "UMAP",
+  backend = "cpp"
 )
+#> ℹ [2026-05-22 17:42:38] Running PAGA with `backend = 'cpp'` using 29 neighbors
+#> ✔ [2026-05-22 17:42:38] PAGA cpp backend completed
 CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
-  reduction = "draw_graph_fr"
+  reduction = "UMAP"
 )
 
+
 PAGAPlot(pancreas_sub, reduction = "UMAP")
+
 
 CellDimPlot(
   pancreas_sub,
@@ -244,30 +274,4 @@ CellDimPlot(
   reduction = "UMAP",
   paga = pancreas_sub@misc$paga
 )
-
-pancreas_sub <- RunPAGA(
-  pancreas_sub,
-  group.by = "SubCellType",
-  linear_reduction = "PCA",
-  nonlinear_reduction = "UMAP",
-  embedded_with_PAGA = TRUE,
-  infer_pseudotime = TRUE,
-  root_group = "Ductal"
-)
-
-FeatureDimPlot(
-  pancreas_sub,
-  features = "dpt_pseudotime",
-  reduction = "PAGAUMAP2D"
-)
-
-PAGAPlot(pancreas_sub, reduction = "PAGAUMAP2D")
-
-CellDimPlot(
-  pancreas_sub,
-  group.by = "SubCellType",
-  reduction = "PAGAUMAP2D",
-  paga = pancreas_sub@misc$paga
-)
-} # }
 ```

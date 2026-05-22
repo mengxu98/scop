@@ -27,11 +27,12 @@ env_requirements(version = "3.10-1", include_optional = FALSE, modules = NULL)
   `"scanpy"`, `"scvi"`, `"scanorama"`, `"bbknn"`, `"celltypist"`,
   `"cellphonedb"`, `"magic"`, `"scrublet"`, `"doubletdetection"`,
   `"sccoda"`, `"doublet"`, `"palantir"`, `"scvelo"`, `"cellrank"`,
-  `"wot"`, `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`, and
-  `"scomm"`. If `NULL`, the default environment is returned. The default
-  excludes `"sccoda"` and `"scomm"` because their TensorFlow stacks are
-  not compatible with the default JAX/scVI stack in the same
-  environment.
+  `"wot"`, `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`, `"scomm"`,
+  and `"scenic"`. If `NULL`, the default environment is returned. The
+  default excludes `"sccoda"`, `"scomm"`, and `"scenic"` because these
+  workflows require dependency stacks that should be prepared
+  explicitly. The `"scenic"` module is standalone and always uses Python
+  `"3.10-1"`.
 
 ## Value
 

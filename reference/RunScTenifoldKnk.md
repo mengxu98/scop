@@ -28,7 +28,7 @@ RunscTenifoldKnk(
   td_nDecimal = 3,
   ma_nDim = 2,
   cores = 1,
-  backend = c("cpp", "scTenifoldKnk"),
+  backend = c("cpp", "r"),
   store_networks = TRUE,
   store_manifold = TRUE,
   tool_name = "scTenifoldKnk",
@@ -105,8 +105,7 @@ RunscTenifoldKnk(
   `cpp` is a native equivalent covariance-based network construction,
   direct sparse network assembly, controlled per-gene eigensolver
   parallelism, and helpers for tensor decomposition, manifold matrix
-  construction, directionality, and distance calculation.
-  `scTenifoldKnk` calls
+  construction, directionality, and distance calculation. `r` calls
   [`scTenifoldKnk::scTenifoldKnk()`](https://rdrr.io/pkg/scTenifoldKnk/man/scTenifoldKnk.html)
   directly for comparison.
 
@@ -136,8 +135,15 @@ A `Seurat` object with scTenifoldKnk results stored in
 ``` r
 data(pancreas_sub)
 gene_use <- "Pdx1"
-counts <- GetAssayData5(pancreas_sub, assay = "RNA", layer = "counts")
-detected <- names(sort(Matrix::rowSums(counts > 0), decreasing = TRUE))
+counts <- GetAssayData5(
+  pancreas_sub,
+  assay = "RNA",
+  layer = "counts"
+)
+detected <- names(
+  sort(Matrix::rowSums(counts > 0),
+  decreasing = TRUE)
+)
 features_use <- unique(c(gene_use, head(detected, 300)))
 
 pancreas_sub <- RunscTenifoldKnk(
@@ -151,22 +157,22 @@ pancreas_sub <- RunscTenifoldKnk(
   store_networks = FALSE,
   store_manifold = TRUE
 )
-#> ℹ [2026-05-14 07:37:22] Run scTenifoldKnk knockout for "Pdx1" using "cpp" backend
-#> ℹ [2026-05-14 07:37:27] Construct scTenifoldNet network ensemble
-#> ℹ [2026-05-14 07:37:27] Denoise network ensemble with tensor decomposition
-#> ℹ [2026-05-14 07:37:27] Denoise network ensemble with tensor decomposition  ■■ …
-#> ℹ [2026-05-14 07:37:27] Align WT and KO network manifolds
-#> ✔ [2026-05-14 07:37:27] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
+#> ℹ [2026-05-22 17:47:09] Run scTenifoldKnk knockout for "Pdx1" using "cpp" backend
+#> ℹ [2026-05-22 17:47:14] Construct scTenifoldNet network ensemble
+#> ℹ [2026-05-22 17:47:14] Denoise network ensemble with tensor decomposition
+#> ℹ [2026-05-22 17:47:14] Denoise network ensemble with tensor decomposition  ■■ …
+#> ℹ [2026-05-22 17:47:14] Align WT and KO network manifolds
+#> ✔ [2026-05-22 17:47:14] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
 
 dr <- pancreas_sub@tools$scTenifoldKnk$diffRegulation
 head(dr)
-#>     gene     distance        Z          FC      p.value        p.adj
-#> 1   Pdx1 9.304567e-04 4.568187 12059.91897 0.000000e+00 0.000000e+00
-#> 2   Gnas 4.887597e-05 2.057742    33.27690 7.992633e-09 1.202891e-06
-#> 3   Ssr2 4.386627e-05 1.985077    26.80486 2.250708e-07 2.258210e-05
-#> 4   Ssr4 4.132486e-05 1.945477    23.78893 1.074990e-06 8.089300e-05
-#> 5 Sec61b 4.074745e-05 1.936192    23.12879 1.515051e-06 9.120607e-05
-#> 6   Dad1 3.408756e-05 1.820118    16.18616 5.741213e-05 2.880175e-03
+#>     gene     distance        Z         FC      p.value        p.adj
+#> 1   Pdx1 6.561133e-04 3.960035 7251.32977 0.000000e+00 0.000000e+00
+#> 2   Cd81 7.531816e-05 2.333427   95.55631 1.437441e-22 2.163349e-20
+#> 3   Myl6 3.422043e-05 1.851560   19.72563 8.939449e-06 8.969248e-04
+#> 4  Actg1 3.355487e-05 1.840220   18.96580 1.330824e-05 1.001445e-03
+#> 5   Ssr2 2.707015e-05 1.718221   12.34359 4.425038e-04 2.663873e-02
+#> 6 Sec61b 2.486587e-05 1.670959   10.41519 1.249829e-03 6.269975e-02
 
 scTenifoldKnkPlot(pancreas_sub, plot_type = "effect")
 ```

@@ -69,7 +69,7 @@ GSEAPlot(
 
 - srt:
 
-  A Seurat object containing the results of RunDEtest and RunGSEA. If
+  A `Seurat` object containing the results of RunDEtest and RunGSEA. If
   specified, GSEA results will be extracted from the Seurat object
   automatically. If not specified, the `res` arguments must be provided.
 
@@ -333,48 +333,48 @@ GSEAPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-14 06:12:39] Start standard processing workflow...
-#> ℹ [2026-05-14 06:12:40] Checking a list of <Seurat>...
-#> ! [2026-05-14 06:12:40] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-14 06:12:40] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-14 06:12:42] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-14 06:12:42] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-14 06:12:42] Number of available HVF: 2000
-#> ℹ [2026-05-14 06:12:43] Finished check
-#> ℹ [2026-05-14 06:12:43] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-14 06:12:43] Perform pca linear dimension reduction
-#> ℹ [2026-05-14 06:12:43] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-05-14 06:12:44] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-14 06:12:44] Reorder clusters...
-#> ℹ [2026-05-14 06:12:44] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-14 06:12:44] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-14 06:12:44] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-05-14 06:12:49] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-05-14 06:12:54] Standard processing workflow completed
+#> ℹ [2026-05-22 16:32:05] Start standard processing workflow...
+#> ℹ [2026-05-22 16:32:06] Checking a list of <Seurat>...
+#> ! [2026-05-22 16:32:06] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-22 16:32:06] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-22 16:32:07] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-22 16:32:08] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-22 16:32:08] Number of available HVF: 2000
+#> ℹ [2026-05-22 16:32:08] Finished check
+#> ℹ [2026-05-22 16:32:08] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-22 16:32:08] Perform pca linear dimension reduction
+#> ℹ [2026-05-22 16:32:09] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-22 16:32:09] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-22 16:32:09] Reorder clusters...
+#> ℹ [2026-05-22 16:32:09] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-22 16:32:09] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-22 16:32:09] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-22 16:32:14] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-22 16:32:18] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-05-14 06:12:54] Data type is log-normalized
-#> ℹ [2026-05-14 06:12:54] Start differential expression test
-#> ℹ [2026-05-14 06:12:54] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-05-14 06:12:54] Using 1 core
-#> ⠙ [2026-05-14 06:12:54] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ✔ [2026-05-14 06:12:54] Completed 5 tasks in 951ms
+#> ℹ [2026-05-22 16:32:18] Data type is log-normalized
+#> ℹ [2026-05-22 16:32:18] Start differential expression test
+#> ℹ [2026-05-22 16:32:18] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-05-22 16:32:18] Using 1 core
+#> ⠙ [2026-05-22 16:32:18] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ✔ [2026-05-22 16:32:18] Completed 5 tasks in 916ms
 #> 
-#> ℹ [2026-05-14 06:12:54] Building results
-#> ✔ [2026-05-14 06:12:55] Differential expression test completed
+#> ℹ [2026-05-22 16:32:18] Building results
+#> ✔ [2026-05-22 16:32:19] Differential expression test completed
 pancreas_sub <- RunGSEA(
   pancreas_sub,
   group.by = "CellType",
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-14 06:12:55] Start GSEA analysis
-#> ! [2026-05-14 06:12:55] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
-#> ℹ [2026-05-14 06:12:55] Species: "Mus_musculus"
-#> ℹ [2026-05-14 06:12:55] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-14 06:04:39
-#> ℹ [2026-05-14 06:12:56] Using 1 core
+#> ℹ [2026-05-22 16:32:19] Start GSEA analysis
+#> ! [2026-05-22 16:32:19] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
+#> ℹ [2026-05-22 16:32:19] Species: "Mus_musculus"
+#> ℹ [2026-05-22 16:32:19] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-22 16:24:27
+#> ℹ [2026-05-22 16:32:21] Using 1 core
 #> Registered S3 methods overwritten by 'callr':
 #>   method                    from
 #>   format.callr_status_error     
@@ -382,14 +382,14 @@ pancreas_sub <- RunGSEA(
 #> Registered S3 method overwritten by 'ggtree':
 #>   method         from     
 #>   fortify.igraph ggnetwork
-#> ⠙ [2026-05-14 06:12:56] Running for 1 [1/5] ■■          20% | ETA: 33s
-#> ⠹ [2026-05-14 06:12:56] Running for 2 [2/5] ■■■■        40% | ETA: 17s
-#> ⠸ [2026-05-14 06:12:56] Running for 3 [3/5] ■■■■■■      60% | ETA: 11s
-#> ⠼ [2026-05-14 06:12:56] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  5s
-#> ✔ [2026-05-14 06:12:56] Completed 5 tasks in 22.5s
+#> ⠙ [2026-05-22 16:32:21] Running for 1 [1/5] ■■          20% | ETA: 34s
+#> ⠹ [2026-05-22 16:32:21] Running for 2 [2/5] ■■■■        40% | ETA: 20s
+#> ⠸ [2026-05-22 16:32:21] Running for 3 [3/5] ■■■■■■      60% | ETA: 11s
+#> ⠼ [2026-05-22 16:32:21] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  5s
+#> ✔ [2026-05-22 16:32:21] Completed 5 tasks in 23.2s
 #> 
-#> ℹ [2026-05-14 06:12:56] Building results
-#> ✔ [2026-05-14 06:13:19] GSEA analysis done
+#> ℹ [2026-05-22 16:32:21] Building results
+#> ✔ [2026-05-22 16:32:44] GSEA analysis done
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -484,7 +484,7 @@ GSEAPlot(
   group_use = "Ductal",
   plot_type = "network"
 )
-#> ✔ [2026-05-14 06:13:22] shadowtext installed successfully
+#> ✔ [2026-05-22 16:32:47] shadowtext installed successfully
 
 GSEAPlot(
   pancreas_sub,

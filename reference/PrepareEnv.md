@@ -14,6 +14,7 @@ PrepareEnv(
   force = FALSE,
   modules = NULL,
   pip_options = character(),
+  verbose = TRUE,
   ...
 )
 ```
@@ -56,17 +57,26 @@ PrepareEnv(
   `"glue"`, `"scanorama"`, `"bbknn"`, `"celltypist"`, `"cellphonedb"`,
   `"magic"`, `"scrublet"`, `"sccoda"`, `"doubletdetection"`,
   `"doublet"`, `"palantir"`, `"scvelo"`, `"cellrank"`, `"wot"`,
-  `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`, and `"scomm"`. If
-  `NULL` or omitted in `PrepareEnv()`, the default environment is
-  installed. The default excludes `"sccoda"` and `"scomm"` because their
-  TensorFlow stacks are not compatible with the default JAX/scVI stack
-  in the same environment; request them explicitly for scCODA/scOMM
-  workflows.
+  `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`, `"scomm"`, and
+  `"scenic"`. If `NULL` or omitted in `PrepareEnv()`, the default
+  environment is installed. The default excludes `"sccoda"` and
+  `"scomm"` because their TensorFlow stacks are not compatible with the
+  default JAX/scVI stack in the same environment; request them
+  explicitly for scCODA/scOMM workflows. `"scenic"` is also excluded
+  from the default environment and is prepared in `"scenic_env"` by
+  default because SCENIC requires an older Python/numpy stack. On
+  Windows, the default also excludes `"scvi"`, `"glue"`, and
+  `"multimap"` because those upstream stacks are more reliable when
+  requested explicitly for method-specific workflows.
 
 - pip_options:
 
   Additional command line arguments to be passed to `uv`/`pip` when
   installing pip packages.
+
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
 
 - ...:
 
