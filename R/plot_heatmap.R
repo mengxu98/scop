@@ -1,3 +1,25 @@
+compact_heatmap_feature_annotation <- function(values, annotation_name) {
+  if (is.numeric(values) || is.logical(values)) {
+    return(values)
+  }
+  value_chr <- as.character(values)
+  has_value <- !is.na(value_chr) & nzchar(value_chr)
+  if (!any(has_value)) {
+    return(values)
+  }
+
+  needs_compact <- any(grepl(";", value_chr[has_value], fixed = TRUE)) ||
+    any(nchar(value_chr[has_value], type = "width") > 80)
+  if (!isTRUE(needs_compact)) {
+    return(values)
+  }
+
+  out <- rep(NA_character_, length(value_chr))
+  names(out) <- names(values)
+  out[has_value] <- annotation_name
+  out
+}
+
 heatmap_enrichment <- function(
   geneID,
   geneID_groups,
