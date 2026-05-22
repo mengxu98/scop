@@ -1823,6 +1823,7 @@ GroupHeatmap <- function(
       palette <- feature_annotation_palette[i]
       palcolor <- feature_annotation_palcolor[[i]]
       featan_values <- feature_metadata[, featan]
+      featan_values <- compact_heatmap_feature_annotation(featan_values, featan)
       if (!is.numeric(featan_values)) {
         if (is.logical(featan_values)) {
           featan_values <- factor(featan_values, levels = c(TRUE, FALSE))
