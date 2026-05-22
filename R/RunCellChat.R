@@ -11,6 +11,8 @@
 #' @param group_cmp A list of pairwise condition comparisons for differential `CellChat` analysis.
 #' @param thresh The threshold for computing centrality scores. Default is `0.05`.
 #' @param min.cells the minmum number of expressed cells required for the genes that are considered for cell-cell communication analysis. Default is `10`.
+#' @param do.fast Whether to use CellChat's fast Wilcoxon implementation backed
+#' by `presto`. Set to `TRUE` only when `presto` is installed.
 #' @param assay Which assay to use. If `NULL`, the default assay of the `Seurat` object will be used.
 #' @param layer The layer to use for the expression data. Default is `"data"`.
 #' @return A `Seurat` object with `CellChat` results stored in `srt@tools[["CellChat"]]`.
@@ -60,6 +62,7 @@ RunCellChat <- function(
   group_cmp = NULL,
   thresh = 0.05,
   min.cells = 10,
+  do.fast = FALSE,
   assay = NULL,
   layer = "data",
   verbose = TRUE
@@ -70,7 +73,9 @@ RunCellChat <- function(
   )
 
   check_r("jinworks/CellChat", verbose = FALSE)
-  check_r("immunogenomics/presto", verbose = FALSE)
+  if (isTRUE(do.fast)) {
+    check_r("immunogenomics/presto", verbose = FALSE)
+  }
 
   validate_cc_input(
     srt = srt,
@@ -99,6 +104,7 @@ RunCellChat <- function(
       species = species,
       thresh = thresh,
       min.cells = min.cells,
+      do.fast = do.fast,
       verbose = verbose
     )
     if (!is.null(res)) {
@@ -134,6 +140,7 @@ RunCellChat <- function(
         species = species,
         thresh = thresh,
         min.cells = min.cells,
+        do.fast = do.fast,
         verbose = verbose
       )
       if (!is.null(res_i)) {
@@ -167,6 +174,7 @@ RunCellChat <- function(
       group_cmp = group_cmp,
       thresh = thresh,
       min.cells = min.cells,
+      do.fast = do.fast,
       assay = assay,
       layer = layer
     )
@@ -354,6 +362,7 @@ run_one_cc <- function(
   species,
   thresh = 0.05,
   min.cells = 10,
+  do.fast = FALSE,
   verbose = TRUE
 ) {
   if (!inherits(seu, "Seurat")) {
@@ -403,7 +412,8 @@ run_one_cc <- function(
     layer = layer,
     species = species,
     thresh = thresh,
-    min.cells = min.cells
+    min.cells = min.cells,
+    do.fast = do.fast
   )
 
   list(
@@ -480,7 +490,8 @@ DoCellChat <- function(
   layer = "data",
   species,
   thresh = 0.05,
-  min.cells = 10
+  min.cells = 10,
+  do.fast = FALSE
 ) {
   assay <- assay %||% DefaultAssay(object)
 
@@ -518,7 +529,8 @@ DoCellChat <- function(
   object <- CellChat::identifyOverExpressedGenes(
     object,
     thresh.p = thresh,
-    min.cells = min.cells
+    min.cells = min.cells,
+    do.fast = isTRUE(do.fast)
   )
   object <- CellChat::identifyOverExpressedInteractions(object)
   object <- CellChat::computeCommunProb(object)

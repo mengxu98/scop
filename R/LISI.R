@@ -106,10 +106,7 @@ RunLISI <- function(
   }
   nn_method <- match.arg(nn_method)
   compute_lisi_args <- names(formals(thisutils::compute_lisi))
-  if (
-    any(c("nn_eps", "use_rann") %in% compute_lisi_args) ||
-      !("nn_method" %in% compute_lisi_args)
-  ) {
+  if (!("nn_method" %in% compute_lisi_args)) {
     log_message(
       "{.fn RunLISI} requires the accelerated {.fn thisutils::compute_lisi} interface with {.arg nn_method = c('auto', 'exact')}. Please install the updated {.pkg thisutils}.",
       message_type = "error"

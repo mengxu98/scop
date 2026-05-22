@@ -176,7 +176,27 @@ GeneConvert <- function(
         if (!is.null(mirror)) {
           biomaRt::useEnsembl(biomart = "ensembl", mirror = mirror)
         } else {
-          biomaRt::useMart(biomart = "ensembl", host = url)
+          mart_try <- tryCatch(
+            biomaRt::useMart(biomart = "ensembl", host = url),
+            error = function(e) e
+          )
+          if (inherits(mart_try, "error")) {
+            mirror_candidates <- c("useast", "uswest", "asia", "www")
+            for (mirror_i in mirror_candidates) {
+              mart_mirror <- tryCatch(
+                biomaRt::useEnsembl(biomart = "ensembl", mirror = mirror_i),
+                error = function(e) e
+              )
+              if (!inherits(mart_mirror, "error")) {
+                mart_try <- mart_mirror
+                break
+              }
+            }
+          }
+          if (inherits(mart_try, "error")) {
+            stop(mart_try)
+          }
+          mart_try
         }
       },
       max_tries = max_tries,
@@ -213,8 +233,9 @@ GeneConvert <- function(
           biomaRt::useMart(biomart = biomart, host = url[biomart])
         },
         max_tries = max_tries,
-        error_message = paste0(
-          "Get errors when connecting with ensembl database ({.pkg {biomart}})",
+        error_message = sprintf(
+          "Get errors when connecting with ensembl database (%s)",
+          biomart
         )
       )
       mart_from <- mart_to <- mart
@@ -231,8 +252,9 @@ GeneConvert <- function(
           )
         },
         max_tries = max_tries,
-        error_message = paste0(
-          "Get errors when connecting with ensembl database ({.pkg {biomart[1]}})",
+        error_message = sprintf(
+          "Get errors when connecting with ensembl database (%s)",
+          biomart[1]
         )
       )
       mart_to <- try_get(
@@ -243,8 +265,9 @@ GeneConvert <- function(
           )
         },
         max_tries = max_tries,
-        error_message = paste0(
-          "Get errors when connecting with ensembl database ({.pkg {biomart[2]}})",
+        error_message = sprintf(
+          "Get errors when connecting with ensembl database (%s)",
+          biomart[2]
         )
       )
     }
@@ -259,8 +282,9 @@ GeneConvert <- function(
       biomaRt::listDatasets(mart_from)
     },
     max_tries = max_tries,
-    error_message = paste0(
-      "Get errors when connecting with ensembl database ({.pkg {mart_from@biomart}})",
+    error_message = sprintf(
+      "Get errors when connecting with ensembl database (%s)",
+      mart_from@biomart
     )
   )
   dataset <- search_datasets(
@@ -292,14 +316,16 @@ GeneConvert <- function(
   )
   mart1 <- try_get(
     expr = {
-      biomaRt::useDataset(
+      connect_biomart_dataset(
         dataset = dataset,
-        mart = mart_from
+        mart = mart_from,
+        mirror = mirror
       )
     },
     max_tries = max_tries,
-    error_message = paste0(
-      "Get errors when connecting with Dataset ({.pkg {dataset}})",
+    error_message = sprintf(
+      "Get errors when connecting with Dataset (%s)",
+      dataset
     )
   )
 
@@ -313,8 +339,9 @@ GeneConvert <- function(
         biomaRt::listDatasets(mart_to)
       },
       max_tries = max_tries,
-      error_message = paste0(
-        "Get errors when connecting with ensembl database ({.pkg {mart_to@biomart}})",
+      error_message = sprintf(
+        "Get errors when connecting with ensembl database (%s)",
+        mart_to@biomart
       )
     )
     dataset2 <- search_datasets(
@@ -346,14 +373,16 @@ GeneConvert <- function(
     )
     mart2 <- try_get(
       expr = {
-        biomaRt::useDataset(
+        connect_biomart_dataset(
           dataset = dataset2,
-          mart = mart_to
+          mart = mart_to,
+          mirror = mirror
         )
       },
       max_tries = max_tries,
-      error_message = paste0(
-        "Get errors when connecting with Dataset ({.pkg {dataset2}})",
+      error_message = sprintf(
+        "Get errors when connecting with Dataset (%s)",
+        dataset2
       )
     )
   }
@@ -752,4 +781,43 @@ search_datasets <- function(datasets, pattern, verbose = TRUE) {
     )
     return(NULL)
   }
+}
+
+connect_biomart_dataset <- function(dataset, mart, mirror = NULL) {
+  dataset_try <- tryCatch(
+    biomaRt::useDataset(
+      dataset = dataset,
+      mart = mart
+    ),
+    error = function(e) e
+  )
+  if (!inherits(dataset_try, "error")) {
+    return(dataset_try)
+  }
+  if (!identical(mart@biomart, "ENSEMBL_MART_ENSEMBL")) {
+    stop(dataset_try)
+  }
+  mirror_candidates <- unique(
+    stats::na.omit(c(mirror, "useast", "uswest", "asia", "www"))
+  )
+  for (mirror_i in mirror_candidates) {
+    mart_try <- tryCatch(
+      biomaRt::useEnsembl(biomart = "ensembl", mirror = mirror_i),
+      error = function(e) e
+    )
+    if (inherits(mart_try, "error")) {
+      next
+    }
+    dataset_mirror <- tryCatch(
+      biomaRt::useDataset(
+        dataset = dataset,
+        mart = mart_try
+      ),
+      error = function(e) e
+    )
+    if (!inherits(dataset_mirror, "error")) {
+      return(dataset_mirror)
+    }
+  }
+  stop(dataset_try)
 }
