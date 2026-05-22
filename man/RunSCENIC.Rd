@@ -8,10 +8,13 @@ RunSCENIC(
   srt,
   assay = NULL,
   layer = "counts",
-  ranking_dbs,
-  motif_annotations,
-  tf_list,
-  work_dir,
+  ranking_dbs = NULL,
+  motif_annotations = NULL,
+  regulators = NULL,
+  targets = NULL,
+  work_dir = "scenic_output/",
+  species = c("Homo_sapiens", "Mus_musculus", "Drosophila_melanogaster"),
+  data_dir = NULL,
   prefix = "scenic",
   metacell = TRUE,
   metacell.by = NULL,
@@ -48,13 +51,33 @@ additional \code{ChromatinAssay} will be preprocessed sequentially.}
 
 \item{layer}{Assay layer used as the count matrix.}
 
-\item{ranking_dbs}{Character vector of cisTarget ranking feather files.}
+\item{ranking_dbs}{Character vector of cisTarget ranking feather files. If
+\code{NULL}, the gene-based v10 cisTarget ranking databases are prepared from
+\code{species}.}
 
-\item{motif_annotations}{Motif annotation table used by \verb{scenic ctx}.}
+\item{motif_annotations}{Motif annotation table used by \verb{scenic ctx}. If
+\code{NULL}, the v10 motif2tf table is prepared from \code{species}.}
 
-\item{tf_list}{Transcription-factor list used by GRNBoost2.}
+\item{regulators}{Transcription factors used as candidate regulators in
+GRNBoost2. This can be a character vector of gene names or one text file. If
+\code{NULL}, the cisTarget TF list is prepared from \code{species}.}
+
+\item{targets}{Optional target genes used to restrict the GRN output. This
+can be a character vector of gene names or one text file. Regulator
+expression is still kept as predictor input for GRNBoost2, and the adjacency
+table passed to \verb{scenic ctx} is filtered to these targets.}
 
 \item{work_dir}{Directory used for SCENIC input and output files.}
+
+\item{species}{Species used to select cisTarget reference files when
+\code{ranking_dbs}, \code{motif_annotations}, or \code{regulators} is \code{NULL}. Supported
+values include \code{"Homo_sapiens"}, \code{"Mus_musculus"},
+\code{"Drosophila_melanogaster"} and aliases such as \code{"human"}, \code{"mouse"}, and
+\code{"fly"}.}
+
+\item{data_dir}{Directory used to cache automatically prepared SCENIC
+reference files. If \code{NULL}, files are stored under
+\verb{tools::R_user_dir("scop", "data")/SCENIC/<species>}.}
 
 \item{prefix}{Prefix for SCENIC output files.}
 
@@ -136,16 +159,11 @@ original single-cell count matrix.
 }
 \examples{
 \dontrun{
-srt <- RunSCENIC(
-  srt,
-  ranking_dbs = c(
-    "/path/to/hg38_500bp_up_100bp_down.genes_vs_motifs.rankings.feather",
-    "/path/to/hg38_10kbp_up_10kbp_down.genes_vs_motifs.rankings.feather"
-  ),
-  motif_annotations = "/path/to/motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl",
-  tf_list = "/path/to/hsa_hgnc_tfs.motifs-v10.txt",
-  work_dir = "./scenic",
-  cores = 8
+data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunSCENIC(
+  pancreas_sub,
+  species = "Mus_musculus"
 )
 }
 }
