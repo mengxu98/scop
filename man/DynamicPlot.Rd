@@ -9,6 +9,7 @@ DynamicPlot(
   lineages,
   features,
   group.by = NULL,
+  group_use = NULL,
   cells = NULL,
   layer = "counts",
   assay = NULL,
@@ -53,6 +54,10 @@ DynamicPlot(
 \item{features}{A character vector of features to use.}
 
 \item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
+
+\item{group_use}{A character vector specifying groups from \code{group.by} to
+keep. If both \code{group_use} and \code{cells} are provided, their intersection will
+be used. Default is \code{NULL}.}
 
 \item{cells}{A character vector of cell names to use. Default is \code{NULL}.}
 
@@ -167,6 +172,7 @@ DynamicPlot(
   lineages = "Lineage1",
   features = c("Arxes1", "Ncoa2", "G2M_score"),
   group.by = "SubCellType",
+  group_use = c("Ductal", "Beta"),
   compare_features = TRUE
 )
 

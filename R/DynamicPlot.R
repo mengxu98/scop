@@ -7,6 +7,9 @@
 #' @inheritParams RunDynamicFeatures
 #' @param features A character vector of features to use.
 #' @param lineages A character vector specifying the lineages to plot.
+#' @param group_use A character vector specifying groups from `group.by` to
+#' keep. If both `group_use` and `cells` are provided, their intersection will
+#' be used. Default is `NULL`.
 #' @param cells A character vector of cell names to use. Default is `NULL`.
 #' @param family A character specifying the model used to calculate the dynamic features if needed.
 #' By default, this parameter is set to `NULL`, and the appropriate family will be automatically determined.
@@ -59,6 +62,7 @@
 #'   lineages = "Lineage1",
 #'   features = c("Arxes1", "Ncoa2", "G2M_score"),
 #'   group.by = "SubCellType",
+#'   group_use = c("Ductal", "Beta"),
 #'   compare_features = TRUE
 #' )
 #'
@@ -84,6 +88,7 @@ DynamicPlot <- function(
   lineages,
   features,
   group.by = NULL,
+  group_use = NULL,
   cells = NULL,
   layer = "counts",
   assay = NULL,
@@ -129,11 +134,50 @@ DynamicPlot <- function(
 
   check_r("MatrixGenerics", verbose = FALSE)
   x_order <- match.arg(x_order)
-  if (!is.null(group.by) && !group.by %in% colnames(srt@meta.data)) {
-    log_message(
-      "{.val {group.by}} is not in the meta.data of srt object",
-      message_type = "error"
-    )
+  if (!is.null(group.by)) {
+    group_missing <- setdiff(group.by, colnames(srt@meta.data))
+    if (length(group_missing) > 0) {
+      log_message(
+        "{.val {group_missing}} is not in the meta.data of srt object",
+        message_type = "error"
+      )
+    }
+  }
+  if (!is.null(group_use)) {
+    if (is.null(group.by)) {
+      log_message(
+        "{.arg group_use} requires {.arg group.by}.",
+        message_type = "error"
+      )
+    }
+    if (length(group.by) > 1) {
+      log_message(
+        "{.arg group_use} supports one {.arg group.by} column.",
+        message_type = "error"
+      )
+    }
+    group_use <- unique(as.character(group_use))
+    group_use <- group_use[nzchar(group_use)]
+    group_cells <- rownames(srt@meta.data)[
+      as.character(srt@meta.data[[group.by]]) %in% group_use
+    ]
+    if (length(group_cells) == 0) {
+      log_message(
+        "No cells found for {.arg group_use} in {.val {group.by}}.",
+        message_type = "error"
+      )
+    }
+    cells <- if (is.null(cells)) {
+      group_cells
+    } else {
+      intersect(cells, group_cells)
+    }
+    if (length(cells) == 0) {
+      log_message(
+        "No cells remain after intersecting {.arg cells} and {.arg group_use}.",
+        message_type = "error"
+      )
+    }
   }
 
   data_nm <- c(ifelse(isTRUE(lib_normalize), "normalized", ""), layer)
