@@ -1013,40 +1013,9 @@ PrepareDB <- function(
           }
           log_message("Preparing {.pkg MP} database", verbose = verbose)
           temp <- tempfile()
-          ver_info <- tryCatch(
-            {
-              download(
-                url = paste0(
-                  "https://web.archive.org/web/",
-                  format(Sys.Date(), "%Y"),
-                  "id_/http://www.informatics.jax.org/downloads/reports/"
-                ),
-                destfile = temp
-              )
-              ver_lines <- readLines(temp, warn = FALSE)
-              ver_lines <- ver_lines[grep("MGI_PhenoGenoMP.rpt", ver_lines)]
-              ver_datetime <- strsplit(
-                ver_lines,
-                split = "  </td><td align=\"right\">"
-              )[[1]][2]
-              ver_date <- gsub("-", "", sub(" .*", "", ver_datetime))
-              list(version = ver_datetime, archive_date = ver_date)
-            },
-            error = function(e) {
-              list(
-                version = as.character(Sys.Date()),
-                archive_date = gsub("-", "", as.character(Sys.Date()))
-              )
-            }
-          )
-          version <- ver_info[["version"]]
-          archive_date <- ver_info[["archive_date"]]
+          version <- as.character(Sys.Date())
           download(
-            url = paste0(
-              "https://web.archive.org/web/",
-              archive_date,
-              "id_/https://www.informatics.jax.org/downloads/reports/VOC_MammalianPhenotype.rpt"
-            ),
+            url = "https://www.informatics.jax.org/downloads/reports/VOC_MammalianPhenotype.rpt",
             destfile = temp
           )
           mp_name <- utils::read.table(
@@ -1058,11 +1027,7 @@ PrepareDB <- function(
           )
           rownames(mp_name) <- mp_name[, 1]
           download(
-            url = paste0(
-              "https://web.archive.org/web/",
-              archive_date,
-              "id_/https://www.informatics.jax.org/downloads/reports/MGI_Gene_Model_Coord.rpt"
-            ),
+            url = "https://www.informatics.jax.org/downloads/reports/MGI_Gene_Model_Coord.rpt",
             destfile = temp
           )
           gene_id <- utils::read.table(
@@ -1082,11 +1047,7 @@ PrepareDB <- function(
           rownames(gene_id) <- gene_id[, 1]
 
           download(
-            url = paste0(
-              "https://web.archive.org/web/",
-              archive_date,
-              "id_/https://www.informatics.jax.org/downloads/reports/MGI_GenePheno.rpt"
-            ),
+            url = "https://www.informatics.jax.org/downloads/reports/MGI_GenePheno.rpt",
             destfile = temp
           )
           mp_gene <- utils::read.table(

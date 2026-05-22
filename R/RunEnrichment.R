@@ -434,19 +434,21 @@ RunEnrichment <- function(
             sim_res@result,
             eval(rlang::parse_expr(GO_simplify_cutoff))
           ))
+          if (nterm_simplify > 0) {
+            sim_res@result <- sim_res@result[
+              with(sim_res@result, eval(rlang::parse_expr(GO_simplify_cutoff))), ,
+              drop = FALSE
+            ]
+          }
           if (nterm_simplify <= 1) {
             log_message(
               group,
               "|",
               term,
-              " has no term to simplify.",
+              " has <= 1 term to simplify.",
               message_type = "warning"
             )
           } else {
-            sim_res@result <- sim_res@result[
-              with(sim_res@result, eval(rlang::parse_expr(GO_simplify_cutoff))), ,
-              drop = FALSE
-            ]
             semData <- db_list[[species]][[term]][["semData"]]
             sim_res <- clusterProfiler::simplify(
               sim_res,
@@ -454,6 +456,8 @@ RunEnrichment <- function(
               cutoff = simplify_similarityCutoff,
               semData = semData
             )
+          }
+          if (nrow(sim_res@result) > 0) {
             result_sim <- sim_res@result
             result_sim[["Groups"]] <- group
             result_sim[["Database"]] <- paste0(term, "_sim")
@@ -514,8 +518,36 @@ RunEnrichment <- function(
   )
   if (isTRUE(use_object) && inherits(srt, "Seurat")) {
     group.by <- group.by %||% "custom"
-    srt@tools[[paste("Enrichment", group.by, test.use, sep = "_")]] <-
-      utils::modifyList(res, list(DE_threshold = DE_threshold))
+    result_key <- paste("Enrichment", group.by, test.use, sep = "_")
+    if (!is.null(srt@tools[[result_key]][["enrichment"]])) {
+      old_enrichment <- srt@tools[[result_key]][["enrichment"]]
+      if (
+        isTRUE(GO_simplify) &&
+          all(c("Database", "Groups") %in% colnames(old_enrichment))
+      ) {
+        go_terms <- intersect(db, c("GO", "GO_BP", "GO_CC", "GO_MF"))
+        sim_missing <- paste0(go_terms, "_sim")
+        sim_missing <- sim_missing[
+          !sim_missing %in% unique(c(enrichment[["Database"]], old_enrichment[["Database"]]))
+        ]
+        if (length(sim_missing) > 0) {
+          sim_rows <- old_enrichment[
+            old_enrichment[["Database"]] %in% sub("_sim$", "", sim_missing), ,
+            drop = FALSE
+          ]
+          if (nrow(sim_rows) > 0) {
+            sim_rows[["Database"]] <- paste0(sim_rows[["Database"]], "_sim")
+            enrichment <- dplyr::bind_rows(enrichment, sim_rows)
+          }
+        }
+      }
+      enrichment <- unique(dplyr::bind_rows(old_enrichment, enrichment))
+      res[["enrichment"]] <- enrichment
+      if (!is.null(srt@tools[[result_key]][["results"]])) {
+        res[["results"]] <- c(srt@tools[[result_key]][["results"]], res[["results"]])
+      }
+    }
+    srt@tools[[result_key]] <- utils::modifyList(res, list(DE_threshold = DE_threshold))
     return(srt)
   }
   if (isTRUE(use_object) && inherits(srt, "SummarizedExperiment")) {

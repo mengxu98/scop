@@ -14,6 +14,7 @@ RunCellChat(
   group_cmp = NULL,
   thresh = 0.05,
   min.cells = 10,
+  do.fast = FALSE,
   assay = NULL,
   layer = "data",
   verbose = TRUE
@@ -39,6 +40,9 @@ If not provided, all cell types will be considered.}
 \item{thresh}{The threshold for computing centrality scores. Default is \code{0.05}.}
 
 \item{min.cells}{the minmum number of expressed cells required for the genes that are considered for cell-cell communication analysis. Default is \code{10}.}
+
+\item{do.fast}{Whether to use CellChat's fast Wilcoxon implementation backed
+by \code{presto}. Set to \code{TRUE} only when \code{presto} is installed.}
 
 \item{assay}{Which assay to use. If \code{NULL}, the default assay of the \code{Seurat} object will be used.}
 

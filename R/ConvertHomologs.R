@@ -272,24 +272,73 @@ ConvertHomologs_mapping <- function(
   keep_unmapped,
   features
 ) {
-  to_col <- as.character(geneID_to_IDtype[[1]])
-  if (!to_col %in% colnames(conv$geneID_expand)) {
-    fallback <- setdiff(
-      colnames(conv$geneID_expand),
-      c("from_IDtype", "from_geneID", "to_IDtype", "to_geneID")
-    )
-    to_col <- fallback[[1]] %||% "to_geneID"
+  mapping <- data.frame(
+    from_geneID = character(),
+    to_geneID = character(),
+    stringsAsFactors = FALSE
+  )
+  expand <- conv$geneID_expand
+  if (!is.null(expand)) {
+    expand <- as.data.frame(expand, stringsAsFactors = FALSE)
+    to_col <- as.character(geneID_to_IDtype[[1]])
+    if (!to_col %in% colnames(expand)) {
+      fallback <- setdiff(
+        colnames(expand),
+        c("from_IDtype", "from_geneID", "to_IDtype", "to_geneID")
+      )
+      if (length(fallback) > 0L) {
+        to_col <- fallback[[1]]
+      }
+    }
+    if (all(c("from_geneID", to_col) %in% colnames(expand))) {
+      mapping <- expand[, c("from_geneID", to_col), drop = FALSE]
+      mapping <- as.data.frame(mapping, stringsAsFactors = FALSE)
+      if (ncol(mapping) >= 2L) {
+        mapping <- mapping[, seq_len(2L), drop = FALSE]
+        colnames(mapping) <- c("from_geneID", "to_geneID")
+        if (is.list(mapping$to_geneID)) {
+          mapping <- do.call(
+            rbind,
+            Map(
+              f = function(from, to) {
+                to <- unique(as.character(to))
+                to <- to[!is.na(to) & nzchar(to)]
+                if (length(to) == 0L) {
+                  return(NULL)
+                }
+                data.frame(
+                  from_geneID = from,
+                  to_geneID = to,
+                  stringsAsFactors = FALSE
+                )
+              },
+              mapping$from_geneID,
+              mapping$to_geneID
+            )
+          )
+          if (is.null(mapping)) {
+            mapping <- data.frame(
+              from_geneID = character(),
+              to_geneID = character(),
+              stringsAsFactors = FALSE
+            )
+          }
+        }
+      }
+    }
   }
-  mapping <- conv$geneID_expand[, c("from_geneID", to_col), drop = FALSE]
-  colnames(mapping) <- c("from_geneID", "to_geneID")
-  mapping <- mapping[
-    !is.na(mapping$to_geneID) & nzchar(mapping$to_geneID),
-    ,
-    drop = FALSE
-  ]
-  mapping <- mapping[!duplicated(mapping), , drop = FALSE]
-  if (identical(multi_mapping, "first")) {
-    mapping <- mapping[!duplicated(mapping$from_geneID), , drop = FALSE]
+  if (nrow(mapping) > 0L) {
+    mapping$from_geneID <- as.character(mapping$from_geneID)
+    mapping$to_geneID <- as.character(mapping$to_geneID)
+    mapping <- mapping[
+      !is.na(mapping$to_geneID) & nzchar(mapping$to_geneID),
+      ,
+      drop = FALSE
+    ]
+    mapping <- mapping[!duplicated(mapping), , drop = FALSE]
+    if (identical(multi_mapping, "first")) {
+      mapping <- mapping[!duplicated(mapping$from_geneID), , drop = FALSE]
+    }
   }
   if (isTRUE(keep_unmapped)) {
     mapped <- unique(mapping$from_geneID)

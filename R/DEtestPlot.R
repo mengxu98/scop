@@ -446,8 +446,13 @@ get_de_data <- function(
     test.use = test.use,
     res = res
   )
-  if (!"group1" %in% colnames(de_df)) {
-    if ("cluster" %in% colnames(de_df)) {
+  group1_missing <- !"group1" %in% colnames(de_df) ||
+    all(is.na(de_df[["group1"]]) | !nzchar(as.character(de_df[["group1"]])))
+  if (isTRUE(group1_missing)) {
+    if (
+      "cluster" %in% colnames(de_df) &&
+        any(!is.na(de_df[["cluster"]]) & nzchar(as.character(de_df[["cluster"]])))
+    ) {
       de_df[, "group1"] <- de_df[, "cluster"]
     } else {
       de_df[, "group1"] <- "All"

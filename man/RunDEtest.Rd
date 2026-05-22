@@ -6,7 +6,7 @@
 \alias{RunDEtest.SummarizedExperiment}
 \title{Differential gene test}
 \usage{
-RunDEtest(object, ...)
+RunDEtest(object = NULL, ..., srt = NULL)
 
 \method{RunDEtest}{Seurat}(
   object,
@@ -91,6 +91,8 @@ RunDEtest(object, ...)
 \item{object}{A \code{Seurat} object or a \code{SummarizedExperiment} object.}
 
 \item{...}{Additional arguments to pass to the \link[Seurat:FindMarkers]{Seurat::FindMarkers} function.}
+
+\item{srt}{Compatibility alias for \code{object}.}
 
 \item{group.by}{A grouping variable in the dataset to define the groups or conditions for the differential test.
 If not provided, the function uses the "active.ident" variable in the Seurat object.}

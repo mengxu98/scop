@@ -1568,6 +1568,7 @@ RunDEtest_pseudobulk <- function(
 #' @inheritParams standard_scop
 #' @inheritParams FeatureDimPlot
 #' @param object A `Seurat` object or a `SummarizedExperiment` object.
+#' @param srt Compatibility alias for `object`.
 #' @param group.by A grouping variable in the dataset to define the groups or conditions for the differential test.
 #' If not provided, the function uses the "active.ident" variable in the Seurat object.
 #' @param group1 A vector of cell IDs or a character vector specifying the cells that belong to the first group.
@@ -1847,9 +1848,19 @@ RunDEtest_pseudobulk <- function(
 #'   y_metric = "p_val"
 #' )
 RunDEtest <- function(
-  object,
-  ...
+  object = NULL,
+  ...,
+  srt = NULL
 ) {
+  if (is.null(object)) {
+    object <- srt
+    if (methods::is(object, "SummarizedExperiment")) {
+      return(RunDEtest.SummarizedExperiment(object, ...))
+    }
+    if (methods::is(object, "Seurat")) {
+      return(RunDEtest.Seurat(object, ...))
+    }
+  }
   if (methods::is(object, "SummarizedExperiment")) {
     return(RunDEtest.SummarizedExperiment(object, ...))
   }

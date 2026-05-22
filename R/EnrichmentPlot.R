@@ -477,6 +477,15 @@ EnrichmentPlot <- function(
           message_type = "error"
         )
       }
+      id_use_names <- names(id_use)
+      available_groups <- as.character(enrichment[["Groups"]])
+      if (!all(id_use_names %in% available_groups)) {
+        group_roots <- sub("::.*$", "", available_groups)
+        root_map <- stats::setNames(available_groups, group_roots)
+        remap <- !id_use_names %in% available_groups & id_use_names %in% names(root_map)
+        id_use_names[remap] <- unname(root_map[id_use_names[remap]])
+        names(id_use) <- id_use_names
+      }
       if (!all(names(id_use) %in% enrichment[["Groups"]])) {
         log_message(
           paste0(
@@ -1684,8 +1693,15 @@ filter_enrichment_plot_groups <- function(
   if (is.null(group_use)) {
     return(enrichment)
   }
+  group_use <- unique(as.character(group_use))
+  groups <- as.character(enrichment[["Groups"]])
+  keep <- groups %in% group_use
+  if (!any(keep)) {
+    group_roots <- sub("::.*$", "", groups)
+    keep <- group_roots %in% group_use
+  }
   enrichment_sub <- enrichment[
-    as.character(enrichment[["Groups"]]) %in% group_use, ,
+    keep, ,
     drop = FALSE
   ]
   if (nrow(enrichment_sub) == 0) {
