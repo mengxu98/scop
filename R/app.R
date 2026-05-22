@@ -1011,6 +1011,9 @@ RunSCExplorer <- function(
     ),
     verbose = FALSE
   )
+  if (isTRUE(create_script) && isTRUE(style_script)) {
+    check_r("styler", verbose = FALSE)
+  }
   DataFile_full <- paste0(base_dir, "/", data_file)
   MetaFile_full <- paste0(base_dir, "/", meta_file)
   if (!file.exists(DataFile_full) || !file.exists(MetaFile_full)) {

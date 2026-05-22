@@ -108,6 +108,18 @@ RunReferenceMapping <- function(
     )
   }
 
+  if (
+    isTRUE(add_gene_activity) &&
+      !gene_activity_assay %in% SeuratObject::Assays(srt) &&
+      reference_assay %in% SeuratObject::Assays(srt)
+  ) {
+    log_message(
+      "Use existing query assay {.val {reference_assay}} as {.arg gene_activity_assay}",
+      verbose = verbose
+    )
+    gene_activity_assay <- reference_assay
+  }
+
   if (isTRUE(add_gene_activity) && !gene_activity_assay %in% SeuratObject::Assays(srt)) {
     srt <- atac_add_activity(
       srt = srt,
