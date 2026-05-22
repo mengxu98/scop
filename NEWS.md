@@ -29,6 +29,7 @@
   * `GeneConvert()` examples now direct expression-object homolog conversion to `ConvertHomologs()` instead of showing manual `geneID_expand` aggregation.
   * `PrepareDB()`: Added compatibility with older `GOSemSim::godata()` signatures that use `OrgDb` instead of `annoDb`, avoiding GO semantic-data preparation failures in mixed Bioconductor environments.
   * `PrepareDB()` and `AnnotateFeatures()`: Normalize legacy MSigDB caches whose feature column was stored as `symbol.ensembl_id`, and ensure ID-type conversion uses a single existing source ID column to avoid `switch()` errors when annotating MSigDB features by `symbol`.
+  * `DynamicHeatmap()`, `FeatureHeatmap()`, and `GroupHeatmap()`: Compact long multi-term feature annotations from databases such as MSigDB and Reactome before drawing heatmap legends, and keep `DynamicHeatmap()` cluster annotations such as `RNA_snn_res.0.8` discrete even when stored as numeric metadata.
   * Cleaned up package-check issues by declaring missing namespace imports and aligning Rd argument documentation for recently updated wrappers.
   * Optional wrapper dependencies are checked at function entry with `check_r()` instead of silently skipping examples or adding unnecessary hard dependencies.
 
