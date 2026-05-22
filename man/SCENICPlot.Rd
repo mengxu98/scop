@@ -10,21 +10,49 @@ SCENICPlot(
   tool_name = "SCENIC",
   assay = "scenic",
   layer = "data",
+  plot_type = c("rss_rank", "rss_heatmap", "rss_dotplot", "activity_heatmap",
+    "activity_violin", "activity_dim", "regulon_size", "network_graph", "network",
+    "target_bar"),
+  features = NULL,
+  reduction = NULL,
+  dims = c(1, 2),
   top_n = 12,
+  activity_scale = FALSE,
+  heatmap_show_row_names = FALSE,
+  heatmap_show_column_names = FALSE,
+  heatmap_cluster_rows = TRUE,
+  heatmap_cluster_columns = FALSE,
+  heatmap_row_names_side = "right",
+  heatmap_column_names_side = "top",
+  heatmap_row_names_rot = 0,
+  heatmap_column_names_rot = 45,
+  heatmap_border = TRUE,
+  heatmap_palette = NULL,
+  heatmap_palcolor = NULL,
+  heatmap_group_palette = "Chinese",
+  heatmap_group_palcolor = NULL,
+  heatmap_args = list(),
+  max_targets = 20,
+  max_edges = Inf,
+  network_layout = c("fr", "nicely", "kk", "lgl", "drl"),
+  network_tf = NULL,
+  label_nodes = c("tfs", "all", "none"),
+  network_label_top_n = 60,
   combine = TRUE,
   ncol = 3,
   return_data = TRUE,
   title = NULL,
   point_color = "#1F77B4",
   top_color = "#DC050C",
-  point_size = 3,
-  point_alpha = 0.4,
+  point_size = 2,
+  point_alpha = 0.5,
   highlight_tf = NULL,
   highlight_color = "#7A0177",
-  highlight_point_size = 4,
-  highlight_linewidth = 0.4,
+  highlight_point_size = 2,
+  highlight_linewidth = 0.5,
   label_size = 3,
-  verbose = TRUE
+  verbose = TRUE,
+  ...
 )
 }
 \arguments{
@@ -39,7 +67,65 @@ SCENICPlot(
 
 \item{layer}{Assay layer used as a fallback source of regulon activity.}
 
+\item{plot_type}{Plot type. \code{"rss_rank"} keeps the original regulon RSS rank
+plot. Other options summarize RSS, regulon activity, regulon sizes, or
+TF-target subnetworks.}
+
+\item{features}{Optional TF/regulon names used by activity, network, and
+target plots. Values can match either \code{"Sox9"} or \code{"Sox9(+)"}.}
+
+\item{reduction}{Dimensional reduction used when \code{plot_type = "activity_dim"}. If \code{NULL}, a UMAP/tSNE/PCA-like reduction is selected when
+available.}
+
+\item{dims}{Two reduction dimensions used when \code{plot_type = "activity_dim"}.}
+
 \item{top_n}{Number of top regulons labeled for each group.}
+
+\item{activity_scale}{Whether to z-score each regulon across groups in
+\code{plot_type = "activity_heatmap"}. The default is \code{FALSE} so that the
+heatmap shows mean regulon activity and does not collapse constant regulons
+to zero.}
+
+\item{heatmap_show_row_names, heatmap_show_column_names}{Whether to show row
+and column names in \code{plot_type = "rss_heatmap"} and \code{plot_type = "activity_heatmap"}.}
+
+\item{heatmap_cluster_rows, heatmap_cluster_columns}{Whether to cluster rows
+and columns in SCENIC heatmaps.}
+
+\item{heatmap_row_names_side, heatmap_column_names_side}{Sides used for row
+and column names in SCENIC heatmaps.}
+
+\item{heatmap_row_names_rot, heatmap_column_names_rot}{Rotation angles for
+row and column names in SCENIC heatmaps.}
+
+\item{heatmap_border}{Whether to draw heatmap borders in SCENIC heatmaps.}
+
+\item{heatmap_palette, heatmap_palcolor}{Palette passed to \code{\link[=GroupHeatmap]{GroupHeatmap()}}
+or \code{\link[=FeatureHeatmap]{FeatureHeatmap()}} for SCENIC heatmaps. If \code{heatmap_palette = NULL}, a
+sensible default is selected for each heatmap type.}
+
+\item{heatmap_group_palette, heatmap_group_palcolor}{Group annotation palette
+passed to \code{\link[=GroupHeatmap]{GroupHeatmap()}} or \code{\link[=FeatureHeatmap]{FeatureHeatmap()}} for SCENIC heatmaps.}
+
+\item{heatmap_args}{Additional arguments passed to \code{\link[=GroupHeatmap]{GroupHeatmap()}} for
+\code{plot_type = "activity_heatmap"} or \code{\link[=FeatureHeatmap]{FeatureHeatmap()}} for \code{plot_type = "rss_heatmap"}.}
+
+\item{max_targets}{Maximum number of target genes shown per TF/regulon in
+network-style plots.}
+
+\item{max_edges}{Maximum number of TF-target edges shown in global network
+plots. Edges are ranked by absolute weight when a weight column is present.}
+
+\item{network_layout}{Graph layout used by network plots. \code{"fr"} matches the
+force-directed Fruchterman-Reingold layout used in Pando examples.}
+
+\item{network_tf}{Optional TF names used when \code{plot_type = "network"}. If
+\code{NULL}, \code{features}, \code{highlight_tf}, or the top RSS regulons are used.}
+
+\item{label_nodes}{Which nodes to label in network plots.}
+
+\item{network_label_top_n}{Maximum number of high-degree TF nodes labeled in
+\code{plot_type = "network_graph"} when \code{label_nodes = "tfs"}.}
 
 \item{combine}{Whether to combine group plots with \code{\link[patchwork:wrap_plots]{patchwork::wrap_plots()}}.}
 
@@ -73,6 +159,11 @@ lines.}
 \item{label_size}{Text size for top regulon labels.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{...}{Additional arguments passed directly to the underlying
+\code{\link[=GroupHeatmap]{GroupHeatmap()}} or \code{\link[=FeatureHeatmap]{FeatureHeatmap()}} call when \code{plot_type} is
+\code{"activity_heatmap"} or \code{"rss_heatmap"}. For example, \code{width} and \code{height}
+can be supplied directly.}
 }
 \value{
 A list containing \code{rss_matrix}, \code{rank_table}, \code{top_table}, \code{plots},
@@ -82,4 +173,69 @@ plots.
 \description{
 Calculate regulon specificity score (RSS) from SCENIC regulon activity and
 plot the top regulons for each group.
+}
+\examples{
+\dontrun{
+data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunSCENIC(
+  pancreas_sub,
+  species = "Mus_musculus"
+)
+
+scenic_rss <- SCENICPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "rss_rank"
+)
+scenic_rss$plot
+example_regulons <- unique(scenic_rss$top_table$regulon)[1:2]
+example_tfs <- unique(scenic_rss$top_table$TF)[1:2]
+
+SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "rss_heatmap")
+SCENICPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "rss_heatmap",
+  width = 2,
+  height = 3
+)
+SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "rss_dotplot")
+SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "activity_heatmap")
+SCENICPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "activity_violin",
+  features = example_regulons
+)
+SCENICPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "activity_dim",
+  features = example_regulons
+)
+SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "regulon_size")
+SCENICPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "network_graph",
+  max_targets = 10,
+  max_edges = 500,
+  label_nodes = "tfs"
+)
+SCENICPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "network",
+  network_tf = example_tfs,
+  max_targets = 30
+)
+SCENICPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "target_bar",
+  features = example_regulons,
+  max_targets = 20
+)
+}
 }

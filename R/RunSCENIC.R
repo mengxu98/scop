@@ -10,10 +10,27 @@
 #' @inheritParams PrepareEnv
 #' @param srt A Seurat object.
 #' @param layer Assay layer used as the count matrix.
-#' @param ranking_dbs Character vector of cisTarget ranking feather files.
-#' @param motif_annotations Motif annotation table used by `scenic ctx`.
-#' @param tf_list Transcription-factor list used by GRNBoost2.
+#' @param ranking_dbs Character vector of cisTarget ranking feather files. If
+#' `NULL`, the gene-based v10 cisTarget ranking databases are prepared from
+#' `species`.
+#' @param motif_annotations Motif annotation table used by `scenic ctx`. If
+#' `NULL`, the v10 motif2tf table is prepared from `species`.
+#' @param regulators Transcription factors used as candidate regulators in
+#' GRNBoost2. This can be a character vector of gene names or one text file. If
+#' `NULL`, the cisTarget TF list is prepared from `species`.
+#' @param targets Optional target genes used to restrict the GRN output. This
+#' can be a character vector of gene names or one text file. Regulator
+#' expression is still kept as predictor input for GRNBoost2, and the adjacency
+#' table passed to `scenic ctx` is filtered to these targets.
 #' @param work_dir Directory used for SCENIC input and output files.
+#' @param species Species used to select cisTarget reference files when
+#' `ranking_dbs`, `motif_annotations`, or `regulators` is `NULL`. Supported
+#' values include `"Homo_sapiens"`, `"Mus_musculus"`,
+#' `"Drosophila_melanogaster"` and aliases such as `"human"`, `"mouse"`, and
+#' `"fly"`.
+#' @param data_dir Directory used to cache automatically prepared SCENIC
+#' reference files. If `NULL`, files are stored under
+#' `tools::R_user_dir("scop", "data")/SCENIC/<species>`.
 #' @param prefix Prefix for SCENIC output files.
 #' @param metacell Whether to build a metacell count matrix for GRNBoost2.
 #' @param metacell.by Optional metadata column(s) used to keep metacells within
@@ -64,26 +81,24 @@
 #'
 #' @examples
 #' \dontrun{
-#' srt <- RunSCENIC(
-#'   srt,
-#'   ranking_dbs = c(
-#'     "/path/to/hg38_500bp_up_100bp_down.genes_vs_motifs.rankings.feather",
-#'     "/path/to/hg38_10kbp_up_10kbp_down.genes_vs_motifs.rankings.feather"
-#'   ),
-#'   motif_annotations = "/path/to/motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl",
-#'   tf_list = "/path/to/hsa_hgnc_tfs.motifs-v10.txt",
-#'   work_dir = "./scenic",
-#'   cores = 8
+#' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunSCENIC(
+#'   pancreas_sub,
+#'   species = "Mus_musculus"
 #' )
 #' }
 RunSCENIC <- function(
   srt,
   assay = NULL,
   layer = "counts",
-  ranking_dbs,
-  motif_annotations,
-  tf_list,
-  work_dir,
+  ranking_dbs = NULL,
+  motif_annotations = NULL,
+  regulators = NULL,
+  targets = NULL,
+  work_dir = "scenic_output/",
+  species = c("Homo_sapiens", "Mus_musculus", "Drosophila_melanogaster"),
+  data_dir = NULL,
   prefix = "scenic",
   metacell = TRUE,
   metacell.by = NULL,
@@ -115,24 +130,58 @@ RunSCENIC <- function(
       message_type = "error"
     )
   }
-  if (missing(ranking_dbs) || length(ranking_dbs) == 0) {
-    log_message("{.arg ranking_dbs} must be provided", message_type = "error")
-  }
-  if (missing(motif_annotations) || length(motif_annotations) != 1) {
-    log_message("{.arg motif_annotations} must be one file", message_type = "error")
-  }
-  if (missing(tf_list) || length(tf_list) != 1) {
-    log_message("{.arg tf_list} must be one file", message_type = "error")
-  }
   if (missing(work_dir) || length(work_dir) != 1) {
     log_message("{.arg work_dir} must be one directory", message_type = "error")
   }
 
+  reference_data <- scenic_resolve_reference_data(
+    species = species,
+    data_dir = data_dir,
+    ranking_dbs = ranking_dbs,
+    motif_annotations = motif_annotations,
+    regulators = regulators,
+    verbose = verbose
+  )
+  ranking_dbs <- reference_data[["ranking_dbs"]]
+  motif_annotations <- reference_data[["motif_annotations"]]
+  regulators <- reference_data[["regulators"]]
+  species <- reference_data[["species"]]
+  data_dir <- reference_data[["data_dir"]]
+
+  if (length(ranking_dbs) == 0) {
+    log_message("{.arg ranking_dbs} must be provided", message_type = "error")
+  }
+  if (length(motif_annotations) != 1) {
+    log_message(
+      "{.arg motif_annotations} must be one file",
+      message_type = "error"
+    )
+  }
+  if (is.null(regulators) || length(regulators) == 0) {
+    log_message(
+      "{.arg regulators} must contain at least one gene",
+      message_type = "error"
+    )
+  }
+
   ranking_dbs <- normalizePath(ranking_dbs, mustWork = TRUE)
   motif_annotations <- normalizePath(motif_annotations, mustWork = TRUE)
-  tf_list <- normalizePath(tf_list, mustWork = TRUE)
   work_dir <- normalizePath(work_dir, mustWork = FALSE)
   dir.create(work_dir, recursive = TRUE, showWarnings = FALSE)
+  regulators_info <- scenic_prepare_gene_list_argument(
+    x = regulators,
+    arg = "regulators",
+    out_file = file.path(work_dir, paste0(prefix, "_regulators.txt")),
+    required = TRUE
+  )
+  regulators <- regulators_info[["genes"]]
+  regulators_file <- regulators_info[["file"]]
+  targets <- scenic_prepare_gene_list_argument(
+    x = targets,
+    arg = "targets",
+    out_file = file.path(work_dir, paste0(prefix, "_targets.txt")),
+    required = FALSE
+  )[["genes"]]
   progress_state <- scenic_progress_init(progress = progress, verbose = verbose)
   on.exit(scenic_progress_close(progress_state), add = TRUE)
   scenic_progress_step(
@@ -144,7 +193,11 @@ RunSCENIC <- function(
 
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   cores_requested <- suppressWarnings(as.integer(cores))
-  if (length(cores_requested) != 1 || is.na(cores_requested) || cores_requested < 1L) {
+  if (
+    length(cores_requested) != 1 ||
+      is.na(cores_requested) ||
+      cores_requested < 1L
+  ) {
     cores_requested <- 1L
   }
   cores <- max(1L, cores_requested)
@@ -203,7 +256,10 @@ RunSCENIC <- function(
           verbose = FALSE
         ),
         error = function(...) {
-          stats::setNames(rep(FALSE, length(scenic_python_packages)), scenic_python_packages)
+          stats::setNames(
+            rep(FALSE, length(scenic_python_packages)),
+            scenic_python_packages
+          )
         }
       )
       env_ready <- all(pkg_installed)
@@ -319,7 +375,11 @@ RunSCENIC <- function(
       verbose = verbose
     )
   }
-  grn_count_source <- if (isTRUE(metacell)) "metacell matrix" else "single-cell matrix"
+  grn_count_source <- if (isTRUE(metacell)) {
+    "metacell matrix"
+  } else {
+    "single-cell matrix"
+  }
   grn_count_unit <- if (isTRUE(metacell)) "cells/metacells" else "cells"
   log_message(
     "{.pkg SCENIC} GRN count source: {.val {grn_count_source}}, {.val {nrow(grn_counts)}} genes x {.val {ncol(grn_counts)}} {grn_count_unit}",
@@ -336,12 +396,50 @@ RunSCENIC <- function(
     as.character(unlist(functions$SCENICRankingGenes(db), use.names = FALSE))
   })
   ranking_genes <- Reduce(intersect, ranking_gene_lists)
+  grn_gene_filter <- NULL
+  if (!is.null(targets)) {
+    grn_gene_filter <- union(targets, regulators)
+  }
   grn_matrix <- scenic_prepare_grn_matrix(
     counts = grn_counts,
     ranking_genes = ranking_genes,
+    genes = grn_gene_filter,
     min_expr_cells = min_expr_cells,
     verbose = verbose
   )
+  regulators_detected <- intersect(regulators, colnames(grn_matrix))
+  if (length(regulators_detected) == 0) {
+    log_message(
+      "No {.arg regulators} remain after matching expression features and cisTarget databases",
+      message_type = "error"
+    )
+  }
+  if (length(regulators_detected) < length(regulators)) {
+    log_message(
+      "{.pkg SCENIC} GRNBoost2 will use {.val {length(regulators_detected)}} of {.val {length(regulators)}} requested regulator{?s} present in the GRN matrix",
+      message_type = "warning",
+      verbose = verbose
+    )
+    regulators <- regulators_detected
+    regulators_file <- scenic_write_gene_list(regulators, regulators_file)
+  }
+  if (!is.null(targets)) {
+    targets_detected <- intersect(targets, colnames(grn_matrix))
+    if (length(targets_detected) == 0) {
+      log_message(
+        "No {.arg targets} remain after matching expression features and cisTarget databases",
+        message_type = "error"
+      )
+    }
+    if (length(targets_detected) < length(targets)) {
+      log_message(
+        "{.pkg SCENIC} target constraint keeps {.val {length(targets_detected)}} of {.val {length(targets)}} requested target{?s} present in the GRN matrix",
+        message_type = "warning",
+        verbose = verbose
+      )
+    }
+    targets <- targets_detected
+  }
 
   scenic_progress_step(
     progress_state,
@@ -350,12 +448,33 @@ RunSCENIC <- function(
     verbose = verbose
   )
   expr_csv <- file.path(work_dir, paste0(prefix, "_expression_mtx.csv"))
-  if (!file.exists(expr_csv) || isTRUE(force)) {
+  grn_input_params_file <- file.path(
+    work_dir,
+    paste0(prefix, "_grn_input_params.rds")
+  )
+  grn_input_params <- list(
+    regulators = regulators,
+    targets = targets,
+    genes = colnames(grn_matrix)
+  )
+  grn_inputs_changed <- scenic_grn_inputs_changed(
+    grn_input_params_file,
+    grn_input_params
+  )
+  grn_force <- isTRUE(force) || isTRUE(grn_inputs_changed)
+  if (isTRUE(grn_inputs_changed) && file.exists(expr_csv) && isFALSE(force)) {
+    log_message(
+      "Rebuilding {.pkg SCENIC} GRNBoost2 inputs because {.arg regulators}, {.arg targets}, or GRN genes changed",
+      verbose = verbose
+    )
+  }
+  if (!file.exists(expr_csv) || isTRUE(grn_force)) {
     utils::write.csv(
       as.matrix(grn_matrix),
       file = expr_csv,
       row.names = TRUE
     )
+    saveRDS(grn_input_params, grn_input_params_file)
   } else {
     log_message(
       "Reusing existing {.pkg SCENIC} expression matrix: {.file {expr_csv}}",
@@ -364,6 +483,11 @@ RunSCENIC <- function(
   }
 
   adj_file <- file.path(work_dir, paste0(prefix, "_step1_adj.tsv"))
+  grn_adj_file <- if (is.null(targets)) {
+    adj_file
+  } else {
+    file.path(work_dir, paste0(prefix, "_step1_adj_raw.tsv"))
+  }
   ctx_file <- file.path(work_dir, paste0(prefix, "_step2_reg.tsv"))
   gmt_file <- file.path(work_dir, paste0(prefix, "_step2_regulons.gmt"))
   txt_file <- file.path(work_dir, paste0(prefix, "_step2_regulons.txt"))
@@ -378,13 +502,21 @@ RunSCENIC <- function(
   )
   functions$RunSCENICGrn(
     expression_mtx = expr_csv,
-    tf_list = tf_list,
-    adj_output = adj_file,
+    regulators = regulators_file,
+    adj_output = grn_adj_file,
     cores = as.integer(cores),
     seed = as.integer(seed),
-    force = isTRUE(force),
+    force = isTRUE(grn_force),
     verbose = isTRUE(verbose)
   )
+  if (!is.null(targets)) {
+    scenic_filter_adjacency_targets(
+      input_file = grn_adj_file,
+      output_file = adj_file,
+      targets = targets,
+      verbose = verbose
+    )
+  }
 
   scenic_progress_step(
     progress_state,
@@ -399,7 +531,7 @@ RunSCENIC <- function(
     adj_output = adj_file,
     ctx_output = ctx_file,
     cores = as.integer(cores),
-    force = isTRUE(force),
+    force = isTRUE(grn_force),
     verbose = isTRUE(verbose)
   )
 
@@ -409,7 +541,7 @@ RunSCENIC <- function(
     label = "Converting SCENIC regulons",
     verbose = verbose
   )
-  if (isTRUE(force) || !file.exists(gmt_file) || !file.exists(txt_file)) {
+  if (isTRUE(grn_force) || !file.exists(gmt_file) || !file.exists(txt_file)) {
     functions$SCENICRegulonsToFiles(
       regulon_file = ctx_file,
       gmt_file = gmt_file,
@@ -431,11 +563,11 @@ RunSCENIC <- function(
   )
   regulon_tbl <- scenic_read_regulon_txt(txt_file)
   regulon_list <- scenic_regulon_list(regulon_tbl)
-  if (!file.exists(regulon_list_file) || isTRUE(force)) {
+  if (!file.exists(regulon_list_file) || isTRUE(grn_force)) {
     saveRDS(regulon_list, regulon_list_file)
   }
 
-  if (file.exists(ras_file) && isFALSE(force)) {
+  if (file.exists(ras_file) && isFALSE(grn_force)) {
     log_message(
       "Reusing existing regulon activity matrix: {.file {ras_file}}",
       verbose = verbose
@@ -482,6 +614,8 @@ RunSCENIC <- function(
     files = list(
       expression_mtx = expr_csv,
       adj = adj_file,
+      adj_raw = if (!identical(grn_adj_file, adj_file)) grn_adj_file else NULL,
+      grn_input_params = grn_input_params_file,
       ctx = ctx_file,
       regulons_gmt = gmt_file,
       regulons_txt = txt_file,
@@ -492,9 +626,13 @@ RunSCENIC <- function(
     parameters = list(
       assay = assay,
       layer = layer,
+      species = species,
+      data_dir = data_dir,
       ranking_dbs = ranking_dbs,
       motif_annotations = motif_annotations,
-      tf_list = tf_list,
+      regulators = regulators,
+      regulators_file = regulators_file,
+      targets = targets,
       metacell = metacell,
       metacell.by = metacell.by,
       metacell_resolution = metacell_resolution,
@@ -550,12 +688,448 @@ RunSCENIC <- function(
   srt
 }
 
+scenic_resolve_reference_data <- function(
+  species,
+  data_dir = NULL,
+  ranking_dbs = NULL,
+  motif_annotations = NULL,
+  regulators = NULL,
+  verbose = TRUE
+) {
+  species_config <- scenic_species_config(species)
+  missing_ranking_dbs <- is.null(ranking_dbs) || length(ranking_dbs) == 0
+  missing_motif_annotations <- is.null(motif_annotations) ||
+    length(motif_annotations) == 0
+  missing_regulators <- is.null(regulators) || length(regulators) == 0
+  needs_download <- missing_ranking_dbs ||
+    missing_motif_annotations ||
+    missing_regulators
+
+  reference_dir <- NULL
+  if (isTRUE(needs_download)) {
+    reference_dir <- scenic_reference_dir(
+      data_dir = data_dir,
+      species_key = species_config[["key"]]
+    )
+    dir.create(reference_dir, recursive = TRUE, showWarnings = FALSE)
+    log_message(
+      "Preparing {.pkg SCENIC} reference data for {.val {species_config[['label']]}} in {.path {reference_dir}}",
+      verbose = verbose
+    )
+
+    reference_files <- species_config[["files"]]
+    if (isTRUE(missing_ranking_dbs)) {
+      ranking_rows <- reference_files[
+        reference_files[["role"]] == "ranking_dbs",
+        ,
+        drop = FALSE
+      ]
+      ranking_dbs <- scenic_download_reference_files(
+        ranking_rows,
+        reference_dir,
+        verbose = verbose
+      )
+    }
+    if (isTRUE(missing_motif_annotations)) {
+      motif_rows <- reference_files[
+        reference_files[["role"]] == "motif_annotations",
+        ,
+        drop = FALSE
+      ]
+      motif_annotations <- scenic_download_reference_files(
+        motif_rows,
+        reference_dir,
+        verbose = verbose
+      )
+    }
+    if (isTRUE(missing_regulators)) {
+      tf_rows <- reference_files[
+        reference_files[["role"]] == "tf_list",
+        ,
+        drop = FALSE
+      ]
+      regulators <- scenic_download_reference_files(
+        tf_rows,
+        reference_dir,
+        verbose = verbose
+      )
+    }
+  } else if (!is.null(data_dir)) {
+    reference_dir <- scenic_reference_dir(
+      data_dir = data_dir,
+      species_key = species_config[["key"]]
+    )
+  }
+
+  list(
+    species = species_config[["label"]],
+    data_dir = reference_dir,
+    ranking_dbs = ranking_dbs,
+    motif_annotations = motif_annotations,
+    regulators = regulators
+  )
+}
+
+scenic_species_config <- function(species) {
+  if (length(species) > 1L) {
+    species <- species[[1L]]
+  }
+  if (
+    !is.character(species) ||
+      length(species) != 1L ||
+      is.na(species) ||
+      !nzchar(species)
+  ) {
+    log_message(
+      "{.arg species} must be one supported species name",
+      message_type = "error"
+    )
+  }
+  species_key <- tolower(gsub("[ .-]+", "_", species))
+  species_key <- switch(
+    species_key,
+    homo_sapiens = "human",
+    human = "human",
+    hsa = "human",
+    hs = "human",
+    hg38 = "human",
+    mus_musculus = "mouse",
+    mouse = "mouse",
+    mm = "mouse",
+    mm10 = "mouse",
+    drosophila_melanogaster = "fly",
+    drosophila = "fly",
+    fly = "fly",
+    dmel = "fly",
+    dm6 = "fly",
+    NULL
+  )
+  if (is.null(species_key)) {
+    log_message(
+      "{.arg species} must be one of {.val Homo_sapiens}, {.val Mus_musculus}, or {.val Drosophila_melanogaster}",
+      message_type = "error"
+    )
+  }
+
+  cistarget_url <- "https://resources.aertslab.org/cistarget"
+  switch(
+    species_key,
+    human = list(
+      key = "human",
+      label = "Homo_sapiens",
+      files = data.frame(
+        role = c("ranking_dbs", "ranking_dbs", "motif_annotations", "tf_list"),
+        filename = c(
+          "hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather",
+          "hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather",
+          "motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl",
+          "allTFs_hg38.txt"
+        ),
+        url = c(
+          paste0(
+            cistarget_url,
+            "/databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based/hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"
+          ),
+          paste0(
+            cistarget_url,
+            "/databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based/hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"
+          ),
+          paste0(
+            cistarget_url,
+            "/motif2tf/motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl"
+          ),
+          paste0(cistarget_url, "/tf_lists/allTFs_hg38.txt")
+        ),
+        stringsAsFactors = FALSE
+      )
+    ),
+    mouse = list(
+      key = "mouse",
+      label = "Mus_musculus",
+      files = data.frame(
+        role = c("ranking_dbs", "ranking_dbs", "motif_annotations", "tf_list"),
+        filename = c(
+          "mm10_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather",
+          "mm10_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather",
+          "motifs-v10nr_clust-nr.mgi-m0.001-o0.0.tbl",
+          "allTFs_mm.txt"
+        ),
+        url = c(
+          paste0(
+            cistarget_url,
+            "/databases/mus_musculus/mm10/refseq_r80/mc_v10_clust/gene_based/mm10_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"
+          ),
+          paste0(
+            cistarget_url,
+            "/databases/mus_musculus/mm10/refseq_r80/mc_v10_clust/gene_based/mm10_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"
+          ),
+          paste0(
+            cistarget_url,
+            "/motif2tf/motifs-v10nr_clust-nr.mgi-m0.001-o0.0.tbl"
+          ),
+          paste0(cistarget_url, "/tf_lists/allTFs_mm.txt")
+        ),
+        stringsAsFactors = FALSE
+      )
+    ),
+    fly = list(
+      key = "fly",
+      label = "Drosophila_melanogaster",
+      files = data.frame(
+        role = c("ranking_dbs", "motif_annotations", "tf_list"),
+        filename = c(
+          "dm6_v10_clust.genes_vs_motifs.rankings.feather",
+          "motifs-v10nr_clust-nr.flybase-m0.001-o0.0.tbl",
+          "allTFs_dmel.txt"
+        ),
+        url = c(
+          paste0(
+            cistarget_url,
+            "/databases/drosophila_melanogaster/dm6/flybase_r6.02/mc_v10_clust/gene_based/dm6_v10_clust.genes_vs_motifs.rankings.feather"
+          ),
+          paste0(
+            cistarget_url,
+            "/motif2tf/motifs-v10nr_clust-nr.flybase-m0.001-o0.0.tbl"
+          ),
+          paste0(cistarget_url, "/tf_lists/allTFs_dmel.txt")
+        ),
+        stringsAsFactors = FALSE
+      )
+    )
+  )
+}
+
+scenic_reference_dir <- function(data_dir = NULL, species_key) {
+  if (is.null(data_dir)) {
+    return(file.path(
+      tools::R_user_dir("scop", "data"),
+      "SCENIC",
+      species_key
+    ))
+  }
+  if (
+    !is.character(data_dir) ||
+      length(data_dir) != 1L ||
+      is.na(data_dir) ||
+      !nzchar(data_dir)
+  ) {
+    log_message(
+      "{.arg data_dir} must be one directory path",
+      message_type = "error"
+    )
+  }
+  normalizePath(data_dir, mustWork = FALSE)
+}
+
+scenic_download_reference_files <- function(
+  reference_files,
+  reference_dir,
+  verbose = TRUE
+) {
+  vapply(
+    seq_len(nrow(reference_files)),
+    function(idx) {
+      scenic_download_reference_file(
+        url = reference_files[["url"]][[idx]],
+        dest = file.path(reference_dir, reference_files[["filename"]][[idx]]),
+        verbose = verbose
+      )
+    },
+    character(1)
+  )
+}
+
+scenic_download_reference_file <- function(url, dest, verbose = TRUE) {
+  if (file.exists(dest)) {
+    log_message(
+      "Using cached {.pkg SCENIC} reference file: {.path {dest}}",
+      verbose = verbose
+    )
+    return(normalizePath(dest, mustWork = TRUE))
+  }
+
+  log_message(
+    "Downloading {.pkg SCENIC} reference file: {.file {basename(dest)}}",
+    verbose = verbose
+  )
+  dir.create(dirname(dest), recursive = TRUE, showWarnings = FALSE)
+  temp_dest <- paste0(dest, ".download")
+  if (file.exists(temp_dest)) {
+    unlink(temp_dest)
+  }
+  old_timeout <- getOption("timeout")
+  options(timeout = max(3600, old_timeout))
+  on.exit(options(timeout = old_timeout), add = TRUE)
+  download_ok <- tryCatch(
+    {
+      utils::download.file(
+        url = url,
+        destfile = temp_dest,
+        mode = "wb",
+        quiet = !isTRUE(verbose)
+      )
+      TRUE
+    },
+    error = function(err) {
+      log_message(
+        "Failed to download {.pkg SCENIC} reference file from {.val {url}}: {conditionMessage(err)}",
+        message_type = "error"
+      )
+    }
+  )
+  if (!isTRUE(download_ok) || !file.exists(temp_dest)) {
+    log_message(
+      "Failed to download {.pkg SCENIC} reference file from {.val {url}}",
+      message_type = "error"
+    )
+  }
+  if (!file.rename(temp_dest, dest)) {
+    log_message(
+      "Failed to move downloaded {.pkg SCENIC} reference file to {.path {dest}}",
+      message_type = "error"
+    )
+  }
+  normalizePath(dest, mustWork = TRUE)
+}
+
+scenic_prepare_gene_list_argument <- function(
+  x,
+  arg,
+  out_file,
+  required = FALSE
+) {
+  genes <- scenic_read_gene_list_argument(x, arg = arg, required = required)
+  if (is.null(genes)) {
+    return(list(genes = NULL, file = NULL))
+  }
+
+  list(
+    genes = genes,
+    file = scenic_write_gene_list(genes, out_file)
+  )
+}
+
+scenic_read_gene_list_argument <- function(x, arg, required = FALSE) {
+  if (is.null(x) || length(x) == 0) {
+    if (isTRUE(required)) {
+      log_message(
+        "{.val {arg}} must contain at least one gene",
+        message_type = "error"
+      )
+    }
+    return(NULL)
+  }
+
+  x <- as.character(x)
+  from_file <- length(x) == 1L && file.exists(x)
+  path_like <- length(x) == 1L &&
+    (grepl("[/\\\\]", x) ||
+      grepl("\\.(txt|csv|tsv|list)$", x, ignore.case = TRUE))
+  if (!isTRUE(from_file) && isTRUE(path_like)) {
+    log_message(
+      "{.val {arg}} file does not exist: {.path {x}}",
+      message_type = "error"
+    )
+  }
+
+  if (isTRUE(from_file)) {
+    x <- readLines(x, warn = FALSE)
+    x <- x[!grepl("^\\s*#", x)]
+    x <- unlist(strsplit(x, "[,\\t ]+"), use.names = FALSE)
+  }
+
+  genes <- trimws(x)
+  genes <- genes[nzchar(genes)]
+  genes <- unique(genes)
+  if (length(genes) == 0 && isTRUE(required)) {
+    log_message(
+      "{.val {arg}} must contain at least one gene",
+      message_type = "error"
+    )
+  }
+  genes
+}
+
+scenic_write_gene_list <- function(genes, out_file) {
+  dir.create(dirname(out_file), recursive = TRUE, showWarnings = FALSE)
+  writeLines(genes, out_file, useBytes = TRUE)
+  normalizePath(out_file, mustWork = TRUE)
+}
+
+scenic_grn_inputs_changed <- function(params_file, params) {
+  if (!file.exists(params_file)) {
+    return(TRUE)
+  }
+  old_params <- tryCatch(
+    readRDS(params_file),
+    error = function(...) NULL
+  )
+  !identical(old_params, params)
+}
+
+scenic_filter_adjacency_targets <- function(
+  input_file,
+  output_file,
+  targets,
+  verbose = TRUE
+) {
+  if (!file.exists(input_file)) {
+    log_message(
+      "Cannot find GRNBoost2 adjacency file: {.file {input_file}}",
+      message_type = "error"
+    )
+  }
+  adjacency <- utils::read.delim(
+    input_file,
+    stringsAsFactors = FALSE,
+    check.names = FALSE
+  )
+  target_col <- if ("target" %in% colnames(adjacency)) {
+    "target"
+  } else if ("Target" %in% colnames(adjacency)) {
+    "Target"
+  } else if (ncol(adjacency) >= 2L) {
+    colnames(adjacency)[[2L]]
+  } else {
+    log_message(
+      "GRNBoost2 adjacency table must contain a target column",
+      message_type = "error"
+    )
+  }
+
+  n_before <- nrow(adjacency)
+  adjacency <- adjacency[adjacency[[target_col]] %in% targets, , drop = FALSE]
+  if (nrow(adjacency) == 0) {
+    log_message(
+      "No GRNBoost2 edges remain after filtering by {.arg targets}",
+      message_type = "error"
+    )
+  }
+  utils::write.table(
+    adjacency,
+    file = output_file,
+    sep = "\t",
+    quote = FALSE,
+    row.names = FALSE
+  )
+  log_message(
+    "{.pkg SCENIC} target constraint kept {.val {nrow(adjacency)}} of {.val {n_before}} GRNBoost2 edge{?s}",
+    verbose = verbose
+  )
+  invisible(output_file)
+}
+
 scenic_progress_init <- function(progress = TRUE, verbose = TRUE) {
   if (!isTRUE(progress) || !isTRUE(verbose)) {
     return(NULL)
   }
   progress_state <- new.env(parent = emptyenv())
-  progress_state$pb <- utils::txtProgressBar(min = 0, max = 100, initial = 0, style = 3)
+  progress_state$pb <- utils::txtProgressBar(
+    min = 0,
+    max = 100,
+    initial = 0,
+    style = 3
+  )
   progress_state$value <- 0L
   progress_state
 }
@@ -668,7 +1242,10 @@ scenic_resolution_summary <- function(
   do.call(rbind, summary_list)
 }
 
-scenic_select_metacell_resolution <- function(resolution_summary, target_metacells) {
+scenic_select_metacell_resolution <- function(
+  resolution_summary,
+  target_metacells
+) {
   if (is.null(resolution_summary) || nrow(resolution_summary) == 0) {
     log_message(
       "Cannot summarize metacell candidates from {.fn Seurat::FindClusters}",
@@ -679,11 +1256,15 @@ scenic_select_metacell_resolution <- function(resolution_summary, target_metacel
   resolution_summary[["target_distance"]] <- abs(
     resolution_summary[["n_metacells"]] - target_metacells
   )
-  resolution_summary <- resolution_summary[order(
-    resolution_summary[["target_distance"]],
-    -resolution_summary[["n_metacells"]],
-    resolution_summary[["resolution"]]
-  ), , drop = FALSE]
+  resolution_summary <- resolution_summary[
+    order(
+      resolution_summary[["target_distance"]],
+      -resolution_summary[["n_metacells"]],
+      resolution_summary[["resolution"]]
+    ),
+    ,
+    drop = FALSE
+  ]
 
   list(
     selected_resolution = resolution_summary[["resolution"]][[1]],
@@ -711,7 +1292,11 @@ scenic_build_metacell_counts <- function(
     verbose = verbose
   )
   metacell_reduction <- as.character(metacell_reduction)
-  if (length(metacell_reduction) != 1 || is.na(metacell_reduction) || !nzchar(metacell_reduction)) {
+  if (
+    length(metacell_reduction) != 1 ||
+      is.na(metacell_reduction) ||
+      !nzchar(metacell_reduction)
+  ) {
     log_message(
       "{.arg metacell_reduction} must be one reduction name",
       message_type = "error"
@@ -776,7 +1361,10 @@ scenic_build_metacell_counts <- function(
         message_type = "error"
       )
     }
-    reduction_dims <- ncol(Seurat::Embeddings(srt, reduction = metacell_reduction))
+    reduction_dims <- ncol(Seurat::Embeddings(
+      srt,
+      reduction = metacell_reduction
+    ))
     if (max(metacell_dims) > reduction_dims) {
       log_message(
         "{.arg metacell_dims} requests dimension {.val {max(metacell_dims)}}, but {.arg metacell_reduction} {.val {metacell_reduction}} has only {.val {reduction_dims}} dimensions",
@@ -820,11 +1408,15 @@ scenic_build_metacell_counts <- function(
 
   auto_resolution <- is.null(metacell_resolution)
   if (isTRUE(auto_resolution)) {
-    metacell_target <- metacell_target %||% scenic_default_target_metacells(ncol(srt))
+    metacell_target <- metacell_target %||%
+      scenic_default_target_metacells(ncol(srt))
     metacell_target <- max(1L, as.integer(metacell_target))
-    metacell_resolution_candidates <- unique(as.numeric(metacell_resolution_candidates))
+    metacell_resolution_candidates <- unique(as.numeric(
+      metacell_resolution_candidates
+    ))
     metacell_resolution_candidates <- metacell_resolution_candidates[
-      !is.na(metacell_resolution_candidates) & metacell_resolution_candidates > 0
+      !is.na(metacell_resolution_candidates) &
+        metacell_resolution_candidates > 0
     ]
     if (length(metacell_resolution_candidates) == 0) {
       log_message(
@@ -848,14 +1440,24 @@ scenic_build_metacell_counts <- function(
     verbose = FALSE
   )
   cluster_cols <- colnames(srt@meta.data)
-  cluster_cols <- cluster_cols[startsWith(cluster_cols, paste0(assay, "_snn_res."))]
+  cluster_cols <- cluster_cols[startsWith(
+    cluster_cols,
+    paste0(assay, "_snn_res.")
+  )]
   cluster_resolutions <- suppressWarnings(
     as.numeric(sub("^.*_snn_res\\.", "", cluster_cols))
   )
   cluster_cols <- cluster_cols[
-    vapply(cluster_resolutions, function(x) {
-      !is.na(x) && any(abs(x - metacell_resolution_candidates) < sqrt(.Machine$double.eps))
-    }, logical(1))
+    vapply(
+      cluster_resolutions,
+      function(x) {
+        !is.na(x) &&
+          any(
+            abs(x - metacell_resolution_candidates) < sqrt(.Machine$double.eps)
+          )
+      },
+      logical(1)
+    )
   ]
   if (length(cluster_cols) == 0) {
     log_message(
@@ -881,7 +1483,11 @@ scenic_build_metacell_counts <- function(
     metacell_scan <- paste(
       sprintf(
         "%s:%s",
-        format(resolution_summary[["resolution"]], trim = TRUE, scientific = FALSE),
+        format(
+          resolution_summary[["resolution"]],
+          trim = TRUE,
+          scientific = FALSE
+        ),
         resolution_summary[["n_metacells"]]
       ),
       collapse = ", "
@@ -953,13 +1559,20 @@ scenic_build_metacell_counts <- function(
 scenic_prepare_grn_matrix <- function(
   counts,
   ranking_genes,
+  genes = NULL,
   min_expr_cells = 3,
   verbose = TRUE
 ) {
   grn_matrix <- Matrix::t(counts)
   expr_in_cells <- Matrix::colSums(grn_matrix > 0)
   grn_matrix <- grn_matrix[, expr_in_cells >= min_expr_cells, drop = FALSE]
-  grn_matrix <- grn_matrix[, colnames(grn_matrix) %in% ranking_genes, drop = FALSE]
+  if (!is.null(genes)) {
+    grn_matrix <- grn_matrix[, colnames(grn_matrix) %in% genes, drop = FALSE]
+  }
+  grn_matrix <- grn_matrix[,
+    colnames(grn_matrix) %in% ranking_genes,
+    drop = FALSE
+  ]
   if (ncol(grn_matrix) == 0) {
     log_message(
       "No genes remain after filtering by expression and cisTarget database",
@@ -1039,7 +1652,11 @@ scenic_compute_aucell_score <- function(
       gene_sets = regulon_list,
       strategy = cpp_strategy
     )
-    return(as.data.frame(scores, check.names = FALSE)[colnames(counts), , drop = FALSE])
+    return(as.data.frame(scores, check.names = FALSE)[
+      colnames(counts),
+      ,
+      drop = FALSE
+    ])
   }
 
   check_r("AUCell", verbose = FALSE)
