@@ -5033,7 +5033,7 @@ def SCENICRegulonsToFiles(regulon_file, gmt_file, txt_file, min_regulon_size=10)
 
 def RunSCENICGrn(
     expression_mtx,
-    tf_list,
+    regulators,
     adj_output,
     cores=1,
     seed=1234,
@@ -5042,7 +5042,7 @@ def RunSCENICGrn(
 ):
     """Run GRNBoost2 with arboreto multiprocessing."""
     expression_mtx = str(Path(expression_mtx).expanduser())
-    tf_list = str(Path(tf_list).expanduser())
+    regulators = str(Path(regulators).expanduser())
     adj_output = str(Path(adj_output).expanduser())
     Path(adj_output).parent.mkdir(parents=True, exist_ok=True)
 
@@ -5054,7 +5054,7 @@ def RunSCENICGrn(
             [
                 arboreto,
                 expression_mtx,
-                tf_list,
+                regulators,
                 "--method",
                 "grnboost2",
                 "--output",
@@ -5125,7 +5125,7 @@ def RunSCENICCtx(
 
 def RunSCENICCli(
     expression_mtx,
-    tf_list,
+    regulators,
     ranking_dbs,
     motif_annotations,
     adj_output,
@@ -5140,7 +5140,7 @@ def RunSCENICCli(
 ):
     """Run GRNBoost2, SCENIC ctx, and regulon conversion."""
     expression_mtx = str(Path(expression_mtx).expanduser())
-    tf_list = str(Path(tf_list).expanduser())
+    regulators = str(Path(regulators).expanduser())
     motif_annotations = str(Path(motif_annotations).expanduser())
     ranking_dbs = [str(Path(x).expanduser()) for x in ranking_dbs]
     adj_output = str(Path(adj_output).expanduser())
@@ -5150,7 +5150,7 @@ def RunSCENICCli(
 
     RunSCENICGrn(
         expression_mtx=expression_mtx,
-        tf_list=tf_list,
+        regulators=regulators,
         adj_output=adj_output,
         cores=cores,
         seed=seed,
@@ -5187,4 +5187,3 @@ def RunSCENICCli(
         "gmt_output": gmt_output,
         "txt_output": txt_output,
     }
-
