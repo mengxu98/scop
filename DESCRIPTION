@@ -82,7 +82,11 @@ Suggests:
     metR,
     miloR,
     MASS,
+    MuSiC,
     NMF,
+    org.Hs.eg.db,
+    org.Mm.eg.db,
+    openxlsx,
     pak,
     patchwork,
     presto,
@@ -91,6 +95,8 @@ Suggests:
     PFAM.db,
     plotly,
     proxyC,
+    qlcMatrix,
+    RareQ,
     reactome.db,
     RcppML,
     R.cache,
@@ -102,6 +108,7 @@ Suggests:
     RSpectra,
     scales,
     simplifyEnrichment,
+    simspec,
     slingshot,
     scattermore,
     scran,
@@ -109,6 +116,8 @@ Suggests:
     scds,
     scDblFinder,
     decontX,
+    decoupleR,
+    dorothea,
     edgeR,
     multinichenetr,
     nichenetr,
@@ -133,10 +142,14 @@ LinkingTo:
     RSpectra
 Remotes:
     jinworks/CellChat,
+    immunogenomics/presto,
+    fabotao/RareQ,
     mengxu98/thisutils,
     mengxu98/thisplot,
+    quadbiolab/simspec,
     saeyslab/multinichenetr,
-    saeyslab/nichenetr
+    saeyslab/nichenetr,
+    xuranw/MuSiC
 RoxygenNote: 7.3.3
 Config/Needs/website: mengxu98/thistemplate
 Config/testthat/edition: 3
