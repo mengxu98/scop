@@ -2,7 +2,7 @@
 
 <!-- badges: start -->
 
-[![version](https://img.shields.io/github/r-package/v/mengxu98/scop?label=version&color=blue)](https://github.com/mengxu98/scop/blob/main/DESCRIPTION) [![pkgdown](https://github.com/mengxu98/scop/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/mengxu98/scop/actions/workflows/pkgdown.yaml) [![stars](https://img.shields.io/github/stars/mengxu98/scop?style=flat&logo=github)](https://github.com/mengxu98/scop) [![issues](https://img.shields.io/github/issues/mengxu98/scop?color=%23ff0000)](https://github.com/mengxu98/scop/issues) [![issues-closed](https://img.shields.io/github/issues-closed/mengxu98/scop?color=brightgreen)](https://github.com/mengxu98/scop/issues?q=is%3Aissue+is%3Aclosed) [![license](https://img.shields.io/github/license/mengxu98/scop?color=%23bd0000)](https://github.com/mengxu98/scop/blob/main/LICENSE.md) 
+[![version](https://img.shields.io/github/r-package/v/mengxu98/scop?label=version&color=blue)](https://github.com/mengxu98/scop/blob/main/DESCRIPTION) [![R-CMD-check](https://github.com/mengxu98/scop/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mengxu98/scop/actions/workflows/R-CMD-check.yaml) [![test-coverage](https://github.com/mengxu98/scop/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/mengxu98/scop/actions/workflows/test-coverage.yaml) [![pkgdown](https://github.com/mengxu98/scop/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/mengxu98/scop/actions/workflows/pkgdown.yaml) [![stars](https://img.shields.io/github/stars/mengxu98/scop?style=flat&logo=github)](https://github.com/mengxu98/scop) [![issues](https://img.shields.io/github/issues/mengxu98/scop?color=%23ff0000)](https://github.com/mengxu98/scop/issues) [![issues-closed](https://img.shields.io/github/issues-closed/mengxu98/scop?color=brightgreen)](https://github.com/mengxu98/scop/issues?q=is%3Aissue+is%3Aclosed) [![license](https://img.shields.io/github/license/mengxu98/scop?color=%23bd0000)](https://github.com/mengxu98/scop/blob/main/LICENSE.md) 
 
 <!-- badges: end -->
 
@@ -15,20 +15,21 @@
 >
 > Changelog: https://mengxu98.github.io/scop/news/index.html
 
-- Integrated single-cell quality control methods, including cell cycle analysis: Seurat gene-set scoring, [scran::cyclone](https://bioconductor.org/packages/release/bioc/html/scran.html), and [tricycle](https://bioconductor.org/packages/release/bioc/html/tricycle.html) for discrete or continuous cell cycle state estimation, doublet detection methods ([scDblFinder](https://github.com/plger/scDblFinder), [scds](https://github.com/kostkalab/scds), [Scrublet](https://github.com/swolock/scrublet), [DoubletDetection](https://github.com/JonathanShor/DoubletDetection)) and ambient RNA decontamination via [decontX](https://github.com/campbio/decontX).
+- Integrated quality control methods for single-cell RNA-seq and single-cell ATAC-seq, including cell cycle analysis: Seurat gene-set scoring, [scran::cyclone](https://bioconductor.org/packages/release/bioc/html/scran.html), and [tricycle](https://bioconductor.org/packages/release/bioc/html/tricycle.html) for discrete or continuous cell cycle state estimation, doublet detection methods ([scDblFinder](https://github.com/plger/scDblFinder), [scds](https://github.com/kostkalab/scds), [Scrublet](https://github.com/swolock/scrublet), [DoubletDetection](https://github.com/JonathanShor/DoubletDetection)) and ambient RNA decontamination via [decontX](https://github.com/campbio/decontX).
 - Pipelines embedded with multiple methods for normalization, highly variable feature selection, feature reduction (PCA, ICA, NMF, MDS, [GLMPCA](https://github.com/willtownes/glmpca), [UMAP](https://github.com/lmcinnes/umap), [TriMap](https://github.com/eamid/trimap), [LargeVis](https://github.com/lferry007/LargeVis), [PaCMAP](https://github.com/YingfanWang/PaCMAP), [PHATE](https://github.com/KrishnaswamyLab/PHATE), [DM](https://bioconductor.org/packages/release/bioc/html/destiny.html), FR), and cell population identification, including optional [scran](https://bioconductor.org/packages/release/bioc/html/scran.html)-based deconvolution normalization and HVF modeling.
-- Pipelines embedded with multiple integration methods for scRNA-seq and multimodal data, including Uncorrected, [Seurat](https://github.com/satijalab/seurat), [scVI](https://github.com/scverse/scvi-tools), [MNN](http://www.bioconductor.org/packages/release/bioc/html/batchelor.html), [fastMNN](http://www.bioconductor.org/packages/release/bioc/html/batchelor.html), [Harmony](https://github.com/immunogenomics/harmony), [Scanorama](https://github.com/brianhie/scanorama), [BBKNN](https://github.com/Teichlab/bbknn), [CSS](https://github.com/quadbiolab/simspec), [Coralysis](https://github.com/elolab/Coralysis), [LIGER](https://github.com/welch-lab/liger), [Conos](https://github.com/kharchenkolab/conos), [ComBat](https://bioconductor.org/packages/release/bioc/html/sva.html), [GLUE](https://github.com/gao-lab/GLUE), [MultiMAP](https://github.com/Teichlab/MultiMAP), and WNN-based integration and co-embedding.
+- Pipelines embedded with multiple integration methods for scRNA-seq data, including Uncorrected, [Seurat](https://github.com/satijalab/seurat) CCA/RPCA workflows, [scVI](https://github.com/scverse/scvi-tools), [MNN](http://www.bioconductor.org/packages/release/bioc/html/batchelor.html), [fastMNN](http://www.bioconductor.org/packages/release/bioc/html/batchelor.html), [Harmony](https://github.com/immunogenomics/harmony), [Scanorama](https://github.com/brianhie/scanorama), [BBKNN](https://github.com/Teichlab/bbknn), [CSS](https://github.com/quadbiolab/simspec), [Coralysis](https://github.com/elolab/Coralysis), [LIGER](https://github.com/welch-lab/liger), [Conos](https://github.com/kharchenkolab/conos), and [ComBat](https://bioconductor.org/packages/release/bioc/html/sva.html).
+- Pipelines embedded with RNA + ATAC and multimodal integration methods, including Seurat v5 integration, WNN-based integration, [GLUE](https://github.com/gao-lab/GLUE), [MultiMAP](https://github.com/Teichlab/MultiMAP), and cross-modality co-embedding workflows.
 - Multiple methods for automatic annotation of single-cell data ([CellTypist](https://github.com/Teichlab/celltypist), [SciBet](https://github.com/PaulingLiu/scibet), [SingleR](https://github.com/dviraran/SingleR), [Scmap](https://github.com/hemberg-lab/scmap), KNNPredict) and methods for projection between single-cell datasets (CSSMap, PCAMap, SeuratMap, [SymphonyMap](https://github.com/immunogenomics/symphony)).
-- Bulk transcriptomics workflows, including differential expression via [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html), [edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html), [limma-voom](https://bioconductor.org/packages/release/bioc/html/limma.html), and [dream](https://bioconductor.org/packages/release/bioc/html/variancePartition.html), deconvolution via [MuSiC](https://github.com/xuranw/MuSiC), [BisqueRNA](https://cran.r-project.org/package=BisqueRNA), and [BayesPrism](https://github.com/Danko-Lab/BayesPrism), and cell-type-specific differential expression via [TOAST](https://bioconductor.org/packages/release/bioc/html/TOAST.html).
+- Bulk transcriptomics and cellular composition workflows, including differential expression via [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html), [edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html), [limma-voom](https://bioconductor.org/packages/release/bioc/html/limma.html), and [dream](https://bioconductor.org/packages/release/bioc/html/variancePartition.html), deconvolution via [MuSiC](https://github.com/xuranw/MuSiC), [BisqueRNA](https://cran.r-project.org/package=BisqueRNA), and [BayesPrism](https://github.com/Danko-Lab/BayesPrism), cell-type-specific differential expression via [TOAST](https://bioconductor.org/packages/release/bioc/html/TOAST.html), and composition analysis with [Milo](https://bioconductor.org/packages/release/bioc/html/miloR.html), [propeller](https://bioconductor.org/packages/release/bioc/html/speckle.html), [scCODA](https://github.com/theislab/scCODA), permutation-based tests, and [scProportionTest](https://github.com/rpolicastro/scProportionTest).
 - Multiple single-cell downstream analyses:
-  - Differential expression analysis: identification of differential features, expressed marker identification.
+  - Differential expression and perturbation analysis: identification of differential features, expressed marker identification, rare-cell population detection with RareQ, phenotype-associated cell selection with [Scissor](https://github.com/sunduanchen/Scissor), and in-silico perturbation analysis with [scTenifoldKnk](https://github.com/cailab-tamu/scTenifoldKnk).
   - Enrichment, and functional scoring: over-representation analysis, [GSEA](https://www.gsea-msigdb.org/gsea/index.jsp) analysis, [GSVA](https://github.com/rcastelo/GSVA), metabolic pathway activity inference via [scMetabolism](https://github.com/wu-yc/scMetabolism).
   - Transcription factor activity analysis via [DoRothEA](https://github.com/saezlab/dorothea), and dynamic enrichment analysis.
   - Cellular potency: [CytoTRACE 2](https://github.com/digitalcytometry/cytotrace2) for predicting cellular differentiation potential.
   - RNA velocity: [RNA velocity](https://github.com/theislab/scvelo), [PAGA](https://github.com/theislab/paga), [Palantir](https://github.com/dpeerlab/Palantir), [CellRank](https://github.com/theislab/cellrank), [WOT](https://github.com/broadinstitute/wot).
   - Trajectory inference: [Slingshot](https://bioconductor.org/packages/release/bioc/html/slingshot.html), [Monocle2](https://github.com/mengxu98/monocle), [Monocle3](https://github.com/cole-trapnell-lab/monocle3), identification of dynamic features.
   - Cell-cell communication: [CellChat](https://github.com/jinworks/CellChat), [CellphoneDB](https://github.com/ventolab/CellphoneDB), [NicheNet](https://github.com/saeyslab/nichenetr), [MultiNicheNet](https://github.com/saeyslab/multinichenetr), and [LIANA](https://github.com/saezlab/liana).
-  - Cellular composition and perturbation analysis: [scProportionTest](https://github.com/rpolicastro/scProportionTest) and [scTenifoldKnk](https://github.com/cailab-tamu/scTenifoldKnk).
+  - Cellular composition analysis: differential abundance and proportion testing across conditions.
   - Spatial analysis: [BayesSpace](https://github.com/edward130603/BayesSpace) and [CytoSPACE](https://github.com/digitalcytometry/cytospace).
 - High-quality data visualization methods.
 - Fast deployment of single-cell data into SCExplorer, a [shiny](https://shiny.rstudio.com/) app that provides an interactive visualization interface.
@@ -864,68 +865,6 @@ GSEAPlot(
 ```
 
 <img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/GSEA_bar-1.png" width="100%" style="display: block; margin: auto;"/>
-
-### Gene regulatory network analysis with SCENIC
-
-``` r
-pancreas_sub <- RunSCENIC(
-  pancreas_sub,
-  ranking_dbs = c(
-    "./scenic_mm10/mm10_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather",
-    "./scenic_mm10/mm10_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"
-  ),
-  motif_annotations = "./scenic_mm10/motifs-v10nr_clust-nr.mgi-m0.001-o0.0.tbl",
-  tf_list = "./scenic_mm10/allTFs_mm10_from_mgi_motif_annotation.txt",
-  work_dir = "./scenic",
-  metacell_reduction = "pca",
-  cores = 8
-)
-```
-
-`RunSCENIC()` uses `metacell_reduction = "pca"` by default, which recomputes
-PCA before metacell over-clustering. For multi-sample data with clear batch
-effects, run your batch-corrected reduction first and pass it here, for example
-`metacell_reduction = "Harmony"`. This reduction is only used to group cells
-into metacells; GRNBoost2 still uses raw count sums per metacell.
-
-``` r
-rss_plot <- SCENICPlot(
-  pancreas_sub,
-  group.by = "SubCellType",
-  top_n = 12,
-  combine = FALSE
-)
-rss_plot$plots$Ductal
-```
-
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/SCENICPlot-1.png" width="100%" style="display: block; margin: auto;"/>
-
-``` r
-rss_plot <- SCENICPlot(
-  pancreas_sub,
-  group.by = "SubCellType",
-  top_n = 12,
-  combine = TRUE,
-  ncol = 3
-)
-rss_plot$plot
-```
-
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/SCENICPlot-2.png" width="100%" style="display: block; margin: auto;"/>
-
-``` r
-rss_plot <- SCENICPlot(
-  pancreas_sub,
-  group.by = "SubCellType",
-  top_n = 12,
-  highlight_tf = "Sox9",
-  combine = TRUE,
-  ncol = 3
-)
-rss_plot$plot
-```
-
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/SCENICPlot-3.png" width="100%" style="display: block; margin: auto;"/>
 
 ### Interactive data visualization with SCExplorer
 
