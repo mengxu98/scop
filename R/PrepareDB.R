@@ -513,11 +513,14 @@ PrepareDB <- function(
               colnames(TERM2GENE) <- c("Term", default_id_types[[subterm]])
               colnames(TERM2NAME) <- c("Term", "Name")
               TERM2NAME[["ONTOLOGY"]] <- simpleterm
+              godata_args <- list(ont = simpleterm)
+              if ("annoDb" %in% names(formals(GOSemSim::godata))) {
+                godata_args[["annoDb"]] <- orgdb
+              } else {
+                godata_args[["OrgDb"]] <- orgdb
+              }
               semData <- suppressMessages(
-                GOSemSim::godata(
-                  annoDb = orgdb,
-                  ont = simpleterm
-                )
+                do.call(GOSemSim::godata, godata_args)
               )
             }
             TERM2GENE <- stats::na.omit(unique(TERM2GENE))
