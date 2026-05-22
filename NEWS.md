@@ -27,6 +27,7 @@
   * `RunCellTypist()`: Avoided a full AnnData-to-Seurat roundtrip for the common metadata-only annotation path; `RunCellphoneDB()` now avoids repeated Python environment checks and expands result tables with a vectorized path.
   * `RunCellphoneDB()`: Replaced the internal manual homolog-expression conversion path with `ConvertHomologs()`, keeping expression-object conversion behavior consistent across the package.
   * `GeneConvert()` examples now direct expression-object homolog conversion to `ConvertHomologs()` instead of showing manual `geneID_expand` aggregation.
+  * `PrepareDB()`: Added compatibility with older `GOSemSim::godata()` signatures that use `OrgDb` instead of `annoDb`, avoiding GO semantic-data preparation failures in mixed Bioconductor environments.
   * `PrepareDB()` and `AnnotateFeatures()`: Normalize legacy MSigDB caches whose feature column was stored as `symbol.ensembl_id`, and ensure ID-type conversion uses a single existing source ID column to avoid `switch()` errors when annotating MSigDB features by `symbol`.
   * Cleaned up package-check issues by declaring missing namespace imports and aligning Rd argument documentation for recently updated wrappers.
   * Optional wrapper dependencies are checked at function entry with `check_r()` instead of silently skipping examples or adding unnecessary hard dependencies.
