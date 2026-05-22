@@ -192,6 +192,12 @@ RunGSVA <- function(
         verbose = verbose
       )
     }
+    if (single_cell_mode && isTRUE(new_assay) && !assay_name %in% SeuratObject::Assays(srt)) {
+      first_assay_name <- paste(assay_name, method[[1]], sep = "_")
+      if (first_assay_name %in% SeuratObject::Assays(srt)) {
+        srt[[assay_name]] <- srt[[first_assay_name]]
+      }
+    }
     return(srt)
   }
   method <- match.arg(method)

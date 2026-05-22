@@ -83,7 +83,9 @@ CycGenePrefetch <- function(
     list(
       res = res,
       S = s_genes,
-      G2M = g2m_genes
+      G2M = g2m_genes,
+      cc_S_genes = s_genes,
+      cc_G2M_genes = g2m_genes
     )
   )
 }
