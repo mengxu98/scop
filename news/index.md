@@ -3,6 +3,69 @@
 ## scop 0.9.0
 
 - **feat**:
+  - [`RunDimsEstimate()`](https://mengxu98.github.io/scop/reference/RunDimsEstimate.md):
+    Switched the default dimension-selection route to a scree-based
+    ensemble of broken-stick, elbow, cumulative-variance, and
+    marginal-gain criteria; the previous `intrinsicDimension` route
+    remains available via `method = "intrinsic"` or can be combined with
+    `method = "ensemble"`.
+  - Added
+    [`RunRareQ()`](https://mengxu98.github.io/scop/reference/RunRareQ.md)
+    for RareQ rare-cell population detection from Seurat objects,
+    including automatic neighbor construction through
+    [`DefaultReduction()`](https://mengxu98.github.io/scop/reference/DefaultReduction.md),
+    metadata writeback,
+    [`CellDimPlot()`](https://mengxu98.github.io/scop/reference/CellDimPlot.md)
+    examples, and detailed result storage in `srt@tools[["RareQ"]]`.
+  - Added
+    [`RunSCENIC()`](https://mengxu98.github.io/scop/reference/RunSCENIC.md)
+    for a SCENIC workflow from Seurat objects, including optional
+    metacell GRN input, GRNBoost2/`scenic ctx` execution, regulon
+    conversion, multi-core AUCell batch scoring, and storage of regulon
+    activity scores as a Seurat assay plus detailed results in `@tools`.
+  - [`RunSCENIC()`](https://mengxu98.github.io/scop/reference/RunSCENIC.md)
+    now supports `aucell_backend = "cpp"` for regulon activity scoring
+    through the package C++ AUCell implementation, while keeping
+    `aucell_backend = "r"` as the default for exact AUCell package
+    behavior.
+  - Added
+    [`SCENICPlot()`](https://mengxu98.github.io/scop/reference/SCENICPlot.md)
+    to calculate regulon specificity scores from SCENIC activity and
+    plot the top regulons for each metadata group.
+  - Added
+    [`RunScissor()`](https://mengxu98.github.io/scop/reference/RunScissor.md)
+    and
+    [`ScissorPlot()`](https://mengxu98.github.io/scop/reference/ScissorPlot.md)
+    for Scissor phenotype-associated cell selection from Seurat and
+    bulk/SummarizedExperiment inputs, with a native optimized backend,
+    upstream-package backend, Seurat metadata/tool writeback, embedding
+    plots, heatmaps, and status-composition summaries.
+  - [`RunscTenifoldKnk()`](https://mengxu98.github.io/scop/reference/RunScTenifoldKnk.md)
+    now uses the optimized native path directly for QC, network-ensemble
+    construction, tensor denoising, manifold alignment, and
+    differential-regulation summaries;
+    [`scTenifoldKnkPlot()`](https://mengxu98.github.io/scop/reference/scTenifoldKnkPlot.md)
+    includes QQ, effect-size, network, manifold, volcano, and
+    upset-style result views.
+  - [`RunPAGA()`](https://mengxu98.github.io/scop/reference/RunPAGA.md)
+    now supports a native C++ backend for the standard PAGA connectivity
+    graph and uses it by default; `backend = "python"` remains available
+    for RNA-velocity transitions, PAGA-initialized embeddings, plotting
+    side effects, and DPT pseudotime.
+  - [`RunSCVELO()`](https://mengxu98.github.io/scop/reference/RunSCVELO.md)
+    now includes an optimized C++ backend for stochastic velocity
+    embedding, compatible with
+    [`VelocityPlot()`](https://mengxu98.github.io/scop/reference/VelocityPlot.md)
+    and substantially faster than the equivalent R reference
+    calculation. The Python backend remains the default for the full
+    scVelo workflow.
+  - [`VelocityPlot()`](https://mengxu98.github.io/scop/reference/VelocityPlot.md)
+    raw, grid, and stream visualizations were validated with the native
+    `RunSCVELO(backend = "cpp")` velocity embeddings.
+  - [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md)
+    now supports `modules = "scenic"` as a standalone Python 3.10
+    environment (`scenic_env` by default) with SCENIC 0.12.1 and numpy
+    1.23.5, avoiding conflicts with the default `scop_env`.
   - Added
     [`ConvertHomologs()`](https://mengxu98.github.io/scop/reference/ConvertHomologs.md)
     for homologous feature conversion in `Seurat`, `matrix`, and
@@ -30,6 +93,31 @@
     information style as
     [`thisutils::log_message()`](https://mengxu98.github.io/thisutils/reference/log_message.html).
 - **fix**:
+  - [`RunHarmony2()`](https://mengxu98.github.io/scop/reference/RunHarmony2.md):
+    Added compatibility with Harmony 2.0 objects by directly trying both
+    legacy fields (`Z_corr` / `R`) and callable methods (`getZcorr()` /
+    `getR()`), including module methods that are not listed by
+    [`ls()`](https://rdrr.io/r/base/ls.html).
+  - [`srt_append()`](https://mengxu98.github.io/scop/reference/srt_append.md):
+    Align variable-feature metadata by feature name when appending into
+    an existing Assay5 with a different feature universe, avoiding
+    row-count replacement errors after integration workflows.
+  - [`EnrichmentPlot()`](https://mengxu98.github.io/scop/reference/EnrichmentPlot.md)
+    and
+    [`GSEAPlot()`](https://mengxu98.github.io/scop/reference/GSEAPlot.md):
+    Resolve database aliases before applying `group_use`, and report
+    selected groups with no enrichment rows directly instead of
+    misreporting the database as missing.
+  - [`RunPalantir()`](https://mengxu98.github.io/scop/reference/RunPalantir.md):
+    Avoided a macOS/Apple Silicon crash caused by `umap-learn` importing
+    TensorFlow’s ParametricUMAP path during Palantir diffusion-map
+    construction.
+  - [`RunCellTypist()`](https://mengxu98.github.io/scop/reference/RunCellTypist.md):
+    Avoided a full AnnData-to-Seurat roundtrip for the common
+    metadata-only annotation path;
+    [`RunCellphoneDB()`](https://mengxu98.github.io/scop/reference/RunCellphoneDB.md)
+    now avoids repeated Python environment checks and expands result
+    tables with a vectorized path.
   - [`RunCellphoneDB()`](https://mengxu98.github.io/scop/reference/RunCellphoneDB.md):
     Replaced the internal manual homolog-expression conversion path with
     [`ConvertHomologs()`](https://mengxu98.github.io/scop/reference/ConvertHomologs.md),
@@ -39,6 +127,29 @@
     examples now direct expression-object homolog conversion to
     [`ConvertHomologs()`](https://mengxu98.github.io/scop/reference/ConvertHomologs.md)
     instead of showing manual `geneID_expand` aggregation.
+  - [`PrepareDB()`](https://mengxu98.github.io/scop/reference/PrepareDB.md):
+    Added compatibility with older
+    [`GOSemSim::godata()`](https://rdrr.io/pkg/GOSemSim/man/godata.html)
+    signatures that use `OrgDb` instead of `annoDb`, avoiding GO
+    semantic-data preparation failures in mixed Bioconductor
+    environments.
+  - [`PrepareDB()`](https://mengxu98.github.io/scop/reference/PrepareDB.md)
+    and
+    [`AnnotateFeatures()`](https://mengxu98.github.io/scop/reference/AnnotateFeatures.md):
+    Normalize legacy MSigDB caches whose feature column was stored as
+    `symbol.ensembl_id`, and ensure ID-type conversion uses a single
+    existing source ID column to avoid
+    [`switch()`](https://rdrr.io/r/base/switch.html) errors when
+    annotating MSigDB features by `symbol`.
+  - [`DynamicHeatmap()`](https://mengxu98.github.io/scop/reference/DynamicHeatmap.md),
+    [`FeatureHeatmap()`](https://mengxu98.github.io/scop/reference/FeatureHeatmap.md),
+    and
+    [`GroupHeatmap()`](https://mengxu98.github.io/scop/reference/GroupHeatmap.md):
+    Compact long multi-term feature annotations from databases such as
+    MSigDB and Reactome before drawing heatmap legends, and keep
+    [`DynamicHeatmap()`](https://mengxu98.github.io/scop/reference/DynamicHeatmap.md)
+    cluster annotations such as `RNA_snn_res.0.8` discrete even when
+    stored as numeric metadata.
   - Cleaned up package-check issues by declaring missing namespace
     imports and aligning Rd argument documentation for recently updated
     wrappers.
@@ -159,10 +270,9 @@
     initializing Python, and added Python-backed
     [`loom_to_adata()`](https://mengxu98.github.io/scop/reference/loom_to_adata.md)
     for users who need AnnData output.
-  - Added
-    [`RunBulk()`](https://mengxu98.github.io/scop/reference/RunBulk.md)
-    as a unified bulk-strategy entrypoint with method-vector selection
-    for bulk DE, deconvolution, and cell-type-specific DE workflows.
+  - Added `RunBulk()` as a unified bulk-strategy entrypoint with
+    method-vector selection for bulk DE, deconvolution, and
+    cell-type-specific DE workflows.
   - Added method-specific bulk runners for `de_limma_voom`,
     `de_edgeR_qlf`, `de_DESeq2`, `de_dream`, `deconv_MuSiC`,
     `deconv_BisqueRNA`, `deconv_BayesPrism`, and `csde_TOAST`.
@@ -546,8 +656,8 @@
 - **fix**:
   - [`PrepareDB()`](https://mengxu98.github.io/scop/reference/PrepareDB.md):
     - TF database now uses
-      [AnimalTFDB4](https://github.com/mengxu98/AnimalTFDB4) as the data
-      source.
+      [AnimalTFDB4](https://github.com/mengxu98/datasets/tree/main/AnimalTFDB4)
+      as the data source.
     - MP database - the Web Archive URL year is now dynamically
       determined from the current date, and the archive snapshot date
       for all MP-related file downloads (`VOC_MammalianPhenotype.rpt`,

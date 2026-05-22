@@ -1,7 +1,7 @@
-# Single-Cell Omics analysis Pipeline
+# Spatial and single-cell omics analysis pipeline
 
-An end-to-end Single-Cell Omics analysis Pipeline designed to facilitate
-comprehensive analysis and exploration of single-cell omics data.
+An R package for spatial and single-cell omics analysis, integration,
+visualization, and interactive exploration.
 
 ## Source
 

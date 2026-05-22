@@ -57,8 +57,8 @@ VolcanoPlot(
 
 - srt:
 
-  An object of class `Seurat` containing the results of differential
-  expression analysis.
+  A `Seurat` object or `SummarizedExperiment` object containing the
+  results of differential expression analysis.
 
 - group.by:
 
@@ -277,37 +277,37 @@ VolcanoPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-14 07:51:25] Start standard processing workflow...
-#> ℹ [2026-05-14 07:51:25] Checking a list of <Seurat>...
-#> ! [2026-05-14 07:51:26] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-14 07:51:26] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-14 07:51:28] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-14 07:51:28] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-14 07:51:28] Number of available HVF: 2000
-#> ℹ [2026-05-14 07:51:28] Finished check
-#> ℹ [2026-05-14 07:51:28] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-14 07:51:29] Perform pca linear dimension reduction
-#> ℹ [2026-05-14 07:51:29] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-05-14 07:51:30] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-14 07:51:30] Reorder clusters...
-#> ℹ [2026-05-14 07:51:30] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-14 07:51:30] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-14 07:51:30] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-05-14 07:51:36] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-05-14 07:51:42] Standard processing workflow completed
+#> ℹ [2026-05-22 18:02:08] Start standard processing workflow...
+#> ℹ [2026-05-22 18:02:09] Checking a list of <Seurat>...
+#> ! [2026-05-22 18:02:09] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-22 18:02:09] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-22 18:02:11] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-22 18:02:11] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-22 18:02:11] Number of available HVF: 2000
+#> ℹ [2026-05-22 18:02:12] Finished check
+#> ℹ [2026-05-22 18:02:12] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-22 18:02:12] Perform pca linear dimension reduction
+#> ℹ [2026-05-22 18:02:12] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-22 18:02:13] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-22 18:02:13] Reorder clusters...
+#> ℹ [2026-05-22 18:02:13] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-22 18:02:13] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-22 18:02:13] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-22 18:02:18] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-22 18:02:24] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-05-14 07:51:42] Data type is log-normalized
-#> ℹ [2026-05-14 07:51:42] Start differential expression test
-#> ℹ [2026-05-14 07:51:42] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-05-14 07:51:42] Using 1 core
-#> ⠙ [2026-05-14 07:51:42] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ✔ [2026-05-14 07:51:42] Completed 5 tasks in 879ms
+#> ℹ [2026-05-22 18:02:24] Data type is log-normalized
+#> ℹ [2026-05-22 18:02:24] Start differential expression test
+#> ℹ [2026-05-22 18:02:24] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-05-22 18:02:24] Using 1 core
+#> ⠙ [2026-05-22 18:02:24] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ✔ [2026-05-22 18:02:24] Completed 5 tasks in 850ms
 #> 
-#> ℹ [2026-05-14 07:51:42] Building results
-#> ✔ [2026-05-14 07:51:43] Differential expression test completed
+#> ℹ [2026-05-22 18:02:24] Building results
+#> ✔ [2026-05-22 18:02:25] Differential expression test completed
 VolcanoPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -366,19 +366,19 @@ pancreas_sub <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-14 07:51:51] Start Enrichment analysis
-#> ℹ [2026-05-14 07:51:51] Species: "Mus_musculus"
-#> ℹ [2026-05-14 07:51:52] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-14 06:04:39
-#> ℹ [2026-05-14 07:51:53] Permform enrichment...
-#> ℹ [2026-05-14 07:51:53] Using 1 core
-#> ⠙ [2026-05-14 07:51:53] Running for 1 [1/5] ■■          20% | ETA: 21s
-#> ⠹ [2026-05-14 07:51:53] Running for 2 [2/5] ■■■■        40% | ETA: 12s
-#> ⠸ [2026-05-14 07:51:53] Running for 3 [3/5] ■■■■■■      60% | ETA:  8s
-#> ⠼ [2026-05-14 07:51:53] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  4s
-#> ✔ [2026-05-14 07:51:53] Completed 5 tasks in 18.4s
+#> ℹ [2026-05-22 18:02:34] Start Enrichment analysis
+#> ℹ [2026-05-22 18:02:34] Species: "Mus_musculus"
+#> ℹ [2026-05-22 18:02:34] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-22 16:24:27
+#> ℹ [2026-05-22 18:02:35] Permform enrichment...
+#> ℹ [2026-05-22 18:02:35] Using 1 core
+#> ⠙ [2026-05-22 18:02:35] Running for 1 [1/5] ■■          20% | ETA: 21s
+#> ⠹ [2026-05-22 18:02:35] Running for 2 [2/5] ■■■■        40% | ETA: 12s
+#> ⠸ [2026-05-22 18:02:35] Running for 3 [3/5] ■■■■■■      60% | ETA:  8s
+#> ⠼ [2026-05-22 18:02:35] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  4s
+#> ✔ [2026-05-22 18:02:35] Completed 5 tasks in 19.8s
 #> 
-#> ℹ [2026-05-14 07:51:53] Building results
-#> ✔ [2026-05-14 07:52:11] Enrichment analysis done
+#> ℹ [2026-05-22 18:02:35] Building results
+#> ✔ [2026-05-22 18:02:55] Enrichment analysis done
 VolcanoPlot(
   pancreas_sub,
   group.by = "CellType",

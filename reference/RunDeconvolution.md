@@ -1,0 +1,128 @@
+# Run bulk or pseudobulk deconvolution
+
+Estimate cell-type proportions from a bulk-like expression matrix stored
+in a `SummarizedExperiment` object, using a `Seurat` reference.
+
+## Usage
+
+``` r
+RunDeconvolution(object, ...)
+
+# S3 method for class 'SummarizedExperiment'
+RunDeconvolution(
+  object,
+  reference,
+  method = c("MuSiC", "BisqueRNA", "BayesPrism"),
+  group.by,
+  sample.by = NULL,
+  cellstate.by = NULL,
+  bulk_assay = "counts",
+  ref_assay = NULL,
+  ref_layer = "counts",
+  backend = c("cpp", "r"),
+  verbose = TRUE,
+  ...
+)
+```
+
+## Arguments
+
+- object:
+
+  A `SummarizedExperiment` object containing bulk-like counts.
+
+- ...:
+
+  Additional parameters forwarded to the internal deconvolution backend.
+
+- reference:
+
+  A `Seurat` reference object used to build cell-type profiles.
+
+- method:
+
+  Deconvolution method. One of `"MuSiC"`, `"BisqueRNA"`, or
+  `"BayesPrism"`.
+
+- group.by:
+
+  Metadata column in `reference` defining reference cell types.
+
+- sample.by:
+
+  Metadata column in `reference` defining biological sample / donor IDs.
+  Used by the `r` backends of `MuSiC` and `BisqueRNA`. If `NULL`, SCOP
+  will try to infer a suitable column automatically.
+
+- cellstate.by:
+
+  Metadata column in `reference` defining cell states for the `r`
+  backend of `BayesPrism`. If `NULL`, `group.by` is reused.
+
+- bulk_assay:
+
+  Assay name in `object` used as the bulk counts matrix.
+
+- ref_assay:
+
+  Assay name in `reference` used for the reference profiles.
+
+- ref_layer:
+
+  Layer name in `reference` used for reference counts.
+
+- backend:
+
+  Deconvolution engine backend. `"r"` uses the original method package
+  implementation. `"cpp"` is reserved for native SCOP implementations
+  when available.
+
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
+
+## Value
+
+A `SummarizedExperiment` object with results stored in
+`S4Vectors::metadata(object)[["Deconvolution"]]`.
+
+## See also
+
+[DeconvolutionPlot](https://mengxu98.github.io/scop/reference/DeconvolutionPlot.md)
+
+## Examples
+
+``` r
+data(islet_bulk)
+data(panc8_sub)
+islet_bulk <- RunDeconvolution(
+  islet_bulk,
+  reference = panc8_sub,
+  method = "MuSiC",
+  group.by = "celltype"
+)
+#> Creating Relative Abudance Matrix...
+#> Creating Variance Matrix...
+#> Creating Library Size Matrix...
+#> Used 12276 common genes...
+#> Used 12 cell types in deconvolution...
+#> HI-070719-DMSO_S28 has common genes 12192 ...
+#> HI-070719-BFA_S29 has common genes 12028 ...
+#> HI-043019-BFA_S25 has common genes 11854 ...
+#> HI-043019-DMSO_S24 has common genes 12062 ...
+#> HI-061119-BFA_S27 has common genes 11957 ...
+#> HI-061119-DMSO_S26 has common genes 12093 ...
+#> HI-042519-BFA_S23 has common genes 12029 ...
+#> HI-042519-DMSO_S22 has common genes 12103 ...
+DeconvolutionPlot(islet_bulk, plot_type = "bar")
+
+ht <- DeconvolutionPlot(
+  islet_bulk,
+  plot_type = "heatmap",
+  sample_annotation = "condition",
+  sample_split = "condition"
+)
+ComplexHeatmap::draw(ht)
+
+DeconvolutionPlot(islet_bulk, plot_type = "box")
+```

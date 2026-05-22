@@ -34,8 +34,12 @@ RunCellRank(
   calculate_velocity_genes = FALSE,
   denoise = FALSE,
   kinetics = FALSE,
-  kernel_type = c("velocity", "pseudotime", "cytotrace"),
+  kernel_type = c("velocity", "pseudotime", "cytotrace", "wot"),
   time_key = "dpt_pseudotime",
+  time_field = "Time",
+  growth_iters = 3L,
+  tmap_out = "tmaps/tmap_out",
+  recalculate = FALSE,
   estimator_type = c("GPCCA", "CFLARE"),
   use_connectivity_kernel = TRUE,
   velocity_weight = 0.8,
@@ -190,14 +194,34 @@ RunCellRank(
 
   Type of kernel to use: `"velocity"` (default, requires
   spliced/unspliced), `"pseudotime"` (requires pre-computed pseudotime
-  or auto-computes DPT), or `"cytotrace"` (auto-computes CytoTRACE
-  score, suitable for RNA-only data).
+  or auto-computes DPT), `"cytotrace"` (auto-computes CytoTRACE score,
+  suitable for RNA-only data), or `"wot"` (uses Waddington-OT transport
+  maps through CellRank's RealTimeKernel).
 
 - time_key:
 
   Key in metadata for pseudotime. Used when
   `kernel_type = "pseudotime"`. If the key doesn't exist, DPT pseudotime
   will be computed automatically. Default is `"dpt_pseudotime"`.
+
+- time_field:
+
+  Key in metadata for experimental time. Used when
+  `kernel_type = "wot"`.
+
+- growth_iters:
+
+  Number of growth iterations passed to `wot.ot.OTModel`. Default is
+  `3`.
+
+- tmap_out:
+
+  Directory used to store or read Waddington-OT transport maps.
+
+- recalculate:
+
+  Whether to recompute Waddington-OT transport maps even when `tmap_out`
+  already exists. Default is `FALSE`.
 
 - estimator_type:
 

@@ -36,8 +36,10 @@
 <url><loc>https://mengxu98.github.io/scop/reference/DEtestManhattanPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/DEtestPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/DEtestRingPlot.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/DeconvolutionPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/DefaultReduction.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/DimsEstimatePlot.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/DorotheaPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/DynamicHeatmap.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/DynamicPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/EnrichmentPlot.html</loc></url>
@@ -81,7 +83,6 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RenameFeatures.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunATACQC.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunBayesSpace.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/RunBulk.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunCSSMap.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunCellChat.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunCellCycle.html</loc></url>
@@ -95,6 +96,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunDEtest.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunDM.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunDecontX.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunDeconvolution.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunDimsEstimate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunDimsReduction.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunDorothea.html</loc></url>
@@ -129,11 +131,14 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunPermutation.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunPropeller.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunProportionTest.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunRareQ.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunReferenceMapping.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunSCENIC.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunSCExplorer.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunSCVELO.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunScTenifoldKnk.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunSciBet.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunScissor.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunScmap.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunSeuratMap.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunSingleR.html</loc></url>
@@ -144,7 +149,9 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunWOT.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunscCODA.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunscOMM.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/SCENICPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/Scanorama_integrate.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/ScissorPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/Seurat_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/SpatialSpotPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/TACSPlot.html</loc></url>
@@ -168,6 +175,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/h5ad_to_srt.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/index.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/integration_scop.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/islet_bulk.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/loom_to_adata.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/loom_to_srt.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/panc8_sub.html</loc></url>

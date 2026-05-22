@@ -661,24 +661,24 @@ CellDimPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-14 05:41:07] Start standard processing workflow...
-#> ℹ [2026-05-14 05:41:07] Checking a list of <Seurat>...
-#> ! [2026-05-14 05:41:07] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-14 05:41:07] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-14 05:41:09] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-14 05:41:09] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-14 05:41:09] Number of available HVF: 2000
-#> ℹ [2026-05-14 05:41:09] Finished check
-#> ℹ [2026-05-14 05:41:09] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-14 05:41:10] Perform pca linear dimension reduction
-#> ℹ [2026-05-14 05:41:10] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-05-14 05:41:10] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-14 05:41:11] Reorder clusters...
-#> ℹ [2026-05-14 05:41:11] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-14 05:41:11] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-14 05:41:11] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-05-14 05:41:14] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-05-14 05:41:18] Standard processing workflow completed
+#> ℹ [2026-05-22 15:54:16] Start standard processing workflow...
+#> ℹ [2026-05-22 15:54:16] Checking a list of <Seurat>...
+#> ! [2026-05-22 15:54:17] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-22 15:54:17] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-22 15:54:18] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-22 15:54:18] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-22 15:54:18] Number of available HVF: 2000
+#> ℹ [2026-05-22 15:54:18] Finished check
+#> ℹ [2026-05-22 15:54:18] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-22 15:54:19] Perform pca linear dimension reduction
+#> ℹ [2026-05-22 15:54:19] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-22 15:54:20] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-22 15:54:20] Reorder clusters...
+#> ℹ [2026-05-22 15:54:20] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-22 15:54:20] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-22 15:54:20] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-22 15:54:23] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-22 15:54:26] Standard processing workflow completed
 p1 <- CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -932,7 +932,7 @@ CellDimPlot(
   reduction = "UMAP",
   hex = TRUE
 )
-#> Warning: Removed 9 rows containing missing values or values outside the scale range
+#> Warning: Removed 6 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
 
 
@@ -943,7 +943,7 @@ CellDimPlot(
   hex = TRUE,
   hex.bins = 20
 )
-#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> Warning: Removed 4 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
 
 
@@ -954,7 +954,7 @@ CellDimPlot(
   hex = TRUE,
   hex.count = FALSE
 )
-#> Warning: Removed 9 rows containing missing values or values outside the scale range
+#> Warning: Removed 6 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
 
 
@@ -997,10 +997,6 @@ CellDimPlot(
   reduction = "UMAP",
   lineages = paste0("Lineage", 1:2)
 )
-#> Warning: Removed 9 rows containing missing values or values outside the scale range
-#> (`geom_path()`).
-#> Warning: Removed 9 rows containing missing values or values outside the scale range
-#> (`geom_path()`).
 
 
 CellDimPlot(
@@ -1010,12 +1006,6 @@ CellDimPlot(
   lineages = paste0("Lineage", 1:2),
   lineages_whiskers = TRUE
 )
-#> Warning: Removed 9 rows containing missing values or values outside the scale range
-#> (`geom_segment()`).
-#> Warning: Removed 9 rows containing missing values or values outside the scale range
-#> (`geom_path()`).
-#> Warning: Removed 9 rows containing missing values or values outside the scale range
-#> (`geom_path()`).
 
 
 CellDimPlot(
@@ -1027,15 +1017,17 @@ CellDimPlot(
 )
 
 
-if (FALSE) { # \dontrun{
 # Show PAGA results on the plot
 pancreas_sub <- RunPAGA(
   pancreas_sub,
   group.by = "SubCellType",
   linear_reduction = "PCA",
   nonlinear_reduction = "UMAP",
+  backend = "cpp",
   return_seurat = TRUE
 )
+#> ℹ [2026-05-22 15:55:00] Running PAGA with `backend = 'cpp'` using 29 neighbors
+#> ✔ [2026-05-22 15:55:00] PAGA cpp backend completed
 
 CellDimPlot(
   pancreas_sub,
@@ -1044,6 +1036,7 @@ CellDimPlot(
   paga = pancreas_sub@misc$paga
 )
 
+
 CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -1051,6 +1044,7 @@ CellDimPlot(
   paga = pancreas_sub@misc$paga,
   paga_type = "connectivities_tree"
 )
+
 
 CellDimPlot(
   pancreas_sub,
@@ -1070,6 +1064,7 @@ CellDimPlot(
   theme_use = "theme_blank"
 )
 
+
 # Show RNA velocity results on the plot
 pancreas_sub <- RunSCVELO(
   pancreas_sub,
@@ -1077,24 +1072,19 @@ pancreas_sub <- RunSCVELO(
   linear_reduction = "PCA",
   nonlinear_reduction = "UMAP",
   mode = "stochastic",
+  backend = "cpp",
   return_seurat = TRUE
 )
+#> ℹ [2026-05-22 15:55:03] Running scVelo stochastic embedding with `backend = 'cpp'` using 2000 features
+#> ✔ [2026-05-22 15:55:03] scVelo cpp stochastic embedding completed
 
 CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
   reduction = "UMAP",
-  paga = pancreas_sub@misc$paga,
-  paga_show_transition = TRUE
-)
-
-CellDimPlot(
-  pancreas_sub,
-  group.by = "SubCellType",
-  reduction = "UMAP",
-  pt.size = NA,
   velocity = "stochastic"
 )
+
 
 CellDimPlot(
   pancreas_sub,
@@ -1105,6 +1095,9 @@ CellDimPlot(
   velocity = "stochastic",
   velocity_plot_type = "grid"
 )
+#> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> (`geom_segment()`).
+
 
 CellDimPlot(
   pancreas_sub,
@@ -1116,6 +1109,9 @@ CellDimPlot(
   velocity_plot_type = "grid",
   velocity_scale = 1.5
 )
+#> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> (`geom_segment()`).
+
 
 CellDimPlot(
   pancreas_sub,
@@ -1126,6 +1122,7 @@ CellDimPlot(
   velocity = "stochastic",
   velocity_plot_type = "stream"
 )
+
 
 CellDimPlot(
   pancreas_sub,
@@ -1145,5 +1142,4 @@ CellDimPlot(
   legend.position = "none",
   theme_use = "theme_blank"
 )
-} # }
 ```

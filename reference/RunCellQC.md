@@ -256,46 +256,46 @@ Returns Seurat object with the QC results stored in the meta.data layer.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-14 06:56:19] Start standard processing workflow...
-#> ℹ [2026-05-14 06:56:20] Checking a list of <Seurat>...
-#> ! [2026-05-14 06:56:20] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-14 06:56:20] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-14 06:56:22] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-14 06:56:22] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-14 06:56:22] Number of available HVF: 2000
-#> ℹ [2026-05-14 06:56:22] Finished check
-#> ℹ [2026-05-14 06:56:22] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-14 06:56:23] Perform pca linear dimension reduction
-#> ℹ [2026-05-14 06:56:23] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-05-14 06:56:24] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-14 06:56:24] Reorder clusters...
-#> ℹ [2026-05-14 06:56:24] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-14 06:56:24] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-14 06:56:24] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-05-14 06:56:29] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-05-14 06:56:35] Standard processing workflow completed
+#> ℹ [2026-05-22 17:03:52] Start standard processing workflow...
+#> ℹ [2026-05-22 17:03:53] Checking a list of <Seurat>...
+#> ! [2026-05-22 17:03:53] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-22 17:03:53] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-22 17:03:55] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-22 17:03:55] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-22 17:03:56] Number of available HVF: 2000
+#> ℹ [2026-05-22 17:03:56] Finished check
+#> ℹ [2026-05-22 17:03:56] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-22 17:03:56] Perform pca linear dimension reduction
+#> ℹ [2026-05-22 17:03:56] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-22 17:03:57] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-22 17:03:57] Reorder clusters...
+#> ℹ [2026-05-22 17:03:57] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-22 17:03:57] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-22 17:03:57] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-22 17:04:02] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-22 17:04:07] Standard processing workflow completed
 pancreas_sub <- RunCellQC(
   pancreas_sub,
   db_method = "scds_cxds"
 )
-#> ◌ [2026-05-14 06:56:35] Running cell-level quality control
-#> ℹ [2026-05-14 06:56:35] Data type is raw counts
-#> ℹ [2026-05-14 06:56:35] Running scds with method "cxds"
+#> ◌ [2026-05-22 17:04:07] Running cell-level quality control
+#> ℹ [2026-05-22 17:04:07] Data type is raw counts
+#> ℹ [2026-05-22 17:04:07] Running scds with method "cxds"
 #> Registered S3 method overwritten by 'pROC':
 #>   method   from            
 #>   plot.roc spatstat.explore
-#> ! [2026-05-14 06:57:26] Skip "atac" QC because `assay = 'RNA'` is not a <ChromatinAssay>
-#> ℹ [2026-05-14 06:57:26] Running decontX
+#> ! [2026-05-22 17:04:29] Skip "atac" QC because `assay = 'RNA'` is not a <ChromatinAssay>
+#> ℹ [2026-05-22 17:04:29] Running decontX
 #> Warning: 'librarySizeFactors' is deprecated.
 #> Use 'scrapper::centerSizeFactors' instead.
 #> See help("Deprecated")
 #> Warning: 'normalizeCounts' is deprecated.
 #> Use 'scrapper::normalizeCounts' instead.
 #> See help("Deprecated")
-#> ℹ [2026-05-14 07:00:41] decontX contamination (median/mean/max): 0.0136 / 0.1628 / 0.7465
-#> ℹ [2026-05-14 07:00:41] decontX assay stored as decontXcounts
-#> ✔ [2026-05-14 07:00:41] decontX decontamination completed
-#> ✔ [2026-05-14 07:00:41] ● Total cells: 1000
+#> ℹ [2026-05-22 17:07:37] decontX contamination (median/mean/max): 0.0136 / 0.1628 / 0.7465
+#> ℹ [2026-05-22 17:07:38] decontX assay stored as decontXcounts
+#> ✔ [2026-05-22 17:07:38] decontX decontamination completed
+#> ✔ [2026-05-22 17:07:38] ● Total cells: 1000
 #> ✔                       ◉ 967 cells remained
 #> ✔                       ◯ 33 cells filtered out:
 #> ✔                       ◯   10 potential doublets
@@ -317,7 +317,7 @@ CellStatPlot(
   plot_type = "upset",
   stat_level = "Fail"
 )
-#> ! [2026-05-14 07:00:42] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-05-22 17:07:38] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 #> `geom_line()`: Each group consists of only one observation.
 #> ℹ Do you need to adjust the group aesthetic?
 #> `geom_line()`: Each group consists of only one observation.

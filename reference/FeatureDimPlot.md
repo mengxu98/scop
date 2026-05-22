@@ -471,24 +471,24 @@ FeatureDimPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-14 06:07:13] Start standard processing workflow...
-#> ℹ [2026-05-14 06:07:14] Checking a list of <Seurat>...
-#> ! [2026-05-14 06:07:14] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-14 06:07:14] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-14 06:07:15] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-14 06:07:16] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-14 06:07:16] Number of available HVF: 2000
-#> ℹ [2026-05-14 06:07:16] Finished check
-#> ℹ [2026-05-14 06:07:16] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-14 06:07:16] Perform pca linear dimension reduction
-#> ℹ [2026-05-14 06:07:17] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-05-14 06:07:17] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-14 06:07:17] Reorder clusters...
-#> ℹ [2026-05-14 06:07:17] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-14 06:07:17] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-14 06:07:18] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-05-14 06:07:22] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-05-14 06:07:27] Standard processing workflow completed
+#> ℹ [2026-05-22 16:26:24] Start standard processing workflow...
+#> ℹ [2026-05-22 16:26:24] Checking a list of <Seurat>...
+#> ! [2026-05-22 16:26:25] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-22 16:26:25] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-22 16:26:26] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-22 16:26:26] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-22 16:26:27] Number of available HVF: 2000
+#> ℹ [2026-05-22 16:26:27] Finished check
+#> ℹ [2026-05-22 16:26:27] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-22 16:26:27] Perform pca linear dimension reduction
+#> ℹ [2026-05-22 16:26:27] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-22 16:26:28] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-22 16:26:28] Reorder clusters...
+#> ℹ [2026-05-22 16:26:28] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-22 16:26:28] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-22 16:26:28] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-22 16:26:32] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-22 16:26:36] Standard processing workflow completed
 FeatureDimPlot(
   pancreas_sub,
   features = "G2M_score", reduction = "UMAP"
@@ -582,9 +582,9 @@ FeatureDimPlot(
   reduction = "UMAP",
   hex = TRUE
 )
-#> Warning: Removed 6 rows containing missing values or values outside the scale range
+#> Warning: Removed 2 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
-#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> Warning: Removed 6 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
 
 
@@ -595,9 +595,9 @@ FeatureDimPlot(
   hex = TRUE,
   hex.bins = 20
 )
-#> Warning: Removed 6 rows containing missing values or values outside the scale range
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
-#> Warning: Removed 4 rows containing missing values or values outside the scale range
+#> Warning: Removed 5 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
 
 
@@ -607,10 +607,6 @@ pancreas_sub <- RunSlingshot(
   group.by = "SubCellType",
   reduction = "UMAP"
 )
-#> Warning: Removed 9 rows containing missing values or values outside the scale range
-#> (`geom_path()`).
-#> Warning: Removed 9 rows containing missing values or values outside the scale range
-#> (`geom_path()`).
 
 
 FeatureDimPlot(
@@ -621,10 +617,6 @@ FeatureDimPlot(
 )
 #> Warning: `guide_colourbar()` cannot be used for colour_ggnewscale_1.
 #> ℹ Use one of colour, color, or fill instead.
-#> Warning: Removed 9 rows containing missing values or values outside the scale range
-#> (`geom_path()`).
-#> Warning: Removed 9 rows containing missing values or values outside the scale range
-#> (`geom_path()`).
 
 
 FeatureDimPlot(
@@ -636,12 +628,6 @@ FeatureDimPlot(
 )
 #> Warning: `guide_colourbar()` cannot be used for colour_ggnewscale_1.
 #> ℹ Use one of colour, color, or fill instead.
-#> Warning: Removed 9 rows containing missing values or values outside the scale range
-#> (`geom_segment()`).
-#> Warning: Removed 9 rows containing missing values or values outside the scale range
-#> (`geom_path()`).
-#> Warning: Removed 9 rows containing missing values or values outside the scale range
-#> (`geom_path()`).
 
 
 FeatureDimPlot(
