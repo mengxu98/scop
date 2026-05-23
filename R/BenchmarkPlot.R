@@ -36,28 +36,26 @@
 #' returned.
 #'
 #' @examples
-#' if (requireNamespace("labeling", quietly = TRUE)) {
-#'   metrics_df <- data.frame(
-#'     method = c("Raw", "Raw", "Harmony", "Harmony"),
-#'     metric = c("batch_ASW_mixing", "celltype_ASW", "batch_ASW_mixing", "celltype_ASW"),
-#'     value = c(0.42, 0.71, 0.68, 0.66)
-#'   )
-#'   BenchmarkPlot(
-#'     data = metrics_df,
-#'     plot_type = "bar"
-#'   )
+#' metrics_df <- data.frame(
+#'   method = c("Raw", "Raw", "Harmony", "Harmony"),
+#'   metric = c("batch_ASW_mixing", "celltype_ASW", "batch_ASW_mixing", "celltype_ASW"),
+#'   value = c(0.42, 0.71, 0.68, 0.66)
+#' )
+#' BenchmarkPlot(
+#'   data = metrics_df,
+#'   plot_type = "bar"
+#' )
 #'
-#'   data("pbmcmultiome_sub", package = "scop")
-#'   pbmcmultiome_sub[["MethodA_batch_LISI"]] <-
-#'     seq_len(ncol(pbmcmultiome_sub)) / ncol(pbmcmultiome_sub)
-#'   pbmcmultiome_sub[["MethodB_batch_LISI"]] <-
-#'     rev(pbmcmultiome_sub[["MethodA_batch_LISI", drop = TRUE]])
-#'   BenchmarkPlot(
-#'     pbmcmultiome_sub,
-#'     features = c("MethodA_batch_LISI", "MethodB_batch_LISI"),
-#'     plot_type = "boxplot"
-#'   )
-#' }
+#' data("pbmcmultiome_sub", package = "scop")
+#' pbmcmultiome_sub[["MethodA_batch_LISI"]] <-
+#'   seq_len(ncol(pbmcmultiome_sub)) / ncol(pbmcmultiome_sub)
+#' pbmcmultiome_sub[["MethodB_batch_LISI"]] <-
+#'   rev(pbmcmultiome_sub[["MethodA_batch_LISI", drop = TRUE]])
+#' BenchmarkPlot(
+#'   pbmcmultiome_sub,
+#'   features = c("MethodA_batch_LISI", "MethodB_batch_LISI"),
+#'   plot_type = "boxplot"
+#' )
 #'
 #' @export
 BenchmarkPlot <- function(

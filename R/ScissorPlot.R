@@ -790,7 +790,7 @@ scissor_select_heatmap_features <- function(
     return(features)
   }
   if (identical(feature_method, "input_order")) {
-    return(head(features, nfeatures))
+    return(utils::head(features, nfeatures))
   }
 
   mat_select <- mat[features, cells, drop = FALSE]
@@ -808,7 +808,7 @@ scissor_select_heatmap_features <- function(
     scores <- scissor_feature_variance(mat_select)
   }
   scores[!is.finite(scores)] <- 0
-  head(names(sort(scores, decreasing = TRUE)), nfeatures)
+  utils::head(names(sort(scores, decreasing = TRUE)), nfeatures)
 }
 
 scissor_feature_variance <- function(mat) {

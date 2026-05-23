@@ -234,7 +234,7 @@ sctenifold_label_genes <- function(dr, features, nlabel) {
   if (nlabel == 0L) {
     return(character())
   }
-  head(dr$gene[order(dr$FC, decreasing = TRUE)], nlabel)
+  utils::head(dr$gene[order(dr$FC, decreasing = TRUE)], nlabel)
 }
 
 sctenifold_plot_qq <- function(
@@ -420,7 +420,7 @@ sctenifold_plot_network <- function(
     ,
     drop = FALSE
   ]
-  edge_df <- head(edge_df, edge_top_n)
+  edge_df <- utils::head(edge_df, edge_top_n)
   if (nrow(edge_df) == 0L) {
     log_message(
       "No network edges passed the current filter",

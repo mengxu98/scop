@@ -441,15 +441,8 @@ PrepareDB <- function(
             )
           }
         }
-        check_r(org_sp)
-        suppressPackageStartupMessages(
-          require(
-            org_sp,
-            character.only = TRUE,
-            quietly = TRUE
-          )
-        )
-        orgdb <- get(org_sp)
+        check_r(org_sp, verbose = FALSE)
+        orgdb <- get_namespace_fun(org_sp, org_sp)
       }
       if ("PFAM" %in% db) {
         check_r("PFAM.db", verbose = FALSE)
@@ -477,10 +470,11 @@ PrepareDB <- function(
             c("GOALL", "ONTOLOGYALL", org_key),
             drop = FALSE
           ])
+          go_db <- get_namespace_fun("GO.db", "GO.db")
           bg2 <- suppressMessages(
             AnnotationDbi::select(
-              GO.db::GO.db,
-              keys = AnnotationDbi::keys(GO.db::GO.db),
+              go_db,
+              keys = AnnotationDbi::keys(go_db),
               columns = c("GOID", "TERM")
             )
           )
@@ -854,10 +848,11 @@ PrepareDB <- function(
         if (any(db == "Reactome") && (!"Reactome" %in% names(db_list[[sps]]))) {
           log_message("Preparing {.pkg Reactome} database", verbose = verbose)
           reactome_sp <- gsub(pattern = "_", replacement = " ", x = sps)
+          reactome_db <- get_namespace_fun("reactome.db", "reactome.db")
           df_all <- suppressMessages(
             AnnotationDbi::select(
-              reactome.db::reactome.db,
-              keys = AnnotationDbi::keys(reactome.db::reactome.db),
+              reactome_db,
+              keys = AnnotationDbi::keys(reactome_db),
               columns = c("PATHID", "PATHNAME")
             )
           )
@@ -1257,8 +1252,9 @@ PrepareDB <- function(
               )
             )
             bg <- unique(bg[!is.na(bg$PFAM), c("PFAM", org_key), drop = FALSE])
+            pfam_de2ac <- get_namespace_fun("PFAM.db", "PFAMDE2AC")
             bg2 <- as.data.frame(
-              PFAM.db::PFAMDE2AC[AnnotationDbi::mappedkeys(PFAM.db::PFAMDE2AC)]
+              pfam_de2ac[AnnotationDbi::mappedkeys(pfam_de2ac)]
             )
             rownames(bg2) <- bg2[["ac"]]
             bg[["PFAM_name"]] <- bg2[bg$PFAM, "de"]
@@ -2972,7 +2968,7 @@ preparedb_local_orgdb_id_map <- function(
   if (is.na(from_column) || any(is.na(to_columns))) {
     return(NULL)
   }
-  orgdb <- get(org_sp, envir = asNamespace(org_sp))
+  orgdb <- get_namespace_fun(org_sp, org_sp)
   columns_available <- AnnotationDbi::columns(orgdb)
   columns_needed <- unique(c(from_column, to_columns))
   if (any(!columns_needed %in% columns_available)) {

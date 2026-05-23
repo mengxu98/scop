@@ -16,6 +16,7 @@ RunRareQ(
   max_iter = 100,
   run_neighbors = TRUE,
   force_recalc = FALSE,
+  neighbor_name = NULL,
   find_neighbors_params = list(),
   rare_threshold = 0.01,
   prefix = "RareQ",
@@ -57,6 +58,11 @@ it is missing.}
 
 \item{force_recalc}{Whether to rebuild the Seurat neighbor slot before
 running RareQ.}
+
+\item{neighbor_name}{Name of the Seurat \code{Neighbor} object to reuse or create.
+If \code{NULL}, defaults to \verb{\{assay\}.nn}, which is the neighbor slot required by
+\code{RareQ::ComputeQ()} and \code{RareQ::FindRare()}. A non-default neighbor is copied
+to \verb{\{assay\}.nn} before running RareQ because RareQ reads that slot directly.}
 
 \item{find_neighbors_params}{Additional named parameters passed to
 \code{\link[Seurat:FindNeighbors]{Seurat::FindNeighbors()}} when neighbor search is run.}
