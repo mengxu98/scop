@@ -1648,10 +1648,18 @@ VolcanoPlot <- function(
     df[, "label"] <- FALSE
     if (is.null(features_label)) {
       if (threshold_method == "hyperbolic") {
-        df[
-          utils::head(order(df[, "distance"], decreasing = TRUE), nlabel * 2),
-          "label"
-        ] <- TRUE
+        up_idx <- which(df[["avg_log2FC_raw"]] >= 0)
+        down_idx <- which(df[["avg_log2FC_raw"]] < 0)
+        if (length(up_idx) > 0) {
+          df[up_idx[
+            utils::head(order(df[up_idx, "distance"], decreasing = TRUE), nlabel)
+          ], "label"] <- TRUE
+        }
+        if (length(down_idx) > 0) {
+          df[down_idx[
+            utils::head(order(df[down_idx, "distance"], decreasing = TRUE), nlabel)
+          ], "label"] <- TRUE
+        }
       } else if (traditional_volcano) {
         right_idx <- which(df[["x"]] >= 0)
         left_idx <- which(df[["x"]] < 0)
