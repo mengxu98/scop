@@ -447,7 +447,7 @@ cellcycle_cyclone_gene_names <- function(
     )
   }
   check_r(c("AnnotationDbi", org_pkg), verbose = FALSE)
-  orgdb <- getExportedValue(org_pkg, org_pkg)
+  orgdb <- get_namespace_fun(org_pkg, org_pkg)
   gene_map <- AnnotationDbi::select(
     x = orgdb,
     keys = features,
