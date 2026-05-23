@@ -40,8 +40,8 @@ if (requireNamespace("R.cache", quietly = TRUE)) {
 }
 #>                                                         identifier version
 #> 1 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7
-#>                                 comment  timestamp                       date
-#> 1 3.23.0 nterm:14957|Mus_musculus-GO_BP 1779521995 2026-05-23 07:39:54.553924
+#>                                 comment  timestamp                      date
+#> 1 3.23.0 nterm:14957|Mus_musculus-GO_BP 1779532578 2026-05-23 10:36:17.91915
 #>           db_version            db_name
 #> 1 3.23.0 nterm:14957 Mus_musculus-GO_BP
 #>                                                                    file

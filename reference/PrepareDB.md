@@ -142,10 +142,10 @@ db_list <- PrepareDB(
   species = "Homo_sapiens",
   db = "GO_BP"
 )
-#> ℹ [2026-05-23 08:10:33] Species: "Homo_sapiens"
-#> ℹ [2026-05-23 08:10:33] Loading cached: GO_BP version: 3.23.1 nterm:14209 created: 2026-05-23 07:19:23
-#> ℹ [2026-05-23 08:10:34] Convert ID types for the GO_BP database
-#> ℹ [2026-05-23 08:10:34] Converted ID types using local annotation package org.Hs.eg.db
+#> ℹ [2026-05-23 11:03:48] Species: "Homo_sapiens"
+#> ℹ [2026-05-23 11:03:48] Loading cached: GO_BP version: 3.23.1 nterm:14209 created: 2026-05-23 10:17:59
+#> ℹ [2026-05-23 11:03:49] Convert ID types for the GO_BP database
+#> ℹ [2026-05-23 11:03:49] Converted ID types using local annotation package org.Hs.eg.db
 ListDB(
   species = "Homo_sapiens",
   db = "GO_BP"
@@ -153,7 +153,7 @@ ListDB(
 #>                                                         identifier version
 #> 1 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7
 #>                                 comment  timestamp                       date
-#> 1 3.23.1 nterm:14209|Homo_sapiens-GO_BP 1779523836 2026-05-23 08:10:35.842231
+#> 1 3.23.1 nterm:14209|Homo_sapiens-GO_BP 1779534230 2026-05-23 11:03:50.299942
 #>           db_version            db_name
 #> 1 3.23.1 nterm:14209 Homo_sapiens-GO_BP
 #>                                                                    file
@@ -189,8 +189,8 @@ if (interactive()) {
 
 # You can also build a custom database based on the gene sets you have
 ccgenes <- CycGenePrefetch("Homo_sapiens")
-#> ℹ [2026-05-23 08:10:36] Prefetching cell cycle genes for "Homo_sapiens" ...
-#> ✔ [2026-05-23 08:10:36] Cell cycle gene prefetching completed "Homo_sapiens"
+#> ℹ [2026-05-23 11:03:50] Prefetching cell cycle genes for "Homo_sapiens" ...
+#> ✔ [2026-05-23 11:03:50] Cell cycle gene prefetching completed "Homo_sapiens"
 custom_TERM2GENE <- rbind(
   data.frame(
     term = "S_genes",
@@ -217,26 +217,88 @@ db_list <- PrepareDB(
   custom_IDtype = "symbol",
   custom_version = "Seurat_v5"
 )
-#> ℹ [2026-05-23 08:10:36] Species: "Homo_sapiens"
-#> ℹ [2026-05-23 08:10:36] Convert ID types for the CellCycle database
-#> ℹ [2026-05-23 08:10:36] Converted ID types using local annotation package org.Hs.eg.db
-#> ℹ [2026-05-23 08:10:36] Species: "Mus_musculus"
-#> ! [2026-05-23 08:10:36] Use the "Homo_sapiens" annotation to create the "CellCycle" database for "Mus_musculus"
-#> ℹ [2026-05-23 08:10:36] Convert species for the CellCycle database
-#> ℹ [2026-05-23 08:10:36] Connect to the Ensembl archives...
-#> ℹ [2026-05-23 08:10:37] Using the 115 version of ensembl database...
-#> ℹ [2026-05-23 08:10:37] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
+#> ℹ [2026-05-23 11:03:50] Species: "Homo_sapiens"
+#> ℹ [2026-05-23 11:03:50] Convert ID types for the CellCycle database
+#> ℹ [2026-05-23 11:03:51] Converted ID types using local annotation package org.Hs.eg.db
+#> ℹ [2026-05-23 11:03:51] Species: "Mus_musculus"
+#> ! [2026-05-23 11:03:51] Use the "Homo_sapiens" annotation to create the "CellCycle" database for "Mus_musculus"
+#> ℹ [2026-05-23 11:03:51] Convert species for the CellCycle database
+#> ℹ [2026-05-23 11:03:51] Connect to the Ensembl archives...
+#> ℹ [2026-05-23 11:03:51] Using the 115 version of ensembl database...
+#> ℹ [2026-05-23 11:03:51] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
 #> Ensembl site unresponsive, trying www mirror
-#> ℹ [2026-05-23 08:11:44] Searching the dataset hsapiens ...
-#> ℹ [2026-05-23 08:11:46] Connecting to the dataset hsapiens_gene_ensembl ...
-#> ℹ [2026-05-23 08:11:56] Converting the geneIDs...
-#> ℹ [2026-05-23 08:12:04] 97 genes mapped with "ensembl_symbol"
-#> ℹ [2026-05-23 08:12:04] ==============================
+#> Ensembl site unresponsive, trying asia mirror
+#> Warning: Invalid mirror. Select a mirror from [www, useast, asia].
+#> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying www mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> ! [2026-05-23 11:03:57] <simpleError: Your query has been redirected to https://status.ensembl.org indicating this Ensembl service is currently unavailable.
+#> !                       Look at ?useEnsembl for details on how to try a mirror site.>
+#> ! [2026-05-23 11:03:57] Get errors when connecting with ensembl database...
+#> ! [2026-05-23 11:03:58] Retrying...
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying www mirror
+#> Warning: Invalid mirror. Select a mirror from [www, useast, asia].
+#> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying www mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> ! [2026-05-23 11:04:02] <simpleError: Your query has been redirected to https://status.ensembl.org indicating this Ensembl service is currently unavailable.
+#> !                       Look at ?useEnsembl for details on how to try a mirror site.>
+#> ! [2026-05-23 11:04:02] Get errors when connecting with ensembl database...
+#> ! [2026-05-23 11:04:03] Retrying...
+#> Ensembl site unresponsive, trying www mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> Warning: Invalid mirror. Select a mirror from [www, useast, asia].
+#> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying www mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> ! [2026-05-23 11:04:06] <simpleError: Your query has been redirected to https://status.ensembl.org indicating this Ensembl service is currently unavailable.
+#> !                       Look at ?useEnsembl for details on how to try a mirror site.>
+#> ! [2026-05-23 11:04:06] Get errors when connecting with ensembl database...
+#> ! [2026-05-23 11:04:07] Retrying...
+#> Ensembl site unresponsive, trying www mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> Warning: Invalid mirror. Select a mirror from [www, useast, asia].
+#> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying www mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> ! [2026-05-23 11:04:10] <simpleError: Your query has been redirected to https://status.ensembl.org indicating this Ensembl service is currently unavailable.
+#> !                       Look at ?useEnsembl for details on how to try a mirror site.>
+#> ! [2026-05-23 11:04:10] Get errors when connecting with ensembl database...
+#> ! [2026-05-23 11:04:11] Retrying...
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying www mirror
+#> Warning: Invalid mirror. Select a mirror from [www, useast, asia].
+#> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying www mirror
+#> ℹ [2026-05-23 11:04:15] Searching the dataset hsapiens ...
+#> ℹ [2026-05-23 11:04:16] Connecting to the dataset hsapiens_gene_ensembl ...
+#> ℹ [2026-05-23 11:04:17] Converting the geneIDs...
+#> ℹ [2026-05-23 11:04:20] 97 genes mapped with "ensembl_symbol"
+#> ℹ [2026-05-23 11:04:20] ==============================
 #> ℹ                       97 genes mapped
 #> ℹ                       0 genes unmapped
 #> ℹ                       ==============================
-#> ℹ [2026-05-23 08:12:04] Convert ID types for the CellCycle database
-#> ℹ [2026-05-23 08:12:04] Converted ID types using local annotation package org.Mm.eg.db
+#> ℹ [2026-05-23 11:04:20] Convert ID types for the CellCycle database
+#> ℹ [2026-05-23 11:04:21] Converted ID types using local annotation package org.Mm.eg.db
 ListDB(db = "CellCycle")
 #>                                                         identifier version
 #> 1 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7
@@ -245,8 +307,8 @@ ListDB(db = "CellCycle")
 #> 1                              Seurat_v5 nterm:2|Homo_sapiens-CellCycle
 #> 2 Seurat_v5(converted from Homo_sapiens) nterm:2|Mus_musculus-CellCycle
 #>    timestamp                       date
-#> 1 1779523837 2026-05-23 08:10:36.707987
-#> 2 1779523924  2026-05-23 08:12:04.21792
+#> 1 1779534231  2026-05-23 11:03:51.17381
+#> 2 1779534261 2026-05-23 11:04:21.010632
 #>                                       db_version                db_name
 #> 1                              Seurat_v5 nterm:2 Homo_sapiens-CellCycle
 #> 2 Seurat_v5(converted from Homo_sapiens) nterm:2 Mus_musculus-CellCycle
@@ -258,8 +320,8 @@ ListDB(db = "CellCycle")
 #> 2 Mus_musculus CellCycle
 
 db_list <- PrepareDB(species = "Mus_musculus", db = "CellCycle")
-#> ℹ [2026-05-23 08:12:04] Species: "Mus_musculus"
-#> ℹ [2026-05-23 08:12:04] Loading cached: CellCycle version: Seurat_v5(converted from Homo_sapiens) nterm:2 created: 2026-05-23 08:12:04
+#> ℹ [2026-05-23 11:04:21] Species: "Mus_musculus"
+#> ℹ [2026-05-23 11:04:21] Loading cached: CellCycle version: Seurat_v5(converted from Homo_sapiens) nterm:2 created: 2026-05-23 11:04:21
 head(
   db_list[["Mus_musculus"]][["CellCycle"]][["TERM2GENE"]]
 )
