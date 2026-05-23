@@ -17,6 +17,7 @@ RunRareQ(
   max_iter = 100,
   run_neighbors = TRUE,
   force_recalc = FALSE,
+  neighbor_name = NULL,
   find_neighbors_params = list(),
   rare_threshold = 0.01,
   prefix = "RareQ",
@@ -86,6 +87,15 @@ RunRareQ(
 
   Whether to rebuild the Seurat neighbor slot before running RareQ.
 
+- neighbor_name:
+
+  Name of the Seurat `Neighbor` object to reuse or create. If `NULL`,
+  defaults to `{assay}.nn`, which is the neighbor slot required by
+  [`RareQ::ComputeQ()`](https://rdrr.io/pkg/RareQ/man/ComputeQ.html) and
+  [`RareQ::FindRare()`](https://rdrr.io/pkg/RareQ/man/FindRare.html). A
+  non-default neighbor is copied to `{assay}.nn` before running RareQ
+  because RareQ reads that slot directly.
+
 - find_neighbors_params:
 
   Additional named parameters passed to
@@ -134,16 +144,16 @@ pancreas_sub <- standard_scop(
   pancreas_sub,
   verbose = FALSE
 )
-#> ℹ [2026-05-22 17:43:34] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-23 09:01:48] Skip `log1p()` because `layer = data` is not "counts"
 pancreas_sub <- RunRareQ(
   pancreas_sub,
   dims = 1:20
 )
-#> ℹ [2026-05-22 17:44:13] Build Seurat nearest neighbors for RareQ using reduction "Standardpca"
+#> ℹ [2026-05-23 09:02:30] Build Seurat nearest neighbors for RareQ using reduction "Standardpca"
 #> Computing nearest neighbors
 #> Only one graph name supplied, storing nearest-neighbor graph only
-#> ℹ [2026-05-22 17:44:37] Run RareQ with `k = 6`, `Q_cut = 0.6`, and `ratio = 0.2`
-#> ℹ [2026-05-22 17:44:37] RareQ clusters stored in metadata column "RareQ_cluster"
+#> ℹ [2026-05-23 09:02:53] Run RareQ with `k = 6`, `Q_cut = 0.6`, and `ratio = 0.2`
+#> ℹ [2026-05-23 09:02:54] RareQ clusters stored in metadata column "RareQ_cluster"
 
 CellDimPlot(
   pancreas_sub,

@@ -56,6 +56,7 @@
 <span>  max_iter <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  run_neighbors <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  force_recalc <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  neighbor_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  find_neighbors_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  rare_threshold <span class="op">=</span> <span class="fl">0.01</span>,</span>
 <span>  prefix <span class="op">=</span> <span class="st">"RareQ"</span>,</span>
@@ -124,6 +125,13 @@ it is missing.</p></dd>
 running RareQ.</p></dd>
 
 
+<dt id="arg-neighbor-name">neighbor_name<a class="anchor" aria-label="anchor" href="#arg-neighbor-name"></a></dt>
+<dd><p>Name of the Seurat <code>Neighbor</code> object to reuse or create.
+If <code>NULL</code>, defaults to <code>{assay}.nn</code>, which is the neighbor slot required by
+<code><a href="https://rdrr.io/pkg/RareQ/man/ComputeQ.html" class="external-link">RareQ::ComputeQ()</a></code> and <code><a href="https://rdrr.io/pkg/RareQ/man/FindRare.html" class="external-link">RareQ::FindRare()</a></code>. A non-default neighbor is copied
+to <code>{assay}.nn</code> before running RareQ because RareQ reads that slot directly.</p></dd>
+
+
 <dt id="arg-find-neighbors-params">find_neighbors_params<a class="anchor" aria-label="anchor" href="#arg-find-neighbors-params"></a></dt>
 <dd><p>Additional named parameters passed to
 <code><a href="https://satijalab.org/seurat/reference/FindNeighbors.html" class="external-link">Seurat::FindNeighbors()</a></code> when neighbor search is run.</p></dd>
@@ -172,16 +180,16 @@ identification. <em>Nature Communications</em> (2026).
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-22 17:43:34] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 09:01:48] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunRareQ</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">20</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-22 17:44:13] Build <span style="color: #0000BB;">Seurat</span> nearest neighbors for <span style="color: #0000BB;">RareQ</span> using reduction <span style="color: #0000BB;">"Standardpca"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 09:02:30] Build <span style="color: #0000BB;">Seurat</span> nearest neighbors for <span style="color: #0000BB;">RareQ</span> using reduction <span style="color: #0000BB;">"Standardpca"</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing nearest neighbors</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Only one graph name supplied, storing nearest-neighbor graph only</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-22 17:44:37] Run <span style="color: #0000BB;">RareQ</span> with `k = 6`, `Q_cut = 0.6`, and `ratio = 0.2`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-22 17:44:37] <span style="color: #0000BB;">RareQ</span> clusters stored in metadata column <span style="color: #0000BB;">"RareQ_cluster"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 09:02:53] Run <span style="color: #0000BB;">RareQ</span> with `k = 6`, `Q_cut = 0.6`, and `ratio = 0.2`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 09:02:54] <span style="color: #0000BB;">RareQ</span> clusters stored in metadata column <span style="color: #0000BB;">"RareQ_cluster"</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>

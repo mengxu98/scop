@@ -418,44 +418,44 @@ CCCStatPlot(
   plot_type = "role_change"
 )
 }
-#> ℹ [2026-05-22 15:45:23] Start standard processing workflow...
-#> ℹ [2026-05-22 15:45:24] Checking a list of <Seurat>...
-#> ! [2026-05-22 15:45:24] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-22 15:45:24] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-22 15:45:26] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-22 15:45:26] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-22 15:45:26] Number of available HVF: 2000
-#> ℹ [2026-05-22 15:45:26] Finished check
-#> ℹ [2026-05-22 15:45:26] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-22 15:45:27] Perform pca linear dimension reduction
-#> ℹ [2026-05-22 15:45:27] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-22 15:45:27] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-22 15:45:28] Reorder clusters...
-#> ℹ [2026-05-22 15:45:28] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-22 15:45:28] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-22 15:45:28] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-22 15:45:30] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-22 15:45:33] Standard processing workflow completed
-#> ℹ [2026-05-22 15:45:33] Start CellChat analysis
-#> ℹ [2026-05-22 15:45:37] Processing condition: "ConditionA"
+#> ℹ [2026-05-23 07:00:05] Start standard processing workflow...
+#> ℹ [2026-05-23 07:00:06] Checking a list of <Seurat>...
+#> ! [2026-05-23 07:00:06] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-23 07:00:06] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-23 07:00:07] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-23 07:00:07] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-23 07:00:07] Number of available HVF: 2000
+#> ℹ [2026-05-23 07:00:07] Finished check
+#> ℹ [2026-05-23 07:00:07] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-23 07:00:08] Perform pca linear dimension reduction
+#> ℹ [2026-05-23 07:00:08] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-23 07:00:09] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-23 07:00:09] Reorder clusters...
+#> ℹ [2026-05-23 07:00:09] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-23 07:00:09] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-23 07:00:09] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-23 07:00:12] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-23 07:00:15] Standard processing workflow completed
+#> ℹ [2026-05-23 07:00:15] Start CellChat analysis
+#> ℹ [2026-05-23 07:00:19] Processing condition: "ConditionA"
 #> [1] "Create a CellChat object from a data matrix"
 #> Set cell identities for the new CellChat object 
 #> The cell groups used for CellChat analysis are  Ductal, Ngn3-high-EP, Endocrine, Ngn3-low-EP, Pre-endocrine 
 #> The number of highly variable ligand-receptor pairs used for signaling inference is 542 
 #> triMean is used for calculating the average gene expression per cell group. 
-#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-05-22 15:45:39.691739]"
-#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-05-22 15:45:59.537776]"
-#> ℹ [2026-05-22 15:45:59] Processing condition: "ConditionB"
+#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-05-23 07:00:21.215786]"
+#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-05-23 07:00:39.258527]"
+#> ℹ [2026-05-23 07:00:39] Processing condition: "ConditionB"
 #> [1] "Create a CellChat object from a data matrix"
 #> Set cell identities for the new CellChat object 
 #> The cell groups used for CellChat analysis are  Endocrine, Ngn3-high-EP, Ductal, Ngn3-low-EP, Pre-endocrine 
 #> The number of highly variable ligand-receptor pairs used for signaling inference is 597 
 #> triMean is used for calculating the average gene expression per cell group. 
-#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-05-22 15:46:01.620994]"
-#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-05-22 15:46:22.480935]"
-#> ℹ [2026-05-22 15:46:22] Merging CellChat objects for comparison "ConditionA_vs_ConditionB"
+#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-05-23 07:00:42.068591]"
+#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-05-23 07:01:01.672521]"
+#> ℹ [2026-05-23 07:01:01] Merging CellChat objects for comparison "ConditionA_vs_ConditionB"
 #> Merge the following slots: 'data.signaling','images','net', 'netP','meta', 'idents', 'var.features' , 'DB', and 'LR'.
-#> ✔ [2026-05-22 15:46:22] CellChat analysis completed
-#> ! [2026-05-22 15:46:30] `thisplot::StatPlot()` sankey is count-based. For `CCCStatPlot()` with `plot_type = 'sankey'`, `edge_value` is used to rank/filter pairs, but flow width is shown by interaction count.
-#> ℹ [2026-05-22 15:46:34] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ✔ [2026-05-23 07:01:02] CellChat analysis completed
+#> ! [2026-05-23 07:01:09] `thisplot::StatPlot()` sankey is count-based. For `CCCStatPlot()` with `plot_type = 'sankey'`, `edge_value` is used to rank/filter pairs, but flow width is shown by interaction count.
+#> ℹ [2026-05-23 07:01:12] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 ```
