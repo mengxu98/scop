@@ -157,22 +157,22 @@ pancreas_sub <- RunscTenifoldKnk(
   store_networks = FALSE,
   store_manifold = TRUE
 )
-#> ℹ [2026-05-23 11:54:16] Run scTenifoldKnk knockout for "Pdx1" using "cpp" backend
-#> ℹ [2026-05-23 11:54:21] Construct scTenifoldNet network ensemble
-#> ℹ [2026-05-23 11:54:21] Denoise network ensemble with tensor decomposition
-#> ℹ [2026-05-23 11:54:21] Denoise network ensemble with tensor decomposition  ■■ …
-#> ℹ [2026-05-23 11:54:21] Align WT and KO network manifolds
-#> ✔ [2026-05-23 11:54:21] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
+#> ℹ [2026-05-23 14:54:52] Run scTenifoldKnk knockout for "Pdx1" using "cpp" backend
+#> ℹ [2026-05-23 14:54:56] Construct scTenifoldNet network ensemble
+#> ℹ [2026-05-23 14:54:57] Denoise network ensemble with tensor decomposition
+#> ℹ [2026-05-23 14:54:57] Denoise network ensemble with tensor decomposition  ■■ …
+#> ℹ [2026-05-23 14:54:57] Align WT and KO network manifolds
+#> ✔ [2026-05-23 14:54:57] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
 
 dr <- pancreas_sub@tools$scTenifoldKnk$diffRegulation
 head(dr)
 #>     gene     distance        Z         FC      p.value        p.adj
-#> 1   Pdx1 6.561133e-04 3.960281 7251.32977 0.000000e+00 0.000000e+00
-#> 2   Cd81 7.531816e-05 2.333559   95.55631 1.437441e-22 2.163349e-20
-#> 3   Myl6 3.422043e-05 1.851658   19.72563 8.939449e-06 8.969248e-04
-#> 4  Actg1 3.355487e-05 1.840318   18.96580 1.330824e-05 1.001445e-03
-#> 5   Ssr2 2.707015e-05 1.718310   12.34359 4.425038e-04 2.663873e-02
-#> 6 Sec61b 2.486587e-05 1.671045   10.41519 1.249829e-03 6.269975e-02
+#> 1   Pdx1 6.561133e-04 3.960035 7251.32977 0.000000e+00 0.000000e+00
+#> 2   Cd81 7.531816e-05 2.333427   95.55631 1.437441e-22 2.163349e-20
+#> 3   Myl6 3.422043e-05 1.851560   19.72563 8.939449e-06 8.969248e-04
+#> 4  Actg1 3.355487e-05 1.840220   18.96580 1.330824e-05 1.001445e-03
+#> 5   Ssr2 2.707015e-05 1.718221   12.34359 4.425038e-04 2.663873e-02
+#> 6 Sec61b 2.486587e-05 1.670959   10.41519 1.249829e-03 6.269975e-02
 
 scTenifoldKnkPlot(pancreas_sub, plot_type = "effect")
 ```
