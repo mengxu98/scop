@@ -242,7 +242,7 @@ RunScissor <- function(
     if (isTRUE(verbose)) {
       result <- call_original()
     } else {
-      capture.output(result <- call_original())
+      utils::capture.output(result <- call_original())
     }
     input_summary <- inputs$summary
     input_summary$backend <- "r"
@@ -994,12 +994,12 @@ scissor_fit_cox <- function(
 
     cvraw = cvPL / weighti
     nfoldi = apply(!is.na(cvraw), 2, sum) #rm(cvPL) #
-    cvm = apply(cvraw, 2, weighted.mean, w = weighti, na.rm = TRUE)
+    cvm = apply(cvraw, 2, stats::weighted.mean, w = weighti, na.rm = TRUE)
     cvse = sqrt(
       apply(
         sweep(cvraw, 2, cvm, "-")^2,
         2,
-        weighted.mean,
+        stats::weighted.mean,
         w = weighti,
         na.rm = TRUE
       ) /
@@ -1150,7 +1150,7 @@ scissor_fit_cox <- function(
       cvraw = cvPL / weighti
       nfoldi = apply(!is.na(cvraw), 2, sum)
       rm(cvPL)
-      cvm[[il0]] = apply(cvraw, 2, weighted.mean, w = weighti, na.rm = TRUE)
+      cvm[[il0]] = apply(cvraw, 2, stats::weighted.mean, w = weighti, na.rm = TRUE)
       temi = cvm[[il0]]
       if (aPen) {
         cv.max[il0] = max(temi)
@@ -1269,7 +1269,7 @@ scissor_fit_cox <- function(
             cvm[[il1[j]]] = apply(
               cvraw,
               2,
-              weighted.mean,
+              stats::weighted.mean,
               w = weighti,
               na.rm = TRUE
             )
