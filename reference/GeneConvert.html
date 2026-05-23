@@ -127,16 +127,38 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  species_from <span class="op">=</span> <span class="st">"Homo_sapiens"</span>,</span></span>
 <span class="r-in"><span>  species_to <span class="op">=</span> <span class="st">"Mus_musculus"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 07:57:28] Connect to the Ensembl archives...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 07:57:29] Using the <span style="color: #0000BB;">115</span> version of ensembl database...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 07:57:29] Downloading the ensembl database from <span style="color: #0000BB;">https://sep2025.archive.ensembl.org</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 07:57:31] Searching the dataset <span style="color: #0000BB;">hsapiens</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 07:57:31] Connecting to the dataset <span style="color: #0000BB;">hsapiens_gene_ensembl</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 07:58:00] Searching the dataset <span style="color: #0000BB;">mmusculus</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 07:58:01] Connecting to the dataset <span style="color: #0000BB;">mmusculus_gene_ensembl</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 07:58:01] Converting the geneIDs...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 07:58:18] <span style="color: #0000BB;">5</span> genes mapped with <span style="color: #0000BB;">"ensembl_symbol"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 07:58:18] ==============================</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 10:51:40] Connect to the Ensembl archives...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 10:51:40] Using the <span style="color: #0000BB;">115</span> version of ensembl database...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 10:51:40] Downloading the ensembl database from <span style="color: #0000BB;">https://sep2025.archive.ensembl.org</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying www mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Invalid mirror. Select a mirror from [www, useast, asia].</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying useast mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying www mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying useast mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying useast mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-05-23 10:51:46] &lt;simpleError: Your query has been redirected to https://status.ensembl.org indicating this Ensembl service is currently unavailable.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       Look at ?useEnsembl for details on how to try a mirror site.&gt;</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-05-23 10:51:46] Get errors when connecting with ensembl database...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-05-23 10:51:47] Retrying...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying www mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Invalid mirror. Select a mirror from [www, useast, asia].</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying useast mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying www mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying useast mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 10:51:52] Searching the dataset <span style="color: #0000BB;">hsapiens</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 10:51:53] Connecting to the dataset <span style="color: #0000BB;">hsapiens_gene_ensembl</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 10:51:54] Searching the dataset <span style="color: #0000BB;">mmusculus</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 10:51:54] Connecting to the dataset <span style="color: #0000BB;">mmusculus_gene_ensembl</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 10:51:57] Converting the geneIDs...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 10:52:52] <span style="color: #0000BB;">5</span> genes mapped with <span style="color: #0000BB;">"ensembl_symbol"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 10:52:52] ==============================</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       <span style="color: #00BB00;">5 genes mapped</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       <span style="color: #BB0000;">0 genes unmapped</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       ==============================</span>
