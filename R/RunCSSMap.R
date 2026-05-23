@@ -47,7 +47,7 @@ RunCSSMap <- function(
   distance_metric = "cosine",
   vote_fun = "mean"
 ) {
-  check_r("quadbiolab/simspec", verbose = FALSE)
+  check_r("quadbio/simspec", verbose = FALSE)
   query_assay <- query_assay %||% SeuratObject::DefaultAssay(srt_query)
   ref_assay <- ref_assay %||% SeuratObject::DefaultAssay(srt_ref)
   if (!is.null(ref_group)) {
