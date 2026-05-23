@@ -144,16 +144,16 @@ pancreas_sub <- standard_scop(
   pancreas_sub,
   verbose = FALSE
 )
-#> ℹ [2026-05-23 11:50:53] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-23 14:51:18] Skip `log1p()` because `layer = data` is not "counts"
 pancreas_sub <- RunRareQ(
   pancreas_sub,
   dims = 1:20
 )
-#> ℹ [2026-05-23 11:51:29] Build Seurat nearest neighbors for RareQ using reduction "Standardpca"
+#> ℹ [2026-05-23 14:51:56] Build Seurat nearest neighbors for RareQ using reduction "Standardpca"
 #> Computing nearest neighbors
 #> Only one graph name supplied, storing nearest-neighbor graph only
-#> ℹ [2026-05-23 11:51:50] Run RareQ with `k = 6`, `Q_cut = 0.6`, and `ratio = 0.2`
-#> ℹ [2026-05-23 11:51:50] RareQ clusters stored in metadata column "RareQ_cluster"
+#> ℹ [2026-05-23 14:52:19] Run RareQ with `k = 6`, `Q_cut = 0.6`, and `ratio = 0.2`
+#> ℹ [2026-05-23 14:52:19] RareQ clusters stored in metadata column "RareQ_cluster"
 
 CellDimPlot(
   pancreas_sub,

@@ -172,7 +172,7 @@ omics data. <em>Bioinformatics Advances</em>, 2, vbac016.
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 11:25:04] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 14:24:19] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunDorothea</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -183,8 +183,8 @@ omics data. <em>Bioinformatics Advances</em>, 2, vbac016.
 <span class="r-in"><span>  minsize <span class="op">=</span> <span class="fl">5</span>,</span></span>
 <span class="r-in"><span>  new_assay <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 11:25:14] Run <span style="color: #0000BB;">DoRothEA</span>/<span style="color: #0000BB;">decoupleR</span> with <span style="color: #0000BB;">12895</span> regulon edges</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 11:25:21] <span style="color: #0000BB;">DoRothEA</span> TF activity scores stored in <span style="color: #0000BB;">&lt;Seurat&gt;</span> metadata</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 14:24:29] Run <span style="color: #0000BB;">DoRothEA</span>/<span style="color: #0000BB;">decoupleR</span> with <span style="color: #0000BB;">12895</span> regulon edges</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 14:24:40] <span style="color: #0000BB;">DoRothEA</span> TF activity scores stored in <span style="color: #0000BB;">&lt;Seurat&gt;</span> metadata</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Dorothea</span><span class="op">$</span><span class="va">regulon_summary</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   n_tfs n_targets n_edges confidence</span>

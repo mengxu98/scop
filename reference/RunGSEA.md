@@ -244,37 +244,37 @@ Enrichment result is a list with the following component:
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-23 11:40:33] Start standard processing workflow...
-#> ℹ [2026-05-23 11:40:34] Checking a list of <Seurat>...
-#> ! [2026-05-23 11:40:34] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-23 11:40:34] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-23 11:40:36] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-23 11:40:36] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-23 11:40:36] Number of available HVF: 2000
-#> ℹ [2026-05-23 11:40:36] Finished check
-#> ℹ [2026-05-23 11:40:36] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-23 11:40:37] Perform pca linear dimension reduction
-#> ℹ [2026-05-23 11:40:37] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-23 11:40:38] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-23 11:40:38] Reorder clusters...
-#> ℹ [2026-05-23 11:40:38] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-23 11:40:38] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-23 11:40:38] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-23 11:40:42] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-23 11:40:47] Standard processing workflow completed
+#> ℹ [2026-05-23 14:40:23] Start standard processing workflow...
+#> ℹ [2026-05-23 14:40:24] Checking a list of <Seurat>...
+#> ! [2026-05-23 14:40:24] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-23 14:40:24] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-23 14:40:25] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-23 14:40:26] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-23 14:40:26] Number of available HVF: 2000
+#> ℹ [2026-05-23 14:40:26] Finished check
+#> ℹ [2026-05-23 14:40:26] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-23 14:40:26] Perform pca linear dimension reduction
+#> ℹ [2026-05-23 14:40:27] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-23 14:40:27] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-23 14:40:27] Reorder clusters...
+#> ℹ [2026-05-23 14:40:28] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-23 14:40:28] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-23 14:40:28] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-23 14:40:33] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-23 14:40:38] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-05-23 11:40:47] Data type is log-normalized
-#> ℹ [2026-05-23 11:40:47] Start differential expression test
-#> ℹ [2026-05-23 11:40:47] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-05-23 11:40:47] Using 1 core
-#> ⠙ [2026-05-23 11:40:47] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ✔ [2026-05-23 11:40:47] Completed 5 tasks in 871ms
+#> ℹ [2026-05-23 14:40:39] Data type is log-normalized
+#> ℹ [2026-05-23 14:40:39] Start differential expression test
+#> ℹ [2026-05-23 14:40:39] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-05-23 14:40:39] Using 1 core
+#> ⠙ [2026-05-23 14:40:39] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ✔ [2026-05-23 14:40:39] Completed 5 tasks in 838ms
 #> 
-#> ℹ [2026-05-23 11:40:47] Building results
-#> ✔ [2026-05-23 11:40:48] Differential expression test completed
+#> ℹ [2026-05-23 14:40:39] Building results
+#> ✔ [2026-05-23 14:40:39] Differential expression test completed
 pancreas_sub <- RunGSEA(
   pancreas_sub,
   group.by = "CellType",
@@ -283,19 +283,19 @@ pancreas_sub <- RunGSEA(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-23 11:40:48] Start GSEA analysis
-#> ! [2026-05-23 11:40:48] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
-#> ℹ [2026-05-23 11:40:48] Species: "Mus_musculus"
-#> ℹ [2026-05-23 11:40:48] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-23 10:36:17
-#> ℹ [2026-05-23 11:40:50] Using 1 core
-#> ⠙ [2026-05-23 11:40:50] Running for 1 [1/5] ■■          20% | ETA: 31s
-#> ⠹ [2026-05-23 11:40:50] Running for 2 [2/5] ■■■■        40% | ETA: 18s
-#> ⠸ [2026-05-23 11:40:50] Running for 3 [3/5] ■■■■■■      60% | ETA: 10s
-#> ⠼ [2026-05-23 11:40:50] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  5s
-#> ✔ [2026-05-23 11:40:50] Completed 5 tasks in 21.5s
+#> ℹ [2026-05-23 14:40:39] Start GSEA analysis
+#> ! [2026-05-23 14:40:39] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
+#> ℹ [2026-05-23 14:40:39] Species: "Mus_musculus"
+#> ℹ [2026-05-23 14:40:40] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-23 13:33:03
+#> ℹ [2026-05-23 14:40:41] Using 1 core
+#> ⠙ [2026-05-23 14:40:41] Running for 1 [1/5] ■■          20% | ETA: 33s
+#> ⠹ [2026-05-23 14:40:41] Running for 2 [2/5] ■■■■        40% | ETA: 19s
+#> ⠸ [2026-05-23 14:40:41] Running for 3 [3/5] ■■■■■■      60% | ETA: 11s
+#> ⠼ [2026-05-23 14:40:41] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  5s
+#> ✔ [2026-05-23 14:40:41] Completed 5 tasks in 22.9s
 #> 
-#> ℹ [2026-05-23 11:40:50] Building results
-#> ✔ [2026-05-23 11:41:11] GSEA analysis done
+#> ℹ [2026-05-23 14:40:41] Building results
+#> ✔ [2026-05-23 14:41:04] GSEA analysis done
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -335,20 +335,20 @@ pancreas_sub <- RunGSEA(
   GO_simplify = TRUE,
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-23 11:41:12] Start GSEA analysis
-#> ! [2026-05-23 11:41:12] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
-#> ℹ [2026-05-23 11:41:12] Species: "Mus_musculus"
-#> ℹ [2026-05-23 11:41:12] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-23 10:36:17
-#> ℹ [2026-05-23 11:41:13] Using 1 core
-#> ⠙ [2026-05-23 11:41:13] Running for 1 [1/5] ■■          20% | ETA: 31s
-#> ⠹ [2026-05-23 11:41:13] Running for 2 [2/5] ■■■■        40% | ETA: 18s
-#> ⠸ [2026-05-23 11:41:13] Running for 3 [3/5] ■■■■■■      60% | ETA: 10s
-#> ⠼ [2026-05-23 11:41:13] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  5s
-#> ✔ [2026-05-23 11:41:13] Completed 5 tasks in 21.1s
+#> ℹ [2026-05-23 14:41:04] Start GSEA analysis
+#> ! [2026-05-23 14:41:04] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
+#> ℹ [2026-05-23 14:41:04] Species: "Mus_musculus"
+#> ℹ [2026-05-23 14:41:04] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-23 13:33:03
+#> ℹ [2026-05-23 14:41:06] Using 1 core
+#> ⠙ [2026-05-23 14:41:06] Running for 1 [1/5] ■■          20% | ETA: 34s
+#> ⠹ [2026-05-23 14:41:06] Running for 2 [2/5] ■■■■        40% | ETA: 20s
+#> ⠸ [2026-05-23 14:41:06] Running for 3 [3/5] ■■■■■■      60% | ETA: 11s
+#> ⠼ [2026-05-23 14:41:06] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  5s
+#> ✔ [2026-05-23 14:41:06] Completed 5 tasks in 23.2s
 #> 
-#> ℹ [2026-05-23 11:41:13] Building results
-#> ! [2026-05-23 11:41:13] Found 5 failed results
-#> ℹ [2026-05-23 11:41:34] ✖ Error details:
+#> ℹ [2026-05-23 14:41:06] Building results
+#> ! [2026-05-23 14:41:06] Found 5 failed results
+#> ℹ [2026-05-23 14:41:29] ✖ Error details:
 #> ℹ                       ✖ missing value where TRUE/FALSE needed (5): "1", "2", "3" and 2 more
 #> Error in x@result: no applicable method for `@` applied to an object of class "parallelize_error"
 GSEAPlot(
@@ -372,19 +372,19 @@ gsea_out <- RunGSEA(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-23 11:41:34] Start GSEA analysis
-#> ! [2026-05-23 11:41:34] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
-#> ℹ [2026-05-23 11:41:34] Species: "Mus_musculus"
-#> ℹ [2026-05-23 11:41:34] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-23 10:36:17
-#> ℹ [2026-05-23 11:41:36] Using 1 core
-#> ⠙ [2026-05-23 11:41:36] Running for 1 [1/5] ■■          20% | ETA: 31s
-#> ⠹ [2026-05-23 11:41:36] Running for 2 [2/5] ■■■■        40% | ETA: 16s
-#> ⠸ [2026-05-23 11:41:36] Running for 3 [3/5] ■■■■■■      60% | ETA: 10s
-#> ⠼ [2026-05-23 11:41:36] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  5s
-#> ✔ [2026-05-23 11:41:36] Completed 5 tasks in 21.6s
+#> ℹ [2026-05-23 14:41:29] Start GSEA analysis
+#> ! [2026-05-23 14:41:29] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
+#> ℹ [2026-05-23 14:41:29] Species: "Mus_musculus"
+#> ℹ [2026-05-23 14:41:29] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-23 13:33:03
+#> ℹ [2026-05-23 14:41:30] Using 1 core
+#> ⠙ [2026-05-23 14:41:30] Running for 1 [1/5] ■■          20% | ETA: 33s
+#> ⠹ [2026-05-23 14:41:30] Running for 2 [2/5] ■■■■        40% | ETA: 17s
+#> ⠸ [2026-05-23 14:41:30] Running for 3 [3/5] ■■■■■■      60% | ETA: 11s
+#> ⠼ [2026-05-23 14:41:30] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  5s
+#> ✔ [2026-05-23 14:41:30] Completed 5 tasks in 22.9s
 #> 
-#> ℹ [2026-05-23 11:41:36] Building results
-#> ✔ [2026-05-23 11:41:57] GSEA analysis done
+#> ℹ [2026-05-23 14:41:30] Building results
+#> ✔ [2026-05-23 14:41:53] GSEA analysis done
 GSEAPlot(
   res = gsea_out,
   db = "GO_BP",
@@ -406,23 +406,23 @@ pancreas_sub <- RunGSEA(
   db_combine = TRUE,
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-23 11:41:58] Start GSEA analysis
-#> ! [2026-05-23 11:41:58] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
-#> ℹ [2026-05-23 11:41:58] Species: "Mus_musculus"
-#> ℹ [2026-05-23 11:41:58] Loading cached: KEGG version: Release 118.0+/05-23, May 26 nterm:367 created: 2026-05-23 11:39:22
-#> ℹ [2026-05-23 11:41:58] Loading cached: WikiPathway version: 20260510 nterm:214 created: 2026-05-23 11:39:22
-#> ℹ [2026-05-23 11:41:59] Loading cached: Reactome version: 1.96.0 nterm:1835 created: 2026-05-23 11:39:22
-#> ℹ [2026-05-23 11:42:00] Loading cached: PFAM version: 3.23.0 nterm:8132 created: 2026-05-23 11:39:22
-#> ℹ [2026-05-23 11:42:00] Loading cached: MP version: 2026-05-23 nterm:10841 created: 2026-05-23 11:39:21
-#> ℹ [2026-05-23 11:42:01] Create "Combined" database ...
-#> ℹ [2026-05-23 11:42:01] Using 1 core
-#> ⠙ [2026-05-23 11:42:01] Running for 1 [1/5] ■■          20% | ETA: 18s
-#> ⠹ [2026-05-23 11:42:01] Running for 2 [2/5] ■■■■        40% | ETA: 11s
-#> ⠸ [2026-05-23 11:42:01] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  3s
-#> ✔ [2026-05-23 11:42:01] Completed 5 tasks in 12.6s
+#> ℹ [2026-05-23 14:41:55] Start GSEA analysis
+#> ! [2026-05-23 14:41:55] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
+#> ℹ [2026-05-23 14:41:55] Species: "Mus_musculus"
+#> ℹ [2026-05-23 14:41:55] Loading cached: KEGG version: Release 118.0+/05-23, May 26 nterm:367 created: 2026-05-23 14:39:07
+#> ℹ [2026-05-23 14:41:56] Loading cached: WikiPathway version: 20260510 nterm:214 created: 2026-05-23 14:39:08
+#> ℹ [2026-05-23 14:41:56] Loading cached: Reactome version: 1.96.0 nterm:1835 created: 2026-05-23 14:39:08
+#> ℹ [2026-05-23 14:41:57] Loading cached: PFAM version: 3.23.0 nterm:8132 created: 2026-05-23 14:39:08
+#> ℹ [2026-05-23 14:41:58] Loading cached: MP version: 2026-05-23 nterm:10841 created: 2026-05-23 14:39:06
+#> ℹ [2026-05-23 14:41:58] Create "Combined" database ...
+#> ℹ [2026-05-23 14:41:59] Using 1 core
+#> ⠙ [2026-05-23 14:41:59] Running for 1 [1/5] ■■          20% | ETA: 19s
+#> ⠹ [2026-05-23 14:41:59] Running for 2 [2/5] ■■■■        40% | ETA: 11s
+#> ⠸ [2026-05-23 14:41:59] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  3s
+#> ✔ [2026-05-23 14:41:59] Completed 5 tasks in 13.3s
 #> 
-#> ℹ [2026-05-23 11:42:01] Building results
-#> ✔ [2026-05-23 11:42:14] GSEA analysis done
+#> ℹ [2026-05-23 14:41:59] Building results
+#> ✔ [2026-05-23 14:42:12] GSEA analysis done
 GSEAPlot(
   pancreas_sub,
   db = "Combined",

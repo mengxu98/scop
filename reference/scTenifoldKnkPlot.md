@@ -189,12 +189,12 @@ pancreas_sub <- RunscTenifoldKnk(
   store_networks = TRUE,
   store_manifold = TRUE
 )
-#> ℹ [2026-05-23 12:26:58] Run scTenifoldKnk knockout for "Pdx1" using "cpp" backend
-#> ℹ [2026-05-23 12:27:04] Construct scTenifoldNet network ensemble
-#> ℹ [2026-05-23 12:27:04] Denoise network ensemble with tensor decomposition
-#> ℹ [2026-05-23 12:27:04] Denoise network ensemble with tensor decomposition  ■■■…
-#> ℹ [2026-05-23 12:27:04] Align WT and KO network manifolds
-#> ✔ [2026-05-23 12:27:04] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
+#> ℹ [2026-05-23 15:27:15] Run scTenifoldKnk knockout for "Pdx1" using "cpp" backend
+#> ℹ [2026-05-23 15:27:20] Construct scTenifoldNet network ensemble
+#> ℹ [2026-05-23 15:27:21] Denoise network ensemble with tensor decomposition
+#> ℹ [2026-05-23 15:27:21] Denoise network ensemble with tensor decomposition  ■■■…
+#> ℹ [2026-05-23 15:27:21] Align WT and KO network manifolds
+#> ✔ [2026-05-23 15:27:21] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
 
 scTenifoldKnkPlot(pancreas_sub, plot_type = "qq")
 
