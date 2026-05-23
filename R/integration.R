@@ -3670,7 +3670,7 @@ CSS_integrate <- function(
     "leiden" = 4
   )
 
-  check_r(c("quadbiolab/simspec", "qlcMatrix"), verbose = FALSE)
+  check_r(c("quadbio/simspec", "qlcMatrix"), verbose = FALSE)
   set.seed(seed)
 
   if (normalization_method == "TFIDF") {
