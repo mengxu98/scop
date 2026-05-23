@@ -242,38 +242,37 @@ Enrichment result is a list with the following component:
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-22 17:22:56] Start standard processing workflow...
-#> ℹ [2026-05-22 17:22:56] Checking a list of <Seurat>...
-#> ! [2026-05-22 17:22:56] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-22 17:22:56] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-22 17:22:58] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-22 17:22:59] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-22 17:22:59] Number of available HVF: 2000
-#> ℹ [2026-05-22 17:22:59] Finished check
-#> ℹ [2026-05-22 17:22:59] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-22 17:22:59] Perform pca linear dimension reduction
-#> ℹ [2026-05-22 17:23:00] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-22 17:23:00] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-22 17:23:00] Reorder clusters...
-#> ℹ [2026-05-22 17:23:00] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-22 17:23:00] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-22 17:23:00] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-22 17:23:05] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-22 17:23:10] Standard processing workflow completed
+#> ℹ [2026-05-23 08:40:22] Start standard processing workflow...
+#> ℹ [2026-05-23 08:40:22] Checking a list of <Seurat>...
+#> ! [2026-05-23 08:40:22] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-23 08:40:22] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-23 08:40:24] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-23 08:40:25] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-23 08:40:25] Number of available HVF: 2000
+#> ℹ [2026-05-23 08:40:25] Finished check
+#> ℹ [2026-05-23 08:40:25] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-23 08:40:26] Perform pca linear dimension reduction
+#> ℹ [2026-05-23 08:40:26] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-23 08:40:26] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-23 08:40:26] Reorder clusters...
+#> ℹ [2026-05-23 08:40:27] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-23 08:40:27] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-23 08:40:27] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-23 08:40:33] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-23 08:40:39] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-05-22 17:23:11] Data type is log-normalized
-#> ℹ [2026-05-22 17:23:11] Start differential expression test
-#> ℹ [2026-05-22 17:23:11] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-05-22 17:23:11] Using 1 core
-#> ⠙ [2026-05-22 17:23:11] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ⠹ [2026-05-22 17:23:11] Running for Ngn3-high-EP [2/5] ■■■■        40% | ETA:  …
-#> ✔ [2026-05-22 17:23:11] Completed 5 tasks in 863ms
+#> ℹ [2026-05-23 08:40:39] Data type is log-normalized
+#> ℹ [2026-05-23 08:40:39] Start differential expression test
+#> ℹ [2026-05-23 08:40:39] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-05-23 08:40:39] Using 1 core
+#> ⠙ [2026-05-23 08:40:39] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ✔ [2026-05-23 08:40:39] Completed 5 tasks in 889ms
 #> 
-#> ℹ [2026-05-22 17:23:11] Building results
-#> ✔ [2026-05-22 17:23:11] Differential expression test completed
+#> ℹ [2026-05-23 08:40:39] Building results
+#> ✔ [2026-05-23 08:40:40] Differential expression test completed
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
   group.by = "CellType",
@@ -281,19 +280,19 @@ pancreas_sub <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-22 17:23:11] Start Enrichment analysis
-#> ℹ [2026-05-22 17:23:11] Species: "Mus_musculus"
-#> ℹ [2026-05-22 17:23:11] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-22 16:24:27
-#> ℹ [2026-05-22 17:23:13] Permform enrichment...
-#> ℹ [2026-05-22 17:23:13] Using 1 core
-#> ⠙ [2026-05-22 17:23:13] Running for 1 [1/5] ■■          20% | ETA: 21s
-#> ⠹ [2026-05-22 17:23:13] Running for 2 [2/5] ■■■■        40% | ETA: 12s
-#> ⠸ [2026-05-22 17:23:13] Running for 3 [3/5] ■■■■■■      60% | ETA:  8s
-#> ⠼ [2026-05-22 17:23:13] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  4s
-#> ✔ [2026-05-22 17:23:13] Completed 5 tasks in 17.4s
+#> ℹ [2026-05-23 08:40:40] Start Enrichment analysis
+#> ℹ [2026-05-23 08:40:40] Species: "Mus_musculus"
+#> ℹ [2026-05-23 08:40:40] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-23 07:39:54
+#> ℹ [2026-05-23 08:40:41] Permform enrichment...
+#> ℹ [2026-05-23 08:40:41] Using 1 core
+#> ⠙ [2026-05-23 08:40:41] Running for 1 [1/5] ■■          20% | ETA: 21s
+#> ⠹ [2026-05-23 08:40:41] Running for 2 [2/5] ■■■■        40% | ETA: 12s
+#> ⠸ [2026-05-23 08:40:41] Running for 3 [3/5] ■■■■■■      60% | ETA:  8s
+#> ⠼ [2026-05-23 08:40:41] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  4s
+#> ✔ [2026-05-23 08:40:41] Completed 5 tasks in 17.7s
 #> 
-#> ℹ [2026-05-22 17:23:13] Building results
-#> ✔ [2026-05-22 17:23:30] Enrichment analysis done
+#> ℹ [2026-05-23 08:40:41] Building results
+#> ✔ [2026-05-23 08:40:59] Enrichment analysis done
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -309,20 +308,20 @@ pancreas_sub <- RunEnrichment(
   db = c("MSigDB", "MSigDB_MH"),
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-22 17:23:30] Start Enrichment analysis
-#> ℹ [2026-05-22 17:23:30] Species: "Mus_musculus"
-#> ℹ [2026-05-22 17:23:30] Preparing MSigDB database
-#> ℹ [2026-05-22 17:23:42] Permform enrichment...
-#> ℹ [2026-05-22 17:23:42] Using 1 core
-#> ⠙ [2026-05-22 17:23:42] Running for 1 [1/10] ■           10% | ETA:  2m
-#> ⠹ [2026-05-22 17:23:42] Running for 2 [2/10] ■■          20% | ETA:  1m
-#> ⠸ [2026-05-22 17:23:42] Running for 3 [3/10] ■■■         30% | ETA:  1m
-#> ⠼ [2026-05-22 17:23:42] Running for 4 [4/10] ■■■■        40% | ETA: 44s
-#> ⠴ [2026-05-22 17:23:42] Running for 5 [5/10] ■■■■■       50% | ETA: 34s
-#> ✔ [2026-05-22 17:23:42] Completed 10 tasks in 34s
+#> ℹ [2026-05-23 08:40:59] Start Enrichment analysis
+#> ℹ [2026-05-23 08:40:59] Species: "Mus_musculus"
+#> ℹ [2026-05-23 08:40:59] Preparing MSigDB database
+#> ℹ [2026-05-23 08:41:12] Permform enrichment...
+#> ℹ [2026-05-23 08:41:12] Using 1 core
+#> ⠙ [2026-05-23 08:41:12] Running for 1 [1/10] ■           10% | ETA:  2m
+#> ⠹ [2026-05-23 08:41:12] Running for 2 [2/10] ■■          20% | ETA:  1m
+#> ⠸ [2026-05-23 08:41:12] Running for 3 [3/10] ■■■         30% | ETA:  1m
+#> ⠼ [2026-05-23 08:41:12] Running for 4 [4/10] ■■■■        40% | ETA: 43s
+#> ⠴ [2026-05-23 08:41:12] Running for 5 [5/10] ■■■■■       50% | ETA: 33s
+#> ✔ [2026-05-23 08:41:12] Completed 10 tasks in 33.1s
 #> 
-#> ℹ [2026-05-22 17:23:42] Building results
-#> ✔ [2026-05-22 17:24:16] Enrichment analysis done
+#> ℹ [2026-05-23 08:41:12] Building results
+#> ✔ [2026-05-23 08:41:45] Enrichment analysis done
 EnrichmentPlot(
   pancreas_sub,
   db = "MSigDB",
@@ -346,20 +345,20 @@ pancreas_sub <- RunEnrichment(
   GO_simplify = TRUE,
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-22 17:24:17] Start Enrichment analysis
-#> ! [2026-05-22 17:24:17] `GO_simplify = TRUE` requires clusterProfiler result objects; using `backend = 'r'` for this run.
-#> ℹ [2026-05-22 17:24:18] Species: "Mus_musculus"
-#> ℹ [2026-05-22 17:24:18] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-22 16:24:27
-#> ℹ [2026-05-22 17:24:19] Permform enrichment...
-#> ℹ [2026-05-22 17:24:19] Using 1 core
-#> ⠙ [2026-05-22 17:24:19] Running for 1 [1/5] ■■          20% | ETA: 14m
-#> ⠹ [2026-05-22 17:24:19] Running for 2 [2/5] ■■■■        40% | ETA:  6m
-#> ⠸ [2026-05-22 17:24:19] Running for 3 [3/5] ■■■■■■      60% | ETA:  3m
-#> ⠼ [2026-05-22 17:24:19] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  1m
-#> ✔ [2026-05-22 17:24:19] Completed 5 tasks in 6m 0.3s
+#> ℹ [2026-05-23 08:41:46] Start Enrichment analysis
+#> ! [2026-05-23 08:41:46] `GO_simplify = TRUE` requires clusterProfiler result objects; using `backend = 'r'` for this run.
+#> ℹ [2026-05-23 08:41:46] Species: "Mus_musculus"
+#> ℹ [2026-05-23 08:41:46] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-23 07:39:54
+#> ℹ [2026-05-23 08:41:47] Permform enrichment...
+#> ℹ [2026-05-23 08:41:47] Using 1 core
+#> ⠙ [2026-05-23 08:41:47] Running for 1 [1/5] ■■          20% | ETA: 13m
+#> ⠹ [2026-05-23 08:41:47] Running for 2 [2/5] ■■■■        40% | ETA:  6m
+#> ⠸ [2026-05-23 08:41:47] Running for 3 [3/5] ■■■■■■      60% | ETA:  3m
+#> ⠼ [2026-05-23 08:41:47] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  1m
+#> ✔ [2026-05-23 08:41:47] Completed 5 tasks in 5m 40.8s
 #> 
-#> ℹ [2026-05-22 17:24:19] Building results
-#> ✔ [2026-05-22 17:30:19] Enrichment analysis done
+#> ℹ [2026-05-23 08:41:47] Building results
+#> ✔ [2026-05-23 08:47:28] Enrichment analysis done
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP_sim",
@@ -379,19 +378,19 @@ enrich_out <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-22 17:30:20] Start Enrichment analysis
-#> ℹ [2026-05-22 17:30:20] Species: "Mus_musculus"
-#> ℹ [2026-05-22 17:30:20] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-22 16:24:27
-#> ℹ [2026-05-22 17:30:21] Permform enrichment...
-#> ℹ [2026-05-22 17:30:21] Using 1 core
-#> ⠙ [2026-05-22 17:30:21] Running for 1 [1/5] ■■          20% | ETA: 21s
-#> ⠹ [2026-05-22 17:30:21] Running for 2 [2/5] ■■■■        40% | ETA: 12s
-#> ⠸ [2026-05-22 17:30:21] Running for 3 [3/5] ■■■■■■      60% | ETA:  8s
-#> ⠼ [2026-05-22 17:30:21] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  4s
-#> ✔ [2026-05-22 17:30:21] Completed 5 tasks in 18.1s
+#> ℹ [2026-05-23 08:47:29] Start Enrichment analysis
+#> ℹ [2026-05-23 08:47:29] Species: "Mus_musculus"
+#> ℹ [2026-05-23 08:47:29] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-23 07:39:54
+#> ℹ [2026-05-23 08:47:30] Permform enrichment...
+#> ℹ [2026-05-23 08:47:30] Using 1 core
+#> ⠙ [2026-05-23 08:47:30] Running for 1 [1/5] ■■          20% | ETA: 21s
+#> ⠹ [2026-05-23 08:47:30] Running for 2 [2/5] ■■■■        40% | ETA: 12s
+#> ⠸ [2026-05-23 08:47:30] Running for 3 [3/5] ■■■■■■      60% | ETA:  8s
+#> ⠼ [2026-05-23 08:47:30] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  4s
+#> ✔ [2026-05-23 08:47:30] Completed 5 tasks in 18.3s
 #> 
-#> ℹ [2026-05-22 17:30:21] Building results
-#> ✔ [2026-05-22 17:30:39] Enrichment analysis done
+#> ℹ [2026-05-23 08:47:30] Building results
+#> ✔ [2026-05-23 08:47:48] Enrichment analysis done
 EnrichmentPlot(
   res = enrich_out,
   db = "GO_BP",
@@ -409,32 +408,32 @@ pancreas_sub <- RunEnrichment(
   db_combine = TRUE,
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-22 17:30:39] Start Enrichment analysis
-#> ℹ [2026-05-22 17:30:39] Species: "Mus_musculus"
-#> ✔ [2026-05-22 17:30:39] org.Mm.eg.db installed successfully
-#> ℹ [2026-05-22 17:31:00] Preparing KEGG database
-#> ℹ [2026-05-22 17:31:14] Preparing WikiPathway database
-#> ℹ [2026-05-22 17:31:17] Preparing Reactome database
-#> ℹ [2026-05-22 17:31:22] Preparing MP database
-#> ℹ [2026-05-22 17:31:32] Preparing PFAM database
+#> ℹ [2026-05-23 08:47:49] Start Enrichment analysis
+#> ℹ [2026-05-23 08:47:49] Species: "Mus_musculus"
+#> ℹ [2026-05-23 08:48:09] Preparing KEGG database
+#> ℹ [2026-05-23 08:48:24] Preparing WikiPathway database
+#> ℹ [2026-05-23 08:48:31] Preparing Reactome database
+#> ℹ [2026-05-23 08:48:36] Preparing MP database
+#> ℹ [2026-05-23 08:48:46] Preparing PFAM database
 #> 
-#> ℹ [2026-05-22 17:31:33] Convert ID types for the KEGG database
-#> ℹ [2026-05-22 17:31:33] Converted ID types using local annotation package org.Mm.eg.db
-#> ℹ [2026-05-22 17:31:33] Convert ID types for the WikiPathway database
-#> ℹ [2026-05-22 17:31:33] Converted ID types using local annotation package org.Mm.eg.db
-#> ℹ [2026-05-22 17:31:33] Convert ID types for the Reactome database
-#> ℹ [2026-05-22 17:31:34] Converted ID types using local annotation package org.Mm.eg.db
-#> ℹ [2026-05-22 17:31:34] Convert ID types for the PFAM database
-#> ℹ [2026-05-22 17:31:34] Converted ID types using local annotation package org.Mm.eg.db
-#> ℹ [2026-05-22 17:31:34] Create 'Combined' database ...
-#> ℹ [2026-05-22 17:31:35] Permform enrichment...
-#> ℹ [2026-05-22 17:31:35] Using 1 core
-#> ⠙ [2026-05-22 17:31:35] Running for 1 [1/5] ■■          20% | ETA: 16s
-#> ⠹ [2026-05-22 17:31:35] Running for 3 [3/5] ■■■■■■      60% | ETA:  5s
-#> ✔ [2026-05-22 17:31:35] Completed 5 tasks in 10.2s
+#> ℹ [2026-05-23 08:48:47] Convert ID types for the KEGG database
+#> ℹ [2026-05-23 08:48:47] Converted ID types using local annotation package org.Mm.eg.db
+#> ℹ [2026-05-23 08:48:47] Convert ID types for the WikiPathway database
+#> ℹ [2026-05-23 08:48:47] Converted ID types using local annotation package org.Mm.eg.db
+#> ℹ [2026-05-23 08:48:47] Convert ID types for the Reactome database
+#> ℹ [2026-05-23 08:48:47] Converted ID types using local annotation package org.Mm.eg.db
+#> ℹ [2026-05-23 08:48:47] Convert ID types for the PFAM database
+#> ℹ [2026-05-23 08:48:47] Converted ID types using local annotation package org.Mm.eg.db
+#> ℹ [2026-05-23 08:48:48] Create 'Combined' database ...
+#> ℹ [2026-05-23 08:48:49] Permform enrichment...
+#> ℹ [2026-05-23 08:48:49] Using 1 core
+#> ⠙ [2026-05-23 08:48:49] Running for 1 [1/5] ■■          20% | ETA: 12s
+#> ⠹ [2026-05-23 08:48:49] Running for 2 [2/5] ■■■■        40% | ETA:  7s
+#> ⠸ [2026-05-23 08:48:49] Running for 3 [3/5] ■■■■■■      60% | ETA:  4s
+#> ✔ [2026-05-23 08:48:49] Completed 5 tasks in 9.1s
 #> 
-#> ℹ [2026-05-22 17:31:35] Building results
-#> ✔ [2026-05-22 17:31:45] Enrichment analysis done
+#> ℹ [2026-05-23 08:48:49] Building results
+#> ✔ [2026-05-23 08:48:58] Enrichment analysis done
 EnrichmentPlot(
   pancreas_sub,
   db = "Combined",

@@ -142,10 +142,10 @@ db_list <- PrepareDB(
   species = "Homo_sapiens",
   db = "GO_BP"
 )
-#> ℹ [2026-05-22 16:53:22] Species: "Homo_sapiens"
-#> ℹ [2026-05-22 16:53:22] Loading cached: GO_BP version: 3.23.1 nterm:14209 created: 2026-05-22 16:04:05
-#> ℹ [2026-05-22 16:53:23] Convert ID types for the GO_BP database
-#> ℹ [2026-05-22 16:53:23] Converted ID types using local annotation package org.Hs.eg.db
+#> ℹ [2026-05-23 08:10:33] Species: "Homo_sapiens"
+#> ℹ [2026-05-23 08:10:33] Loading cached: GO_BP version: 3.23.1 nterm:14209 created: 2026-05-23 07:19:23
+#> ℹ [2026-05-23 08:10:34] Convert ID types for the GO_BP database
+#> ℹ [2026-05-23 08:10:34] Converted ID types using local annotation package org.Hs.eg.db
 ListDB(
   species = "Homo_sapiens",
   db = "GO_BP"
@@ -153,7 +153,7 @@ ListDB(
 #>                                                         identifier version
 #> 1 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7
 #>                                 comment  timestamp                       date
-#> 1 3.23.1 nterm:14209|Homo_sapiens-GO_BP 1779468804 2026-05-22 16:53:24.264898
+#> 1 3.23.1 nterm:14209|Homo_sapiens-GO_BP 1779523836 2026-05-23 08:10:35.842231
 #>           db_version            db_name
 #> 1 3.23.1 nterm:14209 Homo_sapiens-GO_BP
 #>                                                                    file
@@ -189,8 +189,8 @@ if (interactive()) {
 
 # You can also build a custom database based on the gene sets you have
 ccgenes <- CycGenePrefetch("Homo_sapiens")
-#> ℹ [2026-05-22 16:53:24] Prefetching cell cycle genes for "Homo_sapiens" ...
-#> ✔ [2026-05-22 16:53:24] Cell cycle gene prefetching completed "Homo_sapiens"
+#> ℹ [2026-05-23 08:10:36] Prefetching cell cycle genes for "Homo_sapiens" ...
+#> ✔ [2026-05-23 08:10:36] Cell cycle gene prefetching completed "Homo_sapiens"
 custom_TERM2GENE <- rbind(
   data.frame(
     term = "S_genes",
@@ -217,171 +217,57 @@ db_list <- PrepareDB(
   custom_IDtype = "symbol",
   custom_version = "Seurat_v5"
 )
-#> ℹ [2026-05-22 16:53:24] Species: "Homo_sapiens"
-#> ℹ [2026-05-22 16:53:24] Convert ID types for the CellCycle database
-#> ℹ [2026-05-22 16:53:25] Converted ID types using local annotation package org.Hs.eg.db
-#> ℹ [2026-05-22 16:53:25] Species: "Mus_musculus"
-#> ! [2026-05-22 16:53:25] Use the "Homo_sapiens" annotation to create the "CellCycle" database for "Mus_musculus"
-#> ℹ [2026-05-22 16:53:25] Convert species for the CellCycle database
-#> ℹ [2026-05-22 16:53:25] Connect to the Ensembl archives...
-#> ℹ [2026-05-22 16:53:25] Using the 115 version of ensembl database...
-#> ℹ [2026-05-22 16:53:25] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
-#> ℹ [2026-05-22 16:53:50] Searching the dataset hsapiens ...
-#> ℹ [2026-05-22 16:53:55] Connecting to the dataset hsapiens_gene_ensembl ...
+#> ℹ [2026-05-23 08:10:36] Species: "Homo_sapiens"
+#> ℹ [2026-05-23 08:10:36] Convert ID types for the CellCycle database
+#> ℹ [2026-05-23 08:10:36] Converted ID types using local annotation package org.Hs.eg.db
+#> ℹ [2026-05-23 08:10:36] Species: "Mus_musculus"
+#> ! [2026-05-23 08:10:36] Use the "Homo_sapiens" annotation to create the "CellCycle" database for "Mus_musculus"
+#> ℹ [2026-05-23 08:10:36] Convert species for the CellCycle database
+#> ℹ [2026-05-23 08:10:36] Connect to the Ensembl archives...
+#> ℹ [2026-05-23 08:10:37] Using the 115 version of ensembl database...
+#> ℹ [2026-05-23 08:10:37] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
 #> Ensembl site unresponsive, trying www mirror
-#> Ensembl site unresponsive, trying asia mirror
-#> Warning: Invalid mirror. Select a mirror from [www, useast, asia].
-#> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.
-#> Ensembl site unresponsive, trying useast mirror
-#> Ensembl site unresponsive, trying asia mirror
-#> Ensembl site unresponsive, trying useast mirror
-#> Ensembl site unresponsive, trying www mirror
-#> Ensembl site unresponsive, trying useast mirror
-#> Ensembl site unresponsive, trying asia mirror
-#> ! [2026-05-22 16:54:59] <error/httr2_failure>
-#> !                       Error in `req_perform()`:
-#> !                       ! Failed to perform HTTP request.
-#> !                       Caused by error in `curl::curl_fetch_memory()`:
-#> !                       ! Timeout was reached [www.ensembl.org]:
-#> !                       Operation timed out after 60001 milliseconds with 0 bytes received
-#> !                       ---
-#> !                       Backtrace:
-#> !                            ▆
-#> !                         1. ├─base::tryCatch(...)
-#> !                         2. │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
-#> !                         3. │   ├─base (local) tryCatchOne(...)
-#> !                         4. │   │ └─base (local) doTryCatch(return(expr), name, parentenv, handler)
-#> !                         5. │   └─base (local) tryCatchList(expr, names[-nh], parentenv, handlers[-nh])
-#> !                         6. │     └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
-#> !                         7. │       └─base (local) doTryCatch(return(expr), name, parentenv, handler)
-#> !                         8. ├─base::withCallingHandlers(...)
-#> !                         9. ├─base::saveRDS(...)
-#> !                        10. ├─base::do.call(...)
-#> !                        11. ├─base (local) `<fn>`(...)
-#> !                        12. └─global `<fn>`(...)
-#> !                        13.   └─pkgdown::build_site(...)
-#> !                        14.     └─pkgdown:::build_site_local(...)
-#> !                        15.       └─pkgdown::build_reference(...)
-#> !                        16.         ├─pkgdown:::unwrap_purrr_error(...)
-#> !                        17.         │ └─base::withCallingHandlers(...)
-#> !                        18.         └─purrr::map(...)
-#> !                        19.           └─purrr:::map_("list", .x, .f, ..., .progress = .progress)
-#> !                        20.             ├─purrr:::with_indexed_errors(...)
-#> !                        21.             │ └─base::withCallingHandlers(...)
-#> !                        22.             ├─purrr:::call_with_cleanup(...)
-#> !                        23.             └─pkgdown (local) .f(.x[[i]], ...)
-#> !                        24.               ├─base::withCallingHandlers(...)
-#> !                        25.               └─pkgdown:::data_reference_topic(...)
-#> !                        26.                 └─pkgdown:::run_examples(...)
-#> !                        27.                   └─pkgdown:::highlight_examples(code, topic, env = env)
-#> !                        28.                     └─downlit::evaluate_and_highlight(...)
-#> !                        29.                       └─evaluate::evaluate(code, child_env(env), new_device = TRUE, output_handler = output_handler)
-#> !                        30.                         ├─base::withRestarts(...)
-#> !                        31.                         │ └─base (local) withRestartList(expr, restarts)
-#> !                        32.                         │   ├─base (local) withOneRestart(withRestartList(expr, restarts[-nr]), restarts[[nr]])
-#> !                        33.                         │   │ └─base (local) doWithOneRestart(return(expr), restart)
-#> !                        34.                         │   └─base (local) withRestartList(expr, restarts[-nr])
-#> !                        35.                         │     └─base (local) withOneRestart(expr, restarts[[1L]])
-#> !                        36.                         │       └─base (local) doWithOneRestart(return(expr), restart)
-#> !                        37.                         ├─evaluate:::with_handlers(...)
-#> !                        38.                         │ ├─base::eval(call)
-#> !                        39.                         │ │ └─base::eval(call)
-#> !                        40.                         │ └─base::withCallingHandlers(...)
-#> !                        41.                         ├─base::withVisible(eval(expr, envir))
-#> !                        42.                         └─base::eval(expr, envir)
-#> !                        43.                           └─base::eval(expr, envir)
-#> !                        44.                             └─scop::PrepareDB(...)
-#> !                        45.                               └─scop::GeneConvert(...)
-#> !                        46.                                 ├─thisutils::try_get(...)
-#> !                        47.                                 │ ├─base::tryCatch(...)
-#> !                        48.                                 │ │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
-#> !                        49.                                 │ │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
-#> !                        50.                                 │ │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
-#> !                        51.                                 │ └─base::eval.parent(substitute(expr))
-#> !                        52.                                 │   └─base::eval(expr, p)
-#> !                        53.                                 │     └─base::eval(expr, p)
-#> !                        54.                                 └─scop:::connect_biomart_dataset(...)
-#> !                        55.                                   ├─base::tryCatch(...)
-#> !                        56.                                   │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
-#> !                        57.                                   │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
-#> !                        58.                                   │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
-#> !                        59.                                   └─biomaRt::useDataset(dataset = dataset, mart = mart)
-#> !                        60.                                     └─biomaRt:::checkDataset(dataset = dataset, mart = mart)
-#> !                        61.                                       └─biomaRt:::.listDatasets(mart, sort = FALSE)
-#> !                        62.                                         └─biomaRt:::bmRequest(...)
-#> !                        63.                                           └─httr2::req_perform(request)
-#> ! [2026-05-22 16:54:59] Get errors when connecting with Dataset (hsapiens_gene_ensembl)
-#> ! [2026-05-22 16:55:00] Retrying...
-#> Ensembl site unresponsive, trying asia mirror
-#> Ensembl site unresponsive, trying www mirror
-#> Warning: Invalid mirror. Select a mirror from [www, useast, asia].
-#> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.
-#> Ensembl site unresponsive, trying asia mirror
-#> Ensembl site unresponsive, trying useast mirror
-#> Ensembl site unresponsive, trying useast mirror
-#> Ensembl site unresponsive, trying www mirror
-#> Ensembl site unresponsive, trying useast mirror
-#> Ensembl site unresponsive, trying asia mirror
-#> ! [2026-05-22 16:55:03] <simpleError in checkDataset(dataset = dataset, mart = mart): The given dataset: hsapiens_gene_ensembl, is not valid.  Correct dataset names can be obtained with the listDatasets() function.>
-#> ! [2026-05-22 16:55:03] Get errors when connecting with Dataset (hsapiens_gene_ensembl)
-#> ! [2026-05-22 16:55:04] Retrying...
-#> Ensembl site unresponsive, trying www mirror
-#> Ensembl site unresponsive, trying asia mirror
-#> Warning: Invalid mirror. Select a mirror from [www, useast, asia].
-#> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.
-#> Ensembl site unresponsive, trying useast mirror
-#> Ensembl site unresponsive, trying asia mirror
-#> Ensembl site unresponsive, trying useast mirror
-#> Ensembl site unresponsive, trying www mirror
-#> Ensembl site unresponsive, trying useast mirror
-#> Ensembl site unresponsive, trying asia mirror
-#> ! [2026-05-22 16:55:06] <simpleError in checkDataset(dataset = dataset, mart = mart): The given dataset: hsapiens_gene_ensembl, is not valid.  Correct dataset names can be obtained with the listDatasets() function.>
-#> ! [2026-05-22 16:55:06] Get errors when connecting with Dataset (hsapiens_gene_ensembl)
-#> ! [2026-05-22 16:55:07] Retrying...
-#> Ensembl site unresponsive, trying www mirror
-#> Ensembl site unresponsive, trying asia mirror
-#> Warning: Invalid mirror. Select a mirror from [www, useast, asia].
-#> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.
-#> Ensembl site unresponsive, trying useast mirror
-#> Ensembl site unresponsive, trying asia mirror
-#> Ensembl site unresponsive, trying useast mirror
-#> Ensembl site unresponsive, trying www mirror
-#> Ensembl site unresponsive, trying asia mirror
-#> Ensembl site unresponsive, trying useast mirror
-#> ! [2026-05-22 16:55:10] <simpleError in checkDataset(dataset = dataset, mart = mart): The given dataset: hsapiens_gene_ensembl, is not valid.  Correct dataset names can be obtained with the listDatasets() function.>
-#> ! [2026-05-22 16:55:10] Get errors when connecting with Dataset (hsapiens_gene_ensembl)
-#> ! [2026-05-22 16:55:11] Retrying...
-#> Ensembl site unresponsive, trying asia mirror
-#> Ensembl site unresponsive, trying www mirror
-#> Warning: Invalid mirror. Select a mirror from [www, useast, asia].
-#> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.
-#> Ensembl site unresponsive, trying asia mirror
-#> Ensembl site unresponsive, trying useast mirror
-#> Ensembl site unresponsive, trying www mirror
-#> Ensembl site unresponsive, trying useast mirror
-#> Ensembl site unresponsive, trying useast mirror
-#> Ensembl site unresponsive, trying asia mirror
-#> ! [2026-05-22 16:55:14] <simpleError in checkDataset(dataset = dataset, mart = mart): The given dataset: hsapiens_gene_ensembl, is not valid.  Correct dataset names can be obtained with the listDatasets() function.>
-#> ! [2026-05-22 16:55:14] Get errors when connecting with Dataset (hsapiens_gene_ensembl)
-#> Error in try_get(expr = {    connect_biomart_dataset(dataset = dataset, mart = mart_from,         mirror = mirror)}, max_tries = max_tries, error_message = sprintf("Get errors when connecting with Dataset (%s)",     dataset)): <simpleError in checkDataset(dataset = dataset, mart = mart): The given
-#> dataset: hsapiens_gene_ensembl, is not valid.  Correct dataset names can be
-#> obtained with the listDatasets() function.>
+#> ℹ [2026-05-23 08:11:44] Searching the dataset hsapiens ...
+#> ℹ [2026-05-23 08:11:46] Connecting to the dataset hsapiens_gene_ensembl ...
+#> ℹ [2026-05-23 08:11:56] Converting the geneIDs...
+#> ℹ [2026-05-23 08:12:04] 97 genes mapped with "ensembl_symbol"
+#> ℹ [2026-05-23 08:12:04] ==============================
+#> ℹ                       97 genes mapped
+#> ℹ                       0 genes unmapped
+#> ℹ                       ==============================
+#> ℹ [2026-05-23 08:12:04] Convert ID types for the CellCycle database
+#> ℹ [2026-05-23 08:12:04] Converted ID types using local annotation package org.Mm.eg.db
 ListDB(db = "CellCycle")
 #>                                                         identifier version
 #> 1 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7
-#>                                    comment  timestamp
-#> 1 Seurat_v5 nterm:2|Homo_sapiens-CellCycle 1779468805
-#>                         date        db_version                db_name
-#> 1 2026-05-22 16:53:25.144113 Seurat_v5 nterm:2 Homo_sapiens-CellCycle
+#> 2 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7
+#>                                                                 comment
+#> 1                              Seurat_v5 nterm:2|Homo_sapiens-CellCycle
+#> 2 Seurat_v5(converted from Homo_sapiens) nterm:2|Mus_musculus-CellCycle
+#>    timestamp                       date
+#> 1 1779523837 2026-05-23 08:10:36.707987
+#> 2 1779523924  2026-05-23 08:12:04.21792
+#>                                       db_version                db_name
+#> 1                              Seurat_v5 nterm:2 Homo_sapiens-CellCycle
+#> 2 Seurat_v5(converted from Homo_sapiens) nterm:2 Mus_musculus-CellCycle
 #>                                                                    file
 #> 1 /home/runner/.cache/R/R.cache/a6aa81007b9564b5bf1f3fa5dc7997fa.Rcache
+#> 2 /home/runner/.cache/R/R.cache/c536960e834e01aaece391bfc36f44cf.Rcache
 #>        Species        DB
 #> 1 Homo_sapiens CellCycle
+#> 2 Mus_musculus CellCycle
 
 db_list <- PrepareDB(species = "Mus_musculus", db = "CellCycle")
-#> ℹ [2026-05-22 16:55:15] Species: "Mus_musculus"
+#> ℹ [2026-05-23 08:12:04] Species: "Mus_musculus"
+#> ℹ [2026-05-23 08:12:04] Loading cached: CellCycle version: Seurat_v5(converted from Homo_sapiens) nterm:2 created: 2026-05-23 08:12:04
 head(
   db_list[["Mus_musculus"]][["CellCycle"]][["TERM2GENE"]]
 )
-#> NULL
+#>      Term         ensembl_id symbol entrez_id
+#> 1 S_genes ENSMUSG00000005410   Mcm5     17218
+#> 2 S_genes ENSMUSG00000027342   Pcna     18538
+#> 3 S_genes ENSMUSG00000025747   Tyms     22171
+#> 4 S_genes ENSMUSG00000024742   Fen1     14156
+#> 5 S_genes ENSMUSG00000029730   Mcm7     17220
+#> 6 S_genes ENSMUSG00000022673   Mcm4     17217
 ```
