@@ -17,6 +17,10 @@
 #' it is missing.
 #' @param force_recalc Whether to rebuild the Seurat neighbor slot before
 #' running RareQ.
+#' @param neighbor_name Name of the Seurat `Neighbor` object to reuse or create.
+#' If `NULL`, defaults to `{assay}.nn`, which is the neighbor slot required by
+#' `RareQ::ComputeQ()` and `RareQ::FindRare()`. A non-default neighbor is copied
+#' to `{assay}.nn` before running RareQ because RareQ reads that slot directly.
 #' @param find_neighbors_params Additional named parameters passed to
 #' [Seurat::FindNeighbors()] when neighbor search is run.
 #' @param rare_threshold Cluster-size threshold used to mark rare clusters. A
@@ -73,6 +77,7 @@ RunRareQ <- function(
   max_iter = 100,
   run_neighbors = TRUE,
   force_recalc = FALSE,
+  neighbor_name = NULL,
   find_neighbors_params = list(),
   rare_threshold = 0.01,
   prefix = "RareQ",
@@ -181,7 +186,21 @@ RunRareQ <- function(
       message_type = "error"
     )
   }
-  neighbor_slot <- paste0(assay, ".nn")
+  rareq_neighbor_slot <- paste0(assay, ".nn")
+  if (!is.null(neighbor_name)) {
+    if (
+      !is.character(neighbor_name) ||
+        length(neighbor_name) != 1L ||
+        is.na(neighbor_name) ||
+        !nzchar(neighbor_name)
+    ) {
+      log_message(
+        "{.arg neighbor_name} must be a single non-empty string or NULL",
+        message_type = "error"
+      )
+    }
+  }
+  neighbor_slot <- neighbor_name %||% rareq_neighbor_slot
   old_assay <- SeuratObject::DefaultAssay(srt)
   SeuratObject::DefaultAssay(srt) <- assay
 
@@ -236,16 +255,24 @@ RunRareQ <- function(
         k.param = k.param,
         return.neighbor = TRUE,
         compute.SNN = FALSE,
+        graph.name = neighbor_slot,
         prune.SNN = 0,
         verbose = verbose
       ),
       find_neighbors_params
     )
+    find_neighbors_args$return.neighbor <- TRUE
+    find_neighbors_args$compute.SNN <- FALSE
+    find_neighbors_args$graph.name <- neighbor_slot
     log_message(
       "Build {.pkg Seurat} nearest neighbors for {.pkg RareQ} using reduction {.val {reduction}}",
       verbose = verbose
     )
-    srt <- do.call(Seurat::FindNeighbors, find_neighbors_args)
+    srt <- if (isTRUE(verbose)) {
+      do.call(Seurat::FindNeighbors, find_neighbors_args)
+    } else {
+      suppressMessages(do.call(Seurat::FindNeighbors, find_neighbors_args))
+    }
     if (!neighbor_slot %in% names(srt@neighbors)) {
       log_message(
         "{.pkg Seurat} did not create the expected neighbor slot {.val {neighbor_slot}}",
@@ -254,10 +281,14 @@ RunRareQ <- function(
     }
   }
 
-  nn_idx <- srt@neighbors[[neighbor_slot]]@nn.idx
+  if (!identical(neighbor_slot, rareq_neighbor_slot)) {
+    srt@neighbors[[rareq_neighbor_slot]] <- srt@neighbors[[neighbor_slot]]
+  }
+
+  nn_idx <- srt@neighbors[[rareq_neighbor_slot]]@nn.idx
   if (is.null(nn_idx) || ncol(nn_idx) < k) {
     log_message(
-      "Neighbor slot {.val {neighbor_slot}} must contain at least {.arg k} neighbors",
+      "Neighbor slot {.val {rareq_neighbor_slot}} must contain at least {.arg k} neighbors",
       message_type = "error"
     )
   }
@@ -320,7 +351,8 @@ RunRareQ <- function(
     clusters = clusters,
     q_values = q_values,
     cluster_summary = cluster_summary,
-    neighbor_slot = neighbor_slot,
+    neighbor_slot = rareq_neighbor_slot,
+    source_neighbor_slot = neighbor_slot,
     parameters = list(
       assay = assay,
       reduction = reduction,
@@ -332,6 +364,7 @@ RunRareQ <- function(
       max_iter = max_iter,
       run_neighbors = run_neighbors,
       force_recalc = force_recalc,
+      neighbor_name = neighbor_slot,
       rare_threshold = rare_threshold,
       rare_cutoff = rare_cutoff,
       prefix = prefix,
