@@ -487,7 +487,7 @@ augur_cpp <- function(
           } else {
             X0 <- X
           }
-          X0 <- BiocGenerics::t(X0)
+          X0 <- Matrix::t(X0)
           X0 <- as.matrix(X0)
           X0 <- as.data.frame(X0)
           X0 <- tibble::repair_names(X0)
@@ -511,7 +511,7 @@ augur_cpp <- function(
             X0 <- as.data.frame(X0)
           } else {
             X0 <- X0[, subsample_idxs, drop = FALSE]
-            X0 <- BiocGenerics::t(X0)
+            X0 <- Matrix::t(X0)
             keep <- MatrixGenerics::colVars(X0) > 0
             X0 <- X0[, keep, drop = FALSE]
             X0 <- as.matrix(X0)
@@ -558,8 +558,8 @@ augur_cpp <- function(
               test <- rsample::assessment(split)
               tbl <- tibble::tibble(
                 true = test$label,
-                pred = predict(model, test),
-                prob = predict(model, test, type = "prob")
+                pred = stats::predict(model, test),
+                prob = stats::predict(model, test, type = "prob")
               )
               tbl <- cbind(tbl, tbl$prob)
               tbl[["prob"]] <- NULL
