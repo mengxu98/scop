@@ -47,6 +47,7 @@ Imports:
     uwot
 Suggests:
     AnnotationDbi,
+    Augur,
     AUCell,
     BayesSpace,
     batchelor,
@@ -96,9 +97,11 @@ Suggests:
     R.utils,
     reshape2,
     RhpcBLASctl,
+    randomForest,
     rliger,
     rhdf5,
     RSpectra,
+    rsample,
     scales,
     simplifyEnrichment,
     slingshot,
@@ -119,9 +122,11 @@ Suggests:
     SingleCellExperiment,
     testthat,
     tensorflow,
+    tibble,
     tricycle,
     umap,
-    UCell
+    UCell,
+    yardstick
 LinkingTo:
     cli,
     Rcpp,
@@ -129,6 +134,7 @@ LinkingTo:
     RcppEigen,
     RSpectra
 Remotes:
+    neurorestore/Augur,
     jinworks/CellChat,
     immunogenomics/presto,
     fabotao/RareQ,
