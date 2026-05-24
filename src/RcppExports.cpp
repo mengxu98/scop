@@ -12,6 +12,18 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// augur_subsample_cpp
+NumericMatrix augur_subsample_cpp(S4 mat, IntegerVector cols);
+RcppExport SEXP _scop_augur_subsample_cpp(SEXP matSEXP, SEXP colsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< S4 >::type mat(matSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type cols(colsSEXP);
+    rcpp_result_gen = Rcpp::wrap(augur_subsample_cpp(mat, cols));
+    return rcpp_result_gen;
+END_RCPP
+}
 // bayesprism_gibbs_initial_cpp
 List bayesprism_gibbs_initial_cpp(NumericMatrix mixture, NumericMatrix phi, IntegerVector gibbs_idx, double alpha, int seed, int n_threads);
 RcppExport SEXP _scop_bayesprism_gibbs_initial_cpp(SEXP mixtureSEXP, SEXP phiSEXP, SEXP gibbs_idxSEXP, SEXP alphaSEXP, SEXP seedSEXP, SEXP n_threadsSEXP) {
@@ -1104,6 +1116,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_scop_augur_subsample_cpp", (DL_FUNC) &_scop_augur_subsample_cpp, 2},
     {"_scop_bayesprism_gibbs_initial_cpp", (DL_FUNC) &_scop_bayesprism_gibbs_initial_cpp, 6},
     {"_scop_bayesprism_gibbs_final_cpp", (DL_FUNC) &_scop_bayesprism_gibbs_final_cpp, 6},
     {"_scop_classification_metrics", (DL_FUNC) &_scop_classification_metrics, 4},
