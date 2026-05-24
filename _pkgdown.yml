@@ -172,6 +172,7 @@ reference:
 - subtitle: "Differential Expression and Perturbation"
 - contents:
   - FindExpressedMarkers
+  - RunAugur
   - RunDEtest
   - RunRareQ
   - RunScissor

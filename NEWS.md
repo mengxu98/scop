@@ -1,10 +1,9 @@
-# scop
-
 # scop 0.9.0
 
 * **feat**:
   * `RunDimsEstimate()`: Switched the default dimension-selection route to a scree-based ensemble of broken-stick, elbow, cumulative-variance, and marginal-gain criteria; the previous `intrinsicDimension` route remains available via `method = "intrinsic"` or can be combined with `method = "ensemble"`.
   * Added `RunRareQ()` for RareQ rare-cell population detection from Seurat objects, including automatic neighbor construction through `DefaultReduction()`, metadata writeback, `CellDimPlot()` examples, and detailed result storage in `srt@tools[["RareQ"]]`.
+  * Added `RunAugur()` for Augur cell-type perturbation prioritization from Seurat objects, with an optimized native backend and metadata/tool-slot writeback.
   * Added `RunSCENIC()` for a SCENIC workflow from Seurat objects, including optional metacell GRN input, GRNBoost2/`scenic ctx` execution, regulon conversion, multi-core AUCell batch scoring, and storage of regulon activity scores as a Seurat assay plus detailed results in `@tools`.
   * `RunSCENIC()` now supports `aucell_backend = "cpp"` for regulon activity scoring through the package C++ AUCell implementation, while keeping `aucell_backend = "r"` as the default for exact AUCell package behavior.
   * Added `SCENICPlot()` to calculate regulon specificity scores from SCENIC activity and plot the top regulons for each metadata group.
