@@ -129,44 +129,44 @@ If `combine = FALSE`, returns a named list of ggplot objects:
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-23 13:22:42] Start standard processing workflow...
-#> ℹ [2026-05-23 13:22:42] Checking a list of <Seurat>...
-#> ! [2026-05-23 13:22:42] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-23 13:22:42] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-23 13:22:44] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-23 13:22:44] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-23 13:22:45] Number of available HVF: 2000
-#> ℹ [2026-05-23 13:22:45] Finished check
-#> ℹ [2026-05-23 13:22:45] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-23 13:22:45] Perform pca linear dimension reduction
-#> ℹ [2026-05-23 13:22:45] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-23 13:22:46] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-23 13:22:46] Reorder clusters...
-#> ℹ [2026-05-23 13:22:46] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-23 13:22:46] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-23 13:22:46] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-23 13:22:50] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-23 13:22:54] Standard processing workflow completed
+#> ℹ [2026-05-24 15:02:06] Start standard processing workflow...
+#> ℹ [2026-05-24 15:02:07] Checking a list of <Seurat>...
+#> ! [2026-05-24 15:02:07] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-24 15:02:07] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-24 15:02:08] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-24 15:02:08] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-24 15:02:09] Number of available HVF: 2000
+#> ℹ [2026-05-24 15:02:09] Finished check
+#> ℹ [2026-05-24 15:02:09] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-24 15:02:09] Perform pca linear dimension reduction
+#> ℹ [2026-05-24 15:02:09] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-24 15:02:10] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-24 15:02:10] Reorder clusters...
+#> ℹ [2026-05-24 15:02:10] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-24 15:02:10] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-24 15:02:10] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-24 15:02:14] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-24 15:02:17] Standard processing workflow completed
 pancreas_sub <- RunCytoTRACE(
   pancreas_sub,
   species = "Mus_musculus"
 )
-#> ◌ [2026-05-23 13:22:54] Running CytoTRACE2
-#> ℹ [2026-05-23 13:22:54] Extracting expression matrix from `assay = RNA, layer = counts`
-#> ℹ [2026-05-23 13:22:54] Downloading CytoTRACE2 model data from GitHub repository...
-#> ℹ [2026-05-23 13:22:54]   Downloading model_parameters.rds ...
-#> ℹ [2026-05-23 13:22:54]   Downloading features_model_training_17.csv ...
-#> ℹ [2026-05-23 13:22:54]   Downloading mt_dict_human_to_mouse.csv ...
-#> ℹ [2026-05-23 13:22:54]   Downloading mt_human_alias.csv ...
-#> ℹ [2026-05-23 13:22:54]   Downloading mt_mouse_alias.csv ...
-#> ℹ [2026-05-23 13:22:54] Loading model from /home/runner/.local/share/R/scop/CytoTRACE2
-#> ℹ [2026-05-23 13:22:58] Dataset contains 15998 genes and 1000 cells.
-#> ℹ [2026-05-23 13:22:58] Running on 1 subsample(s)
-#> ℹ [2026-05-23 13:22:58] Preprocessing subsample (1000 cells)
-#> ℹ [2026-05-23 13:22:58] 12486 input genes mapped to model genes.
-#> ℹ [2026-05-23 13:22:59] Running ensemble prediction and postprocessing
-#> ℹ [2026-05-23 13:22:59] Computing PCA for kNN smoothing
-#> ✔ [2026-05-23 13:23:35] CytoTRACE2 computed successfully
+#> ◌ [2026-05-24 15:02:17] Running CytoTRACE2
+#> ℹ [2026-05-24 15:02:17] Extracting expression matrix from `assay = RNA, layer = counts`
+#> ℹ [2026-05-24 15:02:17] Downloading CytoTRACE2 model data from GitHub repository...
+#> ℹ [2026-05-24 15:02:17]   Downloading model_parameters.rds ...
+#> ℹ [2026-05-24 15:02:18]   Downloading features_model_training_17.csv ...
+#> ℹ [2026-05-24 15:02:18]   Downloading mt_dict_human_to_mouse.csv ...
+#> ℹ [2026-05-24 15:02:18]   Downloading mt_human_alias.csv ...
+#> ℹ [2026-05-24 15:02:18]   Downloading mt_mouse_alias.csv ...
+#> ℹ [2026-05-24 15:02:18] Loading model from /home/runner/.local/share/R/scop/CytoTRACE2
+#> ℹ [2026-05-24 15:02:21] Dataset contains 15998 genes and 1000 cells.
+#> ℹ [2026-05-24 15:02:21] Running on 1 subsample(s)
+#> ℹ [2026-05-24 15:02:21] Preprocessing subsample (1000 cells)
+#> ℹ [2026-05-24 15:02:22] 12486 input genes mapped to model genes.
+#> ℹ [2026-05-24 15:02:23] Running ensemble prediction and postprocessing
+#> ℹ [2026-05-24 15:02:23] Computing PCA for kNN smoothing
+#> ✔ [2026-05-24 15:03:02] CytoTRACE2 computed successfully
 
 CytoTRACEPlot(
   pancreas_sub,

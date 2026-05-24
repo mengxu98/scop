@@ -20,10 +20,12 @@ SCENICPlot(
   dims = c(1, 2),
   top_n = 12,
   activity_scale = FALSE,
+  rss_scale = FALSE,
   heatmap_show_row_names = FALSE,
   heatmap_show_column_names = FALSE,
   heatmap_cluster_rows = TRUE,
   heatmap_cluster_columns = FALSE,
+  heatmap_order = c("cluster", "group", "input"),
   heatmap_row_names_side = "right",
   heatmap_column_names_side = "top",
   heatmap_row_names_rot = 0,
@@ -33,6 +35,7 @@ SCENICPlot(
   heatmap_palcolor = NULL,
   heatmap_group_palette = "Chinese",
   heatmap_group_palcolor = NULL,
+  heatmap_limits = NULL,
   heatmap_args = list(),
   max_targets = 20,
   max_edges = Inf,
@@ -112,6 +115,13 @@ SCENICPlot(
   heatmap shows mean regulon activity and does not collapse constant
   regulons to zero.
 
+- rss_scale:
+
+  Whether to z-score each regulon across groups in
+  `plot_type = "rss_heatmap"`. Use `rss_scale = TRUE`,
+  `activity_scale = TRUE`, and the same `heatmap_limits` value when RSS
+  and activity heatmaps should use a comparable row-wise relative scale.
+
 - heatmap_show_row_names, heatmap_show_column_names:
 
   Whether to show row and column names in `plot_type = "rss_heatmap"`
@@ -120,6 +130,15 @@ SCENICPlot(
 - heatmap_cluster_rows, heatmap_cluster_columns:
 
   Whether to cluster rows and columns in SCENIC heatmaps.
+
+- heatmap_order:
+
+  Row ordering strategy for `plot_type = "rss_heatmap"` and
+  `plot_type = "activity_heatmap"`. `"cluster"` keeps the existing
+  dendrogram-based order, `"group"` groups regulons by the group where
+  each regulon reaches its maximum heatmap value, and `"input"` keeps
+  the resolved feature order. `"group"` and `"input"` disable row
+  clustering so the chosen order is preserved.
 
 - heatmap_row_names_side, heatmap_column_names_side:
 
@@ -149,6 +168,13 @@ SCENICPlot(
   or
   [`FeatureHeatmap()`](https://mengxu98.github.io/scop/reference/FeatureHeatmap.md)
   for SCENIC heatmaps.
+
+- heatmap_limits:
+
+  Optional two-length numeric vector used as the color scale limits for
+  `plot_type = "rss_heatmap"` and `plot_type = "activity_heatmap"`. For
+  example, `c(-2, 2)` fixes both z-score heatmaps to the same legend
+  range.
 
 - heatmap_args:
 
@@ -292,6 +318,28 @@ SCENICPlot(
 )
 SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "rss_dotplot")
 SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "activity_heatmap")
+SCENICPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "rss_heatmap",
+  heatmap_order = "group",
+  heatmap_cluster_columns = FALSE
+)
+SCENICPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "rss_heatmap",
+  rss_scale = TRUE,
+  heatmap_order = "group",
+  heatmap_limits = c(-2, 2)
+)
+SCENICPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "activity_heatmap",
+  activity_scale = TRUE,
+  heatmap_limits = c(-2, 2)
+)
 SCENICPlot(
   pancreas_sub,
   group.by = "CellType",

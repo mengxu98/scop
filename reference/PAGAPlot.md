@@ -338,24 +338,24 @@ PAGAPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-23 14:01:46] Start standard processing workflow...
-#> ℹ [2026-05-23 14:01:46] Checking a list of <Seurat>...
-#> ! [2026-05-23 14:01:47] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-23 14:01:47] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-23 14:01:48] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-23 14:01:49] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-23 14:01:49] Number of available HVF: 2000
-#> ℹ [2026-05-23 14:01:49] Finished check
-#> ℹ [2026-05-23 14:01:49] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-23 14:01:49] Perform pca linear dimension reduction
-#> ℹ [2026-05-23 14:01:50] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-23 14:01:50] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-23 14:01:50] Reorder clusters...
-#> ℹ [2026-05-23 14:01:50] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-23 14:01:50] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-23 14:01:50] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-23 14:01:55] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-23 14:01:59] Standard processing workflow completed
+#> ℹ [2026-05-24 15:40:08] Start standard processing workflow...
+#> ℹ [2026-05-24 15:40:09] Checking a list of <Seurat>...
+#> ! [2026-05-24 15:40:09] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-24 15:40:09] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-24 15:40:10] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-24 15:40:11] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-24 15:40:11] Number of available HVF: 2000
+#> ℹ [2026-05-24 15:40:11] Finished check
+#> ℹ [2026-05-24 15:40:11] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-24 15:40:11] Perform pca linear dimension reduction
+#> ℹ [2026-05-24 15:40:12] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-24 15:40:12] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-24 15:40:12] Reorder clusters...
+#> ℹ [2026-05-24 15:40:12] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-24 15:40:12] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-24 15:40:12] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-24 15:40:17] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-24 15:40:21] Standard processing workflow completed
 pancreas_sub <- RunPAGA(
   pancreas_sub,
   group.by = "SubCellType",
@@ -364,8 +364,8 @@ pancreas_sub <- RunPAGA(
   backend = "cpp",
   return_seurat = TRUE
 )
-#> ℹ [2026-05-23 14:01:59] Running PAGA with `backend = 'cpp'` using 29 neighbors
-#> ✔ [2026-05-23 14:01:59] PAGA cpp backend completed
+#> ℹ [2026-05-24 15:40:21] Running PAGA with `backend = 'cpp'` using 29 neighbors
+#> ✔ [2026-05-24 15:40:21] PAGA cpp backend completed
 
 PAGAPlot(pancreas_sub)
 

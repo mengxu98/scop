@@ -50,24 +50,24 @@ MetabolismPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-23 14:01:13] Start standard processing workflow...
-#> ℹ [2026-05-23 14:01:13] Checking a list of <Seurat>...
-#> ! [2026-05-23 14:01:13] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-23 14:01:13] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-23 14:01:15] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-23 14:01:15] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-23 14:01:15] Number of available HVF: 2000
-#> ℹ [2026-05-23 14:01:15] Finished check
-#> ℹ [2026-05-23 14:01:15] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-23 14:01:16] Perform pca linear dimension reduction
-#> ℹ [2026-05-23 14:01:16] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-23 14:01:17] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-23 14:01:17] Reorder clusters...
-#> ℹ [2026-05-23 14:01:17] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-23 14:01:17] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-23 14:01:17] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-23 14:01:21] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-23 14:01:26] Standard processing workflow completed
+#> ℹ [2026-05-24 15:39:35] Start standard processing workflow...
+#> ℹ [2026-05-24 15:39:36] Checking a list of <Seurat>...
+#> ! [2026-05-24 15:39:36] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-24 15:39:36] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-24 15:39:37] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-24 15:39:38] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-24 15:39:38] Number of available HVF: 2000
+#> ℹ [2026-05-24 15:39:38] Finished check
+#> ℹ [2026-05-24 15:39:38] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-24 15:39:38] Perform pca linear dimension reduction
+#> ℹ [2026-05-24 15:39:39] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-24 15:39:39] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-24 15:39:39] Reorder clusters...
+#> ℹ [2026-05-24 15:39:39] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-24 15:39:39] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-24 15:39:39] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-24 15:39:44] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-24 15:39:48] Standard processing workflow completed
 pancreas_sub <- RunMetabolism(
   pancreas_sub,
   db = c("KEGG", "REACTOME"),
@@ -75,13 +75,13 @@ pancreas_sub <- RunMetabolism(
   species = "Mus_musculus",
   method = "AUCell"
 )
-#> ℹ [2026-05-23 14:01:26] Start metabolism pathway scoring
-#> ℹ [2026-05-23 14:01:26] Data type is raw counts
-#> ℹ [2026-05-23 14:01:26] Averaging expression by "CellType" ...
-#> ℹ [2026-05-23 14:01:26] Aggregated expression: 15998 genes x 5 groups
-#> ℹ [2026-05-23 14:01:26] Using raw scMetabolism gene sets directly; `PrepareDB()` / BioMart-based ID rebuilding is skipped
-#> ℹ [2026-05-23 14:01:27] Total metabolism gene sets to score: 127
-#> ✔ [2026-05-23 14:01:27] Metabolism scores stored in tools slot "Metabolism_CellType_AUCell"
+#> ℹ [2026-05-24 15:39:48] Start metabolism pathway scoring
+#> ℹ [2026-05-24 15:39:48] Data type is raw counts
+#> ℹ [2026-05-24 15:39:48] Averaging expression by "CellType" ...
+#> ℹ [2026-05-24 15:39:48] Aggregated expression: 15998 genes x 5 groups
+#> ℹ [2026-05-24 15:39:48] Using raw scMetabolism gene sets directly; `PrepareDB()` / BioMart-based ID rebuilding is skipped
+#> ℹ [2026-05-24 15:39:49] Total metabolism gene sets to score: 127
+#> ✔ [2026-05-24 15:39:49] Metabolism scores stored in tools slot "Metabolism_CellType_AUCell"
 
 ht1 <- MetabolismPlot(
   pancreas_sub,
@@ -138,7 +138,7 @@ MetabolismPlot(
   plot_type = "network",
   topTerm = 3
 )
-#> ✔ [2026-05-23 14:01:32] shadowtext installed successfully
+#> ✔ [2026-05-24 15:39:54] shadowtext installed successfully
 
 
 MetabolismPlot(
@@ -165,12 +165,12 @@ pancreas_sub <- RunMetabolism(
   db = c("KEGG", "REACTOME"),
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-23 14:01:38] Start metabolism pathway scoring
-#> ℹ [2026-05-23 14:01:38] Data type is raw counts
-#> ℹ [2026-05-23 14:01:38] Using raw scMetabolism gene sets directly; `PrepareDB()` / BioMart-based ID rebuilding is skipped
-#> ℹ [2026-05-23 14:01:38] Total metabolism gene sets to score: 127
-#> ✔ [2026-05-23 14:01:39] Metabolism scores stored in tools slot "Metabolism_AUCell"
-#> ℹ [2026-05-23 14:01:39] Metabolism scores also stored in assay "METABOLISM"
+#> ℹ [2026-05-24 15:40:00] Start metabolism pathway scoring
+#> ℹ [2026-05-24 15:40:00] Data type is raw counts
+#> ℹ [2026-05-24 15:40:00] Using raw scMetabolism gene sets directly; `PrepareDB()` / BioMart-based ID rebuilding is skipped
+#> ℹ [2026-05-24 15:40:00] Total metabolism gene sets to score: 127
+#> ✔ [2026-05-24 15:40:01] Metabolism scores stored in tools slot "Metabolism_AUCell"
+#> ℹ [2026-05-24 15:40:01] Metabolism scores also stored in assay "METABOLISM"
 
 FeatureDimPlot(
   pancreas_sub,
@@ -201,5 +201,5 @@ ht <- GroupHeatmap(
   width = 1,
   height = 2
 )
-#> ! [2026-05-23 14:01:40] The values in the "counts" layer are non-integer. Set the library size to "1"
+#> ! [2026-05-24 15:40:02] The values in the "counts" layer are non-integer. Set the library size to "1"
 ```

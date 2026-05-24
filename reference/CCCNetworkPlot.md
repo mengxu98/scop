@@ -342,24 +342,24 @@ A ggplot, patchwork, or recorded plot object.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-23 12:46:59] Start standard processing workflow...
-#> ℹ [2026-05-23 12:46:59] Checking a list of <Seurat>...
-#> ! [2026-05-23 12:47:00] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-23 12:47:00] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-23 12:47:00] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-23 12:47:01] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-23 12:47:01] Number of available HVF: 2000
-#> ℹ [2026-05-23 12:47:01] Finished check
-#> ℹ [2026-05-23 12:47:01] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-23 12:47:02] Perform pca linear dimension reduction
-#> ℹ [2026-05-23 12:47:02] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-23 12:47:02] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-23 12:47:02] Reorder clusters...
-#> ℹ [2026-05-23 12:47:03] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-23 12:47:03] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-23 12:47:03] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-23 12:47:05] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-23 12:47:08] Standard processing workflow completed
+#> ℹ [2026-05-24 14:33:28] Start standard processing workflow...
+#> ℹ [2026-05-24 14:33:29] Checking a list of <Seurat>...
+#> ! [2026-05-24 14:33:29] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-24 14:33:29] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-24 14:33:29] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-24 14:33:30] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-24 14:33:30] Number of available HVF: 2000
+#> ℹ [2026-05-24 14:33:30] Finished check
+#> ℹ [2026-05-24 14:33:30] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-24 14:33:31] Perform pca linear dimension reduction
+#> ℹ [2026-05-24 14:33:31] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-24 14:33:31] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-24 14:33:31] Reorder clusters...
+#> ℹ [2026-05-24 14:33:32] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-24 14:33:32] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-24 14:33:32] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-24 14:33:34] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-24 14:33:37] Standard processing workflow completed
 
 pc1 <- Seurat::Embeddings(pancreas_sub, "Standardpca")[, 1]
 ct <- as.character(pancreas_sub$CellType)
@@ -377,26 +377,26 @@ pancreas_sub <- RunCellChat(
   group_cmp = list(c("ConditionA", "ConditionB")),
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-23 12:47:08] Start CellChat analysis
-#> ℹ [2026-05-23 12:47:13] Processing condition: "ConditionA"
+#> ℹ [2026-05-24 14:33:37] Start CellChat analysis
+#> ℹ [2026-05-24 14:33:42] Processing condition: "ConditionA"
 #> [1] "Create a CellChat object from a data matrix"
 #> Set cell identities for the new CellChat object 
 #> The cell groups used for CellChat analysis are  Ductal, Ngn3-high-EP, Endocrine, Ngn3-low-EP, Pre-endocrine 
 #> The number of highly variable ligand-receptor pairs used for signaling inference is 542 
 #> triMean is used for calculating the average gene expression per cell group. 
-#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-05-23 12:47:15.250426]"
-#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-05-23 12:47:34.312865]"
-#> ℹ [2026-05-23 12:47:34] Processing condition: "ConditionB"
+#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-05-24 14:33:43.817079]"
+#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-05-24 14:34:02.440171]"
+#> ℹ [2026-05-24 14:34:02] Processing condition: "ConditionB"
 #> [1] "Create a CellChat object from a data matrix"
 #> Set cell identities for the new CellChat object 
 #> The cell groups used for CellChat analysis are  Endocrine, Ngn3-high-EP, Ductal, Ngn3-low-EP, Pre-endocrine 
 #> The number of highly variable ligand-receptor pairs used for signaling inference is 597 
 #> triMean is used for calculating the average gene expression per cell group. 
-#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-05-23 12:47:36.419763]"
-#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-05-23 12:47:58.539306]"
-#> ℹ [2026-05-23 12:47:58] Merging CellChat objects for comparison "ConditionA_vs_ConditionB"
+#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-05-24 14:34:04.521886]"
+#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-05-24 14:34:25.466063]"
+#> ℹ [2026-05-24 14:34:25] Merging CellChat objects for comparison "ConditionA_vs_ConditionB"
 #> Merge the following slots: 'data.signaling','images','net', 'netP','meta', 'idents', 'var.features' , 'DB', and 'LR'.
-#> ✔ [2026-05-23 12:47:58] CellChat analysis completed
+#> ✔ [2026-05-24 14:34:25] CellChat analysis completed
 
 CCCNetworkPlot(
   pancreas_sub,
