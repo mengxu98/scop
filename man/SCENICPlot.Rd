@@ -18,10 +18,12 @@ SCENICPlot(
   dims = c(1, 2),
   top_n = 12,
   activity_scale = FALSE,
+  rss_scale = FALSE,
   heatmap_show_row_names = FALSE,
   heatmap_show_column_names = FALSE,
   heatmap_cluster_rows = TRUE,
   heatmap_cluster_columns = FALSE,
+  heatmap_order = c("cluster", "group", "input"),
   heatmap_row_names_side = "right",
   heatmap_column_names_side = "top",
   heatmap_row_names_rot = 0,
@@ -31,6 +33,7 @@ SCENICPlot(
   heatmap_palcolor = NULL,
   heatmap_group_palette = "Chinese",
   heatmap_group_palcolor = NULL,
+  heatmap_limits = NULL,
   heatmap_args = list(),
   max_targets = 20,
   max_edges = Inf,
@@ -86,11 +89,23 @@ available.}
 heatmap shows mean regulon activity and does not collapse constant regulons
 to zero.}
 
+\item{rss_scale}{Whether to z-score each regulon across groups in
+\code{plot_type = "rss_heatmap"}. Use \code{rss_scale = TRUE},
+\code{activity_scale = TRUE}, and the same \code{heatmap_limits} value when RSS and
+activity heatmaps should use a comparable row-wise relative scale.}
+
 \item{heatmap_show_row_names, heatmap_show_column_names}{Whether to show row
 and column names in \code{plot_type = "rss_heatmap"} and \code{plot_type = "activity_heatmap"}.}
 
 \item{heatmap_cluster_rows, heatmap_cluster_columns}{Whether to cluster rows
 and columns in SCENIC heatmaps.}
+
+\item{heatmap_order}{Row ordering strategy for \code{plot_type = "rss_heatmap"}
+and \code{plot_type = "activity_heatmap"}. \code{"cluster"} keeps the existing
+dendrogram-based order, \code{"group"} groups regulons by the group where each
+regulon reaches its maximum heatmap value, and \code{"input"} keeps the resolved
+feature order. \code{"group"} and \code{"input"} disable row clustering so the chosen
+order is preserved.}
 
 \item{heatmap_row_names_side, heatmap_column_names_side}{Sides used for row
 and column names in SCENIC heatmaps.}
@@ -106,6 +121,11 @@ sensible default is selected for each heatmap type.}
 
 \item{heatmap_group_palette, heatmap_group_palcolor}{Group annotation palette
 passed to \code{\link[=GroupHeatmap]{GroupHeatmap()}} or \code{\link[=FeatureHeatmap]{FeatureHeatmap()}} for SCENIC heatmaps.}
+
+\item{heatmap_limits}{Optional two-length numeric vector used as the color
+scale limits for \code{plot_type = "rss_heatmap"} and \code{plot_type =
+"activity_heatmap"}. For example, \code{c(-2, 2)} fixes both z-score heatmaps to
+the same legend range.}
 
 \item{heatmap_args}{Additional arguments passed to \code{\link[=GroupHeatmap]{GroupHeatmap()}} for
 \code{plot_type = "activity_heatmap"} or \code{\link[=FeatureHeatmap]{FeatureHeatmap()}} for \code{plot_type = "rss_heatmap"}.}
@@ -202,6 +222,28 @@ SCENICPlot(
 )
 SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "rss_dotplot")
 SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "activity_heatmap")
+SCENICPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "rss_heatmap",
+  heatmap_order = "group",
+  heatmap_cluster_columns = FALSE
+)
+SCENICPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "rss_heatmap",
+  rss_scale = TRUE,
+  heatmap_order = "group",
+  heatmap_limits = c(-2, 2)
+)
+SCENICPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "activity_heatmap",
+  activity_scale = TRUE,
+  heatmap_limits = c(-2, 2)
+)
 SCENICPlot(
   pancreas_sub,
   group.by = "CellType",
