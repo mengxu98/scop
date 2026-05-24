@@ -912,7 +912,7 @@ scenic_plot_activity_violin <- function(
     features = features,
     available = rownames(auc_mat),
     top_table = top_table,
-    max_features = 6
+    max_features = if (is.null(features)) 6 else NULL
   )
   plot_data <- do.call(
     rbind,
@@ -966,7 +966,7 @@ scenic_plot_activity_dim <- function(
     features = features,
     available = rownames(auc_mat),
     top_table = top_table,
-    max_features = 6
+    max_features = if (is.null(features)) 6 else NULL
   )
   reduction <- scenic_select_reduction(srt, reduction)
   emb <- Seurat::Embeddings(srt, reduction = reduction)
