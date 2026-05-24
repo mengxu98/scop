@@ -165,7 +165,7 @@ results in <code>srt@tools[["BayesSpace"]]</code>.</p>
 <span class="r-in"><span>    save.chain <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 14:08:24] Convert <span style="color: #0000BB;">&lt;Seurat&gt;</span> to <span style="color: #0000BB;">&lt;SingleCellExperiment&gt;</span> for <span style="color: #0000BB;">BayesSpace</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-24 15:48:08] Convert <span style="color: #0000BB;">&lt;Seurat&gt;</span> to <span style="color: #0000BB;">&lt;SingleCellExperiment&gt;</span> for <span style="color: #0000BB;">BayesSpace</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘scale.data’ is empty</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'librarySizeFactors' is deprecated.</span>
@@ -182,15 +182,15 @@ results in <code>srt@tools[["BayesSpace"]]</code>.</p>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'getTopHVGs' is deprecated.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> Use 'scrapper::chooseHighlyVariableGenes' instead.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> See help("Deprecated")</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 14:08:25] Run <span style="color: #0000BB;">BayesSpace</span> spatial clustering with `q = 3`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-24 15:48:09] Run <span style="color: #0000BB;">BayesSpace</span> spatial clustering with `q = 3`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Neighbors were identified for 1974 out of 1986 spots.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Fitting model...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating labels using iterations 51 through 200.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-23 14:08:29] <span style="color: #0000BB;">BayesSpace</span> clusters stored in metadata column <span style="color: #0000BB;">"BayesSpace_cluster"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-24 15:48:13] <span style="color: #0000BB;">BayesSpace</span> clusters stored in metadata column <span style="color: #0000BB;">"BayesSpace_cluster"</span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">$</span><span class="va">BayesSpace_cluster</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    1    2    3 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1240  547  199 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1237  549  200 </span>
 <span class="r-in"><span><span class="fu"><a href="SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span><span class="va">spatial</span>, group.by <span class="op">=</span> <span class="st">"BayesSpace_cluster"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="RunBayesSpace-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>

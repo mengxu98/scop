@@ -18,6 +18,10 @@
     [`CellDimPlot()`](https://mengxu98.github.io/scop/reference/CellDimPlot.md)
     examples, and detailed result storage in `srt@tools[["RareQ"]]`.
   - Added
+    [`RunAugur()`](https://mengxu98.github.io/scop/reference/RunAugur.md)
+    for Augur cell-type perturbation prioritization from Seurat objects,
+    with an optimized native backend and metadata/tool-slot writeback.
+  - Added
     [`RunSCENIC()`](https://mengxu98.github.io/scop/reference/RunSCENIC.md)
     for a SCENIC workflow from Seurat objects, including optional
     metacell GRN input, GRNBoost2/`scenic ctx` execution, regulon
@@ -32,6 +36,11 @@
     [`SCENICPlot()`](https://mengxu98.github.io/scop/reference/SCENICPlot.md)
     to calculate regulon specificity scores from SCENIC activity and
     plot the top regulons for each metadata group.
+  - [`SCENICPlot()`](https://mengxu98.github.io/scop/reference/SCENICPlot.md)
+    heatmaps now expose `rss_scale`, `heatmap_limits`, and
+    `heatmap_order`, allowing RSS and activity heatmaps to use matched
+    row-wise z-score color scales and stable group-block row ordering
+    when requested.
   - Added
     [`RunScissor()`](https://mengxu98.github.io/scop/reference/RunScissor.md)
     and
@@ -93,6 +102,10 @@
     information style as
     [`thisutils::log_message()`](https://mengxu98.github.io/thisutils/reference/log_message.html).
 - **fix**:
+  - [`SCENICPlot()`](https://mengxu98.github.io/scop/reference/SCENICPlot.md):
+    `plot_type = "activity_dim"` and `"activity_violin"` now respect all
+    explicitly supplied `features`, instead of applying the six-regulon
+    default preview limit.
   - [`RunHarmony2()`](https://mengxu98.github.io/scop/reference/RunHarmony2.md):
     Added compatibility with Harmony 2.0 objects by directly trying both
     legacy fields (`Z_corr` / `R`) and callable methods (`getZcorr()` /

@@ -209,24 +209,24 @@ RunDynamicEnrichment(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-23 14:27:39] Start standard processing workflow...
-#> ℹ [2026-05-23 14:27:40] Checking a list of <Seurat>...
-#> ! [2026-05-23 14:27:40] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-23 14:27:40] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-23 14:27:42] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-23 14:27:42] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-23 14:27:43] Number of available HVF: 2000
-#> ℹ [2026-05-23 14:27:43] Finished check
-#> ℹ [2026-05-23 14:27:43] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-23 14:27:43] Perform pca linear dimension reduction
-#> ℹ [2026-05-23 14:27:44] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-23 14:27:44] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-23 14:27:44] Reorder clusters...
-#> ℹ [2026-05-23 14:27:44] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-23 14:27:44] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-23 14:27:44] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-23 14:27:49] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-23 14:27:55] Standard processing workflow completed
+#> ℹ [2026-05-24 16:06:47] Start standard processing workflow...
+#> ℹ [2026-05-24 16:06:48] Checking a list of <Seurat>...
+#> ! [2026-05-24 16:06:48] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-24 16:06:48] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-24 16:06:50] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-24 16:06:50] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-24 16:06:51] Number of available HVF: 2000
+#> ℹ [2026-05-24 16:06:51] Finished check
+#> ℹ [2026-05-24 16:06:51] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-24 16:06:51] Perform pca linear dimension reduction
+#> ℹ [2026-05-24 16:06:51] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-24 16:06:52] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-24 16:06:52] Reorder clusters...
+#> ℹ [2026-05-24 16:06:52] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-24 16:06:52] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-24 16:06:52] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-24 16:06:57] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-24 16:07:02] Standard processing workflow completed
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "CellType",
@@ -243,21 +243,21 @@ pancreas_sub <- RunDynamicFeatures(
   fit_method = "pretsa",
   n_candidates = 200
 )
-#> ℹ [2026-05-23 14:27:55] Start find dynamic features
-#> ℹ [2026-05-23 14:27:56] Data type is raw counts
-#> ℹ [2026-05-23 14:27:57] Number of candidate features (union): 200
-#> ℹ [2026-05-23 14:27:57] Data type is raw counts
-#> ℹ [2026-05-23 14:27:57] Calculating dynamic features for "Lineage1"...
-#> ✔ [2026-05-23 14:27:57] Find dynamic features done
+#> ℹ [2026-05-24 16:07:03] Start find dynamic features
+#> ℹ [2026-05-24 16:07:04] Data type is raw counts
+#> ℹ [2026-05-24 16:07:05] Number of candidate features (union): 200
+#> ℹ [2026-05-24 16:07:05] Data type is raw counts
+#> ℹ [2026-05-24 16:07:05] Calculating dynamic features for "Lineage1"...
+#> ✔ [2026-05-24 16:07:05] Find dynamic features done
 ht1 <- DynamicHeatmap(
   pancreas_sub,
   lineages = "Lineage1",
   cell_annotation = "CellType",
   n_split = 3
 )
-#> ℹ [2026-05-23 14:27:58] [1] 132 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-05-24 16:07:05] [1] 132 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Ins1,Ins2,Nnat,Iapp,Lrpprc,Npy,Chgb,Slc38a5,2810417H13Rik,Rbp4...
-#> ℹ [2026-05-23 14:27:58] 
+#> ℹ [2026-05-24 16:07:06] 
 #> ℹ                       The size of the heatmap is fixed because certain elements are not scalable.
 #> ℹ                       The width and height of the heatmap are determined by the size of the current viewport.
 #> ℹ                       If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
@@ -270,40 +270,41 @@ pancreas_sub <- RunDynamicEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-23 14:28:00] Species: "Mus_musculus"
-#> ℹ [2026-05-23 14:28:00] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-23 13:33:03
-#> ℹ [2026-05-23 14:28:02] Start cell scoring
-#> ℹ [2026-05-23 14:28:03] Data type is log-normalized
-#> ℹ [2026-05-23 14:28:04] Number of feature lists to be scored: 2719
+#> ℹ [2026-05-24 16:07:07] Species: "Mus_musculus"
+#> ℹ [2026-05-24 16:07:08] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-24 15:12:29
+#> ℹ [2026-05-24 16:07:10] Start cell scoring
+#> ℹ [2026-05-24 16:07:11] Data type is log-normalized
+#> ℹ [2026-05-24 16:07:12] Number of feature lists to be scored: 2719
 #> Warning: Feature names cannot have underscores ('_'), replacing with dashes ('-')
 #> Warning: Feature names cannot have underscores ('_'), replacing with dashes ('-')
-#> ✔ [2026-05-23 14:28:11] Cell scoring completed
-#> ℹ [2026-05-23 14:28:11] Start find dynamic features
-#> ℹ [2026-05-23 14:28:12] Data type is log-normalized
-#> ℹ [2026-05-23 14:28:12] Number of candidate features (union): 2719
-#> ℹ [2026-05-23 14:28:12] Data type is log-normalized
-#> ℹ [2026-05-23 14:28:12] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-05-23 14:28:12] Using 1 core
-#> ⠙ [2026-05-23 14:28:12] Running for GO-BP-2..deoxyribonucleotide.biosynthetic.p…
-#> ⠹ [2026-05-23 14:28:12] Running for GO-BP-amino.acid.transport [121/2719]      …
-#> ⠸ [2026-05-23 14:28:12] Running for GO-BP-cellular.response.to.heat [331/2719] …
-#> ⠼ [2026-05-23 14:28:12] Running for GO-BP-endothelial.cell.proliferation [529/2…
-#> ⠴ [2026-05-23 14:28:12] Running for GO-BP-import.across.plasma.membrane [727/27…
-#> ⠦ [2026-05-23 14:28:12] Running for GO-BP-metanephric.nephron.development [921/…
-#> ⠧ [2026-05-23 14:28:12] Running for GO-BP-negative.regulation.of.chromosome.org…
-#> ⠇ [2026-05-23 14:28:12] Running for GO-BP-neurotransmitter.uptake [1324/2719] ■…
-#> ⠏ [2026-05-23 14:28:12] Running for GO-BP-positive.regulation.of.cell.activatio…
-#> ⠋ [2026-05-23 14:28:12] Running for GO-BP-positive.regulation.of.secretion [171…
-#> ⠙ [2026-05-23 14:28:12] Running for GO-BP-regulation.of.actin.filament.length […
-#> ⠹ [2026-05-23 14:28:12] Running for GO-BP-regulation.of.intrinsic.apoptotic.sig…
-#> ⠸ [2026-05-23 14:28:12] Running for GO-BP-regulation.of.response.to.food [2302/…
-#> ⠼ [2026-05-23 14:28:12] Running for GO-BP-ribonucleoside.diphosphate.catabolic.…
-#> ⠴ [2026-05-23 14:28:12] Running for GO-BP-viral.gene.expression [2701/2719] ■■■…
-#> ✔ [2026-05-23 14:28:12] Completed 2719 tasks in 41.2s
+#> ✔ [2026-05-24 16:07:19] Cell scoring completed
+#> ℹ [2026-05-24 16:07:19] Start find dynamic features
+#> ℹ [2026-05-24 16:07:20] Data type is log-normalized
+#> ℹ [2026-05-24 16:07:20] Number of candidate features (union): 2719
+#> ℹ [2026-05-24 16:07:20] Data type is log-normalized
+#> ℹ [2026-05-24 16:07:20] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-05-24 16:07:20] Using 1 core
+#> ⠙ [2026-05-24 16:07:20] Running for GO-BP-2..deoxyribonucleotide.biosynthetic.p…
+#> ⠹ [2026-05-24 16:07:20] Running for GO-BP-adrenal.gland.development [99/2719]  …
+#> ⠸ [2026-05-24 16:07:20] Running for GO-BP-catecholamine.secretion [266/2719]   …
+#> ⠼ [2026-05-24 16:07:20] Running for GO-BP-defense.response.to.fungus [450/2719]…
+#> ⠴ [2026-05-24 16:07:20] Running for GO-BP-glucose.catabolic.process [652/2719] …
+#> ⠦ [2026-05-24 16:07:20] Running for GO-BP-locomotor.rhythm [829/2719] ■■■      …
+#> ⠧ [2026-05-24 16:07:20] Running for GO-BP-muscle.cell.apoptotic.process [1018/2…
+#> ⠇ [2026-05-24 16:07:20] Running for GO-BP-negative.regulation.of.neuron.project…
+#> ⠏ [2026-05-24 16:07:20] Running for GO-BP-organic.acid.transport [1397/2719] ■■…
+#> ⠋ [2026-05-24 16:07:20] Running for GO-BP-positive.regulation.of.glucose.metabo…
+#> ⠙ [2026-05-24 16:07:20] Running for GO-BP-proteasome.mediated.ubiquitin.depende…
+#> ⠹ [2026-05-24 16:07:20] Running for GO-BP-regulation.of.bone.mineralization [19…
+#> ⠸ [2026-05-24 16:07:20] Running for GO-BP-regulation.of.lipid.metabolic.process…
+#> ⠼ [2026-05-24 16:07:20] Running for GO-BP-regulation.of.sister.chromatid.segreg…
+#> ⠴ [2026-05-24 16:07:20] Running for GO-BP-retina.development.in.camera.type.eye…
+#> ⠦ [2026-05-24 16:07:20] Running for GO-BP-urogenital.system.development [2671/2…
+#> ✔ [2026-05-24 16:07:20] Completed 2719 tasks in 44.3s
 #> 
-#> ℹ [2026-05-23 14:28:12] Building results
-#> ✔ [2026-05-23 14:28:54] Find dynamic features done
-#> ✔ [2026-05-23 14:28:54] Dynamic enrichment analysis completed
+#> ℹ [2026-05-24 16:07:20] Building results
+#> ✔ [2026-05-24 16:08:05] Find dynamic features done
+#> ✔ [2026-05-24 16:08:05] Dynamic enrichment analysis completed
 ht2 <- DynamicHeatmap(
   pancreas_sub,
   assay = "GO_BP",
@@ -312,10 +313,10 @@ ht2 <- DynamicHeatmap(
   n_split = 3,
   split_method = "kmeans-peaktime"
 )
-#> ℹ [2026-05-23 14:28:54] [1] 1881 features from Lineage1_GO_BP passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-05-24 16:08:05] [1] 1881 features from Lineage1_GO_BP passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       GO-BP-2..deoxyribonucleotide.biosynthetic.process,GO-BP-2..deoxyribonucleotide.metabolic.process,GO-BP-ADP.catabolic.process,GO-BP-ADP.metabolic.process,GO-BP-ATP.metabolic.process,GO-BP-ATP.synthesis.coupled.electron.transport,GO-BP-B.cell.activation,GO-BP-B.cell.proliferation,GO-BP-CENP.A.containing.chromatin.assembly,GO-BP-D.glucose.import.across.plasma.membrane...
-#> ! [2026-05-23 14:28:54] The values in the 'counts' layer are non-integer. Set the library size to 1.
-#> ℹ [2026-05-23 14:28:55] 
+#> ! [2026-05-24 16:08:05] The values in the 'counts' layer are non-integer. Set the library size to 1.
+#> ℹ [2026-05-24 16:08:06] 
 #> ℹ                       The size of the heatmap is fixed because certain elements are not scalable.
 #> ℹ                       The width and height of the heatmap are determined by the size of the current viewport.
 #> ℹ                       If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.

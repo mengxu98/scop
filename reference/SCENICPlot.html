@@ -61,10 +61,12 @@ plot the top regulons for each group.</p>
 <span>  dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,</span>
 <span>  top_n <span class="op">=</span> <span class="fl">12</span>,</span>
 <span>  activity_scale <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  rss_scale <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  heatmap_show_row_names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  heatmap_show_column_names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  heatmap_cluster_rows <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  heatmap_cluster_columns <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  heatmap_order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cluster"</span>, <span class="st">"group"</span>, <span class="st">"input"</span><span class="op">)</span>,</span>
 <span>  heatmap_row_names_side <span class="op">=</span> <span class="st">"right"</span>,</span>
 <span>  heatmap_column_names_side <span class="op">=</span> <span class="st">"top"</span>,</span>
 <span>  heatmap_row_names_rot <span class="op">=</span> <span class="fl">0</span>,</span>
@@ -74,6 +76,7 @@ plot the top regulons for each group.</p>
 <span>  heatmap_palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  heatmap_group_palette <span class="op">=</span> <span class="st">"Chinese"</span>,</span>
 <span>  heatmap_group_palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  heatmap_limits <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  heatmap_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  max_targets <span class="op">=</span> <span class="fl">20</span>,</span>
 <span>  max_edges <span class="op">=</span> <span class="cn">Inf</span>,</span>
@@ -155,6 +158,13 @@ heatmap shows mean regulon activity and does not collapse constant regulons
 to zero.</p></dd>
 
 
+<dt id="arg-rss-scale">rss_scale<a class="anchor" aria-label="anchor" href="#arg-rss-scale"></a></dt>
+<dd><p>Whether to z-score each regulon across groups in
+<code>plot_type = "rss_heatmap"</code>. Use <code>rss_scale = TRUE</code>,
+<code>activity_scale = TRUE</code>, and the same <code>heatmap_limits</code> value when RSS and
+activity heatmaps should use a comparable row-wise relative scale.</p></dd>
+
+
 <dt id="arg-heatmap-show-row-names-heatmap-show-column-names">heatmap_show_row_names, heatmap_show_column_names<a class="anchor" aria-label="anchor" href="#arg-heatmap-show-row-names-heatmap-show-column-names"></a></dt>
 <dd><p>Whether to show row
 and column names in <code>plot_type = "rss_heatmap"</code> and <code>plot_type = "activity_heatmap"</code>.</p></dd>
@@ -163,6 +173,15 @@ and column names in <code>plot_type = "rss_heatmap"</code> and <code>plot_type =
 <dt id="arg-heatmap-cluster-rows-heatmap-cluster-columns">heatmap_cluster_rows, heatmap_cluster_columns<a class="anchor" aria-label="anchor" href="#arg-heatmap-cluster-rows-heatmap-cluster-columns"></a></dt>
 <dd><p>Whether to cluster rows
 and columns in SCENIC heatmaps.</p></dd>
+
+
+<dt id="arg-heatmap-order">heatmap_order<a class="anchor" aria-label="anchor" href="#arg-heatmap-order"></a></dt>
+<dd><p>Row ordering strategy for <code>plot_type = "rss_heatmap"</code>
+and <code>plot_type = "activity_heatmap"</code>. <code>"cluster"</code> keeps the existing
+dendrogram-based order, <code>"group"</code> groups regulons by the group where each
+regulon reaches its maximum heatmap value, and <code>"input"</code> keeps the resolved
+feature order. <code>"group"</code> and <code>"input"</code> disable row clustering so the chosen
+order is preserved.</p></dd>
 
 
 <dt id="arg-heatmap-row-names-side-heatmap-column-names-side">heatmap_row_names_side, heatmap_column_names_side<a class="anchor" aria-label="anchor" href="#arg-heatmap-row-names-side-heatmap-column-names-side"></a></dt>
@@ -188,6 +207,13 @@ sensible default is selected for each heatmap type.</p></dd>
 <dt id="arg-heatmap-group-palette-heatmap-group-palcolor">heatmap_group_palette, heatmap_group_palcolor<a class="anchor" aria-label="anchor" href="#arg-heatmap-group-palette-heatmap-group-palcolor"></a></dt>
 <dd><p>Group annotation palette
 passed to <code><a href="GroupHeatmap.html">GroupHeatmap()</a></code> or <code><a href="FeatureHeatmap.html">FeatureHeatmap()</a></code> for SCENIC heatmaps.</p></dd>
+
+
+<dt id="arg-heatmap-limits">heatmap_limits<a class="anchor" aria-label="anchor" href="#arg-heatmap-limits"></a></dt>
+<dd><p>Optional two-length numeric vector used as the color
+scale limits for <code>plot_type = "rss_heatmap"</code> and <code>plot_type =
+"activity_heatmap"</code>. For example, <code>c(-2, 2)</code> fixes both z-score heatmaps to
+the same legend range.</p></dd>
 
 
 <dt id="arg-heatmap-args">heatmap_args<a class="anchor" aria-label="anchor" href="#arg-heatmap-args"></a></dt>
@@ -328,6 +354,28 @@ plots.</p>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">SCENICPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group.by <span class="op">=</span> <span class="st">"CellType"</span>, plot_type <span class="op">=</span> <span class="st">"rss_dotplot"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">SCENICPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group.by <span class="op">=</span> <span class="st">"CellType"</span>, plot_type <span class="op">=</span> <span class="st">"activity_heatmap"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">SCENICPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"rss_heatmap"</span>,</span></span>
+<span class="r-in"><span>  heatmap_order <span class="op">=</span> <span class="st">"group"</span>,</span></span>
+<span class="r-in"><span>  heatmap_cluster_columns <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">SCENICPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"rss_heatmap"</span>,</span></span>
+<span class="r-in"><span>  rss_scale <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  heatmap_order <span class="op">=</span> <span class="st">"group"</span>,</span></span>
+<span class="r-in"><span>  heatmap_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">SCENICPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"activity_heatmap"</span>,</span></span>
+<span class="r-in"><span>  activity_scale <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  heatmap_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">SCENICPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>

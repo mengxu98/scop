@@ -236,6 +236,8 @@
 
 - [`FindExpressedMarkers()`](https://mengxu98.github.io/scop/reference/FindExpressedMarkers.md)
   : Find Expressed Markers
+- [`RunAugur()`](https://mengxu98.github.io/scop/reference/RunAugur.md)
+  : Prioritize perturbed cell types using Augur
 - [`RunDEtest()`](https://mengxu98.github.io/scop/reference/RunDEtest.md)
   : Differential gene test
 - [`RunRareQ()`](https://mengxu98.github.io/scop/reference/RunRareQ.md)

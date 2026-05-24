@@ -157,12 +157,12 @@ pancreas_sub <- RunscTenifoldKnk(
   store_networks = FALSE,
   store_manifold = TRUE
 )
-#> ℹ [2026-05-23 14:54:52] Run scTenifoldKnk knockout for "Pdx1" using "cpp" backend
-#> ℹ [2026-05-23 14:54:56] Construct scTenifoldNet network ensemble
-#> ℹ [2026-05-23 14:54:57] Denoise network ensemble with tensor decomposition
-#> ℹ [2026-05-23 14:54:57] Denoise network ensemble with tensor decomposition  ■■ …
-#> ℹ [2026-05-23 14:54:57] Align WT and KO network manifolds
-#> ✔ [2026-05-23 14:54:57] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
+#> ℹ [2026-05-24 16:33:44] Run scTenifoldKnk knockout for "Pdx1" using "cpp" backend
+#> ℹ [2026-05-24 16:33:49] Construct scTenifoldNet network ensemble
+#> ℹ [2026-05-24 16:33:49] Denoise network ensemble with tensor decomposition
+#> ℹ [2026-05-24 16:33:49] Denoise network ensemble with tensor decomposition  ■■ …
+#> ℹ [2026-05-24 16:33:49] Align WT and KO network manifolds
+#> ✔ [2026-05-24 16:33:49] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
 
 dr <- pancreas_sub@tools$scTenifoldKnk$diffRegulation
 head(dr)
