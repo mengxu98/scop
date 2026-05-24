@@ -26,11 +26,21 @@
 #' `plot_type = "activity_heatmap"`. The default is `FALSE` so that the
 #' heatmap shows mean regulon activity and does not collapse constant regulons
 #' to zero.
+#' @param rss_scale Whether to z-score each regulon across groups in
+#' `plot_type = "rss_heatmap"`. Use `rss_scale = TRUE`,
+#' `activity_scale = TRUE`, and the same `heatmap_limits` value when RSS and
+#' activity heatmaps should use a comparable row-wise relative scale.
 #' @param heatmap_show_row_names,heatmap_show_column_names Whether to show row
 #' and column names in `plot_type = "rss_heatmap"` and `plot_type =
 #' "activity_heatmap"`.
 #' @param heatmap_cluster_rows,heatmap_cluster_columns Whether to cluster rows
 #' and columns in SCENIC heatmaps.
+#' @param heatmap_order Row ordering strategy for `plot_type = "rss_heatmap"`
+#' and `plot_type = "activity_heatmap"`. `"cluster"` keeps the existing
+#' dendrogram-based order, `"group"` groups regulons by the group where each
+#' regulon reaches its maximum heatmap value, and `"input"` keeps the resolved
+#' feature order. `"group"` and `"input"` disable row clustering so the chosen
+#' order is preserved.
 #' @param heatmap_row_names_side,heatmap_column_names_side Sides used for row
 #' and column names in SCENIC heatmaps.
 #' @param heatmap_row_names_rot,heatmap_column_names_rot Rotation angles for
@@ -41,6 +51,10 @@
 #' sensible default is selected for each heatmap type.
 #' @param heatmap_group_palette,heatmap_group_palcolor Group annotation palette
 #' passed to [GroupHeatmap()] or [FeatureHeatmap()] for SCENIC heatmaps.
+#' @param heatmap_limits Optional two-length numeric vector used as the color
+#' scale limits for `plot_type = "rss_heatmap"` and `plot_type =
+#' "activity_heatmap"`. For example, `c(-2, 2)` fixes both z-score heatmaps to
+#' the same legend range.
 #' @param heatmap_args Additional arguments passed to [GroupHeatmap()] for
 #' `plot_type = "activity_heatmap"` or [FeatureHeatmap()] for `plot_type =
 #' "rss_heatmap"`.
@@ -116,6 +130,28 @@
 #' SCENICPlot(
 #'   pancreas_sub,
 #'   group.by = "CellType",
+#'   plot_type = "rss_heatmap",
+#'   heatmap_order = "group",
+#'   heatmap_cluster_columns = FALSE
+#' )
+#' SCENICPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   plot_type = "rss_heatmap",
+#'   rss_scale = TRUE,
+#'   heatmap_order = "group",
+#'   heatmap_limits = c(-2, 2)
+#' )
+#' SCENICPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   plot_type = "activity_heatmap",
+#'   activity_scale = TRUE,
+#'   heatmap_limits = c(-2, 2)
+#' )
+#' SCENICPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
 #'   plot_type = "activity_violin",
 #'   features = example_regulons
 #' )
@@ -172,10 +208,12 @@ SCENICPlot <- function(
   dims = c(1, 2),
   top_n = 12,
   activity_scale = FALSE,
+  rss_scale = FALSE,
   heatmap_show_row_names = FALSE,
   heatmap_show_column_names = FALSE,
   heatmap_cluster_rows = TRUE,
   heatmap_cluster_columns = FALSE,
+  heatmap_order = c("cluster", "group", "input"),
   heatmap_row_names_side = "right",
   heatmap_column_names_side = "top",
   heatmap_row_names_rot = 0,
@@ -185,6 +223,7 @@ SCENICPlot <- function(
   heatmap_palcolor = NULL,
   heatmap_group_palette = "Chinese",
   heatmap_group_palcolor = NULL,
+  heatmap_limits = NULL,
   heatmap_args = list(),
   max_targets = 20,
   max_edges = Inf,
@@ -211,6 +250,7 @@ SCENICPlot <- function(
   plot_type <- match.arg(plot_type)
   network_layout <- match.arg(network_layout)
   label_nodes <- match.arg(label_nodes)
+  heatmap_order <- match.arg(heatmap_order)
   dot_args <- list(...)
   if (length(dot_args) > 0) {
     if (is.null(names(dot_args)) || any(!nzchar(names(dot_args)))) {
@@ -259,6 +299,17 @@ SCENICPlot <- function(
     )
   }
   dims <- as.integer(dims)
+  if (!is.null(heatmap_limits)) {
+    heatmap_limits <- suppressWarnings(as.numeric(heatmap_limits))
+    if (length(heatmap_limits) != 2L ||
+      any(!is.finite(heatmap_limits)) ||
+      heatmap_limits[[1]] >= heatmap_limits[[2]]) {
+      log_message(
+        "{.arg heatmap_limits} must be an increasing two-length numeric vector",
+        message_type = "error"
+      )
+    }
+  }
   if (!is.null(highlight_tf)) {
     highlight_tf <- unique(as.character(highlight_tf))
     highlight_tf <- highlight_tf[!is.na(highlight_tf) & nzchar(highlight_tf)]
@@ -373,20 +424,23 @@ SCENICPlot <- function(
       rss_matrix = rss_matrix,
       top_table = top_table,
       features = features,
+      scale = rss_scale,
       title = title,
       show_row_names = heatmap_show_row_names,
       show_column_names = heatmap_show_column_names,
       cluster_rows = heatmap_cluster_rows,
       cluster_columns = heatmap_cluster_columns,
+      heatmap_order = heatmap_order,
       row_names_side = heatmap_row_names_side,
       column_names_side = heatmap_column_names_side,
       row_names_rot = heatmap_row_names_rot,
       column_names_rot = heatmap_column_names_rot,
       border = heatmap_border,
-      heatmap_palette = heatmap_palette %||% "viridis",
+      heatmap_palette = heatmap_palette,
       heatmap_palcolor = heatmap_palcolor,
       group_palette = heatmap_group_palette,
       group_palcolor = heatmap_group_palcolor,
+      heatmap_limits = heatmap_limits,
       heatmap_args = heatmap_args
     ),
     rss_dotplot = scenic_plot_rss_dotplot(
@@ -411,6 +465,7 @@ SCENICPlot <- function(
       show_column_names = heatmap_show_column_names,
       cluster_rows = heatmap_cluster_rows,
       cluster_columns = heatmap_cluster_columns,
+      heatmap_order = heatmap_order,
       row_names_side = heatmap_row_names_side,
       column_names_side = heatmap_column_names_side,
       row_names_rot = heatmap_row_names_rot,
@@ -420,6 +475,7 @@ SCENICPlot <- function(
       heatmap_palcolor = heatmap_palcolor,
       group_palette = heatmap_group_palette,
       group_palcolor = heatmap_group_palcolor,
+      heatmap_limits = heatmap_limits,
       heatmap_args = heatmap_args
     ),
     activity_violin = scenic_plot_activity_violin(
@@ -622,11 +678,13 @@ scenic_plot_rss_heatmap <- function(
   rss_matrix,
   top_table,
   features = NULL,
+  scale = FALSE,
   title = NULL,
   show_row_names = TRUE,
   show_column_names = TRUE,
   cluster_rows = TRUE,
   cluster_columns = FALSE,
+  heatmap_order = c("cluster", "group", "input"),
   row_names_side = "right",
   column_names_side = "top",
   row_names_rot = 0,
@@ -636,6 +694,7 @@ scenic_plot_rss_heatmap <- function(
   heatmap_palcolor = NULL,
   group_palette = "Chinese",
   group_palcolor = NULL,
+  heatmap_limits = NULL,
   heatmap_args = list()
 ) {
   regulons <- scenic_resolve_regulon_features(
@@ -643,12 +702,33 @@ scenic_plot_rss_heatmap <- function(
     available = rownames(rss_matrix),
     top_table = top_table
   )
+  heatmap_order <- match.arg(heatmap_order)
   rss_subset <- rss_matrix[regulons, , drop = FALSE]
+  value_name <- "RSS"
+  legend_title <- "RSS"
+  heatmap_palette <- heatmap_palette %||% if (isTRUE(scale)) "RdBu" else "viridis"
+  if (isTRUE(scale)) {
+    rss_subset <- scenic_scale_rows(rss_subset)
+    constant_rows <- attr(rss_subset, "constant_rows")
+    if (length(constant_rows) == nrow(rss_subset)) {
+      log_message(
+        "All selected regulons have identical group RSS values; z-score heatmap values are zero. Use {.code rss_scale = FALSE} to show raw RSS.",
+        message_type = "warning"
+      )
+    }
+    value_name <- "RSS_z"
+    legend_title <- "RSS z"
+  }
+  regulons <- scenic_order_heatmap_features(rss_subset, regulons, heatmap_order)
+  rss_subset <- rss_subset[regulons, , drop = FALSE]
+  if (!identical(heatmap_order, "cluster")) {
+    cluster_rows <- FALSE
+  }
   plot_data <- scenic_matrix_to_long(
     rss_subset,
     row_name = "regulon",
     col_name = "group",
-    value_name = "RSS"
+    value_name = value_name
   )
   plot_data[["TF"]] <- scenic_tf_from_regulon(plot_data[["regulon"]])
   plot_data[["regulon"]] <- factor(plot_data[["regulon"]], levels = rev(regulons))
@@ -658,7 +738,7 @@ scenic_plot_rss_heatmap <- function(
     mat = rss_subset,
     group_names = colnames(rss_subset),
     features = regulons,
-    legend_title = "RSS",
+    legend_title = legend_title,
     title = title %||% "SCENIC regulon specificity",
     show_row_names = show_row_names,
     show_column_names = show_column_names,
@@ -673,6 +753,7 @@ scenic_plot_rss_heatmap <- function(
     heatmap_palcolor = heatmap_palcolor,
     group_palette = group_palette,
     group_palcolor = group_palcolor,
+    heatmap_limits = heatmap_limits,
     heatmap_args = heatmap_args
   )
 
@@ -730,6 +811,7 @@ scenic_plot_activity_heatmap <- function(
   show_column_names = TRUE,
   cluster_rows = TRUE,
   cluster_columns = FALSE,
+  heatmap_order = c("cluster", "group", "input"),
   row_names_side = "right",
   column_names_side = "top",
   row_names_rot = 0,
@@ -739,6 +821,7 @@ scenic_plot_activity_heatmap <- function(
   heatmap_palcolor = NULL,
   group_palette = "Chinese",
   group_palcolor = NULL,
+  heatmap_limits = NULL,
   heatmap_args = list()
 ) {
   regulons <- scenic_resolve_regulon_features(
@@ -746,6 +829,7 @@ scenic_plot_activity_heatmap <- function(
     available = rownames(auc_mat),
     top_table = top_table
   )
+  heatmap_order <- match.arg(heatmap_order)
   avg_mat <- scenic_group_average_matrix(auc_mat[regulons, , drop = FALSE], group_annotation, group_names)
   value_name <- "activity"
   if (isTRUE(scale)) {
@@ -758,6 +842,11 @@ scenic_plot_activity_heatmap <- function(
       )
     }
     value_name <- "activity_z"
+  }
+  regulons <- scenic_order_heatmap_features(avg_mat, regulons, heatmap_order)
+  avg_mat <- avg_mat[regulons, , drop = FALSE]
+  if (!identical(heatmap_order, "cluster")) {
+    cluster_rows <- FALSE
   }
   plot_data <- scenic_matrix_to_long(
     avg_mat,
@@ -773,17 +862,18 @@ scenic_plot_activity_heatmap <- function(
   plot <- scenic_call_with_args(
     GroupHeatmap,
     args = list(
-    srt = srt_use,
-    features = regulons,
-    group.by = group.by,
-    aggregate_fun = base::mean,
+      srt = srt_use,
+      features = regulons,
+      group.by = group.by,
+      aggregate_fun = base::mean,
       border = border,
-    layer = layer,
-    assay = assay,
-    exp_method = if (isTRUE(scale)) "zscore" else "raw",
-    exp_legend_title = if (isTRUE(scale)) "Activity z" else "Mean activity",
-    lib_normalize = FALSE,
-    max_cells = Inf,
+      layer = layer,
+      assay = assay,
+      exp_method = if (isTRUE(scale)) "zscore" else "raw",
+      exp_legend_title = if (isTRUE(scale)) "Activity z" else "Mean activity",
+      limits = heatmap_limits,
+      lib_normalize = FALSE,
+      max_cells = Inf,
       show_row_names = show_row_names,
       show_column_names = show_column_names,
       row_names_side = row_names_side,
@@ -792,12 +882,12 @@ scenic_plot_activity_heatmap <- function(
       column_names_rot = column_names_rot,
       cluster_rows = cluster_rows,
       cluster_columns = cluster_columns,
-    column_title = title %||% "SCENIC regulon activity",
+      column_title = title %||% "SCENIC regulon activity",
       heatmap_palette = heatmap_palette,
       heatmap_palcolor = heatmap_palcolor,
       group_palette = group_palette,
       group_palcolor = group_palcolor,
-    verbose = FALSE
+      verbose = FALSE
     ),
     extra_args = heatmap_args
   )
@@ -1285,6 +1375,7 @@ scenic_plot_feature_heatmap_from_matrix <- function(
   heatmap_palcolor = NULL,
   group_palette = "Chinese",
   group_palcolor = NULL,
+  heatmap_limits = NULL,
   heatmap_args = list()
 ) {
   colnames(mat) <- group_names
@@ -1314,6 +1405,7 @@ scenic_plot_feature_heatmap_from_matrix <- function(
       assay = "SCENICHeatmap",
       exp_method = "raw",
       exp_legend_title = legend_title,
+      limits = heatmap_limits,
       lib_normalize = FALSE,
       show_row_names = show_row_names,
       show_column_names = show_column_names,
@@ -1455,6 +1547,39 @@ scenic_resolve_regulon_features <- function(
     regulons <- utils::head(regulons, max_features)
   }
   regulons
+}
+
+scenic_order_heatmap_features <- function(
+  mat,
+  features,
+  heatmap_order = c("cluster", "group", "input")
+) {
+  heatmap_order <- match.arg(heatmap_order)
+  if (!identical(heatmap_order, "group")) {
+    return(features)
+  }
+
+  mat <- as.matrix(mat[features, , drop = FALSE])
+  mat[!is.finite(mat)] <- NA_real_
+  max_group_idx <- apply(mat, 1L, function(x) {
+    if (all(is.na(x))) {
+      return(NA_integer_)
+    }
+    which.max(replace(x, is.na(x), -Inf))
+  })
+  max_value <- apply(mat, 1L, function(x) {
+    out <- suppressWarnings(max(x, na.rm = TRUE))
+    if (is.finite(out)) out else NA_real_
+  })
+  max_group <- colnames(mat)[max_group_idx]
+  features[
+    order(
+      factor(max_group, levels = colnames(mat)),
+      -max_value,
+      features,
+      na.last = TRUE
+    )
+  ]
 }
 
 scenic_group_average_matrix <- function(auc_mat, group_annotation, group_names) {
