@@ -625,37 +625,37 @@ FeatureHeatmap(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-25 04:19:08] Start standard processing workflow...
-#> ℹ [2026-05-25 04:19:08] Checking a list of <Seurat>...
-#> ! [2026-05-25 04:19:08] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-25 04:19:08] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 04:19:10] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 04:19:10] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-25 04:19:10] Number of available HVF: 2000
-#> ℹ [2026-05-25 04:19:10] Finished check
-#> ℹ [2026-05-25 04:19:10] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-25 04:19:11] Perform pca linear dimension reduction
-#> ℹ [2026-05-25 04:19:11] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-25 04:19:11] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-25 04:19:12] Reorder clusters...
-#> ℹ [2026-05-25 04:19:12] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-25 04:19:12] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-25 04:19:12] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-25 04:19:16] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-25 04:19:20] Standard processing workflow completed
+#> ℹ [2026-05-25 07:17:06] Start standard processing workflow...
+#> ℹ [2026-05-25 07:17:07] Checking a list of <Seurat>...
+#> ! [2026-05-25 07:17:07] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-25 07:17:07] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-25 07:17:08] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-25 07:17:09] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-25 07:17:09] Number of available HVF: 2000
+#> ℹ [2026-05-25 07:17:09] Finished check
+#> ℹ [2026-05-25 07:17:09] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-25 07:17:09] Perform pca linear dimension reduction
+#> ℹ [2026-05-25 07:17:10] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-25 07:17:10] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-25 07:17:10] Reorder clusters...
+#> ℹ [2026-05-25 07:17:10] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-25 07:17:10] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-25 07:17:10] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-25 07:17:14] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-25 07:17:18] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-05-25 04:19:20] Data type is log-normalized
-#> ℹ [2026-05-25 04:19:20] Start differential expression test
-#> ℹ [2026-05-25 04:19:20] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-05-25 04:19:20] Using 1 core
-#> ⠙ [2026-05-25 04:19:20] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ✔ [2026-05-25 04:19:20] Completed 5 tasks in 977ms
+#> ℹ [2026-05-25 07:17:18] Data type is log-normalized
+#> ℹ [2026-05-25 07:17:18] Start differential expression test
+#> ℹ [2026-05-25 07:17:18] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-05-25 07:17:18] Using 1 core
+#> ⠙ [2026-05-25 07:17:18] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ✔ [2026-05-25 07:17:18] Completed 5 tasks in 946ms
 #> 
-#> ℹ [2026-05-25 04:19:20] Building results
-#> ✔ [2026-05-25 04:19:21] Differential expression test completed
+#> ℹ [2026-05-25 07:17:18] Building results
+#> ✔ [2026-05-25 07:17:19] Differential expression test completed
 de_filter <- dplyr::filter(
   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
@@ -696,9 +696,9 @@ ht2 <- FeatureHeatmap(
   ht_params = list(row_gap = grid::unit(0, "mm")),
   use_raster = FALSE
 )
-#> ℹ [2026-05-25 04:19:36] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-05-25 04:19:36] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-05-25 04:19:36] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
+#> ℹ [2026-05-25 07:17:33] The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ [2026-05-25 07:17:33] The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ [2026-05-25 07:17:33] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 
 ht2$plot
 
@@ -714,27 +714,27 @@ ht3 <- FeatureHeatmap(
   anno_keys = TRUE,
   anno_features = TRUE
 )
-#> ℹ [2026-05-25 04:20:04] Start Enrichment analysis
-#> ℹ [2026-05-25 04:20:04] Species: "Mus_musculus"
-#> ℹ [2026-05-25 04:20:05] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-25 04:16:12
-#> ℹ [2026-05-25 04:20:06] Permform enrichment...
-#> ℹ [2026-05-25 04:20:06] Using 1 core
-#> ⠙ [2026-05-25 04:20:06] Running for 1 [1/5] ■■          20% | ETA: 18s
-#> ⠹ [2026-05-25 04:20:06] Running for 2 [2/5] ■■■■        40% | ETA: 11s
-#> ⠸ [2026-05-25 04:20:06] Running for 3 [3/5] ■■■■■■      60% | ETA:  7s
-#> ⠼ [2026-05-25 04:20:06] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  3s
-#> ✔ [2026-05-25 04:20:06] Completed 5 tasks in 16.4s
+#> ℹ [2026-05-25 07:18:00] Start Enrichment analysis
+#> ℹ [2026-05-25 07:18:00] Species: "Mus_musculus"
+#> ℹ [2026-05-25 07:18:00] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-25 07:14:27
+#> ℹ [2026-05-25 07:18:02] Permform enrichment...
+#> ℹ [2026-05-25 07:18:02] Using 1 core
+#> ⠙ [2026-05-25 07:18:02] Running for 1 [1/5] ■■          20% | ETA: 17s
+#> ⠹ [2026-05-25 07:18:02] Running for 2 [2/5] ■■■■        40% | ETA: 10s
+#> ⠸ [2026-05-25 07:18:02] Running for 3 [3/5] ■■■■■■      60% | ETA:  7s
+#> ⠼ [2026-05-25 07:18:02] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  3s
+#> ✔ [2026-05-25 07:18:02] Completed 5 tasks in 16.4s
 #> 
-#> ℹ [2026-05-25 04:20:06] Building results
-#> ✔ [2026-05-25 04:20:23] Enrichment analysis done
+#> ℹ [2026-05-25 07:18:02] Building results
+#> ✔ [2026-05-25 07:18:19] Enrichment analysis done
 #> `use_raster` is automatically set to TRUE for a matrix with more than
 #> 2000 rows. You can control `use_raster` argument by explicitly setting
 #> TRUE/FALSE to it.
 #> 
 #> Set `ht_opt$message = FALSE` to turn off this message.
-#> ℹ [2026-05-25 04:21:10] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-05-25 04:21:10] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-05-25 04:21:10] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
+#> ℹ [2026-05-25 07:19:07] The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ [2026-05-25 07:19:07] The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ [2026-05-25 07:19:07] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 
 ht3$plot
 
@@ -766,9 +766,9 @@ ht4$plot
     species = "Mus_musculus",
     db = c("CSPA", "TF")
   )
-#> ℹ [2026-05-25 04:21:25] Species: "Mus_musculus"
-#> ℹ [2026-05-25 04:21:25] Loading cached: CSPA version: CSPA nterm:1 created: 2026-05-25 04:13:57
-#> ℹ [2026-05-25 04:21:26] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-05-25 03:36:18
+#> ℹ [2026-05-25 07:19:20] Species: "Mus_musculus"
+#> ℹ [2026-05-25 07:19:20] Loading cached: CSPA version: CSPA nterm:1 created: 2026-05-25 07:12:24
+#> ℹ [2026-05-25 07:19:21] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-05-25 06:36:37
 
   ht5 <- FeatureHeatmap(
     pancreas_sub,
@@ -788,9 +788,9 @@ ht4$plot
 #> TRUE/FALSE to it.
 #> 
 #> Set `ht_opt$message = FALSE` to turn off this message.
-#> ℹ [2026-05-25 04:21:31] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-05-25 04:21:31] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-05-25 04:21:31] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
+#> ℹ [2026-05-25 07:19:27] The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ [2026-05-25 07:19:27] The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ [2026-05-25 07:19:27] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 
   ht5$plot
 
@@ -815,9 +815,9 @@ ht4$plot
 #> setting TRUE/FALSE to it.
 #> 
 #> Set `ht_opt$message = FALSE` to turn off this message.
-#> ℹ [2026-05-25 04:21:43] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-05-25 04:21:43] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-05-25 04:21:43] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
+#> ℹ [2026-05-25 07:19:38] The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ [2026-05-25 07:19:38] The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ [2026-05-25 07:19:38] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 
   ht6$plot
 ```

@@ -258,38 +258,38 @@ ProportionTestPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-25 04:47:57] Start standard processing workflow...
-#> ℹ [2026-05-25 04:47:58] Checking a list of <Seurat>...
-#> ! [2026-05-25 04:47:58] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-25 04:47:58] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 04:47:59] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 04:48:00] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-25 04:48:00] Number of available HVF: 2000
-#> ℹ [2026-05-25 04:48:00] Finished check
-#> ℹ [2026-05-25 04:48:00] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-25 04:48:00] Perform pca linear dimension reduction
-#> ℹ [2026-05-25 04:48:01] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-25 04:48:01] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-25 04:48:01] Reorder clusters...
-#> ℹ [2026-05-25 04:48:01] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-25 04:48:01] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-25 04:48:01] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-25 04:48:06] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-25 04:48:10] Standard processing workflow completed
+#> ℹ [2026-05-25 07:43:37] Start standard processing workflow...
+#> ℹ [2026-05-25 07:43:38] Checking a list of <Seurat>...
+#> ! [2026-05-25 07:43:38] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-25 07:43:38] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-25 07:43:39] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-25 07:43:40] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-25 07:43:40] Number of available HVF: 2000
+#> ℹ [2026-05-25 07:43:40] Finished check
+#> ℹ [2026-05-25 07:43:40] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-25 07:43:41] Perform pca linear dimension reduction
+#> ℹ [2026-05-25 07:43:41] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-25 07:43:41] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-25 07:43:41] Reorder clusters...
+#> ℹ [2026-05-25 07:43:42] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-25 07:43:42] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-25 07:43:42] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-25 07:43:46] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-25 07:43:50] Standard processing workflow completed
 pancreas_sub <- RunProportionTest(
   pancreas_sub,
   group.by = "CellType",
   split.by = "Phase",
   proportion_method = "permutation"
 )
-#> ℹ [2026-05-25 04:48:10] Start proportion test ("permutation")
-#> ℹ [2026-05-25 04:48:10] Running comparison: "S" vs "G1"
-#> ℹ [2026-05-25 04:48:12] Running comparison: "G2M" vs "G1"
-#> ℹ [2026-05-25 04:48:14] Running comparison: "G2M" vs "S"
-#> ℹ [2026-05-25 04:48:14] Running comparison: "G1" vs "S"
-#> ℹ [2026-05-25 04:48:14] Running comparison: "G1" vs "G2M"
-#> ℹ [2026-05-25 04:48:14] Running comparison: "S" vs "G2M"
-#> ✔ [2026-05-25 04:48:14] Proportion test completed ("permutation")
+#> ℹ [2026-05-25 07:43:50] Start proportion test ("permutation")
+#> ℹ [2026-05-25 07:43:50] Running comparison: "S" vs "G1"
+#> ℹ [2026-05-25 07:43:51] Running comparison: "G2M" vs "G1"
+#> ℹ [2026-05-25 07:43:53] Running comparison: "G2M" vs "S"
+#> ℹ [2026-05-25 07:43:53] Running comparison: "G1" vs "S"
+#> ℹ [2026-05-25 07:43:53] Running comparison: "G1" vs "G2M"
+#> ℹ [2026-05-25 07:43:54] Running comparison: "S" vs "G2M"
+#> ✔ [2026-05-25 07:43:54] Proportion test completed ("permutation")
 
 ProportionTestPlot(pancreas_sub)
 

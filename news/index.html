@@ -70,6 +70,8 @@
 <li>
 <strong>fix</strong>:
 <ul><li>
+<code><a href="../reference/SCENICPlot.html">SCENICPlot()</a></code>: Explicit <code>features</code> in SCENIC heatmaps now keep the user-supplied regulon order, and <code>activity_heatmap</code> aligns <code>feature_split</code> to the resolved and displayed regulons.</li>
+<li>
 <code><a href="../reference/SCENICPlot.html">SCENICPlot()</a></code>: <code>plot_type = "activity_dim"</code> and <code>"activity_violin"</code> now respect all explicitly supplied <code>features</code>, instead of applying the six-regulon default preview limit.</li>
 <li>
 <code><a href="../reference/RunHarmony2.html">RunHarmony2()</a></code>: Added compatibility with Harmony 2.0 objects by directly trying both legacy fields (<code>Z_corr</code> / <code>R</code>) and callable methods (<code>getZcorr()</code> / <code>getR()</code>), including module methods that are not listed by <code><a href="https://rdrr.io/r/base/ls.html" class="external-link">ls()</a></code>.</li>
