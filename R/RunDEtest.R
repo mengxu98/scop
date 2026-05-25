@@ -785,7 +785,8 @@ PerformDE <- function(
       ...
     ),
     "bimod" = get_namespace_fun(
-      "Seurat", "DiffExpTest"
+      "Seurat",
+      "DiffExpTest"
     )(
       data.use = dense_data_use(),
       cells.1 = cells.1,
@@ -793,7 +794,8 @@ PerformDE <- function(
       verbose = verbose
     ),
     "roc" = get_namespace_fun(
-      "Seurat", "MarkerTest"
+      "Seurat",
+      "MarkerTest"
     )(
       data.use = dense_data_use(),
       cells.1 = cells.1,
@@ -801,7 +803,8 @@ PerformDE <- function(
       verbose = verbose
     ),
     "t" = get_namespace_fun(
-      "Seurat", "DiffTTest"
+      "Seurat",
+      "DiffTTest"
     )(
       data.use = dense_data_use(),
       cells.1 = cells.1,
@@ -809,7 +812,8 @@ PerformDE <- function(
       verbose = verbose
     ),
     "negbinom" = get_namespace_fun(
-      "Seurat", "GLMDETest"
+      "Seurat",
+      "GLMDETest"
     )(
       data.use = dense_data_use(),
       cells.1 = cells.1,
@@ -820,7 +824,8 @@ PerformDE <- function(
       verbose = verbose
     ),
     "poisson" = get_namespace_fun(
-      "Seurat", "GLMDETest"
+      "Seurat",
+      "GLMDETest"
     )(
       data.use = dense_data_use(),
       cells.1 = cells.1,
@@ -831,7 +836,8 @@ PerformDE <- function(
       verbose = verbose
     ),
     "MAST" = get_namespace_fun(
-      "Seurat", "MASTDETest"
+      "Seurat",
+      "MASTDETest"
     )(
       data.use = dense_data_use(),
       cells.1 = cells.1,
@@ -841,7 +847,8 @@ PerformDE <- function(
       ...
     ),
     "DESeq2" = get_namespace_fun(
-      "Seurat", "DESeq2DETest"
+      "Seurat",
+      "DESeq2DETest"
     )(
       data.use = dense_data_use(),
       cells.1 = cells.1,
@@ -850,7 +857,8 @@ PerformDE <- function(
       ...
     ),
     "LR" = get_namespace_fun(
-      "Seurat", "LRDETest"
+      "Seurat",
+      "LRDETest"
     )(
       data.use = dense_data_use(),
       cells.1 = cells.1,
@@ -900,16 +908,18 @@ WilcoxDETest <- function(
       j <- seq_len(length.out = length(intersect(cells.1, keep)))
       statistics <- data.use[x, keep]
       min(
-        2 * min(
-          limma::rankSumTestWithCorrelation(
-            index = j,
-            statistics = statistics
-          )
-        ),
+        2 *
+          min(
+            limma::rankSumTestWithCorrelation(
+              index = j,
+              statistics = statistics
+            )
+          ),
         1
       )
     }
-  ) |> purrr::list_c()
+  ) |>
+    purrr::list_c()
   data.frame(
     p_val,
     row.names = rownames(data.use)
@@ -947,7 +957,7 @@ RunDEtestFindMarkers <- function(
     layer %in% c("data", "counts") &&
     identical(norm.method, "LogNormalize") &&
     length(extra_args) == 0 &&
-    !requireNamespace("presto", quietly = TRUE)
+    !isTRUE(check_pkg_status("presto"))
   if (isTRUE(use_sparse_wilcox)) {
     return(RunDEtestSparseWilcoxMarkers(
       srt = srt,
@@ -1056,7 +1066,9 @@ RunDEtestSparseWilcoxMarkers <- function(
     return(fc.results[features, , drop = FALSE])
   }
   alpha.diff <- alpha.min - pmin(fc.results$pct.1, fc.results$pct.2)
-  features <- names(alpha.min)[alpha.min >= min.pct & alpha.diff >= min.diff.pct]
+  features <- names(alpha.min)[
+    alpha.min >= min.pct & alpha.diff >= min.diff.pct
+  ]
   if (length(features) == 0) {
     return(fc.results[features, , drop = FALSE])
   }
@@ -1234,7 +1246,12 @@ RunDEtest_limma <- function(
   v <- limma::voom(dge, design, plot = FALSE)
   fit <- limma::lmFit(v, design)
   fit <- limma::eBayes(fit)
-  tt <- limma::topTable(fit, coef = ncol(design), number = Inf, sort.by = "none")
+  tt <- limma::topTable(
+    fit,
+    coef = ncol(design),
+    number = Inf,
+    sort.by = "none"
+  )
   if (is.null(tt) || nrow(tt) == 0) {
     return(data.frame())
   }
@@ -1389,7 +1406,10 @@ RunDEtest_pseudobulk <- function(
   }
   counts <- counts[features, , drop = FALSE]
 
-  condition_levels_all <- unique(as.character(stats::na.omit(srt[[condition_col, drop = TRUE]])))
+  condition_levels_all <- unique(as.character(stats::na.omit(srt[[
+    condition_col,
+    drop = TRUE
+  ]])))
   condition1 <- group1 %||% NULL
   condition2 <- group2 %||% NULL
   if (is.null(condition1) || is.null(condition2)) {
@@ -1431,16 +1451,25 @@ RunDEtest_pseudobulk <- function(
     function(current_group) {
       cells_use <- colnames(srt)
       if (!is.null(group.by)) {
-        cells_use <- colnames(srt)[srt[[group.by, drop = TRUE]] %in% current_group]
+        cells_use <- colnames(srt)[
+          srt[[group.by, drop = TRUE]] %in% current_group
+        ]
       }
-      meta_use <- srt@meta.data[cells_use, c(sample_col, condition_col), drop = FALSE]
+      meta_use <- srt@meta.data[
+        cells_use,
+        c(sample_col, condition_col),
+        drop = FALSE
+      ]
       meta_use <- meta_use[stats::complete.cases(meta_use), , drop = FALSE]
       cells_use <- rownames(meta_use)
       if (length(cells_use) == 0) {
         return(NULL)
       }
 
-      sample_condition <- unique(meta_use[, c(sample_col, condition_col), drop = FALSE])
+      sample_condition <- unique(meta_use[,
+        c(sample_col, condition_col),
+        drop = FALSE
+      ])
       sample_tab <- table(meta_use[[sample_col]], meta_use[[condition_col]])
       if (any(rowSums(sample_tab > 0) > 1)) {
         log_message(
@@ -1508,13 +1537,23 @@ RunDEtest_pseudobulk <- function(
       markers[, "group2"] <- paste0(condition2, "_vs_", condition1)
       markers[, "condition1"] <- condition1
       markers[, "condition2"] <- condition2
-      markers[, "sample_number1"] <- sum(condition_use == condition1, na.rm = TRUE)
-      markers[, "sample_number2"] <- sum(condition_use == condition2, na.rm = TRUE)
+      markers[, "sample_number1"] <- sum(
+        condition_use == condition1,
+        na.rm = TRUE
+      )
+      markers[, "sample_number2"] <- sum(
+        condition_use == condition2,
+        na.rm = TRUE
+      )
       markers
     }
   )
   all_markers <- do.call(rbind.data.frame, all_markers)
-  tool_name <- if (is.null(group.by)) "DEtest_pseudobulk" else paste0("DEtest_", group.by)
+  tool_name <- if (is.null(group.by)) {
+    "DEtest_pseudobulk"
+  } else {
+    paste0("DEtest_", group.by)
+  }
   if (is.null(srt@tools[[tool_name]])) {
     srt@tools[[tool_name]] <- list()
   }
@@ -1533,7 +1572,10 @@ RunDEtest_pseudobulk <- function(
     srt@tools[[tool_name]][[paste0("AllMarkers_", test.use)]] <- data.frame()
   } else {
     rownames(all_markers) <- NULL
-    all_markers[, "group1"] <- factor(all_markers[, "group1"], levels = target_groups)
+    all_markers[, "group1"] <- factor(
+      all_markers[, "group1"],
+      levels = target_groups
+    )
     all_markers[, "test_group_number"] <- as.integer(
       table(all_markers[["gene"]])[all_markers[, "gene"]]
     )
@@ -1931,7 +1973,10 @@ RunDEtest.Seurat <- function(
     assay <- SeuratObject::DefaultAssay(srt)
   }
   if (!is.null(ident.1)) {
-    if (!is.null(group1) && !identical(as.character(group1), as.character(ident.1))) {
+    if (
+      !is.null(group1) &&
+        !identical(as.character(group1), as.character(ident.1))
+    ) {
       log_message(
         "Both {.arg group1} and Seurat-style {.arg ident.1} were provided; using {.arg ident.1}.",
         message_type = "warning",
@@ -1941,7 +1986,10 @@ RunDEtest.Seurat <- function(
     group1 <- ident.1
   }
   if (!is.null(ident.2)) {
-    if (!is.null(group2) && !identical(as.character(group2), as.character(ident.2))) {
+    if (
+      !is.null(group2) &&
+        !identical(as.character(group2), as.character(ident.2))
+    ) {
       log_message(
         "Both {.arg group2} and Seurat-style {.arg ident.2} were provided; using {.arg ident.2}.",
         message_type = "warning",
@@ -1951,7 +1999,10 @@ RunDEtest.Seurat <- function(
     group2 <- ident.2
   }
   if (!is.null(cells.1)) {
-    if (!is.null(cells1) && !identical(as.character(cells1), as.character(cells.1))) {
+    if (
+      !is.null(cells1) &&
+        !identical(as.character(cells1), as.character(cells.1))
+    ) {
       log_message(
         "Both {.arg cells1} and Seurat-style {.arg cells.1} were provided; using {.arg cells.1}.",
         message_type = "warning",
@@ -1961,7 +2012,10 @@ RunDEtest.Seurat <- function(
     cells1 <- cells.1
   }
   if (!is.null(cells.2)) {
-    if (!is.null(cells2) && !identical(as.character(cells2), as.character(cells.2))) {
+    if (
+      !is.null(cells2) &&
+        !identical(as.character(cells2), as.character(cells.2))
+    ) {
       log_message(
         "Both {.arg cells2} and Seurat-style {.arg cells.2} were provided; using {.arg cells.2}.",
         message_type = "warning",
@@ -2418,7 +2472,6 @@ RunDEtest.Seurat <- function(
       ...
     )
 
-
     log_message(
       "Find ",
       markers_type,
@@ -2633,11 +2686,9 @@ RunDEtest.Seurat <- function(
           ConservedMarkers[, "group1"],
           levels = levels(cell_group)
         )
-        ConservedMarkers[
-          ,
+        ConservedMarkers[,
           "test_group_number"
-        ] <- as.integer(table(ConservedMarkers[["gene"]])[ConservedMarkers[
-          ,
+        ] <- as.integer(table(ConservedMarkers[["gene"]])[ConservedMarkers[,
           "gene"
         ]])
         ConservedMarkersMatrix <- as.data.frame.matrix(table(ConservedMarkers[, c(
@@ -2692,7 +2743,11 @@ RunDEtest.Seurat <- function(
             cells.1
           )] <- NA
           if (
-            length(stats::na.omit(unique(srt_tmp[[grouping.var, drop = TRUE]]))) < 2
+            length(stats::na.omit(unique(srt_tmp[[
+              grouping.var,
+              drop = TRUE
+            ]]))) <
+              2
           ) {
             return(NULL)
           } else {
@@ -2746,8 +2801,7 @@ RunDEtest.Seurat <- function(
           DisturbedMarkers[, "group1"],
           levels = levels(cell_group)
         )
-        DisturbedMarkers[
-          ,
+        DisturbedMarkers[,
           "test_group_number"
         ] <- as.integer(table(unique(DisturbedMarkers[, c("gene", "group1")])[[
           "gene"
@@ -2958,10 +3012,7 @@ RunDEtest.SummarizedExperiment <- function(
     "paired"
   } else {
     unique_condition <- unique(as.character(ctx$condition_global))
-    if (
-      !is.null(group1) || !is.null(group2) ||
-        length(unique_condition) <= 2
-    ) {
+    if (!is.null(group1) || !is.null(group2) || length(unique_condition) <= 2) {
       "single"
     } else {
       "all"
@@ -3015,15 +3066,19 @@ RunDEtest.SummarizedExperiment <- function(
 }
 
 RunDEtest_DESeq2 <- function(
-    count_matrix,
-    condition,
-    condition1 = NULL,
-    condition2 = NULL,
-    only.pos = TRUE,
-    logfc.threshold = 0,
-    p.adjust.method = "bonferroni") {
+  count_matrix,
+  condition,
+  condition1 = NULL,
+  condition2 = NULL,
+  only.pos = TRUE,
+  logfc.threshold = 0,
+  p.adjust.method = "bonferroni"
+) {
   check_r("DESeq2", verbose = FALSE)
-  DESeqDataSetFromMatrix <- get_namespace_fun("DESeq2", "DESeqDataSetFromMatrix")
+  DESeqDataSetFromMatrix <- get_namespace_fun(
+    "DESeq2",
+    "DESeqDataSetFromMatrix"
+  )
   DESeq <- get_namespace_fun("DESeq2", "DESeq")
   DESeq_results <- get_namespace_fun("DESeq2", "results")
 
@@ -3084,11 +3139,18 @@ RunDEtest_DESeq2 <- function(
         row.names = rownames(res_df)
       )
       out_df <- out_df[!is.na(out_df$p_val), , drop = FALSE]
-      out_df$p_val_adj <- stats::p.adjust(out_df$p_val, method = p.adjust.method)
+      out_df$p_val_adj <- stats::p.adjust(
+        out_df$p_val,
+        method = p.adjust.method
+      )
       if (isTRUE(only.pos)) {
         out_df <- out_df[out_df$avg_log2FC >= logfc.threshold, , drop = FALSE]
       } else {
-        out_df <- out_df[abs(out_df$avg_log2FC) >= logfc.threshold, , drop = FALSE]
+        out_df <- out_df[
+          abs(out_df$avg_log2FC) >= logfc.threshold,
+          ,
+          drop = FALSE
+        ]
       }
       out_df
     },
@@ -3098,21 +3160,23 @@ RunDEtest_DESeq2 <- function(
 }
 
 RunDEtest_dream <- function(
-    count_matrix,
-    condition,
-    condition1 = NULL,
-    condition2 = NULL,
-    sample_data = NULL,
-    dream_formula = NULL,
-    only.pos = TRUE,
-    logfc.threshold = 0,
-    p.adjust.method = "bonferroni") {
+  count_matrix,
+  condition,
+  condition1 = NULL,
+  condition2 = NULL,
+  sample_data = NULL,
+  dream_formula = NULL,
+  only.pos = TRUE,
+  logfc.threshold = 0,
+  p.adjust.method = "bonferroni"
+) {
   check_r(c("variancePartition", "limma", "edgeR"), verbose = FALSE)
   DGEList <- get_namespace_fun("edgeR", "DGEList")
   filterByExpr <- get_namespace_fun("edgeR", "filterByExpr")
   calcNormFactors <- get_namespace_fun("edgeR", "calcNormFactors")
   voomWithDreamWeights <- get_namespace_fun(
-    "variancePartition", "voomWithDreamWeights"
+    "variancePartition",
+    "voomWithDreamWeights"
   )
   dream <- get_namespace_fun("variancePartition", "dream")
   eBayes <- get_namespace_fun("limma", "eBayes")
@@ -3151,8 +3215,10 @@ RunDEtest_dream <- function(
   } else if (is.character(dream_formula) && length(dream_formula) == 1) {
     dream_formula <- stats::as.formula(dream_formula)
   }
-  if (!inherits(dream_formula, "formula") ||
-        !"condition" %in% all.vars(dream_formula)) {
+  if (
+    !inherits(dream_formula, "formula") ||
+      !"condition" %in% all.vars(dream_formula)
+  ) {
     return(NULL)
   }
 
@@ -3166,7 +3232,9 @@ RunDEtest_dream <- function(
       dge <- dge[keep_features, , keep.lib.sizes = FALSE]
       dge <- calcNormFactors(dge)
       vobj <- voomWithDreamWeights(
-        dge, formula = dream_formula, data = sample_df
+        dge,
+        formula = dream_formula,
+        data = sample_df
       )
       fit <- dream(exprObj = vobj, formula = dream_formula, data = sample_df)
       fit <- eBayes(fit)
@@ -3183,8 +3251,10 @@ RunDEtest_dream <- function(
         stop("Cannot find condition coefficient in dream model.")
       }
       tt <- topTable(
-        fit = fit, coef = coef_use[[1]],
-        number = Inf, sort.by = "none"
+        fit = fit,
+        coef = coef_use[[1]],
+        number = Inf,
+        sort.by = "none"
       )
       if (nrow(tt) == 0) {
         return(data.frame())
@@ -3206,11 +3276,18 @@ RunDEtest_dream <- function(
         pct.2 = pct.2,
         row.names = rownames(tt)
       )
-      out_df$p_val_adj <- stats::p.adjust(out_df$p_val, method = p.adjust.method)
+      out_df$p_val_adj <- stats::p.adjust(
+        out_df$p_val,
+        method = p.adjust.method
+      )
       if (isTRUE(only.pos)) {
         out_df <- out_df[out_df$avg_log2FC >= logfc.threshold, , drop = FALSE]
       } else {
-        out_df <- out_df[abs(out_df$avg_log2FC) >= logfc.threshold, , drop = FALSE]
+        out_df <- out_df[
+          abs(out_df$avg_log2FC) >= logfc.threshold,
+          ,
+          drop = FALSE
+        ]
       }
       out_df
     },
