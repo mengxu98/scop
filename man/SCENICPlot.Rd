@@ -75,7 +75,8 @@ plot. Other options summarize RSS, regulon activity, regulon sizes, or
 TF-target subnetworks.}
 
 \item{features}{Optional TF/regulon names used by activity, network, and
-target plots. Values can match either \code{"Sox9"} or \code{"Sox9(+)"}.}
+target plots. Values can match either \code{"Sox9"} or \code{"Sox9(+)"}. Explicit
+values are resolved in input order; duplicated regulons are drawn once.}
 
 \item{reduction}{Dimensional reduction used when \code{plot_type = "activity_dim"}. If \code{NULL}, a UMAP/tSNE/PCA-like reduction is selected when
 available.}
