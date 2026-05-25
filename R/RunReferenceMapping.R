@@ -267,7 +267,7 @@ RunReferenceMapping <- function(
         query_assay = query_assay,
         reference_label = reference_label,
         features = features,
-        prediction_prefix = "predicted_",
+        prediction_prefix = "scomm_",
         evaluate = FALSE,
         tool_name = tool_name,
         scomm_python = scomm_python,
