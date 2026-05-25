@@ -15,7 +15,8 @@
 #' plot. Other options summarize RSS, regulon activity, regulon sizes, or
 #' TF-target subnetworks.
 #' @param features Optional TF/regulon names used by activity, network, and
-#' target plots. Values can match either `"Sox9"` or `"Sox9(+)"`.
+#' target plots. Values can match either `"Sox9"` or `"Sox9(+)"`. Explicit
+#' values are resolved in input order; duplicated regulons are drawn once.
 #' @param reduction Dimensional reduction used when `plot_type =
 #' "activity_dim"`. If `NULL`, a UMAP/tSNE/PCA-like reduction is selected when
 #' available.
@@ -831,6 +832,12 @@ scenic_plot_activity_heatmap <- function(
   )
   heatmap_order <- match.arg(heatmap_order)
   avg_mat <- scenic_group_average_matrix(auc_mat[regulons, , drop = FALSE], group_annotation, group_names)
+  feature_split <- scenic_align_heatmap_feature_split(
+    feature_split = heatmap_args[["feature_split"]],
+    features = features,
+    regulons = regulons,
+    available = rownames(auc_mat)
+  )
   value_name <- "activity"
   if (isTRUE(scale)) {
     avg_mat <- scenic_scale_rows(avg_mat)
@@ -844,6 +851,10 @@ scenic_plot_activity_heatmap <- function(
     value_name <- "activity_z"
   }
   regulons <- scenic_order_heatmap_features(avg_mat, regulons, heatmap_order)
+  if (!is.null(feature_split)) {
+    feature_split <- feature_split[regulons]
+    heatmap_args[["feature_split"]] <- feature_split
+  }
   avg_mat <- avg_mat[regulons, , drop = FALSE]
   if (!identical(heatmap_order, "cluster")) {
     cluster_rows <- FALSE
@@ -1535,8 +1546,7 @@ scenic_resolve_regulon_features <- function(
     }
   }
   features <- unique(as.character(features))
-  candidates <- unique(c(features, paste0(features, "(+)")))
-  regulons <- available[available %in% candidates]
+  regulons <- scenic_match_regulon_features(features, available)
   if (length(regulons) == 0) {
     log_message(
       "None of {.arg features} matched available SCENIC regulons",
@@ -1547,6 +1557,81 @@ scenic_resolve_regulon_features <- function(
     regulons <- utils::head(regulons, max_features)
   }
   regulons
+}
+
+scenic_match_regulon_features <- function(features, available) {
+  matches <- vapply(
+    as.character(features),
+    function(feature) {
+      candidates <- unique(c(feature, paste0(feature, "(+)")))
+      hit <- candidates[candidates %in% available]
+      if (length(hit) == 0) {
+        return(NA_character_)
+      }
+      hit[[1]]
+    },
+    character(1)
+  )
+  unique(matches[!is.na(matches)])
+}
+
+scenic_align_heatmap_feature_split <- function(
+  feature_split,
+  features,
+  regulons,
+  available
+) {
+  if (is.null(feature_split)) {
+    return(NULL)
+  }
+  if (!is.null(names(feature_split)) && all(regulons %in% names(feature_split))) {
+    return(feature_split[regulons])
+  }
+  if (length(feature_split) == length(regulons) && is.null(features)) {
+    names(feature_split) <- regulons
+    return(feature_split)
+  }
+  if (is.null(features) || length(feature_split) != length(features)) {
+    log_message(
+      "{.arg feature_split} must have the same length as the explicit {.arg features} used by {.val activity_heatmap}, or be named by regulon.",
+      message_type = "error"
+    )
+  }
+
+  split_levels <- if (is.factor(feature_split)) {
+    levels(feature_split)
+  } else {
+    unique(as.character(feature_split))
+  }
+  split_values <- as.character(feature_split)
+  matched_all <- vapply(
+    as.character(features),
+    function(feature) {
+      candidates <- unique(c(feature, paste0(feature, "(+)")))
+      hit <- candidates[candidates %in% available]
+      if (length(hit) == 0) {
+        return(NA_character_)
+      }
+      hit[[1]]
+    },
+    character(1)
+  )
+
+  out <- stats::setNames(rep(NA_character_, length(regulons)), regulons)
+  for (idx in seq_along(matched_all)) {
+    regulon <- matched_all[[idx]]
+    if (!is.na(regulon) && regulon %in% names(out) && is.na(out[[regulon]])) {
+      out[[regulon]] <- split_values[[idx]]
+    }
+  }
+  if (any(is.na(out[regulons]))) {
+    missing_regulons <- regulons[is.na(out[regulons])]
+    log_message(
+      "{.arg feature_split} could not be matched to all displayed regulons: {.val {missing_regulons}}",
+      message_type = "error"
+    )
+  }
+  stats::setNames(factor(out[regulons], levels = split_levels), regulons)
 }
 
 scenic_order_heatmap_features <- function(
