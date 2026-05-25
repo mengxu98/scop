@@ -71,30 +71,30 @@ A Seurat object with the fetched data.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-25 07:21:07] Start standard processing workflow...
-#> ℹ [2026-05-25 07:21:08] Checking a list of <Seurat>...
-#> ! [2026-05-25 07:21:08] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-25 07:21:08] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 07:21:10] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 07:21:10] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-25 07:21:10] Number of available HVF: 2000
-#> ℹ [2026-05-25 07:21:10] Finished check
-#> ℹ [2026-05-25 07:21:10] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-25 07:21:11] Perform pca linear dimension reduction
-#> ℹ [2026-05-25 07:21:11] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-25 07:21:12] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-25 07:21:12] Reorder clusters...
-#> ℹ [2026-05-25 07:21:12] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-25 07:21:12] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-25 07:21:12] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-25 07:21:16] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-25 07:21:20] Standard processing workflow completed
+#> ℹ [2026-05-25 09:58:56] Start standard processing workflow...
+#> ℹ [2026-05-25 09:58:57] Checking a list of <Seurat>...
+#> ! [2026-05-25 09:58:57] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-25 09:58:57] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-25 09:58:59] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-25 09:58:59] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-25 09:58:59] Number of available HVF: 2000
+#> ℹ [2026-05-25 09:58:59] Finished check
+#> ℹ [2026-05-25 09:58:59] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-25 09:59:00] Perform pca linear dimension reduction
+#> ℹ [2026-05-25 09:59:00] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-25 09:59:01] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-25 09:59:01] Reorder clusters...
+#> ℹ [2026-05-25 09:59:01] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-25 09:59:01] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-25 09:59:01] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-25 09:59:05] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-25 09:59:09] Standard processing workflow completed
 PrepareSCExplorer(pancreas_sub, base_dir = "./SCExplorer")
-#> ℹ [2026-05-25 07:21:20] Create SCExplorer base directory: ./SCExplorer
-#> ℹ [2026-05-25 07:21:20] Set the project name of each <Seurat> to their dataset name
-#> ℹ [2026-05-25 07:21:20] Prepare data for object: "SeuratProject"
-#> ℹ [2026-05-25 07:21:20] Write the expression matrix to: ./SCExplorer/data.hdf5
-#> ℹ [2026-05-25 07:21:22] Write the meta information to: ./SCExplorer/meta.hdf5
+#> ℹ [2026-05-25 09:59:09] Create SCExplorer base directory: ./SCExplorer
+#> ℹ [2026-05-25 09:59:09] Set the project name of each <Seurat> to their dataset name
+#> ℹ [2026-05-25 09:59:09] Prepare data for object: "SeuratProject"
+#> ℹ [2026-05-25 09:59:09] Write the expression matrix to: ./SCExplorer/data.hdf5
+#> ℹ [2026-05-25 09:59:12] Write the meta information to: ./SCExplorer/meta.hdf5
 srt <- FetchH5(
   data_file = "./SCExplorer/data.hdf5",
   meta_file = "./SCExplorer/meta.hdf5",

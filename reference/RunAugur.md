@@ -123,7 +123,7 @@ prioritization in single-cell data. *Nature Biotechnology*, 39, 30-34.
 data(panc8_sub)
 panc8_sub <- subset(panc8_sub, subset = tech %in% c("celseq", "celseq2"))
 panc8_sub <- standard_scop(panc8_sub, verbose = FALSE)
-#> ℹ [2026-05-25 07:44:51] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-25 10:23:24] Skip `log1p()` because `layer = data` is not "counts"
 panc8_sub <- RunAugur(
   panc8_sub,
   celltype.by = "celltype",

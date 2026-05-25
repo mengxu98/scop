@@ -195,38 +195,38 @@ DEtestManhattanPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-25 07:05:05] Start standard processing workflow...
-#> ℹ [2026-05-25 07:05:05] Checking a list of <Seurat>...
-#> ! [2026-05-25 07:05:06] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-25 07:05:06] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 07:05:07] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 07:05:07] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-25 07:05:07] Number of available HVF: 2000
-#> ℹ [2026-05-25 07:05:08] Finished check
-#> ℹ [2026-05-25 07:05:08] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-25 07:05:08] Perform pca linear dimension reduction
-#> ℹ [2026-05-25 07:05:08] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-25 07:05:09] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-25 07:05:09] Reorder clusters...
-#> ℹ [2026-05-25 07:05:09] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-25 07:05:09] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-25 07:05:09] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-25 07:05:12] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-25 07:05:16] Standard processing workflow completed
+#> ℹ [2026-05-25 09:41:32] Start standard processing workflow...
+#> ℹ [2026-05-25 09:41:32] Checking a list of <Seurat>...
+#> ! [2026-05-25 09:41:32] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-25 09:41:32] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-25 09:41:34] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-25 09:41:34] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-25 09:41:34] Number of available HVF: 2000
+#> ℹ [2026-05-25 09:41:34] Finished check
+#> ℹ [2026-05-25 09:41:34] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-25 09:41:35] Perform pca linear dimension reduction
+#> ℹ [2026-05-25 09:41:35] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-25 09:41:36] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-25 09:41:36] Reorder clusters...
+#> ℹ [2026-05-25 09:41:36] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-25 09:41:36] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-25 09:41:36] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-25 09:41:39] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-25 09:41:43] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
   only.pos = FALSE
 )
-#> ℹ [2026-05-25 07:05:16] Data type is log-normalized
-#> ℹ [2026-05-25 07:05:16] Start differential expression test
-#> ℹ [2026-05-25 07:05:16] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-05-25 07:05:16] Using 1 core
-#> ⠙ [2026-05-25 07:05:16] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ✔ [2026-05-25 07:05:16] Completed 5 tasks in 1.3s
+#> ℹ [2026-05-25 09:41:43] Data type is log-normalized
+#> ℹ [2026-05-25 09:41:43] Start differential expression test
+#> ℹ [2026-05-25 09:41:43] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-05-25 09:41:43] Using 1 core
+#> ⠙ [2026-05-25 09:41:43] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ✔ [2026-05-25 09:41:43] Completed 5 tasks in 1.4s
 #> 
-#> ℹ [2026-05-25 07:05:16] Building results
-#> ✔ [2026-05-25 07:05:18] Differential expression test completed
+#> ℹ [2026-05-25 09:41:43] Building results
+#> ✔ [2026-05-25 09:41:45] Differential expression test completed
 DEtestManhattanPlot(
   pancreas_sub,
   group.by = "CellType"
