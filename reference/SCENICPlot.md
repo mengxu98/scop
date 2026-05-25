@@ -93,7 +93,8 @@ SCENICPlot(
 - features:
 
   Optional TF/regulon names used by activity, network, and target plots.
-  Values can match either `"Sox9"` or `"Sox9(+)"`.
+  Values can match either `"Sox9"` or `"Sox9(+)"`. Explicit values are
+  resolved in input order; duplicated regulons are drawn once.
 
 - reduction:
 

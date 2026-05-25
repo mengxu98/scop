@@ -103,6 +103,10 @@
     [`thisutils::log_message()`](https://mengxu98.github.io/thisutils/reference/log_message.html).
 - **fix**:
   - [`SCENICPlot()`](https://mengxu98.github.io/scop/reference/SCENICPlot.md):
+    Explicit `features` in SCENIC heatmaps now keep the user-supplied
+    regulon order, and `activity_heatmap` aligns `feature_split` to the
+    resolved and displayed regulons.
+  - [`SCENICPlot()`](https://mengxu98.github.io/scop/reference/SCENICPlot.md):
     `plot_type = "activity_dim"` and `"activity_violin"` now respect all
     explicitly supplied `features`, instead of applying the six-regulon
     default preview limit.

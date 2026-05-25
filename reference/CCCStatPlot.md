@@ -418,26 +418,26 @@ CCCStatPlot(
   plot_type = "role_change"
 )
 }
-#> ℹ [2026-05-25 03:37:47] Start standard processing workflow...
-#> ℹ [2026-05-25 03:37:49] Checking a list of <Seurat>...
-#> ! [2026-05-25 03:37:49] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-25 03:37:49] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 03:37:49] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 03:37:50] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-25 03:37:50] Number of available HVF: 2000
-#> ℹ [2026-05-25 03:37:50] Finished check
-#> ℹ [2026-05-25 03:37:50] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-25 03:37:51] Perform pca linear dimension reduction
-#> ℹ [2026-05-25 03:37:51] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-25 03:37:51] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-25 03:37:51] Reorder clusters...
-#> ℹ [2026-05-25 03:37:52] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-25 03:37:52] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-25 03:37:52] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-25 03:37:54] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-25 03:37:57] Standard processing workflow completed
-#> ℹ [2026-05-25 03:37:57] Start CellChat analysis
-#> ℹ [2026-05-25 03:38:01] Processing condition: "ConditionA"
+#> ℹ [2026-05-25 06:37:57] Start standard processing workflow...
+#> ℹ [2026-05-25 06:37:58] Checking a list of <Seurat>...
+#> ! [2026-05-25 06:37:58] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-25 06:37:58] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-25 06:37:59] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-25 06:37:59] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-25 06:38:00] Number of available HVF: 2000
+#> ℹ [2026-05-25 06:38:00] Finished check
+#> ℹ [2026-05-25 06:38:00] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-25 06:38:00] Perform pca linear dimension reduction
+#> ℹ [2026-05-25 06:38:00] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-25 06:38:01] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-25 06:38:01] Reorder clusters...
+#> ℹ [2026-05-25 06:38:01] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-25 06:38:01] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-25 06:38:01] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-25 06:38:04] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-25 06:38:06] Standard processing workflow completed
+#> ℹ [2026-05-25 06:38:06] Start CellChat analysis
+#> ℹ [2026-05-25 06:38:10] Processing condition: "ConditionA"
 #> [1] "Create a CellChat object from a data matrix"
 #> Set cell identities for the new CellChat object 
 #> The cell groups used for CellChat analysis are  Ductal, Ngn3-high-EP, Endocrine, Ngn3-low-EP, Pre-endocrine 

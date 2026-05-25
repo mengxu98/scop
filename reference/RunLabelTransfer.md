@@ -159,27 +159,27 @@ pbmcmultiome_sub <- standard_scop(
   assay = "RNA",
   linear_reduction_dims = 20
 )
-#> ℹ [2026-05-25 05:31:07] Start standard processing workflow...
-#> ℹ [2026-05-25 05:31:08] Checking a list of <Seurat>...
-#> ! [2026-05-25 05:31:08] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-25 05:31:08] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 05:31:10] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-25 08:22:41] Start standard processing workflow...
+#> ℹ [2026-05-25 08:22:42] Checking a list of <Seurat>...
+#> ! [2026-05-25 08:22:42] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-25 08:22:42] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-25 08:22:44] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
 #> Warning: pseudoinverse used at -2.3979
 #> Warning: neighborhood radius 0.30103
-#> Warning: reciprocal condition number  1.2589e-15
-#> ℹ [2026-05-25 05:31:11] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-25 05:31:11] Number of available HVF: 2000
-#> ℹ [2026-05-25 05:31:11] Finished check
-#> ℹ [2026-05-25 05:31:11] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-25 05:31:11] Perform pca linear dimension reduction
-#> ℹ [2026-05-25 05:31:11] Use stored estimated dimensions 1:9 for Standardpca
-#> ℹ [2026-05-25 05:31:12] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-25 05:31:12] Reorder clusters...
-#> ℹ [2026-05-25 05:31:12] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-25 05:31:12] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-25 05:31:12] Perform umap nonlinear dimension reduction using Standardpca (1:9)
-#> ℹ [2026-05-25 05:31:17] Perform umap nonlinear dimension reduction using Standardpca (1:9)
-#> ✔ [2026-05-25 05:31:22] Standard processing workflow completed
+#> Warning: reciprocal condition number  9.9917e-16
+#> ℹ [2026-05-25 08:22:44] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-25 08:22:44] Number of available HVF: 2000
+#> ℹ [2026-05-25 08:22:45] Finished check
+#> ℹ [2026-05-25 08:22:45] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-25 08:22:45] Perform pca linear dimension reduction
+#> ℹ [2026-05-25 08:22:45] Use stored estimated dimensions 1:9 for Standardpca
+#> ℹ [2026-05-25 08:22:45] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-25 08:22:46] Reorder clusters...
+#> ℹ [2026-05-25 08:22:46] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-25 08:22:46] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-25 08:22:46] Perform umap nonlinear dimension reduction using Standardpca (1:9)
+#> ℹ [2026-05-25 08:22:50] Perform umap nonlinear dimension reduction using Standardpca (1:9)
+#> ✔ [2026-05-25 08:22:55] Standard processing workflow completed
 reference <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[1:250])
 query <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[251:350])
 query <- standard_scop(
@@ -188,25 +188,25 @@ query <- standard_scop(
   normalization_method = "TFIDF",
   linear_reduction_dims = 20
 )
-#> ℹ [2026-05-25 05:31:23] Start standard processing workflow...
-#> ℹ [2026-05-25 05:31:23] Checking a list of <Seurat>...
-#> ! [2026-05-25 05:31:23] Data 1/1 of the `srt_list` is "raw_counts"
-#> ℹ [2026-05-25 05:31:23] Perform `RunTFIDF()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 05:31:23] Perform `FindTopFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 05:31:23] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-25 05:31:23] Number of available HVF: 11426
-#> ℹ [2026-05-25 05:31:23] Finished check
-#> ℹ [2026-05-25 05:31:23] `normalization_method` is TFIDF. Use lsi workflow
-#> ℹ [2026-05-25 05:31:23] Perform svd linear dimension reduction
+#> ℹ [2026-05-25 08:22:56] Start standard processing workflow...
+#> ℹ [2026-05-25 08:22:56] Checking a list of <Seurat>...
+#> ! [2026-05-25 08:22:56] Data 1/1 of the `srt_list` is "raw_counts"
+#> ℹ [2026-05-25 08:22:56] Perform `RunTFIDF()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-25 08:22:56] Perform `FindTopFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-25 08:22:56] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-25 08:22:56] Number of available HVF: 11426
+#> ℹ [2026-05-25 08:22:56] Finished check
+#> ℹ [2026-05-25 08:22:56] `normalization_method` is TFIDF. Use lsi workflow
+#> ℹ [2026-05-25 08:22:56] Perform svd linear dimension reduction
 #> Running SVD
 #> Scaling cell embeddings
-#> ℹ [2026-05-25 05:31:24] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-25 05:31:24] Reorder clusters...
-#> ℹ [2026-05-25 05:31:24] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-25 05:31:24] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-25 05:31:24] Perform umap nonlinear dimension reduction using ATACsvd (2:30)
-#> ℹ [2026-05-25 05:31:29] Perform umap nonlinear dimension reduction using ATACsvd (2:30)
-#> ✔ [2026-05-25 05:31:34] Standard processing workflow completed
+#> ℹ [2026-05-25 08:22:56] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-25 08:22:56] Reorder clusters...
+#> ℹ [2026-05-25 08:22:56] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-25 08:22:56] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-25 08:22:56] Perform umap nonlinear dimension reduction using ATACsvd (2:30)
+#> ℹ [2026-05-25 08:23:01] Perform umap nonlinear dimension reduction using ATACsvd (2:30)
+#> ✔ [2026-05-25 08:23:05] Standard processing workflow completed
 query <- RunLabelTransfer(
   srt = query,
   reference = reference,
@@ -217,9 +217,9 @@ query <- RunLabelTransfer(
   reference_dims = 1:10,
   dims = 2:10
 )
-#> ℹ [2026-05-25 05:31:34] Use existing query assay "RNA" as `gene_activity_assay`
-#> ℹ [2026-05-25 05:31:34] Use "ATAClsi" as the ATAC weight reduction
-#> ℹ [2026-05-25 05:31:34] Adjust `k.filter` from 200 to 99 for small-sample ATAC mapping
-#> ℹ [2026-05-25 05:31:34] Running RNA reference label transfer for ATAC cells...
-#> ℹ [2026-05-25 05:31:37] Adjust `k.weight` from 100 to 96 for small-sample ATAC mapping
+#> ℹ [2026-05-25 08:23:05] Use existing query assay "RNA" as `gene_activity_assay`
+#> ℹ [2026-05-25 08:23:05] Use "ATAClsi" as the ATAC weight reduction
+#> ℹ [2026-05-25 08:23:05] Adjust `k.filter` from 200 to 99 for small-sample ATAC mapping
+#> ℹ [2026-05-25 08:23:05] Running RNA reference label transfer for ATAC cells...
+#> ℹ [2026-05-25 08:23:08] Adjust `k.weight` from 100 to 96 for small-sample ATAC mapping
 ```
