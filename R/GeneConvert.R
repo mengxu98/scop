@@ -51,14 +51,13 @@ GeneConvert <- function(
   max_tries = 5,
   verbose = TRUE
 ) {
-  if (requireNamespace("httr", quietly = TRUE)) {
-    httr::set_config(
-      httr::config(
-        ssl_verifypeer = FALSE,
-        ssl_verifyhost = FALSE
-      )
+  check_r("httr", verbose = FALSE)
+  httr::set_config(
+    httr::config(
+      ssl_verifypeer = FALSE,
+      ssl_verifyhost = FALSE
     )
-  }
+  )
 
   if (is.null(species_to)) {
     species_to <- species_from

@@ -461,7 +461,7 @@ build_comparison_results <- function(
     object.list <- lapply(pair_i, function(x) result_list[[x]]$cellchat_object)
     names(object.list) <- pair_i
 
-    merged_cc <- CellChat::mergeCellChat(
+    merged_cc <- get_namespace_fun("CellChat", "mergeCellChat")(
       object.list = object.list,
       add.names = names(object.list)
     )
@@ -509,38 +509,39 @@ DoCellChat <- function(
     )
   }
 
-  object <- CellChat::createCellChat(
+  object <- get_namespace_fun("CellChat", "createCellChat")(
     object = expr_mat,
     meta = metadata,
     group.by = "label"
   )
 
+  cellchat_ns_env <- asNamespace("CellChat")
   object@DB <- switch(species,
-    "Mus_musculus" = CellChat::CellChatDB.mouse,
-    "Homo_sapiens" = CellChat::CellChatDB.human,
-    "zebrafish" = CellChat::CellChatDB.zebrafish,
+    "Mus_musculus" = get("CellChatDB.mouse", envir = cellchat_ns_env),
+    "Homo_sapiens" = get("CellChatDB.human", envir = cellchat_ns_env),
+    "zebrafish" = get("CellChatDB.zebrafish", envir = cellchat_ns_env),
     log_message(
       "Invalid species. Must be one of {.val {c('Homo_sapiens', 'Mus_musculus', 'zebrafish')}}",
       message_type = "error"
     )
   )
 
-  object <- CellChat::subsetData(object)
-  object <- CellChat::identifyOverExpressedGenes(
+  object <- get_namespace_fun("CellChat", "subsetData")(object)
+  object <- get_namespace_fun("CellChat", "identifyOverExpressedGenes")(
     object,
     thresh.p = thresh,
     min.cells = min.cells,
     do.fast = isTRUE(do.fast)
   )
-  object <- CellChat::identifyOverExpressedInteractions(object)
-  object <- CellChat::computeCommunProb(object)
-  object <- CellChat::filterCommunication(
+  object <- get_namespace_fun("CellChat", "identifyOverExpressedInteractions")(object)
+  object <- get_namespace_fun("CellChat", "computeCommunProb")(object)
+  object <- get_namespace_fun("CellChat", "filterCommunication")(
     object,
     min.cells = min.cells
   )
-  object <- CellChat::computeCommunProbPathway(object, thresh = thresh)
-  object <- CellChat::aggregateNet(object, thresh = thresh)
-  object <- CellChat::netAnalysis_computeCentrality(object, thresh = thresh)
+  object <- get_namespace_fun("CellChat", "computeCommunProbPathway")(object, thresh = thresh)
+  object <- get_namespace_fun("CellChat", "aggregateNet")(object, thresh = thresh)
+  object <- get_namespace_fun("CellChat", "netAnalysis_computeCentrality")(object, thresh = thresh)
 
   object
 }
@@ -636,12 +637,12 @@ DoCellChat <- function(
       }
       net_subset[[i]] <- net
 
-      netP <- CellChat::computeCommunProbPathway(
+      netP <- get_namespace_fun("CellChat", "computeCommunProbPathway")(
         net = net_subset[[i]],
         pairLR.use = object@LR[[i]]$LRsig,
         thresh = thresh
       )
-      netP$centr <- CellChat::netAnalysis_computeCentrality(
+      netP$centr <- get_namespace_fun("CellChat", "netAnalysis_computeCentrality")(
         net = net_subset[[i]]$prob
       )
       netP_subset[[i]] <- netP
@@ -696,12 +697,14 @@ DoCellChat <- function(
     }
     net_subset <- net
 
-    netP <- CellChat::computeCommunProbPathway(
+    netP <- get_namespace_fun("CellChat", "computeCommunProbPathway")(
       net = net_subset,
       pairLR.use = object@LR$LRsig,
       thresh = thresh
     )
-    netP$centr <- CellChat::netAnalysis_computeCentrality(net = net_subset$prob)
+    netP$centr <- get_namespace_fun("CellChat", "netAnalysis_computeCentrality")(
+      net = net_subset$prob
+    )
     netP_subset <- netP
 
     idents_subset <- object@idents[level_use_index]

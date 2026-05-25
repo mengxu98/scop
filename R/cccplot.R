@@ -534,6 +534,7 @@ subset_cc_table <- function(
   thresh = 0.05,
   dataset = NULL
 ) {
+  check_r("jinworks/CellChat", verbose = FALSE)
   if (!is.null(pairLR.use) && !is.data.frame(pairLR.use)) {
     pairLR.use <- data.frame(
       interaction_name = as.character(pairLR.use),
@@ -543,7 +544,7 @@ subset_cc_table <- function(
   if (!is.null(pairLR.use)) {
     signaling <- NULL
   }
-  df <- CellChat::subsetCommunication(
+  df <- get_namespace_fun("CellChat", "subsetCommunication")(
     object = object,
     slot.name = slot.name,
     sources.use = sources.use,

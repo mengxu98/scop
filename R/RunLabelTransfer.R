@@ -23,7 +23,9 @@
 #' @param dims Query reduction dimensions used by `TransferData`.
 #' @param features Features used by `FindTransferAnchors`. If `NULL`, reference
 #' variable features are used.
-#' @param prediction_prefix Prefix added to prediction metadata columns.
+#' @param prediction_prefix Prefix added to prediction metadata columns. If
+#' `NULL`, `"predicted_"` is used for `method = "Seurat"` and `"scomm_"` is used
+#' for `method = "scOMM"`.
 #' @param k.weight Number of neighbors used when weighting transfer anchors.
 #' @param evaluate Whether to compute mapping metrics against a truth label.
 #' @param truth_col Metadata column in `srt` used as the truth label when
@@ -79,7 +81,7 @@ RunLabelTransfer <- function(
   weight_reduction = NULL,
   dims = 2:30,
   features = NULL,
-  prediction_prefix = "predicted_",
+  prediction_prefix = NULL,
   k.weight = 100,
   evaluate = FALSE,
   truth_col = NULL,
@@ -94,6 +96,12 @@ RunLabelTransfer <- function(
   verbose = TRUE
 ) {
   method <- match.arg(method)
+  prediction_prefix <- prediction_prefix %||%
+    if (identical(method, "scOMM")) {
+      "scomm_"
+    } else {
+      "predicted_"
+    }
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   reference_assay <- reference_assay %||% SeuratObject::DefaultAssay(reference)
   if (!inherits(srt[[assay]], "ChromatinAssay")) {
@@ -231,9 +239,10 @@ resolve_pred_col <- function(srt, prediction_prefix = "predicted_") {
 
 resolve_prob_col <- function(srt, prediction_prefix = "predicted_") {
   candidates <- c(
+    paste0(prediction_prefix, "score.max"),
     paste0(prediction_prefix, "prediction.score.max"),
     grep(
-      paste0("^", prediction_prefix, "prediction\\.score\\.max$"),
+      paste0("^", prediction_prefix, "(score\\.max|prediction\\.score\\.max)$"),
       colnames(srt@meta.data),
       value = TRUE
     )

@@ -1,4 +1,5 @@
 metric_silhouette <- function(embeddings, labels, maximize = TRUE) {
+  check_r("cluster", verbose = FALSE)
   labels <- as.factor(labels)
   keep <- !is.na(labels)
   embeddings <- embeddings[keep, , drop = FALSE]

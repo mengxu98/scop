@@ -120,7 +120,7 @@ RunNichenetr <- function(
   )
   Idents(srt) <- srt[[group.by]][, 1]
 
-  ns_fun <- function(name) getExportedValue("nichenetr", name)
+  ns_fun <- function(name) get_namespace_fun("nichenetr", name)
   ligand_activities <- NULL
   ligand_target_df <- NULL
   ligand_receptor_df <- NULL
@@ -404,7 +404,7 @@ RunMultiNichenetr <- function(
   )
   contrasts_oi <- paste0("'", contrast_tbl$contrast, "'", collapse = ",")
 
-  ns_fun <- function(name) getExportedValue("multinichenetr", name)
+  ns_fun <- function(name) get_namespace_fun("multinichenetr", name)
   raw_result <- tryCatch(
     {
       if (isTRUE(sample_agnostic)) {

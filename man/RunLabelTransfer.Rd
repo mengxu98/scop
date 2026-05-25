@@ -19,7 +19,7 @@ RunLabelTransfer(
   weight_reduction = NULL,
   dims = 2:30,
   features = NULL,
-  prediction_prefix = "predicted_",
+  prediction_prefix = NULL,
   k.weight = 100,
   evaluate = FALSE,
   truth_col = NULL,
@@ -70,7 +70,9 @@ default reduction.}
 \item{features}{Features used by \code{FindTransferAnchors}. If \code{NULL}, reference
 variable features are used.}
 
-\item{prediction_prefix}{Prefix added to prediction metadata columns.}
+\item{prediction_prefix}{Prefix added to prediction metadata columns. If
+\code{NULL}, \code{"predicted_"} is used for \code{method = "Seurat"} and \code{"scomm_"} is used
+for \code{method = "scOMM"}.}
 
 \item{k.weight}{Number of neighbors used when weighting transfer anchors.}
 

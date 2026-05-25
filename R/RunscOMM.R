@@ -13,7 +13,9 @@
 #' @param reference_label Metadata column in the reference used as supervision labels.
 #' @param features Shared features passed to `scOMM`. If `NULL`, reference variable
 #' features are used.
-#' @param prediction_prefix Prefix added to prediction metadata columns.
+#' @param prediction_prefix Prefix added to prediction metadata columns. The
+#' default creates `scomm_prediction`, `scomm_score.<class>`, and
+#' `scomm_score.max`.
 #' @param evaluate Whether to compute prediction metrics against a truth label.
 #' @param truth_col Metadata column in `srt` used as the truth label when
 #' `evaluate = TRUE`.
@@ -31,10 +33,9 @@
 #' @examples
 #' \dontrun{
 #' data("pbmcmultiome_sub", package = "scop")
-#' pbmcmultiome_sub <- Seurat::NormalizeData(pbmcmultiome_sub, assay = "RNA")
-#' pbmcmultiome_sub <- Seurat::FindVariableFeatures(pbmcmultiome_sub, assay = "RNA")
+#' pbmcmultiome_sub <- standard_scop(pbmcmultiome_sub, assay = "RNA")
 #' ref_cells <- colnames(pbmcmultiome_sub)[1:250]
-#' query_cells <- colnames(pbmcmultiome_sub)[251:350]
+#' query_cells <- colnames(pbmcmultiome_sub)[251:500]
 #' reference <- subset(pbmcmultiome_sub, cells = ref_cells)
 #' query <- subset(pbmcmultiome_sub, cells = query_cells)
 #' query <- RunscOMM(
@@ -43,7 +44,26 @@
 #'   reference_assay = "RNA",
 #'   query_assay = "RNA",
 #'   reference_label = "CellType",
-#'   scomm_epochs = 2
+#'   scomm_epochs = 1
+#' )
+#' CellDimPlot(
+#'   query,
+#'   group.by = c(
+#'     "CellType",
+#'     "scomm_prediction"
+#'   ),
+#'   xlab = "UMAP_1",
+#'   ylab = "UMAP_2"
+#' )
+#' 
+#' FeatureDimPlot(
+#'   query,
+#'   features = c(
+#'     "scomm_score.B",
+#'     "scomm_score.max"
+#'   ),
+#'   xlab = "UMAP_1",
+#'   ylab = "UMAP_2"
 #' )
 #' }
 RunscOMM <- function(
@@ -53,7 +73,7 @@ RunscOMM <- function(
   query_assay = NULL,
   reference_label = NULL,
   features = NULL,
-  prediction_prefix = "predicted_",
+  prediction_prefix = "scomm_",
   evaluate = FALSE,
   truth_col = NULL,
   tool_name = "scOMM",
@@ -155,7 +175,7 @@ add_prediction_meta <- function(
   srt,
   ids,
   probabilities = NULL,
-  prediction_prefix = "predicted_"
+  prediction_prefix = "scomm_"
 ) {
   pred_col <- paste0(prediction_prefix, "prediction")
   srt[[pred_col]] <- factor(ids)
@@ -171,7 +191,7 @@ add_prediction_meta <- function(
     colnames(prob_df) <- prob_cols
     rownames(prob_df) <- colnames(srt)
     srt <- SeuratObject::AddMetaData(srt, metadata = prob_df)
-    prob_col <- paste0(prediction_prefix, "prediction.score.max")
+    prob_col <- paste0(prediction_prefix, "score.max")
     srt[[prob_col]] <- apply(prob_df, 1, max, na.rm = TRUE)
   }
   list(
@@ -251,7 +271,7 @@ run_scomm <- function(
     seed = seed,
     verbose = verbose
   )
-  if (is_linux()) {
+  if (!identical(threshold, "AUTO") && nzchar(python)) {
     preds <- run_scomm_subprocess(
       split_data = split_data,
       query_mat = query_mat,
@@ -268,6 +288,7 @@ run_scomm <- function(
       features = features
     ))
   }
+  ensure_scomm_tensorflow(python)
   patch_keras_categorical()
   if (
     requireNamespace("keras", quietly = TRUE) &&
@@ -276,15 +297,6 @@ run_scomm <- function(
     tryCatch(
       keras::py_require_legacy_keras(),
       error = function(...) NULL
-    )
-  }
-  if (
-    !requireNamespace("keras", quietly = TRUE) ||
-      !requireNamespace("tensorflow", quietly = TRUE)
-  ) {
-    log_message(
-      "{.pkg keras} and {.pkg tensorflow} are required for {.val method = 'scOMM'}.",
-      message_type = "error"
     )
   }
   reticulate::use_python(python, required = TRUE)
@@ -428,24 +440,25 @@ run_scomm_subprocess <- function(
   writeLines(as.character(threshold_vec), threshold_file, useBytes = TRUE)
   writeLines(scomm_python_script(), con = script_file, useBytes = TRUE)
 
+  args <- c(
+    "-i",
+    scomm_subprocess_env(python),
+    python,
+    script_file,
+    train_x_file,
+    train_y_file,
+    query_x_file,
+    prob_file,
+    as.character(length(class_names)),
+    paste(hidden_nodes, collapse = ","),
+    as.character(epochs),
+    as.character(batch_size),
+    as.character(seed)
+  )
   output <- suppressWarnings(
     system2(
       command = "/usr/bin/env",
-      args = c(
-        "-i",
-        scomm_subprocess_env(python),
-        python,
-        script_file,
-        train_x_file,
-        train_y_file,
-        query_x_file,
-        prob_file,
-        as.character(length(class_names)),
-        paste(hidden_nodes, collapse = ","),
-        as.character(epochs),
-        as.character(batch_size),
-        as.character(seed)
-      ),
+      args = shQuote(args),
       stdout = TRUE,
       stderr = TRUE
     )
@@ -586,6 +599,33 @@ scomm_subprocess_env <- function(python) {
     )
   }
   unname(paste(names(env), env, sep = "="))
+}
+
+ensure_scomm_tensorflow <- function(python) {
+  if (is.null(python) || !nzchar(python)) {
+    log_message(
+      "A Python environment with {.pkg tensorflow} is required for {.val method = 'scOMM'}.",
+      message_type = "error"
+    )
+  }
+  ok <- tryCatch(
+    {
+      reticulate::use_python(python, required = TRUE)
+      reticulate::import("tensorflow", delay_load = FALSE)
+      TRUE
+    },
+    error = function(...) FALSE
+  )
+  if (!isTRUE(ok)) {
+    log_message(
+      c(
+        "Python {.pkg tensorflow} is required for {.val method = 'scOMM'}.",
+        "Run {.code PrepareEnv(modules = 'scomm')} or provide {.arg scomm_python} pointing to a Python with tensorflow installed."
+      ),
+      message_type = "error"
+    )
+  }
+  invisible(TRUE)
 }
 
 patch_keras_categorical <- function() {

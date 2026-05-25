@@ -306,12 +306,7 @@ RunMuSiC <- function(
     cpp_available = FALSE,
     method_label = "MuSiC"
   )
-  check_r(c("MuSiC", "SingleCellExperiment"), verbose = FALSE)
-  suppressPackageStartupMessages(base::library(
-    "SingleCellExperiment",
-    character.only = TRUE
-  ))
-  suppressPackageStartupMessages(base::library("MuSiC", character.only = TRUE))
+  check_r(c("xuranw/MuSiC", "SingleCellExperiment"), verbose = FALSE)
   ref_info <- prep_ref(
     reference_srt = reference_srt,
     group.by = group.by,

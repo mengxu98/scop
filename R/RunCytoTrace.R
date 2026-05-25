@@ -762,6 +762,7 @@ cytotrace2_preprocess <- function(
   count_cells_few_genes <- sum(num_expressed_per_cell < 500)
 
   expr_mat <- as.matrix(expression_mapped)
+  check_r("Rfast", verbose = FALSE)
   ranked_data <- t(Rfast::colRanks(
     expr_mat,
     descending = TRUE,
