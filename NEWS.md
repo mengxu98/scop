@@ -20,6 +20,7 @@
   * Added a shared native progress helper in `src/log_message.h` for long-running C++ loops. CytoSPACE assignment, scTenifold tensor decomposition, proportion permutation/bootstrap, and sample-level proportion bootstrap now report progress with the same timestamped information style as `thisutils::log_message()`.
 
 * **fix**:
+  * `SCENICPlot()`: Explicit `features` in SCENIC heatmaps now keep the user-supplied regulon order, and `activity_heatmap` aligns `feature_split` to the resolved and displayed regulons.
   * `SCENICPlot()`: `plot_type = "activity_dim"` and `"activity_violin"` now respect all explicitly supplied `features`, instead of applying the six-regulon default preview limit.
   * `RunHarmony2()`: Added compatibility with Harmony 2.0 objects by directly trying both legacy fields (`Z_corr` / `R`) and callable methods (`getZcorr()` / `getR()`), including module methods that are not listed by `ls()`.
   * `srt_append()`: Align variable-feature metadata by feature name when appending into an existing Assay5 with a different feature universe, avoiding row-count replacement errors after integration workflows.
