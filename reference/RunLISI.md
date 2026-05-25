@@ -109,26 +109,26 @@ panc8_sub <- integration_scop(
   batch = "tech",
   integration_method = "Harmony5"
 )
-#> ◌ [2026-05-24 16:24:24] Run integration workflow...
+#> ◌ [2026-05-25 05:30:39] Run integration workflow...
 #> Warning: No layers found matching search pattern provided
-#> ℹ [2026-05-24 16:24:25] Perform `Seurat::NormalizeData()` on split layers for Seurat v5 integration
-#> ℹ [2026-05-24 16:24:27] Perform `Seurat::FindVariableFeatures()` per batch (`HVF_source = 'separate'`)
-#> ℹ [2026-05-24 16:24:28] Number of available HVF: 2000
+#> ℹ [2026-05-25 05:30:40] Perform `Seurat::NormalizeData()` on split layers for Seurat v5 integration
+#> ℹ [2026-05-25 05:30:42] Perform `Seurat::FindVariableFeatures()` per batch (`HVF_source = 'separate'`)
+#> ℹ [2026-05-25 05:30:44] Number of available HVF: 2000
 #> Warning: Layer ‘scale.data’ is empty
-#> ℹ [2026-05-24 16:24:29] Perform `Seurat::ScaleData()` on split layers for Seurat v5 integration
-#> ℹ [2026-05-24 16:24:30] Perform PCA on split layers before `Seurat::IntegrateLayers()`
-#> ℹ [2026-05-24 16:24:30] Perform Seurat v5 integration with `HarmonyIntegration()`
+#> ℹ [2026-05-25 05:30:45] Perform `Seurat::ScaleData()` on split layers for Seurat v5 integration
+#> ℹ [2026-05-25 05:30:45] Perform PCA on split layers before `Seurat::IntegrateLayers()`
+#> ℹ [2026-05-25 05:30:46] Perform Seurat v5 integration with `HarmonyIntegration()`
 #> The `features` argument is ignored by `HarmonyIntegration`.
 #> This message is displayed once per session.
-#> ! [2026-05-24 16:24:31] No valid estimated dimensions found for Harmony5. Use fallback dimensions 1:50
-#> ℹ [2026-05-24 16:24:31] Adjust neighbor k from 20 to 20 for small-sample clustering
-#> ℹ [2026-05-24 16:24:32] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-05-24 16:24:32] Reorder clusters...
-#> ℹ [2026-05-24 16:24:32] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-24 16:24:32] Perform umap nonlinear dimension reduction using Harmony5 (1:50)
-#> ℹ [2026-05-24 16:24:38] Perform umap nonlinear dimension reduction using Harmony5 (1:50)
-#> ℹ [2026-05-24 16:24:43] Perform umap nonlinear dimension reduction using pca (1:20)
-#> ✔ [2026-05-24 16:24:50] Harmony5 integration completed
+#> ! [2026-05-25 05:30:47] No valid estimated dimensions found for Harmony5. Use fallback dimensions 1:50
+#> ℹ [2026-05-25 05:30:47] Adjust neighbor k from 20 to 20 for small-sample clustering
+#> ℹ [2026-05-25 05:30:48] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-05-25 05:30:48] Reorder clusters...
+#> ℹ [2026-05-25 05:30:48] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-25 05:30:48] Perform umap nonlinear dimension reduction using Harmony5 (1:50)
+#> ℹ [2026-05-25 05:30:54] Perform umap nonlinear dimension reduction using Harmony5 (1:50)
+#> ℹ [2026-05-25 05:31:00] Perform umap nonlinear dimension reduction using pca (1:20)
+#> ✔ [2026-05-25 05:31:06] Harmony5 integration completed
 names(panc8_sub@reductions)
 #> [1] "pca"            "Harmony5"       "Harmony5UMAP2D" "Harmony5UMAP3D"
 #> [5] "pcaUMAP2D"     
@@ -137,13 +137,13 @@ panc8_sub <- RunLISI(
   panc8_sub,
   reductions = c("pcaUMAP2D", "Harmony5UMAP2D")
 )
-#> Error in RunLISI(panc8_sub, reductions = c("pcaUMAP2D", "Harmony5UMAP2D")): `RunLISI()` requires the accelerated `thisutils::compute_lisi()`
-#> interface with `nn_method = c('auto', 'exact')`. Please install the updated
-#> thisutils.
+#> ℹ [2026-05-25 05:31:06] Compute LISI scores from reduction "pcaUMAP2D"
+#> ◌ [2026-05-25 05:31:06] Using "rann" nearest-neighbor backend for compute_lisi
+#> ℹ [2026-05-25 05:31:06] Compute LISI scores from reduction "Harmony5UMAP2D"
+#> ◌ [2026-05-25 05:31:06] Using "rann" nearest-neighbor backend for compute_lisi
+#> ✔ [2026-05-25 05:31:06] Stored LISI scores in metadata: "pcaUMAP2D_tech_LISI" and "Harmony5UMAP2D_tech_LISI"
 LISIPlot(
   panc8_sub,
   combine = TRUE
 )
-#> Error in benchmark_feature_plot(srt = srt, features = features, tool_name = tool_name,     reduction = reduction, plot_type = plot_type, plot_boxplot = plot_boxplot,     boxplot_jitter = boxplot_jitter, combine = combine, nrow = nrow,     ncol = ncol, byrow = byrow, pt.size = pt.size, pt.alpha = pt.alpha,     palette = palette, palcolor = palcolor, theme_use = theme_use,     theme_args = theme_args, verbose = verbose, ...): No per-cell benchmark columns found. Please provide `features` or a
-#> valid `tool_name`.
 ```

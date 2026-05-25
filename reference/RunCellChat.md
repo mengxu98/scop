@@ -104,52 +104,50 @@ A `Seurat` object with `CellChat` results stored in
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-24 15:49:13] Start standard processing workflow...
-#> ℹ [2026-05-24 15:49:14] Checking a list of <Seurat>...
-#> ! [2026-05-24 15:49:14] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-24 15:49:14] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-24 15:49:16] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-24 15:49:16] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-24 15:49:16] Number of available HVF: 2000
-#> ℹ [2026-05-24 15:49:16] Finished check
-#> ℹ [2026-05-24 15:49:16] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-24 15:49:17] Perform pca linear dimension reduction
-#> ℹ [2026-05-24 15:49:17] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-24 15:49:18] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-24 15:49:18] Reorder clusters...
-#> ℹ [2026-05-24 15:49:18] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-24 15:49:18] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-24 15:49:18] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-24 15:49:22] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-24 15:49:27] Standard processing workflow completed
+#> ℹ [2026-05-25 04:55:09] Start standard processing workflow...
+#> ℹ [2026-05-25 04:55:10] Checking a list of <Seurat>...
+#> ! [2026-05-25 04:55:10] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-25 04:55:10] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-25 04:55:12] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-25 04:55:12] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-25 04:55:12] Number of available HVF: 2000
+#> ℹ [2026-05-25 04:55:13] Finished check
+#> ℹ [2026-05-25 04:55:13] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-25 04:55:13] Perform pca linear dimension reduction
+#> ℹ [2026-05-25 04:55:13] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-25 04:55:14] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-25 04:55:14] Reorder clusters...
+#> ℹ [2026-05-25 04:55:14] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-25 04:55:14] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-25 04:55:14] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-25 04:55:19] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-25 04:55:24] Standard processing workflow completed
 pancreas_sub <- RunCellChat(
   pancreas_sub,
   group.by = "CellType",
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-24 15:49:27] Start CellChat analysis
+#> ℹ [2026-05-25 04:55:24] Start CellChat analysis
 #> [1] "Create a CellChat object from a data matrix"
 #> Set cell identities for the new CellChat object 
 #> The cell groups used for CellChat analysis are  Ductal, Ngn3-high-EP, Endocrine, Ngn3-low-EP, Pre-endocrine 
-#> The number of highly variable ligand-receptor pairs used for signaling inference is 841 
-#> triMean is used for calculating the average gene expression per cell group. 
-#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-05-24 15:49:35.861792]"
-#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-05-24 15:49:58.896491]"
-#> ✔ [2026-05-24 15:49:59] CellChat analysis completed
+#> Error in get("CellChatDB.mouse", envir = cellchat_ns_env): object 'CellChatDB.mouse' not found
 
 CCCNetworkPlot(
   pancreas_sub,
   method = "CellChat",
   plot_type = "bipartite"
 )
-
+#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
+#> `condition`
 
 CCCHeatmap(
   pancreas_sub,
   method = "CellChat",
   plot_type = "heatmap"
 )
-
+#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
+#> `condition`
 
 CCCStatPlot(
   pancreas_sub,
@@ -157,4 +155,6 @@ CCCStatPlot(
   plot_type = "violin",
   top_n = 50
 )
+#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
+#> `condition`
 ```

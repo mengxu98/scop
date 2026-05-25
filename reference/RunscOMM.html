@@ -57,7 +57,7 @@ evaluate predictions against a truth label.</p>
 <span>  query_assay <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  reference_label <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  features <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  prediction_prefix <span class="op">=</span> <span class="st">"predicted_"</span>,</span>
+<span>  prediction_prefix <span class="op">=</span> <span class="st">"scomm_"</span>,</span>
 <span>  evaluate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  truth_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  tool_name <span class="op">=</span> <span class="st">"scOMM"</span>,</span>
@@ -102,7 +102,9 @@ features are used.</p></dd>
 
 
 <dt id="arg-prediction-prefix">prediction_prefix<a class="anchor" aria-label="anchor" href="#arg-prediction-prefix"></a></dt>
-<dd><p>Prefix added to prediction metadata columns.</p></dd>
+<dd><p>Prefix added to prediction metadata columns. The
+default creates <code>scomm_prediction</code>, <code>scomm_score.&lt;class&gt;</code>, and
+<code>scomm_score.max</code>.</p></dd>
 
 
 <dt id="arg-evaluate">evaluate<a class="anchor" aria-label="anchor" href="#arg-evaluate"></a></dt>
@@ -147,10 +149,9 @@ Default is <code>TRUE</code>.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"pbmcmultiome_sub"</span>, package <span class="op">=</span> <span class="st">"scop"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pbmcmultiome_sub</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span>, assay <span class="op">=</span> <span class="st">"RNA"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pbmcmultiome_sub</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/FindVariableFeatures.html" class="external-link">FindVariableFeatures</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span>, assay <span class="op">=</span> <span class="st">"RNA"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pbmcmultiome_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span>, assay <span class="op">=</span> <span class="st">"RNA"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">ref_cells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">250</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">query_cells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span><span class="op">)</span><span class="op">[</span><span class="fl">251</span><span class="op">:</span><span class="fl">350</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">query_cells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span><span class="op">)</span><span class="op">[</span><span class="fl">251</span><span class="op">:</span><span class="fl">500</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">reference</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span>, cells <span class="op">=</span> <span class="va">ref_cells</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span>, cells <span class="op">=</span> <span class="va">query_cells</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu">RunscOMM</span><span class="op">(</span></span></span>
@@ -159,7 +160,26 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  reference_assay <span class="op">=</span> <span class="st">"RNA"</span>,</span></span>
 <span class="r-in"><span>  query_assay <span class="op">=</span> <span class="st">"RNA"</span>,</span></span>
 <span class="r-in"><span>  reference_label <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  scomm_epochs <span class="op">=</span> <span class="fl">2</span></span></span>
+<span class="r-in"><span>  scomm_epochs <span class="op">=</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">query</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"scomm_prediction"</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span>,</span></span>
+<span class="r-in"><span>  xlab <span class="op">=</span> <span class="st">"UMAP_1"</span>,</span></span>
+<span class="r-in"><span>  ylab <span class="op">=</span> <span class="st">"UMAP_2"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">query</span>,</span></span>
+<span class="r-in"><span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="st">"scomm_score.B"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"scomm_score.max"</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span>,</span></span>
+<span class="r-in"><span>  xlab <span class="op">=</span> <span class="st">"UMAP_1"</span>,</span></span>
+<span class="r-in"><span>  ylab <span class="op">=</span> <span class="st">"UMAP_2"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>

@@ -14,7 +14,7 @@ RunscOMM(
   query_assay = NULL,
   reference_label = NULL,
   features = NULL,
-  prediction_prefix = "predicted_",
+  prediction_prefix = "scomm_",
   evaluate = FALSE,
   truth_col = NULL,
   tool_name = "scOMM",
@@ -58,7 +58,8 @@ RunscOMM(
 
 - prediction_prefix:
 
-  Prefix added to prediction metadata columns.
+  Prefix added to prediction metadata columns. The default creates
+  `scomm_prediction`, `scomm_score.<class>`, and `scomm_score.max`.
 
 - evaluate:
 
@@ -103,10 +104,9 @@ A `Seurat` object with `scOMM` predictions stored in metadata and
 ``` r
 if (FALSE) { # \dontrun{
 data("pbmcmultiome_sub", package = "scop")
-pbmcmultiome_sub <- Seurat::NormalizeData(pbmcmultiome_sub, assay = "RNA")
-pbmcmultiome_sub <- Seurat::FindVariableFeatures(pbmcmultiome_sub, assay = "RNA")
+pbmcmultiome_sub <- standard_scop(pbmcmultiome_sub, assay = "RNA")
 ref_cells <- colnames(pbmcmultiome_sub)[1:250]
-query_cells <- colnames(pbmcmultiome_sub)[251:350]
+query_cells <- colnames(pbmcmultiome_sub)[251:500]
 reference <- subset(pbmcmultiome_sub, cells = ref_cells)
 query <- subset(pbmcmultiome_sub, cells = query_cells)
 query <- RunscOMM(
@@ -115,7 +115,26 @@ query <- RunscOMM(
   reference_assay = "RNA",
   query_assay = "RNA",
   reference_label = "CellType",
-  scomm_epochs = 2
+  scomm_epochs = 1
+)
+CellDimPlot(
+  query,
+  group.by = c(
+    "CellType",
+    "scomm_prediction"
+  ),
+  xlab = "UMAP_1",
+  ylab = "UMAP_2"
+)
+
+FeatureDimPlot(
+  query,
+  features = c(
+    "scomm_score.B",
+    "scomm_score.max"
+  ),
+  xlab = "UMAP_1",
+  ylab = "UMAP_2"
 )
 } # }
 ```

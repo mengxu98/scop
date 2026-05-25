@@ -201,24 +201,24 @@ RunKNNPredict(
 data(pancreas_sub)
 data(ref_scMCA)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-24 16:23:27] Start standard processing workflow...
-#> ℹ [2026-05-24 16:23:29] Checking a list of <Seurat>...
-#> ! [2026-05-24 16:23:29] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-24 16:23:29] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-24 16:23:30] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-24 16:23:31] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-24 16:23:31] Number of available HVF: 2000
-#> ℹ [2026-05-24 16:23:31] Finished check
-#> ℹ [2026-05-24 16:23:31] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-24 16:23:32] Perform pca linear dimension reduction
-#> ℹ [2026-05-24 16:23:32] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-24 16:23:32] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-24 16:23:32] Reorder clusters...
-#> ℹ [2026-05-24 16:23:33] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-24 16:23:33] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-24 16:23:33] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-24 16:23:38] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-24 16:23:43] Standard processing workflow completed
+#> ℹ [2026-05-25 05:29:39] Start standard processing workflow...
+#> ℹ [2026-05-25 05:29:40] Checking a list of <Seurat>...
+#> ! [2026-05-25 05:29:40] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-25 05:29:40] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-25 05:29:42] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-25 05:29:42] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-25 05:29:42] Number of available HVF: 2000
+#> ℹ [2026-05-25 05:29:43] Finished check
+#> ℹ [2026-05-25 05:29:43] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-25 05:29:43] Perform pca linear dimension reduction
+#> ℹ [2026-05-25 05:29:43] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-25 05:29:44] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-25 05:29:44] Reorder clusters...
+#> ℹ [2026-05-25 05:29:44] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-25 05:29:44] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-25 05:29:44] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-25 05:29:49] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-25 05:29:55] Standard processing workflow completed
 
 # Set the number of threads for RcppParallel
 # details see: ?RcppParallel::setThreadOptions
@@ -229,12 +229,12 @@ pancreas_sub <- RunKNNPredict(
   srt_query = pancreas_sub,
   bulk_ref = ref_scMCA
 )
-#> ℹ [2026-05-24 16:23:43] Use [1] 549 features to calculate distance.
-#> ℹ [2026-05-24 16:23:43] Detected query data type: "log_normalized_counts"
-#> ℹ [2026-05-24 16:23:43] Detected reference data type: "log_normalized_counts"
-#> ℹ [2026-05-24 16:23:43] Calculate similarity...
-#> ℹ [2026-05-24 16:23:43] Use cpp method to find neighbors
-#> ℹ [2026-05-24 16:23:43] Predict cell type...
+#> ℹ [2026-05-25 05:29:56] Use [1] 549 features to calculate distance.
+#> ℹ [2026-05-25 05:29:56] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-05-25 05:29:56] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-05-25 05:29:56] Calculate similarity...
+#> ℹ [2026-05-25 05:29:56] Use cpp method to find neighbors
+#> ℹ [2026-05-25 05:29:56] Predict cell type...
 CellDimPlot(
   pancreas_sub,
   group.by = "KNNPredict_classification",
@@ -248,12 +248,12 @@ pancreas_sub <- RunKNNPredict(
   bulk_ref = ref_scMCA,
   filter_lowfreq = 30
 )
-#> ℹ [2026-05-24 16:23:44] Use [1] 549 features to calculate distance.
-#> ℹ [2026-05-24 16:23:44] Detected query data type: "log_normalized_counts"
-#> ℹ [2026-05-24 16:23:44] Detected reference data type: "log_normalized_counts"
-#> ℹ [2026-05-24 16:23:44] Calculate similarity...
-#> ℹ [2026-05-24 16:23:44] Use cpp method to find neighbors
-#> ℹ [2026-05-24 16:23:44] Predict cell type...
+#> ℹ [2026-05-25 05:29:56] Use [1] 549 features to calculate distance.
+#> ℹ [2026-05-25 05:29:57] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-05-25 05:29:57] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-05-25 05:29:57] Calculate similarity...
+#> ℹ [2026-05-25 05:29:57] Use cpp method to find neighbors
+#> ℹ [2026-05-25 05:29:57] Predict cell type...
 CellDimPlot(
   pancreas_sub,
   group.by = "KNNPredict_classification",
@@ -267,12 +267,12 @@ pancreas_sub <- RunKNNPredict(
   query_group = "SubCellType",
   bulk_ref = ref_scMCA
 )
-#> ℹ [2026-05-24 16:23:44] Use [1] 549 features to calculate distance.
-#> ℹ [2026-05-24 16:23:45] Detected query data type: "log_normalized_counts"
-#> ℹ [2026-05-24 16:23:45] Detected reference data type: "log_normalized_counts"
-#> ℹ [2026-05-24 16:23:45] Calculate similarity...
-#> ℹ [2026-05-24 16:23:45] Use cpp method to find neighbors
-#> ℹ [2026-05-24 16:23:45] Predict cell type...
+#> ℹ [2026-05-25 05:29:57] Use [1] 549 features to calculate distance.
+#> ℹ [2026-05-25 05:29:57] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-05-25 05:29:57] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-05-25 05:29:57] Calculate similarity...
+#> ℹ [2026-05-25 05:29:57] Use cpp method to find neighbors
+#> ℹ [2026-05-25 05:29:57] Predict cell type...
 CellDimPlot(
   pancreas_sub,
   group.by = "KNNPredict_classification",
@@ -294,44 +294,44 @@ panc8_sub <- RenameFeatures(
   panc8_sub,
   newnames = genenames
 )
-#> ℹ [2026-05-24 16:23:45] Rename features for the assay: RNA
+#> ℹ [2026-05-25 05:29:58] Rename features for the assay: RNA
 panc8_sub <- CheckDataMerge(
   panc8_sub,
   batch = "tech"
 )[["srt_merge"]]
-#> ℹ [2026-05-24 16:23:45] Split `srt_merge` into `srt_list` by "tech"
-#> ℹ [2026-05-24 16:23:46] Checking a list of <Seurat>...
-#> ! [2026-05-24 16:23:46] Data 1/5 of the `srt_list` is "unknown"
-#> ℹ [2026-05-24 16:23:46] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/5 of `srt_list`...
-#> ℹ [2026-05-24 16:23:48] Perform `Seurat::FindVariableFeatures()` on 1/5 of `srt_list`...
-#> ! [2026-05-24 16:23:48] Data 2/5 of the `srt_list` is "unknown"
-#> ℹ [2026-05-24 16:23:48] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 2/5 of `srt_list`...
-#> ℹ [2026-05-24 16:23:50] Perform `Seurat::FindVariableFeatures()` on 2/5 of `srt_list`...
-#> ! [2026-05-24 16:23:50] Data 3/5 of the `srt_list` is "unknown"
-#> ℹ [2026-05-24 16:23:50] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 3/5 of `srt_list`...
-#> ℹ [2026-05-24 16:23:52] Perform `Seurat::FindVariableFeatures()` on 3/5 of `srt_list`...
-#> ! [2026-05-24 16:23:52] Data 4/5 of the `srt_list` is "unknown"
-#> ℹ [2026-05-24 16:23:52] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 4/5 of `srt_list`...
-#> ℹ [2026-05-24 16:23:53] Perform `Seurat::FindVariableFeatures()` on 4/5 of `srt_list`...
-#> ! [2026-05-24 16:23:54] Data 5/5 of the `srt_list` is "unknown"
-#> ℹ [2026-05-24 16:23:54] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 5/5 of `srt_list`...
-#> ℹ [2026-05-24 16:23:55] Perform `Seurat::FindVariableFeatures()` on 5/5 of `srt_list`...
-#> ℹ [2026-05-24 16:23:56] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-24 16:23:56] Number of available HVF: 2000
-#> ℹ [2026-05-24 16:23:56] Finished check
+#> ℹ [2026-05-25 05:29:58] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-05-25 05:29:59] Checking a list of <Seurat>...
+#> ! [2026-05-25 05:29:59] Data 1/5 of the `srt_list` is "unknown"
+#> ℹ [2026-05-25 05:29:59] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/5 of `srt_list`...
+#> ℹ [2026-05-25 05:30:01] Perform `Seurat::FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ! [2026-05-25 05:30:01] Data 2/5 of the `srt_list` is "unknown"
+#> ℹ [2026-05-25 05:30:01] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 2/5 of `srt_list`...
+#> ℹ [2026-05-25 05:30:03] Perform `Seurat::FindVariableFeatures()` on 2/5 of `srt_list`...
+#> ! [2026-05-25 05:30:03] Data 3/5 of the `srt_list` is "unknown"
+#> ℹ [2026-05-25 05:30:03] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 3/5 of `srt_list`...
+#> ℹ [2026-05-25 05:30:05] Perform `Seurat::FindVariableFeatures()` on 3/5 of `srt_list`...
+#> ! [2026-05-25 05:30:05] Data 4/5 of the `srt_list` is "unknown"
+#> ℹ [2026-05-25 05:30:05] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 4/5 of `srt_list`...
+#> ℹ [2026-05-25 05:30:07] Perform `Seurat::FindVariableFeatures()` on 4/5 of `srt_list`...
+#> ! [2026-05-25 05:30:07] Data 5/5 of the `srt_list` is "unknown"
+#> ℹ [2026-05-25 05:30:07] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 5/5 of `srt_list`...
+#> ℹ [2026-05-25 05:30:09] Perform `Seurat::FindVariableFeatures()` on 5/5 of `srt_list`...
+#> ℹ [2026-05-25 05:30:09] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-25 05:30:09] Number of available HVF: 2000
+#> ℹ [2026-05-25 05:30:10] Finished check
 panc8_sub <- SeuratObject::JoinLayers(panc8_sub)
 pancreas_sub <- RunKNNPredict(
   srt_query = pancreas_sub,
   srt_ref = panc8_sub,
   ref_group = "celltype"
 )
-#> ℹ [2026-05-24 16:23:59] Use the HVF to calculate distance metric
-#> ℹ [2026-05-24 16:23:59] Use [1] 632 features to calculate distance.
-#> ℹ [2026-05-24 16:23:59] Detected query data type: "log_normalized_counts"
-#> ℹ [2026-05-24 16:23:59] Detected reference data type: "log_normalized_counts"
-#> ℹ [2026-05-24 16:23:59] Calculate similarity...
-#> ℹ [2026-05-24 16:23:59] Use cpp method to find neighbors
-#> ℹ [2026-05-24 16:23:59] Predict cell type...
+#> ℹ [2026-05-25 05:30:12] Use the HVF to calculate distance metric
+#> ℹ [2026-05-25 05:30:12] Use [1] 632 features to calculate distance.
+#> ℹ [2026-05-25 05:30:12] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-05-25 05:30:12] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-05-25 05:30:12] Calculate similarity...
+#> ℹ [2026-05-25 05:30:12] Use cpp method to find neighbors
+#> ℹ [2026-05-25 05:30:12] Predict cell type...
 CellDimPlot(
   pancreas_sub,
   group.by = "KNNPredict_classification",
@@ -350,13 +350,13 @@ pancreas_sub <- RunKNNPredict(
   ref_group = "celltype",
   ref_collapsing = FALSE
 )
-#> ℹ [2026-05-24 16:23:59] Use the HVF to calculate distance metric
-#> ℹ [2026-05-24 16:23:59] Use [1] 632 features to calculate distance.
-#> ℹ [2026-05-24 16:24:00] Detected query data type: "log_normalized_counts"
-#> ℹ [2026-05-24 16:24:00] Detected reference data type: "log_normalized_counts"
-#> ℹ [2026-05-24 16:24:00] Calculate similarity...
-#> ℹ [2026-05-24 16:24:00] Use cpp method to find neighbors
-#> ℹ [2026-05-24 16:24:01] Predict cell type...
+#> ℹ [2026-05-25 05:30:13] Use the HVF to calculate distance metric
+#> ℹ [2026-05-25 05:30:13] Use [1] 632 features to calculate distance.
+#> ℹ [2026-05-25 05:30:13] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-05-25 05:30:13] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-05-25 05:30:13] Calculate similarity...
+#> ℹ [2026-05-25 05:30:13] Use cpp method to find neighbors
+#> ℹ [2026-05-25 05:30:14] Predict cell type...
 CellDimPlot(
   pancreas_sub,
   group.by = "KNNPredict_classification",
@@ -375,13 +375,13 @@ pancreas_sub <- RunKNNPredict(
   query_group = "SubCellType",
   ref_group = "celltype"
 )
-#> ℹ [2026-05-24 16:24:01] Use the HVF to calculate distance metric
-#> ℹ [2026-05-24 16:24:01] Use [1] 632 features to calculate distance.
-#> ℹ [2026-05-24 16:24:01] Detected query data type: "log_normalized_counts"
-#> ℹ [2026-05-24 16:24:01] Detected reference data type: "log_normalized_counts"
-#> ℹ [2026-05-24 16:24:01] Calculate similarity...
-#> ℹ [2026-05-24 16:24:01] Use cpp method to find neighbors
-#> ℹ [2026-05-24 16:24:01] Predict cell type...
+#> ℹ [2026-05-25 05:30:15] Use the HVF to calculate distance metric
+#> ℹ [2026-05-25 05:30:15] Use [1] 632 features to calculate distance.
+#> ℹ [2026-05-25 05:30:15] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-05-25 05:30:15] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-05-25 05:30:15] Calculate similarity...
+#> ℹ [2026-05-25 05:30:15] Use cpp method to find neighbors
+#> ℹ [2026-05-25 05:30:15] Predict cell type...
 CellDimPlot(
   pancreas_sub,
   group.by = "KNNPredict_classification",
@@ -403,25 +403,25 @@ pancreas_sub <- RunKNNPredict(
   feature_source = "ref",
   DEtest_param = list(cores = 2)
 )
-#> ℹ [2026-05-24 16:24:03] Data type is log-normalized
-#> ℹ [2026-05-24 16:24:03] Start differential expression test
-#> ℹ [2026-05-24 16:24:03] Find all markers(wilcox) among [1] 13 groups...
-#> ℹ [2026-05-24 16:24:03] Using 2 cores
-#> ⠙ [2026-05-24 16:24:03] Running for delta [1/13]              8% | ETA:  6s
-#> ⠹ [2026-05-24 16:24:03] Running for beta [4/13] ■■■         31% | ETA:  4s
-#> ⠸ [2026-05-24 16:24:03] Running for quiescent-stellate [10/13] ■■■■■■■     77% …
-#> ✔ [2026-05-24 16:24:03] Completed 13 tasks in 4.9s
+#> ℹ [2026-05-25 05:30:16] Data type is log-normalized
+#> ℹ [2026-05-25 05:30:16] Start differential expression test
+#> ℹ [2026-05-25 05:30:16] Find all markers(wilcox) among [1] 13 groups...
+#> ℹ [2026-05-25 05:30:16] Using 2 cores
+#> ⠙ [2026-05-25 05:30:16] Running for delta [1/13]              8% | ETA:  9s
+#> ⠹ [2026-05-25 05:30:16] Running for ductal [6/13] ■■■■        46% | ETA:  5s
+#> ⠸ [2026-05-25 05:30:16] Running for quiescent-stellate [10/13] ■■■■■■■     77% …
+#> ✔ [2026-05-25 05:30:16] Completed 13 tasks in 7.5s
 #> 
-#> ℹ [2026-05-24 16:24:03] Building results
-#> ✔ [2026-05-24 16:24:08] Differential expression test completed
-#> ℹ [2026-05-24 16:24:08] Use the DE features from AllMarkers_wilcox to calculate distance metric.
-#> ℹ [2026-05-24 16:24:08] DE features number of the ref data: [1] 1998
-#> ℹ [2026-05-24 16:24:08] Use [1] 1998 features to calculate distance.
-#> ℹ [2026-05-24 16:24:08] Detected query data type: "log_normalized_counts"
-#> ℹ [2026-05-24 16:24:08] Detected reference data type: "log_normalized_counts"
-#> ℹ [2026-05-24 16:24:08] Calculate similarity...
-#> ℹ [2026-05-24 16:24:08] Use cpp method to find neighbors
-#> ℹ [2026-05-24 16:24:08] Predict cell type...
+#> ℹ [2026-05-25 05:30:16] Building results
+#> ✔ [2026-05-25 05:30:24] Differential expression test completed
+#> ℹ [2026-05-25 05:30:24] Use the DE features from AllMarkers_wilcox to calculate distance metric.
+#> ℹ [2026-05-25 05:30:24] DE features number of the ref data: [1] 1998
+#> ℹ [2026-05-25 05:30:24] Use [1] 1998 features to calculate distance.
+#> ℹ [2026-05-25 05:30:24] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-05-25 05:30:24] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-05-25 05:30:24] Calculate similarity...
+#> ℹ [2026-05-25 05:30:24] Use cpp method to find neighbors
+#> ℹ [2026-05-25 05:30:24] Predict cell type...
 
 CellDimPlot(
   pancreas_sub,
@@ -445,36 +445,36 @@ pancreas_sub <- RunKNNPredict(
   feature_source = "both",
   DEtest_param = list(cores = 2)
 )
-#> ℹ [2026-05-24 16:24:09] Data type is log-normalized
-#> ℹ [2026-05-24 16:24:09] Start differential expression test
-#> ℹ [2026-05-24 16:24:09] Find all markers(wilcox) among [1] 8 groups...
-#> ℹ [2026-05-24 16:24:09] Using 2 cores
-#> ⠙ [2026-05-24 16:24:09] Running for Beta [3/8] ■■■         38% | ETA:  2s
-#> ✔ [2026-05-24 16:24:09] Completed 8 tasks in 2s
+#> ℹ [2026-05-25 05:30:26] Data type is log-normalized
+#> ℹ [2026-05-25 05:30:26] Start differential expression test
+#> ℹ [2026-05-25 05:30:26] Find all markers(wilcox) among [1] 8 groups...
+#> ℹ [2026-05-25 05:30:26] Using 2 cores
+#> ⠙ [2026-05-25 05:30:26] Running for Ductal [1/8] ■           12% | ETA:  3s
+#> ✔ [2026-05-25 05:30:26] Completed 8 tasks in 2.3s
 #> 
-#> ℹ [2026-05-24 16:24:09] Building results
-#> ✔ [2026-05-24 16:24:11] Differential expression test completed
-#> ℹ [2026-05-24 16:24:11] Use the DE features from AllMarkers_wilcox to calculate distance metric.
-#> ℹ [2026-05-24 16:24:11] DE features number of the query data: [1] 1998
-#> ℹ [2026-05-24 16:24:12] Data type is log-normalized
-#> ℹ [2026-05-24 16:24:12] Start differential expression test
-#> ℹ [2026-05-24 16:24:12] Find all markers(wilcox) among [1] 13 groups...
-#> ℹ [2026-05-24 16:24:12] Using 2 cores
-#> ⠙ [2026-05-24 16:24:12] Running for delta [1/13]              8% | ETA: 11s
-#> ⠹ [2026-05-24 16:24:12] Running for activated-stellate [7/13] ■■■■■       54% |…
-#> ⠸ [2026-05-24 16:24:12] Running for quiescent-stellate [10/13] ■■■■■■■     77% …
-#> ✔ [2026-05-24 16:24:12] Completed 13 tasks in 7.7s
+#> ℹ [2026-05-25 05:30:26] Building results
+#> ✔ [2026-05-25 05:30:28] Differential expression test completed
+#> ℹ [2026-05-25 05:30:28] Use the DE features from AllMarkers_wilcox to calculate distance metric.
+#> ℹ [2026-05-25 05:30:28] DE features number of the query data: [1] 1998
+#> ℹ [2026-05-25 05:30:29] Data type is log-normalized
+#> ℹ [2026-05-25 05:30:29] Start differential expression test
+#> ℹ [2026-05-25 05:30:29] Find all markers(wilcox) among [1] 13 groups...
+#> ℹ [2026-05-25 05:30:29] Using 2 cores
+#> ⠙ [2026-05-25 05:30:29] Running for delta [1/13]              8% | ETA: 10s
+#> ⠹ [2026-05-25 05:30:29] Running for ductal [6/13] ■■■■        46% | ETA:  4s
+#> ⠸ [2026-05-25 05:30:29] Running for quiescent-stellate [10/13] ■■■■■■■     77% …
+#> ✔ [2026-05-25 05:30:29] Completed 13 tasks in 6.3s
 #> 
-#> ℹ [2026-05-24 16:24:12] Building results
-#> ✔ [2026-05-24 16:24:20] Differential expression test completed
-#> ℹ [2026-05-24 16:24:20] Use the DE features from AllMarkers_wilcox to calculate distance metric.
-#> ℹ [2026-05-24 16:24:20] DE features number of the ref data: [1] 352
-#> ℹ [2026-05-24 16:24:20] Use [1] 102 features to calculate distance.
-#> ℹ [2026-05-24 16:24:21] Detected query data type: "log_normalized_counts"
-#> ℹ [2026-05-24 16:24:21] Detected reference data type: "log_normalized_counts"
-#> ℹ [2026-05-24 16:24:21] Calculate similarity...
-#> ℹ [2026-05-24 16:24:21] Use cpp method to find neighbors
-#> ℹ [2026-05-24 16:24:21] Predict cell type...
+#> ℹ [2026-05-25 05:30:29] Building results
+#> ✔ [2026-05-25 05:30:35] Differential expression test completed
+#> ℹ [2026-05-25 05:30:35] Use the DE features from AllMarkers_wilcox to calculate distance metric.
+#> ℹ [2026-05-25 05:30:35] DE features number of the ref data: [1] 352
+#> ℹ [2026-05-25 05:30:35] Use [1] 102 features to calculate distance.
+#> ℹ [2026-05-25 05:30:35] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-05-25 05:30:36] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-05-25 05:30:36] Calculate similarity...
+#> ℹ [2026-05-25 05:30:36] Use cpp method to find neighbors
+#> ℹ [2026-05-25 05:30:36] Predict cell type...
 
 CellDimPlot(
   pancreas_sub,

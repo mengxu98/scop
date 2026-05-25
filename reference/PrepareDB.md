@@ -142,10 +142,10 @@ db_list <- PrepareDB(
   species = "Homo_sapiens",
   db = "GO_BP"
 )
-#> ℹ [2026-05-24 15:40:26] Species: "Homo_sapiens"
-#> ℹ [2026-05-24 15:40:26] Loading cached: GO_BP version: 3.23.1 nterm:14209 created: 2026-05-24 14:53:40
-#> ℹ [2026-05-24 15:40:27] Convert ID types for the GO_BP database
-#> ℹ [2026-05-24 15:40:27] Converted ID types using local annotation package org.Hs.eg.db
+#> ℹ [2026-05-25 04:46:41] Species: "Homo_sapiens"
+#> ℹ [2026-05-25 04:46:41] Loading cached: GO_BP version: 3.23.1 nterm:14209 created: 2026-05-25 03:56:22
+#> ℹ [2026-05-25 04:46:42] Convert ID types for the GO_BP database
+#> ℹ [2026-05-25 04:46:42] Converted ID types using local annotation package org.Hs.eg.db
 ListDB(
   species = "Homo_sapiens",
   db = "GO_BP"
@@ -153,7 +153,7 @@ ListDB(
 #>                                                         identifier version
 #> 1 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7
 #>                                 comment  timestamp                       date
-#> 1 3.23.1 nterm:14209|Homo_sapiens-GO_BP 1779637229 2026-05-24 15:40:28.783314
+#> 1 3.23.1 nterm:14209|Homo_sapiens-GO_BP 1779684403 2026-05-25 04:46:43.389385
 #>           db_version            db_name
 #> 1 3.23.1 nterm:14209 Homo_sapiens-GO_BP
 #>                                                                    file
@@ -189,8 +189,8 @@ if (interactive()) {
 
 # You can also build a custom database based on the gene sets you have
 ccgenes <- CycGenePrefetch("Homo_sapiens")
-#> ℹ [2026-05-24 15:40:29] Prefetching cell cycle genes for "Homo_sapiens" ...
-#> ✔ [2026-05-24 15:40:29] Cell cycle gene prefetching completed "Homo_sapiens"
+#> ℹ [2026-05-25 04:46:43] Prefetching cell cycle genes for "Homo_sapiens" ...
+#> ✔ [2026-05-25 04:46:43] Cell cycle gene prefetching completed "Homo_sapiens"
 custom_TERM2GENE <- rbind(
   data.frame(
     term = "S_genes",
@@ -217,25 +217,25 @@ db_list <- PrepareDB(
   custom_IDtype = "symbol",
   custom_version = "Seurat_v5"
 )
-#> ℹ [2026-05-24 15:40:29] Species: "Homo_sapiens"
-#> ℹ [2026-05-24 15:40:29] Convert ID types for the CellCycle database
-#> ℹ [2026-05-24 15:40:29] Converted ID types using local annotation package org.Hs.eg.db
-#> ℹ [2026-05-24 15:40:29] Species: "Mus_musculus"
-#> ! [2026-05-24 15:40:29] Use the "Homo_sapiens" annotation to create the "CellCycle" database for "Mus_musculus"
-#> ℹ [2026-05-24 15:40:29] Convert species for the CellCycle database
-#> ℹ [2026-05-24 15:40:29] Connect to the Ensembl archives...
-#> ℹ [2026-05-24 15:40:30] Using the 115 version of ensembl database...
-#> ℹ [2026-05-24 15:40:30] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
-#> ℹ [2026-05-24 15:40:52] Searching the dataset hsapiens ...
-#> ℹ [2026-05-24 15:41:11] Connecting to the dataset hsapiens_gene_ensembl ...
-#> ℹ [2026-05-24 15:41:25] Converting the geneIDs...
-#> ℹ [2026-05-24 15:41:28] 97 genes mapped with "ensembl_symbol"
-#> ℹ [2026-05-24 15:41:28] ==============================
+#> ℹ [2026-05-25 04:46:44] Species: "Homo_sapiens"
+#> ℹ [2026-05-25 04:46:44] Convert ID types for the CellCycle database
+#> ℹ [2026-05-25 04:46:44] Converted ID types using local annotation package org.Hs.eg.db
+#> ℹ [2026-05-25 04:46:44] Species: "Mus_musculus"
+#> ! [2026-05-25 04:46:44] Use the "Homo_sapiens" annotation to create the "CellCycle" database for "Mus_musculus"
+#> ℹ [2026-05-25 04:46:44] Convert species for the CellCycle database
+#> ℹ [2026-05-25 04:46:44] Connect to the Ensembl archives...
+#> ℹ [2026-05-25 04:46:44] Using the 115 version of ensembl database...
+#> ℹ [2026-05-25 04:46:44] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
+#> ℹ [2026-05-25 04:46:47] Searching the dataset hsapiens ...
+#> ℹ [2026-05-25 04:46:53] Connecting to the dataset hsapiens_gene_ensembl ...
+#> ℹ [2026-05-25 04:46:54] Converting the geneIDs...
+#> ℹ [2026-05-25 04:46:56] 97 genes mapped with "ensembl_symbol"
+#> ℹ [2026-05-25 04:46:56] ==============================
 #> ℹ                       97 genes mapped
 #> ℹ                       0 genes unmapped
 #> ℹ                       ==============================
-#> ℹ [2026-05-24 15:41:28] Convert ID types for the CellCycle database
-#> ℹ [2026-05-24 15:41:28] Converted ID types using local annotation package org.Mm.eg.db
+#> ℹ [2026-05-25 04:46:56] Convert ID types for the CellCycle database
+#> ℹ [2026-05-25 04:46:56] Converted ID types using local annotation package org.Mm.eg.db
 ListDB(db = "CellCycle")
 #>                                                         identifier version
 #> 1 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7
@@ -244,8 +244,8 @@ ListDB(db = "CellCycle")
 #> 1                              Seurat_v5 nterm:2|Homo_sapiens-CellCycle
 #> 2 Seurat_v5(converted from Homo_sapiens) nterm:2|Mus_musculus-CellCycle
 #>    timestamp                       date
-#> 1 1779637230 2026-05-24 15:40:29.650087
-#> 2 1779637289 2026-05-24 15:41:28.971076
+#> 1 1779684404 2026-05-25 04:46:44.272923
+#> 2 1779684417 2026-05-25 04:46:56.862402
 #>                                       db_version                db_name
 #> 1                              Seurat_v5 nterm:2 Homo_sapiens-CellCycle
 #> 2 Seurat_v5(converted from Homo_sapiens) nterm:2 Mus_musculus-CellCycle
@@ -257,8 +257,8 @@ ListDB(db = "CellCycle")
 #> 2 Mus_musculus CellCycle
 
 db_list <- PrepareDB(species = "Mus_musculus", db = "CellCycle")
-#> ℹ [2026-05-24 15:41:28] Species: "Mus_musculus"
-#> ℹ [2026-05-24 15:41:28] Loading cached: CellCycle version: Seurat_v5(converted from Homo_sapiens) nterm:2 created: 2026-05-24 15:41:28
+#> ℹ [2026-05-25 04:46:56] Species: "Mus_musculus"
+#> ℹ [2026-05-25 04:46:56] Loading cached: CellCycle version: Seurat_v5(converted from Homo_sapiens) nterm:2 created: 2026-05-25 04:46:56
 head(
   db_list[["Mus_musculus"]][["CellCycle"]][["TERM2GENE"]]
 )
