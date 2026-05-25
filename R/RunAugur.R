@@ -106,7 +106,7 @@ RunAugur <- function(
       message_type = "error"
     )
   }
-  check_r("Augur", verbose = FALSE)
+  check_r("neurorestore/Augur", verbose = FALSE)
 
   backend <- match.arg(backend)
   augur_mode <- match.arg(augur_mode)
@@ -221,7 +221,7 @@ RunAugur <- function(
   )
 
   if (identical(backend, "r")) {
-    augur <- Augur::calculate_auc(
+    augur <- get_namespace_fun("Augur", "calculate_auc")(
       input = expr,
       meta = meta,
       label_col = "label",
@@ -435,7 +435,7 @@ augur_cpp <- function(
       }
       X <- expr[, cell_types == cell_type, drop = FALSE]
       if (nrow(X) >= 1000 && isTRUE(select_var)) {
-        X <- Augur::select_variance(
+        X <- get_namespace_fun("Augur", "select_variance")(
           X,
           var_quantile,
           filter_negative_residuals = FALSE
@@ -483,7 +483,7 @@ augur_cpp <- function(
         }
         if (n_subsamples < 1) {
           if (nrow(X) >= 1000 && feature_perc < 1) {
-            X0 <- Augur::select_random(X, feature_perc)
+            X0 <- get_namespace_fun("Augur", "select_random")(X, feature_perc)
           } else {
             X0 <- X
           }
@@ -502,7 +502,7 @@ augur_cpp <- function(
           )
           y0 <- y[subsample_idxs]
           if (nrow(X) >= 1000 && feature_perc < 1) {
-            X0 <- Augur::select_random(X, feature_perc)
+            X0 <- get_namespace_fun("Augur", "select_random")(X, feature_perc)
           } else {
             X0 <- X
           }
