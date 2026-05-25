@@ -121,7 +121,6 @@ pancreas_human <- ConvertHomologs(
   species_to = "Homo_sapiens",
   verbose = FALSE
 )
-#> Error in ConvertHomologs.default(object = counts, species_from = species_from,     species_to = species_to, geneID_from_IDtype = geneID_from_IDtype,     geneID_to_IDtype = geneID_to_IDtype, multi_mapping = multi_mapping,     keep_unmapped = keep_unmapped, collapse_fun = collapse_fun,     Ensembl_version = Ensembl_version, biomart = biomart, mirror = mirror,     max_tries = max_tries, verbose = verbose): No homologous genes remained after conversion
 spatial <- RunCytoSPACE(
   visium_human_pancreas_sub,
   reference = pancreas_human,
@@ -129,7 +128,6 @@ spatial <- RunCytoSPACE(
   mean_cell_numbers = 1,
   verbose = FALSE
 )
-#> Error: object 'pancreas_human' not found
 
 SpatialSpotPlot(
   visium_human_pancreas_sub,
@@ -143,5 +141,4 @@ SpatialSpotPlot(
   group.by = "CytoSPACE_dominant_type",
   theme_use = "theme_scop"
 )
-#> Error: object 'spatial' not found
 ```

@@ -724,24 +724,24 @@ A list with the following elements:
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-25 07:31:42] Start standard processing workflow...
-#> ℹ [2026-05-25 07:31:43] Checking a list of <Seurat>...
-#> ! [2026-05-25 07:31:43] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-25 07:31:43] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 07:31:45] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 07:31:45] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-25 07:31:46] Number of available HVF: 2000
-#> ℹ [2026-05-25 07:31:46] Finished check
-#> ℹ [2026-05-25 07:31:46] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-25 07:31:46] Perform pca linear dimension reduction
-#> ℹ [2026-05-25 07:31:46] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-25 07:31:47] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-25 07:31:47] Reorder clusters...
-#> ℹ [2026-05-25 07:31:47] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-25 07:31:47] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-25 07:31:47] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-25 07:31:52] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-25 07:31:56] Standard processing workflow completed
+#> ℹ [2026-05-25 10:08:54] Start standard processing workflow...
+#> ℹ [2026-05-25 10:08:55] Checking a list of <Seurat>...
+#> ! [2026-05-25 10:08:55] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-25 10:08:55] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-25 10:08:57] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-25 10:08:57] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-25 10:08:57] Number of available HVF: 2000
+#> ℹ [2026-05-25 10:08:57] Finished check
+#> ℹ [2026-05-25 10:08:57] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-25 10:08:58] Perform pca linear dimension reduction
+#> ℹ [2026-05-25 10:08:58] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-25 10:08:59] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-25 10:08:59] Reorder clusters...
+#> ℹ [2026-05-25 10:08:59] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-25 10:08:59] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-25 10:08:59] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-25 10:09:04] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-25 10:09:08] Standard processing workflow completed
 ht1 <- GroupHeatmap(
   pancreas_sub,
   features = c(
@@ -771,22 +771,22 @@ thisplot::panel_fix(
     species = "Mus_musculus",
     db = c("CSPA", "TF")
   )
-#> ℹ [2026-05-25 07:31:57] Species: "Mus_musculus"
-#> ℹ [2026-05-25 07:31:57] Loading cached: CSPA version: CSPA nterm:1 created: 2026-05-25 07:12:24
-#> ℹ [2026-05-25 07:31:57] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-05-25 06:36:37
+#> ℹ [2026-05-25 10:09:09] Species: "Mus_musculus"
+#> ℹ [2026-05-25 10:09:09] Loading cached: CSPA version: CSPA nterm:1 created: 2026-05-25 09:49:38
+#> ℹ [2026-05-25 10:09:10] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-05-25 09:09:59
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-05-25 07:31:59] Data type is log-normalized
-#> ℹ [2026-05-25 07:31:59] Start differential expression test
-#> ℹ [2026-05-25 07:31:59] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-05-25 07:31:59] Using 1 core
-#> ⠙ [2026-05-25 07:31:59] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ✔ [2026-05-25 07:31:59] Completed 5 tasks in 977ms
+#> ℹ [2026-05-25 10:09:11] Data type is log-normalized
+#> ℹ [2026-05-25 10:09:11] Start differential expression test
+#> ℹ [2026-05-25 10:09:11] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-05-25 10:09:11] Using 1 core
+#> ⠙ [2026-05-25 10:09:11] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ✔ [2026-05-25 10:09:11] Completed 5 tasks in 1.4s
 #> 
-#> ℹ [2026-05-25 07:31:59] Building results
-#> ✔ [2026-05-25 07:32:00] Differential expression test completed
+#> ℹ [2026-05-25 10:09:11] Building results
+#> ✔ [2026-05-25 10:09:13] Differential expression test completed
 de_filter <- dplyr::filter(
   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
@@ -820,22 +820,22 @@ ht3 <- GroupHeatmap(
   anno_keys = TRUE,
   anno_features = TRUE
 )
-#> ℹ [2026-05-25 07:32:10] Start Enrichment analysis
-#> ℹ [2026-05-25 07:32:10] Species: "Mus_musculus"
-#> ℹ [2026-05-25 07:32:10] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-25 07:14:27
-#> ℹ [2026-05-25 07:32:11] Permform enrichment...
-#> ℹ [2026-05-25 07:32:11] Using 1 core
-#> ⠙ [2026-05-25 07:32:11] Running for 1 [1/5] ■■          20% | ETA: 15s
-#> ⠹ [2026-05-25 07:32:11] Running for 2 [2/5] ■■■■        40% | ETA:  9s
-#> ⠸ [2026-05-25 07:32:11] Running for 3 [3/5] ■■■■■■      60% | ETA:  6s
-#> ⠼ [2026-05-25 07:32:11] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  3s
-#> ✔ [2026-05-25 07:32:11] Completed 5 tasks in 13.9s
+#> ℹ [2026-05-25 10:09:23] Start Enrichment analysis
+#> ℹ [2026-05-25 10:09:23] Species: "Mus_musculus"
+#> ℹ [2026-05-25 10:09:23] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-25 09:51:46
+#> ℹ [2026-05-25 10:09:25] Permform enrichment...
+#> ℹ [2026-05-25 10:09:25] Using 1 core
+#> ⠙ [2026-05-25 10:09:25] Running for 1 [1/5] ■■          20% | ETA: 17s
+#> ⠹ [2026-05-25 10:09:25] Running for 2 [2/5] ■■■■        40% | ETA: 10s
+#> ⠸ [2026-05-25 10:09:25] Running for 3 [3/5] ■■■■■■      60% | ETA:  7s
+#> ⠼ [2026-05-25 10:09:25] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  3s
+#> ✔ [2026-05-25 10:09:25] Completed 5 tasks in 14.8s
 #> 
-#> ℹ [2026-05-25 07:32:11] Building results
-#> ✔ [2026-05-25 07:32:25] Enrichment analysis done
-#> ℹ [2026-05-25 07:33:13] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-05-25 07:33:13] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-05-25 07:33:13] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
+#> ℹ [2026-05-25 10:09:25] Building results
+#> ✔ [2026-05-25 10:09:40] Enrichment analysis done
+#> ℹ [2026-05-25 10:10:25] The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ [2026-05-25 10:10:25] The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ [2026-05-25 10:10:25] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 
 ht3$plot
 

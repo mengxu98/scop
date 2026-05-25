@@ -109,26 +109,26 @@ panc8_sub <- integration_scop(
   batch = "tech",
   integration_method = "Harmony5"
 )
-#> ◌ [2026-05-25 08:22:16] Run integration workflow...
+#> ◌ [2026-05-25 11:03:46] Run integration workflow...
 #> Warning: No layers found matching search pattern provided
-#> ℹ [2026-05-25 08:22:16] Perform `Seurat::NormalizeData()` on split layers for Seurat v5 integration
-#> ℹ [2026-05-25 08:22:18] Perform `Seurat::FindVariableFeatures()` per batch (`HVF_source = 'separate'`)
-#> ℹ [2026-05-25 08:22:20] Number of available HVF: 2000
+#> ℹ [2026-05-25 11:03:47] Perform `Seurat::NormalizeData()` on split layers for Seurat v5 integration
+#> ℹ [2026-05-25 11:03:49] Perform `Seurat::FindVariableFeatures()` per batch (`HVF_source = 'separate'`)
+#> ℹ [2026-05-25 11:03:51] Number of available HVF: 2000
 #> Warning: Layer ‘scale.data’ is empty
-#> ℹ [2026-05-25 08:22:21] Perform `Seurat::ScaleData()` on split layers for Seurat v5 integration
-#> ℹ [2026-05-25 08:22:22] Perform PCA on split layers before `Seurat::IntegrateLayers()`
-#> ℹ [2026-05-25 08:22:22] Perform Seurat v5 integration with `HarmonyIntegration()`
+#> ℹ [2026-05-25 11:03:52] Perform `Seurat::ScaleData()` on split layers for Seurat v5 integration
+#> ℹ [2026-05-25 11:03:53] Perform PCA on split layers before `Seurat::IntegrateLayers()`
+#> ℹ [2026-05-25 11:03:53] Perform Seurat v5 integration with `HarmonyIntegration()`
 #> The `features` argument is ignored by `HarmonyIntegration`.
 #> This message is displayed once per session.
-#> ! [2026-05-25 08:22:23] No valid estimated dimensions found for Harmony5. Use fallback dimensions 1:50
-#> ℹ [2026-05-25 08:22:23] Adjust neighbor k from 20 to 20 for small-sample clustering
-#> ℹ [2026-05-25 08:22:24] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-05-25 08:22:24] Reorder clusters...
-#> ℹ [2026-05-25 08:22:24] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-25 08:22:24] Perform umap nonlinear dimension reduction using Harmony5 (1:50)
-#> ℹ [2026-05-25 08:22:30] Perform umap nonlinear dimension reduction using Harmony5 (1:50)
-#> ℹ [2026-05-25 08:22:35] Perform umap nonlinear dimension reduction using pca (1:20)
-#> ✔ [2026-05-25 08:22:41] Harmony5 integration completed
+#> ! [2026-05-25 11:03:54] No valid estimated dimensions found for Harmony5. Use fallback dimensions 1:50
+#> ℹ [2026-05-25 11:03:54] Adjust neighbor k from 20 to 20 for small-sample clustering
+#> ℹ [2026-05-25 11:03:55] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-05-25 11:03:55] Reorder clusters...
+#> ℹ [2026-05-25 11:03:55] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-25 11:03:55] Perform umap nonlinear dimension reduction using Harmony5 (1:50)
+#> ℹ [2026-05-25 11:04:01] Perform umap nonlinear dimension reduction using Harmony5 (1:50)
+#> ℹ [2026-05-25 11:04:07] Perform umap nonlinear dimension reduction using pca (1:20)
+#> ✔ [2026-05-25 11:04:13] Harmony5 integration completed
 names(panc8_sub@reductions)
 #> [1] "pca"            "Harmony5"       "Harmony5UMAP2D" "Harmony5UMAP3D"
 #> [5] "pcaUMAP2D"     
