@@ -14,17 +14,17 @@
 #' `scop` backend that keeps Augur's sampling, random forest, and metric
 #' semantics but removes the heavier recipe/bake loop and uses C++ sparse
 #' matrix preparation where possible. `"r"` calls the native
-#' [Augur::calculate_auc()] implementation.
+#' `Augur::calculate_auc` implementation.
 #' @param features Features used by Augur. If `NULL`, all features in `assay`
 #' are used.
 #' @param n_subsamples,subsample_size,folds,min_cells,var_quantile,feature_perc,select_var,augur_mode,classifier,rf_params,lr_params
-#' Arguments passed to [Augur::calculate_auc()].
+#' Arguments passed to `Augur::calculate_auc`.
 #' @param cores Number of cores used by Augur.
 #' @param prefix Prefix for metadata columns written to `srt@meta.data`.
 #' @param tool_name Name of the `srt@tools` entry used to store Augur results.
 #' @param add_meta Whether to write `prefix_auc` and `prefix_rank` metadata
 #' columns back to each cell by matching `celltype.by`.
-#' @param ... Additional arguments passed to [Augur::calculate_auc()].
+#' @param ... Additional arguments passed to `Augur::calculate_auc`.
 #'
 #' @return A `Seurat` object with native Augur results stored in
 #' `srt@tools[[tool_name]]`. When `add_meta = TRUE`, cell-level metadata columns

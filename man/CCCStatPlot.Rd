@@ -184,7 +184,6 @@ A ggplot or recorded base plot object.
 CCC statistical distribution and summary plots
 }
 \examples{
-if (requireNamespace("CellChat", quietly = TRUE)) {
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 
@@ -306,5 +305,4 @@ CCCStatPlot(
   idents.use = "Ductal",
   plot_type = "role_change"
 )
-}
 }
