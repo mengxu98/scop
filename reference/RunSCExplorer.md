@@ -139,82 +139,82 @@ RunSCExplorer(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-24 16:31:51] Start standard processing workflow...
-#> ℹ [2026-05-24 16:31:51] Checking a list of <Seurat>...
-#> ! [2026-05-24 16:31:51] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-24 16:31:51] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-24 16:31:53] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-24 16:31:54] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-24 16:31:54] Number of available HVF: 2000
-#> ℹ [2026-05-24 16:31:54] Finished check
-#> ℹ [2026-05-24 16:31:54] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-24 16:31:55] Perform pca linear dimension reduction
-#> ℹ [2026-05-24 16:31:55] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-24 16:31:55] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-24 16:31:55] Reorder clusters...
-#> ℹ [2026-05-24 16:31:56] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-24 16:31:56] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-24 16:31:56] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-24 16:32:01] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-24 16:32:07] Standard processing workflow completed
+#> ℹ [2026-05-25 05:38:36] Start standard processing workflow...
+#> ℹ [2026-05-25 05:38:36] Checking a list of <Seurat>...
+#> ! [2026-05-25 05:38:37] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-25 05:38:37] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-25 05:38:39] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-25 05:38:39] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-25 05:38:39] Number of available HVF: 2000
+#> ℹ [2026-05-25 05:38:39] Finished check
+#> ℹ [2026-05-25 05:38:39] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-25 05:38:40] Perform pca linear dimension reduction
+#> ℹ [2026-05-25 05:38:40] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-25 05:38:41] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-25 05:38:41] Reorder clusters...
+#> ℹ [2026-05-25 05:38:41] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-25 05:38:41] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-25 05:38:41] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-25 05:38:47] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-25 05:38:53] Standard processing workflow completed
 data(panc8_sub)
 panc8_sub <- integration_scop(
   panc8_sub,
   batch = "tech",
   integration_method = "Harmony"
 )
-#> ◌ [2026-05-24 16:32:07] Run integration workflow...
-#> ℹ [2026-05-24 16:32:07] Split `srt_merge` into `srt_list` by "tech"
-#> ℹ [2026-05-24 16:32:08] Checking a list of <Seurat>...
-#> ! [2026-05-24 16:32:08] Data 1/5 of the `srt_list` is "unknown"
-#> ℹ [2026-05-24 16:32:08] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/5 of `srt_list`...
-#> ℹ [2026-05-24 16:32:10] Perform `Seurat::FindVariableFeatures()` on 1/5 of `srt_list`...
-#> ! [2026-05-24 16:32:10] Data 2/5 of the `srt_list` is "unknown"
-#> ℹ [2026-05-24 16:32:10] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 2/5 of `srt_list`...
-#> ℹ [2026-05-24 16:32:12] Perform `Seurat::FindVariableFeatures()` on 2/5 of `srt_list`...
-#> ! [2026-05-24 16:32:12] Data 3/5 of the `srt_list` is "unknown"
-#> ℹ [2026-05-24 16:32:12] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 3/5 of `srt_list`...
-#> ℹ [2026-05-24 16:32:14] Perform `Seurat::FindVariableFeatures()` on 3/5 of `srt_list`...
-#> ! [2026-05-24 16:32:14] Data 4/5 of the `srt_list` is "unknown"
-#> ℹ [2026-05-24 16:32:14] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 4/5 of `srt_list`...
-#> ℹ [2026-05-24 16:32:16] Perform `Seurat::FindVariableFeatures()` on 4/5 of `srt_list`...
-#> ! [2026-05-24 16:32:17] Data 5/5 of the `srt_list` is "unknown"
-#> ℹ [2026-05-24 16:32:17] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 5/5 of `srt_list`...
-#> ℹ [2026-05-24 16:32:18] Perform `Seurat::FindVariableFeatures()` on 5/5 of `srt_list`...
-#> ℹ [2026-05-24 16:32:19] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-24 16:32:19] Number of available HVF: 2000
-#> ℹ [2026-05-24 16:32:19] Finished check
+#> ◌ [2026-05-25 05:38:53] Run integration workflow...
+#> ℹ [2026-05-25 05:38:54] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-05-25 05:38:54] Checking a list of <Seurat>...
+#> ! [2026-05-25 05:38:55] Data 1/5 of the `srt_list` is "unknown"
+#> ℹ [2026-05-25 05:38:55] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/5 of `srt_list`...
+#> ℹ [2026-05-25 05:38:57] Perform `Seurat::FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ! [2026-05-25 05:38:57] Data 2/5 of the `srt_list` is "unknown"
+#> ℹ [2026-05-25 05:38:57] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 2/5 of `srt_list`...
+#> ℹ [2026-05-25 05:38:59] Perform `Seurat::FindVariableFeatures()` on 2/5 of `srt_list`...
+#> ! [2026-05-25 05:38:59] Data 3/5 of the `srt_list` is "unknown"
+#> ℹ [2026-05-25 05:38:59] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 3/5 of `srt_list`...
+#> ℹ [2026-05-25 05:39:01] Perform `Seurat::FindVariableFeatures()` on 3/5 of `srt_list`...
+#> ! [2026-05-25 05:39:02] Data 4/5 of the `srt_list` is "unknown"
+#> ℹ [2026-05-25 05:39:02] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 4/5 of `srt_list`...
+#> ℹ [2026-05-25 05:39:04] Perform `Seurat::FindVariableFeatures()` on 4/5 of `srt_list`...
+#> ! [2026-05-25 05:39:04] Data 5/5 of the `srt_list` is "unknown"
+#> ℹ [2026-05-25 05:39:04] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 5/5 of `srt_list`...
+#> ℹ [2026-05-25 05:39:06] Perform `Seurat::FindVariableFeatures()` on 5/5 of `srt_list`...
+#> ℹ [2026-05-25 05:39:06] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-25 05:39:07] Number of available HVF: 2000
+#> ℹ [2026-05-25 05:39:07] Finished check
 #> Warning: Layer ‘scale.data’ is empty
-#> ℹ [2026-05-24 16:32:22] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-24 16:32:23] Perform linear dimension reduction("pca")
-#> ℹ [2026-05-24 16:32:23] Perform Harmony integration
-#> ℹ [2026-05-24 16:32:23] Using "Harmonypca" (1:20) as input
-#> ℹ [2026-05-24 16:32:24] Adjust neighbor k from 20 to 20 for small-sample clustering
-#> ℹ [2026-05-24 16:32:25] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-05-24 16:32:25] Reorder clusters...
-#> ℹ [2026-05-24 16:32:26] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-24 16:32:26] Perform umap nonlinear dimension reduction using Harmony (1:20)
-#> ℹ [2026-05-24 16:32:32] Perform umap nonlinear dimension reduction using Harmony (1:20)
-#> ℹ [2026-05-24 16:32:38] Perform umap nonlinear dimension reduction using Harmonypca (1:20)
-#> ✔ [2026-05-24 16:32:46] Harmony integration completed
+#> ℹ [2026-05-25 05:39:10] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-25 05:39:10] Perform linear dimension reduction("pca")
+#> ℹ [2026-05-25 05:39:11] Perform Harmony integration
+#> ℹ [2026-05-25 05:39:11] Using "Harmonypca" (1:20) as input
+#> ℹ [2026-05-25 05:39:14] Adjust neighbor k from 20 to 20 for small-sample clustering
+#> ℹ [2026-05-25 05:39:14] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-05-25 05:39:14] Reorder clusters...
+#> ℹ [2026-05-25 05:39:15] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-25 05:39:15] Perform umap nonlinear dimension reduction using Harmony (1:20)
+#> ℹ [2026-05-25 05:39:22] Perform umap nonlinear dimension reduction using Harmony (1:20)
+#> ℹ [2026-05-25 05:39:28] Perform umap nonlinear dimension reduction using Harmonypca (1:20)
+#> ✔ [2026-05-25 05:39:36] Harmony integration completed
 panc8_sub <- standard_scop(panc8_sub)
-#> ℹ [2026-05-24 16:32:46] Start standard processing workflow...
-#> ℹ [2026-05-24 16:32:46] Checking a list of <Seurat>...
-#> ℹ [2026-05-24 16:32:46] Data 1/1 of the `srt_list` has been log-normalized
-#> ℹ [2026-05-24 16:32:46] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-24 16:32:47] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-24 16:32:47] Number of available HVF: 2000
-#> ℹ [2026-05-24 16:32:47] Finished check
-#> ℹ [2026-05-24 16:32:47] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-24 16:32:48] Perform pca linear dimension reduction
-#> ℹ [2026-05-24 16:32:48] Use stored estimated dimensions 1:27 for Standardpca
-#> ℹ [2026-05-24 16:32:49] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-24 16:32:49] Reorder clusters...
-#> ℹ [2026-05-24 16:32:49] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-24 16:32:49] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-24 16:32:49] Perform umap nonlinear dimension reduction using Standardpca (1:27)
-#> ℹ [2026-05-24 16:32:56] Perform umap nonlinear dimension reduction using Standardpca (1:27)
-#> ✔ [2026-05-24 16:33:02] Standard processing workflow completed
+#> ℹ [2026-05-25 05:39:36] Start standard processing workflow...
+#> ℹ [2026-05-25 05:39:36] Checking a list of <Seurat>...
+#> ℹ [2026-05-25 05:39:37] Data 1/1 of the `srt_list` has been log-normalized
+#> ℹ [2026-05-25 05:39:37] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-25 05:39:38] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-25 05:39:38] Number of available HVF: 2000
+#> ℹ [2026-05-25 05:39:38] Finished check
+#> ℹ [2026-05-25 05:39:38] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-25 05:39:39] Perform pca linear dimension reduction
+#> ℹ [2026-05-25 05:39:39] Use stored estimated dimensions 1:27 for Standardpca
+#> ℹ [2026-05-25 05:39:40] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-25 05:39:40] Reorder clusters...
+#> ℹ [2026-05-25 05:39:40] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-25 05:39:40] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-25 05:39:40] Perform umap nonlinear dimension reduction using Standardpca (1:27)
+#> ℹ [2026-05-25 05:39:47] Perform umap nonlinear dimension reduction using Standardpca (1:27)
+#> ✔ [2026-05-25 05:39:53] Standard processing workflow completed
 
 PrepareSCExplorer(
   list(
@@ -223,12 +223,12 @@ PrepareSCExplorer(
   ),
   base_dir = "./SCExplorer"
 )
-#> ℹ [2026-05-24 16:33:02] Prepare data for object: "mouse_pancreas"
-#> ℹ [2026-05-24 16:33:02] Write the expression matrix to: /home/runner/work/scop/scop/docs/reference/SCExplorer/data.hdf5
-#> ℹ [2026-05-24 16:33:04] Write the meta information to: /home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5
-#> ℹ [2026-05-24 16:33:04] Prepare data for object: "human_pancreas"
-#> ℹ [2026-05-24 16:33:04] Write the expression matrix to: /home/runner/work/scop/scop/docs/reference/SCExplorer/data.hdf5
-#> ℹ [2026-05-24 16:33:09] Write the meta information to: /home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5
+#> ℹ [2026-05-25 05:39:53] Prepare data for object: "mouse_pancreas"
+#> ℹ [2026-05-25 05:39:53] Write the expression matrix to: /home/runner/work/scop/scop/docs/reference/SCExplorer/data.hdf5
+#> ℹ [2026-05-25 05:39:55] Write the meta information to: /home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5
+#> ℹ [2026-05-25 05:39:56] Prepare data for object: "human_pancreas"
+#> ℹ [2026-05-25 05:39:56] Write the expression matrix to: /home/runner/work/scop/scop/docs/reference/SCExplorer/data.hdf5
+#> ℹ [2026-05-25 05:40:00] Write the meta information to: /home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5
 
 # Create the app.R script
 app <- RunSCExplorer(
@@ -237,10 +237,10 @@ app <- RunSCExplorer(
   initial_group = "CellType",
   initial_feature = "Ncoa2"
 )
-#> ℹ [2026-05-24 16:33:14] Create the SCExplorer app script: ./SCExplorer/app.R
-#> ℹ [2026-05-24 16:33:14] Styling the script...
+#> ℹ [2026-05-25 05:40:35] Create the SCExplorer app script: ./SCExplorer/app.R
+#> ℹ [2026-05-25 05:40:35] Styling the script...
 #> Loading required package: shiny
-#> ✔ [2026-05-24 16:33:23] rhdf5, HDF5Array, shiny, ggplot2, ragg, htmlwidgets, plotly, bslib, promises, and thisplot installed successfully
+#> ✔ [2026-05-25 05:40:45] rhdf5, HDF5Array, shiny, ggplot2, ragg, htmlwidgets, plotly, bslib, promises, and thisplot installed successfully
 #> 
 #> Attaching package: ‘bslib’
 #> The following object is masked from ‘package:utils’:
@@ -251,7 +251,7 @@ app <- RunSCExplorer(
 #> The following object is masked from ‘package:Biobase’:
 #> 
 #>     exprs
-#> Error in value[[3L]](cond): Package ‘thisutils’ version 0.4.7 cannot be unloaded:
+#> Error in value[[3L]](cond): Package ‘thisutils’ version 0.4.5 cannot be unloaded:
 #>  Error in unloadNamespace(package) : namespace ‘thisutils’ is imported by ‘thisplot’, ‘scop’ so cannot be unloaded
 # Check files
 list.files("./SCExplorer")
