@@ -123,8 +123,7 @@ sensible default is selected for each heatmap type.}
 passed to \code{\link[=GroupHeatmap]{GroupHeatmap()}} or \code{\link[=FeatureHeatmap]{FeatureHeatmap()}} for SCENIC heatmaps.}
 
 \item{heatmap_limits}{Optional two-length numeric vector used as the color
-scale limits for \code{plot_type = "rss_heatmap"} and \code{plot_type =
-"activity_heatmap"}. For example, \code{c(-2, 2)} fixes both z-score heatmaps to
+scale limits for \code{plot_type = "rss_heatmap"} and \code{plot_type = "activity_heatmap"}. For example, \code{c(-2, 2)} fixes both z-score heatmaps to
 the same legend range.}
 
 \item{heatmap_args}{Additional arguments passed to \code{\link[=GroupHeatmap]{GroupHeatmap()}} for
