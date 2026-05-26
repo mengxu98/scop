@@ -21,7 +21,6 @@ integration_scop(
   lisi_prefix = NULL,
   lisi_tool_name = NULL,
   lisi_perplexity = 30,
-  lisi_nn_method = c("auto", "exact"),
   lisi_tol = 1e-05,
   lisi_max_iter = 50,
   compute_metrics = FALSE,
@@ -104,9 +103,6 @@ Default is \code{NULL}, which uses \code{paste0(lisi_prefix, "_LISI")}.}
 
 \item{lisi_perplexity}{Effective neighborhood size used by LISI.
 Default is \code{30}.}
-
-\item{lisi_nn_method}{Nearest-neighbor backend passed to \code{\link[=RunLISI]{RunLISI()}}.
-One of \code{"auto"} or \code{"exact"}. Default is \code{"auto"}.}
 
 \item{lisi_tol}{Tolerance used in the LISI binary search. Default is \code{1e-5}.}
 
