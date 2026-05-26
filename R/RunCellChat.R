@@ -73,7 +73,12 @@ RunCellChat <- function(
   )
 
   check_r("jinworks/CellChat", verbose = FALSE)
-  if (isTRUE(do.fast)) {
+  identifyOverExpressedGenes <- get_namespace_fun("CellChat", "identifyOverExpressedGenes")
+  identify_formals <- names(formals(identifyOverExpressedGenes))
+  if (
+    isTRUE(do.fast) &&
+      ("..." %in% identify_formals || "do.fast" %in% identify_formals)
+  ) {
     check_r("immunogenomics/presto", verbose = FALSE)
   }
 
@@ -527,12 +532,18 @@ DoCellChat <- function(
   )
 
   object <- get_namespace_fun("CellChat", "subsetData")(object)
-  object <- get_namespace_fun("CellChat", "identifyOverExpressedGenes")(
-    object,
+  identifyOverExpressedGenes <- get_namespace_fun("CellChat", "identifyOverExpressedGenes")
+  identify_args <- list(
+    object = object,
     thresh.p = thresh,
     min.cells = min.cells,
     do.fast = isTRUE(do.fast)
   )
+  identify_formals <- names(formals(identifyOverExpressedGenes))
+  if (!"..." %in% identify_formals) {
+    identify_args <- identify_args[names(identify_args) %in% identify_formals]
+  }
+  object <- do.call(identifyOverExpressedGenes, identify_args)
   object <- get_namespace_fun("CellChat", "identifyOverExpressedInteractions")(object)
   object <- get_namespace_fun("CellChat", "computeCommunProb")(object)
   object <- get_namespace_fun("CellChat", "filterCommunication")(
