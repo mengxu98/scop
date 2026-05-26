@@ -9,7 +9,8 @@
   * Added `SCENICPlot()` to calculate regulon specificity scores from SCENIC activity and plot the top regulons for each metadata group.
   * `SCENICPlot()` heatmaps now expose `rss_scale`, `heatmap_limits`, and `heatmap_order`, allowing RSS and activity heatmaps to use matched row-wise z-score color scales and stable group-block row ordering when requested.
   * Added `RunScissor()` and `ScissorPlot()` for Scissor phenotype-associated cell selection from Seurat and bulk/SummarizedExperiment inputs, with a native optimized backend, upstream-package backend, Seurat metadata/tool writeback, embedding plots, heatmaps, and status-composition summaries.
-  * `RunscTenifoldKnk()` now uses the optimized native path directly for QC, network-ensemble construction, tensor denoising, manifold alignment, and differential-regulation summaries; `scTenifoldKnkPlot()` includes QQ, effect-size, network, manifold, volcano, and upset-style result views.
+  * Added `RunscTenifoldNet()` for condition-level scTenifoldNet network comparison from matrices or Seurat groups using `cailab-tamu/scTenifoldNet`.
+  * `RunscTenifoldKnk()` now uses the optimized native path directly for QC, network-ensemble construction, tensor denoising, manifold alignment, and differential-regulation summaries; `scTenifoldKnkPlot()` includes QQ, effect-size, network, manifold, volcano, and upset-style result views. Added `scTenifoldNetPlot()` for condition-level scTenifoldNet QQ, effect-size, network, and manifold views.
   * `RunPAGA()` now supports a native C++ backend for the standard PAGA connectivity graph and uses it by default; `backend = "python"` remains available for RNA-velocity transitions, PAGA-initialized embeddings, plotting side effects, and DPT pseudotime.
   * `RunSCVELO()` now includes an optimized C++ backend for stochastic velocity embedding, compatible with `VelocityPlot()` and substantially faster than the equivalent R reference calculation. The Python backend remains the default for the full scVelo workflow.
   * `VelocityPlot()` raw, grid, and stream visualizations were validated with the native `RunSCVELO(backend = "cpp")` velocity embeddings.
@@ -22,6 +23,7 @@
 * **fix**:
   * `SCENICPlot()`: Explicit `features` in SCENIC heatmaps now keep the user-supplied regulon order, and `activity_heatmap` aligns `feature_split` to the resolved and displayed regulons.
   * `SCENICPlot()`: `plot_type = "activity_dim"` and `"activity_violin"` now respect all explicitly supplied `features`, instead of applying the six-regulon default preview limit.
+  * `SCENICPlot()`: `plot_type = "target_bar"` now respects all explicitly supplied `features`, instead of applying the four-regulon default preview limit.
   * `RunHarmony2()`: Added compatibility with Harmony 2.0 objects by directly trying both legacy fields (`Z_corr` / `R`) and callable methods (`getZcorr()` / `getR()`), including module methods that are not listed by `ls()`.
   * `srt_append()`: Align variable-feature metadata by feature name when appending into an existing Assay5 with a different feature universe, avoiding row-count replacement errors after integration workflows.
   * `EnrichmentPlot()` and `GSEAPlot()`: Resolve database aliases before applying `group_use`, and report selected groups with no enrichment rows directly instead of misreporting the database as missing.
@@ -31,6 +33,7 @@
   * `GeneConvert()` examples now direct expression-object homolog conversion to `ConvertHomologs()` instead of showing manual `geneID_expand` aggregation.
   * `PrepareDB()`: Added compatibility with older `GOSemSim::godata()` signatures that use `OrgDb` instead of `annoDb`, avoiding GO semantic-data preparation failures in mixed Bioconductor environments.
   * `PrepareDB()` and `AnnotateFeatures()`: Normalize legacy MSigDB caches whose feature column was stored as `symbol.ensembl_id`, and ensure ID-type conversion uses a single existing source ID column to avoid `switch()` errors when annotating MSigDB features by `symbol`.
+  * `DEtestPlot()`, `VolcanoPlot()`, `DEtestManhattanPlot()`, and `DEtestRingPlot()`: Added `label.by` to choose automatic top-gene labels by adjusted p-value, p-value, detection-rate difference, or log2 fold change. Manhattan plots now keep y positions tied to the raw `avg_log2FC` values and default to no vertical jitter.
   * `DynamicHeatmap()`, `FeatureHeatmap()`, and `GroupHeatmap()`: Compact long multi-term feature annotations from databases such as MSigDB and Reactome before drawing heatmap legends, and keep `DynamicHeatmap()` cluster annotations such as `RNA_snn_res.0.8` discrete even when stored as numeric metadata.
   * Cleaned up package-check issues by declaring missing namespace imports and aligning Rd argument documentation for recently updated wrappers.
   * Optional wrapper dependencies are checked at function entry with `check_r()` instead of silently skipping examples or adding unnecessary hard dependencies.
@@ -185,6 +188,7 @@
   * Moved `StatPlot` function to `thisplot::StatPlot`.
 
 * **fix**:
+  * `DEtestManhattanPlot()`: Moved the cell-type annotation track below the data cloud so the colored group labels no longer cover Manhattan plot points near zero log2 fold change.
   * `DynamicHeatmap()` / `heatmap_enrichment()`: Fixed incorrect `db` handling when using custom `TERM2GENE`/`TERM2NAME`. Enrichment results with `Database = "custom"` could be incorrectly filtered by default `db` values (e.g. `"GO_BP"`), causing false "No term enriched using the threshold" warnings even when enrichment succeeded. Relate issue #133 (@1228849000).
 
 # scop 0.8.2
