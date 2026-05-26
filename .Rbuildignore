@@ -7,15 +7,12 @@
 ^pkgdown$
 ^\.github$
 ^\.claude$
-^codecov\.yml$
 ^README\.Rmd$
 ^LICENSE\.md$
 ^SCExplorer$
 ^README$
 ^README.md$
 ^tmaps$
-^test$
-^test.R$
 ^scripts$
 ^\.codex$
 ^\.cc-connect$
