@@ -329,10 +329,6 @@ standard_scop <- function(
       message_type = "error"
     )
   }
-  if (cluster_algorithm == "leiden") {
-    PrepareEnv(modules = "scanpy")
-    check_python("leidenalg")
-  }
   cluster_algorithm_index <- switch(
     EXPR = tolower(cluster_algorithm),
     "louvain" = 1,
@@ -461,6 +457,7 @@ standard_scop <- function(
           object = srt,
           resolution = cluster_resolution,
           algorithm = cluster_algorithm_index,
+          leiden_method = "igraph",
           graph.name = paste0(prefix, lr, "_SNN"),
           verbose = FALSE
         )
