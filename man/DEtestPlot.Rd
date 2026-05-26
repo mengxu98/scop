@@ -44,6 +44,8 @@ DEtestPlot(
   ncol = NULL,
   byrow = TRUE,
   manhattan.bg = "white",
+  group_track_width = NULL,
+  group_track_height = NULL,
   jitter_width = 0.5,
   jitter_height = 0,
   tile_height = 0.3,
@@ -187,6 +189,12 @@ Default is \code{TRUE}.}
 
 \item{manhattan.bg}{Background color for Manhattan plot.
 Default is \code{"white"}.}
+
+\item{group_track_width}{Width of the centered cell-type track in Manhattan plot.
+Default is \code{NULL}, which uses the current automatic width.}
+
+\item{group_track_height}{Height of the centered cell-type track in Manhattan plot.
+Default is \code{NULL}, which uses the current automatic height.}
 
 \item{jitter_width}{Horizontal jitter range for points in Manhattan plot.
 Default is \code{0.5}.}

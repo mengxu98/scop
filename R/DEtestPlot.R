@@ -108,6 +108,10 @@
 #' Default is `TRUE`.
 #' @param manhattan.bg Background color for Manhattan plot.
 #' Default is `"white"`.
+#' @param group_track_width Width of the centered cell-type track in Manhattan plot.
+#' Default is `NULL`, which uses the current automatic width.
+#' @param group_track_height Height of the centered cell-type track in Manhattan plot.
+#' Default is `NULL`, which uses the current automatic height.
 #' @param jitter_width Horizontal jitter range for points in Manhattan plot.
 #' Default is `0.5`.
 #' @param jitter_height Vertical jitter range for points in Manhattan plot.
@@ -268,6 +272,8 @@ DEtestPlot <- function(
     ncol = NULL,
     byrow = TRUE,
     manhattan.bg = "white",
+    group_track_width = NULL,
+    group_track_height = NULL,
     jitter_width = 0.5,
     jitter_height = 0,
     tile_height = 0.3,
@@ -401,6 +407,8 @@ DEtestPlot <- function(
         theme_use = theme_use,
         theme_args = theme_args,
         manhattan.bg = manhattan.bg,
+        group_track_width = group_track_width,
+        group_track_height = group_track_height,
         jitter_width = jitter_width,
         jitter_height = jitter_height,
         seed = seed,
@@ -1116,6 +1124,8 @@ DEtestManhattanPlot <- function(
   theme_use = "theme_scop",
   theme_args = list(),
   manhattan.bg = "white",
+  group_track_width = NULL,
+  group_track_height = NULL,
   jitter_width = 0.5,
   jitter_height = 0,
   seed = 11,
@@ -1157,10 +1167,33 @@ DEtestManhattanPlot <- function(
   }
   de_df_marker[, "y_plot"] <- de_df_marker[, "y_raw_plot"]
   track_half_height <- suppressWarnings(min(abs(de_df_marker[, "y_plot"]), na.rm = TRUE))
+  min_track_half_height <- plot_y_span * 0.02
   if (!is.finite(track_half_height) || track_half_height <= 0) {
-    track_half_height <- plot_y_span * 0.04
+    track_half_height <- min_track_half_height
   }
-  group_track_height <- track_half_height * 2
+  track_half_height <- max(track_half_height, min_track_half_height)
+  group_track_height_use <- if (is.null(group_track_height)) {
+    track_half_height * 2
+  } else {
+    suppressWarnings(as.numeric(group_track_height[1]))
+  }
+  if (!is.finite(group_track_height_use) || group_track_height_use <= 0) {
+    log_message(
+      "'group_track_height' must be a positive number or NULL",
+      message_type = "error"
+    )
+  }
+  group_track_width_use <- if (is.null(group_track_width)) {
+    1
+  } else {
+    suppressWarnings(as.numeric(group_track_width[1]))
+  }
+  if (!is.finite(group_track_width_use) || group_track_width_use <= 0) {
+    log_message(
+      "'group_track_width' must be a positive number or NULL",
+      message_type = "error"
+    )
+  }
   top_marker <- get_top_markers_for_label(
     de_df_marker, cluster_levels, nlabel, features_label, label.by = label.by
   )
@@ -1177,8 +1210,8 @@ DEtestManhattanPlot <- function(
   })
   back_data <- do.call(rbind, back_data_list[!sapply(back_data_list, is.null)])
   back_data[, "x_num"] <- match(back_data[, "cluster"], cluster_levels)
-  track_top <- if (isTRUE(show_group_track)) group_track_height / 2 else 0
-  track_bottom <- if (isTRUE(show_group_track)) -group_track_height / 2 else 0
+  track_top <- if (isTRUE(show_group_track)) group_track_height_use / 2 else 0
+  track_bottom <- if (isTRUE(show_group_track)) -group_track_height_use / 2 else 0
   back_data[, "xmin"] <- back_data[, "x_num"] - 0.45
   back_data[, "xmax"] <- back_data[, "x_num"] + 0.45
   back_data_pos <- back_data[back_data[, "max"] > track_top, , drop = FALSE]
@@ -1266,8 +1299,8 @@ DEtestManhattanPlot <- function(
       geom_tile(
         aes(x = x, y = y, fill = group1),
         color = "black",
-        width = 1,
-        height = group_track_height,
+        width = group_track_width_use,
+        height = group_track_height_use,
         show.legend = FALSE,
         inherit.aes = FALSE,
         data = tile_data
