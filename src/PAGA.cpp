@@ -151,7 +151,6 @@ List paga_connectivities_cpp(IntegerMatrix knn_idx, IntegerVector groups, int n_
   for (const PagaEdge& edge : edges) {
     if (dsu.unite(edge.i, edge.j)) {
       connectivities_tree(edge.i, edge.j) = edge.weight;
-      connectivities_tree(edge.j, edge.i) = edge.weight;
       ++used_edges;
       if (used_edges == n_groups - 1) {
         break;

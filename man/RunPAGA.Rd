@@ -39,7 +39,7 @@ RunPAGA(
   plot_dpi = 300,
   plot_prefix = "paga",
   dirpath = "./paga",
-  backend = c("cpp", "python"),
+  backend = c("python", "cpp"),
   return_seurat = !is.null(srt),
   verbose = TRUE
 )
@@ -135,10 +135,10 @@ Default is \code{FALSE}.}
 
 \item{dirpath}{The directory to save the plots. Default is \code{"./cellrank"}.}
 
-\item{backend}{Backend used to compute PAGA. \code{"cpp"} uses the native C++
-implementation for the standard connectivity graph. \code{"python"} keeps the
-original scanpy workflow for RNA-velocity transitions, PAGA-initialized
-embeddings, plotting side effects, or DPT pseudotime.}
+\item{backend}{Backend used to compute PAGA. \code{"python"} keeps the original
+scanpy workflow and remains the default. \code{"cpp"} uses the native C++
+implementation for the standard connectivity graph and tree, plus an
+approximate R igraph layout stored in \code{paga$pos}.}
 
 \item{return_seurat}{Whether to return a Seurat object instead of an anndata object.
 Default is \code{TRUE}.}
