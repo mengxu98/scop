@@ -11,6 +11,7 @@ SpatialSpotPlot(
   assay = NULL,
   layer = "data",
   values = NULL,
+  plot_type = c("point", "pie"),
   plot.data = NULL,
   spot.by = NULL,
   color.by = NULL,
@@ -25,6 +26,8 @@ SpatialSpotPlot(
   cells = NULL,
   show_na = FALSE,
   pt.size = NULL,
+  pie.radius = NULL,
+  pie.radius.scale = 0.45,
   pt.alpha = 0.9,
   stroke = 0.1,
   jitter_width = 0.25,
@@ -58,6 +61,10 @@ are read from \code{assay} and \code{layer}.}
 \item{values}{Optional vector, matrix, or data.frame with spot-level values.
 Row names or vector names must match spatial spot names.}
 
+\item{plot_type}{Plot type. \code{"point"} keeps the default spot plot behavior.
+\code{"pie"} draws spot-level pies from numeric metadata columns supplied to
+\code{group.by} or from a numeric matrix/data.frame supplied to \code{values}.}
+
 \item{plot.data}{Optional long-format data.frame for plotting repeated
 spatial points, such as cell-to-spot assignments.}
 
@@ -90,6 +97,10 @@ If \code{TRUE}, cell points with NA level will be colored by \code{bg_color}.
 If \code{FALSE}, cell points with NA level will be removed from the plot.}
 
 \item{pt.size}{Point size.}
+
+\item{pie.radius, pie.radius.scale}{Radius controls for \code{plot_type = "pie"}.
+If \code{pie.radius} is \code{NULL}, the radius is estimated from spot spacing and
+multiplied by \code{pie.radius.scale}.}
 
 \item{pt.alpha}{Point alpha.}
 
