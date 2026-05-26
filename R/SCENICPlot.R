@@ -1148,7 +1148,7 @@ scenic_plot_target_bar <- function(srt, tool_name, top_table, features = NULL, m
     features = features,
     available = names(regulon_list),
     top_table = top_table,
-    max_features = 4
+    max_features = if (is.null(features)) 4 else NULL
   )
   adjacency <- tryCatch(scenic_get_adjacency(srt, tool_name), error = function(...) NULL)
   cols <- if (!is.null(adjacency)) scenic_adjacency_columns(adjacency) else NULL
