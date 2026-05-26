@@ -21,6 +21,7 @@ DEtestRingPlot(
   stroke.highlight = 0.5,
   nlabel = 5,
   features_label = NULL,
+  only.pos = FALSE,
   label.by = c("p_val_adj", "p_val", "diff_pct", "avg_log2FC"),
   label.fg = "black",
   label.bg = "white",
@@ -87,6 +88,10 @@ Default is \code{5}.}
 
 \item{features_label}{A character vector specifying the feature labels to plot.
 Default is \code{NULL}.}
+
+\item{only.pos}{Whether to show only positive log2 fold-change results in
+differential expression visualizations.
+Default is \code{FALSE}.}
 
 \item{label.by}{Metric used to select automatic labels when \code{features_label = NULL}.
 Options are \code{"p_val_adj"}, \code{"p_val"}, \code{"diff_pct"}, and \code{"avg_log2FC"}.
