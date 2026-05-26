@@ -177,6 +177,7 @@ reference:
   - RunRareQ
   - RunScissor
   - RunscTenifoldKnk
+  - RunscTenifoldNet
 
 - subtitle: "Differential Expression and Perturbation Plots"
 - contents:
@@ -186,6 +187,7 @@ reference:
   - VolcanoPlot
   - ScissorPlot
   - scTenifoldKnkPlot
+  - scTenifoldNetPlot
 
 - subtitle: "Bulk and Composition Analysis"
 - contents:
