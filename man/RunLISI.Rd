@@ -13,7 +13,6 @@ RunLISI(
   prefix = NULL,
   tool_name = NULL,
   perplexity = 30,
-  nn_method = c("auto", "exact"),
   tol = 1e-05,
   max_iter = 50,
   overwrite = TRUE,
@@ -42,12 +41,6 @@ Default is \code{"LISI"} when multiple reductions are provided, otherwise
 \code{paste0(prefix, "_LISI")}.}
 
 \item{perplexity}{Effective neighborhood size. Default is \code{30}.}
-
-\item{nn_method}{Nearest-neighbor backend. One of \code{"auto"} or \code{"exact"}.
-Default is \code{"auto"}, which lets \code{thisutils} choose the fastest exact
-backend available.
-Requires the accelerated \code{thisutils::compute_lisi()} interface that exposes
-\code{nn_method = c("auto", "exact")}.}
 
 \item{tol}{Tolerance used in the binary search for the target perplexity.
 Default is \code{1e-5}.}
