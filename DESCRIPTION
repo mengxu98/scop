@@ -2,7 +2,7 @@ Package: scop
 Type: Package
 Title: Spatial and single-cell omics analysis pipeline
 Version: 0.8.9
-Date: 2026-05-13
+Date: 2026-05-26
 Authors@R:
     c(
     person(given = "Xu", family = "Meng", email = "mengxu98@qq.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-8300-1054")),
@@ -113,7 +113,6 @@ Suggests:
     symphony,
     SingleR,
     SingleCellExperiment,
-    testthat,
     tensorflow,
     tibble,
     tricycle,
@@ -128,6 +127,5 @@ LinkingTo:
     RSpectra
 RoxygenNote: 7.3.3
 Config/Needs/website: mengxu98/thistemplate
-Config/testthat/edition: 3
 URL: https://mengxu98.github.io/scop/
 BugReports: https://github.com/mengxu98/scop/issues
