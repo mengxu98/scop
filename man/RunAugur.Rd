@@ -49,12 +49,12 @@ default assay is used.}
 \code{scop} backend that keeps Augur's sampling, random forest, and metric
 semantics but removes the heavier recipe/bake loop and uses C++ sparse
 matrix preparation where possible. \code{"r"} calls the native
-\code{\link[Augur:calculate_auc]{Augur::calculate_auc()}} implementation.}
+\code{Augur::calculate_auc} implementation.}
 
 \item{features}{Features used by Augur. If \code{NULL}, all features in \code{assay}
 are used.}
 
-\item{n_subsamples, subsample_size, folds, min_cells, var_quantile, feature_perc, select_var, augur_mode, classifier, rf_params, lr_params}{Arguments passed to \code{\link[Augur:calculate_auc]{Augur::calculate_auc()}}.}
+\item{n_subsamples, subsample_size, folds, min_cells, var_quantile, feature_perc, select_var, augur_mode, classifier, rf_params, lr_params}{Arguments passed to \code{Augur::calculate_auc}.}
 
 \item{cores}{Number of cores used by Augur.}
 
@@ -68,7 +68,7 @@ columns back to each cell by matching \code{celltype.by}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Additional arguments passed to \code{\link[Augur:calculate_auc]{Augur::calculate_auc()}}.}
+\item{...}{Additional arguments passed to \code{Augur::calculate_auc}.}
 }
 \value{
 A \code{Seurat} object with native Augur results stored in
