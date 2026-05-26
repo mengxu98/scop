@@ -22,11 +22,6 @@
 #' Default is `"LISI"` when multiple reductions are provided, otherwise
 #' `paste0(prefix, "_LISI")`.
 #' @param perplexity Effective neighborhood size. Default is `30`.
-#' @param nn_method Nearest-neighbor backend. One of `"auto"` or `"exact"`.
-#' Default is `"auto"`, which lets `thisutils` choose the fastest exact
-#' backend available.
-#' Requires the accelerated `thisutils::compute_lisi()` interface that exposes
-#' `nn_method = c("auto", "exact")`.
 #' @param tol Tolerance used in the binary search for the target perplexity.
 #' Default is `1e-5`.
 #' @param max_iter Maximum number of binary-search iterations. Default is `50`.
@@ -64,7 +59,6 @@ RunLISI <- function(
   prefix = NULL,
   tool_name = NULL,
   perplexity = 30,
-  nn_method = c("auto", "exact"),
   tol = 1e-5,
   max_iter = 50,
   overwrite = TRUE,
@@ -104,15 +98,6 @@ RunLISI <- function(
       message_type = "error"
     )
   }
-  nn_method <- match.arg(nn_method)
-  compute_lisi_args <- names(formals(thisutils::compute_lisi))
-  if (!("nn_method" %in% compute_lisi_args)) {
-    log_message(
-      "{.fn RunLISI} requires the accelerated {.fn thisutils::compute_lisi} interface with {.arg nn_method = c('auto', 'exact')}. Please install the updated {.pkg thisutils}.",
-      message_type = "error"
-    )
-  }
-
   if (is.null(prefix)) {
     prefix <- reductions
   }
@@ -175,7 +160,6 @@ RunLISI <- function(
       meta_data = srt@meta.data,
       label_colnames = label_colnames,
       perplexity = perplexity,
-      nn_method = nn_method,
       tol = tol,
       max_iter = max_iter
     )
@@ -197,7 +181,6 @@ RunLISI <- function(
     label_colnames = label_colnames,
     colnames = lisi_cols_all,
     perplexity = perplexity,
-    nn_method = nn_method,
     tol = tol,
     max_iter = max_iter
   )
