@@ -21,7 +21,7 @@ Default is \code{"RNA"}.}
 \item{db_rate}{The expected doublet rate.
 Default is calculated as \code{ncol(srt) / 1000 * 0.01}.}
 
-\item{data_type}{Optional precomputed result from \code{\link[=CheckDataType]{CheckDataType()}} for the
+\item{data_type}{Optional precomputed result from \link{CheckDataType} for the
 input assay. Primarily used internally to avoid repeated scans of the same
 count matrix across nested QC calls.}
 

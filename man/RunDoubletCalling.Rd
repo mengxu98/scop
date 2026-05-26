@@ -26,7 +26,7 @@ Default is calculated as \code{ncol(srt) / 1000 * 0.01}.}
 Can be one of \code{"scDblFinder"}, \code{"Scrublet"}, \code{"DoubletDetection"},
 \code{"scds_cxds"}, \code{"scds_bcds"}, \code{"scds_hybrid"}.}
 
-\item{data_type}{Optional precomputed result from \code{\link[=CheckDataType]{CheckDataType()}} for the
+\item{data_type}{Optional precomputed result from \link{CheckDataType} for the
 input assay. Primarily used internally to avoid repeated scans of the same
 count matrix across nested QC calls.}
 
