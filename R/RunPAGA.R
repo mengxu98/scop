@@ -7,10 +7,10 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams RunCellRank
-#' @param backend Backend used to compute PAGA. `"cpp"` uses the native C++
-#' implementation for the standard connectivity graph. `"python"` keeps the
-#' original scanpy workflow for RNA-velocity transitions, PAGA-initialized
-#' embeddings, plotting side effects, or DPT pseudotime.
+#' @param backend Backend used to compute PAGA. `"python"` keeps the original
+#' scanpy workflow and remains the default. `"cpp"` uses the native C++
+#' implementation for the standard connectivity graph and tree, plus an
+#' approximate R igraph layout stored in `paga$pos`.
 #' @param use_rna_velocity Whether to use RNA velocity for PAGA analysis.
 #' Default is `FALSE`.
 #' @param vkey The name of the RNA velocity data to use if `use_rna_velocity` is `TRUE`.
@@ -94,7 +94,7 @@ RunPAGA <- function(
   plot_dpi = 300,
   plot_prefix = "paga",
   dirpath = "./paga",
-  backend = c("cpp", "python"),
+  backend = c("python", "cpp"),
   return_seurat = !is.null(srt),
   verbose = TRUE
 ) {
@@ -163,6 +163,8 @@ RunPAGA <- function(
       linear_reduction = linear_reduction,
       n_pcs = n_pcs,
       n_neighbors = n_neighbors,
+      paga_layout = paga_layout,
+      threshold = threshold,
       cores = cores,
       verbose = verbose
     )
@@ -288,6 +290,8 @@ run_paga_cpp <- function(
   linear_reduction,
   n_pcs,
   n_neighbors,
+  paga_layout,
+  threshold,
   cores,
   verbose = TRUE
 ) {
@@ -346,26 +350,34 @@ run_paga_cpp <- function(
     n_groups = nlevels(groups)
   )
   group_levels <- levels(groups)
-  for (nm in c(
-    "connectivities",
-    "connectivities_tree",
-    "expected_n_edges_random",
-    "directed_edges"
-  )) {
-    dimnames(paga[[nm]]) <- list(group_levels, group_levels)
+  for (nm in c("connectivities", "connectivities_tree")) {
+    dimnames(paga[[nm]]) <- list(NULL, NULL)
   }
   names(paga[["group_sizes"]]) <- group_levels
+  pos <- paga_layout_igraph(
+    connectivities = paga[["connectivities"]],
+    connectivities_tree = paga[["connectivities_tree"]],
+    layout = paga_layout,
+    threshold = threshold
+  )
 
   srt@misc[["paga"]] <- list(
     connectivities = paga[["connectivities"]],
     connectivities_tree = paga[["connectivities_tree"]],
     groups = group.by,
+    pos = pos,
     backend = "cpp",
     parameters = list(
       linear_reduction = linear_reduction,
       n_pcs = length(dims_use),
       n_neighbors = as.integer(n_neighbors),
-      knn_k = knn_k
+      knn_k = knn_k,
+      paga_layout = paga_layout,
+      threshold = threshold,
+      layout_engine = "igraph_r_approximate",
+      connectivity_engine = "cpp_exact",
+      tree_engine = "cpp_exact",
+      layout_seed = 0L
     )
   )
   srt@misc[[paste0(group.by, "_sizes")]] <- as.numeric(paga[["group_sizes"]])
@@ -376,4 +388,95 @@ run_paga_cpp <- function(
     verbose = verbose
   )
   srt
+}
+
+paga_layout_igraph <- function(
+  connectivities,
+  connectivities_tree = NULL,
+  layout = "fr",
+  threshold = 0.1
+) {
+  adj <- as.matrix(connectivities)
+  if (!is.null(threshold) && is.finite(threshold) && threshold > 0) {
+    adj[adj < threshold] <- 0
+  }
+  diag(adj) <- 0
+  n_groups <- nrow(adj)
+  if (n_groups == 1L) {
+    pos <- matrix(c(0.5, 0.5), ncol = 2)
+    dimnames(pos) <- NULL
+    return(pos)
+  }
+
+  layout <- layout %||% "fr"
+  seed_exists <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
+  old_seed <- if (seed_exists) {
+    get(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
+  } else {
+    NULL
+  }
+  on.exit({
+    if (seed_exists) {
+      assign(".Random.seed", old_seed, envir = .GlobalEnv)
+    } else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
+      rm(".Random.seed", envir = .GlobalEnv)
+    }
+  }, add = TRUE)
+  set.seed(0)
+
+  graph <- igraph::graph_from_adjacency_matrix(
+    adj,
+    mode = "max",
+    weighted = TRUE,
+    diag = FALSE
+  )
+  weights <- igraph::E(graph)$weight
+  pos <- switch(
+    layout,
+    fr = {
+      init <- matrix(stats::runif(n_groups * 2L), ncol = 2L)
+      igraph::layout_with_fr(
+        graph = graph,
+        coords = init,
+        weights = weights,
+        niter = 500
+      )
+    },
+    circle = igraph::layout_in_circle(graph),
+    kk = igraph::layout_with_kk(graph, weights = weights),
+    rt = paga_layout_tree(connectivities_tree, circular = FALSE),
+    rt_circular = paga_layout_tree(connectivities_tree, circular = TRUE),
+    igraph::layout_with_fr(
+      graph = graph,
+      coords = matrix(stats::runif(n_groups * 2L), ncol = 2L),
+      weights = weights,
+      niter = 500
+    )
+  )
+  pos <- as.matrix(pos)
+  pos[, 2] <- -pos[, 2]
+  dimnames(pos) <- NULL
+  pos
+}
+
+paga_layout_tree <- function(connectivities_tree, circular = FALSE) {
+  if (is.null(connectivities_tree)) {
+    log_message(
+      "{.arg connectivities_tree} is required for tree PAGA layouts",
+      message_type = "error"
+    )
+  }
+  tree <- as.matrix(connectivities_tree)
+  tree <- pmax(tree, t(tree))
+  graph <- igraph::graph_from_adjacency_matrix(
+    tree,
+    mode = "max",
+    weighted = TRUE,
+    diag = FALSE
+  )
+  igraph::layout_as_tree(
+    graph = graph,
+    root = 1L,
+    circular = circular
+  )
 }
