@@ -1199,7 +1199,10 @@ DEtestManhattanPlot <- function(
   xlab_use <- if (!is.null(res) && group.by == "custom") NULL else (xlab %||% group.by)
   p3 <- p2 +
     scale_x_continuous(
-      breaks = seq_along(cluster_levels), labels = cluster_levels
+      limits = c(0.5, length(cluster_levels) + 0.5),
+      breaks = seq_along(cluster_levels),
+      labels = cluster_levels,
+      expand = ggplot2::expansion(mult = c(0, 0))
     ) +
     scale_y_continuous(
       n.breaks = 6,
@@ -1245,6 +1248,7 @@ DEtestManhattanPlot <- function(
       geom_tile(
         aes(x = x, y = y, fill = group1),
         color = "black",
+        width = 1,
         height = group_track_height,
         show.legend = FALSE,
         inherit.aes = FALSE,
