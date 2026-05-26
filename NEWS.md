@@ -33,7 +33,7 @@
   * `GeneConvert()` examples now direct expression-object homolog conversion to `ConvertHomologs()` instead of showing manual `geneID_expand` aggregation.
   * `PrepareDB()`: Added compatibility with older `GOSemSim::godata()` signatures that use `OrgDb` instead of `annoDb`, avoiding GO semantic-data preparation failures in mixed Bioconductor environments.
   * `PrepareDB()` and `AnnotateFeatures()`: Normalize legacy MSigDB caches whose feature column was stored as `symbol.ensembl_id`, and ensure ID-type conversion uses a single existing source ID column to avoid `switch()` errors when annotating MSigDB features by `symbol`.
-  * `DEtestPlot()`, `VolcanoPlot()`, `DEtestManhattanPlot()`, and `DEtestRingPlot()`: Added `label.by` to choose automatic top-gene labels by adjusted p-value, p-value, detection-rate difference, or log2 fold change. Manhattan plots now keep y positions tied to the raw `avg_log2FC` values and default to no vertical jitter.
+  * `DEtestPlot()`, `VolcanoPlot()`, `DEtestManhattanPlot()`, and `DEtestRingPlot()`: Added `label.by` to choose automatic top-gene labels by adjusted p-value, p-value, detection-rate difference, or log2 fold change. Volcano and Manhattan plots now keep displayed positions and colors tied to the raw `avg_log2FC` values, and Manhattan plots default to no vertical jitter.
   * `DynamicHeatmap()`, `FeatureHeatmap()`, and `GroupHeatmap()`: Compact long multi-term feature annotations from databases such as MSigDB and Reactome before drawing heatmap legends, and keep `DynamicHeatmap()` cluster annotations such as `RNA_snn_res.0.8` discrete even when stored as numeric metadata.
   * Cleaned up package-check issues by declaring missing namespace imports and aligning Rd argument documentation for recently updated wrappers.
   * Optional wrapper dependencies are checked at function entry with `check_r()` instead of silently skipping examples or adding unnecessary hard dependencies.
@@ -188,7 +188,7 @@
   * Moved `StatPlot` function to `thisplot::StatPlot`.
 
 * **fix**:
-  * `DEtestManhattanPlot()`: Moved the cell-type annotation track below the data cloud so the colored group labels no longer cover Manhattan plot points near zero log2 fold change.
+  * Differential expression plots (`VolcanoPlot()`, `DEtestManhattanPlot()`, `DEtestRingPlot()`): added `only.pos = TRUE` for positive-only visualization. `DEtestManhattanPlot()` now keeps the cell-type track centered at y = 0 and sizes the track from the nearest point distance around zero.
   * `DynamicHeatmap()` / `heatmap_enrichment()`: Fixed incorrect `db` handling when using custom `TERM2GENE`/`TERM2NAME`. Enrichment results with `Database = "custom"` could be incorrectly filtered by default `db` values (e.g. `"GO_BP"`), causing false "No term enriched using the threshold" warnings even when enrichment succeeded. Relate issue #133 (@1228849000).
 
 # scop 0.8.2
