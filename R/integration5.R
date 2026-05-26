@@ -594,10 +594,6 @@ run_integration5 <- function(
       message_type = "error"
     )
   }
-  if (cluster_algorithm == "leiden") {
-    PrepareEnv(modules = "scanpy")
-    check_python("leidenalg")
-  }
   cluster_algorithm_index <- switch(
     EXPR = tolower(cluster_algorithm),
     "louvain" = 1,

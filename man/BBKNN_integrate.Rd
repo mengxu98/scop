@@ -34,6 +34,7 @@ BBKNN_integrate(
   cluster_algorithm = "louvain",
   cluster_resolution = 0.6,
   bbknn_params = list(),
+  bbknn_backend = c("python", "r"),
   verbose = TRUE,
   seed = 11
 )
@@ -133,6 +134,10 @@ Larger values result in fewer clusters.
 Default is \code{0.6}.}
 
 \item{bbknn_params}{A list of parameters for the bbknn.matrix.bbknn function, default is an empty list.}
+
+\item{bbknn_backend}{Backend used for BBKNN graph construction. `"python"`
+uses the original `bbknn.matrix.bbknn` implementation. `"r"` uses a native
+R/C++ balanced KNN graph with approximate connectivity weights.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

@@ -86,10 +86,6 @@ Uncorrected_integrate <- function(
       message_type = "error"
     )
   }
-  if (cluster_algorithm == "leiden") {
-    PrepareEnv(modules = "scanpy")
-    check_python("leidenalg")
-  }
   cluster_algorithm_index <- switch(
     EXPR = tolower(cluster_algorithm),
     "louvain" = 1,
@@ -333,10 +329,6 @@ WNN_integrate <- function(
       "{.arg cluster_algorithm} must be one of {.val {cluster_algorithms}}",
       message_type = "error"
     )
-  }
-  if (cluster_algorithm == "leiden") {
-    PrepareEnv(modules = "scanpy")
-    check_python("leidenalg")
   }
   cluster_algorithm_index <- switch(
     EXPR = tolower(cluster_algorithm),
@@ -609,10 +601,6 @@ MultiMAP_integrate <- function(
       "{.arg cluster_algorithm} must be one of {.val {cluster_algorithms}}",
       message_type = "error"
     )
-  }
-  if (cluster_algorithm == "leiden") {
-    PrepareEnv(modules = "scanpy")
-    check_python("leidenalg")
   }
   cluster_algorithm_index <- switch(
     EXPR = tolower(cluster_algorithm),
@@ -1229,10 +1217,6 @@ Seurat_integrate <- function(
       message_type = "error"
     )
   }
-  if (cluster_algorithm == "leiden") {
-    PrepareEnv(modules = "scanpy")
-    check_python("leidenalg")
-  }
   cluster_algorithm_index <- switch(
     EXPR = tolower(cluster_algorithm),
     "louvain" = 1,
@@ -1708,10 +1692,6 @@ scVI_integrate <- function(
       message_type = "error"
     )
   }
-  if (cluster_algorithm == "leiden") {
-    PrepareEnv(modules = "scanpy")
-    check_python("leidenalg")
-  }
   cluster_algorithm_index <- switch(tolower(cluster_algorithm),
     "louvain" = 1,
     "louvain_refined" = 2,
@@ -2027,10 +2007,6 @@ MNN_integrate <- function(
       "{.arg cluster_algorithm} must be one of {.val {cluster_algorithms}}",
       message_type = "error"
     )
-  }
-  if (cluster_algorithm == "leiden") {
-    PrepareEnv(modules = "scanpy")
-    check_python("leidenalg")
   }
   cluster_algorithm_index <- switch(tolower(cluster_algorithm),
     "louvain" = 1,
@@ -2349,10 +2325,6 @@ fastMNN_integrate <- function(
       message_type = "error"
     )
   }
-  if (cluster_algorithm == "leiden") {
-    PrepareEnv(modules = "scanpy")
-    check_python("leidenalg")
-  }
   cluster_algorithm_index <- switch(tolower(cluster_algorithm),
     "louvain" = 1,
     "louvain_refined" = 2,
@@ -2643,10 +2615,6 @@ Harmony_integrate <- function(
       "{.arg cluster_algorithm} must be one of {.val {cluster_algorithms}}",
       message_type = "error"
     )
-  }
-  if (cluster_algorithm == "leiden") {
-    PrepareEnv(modules = "scanpy")
-    check_python("leidenalg")
   }
   cluster_algorithm_index <- switch(
     EXPR = tolower(cluster_algorithm),
@@ -2942,9 +2910,6 @@ Scanorama_integrate <- function(
       message_type = "error"
     )
   }
-  if (cluster_algorithm == "leiden") {
-    check_python("leidenalg")
-  }
   cluster_algorithm_index <- switch(
     EXPR = tolower(cluster_algorithm),
     "louvain" = 1,
@@ -3148,6 +3113,9 @@ Scanorama_integrate <- function(
 #'
 #' @inheritParams integration_scop
 #' @param bbknn_params A list of parameters for the bbknn.matrix.bbknn function, default is an empty list.
+#' @param bbknn_backend Backend used for BBKNN graph construction. `"python"`
+#' uses the original `bbknn.matrix.bbknn` implementation. `"r"` uses a native
+#' R/C++ balanced KNN graph with approximate connectivity weights.
 #'
 #' @export
 BBKNN_integrate <- function(
@@ -3180,10 +3148,14 @@ BBKNN_integrate <- function(
   cluster_algorithm = "louvain",
   cluster_resolution = 0.6,
   bbknn_params = list(),
+  bbknn_backend = c("python", "r"),
   verbose = TRUE,
   seed = 11
 ) {
-  PrepareEnv(modules = "bbknn")
+  bbknn_backend <- match.arg(bbknn_backend)
+  if (identical(bbknn_backend, "python")) {
+    PrepareEnv(modules = "bbknn")
+  }
 
   if (length(linear_reduction) > 1) {
     log_message(
@@ -3229,9 +3201,6 @@ BBKNN_integrate <- function(
       message_type = "error"
     )
   }
-  if (cluster_algorithm == "leiden") {
-    check_python("leidenalg")
-  }
   cluster_algorithm_index <- switch(
     EXPR = tolower(cluster_algorithm),
     "louvain" = 1,
@@ -3240,8 +3209,10 @@ BBKNN_integrate <- function(
     "leiden" = 4
   )
 
-  check_python("bbknn")
-  bbknn <- reticulate::import("bbknn")
+  if (identical(bbknn_backend, "python")) {
+    check_python("bbknn")
+    bbknn <- reticulate::import("bbknn")
+  }
   set.seed(seed)
 
   if (is.null(srt_list) && is.null(srt_merge)) {
@@ -3365,11 +3336,11 @@ BBKNN_integrate <- function(
   }
 
   log_message(
-    "Perform {.pkg BBKNN} integration",
+    "Perform {.pkg BBKNN} integration with {.arg bbknn_backend = {bbknn_backend}}",
     verbose = verbose
   )
   log_message(
-    "Using {.val {paste0('CSS', linear_reduction)}} ({.val {min(linear_reduction_dims_use)}}:{.val {max(linear_reduction_dims_use)}}) as input",
+    "Using {.val {paste0('BBKNN', linear_reduction)}} ({.val {min(linear_reduction_dims_use)}}:{.val {max(linear_reduction_dims_use)}}) as input",
     verbose = verbose
   )
   emb <- Embeddings(srt_merge, reduction = paste0("BBKNN", linear_reduction))[,
@@ -3383,7 +3354,12 @@ BBKNN_integrate <- function(
   for (nm in names(bbknn_params)) {
     params[[nm]] <- bbknn_params[[nm]]
   }
-  bem <- invoke_fun(bbknn$matrix$bbknn, params)
+  bem <- if (identical(bbknn_backend, "python")) {
+    invoke_fun(bbknn$matrix$bbknn, params)
+  } else {
+    params[["verbose"]] <- verbose
+    invoke_fun(bbknn_native_graph, params)
+  }
   n.neighbors <- bem[[3]]$n_neighbors
   srt_integrated <- srt_merge
 
@@ -3484,6 +3460,8 @@ BBKNN_integrate <- function(
   SeuratObject::VariableFeatures(srt_integrated) <- srt_integrated@misc[[
     "BBKNN_HVF"
   ]] <- HVF
+  srt_integrated@misc[["BBKNN_backend"]] <- bbknn_backend
+  srt_integrated@misc[["BBKNN_parameters"]] <- bem[[3]]
 
   if (isTRUE(append) && !is.null(srt_merge_raw)) {
     srt_merge_raw <- srt_append(
@@ -3497,6 +3475,162 @@ BBKNN_integrate <- function(
   } else {
     return(srt_integrated)
   }
+}
+
+bbknn_native_graph <- function(
+  pca,
+  batch_list,
+  neighbors_within_batch = 3,
+  n_pcs = 50,
+  trim = NULL,
+  metric = "euclidean",
+  ...,
+  verbose = TRUE
+) {
+  unsupported <- names(list(...))
+  unsupported <- unsupported[nzchar(unsupported)]
+  if (length(unsupported) > 0L) {
+    log_message(
+      "{.arg bbknn_backend = 'r'} ignores unsupported {.arg bbknn_params}: {.val {unsupported}}",
+      message_type = "warning",
+      verbose = verbose
+    )
+  }
+  pca <- as.matrix(pca)
+  storage.mode(pca) <- "double"
+  batch_list <- as.character(batch_list)
+  if (nrow(pca) != length(batch_list)) {
+    log_message(
+      "{.arg pca} and {.arg batch_list} must contain the same number of cells",
+      message_type = "error"
+    )
+  }
+  n_pcs <- min(as.integer(n_pcs), ncol(pca))
+  pca <- pca[, seq_len(n_pcs), drop = FALSE]
+  neighbors_within_batch <- as.integer(neighbors_within_batch)
+  batches <- sort(unique(batch_list))
+  batch_counts <- table(batch_list)
+  if (min(batch_counts[batches]) < neighbors_within_batch) {
+    log_message(
+      "Not all batches have at least {.arg neighbors_within_batch} cells",
+      message_type = "error"
+    )
+  }
+  metric_use <- switch(
+    metric,
+    euclidean = "euclidean",
+    cosine = "cosine",
+    angular = "cosine",
+    {
+      log_message(
+        "{.arg bbknn_backend = 'r'} supports {.val euclidean}, {.val cosine}, and {.val angular}; using {.val euclidean} instead of {.val {metric}}",
+        message_type = "warning",
+        verbose = verbose
+      )
+      "euclidean"
+    }
+  )
+
+  n_cells <- nrow(pca)
+  n_neighbors <- neighbors_within_batch * length(batches)
+  idx <- matrix(NA_integer_, nrow = n_cells, ncol = n_neighbors)
+  dist <- matrix(NA_real_, nrow = n_cells, ncol = n_neighbors)
+  col_start <- 1L
+  for (batch in batches) {
+    batch_idx <- which(batch_list == batch)
+    knn <- run_cpp_knn(
+      reference = pca[batch_idx, , drop = FALSE],
+      query = pca,
+      k = neighbors_within_batch,
+      metric = metric_use,
+      exclude_self = FALSE,
+      n_threads = 0L
+    )
+    cols <- col_start:(col_start + neighbors_within_batch - 1L)
+    mapped_idx <- knn[["idx"]]
+    mapped_idx[] <- batch_idx[mapped_idx]
+    idx[, cols] <- mapped_idx
+    dist[, cols] <- knn[["dist"]]
+    col_start <- col_start + neighbors_within_batch
+  }
+
+  order_idx <- t(apply(dist, 1L, order))
+  gather <- cbind(
+    rep(seq_len(n_cells), each = n_neighbors),
+    as.vector(t(order_idx))
+  )
+  idx <- matrix(idx[gather], nrow = n_cells, byrow = TRUE)
+  dist <- matrix(dist[gather], nrow = n_cells, byrow = TRUE)
+
+  distances <- Matrix::sparseMatrix(
+    i = rep(seq_len(n_cells), each = n_neighbors),
+    j = as.vector(t(idx)),
+    x = as.vector(t(dist)),
+    dims = c(n_cells, n_cells)
+  )
+  connectivities_directed <- Matrix::sparseMatrix(
+    i = rep(seq_len(n_cells), each = n_neighbors),
+    j = as.vector(t(idx)),
+    x = 1 / (1 + as.vector(t(dist))),
+    dims = c(n_cells, n_cells)
+  )
+  connectivities <- pmax(connectivities_directed, Matrix::t(connectivities_directed))
+  if (is.null(trim)) {
+    trim <- 10L * n_neighbors
+  }
+  trim <- as.integer(trim)
+  if (trim > 0L) {
+    connectivities <- trim_sparse_rows(connectivities, trim = trim)
+    connectivities <- pmax(connectivities, Matrix::t(connectivities))
+  }
+  list(
+    distances,
+    connectivities,
+    list(
+      n_neighbors = n_neighbors,
+      method = "native_approx",
+      metric = metric_use,
+      n_pcs = n_pcs,
+      bbknn = list(
+        trim = trim,
+        computation = "r_cpp_exact_knn_approx_connectivity",
+        neighbors_within_batch = neighbors_within_batch
+      )
+    )
+  )
+}
+
+trim_sparse_rows <- function(x, trim) {
+  x <- methods::as(x, "dgCMatrix")
+  keep <- vector("list", nrow(x))
+  x_row <- Matrix::t(x)
+  for (i in seq_len(nrow(x))) {
+    start <- x_row@p[[i]] + 1L
+    end <- x_row@p[[i + 1L]]
+    if (start > end) {
+      keep[[i]] <- NULL
+      next
+    }
+    vals <- x_row@x[start:end]
+    rows <- x_row@i[start:end] + 1L
+    ord <- order(vals, decreasing = TRUE)
+    ord <- utils::head(ord, trim)
+    keep[[i]] <- data.frame(
+      i = rep(i, length(ord)),
+      j = rows[ord],
+      x = vals[ord]
+    )
+  }
+  keep <- do.call(rbind, keep)
+  if (is.null(keep) || nrow(keep) == 0L) {
+    return(Matrix::sparseMatrix(dims = dim(x)))
+  }
+  Matrix::sparseMatrix(
+    i = keep$i,
+    j = keep$j,
+    x = keep$x,
+    dims = dim(x)
+  )
 }
 
 #' @title The CSS integration function
@@ -3657,10 +3791,6 @@ CSS_integrate <- function(
       "{.arg cluster_algorithm} must be one of {.val {cluster_algorithms}}",
       message_type = "error"
     )
-  }
-  if (cluster_algorithm == "leiden") {
-    PrepareEnv(modules = "scanpy")
-    check_python("leidenalg")
   }
   cluster_algorithm_index <- switch(
     EXPR = tolower(cluster_algorithm),
@@ -3894,10 +4024,6 @@ LIGER_integrate <- function(
       "{.arg cluster_algorithm} must be one of {.val {cluster_algorithms}}",
       message_type = "error"
     )
-  }
-  if (cluster_algorithm == "leiden") {
-    PrepareEnv(modules = "scanpy")
-    check_python("leidenalg")
   }
   cluster_algorithm_index <- switch(
     EXPR = tolower(cluster_algorithm),
@@ -4219,10 +4345,6 @@ Conos_integrate <- function(
       "{.arg cluster_algorithm} must be one of {.val {cluster_algorithms}}",
       message_type = "error"
     )
-  }
-  if (cluster_algorithm == "leiden") {
-    PrepareEnv(modules = "scanpy")
-    check_python("leidenalg")
   }
   cluster_algorithm_index <- switch(
     EXPR = tolower(cluster_algorithm),
@@ -4593,10 +4715,6 @@ ComBat_integrate <- function(
       message_type = "error"
     )
   }
-  if (cluster_algorithm == "leiden") {
-    PrepareEnv(modules = "scanpy")
-    check_python("leidenalg")
-  }
   cluster_algorithm_index <- switch(
     EXPR = tolower(cluster_algorithm),
     "louvain" = 1,
@@ -4883,10 +5001,6 @@ Coralysis_integrate <- function(
       "{.arg cluster_algorithm} must be one of {.val {cluster_algorithms}}",
       message_type = "error"
     )
-  }
-  if (cluster_algorithm == "leiden") {
-    PrepareEnv(modules = "scanpy")
-    check_python("leidenalg")
   }
   cluster_algorithm_index <- switch(
     EXPR = tolower(cluster_algorithm),
