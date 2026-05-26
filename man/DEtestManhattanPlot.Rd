@@ -21,6 +21,7 @@ DEtestManhattanPlot(
   stroke.highlight = 0.5,
   nlabel = 5,
   features_label = NULL,
+  label.by = c("p_val_adj", "p_val", "diff_pct", "avg_log2FC"),
   label.fg = "black",
   label.bg = "white",
   label.bg.r = 0.1,
@@ -31,7 +32,8 @@ DEtestManhattanPlot(
   theme_args = list(),
   manhattan.bg = "white",
   jitter_width = 0.5,
-  jitter_height = 0.4,
+  jitter_height = 0,
+  seed = 11,
   aspect.ratio = NULL,
   xlab = NULL,
   ylab = NULL
@@ -88,6 +90,12 @@ Default is \code{5}.}
 \item{features_label}{A character vector specifying the feature labels to plot.
 Default is \code{NULL}.}
 
+\item{label.by}{Metric used to select automatic labels when \code{features_label = NULL}.
+Options are \code{"p_val_adj"}, \code{"p_val"}, \code{"diff_pct"}, and \code{"avg_log2FC"}.
+Smaller p-values are ranked first; \code{diff_pct} and \code{avg_log2FC} use the strongest
+positive and negative effects within each group.
+Default is \code{"p_val_adj"}.}
+
 \item{label.fg}{A character string specifying the color for the labels' foreground.
 Default is \code{"black"}.}
 
@@ -120,7 +128,10 @@ Default is \code{"white"}.}
 Default is \code{0.5}.}
 
 \item{jitter_height}{Vertical jitter range for points in Manhattan plot.
-Default is \code{0.4}.}
+Default is \code{0}.}
+
+\item{seed}{Random seed for jitter in Manhattan and ring plots.
+Default is \code{11}.}
 
 \item{aspect.ratio}{Aspect ratio of the panel.
 Default is \code{NULL}.}

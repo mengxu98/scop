@@ -74,6 +74,11 @@
 #' Default is `5`.
 #' @param features_label A character vector specifying the feature labels to plot.
 #' Default is `NULL`.
+#' @param label.by Metric used to select automatic labels when `features_label = NULL`.
+#' Options are `"p_val_adj"`, `"p_val"`, `"diff_pct"`, and `"avg_log2FC"`.
+#' Smaller p-values are ranked first; `diff_pct` and `avg_log2FC` use the strongest
+#' positive and negative effects within each group.
+#' Default is `"p_val_adj"`.
 #' @param label.fg A character string specifying the color for the labels' foreground.
 #' Default is `"black"`.
 #' @param label.bg A character string specifying the color for the labels' background.
@@ -103,14 +108,14 @@
 #' @param jitter_width Horizontal jitter range for points in Manhattan plot.
 #' Default is `0.5`.
 #' @param jitter_height Vertical jitter range for points in Manhattan plot.
-#' Default is `0.4`.
+#' Default is `0`.
 #' @param tile_height Height of the cell-type track in ring plot.
 #' Default is `0.3`.
 #' @param tile_gap Gap between the track and nudged points in ring plot.
 #' Default is `0.1`.
 #' @param ring_segments Whether to draw segment lines between cell types in ring plot.
 #' Default is `TRUE`.
-#' @param seed Random seed for jitter in ring plot.
+#' @param seed Random seed for jitter in Manhattan and ring plots.
 #' Default is `11`.
 #'
 #' @seealso [RunDEtest], [VolcanoPlot], [DEtestManhattanPlot], [DEtestRingPlot]
@@ -244,6 +249,7 @@ DEtestPlot <- function(
     stroke.highlight = 0.5,
     nlabel = 5,
     features_label = NULL,
+    label.by = c("p_val_adj", "p_val", "diff_pct", "avg_log2FC"),
     label.fg = "black",
     label.bg = "white",
     label.bg.r = 0.1,
@@ -259,7 +265,7 @@ DEtestPlot <- function(
     byrow = TRUE,
     manhattan.bg = "white",
     jitter_width = 0.5,
-    jitter_height = 0.4,
+    jitter_height = 0,
     tile_height = 0.3,
     tile_gap = 0.1,
     ring_segments = TRUE,
@@ -281,6 +287,7 @@ DEtestPlot <- function(
   threshold_method <- match.arg(threshold_method)
   y_metric <- match.arg(y_metric)
   x_order <- match.arg(x_order)
+  label.by <- match.arg(label.by)
 
   if (plot_type == "volcano") {
     DE_threshold_use <- if (
@@ -333,6 +340,7 @@ DEtestPlot <- function(
         stroke.highlight = stroke.highlight,
         nlabel = nlabel,
         features_label = features_label,
+        label.by = label.by,
         label.fg = label.fg,
         label.bg = label.bg,
         label.bg.r = label.bg.r,
@@ -377,6 +385,7 @@ DEtestPlot <- function(
         stroke.highlight = stroke.highlight,
         nlabel = nlabel,
         features_label = features_label,
+        label.by = label.by,
         label.fg = label.fg,
         label.bg = label.bg,
         label.bg.r = label.bg.r,
@@ -388,6 +397,7 @@ DEtestPlot <- function(
         manhattan.bg = manhattan.bg,
         jitter_width = jitter_width,
         jitter_height = jitter_height,
+        seed = seed,
         aspect.ratio = aspect.ratio,
         xlab = xlab,
         ylab = ylab
@@ -413,6 +423,7 @@ DEtestPlot <- function(
         stroke.highlight = stroke.highlight,
         nlabel = nlabel,
         features_label = features_label,
+        label.by = label.by,
         label.fg = label.fg,
         label.bg = label.bg,
         label.bg.r = label.bg.r,
@@ -556,29 +567,102 @@ filter_de_markers <- function(de_df, log2FC_cutoff, pvalue_cutoff) {
   de_df_marker
 }
 
-get_top_markers_for_label <- function(de_df_marker, cluster_levels, nlabel, features_label) {
+normalize_de_label_count <- function(nlabel) {
+  nlabel <- suppressWarnings(as.integer(nlabel[1]))
+  if (is.na(nlabel) || nlabel < 0L) {
+    return(0L)
+  }
+  nlabel
+}
+
+rank_de_label_subset <- function(tmp, label.by, decreasing, nlabel) {
+  if (nrow(tmp) == 0 || nlabel == 0L) {
+    return(tmp[0, , drop = FALSE])
+  }
+  score <- suppressWarnings(as.numeric(tmp[[label.by]]))
+  fc_for_rank <- if ("avg_log2FC_raw" %in% colnames(tmp)) {
+    suppressWarnings(as.numeric(tmp[["avg_log2FC_raw"]]))
+  } else {
+    suppressWarnings(as.numeric(tmp[["avg_log2FC"]]))
+  }
+  if (label.by %in% c("p_val", "p_val_adj")) {
+    ord <- order(
+      score,
+      -abs(fc_for_rank),
+      as.character(tmp[["gene"]]),
+      na.last = TRUE
+    )
+  } else {
+    rank_score <- if (isTRUE(decreasing)) -score else score
+    ord <- order(
+      rank_score,
+      suppressWarnings(as.numeric(tmp[["p_val_adj"]])),
+      as.character(tmp[["gene"]]),
+      na.last = TRUE
+    )
+  }
+  tmp[utils::head(ord, nlabel), , drop = FALSE]
+}
+
+get_top_markers_for_label <- function(
+    de_df_marker,
+    cluster_levels,
+    nlabel,
+    features_label,
+    label.by = c("p_val_adj", "p_val", "diff_pct", "avg_log2FC")) {
+  label.by <- match.arg(label.by)
+  if (!label.by %in% colnames(de_df_marker)) {
+    log_message(
+      paste0("'", label.by, "' is not available in DEtest results"),
+      message_type = "error"
+    )
+  }
+  label_col <- if (label.by == "avg_log2FC" && "avg_log2FC_raw" %in% colnames(de_df_marker)) {
+    "avg_log2FC_raw"
+  } else {
+    label.by
+  }
+  nlabel <- normalize_de_label_count(nlabel)
   top_marker_list <- lapply(cluster_levels, function(x) {
     tmp <- de_df_marker[de_df_marker[["group1"]] == x, , drop = FALSE]
     if (nrow(tmp) == 0) {
       return(NULL)
     }
     if (is.null(features_label)) {
-      top_max <- if (nrow(tmp) > 0) {
-        tmp[utils::head(order(tmp[, "avg_log2FC"], decreasing = TRUE), nlabel), , drop = FALSE]
-      } else {
-        tmp[0, , drop = FALSE]
+      if (nlabel == 0L) {
+        return(tmp[0, , drop = FALSE])
       }
-      top_min <- if (nrow(tmp) > 0) {
-        tmp[utils::head(order(tmp[, "avg_log2FC"], decreasing = FALSE), nlabel), , drop = FALSE]
+      split_by <- if (label.by %in% c("p_val", "p_val_adj")) {
+        if ("avg_log2FC_raw" %in% colnames(tmp)) {
+          suppressWarnings(as.numeric(tmp[["avg_log2FC_raw"]]))
+        } else {
+          suppressWarnings(as.numeric(tmp[["avg_log2FC"]]))
+        }
       } else {
-        tmp[0, , drop = FALSE]
+        suppressWarnings(as.numeric(tmp[[label_col]]))
       }
-      rbind(top_max, top_min)
+      top_max <- rank_de_label_subset(
+        tmp = tmp[split_by >= 0 | is.na(split_by), , drop = FALSE],
+        label.by = label_col,
+        decreasing = TRUE,
+        nlabel = nlabel
+      )
+      top_min <- rank_de_label_subset(
+        tmp = tmp[split_by < 0, , drop = FALSE],
+        label.by = label_col,
+        decreasing = FALSE,
+        nlabel = nlabel
+      )
+      unique(rbind(top_max, top_min))
     } else {
       tmp[tmp[, "gene"] %in% features_label, , drop = FALSE]
     }
   })
-  do.call(rbind, top_marker_list[!sapply(top_marker_list, is.null)])
+  top_marker_list <- top_marker_list[!sapply(top_marker_list, is.null)]
+  if (length(top_marker_list) == 0) {
+    return(de_df_marker[0, , drop = FALSE])
+  }
+  do.call(rbind, top_marker_list)
 }
 
 add_volcano_plot_coords <- function(df, jitter_width = 0.2, jitter_height = 0.2, seed = 11) {
@@ -1002,6 +1086,7 @@ DEtestManhattanPlot <- function(
   stroke.highlight = 0.5,
   nlabel = 5,
   features_label = NULL,
+  label.by = c("p_val_adj", "p_val", "diff_pct", "avg_log2FC"),
   label.fg = "black",
   label.bg = "white",
   label.bg.r = 0.1,
@@ -1012,21 +1097,24 @@ DEtestManhattanPlot <- function(
   theme_args = list(),
   manhattan.bg = "white",
   jitter_width = 0.5,
-  jitter_height = 0.4,
+  jitter_height = 0,
+  seed = 11,
   aspect.ratio = NULL,
   xlab = NULL,
   ylab = NULL
 ) {
+  label.by <- match.arg(label.by)
   if (is.null(group.by)) {
     group.by <- "custom"
   }
   data_res <- get_de_data(srt, group.by, test.use, DE_threshold, res, group_use)
   de_df <- data_res$de_df
+  de_df[, "avg_log2FC_raw"] <- de_df[, "avg_log2FC"]
   clip_res <- clip_log2fc_symmetric(de_df)
   de_df_marker <- clip_res$df
   fc_lim <- clip_res$fc_lim
   de_df_marker[, "type"] <- ifelse(
-    de_df_marker[, "avg_log2FC"] >= 0,
+    de_df_marker[, "avg_log2FC_raw"] >= 0,
     "sigUp",
     "sigDown"
   )
@@ -1034,9 +1122,19 @@ DEtestManhattanPlot <- function(
   show_group_track <- length(cluster_levels) > 1
   n_m <- nrow(de_df_marker)
   de_df_marker[, "x_num"] <- as.numeric(de_df_marker[, "group1"])
-  de_df_marker[, "x_plot"] <- de_df_marker[, "x_num"] + (stats::runif(n_m) - 0.5) * jitter_width
-  de_df_marker[, "y_plot"] <- de_df_marker[, "avg_log2FC"] + (stats::runif(n_m) - 0.5) * jitter_height
-  top_marker <- get_top_markers_for_label(de_df_marker, cluster_levels, nlabel, features_label)
+  jitter_index <- seq_len(n_m)
+  x_offset <- ((((jitter_index * 0.61803398875) + (seed * 0.01)) %% 1) - 0.5) * jitter_width
+  y_offset <- ((((jitter_index * 0.41421356237) + (seed * 0.01)) %% 1) - 0.5) * jitter_height
+  de_df_marker[, "x_plot"] <- de_df_marker[, "x_num"] + x_offset
+  de_df_marker[, "y_plot"] <- de_df_marker[, "avg_log2FC_raw"] + y_offset
+  plot_y_range <- range(de_df_marker[, "y_plot"], na.rm = TRUE)
+  plot_y_span <- diff(plot_y_range)
+  if (!is.finite(plot_y_span) || plot_y_span <= 0) {
+    plot_y_span <- 1
+  }
+  top_marker <- get_top_markers_for_label(
+    de_df_marker, cluster_levels, nlabel, features_label, label.by = label.by
+  )
   back_data_list <- lapply(cluster_levels, function(x) {
     tmp <- de_df_marker[de_df_marker[["group1"]] == x, , drop = FALSE]
     if (nrow(tmp) == 0) {
@@ -1044,8 +1142,8 @@ DEtestManhattanPlot <- function(
     }
     data.frame(
       cluster = x,
-      min = min(tmp[, "avg_log2FC"], na.rm = TRUE) - 0.2,
-      max = max(tmp[, "avg_log2FC"], na.rm = TRUE) + 0.2
+      min = min(tmp[, "avg_log2FC_raw"], na.rm = TRUE) - 0.2,
+      max = max(tmp[, "avg_log2FC_raw"], na.rm = TRUE) + 0.2
     )
   })
   back_data <- do.call(rbind, back_data_list[!sapply(back_data_list, is.null)])
@@ -1058,8 +1156,10 @@ DEtestManhattanPlot <- function(
   tile_data <- data.frame(
     group1 = cluster_levels,
     x = seq_along(cluster_levels),
-    y = 0
+    y = plot_y_range[1] - plot_y_span * 0.08
   )
+  group_track_height <- plot_y_span * 0.08
+  group_track_bottom <- tile_data[["y"]][1] - group_track_height / 2
   p1 <- ggplot(de_df_marker, aes(x = x_plot, y = y_plot)) +
     geom_col(
       data = back_data,
@@ -1082,12 +1182,13 @@ DEtestManhattanPlot <- function(
       inherit.aes = FALSE,
       data = de_df_marker
     ) +
-    geom_point(aes(color = avg_log2FC), size = pt.size, alpha = pt.alpha) +
+    geom_point(aes(color = avg_log2FC_raw), size = pt.size, alpha = pt.alpha) +
     scale_color_gradientn(
       name = "log2FC",
       colors = palette_colors(palette = palette, palcolor = palcolor),
       values = scales::rescale(unique(c(fc_lim[1], 0, fc_lim[2]))),
       limits = fc_lim,
+      oob = scales::squish,
       guide = guide_colorbar(
         frame.colour = "black",
         ticks.colour = "black",
@@ -1100,7 +1201,11 @@ DEtestManhattanPlot <- function(
     scale_x_continuous(
       breaks = seq_along(cluster_levels), labels = cluster_levels
     ) +
-    scale_y_continuous(n.breaks = 6) +
+    scale_y_continuous(
+      n.breaks = 6,
+      expand = ggplot2::expansion(mult = c(0.02, 0.05))
+    ) +
+    ggplot2::expand_limits(y = if (isTRUE(show_group_track)) group_track_bottom else NULL) +
     labs(
       x = xlab_use,
       y = ylab %||% "Average log2FoldChange"
@@ -1140,7 +1245,7 @@ DEtestManhattanPlot <- function(
       geom_tile(
         aes(x = x, y = y, fill = group1),
         color = "black",
-        height = 0.5,
+        height = group_track_height,
         show.legend = FALSE,
         inherit.aes = FALSE,
         data = tile_data
@@ -1203,6 +1308,7 @@ DEtestRingPlot <- function(
   stroke.highlight = 0.5,
   nlabel = 5,
   features_label = NULL,
+  label.by = c("p_val_adj", "p_val", "diff_pct", "avg_log2FC"),
   label.fg = "black",
   label.bg = "white",
   label.bg.r = 0.1,
@@ -1217,6 +1323,7 @@ DEtestRingPlot <- function(
   ring_segments = TRUE,
   seed = 11
 ) {
+  label.by <- match.arg(label.by)
   check_r("geomtextpath", verbose = FALSE)
   if (is.null(group.by)) {
     group.by <- "custom"
@@ -1228,7 +1335,7 @@ DEtestRingPlot <- function(
   fc_lim <- clip_res$fc_lim
   cluster_levels <- levels(de_df_marker[["group1"]])
   top_marker <- get_top_markers_for_label(
-    de_df_marker, cluster_levels, nlabel, features_label
+    de_df_marker, cluster_levels, nlabel, features_label, label.by = label.by
   )
   n_grp <- length(cluster_levels)
   show_group_track <- n_grp > 1
@@ -1465,6 +1572,7 @@ VolcanoPlot <- function(
     stroke.highlight = 0.5,
     nlabel = 5,
     features_label = NULL,
+    label.by = c("p_val_adj", "p_val", "diff_pct", "avg_log2FC"),
     label.fg = "black",
     label.bg = "white",
     label.bg.r = 0.1,
@@ -1491,6 +1599,7 @@ VolcanoPlot <- function(
     enrich_nlabel = 15) {
   DE_threshold_missing <- missing(DE_threshold)
   threshold_method <- match.arg(threshold_method)
+  label.by <- match.arg(label.by)
   if (
     DE_threshold_missing &&
       test.use %in% c("edgeR", "limma")
@@ -1589,6 +1698,13 @@ VolcanoPlot <- function(
     ]
   }
   de_df[, "distance"] <- de_df[, "x"]^2 + de_df[, "y"]^2
+  label_df_all <- get_top_markers_for_label(
+    de_df,
+    levels(de_df[["group1"]]),
+    nlabel,
+    features_label,
+    label.by = label.by
+  )
 
   enrichment_map <- data.frame()
   if (isTRUE(annotate_enrichment)) {
@@ -1645,64 +1761,8 @@ VolcanoPlot <- function(
     if (!is.finite(x_nudge) || x_nudge <= 0) {
       x_nudge <- 0.1
     }
-    df[, "label"] <- FALSE
-    if (is.null(features_label)) {
-      if (threshold_method == "hyperbolic") {
-        up_idx <- which(df[["avg_log2FC_raw"]] >= 0)
-        down_idx <- which(df[["avg_log2FC_raw"]] < 0)
-        if (length(up_idx) > 0) {
-          df[up_idx[
-            utils::head(order(df[up_idx, "distance"], decreasing = TRUE), nlabel)
-          ], "label"] <- TRUE
-        }
-        if (length(down_idx) > 0) {
-          df[down_idx[
-            utils::head(order(df[down_idx, "distance"], decreasing = TRUE), nlabel)
-          ], "label"] <- TRUE
-        }
-      } else if (traditional_volcano) {
-        right_idx <- which(df[["x"]] >= 0)
-        left_idx <- which(df[["x"]] < 0)
-        if (length(right_idx) > 0) {
-          df[right_idx[
-            utils::head(order(df[right_idx, "distance"], decreasing = TRUE), nlabel)
-          ], "label"] <- TRUE
-        }
-        if (length(left_idx) > 0) {
-          df[left_idx[
-            utils::head(order(df[left_idx, "distance"], decreasing = TRUE), nlabel)
-          ], "label"] <- TRUE
-        }
-      } else if (isTRUE(signed_diff_pct_volcano)) {
-        up_idx <- which(df[["y"]] >= 0)
-        down_idx <- which(df[["y"]] < 0)
-        if (length(up_idx) > 0) {
-          df[up_idx[
-            utils::head(order(df[up_idx, "distance"], decreasing = TRUE), nlabel)
-          ], "label"] <- TRUE
-        }
-        if (length(down_idx) > 0) {
-          df[down_idx[
-            utils::head(order(df[down_idx, "distance"], decreasing = TRUE), nlabel)
-          ], "label"] <- TRUE
-        }
-      } else {
-        up_idx <- which(df[["avg_log2FC_raw"]] >= 0)
-        down_idx <- which(df[["avg_log2FC_raw"]] < 0)
-        if (length(up_idx) > 0) {
-          df[up_idx[
-            utils::head(order(df[up_idx, "distance"], decreasing = TRUE), nlabel)
-          ], "label"] <- TRUE
-        }
-        if (length(down_idx) > 0) {
-          df[down_idx[
-            utils::head(order(df[down_idx, "distance"], decreasing = TRUE), nlabel)
-          ], "label"] <- TRUE
-        }
-      }
-    } else {
-      df[df[["gene"]] %in% features_label, "label"] <- TRUE
-    }
+    df[, "label"] <- paste(df[["group1"]], df[["gene"]], sep = "|||") %in%
+      paste(label_df_all[["group1"]], label_df_all[["gene"]], sep = "|||")
     if (nrow(df_enrich) > 0 && is.finite(enrich_nlabel) && enrich_nlabel > 0) {
       enrich_genes <- df_enrich[order(
         df_enrich[["source_priority"]],
