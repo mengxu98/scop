@@ -74,6 +74,9 @@
 #' Default is `5`.
 #' @param features_label A character vector specifying the feature labels to plot.
 #' Default is `NULL`.
+#' @param only.pos Whether to show only positive log2 fold-change results in
+#' differential expression visualizations.
+#' Default is `FALSE`.
 #' @param label.by Metric used to select automatic labels when `features_label = NULL`.
 #' Options are `"p_val_adj"`, `"p_val"`, `"diff_pct"`, and `"avg_log2FC"`.
 #' Smaller p-values are ranked first; `diff_pct` and `avg_log2FC` use the strongest
@@ -249,6 +252,7 @@ DEtestPlot <- function(
     stroke.highlight = 0.5,
     nlabel = 5,
     features_label = NULL,
+    only.pos = FALSE,
     label.by = c("p_val_adj", "p_val", "diff_pct", "avg_log2FC"),
     label.fg = "black",
     label.bg = "white",
@@ -340,6 +344,7 @@ DEtestPlot <- function(
         stroke.highlight = stroke.highlight,
         nlabel = nlabel,
         features_label = features_label,
+        only.pos = only.pos,
         label.by = label.by,
         label.fg = label.fg,
         label.bg = label.bg,
@@ -385,6 +390,7 @@ DEtestPlot <- function(
         stroke.highlight = stroke.highlight,
         nlabel = nlabel,
         features_label = features_label,
+        only.pos = only.pos,
         label.by = label.by,
         label.fg = label.fg,
         label.bg = label.bg,
@@ -423,6 +429,7 @@ DEtestPlot <- function(
         stroke.highlight = stroke.highlight,
         nlabel = nlabel,
         features_label = features_label,
+        only.pos = only.pos,
         label.by = label.by,
         label.fg = label.fg,
         label.bg = label.bg,
@@ -565,6 +572,18 @@ filter_de_markers <- function(de_df, log2FC_cutoff, pvalue_cutoff) {
     return(NULL)
   }
   de_df_marker
+}
+
+filter_de_positive_results <- function(de_df) {
+  de_df <- de_df[de_df[, "avg_log2FC"] > 0, , drop = FALSE]
+  if (nrow(de_df) == 0) {
+    log_message(
+      "No positive log2 fold-change results are available for plotting",
+      message_type = "error"
+    )
+  }
+  de_df[["group1"]] <- droplevels(de_df[["group1"]])
+  de_df
 }
 
 normalize_de_label_count <- function(nlabel) {
@@ -1086,6 +1105,7 @@ DEtestManhattanPlot <- function(
   stroke.highlight = 0.5,
   nlabel = 5,
   features_label = NULL,
+  only.pos = FALSE,
   label.by = c("p_val_adj", "p_val", "diff_pct", "avg_log2FC"),
   label.fg = "black",
   label.bg = "white",
@@ -1109,6 +1129,9 @@ DEtestManhattanPlot <- function(
   }
   data_res <- get_de_data(srt, group.by, test.use, DE_threshold, res, group_use)
   de_df <- data_res$de_df
+  if (isTRUE(only.pos)) {
+    de_df <- filter_de_positive_results(de_df)
+  }
   de_df[, "avg_log2FC_raw"] <- de_df[, "avg_log2FC"]
   clip_res <- clip_log2fc_symmetric(de_df)
   de_df_marker <- clip_res$df
@@ -1126,12 +1149,18 @@ DEtestManhattanPlot <- function(
   x_offset <- ((((jitter_index * 0.61803398875) + (seed * 0.01)) %% 1) - 0.5) * jitter_width
   y_offset <- ((((jitter_index * 0.41421356237) + (seed * 0.01)) %% 1) - 0.5) * jitter_height
   de_df_marker[, "x_plot"] <- de_df_marker[, "x_num"] + x_offset
-  de_df_marker[, "y_plot"] <- de_df_marker[, "avg_log2FC_raw"] + y_offset
-  plot_y_range <- range(de_df_marker[, "y_plot"], na.rm = TRUE)
+  de_df_marker[, "y_raw_plot"] <- de_df_marker[, "avg_log2FC_raw"] + y_offset
+  plot_y_range <- range(de_df_marker[, "y_raw_plot"], na.rm = TRUE)
   plot_y_span <- diff(plot_y_range)
   if (!is.finite(plot_y_span) || plot_y_span <= 0) {
     plot_y_span <- 1
   }
+  de_df_marker[, "y_plot"] <- de_df_marker[, "y_raw_plot"]
+  track_half_height <- suppressWarnings(min(abs(de_df_marker[, "y_plot"]), na.rm = TRUE))
+  if (!is.finite(track_half_height) || track_half_height <= 0) {
+    track_half_height <- plot_y_span * 0.04
+  }
+  group_track_height <- track_half_height * 2
   top_marker <- get_top_markers_for_label(
     de_df_marker, cluster_levels, nlabel, features_label, label.by = label.by
   )
@@ -1142,12 +1171,18 @@ DEtestManhattanPlot <- function(
     }
     data.frame(
       cluster = x,
-      min = min(tmp[, "avg_log2FC_raw"], na.rm = TRUE) - 0.2,
-      max = max(tmp[, "avg_log2FC_raw"], na.rm = TRUE) + 0.2
+      min = min(tmp[, "y_plot"], na.rm = TRUE) - 0.2,
+      max = max(tmp[, "y_plot"], na.rm = TRUE) + 0.2
     )
   })
   back_data <- do.call(rbind, back_data_list[!sapply(back_data_list, is.null)])
   back_data[, "x_num"] <- match(back_data[, "cluster"], cluster_levels)
+  track_top <- if (isTRUE(show_group_track)) group_track_height / 2 else 0
+  track_bottom <- if (isTRUE(show_group_track)) -group_track_height / 2 else 0
+  back_data[, "xmin"] <- back_data[, "x_num"] - 0.45
+  back_data[, "xmax"] <- back_data[, "x_num"] + 0.45
+  back_data_pos <- back_data[back_data[, "max"] > track_top, , drop = FALSE]
+  back_data_neg <- back_data[back_data[, "min"] < track_bottom, , drop = FALSE]
   tile_colors <- palette_colors(
     x = cluster_levels,
     palette = group_palette,
@@ -1156,20 +1191,18 @@ DEtestManhattanPlot <- function(
   tile_data <- data.frame(
     group1 = cluster_levels,
     x = seq_along(cluster_levels),
-    y = plot_y_range[1] - plot_y_span * 0.08
+    y = 0
   )
-  group_track_height <- plot_y_span * 0.08
-  group_track_bottom <- tile_data[["y"]][1] - group_track_height / 2
   p1 <- ggplot(de_df_marker, aes(x = x_plot, y = y_plot)) +
-    geom_col(
-      data = back_data,
-      aes(x = x_num, y = min),
+    geom_rect(
+      data = back_data_neg,
+      aes(xmin = xmin, xmax = xmax, ymin = min, ymax = track_bottom),
       fill = manhattan.bg,
       inherit.aes = FALSE
     ) +
-    geom_col(
-      data = back_data,
-      aes(x = x_num, y = max),
+    geom_rect(
+      data = back_data_pos,
+      aes(xmin = xmin, xmax = xmax, ymin = track_top, ymax = max),
       fill = manhattan.bg,
       inherit.aes = FALSE
     )
@@ -1208,7 +1241,6 @@ DEtestManhattanPlot <- function(
       n.breaks = 6,
       expand = ggplot2::expansion(mult = c(0.02, 0.05))
     ) +
-    ggplot2::expand_limits(y = if (isTRUE(show_group_track)) group_track_bottom else NULL) +
     labs(
       x = xlab_use,
       y = ylab %||% "Average log2FoldChange"
@@ -1229,22 +1261,8 @@ DEtestManhattanPlot <- function(
       legend.background = element_blank(),
       aspect.ratio = aspect.ratio
     )
-  p4 <- p3 +
-    ggrepel::geom_text_repel(
-      data = top_marker,
-      aes(x = x_plot, y = y_plot, label = gene),
-      inherit.aes = FALSE,
-      min.segment.length = 0,
-      max.overlaps = 100,
-      segment.colour = "grey40",
-      color = label.fg,
-      bg.color = label.bg,
-      bg.r = label.bg.r,
-      size = label.size,
-      force = 20
-    )
   if (isTRUE(show_group_track)) {
-    p4 <- p4 +
+    p3 <- p3 +
       geom_tile(
         aes(x = x, y = y, fill = group1),
         color = "black",
@@ -1263,6 +1281,20 @@ DEtestManhattanPlot <- function(
         color = "black"
       )
   }
+  p4 <- p3 +
+    ggrepel::geom_text_repel(
+      data = top_marker,
+      aes(x = x_plot, y = y_plot, label = gene),
+      inherit.aes = FALSE,
+      min.segment.length = 0,
+      max.overlaps = 100,
+      segment.colour = "grey40",
+      color = label.fg,
+      bg.color = label.bg,
+      bg.r = label.bg.r,
+      size = label.size,
+      force = 20
+    )
   p4 +
     theme(
       axis.line.x = element_blank(),
@@ -1312,6 +1344,7 @@ DEtestRingPlot <- function(
   stroke.highlight = 0.5,
   nlabel = 5,
   features_label = NULL,
+  only.pos = FALSE,
   label.by = c("p_val_adj", "p_val", "diff_pct", "avg_log2FC"),
   label.fg = "black",
   label.bg = "white",
@@ -1334,6 +1367,9 @@ DEtestRingPlot <- function(
   }
   data_res <- get_de_data(srt, group.by, test.use, DE_threshold, res, group_use)
   de_df <- data_res$de_df
+  if (isTRUE(only.pos)) {
+    de_df <- filter_de_positive_results(de_df)
+  }
   clip_res <- clip_log2fc_symmetric(de_df)
   de_df_marker <- clip_res$df
   fc_lim <- clip_res$fc_lim
@@ -1576,6 +1612,7 @@ VolcanoPlot <- function(
     stroke.highlight = 0.5,
     nlabel = 5,
     features_label = NULL,
+    only.pos = FALSE,
     label.by = c("p_val_adj", "p_val", "diff_pct", "avg_log2FC"),
     label.fg = "black",
     label.bg = "white",
@@ -1653,6 +1690,9 @@ VolcanoPlot <- function(
 
   data_res <- get_de_data(srt, group.by, test.use, DE_threshold, res, group_use)
   de_df <- data_res$de_df
+  if (isTRUE(only.pos)) {
+    de_df <- filter_de_positive_results(de_df)
+  }
   de_df[, "avg_log2FC_raw"] <- de_df[, "avg_log2FC"]
   de_df[, "p_val_adj_raw"] <- de_df[, "p_val_adj"]
   de_df[, "neglog10_pvalue"] <- get_safe_neglog10(de_df[, y_metric])
@@ -1661,7 +1701,9 @@ VolcanoPlot <- function(
   de_df <- clip_res$df
   x_upper <- clip_res$fc_lim[2]
   x_lower <- clip_res$fc_lim[1]
-  de_df[, "border"] <- (de_df[["avg_log2FC"]] >= x_upper) | (de_df[["avg_log2FC"]] <= x_lower)
+  de_df[, "avg_log2FC_plot"] <- de_df[, "avg_log2FC"]
+  de_df[, "avg_log2FC"] <- de_df[, "avg_log2FC_raw"]
+  de_df[, "border"] <- (de_df[["avg_log2FC_plot"]] >= x_upper) | (de_df[["avg_log2FC_plot"]] <= x_lower)
   volcano_groups <- unique(as.character(de_df[["group1"]]))
   volcano_groups <- volcano_groups[!is.na(volcano_groups) & nzchar(volcano_groups)]
   single_group_volcano <- length(volcano_groups) <= 1
@@ -1684,20 +1726,20 @@ VolcanoPlot <- function(
     de_df[, "x"] <- de_df[, "diff_pct"]
     signed_diff_pct_volcano <- !isTRUE(single_group_volcano)
     if (isTRUE(signed_diff_pct_volcano)) {
-      de_df[de_df[, "avg_log2FC"] < 0, "y"] <- -de_df[
-        de_df[, "avg_log2FC"] < 0,
+      de_df[de_df[, "avg_log2FC_raw"] < 0, "y"] <- -de_df[
+        de_df[, "avg_log2FC_raw"] < 0,
         "y"
       ]
     }
     de_df <- de_df[
-      order(abs(de_df[, "avg_log2FC"]), decreasing = FALSE, na.last = FALSE), ,
+      order(abs(de_df[, "avg_log2FC_raw"]), decreasing = FALSE, na.last = FALSE), ,
       drop = FALSE
     ]
   } else if (x_metric == "avg_log2FC") {
     de_df[, "y"] <- de_df[, "neglog10_pvalue"]
-    de_df[, "x"] <- de_df[, "avg_log2FC"]
+    de_df[, "x"] <- de_df[, "avg_log2FC_raw"]
     de_df <- de_df[
-      order(abs(de_df[, "avg_log2FC"]), decreasing = FALSE, na.last = FALSE), ,
+      order(abs(de_df[, "avg_log2FC_raw"]), decreasing = FALSE, na.last = FALSE), ,
       drop = FALSE
     ]
   }
@@ -1743,7 +1785,7 @@ VolcanoPlot <- function(
     if (nrow(df) == 0) {
       next
     }
-    df <- add_volcano_plot_coords(df = df, jitter_width = 0.2, jitter_height = 0.2, seed = 11)
+    df <- add_volcano_plot_coords(df = df, jitter_width = 0, jitter_height = 0, seed = 11)
     df_enrich <- enrichment_map[
       enrichment_map[["group1"]] == group & enrichment_map[["gene"]] %in% df[["gene"]], ,
       drop = FALSE
@@ -1778,7 +1820,7 @@ VolcanoPlot <- function(
       df[df[["gene"]] %in% enrich_genes, "label"] <- TRUE
     }
 
-    color_by <- "avg_log2FC"
+    color_by <- "avg_log2FC_raw"
     color_metric <- suppressWarnings(as.numeric(df[, color_by]))
     if (!any(is.finite(color_metric))) {
       color_metric <- c(-1, 1)
