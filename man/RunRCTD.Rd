@@ -28,16 +28,13 @@ RunRCTD(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{Spatial \code{Seurat} object used as the RCTD query.}
 
 \item{reference}{Reference \code{Seurat} object containing annotated single cells.}
 
 \item{reference_label}{Metadata column in \code{reference} with cell type labels.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay used in \code{srt}. If \code{NULL}, the default assay is used.}
 
 \item{reference_assay}{Assay used in \code{reference}.}
 
@@ -82,7 +79,8 @@ Default is \code{TRUE}.}
 }
 \value{
 A \code{Seurat} object with RCTD proportion columns in metadata and
-detailed results stored in \code{srt@tools[["RCTD"]]}.
+dominant cell type summaries. When \code{store_results = TRUE}, detailed results
+are also stored in \code{srt@tools[["RCTD"]]}.
 }
 \description{
 Estimate spot-level cell type proportions from a spatial \code{Seurat} object
