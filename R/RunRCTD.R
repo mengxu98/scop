@@ -128,7 +128,6 @@ RunRCTD <- function(
     )
   }
   labels <- rctd_filter_labels_by_min_cells(
-    reference = reference,
     labels = labels,
     min_cells = min_cells,
     verbose = verbose
@@ -200,8 +199,20 @@ RunRCTD <- function(
     ref_counts <- ref_counts[, keep_ref_numi, drop = FALSE]
     labels <- labels[keep_ref_numi]
     names(labels) <- colnames(ref_counts)
+    labels <- rctd_filter_labels_by_min_cells(
+      labels = labels,
+      min_cells = min_cells,
+      verbose = verbose
+    )
+    dropped_cell_types <- rbind(
+      dropped_cell_types,
+      attr(labels, "dropped_cell_types")
+    )
+    ref_counts <- ref_counts[, names(labels), drop = FALSE]
+    ref_numi <- ref_numi[names(labels)]
+    labels <- factor(as.character(labels), levels = unique(as.character(labels)))
+    names(labels) <- colnames(ref_counts)
     label_map <- rctd_backend_label_map(labels)
-    ref_numi <- ref_numi[keep_ref_numi]
   }
   if (ncol(ref_counts) == 0L) {
     log_message(
@@ -365,7 +376,7 @@ rctd_resolve_reference_labels <- function(reference, reference_label) {
   reference[[reference_label, drop = TRUE]]
 }
 
-rctd_filter_labels_by_min_cells <- function(reference, labels, min_cells, verbose = TRUE) {
+rctd_filter_labels_by_min_cells <- function(labels, min_cells, verbose = TRUE) {
   label_counts <- table(labels)
   keep_types <- names(label_counts)[label_counts >= min_cells]
   drop_types <- names(label_counts)[label_counts < min_cells]
@@ -383,7 +394,6 @@ rctd_filter_labels_by_min_cells <- function(reference, labels, min_cells, verbos
   }
   keep <- as.character(labels) %in% keep_types
   labels <- labels[keep]
-  names(labels) <- colnames(reference)[keep]
   attr(labels, "dropped_cell_types") <- dropped
   if (length(unique(as.character(labels))) == 0L) {
     log_message(
@@ -659,7 +669,7 @@ rctd_run_spacexr_new <- function(
   reference_coldata <- S4Vectors::DataFrame(cell_type = ref_labels, nUMI = ref_numi)
   rownames(reference_coldata) <- colnames(ref_counts)
   spatial_spe <- SpatialExperiment::SpatialExperiment(
-    assay = st_counts,
+    assays = list(counts = st_counts),
     colData = spatial_coldata,
     spatialCoords = as.matrix(coords)
   )
