@@ -87,6 +87,7 @@ Estimate spot-level cell type proportions from a spatial \code{Seurat} object
 using a single-cell \code{Seurat} reference and \code{spacexr} RCTD.
 }
 \examples{
+\dontrun{
 data(visium_human_pancreas_sub)
 data(panc8_sub)
 
@@ -101,4 +102,5 @@ spatial <- RunRCTD(
 rctd_cols <- grep("^RCTD_prop_", colnames(spatial@meta.data), value = TRUE)
 SpatialSpotPlot(spatial, group.by = rctd_cols[1:4])
 SpatialSpotPlot(spatial, group.by = rctd_cols, plot_type = "pie")
+}
 }

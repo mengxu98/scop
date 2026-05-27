@@ -41,6 +41,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data(visium_human_pancreas_sub)
 #' data(panc8_sub)
 #'
@@ -55,6 +56,7 @@
 #' rctd_cols <- grep("^RCTD_prop_", colnames(spatial@meta.data), value = TRUE)
 #' SpatialSpotPlot(spatial, group.by = rctd_cols[1:4])
 #' SpatialSpotPlot(spatial, group.by = rctd_cols, plot_type = "pie")
+#' }
 RunRCTD <- function(
   srt,
   reference,
