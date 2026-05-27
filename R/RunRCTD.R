@@ -42,20 +42,63 @@
 #'
 #' @examples
 #' \dontrun{
+#' library(scop)
+#'
 #' data(visium_human_pancreas_sub)
 #' data(panc8_sub)
 #'
+#' drop_celltypes <- c(
+#'   "epsilon",
+#'   "macrophage",
+#'   "mast",
+#'   "quiescent-stellate",
+#'   "schwann"
+#' )
+#'
+#' panc8_rctd <- subset(
+#'   panc8_sub,
+#'   subset = !celltype %in% drop_celltypes
+#' )
+#'
+#' table(panc8_sub$celltype)
+#' table(panc8_rctd$celltype)
+#'
 #' spatial <- RunRCTD(
-#'   visium_human_pancreas_sub,
-#'   reference = panc8_sub,
+#'   srt = visium_human_pancreas_sub,
+#'   reference = panc8_rctd,
 #'   reference_label = "celltype",
+#'   assay = "Spatial",
+#'   reference_assay = "RNA",
+#'   layer = "counts",
+#'   reference_layer = "counts",
 #'   rctd_mode = "full",
-#'   max_cores = 1
+#'   max_cores = 1,
+#'   prefix = "RCTD"
 #' )
 #'
 #' rctd_cols <- grep("^RCTD_prop_", colnames(spatial@meta.data), value = TRUE)
-#' SpatialSpotPlot(spatial, group.by = rctd_cols[1:4])
-#' SpatialSpotPlot(spatial, group.by = rctd_cols, plot_type = "pie")
+#' head(spatial@meta.data[, c("RCTD_dominant_type", "RCTD_max_prop", rctd_cols[1:3])])
+#'
+#' SpatialSpotPlot(
+#'   spatial,
+#'   group.by = "RCTD_dominant_type",
+#'   theme_use = "theme_scop"
+#' )
+#'
+#' SpatialSpotPlot(
+#'   spatial,
+#'   group.by = rctd_cols[1:min(4, length(rctd_cols))],
+#'   palette = "Spectral",
+#'   theme_use = "theme_scop"
+#' )
+#'
+#' SpatialSpotPlot(
+#'   spatial,
+#'   group.by = rctd_cols,
+#'   plot_type = "pie",
+#'   pie.radius.scale = 0.45,
+#'   theme_use = "theme_scop"
+#' )
 #' }
 RunRCTD <- function(
   srt,
