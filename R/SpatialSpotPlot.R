@@ -76,7 +76,7 @@ SpatialSpotPlot <- function(
   stroke = 0.1,
   jitter_width = 0.25,
   jitter_height = 0.25,
-  palette = ifelse(is.null(features), "Chinese", "Spectral"),
+  palette = "Spectral",
   palcolor = NULL,
   bg_color = "grey20",
   legend.position = "right",
