@@ -648,7 +648,7 @@ rctd_run_spacexr <- function(
   create_rctd_params,
   run_rctd_params
 ) {
-  check_r("spacexr", verbose = FALSE)
+  rctd_require_namespaces("spacexr")
   ns <- getNamespace("spacexr")
   has_new_api <- exists("createRctd", envir = ns, inherits = FALSE) &&
     exists("runRctd", envir = ns, inherits = FALSE)
@@ -708,7 +708,7 @@ rctd_run_spacexr_new <- function(
   create_rctd_params,
   run_rctd_params
 ) {
-  check_r(c("SpatialExperiment", "SummarizedExperiment", "S4Vectors"), verbose = FALSE)
+  rctd_require_namespaces(c("SpatialExperiment", "SummarizedExperiment", "S4Vectors"))
   spatial_coldata <- S4Vectors::DataFrame(nUMI = st_numi)
   rownames(spatial_coldata) <- colnames(st_counts)
   reference_coldata <- S4Vectors::DataFrame(cell_type = ref_labels, nUMI = ref_numi)
@@ -745,6 +745,17 @@ rctd_run_spacexr_new <- function(
     metadata = metadata,
     object = result
   )
+}
+
+rctd_require_namespaces <- function(pkgs) {
+  available <- vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)
+  if (!all(available)) {
+    log_message(
+      "Please install required package(s) before running {.fn RunRCTD}: {.val {paste(pkgs[!available], collapse = ', ')}}",
+      message_type = "error"
+    )
+  }
+  invisible(TRUE)
 }
 
 rctd_run_spacexr_old <- function(
