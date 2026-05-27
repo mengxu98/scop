@@ -5,10 +5,11 @@
 #' using a single-cell `Seurat` reference and `spacexr` RCTD.
 #'
 #' @md
-#' @inheritParams standard_scop
 #' @inheritParams thisutils::log_message
+#' @param srt Spatial `Seurat` object used as the RCTD query.
 #' @param reference Reference `Seurat` object containing annotated single cells.
 #' @param reference_label Metadata column in `reference` with cell type labels.
+#' @param assay Assay used in `srt`. If `NULL`, the default assay is used.
 #' @param reference_assay Assay used in `reference`.
 #' @param layer,reference_layer Assay layers used for spatial and reference
 #' raw counts.
@@ -35,7 +36,8 @@
 #' @param ... Additional parameters passed to the RCTD run step.
 #'
 #' @return A `Seurat` object with RCTD proportion columns in metadata and
-#' detailed results stored in `srt@tools[["RCTD"]]`.
+#' dominant cell type summaries. When `store_results = TRUE`, detailed results
+#' are also stored in `srt@tools[["RCTD"]]`.
 #' @export
 #'
 #' @examples
