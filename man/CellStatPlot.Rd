@@ -19,6 +19,8 @@ CellStatPlot(
   stat_level = NULL,
   plot_type = c("bar", "rose", "ring", "pie", "trend", "trend_alluvial", "area", "dot",
     "sankey", "chord", "venn", "upset"),
+  venn_engine = c("ggVennDiagram", "venny"),
+  venn_args = list(),
   stat_type = c("percent", "count"),
   position = c("stack", "dodge"),
   palette = "Chinese",
@@ -90,6 +92,17 @@ Default is \code{NULL}.}
 Can be one of \code{"bar"}, \code{"rose"}, \code{"ring"}, \code{"pie"}, \code{"trend"},
 \code{"trend_alluvial"}, \code{"area"}, \code{"dot"}, \code{"sankey"}, \code{"chord"},
 \code{"venn"}, or \code{"upset"}.}
+
+\item{venn_engine}{The engine used when \code{plot_type = "venn"}.
+Can be one of \code{"ggVennDiagram"} or \code{"venny"}.
+Default is \code{"ggVennDiagram"}.
+The \code{"venny"} engine supports 2 to 4 sets.}
+
+\item{venn_args}{A list of additional arguments passed to
+\link[venny:venny]{venny::venny()} when \code{plot_type = "venn"} and
+\code{venn_engine = "venny"}.
+The \code{data} argument is generated internally by \link[thisplot:StatPlot]{thisplot::StatPlot()}
+and cannot be supplied here.}
 
 \item{stat_type}{The type of statistic to compute for the plot.
 Can be one of \code{"percent"} or \code{"count"}.}

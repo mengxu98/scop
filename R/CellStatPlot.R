@@ -13,6 +13,15 @@
 #' Can be one of `"bar"`, `"rose"`, `"ring"`, `"pie"`, `"trend"`,
 #' `"trend_alluvial"`, `"area"`, `"dot"`, `"sankey"`, `"chord"`,
 #' `"venn"`, or `"upset"`.
+#' @param venn_engine The engine used when `plot_type = "venn"`.
+#' Can be one of `"ggVennDiagram"` or `"venny"`.
+#' Default is `"ggVennDiagram"`.
+#' The `"venny"` engine supports 2 to 4 sets.
+#' @param venn_args A list of additional arguments passed to
+#' [venny::venny()] when `plot_type = "venn"` and
+#' `venn_engine = "venny"`.
+#' The `data` argument is generated internally by [thisplot::StatPlot()]
+#' and cannot be supplied here.
 #' @param position The position adjustment for the plot.
 #' Can be one of `"stack"` or `"dodge"`.
 #' @param label Whether to add labels on the plot.
@@ -316,6 +325,8 @@ CellStatPlot <- function(
       "venn",
       "upset"
     ),
+    venn_engine = c("ggVennDiagram", "venny"),
+    venn_args = list(),
     stat_type = c("percent", "count"),
     position = c("stack", "dodge"),
     palette = "Chinese",
@@ -354,12 +365,17 @@ CellStatPlot <- function(
     theme_use <- "theme_this"
   }
   plot_type <- match.arg(plot_type)
+  venn_engine <- match.arg(venn_engine)
   stat_type <- match.arg(stat_type)
   position <- match.arg(position)
   check_r("geomtextpath", verbose = FALSE)
 
   if (identical(plot_type, "venn")) {
-    check_r("ggVennDiagram", verbose = FALSE)
+    if (identical(venn_engine, "venny")) {
+      check_r("venny", verbose = FALSE)
+    } else {
+      check_r("ggVennDiagram", verbose = FALSE)
+    }
   }
   if (identical(plot_type, "upset")) {
     check_r("ggupset", verbose = FALSE)
@@ -377,6 +393,8 @@ CellStatPlot <- function(
     individual = individual,
     stat_level = stat_level,
     plot_type = plot_type,
+    venn_engine = venn_engine,
+    venn_args = venn_args,
     stat_type = stat_type,
     position = position,
     palette = palette,
