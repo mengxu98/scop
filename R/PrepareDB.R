@@ -15,6 +15,8 @@
 #' "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa",
 #' "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB",
 #' "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF", "CytoTRACE2"`.
+#' MSigDB subcollections can be requested as `"MSigDB_<collection>"`, such as
+#' `"MSigDB_H"` for human Hallmark and `"MSigDB_MH"` for mouse Hallmark.
 #' Note: `"CytoTRACE2"` is species-independent and downloads pre-trained model data
 #' required by [RunCytoTRACE].
 #' @param db_IDtypes A character vector specifying the desired ID types to be used for gene identifiers in the gene annotation databases.
@@ -370,6 +372,9 @@ PrepareDB <- function(
     }
 
     db_species <- stats::setNames(object = rep(sps, length(db)), nm = db)
+    if (any(grepl("^MSigDB($|_)", db)) && !"MSigDB" %in% names(db_species)) {
+      db_species["MSigDB"] <- sps
+    }
 
     sp <- unlist(strsplit(sps, split = "_"))
     org_sp <- paste0(
@@ -2309,7 +2314,7 @@ PrepareDB <- function(
 
         ## MSigDB -----------------
         if (
-          any(grepl("MSigDB", db)) && (!"MSigDB" %in% names(db_list[[sps]]))
+          any(grepl("^MSigDB($|_)", db)) && (!"MSigDB" %in% names(db_list[[sps]]))
         ) {
           if (!sps %in% c("Homo_sapiens", "Mus_musculus")) {
             if (isTRUE(convert_species)) {
@@ -2335,11 +2340,18 @@ PrepareDB <- function(
           )
           version <- readLines(temp)
           version <- version[grep("alt=\"\\[DIR\\]\"", version)]
+          msigdb_release_species <- switch(db_species[["MSigDB"]],
+            "Homo_sapiens" = "Hs",
+            "Mus_musculus" = "Mm"
+          )
+          if (is.null(msigdb_release_species)) {
+            log_message(
+              "{.pkg MSigDB} database only support {.val {c('Homo_sapiens', 'Mus_musculus')}}. Consider setting {.arg convert_species=TRUE}",
+              message_type = "error"
+            )
+          }
           version <- version[grep(
-            switch(db_species["MSigDB"],
-              "Homo_sapiens" = "Hs",
-              "Mus_musculus" = "Mm"
-            ),
+            msigdb_release_species,
             version
           )]
           version <- version[length(version)]
