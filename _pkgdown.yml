@@ -150,6 +150,7 @@ reference:
 - contents:
   - RunBayesSpace
   - RunCytoSPACE
+  - RunRCTD
 
 - subtitle: "Spatial Visualization"
 - contents:

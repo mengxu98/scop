@@ -9,6 +9,9 @@
 #' @param layer Assay layer used for `features`.
 #' @param values Optional vector, matrix, or data.frame with spot-level values.
 #' Row names or vector names must match spatial spot names.
+#' @param plot_type Plot type. `"point"` keeps the default spot plot behavior.
+#' `"pie"` draws spot-level pies from numeric metadata columns supplied to
+#' `group.by` or from a numeric matrix/data.frame supplied to `values`.
 #' @param plot.data Optional long-format data.frame for plotting repeated
 #' spatial points, such as cell-to-spot assignments.
 #' @param spot.by Column in `plot.data` containing spot names.
@@ -22,6 +25,9 @@
 #' @param coord.cols Metadata coordinate columns used when no image is available.
 #' @param flip.y Whether to reverse the y axis for metadata coordinates.
 #' @param pt.size Point size.
+#' @param pie.radius,pie.radius.scale Radius controls for `plot_type = "pie"`.
+#' If `pie.radius` is `NULL`, the radius is estimated from spot spacing and
+#' multiplied by `pie.radius.scale`.
 #' @param pt.alpha Point alpha.
 #' @param stroke Point border width.
 #' @param bg_color Point border color.
@@ -49,6 +55,7 @@ SpatialSpotPlot <- function(
   assay = NULL,
   layer = "data",
   values = NULL,
+  plot_type = c("point", "pie"),
   plot.data = NULL,
   spot.by = NULL,
   color.by = NULL,
@@ -63,11 +70,13 @@ SpatialSpotPlot <- function(
   cells = NULL,
   show_na = FALSE,
   pt.size = NULL,
+  pie.radius = NULL,
+  pie.radius.scale = 0.45,
   pt.alpha = 0.9,
   stroke = 0.1,
   jitter_width = 0.25,
   jitter_height = 0.25,
-  palette = ifelse(is.null(features), "Chinese", "Spectral"),
+  palette = "Spectral",
   palcolor = NULL,
   bg_color = "grey20",
   legend.position = "right",
@@ -86,8 +95,15 @@ SpatialSpotPlot <- function(
       message_type = "error"
     )
   }
+  plot_type <- match.arg(plot_type)
   geom <- match.arg(geom)
   if (!is.null(plot.data)) {
+    if (!identical(plot_type, "point")) {
+      log_message(
+        "{.arg plot.data} is only supported when {.arg plot_type = 'point'}",
+        message_type = "error"
+      )
+    }
     return(spatial_dim_long_plot(
       srt = srt,
       plot.data = plot.data,
@@ -119,6 +135,32 @@ SpatialSpotPlot <- function(
       nrow = nrow,
       ncol = ncol,
       byrow = byrow
+    ))
+  }
+  if (identical(plot_type, "pie")) {
+    return(spatial_dim_pie_plot(
+      srt = srt,
+      group.by = group.by,
+      values = values,
+      image = image,
+      overlay_image = overlay_image,
+      image.alpha = image.alpha,
+      crop = crop,
+      coord.cols = coord.cols,
+      flip.y = flip.y,
+      split.by = split.by,
+      cells = cells,
+      pie.radius = pie.radius,
+      pie.radius.scale = pie.radius.scale,
+      pt.alpha = pt.alpha,
+      palette = palette,
+      palcolor = palcolor,
+      bg_color = bg_color,
+      legend.position = legend.position,
+      legend.direction = legend.direction,
+      legend.title = legend.title,
+      theme_use = theme_use,
+      theme_args = theme_args
     ))
   }
   if (is.null(group.by) && is.null(features) && is.null(values)) {
@@ -392,6 +434,241 @@ spatial_dim_long_plot <- function(
     p <- p + ggplot2::coord_equal()
   }
   p
+}
+
+spatial_dim_pie_plot <- function(
+  srt,
+  group.by = NULL,
+  values = NULL,
+  image = NULL,
+  overlay_image = TRUE,
+  image.alpha = 1,
+  crop = TRUE,
+  coord.cols = c("col", "row"),
+  flip.y = TRUE,
+  split.by = NULL,
+  cells = NULL,
+  pie.radius = NULL,
+  pie.radius.scale = 0.45,
+  pt.alpha = 0.9,
+  palette = "Chinese",
+  palcolor = NULL,
+  bg_color = "grey20",
+  legend.position = "right",
+  legend.direction = "vertical",
+  legend.title = NULL,
+  theme_use = "theme_blank",
+  theme_args = list()
+) {
+  check_r("scatterpie", verbose = FALSE)
+  coords <- spatial_dim_coords(
+    srt = srt,
+    image = image,
+    coord.cols = coord.cols,
+    overlay_image = overlay_image
+  )
+  dat <- coords$data
+  if (!is.null(cells)) {
+    dat <- dat[intersect(rownames(dat), cells), , drop = FALSE]
+  }
+  if (nrow(dat) == 0L) {
+    log_message("No spots are available for plotting", message_type = "error")
+  }
+
+  mat <- spatial_dim_pie_values(
+    srt = srt,
+    group.by = group.by,
+    values = values,
+    cells = rownames(dat)
+  )
+  mat[!is.finite(mat) | mat < 0] <- 0
+  keep <- rowSums(mat, na.rm = TRUE) > 0
+  dat <- dat[keep, , drop = FALSE]
+  mat <- mat[keep, , drop = FALSE]
+  if (nrow(dat) == 0L) {
+    log_message(
+      "No spots with positive pie values are available for plotting",
+      message_type = "error"
+    )
+  }
+  mat <- sweep(mat, 1, rowSums(mat), "/")
+  plot_dat <- cbind(dat, as.data.frame(mat, check.names = FALSE))
+
+  if (!is.null(split.by)) {
+    if (!split.by %in% colnames(srt@meta.data)) {
+      log_message(
+        "{.arg split.by} {.val {split.by}} is not in srt meta.data",
+        message_type = "error"
+      )
+    }
+    plot_dat[[split.by]] <- srt@meta.data[rownames(plot_dat), split.by, drop = TRUE]
+  }
+
+  plot_dat[[".radius"]] <- spatial_dim_pie_radius(
+    coords = plot_dat[, c("x", "y"), drop = FALSE],
+    radius = pie.radius,
+    scale = pie.radius.scale
+  )
+  cols <- palette_colors(
+    colnames(mat),
+    palette = palette,
+    palcolor = palcolor
+  )
+  theme_obj <- spatial_dim_drop_coord(do.call(theme_use, theme_args))
+  p <- ggplot2::ggplot(plot_dat, ggplot2::aes(x = x, y = y))
+  if (isTRUE(overlay_image) && !is.null(coords$image)) {
+    p <- p +
+      ggplot2::annotation_raster(
+        spatial_dim_raster(coords$image$image, image.alpha),
+        xmin = 0,
+        xmax = coords$image$width,
+        ymin = 0,
+        ymax = coords$image$height
+      )
+  }
+  p <- p +
+    scatterpie::geom_scatterpie(
+      ggplot2::aes(x = x, y = y, r = .data[[".radius"]]),
+      cols = colnames(mat),
+      color = bg_color,
+      alpha = pt.alpha
+    ) +
+    ggplot2::scale_fill_manual(values = cols) +
+    ggplot2::labs(x = NULL, y = NULL, fill = legend.title %||% "Proportion") +
+    ggplot2::theme(
+      legend.position = legend.position,
+      legend.direction = legend.direction
+    ) +
+    theme_obj
+
+  if (isTRUE(flip.y) && isFALSE(coords$uses_image)) {
+    p <- p + ggplot2::scale_y_reverse()
+  }
+  if (!is.null(split.by)) {
+    p <- p + ggplot2::facet_wrap(stats::as.formula(paste("~", split.by)))
+  }
+  if (isTRUE(crop)) {
+    radius_max <- max(plot_dat[[".radius"]], na.rm = TRUE)
+    xpad <- max(diff(range(plot_dat$x, na.rm = TRUE)) * 0.04, radius_max)
+    ypad <- max(diff(range(plot_dat$y, na.rm = TRUE)) * 0.04, radius_max)
+    p <- p +
+      ggplot2::coord_equal(
+        xlim = range(plot_dat$x, na.rm = TRUE) + c(-xpad, xpad),
+        ylim = range(plot_dat$y, na.rm = TRUE) + c(-ypad, ypad)
+      )
+  } else {
+    p <- p + ggplot2::coord_equal()
+  }
+  p
+}
+
+spatial_dim_pie_values <- function(srt, group.by = NULL, values = NULL, cells) {
+  if (!is.null(values)) {
+    if (is.atomic(values) && is.null(dim(values))) {
+      log_message(
+        "{.arg values} must be a numeric matrix/data.frame for {.arg plot_type = 'pie'}",
+        message_type = "error"
+      )
+    }
+    mat <- as.data.frame(values, check.names = FALSE)
+    if (is.null(rownames(mat)) || !any(cells %in% rownames(mat))) {
+      log_message(
+        "{.arg values} row names must match spatial spot names",
+        message_type = "error"
+      )
+    }
+    mat <- mat[cells, , drop = FALSE]
+  } else {
+    if (is.null(group.by) || length(group.by) == 0L) {
+      log_message(
+        "{.arg group.by} or {.arg values} must be provided for {.arg plot_type = 'pie'}",
+        message_type = "error"
+      )
+    }
+    missing_cols <- setdiff(group.by, colnames(srt@meta.data))
+    if (length(missing_cols) > 0L) {
+      log_message(
+        "{.arg group.by} columns are not in srt meta.data: {.val {missing_cols}}",
+        message_type = "error"
+      )
+    }
+    mat <- srt@meta.data[cells, group.by, drop = FALSE]
+  }
+  if (ncol(mat) == 0L) {
+    log_message(
+      "Pie plotting requires at least one numeric column",
+      message_type = "error"
+    )
+  }
+  is_numeric <- vapply(mat, is.numeric, logical(1))
+  if (!all(is_numeric)) {
+    log_message(
+      "All pie columns must be numeric",
+      message_type = "error"
+    )
+  }
+  as.matrix(mat)
+}
+
+spatial_dim_pie_radius <- function(coords, radius = NULL, scale = 0.45) {
+  if (
+    length(scale) != 1L ||
+      !is.numeric(scale) ||
+      is.na(scale) ||
+      scale <= 0
+  ) {
+    log_message(
+      "{.arg pie.radius.scale} must be a single positive number",
+      message_type = "error"
+    )
+  }
+  if (!is.null(radius)) {
+    if (!is.numeric(radius)) {
+      log_message(
+        "{.arg pie.radius} must be numeric",
+        message_type = "error"
+      )
+    }
+    if (length(radius) == 1L) {
+      radius <- rep(radius, nrow(coords))
+      spatial_dim_validate_pie_radius(radius)
+      return(radius)
+    }
+    if (!is.null(names(radius))) {
+      radius <- as.numeric(radius[rownames(coords)])
+      spatial_dim_validate_pie_radius(radius)
+      return(radius)
+    }
+    if (length(radius) != nrow(coords)) {
+      log_message(
+        "{.arg pie.radius} must have length 1 or one value per spot",
+        message_type = "error"
+      )
+    }
+    spatial_dim_validate_pie_radius(radius)
+    return(radius)
+  }
+  x <- sort(unique(coords$x[is.finite(coords$x)]))
+  y <- sort(unique(coords$y[is.finite(coords$y)]))
+  dx <- diff(x)
+  dy <- diff(y)
+  steps <- c(dx[dx > 0], dy[dy > 0])
+  step <- suppressWarnings(stats::median(steps, na.rm = TRUE))
+  if (!is.finite(step) || step <= 0) {
+    xrange <- diff(range(coords$x, na.rm = TRUE))
+    yrange <- diff(range(coords$y, na.rm = TRUE))
+    step <- max(xrange, yrange, 1, na.rm = TRUE) / sqrt(max(nrow(coords), 1))
+  }
+  rep(step * scale, nrow(coords))
+}
+
+spatial_dim_validate_pie_radius <- function(radius) {
+  if (any(!is.finite(radius) | radius <= 0)) {
+    log_message(
+      "{.arg pie.radius} values must be finite positive numbers",
+      message_type = "error"
+    )
+  }
 }
 
 spatial_dim_coords <- function(
