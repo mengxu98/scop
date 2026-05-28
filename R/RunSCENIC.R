@@ -541,7 +541,11 @@ RunSCENIC <- function(
     label = "Converting SCENIC regulons",
     verbose = verbose
   )
-  if (isTRUE(grn_force) || !file.exists(gmt_file) || !file.exists(txt_file)) {
+  regulon_files_missing <- !file.exists(gmt_file) ||
+    isTRUE(file.info(gmt_file)$size == 0) ||
+    !file.exists(txt_file) ||
+    isTRUE(file.info(txt_file)$size == 0)
+  if (isTRUE(grn_force) || isTRUE(regulon_files_missing)) {
     functions$SCENICRegulonsToFiles(
       regulon_file = ctx_file,
       gmt_file = gmt_file,

@@ -4956,10 +4956,20 @@ def _scenic_find_executable(names):
             return found
 
     bin_dir = Path(sys.executable).resolve().parent
+    search_dirs = [bin_dir, bin_dir / "Scripts", bin_dir / "bin"]
+    windows_suffixes = ["", ".exe", ".bat", ".cmd", ".py"]
+    seen = set()
     for name in names:
-        candidate = bin_dir / name
-        if candidate.exists():
-            return str(candidate)
+        suffixes = [""] if Path(name).suffix else windows_suffixes
+        for directory in search_dirs:
+            for suffix in suffixes:
+                candidate = directory / (name + suffix)
+                key = str(candidate).lower()
+                if key in seen:
+                    continue
+                seen.add(key)
+                if candidate.exists():
+                    return str(candidate)
 
     raise FileNotFoundError("Cannot find executable: " + ", ".join(names))
 
@@ -4968,8 +4978,40 @@ def _scenic_backend_name():
     return "py" + "scenic"
 
 
+def _scenic_missing_or_empty(path):
+    path = Path(path)
+    return not path.exists() or path.stat().st_size == 0
+
+
+def _scenic_backend_command():
+    import sys
+    import tempfile
+    from textwrap import dedent
+
+    executable = _scenic_find_executable([_scenic_backend_name()])
+    if not sys.platform.startswith("win"):
+        return [executable]
+
+    wrapper = Path(tempfile.gettempdir()) / "scop_pyscenic_cli_wrapper.py"
+    wrapper.write_text(
+        dedent(
+            """
+            from multiprocessing import freeze_support
+            from pyscenic.cli.pyscenic import main
+
+            if __name__ == "__main__":
+                freeze_support()
+                main()
+            """
+        ).lstrip(),
+        encoding="utf-8",
+    )
+    return [sys.executable, str(wrapper)]
+
+
 def _scenic_run_command(cmd, verbose=True, label="SCENIC command"):
     import subprocess
+    import sys
 
     log_message(
         "Running %s" % label,
@@ -4980,9 +5022,15 @@ def _scenic_run_command(cmd, verbose=True, label="SCENIC command"):
         [str(x) for x in cmd],
         check=False,
         text=True,
-        stdout=None if verbose else subprocess.PIPE,
-        stderr=None if verbose else subprocess.PIPE,
+        encoding="utf-8",
+        errors="replace",
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
     )
+    if verbose and proc.stdout:
+        sys.stdout.write(proc.stdout)
+    if verbose and proc.stderr:
+        sys.stderr.write(proc.stderr)
     if proc.returncode != 0:
         details = ""
         if proc.stdout:
@@ -5046,13 +5094,18 @@ def RunSCENICGrn(
     adj_output = str(Path(adj_output).expanduser())
     Path(adj_output).parent.mkdir(parents=True, exist_ok=True)
 
-    if force or not Path(adj_output).exists():
+    if force or _scenic_missing_or_empty(adj_output):
         arboreto = _scenic_find_executable(
             ["arboreto_with_multiprocessing.py", "arboreto_with_multiprocessing"]
         )
+        arboreto_cmd = [arboreto]
+        if str(arboreto).lower().endswith(".py"):
+            import sys
+
+            arboreto_cmd = [sys.executable, arboreto]
         _scenic_run_command(
-            [
-                arboreto,
+            arboreto_cmd
+            + [
                 expression_mtx,
                 regulators,
                 "--method",
@@ -5094,11 +5147,12 @@ def RunSCENICCtx(
     ctx_output = str(Path(ctx_output).expanduser())
     Path(ctx_output).parent.mkdir(parents=True, exist_ok=True)
 
-    if force or not Path(ctx_output).exists():
-        scenic = _scenic_find_executable([_scenic_backend_name()])
+    if force or _scenic_missing_or_empty(ctx_output):
+        scenic_cmd = _scenic_backend_command()
+        ctx_workers = max(int(cores), len(ranking_dbs))
         _scenic_run_command(
-            [
-                scenic,
+            scenic_cmd
+            + [
                 "ctx",
                 adj_output,
                 *ranking_dbs,
@@ -5109,7 +5163,7 @@ def RunSCENICCtx(
                 "--output",
                 ctx_output,
                 "--num_workers",
-                int(cores),
+                ctx_workers,
             ],
             verbose=verbose,
             label="SCENIC cisTarget pruning",
@@ -5168,7 +5222,11 @@ def RunSCENICCli(
         verbose=verbose,
     )
 
-    if force or not Path(gmt_output).exists() or not Path(txt_output).exists():
+    if (
+        force
+        or _scenic_missing_or_empty(gmt_output)
+        or _scenic_missing_or_empty(txt_output)
+    ):
         SCENICRegulonsToFiles(
             ctx_output,
             gmt_output,
