@@ -42,20 +42,63 @@
 #'
 #' @examples
 #' \dontrun{
+#' library(scop)
+#'
 #' data(visium_human_pancreas_sub)
 #' data(panc8_sub)
 #'
+#' drop_celltypes <- c(
+#'   "epsilon",
+#'   "macrophage",
+#'   "mast",
+#'   "quiescent-stellate",
+#'   "schwann"
+#' )
+#'
+#' panc8_rctd <- subset(
+#'   panc8_sub,
+#'   subset = !celltype %in% drop_celltypes
+#' )
+#'
+#' table(panc8_sub$celltype)
+#' table(panc8_rctd$celltype)
+#'
 #' spatial <- RunRCTD(
-#'   visium_human_pancreas_sub,
-#'   reference = panc8_sub,
+#'   srt = visium_human_pancreas_sub,
+#'   reference = panc8_rctd,
 #'   reference_label = "celltype",
+#'   assay = "Spatial",
+#'   reference_assay = "RNA",
+#'   layer = "counts",
+#'   reference_layer = "counts",
 #'   rctd_mode = "full",
-#'   max_cores = 1
+#'   max_cores = 1,
+#'   prefix = "RCTD"
 #' )
 #'
 #' rctd_cols <- grep("^RCTD_prop_", colnames(spatial@meta.data), value = TRUE)
-#' SpatialSpotPlot(spatial, group.by = rctd_cols[1:4])
-#' SpatialSpotPlot(spatial, group.by = rctd_cols, plot_type = "pie")
+#' head(spatial@meta.data[, c("RCTD_dominant_type", "RCTD_max_prop", rctd_cols[1:3])])
+#'
+#' SpatialSpotPlot(
+#'   spatial,
+#'   group.by = "RCTD_dominant_type",
+#'   theme_use = "theme_scop"
+#' )
+#'
+#' SpatialSpotPlot(
+#'   spatial,
+#'   group.by = rctd_cols[1:min(4, length(rctd_cols))],
+#'   palette = "Spectral",
+#'   theme_use = "theme_scop"
+#' )
+#'
+#' SpatialSpotPlot(
+#'   spatial,
+#'   group.by = rctd_cols,
+#'   plot_type = "pie",
+#'   pie.radius.scale = 0.45,
+#'   theme_use = "theme_scop"
+#' )
 #' }
 RunRCTD <- function(
   srt,
@@ -605,7 +648,7 @@ rctd_run_spacexr <- function(
   create_rctd_params,
   run_rctd_params
 ) {
-  check_r("spacexr", verbose = FALSE)
+  rctd_require_namespaces("spacexr")
   ns <- getNamespace("spacexr")
   has_new_api <- exists("createRctd", envir = ns, inherits = FALSE) &&
     exists("runRctd", envir = ns, inherits = FALSE)
@@ -665,7 +708,7 @@ rctd_run_spacexr_new <- function(
   create_rctd_params,
   run_rctd_params
 ) {
-  check_r(c("SpatialExperiment", "SummarizedExperiment", "S4Vectors"), verbose = FALSE)
+  rctd_require_namespaces(c("SpatialExperiment", "SummarizedExperiment", "S4Vectors"))
   spatial_coldata <- S4Vectors::DataFrame(nUMI = st_numi)
   rownames(spatial_coldata) <- colnames(st_counts)
   reference_coldata <- S4Vectors::DataFrame(cell_type = ref_labels, nUMI = ref_numi)
@@ -702,6 +745,17 @@ rctd_run_spacexr_new <- function(
     metadata = metadata,
     object = result
   )
+}
+
+rctd_require_namespaces <- function(pkgs) {
+  available <- vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)
+  if (!all(available)) {
+    log_message(
+      "Please install required package(s) before running {.fn RunRCTD}: {.val {paste(pkgs[!available], collapse = ', ')}}",
+      message_type = "error"
+    )
+  }
+  invisible(TRUE)
 }
 
 rctd_run_spacexr_old <- function(
