@@ -38,7 +38,7 @@ Imports:
     Seurat,
     SeuratObject,
     SummarizedExperiment,
-    thisplot (>= 0.3.9),
+    thisplot (>= 0.4.0),
     thisutils (>= 0.4.5),
     uwot
 Suggests:
@@ -57,6 +57,7 @@ Suggests:
     ggpubr,
     ggupset,
     ggVennDiagram,
+    venny,
     ggridges,
     ggwordcloud,
     funkyheatmap,
