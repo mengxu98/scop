@@ -168,7 +168,7 @@ RunSCENIC <- function(
   motif_annotations <- normalizePath(motif_annotations, mustWork = TRUE)
   work_dir <- normalizePath(work_dir, mustWork = FALSE)
   dir.create(work_dir, recursive = TRUE, showWarnings = FALSE)
-  regulators_info <- scenic_prepare_gene_list_argument(
+  regulators_info <- scenic_prep_gene_arg(
     x = regulators,
     arg = "regulators",
     out_file = file.path(work_dir, paste0(prefix, "_regulators.txt")),
@@ -176,7 +176,7 @@ RunSCENIC <- function(
   )
   regulators <- regulators_info[["genes"]]
   regulators_file <- regulators_info[["file"]]
-  targets <- scenic_prepare_gene_list_argument(
+  targets <- scenic_prep_gene_arg(
     x = targets,
     arg = "targets",
     out_file = file.path(work_dir, paste0(prefix, "_targets.txt")),
@@ -510,7 +510,7 @@ RunSCENIC <- function(
     verbose = isTRUE(verbose)
   )
   if (!is.null(targets)) {
-    scenic_filter_adjacency_targets(
+    scenic_flt_adj(
       input_file = grn_adj_file,
       output_file = adj_file,
       targets = targets,
@@ -724,7 +724,7 @@ scenic_resolve_reference_data <- function(
         ,
         drop = FALSE
       ]
-      ranking_dbs <- scenic_download_reference_files(
+      ranking_dbs <- scenic_dl_refs(
         ranking_rows,
         reference_dir,
         verbose = verbose
@@ -736,7 +736,7 @@ scenic_resolve_reference_data <- function(
         ,
         drop = FALSE
       ]
-      motif_annotations <- scenic_download_reference_files(
+      motif_annotations <- scenic_dl_refs(
         motif_rows,
         reference_dir,
         verbose = verbose
@@ -748,7 +748,7 @@ scenic_resolve_reference_data <- function(
         ,
         drop = FALSE
       ]
-      regulators <- scenic_download_reference_files(
+      regulators <- scenic_dl_refs(
         tf_rows,
         reference_dir,
         verbose = verbose
@@ -921,7 +921,7 @@ scenic_reference_dir <- function(data_dir = NULL, species_key) {
   normalizePath(data_dir, mustWork = FALSE)
 }
 
-scenic_download_reference_files <- function(
+scenic_dl_refs <- function(
   reference_files,
   reference_dir,
   verbose = TRUE
@@ -992,7 +992,7 @@ scenic_download_reference_file <- function(url, dest, verbose = TRUE) {
   normalizePath(dest, mustWork = TRUE)
 }
 
-scenic_prepare_gene_list_argument <- function(
+scenic_prep_gene_arg <- function(
   x,
   arg,
   out_file,
@@ -1067,7 +1067,7 @@ scenic_grn_inputs_changed <- function(params_file, params) {
   !identical(old_params, params)
 }
 
-scenic_filter_adjacency_targets <- function(
+scenic_flt_adj <- function(
   input_file,
   output_file,
   targets,
@@ -1156,7 +1156,7 @@ scenic_progress_close <- function(progress_state) {
   invisible(NULL)
 }
 
-scenic_default_target_metacells <- function(n_cells) {
+scenic_def_mc <- function(n_cells) {
   n_cells <- as.integer(n_cells)
   if (length(n_cells) != 1 || is.na(n_cells) || n_cells <= 0) {
     log_message(
@@ -1242,7 +1242,7 @@ scenic_resolution_summary <- function(
   do.call(rbind, summary_list)
 }
 
-scenic_select_metacell_resolution <- function(
+scenic_sel_mc_res <- function(
   resolution_summary,
   target_metacells
 ) {
@@ -1409,7 +1409,7 @@ scenic_build_metacell_counts <- function(
   auto_resolution <- is.null(metacell_resolution)
   if (isTRUE(auto_resolution)) {
     metacell_target <- metacell_target %||%
-      scenic_default_target_metacells(ncol(srt))
+      scenic_def_mc(ncol(srt))
     metacell_target <- max(1L, as.integer(metacell_target))
     metacell_resolution_candidates <- unique(as.numeric(
       metacell_resolution_candidates
@@ -1473,7 +1473,7 @@ scenic_build_metacell_counts <- function(
   )
 
   if (isTRUE(auto_resolution)) {
-    selection <- scenic_select_metacell_resolution(
+    selection <- scenic_sel_mc_res(
       resolution_summary = resolution_summary,
       target_metacells = metacell_target
     )

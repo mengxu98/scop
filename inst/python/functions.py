@@ -5035,38 +5035,36 @@ def RunSCENICGrn(
     expression_mtx,
     regulators,
     adj_output,
+    n_rounds=5000,
     cores=1,
     seed=1234,
     force=False,
     verbose=True,
 ):
-    """Run GRNBoost2 with arboreto multiprocessing."""
+    """Run GRNBoost2 via arboreto Python API."""
     expression_mtx = str(Path(expression_mtx).expanduser())
     regulators = str(Path(regulators).expanduser())
     adj_output = str(Path(adj_output).expanduser())
     Path(adj_output).parent.mkdir(parents=True, exist_ok=True)
 
     if force or not Path(adj_output).exists():
-        arboreto = _scenic_find_executable(
-            ["arboreto_with_multiprocessing.py", "arboreto_with_multiprocessing"]
-        )
-        _scenic_run_command(
-            [
-                arboreto,
-                expression_mtx,
-                regulators,
-                "--method",
-                "grnboost2",
-                "--output",
-                adj_output,
-                "--num_workers",
-                int(cores),
-                "--seed",
-                int(seed),
-            ],
+        import pandas as pd
+        from arboreto.algo import grnboost2, SGBM_KWARGS
+
+        SGBM_KWARGS["n_estimators"] = int(n_rounds)
+
+        data = pd.read_csv(expression_mtx, index_col=0)
+        with open(regulators) as f:
+            tf_names = [line.strip() for line in f if line.strip()]
+
+        network = grnboost2(
+            expression_data=data,
+            tf_names=tf_names,
+            client_or_address="local",
+            seed=int(seed),
             verbose=verbose,
-            label="GRNBoost2",
         )
+        network.to_csv(adj_output, sep="\t", index=False)
     else:
         log_message(
             "Reusing existing GRNBoost2 output",
@@ -5074,6 +5072,243 @@ def RunSCENICGrn(
         )
 
     return {"adj_output": adj_output}
+
+
+def RunSCENICRegDiffusion(
+    expression_mtx,
+    regulators,
+    adj_output,
+    force=False,
+    verbose=True,
+    **kwargs,
+):
+    """Run official RegDiffusion and export a SCENIC-compatible edge list."""
+    expression_mtx = str(Path(expression_mtx).expanduser())
+    regulators = str(Path(regulators).expanduser())
+    adj_output = str(Path(adj_output).expanduser())
+    Path(adj_output).parent.mkdir(parents=True, exist_ok=True)
+
+    if not force and Path(adj_output).exists():
+        log_message(
+            "Reusing existing RegDiffusion output",
+            verbose=verbose,
+        )
+        return {"adj_output": adj_output}
+
+    import numpy as np
+    import pandas as pd
+
+    try:
+        import regdiffusion as rd
+    except ImportError as exc:
+        raise ImportError(
+            "RegDiffusion is required for grn_method='regdiffusion'. "
+            "Install it in the SCENIC Python environment or run "
+            "PrepareEnv(modules = c('scenic', 'regdiffusion'))."
+        ) from exc
+
+    expr = pd.read_csv(expression_mtx, index_col=0)
+    gene_names = list(expr.columns)
+    with open(regulators, "r") as handle:
+        tf_names = [line.strip() for line in handle if line.strip()]
+    tf_set = set(tf_names)
+
+    x_matrix = np.asarray(expr.values, dtype=np.float32)
+    top_gene_percentile = int(kwargs.pop("top_gene_percentile", 50))
+    workers = int(kwargs.pop("workers", 1))
+    for int_key in (
+        "n_steps",
+        "T",
+        "train_batch_size",
+        "eval_on_n_steps",
+        "hidden_dims",
+        "time_dim",
+        "celltype_dim",
+    ):
+        if int_key in kwargs and int_key != "hidden_dims":
+            kwargs[int_key] = int(kwargs[int_key])
+    if "hidden_dims" in kwargs:
+        kwargs["hidden_dims"] = [int(value) for value in kwargs["hidden_dims"]]
+    trainer = rd.RegDiffusionTrainer(x_matrix, **kwargs)
+    trainer.train()
+    try:
+        grn_obj = trainer.get_grn(
+            gene_names,
+            tf_names=tf_names,
+            top_gene_percentile=top_gene_percentile,
+        )
+        edges = grn_obj.extract_edgelist(k=-1, workers=workers)
+    except Exception:
+        grn_obj = trainer.get_grn(
+            gene_names,
+            top_gene_percentile=top_gene_percentile,
+        )
+        edges = grn_obj.extract_edgelist(k=-1, workers=workers)
+    edges.columns = ["TF", "target", "importance"]
+    edges = edges[edges["TF"].isin(tf_set)]
+    edges.to_csv(adj_output, sep="\t", index=False)
+    return {"adj_output": adj_output}
+
+
+def ExtractSCENICPlusTables(scplus_object, output_dir, verbose=True):
+    """Extract common official SCENIC+ result tables to a standardized folder."""
+    import pickle
+    import pandas as pd
+
+    scplus_object = Path(str(scplus_object)).expanduser()
+    output_dir = Path(str(output_dir)).expanduser()
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    with open(scplus_object, "rb") as handle:
+        obj = pickle.load(handle)
+
+    def _get(container, key):
+        if container is None:
+            return None
+        if isinstance(container, dict):
+            return container.get(key)
+        if hasattr(container, key):
+            return getattr(container, key)
+        try:
+            return container[key]
+        except Exception:
+            return None
+
+    uns = _get(obj, "uns")
+    def _first_value(*values):
+        for value in values:
+            if value is not None:
+                return value
+        return None
+
+    metadata = _first_value(
+        _get(uns, "eRegulon_metadata_filtered"),
+        _get(uns, "eRegulon_metadata"),
+        _get(obj, "eRegulon_metadata"),
+    )
+    auc = _first_value(
+        _get(uns, "eRegulon_AUC"),
+        _get(uns, "eRegulon_AUC_filtered"),
+        _get(obj, "eRegulon_AUC"),
+    )
+
+    if metadata is None:
+        raise ValueError(
+            "Could not find eRegulon metadata in the SCENIC+ object. "
+            "Export official tables manually to python_result_dir instead."
+        )
+    metadata = pd.DataFrame(metadata)
+    if metadata.empty:
+        raise ValueError("SCENIC+ eRegulon metadata is empty.")
+
+    def _first_existing(columns):
+        for col in columns:
+            if col in metadata.columns:
+                return col
+        return None
+
+    tf_col = _first_existing(["TF", "tf", "transcription_factor", "Gene_signature_name"])
+    gene_col = _first_existing(["Gene", "gene", "target", "Target"])
+    region_col = _first_existing(["Region", "region", "region_name", "peak"])
+    tf2g_score_col = _first_existing([
+        "TF2G_importance",
+        "TF2G_importance_x_abs_rho",
+        "TF2G_importance_x_rho",
+        "TF2G_rho",
+        "importance",
+        "score",
+    ])
+    r2g_score_col = _first_existing([
+        "R2G_importance_x_abs_rho",
+        "R2G_importance",
+        "R2G_importance_x_rho",
+        "R2G_rho",
+        "rho",
+        "importance",
+        "score",
+    ])
+    if tf_col is None:
+        raise ValueError("SCENIC+ eRegulon metadata has no recognizable TF column.")
+
+    def _dedupe_score(df, keys, score_col, out_score_col):
+        if score_col is not None and score_col in df.columns:
+            tmp = df[list(keys) + [score_col]].dropna().copy()
+            tmp[score_col] = pd.to_numeric(tmp[score_col], errors="coerce")
+            tmp = tmp.dropna(subset=[score_col])
+            if not tmp.empty:
+                tmp = tmp.groupby(list(keys), as_index=False)[score_col].max()
+                tmp = tmp.rename(columns={score_col: out_score_col})
+                return tmp
+        tmp = df[list(keys)].dropna().drop_duplicates().copy()
+        tmp[out_score_col] = 1.0
+        return tmp
+
+    if gene_col is not None:
+        tf_gene = _dedupe_score(metadata, [tf_col, gene_col], tf2g_score_col, "importance")
+        tf_gene = tf_gene.rename(columns={tf_col: "TF", gene_col: "target"})
+        tf_gene.to_csv(output_dir / "tf_gene.tsv", sep="\t", index=False)
+    if region_col is not None and gene_col is not None:
+        region_gene = _dedupe_score(metadata, [region_col, gene_col], r2g_score_col, "score")
+        region_gene = region_gene.rename(columns={region_col: "region", gene_col: "gene"})
+        region_gene.to_csv(output_dir / "region_gene.tsv", sep="\t", index=False)
+    if region_col is not None:
+        tf_region = metadata[[tf_col, region_col]].dropna().drop_duplicates()
+        tf_region.columns = ["TF", "region"]
+        tf_region["score"] = 1.0
+        tf_region.to_csv(output_dir / "tf_region.tsv", sep="\t", index=False)
+    if region_col is not None and gene_col is not None:
+        triplets = _dedupe_score(metadata, [tf_col, region_col, gene_col], r2g_score_col, "score")
+        triplets = triplets.rename(columns={tf_col: "TF", region_col: "region", gene_col: "gene"})
+        triplets.to_csv(output_dir / "triplets.tsv", sep="\t", index=False)
+
+    if auc is None:
+        raise ValueError(
+            "Could not find eRegulon AUC in the SCENIC+ object. "
+            "Export auc.tsv manually to python_result_dir instead."
+        )
+    if isinstance(auc, dict):
+        auc = _first_value(
+            auc.get("Gene_based"),
+            auc.get("Region_based"),
+            next(iter(auc.values())) if len(auc) > 0 else None,
+        )
+    if hasattr(auc, "to_pandas"):
+        auc = auc.to_pandas()
+    auc = pd.DataFrame(auc)
+    auc.to_csv(output_dir / "auc.tsv", sep="\t")
+
+    regulon_col = _first_existing(["eRegulon_name", "Regulon", "regulon", "Gene_signature_name"])
+    if regulon_col is not None:
+        if gene_col is not None:
+            eregulons = (
+                metadata[[regulon_col, gene_col]]
+                .dropna()
+                .drop_duplicates()
+                .rename(columns={regulon_col: "regulon", gene_col: "target"})
+            )
+            counts = eregulons.groupby("regulon")["target"].nunique().reset_index()
+            counts.columns = ["regulon", "target_count"]
+            eregulons = eregulons.merge(counts, on="regulon", how="left")
+        else:
+            eregulons = metadata[[regulon_col]].dropna().drop_duplicates()
+            eregulons.columns = ["regulon"]
+            eregulons["target_count"] = None
+        eregulons.to_csv(output_dir / "eregulons.tsv", sep="\t", index=False)
+
+    required = ["tf_gene.tsv", "region_gene.tsv", "tf_region.tsv", "triplets.tsv", "auc.tsv"]
+    missing = [name for name in required if not (output_dir / name).exists()]
+    if missing:
+        raise ValueError(
+            "Could not extract required SCENIC+ table(s): "
+            + ", ".join(missing)
+            + ". Export official tables manually to python_result_dir."
+        )
+    log_message(
+        "Exported SCENIC+ standardized tables to {.val {%s}}" % output_dir,
+        message_type="success",
+        verbose=verbose,
+    )
+    return {"output_dir": str(output_dir)}
 
 
 def RunSCENICCtx(

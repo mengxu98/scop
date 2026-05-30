@@ -53,9 +53,10 @@ PrepareEnv <- function(
 ) {
   modules <- normalize_env_modules(modules = modules)
   if ("scenic" %in% modules) {
-    if (length(modules) > 1) {
+    scenic_allowed <- c("scenic", "regdiffusion")
+    if (length(setdiff(modules, scenic_allowed)) > 0) {
       log_message(
-        "{.arg modules = 'scenic'} must be prepared as a standalone environment. Run {.code PrepareEnv(envname = 'scenic_env', modules = 'scenic')}.",
+        "{.arg modules = 'scenic'} must be prepared as a standalone environment, optionally with {.val regdiffusion}. Run {.code PrepareEnv(envname = 'scenic_env', modules = c('scenic', 'regdiffusion'))}.",
         message_type = "error"
       )
     }
@@ -392,12 +393,14 @@ supported_env_modules <- function() {
     "trimap",
     "multimap",
     "scomm",
-    "scenic"
+    "scenic",
+    "regdiffusion",
+    "scenicplus"
   )
 }
 
 default_env_modules <- function() {
-  excluded <- c("sccoda", "scomm", "scenic")
+  excluded <- c("sccoda", "scomm", "scenic", "regdiffusion", "scenicplus")
   if (is_windows()) {
     excluded <- c(excluded, "scvi", "glue", "multimap")
   }
@@ -453,7 +456,9 @@ env_module_requirements <- function() {
     trimap = trimap_python_requirements(),
     multimap = multimap_python_requirements(),
     scomm = scomm_python_requirements(),
-    scenic = scenic_python_requirements()
+    scenic = scenic_python_requirements(),
+    regdiffusion = regdiffusion_python_requirements(),
+    scenicplus = scenicplus_python_requirements()
   )
 }
 
@@ -630,7 +635,9 @@ configure_linux_cpp_runtime <- function(env_path) {
 
   libgcc <- find_conda_shared_library(env_path, c("libgcc_s.so.1", "libgcc_s.so"))
   libstdcpp <- find_conda_shared_library(env_path, c("libstdc++.so.6", "libstdc++.so"))
-  runtime_libs <- c(libgcc, libstdcpp)
+  libcrypto <- find_conda_shared_library(env_path, c("libcrypto.so.3", "libcrypto.so"))
+  libssl <- find_conda_shared_library(env_path, c("libssl.so.3", "libssl.so"))
+  runtime_libs <- c(libcrypto, libssl, libgcc, libstdcpp)
   runtime_libs <- runtime_libs[nzchar(runtime_libs)]
   if (length(runtime_libs) == 0) {
     return(invisible(FALSE))
@@ -1216,16 +1223,17 @@ env_requirements <- function(
     include_optional = include_optional
   )
   if ("scenic" %in% modules) {
-    if (length(modules) > 1) {
+    scenic_allowed <- c("scenic", "regdiffusion")
+    if (length(setdiff(modules, scenic_allowed)) > 0) {
       log_message(
-        "{.arg modules = 'scenic'} must be used as a standalone environment module.",
+        "{.arg modules = 'scenic'} must be used as a standalone environment module, optionally with {.val regdiffusion}.",
         message_type = "error"
       )
     }
     version <- "3.10-1"
   }
 
-  base_requirements <- if (identical(modules, "scenic")) {
+  base_requirements <- if ("scenic" %in% modules) {
     scenic_core_python_requirements()
   } else {
     core_python_requirements()
@@ -1543,6 +1551,30 @@ scenic_python_requirements <- function() {
       "dask" = "pip",
       "distributed" = "pip",
       "pyarrow" = "pip"
+    ),
+    package_aliases = list()
+  )
+}
+
+regdiffusion_python_requirements <- function() {
+  list(
+    packages = c(
+      "regdiffusion" = "regdiffusion"
+    ),
+    install_methods = c(
+      "regdiffusion" = "pip"
+    ),
+    package_aliases = list()
+  )
+}
+
+scenicplus_python_requirements <- function() {
+  list(
+    packages = c(
+      "scenicplus" = "scenicplus @ git+https://github.com/aertslab/scenicplus.git"
+    ),
+    install_methods = c(
+      "scenicplus" = "pip"
     ),
     package_aliases = list()
   )
