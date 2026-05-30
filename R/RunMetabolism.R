@@ -7,6 +7,8 @@
 #' @param assay Assay to use as expression matrix. Default is `DefaultAssay(srt)`.
 #' @param layer Data layer to use, usually `"counts"` for count matrix.
 #' @param db Databases to use for metabolism pathways. One or both of `"KEGG"`, `"REACTOME"`.
+#' `"Reactome"` is also accepted and treated identically to `"REACTOME"`.
+#' When `use_preparedb = TRUE`, gene sets are built via [PrepareDB].
 #' @param method Scoring method, one of `"AUCell"`, `"GSVA"`, `"ssGSEA"`, `"VISION"`.
 #' @param backend Scoring backend. `"cpp"` is the default for supported methods.
 #' `"r"` uses the original R package implementation. `"cpp"` currently supports
@@ -15,6 +17,13 @@
 #' AUCell C++ scores may differ from the R backend when tied expression values
 #' are randomly ranked.
 #' @param cpp_strategy C++ AUCell ranking strategy. `"sparse"` ranks non-zero
+#' @param use_preparedb When `TRUE`, gene sets are built via [PrepareDB] which
+#' provides species-aware gene mapping via BioMart and KEGG/Reactome databases.
+#' This automatically handles gene symbol conversion for non-human species
+#' (e.g., `species = "Mus_musculus"` → mouse gene symbols in metabolism pathways).
+#' When `FALSE`, raw scMetabolism GMT files are
+#' downloaded and genes are matched case-insensitively with optional [GeneConvert]
+#' supplementation when `convert_species = TRUE`.
 #' genes and approximates zero ties, `"topk"` ranks only genes that can contribute
 #' to AUCell AUC, and `"full"` ranks all genes.
 #' @param cpp_chunk_size Optional cell chunk size for C++ GSVA kernels. `NULL`
@@ -25,6 +34,18 @@
 #' @param assay_name Name of the assay to store metabolism scores when `new_assay = TRUE`.
 #' Default is `"METABOLISM"`.
 #' @param new_assay Whether to create a new assay for metabolism scores when `group.by = NULL`. Default is `TRUE`.
+#' @param species Species of the input data. The scMetabolism gene sets contain human
+#' gene symbols. When `species` is not `"Homo_sapiens"` and `convert_species` is `TRUE`,
+#' [GeneConvert] is used to map human genes to the target species via biomaRt homolog
+#' tables. Default is `"Homo_sapiens"`.
+#' @param convert_species Whether to convert human gene symbols from the scMetabolism
+#' gene sets to the target species using [GeneConvert]. When `TRUE` (default), genes
+#' are mapped via cross-species orthologs from Ensembl BioMart. When `FALSE`, only
+#' case-insensitive direct symbol matching is used.
+#' @param biomart BioMart database name passed to [GeneConvert]. Default `NULL` uses
+#' `"ensembl"`. Other options: `"protists_mart"`, `"fungi_mart"`, `"plants_mart"`.
+#' @param max_tries Maximum retry attempts for biomaRt connections in [GeneConvert].
+#' Default is `5`.
 #'
 #' @return
 #' Returns a `Seurat` object. When `group.by = NULL`, stores scores in assay `assay_name` and tools.
@@ -65,6 +86,9 @@ RunMetabolism <- function(
   convert_species = TRUE,
   Ensembl_version = NULL,
   mirror = NULL,
+  biomart = NULL,  # deprecated, kept for compat
+  max_tries = 5,   # deprecated, kept for compat
+  use_preparedb = TRUE,
   method = c("AUCell", "GSVA", "ssGSEA", "VISION"),
   backend = c("cpp", "r"),
   cpp_strategy = c("sparse", "topk", "full"),
@@ -130,7 +154,7 @@ RunMetabolism <- function(
   db_prepare <- unname(c("KEGG" = "KEGG", "REACTOME" = "Reactome")[db])
   db_labels <- stats::setNames(db, db_prepare)
 
-  if (!identical(tolower(IDtype), "symbol")) {
+  if (!isTRUE(use_preparedb) && !identical(tolower(IDtype), "symbol")) {
     log_message(
       paste0(
         "{.fn RunMetabolism} now uses raw {.pkg scMetabolism} gene sets ",
@@ -179,13 +203,47 @@ RunMetabolism <- function(
     expr_counts <- as_matrix(expr_counts)
   }
 
-  log_message(
-    paste0(
-      "Using raw {.pkg scMetabolism} gene sets directly; ",
-      "{.fn PrepareDB} / BioMart-based ID rebuilding is skipped"
-    ),
-    verbose = verbose
-  )
+  # ---- Build gene sets ----
+
+  if (isTRUE(use_preparedb)) {
+    log_message(
+      "Using {.fn PrepareDB} for species-aware gene set construction",
+      verbose = verbose
+    )
+    curated <- scmetabolism_pathway_refs(db_prepare, verbose = verbose)
+    log_message(
+      "  KEGG pathway refs: {.val {length(curated[['kegg_refs']])}}, ",
+      "Reactome pathway names: {.val {length(curated[['reactome_names']])}}",
+      verbose = verbose
+    )
+    result <- build_metabolism_gene_sets_from_preparedb(
+      species = species,
+      db_prepare = db_prepare,
+      IDtype = IDtype,
+      curated = curated,
+      expr_gene_names = rownames(expr_counts),
+      db_update = db_update,
+      db_version = db_version,
+      convert_species = convert_species,
+      Ensembl_version = Ensembl_version,
+      mirror = mirror,
+      minGSSize = minGSSize,
+      maxGSSize = maxGSSize,
+      verbose = verbose
+    )
+    gene_sets <- result[["gene_sets"]]
+    term_names_final <- result[["term_names"]]
+
+    # Skip the GMT-based gene set construction below
+    skip_gmt <- TRUE
+  } else {
+    need_species_conv <- isTRUE(convert_species) && !identical(species, "Homo_sapiens")
+    log_message(
+      if (need_species_conv) paste0("Using raw {.pkg scMetabolism} gene sets with species conversion to {.val {species}}") else "Using raw {.pkg scMetabolism} gene sets directly (human gene symbols)",
+      verbose = verbose
+    )
+    skip_gmt <- FALSE
+  }
 
   gmt_urls <- c(
     KEGG = "https://raw.githubusercontent.com/mengxu98/datasets/main/scMetabolism/KEGG_metabolism_nc.gmt",
@@ -194,11 +252,13 @@ RunMetabolism <- function(
 
   gene_sets_all <- list()
   term_names_all <- list()
+  metabolism_db_all <- list()
   expr_gene_lookup <- stats::setNames(
     rownames(expr_counts),
     toupper(rownames(expr_counts))
   )
 
+  if (!isTRUE(skip_gmt)) {
   for (term_db in db_prepare) {
     term_db_label <- db_labels[[term_db]]
     metabolism_db <- load_scmetabolism_gmt(
@@ -214,6 +274,7 @@ RunMetabolism <- function(
       )
       next
     }
+    metabolism_db_all[[term_db]] <- metabolism_db
 
     gene_sets_db <- lapply(
       metabolism_db[["gene_sets"]],
@@ -249,7 +310,92 @@ RunMetabolism <- function(
       term_ids_db
     )
   }
+  } # end if (!skip_gmt)
 
+  if (!isTRUE(skip_gmt) && isTRUE(convert_species) && !identical(species, "Homo_sapiens") &&
+      length(gene_sets_all) > 0) {
+    all_human_genes <- unique(unlist(
+      lapply(metabolism_db_all, function(mdb) {
+        unique(unlist(mdb[["gene_sets"]], use.names = FALSE))
+      }),
+      use.names = FALSE
+    ))
+    if (length(all_human_genes) > 0) {
+      log_message(
+        "Converting {.val {length(all_human_genes)}} human gene symbols to {.val {species}} via {.pkg biomaRt} ...",
+        verbose = verbose
+      )
+      conv <- tryCatch(
+        GeneConvert(
+          geneID = all_human_genes,
+          geneID_from_IDtype = "symbol",
+          geneID_to_IDtype = "symbol",
+          species_from = "Homo_sapiens",
+          species_to = species,
+          Ensembl_version = Ensembl_version,
+          biomart = biomart,
+          mirror = mirror,
+          max_tries = max_tries,
+          verbose = verbose
+        ),
+        error = function(e) {
+          log_message(
+            "{.fn GeneConvert} failed: {.val {conditionMessage(e)}}. Falling back to direct symbol matching.",
+            message_type = "warning",
+            verbose = verbose
+          )
+          NULL
+        }
+      )
+      if (!is.null(conv) && !is.null(conv[["geneID_expand"]]) &&
+          nrow(conv[["geneID_expand"]]) > 0) {
+        expand <- conv[["geneID_expand"]]
+        from_col <- "from_geneID"
+        to_col <- "symbol"
+        hs_to_target <- split(
+          expand[[to_col]],
+          toupper(expand[[from_col]])
+        )
+
+        n_added_total <- 0L
+        for (db_name in names(gene_sets_all)) {
+          mdb <- metabolism_db_all[[db_name]]
+          gmt_gene_sets <- mdb[["gene_sets"]]
+          gs_current <- gene_sets_all[[db_name]]
+          for (pw in names(gmt_gene_sets)) {
+            if (!pw %in% names(gs_current)) next
+            human_genes <- toupper(gmt_gene_sets[[pw]])
+            # For each human gene, find target species homologs
+            target_genes <- unique(unlist(
+              hs_to_target[human_genes],
+              use.names = FALSE
+            ))
+            target_genes <- target_genes[!is.na(target_genes) & nzchar(target_genes)]
+            if (length(target_genes) == 0) next
+            # Match target genes to expression rownames
+            matched <- intersect(target_genes, rownames(expr_counts))
+            if (length(matched) > 0) {
+              existing <- gs_current[[pw]]
+              gs_current[[pw]] <- unique(c(existing, matched))
+              n_added_total <- n_added_total +
+                (length(gs_current[[pw]]) - length(existing))
+            }
+          }
+          # Re-filter by size
+          gs_size <- lengths(gs_current)
+          gs_current <- gs_current[gs_size >= minGSSize & gs_size <= maxGSSize]
+          gene_sets_all[[db_name]] <- gs_current
+        }
+        log_message(
+          "Species conversion added {.val {n_added_total}} gene matches across pathways",
+          message_type = "success",
+          verbose = verbose
+        )
+      }
+    }
+  }
+
+  if (!isTRUE(skip_gmt)) {
   if (length(gene_sets_all) == 0) {
     log_message(
       "No metabolism gene sets were constructed from the specified databases",
@@ -259,6 +405,7 @@ RunMetabolism <- function(
 
   gene_sets <- do.call(c, gene_sets_all)
   term_names_final <- unlist(term_names_all, use.names = TRUE)
+  } # end if (!skip_gmt)
 
   log_message(
     "Total metabolism gene sets to score: {.val {length(gene_sets)}}",
@@ -535,4 +682,168 @@ load_scmetabolism_gmt <- function(url, db_name, verbose = TRUE) {
   )
   R.cache::saveCache(out, key = cache_key)
   out
+}
+
+# ---- PrepareDB-based gene set construction for species-aware metabolism ----
+
+#' Extract scMetabolism pathway references from cached GMT data
+#'
+#' @param db_prepare Character vector of database names (e.g., c("KEGG", "Reactome")).
+#' @param verbose Logical; print progress messages.
+#' @return A list with elements `kegg_refs` (KEGG pathway numbers) and
+#'   `reactome_names` (Reactome pathway names).
+#' @keywords internal
+scmetabolism_pathway_refs <- function(db_prepare, verbose = TRUE) {
+  gmt_urls <- c(
+    KEGG = "https://raw.githubusercontent.com/mengxu98/datasets/main/scMetabolism/KEGG_metabolism_nc.gmt",
+    Reactome = "https://raw.githubusercontent.com/mengxu98/datasets/main/scMetabolism/REACTOME_metabolism.gmt"
+  )
+  kegg_refs <- character(0)
+  reactome_names <- character(0)
+
+  for (term_db in intersect(db_prepare, names(gmt_urls))) {
+    db <- load_scmetabolism_gmt(
+      url = gmt_urls[[term_db]],
+      db_name = term_db,
+      verbose = verbose
+    )
+    if (is.null(db)) next
+    refs <- as.character(db[["term_info"]][["Ref"]])
+    names_db <- as.character(db[["term_info"]][["Name"]])
+    if (identical(term_db, "KEGG")) {
+      kegg_refs <- unique(stats::na.omit(refs[nzchar(trimws(refs))]))
+    } else if (identical(term_db, "Reactome")) {
+      reactome_names <- unique(stats::na.omit(names_db[nzchar(trimws(names_db))]))
+    }
+  }
+  list(kegg_refs = kegg_refs, reactome_names = reactome_names)
+}
+
+#' Build metabolism gene sets from PrepareDB TERM2GENE
+#'
+#' Uses [PrepareDB] to obtain species-specific TERM2GENE for KEGG/Reactome,
+#' then filters to only the metabolism pathways curated by scMetabolism.
+#'
+#' @inheritParams RunMetabolism
+#' @param curated List from [scmetabolism_pathway_refs].
+#' @param expr_gene_names Character vector of gene names in the expression matrix.
+#' @return A list with `gene_sets` and `term_names`.
+#' @keywords internal
+build_metabolism_gene_sets_from_preparedb <- function(
+  species,
+  db_prepare,
+  IDtype,
+  curated,
+  expr_gene_names,
+  db_update,
+  db_version,
+  convert_species,
+  Ensembl_version,
+  mirror,
+  minGSSize,
+  maxGSSize,
+  verbose
+) {
+  db_terms <- intersect(db_prepare, c("KEGG", "Reactome"))
+  if (length(db_terms) == 0) {
+    return(list(gene_sets = list(), term_names = character(0)))
+  }
+
+  db_list <- PrepareDB(
+    species = species,
+    db = db_terms,
+    db_IDtypes = IDtype,
+    db_version = db_version,
+    db_update = db_update,
+    convert_species = convert_species,
+    Ensembl_version = Ensembl_version,
+    mirror = mirror,
+    verbose = verbose
+  )
+
+  gene_sets <- list()
+  term_names <- character(0)
+  expr_set <- stats::setNames(rep(TRUE, length(expr_gene_names)), expr_gene_names)
+
+  for (term_db in db_terms) {
+    db_entry <- db_list[[species]][[term_db]]
+    if (is.null(db_entry)) next
+
+    tg <- db_entry[["TERM2GENE"]]
+    tn <- db_entry[["TERM2NAME"]]
+    if (is.null(tg) || nrow(tg) == 0L) next
+
+    # Filter to scMetabolism-curated pathways
+    if (identical(term_db, "KEGG")) {
+      # Match KEGG pathway numbers (e.g., "00010" matches "hsa00010")
+      kegg_nums <- curated[["kegg_refs"]]
+      if (length(kegg_nums) == 0) next
+      term_ids <- as.character(tg[["Term"]])
+      keep <- vapply(term_ids, function(tid) {
+        any(vapply(kegg_nums, function(kn) grepl(paste0(kn, "$"), tid), logical(1)))
+      }, logical(1))
+      tg <- tg[keep, , drop = FALSE]
+    } else if (identical(term_db, "Reactome")) {
+      reactome_names_curated <- curated[["reactome_names"]]
+      if (length(reactome_names_curated) == 0) next
+      tn_sub <- tn[tn[["Term"]] %in% tg[["Term"]], , drop = FALSE]
+      term_name_to_id <- stats::setNames(
+        as.character(tn_sub[["Term"]]),
+        tolower(as.character(tn_sub[["Name"]]))
+      )
+      matched_ids <- unique(unlist(
+        lapply(tolower(reactome_names_curated), function(rn) {
+          term_name_to_id[rn]
+        }),
+        use.names = FALSE
+      ))
+      matched_ids <- matched_ids[!is.na(matched_ids)]
+      tg <- tg[tg[["Term"]] %in% matched_ids, , drop = FALSE]
+    }
+
+    if (nrow(tg) == 0) next
+
+    gene_col <- IDtype
+    if (!gene_col %in% colnames(tg)) {
+      gene_col <- setdiff(colnames(tg), "Term")[1]
+      if (is.na(gene_col)) next
+    }
+
+    # Build gene sets: Term → genes present in expression matrix
+    term_vec <- as.character(tg[["Term"]])
+    gene_vec <- as.character(tg[[gene_col]])
+    gene_vec <- gene_vec[!is.na(gene_vec) & nzchar(trimws(gene_vec))]
+    term_vec <- term_vec[!is.na(gene_vec) & nzchar(trimws(gene_vec))]
+
+    gene_in_expr <- gene_vec %in% expr_gene_names
+    term_vec <- term_vec[gene_in_expr]
+    gene_vec <- gene_vec[gene_in_expr]
+
+    if (length(term_vec) == 0) next
+
+    gs <- split(gene_vec, term_vec)
+    gs <- lapply(gs, unique)
+    gs_size <- lengths(gs)
+    gs <- gs[gs_size >= minGSSize & gs_size <= maxGSSize]
+
+    if (length(gs) == 0) next
+
+    # Build term names
+    tn_sub <- tn[tn[["Term"]] %in% names(gs), , drop = FALSE]
+    term_name_vec <- stats::setNames(
+      as.character(tn_sub[["Name"]]),
+      as.character(tn_sub[["Term"]])
+    )
+
+    gene_sets <- c(gene_sets, gs)
+    term_names <- c(term_names, term_name_vec[names(gs)])
+
+    log_message(
+      "  {.val {term_db}}: {.val {length(gs)}} metabolism pathways, ",
+      "{.val {length(unique(unlist(gs, use.names = FALSE)))}} genes mapped",
+      verbose = verbose
+    )
+  }
+
+  list(gene_sets = gene_sets, term_names = term_names)
 }
