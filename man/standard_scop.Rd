@@ -7,7 +7,24 @@
 standard_scop(
   srt,
   prefix = "Standard",
+  workflow = c("single_cell", "spatial"),
   assay = NULL,
+  image = NULL,
+  coord.cols = c("x", "y"),
+  do_spot_qc = TRUE,
+  spot_qc_params = list(),
+  do_spatial_variable_features = TRUE,
+  spatial_variable_features_params = list(),
+  do_spatial_cluster = FALSE,
+  spatial_cluster_method = "BayesSpace",
+  spatial_q = NULL,
+  bayesspace_params = list(),
+  reference = NULL,
+  reference_label = NULL,
+  reference_assay = NULL,
+  do_deconvolution = !is.null(reference),
+  deconvolution_method = "RCTD",
+  deconvolution_params = list(),
   do_normalization = NULL,
   normalization_method = "LogNormalize",
   do_HVF_finding = TRUE,
@@ -41,10 +58,61 @@ standard_scop(
 \item{prefix}{A prefix to add to the names of intermediate objects created by the function.
 Default is \code{"Standard"}.}
 
+\item{workflow}{Workflow to run. \code{"single_cell"} keeps the original standard
+workflow. \code{"spatial"} runs a spot-level spatial workflow that wraps the
+original workflow with spot QC, spatial variable features, optional spatial
+clustering, and optional RCTD deconvolution.}
+
 \item{assay}{Which assay to use.
 If \code{NULL}, the default assay of the Seurat object will be used.
 When the object also contains \code{ChromatinAssay}, the default assay and
 additional \code{ChromatinAssay} will be preprocessed sequentially.}
+
+\item{image}{Name of the Seurat spatial image used by the spatial workflow.
+If \code{NULL}, the first image is used when present.}
+
+\item{coord.cols}{Metadata coordinate columns used by the spatial workflow
+when no image is available.}
+
+\item{do_spot_qc}{Whether to run \code{\link[=RunSpotQC]{RunSpotQC()}} in the spatial workflow.}
+
+\item{spot_qc_params}{Named list of additional arguments passed to
+\code{\link[=RunSpotQC]{RunSpotQC()}}.}
+
+\item{do_spatial_variable_features}{Whether to run
+\code{\link[=RunSpatialVariableFeatures]{RunSpatialVariableFeatures()}} in the spatial workflow.}
+
+\item{spatial_variable_features_params}{Named list of additional arguments
+passed to \code{\link[=RunSpatialVariableFeatures]{RunSpatialVariableFeatures()}}.}
+
+\item{do_spatial_cluster}{Whether to run spatial-aware clustering in the
+spatial workflow.}
+
+\item{spatial_cluster_method}{Spatial clustering method. Only
+\code{"BayesSpace"} is supported in this workflow.}
+
+\item{spatial_q}{Number of spatial clusters for \code{\link[=RunBayesSpace]{RunBayesSpace()}}. If
+\code{NULL}, the number of ordinary spot clusters is used.}
+
+\item{bayesspace_params}{Named list of additional arguments passed to
+\code{\link[=RunBayesSpace]{RunBayesSpace()}}.}
+
+\item{reference}{Optional single-cell reference used for spatial
+deconvolution.}
+
+\item{reference_label}{Metadata column in \code{reference} containing cell type
+labels.}
+
+\item{reference_assay}{Assay used in \code{reference} for deconvolution.}
+
+\item{do_deconvolution}{Whether to run deconvolution in the spatial workflow.
+If \code{NULL}, deconvolution is run only when \code{reference} is provided.}
+
+\item{deconvolution_method}{Deconvolution method. Only \code{"RCTD"} is supported
+in this workflow.}
+
+\item{deconvolution_params}{Named list of additional arguments passed to
+\code{\link[=RunRCTD]{RunRCTD()}}.}
 
 \item{do_normalization}{Whether to perform normalization.
 If \code{NULL}, normalization will be performed if the specified assay does not have scaled data.}
@@ -135,7 +203,8 @@ Default is \code{11}.}
 A \code{Seurat} object.
 }
 \description{
-This function performs a standard single-cell analysis workflow.
+This function performs a standard single-cell or spot-level spatial analysis
+workflow.
 }
 \examples{
 library(Matrix)
@@ -219,5 +288,85 @@ if (requireNamespace("scran", quietly = TRUE)) {
     reduction = "StandardUMAP2D",
     group.by = "Standardclusters"
   )
+}
+
+\dontrun{
+data(visium_human_pancreas_sub)
+spatial <- standard_scop(
+  visium_human_pancreas_sub,
+  workflow = "spatial",
+  assay = "Spatial",
+  do_spatial_cluster = FALSE,
+  spatial_cluster_method = "BayesSpace",
+  do_deconvolution = FALSE,
+  deconvolution_method = "RCTD",
+  linear_reduction_dims = 10,
+  linear_reduction_dims_use = 1:5,
+  nonlinear_reduction_dims = 2,
+  spatial_variable_features_params = list(nfeatures = 50)
+)
+SpatialSpotPlot(spatial, group.by = "SpotQC")
+SpatialSpotPlot(spatial, group.by = "Standardclusters")
+SpatialSpotPlot(
+  spatial,
+  features = spatial@misc[["SpatialVariableFeatures"]][1:2]
+)
+
+spatial_bayes <- standard_scop(
+  visium_human_pancreas_sub,
+  workflow = "spatial",
+  assay = "Spatial",
+  do_spatial_cluster = TRUE,
+  spatial_cluster_method = "BayesSpace",
+  spatial_q = 3,
+  do_deconvolution = FALSE,
+  deconvolution_method = "RCTD",
+  bayesspace_params = list(
+    n.PCs = 5,
+    n.HVGs = 200,
+    store_sce = FALSE,
+    spatial_cluster_params = list(
+      nrep = 200,
+      burn.in = 50,
+      thin = 10,
+      save.chain = FALSE
+    )
+  )
+)
+SpatialSpotPlot(spatial_bayes, group.by = "BayesSpace_cluster")
+
+data(panc8_sub)
+spatial_rctd <- standard_scop(
+  visium_human_pancreas_sub,
+  workflow = "spatial",
+  assay = "Spatial",
+  do_spatial_cluster = FALSE,
+  spatial_cluster_method = "BayesSpace",
+  do_deconvolution = TRUE,
+  deconvolution_method = "RCTD",
+  reference = panc8_sub,
+  reference_assay = "RNA",
+  reference_label = "celltype",
+  deconvolution_params = list(
+    max_cores = 1,
+    min_cells = 25
+  )
+)
+SpatialSpotPlot(spatial_rctd, group.by = "RCTD_dominant_type")
+
+rctd_cols <- grep(
+  "^RCTD_prop_",
+  colnames(spatial_rctd@meta.data),
+  value = TRUE
+)
+SpatialSpotPlot(
+  spatial_rctd,
+  group.by = rctd_cols[1:min(4, length(rctd_cols))]
+)
+SpatialSpotPlot(
+  spatial_rctd,
+  group.by = rctd_cols,
+  plot_type = "pie"
+)
 }
 }
