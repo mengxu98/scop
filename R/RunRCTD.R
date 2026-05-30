@@ -94,7 +94,7 @@
 #'
 #' SpatialSpotPlot(
 #'   spatial,
-#'   group.by = rctd_cols,
+#'   group.by = "RCTD_dominant_type",
 #'   plot_type = "pie",
 #'   pie.radius.scale = 0.45,
 #'   theme_use = "theme_scop"

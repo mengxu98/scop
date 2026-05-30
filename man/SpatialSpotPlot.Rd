@@ -63,7 +63,10 @@ Row names or vector names must match spatial spot names.}
 
 \item{plot_type}{Plot type. \code{"point"} keeps the default spot plot behavior.
 \code{"pie"} draws spot-level pies from numeric metadata columns supplied to
-\code{group.by} or from a numeric matrix/data.frame supplied to \code{values}.}
+\code{group.by} or from a numeric matrix/data.frame supplied to \code{values}. When
+\code{group.by} is a single \code{"<prefix>_dominant_type"} column, matching
+\code{"<prefix>_prop_*"} or \code{"<prefix>_frac_*"} numeric metadata columns are used
+automatically.}
 
 \item{plot.data}{Optional long-format data.frame for plotting repeated
 spatial points, such as cell-to-spot assignments.}
