@@ -17,6 +17,9 @@ RunMetabolism(
   convert_species = TRUE,
   Ensembl_version = NULL,
   mirror = NULL,
+  biomart = NULL,
+  max_tries = 5,
+  use_preparedb = TRUE,
   method = c("AUCell", "GSVA", "ssGSEA", "VISION"),
   backend = c("cpp", "r"),
   cpp_strategy = c("sparse", "topk", "full"),
@@ -39,10 +42,14 @@ If provided, expression is averaged by group before scoring (cell-type level).}
 
 \item{layer}{Data layer to use, usually \code{"counts"} for count matrix.}
 
-\item{db}{Databases to use for metabolism pathways. One or both of \code{"KEGG"}, \code{"REACTOME"}.}
+\item{db}{Databases to use for metabolism pathways. One or both of \code{"KEGG"}, \code{"REACTOME"}.
+\code{"Reactome"} is also accepted and treated identically to \code{"REACTOME"}.
+When \code{use_preparedb = TRUE}, gene sets are built via \link{PrepareDB}.}
 
-\item{species}{A character vector specifying the species for which the gene annotation databases should be prepared.
-Can be \code{"Homo_sapiens"} or \code{"Mus_musculus"}.}
+\item{species}{Species of the input data. The scMetabolism gene sets contain human
+gene symbols. When \code{species} is not \code{"Homo_sapiens"} and \code{convert_species} is \code{TRUE},
+\link{GeneConvert} is used to map human genes to the target species via biomaRt homolog
+tables. Default is \code{"Homo_sapiens"}.}
 
 \item{IDtype}{A character vector specifying the type of gene IDs in the \code{srt} object or \code{geneID} argument.
 This argument is used to convert the gene IDs to a different type if \code{IDtype} is different from \code{result_IDtype}.}
@@ -54,13 +61,31 @@ Default is \code{FALSE}.}
 \item{db_version}{A character vector specifying the version of the gene annotation databases to be retrieved.
 Default is \code{"latest"}.}
 
-\item{convert_species}{Whether to use a species-converted database when the annotation is missing for the specified species.
-Default is \code{TRUE}.}
+\item{convert_species}{Whether to convert human gene symbols from the scMetabolism
+gene sets to the target species using \link{GeneConvert}. When \code{TRUE} (default), genes
+are mapped via cross-species orthologs from Ensembl BioMart. When \code{FALSE}, only
+case-insensitive direct symbol matching is used.}
 
 \item{Ensembl_version}{An integer specifying the Ensembl version.
 Default is \code{NULL}. If \code{NULL}, the latest version will be used.}
 
 \item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are \code{"www"}, \code{"uswest"}, \code{"useast"}, \code{"asia"}.}
+
+\item{biomart}{BioMart database name passed to \link{GeneConvert}. Default \code{NULL} uses
+\code{"ensembl"}. Other options: \code{"protists_mart"}, \code{"fungi_mart"}, \code{"plants_mart"}.}
+
+\item{max_tries}{Maximum retry attempts for biomaRt connections in \link{GeneConvert}.
+Default is \code{5}.}
+
+\item{use_preparedb}{When \code{TRUE}, gene sets are built via \link{PrepareDB} which
+provides species-aware gene mapping via BioMart and KEGG/Reactome databases.
+This automatically handles gene symbol conversion for non-human species
+(e.g., \code{species = "Mus_musculus"} → mouse gene symbols in metabolism pathways).
+When \code{FALSE}, raw scMetabolism GMT files are
+downloaded and genes are matched case-insensitively with optional \link{GeneConvert}
+supplementation when \code{convert_species = TRUE}.
+genes and approximates zero ties, \code{"topk"} ranks only genes that can contribute
+to AUCell AUC, and \code{"full"} ranks all genes.}
 
 \item{method}{Scoring method, one of \code{"AUCell"}, \code{"GSVA"}, \code{"ssGSEA"}, \code{"VISION"}.}
 
@@ -71,9 +96,7 @@ Default is \code{NULL}. If \code{NULL}, the latest version will be used.}
 AUCell C++ scores may differ from the R backend when tied expression values
 are randomly ranked.}
 
-\item{cpp_strategy}{C++ AUCell ranking strategy. \code{"sparse"} ranks non-zero
-genes and approximates zero ties, \code{"topk"} ranks only genes that can contribute
-to AUCell AUC, and \code{"full"} ranks all genes.}
+\item{cpp_strategy}{C++ AUCell ranking strategy. \code{"sparse"} ranks non-zero}
 
 \item{cpp_chunk_size}{Optional cell chunk size for C++ GSVA kernels. \code{NULL}
 or \code{"auto"} automatically chunks large matrices to reduce peak dense

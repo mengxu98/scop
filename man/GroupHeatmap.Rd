@@ -128,6 +128,7 @@ GroupHeatmap(
   units = "inch",
   cores = 1,
   seed = 11,
+  legend.position = "right",
   ht_params = list(),
   verbose = TRUE,
   ...
@@ -478,6 +479,11 @@ Default is \code{1}.}
 \item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
 
+\item{legend.position}{A character vector specifying the side to place the legends.
+Options are \code{"right"}, \code{"left"}, \code{"top"}, or \code{"bottom"}.
+Default is \code{"right"}.
+When row names are long and shown on the right side, the gap between the heatmap and the legend is automatically increased to avoid overlap.}
+
 \item{ht_params}{Additional parameters to customize the appearance of the heatmap.
 This should be a list with named elements, where the names correspond to parameter names in the \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap} function.
 Any conflicting parameters will override the defaults set by this function.
@@ -486,7 +492,7 @@ Default is \code{list()}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Additional arguments passed to the \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap} function.}
+\item{...}{Additional arguments passed to the other functions.}
 }
 \value{
 A list with the following elements:
@@ -527,11 +533,11 @@ thisplot::panel_fix(
   dpi = 50
 )
 
-  pancreas_sub <- AnnotateFeatures(
-    pancreas_sub,
-    species = "Mus_musculus",
-    db = c("CSPA", "TF")
-  )
+pancreas_sub <- AnnotateFeatures(
+  pancreas_sub,
+  species = "Mus_musculus",
+  db = c("CSPA", "TF")
+)
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"

@@ -228,6 +228,7 @@ GSVAPlot <- function(
   ncol = NULL,
   byrow = TRUE,
   border = TRUE,
+  nlabel = 0,
   seed = 11
 ) {
   set.seed(seed)
@@ -611,6 +612,8 @@ GSVAPlot <- function(
       width = width,
       units = units,
       border = border,
+      legend.position = legend.position,
+      nlabel = nlabel,
       ht_params = ht_params,
       seed = seed
     ))
