@@ -326,6 +326,7 @@ CellCorHeatmap <- function(
   width = NULL,
   units = "inch",
   seed = 11,
+  legend.position = "right",
   ht_params = list()
 ) {
   set.seed(seed)
@@ -630,6 +631,14 @@ CellCorHeatmap <- function(
     cluster_columns_raw <- cluster_columns
     cluster_rows <- cluster_columns_raw
     cluster_columns <- cluster_rows_raw
+  }
+  if (!flip && show_row_names && !is.null(features)) {
+    row_name_gp <- ht_params$row_names_gp %||% grid::gpar(fontsize = 10)
+    fontsize <- row_name_gp$fontsize %||% 10
+    max_nchar_val <- max(nchar(features), na.rm = TRUE)
+    row_name_width_inch <- max_nchar_val * fontsize * 0.6 / 72
+  } else {
+    row_name_width_inch <- 0
   }
   if (is.null(limits)) {
     colors <- circlize::colorRamp2(
@@ -1478,7 +1487,8 @@ CellCorHeatmap <- function(
 
     g_tree <- grid::grid.grabExpr(
       {
-        ComplexHeatmap::draw(ht_list, annotation_legend_list = lgd)
+        ComplexHeatmap::draw(ht_list, annotation_legend_list = lgd,
+                             annotation_legend_side = legend.position)
       },
       width = ht_width,
       height = ht_height,
@@ -1490,7 +1500,8 @@ CellCorHeatmap <- function(
     ht_height <- grid::unit(height_sum, units = units)
     g_tree <- grid::grid.grabExpr(
       {
-        ComplexHeatmap::draw(ht_list, annotation_legend_list = lgd)
+        ComplexHeatmap::draw(ht_list, annotation_legend_list = lgd,
+                             annotation_legend_side = legend.position)
       },
       width = ht_width,
       height = ht_height,

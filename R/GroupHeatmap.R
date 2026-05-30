@@ -216,11 +216,15 @@
 #' If not provided, the height will be automatically determined based on the number of rows in the heatmap and the default unit.
 #' @param units The units to use for the width and height of the heatmap.
 #' Default is `"inch"`, Options are `"mm"`, `"cm"`, or `"inch"`.
+#' @param legend.position A character vector specifying the side to place the legends.
+#' Options are `"right"`, `"left"`, `"top"`, or `"bottom"`.
+#' Default is `"right"`.
+#' When row names are long and shown on the right side, the gap between the heatmap and the legend is automatically increased to avoid overlap.
 #' @param ht_params Additional parameters to customize the appearance of the heatmap.
 #' This should be a list with named elements, where the names correspond to parameter names in the [ComplexHeatmap::Heatmap] function.
 #' Any conflicting parameters will override the defaults set by this function.
 #' Default is `list()`.
-#' @param ... Additional arguments passed to the [ComplexHeatmap::Heatmap] function.
+#' @param ... Additional arguments passed to the other functions.
 #'
 #' @seealso [RunDEtest]
 #'
@@ -262,11 +266,11 @@
 #'   dpi = 50
 #' )
 #'
-#'   pancreas_sub <- AnnotateFeatures(
-#'     pancreas_sub,
-#'     species = "Mus_musculus",
-#'     db = c("CSPA", "TF")
-#'   )
+#' pancreas_sub <- AnnotateFeatures(
+#'   pancreas_sub,
+#'   species = "Mus_musculus",
+#'   db = c("CSPA", "TF")
+#' )
 #' pancreas_sub <- RunDEtest(
 #'   pancreas_sub,
 #'   group.by = "CellType"
@@ -529,6 +533,7 @@ GroupHeatmap <- function(
   units = "inch",
   cores = 1,
   seed = 11,
+  legend.position = "right",
   ht_params = list(),
   verbose = TRUE,
   ...
@@ -843,8 +848,11 @@ GroupHeatmap <- function(
   }
 
   if (!is.null(cell_annotation_params)) {
-    if (isTRUE(flip) && !"width" %in% names(cell_annotation_params) &&
-      "height" %in% names(cell_annotation_params)) {
+    if (
+      isTRUE(flip) &&
+        !"width" %in% names(cell_annotation_params) &&
+        "height" %in% names(cell_annotation_params)
+    ) {
       cell_annotation_params[["width"]] <- cell_annotation_params[["height"]]
       cell_annotation_params[["height"]] <- NULL
       log_message(
@@ -853,8 +861,11 @@ GroupHeatmap <- function(
         verbose = verbose
       )
     }
-    if (!isTRUE(flip) && !"height" %in% names(cell_annotation_params) &&
-      "width" %in% names(cell_annotation_params)) {
+    if (
+      !isTRUE(flip) &&
+        !"height" %in% names(cell_annotation_params) &&
+        "width" %in% names(cell_annotation_params)
+    ) {
       cell_annotation_params[["height"]] <- cell_annotation_params[["width"]]
       cell_annotation_params[["width"]] <- NULL
       log_message(
@@ -1078,20 +1089,31 @@ GroupHeatmap <- function(
   for (cell_group in group.by) {
     mat_tmp <- mat_raw_list[[cell_group]]
     if (is.null(grouping.var)) {
-      if (ncol(mat_tmp) == 1L && !is.function(exp_method) &&
-        exp_method %in% c("zscore", "log2fc")) {
+      if (
+        ncol(mat_tmp) == 1L &&
+          !is.function(exp_method) &&
+          exp_method %in% c("zscore", "log2fc")
+      ) {
         mat_tmp <- (mat_tmp - gene_mean[rownames(mat_tmp)]) /
           gene_sd[rownames(mat_tmp)]
       } else {
         mat_tmp <- matrix_process(mat_tmp, method = exp_method)
       }
       finite_vals <- mat_tmp[!is.infinite(mat_tmp) & !is.na(mat_tmp)]
-      repl <- if (length(finite_vals) > 0L) max(abs(finite_vals), na.rm = TRUE) else 1
-      if (!is.finite(repl)) repl <- 1
+      repl <- if (length(finite_vals) > 0L) {
+        max(abs(finite_vals), na.rm = TRUE)
+      } else {
+        1
+      }
+      if (!is.finite(repl)) {
+        repl <- 1
+      }
       mat_tmp[is.infinite(mat_tmp)] <- repl *
         ifelse(mat_tmp[is.infinite(mat_tmp)] > 0, 1, -1)
       mean_val <- mean(mat_tmp, na.rm = TRUE)
-      if (!is.finite(mean_val)) mean_val <- 0
+      if (!is.finite(mean_val)) {
+        mean_val <- 0
+      }
       mat_tmp[is.na(mat_tmp)] <- mean_val
       mat_list[[cell_group]] <- mat_tmp
     } else {
@@ -1114,8 +1136,14 @@ GroupHeatmap <- function(
       mat_tmp <- log2(mat_tmp[, group_TRUE] / mat_tmp[, group_FALSE])
       colnames(mat_tmp) <- gsub(" ; .*", "", colnames(mat_tmp))
       finite_vals <- mat_tmp[!is.infinite(mat_tmp) & !is.na(mat_tmp)]
-      repl <- if (length(finite_vals) > 0L) max(abs(finite_vals), na.rm = TRUE) else 1
-      if (!is.finite(repl)) repl <- 1
+      repl <- if (length(finite_vals) > 0L) {
+        max(abs(finite_vals), na.rm = TRUE)
+      } else {
+        1
+      }
+      if (!is.finite(repl)) {
+        repl <- 1
+      }
       mat_tmp[is.infinite(mat_tmp)] <- repl *
         ifelse(mat_tmp[is.infinite(mat_tmp)] > 0, 1, -1)
       mat_tmp[is.na(mat_tmp)] <- 0
@@ -1139,16 +1167,22 @@ GroupHeatmap <- function(
             stats::quantile(combined_mat, c(0.01, 0.99), na.rm = TRUE)
           ),
           na.rm = TRUE
-        ) * 2
-      ) / 2
-      if (!is.finite(b) || b <= 0) b <- 2
+        ) *
+          2
+      ) /
+        2
+      if (!is.finite(b) || b <= 0) {
+        b <- 2
+      }
       colors <- circlize::colorRamp2(
         seq(-b, b, length = 100),
         palette_colors(palette = heatmap_palette, palcolor = heatmap_palcolor)
       )
     } else {
       b <- stats::quantile(combined_mat, c(0.01, 0.99), na.rm = TRUE)
-      if (!all(is.finite(b)) || b[1] == b[2]) b <- c(0, 1)
+      if (!all(is.finite(b)) || b[1] == b[2]) {
+        b <- c(0, 1)
+      }
       colors <- circlize::colorRamp2(
         seq(b[1], b[2], length = 100),
         palette_colors(palette = heatmap_palette, palcolor = heatmap_palcolor)
@@ -1174,7 +1208,11 @@ GroupHeatmap <- function(
           srt,
           assay = assay,
           layer = "data"
-        )[intersect(cell_annotation, rownames(assay_use)) %||% integer(), cells, drop = FALSE]
+        )[
+          intersect(cell_annotation, rownames(assay_use)) %||% integer(),
+          cells,
+          drop = FALSE
+        ]
       )
     )
   )
@@ -1636,7 +1674,8 @@ GroupHeatmap <- function(
         )
       )
       df_order <- df_order[
-        order(df_order[["order_by"]], decreasing = decreasing), ,
+        order(df_order[["order_by"]], decreasing = decreasing),
+        ,
         drop = FALSE
       ]
       if (!is.null(split_order)) {
@@ -1673,7 +1712,8 @@ GroupHeatmap <- function(
     if (isTRUE(cluster_row_slices)) {
       if (isFALSE(cluster_rows)) {
         dend <- ComplexHeatmap::cluster_within_group(
-          Matrix::t(mat_split), row_split_raw
+          Matrix::t(mat_split),
+          row_split_raw
         )
         cluster_rows <- dend
         row_split <- length(unique(row_split_raw))
@@ -1719,7 +1759,10 @@ GroupHeatmap <- function(
 
   if (isTRUE(cluster_rows) && !is.null(cluster_features_by)) {
     # Preserve order of cluster_features_by (same as do.call(cbind, mat_list[cluster_features_by]))
-    mat_cluster <- combined_mat[, unlist(lapply(cluster_features_by, function(g) which(col_groups == g))), drop = FALSE]
+    mat_cluster <- combined_mat[,
+      unlist(lapply(cluster_features_by, function(g) which(col_groups == g))),
+      drop = FALSE
+    ]
     if (is.null(row_split)) {
       dend <- stats::as.dendrogram(
         stats::hclust(
@@ -1856,7 +1899,9 @@ GroupHeatmap <- function(
           ha_right <- c(ha_right, ha_feature)
         }
         featan_levels <- levels(featan_values)
-        featan_levels <- featan_levels[!is.na(featan_levels) & nzchar(featan_levels)]
+        featan_levels <- featan_levels[
+          !is.na(featan_levels) & nzchar(featan_levels)
+        ]
         if (length(featan_levels) > 0) {
           lgd[[featan]] <- ComplexHeatmap::Legend(
             title = featan,
@@ -2296,9 +2341,14 @@ GroupHeatmap <- function(
     ht_width <- grid::unit(width_sum, units = units)
     ht_height <- grid::unit(height_sum, units = units)
   }
+
   g_tree <- grid::grid.grabExpr(
     {
-      ComplexHeatmap::draw(ht_list, annotation_legend_list = lgd)
+      ComplexHeatmap::draw(
+        ht_list,
+        annotation_legend_list = lgd,
+        annotation_legend_side = legend.position
+      )
       for (enrich in db) {
         enrich_anno <- names(ha_right)[grep(
           paste0("_split_", enrich),
