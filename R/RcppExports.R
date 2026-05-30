@@ -41,8 +41,12 @@ cytotrace2_main <- function(rank_data, log2_data, parameter_dict, smooth_groups,
     .Call(`_scop_cytotrace2_main`, rank_data, log2_data, parameter_dict, smooth_groups, cores, seed, pca_coords)
 }
 
-aucell_auc_sparse <- function(expr, gene_sets, auc_max_rank, norm_auc = TRUE, strategy = 1L) {
-    .Call(`_scop_aucell_auc_sparse`, expr, gene_sets, auc_max_rank, norm_auc, strategy)
+aucell_auc_sparse <- function(expr, gene_sets, auc_max_rank, norm_auc = TRUE, strategy = 1L, algorithm = 1L) {
+    .Call(`_scop_aucell_auc_sparse`, expr, gene_sets, auc_max_rank, norm_auc, strategy, algorithm)
+}
+
+aucell_auc_ranked <- function(rankings, gene_sets, auc_max_rank) {
+    .Call(`_scop_aucell_auc_ranked`, rankings, gene_sets, auc_max_rank)
 }
 
 ora_hypergeom <- function(genes, term_ids, term_genes, term_name_ids, term_names, min_size = 10L, max_size = 2147483647L) {
@@ -115,6 +119,26 @@ pseudotime_velocity_knn <- function(x_emb, pseudotime, neighbors, normalize = TR
 
 pseudotime_velocity_gradient <- function(x_emb, pseudotime, neighbors, smooth = 0.5, normalize = TRUE) {
     .Call(`_scop_pseudotime_velocity_gradient`, x_emb, pseudotime, neighbors, smooth, normalize)
+}
+
+grnboost_tree <- function(expr, regulator_idx, target_idx, n_rounds = 5000L, learning_rate = 0.01, max_edges_per_target = 0L, max_depth = 3L, max_features = 0.1, subsample = 0.9, early_stop_window_length = 25L, random_seed = 1234L, exclude_self = TRUE) {
+    .Call(`_scop_grnboost_tree`, expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self)
+}
+
+scenic_ctx_auc_nes <- function(ranks, nes_threshold, rank_cutoff) {
+    .Call(`_scop_scenic_ctx_auc_nes`, ranks, nes_threshold, rank_cutoff)
+}
+
+scenic_ctx_recovery <- function(ranks, weights, rank_threshold) {
+    .Call(`_scop_scenic_ctx_recovery`, ranks, weights, rank_threshold)
+}
+
+scenicplus_region_gene_cor <- function(atac_log, rna_log, region_idx, gene_idx) {
+    .Call(`_scop_scenicplus_region_gene_cor`, atac_log, rna_log, region_idx, gene_idx)
+}
+
+scenicplus_triplets_cpp <- function(tf_gene_tf, tf_gene_target, tf_gene_importance, region_gene_region, region_gene_gene, region_gene_score, tf_region_tf, tf_region_region, tf_region_score) {
+    .Call(`_scop_scenicplus_triplets_cpp`, tf_gene_tf, tf_gene_target, tf_gene_importance, region_gene_region, region_gene_gene, region_gene_score, tf_region_tf, tf_region_region, tf_region_score)
 }
 
 scvelo_stochastic_embedding_cpp <- function(spliced, unspliced, knn_idx, embedding) {
