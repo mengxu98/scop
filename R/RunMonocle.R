@@ -29,6 +29,8 @@
 #' Default is 1.
 #' @param root_state The state to use as the root of the trajectory.
 #' If NULL, will prompt for user input.
+#' @param show_plot Whether to print diagnostic plots during the run.
+#' Default is `FALSE`.
 #'
 #' @export
 #' @seealso
@@ -107,6 +109,7 @@ RunMonocle2 <- function(
   residualModelFormulaStr = NULL,
   pseudo_expr = 1,
   root_state = NULL,
+  show_plot = FALSE,
   xlab = NULL,
   ylab = NULL,
   seed = 11,
@@ -190,7 +193,9 @@ RunMonocle2 <- function(
   )
   cds <- get_namespace_fun("monocle", "setOrderingFilter")(cds, features)
   p <- get_namespace_fun("monocle", "plot_ordering_genes")(cds)
-  print(p)
+  if (isTRUE(show_plot)) {
+    print(p)
+  }
 
   cds <- get_namespace_fun("monocle", "reduceDimension")(
     cds = cds,
@@ -246,9 +251,13 @@ RunMonocle2 <- function(
       ylab = ylab
     ) +
       trajectory
-    print(p1 + p2)
+    if (isTRUE(show_plot)) {
+      print(p1 + p2)
+    }
   } else {
-    print(p1)
+    if (isTRUE(show_plot)) {
+      print(p1)
+    }
   }
 
   if (is.null(root_state)) {
@@ -281,9 +290,13 @@ RunMonocle2 <- function(
     trajectory
 
   if (!is.null(group.by)) {
-    print(p1 + p2 + p3)
+    if (isTRUE(show_plot)) {
+      print(p1 + p2 + p3)
+    }
   } else {
-    print(p1 + p3)
+    if (isTRUE(show_plot)) {
+      print(p1 + p3)
+    }
   }
   log_message(
     "{.pkg monocle2} completed",

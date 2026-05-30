@@ -35,6 +35,8 @@ Default is \code{"symbol"}.}
 
 \item{db}{A character vector specifying the annotation sources to be included in the gene annotation databases.
 Can be one or more of \verb{"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF", "CytoTRACE2"}.
+MSigDB subcollections can be requested as \code{"MSigDB_<collection>"}, such as
+\code{"MSigDB_H"} for human Hallmark and \code{"MSigDB_MH"} for mouse Hallmark.
 Note: \code{"CytoTRACE2"} is species-independent and downloads pre-trained model data
 required by \link{RunCytoTRACE}.}
 

@@ -13,6 +13,7 @@ PrepareDB(
   db_IDtypes = c("symbol", "entrez_id", "ensembl_id"),
   db_version = "latest",
   db_update = FALSE,
+  data_dir = NULL,
   convert_species = TRUE,
   Ensembl_version = NULL,
   mirror = NULL,
@@ -47,6 +48,11 @@ Default is \code{"latest"}.}
 \item{db_update}{Whether the gene annotation databases should be forcefully updated.
 If set to FALSE, the function will attempt to load the cached databases instead.
 Default is \code{FALSE}.}
+
+\item{data_dir}{A local directory or named list of local paths containing
+manually downloaded database source files. If a directory is provided,
+\link{PrepareDB} first searches \verb{data_dir/<db>/}, then \code{data_dir}. Named lists can
+override a database path, e.g. \code{list(MSigDB = "~/db/msigdb")}.}
 
 \item{convert_species}{Whether to use a species-converted database when the annotation is missing for the specified species.
 Default is \code{TRUE}.}
