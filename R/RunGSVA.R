@@ -189,7 +189,8 @@ RunGSVA <- function(
         mx.diff = mx.diff,
         tau = tau,
         ssgsea.norm = ssgsea.norm,
-        verbose = verbose
+        verbose = verbose,
+        ...
       )
     }
     if (single_cell_mode && isTRUE(new_assay) && !assay_name %in% SeuratObject::Assays(srt)) {
@@ -287,7 +288,8 @@ RunGSVA <- function(
       db_IDtypes = IDtype,
       convert_species = convert_species,
       Ensembl_version = Ensembl_version,
-      mirror = mirror
+      mirror = mirror,
+      ...
     )
   } else {
     db <- "custom"

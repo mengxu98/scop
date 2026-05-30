@@ -34,7 +34,8 @@ RunEnrichment(
   simplify_method = "Wang",
   simplify_similarityCutoff = 0.7,
   cores = 1,
-  verbose = TRUE
+  verbose = TRUE,
+  ...
 )
 }
 \arguments{
@@ -126,6 +127,8 @@ Default is \code{1}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{...}{Passed to other functions.}
 }
 \value{
 If input is a Seurat object, returns the modified Seurat object with the enrichment result stored in the tools slot.

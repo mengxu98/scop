@@ -333,7 +333,8 @@ CellScoring <- function(
         db_IDtypes = IDtype,
         convert_species = convert_species,
         Ensembl_version = Ensembl_version,
-        mirror = mirror
+        mirror = mirror,
+        ...
       )
       db_data <- db_list[[species]][[single_db]]
       term2gene_tmp <- db_data[["TERM2GENE"]][, c("Term", IDtype)]
