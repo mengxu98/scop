@@ -40,6 +40,7 @@
 #' Default is `NULL`.
 #' @param custom_version A character vector specifying the version to be used in a custom database.
 #' Default is `NULL`.
+#' @param ... Passed to other functions.
 #'
 #' @return A list containing the prepared gene annotation databases:
 #' \itemize{
@@ -158,7 +159,8 @@ PrepareDB <- function(
   custom_species = NULL,
   custom_IDtype = NULL,
   custom_version = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  ...
 ) {
   check_r("R.cache", verbose = FALSE)
   db_list <- list()

@@ -127,6 +127,7 @@
 #' @param grid_major_colour Color of major panel grid lines.
 #' @param grid_major_linetype Linetype of major panel grid lines.
 #' @param grid_major_linewidth Line width of major panel grid lines.
+#' @param ... Additional arguments passed to the other functions.
 #'
 #' @seealso
 #' [CellStatPlot]
@@ -406,88 +407,90 @@
 #'   y.max = 4
 #' )
 FeatureStatPlot <- function(
-    srt,
-    stat.by,
-    group.by = NULL,
-    split.by = NULL,
-    bg.by = NULL,
-    plot.by = c("group", "feature"),
-    fill.by = c("group", "feature", "expression"),
-    cells = NULL,
-    layer = "data",
-    assay = NULL,
-    keep_empty = FALSE,
-    individual = FALSE,
-    plot_type = c("violin", "box", "bar", "dot", "col"),
-    palette = "Chinese",
-    palcolor = NULL,
-    alpha = 1,
-    bg_palette = "Chinese",
-    bg_palcolor = NULL,
-    bg_alpha = 0.2,
-    add_box = FALSE,
-    box_color = "black",
-    box_width = 0.1,
-    box_ptsize = 2,
-    add_point = FALSE,
-    pt.color = "grey30",
-    pt.size = NULL,
-    pt.alpha = 1,
-    jitter.width = 0.4,
-    jitter.height = 0.1,
-    add_trend = FALSE,
-    trend_color = "black",
-    trend_linewidth = 1,
-    trend_ptsize = 2,
-    add_stat = c("none", "mean", "median"),
-    stat_color = "black",
-    stat_size = 1,
-    stat_stroke = 1,
-    stat_shape = 25,
-    add_line = NULL,
-    line_color = "red",
-    line_size = 1,
-    line_type = 1,
-    cells.highlight = NULL,
-    cols.highlight = "red",
-    sizes.highlight = 1,
-    alpha.highlight = 1,
-    calculate_coexp = FALSE,
-    same.y.lims = FALSE,
-    y.min = NULL,
-    y.max = NULL,
-    y.trans = "identity",
-    y.nbreaks = 5,
-    sort = FALSE,
-    stack = FALSE,
-    flip = FALSE,
-    comparisons = NULL,
-    ref_group = NULL,
-    pairwise_method = "wilcox.test",
-    multiplegroup_comparisons = FALSE,
-    multiple_method = "kruskal.test",
-    sig_label = c("p.signif", "p.format"),
-    sig_labelsize = 3.5,
-    aspect.ratio = NULL,
-    title = NULL,
-    subtitle = NULL,
-    xlab = NULL,
-    ylab = "Expression level",
-    legend.position = "right",
-    legend.direction = "vertical",
-    legend.title = NULL,
-    theme_use = "theme_scop",
-    theme_args = list(),
-    grid_major = TRUE,
-    grid_major_colour = "grey80",
-    grid_major_linetype = 2,
-    grid_major_linewidth = 0.3,
-    combine = TRUE,
-    nrow = NULL,
-    ncol = NULL,
-    byrow = TRUE,
-    force = FALSE,
-    seed = 11) {
+  srt,
+  stat.by,
+  group.by = NULL,
+  split.by = NULL,
+  bg.by = NULL,
+  plot.by = c("group", "feature"),
+  fill.by = c("group", "feature", "expression"),
+  cells = NULL,
+  layer = "data",
+  assay = NULL,
+  keep_empty = FALSE,
+  individual = FALSE,
+  plot_type = c("violin", "box", "bar", "dot", "col"),
+  palette = "Chinese",
+  palcolor = NULL,
+  alpha = 1,
+  bg_palette = "Chinese",
+  bg_palcolor = NULL,
+  bg_alpha = 0.2,
+  add_box = FALSE,
+  box_color = "black",
+  box_width = 0.1,
+  box_ptsize = 2,
+  add_point = FALSE,
+  pt.color = "grey30",
+  pt.size = NULL,
+  pt.alpha = 1,
+  jitter.width = 0.4,
+  jitter.height = 0.1,
+  add_trend = FALSE,
+  trend_color = "black",
+  trend_linewidth = 1,
+  trend_ptsize = 2,
+  add_stat = c("none", "mean", "median"),
+  stat_color = "black",
+  stat_size = 1,
+  stat_stroke = 1,
+  stat_shape = 25,
+  add_line = NULL,
+  line_color = "red",
+  line_size = 1,
+  line_type = 1,
+  cells.highlight = NULL,
+  cols.highlight = "red",
+  sizes.highlight = 1,
+  alpha.highlight = 1,
+  calculate_coexp = FALSE,
+  same.y.lims = FALSE,
+  y.min = NULL,
+  y.max = NULL,
+  y.trans = "identity",
+  y.nbreaks = 5,
+  sort = FALSE,
+  stack = FALSE,
+  flip = FALSE,
+  comparisons = NULL,
+  ref_group = NULL,
+  pairwise_method = "wilcox.test",
+  multiplegroup_comparisons = FALSE,
+  multiple_method = "kruskal.test",
+  sig_label = c("p.signif", "p.format"),
+  sig_labelsize = 3.5,
+  aspect.ratio = NULL,
+  title = NULL,
+  subtitle = NULL,
+  xlab = NULL,
+  ylab = "Expression level",
+  legend.position = "right",
+  legend.direction = "vertical",
+  legend.title = NULL,
+  theme_use = "theme_scop",
+  theme_args = list(),
+  grid_major = TRUE,
+  grid_major_colour = "grey80",
+  grid_major_linetype = 2,
+  grid_major_linewidth = 0.3,
+  combine = TRUE,
+  nrow = NULL,
+  ncol = NULL,
+  byrow = TRUE,
+  force = FALSE,
+  seed = 11,
+  ...
+) {
   if (is.null(group.by)) {
     group.by <- "All.groups"
     xlab <- "All groups"
@@ -737,15 +740,29 @@ FeatureStatPlot <- function(
       )
     }
     axis_title_y_gp <- element_text_to_gpar(
-      if (!is.null(theme_stack)) ggplot2::calc_element("axis.title.y", theme_stack) else NULL
+      if (!is.null(theme_stack)) {
+        ggplot2::calc_element("axis.title.y", theme_stack)
+      } else {
+        NULL
+      }
     )
     axis_title_x_gp <- element_text_to_gpar(
-      if (!is.null(theme_stack)) ggplot2::calc_element("axis.title.x", theme_stack) else NULL
+      if (!is.null(theme_stack)) {
+        ggplot2::calc_element("axis.title.x", theme_stack)
+      } else {
+        NULL
+      }
     )
     plot_title_el <- NULL
-    if (!is.null(theme_args[["plot.title"]]) && inherits(theme_args[["plot.title"]], "element_text")) {
+    if (
+      !is.null(theme_args[["plot.title"]]) &&
+        inherits(theme_args[["plot.title"]], "element_text")
+    ) {
       plot_title_el <- theme_args[["plot.title"]]
-    } else if (!is.null(theme_args[["title"]]) && inherits(theme_args[["title"]], "element_text")) {
+    } else if (
+      !is.null(theme_args[["title"]]) &&
+        inherits(theme_args[["title"]], "element_text")
+    ) {
       plot_title_el <- theme_args[["title"]]
     } else if (!is.null(theme_stack)) {
       plot_title_el <- ggplot2::calc_element("plot.title", theme_stack)
@@ -804,7 +821,11 @@ FeatureStatPlot <- function(
                   )
               )
             }
-            p <- p + theme(plot.title = element_blank(), plot.subtitle = element_blank())
+            p <- p +
+              theme(
+                plot.title = element_blank(),
+                plot.subtitle = element_blank()
+              )
             return(as_grob(p))
           }
         )
@@ -849,9 +870,11 @@ FeatureStatPlot <- function(
                   )
               )
             }
-            p <- p + theme(
-              plot.title = element_blank(), plot.subtitle = element_blank()
-            )
+            p <- p +
+              theme(
+                plot.title = element_blank(),
+                plot.subtitle = element_blank()
+              )
             return(as_grob(p))
           }
         )
@@ -867,7 +890,13 @@ FeatureStatPlot <- function(
           gp = plot_title_gp
         )
         title_height <- grid::grobHeight(title_grob) + grid::unit(0.5, "lines")
-        gtable <- add_grob(gtable, title_grob, "top", title_height, clip = "off")
+        gtable <- add_grob(
+          gtable,
+          title_grob,
+          "top",
+          title_height,
+          clip = "off"
+        )
       }
       gtable <- gtable::gtable_add_padding(
         gtable,

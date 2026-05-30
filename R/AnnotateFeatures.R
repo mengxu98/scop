@@ -79,7 +79,8 @@ AnnotateFeatures <- function(
     "gene_type"
   ),
   assays = "RNA",
-  overwrite = FALSE
+  overwrite = FALSE,
+  ...
 ) {
   IDtype <- match.arg(IDtype)
   if (is.null(db) && is.null(gtf)) {
@@ -98,7 +99,8 @@ AnnotateFeatures <- function(
       convert_species = convert_species,
       db_IDtypes = IDtype,
       Ensembl_version = Ensembl_version,
-      mirror = mirror
+      mirror = mirror,
+      ...
     )
     db_notfound <- setdiff(db, names(db_list[[species]]))
     if (length(db_notfound) > 0) {
