@@ -1,6 +1,18 @@
 # scop 0.9.0
 
 * **feat**:
+  * `RunMetabolism()`: Gene sets are now built via `PrepareDB()` by default (`use_preparedb = TRUE`) for species-aware gene mapping through BioMart and KEGG/Reactome databases. The `species` parameter now automatically converts human gene symbols to the target species. scMetabolism-curated pathway lists are cross-referenced with PrepareDB TERM2GENE so mouse data receives mouse gene symbols directly. The previous GMT-only path is still available with `use_preparedb = FALSE`.
+  * `RunMetabolism()`: `convert_species` now defaults to `TRUE`, enabling automatic `GeneConvert()` cross-species ortholog mapping when `species` differs from `"Homo_sapiens"`.
+  * Added `RunSCENICPlus()` for the SCENIC+ multi-omics workflow from Seurat objects, with native Python launcher, parallelized processing, and result readback.
+  * Added `RunGRNBoost2()` and `RunGENIE3()` as standalone GRN modules wrapping the Arboreto Python implementations, with Seurat/matrix methods and `scenic_flt_adj()` target filtering shared with `RunSCENIC()`.
+  * `PrepareDB()`: Added `data_dir` to parse locally downloaded single-file database sources (Broad MSigDB JSON, CSPA, Surfaceome, SPRomeDB, CORUM, JASPAR, ENCODE, TFLink, hTFtarget, TRRUST, CellTalk, CellChat) into the reusable `R.cache` database cache, avoiding repeated downloads.
+  * `GeneSetScoring()`: Added C++ backends `zscore_dense()` and `plage_dense()` for Z-score and PLAGE gene-set scoring, plus PLAGE score orientation via z-score dot product for deterministic SVD signs. `ssgsea_rank_dense()` now accepts a `normalize` parameter. `aucell_auc_sparse()` gained a sparse `ctxcore` algorithm option.
+  * `RunSCENIC()`: Inlined the single-call `scenic_grn_inputs_changed` helper; shortened long internal function names (`scenic_dl_refs`, `scenic_flt_adj`, `scenic_def_mc`, `scenic_sel_mc_res`, `scenic_prep_gene_arg`) and synced cross-file calls in `RunGRN.R`.
+  * `RunSCENICPlus()`: Inlined single-call helpers `scenicplus_read_optional_table`, `scenicplus_motif_tf_names`, `scenicplus_eregulon_table`; removed unused `scenicplus_eregulons`.
+  * `FeatureHeatmap()`, `DynamicHeatmap()`, `GroupHeatmap()`: Compact long multi-term feature annotations from databases such as MSigDB and Reactome before drawing heatmap legends for cleaner display.
+  * `CellCorHeatmap()`: Added `legend.position` parameter.
+  * `GSVAPlot()`: Added `Database` column to enrichment results for consistent downstream filtering.
+  * `RunMonocle2()`: Support custom root cells via `root_cells` parameter.
   * `RunDimsEstimate()`: Switched the default dimension-selection route to a scree-based ensemble of broken-stick, elbow, cumulative-variance, and marginal-gain criteria; the previous `intrinsicDimension` route remains available via `method = "intrinsic"` or can be combined with `method = "ensemble"`.
   * Added `RunRareQ()` for RareQ rare-cell population detection from Seurat objects, including automatic neighbor construction through `DefaultReduction()`, metadata writeback, `CellDimPlot()` examples, and detailed result storage in `srt@tools[["RareQ"]]`.
   * Added `RunAugur()` for Augur cell-type perturbation prioritization from Seurat objects, with an optimized native backend and metadata/tool-slot writeback.
@@ -33,7 +45,6 @@
   * `GeneConvert()` examples now direct expression-object homolog conversion to `ConvertHomologs()` instead of showing manual `geneID_expand` aggregation.
   * `PrepareDB()`: Added compatibility with older `GOSemSim::godata()` signatures that use `OrgDb` instead of `annoDb`, avoiding GO semantic-data preparation failures in mixed Bioconductor environments.
   * `PrepareDB()`: Fixed direct MSigDB subcollection requests such as `db = "MSigDB_H"` or `db = "MSigDB_MH"` by resolving the base MSigDB species metadata before selecting the Broad release.
-  * `PrepareDB()`: Added `data_dir` so locally downloaded single-file database sources, including Broad MSigDB JSON, CSPA, Surfaceome, SPRomeDB, CORUM, JASPAR, ENCODE, TFLink, hTFtarget, TRRUST, CellTalk, and CellChat files, can be parsed into the reusable `R.cache` database cache.
   * `PrepareDB()` and `AnnotateFeatures()`: Normalize legacy MSigDB caches whose feature column was stored as `symbol.ensembl_id`, and ensure ID-type conversion uses a single existing source ID column to avoid `switch()` errors when annotating MSigDB features by `symbol`.
   * `DEtestPlot()`, `VolcanoPlot()`, `DEtestManhattanPlot()`, and `DEtestRingPlot()`: Added `label.by` to choose automatic top-gene labels by adjusted p-value, p-value, detection-rate difference, or log2 fold change. Volcano and Manhattan plots now keep displayed positions and colors tied to the raw `avg_log2FC` values, and Manhattan plots default to no vertical jitter while allowing the centered group track size to be overridden with `group_track_width` and `group_track_height`.
   * `DynamicHeatmap()`, `FeatureHeatmap()`, and `GroupHeatmap()`: Compact long multi-term feature annotations from databases such as MSigDB and Reactome before drawing heatmap legends, and keep `DynamicHeatmap()` cluster annotations such as `RNA_snn_res.0.8` discrete even when stored as numeric metadata.
