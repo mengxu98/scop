@@ -102,7 +102,9 @@ The \code{"venny"} engine supports 2 to 4 sets.}
 \link[venny:venny]{venny::venny()} when \code{plot_type = "venn"} and
 \code{venn_engine = "venny"}.
 The \code{data} argument is generated internally by \link[thisplot:StatPlot]{thisplot::StatPlot()}
-and cannot be supplied here.}
+and cannot be supplied here.
+\code{venny} subset labels such as \code{"A"} and \code{"AB"} are hidden by default;
+use \code{venn_args = list(subset.label = TRUE)} to show them.}
 
 \item{stat_type}{The type of statistic to compute for the plot.
 Can be one of \code{"percent"} or \code{"count"}.}
@@ -438,7 +440,13 @@ CellStatPlot(
       "Progenitor", "G2M", "Fancb_Expressed", "Dlg3_Expressed"
     ),
     plot_type = "venn",
-    stat_level = "TRUE"
+    stat_level = "TRUE",
+    venn_engine = "venny",
+    venn_args = list(
+      detail = TRUE,
+      ellipse.fill = venny::ellipse_fill(alpha = 0.25),
+      set.label.font = venny::set_label_font(size = 5)
+    )
   )
 
   CellStatPlot(

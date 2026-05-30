@@ -22,6 +22,8 @@
 #' `venn_engine = "venny"`.
 #' The `data` argument is generated internally by [thisplot::StatPlot()]
 #' and cannot be supplied here.
+#' `venny` subset labels such as `"A"` and `"AB"` are hidden by default;
+#' use `venn_args = list(subset.label = TRUE)` to show them.
 #' @param position The position adjustment for the plot.
 #' Can be one of `"stack"` or `"dodge"`.
 #' @param label Whether to add labels on the plot.
@@ -280,7 +282,13 @@
 #'       "Progenitor", "G2M", "Fancb_Expressed", "Dlg3_Expressed"
 #'     ),
 #'     plot_type = "venn",
-#'     stat_level = "TRUE"
+#'     stat_level = "TRUE",
+#'     venn_engine = "venny",
+#'     venn_args = list(
+#'       detail = TRUE,
+#'       ellipse.fill = venny::ellipse_fill(alpha = 0.25),
+#'       set.label.font = venny::set_label_font(size = 5)
+#'     )
 #'   )
 #'
 #'   CellStatPlot(
