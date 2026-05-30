@@ -1772,10 +1772,14 @@ EnrichmentHeatmap <- function(
     exp_method = "raw",
     exp_legend_title = NULL,
     limits = NULL,
-    lib_normalize = FALSE
+    lib_normalize = FALSE,
+    nlabel = 0
   )
-
   user_args <- list(...)
+  dup_keys <- intersect(names(base_args), names(user_args))
+  for (k in dup_keys) {
+    base_args[[k]] <- NULL
+  }
   if (!is.null(user_args[["palette"]])) {
     user_args[["heatmap_palette"]] <- user_args[["palette"]]
     user_args[["palette"]] <- NULL

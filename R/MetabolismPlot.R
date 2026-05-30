@@ -29,6 +29,7 @@
 #'   group.by = "CellType",
 #'   plot_type = "heatmap",
 #'   topTerm = 10,
+#'   show_row_names = TRUE,
 #'   width = 1,
 #'   height = 2
 #' )

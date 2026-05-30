@@ -81,6 +81,7 @@ CellCorHeatmap(
   width = NULL,
   units = "inch",
   seed = 11,
+  legend.position = "right",
   ht_params = list()
 )
 }
@@ -326,6 +327,11 @@ Default is \code{"inch"}, Options are \code{"mm"}, \code{"cm"}, or \code{"inch"}
 
 \item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
+
+\item{legend.position}{A character vector specifying the side to place the legends.
+Options are \code{"right"}, \code{"left"}, \code{"top"}, or \code{"bottom"}.
+Default is \code{"right"}.
+When row names are long and shown on the right side, the gap between the heatmap and the legend is automatically increased to avoid overlap.}
 
 \item{ht_params}{Additional parameters to customize the appearance of the heatmap.
 This should be a list with named elements, where the names correspond to parameter names in the \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap} function.
