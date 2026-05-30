@@ -42,6 +42,12 @@
 #'   nfeatures = 100,
 #'   verbose = FALSE
 #' )
+#'
+#' SpatialSpotPlot(
+#'   spatial,
+#'   features = Seurat::VariableFeatures(spatial, assay = 'Spatial')[1:2]
+#' )
+#'
 #' spatial <- RunSpatialVariableFeatures(
 #'   spatial,
 #'   assay = "Spatial",
