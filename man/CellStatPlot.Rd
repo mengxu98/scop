@@ -50,7 +50,8 @@ CellStatPlot(
   ncol = NULL,
   byrow = TRUE,
   force = FALSE,
-  seed = 11
+  seed = 11,
+  ...
 )
 }
 \arguments{
@@ -181,6 +182,8 @@ Default is \code{FALSE}.}
 
 \item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
+
+\item{...}{Additional arguments passed to the other functions.}
 }
 \description{
 Statistical plot of cells

@@ -19,7 +19,8 @@ AnnotateFeatures(
   columns = c("seqname", "feature", "start", "end", "strand", "gene_id", "gene_name",
     "gene_type"),
   assays = "RNA",
-  overwrite = FALSE
+  overwrite = FALSE,
+  ...
 )
 }
 \arguments{
@@ -68,6 +69,8 @@ Default is \code{"RNA"}.}
 
 \item{overwrite}{Whether to overwrite existing metadata.
 Default is \code{FALSE}.}
+
+\item{...}{Passed to other functions.}
 }
 \description{
 Annotate features in a Seurat object with additional metadata from databases or a GTF file.

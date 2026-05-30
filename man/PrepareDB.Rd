@@ -23,7 +23,8 @@ PrepareDB(
   custom_species = NULL,
   custom_IDtype = NULL,
   custom_version = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  ...
 )
 }
 \arguments{
@@ -77,6 +78,8 @@ Default is \code{NULL}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{...}{Passed to other functions.}
 }
 \value{
 A list containing the prepared gene annotation databases:

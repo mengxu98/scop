@@ -45,12 +45,6 @@
 #'   nonlinear_reduction = "UMAP",
 #'   backend = "cpp"
 #' )
-#' CellDimPlot(
-#'   pancreas_sub,
-#'   group.by = "SubCellType",
-#'   reduction = "UMAP"
-#' )
-#'
 #' PAGAPlot(pancreas_sub, reduction = "UMAP")
 #'
 #' CellDimPlot(

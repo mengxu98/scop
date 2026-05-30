@@ -122,7 +122,7 @@ Default is \code{TRUE}.}
 \item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
 
-\item{...}{Additional arguments to be passed to the scoring methods.}
+\item{...}{Passed to other functions.}
 }
 \description{
 This function calculates gene-set scores from the specified database (\code{db}) for each lineage using the specified scoring method (\code{score_method}).

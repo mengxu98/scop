@@ -146,7 +146,8 @@ RunGSEA <- function(
   simplify_method = "Wang",
   simplify_similarityCutoff = 0.7,
   cores = 1,
-  verbose = TRUE
+  verbose = TRUE,
+  ...
 ) {
   log_message("Start {.pkg GSEA} analysis", verbose = verbose)
 
@@ -261,7 +262,8 @@ RunGSEA <- function(
       db_IDtypes = IDtype,
       convert_species = convert_species,
       Ensembl_version = Ensembl_version,
-      mirror = mirror
+      mirror = mirror,
+      ...
     )
   } else {
     db <- "custom"

@@ -155,7 +155,8 @@ RunDynamicEnrichment <- function(
       db_IDtypes = IDtype,
       convert_species = convert_species,
       Ensembl_version = Ensembl_version,
-      mirror = mirror
+      mirror = mirror,
+      ...
     )
   } else {
     db <- "custom"

@@ -117,7 +117,8 @@ FeatureHeatmap(
   cores = 1,
   seed = 11,
   ht_params = list(),
-  verbose = TRUE
+  verbose = TRUE,
+  ...
 )
 }
 \arguments{
@@ -434,6 +435,8 @@ Default is \code{list()}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{...}{Additional arguments passed to the other functions.}
 }
 \description{
 Feature Heatmap

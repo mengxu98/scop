@@ -59,7 +59,8 @@ heatmap_enrichment <- function(
   show_termid = FALSE,
   topWord = 20,
   words_excluded = NULL,
-  cores = 1
+  cores = 1,
+  ...
 ) {
   res <- NULL
   words_excluded <- words_excluded %||% scop::words_excluded
@@ -103,7 +104,8 @@ heatmap_enrichment <- function(
       GO_simplify_cutoff = GO_simplify_cutoff,
       simplify_method = simplify_method,
       simplify_similarityCutoff = simplify_similarityCutoff,
-      cores = cores
+      cores = cores,
+      ...
     )
     if (!is.null(TERM2GENE)) {
       db <- "custom"
