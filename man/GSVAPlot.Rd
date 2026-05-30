@@ -78,6 +78,7 @@ GSVAPlot(
   ncol = NULL,
   byrow = TRUE,
   border = TRUE,
+  nlabel = 0,
   seed = 11
 )
 }
@@ -308,6 +309,9 @@ Default is \code{TRUE}.}
 
 \item{border}{Whether to add a border to the heatmap.
 Default is \code{TRUE}.}
+
+\item{nlabel}{A number of labels to include.
+Default is \code{20}.}
 
 \item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
