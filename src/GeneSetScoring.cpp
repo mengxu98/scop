@@ -77,13 +77,49 @@ static double aucell_auc_from_ranks(
   return auc / max_auc;
 }
 
+static double ctxcore_auc_from_ranks(
+  const std::vector<int>& ranks,
+  int auc_threshold,
+  int n_genes
+) {
+  const int rank_cutoff = std::max(0, auc_threshold - 1);
+  if (rank_cutoff <= 0 || ranks.empty()) {
+    return 0.0;
+  }
+
+  std::vector<int> x;
+  x.reserve(ranks.size());
+  for (std::vector<int>::const_iterator it = ranks.begin(); it != ranks.end(); ++it) {
+    if (*it > 0 && (*it - 1) < rank_cutoff) {
+      x.push_back(*it - 1);
+    }
+  }
+  if (x.empty()) {
+    return 0.0;
+  }
+  std::sort(x.begin(), x.end());
+
+  double auc = 0.0;
+  int prev = x[0];
+  double cumulative = 1.0;
+  for (std::size_t i = 1; i < x.size(); ++i) {
+    auc += static_cast<double>(x[i] - prev) * cumulative;
+    prev = x[i];
+    cumulative += 1.0;
+  }
+  auc += static_cast<double>(rank_cutoff - prev) * cumulative;
+  const double max_auc = static_cast<double>(rank_cutoff + 1) * static_cast<double>(n_genes);
+  return max_auc > 0.0 ? auc / max_auc : R_NaN;
+}
+
 // [[Rcpp::export]]
 NumericMatrix aucell_auc_sparse(
   S4 expr,
   List gene_sets,
   int auc_max_rank,
   bool norm_auc = true,
-  int strategy = 1
+  int strategy = 1,
+  int algorithm = 1
 ) {
   IntegerVector dims = expr.slot("Dim");
   const int n_genes = dims[0];
@@ -197,7 +233,15 @@ NumericMatrix aucell_auc_sparse(
           ranks.push_back(rank);
         }
       }
-      scores(cell, set_i) = aucell_auc_from_ranks(ranks, auc_threshold, max_auc[set_i]);
+      if (algorithm == 2) {
+        scores(cell, set_i) = ctxcore_auc_from_ranks(
+          ranks,
+          auc_threshold,
+          static_cast<int>(sets[set_i].size())
+        );
+      } else {
+        scores(cell, set_i) = aucell_auc_from_ranks(ranks, auc_threshold, max_auc[set_i]);
+      }
     }
 
     for (std::vector<int>::const_iterator it = touched_ranks.begin(); it != touched_ranks.end(); ++it) {
@@ -208,6 +252,52 @@ NumericMatrix aucell_auc_sparse(
     }
   }
 
+  return scores;
+}
+
+// [[Rcpp::export]]
+NumericMatrix aucell_auc_ranked(
+  NumericMatrix rankings,
+  List gene_sets,
+  int auc_max_rank
+) {
+  const int n_cells = rankings.nrow();
+  const int n_genes = rankings.ncol();
+  const int n_sets = gene_sets.size();
+  const int auc_threshold = std::max(1, auc_max_rank);
+
+  std::vector<std::vector<int> > sets(n_sets);
+  for (int set_i = 0; set_i < n_sets; ++set_i) {
+    IntegerVector genes = gene_sets[set_i];
+    sets[set_i].reserve(genes.size());
+    for (int gene_i = 0; gene_i < genes.size(); ++gene_i) {
+      const int gene = genes[gene_i] - 1;
+      if (gene >= 0 && gene < n_genes) {
+        sets[set_i].push_back(gene);
+      }
+    }
+    std::sort(sets[set_i].begin(), sets[set_i].end());
+    sets[set_i].erase(std::unique(sets[set_i].begin(), sets[set_i].end()), sets[set_i].end());
+  }
+
+  NumericMatrix scores(n_cells, n_sets);
+  for (int cell = 0; cell < n_cells; ++cell) {
+    for (int set_i = 0; set_i < n_sets; ++set_i) {
+      std::vector<int> ranks;
+      ranks.reserve(sets[set_i].size());
+      for (std::vector<int>::const_iterator it = sets[set_i].begin(); it != sets[set_i].end(); ++it) {
+        const double rank0 = rankings(cell, *it);
+        if (R_finite(rank0)) {
+          ranks.push_back(static_cast<int>(rank0) + 1);
+        }
+      }
+      scores(cell, set_i) = ctxcore_auc_from_ranks(
+        ranks,
+        auc_threshold,
+        static_cast<int>(sets[set_i].size())
+      );
+    }
+  }
   return scores;
 }
 
