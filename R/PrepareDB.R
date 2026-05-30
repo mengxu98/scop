@@ -26,6 +26,10 @@
 #' @param db_update Whether the gene annotation databases should be forcefully updated.
 #' If set to FALSE, the function will attempt to load the cached databases instead.
 #' Default is `FALSE`.
+#' @param data_dir A local directory or named list of local paths containing
+#' manually downloaded database source files. If a directory is provided,
+#' [PrepareDB] first searches `data_dir/<db>/`, then `data_dir`. Named lists can
+#' override a database path, e.g. `list(MSigDB = "~/db/msigdb")`.
 #' @param convert_species Whether to use a species-converted database when the annotation is missing for the specified species.
 #' Default is `TRUE`.
 #' @param Ensembl_version An integer specifying the Ensembl version.
@@ -149,6 +153,7 @@ PrepareDB <- function(
   db_IDtypes = c("symbol", "entrez_id", "ensembl_id"),
   db_version = "latest",
   db_update = FALSE,
+  data_dir = NULL,
   convert_species = TRUE,
   Ensembl_version = NULL,
   mirror = NULL,
@@ -967,10 +972,19 @@ PrepareDB <- function(
           }
           log_message("Preparing {.pkg CORUM} database", verbose = verbose)
           url <- "https://maayanlab.cloud/static/hdfs/harmonizome/data/corum/gene_set_library_crisp.gmt.gz"
-          temp <- tempfile(fileext = ".gz")
-          download(url = url, destfile = temp)
-          R.utils::gunzip(temp)
-          TERM2GENE <- clusterProfiler::read.gmt(gsub(".gz", "", temp))
+          source_file <- preparedb_local_source_file(
+            data_dir = data_dir,
+            db = "CORUM",
+            pattern = "^gene_set_library_crisp\\.gmt(\\.gz)?$",
+            verbose = verbose
+          )
+          if (is.null(source_file)) {
+            temp <- tempfile(fileext = ".gz")
+            download(url = url, destfile = temp)
+            R.utils::gunzip(temp)
+            source_file <- gsub(".gz", "", temp)
+          }
+          TERM2GENE <- preparedb_read_gmt_source(source_file)
           version <- "Harmonizome 3.0"
           TERM2NAME <- TERM2GENE[, c(1, 1)]
           colnames(TERM2GENE) <- c("Term", default_id_types[["CORUM"]])
@@ -1715,17 +1729,29 @@ PrepareDB <- function(
           }
           check_r("openxlsx", verbose = FALSE)
           log_message("Preparing database: CSPA")
-          temp <- tempfile(fileext = ".xlsx")
           url <- "https://raw.githubusercontent.com/mengxu98/datasets/main/CSPA/S1_File.xlsx"
-          download(
-            url = url,
-            destfile = temp,
-            mode = "wb"
+          source_file <- preparedb_local_source_file(
+            data_dir = data_dir,
+            db = "CSPA",
+            pattern = "^S1_File\\.xlsx$",
+            verbose = verbose
           )
+          source_is_temp <- FALSE
+          if (is.null(source_file)) {
+            source_file <- tempfile(fileext = ".xlsx")
+            source_is_temp <- TRUE
+            download(
+              url = url,
+              destfile = source_file,
+              mode = "wb"
+            )
+          }
           surfacepro <- get_namespace_fun(
             "openxlsx", "read.xlsx"
-          )(temp, sheet = 1)
-          unlink(temp)
+          )(source_file, sheet = 1)
+          if (isTRUE(source_is_temp)) {
+            unlink(source_file)
+          }
           surfacepro <- surfacepro[
             surfacepro[["organism"]] ==
               switch(db_species["CSPA"],
@@ -1786,20 +1812,32 @@ PrepareDB <- function(
           }
           check_r("openxlsx", verbose = FALSE)
           log_message("Preparing database: Surfaceome")
-          temp <- tempfile(fileext = ".xlsx")
           url <- "http://wlab.ethz.ch/surfaceome/table_S3_surfaceome.xlsx"
-          download(
-            url = url,
-            destfile = temp,
-            mode = ifelse(.Platform$OS.type == "windows", "wb", "w")
+          source_file <- preparedb_local_source_file(
+            data_dir = data_dir,
+            db = "Surfaceome",
+            pattern = "^table_S3_surfaceome\\.xlsx$",
+            verbose = verbose
           )
+          source_is_temp <- FALSE
+          if (is.null(source_file)) {
+            source_file <- tempfile(fileext = ".xlsx")
+            source_is_temp <- TRUE
+            download(
+              url = url,
+              destfile = source_file,
+              mode = ifelse(.Platform$OS.type == "windows", "wb", "w")
+            )
+          }
           surfaceome <- get_namespace_fun("openxlsx", "read.xlsx")(
-            temp,
+            source_file,
             sheet = 2,
             colNames = TRUE,
             startRow = 2
           )
-          unlink(temp)
+          if (isTRUE(source_is_temp)) {
+            unlink(source_file)
+          }
           TERM2GENE <- data.frame(
             "Term" = "SurfaceProtein",
             "symbol" = surfaceome[["UniProt.gene"]]
@@ -1859,11 +1897,23 @@ PrepareDB <- function(
             }
           }
           log_message("Preparing {.pkg SPRomeDB} database", verbose = verbose)
-          temp <- tempfile()
           url <- "http://119.3.41.228/SPRomeDB/files/download/secreted_proteins_SPRomeDB.csv"
-          download(url = url, destfile = temp)
-          spromedb <- utils::read.csv(temp, header = TRUE)
-          unlink(temp)
+          source_file <- preparedb_local_source_file(
+            data_dir = data_dir,
+            db = "SPRomeDB",
+            pattern = "^secreted_proteins_SPRomeDB\\.csv$",
+            verbose = verbose
+          )
+          source_is_temp <- FALSE
+          if (is.null(source_file)) {
+            source_file <- tempfile()
+            source_is_temp <- TRUE
+            download(url = url, destfile = source_file)
+          }
+          spromedb <- utils::read.csv(source_file, header = TRUE)
+          if (isTRUE(source_is_temp)) {
+            unlink(source_file)
+          }
           TERM2GENE <- data.frame(
             "Term" = "SecretoryProtein",
             "entrez_id" = unlist(strsplit(spromedb$Gene_ID, ";"))
@@ -2048,9 +2098,26 @@ PrepareDB <- function(
             db_species["TFLink"],
             "_interactions_All_GMT_proteinName_v1.0.gmt"
           )
-          temp <- tempfile()
-          download(url = url, destfile = temp)
-          TERM2GENE <- clusterProfiler::read.gmt(temp)
+          source_file <- preparedb_local_source_file(
+            data_dir = data_dir,
+            db = "TFLink",
+            pattern = paste0(
+              "^TFLink_",
+              db_species[["TFLink"]],
+              "_interactions_All_GMT_proteinName_v1\\.0\\.gmt$"
+            ),
+            verbose = verbose
+          )
+          source_is_temp <- FALSE
+          if (is.null(source_file)) {
+            source_file <- tempfile()
+            source_is_temp <- TRUE
+            download(url = url, destfile = source_file)
+          }
+          TERM2GENE <- clusterProfiler::read.gmt(source_file)
+          if (isTRUE(source_is_temp)) {
+            unlink(source_file)
+          }
           version <- "v1.0"
           TERM2NAME <- TERM2GENE[, c(1, 1)]
           colnames(TERM2GENE) <- c("Term", default_id_types[["TFLink"]])
@@ -2101,9 +2168,22 @@ PrepareDB <- function(
           }
           log_message("Preparing {.pkg hTFtarget} database", verbose = verbose)
           url <- "https://guolab.wchscu.cn/static/hTFtarget/file_download/tf-target-infomation.txt"
-          temp <- tempfile()
-          download(url = url, destfile = temp)
-          TERM2GENE <- utils::read.table(temp, header = TRUE, fill = T, sep = "\t")
+          source_file <- preparedb_local_source_file(
+            data_dir = data_dir,
+            db = "hTFtarget",
+            pattern = "^tf-target-infomation\\.txt$",
+            verbose = verbose
+          )
+          source_is_temp <- FALSE
+          if (is.null(source_file)) {
+            source_file <- tempfile()
+            source_is_temp <- TRUE
+            download(url = url, destfile = source_file)
+          }
+          TERM2GENE <- utils::read.table(source_file, header = TRUE, fill = T, sep = "\t")
+          if (isTRUE(source_is_temp)) {
+            unlink(source_file)
+          }
           version <- "v1.0"
           TERM2NAME <- TERM2GENE[, c(1, 1)]
           colnames(TERM2GENE) <- c("Term", default_id_types[["hTFtarget"]])
@@ -2161,9 +2241,28 @@ PrepareDB <- function(
             "Homo_sapiens" = "https://raw.githubusercontent.com/bioinfonerd/Transcription-Factor-Databases/master/Ttrust_v2/trrust_rawdata.human.tsv",
             "Mus_musculus" = "https://raw.githubusercontent.com/bioinfonerd/Transcription-Factor-Databases/master/Ttrust_v2/trrust_rawdata.mouse.tsv.gz"
           )
-          if (endsWith(url, "gz")) {
+          trrust_file <- switch(db_species["TRRUST"],
+            "Homo_sapiens" = "trrust_rawdata.human.tsv",
+            "Mus_musculus" = "trrust_rawdata.mouse.tsv.gz"
+          )
+          source_file <- preparedb_local_source_file(
+            data_dir = data_dir,
+            db = "TRRUST",
+            pattern = switch(db_species["TRRUST"],
+              "Homo_sapiens" = "^trrust_rawdata\\.human\\.tsv$",
+              "Mus_musculus" = "^trrust_rawdata\\.mouse\\.tsv\\.gz$"
+            ),
+            verbose = verbose
+          )
+          source_is_temp <- FALSE
+          if (is.null(source_file)) {
+            source_file <- tempfile(fileext = ifelse(endsWith(url, "gz"), ".gz", ""))
+            source_is_temp <- TRUE
+            download(url = url, destfile = source_file)
+          }
+          if (grepl("\\.gz$", source_file, ignore.case = TRUE)) {
             temp <- tempfile(fileext = ".gz")
-            download(url = url, destfile = temp)
+            file.copy(source_file, temp, overwrite = TRUE)
             R.utils::gunzip(temp)
             TERM2GENE <- utils::read.table(
               gsub(".gz$", "", temp),
@@ -2171,15 +2270,17 @@ PrepareDB <- function(
               fill = T,
               sep = "\t"
             )[, 1:2]
+            unlink(gsub(".gz$", "", temp))
           } else {
-            temp <- tempfile()
-            download(url = url, destfile = temp)
             TERM2GENE <- utils::read.table(
-              temp,
+              source_file,
               header = FALSE,
               fill = T,
               sep = "\t"
             )[, 1:2]
+          }
+          if (isTRUE(source_is_temp)) {
+            unlink(source_file)
           }
           version <- "v2.0"
           TERM2NAME <- TERM2GENE[, c(1, 1)]
@@ -2229,10 +2330,19 @@ PrepareDB <- function(
           }
           log_message("Preparing {.pkg JASPAR} database", verbose = verbose)
           url <- "https://maayanlab.cloud/static/hdfs/harmonizome/data/jasparpwm/gene_set_library_crisp.gmt.gz"
-          temp <- tempfile(fileext = ".gz")
-          download(url = url, destfile = temp)
-          R.utils::gunzip(temp)
-          TERM2GENE <- clusterProfiler::read.gmt(gsub(".gz", "", temp))
+          source_file <- preparedb_local_source_file(
+            data_dir = data_dir,
+            db = "JASPAR",
+            pattern = "^gene_set_library_crisp\\.gmt(\\.gz)?$",
+            verbose = verbose
+          )
+          if (is.null(source_file)) {
+            temp <- tempfile(fileext = ".gz")
+            download(url = url, destfile = temp)
+            R.utils::gunzip(temp)
+            source_file <- gsub(".gz", "", temp)
+          }
+          TERM2GENE <- preparedb_read_gmt_source(source_file)
           version <- "Harmonizome 3.0"
           TERM2NAME <- TERM2GENE[, c(1, 1)]
           colnames(TERM2GENE) <- c("Term", default_id_types[["JASPAR"]])
@@ -2281,10 +2391,19 @@ PrepareDB <- function(
           }
           log_message("Preparing {.pkg ENCODE} database", verbose = verbose)
           url <- "https://maayanlab.cloud/static/hdfs/harmonizome/data/encodetfppi/gene_set_library_crisp.gmt.gz"
-          temp <- tempfile(fileext = ".gz")
-          download(url = url, destfile = temp)
-          R.utils::gunzip(temp)
-          TERM2GENE <- clusterProfiler::read.gmt(gsub(".gz", "", temp))
+          source_file <- preparedb_local_source_file(
+            data_dir = data_dir,
+            db = "ENCODE",
+            pattern = "^gene_set_library_crisp\\.gmt(\\.gz)?$",
+            verbose = verbose
+          )
+          if (is.null(source_file)) {
+            temp <- tempfile(fileext = ".gz")
+            download(url = url, destfile = temp)
+            R.utils::gunzip(temp)
+            source_file <- gsub(".gz", "", temp)
+          }
+          TERM2GENE <- preparedb_read_gmt_source(source_file)
           version <- "Harmonizome 3.0"
           TERM2NAME <- TERM2GENE[, c(1, 1)]
           colnames(TERM2GENE) <- c("Term", default_id_types[["ENCODE"]])
@@ -2335,13 +2454,6 @@ PrepareDB <- function(
           }
           log_message("Preparing {.pkg MSigDB} database", verbose = verbose)
 
-          temp <- tempfile()
-          download(
-            url = "https://data.broadinstitute.org/gsea-msigdb/msigdb/release/",
-            destfile = temp
-          )
-          version <- readLines(temp)
-          version <- version[grep("alt=\"\\[DIR\\]\"", version)]
           msigdb_release_species <- switch(db_species[["MSigDB"]],
             "Homo_sapiens" = "Hs",
             "Mus_musculus" = "Mm"
@@ -2352,25 +2464,54 @@ PrepareDB <- function(
               message_type = "error"
             )
           }
-          version <- version[grep(
-            msigdb_release_species,
-            version
-          )]
-          version <- version[length(version)]
-          version <- regmatches(
-            version,
-            m = regexpr("(?<=href\\=\")\\S+(?=/\"\\>)", version, perl = TRUE)
+
+          msigdb_pattern <- if (identical(db_version, "latest")) {
+            paste0("^msigdb\\.v.+\\.", msigdb_release_species, "\\.json$")
+          } else {
+            glob2rx(paste0("msigdb.v", db_version, ".json"))
+          }
+          msigdb_local_file <- preparedb_local_source_file(
+            data_dir = data_dir,
+            db = "MSigDB",
+            pattern = msigdb_pattern,
+            verbose = verbose
           )
 
-          url <- paste0(
-            "https://data.broadinstitute.org/gsea-msigdb/msigdb/release/",
-            version,
-            "/msigdb.v",
-            version,
-            ".json"
-          )
-          download(url = url, destfile = temp)
-          lines <- paste0(readLines(temp, warn = FALSE), collapse = "")
+          if (!is.null(msigdb_local_file)) {
+            version <- sub("^msigdb\\.v(.+)\\.json$", "\\1", basename(msigdb_local_file))
+            log_message(
+              "Using local {.pkg MSigDB} JSON file: {.path {msigdb_local_file}}",
+              verbose = verbose
+            )
+            lines <- paste0(readLines(msigdb_local_file, warn = FALSE), collapse = "")
+          } else {
+            temp <- tempfile()
+            download(
+              url = "https://data.broadinstitute.org/gsea-msigdb/msigdb/release/",
+              destfile = temp
+            )
+            version <- readLines(temp)
+            version <- version[grep("alt=\"\\[DIR\\]\"", version)]
+            version <- version[grep(
+              msigdb_release_species,
+              version
+            )]
+            version <- version[length(version)]
+            version <- regmatches(
+              version,
+              m = regexpr("(?<=href\\=\")\\S+(?=/\"\\>)", version, perl = TRUE)
+            )
+
+            url <- paste0(
+              "https://data.broadinstitute.org/gsea-msigdb/msigdb/release/",
+              version,
+              "/msigdb.v",
+              version,
+              ".json"
+            )
+            download(url = url, destfile = temp)
+            lines <- paste0(readLines(temp, warn = FALSE), collapse = "")
+          }
           lines <- gsub("\"", "", lines)
           lines <- gsub("^\\{|\\}$", "", lines)
           terms <- strsplit(lines, "\\},")[[1]]
@@ -2514,9 +2655,29 @@ PrepareDB <- function(
             "Mus_musculus" = "https://raw.githubusercontent.com/ZJUFanLab/CellTalkDB/master/database/mouse_lr_pair.rds"
           )
 
-          temp <- tempfile()
-          download(url = url, destfile = temp)
-          lr <- readRDS(temp)
+          celltalk_file <- switch(db_species["CellTalk"],
+            "Homo_sapiens" = "human_lr_pair.rds",
+            "Mus_musculus" = "mouse_lr_pair.rds"
+          )
+          source_file <- preparedb_local_source_file(
+            data_dir = data_dir,
+            db = "CellTalk",
+            pattern = switch(db_species["CellTalk"],
+              "Homo_sapiens" = "^human_lr_pair\\.rds$",
+              "Mus_musculus" = "^mouse_lr_pair\\.rds$"
+            ),
+            verbose = verbose
+          )
+          source_is_temp <- FALSE
+          if (is.null(source_file)) {
+            source_file <- tempfile()
+            source_is_temp <- TRUE
+            download(url = url, destfile = source_file)
+          }
+          lr <- readRDS(source_file)
+          if (isTRUE(source_is_temp)) {
+            unlink(source_file)
+          }
           version <- "v1.0"
 
           lr[["ligand_gene_symbol2"]] <- paste0(
@@ -2597,9 +2758,31 @@ PrepareDB <- function(
               "Danio_rerio" = "zebrafish.rda"
             )
           )
-          temp <- tempfile()
-          download(url = url, destfile = temp)
-          load(temp)
+          cellchat_file <- paste0(
+            "CellChatDB.",
+            switch(db_species["CellChat"],
+              "Homo_sapiens" = "human.rda",
+              "Mus_musculus" = "mouse.rda",
+              "Danio_rerio" = "zebrafish.rda"
+            )
+          )
+          source_file <- preparedb_local_source_file(
+            data_dir = data_dir,
+            db = "CellChat",
+            pattern = switch(db_species["CellChat"],
+              "Homo_sapiens" = "^CellChatDB\\.human\\.rda$",
+              "Mus_musculus" = "^CellChatDB\\.mouse\\.rda$",
+              "Danio_rerio" = "^CellChatDB\\.zebrafish\\.rda$"
+            ),
+            verbose = verbose
+          )
+          source_is_temp <- FALSE
+          if (is.null(source_file)) {
+            source_file <- tempfile()
+            source_is_temp <- TRUE
+            download(url = url, destfile = source_file)
+          }
+          load(source_file)
           lr <- get(paste0(
             "CellChatDB.",
             switch(db_species["CellChat"],
@@ -2608,21 +2791,26 @@ PrepareDB <- function(
               "Danio_rerio" = "zebrafish"
             )
           ))[["interaction"]]
-          download(
-            url = "https://raw.githubusercontent.com/sqjin/CellChat/master/DESCRIPTION",
-            destfile = temp
-          )
-          version <- grep(
-            pattern = "Version",
-            x = readLines(temp),
-            value = TRUE
-          )
-          version <- gsub(
-            pattern = "(.*Version: )|(</td>)",
-            replacement = "",
-            x = version
-          )
-          unlink(temp)
+          if (isTRUE(source_is_temp)) {
+            temp <- source_file
+            download(
+              url = "https://raw.githubusercontent.com/sqjin/CellChat/master/DESCRIPTION",
+              destfile = temp
+            )
+            version <- grep(
+              pattern = "Version",
+              x = readLines(temp),
+              value = TRUE
+            )
+            version <- gsub(
+              pattern = "(.*Version: )|(</td>)",
+              replacement = "",
+              x = version
+            )
+            unlink(temp)
+          } else {
+            version <- if (identical(db_version, "latest")) "local" else db_version
+          }
 
           lr_list <- strsplit(lr$interaction_name, split = "_")
           lr[["ligand_gene_symbol"]] <- paste0(
@@ -2937,6 +3125,91 @@ preparedb_normalize_term2gene_id_columns <- function(TERM2GENE) {
     colnames(TERM2GENE)[colnames(TERM2GENE) == legacy_msigdb_col] <- "symbol"
   }
   TERM2GENE
+}
+
+preparedb_local_source_file <- function(
+  data_dir,
+  db,
+  pattern,
+  verbose = TRUE
+) {
+  if (is.null(data_dir)) {
+    return(NULL)
+  }
+
+  data_source <- data_dir
+  if (is.list(data_dir)) {
+    if (is.null(names(data_dir)) || !db %in% names(data_dir)) {
+      return(NULL)
+    }
+    data_source <- data_dir[[db]]
+    if (is.list(data_source)) {
+      if (!is.null(data_source[["file"]])) {
+        data_source <- data_source[["file"]]
+      } else if (!is.null(data_source[["path"]])) {
+        data_source <- data_source[["path"]]
+      } else {
+        return(NULL)
+      }
+    }
+  }
+
+  if (!is.character(data_source) || length(data_source) != 1 || is.na(data_source) || !nzchar(data_source)) {
+    log_message(
+      "{.arg data_dir} must be one directory path, one file path, or a named list of paths",
+      message_type = "error"
+    )
+  }
+  data_source <- path.expand(data_source)
+  if (file.exists(data_source) && !dir.exists(data_source)) {
+    if (any(grepl(pattern, basename(data_source), perl = TRUE))) {
+      return(normalizePath(data_source, mustWork = TRUE))
+    }
+    log_message(
+      "Local source file {.path {data_source}} does not match the expected {.pkg {db}} file name; downloading instead",
+      message_type = "warning",
+      verbose = verbose
+    )
+    return(NULL)
+  }
+  if (!dir.exists(data_source)) {
+    log_message(
+      "{.arg data_dir} must point to an existing local directory or file",
+      message_type = "error"
+    )
+  }
+
+  candidate_dirs <- unique(c(file.path(data_source, db), data_source))
+  candidate_dirs <- candidate_dirs[dir.exists(candidate_dirs)]
+  local_files <- unlist(lapply(candidate_dirs, function(dir) {
+    list.files(
+      dir,
+      pattern = pattern,
+      full.names = TRUE
+    )
+  }), use.names = FALSE)
+  local_files <- unique(local_files)
+  if (length(local_files) == 0) {
+    log_message(
+      "No local source file for {.pkg {db}} was found in {.arg data_dir}; downloading instead",
+      message_type = "warning",
+      verbose = verbose
+    )
+    return(NULL)
+  }
+  local_files[order(file.info(local_files)[["mtime"]], decreasing = TRUE)][[1]]
+}
+
+preparedb_read_gmt_source <- function(path) {
+  if (grepl("\\.gz$", path, ignore.case = TRUE)) {
+    temp <- tempfile(fileext = ".gz")
+    file.copy(path, temp, overwrite = TRUE)
+    R.utils::gunzip(temp)
+    unzipped <- sub("\\.gz$", "", temp)
+    on.exit(unlink(unzipped), add = TRUE)
+    return(clusterProfiler::read.gmt(unzipped))
+  }
+  clusterProfiler::read.gmt(path)
 }
 
 preparedb_source_idtype <- function(term, TERM2GENE, default_id_types) {
