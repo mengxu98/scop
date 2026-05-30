@@ -159,8 +159,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // aucell_auc_sparse
-NumericMatrix aucell_auc_sparse(S4 expr, List gene_sets, int auc_max_rank, bool norm_auc, int strategy);
-RcppExport SEXP _scop_aucell_auc_sparse(SEXP exprSEXP, SEXP gene_setsSEXP, SEXP auc_max_rankSEXP, SEXP norm_aucSEXP, SEXP strategySEXP) {
+NumericMatrix aucell_auc_sparse(S4 expr, List gene_sets, int auc_max_rank, bool norm_auc, int strategy, int algorithm);
+RcppExport SEXP _scop_aucell_auc_sparse(SEXP exprSEXP, SEXP gene_setsSEXP, SEXP auc_max_rankSEXP, SEXP norm_aucSEXP, SEXP strategySEXP, SEXP algorithmSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -169,7 +169,21 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type auc_max_rank(auc_max_rankSEXP);
     Rcpp::traits::input_parameter< bool >::type norm_auc(norm_aucSEXP);
     Rcpp::traits::input_parameter< int >::type strategy(strategySEXP);
-    rcpp_result_gen = Rcpp::wrap(aucell_auc_sparse(expr, gene_sets, auc_max_rank, norm_auc, strategy));
+    Rcpp::traits::input_parameter< int >::type algorithm(algorithmSEXP);
+    rcpp_result_gen = Rcpp::wrap(aucell_auc_sparse(expr, gene_sets, auc_max_rank, norm_auc, strategy, algorithm));
+    return rcpp_result_gen;
+END_RCPP
+}
+// aucell_auc_ranked
+NumericMatrix aucell_auc_ranked(NumericMatrix rankings, List gene_sets, int auc_max_rank);
+RcppExport SEXP _scop_aucell_auc_ranked(SEXP rankingsSEXP, SEXP gene_setsSEXP, SEXP auc_max_rankSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type rankings(rankingsSEXP);
+    Rcpp::traits::input_parameter< List >::type gene_sets(gene_setsSEXP);
+    Rcpp::traits::input_parameter< int >::type auc_max_rank(auc_max_rankSEXP);
+    rcpp_result_gen = Rcpp::wrap(aucell_auc_ranked(rankings, gene_sets, auc_max_rank));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -429,6 +443,87 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type smooth(smoothSEXP);
     Rcpp::traits::input_parameter< bool >::type normalize(normalizeSEXP);
     rcpp_result_gen = Rcpp::wrap(pseudotime_velocity_gradient(x_emb, pseudotime, neighbors, smooth, normalize));
+    return rcpp_result_gen;
+END_RCPP
+}
+// grnboost_tree
+DataFrame grnboost_tree(NumericMatrix expr, IntegerVector regulator_idx, IntegerVector target_idx, int n_rounds, double learning_rate, int max_edges_per_target, int max_depth, double max_features, double subsample, int early_stop_window_length, int random_seed, bool exclude_self);
+RcppExport SEXP _scop_grnboost_tree(SEXP exprSEXP, SEXP regulator_idxSEXP, SEXP target_idxSEXP, SEXP n_roundsSEXP, SEXP learning_rateSEXP, SEXP max_edges_per_targetSEXP, SEXP max_depthSEXP, SEXP max_featuresSEXP, SEXP subsampleSEXP, SEXP early_stop_window_lengthSEXP, SEXP random_seedSEXP, SEXP exclude_selfSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type expr(exprSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type regulator_idx(regulator_idxSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type target_idx(target_idxSEXP);
+    Rcpp::traits::input_parameter< int >::type n_rounds(n_roundsSEXP);
+    Rcpp::traits::input_parameter< double >::type learning_rate(learning_rateSEXP);
+    Rcpp::traits::input_parameter< int >::type max_edges_per_target(max_edges_per_targetSEXP);
+    Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);
+    Rcpp::traits::input_parameter< double >::type max_features(max_featuresSEXP);
+    Rcpp::traits::input_parameter< double >::type subsample(subsampleSEXP);
+    Rcpp::traits::input_parameter< int >::type early_stop_window_length(early_stop_window_lengthSEXP);
+    Rcpp::traits::input_parameter< int >::type random_seed(random_seedSEXP);
+    Rcpp::traits::input_parameter< bool >::type exclude_self(exclude_selfSEXP);
+    rcpp_result_gen = Rcpp::wrap(grnboost_tree(expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self));
+    return rcpp_result_gen;
+END_RCPP
+}
+// scenic_ctx_recovery
+NumericMatrix scenic_ctx_recovery(IntegerMatrix ranks, NumericVector weights, int rank_threshold);
+RcppExport SEXP _scop_scenic_ctx_recovery(SEXP ranksSEXP, SEXP weightsSEXP, SEXP rank_thresholdSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type ranks(ranksSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type weights(weightsSEXP);
+    Rcpp::traits::input_parameter< int >::type rank_threshold(rank_thresholdSEXP);
+    rcpp_result_gen = Rcpp::wrap(scenic_ctx_recovery(ranks, weights, rank_threshold));
+    return rcpp_result_gen;
+END_RCPP
+}
+// scenic_ctx_auc_nes
+List scenic_ctx_auc_nes(IntegerMatrix ranks, double nes_threshold, int rank_cutoff);
+RcppExport SEXP _scop_scenic_ctx_auc_nes(SEXP ranksSEXP, SEXP nes_thresholdSEXP, SEXP rank_cutoffSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type ranks(ranksSEXP);
+    Rcpp::traits::input_parameter< double >::type nes_threshold(nes_thresholdSEXP);
+    Rcpp::traits::input_parameter< int >::type rank_cutoff(rank_cutoffSEXP);
+    rcpp_result_gen = Rcpp::wrap(scenic_ctx_auc_nes(ranks, nes_threshold, rank_cutoff));
+    return rcpp_result_gen;
+END_RCPP
+}
+// scenicplus_region_gene_cor
+NumericVector scenicplus_region_gene_cor(NumericMatrix atac_log, NumericMatrix rna_log, IntegerVector region_idx, IntegerVector gene_idx);
+RcppExport SEXP _scop_scenicplus_region_gene_cor(SEXP atac_logSEXP, SEXP rna_logSEXP, SEXP region_idxSEXP, SEXP gene_idxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type atac_log(atac_logSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type rna_log(rna_logSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type region_idx(region_idxSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type gene_idx(gene_idxSEXP);
+    rcpp_result_gen = Rcpp::wrap(scenicplus_region_gene_cor(atac_log, rna_log, region_idx, gene_idx));
+    return rcpp_result_gen;
+END_RCPP
+}
+// scenicplus_triplets_cpp
+DataFrame scenicplus_triplets_cpp(CharacterVector tf_gene_tf, CharacterVector tf_gene_target, NumericVector tf_gene_importance, CharacterVector region_gene_region, CharacterVector region_gene_gene, NumericVector region_gene_score, CharacterVector tf_region_tf, CharacterVector tf_region_region, NumericVector tf_region_score);
+RcppExport SEXP _scop_scenicplus_triplets_cpp(SEXP tf_gene_tfSEXP, SEXP tf_gene_targetSEXP, SEXP tf_gene_importanceSEXP, SEXP region_gene_regionSEXP, SEXP region_gene_geneSEXP, SEXP region_gene_scoreSEXP, SEXP tf_region_tfSEXP, SEXP tf_region_regionSEXP, SEXP tf_region_scoreSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< CharacterVector >::type tf_gene_tf(tf_gene_tfSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type tf_gene_target(tf_gene_targetSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type tf_gene_importance(tf_gene_importanceSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type region_gene_region(region_gene_regionSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type region_gene_gene(region_gene_geneSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type region_gene_score(region_gene_scoreSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type tf_region_tf(tf_region_tfSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type tf_region_region(tf_region_regionSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type tf_region_score(tf_region_scoreSEXP);
+    rcpp_result_gen = Rcpp::wrap(scenicplus_triplets_cpp(tf_gene_tf, tf_gene_target, tf_gene_importance, region_gene_region, region_gene_gene, region_gene_score, tf_region_tf, tf_region_region, tf_region_score));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1126,7 +1221,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_cytotrace2_bin_data", (DL_FUNC) &_scop_cytotrace2_bin_data, 3},
     {"_scop_cytotrace2_knn_smooth", (DL_FUNC) &_scop_cytotrace2_knn_smooth, 5},
     {"_scop_cytotrace2_main", (DL_FUNC) &_scop_cytotrace2_main, 7},
-    {"_scop_aucell_auc_sparse", (DL_FUNC) &_scop_aucell_auc_sparse, 5},
+    {"_scop_aucell_auc_sparse", (DL_FUNC) &_scop_aucell_auc_sparse, 6},
+    {"_scop_aucell_auc_ranked", (DL_FUNC) &_scop_aucell_auc_ranked, 3},
     {"_scop_ora_hypergeom", (DL_FUNC) &_scop_ora_hypergeom, 7},
     {"_scop_module_score_sparse", (DL_FUNC) &_scop_module_score_sparse, 3},
     {"_scop_proportion_permutation", (DL_FUNC) &_scop_proportion_permutation, 6},
@@ -1145,6 +1241,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_proportion_bootstrap_stats", (DL_FUNC) &_scop_proportion_bootstrap_stats, 5},
     {"_scop_pseudotime_velocity_knn", (DL_FUNC) &_scop_pseudotime_velocity_knn, 4},
     {"_scop_pseudotime_velocity_gradient", (DL_FUNC) &_scop_pseudotime_velocity_gradient, 5},
+    {"_scop_grnboost_tree", (DL_FUNC) &_scop_grnboost_tree, 12},
+    {"_scop_scenic_ctx_auc_nes", (DL_FUNC) &_scop_scenic_ctx_auc_nes, 3},
+    {"_scop_scenic_ctx_recovery", (DL_FUNC) &_scop_scenic_ctx_recovery, 3},
+    {"_scop_scenicplus_region_gene_cor", (DL_FUNC) &_scop_scenicplus_region_gene_cor, 4},
+    {"_scop_scenicplus_triplets_cpp", (DL_FUNC) &_scop_scenicplus_triplets_cpp, 9},
     {"_scop_scvelo_stochastic_embedding_cpp", (DL_FUNC) &_scop_scvelo_stochastic_embedding_cpp, 4},
     {"_scop_sctenifold_pcnet_covariance_raw", (DL_FUNC) &_scop_sctenifold_pcnet_covariance_raw, 6},
     {"_scop_sctenifold_pcnet_covariance_sparse", (DL_FUNC) &_scop_sctenifold_pcnet_covariance_sparse, 9},

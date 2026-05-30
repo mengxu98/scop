@@ -166,9 +166,16 @@ gene_set_scoring_normalize_chunk_size <- function(
   as.integer(chunk_size_num)
 }
 
-run_aucell_scores <- function(expr_counts, gene_sets, strategy = c("sparse", "topk", "full")) {
+run_aucell_scores <- function(
+  expr_counts,
+  gene_sets,
+  strategy = c("sparse", "topk", "full"),
+  algorithm = c("aucell", "ctxcore")
+) {
   strategy <- match.arg(strategy)
+  algorithm <- match.arg(algorithm)
   strategy_id <- c("topk" = 1L, "sparse" = 2L, "full" = 3L)[[strategy]]
+  algorithm_id <- c("aucell" = 1L, "ctxcore" = 2L)[[algorithm]]
 
   gene_set_idx <- gene_set_scoring_indices(
     gene_sets = gene_sets,
@@ -189,9 +196,41 @@ run_aucell_scores <- function(expr_counts, gene_sets, strategy = c("sparse", "to
     gene_sets = gene_set_idx,
     auc_max_rank = as.integer(auc_max_rank),
     norm_auc = TRUE,
-    strategy = strategy_id
+    strategy = strategy_id,
+    algorithm = algorithm_id
   )
   dimnames(scores) <- list(colnames(expr_counts), names(gene_set_idx))
+  scores
+}
+
+run_aucell_scores_from_rankings <- function(rankings, gene_sets) {
+  if (!is.matrix(rankings)) {
+    rankings <- as.matrix(rankings)
+  }
+  if (is.null(rownames(rankings)) || is.null(colnames(rankings))) {
+    log_message(
+      "{.arg rankings} must have cell row names and gene column names",
+      message_type = "error"
+    )
+  }
+  gene_set_idx <- gene_set_scoring_indices(
+    gene_sets = gene_sets,
+    feature_names = colnames(rankings)
+  )
+  gene_set_idx <- gene_set_idx[lengths(gene_set_idx) > 0L]
+  if (length(gene_set_idx) == 0L) {
+    log_message(
+      "No gene sets retain genes after intersecting with the ranking matrix",
+      message_type = "error"
+    )
+  }
+  auc_max_rank <- round(0.05 * ncol(rankings))
+  scores <- aucell_auc_ranked(
+    rankings = rankings,
+    gene_sets = gene_set_idx,
+    auc_max_rank = as.integer(auc_max_rank)
+  )
+  dimnames(scores) <- list(rownames(rankings), names(gene_set_idx))
   scores
 }
 
