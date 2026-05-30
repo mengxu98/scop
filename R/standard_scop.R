@@ -1,17 +1,52 @@
 #' @title Standard workflow for scop
 #'
 #' @description
-#' This function performs a standard single-cell analysis workflow.
+#' This function performs a standard single-cell or spot-level spatial analysis
+#' workflow.
 #'
 #' @md
 #' @inheritParams thisutils::log_message
 #' @param srt A Seurat object.
 #' @param prefix A prefix to add to the names of intermediate objects created by the function.
 #' Default is `"Standard"`.
+#' @param workflow Workflow to run. `"single_cell"` keeps the original standard
+#' workflow. `"spatial"` runs a spot-level spatial workflow that wraps the
+#' original workflow with spot QC, spatial variable features, optional spatial
+#' clustering, and optional RCTD deconvolution.
 #' @param assay Which assay to use.
 #' If `NULL`, the default assay of the Seurat object will be used.
 #' When the object also contains `ChromatinAssay`, the default assay and
 #' additional `ChromatinAssay` will be preprocessed sequentially.
+#' @param image Name of the Seurat spatial image used by the spatial workflow.
+#' If `NULL`, the first image is used when present.
+#' @param coord.cols Metadata coordinate columns used by the spatial workflow
+#' when no image is available.
+#' @param do_spot_qc Whether to run [RunSpotQC()] in the spatial workflow.
+#' @param spot_qc_params Named list of additional arguments passed to
+#' [RunSpotQC()].
+#' @param do_spatial_variable_features Whether to run
+#' [RunSpatialVariableFeatures()] in the spatial workflow.
+#' @param spatial_variable_features_params Named list of additional arguments
+#' passed to [RunSpatialVariableFeatures()].
+#' @param do_spatial_cluster Whether to run spatial-aware clustering in the
+#' spatial workflow.
+#' @param spatial_cluster_method Spatial clustering method. Only
+#' `"BayesSpace"` is supported in this workflow.
+#' @param spatial_q Number of spatial clusters for [RunBayesSpace()]. If
+#' `NULL`, the number of ordinary spot clusters is used.
+#' @param bayesspace_params Named list of additional arguments passed to
+#' [RunBayesSpace()].
+#' @param reference Optional single-cell reference used for spatial
+#' deconvolution.
+#' @param reference_label Metadata column in `reference` containing cell type
+#' labels.
+#' @param reference_assay Assay used in `reference` for deconvolution.
+#' @param do_deconvolution Whether to run deconvolution in the spatial workflow.
+#' If `NULL`, deconvolution is run only when `reference` is provided.
+#' @param deconvolution_method Deconvolution method. Only `"RCTD"` is supported
+#' in this workflow.
+#' @param deconvolution_params Named list of additional arguments passed to
+#' [RunRCTD()].
 #' @param do_normalization Whether to perform normalization.
 #' If `NULL`, normalization will be performed if the specified assay does not have scaled data.
 #' @param normalization_method The method to use for normalization.
@@ -159,10 +194,107 @@
 #'     group.by = "Standardclusters"
 #'   )
 #' }
+#'
+#' \dontrun{
+#' data(visium_human_pancreas_sub)
+#' spatial <- standard_scop(
+#'   visium_human_pancreas_sub,
+#'   workflow = "spatial",
+#'   assay = "Spatial",
+#'   do_spatial_cluster = FALSE,
+#'   spatial_cluster_method = "BayesSpace",
+#'   do_deconvolution = FALSE,
+#'   deconvolution_method = "RCTD",
+#'   linear_reduction_dims = 10,
+#'   linear_reduction_dims_use = 1:5,
+#'   nonlinear_reduction_dims = 2,
+#'   spatial_variable_features_params = list(nfeatures = 50)
+#' )
+#' SpatialSpotPlot(spatial, group.by = "SpotQC")
+#' SpatialSpotPlot(spatial, group.by = "Standardclusters")
+#' SpatialSpotPlot(
+#'   spatial,
+#'   features = spatial@misc[["SpatialVariableFeatures"]][1:2]
+#' )
+#'
+#' spatial_bayes <- standard_scop(
+#'   visium_human_pancreas_sub,
+#'   workflow = "spatial",
+#'   assay = "Spatial",
+#'   do_spatial_cluster = TRUE,
+#'   spatial_cluster_method = "BayesSpace",
+#'   spatial_q = 3,
+#'   do_deconvolution = FALSE,
+#'   deconvolution_method = "RCTD",
+#'   bayesspace_params = list(
+#'     n.PCs = 5,
+#'     n.HVGs = 200,
+#'     store_sce = FALSE,
+#'     spatial_cluster_params = list(
+#'       nrep = 200,
+#'       burn.in = 50,
+#'       thin = 10,
+#'       save.chain = FALSE
+#'     )
+#'   )
+#' )
+#' SpatialSpotPlot(spatial_bayes, group.by = "BayesSpace_cluster")
+#'
+#' data(panc8_sub)
+#' spatial_rctd <- standard_scop(
+#'   visium_human_pancreas_sub,
+#'   workflow = "spatial",
+#'   assay = "Spatial",
+#'   do_spatial_cluster = FALSE,
+#'   spatial_cluster_method = "BayesSpace",
+#'   do_deconvolution = TRUE,
+#'   deconvolution_method = "RCTD",
+#'   reference = panc8_sub,
+#'   reference_assay = "RNA",
+#'   reference_label = "celltype",
+#'   deconvolution_params = list(
+#'     max_cores = 1,
+#'     min_cells = 25
+#'   )
+#' )
+#' SpatialSpotPlot(spatial_rctd, group.by = "RCTD_dominant_type")
+#'
+#' rctd_cols <- grep(
+#'   "^RCTD_prop_",
+#'   colnames(spatial_rctd@meta.data),
+#'   value = TRUE
+#' )
+#' SpatialSpotPlot(
+#'   spatial_rctd,
+#'   group.by = rctd_cols[1:min(4, length(rctd_cols))]
+#' )
+#' SpatialSpotPlot(
+#'   spatial_rctd,
+#'   group.by = rctd_cols,
+#'   plot_type = "pie"
+#' )
+#' }
 standard_scop <- function(
   srt,
   prefix = "Standard",
+  workflow = c("single_cell", "spatial"),
   assay = NULL,
+  image = NULL,
+  coord.cols = c("x", "y"),
+  do_spot_qc = TRUE,
+  spot_qc_params = list(),
+  do_spatial_variable_features = TRUE,
+  spatial_variable_features_params = list(),
+  do_spatial_cluster = FALSE,
+  spatial_cluster_method = "BayesSpace",
+  spatial_q = NULL,
+  bayesspace_params = list(),
+  reference = NULL,
+  reference_label = NULL,
+  reference_assay = NULL,
+  do_deconvolution = !is.null(reference),
+  deconvolution_method = "RCTD",
+  deconvolution_params = list(),
   do_normalization = NULL,
   normalization_method = "LogNormalize",
   do_HVF_finding = TRUE,
@@ -189,6 +321,56 @@ standard_scop <- function(
   seed = 11,
   ...
 ) {
+  workflow <- match.arg(workflow)
+  if (identical(workflow, "spatial")) {
+    return(standard_spatial_scop(
+      srt = srt,
+      prefix = prefix,
+      assay = assay,
+      image = image,
+      coord.cols = coord.cols,
+      do_spot_qc = do_spot_qc,
+      spot_qc_params = spot_qc_params,
+      do_spatial_variable_features = do_spatial_variable_features,
+      spatial_variable_features_params = spatial_variable_features_params,
+      do_spatial_cluster = do_spatial_cluster,
+      spatial_cluster_method = spatial_cluster_method,
+      spatial_q = spatial_q,
+      bayesspace_params = bayesspace_params,
+      reference = reference,
+      reference_label = reference_label,
+      reference_assay = reference_assay,
+      do_deconvolution = do_deconvolution,
+      deconvolution_method = deconvolution_method,
+      deconvolution_params = deconvolution_params,
+      do_normalization = do_normalization,
+      normalization_method = normalization_method,
+      do_HVF_finding = do_HVF_finding,
+      HVF_method = HVF_method,
+      nHVF = nHVF,
+      HVF = HVF,
+      do_scaling = do_scaling,
+      vars_to_regress = vars_to_regress,
+      regression_model = regression_model,
+      linear_reduction = linear_reduction,
+      linear_reduction_dims = linear_reduction_dims,
+      linear_reduction_dims_use = linear_reduction_dims_use,
+      linear_reduction_params = linear_reduction_params,
+      force_linear_reduction = force_linear_reduction,
+      nonlinear_reduction = nonlinear_reduction,
+      nonlinear_reduction_dims = nonlinear_reduction_dims,
+      nonlinear_reduction_params = nonlinear_reduction_params,
+      force_nonlinear_reduction = force_nonlinear_reduction,
+      neighbor_metric = neighbor_metric,
+      neighbor_k = neighbor_k,
+      cluster_algorithm = cluster_algorithm,
+      cluster_resolution = cluster_resolution,
+      verbose = verbose,
+      seed = seed,
+      ...
+    ))
+  }
+
   log_message(
     "Start standard processing workflow...",
     text_color = "blue",
@@ -564,6 +746,335 @@ standard_scop <- function(
   )
 
   return(srt)
+}
+
+standard_spatial_scop <- function(
+  srt,
+  prefix = "Standard",
+  assay = NULL,
+  image = NULL,
+  coord.cols = c("x", "y"),
+  do_spot_qc = TRUE,
+  spot_qc_params = list(),
+  do_spatial_variable_features = TRUE,
+  spatial_variable_features_params = list(),
+  do_spatial_cluster = FALSE,
+  spatial_cluster_method = "BayesSpace",
+  spatial_q = NULL,
+  bayesspace_params = list(),
+  reference = NULL,
+  reference_label = NULL,
+  reference_assay = NULL,
+  do_deconvolution = !is.null(reference),
+  deconvolution_method = "RCTD",
+  deconvolution_params = list(),
+  do_normalization = NULL,
+  normalization_method = "LogNormalize",
+  do_HVF_finding = TRUE,
+  HVF_method = "vst",
+  nHVF = 2000,
+  HVF = NULL,
+  do_scaling = TRUE,
+  vars_to_regress = NULL,
+  regression_model = "linear",
+  linear_reduction = "pca",
+  linear_reduction_dims = 50,
+  linear_reduction_dims_use = NULL,
+  linear_reduction_params = list(),
+  force_linear_reduction = FALSE,
+  nonlinear_reduction = "umap",
+  nonlinear_reduction_dims = c(2, 3),
+  nonlinear_reduction_params = list(),
+  force_nonlinear_reduction = TRUE,
+  neighbor_metric = "euclidean",
+  neighbor_k = 20L,
+  cluster_algorithm = "louvain",
+  cluster_resolution = 0.6,
+  verbose = TRUE,
+  seed = 11,
+  ...
+) {
+  log_message(
+    "Start standard spot-level spatial workflow...",
+    text_color = "blue",
+    verbose = verbose
+  )
+
+  if (!inherits(srt, "Seurat")) {
+    log_message(
+      "{.arg srt} is not a {.cls Seurat}",
+      message_type = "error"
+    )
+  }
+  if (is.null(assay) || length(assay) != 1L || is.na(assay)) {
+    log_message(
+      "{.arg assay} must be specified for {.arg workflow = 'spatial'}",
+      message_type = "error"
+    )
+  }
+  if (!assay %in% SeuratObject::Assays(srt)) {
+    log_message(
+      "{.arg assay} {.val {assay}} is not present in {.cls Seurat}",
+      message_type = "error"
+    )
+  }
+
+  standard_scop_validate_named_list(spot_qc_params, "spot_qc_params")
+  standard_scop_validate_named_list(
+    spatial_variable_features_params,
+    "spatial_variable_features_params"
+  )
+  standard_scop_validate_named_list(bayesspace_params, "bayesspace_params")
+  standard_scop_validate_named_list(
+    deconvolution_params,
+    "deconvolution_params"
+  )
+
+  spatial_cluster_method <- match.arg(spatial_cluster_method, "BayesSpace")
+  deconvolution_method <- match.arg(deconvolution_method, "RCTD")
+  if (is.null(do_deconvolution)) {
+    do_deconvolution <- !is.null(reference)
+  }
+
+  if (isTRUE(do_spot_qc)) {
+    spot_qc_args <- standard_scop_merge_args(
+      list(
+        srt = srt,
+        assay = assay,
+        verbose = verbose
+      ),
+      spot_qc_params
+    )
+    srt <- do.call(RunSpotQC, spot_qc_args)
+  }
+
+  srt <- standard_scop(
+    srt = srt,
+    prefix = prefix,
+    workflow = "single_cell",
+    assay = assay,
+    do_normalization = do_normalization,
+    normalization_method = normalization_method,
+    do_HVF_finding = do_HVF_finding,
+    HVF_method = HVF_method,
+    nHVF = nHVF,
+    HVF = HVF,
+    do_scaling = do_scaling,
+    vars_to_regress = vars_to_regress,
+    regression_model = regression_model,
+    linear_reduction = linear_reduction,
+    linear_reduction_dims = linear_reduction_dims,
+    linear_reduction_dims_use = linear_reduction_dims_use,
+    linear_reduction_params = linear_reduction_params,
+    force_linear_reduction = force_linear_reduction,
+    nonlinear_reduction = nonlinear_reduction,
+    nonlinear_reduction_dims = nonlinear_reduction_dims,
+    nonlinear_reduction_params = nonlinear_reduction_params,
+    force_nonlinear_reduction = force_nonlinear_reduction,
+    neighbor_metric = neighbor_metric,
+    neighbor_k = neighbor_k,
+    cluster_algorithm = cluster_algorithm,
+    cluster_resolution = cluster_resolution,
+    verbose = verbose,
+    seed = seed,
+    ...
+  )
+
+  cluster_col <- paste0(prefix, "clusters")
+  if (isTRUE(do_spatial_variable_features)) {
+    svf_args <- standard_scop_merge_args(
+      list(
+        srt = srt,
+        assay = assay,
+        image = image,
+        coord.cols = coord.cols,
+        verbose = verbose,
+        seed = seed
+      ),
+      spatial_variable_features_params
+    )
+    srt <- do.call(RunSpatialVariableFeatures, svf_args)
+  }
+
+  if (isTRUE(do_spatial_cluster)) {
+    if (!identical(spatial_cluster_method, "BayesSpace")) {
+      log_message(
+        "{.arg spatial_cluster_method} only supports {.val BayesSpace}",
+        message_type = "error"
+      )
+    }
+    spatial_q_use <- spatial_q %||% standard_spatial_infer_q(
+      srt = srt,
+      cluster_col = cluster_col
+    )
+    bayesspace_args <- list(
+      srt = srt,
+      q = spatial_q_use,
+      assay = assay,
+      image = image,
+      verbose = verbose
+    )
+    linear_reduction_use <- linear_reduction[[1L]]
+    reduction_use <- paste0(prefix, linear_reduction_use)
+    if (
+      reduction_use %in% SeuratObject::Reductions(srt) &&
+        is.null(bayesspace_params[["use_reduction"]])
+    ) {
+      bayesspace_args[["use_reduction"]] <- reduction_use
+      if (is.null(bayesspace_params[["dims"]])) {
+        emb <- SeuratObject::Embeddings(srt, reduction = reduction_use)
+        if (!is.null(linear_reduction_dims_use)) {
+          dims_use <- linear_reduction_dims_use
+        } else {
+          dims_use <- seq_len(min(15L, ncol(emb)))
+        }
+        bayesspace_args[["dims"]] <- dims_use[dims_use <= ncol(emb)]
+      }
+    }
+    bayesspace_args <- standard_scop_merge_args(
+      bayesspace_args,
+      bayesspace_params
+    )
+    srt <- do.call(RunBayesSpace, bayesspace_args)
+  }
+
+  if (isTRUE(do_deconvolution)) {
+    if (is.null(reference)) {
+      log_message(
+        "Skip deconvolution because {.arg reference} is {.val NULL}",
+        message_type = "warning",
+        verbose = verbose
+      )
+    } else {
+      if (is.null(reference_label)) {
+        log_message(
+          "{.arg reference_label} must be provided when running deconvolution",
+          message_type = "error"
+        )
+      }
+      if (!identical(deconvolution_method, "RCTD")) {
+        log_message(
+          "{.arg deconvolution_method} only supports {.val RCTD}",
+          message_type = "error"
+        )
+      }
+      deconvolution_params <- standard_spatial_prepare_rctd_params(
+        deconvolution_params = deconvolution_params,
+        verbose = verbose
+      )
+      rctd_args <- standard_scop_merge_args(
+        list(
+          srt = srt,
+          reference = reference,
+          reference_label = reference_label,
+          assay = assay,
+          reference_assay = reference_assay,
+          image = image,
+          coord.cols = coord.cols,
+          verbose = verbose
+        ),
+        deconvolution_params
+      )
+      srt <- do.call(RunRCTD, rctd_args)
+    }
+  }
+
+  srt@tools[["standard_spatial_scop"]] <- list(
+    parameters = list(
+      prefix = prefix,
+      assay = assay,
+      image = image,
+      coord.cols = coord.cols,
+      do_spot_qc = do_spot_qc,
+      do_spatial_variable_features = do_spatial_variable_features,
+      do_spatial_cluster = do_spatial_cluster,
+      spatial_cluster_method = spatial_cluster_method,
+      spatial_q = spatial_q,
+      do_deconvolution = do_deconvolution,
+      deconvolution_method = deconvolution_method
+    ),
+    cluster_col = if (cluster_col %in% colnames(srt@meta.data)) {
+      cluster_col
+    } else {
+      NULL
+    }
+  )
+
+  log_message(
+    "Standard spot-level spatial workflow completed",
+    message_type = "success",
+    text_color = "green",
+    verbose = verbose
+  )
+  srt
+}
+
+standard_scop_validate_named_list <- function(x, arg_name) {
+  if (!is.list(x)) {
+    log_message(
+      "{.arg {arg_name}} must be a named list",
+      message_type = "error"
+    )
+  }
+  if (
+    length(x) > 0L &&
+      (is.null(names(x)) || any(is.na(names(x)) | !nzchar(names(x))))
+  ) {
+    log_message(
+      "{.arg {arg_name}} must be a named list",
+      message_type = "error"
+    )
+  }
+  invisible(TRUE)
+}
+
+standard_scop_merge_args <- function(defaults, extra) {
+  if (length(extra) == 0L) {
+    return(defaults)
+  }
+  for (nm in names(extra)) {
+    defaults[[nm]] <- extra[[nm]]
+  }
+  defaults
+}
+
+standard_spatial_infer_q <- function(srt, cluster_col) {
+  if (!cluster_col %in% colnames(srt@meta.data)) {
+    log_message(
+      "Unable to infer {.arg spatial_q}; metadata column {.val {cluster_col}} was not found",
+      message_type = "error"
+    )
+  }
+  clusters <- as.character(srt[[cluster_col, drop = TRUE]])
+  q <- length(unique(stats::na.omit(clusters)))
+  if (q < 2L) {
+    log_message(
+      "Unable to infer {.arg spatial_q}; {.val {cluster_col}} contains fewer than 2 clusters",
+      message_type = "error"
+    )
+  }
+  q
+}
+
+standard_spatial_prepare_rctd_params <- function(
+  deconvolution_params,
+  verbose = TRUE
+) {
+  min_cells <- deconvolution_params[["min_cells"]] %||% 25
+  if (
+    is.numeric(min_cells) &&
+      length(min_cells) == 1L &&
+      !is.na(min_cells) &&
+      min_cells < 25
+  ) {
+    log_message(
+      "{.pkg spacexr} RCTD requires at least 25 reference cells per cell type; set {.arg min_cells} from {.val {min_cells}} to {.val 25}",
+      message_type = "warning",
+      verbose = verbose
+    )
+    deconvolution_params[["min_cells"]] <- 25
+  }
+  deconvolution_params
 }
 
 standard_scop_resolve_assays <- function(srt, assay = NULL) {
