@@ -228,8 +228,10 @@ FeatureHeatmap <- function(
   units = "inch",
   cores = 1,
   seed = 11,
+  legend.position = "right",
   ht_params = list(),
-  verbose = TRUE
+  verbose = TRUE,
+  ...
 ) {
   set.seed(seed)
   if (isTRUE(raster_by_magick)) {
@@ -489,6 +491,15 @@ FeatureHeatmap <- function(
     cluster_columns <- cluster_rows_raw
     cluster_row_slices <- cluster_column_slices_raw
     cluster_column_slices <- cluster_row_slices_raw
+  }
+
+  if (!flip && show_row_names && !is.null(features)) {
+    row_name_gp <- ht_params$row_names_gp %||% grid::gpar(fontsize = 10)
+    fontsize <- row_name_gp$fontsize %||% 10
+    max_nchar_val <- max(nchar(features), na.rm = TRUE)
+    row_name_width_inch <- max_nchar_val * fontsize * 0.6 / 72
+  } else {
+    row_name_width_inch <- 0
   }
 
   if (is.null(cells)) {
@@ -1418,7 +1429,8 @@ FeatureHeatmap <- function(
     show_termid = show_termid,
     topWord = topWord,
     words_excluded = words_excluded,
-    cores = cores
+    cores = cores,
+    ...
   )
   res <- enrichment$res
   ha_right <- enrichment$ha_right
@@ -1603,7 +1615,8 @@ FeatureHeatmap <- function(
 
     g_tree <- grid::grid.grabExpr(
       {
-        ComplexHeatmap::draw(ht_list, annotation_legend_list = lgd)
+        ComplexHeatmap::draw(ht_list, annotation_legend_list = lgd,
+                             annotation_legend_side = legend.position)
         for (enrich in db) {
           enrich_anno <- names(ha_right)[grep(
             paste0("_split_", enrich),
@@ -1638,7 +1651,8 @@ FeatureHeatmap <- function(
     ht_height <- grid::unit(height_sum, units = units)
     g_tree <- grid::grid.grabExpr(
       {
-        ComplexHeatmap::draw(ht_list, annotation_legend_list = lgd)
+        ComplexHeatmap::draw(ht_list, annotation_legend_list = lgd,
+                             annotation_legend_side = legend.position)
         for (enrich in db) {
           enrich_anno <- names(ha_right)[grep(
             paste0("_split_", enrich),
