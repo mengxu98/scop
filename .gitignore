@@ -14,6 +14,7 @@
 # directories and files
 .cc-connect
 .codex
+.deepseek
 *.dll
 *.h5ad
 *.o
