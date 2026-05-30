@@ -6,6 +6,7 @@
 #' @importFrom dplyr "%>%" %>% .data
 #' @importFrom grDevices as.raster
 #' @importFrom methods slot
+#' @importFrom Rcpp evalCpp
 #' @export
 dplyr::`%>%`
 
