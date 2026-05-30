@@ -12,6 +12,7 @@
 #' @md
 #' @docType package
 #' @name scop-package
+#' @useDynLib scop, .registration = TRUE
 "_PACKAGE"
 
 #' @title scop logo
