@@ -2468,7 +2468,7 @@ PrepareDB <- function(
           msigdb_pattern <- if (identical(db_version, "latest")) {
             paste0("^msigdb\\.v.+\\.", msigdb_release_species, "\\.json$")
           } else {
-            glob2rx(paste0("msigdb.v", db_version, ".json"))
+            utils::glob2rx(paste0("msigdb.v", db_version, ".json"))
           }
           msigdb_local_file <- preparedb_local_source_file(
             data_dir = data_dir,
