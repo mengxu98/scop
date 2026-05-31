@@ -981,8 +981,8 @@ scfea_balance_plot_one <- function(
     down_df <- sig_df[sig_df$mean_diff < 0, , drop = FALSE]
     down_df <- down_df[order(down_df$mean_diff, decreasing = FALSE), , drop = FALSE]
     plot_df <- rbind(
-      head(up_df, top_n),
-      head(down_df, top_n)
+      utils::head(up_df, top_n),
+      utils::head(down_df, top_n)
     )
   }
 
@@ -999,7 +999,11 @@ scfea_balance_plot_one <- function(
 
   p <- ggplot2::ggplot(
     plot_df,
-    ggplot2::aes(x = compound_name, y = mean_diff, fill = direction)
+    ggplot2::aes(
+      x = .data$compound_name,
+      y = .data$mean_diff,
+      fill = .data$direction
+    )
   ) +
     ggplot2::geom_col(width = 0.78) +
     ggplot2::geom_hline(yintercept = 0, linewidth = 0.35, color = "grey30") +
