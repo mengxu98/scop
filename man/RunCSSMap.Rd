@@ -64,6 +64,9 @@ Additional distance metrics can also be used, such as "euclidean", "manhattan", 
 \item{vote_fun}{A character string specifying the function to be used for aggregating the nearest neighbors in the reference object.
 Options are "mean", "median", "sum", "min", "max", "sd", "var", etc.
 If not provided, the default is "mean".}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Single-cell reference mapping with CSS method

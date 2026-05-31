@@ -43,6 +43,9 @@ Default is \code{0.5}.}
 
 \item{k}{Number of clusters per group for k-means clustering when \code{method} is \code{"scmapCell"}.
 Default is \code{10}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Annotate single cells using scmap.

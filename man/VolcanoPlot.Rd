@@ -199,6 +199,9 @@ Default is \code{NULL}.}
 \item{enrich_nlabel}{Maximum number of enrichment-derived labels added per group.
 Labels from \code{features_label} are always retained.
 Default is \code{15}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Generate a volcano plot based on differential expression analysis results.

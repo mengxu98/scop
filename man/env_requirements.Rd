@@ -34,6 +34,9 @@ A list containing:
 \item{packages}{Named vector of package version specifications}
 \item{package_aliases}{Named list mapping logical package names to actual installed names}
 }
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 The function returns a list of requirements including the required Python version,

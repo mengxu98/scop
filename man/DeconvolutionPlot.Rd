@@ -88,6 +88,9 @@ plots. Default is \code{FALSE}.}
 \value{
 A \code{ggplot} object.
 For \code{plot_type = "heatmap"}, returns a \code{ComplexHeatmap::Heatmap} object.
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Visualize bulk or pseudobulk deconvolution results from a
