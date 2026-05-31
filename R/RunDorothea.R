@@ -121,8 +121,7 @@ RunDorothea <- function(
   check_r("decoupleR", verbose = FALSE)
   if (is.null(regulons)) {
     check_r("dorothea", verbose = FALSE)
-    data_name <- switch(
-      species,
+    data_name <- switch(species,
       Homo_sapiens = "dorothea_hs",
       Mus_musculus = "dorothea_mm"
     )
@@ -134,8 +133,7 @@ RunDorothea <- function(
   }
   if (!is.null(confidence) && "confidence" %in% colnames(regulons)) {
     regulons <- regulons[
-      regulons[["confidence"]] %in% confidence,
-      ,
+      regulons[["confidence"]] %in% confidence, ,
       drop = FALSE
     ]
   }
@@ -236,8 +234,7 @@ RunDorothea <- function(
     verbose = verbose
   )
 
-  run_fun <- switch(
-    method,
+  run_fun <- switch(method,
     ulm = getExportedValue("decoupleR", "run_ulm"),
     viper = getExportedValue("decoupleR", "run_viper"),
     wmean = getExportedValue("decoupleR", "run_wmean")
@@ -544,8 +541,7 @@ DorotheaPlot <- function(
         return(NA_real_)
       }
       tryCatch(
-        switch(
-          test.use,
+        switch(test.use,
           wilcox.test = stats::wilcox.test(x, y)$p.value,
           t.test = stats::t.test(x, y)$p.value
         ),
@@ -608,8 +604,7 @@ DorotheaPlot <- function(
   stat_df <- stat_df[plot_order, , drop = FALSE]
   stat_df$TF <- factor(stat_df$TF, levels = stat_df$TF)
 
-  fill_col <- switch(
-    color.by,
+  fill_col <- switch(color.by,
     p_val = "signed_neglog10_p_val",
     p_val_adj = "signed_neglog10_p_val_adj"
   )

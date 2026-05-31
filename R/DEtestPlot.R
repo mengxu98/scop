@@ -152,7 +152,7 @@
 #'   group_use = c("Ductal", "Endocrine"),
 #'   ncol = 2
 #' )
-#' 
+#'
 #' DEtestPlot(
 #'   pancreas_sub,
 #'   group.by = "CellType",
@@ -233,64 +233,65 @@
 #'   ncol = 2
 #' )
 DEtestPlot <- function(
-    srt,
-    group.by = NULL,
-    test.use = "wilcox",
-    res = NULL,
-    plot_type = c("volcano", "manhattan", "ring"),
-    group_use = NULL,
-    DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
-    x_metric = NULL,
-    y_metric = c("p_val_adj", "p_val"),
-    x_order = c("gene", "index"),
-    palette = "RdBu",
-    palcolor = NULL,
-    group_palette = "Chinese",
-    group_palcolor = NULL,
-    pt.size = 1,
-    pt.alpha = 1,
-    cols.background = "grey80",
-    cols.highlight = "black",
-    sizes.highlight = 1,
-    alpha.highlight = 1,
-    stroke.highlight = 0.5,
-    nlabel = 5,
-    features_label = NULL,
-    only.pos = FALSE,
-    label.by = c("p_val_adj", "p_val", "diff_pct", "avg_log2FC"),
-    label.fg = "black",
-    label.bg = "white",
-    label.bg.r = 0.1,
-    label.size = 4,
-    aspect.ratio = NULL,
-    xlab = NULL,
-    ylab = NULL,
-    theme_use = "theme_scop",
-    theme_args = list(),
-    combine = TRUE,
-    nrow = NULL,
-    ncol = NULL,
-    byrow = TRUE,
-    manhattan.bg = "white",
-    group_track_width = NULL,
-    group_track_height = NULL,
-    jitter_width = 0.5,
-    jitter_height = 0,
-    tile_height = 0.3,
-    tile_gap = 0.1,
-    ring_segments = TRUE,
-    seed = 11,
-    threshold_method = c("rectangular", "hyperbolic"),
-    hyperbola_c = 6,
-    annotate_enrichment = FALSE,
-    enrich_from = c("Enrichment", "GSEA", "GSVA"),
-    enrich_db = NULL,
-    enrich_terms = NULL,
-    enrich_top_terms = 3,
-    enrich_padj_cutoff = 0.05,
-    enrich_gsva_score_cutoff = NULL,
-    gsva_method = NULL,
-    enrich_nlabel = 15) {
+  srt,
+  group.by = NULL,
+  test.use = "wilcox",
+  res = NULL,
+  plot_type = c("volcano", "manhattan", "ring"),
+  group_use = NULL,
+  DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
+  x_metric = NULL,
+  y_metric = c("p_val_adj", "p_val"),
+  x_order = c("gene", "index"),
+  palette = "RdBu",
+  palcolor = NULL,
+  group_palette = "Chinese",
+  group_palcolor = NULL,
+  pt.size = 1,
+  pt.alpha = 1,
+  cols.background = "grey80",
+  cols.highlight = "black",
+  sizes.highlight = 1,
+  alpha.highlight = 1,
+  stroke.highlight = 0.5,
+  nlabel = 5,
+  features_label = NULL,
+  only.pos = FALSE,
+  label.by = c("p_val_adj", "p_val", "diff_pct", "avg_log2FC"),
+  label.fg = "black",
+  label.bg = "white",
+  label.bg.r = 0.1,
+  label.size = 4,
+  aspect.ratio = NULL,
+  xlab = NULL,
+  ylab = NULL,
+  theme_use = "theme_scop",
+  theme_args = list(),
+  combine = TRUE,
+  nrow = NULL,
+  ncol = NULL,
+  byrow = TRUE,
+  manhattan.bg = "white",
+  group_track_width = NULL,
+  group_track_height = NULL,
+  jitter_width = 0.5,
+  jitter_height = 0,
+  tile_height = 0.3,
+  tile_gap = 0.1,
+  ring_segments = TRUE,
+  seed = 11,
+  threshold_method = c("rectangular", "hyperbolic"),
+  hyperbola_c = 6,
+  annotate_enrichment = FALSE,
+  enrich_from = c("Enrichment", "GSEA", "GSVA"),
+  enrich_db = NULL,
+  enrich_terms = NULL,
+  enrich_top_terms = 3,
+  enrich_padj_cutoff = 0.05,
+  enrich_gsva_score_cutoff = NULL,
+  gsva_method = NULL,
+  enrich_nlabel = 15
+) {
   DE_threshold_missing <- missing(DE_threshold)
   y_metric_missing <- missing(y_metric)
   plot_type <- match.arg(plot_type)
@@ -632,11 +633,12 @@ rank_de_label_subset <- function(tmp, label.by, decreasing, nlabel) {
 }
 
 get_top_markers_for_label <- function(
-    de_df_marker,
-    cluster_levels,
-    nlabel,
-    features_label,
-    label.by = c("p_val_adj", "p_val", "diff_pct", "avg_log2FC")) {
+  de_df_marker,
+  cluster_levels,
+  nlabel,
+  features_label,
+  label.by = c("p_val_adj", "p_val", "diff_pct", "avg_log2FC")
+) {
   label.by <- match.arg(label.by)
   if (!label.by %in% colnames(de_df_marker)) {
     log_message(
@@ -720,21 +722,23 @@ get_safe_neglog10 <- function(padj, p_floor = .Machine$double.xmin) {
 }
 
 compute_hyperbolic_de_flags <- function(
-    avg_log2FC,
-    p_val_adj,
-    hyperbola_c = 6,
-    p_floor = .Machine$double.xmin) {
+  avg_log2FC,
+  p_val_adj,
+  hyperbola_c = 6,
+  p_floor = .Machine$double.xmin
+) {
   neglog10 <- get_safe_neglog10(padj = p_val_adj, p_floor = p_floor)
   prod_value <- abs(as.numeric(avg_log2FC)) * neglog10
   is.finite(prod_value) & (prod_value > as.numeric(hyperbola_c))
 }
 
 build_hyperbola_curve_df <- function(
-    x_range,
-    hyperbola_c = 6,
-    y_max = NULL,
-    n = 400,
-    x_eps = NULL) {
+  x_range,
+  hyperbola_c = 6,
+  y_max = NULL,
+  n = 400,
+  x_eps = NULL
+) {
   if (length(x_range) != 2 || any(!is.finite(x_range))) {
     return(data.frame(x = numeric(0), y = numeric(0)))
   }
@@ -794,7 +798,7 @@ get_enrichment_overlay_colors <- function(keys) {
     "#E3F0CC", # light lime
     "#F2E2CE", # apricot cream
     "#DCCFE6", # soft mauve
-    "#CCE3D9"  # sage
+    "#CCE3D9" # sage
   )
   cols <- if (length(keys) <= length(base_cols)) {
     base_cols[seq_along(keys)]
@@ -825,11 +829,12 @@ get_gsva_tool_names <- function(srt, group.by = NULL, gsva_method = NULL) {
 }
 
 extract_volcano_enrichment_source <- function(
-    srt,
-    source = c("Enrichment", "GSEA", "GSVA"),
-    group.by = NULL,
-    test.use = "wilcox",
-    gsva_method = NULL) {
+  srt,
+  source = c("Enrichment", "GSEA", "GSVA"),
+  group.by = NULL,
+  test.use = "wilcox",
+  gsva_method = NULL
+) {
   source <- match.arg(source)
   group.by <- group.by %||% "custom"
   output <- list()
@@ -922,16 +927,17 @@ extract_volcano_enrichment_source <- function(
 }
 
 collect_volcano_enrichment_annotations <- function(
-    srt,
-    group.by = NULL,
-    test.use = "wilcox",
-    enrich_from = c("Enrichment", "GSEA", "GSVA"),
-    enrich_db = NULL,
-    enrich_terms = NULL,
-    enrich_top_terms = 3,
-    enrich_padj_cutoff = 0.05,
-    enrich_gsva_score_cutoff = NULL,
-    gsva_method = NULL) {
+  srt,
+  group.by = NULL,
+  test.use = "wilcox",
+  enrich_from = c("Enrichment", "GSEA", "GSVA"),
+  enrich_db = NULL,
+  enrich_terms = NULL,
+  enrich_top_terms = 3,
+  enrich_padj_cutoff = 0.05,
+  enrich_gsva_score_cutoff = NULL,
+  gsva_method = NULL
+) {
   if (is.null(srt) || !inherits(srt, "Seurat")) {
     return(data.frame())
   }
@@ -1064,8 +1070,7 @@ collect_volcano_enrichment_annotations <- function(
   ), , drop = FALSE]
 
   gene_map <- gene_map[
-    !duplicated(paste(gene_map[["group1"]], gene_map[["gene"]], sep = "|||")),
-    ,
+    !duplicated(paste(gene_map[["group1"]], gene_map[["gene"]], sep = "|||")), ,
     drop = FALSE
   ]
   rownames(gene_map) <- NULL
@@ -1131,7 +1136,8 @@ DEtestManhattanPlot <- function(
   seed = 11,
   aspect.ratio = NULL,
   xlab = NULL,
-  ylab = NULL
+  ylab = NULL,
+  verbose = TRUE
 ) {
   label.by <- match.arg(label.by)
   if (is.null(group.by)) {
@@ -1195,7 +1201,8 @@ DEtestManhattanPlot <- function(
     )
   }
   top_marker <- get_top_markers_for_label(
-    de_df_marker, cluster_levels, nlabel, features_label, label.by = label.by
+    de_df_marker, cluster_levels, nlabel, features_label,
+    label.by = label.by
   )
   back_data_list <- lapply(cluster_levels, function(x) {
     tmp <- de_df_marker[de_df_marker[["group1"]] == x, , drop = FALSE]
@@ -1408,7 +1415,8 @@ DEtestRingPlot <- function(
   fc_lim <- clip_res$fc_lim
   cluster_levels <- levels(de_df_marker[["group1"]])
   top_marker <- get_top_markers_for_label(
-    de_df_marker, cluster_levels, nlabel, features_label, label.by = label.by
+    de_df_marker, cluster_levels, nlabel, features_label,
+    label.by = label.by
   )
   n_grp <- length(cluster_levels)
   show_group_track <- n_grp > 1
@@ -1626,51 +1634,53 @@ DEtestRingPlot <- function(
 #'   ncol = 2
 #' )
 VolcanoPlot <- function(
-    srt,
-    group.by = NULL,
-    test.use = "wilcox",
-    res = NULL,
-    group_use = NULL,
-    DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
-    x_metric = NULL,
-    y_metric = NULL,
-    palette = "RdBu",
-    palcolor = NULL,
-    pt.size = 1,
-    pt.alpha = 1,
-    cols.background = "grey80",
-    cols.highlight = "black",
-    sizes.highlight = 1,
-    alpha.highlight = 1,
-    stroke.highlight = 0.5,
-    nlabel = 5,
-    features_label = NULL,
-    only.pos = FALSE,
-    label.by = c("p_val_adj", "p_val", "diff_pct", "avg_log2FC"),
-    label.fg = "black",
-    label.bg = "white",
-    label.bg.r = 0.1,
-    label.size = 4,
-    aspect.ratio = NULL,
-    xlab = NULL,
-    ylab = NULL,
-    theme_use = "theme_scop",
-    theme_args = list(),
-    combine = TRUE,
-    nrow = NULL,
-    ncol = NULL,
-    byrow = TRUE,
-    threshold_method = c("rectangular", "hyperbolic"),
-    hyperbola_c = 6,
-    annotate_enrichment = FALSE,
-    enrich_from = c("Enrichment", "GSEA", "GSVA"),
-    enrich_db = NULL,
-    enrich_terms = NULL,
-    enrich_top_terms = 3,
-    enrich_padj_cutoff = 0.05,
-    enrich_gsva_score_cutoff = NULL,
-    gsva_method = NULL,
-    enrich_nlabel = 15) {
+  srt,
+  group.by = NULL,
+  test.use = "wilcox",
+  res = NULL,
+  group_use = NULL,
+  DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
+  x_metric = NULL,
+  y_metric = NULL,
+  palette = "RdBu",
+  palcolor = NULL,
+  pt.size = 1,
+  pt.alpha = 1,
+  cols.background = "grey80",
+  cols.highlight = "black",
+  sizes.highlight = 1,
+  alpha.highlight = 1,
+  stroke.highlight = 0.5,
+  nlabel = 5,
+  features_label = NULL,
+  only.pos = FALSE,
+  label.by = c("p_val_adj", "p_val", "diff_pct", "avg_log2FC"),
+  label.fg = "black",
+  label.bg = "white",
+  label.bg.r = 0.1,
+  label.size = 4,
+  aspect.ratio = NULL,
+  xlab = NULL,
+  ylab = NULL,
+  theme_use = "theme_scop",
+  theme_args = list(),
+  combine = TRUE,
+  nrow = NULL,
+  ncol = NULL,
+  byrow = TRUE,
+  threshold_method = c("rectangular", "hyperbolic"),
+  hyperbola_c = 6,
+  annotate_enrichment = FALSE,
+  enrich_from = c("Enrichment", "GSEA", "GSVA"),
+  enrich_db = NULL,
+  enrich_terms = NULL,
+  enrich_top_terms = 3,
+  enrich_padj_cutoff = 0.05,
+  enrich_gsva_score_cutoff = NULL,
+  gsva_method = NULL,
+  enrich_nlabel = 15,
+  verbose = TRUE
+) {
   DE_threshold_missing <- missing(DE_threshold)
   threshold_method <- match.arg(threshold_method)
   label.by <- match.arg(label.by)

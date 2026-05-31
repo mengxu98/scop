@@ -1400,8 +1400,7 @@ ccc_context_comparison_data <- function(
         value_col = value_col,
         all_groups = all_celltypes
       )
-      value <- switch(
-        pattern,
+      value <- switch(pattern,
         outgoing = rowSums(mat, na.rm = TRUE),
         incoming = colSums(mat, na.rm = TRUE),
         all = rowSums(mat, na.rm = TRUE) +
@@ -1895,8 +1894,7 @@ filter_long_df <- function(
     df <- df[
       df$pathway_name %in% signaling |
         pathway_key %in% signaling_key |
-        class_key %in% signaling_key,
-      ,
+        class_key %in% signaling_key, ,
       drop = FALSE
     ]
   }
@@ -3180,8 +3178,7 @@ ccc_flow_plot_df <- function(
     receiver_keep <- paste(receiver_rank$interaction_label, receiver_rank$receiver, sep = "\r")
     plot_df <- plot_df[
       paste(plot_df$interaction_label, plot_df$sender, sep = "\r") %in% sender_keep &
-        paste(plot_df$interaction_label, plot_df$receiver, sep = "\r") %in% receiver_keep,
-      ,
+        paste(plot_df$interaction_label, plot_df$receiver, sep = "\r") %in% receiver_keep, ,
       drop = FALSE
     ]
     if (nrow(plot_df) == 0L) {
@@ -3259,8 +3256,7 @@ ccc_flow_plot_df <- function(
       fun = function(x) sum(as.numeric(x), na.rm = TRUE)
     )
     sender_lookup <- sender_lookup[
-      order(sender_lookup$interaction_label, sender_lookup$receiver, -sender_lookup$weight),
-      ,
+      order(sender_lookup$interaction_label, sender_lookup$receiver, -sender_lookup$weight), ,
       drop = FALSE
     ]
     sender_lookup <- sender_lookup[!duplicated(paste(sender_lookup$interaction_label, sender_lookup$receiver, sep = "\r")), , drop = FALSE]
@@ -4004,8 +4000,7 @@ ccc_source_target_dot_plot <- function(
   )
   plot_df <- plot_df[
     is.finite(suppressWarnings(as.numeric(plot_df$score))) &
-      suppressWarnings(as.numeric(plot_df$score)) > 0,
-    ,
+      suppressWarnings(as.numeric(plot_df$score)) > 0, ,
     drop = FALSE
   ]
   if (nrow(plot_df) == 0L) {
@@ -4594,8 +4589,7 @@ ccc_gene_chord_plot <- function(
       !is.na(df$sender) &
       nzchar(df$sender) &
       !is.na(df$receiver) &
-      nzchar(df$receiver),
-    ,
+      nzchar(df$receiver), ,
     drop = FALSE
   ]
   if (nrow(df) == 0L) {
@@ -4623,8 +4617,7 @@ ccc_gene_chord_plot <- function(
     !is.na(edge_df$source) &
       nzchar(edge_df$source) &
       !is.na(edge_df$target) &
-      nzchar(edge_df$target),
-    ,
+      nzchar(edge_df$target), ,
     drop = FALSE
   ]
   edge_df <- group_summary(
@@ -4635,8 +4628,7 @@ ccc_gene_chord_plot <- function(
     fun = function(x) sum(as.numeric(x), na.rm = TRUE)
   )
   edge_df <- edge_df[
-    is.finite(edge_df$score) & edge_df$score > 0,
-    ,
+    is.finite(edge_df$score) & edge_df$score > 0, ,
     drop = FALSE
   ]
   if (nrow(edge_df) == 0L) {
@@ -4657,8 +4649,7 @@ ccc_gene_chord_plot <- function(
     na.rm = TRUE
   )
   strength_df <- strength_df[
-    order(strength_df$strength, decreasing = TRUE, na.last = TRUE),
-    ,
+    order(strength_df$strength, decreasing = TRUE, na.last = TRUE), ,
     drop = FALSE
   ]
   node_order <- unique(strength_df$node)
@@ -4788,8 +4779,7 @@ ccc_sankey_plot <- function(
       )
       keep_receivers <- names(receiver_weight)[receiver_weight >= min_receiver_flow]
       plot_df <- plot_df[
-        as.character(plot_df$receiver) %in% keep_receivers,
-        ,
+        as.character(plot_df$receiver) %in% keep_receivers, ,
         drop = FALSE
       ]
       if (nrow(plot_df) == 0L) {
@@ -4824,8 +4814,7 @@ ccc_sankey_plot <- function(
       )
       keep_receivers <- names(receiver_weight)[receiver_weight >= min_receiver_flow]
       plot_df <- plot_df[
-        as.character(plot_df$receiver) %in% keep_receivers,
-        ,
+        as.character(plot_df$receiver) %in% keep_receivers, ,
         drop = FALSE
       ]
       if (nrow(plot_df) == 0L) {

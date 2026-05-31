@@ -351,8 +351,7 @@ RunSCENICPlus <- function(
     )
   }
   tf_region <- motif_links[
-    motif_links[["TF"]] %in% unique(tf_gene[["TF"]]),
-    ,
+    motif_links[["TF"]] %in% unique(tf_gene[["TF"]]), ,
     drop = FALSE
   ]
   triplets <- if (!is.null(triplets_prior)) {
@@ -415,8 +414,7 @@ RunSCENICPlus <- function(
     )
   }
   auc <- as.data.frame(auc, check.names = FALSE)[
-    colnames(auc_counts),
-    ,
+    colnames(auc_counts), ,
     drop = FALSE
   ]
   scores <- Matrix::t(Matrix::Matrix(as.matrix(auc), sparse = TRUE))
@@ -834,8 +832,7 @@ scenicplus_filter_rg_prior <- function(
     region_gene_prior[["region"]] %in%
       rownames(atac_counts) &
       region_gene_prior[["gene"]] %in% rownames(rna_counts) &
-      is.finite(region_gene_prior[["score"]]),
-    ,
+      is.finite(region_gene_prior[["score"]]), ,
     drop = FALSE
   ]
   if (nrow(out) == 0L) {
@@ -848,8 +845,7 @@ scenicplus_filter_rg_prior <- function(
   if (length(max_region_gene) == 1L && is.finite(max_region_gene)) {
     max_region_gene <- max(1L, as.integer(max_region_gene))
     out <- out[
-      order(out[["gene"]], -abs(out[["score"]]), out[["region"]]),
-      ,
+      order(out[["gene"]], -abs(out[["score"]]), out[["region"]]), ,
       drop = FALSE
     ]
     out <- do.call(
@@ -874,8 +870,7 @@ scenicplus_filter_tfr_prior <- function(
   out <- tf_region_prior[
     tf_region_prior[["region"]] %in%
       peak_names &
-      is.finite(tf_region_prior[["score"]]),
-    ,
+      is.finite(tf_region_prior[["score"]]), ,
     drop = FALSE
   ]
   if (nrow(out) == 0L) {
@@ -888,8 +883,7 @@ scenicplus_filter_tfr_prior <- function(
   if (length(max_tf_region) == 1L && is.finite(max_tf_region)) {
     max_tf_region <- max(1L, as.integer(max_tf_region))
     out <- out[
-      order(out[["TF"]], -out[["score"]], out[["region"]]),
-      ,
+      order(out[["TF"]], -out[["score"]], out[["region"]]), ,
       drop = FALSE
     ]
     out <- do.call(
@@ -916,8 +910,7 @@ scenicplus_filter_tfg_prior <- function(
     tf_gene_prior[["TF"]] %in%
       regulators &
       tf_gene_prior[["target"]] %in% targets &
-      is.finite(tf_gene_prior[["importance"]]),
-    ,
+      is.finite(tf_gene_prior[["importance"]]), ,
     drop = FALSE
   ]
   if (nrow(out) == 0L) {
@@ -930,8 +923,7 @@ scenicplus_filter_tfg_prior <- function(
   if (length(max_edges_per_target) == 1L && is.finite(max_edges_per_target)) {
     max_edges_per_target <- max(1L, as.integer(max_edges_per_target))
     out <- out[
-      order(out[["target"]], -out[["importance"]], out[["TF"]]),
-      ,
+      order(out[["target"]], -out[["importance"]], out[["TF"]]), ,
       drop = FALSE
     ]
     out <- do.call(
@@ -1366,8 +1358,7 @@ scenicplus_region_gene_native <- function(
     )
   }
   hits <- hits[
-    order(hits[["gene"]], -abs(hits[["score"]]), hits[["region"]]),
-    ,
+    order(hits[["gene"]], -abs(hits[["score"]]), hits[["region"]]), ,
     drop = FALSE
   ]
   hits <- do.call(
@@ -1387,8 +1378,7 @@ scenicplus_rg_search <- function(
   out <- search_space[
     search_space[["region"]] %in%
       rownames(atac_counts) &
-      search_space[["gene"]] %in% rownames(rna_counts),
-    ,
+      search_space[["gene"]] %in% rownames(rna_counts), ,
     drop = FALSE
   ]
   if (nrow(out) == 0L) {
@@ -1455,8 +1445,7 @@ scenicplus_rg_gbm <- function(
   hits <- hits[
     hits[["region"]] %in%
       rownames(atac_counts) &
-      hits[["gene"]] %in% rownames(rna_counts),
-    ,
+      hits[["gene"]] %in% rownames(rna_counts), ,
     drop = FALSE
   ]
   if (nrow(hits) == 0L) {
@@ -1539,8 +1528,7 @@ scenicplus_rg_gbm <- function(
   if (length(max_region_gene) == 1L && is.finite(max_region_gene)) {
     max_region_gene <- max(1L, as.integer(max_region_gene))
     out <- out[
-      order(out[["gene"]], -out[["score"]], out[["region"]]),
-      ,
+      order(out[["gene"]], -out[["score"]], out[["region"]]), ,
       drop = FALSE
     ]
     out <- do.call(
@@ -1666,8 +1654,7 @@ scenicplus_tfr_motifs <- function(
     )
   }
   nz <- nz[
-    order(nz[["tf_idx"]], -nz[["score"]], nz[["region_idx"]]),
-    ,
+    order(nz[["tf_idx"]], -nz[["score"]], nz[["region_idx"]]), ,
     drop = FALSE
   ]
   nz <- do.call(
@@ -1891,8 +1878,7 @@ scenicplus_le_triplets <- function(
     region_gene[["importance"]] <- abs(as.numeric(region_gene[["score"]]))
   }
   tf_gene <- tf_gene[
-    is.finite(tf_gene[["rho"]]) & is.finite(tf_gene[["importance"]]),
-    ,
+    is.finite(tf_gene[["rho"]]) & is.finite(tf_gene[["importance"]]), ,
     drop = FALSE
   ]
   tf_regions <- split(triplets[["region"]], triplets[["TF"]])
@@ -1925,8 +1911,7 @@ scenicplus_le_triplets <- function(
     regions <- unique(tf_regions[[tf]])
     for (module in modules) {
       emodule <- module[["data"]][
-        module[["data"]][["region"]] %in% regions,
-        ,
+        module[["data"]][["region"]] %in% regions, ,
         drop = FALSE
       ]
       if (nrow(emodule) == 0L) {
@@ -1978,8 +1963,7 @@ scenicplus_le_triplets <- function(
       out[["r2g_sign"]],
       out[["gene"]],
       out[["region"]]
-    ),
-    ,
+    ), ,
     drop = FALSE
   ]
   rownames(out) <- NULL
@@ -2164,16 +2148,14 @@ scenicplus_tf_gene_rho <- function(pairs, rna_counts) {
   pairs <- pairs[
     pairs[["TF"]] %in%
       rownames(rna_counts) &
-      pairs[["gene"]] %in% rownames(rna_counts),
-    ,
+      pairs[["gene"]] %in% rownames(rna_counts), ,
     drop = FALSE
   ]
   if (nrow(pairs) == 0L) {
     return(NULL)
   }
   expr <- log1p(as.matrix(rna_counts[
-    unique(c(pairs[["TF"]], pairs[["gene"]])),
-    ,
+    unique(c(pairs[["TF"]], pairs[["gene"]])), ,
     drop = FALSE
   ]))
   out <- vapply(
@@ -2190,5 +2172,3 @@ scenicplus_tf_gene_rho <- function(pairs, rna_counts) {
   )
   stats::setNames(out, paste(pairs[["TF"]], pairs[["gene"]], sep = "\r"))
 }
-
-

@@ -55,7 +55,7 @@
 #'   xlab = "UMAP_1",
 #'   ylab = "UMAP_2"
 #' )
-#' 
+#'
 #' FeatureDimPlot(
 #'   query,
 #'   features = c(

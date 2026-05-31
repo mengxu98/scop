@@ -45,7 +45,8 @@ RunCSSMap <- function(
   nn_method = NULL,
   k = 30,
   distance_metric = "cosine",
-  vote_fun = "mean"
+  vote_fun = "mean",
+  verbose = TRUE
 ) {
   check_r("quadbio/simspec", verbose = FALSE)
   query_assay <- query_assay %||% SeuratObject::DefaultAssay(srt_query)
@@ -84,7 +85,7 @@ RunCSSMap <- function(
         message_type = "error"
       )
     } else {
-      log_message("Set {.arg ref_css} to {.val {ref_css}}")
+      log_message("Set {.arg ref_css} to {.val {ref_css}}", verbose = verbose)
       if (
         !"model" %in% names(srt_ref[[ref_css]]@misc) ||
           !"sim2profiles" %in% names(srt_ref[[ref_css]]@misc$model)
@@ -110,7 +111,7 @@ RunCSSMap <- function(
         message_type = "error"
       )
     } else {
-      log_message("Set {.arg ref_umap} to {.val {ref_umap}}")
+      log_message("Set {.arg ref_umap} to {.val {ref_umap}}", verbose = verbose)
     }
   }
   projection_method <- match.arg(projection_method)
@@ -120,7 +121,8 @@ RunCSSMap <- function(
   ) {
     log_message(
       "No UMAP model detected. Set the {.arg projection_method} to {.val knn}",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     projection_method <- "knn"
   }
@@ -130,7 +132,8 @@ RunCSSMap <- function(
   ) {
     log_message(
       "{.arg distance_metric} must be one of {.val euclidean}, {.val cosine}, {.val manhattan}, and {.val hamming} when {.arg projection_method='model'}",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
   }
 
@@ -138,22 +141,23 @@ RunCSSMap <- function(
   status_query <- CheckDataType(
     GetAssayData5(srt_query, layer = "data", assay = query_assay)
   )
-  log_message("Detected {.arg srt_query} data type: {.val {status_query}}")
+  log_message("Detected {.arg srt_query} data type: {.val {status_query}}", verbose = verbose)
   status_ref <- CheckDataType(
     GetAssayData5(srt_ref, layer = "data", assay = ref_assay)
   )
-  log_message("Detected {.arg srt_ref} data type: {.val {status_ref}}")
+  log_message("Detected {.arg srt_ref} data type: {.val {status_ref}}", verbose = verbose)
   if (
     status_ref != status_query ||
       any(status_query == "unknown", status_ref == "unknown")
   ) {
     log_message(
       "Data type is unknown or different between {.arg srt_query} and {.arg srt_ref}",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
   }
 
-  log_message("Run {.pkg CSS} projection")
+  log_message("Run {.pkg CSS} projection", verbose = verbose)
   CSSmodel <- srt_ref[[ref_css]]@misc$model
   css_proj <- invoke_fun(
     .fn = get("css_project", envir = getNamespace("simspec")),
@@ -170,7 +174,7 @@ RunCSSMap <- function(
     assay = query_assay
   )
 
-  log_message("Run {.pkg UMAP} projection")
+  log_message("Run {.pkg UMAP} projection", verbose = verbose)
   ref_dims <- seq_len(dim(srt_ref[[ref_css]])[2])
   srt_query <- RunKNNMap(
     srt_query = srt_query,

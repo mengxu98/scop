@@ -557,7 +557,8 @@ DimsEstimatePlot <- function(
   combine = TRUE,
   nrow = NULL,
   ncol = NULL,
-  seed = 11
+  seed = 11,
+  verbose = TRUE
 ) {
   set.seed(seed)
   if (is.null(reduction)) {
@@ -723,8 +724,7 @@ DimsEstimatePlot <- function(
   p4 <- apply_theme(
     ggplot2::ggplot(
       plot_data[
-        seq.int(min(3L, nrow(plot_data)), nrow(plot_data)),
-        ,
+        seq.int(min(3L, nrow(plot_data)), nrow(plot_data)), ,
         drop = FALSE
       ],
       ggplot2::aes(x = .data$PC, y = abs(.data$curvature))

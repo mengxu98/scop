@@ -402,8 +402,7 @@ SCENICPlot <- function(
   }
   top_table <- rank_table[rank_table[["is_top"]], , drop = FALSE]
 
-  plot_result <- switch(
-    plot_type,
+  plot_result <- switch(plot_type,
     rss_rank = scenic_plot_rss_rank(
       rss_matrix = rss_matrix,
       rank_table = rank_table,
@@ -585,14 +584,12 @@ scenic_plot_rss_rank <- function(
 ) {
   plots <- lapply(colnames(rss_matrix), function(one_group) {
     data_rank_plot <- rank_table[
-      rank_table[["group"]] == one_group,
-      ,
+      rank_table[["group"]] == one_group, ,
       drop = FALSE
     ]
     top_df <- top_table[top_table[["group"]] == one_group, , drop = FALSE]
     highlight_df <- data_rank_plot[
-      data_rank_plot[["is_highlight"]],
-      ,
+      data_rank_plot[["is_highlight"]], ,
       drop = FALSE
     ]
     label_df <- unique(rbind(top_df, highlight_df))
@@ -1053,8 +1050,7 @@ scenic_plot_network_graph <- function(
     features <- unique(c(as.character(features), scenic_tf_from_regulon(features)))
     adjacency <- adjacency[
       adjacency[[cols[["tf"]]]] %in% features |
-        adjacency[[cols[["target"]]]] %in% features,
-      ,
+        adjacency[[cols[["target"]]]] %in% features, ,
       drop = FALSE
     ]
   }
@@ -1121,8 +1117,7 @@ scenic_plot_network <- function(
   node_data <- network_data[["nodes"]]
   edge_plot <- network_data[["edge_plot"]]
 
-  label_data <- switch(
-    label_nodes,
+  label_data <- switch(label_nodes,
     all = node_data,
     tfs = node_data[node_data[["node_type"]] == "TF", , drop = FALSE],
     none = node_data[FALSE, , drop = FALSE]
@@ -1230,8 +1225,7 @@ scenic_network_layout <- function(graph, layout = "fr") {
     layout_weights <- abs(igraph::E(graph)$weight)
     layout_weights[!is.finite(layout_weights) | layout_weights <= 0] <- 1
   }
-  xy <- switch(
-    layout,
+  xy <- switch(layout,
     fr = igraph::layout_with_fr(graph, weights = layout_weights),
     nicely = igraph::layout_nicely(graph),
     kk = igraph::layout_with_kk(graph, weights = layout_weights),
@@ -1251,8 +1245,7 @@ scenic_network_label_data <- function(
   top_n = 60
 ) {
   label_nodes <- match.arg(label_nodes)
-  label_data <- switch(
-    label_nodes,
+  label_data <- switch(label_nodes,
     all = node_data,
     tfs = {
       tf_nodes <- node_data[node_data[["node_type"]] == "TF", , drop = FALSE]

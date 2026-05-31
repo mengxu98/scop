@@ -171,8 +171,7 @@ scTenifoldKnkPlot <- function(
     )
   }
 
-  plot_fun <- switch(
-    plot_type,
+  plot_fun <- switch(plot_type,
     qq = sctenifold_plot_qq,
     effect = sctenifold_plot_effect,
     network = sctenifold_plot_network,
@@ -361,8 +360,7 @@ scTenifoldNetPlot <- function(
   )
   names(condition_labels) <- c("X", "Y")
   network_label <- condition_labels[[network]] %||% network
-  default_title <- switch(
-    plot_type,
+  default_title <- switch(plot_type,
     qq = "scTenifoldNet differential regulation",
     effect = "Top scTenifoldNet differential regulation",
     network = paste0("scTenifoldNet ", network_label, " network"),
@@ -374,8 +372,7 @@ scTenifoldNetPlot <- function(
     )
   )
 
-  plot_fun <- switch(
-    plot_type,
+  plot_fun <- switch(plot_type,
     qq = sctenifold_plot_qq,
     effect = sctenifold_plot_effect,
     network = sctenifold_plot_network,
@@ -497,8 +494,7 @@ sctenifold_plot_qq <- function(
     sctenifold_plot_theme(theme_use, theme_args)
   if (isTRUE(label)) {
     label_df <- dr[
-      dr$gene %in% sctenifold_label_genes(dr, features, min(nlabel, top_n)),
-      ,
+      dr$gene %in% sctenifold_label_genes(dr, features, min(nlabel, top_n)), ,
       drop = FALSE
     ]
     if (nrow(label_df) > 0L) {
@@ -632,8 +628,7 @@ sctenifold_plot_network <- function(
     edge_df <- edge_df[edge_df$abs_weight >= edge_threshold, , drop = FALSE]
   }
   edge_df <- edge_df[
-    order(edge_df$abs_weight, decreasing = TRUE),
-    ,
+    order(edge_df$abs_weight, decreasing = TRUE), ,
     drop = FALSE
   ]
   edge_df <- utils::head(edge_df, edge_top_n)
@@ -687,8 +682,7 @@ sctenifold_plot_network <- function(
     dimnames = list(rownames(node_plot), rownames(node_plot))
   )
   edge_df <- edge_df[
-    edge_df$from %in% rownames(edge_mat) & edge_df$to %in% colnames(edge_mat),
-    ,
+    edge_df$from %in% rownames(edge_mat) & edge_df$to %in% colnames(edge_mat), ,
     drop = FALSE
   ]
   edge_mat[cbind(edge_df$from, edge_df$to)] <- edge_df$abs_weight

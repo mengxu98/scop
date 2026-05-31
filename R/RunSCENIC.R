@@ -720,8 +720,7 @@ scenic_resolve_reference_data <- function(
     reference_files <- species_config[["files"]]
     if (isTRUE(missing_ranking_dbs)) {
       ranking_rows <- reference_files[
-        reference_files[["role"]] == "ranking_dbs",
-        ,
+        reference_files[["role"]] == "ranking_dbs", ,
         drop = FALSE
       ]
       ranking_dbs <- scenic_dl_refs(
@@ -732,8 +731,7 @@ scenic_resolve_reference_data <- function(
     }
     if (isTRUE(missing_motif_annotations)) {
       motif_rows <- reference_files[
-        reference_files[["role"]] == "motif_annotations",
-        ,
+        reference_files[["role"]] == "motif_annotations", ,
         drop = FALSE
       ]
       motif_annotations <- scenic_dl_refs(
@@ -744,8 +742,7 @@ scenic_resolve_reference_data <- function(
     }
     if (isTRUE(missing_regulators)) {
       tf_rows <- reference_files[
-        reference_files[["role"]] == "tf_list",
-        ,
+        reference_files[["role"]] == "tf_list", ,
         drop = FALSE
       ]
       regulators <- scenic_dl_refs(
@@ -786,8 +783,7 @@ scenic_species_config <- function(species) {
     )
   }
   species_key <- tolower(gsub("[ .-]+", "_", species))
-  species_key <- switch(
-    species_key,
+  species_key <- switch(species_key,
     homo_sapiens = "human",
     human = "human",
     hsa = "human",
@@ -812,8 +808,7 @@ scenic_species_config <- function(species) {
   }
 
   cistarget_url <- "https://resources.aertslab.org/cistarget"
-  switch(
-    species_key,
+  switch(species_key,
     human = list(
       key = "human",
       label = "Homo_sapiens",
@@ -1140,7 +1135,7 @@ scenic_progress_step <- function(progress_state, value, label, verbose = TRUE) {
     value <- max(progress_state$value, value)
     utils::setTxtProgressBar(progress_state$pb, value)
     progress_state$value <- value
-    cat("\n")
+    if (isTRUE(verbose)) cat("\n")
   }
   log_message(
     sprintf("[%d%%] %s", value, label),
@@ -1261,8 +1256,7 @@ scenic_sel_mc_res <- function(
       resolution_summary[["target_distance"]],
       -resolution_summary[["n_metacells"]],
       resolution_summary[["resolution"]]
-    ),
-    ,
+    ), ,
     drop = FALSE
   ]
 
@@ -1653,8 +1647,7 @@ scenic_compute_aucell_score <- function(
       strategy = cpp_strategy
     )
     return(as.data.frame(scores, check.names = FALSE)[
-      colnames(counts),
-      ,
+      colnames(counts), ,
       drop = FALSE
     ])
   }

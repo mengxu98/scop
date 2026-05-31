@@ -223,8 +223,8 @@ PrepareDB <- function(
       )
 
       if (!dir.exists(cyto_data_dir) ||
-          !all(file.exists(file.path(cyto_data_dir, cyto_files))) ||
-          isTRUE(db_update)) {
+        !all(file.exists(file.path(cyto_data_dir, cyto_files))) ||
+        isTRUE(db_update)) {
         log_message(
           "Downloading CytoTRACE2 model data from datasets GitHub repository...",
           message_type = "info",

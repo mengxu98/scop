@@ -343,8 +343,7 @@ RunRareQ <- function(
     stringsAsFactors = FALSE
   )
   cluster_summary <- cluster_summary[
-    order(cluster_summary$n_cells),
-    ,
+    order(cluster_summary$n_cells), ,
     drop = FALSE
   ]
   srt@tools[[tool_name]] <- list(

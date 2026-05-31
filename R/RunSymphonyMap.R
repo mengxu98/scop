@@ -46,7 +46,8 @@ RunSymphonyMap <- function(
   nn_method = NULL,
   k = 30,
   distance_metric = "cosine",
-  vote_fun = "mean"
+  vote_fun = "mean",
+  verbose = TRUE
 ) {
   check_r("immunogenomics/symphony", verbose = FALSE)
   query_assay <- query_assay %||% SeuratObject::DefaultAssay(srt_query)
@@ -85,7 +86,7 @@ RunSymphonyMap <- function(
         message_type = "error"
       )
     } else {
-      log_message("Set ref_pca to {.val {ref_pca}}")
+      log_message("Set ref_pca to {.val {ref_pca}}", verbose = verbose)
     }
   }
   if (is.null(ref_harmony)) {
@@ -102,7 +103,7 @@ RunSymphonyMap <- function(
         message_type = "error"
       )
     } else {
-      log_message("Set ref_harmony to {.val {ref_harmony}}")
+      log_message("Set ref_harmony to {.val {ref_harmony}}", verbose = verbose)
     }
   }
   if (is.null(ref_umap)) {
@@ -119,7 +120,7 @@ RunSymphonyMap <- function(
         message_type = "error"
       )
     } else {
-      log_message("Set ref_umap to {.val {ref_umap}}")
+      log_message("Set ref_umap to {.val {ref_umap}}", verbose = verbose)
     }
   }
   ref_pca_dims <- srt_ref[[ref_harmony]]@misc$reduction_dims
@@ -131,7 +132,8 @@ RunSymphonyMap <- function(
   ) {
     log_message(
       "No UMAP model detected. Set the projection_method to 'knn'",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     projection_method <- "knn"
   }
@@ -152,7 +154,7 @@ RunSymphonyMap <- function(
       assay = query_assay
     )
   )
-  log_message("Detected {.arg srt_query} data type: {.val {status_query}}")
+  log_message("Detected {.arg srt_query} data type: {.val {status_query}}", verbose = verbose)
   status_ref <- CheckDataType(
     object = GetAssayData5(
       srt_ref,
@@ -160,18 +162,19 @@ RunSymphonyMap <- function(
       assay = ref_assay
     )
   )
-  log_message("Detected {.arg srt_ref} data type: {.val {status_ref}}")
+  log_message("Detected {.arg srt_ref} data type: {.val {status_ref}}", verbose = verbose)
   if (
     status_ref != status_query ||
       any(status_query == "unknown", status_ref == "unknown")
   ) {
     log_message(
       "Data type is unknown or different between {.arg srt_query} and {.arg srt_ref}.",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
   }
 
-  log_message("Build reference")
+  log_message("Build reference", verbose = verbose)
   ref <- buildReferenceFromSeurat(
     obj = srt_ref,
     assay = ref_assay,
@@ -180,7 +183,7 @@ RunSymphonyMap <- function(
     harmony = ref_harmony,
     umap = ref_umap
   )
-  log_message("Run mapQuery")
+  log_message("Run mapQuery", verbose = verbose)
   res <- mapQuery(
     exp_query = GetAssayData5(
       srt_query,
@@ -212,7 +215,7 @@ RunSymphonyMap <- function(
     misc = list(R = R_query)
   )
 
-  log_message("Run UMAP projection")
+  log_message("Run UMAP projection", verbose = verbose)
   ref_dims <- seq_len(dim(srt_ref[[ref_harmony]])[2])
   srt_query <- RunKNNMap(
     srt_query = srt_query,
@@ -233,7 +236,8 @@ RunSymphonyMap <- function(
   )
 
   log_message(
-    "Run SymphonyMap finished"
+    "Run SymphonyMap finished",
+    verbose = verbose
   )
   return(srt_query)
 }

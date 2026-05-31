@@ -608,8 +608,7 @@ sample_level_proportion_test <- function(
   samples_1 <- sample_condition$sample[sample_condition$condition == cluster_1]
   samples_2 <- sample_condition$sample[sample_condition$condition == cluster_2]
 
-  trans_fun <- switch(
-    transform,
+  trans_fun <- switch(transform,
     raw = function(x) x,
     logit = function(x) log((x + pseudocount) / (1 - x + pseudocount)),
     asin = function(x) asin(sqrt(x))
@@ -885,8 +884,7 @@ permutation_test <- function(
   colnames(meta_data) <- c("samples", "clusters")
   meta_data[["clusters"]] <- as.character(meta_data[["clusters"]])
   comparison_data <- meta_data[
-    meta_data[["samples"]] %in% c(cluster_1, cluster_2),
-    ,
+    meta_data[["samples"]] %in% c(cluster_1, cluster_2), ,
     drop = FALSE
   ]
   if (isTRUE(include_all_cells)) {

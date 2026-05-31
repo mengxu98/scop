@@ -94,8 +94,7 @@ RunCellCycle <- function(
     )
   }
 
-  srt <- switch(
-    method,
+  srt <- switch(method,
     Seurat = RunCellCycleSeurat(
       srt = srt,
       assay = assay,
@@ -163,8 +162,7 @@ RunCellCycleSeurat <- function(
   if (length(s_features) == 0 || length(g2m_features) == 0) {
     log_message(
       "No matched S or G2M cell cycle genes were found in {.arg srt}",
-      message_type = "error",
-      verbose = verbose
+      message_type = "error"
     )
   }
   status <- suppressWarnings(
@@ -295,8 +293,7 @@ RunCellCycleTricycle <- function(
   if (reduction_name %in% names(srt@reductions) && !isTRUE(overwrite)) {
     log_message(
       "Reduction {.val {reduction_name}} already exists. Set {.arg overwrite = TRUE} to replace it",
-      message_type = "error",
-      verbose = verbose
+      message_type = "error"
     )
   }
 
@@ -337,8 +334,7 @@ RunCellCycleTricycle <- function(
   if (!"tricycleEmbedding" %in% SingleCellExperiment::reducedDimNames(sce)) {
     log_message(
       "{.pkg tricycle} did not return {.val tricycleEmbedding}",
-      message_type = "error",
-      verbose = verbose
+      message_type = "error"
     )
   }
   embeddings <- SingleCellExperiment::reducedDim(sce, "tricycleEmbedding")
@@ -398,8 +394,7 @@ cellcycle_cyclone_pairs <- function(
   species,
   verbose = TRUE
 ) {
-  marker_file <- switch(
-    species,
+  marker_file <- switch(species,
     Homo_sapiens = "human_cycle_markers.rds",
     Mus_musculus = "mouse_cycle_markers.rds",
     human = "human_cycle_markers.rds",
@@ -432,8 +427,7 @@ cellcycle_cyclone_gene_names <- function(
   if (length(intersect(marker_genes, features)) > 0) {
     return(features)
   }
-  org_pkg <- switch(
-    species,
+  org_pkg <- switch(species,
     Homo_sapiens = "org.Hs.eg.db",
     human = "org.Hs.eg.db",
     Mus_musculus = "org.Mm.eg.db",
@@ -462,8 +456,7 @@ cellcycle_cyclone_gene_names <- function(
   if (length(intersect(marker_genes, gene_names)) == 0) {
     log_message(
       "Unable to map input feature names to {.pkg scran::cyclone} marker IDs with {.pkg {org_pkg}}",
-      message_type = "error",
-      verbose = verbose
+      message_type = "error"
     )
   }
   log_message(
@@ -474,8 +467,7 @@ cellcycle_cyclone_gene_names <- function(
 }
 
 cellcycle_tricycle_species <- function(species) {
-  species_use <- switch(
-    species,
+  species_use <- switch(species,
     Homo_sapiens = "human",
     Mus_musculus = "mouse",
     human = "human",

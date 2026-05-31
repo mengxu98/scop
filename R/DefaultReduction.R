@@ -23,7 +23,8 @@ DefaultReduction <- function(
   srt,
   pattern = NULL,
   min_dim = 2,
-  max_distance = 0.1
+  max_distance = 0.1,
+  verbose = TRUE
 ) {
   if (length(srt@reductions) == 0) {
     log_message(

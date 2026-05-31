@@ -154,7 +154,8 @@ PAGAPlot <- function(
   legend.direction = "vertical",
   theme_use = "theme_scop",
   theme_args = list(),
-  return_layer = FALSE
+  return_layer = FALSE,
+  verbose = TRUE
 ) {
   if (is.null(paga)) {
     log_message(
@@ -217,7 +218,8 @@ PAGAPlot <- function(
   } else if (isTRUE(show_transition) && is.null(transition)) {
     log_message(
       "transitions_confidence need to be calculated first.",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
   }
   xlab <- xlab %||% paste0(reduction_key, dims[1])

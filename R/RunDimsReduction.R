@@ -327,8 +327,7 @@ RunDimsReduction <- function(
       } else {
         center <- rowMeans(
           GetAssayData5(srt, assay = assay, layer = "scale.data")[
-            features,
-            ,
+            features, ,
             drop = FALSE
           ]
         )

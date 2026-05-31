@@ -234,8 +234,14 @@ PrepareEnv <- function(
         "Environment creation failed",
         message_type = "warning"
       )
-      print(conda_info_json(conda = conda))
-      print(reticulate::conda_list(conda = conda))
+      log_message(
+        "Conda info: {.val {conda_info_json(conda = conda)}}",
+        verbose = verbose
+      )
+      log_message(
+        "Conda environments: {.val {reticulate::conda_list(conda = conda)}}",
+        verbose = verbose
+      )
       log_message(
         "Unable to find environment under the expected path: {.file {env_path}}\n",
         "manager: {.pkg {conda_manager_label(conda)}}\n",
@@ -1212,7 +1218,8 @@ env_info <- function(conda, envname, verbose = TRUE) {
 env_requirements <- function(
   version = "3.10-1",
   include_optional = FALSE,
-  modules = NULL
+  modules = NULL,
+  verbose = TRUE
 ) {
   version <- match.arg(
     version,
@@ -2602,9 +2609,9 @@ conda_install <- function(
     )
   } else {
     log_message(
-        "{.pkg {manager}} installation completed successfully",
-        message_type = "success"
-      )
+      "{.pkg {manager}} installation completed successfully",
+      message_type = "success"
+    )
   }
 
   invisible(packages)
@@ -2879,7 +2886,8 @@ conda_python <- function(
 RemoveEnv <- function(
   envname = NULL,
   conda = "auto",
-  force = FALSE
+  force = FALSE,
+  verbose = TRUE
 ) {
   envname <- get_envname(envname)
 
@@ -2890,14 +2898,16 @@ RemoveEnv <- function(
   manager <- conda_manager_label(conda)
 
   log_message(
-    "Removing environment: {.file {envname}} using {.pkg {manager}}"
+    "Removing environment: {.file {envname}} using {.pkg {manager}}",
+    verbose = verbose
   )
 
   env_exists <- env_exist(envname = envname, conda = conda)
   if (isFALSE(env_exists)) {
     log_message(
       "{.file {envname}} environment does not exist",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     return(invisible(FALSE))
   }
@@ -2906,10 +2916,12 @@ RemoveEnv <- function(
 
   if (!force) {
     log_message(
-      "Environment path: {.file {env_path}}"
+      "Environment path: {.file {env_path}}",
+      verbose = verbose
     )
     log_message(
-      "This will permanently delete the environment and all its packages"
+      "This will permanently delete the environment and all its packages",
+      verbose = verbose
     )
 
     if (interactive()) {
@@ -2923,20 +2935,22 @@ RemoveEnv <- function(
       if (!tolower(response) %in% c("y", "yes")) {
         log_message(
           "Environment removal cancelled",
-          message_type = "warning"
+          message_type = "warning",
+          verbose = verbose
         )
         return(invisible(FALSE))
       }
     } else {
       log_message(
         "Use {.arg force = TRUE} to remove environment in non-interactive mode",
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
       return(invisible(FALSE))
     }
   }
 
-  log_message("Removing {.file {envname}} environment...")
+  log_message("Removing {.file {envname}} environment...", verbose = verbose)
 
   result <- tryCatch(
     {
@@ -2947,14 +2961,16 @@ RemoveEnv <- function(
       )
       log_message(
         "Environment removed successfully using {.fn reticulate::conda_remove}",
-        message_type = "success"
+        message_type = "success",
+        verbose = verbose
       )
       TRUE
     },
     error = function(e) {
       log_message(
         "{.fn reticulate::conda_remove} failed for {.pkg {manager}}: {.val {e$message}}",
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
       FALSE
     }
@@ -2962,7 +2978,8 @@ RemoveEnv <- function(
 
   if (!result) {
     log_message(
-      "Attempting direct removal of environment directory: {.file {env_path}}"
+      "Attempting direct removal of environment directory: {.file {env_path}}",
+      verbose = verbose
     )
 
     result <- tryCatch(
@@ -2973,7 +2990,8 @@ RemoveEnv <- function(
           if (!dir.exists(env_path)) {
             log_message(
               "Environment directory {.file {env_path}} removed successfully",
-              message_type = "success"
+              message_type = "success",
+              verbose = verbose
             )
             TRUE
           } else {
@@ -2986,7 +3004,8 @@ RemoveEnv <- function(
         } else {
           log_message(
             "Environment directory does not exist: {.file {env_path}}",
-            message_type = "warning"
+            message_type = "warning",
+            verbose = verbose
           )
           TRUE
         }
@@ -3001,7 +3020,8 @@ RemoveEnv <- function(
     )
   } else if (!is.null(env_path) && dir.exists(env_path)) {
     log_message(
-      "Removing leftover environment directory: {.file {env_path}}"
+      "Removing leftover environment directory: {.file {env_path}}",
+      verbose = verbose
     )
     result <- tryCatch(
       {
@@ -3011,7 +3031,8 @@ RemoveEnv <- function(
       error = function(e) {
         log_message(
           "Direct cleanup failed: {.val {e$message}}",
-          message_type = "warning"
+          message_type = "warning",
+          verbose = verbose
         )
         FALSE
       }
@@ -3023,7 +3044,8 @@ RemoveEnv <- function(
     Sys.unsetenv("RETICULATE_PYTHON")
     log_message(
       "{.file {envname}} environment removed successfully",
-      message_type = "success"
+      message_type = "success",
+      verbose = verbose
     )
   } else {
     log_message(

@@ -151,80 +151,80 @@
 #'   features_fontsize = c(3, 6)
 #' )
 #'
-#'   pancreas_sub <- AnnotateFeatures(
-#'     pancreas_sub,
-#'     species = "Mus_musculus",
-#'     db = c("CSPA", "TF")
-#'   )
-#'   ht6 <- DynamicHeatmap(
-#'     pancreas_sub,
-#'     exp_legend_title = "Z-score",
-#'     lineages = c("Lineage1", "Lineage2"),
-#'     reverse_ht = "Lineage1",
-#'     use_fitted = TRUE,
-#'     n_split = 3,
-#'     nlabel = 10,
-#'     split_method = "mfuzz",
-#'     heatmap_palette = "viridis",
-#'     cell_annotation = c(
-#'       "SubCellType", "Phase", "G2M_score"
-#'     ),
-#'     cell_annotation_palette = c(
-#'       "Chinese", "simspec", "Purples"
-#'     ),
-#'     separate_annotation = list(
-#'       "SubCellType", c("Arxes1", "Ncoa2")
-#'     ),
-#'     separate_annotation_palette = c(
-#'       "Chinese", "Set1"
-#'     ),
-#'     separate_annotation_params = list(
-#'       height = grid::unit(10, "mm")
-#'     ),
-#'     feature_annotation = c("TF", "CSPA"),
-#'     feature_annotation_palcolor = list(
-#'       c("gold", "steelblue"),
-#'       c("forestgreen")
-#'     ),
-#'     pseudotime_label = 25,
-#'     pseudotime_label_color = "red",
-#'     width = 1,
-#'     height = 2
-#'   )
+#' pancreas_sub <- AnnotateFeatures(
+#'   pancreas_sub,
+#'   species = "Mus_musculus",
+#'   db = c("CSPA", "TF")
+#' )
+#' ht6 <- DynamicHeatmap(
+#'   pancreas_sub,
+#'   exp_legend_title = "Z-score",
+#'   lineages = c("Lineage1", "Lineage2"),
+#'   reverse_ht = "Lineage1",
+#'   use_fitted = TRUE,
+#'   n_split = 3,
+#'   nlabel = 10,
+#'   split_method = "mfuzz",
+#'   heatmap_palette = "viridis",
+#'   cell_annotation = c(
+#'     "SubCellType", "Phase", "G2M_score"
+#'   ),
+#'   cell_annotation_palette = c(
+#'     "Chinese", "simspec", "Purples"
+#'   ),
+#'   separate_annotation = list(
+#'     "SubCellType", c("Arxes1", "Ncoa2")
+#'   ),
+#'   separate_annotation_palette = c(
+#'     "Chinese", "Set1"
+#'   ),
+#'   separate_annotation_params = list(
+#'     height = grid::unit(10, "mm")
+#'   ),
+#'   feature_annotation = c("TF", "CSPA"),
+#'   feature_annotation_palcolor = list(
+#'     c("gold", "steelblue"),
+#'     c("forestgreen")
+#'   ),
+#'   pseudotime_label = 25,
+#'   pseudotime_label_color = "red",
+#'   width = 1,
+#'   height = 2
+#' )
 #'
-#'   ht7 <- DynamicHeatmap(
-#'     pancreas_sub,
-#'     exp_legend_title = "Z-score",
-#'     lineages = c("Lineage1", "Lineage2"),
-#'     reverse_ht = "Lineage1",
-#'     use_fitted = TRUE,
-#'     n_split = 3,
-#'     nlabel = 10,
-#'     split_method = "mfuzz",
-#'     heatmap_palette = "viridis",
-#'     cell_annotation = c(
-#'       "SubCellType", "Phase", "G2M_score"
-#'     ),
-#'     cell_annotation_palette = c(
-#'       "Chinese", "simspec", "Purples"
-#'     ),
-#'     separate_annotation = list(
-#'       "SubCellType", c("Arxes1", "Ncoa2")
-#'     ),
-#'     separate_annotation_palette = c("Chinese", "Set1"),
-#'     separate_annotation_params = list(width = grid::unit(10, "mm")),
-#'     feature_annotation = c("TF", "CSPA"),
-#'     feature_annotation_palcolor = list(
-#'       c("gold", "steelblue"),
-#'       c("forestgreen")
-#'     ),
-#'     pseudotime_label = 25,
-#'     pseudotime_label_color = "red",
-#'     flip = TRUE,
-#'     column_title_rot = 90,
-#'     width = 2,
-#'     height = 1
-#'   )
+#' ht7 <- DynamicHeatmap(
+#'   pancreas_sub,
+#'   exp_legend_title = "Z-score",
+#'   lineages = c("Lineage1", "Lineage2"),
+#'   reverse_ht = "Lineage1",
+#'   use_fitted = TRUE,
+#'   n_split = 3,
+#'   nlabel = 10,
+#'   split_method = "mfuzz",
+#'   heatmap_palette = "viridis",
+#'   cell_annotation = c(
+#'     "SubCellType", "Phase", "G2M_score"
+#'   ),
+#'   cell_annotation_palette = c(
+#'     "Chinese", "simspec", "Purples"
+#'   ),
+#'   separate_annotation = list(
+#'     "SubCellType", c("Arxes1", "Ncoa2")
+#'   ),
+#'   separate_annotation_palette = c("Chinese", "Set1"),
+#'   separate_annotation_params = list(width = grid::unit(10, "mm")),
+#'   feature_annotation = c("TF", "CSPA"),
+#'   feature_annotation_palcolor = list(
+#'     c("gold", "steelblue"),
+#'     c("forestgreen")
+#'   ),
+#'   pseudotime_label = 25,
+#'   pseudotime_label_color = "red",
+#'   flip = TRUE,
+#'   column_title_rot = 90,
+#'   width = 2,
+#'   height = 1
+#' )
 DynamicHeatmap <- function(
   srt,
   lineages,
@@ -1927,8 +1927,10 @@ DynamicHeatmap <- function(
 
     g_tree <- grid::grid.grabExpr(
       {
-        ComplexHeatmap::draw(ht_list, annotation_legend_list = lgd,
-                             annotation_legend_side = legend.position)
+        ComplexHeatmap::draw(ht_list,
+          annotation_legend_list = lgd,
+          annotation_legend_side = legend.position
+        )
         for (enrich in db) {
           enrich_anno <- names(ha_right)[grep(
             paste0("_split_", enrich),
@@ -2007,8 +2009,10 @@ DynamicHeatmap <- function(
     ht_height <- grid::unit(height_sum, units = units)
     g_tree <- grid::grid.grabExpr(
       {
-        ComplexHeatmap::draw(ht_list, annotation_legend_list = lgd,
-                             annotation_legend_side = legend.position)
+        ComplexHeatmap::draw(ht_list,
+          annotation_legend_list = lgd,
+          annotation_legend_side = legend.position
+        )
         for (enrich in db) {
           enrich_anno <- names(ha_right)[grep(
             paste0("_split_", enrich),

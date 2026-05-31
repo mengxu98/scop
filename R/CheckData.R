@@ -308,8 +308,7 @@ CheckDataList <- function(
   if (length(celllist) != length(unique(celllist))) {
     log_message(
       "{.arg srt_list} have duplicated cell names",
-      message_type = "error",
-      verbose = verbose
+      message_type = "error"
     )
   }
 
@@ -607,8 +606,7 @@ CheckDataList <- function(
       if (length(HVF) == 0) {
         log_message(
           "No HVF available",
-          message_type = "error",
-          verbose = verbose
+          message_type = "error"
         )
       }
     }

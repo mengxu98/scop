@@ -72,7 +72,8 @@ RunSlingshot <- function(
   show_plot = TRUE,
   lineage_palette = "Dark2",
   seed = 11,
-  ...
+  ...,
+  verbose = TRUE
 ) {
   check_r("slingshot", verbose = FALSE)
   if (missing(group.by)) {
@@ -96,7 +97,8 @@ RunSlingshot <- function(
     celltypes <- names(which(table(srt[[group.by]]) < 2))
     log_message(
       "{.val {celltypes}} have less than 2 cells. Removed them",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     celltypes <- setdiff(names(table(srt[[group.by]])), celltypes)
     srt <- srt[, select_cells(srt, celltypes, group.by)]

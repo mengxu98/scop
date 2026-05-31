@@ -25,7 +25,8 @@
 RenameFeatures <- function(
   srt,
   newnames = NULL,
-  assays = NULL
+  assays = NULL,
+  verbose = TRUE
 ) {
   assays <- assays[assays %in% SeuratObject::Assays(srt)] %||% SeuratObject::Assays(srt)
   if (is.null(names(newnames))) {
@@ -44,7 +45,7 @@ RenameFeatures <- function(
     names(newnames) <- rownames(srt[[assays[1]]])
   }
   for (assay in assays) {
-    log_message("Rename features for the assay: ", assay)
+    log_message("Rename features for the assay: ", assay, verbose = verbose)
     assay_obj <- Seurat::GetAssay(srt, assay = assay)
     if (inherits(assay_obj, "Assay")) {
       for (d in c("meta.features", "scale.data", "counts", "data")) {
@@ -140,7 +141,8 @@ RenameClusters <- function(
   group.by,
   nameslist = list(),
   name = "newclusters",
-  keep_levels = FALSE
+  keep_levels = FALSE,
+  verbose = TRUE
 ) {
   if (missing(group.by)) {
     log_message(

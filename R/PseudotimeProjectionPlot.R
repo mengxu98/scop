@@ -132,7 +132,8 @@ PseudotimeProjectionPlot <- function(
   label.fg = "black",
   label.bg = "white",
   label.bg.r = 0.1,
-  seed = 11
+  seed = 11,
+  verbose = TRUE
 ) {
   set.seed(seed)
 
@@ -182,7 +183,8 @@ PseudotimeProjectionPlot <- function(
     pseudotime <- pseudotime[valid_idx]
     log_message(
       "Removed {sum(!valid_idx)} cells with NA pseudotime values",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
   }
 

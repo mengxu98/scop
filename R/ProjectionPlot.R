@@ -63,7 +63,8 @@ ProjectionPlot <- function(
   xlim = NULL,
   ylim = NULL,
   pt.size = 0.8,
-  stroke.highlight = 0.5
+  stroke.highlight = 0.5,
+  verbose = TRUE
 ) {
   if (is.null(ref_reduction)) {
     log_message(

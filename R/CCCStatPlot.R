@@ -888,8 +888,7 @@ ccc_lr_contribution_plot <- function(
     split(contrib_df, contrib_df$signaling),
     function(df_sig) {
       df_sig <- df_sig[
-        order(df_sig$contribution, decreasing = TRUE),
-        ,
+        order(df_sig$contribution, decreasing = TRUE), ,
         drop = FALSE
       ]
       df_sig$interaction <- factor(
@@ -1527,8 +1526,7 @@ ccc_generic_lr_contribution_plot <- function(
     split(contrib_df, contrib_df$signaling),
     function(df_sig) {
       df_sig <- df_sig[
-        order(df_sig$contribution, decreasing = TRUE),
-        ,
+        order(df_sig$contribution, decreasing = TRUE), ,
         drop = FALSE
       ]
       df_sig$interaction <- factor(
@@ -2074,8 +2072,7 @@ ccc_pathway_summary_plot <- function(
   summary$n_active_cell_pairs[is.na(summary$n_active_cell_pairs)] <- 0
   summary$is_significant <- summary$n_significant_pairs > 0
   summary <- summary[
-    order(summary$is_significant, summary$total_strength, decreasing = TRUE),
-    ,
+    order(summary$is_significant, summary$total_strength, decreasing = TRUE), ,
     drop = FALSE
   ]
   summary <- utils::head(summary, top_n)
@@ -2208,8 +2205,7 @@ ccc_stat_comparison_plot <- function(
       rbind,
       lapply(seq_along(cc_cmp$object_list), function(i) {
         obj <- cc_cmp$object_list[[i]]
-        value <- switch(
-          measure,
+        value <- switch(measure,
           count = sum(obj@net$count, na.rm = TRUE),
           weight = sum(obj@net$weight, na.rm = TRUE)
         )
@@ -2254,14 +2250,12 @@ ccc_stat_comparison_plot <- function(
     rbind,
     lapply(seq_along(cc_cmp$object_list), function(i) {
       obj <- cc_cmp$object_list[[i]]
-      mat <- switch(
-        measure,
+      mat <- switch(measure,
         count = obj@net$count,
         weight = obj@net$weight
       )
       celltypes <- rownames(mat)
-      value <- switch(
-        pattern,
+      value <- switch(pattern,
         outgoing = rowSums(mat, na.rm = TRUE),
         incoming = colSums(mat, na.rm = TRUE),
         all = rowSums(mat, na.rm = TRUE) +

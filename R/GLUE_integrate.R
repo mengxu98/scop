@@ -459,8 +459,7 @@ glue_add_gene_coords <- function(
     gene_matches[[field]] <- sum(rownames(features) %in% rownames(coord_table))
   }
 
-  field_order <- switch(
-    gene_annotation_by,
+  field_order <- switch(gene_annotation_by,
     auto = names(sort(gene_matches, decreasing = TRUE)),
     gene_name = c("gene_name", "gene_id"),
     gene_id = c("gene_id", "gene_name")
@@ -574,8 +573,7 @@ glue_gene_coord_table <- function(annotation_df, field = c("gene_name", "gene_id
       nzchar(annotation_df[[field]]) &
       !is.na(annotation_df[["seqnames"]]) &
       !is.na(annotation_df[["start"]]) &
-      !is.na(annotation_df[["end"]]),
-    ,
+      !is.na(annotation_df[["end"]]), ,
     drop = FALSE
   ]
   keys <- as.character(annotation_df[[field]])

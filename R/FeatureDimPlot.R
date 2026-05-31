@@ -362,7 +362,8 @@ FeatureDimPlot <- function(
   ncol = NULL,
   byrow = TRUE,
   force = FALSE,
-  seed = 11
+  seed = 11,
+  verbose = TRUE
 ) {
   set.seed(seed)
   color_blend_mode <- match.arg(color_blend_mode)
@@ -444,7 +445,8 @@ FeatureDimPlot <- function(
     if (!all(cells.highlight %in% colnames(srt@assays[[1]]))) {
       log_message(
         "Some cells in {.val {cells.highlight}} not found in {.cls Seurat}",
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
     }
     cells.highlight <- intersect(cells.highlight, colnames(srt@assays[[1]]))
@@ -468,7 +470,8 @@ FeatureDimPlot <- function(
   if (length(features_drop) > 0) {
     log_message(
       "{.val {features_drop}} are not in the features of {.cls Seurat}",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     features <- features[!features %in% features_drop]
   }
@@ -480,7 +483,8 @@ FeatureDimPlot <- function(
   if (length(features_common) > 0) {
     log_message(
       "Features appear in both gene names and metadata names: {.val {features_common}}",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
   }
   if (length(c(features_gene, features_meta, features_embedding)) == 0) {
@@ -495,11 +499,12 @@ FeatureDimPlot <- function(
       log_message(
         "{.val {features_meta}} is not used when calculating co-expression",
         "is not used when calculating co-expression",
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
     }
     status <- CheckDataType(srt, layer = layer, assay = assay)
-    log_message("Data type detected in {.val {layer}} layer: {.val {status}}")
+    log_message("Data type detected in {.val {layer}} layer: {.val {status}}", verbose = verbose)
     if (status %in% c("raw_counts", "raw_normalized_counts")) {
       srt@meta.data[["CoExp"]] <- apply(
         GetAssayData5(
@@ -591,7 +596,8 @@ FeatureDimPlot <- function(
   if (length(features) > 50 && isFALSE(force)) {
     log_message(
       "More than 50 {.arg features} to be plotted",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
     if (isFALSE(answer)) {
@@ -1780,7 +1786,8 @@ FeatureDimPlot3D <- function(
   width = NULL,
   height = NULL,
   save = NULL,
-  force = FALSE
+  force = FALSE,
+  verbose = TRUE
 ) {
   cols.highlight <- col2hex(cols.highlight)
 
@@ -1840,7 +1847,8 @@ FeatureDimPlot3D <- function(
     if (!all(cells.highlight %in% colnames(srt@assays[[1]]))) {
       log_message(
         "Some cells in 'cells.highlight' not found in srt.",
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
     }
     cells.highlight <- intersect(cells.highlight, colnames(srt@assays[[1]]))
@@ -1886,7 +1894,8 @@ FeatureDimPlot3D <- function(
     log_message(
       paste0(features_drop, collapse = ","),
       " are not in the features of srt.",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     features <- features[!features %in% features_drop]
   }
@@ -1898,7 +1907,8 @@ FeatureDimPlot3D <- function(
     log_message(
       "Features appear in both gene names and metadata names: ",
       paste0(intersect(features_gene, features_meta), collapse = ","),
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
   }
   if (length(c(features_gene, features_meta, features_embedding)) == 0) {
@@ -1913,11 +1923,12 @@ FeatureDimPlot3D <- function(
       log_message(
         paste(features_meta, collapse = ","),
         "is not used when calculating co-expression",
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
     }
     status <- CheckDataType(srt, layer = layer, assay = assay)
-    log_message("Data type detected in ", layer, " layer: ", status)
+    log_message("Data type detected in ", layer, " layer: ", status, verbose = verbose)
     if (status %in% c("raw_counts", "raw_normalized_counts")) {
       srt@meta.data[["CoExp"]] <- apply(
         GetAssayData5(
@@ -2007,7 +2018,8 @@ FeatureDimPlot3D <- function(
   if (length(features) > 50 && isFALSE(force)) {
     log_message(
       "More than 50 features to be plotted",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
     if (isFALSE(answer)) {

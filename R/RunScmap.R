@@ -70,7 +70,8 @@ RunScmap <- function(
   method = "scmapCluster",
   nfeatures = 500,
   threshold = 0.5,
-  k = 10
+  k = 10,
+  verbose = TRUE
 ) {
   check_r("scmap", verbose = FALSE)
   if (!is.null(ref_group)) {
@@ -106,7 +107,7 @@ RunScmap <- function(
       assay = query_assay
     )
   )
-  log_message("Detected {.arg srt_query} data type: {.val {status_query}}")
+  log_message("Detected {.arg srt_query} data type: {.val {status_query}}", verbose = verbose)
   status_ref <- CheckDataType(
     object = GetAssayData5(
       srt_ref,
@@ -114,14 +115,15 @@ RunScmap <- function(
       assay = ref_assay
     )
   )
-  log_message("Detected {.arg srt_ref} data type: {.val {status_ref}}")
+  log_message("Detected {.arg srt_ref} data type: {.val {status_ref}}", verbose = verbose)
   if (
     status_ref != status_query ||
       any(status_query == "unknown", status_ref == "unknown")
   ) {
     log_message(
       "Data type is unknown or different between query and ref.",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
   }
 
@@ -171,7 +173,7 @@ RunScmap <- function(
     metadata_ref
   )
 
-  log_message("Perform selectFeatures")
+  log_message("Perform selectFeatures", verbose = verbose)
   sce_ref <- scmap::selectFeatures(
     sce_ref,
     n_features = nfeatures,
@@ -182,9 +184,9 @@ RunScmap <- function(
   ]
 
   if (method == "scmapCluster") {
-    log_message("Perform indexCluster")
+    log_message("Perform indexCluster", verbose = verbose)
     sce_ref <- scmap::indexCluster(sce_ref, cluster_col = ref_group)
-    log_message("Perform scmapCluster")
+    log_message("Perform scmapCluster", verbose = verbose)
     scmapCluster_results <- scmap::scmapCluster(
       projection = sce_query,
       index_list = list(S4Vectors::metadata(sce_ref)$scmap_cluster_index),
@@ -200,13 +202,13 @@ RunScmap <- function(
     srt_query$scmap_annotation <- scmapCluster_results$scmap_cluster_labs[, 1]
     srt_query$scmap_score <- scmapCluster_results$scmap_cluster_siml[, 1]
   } else if (method == "scmapCell") {
-    log_message("Perform indexCell")
+    log_message("Perform indexCell", verbose = verbose)
     sce_ref <- scmap::indexCell(
       sce_ref,
       M = ifelse(nfeatures <= 1000, nfeatures / 10, 100),
       k = sqrt(ncol(sce_ref))
     )
-    log_message("Perform scmapCell")
+    log_message("Perform scmapCell", verbose = verbose)
     scmapCell_results <- scmap::scmapCell(
       projection = sce_query,
       index_list = list(S4Vectors::metadata(sce_ref)$scmap_cell_index),
@@ -219,7 +221,7 @@ RunScmap <- function(
       )
     }
     srt_query@tools[["scmapCell_results"]] <- scmapCell_results[[1]]
-    log_message("Perform scmapCell2Cluster")
+    log_message("Perform scmapCell2Cluster", verbose = verbose)
     scmapCell_clusters <- scmap::scmapCell2Cluster(
       scmapCell_results = scmapCell_results,
       cluster_list = list(

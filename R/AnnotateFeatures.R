@@ -80,7 +80,8 @@ AnnotateFeatures <- function(
   ),
   assays = "RNA",
   overwrite = FALSE,
-  ...
+  ...,
+  verbose = TRUE
 ) {
   IDtype <- match.arg(IDtype)
   if (is.null(db) && is.null(gtf)) {
@@ -106,7 +107,8 @@ AnnotateFeatures <- function(
     if (length(db_notfound) > 0) {
       log_message(
         "The following databases are not found: {.val {db_notfound}}",
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
     }
     for (single_db in names(db_list[[species]])) {

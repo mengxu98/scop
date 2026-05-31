@@ -37,7 +37,7 @@
 #'   dims = 2:10,
 #'   umap_dims = 1:10
 #' )
-#' 
+#'
 #' CellDimPlot(
 #'   coembed,
 #'   group.by = c("modality", "CellType"),

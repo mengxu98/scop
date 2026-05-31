@@ -108,8 +108,7 @@ RunSingleR <- function(
   if (is.null(ref_group)) {
     log_message(
       "{.arg ref_group} must be provided",
-      message_type = "error",
-      verbose = verbose
+      message_type = "error"
     )
   }
   if (length(ref_group) == ncol(srt_ref)) {
