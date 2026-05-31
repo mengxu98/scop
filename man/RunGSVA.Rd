@@ -37,7 +37,8 @@ RunGSVA(
   mx.diff = TRUE,
   tau = 1,
   ssgsea.norm = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  ...
 )
 }
 \arguments{
@@ -153,6 +154,8 @@ Default is \code{TRUE}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{...}{Passed to other functions.}
 }
 \value{
 Returns the modified \code{Seurat} object. When \code{group.by} is provided, GSVA scores are stored in the \code{tools} slot.

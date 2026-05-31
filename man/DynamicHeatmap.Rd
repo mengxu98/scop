@@ -142,7 +142,8 @@ DynamicHeatmap(
   verbose = TRUE,
   seed = 11,
   legend.position = "right",
-  ht_params = list()
+  ht_params = list(),
+  ...
 )
 }
 \arguments{
@@ -522,6 +523,8 @@ When row names are long and shown on the right side, the gap between the heatmap
 This should be a list with named elements, where the names correspond to parameter names in the \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap} function.
 Any conflicting parameters will override the defaults set by this function.
 Default is \code{list()}.}
+
+\item{...}{Additional arguments passed to the other functions.}
 }
 \description{
 Heatmap plot for dynamic features along lineages
