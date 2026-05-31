@@ -1084,6 +1084,7 @@ collect_volcano_enrichment_annotations <- function(
 #'
 #' @md
 #' @inheritParams DEtestPlot
+#' @inheritParams thisutils::log_message
 #'
 #' @seealso [DEtestPlot], [RunDEtest], [VolcanoPlot], [DEtestRingPlot]
 #'
@@ -1568,6 +1569,7 @@ DEtestRingPlot <- function(
 #'
 #' @md
 #' @inheritParams DEtestPlot
+#' @inheritParams thisutils::log_message
 #'
 #' @seealso [DEtestPlot], [RunDEtest], [DEtestManhattanPlot], [DEtestRingPlot]
 #'

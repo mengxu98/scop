@@ -1,6 +1,7 @@
 #' Single-cell reference mapping with Seurat method
 #'
 #' @inheritParams RunKNNMap
+#' @inheritParams thisutils::log_message
 #' @param ref_pca A character string specifying the name of the PCA reduction in the reference object to use for calculating the distance metric.
 #' @param normalization.method The normalization method to use.
 #' Default is `"LogNormalize"`.

@@ -506,6 +506,7 @@ pc_selection_stats <- function(
 #' @title Dimension estimate diagnostic plot
 #'
 #' @md
+#' @inheritParams thisutils::log_message
 #' @param srt A `Seurat` object with a PCA-like reduction computed.
 #' @param max_pcs Maximum number of PCs to visualize. Default is `50`.
 #' @param variance_thresholds Numeric vector of variance thresholds to mark.
