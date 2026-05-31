@@ -36,12 +36,12 @@ If not specified, the default assay in the hdf5 file will be used.}
 \item{metanames}{The names of the metadata columns to fetch.}
 
 \item{reduction}{The name of the reduction to fetch.}
-}
-\value{
-A Seurat object with the fetched data.
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+}
+\value{
+A Seurat object with the fetched data.
 }
 \description{
 Fetch data from the hdf5 file and returns a Seurat object
