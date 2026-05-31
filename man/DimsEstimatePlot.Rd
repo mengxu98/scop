@@ -67,6 +67,9 @@ Default is \code{"theme_scop"}.}
 \value{
 A patchwork plot object when \code{combine = TRUE},
 or a named list of ggplot objects when \code{combine = FALSE}.
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Dimension estimate diagnostic plot
