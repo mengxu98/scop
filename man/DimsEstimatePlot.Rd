@@ -63,13 +63,13 @@ Default is \code{"theme_scop"}.}
 \item{ncol}{Number of columns in the combined layout. Default is \code{NULL}}
 
 \item{seed}{Random seed. Default is \code{11}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 A patchwork plot object when \code{combine = TRUE},
 or a named list of ggplot objects when \code{combine = FALSE}.
-
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
 }
 \description{
 Dimension estimate diagnostic plot

@@ -84,13 +84,13 @@ columns for grouped comparison.}
 plots. Default is \code{FALSE}.}
 
 \item{...}{Reserved for future use.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 A \code{ggplot} object.
 For \code{plot_type = "heatmap"}, returns a \code{ComplexHeatmap::Heatmap} object.
-
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
 }
 \description{
 Visualize bulk or pseudobulk deconvolution results from a

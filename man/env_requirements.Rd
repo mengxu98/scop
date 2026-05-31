@@ -26,7 +26,11 @@ Default is \code{"3.10-1"}.}
 excludes \code{"sccoda"}, \code{"scomm"}, and \code{"scenic"} because these workflows
 require dependency stacks that should be prepared explicitly. The
 \code{"scenic"} module is standalone and always uses Python \code{"3.10-1"}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
+
 \value{
 A list containing:
 \describe{
@@ -34,9 +38,6 @@ A list containing:
 \item{packages}{Named vector of package version specifications}
 \item{package_aliases}{Named list mapping logical package names to actual installed names}
 }
-
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
 }
 \description{
 The function returns a list of requirements including the required Python version,

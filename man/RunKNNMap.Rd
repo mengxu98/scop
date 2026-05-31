@@ -81,13 +81,13 @@ Additional distance metrics can also be used, such as "euclidean", "manhattan", 
 \item{vote_fun}{A character string specifying the function to be used for aggregating the nearest neighbors in the reference object.
 Options are "mean", "median", "sum", "min", "max", "sd", "var", etc.
 If not provided, the default is "mean".}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 A Seurat object with the projection results stored in the "ref.embeddings" reduction.
 If \code{ref_group} is provided, the function will also add a new metadata column called "predicted_ref_group" to the query object.
-
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
 }
 \description{
 This function performs single-cell reference mapping using the K-nearest neighbor (KNN) method.
