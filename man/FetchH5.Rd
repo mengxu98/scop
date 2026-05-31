@@ -39,6 +39,9 @@ If not specified, the default assay in the hdf5 file will be used.}
 }
 \value{
 A Seurat object with the fetched data.
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Fetch data from the hdf5 file and returns a Seurat object

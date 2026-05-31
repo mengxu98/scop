@@ -113,6 +113,9 @@ Default is \code{0}, which means no filtering will be performed.}
 
 \item{prefix}{A character vector specifying the prefix to be added to the resulting annotations.
 Default is \code{"KNNPredict"}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 This function performs KNN prediction to annotate cell types based on reference scRNA-seq or bulk RNA-seq data.
