@@ -8,6 +8,7 @@
 #' @md
 #' @inheritParams CellCorHeatmap
 #' @inheritParams RunKNNPredict
+#' @inheritParams thisutils::log_message
 #' @param ref_umap A character string specifying the name of the UMAP reduction in the reference object.
 #' If not provided, the first UMAP reduction found in the reference object will be used.
 #' @param query_reduction A character string specifying the name of a dimensionality reduction in the query object to use for calculating the distance metric.

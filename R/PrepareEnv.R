@@ -1191,6 +1191,7 @@ env_info <- function(conda, envname, verbose = TRUE) {
 #' All packages will be installed using uv as the primary tool.
 #'
 #' @md
+#' @inheritParams thisutils::log_message
 #' @param version The Python version of the environment.
 #' Default is `"3.10-1"`.
 #' @param include_optional Whether to include optional Python dependencies.
