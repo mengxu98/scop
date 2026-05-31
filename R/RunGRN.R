@@ -381,7 +381,7 @@ scenic_normalize_target_importance <- function(adjacency, power = 0.25) {
   if (length(power) != 1L || is.na(power) || power <= 0) {
     return(adjacency)
   }
-  target_total <- ave(abs(adjacency[["importance"]]), adjacency[["target"]], FUN = sum)
+  target_total <- stats::ave(abs(adjacency[["importance"]]), adjacency[["target"]], FUN = sum)
   target_total[!is.finite(target_total) | target_total <= 0] <- 1
   adjacency[["importance"]] <- adjacency[["importance"]] / (target_total^power)
   adjacency
