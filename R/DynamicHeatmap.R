@@ -366,7 +366,8 @@ DynamicHeatmap <- function(
   verbose = TRUE,
   seed = 11,
   legend.position = "right",
-  ht_params = list()
+  ht_params = list(),
+  ...
 ) {
   set.seed(seed)
   if (isTRUE(raster_by_magick)) {

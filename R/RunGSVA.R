@@ -125,7 +125,8 @@ RunGSVA <- function(
   mx.diff = TRUE,
   tau = 1,
   ssgsea.norm = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  ...
 ) {
   log_message("Start {.pkg GSVA} analysis", verbose = verbose)
 
