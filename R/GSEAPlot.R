@@ -198,7 +198,8 @@ GSEAPlot <- function(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
-  seed = 11
+  seed = 11,
+  verbose = TRUE
 ) {
   set.seed(seed)
   plot_type <- match.arg(plot_type)
@@ -713,7 +714,8 @@ GSEAPlot <- function(
           if (length(gene_drop) > 0) {
             log_message(
               "Gene {.val {gene_drop}} is not in the geneset of the {.val {gsdata$Description[1]}}",
-              message_type = "warning"
+              message_type = "warning",
+              verbose = verbose
             )
           }
           x_nudge <- diff(range(gsdata$x)) * 0.05

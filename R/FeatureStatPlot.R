@@ -489,7 +489,8 @@ FeatureStatPlot <- function(
   byrow = TRUE,
   force = FALSE,
   seed = 11,
-  ...
+  ...,
+  verbose = TRUE
 ) {
   if (is.null(group.by)) {
     group.by <- "All.groups"
@@ -517,11 +518,13 @@ FeatureStatPlot <- function(
     if (!is.null(bg.by)) {
       log_message(
         "{.arg bg.by} is invalid when {.arg plot.by} is set to {.val feature}",
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
     }
     log_message(
-      "Setting {.arg group.by} to {.val Features} as {.arg plot.by} is set to {.val feature}"
+      "Setting {.arg group.by} to {.val Features} as {.arg plot.by} is set to {.val feature}",
+      verbose = verbose
     )
     srt@assays[setdiff(names(srt@assays), assay)] <- NULL
     meta_reshape <- SeuratObject::FetchData(

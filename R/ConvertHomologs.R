@@ -22,10 +22,10 @@
 #' @return A converted object of the same high-level type as `object`. The
 #' mapping table is stored in `@tools$ConvertHomologs` for Seurat objects and in
 #' the `"ConvertHomologs"` attribute for matrix inputs.
-#' 
+#'
 #' @seealso
 #' [AnnotateFeatures], [ConvertHomologs]]
-#' 
+#'
 #' @export
 #'
 #' @examples
@@ -331,8 +331,7 @@ ConvertHomologs_mapping <- function(
     mapping$from_geneID <- as.character(mapping$from_geneID)
     mapping$to_geneID <- as.character(mapping$to_geneID)
     mapping <- mapping[
-      !is.na(mapping$to_geneID) & nzchar(mapping$to_geneID),
-      ,
+      !is.na(mapping$to_geneID) & nzchar(mapping$to_geneID), ,
       drop = FALSE
     ]
     mapping <- mapping[!duplicated(mapping), , drop = FALSE]

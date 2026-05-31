@@ -86,8 +86,8 @@ RunMetabolism <- function(
   convert_species = TRUE,
   Ensembl_version = NULL,
   mirror = NULL,
-  biomart = NULL,  # deprecated, kept for compat
-  max_tries = 5,   # deprecated, kept for compat
+  biomart = NULL, # deprecated, kept for compat
+  max_tries = 5, # deprecated, kept for compat
   use_preparedb = TRUE,
   method = c("AUCell", "GSVA", "ssGSEA", "VISION"),
   backend = c("cpp", "r"),
@@ -259,61 +259,61 @@ RunMetabolism <- function(
   )
 
   if (!isTRUE(skip_gmt)) {
-  for (term_db in db_prepare) {
-    term_db_label <- db_labels[[term_db]]
-    metabolism_db <- load_scmetabolism_gmt(
-      url = gmt_urls[[term_db]],
-      db_name = term_db,
-      verbose = verbose
-    )
-    if (is.null(metabolism_db)) {
-      log_message(
-        "Failed to load raw {.pkg scMetabolism} genesets for {.val {term_db_label}}, skip this database.",
-        message_type = "warning",
+    for (term_db in db_prepare) {
+      term_db_label <- db_labels[[term_db]]
+      metabolism_db <- load_scmetabolism_gmt(
+        url = gmt_urls[[term_db]],
+        db_name = term_db,
         verbose = verbose
       )
-      next
-    }
-    metabolism_db_all[[term_db]] <- metabolism_db
-
-    gene_sets_db <- lapply(
-      metabolism_db[["gene_sets"]],
-      function(gs) {
-        mapped <- unname(expr_gene_lookup[toupper(gs)])
-        unique(stats::na.omit(mapped[nzchar(mapped)]))
+      if (is.null(metabolism_db)) {
+        log_message(
+          "Failed to load raw {.pkg scMetabolism} genesets for {.val {term_db_label}}, skip this database.",
+          message_type = "warning",
+          verbose = verbose
+        )
+        next
       }
-    )
-    gs_size <- lengths(gene_sets_db)
-    gene_sets_db <- gene_sets_db[
-      gs_size >= minGSSize & gs_size <= maxGSSize
-    ]
-    if (length(gene_sets_db) == 0) {
-      log_message(
-        "No metabolism gene sets remain in {.val {term_db_label}} after size filtering",
-        message_type = "warning",
-        verbose = verbose
+      metabolism_db_all[[term_db]] <- metabolism_db
+
+      gene_sets_db <- lapply(
+        metabolism_db[["gene_sets"]],
+        function(gs) {
+          mapped <- unname(expr_gene_lookup[toupper(gs)])
+          unique(stats::na.omit(mapped[nzchar(mapped)]))
+        }
       )
-      next
+      gs_size <- lengths(gene_sets_db)
+      gene_sets_db <- gene_sets_db[
+        gs_size >= minGSSize & gs_size <= maxGSSize
+      ]
+      if (length(gene_sets_db) == 0) {
+        log_message(
+          "No metabolism gene sets remain in {.val {term_db_label}} after size filtering",
+          message_type = "warning",
+          verbose = verbose
+        )
+        next
+      }
+
+      term_ids_db <- names(gene_sets_db)
+      term_names_db <- metabolism_db[["term_info"]][term_ids_db, "Name"]
+      term_names_db[is.na(term_names_db)] <- term_ids_db[is.na(term_names_db)]
+
+      if (length(gene_sets_db) == 0) {
+        next
+      }
+
+      gene_sets_all[[term_db]] <- gene_sets_db
+      term_names_all[[term_db]] <- stats::setNames(
+        term_names_db,
+        term_ids_db
+      )
     }
-
-    term_ids_db <- names(gene_sets_db)
-    term_names_db <- metabolism_db[["term_info"]][term_ids_db, "Name"]
-    term_names_db[is.na(term_names_db)] <- term_ids_db[is.na(term_names_db)]
-
-    if (length(gene_sets_db) == 0) {
-      next
-    }
-
-    gene_sets_all[[term_db]] <- gene_sets_db
-    term_names_all[[term_db]] <- stats::setNames(
-      term_names_db,
-      term_ids_db
-    )
-  }
   } # end if (!skip_gmt)
 
   if (!isTRUE(skip_gmt) && isTRUE(convert_species) && !identical(species, "Homo_sapiens") &&
-      length(gene_sets_all) > 0) {
+    length(gene_sets_all) > 0) {
     all_human_genes <- unique(unlist(
       lapply(metabolism_db_all, function(mdb) {
         unique(unlist(mdb[["gene_sets"]], use.names = FALSE))
@@ -348,7 +348,7 @@ RunMetabolism <- function(
         }
       )
       if (!is.null(conv) && !is.null(conv[["geneID_expand"]]) &&
-          nrow(conv[["geneID_expand"]]) > 0) {
+        nrow(conv[["geneID_expand"]]) > 0) {
         expand <- conv[["geneID_expand"]]
         from_col <- "from_geneID"
         to_col <- "symbol"
@@ -396,15 +396,15 @@ RunMetabolism <- function(
   }
 
   if (!isTRUE(skip_gmt)) {
-  if (length(gene_sets_all) == 0) {
-    log_message(
-      "No metabolism gene sets were constructed from the specified databases",
-      message_type = "error"
-    )
-  }
+    if (length(gene_sets_all) == 0) {
+      log_message(
+        "No metabolism gene sets were constructed from the specified databases",
+        message_type = "error"
+      )
+    }
 
-  gene_sets <- do.call(c, gene_sets_all)
-  term_names_final <- unlist(term_names_all, use.names = TRUE)
+    gene_sets <- do.call(c, gene_sets_all)
+    term_names_final <- unlist(term_names_all, use.names = TRUE)
   } # end if (!skip_gmt)
 
   log_message(
@@ -684,15 +684,6 @@ load_scmetabolism_gmt <- function(url, db_name, verbose = TRUE) {
   out
 }
 
-# ---- PrepareDB-based gene set construction for species-aware metabolism ----
-
-#' Extract scMetabolism pathway references from cached GMT data
-#'
-#' @param db_prepare Character vector of database names (e.g., c("KEGG", "Reactome")).
-#' @param verbose Logical; print progress messages.
-#' @return A list with elements `kegg_refs` (KEGG pathway numbers) and
-#'   `reactome_names` (Reactome pathway names).
-#' @keywords internal
 scmetabolism_pathway_refs <- function(db_prepare, verbose = TRUE) {
   gmt_urls <- c(
     KEGG = "https://raw.githubusercontent.com/mengxu98/datasets/main/scMetabolism/KEGG_metabolism_nc.gmt",
@@ -719,16 +710,6 @@ scmetabolism_pathway_refs <- function(db_prepare, verbose = TRUE) {
   list(kegg_refs = kegg_refs, reactome_names = reactome_names)
 }
 
-#' Build metabolism gene sets from PrepareDB TERM2GENE
-#'
-#' Uses [PrepareDB] to obtain species-specific TERM2GENE for KEGG/Reactome,
-#' then filters to only the metabolism pathways curated by scMetabolism.
-#'
-#' @inheritParams RunMetabolism
-#' @param curated List from [scmetabolism_pathway_refs].
-#' @param expr_gene_names Character vector of gene names in the expression matrix.
-#' @return A list with `gene_sets` and `term_names`.
-#' @keywords internal
 build_metabolism_gene_sets_from_preparedb <- function(
   species,
   db_prepare,

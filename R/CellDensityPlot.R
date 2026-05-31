@@ -96,7 +96,8 @@ CellDensityPlot <- function(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
-  force = FALSE
+  force = FALSE,
+  verbose = TRUE
 ) {
   check_r("ggridges", verbose = FALSE)
   assay <- assay %||% DefaultAssay(srt)
@@ -146,7 +147,8 @@ CellDensityPlot <- function(
   if (length(features_drop) > 0) {
     log_message(
       "{.val {features_drop}} are not in the features of srt",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     features <- features[!features %in% features_drop]
   }
@@ -156,7 +158,8 @@ CellDensityPlot <- function(
   if (length(intersect(features_gene, features_meta)) > 0) {
     log_message(
       "Features appear in both gene names and metadata names: {.val {intersect(features_gene, features_meta)}}",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
   }
 
@@ -188,7 +191,8 @@ CellDensityPlot <- function(
   if (length(features) > 50 && isFALSE(force)) {
     log_message(
       "More than 50 {.arg features} to be plotted",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
     if (isFALSE(answer)) {

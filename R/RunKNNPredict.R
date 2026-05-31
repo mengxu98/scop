@@ -245,7 +245,8 @@ RunKNNPredict <- function(
   distance_metric = "cosine",
   k = 30,
   filter_lowfreq = 0,
-  prefix = "KNNPredict"
+  prefix = "KNNPredict",
+  verbose = TRUE
 ) {
   query_assay <- query_assay %||% SeuratObject::DefaultAssay(srt_query)
   features_type <- match.arg(features_type)
@@ -264,7 +265,7 @@ RunKNNPredict <- function(
     if (length(features) == 0) {
       if (features_type == "HVF" && feature_source %in% c("both", "query")) {
         if (length(SeuratObject::VariableFeatures(srt_query, assay = query_assay)) == 0) {
-          log_message("Perform {.fn Seurat::FindVariableFeatures} on the query data...")
+          log_message("Perform {.fn Seurat::FindVariableFeatures} on the query data...", verbose = verbose)
           srt_query <- Seurat::FindVariableFeatures(
             srt_query,
             nfeatures = nfeatures,
@@ -311,7 +312,8 @@ RunKNNPredict <- function(
           log_message(
             "Use the DE features from ",
             de,
-            " to calculate distance metric."
+            " to calculate distance metric.",
+            verbose = verbose
           )
           de_df <- srt_query@tools[[layer]][[de]]
           de_df <- de_df[
@@ -353,7 +355,8 @@ RunKNNPredict <- function(
           }
           log_message(
             "DE features number of the query data: ",
-            length(features_query)
+            length(features_query),
+            verbose = verbose
           )
         }
       } else {
@@ -367,7 +370,7 @@ RunKNNPredict <- function(
       features <- features_query
     }
     features_common <- intersect(features, rownames(bulk_ref))
-    log_message("Use ", length(features_common), " features to calculate distance.")
+    log_message("Use ", length(features_common), " features to calculate distance.", verbose = verbose)
     ref <- Matrix::t(bulk_ref[features_common, , drop = FALSE])
   } else if (!is.null(srt_ref)) {
     ref_assay <- ref_assay %||% SeuratObject::DefaultAssay(srt_ref)
@@ -398,11 +401,11 @@ RunKNNPredict <- function(
 
     drop_cell <- colnames(srt_ref)[is.na(srt_ref[["ref_group", drop = TRUE]])]
     if (length(drop_cell) > 0) {
-      log_message("Drop ", length(drop_cell), " cells with NA in the ref_group")
+      log_message("Drop ", length(drop_cell), " cells with NA in the ref_group", verbose = verbose)
       srt_ref <- srt_ref[, setdiff(colnames(srt_ref), drop_cell)]
     }
     if (isTRUE(use_reduction)) {
-      log_message("Use the reduction to calculate distance metric.")
+      log_message("Use the reduction to calculate distance metric.", verbose = verbose)
       if (
         !is.null(query_dims) &&
           !is.null(ref_dims) &&
@@ -422,7 +425,7 @@ RunKNNPredict <- function(
     } else {
       if (length(features) == 0) {
         if (features_type == "HVF" && feature_source %in% c("both", "ref")) {
-          log_message("Use the HVF to calculate distance metric")
+          log_message("Use the HVF to calculate distance metric", verbose = verbose)
           if (length(SeuratObject::VariableFeatures(srt_ref, assay = ref_assay)) == 0) {
             srt_ref <- Seurat::FindVariableFeatures(
               srt_ref,
@@ -462,7 +465,8 @@ RunKNNPredict <- function(
           log_message(
             "Use the DE features from ",
             de,
-            " to calculate distance metric."
+            " to calculate distance metric.",
+            verbose = verbose
           )
           de_df <- srt_ref@tools[[layer]][[de]]
           de_df <- de_df[
@@ -502,7 +506,7 @@ RunKNNPredict <- function(
               }
             ))
           }
-          log_message("DE features number of the ref data: ", length(features_ref))
+          log_message("DE features number of the ref data: ", length(features_ref), verbose = verbose)
         } else {
           features_ref <- rownames(srt_ref[[ref_assay]])
         }
@@ -519,7 +523,8 @@ RunKNNPredict <- function(
       log_message(
         "Use ",
         length(features_common),
-        " features to calculate distance."
+        " features to calculate distance.",
+        verbose = verbose
       )
       if (isTRUE(ref_collapsing)) {
         ref <- Seurat::AverageExpression(
@@ -605,18 +610,19 @@ RunKNNPredict <- function(
 
   if (isFALSE(use_reduction)) {
     status_dat <- CheckDataType(query, verbose = FALSE)
-    log_message("Detected query data type: {.val {status_dat}}")
+    log_message("Detected query data type: {.val {status_dat}}", verbose = verbose)
     status_ref <- CheckDataType(ref, verbose = FALSE)
-    log_message("Detected reference data type: {.val {status_ref}}")
+    log_message("Detected reference data type: {.val {status_ref}}", verbose = verbose)
     if (status_ref != status_dat || any(status_dat == "unknown", status_ref == "unknown")) {
       log_message(
         "Data type is unknown or different between query and reference",
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
     }
   }
 
-  log_message("Calculate similarity...")
+  log_message("Calculate similarity...", verbose = verbose)
 
   if (is.null(nn_method)) {
     if (distance_metric %in% c("euclidean", "cosine")) {
@@ -627,7 +633,7 @@ RunKNNPredict <- function(
       nn_method <- "raw"
     }
   }
-  log_message("Use {.pkg {nn_method}} method to find neighbors")
+  log_message("Use {.pkg {nn_method}} method to find neighbors", verbose = verbose)
   if (!nn_method %in% c("raw", "annoy", "rann", "cpp")) {
     log_message("nn_method must be one of raw, rann, annoy, and cpp",
       message_type = "error"
@@ -651,7 +657,8 @@ RunKNNPredict <- function(
   if (isTRUE(return_full_distance_matrix) && nn_method != "raw") {
     log_message(
       "Distance matrix will not be returned besause nn_method is not 'raw'",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     return_full_distance_matrix <- FALSE
   }
@@ -758,7 +765,7 @@ RunKNNPredict <- function(
     rownames(match_k_distance) <- colnames(d)
   }
 
-  log_message("Predict cell type...")
+  log_message("Predict cell type...", verbose = verbose)
   match_prob <- NULL
   if (!is.null(srt_ref) && (isFALSE(ref_collapsing) || isTRUE(use_reduction))) {
     level <- as.character(unique(srt_ref[["ref_group", drop = TRUE]]))

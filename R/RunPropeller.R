@@ -1,4 +1,3 @@
-
 #' @title Propeller differential abundance wrapper
 #'
 #' @description

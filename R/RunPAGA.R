@@ -409,13 +409,16 @@ paga_layout_igraph <- function(
   } else {
     NULL
   }
-  on.exit({
-    if (seed_exists) {
-      assign(".Random.seed", old_seed, envir = .GlobalEnv)
-    } else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
-      rm(".Random.seed", envir = .GlobalEnv)
-    }
-  }, add = TRUE)
+  on.exit(
+    {
+      if (seed_exists) {
+        assign(".Random.seed", old_seed, envir = .GlobalEnv)
+      } else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
+        rm(".Random.seed", envir = .GlobalEnv)
+      }
+    },
+    add = TRUE
+  )
   set.seed(0)
 
   graph <- igraph::graph_from_adjacency_matrix(
@@ -425,8 +428,7 @@ paga_layout_igraph <- function(
     diag = FALSE
   )
   weights <- igraph::E(graph)$weight
-  pos <- switch(
-    layout,
+  pos <- switch(layout,
     fr = {
       init <- matrix(stats::runif(n_groups * 2L), ncol = 2L)
       igraph::layout_with_fr(

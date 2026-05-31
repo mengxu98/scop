@@ -1180,8 +1180,7 @@ bipartite_plot <- function(
       !is.na(receptor_chr) &
       nzchar(receptor_chr) &
       !is.na(receiver_chr) &
-      nzchar(receiver_chr),
-    ,
+      nzchar(receiver_chr), ,
     drop = FALSE
   ]
 
@@ -1214,8 +1213,7 @@ bipartite_plot <- function(
     df <- df[
       df$sender %in% top_senders &
         df$receptor %in% top_receptors &
-        df$receiver %in% top_receivers,
-      ,
+        df$receiver %in% top_receivers, ,
       drop = FALSE
     ]
   }

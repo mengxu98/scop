@@ -148,7 +148,8 @@ VelocityPlot <- function(
   theme_use = "theme_scop",
   theme_args = list(),
   return_layer = FALSE,
-  seed = 11
+  seed = 11,
+  verbose = TRUE
 ) {
   set.seed(seed)
 

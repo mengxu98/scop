@@ -229,7 +229,8 @@ GSVAPlot <- function(
   byrow = TRUE,
   border = TRUE,
   nlabel = 0,
-  seed = 11
+  seed = 11,
+  verbose = TRUE
 ) {
   set.seed(seed)
   if (isTRUE(raster_by_magick)) {
@@ -275,7 +276,8 @@ GSVAPlot <- function(
           if (length(possible_names) > 1) {
             log_message(
               "Multiple GSVA results found for {.val {group.by}}. Using {.val {tool_name}}",
-              message_type = "warning"
+              message_type = "warning",
+              verbose = verbose
             )
           }
         }
@@ -355,7 +357,8 @@ GSVAPlot <- function(
       heatmap_topTerm <- 50
       log_message(
         "Too many gene sets for a readable heatmap. Using the top 50 most variable gene sets by default.",
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
     }
     if (!is.null(features)) {
@@ -526,7 +529,8 @@ GSVAPlot <- function(
     if (plot_type == "wordcloud" && word_type == "feature" && !has_geneid) {
       log_message(
         "word_type 'feature' requires gene lists (geneID), which GSVA results do not contain. Using word_type='term' instead",
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
       word_type <- "term"
     }
