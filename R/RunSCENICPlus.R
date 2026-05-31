@@ -1987,7 +1987,7 @@ scenicplus_region_gene_modules <- function(
       next
     }
     for (threshold in quantiles) {
-      passing <- as.logical(ave(
+      passing <- as.logical(stats::ave(
         adj[["importance"]],
         adj[["gene"]],
         FUN = function(x) {
@@ -2012,7 +2012,7 @@ scenicplus_region_gene_modules <- function(
       if (!is.finite(n) || n < 1L) {
         next
       }
-      passing <- as.logical(ave(
+      passing <- as.logical(stats::ave(
         adj[["importance"]],
         adj[["gene"]],
         FUN = function(x) {
