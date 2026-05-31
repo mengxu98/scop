@@ -270,7 +270,7 @@
 #' )
 #' SpatialSpotPlot(
 #'   spatial_rctd,
-#'   group.by = rctd_cols,
+#'   group.by = "RCTD_dominant_type",
 #'   plot_type = "pie"
 #' )
 #' }
