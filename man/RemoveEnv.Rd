@@ -4,7 +4,7 @@
 \alias{RemoveEnv}
 \title{Remove a conda-compatible Python environment}
 \usage{
-RemoveEnv(envname = NULL, conda = "auto", force = FALSE)
+RemoveEnv(envname = NULL, conda = "auto", force = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{envname}{The name of the conda-compatible Python environment.
@@ -19,6 +19,9 @@ downloaded automatically.}
 
 \item{force}{Whether to force removal without confirmation.
 Default is \code{FALSE}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 Invisibly returns \code{TRUE} if successful, \code{FALSE} otherwise.

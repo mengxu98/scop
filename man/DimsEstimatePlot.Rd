@@ -20,7 +20,8 @@ DimsEstimatePlot(
   combine = TRUE,
   nrow = NULL,
   ncol = NULL,
-  seed = 11
+  seed = 11,
+  verbose = TRUE
 )
 }
 \arguments{

@@ -9,7 +9,8 @@ MetabolismPlot(
   res = NULL,
   group.by = NULL,
   assay_name = "METABOLISM",
-  ...
+  ...,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -24,6 +25,9 @@ If provided, 'srt' and 'group.by' are ignored.}
 Default is \code{"METABOLISM"}.}
 
 \item{...}{Additional arguments passed to \link{GSVAPlot}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Plots for metabolism pathway scoring

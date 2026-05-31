@@ -12,7 +12,8 @@ CreateMetaFile(
   write_misc = FALSE,
   ignore_nlevel = 100,
   compression_level = 6,
-  overwrite = TRUE
+  overwrite = TRUE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -37,6 +38,9 @@ Default is \code{100}.}
 Default is \code{6}.}
 
 \item{overwrite}{Whether to overwrite existing metadata and reductions in the meta file.
+Default is \code{TRUE}.}
+
+\item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 }
 \description{

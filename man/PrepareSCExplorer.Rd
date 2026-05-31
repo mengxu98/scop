@@ -15,7 +15,8 @@ PrepareSCExplorer(
   write_tools = FALSE,
   write_misc = FALSE,
   compression_level = 6,
-  overwrite = FALSE
+  overwrite = FALSE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -49,6 +50,9 @@ Default is \code{FALSE}.}
 Default is \code{6}.}
 
 \item{overwrite}{Whether to overwrite existing data in the data file.
+Default is \code{TRUE}.}
+
+\item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 }
 \description{

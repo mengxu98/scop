@@ -111,10 +111,11 @@ panc8_sub <- RunScissor(
   positive = "bfa",
   family = "binomial",
   features = head(
-  intersect(
-    rownames(panc8_sub),
-    rownames(SummarizedExperiment::assay(islet_bulk, "counts"))
-  ), 1000),
+    intersect(
+      rownames(panc8_sub),
+      rownames(SummarizedExperiment::assay(islet_bulk, "counts"))
+    ), 1000
+  ),
   alpha = 0.2,
   cutoff = 0.5
 )

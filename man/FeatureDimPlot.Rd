@@ -87,7 +87,8 @@ FeatureDimPlot(
   ncol = NULL,
   byrow = TRUE,
   force = FALSE,
-  seed = 11
+  seed = 11,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -286,6 +287,9 @@ Default is \code{FALSE}.}
 
 \item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Plotting cell points on a reduced 2D plane and coloring according to the values of the features.

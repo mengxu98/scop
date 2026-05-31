@@ -576,60 +576,60 @@ de_top <- de_filter |>
   dplyr::top_n(1, avg_log2FC) |>
   dplyr::group_by(group1) |>
   dplyr::top_n(3, avg_log2FC)
-  ht4 <- GroupHeatmap(
-    pancreas_sub,
-    features = de_top$gene,
-    feature_split = de_top$group1,
-    group.by = "CellType",
-    heatmap_palette = "YlOrRd",
-    cell_annotation = c(
-      "Phase", "G2M_score", "Neurod2"
-    ),
-    cell_annotation_palette = c(
-      "Dark2", "Chinese", "Chinese"
-    ),
-    cell_annotation_params = list(
-      height = grid::unit(10, "mm")
-    ),
-    feature_annotation = c("TF", "CSPA"),
-    feature_annotation_palcolor = list(
-      c("gold", "steelblue"),
-      c("forestgreen")
-    ),
-    add_dot = TRUE,
-    add_bg = TRUE,
-    nlabel = 0,
-    show_row_names = TRUE
-  )
-  ht4$plot
+ht4 <- GroupHeatmap(
+  pancreas_sub,
+  features = de_top$gene,
+  feature_split = de_top$group1,
+  group.by = "CellType",
+  heatmap_palette = "YlOrRd",
+  cell_annotation = c(
+    "Phase", "G2M_score", "Neurod2"
+  ),
+  cell_annotation_palette = c(
+    "Dark2", "Chinese", "Chinese"
+  ),
+  cell_annotation_params = list(
+    height = grid::unit(10, "mm")
+  ),
+  feature_annotation = c("TF", "CSPA"),
+  feature_annotation_palcolor = list(
+    c("gold", "steelblue"),
+    c("forestgreen")
+  ),
+  add_dot = TRUE,
+  add_bg = TRUE,
+  nlabel = 0,
+  show_row_names = TRUE
+)
+ht4$plot
 
-  ht5 <- GroupHeatmap(
-    pancreas_sub,
-    features = de_top$gene,
-    feature_split = de_top$group1,
-    group.by = "CellType",
-    heatmap_palette = "YlOrRd",
-    cell_annotation = c(
-      "Phase", "G2M_score", "Neurod2"
-    ),
-    cell_annotation_palette = c(
-      "Dark2", "Chinese", "Chinese"
-    ),
-    cell_annotation_params = list(
-      width = grid::unit(10, "mm")
-    ),
-    feature_annotation = c("TF", "CSPA"),
-    feature_annotation_palcolor = list(
-      c("gold", "steelblue"), c("forestgreen")
-    ),
-    add_dot = TRUE,
-    add_bg = TRUE,
-    flip = TRUE,
-    column_title_rot = 45,
-    nlabel = 0,
-    show_row_names = TRUE
-  )
-  ht5$plot
+ht5 <- GroupHeatmap(
+  pancreas_sub,
+  features = de_top$gene,
+  feature_split = de_top$group1,
+  group.by = "CellType",
+  heatmap_palette = "YlOrRd",
+  cell_annotation = c(
+    "Phase", "G2M_score", "Neurod2"
+  ),
+  cell_annotation_palette = c(
+    "Dark2", "Chinese", "Chinese"
+  ),
+  cell_annotation_params = list(
+    width = grid::unit(10, "mm")
+  ),
+  feature_annotation = c("TF", "CSPA"),
+  feature_annotation_palcolor = list(
+    c("gold", "steelblue"), c("forestgreen")
+  ),
+  add_dot = TRUE,
+  add_bg = TRUE,
+  flip = TRUE,
+  column_title_rot = 45,
+  nlabel = 0,
+  show_row_names = TRUE
+)
+ht5$plot
 
 ht6 <- GroupHeatmap(
   pancreas_sub,
