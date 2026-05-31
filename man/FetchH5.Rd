@@ -36,6 +36,9 @@ If not specified, the default assay in the hdf5 file will be used.}
 \item{metanames}{The names of the metadata columns to fetch.}
 
 \item{reduction}{The name of the reduction to fetch.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 A Seurat object with the fetched data.

@@ -572,6 +572,7 @@ PrepareSCExplorer <- function(
 #' @title Fetch data from the hdf5 file and returns a Seurat object
 #'
 #' @md
+#' @inheritParams thisutils::log_message
 #' @param data_file The path to the hdf5 file containing the data.
 #' @param meta_file The path to the hdf5 file containing the metadata.
 #' @param assay The name of the assay to use.
