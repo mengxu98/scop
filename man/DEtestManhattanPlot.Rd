@@ -153,6 +153,9 @@ Default is \code{NULL}.}
 \item{xlab}{A character string specifying the x-axis label.}
 
 \item{ylab}{A character string specifying the y-axis label.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Draw a Manhattan-style plot of differential expression results by cell type.
