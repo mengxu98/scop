@@ -59,7 +59,8 @@
 <span>  columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"seqname"</span>, <span class="st">"feature"</span>, <span class="st">"start"</span>, <span class="st">"end"</span>, <span class="st">"strand"</span>, <span class="st">"gene_id"</span>, <span class="st">"gene_name"</span>,</span>
 <span>    <span class="st">"gene_type"</span><span class="op">)</span>,</span>
 <span>  assays <span class="op">=</span> <span class="st">"RNA"</span>,</span>
-<span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -85,6 +86,8 @@ Default is <code>"symbol"</code>.</p></dd>
 <dt id="arg-db">db<a class="anchor" aria-label="anchor" href="#arg-db"></a></dt>
 <dd><p>A character vector specifying the annotation sources to be included in the gene annotation databases.
 Can be one or more of <code>"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF", "CytoTRACE2"</code>.
+MSigDB subcollections can be requested as <code>"MSigDB_&lt;collection&gt;"</code>, such as
+<code>"MSigDB_H"</code> for human Hallmark and <code>"MSigDB_MH"</code> for mouse Hallmark.
 Note: <code>"CytoTRACE2"</code> is species-independent and downloads pre-trained model data
 required by <a href="RunCytoTRACE.html">RunCytoTRACE</a>.</p></dd>
 
@@ -140,6 +143,10 @@ Default is <code>"RNA"</code>.</p></dd>
 <dd><p>Whether to overwrite existing metadata.
 Default is <code>FALSE</code>.</p></dd>
 
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Passed to other functions.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -161,8 +168,8 @@ Default is <code>FALSE</code>.</p></dd>
 <span class="r-in"><span>    <span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 09:09:58] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 09:09:58] Preparing database: TF</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 05:14:48] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 05:14:48] Preparing database: TF</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>               highly_variable_genes   TF</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Xkr4                          False &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Mrpl15                        False &lt;NA&gt;</span>

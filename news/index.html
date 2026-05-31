@@ -42,6 +42,28 @@
 <ul><li>
 <strong>feat</strong>:
 <ul><li>
+<code><a href="../reference/RunMetabolism.html">RunMetabolism()</a></code>: Gene sets are now built via <code><a href="../reference/PrepareDB.html">PrepareDB()</a></code> by default (<code>use_preparedb = TRUE</code>) for species-aware gene mapping through BioMart and KEGG/Reactome databases. The <code>species</code> parameter now automatically converts human gene symbols to the target species. scMetabolism-curated pathway lists are cross-referenced with PrepareDB TERM2GENE so mouse data receives mouse gene symbols directly. The previous GMT-only path is still available with <code>use_preparedb = FALSE</code>.</li>
+<li>
+<code><a href="../reference/RunMetabolism.html">RunMetabolism()</a></code>: <code>convert_species</code> now defaults to <code>TRUE</code>, enabling automatic <code><a href="../reference/GeneConvert.html">GeneConvert()</a></code> cross-species ortholog mapping when <code>species</code> differs from <code>"Homo_sapiens"</code>.</li>
+<li>Added <code><a href="../reference/RunSCENICPlus.html">RunSCENICPlus()</a></code> for the SCENIC+ multi-omics workflow from Seurat objects, with native Python launcher, parallelized processing, and result readback.</li>
+<li>Added <code><a href="../reference/RunGRNBoost2.html">RunGRNBoost2()</a></code> and <code><a href="../reference/RunGRNBoost2.html">RunGENIE3()</a></code> as standalone GRN modules wrapping the Arboreto Python implementations, with Seurat/matrix methods and <code>scenic_flt_adj()</code> target filtering shared with <code><a href="../reference/RunSCENIC.html">RunSCENIC()</a></code>.</li>
+<li>
+<code><a href="../reference/PrepareDB.html">PrepareDB()</a></code>: Added <code>data_dir</code> to parse locally downloaded single-file database sources (Broad MSigDB JSON, CSPA, Surfaceome, SPRomeDB, CORUM, JASPAR, ENCODE, TFLink, hTFtarget, TRRUST, CellTalk, CellChat) into the reusable <code>R.cache</code> database cache, avoiding repeated downloads.</li>
+<li>
+<code>GeneSetScoring()</code>: Added C++ backends <code>zscore_dense()</code> and <code>plage_dense()</code> for Z-score and PLAGE gene-set scoring, plus PLAGE score orientation via z-score dot product for deterministic SVD signs. <code>ssgsea_rank_dense()</code> now accepts a <code>normalize</code> parameter. <code>aucell_auc_sparse()</code> gained a sparse <code>ctxcore</code> algorithm option.</li>
+<li>
+<code><a href="../reference/RunSCENIC.html">RunSCENIC()</a></code>: Inlined the single-call <code>scenic_grn_inputs_changed</code> helper; shortened long internal function names (<code>scenic_dl_refs</code>, <code>scenic_flt_adj</code>, <code>scenic_def_mc</code>, <code>scenic_sel_mc_res</code>, <code>scenic_prep_gene_arg</code>) and synced cross-file calls in <code>RunGRN.R</code>.</li>
+<li>
+<code><a href="../reference/RunSCENICPlus.html">RunSCENICPlus()</a></code>: Inlined single-call helpers <code>scenicplus_read_optional_table</code>, <code>scenicplus_motif_tf_names</code>, <code>scenicplus_eregulon_table</code>; removed unused <code>scenicplus_eregulons</code>.</li>
+<li>
+<code><a href="../reference/FeatureHeatmap.html">FeatureHeatmap()</a></code>, <code><a href="../reference/DynamicHeatmap.html">DynamicHeatmap()</a></code>, <code><a href="../reference/GroupHeatmap.html">GroupHeatmap()</a></code>: Compact long multi-term feature annotations from databases such as MSigDB and Reactome before drawing heatmap legends for cleaner display.</li>
+<li>
+<code><a href="../reference/CellCorHeatmap.html">CellCorHeatmap()</a></code>: Added <code>legend.position</code> parameter.</li>
+<li>
+<code><a href="../reference/GSVAPlot.html">GSVAPlot()</a></code>: Added <code>Database</code> column to enrichment results for consistent downstream filtering.</li>
+<li>
+<code><a href="../reference/RunMonocle2.html">RunMonocle2()</a></code>: Support custom root cells via <code>root_cells</code> parameter.</li>
+<li>
 <code><a href="../reference/RunDimsEstimate.html">RunDimsEstimate()</a></code>: Switched the default dimension-selection route to a scree-based ensemble of broken-stick, elbow, cumulative-variance, and marginal-gain criteria; the previous <code>intrinsicDimension</code> route remains available via <code>method = "intrinsic"</code> or can be combined with <code>method = "ensemble"</code>.</li>
 <li>Added <code><a href="../reference/RunRareQ.html">RunRareQ()</a></code> for RareQ rare-cell population detection from Seurat objects, including automatic neighbor construction through <code><a href="../reference/DefaultReduction.html">DefaultReduction()</a></code>, metadata writeback, <code><a href="../reference/CellDimPlot.html">CellDimPlot()</a></code> examples, and detailed result storage in <code>srt@tools[["RareQ"]]</code>.</li>
 <li>Added <code><a href="../reference/RunAugur.html">RunAugur()</a></code> for Augur cell-type perturbation prioritization from Seurat objects, with an optimized native backend and metadata/tool-slot writeback.</li>
@@ -52,8 +74,9 @@
 <li>
 <code><a href="../reference/SCENICPlot.html">SCENICPlot()</a></code> heatmaps now expose <code>rss_scale</code>, <code>heatmap_limits</code>, and <code>heatmap_order</code>, allowing RSS and activity heatmaps to use matched row-wise z-score color scales and stable group-block row ordering when requested.</li>
 <li>Added <code><a href="../reference/RunScissor.html">RunScissor()</a></code> and <code><a href="../reference/ScissorPlot.html">ScissorPlot()</a></code> for Scissor phenotype-associated cell selection from Seurat and bulk/SummarizedExperiment inputs, with a native optimized backend, upstream-package backend, Seurat metadata/tool writeback, embedding plots, heatmaps, and status-composition summaries.</li>
+<li>Added <code><a href="../reference/RunscTenifoldNet.html">RunscTenifoldNet()</a></code> for condition-level scTenifoldNet network comparison from matrices or Seurat groups using <code>cailab-tamu/scTenifoldNet</code>.</li>
 <li>
-<code><a href="../reference/RunScTenifoldKnk.html">RunscTenifoldKnk()</a></code> now uses the optimized native path directly for QC, network-ensemble construction, tensor denoising, manifold alignment, and differential-regulation summaries; <code><a href="../reference/scTenifoldKnkPlot.html">scTenifoldKnkPlot()</a></code> includes QQ, effect-size, network, manifold, volcano, and upset-style result views.</li>
+<code><a href="../reference/RunScTenifoldKnk.html">RunscTenifoldKnk()</a></code> now uses the optimized native path directly for QC, network-ensemble construction, tensor denoising, manifold alignment, and differential-regulation summaries; <code><a href="../reference/scTenifoldKnkPlot.html">scTenifoldKnkPlot()</a></code> includes QQ, effect-size, network, manifold, volcano, and upset-style result views. Added <code><a href="../reference/scTenifoldNetPlot.html">scTenifoldNetPlot()</a></code> for condition-level scTenifoldNet QQ, effect-size, network, and manifold views.</li>
 <li>
 <code><a href="../reference/RunPAGA.html">RunPAGA()</a></code> now supports a native C++ backend for the standard PAGA connectivity graph and uses it by default; <code>backend = "python"</code> remains available for RNA-velocity transitions, PAGA-initialized embeddings, plotting side effects, and DPT pseudotime.</li>
 <li>
@@ -74,6 +97,8 @@
 <li>
 <code><a href="../reference/SCENICPlot.html">SCENICPlot()</a></code>: <code>plot_type = "activity_dim"</code> and <code>"activity_violin"</code> now respect all explicitly supplied <code>features</code>, instead of applying the six-regulon default preview limit.</li>
 <li>
+<code><a href="../reference/SCENICPlot.html">SCENICPlot()</a></code>: <code>plot_type = "target_bar"</code> now respects all explicitly supplied <code>features</code>, instead of applying the four-regulon default preview limit.</li>
+<li>
 <code><a href="../reference/RunHarmony2.html">RunHarmony2()</a></code>: Added compatibility with Harmony 2.0 objects by directly trying both legacy fields (<code>Z_corr</code> / <code>R</code>) and callable methods (<code>getZcorr()</code> / <code>getR()</code>), including module methods that are not listed by <code><a href="https://rdrr.io/r/base/ls.html" class="external-link">ls()</a></code>.</li>
 <li>
 <code><a href="../reference/srt_append.html">srt_append()</a></code>: Align variable-feature metadata by feature name when appending into an existing Assay5 with a different feature universe, avoiding row-count replacement errors after integration workflows.</li>
@@ -90,7 +115,11 @@
 <li>
 <code><a href="../reference/PrepareDB.html">PrepareDB()</a></code>: Added compatibility with older <code><a href="https://rdrr.io/pkg/GOSemSim/man/godata.html" class="external-link">GOSemSim::godata()</a></code> signatures that use <code>OrgDb</code> instead of <code>annoDb</code>, avoiding GO semantic-data preparation failures in mixed Bioconductor environments.</li>
 <li>
+<code><a href="../reference/PrepareDB.html">PrepareDB()</a></code>: Fixed direct MSigDB subcollection requests such as <code>db = "MSigDB_H"</code> or <code>db = "MSigDB_MH"</code> by resolving the base MSigDB species metadata before selecting the Broad release.</li>
+<li>
 <code><a href="../reference/PrepareDB.html">PrepareDB()</a></code> and <code><a href="../reference/AnnotateFeatures.html">AnnotateFeatures()</a></code>: Normalize legacy MSigDB caches whose feature column was stored as <code>symbol.ensembl_id</code>, and ensure ID-type conversion uses a single existing source ID column to avoid <code><a href="https://rdrr.io/r/base/switch.html" class="external-link">switch()</a></code> errors when annotating MSigDB features by <code>symbol</code>.</li>
+<li>
+<code><a href="../reference/DEtestPlot.html">DEtestPlot()</a></code>, <code><a href="../reference/VolcanoPlot.html">VolcanoPlot()</a></code>, <code><a href="../reference/DEtestManhattanPlot.html">DEtestManhattanPlot()</a></code>, and <code><a href="../reference/DEtestRingPlot.html">DEtestRingPlot()</a></code>: Added <code>label.by</code> to choose automatic top-gene labels by adjusted p-value, p-value, detection-rate difference, or log2 fold change. Volcano and Manhattan plots now keep displayed positions and colors tied to the raw <code>avg_log2FC</code> values, and Manhattan plots default to no vertical jitter while allowing the centered group track size to be overridden with <code>group_track_width</code> and <code>group_track_height</code>.</li>
 <li>
 <code><a href="../reference/DynamicHeatmap.html">DynamicHeatmap()</a></code>, <code><a href="../reference/FeatureHeatmap.html">FeatureHeatmap()</a></code>, and <code><a href="../reference/GroupHeatmap.html">GroupHeatmap()</a></code>: Compact long multi-term feature annotations from databases such as MSigDB and Reactome before drawing heatmap legends, and keep <code><a href="../reference/DynamicHeatmap.html">DynamicHeatmap()</a></code> cluster annotations such as <code>RNA_snn_res.0.8</code> discrete even when stored as numeric metadata.</li>
 <li>Cleaned up package-check issues by declaring missing namespace imports and aligning Rd argument documentation for recently updated wrappers.</li>
@@ -325,7 +354,8 @@ Related issus <a href="https://github.com/mengxu98/scop/issues/76" class="extern
 </ul></li>
 <li>
 <strong>fix</strong>:
-<ul><li>
+<ul><li>Differential expression plots (<code><a href="../reference/VolcanoPlot.html">VolcanoPlot()</a></code>, <code><a href="../reference/DEtestManhattanPlot.html">DEtestManhattanPlot()</a></code>, <code><a href="../reference/DEtestRingPlot.html">DEtestRingPlot()</a></code>): added <code>only.pos = TRUE</code> for positive-only visualization. <code><a href="../reference/DEtestManhattanPlot.html">DEtestManhattanPlot()</a></code> now keeps the cell-type track centered at y = 0 and sizes the track from the nearest point distance around zero.</li>
+<li>
 <code><a href="../reference/DynamicHeatmap.html">DynamicHeatmap()</a></code> / <code>heatmap_enrichment()</code>: Fixed incorrect <code>db</code> handling when using custom <code>TERM2GENE</code>/<code>TERM2NAME</code>. Enrichment results with <code>Database = "custom"</code> could be incorrectly filtered by default <code>db</code> values (e.g. <code>"GO_BP"</code>), causing false “No term enriched using the threshold” warnings even when enrichment succeeded. Relate issue <a href="https://github.com/mengxu98/scop/issues/133" class="external-link">#133</a> (<a href="https://github.com/1228849000" class="external-link">@1228849000</a>).</li>
 </ul></li>
 </ul></div>

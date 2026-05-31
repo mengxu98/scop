@@ -26,6 +26,8 @@ VolcanoPlot(
   stroke.highlight = 0.5,
   nlabel = 5,
   features_label = NULL,
+  only.pos = FALSE,
+  label.by = c("p_val_adj", "p_val", "diff_pct", "avg_log2FC"),
   label.fg = "black",
   label.bg = "white",
   label.bg.r = 0.1,
@@ -152,6 +154,19 @@ VolcanoPlot(
   A character vector specifying the feature labels to plot. Default is
   `NULL`.
 
+- only.pos:
+
+  Whether to show only positive log2 fold-change results in differential
+  expression visualizations. Default is `FALSE`.
+
+- label.by:
+
+  Metric used to select automatic labels when `features_label = NULL`.
+  Options are `"p_val_adj"`, `"p_val"`, `"diff_pct"`, and
+  `"avg_log2FC"`. Smaller p-values are ranked first; `diff_pct` and
+  `avg_log2FC` use the strongest positive and negative effects within
+  each group. Default is `"p_val_adj"`.
+
 - label.fg:
 
   A character string specifying the color for the labels' foreground.
@@ -277,37 +292,37 @@ VolcanoPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-25 11:29:06] Start standard processing workflow...
-#> ℹ [2026-05-25 11:29:07] Checking a list of <Seurat>...
-#> ! [2026-05-25 11:29:07] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-25 11:29:07] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 11:29:09] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 11:29:09] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-25 11:29:09] Number of available HVF: 2000
-#> ℹ [2026-05-25 11:29:09] Finished check
-#> ℹ [2026-05-25 11:29:09] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-25 11:29:10] Perform pca linear dimension reduction
-#> ℹ [2026-05-25 11:29:10] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-25 11:29:11] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-25 11:29:11] Reorder clusters...
-#> ℹ [2026-05-25 11:29:11] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-25 11:29:11] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-25 11:29:11] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-25 11:29:16] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-25 11:29:22] Standard processing workflow completed
+#> ℹ [2026-05-31 07:29:59] Start standard processing workflow...
+#> ℹ [2026-05-31 07:30:00] Checking a list of <Seurat>...
+#> ! [2026-05-31 07:30:00] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-31 07:30:00] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-31 07:30:01] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-31 07:30:02] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-31 07:30:02] Number of available HVF: 2000
+#> ℹ [2026-05-31 07:30:02] Finished check
+#> ℹ [2026-05-31 07:30:02] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-31 07:30:03] Perform pca linear dimension reduction
+#> ℹ [2026-05-31 07:30:03] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-31 07:30:04] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-31 07:30:04] Reorder clusters...
+#> ℹ [2026-05-31 07:30:04] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-31 07:30:04] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-31 07:30:04] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-31 07:30:09] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-31 07:30:14] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-05-25 11:29:22] Data type is log-normalized
-#> ℹ [2026-05-25 11:29:22] Start differential expression test
-#> ℹ [2026-05-25 11:29:22] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-05-25 11:29:22] Using 1 core
-#> ⠙ [2026-05-25 11:29:22] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ✔ [2026-05-25 11:29:22] Completed 5 tasks in 880ms
+#> ℹ [2026-05-31 07:30:15] Data type is log-normalized
+#> ℹ [2026-05-31 07:30:15] Start differential expression test
+#> ℹ [2026-05-31 07:30:15] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-05-31 07:30:15] Using 1 core
+#> ⠙ [2026-05-31 07:30:15] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ✔ [2026-05-31 07:30:15] Completed 5 tasks in 860ms
 #> 
-#> ℹ [2026-05-25 11:29:22] Building results
-#> ✔ [2026-05-25 11:29:23] Differential expression test completed
+#> ℹ [2026-05-31 07:30:15] Building results
+#> ✔ [2026-05-31 07:30:16] Differential expression test completed
 VolcanoPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -350,9 +365,9 @@ VolcanoPlot(
 )
 #> Warning: Removed 2 rows containing missing values or values outside the scale range
 #> (`geom_line()`).
-#> Warning: Removed 3 rows containing missing values or values outside the scale range
-#> (`geom_line()`).
 #> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> (`geom_line()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
 #> (`geom_line()`).
 #> Warning: Removed 11 rows containing missing values or values outside the scale range
 #> (`geom_line()`).
@@ -366,19 +381,19 @@ pancreas_sub <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-25 11:29:32] Start Enrichment analysis
-#> ℹ [2026-05-25 11:29:32] Species: "Mus_musculus"
-#> ℹ [2026-05-25 11:29:32] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-25 09:51:46
-#> ℹ [2026-05-25 11:29:33] Permform enrichment...
-#> ℹ [2026-05-25 11:29:33] Using 1 core
-#> ⠙ [2026-05-25 11:29:33] Running for 1 [1/5] ■■          20% | ETA: 22s
-#> ⠹ [2026-05-25 11:29:33] Running for 2 [2/5] ■■■■        40% | ETA: 13s
-#> ⠸ [2026-05-25 11:29:33] Running for 3 [3/5] ■■■■■■      60% | ETA:  8s
-#> ⠼ [2026-05-25 11:29:33] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  4s
-#> ✔ [2026-05-25 11:29:33] Completed 5 tasks in 18.5s
+#> ℹ [2026-05-31 07:30:24] Start Enrichment analysis
+#> ℹ [2026-05-31 07:30:24] Species: "Mus_musculus"
+#> ℹ [2026-05-31 07:30:24] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-31 05:58:25
+#> ℹ [2026-05-31 07:30:25] Permform enrichment...
+#> ℹ [2026-05-31 07:30:25] Using 1 core
+#> ⠙ [2026-05-31 07:30:25] Running for 1 [1/5] ■■          20% | ETA: 21s
+#> ⠹ [2026-05-31 07:30:25] Running for 2 [2/5] ■■■■        40% | ETA: 12s
+#> ⠸ [2026-05-31 07:30:25] Running for 3 [3/5] ■■■■■■      60% | ETA:  8s
+#> ⠼ [2026-05-31 07:30:25] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  4s
+#> ✔ [2026-05-31 07:30:25] Completed 5 tasks in 17.8s
 #> 
-#> ℹ [2026-05-25 11:29:33] Building results
-#> ✔ [2026-05-25 11:29:51] Enrichment analysis done
+#> ℹ [2026-05-31 07:30:25] Building results
+#> ✔ [2026-05-31 07:30:43] Enrichment analysis done
 VolcanoPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -391,9 +406,9 @@ VolcanoPlot(
 )
 #> Warning: Removed 2 rows containing missing values or values outside the scale range
 #> (`geom_line()`).
-#> Warning: Removed 3 rows containing missing values or values outside the scale range
-#> (`geom_line()`).
 #> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> (`geom_line()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
 #> (`geom_line()`).
 #> Warning: Removed 11 rows containing missing values or values outside the scale range
 #> (`geom_line()`).

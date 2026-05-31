@@ -57,6 +57,9 @@
 <span>  convert_species <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  Ensembl_version <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  mirror <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  biomart <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  max_tries <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  use_preparedb <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AUCell"</span>, <span class="st">"GSVA"</span>, <span class="st">"ssGSEA"</span>, <span class="st">"VISION"</span><span class="op">)</span>,</span>
 <span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cpp"</span>, <span class="st">"r"</span><span class="op">)</span>,</span>
 <span>  cpp_strategy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sparse"</span>, <span class="st">"topk"</span>, <span class="st">"full"</span><span class="op">)</span>,</span>
@@ -92,12 +95,16 @@ If provided, expression is averaged by group before scoring (cell-type level).</
 
 
 <dt id="arg-db">db<a class="anchor" aria-label="anchor" href="#arg-db"></a></dt>
-<dd><p>Databases to use for metabolism pathways. One or both of <code>"KEGG"</code>, <code>"REACTOME"</code>.</p></dd>
+<dd><p>Databases to use for metabolism pathways. One or both of <code>"KEGG"</code>, <code>"REACTOME"</code>.
+<code>"Reactome"</code> is also accepted and treated identically to <code>"REACTOME"</code>.
+When <code>use_preparedb = TRUE</code>, gene sets are built via <a href="PrepareDB.html">PrepareDB</a>.</p></dd>
 
 
 <dt id="arg-species">species<a class="anchor" aria-label="anchor" href="#arg-species"></a></dt>
-<dd><p>A character vector specifying the species for which the gene annotation databases should be prepared.
-Can be <code>"Homo_sapiens"</code> or <code>"Mus_musculus"</code>.</p></dd>
+<dd><p>Species of the input data. The scMetabolism gene sets contain human
+gene symbols. When <code>species</code> is not <code>"Homo_sapiens"</code> and <code>convert_species</code> is <code>TRUE</code>,
+<a href="GeneConvert.html">GeneConvert</a> is used to map human genes to the target species via biomaRt homolog
+tables. Default is <code>"Homo_sapiens"</code>.</p></dd>
 
 
 <dt id="arg-idtype">IDtype<a class="anchor" aria-label="anchor" href="#arg-idtype"></a></dt>
@@ -117,8 +124,10 @@ Default is <code>"latest"</code>.</p></dd>
 
 
 <dt id="arg-convert-species">convert_species<a class="anchor" aria-label="anchor" href="#arg-convert-species"></a></dt>
-<dd><p>Whether to use a species-converted database when the annotation is missing for the specified species.
-Default is <code>TRUE</code>.</p></dd>
+<dd><p>Whether to convert human gene symbols from the scMetabolism
+gene sets to the target species using <a href="GeneConvert.html">GeneConvert</a>. When <code>TRUE</code> (default), genes
+are mapped via cross-species orthologs from Ensembl BioMart. When <code>FALSE</code>, only
+case-insensitive direct symbol matching is used.</p></dd>
 
 
 <dt id="arg-ensembl-version">Ensembl_version<a class="anchor" aria-label="anchor" href="#arg-ensembl-version"></a></dt>
@@ -128,6 +137,28 @@ Default is <code>NULL</code>. If <code>NULL</code>, the latest version will be u
 
 <dt id="arg-mirror">mirror<a class="anchor" aria-label="anchor" href="#arg-mirror"></a></dt>
 <dd><p>Specify an Ensembl mirror to connect to. The valid options here are <code>"www"</code>, <code>"uswest"</code>, <code>"useast"</code>, <code>"asia"</code>.</p></dd>
+
+
+<dt id="arg-biomart">biomart<a class="anchor" aria-label="anchor" href="#arg-biomart"></a></dt>
+<dd><p>BioMart database name passed to <a href="GeneConvert.html">GeneConvert</a>. Default <code>NULL</code> uses
+<code>"ensembl"</code>. Other options: <code>"protists_mart"</code>, <code>"fungi_mart"</code>, <code>"plants_mart"</code>.</p></dd>
+
+
+<dt id="arg-max-tries">max_tries<a class="anchor" aria-label="anchor" href="#arg-max-tries"></a></dt>
+<dd><p>Maximum retry attempts for biomaRt connections in <a href="GeneConvert.html">GeneConvert</a>.
+Default is <code>5</code>.</p></dd>
+
+
+<dt id="arg-use-preparedb">use_preparedb<a class="anchor" aria-label="anchor" href="#arg-use-preparedb"></a></dt>
+<dd><p>When <code>TRUE</code>, gene sets are built via <a href="PrepareDB.html">PrepareDB</a> which
+provides species-aware gene mapping via BioMart and KEGG/Reactome databases.
+This automatically handles gene symbol conversion for non-human species
+(e.g., <code>species = "Mus_musculus"</code> → mouse gene symbols in metabolism pathways).
+When <code>FALSE</code>, raw scMetabolism GMT files are
+downloaded and genes are matched case-insensitively with optional <a href="GeneConvert.html">GeneConvert</a>
+supplementation when <code>convert_species = TRUE</code>.
+genes and approximates zero ties, <code>"topk"</code> ranks only genes that can contribute
+to AUCell AUC, and <code>"full"</code> ranks all genes.</p></dd>
 
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
@@ -144,9 +175,7 @@ are randomly ranked.</p></dd>
 
 
 <dt id="arg-cpp-strategy">cpp_strategy<a class="anchor" aria-label="anchor" href="#arg-cpp-strategy"></a></dt>
-<dd><p>C++ AUCell ranking strategy. <code>"sparse"</code> ranks non-zero
-genes and approximates zero ties, <code>"topk"</code> ranks only genes that can contribute
-to AUCell AUC, and <code>"full"</code> ranks all genes.</p></dd>
+<dd><p>C++ AUCell ranking strategy. <code>"sparse"</code> ranks non-zero</p></dd>
 
 
 <dt id="arg-cpp-chunk-size">cpp_chunk_size<a class="anchor" aria-label="anchor" href="#arg-cpp-chunk-size"></a></dt>
@@ -192,24 +221,24 @@ When <code>group.by</code> is provided, stores in tools slot <code>Metabolism_&l
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 11:07:49] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 11:07:50] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-05-25 11:07:50] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 11:07:50] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 11:07:52] Perform `Seurat::FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 11:07:52] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 11:07:52] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 11:07:52] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 11:07:52] Perform `Seurat::ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 11:07:53] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 11:07:53] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 11:07:54] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 11:07:54] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 11:07:54] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 11:07:54] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 11:07:54] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 11:07:59] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-05-25 11:08:04] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:08:28] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:08:29] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-05-31 07:08:29] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:08:29] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:08:31] Perform `Seurat::FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:08:31] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:08:32] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:08:32] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:08:32] Perform `Seurat::ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:08:32] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:08:32] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:08:33] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:08:33] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:08:33] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:08:33] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:08:33] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:08:38] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-05-31 07:08:44] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunMetabolism</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"RNA"</span>,</span></span>
@@ -219,13 +248,19 @@ When <code>group.by</code> is provided, stores in tools slot <code>Metabolism_&l
 <span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span></span>
 <span class="r-in"><span>  method <span class="op">=</span> <span class="st">"AUCell"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 11:08:04] Start <span style="color: #0000BB;">metabolism pathway</span> scoring</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 11:08:05] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 11:08:05] Averaging expression by <span style="color: #0000BB;">"CellType"</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 11:08:05] Aggregated expression: <span style="color: #0000BB;">15998</span> genes x <span style="color: #0000BB;">5</span> groups</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 11:08:05] Using raw <span style="color: #0000BB;">scMetabolism</span> gene sets directly; `PrepareDB()` / BioMart-based ID rebuilding is skipped</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 11:08:05] Total metabolism gene sets to score: <span style="color: #0000BB;">127</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-05-25 11:08:05] Metabolism scores stored in tools slot <span style="color: #0000BB;">"Metabolism_CellType_AUCell"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:08:44] Start <span style="color: #0000BB;">metabolism pathway</span> scoring</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:08:44] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:08:44] Averaging expression by <span style="color: #0000BB;">"CellType"</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:08:44] Aggregated expression: <span style="color: #0000BB;">15998</span> genes x <span style="color: #0000BB;">5</span> groups</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:08:44] Using `PrepareDB()` for species-aware gene set construction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:08:44]   KEGG pathway refs: <span style="color: #0000BB;">85</span>, Reactome pathway names: <span style="color: #0000BB;">82</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:08:44] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:08:44] Loading cached: <span style="color: #0000BB;">KEGG</span> version: <span style="color: #0000BB;">Release 118.0+/05-30, May 26 nterm:367</span> created: <span style="color: #0000BB;">2026-05-31 06:20:17</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:08:45] Loading cached: <span style="color: #0000BB;">Reactome</span> version: <span style="color: #0000BB;">1.96.0 nterm:1835</span> created: <span style="color: #0000BB;">2026-05-31 06:20:17</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:09:12]   <span style="color: #0000BB;">"KEGG"</span>: <span style="color: #0000BB;">73</span> metabolism pathways, <span style="color: #0000BB;">1353</span> genes mapped</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:09:12]   <span style="color: #0000BB;">"Reactome"</span>: <span style="color: #0000BB;">37</span> metabolism pathways, <span style="color: #0000BB;">1322</span> genes mapped</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:09:12] Total metabolism gene sets to score: <span style="color: #0000BB;">110</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-05-31 07:09:12] Metabolism scores stored in tools slot <span style="color: #0000BB;">"Metabolism_CellType_AUCell"</span></span>
 <span class="r-in"><span><span class="va">ht</span> <span class="op">&lt;-</span> <span class="fu"><a href="MetabolismPlot.html">MetabolismPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>

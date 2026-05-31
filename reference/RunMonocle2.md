@@ -20,6 +20,7 @@ RunMonocle2(
   residualModelFormulaStr = NULL,
   pseudo_expr = 1,
   root_state = NULL,
+  show_plot = FALSE,
   xlab = NULL,
   ylab = NULL,
   seed = 11,
@@ -99,6 +100,10 @@ RunMonocle2(
 
   The state to use as the root of the trajectory. If NULL, will prompt
   for user input.
+
+- show_plot:
+
+  Whether to print diagnostic plots during the run. Default is `FALSE`.
 
 - xlab:
 

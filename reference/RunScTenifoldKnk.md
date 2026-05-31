@@ -106,8 +106,7 @@ RunscTenifoldKnk(
   direct sparse network assembly, controlled per-gene eigensolver
   parallelism, and helpers for tensor decomposition, manifold matrix
   construction, directionality, and distance calculation. `r` calls
-  [`scTenifoldKnk::scTenifoldKnk()`](https://rdrr.io/pkg/scTenifoldKnk/man/scTenifoldKnk.html)
-  directly for comparison.
+  `scTenifoldKnk::scTenifoldKnk()` directly for comparison.
 
 - store_networks:
 
@@ -157,12 +156,12 @@ pancreas_sub <- RunscTenifoldKnk(
   store_networks = FALSE,
   store_manifold = TRUE
 )
-#> ℹ [2026-05-25 11:13:41] Run scTenifoldKnk knockout for "Pdx1" using "cpp" backend
-#> ℹ [2026-05-25 11:13:48] Construct scTenifoldNet network ensemble
-#> ℹ [2026-05-25 11:13:48] Denoise network ensemble with tensor decomposition
-#> ℹ [2026-05-25 11:13:48] Denoise network ensemble with tensor decomposition  ■■ …
-#> ℹ [2026-05-25 11:13:48] Align WT and KO network manifolds
-#> ✔ [2026-05-25 11:13:48] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
+#> ℹ [2026-05-31 07:14:35] Run scTenifoldKnk knockout for "Pdx1" using "cpp" backend
+#> ℹ [2026-05-31 07:14:40] Construct scTenifoldNet network ensemble
+#> ℹ [2026-05-31 07:14:40] Denoise network ensemble with tensor decomposition
+#> ℹ [2026-05-31 07:14:40] Denoise network ensemble with tensor decomposition  ■■ …
+#> ℹ [2026-05-31 07:14:40] Align WT and KO network manifolds
+#> ✔ [2026-05-31 07:14:40] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
 
 dr <- pancreas_sub@tools$scTenifoldKnk$diffRegulation
 head(dr)

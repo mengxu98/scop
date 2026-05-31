@@ -16,7 +16,6 @@ RunLISI(
   prefix = NULL,
   tool_name = NULL,
   perplexity = 30,
-  nn_method = c("auto", "exact"),
   tol = 1e-05,
   max_iter = 50,
   overwrite = TRUE,
@@ -66,14 +65,6 @@ RunLISI(
 
   Effective neighborhood size. Default is `30`.
 
-- nn_method:
-
-  Nearest-neighbor backend. One of `"auto"` or `"exact"`. Default is
-  `"auto"`, which lets `thisutils` choose the fastest exact backend
-  available. Requires the accelerated
-  [`thisutils::compute_lisi()`](https://mengxu98.github.io/thisutils/reference/compute_lisi.html)
-  interface that exposes `nn_method = c("auto", "exact")`.
-
 - tol:
 
   Tolerance used in the binary search for the target perplexity. Default
@@ -109,26 +100,26 @@ panc8_sub <- integration_scop(
   batch = "tech",
   integration_method = "Harmony5"
 )
-#> ◌ [2026-05-25 11:03:46] Run integration workflow...
+#> ◌ [2026-05-31 07:04:25] Run integration workflow...
 #> Warning: No layers found matching search pattern provided
-#> ℹ [2026-05-25 11:03:47] Perform `Seurat::NormalizeData()` on split layers for Seurat v5 integration
-#> ℹ [2026-05-25 11:03:49] Perform `Seurat::FindVariableFeatures()` per batch (`HVF_source = 'separate'`)
-#> ℹ [2026-05-25 11:03:51] Number of available HVF: 2000
+#> ℹ [2026-05-31 07:04:28] Perform `Seurat::NormalizeData()` on split layers for Seurat v5 integration
+#> ℹ [2026-05-31 07:04:30] Perform `Seurat::FindVariableFeatures()` per batch (`HVF_source = 'separate'`)
+#> ℹ [2026-05-31 07:04:31] Number of available HVF: 2000
 #> Warning: Layer ‘scale.data’ is empty
-#> ℹ [2026-05-25 11:03:52] Perform `Seurat::ScaleData()` on split layers for Seurat v5 integration
-#> ℹ [2026-05-25 11:03:53] Perform PCA on split layers before `Seurat::IntegrateLayers()`
-#> ℹ [2026-05-25 11:03:53] Perform Seurat v5 integration with `HarmonyIntegration()`
+#> ℹ [2026-05-31 07:04:32] Perform `Seurat::ScaleData()` on split layers for Seurat v5 integration
+#> ℹ [2026-05-31 07:04:33] Perform PCA on split layers before `Seurat::IntegrateLayers()`
+#> ℹ [2026-05-31 07:04:33] Perform Seurat v5 integration with `HarmonyIntegration()`
 #> The `features` argument is ignored by `HarmonyIntegration`.
 #> This message is displayed once per session.
-#> ! [2026-05-25 11:03:54] No valid estimated dimensions found for Harmony5. Use fallback dimensions 1:50
-#> ℹ [2026-05-25 11:03:54] Adjust neighbor k from 20 to 20 for small-sample clustering
-#> ℹ [2026-05-25 11:03:55] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-05-25 11:03:55] Reorder clusters...
-#> ℹ [2026-05-25 11:03:55] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-25 11:03:55] Perform umap nonlinear dimension reduction using Harmony5 (1:50)
-#> ℹ [2026-05-25 11:04:01] Perform umap nonlinear dimension reduction using Harmony5 (1:50)
-#> ℹ [2026-05-25 11:04:07] Perform umap nonlinear dimension reduction using pca (1:20)
-#> ✔ [2026-05-25 11:04:13] Harmony5 integration completed
+#> ! [2026-05-31 07:04:34] No valid estimated dimensions found for Harmony5. Use fallback dimensions 1:50
+#> ℹ [2026-05-31 07:04:34] Adjust neighbor k from 20 to 20 for small-sample clustering
+#> ℹ [2026-05-31 07:04:35] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-05-31 07:04:35] Reorder clusters...
+#> ℹ [2026-05-31 07:04:35] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-31 07:04:35] Perform umap nonlinear dimension reduction using Harmony5 (1:50)
+#> ℹ [2026-05-31 07:04:41] Perform umap nonlinear dimension reduction using Harmony5 (1:50)
+#> ℹ [2026-05-31 07:04:46] Perform umap nonlinear dimension reduction using pca (1:20)
+#> ✔ [2026-05-31 07:04:53] Harmony5 integration completed
 names(panc8_sub@reductions)
 #> [1] "pca"            "Harmony5"       "Harmony5UMAP2D" "Harmony5UMAP3D"
 #> [5] "pcaUMAP2D"     
@@ -137,13 +128,11 @@ panc8_sub <- RunLISI(
   panc8_sub,
   reductions = c("pcaUMAP2D", "Harmony5UMAP2D")
 )
-#> Error in RunLISI(panc8_sub, reductions = c("pcaUMAP2D", "Harmony5UMAP2D")): `RunLISI()` requires the accelerated `thisutils::compute_lisi()`
-#> interface with `nn_method = c('auto', 'exact')`. Please install the updated
-#> thisutils.
+#> ℹ [2026-05-31 07:04:53] Compute LISI scores from reduction "pcaUMAP2D"
+#> ℹ [2026-05-31 07:04:53] Compute LISI scores from reduction "Harmony5UMAP2D"
+#> ✔ [2026-05-31 07:04:53] Stored LISI scores in metadata: "pcaUMAP2D_tech_LISI" and "Harmony5UMAP2D_tech_LISI"
 LISIPlot(
   panc8_sub,
   combine = TRUE
 )
-#> Error in benchmark_feature_plot(srt = srt, features = features, tool_name = tool_name,     reduction = reduction, plot_type = plot_type, plot_boxplot = plot_boxplot,     boxplot_jitter = boxplot_jitter, combine = combine, nrow = nrow,     ncol = ncol, byrow = byrow, pt.size = pt.size, pt.alpha = pt.alpha,     palette = palette, palcolor = palcolor, theme_use = theme_use,     theme_args = theme_args, verbose = verbose, ...): No per-cell benchmark columns found. Please provide `features` or a
-#> valid `tool_name`.
 ```

@@ -100,8 +100,8 @@ Default is <code>TRUE</code>.</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">ccgenes</span> <span class="op">&lt;-</span> <span class="fu">CycGenePrefetch</span><span class="op">(</span><span class="st">"Homo_sapiens"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 09:39:30] Prefetching cell cycle genes for <span style="color: #0000BB;">"Homo_sapiens"</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-05-25 09:39:30] Cell cycle gene prefetching completed <span style="color: #0000BB;">"Homo_sapiens"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 05:42:32] Prefetching cell cycle genes for <span style="color: #0000BB;">"Homo_sapiens"</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-05-31 05:42:32] Cell cycle gene prefetching completed <span style="color: #0000BB;">"Homo_sapiens"</span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">ccgenes</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> List of 5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ res         : NULL</span>
@@ -111,20 +111,50 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ cc_G2M_genes: chr [1:54] "HMGB2" "CDK1" "NUSAP1" "UBE2C" ...</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">ccgenes</span> <span class="op">&lt;-</span> <span class="fu">CycGenePrefetch</span><span class="op">(</span><span class="st">"Mus_musculus"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 09:39:30] Prefetching cell cycle genes for <span style="color: #0000BB;">"Mus_musculus"</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 09:39:30] Connect to the Ensembl archives...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 09:39:30] Using the <span style="color: #0000BB;">115</span> version of ensembl database...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 09:39:30] Downloading the ensembl database from <span style="color: #0000BB;">https://sep2025.archive.ensembl.org</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 09:39:40] Searching the dataset <span style="color: #0000BB;">hsapiens</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 09:40:12] Connecting to the dataset <span style="color: #0000BB;">hsapiens_gene_ensembl</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 09:40:15] Converting the geneIDs...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 09:40:32] <span style="color: #0000BB;">97</span> genes mapped with <span style="color: #0000BB;">"ensembl_symbol"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 09:40:32] ==============================</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 05:42:32] Prefetching cell cycle genes for <span style="color: #0000BB;">"Mus_musculus"</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 05:42:32] Connect to the Ensembl archives...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 05:42:33] Using the <span style="color: #0000BB;">115</span> version of ensembl database...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 05:42:33] Downloading the ensembl database from <span style="color: #0000BB;">https://sep2025.archive.ensembl.org</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying www mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Invalid mirror. Select a mirror from [www, useast, asia].</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying useast mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying useast mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying www mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying useast mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-05-31 05:42:36] &lt;simpleError: Your query has been redirected to https://status.ensembl.org indicating this Ensembl service is currently unavailable.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       Look at ?useEnsembl for details on how to try a mirror site.&gt;</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-05-31 05:42:36] Get errors when connecting with ensembl database...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-05-31 05:42:37] Retrying...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying www mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Invalid mirror. Select a mirror from [www, useast, asia].</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying useast mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying useast mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying www mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying useast mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-05-31 05:42:40] &lt;simpleError: Your query has been redirected to https://status.ensembl.org indicating this Ensembl service is currently unavailable.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       Look at ?useEnsembl for details on how to try a mirror site.&gt;</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-05-31 05:42:40] Get errors when connecting with ensembl database...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-05-31 05:42:41] Retrying...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying www mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 05:42:44] Searching the dataset <span style="color: #0000BB;">hsapiens</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 05:42:44] Connecting to the dataset <span style="color: #0000BB;">hsapiens_gene_ensembl</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 05:42:45] Converting the geneIDs...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 05:42:47] <span style="color: #0000BB;">97</span> genes mapped with <span style="color: #0000BB;">"ensembl_symbol"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 05:42:47] ==============================</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       <span style="color: #00BB00;">97 genes mapped</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       <span style="color: #BB0000;">0 genes unmapped</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       ==============================</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 09:40:32] Cached conversion results for <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-05-25 09:40:32] Cell cycle gene prefetching completed <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 05:42:47] Cached conversion results for <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-05-31 05:42:47] Cell cycle gene prefetching completed <span style="color: #0000BB;">"Mus_musculus"</span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">ccgenes</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> List of 5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ res         :List of 7</span>

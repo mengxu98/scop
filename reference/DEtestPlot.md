@@ -29,6 +29,8 @@ DEtestPlot(
   stroke.highlight = 0.5,
   nlabel = 5,
   features_label = NULL,
+  only.pos = FALSE,
+  label.by = c("p_val_adj", "p_val", "diff_pct", "avg_log2FC"),
   label.fg = "black",
   label.bg = "white",
   label.bg.r = 0.1,
@@ -43,8 +45,10 @@ DEtestPlot(
   ncol = NULL,
   byrow = TRUE,
   manhattan.bg = "white",
+  group_track_width = NULL,
+  group_track_height = NULL,
   jitter_width = 0.5,
-  jitter_height = 0.4,
+  jitter_height = 0,
   tile_height = 0.3,
   tile_gap = 0.1,
   ring_segments = TRUE,
@@ -183,6 +187,19 @@ DEtestPlot(
   A character vector specifying the feature labels to plot. Default is
   `NULL`.
 
+- only.pos:
+
+  Whether to show only positive log2 fold-change results in differential
+  expression visualizations. Default is `FALSE`.
+
+- label.by:
+
+  Metric used to select automatic labels when `features_label = NULL`.
+  Options are `"p_val_adj"`, `"p_val"`, `"diff_pct"`, and
+  `"avg_log2FC"`. Smaller p-values are ranked first; `diff_pct` and
+  `avg_log2FC` use the strongest positive and negative effects within
+  each group. Default is `"p_val_adj"`.
+
 - label.fg:
 
   A character string specifying the color for the labels' foreground.
@@ -243,6 +260,16 @@ DEtestPlot(
 
   Background color for Manhattan plot. Default is `"white"`.
 
+- group_track_width:
+
+  Width of the centered cell-type track in Manhattan plot. Default is
+  `NULL`, which uses the current automatic width.
+
+- group_track_height:
+
+  Height of the centered cell-type track in Manhattan plot. Default is
+  `NULL`, which uses the current automatic height.
+
 - jitter_width:
 
   Horizontal jitter range for points in Manhattan plot. Default is
@@ -250,7 +277,7 @@ DEtestPlot(
 
 - jitter_height:
 
-  Vertical jitter range for points in Manhattan plot. Default is `0.4`.
+  Vertical jitter range for points in Manhattan plot. Default is `0`.
 
 - tile_height:
 
@@ -268,7 +295,7 @@ DEtestPlot(
 
 - seed:
 
-  Random seed for jitter in ring plot. Default is `11`.
+  Random seed for jitter in Manhattan and ring plots. Default is `11`.
 
 - threshold_method:
 
@@ -339,38 +366,39 @@ DEtestPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-25 09:41:48] Start standard processing workflow...
-#> ℹ [2026-05-25 09:41:48] Checking a list of <Seurat>...
-#> ! [2026-05-25 09:41:48] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-25 09:41:48] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 09:41:50] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 09:41:50] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-25 09:41:50] Number of available HVF: 2000
-#> ℹ [2026-05-25 09:41:50] Finished check
-#> ℹ [2026-05-25 09:41:50] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-25 09:41:51] Perform pca linear dimension reduction
-#> ℹ [2026-05-25 09:41:51] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-25 09:41:51] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-25 09:41:52] Reorder clusters...
-#> ℹ [2026-05-25 09:41:52] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-25 09:41:52] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-25 09:41:52] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-25 09:41:55] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-25 09:41:59] Standard processing workflow completed
+#> ℹ [2026-05-31 05:44:11] Start standard processing workflow...
+#> ℹ [2026-05-31 05:44:11] Checking a list of <Seurat>...
+#> ! [2026-05-31 05:44:12] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-31 05:44:12] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-31 05:44:13] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-31 05:44:13] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-31 05:44:13] Number of available HVF: 2000
+#> ℹ [2026-05-31 05:44:13] Finished check
+#> ℹ [2026-05-31 05:44:13] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-31 05:44:14] Perform pca linear dimension reduction
+#> ℹ [2026-05-31 05:44:14] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-31 05:44:15] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-31 05:44:15] Reorder clusters...
+#> ℹ [2026-05-31 05:44:15] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-31 05:44:15] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-31 05:44:15] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-31 05:44:18] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-31 05:44:22] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
   only.pos = FALSE
 )
-#> ℹ [2026-05-25 09:41:59] Data type is log-normalized
-#> ℹ [2026-05-25 09:41:59] Start differential expression test
-#> ℹ [2026-05-25 09:41:59] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-05-25 09:41:59] Using 1 core
-#> ⠙ [2026-05-25 09:41:59] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ✔ [2026-05-25 09:41:59] Completed 5 tasks in 1.4s
+#> ℹ [2026-05-31 05:44:22] Data type is log-normalized
+#> ℹ [2026-05-31 05:44:22] Start differential expression test
+#> ℹ [2026-05-31 05:44:22] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-05-31 05:44:22] Using 1 core
+#> ⠙ [2026-05-31 05:44:22] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ⠹ [2026-05-31 05:44:22] Running for Ngn3-high-EP [2/5] ■■■■        40% | ETA:  …
+#> ✔ [2026-05-31 05:44:22] Completed 5 tasks in 1.4s
 #> 
-#> ℹ [2026-05-25 09:41:59] Building results
-#> ✔ [2026-05-25 09:42:01] Differential expression test completed
+#> ℹ [2026-05-31 05:44:22] Building results
+#> ✔ [2026-05-31 05:44:24] Differential expression test completed
 
 DEtestPlot(
   pancreas_sub,
@@ -417,19 +445,19 @@ pancreas_sub <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-25 09:42:07] Start Enrichment analysis
-#> ℹ [2026-05-25 09:42:07] Species: "Mus_musculus"
-#> ℹ [2026-05-25 09:42:07] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-25 09:35:03
-#> ℹ [2026-05-25 09:42:08] Permform enrichment...
-#> ℹ [2026-05-25 09:42:08] Using 1 core
-#> ⠙ [2026-05-25 09:42:08] Running for 1 [1/5] ■■          20% | ETA: 20s
-#> ⠹ [2026-05-25 09:42:08] Running for 2 [2/5] ■■■■        40% | ETA: 12s
-#> ⠸ [2026-05-25 09:42:08] Running for 3 [3/5] ■■■■■■      60% | ETA:  8s
-#> ⠼ [2026-05-25 09:42:08] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  4s
-#> ✔ [2026-05-25 09:42:08] Completed 5 tasks in 16.6s
+#> ℹ [2026-05-31 05:44:30] Start Enrichment analysis
+#> ℹ [2026-05-31 05:44:30] Species: "Mus_musculus"
+#> ℹ [2026-05-31 05:44:30] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-31 05:39:34
+#> ℹ [2026-05-31 05:44:31] Permform enrichment...
+#> ℹ [2026-05-31 05:44:31] Using 1 core
+#> ⠙ [2026-05-31 05:44:31] Running for 1 [1/5] ■■          20% | ETA: 21s
+#> ⠹ [2026-05-31 05:44:31] Running for 2 [2/5] ■■■■        40% | ETA: 12s
+#> ⠸ [2026-05-31 05:44:31] Running for 3 [3/5] ■■■■■■      60% | ETA:  8s
+#> ⠼ [2026-05-31 05:44:31] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  4s
+#> ✔ [2026-05-31 05:44:31] Completed 5 tasks in 18.3s
 #> 
-#> ℹ [2026-05-25 09:42:08] Building results
-#> ✔ [2026-05-25 09:42:25] Enrichment analysis done
+#> ℹ [2026-05-31 05:44:31] Building results
+#> ✔ [2026-05-31 05:44:50] Enrichment analysis done
 DEtestPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -473,6 +501,15 @@ de_results2 <- Seurat::FindMarkers(
   ident.1 = "Ductal",
   ident.2 = "Endocrine"
 )
+#> For a (much!) faster implementation of the Wilcoxon Rank Sum Test,
+#> (default method for FindMarkers) please install the presto package
+#> --------------------------------------------
+#> install.packages('devtools')
+#> devtools::install_github('immunogenomics/presto')
+#> --------------------------------------------
+#> After installation of presto, Seurat will automatically use the more 
+#> efficient implementation (no further action necessary).
+#> This message will be shown once per session
 DEtestPlot(
   res = de_results2,
   plot_type = "volcano"

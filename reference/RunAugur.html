@@ -104,7 +104,7 @@ default assay is used.</p></dd>
 <code>scop</code> backend that keeps Augur's sampling, random forest, and metric
 semantics but removes the heavier recipe/bake loop and uses C++ sparse
 matrix preparation where possible. <code>"r"</code> calls the native
-<code><a href="https://rdrr.io/pkg/Augur/man/calculate_auc.html" class="external-link">Augur::calculate_auc()</a></code> implementation.</p></dd>
+<code>Augur::calculate_auc</code> implementation.</p></dd>
 
 
 <dt id="arg-features">features<a class="anchor" aria-label="anchor" href="#arg-features"></a></dt>
@@ -113,7 +113,7 @@ are used.</p></dd>
 
 
 <dt id="arg-n-subsamples-subsample-size-folds-min-cells-var-quantile-feature-perc-select-var-augur-mode-classifier-rf-params-lr-params">n_subsamples, subsample_size, folds, min_cells, var_quantile, feature_perc, select_var, augur_mode, classifier, rf_params, lr_params<a class="anchor" aria-label="anchor" href="#arg-n-subsamples-subsample-size-folds-min-cells-var-quantile-feature-perc-select-var-augur-mode-classifier-rf-params-lr-params"></a></dt>
-<dd><p>Arguments passed to <code><a href="https://rdrr.io/pkg/Augur/man/calculate_auc.html" class="external-link">Augur::calculate_auc()</a></code>.</p></dd>
+<dd><p>Arguments passed to <code>Augur::calculate_auc</code>.</p></dd>
 
 
 <dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
@@ -139,7 +139,7 @@ Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional arguments passed to <code><a href="https://rdrr.io/pkg/Augur/man/calculate_auc.html" class="external-link">Augur::calculate_auc()</a></code>.</p></dd>
+<dd><p>Additional arguments passed to <code>Augur::calculate_auc</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -161,7 +161,7 @@ prioritization in single-cell data. <em>Nature Biotechnology</em>, 39,
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">panc8_sub</span>, subset <span class="op">=</span> <span class="va">tech</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"celseq"</span>, <span class="st">"celseq2"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">panc8_sub</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-25 10:23:24] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:24:45] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
 <span class="r-in"><span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu">RunAugur</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
 <span class="r-in"><span>  celltype.by <span class="op">=</span> <span class="st">"celltype"</span>,</span></span>
@@ -178,25 +178,20 @@ prioritization in single-cell data. <em>Nature Biotechnology</em>, 39,
 <span class="r-in"><span>    importance <span class="op">=</span> <span class="st">"accuracy"</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Registered S3 method overwritten by 'yardstick':</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   method       from         </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   print.metric spatstat.geom</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in dplyr::filter(AUCs, metric == "roc_auc"):</span> <span style="color: #00BBBB;">ℹ</span> In argument: `metric == "roc_auc"`.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Caused by error:</span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> object 'metric' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">panc8_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Augur</span><span class="op">$</span><span class="va">AUC</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 4 × 2</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   cell_type   auc</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> alpha     0.994</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> beta      0.991</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> ductal    0.982</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> acinar    0.969</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
 <span class="r-in"><span><span class="fu"><a href="FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
 <span class="r-in"><span>  features <span class="op">=</span> <span class="st">"augur_auc"</span>,</span></span>
 <span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"StandardUMAP2D"</span>,</span></span>
 <span class="r-in"><span>  bg_cutoff <span class="op">=</span> <span class="op">-</span><span class="cn">Inf</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="RunAugur-1.png" alt="" width="700" height="433"></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-05-31 06:25:09] <span style="color: #0000BB;">"augur_auc"</span> are not in the features of <span style="color: #0000BB;">&lt;Seurat&gt;</span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in FeatureDimPlot(panc8_sub, features = "augur_auc", reduction = "StandardUMAP2D",     bg_cutoff = -Inf):</span> There are no valid features present.</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

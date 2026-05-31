@@ -41,7 +41,7 @@ RunPAGA(
   plot_dpi = 300,
   plot_prefix = "paga",
   dirpath = "./paga",
-  backend = c("cpp", "python"),
+  backend = c("python", "cpp"),
   return_seurat = !is.null(srt),
   verbose = TRUE
 )
@@ -205,10 +205,10 @@ RunPAGA(
 
 - backend:
 
-  Backend used to compute PAGA. `"cpp"` uses the native C++
-  implementation for the standard connectivity graph. `"python"` keeps
-  the original scanpy workflow for RNA-velocity transitions,
-  PAGA-initialized embeddings, plotting side effects, or DPT pseudotime.
+  Backend used to compute PAGA. `"python"` keeps the original scanpy
+  workflow and remains the default. `"cpp"` uses the native C++
+  implementation for the standard connectivity graph and tree, plus an
+  approximate R igraph layout stored in `paga$pos`.
 
 - return_seurat:
 
@@ -230,24 +230,24 @@ RunPAGA(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-25 11:08:31] Start standard processing workflow...
-#> ℹ [2026-05-25 11:08:32] Checking a list of <Seurat>...
-#> ! [2026-05-25 11:08:32] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-25 11:08:32] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 11:08:33] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 11:08:34] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-25 11:08:34] Number of available HVF: 2000
-#> ℹ [2026-05-25 11:08:34] Finished check
-#> ℹ [2026-05-25 11:08:34] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-25 11:08:35] Perform pca linear dimension reduction
-#> ℹ [2026-05-25 11:08:35] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-25 11:08:35] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-25 11:08:36] Reorder clusters...
-#> ℹ [2026-05-25 11:08:36] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-25 11:08:36] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-25 11:08:36] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-25 11:08:41] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-25 11:08:47] Standard processing workflow completed
+#> ℹ [2026-05-31 07:09:36] Start standard processing workflow...
+#> ℹ [2026-05-31 07:09:37] Checking a list of <Seurat>...
+#> ! [2026-05-31 07:09:37] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-31 07:09:37] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-31 07:09:39] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-31 07:09:40] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-31 07:09:40] Number of available HVF: 2000
+#> ℹ [2026-05-31 07:09:40] Finished check
+#> ℹ [2026-05-31 07:09:40] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-31 07:09:40] Perform pca linear dimension reduction
+#> ℹ [2026-05-31 07:09:41] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-31 07:09:41] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-31 07:09:41] Reorder clusters...
+#> ℹ [2026-05-31 07:09:41] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-31 07:09:41] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-31 07:09:41] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-31 07:09:47] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-31 07:09:52] Standard processing workflow completed
 pancreas_sub <- RunPAGA(
   pancreas_sub,
   assay_x = "RNA",
@@ -256,15 +256,8 @@ pancreas_sub <- RunPAGA(
   nonlinear_reduction = "UMAP",
   backend = "cpp"
 )
-#> ℹ [2026-05-25 11:08:47] Running PAGA with `backend = 'cpp'` using 29 neighbors
-#> ✔ [2026-05-25 11:08:47] PAGA cpp backend completed
-CellDimPlot(
-  pancreas_sub,
-  group.by = "SubCellType",
-  reduction = "UMAP"
-)
-
-
+#> ℹ [2026-05-31 07:09:52] Running PAGA with `backend = 'cpp'` using 29 neighbors
+#> ✔ [2026-05-31 07:09:52] PAGA cpp backend completed
 PAGAPlot(pancreas_sub, reduction = "UMAP")
 
 

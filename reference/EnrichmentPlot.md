@@ -290,37 +290,37 @@ EnrichmentPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-25 09:50:42] Start standard processing workflow...
-#> ℹ [2026-05-25 09:50:43] Checking a list of <Seurat>...
-#> ! [2026-05-25 09:50:43] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-25 09:50:43] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 09:50:45] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 09:50:45] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-25 09:50:45] Number of available HVF: 2000
-#> ℹ [2026-05-25 09:50:45] Finished check
-#> ℹ [2026-05-25 09:50:45] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-25 09:50:46] Perform pca linear dimension reduction
-#> ℹ [2026-05-25 09:50:46] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-25 09:50:47] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-25 09:50:47] Reorder clusters...
-#> ℹ [2026-05-25 09:50:47] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-25 09:50:47] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-25 09:50:47] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-25 09:50:51] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-25 09:50:55] Standard processing workflow completed
+#> ℹ [2026-05-31 05:57:20] Start standard processing workflow...
+#> ℹ [2026-05-31 05:57:20] Checking a list of <Seurat>...
+#> ! [2026-05-31 05:57:20] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-31 05:57:20] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-31 05:57:22] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-31 05:57:22] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-31 05:57:22] Number of available HVF: 2000
+#> ℹ [2026-05-31 05:57:22] Finished check
+#> ℹ [2026-05-31 05:57:22] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-31 05:57:23] Perform pca linear dimension reduction
+#> ℹ [2026-05-31 05:57:23] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-31 05:57:24] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-31 05:57:24] Reorder clusters...
+#> ℹ [2026-05-31 05:57:24] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-31 05:57:24] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-31 05:57:24] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-31 05:57:28] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-31 05:57:31] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-05-25 09:50:56] Data type is log-normalized
-#> ℹ [2026-05-25 09:50:56] Start differential expression test
-#> ℹ [2026-05-25 09:50:56] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-05-25 09:50:56] Using 1 core
-#> ⠙ [2026-05-25 09:50:56] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ✔ [2026-05-25 09:50:56] Completed 5 tasks in 1.2s
+#> ℹ [2026-05-31 05:57:32] Data type is log-normalized
+#> ℹ [2026-05-31 05:57:32] Start differential expression test
+#> ℹ [2026-05-31 05:57:32] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-05-31 05:57:32] Using 1 core
+#> ⠙ [2026-05-31 05:57:32] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ✔ [2026-05-31 05:57:32] Completed 5 tasks in 2.2s
 #> 
-#> ℹ [2026-05-25 09:50:56] Building results
-#> ✔ [2026-05-25 09:50:57] Differential expression test completed
+#> ℹ [2026-05-31 05:57:32] Building results
+#> ✔ [2026-05-31 05:57:34] Differential expression test completed
 
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
@@ -328,27 +328,27 @@ pancreas_sub <- RunEnrichment(
   group.by = "CellType",
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-25 09:50:57] Start Enrichment analysis
-#> ℹ [2026-05-25 09:50:57] Species: "Mus_musculus"
-#> ℹ [2026-05-25 09:50:57] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-25 09:35:03
-#> ℹ [2026-05-25 09:51:31] Preparing database: GO_BP
-#> ℹ [2026-05-25 09:51:41] Preparing database: GO_CC
-#> ℹ [2026-05-25 09:51:45] Convert ID types for the GO_BP database
-#> ℹ [2026-05-25 09:51:45] Converted ID types using local annotation package org.Mm.eg.db
-#> ℹ [2026-05-25 09:51:47] Convert ID types for the GO_CC database
-#> ℹ [2026-05-25 09:51:47] Converted ID types using local annotation package org.Mm.eg.db
-#> ℹ [2026-05-25 09:51:47] Permform enrichment...
-#> ℹ [2026-05-25 09:51:47] Using 1 core
-#> ⠙ [2026-05-25 09:51:47] Running for 1 [1/10] ■           10% | ETA:  1m
-#> ⠹ [2026-05-25 09:51:47] Running for 2 [2/10] ■■          20% | ETA: 35s
-#> ⠸ [2026-05-25 09:51:47] Running for 3 [3/10] ■■■         30% | ETA: 30s
-#> ⠼ [2026-05-25 09:51:47] Running for 4 [4/10] ■■■■        40% | ETA: 24s
-#> ⠴ [2026-05-25 09:51:47] Running for 6 [6/10] ■■■■■■      60% | ETA: 13s
-#> ⠦ [2026-05-25 09:51:47] Running for 9 [9/10] ■■■■■■■■■   90% | ETA:  2s
-#> ✔ [2026-05-25 09:51:47] Completed 10 tasks in 22.9s
+#> ℹ [2026-05-31 05:57:34] Start Enrichment analysis
+#> ℹ [2026-05-31 05:57:34] Species: "Mus_musculus"
+#> ℹ [2026-05-31 05:57:34] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-31 05:39:34
+#> ℹ [2026-05-31 05:58:08] Preparing database: GO_BP
+#> ℹ [2026-05-31 05:58:19] Preparing database: GO_CC
+#> ℹ [2026-05-31 05:58:24] Convert ID types for the GO_BP database
+#> ℹ [2026-05-31 05:58:24] Converted ID types using local annotation package org.Mm.eg.db
+#> ℹ [2026-05-31 05:58:25] Convert ID types for the GO_CC database
+#> ℹ [2026-05-31 05:58:26] Converted ID types using local annotation package org.Mm.eg.db
+#> ℹ [2026-05-31 05:58:26] Permform enrichment...
+#> ℹ [2026-05-31 05:58:26] Using 1 core
+#> ⠙ [2026-05-31 05:58:26] Running for 1 [1/10] ■           10% | ETA:  1m
+#> ⠹ [2026-05-31 05:58:26] Running for 2 [2/10] ■■          20% | ETA: 37s
+#> ⠸ [2026-05-31 05:58:26] Running for 3 [3/10] ■■■         30% | ETA: 30s
+#> ⠼ [2026-05-31 05:58:26] Running for 4 [4/10] ■■■■        40% | ETA: 23s
+#> ⠴ [2026-05-31 05:58:26] Running for 5 [5/10] ■■■■■       50% | ETA: 18s
+#> ⠦ [2026-05-31 05:58:26] Running for 9 [9/10] ■■■■■■■■■   90% | ETA:  2s
+#> ✔ [2026-05-31 05:58:26] Completed 10 tasks in 21.5s
 #> 
-#> ℹ [2026-05-25 09:51:47] Building results
-#> ✔ [2026-05-25 09:52:10] Enrichment analysis done
+#> ℹ [2026-05-31 05:58:26] Building results
+#> ✔ [2026-05-31 05:58:48] Enrichment analysis done
 
 EnrichmentPlot(
   pancreas_sub,
@@ -515,7 +515,7 @@ EnrichmentPlot(
 #> Also defined by ‘BiocGenerics’
 #> Found more than one class "dist" in cache; using the first, from namespace 'spam'
 #> Also defined by ‘BiocGenerics’
-#> ◌ [2026-05-25 09:52:39] Installing: shadowtext...
+#> ◌ [2026-05-31 06:01:01] Installing: shadowtext...
 #>  
 #> → Will install 1 package.
 #> → The package (0 B) is cached.
@@ -547,10 +547,10 @@ EnrichmentPlot(
 #> libfreetype-dev is already the newest version (2.13.2+dfsg-1ubuntu0.1).
 #> libpng-dev is already the newest version (1.6.43-5ubuntu0.6).
 #> pandoc is already the newest version (3.1.3+ds-2).
-#> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.
+#> 0 upgraded, 0 newly installed, 0 to remove and 48 not upgraded.
 #> ✔ Installed shadowtext 0.1.6  (1s)
-#> ✔ 1 pkg + 56 deps: kept 56, added 1, dld 1 (243.58 kB) [5.7s]
-#> ✔ [2026-05-25 09:52:45] shadowtext installed successfully
+#> ✔ 1 pkg + 56 deps: kept 56, added 1, dld 1 (243.58 kB) [5.3s]
+#> ✔ [2026-05-31 06:01:06] shadowtext installed successfully
 
 
 EnrichmentPlot(
@@ -566,7 +566,7 @@ EnrichmentPlot(
     "GO:0030073"
   )
 )
-#> ✔ [2026-05-25 09:52:46] shadowtext installed successfully
+#> ✔ [2026-05-31 06:01:07] shadowtext installed successfully
 
 
 EnrichmentPlot(
@@ -577,7 +577,7 @@ EnrichmentPlot(
   plot_type = "network",
   network_layoutadjust = FALSE
 )
-#> ✔ [2026-05-25 09:52:47] shadowtext installed successfully
+#> ✔ [2026-05-31 06:01:08] shadowtext installed successfully
 
 
 EnrichmentPlot(
@@ -591,7 +591,7 @@ EnrichmentPlot(
   theme_use = "theme_blank",
   theme_args = list(add_coord = FALSE)
 ) |> thisplot::panel_fix(height = 5)
-#> ✔ [2026-05-25 09:52:48] shadowtext installed successfully
+#> ✔ [2026-05-31 06:01:10] shadowtext installed successfully
 
 
 EnrichmentPlot(

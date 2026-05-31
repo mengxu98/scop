@@ -21,7 +21,8 @@ AnnotateFeatures(
   columns = c("seqname", "feature", "start", "end", "strand", "gene_id", "gene_name",
     "gene_type"),
   assays = "RNA",
-  overwrite = FALSE
+  overwrite = FALSE,
+  ...
 )
 ```
 
@@ -47,8 +48,10 @@ AnnotateFeatures(
   A character vector specifying the annotation sources to be included in
   the gene annotation databases. Can be one or more of
   `"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF", "CytoTRACE2"`.
-  Note: `"CytoTRACE2"` is species-independent and downloads pre-trained
-  model data required by
+  MSigDB subcollections can be requested as `"MSigDB_<collection>"`,
+  such as `"MSigDB_H"` for human Hallmark and `"MSigDB_MH"` for mouse
+  Hallmark. Note: `"CytoTRACE2"` is species-independent and downloads
+  pre-trained model data required by
   [RunCytoTRACE](https://mengxu98.github.io/scop/reference/RunCytoTRACE.md).
 
 - db_update:
@@ -98,6 +101,10 @@ AnnotateFeatures(
 
   Whether to overwrite existing metadata. Default is `FALSE`.
 
+- ...:
+
+  Passed to other functions.
+
 ## See also
 
 [PrepareDB](https://mengxu98.github.io/scop/reference/PrepareDB.md),
@@ -119,8 +126,8 @@ if (requireNamespace("R.cache", quietly = TRUE)) {
     )
   )
 }
-#> ℹ [2026-05-25 09:09:58] Species: "Mus_musculus"
-#> ℹ [2026-05-25 09:09:58] Preparing database: TF
+#> ℹ [2026-05-31 05:14:48] Species: "Mus_musculus"
+#> ℹ [2026-05-31 05:14:48] Preparing database: TF
 #>               highly_variable_genes   TF
 #> Xkr4                          False <NA>
 #> Mrpl15                        False <NA>

@@ -49,6 +49,7 @@
 <span>  assay <span class="op">=</span> <span class="st">"RNA"</span>,</span>
 <span>  db_rate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">srt</span><span class="op">)</span><span class="op">/</span><span class="fl">1000</span> <span class="op">*</span> <span class="fl">0.01</span>,</span>
 <span>  data_type <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  scrublet_backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"python"</span>, <span class="st">"r"</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -72,9 +73,15 @@ Default is calculated as <code>ncol(srt) / 1000 * 0.01</code>.</p></dd>
 
 
 <dt id="arg-data-type">data_type<a class="anchor" aria-label="anchor" href="#arg-data-type"></a></dt>
-<dd><p>Optional precomputed result from <code><a href="CheckDataType.html">CheckDataType()</a></code> for the
+<dd><p>Optional precomputed result from <a href="CheckDataType.html">CheckDataType</a> for the
 input assay. Primarily used internally to avoid repeated scans of the same
 count matrix across nested QC calls.</p></dd>
+
+
+<dt id="arg-scrublet-backend">scrublet_backend<a class="anchor" aria-label="anchor" href="#arg-scrublet-backend"></a></dt>
+<dd><p>Backend used for Scrublet scoring. <code>"python"</code> uses
+the original <code>scrublet.Scrublet</code> implementation. <code>"r"</code> uses a native
+approximate doublet simulation, PCA, and KNN scoring workflow.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

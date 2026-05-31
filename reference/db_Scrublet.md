@@ -10,6 +10,7 @@ db_Scrublet(
   assay = "RNA",
   db_rate = ncol(srt)/1000 * 0.01,
   data_type = NULL,
+  scrublet_backend = c("python", "r"),
   ...
 )
 ```
@@ -33,9 +34,15 @@ db_Scrublet(
 - data_type:
 
   Optional precomputed result from
-  [`CheckDataType()`](https://mengxu98.github.io/scop/reference/CheckDataType.md)
+  [CheckDataType](https://mengxu98.github.io/scop/reference/CheckDataType.md)
   for the input assay. Primarily used internally to avoid repeated scans
   of the same count matrix across nested QC calls.
+
+- scrublet_backend:
+
+  Backend used for Scrublet scoring. `"python"` uses the original
+  `scrublet.Scrublet` implementation. `"r"` uses a native approximate
+  doublet simulation, PCA, and KNN scoring workflow.
 
 - ...:
 
