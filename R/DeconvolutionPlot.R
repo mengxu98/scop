@@ -1,10 +1,7 @@
 #' @title Plot deconvolution results
 #'
-#' @description
-#' Visualize bulk or pseudobulk deconvolution results from a
-#' `SummarizedExperiment` object or a supplied result table.
-#'
 #' @md
+#' @inheritParams thisutils::log_message
 #' @param object A `SummarizedExperiment` object containing deconvolution
 #' results in `metadata(object)[["Deconvolution"]]`.
 #' @param res A deconvolution result data frame. When provided, `object` is
@@ -88,8 +85,8 @@ DeconvolutionPlot <- function(
   legend.position = "right",
   legend.direction = "vertical",
   grid_major = FALSE,
-  ...,
-  verbose = TRUE
+  verbose = TRUE,
+  ...
 ) {
   plot_type <- match.arg(plot_type)
   df <- resolve_deconvolution_result(object = object, res = res)

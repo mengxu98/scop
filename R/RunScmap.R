@@ -2,6 +2,7 @@
 #'
 #' @md
 #' @inheritParams RunKNNPredict
+#' @inheritParams thisutils::log_message
 #' @param method The method to be used for scmap analysis.
 #' Can be any of `"scmapCluster"` or `"scmapCell"`.
 #' Default is `"scmapCluster"`.

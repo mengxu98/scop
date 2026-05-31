@@ -27,8 +27,8 @@ DeconvolutionPlot(
   legend.position = "right",
   legend.direction = "vertical",
   grid_major = FALSE,
-  ...,
-  verbose = TRUE
+  verbose = TRUE,
+  ...
 )
 }
 \arguments{
@@ -83,18 +83,17 @@ columns for grouped comparison.}
 \item{grid_major}{Whether to show major grid lines for \code{"bar"} and \code{"box"}
 plots. Default is \code{FALSE}.}
 
-\item{...}{Reserved for future use.}
-
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{...}{Reserved for future use.}
 }
 \value{
 A \code{ggplot} object.
 For \code{plot_type = "heatmap"}, returns a \code{ComplexHeatmap::Heatmap} object.
 }
 \description{
-Visualize bulk or pseudobulk deconvolution results from a
-\code{SummarizedExperiment} object or a supplied result table.
+Plot deconvolution results
 }
 \examples{
 data(islet_bulk)

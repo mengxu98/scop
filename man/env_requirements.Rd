@@ -30,7 +30,6 @@ require dependency stacks that should be prepared explicitly. The
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 }
-
 \value{
 A list containing:
 \describe{

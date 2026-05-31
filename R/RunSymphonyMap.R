@@ -2,6 +2,7 @@
 #'
 #' @md
 #' @inheritParams RunKNNMap
+#' @inheritParams thisutils::log_message
 #' @param ref_pca The PCA reduction in the reference object to use for calculating the distance metric.
 #' @param ref_harmony The Harmony reduction in the reference object to use for calculating the distance metric.
 #'
