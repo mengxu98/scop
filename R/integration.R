@@ -2136,8 +2136,7 @@ MNN_integrate <- function(
       if (nrow(data_matrix) == 0 || ncol(data_matrix) == 0) {
         log_message(
           "No available features/cells for MNN after preparing {.val logcounts} matrix.",
-          message_type = "error",
-          verbose = verbose
+          message_type = "error"
         )
       }
       sce <- SingleCellExperiment::SingleCellExperiment(
@@ -2433,8 +2432,7 @@ fastMNN_integrate <- function(
     if (nrow(data_matrix) == 0 || ncol(data_matrix) == 0) {
       log_message(
         "No available features/cells for fastMNN after preparing {.val {'logcounts'}} matrix.",
-        message_type = "error",
-        verbose = verbose
+        message_type = "error"
       )
     }
     sce <- SingleCellExperiment::SingleCellExperiment(
@@ -3516,8 +3514,7 @@ bbknn_native_graph <- function(
       message_type = "error"
     )
   }
-  metric_use <- switch(
-    metric,
+  metric_use <- switch(metric,
     euclidean = "euclidean",
     cosine = "cosine",
     angular = "cosine",

@@ -81,9 +81,9 @@
 #' )
 #'
 #' GroupHeatmap(
-#'  pancreas_sub,
-#'  features = c("AUCell_A", "GSVA_A", "Sox9", "Anxa2", "Bicc1"),
-#'  group.by = "CellType"
+#'   pancreas_sub,
+#'   features = c("AUCell_A", "GSVA_A", "Sox9", "Anxa2", "Bicc1"),
+#'   group.by = "CellType"
 #' )
 #'
 #' data(panc8_sub)
@@ -263,8 +263,7 @@ CellScoring <- function(
     } else {
       log_message(
         "{.arg backend = 'cpp'} currently supports {.arg method} values {.val {cpp_supported_methods}} only",
-        message_type = "error",
-        verbose = verbose
+        message_type = "error"
       )
     }
   }
@@ -307,8 +306,7 @@ CellScoring <- function(
   if (name == "" && isTRUE(new_assay)) {
     log_message(
       "{.arg name} must be specified when {.arg new_assay = TRUE}",
-      message_type = "error",
-      verbose = verbose
+      message_type = "error"
     )
   }
   features_input_supplied <- !is.null(features)
@@ -318,8 +316,7 @@ CellScoring <- function(
     if (!is.logical(store_metadata) || length(store_metadata) != 1L || is.na(store_metadata)) {
       log_message(
         "{.arg store_metadata} must be TRUE, FALSE, or NULL",
-        message_type = "error",
-        verbose = verbose
+        message_type = "error"
       )
     }
   }
@@ -366,8 +363,7 @@ CellScoring <- function(
         } else {
           log_message(
             "None of termnames found in the db: {.val {single_db}}",
-            message_type = "error",
-            verbose = verbose
+            message_type = "error"
           )
         }
       }
@@ -378,8 +374,7 @@ CellScoring <- function(
   if (!is.list(features) || length(names(features)) == 0) {
     log_message(
       "{.arg features} must be a named list",
-      message_type = "error",
-      verbose = verbose
+      message_type = "error"
     )
   }
   dots <- list(...)
@@ -607,8 +602,7 @@ CellScoring <- function(
         if (length(gene_sets_filtered) == 0L) {
           log_message(
             "No gene sets remain after intersecting with the expression matrix",
-            message_type = "error",
-            verbose = verbose
+            message_type = "error"
           )
         }
         if (method == "GSVA") {

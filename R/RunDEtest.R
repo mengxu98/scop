@@ -1488,8 +1488,7 @@ RunDEtest_pseudobulk <- function(
         sample_condition[[sample_col]]
       )
       condition_use <- condition_map[colnames(count_matrix)]
-      markers <- switch(
-        test.use,
+      markers <- switch(test.use,
         limma = RunDEtest_limma(
           count_matrix = count_matrix,
           condition = condition_use,
@@ -2686,9 +2685,11 @@ RunDEtest.Seurat <- function(
           ConservedMarkers[, "group1"],
           levels = levels(cell_group)
         )
-        ConservedMarkers[,
+        ConservedMarkers[
+          ,
           "test_group_number"
-        ] <- as.integer(table(ConservedMarkers[["gene"]])[ConservedMarkers[,
+        ] <- as.integer(table(ConservedMarkers[["gene"]])[ConservedMarkers[
+          ,
           "gene"
         ]])
         ConservedMarkersMatrix <- as.data.frame.matrix(table(ConservedMarkers[, c(
@@ -2801,7 +2802,8 @@ RunDEtest.Seurat <- function(
           DisturbedMarkers[, "group1"],
           levels = levels(cell_group)
         )
-        DisturbedMarkers[,
+        DisturbedMarkers[
+          ,
           "test_group_number"
         ] <- as.integer(table(unique(DisturbedMarkers[, c("gene", "group1")])[[
           "gene"
@@ -3147,8 +3149,7 @@ RunDEtest_DESeq2 <- function(
         out_df <- out_df[out_df$avg_log2FC >= logfc.threshold, , drop = FALSE]
       } else {
         out_df <- out_df[
-          abs(out_df$avg_log2FC) >= logfc.threshold,
-          ,
+          abs(out_df$avg_log2FC) >= logfc.threshold, ,
           drop = FALSE
         ]
       }
@@ -3284,8 +3285,7 @@ RunDEtest_dream <- function(
         out_df <- out_df[out_df$avg_log2FC >= logfc.threshold, , drop = FALSE]
       } else {
         out_df <- out_df[
-          abs(out_df$avg_log2FC) >= logfc.threshold,
-          ,
+          abs(out_df$avg_log2FC) >= logfc.threshold, ,
           drop = FALSE
         ]
       }

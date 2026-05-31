@@ -401,7 +401,8 @@ EnrichmentPlot <- function(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
-  seed = 11
+  seed = 11,
+  verbose = TRUE
 ) {
   set.seed(seed)
   plot_type <- match.arg(plot_type)
@@ -419,7 +420,8 @@ EnrichmentPlot <- function(
   if (plot_type %in% c("network", "enrichmap") && length(split_by) == 1) {
     log_message(
       "When 'plot_type' is 'network' or 'enrichmap', the 'split_by' parameter does not take effect.",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     split_by <- c("Database", "Groups")
   }

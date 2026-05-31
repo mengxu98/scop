@@ -604,8 +604,7 @@ branch_stream_merge_lineage_values <- function(
     if (length(values) == 0L) {
       return(NA_real_)
     }
-    switch(
-      method,
+    switch(method,
       min = min(values),
       mean = mean(values),
       max = max(values)

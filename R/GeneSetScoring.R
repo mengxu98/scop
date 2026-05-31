@@ -344,8 +344,7 @@ run_gsva_scores <- function(
     n_cells = ncol(expr_counts)
   )
 
-  scores <- switch(
-    kcdf,
+  scores <- switch(kcdf,
     Gaussian = gsva_gaussian_dense(
       expr = expr_counts,
       gene_sets = gene_set_idx,

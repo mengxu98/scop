@@ -481,7 +481,7 @@ benchmark_summary_barplot <- function(
   if (length(levels(summary_df$workflow)) > 1) {
     p <- p + ggplot2::facet_grid(metric ~ workflow, scales = "free_y")
   } else {
-    p <- p + ggplot2::facet_wrap(~ metric, scales = "free_y")
+    p <- p + ggplot2::facet_wrap(~metric, scales = "free_y")
   }
   p
 }
@@ -495,8 +495,7 @@ benchmark_summary_funkyheatmap <- function(
   if (!requireNamespace("funkyheatmap", quietly = TRUE)) {
     log_message(
       "{.pkg funkyheatmap} is required for {.arg plot_type = 'funkyheatmap'}",
-      message_type = "error",
-      verbose = verbose
+      message_type = "error"
     )
   }
 
@@ -647,7 +646,8 @@ benchmark_feature_boxplot <- function(
       message_type = "warning",
       verbose = verbose
     )
-    return(ggplot2::ggplot() + ggplot2::theme_void())
+    return(ggplot2::ggplot() +
+      ggplot2::theme_void())
   }
 
   label_map <- benchmark_clean_feature_labels(features)

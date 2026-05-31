@@ -42,7 +42,8 @@ RunDoubletCalling <- function(
   db_rate = ncol(srt) / 1000 * 0.01,
   db_method = "scDblFinder",
   data_type = NULL,
-  ...
+  ...,
+  verbose = TRUE
 ) {
   if (!inherits(srt, "Seurat")) {
     log_message(
@@ -118,9 +119,10 @@ db_scDblFinder <- function(
   assay = "RNA",
   db_rate = ncol(srt) / 1000 * 0.01,
   data_type = NULL,
-  ...
+  ...,
+  verbose = TRUE
 ) {
-  log_message("Running {.pkg scDblFinder}")
+  log_message("Running {.pkg scDblFinder}", verbose = verbose)
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} is not a {.cls Seurat}",
@@ -172,9 +174,10 @@ db_scds <- function(
   db_rate = ncol(srt) / 1000 * 0.01,
   method = c("hybrid", "cxds", "bcds"),
   data_type = NULL,
-  ...
+  ...,
+  verbose = TRUE
 ) {
-  log_message("Running {.pkg scds} with method {.val {method}}")
+  log_message("Running {.pkg scds} with method {.val {method}}", verbose = verbose)
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} is not a {.cls Seurat}",
@@ -239,10 +242,11 @@ db_Scrublet <- function(
   db_rate = ncol(srt) / 1000 * 0.01,
   data_type = NULL,
   scrublet_backend = c("python", "r"),
-  ...
+  ...,
+  verbose = TRUE
 ) {
   scrublet_backend <- match.arg(scrublet_backend)
-  log_message("Running {.pkg Scrublet} with {.arg scrublet_backend = {scrublet_backend}}")
+  log_message("Running {.pkg Scrublet} with {.arg scrublet_backend = {scrublet_backend}}", verbose = verbose)
   if (identical(scrublet_backend, "python")) {
     PrepareEnv(modules = "scrublet")
   }
@@ -316,7 +320,8 @@ db_Scrublet <- function(
   )
   log_message(
     "{.pkg Scrublet} doublet calling completed",
-    message_type = "success"
+    message_type = "success",
+    verbose = verbose
   )
   return(srt)
 }
@@ -386,13 +391,16 @@ scrublet_native_scores <- function(
   } else {
     NULL
   }
-  on.exit({
-    if (is.null(old_seed)) {
-      rm(".Random.seed", envir = .GlobalEnv)
-    } else {
-      assign(".Random.seed", old_seed, envir = .GlobalEnv)
-    }
-  }, add = TRUE)
+  on.exit(
+    {
+      if (is.null(old_seed)) {
+        rm(".Random.seed", envir = .GlobalEnv)
+      } else {
+        assign(".Random.seed", old_seed, envir = .GlobalEnv)
+      }
+    },
+    add = TRUE
+  )
   set.seed(as.integer(random_state))
 
   n_sim <- max(1L, as.integer(ceiling(n_cells * sim_doublet_ratio)))
@@ -564,9 +572,10 @@ db_DoubletDetection <- function(
   db_rate = ncol(srt) / 1000 * 0.01,
   cores = 1,
   data_type = NULL,
-  ...
+  ...,
+  verbose = TRUE
 ) {
-  log_message("Running {.pkg DoubletDetection}")
+  log_message("Running {.pkg DoubletDetection}", verbose = verbose)
   # Sys.setenv(NUMBA_NUM_THREADS = "1")
   # Sys.setenv(NUMBA_DISABLE_JIT = "0")
   PrepareEnv(modules = "doubletdetection")
@@ -650,7 +659,8 @@ db_DoubletDetection <- function(
   if (any(idx_unknown)) {
     log_message(
       "Found {.val {sum(idx_unknown)}} cells with unexpected DoubletDetection labels; setting to {.val doublet}",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     class_labels[idx_unknown] <- "doublet"
   }
@@ -661,7 +671,8 @@ db_DoubletDetection <- function(
 
   log_message(
     "{.pkg DoubletDetection} doublet calling completed",
-    message_type = "success"
+    message_type = "success",
+    verbose = verbose
   )
   return(srt)
 }
@@ -734,9 +745,10 @@ RunDecontX <- function(
   round_counts = FALSE,
   data_type = NULL,
   seed = 11,
-  ...
+  ...,
+  verbose = TRUE
 ) {
-  log_message("Running {.pkg decontX}")
+  log_message("Running {.pkg decontX}", verbose = verbose)
 
   .decontx_get_meta <- function(object) {
     if (inherits(object, "Seurat")) {
@@ -831,7 +843,8 @@ RunDecontX <- function(
   if (status != "raw_counts") {
     log_message(
       "Data type is not raw counts",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
   }
 
@@ -918,7 +931,8 @@ RunDecontX <- function(
       max(decontX_contamination_values, na.rm = TRUE)
     )
     log_message(
-      "decontX contamination (median/mean/max): {decontX_contamination_summary}"
+      "decontX contamination (median/mean/max): {decontX_contamination_summary}",
+      verbose = verbose
     )
   }
 
@@ -931,12 +945,13 @@ RunDecontX <- function(
       decontx_counts <- Matrix::Matrix(decontx_counts, sparse = TRUE)
     }
     srt[[assay_name]] <- Seurat::CreateAssayObject(counts = decontx_counts)
-    log_message("decontX assay stored as {assay_name}")
+    log_message("decontX assay stored as {assay_name}", verbose = verbose)
   }
 
   log_message(
     "{.pkg decontX} decontamination completed",
-    message_type = "success"
+    message_type = "success",
+    verbose = verbose
   )
   return(srt)
 }
@@ -1106,11 +1121,13 @@ RunCellQC <- function(
   species = NULL,
   species_gene_prefix = NULL,
   species_percent = 95,
-  seed = 11
+  seed = 11,
+  verbose = TRUE
 ) {
   log_message(
     "Running cell-level quality control",
-    message_type = "running"
+    message_type = "running",
+    verbose = verbose
   )
   set.seed(seed)
 
@@ -1185,7 +1202,8 @@ RunCellQC <- function(
   if (status != "raw_counts") {
     log_message(
       "Data type is not raw counts",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
   }
   if (!paste0("nCount_", assay) %in% colnames(srt@meta.data)) {
@@ -1219,7 +1237,7 @@ RunCellQC <- function(
   for (i in seq_along(split_cells)) {
     if (!is.null(split.by)) {
       srt <- srt_raw[, split_cells[[i]]]
-      log_message("Running QC for {.val {srt@meta.data[[split.by]][1]}}")
+      log_message("Running QC for {.val {srt@meta.data[[split.by]][1]}}", verbose = verbose)
     } else {
       srt <- srt_raw
     }
@@ -1263,7 +1281,8 @@ RunCellQC <- function(
       if (!inherits(srt[[assay]], "ChromatinAssay")) {
         log_message(
           "Skip {.val atac} QC because {.arg assay = '{assay}'} is not a {.cls ChromatinAssay}",
-          message_type = "warning"
+          message_type = "warning",
+          verbose = verbose
         )
       } else {
         atac_args_use <- atac_args

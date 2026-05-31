@@ -99,8 +99,7 @@ RunDynamicEnrichment <- function(
   if (!identical(backend, "r") && length(score_method_cpp_unsupported) > 0L && !isTRUE(backend_missing)) {
     log_message(
       "{.arg backend = 'cpp'} currently supports {.arg score_method} values {.val {cpp_supported_methods}} only",
-      message_type = "error",
-      verbose = verbose
+      message_type = "error"
     )
   }
   assay <- assay %||% DefaultAssay(srt)
@@ -112,8 +111,7 @@ RunDynamicEnrichment <- function(
     if (!paste0("DynamicFeatures_", l) %in% names(srt@tools)) {
       log_message(
         "{.val {l}} info not found in the srt object. Should perform {.fn RunDynamicFeatures} first",
-        message_type = "error",
-        verbose = verbose
+        message_type = "error"
       )
     }
     DynamicFeatures <- srt@tools[[paste0("DynamicFeatures_", l)]][[

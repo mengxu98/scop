@@ -73,55 +73,57 @@
 #' ProportionTestPlot(pancreas_sub)
 #'
 #' ProportionTestPlot(
-#'  pancreas_sub,
-#'  reduction = "UMAP",
-#'  plot_type = "umap",
-#'  xlab = "UMAP_1",
-#'  ylab = "UMAP_2"
+#'   pancreas_sub,
+#'   reduction = "UMAP",
+#'   plot_type = "umap",
+#'   xlab = "UMAP_1",
+#'   ylab = "UMAP_2"
 #' )
 ProportionTestPlot <- function(
-    srt,
-    comparison = NULL,
-    proportion_method = NULL,
-    result_level = c("group"),
-    plot_type = c("effect", "umap"),
-    umap_mode = c("discrete", "continuous"),
-    reduction = "UMAP",
-    projection_args = list(),
-    FDR_threshold = 0.05,
-    log2FD_threshold = log2(1.5),
-    order_by = c("value", "name"),
-    palette = "RdBu",
-    palcolor = NULL,
-    group_palette = "Chinese",
-    group_palcolor = NULL,
-    pt.size = 1,
-    pt.alpha = 1,
-    cols.sig = "red",
-    cols.ns = "grey",
-    cols.increase = "#d7301f",
-    cols.decrease = "#2b8cbe",
-    effect_color_mode = c("directional", "classic"),
-    nlabel = 5,
-    features_label = NULL,
-    label = FALSE,
-    label.fg = "black",
-    label.bg = "white",
-    label.bg.r = 0.1,
-    label.size = 4,
-    aspect.ratio = NULL,
-    xlab = "Cell Type",
-    ylab = "log2 (FD)",
-    theme_use = "theme_scop",
-    theme_args = list(),
-    legend.position = "bottom",
-    legend.direction = "vertical",
-    legend.title = "Significance",
-    combine = TRUE,
-    nrow = NULL,
-    ncol = NULL,
-    byrow = TRUE,
-    seed = 11) {
+  srt,
+  comparison = NULL,
+  proportion_method = NULL,
+  result_level = c("group"),
+  plot_type = c("effect", "umap"),
+  umap_mode = c("discrete", "continuous"),
+  reduction = "UMAP",
+  projection_args = list(),
+  FDR_threshold = 0.05,
+  log2FD_threshold = log2(1.5),
+  order_by = c("value", "name"),
+  palette = "RdBu",
+  palcolor = NULL,
+  group_palette = "Chinese",
+  group_palcolor = NULL,
+  pt.size = 1,
+  pt.alpha = 1,
+  cols.sig = "red",
+  cols.ns = "grey",
+  cols.increase = "#d7301f",
+  cols.decrease = "#2b8cbe",
+  effect_color_mode = c("directional", "classic"),
+  nlabel = 5,
+  features_label = NULL,
+  label = FALSE,
+  label.fg = "black",
+  label.bg = "white",
+  label.bg.r = 0.1,
+  label.size = 4,
+  aspect.ratio = NULL,
+  xlab = "Cell Type",
+  ylab = "log2 (FD)",
+  theme_use = "theme_scop",
+  theme_args = list(),
+  legend.position = "bottom",
+  legend.direction = "vertical",
+  legend.title = "Significance",
+  combine = TRUE,
+  nrow = NULL,
+  ncol = NULL,
+  byrow = TRUE,
+  seed = 11,
+  verbose = TRUE
+) {
   order_by <- match.arg(order_by)
   plot_type <- match.arg(plot_type)
   umap_mode <- match.arg(umap_mode)
@@ -209,8 +211,7 @@ ProportionTestPlot <- function(
     theme_args = theme_args
   )
 
-  plist <- switch(
-    plot_type,
+  plist <- switch(plot_type,
     effect = lapply(std_results, function(df) do.call(plot_proportion_effect, c(list(df = df), plot_args))),
     umap = plot_proportion_umap(
       srt = srt,
@@ -250,14 +251,14 @@ ProportionTestPlot <- function(
 }
 
 prepare_proportion_plot_data <- function(
-    plot_data,
-    FDR_threshold,
-    log2FD_threshold,
-    order_by,
-    nlabel,
-    features_label,
-    label,
-    seed = 11
+  plot_data,
+  FDR_threshold,
+  log2FD_threshold,
+  order_by,
+  nlabel,
+  features_label,
+  label,
+  seed = 11
 ) {
   plot_data$clusters <- as.character(plot_data$clusters)
   plot_data$FDR <- suppressWarnings(as.numeric(plot_data$FDR))
@@ -343,25 +344,25 @@ prepare_proportion_plot_data <- function(
 }
 
 plot_proportion_effect <- function(
-    df,
-    FDR_threshold,
-    log2FD_threshold,
-    pt.size,
-    pt.alpha,
-    cols.sig,
-    cols.ns,
-    cols.increase,
-    cols.decrease,
-    effect_color_mode = c("directional", "classic"),
-    xlab,
-    ylab,
-    aspect.ratio,
-    legend.position,
-    legend.direction,
-    legend.title,
-    theme_use,
-    theme_args,
-    ...
+  df,
+  FDR_threshold,
+  log2FD_threshold,
+  pt.size,
+  pt.alpha,
+  cols.sig,
+  cols.ns,
+  cols.increase,
+  cols.decrease,
+  effect_color_mode = c("directional", "classic"),
+  xlab,
+  ylab,
+  aspect.ratio,
+  legend.position,
+  legend.direction,
+  legend.title,
+  theme_use,
+  theme_args,
+  ...
 ) {
   effect_color_mode <- match.arg(effect_color_mode)
   sig_label <- proportion_sig_label(FDR_threshold, log2FD_threshold)
@@ -442,24 +443,24 @@ plot_proportion_effect <- function(
 }
 
 plot_proportion_umap <- function(
-    srt,
-    std_results,
-    method_bundle,
-    umap_mode = c("discrete", "continuous"),
-    reduction = "UMAP",
-    projection_args = list(),
-    FDR_threshold = 0.05,
-    log2FD_threshold = log2(1.5),
-    cols.increase = "#d7301f",
-    cols.decrease = "#2b8cbe",
-    cols.ns = "grey80",
-    palette = "RdBu",
-    palcolor = NULL,
-    xlab = NULL,
-    ylab = NULL,
-    legend.title = NULL,
-    theme_use = "theme_scop",
-    theme_args = list()
+  srt,
+  std_results,
+  method_bundle,
+  umap_mode = c("discrete", "continuous"),
+  reduction = "UMAP",
+  projection_args = list(),
+  FDR_threshold = 0.05,
+  log2FD_threshold = log2(1.5),
+  cols.increase = "#d7301f",
+  cols.decrease = "#2b8cbe",
+  cols.ns = "grey80",
+  palette = "RdBu",
+  palcolor = NULL,
+  xlab = NULL,
+  ylab = NULL,
+  legend.title = NULL,
+  theme_use = "theme_scop",
+  theme_args = list()
 ) {
   umap_mode <- match.arg(umap_mode)
   reduction_use <- if (is.null(reduction)) {
@@ -582,9 +583,9 @@ plot_proportion_umap <- function(
 }
 
 summarize_proportion_projection <- function(
-    df,
-    FDR_threshold,
-    log2FD_threshold
+  df,
+  FDR_threshold,
+  log2FD_threshold
 ) {
   if (!"clusters" %in% colnames(df)) {
     log_message(
@@ -680,13 +681,13 @@ proportion_title <- function(df) {
 }
 
 combine_proportion_plots <- function(
-    plist,
-    nrow,
-    ncol,
-    byrow,
-    legend.position,
-    legend.direction,
-    pair_reverse = FALSE
+  plist,
+  nrow,
+  ncol,
+  byrow,
+  legend.position,
+  legend.direction,
+  pair_reverse = FALSE
 ) {
   if (length(plist) == 0) {
     return(plist)
@@ -749,9 +750,9 @@ combine_proportion_plots <- function(
 }
 
 get_proportion_plot_results <- function(
-    srt,
-    proportion_method = NULL,
-    result_level = c("group", "neighborhood")
+  srt,
+  proportion_method = NULL,
+  result_level = c("group", "neighborhood")
 ) {
   result_level <- match.arg(result_level)
 

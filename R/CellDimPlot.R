@@ -669,7 +669,8 @@ CellDimPlot <- function(
   ncol = NULL,
   byrow = TRUE,
   force = FALSE,
-  seed = 11
+  seed = 11,
+  verbose = TRUE
 ) {
   set.seed(seed)
   mark_type <- match.arg(mark_type)
@@ -737,7 +738,8 @@ CellDimPlot <- function(
     if (!all(cells.highlight %in% colnames(srt@assays[[1]]))) {
       log_message(
         "Some cells in '{.arg cells.highlight}' not found in srt",
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
     }
     cells.highlight <- intersect(cells.highlight, colnames(srt@assays[[1]]))
@@ -749,7 +751,8 @@ CellDimPlot <- function(
   if (length(nlev) > 0 && isFALSE(force)) {
     log_message(
       "The following variables have more than 100 levels: {.val {names(nlev)}}",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
     if (isFALSE(answer)) {
@@ -1548,7 +1551,8 @@ CellDimPlot3D <- function(
   width = NULL,
   height = NULL,
   save = NULL,
-  force = FALSE
+  force = FALSE,
+  verbose = TRUE
 ) {
   bg_color <- col2hex(bg_color)
   cols.highlight <- col2hex(cols.highlight)
@@ -1602,7 +1606,8 @@ CellDimPlot3D <- function(
     if (!all(cells.highlight %in% colnames(srt@assays[[1]]))) {
       log_message(
         "Some cells in 'cells.highlight' not found in srt.",
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
     }
     cells.highlight <- intersect(cells.highlight, colnames(srt@assays[[1]]))
@@ -1642,7 +1647,8 @@ CellDimPlot3D <- function(
         "The following variables have more than 100 levels: ",
         paste(names(nlev), collapse = ",")
       ),
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
     if (isFALSE(answer)) {

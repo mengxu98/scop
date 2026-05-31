@@ -37,7 +37,7 @@
 #' @return A ggplot/patchwork object for embedding and statistical plots, or a
 #' list returned by [FeatureHeatmap] for `plot_type = "heatmap"`.
 #' @export
-#' 
+#'
 #' @seealso [ScissorPlot]
 #'
 #' @examples
@@ -77,36 +77,36 @@
 #'   group.by = "celltype"
 #' )
 #' ht$plot
-#' 
+#'
 #' ScissorPlot(
 #'   panc8_sub,
 #'   plot_type = "bar",
 #'   group.by = "celltype"
 #' )
-#' 
+#'
 #' ScissorPlot(
 #'   panc8_sub,
 #'   plot_type = "upset"
 #' )
-#' 
+#'
 #' ScissorPlot(
 #'   panc8_sub,
 #'   plot_type = "rose",
 #'   label = TRUE
 #' )
-#' 
+#'
 #' ScissorPlot(
 #'   panc8_sub,
 #'   plot_type = "ring",
 #'   label = TRUE
 #' )
-#' 
+#'
 #' ScissorPlot(
 #'   panc8_sub,
 #'   plot_type = "pie",
 #'   label = TRUE
 #' )
-#' 
+#'
 #' ScissorPlot(
 #'   panc8_sub,
 #'   plot_type = "dot",

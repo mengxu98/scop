@@ -327,7 +327,8 @@ CellCorHeatmap <- function(
   units = "inch",
   seed = 11,
   legend.position = "right",
-  ht_params = list()
+  ht_params = list(),
+  verbose = TRUE
 ) {
   set.seed(seed)
   if (isTRUE(raster_by_magick)) {
@@ -1439,7 +1440,8 @@ CellCorHeatmap <- function(
   if (any(names(ht_params) %in% names(ht_args))) {
     log_message(
       "{.arg ht_params}: {.val {intersect(names(ht_params), names(ht_args))}} were duplicated and will not be used",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
   }
   ht_args <- c(ht_args, ht_params[setdiff(names(ht_params), names(ht_args))])
@@ -1487,8 +1489,10 @@ CellCorHeatmap <- function(
 
     g_tree <- grid::grid.grabExpr(
       {
-        ComplexHeatmap::draw(ht_list, annotation_legend_list = lgd,
-                             annotation_legend_side = legend.position)
+        ComplexHeatmap::draw(ht_list,
+          annotation_legend_list = lgd,
+          annotation_legend_side = legend.position
+        )
       },
       width = ht_width,
       height = ht_height,
@@ -1500,8 +1504,10 @@ CellCorHeatmap <- function(
     ht_height <- grid::unit(height_sum, units = units)
     g_tree <- grid::grid.grabExpr(
       {
-        ComplexHeatmap::draw(ht_list, annotation_legend_list = lgd,
-                             annotation_legend_side = legend.position)
+        ComplexHeatmap::draw(ht_list,
+          annotation_legend_list = lgd,
+          annotation_legend_side = legend.position
+        )
       },
       width = ht_width,
       height = ht_height,

@@ -43,7 +43,8 @@ RunPCAMap <- function(
   nn_method = NULL,
   k = 30,
   distance_metric = "cosine",
-  vote_fun = "mean"
+  vote_fun = "mean",
+  verbose = TRUE
 ) {
   query_assay <- query_assay %||% SeuratObject::DefaultAssay(srt_query)
   ref_assay <- ref_assay %||% SeuratObject::DefaultAssay(srt_ref)
@@ -81,7 +82,7 @@ RunPCAMap <- function(
         message_type = "error"
       )
     } else {
-      log_message("Set ref_pca to ", ref_pca)
+      log_message("Set ref_pca to ", ref_pca, verbose = verbose)
     }
   }
   if (is.null(ref_umap)) {
@@ -98,7 +99,7 @@ RunPCAMap <- function(
         message_type = "error"
       )
     } else {
-      log_message("Set ref_umap to ", ref_umap)
+      log_message("Set ref_umap to ", ref_umap, verbose = verbose)
     }
   }
   projection_method <- match.arg(projection_method)
@@ -108,7 +109,8 @@ RunPCAMap <- function(
   ) {
     log_message(
       "No UMAP model detected. Set the projection_method to 'knn'",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     projection_method <- "knn"
   }
@@ -130,7 +132,7 @@ RunPCAMap <- function(
       assay = query_assay
     )
   )
-  log_message("Detected srt_query data type: ", status_query)
+  log_message("Detected srt_query data type: ", status_query, verbose = verbose)
   status_ref <- CheckDataType(
     object = GetAssayData5(
       srt_ref,
@@ -138,18 +140,19 @@ RunPCAMap <- function(
       assay = ref_assay
     )
   )
-  log_message("Detected srt_ref data type: ", status_ref)
+  log_message("Detected srt_ref data type: ", status_ref, verbose = verbose)
   if (
     status_ref != status_query ||
       any(status_query == "unknown", status_ref == "unknown")
   ) {
     log_message(
       "Data type is unknown or different between srt_query and srt_ref.",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
   }
 
-  log_message("Run PCA projection")
+  log_message("Run PCA projection", verbose = verbose)
   features <- rownames(pca.out@feature.loadings)
   center <- apply(
     GetAssayData5(
@@ -185,7 +188,7 @@ RunPCAMap <- function(
       rownames(srt_ref[[ref_assay]])
     )
   )
-  log_message("Use ", length(features_common), " features to calculate PC.")
+  log_message("Use ", length(features_common), " features to calculate PC.", verbose = verbose)
   query_data <- Matrix::t(
     GetAssayData5(
       srt_query,
@@ -208,7 +211,7 @@ RunPCAMap <- function(
     assay = query_assay
   )
 
-  log_message("Run UMAP projection")
+  log_message("Run UMAP projection", verbose = verbose)
   srt_query <- RunKNNMap(
     srt_query = srt_query,
     query_assay = query_assay,
