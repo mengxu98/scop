@@ -33,7 +33,7 @@ db_scDblFinder(
 - data_type:
 
   Optional precomputed result from
-  [`CheckDataType()`](https://mengxu98.github.io/scop/reference/CheckDataType.md)
+  [CheckDataType](https://mengxu98.github.io/scop/reference/CheckDataType.md)
   for the input assay. Primarily used internally to avoid repeated scans
   of the same count matrix across nested QC calls.
 

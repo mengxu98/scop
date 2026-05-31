@@ -3,6 +3,66 @@
 ## scop 0.9.0
 
 - **feat**:
+  - [`RunMetabolism()`](https://mengxu98.github.io/scop/reference/RunMetabolism.md):
+    Gene sets are now built via
+    [`PrepareDB()`](https://mengxu98.github.io/scop/reference/PrepareDB.md)
+    by default (`use_preparedb = TRUE`) for species-aware gene mapping
+    through BioMart and KEGG/Reactome databases. The `species` parameter
+    now automatically converts human gene symbols to the target species.
+    scMetabolism-curated pathway lists are cross-referenced with
+    PrepareDB TERM2GENE so mouse data receives mouse gene symbols
+    directly. The previous GMT-only path is still available with
+    `use_preparedb = FALSE`.
+  - [`RunMetabolism()`](https://mengxu98.github.io/scop/reference/RunMetabolism.md):
+    `convert_species` now defaults to `TRUE`, enabling automatic
+    [`GeneConvert()`](https://mengxu98.github.io/scop/reference/GeneConvert.md)
+    cross-species ortholog mapping when `species` differs from
+    `"Homo_sapiens"`.
+  - Added
+    [`RunSCENICPlus()`](https://mengxu98.github.io/scop/reference/RunSCENICPlus.md)
+    for the SCENIC+ multi-omics workflow from Seurat objects, with
+    native Python launcher, parallelized processing, and result
+    readback.
+  - Added
+    [`RunGRNBoost2()`](https://mengxu98.github.io/scop/reference/RunGRNBoost2.md)
+    and
+    [`RunGENIE3()`](https://mengxu98.github.io/scop/reference/RunGRNBoost2.md)
+    as standalone GRN modules wrapping the Arboreto Python
+    implementations, with Seurat/matrix methods and `scenic_flt_adj()`
+    target filtering shared with
+    [`RunSCENIC()`](https://mengxu98.github.io/scop/reference/RunSCENIC.md).
+  - [`PrepareDB()`](https://mengxu98.github.io/scop/reference/PrepareDB.md):
+    Added `data_dir` to parse locally downloaded single-file database
+    sources (Broad MSigDB JSON, CSPA, Surfaceome, SPRomeDB, CORUM,
+    JASPAR, ENCODE, TFLink, hTFtarget, TRRUST, CellTalk, CellChat) into
+    the reusable `R.cache` database cache, avoiding repeated downloads.
+  - `GeneSetScoring()`: Added C++ backends `zscore_dense()` and
+    `plage_dense()` for Z-score and PLAGE gene-set scoring, plus PLAGE
+    score orientation via z-score dot product for deterministic SVD
+    signs. `ssgsea_rank_dense()` now accepts a `normalize` parameter.
+    `aucell_auc_sparse()` gained a sparse `ctxcore` algorithm option.
+  - [`RunSCENIC()`](https://mengxu98.github.io/scop/reference/RunSCENIC.md):
+    Inlined the single-call `scenic_grn_inputs_changed` helper;
+    shortened long internal function names (`scenic_dl_refs`,
+    `scenic_flt_adj`, `scenic_def_mc`, `scenic_sel_mc_res`,
+    `scenic_prep_gene_arg`) and synced cross-file calls in `RunGRN.R`.
+  - [`RunSCENICPlus()`](https://mengxu98.github.io/scop/reference/RunSCENICPlus.md):
+    Inlined single-call helpers `scenicplus_read_optional_table`,
+    `scenicplus_motif_tf_names`, `scenicplus_eregulon_table`; removed
+    unused `scenicplus_eregulons`.
+  - [`FeatureHeatmap()`](https://mengxu98.github.io/scop/reference/FeatureHeatmap.md),
+    [`DynamicHeatmap()`](https://mengxu98.github.io/scop/reference/DynamicHeatmap.md),
+    [`GroupHeatmap()`](https://mengxu98.github.io/scop/reference/GroupHeatmap.md):
+    Compact long multi-term feature annotations from databases such as
+    MSigDB and Reactome before drawing heatmap legends for cleaner
+    display.
+  - [`CellCorHeatmap()`](https://mengxu98.github.io/scop/reference/CellCorHeatmap.md):
+    Added `legend.position` parameter.
+  - [`GSVAPlot()`](https://mengxu98.github.io/scop/reference/GSVAPlot.md):
+    Added `Database` column to enrichment results for consistent
+    downstream filtering.
+  - [`RunMonocle2()`](https://mengxu98.github.io/scop/reference/RunMonocle2.md):
+    Support custom root cells via `root_cells` parameter.
   - [`RunDimsEstimate()`](https://mengxu98.github.io/scop/reference/RunDimsEstimate.md):
     Switched the default dimension-selection route to a scree-based
     ensemble of broken-stick, elbow, cumulative-variance, and
@@ -49,13 +109,20 @@
     bulk/SummarizedExperiment inputs, with a native optimized backend,
     upstream-package backend, Seurat metadata/tool writeback, embedding
     plots, heatmaps, and status-composition summaries.
+  - Added
+    [`RunscTenifoldNet()`](https://mengxu98.github.io/scop/reference/RunscTenifoldNet.md)
+    for condition-level scTenifoldNet network comparison from matrices
+    or Seurat groups using `cailab-tamu/scTenifoldNet`.
   - [`RunscTenifoldKnk()`](https://mengxu98.github.io/scop/reference/RunScTenifoldKnk.md)
     now uses the optimized native path directly for QC, network-ensemble
     construction, tensor denoising, manifold alignment, and
     differential-regulation summaries;
     [`scTenifoldKnkPlot()`](https://mengxu98.github.io/scop/reference/scTenifoldKnkPlot.md)
     includes QQ, effect-size, network, manifold, volcano, and
-    upset-style result views.
+    upset-style result views. Added
+    [`scTenifoldNetPlot()`](https://mengxu98.github.io/scop/reference/scTenifoldNetPlot.md)
+    for condition-level scTenifoldNet QQ, effect-size, network, and
+    manifold views.
   - [`RunPAGA()`](https://mengxu98.github.io/scop/reference/RunPAGA.md)
     now supports a native C++ backend for the standard PAGA connectivity
     graph and uses it by default; `backend = "python"` remains available
@@ -110,6 +177,10 @@
     `plot_type = "activity_dim"` and `"activity_violin"` now respect all
     explicitly supplied `features`, instead of applying the six-regulon
     default preview limit.
+  - [`SCENICPlot()`](https://mengxu98.github.io/scop/reference/SCENICPlot.md):
+    `plot_type = "target_bar"` now respects all explicitly supplied
+    `features`, instead of applying the four-regulon default preview
+    limit.
   - [`RunHarmony2()`](https://mengxu98.github.io/scop/reference/RunHarmony2.md):
     Added compatibility with Harmony 2.0 objects by directly trying both
     legacy fields (`Z_corr` / `R`) and callable methods (`getZcorr()` /
@@ -150,6 +221,10 @@
     signatures that use `OrgDb` instead of `annoDb`, avoiding GO
     semantic-data preparation failures in mixed Bioconductor
     environments.
+  - [`PrepareDB()`](https://mengxu98.github.io/scop/reference/PrepareDB.md):
+    Fixed direct MSigDB subcollection requests such as `db = "MSigDB_H"`
+    or `db = "MSigDB_MH"` by resolving the base MSigDB species metadata
+    before selecting the Broad release.
   - [`PrepareDB()`](https://mengxu98.github.io/scop/reference/PrepareDB.md)
     and
     [`AnnotateFeatures()`](https://mengxu98.github.io/scop/reference/AnnotateFeatures.md):
@@ -158,6 +233,17 @@
     existing source ID column to avoid
     [`switch()`](https://rdrr.io/r/base/switch.html) errors when
     annotating MSigDB features by `symbol`.
+  - [`DEtestPlot()`](https://mengxu98.github.io/scop/reference/DEtestPlot.md),
+    [`VolcanoPlot()`](https://mengxu98.github.io/scop/reference/VolcanoPlot.md),
+    [`DEtestManhattanPlot()`](https://mengxu98.github.io/scop/reference/DEtestManhattanPlot.md),
+    and
+    [`DEtestRingPlot()`](https://mengxu98.github.io/scop/reference/DEtestRingPlot.md):
+    Added `label.by` to choose automatic top-gene labels by adjusted
+    p-value, p-value, detection-rate difference, or log2 fold change.
+    Volcano and Manhattan plots now keep displayed positions and colors
+    tied to the raw `avg_log2FC` values, and Manhattan plots default to
+    no vertical jitter while allowing the centered group track size to
+    be overridden with `group_track_width` and `group_track_height`.
   - [`DynamicHeatmap()`](https://mengxu98.github.io/scop/reference/DynamicHeatmap.md),
     [`FeatureHeatmap()`](https://mengxu98.github.io/scop/reference/FeatureHeatmap.md),
     and
@@ -756,6 +842,14 @@
   - Moved `StatPlot` function to
     [`thisplot::StatPlot`](https://mengxu98.github.io/thisplot/reference/StatPlot.html).
 - **fix**:
+  - Differential expression plots
+    ([`VolcanoPlot()`](https://mengxu98.github.io/scop/reference/VolcanoPlot.md),
+    [`DEtestManhattanPlot()`](https://mengxu98.github.io/scop/reference/DEtestManhattanPlot.md),
+    [`DEtestRingPlot()`](https://mengxu98.github.io/scop/reference/DEtestRingPlot.md)):
+    added `only.pos = TRUE` for positive-only visualization.
+    [`DEtestManhattanPlot()`](https://mengxu98.github.io/scop/reference/DEtestManhattanPlot.md)
+    now keeps the cell-type track centered at y = 0 and sizes the track
+    from the nearest point distance around zero.
   - [`DynamicHeatmap()`](https://mengxu98.github.io/scop/reference/DynamicHeatmap.md)
     / `heatmap_enrichment()`: Fixed incorrect `db` handling when using
     custom `TERM2GENE`/`TERM2NAME`. Enrichment results with

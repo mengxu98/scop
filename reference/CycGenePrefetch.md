@@ -57,8 +57,8 @@ A list of S-phase and G2M-phase genes.
 
 ``` r
 ccgenes <- CycGenePrefetch("Homo_sapiens")
-#> ℹ [2026-05-25 09:39:30] Prefetching cell cycle genes for "Homo_sapiens" ...
-#> ✔ [2026-05-25 09:39:30] Cell cycle gene prefetching completed "Homo_sapiens"
+#> ℹ [2026-05-31 05:42:32] Prefetching cell cycle genes for "Homo_sapiens" ...
+#> ✔ [2026-05-31 05:42:32] Cell cycle gene prefetching completed "Homo_sapiens"
 str(ccgenes)
 #> List of 5
 #>  $ res         : NULL
@@ -68,20 +68,50 @@ str(ccgenes)
 #>  $ cc_G2M_genes: chr [1:54] "HMGB2" "CDK1" "NUSAP1" "UBE2C" ...
 
 ccgenes <- CycGenePrefetch("Mus_musculus")
-#> ℹ [2026-05-25 09:39:30] Prefetching cell cycle genes for "Mus_musculus" ...
-#> ℹ [2026-05-25 09:39:30] Connect to the Ensembl archives...
-#> ℹ [2026-05-25 09:39:30] Using the 115 version of ensembl database...
-#> ℹ [2026-05-25 09:39:30] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
-#> ℹ [2026-05-25 09:39:40] Searching the dataset hsapiens ...
-#> ℹ [2026-05-25 09:40:12] Connecting to the dataset hsapiens_gene_ensembl ...
-#> ℹ [2026-05-25 09:40:15] Converting the geneIDs...
-#> ℹ [2026-05-25 09:40:32] 97 genes mapped with "ensembl_symbol"
-#> ℹ [2026-05-25 09:40:32] ==============================
+#> ℹ [2026-05-31 05:42:32] Prefetching cell cycle genes for "Mus_musculus" ...
+#> ℹ [2026-05-31 05:42:32] Connect to the Ensembl archives...
+#> ℹ [2026-05-31 05:42:33] Using the 115 version of ensembl database...
+#> ℹ [2026-05-31 05:42:33] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
+#> Ensembl site unresponsive, trying www mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> Warning: Invalid mirror. Select a mirror from [www, useast, asia].
+#> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying www mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> ! [2026-05-31 05:42:36] <simpleError: Your query has been redirected to https://status.ensembl.org indicating this Ensembl service is currently unavailable.
+#> !                       Look at ?useEnsembl for details on how to try a mirror site.>
+#> ! [2026-05-31 05:42:36] Get errors when connecting with ensembl database...
+#> ! [2026-05-31 05:42:37] Retrying...
+#> Ensembl site unresponsive, trying www mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> Warning: Invalid mirror. Select a mirror from [www, useast, asia].
+#> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying www mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> ! [2026-05-31 05:42:40] <simpleError: Your query has been redirected to https://status.ensembl.org indicating this Ensembl service is currently unavailable.
+#> !                       Look at ?useEnsembl for details on how to try a mirror site.>
+#> ! [2026-05-31 05:42:40] Get errors when connecting with ensembl database...
+#> ! [2026-05-31 05:42:41] Retrying...
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying www mirror
+#> ℹ [2026-05-31 05:42:44] Searching the dataset hsapiens ...
+#> ℹ [2026-05-31 05:42:44] Connecting to the dataset hsapiens_gene_ensembl ...
+#> ℹ [2026-05-31 05:42:45] Converting the geneIDs...
+#> ℹ [2026-05-31 05:42:47] 97 genes mapped with "ensembl_symbol"
+#> ℹ [2026-05-31 05:42:47] ==============================
 #> ℹ                       97 genes mapped
 #> ℹ                       0 genes unmapped
 #> ℹ                       ==============================
-#> ℹ [2026-05-25 09:40:32] Cached conversion results for "Mus_musculus"
-#> ✔ [2026-05-25 09:40:32] Cell cycle gene prefetching completed "Mus_musculus"
+#> ℹ [2026-05-31 05:42:47] Cached conversion results for "Mus_musculus"
+#> ✔ [2026-05-31 05:42:47] Cell cycle gene prefetching completed "Mus_musculus"
 str(ccgenes)
 #> List of 5
 #>  $ res         :List of 7

@@ -63,8 +63,7 @@ RunAugur(
   backend that keeps Augur's sampling, random forest, and metric
   semantics but removes the heavier recipe/bake loop and uses C++ sparse
   matrix preparation where possible. `"r"` calls the native
-  [`Augur::calculate_auc()`](https://rdrr.io/pkg/Augur/man/calculate_auc.html)
-  implementation.
+  `Augur::calculate_auc` implementation.
 
 - features:
 
@@ -74,8 +73,7 @@ RunAugur(
   feature_perc, select_var, augur_mode, classifier, rf_params,
   lr_params:
 
-  Arguments passed to
-  [`Augur::calculate_auc()`](https://rdrr.io/pkg/Augur/man/calculate_auc.html).
+  Arguments passed to `Augur::calculate_auc`.
 
 - cores:
 
@@ -100,8 +98,7 @@ RunAugur(
 
 - ...:
 
-  Additional arguments passed to
-  [`Augur::calculate_auc()`](https://rdrr.io/pkg/Augur/man/calculate_auc.html).
+  Additional arguments passed to `Augur::calculate_auc`.
 
 ## Value
 
@@ -123,7 +120,7 @@ prioritization in single-cell data. *Nature Biotechnology*, 39, 30-34.
 data(panc8_sub)
 panc8_sub <- subset(panc8_sub, subset = tech %in% c("celseq", "celseq2"))
 panc8_sub <- standard_scop(panc8_sub, verbose = FALSE)
-#> ℹ [2026-05-25 10:23:24] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-31 06:24:45] Skip `log1p()` because `layer = data` is not "counts"
 panc8_sub <- RunAugur(
   panc8_sub,
   celltype.by = "celltype",
@@ -140,22 +137,18 @@ panc8_sub <- RunAugur(
     importance = "accuracy"
   )
 )
-#> Registered S3 method overwritten by 'yardstick':
-#>   method       from         
-#>   print.metric spatstat.geom
+#> Error in dplyr::filter(AUCs, metric == "roc_auc"): ℹ In argument: `metric == "roc_auc"`.
+#> Caused by error:
+#> ! object 'metric' not found
 
 panc8_sub@tools$Augur$AUC
-#> # A tibble: 4 × 2
-#>   cell_type   auc
-#>   <fct>     <dbl>
-#> 1 alpha     0.994
-#> 2 beta      0.991
-#> 3 ductal    0.982
-#> 4 acinar    0.969
+#> NULL
 FeatureDimPlot(
   panc8_sub,
   features = "augur_auc",
   reduction = "StandardUMAP2D",
   bg_cutoff = -Inf
 )
+#> ! [2026-05-31 06:25:09] "augur_auc" are not in the features of <Seurat>
+#> Error in FeatureDimPlot(panc8_sub, features = "augur_auc", reduction = "StandardUMAP2D",     bg_cutoff = -Inf): There are no valid features present.
 ```

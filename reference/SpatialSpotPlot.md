@@ -12,6 +12,7 @@ SpatialSpotPlot(
   assay = NULL,
   layer = "data",
   values = NULL,
+  plot_type = c("point", "pie"),
   plot.data = NULL,
   spot.by = NULL,
   color.by = NULL,
@@ -26,11 +27,13 @@ SpatialSpotPlot(
   cells = NULL,
   show_na = FALSE,
   pt.size = NULL,
+  pie.radius = NULL,
+  pie.radius.scale = 0.45,
   pt.alpha = 0.9,
   stroke = 0.1,
   jitter_width = 0.25,
   jitter_height = 0.25,
-  palette = ifelse(is.null(features), "Chinese", "Spectral"),
+  palette = "Spectral",
   palcolor = NULL,
   bg_color = "grey20",
   legend.position = "right",
@@ -72,6 +75,12 @@ SpatialSpotPlot(
 
   Optional vector, matrix, or data.frame with spot-level values. Row
   names or vector names must match spatial spot names.
+
+- plot_type:
+
+  Plot type. `"point"` keeps the default spot plot behavior. `"pie"`
+  draws spot-level pies from numeric metadata columns supplied to
+  `group.by` or from a numeric matrix/data.frame supplied to `values`.
 
 - plot.data:
 
@@ -133,6 +142,12 @@ SpatialSpotPlot(
 - pt.size:
 
   Point size.
+
+- pie.radius, pie.radius.scale:
+
+  Radius controls for `plot_type = "pie"`. If `pie.radius` is `NULL`,
+  the radius is estimated from spot spacing and multiplied by
+  `pie.radius.scale`.
 
 - pt.alpha:
 

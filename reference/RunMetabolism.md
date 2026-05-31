@@ -18,6 +18,9 @@ RunMetabolism(
   convert_species = TRUE,
   Ensembl_version = NULL,
   mirror = NULL,
+  biomart = NULL,
+  max_tries = 5,
+  use_preparedb = TRUE,
   method = c("AUCell", "GSVA", "ssGSEA", "VISION"),
   backend = c("cpp", "r"),
   cpp_strategy = c("sparse", "topk", "full"),
@@ -54,13 +57,18 @@ RunMetabolism(
 - db:
 
   Databases to use for metabolism pathways. One or both of `"KEGG"`,
-  `"REACTOME"`.
+  `"REACTOME"`. `"Reactome"` is also accepted and treated identically to
+  `"REACTOME"`. When `use_preparedb = TRUE`, gene sets are built via
+  [PrepareDB](https://mengxu98.github.io/scop/reference/PrepareDB.md).
 
 - species:
 
-  A character vector specifying the species for which the gene
-  annotation databases should be prepared. Can be `"Homo_sapiens"` or
-  `"Mus_musculus"`.
+  Species of the input data. The scMetabolism gene sets contain human
+  gene symbols. When `species` is not `"Homo_sapiens"` and
+  `convert_species` is `TRUE`,
+  [GeneConvert](https://mengxu98.github.io/scop/reference/GeneConvert.md)
+  is used to map human genes to the target species via biomaRt homolog
+  tables. Default is `"Homo_sapiens"`.
 
 - IDtype:
 
@@ -81,8 +89,12 @@ RunMetabolism(
 
 - convert_species:
 
-  Whether to use a species-converted database when the annotation is
-  missing for the specified species. Default is `TRUE`.
+  Whether to convert human gene symbols from the scMetabolism gene sets
+  to the target species using
+  [GeneConvert](https://mengxu98.github.io/scop/reference/GeneConvert.md).
+  When `TRUE` (default), genes are mapped via cross-species orthologs
+  from Ensembl BioMart. When `FALSE`, only case-insensitive direct
+  symbol matching is used.
 
 - Ensembl_version:
 
@@ -93,6 +105,34 @@ RunMetabolism(
 
   Specify an Ensembl mirror to connect to. The valid options here are
   `"www"`, `"uswest"`, `"useast"`, `"asia"`.
+
+- biomart:
+
+  BioMart database name passed to
+  [GeneConvert](https://mengxu98.github.io/scop/reference/GeneConvert.md).
+  Default `NULL` uses `"ensembl"`. Other options: `"protists_mart"`,
+  `"fungi_mart"`, `"plants_mart"`.
+
+- max_tries:
+
+  Maximum retry attempts for biomaRt connections in
+  [GeneConvert](https://mengxu98.github.io/scop/reference/GeneConvert.md).
+  Default is `5`.
+
+- use_preparedb:
+
+  When `TRUE`, gene sets are built via
+  [PrepareDB](https://mengxu98.github.io/scop/reference/PrepareDB.md)
+  which provides species-aware gene mapping via BioMart and
+  KEGG/Reactome databases. This automatically handles gene symbol
+  conversion for non-human species (e.g., `species = "Mus_musculus"` →
+  mouse gene symbols in metabolism pathways). When `FALSE`, raw
+  scMetabolism GMT files are downloaded and genes are matched
+  case-insensitively with optional
+  [GeneConvert](https://mengxu98.github.io/scop/reference/GeneConvert.md)
+  supplementation when `convert_species = TRUE`. genes and approximates
+  zero ties, `"topk"` ranks only genes that can contribute to AUCell
+  AUC, and `"full"` ranks all genes.
 
 - method:
 
@@ -109,9 +149,7 @@ RunMetabolism(
 
 - cpp_strategy:
 
-  C++ AUCell ranking strategy. `"sparse"` ranks non-zero genes and
-  approximates zero ties, `"topk"` ranks only genes that can contribute
-  to AUCell AUC, and `"full"` ranks all genes.
+  C++ AUCell ranking strategy. `"sparse"` ranks non-zero
 
 - cpp_chunk_size:
 
@@ -159,24 +197,24 @@ tools slot `Metabolism_<group.by>_<method>` for
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-25 11:07:49] Start standard processing workflow...
-#> ℹ [2026-05-25 11:07:50] Checking a list of <Seurat>...
-#> ! [2026-05-25 11:07:50] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-25 11:07:50] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 11:07:52] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 11:07:52] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-25 11:07:52] Number of available HVF: 2000
-#> ℹ [2026-05-25 11:07:52] Finished check
-#> ℹ [2026-05-25 11:07:52] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-25 11:07:53] Perform pca linear dimension reduction
-#> ℹ [2026-05-25 11:07:53] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-25 11:07:54] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-25 11:07:54] Reorder clusters...
-#> ℹ [2026-05-25 11:07:54] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-25 11:07:54] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-25 11:07:54] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-25 11:07:59] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-25 11:08:04] Standard processing workflow completed
+#> ℹ [2026-05-31 07:08:28] Start standard processing workflow...
+#> ℹ [2026-05-31 07:08:29] Checking a list of <Seurat>...
+#> ! [2026-05-31 07:08:29] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-31 07:08:29] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-31 07:08:31] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-31 07:08:31] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-31 07:08:32] Number of available HVF: 2000
+#> ℹ [2026-05-31 07:08:32] Finished check
+#> ℹ [2026-05-31 07:08:32] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-31 07:08:32] Perform pca linear dimension reduction
+#> ℹ [2026-05-31 07:08:32] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-31 07:08:33] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-31 07:08:33] Reorder clusters...
+#> ℹ [2026-05-31 07:08:33] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-31 07:08:33] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-31 07:08:33] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-31 07:08:38] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-31 07:08:44] Standard processing workflow completed
 pancreas_sub <- RunMetabolism(
   pancreas_sub,
   assay = "RNA",
@@ -186,13 +224,19 @@ pancreas_sub <- RunMetabolism(
   species = "Mus_musculus",
   method = "AUCell"
 )
-#> ℹ [2026-05-25 11:08:04] Start metabolism pathway scoring
-#> ℹ [2026-05-25 11:08:05] Data type is raw counts
-#> ℹ [2026-05-25 11:08:05] Averaging expression by "CellType" ...
-#> ℹ [2026-05-25 11:08:05] Aggregated expression: 15998 genes x 5 groups
-#> ℹ [2026-05-25 11:08:05] Using raw scMetabolism gene sets directly; `PrepareDB()` / BioMart-based ID rebuilding is skipped
-#> ℹ [2026-05-25 11:08:05] Total metabolism gene sets to score: 127
-#> ✔ [2026-05-25 11:08:05] Metabolism scores stored in tools slot "Metabolism_CellType_AUCell"
+#> ℹ [2026-05-31 07:08:44] Start metabolism pathway scoring
+#> ℹ [2026-05-31 07:08:44] Data type is raw counts
+#> ℹ [2026-05-31 07:08:44] Averaging expression by "CellType" ...
+#> ℹ [2026-05-31 07:08:44] Aggregated expression: 15998 genes x 5 groups
+#> ℹ [2026-05-31 07:08:44] Using `PrepareDB()` for species-aware gene set construction
+#> ℹ [2026-05-31 07:08:44]   KEGG pathway refs: 85, Reactome pathway names: 82
+#> ℹ [2026-05-31 07:08:44] Species: "Mus_musculus"
+#> ℹ [2026-05-31 07:08:44] Loading cached: KEGG version: Release 118.0+/05-30, May 26 nterm:367 created: 2026-05-31 06:20:17
+#> ℹ [2026-05-31 07:08:45] Loading cached: Reactome version: 1.96.0 nterm:1835 created: 2026-05-31 06:20:17
+#> ℹ [2026-05-31 07:09:12]   "KEGG": 73 metabolism pathways, 1353 genes mapped
+#> ℹ [2026-05-31 07:09:12]   "Reactome": 37 metabolism pathways, 1322 genes mapped
+#> ℹ [2026-05-31 07:09:12] Total metabolism gene sets to score: 110
+#> ✔ [2026-05-31 07:09:12] Metabolism scores stored in tools slot "Metabolism_CellType_AUCell"
 ht <- MetabolismPlot(
   pancreas_sub,
   group.by = "CellType",

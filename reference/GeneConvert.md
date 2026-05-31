@@ -108,46 +108,81 @@ res <- GeneConvert(
   species_from = "Homo_sapiens",
   species_to = "Mus_musculus"
 )
-#> ℹ [2026-05-25 10:08:18] Connect to the Ensembl archives...
-#> ℹ [2026-05-25 10:08:18] Using the 115 version of ensembl database...
-#> ℹ [2026-05-25 10:08:18] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
-#> ℹ [2026-05-25 10:08:41] Searching the dataset hsapiens ...
-#> ℹ [2026-05-25 10:08:42] Connecting to the dataset hsapiens_gene_ensembl ...
-#> ℹ [2026-05-25 10:08:43] Searching the dataset mmusculus ...
-#> ℹ [2026-05-25 10:08:43] Connecting to the dataset mmusculus_gene_ensembl ...
-#> ℹ [2026-05-25 10:08:44] Converting the geneIDs...
-#> ℹ [2026-05-25 10:08:51] 5 genes mapped with "ensembl_symbol"
-#> ℹ [2026-05-25 10:08:51] ==============================
-#> ℹ                       5 genes mapped
-#> ℹ                       0 genes unmapped
-#> ℹ                       ==============================
+#> ℹ [2026-05-31 06:08:43] Connect to the Ensembl archives...
+#> ℹ [2026-05-31 06:08:43] Using the 115 version of ensembl database...
+#> ℹ [2026-05-31 06:08:43] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying www mirror
+#> Warning: Invalid mirror. Select a mirror from [www, useast, asia].
+#> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying www mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> ! [2026-05-31 06:08:48] <simpleError: Your query has been redirected to https://status.ensembl.org indicating this Ensembl service is currently unavailable.
+#> !                       Look at ?useEnsembl for details on how to try a mirror site.>
+#> ! [2026-05-31 06:08:48] Get errors when connecting with ensembl database...
+#> ! [2026-05-31 06:08:49] Retrying...
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying www mirror
+#> Warning: Invalid mirror. Select a mirror from [www, useast, asia].
+#> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying www mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> ! [2026-05-31 06:08:53] <simpleError: Your query has been redirected to https://status.ensembl.org indicating this Ensembl service is currently unavailable.
+#> !                       Look at ?useEnsembl for details on how to try a mirror site.>
+#> ! [2026-05-31 06:08:53] Get errors when connecting with ensembl database...
+#> ! [2026-05-31 06:08:54] Retrying...
+#> Ensembl site unresponsive, trying www mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> Warning: Invalid mirror. Select a mirror from [www, useast, asia].
+#> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying www mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> ! [2026-05-31 06:08:57] <simpleError: Your query has been redirected to https://status.ensembl.org indicating this Ensembl service is currently unavailable.
+#> !                       Look at ?useEnsembl for details on how to try a mirror site.>
+#> ! [2026-05-31 06:08:57] Get errors when connecting with ensembl database...
+#> ! [2026-05-31 06:08:58] Retrying...
+#> Ensembl site unresponsive, trying www mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> Warning: Invalid mirror. Select a mirror from [www, useast, asia].
+#> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying www mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> ! [2026-05-31 06:09:01] <simpleError: Your query has been redirected to https://status.ensembl.org indicating this Ensembl service is currently unavailable.
+#> !                       Look at ?useEnsembl for details on how to try a mirror site.>
+#> ! [2026-05-31 06:09:01] Get errors when connecting with ensembl database...
+#> ! [2026-05-31 06:09:02] Retrying...
+#> Ensembl site unresponsive, trying www mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> Warning: Invalid mirror. Select a mirror from [www, useast, asia].
+#> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying www mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> ! [2026-05-31 06:09:05] <simpleError: Your query has been redirected to https://status.ensembl.org indicating this Ensembl service is currently unavailable.
+#> !                       Look at ?useEnsembl for details on how to try a mirror site.>
+#> ! [2026-05-31 06:09:05] Get errors when connecting with ensembl database...
+#> Error in try_get(expr = {    if (!is.null(mirror)) {        biomaRt::useEnsembl(biomart = "ensembl", mirror = mirror)    }    else {        mart_try <- tryCatch(biomaRt::useMart(biomart = "ensembl",             host = url), error = function(e) e)        if (inherits(mart_try, "error")) {            mirror_candidates <- c("useast", "uswest", "asia",                 "www")            for (mirror_i in mirror_candidates) {                mart_mirror <- tryCatch(biomaRt::useEnsembl(biomart = "ensembl",                   mirror = mirror_i), error = function(e) e)                if (!inherits(mart_mirror, "error")) {                  mart_try <- mart_mirror                  break                }            }        }        if (inherits(mart_try, "error")) {            stop(mart_try)        }        mart_try    }}, max_tries = max_tries, error_message = "Get errors when connecting with ensembl database..."): <simpleError: Your query has been redirected to
+#> https://status.ensembl.org indicating this Ensembl service is currently
+#> unavailable. Look at ?useEnsembl for details on how to try a mirror site.>
 str(res)
-#> List of 7
-#>  $ geneID_res     :'data.frame': 5 obs. of  4 variables:
-#>   ..$ from_IDtype: chr [1:5] "ensembl_symbol" "ensembl_symbol" "ensembl_symbol" "ensembl_symbol" ...
-#>   ..$ from_geneID: chr [1:5] "CTCF" "CDK1" "TOP2A" "AURKA" ...
-#>   ..$ to_IDtype  : chr [1:5] "entrez_id" "entrez_id" "entrez_id" "entrez_id" ...
-#>   ..$ to_geneID  : int [1:5] 13018 12534 21973 20878 17345
-#>  $ geneID_collapse:'data.frame': 5 obs. of  2 variables:
-#>   ..$ from_geneID: chr [1:5] "AURKA" "CDK1" "CTCF" "MKI67" ...
-#>   ..$ entrez_id  :List of 5
-#>   .. ..$ : int 20878
-#>   .. ..$ : int 12534
-#>   .. ..$ : int 13018
-#>   .. ..$ : int 17345
-#>   .. ..$ : int 21973
-#>   .. ..- attr(*, "class")= chr "AsIs"
-#>  $ geneID_expand  :'data.frame': 5 obs. of  2 variables:
-#>   ..$ from_geneID: chr [1:5] "AURKA" "CDK1" "CTCF" "MKI67" ...
-#>   ..$ entrez_id  : int [1:5] 20878 12534 13018 17345 21973
-#>  $ Ensembl_version: chr "115"
-#>  $ Datasets       :'data.frame': 213 obs. of  3 variables:
-#>   ..$ dataset    : 'AsIs' chr [1:213] "abrachyrhynchus_gene_ensembl" "acalliptera_gene_ensembl" "acarolinensis_gene_ensembl" "acchrysaetos_gene_ensembl" ...
-#>   ..$ description: 'AsIs' chr [1:213] "Pink-footed goose genes (ASM259213v1)" "Eastern happy genes (fAstCal1.3)" "Green anole genes (AnoCar2.0v2)" "Golden eagle genes (bAquChr1.2)" ...
-#>   ..$ version    : 'AsIs' chr [1:213] "ASM259213v1" "fAstCal1.3" "AnoCar2.0v2" "bAquChr1.2" ...
-#>  $ Attributes     :'data.frame': 3170 obs. of  3 variables:
-#>   ..$ name       : chr [1:3170] "ensembl_gene_id" "ensembl_gene_id_version" "ensembl_transcript_id" "ensembl_transcript_id_version" ...
-#>   ..$ description: chr [1:3170] "Gene stable ID" "Gene stable ID version" "Transcript stable ID" "Transcript stable ID version" ...
-#>   ..$ page       : chr [1:3170] "feature_page" "feature_page" "feature_page" "feature_page" ...
-#>  $ geneID_unmapped: chr(0) 
+#> Error: object 'res' not found
 ```

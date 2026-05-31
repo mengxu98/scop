@@ -23,6 +23,8 @@ DEtestManhattanPlot(
   stroke.highlight = 0.5,
   nlabel = 5,
   features_label = NULL,
+  only.pos = FALSE,
+  label.by = c("p_val_adj", "p_val", "diff_pct", "avg_log2FC"),
   label.fg = "black",
   label.bg = "white",
   label.bg.r = 0.1,
@@ -32,8 +34,11 @@ DEtestManhattanPlot(
   theme_use = "theme_scop",
   theme_args = list(),
   manhattan.bg = "white",
+  group_track_width = NULL,
+  group_track_height = NULL,
   jitter_width = 0.5,
-  jitter_height = 0.4,
+  jitter_height = 0,
+  seed = 11,
   aspect.ratio = NULL,
   xlab = NULL,
   ylab = NULL
@@ -120,6 +125,19 @@ DEtestManhattanPlot(
   A character vector specifying the feature labels to plot. Default is
   `NULL`.
 
+- only.pos:
+
+  Whether to show only positive log2 fold-change results in differential
+  expression visualizations. Default is `FALSE`.
+
+- label.by:
+
+  Metric used to select automatic labels when `features_label = NULL`.
+  Options are `"p_val_adj"`, `"p_val"`, `"diff_pct"`, and
+  `"avg_log2FC"`. Smaller p-values are ranked first; `diff_pct` and
+  `avg_log2FC` use the strongest positive and negative effects within
+  each group. Default is `"p_val_adj"`.
+
 - label.fg:
 
   A character string specifying the color for the labels' foreground.
@@ -162,6 +180,16 @@ DEtestManhattanPlot(
 
   Background color for Manhattan plot. Default is `"white"`.
 
+- group_track_width:
+
+  Width of the centered cell-type track in Manhattan plot. Default is
+  `NULL`, which uses the current automatic width.
+
+- group_track_height:
+
+  Height of the centered cell-type track in Manhattan plot. Default is
+  `NULL`, which uses the current automatic height.
+
 - jitter_width:
 
   Horizontal jitter range for points in Manhattan plot. Default is
@@ -169,7 +197,11 @@ DEtestManhattanPlot(
 
 - jitter_height:
 
-  Vertical jitter range for points in Manhattan plot. Default is `0.4`.
+  Vertical jitter range for points in Manhattan plot. Default is `0`.
+
+- seed:
+
+  Random seed for jitter in Manhattan and ring plots. Default is `11`.
 
 - aspect.ratio:
 
@@ -195,38 +227,38 @@ DEtestManhattanPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-25 09:41:32] Start standard processing workflow...
-#> ℹ [2026-05-25 09:41:32] Checking a list of <Seurat>...
-#> ! [2026-05-25 09:41:32] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-25 09:41:32] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 09:41:34] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 09:41:34] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-25 09:41:34] Number of available HVF: 2000
-#> ℹ [2026-05-25 09:41:34] Finished check
-#> ℹ [2026-05-25 09:41:34] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-25 09:41:35] Perform pca linear dimension reduction
-#> ℹ [2026-05-25 09:41:35] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-25 09:41:36] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-25 09:41:36] Reorder clusters...
-#> ℹ [2026-05-25 09:41:36] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-25 09:41:36] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-25 09:41:36] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-25 09:41:39] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-25 09:41:43] Standard processing workflow completed
+#> ℹ [2026-05-31 05:43:55] Start standard processing workflow...
+#> ℹ [2026-05-31 05:43:55] Checking a list of <Seurat>...
+#> ! [2026-05-31 05:43:55] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-31 05:43:55] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-31 05:43:57] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-31 05:43:57] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-31 05:43:57] Number of available HVF: 2000
+#> ℹ [2026-05-31 05:43:57] Finished check
+#> ℹ [2026-05-31 05:43:57] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-31 05:43:58] Perform pca linear dimension reduction
+#> ℹ [2026-05-31 05:43:58] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-31 05:43:59] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-31 05:43:59] Reorder clusters...
+#> ℹ [2026-05-31 05:43:59] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-31 05:43:59] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-31 05:43:59] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-31 05:44:02] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-31 05:44:06] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
   only.pos = FALSE
 )
-#> ℹ [2026-05-25 09:41:43] Data type is log-normalized
-#> ℹ [2026-05-25 09:41:43] Start differential expression test
-#> ℹ [2026-05-25 09:41:43] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-05-25 09:41:43] Using 1 core
-#> ⠙ [2026-05-25 09:41:43] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ✔ [2026-05-25 09:41:43] Completed 5 tasks in 1.4s
+#> ℹ [2026-05-31 05:44:06] Data type is log-normalized
+#> ℹ [2026-05-31 05:44:06] Start differential expression test
+#> ℹ [2026-05-31 05:44:06] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-05-31 05:44:06] Using 1 core
+#> ⠙ [2026-05-31 05:44:06] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ✔ [2026-05-31 05:44:06] Completed 5 tasks in 1.4s
 #> 
-#> ℹ [2026-05-25 09:41:43] Building results
-#> ✔ [2026-05-25 09:41:45] Differential expression test completed
+#> ℹ [2026-05-31 05:44:06] Building results
+#> ✔ [2026-05-31 05:44:08] Differential expression test completed
 DEtestManhattanPlot(
   pancreas_sub,
   group.by = "CellType"

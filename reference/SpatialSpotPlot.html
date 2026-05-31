@@ -51,6 +51,7 @@
 <span>  assay <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  layer <span class="op">=</span> <span class="st">"data"</span>,</span>
 <span>  values <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"point"</span>, <span class="st">"pie"</span><span class="op">)</span>,</span>
 <span>  plot.data <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  spot.by <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  color.by <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -65,11 +66,13 @@
 <span>  cells <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  show_na <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  pt.size <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  pie.radius <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  pie.radius.scale <span class="op">=</span> <span class="fl">0.45</span>,</span>
 <span>  pt.alpha <span class="op">=</span> <span class="fl">0.9</span>,</span>
 <span>  stroke <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>  jitter_width <span class="op">=</span> <span class="fl">0.25</span>,</span>
 <span>  jitter_height <span class="op">=</span> <span class="fl">0.25</span>,</span>
-<span>  palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">features</span><span class="op">)</span>, <span class="st">"Chinese"</span>, <span class="st">"Spectral"</span><span class="op">)</span>,</span>
+<span>  palette <span class="op">=</span> <span class="st">"Spectral"</span>,</span>
 <span>  palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  bg_color <span class="op">=</span> <span class="st">"grey20"</span>,</span>
 <span>  legend.position <span class="op">=</span> <span class="st">"right"</span>,</span>
@@ -112,6 +115,12 @@ are read from <code>assay</code> and <code>layer</code>.</p></dd>
 <dt id="arg-values">values<a class="anchor" aria-label="anchor" href="#arg-values"></a></dt>
 <dd><p>Optional vector, matrix, or data.frame with spot-level values.
 Row names or vector names must match spatial spot names.</p></dd>
+
+
+<dt id="arg-plot-type">plot_type<a class="anchor" aria-label="anchor" href="#arg-plot-type"></a></dt>
+<dd><p>Plot type. <code>"point"</code> keeps the default spot plot behavior.
+<code>"pie"</code> draws spot-level pies from numeric metadata columns supplied to
+<code>group.by</code> or from a numeric matrix/data.frame supplied to <code>values</code>.</p></dd>
 
 
 <dt id="arg-plot-data">plot.data<a class="anchor" aria-label="anchor" href="#arg-plot-data"></a></dt>
@@ -173,6 +182,12 @@ If <code>FALSE</code>, cell points with NA level will be removed from the plot.<
 
 <dt id="arg-pt-size">pt.size<a class="anchor" aria-label="anchor" href="#arg-pt-size"></a></dt>
 <dd><p>Point size.</p></dd>
+
+
+<dt id="arg-pie-radius-pie-radius-scale">pie.radius, pie.radius.scale<a class="anchor" aria-label="anchor" href="#arg-pie-radius-pie-radius-scale"></a></dt>
+<dd><p>Radius controls for <code>plot_type = "pie"</code>.
+If <code>pie.radius</code> is <code>NULL</code>, the radius is estimated from spot spacing and
+multiplied by <code>pie.radius.scale</code>.</p></dd>
 
 
 <dt id="arg-pt-alpha">pt.alpha<a class="anchor" aria-label="anchor" href="#arg-pt-alpha"></a></dt>

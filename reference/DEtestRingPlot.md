@@ -23,6 +23,8 @@ DEtestRingPlot(
   stroke.highlight = 0.5,
   nlabel = 5,
   features_label = NULL,
+  only.pos = FALSE,
+  label.by = c("p_val_adj", "p_val", "diff_pct", "avg_log2FC"),
   label.fg = "black",
   label.bg = "white",
   label.bg.r = 0.1,
@@ -119,6 +121,19 @@ DEtestRingPlot(
   A character vector specifying the feature labels to plot. Default is
   `NULL`.
 
+- only.pos:
+
+  Whether to show only positive log2 fold-change results in differential
+  expression visualizations. Default is `FALSE`.
+
+- label.by:
+
+  Metric used to select automatic labels when `features_label = NULL`.
+  Options are `"p_val_adj"`, `"p_val"`, `"diff_pct"`, and
+  `"avg_log2FC"`. Smaller p-values are ranked first; `diff_pct` and
+  `avg_log2FC` use the strongest positive and negative effects within
+  each group. Default is `"p_val_adj"`.
+
 - label.fg:
 
   A character string specifying the color for the labels' foreground.
@@ -178,7 +193,7 @@ DEtestRingPlot(
 
 - seed:
 
-  Random seed for jitter in ring plot. Default is `11`.
+  Random seed for jitter in Manhattan and ring plots. Default is `11`.
 
 ## See also
 
@@ -192,39 +207,38 @@ DEtestRingPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-25 09:42:45] Start standard processing workflow...
-#> ℹ [2026-05-25 09:42:45] Checking a list of <Seurat>...
-#> ! [2026-05-25 09:42:45] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-25 09:42:45] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 09:42:47] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 09:42:47] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-25 09:42:48] Number of available HVF: 2000
-#> ℹ [2026-05-25 09:42:48] Finished check
-#> ℹ [2026-05-25 09:42:48] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-25 09:42:48] Perform pca linear dimension reduction
-#> ℹ [2026-05-25 09:42:48] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-25 09:42:49] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-25 09:42:49] Reorder clusters...
-#> ℹ [2026-05-25 09:42:49] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-25 09:42:49] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-25 09:42:49] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-25 09:42:53] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-25 09:42:56] Standard processing workflow completed
+#> ℹ [2026-05-31 05:52:06] Start standard processing workflow...
+#> ℹ [2026-05-31 05:52:06] Checking a list of <Seurat>...
+#> ! [2026-05-31 05:52:06] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-31 05:52:06] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-31 05:52:08] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-31 05:52:08] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-31 05:52:08] Number of available HVF: 2000
+#> ℹ [2026-05-31 05:52:08] Finished check
+#> ℹ [2026-05-31 05:52:08] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-31 05:52:09] Perform pca linear dimension reduction
+#> ℹ [2026-05-31 05:52:09] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-31 05:52:10] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-31 05:52:10] Reorder clusters...
+#> ℹ [2026-05-31 05:52:10] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-31 05:52:10] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-31 05:52:10] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-31 05:52:13] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-31 05:52:17] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
   only.pos = FALSE
 )
-#> ℹ [2026-05-25 09:42:57] Data type is log-normalized
-#> ℹ [2026-05-25 09:42:57] Start differential expression test
-#> ℹ [2026-05-25 09:42:57] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-05-25 09:42:57] Using 1 core
-#> ⠙ [2026-05-25 09:42:57] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ⠹ [2026-05-25 09:42:57] Running for Ngn3-high-EP [2/5] ■■■■        40% | ETA:  …
-#> ✔ [2026-05-25 09:42:57] Completed 5 tasks in 1.4s
+#> ℹ [2026-05-31 05:52:17] Data type is log-normalized
+#> ℹ [2026-05-31 05:52:17] Start differential expression test
+#> ℹ [2026-05-31 05:52:17] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-05-31 05:52:17] Using 1 core
+#> ⠙ [2026-05-31 05:52:17] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ✔ [2026-05-31 05:52:17] Completed 5 tasks in 1.4s
 #> 
-#> ℹ [2026-05-25 09:42:57] Building results
-#> ✔ [2026-05-25 09:42:58] Differential expression test completed
+#> ℹ [2026-05-31 05:52:17] Building results
+#> ✔ [2026-05-31 05:52:19] Differential expression test completed
 DEtestRingPlot(
   pancreas_sub,
   group.by = "CellType"

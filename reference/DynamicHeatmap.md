@@ -142,6 +142,7 @@ DynamicHeatmap(
   cores = 1,
   verbose = TRUE,
   seed = 11,
+  legend.position = "right",
   ht_params = list()
 )
 ```
@@ -728,6 +729,14 @@ DynamicHeatmap(
 
   Random seed for reproducibility. Default is `11`.
 
+- legend.position:
+
+  A character vector specifying the side to place the legends. Options
+  are `"right"`, `"left"`, `"top"`, or `"bottom"`. Default is `"right"`.
+  When row names are long and shown on the right side, the gap between
+  the heatmap and the legend is automatically increased to avoid
+  overlap.
+
 - ht_params:
 
   Additional parameters to customize the appearance of the heatmap. This
@@ -748,24 +757,24 @@ DynamicHeatmap(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-25 09:46:46] Start standard processing workflow...
-#> ℹ [2026-05-25 09:46:47] Checking a list of <Seurat>...
-#> ! [2026-05-25 09:46:47] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-25 09:46:47] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 09:46:48] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 09:46:48] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-25 09:46:49] Number of available HVF: 2000
-#> ℹ [2026-05-25 09:46:49] Finished check
-#> ℹ [2026-05-25 09:46:49] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-25 09:46:49] Perform pca linear dimension reduction
-#> ℹ [2026-05-25 09:46:49] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-25 09:46:50] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-25 09:46:50] Reorder clusters...
-#> ℹ [2026-05-25 09:46:50] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-25 09:46:50] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-25 09:46:50] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-25 09:46:54] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-25 09:46:58] Standard processing workflow completed
+#> ℹ [2026-05-31 05:56:03] Start standard processing workflow...
+#> ℹ [2026-05-31 05:56:04] Checking a list of <Seurat>...
+#> ! [2026-05-31 05:56:04] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-31 05:56:04] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-31 05:56:05] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-31 05:56:06] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-31 05:56:06] Number of available HVF: 2000
+#> ℹ [2026-05-31 05:56:06] Finished check
+#> ℹ [2026-05-31 05:56:06] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-31 05:56:06] Perform pca linear dimension reduction
+#> ℹ [2026-05-31 05:56:07] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-31 05:56:07] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-31 05:56:07] Reorder clusters...
+#> ℹ [2026-05-31 05:56:07] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-31 05:56:07] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-31 05:56:07] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-31 05:56:11] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-31 05:56:15] Standard processing workflow completed
 
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
@@ -779,13 +788,13 @@ pancreas_sub <- RunDynamicFeatures(
   fit_method = "pretsa",
   n_candidates = 200
 )
-#> ℹ [2026-05-25 09:46:59] Start find dynamic features
-#> ℹ [2026-05-25 09:47:00] Data type is raw counts
-#> ℹ [2026-05-25 09:47:02] Number of candidate features (union): 244
-#> ℹ [2026-05-25 09:47:02] Data type is raw counts
-#> ℹ [2026-05-25 09:47:02] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-05-25 09:47:02] Calculating dynamic features for "Lineage2"...
-#> ✔ [2026-05-25 09:47:02] Find dynamic features done
+#> ℹ [2026-05-31 05:56:16] Start find dynamic features
+#> ℹ [2026-05-31 05:56:17] Data type is raw counts
+#> ℹ [2026-05-31 05:56:19] Number of candidate features (union): 244
+#> ℹ [2026-05-31 05:56:19] Data type is raw counts
+#> ℹ [2026-05-31 05:56:19] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-05-31 05:56:19] Calculating dynamic features for "Lineage2"...
+#> ✔ [2026-05-31 05:56:19] Find dynamic features done
 
 ht1 <- DynamicHeatmap(
   pancreas_sub,
@@ -797,14 +806,14 @@ ht1 <- DynamicHeatmap(
   width = 2,
   height = 3
 )
-#> ℹ [2026-05-25 09:47:03] [1] 156 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-05-31 05:56:20] [1] 156 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Ins1,Ins2,Nnat,Iapp,Lrpprc,Chgb,Pyy,Slc38a5,2810417H13Rik...
-
+#> Error in heatmap_enrichment(geneID = feature_metadata[["features"]], geneID_groups = feature_metadata[["feature_split"]],     feature_split_palette = feature_split_palette, feature_split_palcolor = feature_split_palcolor,     ha_right = ha_right, flip = flip, anno_terms = anno_terms,     anno_keys = anno_keys, anno_features = anno_features, terms_width = terms_width,     terms_fontsize = terms_fontsize, keys_width = keys_width,     keys_fontsize = keys_fontsize, features_width = features_width,     features_fontsize = features_fontsize, IDtype = IDtype, species = species,     db_update = db_update, db_version = db_version, db_combine = db_combine,     convert_species = convert_species, Ensembl_version = Ensembl_version,     mirror = mirror, db = db, TERM2GENE = TERM2GENE, TERM2NAME = TERM2NAME,     minGSSize = minGSSize, maxGSSize = maxGSSize, GO_simplify = GO_simplify,     GO_simplify_cutoff = GO_simplify_cutoff, simplify_method = simplify_method,     simplify_similarityCutoff = simplify_similarityCutoff, pvalueCutoff = pvalueCutoff,     padjustCutoff = padjustCutoff, topTerm = topTerm, show_termid = show_termid,     topWord = topWord, words_excluded = words_excluded, cores = cores,     ...): '...' used in an incorrect context
 ht1$plot
-
+#> Error: object 'ht1' not found
 
 thisplot::panel_fix(ht1$plot, raster = TRUE, dpi = 50)
-
+#> Error: object 'ht1' not found
 
 ht2 <- DynamicHeatmap(
   pancreas_sub,
@@ -821,23 +830,24 @@ ht2 <- DynamicHeatmap(
   ),
   cell_annotation = "SubCellType"
 )
-#> ℹ [2026-05-25 09:47:06] Start find dynamic features
-#> ℹ [2026-05-25 09:47:07] Data type is raw counts
-#> ℹ [2026-05-25 09:47:08] Number of candidate features (union): 2
-#> ℹ [2026-05-25 09:47:08] Data type is raw counts
-#> ! [2026-05-25 09:47:08] Negative values detected
-#> ! [2026-05-25 09:47:08] Negative values detected
-#> ℹ [2026-05-25 09:47:08] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-05-25 09:47:08] Using 1 core
-#> ⠙ [2026-05-25 09:47:08] Running for S_score [1/2] ■■■■■       50% | ETA:  0s
-#> ✔ [2026-05-25 09:47:08] Completed 2 tasks in 114ms
+#> ℹ [2026-05-31 05:56:20] Start find dynamic features
+#> ℹ [2026-05-31 05:56:22] Data type is raw counts
+#> ℹ [2026-05-31 05:56:22] Number of candidate features (union): 2
+#> ℹ [2026-05-31 05:56:23] Data type is raw counts
+#> ! [2026-05-31 05:56:23] Negative values detected
+#> ! [2026-05-31 05:56:23] Negative values detected
+#> ℹ [2026-05-31 05:56:23] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-05-31 05:56:23] Using 1 core
+#> ⠙ [2026-05-31 05:56:23] Running for S_score [1/2] ■■■■■       50% | ETA:  0s
+#> ✔ [2026-05-31 05:56:23] Completed 2 tasks in 110ms
 #> 
-#> ℹ [2026-05-25 09:47:08] Building results
-#> ✔ [2026-05-25 09:47:08] Find dynamic features done
-#> ℹ [2026-05-25 09:47:08] Some features were missing in at least one lineage: 
+#> ℹ [2026-05-31 05:56:23] Building results
+#> ✔ [2026-05-31 05:56:23] Find dynamic features done
+#> ℹ [2026-05-31 05:56:23] Some features were missing in at least one lineage: 
 #> ℹ                       Isl1,Neurod2,Pyy,Rbp4,Sox9...
+#> Error in heatmap_enrichment(geneID = feature_metadata[["features"]], geneID_groups = feature_metadata[["feature_split"]],     feature_split_palette = feature_split_palette, feature_split_palcolor = feature_split_palcolor,     ha_right = ha_right, flip = flip, anno_terms = anno_terms,     anno_keys = anno_keys, anno_features = anno_features, terms_width = terms_width,     terms_fontsize = terms_fontsize, keys_width = keys_width,     keys_fontsize = keys_fontsize, features_width = features_width,     features_fontsize = features_fontsize, IDtype = IDtype, species = species,     db_update = db_update, db_version = db_version, db_combine = db_combine,     convert_species = convert_species, Ensembl_version = Ensembl_version,     mirror = mirror, db = db, TERM2GENE = TERM2GENE, TERM2NAME = TERM2NAME,     minGSSize = minGSSize, maxGSSize = maxGSSize, GO_simplify = GO_simplify,     GO_simplify_cutoff = GO_simplify_cutoff, simplify_method = simplify_method,     simplify_similarityCutoff = simplify_similarityCutoff, pvalueCutoff = pvalueCutoff,     padjustCutoff = padjustCutoff, topTerm = topTerm, show_termid = show_termid,     topWord = topWord, words_excluded = words_excluded, cores = cores,     ...): '...' used in an incorrect context
 ht2$plot
-
+#> Error: object 'ht2' not found
 
 ht3 <- DynamicHeatmap(
   pancreas_sub,
@@ -851,11 +861,11 @@ ht3 <- DynamicHeatmap(
   width = 1,
   height = 2
 )
-#> ℹ [2026-05-25 09:47:09] [1] 167 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-05-31 05:56:24] [1] 167 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Ins1,Ins2,Nnat,Iapp,Lrpprc,Chgb,Pyy,Slc38a5,2810417H13Rik...
-
+#> Error in heatmap_enrichment(geneID = feature_metadata[["features"]], geneID_groups = feature_metadata[["feature_split"]],     feature_split_palette = feature_split_palette, feature_split_palcolor = feature_split_palcolor,     ha_right = ha_right, flip = flip, anno_terms = anno_terms,     anno_keys = anno_keys, anno_features = anno_features, terms_width = terms_width,     terms_fontsize = terms_fontsize, keys_width = keys_width,     keys_fontsize = keys_fontsize, features_width = features_width,     features_fontsize = features_fontsize, IDtype = IDtype, species = species,     db_update = db_update, db_version = db_version, db_combine = db_combine,     convert_species = convert_species, Ensembl_version = Ensembl_version,     mirror = mirror, db = db, TERM2GENE = TERM2GENE, TERM2NAME = TERM2NAME,     minGSSize = minGSSize, maxGSSize = maxGSSize, GO_simplify = GO_simplify,     GO_simplify_cutoff = GO_simplify_cutoff, simplify_method = simplify_method,     simplify_similarityCutoff = simplify_similarityCutoff, pvalueCutoff = pvalueCutoff,     padjustCutoff = padjustCutoff, topTerm = topTerm, show_termid = show_termid,     topWord = topWord, words_excluded = words_excluded, cores = cores,     ...): '...' used in an incorrect context
 ht3$plot
-
+#> Error: object 'ht3' not found
 
 ht4 <- DynamicHeatmap(
   pancreas_sub,
@@ -872,20 +882,9 @@ ht4 <- DynamicHeatmap(
   width = 1,
   height = 2
 )
-#> ℹ [2026-05-25 09:47:15] [1] 167 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-05-31 05:56:25] [1] 167 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Ins1,Ins2,Nnat,Iapp,Lrpprc,Chgb,Pyy,Slc38a5,2810417H13Rik...
-#> ℹ [2026-05-25 09:47:16] Start Enrichment analysis
-#> ℹ [2026-05-25 09:47:16] Species: "Mus_musculus"
-#> ℹ [2026-05-25 09:47:16] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-25 09:35:03
-#> ℹ [2026-05-25 09:47:18] Permform enrichment...
-#> ℹ [2026-05-25 09:47:18] Using 1 core
-#> ⠙ [2026-05-25 09:47:18] Running for 1 [1/3] ■■■         33% | ETA:  4s
-#> ⠹ [2026-05-25 09:47:18] Running for 2 [2/3] ■■■■■■      67% | ETA:  2s
-#> ✔ [2026-05-25 09:47:18] Completed 3 tasks in 5.8s
-#> 
-#> ℹ [2026-05-25 09:47:18] Building results
-#> ✔ [2026-05-25 09:47:24] Enrichment analysis done
-
+#> Error in heatmap_enrichment(geneID = feature_metadata[["features"]], geneID_groups = feature_metadata[["feature_split"]],     feature_split_palette = feature_split_palette, feature_split_palcolor = feature_split_palcolor,     ha_right = ha_right, flip = flip, anno_terms = anno_terms,     anno_keys = anno_keys, anno_features = anno_features, terms_width = terms_width,     terms_fontsize = terms_fontsize, keys_width = keys_width,     keys_fontsize = keys_fontsize, features_width = features_width,     features_fontsize = features_fontsize, IDtype = IDtype, species = species,     db_update = db_update, db_version = db_version, db_combine = db_combine,     convert_species = convert_species, Ensembl_version = Ensembl_version,     mirror = mirror, db = db, TERM2GENE = TERM2GENE, TERM2NAME = TERM2NAME,     minGSSize = minGSSize, maxGSSize = maxGSSize, GO_simplify = GO_simplify,     GO_simplify_cutoff = GO_simplify_cutoff, simplify_method = simplify_method,     simplify_similarityCutoff = simplify_similarityCutoff, pvalueCutoff = pvalueCutoff,     padjustCutoff = padjustCutoff, topTerm = topTerm, show_termid = show_termid,     topWord = topWord, words_excluded = words_excluded, cores = cores,     ...): '...' used in an incorrect context
 
 ht5 <- DynamicHeatmap(
   pancreas_sub,
@@ -910,28 +909,18 @@ ht5 <- DynamicHeatmap(
   features_width = grid::unit(0.5, "in"),
   features_fontsize = c(3, 6)
 )
-#> ℹ [2026-05-25 09:47:26] [1] 156 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-05-31 05:56:26] [1] 156 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Ins1,Ins2,Nnat,Iapp,Lrpprc,Chgb,Pyy,Slc38a5,2810417H13Rik...
-#> ℹ [2026-05-25 09:47:27] Start Enrichment analysis
-#> ℹ [2026-05-25 09:47:27] Species: "Mus_musculus"
-#> ℹ [2026-05-25 09:47:27] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-25 09:35:03
-#> ℹ [2026-05-25 09:47:28] Permform enrichment...
-#> ℹ [2026-05-25 09:47:28] Using 2 cores
-#> ⠙ [2026-05-25 09:47:28] Running for 2 [1/2] ■■■■■       50% | ETA:  4s
-#> ✔ [2026-05-25 09:47:28] Completed 2 tasks in 3.8s
-#> 
-#> ℹ [2026-05-25 09:47:28] Building results
-#> ✔ [2026-05-25 09:47:32] Enrichment analysis done
-
+#> Error in heatmap_enrichment(geneID = feature_metadata[["features"]], geneID_groups = feature_metadata[["feature_split"]],     feature_split_palette = feature_split_palette, feature_split_palcolor = feature_split_palcolor,     ha_right = ha_right, flip = flip, anno_terms = anno_terms,     anno_keys = anno_keys, anno_features = anno_features, terms_width = terms_width,     terms_fontsize = terms_fontsize, keys_width = keys_width,     keys_fontsize = keys_fontsize, features_width = features_width,     features_fontsize = features_fontsize, IDtype = IDtype, species = species,     db_update = db_update, db_version = db_version, db_combine = db_combine,     convert_species = convert_species, Ensembl_version = Ensembl_version,     mirror = mirror, db = db, TERM2GENE = TERM2GENE, TERM2NAME = TERM2NAME,     minGSSize = minGSSize, maxGSSize = maxGSSize, GO_simplify = GO_simplify,     GO_simplify_cutoff = GO_simplify_cutoff, simplify_method = simplify_method,     simplify_similarityCutoff = simplify_similarityCutoff, pvalueCutoff = pvalueCutoff,     padjustCutoff = padjustCutoff, topTerm = topTerm, show_termid = show_termid,     topWord = topWord, words_excluded = words_excluded, cores = cores,     ...): '...' used in an incorrect context
 
   pancreas_sub <- AnnotateFeatures(
     pancreas_sub,
     species = "Mus_musculus",
     db = c("CSPA", "TF")
   )
-#> ℹ [2026-05-25 09:49:32] Species: "Mus_musculus"
-#> ℹ [2026-05-25 09:49:32] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-05-25 09:09:59
-#> ℹ [2026-05-25 09:49:37] Preparing database: CSPA
+#> ℹ [2026-05-31 05:56:27] Species: "Mus_musculus"
+#> ℹ [2026-05-31 05:56:27] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-05-31 05:14:48
+#> ℹ [2026-05-31 05:56:32] Preparing database: CSPA
   ht6 <- DynamicHeatmap(
     pancreas_sub,
     exp_legend_title = "Z-score",
@@ -967,35 +956,31 @@ ht5 <- DynamicHeatmap(
     width = 1,
     height = 2
   )
-#> ℹ [2026-05-25 09:49:39] [1] 167 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-05-31 05:56:34] [1] 167 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Ins1,Ins2,Nnat,Iapp,Lrpprc,Chgb,Pyy,Slc38a5,2810417H13Rik...
-#> ℹ [2026-05-25 09:49:39] Start find dynamic features
-#> ℹ [2026-05-25 09:49:41] Data type is raw counts
-#> ℹ [2026-05-25 09:49:41] Number of candidate features (union): 2
-#> ℹ [2026-05-25 09:49:42] Data type is raw counts
-#> ℹ [2026-05-25 09:49:42] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-05-25 09:49:42] Using 1 core
-#> ⠙ [2026-05-25 09:49:42] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
-#> ✔ [2026-05-25 09:49:42] Completed 2 tasks in 200ms
+#> ℹ [2026-05-31 05:56:34] Start find dynamic features
+#> ℹ [2026-05-31 05:56:36] Data type is raw counts
+#> ℹ [2026-05-31 05:56:36] Number of candidate features (union): 2
+#> ℹ [2026-05-31 05:56:36] Data type is raw counts
+#> ℹ [2026-05-31 05:56:36] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-05-31 05:56:36] Using 1 core
+#> ⠙ [2026-05-31 05:56:36] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
+#> ✔ [2026-05-31 05:56:36] Completed 2 tasks in 238ms
 #> 
-#> ℹ [2026-05-25 09:49:42] Building results
-#> ✔ [2026-05-25 09:49:42] Find dynamic features done
-#> ℹ [2026-05-25 09:49:43] Start find dynamic features
-#> ℹ [2026-05-25 09:49:44] Data type is raw counts
-#> ℹ [2026-05-25 09:49:44] Number of candidate features (union): 2
-#> ℹ [2026-05-25 09:49:45] Data type is raw counts
-#> ℹ [2026-05-25 09:49:45] Calculating dynamic features for "Lineage2"...
-#> ℹ [2026-05-25 09:49:45] Using 1 core
-#> ⠙ [2026-05-25 09:49:45] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
-#> ✔ [2026-05-25 09:49:45] Completed 2 tasks in 131ms
+#> ℹ [2026-05-31 05:56:36] Building results
+#> ✔ [2026-05-31 05:56:37] Find dynamic features done
+#> ℹ [2026-05-31 05:56:37] Start find dynamic features
+#> ℹ [2026-05-31 05:56:39] Data type is raw counts
+#> ℹ [2026-05-31 05:56:39] Number of candidate features (union): 2
+#> ℹ [2026-05-31 05:56:39] Data type is raw counts
+#> ℹ [2026-05-31 05:56:39] Calculating dynamic features for "Lineage2"...
+#> ℹ [2026-05-31 05:56:39] Using 1 core
+#> ⠙ [2026-05-31 05:56:39] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
+#> ✔ [2026-05-31 05:56:39] Completed 2 tasks in 92ms
 #> 
-#> ℹ [2026-05-25 09:49:45] Building results
-#> ✔ [2026-05-25 09:49:45] Find dynamic features done
-#> Picking joint bandwidth of 26.3
-#> Picking joint bandwidth of 20.7
-#> Picking joint bandwidth of 26.3
-#> Picking joint bandwidth of 20.7
-
+#> ℹ [2026-05-31 05:56:39] Building results
+#> ✔ [2026-05-31 05:56:40] Find dynamic features done
+#> Error in heatmap_enrichment(geneID = feature_metadata[["features"]], geneID_groups = feature_metadata[["feature_split"]],     feature_split_palette = feature_split_palette, feature_split_palcolor = feature_split_palcolor,     ha_right = ha_right, flip = flip, anno_terms = anno_terms,     anno_keys = anno_keys, anno_features = anno_features, terms_width = terms_width,     terms_fontsize = terms_fontsize, keys_width = keys_width,     keys_fontsize = keys_fontsize, features_width = features_width,     features_fontsize = features_fontsize, IDtype = IDtype, species = species,     db_update = db_update, db_version = db_version, db_combine = db_combine,     convert_species = convert_species, Ensembl_version = Ensembl_version,     mirror = mirror, db = db, TERM2GENE = TERM2GENE, TERM2NAME = TERM2NAME,     minGSSize = minGSSize, maxGSSize = maxGSSize, GO_simplify = GO_simplify,     GO_simplify_cutoff = GO_simplify_cutoff, simplify_method = simplify_method,     simplify_similarityCutoff = simplify_similarityCutoff, pvalueCutoff = pvalueCutoff,     padjustCutoff = padjustCutoff, topTerm = topTerm, show_termid = show_termid,     topWord = topWord, words_excluded = words_excluded, cores = cores,     ...): '...' used in an incorrect context
 
   ht7 <- DynamicHeatmap(
     pancreas_sub,
@@ -1030,32 +1015,29 @@ ht5 <- DynamicHeatmap(
     width = 2,
     height = 1
   )
-#> ℹ [2026-05-25 09:49:50] [1] 167 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-05-31 05:56:40] [1] 167 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Ins1,Ins2,Nnat,Iapp,Lrpprc,Chgb,Pyy,Slc38a5,2810417H13Rik...
-#> ℹ [2026-05-25 09:49:51] Start find dynamic features
-#> ℹ [2026-05-25 09:49:52] Data type is raw counts
-#> ℹ [2026-05-25 09:49:52] Number of candidate features (union): 2
-#> ℹ [2026-05-25 09:49:53] Data type is raw counts
-#> ℹ [2026-05-25 09:49:53] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-05-25 09:49:53] Using 1 core
-#> ⠙ [2026-05-25 09:49:53] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
-#> ✔ [2026-05-25 09:49:53] Completed 2 tasks in 206ms
+#> ℹ [2026-05-31 05:56:41] Start find dynamic features
+#> ℹ [2026-05-31 05:56:42] Data type is raw counts
+#> ℹ [2026-05-31 05:56:43] Number of candidate features (union): 2
+#> ℹ [2026-05-31 05:56:43] Data type is raw counts
+#> ℹ [2026-05-31 05:56:43] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-05-31 05:56:43] Using 1 core
+#> ⠙ [2026-05-31 05:56:43] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
+#> ✔ [2026-05-31 05:56:43] Completed 2 tasks in 134ms
 #> 
-#> ℹ [2026-05-25 09:49:53] Building results
-#> ✔ [2026-05-25 09:49:53] Find dynamic features done
-#> ℹ [2026-05-25 09:49:54] Start find dynamic features
-#> ℹ [2026-05-25 09:49:55] Data type is raw counts
-#> ℹ [2026-05-25 09:49:56] Number of candidate features (union): 2
-#> ℹ [2026-05-25 09:49:56] Data type is raw counts
-#> ℹ [2026-05-25 09:49:57] Calculating dynamic features for "Lineage2"...
-#> ℹ [2026-05-25 09:49:57] Using 1 core
-#> ⠙ [2026-05-25 09:49:57] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
-#> ✔ [2026-05-25 09:49:57] Completed 2 tasks in 158ms
+#> ℹ [2026-05-31 05:56:43] Building results
+#> ✔ [2026-05-31 05:56:43] Find dynamic features done
+#> ℹ [2026-05-31 05:56:44] Start find dynamic features
+#> ℹ [2026-05-31 05:56:46] Data type is raw counts
+#> ℹ [2026-05-31 05:56:46] Number of candidate features (union): 2
+#> ℹ [2026-05-31 05:56:46] Data type is raw counts
+#> ℹ [2026-05-31 05:56:46] Calculating dynamic features for "Lineage2"...
+#> ℹ [2026-05-31 05:56:46] Using 1 core
+#> ⠙ [2026-05-31 05:56:46] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
+#> ✔ [2026-05-31 05:56:46] Completed 2 tasks in 89ms
 #> 
-#> ℹ [2026-05-25 09:49:57] Building results
-#> ✔ [2026-05-25 09:49:57] Find dynamic features done
-#> Picking joint bandwidth of 26.3
-#> Picking joint bandwidth of 20.7
-#> Picking joint bandwidth of 26.3
-#> Picking joint bandwidth of 20.7
+#> ℹ [2026-05-31 05:56:46] Building results
+#> ✔ [2026-05-31 05:56:47] Find dynamic features done
+#> Error in heatmap_enrichment(geneID = feature_metadata[["features"]], geneID_groups = feature_metadata[["feature_split"]],     feature_split_palette = feature_split_palette, feature_split_palcolor = feature_split_palcolor,     ha_right = ha_right, flip = flip, anno_terms = anno_terms,     anno_keys = anno_keys, anno_features = anno_features, terms_width = terms_width,     terms_fontsize = terms_fontsize, keys_width = keys_width,     keys_fontsize = keys_fontsize, features_width = features_width,     features_fontsize = features_fontsize, IDtype = IDtype, species = species,     db_update = db_update, db_version = db_version, db_combine = db_combine,     convert_species = convert_species, Ensembl_version = Ensembl_version,     mirror = mirror, db = db, TERM2GENE = TERM2GENE, TERM2NAME = TERM2NAME,     minGSSize = minGSSize, maxGSSize = maxGSSize, GO_simplify = GO_simplify,     GO_simplify_cutoff = GO_simplify_cutoff, simplify_method = simplify_method,     simplify_similarityCutoff = simplify_similarityCutoff, pvalueCutoff = pvalueCutoff,     padjustCutoff = padjustCutoff, topTerm = topTerm, show_termid = show_termid,     topWord = topWord, words_excluded = words_excluded, cores = cores,     ...): '...' used in an incorrect context
 ```

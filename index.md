@@ -88,7 +88,9 @@ exploring spatial, and single-cell omics data.
   - Differential expression and perturbation analysis: identification of
     differential features, expressed marker identification, rare-cell
     population detection with RareQ, phenotype-associated cell selection
-    with [Scissor](https://github.com/sunduanchen/Scissor), and
+    with [Scissor](https://github.com/sunduanchen/Scissor), network
+    comparison with
+    [scTenifoldNet](https://github.com/cailab-tamu/scTenifoldNet), and
     in-silico perturbation analysis with
     [scTenifoldKnk](https://github.com/cailab-tamu/scTenifoldKnk).
   - Enrichment, and functional scoring: over-representation analysis,

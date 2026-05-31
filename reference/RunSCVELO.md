@@ -316,24 +316,24 @@ RunSCVELO(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-25 11:13:19] Start standard processing workflow...
-#> ℹ [2026-05-25 11:13:19] Checking a list of <Seurat>...
-#> ! [2026-05-25 11:13:20] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-25 11:13:20] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 11:13:22] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 11:13:22] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-25 11:13:22] Number of available HVF: 2000
-#> ℹ [2026-05-25 11:13:23] Finished check
-#> ℹ [2026-05-25 11:13:23] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-25 11:13:23] Perform pca linear dimension reduction
-#> ℹ [2026-05-25 11:13:23] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-25 11:13:24] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-25 11:13:24] Reorder clusters...
-#> ℹ [2026-05-25 11:13:24] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-25 11:13:24] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-25 11:13:24] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-25 11:13:30] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-25 11:13:37] Standard processing workflow completed
+#> ℹ [2026-05-31 07:14:14] Start standard processing workflow...
+#> ℹ [2026-05-31 07:14:15] Checking a list of <Seurat>...
+#> ! [2026-05-31 07:14:15] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-31 07:14:15] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-31 07:14:17] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-31 07:14:18] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-31 07:14:18] Number of available HVF: 2000
+#> ℹ [2026-05-31 07:14:18] Finished check
+#> ℹ [2026-05-31 07:14:18] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-31 07:14:18] Perform pca linear dimension reduction
+#> ℹ [2026-05-31 07:14:19] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-31 07:14:19] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-31 07:14:19] Reorder clusters...
+#> ℹ [2026-05-31 07:14:19] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-31 07:14:19] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-31 07:14:19] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-31 07:14:25] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-31 07:14:31] Standard processing workflow completed
 pancreas_sub <- RunSCVELO(
   pancreas_sub,
   assay_x = "RNA",
@@ -342,8 +342,8 @@ pancreas_sub <- RunSCVELO(
   nonlinear_reduction = "UMAP",
   backend = "cpp"
 )
-#> ℹ [2026-05-25 11:13:37] Running scVelo stochastic embedding with `backend = 'cpp'` using 2000 features
-#> ✔ [2026-05-25 11:13:37] scVelo cpp stochastic embedding completed
+#> ℹ [2026-05-31 07:14:31] Running scVelo stochastic embedding with `backend = 'cpp'` using 2000 features
+#> ✔ [2026-05-31 07:14:31] scVelo cpp stochastic embedding completed
 
 FeatureDimPlot(
   pancreas_sub,

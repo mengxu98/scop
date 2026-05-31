@@ -104,34 +104,31 @@ A `Seurat` object with `CellChat` results stored in
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-25 10:29:00] Start standard processing workflow...
-#> ℹ [2026-05-25 10:29:01] Checking a list of <Seurat>...
-#> ! [2026-05-25 10:29:01] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-25 10:29:01] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 10:29:03] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-25 10:29:03] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-25 10:29:03] Number of available HVF: 2000
-#> ℹ [2026-05-25 10:29:03] Finished check
-#> ℹ [2026-05-25 10:29:03] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-25 10:29:04] Perform pca linear dimension reduction
-#> ℹ [2026-05-25 10:29:04] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-25 10:29:04] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-25 10:29:04] Reorder clusters...
-#> ℹ [2026-05-25 10:29:05] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-25 10:29:05] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-25 10:29:05] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-25 10:29:09] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-25 10:29:14] Standard processing workflow completed
+#> ℹ [2026-05-31 06:30:01] Start standard processing workflow...
+#> ℹ [2026-05-31 06:30:02] Checking a list of <Seurat>...
+#> ! [2026-05-31 06:30:02] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-05-31 06:30:02] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-05-31 06:30:03] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-05-31 06:30:04] Use the separate HVF from `srt_list`
+#> ℹ [2026-05-31 06:30:04] Number of available HVF: 2000
+#> ℹ [2026-05-31 06:30:04] Finished check
+#> ℹ [2026-05-31 06:30:04] Perform `Seurat::ScaleData()`
+#> ℹ [2026-05-31 06:30:05] Perform pca linear dimension reduction
+#> ℹ [2026-05-31 06:30:05] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-05-31 06:30:05] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-05-31 06:30:05] Reorder clusters...
+#> ℹ [2026-05-31 06:30:06] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-05-31 06:30:06] Perform umap nonlinear dimension reduction
+#> ℹ [2026-05-31 06:30:06] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-05-31 06:30:10] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-05-31 06:30:14] Standard processing workflow completed
 pancreas_sub <- RunCellChat(
   pancreas_sub,
   group.by = "CellType",
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-25 10:29:14] Start CellChat analysis
-#> [1] "Create a CellChat object from a data matrix"
-#> Set cell identities for the new CellChat object 
-#> The cell groups used for CellChat analysis are  Ductal, Ngn3-high-EP, Endocrine, Ngn3-low-EP, Pre-endocrine 
-#> Error in get("CellChatDB.mouse", envir = cellchat_ns_env): object 'CellChatDB.mouse' not found
+#> ℹ [2026-05-31 06:30:14] Start CellChat analysis
+#> Error in loadNamespace(name): there is no package called ‘CellChat’
 
 CCCNetworkPlot(
   pancreas_sub,

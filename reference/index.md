@@ -73,6 +73,8 @@
   : Run ambient RNA decontamination with decontX
 - [`RunDoubletCalling()`](https://mengxu98.github.io/scop/reference/RunDoubletCalling.md)
   : Run doublet-calling for single cell RNA-seq data.
+- [`RunSpotQC()`](https://mengxu98.github.io/scop/reference/RunSpotQC.md)
+  : Run spot-level quality control
 
 ### Cell Cycle Analysis
 
@@ -190,6 +192,8 @@
   : Visualize feature values on a 2-dimensional reduction plot
 - [`FeatureDimPlot3D()`](https://mengxu98.github.io/scop/reference/FeatureDimPlot3D.md)
   : 3D-Dimensional reduction plot for gene expression visualization.
+- [`NMFHeatmap()`](https://mengxu98.github.io/scop/reference/NMFHeatmap.md)
+  : NMF similarity heatmap
 - [`ProjectionPlot()`](https://mengxu98.github.io/scop/reference/ProjectionPlot.md)
   : Projection Plot
 - [`TACSPlot()`](https://mengxu98.github.io/scop/reference/TACSPlot.md)
@@ -201,6 +205,10 @@
   : Run BayesSpace spatial clustering
 - [`RunCytoSPACE()`](https://mengxu98.github.io/scop/reference/RunCytoSPACE.md)
   : Run CytoSPACE spatial assignment
+- [`RunRCTD()`](https://mengxu98.github.io/scop/reference/RunRCTD.md) :
+  Run RCTD spatial deconvolution
+- [`RunSpatialVariableFeatures()`](https://mengxu98.github.io/scop/reference/RunSpatialVariableFeatures.md)
+  : Run spatial variable feature detection
 
 ### Spatial Visualization
 
@@ -246,6 +254,8 @@
   : Run Scissor phenotype-associated cell selection
 - [`RunscTenifoldKnk()`](https://mengxu98.github.io/scop/reference/RunScTenifoldKnk.md)
   : Run scTenifoldKnk in-silico knockout analysis
+- [`RunscTenifoldNet()`](https://mengxu98.github.io/scop/reference/RunscTenifoldNet.md)
+  : Run scTenifoldNet network comparison
 
 ### Differential Expression and Perturbation Plots
 
@@ -261,6 +271,8 @@
   : Plot Scissor results
 - [`scTenifoldKnkPlot()`](https://mengxu98.github.io/scop/reference/scTenifoldKnkPlot.md)
   : scTenifoldKnk Plot
+- [`scTenifoldNetPlot()`](https://mengxu98.github.io/scop/reference/scTenifoldNetPlot.md)
+  : scTenifoldNet Plot
 
 ### Bulk and Composition Analysis
 
@@ -300,8 +312,13 @@
   Perform Gene Set Variation Analysis (GSVA)
 - [`RunMetabolism()`](https://mengxu98.github.io/scop/reference/RunMetabolism.md)
   : Run metabolism pathway scoring
+- [`RunGRNBoost2()`](https://mengxu98.github.io/scop/reference/RunGRNBoost2.md)
+  [`RunGENIE3()`](https://mengxu98.github.io/scop/reference/RunGRNBoost2.md)
+  : Infer gene regulatory networks
 - [`RunSCENIC()`](https://mengxu98.github.io/scop/reference/RunSCENIC.md)
   : Run SCENIC gene regulatory network analysis
+- [`RunSCENICPlus()`](https://mengxu98.github.io/scop/reference/RunSCENICPlus.md)
+  : Run SCENICPlus-style eGRN analysis
 
 ### Enrichment Analysis Plot
 
