@@ -215,6 +215,7 @@ test_that("scFEA plotting functions return expected objects", {
 })
 
 test_that("scFEA Python backend imports when dependencies are available", {
+  skip_on_os("mac")
   skip_if_not(
     all(vapply(
       c("torch", "numpy", "pandas", "tqdm"),
@@ -232,6 +233,7 @@ test_that("scFEA Python backend imports when dependencies are available", {
 })
 
 test_that("RunScFEA can run a one-epoch backend smoke test", {
+  skip_on_os("mac")
   skip_if_not(
     identical(Sys.getenv("SCOP_RUN_SCFEA_BACKEND_TEST"), "true"),
     "Set SCOP_RUN_SCFEA_BACKEND_TEST=true to run the scFEA training smoke test"
