@@ -11,7 +11,10 @@
 #' Row names or vector names must match spatial spot names.
 #' @param plot_type Plot type. `"point"` keeps the default spot plot behavior.
 #' `"pie"` draws spot-level pies from numeric metadata columns supplied to
-#' `group.by` or from a numeric matrix/data.frame supplied to `values`.
+#' `group.by` or from a numeric matrix/data.frame supplied to `values`. When
+#' `group.by` is a single `"<prefix>_dominant_type"` column, matching
+#' `"<prefix>_prop_*"` or `"<prefix>_frac_*"` numeric metadata columns are used
+#' automatically.
 #' @param plot.data Optional long-format data.frame for plotting repeated
 #' spatial points, such as cell-to-spot assignments.
 #' @param spot.by Column in `plot.data` containing spot names.
@@ -593,7 +596,11 @@ spatial_dim_pie_values <- function(srt, group.by = NULL, values = NULL, cells) {
         message_type = "error"
       )
     }
-    mat <- srt@meta.data[cells, group.by, drop = FALSE]
+    mat <- spatial_dim_pie_metadata(
+      srt = srt,
+      group.by = group.by,
+      cells = cells
+    )
   }
   if (ncol(mat) == 0L) {
     log_message(
@@ -603,12 +610,53 @@ spatial_dim_pie_values <- function(srt, group.by = NULL, values = NULL, cells) {
   }
   is_numeric <- vapply(mat, is.numeric, logical(1))
   if (!all(is_numeric)) {
+    non_numeric <- colnames(mat)[!is_numeric]
     log_message(
-      "All pie columns must be numeric",
+      paste(
+        "All pie columns must be numeric. Non-numeric column(s):",
+        "{.val {non_numeric}}.",
+        "For RCTD pies, use {.arg group.by} with {.val RCTD_prop_*}",
+        "columns, or use {.val RCTD_dominant_type} when matching",
+        "{.val RCTD_prop_*} columns are present."
+      ),
       message_type = "error"
     )
   }
   as.matrix(mat)
+}
+
+spatial_dim_pie_metadata <- function(srt, group.by, cells) {
+  mat <- srt@meta.data[cells, group.by, drop = FALSE]
+  is_numeric <- vapply(mat, is.numeric, logical(1))
+  if (all(is_numeric)) {
+    return(mat)
+  }
+  inferred_cols <- spatial_dim_infer_pie_columns(srt, group.by)
+  if (length(inferred_cols) > 0L) {
+    return(srt@meta.data[cells, inferred_cols, drop = FALSE])
+  }
+  mat
+}
+
+spatial_dim_infer_pie_columns <- function(srt, group.by) {
+  if (length(group.by) != 1L || !grepl("_dominant_type$", group.by)) {
+    return(character())
+  }
+  prefix <- sub("_dominant_type$", "", group.by)
+  meta_cols <- colnames(srt@meta.data)
+  candidates <- meta_cols[
+    startsWith(meta_cols, paste0(prefix, "_prop_")) |
+      startsWith(meta_cols, paste0(prefix, "_frac_"))
+  ]
+  if (length(candidates) == 0L) {
+    return(character())
+  }
+  is_numeric <- vapply(
+    srt@meta.data[, candidates, drop = FALSE],
+    is.numeric,
+    logical(1)
+  )
+  candidates[is_numeric]
 }
 
 spatial_dim_pie_radius <- function(coords, radius = NULL, scale = 0.45) {
