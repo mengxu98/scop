@@ -229,6 +229,13 @@ reference:
   - MetabolismPlot
   - SCENICPlot
 
+- subtitle: "Metabolic Flux Analysis"
+- contents:
+  - RunScFEA
+  - ScFEAHeatmap
+  - ScFEAVolcanoPlot
+  - ScFEABalanceBarPlot
+
 - subtitle: "Dynamic Trajectory Analysis"
 - contents:
   - RunCellRank
