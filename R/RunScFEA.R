@@ -495,6 +495,7 @@ ScFEAHeatmap <- function(
     row_labels = row_labels,
     show_row_names = show_row_names,
     show_column_names = TRUE,
+    use_raster = FALSE,
     column_names_rot = column_names_rot,
     column_names_gp = column_names_gp,
     column_title_gp = column_title_gp,
