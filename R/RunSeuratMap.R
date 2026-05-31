@@ -65,7 +65,8 @@ RunSeuratMap <- function(
   nn_method = NULL,
   k = 30,
   distance_metric = "cosine",
-  vote_fun = "mean"
+  vote_fun = "mean",
+  verbose = TRUE
 ) {
   query_assay <- query_assay %||% SeuratObject::DefaultAssay(srt_query)
   ref_assay <- ref_assay %||% SeuratObject::DefaultAssay(srt_ref)
@@ -82,12 +83,13 @@ RunSeuratMap <- function(
       )[1]
     } else {
       log_message(
-        "'ref_pca' is NUll and no pca reduction detected. Run standard_scop first.\n"
+        "'ref_pca' is NUll and no pca reduction detected. Run standard_scop first.\n",
+        verbose = verbose
       )
       srt_ref <- standard_scop(srt_ref)
       ref_pca <- "Standardpca"
     }
-    log_message("Set the ref_pca to '", ref_pca, "'")
+    log_message("Set the ref_pca to '", ref_pca, "'", verbose = verbose)
   }
   if (is.null(ref_umap)) {
     ref_umap <- sort(
@@ -103,7 +105,7 @@ RunSeuratMap <- function(
         message_type = "error"
       )
     } else {
-      log_message("Set ref_umap to ", ref_umap)
+      log_message("Set ref_umap to ", ref_umap, verbose = verbose)
     }
   }
   projection_method <- match.arg(projection_method)
@@ -113,7 +115,8 @@ RunSeuratMap <- function(
   ) {
     log_message(
       "No UMAP model detected. Set the projection_method to 'knn'",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     projection_method <- "knn"
   }
@@ -134,7 +137,7 @@ RunSeuratMap <- function(
       assay = query_assay
     )
   )
-  log_message("Detected srt_query data type: ", status_query)
+  log_message("Detected srt_query data type: ", status_query, verbose = verbose)
   status_ref <- CheckDataType(
     GetAssayData5(
       srt_ref,
@@ -142,18 +145,19 @@ RunSeuratMap <- function(
       assay = ref_assay
     )
   )
-  log_message("Detected srt_ref data type: ", status_ref)
+  log_message("Detected srt_ref data type: ", status_ref, verbose = verbose)
   if (
     status_ref != status_query ||
       any(status_query == "unknown", status_ref == "unknown")
   ) {
     log_message(
       "Data type is unknown or different between srt_query and srt_ref.",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
   }
 
-  log_message("Run FindTransferAnchors")
+  log_message("Run FindTransferAnchors", verbose = verbose)
   anchors <- Seurat::FindTransferAnchors(
     query = srt_query,
     query.assay = query_assay,
@@ -179,7 +183,7 @@ RunSeuratMap <- function(
     )
   }
 
-  log_message("Run UMAP projection")
+  log_message("Run UMAP projection", verbose = verbose)
   srt_query <- RunKNNMap(
     srt_query = srt_query,
     query_assay = query_assay,

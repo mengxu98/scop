@@ -26,7 +26,8 @@ CreateDataFile <- function(
   assays = "RNA",
   layers = "data",
   compression_level = 6,
-  overwrite = TRUE
+  overwrite = TRUE,
+  verbose = TRUE
 ) {
   if (missing(data_file) || is.null(data_file)) {
     data_file <- "data.hdf5"
@@ -36,7 +37,7 @@ CreateDataFile <- function(
   }
   if (is.null(name)) {
     name <- srt@project.name
-    log_message("Set the dataset name to {.file {name}}")
+    log_message("Set the dataset name to {.file {name}}", verbose = verbose)
   }
   if (substr(name, 1, 1) != "/") {
     name <- paste0("/", name)
@@ -45,7 +46,7 @@ CreateDataFile <- function(
     rhdf5::h5createGroup(file = data_file, group = name)
   }
 
-  log_message("Write the expression matrix to: {.file {data_file}}")
+  log_message("Write the expression matrix to: {.file {data_file}}", verbose = verbose)
   for (assay in assays) {
     for (layer in layers) {
       data <- Matrix::t(
@@ -68,7 +69,8 @@ CreateDataFile <- function(
       }
       if (assay_layer_group %in% rhdf5::h5ls(data_file)$group) {
         log_message(
-          "Group {.val {assay_layer_group}} already exists in {.file {data_file}}"
+          "Group {.val {assay_layer_group}} already exists in {.file {data_file}}",
+          verbose = verbose
         )
       } else {
         if (!assay_group %in% rhdf5::h5ls(data_file)$group) {
@@ -102,7 +104,8 @@ CreateDataFile <- function(
   }
   if (default_assay_group %in% rhdf5::h5ls(data_file)$group) {
     log_message(
-      "Group {.val {default_assay_group}} already exists in {.file {data_file}}"
+      "Group {.val {default_assay_group}} already exists in {.file {data_file}}",
+      verbose = verbose
     )
   } else {
     rhdf5::h5write(
@@ -125,7 +128,8 @@ CreateDataFile <- function(
   }
   if (cells_group %in% rhdf5::h5ls(data_file)$group) {
     log_message(
-      "Group {.val {cells_group}} already exists in {.file {data_file}}"
+      "Group {.val {cells_group}} already exists in {.file {data_file}}",
+      verbose = verbose
     )
   } else {
     rhdf5::h5write(
@@ -148,7 +152,8 @@ CreateDataFile <- function(
   }
   if (features_group %in% rhdf5::h5ls(data_file)$group) {
     log_message(
-      "Group {.val {features_group}} already exists in {.file {data_file}}"
+      "Group {.val {features_group}} already exists in {.file {data_file}}",
+      verbose = verbose
     )
   } else {
     rhdf5::h5write(
@@ -196,7 +201,8 @@ CreateMetaFile <- function(
   write_misc = FALSE,
   ignore_nlevel = 100,
   compression_level = 6,
-  overwrite = TRUE
+  overwrite = TRUE,
+  verbose = TRUE
 ) {
   if (missing(meta_file) || is.null(meta_file)) {
     meta_file <- "meta.hdf5"
@@ -206,7 +212,7 @@ CreateMetaFile <- function(
   }
   if (is.null(name)) {
     name <- srt@project.name
-    log_message("Set the dataset name to {.file {name}}")
+    log_message("Set the dataset name to {.file {name}}", verbose = verbose)
   }
   if (substr(name, 1, 1) != "/") {
     name <- paste0("/", name)
@@ -215,7 +221,7 @@ CreateMetaFile <- function(
     rhdf5::h5createGroup(file = meta_file, group = name)
   }
 
-  log_message("Write the meta information to: {.file {meta_file}}")
+  log_message("Write the meta information to: {.file {meta_file}}", verbose = verbose)
   if (!paste0(name, "/metadata") %in% rhdf5::h5ls(meta_file)$group) {
     rhdf5::h5createGroup(
       file = meta_file,
@@ -246,7 +252,8 @@ CreateMetaFile <- function(
       if (length(unique(meta)) > ignore_nlevel) {
         log_message(
           "The number of categories in {.var {var}} is greater than {.val {ignore_nlevel}}. Ignore it",
-          message_type = "warning"
+          message_type = "warning",
+          verbose = verbose
         )
       } else {
         meta_asgroups <- c(meta_asgroups, var)
@@ -264,13 +271,15 @@ CreateMetaFile <- function(
     }
     if (metadata_var_group %in% paste0(rhdf5::h5ls(meta_file)$group, "/", rhdf5::h5ls(meta_file)$name)) {
       log_message(
-        "Group {.val {metadata_var_group}} already exists in {.file {meta_file}}"
+        "Group {.val {metadata_var_group}} already exists in {.file {meta_file}}",
+        verbose = verbose
       )
     } else {
       if (all(is.na(meta))) {
         log_message(
           "All of values in {.var {var}} is NA. Ignore it",
-          message_type = "warning"
+          message_type = "warning",
+          verbose = verbose
         )
       } else {
         rhdf5::h5write(
@@ -296,7 +305,8 @@ CreateMetaFile <- function(
   }
   if (metadata_stat_group %in% rhdf5::h5ls(meta_file)$group) {
     log_message(
-      "Group {.val {metadata_stat_group}} already exists in {.file {meta_file}}"
+      "Group {.val {metadata_stat_group}} already exists in {.file {meta_file}}",
+      verbose = verbose
     )
   } else {
     rhdf5::h5createGroup(
@@ -338,7 +348,8 @@ CreateMetaFile <- function(
     }
     if (reduction_group %in% paste0(rhdf5::h5ls(meta_file)$group, "/", rhdf5::h5ls(meta_file)$name)) {
       log_message(
-        "Group {.val {reduction_group}} already exists in {.file {meta_file}}"
+        "Group {.val {reduction_group}} already exists in {.file {meta_file}}",
+        verbose = verbose
       )
     } else {
       rhdf5::h5createDataset(
@@ -370,7 +381,8 @@ CreateMetaFile <- function(
   }
   if (paste0(name, "/reductions.stat") %in% rhdf5::h5ls(meta_file)$group) {
     log_message(
-      "Group {.file {paste0(name, '/reductions.stat')}} already exists in the {.file {meta_file}}"
+      "Group {.file {paste0(name, '/reductions.stat')}} already exists in the {.file {meta_file}}",
+      verbose = verbose
     )
   } else {
     rhdf5::h5createGroup(
@@ -397,7 +409,8 @@ CreateMetaFile <- function(
     }
     if (paste0(name, "/misc") %in% rhdf5::h5ls(meta_file)$group) {
       log_message(
-        "Group {.file {paste0(name, '/misc')}} already exists in the {.file {meta_file}}"
+        "Group {.file {paste0(name, '/misc')}} already exists in the {.file {meta_file}}",
+        verbose = verbose
       )
     } else {
       rhdf5::h5write(
@@ -420,7 +433,8 @@ CreateMetaFile <- function(
     }
     if (paste0(name, "/tools") %in% rhdf5::h5ls(meta_file)$group) {
       log_message(
-        "Group {.file {paste0(name, '/tools')}} already exists in the {.file {meta_file}}"
+        "Group {.file {paste0(name, '/tools')}} already exists in the {.file {meta_file}}",
+        verbose = verbose
       )
     } else {
       rhdf5::h5write(
@@ -468,11 +482,12 @@ PrepareSCExplorer <- function(
   write_tools = FALSE,
   write_misc = FALSE,
   compression_level = 6,
-  overwrite = FALSE
+  overwrite = FALSE,
+  verbose = TRUE
 ) {
   base_dir <- normalizePath(base_dir, mustWork = FALSE)
   if (!dir.exists(base_dir)) {
-    log_message("Create SCExplorer base directory: {.file {base_dir}}")
+    log_message("Create SCExplorer base directory: {.file {base_dir}}", verbose = verbose)
     dir.create(base_dir, recursive = TRUE, showWarnings = FALSE)
   }
   DataFile_full <- paste0(base_dir, "/", data_file)
@@ -496,14 +511,15 @@ PrepareSCExplorer <- function(
   if (length(names(object)) == 0) {
     names(object) <- make.names(sapply(object, function(x) x@project.name), unique = TRUE)
     log_message(
-      "Set the project name of each {.cls Seurat} to their dataset name"
+      "Set the project name of each {.cls Seurat} to their dataset name",
+      verbose = verbose
     )
   }
 
   for (i in seq_along(object)) {
     nm <- names(object)[i]
     srt <- object[[nm]]
-    log_message("Prepare data for object: {.val {nm}}")
+    log_message("Prepare data for object: {.val {nm}}", verbose = verbose)
     if (length(SeuratObject::Reductions(srt)) == 0) {
       log_message(
         "No reduction found in {.cls Seurat} {.val {nm}}",
@@ -513,13 +529,15 @@ PrepareSCExplorer <- function(
     if (!any(assays %in% SeuratObject::Assays(srt))) {
       log_message(
         "Assay: {.val {assays[!assays %in% SeuratObject::Assays(srt)]}} is not in {.cls Seurat} {.val {nm}}",
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
       assays <- assays[assays %in% SeuratObject::Assays(srt)]
       if (length(assays) == 0) {
         log_message(
           "No assays found in {.cls Seurat} {.val {nm}}. Use the default assay to create data file",
-          message_type = "warning"
+          message_type = "warning",
+          verbose = verbose
         )
         assays <- SeuratObject::DefaultAssay(srt)
       }
@@ -602,7 +620,8 @@ FetchH5 <- function(
   layer = NULL,
   assay = NULL,
   metanames = NULL,
-  reduction = NULL
+  reduction = NULL,
+  verbose = TRUE
 ) {
   if (missing(data_file) || missing(meta_file)) {
     log_message(
@@ -624,7 +643,8 @@ FetchH5 <- function(
       )
     } else if (length(group) > 1) {
       log_message(
-        "{.val {length(group)}} possible dataset names were found: {.val {group}}, use the first one"
+        "{.val {length(group)}} possible dataset names were found: {.val {group}}, use the first one",
+        verbose = verbose
       )
     }
     name <- group[1]
@@ -655,7 +675,8 @@ FetchH5 <- function(
   if (!is.null(features) && any(!features %in% c(all_features, meta_features_name))) {
     log_message(
       "Can not find the features: {.val {features[!features %in% c(all_features, meta_features_name)]}}",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
   }
   gene_features <- features[features %in% c(all_features)]
@@ -664,7 +685,8 @@ FetchH5 <- function(
   if (!is.null(metanames) && any(!metanames_available)) {
     log_message(
       "Can not find the meta information: {.val {metanames[!metanames_available]}}",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
   }
   metanames <- metanames[metanames_available]
@@ -993,7 +1015,8 @@ RunSCExplorer <- function(
   create_script = TRUE,
   style_script = TRUE,
   overwrite = TRUE,
-  return_app = TRUE
+  return_app = TRUE,
+  verbose = TRUE
 ) {
   check_r(
     c(
@@ -2708,12 +2731,13 @@ server <- function(input, output, session) {
     app_file <- paste0(base_dir, "/app.R")
     if (!file.exists(app_file) || isTRUE(overwrite)) {
       log_message(
-        "Create the SCExplorer app script: {.file {app_file}}"
+        "Create the SCExplorer app script: {.file {app_file}}",
+        verbose = verbose
       )
       suppressWarnings(file.remove(app_file))
       file.copy(from = temp, to = app_file, overwrite = TRUE)
       if (isTRUE(style_script)) {
-        log_message("Styling the script...")
+        log_message("Styling the script...", verbose = verbose)
         check_r("styler", verbose = FALSE)
         invisible(
           utils::capture.output(
@@ -2724,7 +2748,8 @@ server <- function(input, output, session) {
     } else {
       log_message(
         "{.file app.R} already exists. Regenerate it with {.arg overwrite = TRUE}",
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
     }
   }

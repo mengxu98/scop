@@ -81,43 +81,43 @@
 #' )
 #' ht4$plot
 #'
-#'   pancreas_sub <- AnnotateFeatures(
-#'     pancreas_sub,
-#'     species = "Mus_musculus",
-#'     db = c("CSPA", "TF")
-#'   )
+#' pancreas_sub <- AnnotateFeatures(
+#'   pancreas_sub,
+#'   species = "Mus_musculus",
+#'   db = c("CSPA", "TF")
+#' )
 #'
-#'   ht5 <- FeatureHeatmap(
-#'     pancreas_sub,
-#'     features = de_filter$gene,
-#'     n_split = 4,
-#'     group.by = "CellType",
-#'     heatmap_palette = "viridis",
-#'     feature_annotation = c("TF", "CSPA"),
-#'     feature_annotation_palcolor = list(
-#'       c("gold", "steelblue"), c("forestgreen")
-#'     ),
-#'     cell_annotation = c("Phase", "G2M_score"),
-#'     cell_annotation_palette = c("Dark2", "Purples")
-#'   )
-#'   ht5$plot
+#' ht5 <- FeatureHeatmap(
+#'   pancreas_sub,
+#'   features = de_filter$gene,
+#'   n_split = 4,
+#'   group.by = "CellType",
+#'   heatmap_palette = "viridis",
+#'   feature_annotation = c("TF", "CSPA"),
+#'   feature_annotation_palcolor = list(
+#'     c("gold", "steelblue"), c("forestgreen")
+#'   ),
+#'   cell_annotation = c("Phase", "G2M_score"),
+#'   cell_annotation_palette = c("Dark2", "Purples")
+#' )
+#' ht5$plot
 #'
-#'   ht6 <- FeatureHeatmap(
-#'     pancreas_sub,
-#'     features = de_filter$gene,
-#'     n_split = 4,
-#'     group.by = "CellType",
-#'     heatmap_palette = "viridis",
-#'     feature_annotation = c("TF", "CSPA"),
-#'     feature_annotation_palcolor = list(
-#'       c("gold", "steelblue"), c("forestgreen")
-#'     ),
-#'     cell_annotation = c("Phase", "G2M_score"),
-#'     cell_annotation_palette = c("Dark2", "Purples"),
-#'     flip = TRUE,
-#'     column_title_rot = 45
-#'   )
-#'   ht6$plot
+#' ht6 <- FeatureHeatmap(
+#'   pancreas_sub,
+#'   features = de_filter$gene,
+#'   n_split = 4,
+#'   group.by = "CellType",
+#'   heatmap_palette = "viridis",
+#'   feature_annotation = c("TF", "CSPA"),
+#'   feature_annotation_palcolor = list(
+#'     c("gold", "steelblue"), c("forestgreen")
+#'   ),
+#'   cell_annotation = c("Phase", "G2M_score"),
+#'   cell_annotation_palette = c("Dark2", "Purples"),
+#'   flip = TRUE,
+#'   column_title_rot = 45
+#' )
+#' ht6$plot
 FeatureHeatmap <- function(
   srt,
   features = NULL,
@@ -1615,8 +1615,10 @@ FeatureHeatmap <- function(
 
     g_tree <- grid::grid.grabExpr(
       {
-        ComplexHeatmap::draw(ht_list, annotation_legend_list = lgd,
-                             annotation_legend_side = legend.position)
+        ComplexHeatmap::draw(ht_list,
+          annotation_legend_list = lgd,
+          annotation_legend_side = legend.position
+        )
         for (enrich in db) {
           enrich_anno <- names(ha_right)[grep(
             paste0("_split_", enrich),
@@ -1651,8 +1653,10 @@ FeatureHeatmap <- function(
     ht_height <- grid::unit(height_sum, units = units)
     g_tree <- grid::grid.grabExpr(
       {
-        ComplexHeatmap::draw(ht_list, annotation_legend_list = lgd,
-                             annotation_legend_side = legend.position)
+        ComplexHeatmap::draw(ht_list,
+          annotation_legend_list = lgd,
+          annotation_legend_side = legend.position
+        )
         for (enrich in db) {
           enrich_anno <- names(ha_right)[grep(
             paste0("_split_", enrich),

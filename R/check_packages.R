@@ -210,18 +210,18 @@ exist_python_pkgs <- function(
         )
 
         if (version_match) {
-        log_message(
-          "{.pkg {pkg_name}} {.pkg {pkg_operator}} {.pkg {pkg_version}}",
-          message_type = "success",
-          verbose = verbose
-        )
-      } else {
-        log_message(
-          "{.pkg {pkg_name}} found but version mismatch: installed {.pkg {paste(installed_version, collapse = ', ')}}, required {.pkg {pkg_operator}} {.pkg {pkg_version}}",
-          message_type = "warning",
-          verbose = verbose
-        )
-      }
+          log_message(
+            "{.pkg {pkg_name}} {.pkg {pkg_operator}} {.pkg {pkg_version}}",
+            message_type = "success",
+            verbose = verbose
+          )
+        } else {
+          log_message(
+            "{.pkg {pkg_name}} found but version mismatch: installed {.pkg {paste(installed_version, collapse = ', ')}}, required {.pkg {pkg_operator}} {.pkg {pkg_version}}",
+            message_type = "warning",
+            verbose = verbose
+          )
+        }
 
         packages_installed[pkg] <- version_match
       } else {
@@ -436,8 +436,7 @@ installed_python_pkgs <- function(
 
   log_message(
     "Failed to retrieve package list from environment: {.file {envname}}",
-    message_type = "error",
-    verbose = verbose
+    message_type = "error"
   )
 }
 
@@ -735,8 +734,7 @@ remove_python <- function(
         error = function(e) {
           log_message(
             "{.pkg {packages}} removal failed via {.pkg uv} as fallback: {.val {e$message}}",
-            message_type = "error",
-            verbose = verbose
+            message_type = "error"
           )
           FALSE
         }

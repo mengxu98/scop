@@ -84,7 +84,8 @@ RunKNNMap <- function(
   nn_method = NULL,
   k = 30,
   distance_metric = "cosine",
-  vote_fun = "mean"
+  vote_fun = "mean",
+  verbose = TRUE
 ) {
   query_assay <- query_assay %||% SeuratObject::DefaultAssay(srt_query)
   ref_assay <- ref_assay %||% SeuratObject::DefaultAssay(srt_ref)
@@ -122,13 +123,14 @@ RunKNNMap <- function(
         message_type = "error"
       )
     } else {
-      log_message("Set {.arg ref_umap} to {.val {ref_umap}}")
+      log_message("Set {.arg ref_umap} to {.val {ref_umap}}", verbose = verbose)
     }
   }
   projection_method <- match.arg(projection_method)
   if (projection_method == "model" && !"model" %in% names(srt_ref[[ref_umap]]@misc)) {
     log_message(
-      "No UMAP model detected. Set the {.arg projection_method} to {.val knn}"
+      "No UMAP model detected. Set the {.arg projection_method} to {.val knn}",
+      verbose = verbose
     )
     projection_method <- "knn"
   }
@@ -174,18 +176,18 @@ RunKNNMap <- function(
     if ("layout" %in% names(model)) {
       if (k != model$config$n_neighbors) {
         k <- model$config$n_neighbors
-        log_message("Set k to {.val k} which is used in the umap model")
+        log_message("Set k to {.val k} which is used in the umap model", verbose = verbose)
       }
     } else if ("embedding" %in% names(model)) {
       if (k != model$n_neighbors) {
         k <- model$n_neighbors
-        log_message("Set k to {.val k} which is used in the umap model")
+        log_message("Set k to {.val k} which is used in the umap model", verbose = verbose)
       }
     }
   }
 
   if (!is.null(query_reduction) && !is.null(ref_reduction)) {
-    log_message("Use the reduction to calculate distance metric")
+    log_message("Use the reduction to calculate distance metric", verbose = verbose)
     if (!is.null(query_dims) && !is.null(ref_dims) && length(query_dims) == length(ref_dims)) {
       query <- Seurat::Embeddings(srt_query, reduction = query_reduction)
       query <- query[, query_dims]
@@ -198,7 +200,7 @@ RunKNNMap <- function(
       )
     }
   } else {
-    log_message("Use the features to calculate distance metric")
+    log_message("Use the features to calculate distance metric", verbose = verbose)
     status_query <- CheckDataType(
       object = GetAssayData5(
         srt_query,
@@ -216,13 +218,15 @@ RunKNNMap <- function(
     if (status_ref != status_query) {
       log_message(
         "Data type is different between {.arg srt_query} and {.arg srt_ref}",
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
     }
     if (any(status_query == "unknown", status_ref == "unknown")) {
       log_message(
         "Data type is unknown in {.arg srt_query} or {.arg srt_ref}",
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
     }
     if (length(features) == 0) {
@@ -270,7 +274,8 @@ RunKNNMap <- function(
       )
     )
     log_message(
-      "Use {.val {length(features_common)}} features to calculate distance"
+      "Use {.val {length(features_common)}} features to calculate distance",
+      verbose = verbose
     )
     query <- Matrix::t(
       GetAssayData5(
@@ -315,7 +320,7 @@ RunKNNMap <- function(
       nn_method <- "raw"
     }
   }
-  log_message("Use {.pkg {nn_method}} method to find neighbors")
+  log_message("Use {.pkg {nn_method}} method to find neighbors", verbose = verbose)
   if (!nn_method %in% c("raw", "annoy", "rann", "cpp")) {
     log_message(
       "{.arg nn_method} must be one of {.val {c('raw', 'annoy', 'rann', 'cpp')}}",
@@ -500,7 +505,8 @@ RunKNNMap <- function(
 
   if (!is.null(ref_group)) {
     log_message(
-      "Predicting cell types based on ref_group"
+      "Predicting cell types based on ref_group",
+      verbose = verbose
     )
     level <- as.character(unique(srt_ref[["ref_group", drop = TRUE]]))
     if (k == 1) {

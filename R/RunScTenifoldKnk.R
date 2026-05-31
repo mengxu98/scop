@@ -45,7 +45,8 @@
 #' )
 #' detected <- names(
 #'   sort(Matrix::rowSums(counts > 0),
-#'   decreasing = TRUE)
+#'     decreasing = TRUE
+#'   )
 #' )
 #' features_use <- unique(c(gene_use, head(detected, 300)))
 #'
@@ -298,8 +299,7 @@ RunscTenifoldKnk <- function(
     verbose = verbose
   )
 
-  result <- switch(
-    backend,
+  result <- switch(backend,
     cpp = {
       check_r(c("scTenifoldNet", "MASS"), verbose = FALSE)
 

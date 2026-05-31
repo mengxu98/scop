@@ -88,7 +88,8 @@ DeconvolutionPlot <- function(
   legend.position = "right",
   legend.direction = "vertical",
   grid_major = FALSE,
-  ...
+  ...,
+  verbose = TRUE
 ) {
   plot_type <- match.arg(plot_type)
   df <- resolve_deconvolution_result(object = object, res = res)

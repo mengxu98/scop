@@ -124,7 +124,8 @@ MetabolismPlot <- function(
   res = NULL,
   group.by = NULL,
   assay_name = "METABOLISM",
-  ...
+  ...,
+  verbose = TRUE
 ) {
   if (!is.null(res)) {
     return(GSVAPlot(res = res, assay_name = assay_name, ...))

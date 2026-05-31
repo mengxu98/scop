@@ -87,7 +87,8 @@ SpatialSpotPlot <- function(
   combine = TRUE,
   nrow = NULL,
   ncol = NULL,
-  byrow = TRUE
+  byrow = TRUE,
+  verbose = TRUE
 ) {
   if (!inherits(srt, "Seurat")) {
     log_message(

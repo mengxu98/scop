@@ -113,7 +113,8 @@ FeatureCorPlot <- function(
   ncol = NULL,
   byrow = TRUE,
   force = FALSE,
-  seed = 11
+  seed = 11,
+  verbose = TRUE
 ) {
   set.seed(seed)
 
@@ -161,7 +162,8 @@ FeatureCorPlot <- function(
     if (!all(cells.highlight %in% colnames(srt@assays[[1]]))) {
       log_message(
         "Some cells in 'cells.highlight' not found in srt.",
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
     }
     cells.highlight <- intersect(cells.highlight, colnames(srt@assays[[1]]))
@@ -177,7 +179,8 @@ FeatureCorPlot <- function(
     log_message(
       paste0(features_drop, collapse = ","),
       " are not in the features of srt.",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     features <- features[!features %in% features_drop]
   }
@@ -188,7 +191,8 @@ FeatureCorPlot <- function(
     log_message(
       "Features appear in both gene names and metadata names: ",
       paste0(intersect(features_gene, features_meta), collapse = ","),
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
   }
 
@@ -197,7 +201,8 @@ FeatureCorPlot <- function(
       log_message(
         paste(features_meta, collapse = ","),
         "is not used when calculating co-expression",
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
     }
     if (status %in% c("raw_counts", "raw_normalized_counts")) {
@@ -270,7 +275,8 @@ FeatureCorPlot <- function(
   if (length(features) > 10 && isFALSE(force)) {
     log_message(
       "More than 10 features to be paired compared which will generate more than 50 plots",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
     if (isFALSE(answer)) {

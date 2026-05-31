@@ -237,7 +237,11 @@ TACSPlot <- function(
     ]
     removed_count <- original_rows - nrow(plot_df)
     if (removed_count > 0) {
-      message(paste("Removed", removed_count, "outlier cells."))
+      log_message(
+        "Removed {.val {removed_count}} outlier cells.",
+        message_type = "warning",
+        verbose = verbose
+      )
     }
   }
 
@@ -336,19 +340,22 @@ GetSimilarFeatures <- function(
   anticorr = FALSE,
   aggregator = "sum",
   assay = "RNA",
-  layer = "data"
+  layer = "data",
+  verbose = TRUE
 ) {
   if (!all(features %in% rownames(srt))) {
     log_message(
       "Some of your features have no data available.",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
   }
   features <- intersect(features, rownames(srt))
   if (!all(features_use %in% rownames(srt))) {
     log_message(
       "Some of your genes have no data available.",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
   }
   features_use <- intersect(features_use, rownames(srt))

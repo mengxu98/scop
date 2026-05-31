@@ -844,8 +844,7 @@ CCCHeatmap <- function(
   ) {
     score_num <- suppressWarnings(as.numeric(df$score))
     df <- df[
-      is.finite(score_num) & score_num >= min_interaction_threshold,
-      ,
+      is.finite(score_num) & score_num >= min_interaction_threshold, ,
       drop = FALSE
     ]
     if (nrow(df) == 0L) {
