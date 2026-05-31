@@ -468,9 +468,11 @@ CreateMetaFile <- function(
 #'
 #' @export
 #' @examples
+#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' PrepareSCExplorer(pancreas_sub, base_dir = "./SCExplorer")
+#' }
 PrepareSCExplorer <- function(
   object,
   base_dir = "SCExplorer",
@@ -593,6 +595,7 @@ PrepareSCExplorer <- function(
 #'
 #' @export
 #' @examples
+#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' PrepareSCExplorer(pancreas_sub, base_dir = "./SCExplorer")
@@ -603,16 +606,7 @@ PrepareSCExplorer <- function(
 #'   metanames = c("SubCellType", "Phase"),
 #'   reduction = "UMAP"
 #' )
-#' CellDimPlot(
-#'   srt,
-#'   group.by = c("SubCellType", "Phase"),
-#'   reduction = "UMAP"
-#' )
-#' FeatureDimPlot(
-#'   srt,
-#'   features = c("Ins1", "Ghrl"),
-#'   reduction = "UMAP"
-#' )
+#' }
 FetchH5 <- function(
   data_file,
   meta_file,
@@ -941,6 +935,7 @@ CreateSeuratObject2 <- function(
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' data(panc8_sub)
@@ -994,6 +989,7 @@ CreateSeuratObject2 <- function(
 #'
 #' ### step2: deploy the app
 #' # deployApp("./SCExplorer")
+#' }
 RunSCExplorer <- function(
   base_dir = "SCExplorer",
   data_file = "data.hdf5",
