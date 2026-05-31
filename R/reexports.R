@@ -186,6 +186,16 @@ utils::globalVariables(
     "TF",
     "true",
     "xmax",
-    "xmin"
+    "xmin",
+    "avg_log2FC_raw",
+    "build_context",
+    "build_reference_profiles",
+    "canonical_method",
+    "compose_comparison_label",
+    "filter_de_results",
+    "prepare_de_for_pathway",
+    "resolve_condition_pair",
+    "scenic_prepare_python_env",
+    "scenic_py_pkgs"
   )
 )
