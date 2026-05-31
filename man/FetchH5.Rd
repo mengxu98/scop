@@ -12,7 +12,8 @@ FetchH5(
   layer = NULL,
   assay = NULL,
   metanames = NULL,
-  reduction = NULL
+  reduction = NULL,
+  verbose = TRUE
 )
 }
 \arguments{

@@ -16,7 +16,8 @@ ProjectionPlot(
   xlim = NULL,
   ylim = NULL,
   pt.size = 0.8,
-  stroke.highlight = 0.5
+  stroke.highlight = 0.5,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -49,6 +50,9 @@ If not provided, the limits will be calculated based on the data.}
 \item{pt.size}{The size of the points in the plot.}
 
 \item{stroke.highlight}{The size of the stroke highlight for cells.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 This function generates a projection plot,

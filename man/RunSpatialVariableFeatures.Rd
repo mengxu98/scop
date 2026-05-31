@@ -90,7 +90,7 @@ spatial <- Seurat::FindVariableFeatures(
 
 SpatialSpotPlot(
   spatial,
-  features = Seurat::VariableFeatures(spatial, assay = 'Spatial')[1:2]
+  features = Seurat::VariableFeatures(spatial, assay = "Spatial")[1:2]
 )
 
 spatial <- RunSpatialVariableFeatures(

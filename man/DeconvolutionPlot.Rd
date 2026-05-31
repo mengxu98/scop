@@ -27,7 +27,8 @@ DeconvolutionPlot(
   legend.position = "right",
   legend.direction = "vertical",
   grid_major = FALSE,
-  ...
+  ...,
+  verbose = TRUE
 )
 }
 \arguments{

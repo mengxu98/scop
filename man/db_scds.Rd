@@ -10,7 +10,8 @@ db_scds(
   db_rate = ncol(srt)/1000 * 0.01,
   method = c("hybrid", "cxds", "bcds"),
   data_type = NULL,
-  ...
+  ...,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -30,6 +31,9 @@ input assay. Primarily used internally to avoid repeated scans of the same
 count matrix across nested QC calls.}
 
 \item{...}{Additional arguments to be passed to \code{\link[scds:cxds_bcds_hybrid]{scds::cxds_bcds_hybrid()}}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Run doublet-calling with scds

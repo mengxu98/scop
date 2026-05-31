@@ -31,7 +31,8 @@ LineagePlot(
   theme_use = "theme_scop",
   theme_args = list(),
   return_layer = FALSE,
-  seed = 11
+  seed = 11,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -103,6 +104,9 @@ Defaults is \code{FALSE}.}
 
 \item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Generate a lineage plot based on the pseudotime.

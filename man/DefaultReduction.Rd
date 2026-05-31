@@ -4,7 +4,13 @@
 \alias{DefaultReduction}
 \title{Find the default reduction name in a Seurat object}
 \usage{
-DefaultReduction(srt, pattern = NULL, min_dim = 2, max_distance = 0.1)
+DefaultReduction(
+  srt,
+  pattern = NULL,
+  min_dim = 2,
+  max_distance = 0.1,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{srt}{A Seurat object.}
@@ -14,6 +20,9 @@ DefaultReduction(srt, pattern = NULL, min_dim = 2, max_distance = 0.1)
 \item{min_dim}{Minimum dimension threshold.}
 
 \item{max_distance}{Maximum distance allowed for a match.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 Default reduction name.

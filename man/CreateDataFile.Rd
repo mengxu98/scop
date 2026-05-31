@@ -11,7 +11,8 @@ CreateDataFile(
   assays = "RNA",
   layers = "data",
   compression_level = 6,
-  overwrite = TRUE
+  overwrite = TRUE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -33,6 +34,9 @@ Default is \code{"data"}.}
 Default is \code{6}.}
 
 \item{overwrite}{Whether to overwrite existing data in the data file.
+Default is \code{TRUE}.}
+
+\item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 }
 \description{

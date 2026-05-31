@@ -170,9 +170,9 @@ FeatureDimPlot(
 )
 
 GroupHeatmap(
- pancreas_sub,
- features = c("AUCell_A", "GSVA_A", "Sox9", "Anxa2", "Bicc1"),
- group.by = "CellType"
+  pancreas_sub,
+  features = c("AUCell_A", "GSVA_A", "Sox9", "Anxa2", "Bicc1"),
+  group.by = "CellType"
 )
 
 data(panc8_sub)

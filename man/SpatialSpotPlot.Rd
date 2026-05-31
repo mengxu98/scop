@@ -43,7 +43,8 @@ SpatialSpotPlot(
   combine = TRUE,
   nrow = NULL,
   ncol = NULL,
-  byrow = TRUE
+  byrow = TRUE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -145,6 +146,9 @@ Default is \code{NULL}, which means determined automatically based on the number
 Default is \code{NULL}, which means determined automatically based on the number of plots.}
 
 \item{byrow}{Whether to arrange the plots by row in the combined plot.
+Default is \code{TRUE}.}
+
+\item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 }
 \value{

@@ -103,7 +103,8 @@ counts <- GetAssayData5(
 )
 detected <- names(
   sort(Matrix::rowSums(counts > 0),
-  decreasing = TRUE)
+    decreasing = TRUE
+  )
 )
 features_use <- unique(c(gene_use, head(detected, 300)))
 

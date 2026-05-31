@@ -46,7 +46,8 @@ ProportionTestPlot(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
-  seed = 11
+  seed = 11,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -155,6 +156,9 @@ Default is \code{TRUE}.}
 
 \item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Generate differential-abundance plots based on results from \link{RunProportionTest}.
@@ -174,11 +178,11 @@ pancreas_sub <- RunProportionTest(
 ProportionTestPlot(pancreas_sub)
 
 ProportionTestPlot(
- pancreas_sub,
- reduction = "UMAP",
- plot_type = "umap",
- xlab = "UMAP_1",
- ylab = "UMAP_2"
+  pancreas_sub,
+  reduction = "UMAP",
+  plot_type = "umap",
+  xlab = "UMAP_1",
+  ylab = "UMAP_2"
 )
 }
 \seealso{

@@ -23,7 +23,8 @@ RunSeuratMap(
   nn_method = NULL,
   k = 30,
   distance_metric = "cosine",
-  vote_fun = "mean"
+  vote_fun = "mean",
+  verbose = TRUE
 )
 }
 \arguments{

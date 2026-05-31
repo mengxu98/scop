@@ -17,7 +17,8 @@ RunSlingshot(
   show_plot = TRUE,
   lineage_palette = "Dark2",
   seed = 11,
-  ...
+  ...,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -56,6 +57,9 @@ Default is \code{"Dark2"}.}
 Default is \code{11}.}
 
 \item{...}{Additional arguments to be passed to the \link[slingshot:slingshot]{slingshot::slingshot} function.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 RunSlingshot

@@ -24,7 +24,8 @@ CellDimPlot3D(
   width = NULL,
   height = NULL,
   save = NULL,
-  force = FALSE
+  force = FALSE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -76,6 +77,9 @@ If specified, curves will be fitted using \link[stats:loess]{stats::loess} metho
 
 \item{force}{Whether to force drawing regardless of maximum levels in any cell group is greater than 100.
 Default is \code{FALSE}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Plotting cell points on a reduced 3D space and coloring according to the groups of the cells.

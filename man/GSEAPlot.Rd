@@ -59,7 +59,8 @@ GSEAPlot(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
-  seed = 11
+  seed = 11,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -224,6 +225,9 @@ Default is \code{TRUE}.}
 
 \item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 This function generates various types of plots for Gene Set Enrichment Analysis (GSEA) results.

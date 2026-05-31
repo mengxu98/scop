@@ -79,7 +79,8 @@ GSVAPlot(
   byrow = TRUE,
   border = TRUE,
   nlabel = 0,
-  seed = 11
+  seed = 11,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -315,6 +316,9 @@ Default is \code{20}.}
 
 \item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Plots for GSVA (Gene Set Variation Analysis)

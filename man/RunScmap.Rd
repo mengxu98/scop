@@ -13,7 +13,8 @@ RunScmap(
   method = "scmapCluster",
   nfeatures = 500,
   threshold = 0.5,
-  k = 10
+  k = 10,
+  verbose = TRUE
 )
 }
 \arguments{

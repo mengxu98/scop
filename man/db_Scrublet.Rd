@@ -10,7 +10,8 @@ db_Scrublet(
   db_rate = ncol(srt)/1000 * 0.01,
   data_type = NULL,
   scrublet_backend = c("python", "r"),
-  ...
+  ...,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -31,6 +32,9 @@ the original \code{scrublet.Scrublet} implementation. \code{"r"} uses a native
 approximate doublet simulation, PCA, and KNN scoring workflow.}
 
 \item{...}{Additional arguments to be passed to \href{https://github.com/swolock/scrublet}{scrublet.Scrublet}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Run doublet-calling with Scrublet

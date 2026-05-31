@@ -4,7 +4,7 @@
 \alias{RenameFeatures}
 \title{Rename features for the Seurat object}
 \usage{
-RenameFeatures(srt, newnames = NULL, assays = NULL)
+RenameFeatures(srt, newnames = NULL, assays = NULL, verbose = TRUE)
 }
 \arguments{
 \item{srt}{A Seurat object.}
@@ -13,6 +13,9 @@ RenameFeatures(srt, newnames = NULL, assays = NULL)
 or characters named with old features.}
 
 \item{assays}{Assays to rename.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Rename features for the Seurat object

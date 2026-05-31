@@ -4,7 +4,12 @@
 \alias{env_requirements}
 \title{Python environment requirements}
 \usage{
-env_requirements(version = "3.10-1", include_optional = FALSE, modules = NULL)
+env_requirements(
+  version = "3.10-1",
+  include_optional = FALSE,
+  modules = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{version}{The Python version of the environment.

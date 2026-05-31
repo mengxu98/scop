@@ -39,7 +39,8 @@ DEtestManhattanPlot(
   seed = 11,
   aspect.ratio = NULL,
   xlab = NULL,
-  ylab = NULL
+  ylab = NULL,
+  verbose = TRUE
 )
 }
 \arguments{

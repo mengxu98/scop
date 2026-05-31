@@ -20,7 +20,8 @@ AnnotateFeatures(
     "gene_type"),
   assays = "RNA",
   overwrite = FALSE,
-  ...
+  ...,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -73,6 +74,9 @@ Default is \code{"RNA"}.}
 Default is \code{FALSE}.}
 
 \item{...}{Passed to other functions.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Annotate features in a Seurat object with additional metadata from databases or a GTF file.

@@ -49,7 +49,8 @@ VolcanoPlot(
   enrich_padj_cutoff = 0.05,
   enrich_gsva_score_cutoff = NULL,
   gsva_method = NULL,
-  enrich_nlabel = 15
+  enrich_nlabel = 15,
+  verbose = TRUE
 )
 }
 \arguments{

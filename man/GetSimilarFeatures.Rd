@@ -12,7 +12,8 @@ GetSimilarFeatures(
   anticorr = FALSE,
   aggregator = "sum",
   assay = "RNA",
-  layer = "data"
+  layer = "data",
+  verbose = TRUE
 )
 }
 \arguments{
@@ -34,6 +35,9 @@ Options: \code{"sum"} (default), \code{"min"} (for "and"-like filter), \code{"ma
 
 \item{layer}{Which layer to use.
 Default is \code{data}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 character vector.

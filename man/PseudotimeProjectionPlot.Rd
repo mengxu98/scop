@@ -56,7 +56,8 @@ PseudotimeProjectionPlot(
   label.fg = "black",
   label.bg = "white",
   label.bg.r = 0.1,
-  seed = 11
+  seed = 11,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -195,6 +196,9 @@ Defaults is \code{"white"}.}
 
 \item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 This function creates a projection plot similar to \link{VelocityPlot},

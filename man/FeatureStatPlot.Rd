@@ -87,7 +87,8 @@ FeatureStatPlot(
   byrow = TRUE,
   force = FALSE,
   seed = 11,
-  ...
+  ...,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -346,6 +347,9 @@ Default is \code{FALSE}.}
 Default is \code{11}.}
 
 \item{...}{Additional arguments passed to the other functions.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Statistical plot of features
