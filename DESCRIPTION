@@ -119,6 +119,7 @@ Suggests:
     SpatialExperiment,
     spacexr,
     tensorflow,
+    testthat (>= 3.0.0),
     tibble,
     tricycle,
     umap,
@@ -131,6 +132,7 @@ LinkingTo:
     RcppEigen,
     RSpectra
 RoxygenNote: 7.3.3
+Config/testthat/edition: 3
 Config/Needs/website: mengxu98/thistemplate
 URL: https://mengxu98.github.io/scop/
 BugReports: https://github.com/mengxu98/scop/issues
