@@ -26,7 +26,8 @@ RunSCExplorer(
   create_script = TRUE,
   style_script = TRUE,
   overwrite = TRUE,
-  return_app = TRUE
+  return_app = TRUE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -95,6 +96,9 @@ Default is \code{TRUE}.}
 Default is \code{TRUE}.}
 
 \item{return_app}{Whether to return the SCExplorer app.
+Default is \code{TRUE}.}
+
+\item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 }
 \description{

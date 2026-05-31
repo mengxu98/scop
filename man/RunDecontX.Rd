@@ -17,7 +17,8 @@ RunDecontX(
   round_counts = FALSE,
   data_type = NULL,
   seed = 11,
-  ...
+  ...,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -64,6 +65,9 @@ count matrix across nested QC calls.}
 Default is \code{11}.}
 
 \item{...}{Additional arguments passed to \code{\link[decontX:decontX]{decontX::decontX()}}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 Returns a Seurat object with decontX contamination estimates stored in the meta.data,

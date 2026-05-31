@@ -291,53 +291,53 @@ if (requireNamespace("Signac", quietly = TRUE)) {
     normalization_method = "TFIDF"
   )
 
-integration_methods <- c(
-  "Uncorrected", "Seurat", "CCA", "RPCA", "scVI", "scVI5",
-  "MNN", "fastMNN", "fastMNN5", "Harmony", "Harmony5",
-  "Scanorama", "BBKNN", "CSS", "Coralysis", "LIGER", "Conos", "ComBat"
-)
-p_list <- list()
-for (method in integration_methods) {
+  integration_methods <- c(
+    "Uncorrected", "Seurat", "CCA", "RPCA", "scVI", "scVI5",
+    "MNN", "fastMNN", "fastMNN5", "Harmony", "Harmony5",
+    "Scanorama", "BBKNN", "CSS", "Coralysis", "LIGER", "Conos", "ComBat"
+  )
+  p_list <- list()
+  for (method in integration_methods) {
+    panc8_sub <- integration_scop(
+      panc8_sub,
+      batch = "tech",
+      integration_method = method,
+      linear_reduction_dims_use = 1:50,
+      nonlinear_reduction = "umap"
+    )
+    p_list[[method]] <- CellDimPlot(
+      panc8_sub,
+      group.by = c("tech", "celltype"),
+      reduction = paste0(method, "UMAP2D"),
+      xlab = "", ylab = "",
+      title = method,
+      legend.position = "none",
+      theme_use = "theme_blank"
+    )
+  }
+
+  nonlinear_reductions <- c(
+    "umap", "tsne", "dm", "phate",
+    "pacmap", "trimap", "largevis", "fr"
+  )
   panc8_sub <- integration_scop(
     panc8_sub,
     batch = "tech",
-    integration_method = method,
+    integration_method = "Seurat",
     linear_reduction_dims_use = 1:50,
-    nonlinear_reduction = "umap"
+    nonlinear_reduction = nonlinear_reductions
   )
-  p_list[[method]] <- CellDimPlot(
-    panc8_sub,
-    group.by = c("tech", "celltype"),
-    reduction = paste0(method, "UMAP2D"),
-    xlab = "", ylab = "",
-    title = method,
-    legend.position = "none",
-    theme_use = "theme_blank"
-  )
-}
-
-nonlinear_reductions <- c(
-  "umap", "tsne", "dm", "phate",
-  "pacmap", "trimap", "largevis", "fr"
-)
-panc8_sub <- integration_scop(
-  panc8_sub,
-  batch = "tech",
-  integration_method = "Seurat",
-  linear_reduction_dims_use = 1:50,
-  nonlinear_reduction = nonlinear_reductions
-)
-for (nr in nonlinear_reductions) {
-  print(
-    CellDimPlot(
-      panc8_sub,
-      group.by = c("tech", "celltype"),
-      reduction = paste0("Seurat", nr, "2D"),
-      xlab = "", ylab = "", title = nr,
-      legend.position = "none", theme_use = "theme_blank"
+  for (nr in nonlinear_reductions) {
+    print(
+      CellDimPlot(
+        panc8_sub,
+        group.by = c("tech", "celltype"),
+        reduction = paste0("Seurat", nr, "2D"),
+        xlab = "", ylab = "", title = nr,
+        legend.position = "none", theme_use = "theme_blank"
+      )
     )
-  )
-}
+  }
 }
 }
 \seealso{

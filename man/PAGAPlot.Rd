@@ -63,7 +63,8 @@ PAGAPlot(
   legend.direction = "vertical",
   theme_use = "theme_scop",
   theme_args = list(),
-  return_layer = FALSE
+  return_layer = FALSE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -199,6 +200,9 @@ Default is \code{list()}.}
 
 \item{return_layer}{Whether to return the plot layers as a list.
 Defaults is \code{FALSE}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 This function generates a PAGA plot based on the given Seurat object and PAGA result.

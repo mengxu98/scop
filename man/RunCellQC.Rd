@@ -41,7 +41,8 @@ RunCellQC(
   species = NULL,
   species_gene_prefix = NULL,
   species_percent = 95,
-  seed = 11
+  seed = 11,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -168,6 +169,9 @@ Default is \code{95}.}
 
 \item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 Returns Seurat object with the QC results stored in the meta.data layer.

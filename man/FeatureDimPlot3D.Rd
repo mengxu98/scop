@@ -22,7 +22,8 @@ FeatureDimPlot3D(
   width = NULL,
   height = NULL,
   save = NULL,
-  force = FALSE
+  force = FALSE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -72,6 +73,9 @@ See \href{https://plotly.com/r/reference/scattergl/#scattergl-marker-symbol}{sca
 
 \item{force}{Whether to force drawing regardless of the number of features greater than 100.
 Default is \code{FALSE}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 3D-Dimensional reduction plot for gene expression visualization.
