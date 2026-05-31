@@ -76,6 +76,7 @@ reference:
   - RunCellQC
   - RunDecontX
   - RunDoubletCalling
+  - RunSpotQC
 
 - subtitle: "Cell Cycle Analysis"
 - contents:
@@ -152,6 +153,7 @@ reference:
   - RunBayesSpace
   - RunCytoSPACE
   - RunRCTD
+  - RunSpatialVariableFeatures
 
 - subtitle: "Spatial Visualization"
 - contents:
@@ -214,7 +216,9 @@ reference:
   - RunGSEA
   - RunGSVA
   - RunMetabolism
+  - RunGRNBoost2
   - RunSCENIC
+  - RunSCENICPlus
 
 - subtitle: "Enrichment Analysis Plot"
 - contents:
