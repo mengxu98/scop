@@ -299,7 +299,8 @@ RunscTenifoldKnk <- function(
     verbose = verbose
   )
 
-  result <- switch(backend,
+  result <- switch(
+    backend,
     cpp = {
       check_r(c("scTenifoldNet", "MASS"), verbose = FALSE)
 
@@ -403,7 +404,8 @@ RunscTenifoldKnk <- function(
         all(vapply(
           wt_networks,
           function(x) {
-            identical(rownames(x), gene_list) && identical(colnames(x), gene_list)
+            identical(rownames(x), gene_list) &&
+              identical(colnames(x), gene_list)
           },
           logical(1)
         ))

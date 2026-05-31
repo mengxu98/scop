@@ -410,13 +410,15 @@ CellStatPlot <- function(
     seed = seed,
     ...
   )
-  plot <- add_major_grid_theme(
-    plot = plot,
-    grid_major = grid_major,
-    grid_major_colour = grid_major_colour,
-    grid_major_linetype = grid_major_linetype,
-    grid_major_linewidth = grid_major_linewidth
-  )
+  if (!plot_type %in% c("venn", "upset", "sankey", "chord")) {
+    plot <- add_major_grid_theme(
+      plot = plot,
+      grid_major = grid_major,
+      grid_major_colour = grid_major_colour,
+      grid_major_linetype = grid_major_linetype,
+      grid_major_linewidth = grid_major_linewidth
+    )
+  }
 
   return(plot)
 }
