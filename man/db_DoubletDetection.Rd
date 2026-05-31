@@ -10,7 +10,8 @@ db_DoubletDetection(
   db_rate = ncol(srt)/1000 * 0.01,
   cores = 1,
   data_type = NULL,
-  ...
+  ...,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -30,6 +31,9 @@ input assay. Primarily used internally to avoid repeated scans of the same
 count matrix across nested QC calls.}
 
 \item{...}{Additional arguments to be passed to \href{https://github.com/JonathanShor/DoubletDetection}{doubletdetection.BoostClassifier}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Run doublet-calling with DoubletDetection

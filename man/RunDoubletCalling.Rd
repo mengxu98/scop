@@ -10,7 +10,8 @@ RunDoubletCalling(
   db_rate = ncol(srt)/1000 * 0.01,
   db_method = "scDblFinder",
   data_type = NULL,
-  ...
+  ...,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -31,6 +32,9 @@ input assay. Primarily used internally to avoid repeated scans of the same
 count matrix across nested QC calls.}
 
 \item{...}{Additional arguments to be passed to the corresponding doublet-calling method.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 Returns a Seurat object with the doublet prediction results and prediction scores stored in the meta.data.

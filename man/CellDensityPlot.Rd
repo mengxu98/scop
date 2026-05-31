@@ -34,7 +34,8 @@ CellDensityPlot(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
-  force = FALSE
+  force = FALSE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -125,6 +126,9 @@ Default is \code{TRUE}.}
 
 \item{force}{Whether to continue plotting if there are more than 50 features.
 Default is \code{FALSE}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Plots the density of specified features in a single or multiple groups,
