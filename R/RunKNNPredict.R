@@ -4,6 +4,7 @@
 #' This function performs KNN prediction to annotate cell types based on reference scRNA-seq or bulk RNA-seq data.
 #'
 #' @md
+#' @inheritParams thisutils::log_message
 #' @param srt_query An object of class Seurat to be annotated with cell types.
 #' @param srt_ref An object of class Seurat storing the reference cells.
 #' @param bulk_ref A cell atlas matrix, where cell types are represented by columns and genes are represented by rows.
