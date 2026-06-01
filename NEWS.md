@@ -15,6 +15,7 @@
   * `RunMonocle2()`: Support custom root cells via `root_cells` parameter.
   * `RunDimsEstimate()`: Switched the default dimension-selection route to a scree-based ensemble of broken-stick, elbow, cumulative-variance, and marginal-gain criteria; the previous `intrinsicDimension` route remains available via `method = "intrinsic"` or can be combined with `method = "ensemble"`.
   * Added `RunRareQ()` for RareQ rare-cell population detection from Seurat objects, including automatic neighbor construction through `DefaultReduction()`, metadata writeback, `CellDimPlot()` examples, and detailed result storage in `srt@tools[["RareQ"]]`.
+  * Added `RunscFEA()` for scFEA metabolic flux estimation from Seurat objects, with cached M168 resources from `mengxu98/datasets`, flux and balance assays, and `scFEAHeatmap()`, `scFEAVolcanoPlot()`, and `scFEABalanceBarPlot()` visualization helpers.
   * Added `RunAugur()` for Augur cell-type perturbation prioritization from Seurat objects, with an optimized native backend and metadata/tool-slot writeback.
   * Added `RunSCENIC()` for a SCENIC workflow from Seurat objects, including optional metacell GRN input, GRNBoost2/`scenic ctx` execution, regulon conversion, multi-core AUCell batch scoring, and storage of regulon activity scores as a Seurat assay plus detailed results in `@tools`.
   * `RunSCENIC()` now supports `aucell_backend = "cpp"` for regulon activity scoring through the package C++ AUCell implementation, while keeping `aucell_backend = "r"` as the default for exact AUCell package behavior.
@@ -36,6 +37,9 @@
   * `SCENICPlot()`: Explicit `features` in SCENIC heatmaps now keep the user-supplied regulon order, and `activity_heatmap` aligns `feature_split` to the resolved and displayed regulons.
   * `SCENICPlot()`: `plot_type = "activity_dim"` and `"activity_violin"` now respect all explicitly supplied `features`, instead of applying the six-regulon default preview limit.
   * `SCENICPlot()`: `plot_type = "target_bar"` now respects all explicitly supplied `features`, instead of applying the four-regulon default preview limit.
+  * `RunscFEA()`: Configure Python thread and OpenMP runtime variables before dependency checks/imports to avoid torch runtime conflicts on macOS and mixed BLAS environments.
+  * `scFEAHeatmap()`: Use the package heatmap palette conventions (`RdBu`, `Chinese`, and `simspec`), border/raster defaults, non-clustered group summaries, and `ht_params` overrides for closer consistency with `GroupHeatmap()`.
+  * `GeneSetScoring()`: Route dense Gaussian and Poisson GSVA scoring through the native KDE path instead of immediately falling back to sparse-exact scoring, keeping the optimized z-score/rank workflow active for dense inputs.
   * `RunHarmony2()`: Added compatibility with Harmony 2.0 objects by directly trying both legacy fields (`Z_corr` / `R`) and callable methods (`getZcorr()` / `getR()`), including module methods that are not listed by `ls()`.
   * `srt_append()`: Align variable-feature metadata by feature name when appending into an existing Assay5 with a different feature universe, avoiding row-count replacement errors after integration workflows.
   * `EnrichmentPlot()` and `GSEAPlot()`: Resolve database aliases before applying `group_use`, and report selected groups with no enrichment rows directly instead of misreporting the database as missing.
