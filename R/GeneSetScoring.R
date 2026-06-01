@@ -323,7 +323,8 @@ run_gsva_scores <- function(
   kcdf <- match.arg(kcdf)
 
   expr_counts <- gene_set_scoring_to_dgC(expr_counts)
-  expr_counts <- gene_set_scoring_keep_variable_rows(expr_counts)
+  keep_features <- Matrix::rowSums(expr_counts) > 0
+  expr_counts <- expr_counts[keep_features, , drop = FALSE]
   gene_set_idx <- gene_set_scoring_indices(
     gene_sets = gene_sets,
     feature_names = rownames(expr_counts)
@@ -409,7 +410,8 @@ run_zscore_scores <- function(
   max_gs_size = 500
 ) {
   expr_counts <- gene_set_scoring_to_dgC(expr_counts)
-  expr_counts <- gene_set_scoring_keep_variable_rows(expr_counts)
+  keep_features <- Matrix::rowSums(expr_counts) > 0
+  expr_counts <- expr_counts[keep_features, , drop = FALSE]
   gene_set_idx <- gene_set_scoring_indices(
     gene_sets = gene_sets,
     feature_names = rownames(expr_counts)
@@ -447,7 +449,8 @@ run_plage_scores <- function(
   max_gs_size = 500
 ) {
   expr_counts <- gene_set_scoring_to_dgC(expr_counts)
-  expr_counts <- gene_set_scoring_keep_variable_rows(expr_counts)
+  keep_features <- Matrix::rowSums(expr_counts) > 0
+  expr_counts <- expr_counts[keep_features, , drop = FALSE]
   gene_set_idx <- gene_set_scoring_indices(
     gene_sets = gene_sets,
     feature_names = rownames(expr_counts)
