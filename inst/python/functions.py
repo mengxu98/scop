@@ -3095,9 +3095,9 @@ def PAGA(
         if infer_pseudotime is True:
             if root_group is not None and root_cell is None:
                 cell = adata.obs[group_by].index.values[
-                    adata.obs[group_by] == root_group
+                    adata.obs[group_by].isin(root_group)
                 ]
-                root_group_cell = adata.obsm[basis][adata.obs[group_by] == root_group,][
+                root_group_cell = adata.obsm[basis][adata.obs[group_by].isin(root_group),][
                     :, [0, 1]
                 ]
                 x = statistics.median(root_group_cell[:, 0])
@@ -3318,8 +3318,8 @@ def Palantir(
             point_size = min(100000 / adata.shape[0], 20)
 
         if early_group is not None and early_cell is None:
-            cell = adata.obs[group_by].index.values[adata.obs[group_by] == early_group]
-            early_group_cell = adata.obsm[basis][adata.obs[group_by] == early_group,][
+            cell = adata.obs[group_by].index.values[adata.obs[group_by].isin(early_group)]
+            early_group_cell = adata.obsm[basis][adata.obs[group_by].isin(early_group),][
                 :, [0, 1]
             ]
             x = statistics.median(early_group_cell[:, 0])
