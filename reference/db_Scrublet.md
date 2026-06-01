@@ -11,7 +11,8 @@ db_Scrublet(
   db_rate = ncol(srt)/1000 * 0.01,
   data_type = NULL,
   scrublet_backend = c("python", "r"),
-  ...
+  ...,
+  verbose = TRUE
 )
 ```
 
@@ -48,6 +49,10 @@ db_Scrublet(
 
   Additional arguments to be passed to
   [scrublet.Scrublet](https://github.com/swolock/scrublet).
+
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
 
 ## Examples
 

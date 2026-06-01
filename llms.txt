@@ -1404,13 +1404,6 @@ etc.
   Perform Gene Set Variation Analysis (GSVA)
 - [`RunMetabolism()`](https://mengxu98.github.io/scop/reference/RunMetabolism.md)
   : Run metabolism pathway scoring
-- [`RunGRNBoost2()`](https://mengxu98.github.io/scop/reference/RunGRNBoost2.md)
-  [`RunGENIE3()`](https://mengxu98.github.io/scop/reference/RunGRNBoost2.md)
-  : Infer gene regulatory networks
-- [`RunSCENIC()`](https://mengxu98.github.io/scop/reference/RunSCENIC.md)
-  : Run SCENIC gene regulatory network analysis
-- [`RunSCENICPlus()`](https://mengxu98.github.io/scop/reference/RunSCENICPlus.md)
-  : Run SCENICPlus-style eGRN analysis
 
 ### Enrichment Analysis Plot
 
@@ -1424,8 +1417,17 @@ etc.
   : Plots for GSVA (Gene Set Variation Analysis)
 - [`MetabolismPlot()`](https://mengxu98.github.io/scop/reference/MetabolismPlot.md)
   : Plots for metabolism pathway scoring
-- [`SCENICPlot()`](https://mengxu98.github.io/scop/reference/SCENICPlot.md)
-  : Plot top regulon specificity scores from SCENIC results
+
+### Metabolic Flux Analysis
+
+- [`RunscFEA()`](https://mengxu98.github.io/scop/reference/RunscFEA.md)
+  : Run scFEA flux estimation for a Seurat object
+- [`scFEAHeatmap()`](https://mengxu98.github.io/scop/reference/scFEAHeatmap.md)
+  : Plot scFEA module flux heatmap
+- [`scFEAVolcanoPlot()`](https://mengxu98.github.io/scop/reference/scFEAVolcanoPlot.md)
+  : Plot scFEA flux Cohen's d volcano plots
+- [`scFEABalanceBarPlot()`](https://mengxu98.github.io/scop/reference/scFEABalanceBarPlot.md)
+  : Plot scFEA metabolite balance changes
 
 ### Dynamic Trajectory Analysis
 
@@ -1496,6 +1498,22 @@ etc.
   : CCC network and flow plots
 - [`CCCStatPlot()`](https://mengxu98.github.io/scop/reference/CCCStatPlot.md)
   : CCC statistical distribution and summary plots
+
+### Gene Regulatory Network Inference
+
+- [`RunGRNBoost2()`](https://mengxu98.github.io/scop/reference/RunGRNBoost2.md)
+  : Infer gene regulatory networks with GRNBoost2
+- [`RunGENIE3()`](https://mengxu98.github.io/scop/reference/RunGENIE3.md)
+  : Infer gene regulatory networks with GENIE3
+- [`RunSCENIC()`](https://mengxu98.github.io/scop/reference/RunSCENIC.md)
+  : Run SCENIC gene regulatory network analysis
+- [`RunSCENICPlus()`](https://mengxu98.github.io/scop/reference/RunSCENICPlus.md)
+  : Run SCENICPlus-style eGRN analysis
+
+### Gene Regulatory Network Plots
+
+- [`SCENICPlot()`](https://mengxu98.github.io/scop/reference/SCENICPlot.md)
+  : Plot top regulon specificity scores from SCENIC results
 
 ### Benchmark and Genomic Track Plots
 

@@ -197,13 +197,223 @@ pancreas_human <- ConvertHomologs(
   species_from = "Mus_musculus",
   species_to = "Homo_sapiens"
 )
-#> ℹ [2026-05-31 05:42:10] Connect to the Ensembl archives...
-#> ℹ [2026-05-31 05:42:13] Using the 115 version of ensembl database...
-#> ℹ [2026-05-31 05:42:13] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
-#> ℹ [2026-05-31 05:42:30] Searching the dataset mmusculus ...
-#> ! [2026-05-31 05:42:30] No matching datasets found
-#> ! [2026-05-31 05:42:30] Can not find the dataset for the species: Mus_musculus (mmusculus)
-#> Error in ConvertHomologs.default(object = counts, species_from = species_from,     species_to = species_to, geneID_from_IDtype = geneID_from_IDtype,     geneID_to_IDtype = geneID_to_IDtype, multi_mapping = multi_mapping,     keep_unmapped = keep_unmapped, collapse_fun = collapse_fun,     Ensembl_version = Ensembl_version, biomart = biomart, mirror = mirror,     max_tries = max_tries, verbose = verbose): No homologous genes remained after conversion
+#> ℹ [2026-06-01 08:55:38] Connect to the Ensembl archives...
+#> ! [2026-06-01 08:55:48] <error/httr2_failure>
+#> !                       Error in `req_perform()`:
+#> !                       ! Failed to perform HTTP request.
+#> !                       Caused by error in `curl::curl_fetch_memory()`:
+#> !                       ! Timeout was reached [www.ensembl.org]:
+#> !                       Send failure: Broken pipe
+#> !                       ---
+#> !                       Backtrace:
+#> !                            ▆
+#> !                         1. ├─base::tryCatch(...)
+#> !                         2. │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                         3. │   ├─base (local) tryCatchOne(...)
+#> !                         4. │   │ └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                         5. │   └─base (local) tryCatchList(expr, names[-nh], parentenv, handlers[-nh])
+#> !                         6. │     └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                         7. │       └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                         8. ├─base::withCallingHandlers(...)
+#> !                         9. ├─base::saveRDS(...)
+#> !                        10. ├─base::do.call(...)
+#> !                        11. ├─base (local) `<fn>`(...)
+#> !                        12. └─global `<fn>`(...)
+#> !                        13.   └─pkgdown::build_site(...)
+#> !                        14.     └─pkgdown:::build_site_local(...)
+#> !                        15.       └─pkgdown::build_reference(...)
+#> !                        16.         ├─pkgdown:::unwrap_purrr_error(...)
+#> !                        17.         │ └─base::withCallingHandlers(...)
+#> !                        18.         └─purrr::map(...)
+#> !                        19.           └─purrr:::map_("list", .x, .f, ..., .progress = .progress)
+#> !                        20.             ├─purrr:::with_indexed_errors(...)
+#> !                        21.             │ └─base::withCallingHandlers(...)
+#> !                        22.             ├─purrr:::call_with_cleanup(...)
+#> !                        23.             └─pkgdown (local) .f(.x[[i]], ...)
+#> !                        24.               ├─base::withCallingHandlers(...)
+#> !                        25.               └─pkgdown:::data_reference_topic(...)
+#> !                        26.                 └─pkgdown:::run_examples(...)
+#> !                        27.                   └─pkgdown:::highlight_examples(code, topic, env = env)
+#> !                        28.                     └─downlit::evaluate_and_highlight(...)
+#> !                        29.                       └─evaluate::evaluate(code, child_env(env), new_device = TRUE, output_handler = output_handler)
+#> !                        30.                         ├─base::withRestarts(...)
+#> !                        31.                         │ └─base (local) withRestartList(expr, restarts)
+#> !                        32.                         │   ├─base (local) withOneRestart(withRestartList(expr, restarts[-nr]), restarts[[nr]])
+#> !                        33.                         │   │ └─base (local) doWithOneRestart(return(expr), restart)
+#> !                        34.                         │   └─base (local) withRestartList(expr, restarts[-nr])
+#> !                        35.                         │     └─base (local) withOneRestart(expr, restarts[[1L]])
+#> !                        36.                         │       └─base (local) doWithOneRestart(return(expr), restart)
+#> !                        37.                         ├─evaluate:::with_handlers(...)
+#> !                        38.                         │ ├─base::eval(call)
+#> !                        39.                         │ │ └─base::eval(call)
+#> !                        40.                         │ └─base::withCallingHandlers(...)
+#> !                        41.                         ├─base::withVisible(eval(expr, envir))
+#> !                        42.                         └─base::eval(expr, envir)
+#> !                        43.                           └─base::eval(expr, envir)
+#> !                        44.                             └─scop::ConvertHomologs(...)
+#> !                        45.                               └─scop:::ConvertHomologs.Seurat(...)
+#> !                        46.                                 └─scop:::ConvertHomologs.default(...)
+#> !                        47.                                   └─scop::GeneConvert(...)
+#> !                        48.                                     ├─thisutils::try_get(...)
+#> !                        49.                                     │ ├─base::tryCatch(...)
+#> !                        50.                                     │ │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                        51.                                     │ │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                        52.                                     │ │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                        53.                                     │ └─base::eval.parent(substitute(expr))
+#> !                        54.                                     │   └─base::eval(expr, p)
+#> !                        55.                                     │     └─base::eval(expr, p)
+#> !                        56.                                     └─biomaRt::listEnsemblArchives()
+#> !                        57.                                       └─biomaRt:::.listEnsemblArchives(http_config = list())
+#> !                        58.                                         └─biomaRt:::.checkArchiveList(http_config)
+#> !                        59.                                           └─biomaRt:::.getArchiveList(http_config = http_config)
+#> !                        60.                                             └─httr2::req_perform(html_request)
+#> ! [2026-06-01 08:55:48] Get errors when connecting with EnsemblArchives...
+#> ! [2026-06-01 08:55:49] Retrying...
+#> ! [2026-06-01 08:56:00] <error/httr2_failure>
+#> !                       Error in `req_perform()`:
+#> !                       ! Failed to perform HTTP request.
+#> !                       Caused by error in `curl::curl_fetch_memory()`:
+#> !                       ! Timeout was reached [www.ensembl.org]:
+#> !                       Operation timed out after 10002 milliseconds with 0 bytes received
+#> !                       ---
+#> !                       Backtrace:
+#> !                            ▆
+#> !                         1. ├─base::tryCatch(...)
+#> !                         2. │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                         3. │   ├─base (local) tryCatchOne(...)
+#> !                         4. │   │ └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                         5. │   └─base (local) tryCatchList(expr, names[-nh], parentenv, handlers[-nh])
+#> !                         6. │     └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                         7. │       └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                         8. ├─base::withCallingHandlers(...)
+#> !                         9. ├─base::saveRDS(...)
+#> !                        10. ├─base::do.call(...)
+#> !                        11. ├─base (local) `<fn>`(...)
+#> !                        12. └─global `<fn>`(...)
+#> !                        13.   └─pkgdown::build_site(...)
+#> !                        14.     └─pkgdown:::build_site_local(...)
+#> !                        15.       └─pkgdown::build_reference(...)
+#> !                        16.         ├─pkgdown:::unwrap_purrr_error(...)
+#> !                        17.         │ └─base::withCallingHandlers(...)
+#> !                        18.         └─purrr::map(...)
+#> !                        19.           └─purrr:::map_("list", .x, .f, ..., .progress = .progress)
+#> !                        20.             ├─purrr:::with_indexed_errors(...)
+#> !                        21.             │ └─base::withCallingHandlers(...)
+#> !                        22.             ├─purrr:::call_with_cleanup(...)
+#> !                        23.             └─pkgdown (local) .f(.x[[i]], ...)
+#> !                        24.               ├─base::withCallingHandlers(...)
+#> !                        25.               └─pkgdown:::data_reference_topic(...)
+#> !                        26.                 └─pkgdown:::run_examples(...)
+#> !                        27.                   └─pkgdown:::highlight_examples(code, topic, env = env)
+#> !                        28.                     └─downlit::evaluate_and_highlight(...)
+#> !                        29.                       └─evaluate::evaluate(code, child_env(env), new_device = TRUE, output_handler = output_handler)
+#> !                        30.                         ├─base::withRestarts(...)
+#> !                        31.                         │ └─base (local) withRestartList(expr, restarts)
+#> !                        32.                         │   ├─base (local) withOneRestart(withRestartList(expr, restarts[-nr]), restarts[[nr]])
+#> !                        33.                         │   │ └─base (local) doWithOneRestart(return(expr), restart)
+#> !                        34.                         │   └─base (local) withRestartList(expr, restarts[-nr])
+#> !                        35.                         │     └─base (local) withOneRestart(expr, restarts[[1L]])
+#> !                        36.                         │       └─base (local) doWithOneRestart(return(expr), restart)
+#> !                        37.                         ├─evaluate:::with_handlers(...)
+#> !                        38.                         │ ├─base::eval(call)
+#> !                        39.                         │ │ └─base::eval(call)
+#> !                        40.                         │ └─base::withCallingHandlers(...)
+#> !                        41.                         ├─base::withVisible(eval(expr, envir))
+#> !                        42.                         └─base::eval(expr, envir)
+#> !                        43.                           └─base::eval(expr, envir)
+#> !                        44.                             └─scop::ConvertHomologs(...)
+#> !                        45.                               └─scop:::ConvertHomologs.Seurat(...)
+#> !                        46.                                 └─scop:::ConvertHomologs.default(...)
+#> !                        47.                                   └─scop::GeneConvert(...)
+#> !                        48.                                     ├─thisutils::try_get(...)
+#> !                        49.                                     │ ├─base::tryCatch(...)
+#> !                        50.                                     │ │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                        51.                                     │ │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                        52.                                     │ │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                        53.                                     │ └─base::eval.parent(substitute(expr))
+#> !                        54.                                     │   └─base::eval(expr, p)
+#> !                        55.                                     │     └─base::eval(expr, p)
+#> !                        56.                                     └─biomaRt::listEnsemblArchives()
+#> !                        57.                                       └─biomaRt:::.listEnsemblArchives(http_config = list())
+#> !                        58.                                         └─biomaRt:::.checkArchiveList(http_config)
+#> !                        59.                                           └─biomaRt:::.getArchiveList(http_config = http_config)
+#> !                        60.                                             └─httr2::req_perform(html_request)
+#> ! [2026-06-01 08:56:00] Get errors when connecting with EnsemblArchives...
+#> ! [2026-06-01 08:56:01] Retrying...
+#> ℹ [2026-06-01 08:56:08] Using the 115 version of ensembl database...
+#> ℹ [2026-06-01 08:56:08] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
+#> Ensembl site unresponsive, trying www mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> Warning: Invalid mirror. Select a mirror from [www, useast, asia].
+#> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying www mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> ! [2026-06-01 08:56:12] <simpleError: Your query has been redirected to https://status.ensembl.org indicating this Ensembl service is currently unavailable.
+#> !                       Look at ?useEnsembl for details on how to try a mirror site.>
+#> ! [2026-06-01 08:56:12] Get errors when connecting with ensembl database...
+#> ! [2026-06-01 08:56:13] Retrying...
+#> Ensembl site unresponsive, trying www mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> Warning: Invalid mirror. Select a mirror from [www, useast, asia].
+#> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying www mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> ! [2026-06-01 08:56:16] <simpleError: Your query has been redirected to https://status.ensembl.org indicating this Ensembl service is currently unavailable.
+#> !                       Look at ?useEnsembl for details on how to try a mirror site.>
+#> ! [2026-06-01 08:56:16] Get errors when connecting with ensembl database...
+#> ! [2026-06-01 08:56:17] Retrying...
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying www mirror
+#> Warning: Invalid mirror. Select a mirror from [www, useast, asia].
+#> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying www mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> ! [2026-06-01 08:56:20] <simpleError: Your query has been redirected to https://status.ensembl.org indicating this Ensembl service is currently unavailable.
+#> !                       Look at ?useEnsembl for details on how to try a mirror site.>
+#> ! [2026-06-01 08:56:20] Get errors when connecting with ensembl database...
+#> ! [2026-06-01 08:56:21] Retrying...
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying www mirror
+#> Warning: Invalid mirror. Select a mirror from [www, useast, asia].
+#> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying www mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> ! [2026-06-01 08:56:24] <simpleError: Your query has been redirected to https://status.ensembl.org indicating this Ensembl service is currently unavailable.
+#> !                       Look at ?useEnsembl for details on how to try a mirror site.>
+#> ! [2026-06-01 08:56:24] Get errors when connecting with ensembl database...
+#> ! [2026-06-01 08:56:25] Retrying...
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying www mirror
+#> Warning: Invalid mirror. Select a mirror from [www, useast, asia].
+#> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> Ensembl site unresponsive, trying www mirror
+#> Ensembl site unresponsive, trying asia mirror
+#> Ensembl site unresponsive, trying useast mirror
+#> ! [2026-06-01 08:56:28] <simpleError: Your query has been redirected to https://status.ensembl.org indicating this Ensembl service is currently unavailable.
+#> !                       Look at ?useEnsembl for details on how to try a mirror site.>
+#> ! [2026-06-01 08:56:28] Get errors when connecting with ensembl database...
+#> Error in try_get(expr = {    if (!is.null(mirror)) {        biomaRt::useEnsembl(biomart = "ensembl", mirror = mirror)    }    else {        mart_try <- tryCatch(biomaRt::useMart(biomart = "ensembl",             host = url), error = function(e) e)        if (inherits(mart_try, "error")) {            mirror_candidates <- c("useast", "uswest", "asia",                 "www")            for (mirror_i in mirror_candidates) {                mart_mirror <- tryCatch(biomaRt::useEnsembl(biomart = "ensembl",                   mirror = mirror_i), error = function(e) e)                if (!inherits(mart_mirror, "error")) {                  mart_try <- mart_mirror                  break                }            }        }        if (inherits(mart_try, "error")) {            stop(mart_try)        }        mart_try    }}, max_tries = max_tries, error_message = "Get errors when connecting with ensembl database..."): <simpleError: Your query has been redirected to
+#> https://status.ensembl.org indicating this Ensembl service is currently
+#> unavailable. Look at ?useEnsembl for details on how to try a mirror site.>
 rownames(pancreas_human)[1:5]
 #> Error: object 'pancreas_human' not found
 ```

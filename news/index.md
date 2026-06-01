@@ -26,7 +26,7 @@
   - Added
     [`RunGRNBoost2()`](https://mengxu98.github.io/scop/reference/RunGRNBoost2.md)
     and
-    [`RunGENIE3()`](https://mengxu98.github.io/scop/reference/RunGRNBoost2.md)
+    [`RunGENIE3()`](https://mengxu98.github.io/scop/reference/RunGENIE3.md)
     as standalone GRN modules wrapping the Arboreto Python
     implementations, with Seurat/matrix methods and `scenic_flt_adj()`
     target filtering shared with

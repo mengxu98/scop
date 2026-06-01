@@ -65,7 +65,8 @@ PAGAPlot(
   legend.direction = "vertical",
   theme_use = "theme_scop",
   theme_args = list(),
-  return_layer = FALSE
+  return_layer = FALSE,
+  verbose = TRUE
 )
 ```
 
@@ -327,6 +328,10 @@ PAGAPlot(
 
   Whether to return the plot layers as a list. Defaults is `FALSE`.
 
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
+
 ## See also
 
 [RunPAGA](https://mengxu98.github.io/scop/reference/RunPAGA.md),
@@ -338,24 +343,24 @@ PAGAPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-31 06:21:49] Start standard processing workflow...
-#> ℹ [2026-05-31 06:21:50] Checking a list of <Seurat>...
-#> ! [2026-05-31 06:21:50] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-31 06:21:50] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-31 06:21:51] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-31 06:21:51] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-31 06:21:52] Number of available HVF: 2000
-#> ℹ [2026-05-31 06:21:52] Finished check
-#> ℹ [2026-05-31 06:21:52] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-31 06:21:52] Perform pca linear dimension reduction
-#> ℹ [2026-05-31 06:21:52] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-31 06:21:53] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-31 06:21:53] Reorder clusters...
-#> ℹ [2026-05-31 06:21:53] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-31 06:21:53] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-31 06:21:53] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-31 06:21:57] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-31 06:22:01] Standard processing workflow completed
+#> ℹ [2026-06-01 09:40:21] Start standard processing workflow...
+#> ℹ [2026-06-01 09:40:22] Checking a list of <Seurat>...
+#> ! [2026-06-01 09:40:22] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-01 09:40:22] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-01 09:40:23] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-01 09:40:23] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-01 09:40:24] Number of available HVF: 2000
+#> ℹ [2026-06-01 09:40:24] Finished check
+#> ℹ [2026-06-01 09:40:24] Perform `Seurat::ScaleData()`
+#> ℹ [2026-06-01 09:40:24] Perform pca linear dimension reduction
+#> ℹ [2026-06-01 09:40:24] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-01 09:40:25] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-01 09:40:25] Reorder clusters...
+#> ℹ [2026-06-01 09:40:25] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-01 09:40:25] Perform umap nonlinear dimension reduction
+#> ℹ [2026-06-01 09:40:25] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-06-01 09:40:29] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-06-01 09:40:33] Standard processing workflow completed
 pancreas_sub <- RunPAGA(
   pancreas_sub,
   group.by = "SubCellType",
@@ -364,8 +369,8 @@ pancreas_sub <- RunPAGA(
   backend = "cpp",
   return_seurat = TRUE
 )
-#> ℹ [2026-05-31 06:22:01] Running PAGA with `backend = 'cpp'` using 29 neighbors
-#> ✔ [2026-05-31 06:22:01] PAGA cpp backend completed
+#> ℹ [2026-06-01 09:40:33] Running PAGA with `backend = 'cpp'` using 29 neighbors
+#> ✔ [2026-06-01 09:40:33] PAGA cpp backend completed
 
 PAGAPlot(pancreas_sub)
 

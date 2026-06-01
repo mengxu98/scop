@@ -44,7 +44,8 @@ SpatialSpotPlot(
   combine = TRUE,
   nrow = NULL,
   ncol = NULL,
-  byrow = TRUE
+  byrow = TRUE,
+  verbose = TRUE
 )
 ```
 
@@ -81,6 +82,9 @@ SpatialSpotPlot(
   Plot type. `"point"` keeps the default spot plot behavior. `"pie"`
   draws spot-level pies from numeric metadata columns supplied to
   `group.by` or from a numeric matrix/data.frame supplied to `values`.
+  When `group.by` is a single `"<prefix>_dominant_type"` column,
+  matching `"<prefix>_prop_*"` or `"<prefix>_frac_*"` numeric metadata
+  columns are used automatically.
 
 - plot.data:
 
@@ -218,6 +222,10 @@ SpatialSpotPlot(
 
   Whether to arrange the plots by row in the combined plot. Default is
   `TRUE`.
+
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
 
 ## Value
 

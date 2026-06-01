@@ -5,7 +5,7 @@ Remove a conda-compatible Python environment
 ## Usage
 
 ``` r
-RemoveEnv(envname = NULL, conda = "auto", force = FALSE)
+RemoveEnv(envname = NULL, conda = "auto", force = FALSE, verbose = TRUE)
 ```
 
 ## Arguments
@@ -26,6 +26,10 @@ RemoveEnv(envname = NULL, conda = "auto", force = FALSE)
 - force:
 
   Whether to force removal without confirmation. Default is `FALSE`.
+
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
 
 ## Value
 

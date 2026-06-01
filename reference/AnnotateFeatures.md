@@ -22,7 +22,8 @@ AnnotateFeatures(
     "gene_type"),
   assays = "RNA",
   overwrite = FALSE,
-  ...
+  ...,
+  verbose = TRUE
 )
 ```
 
@@ -105,6 +106,10 @@ AnnotateFeatures(
 
   Passed to other functions.
 
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
+
 ## See also
 
 [PrepareDB](https://mengxu98.github.io/scop/reference/PrepareDB.md),
@@ -126,8 +131,8 @@ if (requireNamespace("R.cache", quietly = TRUE)) {
     )
   )
 }
-#> ℹ [2026-05-31 05:14:48] Species: "Mus_musculus"
-#> ℹ [2026-05-31 05:14:48] Preparing database: TF
+#> ℹ [2026-06-01 08:28:36] Species: "Mus_musculus"
+#> ℹ [2026-06-01 08:28:36] Preparing database: TF
 #>               highly_variable_genes   TF
 #> Xkr4                          False <NA>
 #> Mrpl15                        False <NA>

@@ -11,7 +11,8 @@ db_scds(
   db_rate = ncol(srt)/1000 * 0.01,
   method = c("hybrid", "cxds", "bcds"),
   data_type = NULL,
-  ...
+  ...,
+  verbose = TRUE
 )
 ```
 
@@ -48,32 +49,36 @@ db_scds(
   Additional arguments to be passed to
   [`scds::cxds_bcds_hybrid()`](https://rdrr.io/pkg/scds/man/cxds_bcds_hybrid.html).
 
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
+
 ## Examples
 
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-31 07:31:31] Start standard processing workflow...
-#> ℹ [2026-05-31 07:31:32] Checking a list of <Seurat>...
-#> ! [2026-05-31 07:31:32] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-31 07:31:32] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-31 07:31:34] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-31 07:31:34] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-31 07:31:34] Number of available HVF: 2000
-#> ℹ [2026-05-31 07:31:34] Finished check
-#> ℹ [2026-05-31 07:31:34] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-31 07:31:35] Perform pca linear dimension reduction
-#> ℹ [2026-05-31 07:31:35] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-31 07:31:36] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-31 07:31:36] Reorder clusters...
-#> ℹ [2026-05-31 07:31:36] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-31 07:31:36] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-31 07:31:36] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-31 07:31:41] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-31 07:31:46] Standard processing workflow completed
+#> ℹ [2026-06-01 10:40:43] Start standard processing workflow...
+#> ℹ [2026-06-01 10:40:44] Checking a list of <Seurat>...
+#> ! [2026-06-01 10:40:44] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-01 10:40:44] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-01 10:40:46] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-01 10:40:46] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-01 10:40:46] Number of available HVF: 2000
+#> ℹ [2026-06-01 10:40:46] Finished check
+#> ℹ [2026-06-01 10:40:46] Perform `Seurat::ScaleData()`
+#> ℹ [2026-06-01 10:40:47] Perform pca linear dimension reduction
+#> ℹ [2026-06-01 10:40:47] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-01 10:40:48] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-01 10:40:48] Reorder clusters...
+#> ℹ [2026-06-01 10:40:48] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-01 10:40:48] Perform umap nonlinear dimension reduction
+#> ℹ [2026-06-01 10:40:48] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-06-01 10:40:53] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-06-01 10:40:58] Standard processing workflow completed
 pancreas_sub <- db_scds(pancreas_sub, method = "hybrid")
-#> ℹ [2026-05-31 07:31:47] Running scds with method "hybrid"
-#> ℹ [2026-05-31 07:31:47] Data type is raw counts
+#> ℹ [2026-06-01 10:40:58] Running scds with method "hybrid"
+#> ℹ [2026-06-01 10:40:58] Data type is raw counts
 CellDimPlot(
   pancreas_sub,
   reduction = "umap",

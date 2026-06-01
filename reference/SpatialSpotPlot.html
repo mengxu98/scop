@@ -83,7 +83,8 @@
 <span>  combine <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  nrow <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ncol <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  byrow <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  byrow <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -120,7 +121,10 @@ Row names or vector names must match spatial spot names.</p></dd>
 <dt id="arg-plot-type">plot_type<a class="anchor" aria-label="anchor" href="#arg-plot-type"></a></dt>
 <dd><p>Plot type. <code>"point"</code> keeps the default spot plot behavior.
 <code>"pie"</code> draws spot-level pies from numeric metadata columns supplied to
-<code>group.by</code> or from a numeric matrix/data.frame supplied to <code>values</code>.</p></dd>
+<code>group.by</code> or from a numeric matrix/data.frame supplied to <code>values</code>. When
+<code>group.by</code> is a single <code>"&lt;prefix&gt;_dominant_type"</code> column, matching
+<code>"&lt;prefix&gt;_prop_*"</code> or <code>"&lt;prefix&gt;_frac_*"</code> numeric metadata columns are used
+automatically.</p></dd>
 
 
 <dt id="arg-plot-data">plot.data<a class="anchor" aria-label="anchor" href="#arg-plot-data"></a></dt>
@@ -259,6 +263,11 @@ Default is <code>NULL</code>, which means determined automatically based on the 
 
 <dt id="arg-byrow">byrow<a class="anchor" aria-label="anchor" href="#arg-byrow"></a></dt>
 <dd><p>Whether to arrange the plots by row in the combined plot.
+Default is <code>TRUE</code>.</p></dd>
+
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>Whether to print the message.
 Default is <code>TRUE</code>.</p></dd>
 
 </dl></div>

@@ -13,7 +13,8 @@ GetSimilarFeatures(
   anticorr = FALSE,
   aggregator = "sum",
   assay = "RNA",
-  layer = "data"
+  layer = "data",
+  verbose = TRUE
 )
 ```
 
@@ -52,6 +53,10 @@ GetSimilarFeatures(
 - layer:
 
   Which layer to use. Default is `data`.
+
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
 
 ## Value
 

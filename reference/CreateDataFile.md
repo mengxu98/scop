@@ -12,7 +12,8 @@ CreateDataFile(
   assays = "RNA",
   layers = "data",
   compression_level = 6,
-  overwrite = TRUE
+  overwrite = TRUE,
+  verbose = TRUE
 )
 ```
 
@@ -48,6 +49,10 @@ CreateDataFile(
 
   Whether to overwrite existing data in the data file. Default is
   `TRUE`.
+
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
 
 ## See also
 

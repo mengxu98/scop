@@ -51,7 +51,8 @@ VolcanoPlot(
   enrich_padj_cutoff = 0.05,
   enrich_gsva_score_cutoff = NULL,
   gsva_method = NULL,
-  enrich_nlabel = 15
+  enrich_nlabel = 15,
+  verbose = TRUE
 )
 ```
 
@@ -280,6 +281,10 @@ VolcanoPlot(
   Maximum number of enrichment-derived labels added per group. Labels
   from `features_label` are always retained. Default is `15`.
 
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
+
 ## See also
 
 [DEtestPlot](https://mengxu98.github.io/scop/reference/DEtestPlot.md),
@@ -292,37 +297,37 @@ VolcanoPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-31 07:29:59] Start standard processing workflow...
-#> ℹ [2026-05-31 07:30:00] Checking a list of <Seurat>...
-#> ! [2026-05-31 07:30:00] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-31 07:30:00] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-31 07:30:01] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-31 07:30:02] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-31 07:30:02] Number of available HVF: 2000
-#> ℹ [2026-05-31 07:30:02] Finished check
-#> ℹ [2026-05-31 07:30:02] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-31 07:30:03] Perform pca linear dimension reduction
-#> ℹ [2026-05-31 07:30:03] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-31 07:30:04] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-31 07:30:04] Reorder clusters...
-#> ℹ [2026-05-31 07:30:04] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-31 07:30:04] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-31 07:30:04] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-31 07:30:09] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-31 07:30:14] Standard processing workflow completed
+#> ℹ [2026-06-01 10:39:35] Start standard processing workflow...
+#> ℹ [2026-06-01 10:39:35] Checking a list of <Seurat>...
+#> ! [2026-06-01 10:39:35] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-01 10:39:36] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-01 10:39:37] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-01 10:39:38] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-01 10:39:38] Number of available HVF: 2000
+#> ℹ [2026-06-01 10:39:38] Finished check
+#> ℹ [2026-06-01 10:39:38] Perform `Seurat::ScaleData()`
+#> ℹ [2026-06-01 10:39:38] Perform pca linear dimension reduction
+#> ℹ [2026-06-01 10:39:39] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-01 10:39:39] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-01 10:39:39] Reorder clusters...
+#> ℹ [2026-06-01 10:39:39] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-01 10:39:39] Perform umap nonlinear dimension reduction
+#> ℹ [2026-06-01 10:39:39] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-06-01 10:39:44] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-06-01 10:39:49] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-05-31 07:30:15] Data type is log-normalized
-#> ℹ [2026-05-31 07:30:15] Start differential expression test
-#> ℹ [2026-05-31 07:30:15] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-05-31 07:30:15] Using 1 core
-#> ⠙ [2026-05-31 07:30:15] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ✔ [2026-05-31 07:30:15] Completed 5 tasks in 860ms
+#> ℹ [2026-06-01 10:39:50] Data type is log-normalized
+#> ℹ [2026-06-01 10:39:50] Start differential expression test
+#> ℹ [2026-06-01 10:39:50] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-06-01 10:39:50] Using 1 core
+#> ⠙ [2026-06-01 10:39:50] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ✔ [2026-06-01 10:39:50] Completed 5 tasks in 970ms
 #> 
-#> ℹ [2026-05-31 07:30:15] Building results
-#> ✔ [2026-05-31 07:30:16] Differential expression test completed
+#> ℹ [2026-06-01 10:39:50] Building results
+#> ✔ [2026-06-01 10:39:51] Differential expression test completed
 VolcanoPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -381,19 +386,8 @@ pancreas_sub <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-31 07:30:24] Start Enrichment analysis
-#> ℹ [2026-05-31 07:30:24] Species: "Mus_musculus"
-#> ℹ [2026-05-31 07:30:24] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-31 05:58:25
-#> ℹ [2026-05-31 07:30:25] Permform enrichment...
-#> ℹ [2026-05-31 07:30:25] Using 1 core
-#> ⠙ [2026-05-31 07:30:25] Running for 1 [1/5] ■■          20% | ETA: 21s
-#> ⠹ [2026-05-31 07:30:25] Running for 2 [2/5] ■■■■        40% | ETA: 12s
-#> ⠸ [2026-05-31 07:30:25] Running for 3 [3/5] ■■■■■■      60% | ETA:  8s
-#> ⠼ [2026-05-31 07:30:25] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  4s
-#> ✔ [2026-05-31 07:30:25] Completed 5 tasks in 17.8s
-#> 
-#> ℹ [2026-05-31 07:30:25] Building results
-#> ✔ [2026-05-31 07:30:43] Enrichment analysis done
+#> ℹ [2026-06-01 10:39:59] Start Enrichment analysis
+#> Error in filter_de_results(de_results = de_df, DE_threshold = DE_threshold): could not find function "filter_de_results"
 VolcanoPlot(
   pancreas_sub,
   group.by = "CellType",

@@ -10,7 +10,8 @@ MetabolismPlot(
   res = NULL,
   group.by = NULL,
   assay_name = "METABOLISM",
-  ...
+  ...,
+  verbose = TRUE
 )
 ```
 
@@ -40,6 +41,10 @@ MetabolismPlot(
   Additional arguments passed to
   [GSVAPlot](https://mengxu98.github.io/scop/reference/GSVAPlot.md).
 
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
+
 ## See also
 
 [RunMetabolism](https://mengxu98.github.io/scop/reference/RunMetabolism.md),
@@ -50,24 +55,24 @@ MetabolismPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-31 06:19:43] Start standard processing workflow...
-#> ℹ [2026-05-31 06:19:44] Checking a list of <Seurat>...
-#> ! [2026-05-31 06:19:44] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-31 06:19:44] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-31 06:19:46] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-31 06:19:46] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-31 06:19:46] Number of available HVF: 2000
-#> ℹ [2026-05-31 06:19:46] Finished check
-#> ℹ [2026-05-31 06:19:46] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-31 06:19:47] Perform pca linear dimension reduction
-#> ℹ [2026-05-31 06:19:47] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-31 06:19:47] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-31 06:19:48] Reorder clusters...
-#> ℹ [2026-05-31 06:19:48] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-31 06:19:48] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-31 06:19:48] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-31 06:19:52] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-31 06:19:56] Standard processing workflow completed
+#> ℹ [2026-06-01 09:38:18] Start standard processing workflow...
+#> ℹ [2026-06-01 09:38:19] Checking a list of <Seurat>...
+#> ! [2026-06-01 09:38:19] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-01 09:38:19] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-01 09:38:20] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-01 09:38:21] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-01 09:38:21] Number of available HVF: 2000
+#> ℹ [2026-06-01 09:38:21] Finished check
+#> ℹ [2026-06-01 09:38:21] Perform `Seurat::ScaleData()`
+#> ℹ [2026-06-01 09:38:21] Perform pca linear dimension reduction
+#> ℹ [2026-06-01 09:38:21] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-01 09:38:22] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-01 09:38:22] Reorder clusters...
+#> ℹ [2026-06-01 09:38:22] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-01 09:38:22] Perform umap nonlinear dimension reduction
+#> ℹ [2026-06-01 09:38:22] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-06-01 09:38:26] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-06-01 09:38:30] Standard processing workflow completed
 pancreas_sub <- RunMetabolism(
   pancreas_sub,
   db = c("KEGG", "REACTOME"),
@@ -75,23 +80,23 @@ pancreas_sub <- RunMetabolism(
   species = "Mus_musculus",
   method = "AUCell"
 )
-#> ℹ [2026-05-31 06:19:56] Start metabolism pathway scoring
-#> ℹ [2026-05-31 06:19:56] Data type is raw counts
-#> ℹ [2026-05-31 06:19:56] Averaging expression by "CellType" ...
-#> ℹ [2026-05-31 06:19:56] Aggregated expression: 15998 genes x 5 groups
-#> ℹ [2026-05-31 06:19:56] Using `PrepareDB()` for species-aware gene set construction
-#> ℹ [2026-05-31 06:19:57]   KEGG pathway refs: 85, Reactome pathway names: 82
-#> ℹ [2026-05-31 06:19:57] Species: "Mus_musculus"
-#> ℹ [2026-05-31 06:19:57] Preparing KEGG database
-#> ℹ [2026-05-31 06:20:12] Preparing Reactome database
-#> ℹ [2026-05-31 06:20:17] Convert ID types for the KEGG database
-#> ℹ [2026-05-31 06:20:17] Converted ID types using local annotation package org.Mm.eg.db
-#> ℹ [2026-05-31 06:20:17] Convert ID types for the Reactome database
-#> ℹ [2026-05-31 06:20:17] Converted ID types using local annotation package org.Mm.eg.db
-#> ℹ [2026-05-31 06:20:45]   "KEGG": 73 metabolism pathways, 1353 genes mapped
-#> ℹ [2026-05-31 06:20:45]   "Reactome": 37 metabolism pathways, 1322 genes mapped
-#> ℹ [2026-05-31 06:20:45] Total metabolism gene sets to score: 110
-#> ✔ [2026-05-31 06:20:45] Metabolism scores stored in tools slot "Metabolism_CellType_AUCell"
+#> ℹ [2026-06-01 09:38:30] Start metabolism pathway scoring
+#> ℹ [2026-06-01 09:38:31] Data type is raw counts
+#> ℹ [2026-06-01 09:38:31] Averaging expression by "CellType" ...
+#> ℹ [2026-06-01 09:38:31] Aggregated expression: 15998 genes x 5 groups
+#> ℹ [2026-06-01 09:38:31] Using `PrepareDB()` for species-aware gene set construction
+#> ℹ [2026-06-01 09:38:31]   KEGG pathway refs: 85, Reactome pathway names: 82
+#> ℹ [2026-06-01 09:38:31] Species: "Mus_musculus"
+#> ℹ [2026-06-01 09:38:31] Preparing KEGG database
+#> ℹ [2026-06-01 09:38:46] Preparing Reactome database
+#> ℹ [2026-06-01 09:38:51] Convert ID types for the KEGG database
+#> ℹ [2026-06-01 09:38:51] Converted ID types using local annotation package org.Mm.eg.db
+#> ℹ [2026-06-01 09:38:51] Convert ID types for the Reactome database
+#> ℹ [2026-06-01 09:38:51] Converted ID types using local annotation package org.Mm.eg.db
+#> ℹ [2026-06-01 09:39:18]   "KEGG": 73 metabolism pathways, 1353 genes mapped
+#> ℹ [2026-06-01 09:39:18]   "Reactome": 37 metabolism pathways, 1322 genes mapped
+#> ℹ [2026-06-01 09:39:18] Total metabolism gene sets to score: 110
+#> ✔ [2026-06-01 09:39:18] Metabolism scores stored in tools slot "Metabolism_CellType_AUCell"
 
 ht1 <- MetabolismPlot(
   pancreas_sub,
@@ -149,7 +154,7 @@ MetabolismPlot(
   plot_type = "network",
   topTerm = 3
 )
-#> ✔ [2026-05-31 06:20:50] shadowtext installed successfully
+#> ✔ [2026-06-01 09:39:23] shadowtext installed successfully
 
 
 MetabolismPlot(
@@ -176,18 +181,18 @@ pancreas_sub <- RunMetabolism(
   db = c("KEGG", "REACTOME"),
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-31 06:20:55] Start metabolism pathway scoring
-#> ℹ [2026-05-31 06:20:55] Data type is raw counts
-#> ℹ [2026-05-31 06:20:55] Using `PrepareDB()` for species-aware gene set construction
-#> ℹ [2026-05-31 06:20:55]   KEGG pathway refs: 85, Reactome pathway names: 82
-#> ℹ [2026-05-31 06:20:55] Species: "Mus_musculus"
-#> ℹ [2026-05-31 06:20:55] Loading cached: KEGG version: Release 118.0+/05-30, May 26 nterm:367 created: 2026-05-31 06:20:17
-#> ℹ [2026-05-31 06:20:56] Loading cached: Reactome version: 1.96.0 nterm:1835 created: 2026-05-31 06:20:17
-#> ℹ [2026-05-31 06:21:22]   "KEGG": 73 metabolism pathways, 1353 genes mapped
-#> ℹ [2026-05-31 06:21:22]   "Reactome": 37 metabolism pathways, 1322 genes mapped
-#> ℹ [2026-05-31 06:21:22] Total metabolism gene sets to score: 110
-#> ✔ [2026-05-31 06:21:23] Metabolism scores stored in tools slot "Metabolism_AUCell"
-#> ℹ [2026-05-31 06:21:23] Metabolism scores also stored in assay "METABOLISM"
+#> ℹ [2026-06-01 09:39:27] Start metabolism pathway scoring
+#> ℹ [2026-06-01 09:39:28] Data type is raw counts
+#> ℹ [2026-06-01 09:39:28] Using `PrepareDB()` for species-aware gene set construction
+#> ℹ [2026-06-01 09:39:28]   KEGG pathway refs: 85, Reactome pathway names: 82
+#> ℹ [2026-06-01 09:39:28] Species: "Mus_musculus"
+#> ℹ [2026-06-01 09:39:28] Loading cached: KEGG version: Release 118.0+/05-30, May 26 nterm:367 created: 2026-06-01 09:38:51
+#> ℹ [2026-06-01 09:39:29] Loading cached: Reactome version: 1.96.0 nterm:1835 created: 2026-06-01 09:38:51
+#> ℹ [2026-06-01 09:39:53]   "KEGG": 73 metabolism pathways, 1353 genes mapped
+#> ℹ [2026-06-01 09:39:53]   "Reactome": 37 metabolism pathways, 1322 genes mapped
+#> ℹ [2026-06-01 09:39:53] Total metabolism gene sets to score: 110
+#> ✔ [2026-06-01 09:39:54] Metabolism scores stored in tools slot "Metabolism_AUCell"
+#> ℹ [2026-06-01 09:39:54] Metabolism scores also stored in assay "METABOLISM"
 
 FeatureDimPlot(
   pancreas_sub,
@@ -218,5 +223,5 @@ ht <- GroupHeatmap(
   width = 1,
   height = 2
 )
-#> ! [2026-05-31 06:21:24] The values in the "counts" layer are non-integer. Set the library size to "1"
+#> ! [2026-06-01 09:39:55] The values in the "counts" layer are non-integer. Set the library size to "1"
 ```
