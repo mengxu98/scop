@@ -13,7 +13,8 @@ FetchH5(
   layer = NULL,
   assay = NULL,
   metanames = NULL,
-  reduction = NULL
+  reduction = NULL,
+  verbose = TRUE
 )
 ```
 
@@ -55,6 +56,10 @@ FetchH5(
 
   The name of the reduction to fetch.
 
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
+
 ## Value
 
 A Seurat object with the fetched data.
@@ -69,32 +74,10 @@ A Seurat object with the fetched data.
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-31 06:06:59] Start standard processing workflow...
-#> ℹ [2026-05-31 06:07:00] Checking a list of <Seurat>...
-#> ! [2026-05-31 06:07:00] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-31 06:07:00] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-31 06:07:02] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-31 06:07:02] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-31 06:07:02] Number of available HVF: 2000
-#> ℹ [2026-05-31 06:07:02] Finished check
-#> ℹ [2026-05-31 06:07:02] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-31 06:07:03] Perform pca linear dimension reduction
-#> ℹ [2026-05-31 06:07:03] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-31 06:07:03] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-31 06:07:04] Reorder clusters...
-#> ℹ [2026-05-31 06:07:04] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-31 06:07:04] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-31 06:07:04] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-31 06:07:08] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-31 06:07:12] Standard processing workflow completed
 PrepareSCExplorer(pancreas_sub, base_dir = "./SCExplorer")
-#> ℹ [2026-05-31 06:07:12] Create SCExplorer base directory: ./SCExplorer
-#> ℹ [2026-05-31 06:07:12] Set the project name of each <Seurat> to their dataset name
-#> ℹ [2026-05-31 06:07:12] Prepare data for object: "SeuratProject"
-#> ℹ [2026-05-31 06:07:12] Write the expression matrix to: ./SCExplorer/data.hdf5
-#> ℹ [2026-05-31 06:07:14] Write the meta information to: ./SCExplorer/meta.hdf5
 srt <- FetchH5(
   data_file = "./SCExplorer/data.hdf5",
   meta_file = "./SCExplorer/meta.hdf5",
@@ -102,15 +85,5 @@ srt <- FetchH5(
   metanames = c("SubCellType", "Phase"),
   reduction = "UMAP"
 )
-CellDimPlot(
-  srt,
-  group.by = c("SubCellType", "Phase"),
-  reduction = "UMAP"
-)
-
-FeatureDimPlot(
-  srt,
-  features = c("Ins1", "Ghrl"),
-  reduction = "UMAP"
-)
+} # }
 ```

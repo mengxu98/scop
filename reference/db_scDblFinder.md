@@ -10,7 +10,8 @@ db_scDblFinder(
   assay = "RNA",
   db_rate = ncol(srt)/1000 * 0.01,
   data_type = NULL,
-  ...
+  ...,
+  verbose = TRUE
 )
 ```
 
@@ -41,3 +42,7 @@ db_scDblFinder(
 
   Additional arguments to be passed to
   [`scDblFinder::scDblFinder()`](https://plger.github.io/scDblFinder/reference/scDblFinder.html).
+
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.

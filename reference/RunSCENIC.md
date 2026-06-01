@@ -40,7 +40,6 @@ RunSCENIC(
   envname = NULL,
   conda = "auto",
   prepare_env = TRUE,
-  progress = verbose,
   verbose = TRUE
 )
 ```
@@ -210,10 +209,6 @@ RunSCENIC(
 
   Whether to prepare and configure the SCENIC Python environment before
   running.
-
-- progress:
-
-  Whether to show a stage-level progress bar.
 
 - verbose:
 

@@ -5,7 +5,7 @@ Rename features for the Seurat object
 ## Usage
 
 ``` r
-RenameFeatures(srt, newnames = NULL, assays = NULL)
+RenameFeatures(srt, newnames = NULL, assays = NULL, verbose = TRUE)
 ```
 
 ## Arguments
@@ -22,6 +22,10 @@ RenameFeatures(srt, newnames = NULL, assays = NULL)
 - assays:
 
   Assays to rename.
+
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
 
 ## Examples
 
@@ -40,7 +44,7 @@ panc8_rename <- RenameFeatures(
   panc8_sub,
   newnames = genenames
 )
-#> ℹ [2026-05-31 06:24:41] Rename features for the assay: RNA
+#> ℹ [2026-06-01 09:42:42] Rename features for the assay: RNA
 head(rownames(panc8_rename))
 #> [1] "A1cf"   "A4galt" "Aaas"   "Aacs"   "Aadac"  "Aadat" 
 ```

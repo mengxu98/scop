@@ -8,7 +8,12 @@ the primary tool.
 ## Usage
 
 ``` r
-env_requirements(version = "3.10-1", include_optional = FALSE, modules = NULL)
+env_requirements(
+  version = "3.10-1",
+  include_optional = FALSE,
+  modules = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments
@@ -33,6 +38,10 @@ env_requirements(version = "3.10-1", include_optional = FALSE, modules = NULL)
   workflows require dependency stacks that should be prepared
   explicitly. The `"scenic"` module is standalone and always uses Python
   `"3.10-1"`.
+
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
 
 ## Value
 

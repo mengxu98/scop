@@ -61,7 +61,8 @@ one for the data and one for the metadata.</p>
 <span>  write_tools <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  write_misc <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  compression_level <span class="op">=</span> <span class="fl">6</span>,</span>
-<span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -122,6 +123,11 @@ Default is <code>6</code>.</p></dd>
 <dd><p>Whether to overwrite existing data in the data file.
 Default is <code>TRUE</code>.</p></dd>
 
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>Whether to print the message.
+Default is <code>TRUE</code>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -130,56 +136,11 @@ Default is <code>TRUE</code>.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:36] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:36] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-05-31 06:22:36] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:36] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:38] Perform `Seurat::FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:38] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:38] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:38] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:38] Perform `Seurat::ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:39] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:39] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:40] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:40] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:40] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:40] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:40] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:44] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-05-31 06:22:48] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
 <span class="r-in"><span><span class="fu">PrepareSCExplorer</span><span class="op">(</span><span class="va">pancreas_sub</span>, base_dir <span class="op">=</span> <span class="st">"./SCExplorer"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:48] Set the project name of each <span style="color: #0000BB;">&lt;Seurat&gt;</span> to their dataset name</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:48] Prepare data for object: <span style="color: #0000BB;">"SeuratProject"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:48] Write the expression matrix to: <span style="color: #0000BB;">/home/runner/work/scop/scop/docs/reference/SCExplorer/data.hdf5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:48] Group <span style="color: #0000BB;">"/SeuratProject/RNA/counts"</span> already exists in <span style="color: #0000BB;">/home/runner/work/scop/scop/docs/reference/SCExplorer/data.hdf5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:49] Group <span style="color: #0000BB;">"/SeuratProject/RNA/data"</span> already exists in <span style="color: #0000BB;">/home/runner/work/scop/scop/docs/reference/SCExplorer/data.hdf5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:49] Write the meta information to: <span style="color: #0000BB;">/home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:49] Group <span style="color: #0000BB;">"/SeuratProject/metadata/orig.ident"</span> already exists in <span style="color: #0000BB;">/home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:49] Group <span style="color: #0000BB;">"/SeuratProject/metadata/nCount_RNA"</span> already exists in <span style="color: #0000BB;">/home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:49] Group <span style="color: #0000BB;">"/SeuratProject/metadata/nFeature_RNA"</span> already exists in <span style="color: #0000BB;">/home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:49] Group <span style="color: #0000BB;">"/SeuratProject/metadata/S_score"</span> already exists in <span style="color: #0000BB;">/home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:49] Group <span style="color: #0000BB;">"/SeuratProject/metadata/G2M_score"</span> already exists in <span style="color: #0000BB;">/home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:49] Group <span style="color: #0000BB;">"/SeuratProject/metadata/nCount_spliced"</span> already exists in <span style="color: #0000BB;">/home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:49] Group <span style="color: #0000BB;">"/SeuratProject/metadata/nFeature_spliced"</span> already exists in <span style="color: #0000BB;">/home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:49] Group <span style="color: #0000BB;">"/SeuratProject/metadata/nCount_unspliced"</span> already exists in <span style="color: #0000BB;">/home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:49] Group <span style="color: #0000BB;">"/SeuratProject/metadata/nFeature_unspliced"</span> already exists in <span style="color: #0000BB;">/home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:49] Group <span style="color: #0000BB;">"/SeuratProject/metadata/CellType"</span> already exists in <span style="color: #0000BB;">/home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:49] Group <span style="color: #0000BB;">"/SeuratProject/metadata/SubCellType"</span> already exists in <span style="color: #0000BB;">/home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:49] Group <span style="color: #0000BB;">"/SeuratProject/metadata/Phase"</span> already exists in <span style="color: #0000BB;">/home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:49] Group <span style="color: #0000BB;">"/SeuratProject/metadata/Standardpca_SNN_res.0.6"</span> already exists in <span style="color: #0000BB;">/home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:49] Group <span style="color: #0000BB;">"/SeuratProject/metadata/ident"</span> already exists in <span style="color: #0000BB;">/home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:49] Group <span style="color: #0000BB;">"/SeuratProject/metadata/Standardpcaclusters"</span> already exists in <span style="color: #0000BB;">/home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:49] Group <span style="color: #0000BB;">"/SeuratProject/metadata/Standardclusters"</span> already exists in <span style="color: #0000BB;">/home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:49] Group <span style="color: #0000BB;">"/SeuratProject/metadata.stat"</span> already exists in <span style="color: #0000BB;">/home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:49] Group <span style="color: #0000BB;">"/SeuratProject/reductions/Standardpca"</span> already exists in <span style="color: #0000BB;">/home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:49] Group <span style="color: #0000BB;">"/SeuratProject/reductions/StandardpcaUMAP2D"</span> already exists in <span style="color: #0000BB;">/home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:49] Group <span style="color: #0000BB;">"/SeuratProject/reductions/StandardpcaUMAP3D"</span> already exists in <span style="color: #0000BB;">/home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:49] Group <span style="color: #0000BB;">"/SeuratProject/reductions/StandardUMAP2D"</span> already exists in <span style="color: #0000BB;">/home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:49] Group <span style="color: #0000BB;">"/SeuratProject/reductions/StandardUMAP3D"</span> already exists in <span style="color: #0000BB;">/home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 06:22:49] Group <span style="color: #0000BB;">/SeuratProject/reductions.stat</span> already exists in the <span style="color: #0000BB;">/home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5</span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

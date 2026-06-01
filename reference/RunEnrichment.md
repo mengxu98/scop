@@ -249,37 +249,37 @@ Enrichment result is a list with the following component:
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-31 06:50:46] Start standard processing workflow...
-#> ℹ [2026-05-31 06:50:46] Checking a list of <Seurat>...
-#> ! [2026-05-31 06:50:46] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-31 06:50:46] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-31 06:50:48] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-31 06:50:49] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-31 06:50:49] Number of available HVF: 2000
-#> ℹ [2026-05-31 06:50:49] Finished check
-#> ℹ [2026-05-31 06:50:49] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-31 06:50:49] Perform pca linear dimension reduction
-#> ℹ [2026-05-31 06:50:49] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-31 06:50:50] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-31 06:50:50] Reorder clusters...
-#> ℹ [2026-05-31 06:50:50] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-31 06:50:50] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-31 06:50:50] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-31 06:50:55] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-31 06:51:00] Standard processing workflow completed
+#> ℹ [2026-06-01 10:11:18] Start standard processing workflow...
+#> ℹ [2026-06-01 10:11:19] Checking a list of <Seurat>...
+#> ! [2026-06-01 10:11:19] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-01 10:11:19] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-01 10:11:20] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-01 10:11:21] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-01 10:11:21] Number of available HVF: 2000
+#> ℹ [2026-06-01 10:11:21] Finished check
+#> ℹ [2026-06-01 10:11:21] Perform `Seurat::ScaleData()`
+#> ℹ [2026-06-01 10:11:22] Perform pca linear dimension reduction
+#> ℹ [2026-06-01 10:11:22] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-01 10:11:22] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-01 10:11:22] Reorder clusters...
+#> ℹ [2026-06-01 10:11:23] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-01 10:11:23] Perform umap nonlinear dimension reduction
+#> ℹ [2026-06-01 10:11:23] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-06-01 10:11:27] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-06-01 10:11:32] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-05-31 06:51:00] Data type is log-normalized
-#> ℹ [2026-05-31 06:51:00] Start differential expression test
-#> ℹ [2026-05-31 06:51:00] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-05-31 06:51:00] Using 1 core
-#> ⠙ [2026-05-31 06:51:00] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ✔ [2026-05-31 06:51:00] Completed 5 tasks in 968ms
+#> ℹ [2026-06-01 10:11:33] Data type is log-normalized
+#> ℹ [2026-06-01 10:11:33] Start differential expression test
+#> ℹ [2026-06-01 10:11:33] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-06-01 10:11:33] Using 1 core
+#> ⠙ [2026-06-01 10:11:33] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ✔ [2026-06-01 10:11:33] Completed 5 tasks in 876ms
 #> 
-#> ℹ [2026-05-31 06:51:00] Building results
-#> ✔ [2026-05-31 06:51:01] Differential expression test completed
+#> ℹ [2026-06-01 10:11:33] Building results
+#> ✔ [2026-06-01 10:11:33] Differential expression test completed
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
   group.by = "CellType",
@@ -287,26 +287,15 @@ pancreas_sub <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-31 06:51:01] Start Enrichment analysis
-#> ℹ [2026-05-31 06:51:02] Species: "Mus_musculus"
-#> ℹ [2026-05-31 06:51:02] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-31 05:58:25
-#> ℹ [2026-05-31 06:51:03] Permform enrichment...
-#> ℹ [2026-05-31 06:51:03] Using 1 core
-#> ⠙ [2026-05-31 06:51:03] Running for 1 [1/5] ■■          20% | ETA: 21s
-#> ⠹ [2026-05-31 06:51:03] Running for 2 [2/5] ■■■■        40% | ETA: 12s
-#> ⠸ [2026-05-31 06:51:03] Running for 3 [3/5] ■■■■■■      60% | ETA:  8s
-#> ⠼ [2026-05-31 06:51:03] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  4s
-#> ✔ [2026-05-31 06:51:03] Completed 5 tasks in 18s
-#> 
-#> ℹ [2026-05-31 06:51:03] Building results
-#> ✔ [2026-05-31 06:51:21] Enrichment analysis done
+#> ℹ [2026-06-01 10:11:33] Start Enrichment analysis
+#> Error in filter_de_results(de_results = de_df, DE_threshold = DE_threshold): could not find function "filter_de_results"
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
   group.by = "CellType",
   plot_type = "comparison"
 )
-
+#> Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     plot_type = "comparison"): No enrichment result found. You may perform RunEnrichment first
 
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
@@ -315,34 +304,22 @@ pancreas_sub <- RunEnrichment(
   db = c("MSigDB", "MSigDB_MH"),
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-31 06:51:21] Start Enrichment analysis
-#> ℹ [2026-05-31 06:51:21] Species: "Mus_musculus"
-#> ℹ [2026-05-31 06:51:21] Preparing MSigDB database
-#> ℹ [2026-05-31 06:51:34] Permform enrichment...
-#> ℹ [2026-05-31 06:51:34] Using 1 core
-#> ⠙ [2026-05-31 06:51:34] Running for 1 [1/10] ■           10% | ETA:  2m
-#> ⠹ [2026-05-31 06:51:34] Running for 2 [2/10] ■■          20% | ETA:  1m
-#> ⠸ [2026-05-31 06:51:34] Running for 3 [3/10] ■■■         30% | ETA:  1m
-#> ⠼ [2026-05-31 06:51:34] Running for 4 [4/10] ■■■■        40% | ETA: 40s
-#> ⠴ [2026-05-31 06:51:34] Running for 5 [5/10] ■■■■■       50% | ETA: 31s
-#> ✔ [2026-05-31 06:51:34] Completed 10 tasks in 31.7s
-#> 
-#> ℹ [2026-05-31 06:51:34] Building results
-#> ✔ [2026-05-31 06:52:06] Enrichment analysis done
+#> ℹ [2026-06-01 10:11:33] Start Enrichment analysis
+#> Error in filter_de_results(de_results = de_df, DE_threshold = DE_threshold): could not find function "filter_de_results"
 EnrichmentPlot(
   pancreas_sub,
   db = "MSigDB",
   group.by = "CellType",
   plot_type = "comparison"
 )
-
+#> Error in EnrichmentPlot(pancreas_sub, db = "MSigDB", group.by = "CellType",     plot_type = "comparison"): No enrichment result found. You may perform RunEnrichment first
 EnrichmentPlot(
   pancreas_sub,
   db = "MSigDB_MH",
   group.by = "CellType",
   plot_type = "comparison"
 )
-
+#> Error in EnrichmentPlot(pancreas_sub, db = "MSigDB_MH", group.by = "CellType",     plot_type = "comparison"): No enrichment result found. You may perform RunEnrichment first
 
 # Remove redundant GO terms
 pancreas_sub <- RunEnrichment(
@@ -352,27 +329,16 @@ pancreas_sub <- RunEnrichment(
   GO_simplify = TRUE,
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-31 06:52:07] Start Enrichment analysis
-#> ! [2026-05-31 06:52:07] `GO_simplify = TRUE` requires clusterProfiler result objects; using `backend = 'r'` for this run.
-#> ℹ [2026-05-31 06:52:07] Species: "Mus_musculus"
-#> ℹ [2026-05-31 06:52:07] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-31 05:58:25
-#> ℹ [2026-05-31 06:52:08] Permform enrichment...
-#> ℹ [2026-05-31 06:52:08] Using 1 core
-#> ⠙ [2026-05-31 06:52:08] Running for 1 [1/5] ■■          20% | ETA: 13m
-#> ⠹ [2026-05-31 06:52:08] Running for 2 [2/5] ■■■■        40% | ETA:  6m
-#> ⠸ [2026-05-31 06:52:08] Running for 3 [3/5] ■■■■■■      60% | ETA:  3m
-#> ⠼ [2026-05-31 06:52:08] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  1m
-#> ✔ [2026-05-31 06:52:08] Completed 5 tasks in 5m 46s
-#> 
-#> ℹ [2026-05-31 06:52:08] Building results
-#> ✔ [2026-05-31 06:57:54] Enrichment analysis done
+#> ℹ [2026-06-01 10:11:34] Start Enrichment analysis
+#> ! [2026-06-01 10:11:34] `GO_simplify = TRUE` requires clusterProfiler result objects; using `backend = 'r'` for this run.
+#> Error in filter_de_results(de_results = de_df, DE_threshold = DE_threshold): could not find function "filter_de_results"
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP_sim",
   group.by = "CellType",
   plot_type = "comparison"
 )
-
+#> Error in EnrichmentPlot(pancreas_sub, db = "GO_BP_sim", group.by = "CellType",     plot_type = "comparison"): No enrichment result found. You may perform RunEnrichment first
 
 # Or use "geneID" and "geneID_groups" as input to run enrichment
 de_df <- dplyr::filter(
@@ -385,19 +351,19 @@ enrich_out <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-31 06:57:55] Start Enrichment analysis
-#> ℹ [2026-05-31 06:57:55] Species: "Mus_musculus"
-#> ℹ [2026-05-31 06:57:55] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-31 05:58:25
-#> ℹ [2026-05-31 06:57:56] Permform enrichment...
-#> ℹ [2026-05-31 06:57:56] Using 1 core
-#> ⠙ [2026-05-31 06:57:56] Running for 1 [1/5] ■■          20% | ETA: 22s
-#> ⠹ [2026-05-31 06:57:56] Running for 2 [2/5] ■■■■        40% | ETA: 12s
-#> ⠸ [2026-05-31 06:57:56] Running for 3 [3/5] ■■■■■■      60% | ETA:  8s
-#> ⠼ [2026-05-31 06:57:56] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  4s
-#> ✔ [2026-05-31 06:57:56] Completed 5 tasks in 18.1s
+#> ℹ [2026-06-01 10:11:34] Start Enrichment analysis
+#> ℹ [2026-06-01 10:11:34] Species: "Mus_musculus"
+#> ℹ [2026-06-01 10:11:34] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-06-01 08:53:04
+#> ℹ [2026-06-01 10:11:35] Permform enrichment...
+#> ℹ [2026-06-01 10:11:35] Using 1 core
+#> ⠙ [2026-06-01 10:11:35] Running for 1 [1/5] ■■          20% | ETA: 21s
+#> ⠹ [2026-06-01 10:11:35] Running for 2 [2/5] ■■■■        40% | ETA: 12s
+#> ⠸ [2026-06-01 10:11:35] Running for 3 [3/5] ■■■■■■      60% | ETA:  8s
+#> ⠼ [2026-06-01 10:11:35] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  4s
+#> ✔ [2026-06-01 10:11:35] Completed 5 tasks in 17.6s
 #> 
-#> ℹ [2026-05-31 06:57:56] Building results
-#> ✔ [2026-05-31 06:58:15] Enrichment analysis done
+#> ℹ [2026-06-01 10:11:35] Building results
+#> ✔ [2026-06-01 10:11:52] Enrichment analysis done
 EnrichmentPlot(
   res = enrich_out,
   db = "GO_BP",
@@ -415,32 +381,13 @@ pancreas_sub <- RunEnrichment(
   db_combine = TRUE,
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-31 06:58:15] Start Enrichment analysis
-#> ℹ [2026-05-31 06:58:15] Species: "Mus_musculus"
-#> ℹ [2026-05-31 06:58:15] Loading cached: KEGG version: Release 118.0+/05-30, May 26 nterm:367 created: 2026-05-31 06:20:17
-#> ℹ [2026-05-31 06:58:15] Loading cached: Reactome version: 1.96.0 nterm:1835 created: 2026-05-31 06:20:17
-#> ℹ [2026-05-31 06:58:35] Preparing WikiPathway database
-#> ℹ [2026-05-31 06:58:38] Preparing MP database
-#> ℹ [2026-05-31 06:58:48] Preparing PFAM database
-#> 
-#> ℹ [2026-05-31 06:58:49] Convert ID types for the WikiPathway database
-#> ℹ [2026-05-31 06:58:49] Converted ID types using local annotation package org.Mm.eg.db
-#> ℹ [2026-05-31 06:58:49] Convert ID types for the PFAM database
-#> ℹ [2026-05-31 06:58:49] Converted ID types using local annotation package org.Mm.eg.db
-#> ℹ [2026-05-31 06:58:49] Create 'Combined' database ...
-#> ℹ [2026-05-31 06:58:50] Permform enrichment...
-#> ℹ [2026-05-31 06:58:50] Using 1 core
-#> ⠙ [2026-05-31 06:58:50] Running for 1 [1/5] ■■          20% | ETA: 20s
-#> ⠹ [2026-05-31 06:58:50] Running for 2 [2/5] ■■■■        40% | ETA: 10s
-#> ⠸ [2026-05-31 06:58:50] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  2s
-#> ✔ [2026-05-31 06:58:50] Completed 5 tasks in 11.2s
-#> 
-#> ℹ [2026-05-31 06:58:50] Building results
-#> ✔ [2026-05-31 06:59:01] Enrichment analysis done
+#> ℹ [2026-06-01 10:11:53] Start Enrichment analysis
+#> Error in filter_de_results(de_results = de_df, DE_threshold = DE_threshold): could not find function "filter_de_results"
 EnrichmentPlot(
   pancreas_sub,
   db = "Combined",
   group.by = "CellType",
   plot_type = "comparison"
 )
+#> Error in EnrichmentPlot(pancreas_sub, db = "Combined", group.by = "CellType",     plot_type = "comparison"): No enrichment result found. You may perform RunEnrichment first
 ```

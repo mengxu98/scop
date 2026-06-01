@@ -1,6 +1,6 @@
-# Infer gene regulatory networks
+# Infer gene regulatory networks with GRNBoost2
 
-Run GRNBoost2-like or GENIE3 regulatory network inference and return a
+Run GRNBoost2-like regulatory network inference and return a
 standardized adjacency table with columns \`TF\`, \`target\`, and
 \`importance\`.
 
@@ -80,40 +80,6 @@ RunGRNBoost2(
   verbose = TRUE,
   ...
 )
-
-RunGENIE3(object, ...)
-
-# S3 method for class 'Seurat'
-RunGENIE3(
-  object,
-  assay = NULL,
-  layer = "counts",
-  regulators = NULL,
-  targets = NULL,
-  max_edges_per_target = 50,
-  output_file = NULL,
-  cores = 1,
-  force = FALSE,
-  verbose = TRUE,
-  ...
-)
-
-# S3 method for class 'matrix'
-RunGENIE3(object, ...)
-
-# Default S3 method
-RunGENIE3(
-  object,
-  regulators = NULL,
-  targets = NULL,
-  genes_in = c("rows", "columns"),
-  max_edges_per_target = 50,
-  output_file = NULL,
-  cores = 1,
-  force = FALSE,
-  verbose = TRUE,
-  ...
-)
 ```
 
 ## Arguments
@@ -145,8 +111,7 @@ RunGENIE3(
 
 - backend:
 
-  Runtime backend. GRNBoost2 supports \`"cpp"\` and \`"python"\`; GENIE3
-  uses the R package backend.
+  Runtime backend. Supports \`"cpp"\` and \`"python"\`.
 
 - max_edges_per_target:
 
@@ -242,7 +207,7 @@ RunGENIE3(
 
 - cores:
 
-  Number of workers used by native/Python GRNBoost2 or R GENIE3.
+  Number of workers used by native/Python GRNBoost2.
 
 - seed:
 

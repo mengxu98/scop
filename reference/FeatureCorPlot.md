@@ -49,7 +49,8 @@ FeatureCorPlot(
   ncol = NULL,
   byrow = TRUE,
   force = FALSE,
-  seed = 11
+  seed = 11,
+  verbose = TRUE
 )
 ```
 
@@ -257,6 +258,10 @@ FeatureCorPlot(
 
   Random seed for reproducibility. Default is `11`.
 
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
+
 ## See also
 
 [FeatureStatPlot](https://mengxu98.github.io/scop/reference/FeatureStatPlot.md)
@@ -266,24 +271,24 @@ FeatureCorPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-31 06:01:33] Start standard processing workflow...
-#> ℹ [2026-05-31 06:01:34] Checking a list of <Seurat>...
-#> ! [2026-05-31 06:01:34] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-31 06:01:34] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-31 06:01:35] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-31 06:01:36] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-31 06:01:36] Number of available HVF: 2000
-#> ℹ [2026-05-31 06:01:36] Finished check
-#> ℹ [2026-05-31 06:01:36] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-31 06:01:37] Perform pca linear dimension reduction
-#> ℹ [2026-05-31 06:01:37] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-31 06:01:37] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-31 06:01:37] Reorder clusters...
-#> ℹ [2026-05-31 06:01:38] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-31 06:01:38] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-31 06:01:38] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-31 06:01:42] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-31 06:01:45] Standard processing workflow completed
+#> ℹ [2026-06-01 09:12:48] Start standard processing workflow...
+#> ℹ [2026-06-01 09:12:49] Checking a list of <Seurat>...
+#> ! [2026-06-01 09:12:49] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-01 09:12:49] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-01 09:12:50] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-01 09:12:50] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-01 09:12:51] Number of available HVF: 2000
+#> ℹ [2026-06-01 09:12:51] Finished check
+#> ℹ [2026-06-01 09:12:51] Perform `Seurat::ScaleData()`
+#> ℹ [2026-06-01 09:12:51] Perform pca linear dimension reduction
+#> ℹ [2026-06-01 09:12:51] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-01 09:12:52] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-01 09:12:52] Reorder clusters...
+#> ℹ [2026-06-01 09:12:52] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-01 09:12:52] Perform umap nonlinear dimension reduction
+#> ℹ [2026-06-01 09:12:52] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-06-01 09:12:56] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-06-01 09:13:00] Standard processing workflow completed
 FeatureCorPlot(
   pancreas_sub,
   features = rownames(pancreas_sub)[1:5],

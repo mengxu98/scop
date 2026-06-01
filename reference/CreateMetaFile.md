@@ -13,7 +13,8 @@ CreateMetaFile(
   write_misc = FALSE,
   ignore_nlevel = 100,
   compression_level = 6,
-  overwrite = TRUE
+  overwrite = TRUE,
+  verbose = TRUE
 )
 ```
 
@@ -56,6 +57,10 @@ CreateMetaFile(
 
   Whether to overwrite existing metadata and reductions in the meta
   file. Default is `TRUE`.
+
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
 
 ## See also
 

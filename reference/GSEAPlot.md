@@ -61,7 +61,8 @@ GSEAPlot(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
-  seed = 11
+  seed = 11,
+  verbose = TRUE
 )
 ```
 
@@ -324,6 +325,10 @@ GSEAPlot(
 
   Random seed for reproducibility. Default is `11`.
 
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
+
 ## See also
 
 [RunGSEA](https://mengxu98.github.io/scop/reference/RunGSEA.md)
@@ -333,67 +338,52 @@ GSEAPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-31 06:07:30] Start standard processing workflow...
-#> ℹ [2026-05-31 06:07:30] Checking a list of <Seurat>...
-#> ! [2026-05-31 06:07:30] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-31 06:07:30] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-31 06:07:32] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-31 06:07:32] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-31 06:07:32] Number of available HVF: 2000
-#> ℹ [2026-05-31 06:07:32] Finished check
-#> ℹ [2026-05-31 06:07:32] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-31 06:07:33] Perform pca linear dimension reduction
-#> ℹ [2026-05-31 06:07:33] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-31 06:07:34] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-31 06:07:34] Reorder clusters...
-#> ℹ [2026-05-31 06:07:34] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-31 06:07:34] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-31 06:07:34] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-31 06:07:38] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-31 06:07:42] Standard processing workflow completed
+#> ℹ [2026-06-01 09:18:36] Start standard processing workflow...
+#> ℹ [2026-06-01 09:18:37] Checking a list of <Seurat>...
+#> ! [2026-06-01 09:18:37] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-01 09:18:37] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-01 09:18:38] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-01 09:18:39] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-01 09:18:39] Number of available HVF: 2000
+#> ℹ [2026-06-01 09:18:39] Finished check
+#> ℹ [2026-06-01 09:18:39] Perform `Seurat::ScaleData()`
+#> ℹ [2026-06-01 09:18:39] Perform pca linear dimension reduction
+#> ℹ [2026-06-01 09:18:40] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-01 09:18:40] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-01 09:18:40] Reorder clusters...
+#> ℹ [2026-06-01 09:18:40] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-01 09:18:40] Perform umap nonlinear dimension reduction
+#> ℹ [2026-06-01 09:18:40] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-06-01 09:18:44] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-06-01 09:18:48] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-05-31 06:07:42] Data type is log-normalized
-#> ℹ [2026-05-31 06:07:42] Start differential expression test
-#> ℹ [2026-05-31 06:07:42] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-05-31 06:07:42] Using 1 core
-#> ⠙ [2026-05-31 06:07:42] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ✔ [2026-05-31 06:07:42] Completed 5 tasks in 1.2s
+#> ℹ [2026-06-01 09:18:49] Data type is log-normalized
+#> ℹ [2026-06-01 09:18:49] Start differential expression test
+#> ℹ [2026-06-01 09:18:49] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-06-01 09:18:49] Using 1 core
+#> ⠙ [2026-06-01 09:18:49] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ✔ [2026-06-01 09:18:49] Completed 5 tasks in 1.2s
 #> 
-#> ℹ [2026-05-31 06:07:42] Building results
-#> ✔ [2026-05-31 06:07:44] Differential expression test completed
+#> ℹ [2026-06-01 09:18:49] Building results
+#> ✔ [2026-06-01 09:18:50] Differential expression test completed
 pancreas_sub <- RunGSEA(
   pancreas_sub,
   group.by = "CellType",
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-05-31 06:07:44] Start GSEA analysis
-#> ! [2026-05-31 06:07:44] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
-#> ℹ [2026-05-31 06:07:44] Species: "Mus_musculus"
-#> ℹ [2026-05-31 06:07:44] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-05-31 05:58:25
-#> ℹ [2026-05-31 06:07:45] Using 1 core
-#> Registered S3 methods overwritten by 'callr':
-#>   method                    from
-#>   format.callr_status_error     
-#>   print.callr_status_error      
-#> ⠙ [2026-05-31 06:07:45] Running for 1 [1/5] ■■          20% | ETA: 33s
-#> ⠹ [2026-05-31 06:07:45] Running for 2 [2/5] ■■■■        40% | ETA: 19s
-#> ⠸ [2026-05-31 06:07:45] Running for 3 [3/5] ■■■■■■      60% | ETA: 11s
-#> ⠼ [2026-05-31 06:07:45] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  5s
-#> ✔ [2026-05-31 06:07:45] Completed 5 tasks in 22.5s
-#> 
-#> ℹ [2026-05-31 06:07:45] Building results
-#> ✔ [2026-05-31 06:08:07] GSEA analysis done
+#> ℹ [2026-06-01 09:18:50] Start GSEA analysis
+#> Error in filter_de_results(de_results = de_df, DE_threshold = DE_threshold): could not find function "filter_de_results"
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
   group.by = "CellType",
   group_use = "Ductal"
 )
-
+#> Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", group_use = "Ductal"): No enrichment result found. You may perform `RunGSEA()` first
 
 p1 <- GSEAPlot(
   pancreas_sub,
@@ -402,7 +392,7 @@ p1 <- GSEAPlot(
   group_use = "Ductal",
   id_use = "GO:0006412"
 )
-#> Error in `.rowNamesDF<-`(x, value = value): missing values in 'row.names' are not allowed
+#> Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", group_use = "Ductal",     id_use = "GO:0006412"): No enrichment result found. You may perform `RunGSEA()` first
 p1
 #> Error: object 'p1' not found
 
@@ -416,11 +406,7 @@ GSEAPlot(
   topTerm = 3,
   plot_type = "comparison"
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's alpha values.
-#> Warning: Removed 9786 rows containing missing values or values outside the scale range
-#> (`geom_point()`).
-
+#> Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", topTerm = 3,     plot_type = "comparison"): No enrichment result found. You may perform `RunGSEA()` first
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -429,11 +415,7 @@ GSEAPlot(
   plot_type = "comparison",
   direction = "pos"
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's alpha values.
-#> Warning: Removed 9786 rows containing missing values or values outside the scale range
-#> (`geom_point()`).
-
+#> Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", topTerm = 3,     plot_type = "comparison", direction = "pos"): No enrichment result found. You may perform `RunGSEA()` first
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -442,18 +424,14 @@ GSEAPlot(
   plot_type = "comparison",
   compare_only_sig = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's alpha values.
-#> Warning: Removed 9786 rows containing missing values or values outside the scale range
-#> (`geom_point()`).
-
+#> Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", topTerm = 3,     plot_type = "comparison", compare_only_sig = TRUE): No enrichment result found. You may perform `RunGSEA()` first
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
   group.by = "CellType",
   plot_type = "bar"
 )
-#> Error in `.rowNamesDF<-`(x, value = value): missing values in 'row.names' are not allowed
+#> Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", plot_type = "bar"): No enrichment result found. You may perform `RunGSEA()` first
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -461,7 +439,7 @@ GSEAPlot(
   plot_type = "bar",
   direction = "both"
 )
-#> Error in `.rowNamesDF<-`(x, value = value): missing values in 'row.names' are not allowed
+#> Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", plot_type = "bar",     direction = "both"): No enrichment result found. You may perform `RunGSEA()` first
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -472,7 +450,7 @@ GSEAPlot(
   direction = "both",
   palcolor = c("red3", "steelblue")
 )
-
+#> Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", group_use = "Ductal",     plot_type = "bar", topTerm = 20, direction = "both", palcolor = c("red3",         "steelblue")): No enrichment result found. You may perform `RunGSEA()` first
 
 GSEAPlot(
   pancreas_sub,
@@ -481,8 +459,7 @@ GSEAPlot(
   group_use = "Ductal",
   plot_type = "network"
 )
-#> ✔ [2026-05-31 06:08:11] shadowtext installed successfully
-
+#> Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", group_use = "Ductal",     plot_type = "network"): No enrichment result found. You may perform `RunGSEA()` first
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -490,7 +467,7 @@ GSEAPlot(
   group_use = "Ductal",
   plot_type = "enrichmap"
 )
-
+#> Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", group_use = "Ductal",     plot_type = "enrichmap"): No enrichment result found. You may perform `RunGSEA()` first
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -498,7 +475,7 @@ GSEAPlot(
   group_use = "Ductal",
   plot_type = "wordcloud"
 )
-
+#> Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", group_use = "Ductal",     plot_type = "wordcloud"): No enrichment result found. You may perform `RunGSEA()` first
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -507,4 +484,5 @@ GSEAPlot(
   plot_type = "wordcloud",
   word_type = "feature"
 )
+#> Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", group_use = "Ductal",     plot_type = "wordcloud", word_type = "feature"): No enrichment result found. You may perform `RunGSEA()` first
 ```

@@ -92,7 +92,7 @@ RunSCENICPlus(
   GRN method used for TF-gene inference. The native backend can call
   [`RunGRNBoost2()`](https://mengxu98.github.io/scop/reference/RunGRNBoost2.md)
   or
-  [`RunGENIE3()`](https://mengxu98.github.io/scop/reference/RunGRNBoost2.md);
+  [`RunGENIE3()`](https://mengxu98.github.io/scop/reference/RunGENIE3.md);
   RegDiffusion is supported only through the Python backend.
 
 - regulators:

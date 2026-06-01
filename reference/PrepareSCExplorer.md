@@ -19,7 +19,8 @@ PrepareSCExplorer(
   write_tools = FALSE,
   write_misc = FALSE,
   compression_level = 6,
-  overwrite = FALSE
+  overwrite = FALSE,
+  verbose = TRUE
 )
 ```
 
@@ -76,6 +77,10 @@ PrepareSCExplorer(
   Whether to overwrite existing data in the data file. Default is
   `TRUE`.
 
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
+
 ## See also
 
 [CreateDataFile](https://mengxu98.github.io/scop/reference/CreateDataFile.md),
@@ -86,54 +91,9 @@ PrepareSCExplorer(
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-31 06:22:36] Start standard processing workflow...
-#> ℹ [2026-05-31 06:22:36] Checking a list of <Seurat>...
-#> ! [2026-05-31 06:22:36] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-31 06:22:36] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-31 06:22:38] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-31 06:22:38] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-31 06:22:38] Number of available HVF: 2000
-#> ℹ [2026-05-31 06:22:38] Finished check
-#> ℹ [2026-05-31 06:22:38] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-31 06:22:39] Perform pca linear dimension reduction
-#> ℹ [2026-05-31 06:22:39] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-31 06:22:40] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-31 06:22:40] Reorder clusters...
-#> ℹ [2026-05-31 06:22:40] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-31 06:22:40] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-31 06:22:40] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-31 06:22:44] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-31 06:22:48] Standard processing workflow completed
 PrepareSCExplorer(pancreas_sub, base_dir = "./SCExplorer")
-#> ℹ [2026-05-31 06:22:48] Set the project name of each <Seurat> to their dataset name
-#> ℹ [2026-05-31 06:22:48] Prepare data for object: "SeuratProject"
-#> ℹ [2026-05-31 06:22:48] Write the expression matrix to: /home/runner/work/scop/scop/docs/reference/SCExplorer/data.hdf5
-#> ℹ [2026-05-31 06:22:48] Group "/SeuratProject/RNA/counts" already exists in /home/runner/work/scop/scop/docs/reference/SCExplorer/data.hdf5
-#> ℹ [2026-05-31 06:22:49] Group "/SeuratProject/RNA/data" already exists in /home/runner/work/scop/scop/docs/reference/SCExplorer/data.hdf5
-#> ℹ [2026-05-31 06:22:49] Write the meta information to: /home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5
-#> ℹ [2026-05-31 06:22:49] Group "/SeuratProject/metadata/orig.ident" already exists in /home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5
-#> ℹ [2026-05-31 06:22:49] Group "/SeuratProject/metadata/nCount_RNA" already exists in /home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5
-#> ℹ [2026-05-31 06:22:49] Group "/SeuratProject/metadata/nFeature_RNA" already exists in /home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5
-#> ℹ [2026-05-31 06:22:49] Group "/SeuratProject/metadata/S_score" already exists in /home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5
-#> ℹ [2026-05-31 06:22:49] Group "/SeuratProject/metadata/G2M_score" already exists in /home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5
-#> ℹ [2026-05-31 06:22:49] Group "/SeuratProject/metadata/nCount_spliced" already exists in /home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5
-#> ℹ [2026-05-31 06:22:49] Group "/SeuratProject/metadata/nFeature_spliced" already exists in /home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5
-#> ℹ [2026-05-31 06:22:49] Group "/SeuratProject/metadata/nCount_unspliced" already exists in /home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5
-#> ℹ [2026-05-31 06:22:49] Group "/SeuratProject/metadata/nFeature_unspliced" already exists in /home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5
-#> ℹ [2026-05-31 06:22:49] Group "/SeuratProject/metadata/CellType" already exists in /home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5
-#> ℹ [2026-05-31 06:22:49] Group "/SeuratProject/metadata/SubCellType" already exists in /home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5
-#> ℹ [2026-05-31 06:22:49] Group "/SeuratProject/metadata/Phase" already exists in /home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5
-#> ℹ [2026-05-31 06:22:49] Group "/SeuratProject/metadata/Standardpca_SNN_res.0.6" already exists in /home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5
-#> ℹ [2026-05-31 06:22:49] Group "/SeuratProject/metadata/ident" already exists in /home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5
-#> ℹ [2026-05-31 06:22:49] Group "/SeuratProject/metadata/Standardpcaclusters" already exists in /home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5
-#> ℹ [2026-05-31 06:22:49] Group "/SeuratProject/metadata/Standardclusters" already exists in /home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5
-#> ℹ [2026-05-31 06:22:49] Group "/SeuratProject/metadata.stat" already exists in /home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5
-#> ℹ [2026-05-31 06:22:49] Group "/SeuratProject/reductions/Standardpca" already exists in /home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5
-#> ℹ [2026-05-31 06:22:49] Group "/SeuratProject/reductions/StandardpcaUMAP2D" already exists in /home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5
-#> ℹ [2026-05-31 06:22:49] Group "/SeuratProject/reductions/StandardpcaUMAP3D" already exists in /home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5
-#> ℹ [2026-05-31 06:22:49] Group "/SeuratProject/reductions/StandardUMAP2D" already exists in /home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5
-#> ℹ [2026-05-31 06:22:49] Group "/SeuratProject/reductions/StandardUMAP3D" already exists in /home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5
-#> ℹ [2026-05-31 06:22:49] Group /SeuratProject/reductions.stat already exists in the /home/runner/work/scop/scop/docs/reference/SCExplorer/meta.hdf5
+} # }
 ```

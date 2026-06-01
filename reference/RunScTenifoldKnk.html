@@ -183,7 +183,8 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">detected</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu">Matrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/colSums-methods.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">counts</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  decreasing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    decreasing <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">features_use</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">gene_use</span>, <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">detected</span>, <span class="fl">300</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -198,12 +199,12 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  store_networks <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>  store_manifold <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:14:35] Run <span style="color: #0000BB;">scTenifoldKnk</span> knockout for <span style="color: #0000BB;">"Pdx1"</span> using <span style="color: #0000BB;">"cpp"</span> backend</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:14:40] Construct scTenifoldNet network ensemble</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:14:40] Denoise network ensemble with tensor decomposition</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ℹ [2026-05-31 07:14:40] Denoise network ensemble with tensor decomposition  <span style="color: #00BB00;">■■ </span>…</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-05-31 07:14:40] Align WT and KO network manifolds</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-05-31 07:14:40] <span style="color: #0000BB;">scTenifoldKnk</span> results stored in `srt@tools[[scTenifoldKnk]]`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:42] Run <span style="color: #0000BB;">scTenifoldKnk</span> knockout for <span style="color: #0000BB;">"Pdx1"</span> using <span style="color: #0000BB;">"cpp"</span> backend</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:47] Construct scTenifoldNet network ensemble</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:47] Denoise network ensemble with tensor decomposition</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ℹ [2026-06-01 10:24:47] Denoise network ensemble with tensor decomposition  <span style="color: #00BB00;">■■ </span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:48] Align WT and KO network manifolds</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-01 10:24:48] <span style="color: #0000BB;">scTenifoldKnk</span> results stored in `srt@tools[[scTenifoldKnk]]`</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">dr</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">scTenifoldKnk</span><span class="op">$</span><span class="va">diffRegulation</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dr</span><span class="op">)</span></span></span>

@@ -41,7 +41,8 @@ DEtestManhattanPlot(
   seed = 11,
   aspect.ratio = NULL,
   xlab = NULL,
-  ylab = NULL
+  ylab = NULL,
+  verbose = TRUE
 )
 ```
 
@@ -215,6 +216,10 @@ DEtestManhattanPlot(
 
   A character string specifying the y-axis label.
 
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
+
 ## See also
 
 [DEtestPlot](https://mengxu98.github.io/scop/reference/DEtestPlot.md),
@@ -227,38 +232,39 @@ DEtestManhattanPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-31 05:43:55] Start standard processing workflow...
-#> ℹ [2026-05-31 05:43:55] Checking a list of <Seurat>...
-#> ! [2026-05-31 05:43:55] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-31 05:43:55] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-31 05:43:57] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-31 05:43:57] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-31 05:43:57] Number of available HVF: 2000
-#> ℹ [2026-05-31 05:43:57] Finished check
-#> ℹ [2026-05-31 05:43:57] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-31 05:43:58] Perform pca linear dimension reduction
-#> ℹ [2026-05-31 05:43:58] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-31 05:43:59] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-31 05:43:59] Reorder clusters...
-#> ℹ [2026-05-31 05:43:59] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-31 05:43:59] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-31 05:43:59] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-31 05:44:02] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-31 05:44:06] Standard processing workflow completed
+#> ℹ [2026-06-01 08:57:50] Start standard processing workflow...
+#> ℹ [2026-06-01 08:57:50] Checking a list of <Seurat>...
+#> ! [2026-06-01 08:57:51] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-01 08:57:51] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-01 08:57:52] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-01 08:57:52] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-01 08:57:52] Number of available HVF: 2000
+#> ℹ [2026-06-01 08:57:53] Finished check
+#> ℹ [2026-06-01 08:57:53] Perform `Seurat::ScaleData()`
+#> ℹ [2026-06-01 08:57:53] Perform pca linear dimension reduction
+#> ℹ [2026-06-01 08:57:53] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-01 08:57:54] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-01 08:57:54] Reorder clusters...
+#> ℹ [2026-06-01 08:57:54] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-01 08:57:54] Perform umap nonlinear dimension reduction
+#> ℹ [2026-06-01 08:57:54] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-06-01 08:57:57] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-06-01 08:58:01] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
   only.pos = FALSE
 )
-#> ℹ [2026-05-31 05:44:06] Data type is log-normalized
-#> ℹ [2026-05-31 05:44:06] Start differential expression test
-#> ℹ [2026-05-31 05:44:06] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-05-31 05:44:06] Using 1 core
-#> ⠙ [2026-05-31 05:44:06] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ✔ [2026-05-31 05:44:06] Completed 5 tasks in 1.4s
+#> ℹ [2026-06-01 08:58:01] Data type is log-normalized
+#> ℹ [2026-06-01 08:58:01] Start differential expression test
+#> ℹ [2026-06-01 08:58:01] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-06-01 08:58:01] Using 1 core
+#> ⠙ [2026-06-01 08:58:01] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ⠹ [2026-06-01 08:58:01] Running for Ngn3-low-EP [4/5] ■■■■■■■■    80% | ETA:  0s
+#> ✔ [2026-06-01 08:58:01] Completed 5 tasks in 1.4s
 #> 
-#> ℹ [2026-05-31 05:44:06] Building results
-#> ✔ [2026-05-31 05:44:08] Differential expression test completed
+#> ℹ [2026-06-01 08:58:01] Building results
+#> ✔ [2026-06-01 08:58:03] Differential expression test completed
 DEtestManhattanPlot(
   pancreas_sub,
   group.by = "CellType"

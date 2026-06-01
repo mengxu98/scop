@@ -141,7 +141,8 @@ counts <- GetAssayData5(
 )
 detected <- names(
   sort(Matrix::rowSums(counts > 0),
-  decreasing = TRUE)
+    decreasing = TRUE
+  )
 )
 features_use <- unique(c(gene_use, head(detected, 300)))
 
@@ -156,12 +157,12 @@ pancreas_sub <- RunscTenifoldKnk(
   store_networks = FALSE,
   store_manifold = TRUE
 )
-#> ℹ [2026-05-31 07:14:35] Run scTenifoldKnk knockout for "Pdx1" using "cpp" backend
-#> ℹ [2026-05-31 07:14:40] Construct scTenifoldNet network ensemble
-#> ℹ [2026-05-31 07:14:40] Denoise network ensemble with tensor decomposition
-#> ℹ [2026-05-31 07:14:40] Denoise network ensemble with tensor decomposition  ■■ …
-#> ℹ [2026-05-31 07:14:40] Align WT and KO network manifolds
-#> ✔ [2026-05-31 07:14:40] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
+#> ℹ [2026-06-01 10:24:42] Run scTenifoldKnk knockout for "Pdx1" using "cpp" backend
+#> ℹ [2026-06-01 10:24:47] Construct scTenifoldNet network ensemble
+#> ℹ [2026-06-01 10:24:47] Denoise network ensemble with tensor decomposition
+#> ℹ [2026-06-01 10:24:47] Denoise network ensemble with tensor decomposition  ■■ …
+#> ℹ [2026-06-01 10:24:48] Align WT and KO network manifolds
+#> ✔ [2026-06-01 10:24:48] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
 
 dr <- pancreas_sub@tools$scTenifoldKnk$diffRegulation
 head(dr)

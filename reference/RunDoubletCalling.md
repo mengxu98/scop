@@ -11,7 +11,8 @@ RunDoubletCalling(
   db_rate = ncol(srt)/1000 * 0.01,
   db_method = "scDblFinder",
   data_type = NULL,
-  ...
+  ...,
+  verbose = TRUE
 )
 ```
 
@@ -49,6 +50,10 @@ RunDoubletCalling(
   Additional arguments to be passed to the corresponding doublet-calling
   method.
 
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
+
 ## Value
 
 Returns a Seurat object with the doublet prediction results and
@@ -59,31 +64,31 @@ prediction scores stored in the meta.data.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-31 06:45:23] Start standard processing workflow...
-#> ℹ [2026-05-31 06:45:24] Checking a list of <Seurat>...
-#> ! [2026-05-31 06:45:24] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-31 06:45:24] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-31 06:45:25] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-31 06:45:26] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-31 06:45:26] Number of available HVF: 2000
-#> ℹ [2026-05-31 06:45:26] Finished check
-#> ℹ [2026-05-31 06:45:26] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-31 06:45:26] Perform pca linear dimension reduction
-#> ℹ [2026-05-31 06:45:27] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-31 06:45:27] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-31 06:45:27] Reorder clusters...
-#> ℹ [2026-05-31 06:45:27] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-31 06:45:28] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-31 06:45:28] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-31 06:45:32] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-31 06:45:37] Standard processing workflow completed
+#> ℹ [2026-06-01 10:05:24] Start standard processing workflow...
+#> ℹ [2026-06-01 10:05:24] Checking a list of <Seurat>...
+#> ! [2026-06-01 10:05:25] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-01 10:05:25] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-01 10:05:26] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-01 10:05:27] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-01 10:05:27] Number of available HVF: 2000
+#> ℹ [2026-06-01 10:05:27] Finished check
+#> ℹ [2026-06-01 10:05:27] Perform `Seurat::ScaleData()`
+#> ℹ [2026-06-01 10:05:27] Perform pca linear dimension reduction
+#> ℹ [2026-06-01 10:05:28] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-01 10:05:28] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-01 10:05:28] Reorder clusters...
+#> ℹ [2026-06-01 10:05:28] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-01 10:05:28] Perform umap nonlinear dimension reduction
+#> ℹ [2026-06-01 10:05:28] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-06-01 10:05:33] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-06-01 10:05:38] Standard processing workflow completed
 pancreas_sub <- RunDoubletCalling(
   pancreas_sub,
   db_method = "scDblFinder"
 )
-#> ℹ [2026-05-31 06:45:38] Data type is raw counts
-#> ℹ [2026-05-31 06:45:38] Running scDblFinder
-#> ℹ [2026-05-31 06:45:38] Data type is raw counts
+#> ℹ [2026-06-01 10:05:38] Data type is raw counts
+#> ℹ [2026-06-01 10:05:38] Running scDblFinder
+#> ℹ [2026-06-01 10:05:38] Data type is raw counts
 #> Warning: Layer ‘data’ is empty
 #> Warning: Layer ‘scale.data’ is empty
 #> Warning: 'normalizeCounts' is deprecated.

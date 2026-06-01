@@ -1,7 +1,6 @@
 # Plot deconvolution results
 
-Visualize bulk or pseudobulk deconvolution results from a
-`SummarizedExperiment` object or a supplied result table.
+Plot deconvolution results
 
 ## Usage
 
@@ -29,6 +28,7 @@ DeconvolutionPlot(
   legend.position = "right",
   legend.direction = "vertical",
   grid_major = FALSE,
+  verbose = TRUE,
   ...
 )
 ```
@@ -121,6 +121,10 @@ DeconvolutionPlot(
   Whether to show major grid lines for `"bar"` and `"box"` plots.
   Default is `FALSE`.
 
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
+
 - ...:
 
   Reserved for future use.
@@ -146,11 +150,14 @@ islet_bulk <- RunDeconvolution(
   method = "MuSiC",
   group.by = "celltype"
 )
+#> Error in build_context(mode = "pure_bulk", bulk_se = object, bulk_assay = bulk_assay): could not find function "build_context"
 DeconvolutionPlot(islet_bulk, plot_type = "bar")
-#> Error in DeconvolutionPlot(islet_bulk, plot_type = "bar"): No deconvolution result is available for plotting.
+#> Error in resolve_deconvolution_result(object = object, res = res): Cannot find deconvolution results in
+#> `S4Vectors::metadata(object)[['Deconvolution']]()`
 
 DeconvolutionPlot(islet_bulk, plot_type = "box")
-#> Error in DeconvolutionPlot(islet_bulk, plot_type = "box"): No deconvolution result is available for plotting.
+#> Error in resolve_deconvolution_result(object = object, res = res): Cannot find deconvolution results in
+#> `S4Vectors::metadata(object)[['Deconvolution']]()`
 
 ht <- DeconvolutionPlot(
   islet_bulk,
@@ -158,7 +165,8 @@ ht <- DeconvolutionPlot(
   sample_annotation = "condition",
   sample_split = "condition"
 )
-#> Error in DeconvolutionPlot(islet_bulk, plot_type = "heatmap", sample_annotation = "condition",     sample_split = "condition"): No deconvolution result is available for plotting.
+#> Error in resolve_deconvolution_result(object = object, res = res): Cannot find deconvolution results in
+#> `S4Vectors::metadata(object)[['Deconvolution']]()`
 ComplexHeatmap::draw(ht)
 #> Error in h(simpleError(msg, call)): error in evaluating the argument 'object' in selecting a method for function 'draw': object 'ht' not found
 ```

@@ -50,7 +50,8 @@
 <span>  db_rate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">srt</span><span class="op">)</span><span class="op">/</span><span class="fl">1000</span> <span class="op">*</span> <span class="fl">0.01</span>,</span>
 <span>  cores <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  data_type <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  <span class="va">...</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -85,6 +86,11 @@ count matrix across nested QC calls.</p></dd>
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Additional arguments to be passed to <a href="https://github.com/JonathanShor/DoubletDetection" class="external-link">doubletdetection.BoostClassifier</a>.</p></dd>
+
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>Whether to print the message.
+Default is <code>TRUE</code>.</p></dd>
 
 </dl></div>
 

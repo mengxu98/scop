@@ -127,7 +127,8 @@ CellDimPlot(
   ncol = NULL,
   byrow = TRUE,
   force = FALSE,
-  seed = 11
+  seed = 11,
+  verbose = TRUE
 )
 ```
 
@@ -650,6 +651,10 @@ CellDimPlot(
 
   Random seed for reproducibility. Default is `11`.
 
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
+
 ## See also
 
 [CellDimPlot3D](https://mengxu98.github.io/scop/reference/CellDimPlot3D.md),
@@ -661,24 +666,24 @@ CellDimPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-31 05:24:42] Start standard processing workflow...
-#> ℹ [2026-05-31 05:24:42] Checking a list of <Seurat>...
-#> ! [2026-05-31 05:24:42] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-31 05:24:42] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-31 05:24:44] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-31 05:24:44] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-31 05:24:44] Number of available HVF: 2000
-#> ℹ [2026-05-31 05:24:44] Finished check
-#> ℹ [2026-05-31 05:24:44] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-31 05:24:45] Perform pca linear dimension reduction
-#> ℹ [2026-05-31 05:24:45] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-31 05:24:46] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-31 05:24:46] Reorder clusters...
-#> ℹ [2026-05-31 05:24:46] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-31 05:24:46] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-31 05:24:46] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-31 05:24:49] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-31 05:24:52] Standard processing workflow completed
+#> ℹ [2026-06-01 08:38:12] Start standard processing workflow...
+#> ℹ [2026-06-01 08:38:13] Checking a list of <Seurat>...
+#> ! [2026-06-01 08:38:13] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-01 08:38:13] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-01 08:38:14] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-01 08:38:15] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-01 08:38:15] Number of available HVF: 2000
+#> ℹ [2026-06-01 08:38:15] Finished check
+#> ℹ [2026-06-01 08:38:15] Perform `Seurat::ScaleData()`
+#> ℹ [2026-06-01 08:38:15] Perform pca linear dimension reduction
+#> ℹ [2026-06-01 08:38:16] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-01 08:38:16] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-01 08:38:16] Reorder clusters...
+#> ℹ [2026-06-01 08:38:16] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-01 08:38:16] Perform umap nonlinear dimension reduction
+#> ℹ [2026-06-01 08:38:16] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-06-01 08:38:19] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-06-01 08:38:23] Standard processing workflow completed
 p1 <- CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -1026,8 +1031,8 @@ pancreas_sub <- RunPAGA(
   backend = "cpp",
   return_seurat = TRUE
 )
-#> ℹ [2026-05-31 05:25:26] Running PAGA with `backend = 'cpp'` using 29 neighbors
-#> ✔ [2026-05-31 05:25:26] PAGA cpp backend completed
+#> ℹ [2026-06-01 08:38:57] Running PAGA with `backend = 'cpp'` using 29 neighbors
+#> ✔ [2026-06-01 08:38:57] PAGA cpp backend completed
 
 CellDimPlot(
   pancreas_sub,
@@ -1075,8 +1080,8 @@ pancreas_sub <- RunSCVELO(
   backend = "cpp",
   return_seurat = TRUE
 )
-#> ℹ [2026-05-31 05:25:28] Running scVelo stochastic embedding with `backend = 'cpp'` using 2000 features
-#> ✔ [2026-05-31 05:25:28] scVelo cpp stochastic embedding completed
+#> ℹ [2026-06-01 08:38:58] Running scVelo stochastic embedding with `backend = 'cpp'` using 2000 features
+#> ✔ [2026-06-01 08:38:59] scVelo cpp stochastic embedding completed
 
 CellDimPlot(
   pancreas_sub,

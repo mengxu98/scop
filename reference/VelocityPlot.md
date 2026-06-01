@@ -46,7 +46,8 @@ VelocityPlot(
   theme_use = "theme_scop",
   theme_args = list(),
   return_layer = FALSE,
-  seed = 11
+  seed = 11,
+  verbose = TRUE
 )
 ```
 
@@ -219,6 +220,10 @@ VelocityPlot(
 
   Random seed for reproducibility. Default is `11`.
 
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
+
 ## See also
 
 [RunSCVELO](https://mengxu98.github.io/scop/reference/RunSCVELO.md),
@@ -229,24 +234,24 @@ VelocityPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-05-31 07:29:39] Start standard processing workflow...
-#> ℹ [2026-05-31 07:29:40] Checking a list of <Seurat>...
-#> ! [2026-05-31 07:29:40] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-05-31 07:29:40] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-05-31 07:29:41] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-05-31 07:29:42] Use the separate HVF from `srt_list`
-#> ℹ [2026-05-31 07:29:42] Number of available HVF: 2000
-#> ℹ [2026-05-31 07:29:42] Finished check
-#> ℹ [2026-05-31 07:29:42] Perform `Seurat::ScaleData()`
-#> ℹ [2026-05-31 07:29:43] Perform pca linear dimension reduction
-#> ℹ [2026-05-31 07:29:43] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-05-31 07:29:43] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-05-31 07:29:43] Reorder clusters...
-#> ℹ [2026-05-31 07:29:44] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-05-31 07:29:44] Perform umap nonlinear dimension reduction
-#> ℹ [2026-05-31 07:29:44] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-05-31 07:29:49] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-05-31 07:29:54] Standard processing workflow completed
+#> ℹ [2026-06-01 10:39:16] Start standard processing workflow...
+#> ℹ [2026-06-01 10:39:16] Checking a list of <Seurat>...
+#> ! [2026-06-01 10:39:16] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-01 10:39:17] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-01 10:39:18] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-01 10:39:19] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-01 10:39:19] Number of available HVF: 2000
+#> ℹ [2026-06-01 10:39:19] Finished check
+#> ℹ [2026-06-01 10:39:19] Perform `Seurat::ScaleData()`
+#> ℹ [2026-06-01 10:39:19] Perform pca linear dimension reduction
+#> ℹ [2026-06-01 10:39:20] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-01 10:39:20] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-01 10:39:20] Reorder clusters...
+#> ℹ [2026-06-01 10:39:20] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-01 10:39:20] Perform umap nonlinear dimension reduction
+#> ℹ [2026-06-01 10:39:20] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ℹ [2026-06-01 10:39:25] Perform umap nonlinear dimension reduction using Standardpca (1:23)
+#> ✔ [2026-06-01 10:39:30] Standard processing workflow completed
 pancreas_sub <- RunSCVELO(
   pancreas_sub,
   group.by = "SubCellType",
@@ -255,8 +260,8 @@ pancreas_sub <- RunSCVELO(
   backend = "cpp",
   return_seurat = TRUE
 )
-#> ℹ [2026-05-31 07:29:54] Running scVelo stochastic embedding with `backend = 'cpp'` using 2000 features
-#> ✔ [2026-05-31 07:29:54] scVelo cpp stochastic embedding completed
+#> ℹ [2026-06-01 10:39:30] Running scVelo stochastic embedding with `backend = 'cpp'` using 2000 features
+#> ✔ [2026-06-01 10:39:30] scVelo cpp stochastic embedding completed
 VelocityPlot(
   pancreas_sub,
   reduction = "umap"

@@ -107,6 +107,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunDynamicFeatures.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunEnrichment.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunFR.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunGENIE3.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunGLMPCA.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunGRNBoost2.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunGSEA.html</loc></url>
@@ -155,6 +156,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunUMAP2.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunWOT.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunscCODA.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunscFEA.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunscOMM.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunscTenifoldNet.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/SCENICPlot.html</loc></url>
@@ -193,6 +195,9 @@
 <url><loc>https://mengxu98.github.io/scop/reference/reexports.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/ref_scMCA.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/remove_python.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/scFEABalanceBarPlot.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/scFEAHeatmap.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/scFEAVolcanoPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/scTenifoldKnkPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/scTenifoldNetPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/scVI5_integrate.html</loc></url>

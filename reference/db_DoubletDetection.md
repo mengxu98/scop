@@ -11,7 +11,8 @@ db_DoubletDetection(
   db_rate = ncol(srt)/1000 * 0.01,
   cores = 1,
   data_type = NULL,
-  ...
+  ...,
+  verbose = TRUE
 )
 ```
 
@@ -46,6 +47,10 @@ db_DoubletDetection(
 
   Additional arguments to be passed to
   [doubletdetection.BoostClassifier](https://github.com/JonathanShor/DoubletDetection).
+
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
 
 ## Examples
 
