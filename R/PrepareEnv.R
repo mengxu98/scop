@@ -387,6 +387,7 @@ supported_env_modules <- function() {
     "celltypist",
     "cellphonedb",
     "magic",
+    "scfea",
     "scrublet",
     "sccoda",
     "doubletdetection",
@@ -406,7 +407,7 @@ supported_env_modules <- function() {
 }
 
 default_env_modules <- function() {
-  excluded <- c("sccoda", "scomm", "scenic", "regdiffusion", "scenicplus")
+  excluded <- c("scfea", "sccoda", "scomm", "scenic", "regdiffusion", "scenicplus")
   if (is_windows()) {
     excluded <- c(excluded, "scvi", "glue", "multimap")
   }
@@ -450,6 +451,7 @@ env_module_requirements <- function() {
     celltypist = celltypist_python_requirements(),
     cellphonedb = cellphonedb_python_requirements(),
     magic = magic_python_requirements(),
+    scfea = scfea_python_requirements(),
     scrublet = scrublet_python_requirements(),
     sccoda = sccoda_python_requirements(),
     doubletdetection = doubletdetection_python_requirements(),
@@ -1461,6 +1463,24 @@ magic_python_requirements <- function() {
     ),
     install_methods = c(
       "magic-impute" = "pip"
+    ),
+    package_aliases = list()
+  )
+}
+
+scfea_python_requirements <- function() {
+  list(
+    packages = c(
+      "torch" = "torch",
+      "numpy" = "numpy",
+      "pandas" = "pandas",
+      "tqdm" = "tqdm"
+    ),
+    install_methods = c(
+      "torch" = "pip",
+      "numpy" = "pip",
+      "pandas" = "pip",
+      "tqdm" = "pip"
     ),
     package_aliases = list()
   )

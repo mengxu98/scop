@@ -225,6 +225,13 @@ reference:
   - GSVAPlot
   - MetabolismPlot
 
+- subtitle: "Metabolic Flux Analysis"
+- contents:
+  - RunscFEA
+  - scFEAHeatmap
+  - scFEAVolcanoPlot
+  - scFEABalanceBarPlot
+
 - subtitle: "Dynamic Trajectory Analysis"
 - contents:
   - RunCellRank
