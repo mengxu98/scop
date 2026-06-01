@@ -54,6 +54,7 @@ Suggests:
     Coralysis,
     circlize,
     clusterProfiler,
+    cowplot,
     e1071,
     ggpubr,
     ggupset,
