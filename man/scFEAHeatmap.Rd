@@ -12,13 +12,23 @@ scFEAHeatmap(
   label_by = c("module", "reaction", "module_reaction"),
   add_sm_anno = TRUE,
   scale_rows = TRUE,
-  cluster_rows = TRUE,
-  cluster_columns = TRUE,
+  cluster_rows = FALSE,
+  cluster_columns = FALSE,
   sm_anno_label_rot = 0,
   show_row_names = FALSE,
+  show_column_names = FALSE,
   heatmap_limit = 2,
-  heatmap_column_width = grid::unit(10, "mm"),
-  column_names_rot = 45,
+  heatmap_column_width = NULL,
+  column_names_rot = 90,
+  heatmap_palette = "RdBu",
+  heatmap_palcolor = NULL,
+  group_palette = "Chinese",
+  group_palcolor = NULL,
+  feature_split_palette = "simspec",
+  feature_split_palcolor = NULL,
+  border = TRUE,
+  use_raster = TRUE,
+  raster_by_magick = FALSE,
   column_names_gp = grid::gpar(fontsize = 8),
   column_title_gp = grid::gpar(fontsize = 11),
   row_title_gp = grid::gpar(fontsize = 7.5),
@@ -33,6 +43,7 @@ scFEAHeatmap(
   mark_annotation_width = NULL,
   mark_link_width = grid::unit(5, "mm"),
   name = NULL,
+  ht_params = list(),
   width = NULL,
   height = NULL,
   verbose = TRUE
@@ -51,9 +62,15 @@ scFEAHeatmap(
 \item{cluster_rows, cluster_columns}{Passed to \code{\link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap()}}.}
 \item{sm_anno_label_rot}{Rotation angle for \code{SM_anno} row-split labels.}
 \item{show_row_names}{Whether to show row labels.}
+\item{show_column_names}{Whether to show aggregated group labels.}
 \item{heatmap_limit}{Numeric clipping limit for row z-scores.}
 \item{heatmap_column_width}{Width for each aggregated group column. Numeric values are interpreted as millimeters.}
 \item{column_names_rot}{Rotation angle for heatmap column labels.}
+\item{heatmap_palette, heatmap_palcolor}{Continuous heatmap palette passed to \code{palette_colors()}.}
+\item{group_palette, group_palcolor}{Palette for the top group annotation.}
+\item{feature_split_palette, feature_split_palcolor}{Palette for \code{SM_anno} row annotation.}
+\item{border}{Whether to draw borders around heatmap cells and annotations.}
+\item{use_raster, raster_by_magick}{Raster settings passed to \code{\link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap()}}.}
 \item{column_names_gp, column_title_gp, row_title_gp}{Font settings passed to \code{\link[grid:gpar]{grid::gpar()}}-aware ComplexHeatmap arguments.}
 \item{legend_title_gp, legend_labels_gp}{Font settings for heatmap and annotation legends.}
 \item{row_gap}{Gap between \code{SM_anno} row splits.}
@@ -65,6 +82,7 @@ scFEAHeatmap(
 \item{mark_annotation_width}{Width of the right mark annotation. Numeric values are interpreted as millimeters.}
 \item{mark_link_width}{Link width used by \code{\link[ComplexHeatmap:anno_mark]{ComplexHeatmap::anno_mark()}}.}
 \item{name}{Heatmap legend title.}
+\item{ht_params}{Additional parameters passed to \code{\link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap()}}, overriding defaults when names overlap.}
 \item{width, height}{Suggested export size. Stored as attributes on the returned heatmap object.}
 \item{verbose}{Whether to print messages.}
 }
