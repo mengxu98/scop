@@ -216,9 +216,6 @@ reference:
   - RunGSEA
   - RunGSVA
   - RunMetabolism
-  - RunGRNBoost2
-  - RunSCENIC
-  - RunSCENICPlus
 
 - subtitle: "Enrichment Analysis Plot"
 - contents:
@@ -227,7 +224,6 @@ reference:
   - GSEAPlot
   - GSVAPlot
   - MetabolismPlot
-  - SCENICPlot
 
 - subtitle: "Dynamic Trajectory Analysis"
 - contents:
@@ -269,6 +265,17 @@ reference:
   - CCCHeatmap
   - CCCNetworkPlot
   - CCCStatPlot
+
+- subtitle: "Gene Regulatory Network Inference"
+- contents:
+  - RunGRNBoost2
+  - RunGENIE3
+  - RunSCENIC
+  - RunSCENICPlus
+
+- subtitle: "Gene Regulatory Network Plots"
+- contents:
+  - SCENICPlot
 
 - subtitle: "Benchmark and Genomic Track Plots"
 - contents:
