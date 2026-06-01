@@ -67,6 +67,26 @@ RunscFEA <- function(
     verbose = verbose
   )
 
+  configure_python_thread_env()
+  if (isTRUE(reticulate::py_available(initialize = FALSE))) {
+    tryCatch(
+      reticulate::py_run_string(
+        "
+import os
+os.environ['OMP_NUM_THREADS'] = '1'
+os.environ['OPENBLAS_NUM_THREADS'] = '1'
+os.environ['MKL_NUM_THREADS'] = '1'
+os.environ['VECLIB_MAXIMUM_THREADS'] = '1'
+os.environ['NUMEXPR_NUM_THREADS'] = '1'
+os.environ['KMP_WARNINGS'] = '0'
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
+os.environ['NUMBA_NUM_THREADS'] = '1'
+"
+      ),
+      error = function(...) NULL
+    )
+  }
+
   ok <- check_python(
     c("torch", "numpy", "pandas", "tqdm"),
     verbose = verbose
@@ -263,10 +283,19 @@ RunscFEA <- function(
 #' @param cluster_rows,cluster_columns Passed to [ComplexHeatmap::Heatmap()].
 #' @param sm_anno_label_rot Rotation angle for `SM_anno` row-split labels.
 #' @param show_row_names Whether to show row labels.
+#' @param show_column_names Whether to show aggregated group labels.
 #' @param heatmap_limit Numeric clipping limit for row z-scores.
 #' @param heatmap_column_width Width for each aggregated group column. Numeric
 #' values are interpreted as millimeters.
 #' @param column_names_rot Rotation angle for heatmap column labels.
+#' @param heatmap_palette,heatmap_palcolor Continuous heatmap palette passed to
+#' `palette_colors()`.
+#' @param group_palette,group_palcolor Palette for the top group annotation.
+#' @param feature_split_palette,feature_split_palcolor Palette for `SM_anno`
+#' row annotation.
+#' @param border Whether to draw borders around heatmap cells and annotations.
+#' @param use_raster,raster_by_magick Raster settings passed to
+#' [ComplexHeatmap::Heatmap()].
 #' @param column_names_gp,column_title_gp,row_title_gp Font settings passed to
 #' [grid::gpar()]-aware ComplexHeatmap arguments.
 #' @param legend_title_gp,legend_labels_gp Font settings for heatmap and
@@ -284,6 +313,8 @@ RunscFEA <- function(
 #' values are interpreted as millimeters.
 #' @param mark_link_width Link width used by [ComplexHeatmap::anno_mark()].
 #' @param name Heatmap legend title.
+#' @param ht_params Additional parameters passed to
+#' [ComplexHeatmap::Heatmap()], overriding defaults when names overlap.
 #' @param width,height Suggested export size. Stored as attributes on the
 #' returned heatmap object.
 #' @param verbose Whether to print messages.
@@ -300,13 +331,23 @@ scFEAHeatmap <- function(
   label_by = c("module", "reaction", "module_reaction"),
   add_sm_anno = TRUE,
   scale_rows = TRUE,
-  cluster_rows = TRUE,
-  cluster_columns = TRUE,
+  cluster_rows = FALSE,
+  cluster_columns = FALSE,
   sm_anno_label_rot = 0,
   show_row_names = FALSE,
+  show_column_names = FALSE,
   heatmap_limit = 2,
-  heatmap_column_width = grid::unit(10, "mm"),
-  column_names_rot = 45,
+  heatmap_column_width = NULL,
+  column_names_rot = 90,
+  heatmap_palette = "RdBu",
+  heatmap_palcolor = NULL,
+  group_palette = "Chinese",
+  group_palcolor = NULL,
+  feature_split_palette = "simspec",
+  feature_split_palcolor = NULL,
+  border = TRUE,
+  use_raster = TRUE,
+  raster_by_magick = FALSE,
   column_names_gp = grid::gpar(fontsize = 8),
   column_title_gp = grid::gpar(fontsize = 11),
   row_title_gp = grid::gpar(fontsize = 7.5),
@@ -321,6 +362,7 @@ scFEAHeatmap <- function(
   mark_annotation_width = NULL,
   mark_link_width = grid::unit(5, "mm"),
   name = NULL,
+  ht_params = list(),
   width = NULL,
   height = NULL,
   verbose = TRUE
@@ -408,12 +450,17 @@ scFEAHeatmap <- function(
     sm_anno <- module_info$SM_anno
     sm_anno[is.na(sm_anno)] <- "Unknown"
     sm_anno <- factor(sm_anno, levels = unique(sm_anno))
-    sm_cols <- scfea_discrete_colors(levels(sm_anno))
+    sm_cols <- palette_colors(
+      levels(sm_anno),
+      palette = feature_split_palette,
+      palcolor = feature_split_palcolor
+    )
     left_annotation <- ComplexHeatmap::rowAnnotation(
       SM_anno = sm_anno,
       col = list(SM_anno = sm_cols),
       show_annotation_name = FALSE,
       simple_anno_size = sm_anno_size,
+      border = border,
       annotation_legend_param = list(
         SM_anno = list(
           title = "SM_anno",
@@ -427,9 +474,10 @@ scFEAHeatmap <- function(
 
   top_annotation <- NULL
   if (!is.null(group.by)) {
-    group_cols <- stats::setNames(
-      grDevices::hcl.colors(length(group_levels), palette = "Set 3"),
-      group_levels
+    group_cols <- palette_colors(
+      group_levels,
+      palette = group_palette,
+      palcolor = group_palcolor
     )
     group_df <- data.frame(group = colnames(plot_mat), check.names = FALSE)
     colnames(group_df) <- group.by
@@ -438,6 +486,7 @@ scFEAHeatmap <- function(
       col = stats::setNames(list(group_cols), group.by),
       show_annotation_name = FALSE,
       simple_anno_size = group_anno_size,
+      border = border,
       annotation_legend_param = stats::setNames(
         list(list(
           title = group.by,
@@ -490,21 +539,22 @@ scFEAHeatmap <- function(
     }
   }
 
-  ht <- ComplexHeatmap::Heatmap(
-    plot_mat,
+  colors <- circlize::colorRamp2(
+    seq(-color_limit, color_limit, length = 100),
+    palette_colors(palette = heatmap_palette, palcolor = heatmap_palcolor)
+  )
+  ht_args <- list(
+    matrix = plot_mat,
     name = name,
-    col = circlize::colorRamp2(
-      c(-color_limit, 0, color_limit),
-      c("#08519C", "white", "#A50F15")
-    ),
+    col = colors,
     width = heatmap_body_width,
     cluster_rows = cluster_rows,
     cluster_columns = cluster_columns,
     row_labels = row_labels,
     show_row_names = show_row_names,
-    show_column_names = TRUE,
-    use_raster = FALSE,
-    raster_by_magick = FALSE,
+    show_column_names = show_column_names,
+    use_raster = use_raster,
+    raster_by_magick = raster_by_magick,
     column_names_rot = column_names_rot,
     column_names_gp = column_names_gp,
     column_title_gp = column_title_gp,
@@ -515,6 +565,7 @@ scFEAHeatmap <- function(
     row_title_rot = sm_anno_label_rot,
     row_title_gp = row_title_gp,
     row_gap = row_gap,
+    border = border,
     column_title = group.by %||% "All cells",
     heatmap_legend_param = list(
       legend_height = grid::unit(5, "cm"),
@@ -523,6 +574,8 @@ scFEAHeatmap <- function(
       labels_gp = legend_labels_gp
     )
   )
+  ht_args <- utils::modifyList(ht_args, ht_params)
+  ht <- do.call(ComplexHeatmap::Heatmap, ht_args)
   attr(ht, "width") <- width
   attr(ht, "height") <- height
   ht
@@ -1610,10 +1663,4 @@ scfea_supermodule_labels <- function() {
     "21" = "Pyrimidine_synthesis",
     "22" = "Steroid_hormone_synthesis"
   )
-}
-
-scfea_discrete_colors <- function(x) {
-  x <- unique(as.character(x))
-  cols <- grDevices::hcl.colors(length(x), palette = "Dark 3")
-  stats::setNames(cols, x)
 }
