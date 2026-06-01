@@ -2,277 +2,277 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 augur_subsample_cpp <- function(mat, cols) {
-  .Call(`_scop_augur_subsample_cpp`, mat, cols)
+    .Call(`_scop_augur_subsample_cpp`, mat, cols)
 }
 
 bayesprism_gibbs_initial_cpp <- function(mixture, phi, gibbs_idx, alpha = 1.0, seed = 123L, n_threads = 1L) {
-  .Call(`_scop_bayesprism_gibbs_initial_cpp`, mixture, phi, gibbs_idx, alpha, seed, n_threads)
+    .Call(`_scop_bayesprism_gibbs_initial_cpp`, mixture, phi, gibbs_idx, alpha, seed, n_threads)
 }
 
 bayesprism_gibbs_final_cpp <- function(mixture, phi, gibbs_idx, alpha = 1.0, seed = 123L, n_threads = 1L) {
-  .Call(`_scop_bayesprism_gibbs_final_cpp`, mixture, phi, gibbs_idx, alpha, seed, n_threads)
+    .Call(`_scop_bayesprism_gibbs_final_cpp`, mixture, phi, gibbs_idx, alpha, seed, n_threads)
 }
 
 classification_metrics <- function(predicted, truth, classes, rare_threshold = 0.05) {
-  .Call(`_scop_classification_metrics`, predicted, truth, classes, rare_threshold)
+    .Call(`_scop_classification_metrics`, predicted, truth, classes, rare_threshold)
 }
 
 cytospace_assign <- function(sc_expr, st_expr, spot_capacities, seed = 1L, upstream_tie_break = TRUE, verbose = FALSE) {
-  .Call(`_scop_cytospace_assign`, sc_expr, st_expr, spot_capacities, seed, upstream_tie_break, verbose)
+    .Call(`_scop_cytospace_assign`, sc_expr, st_expr, spot_capacities, seed, upstream_tie_break, verbose)
 }
 
 cytotrace2_ensemble_predict <- function(rank_data, log2_data, parameter_dict, cores = 1L) {
-  .Call(`_scop_cytotrace2_ensemble_predict`, rank_data, log2_data, parameter_dict, cores)
+    .Call(`_scop_cytotrace2_ensemble_predict`, rank_data, log2_data, parameter_dict, cores)
 }
 
 cytotrace2_diffusion_smooth <- function(log2_data, raw_scores, smooth_groups) {
-  .Call(`_scop_cytotrace2_diffusion_smooth`, log2_data, raw_scores, smooth_groups)
+    .Call(`_scop_cytotrace2_diffusion_smooth`, log2_data, raw_scores, smooth_groups)
 }
 
 cytotrace2_bin_data <- function(smoothed_scores, categories, category_labels) {
-  .Call(`_scop_cytotrace2_bin_data`, smoothed_scores, categories, category_labels)
+    .Call(`_scop_cytotrace2_bin_data`, smoothed_scores, categories, category_labels)
 }
 
 cytotrace2_knn_smooth <- function(pca_coords, preKNN_scores, preKNN_potency, cores = 1L, seed = 14L) {
-  .Call(`_scop_cytotrace2_knn_smooth`, pca_coords, preKNN_scores, preKNN_potency, cores, seed)
+    .Call(`_scop_cytotrace2_knn_smooth`, pca_coords, preKNN_scores, preKNN_potency, cores, seed)
 }
 
 cytotrace2_main <- function(rank_data, log2_data, parameter_dict, smooth_groups, cores, seed, pca_coords) {
-  .Call(`_scop_cytotrace2_main`, rank_data, log2_data, parameter_dict, smooth_groups, cores, seed, pca_coords)
+    .Call(`_scop_cytotrace2_main`, rank_data, log2_data, parameter_dict, smooth_groups, cores, seed, pca_coords)
 }
 
 aucell_auc_sparse <- function(expr, gene_sets, auc_max_rank, norm_auc = TRUE, strategy = 1L, algorithm = 1L) {
-  .Call(`_scop_aucell_auc_sparse`, expr, gene_sets, auc_max_rank, norm_auc, strategy, algorithm)
+    .Call(`_scop_aucell_auc_sparse`, expr, gene_sets, auc_max_rank, norm_auc, strategy, algorithm)
 }
 
 aucell_auc_ranked <- function(rankings, gene_sets, auc_max_rank) {
-  .Call(`_scop_aucell_auc_ranked`, rankings, gene_sets, auc_max_rank)
+    .Call(`_scop_aucell_auc_ranked`, rankings, gene_sets, auc_max_rank)
 }
 
 ora_hypergeom <- function(genes, term_ids, term_genes, term_name_ids, term_names, min_size = 10L, max_size = 2147483647L) {
-  .Call(`_scop_ora_hypergeom`, genes, term_ids, term_genes, term_name_ids, term_names, min_size, max_size)
+    .Call(`_scop_ora_hypergeom`, genes, term_ids, term_genes, term_name_ids, term_names, min_size, max_size)
 }
 
 module_score_sparse <- function(expr, feature_sets, control_sets) {
-  .Call(`_scop_module_score_sparse`, expr, feature_sets, control_sets)
+    .Call(`_scop_module_score_sparse`, expr, feature_sets, control_sets)
 }
 
 proportion_permutation <- function(sample_ids, cluster_ids, cluster_levels, n_permutations, pseudocount = 1e-8, verbose = FALSE) {
-  .Call(`_scop_proportion_permutation`, sample_ids, cluster_ids, cluster_levels, n_permutations, pseudocount, verbose)
+    .Call(`_scop_proportion_permutation`, sample_ids, cluster_ids, cluster_levels, n_permutations, pseudocount, verbose)
 }
 
 ssgsea_rank_dense <- function(expr, gene_sets, alpha = 0.25, normalize = TRUE) {
-  .Call(`_scop_ssgsea_rank_dense`, expr, gene_sets, alpha, normalize)
+    .Call(`_scop_ssgsea_rank_dense`, expr, gene_sets, alpha, normalize)
 }
 
 zscore_dense <- function(expr, gene_sets, min_size = 1L, max_size = 2147483647L) {
-  .Call(`_scop_zscore_dense`, expr, gene_sets, min_size, max_size)
+    .Call(`_scop_zscore_dense`, expr, gene_sets, min_size, max_size)
 }
 
 plage_dense <- function(expr, gene_sets, min_size = 1L, max_size = 2147483647L) {
-  .Call(`_scop_plage_dense`, expr, gene_sets, min_size, max_size)
+    .Call(`_scop_plage_dense`, expr, gene_sets, min_size, max_size)
 }
 
 gsva_gaussian_dense <- function(expr, gene_sets, max_diff = TRUE, abs_ranking = FALSE, tau = 1.0, chunk_size = 0L) {
-  .Call(`_scop_gsva_gaussian_dense`, expr, gene_sets, max_diff, abs_ranking, tau, chunk_size)
+    .Call(`_scop_gsva_gaussian_dense`, expr, gene_sets, max_diff, abs_ranking, tau, chunk_size)
 }
 
 gsva_poisson_dense <- function(expr, gene_sets, max_diff = TRUE, abs_ranking = FALSE, tau = 1.0, chunk_size = 0L) {
-  .Call(`_scop_gsva_poisson_dense`, expr, gene_sets, max_diff, abs_ranking, tau, chunk_size)
+    .Call(`_scop_gsva_poisson_dense`, expr, gene_sets, max_diff, abs_ranking, tau, chunk_size)
 }
 
 knn_topk_cpp <- function(reference, query, k, metric = "euclidean", exclude_self = FALSE, n_threads = 0L) {
-  .Call(`_scop_knn_topk_cpp`, reference, query, k, metric, exclude_self, n_threads)
+    .Call(`_scop_knn_topk_cpp`, reference, query, k, metric, exclude_self, n_threads)
 }
 
 wilcox_rank_sum_sparse <- function(mat, n_group1, min_expression = 0.0) {
-  .Call(`_scop_wilcox_rank_sum_sparse`, mat, n_group1, min_expression)
+    .Call(`_scop_wilcox_rank_sum_sparse`, mat, n_group1, min_expression)
 }
 
 wilcox_rank_sum_sparse_all_cells <- function(mat, n_group1) {
-  .Call(`_scop_wilcox_rank_sum_sparse_all_cells`, mat, n_group1)
+    .Call(`_scop_wilcox_rank_sum_sparse_all_cells`, mat, n_group1)
 }
 
 sparse_topk_by_column <- function(mat, k, decreasing = TRUE) {
-  .Call(`_scop_sparse_topk_by_column`, mat, k, decreasing)
+    .Call(`_scop_sparse_topk_by_column`, mat, k, decreasing)
 }
 
 dense_topk_by_column <- function(mat, k, decreasing = FALSE) {
-  .Call(`_scop_dense_topk_by_column`, mat, k, decreasing)
+    .Call(`_scop_dense_topk_by_column`, mat, k, decreasing)
 }
 
 paga_connectivities_cpp <- function(knn_idx, groups, n_groups) {
-  .Call(`_scop_paga_connectivities_cpp`, knn_idx, groups, n_groups)
+    .Call(`_scop_paga_connectivities_cpp`, knn_idx, groups, n_groups)
 }
 
 proportion_bootstrap_log2fd <- function(v1, v2, n_bootstrap = 1000L, pseudocount = 1e-5, verbose = FALSE) {
-  .Call(`_scop_proportion_bootstrap_log2fd`, v1, v2, n_bootstrap, pseudocount, verbose)
+    .Call(`_scop_proportion_bootstrap_log2fd`, v1, v2, n_bootstrap, pseudocount, verbose)
 }
 
 proportion_bootstrap_stats <- function(v1, v2, n_bootstrap = 1000L, pseudocount = 1e-5, verbose = FALSE) {
-  .Call(`_scop_proportion_bootstrap_stats`, v1, v2, n_bootstrap, pseudocount, verbose)
+    .Call(`_scop_proportion_bootstrap_stats`, v1, v2, n_bootstrap, pseudocount, verbose)
 }
 
 pseudotime_velocity_knn <- function(x_emb, pseudotime, neighbors, normalize = TRUE) {
-  .Call(`_scop_pseudotime_velocity_knn`, x_emb, pseudotime, neighbors, normalize)
+    .Call(`_scop_pseudotime_velocity_knn`, x_emb, pseudotime, neighbors, normalize)
 }
 
 pseudotime_velocity_gradient <- function(x_emb, pseudotime, neighbors, smooth = 0.5, normalize = TRUE) {
-  .Call(`_scop_pseudotime_velocity_gradient`, x_emb, pseudotime, neighbors, smooth, normalize)
+    .Call(`_scop_pseudotime_velocity_gradient`, x_emb, pseudotime, neighbors, smooth, normalize)
 }
 
 grnboost_tree <- function(expr, regulator_idx, target_idx, n_rounds = 5000L, learning_rate = 0.01, max_edges_per_target = 0L, max_depth = 3L, max_features = 0.1, subsample = 0.9, early_stop_window_length = 25L, random_seed = 1234L, exclude_self = TRUE) {
-  .Call(`_scop_grnboost_tree`, expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self)
-}
-
-scenic_ctx_auc_nes <- function(ranks, nes_threshold, rank_cutoff) {
-  .Call(`_scop_scenic_ctx_auc_nes`, ranks, nes_threshold, rank_cutoff)
+    .Call(`_scop_grnboost_tree`, expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self)
 }
 
 scenic_ctx_recovery <- function(ranks, weights, rank_threshold) {
-  .Call(`_scop_scenic_ctx_recovery`, ranks, weights, rank_threshold)
+    .Call(`_scop_scenic_ctx_recovery`, ranks, weights, rank_threshold)
+}
+
+scenic_ctx_auc_nes <- function(ranks, nes_threshold, rank_cutoff) {
+    .Call(`_scop_scenic_ctx_auc_nes`, ranks, nes_threshold, rank_cutoff)
 }
 
 scenicplus_region_gene_cor <- function(atac_log, rna_log, region_idx, gene_idx) {
-  .Call(`_scop_scenicplus_region_gene_cor`, atac_log, rna_log, region_idx, gene_idx)
+    .Call(`_scop_scenicplus_region_gene_cor`, atac_log, rna_log, region_idx, gene_idx)
 }
 
 scenicplus_triplets_cpp <- function(tf_gene_tf, tf_gene_target, tf_gene_importance, region_gene_region, region_gene_gene, region_gene_score, tf_region_tf, tf_region_region, tf_region_score) {
-  .Call(`_scop_scenicplus_triplets_cpp`, tf_gene_tf, tf_gene_target, tf_gene_importance, region_gene_region, region_gene_gene, region_gene_score, tf_region_tf, tf_region_region, tf_region_score)
+    .Call(`_scop_scenicplus_triplets_cpp`, tf_gene_tf, tf_gene_target, tf_gene_importance, region_gene_region, region_gene_gene, region_gene_score, tf_region_tf, tf_region_region, tf_region_score)
 }
 
 scvelo_stochastic_embedding_cpp <- function(spliced, unspliced, knn_idx, embedding) {
-  .Call(`_scop_scvelo_stochastic_embedding_cpp`, spliced, unspliced, knn_idx, embedding)
+    .Call(`_scop_scvelo_stochastic_embedding_cpp`, spliced, unspliced, knn_idx, embedding)
 }
 
 sctenifold_pcnet_covariance_raw <- function(x, n_comp = 3L, ncv = 0L, maxit = 1000L, tol = 1e-10, n_threads = 1L) {
-  .Call(`_scop_sctenifold_pcnet_covariance_raw`, x, n_comp, ncv, maxit, tol, n_threads)
+    .Call(`_scop_sctenifold_pcnet_covariance_raw`, x, n_comp, ncv, maxit, tol, n_threads)
 }
 
 sctenifold_pcnet_covariance_sparse <- function(x, n_comp = 3L, scale_scores = TRUE, symmetric = FALSE, q = 0.0, ncv = 0L, maxit = 1000L, tol = 1e-10, n_threads = 1L) {
-  .Call(`_scop_sctenifold_pcnet_covariance_sparse`, x, n_comp, scale_scores, symmetric, q, ncv, maxit, tol, n_threads)
+    .Call(`_scop_sctenifold_pcnet_covariance_sparse`, x, n_comp, scale_scores, symmetric, q, ncv, maxit, tol, n_threads)
 }
 
 sctenifold_tensor_decomposition <- function(x_list, init_u, max_iter = 1000L, tol = 1e-5, verbose = FALSE) {
-  .Call(`_scop_sctenifold_tensor_decomposition`, x_list, init_u, max_iter, tol, verbose)
+    .Call(`_scop_sctenifold_tensor_decomposition`, x_list, init_u, max_iter, tol, verbose)
 }
 
 sctenifold_strict_direction <- function(x, lambda = 1.0) {
-  .Call(`_scop_sctenifold_strict_direction`, x, lambda)
+    .Call(`_scop_sctenifold_strict_direction`, x, lambda)
 }
 
 sctenifold_manifold_matrix <- function(x, y) {
-  .Call(`_scop_sctenifold_manifold_matrix`, x, y)
+    .Call(`_scop_sctenifold_manifold_matrix`, x, y)
 }
 
 sctenifold_pair_distances <- function(aligned) {
-  .Call(`_scop_sctenifold_pair_distances`, aligned)
+    .Call(`_scop_sctenifold_pair_distances`, aligned)
 }
 
 scibet_fit_predict <- function(ref, query, labels, n_labels, n_top, additional_per_label = 0L) {
-  .Call(`_scop_scibet_fit_predict`, ref, query, labels, n_labels, n_top, additional_per_label)
+    .Call(`_scop_scibet_fit_predict`, ref, query, labels, n_labels, n_top, additional_per_label)
 }
 
 scibet_fit_predict_sparse <- function(ref, query, labels, n_labels, n_top, additional_per_label = 0L) {
-  .Call(`_scop_scibet_fit_predict_sparse`, ref, query, labels, n_labels, n_top, additional_per_label)
+    .Call(`_scop_scibet_fit_predict_sparse`, ref, query, labels, n_labels, n_top, additional_per_label)
 }
 
 scibet_predict <- function(query, core, feature_index) {
-  .Call(`_scop_scibet_predict`, query, core, feature_index)
+    .Call(`_scop_scibet_predict`, query, core, feature_index)
 }
 
 scaleC <- function(X) {
-  .Call(`_scop_scaleC`, X)
+    .Call(`_scop_scaleC`, X)
 }
 
 OmegaC <- function(Omega, sgn) {
-  .Call(`_scop_OmegaC`, Omega, sgn)
+    .Call(`_scop_OmegaC`, Omega, sgn)
 }
 
 OmegaSC <- function(OmegaS, sgn) {
-  .Call(`_scop_OmegaSC`, OmegaS, sgn)
+    .Call(`_scop_OmegaSC`, OmegaS, sgn)
 }
 
 maxLambdaLmC <- function(X, y, alpha, wbeta, N0, p) {
-  .Call(`_scop_maxLambdaLmC`, X, y, alpha, wbeta, N0, p)
+    .Call(`_scop_maxLambdaLmC`, X, y, alpha, wbeta, N0, p)
 }
 
 cvTrimLmC <- function(beta, nn, nn2, loco, XF, yF, NF, a0) {
-  .Call(`_scop_cvTrimLmC`, beta, nn, nn2, loco, XF, yF, NF, a0)
+    .Call(`_scop_cvTrimLmC`, beta, nn, nn2, loco, XF, yF, NF, a0)
 }
 
 EnetLmC <- function(X, y, alpha, lambda, nlambda, ilambda, wbeta, p, N0, thresh, maxit, thresh2) {
-  .Call(`_scop_EnetLmC`, X, y, alpha, lambda, nlambda, ilambda, wbeta, p, N0, thresh, maxit, thresh2)
+    .Call(`_scop_EnetLmC`, X, y, alpha, lambda, nlambda, ilambda, wbeta, p, N0, thresh, maxit, thresh2)
 }
 
 cvEnetLmC <- function(X, y, alpha, lambda, nlambda, wbeta, N, p, thresh, maxit, XF, yF, NF, thresh2) {
-  .Call(`_scop_cvEnetLmC`, X, y, alpha, lambda, nlambda, wbeta, N, p, thresh, maxit, XF, yF, NF, thresh2)
+    .Call(`_scop_cvEnetLmC`, X, y, alpha, lambda, nlambda, wbeta, N, p, thresh, maxit, XF, yF, NF, thresh2)
 }
 
 NetLmC <- function(X, y, alpha, lambda, nlambda, ilambda, wbeta, Omega, loc, nadj, p, N0, thresh, maxit, thresh2) {
-  .Call(`_scop_NetLmC`, X, y, alpha, lambda, nlambda, ilambda, wbeta, Omega, loc, nadj, p, N0, thresh, maxit, thresh2)
+    .Call(`_scop_NetLmC`, X, y, alpha, lambda, nlambda, ilambda, wbeta, Omega, loc, nadj, p, N0, thresh, maxit, thresh2)
 }
 
 cvNetLmC <- function(X, y, alpha, lambda, nlambda, wbeta, Omega, loc, nadj, N, p, thresh, maxit, XF, yF, NF, thresh2) {
-  .Call(`_scop_cvNetLmC`, X, y, alpha, lambda, nlambda, wbeta, Omega, loc, nadj, N, p, thresh, maxit, XF, yF, NF, thresh2)
+    .Call(`_scop_cvNetLmC`, X, y, alpha, lambda, nlambda, wbeta, Omega, loc, nadj, N, p, thresh, maxit, XF, yF, NF, thresh2)
 }
 
 maxLambdaCoxC <- function(X, tevent, N, nevent, nevent1, loc1, n, alpha, wbeta, N0, p) {
-  .Call(`_scop_maxLambdaCoxC`, X, tevent, N, nevent, nevent1, loc1, n, alpha, wbeta, N0, p)
+    .Call(`_scop_maxLambdaCoxC`, X, tevent, N, nevent, nevent1, loc1, n, alpha, wbeta, N0, p)
 }
 
 pletaCm <- function(xb, exb, nevent, nevent1, loc1, n, ifast, itwo) {
-  .Call(`_scop_pletaCm`, xb, exb, nevent, nevent1, loc1, n, ifast, itwo)
+    .Call(`_scop_pletaCm`, xb, exb, nevent, nevent1, loc1, n, ifast, itwo)
 }
 
 cvTrimCoxC <- function(beta, nn, nn2, loco, XF, NF, neventF, nevent1F, loc1F, nF, X, N, nevent, nevent1, loc1, n, ifast, itwo) {
-  .Call(`_scop_cvTrimCoxC`, beta, nn, nn2, loco, XF, NF, neventF, nevent1F, loc1F, nF, X, N, nevent, nevent1, loc1, n, ifast, itwo)
+    .Call(`_scop_cvTrimCoxC`, beta, nn, nn2, loco, XF, NF, neventF, nevent1F, loc1F, nF, X, N, nevent, nevent1, loc1, n, ifast, itwo)
 }
 
 EnetCoxC <- function(X, tevent, alpha, lambda, nlambda, ilambda, wbeta, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast) {
-  .Call(`_scop_EnetCoxC`, X, tevent, alpha, lambda, nlambda, ilambda, wbeta, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast)
+    .Call(`_scop_EnetCoxC`, X, tevent, alpha, lambda, nlambda, ilambda, wbeta, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast)
 }
 
 cvEnetCoxC <- function(X, tevent, alpha, lambda, nlambda, wbeta, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast, XF, NF, neventF, nevent1F, loc1F, nF) {
-  .Call(`_scop_cvEnetCoxC`, X, tevent, alpha, lambda, nlambda, wbeta, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast, XF, NF, neventF, nevent1F, loc1F, nF)
+    .Call(`_scop_cvEnetCoxC`, X, tevent, alpha, lambda, nlambda, wbeta, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast, XF, NF, neventF, nevent1F, loc1F, nF)
 }
 
 NetCoxC <- function(X, tevent, alpha, lambda, nlambda, ilambda, wbeta, Omega, loc, nadj, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast) {
-  .Call(`_scop_NetCoxC`, X, tevent, alpha, lambda, nlambda, ilambda, wbeta, Omega, loc, nadj, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast)
+    .Call(`_scop_NetCoxC`, X, tevent, alpha, lambda, nlambda, ilambda, wbeta, Omega, loc, nadj, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast)
 }
 
 cvNetCoxC <- function(X, tevent, alpha, lambda, nlambda, wbeta, Omega, loc, nadj, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast, XF, NF, neventF, nevent1F, loc1F, nF) {
-  .Call(`_scop_cvNetCoxC`, X, tevent, alpha, lambda, nlambda, wbeta, Omega, loc, nadj, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast, XF, NF, neventF, nevent1F, loc1F, nF)
+    .Call(`_scop_cvNetCoxC`, X, tevent, alpha, lambda, nlambda, wbeta, Omega, loc, nadj, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast, XF, NF, neventF, nevent1F, loc1F, nF)
 }
 
 maxLambdaLogC <- function(X, Z, alpha, wbeta, N0, p) {
-  .Call(`_scop_maxLambdaLogC`, X, Z, alpha, wbeta, N0, p)
+    .Call(`_scop_maxLambdaLogC`, X, Z, alpha, wbeta, N0, p)
 }
 
 cvTrimLogC <- function(beta, nn, nn2, loco, XF, yF, NF, threshP) {
-  .Call(`_scop_cvTrimLogC`, beta, nn, nn2, loco, XF, yF, NF, threshP)
+    .Call(`_scop_cvTrimLogC`, beta, nn, nn2, loco, XF, yF, NF, threshP)
 }
 
 EnetLogC <- function(X, y, alpha, lambda, nlambda, ilambda, wbeta, wbetai, p, N0, thresh, maxit, threshP) {
-  .Call(`_scop_EnetLogC`, X, y, alpha, lambda, nlambda, ilambda, wbeta, wbetai, p, N0, thresh, maxit, threshP)
+    .Call(`_scop_EnetLogC`, X, y, alpha, lambda, nlambda, ilambda, wbeta, wbetai, p, N0, thresh, maxit, threshP)
 }
 
 cvEnetLogC <- function(X, y, alpha, lambda, nlambda, wbeta, wbetai, p, N0, thresh, maxit, XF, yF, NF, threshP) {
-  .Call(`_scop_cvEnetLogC`, X, y, alpha, lambda, nlambda, wbeta, wbetai, p, N0, thresh, maxit, XF, yF, NF, threshP)
+    .Call(`_scop_cvEnetLogC`, X, y, alpha, lambda, nlambda, wbeta, wbetai, p, N0, thresh, maxit, XF, yF, NF, threshP)
 }
 
 NetLogC <- function(X, y, alpha, lambda, nlambda, ilambda, wbeta, wbetai, Omega, loc, nadj, p, N0, thresh, maxit, threshP) {
-  .Call(`_scop_NetLogC`, X, y, alpha, lambda, nlambda, ilambda, wbeta, wbetai, Omega, loc, nadj, p, N0, thresh, maxit, threshP)
+    .Call(`_scop_NetLogC`, X, y, alpha, lambda, nlambda, ilambda, wbeta, wbetai, Omega, loc, nadj, p, N0, thresh, maxit, threshP)
 }
 
 cvNetLogC <- function(X, y, alpha, lambda, nlambda, wbeta, wbetai, Omega, loc, nadj, p, N0, thresh, maxit, XF, yF, NF, threshP) {
-  .Call(`_scop_cvNetLogC`, X, y, alpha, lambda, nlambda, wbeta, wbetai, Omega, loc, nadj, p, N0, thresh, maxit, XF, yF, NF, threshP)
+    .Call(`_scop_cvNetLogC`, X, y, alpha, lambda, nlambda, wbeta, wbetai, Omega, loc, nadj, p, N0, thresh, maxit, XF, yF, NF, threshP)
 }
 
 scissor_gaussian_net_fit_cpp <- function(x, y, omega, alpha, lambda = NULL, nlambda = 100L, foldid = NULL, inzero = TRUE, isd = FALSE, thresh = 1e-7, maxit = 100000L, threshP = 1e-5) {
-  .Call(`_scop_scissor_gaussian_net_fit_cpp`, x, y, omega, alpha, lambda, nlambda, foldid, inzero, isd, thresh, maxit, threshP)
+    .Call(`_scop_scissor_gaussian_net_fit_cpp`, x, y, omega, alpha, lambda, nlambda, foldid, inzero, isd, thresh, maxit, threshP)
 }
 
 scissor_binomial_net_fit_cpp <- function(x, y, omega, alpha, lambda = NULL, nlambda = 100L, foldid = NULL, inzero = TRUE, isd = FALSE, thresh = 1e-7, maxit = 100000L, threshP = 1e-5) {
-  .Call(`_scop_scissor_binomial_net_fit_cpp`, x, y, omega, alpha, lambda, nlambda, foldid, inzero, isd, thresh, maxit, threshP)
+    .Call(`_scop_scissor_binomial_net_fit_cpp`, x, y, omega, alpha, lambda, nlambda, foldid, inzero, isd, thresh, maxit, threshP)
 }

@@ -37,7 +37,6 @@ RunSCENIC(
   envname = NULL,
   conda = "auto",
   prepare_env = TRUE,
-  progress = verbose,
   verbose = TRUE
 )
 }
@@ -142,8 +141,6 @@ gene-set scoring backend.}
 
 \item{prepare_env}{Whether to prepare and configure the SCENIC Python
 environment before running.}
-
-\item{progress}{Whether to show a stage-level progress bar.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

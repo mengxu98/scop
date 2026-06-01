@@ -73,7 +73,6 @@
 #' @param conda The path or command name of a conda-compatible executable.
 #' @param prepare_env Whether to prepare and configure the SCENIC Python
 #' environment before running.
-#' @param progress Whether to show a stage-level progress bar.
 #'
 #' @return A Seurat object with SCENIC results, or a result list when
 #' `return_seurat = FALSE`.
@@ -121,7 +120,6 @@ RunSCENIC <- function(
   envname = NULL,
   conda = "auto",
   prepare_env = TRUE,
-  progress = verbose,
   verbose = TRUE
 ) {
   if (!inherits(srt, "Seurat")) {
@@ -182,7 +180,7 @@ RunSCENIC <- function(
     out_file = file.path(work_dir, paste0(prefix, "_targets.txt")),
     required = FALSE
   )[["genes"]]
-  progress_state <- scenic_progress_init(progress = progress, verbose = verbose)
+  progress_state <- scenic_progress_init(verbose = verbose)
   on.exit(scenic_progress_close(progress_state), add = TRUE)
   scenic_progress_step(
     progress_state,
@@ -650,7 +648,7 @@ RunSCENIC <- function(
       assay_name = assay_name,
       tool_name = tool_name,
       envname = envname,
-      progress = progress
+      progress = verbose
     )
   )
 
@@ -720,7 +718,8 @@ scenic_resolve_reference_data <- function(
     reference_files <- species_config[["files"]]
     if (isTRUE(missing_ranking_dbs)) {
       ranking_rows <- reference_files[
-        reference_files[["role"]] == "ranking_dbs", ,
+        reference_files[["role"]] == "ranking_dbs",
+        ,
         drop = FALSE
       ]
       ranking_dbs <- scenic_dl_refs(
@@ -731,7 +730,8 @@ scenic_resolve_reference_data <- function(
     }
     if (isTRUE(missing_motif_annotations)) {
       motif_rows <- reference_files[
-        reference_files[["role"]] == "motif_annotations", ,
+        reference_files[["role"]] == "motif_annotations",
+        ,
         drop = FALSE
       ]
       motif_annotations <- scenic_dl_refs(
@@ -742,7 +742,8 @@ scenic_resolve_reference_data <- function(
     }
     if (isTRUE(missing_regulators)) {
       tf_rows <- reference_files[
-        reference_files[["role"]] == "tf_list", ,
+        reference_files[["role"]] == "tf_list",
+        ,
         drop = FALSE
       ]
       regulators <- scenic_dl_refs(
@@ -783,7 +784,8 @@ scenic_species_config <- function(species) {
     )
   }
   species_key <- tolower(gsub("[ .-]+", "_", species))
-  species_key <- switch(species_key,
+  species_key <- switch(
+    species_key,
     homo_sapiens = "human",
     human = "human",
     hsa = "human",
@@ -808,7 +810,8 @@ scenic_species_config <- function(species) {
   }
 
   cistarget_url <- "https://resources.aertslab.org/cistarget"
-  switch(species_key,
+  switch(
+    species_key,
     human = list(
       key = "human",
       label = "Homo_sapiens",
@@ -1114,8 +1117,8 @@ scenic_flt_adj <- function(
   invisible(output_file)
 }
 
-scenic_progress_init <- function(progress = TRUE, verbose = TRUE) {
-  if (!isTRUE(progress) || !isTRUE(verbose)) {
+scenic_progress_init <- function(verbose = TRUE) {
+  if (!isTRUE(verbose)) {
     return(NULL)
   }
   progress_state <- new.env(parent = emptyenv())
@@ -1256,7 +1259,8 @@ scenic_sel_mc_res <- function(
       resolution_summary[["target_distance"]],
       -resolution_summary[["n_metacells"]],
       resolution_summary[["resolution"]]
-    ), ,
+    ),
+    ,
     drop = FALSE
   ]
 
@@ -1647,7 +1651,8 @@ scenic_compute_aucell_score <- function(
       strategy = cpp_strategy
     )
     return(as.data.frame(scores, check.names = FALSE)[
-      colnames(counts), ,
+      colnames(counts),
+      ,
       drop = FALSE
     ])
   }
