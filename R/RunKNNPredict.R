@@ -538,6 +538,12 @@ RunKNNPredict <- function(
           verbose = FALSE
         )[[1]]
         ref <- Matrix::t(log1p(ref))
+        ref_group_names <- levels(droplevels(as.factor(
+          srt_ref[["ref_group", drop = TRUE]]
+        )))
+        if (length(ref_group_names) == nrow(ref)) {
+          rownames(ref) <- ref_group_names
+        }
       } else {
         ref <- Matrix::t(
           GetAssayData5(
@@ -598,6 +604,12 @@ RunKNNPredict <- function(
         verbose = FALSE
       )[[1]]
       query <- Matrix::t(log1p(query))
+      query_group_names <- levels(droplevels(as.factor(
+        srt_query[["query_group", drop = TRUE]]
+      )))
+      if (length(query_group_names) == nrow(query)) {
+        rownames(query) <- query_group_names
+      }
     } else {
       query <- Matrix::t(
         GetAssayData5(
