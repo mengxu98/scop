@@ -1794,15 +1794,17 @@ NumericMatrix gsva_gaussian_dense(
   double tau = 1.0,
   int chunk_size = 0
 ) {
-  (void) chunk_size;
-  return gsva_sparse_exact(
-    expr,
-    gene_sets,
-    true,
-    max_diff,
-    abs_ranking,
-    tau
-  );
+  // Enable z-score KDE path (frequency-based with zeros, log-odds transform,
+  // unified gene ranking) — closer to GSVA R's density() → ecdf() → qnorm().
+  // The sparse_exact path is kept as fallback in gsva_sparse_exact.
+  // return gsva_sparse_exact(
+  //   expr,
+  //   gene_sets,
+  //   true,
+  //   max_diff,
+  //   abs_ranking,
+  //   tau
+  // );
 
   IntegerVector dims = expr.slot("Dim");
   const int n_genes = dims[0];
@@ -1920,15 +1922,16 @@ NumericMatrix gsva_poisson_dense(
   double tau = 1.0,
   int chunk_size = 0
 ) {
-  (void) chunk_size;
-  return gsva_sparse_exact(
-    expr,
-    gene_sets,
-    false,
-    max_diff,
-    abs_ranking,
-    tau
-  );
+  // Enable z-score KDE path (frequency-based with zeros, log-odds transform,
+  // unified gene ranking) — same rationale as gsva_gaussian_dense.
+  // return gsva_sparse_exact(
+  //   expr,
+  //   gene_sets,
+  //   false,
+  //   max_diff,
+  //   abs_ranking,
+  //   tau
+  // );
 
   IntegerVector dims = expr.slot("Dim");
   const int n_genes = dims[0];
