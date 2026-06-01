@@ -1,20 +1,21 @@
 #' Run scFEA flux estimation for a Seurat object
 #'
 #' @description
-#' `RunScFEA()` calls the bundled Python scFEA backend through
+#' `RunscFEA()` calls the bundled Python scFEA backend through
 #' `reticulate`. The scFEA GNN architecture, loss function, training loop, and
-#' M168 human/mouse model files are kept in the backend; the R side prepares a
-#' Seurat expression matrix and stores flux / balance outputs back into Seurat.
+#' M168 human/mouse model files are downloaded from the `mengxu98/datasets`
+#' repository and cached outside the package; the R side prepares a Seurat
+#' expression matrix and stores flux / balance outputs back into Seurat.
 #'
 #' scFEA is licensed for academic, non-commercial use. See the bundled
-#' `inst/python/scfea/LICENSE` file for details.
+#' `inst/python/scfea/LICENSE` file for details. Data resources are downloaded
+#' from \url{https://github.com/mengxu98/datasets/tree/main/scFEA}.
 #'
 #' @param srt A Seurat object.
 #' @param assay Assay to use as expression matrix. Default is
 #' `DefaultAssay(srt)`.
 #' @param layer Assay layer to use. Default is `"data"`.
-#' @param species One of `"human"` or `"mouse"`, selecting the bundled M168
-#' scFEA files.
+#' @param species One of `"human"` or `"mouse"`, selecting the M168 scFEA files.
 #' @param n_epoch Number of scFEA training epochs.
 #' @param sc_imputation Whether to run MAGIC imputation inside the scFEA
 #' backend.
@@ -22,13 +23,16 @@
 #' @param assay_balance Name of the assay storing metabolite balance scores.
 #' @param store_metadata Whether to also append flux and balance values to
 #' `srt@meta.data`.
+#' @param data_dir Optional directory containing scFEA M168 CSV resources. If
+#' `NULL`, files are downloaded from `mengxu98/datasets` and cached with
+#' `tools::R_user_dir("scop", "data")`.
 #' @param seed Random seed passed to R and the Python scFEA backend.
 #' @param verbose Whether to print progress messages.
 #'
 #' @return A Seurat object with `assay_flux`, `assay_balance`, and
-#' `srt@tools[["ScFEA"]]`.
+#' `srt@tools[["scFEA"]]`.
 #' @export
-RunScFEA <- function(
+RunscFEA <- function(
   srt,
   assay = NULL,
   layer = "data",
@@ -38,6 +42,7 @@ RunScFEA <- function(
   assay_flux = "scFEAflux",
   assay_balance = "scFEAbalance",
   store_metadata = FALSE,
+  data_dir = NULL,
   seed = 16,
   verbose = TRUE
 ) {
@@ -105,11 +110,12 @@ RunScFEA <- function(
   n_input_genes <- nrow(expr_mat)
   n_input_cells <- ncol(expr_mat)
 
-  module_genes <- scfea_module_genes(species)
+  data_dir <- resolve_scfea_dir(data_dir = data_dir, verbose = verbose)
+  module_genes <- scfea_module_genes(species, data_dir = data_dir)
   overlap_genes <- intersect(rownames(expr_mat), module_genes)
   if (length(overlap_genes) == 0) {
     log_message(
-      "No genes overlap the bundled {.pkg scFEA} M168 module gene file",
+      "No genes overlap the {.pkg scFEA} M168 module gene file",
       message_type = "error"
     )
   }
@@ -144,7 +150,8 @@ RunScFEA <- function(
     sc_imputation = isTRUE(sc_imputation),
     n_epoch = as.integer(n_epoch),
     seed = as.integer(seed),
-    verbose = isTRUE(verbose)
+    verbose = isTRUE(verbose),
+    data_dir = data_dir
   )
 
   flux_df <- scfea_py_dataframe_to_r(
@@ -176,11 +183,11 @@ RunScFEA <- function(
   storage.mode(balance_mat) <- "double"
   colnames(balance_mat) <- colnames(expr_mat)
 
-  module_info <- scfea_module_info()
+  module_info <- scfea_module_info(data_dir = data_dir)
   module_info <- module_info[match(rownames(flux_mat), module_info$feature_id), , drop = FALSE]
   rownames(module_info) <- module_info$feature_id
 
-  compound_info <- scfea_compound_info(species)
+  compound_info <- scfea_compound_info(species, data_dir = data_dir)
   compound_info <- compound_info[match(rownames(balance_mat), compound_info$compound_name), , drop = FALSE]
   rownames(compound_info) <- compound_info$compound_name
 
@@ -205,7 +212,7 @@ RunScFEA <- function(
   }
 
   loss <- reticulate::py_to_r(result_py[["predictions"]][["loss"]])
-  srt@tools[["ScFEA"]] <- list(
+  srt@tools[["scFEA"]] <- list(
     flux = flux_mat,
     balance = balance_mat,
     module_info = module_info,
@@ -216,6 +223,7 @@ RunScFEA <- function(
     seed = as.integer(seed),
     assay = assay,
     layer = layer,
+    data_dir = data_dir,
     assay_flux = assay_flux,
     assay_balance = assay_balance,
     sc_imputation = isTRUE(sc_imputation),
@@ -239,7 +247,7 @@ RunScFEA <- function(
 
 #' Plot scFEA module flux heatmap
 #'
-#' @param srt A Seurat object returned by [RunScFEA()].
+#' @param srt A Seurat object returned by [RunscFEA()].
 #' @param assay Flux assay name.
 #' @param layer Flux assay layer.
 #' @param group.by Metadata column used to aggregate cells.
@@ -282,7 +290,7 @@ RunScFEA <- function(
 #'
 #' @return A `ComplexHeatmap` heatmap object.
 #' @export
-ScFEAHeatmap <- function(
+scFEAHeatmap <- function(
   srt,
   assay = "scFEAflux",
   layer = "data",
@@ -522,7 +530,7 @@ ScFEAHeatmap <- function(
 
 #' Plot scFEA flux Cohen's d volcano plots
 #'
-#' @param srt A Seurat object returned by [RunScFEA()].
+#' @param srt A Seurat object returned by [RunscFEA()].
 #' @param group.by Metadata column defining groups. If `ident.1` and `ident.2`
 #' are both `NULL`, each group is compared against all remaining cells.
 #' @param ident.1,ident.2 Group names to compare. Cohen's d is
@@ -548,7 +556,7 @@ ScFEAHeatmap <- function(
 #' mode, a named list of single-contrast results is returned and combined
 #' statistics are stored in the outer `"data"` attribute.
 #' @export
-ScFEAVolcanoPlot <- function(
+scFEAVolcanoPlot <- function(
   srt,
   group.by,
   ident.1 = NULL,
@@ -870,7 +878,7 @@ scfea_volcano_plot_one <- function(
 
 #' Plot scFEA metabolite balance changes
 #'
-#' @param srt A Seurat object returned by [RunScFEA()].
+#' @param srt A Seurat object returned by [RunscFEA()].
 #' @param group.by Metadata column defining groups. If `ident.1` and `ident.2`
 #' are both `NULL`, each group is compared against all remaining cells.
 #' @param ident.1,ident.2 Group names to compare. Difference is
@@ -888,7 +896,7 @@ scfea_volcano_plot_one <- function(
 #' automatic one-vs-rest mode, a named list of single-contrast results is
 #' returned and combined statistics are stored in the outer `"data"` attribute.
 #' @export
-ScFEABalanceBarPlot <- function(
+scFEABalanceBarPlot <- function(
   srt,
   group.by,
   ident.1 = NULL,
@@ -1237,13 +1245,121 @@ scfea_compare_features <- function(mat, srt = NULL, group.by = NULL, ident.1, id
   )
 }
 
-scfea_module_info <- function() {
+scfea_files <- c(
+  "Human_M168_information.symbols.csv",
+  "cName_c70_m168.csv",
+  "cName_complete_mouse_c70_m168.csv",
+  "cmMat_c70_m168.csv",
+  "cmMat_complete_mouse_c70_m168.csv",
+  "module_gene_complete_mouse_m168.csv",
+  "module_gene_m168.csv"
+)
+
+resolve_scfea_dir <- function(data_dir = NULL, verbose = TRUE) {
+  if (!is.null(data_dir)) {
+    if (!dir.exists(data_dir)) {
+      log_message(
+        "Directory {.path {data_dir}} does not exist",
+        message_type = "error"
+      )
+    }
+    missing_files <- scfea_files[!file.exists(file.path(data_dir, scfea_files))]
+    if (length(missing_files) > 0) {
+      log_message(
+        "Missing scFEA resource files in {.path {data_dir}}: {.val {missing_files}}",
+        message_type = "error"
+      )
+    }
+    return(normalizePath(data_dir, mustWork = TRUE))
+  }
+
+  cache_dir <- file.path(
+    tools::R_user_dir("scop", "data"),
+    "scFEA"
+  )
+  if (dir.exists(cache_dir) && all(file.exists(file.path(cache_dir, scfea_files)))) {
+    return(cache_dir)
+  }
+
+  cache_key <- list("scFEA", "M168", "2026-06-01")
+  if (requireNamespace("R.cache", quietly = TRUE)) {
+    cached <- R.cache::loadCache(key = cache_key)
+    cached_dir <- if (!is.null(cached$data_dir)) {
+      normalizePath(cached$data_dir, mustWork = FALSE)
+    } else {
+      NULL
+    }
+    cache_dir_norm <- normalizePath(cache_dir, mustWork = FALSE)
+    if (
+      !is.null(cached) &&
+        identical(cached_dir, cache_dir_norm) &&
+        dir.exists(cached_dir) &&
+        all(file.exists(file.path(cached_dir, scfea_files)))
+    ) {
+      log_message(
+        "Using scFEA data from datasets cache: {.path {cached_dir}}",
+        message_type = "info",
+        verbose = verbose
+      )
+      return(cached_dir)
+    }
+  }
+
+  log_message(
+    "Downloading scFEA model data from datasets GitHub repository...",
+    message_type = "info",
+    verbose = verbose
+  )
+  dir.create(cache_dir, showWarnings = FALSE, recursive = TRUE)
+
+  old_timeout <- getOption("timeout")
+  options(timeout = max(600, old_timeout))
+  on.exit(options(timeout = old_timeout), add = TRUE)
+
+  for (fname in scfea_files) {
+    url <- paste0(
+      "https://raw.githubusercontent.com/mengxu98/datasets/main/scFEA/",
+      fname
+    )
+    dest <- file.path(cache_dir, fname)
+    if (!file.exists(dest)) {
+      log_message(
+        "  Downloading {.path {fname}} ...",
+        message_type = "info",
+        verbose = verbose
+      )
+      utils::download.file(
+        url = url,
+        destfile = dest,
+        mode = "wb",
+        quiet = !verbose
+      )
+    }
+  }
+
+  if (requireNamespace("R.cache", quietly = TRUE)) {
+    R.cache::saveCache(
+      list(
+        data_dir = cache_dir,
+        files = scfea_files,
+        version = "2026-06-01"
+      ),
+      key = cache_key,
+      comment = paste0(
+        "2026-06-01 nterm:",
+        length(scfea_files),
+        "|scFEA-M168"
+      )
+    )
+  }
+
+  cache_dir
+}
+
+scfea_module_info <- function(data_dir = NULL, verbose = TRUE) {
+  data_dir <- resolve_scfea_dir(data_dir = data_dir, verbose = verbose)
   info <- utils::read.csv(
-    system.file(
-      "python/scfea/data/Human_M168_information.symbols.csv",
-      package = "scop",
-      mustWork = TRUE
-    ),
+    file.path(data_dir, "Human_M168_information.symbols.csv"),
     check.names = FALSE,
     stringsAsFactors = FALSE
   )
@@ -1272,11 +1388,13 @@ scfea_module_info <- function() {
 
 scfea_get_module_info <- function(srt, assay = "scFEAflux") {
   module_info <- NULL
-  if ("ScFEA" %in% names(srt@tools) && !is.null(srt@tools[["ScFEA"]]$module_info)) {
+  if ("scFEA" %in% names(srt@tools) && !is.null(srt@tools[["scFEA"]]$module_info)) {
+    module_info <- srt@tools[["scFEA"]]$module_info
+  } else if ("ScFEA" %in% names(srt@tools) && !is.null(srt@tools[["ScFEA"]]$module_info)) {
     module_info <- srt@tools[["ScFEA"]]$module_info
   }
   if (is.null(module_info)) {
-    module_info <- scfea_module_info()
+    module_info <- scfea_module_info(verbose = FALSE)
   }
   if (!all(rownames(module_info) %in% rownames(srt[[assay]]))) {
     module_info <- module_info[intersect(rownames(module_info), rownames(srt[[assay]])), , drop = FALSE]
@@ -1285,9 +1403,9 @@ scfea_get_module_info <- function(srt, assay = "scFEAflux") {
   module_info
 }
 
-scfea_compound_info <- function(species = c("human", "mouse")) {
+scfea_compound_info <- function(species = c("human", "mouse"), data_dir = NULL, verbose = TRUE) {
   species <- match.arg(species)
-  file <- scfea_species_files(species)[["cName_file"]]
+  file <- scfea_species_files(species, data_dir = data_dir, verbose = verbose)[["cName_file"]]
   cname <- utils::read.csv(
     file,
     header = FALSE,
@@ -1303,9 +1421,9 @@ scfea_compound_info <- function(species = c("human", "mouse")) {
   compound_info
 }
 
-scfea_module_genes <- function(species = c("human", "mouse")) {
+scfea_module_genes <- function(species = c("human", "mouse"), data_dir = NULL, verbose = TRUE) {
   species <- match.arg(species)
-  file <- scfea_species_files(species)[["moduleGene_file"]]
+  file <- scfea_species_files(species, data_dir = data_dir, verbose = verbose)[["moduleGene_file"]]
   module_gene <- utils::read.csv(
     file,
     row.names = 1,
@@ -1317,9 +1435,9 @@ scfea_module_genes <- function(species = c("human", "mouse")) {
   genes
 }
 
-scfea_species_files <- function(species = c("human", "mouse")) {
+scfea_species_files <- function(species = c("human", "mouse"), data_dir = NULL, verbose = TRUE) {
   species <- match.arg(species)
-  data_dir <- system.file("python/scfea/data", package = "scop", mustWork = TRUE)
+  data_dir <- resolve_scfea_dir(data_dir = data_dir, verbose = verbose)
   files <- list(
     human = list(
       moduleGene_file = file.path(data_dir, "module_gene_m168.csv"),

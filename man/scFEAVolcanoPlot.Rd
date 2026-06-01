@@ -1,8 +1,8 @@
-\name{ScFEAVolcanoPlot}
-\alias{ScFEAVolcanoPlot}
+\name{scFEAVolcanoPlot}
+\alias{scFEAVolcanoPlot}
 \title{Plot scFEA flux Cohen's d volcano plots}
 \usage{
-ScFEAVolcanoPlot(
+scFEAVolcanoPlot(
   srt,
   group.by,
   ident.1 = NULL,
@@ -20,7 +20,7 @@ ScFEAVolcanoPlot(
 )
 }
 \arguments{
-\item{srt}{A Seurat object returned by \code{\link[=RunScFEA]{RunScFEA()}}.}
+\item{srt}{A Seurat object returned by \code{\link[=RunscFEA]{RunscFEA()}}.}
 \item{group.by}{Metadata column defining groups. If \code{ident.1} and \code{ident.2} are both \code{NULL}, each group is compared against all remaining cells.}
 \item{ident.1, ident.2}{Group names to compare. Cohen's d is \code{mean(ident.1) - mean(ident.2)} divided by pooled standard deviation. If both are \code{NULL}, one-vs-rest contrasts are generated automatically.}
 \item{assay}{Flux assay name.}

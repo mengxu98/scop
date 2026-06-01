@@ -2,7 +2,7 @@
 """
 scFEA: single-cell Flux Estimation Analysis.
 
-Vendored into omicverse from https://github.com/changwn/scFEA
+Vendored into scop from https://github.com/changwn/scFEA
 (commit 4c1fb76d52f07bafad84ce7686ad7c3acfcf0126).
 
 Original author: wnchang@iu.edu
@@ -12,8 +12,8 @@ This module keeps the original GNN architecture, loss and training loop
 bit-faithful to the upstream ``main()``. Only the I/O has been refactored:
 the expression matrix is accepted as an in-memory pandas DataFrame and the
 results are returned as DataFrames instead of being read from / written to
-CSV files. The bundled model files are loaded from the vendored ``data/``
-directory rather than from a user-supplied ``--data_dir`` argument.
+CSV files. The model files are loaded from a ``data_dir`` prepared by the R
+wrapper, keeping data resources outside the R package tarball.
 """
 
 # system lib
@@ -41,9 +41,6 @@ LAMB_NG = 1
 LAMB_CELL = 1
 LAMB_MOD = 1e-2
 
-
-# directory holding the vendored scFEA model files
-_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
 
 # bundled M168 asset sets, keyed by species
 _SPECIES_FILES = {
@@ -99,7 +96,7 @@ def myLoss(m, c, lamb1=0.2, lamb2=0.2, lamb3=0.2, lamb4=0.2,
 
 
 def run_scfea(expr, *, species='human', sc_imputation=False, n_epoch=100,
-              seed=16, verbose=True, device=None):
+              seed=16, verbose=True, device=None, data_dir=None):
     """Estimate single-cell metabolic flux with scFEA.
 
     Parameters
@@ -122,6 +119,8 @@ def run_scfea(expr, *, species='human', sc_imputation=False, n_epoch=100,
         Print progress messages and show the training progress bar.
     device : str or torch.device, optional
         Compute device. Defaults to ``cuda:0`` if available, else ``cpu``.
+    data_dir : str
+        Directory containing scFEA M168 resource CSV files.
 
     Returns
     -------
@@ -141,6 +140,12 @@ def run_scfea(expr, *, species='human', sc_imputation=False, n_epoch=100,
 
     if not isinstance(expr, pd.DataFrame):
         raise TypeError('expr must be a pandas DataFrame (cells x genes).')
+
+    if data_dir is None:
+        raise ValueError('data_dir is required and must contain scFEA resource files.')
+    data_dir = os.path.abspath(os.path.expanduser(data_dir))
+    if not os.path.isdir(data_dir):
+        raise FileNotFoundError('scFEA data_dir does not exist: %s' % data_dir)
 
     files = _SPECIES_FILES[species]
     moduleGene_file = files['moduleGene_file']
@@ -176,7 +181,7 @@ def run_scfea(expr, *, species='human', sc_imputation=False, n_epoch=100,
     BATCH_SIZE = geneExpr.shape[0]
 
     moduleGene = pd.read_csv(
-        os.path.join(_DATA_DIR, moduleGene_file),
+        os.path.join(data_dir, moduleGene_file),
         sep=',',
         index_col=0)
     moduleLen = [moduleGene.iloc[i, :].notna().sum()
@@ -195,7 +200,7 @@ def run_scfea(expr, *, species='human', sc_imputation=False, n_epoch=100,
     gene_overlap.sort()
 
     cmMat = pd.read_csv(
-        os.path.join(_DATA_DIR, cm_file),
+        os.path.join(data_dir, cm_file),
         sep=',',
         header=None)
     cmMat = cmMat.values
@@ -207,7 +212,7 @@ def run_scfea(expr, *, species='human', sc_imputation=False, n_epoch=100,
             print("Load compound name file, the balance output will have "
                   "compound name.")
         cName = pd.read_csv(
-            os.path.join(_DATA_DIR, cName_file),
+            os.path.join(data_dir, cName_file),
             sep=',',
             header=0)
         cName = cName.columns
