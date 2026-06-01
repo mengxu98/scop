@@ -231,10 +231,10 @@ reference:
 
 - subtitle: "Metabolic Flux Analysis"
 - contents:
-  - RunScFEA
-  - ScFEAHeatmap
-  - ScFEAVolcanoPlot
-  - ScFEABalanceBarPlot
+  - RunscFEA
+  - scFEAHeatmap
+  - scFEAVolcanoPlot
+  - scFEABalanceBarPlot
 
 - subtitle: "Dynamic Trajectory Analysis"
 - contents:

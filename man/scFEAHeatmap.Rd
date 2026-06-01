@@ -1,8 +1,8 @@
-\name{ScFEAHeatmap}
-\alias{ScFEAHeatmap}
+\name{scFEAHeatmap}
+\alias{scFEAHeatmap}
 \title{Plot scFEA module flux heatmap}
 \usage{
-ScFEAHeatmap(
+scFEAHeatmap(
   srt,
   assay = "scFEAflux",
   layer = "data",
@@ -39,7 +39,7 @@ ScFEAHeatmap(
 )
 }
 \arguments{
-\item{srt}{A Seurat object returned by \code{\link[=RunScFEA]{RunScFEA()}}.}
+\item{srt}{A Seurat object returned by \code{\link[=RunscFEA]{RunscFEA()}}.}
 \item{assay}{Flux assay name.}
 \item{layer}{Flux assay layer.}
 \item{group.by}{Metadata column used to aggregate cells. If \code{NULL}, all cells are averaged together.}
