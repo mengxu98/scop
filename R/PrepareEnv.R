@@ -1472,10 +1472,14 @@ scfea_python_requirements <- function() {
   list(
     packages = c(
       "torch" = "torch",
+      "numpy" = "numpy",
+      "pandas" = "pandas",
       "tqdm" = "tqdm"
     ),
     install_methods = c(
       "torch" = "pip",
+      "numpy" = "pip",
+      "pandas" = "pip",
       "tqdm" = "pip"
     ),
     package_aliases = list()
