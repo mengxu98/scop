@@ -3210,6 +3210,7 @@ def Palantir(
     show_plot=True,
     dpi=300,
     save=False,
+    plot_format="pdf",
     dirpath="./",
     fileprefix="",
     verbose=True,
@@ -3267,6 +3268,16 @@ def Palantir(
     warnings.simplefilter("ignore", category=FutureWarning)
     warnings.simplefilter("ignore", category=DeprecationWarning)
 
+    def as_list(value):
+        if value is None:
+            return None
+        if isinstance(value, (str, bytes)):
+            return [value]
+        try:
+            return list(value)
+        except TypeError:
+            return [value]
+
     prevdir = os.getcwd()
     expanded_path = os.path.expanduser(dirpath)
     os.makedirs(expanded_path, exist_ok=True)
@@ -3318,10 +3329,17 @@ def Palantir(
             point_size = min(100000 / adata.shape[0], 20)
 
         if early_group is not None and early_cell is None:
-            cell = adata.obs[group_by].index.values[adata.obs[group_by].isin(early_group)]
-            early_group_cell = adata.obsm[basis][adata.obs[group_by].isin(early_group),][
-                :, [0, 1]
-            ]
+            early_groups = as_list(early_group)
+            early_group_mask = adata.obs[group_by].isin(early_groups)
+            if not early_group_mask.any():
+                log_message(
+                    "{.arg early_group} has no matching cells",
+                    message_type="error",
+                    verbose=verbose,
+                )
+                exit()
+            cell = adata.obs[group_by].index.values[early_group_mask]
+            early_group_cell = adata.obsm[basis][early_group_mask,][:, [0, 1]]
             x = statistics.median(early_group_cell[:, 0])
             y = statistics.median(early_group_cell[:, 1])
             diff = np.array((x - early_group_cell[:, 0], y - early_group_cell[:, 1]))
@@ -3343,13 +3361,24 @@ def Palantir(
 
         terminal_cells_dict = dict()
         if terminal_groups is not None and terminal_cells is None:
+            terminal_groups = as_list(terminal_groups)
             for n in range(len(terminal_groups)):
                 terminal_group = terminal_groups[n]
+                terminal_group_label = str(terminal_group)
+                terminal_group_mask = adata.obs[group_by] == terminal_group
+                if not terminal_group_mask.any():
+                    log_message(
+                        "{.arg terminal_groups} contains a group with no matching cells: "
+                        + terminal_group_label,
+                        message_type="error",
+                        verbose=verbose,
+                    )
+                    exit()
                 cell = adata.obs[group_by].index.values[
-                    adata.obs[group_by] == terminal_group
+                    terminal_group_mask
                 ]
                 terminal_group_cell = adata.obsm[basis][
-                    adata.obs[group_by] == terminal_group,
+                    terminal_group_mask,
                 ][:, [0, 1]]
                 x = statistics.median(terminal_group_cell[:, 0])
                 y = statistics.median(terminal_group_cell[:, 1])
@@ -3360,7 +3389,7 @@ def Palantir(
                 for i in range(diff.shape[1]):
                     dist.append(hypot(diff[0, i], diff[1, i]))
                 terminal_cells_dict[cell[dist.index(min(dist))]] = (
-                    terminal_group.replace(" ", ".") + "_diff_potential"
+                    terminal_group_label.replace(" ", ".") + "_diff_potential"
                 )
 
             terminal_cells = list(terminal_cells_dict.keys())
@@ -3452,62 +3481,36 @@ def Palantir(
         adata.obs = adata.obs.join(pr_res.entropy.to_frame("palantir_diff_potential"))
         adata.obs = adata.obs.join(pr_res.branch_probs)
 
-        sc.pl.embedding(
-            adata,
-            basis=basis,
-            color="palantir_pseudotime",
-            size=point_size,
-            show=show_plot,
-        )
-        if save:
-            plt.savefig(
-                "./" + ".".join(filter(None, [fileprefix, "palantir_pseudotime.pdf"])),
-                dpi=dpi,
-            )
+        plot_format = plot_format if plot_format in ["png", "pdf", "svg"] else "pdf"
 
-        sc.pl.embedding(
-            adata,
-            basis=basis,
-            color="palantir_diff_potential",
-            size=point_size,
-            show=show_plot,
-        )
-        if save:
-            plt.savefig(
-                "./"
-                + ".".join(filter(None, [fileprefix, "palantir_diff_potential.pdf"])),
-                dpi=dpi,
-            )
-
-        sc.pl.embedding(
-            adata,
-            basis=basis,
-            color=pr_res.branch_probs.columns.values,
-            size=point_size,
-            show=show_plot,
-        )
-        if save:
-            plt.savefig(
-                "./" + ".".join(filter(None, [fileprefix, "palantir_probs.pdf"])),
-                dpi=dpi,
-            )
-
-        if group_by is not None:
-            sc.pl.embedding(
+        def save_embedding(color, suffix, **kwargs):
+            fig = sc.pl.embedding(
                 adata,
                 basis=basis,
-                color=group_by,
+                color=color,
                 size=point_size,
-                palette=palette,
-                legend_loc=legend_loc,
-                show=show_plot,
+                show=False,
+                return_fig=True,
+                **kwargs,
             )
             if save:
-                plt.savefig(
-                    "./"
-                    + ".".join(filter(None, [fileprefix, "palantir_group_by.pdf"])),
-                    dpi=dpi,
-                )
+                filename = ".".join(filter(None, [fileprefix, suffix + "." + plot_format]))
+                fig.savefig("./" + filename, dpi=dpi, bbox_inches="tight")
+            if show_plot:
+                plt.show()
+            plt.close(fig)
+
+        save_embedding("palantir_pseudotime", "palantir_pseudotime")
+        save_embedding("palantir_diff_potential", "palantir_diff_potential")
+        save_embedding(pr_res.branch_probs.columns.values, "palantir_probs")
+
+        if group_by is not None:
+            save_embedding(
+                group_by,
+                "palantir_group_by",
+                palette=palette,
+                legend_loc=legend_loc,
+            )
 
     finally:
         try:

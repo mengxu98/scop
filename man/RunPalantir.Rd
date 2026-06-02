@@ -127,13 +127,13 @@ Default is \code{FALSE}.}
 
 \item{save_plot}{Whether to save plots to files. Default is \code{FALSE}.}
 
-\item{plot_format}{Format for saved plots: \code{"png"} (default), \code{"pdf"}, or \code{"svg"}.}
+\item{plot_format}{Format for saved plots: \code{"pdf"}, \code{"png"}, or \code{"svg"}. Default is \code{"pdf"}.}
 
 \item{plot_dpi}{Resolution (DPI) for saved plots. Default is \code{300}.}
 
-\item{plot_prefix}{Prefix for saved plot filenames. Default is "cellrank".}
+\item{plot_prefix}{Prefix for saved plot filenames. Default is \code{"palantir"}.}
 
-\item{dirpath}{The directory to save the plots. Default is \code{"./cellrank"}.}
+\item{dirpath}{The directory to save the plots. Default is \code{"./"}.}
 
 \item{return_seurat}{Whether to return a Seurat object instead of an anndata object.
 Default is \code{TRUE}.}
