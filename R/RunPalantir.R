@@ -17,6 +17,9 @@
 #' @param adjust_terminal_cells Whether to adjust the terminal cells to the cells with the maximum pseudotime value for each terminal group.
 #' @param max_iterations Maximum number of iterations for pseudotime convergence.
 #' @param point_size The point size for plotting.
+#' @param plot_format Format for saved plots: `"pdf"`, `"png"`, or `"svg"`. Default is `"pdf"`.
+#' @param plot_prefix Prefix for saved plot filenames. Default is `"palantir"`.
+#' @param dirpath The directory to save the plots. Default is `"./"`.
 #'
 #' @export
 #'
@@ -103,7 +106,9 @@ RunPalantir <- function(
       message_type = "error"
     )
   }
-  if (is.null(group.by) && any(!is.null(early_group), !is.null(terminal_groups))) {
+  if (
+    is.null(group.by) && any(!is.null(early_group), !is.null(terminal_groups))
+  ) {
     log_message(
       "{.arg group.by} must be provided when {.arg early_group} or {.arg terminal_groups} provided.",
       message_type = "error"
@@ -121,6 +126,7 @@ RunPalantir <- function(
       message_type = "error"
     )
   }
+  plot_format <- match.arg(plot_format)
   args <- mget(names(formals()))
   args <- lapply(args, function(x) {
     if (is.numeric(x)) {
@@ -158,7 +164,6 @@ RunPalantir <- function(
     "palette",
     "palcolor",
     "save_plot",
-    "plot_format",
     "plot_dpi",
     "plot_prefix",
     "legend.position",
@@ -182,7 +187,10 @@ RunPalantir <- function(
     if (is.null(nonlinear_reduction)) {
       nonlinear_reduction <- DefaultReduction(srt)
     } else {
-      nonlinear_reduction <- DefaultReduction(srt, pattern = nonlinear_reduction)
+      nonlinear_reduction <- DefaultReduction(
+        srt,
+        pattern = nonlinear_reduction
+      )
     }
     if (!nonlinear_reduction %in% names(srt@reductions)) {
       log_message(
