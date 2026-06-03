@@ -106,7 +106,9 @@
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunSCENIC(
 #'   pancreas_sub,
-#'   species = "Mus_musculus"
+#'   species = "Mus_musculus",
+#'   backend = "cpp",
+#'   work_dir = "test/scenic"
 #' )
 #'
 #' scenic_rss <- SCENICPlot(
