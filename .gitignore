@@ -15,6 +15,7 @@
 .cc-connect
 .codex
 .deepseek
+.reasonix
 *.dll
 *.h5ad
 *.o
