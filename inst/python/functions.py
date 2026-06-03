@@ -5425,3 +5425,117 @@ def RunSCENICCli(
         "gmt_output": gmt_output,
         "txt_output": txt_output,
     }
+
+
+def RunSEACells(
+    adata,
+    n_SEACells,
+    build_kernel_on="X_pca",
+    n_waypoint_eigs=10,
+    convergence_epsilon=1e-5,
+    min_iter=10,
+    max_iter=100,
+    verbose=True,
+):
+    """Run SEACells metacell partitioning on an AnnData object.
+
+    Parameters
+    ----------
+    adata : AnnData
+        Input AnnData with PCA (X_pca in obsm).
+    n_SEACells : int
+        Target number of metacells (archetypes).
+    build_kernel_on : str
+        Key in adata.obsm for computing the kernel (default 'X_pca').
+    n_waypoint_eigs : int
+        Number of eigenvalues for waypoint initialization.
+    convergence_epsilon : float
+        Convergence threshold for archetype fitting.
+    min_iter : int
+        Minimum iterations for model fitting.
+    max_iter : int
+        Maximum iterations for model fitting.
+    verbose : bool
+        Whether to log progress.
+
+    Returns
+    -------
+    dict
+        membership: list of int, hard metacell assignments (1-based indices)
+        n_metacells: int, number of metacells
+    """
+    import SEACells
+    import numpy as np
+
+    n_cells = adata.n_obs
+    n_SEACells = max(2, min(n_SEACells, n_cells // 2))
+    n_waypoint_eigs = min(n_waypoint_eigs, n_SEACells - 1)
+
+    log_message(
+        f"SEACells: {n_SEACells} archetypes on {n_cells} cells",
+        verbose=verbose,
+    )
+
+    model = SEACells.core.SEACells(
+        adata,
+        build_kernel_on=build_kernel_on,
+        n_SEACells=n_SEACells,
+        n_waypoint_eigs=n_waypoint_eigs,
+        convergence_epsilon=convergence_epsilon,
+        verbose=verbose,
+    )
+
+    log_message("Constructing kernel...", verbose=verbose)
+    model.construct_kernel_matrix()
+
+    log_message("Initializing archetypes...", verbose=verbose)
+    try:
+        model.initialize_archetypes()
+    except Exception as e:
+        log_message(
+            f"Archetype init failed ({e}), continuing...",
+            message_type="warning",
+            verbose=verbose,
+        )
+
+    log_message("Fitting SEACells model...", verbose=verbose)
+    model.fit(min_iter=min_iter, max_iter=max_iter)
+
+    log_message("Extracting soft assignments...", verbose=verbose)
+    try:
+        soft_assign = model.get_soft_assignments()
+    except Exception:
+        soft_assign = None
+
+    # Handle newer SEACells API returning tuple
+    if isinstance(soft_assign, tuple):
+        soft_assign = soft_assign[0]
+
+    if soft_assign is None:
+        log_message(
+            "SEACells returned no assignments",
+            message_type="warning",
+            verbose=verbose,
+        )
+        return {"membership": None, "n_metacells": 0}
+
+    # Convert to numpy and compute hard assignments (argmax)
+    if hasattr(soft_assign, "values"):
+        # pandas DataFrame
+        sa = soft_assign.values
+    else:
+        sa = np.asarray(soft_assign)
+
+    if sa.shape[0] == 0:
+        log_message(
+            "SEACells returned empty assignments",
+            message_type="warning",
+            verbose=verbose,
+        )
+        return {"membership": None, "n_metacells": 0}
+
+    # Argmax along axis=1 → 1-based indices for R
+    membership = np.argmax(sa, axis=1).tolist()
+    membership = [int(m) + 1 for m in membership]  # 1-based
+
+    return {"membership": membership, "n_metacells": int(sa.shape[1])}
