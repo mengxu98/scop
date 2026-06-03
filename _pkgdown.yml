@@ -88,6 +88,15 @@ reference:
   - standard_scop
   - integration_scop
 
+- subtitle: "Metacell Analysis"
+- contents:
+  - RunMetaCell
+  - RunmcRigor
+
+- subtitle: "Metacell Plots"
+- contents:
+  - MetaCellPlot
+  
 - subtitle: "Data Integration and Batch Effect Removal"
 - contents:
   - Uncorrected_integrate
@@ -284,11 +293,13 @@ reference:
 - contents:
   - SCENICPlot
 
-- subtitle: "Benchmark and Genomic Track Plots"
+- subtitle: "Other"
 - contents:
   - BenchmarkPlot
   - CoverageTrackPlot
   - LISIPlot
+  - tAgePlot
+  - RuntAge
 
 - subtitle: "SCExplorer"
 - contents:
@@ -325,6 +336,7 @@ reference:
 - contents:
   - ListDB
   - PrepareDB
+  - RunCisTarget
 
 - subtitle: "Data"
 - contents:
