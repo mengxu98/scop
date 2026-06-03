@@ -1,15 +1,4 @@
-#' Run scFEA flux estimation for a Seurat object
-#'
-#' @description
-#' `RunscFEA()` calls the bundled Python scFEA backend through
-#' `reticulate`. The scFEA GNN architecture, loss function, training loop, and
-#' M168 human/mouse model files are downloaded from the `mengxu98/datasets`
-#' repository and cached outside the package; the R side prepares a Seurat
-#' expression matrix and stores flux / balance outputs back into Seurat.
-#'
-#' scFEA is licensed for academic, non-commercial use. See the bundled
-#' `inst/python/scfea/LICENSE` file for details. Data resources are downloaded
-#' from \url{https://github.com/mengxu98/datasets/tree/main/scFEA}.
+#' @title Run scFEA flux estimation for a Seurat object
 #'
 #' @param srt A Seurat object.
 #' @param assay Assay to use as expression matrix. Default is
@@ -31,6 +20,17 @@
 #'
 #' @return A Seurat object with `assay_flux`, `assay_balance`, and
 #' `srt@tools[["scFEA"]]`.
+#'
+#' @details
+#' The scFEA GNN architecture, loss function, training loop, and
+#' M168 human/mouse model files are downloaded from the `mengxu98/datasets`
+#' repository and cached outside the package; the R side prepares a Seurat
+#' expression matrix and stores flux / balance outputs back into Seurat.
+#'
+#' scFEA is licensed for academic, non-commercial use. See the bundled
+#' `inst/python/scfea/LICENSE` file for details. Data resources are downloaded
+#' from \url{https://github.com/mengxu98/datasets/tree/main/scFEA}.
+#'
 #' @export
 RunscFEA <- function(
   srt,
