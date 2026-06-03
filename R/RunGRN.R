@@ -254,7 +254,7 @@ grnboost <- function(
   verbose = TRUE
 ) {
   if (!is.null(output_file) && file.exists(output_file) && isFALSE(force)) {
-    log_message("Reusing existing native GRNBoost2 output", verbose = verbose)
+    log_message("Reusing existing GRNBoost2 output", verbose = verbose)
     return(utils::read.delim(
       output_file,
       stringsAsFactors = FALSE,
@@ -301,24 +301,32 @@ grnboost <- function(
       exclude_self = isTRUE(exclude_self)
     )
   }
-  edge_idx <- if (cores > 1L && length(target_idx) > 1L) {
-    workers <- min(cores, length(target_idx))
+  n_targets <- length(target_idx)
+  if (n_targets == 0L) {
+    log_message(
+      "No target genes remain after filtering",
+      message_type = "error"
+    )
+  }
+
+  edge_idx <- if (cores > 1L && n_targets > 1L) {
+    workers <- min(cores, n_targets)
     chunks <- split(
       target_idx,
-      rep(seq_len(workers), length.out = length(target_idx))
+      rep(seq_len(workers), length.out = n_targets)
     )
     chunks <- chunks[lengths(chunks) > 0L]
-    do.call(
-      rbind,
-      parallel::mclapply(
-        chunks,
-        run_chunk,
-        mc.cores = workers,
-        mc.preschedule = TRUE
-      )
+    result_list <- thisutils::parallelize_fun(
+      x = chunks,
+      fun = run_chunk,
+      cores = workers,
+      progress_bar_width = min(50L, n_targets),
+      verbose = verbose
     )
+    do.call(rbind, result_list)
   } else {
-    run_chunk(target_idx)
+    res <- run_chunk(target_idx)
+    res
   }
   if (nrow(edge_idx) == 0L) {
     log_message(
