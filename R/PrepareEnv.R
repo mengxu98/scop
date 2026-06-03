@@ -26,7 +26,7 @@
 #' `"celltypist"`, `"cellphonedb"`, `"magic"`, `"scrublet"`,
 #' `"sccoda"`, `"doubletdetection"`, `"doublet"`, `"palantir"`, `"scvelo"`,
 #' `"cellrank"`, `"wot"`, `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`,
-#' `"scomm"`, and `"scenic"`.
+#' `"scomm"`, `"scenic"`, `"seacells"`, and `"tage"`.
 #' If `NULL` or omitted in [PrepareEnv()], the default environment is installed.
 #' The default excludes `"sccoda"` and `"scomm"` because their TensorFlow stacks
 #' are not compatible with the default JAX/scVI stack in the same environment;
@@ -402,7 +402,9 @@ supported_env_modules <- function() {
     "scomm",
     "scenic",
     "regdiffusion",
-    "scenicplus"
+    "scenicplus",
+    "seacells",
+    "tage"
   )
 }
 
@@ -466,7 +468,9 @@ env_module_requirements <- function() {
     scomm = scomm_python_requirements(),
     scenic = scenic_python_requirements(),
     regdiffusion = regdiffusion_python_requirements(),
-    scenicplus = scenicplus_python_requirements()
+    scenicplus = scenicplus_python_requirements(),
+    seacells = seacells_python_requirements(),
+    tage = tage_python_requirements()
   )
 }
 
@@ -1202,7 +1206,7 @@ env_info <- function(conda, envname, verbose = TRUE) {
 #' `"cellphonedb"`, `"magic"`, `"scrublet"`, `"doubletdetection"`,
 #' `"sccoda"`, `"doublet"`, `"palantir"`, `"scvelo"`, `"cellrank"`, `"wot"`,
 #' `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`,
-#' `"scomm"`, and `"scenic"`. If `NULL`, the default environment is returned. The default
+#' `"scomm"`, `"scenic"`, `"seacells"`, and `"tage"`. If `NULL`, the default environment is returned. The default
 #' excludes `"sccoda"`, `"scomm"`, and `"scenic"` because these workflows
 #' require dependency stacks that should be prepared explicitly. The
 #' `"scenic"` module is standalone and always uses Python `"3.10-1"`.
@@ -1486,6 +1490,22 @@ scfea_python_requirements <- function() {
   )
 }
 
+tage_python_requirements <- function() {
+  list(
+    packages = c(
+      "joblib" = "joblib",
+      "pandas" = "pandas",
+      "scikit-learn" = "scikit-learn"
+    ),
+    install_methods = c(
+      "joblib" = "pip",
+      "pandas" = "pip",
+      "scikit-learn" = "pip"
+    ),
+    package_aliases = list()
+  )
+}
+
 scrublet_python_requirements <- function() {
   list(
     packages = c(
@@ -1552,6 +1572,18 @@ scvelo_python_requirements <- function() {
     ),
     install_methods = c(
       "scvelo" = "pip"
+    ),
+    package_aliases = list()
+  )
+}
+
+seacells_python_requirements <- function() {
+  list(
+    packages = c(
+      "SEACells" = "SEACells"
+    ),
+    install_methods = c(
+      "SEACells" = "pip"
     ),
     package_aliases = list()
   )
