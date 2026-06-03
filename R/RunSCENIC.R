@@ -1,10 +1,5 @@
 #' @title Run SCENIC gene regulatory network analysis
 #'
-#' @description
-#' Run SCENIC from a Seurat object. The GRN and cisTarget steps use a
-#' metacell count matrix by default, while AUCell scores are calculated on the
-#' original single-cell count matrix.
-#'
 #' @md
 #' @inheritParams standard_scop
 #' @inheritParams PrepareEnv
@@ -32,24 +27,12 @@
 #' reference files. If `NULL`, files are stored under
 #' `tools::R_user_dir("scop", "data")/SCENIC/<species>`.
 #' @param prefix Prefix for SCENIC output files.
-#' @param metacell Whether to build a metacell count matrix for GRNBoost2.
-#' @param metacell.by Optional metadata column(s) used to keep metacells within
-#' groups such as samples or cell types.
-#' @param metacell_resolution Resolution passed to [Seurat::FindClusters()] for
-#' overclustering. If `NULL`, candidate resolutions are scanned and the one
-#' closest to `metacell_target` is used.
-#' @param metacell_target Target number of metacells used when
-#' `metacell_resolution = NULL`. If `NULL`, a default target is chosen from the
-#' number of cells.
-#' @param metacell_resolution_candidates Candidate resolutions scanned when
-#' `metacell_resolution = NULL`.
-#' @param metacell_reduction Reduction used to build the metacell neighbor graph.
-#' The default `"pca"` keeps the original behavior and recomputes PCA from the
-#' selected assay. To use an already batch-corrected embedding such as Harmony,
-#' run it before `RunSCENIC()` and set `metacell_reduction = "Harmony"`.
-#' Only the metacell grouping uses this reduction; GRNBoost2 still uses raw
-#' count sums per metacell.
-#' @param metacell_dims Dimensions used for metacell overclustering.
+#' @param group.by Optional metadata column used to aggregate single-cell
+#' counts before GRNBoost2. When `NULL` (default), GRNBoost2 runs on the
+#' original single-cell count matrix. To use pre-built metacells, pass the
+#' metacell membership column (e.g. `"Metacell_id"` from [RunMetaCell()]).
+#' All cells sharing the same `group.by` value are summed into one metacell
+#' profile.
 #' @param min_expr_cells Minimum number of cells or metacells where a gene must
 #' be detected before GRNBoost2.
 #' @param min_regulon_size Minimum regulon size kept after `scenic ctx`.
@@ -99,15 +82,19 @@ RunSCENIC <- function(
   species = c("Homo_sapiens", "Mus_musculus", "Drosophila_melanogaster"),
   data_dir = NULL,
   prefix = "scenic",
-  metacell = TRUE,
-  metacell.by = NULL,
-  metacell_resolution = NULL,
-  metacell_target = NULL,
-  metacell_resolution_candidates = c(0.5, 1, 2, 5, 10, 20, 30, 40, 50, 75, 100),
-  metacell_reduction = "pca",
-  metacell_dims = 1:30,
+  group.by = NULL,
   min_expr_cells = 3,
   min_regulon_size = 10,
+  backend = c("cpp", "python"),
+  grn_method = c("grnboost2", "genie3"),
+  cistarget_method = c("native_motif", "native_approx"),
+  max_regulon_targets = 50,
+  n_rounds = 5000,
+  learning_rate = 0.01,
+  max_depth = 3,
+  max_features = 0.1,
+  subsample = 0.9,
+  early_stop_window_length = 25,
   cores = 1,
   aucell_batch_size = 500,
   aucell_backend = c("r", "cpp"),
@@ -131,8 +118,53 @@ RunSCENIC <- function(
   if (missing(work_dir) || length(work_dir) != 1) {
     log_message("{.arg work_dir} must be one directory", message_type = "error")
   }
+  backend <- match.arg(backend)
+  grn_method <- match.arg(grn_method)
+  cistarget_method <- match.arg(cistarget_method)
+  aucell_backend <- match.arg(aucell_backend)
+  aucell_cpp_strategy <- match.arg(aucell_cpp_strategy)
 
-  reference_data <- scenic_resolve_reference_data(
+  if (identical(backend, "cpp")) {
+    return(scenic_cpp(
+      srt = srt,
+      assay = assay,
+      layer = layer,
+      regulators = regulators,
+      targets = targets,
+      work_dir = work_dir,
+      species = species,
+      data_dir = data_dir,
+      prefix = prefix,
+      group.by = group.by,
+      min_expr_cells = min_expr_cells,
+      min_regulon_size = min_regulon_size,
+      grn_method = grn_method,
+      cistarget_method = cistarget_method,
+      max_regulon_targets = max_regulon_targets,
+      ranking_dbs = ranking_dbs,
+      motif_annotations = motif_annotations,
+      n_rounds = n_rounds,
+      learning_rate = learning_rate,
+      max_depth = max_depth,
+      max_features = max_features,
+      subsample = subsample,
+      early_stop_window_length = early_stop_window_length,
+      cores = cores,
+      aucell_batch_size = aucell_batch_size,
+      aucell_backend = aucell_backend,
+      aucell_cpp_strategy = aucell_cpp_strategy,
+      seed = seed,
+      force = force,
+      assay_name = assay_name,
+      tool_name = tool_name,
+      return_seurat = return_seurat,
+      verbose = verbose
+    ))
+  }
+
+  # ── Python path below ─────────────────────────────────────────────────
+
+  reference_data <- scenic_reference(
     species = species,
     data_dir = data_dir,
     ranking_dbs = ranking_dbs,
@@ -220,8 +252,6 @@ RunSCENIC <- function(
     cores <- 1L
   }
   aucell_batch_size <- max(1L, as.integer(aucell_batch_size))
-  aucell_backend <- match.arg(aucell_backend)
-  aucell_cpp_strategy <- match.arg(aucell_cpp_strategy)
 
   envname <- envname %||% "scenic_env"
   scenic_python_packages <- c(
@@ -341,31 +371,36 @@ RunSCENIC <- function(
     verbose = verbose
   )
 
-  if (isTRUE(metacell)) {
+  if (!is.null(group.by)) {
     scenic_progress_step(
       progress_state,
       value = 30,
-      label = "Building metacell counts for GRNBoost2",
+      label = "Aggregating counts by group.by for GRNBoost2",
       verbose = verbose
     )
-    metacell_result <- scenic_build_metacell_counts(
-      srt = srt,
-      counts = counts,
-      assay = assay,
-      metacell.by = metacell.by,
-      metacell_resolution = metacell_resolution,
-      metacell_target = metacell_target,
-      metacell_resolution_candidates = metacell_resolution_candidates,
-      metacell_reduction = metacell_reduction,
-      metacell_dims = metacell_dims,
-      seed = seed,
-      verbose = verbose
+    group_col <- srt[[group.by]][, 1]
+    if (any(is.na(group_col))) {
+      log_message(
+        "{.arg group.by} column {.val {group.by}} contains NA values",
+        message_type = "error"
+      )
+    }
+    cell_groups <- split(colnames(srt), group_col)
+    grn_counts <- do.call(
+      cbind,
+      lapply(cell_groups, function(cells) {
+        Matrix::rowSums(counts[, cells, drop = FALSE])
+      })
     )
-    grn_counts <- metacell_result[["counts"]]
-    metacell_info <- metacell_result[["info"]]
+    grn_counts <- Matrix::Matrix(grn_counts, sparse = TRUE)
+    colnames(grn_counts) <- names(cell_groups)
+    rownames(grn_counts) <- rownames(counts)
+    grn_count_source <- "metacell matrix"
+    grn_count_unit <- "groups"
   } else {
     grn_counts <- counts
-    metacell_info <- NULL
+    grn_count_source <- "single-cell matrix"
+    grn_count_unit <- "cells"
     scenic_progress_step(
       progress_state,
       value = 30,
@@ -373,12 +408,6 @@ RunSCENIC <- function(
       verbose = verbose
     )
   }
-  grn_count_source <- if (isTRUE(metacell)) {
-    "metacell matrix"
-  } else {
-    "single-cell matrix"
-  }
-  grn_count_unit <- if (isTRUE(metacell)) "cells/metacells" else "cells"
   log_message(
     "{.pkg SCENIC} GRN count source: {.val {grn_count_source}}, {.val {nrow(grn_counts)}} genes x {.val {ncol(grn_counts)}} {grn_count_unit}",
     verbose = verbose
@@ -620,7 +649,7 @@ RunSCENIC <- function(
       regulon_activity_score = ras_file,
       regulon_list = regulon_list_file
     ),
-    metacell = metacell_info,
+    group.by = group.by,
     parameters = list(
       assay = assay,
       layer = layer,
@@ -631,13 +660,7 @@ RunSCENIC <- function(
       regulators = regulators,
       regulators_file = regulators_file,
       targets = targets,
-      metacell = metacell,
-      metacell.by = metacell.by,
-      metacell_resolution = metacell_resolution,
-      metacell_target = metacell_target,
-      metacell_resolution_candidates = metacell_resolution_candidates,
-      metacell_reduction = metacell_reduction,
-      metacell_dims = metacell_dims,
+      group.by = group.by,
       min_expr_cells = min_expr_cells,
       min_regulon_size = min_regulon_size,
       cores = cores,
@@ -686,7 +709,623 @@ RunSCENIC <- function(
   srt
 }
 
-scenic_resolve_reference_data <- function(
+scenic_cpp <- function(
+  srt,
+  assay,
+  layer,
+  regulators,
+  targets,
+  work_dir,
+  species,
+  data_dir,
+  prefix,
+  group.by,
+  min_expr_cells,
+  min_regulon_size,
+  grn_method,
+  cistarget_method,
+  max_regulon_targets,
+  ranking_dbs,
+  motif_annotations,
+  n_rounds,
+  learning_rate,
+  max_depth,
+  max_features,
+  subsample,
+  early_stop_window_length,
+  cores,
+  aucell_batch_size,
+  aucell_backend,
+  aucell_cpp_strategy,
+  seed,
+  force,
+  assay_name,
+  tool_name,
+  return_seurat,
+  verbose
+) {
+  assay <- assay %||% SeuratObject::DefaultAssay(srt)
+  dir.create(work_dir, recursive = TRUE, showWarnings = FALSE)
+
+  work_dir <- normalizePath(work_dir, mustWork = FALSE)
+  ras_file <- file.path(
+    work_dir,
+    paste0(prefix, "_regulon_activity_score_cpp.rds")
+  )
+  adj_file <- file.path(work_dir, paste0(prefix, "_adj_cpp.tsv"))
+  regulon_file <- file.path(work_dir, paste0(prefix, "_regulon_list_cpp.rds"))
+
+  if (is.null(regulators) || length(regulators) == 0) {
+    reference_data <- scenic_reference(
+      species = species,
+      data_dir = data_dir,
+      verbose = verbose
+    )
+    regulators_raw <- reference_data[["regulators"]]
+    if (is.null(regulators_raw) || length(regulators_raw) == 0) {
+      log_message(
+        "{.arg regulators} must be provided or resolvable from {.arg species}",
+        message_type = "error"
+      )
+    }
+
+    if (
+      is.character(regulators_raw) &&
+        length(regulators_raw) == 1 &&
+        file.exists(regulators_raw)
+    ) {
+      regulators <- unique(readLines(regulators_raw, warn = FALSE))
+      regulators <- regulators[nzchar(regulators) & !grepl("^#", regulators)]
+    } else {
+      regulators <- regulators_raw
+    }
+    if (length(regulators) == 0) {
+      log_message(
+        "No regulators found in reference data",
+        message_type = "error"
+      )
+    }
+  }
+
+  counts <- GetAssayData5(srt, assay = assay, layer = layer)
+
+  if (!is.null(group.by)) {
+    if (!group.by %in% colnames(srt@meta.data)) {
+      log_message(
+        "{.arg group.by} column {.val {group.by}} not found",
+        message_type = "error"
+      )
+    }
+    groups <- srt@meta.data[[group.by]]
+    grn_matrix <- do.call(
+      cbind,
+      lapply(split(seq_len(ncol(counts)), groups), function(idx) {
+        Matrix::rowSums(counts[, idx, drop = FALSE])
+      })
+    )
+    colnames(grn_matrix) <- levels(factor(groups))
+  } else {
+    grn_matrix <- counts
+  }
+
+  gene_expr_n <- Matrix::rowSums(grn_matrix > 0)
+  keep_genes <- gene_expr_n >= min_expr_cells
+  grn_matrix <- grn_matrix[keep_genes, , drop = FALSE]
+
+  if (nrow(grn_matrix) == 0) {
+    log_message(
+      "No genes remain after filtering by expression",
+      message_type = "error"
+    )
+  }
+
+  regulators_detected <- intersect(regulators, rownames(grn_matrix))
+  if (length(regulators_detected) == 0) {
+    log_message(
+      "No {.arg regulators} overlap with expression matrix",
+      message_type = "error"
+    )
+  }
+  regulators <- regulators_detected
+
+  if (!is.null(targets)) {
+    targets <- intersect(targets, rownames(grn_matrix))
+    if (length(targets) == 0) {
+      log_message(
+        "No {.arg targets} overlap with expression matrix",
+        message_type = "error"
+      )
+    }
+  }
+
+  log_message(
+    "Running SCENIC ({.val {grn_method}}) on {.val {ncol(grn_matrix)}} cells with {.val {length(regulators)}} TFs",
+    verbose = verbose
+  )
+
+  grn_force <- isTRUE(force) || !file.exists(adj_file)
+  if (grn_force) {
+    adjacency <- scenic_run_grn_method(
+      grn_matrix = Matrix::t(grn_matrix),
+      regulators = regulators,
+      targets = targets,
+      grn_method = grn_method,
+      backend = "cpp",
+      output_file = adj_file,
+      max_edges_per_target = max_regulon_targets,
+      n_rounds = n_rounds,
+      learning_rate = learning_rate,
+      max_depth = max_depth,
+      max_features = max_features,
+      subsample = subsample,
+      early_stop_window_length = early_stop_window_length,
+      seed = seed,
+      cores = cores,
+      force = TRUE,
+      verbose = verbose
+    )
+  } else {
+    log_message(
+      "Reusing existing GRN output: {.file {adj_file}}",
+      verbose = verbose
+    )
+    adjacency <- utils::read.delim(
+      adj_file,
+      stringsAsFactors = FALSE,
+      check.names = FALSE
+    )
+  }
+
+  if (nrow(adjacency) == 0) {
+    log_message(
+      "GRN inference produced no edges",
+      message_type = "error"
+    )
+  }
+
+  regulon_force <- grn_force || !file.exists(regulon_file)
+  if (regulon_force) {
+    if (identical(cistarget_method, "native_motif")) {
+      ref_data <- tryCatch(
+        scenic_reference(
+          species = species,
+          data_dir = data_dir,
+          ranking_dbs = ranking_dbs,
+          motif_annotations = motif_annotations,
+          verbose = verbose
+        ),
+        error = function(e) NULL
+      )
+      if (
+        !is.null(ref_data) &&
+          length(ref_data[["ranking_dbs"]]) > 0 &&
+          !is.null(ref_data[["motif_annotations"]])
+      ) {
+        regulon_list <- cistarget2(
+          adjacency = adjacency,
+          ranking_dbs = ref_data[["ranking_dbs"]],
+          motif_annotations = ref_data[["motif_annotations"]],
+          max_targets = max_regulon_targets,
+          min_regulon_size = min_regulon_size,
+          verbose = verbose
+        )
+      } else {
+        log_message(
+          "cisTarget reference data not available; falling back to native_approx",
+          message_type = "warning",
+          verbose = verbose
+        )
+        regulon_list <- build_regulons(
+          adjacency = adjacency,
+          max_targets = max_regulon_targets,
+          min_regulon_size = min_regulon_size
+        )
+      }
+    } else {
+      regulon_list <- build_regulons(
+        adjacency = adjacency,
+        max_targets = max_regulon_targets,
+        min_regulon_size = min_regulon_size
+      )
+    }
+    saveRDS(regulon_list, regulon_file)
+  } else {
+    log_message(
+      "Reusing existing regulon list: {.file {regulon_file}}",
+      verbose = verbose
+    )
+    regulon_list <- readRDS(regulon_file)
+  }
+
+  if (length(regulon_list) == 0) {
+    log_message(
+      "No regulons remain after filtering",
+      message_type = "error"
+    )
+  }
+
+  log_message(
+    "Native regulon builder produced {.val {length(regulon_list)}} regulons",
+    verbose = verbose
+  )
+
+  if (file.exists(ras_file) && isFALSE(grn_force)) {
+    log_message(
+      "Reusing existing AUCell scores: {.file {ras_file}}",
+      verbose = verbose
+    )
+    ras_mat <- readRDS(ras_file)
+  } else {
+    ras_mat <- scenic_compute_aucell_score(
+      counts = counts,
+      regulon_list = regulon_list,
+      min_regulon_size = min_regulon_size,
+      batch_size = aucell_batch_size,
+      cores = cores,
+      backend = aucell_backend,
+      cpp_strategy = aucell_cpp_strategy,
+      verbose = verbose
+    )
+    saveRDS(ras_mat, ras_file)
+  }
+  ras_mat <- ras_mat[colnames(srt), , drop = FALSE]
+
+  regulon_tbl <- do.call(
+    rbind,
+    lapply(names(regulon_list), function(tf) {
+      data.frame(
+        regulon = tf,
+        target = regulon_list[[tf]],
+        target_count = length(regulon_list[[tf]]),
+        stringsAsFactors = FALSE
+      )
+    })
+  )
+
+  result <- list(
+    scores = Matrix::t(Matrix::Matrix(as.matrix(ras_mat), sparse = TRUE)),
+    scores_cells_by_regulon = ras_mat,
+    regulons = regulon_tbl,
+    regulon_list = regulon_list,
+    adjacency = adjacency,
+    files = list(
+      adj = adj_file,
+      regulon_list = regulon_file,
+      regulon_activity_score = ras_file
+    ),
+    group.by = group.by,
+    parameters = list(
+      backend = "cpp",
+      grn_method = grn_method,
+      cistarget_method = cistarget_method,
+      method = if (identical(cistarget_method, "native_motif")) {
+        "native_cistarget"
+      } else {
+        "native_approx"
+      },
+      assay = assay,
+      layer = layer,
+      regulators = regulators,
+      targets = targets,
+      group.by = group.by,
+      min_expr_cells = min_expr_cells,
+      min_regulon_size = min_regulon_size,
+      max_regulon_targets = max_regulon_targets,
+      cores = cores,
+      aucell_batch_size = aucell_batch_size,
+      aucell_backend = aucell_backend,
+      aucell_cpp_strategy = aucell_cpp_strategy,
+      seed = seed,
+      assay_name = assay_name,
+      tool_name = tool_name
+    )
+  )
+
+  if (isFALSE(return_seurat)) {
+    return(result)
+  }
+
+  srt[[assay_name]] <- Seurat::CreateAssayObject(data = result[["scores"]])
+  srt[[assay_name]] <- Seurat::AddMetaData(
+    object = srt[[assay_name]],
+    metadata = data.frame(
+      termnames = rownames(result[["scores"]]),
+      target_count = lengths(regulon_list)[rownames(result[["scores"]])],
+      row.names = rownames(result[["scores"]]),
+      stringsAsFactors = FALSE
+    )
+  )
+  srt@tools[[tool_name]] <- result
+  log_message(
+    "{.pkg SCENIC} results stored in assay {.val {assay_name}} and tools slot {.val {tool_name}}",
+    message_type = "success",
+    verbose = verbose
+  )
+  srt
+}
+
+build_regulons <- function(
+  adjacency,
+  max_targets = 50,
+  min_regulon_size = 10
+) {
+  if (!all(c("TF", "target", "importance") %in% colnames(adjacency))) {
+    log_message(
+      "{.arg adjacency} must have columns TF, target, importance",
+      message_type = "error"
+    )
+  }
+
+  adj_sorted <- adjacency[
+    order(
+      adjacency[["TF"]],
+      -as.numeric(adjacency[["importance"]])
+    ),
+  ]
+
+  adj_split <- split(adj_sorted, adj_sorted[["TF"]])
+  regulons <- lapply(adj_split, function(df) {
+    targets <- unique(df[["target"]])
+    utils::head(targets, max_targets)
+  })
+
+  regulons <- regulons[lengths(regulons) >= min_regulon_size]
+  regulons
+}
+
+cistarget2 <- function(
+  adjacency,
+  ranking_dbs,
+  motif_annotations,
+  max_targets = 50,
+  min_regulon_size = 10,
+  nes_threshold = 1.5,
+  auc_threshold = 0.001,
+  cores = 1,
+  verbose = TRUE
+) {
+  check_r("arrow", verbose = FALSE)
+
+  motif_tbl <- tryCatch(
+    utils::read.table(
+      motif_annotations,
+      header = FALSE,
+      sep = "\t",
+      stringsAsFactors = FALSE,
+      comment.char = ""
+    ),
+    error = function(e) {
+      log_message(
+        "Failed to read motif annotations: {.val {conditionMessage(e)}}",
+        message_type = "error"
+      )
+    }
+  )
+  colnames(motif_tbl) <- c(
+    "motif",
+    "tf",
+    "direct_annotation",
+    "inferred_annotation"
+  )
+
+  motif_to_tf <- split(motif_tbl[["tf"]], motif_tbl[["motif"]])
+  motif_names <- names(motif_to_tf)
+
+  log_message(
+    "Native cisTarget: loaded {.val {length(motif_names)}} motifs from annotations",
+    verbose = verbose
+  )
+
+  rank_matrices <- list()
+  all_genes <- character(0)
+  cluster_names_all <- character(0)
+
+  for (db_path in ranking_dbs) {
+    log_message(
+      "  Reading ranking database: {.file {basename(db_path)}}",
+      verbose = verbose
+    )
+    db <- tryCatch(
+      arrow::read_feather(db_path),
+      error = function(e) {
+        log_message(
+          "Failed to read {.file {db_path}}: {.val {conditionMessage(e)}}",
+          message_type = "warning",
+          verbose = verbose
+        )
+        NULL
+      }
+    )
+    if (is.null(db)) {
+      next
+    }
+
+    if (!"motifs" %in% colnames(db)) {
+      log_message(
+        "Ranking database missing 'motifs' column. Skipping.",
+        message_type = "warning",
+        verbose = verbose
+      )
+      next
+    }
+    clusters <- as.character(db[["motifs"]])
+    gene_cols <- setdiff(colnames(db), "motifs")
+    all_genes <- union(all_genes, gene_cols)
+    cluster_names_all <- union(cluster_names_all, clusters)
+
+    rank_matrices[[length(rank_matrices) + 1]] <- list(
+      clusters = clusters,
+      genes = gene_cols,
+      data = db
+    )
+  }
+
+  if (length(rank_matrices) == 0) {
+    log_message(
+      "Failed to read any ranking databases. Falling back to native_approx.",
+      message_type = "warning",
+      verbose = verbose
+    )
+    return(build_regulons(
+      adjacency,
+      max_targets,
+      min_regulon_size
+    ))
+  }
+
+  gene_to_clusters <- list()
+  for (gene in unique(adjacency[["TF"]])) {
+    gene_pattern <- paste0(
+      "(^|__|_)",
+      gene,
+      "($|_)"
+    )
+    matching_rows <- grepl(
+      gene_pattern,
+      motif_tbl[["tf"]],
+      ignore.case = TRUE
+    )
+    if (any(matching_rows)) {
+      gene_to_clusters[[gene]] <- unique(
+        motif_tbl[["motif"]][matching_rows]
+      )
+    }
+  }
+
+  log_message(
+    "  Indexed {.val {length(all_genes)}} genes, {.val {length(cluster_names_all)}} clusters, {.val {length(gene_to_clusters)}} gene→cluster mappings",
+    verbose = verbose
+  )
+
+  tfs <- unique(adjacency[["TF"]])
+  regulons <- list()
+
+  for (tf in tfs) {
+    tf_adj <- adjacency[adjacency[["TF"]] == tf, , drop = FALSE]
+    tf_adj <- tf_adj[order(-as.numeric(tf_adj[["importance"]])), , drop = FALSE]
+    target_genes <- unique(tf_adj[["target"]])
+    target_genes <- utils::head(target_genes, max_targets * 2)
+    target_set <- intersect(target_genes, all_genes)
+
+    if (length(target_set) < min_regulon_size) {
+      next
+    }
+
+    tf_clusters <- gene_to_clusters[[tf]]
+    if (is.null(tf_clusters) || length(tf_clusters) == 0) {
+      next
+    }
+
+    cluster_scores <- data.frame(
+      cluster = character(0),
+      auc = numeric(0),
+      nes = numeric(0),
+      leading_edge_genes = I(list()),
+      stringsAsFactors = FALSE
+    )
+
+    for (rm in rank_matrices) {
+      gene_idx <- match(target_set, rm[["genes"]])
+      gene_idx <- gene_idx[!is.na(gene_idx)]
+      if (length(gene_idx) < min_regulon_size) {
+        next
+      }
+
+      cluster_idx <- which(rm[["clusters"]] %in% tf_clusters)
+      if (length(cluster_idx) == 0) {
+        next
+      }
+
+      for (ci in cluster_idx) {
+        cluster_name <- rm[["clusters"]][ci]
+        rankings <- as.numeric(rm[["data"]][ci, rm[["genes"]]])
+        names(rankings) <- rm[["genes"]]
+
+        n_total <- length(rankings)
+        target_ranks_sub <- rankings[target_set]
+        target_ranks_sub <- sort(target_ranks_sub[!is.na(target_ranks_sub)])
+
+        if (length(target_ranks_sub) < min_regulon_size) {
+          next
+        }
+
+        max_r <- max(rankings, na.rm = TRUE)
+        if (max_r <= 0) {
+          next
+        }
+        target_ranks_sub <- target_ranks_sub / max_r
+
+        n_targets <- length(target_ranks_sub)
+
+        x <- c(0, target_ranks_sub, 1)
+        y <- c(0, seq_len(n_targets) / n_targets, 1)
+        auc <- sum(diff(x) * (y[-1] + y[-length(y)]) / 2)
+
+        expected_auc <- 0.5
+        nes <- (auc - expected_auc) /
+          max(0.01, sqrt(expected_auc * (1 - expected_auc) / n_total))
+
+        if (auc >= auc_threshold && nes >= nes_threshold) {
+          n_lead <- max(2, as.integer(n_targets / 3))
+          leading <- names(target_ranks_sub)[seq_len(min(n_lead, n_targets))]
+          cluster_scores <- rbind(
+            cluster_scores,
+            data.frame(
+              cluster = cluster_name,
+              auc = auc,
+              nes = nes,
+              leading_edge_genes = I(list(unique(c(target_set, leading)))),
+              stringsAsFactors = FALSE
+            )
+          )
+        }
+      }
+    }
+
+    if (nrow(cluster_scores) == 0) {
+      next
+    }
+
+    cluster_scores <- cluster_scores[
+      order(-cluster_scores[["nes"]]),
+      ,
+      drop = FALSE
+    ]
+    top_clusters <- utils::head(cluster_scores, 5)
+
+    regulon_genes <- unique(unlist(top_clusters[["leading_edge_genes"]]))
+    regulon_genes <- intersect(regulon_genes, target_set)
+    regulon_genes <- utils::head(regulon_genes, max_targets)
+
+    if (length(regulon_genes) >= min_regulon_size) {
+      regulons[[tf]] <- regulon_genes
+    }
+  }
+
+  missing_tfs <- setdiff(tfs, names(regulons))
+  if (length(missing_tfs) > 0) {
+    log_message(
+      "  {.val {length(missing_tfs)}} TFs had no enriched motifs; using top-N importance as fallback",
+      message_type = "info",
+      verbose = verbose
+    )
+    fallback <- build_regulons(
+      adjacency[adjacency[["TF"]] %in% missing_tfs, , drop = FALSE],
+      max_targets,
+      min_regulon_size
+    )
+    regulons <- c(regulons, fallback)
+  }
+
+  log_message(
+    "{.pkg cisTarget} produced {.val {length(regulons)}} regulons (motif-enriched: {.val {length(regulons) - length(missing_tfs)}}, fallback: {.val {length(missing_tfs)}})",
+    verbose = verbose
+  )
+
+  regulons[order(names(regulons))]
+}
+
+scenic_reference <- function(
   species,
   data_dir = NULL,
   ranking_dbs = NULL,
@@ -1154,406 +1793,6 @@ scenic_progress_close <- function(progress_state) {
   invisible(NULL)
 }
 
-scenic_def_mc <- function(n_cells) {
-  n_cells <- as.integer(n_cells)
-  if (length(n_cells) != 1 || is.na(n_cells) || n_cells <= 0) {
-    log_message(
-      "{.arg n_cells} must be a positive integer",
-      message_type = "error"
-    )
-  }
-
-  target <- if (n_cells <= 500) {
-    min(n_cells, 80L)
-  } else if (n_cells <= 1000) {
-    100L
-  } else if (n_cells <= 2000) {
-    150L
-  } else if (n_cells <= 5000) {
-    300L
-  } else if (n_cells <= 10000) {
-    500L
-  } else if (n_cells <= 20000) {
-    700L
-  } else if (n_cells <= 50000) {
-    1000L
-  } else if (n_cells <= 100000) {
-    1500L
-  } else if (n_cells <= 200000) {
-    2000L
-  } else {
-    min(round(n_cells / 100), 10000L)
-  }
-
-  as.integer(target)
-}
-
-scenic_metacell_labels <- function(cluster_vec, group_df = NULL) {
-  cluster_vec <- as.character(cluster_vec)
-  if (!is.null(group_df)) {
-    group_df[] <- lapply(group_df, as.character)
-    return(do.call(
-      interaction,
-      c(group_df, list(cluster = cluster_vec, drop = TRUE, sep = "_"))
-    ))
-  }
-
-  factor(cluster_vec)
-}
-
-scenic_resolution_summary <- function(
-  srt,
-  cluster_cols,
-  resolution_candidates,
-  group_df = NULL
-) {
-  cluster_resolutions <- suppressWarnings(
-    as.numeric(sub("^.*_snn_res\\.", "", cluster_cols))
-  )
-
-  summary_list <- lapply(resolution_candidates, function(resolution) {
-    resolution_idx <- which(
-      !is.na(cluster_resolutions) &
-        abs(cluster_resolutions - resolution) < sqrt(.Machine$double.eps)
-    )
-    if (length(resolution_idx) == 0) {
-      return(NULL)
-    }
-
-    cluster_col <- cluster_cols[[resolution_idx[[length(resolution_idx)]]]]
-    cluster_vec <- as.character(srt[[cluster_col]][, 1])
-    metacell_labels <- scenic_metacell_labels(cluster_vec, group_df = group_df)
-    cell_counts <- lengths(split(colnames(srt), metacell_labels))
-
-    data.frame(
-      resolution = resolution,
-      cluster_col = cluster_col,
-      n_metacells = length(cell_counts),
-      min_cells = min(cell_counts),
-      median_cells = stats::median(cell_counts),
-      mean_cells = mean(cell_counts),
-      max_cells = max(cell_counts),
-      stringsAsFactors = FALSE
-    )
-  })
-
-  do.call(rbind, summary_list)
-}
-
-scenic_sel_mc_res <- function(
-  resolution_summary,
-  target_metacells
-) {
-  if (is.null(resolution_summary) || nrow(resolution_summary) == 0) {
-    log_message(
-      "Cannot summarize metacell candidates from {.fn Seurat::FindClusters}",
-      message_type = "error"
-    )
-  }
-
-  resolution_summary[["target_distance"]] <- abs(
-    resolution_summary[["n_metacells"]] - target_metacells
-  )
-  resolution_summary <- resolution_summary[
-    order(
-      resolution_summary[["target_distance"]],
-      -resolution_summary[["n_metacells"]],
-      resolution_summary[["resolution"]]
-    ),
-    ,
-    drop = FALSE
-  ]
-
-  list(
-    selected_resolution = resolution_summary[["resolution"]][[1]],
-    selected_cluster_col = resolution_summary[["cluster_col"]][[1]],
-    resolution_summary = resolution_summary
-  )
-}
-
-scenic_build_metacell_counts <- function(
-  srt,
-  counts,
-  assay,
-  metacell.by = NULL,
-  metacell_resolution = NULL,
-  metacell_target = NULL,
-  metacell_resolution_candidates = c(0.5, 1, 2, 5, 10, 20, 30, 40, 50, 75, 100),
-  metacell_reduction = "pca",
-  metacell_dims = 1:30,
-  seed = 1234,
-  verbose = TRUE
-) {
-  set.seed(seed)
-  log_message(
-    "Building metacells for {.pkg SCENIC} GRN input",
-    verbose = verbose
-  )
-  metacell_reduction <- as.character(metacell_reduction)
-  if (
-    length(metacell_reduction) != 1 ||
-      is.na(metacell_reduction) ||
-      !nzchar(metacell_reduction)
-  ) {
-    log_message(
-      "{.arg metacell_reduction} must be one reduction name",
-      message_type = "error"
-    )
-  }
-  metacell_dims <- unique(as.integer(metacell_dims))
-  metacell_dims <- metacell_dims[!is.na(metacell_dims) & metacell_dims > 0L]
-  if (length(metacell_dims) == 0) {
-    log_message(
-      "{.arg metacell_dims} must contain at least one positive integer",
-      message_type = "error"
-    )
-  }
-  if (identical(metacell_reduction, "pca")) {
-    srt <- Seurat::NormalizeData(srt, assay = assay, verbose = FALSE)
-    srt <- Seurat::FindVariableFeatures(
-      srt,
-      assay = assay,
-      selection.method = "vst",
-      nfeatures = 2000,
-      verbose = FALSE
-    )
-    srt <- Seurat::ScaleData(srt, assay = assay, verbose = FALSE)
-    pca_features <- SeuratObject::VariableFeatures(srt, assay = assay)
-    max_pca_dims <- min(length(pca_features), ncol(srt) - 1L)
-    if (max_pca_dims < 1L) {
-      log_message(
-        "At least two cells and one variable feature are required to build SCENIC metacells with PCA",
-        message_type = "error"
-      )
-    }
-    if (max(metacell_dims) > max_pca_dims) {
-      log_message(
-        "{.arg metacell_dims} requests dimension {.val {max(metacell_dims)}}, but PCA can use at most {.val {max_pca_dims}} dimensions for this object; using available dimensions only",
-        message_type = "warning",
-        verbose = verbose
-      )
-      metacell_dims <- metacell_dims[metacell_dims <= max_pca_dims]
-    }
-    if (length(metacell_dims) == 0) {
-      log_message(
-        "No valid {.arg metacell_dims} remain after checking PCA limits",
-        message_type = "error"
-      )
-    }
-    srt <- Seurat::RunPCA(
-      srt,
-      assay = assay,
-      npcs = max(metacell_dims),
-      verbose = FALSE
-    )
-  } else {
-    available_reductions <- SeuratObject::Reductions(srt)
-    if (!metacell_reduction %in% available_reductions) {
-      available_reductions_text <- if (length(available_reductions) > 0) {
-        paste(available_reductions, collapse = ", ")
-      } else {
-        "none"
-      }
-      log_message(
-        "{.arg metacell_reduction} {.val {metacell_reduction}} is not present in {.arg srt}. Run the batch-corrected reduction before {.fn RunSCENIC} or use {.val {'pca'}}. Available reductions: {.val {available_reductions_text}}",
-        message_type = "error"
-      )
-    }
-    reduction_dims <- ncol(Seurat::Embeddings(
-      srt,
-      reduction = metacell_reduction
-    ))
-    if (max(metacell_dims) > reduction_dims) {
-      log_message(
-        "{.arg metacell_dims} requests dimension {.val {max(metacell_dims)}}, but {.arg metacell_reduction} {.val {metacell_reduction}} has only {.val {reduction_dims}} dimensions",
-        message_type = "error"
-      )
-    }
-    log_message(
-      "Using existing reduction {.val {metacell_reduction}} for {.pkg SCENIC} metacell overclustering",
-      verbose = verbose
-    )
-  }
-  srt <- Seurat::FindNeighbors(
-    srt,
-    reduction = metacell_reduction,
-    dims = metacell_dims,
-    k.param = 20,
-    verbose = FALSE
-  )
-
-  group_df <- NULL
-  if (!is.null(metacell.by)) {
-    missing_cols <- setdiff(metacell.by, colnames(srt@meta.data))
-    if (length(missing_cols) > 0) {
-      log_message(
-        "{.arg metacell.by} columns not found in {.arg srt}: {.val {missing_cols}}",
-        message_type = "error"
-      )
-    }
-    group_df <- srt@meta.data[, metacell.by, drop = FALSE]
-    missing_group <- !stats::complete.cases(group_df)
-    if (any(missing_group)) {
-      missing_group_cols <- names(group_df)[
-        vapply(group_df, function(x) any(is.na(x)), logical(1))
-      ]
-      log_message(
-        "{.arg metacell.by} contains missing values in {.val {sum(missing_group)}} cell{?s} across column{?s} {.val {missing_group_cols}}; fill or remove missing annotations before building SCENIC metacells.",
-        message_type = "error"
-      )
-    }
-  }
-
-  auto_resolution <- is.null(metacell_resolution)
-  if (isTRUE(auto_resolution)) {
-    metacell_target <- metacell_target %||%
-      scenic_def_mc(ncol(srt))
-    metacell_target <- max(1L, as.integer(metacell_target))
-    metacell_resolution_candidates <- unique(as.numeric(
-      metacell_resolution_candidates
-    ))
-    metacell_resolution_candidates <- metacell_resolution_candidates[
-      !is.na(metacell_resolution_candidates) &
-        metacell_resolution_candidates > 0
-    ]
-    if (length(metacell_resolution_candidates) == 0) {
-      log_message(
-        "{.arg metacell_resolution_candidates} must contain at least one positive number",
-        message_type = "error"
-      )
-    }
-    log_message(
-      "Auto {.pkg SCENIC} target metacells: {.val {metacell_target}} for {.val {ncol(srt)}} cells",
-      verbose = verbose
-    )
-  } else {
-    metacell_target <- NULL
-    metacell_resolution_candidates <- as.numeric(metacell_resolution)
-  }
-
-  srt <- Seurat::FindClusters(
-    srt,
-    resolution = metacell_resolution_candidates,
-    random.seed = seed,
-    verbose = FALSE
-  )
-  cluster_cols <- colnames(srt@meta.data)
-  cluster_cols <- cluster_cols[startsWith(
-    cluster_cols,
-    paste0(assay, "_snn_res.")
-  )]
-  cluster_resolutions <- suppressWarnings(
-    as.numeric(sub("^.*_snn_res\\.", "", cluster_cols))
-  )
-  cluster_cols <- cluster_cols[
-    vapply(
-      cluster_resolutions,
-      function(x) {
-        !is.na(x) &&
-          any(
-            abs(x - metacell_resolution_candidates) < sqrt(.Machine$double.eps)
-          )
-      },
-      logical(1)
-    )
-  ]
-  if (length(cluster_cols) == 0) {
-    log_message(
-      "Cannot find metacell overclustering column after {.fn Seurat::FindClusters}",
-      message_type = "error"
-    )
-  }
-  resolution_summary <- scenic_resolution_summary(
-    srt = srt,
-    cluster_cols = cluster_cols,
-    resolution_candidates = metacell_resolution_candidates,
-    group_df = group_df
-  )
-
-  if (isTRUE(auto_resolution)) {
-    selection <- scenic_sel_mc_res(
-      resolution_summary = resolution_summary,
-      target_metacells = metacell_target
-    )
-    resolution_summary <- selection[["resolution_summary"]]
-    cluster_col <- selection[["selected_cluster_col"]]
-    selected_resolution <- selection[["selected_resolution"]]
-    metacell_scan <- paste(
-      sprintf(
-        "%s:%s",
-        format(
-          resolution_summary[["resolution"]],
-          trim = TRUE,
-          scientific = FALSE
-        ),
-        resolution_summary[["n_metacells"]]
-      ),
-      collapse = ", "
-    )
-    log_message(
-      "{.pkg SCENIC} metacell resolution scan (resolution:n_metacells): {metacell_scan}",
-      verbose = verbose
-    )
-  } else {
-    cluster_col <- resolution_summary[["cluster_col"]][[1]]
-    selected_resolution <- resolution_summary[["resolution"]][[1]]
-  }
-
-  cluster_vec <- as.character(srt[[cluster_col]][, 1])
-  metacell_labels <- scenic_metacell_labels(cluster_vec, group_df = group_df)
-
-  metacells <- split(colnames(srt), metacell_labels)
-  metacell_names <- paste0("metacell_", seq_along(metacells))
-  original_labels <- names(metacells)
-  names(metacells) <- metacell_names
-  metacell_sizes <- lengths(metacells)
-  log_message(
-    "{.pkg SCENIC} selected metacell resolution {.val {selected_resolution}} with {.val {length(metacells)}} metacells",
-    verbose = verbose
-  )
-  log_message(
-    "{.pkg SCENIC} metacell size summary: min {.val {min(metacell_sizes)}}, median {.val {stats::median(metacell_sizes)}}, mean {.val {round(mean(metacell_sizes), 2)}}, max {.val {max(metacell_sizes)}} cells",
-    verbose = verbose
-  )
-
-  meta_counts <- do.call(
-    cbind,
-    lapply(metacells, function(cells) {
-      Matrix::rowSums(counts[, cells, drop = FALSE])
-    })
-  )
-  meta_counts <- Matrix::Matrix(meta_counts, sparse = TRUE)
-  rownames(meta_counts) <- rownames(counts)
-  colnames(meta_counts) <- metacell_names
-
-  cell_map <- data.frame(
-    cell = unlist(metacells, use.names = FALSE),
-    metacell = rep(names(metacells), lengths(metacells)),
-    metacell_label = rep(original_labels, lengths(metacells)),
-    stringsAsFactors = FALSE
-  )
-  info <- list(
-    cluster_col = cluster_col,
-    resolution = selected_resolution,
-    reduction = metacell_reduction,
-    auto_resolution = auto_resolution,
-    target_metacells = metacell_target,
-    selected_resolution = selected_resolution,
-    resolution_summary = resolution_summary,
-    dims = metacell_dims,
-    n_metacells = length(metacells),
-    cell_counts = data.frame(
-      metacell = names(metacells),
-      metacell_label = original_labels,
-      n_cells = lengths(metacells),
-      stringsAsFactors = FALSE
-    ),
-    cell_map = cell_map
-  )
-
-  list(counts = meta_counts, info = info)
-}
-
 scenic_prepare_grn_matrix <- function(
   counts,
   ranking_genes,
@@ -1578,7 +1817,7 @@ scenic_prepare_grn_matrix <- function(
     )
   }
   log_message(
-    "{.pkg SCENIC} GRN input matrix: {.val {nrow(grn_matrix)}} cells/metacells x {.val {ncol(grn_matrix)}} genes",
+    "{.pkg SCENIC} GRN input matrix: {.val {nrow(grn_matrix)}} cells x {.val {ncol(grn_matrix)}} genes",
     verbose = verbose
   )
   grn_matrix
@@ -1673,22 +1912,13 @@ scenic_compute_aucell_score <- function(
     )
   }
 
-  if (cores > 1 && .Platform$OS.type == "unix") {
-    scores_list <- parallel::mclapply(
-      batches,
-      calc_auc,
-      mc.cores = cores
-    )
-  } else {
-    if (cores > 1) {
-      log_message(
-        "{.arg cores} > 1 requires a Unix-like OS for AUCell batch scoring; using one core",
-        message_type = "warning",
-        verbose = verbose
-      )
-    }
-    scores_list <- lapply(batches, calc_auc)
-  }
+  scores_list <- thisutils::parallelize_fun(
+    x = batches,
+    fun = calc_auc,
+    cores = cores,
+    progress_bar_width = min(50L, length(batches)),
+    verbose = verbose
+  )
 
   scores <- do.call(rbind, scores_list)
   scores <- as.data.frame(scores, check.names = FALSE)

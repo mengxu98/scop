@@ -16,15 +16,19 @@ RunSCENIC(
   species = c("Homo_sapiens", "Mus_musculus", "Drosophila_melanogaster"),
   data_dir = NULL,
   prefix = "scenic",
-  metacell = TRUE,
-  metacell.by = NULL,
-  metacell_resolution = NULL,
-  metacell_target = NULL,
-  metacell_resolution_candidates = c(0.5, 1, 2, 5, 10, 20, 30, 40, 50, 75, 100),
-  metacell_reduction = "pca",
-  metacell_dims = 1:30,
+  group.by = NULL,
   min_expr_cells = 3,
   min_regulon_size = 10,
+  backend = c("cpp", "python"),
+  grn_method = c("grnboost2", "genie3"),
+  cistarget_method = c("native_motif", "native_approx"),
+  max_regulon_targets = 50,
+  n_rounds = 5000,
+  learning_rate = 0.01,
+  max_depth = 3,
+  max_features = 0.1,
+  subsample = 0.9,
+  early_stop_window_length = 25,
   cores = 1,
   aucell_batch_size = 500,
   aucell_backend = c("r", "cpp"),
@@ -80,30 +84,12 @@ reference files. If \code{NULL}, files are stored under
 
 \item{prefix}{Prefix for SCENIC output files.}
 
-\item{metacell}{Whether to build a metacell count matrix for GRNBoost2.}
-
-\item{metacell.by}{Optional metadata column(s) used to keep metacells within
-groups such as samples or cell types.}
-
-\item{metacell_resolution}{Resolution passed to \code{\link[Seurat:FindClusters]{Seurat::FindClusters()}} for
-overclustering. If \code{NULL}, candidate resolutions are scanned and the one
-closest to \code{metacell_target} is used.}
-
-\item{metacell_target}{Target number of metacells used when
-\code{metacell_resolution = NULL}. If \code{NULL}, a default target is chosen from the
-number of cells.}
-
-\item{metacell_resolution_candidates}{Candidate resolutions scanned when
-\code{metacell_resolution = NULL}.}
-
-\item{metacell_reduction}{Reduction used to build the metacell neighbor graph.
-The default \code{"pca"} keeps the original behavior and recomputes PCA from the
-selected assay. To use an already batch-corrected embedding such as Harmony,
-run it before \code{RunSCENIC()} and set \code{metacell_reduction = "Harmony"}.
-Only the metacell grouping uses this reduction; GRNBoost2 still uses raw
-count sums per metacell.}
-
-\item{metacell_dims}{Dimensions used for metacell overclustering.}
+\item{group.by}{Optional metadata column used to aggregate single-cell
+counts before GRNBoost2. When \code{NULL} (default), GRNBoost2 runs on the
+original single-cell count matrix. To use pre-built metacells, pass the
+metacell membership column (e.g. \code{"Metacell_id"} from \code{\link[=RunMetaCell]{RunMetaCell()}}).
+All cells sharing the same \code{group.by} value are summed into one metacell
+profile.}
 
 \item{min_expr_cells}{Minimum number of cells or metacells where a gene must
 be detected before GRNBoost2.}
@@ -150,9 +136,7 @@ A Seurat object with SCENIC results, or a result list when
 \code{return_seurat = FALSE}.
 }
 \description{
-Run SCENIC from a Seurat object. The GRN and cisTarget steps use a
-metacell count matrix by default, while AUCell scores are calculated on the
-original single-cell count matrix.
+Run SCENIC gene regulatory network analysis
 }
 \examples{
 \dontrun{
