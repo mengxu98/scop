@@ -230,6 +230,7 @@ reference:
 - contents:
   - DorotheaPlot
   - EnrichmentPlot
+  - FerrisWheelPlot
   - GSEAPlot
   - GSVAPlot
   - MetabolismPlot
@@ -262,6 +263,7 @@ reference:
   - DynamicHeatmap
   - LineagePlot
   - PAGAPlot
+  - PalantirTrajectoryPlot
   - PseudotimeProjectionPlot
   - VelocityPlot
 
