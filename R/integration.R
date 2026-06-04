@@ -4164,7 +4164,6 @@ LIGER_integrate <- function(
     method = "iNMF",
     datasetVar = batch,
     useLayer = "ligerScaleData",
-    layer = "ligerScaleData",
     assay = SeuratObject::DefaultAssay(srt_merge),
     seed = seed,
     verbose = FALSE
