@@ -75,9 +75,8 @@ table passed to \verb{scenic ctx} is filtered to these targets.}
 
 \item{species}{Species used to select cisTarget reference files when
 \code{ranking_dbs}, \code{motif_annotations}, or \code{regulators} is \code{NULL}. Supported
-values include \code{"Homo_sapiens"}, \code{"Mus_musculus"},
-\code{"Drosophila_melanogaster"} and aliases such as \code{"human"}, \code{"mouse"}, and
-\code{"fly"}.}
+values are \code{"Homo_sapiens"}, \code{"Mus_musculus"}, and
+\code{"Drosophila_melanogaster"}.}
 
 \item{genome}{Genome build used to select cisTarget reference files when
 automatic references are prepared. Human supports \code{"hg38"} (default) and
