@@ -16,6 +16,12 @@
 #' `NULL`, files are downloaded from `mengxu98/datasets` and cached with
 #' `tools::R_user_dir("scop", "data")`.
 #' @param seed Random seed passed to R and the Python scFEA backend.
+#' @param max_cells Maximum number of cells used for GNN training. When the
+#' input has more cells, a random subset is sampled for training and the
+#' trained model predicts fluxes for all cells in batches. This drastically
+#' reduces peak memory for large datasets. Set `NULL` (default) to train on
+#' all cells, matching the original upstream behaviour. A value such as
+#' `20000` can be useful on machines with 16-32 GiB RAM.
 #' @param verbose Whether to print progress messages.
 #'
 #' @return A Seurat object with `assay_flux`, `assay_balance`, and
@@ -44,6 +50,7 @@ RunscFEA <- function(
   store_metadata = FALSE,
   data_dir = NULL,
   seed = 16,
+  max_cells = NULL,
   verbose = TRUE
 ) {
   species <- match.arg(species)
@@ -56,6 +63,15 @@ RunscFEA <- function(
   if (!is.numeric(n_epoch) || length(n_epoch) != 1 || n_epoch < 1) {
     log_message(
       "{.arg n_epoch} must be a positive number",
+      message_type = "error"
+    )
+  }
+  if (!is.null(max_cells) && (
+    !is.numeric(max_cells) || length(max_cells) != 1 || is.na(max_cells) ||
+      max_cells < 1
+  )) {
+    log_message(
+      "{.arg max_cells} must be {.code NULL} or a positive number",
       message_type = "error"
     )
   }
@@ -146,10 +162,38 @@ os.environ['NUMBA_NUM_THREADS'] = '1'
   )
 
   keep_genes <- Matrix::rowSums(expr_mat) > 0
-  expr_mat <- expr_mat[keep_genes, , drop = FALSE]
-  n_nonzero_genes <- nrow(expr_mat)
+  n_nonzero_genes <- sum(keep_genes)
+  scfea_genes <- intersect(rownames(expr_mat)[keep_genes], module_genes)
+  if (length(scfea_genes) == 0) {
+    log_message(
+      "No non-zero genes overlap the {.pkg scFEA} M168 module gene file",
+      message_type = "error"
+    )
+  }
+  expr_mat <- expr_mat[scfea_genes, , drop = FALSE]
+
+  dense_bytes <- prod(dim(expr_mat)) * 8
+  dense_gib <- dense_bytes / (1024^3)
+  if (dense_gib > 2) {
+    log_message(
+      "Dense coercion of {.val {nrow(expr_mat)}} genes x {.val {ncol(expr_mat)}} cells ",
+      "would allocate approximately {.val {round(dense_gib, 1)}} GiB. ",
+      "Consider subsetting cells or using a machine with more memory.",
+      message_type = "warning"
+    )
+  }
+  log_message(
+    "Using {.val {nrow(expr_mat)}} non-zero overlapping genes for scFEA input",
+    verbose = verbose
+  )
+
   expr_cells_genes <- as.matrix(Matrix::t(expr_mat))
   storage.mode(expr_cells_genes) <- "double"
+
+  conda <- resolve_conda("auto")
+  envname <- get_envname(NULL)
+  python_path <- conda_python(conda = conda, envname = envname)
+  configure_python_runtime(python_path)
 
   scfea <- reticulate::import_from_path(
     "scfea",
@@ -171,7 +215,8 @@ os.environ['NUMBA_NUM_THREADS'] = '1'
     n_epoch = as.integer(n_epoch),
     seed = as.integer(seed),
     verbose = isTRUE(verbose),
-    data_dir = data_dir
+    data_dir = data_dir,
+    max_cells = if (is.null(max_cells)) NULL else as.integer(max_cells)
   )
 
   flux_df <- scfea_py_dataframe_to_r(
@@ -247,12 +292,14 @@ os.environ['NUMBA_NUM_THREADS'] = '1'
     assay_flux = assay_flux,
     assay_balance = assay_balance,
     sc_imputation = isTRUE(sc_imputation),
+    max_cells = max_cells,
     input_summary = list(
       n_input_genes = n_input_genes,
       n_nonzero_genes = n_nonzero_genes,
       n_input_cells = n_input_cells,
       n_module_genes = length(module_genes),
       n_overlap_genes = length(overlap_genes),
+      n_scfea_genes = nrow(expr_mat),
       overlap_genes = overlap_genes
     )
   )
