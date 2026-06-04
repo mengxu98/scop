@@ -703,6 +703,91 @@ coerce_de_schema <- function(df) {
   out
 }
 
+filter_de_results <- function(de_results, DE_threshold) {
+  de_results <- detest_res(de_results)
+  if (nrow(de_results) == 0) {
+    return(de_results)
+  }
+
+  if ("pct.1" %in% colnames(de_results) && "pct.2" %in% colnames(de_results)) {
+    de_results[["diff_pct"]] <- de_results[["pct.1"]] - de_results[["pct.2"]]
+  }
+  if ("p_val_adj" %in% colnames(de_results)) {
+    de_results[["minus_log10padj"]] <- -log10(de_results[["p_val_adj"]])
+    de_results[["-log10padj"]] <- de_results[["minus_log10padj"]]
+  }
+
+  keep <- tryCatch(
+    with(de_results, eval(rlang::parse_expr(DE_threshold))),
+    error = function(e) {
+      log_message(
+        paste0(
+          "Failed to evaluate {.arg DE_threshold}: ",
+          conditionMessage(e)
+        ),
+        message_type = "error"
+      )
+    }
+  )
+  keep <- keep %in% TRUE
+  de_results[keep, , drop = FALSE]
+}
+
+prepare_de_for_pathway <- function(de_results, require_score = FALSE) {
+  de_results <- detest_res(de_results)
+  if (nrow(de_results) == 0) {
+    return(de_results[0, , drop = FALSE])
+  }
+  if (!"gene" %in% colnames(de_results)) {
+    log_message(
+      "Cannot find {.field gene} in DEtest results.",
+      message_type = "error"
+    )
+  }
+  if (isTRUE(require_score) && !"avg_log2FC" %in% colnames(de_results)) {
+    log_message(
+      "Cannot find {.field avg_log2FC} in DEtest results for GSEA.",
+      message_type = "error"
+    )
+  }
+
+  comparison <- rep(NA_character_, nrow(de_results))
+  if ("comparison" %in% colnames(de_results)) {
+    comparison <- as.character(de_results[["comparison"]])
+  }
+  missing_comparison <- is.na(comparison) | !nzchar(comparison)
+  if (any(missing_comparison) && "group1" %in% colnames(de_results)) {
+    comparison[missing_comparison] <- as.character(de_results[["group1"]])[
+      missing_comparison
+    ]
+  }
+  missing_comparison <- is.na(comparison) | !nzchar(comparison)
+  if (any(missing_comparison) && "cluster" %in% colnames(de_results)) {
+    comparison[missing_comparison] <- as.character(de_results[["cluster"]])[
+      missing_comparison
+    ]
+  }
+  missing_comparison <- is.na(comparison) | !nzchar(comparison)
+  if (any(missing_comparison)) {
+    comparison[missing_comparison] <- "All"
+  }
+
+  de_results[["comparison"]] <- comparison
+  de_results <- de_results[
+    !is.na(de_results[["gene"]]) & nzchar(as.character(de_results[["gene"]])),
+    ,
+    drop = FALSE
+  ]
+  if (isTRUE(require_score)) {
+    de_results <- de_results[
+      !is.na(de_results[["avg_log2FC"]]),
+      ,
+      drop = FALSE
+    ]
+  }
+  de_results
+}
+
 #' @export
 FoldChange.default <- function(
   object,
