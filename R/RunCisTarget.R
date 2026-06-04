@@ -296,12 +296,9 @@ cisTarget_r <- function(
   verbose,
   ...
 ) {
-  if (!requireNamespace("RcisTarget", quietly = TRUE)) {
-    log_message(
-      "{.pkg RcisTarget} is not installed. Install with {.code BiocManager::install('RcisTarget')} or use {.code backend = 'python'}.",
-      message_type = "error"
-    )
-  }
+  check_r("RcisTarget", verbose = FALSE)
+  importRankings <- get_namespace_fun("RcisTarget", "importRankings")
+  cisTarget <- get_namespace_fun("RcisTarget", "cisTarget")
 
   # RcisTarget requires the ranking databases in feather format
   # and the motif annotations as a data.table
@@ -328,7 +325,7 @@ cisTarget_r <- function(
 
   # Run RcisTarget
   motif_rankings <- tryCatch(
-    RcisTarget::importRankings(db_paths[1]),
+    importRankings(db_paths[1]),
     error = function(e) {
       log_message(
         "Failed to import rankings: {.val {conditionMessage(e)}}",
@@ -337,7 +334,7 @@ cisTarget_r <- function(
     }
   )
 
-  motif_enrichment <- RcisTarget::cisTarget(
+  motif_enrichment <- cisTarget(
     tf_targets,
     motif_rankings,
     motifAnnot_dt = motif_annotations_dt
