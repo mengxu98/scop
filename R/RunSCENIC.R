@@ -23,6 +23,9 @@
 #' values include `"Homo_sapiens"`, `"Mus_musculus"`,
 #' `"Drosophila_melanogaster"` and aliases such as `"human"`, `"mouse"`, and
 #' `"fly"`.
+#' @param genome Genome build used to select cisTarget reference files when
+#' automatic references are prepared. Human supports `"hg38"` (default) and
+#' `"hg19"`. Mouse and fly currently use `"mm10"` and `"dm6"`, respectively.
 #' @param data_dir Directory used to cache automatically prepared SCENIC
 #' reference files. If `NULL`, files are stored under
 #' `tools::R_user_dir("scop", "data")/SCENIC/<species>`.
@@ -93,6 +96,7 @@ RunSCENIC <- function(
   targets = NULL,
   work_dir = "scenic_output/",
   species = c("Homo_sapiens", "Mus_musculus", "Drosophila_melanogaster"),
+  genome = NULL,
   data_dir = NULL,
   prefix = "scenic",
   group.by = NULL,
@@ -146,6 +150,7 @@ RunSCENIC <- function(
       targets = targets,
       work_dir = work_dir,
       species = species,
+      genome = genome,
       data_dir = data_dir,
       prefix = prefix,
       group.by = group.by,
@@ -179,6 +184,7 @@ RunSCENIC <- function(
 
   reference_data <- scenic_reference(
     species = species,
+    genome = genome,
     data_dir = data_dir,
     ranking_dbs = ranking_dbs,
     motif_annotations = motif_annotations,
@@ -189,6 +195,7 @@ RunSCENIC <- function(
   motif_annotations <- reference_data[["motif_annotations"]]
   regulators <- reference_data[["regulators"]]
   species <- reference_data[["species"]]
+  genome <- reference_data[["genome"]]
   data_dir <- reference_data[["data_dir"]]
 
   if (length(ranking_dbs) == 0) {
@@ -667,6 +674,7 @@ RunSCENIC <- function(
       assay = assay,
       layer = layer,
       species = species,
+      genome = genome,
       data_dir = data_dir,
       ranking_dbs = ranking_dbs,
       motif_annotations = motif_annotations,
@@ -730,6 +738,7 @@ scenic_cpp <- function(
   targets,
   work_dir,
   species,
+  genome,
   data_dir,
   prefix,
   group.by,
@@ -758,6 +767,9 @@ scenic_cpp <- function(
   verbose
 ) {
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
+  species_config <- scenic_species_config(species, genome = genome)
+  species <- species_config[["label"]]
+  genome <- species_config[["genome"]]
   dir.create(work_dir, recursive = TRUE, showWarnings = FALSE)
 
   work_dir <- normalizePath(work_dir, mustWork = FALSE)
@@ -771,6 +783,7 @@ scenic_cpp <- function(
   if (is.null(regulators) || length(regulators) == 0) {
     reference_data <- scenic_reference(
       species = species,
+      genome = genome,
       data_dir = data_dir,
       verbose = verbose
     )
@@ -902,6 +915,7 @@ scenic_cpp <- function(
       ref_data <- tryCatch(
         scenic_reference(
           species = species,
+          genome = genome,
           data_dir = data_dir,
           ranking_dbs = ranking_dbs,
           motif_annotations = motif_annotations,
@@ -1018,6 +1032,8 @@ scenic_cpp <- function(
       },
       assay = assay,
       layer = layer,
+      species = species,
+      genome = genome,
       regulators = regulators,
       targets = targets,
       group.by = group.by,
@@ -1340,13 +1356,14 @@ cistarget2 <- function(
 
 scenic_reference <- function(
   species,
+  genome = NULL,
   data_dir = NULL,
   ranking_dbs = NULL,
   motif_annotations = NULL,
   regulators = NULL,
   verbose = TRUE
 ) {
-  species_config <- scenic_species_config(species)
+  species_config <- scenic_species_config(species, genome = genome)
   missing_ranking_dbs <- is.null(ranking_dbs) || length(ranking_dbs) == 0
   missing_motif_annotations <- is.null(motif_annotations) ||
     length(motif_annotations) == 0
@@ -1413,6 +1430,7 @@ scenic_reference <- function(
 
   list(
     species = species_config[["label"]],
+    genome = species_config[["genome"]],
     data_dir = reference_dir,
     ranking_dbs = ranking_dbs,
     motif_annotations = motif_annotations,
@@ -1420,7 +1438,7 @@ scenic_reference <- function(
   )
 }
 
-scenic_species_config <- function(species) {
+scenic_species_config <- function(species, genome = NULL) {
   if (length(species) > 1L) {
     species <- species[[1L]]
   }
@@ -1436,22 +1454,36 @@ scenic_species_config <- function(species) {
     )
   }
   species_key <- tolower(gsub("[ .-]+", "_", species))
+  genome_key <- if (is.null(genome)) NULL else tolower(gsub("[ .-]+", "_", genome))
   species_key <- switch(
     species_key,
     homo_sapiens = "human",
     human = "human",
     hsa = "human",
     hs = "human",
-    hg38 = "human",
+    hg38 = {
+      genome_key <- genome_key %||% "hg38"
+      "human"
+    },
+    hg19 = {
+      genome_key <- genome_key %||% "hg19"
+      "human"
+    },
     mus_musculus = "mouse",
     mouse = "mouse",
     mm = "mouse",
-    mm10 = "mouse",
+    mm10 = {
+      genome_key <- genome_key %||% "mm10"
+      "mouse"
+    },
     drosophila_melanogaster = "fly",
     drosophila = "fly",
     fly = "fly",
     dmel = "fly",
-    dm6 = "fly",
+    dm6 = {
+      genome_key <- genome_key %||% "dm6"
+      "fly"
+    },
     NULL
   )
   if (is.null(species_key)) {
@@ -1462,11 +1494,73 @@ scenic_species_config <- function(species) {
   }
 
   cistarget_url <- "https://resources.aertslab.org/cistarget"
+  genome_key <- switch(
+    species_key,
+    human = genome_key %||% "hg38",
+    mouse = genome_key %||% "mm10",
+    fly = genome_key %||% "dm6"
+  )
+  genome_key <- switch(
+    genome_key,
+    hg38 = "hg38",
+    grch38 = "hg38",
+    hg19 = "hg19",
+    grch37 = "hg19",
+    mm10 = "mm10",
+    grcm38 = "mm10",
+    dm6 = "dm6",
+    genome_key
+  )
+  expected_genomes <- switch(
+    species_key,
+    human = c("hg38", "hg19"),
+    mouse = "mm10",
+    fly = "dm6"
+  )
+  if (!genome_key %in% expected_genomes) {
+    log_message(
+      "{.arg genome} must be one of {.val {expected_genomes}} for {.arg species} {.val {species}}",
+      message_type = "error"
+    )
+  }
   switch(
     species_key,
-    human = list(
+    human = if (identical(genome_key, "hg19")) {
+      list(
+        key = "human_hg19",
+        label = "Homo_sapiens",
+        genome = "hg19",
+        files = data.frame(
+          role = c("ranking_dbs", "ranking_dbs", "motif_annotations", "tf_list"),
+          filename = c(
+            "hg19-500bp-upstream-10species.mc9nr.genes_vs_motifs.rankings.feather",
+            "hg19-tss-centered-10kb-10species.mc9nr.genes_vs_motifs.rankings.feather",
+            "motifs-v9-nr.hgnc-m0.001-o0.0.tbl",
+            "allTFs_hgnc.txt"
+          ),
+          url = c(
+            paste0(
+              cistarget_url,
+              "/databases/homo_sapiens/hg19/refseq_r45/mc9nr/gene_based/hg19-500bp-upstream-10species.mc9nr.genes_vs_motifs.rankings.feather"
+            ),
+            paste0(
+              cistarget_url,
+              "/databases/homo_sapiens/hg19/refseq_r45/mc9nr/gene_based/hg19-tss-centered-10kb-10species.mc9nr.genes_vs_motifs.rankings.feather"
+            ),
+            paste0(
+              cistarget_url,
+              "/motif2tf/motifs-v9-nr.hgnc-m0.001-o0.0.tbl"
+            ),
+            paste0(cistarget_url, "/tf_lists/allTFs_hg38.txt")
+          ),
+          stringsAsFactors = FALSE
+        )
+      )
+    } else {
+      list(
       key = "human",
       label = "Homo_sapiens",
+      genome = "hg38",
       files = data.frame(
         role = c("ranking_dbs", "ranking_dbs", "motif_annotations", "tf_list"),
         filename = c(
@@ -1492,10 +1586,12 @@ scenic_species_config <- function(species) {
         ),
         stringsAsFactors = FALSE
       )
-    ),
+    )
+    },
     mouse = list(
       key = "mouse",
       label = "Mus_musculus",
+      genome = "mm10",
       files = data.frame(
         role = c("ranking_dbs", "ranking_dbs", "motif_annotations", "tf_list"),
         filename = c(
@@ -1525,6 +1621,7 @@ scenic_species_config <- function(species) {
     fly = list(
       key = "fly",
       label = "Drosophila_melanogaster",
+      genome = "dm6",
       files = data.frame(
         role = c("ranking_dbs", "motif_annotations", "tf_list"),
         filename = c(
