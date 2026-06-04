@@ -36,6 +36,19 @@
 #' @param min_expr_cells Minimum number of cells or metacells where a gene must
 #' be detected before GRNBoost2.
 #' @param min_regulon_size Minimum regulon size kept after `scenic ctx`.
+#' @param backend SCENIC backend. `"cpp"` uses the native R/C++ path and
+#' `"python"` uses the Python `scenicplus` path.
+#' @param grn_method GRN inference method for the native backend.
+#' @param cistarget_method cisTarget implementation for the native backend.
+#' @param max_regulon_targets Maximum number of target genes kept per regulon in
+#' the native backend.
+#' @param n_rounds Number of boosting rounds used by the native GRN backend.
+#' @param learning_rate Learning rate used by the native GRN backend.
+#' @param max_depth Maximum tree depth used by the native GRN backend.
+#' @param max_features Fraction of features sampled by the native GRN backend.
+#' @param subsample Row subsampling fraction used by the native GRN backend.
+#' @param early_stop_window_length Early-stopping window used by the native GRN
+#' backend.
 #' @param cores Number of workers used by GRNBoost2, `scenic ctx`, and
 #' AUCell batch scoring. If multicore execution is not supported, this is
 #' automatically reduced to one core.
@@ -162,7 +175,7 @@ RunSCENIC <- function(
     ))
   }
 
-  # ── Python path below ─────────────────────────────────────────────────
+  # Python path below.
 
   reference_data <- scenic_reference(
     species = species,
@@ -1193,7 +1206,7 @@ cistarget2 <- function(
   }
 
   log_message(
-    "  Indexed {.val {length(all_genes)}} genes, {.val {length(cluster_names_all)}} clusters, {.val {length(gene_to_clusters)}} gene→cluster mappings",
+    "  Indexed {.val {length(all_genes)}} genes, {.val {length(cluster_names_all)}} clusters, {.val {length(gene_to_clusters)}} gene-to-cluster mappings",
     verbose = verbose
   )
 

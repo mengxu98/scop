@@ -103,12 +103,10 @@ PrepareEnv <- function(
         error = function(...) NULL
       )
     if (!is.null(python_cached) && nzchar(python_cached) && file.exists(python_cached)) {
-      if ("scenic" %in% modules) {
-        assert_python_runtime_switchable(
-          python_cached,
-          restart_hint = scenic_runtime_restart_hint(envname = envname)
-        )
-      }
+      assert_python_runtime_switchable(
+        python_cached,
+        restart_hint = python_runtime_restart_hint(envname = envname, modules = modules)
+      )
       configure_python_runtime(python_cached)
     }
     remember_python_environment(envname = envname, conda = conda)
@@ -163,11 +161,7 @@ PrepareEnv <- function(
     if (!is.null(env_path)) {
       assert_python_runtime_switchable(
         conda_env_python_path(env_path),
-        restart_hint = if ("scenic" %in% modules) {
-          scenic_runtime_restart_hint(envname = envname)
-        } else {
-          NULL
-        }
+        restart_hint = python_runtime_restart_hint(envname = envname, modules = modules)
       )
     }
     env <- env_exist(
@@ -332,12 +326,10 @@ PrepareEnv <- function(
     )
   }
 
-  if ("scenic" %in% modules) {
-    assert_python_runtime_switchable(
-      python,
-      restart_hint = scenic_runtime_restart_hint(envname = envname)
-    )
-  }
+  assert_python_runtime_switchable(
+    python,
+    restart_hint = python_runtime_restart_hint(envname = envname, modules = modules)
+  )
   configure_python_runtime(python)
   remember_python_environment(envname = envname, conda = conda)
 
@@ -725,6 +717,32 @@ scenic_runtime_restart_hint <- function(envname = "scenic_env") {
     "Restart R, then run ",
     "PrepareEnv(envname = \"", envname, "\", modules = \"scenic\") ",
     "before RunSCENIC()."
+  )
+}
+
+python_runtime_restart_hint <- function(envname = "scop_env", modules = NULL) {
+  if ("scenic" %in% modules) {
+    return(scenic_runtime_restart_hint(envname = envname))
+  }
+  if ("cellphonedb" %in% modules) {
+    return(paste0(
+      "Restart R, then run ",
+      "PrepareEnv(envname = \"", envname, "\", modules = \"cellphonedb\") ",
+      "before RunCellphoneDB()."
+    ))
+  }
+  module_code <- if (!is.null(modules) && length(modules) > 0L) {
+    paste0(
+      ", modules = ",
+      paste(deparse(modules), collapse = "")
+    )
+  } else {
+    ""
+  }
+  paste0(
+    "Restart R, then run ",
+    "PrepareEnv(envname = \"", envname, "\"", module_code, ") ",
+    "before the downstream Python-backed analysis."
   )
 }
 
