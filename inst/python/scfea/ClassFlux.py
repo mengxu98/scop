@@ -26,7 +26,7 @@ class FLUX(nn.Module):
 
     def updateC(self, m, n_comps, cmMat): # stoichiometric matrix
 
-        c = torch.zeros((m.shape[0], n_comps))
+        c = torch.zeros((m.shape[0], n_comps), dtype=m.dtype, device=m.device)
         for i in range(c.shape[1]):
             tmp = m * cmMat[i,:]
             c[:,i] = torch.sum(tmp, dim=1)
