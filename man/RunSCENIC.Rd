@@ -96,6 +96,29 @@ be detected before GRNBoost2.}
 
 \item{min_regulon_size}{Minimum regulon size kept after \verb{scenic ctx}.}
 
+\item{backend}{SCENIC backend. \code{"cpp"} uses the native R/C++ path and
+\code{"python"} uses the Python \code{scenicplus} path.}
+
+\item{grn_method}{GRN inference method for the native backend.}
+
+\item{cistarget_method}{cisTarget implementation for the native backend.}
+
+\item{max_regulon_targets}{Maximum number of target genes kept per regulon in
+the native backend.}
+
+\item{n_rounds}{Number of boosting rounds used by the native GRN backend.}
+
+\item{learning_rate}{Learning rate used by the native GRN backend.}
+
+\item{max_depth}{Maximum tree depth used by the native GRN backend.}
+
+\item{max_features}{Fraction of features sampled by the native GRN backend.}
+
+\item{subsample}{Row subsampling fraction used by the native GRN backend.}
+
+\item{early_stop_window_length}{Early-stopping window used by the native GRN
+backend.}
+
 \item{cores}{Number of workers used by GRNBoost2, \verb{scenic ctx}, and
 AUCell batch scoring. If multicore execution is not supported, this is
 automatically reduced to one core.}

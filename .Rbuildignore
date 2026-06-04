@@ -33,3 +33,4 @@
 ^.*\.dll$
 ^\.git$
 ^\.gitignore$
+^\.reasonix$

@@ -10,6 +10,9 @@
 #' @param palette_metacell Color palette for the metacell centroid layer.
 #' Default is "Chinese".
 #' @param palcolor_metacell Custom colors for the metacell centroid layer.
+#' @param cell.alpha Alpha value for the original single-cell background layer.
+#' @param cell.size Point size for the original single-cell background layer.
+#' @param stroke Point border stroke width for metacell centroids.
 #' @param show_metacell_size Whether to map `metacell_size` to centroid size.
 #' @param metacell_size_range Point-size range used when
 #' `show_metacell_size = TRUE`.
