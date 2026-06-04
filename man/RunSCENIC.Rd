@@ -14,6 +14,7 @@ RunSCENIC(
   targets = NULL,
   work_dir = "scenic_output/",
   species = c("Homo_sapiens", "Mus_musculus", "Drosophila_melanogaster"),
+  genome = NULL,
   data_dir = NULL,
   prefix = "scenic",
   group.by = NULL,
@@ -77,6 +78,10 @@ table passed to \verb{scenic ctx} is filtered to these targets.}
 values include \code{"Homo_sapiens"}, \code{"Mus_musculus"},
 \code{"Drosophila_melanogaster"} and aliases such as \code{"human"}, \code{"mouse"}, and
 \code{"fly"}.}
+
+\item{genome}{Genome build used to select cisTarget reference files when
+automatic references are prepared. Human supports \code{"hg38"} (default) and
+\code{"hg19"}. Mouse and fly currently use \code{"mm10"} and \code{"dm6"}, respectively.}
 
 \item{data_dir}{Directory used to cache automatically prepared SCENIC
 reference files. If \code{NULL}, files are stored under
