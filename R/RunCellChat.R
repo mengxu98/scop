@@ -520,16 +520,7 @@ DoCellChat <- function(
     group.by = "label"
   )
 
-  cellchat_ns_env <- asNamespace("CellChat")
-  object@DB <- switch(species,
-    "Mus_musculus" = get("CellChatDB.mouse", envir = cellchat_ns_env),
-    "Homo_sapiens" = get("CellChatDB.human", envir = cellchat_ns_env),
-    "zebrafish" = get("CellChatDB.zebrafish", envir = cellchat_ns_env),
-    log_message(
-      "Invalid species. Must be one of {.val {c('Homo_sapiens', 'Mus_musculus', 'zebrafish')}}",
-      message_type = "error"
-    )
-  )
+  object@DB <- cellchat_database(species = species)
 
   object <- get_namespace_fun("CellChat", "subsetData")(object)
   identifyOverExpressedGenes <- get_namespace_fun("CellChat", "identifyOverExpressedGenes")
@@ -555,6 +546,36 @@ DoCellChat <- function(
   object <- get_namespace_fun("CellChat", "netAnalysis_computeCentrality")(object, thresh = thresh)
 
   object
+}
+
+cellchat_database <- function(species) {
+  data_name <- switch(species,
+    "Mus_musculus" = "CellChatDB.mouse",
+    "Homo_sapiens" = "CellChatDB.human",
+    "zebrafish" = "CellChatDB.zebrafish",
+    log_message(
+      "Invalid species. Must be one of {.val {c('Homo_sapiens', 'Mus_musculus', 'zebrafish')}}",
+      message_type = "error"
+    )
+  )
+
+  cellchat_ns_env <- asNamespace("CellChat")
+  db <- get0(data_name, envir = cellchat_ns_env, inherits = FALSE)
+  if (!is.null(db)) {
+    return(db)
+  }
+
+  data_env <- new.env(parent = emptyenv())
+  utils::data(list = data_name, package = "CellChat", envir = data_env)
+  db <- get0(data_name, envir = data_env, inherits = FALSE)
+  if (!is.null(db)) {
+    return(db)
+  }
+
+  log_message(
+    "Cannot load {.pkg CellChat} database object {.val {data_name}}. Update {.pkg CellChat} or report the output of {.code utils::data(package = 'CellChat')}.",
+    message_type = "error"
+  )
 }
 
 .SubsetCellChatMod <- function(
