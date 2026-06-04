@@ -68,6 +68,12 @@ Default is "Chinese".}
 \item{pt.alpha}{The transparency of the data points.
 Default is \code{1}.}
 
+\item{cell.alpha}{Alpha value for the original single-cell background layer.}
+
+\item{cell.size}{Point size for the original single-cell background layer.}
+
+\item{stroke}{Point border stroke width for metacell centroids.}
+
 \item{show_metacell_size}{Whether to map \code{metacell_size} to centroid size.}
 
 \item{metacell_size_range}{Point-size range used when
