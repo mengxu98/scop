@@ -93,7 +93,6 @@ Suggests:
     proxyC,
     qlcMatrix,
     RANN,
-    RcisTarget,
     Rfast,
     RcppML,
     R.cache,
