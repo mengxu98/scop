@@ -20,9 +20,8 @@
 #' @param work_dir Directory used for SCENIC input and output files.
 #' @param species Species used to select cisTarget reference files when
 #' `ranking_dbs`, `motif_annotations`, or `regulators` is `NULL`. Supported
-#' values include `"Homo_sapiens"`, `"Mus_musculus"`,
-#' `"Drosophila_melanogaster"` and aliases such as `"human"`, `"mouse"`, and
-#' `"fly"`.
+#' values are `"Homo_sapiens"`, `"Mus_musculus"`, and
+#' `"Drosophila_melanogaster"`.
 #' @param genome Genome build used to select cisTarget reference files when
 #' automatic references are prepared. Human supports `"hg38"` (default) and
 #' `"hg19"`. Mouse and fly currently use `"mm10"` and `"dm6"`, respectively.
@@ -135,6 +134,7 @@ RunSCENIC <- function(
   if (missing(work_dir) || length(work_dir) != 1) {
     log_message("{.arg work_dir} must be one directory", message_type = "error")
   }
+  species <- match.arg(species)
   backend <- match.arg(backend)
   grn_method <- match.arg(grn_method)
   cistarget_method <- match.arg(cistarget_method)
@@ -1458,32 +1458,8 @@ scenic_species_config <- function(species, genome = NULL) {
   species_key <- switch(
     species_key,
     homo_sapiens = "human",
-    human = "human",
-    hsa = "human",
-    hs = "human",
-    hg38 = {
-      genome_key <- genome_key %||% "hg38"
-      "human"
-    },
-    hg19 = {
-      genome_key <- genome_key %||% "hg19"
-      "human"
-    },
     mus_musculus = "mouse",
-    mouse = "mouse",
-    mm = "mouse",
-    mm10 = {
-      genome_key <- genome_key %||% "mm10"
-      "mouse"
-    },
     drosophila_melanogaster = "fly",
-    drosophila = "fly",
-    fly = "fly",
-    dmel = "fly",
-    dm6 = {
-      genome_key <- genome_key %||% "dm6"
-      "fly"
-    },
     NULL
   )
   if (is.null(species_key)) {
