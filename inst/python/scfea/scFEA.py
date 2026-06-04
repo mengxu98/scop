@@ -77,14 +77,14 @@ def myLoss(m, c, lamb1=0.2, lamb2=0.2, lamb3=0.2, lamb4=0.2,
 
     # module-wise variation constrain
     if lamb4 > 0:
-        corr = torch.FloatTensor(np.ones(m.shape[0]))
+        corr = torch.ones(m.shape[0], dtype=m.dtype, device=m.device)
         for i in range(m.shape[0]):
             corr[i] = pearsonr(m[i, :], moduleScale[i, :])
         corr = torch.abs(corr)
-        penal_m_var = torch.FloatTensor(np.ones(m.shape[0])) - corr
+        penal_m_var = torch.ones(m.shape[0], dtype=m.dtype, device=m.device) - corr
         total4 = penal_m_var
     else:
-        total4 = torch.FloatTensor(np.zeros(m.shape[0]))
+        total4 = torch.zeros(m.shape[0], dtype=m.dtype, device=m.device)
 
     # loss
     loss1 = torch.sum(lamb1 * total1)
@@ -95,8 +95,74 @@ def myLoss(m, c, lamb1=0.2, lamb2=0.2, lamb3=0.2, lamb4=0.2,
     return loss, loss1, loss2, loss3, loss4
 
 
+def _build_X_batch(geneExpr_np, module_gene_indices, n_genes, n_modules,
+                   cell_indices, device):
+    """Build the expanded X tensor for a subset of cells, directly as a torch
+    tensor without intermediate pandas DataFrames.
+
+    Parameters
+    ----------
+    geneExpr_np : np.ndarray (n_cells, n_genes), float32
+    module_gene_indices : list of list of int
+        module_gene_indices[i] = [global_gene_idx, ...] for module i.
+    n_genes : int
+    n_modules : int
+    cell_indices : np.ndarray or slice
+        Which cells (rows) to include.
+    device : torch.device
+
+    Returns
+    -------
+    X : torch.FloatTensor (len(cell_indices), n_modules * n_genes)
+    """
+    n_cells_batch = len(cell_indices)
+    X = torch.zeros(n_cells_batch, n_modules * n_genes,
+                    dtype=torch.float32, device=device)
+    expr_slice = geneExpr_np[cell_indices, :]  # (batch, n_genes)
+    for i in range(n_modules):
+        indices = module_gene_indices[i]
+        if not indices:
+            continue
+        for local_j, global_j in enumerate(indices):
+            col = i * n_genes + global_j
+            X[:, col] = torch.from_numpy(expr_slice[:, global_j]).float().to(device)
+    return X
+
+
+def _build_module_scale(geneExpr_np, module_gene_indices, moduleLen,
+                        cell_indices, device):
+    """Compute per-cell mean module expression for a subset of cells.
+
+    Parameters
+    ----------
+    geneExpr_np : np.ndarray (n_cells, n_genes), float32
+    module_gene_indices : list of list of int
+    moduleLen : np.ndarray (n_modules,)  number of genes per module
+    cell_indices : np.ndarray or slice
+    device : torch.device
+
+    Returns
+    -------
+    module_scale : torch.FloatTensor (len(cell_indices), n_modules)
+    """
+    n_cells_batch = len(cell_indices)
+    n_modules = len(module_gene_indices)
+    module_scale = torch.zeros(n_cells_batch, n_modules,
+                               dtype=torch.float32, device=device)
+    expr_slice = geneExpr_np[cell_indices, :]
+    for i in range(n_modules):
+        indices = module_gene_indices[i]
+        if not indices or moduleLen[i] == 0:
+            continue
+        module_scale[:, i] = torch.from_numpy(
+            expr_slice[:, indices].sum(axis=1) / moduleLen[i]
+        ).float().to(device)
+    return module_scale
+
+
 def run_scfea(expr, *, species='human', sc_imputation=False, n_epoch=100,
-              seed=16, verbose=True, device=None, data_dir=None):
+              seed=16, verbose=True, device=None, data_dir=None,
+              max_cells=None, predict_batch_size=10000):
     """Estimate single-cell metabolic flux with scFEA.
 
     Parameters
@@ -121,6 +187,16 @@ def run_scfea(expr, *, species='human', sc_imputation=False, n_epoch=100,
         Compute device. Defaults to ``cuda:0`` if available, else ``cpu``.
     data_dir : str
         Directory containing scFEA M168 resource CSV files.
+    max_cells : int, optional
+        Maximum number of cells used for GNN training. When the input has more
+        cells, a random subset is sampled for training and the trained model
+        is used to predict fluxes for all cells in batches. This dramatically
+        reduces peak memory for large datasets. Default (None) trains on all
+        cells, matching the original upstream behaviour.
+    predict_batch_size : int, default 10000
+        Number of cells processed per forward pass during the prediction
+        (inference) phase. Lower this if you encounter out-of-memory errors
+        during prediction.
 
     Returns
     -------
@@ -140,6 +216,12 @@ def run_scfea(expr, *, species='human', sc_imputation=False, n_epoch=100,
 
     if not isinstance(expr, pd.DataFrame):
         raise TypeError('expr must be a pandas DataFrame (cells x genes).')
+    if max_cells is not None and int(max_cells) < 1:
+        raise ValueError('max_cells must be None or a positive integer.')
+    if int(predict_batch_size) < 1:
+        raise ValueError('predict_batch_size must be a positive integer.')
+    max_cells = None if max_cells is None else int(max_cells)
+    predict_batch_size = int(predict_batch_size)
 
     if data_dir is None:
         raise ValueError('data_dir is required and must contain scFEA resource files.')
@@ -173,12 +255,6 @@ def run_scfea(expr, *, species='human', sc_imputation=False, n_epoch=100,
             geneExpr = magic_operator.fit_transform(geneExpr)
     if geneExpr.max().max() > 50:
         geneExpr = (geneExpr + 1).apply(np.log2)
-    geneExprSum = geneExpr.sum(axis=1)
-    stand = geneExprSum.mean()
-    geneExprScale = geneExprSum / stand
-    geneExprScale = torch.FloatTensor(geneExprScale.values).to(device)
-
-    BATCH_SIZE = geneExpr.shape[0]
 
     moduleGene = pd.read_csv(
         os.path.join(data_dir, moduleGene_file),
@@ -221,57 +297,79 @@ def run_scfea(expr, *, species='human', sc_imputation=False, n_epoch=100,
 
     if verbose:
         print("Starting process data...")
-    emptyNode = []
     # extract overlap gene
     geneExpr = geneExpr[gene_overlap]
-    gene_names = geneExpr.columns
-    cell_names = geneExpr.index.astype(str)
+    gene_names = list(geneExpr.columns)
+    cell_names = geneExpr.index.astype(str).tolist()
     n_modules = moduleGene.shape[0]
     n_genes = len(gene_names)
     n_cells = len(cell_names)
     n_comps = cmMat.shape[0]
-    _module_frames = []
+
+    # Pre-compute gene-name to column-index mapping
+    gene_to_idx = {g: i for i, g in enumerate(gene_names)}
+    # Pre-compute per-module gene indices (and track empty modules)
+    emptyNode = []
+    module_gene_indices = []
     for i in range(n_modules):
         genes = moduleGene.iloc[i, :].values.astype(str)
         genes = [g for g in genes if g != 'nan']
         if not genes:
             emptyNode.append(i)
+            module_gene_indices.append([])
             continue
-        temp = geneExpr.copy()
-        temp.loc[:, [g for g in gene_names if g not in genes]] = 0
-        temp = temp.T
-        temp['Module_Gene'] = ['%02d_%s' % (i, g) for g in gene_names]
-        _module_frames.append(temp)
-    geneExprDf = pd.concat(_module_frames, ignore_index=True, sort=False)
-    geneExprDf = geneExprDf[['Module_Gene'] + list(cell_names)]
-    geneExprDf.index = geneExprDf['Module_Gene']
-    geneExprDf.drop('Module_Gene', axis='columns', inplace=True)
-    X = geneExprDf.values.T
-    X = torch.FloatTensor(X.astype(float)).to(device)
+        indices = [gene_to_idx[g] for g in genes if g in gene_to_idx]
+        module_gene_indices.append(indices)
 
-    # prepare data for constraint of module variation based on gene
-    df = geneExprDf
-    df.index = [i.split('_')[0] for i in df.index]
-    # must change type to ensure correct order, T column name order change!
-    df.index = df.index.astype(int)
-    module_scale = df.groupby(df.index).sum().T
-    module_scale = torch.FloatTensor(module_scale.values / moduleLen)
+    # Convert expression to float32 numpy for fast tensor construction
+    geneExpr_np = geneExpr.values.astype(np.float32)
+
+    # Compute geneExprScale from the full dataset (needed for loss)
+    geneExprScale = torch.from_numpy(
+        geneExpr_np.sum(axis=1).astype(np.float32)
+    ).float().to(device)
+    stand = geneExprScale.mean()
+    geneExprScale = geneExprScale / stand
+
     if verbose:
         print("Process data done.")
+
+    # Determine training cells
+    rng = np.random.RandomState(int(seed))
+    all_indices = np.arange(n_cells, dtype=np.int64)
+    if max_cells is not None and n_cells > max_cells:
+        train_indices = rng.choice(all_indices, size=max_cells, replace=False)
+        train_indices.sort()
+        subset_msg = ("Training on %d randomly sampled cells "
+                      "(max_cells=%d, total=%d)"
+                      % (len(train_indices), max_cells, n_cells))
+    else:
+        train_indices = all_indices
+        subset_msg = "Training on all %d cells" % n_cells
+    if verbose:
+        print(subset_msg)
+
+    # Build training tensors only for the train subset
+    X_train = _build_X_batch(geneExpr_np, module_gene_indices, n_genes,
+                             n_modules, train_indices, device)
+    module_scale_train = _build_module_scale(geneExpr_np, module_gene_indices,
+                                             moduleLen, train_indices, device)
+    geneExprScale_train = geneExprScale[train_indices]
+    n_train = len(train_indices)
 
     # =====================================================================
     # NN
     torch.manual_seed(int(seed))
-    net = FLUX(X, n_modules, f_in=n_genes, f_out=1).to(device)
+    net = FLUX(X_train, n_modules, f_in=n_genes, f_out=1).to(device)
     optimizer = torch.optim.Adam(net.parameters(), lr=LEARN_RATE)
 
     # Dataloader
-    dataloader_params = {'batch_size': BATCH_SIZE,
+    dataloader_params = {'batch_size': n_train,
                          'shuffle': False,
                          'num_workers': 0,
                          'pin_memory': False}
 
-    dataSet = MyDataset(X, geneExprScale, module_scale)
+    dataSet = MyDataset(X_train, geneExprScale_train, module_scale_train)
     train_loader = torch.utils.data.DataLoader(dataset=dataSet,
                                                **dataloader_params)
 
@@ -290,11 +388,11 @@ def run_scfea(expr, *, species='human', sc_imputation=False, n_epoch=100,
     for epoch in epoch_iter:
         loss, loss1, loss2, loss3, loss4 = 0, 0, 0, 0, 0
 
-        for i, (X, X_scale, m_scale) in enumerate(train_loader):
+        for X_b, X_scale_b, m_scale_b in train_loader:
 
-            X_batch = Variable(X.float().to(device))
-            X_scale_batch = Variable(X_scale.float().to(device))
-            m_scale_batch = Variable(m_scale.float().to(device))
+            X_batch = Variable(X_b.float().to(device))
+            X_scale_batch = Variable(X_scale_b.float().to(device))
+            m_scale_batch = Variable(m_scale_b.float().to(device))
 
             out_m_batch, out_c_batch = net(X_batch, n_modules, n_genes,
                                            n_comps, cmMat)
@@ -325,30 +423,28 @@ def run_scfea(expr, *, species='human', sc_imputation=False, n_epoch=100,
     if verbose:
         print("Training time: ", end - start)
 
-    # Dataloader
-    dataloader_params = {'batch_size': 1,
-                         'shuffle': False,
-                         'num_workers': 0,
-                         'pin_memory': False}
+    # Prediction: batched inference over all cells
+    if verbose:
+        print("Starting prediction on %d cells (batch_size=%d)..."
+              % (n_cells, predict_batch_size))
 
-    dataSet = MyDataset(X, geneExprScale, module_scale)
-    test_loader = torch.utils.data.DataLoader(dataset=dataSet,
-                                              **dataloader_params)
-
-    # testing
-    fluxStatuTest = np.zeros((n_cells, n_modules), dtype='f')  # float32
-    balanceStatus = np.zeros((n_cells, n_comps), dtype='f')
+    fluxStatuTest = np.zeros((n_cells, n_modules), dtype=np.float32)
+    balanceStatus = np.zeros((n_cells, n_comps), dtype=np.float32)
     net.eval()
-    for epoch in range(1):
-        for i, (X, X_scale, _) in enumerate(test_loader):
 
-            X_batch = Variable(X.float().to(device))
-            out_m_batch, out_c_batch = net(X_batch, n_modules, n_genes,
-                                           n_comps, cmMat)
+    n_batches = int(np.ceil(n_cells / predict_batch_size))
+    batch_iter = tqdm(range(n_batches)) if verbose else range(n_batches)
+    with torch.no_grad():
+        for bi in batch_iter:
+            start_idx = bi * predict_batch_size
+            end_idx = min(start_idx + predict_batch_size, n_cells)
+            batch_indices = all_indices[start_idx:end_idx]
 
-            # save data
-            fluxStatuTest[i, :] = out_m_batch.detach().cpu().numpy()
-            balanceStatus[i, :] = out_c_batch.detach().cpu().numpy()
+            X_batch = _build_X_batch(geneExpr_np, module_gene_indices,
+                                     n_genes, n_modules, batch_indices, device)
+            out_m, out_c = net(X_batch, n_modules, n_genes, n_comps, cmMat)
+            fluxStatuTest[start_idx:end_idx, :] = out_m.detach().cpu().numpy()
+            balanceStatus[start_idx:end_idx, :] = out_c.detach().cpu().numpy()
 
     # ------------------------------------------------------------------
     # assemble results as DataFrames (mirrors scFEA setF / setB outputs)

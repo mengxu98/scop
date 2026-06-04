@@ -16,6 +16,7 @@ RunscFEA(
   store_metadata = FALSE,
   data_dir = NULL,
   seed = 16,
+  max_cells = NULL,
   verbose = TRUE
 )
 }
@@ -46,6 +47,13 @@ backend.}
 `tools::R_user_dir("scop", "data")`.}
 
 \item{seed}{Random seed passed to R and the Python scFEA backend.}
+
+\item{max_cells}{Maximum number of cells used for GNN training. When the
+input has more cells, a random subset is sampled for training and the
+trained model predicts fluxes for all cells in batches. This drastically
+reduces peak memory for large datasets. Set `NULL` (default) to train on
+all cells, matching the original upstream behaviour. A value such as
+`20000` can be useful on machines with 16-32 GiB RAM.}
 
 \item{verbose}{Whether to print progress messages.}
 }
