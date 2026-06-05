@@ -9,9 +9,9 @@ RunDeconvolution(object, ...)
 
 \method{RunDeconvolution}{SummarizedExperiment}(
   object,
-  reference,
-  method = c("MuSiC", "BisqueRNA", "BayesPrism"),
-  group.by,
+  reference = NULL,
+  method = c("MuSiC", "BisqueRNA", "BayesPrism", "CIBERSORT"),
+  group.by = NULL,
   sample.by = NULL,
   cellstate.by = NULL,
   bulk_assay = "counts",
@@ -29,10 +29,10 @@ RunDeconvolution(object, ...)
 backend.}
 
 \item{reference}{A \code{Seurat} reference object used to build cell-type
-profiles.}
+profiles. Not required for \code{"CIBERSORT"}.}
 
-\item{method}{Deconvolution method. One of \code{"MuSiC"}, \code{"BisqueRNA"}, or
-\code{"BayesPrism"}.}
+\item{method}{Deconvolution method. One of \code{"MuSiC"}, \code{"BisqueRNA"},
+\code{"BayesPrism"}, or \code{"CIBERSORT"}.}
 
 \item{group.by}{Metadata column in \code{reference} defining reference cell
 types.}
