@@ -26,10 +26,13 @@ GetFeaturesData.Seurat <- function(
   ...
 ) {
   assay <- assay %||% SeuratObject::DefaultAssay(object)
-  assay_obj <- Seurat::GetAssay(
-    object,
-    assay = assay
-  )
+  assays_available <- SeuratObject::Assays(object)
+  if (!assay %in% assays_available) {
+    cli::cli_abort(
+      "{.val {assay}} is not an assay present in the given object. Available assays are: {.val {assays_available}}"
+    )
+  }
+  assay_obj <- object[[assay]]
   return(GetFeaturesData(assay_obj))
 }
 
@@ -86,10 +89,13 @@ AddFeaturesData.Seurat <- function(
   ...
 ) {
   assay <- assay %||% SeuratObject::DefaultAssay(object)
-  assay_obj <- Seurat::GetAssay(
-    object,
-    assay = assay
-  )
+  assays_available <- SeuratObject::Assays(object)
+  if (!assay %in% assays_available) {
+    cli::cli_abort(
+      "{.val {assay}} is not an assay present in the given object. Available assays are: {.val {assays_available}}"
+    )
+  }
+  assay_obj <- object[[assay]]
   assay_obj <- AddFeaturesData(assay_obj, features, ...)
   object[[assay]] <- assay_obj
 

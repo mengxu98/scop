@@ -39,11 +39,13 @@ GetAssayData5.Seurat <- function(
   ...
 ) {
   assay <- assay %||% SeuratObject::DefaultAssay(object = object)
-  assay_obj <- Seurat::GetAssay(
-    object = object,
-    assay = assay,
-    ...
-  )
+  assays_available <- SeuratObject::Assays(object)
+  if (!assay %in% assays_available) {
+    cli::cli_abort(
+      "{.val {assay}} is not an assay present in the given object. Available assays are: {.val {assays_available}}"
+    )
+  }
+  assay_obj <- object[[assay]]
   data <- GetAssayData5(
     object = assay_obj,
     layer = layer,
@@ -79,8 +81,8 @@ GetAssayData5.Assay <- function(
   ...
 ) {
   SeuratObject::GetAssayData(
-    object,
-    layer,
+    object = object,
+    layer = layer,
     ...
   )
 }
