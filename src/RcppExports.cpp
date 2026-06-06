@@ -56,6 +56,24 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cibersort_cpp
+List cibersort_cpp(NumericMatrix signature, NumericMatrix mixture, int perm, bool QN, bool absolute, int n_threads, int seed, bool verbose);
+RcppExport SEXP _scop_cibersort_cpp(SEXP signatureSEXP, SEXP mixtureSEXP, SEXP permSEXP, SEXP QNSEXP, SEXP absoluteSEXP, SEXP n_threadsSEXP, SEXP seedSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type signature(signatureSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type mixture(mixtureSEXP);
+    Rcpp::traits::input_parameter< int >::type perm(permSEXP);
+    Rcpp::traits::input_parameter< bool >::type QN(QNSEXP);
+    Rcpp::traits::input_parameter< bool >::type absolute(absoluteSEXP);
+    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
+    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(cibersort_cpp(signature, mixture, perm, QN, absolute, n_threads, seed, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
 // classification_metrics
 List classification_metrics(CharacterVector predicted, CharacterVector truth, CharacterVector classes, double rare_threshold);
 RcppExport SEXP _scop_classification_metrics(SEXP predictedSEXP, SEXP truthSEXP, SEXP classesSEXP, SEXP rare_thresholdSEXP) {
@@ -1214,6 +1232,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_augur_subsample_cpp", (DL_FUNC) &_scop_augur_subsample_cpp, 2},
     {"_scop_bayesprism_gibbs_initial_cpp", (DL_FUNC) &_scop_bayesprism_gibbs_initial_cpp, 6},
     {"_scop_bayesprism_gibbs_final_cpp", (DL_FUNC) &_scop_bayesprism_gibbs_final_cpp, 6},
+    {"_scop_cibersort_cpp", (DL_FUNC) &_scop_cibersort_cpp, 8},
     {"_scop_classification_metrics", (DL_FUNC) &_scop_classification_metrics, 4},
     {"_scop_cytospace_assign", (DL_FUNC) &_scop_cytospace_assign, 6},
     {"_scop_cytotrace2_ensemble_predict", (DL_FUNC) &_scop_cytotrace2_ensemble_predict, 4},
