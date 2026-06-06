@@ -125,6 +125,22 @@ pseudotime_velocity_gradient <- function(x_emb, pseudotime, neighbors, smooth = 
     .Call(`_scop_pseudotime_velocity_gradient`, x_emb, pseudotime, neighbors, smooth, normalize)
 }
 
+rctd_sparse_quality_cpp <- function(st_counts, ref_counts) {
+    .Call(`_scop_rctd_sparse_quality_cpp`, st_counts, ref_counts)
+}
+
+rctd_normalize_weights_cpp <- function(weights) {
+    .Call(`_scop_rctd_normalize_weights_cpp`, weights)
+}
+
+rctd_metadata_cpp <- function(weights, all_spots) {
+    .Call(`_scop_rctd_metadata_cpp`, weights, all_spots)
+}
+
+rctd_finalize_weights_cpp <- function(weights, all_spots) {
+    .Call(`_scop_rctd_finalize_weights_cpp`, weights, all_spots)
+}
+
 grnboost_tree <- function(expr, regulator_idx, target_idx, n_rounds = 5000L, learning_rate = 0.01, max_edges_per_target = 0L, max_depth = 3L, max_features = 0.1, subsample = 0.9, early_stop_window_length = 25L, random_seed = 1234L, exclude_self = TRUE) {
     .Call(`_scop_grnboost_tree`, expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self)
 }
