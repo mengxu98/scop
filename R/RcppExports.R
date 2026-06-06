@@ -13,6 +13,10 @@ bayesprism_gibbs_final_cpp <- function(mixture, phi, gibbs_idx, alpha = 1.0, see
     .Call(`_scop_bayesprism_gibbs_final_cpp`, mixture, phi, gibbs_idx, alpha, seed, n_threads)
 }
 
+cibersort_cpp <- function(signature, mixture, perm = 0L, QN = TRUE, absolute = FALSE, n_threads = 1L, seed = 123L, verbose = FALSE) {
+    .Call(`_scop_cibersort_cpp`, signature, mixture, perm, QN, absolute, n_threads, seed, verbose)
+}
+
 classification_metrics <- function(predicted, truth, classes, rare_threshold = 0.05) {
     .Call(`_scop_classification_metrics`, predicted, truth, classes, rare_threshold)
 }
