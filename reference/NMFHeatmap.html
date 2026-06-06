@@ -500,42 +500,37 @@ otherwise <code>NULL</code>.</p></li>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://Matrix.R-forge.R-project.org" class="external-link">Matrix</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/FindVariableFeatures.html" class="external-link">FindVariableFeatures</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  nfeatures <span class="op">=</span> <span class="fl">1000</span>,</span></span>
-<span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunNMF.html">RunNMF</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  features <span class="op">=</span> <span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/VariableFeatures.html" class="external-link">VariableFeatures</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  nbes <span class="op">=</span> <span class="fl">5</span>,</span></span>
-<span class="r-in"><span>  maxit <span class="op">=</span> <span class="fl">50</span>,</span></span>
-<span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">ht_cells</span> <span class="op">&lt;-</span> <span class="fu">NMFHeatmap</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"cells"</span>,</span></span>
-<span class="r-in"><span>  cell_annotation <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  width <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>  height <span class="op">=</span> <span class="fl">0.5</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="NMFHeatmap-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="va">ht_cells</span><span class="op">$</span><span class="va">plot</span></span></span>
-<span class="r-plt img"><img src="NMFHeatmap-2.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">ht_features</span> <span class="op">&lt;-</span> <span class="fu">NMFHeatmap</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"features"</span>,</span></span>
-<span class="r-in"><span>  width <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>  height <span class="op">=</span> <span class="fl">0.5</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="NMFHeatmap-3.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="va">ht_features</span><span class="op">$</span><span class="va">plot</span></span></span>
-<span class="r-plt img"><img src="NMFHeatmap-4.png" alt="" width="700" height="433"></span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://Matrix.R-forge.R-project.org" class="external-link">Matrix</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/FindVariableFeatures.html" class="external-link">FindVariableFeatures</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  nfeatures <span class="op">=</span> <span class="fl">1000</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunNMF.html">RunNMF</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  features <span class="op">=</span> <span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/VariableFeatures.html" class="external-link">VariableFeatures</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span>,</span>
+<span>  nbes <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  maxit <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">ht_cells</span> <span class="op">&lt;-</span> <span class="fu">NMFHeatmap</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"cells"</span>,</span>
+<span>  cell_annotation <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  width <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  height <span class="op">=</span> <span class="fl">0.5</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">ht_cells</span><span class="op">$</span><span class="va">plot</span></span>
+<span></span>
+<span><span class="va">ht_features</span> <span class="op">&lt;-</span> <span class="fu">NMFHeatmap</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"features"</span>,</span>
+<span>  width <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  height <span class="op">=</span> <span class="fl">0.5</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">ht_features</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

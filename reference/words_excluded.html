@@ -49,22 +49,21 @@ These mainly include words that are excessively redundant or of little value.</p
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="va">words_excluded</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="st">"the"</span>, <span class="st">"is"</span>, <span class="st">"and"</span>, <span class="st">"or"</span>, <span class="st">"a"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"in"</span>, <span class="st">"on"</span>, <span class="st">"under"</span>, <span class="st">"between"</span>, <span class="st">"of"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"through"</span>, <span class="st">"via"</span>, <span class="st">"along"</span>, <span class="st">"that"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"for"</span>, <span class="st">"with"</span>, <span class="st">"within"</span>, <span class="st">"without"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"cell"</span>, <span class="st">"cellular"</span>, <span class="st">"dna"</span>, <span class="st">"rna"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"protein"</span>, <span class="st">"peptide"</span>, <span class="st">"amino"</span>, <span class="st">"acid"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"development"</span>, <span class="st">"involved"</span>, <span class="st">"organization"</span>, <span class="st">"system"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"regulation"</span>, <span class="st">"regulated"</span>, <span class="st">"positive"</span>, <span class="st">"negative"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"response"</span>, <span class="st">"process"</span>, <span class="st">"processing"</span>, <span class="st">"small"</span>, <span class="st">"large"</span>, <span class="st">"change"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">use_data</span> <span class="op">&lt;-</span> <span class="fu">get_namespace_fun</span><span class="op">(</span><span class="st">"usethis"</span>, <span class="st">"use_data"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu">use_data</span><span class="op">(</span><span class="va">words_excluded</span>, compress <span class="op">=</span> <span class="st">"xz"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">words_excluded</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"the"</span>, <span class="st">"is"</span>, <span class="st">"and"</span>, <span class="st">"or"</span>, <span class="st">"a"</span>,</span>
+<span>    <span class="st">"in"</span>, <span class="st">"on"</span>, <span class="st">"under"</span>, <span class="st">"between"</span>, <span class="st">"of"</span>,</span>
+<span>    <span class="st">"through"</span>, <span class="st">"via"</span>, <span class="st">"along"</span>, <span class="st">"that"</span>,</span>
+<span>    <span class="st">"for"</span>, <span class="st">"with"</span>, <span class="st">"within"</span>, <span class="st">"without"</span>,</span>
+<span>    <span class="st">"cell"</span>, <span class="st">"cellular"</span>, <span class="st">"dna"</span>, <span class="st">"rna"</span>,</span>
+<span>    <span class="st">"protein"</span>, <span class="st">"peptide"</span>, <span class="st">"amino"</span>, <span class="st">"acid"</span>,</span>
+<span>    <span class="st">"development"</span>, <span class="st">"involved"</span>, <span class="st">"organization"</span>, <span class="st">"system"</span>,</span>
+<span>    <span class="st">"regulation"</span>, <span class="st">"regulated"</span>, <span class="st">"positive"</span>, <span class="st">"negative"</span>,</span>
+<span>    <span class="st">"response"</span>, <span class="st">"process"</span>, <span class="st">"processing"</span>, <span class="st">"small"</span>, <span class="st">"large"</span>, <span class="st">"change"</span></span>
+<span>  <span class="op">)</span></span>
+<span>  <span class="va">use_data</span> <span class="op">&lt;-</span> <span class="fu">get_namespace_fun</span><span class="op">(</span><span class="st">"usethis"</span>, <span class="st">"use_data"</span><span class="op">)</span></span>
+<span>  <span class="fu">use_data</span><span class="op">(</span><span class="va">words_excluded</span>, compress <span class="op">=</span> <span class="st">"xz"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
     </div>
   </main></div>
 

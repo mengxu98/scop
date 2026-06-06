@@ -554,36 +554,10 @@ RunLargeVis(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-01 10:17:25] Start standard processing workflow...
-#> ℹ [2026-06-01 10:17:26] Checking a list of <Seurat>...
-#> ! [2026-06-01 10:17:26] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-01 10:17:26] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-01 10:17:28] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-01 10:17:28] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-01 10:17:28] Number of available HVF: 2000
-#> ℹ [2026-06-01 10:17:29] Finished check
-#> ℹ [2026-06-01 10:17:29] Perform `Seurat::ScaleData()`
-#> ℹ [2026-06-01 10:17:29] Perform pca linear dimension reduction
-#> ℹ [2026-06-01 10:17:29] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-01 10:17:30] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-01 10:17:30] Reorder clusters...
-#> ℹ [2026-06-01 10:17:30] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-01 10:17:30] Perform umap nonlinear dimension reduction
-#> ℹ [2026-06-01 10:17:30] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-06-01 10:17:35] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-06-01 10:17:40] Standard processing workflow completed
 pancreas_sub <- RunLargeVis(
   object = pancreas_sub,
   features = SeuratObject::VariableFeatures(pancreas_sub)
 )
-#> 10:17:40 Read 1000 rows and found 2000 numeric columns
-#> 10:17:40 Normalizing by max-abs
-#> 10:17:40 Using FNN for neighbor search, n_neighbors = 150
-#> 10:17:43 Commencing calibration for perplexity = 50 using 2 threads
-#> 10:17:46 Initializing from random Gaussian with sd = 1e-4
-#> 10:17:46 Commencing optimization for 254033 epochs, with 194344 positive edges
-#> 10:17:46 Using rng type: pcg
-#> 10:20:12 Optimization finished
 CellDimPlot(
   pancreas_sub,
   group.by = "CellType",

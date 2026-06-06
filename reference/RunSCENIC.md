@@ -1,8 +1,6 @@
 # Run SCENIC gene regulatory network analysis
 
-Run SCENIC from a Seurat object. The GRN and cisTarget steps use a
-metacell count matrix by default, while AUCell scores are calculated on
-the original single-cell count matrix.
+Run SCENIC gene regulatory network analysis
 
 ## Usage
 
@@ -17,17 +15,22 @@ RunSCENIC(
   targets = NULL,
   work_dir = "scenic_output/",
   species = c("Homo_sapiens", "Mus_musculus", "Drosophila_melanogaster"),
+  genome = NULL,
   data_dir = NULL,
   prefix = "scenic",
-  metacell = TRUE,
-  metacell.by = NULL,
-  metacell_resolution = NULL,
-  metacell_target = NULL,
-  metacell_resolution_candidates = c(0.5, 1, 2, 5, 10, 20, 30, 40, 50, 75, 100),
-  metacell_reduction = "pca",
-  metacell_dims = 1:30,
+  group.by = NULL,
   min_expr_cells = 3,
   min_regulon_size = 10,
+  backend = c("cpp", "python"),
+  grn_method = c("grnboost2", "genie3"),
+  cistarget_method = c("native_motif", "native_approx"),
+  max_regulon_targets = 50,
+  n_rounds = 5000,
+  learning_rate = 0.01,
+  max_depth = 3,
+  max_features = 0.1,
+  subsample = 0.9,
+  early_stop_window_length = 25,
   cores = 1,
   aucell_batch_size = 500,
   aucell_backend = c("r", "cpp"),
@@ -92,10 +95,15 @@ RunSCENIC(
 - species:
 
   Species used to select cisTarget reference files when `ranking_dbs`,
-  `motif_annotations`, or `regulators` is `NULL`. Supported values
-  include `"Homo_sapiens"`, `"Mus_musculus"`,
-  `"Drosophila_melanogaster"` and aliases such as `"human"`, `"mouse"`,
-  and `"fly"`.
+  `motif_annotations`, or `regulators` is `NULL`. Supported values are
+  `"Homo_sapiens"`, `"Mus_musculus"`, and `"Drosophila_melanogaster"`.
+
+- genome:
+
+  Genome build used to select cisTarget reference files when automatic
+  references are prepared. Human supports `"hg38"` (default) and
+  `"hg19"`. Mouse and fly currently use `"mm10"` and `"dm6"`,
+  respectively.
 
 - data_dir:
 
@@ -107,43 +115,15 @@ RunSCENIC(
 
   Prefix for SCENIC output files.
 
-- metacell:
+- group.by:
 
-  Whether to build a metacell count matrix for GRNBoost2.
-
-- metacell.by:
-
-  Optional metadata column(s) used to keep metacells within groups such
-  as samples or cell types.
-
-- metacell_resolution:
-
-  Resolution passed to
-  [`Seurat::FindClusters()`](https://satijalab.org/seurat/reference/FindClusters.html)
-  for overclustering. If `NULL`, candidate resolutions are scanned and
-  the one closest to `metacell_target` is used.
-
-- metacell_target:
-
-  Target number of metacells used when `metacell_resolution = NULL`. If
-  `NULL`, a default target is chosen from the number of cells.
-
-- metacell_resolution_candidates:
-
-  Candidate resolutions scanned when `metacell_resolution = NULL`.
-
-- metacell_reduction:
-
-  Reduction used to build the metacell neighbor graph. The default
-  `"pca"` keeps the original behavior and recomputes PCA from the
-  selected assay. To use an already batch-corrected embedding such as
-  Harmony, run it before `RunSCENIC()` and set
-  `metacell_reduction = "Harmony"`. Only the metacell grouping uses this
-  reduction; GRNBoost2 still uses raw count sums per metacell.
-
-- metacell_dims:
-
-  Dimensions used for metacell overclustering.
+  Optional metadata column used to aggregate single-cell counts before
+  GRNBoost2. When `NULL` (default), GRNBoost2 runs on the original
+  single-cell count matrix. To use pre-built metacells, pass the
+  metacell membership column (e.g. `"Metacell_id"` from
+  [`RunMetaCell()`](https://mengxu98.github.io/scop/reference/RunMetaCell.md)).
+  All cells sharing the same `group.by` value are summed into one
+  metacell profile.
 
 - min_expr_cells:
 
@@ -153,6 +133,47 @@ RunSCENIC(
 - min_regulon_size:
 
   Minimum regulon size kept after `scenic ctx`.
+
+- backend:
+
+  SCENIC backend. `"cpp"` uses the native R/C++ path and `"python"` uses
+  the Python `scenicplus` path.
+
+- grn_method:
+
+  GRN inference method for the native backend.
+
+- cistarget_method:
+
+  cisTarget implementation for the native backend.
+
+- max_regulon_targets:
+
+  Maximum number of target genes kept per regulon in the native backend.
+
+- n_rounds:
+
+  Number of boosting rounds used by the native GRN backend.
+
+- learning_rate:
+
+  Learning rate used by the native GRN backend.
+
+- max_depth:
+
+  Maximum tree depth used by the native GRN backend.
+
+- max_features:
+
+  Fraction of features sampled by the native GRN backend.
+
+- subsample:
+
+  Row subsampling fraction used by the native GRN backend.
+
+- early_stop_window_length:
+
+  Early-stopping window used by the native GRN backend.
 
 - cores:
 

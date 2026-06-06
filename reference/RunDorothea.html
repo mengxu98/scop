@@ -167,58 +167,37 @@ omics data. <em>Bioinformatics Advances</em>, 2, vbac016.
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:05:03] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunDorothea</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span></span>
-<span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span></span>
-<span class="r-in"><span>  confidence <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  method <span class="op">=</span> <span class="st">"ulm"</span>,</span></span>
-<span class="r-in"><span>  minsize <span class="op">=</span> <span class="fl">5</span>,</span></span>
-<span class="r-in"><span>  new_assay <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:05:12] Run <span style="color: #0000BB;">DoRothEA</span>/<span style="color: #0000BB;">decoupleR</span> with <span style="color: #0000BB;">12895</span> regulon edges</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:05:23] <span style="color: #0000BB;">DoRothEA</span> TF activity scores stored in <span style="color: #0000BB;">&lt;Seurat&gt;</span> metadata</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Dorothea</span><span class="op">$</span><span class="va">regulon_summary</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   n_tfs n_targets n_edges confidence</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1   273      5130   12895      A,B,C</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Dorothea</span><span class="op">$</span><span class="va">result</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   statistic source        condition     score      p_value</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1       ulm     Ar AAACCTGAGCCTTGAT 1.9230738 0.0544885134</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2       ulm     Ar AAACCTGGTAAGTGGC 3.8375556 0.0001247429</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3       ulm     Ar AAACGGGAGATATGGT 2.3175899 0.0204841737</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4       ulm     Ar AAACGGGCAAAGAATC 0.9565534 0.3388071679</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5       ulm     Ar AAACGGGGTACAGTTC 0.6864447 0.4924426684</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6       ulm     Ar AAACGGGTCAGCTCTC 1.0246312 0.3055527415</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">activity_cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"^dorothea_"</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">meta.data</span><span class="op">)</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  <span class="fl">2</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">meta.data</span><span class="op">[</span>, <span class="va">activity_cols</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  dorothea_Ar dorothea_Arid2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGAGCCTTGAT   1.9230738     -0.5482112</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGGTAAGTGGC   3.8375556     -0.2029179</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGAGATATGGT   2.3175899     -0.1763966</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGCAAAGAATC   0.9565534     -0.5784380</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGGTACAGTTC   0.6864447     -0.2284842</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGTCAGCTCTC   1.0246312     -0.6278209</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  features <span class="op">=</span> <span class="va">activity_cols</span>,</span></span>
-<span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"StandardUMAP2D"</span>,</span></span>
-<span class="r-in"><span>  ncol <span class="op">=</span> <span class="fl">2</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="RunDorothea-1.png" alt="" width="700" height="433"></span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunDorothea</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span>
+<span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span>
+<span>  confidence <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"ulm"</span>,</span>
+<span>  minsize <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  new_assay <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Dorothea</span><span class="op">$</span><span class="va">regulon_summary</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Dorothea</span><span class="op">$</span><span class="va">result</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">activity_cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"^dorothea_"</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">meta.data</span><span class="op">)</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  <span class="fl">2</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">meta.data</span><span class="op">[</span>, <span class="va">activity_cols</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  features <span class="op">=</span> <span class="va">activity_cols</span>,</span>
+<span>  reduction <span class="op">=</span> <span class="st">"StandardUMAP2D"</span>,</span>
+<span>  ncol <span class="op">=</span> <span class="fl">2</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

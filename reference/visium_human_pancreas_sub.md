@@ -31,15 +31,6 @@ The package object uses the GEO supplementary files
 ``` r
 data(visium_human_pancreas_sub)
 SeuratObject::Images(visium_human_pancreas_sub)
-#> [1] "slice1"
 head(visium_human_pancreas_sub@meta.data[, c("x", "y")])
-#>                       x   y
-#> TGGTATCGGTCTGTAT-1 3859 662
-#> ATTATCTCGACAGATC-1 3914 662
-#> TGAGATCAAATACTCA-1 3969 662
-#> CTGGTCCTAACTTGGC-1 4024 662
-#> ATAGTCTTTGACGTGC-1 4079 662
-#> GGGTGGTCCAGCCTGT-1 4134 662
 SpatialSpotPlot(visium_human_pancreas_sub, group.by = "coda_label")
-
 ```

@@ -214,42 +214,31 @@ Default is <code>TRUE</code>.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">gene_use</span> <span class="op">&lt;-</span> <span class="st">"Pdx1"</span></span></span>
-<span class="r-in"><span><span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="GetAssayData5.html">GetAssayData5</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, assay <span class="op">=</span> <span class="st">"RNA"</span>, layer <span class="op">=</span> <span class="st">"counts"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">detected</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu">Matrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/colSums-methods.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">counts</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span>, decreasing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">features_use</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">gene_use</span>, <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">detected</span>, <span class="fl">300</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunScTenifoldKnk.html">RunscTenifoldKnk</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  gKO <span class="op">=</span> <span class="va">gene_use</span>,</span></span>
-<span class="r-in"><span>  features <span class="op">=</span> <span class="va">features_use</span>,</span></span>
-<span class="r-in"><span>  qc <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>  nc_nNet <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>  nc_nCells <span class="op">=</span> <span class="fl">200</span>,</span></span>
-<span class="r-in"><span>  td_maxIter <span class="op">=</span> <span class="fl">200</span>,</span></span>
-<span class="r-in"><span>  store_networks <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>  store_manifold <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:56:27] Run <span style="color: #0000BB;">scTenifoldKnk</span> knockout for <span style="color: #0000BB;">"Pdx1"</span> using <span style="color: #0000BB;">"cpp"</span> backend</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:56:31] Construct scTenifoldNet network ensemble</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:56:32] Denoise network ensemble with tensor decomposition</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ℹ [2026-06-01 10:56:32] Denoise network ensemble with tensor decomposition  <span style="color: #00BB00;">■■■</span>…</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:56:32] Align WT and KO network manifolds</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-01 10:56:32] <span style="color: #0000BB;">scTenifoldKnk</span> results stored in `srt@tools[[scTenifoldKnk]]`</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">scTenifoldKnkPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"qq"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="scTenifoldKnkPlot-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">scTenifoldKnkPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"effect"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="scTenifoldKnkPlot-2.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">scTenifoldKnkPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"network"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="scTenifoldKnkPlot-3.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">scTenifoldKnkPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"manifold"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="scTenifoldKnkPlot-4.png" alt="" width="700" height="433"></span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
+<span><span class="va">gene_use</span> <span class="op">&lt;-</span> <span class="st">"Pdx1"</span></span>
+<span><span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="GetAssayData5.html">GetAssayData5</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, assay <span class="op">=</span> <span class="st">"RNA"</span>, layer <span class="op">=</span> <span class="st">"counts"</span><span class="op">)</span></span>
+<span><span class="va">detected</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu">Matrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/colSums-methods.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">counts</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span>, decreasing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">features_use</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">gene_use</span>, <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">detected</span>, <span class="fl">300</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunScTenifoldKnk.html">RunscTenifoldKnk</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  gKO <span class="op">=</span> <span class="va">gene_use</span>,</span>
+<span>  features <span class="op">=</span> <span class="va">features_use</span>,</span>
+<span>  qc <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  nc_nNet <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  nc_nCells <span class="op">=</span> <span class="fl">200</span>,</span>
+<span>  td_maxIter <span class="op">=</span> <span class="fl">200</span>,</span>
+<span>  store_networks <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  store_manifold <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">scTenifoldKnkPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"qq"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">scTenifoldKnkPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"effect"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">scTenifoldKnkPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"network"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">scTenifoldKnkPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"manifold"</span><span class="op">)</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

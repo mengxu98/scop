@@ -249,37 +249,10 @@ Enrichment result is a list with the following component:
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-01 10:11:18] Start standard processing workflow...
-#> ℹ [2026-06-01 10:11:19] Checking a list of <Seurat>...
-#> ! [2026-06-01 10:11:19] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-01 10:11:19] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-01 10:11:20] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-01 10:11:21] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-01 10:11:21] Number of available HVF: 2000
-#> ℹ [2026-06-01 10:11:21] Finished check
-#> ℹ [2026-06-01 10:11:21] Perform `Seurat::ScaleData()`
-#> ℹ [2026-06-01 10:11:22] Perform pca linear dimension reduction
-#> ℹ [2026-06-01 10:11:22] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-01 10:11:22] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-01 10:11:22] Reorder clusters...
-#> ℹ [2026-06-01 10:11:23] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-01 10:11:23] Perform umap nonlinear dimension reduction
-#> ℹ [2026-06-01 10:11:23] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-06-01 10:11:27] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-06-01 10:11:32] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-06-01 10:11:33] Data type is log-normalized
-#> ℹ [2026-06-01 10:11:33] Start differential expression test
-#> ℹ [2026-06-01 10:11:33] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-06-01 10:11:33] Using 1 core
-#> ⠙ [2026-06-01 10:11:33] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ✔ [2026-06-01 10:11:33] Completed 5 tasks in 876ms
-#> 
-#> ℹ [2026-06-01 10:11:33] Building results
-#> ✔ [2026-06-01 10:11:33] Differential expression test completed
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
   group.by = "CellType",
@@ -287,15 +260,12 @@ pancreas_sub <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-06-01 10:11:33] Start Enrichment analysis
-#> Error in filter_de_results(de_results = de_df, DE_threshold = DE_threshold): could not find function "filter_de_results"
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
   group.by = "CellType",
   plot_type = "comparison"
 )
-#> Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     plot_type = "comparison"): No enrichment result found. You may perform RunEnrichment first
 
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
@@ -304,22 +274,18 @@ pancreas_sub <- RunEnrichment(
   db = c("MSigDB", "MSigDB_MH"),
   species = "Mus_musculus"
 )
-#> ℹ [2026-06-01 10:11:33] Start Enrichment analysis
-#> Error in filter_de_results(de_results = de_df, DE_threshold = DE_threshold): could not find function "filter_de_results"
 EnrichmentPlot(
   pancreas_sub,
   db = "MSigDB",
   group.by = "CellType",
   plot_type = "comparison"
 )
-#> Error in EnrichmentPlot(pancreas_sub, db = "MSigDB", group.by = "CellType",     plot_type = "comparison"): No enrichment result found. You may perform RunEnrichment first
 EnrichmentPlot(
   pancreas_sub,
   db = "MSigDB_MH",
   group.by = "CellType",
   plot_type = "comparison"
 )
-#> Error in EnrichmentPlot(pancreas_sub, db = "MSigDB_MH", group.by = "CellType",     plot_type = "comparison"): No enrichment result found. You may perform RunEnrichment first
 
 # Remove redundant GO terms
 pancreas_sub <- RunEnrichment(
@@ -329,16 +295,12 @@ pancreas_sub <- RunEnrichment(
   GO_simplify = TRUE,
   species = "Mus_musculus"
 )
-#> ℹ [2026-06-01 10:11:34] Start Enrichment analysis
-#> ! [2026-06-01 10:11:34] `GO_simplify = TRUE` requires clusterProfiler result objects; using `backend = 'r'` for this run.
-#> Error in filter_de_results(de_results = de_df, DE_threshold = DE_threshold): could not find function "filter_de_results"
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP_sim",
   group.by = "CellType",
   plot_type = "comparison"
 )
-#> Error in EnrichmentPlot(pancreas_sub, db = "GO_BP_sim", group.by = "CellType",     plot_type = "comparison"): No enrichment result found. You may perform RunEnrichment first
 
 # Or use "geneID" and "geneID_groups" as input to run enrichment
 de_df <- dplyr::filter(
@@ -351,25 +313,11 @@ enrich_out <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-06-01 10:11:34] Start Enrichment analysis
-#> ℹ [2026-06-01 10:11:34] Species: "Mus_musculus"
-#> ℹ [2026-06-01 10:11:34] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-06-01 08:53:04
-#> ℹ [2026-06-01 10:11:35] Permform enrichment...
-#> ℹ [2026-06-01 10:11:35] Using 1 core
-#> ⠙ [2026-06-01 10:11:35] Running for 1 [1/5] ■■          20% | ETA: 21s
-#> ⠹ [2026-06-01 10:11:35] Running for 2 [2/5] ■■■■        40% | ETA: 12s
-#> ⠸ [2026-06-01 10:11:35] Running for 3 [3/5] ■■■■■■      60% | ETA:  8s
-#> ⠼ [2026-06-01 10:11:35] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  4s
-#> ✔ [2026-06-01 10:11:35] Completed 5 tasks in 17.6s
-#> 
-#> ℹ [2026-06-01 10:11:35] Building results
-#> ✔ [2026-06-01 10:11:52] Enrichment analysis done
 EnrichmentPlot(
   res = enrich_out,
   db = "GO_BP",
   plot_type = "comparison"
 )
-
 
 # Use a combined database
 pancreas_sub <- RunEnrichment(
@@ -381,13 +329,10 @@ pancreas_sub <- RunEnrichment(
   db_combine = TRUE,
   species = "Mus_musculus"
 )
-#> ℹ [2026-06-01 10:11:53] Start Enrichment analysis
-#> Error in filter_de_results(de_results = de_df, DE_threshold = DE_threshold): could not find function "filter_de_results"
 EnrichmentPlot(
   pancreas_sub,
   db = "Combined",
   group.by = "CellType",
   plot_type = "comparison"
 )
-#> Error in EnrichmentPlot(pancreas_sub, db = "Combined", group.by = "CellType",     plot_type = "comparison"): No enrichment result found. You may perform RunEnrichment first
 ```

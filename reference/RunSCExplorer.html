@@ -198,62 +198,61 @@ Default is <code>TRUE</code>.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="integration_scop.html">integration_scop</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
-<span class="r-in"><span>  batch <span class="op">=</span> <span class="st">"tech"</span>,</span></span>
-<span class="r-in"><span>  integration_method <span class="op">=</span> <span class="st">"Harmony"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="PrepareSCExplorer.html">PrepareSCExplorer</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    mouse_pancreas <span class="op">=</span> <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>    human_pancreas <span class="op">=</span> <span class="va">panc8_sub</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span>,</span></span>
-<span class="r-in"><span>  base_dir <span class="op">=</span> <span class="st">"./SCExplorer"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Create the app.R script</span></span></span>
-<span class="r-in"><span><span class="va">app</span> <span class="op">&lt;-</span> <span class="fu">RunSCExplorer</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  base_dir <span class="op">=</span> <span class="st">"./SCExplorer"</span>,</span></span>
-<span class="r-in"><span>  initial_dataset <span class="op">=</span> <span class="st">"mouse_pancreas"</span>,</span></span>
-<span class="r-in"><span>  initial_group <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  initial_feature <span class="op">=</span> <span class="st">"Ncoa2"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># Check files</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="st">"./SCExplorer"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Run shiny app</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="fu">check_r</span><span class="op">(</span><span class="st">"shiny"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu">get_namespace_fun</span><span class="op">(</span><span class="st">"shiny"</span>, <span class="st">"runApp"</span><span class="op">)</span><span class="op">(</span><span class="va">app</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-in"><span><span class="co"># Note: If scop installed in the isolated environment using renv,</span></span></span>
-<span class="r-in"><span><span class="co"># add `renv::activate(project = "path/to/scop_env")` to the app.R script.</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># You can deploy the app on the self-hosted shiny server</span></span></span>
-<span class="r-in"><span><span class="co"># (https://www.rstudio.com/products/shiny/shiny-server/).</span></span></span>
-<span class="r-in"><span><span class="co"># Or deploy the app on the website</span></span></span>
-<span class="r-in"><span><span class="co"># (https://www.shinyapps.io) for free:</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># step1: install "rsconnect" package and authorize your account</span></span></span>
-<span class="r-in"><span><span class="co"># install.packages("rsconnect")</span></span></span>
-<span class="r-in"><span><span class="co"># library(rsconnect)</span></span></span>
-<span class="r-in"><span><span class="co"># setAccountInfo(</span></span></span>
-<span class="r-in"><span><span class="co">#   name = "&lt;NAME&gt;",</span></span></span>
-<span class="r-in"><span><span class="co">#   token = "&lt;TOKEN&gt;",</span></span></span>
-<span class="r-in"><span><span class="co">#   secret = "&lt;SECRET&gt;"</span></span></span>
-<span class="r-in"><span><span class="co"># )</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">### step2: deploy the app</span></span></span>
-<span class="r-in"><span><span class="co"># deployApp("./SCExplorer")</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span>
+<span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="integration_scop.html">integration_scop</a></span><span class="op">(</span></span>
+<span>  <span class="va">panc8_sub</span>,</span>
+<span>  batch <span class="op">=</span> <span class="st">"tech"</span>,</span>
+<span>  integration_method <span class="op">=</span> <span class="st">"Harmony"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="PrepareSCExplorer.html">PrepareSCExplorer</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    mouse_pancreas <span class="op">=</span> <span class="va">pancreas_sub</span>,</span>
+<span>    human_pancreas <span class="op">=</span> <span class="va">panc8_sub</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  base_dir <span class="op">=</span> <span class="st">"./SCExplorer"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Create the app.R script</span></span>
+<span><span class="va">app</span> <span class="op">&lt;-</span> <span class="fu">RunSCExplorer</span><span class="op">(</span></span>
+<span>  base_dir <span class="op">=</span> <span class="st">"./SCExplorer"</span>,</span>
+<span>  initial_dataset <span class="op">=</span> <span class="st">"mouse_pancreas"</span>,</span>
+<span>  initial_group <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  initial_feature <span class="op">=</span> <span class="st">"Ncoa2"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co"># Check files</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="st">"./SCExplorer"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Run shiny app</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">check_r</span><span class="op">(</span><span class="st">"shiny"</span><span class="op">)</span></span>
+<span>  <span class="fu">get_namespace_fun</span><span class="op">(</span><span class="st">"shiny"</span>, <span class="st">"runApp"</span><span class="op">)</span><span class="op">(</span><span class="va">app</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="co"># Note: If scop installed in the isolated environment using renv,</span></span>
+<span><span class="co"># add `renv::activate(project = "path/to/scop_env")` to the app.R script.</span></span>
+<span></span>
+<span></span>
+<span><span class="co"># You can deploy the app on the self-hosted shiny server</span></span>
+<span><span class="co"># (https://www.rstudio.com/products/shiny/shiny-server/).</span></span>
+<span><span class="co"># Or deploy the app on the website</span></span>
+<span><span class="co"># (https://www.shinyapps.io) for free:</span></span>
+<span></span>
+<span><span class="co"># step1: install "rsconnect" package and authorize your account</span></span>
+<span><span class="co"># install.packages("rsconnect")</span></span>
+<span><span class="co"># library(rsconnect)</span></span>
+<span><span class="co"># setAccountInfo(</span></span>
+<span><span class="co">#   name = "&lt;NAME&gt;",</span></span>
+<span><span class="co">#   token = "&lt;TOKEN&gt;",</span></span>
+<span><span class="co">#   secret = "&lt;SECRET&gt;"</span></span>
+<span><span class="co"># )</span></span>
+<span></span>
+<span><span class="co">### step2: deploy the app</span></span>
+<span><span class="co"># deployApp("./SCExplorer")</span></span>
+<span><span class="op">}</span> <span class="co"># }</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

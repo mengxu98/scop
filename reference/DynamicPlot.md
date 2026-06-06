@@ -249,30 +249,11 @@ DynamicPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-01 09:12:00] Start standard processing workflow...
-#> ℹ [2026-06-01 09:12:01] Checking a list of <Seurat>...
-#> ! [2026-06-01 09:12:01] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-01 09:12:01] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-01 09:12:02] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-01 09:12:03] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-01 09:12:03] Number of available HVF: 2000
-#> ℹ [2026-06-01 09:12:03] Finished check
-#> ℹ [2026-06-01 09:12:03] Perform `Seurat::ScaleData()`
-#> ℹ [2026-06-01 09:12:04] Perform pca linear dimension reduction
-#> ℹ [2026-06-01 09:12:04] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-01 09:12:04] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-01 09:12:04] Reorder clusters...
-#> ℹ [2026-06-01 09:12:05] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-01 09:12:05] Perform umap nonlinear dimension reduction
-#> ℹ [2026-06-01 09:12:05] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-06-01 09:12:08] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-06-01 09:12:12] Standard processing workflow completed
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",
   reduction = "UMAP"
 )
-
 
 CellDimPlot(
   pancreas_sub,
@@ -282,7 +263,6 @@ CellDimPlot(
   lineages_span = 0.1
 )
 
-
 DynamicPlot(
   pancreas_sub,
   lineages = "Lineage1",
@@ -291,19 +271,6 @@ DynamicPlot(
   group_use = c("Ductal", "Beta"),
   compare_features = TRUE
 )
-#> ℹ [2026-06-01 09:12:15] Start find dynamic features
-#> ℹ [2026-06-01 09:12:16] Data type is raw counts
-#> ℹ [2026-06-01 09:12:16] Number of candidate features (union): 3
-#> ℹ [2026-06-01 09:12:17] Data type is raw counts
-#> ! [2026-06-01 09:12:17] Negative values detected
-#> ℹ [2026-06-01 09:12:17] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-06-01 09:12:17] Using 1 core
-#> ⠙ [2026-06-01 09:12:17] Running for Arxes1 [1/3] ■■■         33% | ETA:  0s
-#> ✔ [2026-06-01 09:12:17] Completed 3 tasks in 151ms
-#> 
-#> ℹ [2026-06-01 09:12:17] Building results
-#> ✔ [2026-06-01 09:12:17] Find dynamic features done
-
 
 DynamicPlot(
   pancreas_sub,
@@ -313,39 +280,6 @@ DynamicPlot(
   compare_lineages = TRUE,
   compare_features = FALSE
 )
-#> ℹ [2026-06-01 09:12:18] Start find dynamic features
-#> ℹ [2026-06-01 09:12:19] Data type is raw counts
-#> ℹ [2026-06-01 09:12:19] Number of candidate features (union): 3
-#> ℹ [2026-06-01 09:12:20] Data type is raw counts
-#> ! [2026-06-01 09:12:20] Negative values detected
-#> ℹ [2026-06-01 09:12:20] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-06-01 09:12:20] Using 1 core
-#> ⠙ [2026-06-01 09:12:20] Running for Arxes1 [1/3] ■■■         33% | ETA:  0s
-#> ✔ [2026-06-01 09:12:20] Completed 3 tasks in 152ms
-#> 
-#> ℹ [2026-06-01 09:12:20] Building results
-#> ✔ [2026-06-01 09:12:20] Find dynamic features done
-#> ℹ [2026-06-01 09:12:20] Start find dynamic features
-#> ℹ [2026-06-01 09:12:21] Data type is raw counts
-#> ℹ [2026-06-01 09:12:22] Number of candidate features (union): 3
-#> ℹ [2026-06-01 09:12:23] Data type is raw counts
-#> ! [2026-06-01 09:12:23] Negative values detected
-#> ℹ [2026-06-01 09:12:23] Calculating dynamic features for "Lineage2"...
-#> ℹ [2026-06-01 09:12:23] Using 1 core
-#> ⠙ [2026-06-01 09:12:23] Running for Arxes1 [1/3] ■■■         33% | ETA:  0s
-#> ✔ [2026-06-01 09:12:23] Completed 3 tasks in 107ms
-#> 
-#> ℹ [2026-06-01 09:12:23] Building results
-#> ✔ [2026-06-01 09:12:23] Find dynamic features done
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-
 
 DynamicPlot(
   pancreas_sub,
@@ -355,39 +289,4 @@ DynamicPlot(
   compare_lineages = FALSE,
   compare_features = FALSE
 )
-#> ℹ [2026-06-01 09:12:24] Start find dynamic features
-#> ℹ [2026-06-01 09:12:25] Data type is raw counts
-#> ℹ [2026-06-01 09:12:26] Number of candidate features (union): 3
-#> ℹ [2026-06-01 09:12:26] Data type is raw counts
-#> ! [2026-06-01 09:12:26] Negative values detected
-#> ℹ [2026-06-01 09:12:26] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-06-01 09:12:26] Using 1 core
-#> ⠙ [2026-06-01 09:12:26] Running for Arxes1 [1/3] ■■■         33% | ETA:  0s
-#> ✔ [2026-06-01 09:12:26] Completed 3 tasks in 157ms
-#> 
-#> ℹ [2026-06-01 09:12:26] Building results
-#> ✔ [2026-06-01 09:12:27] Find dynamic features done
-#> ℹ [2026-06-01 09:12:27] Start find dynamic features
-#> ℹ [2026-06-01 09:12:28] Data type is raw counts
-#> ℹ [2026-06-01 09:12:28] Number of candidate features (union): 3
-#> ℹ [2026-06-01 09:12:29] Data type is raw counts
-#> ! [2026-06-01 09:12:29] Negative values detected
-#> ℹ [2026-06-01 09:12:29] Calculating dynamic features for "Lineage2"...
-#> ℹ [2026-06-01 09:12:29] Using 1 core
-#> ℹ [2026-06-01 09:12:29] Building results
-#> ✔ [2026-06-01 09:12:29] Find dynamic features done
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 ```

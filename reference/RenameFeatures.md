@@ -32,7 +32,6 @@ RenameFeatures(srt, newnames = NULL, assays = NULL, verbose = TRUE)
 ``` r
 data(panc8_sub)
 head(rownames(panc8_sub))
-#> [1] "A1CF"   "A4GALT" "AAAS"   "AACS"   "AADAC"  "AADAT" 
 # Simply convert genes from human to mouse and preprocess the data
 genenames <- make.unique(
   thisutils::capitalize(rownames(panc8_sub),
@@ -44,7 +43,5 @@ panc8_rename <- RenameFeatures(
   panc8_sub,
   newnames = genenames
 )
-#> ℹ [2026-06-01 09:42:42] Rename features for the assay: RNA
 head(rownames(panc8_rename))
-#> [1] "A1cf"   "A4galt" "Aaas"   "Aacs"   "Aadac"  "Aadat" 
 ```

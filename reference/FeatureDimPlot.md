@@ -476,29 +476,10 @@ FeatureDimPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-01 09:13:19] Start standard processing workflow...
-#> ℹ [2026-06-01 09:13:20] Checking a list of <Seurat>...
-#> ! [2026-06-01 09:13:20] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-01 09:13:20] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-01 09:13:22] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-01 09:13:22] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-01 09:13:22] Number of available HVF: 2000
-#> ℹ [2026-06-01 09:13:23] Finished check
-#> ℹ [2026-06-01 09:13:23] Perform `Seurat::ScaleData()`
-#> ℹ [2026-06-01 09:13:23] Perform pca linear dimension reduction
-#> ℹ [2026-06-01 09:13:23] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-01 09:13:24] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-01 09:13:24] Reorder clusters...
-#> ℹ [2026-06-01 09:13:24] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-01 09:13:24] Perform umap nonlinear dimension reduction
-#> ℹ [2026-06-01 09:13:24] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-06-01 09:13:28] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-06-01 09:13:32] Standard processing workflow completed
 FeatureDimPlot(
   pancreas_sub,
   features = "G2M_score", reduction = "UMAP"
 )
-
 
 FeatureDimPlot(
   pancreas_sub,
@@ -507,14 +488,12 @@ FeatureDimPlot(
   bg_cutoff = -Inf
 )
 
-
 FeatureDimPlot(
   pancreas_sub,
   features = "G2M_score",
   reduction = "UMAP",
   theme_use = "theme_blank"
 )
-
 
 FeatureDimPlot(
   pancreas_sub,
@@ -523,7 +502,6 @@ FeatureDimPlot(
   theme_use = ggplot2::theme_classic,
   theme_args = list(base_size = 16)
 )
-
 
 FeatureDimPlot(
   pancreas_sub,
@@ -534,7 +512,6 @@ FeatureDimPlot(
   raster = TRUE,
   dpi = 30
 )
-
 
 # Label and highlight cell points
 FeatureDimPlot(
@@ -547,7 +524,6 @@ FeatureDimPlot(
   )[pancreas_sub$SubCellType == "Delta"]
 )
 
-
 FeatureDimPlot(
   pancreas_sub,
   features = "Rbp4",
@@ -556,7 +532,6 @@ FeatureDimPlot(
   cells.highlight = TRUE,
   theme_use = "theme_blank"
 )
-
 
 # Add a density layer
 FeatureDimPlot(
@@ -567,7 +542,6 @@ FeatureDimPlot(
   add_density = TRUE
 )
 
-
 FeatureDimPlot(
   pancreas_sub,
   features = "Rbp4",
@@ -576,9 +550,6 @@ FeatureDimPlot(
   add_density = TRUE,
   density_filled = TRUE
 )
-#> Warning: Removed 396 rows containing missing values or values outside the scale range
-#> (`geom_raster()`).
-
 
 # Chane the plot type from point to the hexagonal bin
 FeatureDimPlot(
@@ -587,11 +558,6 @@ FeatureDimPlot(
   reduction = "UMAP",
   hex = TRUE
 )
-#> Warning: Removed 2 rows containing missing values or values outside the scale range
-#> (`geom_hex()`).
-#> Warning: Removed 6 rows containing missing values or values outside the scale range
-#> (`geom_hex()`).
-
 
 FeatureDimPlot(
   pancreas_sub,
@@ -600,11 +566,6 @@ FeatureDimPlot(
   hex = TRUE,
   hex.bins = 20
 )
-#> Warning: Removed 3 rows containing missing values or values outside the scale range
-#> (`geom_hex()`).
-#> Warning: Removed 5 rows containing missing values or values outside the scale range
-#> (`geom_hex()`).
-
 
 # Show lineages on the plot based on the pseudotime
 pancreas_sub <- RunSlingshot(
@@ -613,16 +574,12 @@ pancreas_sub <- RunSlingshot(
   reduction = "UMAP"
 )
 
-
 FeatureDimPlot(
   pancreas_sub,
   features = "Lineage2",
   reduction = "UMAP",
   lineages = "Lineage2"
 )
-#> Warning: `guide_colourbar()` cannot be used for colour_ggnewscale_1.
-#> ℹ Use one of colour, color, or fill instead.
-
 
 FeatureDimPlot(
   pancreas_sub,
@@ -631,9 +588,6 @@ FeatureDimPlot(
   lineages = "Lineage2",
   lineages_whiskers = TRUE
 )
-#> Warning: `guide_colourbar()` cannot be used for colour_ggnewscale_1.
-#> ℹ Use one of colour, color, or fill instead.
-
 
 FeatureDimPlot(
   pancreas_sub,
@@ -642,9 +596,6 @@ FeatureDimPlot(
   lineages = "Lineage2",
   lineages_span = 0.1
 )
-#> Warning: `guide_colourbar()` cannot be used for colour_ggnewscale_1.
-#> ℹ Use one of colour, color, or fill instead.
-
 
 # Input a named feature list
 markers <- list(
@@ -668,7 +619,6 @@ FeatureDimPlot(
   )
 )
 
-
 # Plot multiple features with different scales
 endocrine_markers <- c(
   "Beta" = "Ins1",
@@ -682,7 +632,6 @@ FeatureDimPlot(
   reduction = "UMAP"
 )
 
-
 FeatureDimPlot(
   pancreas_sub,
   endocrine_markers,
@@ -690,7 +639,6 @@ FeatureDimPlot(
   lower_quantile = 0,
   upper_quantile = 0.8
 )
-
 
 FeatureDimPlot(
   pancreas_sub,
@@ -700,14 +648,12 @@ FeatureDimPlot(
   upper_cutoff = 4
 )
 
-
 FeatureDimPlot(
   pancreas_sub,
   endocrine_markers,
   reduction = "UMAP",
   keep_scale = "all"
 )
-
 
 FeatureDimPlot(
   pancreas_sub,
@@ -716,7 +662,6 @@ FeatureDimPlot(
   reduction = "UMAP",
   keep_scale = "feature"
 )
-
 
 # Plot multiple features on one picture
 FeatureDimPlot(
@@ -728,9 +673,6 @@ FeatureDimPlot(
   label = TRUE,
   label_insitu = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-
 
 FeatureDimPlot(
   pancreas_sub,
@@ -743,9 +685,6 @@ FeatureDimPlot(
   label = TRUE,
   label_insitu = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-
 
 FeatureDimPlot(
   pancreas_sub,
@@ -758,9 +697,6 @@ FeatureDimPlot(
   label = TRUE,
   label_insitu = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-
 
 FeatureDimPlot(
   pancreas_sub,
@@ -773,9 +709,6 @@ FeatureDimPlot(
   label = TRUE,
   label_insitu = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-
 
 FeatureDimPlot(
   pancreas_sub,
@@ -788,6 +721,4 @@ FeatureDimPlot(
   label = TRUE,
   label_insitu = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
 ```

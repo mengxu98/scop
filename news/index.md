@@ -42,6 +42,12 @@
     signs. `ssgsea_rank_dense()` now accepts a `normalize` parameter.
     `aucell_auc_sparse()` gained a sparse `ctxcore` algorithm option.
   - [`RunSCENIC()`](https://mengxu98.github.io/scop/reference/RunSCENIC.md):
+    Added a `genome` parameter for automatic cisTarget reference
+    selection while keeping `species` aligned with the package-wide
+    Latin-name style. Human references now support the default `"hg38"`
+    v10 databases and `"hg19"` v9 databases, while the human TF list is
+    cached with the genome-neutral name `allTFs_hgnc.txt`.
+  - [`RunSCENIC()`](https://mengxu98.github.io/scop/reference/RunSCENIC.md):
     Inlined the single-call `scenic_grn_inputs_changed` helper;
     shortened long internal function names (`scenic_dl_refs`,
     `scenic_flt_adj`, `scenic_def_mc`, `scenic_sel_mc_res`,
@@ -77,6 +83,45 @@
     metadata writeback,
     [`CellDimPlot()`](https://mengxu98.github.io/scop/reference/CellDimPlot.md)
     examples, and detailed result storage in `srt@tools[["RareQ"]]`.
+  - Added
+    [`FerrisWheelPlot()`](https://mengxu98.github.io/scop/reference/FerrisWheelPlot.md)
+    for Ferris wheel-style up/down gene-count visualization from pathway
+    enrichment results or pre-summarized count tables, with automatic
+    [`RunEnrichment()`](https://mengxu98.github.io/scop/reference/RunEnrichment.md)
+    result summarization, SCOP palette defaults, scalable outer donuts,
+    title-cased pathway labels, and configurable text outlines.
+  - Added
+    [`PalantirTrajectoryPlot()`](https://mengxu98.github.io/scop/reference/PalantirTrajectoryPlot.md)
+    for branch-aware Palantir trajectory visualization on Seurat
+    embeddings, including pseudotime interval filtering,
+    branch-probability path fitting, optional loess smoothing,
+    branch-selection coloring, and layer-only return support.
+  - Added
+    [`RunmcRigor()`](https://mengxu98.github.io/scop/reference/RunmcRigor.md)
+    for detecting dubious metacells or optimizing metacell partition
+    granularity with runtime-optional `JSB-UCLA/mcRigor` installation,
+    metadata writeback, and detailed result storage in
+    `srt@tools[["mcRigor"]]`.
+  - Added
+    [`RuntAge()`](https://mengxu98.github.io/scop/reference/RuntAge.md)
+    for tAge transcriptomic aging-clock prediction from Seurat
+    pseudobulk, `ExpressionSet`, or matrix inputs, with runtime-optional
+    `Gladyshev-Lab/tAge` preprocessing, R-native EN model caching from
+    `mengxu98/datasets`, Python BR fallback support, and
+    [`tAgePlot()`](https://mengxu98.github.io/scop/reference/tAgePlot.md)
+    visualization in the
+    [`thisplot::StatPlot()`](https://mengxu98.github.io/thisplot/reference/StatPlot.html)
+    style.
+  - Added
+    [`RunscFEA()`](https://mengxu98.github.io/scop/reference/RunscFEA.md)
+    for scFEA metabolic flux estimation from Seurat objects, with cached
+    M168 resources from `mengxu98/datasets`, flux and balance assays,
+    and
+    [`scFEAHeatmap()`](https://mengxu98.github.io/scop/reference/scFEAHeatmap.md),
+    [`scFEAVolcanoPlot()`](https://mengxu98.github.io/scop/reference/scFEAVolcanoPlot.md),
+    and
+    [`scFEABalanceBarPlot()`](https://mengxu98.github.io/scop/reference/scFEABalanceBarPlot.md)
+    visualization helpers.
   - Added
     [`RunAugur()`](https://mengxu98.github.io/scop/reference/RunAugur.md)
     for Augur cell-type perturbation prioritization from Seurat objects,
@@ -169,6 +214,11 @@
     information style as
     [`thisutils::log_message()`](https://mengxu98.github.io/thisutils/reference/log_message.html).
 - **fix**:
+  - [`RunPalantir()`](https://mengxu98.github.io/scop/reference/RunPalantir.md):
+    Fixed saved plot generation by passing `plot_format` through to
+    Python, saving each embedding from its own matplotlib figure, and
+    accepting scalar `early_group` values such as `"8"` when selecting
+    the starting group.
   - [`SCENICPlot()`](https://mengxu98.github.io/scop/reference/SCENICPlot.md):
     Explicit `features` in SCENIC heatmaps now keep the user-supplied
     regulon order, and `activity_heatmap` aligns `feature_split` to the
@@ -181,6 +231,19 @@
     `plot_type = "target_bar"` now respects all explicitly supplied
     `features`, instead of applying the four-regulon default preview
     limit.
+  - [`RunscFEA()`](https://mengxu98.github.io/scop/reference/RunscFEA.md):
+    Configure Python thread and OpenMP runtime variables before
+    dependency checks/imports to avoid torch runtime conflicts on macOS
+    and mixed BLAS environments.
+  - [`scFEAHeatmap()`](https://mengxu98.github.io/scop/reference/scFEAHeatmap.md):
+    Use the package heatmap palette conventions (`RdBu`, `Chinese`, and
+    `simspec`), border/raster defaults, non-clustered group summaries,
+    and `ht_params` overrides for closer consistency with
+    [`GroupHeatmap()`](https://mengxu98.github.io/scop/reference/GroupHeatmap.md).
+  - `GeneSetScoring()`: Route dense Gaussian and Poisson GSVA scoring
+    through the native KDE path instead of immediately falling back to
+    sparse-exact scoring, keeping the optimized z-score/rank workflow
+    active for dense inputs.
   - [`RunHarmony2()`](https://mengxu98.github.io/scop/reference/RunHarmony2.md):
     Added compatibility with Harmony 2.0 objects by directly trying both
     legacy fields (`Z_corr` / `R`) and callable methods (`getZcorr()` /

@@ -52,6 +52,8 @@
 <li>
 <code>GeneSetScoring()</code>: Added C++ backends <code>zscore_dense()</code> and <code>plage_dense()</code> for Z-score and PLAGE gene-set scoring, plus PLAGE score orientation via z-score dot product for deterministic SVD signs. <code>ssgsea_rank_dense()</code> now accepts a <code>normalize</code> parameter. <code>aucell_auc_sparse()</code> gained a sparse <code>ctxcore</code> algorithm option.</li>
 <li>
+<code><a href="../reference/RunSCENIC.html">RunSCENIC()</a></code>: Added a <code>genome</code> parameter for automatic cisTarget reference selection while keeping <code>species</code> aligned with the package-wide Latin-name style. Human references now support the default <code>"hg38"</code> v10 databases and <code>"hg19"</code> v9 databases, while the human TF list is cached with the genome-neutral name <code>allTFs_hgnc.txt</code>.</li>
+<li>
 <code><a href="../reference/RunSCENIC.html">RunSCENIC()</a></code>: Inlined the single-call <code>scenic_grn_inputs_changed</code> helper; shortened long internal function names (<code>scenic_dl_refs</code>, <code>scenic_flt_adj</code>, <code>scenic_def_mc</code>, <code>scenic_sel_mc_res</code>, <code>scenic_prep_gene_arg</code>) and synced cross-file calls in <code>RunGRN.R</code>.</li>
 <li>
 <code><a href="../reference/RunSCENICPlus.html">RunSCENICPlus()</a></code>: Inlined single-call helpers <code>scenicplus_read_optional_table</code>, <code>scenicplus_motif_tf_names</code>, <code>scenicplus_eregulon_table</code>; removed unused <code>scenicplus_eregulons</code>.</li>
@@ -66,6 +68,11 @@
 <li>
 <code><a href="../reference/RunDimsEstimate.html">RunDimsEstimate()</a></code>: Switched the default dimension-selection route to a scree-based ensemble of broken-stick, elbow, cumulative-variance, and marginal-gain criteria; the previous <code>intrinsicDimension</code> route remains available via <code>method = "intrinsic"</code> or can be combined with <code>method = "ensemble"</code>.</li>
 <li>Added <code><a href="../reference/RunRareQ.html">RunRareQ()</a></code> for RareQ rare-cell population detection from Seurat objects, including automatic neighbor construction through <code><a href="../reference/DefaultReduction.html">DefaultReduction()</a></code>, metadata writeback, <code><a href="../reference/CellDimPlot.html">CellDimPlot()</a></code> examples, and detailed result storage in <code>srt@tools[["RareQ"]]</code>.</li>
+<li>Added <code><a href="../reference/FerrisWheelPlot.html">FerrisWheelPlot()</a></code> for Ferris wheel-style up/down gene-count visualization from pathway enrichment results or pre-summarized count tables, with automatic <code><a href="../reference/RunEnrichment.html">RunEnrichment()</a></code> result summarization, SCOP palette defaults, scalable outer donuts, title-cased pathway labels, and configurable text outlines.</li>
+<li>Added <code><a href="../reference/PalantirTrajectoryPlot.html">PalantirTrajectoryPlot()</a></code> for branch-aware Palantir trajectory visualization on Seurat embeddings, including pseudotime interval filtering, branch-probability path fitting, optional loess smoothing, branch-selection coloring, and layer-only return support.</li>
+<li>Added <code><a href="../reference/RunmcRigor.html">RunmcRigor()</a></code> for detecting dubious metacells or optimizing metacell partition granularity with runtime-optional <code>JSB-UCLA/mcRigor</code> installation, metadata writeback, and detailed result storage in <code>srt@tools[["mcRigor"]]</code>.</li>
+<li>Added <code><a href="../reference/RuntAge.html">RuntAge()</a></code> for tAge transcriptomic aging-clock prediction from Seurat pseudobulk, <code>ExpressionSet</code>, or matrix inputs, with runtime-optional <code>Gladyshev-Lab/tAge</code> preprocessing, R-native EN model caching from <code>mengxu98/datasets</code>, Python BR fallback support, and <code><a href="../reference/tAgePlot.html">tAgePlot()</a></code> visualization in the <code><a href="https://mengxu98.github.io/thisplot/reference/StatPlot.html" class="external-link">thisplot::StatPlot()</a></code> style.</li>
+<li>Added <code><a href="../reference/RunscFEA.html">RunscFEA()</a></code> for scFEA metabolic flux estimation from Seurat objects, with cached M168 resources from <code>mengxu98/datasets</code>, flux and balance assays, and <code><a href="../reference/scFEAHeatmap.html">scFEAHeatmap()</a></code>, <code><a href="../reference/scFEAVolcanoPlot.html">scFEAVolcanoPlot()</a></code>, and <code><a href="../reference/scFEABalanceBarPlot.html">scFEABalanceBarPlot()</a></code> visualization helpers.</li>
 <li>Added <code><a href="../reference/RunAugur.html">RunAugur()</a></code> for Augur cell-type perturbation prioritization from Seurat objects, with an optimized native backend and metadata/tool-slot writeback.</li>
 <li>Added <code><a href="../reference/RunSCENIC.html">RunSCENIC()</a></code> for a SCENIC workflow from Seurat objects, including optional metacell GRN input, GRNBoost2/<code>scenic ctx</code> execution, regulon conversion, multi-core AUCell batch scoring, and storage of regulon activity scores as a Seurat assay plus detailed results in <code>@tools</code>.</li>
 <li>
@@ -93,11 +100,19 @@
 <li>
 <strong>fix</strong>:
 <ul><li>
+<code><a href="../reference/RunPalantir.html">RunPalantir()</a></code>: Fixed saved plot generation by passing <code>plot_format</code> through to Python, saving each embedding from its own matplotlib figure, and accepting scalar <code>early_group</code> values such as <code>"8"</code> when selecting the starting group.</li>
+<li>
 <code><a href="../reference/SCENICPlot.html">SCENICPlot()</a></code>: Explicit <code>features</code> in SCENIC heatmaps now keep the user-supplied regulon order, and <code>activity_heatmap</code> aligns <code>feature_split</code> to the resolved and displayed regulons.</li>
 <li>
 <code><a href="../reference/SCENICPlot.html">SCENICPlot()</a></code>: <code>plot_type = "activity_dim"</code> and <code>"activity_violin"</code> now respect all explicitly supplied <code>features</code>, instead of applying the six-regulon default preview limit.</li>
 <li>
 <code><a href="../reference/SCENICPlot.html">SCENICPlot()</a></code>: <code>plot_type = "target_bar"</code> now respects all explicitly supplied <code>features</code>, instead of applying the four-regulon default preview limit.</li>
+<li>
+<code><a href="../reference/RunscFEA.html">RunscFEA()</a></code>: Configure Python thread and OpenMP runtime variables before dependency checks/imports to avoid torch runtime conflicts on macOS and mixed BLAS environments.</li>
+<li>
+<code><a href="../reference/scFEAHeatmap.html">scFEAHeatmap()</a></code>: Use the package heatmap palette conventions (<code>RdBu</code>, <code>Chinese</code>, and <code>simspec</code>), border/raster defaults, non-clustered group summaries, and <code>ht_params</code> overrides for closer consistency with <code><a href="../reference/GroupHeatmap.html">GroupHeatmap()</a></code>.</li>
+<li>
+<code>GeneSetScoring()</code>: Route dense Gaussian and Poisson GSVA scoring through the native KDE path instead of immediately falling back to sparse-exact scoring, keeping the optimized z-score/rank workflow active for dense inputs.</li>
 <li>
 <code><a href="../reference/RunHarmony2.html">RunHarmony2()</a></code>: Added compatibility with Harmony 2.0 objects by directly trying both legacy fields (<code>Z_corr</code> / <code>R</code>) and callable methods (<code>getZcorr()</code> / <code>getR()</code>), including module methods that are not listed by <code><a href="https://rdrr.io/r/base/ls.html" class="external-link">ls()</a></code>.</li>
 <li>

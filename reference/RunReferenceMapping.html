@@ -212,92 +212,31 @@ Default is <code>TRUE</code>.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"pbmcmultiome_sub"</span>, package <span class="op">=</span> <span class="st">"scop"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pbmcmultiome_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pbmcmultiome_sub</span>,</span></span>
-<span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"RNA"</span>,</span></span>
-<span class="r-in"><span>  linear_reduction_dims <span class="op">=</span> <span class="fl">20</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:23:49] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:23:49] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-01 10:23:49] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:23:49] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:23:51] Perform `Seurat::FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>pseudoinverse used at -2.3979</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>neighborhood radius 0.30103</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>reciprocal condition number  1.2589e-15</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:23:52] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:23:52] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:23:52] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:23:52] Perform `Seurat::ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:23:52] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:23:52] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">9</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:23:53] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:23:53] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:23:53] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:23:53] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:23:53] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">9</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:23:58] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">9</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-01 10:24:03] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
-<span class="r-in"><span><span class="va">reference</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span>, cells <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">250</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span>, cells <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span><span class="op">)</span><span class="op">[</span><span class="fl">251</span><span class="op">:</span><span class="fl">350</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">query</span>,</span></span>
-<span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"peaks"</span>,</span></span>
-<span class="r-in"><span>  normalization_method <span class="op">=</span> <span class="st">"TFIDF"</span>,</span></span>
-<span class="r-in"><span>  linear_reduction_dims <span class="op">=</span> <span class="fl">20</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:04] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:04] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-01 10:24:04] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"raw_counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:04] Perform `RunTFIDF()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:04] Perform `FindTopFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:04] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:04] Number of available HVF: <span style="color: #0000BB;">11426</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:04] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:04] `normalization_method` is <span style="color: #0000BB;">TFIDF</span>. Use <span style="color: #0000BB;">lsi</span> workflow</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:04] Perform <span style="color: #0000BB;">svd</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Running SVD</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Scaling cell embeddings</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:05] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:05] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:05] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:05] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:05] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">ATACsvd</span> (<span style="color: #0000BB;">2</span>:<span style="color: #0000BB;">30</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:09] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">ATACsvd</span> (<span style="color: #0000BB;">2</span>:<span style="color: #0000BB;">30</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-01 10:24:14] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
-<span class="r-in"><span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu">RunReferenceMapping</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  srt <span class="op">=</span> <span class="va">query</span>,</span></span>
-<span class="r-in"><span>  reference <span class="op">=</span> <span class="va">reference</span>,</span></span>
-<span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"peaks"</span>,</span></span>
-<span class="r-in"><span>  reference_assay <span class="op">=</span> <span class="st">"RNA"</span>,</span></span>
-<span class="r-in"><span>  reference_reduction <span class="op">=</span> <span class="st">"Standardpca"</span>,</span></span>
-<span class="r-in"><span>  ref_umap <span class="op">=</span> <span class="st">"StandardUMAP2D"</span>,</span></span>
-<span class="r-in"><span>  reference_label <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  reference_dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,</span></span>
-<span class="r-in"><span>  dims <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">10</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:14] Use existing query assay <span style="color: #0000BB;">"RNA"</span> as `gene_activity_assay`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:14] Adjust `k.filter` from <span style="color: #0000BB;">200</span> to <span style="color: #0000BB;">99</span> for small-sample ATAC mapping</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:14] Finding RNA-to-ATAC anchors for query mapping...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:17] Adjust `k.weight` from <span style="color: #0000BB;">100</span> to <span style="color: #0000BB;">95</span> for small-sample ATAC mapping</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Max dims.to.integrate is larger than the max dims for at least one of the reductions specified. Setting dims.to.integrate to 2,3,4,5,6,7,8,9 and continuing.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Requested to reuse weights matrix, but no weights found. Computing new weights.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Integrating dataset 2 with reference dataset</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Finding integration vectors</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Finding integration vector weights</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Integrating data</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:18] Adjust `k.filter` from <span style="color: #0000BB;">200</span> to <span style="color: #0000BB;">99</span> for small-sample ATAC mapping</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:18] Running RNA reference label transfer for ATAC cells...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:21] Adjust `k.weight` from <span style="color: #0000BB;">95</span> to <span style="color: #0000BB;">94</span> for small-sample ATAC mapping</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:22] Use the reduction to calculate distance metric</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:22] Use <span style="color: #0000BB;">cpp</span> method to find neighbors</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:22] Running UMAP projection</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 10:24:22] Predicting cell types based on ref_group</span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"pbmcmultiome_sub"</span>, package <span class="op">=</span> <span class="st">"scop"</span><span class="op">)</span></span>
+<span><span class="va">pbmcmultiome_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span></span>
+<span>  <span class="va">pbmcmultiome_sub</span>,</span>
+<span>  assay <span class="op">=</span> <span class="st">"RNA"</span>,</span>
+<span>  linear_reduction_dims <span class="op">=</span> <span class="fl">20</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">reference</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span>, cells <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">250</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span>, cells <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span><span class="op">)</span><span class="op">[</span><span class="fl">251</span><span class="op">:</span><span class="fl">350</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span></span>
+<span>  <span class="va">query</span>,</span>
+<span>  assay <span class="op">=</span> <span class="st">"peaks"</span>,</span>
+<span>  normalization_method <span class="op">=</span> <span class="st">"TFIDF"</span>,</span>
+<span>  linear_reduction_dims <span class="op">=</span> <span class="fl">20</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu">RunReferenceMapping</span><span class="op">(</span></span>
+<span>  srt <span class="op">=</span> <span class="va">query</span>,</span>
+<span>  reference <span class="op">=</span> <span class="va">reference</span>,</span>
+<span>  assay <span class="op">=</span> <span class="st">"peaks"</span>,</span>
+<span>  reference_assay <span class="op">=</span> <span class="st">"RNA"</span>,</span>
+<span>  reference_reduction <span class="op">=</span> <span class="st">"Standardpca"</span>,</span>
+<span>  ref_umap <span class="op">=</span> <span class="st">"StandardUMAP2D"</span>,</span>
+<span>  reference_label <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  reference_dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,</span>
+<span>  dims <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">10</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

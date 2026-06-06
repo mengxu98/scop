@@ -173,24 +173,6 @@ LineagePlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-01 09:38:03] Start standard processing workflow...
-#> ℹ [2026-06-01 09:38:04] Checking a list of <Seurat>...
-#> ! [2026-06-01 09:38:04] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-01 09:38:04] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-01 09:38:05] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-01 09:38:06] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-01 09:38:06] Number of available HVF: 2000
-#> ℹ [2026-06-01 09:38:06] Finished check
-#> ℹ [2026-06-01 09:38:06] Perform `Seurat::ScaleData()`
-#> ℹ [2026-06-01 09:38:07] Perform pca linear dimension reduction
-#> ℹ [2026-06-01 09:38:07] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-01 09:38:07] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-01 09:38:08] Reorder clusters...
-#> ℹ [2026-06-01 09:38:08] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-01 09:38:08] Perform umap nonlinear dimension reduction
-#> ℹ [2026-06-01 09:38:08] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-06-01 09:38:12] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-06-01 09:38:16] Standard processing workflow completed
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -201,7 +183,6 @@ LineagePlot(
   pancreas_sub,
   lineages = paste0("Lineage", 1:2)
 )
-
 LineagePlot(
   pancreas_sub,
   lineages = paste0("Lineage", 1:2),

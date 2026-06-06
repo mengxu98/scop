@@ -392,156 +392,112 @@ Default is <code>TRUE</code>.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:18:36] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:18:37] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-01 09:18:37] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:18:37] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:18:38] Perform `Seurat::FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:18:39] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:18:39] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:18:39] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:18:39] Perform `Seurat::ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:18:39] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:18:40] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:18:40] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:18:40] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:18:40] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:18:40] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:18:40] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:18:44] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-01 09:18:48] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunDEtest.html">RunDEtest</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:18:49] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:18:49] Start differential expression test</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:18:49] Find all markers(wilcox) among [1] 5 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:18:49] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-06-01 09:18:49] Running for <span style="color: #0000BB;">Ductal </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■</span>          20% | ETA: <span style="color: #0000BB;"> 1s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-01 09:18:49] Completed <span style="color: #0000BB;">5</span> tasks in <span style="color: #0000BB;">1.2s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:18:49] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-01 09:18:50] Differential expression test completed</span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunGSEA.html">RunGSEA</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:18:50] Start <span style="color: #0000BB;">GSEA</span> analysis</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in filter_de_results(de_results = de_df, DE_threshold = DE_threshold):</span> could not find function "filter_de_results"</span>
-<span class="r-in"><span><span class="fu">GSEAPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", group_use = "Ductal"):</span> No enrichment result found. You may perform `RunGSEA()` first</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu">GSEAPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
-<span class="r-in"><span>  id_use <span class="op">=</span> <span class="st">"GO:0006412"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", group_use = "Ductal",     id_use = "GO:0006412"):</span> No enrichment result found. You may perform `RunGSEA()` first</span>
-<span class="r-in"><span><span class="va">p1</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'p1' not found</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">thisplot</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisplot/reference/panel_fix.html" class="external-link">panel_fix_overall</a></span><span class="op">(</span><span class="va">p1</span>, height <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'p1' not found</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">GSEAPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  topTerm <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"comparison"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", topTerm = 3,     plot_type = "comparison"):</span> No enrichment result found. You may perform `RunGSEA()` first</span>
-<span class="r-in"><span><span class="fu">GSEAPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  topTerm <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"comparison"</span>,</span></span>
-<span class="r-in"><span>  direction <span class="op">=</span> <span class="st">"pos"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", topTerm = 3,     plot_type = "comparison", direction = "pos"):</span> No enrichment result found. You may perform `RunGSEA()` first</span>
-<span class="r-in"><span><span class="fu">GSEAPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  topTerm <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"comparison"</span>,</span></span>
-<span class="r-in"><span>  compare_only_sig <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", topTerm = 3,     plot_type = "comparison", compare_only_sig = TRUE):</span> No enrichment result found. You may perform `RunGSEA()` first</span>
-<span class="r-in"><span><span class="fu">GSEAPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", plot_type = "bar"):</span> No enrichment result found. You may perform `RunGSEA()` first</span>
-<span class="r-in"><span><span class="fu">GSEAPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span></span>
-<span class="r-in"><span>  direction <span class="op">=</span> <span class="st">"both"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", plot_type = "bar",     direction = "both"):</span> No enrichment result found. You may perform `RunGSEA()` first</span>
-<span class="r-in"><span><span class="fu">GSEAPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span></span>
-<span class="r-in"><span>  topTerm <span class="op">=</span> <span class="fl">20</span>,</span></span>
-<span class="r-in"><span>  direction <span class="op">=</span> <span class="st">"both"</span>,</span></span>
-<span class="r-in"><span>  palcolor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red3"</span>, <span class="st">"steelblue"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", group_use = "Ductal",     plot_type = "bar", topTerm = 20, direction = "both", palcolor = c("red3",         "steelblue")):</span> No enrichment result found. You may perform `RunGSEA()` first</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">GSEAPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"network"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", group_use = "Ductal",     plot_type = "network"):</span> No enrichment result found. You may perform `RunGSEA()` first</span>
-<span class="r-in"><span><span class="fu">GSEAPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"enrichmap"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", group_use = "Ductal",     plot_type = "enrichmap"):</span> No enrichment result found. You may perform `RunGSEA()` first</span>
-<span class="r-in"><span><span class="fu">GSEAPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"wordcloud"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", group_use = "Ductal",     plot_type = "wordcloud"):</span> No enrichment result found. You may perform `RunGSEA()` first</span>
-<span class="r-in"><span><span class="fu">GSEAPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"wordcloud"</span>,</span></span>
-<span class="r-in"><span>  word_type <span class="op">=</span> <span class="st">"feature"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", group_use = "Ductal",     plot_type = "wordcloud", word_type = "feature"):</span> No enrichment result found. You may perform `RunGSEA()` first</span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunDEtest.html">RunDEtest</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunGSEA.html">RunGSEA</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu">GSEAPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu">GSEAPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span>
+<span>  id_use <span class="op">=</span> <span class="st">"GO:0006412"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">p1</span></span>
+<span></span>
+<span><span class="fu">thisplot</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisplot/reference/panel_fix.html" class="external-link">panel_fix_overall</a></span><span class="op">(</span><span class="va">p1</span>, height <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">GSEAPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  topTerm <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"comparison"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu">GSEAPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  topTerm <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"comparison"</span>,</span>
+<span>  direction <span class="op">=</span> <span class="st">"pos"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu">GSEAPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  topTerm <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"comparison"</span>,</span>
+<span>  compare_only_sig <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu">GSEAPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"bar"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu">GSEAPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span>
+<span>  direction <span class="op">=</span> <span class="st">"both"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu">GSEAPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span>
+<span>  topTerm <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>  direction <span class="op">=</span> <span class="st">"both"</span>,</span>
+<span>  palcolor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red3"</span>, <span class="st">"steelblue"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">GSEAPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"network"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu">GSEAPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"enrichmap"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu">GSEAPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"wordcloud"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu">GSEAPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"wordcloud"</span>,</span>
+<span>  word_type <span class="op">=</span> <span class="st">"feature"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

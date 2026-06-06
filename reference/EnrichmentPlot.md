@@ -295,37 +295,10 @@ EnrichmentPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-01 09:12:33] Start standard processing workflow...
-#> ℹ [2026-06-01 09:12:34] Checking a list of <Seurat>...
-#> ! [2026-06-01 09:12:34] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-01 09:12:34] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-01 09:12:35] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-01 09:12:36] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-01 09:12:36] Number of available HVF: 2000
-#> ℹ [2026-06-01 09:12:36] Finished check
-#> ℹ [2026-06-01 09:12:36] Perform `Seurat::ScaleData()`
-#> ℹ [2026-06-01 09:12:36] Perform pca linear dimension reduction
-#> ℹ [2026-06-01 09:12:37] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-01 09:12:37] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-01 09:12:37] Reorder clusters...
-#> ℹ [2026-06-01 09:12:37] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-01 09:12:37] Perform umap nonlinear dimension reduction
-#> ℹ [2026-06-01 09:12:37] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-06-01 09:12:41] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-06-01 09:12:45] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-06-01 09:12:46] Data type is log-normalized
-#> ℹ [2026-06-01 09:12:46] Start differential expression test
-#> ℹ [2026-06-01 09:12:46] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-06-01 09:12:46] Using 1 core
-#> ⠙ [2026-06-01 09:12:46] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ✔ [2026-06-01 09:12:46] Completed 5 tasks in 1.2s
-#> 
-#> ℹ [2026-06-01 09:12:46] Building results
-#> ✔ [2026-06-01 09:12:47] Differential expression test completed
 
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
@@ -333,8 +306,6 @@ pancreas_sub <- RunEnrichment(
   group.by = "CellType",
   species = "Mus_musculus"
 )
-#> ℹ [2026-06-01 09:12:47] Start Enrichment analysis
-#> Error in filter_de_results(de_results = de_df, DE_threshold = DE_threshold): could not find function "filter_de_results"
 
 EnrichmentPlot(
   pancreas_sub,
@@ -343,7 +314,6 @@ EnrichmentPlot(
   group_use = "Ductal",
   plot_type = "bar"
 )
-#> Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     group_use = "Ductal", plot_type = "bar"): No enrichment result found. You may perform RunEnrichment first
 
 EnrichmentPlot(
   pancreas_sub,
@@ -353,7 +323,6 @@ EnrichmentPlot(
   color_by = "Groups",
   ncol = 2
 )
-#> Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     plot_type = "bar", color_by = "Groups", ncol = 2): No enrichment result found. You may perform RunEnrichment first
 
 EnrichmentPlot(
   pancreas_sub,
@@ -379,7 +348,6 @@ EnrichmentPlot(
     )
   )
 )
-#> Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     plot_type = "bar", id_use = list(Ductal = c("GO:0002181",         "GO:0045787", "GO:0006260", "GO:0050679"), `Ngn3-low-EP` = c("GO:0050678",         "GO:0051101", "GO:0072091", "GO:0006631"), `Ngn3-high-EP` = c("GO:0035270",         "GO:0030325", "GO:0008637", "GO:0030856"), `Pre-endocrine` = c("GO:0090276",         "GO:0031018", "GO:0030073", "GO:1903532"))): No enrichment result found. You may perform RunEnrichment first
 
 EnrichmentPlot(
   pancreas_sub,
@@ -388,7 +356,6 @@ EnrichmentPlot(
   topTerm = 3,
   plot_type = "comparison"
 )
-#> Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     topTerm = 3, plot_type = "comparison"): No enrichment result found. You may perform RunEnrichment first
 
 EnrichmentPlot(
   pancreas_sub,
@@ -398,7 +365,6 @@ EnrichmentPlot(
   plot_type = "comparison",
   compare_only_sig = TRUE
 )
-#> Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     topTerm = 3, plot_type = "comparison", compare_only_sig = TRUE): No enrichment result found. You may perform RunEnrichment first
 
 EnrichmentPlot(
   pancreas_sub,
@@ -407,7 +373,6 @@ EnrichmentPlot(
   group_use = c("Ductal", "Endocrine"),
   plot_type = "comparison"
 )
-#> Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     group_use = c("Ductal", "Endocrine"), plot_type = "comparison"): No enrichment result found. You may perform RunEnrichment first
 
 EnrichmentPlot(
   pancreas_sub,
@@ -417,7 +382,6 @@ EnrichmentPlot(
   plot_type = "bar",
   split_by = "Groups"
 )
-#> Error in EnrichmentPlot(pancreas_sub, db = c("GO_BP", "GO_CC"), group.by = "CellType",     group_use = c("Ductal", "Endocrine"), plot_type = "bar",     split_by = "Groups"): No enrichment result found. You may perform RunEnrichment first
 
 EnrichmentPlot(
   pancreas_sub,
@@ -428,7 +392,6 @@ EnrichmentPlot(
   split_by = "Database",
   color_by = "Groups"
 )
-#> Error in EnrichmentPlot(pancreas_sub, db = c("GO_BP", "GO_CC"), group.by = "CellType",     group_use = c("Ductal", "Endocrine"), plot_type = "bar",     split_by = "Database", color_by = "Groups"): No enrichment result found. You may perform RunEnrichment first
 
 EnrichmentPlot(
   pancreas_sub,
@@ -438,7 +401,6 @@ EnrichmentPlot(
   plot_type = "bar",
   split_by = c("Database", "Groups")
 )
-#> Error in EnrichmentPlot(pancreas_sub, db = c("GO_BP", "GO_CC"), group.by = "CellType",     group_use = c("Ductal", "Endocrine"), plot_type = "bar",     split_by = c("Database", "Groups")): No enrichment result found. You may perform RunEnrichment first
 
 EnrichmentPlot(
   pancreas_sub,
@@ -449,7 +411,6 @@ EnrichmentPlot(
   color_by = "Groups",
   palette = "Set1"
 )
-#> Error in EnrichmentPlot(pancreas_sub, db = c("GO_BP", "GO_CC"), group.by = "CellType",     plot_type = "bar", split_by = "Database", color_by = "Groups",     palette = "Set1"): No enrichment result found. You may perform RunEnrichment first
 
 EnrichmentPlot(
   pancreas_sub,
@@ -459,7 +420,6 @@ EnrichmentPlot(
   plot_type = "dot",
   palette = "GdRd"
 )
-#> Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     group_use = "Ductal", plot_type = "dot", palette = "GdRd"): No enrichment result found. You may perform RunEnrichment first
 
 EnrichmentPlot(
   pancreas_sub,
@@ -469,7 +429,6 @@ EnrichmentPlot(
   plot_type = "lollipop",
   palette = "GdRd"
 )
-#> Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     group_use = "Ductal", plot_type = "lollipop", palette = "GdRd"): No enrichment result found. You may perform RunEnrichment first
 
 EnrichmentPlot(
   pancreas_sub,
@@ -478,7 +437,6 @@ EnrichmentPlot(
   group_use = "Ductal",
   plot_type = "wordcloud"
 )
-#> Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     group_use = "Ductal", plot_type = "wordcloud"): No enrichment result found. You may perform RunEnrichment first
 
 EnrichmentPlot(
   pancreas_sub,
@@ -488,7 +446,6 @@ EnrichmentPlot(
   plot_type = "wordcloud",
   word_type = "feature"
 )
-#> Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     group_use = "Ductal", plot_type = "wordcloud", word_type = "feature"): No enrichment result found. You may perform RunEnrichment first
 
 EnrichmentPlot(
   pancreas_sub,
@@ -497,7 +454,6 @@ EnrichmentPlot(
   group_use = "Ductal",
   plot_type = "network"
 )
-#> Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     group_use = "Ductal", plot_type = "network"): No enrichment result found. You may perform RunEnrichment first
 
 EnrichmentPlot(
   pancreas_sub,
@@ -512,7 +468,6 @@ EnrichmentPlot(
     "GO:0030073"
   )
 )
-#> Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     group_use = "Ductal", plot_type = "network", id_use = c("GO:0050678",         "GO:0035270", "GO:0090276", "GO:0030073")): No enrichment result found. You may perform RunEnrichment first
 
 EnrichmentPlot(
   pancreas_sub,
@@ -522,7 +477,6 @@ EnrichmentPlot(
   plot_type = "network",
   network_layoutadjust = FALSE
 )
-#> Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     group_use = "Ductal", plot_type = "network", network_layoutadjust = FALSE): No enrichment result found. You may perform RunEnrichment first
 
 EnrichmentPlot(
   pancreas_sub,
@@ -535,7 +489,6 @@ EnrichmentPlot(
   theme_use = "theme_blank",
   theme_args = list(add_coord = FALSE)
 ) |> thisplot::panel_fix(height = 5)
-#> Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     group_use = "Ductal", plot_type = "network", topTerm = 4,     network_blendmode = "average", theme_use = "theme_blank",     theme_args = list(add_coord = FALSE)): No enrichment result found. You may perform RunEnrichment first
 
 EnrichmentPlot(
   pancreas_sub,
@@ -544,7 +497,6 @@ EnrichmentPlot(
   group_use = "Ductal",
   plot_type = "enrichmap"
 )
-#> Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     group_use = "Ductal", plot_type = "enrichmap"): No enrichment result found. You may perform RunEnrichment first
 
 EnrichmentPlot(
   pancreas_sub,
@@ -554,7 +506,6 @@ EnrichmentPlot(
   plot_type = "enrichmap",
   enrichmap_expand = c(2, 1)
 )
-#> Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     group_use = "Ductal", plot_type = "enrichmap", enrichmap_expand = c(2,         1)): No enrichment result found. You may perform RunEnrichment first
 
 EnrichmentPlot(
   pancreas_sub,
@@ -565,7 +516,6 @@ EnrichmentPlot(
   enrichmap_show_keyword = TRUE,
   character_width = 10
 )
-#> Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     group_use = "Ductal", plot_type = "enrichmap", enrichmap_show_keyword = TRUE,     character_width = 10): No enrichment result found. You may perform RunEnrichment first
 
 EnrichmentPlot(
   pancreas_sub,
@@ -581,7 +531,6 @@ EnrichmentPlot(
   theme_use = "theme_blank",
   theme_args = list(add_coord = FALSE)
 ) |> thisplot::panel_fix(height = 4)
-#> Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     group_use = "Ductal", plot_type = "enrichmap", topTerm = 200,     enrichmap_mark = "hull", enrichmap_label = "feature", enrlichmap_nlabel = 3,     character_width = 10, theme_use = "theme_blank", theme_args = list(add_coord = FALSE)): No enrichment result found. You may perform RunEnrichment first
 
 if (interactive()) {
   pancreas_sub <- RunEnrichment(

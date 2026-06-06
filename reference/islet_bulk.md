@@ -25,11 +25,6 @@ workflows.
 ``` r
 data(islet_bulk)
 SummarizedExperiment::assayNames(islet_bulk)
-#> [1] "counts"
 head(rownames(islet_bulk))
-#> [1] "A1BG"     "A1BG-AS1" "A1CF"     "A2M"      "A2M-AS1"  "A2ML1"   
 table(SummarizedExperiment::colData(islet_bulk)$condition)
-#> 
-#>     bfa control 
-#>       4       4 
 ```

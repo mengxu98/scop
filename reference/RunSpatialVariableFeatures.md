@@ -125,14 +125,11 @@ SpatialSpotPlot(
   features = Seurat::VariableFeatures(spatial, assay = "Spatial")[1:2]
 )
 
-
 spatial <- RunSpatialVariableFeatures(
   spatial,
   assay = "Spatial",
   nfeatures = 50
 )
-#> ◌ [2026-06-01 10:36:36] Running spatial variable feature detection
-#> ✔ [2026-06-01 10:36:36] Stored 50 spatial variable features
 SpatialSpotPlot(
   spatial,
   features = spatial@misc[["SpatialVariableFeatures"]][1:2]

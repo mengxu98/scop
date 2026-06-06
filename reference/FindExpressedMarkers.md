@@ -240,24 +240,6 @@ FindExpressedMarkers(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-01 09:18:22] Start standard processing workflow...
-#> ℹ [2026-06-01 09:18:23] Checking a list of <Seurat>...
-#> ! [2026-06-01 09:18:23] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-01 09:18:23] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-01 09:18:24] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-01 09:18:25] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-01 09:18:25] Number of available HVF: 2000
-#> ℹ [2026-06-01 09:18:25] Finished check
-#> ℹ [2026-06-01 09:18:25] Perform `Seurat::ScaleData()`
-#> ℹ [2026-06-01 09:18:26] Perform pca linear dimension reduction
-#> ℹ [2026-06-01 09:18:26] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-01 09:18:26] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-01 09:18:26] Reorder clusters...
-#> ℹ [2026-06-01 09:18:27] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-01 09:18:27] Perform umap nonlinear dimension reduction
-#> ℹ [2026-06-01 09:18:27] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-06-01 09:18:31] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-06-01 09:18:35] Standard processing workflow completed
 markers <- FindExpressedMarkers(
   pancreas_sub,
   cells.1 = SeuratObject::WhichCells(
@@ -266,13 +248,6 @@ markers <- FindExpressedMarkers(
   )
 )
 head(markers)
-#>               p_val avg_log2FC pct.1 pct.2    p_val_adj
-#> Hmgb2  1.964385e-37  2.1638592 1.000 0.526 3.142624e-33
-#> Tuba1b 3.652521e-33  1.8756996 0.986 0.801 5.843303e-29
-#> Ran    2.573020e-31  1.2068807 1.000 0.946 4.116317e-27
-#> H2afx  9.845758e-31  1.4231361 0.971 0.519 1.575124e-26
-#> Ptma   3.541885e-30  0.9021115 1.000 0.999 5.666307e-26
-#> Tubb5  1.550857e-29  1.4861586 1.000 0.940 2.481062e-25
 
 FeatureStatPlot(
   pancreas_sub,
@@ -280,6 +255,4 @@ FeatureStatPlot(
   group.by = "Phase",
   add_point = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
 ```

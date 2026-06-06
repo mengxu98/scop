@@ -287,18 +287,13 @@ panc8_sub <- RunScissor(
   alpha = 0.2,
   cutoff = 0.5
 )
-#> ℹ [2026-06-01 10:38:27] Build a temporary Scissor-style SNN graph
-#> ℹ [2026-06-01 10:38:32] Scissor alpha 0.2 selected 4 positive and 444 negative cells (28%)
-#> ✔ [2026-06-01 10:38:32] Scissor stored 4 Scissor+ and 444 Scissor- cells
 panc8_sub <- standard_scop(panc8_sub, verbose = FALSE)
-#> ℹ [2026-06-01 10:38:36] Skip `log1p()` because `layer = data` is not "counts"
 
 ScissorPlot(
   panc8_sub,
   xlab = "UMAP_1",
   ylab = "UMAP_2"
 )
-
 
 ScissorPlot(
   panc8_sub,
@@ -307,7 +302,6 @@ ScissorPlot(
   ylab = "UMAP_2"
 )
 
-
 ht <- ScissorPlot(
   panc8_sub,
   plot_type = "heatmap",
@@ -315,49 +309,38 @@ ht <- ScissorPlot(
 )
 ht$plot
 
-
 ScissorPlot(
   panc8_sub,
   plot_type = "bar",
   group.by = "celltype"
 )
-#> Error in theme_scop(): could not find function "theme_scop"
 
 ScissorPlot(
   panc8_sub,
   plot_type = "upset"
 )
-#> `geom_line()`: Each group consists of only one observation.
-#> ℹ Do you need to adjust the group aesthetic?
-#> `geom_line()`: Each group consists of only one observation.
-#> ℹ Do you need to adjust the group aesthetic?
-
 
 ScissorPlot(
   panc8_sub,
   plot_type = "rose",
   label = TRUE
 )
-#> Error in theme_scop(): could not find function "theme_scop"
 
 ScissorPlot(
   panc8_sub,
   plot_type = "ring",
   label = TRUE
 )
-#> Error in theme_scop(): could not find function "theme_scop"
 
 ScissorPlot(
   panc8_sub,
   plot_type = "pie",
   label = TRUE
 )
-#> Error in theme_scop(): could not find function "theme_scop"
 
 ScissorPlot(
   panc8_sub,
   plot_type = "dot",
   label = TRUE
 )
-#> Error in theme_scop(): could not find function "theme_scop"
 ```

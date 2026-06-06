@@ -366,39 +366,11 @@ DEtestPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-01 08:58:06] Start standard processing workflow...
-#> ℹ [2026-06-01 08:58:06] Checking a list of <Seurat>...
-#> ! [2026-06-01 08:58:06] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-01 08:58:06] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-01 08:58:07] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-01 08:58:08] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-01 08:58:08] Number of available HVF: 2000
-#> ℹ [2026-06-01 08:58:08] Finished check
-#> ℹ [2026-06-01 08:58:08] Perform `Seurat::ScaleData()`
-#> ℹ [2026-06-01 08:58:09] Perform pca linear dimension reduction
-#> ℹ [2026-06-01 08:58:09] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-01 08:58:09] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-01 08:58:09] Reorder clusters...
-#> ℹ [2026-06-01 08:58:10] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-01 08:58:10] Perform umap nonlinear dimension reduction
-#> ℹ [2026-06-01 08:58:10] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-06-01 08:58:13] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-06-01 08:58:17] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
   only.pos = FALSE
 )
-#> ℹ [2026-06-01 08:58:17] Data type is log-normalized
-#> ℹ [2026-06-01 08:58:17] Start differential expression test
-#> ℹ [2026-06-01 08:58:17] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-06-01 08:58:17] Using 1 core
-#> ⠙ [2026-06-01 08:58:17] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ⠹ [2026-06-01 08:58:17] Running for Ngn3-high-EP [2/5] ■■■■        40% | ETA:  …
-#> ✔ [2026-06-01 08:58:17] Completed 5 tasks in 1.4s
-#> 
-#> ℹ [2026-06-01 08:58:17] Building results
-#> ✔ [2026-06-01 08:58:18] Differential expression test completed
 
 DEtestPlot(
   pancreas_sub,
@@ -406,7 +378,6 @@ DEtestPlot(
   plot_type = "volcano",
   ncol = 2
 )
-
 
 DEtestPlot(
   pancreas_sub,
@@ -415,7 +386,6 @@ DEtestPlot(
   group_use = c("Ductal", "Endocrine"),
   ncol = 2
 )
-
 
 DEtestPlot(
   pancreas_sub,
@@ -428,7 +398,6 @@ DEtestPlot(
   DE_threshold = "abs(avg_log2FC) > 0.25 & p_val_adj < 0.05"
 )
 
-
 DEtestPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -438,15 +407,12 @@ DEtestPlot(
   ncol = 2
 )
 
-
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
   group.by = "CellType",
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-06-01 08:58:25] Start Enrichment analysis
-#> Error in filter_de_results(de_results = de_df, DE_threshold = DE_threshold): could not find function "filter_de_results"
 DEtestPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -461,20 +427,17 @@ DEtestPlot(
   ncol = 2
 )
 
-
 DEtestPlot(
   pancreas_sub,
   group.by = "CellType",
   plot_type = "manhattan"
 )
 
-
 DEtestPlot(
   pancreas_sub,
   group.by = "CellType",
   plot_type = "ring"
 )
-
 
 de_results1 <- pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox
 DEtestPlot(
@@ -483,37 +446,21 @@ DEtestPlot(
   ncol = 2
 )
 
-
 de_results2 <- Seurat::FindMarkers(
   pancreas_sub,
   group.by = "CellType",
   ident.1 = "Ductal",
   ident.2 = "Endocrine"
 )
-#> For a (much!) faster implementation of the Wilcoxon Rank Sum Test,
-#> (default method for FindMarkers) please install the presto package
-#> --------------------------------------------
-#> install.packages('devtools')
-#> devtools::install_github('immunogenomics/presto')
-#> --------------------------------------------
-#> After installation of presto, Seurat will automatically use the more 
-#> efficient implementation (no further action necessary).
-#> This message will be shown once per session
 DEtestPlot(
   res = de_results2,
   plot_type = "volcano"
 )
 
-
 de_results3 <- Seurat::FindAllMarkers(
   pancreas_sub,
   group.by = "CellType"
 )
-#> Calculating cluster Ductal
-#> Calculating cluster Ngn3-high-EP
-#> Calculating cluster Endocrine
-#> Calculating cluster Ngn3-low-EP
-#> Calculating cluster Pre-endocrine
 DEtestPlot(
   res = de_results3,
   plot_type = "volcano",
