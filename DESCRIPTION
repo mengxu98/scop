@@ -124,6 +124,7 @@ Suggests:
     SpatialExperiment,
     spacexr,
     tensorflow,
+    testthat (>= 3.0.0),
     tibble,
     tricycle,
     umap,
