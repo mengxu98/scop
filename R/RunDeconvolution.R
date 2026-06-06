@@ -713,8 +713,9 @@ RunBayesPrism <- function(
 #'
 #' @description
 #' Estimate immune cell proportions from a bulk expression matrix using the
-#' external `CIBERSORT` package. `sig_matrix = "LM22"` downloads the LM22
-#' signature matrix from `mengxu98/datasets` and caches it locally.
+#' external `CIBERSORT` package or the native `scop` C++ backend.
+#' `sig_matrix = "LM22"` downloads the LM22 signature matrix from
+#' `mengxu98/datasets` and caches it locally.
 #'
 #' @md
 #' @inheritParams RunDeconvolution
@@ -727,6 +728,11 @@ RunBayesPrism <- function(
 #' @param perm Number of CIBERSORT permutations.
 #' @param QN Whether CIBERSORT should use quantile normalization.
 #' @param absolute Passed to CIBERSORT when supported by the installed package.
+#' The native C++ backend currently returns relative fractions.
+#' @param backend CIBERSORT backend. `"r"` calls the external `CIBERSORT`
+#' package and `"cpp"` uses the native `scop` LIBSVM implementation.
+#' @param n_threads Number of threads used by the C++ backend.
+#' @param seed Random seed used by the C++ permutation backend.
 #'
 #' @return A deconvolution result bundle for matrix input, or the modified
 #' `SummarizedExperiment` object for `SummarizedExperiment` input.
@@ -776,9 +782,13 @@ RunCIBERSORT <- function(
   perm = 100,
   QN = TRUE,
   absolute = FALSE,
+  backend = c("r", "cpp"),
+  n_threads = 1L,
+  seed = 123L,
   verbose = TRUE,
   ...
 ) {
+  backend <- match.arg(backend)
   input_object <- object
   if (is.null(count_matrix)) {
     if (methods::is(object, "SummarizedExperiment")) {
@@ -801,6 +811,9 @@ RunCIBERSORT <- function(
     perm = perm,
     QN = QN,
     absolute = absolute,
+    backend = backend,
+    n_threads = n_threads,
+    seed = seed,
     verbose = verbose,
     ...
   )
@@ -810,7 +823,7 @@ RunCIBERSORT <- function(
     store <- list(
       input = list(
         bulk_assay = bulk_assay,
-        backend = "r"
+        backend = backend
       ),
       active_method = method_name,
       methods = stats::setNames(list(bundle), method_name),
@@ -834,23 +847,29 @@ run_cibersort_bundle <- function(
   perm = 100,
   QN = TRUE,
   absolute = FALSE,
+  backend = c("r", "cpp"),
+  n_threads = 1L,
+  seed = 123L,
   verbose = TRUE,
   ...
 ) {
-  if (!requireNamespace("CIBERSORT", quietly = TRUE)) {
-    log_message(
-      paste(
-        "{.pkg CIBERSORT} is required for {.fn RunCIBERSORT}.",
-        "Install it with {.code devtools::install_github('Moonerss/CIBERSORT')}",
-        "or provide another installed CIBERSORT-compatible backend."
-      ),
-      message_type = "error"
-    )
+  backend <- match.arg(backend)
+  perm <- as.integer(perm)
+  n_threads <- as.integer(n_threads)
+  seed <- as.integer(seed)
+  if (length(perm) != 1L || is.na(perm) || !is.finite(perm) || perm < 0L) {
+    log_message("{.arg perm} must be a non-negative integer.", message_type = "error")
+  }
+  if (length(n_threads) != 1L || is.na(n_threads) || !is.finite(n_threads) || n_threads < 1L) {
+    log_message("{.arg n_threads} must be a positive integer.", message_type = "error")
+  }
+  if (length(seed) != 1L || is.na(seed) || !is.finite(seed)) {
+    log_message("{.arg seed} must be an integer.", message_type = "error")
   }
   count_matrix <- cibersort_check_matrix(count_matrix, "count_matrix")
   signature <- resolve_cibersort_signature(sig_matrix, verbose = verbose)
   sig_matrix_use <- cibersort_check_matrix(signature$matrix, "sig_matrix")
-  common_genes <- intersect(rownames(sig_matrix_use), rownames(count_matrix))
+  common_genes <- sort(intersect(rownames(sig_matrix_use), rownames(count_matrix)))
   if (length(common_genes) == 0L) {
     log_message(
       "No shared genes between {.arg sig_matrix} and {.arg count_matrix}.",
@@ -865,6 +884,83 @@ run_cibersort_bundle <- function(
   }
   sig_matrix_use <- sig_matrix_use[common_genes, , drop = FALSE]
   count_matrix <- count_matrix[common_genes, , drop = FALSE]
+
+  if (identical(backend, "cpp")) {
+    fit <- tryCatch(
+      cibersort_cpp(
+        signature = as.matrix(sig_matrix_use),
+        mixture = as.matrix(count_matrix),
+        perm = perm,
+        QN = isTRUE(QN),
+        absolute = isTRUE(absolute),
+        n_threads = n_threads,
+        seed = seed,
+        verbose = verbose
+      ),
+      error = function(e) e
+    )
+    if (inherits(fit, "error")) {
+      return(list(
+        status = "failed",
+        reason = fit$message,
+        results = data.frame(),
+        details = list(
+          engine = "scop::cibersort_cpp",
+          package_backend = FALSE,
+          signature_source = signature$source
+        ),
+        parameters = list(
+          method = "CIBERSORT",
+          backend = backend,
+          perm = perm,
+          QN = QN,
+          absolute = absolute,
+          n_threads = n_threads,
+          seed = seed,
+          sig_matrix = signature$label
+        )
+      ))
+    }
+
+    parsed <- parse_cibersort_result(cbind(
+      as.data.frame(fit$proportion_matrix, check.names = FALSE),
+      as.data.frame(fit$statistics, check.names = FALSE)
+    ))
+    return(list(
+      status = "success",
+      reason = NULL,
+      results = prop_long(parsed$proportion_matrix, method_name = "CIBERSORT"),
+      details = list(
+        engine = "scop::cibersort_cpp",
+        package_backend = FALSE,
+        signature_source = signature$source,
+        proportion_matrix = parsed$proportion_matrix,
+        statistics = parsed$statistics,
+        raw_results = parsed$raw_results
+      ),
+      parameters = list(
+        method = "CIBERSORT",
+        backend = backend,
+        perm = perm,
+        QN = QN,
+        absolute = absolute,
+        n_threads = n_threads,
+        seed = seed,
+        sig_matrix = signature$label
+      )
+    ))
+  }
+
+  if (!requireNamespace("CIBERSORT", quietly = TRUE)) {
+    log_message(
+      paste(
+        "{.pkg CIBERSORT} is required for {.fn RunCIBERSORT} with {.arg backend = 'r'}.",
+        "Install it with {.code devtools::install_github('Moonerss/CIBERSORT')}",
+        "or use {.arg backend = 'cpp'}."
+      ),
+      message_type = "error"
+    )
+  }
 
   cibersort_fun <- get_namespace_fun("CIBERSORT", "cibersort")
   call_args <- utils::modifyList(
@@ -889,13 +985,17 @@ run_cibersort_bundle <- function(
       results = data.frame(),
       details = list(
         engine = "CIBERSORT::cibersort",
+        package_backend = TRUE,
         signature_source = signature$source
       ),
       parameters = list(
         method = "CIBERSORT",
+        backend = backend,
         perm = perm,
         QN = QN,
         absolute = absolute,
+        n_threads = n_threads,
+        seed = seed,
         sig_matrix = signature$label
       )
     ))
@@ -916,9 +1016,12 @@ run_cibersort_bundle <- function(
     ),
     parameters = list(
       method = "CIBERSORT",
+      backend = backend,
       perm = perm,
       QN = QN,
       absolute = absolute,
+      n_threads = n_threads,
+      seed = seed,
       sig_matrix = signature$label
     )
   )

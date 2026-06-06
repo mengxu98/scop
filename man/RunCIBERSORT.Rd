@@ -12,6 +12,9 @@ RunCIBERSORT(
   perm = 100,
   QN = TRUE,
   absolute = FALSE,
+  backend = c("r", "cpp"),
+  n_threads = 1L,
+  seed = 123L,
   verbose = TRUE,
   ...
 )
@@ -32,11 +35,21 @@ in columns. Used when \code{object} is not provided as a matrix.}
 
 \item{QN}{Whether CIBERSORT should use quantile normalization.}
 
-\item{absolute}{Passed to CIBERSORT when supported by the installed package.}
+\item{absolute}{Passed to CIBERSORT when supported by the installed package.
+The native C++ backend currently returns relative fractions.}
 
-\item{verbose}{Whether to print messages.}
+\item{backend}{CIBERSORT backend. \code{"r"} calls the external \code{CIBERSORT}
+package and \code{"cpp"} uses the native \code{scop} LIBSVM implementation.}
 
-\item{...}{Additional parameters forwarded to \code{CIBERSORT::cibersort()}.}
+\item{n_threads}{Number of threads used by the C++ backend.}
+
+\item{seed}{Random seed used by the C++ permutation backend.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
+
+\item{...}{Additional parameters forwarded to the internal deconvolution
+backend.}
 }
 \value{
 A deconvolution result bundle for matrix input, or the modified
@@ -44,8 +57,9 @@ A deconvolution result bundle for matrix input, or the modified
 }
 \description{
 Estimate immune cell proportions from a bulk expression matrix using the
-external \code{CIBERSORT} package. \code{sig_matrix = "LM22"} downloads the LM22
-signature matrix from \code{mengxu98/datasets} and caches it locally.
+external \code{CIBERSORT} package or the native \code{scop} C++ backend.
+\code{sig_matrix = "LM22"} downloads the LM22 signature matrix from
+\code{mengxu98/datasets} and caches it locally.
 }
 \examples{
 data(islet_bulk)

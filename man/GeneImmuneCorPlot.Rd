@@ -17,7 +17,7 @@ GeneImmuneCorPlot(
   abs_cor_breaks = c(0.2, 0.4),
   heatmap_colors = c("#2166AC", "#67A9CF", "#F7F7F7", "#F4A582", "#B2182B"),
   link_colors = c(Positive = "#E71D36", Negative = "#0073C2", Not = "grey82"),
-  link_sizes = c(">= 0.4" = 1.5, "0.2 - 0.4" = 0.8, "< 0.2" = 0.3),
+  link_sizes = c(`>= 0.4` = 1.5, `0.2 - 0.4` = 0.8, `< 0.2` = 0.3),
   title = NULL,
   subtitle = NULL,
   theme_use = "theme_scop",
@@ -26,11 +26,11 @@ GeneImmuneCorPlot(
 )
 }
 \arguments{
-\item{object}{Optional \code{Seurat}, \code{SummarizedExperiment},
-deconvolution bundle, or matrix-like object.}
+\item{object}{Optional \code{Seurat}, \code{SummarizedExperiment}, deconvolution bundle,
+or matrix-like object used to resolve expression and immune abundance data.}
 
-\item{gene.data}{Optional gene expression matrix with genes in rows and samples
-in columns.}
+\item{gene.data}{Optional gene expression matrix with genes in rows and
+samples in columns.}
 
 \item{immune.data}{Optional immune abundance matrix with samples in rows and
 immune cell types or signatures in columns.}
@@ -39,25 +39,29 @@ immune cell types or signatures in columns.}
 
 \item{immune.cols}{Metadata columns to extract from a \code{Seurat} object.}
 
-\item{assay, layer}{Expression assay and layer settings.}
+\item{assay}{Assay used for \code{Seurat} or \code{SummarizedExperiment} expression.}
 
-\item{cor_method}{Correlation method.}
+\item{layer}{Assay layer used for \code{Seurat} expression.}
+
+\item{cor_method}{Correlation method. Default is \code{"spearman"}.}
 
 \item{p_cutoff}{P-value cutoff used for positive/negative link categories.}
 
-\item{abs_cor_breaks}{Two numeric breakpoints for link width categories.}
+\item{abs_cor_breaks}{Two numeric breakpoints for link width categories.
+Default \code{c(0.2, 0.4)} creates \verb{< 0.2}, \code{0.2 - 0.4}, and \verb{>= 0.4}.}
 
 \item{heatmap_colors}{Continuous colors for immune-cell correlations.}
 
-\item{link_colors}{Colors for \code{Positive}, \code{Negative}, and \code{Not}
-links.}
+\item{link_colors}{Colors for \code{Positive}, \code{Negative}, and \code{Not} links.}
 
 \item{link_sizes}{Link sizes for strong, medium, and weak absolute
 correlations.}
 
 \item{title, subtitle}{Plot title and subtitle.}
 
-\item{theme_use, theme_args}{Theme settings.}
+\item{theme_use}{Theme function name.}
+
+\item{theme_args}{Additional theme arguments.}
 
 \item{verbose}{Whether to print progress messages.}
 }
@@ -65,7 +69,7 @@ correlations.}
 A \code{ggplot} object.
 }
 \description{
-Draw a linkET-style correlation butterfly plot. The heatmap shows immune-cell
-or immune-signature correlations, and curved links show correlations between
-target genes and immune abundances.
+Draw a linkET-style correlation butterfly plot. The heatmap shows
+immune-cell or immune-signature correlations, and curved links show
+correlations between target genes and immune abundances.
 }
