@@ -464,6 +464,53 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rctd_sparse_quality_cpp
+List rctd_sparse_quality_cpp(S4 st_counts, S4 ref_counts);
+RcppExport SEXP _scop_rctd_sparse_quality_cpp(SEXP st_countsSEXP, SEXP ref_countsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< S4 >::type st_counts(st_countsSEXP);
+    Rcpp::traits::input_parameter< S4 >::type ref_counts(ref_countsSEXP);
+    rcpp_result_gen = Rcpp::wrap(rctd_sparse_quality_cpp(st_counts, ref_counts));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rctd_normalize_weights_cpp
+NumericMatrix rctd_normalize_weights_cpp(NumericMatrix weights);
+RcppExport SEXP _scop_rctd_normalize_weights_cpp(SEXP weightsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type weights(weightsSEXP);
+    rcpp_result_gen = Rcpp::wrap(rctd_normalize_weights_cpp(weights));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rctd_metadata_cpp
+List rctd_metadata_cpp(NumericMatrix weights, CharacterVector all_spots);
+RcppExport SEXP _scop_rctd_metadata_cpp(SEXP weightsSEXP, SEXP all_spotsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type weights(weightsSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type all_spots(all_spotsSEXP);
+    rcpp_result_gen = Rcpp::wrap(rctd_metadata_cpp(weights, all_spots));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rctd_finalize_weights_cpp
+List rctd_finalize_weights_cpp(NumericMatrix weights, CharacterVector all_spots);
+RcppExport SEXP _scop_rctd_finalize_weights_cpp(SEXP weightsSEXP, SEXP all_spotsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type weights(weightsSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type all_spots(all_spotsSEXP);
+    rcpp_result_gen = Rcpp::wrap(rctd_finalize_weights_cpp(weights, all_spots));
+    return rcpp_result_gen;
+END_RCPP
+}
 // grnboost_tree
 DataFrame grnboost_tree(NumericMatrix expr, IntegerVector regulator_idx, IntegerVector target_idx, int n_rounds, double learning_rate, int max_edges_per_target, int max_depth, double max_features, double subsample, int early_stop_window_length, int random_seed, bool exclude_self);
 RcppExport SEXP _scop_grnboost_tree(SEXP exprSEXP, SEXP regulator_idxSEXP, SEXP target_idxSEXP, SEXP n_roundsSEXP, SEXP learning_rateSEXP, SEXP max_edges_per_targetSEXP, SEXP max_depthSEXP, SEXP max_featuresSEXP, SEXP subsampleSEXP, SEXP early_stop_window_lengthSEXP, SEXP random_seedSEXP, SEXP exclude_selfSEXP) {
@@ -1260,6 +1307,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_proportion_bootstrap_stats", (DL_FUNC) &_scop_proportion_bootstrap_stats, 5},
     {"_scop_pseudotime_velocity_knn", (DL_FUNC) &_scop_pseudotime_velocity_knn, 4},
     {"_scop_pseudotime_velocity_gradient", (DL_FUNC) &_scop_pseudotime_velocity_gradient, 5},
+    {"_scop_rctd_sparse_quality_cpp", (DL_FUNC) &_scop_rctd_sparse_quality_cpp, 2},
+    {"_scop_rctd_normalize_weights_cpp", (DL_FUNC) &_scop_rctd_normalize_weights_cpp, 1},
+    {"_scop_rctd_metadata_cpp", (DL_FUNC) &_scop_rctd_metadata_cpp, 2},
+    {"_scop_rctd_finalize_weights_cpp", (DL_FUNC) &_scop_rctd_finalize_weights_cpp, 2},
     {"_scop_grnboost_tree", (DL_FUNC) &_scop_grnboost_tree, 12},
     {"_scop_scenic_ctx_recovery", (DL_FUNC) &_scop_scenic_ctx_recovery, 3},
     {"_scop_scenic_ctx_auc_nes", (DL_FUNC) &_scop_scenic_ctx_auc_nes, 3},
