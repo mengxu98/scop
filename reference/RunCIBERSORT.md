@@ -1,8 +1,9 @@
 # Run CIBERSORT deconvolution
 
 Estimate immune cell proportions from a bulk expression matrix using the
-external `CIBERSORT` package. `sig_matrix = "LM22"` downloads the LM22
-signature matrix from `mengxu98/datasets` and caches it locally.
+external `CIBERSORT` package or the native `scop` C++ backend.
+`sig_matrix = "LM22"` downloads the LM22 signature matrix from
+`mengxu98/datasets` and caches it locally.
 
 ## Usage
 
@@ -15,6 +16,9 @@ RunCIBERSORT(
   perm = 100,
   QN = TRUE,
   absolute = FALSE,
+  backend = c("r", "cpp"),
+  n_threads = 1L,
+  seed = 123L,
   verbose = TRUE,
   ...
 )
@@ -51,16 +55,29 @@ RunCIBERSORT(
 
 - absolute:
 
-  Passed to CIBERSORT when supported by the installed package.
+  Passed to CIBERSORT when supported by the installed package. The
+  native C++ backend currently returns relative fractions.
+
+- backend:
+
+  CIBERSORT backend. `"r"` calls the external `CIBERSORT` package and
+  `"cpp"` uses the native `scop` LIBSVM implementation.
+
+- n_threads:
+
+  Number of threads used by the C++ backend.
+
+- seed:
+
+  Random seed used by the C++ permutation backend.
 
 - verbose:
 
-  Whether to print messages.
+  Whether to print the message. Default is `TRUE`.
 
 - ...:
 
-  Additional parameters forwarded to
-  [`CIBERSORT::cibersort()`](https://rdrr.io/pkg/CIBERSORT/man/CIBERSORT.html).
+  Additional parameters forwarded to the internal deconvolution backend.
 
 ## Value
 
