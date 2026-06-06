@@ -1,11 +1,6 @@
 # Plot scFEA flux Cohen's d volcano plots
 
-Compares scFEA module flux between two Seurat metadata groups, computes
-Wilcoxon adjusted p-values and Cohen's d, and draws one volcano plot per
-M168 pathway class. All modules are shown as grey background points;
-modules in the current pathway are colored red when Cohen's d is
-positive and blue when negative; threshold-passing modules in the
-current pathway are overlaid as larger green labeled points.
+Plot scFEA flux Cohen's d volcano plots
 
 ## Usage
 
@@ -32,19 +27,18 @@ scFEAVolcanoPlot(
 
 - srt:
 
-  A Seurat object returned by
-  [`RunscFEA()`](https://mengxu98.github.io/scop/reference/RunscFEA.md).
+  A Seurat object returned by \[RunscFEA()\].
 
 - group.by:
 
-  Metadata column defining groups. If `ident.1` and `ident.2` are both
-  `NULL`, each group is compared against all remaining cells.
+  Metadata column defining groups. If \`ident.1\` and \`ident.2\` are
+  both \`NULL\`, each group is compared against all remaining cells.
 
 - ident.1, ident.2:
 
-  Group names to compare. Cohen's d is `mean(ident.1) - mean(ident.2)`
-  divided by pooled standard deviation. If both are `NULL`, one-vs-rest
-  contrasts are generated automatically.
+  Group names to compare. Cohen's d is \`mean(ident.1) - mean(ident.2)\`
+  divided by pooled standard deviation. If both are \`NULL\`,
+  one-vs-rest contrasts are generated automatically.
 
 - assay:
 
@@ -60,7 +54,7 @@ scFEAVolcanoPlot(
 
 - pathways:
 
-  Optional `SM_anno` classes to plot.
+  Optional \`SM_anno\` classes to plot.
 
 - p_adj_cutoff:
 
@@ -74,8 +68,8 @@ scFEAVolcanoPlot(
 
 - combine:
 
-  Whether to combine pathway plots into 2 x 2 paged panels. If `FALSE`,
-  returns one plot per pathway.
+  Whether to combine pathway plots into 2 x 2 paged panels. If
+  \`FALSE\`, returns one plot per pathway.
 
 - width, height:
 
@@ -88,8 +82,8 @@ scFEAVolcanoPlot(
 
 ## Value
 
-For a single contrast, a paged list of ggplot2 plots when
-`combine = TRUE`, otherwise a named list of pathway ggplot2 plots.
-Statistics are stored in the `"data"` attribute. For automatic
+For a single contrast, a paged list of \`ggplot\` objects when \`combine
+= TRUE\`, otherwise a named list of pathway \`ggplot\` objects.
+Statistics are stored in the \`"data"\` attribute. For automatic
 one-vs-rest mode, a named list of single-contrast results is returned
-and combined statistics are stored in the outer `"data"` attribute.
+and combined statistics are stored in the outer \`"data"\` attribute.

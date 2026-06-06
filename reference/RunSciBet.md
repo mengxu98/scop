@@ -118,7 +118,6 @@ panc8_sub <- RenameFeatures(
   panc8_sub,
   newnames = genenames
 )
-#> ℹ [2026-06-01 10:24:49] Rename features for the assay: RNA
 
 data(pancreas_sub)
 pancreas_sub <- RunSciBet(
@@ -127,17 +126,13 @@ pancreas_sub <- RunSciBet(
   ref_group = "celltype",
   nfeatures = 200
 )
-#> ℹ [2026-06-01 10:24:50] Run native SciBet with 12928 candidate features and 13 reference classes
-#> ℹ [2026-06-01 10:24:50] SciBet annotations stored in metadata column "scibet_annotation"
 pancreas_sub <- standard_scop(pancreas_sub, verbose = FALSE)
-#> ℹ [2026-06-01 10:24:54] Skip `log1p()` because `layer = data` is not "counts"
 CellDimPlot(
   pancreas_sub,
   group.by = c("SubCellType", "scibet_annotation"),
   xlab = "UMAP_1",
   ylab = "UMAP_2"
 )
-
 
 ht <- CellCorHeatmap(
   srt_query = pancreas_sub,
@@ -147,13 +142,5 @@ ht <- CellCorHeatmap(
   width = 3,
   height = 3
 )
-#> ℹ [2026-06-01 10:25:04] Use the HVF to calculate distance metric
-#> ℹ [2026-06-01 10:25:04] Use [1] 2000 features to calculate distance.
-#> ℹ [2026-06-01 10:25:05] Detected query data type: "log_normalized_counts"
-#> ℹ [2026-06-01 10:25:05] Detected reference data type: "log_normalized_counts"
-#> ℹ [2026-06-01 10:25:05] Calculate similarity...
-#> ℹ [2026-06-01 10:25:05] Use raw method to find neighbors
-#> ℹ [2026-06-01 10:25:05] Predict cell type...
-
 ht$plot
 ```

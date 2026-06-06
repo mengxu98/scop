@@ -157,7 +157,6 @@ BenchmarkPlot(
   plot_type = "bar"
 )
 
-
 data("pbmcmultiome_sub", package = "scop")
 pbmcmultiome_sub[["MethodA_batch_LISI"]] <-
   seq_len(ncol(pbmcmultiome_sub)) / ncol(pbmcmultiome_sub)
@@ -168,5 +167,4 @@ BenchmarkPlot(
   features = c("MethodA_batch_LISI", "MethodB_batch_LISI"),
   plot_type = "boxplot"
 )
-
 ```

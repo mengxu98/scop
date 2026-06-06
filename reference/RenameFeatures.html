@@ -72,24 +72,20 @@ Default is <code>TRUE</code>.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "A1CF"   "A4GALT" "AAAS"   "AACS"   "AADAC"  "AADAT" </span>
-<span class="r-in"><span><span class="co"># Simply convert genes from human to mouse and preprocess the data</span></span></span>
-<span class="r-in"><span><span class="va">genenames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/make.unique.html" class="external-link">make.unique</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu">thisutils</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisutils/reference/capitalize.html" class="external-link">capitalize</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    force_tolower <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">genenames</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">panc8_rename</span> <span class="op">&lt;-</span> <span class="fu">RenameFeatures</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
-<span class="r-in"><span>  newnames <span class="op">=</span> <span class="va">genenames</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:42:42] Rename features for the assay: RNA</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">panc8_rename</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "A1cf"   "A4galt" "Aaas"   "Aacs"   "Aadac"  "Aadat" </span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># Simply convert genes from human to mouse and preprocess the data</span></span>
+<span><span class="va">genenames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/make.unique.html" class="external-link">make.unique</a></span><span class="op">(</span></span>
+<span>  <span class="fu">thisutils</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisutils/reference/capitalize.html" class="external-link">capitalize</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span>,</span>
+<span>    force_tolower <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">genenames</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span>
+<span><span class="va">panc8_rename</span> <span class="op">&lt;-</span> <span class="fu">RenameFeatures</span><span class="op">(</span></span>
+<span>  <span class="va">panc8_sub</span>,</span>
+<span>  newnames <span class="op">=</span> <span class="va">genenames</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">panc8_rename</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

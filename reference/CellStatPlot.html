@@ -328,334 +328,264 @@ Default is <code>11</code>.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 08:54:36] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 08:54:36] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-01 08:54:37] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 08:54:37] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 08:54:38] Perform `Seurat::FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 08:54:38] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 08:54:38] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 08:54:38] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 08:54:38] Perform `Seurat::ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 08:54:39] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 08:54:39] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 08:54:40] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 08:54:40] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 08:54:40] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 08:54:40] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 08:54:40] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 08:54:43] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-01 08:54:46] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
-<span class="r-in"><span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
-<span class="r-in"><span>  label <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">p1</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">thisplot</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisplot/reference/panel_fix.html" class="external-link">panel_fix</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">p1</span>,</span></span>
-<span class="r-in"><span>  height <span class="op">=</span> <span class="fl">2</span>, width <span class="op">=</span> <span class="fl">3</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-2.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
-<span class="r-in"><span>  stat_type <span class="op">=</span> <span class="st">"count"</span>,</span></span>
-<span class="r-in"><span>  position <span class="op">=</span> <span class="st">"dodge"</span>,</span></span>
-<span class="r-in"><span>  label <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-3.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
-<span class="r-in"><span>  bg.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  palette <span class="op">=</span> <span class="st">"Set1"</span>,</span></span>
-<span class="r-in"><span>  stat_type <span class="op">=</span> <span class="st">"count"</span>,</span></span>
-<span class="r-in"><span>  position <span class="op">=</span> <span class="st">"dodge"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-4.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-5.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"rose"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-6.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"ring"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1 row containing missing values or values outside the scale range</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_col()`).</span>
-<span class="r-plt img"><img src="CellStatPlot-7.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"pie"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-8.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"dot"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-9.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-10.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"rose"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-11.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"ring"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1 row containing missing values or values outside the scale range</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_col()`).</span>
-<span class="r-plt img"><img src="CellStatPlot-12.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"area"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-13.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"dot"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-14.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"trend"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-15.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"trend_alluvial"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-16.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span></span>
-<span class="r-in"><span>  individual <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-17.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  stat_type <span class="op">=</span> <span class="st">"count"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-18.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  stat_type <span class="op">=</span> <span class="st">"count"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"rose"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-19.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  stat_type <span class="op">=</span> <span class="st">"count"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"ring"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1 row containing missing values or values outside the scale range</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_col()`).</span>
-<span class="r-plt img"><img src="CellStatPlot-20.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  stat_type <span class="op">=</span> <span class="st">"count"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"area"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-21.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  stat_type <span class="op">=</span> <span class="st">"count"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"dot"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-22.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  stat_type <span class="op">=</span> <span class="st">"count"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"trend"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-23.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  stat_type <span class="op">=</span> <span class="st">"count"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span></span>
-<span class="r-in"><span>  position <span class="op">=</span> <span class="st">"dodge"</span>,</span></span>
-<span class="r-in"><span>  label <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-24.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  stat_type <span class="op">=</span> <span class="st">"count"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"rose"</span>,</span></span>
-<span class="r-in"><span>  position <span class="op">=</span> <span class="st">"dodge"</span>,</span></span>
-<span class="r-in"><span>  label <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="CellStatPlot-25.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  stat_type <span class="op">=</span> <span class="st">"count"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"ring"</span>,</span></span>
-<span class="r-in"><span>  position <span class="op">=</span> <span class="st">"dodge"</span>,</span></span>
-<span class="r-in"><span>  label <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1 row containing missing values or values outside the scale range</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_col()`).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1 row containing missing values or values outside the scale range</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_text_repel()`).</span>
-<span class="r-plt img"><img src="CellStatPlot-26.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CellType"</span>, <span class="st">"Phase"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"sankey"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-01 08:55:05] `stat_type` is forcibly set to <span style="color: #0000BB;">"count"</span> when plot <span style="color: #0000BB;">"sankey"</span>, <span style="color: #0000BB;">"chord"</span>, <span style="color: #0000BB;">"venn"</span>, and <span style="color: #0000BB;">"upset"</span></span>
-<span class="r-plt img"><img src="CellStatPlot-27.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CellType"</span>, <span class="st">"Phase"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"chord"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-01 08:55:06] `stat_type` is forcibly set to <span style="color: #0000BB;">"count"</span> when plot <span style="color: #0000BB;">"sankey"</span>, <span style="color: #0000BB;">"chord"</span>, <span style="color: #0000BB;">"venn"</span>, and <span style="color: #0000BB;">"upset"</span></span>
-<span class="r-plt img"><img src="CellStatPlot-28.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CellType"</span>, <span class="st">"Phase"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"venn"</span>,</span></span>
-<span class="r-in"><span>  stat_level <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    CellType <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ductal"</span>, <span class="st">"Ngn3-low-EP"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    Phase <span class="op">=</span> <span class="st">"S"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-01 08:55:12] `stat_type` is forcibly set to <span style="color: #0000BB;">"count"</span> when plot <span style="color: #0000BB;">"sankey"</span>, <span style="color: #0000BB;">"chord"</span>, <span style="color: #0000BB;">"venn"</span>, and <span style="color: #0000BB;">"upset"</span></span>
-<span class="r-plt img"><img src="CellStatPlot-29.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span><span class="op">$</span><span class="va">Progenitor</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">$</span><span class="va">CellType</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ngn3-low-EP"</span>, <span class="st">"Ngn3-high-EP"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span><span class="op">$</span><span class="va">G2M</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">$</span><span class="va">Phase</span> <span class="op">==</span> <span class="st">"G2M"</span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span><span class="op">$</span><span class="va">Fancb_Expressed</span> <span class="op">&lt;-</span> <span class="fu"><a href="GetAssayData5.html">GetAssayData5</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"RNA"</span>,</span></span>
-<span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"counts"</span></span></span>
-<span class="r-in"><span><span class="op">)</span><span class="op">[</span><span class="st">"Fancb"</span>, <span class="op">]</span> <span class="op">&gt;</span> <span class="fl">0</span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span><span class="op">$</span><span class="va">Dlg3_Expressed</span> <span class="op">&lt;-</span> <span class="fu"><a href="GetAssayData5.html">GetAssayData5</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"RNA"</span>,</span></span>
-<span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"counts"</span></span></span>
-<span class="r-in"><span><span class="op">)</span><span class="op">[</span><span class="st">"Dlg3"</span>, <span class="op">]</span> <span class="op">&gt;</span> <span class="fl">0</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="st">"Progenitor"</span>, <span class="st">"G2M"</span>, <span class="st">"Fancb_Expressed"</span>, <span class="st">"Dlg3_Expressed"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"venn"</span>,</span></span>
-<span class="r-in"><span>  stat_level <span class="op">=</span> <span class="st">"TRUE"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-01 08:55:12] `stat_type` is forcibly set to <span style="color: #0000BB;">"count"</span> when plot <span style="color: #0000BB;">"sankey"</span>, <span style="color: #0000BB;">"chord"</span>, <span style="color: #0000BB;">"venn"</span>, and <span style="color: #0000BB;">"upset"</span></span>
-<span class="r-plt img"><img src="CellStatPlot-30.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="st">"Progenitor"</span>, <span class="st">"G2M"</span>, <span class="st">"Fancb_Expressed"</span>, <span class="st">"Dlg3_Expressed"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"upset"</span>,</span></span>
-<span class="r-in"><span>  stat_level <span class="op">=</span> <span class="st">"TRUE"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-01 08:55:16] `stat_type` is forcibly set to <span style="color: #0000BB;">"count"</span> when plot <span style="color: #0000BB;">"sankey"</span>, <span style="color: #0000BB;">"chord"</span>, <span style="color: #0000BB;">"venn"</span>, and <span style="color: #0000BB;">"upset"</span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Please use `linewidth` instead.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The deprecated feature was likely used in the <span style="color: #0000BB;">ggupset</span> package.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span>   Please report the issue at <span style="color: #0000BB; font-style: italic;">&lt;https://github.com/const-ae/ggupset/issues&gt;</span>.</span>
-<span class="r-plt img"><img src="CellStatPlot-31.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span><span class="op">$</span><span class="va">Progenitor</span> <span class="op">==</span> <span class="st">"FALSE"</span> <span class="op">&amp;</span></span></span>
-<span class="r-in"><span>    <span class="va">pancreas_sub</span><span class="op">$</span><span class="va">G2M</span> <span class="op">==</span> <span class="st">"FALSE"</span> <span class="op">&amp;</span></span></span>
-<span class="r-in"><span>    <span class="va">pancreas_sub</span><span class="op">$</span><span class="va">Fancb_Expressed</span> <span class="op">==</span> <span class="st">"TRUE"</span> <span class="op">&amp;</span></span></span>
-<span class="r-in"><span>    <span class="va">pancreas_sub</span><span class="op">$</span><span class="va">Dlg3_Expressed</span> <span class="op">==</span> <span class="st">"FALSE"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 6</span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
+<span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span>
+<span>  label <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">p1</span></span>
+<span></span>
+<span><span class="fu">thisplot</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisplot/reference/panel_fix.html" class="external-link">panel_fix</a></span><span class="op">(</span></span>
+<span>  <span class="va">p1</span>,</span>
+<span>  height <span class="op">=</span> <span class="fl">2</span>, width <span class="op">=</span> <span class="fl">3</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span>
+<span>  stat_type <span class="op">=</span> <span class="st">"count"</span>,</span>
+<span>  position <span class="op">=</span> <span class="st">"dodge"</span>,</span>
+<span>  label <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span>
+<span>  bg.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  palette <span class="op">=</span> <span class="st">"Set1"</span>,</span>
+<span>  stat_type <span class="op">=</span> <span class="st">"count"</span>,</span>
+<span>  position <span class="op">=</span> <span class="st">"dodge"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"bar"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"rose"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"ring"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"pie"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"dot"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"bar"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"rose"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"ring"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"area"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"dot"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"trend"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"trend_alluvial"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span>
+<span>  individual <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  stat_type <span class="op">=</span> <span class="st">"count"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"bar"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  stat_type <span class="op">=</span> <span class="st">"count"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"rose"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  stat_type <span class="op">=</span> <span class="st">"count"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"ring"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  stat_type <span class="op">=</span> <span class="st">"count"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"area"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  stat_type <span class="op">=</span> <span class="st">"count"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"dot"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  stat_type <span class="op">=</span> <span class="st">"count"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"trend"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  stat_type <span class="op">=</span> <span class="st">"count"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span>
+<span>  position <span class="op">=</span> <span class="st">"dodge"</span>,</span>
+<span>  label <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  stat_type <span class="op">=</span> <span class="st">"count"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"rose"</span>,</span>
+<span>  position <span class="op">=</span> <span class="st">"dodge"</span>,</span>
+<span>  label <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  stat_type <span class="op">=</span> <span class="st">"count"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"ring"</span>,</span>
+<span>  position <span class="op">=</span> <span class="st">"dodge"</span>,</span>
+<span>  label <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CellType"</span>, <span class="st">"Phase"</span><span class="op">)</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"sankey"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CellType"</span>, <span class="st">"Phase"</span><span class="op">)</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"chord"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CellType"</span>, <span class="st">"Phase"</span><span class="op">)</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"venn"</span>,</span>
+<span>  stat_level <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    CellType <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ductal"</span>, <span class="st">"Ngn3-low-EP"</span><span class="op">)</span>,</span>
+<span>    Phase <span class="op">=</span> <span class="st">"S"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pancreas_sub</span><span class="op">$</span><span class="va">Progenitor</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">$</span><span class="va">CellType</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ngn3-low-EP"</span>, <span class="st">"Ngn3-high-EP"</span><span class="op">)</span></span>
+<span><span class="va">pancreas_sub</span><span class="op">$</span><span class="va">G2M</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">$</span><span class="va">Phase</span> <span class="op">==</span> <span class="st">"G2M"</span></span>
+<span><span class="va">pancreas_sub</span><span class="op">$</span><span class="va">Fancb_Expressed</span> <span class="op">&lt;-</span> <span class="fu"><a href="GetAssayData5.html">GetAssayData5</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  assay <span class="op">=</span> <span class="st">"RNA"</span>,</span>
+<span>  layer <span class="op">=</span> <span class="st">"counts"</span></span>
+<span><span class="op">)</span><span class="op">[</span><span class="st">"Fancb"</span>, <span class="op">]</span> <span class="op">&gt;</span> <span class="fl">0</span></span>
+<span><span class="va">pancreas_sub</span><span class="op">$</span><span class="va">Dlg3_Expressed</span> <span class="op">&lt;-</span> <span class="fu"><a href="GetAssayData5.html">GetAssayData5</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  assay <span class="op">=</span> <span class="st">"RNA"</span>,</span>
+<span>  layer <span class="op">=</span> <span class="st">"counts"</span></span>
+<span><span class="op">)</span><span class="op">[</span><span class="st">"Dlg3"</span>, <span class="op">]</span> <span class="op">&gt;</span> <span class="fl">0</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Progenitor"</span>, <span class="st">"G2M"</span>, <span class="st">"Fancb_Expressed"</span>, <span class="st">"Dlg3_Expressed"</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"venn"</span>,</span>
+<span>  stat_level <span class="op">=</span> <span class="st">"TRUE"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">CellStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Progenitor"</span>, <span class="st">"G2M"</span>, <span class="st">"Fancb_Expressed"</span>, <span class="st">"Dlg3_Expressed"</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"upset"</span>,</span>
+<span>  stat_level <span class="op">=</span> <span class="st">"TRUE"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span><span class="op">$</span><span class="va">Progenitor</span> <span class="op">==</span> <span class="st">"FALSE"</span> <span class="op">&amp;</span></span>
+<span>    <span class="va">pancreas_sub</span><span class="op">$</span><span class="va">G2M</span> <span class="op">==</span> <span class="st">"FALSE"</span> <span class="op">&amp;</span></span>
+<span>    <span class="va">pancreas_sub</span><span class="op">$</span><span class="va">Fancb_Expressed</span> <span class="op">==</span> <span class="st">"TRUE"</span> <span class="op">&amp;</span></span>
+<span>    <span class="va">pancreas_sub</span><span class="op">$</span><span class="va">Dlg3_Expressed</span> <span class="op">==</span> <span class="st">"FALSE"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

@@ -136,7 +136,6 @@ pancreas_sub <- standard_scop(
   pancreas_sub,
   verbose = FALSE
 )
-#> ℹ [2026-06-01 10:05:03] Skip `log1p()` because `layer = data` is not "counts"
 
 pancreas_sub <- RunDorothea(
   pancreas_sub,
@@ -147,33 +146,15 @@ pancreas_sub <- RunDorothea(
   minsize = 5,
   new_assay = FALSE
 )
-#> ℹ [2026-06-01 10:05:12] Run DoRothEA/decoupleR with 12895 regulon edges
-#> ℹ [2026-06-01 10:05:23] DoRothEA TF activity scores stored in <Seurat> metadata
 
 pancreas_sub@tools$Dorothea$regulon_summary
-#>   n_tfs n_targets n_edges confidence
-#> 1   273      5130   12895      A,B,C
 head(pancreas_sub@tools$Dorothea$result)
-#>   statistic source        condition     score      p_value
-#> 1       ulm     Ar AAACCTGAGCCTTGAT 1.9230738 0.0544885134
-#> 2       ulm     Ar AAACCTGGTAAGTGGC 3.8375556 0.0001247429
-#> 3       ulm     Ar AAACGGGAGATATGGT 2.3175899 0.0204841737
-#> 4       ulm     Ar AAACGGGCAAAGAATC 0.9565534 0.3388071679
-#> 5       ulm     Ar AAACGGGGTACAGTTC 0.6864447 0.4924426684
-#> 6       ulm     Ar AAACGGGTCAGCTCTC 1.0246312 0.3055527415
 
 activity_cols <- head(
   grep("^dorothea_", colnames(pancreas_sub@meta.data), value = TRUE),
   2
 )
 head(pancreas_sub@meta.data[, activity_cols, drop = FALSE])
-#>                  dorothea_Ar dorothea_Arid2
-#> AAACCTGAGCCTTGAT   1.9230738     -0.5482112
-#> AAACCTGGTAAGTGGC   3.8375556     -0.2029179
-#> AAACGGGAGATATGGT   2.3175899     -0.1763966
-#> AAACGGGCAAAGAATC   0.9565534     -0.5784380
-#> AAACGGGGTACAGTTC   0.6864447     -0.2284842
-#> AAACGGGTCAGCTCTC   1.0246312     -0.6278209
 
 FeatureDimPlot(
   pancreas_sub,

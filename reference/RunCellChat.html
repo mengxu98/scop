@@ -136,59 +136,32 @@ Default is <code>TRUE</code>.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:47:56] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:47:57] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-01 09:47:57] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:47:57] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:47:59] Perform `Seurat::FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:47:59] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:47:59] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:47:59] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:47:59] Perform `Seurat::ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:48:00] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:48:00] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:48:01] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:48:01] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:48:01] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:48:01] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:48:01] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:48:05] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-01 09:48:10] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunCellChat</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:48:10] Start <span style="color: #0000BB;">CellChat</span> analysis</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in loadNamespace(name):</span> there is no package called ‘CellChat’</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="CCCNetworkPlot.html">CCCNetworkPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  method <span class="op">=</span> <span class="st">"CellChat"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bipartite"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in get_dataset_object(srt, condition = condition, dataset = dataset):</span> Unable to determine which CellChat object to plot. Please specify</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> `condition`</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="CCCHeatmap.html">CCCHeatmap</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  method <span class="op">=</span> <span class="st">"CellChat"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"heatmap"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in get_dataset_object(srt, condition = condition, dataset = dataset):</span> Unable to determine which CellChat object to plot. Please specify</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> `condition`</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="CCCStatPlot.html">CCCStatPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  method <span class="op">=</span> <span class="st">"CellChat"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"violin"</span>,</span></span>
-<span class="r-in"><span>  top_n <span class="op">=</span> <span class="fl">50</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in get_dataset_object(srt, condition = condition, dataset = dataset):</span> Unable to determine which CellChat object to plot. Please specify</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> `condition`</span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunCellChat</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="CCCNetworkPlot.html">CCCNetworkPlot</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"CellChat"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"bipartite"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="CCCHeatmap.html">CCCHeatmap</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"CellChat"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"heatmap"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="CCCStatPlot.html">CCCStatPlot</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"CellChat"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"violin"</span>,</span>
+<span>  top_n <span class="op">=</span> <span class="fl">50</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

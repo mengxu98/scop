@@ -195,7 +195,8 @@ RunPalantir(
 
 - plot_format:
 
-  Format for saved plots: `"png"` (default), `"pdf"`, or `"svg"`.
+  Format for saved plots: `"pdf"`, `"png"`, or `"svg"`. Default is
+  `"pdf"`.
 
 - plot_dpi:
 
@@ -203,11 +204,11 @@ RunPalantir(
 
 - plot_prefix:
 
-  Prefix for saved plot filenames. Default is "cellrank".
+  Prefix for saved plot filenames. Default is `"palantir"`.
 
 - dirpath:
 
-  The directory to save the plots. Default is `"./cellrank"`.
+  The directory to save the plots. Default is `"./"`.
 
 - return_seurat:
 

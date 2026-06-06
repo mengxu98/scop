@@ -263,41 +263,14 @@ ProportionTestPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-01 09:41:32] Start standard processing workflow...
-#> ℹ [2026-06-01 09:41:33] Checking a list of <Seurat>...
-#> ! [2026-06-01 09:41:33] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-01 09:41:33] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-01 09:41:34] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-01 09:41:35] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-01 09:41:35] Number of available HVF: 2000
-#> ℹ [2026-06-01 09:41:35] Finished check
-#> ℹ [2026-06-01 09:41:35] Perform `Seurat::ScaleData()`
-#> ℹ [2026-06-01 09:41:35] Perform pca linear dimension reduction
-#> ℹ [2026-06-01 09:41:36] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-01 09:41:36] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-01 09:41:36] Reorder clusters...
-#> ℹ [2026-06-01 09:41:36] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-01 09:41:36] Perform umap nonlinear dimension reduction
-#> ℹ [2026-06-01 09:41:36] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-06-01 09:41:41] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-06-01 09:41:45] Standard processing workflow completed
 pancreas_sub <- RunProportionTest(
   pancreas_sub,
   group.by = "CellType",
   split.by = "Phase",
   proportion_method = "permutation"
 )
-#> ℹ [2026-06-01 09:41:45] Start proportion test ("permutation")
-#> ℹ [2026-06-01 09:41:45] Running comparison: "S" vs "G1"
-#> ℹ [2026-06-01 09:41:46] Running comparison: "G2M" vs "G1"
-#> ℹ [2026-06-01 09:41:48] Running comparison: "G2M" vs "S"
-#> ℹ [2026-06-01 09:41:48] Running comparison: "G1" vs "S"
-#> ℹ [2026-06-01 09:41:48] Running comparison: "G1" vs "G2M"
-#> ℹ [2026-06-01 09:41:48] Running comparison: "S" vs "G2M"
-#> ✔ [2026-06-01 09:41:48] Proportion test completed ("permutation")
 
 ProportionTestPlot(pancreas_sub)
-
 
 ProportionTestPlot(
   pancreas_sub,

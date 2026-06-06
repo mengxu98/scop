@@ -705,206 +705,112 @@ Default is <code>TRUE</code>.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:14:10] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:14:11] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-01 09:14:11] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:14:11] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:14:12] Perform `Seurat::FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:14:12] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:14:13] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:14:13] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:14:13] Perform `Seurat::ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:14:13] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:14:13] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:14:14] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:14:14] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:14:14] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:14:14] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:14:14] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:14:18] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-01 09:14:22] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunDEtest.html">RunDEtest</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:14:22] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:14:22] Start differential expression test</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:14:22] Find all markers(wilcox) among [1] 5 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:14:22] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-06-01 09:14:22] Running for <span style="color: #0000BB;">Ductal </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■</span>          20% | ETA: <span style="color: #0000BB;"> 1s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠹</span> [2026-06-01 09:14:22] Running for <span style="color: #0000BB;">Ngn3-low-EP </span>[<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■■■■■■■</span>    80% | ETA: <span style="color: #0000BB;"> 0s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-01 09:14:22] Completed <span style="color: #0000BB;">5</span> tasks in <span style="color: #0000BB;">1.2s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:14:22] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-01 09:14:24] Differential expression test completed</span>
-<span class="r-in"><span><span class="va">de_filter</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">DEtest_CellType</span><span class="op">$</span><span class="va">AllMarkers_wilcox</span>,</span></span>
-<span class="r-in"><span>  <span class="va">p_val_adj</span> <span class="op">&lt;</span> <span class="fl">0.05</span> <span class="op">&amp;</span> <span class="va">avg_log2FC</span> <span class="op">&gt;</span> <span class="fl">1</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">ht1</span> <span class="op">&lt;-</span> <span class="fu">FeatureHeatmap</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  features <span class="op">=</span> <span class="va">de_filter</span><span class="op">$</span><span class="va">gene</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  split.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
-<span class="r-in"><span>  cell_split_palette <span class="op">=</span> <span class="st">"Dark2"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> `use_raster` is automatically set to TRUE for a matrix with more than</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2000 rows. You can control `use_raster` argument by explicitly setting</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> TRUE/FALSE to it.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Set `ht_opt$message = FALSE` to turn off this message.</span>
-<span class="r-in"><span><span class="va">ht1</span><span class="op">$</span><span class="va">plot</span></span></span>
-<span class="r-plt img"><img src="FeatureHeatmap-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">thisplot</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisplot/reference/panel_fix.html" class="external-link">panel_fix</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">ht1</span><span class="op">$</span><span class="va">plot</span>,</span></span>
-<span class="r-in"><span>  height <span class="op">=</span> <span class="fl">4</span>,</span></span>
-<span class="r-in"><span>  width <span class="op">=</span> <span class="fl">6</span>,</span></span>
-<span class="r-in"><span>  raster <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>  dpi <span class="op">=</span> <span class="fl">50</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="FeatureHeatmap-2.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">ht2</span> <span class="op">&lt;-</span> <span class="fu">FeatureHeatmap</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  features <span class="op">=</span> <span class="va">de_filter</span><span class="op">$</span><span class="va">gene</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CellType"</span>, <span class="st">"SubCellType"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  n_split <span class="op">=</span> <span class="fl">4</span>,</span></span>
-<span class="r-in"><span>  cluster_rows <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>  cluster_row_slices <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>  cluster_columns <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>  cluster_column_slices <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>  ht_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>row_gap <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">0</span>, <span class="st">"mm"</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  use_raster <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:14:38] The size of the heatmap is fixed because certain elements are not scalable.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:14:38] The width and height of the heatmap are determined by the size of the current viewport.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:14:38] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
-<span class="r-plt img"><img src="FeatureHeatmap-3.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="va">ht2</span><span class="op">$</span><span class="va">plot</span></span></span>
-<span class="r-plt img"><img src="FeatureHeatmap-4.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">ht3</span> <span class="op">&lt;-</span> <span class="fu">FeatureHeatmap</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  features <span class="op">=</span> <span class="va">de_filter</span><span class="op">$</span><span class="va">gene</span>,</span></span>
-<span class="r-in"><span>  feature_split <span class="op">=</span> <span class="va">de_filter</span><span class="op">$</span><span class="va">group1</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  anno_terms <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>  anno_keys <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>  anno_features <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:15:08] Start <span style="color: #0000BB;">Enrichment</span> analysis</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:15:08] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:15:09] Loading cached: <span style="color: #0000BB;">GO_BP</span> version: <span style="color: #0000BB;">3.23.0 nterm:14957</span> created: <span style="color: #0000BB;">2026-06-01 08:53:04</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:15:10] Permform enrichment...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:15:10] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-06-01 09:15:10] Running for <span style="color: #0000BB;">1 </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■</span>          20% | ETA: <span style="color: #0000BB;">17s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠹</span> [2026-06-01 09:15:10] Running for <span style="color: #0000BB;">2 </span>[<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■■■</span>        40% | ETA: <span style="color: #0000BB;">11s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠸</span> [2026-06-01 09:15:10] Running for <span style="color: #0000BB;">3 </span>[<span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■■■■■</span>      60% | ETA: <span style="color: #0000BB;"> 7s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠼</span> [2026-06-01 09:15:10] Running for <span style="color: #0000BB;">4 </span>[<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■■■■■■■</span>    80% | ETA: <span style="color: #0000BB;"> 3s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-01 09:15:10] Completed <span style="color: #0000BB;">5</span> tasks in <span style="color: #0000BB;">15.8s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:15:10] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-01 09:15:27] <span style="color: #0000BB;">Enrichment</span> analysis done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> `use_raster` is automatically set to TRUE for a matrix with more than</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2000 rows. You can control `use_raster` argument by explicitly setting</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> TRUE/FALSE to it.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Set `ht_opt$message = FALSE` to turn off this message.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:16:13] The size of the heatmap is fixed because certain elements are not scalable.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:16:13] The width and height of the heatmap are determined by the size of the current viewport.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:16:13] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
-<span class="r-plt img"><img src="FeatureHeatmap-5.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="va">ht3</span><span class="op">$</span><span class="va">plot</span></span></span>
-<span class="r-plt img"><img src="FeatureHeatmap-6.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunSlingshot.html">RunSlingshot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
-<span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="FeatureHeatmap-7.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="va">ht4</span> <span class="op">&lt;-</span> <span class="fu">FeatureHeatmap</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  features <span class="op">=</span> <span class="va">de_filter</span><span class="op">$</span><span class="va">gene</span>,</span></span>
-<span class="r-in"><span>  nlabel <span class="op">=</span> <span class="fl">10</span>,</span></span>
-<span class="r-in"><span>  cell_order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">$</span><span class="va">Lineage1</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  cell_annotation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubCellType"</span>, <span class="st">"Lineage1"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  cell_annotation_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Chinese"</span>, <span class="st">"cividis"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> `use_raster` is automatically set to TRUE for a matrix with more than</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2000 rows. You can control `use_raster` argument by explicitly setting</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> TRUE/FALSE to it.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Set `ht_opt$message = FALSE` to turn off this message.</span>
-<span class="r-in"><span><span class="va">ht4</span><span class="op">$</span><span class="va">plot</span></span></span>
-<span class="r-plt img"><img src="FeatureHeatmap-8.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="AnnotateFeatures.html">AnnotateFeatures</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CSPA"</span>, <span class="st">"TF"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:16:27] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:16:27] Loading cached: <span style="color: #0000BB;">CSPA</span> version: <span style="color: #0000BB;">CSPA nterm:1</span> created: <span style="color: #0000BB;">2026-06-01 09:11:31</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:16:28] Loading cached: <span style="color: #0000BB;">TF</span> version: <span style="color: #0000BB;">AnimalTFDB4 nterm:2</span> created: <span style="color: #0000BB;">2026-06-01 08:28:36</span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">ht5</span> <span class="op">&lt;-</span> <span class="fu">FeatureHeatmap</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  features <span class="op">=</span> <span class="va">de_filter</span><span class="op">$</span><span class="va">gene</span>,</span></span>
-<span class="r-in"><span>  n_split <span class="op">=</span> <span class="fl">4</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  heatmap_palette <span class="op">=</span> <span class="st">"viridis"</span>,</span></span>
-<span class="r-in"><span>  feature_annotation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TF"</span>, <span class="st">"CSPA"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  feature_annotation_palcolor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gold"</span>, <span class="st">"steelblue"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"forestgreen"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span>,</span></span>
-<span class="r-in"><span>  cell_annotation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Phase"</span>, <span class="st">"G2M_score"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  cell_annotation_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Dark2"</span>, <span class="st">"Purples"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> `use_raster` is automatically set to TRUE for a matrix with more than</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2000 rows. You can control `use_raster` argument by explicitly setting</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> TRUE/FALSE to it.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Set `ht_opt$message = FALSE` to turn off this message.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:16:33] The size of the heatmap is fixed because certain elements are not scalable.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:16:33] The width and height of the heatmap are determined by the size of the current viewport.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:16:33] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
-<span class="r-plt img"><img src="FeatureHeatmap-9.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="va">ht5</span><span class="op">$</span><span class="va">plot</span></span></span>
-<span class="r-plt img"><img src="FeatureHeatmap-10.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">ht6</span> <span class="op">&lt;-</span> <span class="fu">FeatureHeatmap</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  features <span class="op">=</span> <span class="va">de_filter</span><span class="op">$</span><span class="va">gene</span>,</span></span>
-<span class="r-in"><span>  n_split <span class="op">=</span> <span class="fl">4</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  heatmap_palette <span class="op">=</span> <span class="st">"viridis"</span>,</span></span>
-<span class="r-in"><span>  feature_annotation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TF"</span>, <span class="st">"CSPA"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  feature_annotation_palcolor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gold"</span>, <span class="st">"steelblue"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"forestgreen"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span>,</span></span>
-<span class="r-in"><span>  cell_annotation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Phase"</span>, <span class="st">"G2M_score"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  cell_annotation_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Dark2"</span>, <span class="st">"Purples"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  flip <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>  column_title_rot <span class="op">=</span> <span class="fl">45</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> `use_raster` is automatically set to TRUE for a matrix with more than</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2000 columns You can control `use_raster` argument by explicitly</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> setting TRUE/FALSE to it.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Set `ht_opt$message = FALSE` to turn off this message.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:16:45] The size of the heatmap is fixed because certain elements are not scalable.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:16:45] The width and height of the heatmap are determined by the size of the current viewport.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:16:45] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
-<span class="r-plt img"><img src="FeatureHeatmap-11.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="va">ht6</span><span class="op">$</span><span class="va">plot</span></span></span>
-<span class="r-plt img"><img src="FeatureHeatmap-12.png" alt="" width="700" height="433"></span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunDEtest.html">RunDEtest</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">de_filter</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">DEtest_CellType</span><span class="op">$</span><span class="va">AllMarkers_wilcox</span>,</span>
+<span>  <span class="va">p_val_adj</span> <span class="op">&lt;</span> <span class="fl">0.05</span> <span class="op">&amp;</span> <span class="va">avg_log2FC</span> <span class="op">&gt;</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">ht1</span> <span class="op">&lt;-</span> <span class="fu">FeatureHeatmap</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  features <span class="op">=</span> <span class="va">de_filter</span><span class="op">$</span><span class="va">gene</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  split.by <span class="op">=</span> <span class="st">"Phase"</span>,</span>
+<span>  cell_split_palette <span class="op">=</span> <span class="st">"Dark2"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">ht1</span><span class="op">$</span><span class="va">plot</span></span>
+<span></span>
+<span><span class="fu">thisplot</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisplot/reference/panel_fix.html" class="external-link">panel_fix</a></span><span class="op">(</span></span>
+<span>  <span class="va">ht1</span><span class="op">$</span><span class="va">plot</span>,</span>
+<span>  height <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  width <span class="op">=</span> <span class="fl">6</span>,</span>
+<span>  raster <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  dpi <span class="op">=</span> <span class="fl">50</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">ht2</span> <span class="op">&lt;-</span> <span class="fu">FeatureHeatmap</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  features <span class="op">=</span> <span class="va">de_filter</span><span class="op">$</span><span class="va">gene</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CellType"</span>, <span class="st">"SubCellType"</span><span class="op">)</span>,</span>
+<span>  n_split <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  cluster_rows <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  cluster_row_slices <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  cluster_columns <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  cluster_column_slices <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  ht_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>row_gap <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">0</span>, <span class="st">"mm"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  use_raster <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">ht2</span><span class="op">$</span><span class="va">plot</span></span>
+<span></span>
+<span><span class="va">ht3</span> <span class="op">&lt;-</span> <span class="fu">FeatureHeatmap</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  features <span class="op">=</span> <span class="va">de_filter</span><span class="op">$</span><span class="va">gene</span>,</span>
+<span>  feature_split <span class="op">=</span> <span class="va">de_filter</span><span class="op">$</span><span class="va">group1</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  anno_terms <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  anno_keys <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  anno_features <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">ht3</span><span class="op">$</span><span class="va">plot</span></span>
+<span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunSlingshot.html">RunSlingshot</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span>
+<span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">ht4</span> <span class="op">&lt;-</span> <span class="fu">FeatureHeatmap</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  features <span class="op">=</span> <span class="va">de_filter</span><span class="op">$</span><span class="va">gene</span>,</span>
+<span>  nlabel <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  cell_order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">$</span><span class="va">Lineage1</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  cell_annotation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubCellType"</span>, <span class="st">"Lineage1"</span><span class="op">)</span>,</span>
+<span>  cell_annotation_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Chinese"</span>, <span class="st">"cividis"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">ht4</span><span class="op">$</span><span class="va">plot</span></span>
+<span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="AnnotateFeatures.html">AnnotateFeatures</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span>
+<span>  db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CSPA"</span>, <span class="st">"TF"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">ht5</span> <span class="op">&lt;-</span> <span class="fu">FeatureHeatmap</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  features <span class="op">=</span> <span class="va">de_filter</span><span class="op">$</span><span class="va">gene</span>,</span>
+<span>  n_split <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  heatmap_palette <span class="op">=</span> <span class="st">"viridis"</span>,</span>
+<span>  feature_annotation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TF"</span>, <span class="st">"CSPA"</span><span class="op">)</span>,</span>
+<span>  feature_annotation_palcolor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gold"</span>, <span class="st">"steelblue"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"forestgreen"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  cell_annotation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Phase"</span>, <span class="st">"G2M_score"</span><span class="op">)</span>,</span>
+<span>  cell_annotation_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Dark2"</span>, <span class="st">"Purples"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">ht5</span><span class="op">$</span><span class="va">plot</span></span>
+<span></span>
+<span><span class="va">ht6</span> <span class="op">&lt;-</span> <span class="fu">FeatureHeatmap</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  features <span class="op">=</span> <span class="va">de_filter</span><span class="op">$</span><span class="va">gene</span>,</span>
+<span>  n_split <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  heatmap_palette <span class="op">=</span> <span class="st">"viridis"</span>,</span>
+<span>  feature_annotation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TF"</span>, <span class="st">"CSPA"</span><span class="op">)</span>,</span>
+<span>  feature_annotation_palcolor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gold"</span>, <span class="st">"steelblue"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"forestgreen"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  cell_annotation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Phase"</span>, <span class="st">"G2M_score"</span><span class="op">)</span>,</span>
+<span>  cell_annotation_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Dark2"</span>, <span class="st">"Purples"</span><span class="op">)</span>,</span>
+<span>  flip <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  column_title_rot <span class="op">=</span> <span class="fl">45</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">ht6</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

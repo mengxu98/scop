@@ -92,179 +92,111 @@ Default is <code>TRUE</code>.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:18] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:19] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-01 09:38:19] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:19] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:20] Perform `Seurat::FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:21] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:21] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:21] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:21] Perform `Seurat::ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:21] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:21] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:22] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:22] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:22] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:22] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:22] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:26] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-01 09:38:30] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunMetabolism.html">RunMetabolism</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"KEGG"</span>, <span class="st">"REACTOME"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span></span>
-<span class="r-in"><span>  method <span class="op">=</span> <span class="st">"AUCell"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:30] Start <span style="color: #0000BB;">metabolism pathway</span> scoring</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:31] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:31] Averaging expression by <span style="color: #0000BB;">"CellType"</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:31] Aggregated expression: <span style="color: #0000BB;">15998</span> genes x <span style="color: #0000BB;">5</span> groups</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:31] Using `PrepareDB()` for species-aware gene set construction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:31]   KEGG pathway refs: <span style="color: #0000BB;">85</span>, Reactome pathway names: <span style="color: #0000BB;">82</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:31] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:31] Preparing <span style="color: #0000BB;">KEGG</span> database</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:46] Preparing <span style="color: #0000BB;">Reactome</span> database</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:51] Convert ID types for the <span style="color: #0000BB;">KEGG</span> database</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:51] Converted ID types using local annotation package <span style="color: #0000BB;">org.Mm.eg.db</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:51] Convert ID types for the <span style="color: #0000BB;">Reactome</span> database</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:38:51] Converted ID types using local annotation package <span style="color: #0000BB;">org.Mm.eg.db</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:39:18]   <span style="color: #0000BB;">"KEGG"</span>: <span style="color: #0000BB;">73</span> metabolism pathways, <span style="color: #0000BB;">1353</span> genes mapped</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:39:18]   <span style="color: #0000BB;">"Reactome"</span>: <span style="color: #0000BB;">37</span> metabolism pathways, <span style="color: #0000BB;">1322</span> genes mapped</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:39:18] Total metabolism gene sets to score: <span style="color: #0000BB;">110</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-01 09:39:18] Metabolism scores stored in tools slot <span style="color: #0000BB;">"Metabolism_CellType_AUCell"</span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">ht1</span> <span class="op">&lt;-</span> <span class="fu">MetabolismPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"heatmap"</span>,</span></span>
-<span class="r-in"><span>  topTerm <span class="op">=</span> <span class="fl">10</span>,</span></span>
-<span class="r-in"><span>  show_row_names <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>  width <span class="op">=</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>  height <span class="op">=</span> <span class="fl">2</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data is of class matrix. Coercing to dgCMatrix.</span>
-<span class="r-plt img"><img src="MetabolismPlot-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="va">ht1</span><span class="op">$</span><span class="va">plot</span></span></span>
-<span class="r-plt img"><img src="MetabolismPlot-2.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">ht2</span> <span class="op">&lt;-</span> <span class="fu">MetabolismPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"heatmap"</span>,</span></span>
-<span class="r-in"><span>  n_split <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>  topTerm <span class="op">=</span> <span class="fl">100</span>,</span></span>
-<span class="r-in"><span>  use_raster <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>  width <span class="op">=</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>  height <span class="op">=</span> <span class="fl">2</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data is of class matrix. Coercing to dgCMatrix.</span>
-<span class="r-plt img"><img src="MetabolismPlot-3.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="va">ht2</span><span class="op">$</span><span class="va">plot</span></span></span>
-<span class="r-plt img"><img src="MetabolismPlot-4.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">MetabolismPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"comparison"</span>,</span></span>
-<span class="r-in"><span>  topTerm <span class="op">=</span> <span class="fl">5</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="MetabolismPlot-5.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">MetabolismPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span></span>
-<span class="r-in"><span>  topTerm <span class="op">=</span> <span class="fl">5</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="MetabolismPlot-6.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">MetabolismPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"network"</span>,</span></span>
-<span class="r-in"><span>  topTerm <span class="op">=</span> <span class="fl">3</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-01 09:39:23] <span style="color: #0000BB;">shadowtext</span> installed successfully</span>
-<span class="r-plt img"><img src="MetabolismPlot-7.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">MetabolismPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"enrichmap"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="MetabolismPlot-8.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">MetabolismPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"wordcloud"</span>,</span></span>
-<span class="r-in"><span>  word_type <span class="op">=</span> <span class="st">"feature"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="MetabolismPlot-9.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunMetabolism.html">RunMetabolism</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  assay_name <span class="op">=</span> <span class="st">"METABOLISM"</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"KEGG"</span>, <span class="st">"REACTOME"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:39:27] Start <span style="color: #0000BB;">metabolism pathway</span> scoring</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:39:28] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:39:28] Using `PrepareDB()` for species-aware gene set construction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:39:28]   KEGG pathway refs: <span style="color: #0000BB;">85</span>, Reactome pathway names: <span style="color: #0000BB;">82</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:39:28] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:39:28] Loading cached: <span style="color: #0000BB;">KEGG</span> version: <span style="color: #0000BB;">Release 118.0+/05-30, May 26 nterm:367</span> created: <span style="color: #0000BB;">2026-06-01 09:38:51</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:39:29] Loading cached: <span style="color: #0000BB;">Reactome</span> version: <span style="color: #0000BB;">1.96.0 nterm:1835</span> created: <span style="color: #0000BB;">2026-06-01 09:38:51</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:39:53]   <span style="color: #0000BB;">"KEGG"</span>: <span style="color: #0000BB;">73</span> metabolism pathways, <span style="color: #0000BB;">1353</span> genes mapped</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:39:53]   <span style="color: #0000BB;">"Reactome"</span>: <span style="color: #0000BB;">37</span> metabolism pathways, <span style="color: #0000BB;">1322</span> genes mapped</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:39:53] Total metabolism gene sets to score: <span style="color: #0000BB;">110</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-01 09:39:54] Metabolism scores stored in tools slot <span style="color: #0000BB;">"Metabolism_AUCell"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:39:54] Metabolism scores also stored in assay <span style="color: #0000BB;">"METABOLISM"</span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"METABOLISM"</span>,</span></span>
-<span class="r-in"><span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">[[</span><span class="st">"METABOLISM"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"umap"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="MetabolismPlot-10.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="FeatureStatPlot.html">FeatureStatPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">[[</span><span class="st">"METABOLISM"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"METABOLISM"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-plt img"><img src="MetabolismPlot-11.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">ht</span> <span class="op">&lt;-</span> <span class="fu"><a href="GroupHeatmap.html">GroupHeatmap</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  exp_legend_title <span class="op">=</span> <span class="st">"Z-score"</span>,</span></span>
-<span class="r-in"><span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">[[</span><span class="st">"METABOLISM"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"METABOLISM"</span>,</span></span>
-<span class="r-in"><span>  width <span class="op">=</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>  height <span class="op">=</span> <span class="fl">2</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-01 09:39:55] The values in the <span style="color: #0000BB;">"counts"</span> layer are non-integer. Set the library size to <span style="color: #0000BB;">"1"</span></span>
-<span class="r-plt img"><img src="MetabolismPlot-12.png" alt="" width="700" height="433"></span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunMetabolism.html">RunMetabolism</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"KEGG"</span>, <span class="st">"REACTOME"</span><span class="op">)</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"AUCell"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">ht1</span> <span class="op">&lt;-</span> <span class="fu">MetabolismPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"heatmap"</span>,</span>
+<span>  topTerm <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  show_row_names <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  width <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  height <span class="op">=</span> <span class="fl">2</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">ht1</span><span class="op">$</span><span class="va">plot</span></span>
+<span></span>
+<span><span class="va">ht2</span> <span class="op">&lt;-</span> <span class="fu">MetabolismPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"heatmap"</span>,</span>
+<span>  n_split <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  topTerm <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  use_raster <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  width <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  height <span class="op">=</span> <span class="fl">2</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">ht2</span><span class="op">$</span><span class="va">plot</span></span>
+<span></span>
+<span><span class="fu">MetabolismPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"comparison"</span>,</span>
+<span>  topTerm <span class="op">=</span> <span class="fl">5</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">MetabolismPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span>
+<span>  topTerm <span class="op">=</span> <span class="fl">5</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">MetabolismPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"network"</span>,</span>
+<span>  topTerm <span class="op">=</span> <span class="fl">3</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">MetabolismPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"enrichmap"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">MetabolismPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"wordcloud"</span>,</span>
+<span>  word_type <span class="op">=</span> <span class="st">"feature"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunMetabolism.html">RunMetabolism</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  assay_name <span class="op">=</span> <span class="st">"METABOLISM"</span>,</span>
+<span>  db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"KEGG"</span>, <span class="st">"REACTOME"</span><span class="op">)</span>,</span>
+<span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  assay <span class="op">=</span> <span class="st">"METABOLISM"</span>,</span>
+<span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">[[</span><span class="st">"METABOLISM"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>,</span>
+<span>  reduction <span class="op">=</span> <span class="st">"umap"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="FeatureStatPlot.html">FeatureStatPlot</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">[[</span><span class="st">"METABOLISM"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  assay <span class="op">=</span> <span class="st">"METABOLISM"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">ht</span> <span class="op">&lt;-</span> <span class="fu"><a href="GroupHeatmap.html">GroupHeatmap</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  exp_legend_title <span class="op">=</span> <span class="st">"Z-score"</span>,</span>
+<span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">[[</span><span class="st">"METABOLISM"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  assay <span class="op">=</span> <span class="st">"METABOLISM"</span>,</span>
+<span>  width <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  height <span class="op">=</span> <span class="fl">2</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

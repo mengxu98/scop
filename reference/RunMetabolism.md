@@ -197,24 +197,6 @@ tools slot `Metabolism_<group.by>_<method>` for
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-01 10:20:30] Start standard processing workflow...
-#> ℹ [2026-06-01 10:20:31] Checking a list of <Seurat>...
-#> ! [2026-06-01 10:20:31] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-01 10:20:31] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-01 10:20:33] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-01 10:20:33] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-01 10:20:33] Number of available HVF: 2000
-#> ℹ [2026-06-01 10:20:33] Finished check
-#> ℹ [2026-06-01 10:20:33] Perform `Seurat::ScaleData()`
-#> ℹ [2026-06-01 10:20:34] Perform pca linear dimension reduction
-#> ℹ [2026-06-01 10:20:34] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-01 10:20:35] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-01 10:20:35] Reorder clusters...
-#> ℹ [2026-06-01 10:20:35] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-01 10:20:35] Perform umap nonlinear dimension reduction
-#> ℹ [2026-06-01 10:20:35] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-06-01 10:20:40] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-06-01 10:20:44] Standard processing workflow completed
 pancreas_sub <- RunMetabolism(
   pancreas_sub,
   assay = "RNA",
@@ -224,19 +206,6 @@ pancreas_sub <- RunMetabolism(
   species = "Mus_musculus",
   method = "AUCell"
 )
-#> ℹ [2026-06-01 10:20:44] Start metabolism pathway scoring
-#> ℹ [2026-06-01 10:20:45] Data type is raw counts
-#> ℹ [2026-06-01 10:20:45] Averaging expression by "CellType" ...
-#> ℹ [2026-06-01 10:20:45] Aggregated expression: 15998 genes x 5 groups
-#> ℹ [2026-06-01 10:20:45] Using `PrepareDB()` for species-aware gene set construction
-#> ℹ [2026-06-01 10:20:45]   KEGG pathway refs: 85, Reactome pathway names: 82
-#> ℹ [2026-06-01 10:20:45] Species: "Mus_musculus"
-#> ℹ [2026-06-01 10:20:45] Loading cached: KEGG version: Release 118.0+/05-30, May 26 nterm:367 created: 2026-06-01 09:38:51
-#> ℹ [2026-06-01 10:20:46] Loading cached: Reactome version: 1.96.0 nterm:1835 created: 2026-06-01 09:38:51
-#> ℹ [2026-06-01 10:21:12]   "KEGG": 73 metabolism pathways, 1353 genes mapped
-#> ℹ [2026-06-01 10:21:12]   "Reactome": 37 metabolism pathways, 1322 genes mapped
-#> ℹ [2026-06-01 10:21:12] Total metabolism gene sets to score: 110
-#> ✔ [2026-06-01 10:21:12] Metabolism scores stored in tools slot "Metabolism_CellType_AUCell"
 ht <- MetabolismPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -245,5 +214,4 @@ ht <- MetabolismPlot(
   width = 1,
   height = 2
 )
-#> Warning: Data is of class matrix. Coercing to dgCMatrix.
 ```

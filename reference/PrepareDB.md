@@ -158,34 +158,13 @@ db_list <- PrepareDB(
   species = "Homo_sapiens",
   db = "GO_BP"
 )
-#> ℹ [2026-06-01 09:40:38] Species: "Homo_sapiens"
-#> ℹ [2026-06-01 09:40:38] Loading cached: GO_BP version: 3.23.1 nterm:14209 created: 2026-06-01 08:48:03
-#> ℹ [2026-06-01 09:40:39] Convert ID types for the GO_BP database
-#> ℹ [2026-06-01 09:40:40] Converted ID types using local annotation package org.Hs.eg.db
 ListDB(
   species = "Homo_sapiens",
   db = "GO_BP"
 )
-#>                                                         identifier version
-#> 1 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7
-#>                                 comment  timestamp                       date
-#> 1 3.23.1 nterm:14209|Homo_sapiens-GO_BP 1780306841 2026-06-01 09:40:40.815537
-#>           db_version            db_name
-#> 1 3.23.1 nterm:14209 Homo_sapiens-GO_BP
-#>                                                                    file
-#> 1 /home/runner/.cache/R/R.cache/82886eae0621aa67a1839db9a8d85cc5.Rcache
-#>        Species    DB
-#> 1 Homo_sapiens GO_BP
 head(
   db_list[["Homo_sapiens"]][["GO_BP"]][["TERM2GENE"]]
 )
-#>         Term entrez_id symbol      ensembl_id
-#> 1 GO:0000012      2074  ERCC6 ENSG00000225830
-#> 2 GO:0000012      7515  XRCC1 ENSG00000073050
-#> 3 GO:0000012       142  PARP1 ENSG00000143799
-#> 4 GO:0000012      1161  ERCC8 ENSG00000049167
-#> 5 GO:0000012     11284   PNKP ENSG00000039650
-#> 6 GO:0000012     55775   TDP1 ENSG00000042088
 
 # Based on homologous gene conversion,
 # prepare a gene annotation database that originally does not exist in the species.
@@ -205,8 +184,6 @@ if (interactive()) {
 
 # You can also build a custom database based on the gene sets you have
 ccgenes <- CycGenePrefetch("Homo_sapiens")
-#> ℹ [2026-06-01 09:40:41] Prefetching cell cycle genes for "Homo_sapiens" ...
-#> ✔ [2026-06-01 09:40:41] Cell cycle gene prefetching completed "Homo_sapiens"
 custom_TERM2GENE <- rbind(
   data.frame(
     term = "S_genes",
@@ -218,9 +195,6 @@ custom_TERM2GENE <- rbind(
   )
 )
 str(custom_TERM2GENE)
-#> 'data.frame':    97 obs. of  2 variables:
-#>  $ term: chr  "S_genes" "S_genes" "S_genes" "S_genes" ...
-#>  $ gene: chr  "MCM5" "PCNA" "TYMS" "FEN1" ...
 
 # Set convert_species = TRUE to build a custom database for both species,
 # with the name "CellCycle"
@@ -233,56 +207,10 @@ db_list <- PrepareDB(
   custom_IDtype = "symbol",
   custom_version = "Seurat_v5"
 )
-#> ℹ [2026-06-01 09:40:41] Species: "Homo_sapiens"
-#> ℹ [2026-06-01 09:40:41] Convert ID types for the CellCycle database
-#> ℹ [2026-06-01 09:40:41] Converted ID types using local annotation package org.Hs.eg.db
-#> ℹ [2026-06-01 09:40:41] Species: "Mus_musculus"
-#> ! [2026-06-01 09:40:41] Use the "Homo_sapiens" annotation to create the "CellCycle" database for "Mus_musculus"
-#> ℹ [2026-06-01 09:40:41] Convert species for the CellCycle database
-#> ℹ [2026-06-01 09:40:41] Connect to the Ensembl archives...
-#> ℹ [2026-06-01 09:40:42] Using the 115 version of ensembl database...
-#> ℹ [2026-06-01 09:40:42] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
-#> ℹ [2026-06-01 09:40:44] Searching the dataset hsapiens ...
-#> ℹ [2026-06-01 09:40:45] Connecting to the dataset hsapiens_gene_ensembl ...
-#> ℹ [2026-06-01 09:40:46] Converting the geneIDs...
-#> ℹ [2026-06-01 09:40:48] 97 genes mapped with "ensembl_symbol"
-#> ℹ [2026-06-01 09:40:48] ==============================
-#> ℹ                       97 genes mapped
-#> ℹ                       0 genes unmapped
-#> ℹ                       ==============================
-#> ℹ [2026-06-01 09:40:48] Convert ID types for the CellCycle database
-#> ℹ [2026-06-01 09:40:48] Converted ID types using local annotation package org.Mm.eg.db
 ListDB(db = "CellCycle")
-#>                                                         identifier version
-#> 1 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7
-#> 2 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7
-#>                                                                 comment
-#> 1                              Seurat_v5 nterm:2|Homo_sapiens-CellCycle
-#> 2 Seurat_v5(converted from Homo_sapiens) nterm:2|Mus_musculus-CellCycle
-#>    timestamp                       date
-#> 1 1780306842 2026-06-01 09:40:41.683935
-#> 2 1780306849 2026-06-01 09:40:48.861654
-#>                                       db_version                db_name
-#> 1                              Seurat_v5 nterm:2 Homo_sapiens-CellCycle
-#> 2 Seurat_v5(converted from Homo_sapiens) nterm:2 Mus_musculus-CellCycle
-#>                                                                    file
-#> 1 /home/runner/.cache/R/R.cache/a6aa81007b9564b5bf1f3fa5dc7997fa.Rcache
-#> 2 /home/runner/.cache/R/R.cache/c536960e834e01aaece391bfc36f44cf.Rcache
-#>        Species        DB
-#> 1 Homo_sapiens CellCycle
-#> 2 Mus_musculus CellCycle
 
 db_list <- PrepareDB(species = "Mus_musculus", db = "CellCycle")
-#> ℹ [2026-06-01 09:40:48] Species: "Mus_musculus"
-#> ℹ [2026-06-01 09:40:48] Loading cached: CellCycle version: Seurat_v5(converted from Homo_sapiens) nterm:2 created: 2026-06-01 09:40:48
 head(
   db_list[["Mus_musculus"]][["CellCycle"]][["TERM2GENE"]]
 )
-#>      Term         ensembl_id symbol entrez_id
-#> 1 S_genes ENSMUSG00000005410   Mcm5     17218
-#> 2 S_genes ENSMUSG00000027342   Pcna     18538
-#> 3 S_genes ENSMUSG00000025747   Tyms     22171
-#> 4 S_genes ENSMUSG00000024742   Fen1     14156
-#> 5 S_genes ENSMUSG00000029730   Mcm7     17220
-#> 6 S_genes ENSMUSG00000022673   Mcm4     17217
 ```

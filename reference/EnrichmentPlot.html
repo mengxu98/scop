@@ -351,314 +351,262 @@ Default is <code>TRUE</code>.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:12:33] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:12:34] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-01 09:12:34] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:12:34] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:12:35] Perform `Seurat::FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:12:36] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:12:36] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:12:36] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:12:36] Perform `Seurat::ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:12:36] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:12:37] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:12:37] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:12:37] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:12:37] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:12:37] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:12:37] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:12:41] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-01 09:12:45] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunDEtest.html">RunDEtest</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:12:46] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:12:46] Start differential expression test</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:12:46] Find all markers(wilcox) among [1] 5 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:12:46] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-06-01 09:12:46] Running for <span style="color: #0000BB;">Ductal </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■</span>          20% | ETA: <span style="color: #0000BB;"> 1s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-01 09:12:46] Completed <span style="color: #0000BB;">5</span> tasks in <span style="color: #0000BB;">1.2s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:12:46] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-01 09:12:47] Differential expression test completed</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunEnrichment.html">RunEnrichment</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GO_BP"</span>, <span class="st">"GO_CC"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 09:12:47] Start <span style="color: #0000BB;">Enrichment</span> analysis</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in filter_de_results(de_results = de_df, DE_threshold = DE_threshold):</span> could not find function "filter_de_results"</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     group_use = "Ductal", plot_type = "bar"):</span> No enrichment result found. You may perform RunEnrichment first</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span></span>
-<span class="r-in"><span>  color_by <span class="op">=</span> <span class="st">"Groups"</span>,</span></span>
-<span class="r-in"><span>  ncol <span class="op">=</span> <span class="fl">2</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     plot_type = "bar", color_by = "Groups", ncol = 2):</span> No enrichment result found. You may perform RunEnrichment first</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span></span>
-<span class="r-in"><span>  id_use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="st">"Ductal"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>      <span class="st">"GO:0002181"</span>, <span class="st">"GO:0045787"</span>,</span></span>
-<span class="r-in"><span>      <span class="st">"GO:0006260"</span>, <span class="st">"GO:0050679"</span></span></span>
-<span class="r-in"><span>    <span class="op">)</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"Ngn3-low-EP"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>      <span class="st">"GO:0050678"</span>, <span class="st">"GO:0051101"</span>,</span></span>
-<span class="r-in"><span>      <span class="st">"GO:0072091"</span>, <span class="st">"GO:0006631"</span></span></span>
-<span class="r-in"><span>    <span class="op">)</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"Ngn3-high-EP"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>      <span class="st">"GO:0035270"</span>, <span class="st">"GO:0030325"</span>,</span></span>
-<span class="r-in"><span>      <span class="st">"GO:0008637"</span>, <span class="st">"GO:0030856"</span></span></span>
-<span class="r-in"><span>    <span class="op">)</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"Pre-endocrine"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>      <span class="st">"GO:0090276"</span>, <span class="st">"GO:0031018"</span>,</span></span>
-<span class="r-in"><span>      <span class="st">"GO:0030073"</span>, <span class="st">"GO:1903532"</span></span></span>
-<span class="r-in"><span>    <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     plot_type = "bar", id_use = list(Ductal = c("GO:0002181",         "GO:0045787", "GO:0006260", "GO:0050679"), `Ngn3-low-EP` = c("GO:0050678",         "GO:0051101", "GO:0072091", "GO:0006631"), `Ngn3-high-EP` = c("GO:0035270",         "GO:0030325", "GO:0008637", "GO:0030856"), `Pre-endocrine` = c("GO:0090276",         "GO:0031018", "GO:0030073", "GO:1903532"))):</span> No enrichment result found. You may perform RunEnrichment first</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  topTerm <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"comparison"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     topTerm = 3, plot_type = "comparison"):</span> No enrichment result found. You may perform RunEnrichment first</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  topTerm <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"comparison"</span>,</span></span>
-<span class="r-in"><span>  compare_only_sig <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     topTerm = 3, plot_type = "comparison", compare_only_sig = TRUE):</span> No enrichment result found. You may perform RunEnrichment first</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group_use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ductal"</span>, <span class="st">"Endocrine"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"comparison"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     group_use = c("Ductal", "Endocrine"), plot_type = "comparison"):</span> No enrichment result found. You may perform RunEnrichment first</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GO_BP"</span>, <span class="st">"GO_CC"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group_use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ductal"</span>, <span class="st">"Endocrine"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span></span>
-<span class="r-in"><span>  split_by <span class="op">=</span> <span class="st">"Groups"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in EnrichmentPlot(pancreas_sub, db = c("GO_BP", "GO_CC"), group.by = "CellType",     group_use = c("Ductal", "Endocrine"), plot_type = "bar",     split_by = "Groups"):</span> No enrichment result found. You may perform RunEnrichment first</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GO_BP"</span>, <span class="st">"GO_CC"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group_use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ductal"</span>, <span class="st">"Endocrine"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span></span>
-<span class="r-in"><span>  split_by <span class="op">=</span> <span class="st">"Database"</span>,</span></span>
-<span class="r-in"><span>  color_by <span class="op">=</span> <span class="st">"Groups"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in EnrichmentPlot(pancreas_sub, db = c("GO_BP", "GO_CC"), group.by = "CellType",     group_use = c("Ductal", "Endocrine"), plot_type = "bar",     split_by = "Database", color_by = "Groups"):</span> No enrichment result found. You may perform RunEnrichment first</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GO_BP"</span>, <span class="st">"GO_CC"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group_use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ductal"</span>, <span class="st">"Endocrine"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span></span>
-<span class="r-in"><span>  split_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Database"</span>, <span class="st">"Groups"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in EnrichmentPlot(pancreas_sub, db = c("GO_BP", "GO_CC"), group.by = "CellType",     group_use = c("Ductal", "Endocrine"), plot_type = "bar",     split_by = c("Database", "Groups")):</span> No enrichment result found. You may perform RunEnrichment first</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GO_BP"</span>, <span class="st">"GO_CC"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span></span>
-<span class="r-in"><span>  split_by <span class="op">=</span> <span class="st">"Database"</span>,</span></span>
-<span class="r-in"><span>  color_by <span class="op">=</span> <span class="st">"Groups"</span>,</span></span>
-<span class="r-in"><span>  palette <span class="op">=</span> <span class="st">"Set1"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in EnrichmentPlot(pancreas_sub, db = c("GO_BP", "GO_CC"), group.by = "CellType",     plot_type = "bar", split_by = "Database", color_by = "Groups",     palette = "Set1"):</span> No enrichment result found. You may perform RunEnrichment first</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"dot"</span>,</span></span>
-<span class="r-in"><span>  palette <span class="op">=</span> <span class="st">"GdRd"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     group_use = "Ductal", plot_type = "dot", palette = "GdRd"):</span> No enrichment result found. You may perform RunEnrichment first</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"lollipop"</span>,</span></span>
-<span class="r-in"><span>  palette <span class="op">=</span> <span class="st">"GdRd"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     group_use = "Ductal", plot_type = "lollipop", palette = "GdRd"):</span> No enrichment result found. You may perform RunEnrichment first</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"wordcloud"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     group_use = "Ductal", plot_type = "wordcloud"):</span> No enrichment result found. You may perform RunEnrichment first</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"wordcloud"</span>,</span></span>
-<span class="r-in"><span>  word_type <span class="op">=</span> <span class="st">"feature"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     group_use = "Ductal", plot_type = "wordcloud", word_type = "feature"):</span> No enrichment result found. You may perform RunEnrichment first</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"network"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     group_use = "Ductal", plot_type = "network"):</span> No enrichment result found. You may perform RunEnrichment first</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"network"</span>,</span></span>
-<span class="r-in"><span>  id_use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="st">"GO:0050678"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"GO:0035270"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"GO:0090276"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"GO:0030073"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     group_use = "Ductal", plot_type = "network", id_use = c("GO:0050678",         "GO:0035270", "GO:0090276", "GO:0030073")):</span> No enrichment result found. You may perform RunEnrichment first</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"network"</span>,</span></span>
-<span class="r-in"><span>  network_layoutadjust <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     group_use = "Ductal", plot_type = "network", network_layoutadjust = FALSE):</span> No enrichment result found. You may perform RunEnrichment first</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"network"</span>,</span></span>
-<span class="r-in"><span>  topTerm <span class="op">=</span> <span class="fl">4</span>,</span></span>
-<span class="r-in"><span>  network_blendmode <span class="op">=</span> <span class="st">"average"</span>,</span></span>
-<span class="r-in"><span>  theme_use <span class="op">=</span> <span class="st">"theme_blank"</span>,</span></span>
-<span class="r-in"><span>  theme_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>add_coord <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">thisplot</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisplot/reference/panel_fix.html" class="external-link">panel_fix</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     group_use = "Ductal", plot_type = "network", topTerm = 4,     network_blendmode = "average", theme_use = "theme_blank",     theme_args = list(add_coord = FALSE)):</span> No enrichment result found. You may perform RunEnrichment first</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"enrichmap"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     group_use = "Ductal", plot_type = "enrichmap"):</span> No enrichment result found. You may perform RunEnrichment first</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"enrichmap"</span>,</span></span>
-<span class="r-in"><span>  enrichmap_expand <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     group_use = "Ductal", plot_type = "enrichmap", enrichmap_expand = c(2,         1)):</span> No enrichment result found. You may perform RunEnrichment first</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"enrichmap"</span>,</span></span>
-<span class="r-in"><span>  enrichmap_show_keyword <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>  character_width <span class="op">=</span> <span class="fl">10</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     group_use = "Ductal", plot_type = "enrichmap", enrichmap_show_keyword = TRUE,     character_width = 10):</span> No enrichment result found. You may perform RunEnrichment first</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"enrichmap"</span>,</span></span>
-<span class="r-in"><span>  topTerm <span class="op">=</span> <span class="fl">200</span>,</span></span>
-<span class="r-in"><span>  enrichmap_mark <span class="op">=</span> <span class="st">"hull"</span>,</span></span>
-<span class="r-in"><span>  enrichmap_label <span class="op">=</span> <span class="st">"feature"</span>,</span></span>
-<span class="r-in"><span>  enrlichmap_nlabel <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>  character_width <span class="op">=</span> <span class="fl">10</span>,</span></span>
-<span class="r-in"><span>  theme_use <span class="op">=</span> <span class="st">"theme_blank"</span>,</span></span>
-<span class="r-in"><span>  theme_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>add_coord <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">thisplot</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisplot/reference/panel_fix.html" class="external-link">panel_fix</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     group_use = "Ductal", plot_type = "enrichmap", topTerm = 200,     enrichmap_mark = "hull", enrichmap_label = "feature", enrlichmap_nlabel = 3,     character_width = 10, theme_use = "theme_blank", theme_args = list(add_coord = FALSE)):</span> No enrichment result found. You may perform RunEnrichment first</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunEnrichment.html">RunEnrichment</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>    db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MP"</span>, <span class="st">"DO"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>    convert_species <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>    species <span class="op">=</span> <span class="st">"Mus_musculus"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="fu">EnrichmentPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>    db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MP"</span>, <span class="st">"DO"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>    group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
-<span class="r-in"><span>    ncol <span class="op">=</span> <span class="fl">1</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunDEtest.html">RunDEtest</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunEnrichment.html">RunEnrichment</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GO_BP"</span>, <span class="st">"GO_CC"</span><span class="op">)</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"bar"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span>
+<span>  color_by <span class="op">=</span> <span class="st">"Groups"</span>,</span>
+<span>  ncol <span class="op">=</span> <span class="fl">2</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span>
+<span>  id_use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Ductal"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>      <span class="st">"GO:0002181"</span>, <span class="st">"GO:0045787"</span>,</span>
+<span>      <span class="st">"GO:0006260"</span>, <span class="st">"GO:0050679"</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    <span class="st">"Ngn3-low-EP"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>      <span class="st">"GO:0050678"</span>, <span class="st">"GO:0051101"</span>,</span>
+<span>      <span class="st">"GO:0072091"</span>, <span class="st">"GO:0006631"</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    <span class="st">"Ngn3-high-EP"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>      <span class="st">"GO:0035270"</span>, <span class="st">"GO:0030325"</span>,</span>
+<span>      <span class="st">"GO:0008637"</span>, <span class="st">"GO:0030856"</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    <span class="st">"Pre-endocrine"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>      <span class="st">"GO:0090276"</span>, <span class="st">"GO:0031018"</span>,</span>
+<span>      <span class="st">"GO:0030073"</span>, <span class="st">"GO:1903532"</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  topTerm <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"comparison"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  topTerm <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"comparison"</span>,</span>
+<span>  compare_only_sig <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group_use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ductal"</span>, <span class="st">"Endocrine"</span><span class="op">)</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"comparison"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GO_BP"</span>, <span class="st">"GO_CC"</span><span class="op">)</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group_use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ductal"</span>, <span class="st">"Endocrine"</span><span class="op">)</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span>
+<span>  split_by <span class="op">=</span> <span class="st">"Groups"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GO_BP"</span>, <span class="st">"GO_CC"</span><span class="op">)</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group_use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ductal"</span>, <span class="st">"Endocrine"</span><span class="op">)</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span>
+<span>  split_by <span class="op">=</span> <span class="st">"Database"</span>,</span>
+<span>  color_by <span class="op">=</span> <span class="st">"Groups"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GO_BP"</span>, <span class="st">"GO_CC"</span><span class="op">)</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group_use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ductal"</span>, <span class="st">"Endocrine"</span><span class="op">)</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span>
+<span>  split_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Database"</span>, <span class="st">"Groups"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GO_BP"</span>, <span class="st">"GO_CC"</span><span class="op">)</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span>
+<span>  split_by <span class="op">=</span> <span class="st">"Database"</span>,</span>
+<span>  color_by <span class="op">=</span> <span class="st">"Groups"</span>,</span>
+<span>  palette <span class="op">=</span> <span class="st">"Set1"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"dot"</span>,</span>
+<span>  palette <span class="op">=</span> <span class="st">"GdRd"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"lollipop"</span>,</span>
+<span>  palette <span class="op">=</span> <span class="st">"GdRd"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"wordcloud"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"wordcloud"</span>,</span>
+<span>  word_type <span class="op">=</span> <span class="st">"feature"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"network"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"network"</span>,</span>
+<span>  id_use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"GO:0050678"</span>,</span>
+<span>    <span class="st">"GO:0035270"</span>,</span>
+<span>    <span class="st">"GO:0090276"</span>,</span>
+<span>    <span class="st">"GO:0030073"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"network"</span>,</span>
+<span>  network_layoutadjust <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"network"</span>,</span>
+<span>  topTerm <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  network_blendmode <span class="op">=</span> <span class="st">"average"</span>,</span>
+<span>  theme_use <span class="op">=</span> <span class="st">"theme_blank"</span>,</span>
+<span>  theme_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>add_coord <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">thisplot</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisplot/reference/panel_fix.html" class="external-link">panel_fix</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"enrichmap"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"enrichmap"</span>,</span>
+<span>  enrichmap_expand <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"enrichmap"</span>,</span>
+<span>  enrichmap_show_keyword <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  character_width <span class="op">=</span> <span class="fl">10</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">EnrichmentPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"enrichmap"</span>,</span>
+<span>  topTerm <span class="op">=</span> <span class="fl">200</span>,</span>
+<span>  enrichmap_mark <span class="op">=</span> <span class="st">"hull"</span>,</span>
+<span>  enrichmap_label <span class="op">=</span> <span class="st">"feature"</span>,</span>
+<span>  enrlichmap_nlabel <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  character_width <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  theme_use <span class="op">=</span> <span class="st">"theme_blank"</span>,</span>
+<span>  theme_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>add_coord <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">thisplot</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisplot/reference/panel_fix.html" class="external-link">panel_fix</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunEnrichment.html">RunEnrichment</a></span><span class="op">(</span></span>
+<span>    <span class="va">pancreas_sub</span>,</span>
+<span>    db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MP"</span>, <span class="st">"DO"</span><span class="op">)</span>,</span>
+<span>    group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>    convert_species <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    species <span class="op">=</span> <span class="st">"Mus_musculus"</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span>  <span class="fu">EnrichmentPlot</span><span class="op">(</span></span>
+<span>    <span class="va">pancreas_sub</span>,</span>
+<span>    db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MP"</span>, <span class="st">"DO"</span><span class="op">)</span>,</span>
+<span>    group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>    group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span>
+<span>    ncol <span class="op">=</span> <span class="fl">1</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

@@ -87,8 +87,10 @@ exploring spatial, and single-cell omics data.
 - Multiple single-cell downstream analyses:
   - Differential expression and perturbation analysis: identification of
     differential features, expressed marker identification, rare-cell
-    population detection with RareQ, phenotype-associated cell selection
-    with [Scissor](https://github.com/sunduanchen/Scissor), network
+    population detection with
+    [RareQ](https://github.com/xiaolab-xjtu/RareQ), phenotype-associated
+    cell selection with
+    [Scissor](https://github.com/sunduanchen/Scissor), network
     comparison with
     [scTenifoldNet](https://github.com/cailab-tamu/scTenifoldNet), and
     in-silico perturbation analysis with
@@ -96,7 +98,9 @@ exploring spatial, and single-cell omics data.
   - Enrichment, and functional scoring: over-representation analysis,
     [GSEA](https://www.gsea-msigdb.org/gsea/index.jsp) analysis,
     [GSVA](https://github.com/rcastelo/GSVA), metabolic pathway activity
-    inference via [scMetabolism](https://github.com/wu-yc/scMetabolism).
+    inference via [scMetabolism](https://github.com/wu-yc/scMetabolism),
+    and metabolic flux estimation via
+    [scFEA](https://github.com/changwn/scFEA).
   - Transcription factor activity analysis via
     [DoRothEA](https://github.com/saezlab/dorothea), and dynamic
     enrichment analysis.

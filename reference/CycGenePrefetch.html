@@ -99,102 +99,11 @@ Default is <code>TRUE</code>.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">ccgenes</span> <span class="op">&lt;-</span> <span class="fu">CycGenePrefetch</span><span class="op">(</span><span class="st">"Homo_sapiens"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 08:56:31] Prefetching cell cycle genes for <span style="color: #0000BB;">"Homo_sapiens"</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-01 08:56:31] Cell cycle gene prefetching completed <span style="color: #0000BB;">"Homo_sapiens"</span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">ccgenes</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> List of 5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ res         : NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ S           : chr [1:43] "MCM5" "PCNA" "TYMS" "FEN1" ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ G2M         : chr [1:54] "HMGB2" "CDK1" "NUSAP1" "UBE2C" ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ cc_S_genes  : chr [1:43] "MCM5" "PCNA" "TYMS" "FEN1" ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ cc_G2M_genes: chr [1:54] "HMGB2" "CDK1" "NUSAP1" "UBE2C" ...</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">ccgenes</span> <span class="op">&lt;-</span> <span class="fu">CycGenePrefetch</span><span class="op">(</span><span class="st">"Mus_musculus"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 08:56:31] Prefetching cell cycle genes for <span style="color: #0000BB;">"Mus_musculus"</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 08:56:31] Connect to the Ensembl archives...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 08:56:31] Using the <span style="color: #0000BB;">115</span> version of ensembl database...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-01 08:56:31] Downloading the ensembl database from <span style="color: #0000BB;">https://sep2025.archive.ensembl.org</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying www mirror</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Invalid mirror. Select a mirror from [www, useast, asia].</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying useast mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying useast mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying www mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying useast mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-01 08:56:34] &lt;simpleError: Your query has been redirected to https://status.ensembl.org indicating this Ensembl service is currently unavailable.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       Look at ?useEnsembl for details on how to try a mirror site.&gt;</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-01 08:56:34] Get errors when connecting with ensembl database...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-01 08:56:35] Retrying...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying www mirror</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Invalid mirror. Select a mirror from [www, useast, asia].</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying useast mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying useast mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying www mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying useast mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-01 08:56:38] &lt;simpleError: Your query has been redirected to https://status.ensembl.org indicating this Ensembl service is currently unavailable.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       Look at ?useEnsembl for details on how to try a mirror site.&gt;</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-01 08:56:38] Get errors when connecting with ensembl database...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-01 08:56:39] Retrying...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying www mirror</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Invalid mirror. Select a mirror from [www, useast, asia].</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying useast mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying www mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying useast mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying useast mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-01 08:56:42] &lt;simpleError: Your query has been redirected to https://status.ensembl.org indicating this Ensembl service is currently unavailable.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       Look at ?useEnsembl for details on how to try a mirror site.&gt;</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-01 08:56:42] Get errors when connecting with ensembl database...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-01 08:56:43] Retrying...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying www mirror</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Invalid mirror. Select a mirror from [www, useast, asia].</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying useast mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying www mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying useast mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying useast mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-01 08:56:46] &lt;simpleError: Your query has been redirected to https://status.ensembl.org indicating this Ensembl service is currently unavailable.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       Look at ?useEnsembl for details on how to try a mirror site.&gt;</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-01 08:56:46] Get errors when connecting with ensembl database...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-01 08:56:47] Retrying...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying www mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Invalid mirror. Select a mirror from [www, useast, asia].</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> Default when no mirror is specified is to use www.ensembl.org which may be automatically redirected.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying useast mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying www mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying useast mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying useast mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-01 08:56:50] &lt;simpleError: Your query has been redirected to https://status.ensembl.org indicating this Ensembl service is currently unavailable.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       Look at ?useEnsembl for details on how to try a mirror site.&gt;</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-01 08:56:50] Get errors when connecting with ensembl database...</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in try_get(expr = {    if (!is.null(mirror)) {        biomaRt::useEnsembl(biomart = "ensembl", mirror = mirror)    }    else {        mart_try &lt;- tryCatch(biomaRt::useMart(biomart = "ensembl",             host = url), error = function(e) e)        if (inherits(mart_try, "error")) {            mirror_candidates &lt;- c("useast", "uswest", "asia",                 "www")            for (mirror_i in mirror_candidates) {                mart_mirror &lt;- tryCatch(biomaRt::useEnsembl(biomart = "ensembl",                   mirror = mirror_i), error = function(e) e)                if (!inherits(mart_mirror, "error")) {                  mart_try &lt;- mart_mirror                  break                }            }        }        if (inherits(mart_try, "error")) {            stop(mart_try)        }        mart_try    }}, max_tries = max_tries, error_message = "Get errors when connecting with ensembl database..."):</span> &lt;simpleError: Your query has been redirected to</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> https://status.ensembl.org indicating this Ensembl service is currently</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> unavailable. Look at ?useEnsembl for details on how to try a mirror site.&gt;</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">ccgenes</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> List of 5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ res         : NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ S           : chr [1:43] "MCM5" "PCNA" "TYMS" "FEN1" ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ G2M         : chr [1:54] "HMGB2" "CDK1" "NUSAP1" "UBE2C" ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ cc_S_genes  : chr [1:43] "MCM5" "PCNA" "TYMS" "FEN1" ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ cc_G2M_genes: chr [1:54] "HMGB2" "CDK1" "NUSAP1" "UBE2C" ...</span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="va">ccgenes</span> <span class="op">&lt;-</span> <span class="fu">CycGenePrefetch</span><span class="op">(</span><span class="st">"Homo_sapiens"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">ccgenes</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">ccgenes</span> <span class="op">&lt;-</span> <span class="fu">CycGenePrefetch</span><span class="op">(</span><span class="st">"Mus_musculus"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">ccgenes</span><span class="op">)</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

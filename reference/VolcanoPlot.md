@@ -297,43 +297,15 @@ VolcanoPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-01 10:39:35] Start standard processing workflow...
-#> ℹ [2026-06-01 10:39:35] Checking a list of <Seurat>...
-#> ! [2026-06-01 10:39:35] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-01 10:39:36] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-01 10:39:37] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-01 10:39:38] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-01 10:39:38] Number of available HVF: 2000
-#> ℹ [2026-06-01 10:39:38] Finished check
-#> ℹ [2026-06-01 10:39:38] Perform `Seurat::ScaleData()`
-#> ℹ [2026-06-01 10:39:38] Perform pca linear dimension reduction
-#> ℹ [2026-06-01 10:39:39] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-01 10:39:39] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-01 10:39:39] Reorder clusters...
-#> ℹ [2026-06-01 10:39:39] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-01 10:39:39] Perform umap nonlinear dimension reduction
-#> ℹ [2026-06-01 10:39:39] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-06-01 10:39:44] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-06-01 10:39:49] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-06-01 10:39:50] Data type is log-normalized
-#> ℹ [2026-06-01 10:39:50] Start differential expression test
-#> ℹ [2026-06-01 10:39:50] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-06-01 10:39:50] Using 1 core
-#> ⠙ [2026-06-01 10:39:50] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ✔ [2026-06-01 10:39:50] Completed 5 tasks in 970ms
-#> 
-#> ℹ [2026-06-01 10:39:50] Building results
-#> ✔ [2026-06-01 10:39:51] Differential expression test completed
 VolcanoPlot(
   pancreas_sub,
   group.by = "CellType",
   ncol = 2
 )
-
 
 VolcanoPlot(
   pancreas_sub,
@@ -342,14 +314,12 @@ VolcanoPlot(
   ncol = 2
 )
 
-
 VolcanoPlot(
   pancreas_sub,
   group.by = "CellType",
   DE_threshold = "abs(diff_pct) > 0.3 & p_val_adj < 0.05",
   ncol = 2
 )
-
 
 VolcanoPlot(
   pancreas_sub,
@@ -360,7 +330,6 @@ VolcanoPlot(
   ncol = 2
 )
 
-
 VolcanoPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -368,17 +337,6 @@ VolcanoPlot(
   hyperbola_c = 6,
   ncol = 2
 )
-#> Warning: Removed 2 rows containing missing values or values outside the scale range
-#> (`geom_line()`).
-#> Warning: Removed 2 rows containing missing values or values outside the scale range
-#> (`geom_line()`).
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_line()`).
-#> Warning: Removed 11 rows containing missing values or values outside the scale range
-#> (`geom_line()`).
-#> Warning: Removed 5 rows containing missing values or values outside the scale range
-#> (`geom_line()`).
-
 
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
@@ -386,8 +344,6 @@ pancreas_sub <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-06-01 10:39:59] Start Enrichment analysis
-#> Error in filter_de_results(de_results = de_df, DE_threshold = DE_threshold): could not find function "filter_de_results"
 VolcanoPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -398,14 +354,4 @@ VolcanoPlot(
   enrich_db = "GO_BP",
   ncol = 2
 )
-#> Warning: Removed 2 rows containing missing values or values outside the scale range
-#> (`geom_line()`).
-#> Warning: Removed 2 rows containing missing values or values outside the scale range
-#> (`geom_line()`).
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_line()`).
-#> Warning: Removed 11 rows containing missing values or values outside the scale range
-#> (`geom_line()`).
-#> Warning: Removed 5 rows containing missing values or values outside the scale range
-#> (`geom_line()`).
 ```

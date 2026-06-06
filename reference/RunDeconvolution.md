@@ -11,9 +11,9 @@ RunDeconvolution(object, ...)
 # S3 method for class 'SummarizedExperiment'
 RunDeconvolution(
   object,
-  reference,
-  method = c("MuSiC", "BisqueRNA", "BayesPrism"),
-  group.by,
+  reference = NULL,
+  method = c("MuSiC", "BisqueRNA", "BayesPrism", "CIBERSORT"),
+  group.by = NULL,
   sample.by = NULL,
   cellstate.by = NULL,
   bulk_assay = "counts",
@@ -37,12 +37,13 @@ RunDeconvolution(
 
 - reference:
 
-  A `Seurat` reference object used to build cell-type profiles.
+  A `Seurat` reference object used to build cell-type profiles. Not
+  required for `"CIBERSORT"`.
 
 - method:
 
-  Deconvolution method. One of `"MuSiC"`, `"BisqueRNA"`, or
-  `"BayesPrism"`.
+  Deconvolution method. One of `"MuSiC"`, `"BisqueRNA"`, `"BayesPrism"`,
+  or `"CIBERSORT"`.
 
 - group.by:
 
@@ -101,21 +102,13 @@ islet_bulk <- RunDeconvolution(
   method = "MuSiC",
   group.by = "celltype"
 )
-#> Error in build_context(mode = "pure_bulk", bulk_se = object, bulk_assay = bulk_assay): could not find function "build_context"
 DeconvolutionPlot(islet_bulk, plot_type = "bar")
-#> Error in resolve_deconvolution_result(object = object, res = res): Cannot find deconvolution results in
-#> `S4Vectors::metadata(object)[['Deconvolution']]()`
 ht <- DeconvolutionPlot(
   islet_bulk,
   plot_type = "heatmap",
   sample_annotation = "condition",
   sample_split = "condition"
 )
-#> Error in resolve_deconvolution_result(object = object, res = res): Cannot find deconvolution results in
-#> `S4Vectors::metadata(object)[['Deconvolution']]()`
 ComplexHeatmap::draw(ht)
-#> Error in h(simpleError(msg, call)): error in evaluating the argument 'object' in selecting a method for function 'draw': object 'ht' not found
 DeconvolutionPlot(islet_bulk, plot_type = "box")
-#> Error in resolve_deconvolution_result(object = object, res = res): Cannot find deconvolution results in
-#> `S4Vectors::metadata(object)[['Deconvolution']]()`
 ```

@@ -342,24 +342,6 @@ A ggplot, patchwork, or recorded plot object.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-01 08:28:58] Start standard processing workflow...
-#> ℹ [2026-06-01 08:28:59] Checking a list of <Seurat>...
-#> ! [2026-06-01 08:28:59] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-01 08:28:59] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-01 08:29:00] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-01 08:29:00] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-01 08:29:01] Number of available HVF: 2000
-#> ℹ [2026-06-01 08:29:01] Finished check
-#> ℹ [2026-06-01 08:29:01] Perform `Seurat::ScaleData()`
-#> ℹ [2026-06-01 08:29:01] Perform pca linear dimension reduction
-#> ℹ [2026-06-01 08:29:01] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-01 08:29:02] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-01 08:29:02] Reorder clusters...
-#> ℹ [2026-06-01 08:29:02] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-01 08:29:02] Perform umap nonlinear dimension reduction
-#> ℹ [2026-06-01 08:29:02] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-06-01 08:29:05] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-06-01 08:29:07] Standard processing workflow completed
 
 pc1 <- Seurat::Embeddings(pancreas_sub, "Standardpca")[, 1]
 ct <- as.character(pancreas_sub$CellType)
@@ -377,8 +359,6 @@ pancreas_sub <- RunCellChat(
   group_cmp = list(c("ConditionA", "ConditionB")),
   species = "Mus_musculus"
 )
-#> ℹ [2026-06-01 08:29:07] Start CellChat analysis
-#> Error in loadNamespace(name): there is no package called ‘CellChat’
 
 CCCNetworkPlot(
   pancreas_sub,
@@ -389,8 +369,6 @@ CCCNetworkPlot(
   value = "count",
   top_n = 20
 )
-#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
-#> `condition`
 
 CCCNetworkPlot(
   pancreas_sub,
@@ -401,8 +379,6 @@ CCCNetworkPlot(
   value = "weight",
   top_n = 20
 )
-#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
-#> `condition`
 
 CCCNetworkPlot(
   pancreas_sub,
@@ -412,8 +388,6 @@ CCCNetworkPlot(
   display_by = "aggregation",
   top_n = 12
 )
-#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
-#> `condition`
 
 CCCNetworkPlot(
   pancreas_sub,
@@ -427,8 +401,6 @@ CCCNetworkPlot(
   directed = TRUE,
   top_n = 3
 )
-#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
-#> `condition`
 
 CCCNetworkPlot(
   pancreas_sub,
@@ -438,8 +410,6 @@ CCCNetworkPlot(
   display_by = "interaction",
   top_n = 20
 )
-#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
-#> `condition`
 
 CCCNetworkPlot(
   pancreas_sub,
@@ -449,8 +419,6 @@ CCCNetworkPlot(
   display_by = "interaction",
   top_n = 20
 )
-#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
-#> `condition`
 
 CCCNetworkPlot(
   pancreas_sub,
@@ -460,8 +428,6 @@ CCCNetworkPlot(
   display_by = "aggregation",
   top_n = 20
 )
-#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
-#> `condition`
 
 CCCNetworkPlot(
   pancreas_sub,
@@ -473,8 +439,6 @@ CCCNetworkPlot(
   top_n = 20,
   label = TRUE
 )
-#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
-#> `condition`
 
 CCCNetworkPlot(
   pancreas_sub,
@@ -483,8 +447,6 @@ CCCNetworkPlot(
   plot_type = "pathway",
   signaling = "MK"
 )
-#> Error in get_dataset_object(srt = srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
-#> `condition`
 
 CCCNetworkPlot(
   pancreas_sub,
@@ -494,8 +456,6 @@ CCCNetworkPlot(
   signaling = "MK",
   pairLR.use = "MDK_SDC1"
 )
-#> Error in get_dataset_object(srt = srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
-#> `condition`
 
 CCCNetworkPlot(
   pancreas_sub,
@@ -504,5 +464,4 @@ CCCNetworkPlot(
   plot_type = "diff_network",
   measure = "count"
 )
-#> Error in .cc_get_cmp(srt = srt, condition = condition): Comparison "ConditionA_vs_ConditionB" not found in CellChat results
 ```

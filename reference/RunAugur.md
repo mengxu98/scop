@@ -120,7 +120,6 @@ prioritization in single-cell data. *Nature Biotechnology*, 39, 30-34.
 data(panc8_sub)
 panc8_sub <- subset(panc8_sub, subset = tech %in% c("celseq", "celseq2"))
 panc8_sub <- standard_scop(panc8_sub, verbose = FALSE)
-#> ℹ [2026-06-01 09:42:46] Skip `log1p()` because `layer = data` is not "counts"
 panc8_sub <- RunAugur(
   panc8_sub,
   celltype.by = "celltype",
@@ -137,18 +136,12 @@ panc8_sub <- RunAugur(
     importance = "accuracy"
   )
 )
-#> Error in dplyr::filter(AUCs, metric == "roc_auc"): ℹ In argument: `metric == "roc_auc"`.
-#> Caused by error:
-#> ! object 'metric' not found
 
 panc8_sub@tools$Augur$AUC
-#> NULL
 FeatureDimPlot(
   panc8_sub,
   features = "augur_auc",
   reduction = "StandardUMAP2D",
   bg_cutoff = -Inf
 )
-#> ! [2026-06-01 09:43:14] "augur_auc" are not in the features of <Seurat>
-#> Error in FeatureDimPlot(panc8_sub, features = "augur_auc", reduction = "StandardUMAP2D",     bg_cutoff = -Inf): There are no valid features present.
 ```

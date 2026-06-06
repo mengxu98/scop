@@ -98,23 +98,22 @@ Default is <code>TRUE</code>.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="co"># Remove a single package using conda</span></span></span>
-<span class="r-in"><span><span class="fu">remove_python</span><span class="op">(</span><span class="st">"numpy"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Remove multiple packages using conda</span></span></span>
-<span class="r-in"><span><span class="fu">remove_python</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"numpy"</span>, <span class="st">"pandas"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Remove packages using pip</span></span></span>
-<span class="r-in"><span><span class="fu">remove_python</span><span class="op">(</span><span class="st">"numpy"</span>, pip <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Force removal without confirmation</span></span></span>
-<span class="r-in"><span><span class="fu">remove_python</span><span class="op">(</span><span class="st">"numpy"</span>, force <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Remove packages from a specific environment</span></span></span>
-<span class="r-in"><span><span class="fu">remove_python</span><span class="op">(</span><span class="st">"numpy"</span>, envname <span class="op">=</span> <span class="st">"env"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
+<span><span class="co"># Remove a single package using conda</span></span>
+<span><span class="fu">remove_python</span><span class="op">(</span><span class="st">"numpy"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Remove multiple packages using conda</span></span>
+<span><span class="fu">remove_python</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"numpy"</span>, <span class="st">"pandas"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Remove packages using pip</span></span>
+<span><span class="fu">remove_python</span><span class="op">(</span><span class="st">"numpy"</span>, pip <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Force removal without confirmation</span></span>
+<span><span class="fu">remove_python</span><span class="op">(</span><span class="st">"numpy"</span>, force <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Remove packages from a specific environment</span></span>
+<span><span class="fu">remove_python</span><span class="op">(</span><span class="st">"numpy"</span>, envname <span class="op">=</span> <span class="st">"env"</span><span class="op">)</span></span>
+<span><span class="op">}</span> <span class="co"># }</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

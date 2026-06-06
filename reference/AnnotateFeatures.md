@@ -131,15 +131,6 @@ if (requireNamespace("R.cache", quietly = TRUE)) {
     )
   )
 }
-#> ℹ [2026-06-01 08:28:36] Species: "Mus_musculus"
-#> ℹ [2026-06-01 08:28:36] Preparing database: TF
-#>               highly_variable_genes   TF
-#> Xkr4                          False <NA>
-#> Mrpl15                        False <NA>
-#> Npbwr1                         <NA> <NA>
-#> 4732440D04Rik                 False <NA>
-#> Gm26901                       False <NA>
-#> Sntg1                          True <NA>
 
 # Annotate features using a GTF file
 gtf_file <- "/refdata-gex-mm10-2020-A/genes/genes.gtf"

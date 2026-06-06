@@ -178,143 +178,142 @@ Default is <code>TRUE</code>.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunMonocle3</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>    reduction <span class="op">=</span> <span class="st">"UMAP"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunMonocle3</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>    reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
-<span class="r-in"><span>    group.by <span class="op">=</span> <span class="st">"CellType"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Monocle3</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">trajectory</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Monocle3</span><span class="op">$</span><span class="va">trajectory</span></span></span>
-<span class="r-in"><span>  <span class="va">milestones</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Monocle3</span><span class="op">$</span><span class="va">milestones</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>    group.by <span class="op">=</span> <span class="st">"Monocle3_partitions"</span>,</span></span>
-<span class="r-in"><span>    reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
-<span class="r-in"><span>    label <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>    theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span> <span class="op">+</span></span></span>
-<span class="r-in"><span>    <span class="va">trajectory</span> <span class="op">+</span></span></span>
-<span class="r-in"><span>    <span class="va">milestones</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>    group.by <span class="op">=</span> <span class="st">"Monocle3_clusters"</span>,</span></span>
-<span class="r-in"><span>    reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
-<span class="r-in"><span>    label <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>    theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span> <span class="op">+</span></span></span>
-<span class="r-in"><span>    <span class="va">trajectory</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>    features <span class="op">=</span> <span class="st">"Monocle3_Pseudotime"</span>,</span></span>
-<span class="r-in"><span>    reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
-<span class="r-in"><span>    theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span> <span class="op">+</span></span></span>
-<span class="r-in"><span>    <span class="va">trajectory</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>    <span class="co"># Select the lineage using monocle3::choose_graph_segments</span></span></span>
-<span class="r-in"><span>    <span class="va">cds</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Monocle3</span><span class="op">$</span><span class="va">cds</span></span></span>
-<span class="r-in"><span>    <span class="va">cds_sub</span> <span class="op">&lt;-</span> <span class="fu">thisutils</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisutils/reference/get_namespace_fun.html" class="external-link">get_namespace_fun</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>      <span class="st">"monocle3"</span>, <span class="st">"choose_graph_segments"</span></span></span>
-<span class="r-in"><span>    <span class="op">)</span><span class="op">(</span></span></span>
-<span class="r-in"><span>      <span class="va">cds</span>,</span></span>
-<span class="r-in"><span>      starting_pr_node <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
-<span class="r-in"><span>      ending_pr_nodes <span class="op">=</span> <span class="cn">NULL</span></span></span>
-<span class="r-in"><span>    <span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="va">pancreas_sub</span><span class="op">$</span><span class="va">Lineages_1</span> <span class="op">&lt;-</span> <span class="cn">NA</span></span></span>
-<span class="r-in"><span>    <span class="va">pancreas_sub</span><span class="op">$</span><span class="va">Lineages_1</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>      <span class="va">cds_sub</span></span></span>
-<span class="r-in"><span>    <span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">$</span><span class="va">Monocle3_Pseudotime</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">cds_sub</span><span class="op">)</span><span class="op">]</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>      <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>      group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
-<span class="r-in"><span>      lineages <span class="op">=</span> <span class="st">"Lineages_1"</span>,</span></span>
-<span class="r-in"><span>      lineages_span <span class="op">=</span> <span class="fl">0.1</span>,</span></span>
-<span class="r-in"><span>      theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span></span>
-<span class="r-in"><span>    <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="op">}</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co"># Use Seurat clusters to infer the trajectories</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>    group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Standardclusters"</span>, <span class="st">"CellType"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    label <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>    theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunMonocle3</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>    clusters <span class="op">=</span> <span class="st">"Standardclusters"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="va">trajectory</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Monocle3</span><span class="op">$</span><span class="va">trajectory</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>    group.by <span class="op">=</span> <span class="st">"Monocle3_partitions"</span>,</span></span>
-<span class="r-in"><span>    reduction <span class="op">=</span> <span class="st">"StandardUMAP2D"</span>,</span></span>
-<span class="r-in"><span>    label <span class="op">=</span> <span class="cn">TRUE</span>, theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span> <span class="op">+</span> <span class="va">trajectory</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>    group.by <span class="op">=</span> <span class="st">"Monocle3_clusters"</span>,</span></span>
-<span class="r-in"><span>    reduction <span class="op">=</span> <span class="st">"StandardUMAP2D"</span>,</span></span>
-<span class="r-in"><span>    label <span class="op">=</span> <span class="cn">TRUE</span>, theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span> <span class="op">+</span> <span class="va">trajectory</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>    features <span class="op">=</span> <span class="st">"Monocle3_Pseudotime"</span>,</span></span>
-<span class="r-in"><span>    reduction <span class="op">=</span> <span class="st">"StandardUMAP2D"</span>,</span></span>
-<span class="r-in"><span>    theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span> <span class="op">+</span> <span class="va">trajectory</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co"># Use custom graphs and cell clusters to infer</span></span></span>
-<span class="r-in"><span>  <span class="co"># the partitions and trajectories, respectively</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>    cluster_resolution <span class="op">=</span> <span class="fl">5</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>    group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Standardclusters"</span>, <span class="st">"CellType"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    label <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunMonocle3</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>    clusters <span class="op">=</span> <span class="st">"Standardclusters"</span>,</span></span>
-<span class="r-in"><span>    graph <span class="op">=</span> <span class="st">"Standardpca_SNN"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">trajectory</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Monocle3</span><span class="op">$</span><span class="va">trajectory</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>    group.by <span class="op">=</span> <span class="st">"Monocle3_partitions"</span>,</span></span>
-<span class="r-in"><span>    reduction <span class="op">=</span> <span class="st">"StandardUMAP2D"</span>,</span></span>
-<span class="r-in"><span>    label <span class="op">=</span> <span class="cn">TRUE</span>, theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span> <span class="op">+</span> <span class="va">trajectory</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>    group.by <span class="op">=</span> <span class="st">"Monocle3_clusters"</span>,</span></span>
-<span class="r-in"><span>    reduction <span class="op">=</span> <span class="st">"StandardUMAP2D"</span>,</span></span>
-<span class="r-in"><span>    label <span class="op">=</span> <span class="cn">TRUE</span>, theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span> <span class="op">+</span> <span class="va">trajectory</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>    features <span class="op">=</span> <span class="st">"Monocle3_Pseudotime"</span>,</span></span>
-<span class="r-in"><span>    reduction <span class="op">=</span> <span class="st">"StandardUMAP2D"</span>,</span></span>
-<span class="r-in"><span>    theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span> <span class="op">+</span> <span class="va">trajectory</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
+<span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
+<span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunMonocle3</span><span class="op">(</span></span>
+<span>    <span class="va">pancreas_sub</span>,</span>
+<span>    reduction <span class="op">=</span> <span class="st">"UMAP"</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunMonocle3</span><span class="op">(</span></span>
+<span>    <span class="va">pancreas_sub</span>,</span>
+<span>    reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span>
+<span>    group.by <span class="op">=</span> <span class="st">"CellType"</span></span>
+<span>  <span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Monocle3</span><span class="op">)</span></span>
+<span>  <span class="va">trajectory</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Monocle3</span><span class="op">$</span><span class="va">trajectory</span></span>
+<span>  <span class="va">milestones</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Monocle3</span><span class="op">$</span><span class="va">milestones</span></span>
+<span></span>
+<span>  <span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span>
+<span>    <span class="va">pancreas_sub</span>,</span>
+<span>    group.by <span class="op">=</span> <span class="st">"Monocle3_partitions"</span>,</span>
+<span>    reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span>
+<span>    label <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="va">trajectory</span> <span class="op">+</span></span>
+<span>    <span class="va">milestones</span></span>
+<span>  <span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span>
+<span>    <span class="va">pancreas_sub</span>,</span>
+<span>    group.by <span class="op">=</span> <span class="st">"Monocle3_clusters"</span>,</span>
+<span>    reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span>
+<span>    label <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="va">trajectory</span></span>
+<span>  <span class="fu"><a href="FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span></span>
+<span>    <span class="va">pancreas_sub</span>,</span>
+<span>    features <span class="op">=</span> <span class="st">"Monocle3_Pseudotime"</span>,</span>
+<span>    reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span>
+<span>    theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="va">trajectory</span></span>
+<span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="co"># Select the lineage using monocle3::choose_graph_segments</span></span>
+<span>    <span class="va">cds</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Monocle3</span><span class="op">$</span><span class="va">cds</span></span>
+<span>    <span class="va">cds_sub</span> <span class="op">&lt;-</span> <span class="fu">thisutils</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisutils/reference/get_namespace_fun.html" class="external-link">get_namespace_fun</a></span><span class="op">(</span></span>
+<span>      <span class="st">"monocle3"</span>, <span class="st">"choose_graph_segments"</span></span>
+<span>    <span class="op">)</span><span class="op">(</span></span>
+<span>      <span class="va">cds</span>,</span>
+<span>      starting_pr_node <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>      ending_pr_nodes <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>    <span class="op">)</span></span>
+<span>    <span class="va">pancreas_sub</span><span class="op">$</span><span class="va">Lineages_1</span> <span class="op">&lt;-</span> <span class="cn">NA</span></span>
+<span>    <span class="va">pancreas_sub</span><span class="op">$</span><span class="va">Lineages_1</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span></span>
+<span>      <span class="va">cds_sub</span></span>
+<span>    <span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">$</span><span class="va">Monocle3_Pseudotime</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">cds_sub</span><span class="op">)</span><span class="op">]</span></span>
+<span>    <span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span>
+<span>      <span class="va">pancreas_sub</span>,</span>
+<span>      group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span>
+<span>      lineages <span class="op">=</span> <span class="st">"Lineages_1"</span>,</span>
+<span>      lineages_span <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>      theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span></span>
+<span>  <span class="co"># Use Seurat clusters to infer the trajectories</span></span>
+<span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span>
+<span>    <span class="va">pancreas_sub</span>,</span>
+<span>    group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Standardclusters"</span>, <span class="st">"CellType"</span><span class="op">)</span>,</span>
+<span>    label <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunMonocle3</span><span class="op">(</span></span>
+<span>    <span class="va">pancreas_sub</span>,</span>
+<span>    clusters <span class="op">=</span> <span class="st">"Standardclusters"</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span>  <span class="va">trajectory</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Monocle3</span><span class="op">$</span><span class="va">trajectory</span></span>
+<span>  <span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span>
+<span>    <span class="va">pancreas_sub</span>,</span>
+<span>    group.by <span class="op">=</span> <span class="st">"Monocle3_partitions"</span>,</span>
+<span>    reduction <span class="op">=</span> <span class="st">"StandardUMAP2D"</span>,</span>
+<span>    label <span class="op">=</span> <span class="cn">TRUE</span>, theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span> <span class="va">trajectory</span></span>
+<span></span>
+<span>  <span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span>
+<span>    <span class="va">pancreas_sub</span>,</span>
+<span>    group.by <span class="op">=</span> <span class="st">"Monocle3_clusters"</span>,</span>
+<span>    reduction <span class="op">=</span> <span class="st">"StandardUMAP2D"</span>,</span>
+<span>    label <span class="op">=</span> <span class="cn">TRUE</span>, theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span> <span class="va">trajectory</span></span>
+<span>  <span class="fu"><a href="FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span></span>
+<span>    <span class="va">pancreas_sub</span>,</span>
+<span>    features <span class="op">=</span> <span class="st">"Monocle3_Pseudotime"</span>,</span>
+<span>    reduction <span class="op">=</span> <span class="st">"StandardUMAP2D"</span>,</span>
+<span>    theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span> <span class="va">trajectory</span></span>
+<span></span>
+<span>  <span class="co"># Use custom graphs and cell clusters to infer</span></span>
+<span>  <span class="co"># the partitions and trajectories, respectively</span></span>
+<span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span></span>
+<span>    <span class="va">pancreas_sub</span>,</span>
+<span>    cluster_resolution <span class="op">=</span> <span class="fl">5</span></span>
+<span>  <span class="op">)</span></span>
+<span>  <span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span>
+<span>    <span class="va">pancreas_sub</span>,</span>
+<span>    group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Standardclusters"</span>, <span class="st">"CellType"</span><span class="op">)</span>,</span>
+<span>    label <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span></span>
+<span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunMonocle3</span><span class="op">(</span></span>
+<span>    <span class="va">pancreas_sub</span>,</span>
+<span>    clusters <span class="op">=</span> <span class="st">"Standardclusters"</span>,</span>
+<span>    graph <span class="op">=</span> <span class="st">"Standardpca_SNN"</span></span>
+<span>  <span class="op">)</span></span>
+<span>  <span class="va">trajectory</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Monocle3</span><span class="op">$</span><span class="va">trajectory</span></span>
+<span>  <span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span>
+<span>    <span class="va">pancreas_sub</span>,</span>
+<span>    group.by <span class="op">=</span> <span class="st">"Monocle3_partitions"</span>,</span>
+<span>    reduction <span class="op">=</span> <span class="st">"StandardUMAP2D"</span>,</span>
+<span>    label <span class="op">=</span> <span class="cn">TRUE</span>, theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span> <span class="va">trajectory</span></span>
+<span>  <span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span>
+<span>    <span class="va">pancreas_sub</span>,</span>
+<span>    group.by <span class="op">=</span> <span class="st">"Monocle3_clusters"</span>,</span>
+<span>    reduction <span class="op">=</span> <span class="st">"StandardUMAP2D"</span>,</span>
+<span>    label <span class="op">=</span> <span class="cn">TRUE</span>, theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span> <span class="va">trajectory</span></span>
+<span>  <span class="fu"><a href="FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span></span>
+<span>    <span class="va">pancreas_sub</span>,</span>
+<span>    features <span class="op">=</span> <span class="st">"Monocle3_Pseudotime"</span>,</span>
+<span>    reduction <span class="op">=</span> <span class="st">"StandardUMAP2D"</span>,</span>
+<span>    theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span> <span class="va">trajectory</span></span>
+<span><span class="op">}</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

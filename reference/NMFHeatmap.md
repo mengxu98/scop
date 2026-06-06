@@ -472,9 +472,7 @@ ht_cells <- NMFHeatmap(
   width = 3,
   height = 0.5
 )
-
 ht_cells$plot
-
 
 ht_features <- NMFHeatmap(
   pancreas_sub,
@@ -482,6 +480,5 @@ ht_features <- NMFHeatmap(
   width = 3,
   height = 0.5
 )
-
 ht_features$plot
 ```

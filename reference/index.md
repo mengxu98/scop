@@ -90,6 +90,18 @@
 - [`integration_scop()`](https://mengxu98.github.io/scop/reference/integration_scop.md)
   : The integration workflow
 
+### Metacell Analysis
+
+- [`RunMetaCell()`](https://mengxu98.github.io/scop/reference/RunMetaCell.md)
+  : Run metacell partitioning for single-cell data
+- [`RunmcRigor()`](https://mengxu98.github.io/scop/reference/RunmcRigor.md)
+  : Run mcRigor metacell partition assessment
+
+### Metacell Plots
+
+- [`MetaCellPlot()`](https://mengxu98.github.io/scop/reference/MetaCellPlot.md)
+  : Visualize metacell partitions on a dimensionality reduction
+
 ### Data Integration and Batch Effect Removal
 
 - [`Uncorrected_integrate()`](https://mengxu98.github.io/scop/reference/Uncorrected_integrate.md)
@@ -278,6 +290,8 @@
 
 - [`RunDeconvolution()`](https://mengxu98.github.io/scop/reference/RunDeconvolution.md)
   : Run bulk or pseudobulk deconvolution
+- [`RunCIBERSORT()`](https://mengxu98.github.io/scop/reference/RunCIBERSORT.md)
+  : Run CIBERSORT deconvolution
 - [`RunMilo()`](https://mengxu98.github.io/scop/reference/RunMilo.md) :
   Milo differential abundance wrapper
 - [`RunPermutation()`](https://mengxu98.github.io/scop/reference/RunPermutation.md)
@@ -293,6 +307,10 @@
 
 - [`DeconvolutionPlot()`](https://mengxu98.github.io/scop/reference/DeconvolutionPlot.md)
   : Plot deconvolution results
+- [`ImmuneAbundancePlot()`](https://mengxu98.github.io/scop/reference/ImmuneAbundancePlot.md)
+  : Immune abundance plots
+- [`GeneImmuneCorPlot()`](https://mengxu98.github.io/scop/reference/GeneImmuneCorPlot.md)
+  : Gene-immune correlation butterfly plot
 - [`ProportionTestPlot()`](https://mengxu98.github.io/scop/reference/ProportionTestPlot.md)
   : Proportion Test Plot
 
@@ -319,6 +337,8 @@
   : Plot differential DoRothEA TF activity
 - [`EnrichmentPlot()`](https://mengxu98.github.io/scop/reference/EnrichmentPlot.md)
   : Enrichment Plot
+- [`FerrisWheelPlot()`](https://mengxu98.github.io/scop/reference/FerrisWheelPlot.md)
+  : Ferris Wheel Plot
 - [`GSEAPlot()`](https://mengxu98.github.io/scop/reference/GSEAPlot.md)
   : GSEA Plot
 - [`GSVAPlot()`](https://mengxu98.github.io/scop/reference/GSVAPlot.md)
@@ -374,6 +394,8 @@
   : Lineage Plot
 - [`PAGAPlot()`](https://mengxu98.github.io/scop/reference/PAGAPlot.md)
   : PAGA plot
+- [`PalantirTrajectoryPlot()`](https://mengxu98.github.io/scop/reference/PalantirTrajectoryPlot.md)
+  : Plot Palantir trajectories
 - [`PseudotimeProjectionPlot()`](https://mengxu98.github.io/scop/reference/PseudotimeProjectionPlot.md)
   : Pseudotime Projection Plot
 - [`VelocityPlot()`](https://mengxu98.github.io/scop/reference/VelocityPlot.md)
@@ -423,7 +445,7 @@
 - [`SCENICPlot()`](https://mengxu98.github.io/scop/reference/SCENICPlot.md)
   : Plot top regulon specificity scores from SCENIC results
 
-### Benchmark and Genomic Track Plots
+### Other
 
 - [`BenchmarkPlot()`](https://mengxu98.github.io/scop/reference/BenchmarkPlot.md)
   : Plot benchmark metrics
@@ -431,6 +453,10 @@
   : Coverage track plot for ATAC data
 - [`LISIPlot()`](https://mengxu98.github.io/scop/reference/LISIPlot.md)
   : Plot LISI scores
+- [`tAgePlot()`](https://mengxu98.github.io/scop/reference/tAgePlot.md)
+  : Plot tAge transcriptomic aging-clock predictions
+- [`RuntAge()`](https://mengxu98.github.io/scop/reference/RuntAge.md) :
+  Run tAge transcriptomic aging-clock prediction
 
 ### SCExplorer
 
@@ -518,6 +544,8 @@
   List cached databases
 - [`PrepareDB()`](https://mengxu98.github.io/scop/reference/PrepareDB.md)
   : Prepare the gene annotation databases
+- [`RunCisTarget()`](https://mengxu98.github.io/scop/reference/RunCisTarget.md)
+  : Run cisTarget motif enrichment on a GRN adjacency table
 
 ### Data
 

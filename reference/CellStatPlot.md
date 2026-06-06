@@ -274,24 +274,6 @@ CellStatPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-01 08:54:36] Start standard processing workflow...
-#> ℹ [2026-06-01 08:54:36] Checking a list of <Seurat>...
-#> ! [2026-06-01 08:54:37] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-01 08:54:37] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-01 08:54:38] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-01 08:54:38] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-01 08:54:38] Number of available HVF: 2000
-#> ℹ [2026-06-01 08:54:38] Finished check
-#> ℹ [2026-06-01 08:54:38] Perform `Seurat::ScaleData()`
-#> ℹ [2026-06-01 08:54:39] Perform pca linear dimension reduction
-#> ℹ [2026-06-01 08:54:39] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-01 08:54:40] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-01 08:54:40] Reorder clusters...
-#> ℹ [2026-06-01 08:54:40] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-01 08:54:40] Perform umap nonlinear dimension reduction
-#> ℹ [2026-06-01 08:54:40] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ℹ [2026-06-01 08:54:43] Perform umap nonlinear dimension reduction using Standardpca (1:23)
-#> ✔ [2026-06-01 08:54:46] Standard processing workflow completed
 p1 <- CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
@@ -300,12 +282,10 @@ p1 <- CellStatPlot(
 )
 p1
 
-
 thisplot::panel_fix(
   p1,
   height = 2, width = 3
 )
-
 
 CellStatPlot(
   pancreas_sub,
@@ -315,7 +295,6 @@ CellStatPlot(
   position = "dodge",
   label = TRUE
 )
-
 
 CellStatPlot(
   pancreas_sub,
@@ -327,13 +306,11 @@ CellStatPlot(
   position = "dodge"
 )
 
-
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   plot_type = "bar"
 )
-
 
 CellStatPlot(
   pancreas_sub,
@@ -341,15 +318,11 @@ CellStatPlot(
   plot_type = "rose"
 )
 
-
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   plot_type = "ring"
 )
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_col()`).
-
 
 CellStatPlot(
   pancreas_sub,
@@ -357,13 +330,11 @@ CellStatPlot(
   plot_type = "pie"
 )
 
-
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   plot_type = "dot"
 )
-
 
 CellStatPlot(
   pancreas_sub,
@@ -372,7 +343,6 @@ CellStatPlot(
   plot_type = "bar"
 )
 
-
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
@@ -380,16 +350,12 @@ CellStatPlot(
   plot_type = "rose"
 )
 
-
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   group.by = "CellType",
   plot_type = "ring"
 )
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_col()`).
-
 
 CellStatPlot(
   pancreas_sub,
@@ -398,14 +364,12 @@ CellStatPlot(
   plot_type = "area"
 )
 
-
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   group.by = "CellType",
   plot_type = "dot"
 )
-
 
 CellStatPlot(
   pancreas_sub,
@@ -414,14 +378,12 @@ CellStatPlot(
   plot_type = "trend"
 )
 
-
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   group.by = "CellType",
   plot_type = "trend_alluvial"
 )
-
 
 CellStatPlot(
   pancreas_sub,
@@ -431,7 +393,6 @@ CellStatPlot(
   individual = TRUE
 )
 
-
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
@@ -439,7 +400,6 @@ CellStatPlot(
   stat_type = "count",
   plot_type = "bar"
 )
-
 
 CellStatPlot(
   pancreas_sub,
@@ -449,7 +409,6 @@ CellStatPlot(
   plot_type = "rose"
 )
 
-
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
@@ -457,9 +416,6 @@ CellStatPlot(
   stat_type = "count",
   plot_type = "ring"
 )
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_col()`).
-
 
 CellStatPlot(
   pancreas_sub,
@@ -469,7 +425,6 @@ CellStatPlot(
   plot_type = "area"
 )
 
-
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
@@ -478,7 +433,6 @@ CellStatPlot(
   plot_type = "dot"
 )
 
-
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
@@ -486,7 +440,6 @@ CellStatPlot(
   stat_type = "count",
   plot_type = "trend"
 )
-
 
 CellStatPlot(
   pancreas_sub,
@@ -497,7 +450,6 @@ CellStatPlot(
   position = "dodge",
   label = TRUE
 )
-
 
 CellStatPlot(
   pancreas_sub,
@@ -509,7 +461,6 @@ CellStatPlot(
   label = TRUE
 )
 
-
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
@@ -519,27 +470,18 @@ CellStatPlot(
   position = "dodge",
   label = TRUE
 )
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_col()`).
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_text_repel()`).
-
 
 CellStatPlot(
   pancreas_sub,
   stat.by = c("CellType", "Phase"),
   plot_type = "sankey"
 )
-#> ! [2026-06-01 08:55:05] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
-
 
 CellStatPlot(
   pancreas_sub,
   stat.by = c("CellType", "Phase"),
   plot_type = "chord"
 )
-#> ! [2026-06-01 08:55:06] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
-
 
 CellStatPlot(
   pancreas_sub,
@@ -550,8 +492,6 @@ CellStatPlot(
     Phase = "S"
   )
 )
-#> ! [2026-06-01 08:55:12] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
-
 
 pancreas_sub$Progenitor <- pancreas_sub$CellType %in% c("Ngn3-low-EP", "Ngn3-high-EP")
 pancreas_sub$G2M <- pancreas_sub$Phase == "G2M"
@@ -574,8 +514,6 @@ CellStatPlot(
   plot_type = "venn",
   stat_level = "TRUE"
 )
-#> ! [2026-06-01 08:55:12] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
-
 
 CellStatPlot(
   pancreas_sub,
@@ -585,12 +523,6 @@ CellStatPlot(
   plot_type = "upset",
   stat_level = "TRUE"
 )
-#> ! [2026-06-01 08:55:16] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
-#> Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
-#> ℹ Please use `linewidth` instead.
-#> ℹ The deprecated feature was likely used in the ggupset package.
-#>   Please report the issue at <https://github.com/const-ae/ggupset/issues>.
-
 
 sum(
   pancreas_sub$Progenitor == "FALSE" &
@@ -598,5 +530,4 @@ sum(
     pancreas_sub$Fancb_Expressed == "TRUE" &
     pancreas_sub$Dlg3_Expressed == "FALSE"
 )
-#> [1] 6
 ```
