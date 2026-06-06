@@ -20,7 +20,7 @@ GeneImmuneCorPlot(
   abs_cor_breaks = c(0.2, 0.4),
   heatmap_colors = c("#2166AC", "#67A9CF", "#F7F7F7", "#F4A582", "#B2182B"),
   link_colors = c(Positive = "#E71D36", Negative = "#0073C2", Not = "grey82"),
-  link_sizes = c(">= 0.4" = 1.5, "0.2 - 0.4" = 0.8, "< 0.2" = 0.3),
+  link_sizes = c(`>= 0.4` = 1.5, `0.2 - 0.4` = 0.8, `< 0.2` = 0.3),
   title = NULL,
   subtitle = NULL,
   theme_use = "theme_scop",
@@ -34,7 +34,8 @@ GeneImmuneCorPlot(
 - object:
 
   Optional `Seurat`, `SummarizedExperiment`, deconvolution bundle, or
-  matrix-like object.
+  matrix-like object used to resolve expression and immune abundance
+  data.
 
 - gene.data:
 
@@ -54,13 +55,17 @@ GeneImmuneCorPlot(
 
   Metadata columns to extract from a `Seurat` object.
 
-- assay, layer:
+- assay:
 
-  Expression assay and layer settings.
+  Assay used for `Seurat` or `SummarizedExperiment` expression.
+
+- layer:
+
+  Assay layer used for `Seurat` expression.
 
 - cor_method:
 
-  Correlation method.
+  Correlation method. Default is `"spearman"`.
 
 - p_cutoff:
 
@@ -68,7 +73,8 @@ GeneImmuneCorPlot(
 
 - abs_cor_breaks:
 
-  Two numeric breakpoints for link width categories.
+  Two numeric breakpoints for link width categories. Default
+  `c(0.2, 0.4)` creates `< 0.2`, `0.2 - 0.4`, and `>= 0.4`.
 
 - heatmap_colors:
 
@@ -86,9 +92,13 @@ GeneImmuneCorPlot(
 
   Plot title and subtitle.
 
-- theme_use, theme_args:
+- theme_use:
 
-  Theme settings.
+  Theme function name.
+
+- theme_args:
+
+  Additional theme arguments.
 
 - verbose:
 
