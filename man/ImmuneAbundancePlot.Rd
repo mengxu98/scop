@@ -43,30 +43,27 @@ ImmuneAbundancePlot(
 )
 }
 \arguments{
-\item{object}{Optional \code{SummarizedExperiment}, \code{Seurat},
-deconvolution bundle, or matrix-like object.}
+\item{object}{Optional \code{SummarizedExperiment}, \code{Seurat}, deconvolution bundle,
+or matrix-like object.}
 
 \item{immune.data}{Optional abundance matrix with samples/spots/cells in rows
 and immune cell types or signatures in columns.}
 
 \item{immune.cols}{Metadata columns to extract from a \code{Seurat} object.
-If \code{NULL}, columns matching \code{RCTD_prop_*}, \code{*_prop_*}, or
-\code{*_frac_*} are used.}
+If \code{NULL}, columns matching \verb{RCTD_prop_*}, \verb{*_prop_*}, or \verb{*_frac_*} are used.}
 
 \item{group.by}{Optional grouping column for \code{bar} and \code{box} plots.}
 
 \item{group.data}{Optional named vector or data frame containing sample groups
 when groups cannot be inferred from \code{object}.}
 
-\item{plot_type}{Plot type: \code{"heatmap"}, \code{"bar"}, \code{"box"}, or
-\code{"cor"}.}
+\item{plot_type}{Plot type: \code{"heatmap"}, \code{"bar"}, \code{"box"}, or \code{"cor"}.}
 
 \item{sample_order}{Optional sample order.}
 
 \item{cell_type_order}{Optional immune cell type or signature order.}
 
-\item{scale}{Scaling for heatmap values: \code{"none"}, \code{"row"}, or
-\code{"column"}.}
+\item{scale}{Scaling for heatmap values: \code{"none"}, \code{"row"}, or \code{"column"}.}
 
 \item{cor_method}{Correlation method for \code{plot_type = "cor"}.}
 
@@ -88,8 +85,7 @@ Requires \code{ggpubr}.}
 
 \item{pairwise_method}{Statistical test for box plot comparisons.}
 
-\item{sig_label}{Significance label type for
-\code{ggpubr::stat_compare_means()}.}
+\item{sig_label}{Significance label type for \code{ggpubr::stat_compare_means()}.}
 
 \item{sig_labelsize}{Significance label size.}
 
