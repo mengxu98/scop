@@ -215,10 +215,11 @@ RunRCTD <- function(
     round_counts = round_counts,
     verbose = verbose
   )
-  nonzero_features <- rctd_nonzero_shared_features(
+  count_quality <- rctd_sparse_quality_cpp(
     st_counts = st_counts,
     ref_counts = ref_counts
   )
+  nonzero_features <- rownames(st_counts)[count_quality$keep_features]
   if (length(nonzero_features) == 0L) {
     log_message(
       "No shared features have non-zero counts in both spatial and reference data",
@@ -234,7 +235,8 @@ RunRCTD <- function(
   st_counts <- st_counts[nonzero_features, , drop = FALSE]
   ref_counts <- ref_counts[nonzero_features, , drop = FALSE]
 
-  ref_numi <- Matrix::colSums(ref_counts)
+  ref_numi <- count_quality$ref_numi
+  names(ref_numi) <- colnames(ref_counts)
   keep_ref_numi <- is.finite(ref_numi) & ref_numi > 0
   if (!all(keep_ref_numi)) {
     log_message(
@@ -266,7 +268,8 @@ RunRCTD <- function(
     )
   }
 
-  st_numi <- Matrix::colSums(st_counts)
+  st_numi <- count_quality$st_numi
+  names(st_numi) <- colnames(st_counts)
   keep_spots <- is.finite(st_numi) & st_numi > 0
   if (!all(keep_spots)) {
     log_message(
@@ -317,8 +320,17 @@ RunRCTD <- function(
     spot_ids = colnames(st_counts),
     label_map = label_map
   )
-  weights <- rctd_normalize_weights(weights)
-  srt <- rctd_add_metadata(srt, weights = weights, prefix = prefix)
+  weight_summary <- rctd_finalize_weights_cpp(
+    weights = weights,
+    all_spots = colnames(srt)
+  )
+  weights <- weight_summary$weights
+  srt <- rctd_add_metadata(
+    srt,
+    weights = weights,
+    prefix = prefix,
+    metadata = weight_summary
+  )
 
   if (isTRUE(store_results)) {
     srt@tools[["RCTD"]] <- list(
@@ -505,6 +517,9 @@ rctd_get_count_matrix <- function(
   if (!inherits(mat, "Matrix")) {
     mat <- Matrix::Matrix(as.matrix(mat), sparse = TRUE)
   }
+  if (!inherits(mat, "dgCMatrix")) {
+    mat <- methods::as(mat, "dgCMatrix")
+  }
   mat@x[!is.finite(mat@x) | mat@x < 0] <- 0
   non_integer <- abs(mat@x - round(mat@x)) > sqrt(.Machine$double.eps)
   if (any(non_integer)) {
@@ -527,8 +542,10 @@ rctd_get_count_matrix <- function(
 }
 
 rctd_nonzero_shared_features <- function(st_counts, ref_counts) {
-  keep <- Matrix::rowSums(st_counts) > 0 & Matrix::rowSums(ref_counts) > 0
-  rownames(st_counts)[keep]
+  st_counts <- methods::as(st_counts, "dgCMatrix")
+  ref_counts <- methods::as(ref_counts, "dgCMatrix")
+  quality <- rctd_sparse_quality_cpp(st_counts, ref_counts)
+  rownames(st_counts)[quality$keep_features]
 }
 
 rctd_get_spatial_coords <- function(
@@ -835,24 +852,17 @@ rctd_orient_weights <- function(weights, spot_ids, label_map) {
 
 rctd_normalize_weights <- function(weights) {
   weights <- as.matrix(weights)
-  weights[!is.finite(weights) | weights < 0] <- 0
-  totals <- rowSums(weights)
-  keep <- is.finite(totals) & totals > 0
-  weights[keep, ] <- sweep(weights[keep, , drop = FALSE], 1, totals[keep], "/")
-  weights[!keep, ] <- 0
-  weights
+  rctd_normalize_weights_cpp(weights)
 }
 
-rctd_add_metadata <- function(srt, weights, prefix = "RCTD") {
+rctd_add_metadata <- function(srt, weights, prefix = "RCTD", metadata = NULL) {
   all_spots <- colnames(srt)
-  full_weights <- matrix(
-    NA_real_,
-    nrow = length(all_spots),
-    ncol = ncol(weights),
-    dimnames = list(all_spots, colnames(weights))
-  )
-  common <- intersect(all_spots, rownames(weights))
-  full_weights[common, ] <- weights[common, , drop = FALSE]
+  if (is.null(metadata)) {
+    metadata <- rctd_metadata_cpp(as.matrix(weights), all_spots)
+    full_weights <- metadata$weights
+  } else {
+    full_weights <- metadata$full_weights
+  }
   meta <- as.data.frame(full_weights, check.names = FALSE)
   prop_cols <- paste0(
     prefix,
@@ -861,22 +871,7 @@ rctd_add_metadata <- function(srt, weights, prefix = "RCTD") {
   )
   colnames(meta) <- prop_cols
 
-  dominant <- rep(NA_character_, nrow(full_weights))
-  max_prop <- rep(NA_real_, nrow(full_weights))
-  row_has_value <- rowSums(!is.na(full_weights)) > 0
-  if (any(row_has_value)) {
-    mat <- full_weights[row_has_value, , drop = FALSE]
-    mat[is.na(mat)] <- 0
-    max_idx <- max.col(mat, ties.method = "first")
-    row_max <- mat[cbind(seq_len(nrow(mat)), max_idx)]
-    dominant[row_has_value] <- ifelse(
-      row_max > 0,
-      colnames(full_weights)[max_idx],
-      NA_character_
-    )
-    max_prop[row_has_value] <- row_max
-  }
-  meta[[paste0(prefix, "_dominant_type")]] <- dominant
-  meta[[paste0(prefix, "_max_prop")]] <- max_prop
+  meta[[paste0(prefix, "_dominant_type")]] <- metadata$dominant
+  meta[[paste0(prefix, "_max_prop")]] <- metadata$max_prop
   Seurat::AddMetaData(srt, metadata = meta)
 }
