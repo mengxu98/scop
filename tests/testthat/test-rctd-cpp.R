@@ -71,13 +71,18 @@ test_that("RCTD metadata helper matches metadata fill and dominant summaries", {
     c(
       0.25, 0.75,
       0.00, 0.00,
-      0.60, 0.40
+      0.60, 0.40,
+      NA, NA,
+      Inf, 1.00
     ),
-    nrow = 3,
+    nrow = 5,
     byrow = TRUE,
-    dimnames = list(c("Spot1", "Spot3", "Spot4"), c("Alpha/Beta", "Delta"))
+    dimnames = list(
+      c("Spot1", "Spot3", "Spot4", "Spot5", "Spot6"),
+      c("Alpha/Beta", "Delta")
+    )
   )
-  all_spots <- paste0("Spot", 1:5)
+  all_spots <- paste0("Spot", 1:7)
   out <- rctd_metadata_cpp(weights, all_spots)
 
   expected_weights <- matrix(
@@ -87,8 +92,8 @@ test_that("RCTD metadata helper matches metadata fill and dominant summaries", {
     dimnames = list(all_spots, colnames(weights))
   )
   expected_weights[rownames(weights), ] <- weights
-  expected_dominant <- c("Delta", NA, NA, "Alpha/Beta", NA)
-  expected_max <- c(0.75, NA, 0, 0.60, NA)
+  expected_dominant <- c("Delta", NA, NA, "Alpha/Beta", NA, "Alpha/Beta", NA)
+  expected_max <- c(0.75, NA, 0, 0.60, NA, Inf, NA)
 
   expect_equal(out$weights, expected_weights)
   expect_equal(out$dominant, expected_dominant)
