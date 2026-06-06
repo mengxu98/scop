@@ -8,9 +8,9 @@
 #' @inheritParams standard_scop
 #' @param object A `SummarizedExperiment` object containing bulk-like counts.
 #' @param reference A `Seurat` reference object used to build cell-type
-#' profiles.
-#' @param method Deconvolution method. One of `"MuSiC"`, `"BisqueRNA"`, or
-#' `"BayesPrism"`.
+#' profiles. Not required for `"CIBERSORT"`.
+#' @param method Deconvolution method. One of `"MuSiC"`, `"BisqueRNA"`,
+#' `"BayesPrism"`, or `"CIBERSORT"`.
 #' @param group.by Metadata column in `reference` defining reference cell
 #' types.
 #' @param sample.by Metadata column in `reference` defining biological
@@ -63,9 +63,9 @@ RunDeconvolution <- function(object, ...) {
 #' @export
 RunDeconvolution.SummarizedExperiment <- function(
   object,
-  reference,
-  method = c("MuSiC", "BisqueRNA", "BayesPrism"),
-  group.by,
+  reference = NULL,
+  method = c("MuSiC", "BisqueRNA", "BayesPrism", "CIBERSORT"),
+  group.by = NULL,
   sample.by = NULL,
   cellstate.by = NULL,
   bulk_assay = "counts",
@@ -86,20 +86,21 @@ RunDeconvolution.SummarizedExperiment <- function(
     bulk_se = object,
     bulk_assay = bulk_assay
   )
-  ctx$reference <- build_reference_profiles(
-    ref_srt = reference,
-    group.by = group.by,
-    sample.by = sample.by,
-    cellstate.by = cellstate.by,
-    assay = ref_assay,
-    layer = ref_layer
-  )
-
   method_info <- canonical_method(method)
   if (!identical(method_info$module, "deconv")) {
     log_message(
       "{.arg method} must resolve to a supported deconvolution method.",
       message_type = "error"
+    )
+  }
+  if (!identical(method_info$method, "deconv_CIBERSORT")) {
+    ctx$reference <- build_reference_profiles(
+      ref_srt = reference,
+      group.by = group.by,
+      sample.by = sample.by,
+      cellstate.by = cellstate.by,
+      assay = ref_assay,
+      layer = ref_layer
     )
   }
   bundle <- run_deconv(
@@ -708,6 +709,350 @@ RunBayesPrism <- function(
   )
 }
 
+#' @title Run CIBERSORT deconvolution
+#'
+#' @description
+#' Estimate immune cell proportions from a bulk expression matrix using the
+#' external `CIBERSORT` package. `sig_matrix = "LM22"` downloads the LM22
+#' signature matrix from `mengxu98/datasets` and caches it locally.
+#'
+#' @md
+#' @inheritParams RunDeconvolution
+#' @param object Optional `SummarizedExperiment` object or expression matrix.
+#' When a `SummarizedExperiment` is provided, results are stored in
+#' `metadata(object)[["Deconvolution"]]`.
+#' @param count_matrix Optional expression matrix with genes in rows and samples
+#' in columns. Used when `object` is not provided as a matrix.
+#' @param sig_matrix Signature matrix, local file path, or `"LM22"`.
+#' @param perm Number of CIBERSORT permutations.
+#' @param QN Whether CIBERSORT should use quantile normalization.
+#' @param absolute Passed to CIBERSORT when supported by the installed package.
+#'
+#' @return A deconvolution result bundle for matrix input, or the modified
+#' `SummarizedExperiment` object for `SummarizedExperiment` input.
+#'
+#' @export
+#'
+#' @examples
+#' data(islet_bulk)
+#'
+#' if (FALSE) {
+#' # Run CIBERSORT
+#' islet_bulk <- RunCIBERSORT(
+#'   object = islet_bulk,
+#'   sig_matrix = "LM22",
+#'   bulk_assay = "counts",
+#'   perm = 100,
+#'   QN = TRUE
+#' )
+#'
+#' # Immune abundance stacked bar plot
+#' p1 <- ImmuneAbundancePlot(
+#'   object = islet_bulk,
+#'   plot_type = "bar",
+#'   group.by = "condition"
+#' )
+#' p1
+#'
+#' # Immune cell correlation heatmap
+#' p2 <- ImmuneAbundancePlot(
+#'   object = islet_bulk,
+#'   plot_type = "cor"
+#' )
+#' p2
+#'
+#' # Gene-immune correlation butterfly plot
+#' p3 <- GeneImmuneCorPlot(
+#'   object = islet_bulk,
+#'   features = rownames(SummarizedExperiment::assay(islet_bulk, "counts"))[1:3]
+#' )
+#' p3
+#' }
+RunCIBERSORT <- function(
+  object = NULL,
+  count_matrix = NULL,
+  sig_matrix = "LM22",
+  bulk_assay = "counts",
+  perm = 100,
+  QN = TRUE,
+  absolute = FALSE,
+  verbose = TRUE,
+  ...
+) {
+  input_object <- object
+  if (is.null(count_matrix)) {
+    if (methods::is(object, "SummarizedExperiment")) {
+      count_matrix <- SummarizedExperiment::assay(object, bulk_assay)
+    } else if (inherits(object, c("matrix", "data.frame", "Matrix"))) {
+      count_matrix <- object
+      input_object <- NULL
+    }
+  }
+  if (is.null(count_matrix)) {
+    log_message(
+      "{.arg object} must be a {.cls SummarizedExperiment} or expression matrix, or {.arg count_matrix} must be provided.",
+      message_type = "error"
+    )
+  }
+
+  bundle <- run_cibersort_bundle(
+    count_matrix = count_matrix,
+    sig_matrix = sig_matrix,
+    perm = perm,
+    QN = QN,
+    absolute = absolute,
+    verbose = verbose,
+    ...
+  )
+
+  if (methods::is(input_object, "SummarizedExperiment")) {
+    method_name <- "CIBERSORT"
+    store <- list(
+      input = list(
+        bulk_assay = bulk_assay,
+        backend = "r"
+      ),
+      active_method = method_name,
+      methods = stats::setNames(list(bundle), method_name),
+      results = deconv_schema(bundle$results),
+      parameters = bundle$parameters %||% list(),
+      details = bundle$details %||% list(),
+      status = list(
+        method = method_name,
+        status = bundle$status %||% "failed",
+        reason = bundle$reason %||% NULL
+      )
+    )
+    return(store_meta(input_object, "Deconvolution", store))
+  }
+  bundle
+}
+
+run_cibersort_bundle <- function(
+  count_matrix,
+  sig_matrix = "LM22",
+  perm = 100,
+  QN = TRUE,
+  absolute = FALSE,
+  verbose = TRUE,
+  ...
+) {
+  if (!requireNamespace("CIBERSORT", quietly = TRUE)) {
+    log_message(
+      paste(
+        "{.pkg CIBERSORT} is required for {.fn RunCIBERSORT}.",
+        "Install it with {.code devtools::install_github('Moonerss/CIBERSORT')}",
+        "or provide another installed CIBERSORT-compatible backend."
+      ),
+      message_type = "error"
+    )
+  }
+  count_matrix <- cibersort_check_matrix(count_matrix, "count_matrix")
+  signature <- resolve_cibersort_signature(sig_matrix, verbose = verbose)
+  sig_matrix_use <- cibersort_check_matrix(signature$matrix, "sig_matrix")
+  common_genes <- intersect(rownames(sig_matrix_use), rownames(count_matrix))
+  if (length(common_genes) == 0L) {
+    log_message(
+      "No shared genes between {.arg sig_matrix} and {.arg count_matrix}.",
+      message_type = "error"
+    )
+  }
+  if (length(common_genes) < nrow(sig_matrix_use)) {
+    log_message(
+      "Use {.val {length(common_genes)}} shared genes for CIBERSORT",
+      verbose = verbose
+    )
+  }
+  sig_matrix_use <- sig_matrix_use[common_genes, , drop = FALSE]
+  count_matrix <- count_matrix[common_genes, , drop = FALSE]
+
+  cibersort_fun <- get_namespace_fun("CIBERSORT", "cibersort")
+  call_args <- utils::modifyList(
+    list(
+      sig_matrix = sig_matrix_use,
+      mixture_file = as.matrix(count_matrix),
+      perm = perm,
+      QN = QN,
+      absolute = absolute
+    ),
+    list(...)
+  )
+  call_args <- call_args[names(call_args) %in% names(formals(cibersort_fun))]
+  fit <- tryCatch(
+    do.call(cibersort_fun, call_args),
+    error = function(e) e
+  )
+  if (inherits(fit, "error")) {
+    return(list(
+      status = "failed",
+      reason = fit$message,
+      results = data.frame(),
+      details = list(
+        engine = "CIBERSORT::cibersort",
+        signature_source = signature$source
+      ),
+      parameters = list(
+        method = "CIBERSORT",
+        perm = perm,
+        QN = QN,
+        absolute = absolute,
+        sig_matrix = signature$label
+      )
+    ))
+  }
+
+  parsed <- parse_cibersort_result(fit)
+  list(
+    status = "success",
+    reason = NULL,
+    results = prop_long(parsed$proportion_matrix, method_name = "CIBERSORT"),
+    details = list(
+      engine = "CIBERSORT::cibersort",
+      package_backend = TRUE,
+      signature_source = signature$source,
+      proportion_matrix = parsed$proportion_matrix,
+      statistics = parsed$statistics,
+      raw_results = parsed$raw_results
+    ),
+    parameters = list(
+      method = "CIBERSORT",
+      perm = perm,
+      QN = QN,
+      absolute = absolute,
+      sig_matrix = signature$label
+    )
+  )
+}
+
+cibersort_check_matrix <- function(x, arg_name) {
+  if (is.null(x)) {
+    log_message(
+      "{.arg {arg_name}} must be provided.",
+      message_type = "error"
+    )
+  }
+  dim_names <- dimnames(as.matrix(x))
+  x <- as.matrix(x)
+  x <- suppressWarnings(matrix(
+    as.numeric(x),
+    nrow = nrow(x),
+    ncol = ncol(x),
+    dimnames = dim_names
+  ))
+  if (is.null(rownames(x)) || any(!nzchar(rownames(x)))) {
+    log_message(
+      "{.arg {arg_name}} must have gene names in rownames.",
+      message_type = "error"
+    )
+  }
+  if (is.null(colnames(x)) || any(!nzchar(colnames(x)))) {
+    log_message(
+      "{.arg {arg_name}} must have column names.",
+      message_type = "error"
+    )
+  }
+  x[!is.finite(x)] <- 0
+  x
+}
+
+resolve_cibersort_signature <- function(sig_matrix = "LM22", verbose = TRUE) {
+  if (inherits(sig_matrix, c("matrix", "data.frame", "Matrix"))) {
+    return(list(
+      matrix = sig_matrix,
+      label = "custom",
+      source = "user-provided matrix"
+    ))
+  }
+  if (!is.character(sig_matrix) || length(sig_matrix) != 1L) {
+    log_message(
+      "{.arg sig_matrix} must be a matrix, data frame, local path, or {.val LM22}.",
+      message_type = "error"
+    )
+  }
+  if (file.exists(sig_matrix)) {
+    mat <- if (grepl("\\.rds$", sig_matrix, ignore.case = TRUE)) {
+      readRDS(sig_matrix)
+    } else {
+      utils::read.delim(sig_matrix, row.names = 1, check.names = FALSE)
+    }
+    return(list(
+      matrix = mat,
+      label = normalizePath(sig_matrix, mustWork = FALSE),
+      source = normalizePath(sig_matrix, mustWork = FALSE)
+    ))
+  }
+  if (!identical(toupper(sig_matrix), "LM22")) {
+    log_message(
+      "{.arg sig_matrix} is not a readable file and is not {.val LM22}.",
+      message_type = "error"
+    )
+  }
+
+  cache_dir <- file.path(tools::R_user_dir("scop", "data"), "CIBERSORT")
+  cache_file <- file.path(cache_dir, "LM22.rds")
+  url <- "https://raw.githubusercontent.com/mengxu98/datasets/main/CIBERSORT/LM22.rds"
+  if (!file.exists(cache_file)) {
+    if (!dir.exists(cache_dir)) {
+      dir.create(cache_dir, recursive = TRUE, showWarnings = FALSE)
+    }
+    tmp <- tempfile(fileext = ".rds")
+    ok <- tryCatch(
+      {
+        utils::download.file(url, tmp, mode = "wb", quiet = !verbose)
+        file.exists(tmp) && file.info(tmp)$size > 0
+      },
+      error = function(e) FALSE
+    )
+    if (!isTRUE(ok)) {
+      log_message(
+        paste(
+          "Failed to download LM22 from {.url {url}}.",
+          "Add {.file CIBERSORT/LM22.rds} to {.url https://github.com/mengxu98/datasets}",
+          "or pass a local/custom {.arg sig_matrix}."
+        ),
+        message_type = "error"
+      )
+    }
+    file.copy(tmp, cache_file, overwrite = TRUE)
+  }
+  list(
+    matrix = readRDS(cache_file),
+    label = "LM22",
+    source = cache_file
+  )
+}
+
+parse_cibersort_result <- function(fit) {
+  df <- as.data.frame(fit, check.names = FALSE)
+  if ("Mixture" %in% colnames(df)) {
+    rownames(df) <- as.character(df$Mixture)
+    df$Mixture <- NULL
+  }
+  if (
+    is.null(rownames(df)) ||
+      all(rownames(df) %in% as.character(seq_len(nrow(df))))
+  ) {
+    log_message(
+      "{.pkg CIBERSORT} results must contain sample names in rownames or a {.field Mixture} column.",
+      message_type = "error"
+    )
+  }
+  stat_cols <- intersect(
+    c("P-value", "P.value", "PValue", "Correlation", "RMSE"),
+    colnames(df)
+  )
+  prop_cols <- setdiff(colnames(df), stat_cols)
+  numeric_prop <- vapply(df[, prop_cols, drop = FALSE], is.numeric, logical(1))
+  prop_cols <- prop_cols[numeric_prop]
+  prop_matrix <- as.matrix(df[, prop_cols, drop = FALSE])
+  prop_matrix[!is.finite(prop_matrix)] <- 0
+  list(
+    proportion_matrix = prop_matrix,
+    statistics = df[, stat_cols, drop = FALSE],
+    raw_results = df
+  )
+}
+
 RunTOAST <- function(
   count_matrix,
   condition,
@@ -935,7 +1280,8 @@ run_deconv <- function(
   method_map <- list(
     deconv_MuSiC = RunMuSiC,
     deconv_BisqueRNA = RunBisqueRNA,
-    deconv_BayesPrism = RunBayesPrism
+    deconv_BayesPrism = RunBayesPrism,
+    deconv_CIBERSORT = RunCIBERSORT
   )
   method_fun <- method_map[[method_name]]
   if (is.null(method_fun)) {

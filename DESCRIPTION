@@ -51,6 +51,7 @@ Suggests:
     Biobase,
     BiocNeighbors,
     biomaRt,
+    CIBERSORT,
     cluster,
     Coralysis,
     circlize,
@@ -78,6 +79,7 @@ Suggests:
     intrinsicDimension,
     irlba,
     limma,
+    linkET,
     MatrixGenerics,
     metR,
     miloR,
@@ -129,6 +131,9 @@ Suggests:
     umap,
     UCell,
     yardstick
+Remotes:
+    Moonerss/CIBERSORT,
+    Hy4m/linkET
 LinkingTo:
     cli,
     Rcpp,

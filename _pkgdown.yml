@@ -205,6 +205,7 @@ reference:
 - subtitle: "Bulk and Composition Analysis"
 - contents:
   - RunDeconvolution
+  - RunCIBERSORT
   - RunMilo
   - RunPermutation
   - RunPropeller
@@ -214,6 +215,8 @@ reference:
 - subtitle: "Bulk and Composition Plots"
 - contents:
   - DeconvolutionPlot
+  - ImmuneAbundancePlot
+  - GeneImmuneCorPlot
   - ProportionTestPlot
 
 - subtitle: "Enrichment Analysis"
