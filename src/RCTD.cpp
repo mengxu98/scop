@@ -158,18 +158,23 @@ List metadata_from_weights(NumericMatrix weights, CharacterVector all_spots) {
     const int source_row = hit->second;
     double row_max = -std::numeric_limits<double>::infinity();
     int max_index = 0;
+    bool row_has_value = false;
     for (int col = 0; col < n_types; ++col) {
       const double value = weights(source_row, col);
       full_weights(spot, col) = value;
-      const double comparable = (std::isfinite(value) && value > 0.0) ? value : 0.0;
+      const bool is_missing = NumericVector::is_na(value);
+      const double comparable = is_missing ? 0.0 : value;
+      row_has_value = row_has_value || !is_missing;
       if (col == 0 || comparable > row_max) {
         row_max = comparable;
         max_index = col;
       }
     }
-    max_prop[spot] = row_max;
-    if (row_max > 0.0) {
-      dominant[spot] = cell_types[max_index];
+    if (row_has_value) {
+      max_prop[spot] = row_max;
+      if (row_max > 0.0) {
+        dominant[spot] = cell_types[max_index];
+      }
     }
   }
 
