@@ -317,20 +317,27 @@ RunDimsReduction <- function(
     if (linear_reduction == "pca") {
       pca_out <- srt[[paste0(prefix, linear_reduction)]]
       if (inherits(srt[[assay]], "Assay5")) {
-        center <- rowMeans(
-          SeuratObject::LayerData(
-            object = srt[[assay]],
-            layer = "scale.data",
-            features = features
-          )
-        )[features]
+        scale_mat <- as.matrix(SeuratObject::LayerData(
+          object = srt[[assay]],
+          layer = "scale.data"
+        ))
       } else {
-        center <- rowMeans(
-          GetAssayData5(srt, assay = assay, layer = "scale.data")[
-            features, ,
-            drop = FALSE
-          ]
+        scale_mat <- as.matrix(GetAssayData5(srt, assay = assay, layer = "scale.data"))
+      }
+      scale_features <- rownames(scale_mat)
+      features_use <- intersect(features, scale_features)
+      if (length(features_use) != length(features)) {
+        dropped <- setdiff(features, features_use)
+        log_message(
+          "Some PCA features are absent from scale.data and will be dropped: {.val {dropped}}",
+          message_type = "warning",
+          verbose = verbose
         )
+      }
+      if (inherits(srt[[assay]], "Assay5")) {
+        center <- rowMeans(scale_mat[features_use, , drop = FALSE])
+      } else {
+        center <- rowMeans(scale_mat[features_use, , drop = FALSE])
       }
       model <- list(
         sdev = pca_out@stdev,
