@@ -57,7 +57,6 @@
 <span>  genome <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  data_dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  prefix <span class="op">=</span> <span class="st">"scenic"</span>,</span>
-<span>  group.by <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  min_expr_cells <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  min_regulon_size <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cpp"</span>, <span class="st">"python"</span><span class="op">)</span>,</span>
@@ -150,18 +149,10 @@ reference files. If <code>NULL</code>, files are stored under
 <dd><p>Prefix for SCENIC output files.</p></dd>
 
 
-<dt id="arg-group-by">group.by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
-<dd><p>Optional metadata column used to aggregate single-cell
-counts before GRNBoost2. When <code>NULL</code> (default), GRNBoost2 runs on the
-original single-cell count matrix. To use pre-built metacells, pass the
-metacell membership column (e.g. <code>"Metacell_id"</code> from <code><a href="RunMetaCell.html">RunMetaCell()</a></code>).
-All cells sharing the same <code>group.by</code> value are summed into one metacell
-profile.</p></dd>
-
-
 <dt id="arg-min-expr-cells">min_expr_cells<a class="anchor" aria-label="anchor" href="#arg-min-expr-cells"></a></dt>
-<dd><p>Minimum number of cells or metacells where a gene must
-be detected before GRNBoost2.</p></dd>
+<dd><p>Minimum number of cells where a gene must be detected
+before GRNBoost2. To run SCENIC on metacells, first create a metacell-level
+object with <code><a href="RunMetaCell.html">RunMetaCell()</a></code> and pass that object to <code>RunSCENIC()</code>.</p></dd>
 
 
 <dt id="arg-min-regulon-size">min_regulon_size<a class="anchor" aria-label="anchor" href="#arg-min-regulon-size"></a></dt>
@@ -169,7 +160,7 @@ be detected before GRNBoost2.</p></dd>
 
 
 <dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
-<dd><p>SCENIC backend. <code>"cpp"</code> uses the native R/C++ path and
+<dd><p>SCENIC backend. <code>"cpp"</code> uses the R/C++ path and
 <code>"python"</code> uses the Python pySCENIC path. The selected backend controls GRN,
 cisTarget pruning, and AUCell scoring together.</p></dd>
 

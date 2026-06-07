@@ -18,7 +18,6 @@ RunSCENIC(
   genome = NULL,
   data_dir = NULL,
   prefix = "scenic",
-  group.by = NULL,
   min_expr_cells = 3,
   min_regulon_size = 10,
   backend = c("cpp", "python"),
@@ -109,20 +108,13 @@ RunSCENIC(
 
   Prefix for SCENIC output files.
 
-- group.by:
-
-  Optional metadata column used to aggregate single-cell counts before
-  GRNBoost2. When `NULL` (default), GRNBoost2 runs on the original
-  single-cell count matrix. To use pre-built metacells, pass the
-  metacell membership column (e.g. `"Metacell_id"` from
-  [`RunMetaCell()`](https://mengxu98.github.io/scop/reference/RunMetaCell.md)).
-  All cells sharing the same `group.by` value are summed into one
-  metacell profile.
-
 - min_expr_cells:
 
-  Minimum number of cells or metacells where a gene must be detected
-  before GRNBoost2.
+  Minimum number of cells where a gene must be detected before
+  GRNBoost2. To run SCENIC on metacells, first create a metacell-level
+  object with
+  [`RunMetaCell()`](https://mengxu98.github.io/scop/reference/RunMetaCell.md)
+  and pass that object to `RunSCENIC()`.
 
 - min_regulon_size:
 
@@ -130,8 +122,8 @@ RunSCENIC(
 
 - backend:
 
-  SCENIC backend. `"cpp"` uses the native R/C++ path and `"python"` uses
-  the Python pySCENIC path. The selected backend controls GRN, cisTarget
+  SCENIC backend. `"cpp"` uses the R/C++ path and `"python"` uses the
+  Python pySCENIC path. The selected backend controls GRN, cisTarget
   pruning, and AUCell scoring together.
 
 - n_rounds:
