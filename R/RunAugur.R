@@ -349,7 +349,7 @@ augur_select_variance <- function(
     } else {
       fit1 <- stats::loess(cv0 ~ mean0)
       fit2 <- stats::loess(cv0 ~ log(mean0))
-      cox <- lmtest::coxtest(fit1, fit2)
+      cox <- get_namespace_fun("lmtest", "coxtest")(fit1, fit2)
       probs <- cox[["Pr(>|z|)"]]
       model <- if (probs[1] < probs[2]) fit1 else fit2
     }

@@ -420,7 +420,8 @@ SpatialGradientPlot <- function(
 }
 
 sgf_require_package <- function(pkg) {
-  if (!requireNamespace(pkg, quietly = TRUE)) {
+  ok <- check_r(pkg, verbose = FALSE)
+  if (!isTRUE(unname(ok[[pkg]]))) {
     log_message(
       "Please install required package before running this function: {.val {pkg}}",
       message_type = "error"
@@ -430,7 +431,8 @@ sgf_require_package <- function(pkg) {
 }
 
 sgf_require_spata2 <- function() {
-  if (!requireNamespace("SPATA2", quietly = TRUE)) {
+  ok <- check_r("theMILOlab/SPATA2", verbose = FALSE)
+  if (!isTRUE(unname(ok[["theMILOlab/SPATA2"]]))) {
     log_message(
       paste(
         "Please install SPATA2 before running spatial gradient screening.",
@@ -443,14 +445,20 @@ sgf_require_spata2 <- function() {
 }
 
 sgf_spata_fun <- function(fun, required = TRUE) {
-  if (!requireNamespace("SPATA2", quietly = TRUE)) {
+  if (isTRUE(required)) {
+    sgf_require_spata2()
+  }
+  out <- tryCatch(get_namespace_fun("SPATA2", fun), error = function(e) NULL)
+  if (!is.null(out)) {
+    return(out)
+  }
+  ns <- tryCatch(getNamespace("SPATA2"), error = function(e) NULL)
+  if (is.null(ns)) {
     if (isTRUE(required)) {
       sgf_require_spata2()
     }
     return(NULL)
   }
-  ns <- asNamespace("SPATA2")
-  out <- tryCatch(getExportedValue("SPATA2", fun), error = function(e) NULL)
   if (is.null(out) && exists(fun, envir = ns, mode = "function", inherits = TRUE)) {
     out <- get(fun, envir = ns, mode = "function", inherits = TRUE)
   }
