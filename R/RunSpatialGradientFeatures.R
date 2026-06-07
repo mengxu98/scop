@@ -636,12 +636,11 @@ sgf_run_cpp_gradient <- function(
     )
   }
 
-  coords <- spatial_dim_coords(
+  coords <- sgf_cpp_coords(
     srt = srt,
     image = image,
-    coord.cols = coord.cols,
-    overlay_image = FALSE
-  )$data
+    coord.cols = coord.cols
+  )
   spots <- intersect(colnames(srt), rownames(coords))
   if (length(spots) == 0L) {
     log_message("No spatial coordinates match spots in {.arg srt}", message_type = "error")
@@ -712,6 +711,27 @@ sgf_run_cpp_gradient <- function(
     top_variables = top_variables,
     parameters = sgf_parameters_df(parameters)
   )
+}
+
+sgf_cpp_coords <- function(srt, image, coord.cols) {
+  if (length(coord.cols) < 2L) {
+    log_message("{.arg coord.cols} must contain at least two coordinate columns", message_type = "error")
+  }
+  coord.cols <- coord.cols[seq_len(2L)]
+  if (is.null(image) && all(coord.cols %in% colnames(srt@meta.data))) {
+    return(data.frame(
+      x = srt@meta.data[[coord.cols[1L]]],
+      y = srt@meta.data[[coord.cols[2L]]],
+      row.names = rownames(srt@meta.data),
+      stringsAsFactors = FALSE
+    ))
+  }
+  spatial_dim_coords(
+    srt = srt,
+    image = image,
+    coord.cols = coord.cols,
+    overlay_image = FALSE
+  )$data
 }
 
 sgf_cpp_reference_spots <- function(
@@ -831,6 +851,7 @@ sgf_prepare_trajectory <- function(object, trajectory_id, start, end, traj_df, w
   if (is.null(start) && is.null(end) && is.null(traj_df)) {
     return(object)
   }
+  invisible(verbose)
   args <- sgf_drop_nulls(list(
     object = object,
     id = trajectory_id,
@@ -838,8 +859,7 @@ sgf_prepare_trajectory <- function(object, trajectory_id, start, end, traj_df, w
     traj_df = traj_df,
     start = start,
     end = end,
-    overwrite = TRUE,
-    verbose = verbose
+    overwrite = TRUE
   ))
   do.call(sgf_spata_fun("addSpatialTrajectory"), args)
 }
