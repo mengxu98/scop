@@ -46,10 +46,9 @@ default assay is used.}
 \item{layer}{Assay layer used as the feature matrix.}
 
 \item{backend}{Backend used to run Augur. \code{"cpp"} uses a parity-preserving
-\code{scop} backend that keeps Augur's sampling, random forest, and metric
-semantics but removes the heavier recipe/bake loop and uses C++ sparse
-matrix preparation where possible. \code{"r"} calls the native
-\code{Augur::calculate_auc} implementation.}
+\code{scop} R/C++ backend that keeps Augur's feature selection, sampling, random
+forest, and metric semantics without requiring the Augur package. \code{"r"}
+calls the native \code{Augur::calculate_auc} implementation.}
 
 \item{features}{Features used by Augur. If \code{NULL}, all features in \code{assay}
 are used.}

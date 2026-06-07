@@ -39,6 +39,7 @@
   * Added a shared native progress helper in `src/log_message.h` for long-running C++ loops. CytoSPACE assignment, scTenifold tensor decomposition, proportion permutation/bootstrap, and sample-level proportion bootstrap now report progress with the same timestamped information style as `thisutils::log_message()`.
 
 * **fix**:
+  * `RunAugur()`: The native `backend = "cpp"` path now performs Augur-style variance and random feature selection inside `scop`, so it no longer requires the GitHub-only `Augur` package unless `backend = "r"` is requested. Native subsample results are accumulated before row binding to reduce repeated table growth, and failed native cell-type tasks now stop with a direct result-structure error instead of falling through to a secondary missing-`metric` error.
   * `RunPalantir()`: Fixed saved plot generation by passing `plot_format` through to Python, saving each embedding from its own matplotlib figure, and accepting scalar `early_group` values such as `"8"` when selecting the starting group.
   * `SCENICPlot()`: Explicit `features` in SCENIC heatmaps now keep the user-supplied regulon order, and `activity_heatmap` aligns `feature_split` to the resolved and displayed regulons.
   * `SCENICPlot()`: `plot_type = "activity_dim"` and `"activity_violin"` now respect all explicitly supplied `features`, instead of applying the six-regulon default preview limit.
