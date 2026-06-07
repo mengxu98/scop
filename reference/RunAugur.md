@@ -60,10 +60,9 @@ RunAugur(
 - backend:
 
   Backend used to run Augur. `"cpp"` uses a parity-preserving `scop`
-  backend that keeps Augur's sampling, random forest, and metric
-  semantics but removes the heavier recipe/bake loop and uses C++ sparse
-  matrix preparation where possible. `"r"` calls the native
-  `Augur::calculate_auc` implementation.
+  R/C++ backend that keeps Augur's feature selection, sampling, random
+  forest, and metric semantics without requiring the Augur package.
+  `"r"` calls the native `Augur::calculate_auc` implementation.
 
 - features:
 

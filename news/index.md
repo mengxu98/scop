@@ -214,6 +214,14 @@
     information style as
     [`thisutils::log_message()`](https://mengxu98.github.io/thisutils/reference/log_message.html).
 - **fix**:
+  - [`RunAugur()`](https://mengxu98.github.io/scop/reference/RunAugur.md):
+    The native `backend = "cpp"` path now performs Augur-style variance
+    and random feature selection inside `scop`, so it no longer requires
+    the GitHub-only `Augur` package unless `backend = "r"` is requested.
+    Native subsample results are accumulated before row binding to
+    reduce repeated table growth, and failed native cell-type tasks now
+    stop with a direct result-structure error instead of falling through
+    to a secondary missing-`metric` error.
   - [`RunPalantir()`](https://mengxu98.github.io/scop/reference/RunPalantir.md):
     Fixed saved plot generation by passing `plot_format` through to
     Python, saving each embedding from its own matplotlib figure, and
