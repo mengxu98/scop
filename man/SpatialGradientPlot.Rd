@@ -27,6 +27,7 @@ SpatialGradientPlot(
   theme_args = list(),
   line_size = 1,
   line_alpha = 0.35,
+  line_fit = c("stored", "lm"),
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE
@@ -82,6 +83,11 @@ Default is \code{list()}.}
 \item{line_size}{Size of fitted gradient lines.}
 
 \item{line_alpha}{Alpha for raw value points.}
+
+\item{line_fit}{Gradient line source. \code{"stored"} uses the saved
+\code{screening$estimate} values produced by the selected backend. \code{"lm"} draws a
+fresh linear fit from \code{screening$value}, which is useful for showing a simple
+monotonic trend even when the backend stores a smoothed curve.}
 
 \item{nrow}{Number of rows in the combined plot.
 Default is \code{NULL}, which means determined automatically based on the number of plots.}
