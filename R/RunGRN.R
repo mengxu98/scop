@@ -324,29 +324,31 @@ grnboost <- function(
       message_type = "error"
     )
   }
-
-  edge_idx <- if (cores > 1L && n_targets > 1L) {
-    workers <- min(cores, n_targets)
-    chunks <- split(
+  use_tasks <- cores > 1L || (isTRUE(verbose) && n_targets > 1L)
+  edge_idx <- if (use_tasks) {
+    task_count <- min(n_targets, max(cores, min(100L, n_targets)))
+    target_tasks <- split(
       target_idx,
-      rep(seq_len(workers), length.out = n_targets)
+      rep(seq_len(task_count), length.out = n_targets)
     )
-    chunks <- chunks[lengths(chunks) > 0L]
+    log_message(
+      "Running C++ GRNBoost2 for {.val {n_targets}} target genes",
+      verbose = verbose
+    )
     result_list <- thisutils::parallelize_fun(
-      x = chunks,
+      x = target_tasks,
       fun = run_chunk,
-      cores = workers,
-      progress_bar_width = min(50L, n_targets),
+      cores = min(cores, length(target_tasks)),
+      progress_bar_width = min(50L, length(target_tasks)),
       verbose = verbose
     )
     do.call(rbind, result_list)
   } else {
-    res <- run_chunk(target_idx)
-    res
+    run_chunk(target_idx)
   }
   if (nrow(edge_idx) == 0L) {
     log_message(
-      "Native GRNBoost2-like inference returned no edges",
+      "C++ GRNBoost2 inference returned no edges",
       message_type = "error"
     )
   }
