@@ -89,6 +89,15 @@ test_that("SPATA2 output tables are standardized to stable column names", {
   expect_equal(unique(screening$reference), "trajectory")
 })
 
+test_that("numeric annotation thresholds are converted for SPATA2", {
+  expect_equal(sgf_format_annotation_threshold(0), ">0")
+  expect_equal(sgf_format_annotation_threshold("0"), ">0")
+  expect_equal(sgf_format_annotation_threshold(" > 0 "), ">0")
+  expect_equal(sgf_format_annotation_threshold("<= 1"), "<=1")
+  expect_equal(sgf_format_annotation_threshold("kmeans_high"), "kmeans_high")
+  expect_error(sgf_format_annotation_threshold(NA_real_), "annotation.threshold")
+})
+
 test_that("top variable table merges significance and best model fits deterministically", {
   significance <- data.frame(
     variable = c("Gene3", "Gene1", "Gene2"),
@@ -136,6 +145,65 @@ test_that("spatial gradient storage keeps only plain data frames", {
   expect_true(all(vapply(stored, is.data.frame, logical(1))))
   expect_false(any(vapply(stored, methods::is, logical(1), class2 = "SPATA2")))
   expect_equal(srt@misc[["SpatialGradientFeatures"]], c("Gene1", "Gene2"))
+})
+
+test_that("cpp backend stores annotation gradient result tables", {
+  srt <- make_spatial_gradient_seurat()
+  srt$source_score <- c(1, 0, 0, 0)
+
+  srt <- RunSpatialGradientFeatures(
+    srt,
+    reference = "annotation",
+    backend = "cpp",
+    result_name = "cpp_annotation",
+    variables = c("Gene1", "Gene2"),
+    annotation.variable = "source_score",
+    annotation.threshold = 0,
+    layer = "counts",
+    coord.cols = c("x", "y"),
+    n_random = 0,
+    n_bins = 3,
+    min_spots = 1,
+    sign_threshold = 1,
+    nfeatures = 2,
+    verbose = FALSE
+  )
+
+  stored <- srt@tools[["SpatialGradientFeatures"]][["cpp_annotation"]]
+  expect_equal(names(stored), c("screening", "significance", "model_fits", "top_variables", "parameters"))
+  expect_true(all(vapply(stored, is.data.frame, logical(1))))
+  expect_false(any(vapply(stored, methods::is, logical(1), class2 = "SPATA2")))
+  expect_true(nrow(stored$screening) > 0)
+  expect_true(nrow(stored$top_variables) > 0)
+  expect_equal(stored$parameters$value[match("backend", stored$parameters$key)], "cpp")
+})
+
+test_that("cpp backend stores trajectory gradient result tables", {
+  srt <- make_spatial_gradient_seurat()
+
+  srt <- RunSpatialGradientFeatures(
+    srt,
+    reference = "trajectory",
+    backend = "cpp",
+    result_name = "cpp_trajectory",
+    variables = c("Gene1", "Gene2"),
+    start = c(1, 1),
+    end = c(2, 2),
+    layer = "counts",
+    coord.cols = c("x", "y"),
+    n_random = 0,
+    n_bins = 3,
+    min_spots = 1,
+    sign_threshold = 1,
+    nfeatures = 2,
+    verbose = FALSE
+  )
+
+  stored <- srt@tools[["SpatialGradientFeatures"]][["cpp_trajectory"]]
+  expect_true(all(vapply(stored, is.data.frame, logical(1))))
+  expect_true(nrow(stored$significance) > 0)
+  expect_true(nrow(stored$model_fits) > 0)
+  expect_equal(unique(stored$screening$mode), "trajectory")
 })
 
 test_that("SpatialGradientPlot handles stored results and missing tables clearly", {
@@ -213,6 +281,7 @@ test_that("RunSpatialGradientFeatures has a clear optional SPATA2 dependency err
     RunSpatialGradientFeatures(
       srt,
       reference = "trajectory",
+      backend = "spata2",
       variables = "Gene1",
       start = c(1, 1),
       end = c(2, 2),
@@ -226,16 +295,29 @@ test_that("RunSpatialGradientFeatures has a clear optional SPATA2 dependency err
 
 test_that("SPATA2 integration stores only stable result tables", {
   testthat::skip_if_not_installed("SPATA2")
+  testthat::skip_if_not(
+    identical(Sys.getenv("SCOP_RUN_SPATA2_INTEGRATION"), "true"),
+    "Set SCOP_RUN_SPATA2_INTEGRATION=true to run the slow SPATA2 integration fixture"
+  )
 
-  srt <- make_spatial_gradient_seurat()
+  data(visium_human_pancreas_sub, package = "scop")
+  srt <- subset(
+    visium_human_pancreas_sub,
+    cells = colnames(visium_human_pancreas_sub)[1:120]
+  )
+  coords <- srt@meta.data[, c("x", "y")]
+  start <- as.numeric(coords[which.min(coords[["x"]]), c("x", "y")])
+  end <- as.numeric(coords[which.max(coords[["x"]]), c("x", "y")])
   srt <- RunSpatialGradientFeatures(
     srt,
     reference = "trajectory",
     result_name = "tiny_trajectory",
-    variables = "Gene1",
-    start = c(1, 1),
-    end = c(2, 2),
+    variables = rownames(srt)[1],
+    start = start,
+    end = end,
+    assay = "Spatial",
     layer = "counts",
+    platform = "VisiumSmall",
     n_random = 5,
     nfeatures = 1,
     verbose = FALSE
