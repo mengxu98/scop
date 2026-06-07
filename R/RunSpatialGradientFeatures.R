@@ -359,6 +359,10 @@ RunSpatialGradientFeatures <- function(
 #' @param palette,palcolor Color palette passed to SCOP plotting helpers.
 #' @param line_size Size of fitted gradient lines.
 #' @param line_alpha Alpha for raw value points.
+#' @param line_fit Gradient line source. `"stored"` uses the saved
+#' `screening$estimate` values produced by the selected backend. `"lm"` draws a
+#' fresh linear fit from `screening$value`, which is useful for showing a simple
+#' monotonic trend even when the backend stores a smoothed curve.
 #'
 #' @return A `ggplot` or `patchwork` object.
 #' @export
@@ -385,6 +389,7 @@ SpatialGradientPlot <- function(
   theme_args = list(),
   line_size = 1,
   line_alpha = 0.35,
+  line_fit = c("stored", "lm"),
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE
@@ -393,6 +398,7 @@ SpatialGradientPlot <- function(
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }
   plot_type <- match.arg(plot_type)
+  line_fit <- match.arg(line_fit)
   result <- sgf_get_result(srt, result_name = result_name)
   features <- sgf_plot_features(result, features = features, nfeatures = nfeatures)
 
@@ -432,6 +438,7 @@ SpatialGradientPlot <- function(
       theme_args = theme_args,
       line_size = line_size,
       line_alpha = line_alpha,
+      line_fit = line_fit,
       nrow = nrow,
       ncol = ncol
     ))
@@ -493,6 +500,7 @@ SpatialGradientPlot <- function(
     theme_args = theme_args,
     line_size = line_size,
     line_alpha = line_alpha,
+    line_fit = line_fit,
     nrow = nrow,
     ncol = ncol
   )
@@ -1390,6 +1398,7 @@ sgf_line_plot <- function(
   theme_args,
   line_size,
   line_alpha,
+  line_fit,
   nrow,
   ncol
 ) {
@@ -1415,12 +1424,25 @@ sgf_line_plot <- function(
       alpha = line_alpha,
       size = 0.8,
       na.rm = TRUE
-    ) +
+    )
+  if (identical(line_fit, "lm")) {
+    p <- p + ggplot2::geom_smooth(
+      ggplot2::aes(y = .data[["value"]]),
+      method = "lm",
+      formula = y ~ x,
+      se = FALSE,
+      linewidth = line_size,
+      na.rm = TRUE
+    )
+  } else {
+    p <- p +
     ggplot2::geom_line(
       ggplot2::aes(y = .data[[y_col]]),
       linewidth = line_size,
       na.rm = TRUE
-    ) +
+    )
+  }
+  p <- p +
     ggplot2::facet_wrap(~variable, scales = "free_y", nrow = nrow, ncol = ncol) +
     ggplot2::scale_color_manual(values = cols) +
     ggplot2::labs(x = "Gradient distance", y = "Expression", color = "Variable") +

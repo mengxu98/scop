@@ -48,6 +48,13 @@ struct FitStats {
   int n_nonzero;
 };
 
+struct GradientStats {
+  double tot_var;
+  double norm_var;
+  double rel_var;
+  double p_value;
+};
+
 inline bool finite2(double x, double y) {
   return std::isfinite(x) && std::isfinite(y);
 }
@@ -163,6 +170,261 @@ FitStats fit_linear(
     }
   }
   return out;
+}
+
+std::vector<double> normalize_minmax(const std::vector<double>& values) {
+  double v_min = std::numeric_limits<double>::infinity();
+  double v_max = -std::numeric_limits<double>::infinity();
+  for (std::size_t i = 0; i < values.size(); ++i) {
+    if (std::isfinite(values[i])) {
+      v_min = std::min(v_min, values[i]);
+      v_max = std::max(v_max, values[i]);
+    }
+  }
+  std::vector<double> out(values.size(), NA_REAL);
+  if (!std::isfinite(v_min) || !std::isfinite(v_max) || !(v_max > v_min)) {
+    return out;
+  }
+  const double denom = v_max - v_min;
+  for (std::size_t i = 0; i < values.size(); ++i) {
+    if (std::isfinite(values[i])) {
+      out[i] = (values[i] - v_min) / denom;
+    }
+  }
+  return out;
+}
+
+double total_variation_rescaled(const std::vector<double>& gradient) {
+  std::vector<double> finite;
+  finite.reserve(gradient.size());
+  for (std::size_t i = 0; i < gradient.size(); ++i) {
+    if (std::isfinite(gradient[i])) {
+      finite.push_back(gradient[i]);
+    }
+  }
+  if (finite.size() < 2) {
+    return NA_REAL;
+  }
+  std::vector<double> scaled = normalize_minmax(finite);
+  bool any_finite = false;
+  for (std::size_t i = 0; i < scaled.size(); ++i) {
+    if (std::isfinite(scaled[i])) {
+      any_finite = true;
+      break;
+    }
+  }
+  if (!any_finite) {
+    return 0.0;
+  }
+  double out = 0.0;
+  for (std::size_t i = 1; i < scaled.size(); ++i) {
+    if (std::isfinite(scaled[i]) && std::isfinite(scaled[i - 1])) {
+      out += std::abs(scaled[i] - scaled[i - 1]);
+    }
+  }
+  return out;
+}
+
+double relative_variation(const std::vector<double>& gradient) {
+  double tv = total_variation_rescaled(gradient);
+  if (!std::isfinite(tv)) {
+    return NA_REAL;
+  }
+  double first = NA_REAL;
+  double last = NA_REAL;
+  for (std::size_t i = 0; i < gradient.size(); ++i) {
+    if (std::isfinite(gradient[i])) {
+      if (!std::isfinite(first)) {
+        first = gradient[i];
+      }
+      last = gradient[i];
+    }
+  }
+  if (!std::isfinite(first) || !std::isfinite(last)) {
+    return NA_REAL;
+  }
+  const double net = std::abs(last - first);
+  if (tv <= 0.0) {
+    return 0.0;
+  }
+  return net / tv;
+}
+
+std::vector<double> local_linear_gradient(
+  const std::vector<double>& x,
+  const std::vector<double>& y,
+  const NumericVector& centers,
+  int n_bins
+) {
+  const int n = static_cast<int>(x.size());
+  std::vector<double> out(static_cast<std::size_t>(centers.size()), NA_REAL);
+  if (n < 3) {
+    return out;
+  }
+  int k = static_cast<int>(std::ceil(static_cast<double>(n) / std::max(1, n_bins) * 3.0));
+  k = std::max(3, std::min(n, k));
+  std::vector<double> distances(static_cast<std::size_t>(n));
+
+  for (int c = 0; c < centers.size(); ++c) {
+    if (!std::isfinite(centers[c])) {
+      continue;
+    }
+    const double center = centers[c];
+    for (int i = 0; i < n; ++i) {
+      distances[static_cast<std::size_t>(i)] = std::abs(x[static_cast<std::size_t>(i)] - center);
+    }
+    std::vector<double> sorted = distances;
+    std::nth_element(sorted.begin(), sorted.begin() + k - 1, sorted.end());
+    double bandwidth = sorted[static_cast<std::size_t>(k - 1)];
+    if (!(bandwidth > 0.0)) {
+      bandwidth = sorted.back();
+    }
+    if (!(bandwidth > 0.0)) {
+      continue;
+    }
+
+    double sw = 0.0, sx = 0.0, sy = 0.0, sxx = 0.0, sxy = 0.0;
+    for (int i = 0; i < n; ++i) {
+      const double d = distances[static_cast<std::size_t>(i)] / bandwidth;
+      if (d > 1.0) {
+        continue;
+      }
+      const double u = 1.0 - d * d * d;
+      const double w = u * u * u;
+      const double xc = x[static_cast<std::size_t>(i)] - center;
+      const double yi = y[static_cast<std::size_t>(i)];
+      sw += w;
+      sx += w * xc;
+      sy += w * yi;
+      sxx += w * xc * xc;
+      sxy += w * xc * yi;
+    }
+    if (!(sw > 0.0)) {
+      continue;
+    }
+    const double den = sw * sxx - sx * sx;
+    if (den > 0.0) {
+      const double slope = (sw * sxy - sx * sy) / den;
+      const double intercept = (sy - slope * sx) / sw;
+      out[static_cast<std::size_t>(c)] = intercept;
+    } else {
+      out[static_cast<std::size_t>(c)] = sy / sw;
+    }
+  }
+  return out;
+}
+
+std::vector<double> binned_means(
+  const std::vector<double>& y_all,
+  const IntegerVector& bins,
+  int n_bins
+) {
+  std::vector<double> sums(static_cast<std::size_t>(n_bins), 0.0);
+  std::vector<int> counts(static_cast<std::size_t>(n_bins), 0);
+  for (int col = 0; col < bins.size(); ++col) {
+    if (bins[col] == NA_INTEGER || !std::isfinite(y_all[static_cast<std::size_t>(col)])) {
+      continue;
+    }
+    const int bin = bins[col];
+    sums[static_cast<std::size_t>(bin)] += y_all[static_cast<std::size_t>(col)];
+    counts[static_cast<std::size_t>(bin)] += 1;
+  }
+  std::vector<double> out(static_cast<std::size_t>(n_bins), NA_REAL);
+  for (int bin = 0; bin < n_bins; ++bin) {
+    if (counts[static_cast<std::size_t>(bin)] > 0) {
+      out[static_cast<std::size_t>(bin)] =
+        sums[static_cast<std::size_t>(bin)] / counts[static_cast<std::size_t>(bin)];
+    }
+  }
+  return out;
+}
+
+GradientStats gradient_test(
+  const std::vector<double>& x_valid,
+  const std::vector<double>& gradient,
+  const NumericVector& bin_centers,
+  int n_bins,
+  int n_random,
+  int seed,
+  int feature_index
+) {
+  GradientStats out;
+  out.tot_var = total_variation_rescaled(gradient);
+  out.norm_var = std::isfinite(out.tot_var) && gradient.size() > 0 ?
+    out.tot_var / static_cast<double>(gradient.size()) : NA_REAL;
+  out.rel_var = relative_variation(gradient);
+  out.p_value = NA_REAL;
+  if (!std::isfinite(out.tot_var) || n_random <= 0 || x_valid.size() < 3) {
+    return out;
+  }
+
+  std::mt19937 rng(static_cast<unsigned int>(seed + feature_index * 104729));
+  std::uniform_real_distribution<double> unif(0.0, 1.0);
+  int lt = 0;
+  int used = 0;
+  std::vector<double> random_y(x_valid.size(), 0.0);
+  for (int iter = 0; iter < n_random; ++iter) {
+    for (std::size_t i = 0; i < random_y.size(); ++i) {
+      random_y[i] = unif(rng);
+    }
+    std::vector<double> random_gradient = local_linear_gradient(
+      x_valid,
+      random_y,
+      bin_centers,
+      n_bins
+    );
+    const double random_tv = total_variation_rescaled(random_gradient);
+    if (std::isfinite(random_tv)) {
+      ++used;
+      if (random_tv < out.tot_var) {
+        ++lt;
+      }
+    }
+  }
+  if (used > 0) {
+    out.p_value = static_cast<double>(lt) / static_cast<double>(used);
+  }
+  return out;
+}
+
+void add_model_fit(
+  const std::string& variable,
+  const std::string& model,
+  const std::vector<double>& gradient,
+  const std::vector<double>& model_values,
+  std::vector<std::string>& fit_variable,
+  std::vector<std::string>& fit_model,
+  std::vector<double>& fit_mae,
+  std::vector<double>& fit_rmse,
+  std::vector<double>& fit_r2,
+  std::vector<double>& fit_slope,
+  std::vector<double>& fit_intercept
+) {
+  double abs_sum = 0.0;
+  double sq_sum = 0.0;
+  std::vector<double> g;
+  std::vector<double> m;
+  const std::size_t n = std::min(gradient.size(), model_values.size());
+  for (std::size_t i = 0; i < n; ++i) {
+    if (std::isfinite(gradient[i]) && std::isfinite(model_values[i])) {
+      const double err = gradient[i] - model_values[i];
+      abs_sum += std::abs(err);
+      sq_sum += err * err;
+      g.push_back(gradient[i]);
+      m.push_back(model_values[i]);
+    }
+  }
+  if (g.empty()) {
+    return;
+  }
+  const double r = pearson_r(g, m);
+  fit_variable.push_back(variable);
+  fit_model.push_back(model);
+  fit_mae.push_back(abs_sum / static_cast<double>(g.size()));
+  fit_rmse.push_back(std::sqrt(sq_sum / static_cast<double>(g.size())));
+  fit_r2.push_back(std::isfinite(r) ? r * r : NA_REAL);
+  fit_slope.push_back(NA_REAL);
+  fit_intercept.push_back(NA_REAL);
 }
 
 std::vector<double> annotation_distances(const NumericMatrix& coords, const LogicalVector& reference_spots) {
@@ -369,9 +631,14 @@ List spatial_gradient_screening_cpp(
 
   std::vector<std::string> sig_variable;
   std::vector<double> sig_tot_var;
+  std::vector<double> sig_norm_var;
+  std::vector<double> sig_rel_var;
   std::vector<double> sig_p;
   std::vector<int> sig_n;
   std::vector<int> sig_n_nonzero;
+  std::vector<double> sig_linear_r2;
+  std::vector<double> sig_linear_slope;
+  std::vector<double> sig_linear_intercept;
 
   std::vector<std::string> fit_variable;
   std::vector<std::string> fit_model;
@@ -390,6 +657,7 @@ List spatial_gradient_screening_cpp(
   sc_variable.reserve(static_cast<std::size_t>(mat.n_rows) * std::max(1, n_nonempty_bins));
 
   std::vector<double> y_all(static_cast<std::size_t>(mat.n_cols), 0.0);
+  std::vector<double> y_all_norm(static_cast<std::size_t>(mat.n_cols), NA_REAL);
   std::vector<double> x_valid;
   std::vector<double> y_valid;
 
@@ -408,57 +676,112 @@ List spatial_gradient_screening_cpp(
     x_valid.reserve(mat.n_cols);
     y_valid.reserve(mat.n_cols);
     int n_nonzero = 0;
+    double y_min = std::numeric_limits<double>::infinity();
+    double y_max = -std::numeric_limits<double>::infinity();
     for (int col = 0; col < mat.n_cols; ++col) {
       if (std::isfinite(dist[col]) && std::isfinite(y_all[static_cast<std::size_t>(col)])) {
-        x_valid.push_back(dist[col]);
-        y_valid.push_back(y_all[static_cast<std::size_t>(col)]);
+        const double y_raw = y_all[static_cast<std::size_t>(col)];
+        y_min = std::min(y_min, y_raw);
+        y_max = std::max(y_max, y_raw);
         if (y_all[static_cast<std::size_t>(col)] > 0.0) {
           ++n_nonzero;
         }
       }
     }
-    if (n_nonzero < min_spots || x_valid.size() < 3) {
+    if (n_nonzero < min_spots || !std::isfinite(y_min) || !std::isfinite(y_max) || !(y_max > y_min)) {
+      continue;
+    }
+    const double y_den = y_max - y_min;
+    std::fill(y_all_norm.begin(), y_all_norm.end(), NA_REAL);
+    for (int col = 0; col < mat.n_cols; ++col) {
+      if (std::isfinite(dist[col]) && std::isfinite(y_all[static_cast<std::size_t>(col)])) {
+        const double y_norm = (y_all[static_cast<std::size_t>(col)] - y_min) / y_den;
+        y_all_norm[static_cast<std::size_t>(col)] = y_norm;
+        x_valid.push_back(dist[col]);
+        y_valid.push_back(y_norm);
+      }
+    }
+    if (x_valid.size() < 3) {
       continue;
     }
 
-    FitStats fit = fit_linear(x_valid, y_valid, n_random, seed, row);
+    FitStats fit = fit_linear(x_valid, y_valid, 0, seed, row);
     fit.n_nonzero = n_nonzero;
-    if (!std::isfinite(fit.r2)) {
+    std::vector<double> gradient = local_linear_gradient(
+      x_valid,
+      y_valid,
+      bin_centers,
+      n_bins
+    );
+    std::vector<double> gradient_scaled = normalize_minmax(gradient);
+    GradientStats grad_stats = gradient_test(
+      x_valid,
+      gradient,
+      bin_centers,
+      n_bins,
+      n_random,
+      seed,
+      row
+    );
+    if (!std::isfinite(grad_stats.tot_var)) {
       continue;
     }
     const std::string variable = as<std::string>(variables[row]);
     sig_variable.push_back(variable);
-    sig_tot_var.push_back(fit.r2);
-    sig_p.push_back(fit.p_value);
+    sig_tot_var.push_back(grad_stats.tot_var);
+    sig_norm_var.push_back(grad_stats.norm_var);
+    sig_rel_var.push_back(grad_stats.rel_var);
+    sig_p.push_back(grad_stats.p_value);
     sig_n.push_back(fit.n);
     sig_n_nonzero.push_back(fit.n_nonzero);
+    sig_linear_r2.push_back(fit.r2);
+    sig_linear_slope.push_back(fit.slope);
+    sig_linear_intercept.push_back(fit.intercept);
 
-    fit_variable.push_back(variable);
-    fit_model.push_back("linear");
-    fit_mae.push_back(fit.mae);
-    fit_rmse.push_back(fit.rmse);
-    fit_r2.push_back(fit.r2);
-    fit_slope.push_back(fit.slope);
-    fit_intercept.push_back(fit.intercept);
-
-    NumericVector bin_value_sum(bin_centers.size());
-    IntegerVector bin_value_count(bin_centers.size());
-    for (int col = 0; col < mat.n_cols; ++col) {
-      if (bins[col] == NA_INTEGER) {
-        continue;
-      }
-      const int bin = bins[col];
-      bin_value_sum[bin] += y_all[static_cast<std::size_t>(col)];
-      bin_value_count[bin] += 1;
-    }
+    double d_min = std::numeric_limits<double>::infinity();
+    double d_max = -std::numeric_limits<double>::infinity();
     for (int bin = 0; bin < bin_centers.size(); ++bin) {
-      if (bin_value_count[bin] <= 0 || !std::isfinite(bin_centers[bin])) {
+      if (std::isfinite(bin_centers[bin])) {
+        d_min = std::min(d_min, static_cast<double>(bin_centers[bin]));
+        d_max = std::max(d_max, static_cast<double>(bin_centers[bin]));
+      }
+    }
+    std::vector<double> model_ascending(static_cast<std::size_t>(bin_centers.size()), NA_REAL);
+    std::vector<double> model_descending(static_cast<std::size_t>(bin_centers.size()), NA_REAL);
+    std::vector<double> model_peak(static_cast<std::size_t>(bin_centers.size()), NA_REAL);
+    std::vector<double> model_valley(static_cast<std::size_t>(bin_centers.size()), NA_REAL);
+    std::vector<double> model_linear(static_cast<std::size_t>(bin_centers.size()), NA_REAL);
+    if (std::isfinite(d_min) && std::isfinite(d_max) && d_max > d_min) {
+      for (int bin = 0; bin < bin_centers.size(); ++bin) {
+        if (!std::isfinite(bin_centers[bin])) {
+          continue;
+        }
+        const double t = (bin_centers[bin] - d_min) / (d_max - d_min);
+        model_ascending[static_cast<std::size_t>(bin)] = t;
+        model_descending[static_cast<std::size_t>(bin)] = 1.0 - t;
+        model_peak[static_cast<std::size_t>(bin)] = 1.0 - std::abs(2.0 * t - 1.0);
+        model_valley[static_cast<std::size_t>(bin)] = std::abs(2.0 * t - 1.0);
+        if (std::isfinite(fit.intercept) && std::isfinite(fit.slope)) {
+          model_linear[static_cast<std::size_t>(bin)] = fit.intercept + fit.slope * bin_centers[bin];
+        }
+      }
+      model_linear = normalize_minmax(model_linear);
+    }
+    add_model_fit(variable, "ascending", gradient_scaled, model_ascending, fit_variable, fit_model, fit_mae, fit_rmse, fit_r2, fit_slope, fit_intercept);
+    add_model_fit(variable, "descending", gradient_scaled, model_descending, fit_variable, fit_model, fit_mae, fit_rmse, fit_r2, fit_slope, fit_intercept);
+    add_model_fit(variable, "peak", gradient_scaled, model_peak, fit_variable, fit_model, fit_mae, fit_rmse, fit_r2, fit_slope, fit_intercept);
+    add_model_fit(variable, "valley", gradient_scaled, model_valley, fit_variable, fit_model, fit_mae, fit_rmse, fit_r2, fit_slope, fit_intercept);
+    add_model_fit(variable, "linear", gradient_scaled, model_linear, fit_variable, fit_model, fit_mae, fit_rmse, fit_r2, fit_slope, fit_intercept);
+
+    std::vector<double> bin_values = binned_means(y_all_norm, bins, bin_centers.size());
+    for (int bin = 0; bin < bin_centers.size(); ++bin) {
+      if (!std::isfinite(bin_centers[bin]) || !std::isfinite(bin_values[static_cast<std::size_t>(bin)])) {
         continue;
       }
       sc_variable.push_back(variable);
       sc_distance.push_back(bin_centers[bin]);
-      sc_value.push_back(bin_value_sum[bin] / bin_value_count[bin]);
-      sc_estimate.push_back(fit.intercept + fit.slope * bin_centers[bin]);
+      sc_value.push_back(bin_values[static_cast<std::size_t>(bin)]);
+      sc_estimate.push_back(gradient_scaled[static_cast<std::size_t>(bin)]);
       sc_reference.push_back(mode);
       sc_mode.push_back(mode);
     }
@@ -469,8 +792,13 @@ List spatial_gradient_screening_cpp(
     _["tot_var"] = sig_tot_var,
     _["p_value"] = sig_p,
     _["fdr"] = NumericVector(sig_p.size(), NA_REAL),
+    _["norm_var"] = sig_norm_var,
+    _["rel_var"] = sig_rel_var,
     _["n_spots"] = sig_n,
     _["n_nonzero"] = sig_n_nonzero,
+    _["linear_r2"] = sig_linear_r2,
+    _["linear_slope"] = sig_linear_slope,
+    _["linear_intercept"] = sig_linear_intercept,
     _["stringsAsFactors"] = false
   );
   DataFrame model_fits = DataFrame::create(
