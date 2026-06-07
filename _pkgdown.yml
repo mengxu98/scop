@@ -162,10 +162,12 @@ reference:
   - RunBayesSpace
   - RunCytoSPACE
   - RunRCTD
+  - RunSpatialGradientFeatures
   - RunSpatialVariableFeatures
 
 - subtitle: "Spatial Visualization"
 - contents:
+  - SpatialGradientPlot
   - SpatialSpotPlot
 
 - subtitle: "Cell Type Annotation"

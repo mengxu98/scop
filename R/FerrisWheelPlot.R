@@ -599,7 +599,7 @@ ferris_wheel_enrichment_data <- function(
   } else {
     unique(enrichment[[term_col]])
   }
-  term_use <- head(term_order, top_n)
+  term_use <- utils::head(term_order, top_n)
   data.frame(
     pathway = term_use,
     up = vapply(term_use, function(term) {

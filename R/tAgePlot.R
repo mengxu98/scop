@@ -104,7 +104,7 @@ tAgePlot <- function(
   )
   plot_df[[group.by]] <- factor(
     plot_df[[group.by]],
-    levels = names(sort(tapply(plot_df[[score_col]], plot_df[[group.by]], median, na.rm = TRUE)))
+    levels = names(sort(tapply(plot_df[[score_col]], plot_df[[group.by]], stats::median, na.rm = TRUE)))
   )
 
   if (identical(theme_use, "theme_scop")) {
