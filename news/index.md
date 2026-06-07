@@ -133,10 +133,12 @@
     conversion, multi-core AUCell batch scoring, and storage of regulon
     activity scores as a Seurat assay plus detailed results in `@tools`.
   - [`RunSCENIC()`](https://mengxu98.github.io/scop/reference/RunSCENIC.md)
-    now supports `aucell_backend = "cpp"` for regulon activity scoring
-    through the package C++ AUCell implementation, while keeping
-    `aucell_backend = "r"` as the default for exact AUCell package
-    behavior.
+    now uses a single `backend` argument to select the full SCENIC
+    execution path. The public `native_motif_fallback`,
+    `aucell_backend`, AUCell C++ strategy, and AUCell batch-size
+    switches were removed from the SCENIC wrapper so GRNBoost2,
+    cisTarget pruning, and AUCell scoring are controlled consistently by
+    `backend = "cpp"` or `backend = "python"`.
   - Added
     [`SCENICPlot()`](https://mengxu98.github.io/scop/reference/SCENICPlot.md)
     to calculate regulon specificity scores from SCENIC activity and

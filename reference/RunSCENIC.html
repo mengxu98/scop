@@ -61,9 +61,6 @@
 <span>  min_expr_cells <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  min_regulon_size <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cpp"</span>, <span class="st">"python"</span><span class="op">)</span>,</span>
-<span>  grn_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grnboost2"</span>, <span class="st">"genie3"</span><span class="op">)</span>,</span>
-<span>  cistarget_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"native_motif"</span>, <span class="st">"native_approx"</span><span class="op">)</span>,</span>
-<span>  max_regulon_targets <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  n_rounds <span class="op">=</span> <span class="fl">5000</span>,</span>
 <span>  learning_rate <span class="op">=</span> <span class="fl">0.01</span>,</span>
 <span>  max_depth <span class="op">=</span> <span class="fl">3</span>,</span>
@@ -71,9 +68,6 @@
 <span>  subsample <span class="op">=</span> <span class="fl">0.9</span>,</span>
 <span>  early_stop_window_length <span class="op">=</span> <span class="fl">25</span>,</span>
 <span>  cores <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  aucell_batch_size <span class="op">=</span> <span class="fl">500</span>,</span>
-<span>  aucell_backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"r"</span>, <span class="st">"cpp"</span><span class="op">)</span>,</span>
-<span>  aucell_cpp_strategy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"full"</span>, <span class="st">"sparse"</span>, <span class="st">"topk"</span><span class="op">)</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">1234</span>,</span>
 <span>  force <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  assay_name <span class="op">=</span> <span class="st">"scenic"</span>,</span>
@@ -176,66 +170,38 @@ be detected before GRNBoost2.</p></dd>
 
 <dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
 <dd><p>SCENIC backend. <code>"cpp"</code> uses the native R/C++ path and
-<code>"python"</code> uses the Python <code>scenicplus</code> path.</p></dd>
-
-
-<dt id="arg-grn-method">grn_method<a class="anchor" aria-label="anchor" href="#arg-grn-method"></a></dt>
-<dd><p>GRN inference method for the native backend.</p></dd>
-
-
-<dt id="arg-cistarget-method">cistarget_method<a class="anchor" aria-label="anchor" href="#arg-cistarget-method"></a></dt>
-<dd><p>cisTarget implementation for the native backend.</p></dd>
-
-
-<dt id="arg-max-regulon-targets">max_regulon_targets<a class="anchor" aria-label="anchor" href="#arg-max-regulon-targets"></a></dt>
-<dd><p>Maximum number of target genes kept per regulon in
-the native backend.</p></dd>
+<code>"python"</code> uses the Python pySCENIC path. The selected backend controls GRN,
+cisTarget pruning, and AUCell scoring together.</p></dd>
 
 
 <dt id="arg-n-rounds">n_rounds<a class="anchor" aria-label="anchor" href="#arg-n-rounds"></a></dt>
-<dd><p>Number of boosting rounds used by the native GRN backend.</p></dd>
+<dd><p>Number of boosting rounds used by GRNBoost2.</p></dd>
 
 
 <dt id="arg-learning-rate">learning_rate<a class="anchor" aria-label="anchor" href="#arg-learning-rate"></a></dt>
-<dd><p>Learning rate used by the native GRN backend.</p></dd>
+<dd><p>Learning rate used by GRNBoost2.</p></dd>
 
 
 <dt id="arg-max-depth">max_depth<a class="anchor" aria-label="anchor" href="#arg-max-depth"></a></dt>
-<dd><p>Maximum tree depth used by the native GRN backend.</p></dd>
+<dd><p>Maximum tree depth used by GRNBoost2.</p></dd>
 
 
 <dt id="arg-max-features">max_features<a class="anchor" aria-label="anchor" href="#arg-max-features"></a></dt>
-<dd><p>Fraction of features sampled by the native GRN backend.</p></dd>
+<dd><p>Fraction of features sampled by GRNBoost2.</p></dd>
 
 
 <dt id="arg-subsample">subsample<a class="anchor" aria-label="anchor" href="#arg-subsample"></a></dt>
-<dd><p>Row subsampling fraction used by the native GRN backend.</p></dd>
+<dd><p>Row subsampling fraction used by GRNBoost2.</p></dd>
 
 
 <dt id="arg-early-stop-window-length">early_stop_window_length<a class="anchor" aria-label="anchor" href="#arg-early-stop-window-length"></a></dt>
-<dd><p>Early-stopping window used by the native GRN
-backend.</p></dd>
+<dd><p>Early-stopping window used by GRNBoost2.</p></dd>
 
 
 <dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
 <dd><p>Number of workers used by GRNBoost2, <code>scenic ctx</code>, and
-AUCell batch scoring. If multicore execution is not supported, this is
+AUCell scoring. If multicore execution is not supported, this is
 automatically reduced to one core.</p></dd>
-
-
-<dt id="arg-aucell-batch-size">aucell_batch_size<a class="anchor" aria-label="anchor" href="#arg-aucell-batch-size"></a></dt>
-<dd><p>Number of cells scored in each AUCell batch.</p></dd>
-
-
-<dt id="arg-aucell-backend">aucell_backend<a class="anchor" aria-label="anchor" href="#arg-aucell-backend"></a></dt>
-<dd><p>Backend used for AUCell regulon activity scoring.
-<code>"r"</code> uses the AUCell package. <code>"cpp"</code> uses the package C++ gene-set scoring
-implementation.</p></dd>
-
-
-<dt id="arg-aucell-cpp-strategy">aucell_cpp_strategy<a class="anchor" aria-label="anchor" href="#arg-aucell-cpp-strategy"></a></dt>
-<dd><p>C++ AUCell ranking strategy passed to the package
-gene-set scoring backend.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
