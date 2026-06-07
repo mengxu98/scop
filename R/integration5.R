@@ -935,6 +935,26 @@ run_integration5 <- function(
       HVF <- HVF[HVF %in% cf]
     }
 
+    scale_features <- tryCatch(
+      rownames(GetAssayData5(
+        srt_integrated,
+        layer = "scale.data",
+        assay = "SCT"
+      )),
+      error = function(e) character(0)
+    )
+    if (length(scale_features) > 0) {
+      hvf_missing <- setdiff(HVF, scale_features)
+      if (length(hvf_missing) > 0) {
+        log_message(
+          "Some HVF are absent from SCT scale.data and will be dropped: {.val {hvf_missing}}",
+          message_type = "warning",
+          verbose = verbose
+        )
+        HVF <- intersect(HVF, scale_features)
+      }
+    }
+
     if (length(HVF) == 0) {
       log_message("No HVF available", message_type = "error")
     }
