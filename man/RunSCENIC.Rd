@@ -17,7 +17,6 @@ RunSCENIC(
   genome = NULL,
   data_dir = NULL,
   prefix = "scenic",
-  group.by = NULL,
   min_expr_cells = 3,
   min_regulon_size = 10,
   backend = c("cpp", "python"),
@@ -82,19 +81,13 @@ reference files. If \code{NULL}, files are stored under
 
 \item{prefix}{Prefix for SCENIC output files.}
 
-\item{group.by}{Optional metadata column used to aggregate single-cell
-counts before GRNBoost2. When \code{NULL} (default), GRNBoost2 runs on the
-original single-cell count matrix. To use pre-built metacells, pass the
-metacell membership column (e.g. \code{"Metacell_id"} from \code{\link[=RunMetaCell]{RunMetaCell()}}).
-All cells sharing the same \code{group.by} value are summed into one metacell
-profile.}
-
-\item{min_expr_cells}{Minimum number of cells or metacells where a gene must
-be detected before GRNBoost2.}
+\item{min_expr_cells}{Minimum number of cells where a gene must be detected
+before GRNBoost2. To run SCENIC on metacells, first create a metacell-level
+object with \code{\link[=RunMetaCell]{RunMetaCell()}} and pass that object to \code{RunSCENIC()}.}
 
 \item{min_regulon_size}{Minimum regulon size kept after \verb{scenic ctx}.}
 
-\item{backend}{SCENIC backend. \code{"cpp"} uses the native R/C++ path and
+\item{backend}{SCENIC backend. \code{"cpp"} uses the R/C++ path and
 \code{"python"} uses the Python pySCENIC path. The selected backend controls GRN,
 cisTarget pruning, and AUCell scoring together.}
 
