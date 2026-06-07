@@ -186,7 +186,7 @@ RunMetaCell <- function(
     verbose = verbose
   )
 
-  raw_to_mc <- setNames(mc_labels, unique_raw)
+  raw_to_mc <- stats::setNames(mc_labels, unique_raw)
   mc_count_ids <- colnames(mc_counts)
   if (
     is.null(mc_count_ids) ||
@@ -305,7 +305,7 @@ metacell_supercell <- function(
 ) {
   check_r("GfellerLab/SuperCell", verbose = FALSE)
 
-  counts <- as(counts, "CsparseMatrix")
+  counts <- methods::as(counts, "CsparseMatrix")
   ge <- lognorm_counts(counts)
 
   if (is.null(group_df)) {
@@ -447,7 +447,7 @@ metacell_seacells <- function(
   run_seacells <- function(adata, n_meta, cell_names, log_prefix = "") {
     n_cells <- reticulate::py_to_r(adata$n_obs)
     if (n_cells < 3) {
-      mem <- setNames(rep("1", n_cells), cell_names)
+      mem <- stats::setNames(rep("1", n_cells), cell_names)
       return(list(membership = mem))
     }
     n_meta_use <- max(2L, min(n_meta, as.integer(n_cells / 2)))
@@ -481,7 +481,7 @@ metacell_seacells <- function(
         message_type = "warning",
         verbose = verbose
       )
-      mem <- setNames(
+      mem <- stats::setNames(
         as.character(sample(seq_len(n_meta_use), n_cells, replace = TRUE)),
         cell_names
       )
@@ -601,7 +601,7 @@ metacell_metacell <- function(
     c("Matrix", "RANN"),
     verbose = FALSE
   )
-  counts <- as(counts, "CsparseMatrix")
+  counts <- methods::as(counts, "CsparseMatrix")
   ge <- lognorm_counts(counts)
 
   extra_args <- list(...)
@@ -649,7 +649,7 @@ metacell_metacell <- function(
     n <- nrow(emb)
     k_use <- min(k, n - 1L)
     if (k_use < 2) {
-      return(setNames(as.character(seq_len(n)), rownames(emb)))
+      return(stats::setNames(as.character(seq_len(n)), rownames(emb)))
     }
 
     knn <- RANN::nn2(emb, k = k_use + 1L)
