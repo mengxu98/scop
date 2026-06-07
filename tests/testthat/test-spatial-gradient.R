@@ -98,6 +98,39 @@ test_that("numeric annotation thresholds are converted for SPATA2", {
   expect_error(sgf_format_annotation_threshold(NA_real_), "annotation.threshold")
 })
 
+test_that("SPATA2 trajectory preparation does not forward unsupported verbose", {
+  testthat::local_mocked_bindings(
+    sgf_spata_fun = function(fun, required = TRUE) {
+      force(fun)
+      force(required)
+      function(...) list(...)
+    }
+  )
+
+  args <- sgf_prepare_trajectory(
+    object = list(id = "mock"),
+    trajectory_id = "traj",
+    start = c(1, 2),
+    end = c(3, 4),
+    traj_df = NULL,
+    width = NULL,
+    verbose = TRUE
+  )
+
+  expect_equal(args$id, "traj")
+  expect_true(isTRUE(args$overwrite))
+  expect_false("verbose" %in% names(args))
+})
+
+test_that("cpp backend coordinates prefer metadata coord.cols", {
+  srt <- make_spatial_gradient_seurat()
+  coords <- sgf_cpp_coords(srt, image = NULL, coord.cols = c("x", "y"))
+
+  expect_equal(rownames(coords), colnames(srt))
+  expect_equal(unname(coords$x), unname(srt$x))
+  expect_equal(unname(coords$y), unname(srt$y))
+})
+
 test_that("top variable table merges significance and best model fits deterministically", {
   significance <- data.frame(
     variable = c("Gene3", "Gene1", "Gene2"),
