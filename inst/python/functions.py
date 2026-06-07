@@ -5039,6 +5039,11 @@ def RunSCENICGrn(
     regulators,
     adj_output,
     n_rounds=5000,
+    learning_rate=0.01,
+    max_depth=3,
+    max_features=0.1,
+    subsample=0.9,
+    early_stop_window_length=25,
     cores=1,
     seed=1234,
     force=False,
@@ -5055,6 +5060,11 @@ def RunSCENICGrn(
         from arboreto.algo import grnboost2, SGBM_KWARGS
 
         SGBM_KWARGS["n_estimators"] = int(n_rounds)
+        SGBM_KWARGS["learning_rate"] = float(learning_rate)
+        SGBM_KWARGS["max_depth"] = int(max_depth)
+        SGBM_KWARGS["max_features"] = float(max_features)
+        SGBM_KWARGS["subsample"] = float(subsample)
+        early_stop_window_length = int(early_stop_window_length)
 
         data = pd.read_csv(expression_mtx, index_col=0)
         with open(regulators) as f:
@@ -5064,6 +5074,7 @@ def RunSCENICGrn(
             expression_data=data,
             tf_names=tf_names,
             client_or_address="local",
+            early_stop_window_length=early_stop_window_length,
             seed=int(seed),
             verbose=verbose,
         )
@@ -5334,6 +5345,14 @@ def RunSCENICCtx(
 
     if force or not Path(ctx_output).exists():
         scenic = _scenic_find_executable([_scenic_backend_name()])
+        num_workers = max(int(cores), len(ranking_dbs))
+        if num_workers != int(cores):
+            log_message(
+                "SCENIC ctx requires at least one worker per ranking database; using %d workers"
+                % num_workers,
+                message_type="warning",
+                verbose=verbose,
+            )
         _scenic_run_command(
             [
                 scenic,
@@ -5347,7 +5366,7 @@ def RunSCENICCtx(
                 "--output",
                 ctx_output,
                 "--num_workers",
-                int(cores),
+                num_workers,
             ],
             verbose=verbose,
             label="SCENIC cisTarget pruning",
@@ -5359,6 +5378,45 @@ def RunSCENICCtx(
         )
 
     return {"ctx_output": ctx_output}
+
+
+def RunSCENICAUCell(
+    expression_mtx,
+    regulons_gmt,
+    auc_output,
+    cores=1,
+    force=False,
+    verbose=True,
+):
+    """Run pySCENIC AUCell scoring."""
+    expression_mtx = str(Path(expression_mtx).expanduser())
+    regulons_gmt = str(Path(regulons_gmt).expanduser())
+    auc_output = str(Path(auc_output).expanduser())
+    Path(auc_output).parent.mkdir(parents=True, exist_ok=True)
+
+    if force or not Path(auc_output).exists():
+        scenic = _scenic_find_executable([_scenic_backend_name()])
+        _scenic_run_command(
+            [
+                scenic,
+                "aucell",
+                expression_mtx,
+                regulons_gmt,
+                "--output",
+                auc_output,
+                "--num_workers",
+                max(1, int(cores)),
+            ],
+            verbose=verbose,
+            label="SCENIC AUCell scoring",
+        )
+    else:
+        log_message(
+            "Reusing existing SCENIC AUCell output",
+            verbose=verbose,
+        )
+
+    return {"auc_output": auc_output}
 
 
 def RunSCENICCli(

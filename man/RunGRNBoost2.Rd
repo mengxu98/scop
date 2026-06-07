@@ -98,20 +98,20 @@ are considered as candidate targets.}
 target. The default `Inf` keeps all positive-importance links, matching
 arboreto GRNBoost2 output.}
 
-\item{n_rounds}{Number of native boosting rounds for GRNBoost2-like tree
-ensemble inference. The default follows arboreto `SGBM_KWARGS`.}
+\item{n_rounds}{Number of boosting rounds for GRNBoost2-like tree ensemble
+inference. The default follows arboreto `SGBM_KWARGS`.}
 
-\item{learning_rate}{Native GRNBoost2-like tree ensemble learning rate.}
+\item{learning_rate}{GRNBoost2-like tree ensemble learning rate.}
 
-\item{max_depth}{Maximum depth of each native regression tree.}
+\item{max_depth}{Maximum depth of each regression tree.}
 
-\item{max_features}{Fraction of candidate regulators sampled at each native
-tree split.}
+\item{max_features}{Fraction of candidate regulators sampled at each tree
+split.}
 
-\item{subsample}{Fraction of cells sampled for each native boosting round.}
+\item{subsample}{Fraction of cells sampled for each boosting round.}
 
-\item{early_stop_window_length}{Out-of-bag improvement window used for native
-GRNBoost2 early stopping, matching arboreto's `EarlyStopMonitor`.}
+\item{early_stop_window_length}{Out-of-bag improvement window used for
+GRNBoost2 early stopping.}
 
 \item{exclude_self}{Whether native GRNBoost2-like inference excludes a target
 gene from its own regulator feature set.}

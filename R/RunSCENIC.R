@@ -39,27 +39,17 @@
 #' be detected before GRNBoost2.
 #' @param min_regulon_size Minimum regulon size kept after `scenic ctx`.
 #' @param backend SCENIC backend. `"cpp"` uses the native R/C++ path and
-#' `"python"` uses the Python `scenicplus` path.
-#' @param grn_method GRN inference method for the native backend.
-#' @param cistarget_method cisTarget implementation for the native backend.
-#' @param max_regulon_targets Maximum number of target genes kept per regulon in
-#' the native backend.
-#' @param n_rounds Number of boosting rounds used by the native GRN backend.
-#' @param learning_rate Learning rate used by the native GRN backend.
-#' @param max_depth Maximum tree depth used by the native GRN backend.
-#' @param max_features Fraction of features sampled by the native GRN backend.
-#' @param subsample Row subsampling fraction used by the native GRN backend.
-#' @param early_stop_window_length Early-stopping window used by the native GRN
-#' backend.
+#' `"python"` uses the Python pySCENIC path. The selected backend controls GRN,
+#' cisTarget pruning, and AUCell scoring together.
+#' @param n_rounds Number of boosting rounds used by GRNBoost2.
+#' @param learning_rate Learning rate used by GRNBoost2.
+#' @param max_depth Maximum tree depth used by GRNBoost2.
+#' @param max_features Fraction of features sampled by GRNBoost2.
+#' @param subsample Row subsampling fraction used by GRNBoost2.
+#' @param early_stop_window_length Early-stopping window used by GRNBoost2.
 #' @param cores Number of workers used by GRNBoost2, `scenic ctx`, and
-#' AUCell batch scoring. If multicore execution is not supported, this is
+#' AUCell scoring. If multicore execution is not supported, this is
 #' automatically reduced to one core.
-#' @param aucell_batch_size Number of cells scored in each AUCell batch.
-#' @param aucell_backend Backend used for AUCell regulon activity scoring.
-#' `"r"` uses the AUCell package. `"cpp"` uses the package C++ gene-set scoring
-#' implementation.
-#' @param aucell_cpp_strategy C++ AUCell ranking strategy passed to the package
-#' gene-set scoring backend.
 #' @param seed Random seed used by GRNBoost2 and Seurat overclustering.
 #' @param force Whether to rebuild existing SCENIC outputs.
 #' @param assay_name Name of the assay used to store regulon activity scores.
@@ -102,9 +92,6 @@ RunSCENIC <- function(
   min_expr_cells = 3,
   min_regulon_size = 10,
   backend = c("cpp", "python"),
-  grn_method = c("grnboost2", "genie3"),
-  cistarget_method = c("native_motif", "native_approx"),
-  max_regulon_targets = 50,
   n_rounds = 5000,
   learning_rate = 0.01,
   max_depth = 3,
@@ -112,9 +99,6 @@ RunSCENIC <- function(
   subsample = 0.9,
   early_stop_window_length = 25,
   cores = 1,
-  aucell_batch_size = 500,
-  aucell_backend = c("r", "cpp"),
-  aucell_cpp_strategy = c("full", "sparse", "topk"),
   seed = 1234,
   force = FALSE,
   assay_name = "scenic",
@@ -136,10 +120,6 @@ RunSCENIC <- function(
   }
   species <- match.arg(species)
   backend <- match.arg(backend)
-  grn_method <- match.arg(grn_method)
-  cistarget_method <- match.arg(cistarget_method)
-  aucell_backend <- match.arg(aucell_backend)
-  aucell_cpp_strategy <- match.arg(aucell_cpp_strategy)
 
   if (identical(backend, "cpp")) {
     return(scenic_cpp(
@@ -156,9 +136,6 @@ RunSCENIC <- function(
       group.by = group.by,
       min_expr_cells = min_expr_cells,
       min_regulon_size = min_regulon_size,
-      grn_method = grn_method,
-      cistarget_method = cistarget_method,
-      max_regulon_targets = max_regulon_targets,
       ranking_dbs = ranking_dbs,
       motif_annotations = motif_annotations,
       n_rounds = n_rounds,
@@ -168,9 +145,6 @@ RunSCENIC <- function(
       subsample = subsample,
       early_stop_window_length = early_stop_window_length,
       cores = cores,
-      aucell_batch_size = aucell_batch_size,
-      aucell_backend = aucell_backend,
-      aucell_cpp_strategy = aucell_cpp_strategy,
       seed = seed,
       force = force,
       assay_name = assay_name,
@@ -263,16 +237,6 @@ RunSCENIC <- function(
     )
     cores <- 1L
   }
-  if (cores_requested > 1L && .Platform$OS.type != "unix") {
-    log_message(
-      "{.arg cores} was set to {.val {cores_requested}}, but multicore AUCell scoring requires a Unix-like OS; using one core",
-      message_type = "warning",
-      verbose = verbose
-    )
-    cores <- 1L
-  }
-  aucell_batch_size <- max(1L, as.integer(aucell_batch_size))
-
   envname <- envname %||% "scenic_env"
   scenic_python_packages <- c(
     scenic_backend_requirement(),
@@ -440,7 +404,9 @@ RunSCENIC <- function(
     verbose = verbose
   )
   ranking_gene_lists <- lapply(ranking_dbs, function(db) {
-    as.character(unlist(functions$SCENICRankingGenes(db), use.names = FALSE))
+    scenic_ranking_gene_columns(
+      as.character(unlist(functions$SCENICRankingGenes(db), use.names = FALSE))
+    )
   })
   ranking_genes <- Reduce(intersect, ranking_gene_lists)
   grn_gene_filter <- NULL
@@ -538,6 +504,7 @@ RunSCENIC <- function(
   ctx_file <- file.path(work_dir, paste0(prefix, "_step2_reg.tsv"))
   gmt_file <- file.path(work_dir, paste0(prefix, "_step2_regulons.gmt"))
   txt_file <- file.path(work_dir, paste0(prefix, "_step2_regulons.txt"))
+  auc_file <- file.path(work_dir, paste0(prefix, "_regulon_activity_score.csv"))
   ras_file <- file.path(work_dir, paste0(prefix, "_regulon_activity_score.rds"))
   regulon_list_file <- file.path(work_dir, paste0(prefix, "_regulon_list.rds"))
 
@@ -551,6 +518,12 @@ RunSCENIC <- function(
     expression_mtx = expr_csv,
     regulators = regulators_file,
     adj_output = grn_adj_file,
+    n_rounds = as.integer(n_rounds),
+    learning_rate = as.numeric(learning_rate),
+    max_depth = as.integer(max_depth),
+    max_features = as.numeric(max_features),
+    subsample = as.numeric(subsample),
+    early_stop_window_length = as.integer(early_stop_window_length),
     cores = as.integer(cores),
     seed = as.integer(seed),
     force = isTRUE(grn_force),
@@ -627,16 +600,15 @@ RunSCENIC <- function(
       label = "Calculating AUCell regulon activity scores",
       verbose = verbose
     )
-    ras_mat <- scenic_compute_aucell_score(
-      counts = counts,
-      regulon_list = regulon_list,
-      min_regulon_size = min_regulon_size,
-      batch_size = aucell_batch_size,
-      cores = cores,
-      backend = aucell_backend,
-      cpp_strategy = aucell_cpp_strategy,
-      verbose = verbose
+    functions$RunSCENICAUCell(
+      expression_mtx = expr_csv,
+      regulons_gmt = gmt_file,
+      auc_output = auc_file,
+      cores = as.integer(cores),
+      force = isTRUE(grn_force),
+      verbose = isTRUE(verbose)
     )
+    ras_mat <- scenic_read_python_aucell(auc_file)
     saveRDS(ras_mat, ras_file)
   }
   ras_mat <- ras_mat[colnames(srt), , drop = FALSE]
@@ -666,11 +638,16 @@ RunSCENIC <- function(
       ctx = ctx_file,
       regulons_gmt = gmt_file,
       regulons_txt = txt_file,
+      regulon_activity_score_csv = auc_file,
       regulon_activity_score = ras_file,
       regulon_list = regulon_list_file
     ),
     group.by = group.by,
     parameters = list(
+      backend = "python",
+      grn_method = "grnboost2",
+      cistarget_method = "pySCENIC_ctx",
+      method = "pySCENIC",
       assay = assay,
       layer = layer,
       species = species,
@@ -684,10 +661,14 @@ RunSCENIC <- function(
       group.by = group.by,
       min_expr_cells = min_expr_cells,
       min_regulon_size = min_regulon_size,
+      n_rounds = n_rounds,
+      learning_rate = learning_rate,
+      max_depth = max_depth,
+      max_features = max_features,
+      subsample = subsample,
+      early_stop_window_length = early_stop_window_length,
       cores = cores,
-      aucell_batch_size = aucell_batch_size,
-      aucell_backend = aucell_backend,
-      aucell_cpp_strategy = aucell_cpp_strategy,
+      aucell_method = "pySCENIC",
       seed = seed,
       assay_name = assay_name,
       tool_name = tool_name,
@@ -744,9 +725,6 @@ scenic_cpp <- function(
   group.by,
   min_expr_cells,
   min_regulon_size,
-  grn_method,
-  cistarget_method,
-  max_regulon_targets,
   ranking_dbs,
   motif_annotations,
   n_rounds,
@@ -756,9 +734,6 @@ scenic_cpp <- function(
   subsample,
   early_stop_window_length,
   cores,
-  aucell_batch_size,
-  aucell_backend,
-  aucell_cpp_strategy,
   seed,
   force,
   assay_name,
@@ -767,6 +742,7 @@ scenic_cpp <- function(
   verbose
 ) {
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
+  max_regulon_targets <- 50L
   species_config <- scenic_species_config(species, genome = genome)
   species <- species_config[["label"]]
   genome <- species_config[["genome"]]
@@ -864,8 +840,48 @@ scenic_cpp <- function(
     }
   }
 
+  ref_data <- NULL
+  ref_data <- tryCatch(
+    scenic_reference(
+      species = species,
+      genome = genome,
+      data_dir = data_dir,
+      ranking_dbs = ranking_dbs,
+      motif_annotations = motif_annotations,
+      verbose = verbose
+    ),
+    error = function(e) NULL
+  )
+  if (!is.null(ref_data) && length(ref_data[["ranking_dbs"]]) > 0) {
+    check_r("arrow", verbose = FALSE)
+    ranking_gene_lists <- lapply(ref_data[["ranking_dbs"]], function(db) {
+      scenic_ranking_gene_columns(scenic_feather_column_names(db))
+    })
+    ranking_genes <- Reduce(intersect, ranking_gene_lists)
+    keep_ranking <- rownames(grn_matrix) %in% ranking_genes
+    if (any(keep_ranking)) {
+      grn_matrix <- grn_matrix[keep_ranking, , drop = FALSE]
+      regulators <- intersect(regulators, rownames(grn_matrix))
+      if (!is.null(targets)) {
+        targets <- intersect(targets, rownames(grn_matrix))
+      }
+    }
+    if (length(regulators) == 0) {
+      log_message(
+        "No {.arg regulators} remain after matching expression features and cisTarget databases",
+        message_type = "error"
+      )
+    }
+    if (!is.null(targets) && length(targets) == 0) {
+      log_message(
+        "No {.arg targets} remain after matching expression features and cisTarget databases",
+        message_type = "error"
+      )
+    }
+  }
+
   log_message(
-    "Running SCENIC ({.val {grn_method}}) on {.val {ncol(grn_matrix)}} cells with {.val {length(regulators)}} TFs",
+    "Running SCENIC (grnboost2) on {.val {ncol(grn_matrix)}} cells with {.val {length(regulators)}} TFs",
     verbose = verbose
   )
 
@@ -875,10 +891,10 @@ scenic_cpp <- function(
       grn_matrix = Matrix::t(grn_matrix),
       regulators = regulators,
       targets = targets,
-      grn_method = grn_method,
+      grn_method = "grnboost2",
       backend = "cpp",
       output_file = adj_file,
-      max_edges_per_target = max_regulon_targets,
+      max_edges_per_target = Inf,
       n_rounds = n_rounds,
       learning_rate = learning_rate,
       max_depth = max_depth,
@@ -911,48 +927,26 @@ scenic_cpp <- function(
 
   regulon_force <- grn_force || !file.exists(regulon_file)
   if (regulon_force) {
-    if (identical(cistarget_method, "native_motif")) {
-      ref_data <- tryCatch(
-        scenic_reference(
-          species = species,
-          genome = genome,
-          data_dir = data_dir,
-          ranking_dbs = ranking_dbs,
-          motif_annotations = motif_annotations,
-          verbose = verbose
-        ),
-        error = function(e) NULL
-      )
-      if (
-        !is.null(ref_data) &&
-          length(ref_data[["ranking_dbs"]]) > 0 &&
-          !is.null(ref_data[["motif_annotations"]])
-      ) {
-        regulon_list <- cistarget2(
-          adjacency = adjacency,
-          ranking_dbs = ref_data[["ranking_dbs"]],
-          motif_annotations = ref_data[["motif_annotations"]],
-          max_targets = max_regulon_targets,
-          min_regulon_size = min_regulon_size,
-          verbose = verbose
-        )
-      } else {
-        log_message(
-          "cisTarget reference data not available; falling back to native_approx",
-          message_type = "warning",
-          verbose = verbose
-        )
-        regulon_list <- build_regulons(
-          adjacency = adjacency,
-          max_targets = max_regulon_targets,
-          min_regulon_size = min_regulon_size
-        )
-      }
-    } else {
-      regulon_list <- build_regulons(
+    if (
+      !is.null(ref_data) &&
+        length(ref_data[["ranking_dbs"]]) > 0 &&
+        !is.null(ref_data[["motif_annotations"]])
+    ) {
+      regulon_list <- cistarget2(
         adjacency = adjacency,
+        expr_mtx = Matrix::t(grn_matrix),
+        ranking_dbs = ref_data[["ranking_dbs"]],
+        motif_annotations = ref_data[["motif_annotations"]],
         max_targets = max_regulon_targets,
-        min_regulon_size = min_regulon_size
+        min_regulon_size = min_regulon_size,
+        fallback = FALSE,
+        cores = cores,
+        verbose = verbose
+      )
+    } else {
+      log_message(
+        "Native cisTarget reference data are required for {.arg backend = 'cpp'}",
+        message_type = "error"
       )
     }
     saveRDS(regulon_list, regulon_file)
@@ -987,10 +981,9 @@ scenic_cpp <- function(
       counts = counts,
       regulon_list = regulon_list,
       min_regulon_size = min_regulon_size,
-      batch_size = aucell_batch_size,
       cores = cores,
-      backend = aucell_backend,
-      cpp_strategy = aucell_cpp_strategy,
+      backend = "cpp",
+      cpp_strategy = "full",
       verbose = verbose
     )
     saveRDS(ras_mat, ras_file)
@@ -1023,13 +1016,9 @@ scenic_cpp <- function(
     group.by = group.by,
     parameters = list(
       backend = "cpp",
-      grn_method = grn_method,
-      cistarget_method = cistarget_method,
-      method = if (identical(cistarget_method, "native_motif")) {
-        "native_cistarget"
-      } else {
-        "native_approx"
-      },
+      grn_method = "grnboost2",
+      cistarget_method = "native_motif",
+      method = "native_cistarget",
       assay = assay,
       layer = layer,
       species = species,
@@ -1039,11 +1028,15 @@ scenic_cpp <- function(
       group.by = group.by,
       min_expr_cells = min_expr_cells,
       min_regulon_size = min_regulon_size,
+      n_rounds = n_rounds,
+      learning_rate = learning_rate,
+      max_depth = max_depth,
+      max_features = max_features,
+      subsample = subsample,
+      early_stop_window_length = early_stop_window_length,
       max_regulon_targets = max_regulon_targets,
       cores = cores,
-      aucell_batch_size = aucell_batch_size,
-      aucell_backend = aucell_backend,
-      aucell_cpp_strategy = aucell_cpp_strategy,
+      aucell_method = "cpp_full",
       seed = seed,
       assay_name = assay_name,
       tool_name = tool_name
@@ -1102,43 +1095,129 @@ build_regulons <- function(
   regulons
 }
 
+scenic_feather_column_names <- function(path) {
+  check_r("arrow", verbose = FALSE)
+  tryCatch(
+    names(arrow::open_dataset(path, format = "feather")),
+    error = function(...) colnames(arrow::read_feather(path))
+  )
+}
+
+scenic_ranking_index_columns <- function(columns) {
+  intersect(c("motifs", "tracks", "regions", "genes"), columns)
+}
+
+scenic_ranking_gene_columns <- function(columns) {
+  setdiff(columns, scenic_ranking_index_columns(columns))
+}
+
 cistarget2 <- function(
   adjacency,
+  expr_mtx = NULL,
   ranking_dbs,
   motif_annotations,
   max_targets = 50,
   min_regulon_size = 10,
-  nes_threshold = 1.5,
-  auc_threshold = 0.001,
+  rank_threshold = 5000,
+  nes_threshold = 3.0,
+  auc_threshold = 0.05,
+  fallback = FALSE,
   cores = 1,
   verbose = TRUE
 ) {
   check_r("arrow", verbose = FALSE)
+  profile_time <- function(expr) {
+    start <- proc.time()[["elapsed"]]
+    value <- force(expr)
+    list(
+      value = value,
+      elapsed = proc.time()[["elapsed"]] - start
+    )
+  }
+  profile <- c(
+    read_annotations = 0,
+    read_rankings = 0,
+    index_annotations = 0,
+    module_build = 0,
+    matrix_subset = 0,
+    cistarget_stats = 0,
+    annotation_filter = 0,
+    leading_edge = 0
+  )
 
-  motif_tbl <- tryCatch(
-    utils::read.table(
-      motif_annotations,
-      header = FALSE,
-      sep = "\t",
-      stringsAsFactors = FALSE,
-      comment.char = ""
-    ),
-    error = function(e) {
-      log_message(
-        "Failed to read motif annotations: {.val {conditionMessage(e)}}",
-        message_type = "error"
-      )
-    }
-  )
-  colnames(motif_tbl) <- c(
-    "motif",
-    "tf",
-    "direct_annotation",
-    "inferred_annotation"
-  )
+  profiled <- profile_time({
+    tryCatch(
+      utils::read.table(
+        motif_annotations,
+        header = TRUE,
+        sep = "\t",
+        stringsAsFactors = FALSE,
+        check.names = FALSE,
+        comment.char = ""
+      ),
+      error = function(e) {
+        log_message(
+          "Failed to read motif annotations: {.val {conditionMessage(e)}}",
+          message_type = "error"
+        )
+      }
+    )
+  })
+  motif_tbl <- profiled[["value"]]
+  profile[["read_annotations"]] <- profile[["read_annotations"]] + profiled[["elapsed"]]
+  motif_col <- intersect(c("#motif_id", "motif_id", "motif"), colnames(motif_tbl))[1]
+  gene_col <- intersect(c("gene_name", "tf", "TF"), colnames(motif_tbl))[1]
+  if (is.na(motif_col) || is.na(gene_col)) {
+    log_message(
+      "{.arg motif_annotations} must contain motif and gene annotation columns",
+      message_type = "error"
+    )
+  }
+  motif_tbl[["motif"]] <- as.character(motif_tbl[[motif_col]])
+  motif_tbl[["tf"]] <- as.character(motif_tbl[[gene_col]])
+  qvalue_col <- intersect(
+    c("motif_similarity_qvalue", "MotifSimilarityQvalue"),
+    colnames(motif_tbl)
+  )[1]
+  orthology_col <- intersect(
+    c("orthologous_identity", "OrthologousIdentity"),
+    colnames(motif_tbl)
+  )[1]
+  if (!is.na(qvalue_col)) {
+    motif_tbl[[".motif_similarity_qvalue"]] <- as.numeric(motif_tbl[[qvalue_col]])
+  } else {
+    motif_tbl[[".motif_similarity_qvalue"]] <- 0
+  }
+  if (!is.na(orthology_col)) {
+    motif_tbl[[".orthologous_identity"]] <- as.numeric(motif_tbl[[orthology_col]])
+  } else {
+    motif_tbl[[".orthologous_identity"]] <- 1
+  }
+  motif_tbl <- motif_tbl[
+    motif_tbl[[".motif_similarity_qvalue"]] <= 0.001 &
+      motif_tbl[[".orthologous_identity"]] >= 0,
+    ,
+    drop = FALSE
+  ]
 
   motif_to_tf <- split(motif_tbl[["tf"]], motif_tbl[["motif"]])
   motif_names <- names(motif_to_tf)
+  profiled <- profile_time({
+    motif_tbl <- motif_tbl[
+      order(
+        motif_tbl[["tf"]],
+        -motif_tbl[[".motif_similarity_qvalue"]],
+        motif_tbl[[".orthologous_identity"]]
+      ),
+      ,
+      drop = FALSE
+    ]
+    motif_key <- paste(motif_tbl[["tf"]], motif_tbl[["motif"]], sep = "\r")
+    motif_tbl <- motif_tbl[!duplicated(motif_key, fromLast = TRUE), , drop = FALSE]
+    split(motif_tbl, motif_tbl[["tf"]], drop = TRUE)
+  })
+  motif_tbl_by_tf <- profiled[["value"]]
+  profile[["index_annotations"]] <- profile[["index_annotations"]] + profiled[["elapsed"]]
 
   log_message(
     "Native cisTarget: loaded {.val {length(motif_names)}} motifs from annotations",
@@ -1148,46 +1227,77 @@ cistarget2 <- function(
   rank_matrices <- list()
   all_genes <- character(0)
   cluster_names_all <- character(0)
+  ranking_required_genes <- unique(c(adjacency[["TF"]], adjacency[["target"]]))
 
   for (db_path in ranking_dbs) {
     log_message(
       "  Reading ranking database: {.file {basename(db_path)}}",
       verbose = verbose
     )
-    db <- tryCatch(
-      arrow::read_feather(db_path),
-      error = function(e) {
-        log_message(
-          "Failed to read {.file {db_path}}: {.val {conditionMessage(e)}}",
-          message_type = "warning",
-          verbose = verbose
-        )
-        NULL
-      }
-    )
-    if (is.null(db)) {
-      next
-    }
-
-    if (!"motifs" %in% colnames(db)) {
+    db_columns <- scenic_feather_column_names(db_path)
+    index_cols <- scenic_ranking_index_columns(db_columns)
+    index_col <- rev(index_cols)[1]
+    if (is.na(index_col)) {
       log_message(
-        "Ranking database missing 'motifs' column. Skipping.",
+        "Ranking database missing motif/index column. Skipping.",
         message_type = "warning",
         verbose = verbose
       )
       next
     }
-    clusters <- as.character(db[["motifs"]])
-    gene_cols <- setdiff(colnames(db), "motifs")
+    gene_cols_all <- scenic_ranking_gene_columns(db_columns)
+    gene_cols <- intersect(ranking_required_genes, gene_cols_all)
+    if (length(gene_cols) < min_regulon_size) {
+      log_message(
+        "Ranking database has fewer than {.val {min_regulon_size}} usable genes for the current adjacency. Skipping.",
+        message_type = "warning",
+        verbose = verbose
+      )
+      next
+    }
+    read_cols <- c(gene_cols, index_col)
+    profiled <- profile_time({
+      tryCatch(
+        arrow::read_feather(db_path, col_select = read_cols),
+        error = function(e) {
+          log_message(
+            "Failed to read {.file {db_path}}: {.val {conditionMessage(e)}}",
+            message_type = "warning",
+            verbose = verbose
+          )
+          NULL
+        }
+      )
+    })
+    db <- profiled[["value"]]
+    profile[["read_rankings"]] <- profile[["read_rankings"]] + profiled[["elapsed"]]
+    if (is.null(db)) {
+      next
+    }
+
+    clusters <- as.character(db[[index_col]])
+    gene_cols <- setdiff(colnames(db), index_col)
     all_genes <- union(all_genes, gene_cols)
     cluster_names_all <- union(cluster_names_all, clusters)
+    profiled <- profile_time({
+      data <- as.matrix(db[, gene_cols])
+      storage.mode(data) <- "integer"
+      data
+    })
+    ranking_data <- profiled[["value"]]
+    profile[["read_rankings"]] <- profile[["read_rankings"]] + profiled[["elapsed"]]
 
     rank_matrices[[length(rank_matrices) + 1]] <- list(
       clusters = clusters,
       genes = gene_cols,
-      data = db
+      gene_index = stats::setNames(seq_along(gene_cols), gene_cols),
+      data = ranking_data,
+      total_genes = length(gene_cols_all),
+      rank_cutoff = as.integer(round(auc_threshold * length(gene_cols_all))) - 1L
     )
   }
+  rm(db)
+  gc()
 
   if (length(rank_matrices) == 0) {
     log_message(
@@ -1204,16 +1314,7 @@ cistarget2 <- function(
 
   gene_to_clusters <- list()
   for (gene in unique(adjacency[["TF"]])) {
-    gene_pattern <- paste0(
-      "(^|__|_)",
-      gene,
-      "($|_)"
-    )
-    matching_rows <- grepl(
-      gene_pattern,
-      motif_tbl[["tf"]],
-      ignore.case = TRUE
-    )
+    matching_rows <- motif_tbl[["tf"]] == gene
     if (any(matching_rows)) {
       gene_to_clusters[[gene]] <- unique(
         motif_tbl[["motif"]][matching_rows]
@@ -1228,21 +1329,30 @@ cistarget2 <- function(
 
   tfs <- unique(adjacency[["TF"]])
   regulons <- list()
+  profiled <- profile_time({
+    scenic_modules_from_adjacencies(
+      adjacency = adjacency,
+      expr_mtx = expr_mtx,
+      min_genes = 20,
+      top_n_targets = max_targets,
+      verbose = verbose
+    )
+  })
+  modules <- profiled[["value"]]
+  profile[["module_build"]] <- profile[["module_build"]] + profiled[["elapsed"]]
 
-  for (tf in tfs) {
-    tf_adj <- adjacency[adjacency[["TF"]] == tf, , drop = FALSE]
-    tf_adj <- tf_adj[order(-as.numeric(tf_adj[["importance"]])), , drop = FALSE]
-    target_genes <- unique(tf_adj[["target"]])
-    target_genes <- utils::head(target_genes, max_targets * 2)
-    target_set <- intersect(target_genes, all_genes)
+  process_module <- function(module) {
+    local_profile <- profile * 0
+    tf <- module[["tf"]]
+    target_set <- intersect(module[["genes"]], all_genes)
 
     if (length(target_set) < min_regulon_size) {
-      next
+      return(NULL)
     }
 
     tf_clusters <- gene_to_clusters[[tf]]
     if (is.null(tf_clusters) || length(tf_clusters) == 0) {
-      next
+      return(NULL)
     }
 
     cluster_scores <- data.frame(
@@ -1254,65 +1364,104 @@ cistarget2 <- function(
     )
 
     for (rm in rank_matrices) {
-      gene_idx <- match(target_set, rm[["genes"]])
+      gene_idx <- unname(rm[["gene_index"]][target_set])
       gene_idx <- gene_idx[!is.na(gene_idx)]
       if (length(gene_idx) < min_regulon_size) {
         next
       }
 
-      cluster_idx <- which(rm[["clusters"]] %in% tf_clusters)
-      if (length(cluster_idx) == 0) {
+      profiled <- profile_time({
+        rm[["data"]][, gene_idx, drop = FALSE]
+      })
+      ranking_sub <- profiled[["value"]]
+      local_profile[["matrix_subset"]] <- local_profile[["matrix_subset"]] + profiled[["elapsed"]]
+      profiled <- profile_time({
+        scenic_ctx_auc_avg2sd(
+          ranks = ranking_sub,
+          total_genes = rm[["total_genes"]],
+          rank_threshold = as.integer(rank_threshold),
+          rank_cutoff = rm[["rank_cutoff"]]
+        )
+      })
+      cistarget_stats <- profiled[["value"]]
+      local_profile[["cistarget_stats"]] <- local_profile[["cistarget_stats"]] + profiled[["elapsed"]]
+      aucs <- cistarget_stats[["auc"]]
+      auc_sd <- scenic_population_sd(aucs)
+      if (!is.finite(auc_sd) || auc_sd <= 0) {
+        next
+      }
+      ness <- (aucs - mean(aucs)) / auc_sd
+      enriched_idx <- which(ness >= nes_threshold)
+      if (length(enriched_idx) == 0) {
         next
       }
 
-      for (ci in cluster_idx) {
-        cluster_name <- rm[["clusters"]][ci]
-        rankings <- as.numeric(rm[["data"]][ci, rm[["genes"]]])
-        names(rankings) <- rm[["genes"]]
-
-        n_total <- length(rankings)
-        target_ranks_sub <- rankings[target_set]
-        target_ranks_sub <- sort(target_ranks_sub[!is.na(target_ranks_sub)])
-
-        if (length(target_ranks_sub) < min_regulon_size) {
-          next
+      profiled <- profile_time({
+        annotated_tf <- motif_tbl_by_tf[[tf]]
+        if (is.null(annotated_tf)) {
+          motif_tbl[FALSE, , drop = FALSE]
+        } else {
+          annotated_tf[
+            annotated_tf[["motif"]] %in% rm[["clusters"]][enriched_idx],
+            ,
+            drop = FALSE
+          ]
         }
+      })
+      annotated_features <- profiled[["value"]]
+      local_profile[["annotation_filter"]] <- local_profile[["annotation_filter"]] + profiled[["elapsed"]]
+      if (nrow(annotated_features) == 0) {
+        next
+      }
+      annotated_feature_idx <- match(annotated_features[["motif"]], rm[["clusters"]])
+      annotated_feature_idx <- annotated_feature_idx[!is.na(annotated_feature_idx)]
+      if (length(annotated_feature_idx) == 0) {
+        next
+      }
+      annotated_features <- annotated_features[
+        match(rm[["clusters"]][annotated_feature_idx], annotated_features[["motif"]]),
+        ,
+        drop = FALSE
+      ]
+      # pySCENIC 0.12.1 sorts/deduplicates motif annotations before applying the
+      # annotation filter positionally to the recovery/ranking matrices. Reproduce
+      # that row alignment so native pruning matches the Python backend output.
+      py_row_idx <- enriched_idx[seq_len(min(length(enriched_idx), nrow(annotated_features)))]
+      avg_recovery <- cistarget_stats[["avg2sd_recovery"]]
 
-        max_r <- max(rankings, na.rm = TRUE)
-        if (max_r <= 0) {
-          next
-        }
-        target_ranks_sub <- target_ranks_sub / max_r
-
-        n_targets <- length(target_ranks_sub)
-
-        x <- c(0, target_ranks_sub, 1)
-        y <- c(0, seq_len(n_targets) / n_targets, 1)
-        auc <- sum(diff(x) * (y[-1] + y[-length(y)]) / 2)
-
-        expected_auc <- 0.5
-        nes <- (auc - expected_auc) /
-          max(0.01, sqrt(expected_auc * (1 - expected_auc) / n_total))
-
-        if (auc >= auc_threshold && nes >= nes_threshold) {
-          n_lead <- max(2, as.integer(n_targets / 3))
-          leading <- names(target_ranks_sub)[seq_len(min(n_lead, n_targets))]
-          cluster_scores <- rbind(
-            cluster_scores,
-            data.frame(
-              cluster = cluster_name,
-              auc = auc,
-              nes = nes,
-              leading_edge_genes = I(list(unique(c(target_set, leading)))),
-              stringsAsFactors = FALSE
-            )
+      for (row_i in seq_along(py_row_idx)) {
+        ci <- py_row_idx[[row_i]]
+        cluster_name <- annotated_features[["motif"]][[row_i]]
+        target_ranks_sub <- as.integer(ranking_sub[ci, ])
+        names(target_ranks_sub) <- rm[["genes"]][gene_idx]
+        profiled <- profile_time({
+          scenic_cistarget_leading_edge(
+            ranks = target_ranks_sub,
+            avg2sd_recovery = avg_recovery
           )
+        })
+        leading <- profiled[["value"]]
+        local_profile[["leading_edge"]] <- local_profile[["leading_edge"]] + profiled[["elapsed"]]
+
+        if (length(leading) == 0) {
+          next
         }
+
+        cluster_scores <- rbind(
+          cluster_scores,
+          data.frame(
+            cluster = cluster_name,
+            auc = aucs[[annotated_feature_idx[[row_i]]]],
+            nes = ness[[annotated_feature_idx[[row_i]]]],
+            leading_edge_genes = I(list(unique(leading))),
+            stringsAsFactors = FALSE
+          )
+        )
       }
     }
 
     if (nrow(cluster_scores) == 0) {
-      next
+      return(list(tf = NULL, genes = NULL, profile = local_profile))
     }
 
     cluster_scores <- cluster_scores[
@@ -1320,38 +1469,277 @@ cistarget2 <- function(
       ,
       drop = FALSE
     ]
-    top_clusters <- utils::head(cluster_scores, 5)
-
-    regulon_genes <- unique(unlist(top_clusters[["leading_edge_genes"]]))
+    regulon_genes <- unique(unlist(cluster_scores[["leading_edge_genes"]]))
     regulon_genes <- intersect(regulon_genes, target_set)
-    regulon_genes <- utils::head(regulon_genes, max_targets)
 
-    if (length(regulon_genes) >= min_regulon_size) {
-      regulons[[tf]] <- regulon_genes
+    if (length(regulon_genes) > 0) {
+      return(list(tf = tf, genes = regulon_genes, profile = local_profile))
     }
+    list(tf = NULL, genes = NULL, profile = local_profile)
   }
 
+  module_cores <- max(1L, as.integer(cores))
+  if (.Platform[["OS.type"]] == "unix" && module_cores > 1L && length(modules) > 1L) {
+    module_results <- parallel::mclapply(
+      modules,
+      process_module,
+      mc.cores = module_cores,
+      mc.preschedule = TRUE
+    )
+  } else {
+    module_results <- lapply(modules, process_module)
+  }
+  for (module_result in module_results) {
+    if (is.null(module_result)) {
+      next
+    }
+    profile <- profile + module_result[["profile"]]
+    if (is.null(module_result[["tf"]])) {
+      next
+    }
+    tf <- module_result[["tf"]]
+    regulons[[tf]] <- unique(c(regulons[[tf]], module_result[["genes"]]))
+  }
+
+  regulons <- regulons[lengths(regulons) >= min_regulon_size]
   missing_tfs <- setdiff(tfs, names(regulons))
-  if (length(missing_tfs) > 0) {
+  if (length(missing_tfs) > 0 && isTRUE(fallback)) {
     log_message(
       "  {.val {length(missing_tfs)}} TFs had no enriched motifs; using top-N importance as fallback",
       message_type = "info",
       verbose = verbose
     )
-    fallback <- build_regulons(
+    fallback_regulons <- build_regulons(
       adjacency[adjacency[["TF"]] %in% missing_tfs, , drop = FALSE],
       max_targets,
       min_regulon_size
     )
-    regulons <- c(regulons, fallback)
+    regulons <- c(regulons, fallback_regulons)
   }
 
+  motif_enriched_n <- length(setdiff(tfs, missing_tfs))
+  fallback_n <- if (isTRUE(fallback)) length(missing_tfs) else 0L
   log_message(
-    "{.pkg cisTarget} produced {.val {length(regulons)}} regulons (motif-enriched: {.val {length(regulons) - length(missing_tfs)}}, fallback: {.val {length(missing_tfs)}})",
+    "{.pkg cisTarget} produced {.val {length(regulons)}} regulons (motif-enriched: {.val {motif_enriched_n}}, fallback: {.val {fallback_n}})",
+    verbose = verbose
+  )
+  log_message(
+    "Native cisTarget timing: {.val {paste(names(profile), sprintf('%.3fs', profile), sep = '=', collapse = ', ')}}",
     verbose = verbose
   )
 
+  if (length(regulons) == 0L) {
+    return(regulons)
+  }
   regulons[order(names(regulons))]
+}
+
+scenic_cistarget_auc <- function(
+  rankings,
+  total_genes,
+  rank_threshold = 5000,
+  auc_threshold = 0.05
+) {
+  rank_threshold <- min(as.integer(rank_threshold), as.integer(total_genes) - 1L)
+  rank_cutoff <- as.integer(round(auc_threshold * total_genes)) - 1L
+  if (rank_cutoff < 1L || rank_cutoff > rank_threshold) {
+    log_message(
+      "{.arg auc_threshold} and {.arg rank_threshold} produce an invalid cisTarget rank cutoff",
+      message_type = "error"
+    )
+  }
+  n_genes <- ncol(rankings)
+  max_auc <- (rank_cutoff + 1L) * n_genes
+  apply(rankings, 1, function(ranks) {
+    ranks <- ranks[is.finite(ranks) & ranks < rank_cutoff]
+    if (length(ranks) == 0) {
+      return(0)
+    }
+    x <- c(sort(as.integer(ranks)), rank_cutoff)
+    y <- seq_len(length(x) - 1L)
+    sum(diff(x) * y) / max_auc
+  })
+}
+
+scenic_cistarget_recovery <- function(
+  ranks,
+  rank_threshold = 5000
+) {
+  ranks <- ranks[is.finite(ranks) & ranks < rank_threshold]
+  if (length(ranks) == 0) {
+    return(rep(0, rank_threshold))
+  }
+  recovered <- tabulate(as.integer(ranks) + 1L, nbins = rank_threshold)
+  cumsum(recovered)
+}
+
+scenic_cistarget_avg2sd_recovery <- function(
+  rankings,
+  total_genes,
+  rank_threshold = 5000
+) {
+  rank_threshold <- min(as.integer(rank_threshold), as.integer(total_genes) - 1L)
+  n_features <- nrow(rankings)
+  if (n_features == 0L) {
+    return(rep(0, rank_threshold))
+  }
+  recovery_sum <- numeric(rank_threshold)
+  recovery_sumsq <- numeric(rank_threshold)
+  for (idx in seq_len(n_features)) {
+    recovery <- scenic_cistarget_recovery(rankings[idx, ], rank_threshold = rank_threshold)
+    recovery_sum <- recovery_sum + recovery
+    recovery_sumsq <- recovery_sumsq + recovery * recovery
+  }
+  recovery_mean <- recovery_sum / n_features
+  recovery_var <- pmax(recovery_sumsq / n_features - recovery_mean * recovery_mean, 0)
+  recovery_mean + 2 * sqrt(recovery_var)
+}
+
+scenic_population_sd <- function(x) {
+  x <- as.numeric(x)
+  x <- x[is.finite(x)]
+  if (length(x) == 0) {
+    return(NA_real_)
+  }
+  sqrt(mean((x - mean(x))^2))
+}
+
+scenic_cistarget_leading_edge <- function(
+  ranks,
+  avg2sd_recovery
+) {
+  rank_threshold <- length(avg2sd_recovery)
+  recovery <- scenic_cistarget_recovery(ranks, rank_threshold = rank_threshold)
+  rank_at_max <- which.max(recovery - avg2sd_recovery) - 1L
+  genes <- names(ranks)[is.finite(ranks) & ranks <= rank_at_max]
+  genes[order(ranks[genes])]
+}
+
+scenic_modules_from_adjacencies <- function(
+  adjacency,
+  expr_mtx = NULL,
+  thresholds = c(0.75, 0.9),
+  top_n_targets = 50,
+  top_n_regulators = c(5, 10, 50),
+  min_genes = 20,
+  rho_threshold = 0.03,
+  keep_only_activating = TRUE,
+  verbose = TRUE
+) {
+  if (!all(c("TF", "target", "importance") %in% colnames(adjacency))) {
+    log_message(
+      "{.arg adjacency} must have columns TF, target, importance",
+      message_type = "error"
+    )
+  }
+  adjacency <- adjacency[!is.na(adjacency[["importance"]]), , drop = FALSE]
+  adjacency[["importance"]] <- as.numeric(adjacency[["importance"]])
+  adjacency <- adjacency[order(-adjacency[["importance"]]), , drop = FALSE]
+  threshold_importance <- adjacency[["importance"]]
+
+  if (!is.null(expr_mtx)) {
+    adjacency <- scenic_add_correlation(
+      adjacency = adjacency,
+      expr_mtx = expr_mtx,
+      rho_threshold = rho_threshold
+    )
+    if (isTRUE(keep_only_activating)) {
+      adjacency <- adjacency[adjacency[["regulation"]] == 1L, , drop = FALSE]
+    }
+  }
+
+  modules <- list()
+  add_module <- function(tf, genes, context) {
+    genes <- unique(c(tf, genes))
+    if (length(genes) < min_genes) {
+      return()
+    }
+    modules[[length(modules) + 1L]] <<- list(
+      tf = tf,
+      genes = genes,
+      context = context
+    )
+  }
+
+  if (nrow(adjacency) > 0) {
+    threshold_values <- stats::quantile(
+      threshold_importance,
+      probs = thresholds,
+      names = FALSE,
+      na.rm = TRUE
+    )
+    for (idx in seq_along(threshold_values)) {
+      adj_thr <- adjacency[adjacency[["importance"]] > threshold_values[[idx]], , drop = FALSE]
+      for (tf in unique(adj_thr[["TF"]])) {
+        tf_adj <- adj_thr[adj_thr[["TF"]] == tf, , drop = FALSE]
+        add_module(tf, tf_adj[["target"]], paste0("weight>", thresholds[[idx]] * 100, "%"))
+      }
+    }
+
+    for (tf in unique(adjacency[["TF"]])) {
+      tf_adj <- adjacency[adjacency[["TF"]] == tf, , drop = FALSE]
+      tf_adj <- tf_adj[order(-tf_adj[["importance"]]), , drop = FALSE]
+      add_module(tf, utils::head(tf_adj[["target"]], top_n_targets), paste0("top", top_n_targets))
+    }
+
+    for (n in top_n_regulators) {
+      top_by_target <- do.call(
+        rbind,
+        lapply(split(adjacency, adjacency[["target"]]), function(df) {
+          df <- df[order(-df[["importance"]]), , drop = FALSE]
+          utils::head(df, n)
+        })
+      )
+      if (!is.null(top_by_target) && nrow(top_by_target) > 0) {
+        for (tf in unique(top_by_target[["TF"]])) {
+          tf_adj <- top_by_target[top_by_target[["TF"]] == tf, , drop = FALSE]
+          add_module(tf, tf_adj[["target"]], paste0("top", n, "perTarget"))
+        }
+      }
+    }
+  }
+
+  log_message(
+    "Native pySCENIC-style module builder produced {.val {length(modules)}} candidate modules",
+    verbose = verbose
+  )
+  modules
+}
+
+scenic_add_correlation <- function(
+  adjacency,
+  expr_mtx,
+  rho_threshold = 0.03
+) {
+  expr_mtx <- as.matrix(expr_mtx)
+  tfs <- intersect(unique(adjacency[["TF"]]), colnames(expr_mtx))
+  targets <- intersect(unique(adjacency[["target"]]), colnames(expr_mtx))
+  adjacency <- adjacency[
+    adjacency[["TF"]] %in% tfs & adjacency[["target"]] %in% targets,
+    ,
+    drop = FALSE
+  ]
+  if (nrow(adjacency) == 0) {
+    adjacency[["rho"]] <- numeric(0)
+    adjacency[["regulation"]] <- integer(0)
+    return(adjacency)
+  }
+
+  corr_mtx <- stats::cor(
+    expr_mtx[, tfs, drop = FALSE],
+    expr_mtx[, targets, drop = FALSE]
+  )
+  rho <- mapply(
+    function(tf, target) corr_mtx[tf, target],
+    adjacency[["TF"]],
+    adjacency[["target"]],
+    USE.NAMES = FALSE
+  )
+  rho[is.na(rho)] <- 0
+  adjacency[["rho"]] <- rho
+  adjacency[["regulation"]] <- as.integer(rho > rho_threshold) -
+    as.integer(rho < -rho_threshold)
+  adjacency
 }
 
 scenic_reference <- function(
@@ -1931,7 +2319,12 @@ scenic_read_regulon_txt <- function(txt_file) {
     )
   }
   colnames(regulons)[1:3] <- c("regulon", "motif", "target")
+  regulons[["regulon"]] <- scenic_regulon_tf_name(regulons[["regulon"]])
   regulons[, 1:3, drop = FALSE]
+}
+
+scenic_regulon_tf_name <- function(x) {
+  sub("\\([0-9]+g\\)$", "", x)
 }
 
 scenic_regulon_list <- function(regulon_tbl) {
@@ -1940,8 +2333,20 @@ scenic_regulon_list <- function(regulon_tbl) {
     target <- regulon_tbl[regulon_tbl[["regulon"]] == rg, "target"]
     unique(unlist(strsplit(target, ",", fixed = TRUE), use.names = FALSE))
   })
-  names(regulon_list) <- sub("[0-9]+g", "+", rgnames)
+  names(regulon_list) <- scenic_regulon_tf_name(rgnames)
   regulon_list
+}
+
+scenic_read_python_aucell <- function(auc_file) {
+  auc <- utils::read.csv(
+    auc_file,
+    row.names = 1,
+    check.names = FALSE,
+    stringsAsFactors = FALSE
+  )
+  auc <- as.data.frame(auc, check.names = FALSE)
+  colnames(auc) <- scenic_regulon_tf_name(colnames(auc))
+  auc
 }
 
 scenic_compute_aucell_score <- function(
