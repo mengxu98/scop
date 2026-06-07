@@ -19,7 +19,7 @@ parse_cli_args <- function(args = commandArgs(trailingOnly = TRUE)) {
   out <- list(
     output_dir = file.path("inst", "benchmarks", "spatial_gradient_cpp"),
     reference = "trajectory",
-    n_spots = 80L,
+    n_spots = 0L,
     n_variables = 6L,
     n_random = 20L,
     n_bins = 25L,
@@ -126,7 +126,7 @@ time_run <- function(fn) {
   }
 }
 
-make_spatial_gradient_fixture <- function(n_spots = 80L, n_variables = 6L, seed = 1L) {
+make_spatial_gradient_fixture <- function(n_spots = 0L, n_variables = 6L, seed = 1L) {
   data(visium_human_pancreas_sub, package = "scop", envir = environment())
   srt <- visium_human_pancreas_sub
   SeuratObject::DefaultAssay(srt) <- "Spatial"
@@ -141,13 +141,21 @@ make_spatial_gradient_fixture <- function(n_spots = 80L, n_variables = 6L, seed 
     srt <- subset(srt, cells = cells)
   }
 
+  expr <- GetAssayData5(srt, assay = "Spatial", layer = "counts")
   candidate_variables <- c(
     "TMSB4X", "COL1A1", "COL3A1", "FOS", "B2M", "IGFBP7",
     "SPP1", "KRT19", "MALAT1", "ACTB"
   )
-  variables <- intersect(candidate_variables, rownames(srt))
+  candidate_variables <- intersect(candidate_variables, rownames(expr))
+  coverage <- Matrix::rowSums(expr > 0) / ncol(expr)
+  mean_expr <- Matrix::rowMeans(expr)
+  candidate_variables <- candidate_variables[
+    order(coverage[candidate_variables], mean_expr[candidate_variables], decreasing = TRUE)
+  ]
+  variables <- candidate_variables[coverage[candidate_variables] >= 0.05]
   if (length(variables) < n_variables) {
-    fallback <- setdiff(rownames(srt), variables)
+    fallback <- setdiff(names(sort(coverage, decreasing = TRUE)), variables)
+    fallback <- fallback[coverage[fallback] >= 0.05]
     variables <- c(variables, head(fallback, n_variables - length(variables)))
   }
   variables <- head(unique(variables), n_variables)
