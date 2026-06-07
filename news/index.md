@@ -20,8 +20,8 @@
     `"Homo_sapiens"`.
   - Added
     [`RunSCENICPlus()`](https://mengxu98.github.io/scop/reference/RunSCENICPlus.md)
-    for the SCENIC+ multi-omics workflow from Seurat objects, with
-    native Python launcher, parallelized processing, and result
+    for the SCENIC+ multi-omics workflow from Seurat objects, with a
+    direct Python launcher, parallelized processing, and result
     readback.
   - Added
     [`RunGRNBoost2()`](https://mengxu98.github.io/scop/reference/RunGRNBoost2.md)
@@ -44,9 +44,9 @@
   - [`RunSCENIC()`](https://mengxu98.github.io/scop/reference/RunSCENIC.md):
     Added a `genome` parameter for automatic cisTarget reference
     selection while keeping `species` aligned with the package-wide
-    Latin-name style. Human references now support the default `"hg38"`
-    v10 databases and `"hg19"` v9 databases, while the human TF list is
-    cached with the genome-neutral name `allTFs_hgnc.txt`.
+    Latin-name convention. Human references now support the default
+    `"hg38"` v10 databases and `"hg19"` v9 databases, while the human TF
+    list is cached with the genome-neutral name `allTFs_hgnc.txt`.
   - [`RunSCENIC()`](https://mengxu98.github.io/scop/reference/RunSCENIC.md):
     Inlined the single-call `scenic_grn_inputs_changed` helper;
     shortened long internal function names (`scenic_dl_refs`,
@@ -85,8 +85,8 @@
     examples, and detailed result storage in `srt@tools[["RareQ"]]`.
   - Added
     [`FerrisWheelPlot()`](https://mengxu98.github.io/scop/reference/FerrisWheelPlot.md)
-    for Ferris wheel-style up/down gene-count visualization from pathway
-    enrichment results or pre-summarized count tables, with automatic
+    for up/down gene-count visualization from pathway enrichment results
+    or pre-summarized count tables, with automatic
     [`RunEnrichment()`](https://mengxu98.github.io/scop/reference/RunEnrichment.md)
     result summarization, SCOP palette defaults, scalable outer donuts,
     title-cased pathway labels, and configurable text outlines.
@@ -106,12 +106,11 @@
     [`RuntAge()`](https://mengxu98.github.io/scop/reference/RuntAge.md)
     for tAge transcriptomic aging-clock prediction from Seurat
     pseudobulk, `ExpressionSet`, or matrix inputs, with runtime-optional
-    `Gladyshev-Lab/tAge` preprocessing, R-native EN model caching from
+    `Gladyshev-Lab/tAge` preprocessing, R EN model caching from
     `mengxu98/datasets`, Python BR fallback support, and
     [`tAgePlot()`](https://mengxu98.github.io/scop/reference/tAgePlot.md)
-    visualization in the
-    [`thisplot::StatPlot()`](https://mengxu98.github.io/thisplot/reference/StatPlot.html)
-    style.
+    visualization through
+    [`thisplot::StatPlot()`](https://mengxu98.github.io/thisplot/reference/StatPlot.html).
   - Added
     [`RunscFEA()`](https://mengxu98.github.io/scop/reference/RunscFEA.md)
     for scFEA metabolic flux estimation from Seurat objects, with cached
@@ -125,20 +124,25 @@
   - Added
     [`RunAugur()`](https://mengxu98.github.io/scop/reference/RunAugur.md)
     for Augur cell-type perturbation prioritization from Seurat objects,
-    with an optimized native backend and metadata/tool-slot writeback.
+    with an optimized backend and metadata/tool-slot writeback.
   - Added
     [`RunSCENIC()`](https://mengxu98.github.io/scop/reference/RunSCENIC.md)
-    for a SCENIC workflow from Seurat objects, including optional
-    metacell GRN input, GRNBoost2/`scenic ctx` execution, regulon
-    conversion, multi-core AUCell batch scoring, and storage of regulon
-    activity scores as a Seurat assay plus detailed results in `@tools`.
+    for a SCENIC workflow from Seurat objects, including
+    GRNBoost2/`scenic ctx` execution, regulon conversion, multi-core
+    AUCell batch scoring, and storage of regulon activity scores as a
+    Seurat assay plus detailed results in `@tools`. Metacell SCENIC
+    workflows should now pass a metacell-level object from
+    [`RunMetaCell()`](https://mengxu98.github.io/scop/reference/RunMetaCell.md)
+    directly to
+    [`RunSCENIC()`](https://mengxu98.github.io/scop/reference/RunSCENIC.md)
+    instead of using an internal `group.by` aggregation path.
   - [`RunSCENIC()`](https://mengxu98.github.io/scop/reference/RunSCENIC.md)
     now uses a single `backend` argument to select the full SCENIC
-    execution path. The public `native_motif_fallback`,
-    `aucell_backend`, AUCell C++ strategy, and AUCell batch-size
-    switches were removed from the SCENIC wrapper so GRNBoost2,
-    cisTarget pruning, and AUCell scoring are controlled consistently by
-    `backend = "cpp"` or `backend = "python"`.
+    execution path. The public motif-fallback, AUCell backend, AUCell
+    C++ strategy, and AUCell batch-size switches were removed from the
+    SCENIC wrapper so GRNBoost2, cisTarget pruning, and AUCell scoring
+    are controlled consistently by `backend = "cpp"` or
+    `backend = "python"`.
   - Added
     [`SCENICPlot()`](https://mengxu98.github.io/scop/reference/SCENICPlot.md)
     to calculate regulon specificity scores from SCENIC activity and
@@ -153,7 +157,7 @@
     and
     [`ScissorPlot()`](https://mengxu98.github.io/scop/reference/ScissorPlot.md)
     for Scissor phenotype-associated cell selection from Seurat and
-    bulk/SummarizedExperiment inputs, with a native optimized backend,
+    bulk/SummarizedExperiment inputs, with an optimized backend,
     upstream-package backend, Seurat metadata/tool writeback, embedding
     plots, heatmaps, and status-composition summaries.
   - Added
@@ -161,20 +165,20 @@
     for condition-level scTenifoldNet network comparison from matrices
     or Seurat groups using `cailab-tamu/scTenifoldNet`.
   - [`RunscTenifoldKnk()`](https://mengxu98.github.io/scop/reference/RunScTenifoldKnk.md)
-    now uses the optimized native path directly for QC, network-ensemble
+    now uses the optimized path directly for QC, network-ensemble
     construction, tensor denoising, manifold alignment, and
     differential-regulation summaries;
     [`scTenifoldKnkPlot()`](https://mengxu98.github.io/scop/reference/scTenifoldKnkPlot.md)
-    includes QQ, effect-size, network, manifold, volcano, and
-    upset-style result views. Added
+    includes QQ, effect-size, network, manifold, volcano, and upset
+    result views. Added
     [`scTenifoldNetPlot()`](https://mengxu98.github.io/scop/reference/scTenifoldNetPlot.md)
     for condition-level scTenifoldNet QQ, effect-size, network, and
     manifold views.
   - [`RunPAGA()`](https://mengxu98.github.io/scop/reference/RunPAGA.md)
-    now supports a native C++ backend for the standard PAGA connectivity
-    graph and uses it by default; `backend = "python"` remains available
-    for RNA-velocity transitions, PAGA-initialized embeddings, plotting
-    side effects, and DPT pseudotime.
+    now supports a C++ backend for the standard PAGA connectivity graph
+    and uses it by default; `backend = "python"` remains available for
+    RNA-velocity transitions, PAGA-initialized embeddings, plotting side
+    effects, and DPT pseudotime.
   - [`RunSCVELO()`](https://mengxu98.github.io/scop/reference/RunSCVELO.md)
     now includes an optimized C++ backend for stochastic velocity
     embedding, compatible with
@@ -183,7 +187,7 @@
     calculation. The Python backend remains the default for the full
     scVelo workflow.
   - [`VelocityPlot()`](https://mengxu98.github.io/scop/reference/VelocityPlot.md)
-    raw, grid, and stream visualizations were validated with the native
+    raw, grid, and stream visualizations were validated with the
     `RunSCVELO(backend = "cpp")` velocity embeddings.
   - [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md)
     now supports `modules = "scenic"` as a standalone Python 3.10
@@ -200,8 +204,8 @@
     table in `@tools$ConvertHomologs`.
   - Added
     [`RunCytoSPACE()`](https://mengxu98.github.io/scop/reference/RunCytoSPACE.md),
-    a native R/C++ implementation of the default CytoSPACE spot-level
-    assignment workflow. The native backend uses spot-capacity graph
+    an R/C++ implementation of the default CytoSPACE spot-level
+    assignment workflow. The C++ backend uses spot-capacity graph
     construction and precomputed Pearson correlation matrices, stores
     detailed results in `srt@tools[["CytoSPACE"]]`, and writes summary
     metadata columns with the requested prefix.
@@ -209,21 +213,21 @@
     [`SpatialSpotPlot()`](https://mengxu98.github.io/scop/reference/SpatialSpotPlot.md)
     for spatial visualization, including examples that show both tissue
     annotations and downstream CytoSPACE assignment results.
-  - Added a shared native progress helper in `src/log_message.h` for
+  - Added a shared C++ progress helper in `src/log_message.h` for
     long-running C++ loops. CytoSPACE assignment, scTenifold tensor
     decomposition, proportion permutation/bootstrap, and sample-level
     proportion bootstrap now report progress with the same timestamped
-    information style as
+    format as
     [`thisutils::log_message()`](https://mengxu98.github.io/thisutils/reference/log_message.html).
 - **fix**:
   - [`RunAugur()`](https://mengxu98.github.io/scop/reference/RunAugur.md):
-    The native `backend = "cpp"` path now performs Augur-style variance
-    and random feature selection inside `scop`, so it no longer requires
-    the GitHub-only `Augur` package unless `backend = "r"` is requested.
-    Native subsample results are accumulated before row binding to
-    reduce repeated table growth, and failed native cell-type tasks now
-    stop with a direct result-structure error instead of falling through
-    to a secondary missing-`metric` error.
+    The `backend = "cpp"` path now performs Augur variance and random
+    feature selection inside `scop`, so it no longer requires the
+    GitHub-only `Augur` package unless `backend = "r"` is requested. C++
+    subsample results are accumulated before row binding to reduce
+    repeated table growth, and failed C++ cell-type tasks now stop with
+    a direct result-structure error instead of falling through to a
+    secondary missing-`metric` error.
   - [`RunPalantir()`](https://mengxu98.github.io/scop/reference/RunPalantir.md):
     Fixed saved plot generation by passing `plot_format` through to
     Python, saving each embedding from its own matplotlib figure, and
@@ -251,7 +255,7 @@
     and `ht_params` overrides for closer consistency with
     [`GroupHeatmap()`](https://mengxu98.github.io/scop/reference/GroupHeatmap.md).
   - `GeneSetScoring()`: Route dense Gaussian and Poisson GSVA scoring
-    through the native KDE path instead of immediately falling back to
+    through the C++ KDE path instead of immediately falling back to
     sparse-exact scoring, keeping the optimized z-score/rank workflow
     active for dense inputs.
   - [`RunHarmony2()`](https://mengxu98.github.io/scop/reference/RunHarmony2.md):
@@ -383,7 +387,7 @@
     [`as.matrix()`](https://rdrr.io/r/base/matrix.html) calls; sparse
     matrices are subset first, then densified only when required.
   - [`RunUMAP2()`](https://mengxu98.github.io/scop/reference/RunUMAP2.md):
-    Replaced `isSymmetric(as.matrix(graph))` with sparse-native
+    Replaced `isSymmetric(as.matrix(graph))` with sparse-aware
     `Matrix::isSymmetric(graph)` in symmetry checks and graph subset
     sampling, avoiding dense materialization of large neighbor graphs.
   - [`RunUMAP2()`](https://mengxu98.github.io/scop/reference/RunUMAP2.md):
@@ -405,7 +409,7 @@
   - `integration.R` (fastMNN): Removed three
     [`as.matrix()`](https://rdrr.io/r/base/matrix.html) calls passed to
     [`batchelor::fastMNN()`](https://rdrr.io/pkg/batchelor/man/fastMNN.html),
-    which accepts sparse matrices natively via `SingleCellExperiment`.
+    which accepts sparse matrices directly via `SingleCellExperiment`.
   - [`standard_scop()`](https://mengxu98.github.io/scop/reference/standard_scop.md):
     Replaced full `scale.data` matrix load (via
     [`GetAssayData5()`](https://mengxu98.github.io/scop/reference/GetAssayData5.md))
@@ -442,7 +446,7 @@
   - Added
     [`loom_to_srt()`](https://mengxu98.github.io/scop/reference/loom_to_srt.md)
     for pure-R loom-to-Seurat conversion via `rhdf5`, preserving
-    velocity-style `spliced` and `unspliced` layers as assays without
+    velocity `spliced` and `unspliced` layers as assays without
     initializing Python, and added Python-backed
     [`loom_to_adata()`](https://mengxu98.github.io/scop/reference/loom_to_adata.md)
     for users who need AnnData output.
@@ -473,8 +477,8 @@
     `engine` in `details`; the current deconvolution runners use
     explicit `backend = "internal"` SCOP profile fitting and
     `csde_TOAST` uses explicit `backend = "limma_interaction"`, so
-    native package backends can be wired in later without pretending to
-    call external packages.
+    package backends can be wired in later without pretending to call
+    external packages.
   - Added explicit `Remotes` entries for `mengxu98/thisplot` and
     `mengxu98/thisutils` so source installs can resolve the minimum
     imported versions required by SCOP. Optional bulk engines such as
@@ -502,15 +506,15 @@
     [`RunscTenifoldKnk()`](https://mengxu98.github.io/scop/reference/RunScTenifoldKnk.md).
     [`RunscTenifoldKnk()`](https://mengxu98.github.io/scop/reference/RunScTenifoldKnk.md)
     keeps the upstream `scTenifoldNet` workflow but fixes the QC
-    gene-filter assignment in the local path, uses a native equivalent
+    gene-filter assignment in the local path, uses an equivalent
     covariance/downdate path with direct sparse matrix construction,
     selection-based quantile thresholding, and controlled per-gene
     eigensolver parallelism for large `pcNet()` network construction,
-    and uses native helpers for tensor decomposition, manifold matrix
+    and uses C++ helpers for tensor decomposition, manifold matrix
     construction, directionality, and differential-regulation distance
-    calculations. The native tensor-decomposition path now computes
-    MTTKRP updates directly instead of materializing four dense
-    unfolding matrices.
+    calculations. The C++ tensor-decomposition path now computes MTTKRP
+    updates directly instead of materializing four dense unfolding
+    matrices.
   - [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md):
     Added explicit support for `mamba` and `micromamba` executables in
     addition to `conda`, including command-name resolution, automatic
@@ -565,7 +569,7 @@
     now prefer `backend = "cpp"` while retaining `backend = "r"` for
     exact legacy/package behavior.
     [`RunPermutation()`](https://mengxu98.github.io/scop/reference/RunPermutation.md)
-    now uses its validated native implementation directly.
+    now uses its validated C++ implementation directly.
   - [`RunMetabolism()`](https://mengxu98.github.io/scop/reference/RunMetabolism.md)
     and
     [`RunGSVA()`](https://mengxu98.github.io/scop/reference/RunGSVA.md):
@@ -583,16 +587,16 @@
     dense intermediate memory on large cell counts; `NULL` now
     auto-selects a chunk size for large matrices.
   - [`RunEnrichment()`](https://mengxu98.github.io/scop/reference/RunEnrichment.md):
-    Added an experimental `backend = "cpp"` ORA path using a native
+    Added an experimental `backend = "cpp"` ORA path using a C++
     hypergeometric implementation for faster enrichment tables while
     keeping `backend = "r"` available as the clusterProfiler-compatible
     path.
   - [`CellScoring()`](https://mengxu98.github.io/scop/reference/CellScoring.md):
-    Added experimental `backend = "cpp"` support for Seurat-style module
+    Added experimental `backend = "cpp"` support for Seurat module
     scoring by keeping control-gene sampling in R and moving sparse mean
-    calculations to native code.
+    calculations to C++ code.
   - [`RunPermutation()`](https://mengxu98.github.io/scop/reference/RunPermutation.md):
-    Uses the native C++ permutation and bootstrap loops directly after
+    Uses the C++ permutation and bootstrap loops directly after
     validating they match the legacy R calculation for observed
     fractions and log2 fold-differences while running substantially
     faster.
@@ -861,10 +865,10 @@
       layer via
       [`rliger::scaleNotCenter()`](https://welch-lab.github.io/liger/reference/scaleNotCenter.html)
       before integration.
-    - Updated argument naming/style from `LIGER_dims_use` to
-      `liger_dims_use`, and removed legacy quantile-normalization
-      parameter compatibility mapping (`ref_dataset`), keeping
-      `reference` as the supported interface.
+    - Updated argument naming from `LIGER_dims_use` to `liger_dims_use`,
+      and removed legacy quantile-normalization parameter compatibility
+      mapping (`ref_dataset`), keeping `reference` as the supported
+      interface.
   - Optimized the installation of some *Python* packages on Apple
     Silicon devices.
 - **docs**:
@@ -1026,7 +1030,7 @@
     analysis with support for cell ordering, trajectory learning, and
     pseudotime computation.
   - [`RunCytoTRACE()`](https://mengxu98.github.io/scop/reference/RunCytoTRACE.md):
-    New native `scop` implementation for running CytoTRACE 2 analysis to
+    New `scop` implementation for running CytoTRACE 2 analysis to
     predict cellular potency scores and categories (Differentiated,
     Unipotent, Oligopotent, Multipotent, Pluripotent, Totipotent) with
     support for human and mouse species.
@@ -1354,7 +1358,7 @@
     [`RunCellRank()`](https://mengxu98.github.io/scop/reference/RunCellRank.md),
     [`RunWOT()`](https://mengxu98.github.io/scop/reference/RunWOT.md))
     and added `verbose` parameter inheritance and improved message
-    formatting using cli-style formatting.
+    formatting through cli formatting.
 - **fix**:
   - Delete `harmonizomeapi.py` file.
   - Move `scop_analysis.py` into a single `functions.py` file in
@@ -1430,7 +1434,7 @@
   - [`CellCorHeatmap()`](https://mengxu98.github.io/scop/reference/CellCorHeatmap.md):
     - Renamed parameters: `query_cell_annotation` → `query_annotation`,
       `ref_cell_annotation` → `ref_annotation`.
-    - Improved error message formatting using cli-style formatting.
+    - Improved error message formatting through cli formatting.
     - Simplified variable assignments and improved readability.
 - **docs**:
   - Comprehensive documentation updates across multiple functions
