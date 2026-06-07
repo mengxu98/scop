@@ -145,8 +145,28 @@ grnboost_tree <- function(expr, regulator_idx, target_idx, n_rounds = 5000L, lea
     .Call(`_scop_grnboost_tree`, expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self)
 }
 
+grnboost_tree_profile <- function(expr, regulator_idx, target_idx, n_rounds = 5000L, learning_rate = 0.01, max_edges_per_target = 0L, max_depth = 3L, max_features = 0.1, subsample = 0.9, early_stop_window_length = 25L, random_seed = 1234L, exclude_self = TRUE) {
+    .Call(`_scop_grnboost_tree_profile`, expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self)
+}
+
+grnboost_tree_round_trace <- function(expr, regulator_idx, target_idx, trace_regulator_idx, n_rounds = 5000L, learning_rate = 0.01, max_depth = 3L, max_features = 0.1, subsample = 0.9, early_stop_window_length = 25L, random_seed = 1234L, exclude_self = TRUE) {
+    .Call(`_scop_grnboost_tree_round_trace`, expr, regulator_idx, target_idx, trace_regulator_idx, n_rounds, learning_rate, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self)
+}
+
+grnboost_tree_round_nodes <- function(expr, regulator_idx, target_idx, trace_round, n_rounds = 5000L, learning_rate = 0.01, max_depth = 3L, max_features = 0.1, subsample = 0.9, early_stop_window_length = 25L, random_seed = 1234L, exclude_self = TRUE) {
+    .Call(`_scop_grnboost_tree_round_nodes`, expr, regulator_idx, target_idx, trace_round, n_rounds, learning_rate, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self)
+}
+
+grnboost_tree_node_candidates <- function(expr, regulator_idx, target_idx, trace_round, trace_node, n_rounds = 5000L, learning_rate = 0.01, max_depth = 3L, max_features = 0.1, subsample = 0.9, early_stop_window_length = 25L, random_seed = 1234L, exclude_self = TRUE) {
+    .Call(`_scop_grnboost_tree_node_candidates`, expr, regulator_idx, target_idx, trace_round, trace_node, n_rounds, learning_rate, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self)
+}
+
 scenic_ctx_recovery <- function(ranks, weights, rank_threshold) {
     .Call(`_scop_scenic_ctx_recovery`, ranks, weights, rank_threshold)
+}
+
+scenic_ctx_auc_avg2sd <- function(ranks, total_genes, rank_threshold, rank_cutoff) {
+    .Call(`_scop_scenic_ctx_auc_avg2sd`, ranks, total_genes, rank_threshold, rank_cutoff)
 }
 
 scenic_ctx_auc_nes <- function(ranks, nes_threshold, rank_cutoff) {
