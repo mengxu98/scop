@@ -125,6 +125,7 @@ Suggests:
     SingleR,
     SingleCellExperiment,
     SpatialExperiment,
+    SPATA2,
     spacexr,
     tensorflow,
     testthat (>= 3.0.0),
