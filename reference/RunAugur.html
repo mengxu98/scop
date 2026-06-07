@@ -101,10 +101,9 @@ default assay is used.</p></dd>
 
 <dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
 <dd><p>Backend used to run Augur. <code>"cpp"</code> uses a parity-preserving
-<code>scop</code> backend that keeps Augur's sampling, random forest, and metric
-semantics but removes the heavier recipe/bake loop and uses C++ sparse
-matrix preparation where possible. <code>"r"</code> calls the native
-<code>Augur::calculate_auc</code> implementation.</p></dd>
+<code>scop</code> R/C++ backend that keeps Augur's feature selection, sampling, random
+forest, and metric semantics without requiring the Augur package. <code>"r"</code>
+calls the native <code>Augur::calculate_auc</code> implementation.</p></dd>
 
 
 <dt id="arg-features">features<a class="anchor" aria-label="anchor" href="#arg-features"></a></dt>
