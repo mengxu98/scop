@@ -22,9 +22,6 @@ RunSCENIC(
   min_expr_cells = 3,
   min_regulon_size = 10,
   backend = c("cpp", "python"),
-  grn_method = c("grnboost2", "genie3"),
-  cistarget_method = c("native_motif", "native_approx"),
-  max_regulon_targets = 50,
   n_rounds = 5000,
   learning_rate = 0.01,
   max_depth = 3,
@@ -32,9 +29,6 @@ RunSCENIC(
   subsample = 0.9,
   early_stop_window_length = 25,
   cores = 1,
-  aucell_batch_size = 500,
-  aucell_backend = c("r", "cpp"),
-  aucell_cpp_strategy = c("full", "sparse", "topk"),
   seed = 1234,
   force = FALSE,
   assay_name = "scenic",
@@ -137,64 +131,38 @@ RunSCENIC(
 - backend:
 
   SCENIC backend. `"cpp"` uses the native R/C++ path and `"python"` uses
-  the Python `scenicplus` path.
-
-- grn_method:
-
-  GRN inference method for the native backend.
-
-- cistarget_method:
-
-  cisTarget implementation for the native backend.
-
-- max_regulon_targets:
-
-  Maximum number of target genes kept per regulon in the native backend.
+  the Python pySCENIC path. The selected backend controls GRN, cisTarget
+  pruning, and AUCell scoring together.
 
 - n_rounds:
 
-  Number of boosting rounds used by the native GRN backend.
+  Number of boosting rounds used by GRNBoost2.
 
 - learning_rate:
 
-  Learning rate used by the native GRN backend.
+  Learning rate used by GRNBoost2.
 
 - max_depth:
 
-  Maximum tree depth used by the native GRN backend.
+  Maximum tree depth used by GRNBoost2.
 
 - max_features:
 
-  Fraction of features sampled by the native GRN backend.
+  Fraction of features sampled by GRNBoost2.
 
 - subsample:
 
-  Row subsampling fraction used by the native GRN backend.
+  Row subsampling fraction used by GRNBoost2.
 
 - early_stop_window_length:
 
-  Early-stopping window used by the native GRN backend.
+  Early-stopping window used by GRNBoost2.
 
 - cores:
 
-  Number of workers used by GRNBoost2, `scenic ctx`, and AUCell batch
-  scoring. If multicore execution is not supported, this is
-  automatically reduced to one core.
-
-- aucell_batch_size:
-
-  Number of cells scored in each AUCell batch.
-
-- aucell_backend:
-
-  Backend used for AUCell regulon activity scoring. `"r"` uses the
-  AUCell package. `"cpp"` uses the package C++ gene-set scoring
-  implementation.
-
-- aucell_cpp_strategy:
-
-  C++ AUCell ranking strategy passed to the package gene-set scoring
-  backend.
+  Number of workers used by GRNBoost2, `scenic ctx`, and AUCell scoring.
+  If multicore execution is not supported, this is automatically reduced
+  to one core.
 
 - seed:
 

@@ -121,29 +121,28 @@ RunGRNBoost2(
 
 - n_rounds:
 
-  Number of native boosting rounds for GRNBoost2-like tree ensemble
-  inference. The default follows arboreto \`SGBM_KWARGS\`.
+  Number of boosting rounds for GRNBoost2-like tree ensemble inference.
+  The default follows arboreto \`SGBM_KWARGS\`.
 
 - learning_rate:
 
-  Native GRNBoost2-like tree ensemble learning rate.
+  GRNBoost2-like tree ensemble learning rate.
 
 - max_depth:
 
-  Maximum depth of each native regression tree.
+  Maximum depth of each regression tree.
 
 - max_features:
 
-  Fraction of candidate regulators sampled at each native tree split.
+  Fraction of candidate regulators sampled at each tree split.
 
 - subsample:
 
-  Fraction of cells sampled for each native boosting round.
+  Fraction of cells sampled for each boosting round.
 
 - early_stop_window_length:
 
-  Out-of-bag improvement window used for native GRNBoost2 early
-  stopping, matching arboreto's \`EarlyStopMonitor\`.
+  Out-of-bag improvement window used for GRNBoost2 early stopping.
 
 - exclude_self:
 

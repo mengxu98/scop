@@ -47,10 +47,8 @@ RunCisTarget(
 - species:
 
   Species used to select cisTarget reference files when `ranking_dbs`,
-  `motif_annotations`, or `regulators` is `NULL`. Supported values
-  include `"Homo_sapiens"`, `"Mus_musculus"`,
-  `"Drosophila_melanogaster"` and aliases such as `"human"`, `"mouse"`,
-  and `"fly"`.
+  `motif_annotations`, or `regulators` is `NULL`. Supported values are
+  `"Homo_sapiens"`, `"Mus_musculus"`, and `"Drosophila_melanogaster"`.
 
 - backend:
 
