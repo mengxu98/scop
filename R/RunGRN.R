@@ -82,6 +82,22 @@ scenic_write_grn_adjacency <- function(
   adjacency
 }
 
+scenic_py_pkgs <- function(module = c("grnboost2", "regdiffusion")) {
+  module <- match.arg(module)
+  if (identical(module, "regdiffusion")) {
+    return(c("regdiffusion"))
+  }
+  c(
+    scenic_backend_requirement(),
+    "arboreto==0.1.6",
+    "ctxcore==0.2.0",
+    "numpy==1.23.5",
+    "dask==2024.2.1",
+    "distributed==2024.2.1",
+    "pyarrow"
+  )
+}
+
 scenic_cap_edges_per_target <- function(adjacency, max_edges_per_target = Inf) {
   max_edges_per_target <- suppressWarnings(as.numeric(max_edges_per_target))
   adjacency <- adjacency[
@@ -375,6 +391,11 @@ grnboost_python <- function(
   targets = NULL,
   max_edges_per_target = Inf,
   n_rounds = 5000,
+  learning_rate = 0.01,
+  max_depth = 3,
+  max_features = 0.1,
+  subsample = 0.9,
+  early_stop_window_length = 25,
   output_file = NULL,
   work_dir = tempdir(),
   prefix = "grnboost2",
@@ -426,6 +447,11 @@ grnboost_python <- function(
     regulators = regulators_file,
     adj_output = raw_file,
     n_rounds = as.integer(n_rounds),
+    learning_rate = as.numeric(learning_rate),
+    max_depth = as.integer(max_depth),
+    max_features = as.numeric(max_features),
+    subsample = as.numeric(subsample),
+    early_stop_window_length = as.integer(early_stop_window_length),
     cores = as.integer(cores),
     seed = as.integer(seed),
     force = TRUE,

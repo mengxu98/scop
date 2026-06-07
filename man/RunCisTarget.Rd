@@ -34,9 +34,8 @@ output of \code{\link[=RunGRNBoost2]{RunGRNBoost2()}}, \code{\link[=RunGENIE3]{R
 
 \item{species}{Species used to select cisTarget reference files when
 \code{ranking_dbs}, \code{motif_annotations}, or \code{regulators} is \code{NULL}. Supported
-values include \code{"Homo_sapiens"}, \code{"Mus_musculus"},
-\code{"Drosophila_melanogaster"} and aliases such as \code{"human"}, \code{"mouse"}, and
-\code{"fly"}.}
+values are \code{"Homo_sapiens"}, \code{"Mus_musculus"}, and
+\code{"Drosophila_melanogaster"}.}
 
 \item{backend}{cisTarget runtime backend.
 \describe{
