@@ -1315,11 +1315,15 @@ etc.
   : Run CytoSPACE spatial assignment
 - [`RunRCTD()`](https://mengxu98.github.io/scop/reference/RunRCTD.md) :
   Run RCTD spatial deconvolution
+- [`RunSpatialGradientFeatures()`](https://mengxu98.github.io/scop/reference/RunSpatialGradientFeatures.md)
+  : Run spatial gradient feature screening
 - [`RunSpatialVariableFeatures()`](https://mengxu98.github.io/scop/reference/RunSpatialVariableFeatures.md)
   : Run spatial variable feature detection
 
 ### Spatial Visualization
 
+- [`SpatialGradientPlot()`](https://mengxu98.github.io/scop/reference/SpatialGradientPlot.md)
+  : Plot spatial gradient screening results
 - [`SpatialSpotPlot()`](https://mengxu98.github.io/scop/reference/SpatialSpotPlot.md)
   : Spatial spot plot
 
