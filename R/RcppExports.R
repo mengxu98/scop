@@ -316,3 +316,7 @@ scissor_gaussian_net_fit_cpp <- function(x, y, omega, alpha, lambda = NULL, nlam
 scissor_binomial_net_fit_cpp <- function(x, y, omega, alpha, lambda = NULL, nlambda = 100L, foldid = NULL, inzero = TRUE, isd = FALSE, thresh = 1e-7, maxit = 100000L, threshP = 1e-5) {
     .Call(`_scop_scissor_binomial_net_fit_cpp`, x, y, omega, alpha, lambda, nlambda, foldid, inzero, isd, thresh, maxit, threshP)
 }
+
+spatial_gradient_screening_cpp <- function(expr, coords, reference_spots, trajectory, variables, mode, n_bins = 50L, n_random = 0L, seed = 123L, min_spots = 3L) {
+    .Call(`_scop_spatial_gradient_screening_cpp`, expr, coords, reference_spots, trajectory, variables, mode, n_bins, n_random, seed, min_spots)
+}
