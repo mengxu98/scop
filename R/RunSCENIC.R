@@ -29,16 +29,11 @@
 #' reference files. If `NULL`, files are stored under
 #' `tools::R_user_dir("scop", "data")/SCENIC/<species>`.
 #' @param prefix Prefix for SCENIC output files.
-#' @param group.by Optional metadata column used to aggregate single-cell
-#' counts before GRNBoost2. When `NULL` (default), GRNBoost2 runs on the
-#' original single-cell count matrix. To use pre-built metacells, pass the
-#' metacell membership column (e.g. `"Metacell_id"` from [RunMetaCell()]).
-#' All cells sharing the same `group.by` value are summed into one metacell
-#' profile.
-#' @param min_expr_cells Minimum number of cells or metacells where a gene must
-#' be detected before GRNBoost2.
+#' @param min_expr_cells Minimum number of cells where a gene must be detected
+#' before GRNBoost2. To run SCENIC on metacells, first create a metacell-level
+#' object with [RunMetaCell()] and pass that object to `RunSCENIC()`.
 #' @param min_regulon_size Minimum regulon size kept after `scenic ctx`.
-#' @param backend SCENIC backend. `"cpp"` uses the native R/C++ path and
+#' @param backend SCENIC backend. `"cpp"` uses the R/C++ path and
 #' `"python"` uses the Python pySCENIC path. The selected backend controls GRN,
 #' cisTarget pruning, and AUCell scoring together.
 #' @param n_rounds Number of boosting rounds used by GRNBoost2.
@@ -88,7 +83,6 @@ RunSCENIC <- function(
   genome = NULL,
   data_dir = NULL,
   prefix = "scenic",
-  group.by = NULL,
   min_expr_cells = 3,
   min_regulon_size = 10,
   backend = c("cpp", "python"),
@@ -115,9 +109,6 @@ RunSCENIC <- function(
       message_type = "error"
     )
   }
-  if (missing(work_dir) || length(work_dir) != 1) {
-    log_message("{.arg work_dir} must be one directory", message_type = "error")
-  }
   species <- match.arg(species)
   backend <- match.arg(backend)
 
@@ -133,7 +124,6 @@ RunSCENIC <- function(
       genome = genome,
       data_dir = data_dir,
       prefix = prefix,
-      group.by = group.by,
       min_expr_cells = min_expr_cells,
       min_regulon_size = min_regulon_size,
       ranking_dbs = ranking_dbs,
@@ -153,8 +143,6 @@ RunSCENIC <- function(
       verbose = verbose
     ))
   }
-
-  # Python path below.
 
   reference_data <- scenic_reference(
     species = species,
@@ -355,43 +343,15 @@ RunSCENIC <- function(
     verbose = verbose
   )
 
-  if (!is.null(group.by)) {
-    scenic_progress_step(
-      progress_state,
-      value = 30,
-      label = "Aggregating counts by group.by for GRNBoost2",
-      verbose = verbose
-    )
-    group_col <- srt[[group.by]][, 1]
-    if (any(is.na(group_col))) {
-      log_message(
-        "{.arg group.by} column {.val {group.by}} contains NA values",
-        message_type = "error"
-      )
-    }
-    cell_groups <- split(colnames(srt), group_col)
-    grn_counts <- do.call(
-      cbind,
-      lapply(cell_groups, function(cells) {
-        Matrix::rowSums(counts[, cells, drop = FALSE])
-      })
-    )
-    grn_counts <- Matrix::Matrix(grn_counts, sparse = TRUE)
-    colnames(grn_counts) <- names(cell_groups)
-    rownames(grn_counts) <- rownames(counts)
-    grn_count_source <- "metacell matrix"
-    grn_count_unit <- "groups"
-  } else {
-    grn_counts <- counts
-    grn_count_source <- "single-cell matrix"
-    grn_count_unit <- "cells"
-    scenic_progress_step(
-      progress_state,
-      value = 30,
-      label = "Using single-cell counts for GRNBoost2",
-      verbose = verbose
-    )
-  }
+  grn_counts <- counts
+  grn_count_source <- "input count matrix"
+  grn_count_unit <- "cells"
+  scenic_progress_step(
+    progress_state,
+    value = 30,
+    label = "Using input counts for GRNBoost2",
+    verbose = verbose
+  )
   log_message(
     "{.pkg SCENIC} GRN count source: {.val {grn_count_source}}, {.val {nrow(grn_counts)}} genes x {.val {ncol(grn_counts)}} {grn_count_unit}",
     verbose = verbose
@@ -642,7 +602,6 @@ RunSCENIC <- function(
       regulon_activity_score = ras_file,
       regulon_list = regulon_list_file
     ),
-    group.by = group.by,
     parameters = list(
       backend = "python",
       grn_method = "grnboost2",
@@ -658,7 +617,6 @@ RunSCENIC <- function(
       regulators = regulators,
       regulators_file = regulators_file,
       targets = targets,
-      group.by = group.by,
       min_expr_cells = min_expr_cells,
       min_regulon_size = min_regulon_size,
       n_rounds = n_rounds,
@@ -722,7 +680,6 @@ scenic_cpp <- function(
   genome,
   data_dir,
   prefix,
-  group.by,
   min_expr_cells,
   min_regulon_size,
   ranking_dbs,
@@ -743,9 +700,6 @@ scenic_cpp <- function(
 ) {
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   max_regulon_targets <- 50L
-  species_config <- scenic_species_config(species, genome = genome)
-  species <- species_config[["label"]]
-  genome <- species_config[["genome"]]
   dir.create(work_dir, recursive = TRUE, showWarnings = FALSE)
 
   work_dir <- normalizePath(work_dir, mustWork = FALSE)
@@ -756,59 +710,46 @@ scenic_cpp <- function(
   adj_file <- file.path(work_dir, paste0(prefix, "_adj_cpp.tsv"))
   regulon_file <- file.path(work_dir, paste0(prefix, "_regulon_list_cpp.rds"))
 
-  if (is.null(regulators) || length(regulators) == 0) {
-    reference_data <- scenic_reference(
-      species = species,
-      genome = genome,
-      data_dir = data_dir,
-      verbose = verbose
+  reference_data <- scenic_reference(
+    species = species,
+    genome = genome,
+    data_dir = data_dir,
+    ranking_dbs = ranking_dbs,
+    motif_annotations = motif_annotations,
+    regulators = regulators,
+    verbose = verbose
+  )
+  species <- reference_data[["species"]]
+  genome <- reference_data[["genome"]]
+  data_dir <- reference_data[["data_dir"]]
+  ranking_dbs <- reference_data[["ranking_dbs"]]
+  motif_annotations <- reference_data[["motif_annotations"]]
+  regulators_raw <- reference_data[["regulators"]]
+  if (is.null(regulators_raw) || length(regulators_raw) == 0) {
+    log_message(
+      "{.arg regulators} must be provided or resolvable from {.arg species}",
+      message_type = "error"
     )
-    regulators_raw <- reference_data[["regulators"]]
-    if (is.null(regulators_raw) || length(regulators_raw) == 0) {
-      log_message(
-        "{.arg regulators} must be provided or resolvable from {.arg species}",
-        message_type = "error"
-      )
-    }
-
-    if (
-      is.character(regulators_raw) &&
-        length(regulators_raw) == 1 &&
-        file.exists(regulators_raw)
-    ) {
-      regulators <- unique(readLines(regulators_raw, warn = FALSE))
-      regulators <- regulators[nzchar(regulators) & !grepl("^#", regulators)]
-    } else {
-      regulators <- regulators_raw
-    }
-    if (length(regulators) == 0) {
-      log_message(
-        "No regulators found in reference data",
-        message_type = "error"
-      )
-    }
+  }
+  if (
+    is.character(regulators_raw) &&
+      length(regulators_raw) == 1 &&
+      file.exists(regulators_raw)
+  ) {
+    regulators <- unique(readLines(regulators_raw, warn = FALSE))
+    regulators <- regulators[nzchar(regulators) & !grepl("^#", regulators)]
+  } else {
+    regulators <- regulators_raw
+  }
+  if (length(regulators) == 0) {
+    log_message(
+      "No regulators found in reference data",
+      message_type = "error"
+    )
   }
 
   counts <- GetAssayData5(srt, assay = assay, layer = layer)
-
-  if (!is.null(group.by)) {
-    if (!group.by %in% colnames(srt@meta.data)) {
-      log_message(
-        "{.arg group.by} column {.val {group.by}} not found",
-        message_type = "error"
-      )
-    }
-    groups <- srt@meta.data[[group.by]]
-    grn_matrix <- do.call(
-      cbind,
-      lapply(split(seq_len(ncol(counts)), groups), function(idx) {
-        Matrix::rowSums(counts[, idx, drop = FALSE])
-      })
-    )
-    colnames(grn_matrix) <- levels(factor(groups))
-  } else {
-    grn_matrix <- counts
-  }
+  grn_matrix <- counts
 
   gene_expr_n <- Matrix::rowSums(grn_matrix > 0)
   keep_genes <- gene_expr_n >= min_expr_cells
@@ -840,18 +781,7 @@ scenic_cpp <- function(
     }
   }
 
-  ref_data <- NULL
-  ref_data <- tryCatch(
-    scenic_reference(
-      species = species,
-      genome = genome,
-      data_dir = data_dir,
-      ranking_dbs = ranking_dbs,
-      motif_annotations = motif_annotations,
-      verbose = verbose
-    ),
-    error = function(e) NULL
-  )
+  ref_data <- reference_data
   if (!is.null(ref_data) && length(ref_data[["ranking_dbs"]]) > 0) {
     check_r("arrow", verbose = FALSE)
     ranking_gene_lists <- lapply(ref_data[["ranking_dbs"]], function(db) {
@@ -945,7 +875,7 @@ scenic_cpp <- function(
       )
     } else {
       log_message(
-        "Native cisTarget reference data are required for {.arg backend = 'cpp'}",
+        "C++ cisTarget reference data are required for {.arg backend = 'cpp'}",
         message_type = "error"
       )
     }
@@ -966,7 +896,7 @@ scenic_cpp <- function(
   }
 
   log_message(
-    "Native regulon builder produced {.val {length(regulon_list)}} regulons",
+    "C++ regulon builder produced {.val {length(regulon_list)}} regulons",
     verbose = verbose
   )
 
@@ -1013,19 +943,17 @@ scenic_cpp <- function(
       regulon_list = regulon_file,
       regulon_activity_score = ras_file
     ),
-    group.by = group.by,
     parameters = list(
       backend = "cpp",
       grn_method = "grnboost2",
-      cistarget_method = "native_motif",
-      method = "native_cistarget",
+      cistarget_method = "cpp_motif",
+      method = "cpp_cistarget",
       assay = assay,
       layer = layer,
       species = species,
       genome = genome,
       regulators = regulators,
       targets = targets,
-      group.by = group.by,
       min_expr_cells = min_expr_cells,
       min_regulon_size = min_regulon_size,
       n_rounds = n_rounds,
@@ -1220,7 +1148,7 @@ cistarget2 <- function(
   profile[["index_annotations"]] <- profile[["index_annotations"]] + profiled[["elapsed"]]
 
   log_message(
-    "Native cisTarget: loaded {.val {length(motif_names)}} motifs from annotations",
+    "C++ cisTarget: loaded {.val {length(motif_names)}} motifs from annotations",
     verbose = verbose
   )
 
@@ -1301,7 +1229,7 @@ cistarget2 <- function(
 
   if (length(rank_matrices) == 0) {
     log_message(
-      "Failed to read any ranking databases. Falling back to native_approx.",
+      "Failed to read any ranking databases. Falling back to rank-based approximation.",
       message_type = "warning",
       verbose = verbose
     )
@@ -1423,9 +1351,6 @@ cistarget2 <- function(
         ,
         drop = FALSE
       ]
-      # pySCENIC 0.12.1 sorts/deduplicates motif annotations before applying the
-      # annotation filter positionally to the recovery/ranking matrices. Reproduce
-      # that row alignment so native pruning matches the Python backend output.
       py_row_idx <- enriched_idx[seq_len(min(length(enriched_idx), nrow(annotated_features)))]
       avg_recovery <- cistarget_stats[["avg2sd_recovery"]]
 
@@ -1524,7 +1449,7 @@ cistarget2 <- function(
     verbose = verbose
   )
   log_message(
-    "Native cisTarget timing: {.val {paste(names(profile), sprintf('%.3fs', profile), sep = '=', collapse = ', ')}}",
+    "C++ cisTarget timing: {.val {paste(names(profile), sprintf('%.3fs', profile), sep = '=', collapse = ', ')}}",
     verbose = verbose
   )
 
@@ -1700,7 +1625,7 @@ scenic_modules_from_adjacencies <- function(
   }
 
   log_message(
-    "Native pySCENIC-style module builder produced {.val {length(modules)}} candidate modules",
+    "C++ pySCENIC module builder produced {.val {length(modules)}} candidate modules",
     verbose = verbose
   )
   modules
