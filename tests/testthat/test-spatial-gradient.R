@@ -209,6 +209,9 @@ test_that("cpp backend stores annotation gradient result tables", {
   expect_true(nrow(stored$screening) > 0)
   expect_true(nrow(stored$top_variables) > 0)
   expect_equal(stored$parameters$value[match("backend", stored$parameters$key)], "cpp")
+  expect_true(all(c("norm_var", "rel_var", "linear_r2") %in% colnames(stored$significance)))
+  expect_true(all(c("ascending", "descending", "peak", "valley", "linear") %in% stored$model_fits$model))
+  expect_true(any(stored$significance$tot_var != stored$significance$linear_r2, na.rm = TRUE))
 })
 
 test_that("cpp backend stores trajectory gradient result tables", {
@@ -248,6 +251,15 @@ test_that("SpatialGradientPlot handles stored results and missing tables clearly
     SpatialGradientPlot(srt, result_name = "mock", plot_type = "line", theme_use = NULL),
     "ggplot"
   )
+  p_line_lm <- SpatialGradientPlot(
+    srt,
+    result_name = "mock",
+    plot_type = "line",
+    line_fit = "lm",
+    theme_use = NULL
+  )
+  expect_s3_class(p_line_lm, "ggplot")
+  expect_s3_class(p_line_lm$layers[[2]]$geom, "GeomSmooth")
   expect_s3_class(
     SpatialGradientPlot(srt, result_name = "mock", plot_type = "summary", theme_use = NULL),
     "ggplot"
