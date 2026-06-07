@@ -16,15 +16,15 @@
 #' @param max_edges_per_target Maximum incoming regulator edges retained per
 #' target. The default `Inf` keeps all positive-importance links, matching
 #' arboreto GRNBoost2 output.
-#' @param n_rounds Number of native boosting rounds for GRNBoost2-like tree
-#' ensemble inference. The default follows arboreto `SGBM_KWARGS`.
-#' @param learning_rate Native GRNBoost2-like tree ensemble learning rate.
-#' @param max_depth Maximum depth of each native regression tree.
-#' @param max_features Fraction of candidate regulators sampled at each native
-#' tree split.
-#' @param subsample Fraction of cells sampled for each native boosting round.
-#' @param early_stop_window_length Out-of-bag improvement window used for native
-#' GRNBoost2 early stopping, matching arboreto's `EarlyStopMonitor`.
+#' @param n_rounds Number of boosting rounds for GRNBoost2-like tree ensemble
+#' inference. The default follows arboreto `SGBM_KWARGS`.
+#' @param learning_rate GRNBoost2-like tree ensemble learning rate.
+#' @param max_depth Maximum depth of each regression tree.
+#' @param max_features Fraction of candidate regulators sampled at each tree
+#' split.
+#' @param subsample Fraction of cells sampled for each boosting round.
+#' @param early_stop_window_length Out-of-bag improvement window used for
+#' GRNBoost2 early stopping.
 #' @param exclude_self Whether native GRNBoost2-like inference excludes a target
 #' gene from its own regulator feature set.
 #' @param importance_norm_power Power used to normalize native GRNBoost2-like
@@ -182,6 +182,11 @@ RunGRNBoost2.default <- function(
       targets = targets,
       max_edges_per_target = max_edges_per_target,
       n_rounds = n_rounds,
+      learning_rate = learning_rate,
+      max_depth = max_depth,
+      max_features = max_features,
+      subsample = subsample,
+      early_stop_window_length = early_stop_window_length,
       output_file = output_file,
       work_dir = work_dir,
       prefix = prefix,

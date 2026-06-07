@@ -21,9 +21,6 @@ RunSCENIC(
   min_expr_cells = 3,
   min_regulon_size = 10,
   backend = c("cpp", "python"),
-  grn_method = c("grnboost2", "genie3"),
-  cistarget_method = c("native_motif", "native_approx"),
-  max_regulon_targets = 50,
   n_rounds = 5000,
   learning_rate = 0.01,
   max_depth = 3,
@@ -31,9 +28,6 @@ RunSCENIC(
   subsample = 0.9,
   early_stop_window_length = 25,
   cores = 1,
-  aucell_batch_size = 500,
-  aucell_backend = c("r", "cpp"),
-  aucell_cpp_strategy = c("full", "sparse", "topk"),
   seed = 1234,
   force = FALSE,
   assay_name = "scenic",
@@ -101,40 +95,24 @@ be detected before GRNBoost2.}
 \item{min_regulon_size}{Minimum regulon size kept after \verb{scenic ctx}.}
 
 \item{backend}{SCENIC backend. \code{"cpp"} uses the native R/C++ path and
-\code{"python"} uses the Python \code{scenicplus} path.}
+\code{"python"} uses the Python pySCENIC path. The selected backend controls GRN,
+cisTarget pruning, and AUCell scoring together.}
 
-\item{grn_method}{GRN inference method for the native backend.}
+\item{n_rounds}{Number of boosting rounds used by GRNBoost2.}
 
-\item{cistarget_method}{cisTarget implementation for the native backend.}
+\item{learning_rate}{Learning rate used by GRNBoost2.}
 
-\item{max_regulon_targets}{Maximum number of target genes kept per regulon in
-the native backend.}
+\item{max_depth}{Maximum tree depth used by GRNBoost2.}
 
-\item{n_rounds}{Number of boosting rounds used by the native GRN backend.}
+\item{max_features}{Fraction of features sampled by GRNBoost2.}
 
-\item{learning_rate}{Learning rate used by the native GRN backend.}
+\item{subsample}{Row subsampling fraction used by GRNBoost2.}
 
-\item{max_depth}{Maximum tree depth used by the native GRN backend.}
-
-\item{max_features}{Fraction of features sampled by the native GRN backend.}
-
-\item{subsample}{Row subsampling fraction used by the native GRN backend.}
-
-\item{early_stop_window_length}{Early-stopping window used by the native GRN
-backend.}
+\item{early_stop_window_length}{Early-stopping window used by GRNBoost2.}
 
 \item{cores}{Number of workers used by GRNBoost2, \verb{scenic ctx}, and
-AUCell batch scoring. If multicore execution is not supported, this is
+AUCell scoring. If multicore execution is not supported, this is
 automatically reduced to one core.}
-
-\item{aucell_batch_size}{Number of cells scored in each AUCell batch.}
-
-\item{aucell_backend}{Backend used for AUCell regulon activity scoring.
-\code{"r"} uses the AUCell package. \code{"cpp"} uses the package C++ gene-set scoring
-implementation.}
-
-\item{aucell_cpp_strategy}{C++ AUCell ranking strategy passed to the package
-gene-set scoring backend.}
 
 \item{seed}{Random seed used by GRNBoost2 and Seurat overclustering.}
 
