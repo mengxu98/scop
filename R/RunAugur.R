@@ -11,10 +11,9 @@
 #' default assay is used.
 #' @param layer Assay layer used as the feature matrix.
 #' @param backend Backend used to run Augur. `"cpp"` uses a parity-preserving
-#' `scop` backend that keeps Augur's sampling, random forest, and metric
-#' semantics but removes the heavier recipe/bake loop and uses C++ sparse
-#' matrix preparation where possible. `"r"` calls the native
-#' `Augur::calculate_auc` implementation.
+#' `scop` R/C++ backend that keeps Augur's feature selection, sampling, random
+#' forest, and metric semantics without requiring the Augur package. `"r"`
+#' calls the native `Augur::calculate_auc` implementation.
 #' @param features Features used by Augur. If `NULL`, all features in `assay`
 #' are used.
 #' @param n_subsamples,subsample_size,folds,min_cells,var_quantile,feature_perc,select_var,augur_mode,classifier,rf_params,lr_params
@@ -106,11 +105,12 @@ RunAugur <- function(
       message_type = "error"
     )
   }
-  check_r("neurorestore/Augur", verbose = FALSE)
-
   backend <- match.arg(backend)
   augur_mode <- match.arg(augur_mode)
   classifier <- match.arg(classifier)
+  if (identical(backend, "r")) {
+    check_r("neurorestore/Augur", verbose = FALSE)
+  }
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
 
   if (
@@ -304,6 +304,71 @@ RunAugur <- function(
   return(srt)
 }
 
+augur_row_sds <- function(mat) {
+  sds <- MatrixGenerics::rowSds(mat)
+  sds[is.na(sds)] <- 0
+  sds
+}
+
+augur_select_random <- function(mat, feature_perc = 0.5) {
+  if (feature_perc < 1) {
+    features <- rownames(mat)
+    keep <- sample(features, floor(nrow(mat) * feature_perc))
+    mat <- mat[keep, , drop = FALSE]
+  }
+  mat
+}
+
+augur_select_variance <- function(
+  mat,
+  var_quantile = 0.5,
+  filter_negative_residuals = FALSE
+) {
+  sds <- augur_row_sds(mat)
+  sds[is.na(sds)] <- 0
+  mat <- mat[sds > 0, , drop = FALSE]
+  if (nrow(mat) == 0L) {
+    return(mat)
+  }
+
+  if (var_quantile < 1 || isTRUE(filter_negative_residuals)) {
+    means <- Matrix::rowMeans(mat)
+    sds <- sds[sds > 0]
+    cvs <- means / sds
+    lower <- stats::quantile(cvs, 0.01, na.rm = TRUE)
+    upper <- stats::quantile(cvs, 0.99, na.rm = TRUE)
+    keep <- dplyr::between(cvs, lower, upper)
+    if (sum(keep) < 3L) {
+      return(mat)
+    }
+
+    cv0 <- cvs[keep]
+    mean0 <- means[keep]
+    if (any(mean0 < 0)) {
+      model <- stats::loess(cv0 ~ mean0)
+    } else {
+      fit1 <- stats::loess(cv0 ~ mean0)
+      fit2 <- stats::loess(cv0 ~ log(mean0))
+      cox <- lmtest::coxtest(fit1, fit2)
+      probs <- cox[["Pr(>|z|)"]]
+      model <- if (probs[1] < probs[2]) fit1 else fit2
+    }
+    genes <- rownames(mat)[keep]
+    residuals <- stats::setNames(model$residuals, genes)
+
+    if (isTRUE(filter_negative_residuals)) {
+      genes <- names(residuals)[residuals > 0]
+    } else {
+      genes <- names(residuals)[
+        residuals > stats::quantile(residuals, var_quantile, na.rm = TRUE)
+      ]
+    }
+    mat <- mat[genes, , drop = FALSE]
+  }
+
+  mat
+}
+
 augur_cpp <- function(
   expr,
   meta,
@@ -361,7 +426,9 @@ augur_cpp <- function(
       "tibble",
       "purrr",
       "MatrixGenerics",
-      "randomForest"
+      "sparseMatrixStats",
+      "randomForest",
+      "lmtest"
     ),
     verbose = FALSE
   )
@@ -435,15 +502,13 @@ augur_cpp <- function(
       }
       X <- expr[, cell_types == cell_type, drop = FALSE]
       if (nrow(X) >= 1000 && isTRUE(select_var)) {
-        X <- get_namespace_fun("Augur", "select_variance")(
+        X <- augur_select_variance(
           X,
           var_quantile,
           filter_negative_residuals = FALSE
         )
       }
 
-      tmp_results <- data.frame()
-      tmp_importances <- data.frame()
       multi_metric <- yardstick::metric_set(
         yardstick::accuracy,
         yardstick::precision,
@@ -476,6 +541,8 @@ augur_cpp <- function(
         )
       }
       n_iter <- ifelse(n_subsamples < 1, 1, n_subsamples)
+      tmp_results <- vector("list", n_iter)
+      tmp_importances <- vector("list", n_iter)
       for (subsample_idx in seq_len(n_iter)) {
         set.seed(subsample_idx)
         if (augur_mode == "permute") {
@@ -483,7 +550,7 @@ augur_cpp <- function(
         }
         if (n_subsamples < 1) {
           if (nrow(X) >= 1000 && feature_perc < 1) {
-            X0 <- get_namespace_fun("Augur", "select_random")(X, feature_perc)
+            X0 <- augur_select_random(X, feature_perc)
           } else {
             X0 <- X
           }
@@ -502,7 +569,7 @@ augur_cpp <- function(
           )
           y0 <- y[subsample_idxs]
           if (nrow(X) >= 1000 && feature_perc < 1) {
-            X0 <- get_namespace_fun("Augur", "select_random")(X, feature_perc)
+            X0 <- augur_select_random(X, feature_perc)
           } else {
             X0 <- X
           }
@@ -632,23 +699,44 @@ augur_cpp <- function(
           importance
         )
 
-        tmp_results <- dplyr::bind_rows(tmp_results, result)
-        tmp_importances <- dplyr::bind_rows(tmp_importances, importance)
+        tmp_results[[subsample_idx]] <- result
+        tmp_importances[[subsample_idx]] <- importance
       }
-      list(results = tmp_results, importances = tmp_importances)
+      list(
+        results = dplyr::bind_rows(tmp_results),
+        importances = dplyr::bind_rows(tmp_importances)
+      )
     },
     cores = cores,
     verbose = verbose
   )
 
-  if (all(lengths(res) == 0)) {
+  valid <- vapply(
+    res,
+    function(x) is.list(x) && all(c("results", "importances") %in% names(x)),
+    logical(1)
+  )
+  if (!any(valid)) {
+    if (all(lengths(res) == 0)) {
+      log_message(
+        "No cell type had at least {.val {min_cells}} cells in all conditions",
+        message_type = "error"
+      )
+    }
     log_message(
-      "No cell type had at least {.val {min_cells}} cells in all conditions",
+      "No Augur results were produced; check the cell-type task errors above",
       message_type = "error"
     )
   }
+  res <- res[valid]
   feature_importances <- dplyr::bind_rows(purrr::map(res, "importances"))
   results <- dplyr::bind_rows(purrr::map(res, "results"))
+  if (!all(c("metric", "estimate", "cell_type", "subsample_idx") %in% colnames(results))) {
+    log_message(
+      "Augur results did not include the expected metric columns",
+      message_type = "error"
+    )
+  }
   AUCs <- results
   AUCs <- dplyr::filter(AUCs, metric == "roc_auc")
   AUCs <- dplyr::group_by(AUCs, cell_type, subsample_idx)
