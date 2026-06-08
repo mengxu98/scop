@@ -30,6 +30,7 @@ SpatialGradientPlot(
   theme_args = list(),
   line_size = 1,
   line_alpha = 0.35,
+  line_fit = c("stored", "lm"),
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE
@@ -128,6 +129,13 @@ SpatialGradientPlot(
 - line_alpha:
 
   Alpha for raw value points.
+
+- line_fit:
+
+  Gradient line source. `"stored"` uses the saved `screening$estimate`
+  values produced by the selected backend. `"lm"` draws a fresh linear
+  fit from `screening$value`, which is useful for showing a simple
+  monotonic trend even when the backend stores a smoothed curve.
 
 - nrow:
 
