@@ -67,6 +67,21 @@ load_scop_for_benchmark <- function(package_root = ".") {
   invisible(TRUE)
 }
 
+scop_benchmark_fun <- function(name) {
+  if (exists(name, envir = .GlobalEnv, mode = "function", inherits = TRUE)) {
+    return(get(name, envir = .GlobalEnv, mode = "function", inherits = TRUE))
+  }
+  exported <- tryCatch(getExportedValue("scop", name), error = function(e) NULL)
+  if (is.function(exported)) {
+    return(exported)
+  }
+  ns <- asNamespace("scop")
+  if (exists(name, envir = ns, mode = "function", inherits = TRUE)) {
+    return(get(name, envir = ns, mode = "function", inherits = TRUE))
+  }
+  stop("Cannot find scop function: ", name, call. = FALSE)
+}
+
 format_seconds <- function(x) {
   if (!is.finite(x)) {
     return("NA")
@@ -262,7 +277,7 @@ run_gradient_backend <- function(
   }
 
   timed <- time_run(function() {
-    out <- do.call(scop::RunSpatialGradientFeatures, base_args)
+    out <- do.call(scop_benchmark_fun("RunSpatialGradientFeatures"), base_args)
     extract_gradient_result(out, result_name)
   })
   list(
@@ -508,6 +523,10 @@ make_summary_metrics <- function(case, runs, pairwise) {
   ok_times <- run_df$elapsed[run_df$status == "ok" & is.finite(run_df$elapsed)]
   min_time <- if (length(ok_times) > 0L) min(ok_times) else NA_real_
   spata_time <- run_df$elapsed[match("spata2", run_df$backend)]
+  has_pairwise <- all(vapply(runs, function(run) identical(run$status, "ok"), logical(1))) &&
+    is.data.frame(pairwise) &&
+    is.finite(as.numeric(pairwise$common_variables)) &&
+    as.numeric(pairwise$common_variables) > 0
   rows <- list()
   i <- 1L
 
@@ -529,10 +548,18 @@ make_summary_metrics <- function(case, runs, pairwise) {
     i <- i + 1L
     rows[[i]] <- metric_row(case, method, "Speedup", "Runtime", speedup, speedup_score, if (is.finite(speedup)) paste0(format_number(speedup, 3), "x") else "NA", row$status)
     i <- i + 1L
-    rows[[i]] <- metric_row(case, method, "Schema", "Integrity", as.numeric(row$schema_ok), as.numeric(row$schema_ok), if (row$schema_ok) "pass" else "fail", if (row$schema_ok) "pass" else "fail", threshold = 1)
+    schema_status <- if (identical(row$status, "skipped")) "skipped" else if (row$schema_ok) "pass" else "fail"
+    schema_value <- if (identical(row$status, "skipped")) NA_real_ else as.numeric(row$schema_ok)
+    rows[[i]] <- metric_row(case, method, "Schema", "Integrity", schema_value, if (is.finite(schema_value)) schema_value else 0, if (is.finite(schema_value)) schema_status else "NA", schema_status, threshold = 1)
     i <- i + 1L
-    rows[[i]] <- metric_row(case, method, "No S4 object", "Integrity", as.numeric(row$no_spata2_object), as.numeric(row$no_spata2_object), if (row$no_spata2_object) "pass" else "fail", if (row$no_spata2_object) "pass" else "fail", threshold = 1)
+    s4_status <- if (identical(row$status, "skipped")) "skipped" else if (row$no_spata2_object) "pass" else "fail"
+    s4_value <- if (identical(row$status, "skipped")) NA_real_ else as.numeric(row$no_spata2_object)
+    rows[[i]] <- metric_row(case, method, "No S4 object", "Integrity", s4_value, if (is.finite(s4_value)) s4_value else 0, if (is.finite(s4_value)) s4_status else "NA", s4_status, threshold = 1)
     i <- i + 1L
+
+    if (!isTRUE(has_pairwise)) {
+      next
+    }
 
     agreement_values <- if (identical(run$backend, "spata2") && ok) {
       list(
