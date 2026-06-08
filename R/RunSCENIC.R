@@ -1603,7 +1603,6 @@ scenic_modules_from_adjacencies <- function(
   adjacency <- adjacency[!is.na(adjacency[["importance"]]), , drop = FALSE]
   adjacency[["importance"]] <- as.numeric(adjacency[["importance"]])
   adjacency <- adjacency[order(-adjacency[["importance"]]), , drop = FALSE]
-  threshold_importance <- adjacency[["importance"]]
 
   if (!is.null(expr_mtx)) {
     adjacency <- scenic_add_correlation(
@@ -1631,7 +1630,12 @@ scenic_modules_from_adjacencies <- function(
     )
   }
 
-  if (nrow(adjacency) > 0) {
+  add_modules_from_adjacency <- function(adjacency_sign, regulation = 1L) {
+    if (nrow(adjacency_sign) == 0) {
+      return()
+    }
+    adjacency_sign <- adjacency_sign[order(-adjacency_sign[["importance"]]), , drop = FALSE]
+    threshold_importance <- adjacency_sign[["importance"]]
     threshold_values <- stats::quantile(
       threshold_importance,
       probs = thresholds,
@@ -1639,39 +1643,33 @@ scenic_modules_from_adjacencies <- function(
       na.rm = TRUE
     )
     for (idx in seq_along(threshold_values)) {
-      adj_thr <- adjacency[adjacency[["importance"]] > threshold_values[[idx]], , drop = FALSE]
+      adj_thr <- adjacency_sign[adjacency_sign[["importance"]] > threshold_values[[idx]], , drop = FALSE]
       for (tf in unique(adj_thr[["TF"]])) {
         tf_adj <- adj_thr[adj_thr[["TF"]] == tf, , drop = FALSE]
-        for (regulation in scenic_module_regulations(tf_adj)) {
-          tf_reg_adj <- scenic_filter_module_regulation(tf_adj, regulation)
-          add_module(
-            tf,
-            tf_reg_adj[["target"]],
-            paste0("weight>", thresholds[[idx]] * 100, "%"),
-            regulation = regulation
-          )
-        }
-      }
-    }
-
-    for (tf in unique(adjacency[["TF"]])) {
-      tf_adj <- adjacency[adjacency[["TF"]] == tf, , drop = FALSE]
-      tf_adj <- tf_adj[order(-tf_adj[["importance"]]), , drop = FALSE]
-      for (regulation in scenic_module_regulations(tf_adj)) {
-        tf_reg_adj <- scenic_filter_module_regulation(tf_adj, regulation)
         add_module(
           tf,
-          utils::head(tf_reg_adj[["target"]], top_n_targets),
-          paste0("top", top_n_targets),
+          tf_adj[["target"]],
+          paste0("weight>", thresholds[[idx]] * 100, "%"),
           regulation = regulation
         )
       }
     }
 
+    for (tf in unique(adjacency_sign[["TF"]])) {
+      tf_adj <- adjacency_sign[adjacency_sign[["TF"]] == tf, , drop = FALSE]
+      tf_adj <- tf_adj[order(-tf_adj[["importance"]]), , drop = FALSE]
+      add_module(
+        tf,
+        utils::head(tf_adj[["target"]], top_n_targets),
+        paste0("top", top_n_targets),
+        regulation = regulation
+      )
+    }
+
     for (n in top_n_regulators) {
       top_by_target <- do.call(
         rbind,
-        lapply(split(adjacency, adjacency[["target"]]), function(df) {
+        lapply(split(adjacency_sign, adjacency_sign[["target"]]), function(df) {
           df <- df[order(-df[["importance"]]), , drop = FALSE]
           utils::head(df, n)
         })
@@ -1679,17 +1677,23 @@ scenic_modules_from_adjacencies <- function(
       if (!is.null(top_by_target) && nrow(top_by_target) > 0) {
         for (tf in unique(top_by_target[["TF"]])) {
           tf_adj <- top_by_target[top_by_target[["TF"]] == tf, , drop = FALSE]
-          for (regulation in scenic_module_regulations(tf_adj)) {
-            tf_reg_adj <- scenic_filter_module_regulation(tf_adj, regulation)
-            add_module(
-              tf,
-              tf_reg_adj[["target"]],
-              paste0("top", n, "perTarget"),
-              regulation = regulation
-            )
-          }
+          add_module(
+            tf,
+            tf_adj[["target"]],
+            paste0("top", n, "perTarget"),
+            regulation = regulation
+          )
         }
       }
+    }
+  }
+
+  if (nrow(adjacency) > 0) {
+    for (regulation in scenic_module_regulations(adjacency)) {
+      add_modules_from_adjacency(
+        scenic_filter_module_regulation(adjacency, regulation),
+        regulation = regulation
+      )
     }
   }
 
