@@ -92,6 +92,9 @@
 #' @param highlight_linewidth Line width for highlighted TF or regulon rank
 #' lines.
 #' @param label_size Text size for top regulon labels.
+#' @param label_max_overlaps Maximum number of overlapping labels allowed by
+#' [ggrepel::geom_text_repel()] before dropping a label. The default `Inf`
+#' keeps all requested top or highlighted TF labels.
 #' @param verbose Whether to print messages.
 #'
 #' @return A list containing `rss_matrix`, `rank_table`, `top_table`, `plots`,
@@ -248,6 +251,7 @@ SCENICPlot <- function(
   highlight_point_size = 2,
   highlight_linewidth = 0.5,
   label_size = 3,
+  label_max_overlaps = Inf,
   verbose = TRUE,
   ...
 ) {
@@ -421,7 +425,8 @@ SCENICPlot <- function(
       highlight_color = highlight_color,
       highlight_point_size = highlight_point_size,
       highlight_linewidth = highlight_linewidth,
-      label_size = label_size
+      label_size = label_size,
+      label_max_overlaps = label_max_overlaps
     ),
     rss_heatmap = scenic_plot_rss_heatmap(
       rss_matrix = rss_matrix,
@@ -584,7 +589,8 @@ scenic_plot_rss_rank <- function(
   highlight_color = "#7A0177",
   highlight_point_size = 2,
   highlight_linewidth = 0.5,
-  label_size = 3
+  label_size = 3,
+  label_max_overlaps = Inf
 ) {
   plots <- lapply(colnames(rss_matrix), function(one_group) {
     data_rank_plot <- rank_table[
@@ -667,7 +673,8 @@ scenic_plot_rss_rank <- function(
         segment.color = "black",
         segment.size = 0.3,
         force = 1,
-        max.iter = 3000
+        max.iter = 3000,
+        max.overlaps = label_max_overlaps
       )
   })
   names(plots) <- colnames(rss_matrix)

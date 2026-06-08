@@ -54,6 +54,7 @@ SCENICPlot(
   highlight_point_size = 2,
   highlight_linewidth = 0.5,
   label_size = 3,
+  label_max_overlaps = Inf,
   verbose = TRUE,
   ...
 )
@@ -177,6 +178,10 @@ lines.}
 lines.}
 
 \item{label_size}{Text size for top regulon labels.}
+
+\item{label_max_overlaps}{Maximum number of overlapping labels allowed by
+\code{\link[ggrepel:geom_text_repel]{ggrepel::geom_text_repel()}} before dropping a label. The default \code{Inf}
+keeps all requested top or highlighted TF labels.}
 
 \item{verbose}{Whether to print messages.}
 
