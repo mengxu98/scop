@@ -1,7 +1,9 @@
 # Run spatial gradient feature screening
 
-Wrap SPATA2 spatial trajectory screening (STS) and spatial annotation
-screening (SAS) for Seurat objects. Results are normalized into plain
+Run spatial trajectory or annotation gradient screening for Seurat
+objects. The native `"cpp"` backend avoids SPATA2 object construction
+for fast distance-based screening, while the `"spata2"` backend keeps
+full upstream SPATA2 SAS/STS behavior. Results are normalized into plain
 data.frames and stored in `srt@tools[["SpatialGradientFeatures"]]`; the
 SPATA2 object itself is never stored.
 
@@ -11,6 +13,7 @@ SPATA2 object itself is never stored.
 RunSpatialGradientFeatures(
   srt,
   reference = c("trajectory", "annotation"),
+  backend = c("cpp", "spata2"),
   result_name = NULL,
   spata_object = NULL,
   assay = NULL,
@@ -19,6 +22,7 @@ RunSpatialGradientFeatures(
   sample_name = NULL,
   platform = "Undefined",
   image = NULL,
+  coord.cols = c("x", "y"),
   img_scale_fct = "lowres",
   assay_modality = "gene",
   trajectory_id = "scop_gradient",
@@ -45,6 +49,8 @@ RunSpatialGradientFeatures(
   n_random = 10000,
   seed = 123,
   control = NULL,
+  n_bins = 50,
+  min_spots = 3,
   nfeatures = 2000,
   set_variable_features = FALSE,
   store_results = TRUE,
@@ -63,6 +69,12 @@ RunSpatialGradientFeatures(
 
   Spatial reference type: `"trajectory"` for STS or `"annotation"` for
   SAS.
+
+- backend:
+
+  Computation backend. `"cpp"` uses SCOP's native fast spatial gradient
+  implementation and avoids SPATA2 object construction. `"spata2"` uses
+  SPATA2 directly for full upstream SAS/STS behavior.
 
 - result_name:
 
@@ -101,6 +113,11 @@ RunSpatialGradientFeatures(
   Name of the Seurat spatial image used by the spatial workflow. If
   `NULL`, the first image is used when present.
 
+- coord.cols:
+
+  Metadata coordinate columns used by the native `"cpp"` backend when no
+  image coordinates are available.
+
 - trajectory_id, start, end, traj_df, width:
 
   Trajectory setup passed to `SPATA2::addSpatialTrajectory()` and
@@ -119,7 +136,7 @@ RunSpatialGradientFeatures(
 - annotation.variable, annotation.threshold:
 
   Numeric variable and threshold used to create SPATA2 numeric
-  annotations.
+  annotations. Numeric thresholds are interpreted as `">{threshold}"`.
 
 - annotation_id:
 
@@ -133,6 +150,16 @@ RunSpatialGradientFeatures(
   model_remove, n_random, seed, control:
 
   SPATA2 screening parameters.
+
+- n_bins:
+
+  Number of distance bins used for the native `"cpp"` backend screening
+  curve.
+
+- min_spots:
+
+  Minimum number of non-zero spots required for a variable in the native
+  `"cpp"` backend.
 
 - nfeatures:
 

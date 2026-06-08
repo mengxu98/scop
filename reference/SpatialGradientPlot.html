@@ -70,6 +70,7 @@ without requiring the original SPATA2 object.</p>
 <span>  theme_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  line_size <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  line_alpha <span class="op">=</span> <span class="fl">0.35</span>,</span>
+<span>  line_fit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"stored"</span>, <span class="st">"lm"</span><span class="op">)</span>,</span>
 <span>  nrow <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ncol <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  byrow <span class="op">=</span> <span class="cn">TRUE</span></span>
@@ -170,6 +171,13 @@ Default is <code><a href="https://rdrr.io/r/base/list.html" class="external-link
 
 <dt id="arg-line-alpha">line_alpha<a class="anchor" aria-label="anchor" href="#arg-line-alpha"></a></dt>
 <dd><p>Alpha for raw value points.</p></dd>
+
+
+<dt id="arg-line-fit">line_fit<a class="anchor" aria-label="anchor" href="#arg-line-fit"></a></dt>
+<dd><p>Gradient line source. <code>"stored"</code> uses the saved
+<code>screening$estimate</code> values produced by the selected backend. <code>"lm"</code> draws a
+fresh linear fit from <code>screening$value</code>, which is useful for showing a simple
+monotonic trend even when the backend stores a smoothed curve.</p></dd>
 
 
 <dt id="arg-nrow">nrow<a class="anchor" aria-label="anchor" href="#arg-nrow"></a></dt>
