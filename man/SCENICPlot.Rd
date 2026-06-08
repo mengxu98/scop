@@ -187,8 +187,9 @@ can be supplied directly.}
 }
 \value{
 A list containing \code{rss_matrix}, \code{rank_table}, \code{top_table}, \code{plots},
-and \code{plot} when \code{return_data = TRUE}; otherwise a plot object or list of
-plots.
+and \code{plot} when \code{return_data = TRUE}; heatmap plot types also include the
+full \code{heatmap} result returned by \code{\link[=FeatureHeatmap]{FeatureHeatmap()}} or \code{\link[=GroupHeatmap]{GroupHeatmap()}}.
+Otherwise, a plot object or list of plots.
 }
 \description{
 Calculate regulon specificity score (RSS) from SCENIC regulon activity and
