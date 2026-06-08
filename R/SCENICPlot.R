@@ -95,8 +95,9 @@
 #' @param verbose Whether to print messages.
 #'
 #' @return A list containing `rss_matrix`, `rank_table`, `top_table`, `plots`,
-#' and `plot` when `return_data = TRUE`; otherwise a plot object or list of
-#' plots.
+#' and `plot` when `return_data = TRUE`; heatmap plot types also include the
+#' full `heatmap` result returned by [FeatureHeatmap()] or [GroupHeatmap()].
+#' Otherwise, a plot object or list of plots.
 #'
 #' @export
 #'
@@ -563,7 +564,8 @@ SCENICPlot <- function(
     plots = plots,
     plot = plot,
     plot_type = plot_type,
-    plot_data = plot_result[["data"]]
+    plot_data = plot_result[["data"]],
+    heatmap = plot_result[["heatmap"]]
   )
 }
 
@@ -734,7 +736,7 @@ scenic_plot_rss_heatmap <- function(
   plot_data[["regulon"]] <- factor(plot_data[["regulon"]], levels = rev(regulons))
   plot_data[["group"]] <- factor(plot_data[["group"]], levels = colnames(rss_subset))
 
-  plot <- scenic_plot_feature_heatmap_from_matrix(
+  heatmap_result <- scenic_plot_feature_heatmap_from_matrix(
     mat = rss_subset,
     group_names = colnames(rss_subset),
     features = regulons,
@@ -756,8 +758,9 @@ scenic_plot_rss_heatmap <- function(
     heatmap_limits = heatmap_limits,
     heatmap_args = heatmap_args
   )
+  plot <- heatmap_result[["plot"]]
 
-  list(plot = plot, plots = list(plot), data = plot_data)
+  list(plot = plot, plots = list(plot), data = plot_data, heatmap = heatmap_result)
 }
 
 scenic_plot_rss_dotplot <- function(rss_matrix, top_table, features = NULL, title = NULL) {
@@ -869,7 +872,7 @@ scenic_plot_activity_heatmap <- function(
 
   srt_use <- scenic_attach_auc_assay(srt = srt, auc_mat = auc_mat, assay = assay)
   heatmap_palette <- heatmap_palette %||% if (isTRUE(scale)) "RdBu" else "viridis"
-  plot <- scenic_call_with_args(
+  heatmap_result <- scenic_call_with_args(
     GroupHeatmap,
     args = list(
       srt = srt_use,
@@ -901,8 +904,9 @@ scenic_plot_activity_heatmap <- function(
     ),
     extra_args = heatmap_args
   )
+  plot <- heatmap_result[["plot"]]
 
-  list(plot = plot, plots = list(plot), data = plot_data)
+  list(plot = plot, plots = list(plot), data = plot_data, heatmap = heatmap_result)
 }
 
 scenic_plot_activity_violin <- function(
