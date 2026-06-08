@@ -7,6 +7,7 @@
 RunSpatialGradientFeatures(
   srt,
   reference = c("trajectory", "annotation"),
+  backend = c("cpp", "spata2"),
   result_name = NULL,
   spata_object = NULL,
   assay = NULL,
@@ -15,6 +16,7 @@ RunSpatialGradientFeatures(
   sample_name = NULL,
   platform = "Undefined",
   image = NULL,
+  coord.cols = c("x", "y"),
   img_scale_fct = "lowres",
   assay_modality = "gene",
   trajectory_id = "scop_gradient",
@@ -41,6 +43,8 @@ RunSpatialGradientFeatures(
   n_random = 10000,
   seed = 123,
   control = NULL,
+  n_bins = 50,
+  min_spots = 3,
   nfeatures = 2000,
   set_variable_features = FALSE,
   store_results = TRUE,
@@ -53,6 +57,10 @@ RunSpatialGradientFeatures(
 
 \item{reference}{Spatial reference type: \code{"trajectory"} for STS or
 \code{"annotation"} for SAS.}
+
+\item{backend}{Computation backend. \code{"cpp"} uses SCOP's native fast spatial
+gradient implementation and avoids SPATA2 object construction. \code{"spata2"}
+uses SPATA2 directly for full upstream SAS/STS behavior.}
 
 \item{result_name}{Name used to store this result. If \code{NULL}, a name is
 generated from \code{reference}.}
@@ -77,6 +85,9 @@ to \code{SPATA2::asSPATA2()} when \code{spata_object} is \code{NULL}.}
 \item{image}{Name of the Seurat spatial image used by the spatial workflow.
 If \code{NULL}, the first image is used when present.}
 
+\item{coord.cols}{Metadata coordinate columns used by the native \code{"cpp"}
+backend when no image coordinates are available.}
+
 \item{trajectory_id, start, end, traj_df, width}{Trajectory setup passed to
 \code{SPATA2::addSpatialTrajectory()} and \code{SPATA2::spatialTrajectoryScreening()}.}
 
@@ -88,13 +99,20 @@ annotations are created from \code{annotation.by} and \code{annotation.groups}, 
 SPATA2 group annotations.}
 
 \item{annotation.variable, annotation.threshold}{Numeric variable and
-threshold used to create SPATA2 numeric annotations.}
+threshold used to create SPATA2 numeric annotations. Numeric thresholds are
+interpreted as \code{">{threshold}"}.}
 
 \item{annotation_id}{Base id used when creating annotations.}
 
 \item{core, distance, angle_span}{SAS parameters forwarded to SPATA2.}
 
 \item{resolution, unit, sign_var, sign_threshold, model_add, model_subset, model_remove, n_random, seed, control}{SPATA2 screening parameters.}
+
+\item{n_bins}{Number of distance bins used for the native \code{"cpp"} backend
+screening curve.}
+
+\item{min_spots}{Minimum number of non-zero spots required for a variable in
+the native \code{"cpp"} backend.}
 
 \item{nfeatures}{Number of top gradient variables retained in
 \code{top_variables} and optionally set as Seurat variable features.}
@@ -114,10 +132,12 @@ A \code{Seurat} object with spatial gradient screening results stored in
 \code{srt@tools[["SpatialGradientFeatures"]]}.
 }
 \description{
-Wrap SPATA2 spatial trajectory screening (STS) and spatial annotation
-screening (SAS) for Seurat objects. Results are normalized into plain
-data.frames and stored in \code{srt@tools[["SpatialGradientFeatures"]]}; the
-SPATA2 object itself is never stored.
+Run spatial trajectory or annotation gradient screening for Seurat objects.
+The native \code{"cpp"} backend avoids SPATA2 object construction for fast
+distance-based screening, while the \code{"spata2"} backend keeps full upstream
+SPATA2 SAS/STS behavior. Results are normalized into plain data.frames and
+stored in \code{srt@tools[["SpatialGradientFeatures"]]}; the SPATA2 object itself
+is never stored.
 }
 \examples{
 \dontrun{

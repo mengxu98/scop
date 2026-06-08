@@ -1377,6 +1377,26 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// spatial_gradient_screening_cpp
+List spatial_gradient_screening_cpp(S4 expr, NumericMatrix coords, LogicalVector reference_spots, NumericMatrix trajectory, CharacterVector variables, std::string mode, int n_bins, int n_random, int seed, int min_spots);
+RcppExport SEXP _scop_spatial_gradient_screening_cpp(SEXP exprSEXP, SEXP coordsSEXP, SEXP reference_spotsSEXP, SEXP trajectorySEXP, SEXP variablesSEXP, SEXP modeSEXP, SEXP n_binsSEXP, SEXP n_randomSEXP, SEXP seedSEXP, SEXP min_spotsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< S4 >::type expr(exprSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type coords(coordsSEXP);
+    Rcpp::traits::input_parameter< LogicalVector >::type reference_spots(reference_spotsSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type trajectory(trajectorySEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type variables(variablesSEXP);
+    Rcpp::traits::input_parameter< std::string >::type mode(modeSEXP);
+    Rcpp::traits::input_parameter< int >::type n_bins(n_binsSEXP);
+    Rcpp::traits::input_parameter< int >::type n_random(n_randomSEXP);
+    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
+    Rcpp::traits::input_parameter< int >::type min_spots(min_spotsSEXP);
+    rcpp_result_gen = Rcpp::wrap(spatial_gradient_screening_cpp(expr, coords, reference_spots, trajectory, variables, mode, n_bins, n_random, seed, min_spots));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_scop_augur_subsample_cpp", (DL_FUNC) &_scop_augur_subsample_cpp, 2},
@@ -1458,6 +1478,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_cvNetLogC", (DL_FUNC) &_scop_cvNetLogC, 18},
     {"_scop_scissor_gaussian_net_fit_cpp", (DL_FUNC) &_scop_scissor_gaussian_net_fit_cpp, 12},
     {"_scop_scissor_binomial_net_fit_cpp", (DL_FUNC) &_scop_scissor_binomial_net_fit_cpp, 12},
+    {"_scop_spatial_gradient_screening_cpp", (DL_FUNC) &_scop_spatial_gradient_screening_cpp, 10},
     {NULL, NULL, 0}
 };
 
