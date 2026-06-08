@@ -56,6 +56,7 @@ SCENICPlot(
   highlight_point_size = 2,
   highlight_linewidth = 0.5,
   label_size = 3,
+  label_max_overlaps = Inf,
   verbose = TRUE,
   ...
 )
@@ -269,6 +270,13 @@ SCENICPlot(
 - label_size:
 
   Text size for top regulon labels.
+
+- label_max_overlaps:
+
+  Maximum number of overlapping labels allowed by
+  [`ggrepel::geom_text_repel()`](https://ggrepel.slowkow.com/reference/geom_text_repel.html)
+  before dropping a label. The default `Inf` keeps all requested top or
+  highlighted TF labels.
 
 - verbose:
 
