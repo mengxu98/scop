@@ -33,6 +33,10 @@
 #' before GRNBoost2. To run SCENIC on metacells, first create a metacell-level
 #' object with [RunMetaCell()] and pass that object to `RunSCENIC()`.
 #' @param min_regulon_size Minimum regulon size kept after `scenic ctx`.
+#' @param include_negative_regulons Whether the C++ backend should also build
+#' negatively correlated regulons and label them as `TF(-)`. The default
+#' matches pySCENIC's positive-regulon workflow and labels C++ regulons as
+#' `TF(+)`.
 #' @param backend SCENIC backend. `"cpp"` uses the R/C++ path and
 #' `"python"` uses the Python pySCENIC path. The selected backend controls GRN,
 #' cisTarget pruning, and AUCell scoring together.
@@ -85,6 +89,7 @@ RunSCENIC <- function(
   prefix = "scenic",
   min_expr_cells = 3,
   min_regulon_size = 10,
+  include_negative_regulons = FALSE,
   backend = c("cpp", "python"),
   n_rounds = 5000,
   learning_rate = 0.01,
@@ -126,6 +131,7 @@ RunSCENIC <- function(
       prefix = prefix,
       min_expr_cells = min_expr_cells,
       min_regulon_size = min_regulon_size,
+      include_negative_regulons = include_negative_regulons,
       ranking_dbs = ranking_dbs,
       motif_annotations = motif_annotations,
       n_rounds = n_rounds,
@@ -682,6 +688,7 @@ scenic_cpp <- function(
   prefix,
   min_expr_cells,
   min_regulon_size,
+  include_negative_regulons,
   ranking_dbs,
   motif_annotations,
   n_rounds,
@@ -709,6 +716,8 @@ scenic_cpp <- function(
   )
   adj_file <- file.path(work_dir, paste0(prefix, "_adj_cpp.tsv"))
   regulon_file <- file.path(work_dir, paste0(prefix, "_regulon_list_cpp.rds"))
+  regulon_params_file <- file.path(work_dir, paste0(prefix, "_regulon_params_cpp.rds"))
+  regulators_file <- file.path(work_dir, paste0(prefix, "_regulators.txt"))
 
   reference_data <- scenic_reference(
     species = species,
@@ -809,6 +818,7 @@ scenic_cpp <- function(
       )
     }
   }
+  regulators_file <- scenic_write_gene_list(regulators, regulators_file)
 
   log_message(
     "Running SCENIC (grnboost2) on {.val {ncol(grn_matrix)}} cells with {.val {length(regulators)}} TFs",
@@ -855,7 +865,15 @@ scenic_cpp <- function(
     )
   }
 
-  regulon_force <- grn_force || !file.exists(regulon_file)
+  regulon_params <- list(
+    include_negative_regulons = isTRUE(include_negative_regulons),
+    min_regulon_size = as.integer(min_regulon_size),
+    max_regulon_targets = as.integer(max_regulon_targets),
+    signed_regulon_names = TRUE
+  )
+  regulon_force <- grn_force ||
+    !file.exists(regulon_file) ||
+    scenic_grn_inputs_changed(regulon_params_file, regulon_params)
   if (regulon_force) {
     if (
       !is.null(ref_data) &&
@@ -869,6 +887,7 @@ scenic_cpp <- function(
         motif_annotations = ref_data[["motif_annotations"]],
         max_targets = max_regulon_targets,
         min_regulon_size = min_regulon_size,
+        include_negative_regulons = include_negative_regulons,
         fallback = FALSE,
         cores = cores,
         verbose = verbose
@@ -880,6 +899,7 @@ scenic_cpp <- function(
       )
     }
     saveRDS(regulon_list, regulon_file)
+    saveRDS(regulon_params, regulon_params_file)
   } else {
     log_message(
       "Reusing existing regulon list: {.file {regulon_file}}",
@@ -900,7 +920,7 @@ scenic_cpp <- function(
     verbose = verbose
   )
 
-  if (file.exists(ras_file) && isFALSE(grn_force)) {
+  if (file.exists(ras_file) && isFALSE(regulon_force)) {
     log_message(
       "Reusing existing AUCell scores: {.file {ras_file}}",
       verbose = verbose
@@ -914,6 +934,7 @@ scenic_cpp <- function(
       cores = cores,
       backend = "cpp",
       cpp_strategy = "full",
+      seed = seed,
       verbose = verbose
     )
     saveRDS(ras_mat, ras_file)
@@ -939,7 +960,9 @@ scenic_cpp <- function(
     regulon_list = regulon_list,
     adjacency = adjacency,
     files = list(
+      regulators = regulators_file,
       adj = adj_file,
+      regulon_params = regulon_params_file,
       regulon_list = regulon_file,
       regulon_activity_score = ras_file
     ),
@@ -953,9 +976,11 @@ scenic_cpp <- function(
       species = species,
       genome = genome,
       regulators = regulators,
+      regulators_file = regulators_file,
       targets = targets,
       min_expr_cells = min_expr_cells,
       min_regulon_size = min_regulon_size,
+      include_negative_regulons = include_negative_regulons,
       n_rounds = n_rounds,
       learning_rate = learning_rate,
       max_depth = max_depth,
@@ -997,7 +1022,8 @@ scenic_cpp <- function(
 build_regulons <- function(
   adjacency,
   max_targets = 50,
-  min_regulon_size = 10
+  min_regulon_size = 10,
+  suffix = "(+)"
 ) {
   if (!all(c("TF", "target", "importance") %in% colnames(adjacency))) {
     log_message(
@@ -1020,6 +1046,7 @@ build_regulons <- function(
   })
 
   regulons <- regulons[lengths(regulons) >= min_regulon_size]
+  names(regulons) <- scenic_regulon_name(names(regulons), suffix = suffix)
   regulons
 }
 
@@ -1049,6 +1076,7 @@ cistarget2 <- function(
   rank_threshold = 5000,
   nes_threshold = 3.0,
   auc_threshold = 0.05,
+  include_negative_regulons = FALSE,
   fallback = FALSE,
   cores = 1,
   verbose = TRUE
@@ -1236,7 +1264,8 @@ cistarget2 <- function(
     return(build_regulons(
       adjacency,
       max_targets,
-      min_regulon_size
+      min_regulon_size,
+      suffix = "(+)"
     ))
   }
 
@@ -1263,6 +1292,7 @@ cistarget2 <- function(
       expr_mtx = expr_mtx,
       min_genes = 20,
       top_n_targets = max_targets,
+      keep_only_activating = !isTRUE(include_negative_regulons),
       verbose = verbose
     )
   })
@@ -1272,6 +1302,8 @@ cistarget2 <- function(
   process_module <- function(module) {
     local_profile <- profile * 0
     tf <- module[["tf"]]
+    suffix <- module[["suffix"]] %||% "(+)"
+    regulon_name <- scenic_regulon_name(tf, suffix = suffix)
     target_set <- intersect(module[["genes"]], all_genes)
 
     if (length(target_set) < min_regulon_size) {
@@ -1398,7 +1430,12 @@ cistarget2 <- function(
     regulon_genes <- intersect(regulon_genes, target_set)
 
     if (length(regulon_genes) > 0) {
-      return(list(tf = tf, genes = regulon_genes, profile = local_profile))
+      return(list(
+        tf = tf,
+        regulon = regulon_name,
+        genes = regulon_genes,
+        profile = local_profile
+      ))
     }
     list(tf = NULL, genes = NULL, profile = local_profile)
   }
@@ -1422,12 +1459,17 @@ cistarget2 <- function(
     if (is.null(module_result[["tf"]])) {
       next
     }
-    tf <- module_result[["tf"]]
-    regulons[[tf]] <- unique(c(regulons[[tf]], module_result[["genes"]]))
+    regulon_name <- module_result[["regulon"]] %||%
+      scenic_regulon_name(module_result[["tf"]], suffix = "(+)")
+    regulons[[regulon_name]] <- unique(c(
+      regulons[[regulon_name]],
+      module_result[["genes"]]
+    ))
   }
 
   regulons <- regulons[lengths(regulons) >= min_regulon_size]
-  missing_tfs <- setdiff(tfs, names(regulons))
+  positive_regulon_names <- scenic_regulon_name(tfs, suffix = "(+)")
+  missing_tfs <- tfs[!positive_regulon_names %in% names(regulons)]
   if (length(missing_tfs) > 0 && isTRUE(fallback)) {
     log_message(
       "  {.val {length(missing_tfs)}} TFs had no enriched motifs; using top-N importance as fallback",
@@ -1437,7 +1479,8 @@ cistarget2 <- function(
     fallback_regulons <- build_regulons(
       adjacency[adjacency[["TF"]] %in% missing_tfs, , drop = FALSE],
       max_targets,
-      min_regulon_size
+      min_regulon_size,
+      suffix = "(+)"
     )
     regulons <- c(regulons, fallback_regulons)
   }
@@ -1574,7 +1617,7 @@ scenic_modules_from_adjacencies <- function(
   }
 
   modules <- list()
-  add_module <- function(tf, genes, context) {
+  add_module <- function(tf, genes, context, regulation = 1L) {
     genes <- unique(c(tf, genes))
     if (length(genes) < min_genes) {
       return()
@@ -1582,7 +1625,9 @@ scenic_modules_from_adjacencies <- function(
     modules[[length(modules) + 1L]] <<- list(
       tf = tf,
       genes = genes,
-      context = context
+      context = context,
+      regulation = as.integer(regulation),
+      suffix = if (as.integer(regulation) < 0L) "(-)" else "(+)"
     )
   }
 
@@ -1597,14 +1642,30 @@ scenic_modules_from_adjacencies <- function(
       adj_thr <- adjacency[adjacency[["importance"]] > threshold_values[[idx]], , drop = FALSE]
       for (tf in unique(adj_thr[["TF"]])) {
         tf_adj <- adj_thr[adj_thr[["TF"]] == tf, , drop = FALSE]
-        add_module(tf, tf_adj[["target"]], paste0("weight>", thresholds[[idx]] * 100, "%"))
+        for (regulation in scenic_module_regulations(tf_adj)) {
+          tf_reg_adj <- scenic_filter_module_regulation(tf_adj, regulation)
+          add_module(
+            tf,
+            tf_reg_adj[["target"]],
+            paste0("weight>", thresholds[[idx]] * 100, "%"),
+            regulation = regulation
+          )
+        }
       }
     }
 
     for (tf in unique(adjacency[["TF"]])) {
       tf_adj <- adjacency[adjacency[["TF"]] == tf, , drop = FALSE]
       tf_adj <- tf_adj[order(-tf_adj[["importance"]]), , drop = FALSE]
-      add_module(tf, utils::head(tf_adj[["target"]], top_n_targets), paste0("top", top_n_targets))
+      for (regulation in scenic_module_regulations(tf_adj)) {
+        tf_reg_adj <- scenic_filter_module_regulation(tf_adj, regulation)
+        add_module(
+          tf,
+          utils::head(tf_reg_adj[["target"]], top_n_targets),
+          paste0("top", top_n_targets),
+          regulation = regulation
+        )
+      }
     }
 
     for (n in top_n_regulators) {
@@ -1618,7 +1679,15 @@ scenic_modules_from_adjacencies <- function(
       if (!is.null(top_by_target) && nrow(top_by_target) > 0) {
         for (tf in unique(top_by_target[["TF"]])) {
           tf_adj <- top_by_target[top_by_target[["TF"]] == tf, , drop = FALSE]
-          add_module(tf, tf_adj[["target"]], paste0("top", n, "perTarget"))
+          for (regulation in scenic_module_regulations(tf_adj)) {
+            tf_reg_adj <- scenic_filter_module_regulation(tf_adj, regulation)
+            add_module(
+              tf,
+              tf_reg_adj[["target"]],
+              paste0("top", n, "perTarget"),
+              regulation = regulation
+            )
+          }
         }
       }
     }
@@ -1629,6 +1698,25 @@ scenic_modules_from_adjacencies <- function(
     verbose = verbose
   )
   modules
+}
+
+scenic_module_regulations <- function(adjacency) {
+  if (!"regulation" %in% colnames(adjacency)) {
+    return(1L)
+  }
+  regulations <- sort(unique(as.integer(adjacency[["regulation"]])))
+  regulations[regulations %in% c(-1L, 1L)]
+}
+
+scenic_filter_module_regulation <- function(adjacency, regulation) {
+  if (!"regulation" %in% colnames(adjacency)) {
+    return(adjacency)
+  }
+  adjacency[
+    as.integer(adjacency[["regulation"]]) == as.integer(regulation),
+    ,
+    drop = FALSE
+  ]
 }
 
 scenic_add_correlation <- function(
@@ -2252,6 +2340,11 @@ scenic_regulon_tf_name <- function(x) {
   sub("\\([0-9]+g\\)$", "", x)
 }
 
+scenic_regulon_name <- function(tf, suffix = "(+)") {
+  tf <- sub("\\([+-]\\)$", "", as.character(tf))
+  paste0(tf, suffix)
+}
+
 scenic_regulon_list <- function(regulon_tbl) {
   rgnames <- unique(regulon_tbl[["regulon"]])
   regulon_list <- lapply(rgnames, function(rg) {
@@ -2282,6 +2375,7 @@ scenic_compute_aucell_score <- function(
   cores = 1,
   backend = c("r", "cpp"),
   cpp_strategy = c("full", "sparse", "topk"),
+  seed = NULL,
   verbose = TRUE
 ) {
   backend <- match.arg(backend)
@@ -2300,6 +2394,9 @@ scenic_compute_aucell_score <- function(
       "Calculating AUCell regulon activity scores with {.arg backend = 'cpp'} and {.arg cpp_strategy} = {.val {cpp_strategy}}",
       verbose = verbose
     )
+    if (!is.null(seed)) {
+      set.seed(as.integer(seed))
+    }
     scores <- run_aucell_scores(
       expr_counts = counts,
       gene_sets = regulon_list,

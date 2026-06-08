@@ -1060,6 +1060,16 @@ GSEAPlot <- function(
             guide_none()
           }
         ) +
+        scale_alpha_continuous(
+          name = paste0("-log10(", metric, ")"),
+          range = c(0.4, 1),
+          guide = guide_colorbar(
+            frame.colour = "black",
+            ticks.colour = "black",
+            title.hjust = 0,
+            order = 2
+          )
+        ) +
         facet_grid(Database ~ Groups, scales = "free") +
         coord_cartesian(
           xlim = c(-max(abs(stat[["NES"]])), max(abs(stat[["NES"]])))
