@@ -286,8 +286,12 @@ SCENICPlot(
 ## Value
 
 A list containing `rss_matrix`, `rank_table`, `top_table`, `plots`, and
-`plot` when `return_data = TRUE`; otherwise a plot object or list of
-plots.
+`plot` when `return_data = TRUE`; heatmap plot types also include the
+full `heatmap` result returned by
+[`FeatureHeatmap()`](https://mengxu98.github.io/scop/reference/FeatureHeatmap.md)
+or
+[`GroupHeatmap()`](https://mengxu98.github.io/scop/reference/GroupHeatmap.md).
+Otherwise, a plot object or list of plots.
 
 ## Examples
 

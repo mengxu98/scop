@@ -100,6 +100,8 @@
 <li>
 <strong>fix</strong>:
 <ul><li>
+<code><a href="../reference/SCENICPlot.html">SCENICPlot()</a></code>: <code>rss_heatmap</code> and <code>activity_heatmap</code> now return the drawable heatmap plot in <code>$plot</code> instead of the full <code><a href="../reference/FeatureHeatmap.html">FeatureHeatmap()</a></code>/<code><a href="../reference/GroupHeatmap.html">GroupHeatmap()</a></code> result list, so direct PDF export draws the heatmap rather than printing metadata.</li>
+<li>
 <code><a href="../reference/RunAugur.html">RunAugur()</a></code>: The <code>backend = "cpp"</code> path now performs Augur variance and random feature selection inside <code>scop</code>, so it no longer requires the GitHub-only <code>Augur</code> package unless <code>backend = "r"</code> is requested. C++ subsample results are accumulated before row binding to reduce repeated table growth, and failed C++ cell-type tasks now stop with a direct result-structure error instead of falling through to a secondary missing-<code>metric</code> error.</li>
 <li>
 <code><a href="../reference/RunPalantir.html">RunPalantir()</a></code>: Fixed saved plot generation by passing <code>plot_format</code> through to Python, saving each embedding from its own matplotlib figure, and accepting scalar <code>early_group</code> values such as <code>"8"</code> when selecting the starting group.</li>

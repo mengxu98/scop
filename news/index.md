@@ -220,6 +220,12 @@
     format as
     [`thisutils::log_message()`](https://mengxu98.github.io/thisutils/reference/log_message.html).
 - **fix**:
+  - [`SCENICPlot()`](https://mengxu98.github.io/scop/reference/SCENICPlot.md):
+    `rss_heatmap` and `activity_heatmap` now return the drawable heatmap
+    plot in `$plot` instead of the full
+    [`FeatureHeatmap()`](https://mengxu98.github.io/scop/reference/FeatureHeatmap.md)/[`GroupHeatmap()`](https://mengxu98.github.io/scop/reference/GroupHeatmap.md)
+    result list, so direct PDF export draws the heatmap rather than
+    printing metadata.
   - [`RunAugur()`](https://mengxu98.github.io/scop/reference/RunAugur.md):
     The `backend = "cpp"` path now performs Augur variance and random
     feature selection inside `scop`, so it no longer requires the
