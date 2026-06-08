@@ -97,6 +97,7 @@ plot the top regulons for each group.</p>
 <span>  highlight_point_size <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  highlight_linewidth <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  label_size <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  label_max_overlaps <span class="op">=</span> <span class="cn">Inf</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -305,6 +306,12 @@ lines.</p></dd>
 
 <dt id="arg-label-size">label_size<a class="anchor" aria-label="anchor" href="#arg-label-size"></a></dt>
 <dd><p>Text size for top regulon labels.</p></dd>
+
+
+<dt id="arg-label-max-overlaps">label_max_overlaps<a class="anchor" aria-label="anchor" href="#arg-label-max-overlaps"></a></dt>
+<dd><p>Maximum number of overlapping labels allowed by
+<code><a href="https://ggrepel.slowkow.com/reference/geom_text_repel.html" class="external-link">ggrepel::geom_text_repel()</a></code> before dropping a label. The default <code>Inf</code>
+keeps all requested top or highlighted TF labels.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
