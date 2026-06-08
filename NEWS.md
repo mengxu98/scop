@@ -40,6 +40,7 @@
 
 * **fix**:
   * `SCENICPlot()`: `rss_heatmap` and `activity_heatmap` now return the drawable heatmap plot in `$plot` instead of the full `FeatureHeatmap()`/`GroupHeatmap()` result list, so direct PDF export draws the heatmap rather than printing metadata.
+  * `SCENICPlot()`: `plot_type = "rss_rank"` now keeps all requested `top_n` and highlighted TF labels by default through `label_max_overlaps = Inf`; users can lower `label_max_overlaps` to let `ggrepel` drop crowded labels.
   * `RunAugur()`: The `backend = "cpp"` path now performs Augur variance and random feature selection inside `scop`, so it no longer requires the GitHub-only `Augur` package unless `backend = "r"` is requested. C++ subsample results are accumulated before row binding to reduce repeated table growth, and failed C++ cell-type tasks now stop with a direct result-structure error instead of falling through to a secondary missing-`metric` error.
   * `RunPalantir()`: Fixed saved plot generation by passing `plot_format` through to Python, saving each embedding from its own matplotlib figure, and accepting scalar `early_group` values such as `"8"` when selecting the starting group.
   * `SCENICPlot()`: Explicit `features` in SCENIC heatmaps now keep the user-supplied regulon order, and `activity_heatmap` aligns `feature_split` to the resolved and displayed regulons.
