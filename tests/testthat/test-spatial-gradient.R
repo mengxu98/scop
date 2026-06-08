@@ -318,6 +318,32 @@ test_that("SpatialGradientPlot combined returns a patchwork object when patchwor
   expect_s3_class(p, "patchwork")
 })
 
+test_that("SpatialGradientPlot reuses stored assay layer for surface plots", {
+  testthat::skip_if_not_installed("patchwork")
+  srt <- make_spatial_gradient_seurat()
+  result <- make_spatial_gradient_result()
+  result$parameters <- data.frame(
+    key = c("assay", "layer"),
+    value = c("RNA", "counts"),
+    stringsAsFactors = FALSE
+  )
+  srt <- sgf_store_result(srt, "mock_counts", result, assay = "RNA", set_variable_features = FALSE)
+
+  p <- expect_warning(
+    SpatialGradientPlot(
+      srt,
+      result_name = "mock_counts",
+      plot_type = "combined",
+      features = "Gene1",
+      coord.cols = c("x", "y"),
+      overlay_image = FALSE,
+      theme_use = NULL
+    ),
+    regexp = NA
+  )
+  expect_s3_class(p, "patchwork")
+})
+
 test_that("RunSpatialGradientFeatures has a clear optional SPATA2 dependency error", {
   testthat::skip_if(requireNamespace("SPATA2", quietly = TRUE))
   srt <- make_spatial_gradient_seurat()
