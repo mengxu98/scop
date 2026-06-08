@@ -19,6 +19,7 @@ standard_scop(
   spatial_cluster_method = "BayesSpace",
   spatial_q = NULL,
   bayesspace_params = list(),
+  giotto_cluster_params = list(),
   reference = NULL,
   reference_label = NULL,
   reference_assay = NULL,
@@ -88,14 +89,17 @@ passed to \code{\link[=RunSpatialVariableFeatures]{RunSpatialVariableFeatures()}
 \item{do_spatial_cluster}{Whether to run spatial-aware clustering in the
 spatial workflow.}
 
-\item{spatial_cluster_method}{Spatial clustering method. Only
-\code{"BayesSpace"} is supported in this workflow.}
+\item{spatial_cluster_method}{Spatial clustering method. Supported methods
+are \code{"BayesSpace"} and \code{"Giotto"}.}
 
 \item{spatial_q}{Number of spatial clusters for \code{\link[=RunBayesSpace]{RunBayesSpace()}}. If
 \code{NULL}, the number of ordinary spot clusters is used.}
 
 \item{bayesspace_params}{Named list of additional arguments passed to
 \code{\link[=RunBayesSpace]{RunBayesSpace()}}.}
+
+\item{giotto_cluster_params}{Named list of additional arguments passed to
+\code{\link[=RunGiottoCluster]{RunGiottoCluster()}}.}
 
 \item{reference}{Optional single-cell reference used for spatial
 deconvolution.}

@@ -30,12 +30,14 @@
 #' passed to [RunSpatialVariableFeatures()].
 #' @param do_spatial_cluster Whether to run spatial-aware clustering in the
 #' spatial workflow.
-#' @param spatial_cluster_method Spatial clustering method. Only
-#' `"BayesSpace"` is supported in this workflow.
+#' @param spatial_cluster_method Spatial clustering method. Supported methods
+#' are `"BayesSpace"` and `"Giotto"`.
 #' @param spatial_q Number of spatial clusters for [RunBayesSpace()]. If
 #' `NULL`, the number of ordinary spot clusters is used.
 #' @param bayesspace_params Named list of additional arguments passed to
 #' [RunBayesSpace()].
+#' @param giotto_cluster_params Named list of additional arguments passed to
+#' [RunGiottoCluster()].
 #' @param reference Optional single-cell reference used for spatial
 #' deconvolution.
 #' @param reference_label Metadata column in `reference` containing cell type
@@ -289,6 +291,7 @@ standard_scop <- function(
   spatial_cluster_method = "BayesSpace",
   spatial_q = NULL,
   bayesspace_params = list(),
+  giotto_cluster_params = list(),
   reference = NULL,
   reference_label = NULL,
   reference_assay = NULL,
@@ -337,6 +340,7 @@ standard_scop <- function(
       spatial_cluster_method = spatial_cluster_method,
       spatial_q = spatial_q,
       bayesspace_params = bayesspace_params,
+      giotto_cluster_params = giotto_cluster_params,
       reference = reference,
       reference_label = reference_label,
       reference_assay = reference_assay,
@@ -762,6 +766,7 @@ standard_spatial_scop <- function(
   spatial_cluster_method = "BayesSpace",
   spatial_q = NULL,
   bayesspace_params = list(),
+  giotto_cluster_params = list(),
   reference = NULL,
   reference_label = NULL,
   reference_assay = NULL,
@@ -826,11 +831,15 @@ standard_spatial_scop <- function(
   )
   standard_scop_validate_named_list(bayesspace_params, "bayesspace_params")
   standard_scop_validate_named_list(
+    giotto_cluster_params,
+    "giotto_cluster_params"
+  )
+  standard_scop_validate_named_list(
     deconvolution_params,
     "deconvolution_params"
   )
 
-  spatial_cluster_method <- match.arg(spatial_cluster_method, "BayesSpace")
+  spatial_cluster_method <- match.arg(spatial_cluster_method, c("BayesSpace", "Giotto"))
   deconvolution_method <- match.arg(deconvolution_method, "RCTD")
   if (is.null(do_deconvolution)) {
     do_deconvolution <- !is.null(reference)
@@ -881,6 +890,11 @@ standard_spatial_scop <- function(
   )
 
   cluster_col <- paste0(prefix, "clusters")
+  spatial_cluster_col <- if (identical(spatial_cluster_method, "Giotto")) {
+    giotto_cluster_params[["cluster_colname"]] %||% "Giotto_cluster"
+  } else {
+    cluster_col
+  }
   if (isTRUE(do_spatial_variable_features)) {
     svf_args <- standard_scop_merge_args(
       list(
@@ -897,45 +911,67 @@ standard_spatial_scop <- function(
   }
 
   if (isTRUE(do_spatial_cluster)) {
-    if (!identical(spatial_cluster_method, "BayesSpace")) {
-      log_message(
-        "{.arg spatial_cluster_method} only supports {.val BayesSpace}",
-        message_type = "error"
-      )
-    }
-    spatial_q_use <- spatial_q %||% standard_spatial_infer_q(
-      srt = srt,
-      cluster_col = cluster_col
-    )
-    bayesspace_args <- list(
-      srt = srt,
-      q = spatial_q_use,
-      assay = assay,
-      image = image,
-      verbose = verbose
-    )
     linear_reduction_use <- linear_reduction[[1L]]
     reduction_use <- paste0(prefix, linear_reduction_use)
-    if (
-      reduction_use %in% SeuratObject::Reductions(srt) &&
-        is.null(bayesspace_params[["use_reduction"]])
-    ) {
-      bayesspace_args[["use_reduction"]] <- reduction_use
-      if (is.null(bayesspace_params[["dims"]])) {
+    if (identical(spatial_cluster_method, "BayesSpace")) {
+      spatial_q_use <- spatial_q %||% standard_spatial_infer_q(
+        srt = srt,
+        cluster_col = cluster_col
+      )
+      bayesspace_args <- list(
+        srt = srt,
+        q = spatial_q_use,
+        assay = assay,
+        image = image,
+        verbose = verbose
+      )
+      if (
+        reduction_use %in% SeuratObject::Reductions(srt) &&
+          is.null(bayesspace_params[["use_reduction"]])
+      ) {
+        bayesspace_args[["use_reduction"]] <- reduction_use
+        if (is.null(bayesspace_params[["dims"]])) {
+          emb <- SeuratObject::Embeddings(srt, reduction = reduction_use)
+          if (!is.null(linear_reduction_dims_use)) {
+            dims_use <- linear_reduction_dims_use
+          } else {
+            dims_use <- seq_len(min(15L, ncol(emb)))
+          }
+          bayesspace_args[["dims"]] <- dims_use[dims_use <= ncol(emb)]
+        }
+      }
+      bayesspace_args <- standard_scop_merge_args(
+        bayesspace_args,
+        bayesspace_params
+      )
+      srt <- do.call(RunBayesSpace, bayesspace_args)
+    } else if (identical(spatial_cluster_method, "Giotto")) {
+      giotto_args <- list(
+        srt = srt,
+        assay = assay,
+        image = image,
+        coord.cols = coord.cols,
+        verbose = verbose,
+        seed = seed
+      )
+      if (
+        is.null(giotto_cluster_params[["dims"]]) &&
+          reduction_use %in% SeuratObject::Reductions(srt)
+      ) {
         emb <- SeuratObject::Embeddings(srt, reduction = reduction_use)
         if (!is.null(linear_reduction_dims_use)) {
           dims_use <- linear_reduction_dims_use
         } else {
-          dims_use <- seq_len(min(15L, ncol(emb)))
+          dims_use <- seq_len(min(20L, ncol(emb)))
         }
-        bayesspace_args[["dims"]] <- dims_use[dims_use <= ncol(emb)]
+        giotto_args[["dims"]] <- dims_use[dims_use <= ncol(emb)]
       }
+      giotto_args <- standard_scop_merge_args(
+        giotto_args,
+        giotto_cluster_params
+      )
+      srt <- do.call(RunGiottoCluster, giotto_args)
     }
-    bayesspace_args <- standard_scop_merge_args(
-      bayesspace_args,
-      bayesspace_params
-    )
-    srt <- do.call(RunBayesSpace, bayesspace_args)
   }
 
   if (isTRUE(do_deconvolution)) {
@@ -990,11 +1026,12 @@ standard_spatial_scop <- function(
       do_spatial_cluster = do_spatial_cluster,
       spatial_cluster_method = spatial_cluster_method,
       spatial_q = spatial_q,
+      giotto_cluster_params = giotto_cluster_params,
       do_deconvolution = do_deconvolution,
       deconvolution_method = deconvolution_method
     ),
-    cluster_col = if (cluster_col %in% colnames(srt@meta.data)) {
-      cluster_col
+    cluster_col = if (spatial_cluster_col %in% colnames(srt@meta.data)) {
+      spatial_cluster_col
     } else {
       NULL
     }
