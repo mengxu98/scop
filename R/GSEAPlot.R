@@ -1020,6 +1020,17 @@ GSEAPlot <- function(
         stat[["Direction"]],
         levels = c("Pos", "Neg")
       )
+      stat[["metric_score"]] <- -log10(stat[[metric]])
+      stat[["metric_score_signed"]] <- ifelse(
+        stat[["NES"]] >= 0,
+        stat[["metric_score"]],
+        -stat[["metric_score"]]
+      )
+      metric_limit <- max(abs(stat[["metric_score_signed"]]), na.rm = TRUE)
+      fill_cols <- palette_colors(
+        palette = palette,
+        palcolor = palcolor
+      )
 
       p <- ggplot(
         stat,
@@ -1030,7 +1041,7 @@ GSEAPlot <- function(
       ) +
         geom_vline(xintercept = 0) +
         geom_col(
-          aes(fill = .data[["Direction"]], alpha = -log10(.data[[metric]])),
+          aes(fill = .data[["metric_score_signed"]]),
           color = "black"
         ) +
         geom_text(
@@ -1048,17 +1059,18 @@ GSEAPlot <- function(
             "plain"
           )
         ) +
-        scale_fill_manual(
-          values = palette_colors(
-            x = rev(levels(stat[["Direction"]])),
-            palette = palette,
-            palcolor = rev(palcolor)
-          ),
-          guide = if (direction == "both") {
-            guide_legend(order = 1)
-          } else {
-            guide_none()
-          }
+        scale_fill_gradientn(
+          name = paste0("-log10(", metric, ")"),
+          colours = fill_cols,
+          limits = c(-metric_limit, metric_limit),
+          breaks = scales::breaks_extended(n = 4),
+          labels = function(x) format(abs(x), trim = TRUE),
+          guide = guide_colorbar(
+            frame.colour = "black",
+            ticks.colour = "black",
+            title.hjust = 0,
+            order = 2
+          )
         ) +
         facet_grid(Database ~ Groups, scales = "free") +
         coord_cartesian(
