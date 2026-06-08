@@ -80,3 +80,23 @@ test_that("SCENICPlot rss rank keeps requested labels by default", {
     4
   )
 })
+
+test_that("SCENICPlot resolves positive and negative regulon suffixes", {
+  dat <- make_scenic_plot_mock(seed = 4)
+  rownames(dat$auc)[1:2] <- c("Jun(+)", "Jun(-)")
+  dat$srt@tools$SCENIC <- list(scores_cells_by_regulon = t(dat$auc))
+
+  out <- SCENICPlot(
+    dat$srt,
+    group.by = "CellType",
+    plot_type = "rss_dotplot",
+    features = "Jun",
+    verbose = FALSE
+  )
+
+  expect_setequal(as.character(unique(out$plot_data[["regulon"]])), c("Jun(-)", "Jun(+)"))
+  expect_equal(
+    sort(unique(out$rank_table[out$rank_table[["regulon"]] %in% c("Jun(+)", "Jun(-)"), "TF"])),
+    "Jun"
+  )
+})

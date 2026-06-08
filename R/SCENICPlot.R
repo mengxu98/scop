@@ -392,7 +392,7 @@ SCENICPlot <- function(
       data.frame(
         group = one_group,
         regulon = regulons,
-        TF = sub("\\(\\+\\)$", "", regulons),
+        TF = scenic_tf_from_regulon(regulons),
         specificity_score = as.numeric(specificity_score),
         rank = seq_along(regulons),
         is_top = seq_along(regulons) <= min(top_n, length(regulons)),
@@ -1535,7 +1535,13 @@ scenic_matrix_to_long <- function(mat, row_name, col_name, value_name) {
 }
 
 scenic_tf_from_regulon <- function(regulon) {
-  sub("\\(\\+\\)$", "", as.character(regulon))
+  sub("\\([+-]\\)$", "", as.character(regulon))
+}
+
+scenic_regulon_feature_candidates <- function(feature) {
+  feature <- as.character(feature)
+  base <- scenic_tf_from_regulon(feature)
+  unique(c(feature, base, paste0(base, "(+)"), paste0(base, "(-)")))
 }
 
 scenic_resolve_regulon_features <- function(
@@ -1566,19 +1572,18 @@ scenic_resolve_regulon_features <- function(
 }
 
 scenic_match_regulon_features <- function(features, available) {
-  matches <- vapply(
+  matches <- lapply(
     as.character(features),
     function(feature) {
-      candidates <- unique(c(feature, paste0(feature, "(+)")))
+      candidates <- scenic_regulon_feature_candidates(feature)
       hit <- candidates[candidates %in% available]
       if (length(hit) == 0) {
-        return(NA_character_)
+        return(character(0))
       }
-      hit[[1]]
-    },
-    character(1)
+      hit
+    }
   )
-  unique(matches[!is.na(matches)])
+  unique(unlist(matches, use.names = FALSE))
 }
 
 scenic_align_heatmap_feature_split <- function(
@@ -1610,24 +1615,24 @@ scenic_align_heatmap_feature_split <- function(
     unique(as.character(feature_split))
   }
   split_values <- as.character(feature_split)
-  matched_all <- vapply(
+  matched_all <- lapply(
     as.character(features),
     function(feature) {
-      candidates <- unique(c(feature, paste0(feature, "(+)")))
+      candidates <- scenic_regulon_feature_candidates(feature)
       hit <- candidates[candidates %in% available]
       if (length(hit) == 0) {
-        return(NA_character_)
+        return(character(0))
       }
-      hit[[1]]
-    },
-    character(1)
+      hit
+    }
   )
 
   out <- stats::setNames(rep(NA_character_, length(regulons)), regulons)
   for (idx in seq_along(matched_all)) {
-    regulon <- matched_all[[idx]]
-    if (!is.na(regulon) && regulon %in% names(out) && is.na(out[[regulon]])) {
-      out[[regulon]] <- split_values[[idx]]
+    for (regulon in matched_all[[idx]]) {
+      if (regulon %in% names(out) && is.na(out[[regulon]])) {
+        out[[regulon]] <- split_values[[idx]]
+      }
     }
   }
   if (any(is.na(out[regulons]))) {
