@@ -54,6 +54,7 @@ SCENICPlot(
   highlight_point_size = 2,
   highlight_linewidth = 0.5,
   label_size = 3,
+  label_max_overlaps = Inf,
   verbose = TRUE,
   ...
 )
@@ -178,6 +179,10 @@ lines.}
 
 \item{label_size}{Text size for top regulon labels.}
 
+\item{label_max_overlaps}{Maximum number of overlapping labels allowed by
+\code{\link[ggrepel:geom_text_repel]{ggrepel::geom_text_repel()}} before dropping a label. The default \code{Inf}
+keeps all requested top or highlighted TF labels.}
+
 \item{verbose}{Whether to print messages.}
 
 \item{...}{Additional arguments passed directly to the underlying
@@ -187,8 +192,9 @@ can be supplied directly.}
 }
 \value{
 A list containing \code{rss_matrix}, \code{rank_table}, \code{top_table}, \code{plots},
-and \code{plot} when \code{return_data = TRUE}; otherwise a plot object or list of
-plots.
+and \code{plot} when \code{return_data = TRUE}; heatmap plot types also include the
+full \code{heatmap} result returned by \code{\link[=FeatureHeatmap]{FeatureHeatmap()}} or \code{\link[=GroupHeatmap]{GroupHeatmap()}}.
+Otherwise, a plot object or list of plots.
 }
 \description{
 Calculate regulon specificity score (RSS) from SCENIC regulon activity and

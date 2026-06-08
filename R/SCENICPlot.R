@@ -92,11 +92,15 @@
 #' @param highlight_linewidth Line width for highlighted TF or regulon rank
 #' lines.
 #' @param label_size Text size for top regulon labels.
+#' @param label_max_overlaps Maximum number of overlapping labels allowed by
+#' [ggrepel::geom_text_repel()] before dropping a label. The default `Inf`
+#' keeps all requested top or highlighted TF labels.
 #' @param verbose Whether to print messages.
 #'
 #' @return A list containing `rss_matrix`, `rank_table`, `top_table`, `plots`,
-#' and `plot` when `return_data = TRUE`; otherwise a plot object or list of
-#' plots.
+#' and `plot` when `return_data = TRUE`; heatmap plot types also include the
+#' full `heatmap` result returned by [FeatureHeatmap()] or [GroupHeatmap()].
+#' Otherwise, a plot object or list of plots.
 #'
 #' @export
 #'
@@ -247,6 +251,7 @@ SCENICPlot <- function(
   highlight_point_size = 2,
   highlight_linewidth = 0.5,
   label_size = 3,
+  label_max_overlaps = Inf,
   verbose = TRUE,
   ...
 ) {
@@ -387,7 +392,7 @@ SCENICPlot <- function(
       data.frame(
         group = one_group,
         regulon = regulons,
-        TF = sub("\\(\\+\\)$", "", regulons),
+        TF = scenic_tf_from_regulon(regulons),
         specificity_score = as.numeric(specificity_score),
         rank = seq_along(regulons),
         is_top = seq_along(regulons) <= min(top_n, length(regulons)),
@@ -420,7 +425,8 @@ SCENICPlot <- function(
       highlight_color = highlight_color,
       highlight_point_size = highlight_point_size,
       highlight_linewidth = highlight_linewidth,
-      label_size = label_size
+      label_size = label_size,
+      label_max_overlaps = label_max_overlaps
     ),
     rss_heatmap = scenic_plot_rss_heatmap(
       rss_matrix = rss_matrix,
@@ -563,7 +569,8 @@ SCENICPlot <- function(
     plots = plots,
     plot = plot,
     plot_type = plot_type,
-    plot_data = plot_result[["data"]]
+    plot_data = plot_result[["data"]],
+    heatmap = plot_result[["heatmap"]]
   )
 }
 
@@ -582,7 +589,8 @@ scenic_plot_rss_rank <- function(
   highlight_color = "#7A0177",
   highlight_point_size = 2,
   highlight_linewidth = 0.5,
-  label_size = 3
+  label_size = 3,
+  label_max_overlaps = Inf
 ) {
   plots <- lapply(colnames(rss_matrix), function(one_group) {
     data_rank_plot <- rank_table[
@@ -665,7 +673,8 @@ scenic_plot_rss_rank <- function(
         segment.color = "black",
         segment.size = 0.3,
         force = 1,
-        max.iter = 3000
+        max.iter = 3000,
+        max.overlaps = label_max_overlaps
       )
   })
   names(plots) <- colnames(rss_matrix)
@@ -734,7 +743,7 @@ scenic_plot_rss_heatmap <- function(
   plot_data[["regulon"]] <- factor(plot_data[["regulon"]], levels = rev(regulons))
   plot_data[["group"]] <- factor(plot_data[["group"]], levels = colnames(rss_subset))
 
-  plot <- scenic_plot_feature_heatmap_from_matrix(
+  heatmap_result <- scenic_plot_feature_heatmap_from_matrix(
     mat = rss_subset,
     group_names = colnames(rss_subset),
     features = regulons,
@@ -756,8 +765,9 @@ scenic_plot_rss_heatmap <- function(
     heatmap_limits = heatmap_limits,
     heatmap_args = heatmap_args
   )
+  plot <- heatmap_result[["plot"]]
 
-  list(plot = plot, plots = list(plot), data = plot_data)
+  list(plot = plot, plots = list(plot), data = plot_data, heatmap = heatmap_result)
 }
 
 scenic_plot_rss_dotplot <- function(rss_matrix, top_table, features = NULL, title = NULL) {
@@ -869,7 +879,7 @@ scenic_plot_activity_heatmap <- function(
 
   srt_use <- scenic_attach_auc_assay(srt = srt, auc_mat = auc_mat, assay = assay)
   heatmap_palette <- heatmap_palette %||% if (isTRUE(scale)) "RdBu" else "viridis"
-  plot <- scenic_call_with_args(
+  heatmap_result <- scenic_call_with_args(
     GroupHeatmap,
     args = list(
       srt = srt_use,
@@ -901,8 +911,9 @@ scenic_plot_activity_heatmap <- function(
     ),
     extra_args = heatmap_args
   )
+  plot <- heatmap_result[["plot"]]
 
-  list(plot = plot, plots = list(plot), data = plot_data)
+  list(plot = plot, plots = list(plot), data = plot_data, heatmap = heatmap_result)
 }
 
 scenic_plot_activity_violin <- function(
@@ -1524,7 +1535,13 @@ scenic_matrix_to_long <- function(mat, row_name, col_name, value_name) {
 }
 
 scenic_tf_from_regulon <- function(regulon) {
-  sub("\\(\\+\\)$", "", as.character(regulon))
+  sub("\\([+-]\\)$", "", as.character(regulon))
+}
+
+scenic_regulon_feature_candidates <- function(feature) {
+  feature <- as.character(feature)
+  base <- scenic_tf_from_regulon(feature)
+  unique(c(feature, base, paste0(base, "(+)"), paste0(base, "(-)")))
 }
 
 scenic_resolve_regulon_features <- function(
@@ -1555,19 +1572,18 @@ scenic_resolve_regulon_features <- function(
 }
 
 scenic_match_regulon_features <- function(features, available) {
-  matches <- vapply(
+  matches <- lapply(
     as.character(features),
     function(feature) {
-      candidates <- unique(c(feature, paste0(feature, "(+)")))
+      candidates <- scenic_regulon_feature_candidates(feature)
       hit <- candidates[candidates %in% available]
       if (length(hit) == 0) {
-        return(NA_character_)
+        return(character(0))
       }
-      hit[[1]]
-    },
-    character(1)
+      hit
+    }
   )
-  unique(matches[!is.na(matches)])
+  unique(unlist(matches, use.names = FALSE))
 }
 
 scenic_align_heatmap_feature_split <- function(
@@ -1599,24 +1615,24 @@ scenic_align_heatmap_feature_split <- function(
     unique(as.character(feature_split))
   }
   split_values <- as.character(feature_split)
-  matched_all <- vapply(
+  matched_all <- lapply(
     as.character(features),
     function(feature) {
-      candidates <- unique(c(feature, paste0(feature, "(+)")))
+      candidates <- scenic_regulon_feature_candidates(feature)
       hit <- candidates[candidates %in% available]
       if (length(hit) == 0) {
-        return(NA_character_)
+        return(character(0))
       }
-      hit[[1]]
-    },
-    character(1)
+      hit
+    }
   )
 
   out <- stats::setNames(rep(NA_character_, length(regulons)), regulons)
   for (idx in seq_along(matched_all)) {
-    regulon <- matched_all[[idx]]
-    if (!is.na(regulon) && regulon %in% names(out) && is.na(out[[regulon]])) {
-      out[[regulon]] <- split_values[[idx]]
+    for (regulon in matched_all[[idx]]) {
+      if (regulon %in% names(out) && is.na(out[[regulon]])) {
+        out[[regulon]] <- split_values[[idx]]
+      }
     }
   }
   if (any(is.na(out[regulons]))) {
