@@ -1603,6 +1603,12 @@ scenic_modules_from_adjacencies <- function(
   adjacency <- adjacency[!is.na(adjacency[["importance"]]), , drop = FALSE]
   adjacency[["importance"]] <- as.numeric(adjacency[["importance"]])
   adjacency <- adjacency[order(-adjacency[["importance"]]), , drop = FALSE]
+  threshold_values <- stats::quantile(
+    adjacency[["importance"]],
+    probs = thresholds,
+    names = FALSE,
+    na.rm = TRUE
+  )
 
   if (!is.null(expr_mtx)) {
     adjacency <- scenic_add_correlation(
@@ -1635,13 +1641,6 @@ scenic_modules_from_adjacencies <- function(
       return()
     }
     adjacency_sign <- adjacency_sign[order(-adjacency_sign[["importance"]]), , drop = FALSE]
-    threshold_importance <- adjacency_sign[["importance"]]
-    threshold_values <- stats::quantile(
-      threshold_importance,
-      probs = thresholds,
-      names = FALSE,
-      na.rm = TRUE
-    )
     for (idx in seq_along(threshold_values)) {
       adj_thr <- adjacency_sign[adjacency_sign[["importance"]] > threshold_values[[idx]], , drop = FALSE]
       for (tf in unique(adj_thr[["TF"]])) {

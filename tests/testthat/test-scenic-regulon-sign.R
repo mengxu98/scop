@@ -127,6 +127,50 @@ test_that("C++ SCENIC negative modules do not change positive module targets", {
   )
 })
 
+test_that("C++ SCENIC threshold modules use global pySCENIC weight quantiles", {
+  expr <- matrix(
+    c(
+      1, 2, 3, 4, 5, 6,
+      1, 2, 3, 4, 5, 6,
+      2, 3, 4, 5, 6, 7,
+      3, 4, 5, 6, 7, 8,
+      6, 5, 4, 3, 2, 1,
+      7, 6, 5, 4, 3, 2,
+      8, 7, 6, 5, 4, 3
+    ),
+    nrow = 6,
+    ncol = 7,
+    dimnames = list(
+      paste0("Cell", 1:6),
+      c("TF1", "GenePos1", "GenePos2", "GenePos3", "GeneNeg1", "GeneNeg2", "GeneNeg3")
+    )
+  )
+  adjacency <- data.frame(
+    TF = "TF1",
+    target = c("GenePos1", "GenePos2", "GenePos3", "GeneNeg1", "GeneNeg2", "GeneNeg3"),
+    importance = c(0.99, 0.98, 0.97, 0.30, 0.29, 0.28),
+    stringsAsFactors = FALSE
+  )
+
+  modules <- getFromNamespace("scenic_modules_from_adjacencies", "scop")(
+    adjacency = adjacency,
+    expr_mtx = expr,
+    thresholds = 0.5,
+    top_n_targets = 3,
+    top_n_regulators = integer(0),
+    min_genes = 2,
+    keep_only_activating = FALSE,
+    verbose = FALSE
+  )
+
+  negative_threshold_modules <- modules[
+    vapply(modules, function(module) {
+      identical(module$suffix, "(-)") && identical(module$context, "weight>50%")
+    }, logical(1))
+  ]
+  expect_length(negative_threshold_modules, 0)
+})
+
 test_that("C++ SCENIC regulon fallback uses pySCENIC-style positive names", {
   adjacency <- data.frame(
     TF = "TF1",
