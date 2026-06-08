@@ -73,6 +73,60 @@ test_that("C++ SCENIC module builder can include negative regulons", {
   }, logical(1))))
 })
 
+test_that("C++ SCENIC negative modules do not change positive module targets", {
+  expr <- matrix(
+    c(
+      1, 2, 3, 4, 5, 6,
+      1, 2, 3, 4, 5, 6,
+      2, 3, 4, 5, 6, 7,
+      3, 4, 5, 6, 7, 8,
+      6, 5, 4, 3, 2, 1,
+      7, 6, 5, 4, 3, 2
+    ),
+    nrow = 6,
+    ncol = 6,
+    dimnames = list(
+      paste0("Cell", 1:6),
+      c("TF1", "GenePos1", "GenePos2", "GenePos3", "GeneNeg1", "GeneNeg2")
+    )
+  )
+  adjacency <- data.frame(
+    TF = "TF1",
+    target = c("GeneNeg1", "GeneNeg2", "GenePos1", "GenePos2", "GenePos3"),
+    importance = c(0.99, 0.98, 0.50, 0.49, 0.48),
+    stringsAsFactors = FALSE
+  )
+
+  positive_only <- getFromNamespace("scenic_modules_from_adjacencies", "scop")(
+    adjacency = adjacency,
+    expr_mtx = expr,
+    thresholds = 0.5,
+    top_n_targets = 3,
+    top_n_regulators = integer(0),
+    min_genes = 2,
+    keep_only_activating = TRUE,
+    verbose = FALSE
+  )
+  with_negative <- getFromNamespace("scenic_modules_from_adjacencies", "scop")(
+    adjacency = adjacency,
+    expr_mtx = expr,
+    thresholds = 0.5,
+    top_n_targets = 3,
+    top_n_regulators = integer(0),
+    min_genes = 2,
+    keep_only_activating = FALSE,
+    verbose = FALSE
+  )
+  with_negative_positive <- with_negative[
+    vapply(with_negative, `[[`, character(1), "suffix") == "(+)"
+  ]
+
+  expect_equal(
+    lapply(positive_only, `[[`, "genes"),
+    lapply(with_negative_positive, `[[`, "genes")
+  )
+})
+
 test_that("C++ SCENIC regulon fallback uses pySCENIC-style positive names", {
   adjacency <- data.frame(
     TF = "TF1",
