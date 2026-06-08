@@ -19,6 +19,7 @@ RunSCENIC(
   prefix = "scenic",
   min_expr_cells = 3,
   min_regulon_size = 10,
+  include_negative_regulons = FALSE,
   backend = c("cpp", "python"),
   n_rounds = 5000,
   learning_rate = 0.01,
@@ -86,6 +87,11 @@ before GRNBoost2. To run SCENIC on metacells, first create a metacell-level
 object with \code{\link[=RunMetaCell]{RunMetaCell()}} and pass that object to \code{RunSCENIC()}.}
 
 \item{min_regulon_size}{Minimum regulon size kept after \verb{scenic ctx}.}
+
+\item{include_negative_regulons}{Whether the C++ backend should also build
+negatively correlated regulons and label them as \code{TF(-)}. The default
+matches pySCENIC's positive-regulon workflow and labels C++ regulons as
+\code{TF(+)}.}
 
 \item{backend}{SCENIC backend. \code{"cpp"} uses the R/C++ path and
 \code{"python"} uses the Python pySCENIC path. The selected backend controls GRN,
