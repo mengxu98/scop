@@ -1324,7 +1324,7 @@ core_python_requirements <- function() {
       "llvmlite" = "llvmlite==0.42.0",
       "numpy" = "numpy==1.26.4",
       "packaging" = "packaging>=24.0",
-      "pandas" = "pandas==2.0.3",
+      "pandas" = "pandas==2.2.0",
       "scikit-learn" = "scikit-learn==1.7.0",
       "scipy" = "scipy==1.15.3",
       if (is_apple_silicon()) {
