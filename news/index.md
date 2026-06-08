@@ -220,6 +220,15 @@
     format as
     [`thisutils::log_message()`](https://mengxu98.github.io/thisutils/reference/log_message.html).
 - **fix**:
+  - [`RunSCENIC()`](https://mengxu98.github.io/scop/reference/RunSCENIC.md):
+    The C++ backend now writes the final filtered TF list to
+    `<prefix>_regulators.txt` and records it in `@tools$SCENIC$files`,
+    matching the persisted output bundle users expect beside the C++
+    adjacency, regulon list, and activity-score files.
+  - [`RunSCENIC()`](https://mengxu98.github.io/scop/reference/RunSCENIC.md):
+    The C++ backend now labels positive regulons as `TF(+)` to match
+    pySCENIC naming and supports optional negatively correlated regulons
+    as `TF(-)` with `include_negative_regulons = TRUE`.
   - [`SCENICPlot()`](https://mengxu98.github.io/scop/reference/SCENICPlot.md):
     `rss_heatmap` and `activity_heatmap` now return the drawable heatmap
     plot in `$plot` instead of the full
