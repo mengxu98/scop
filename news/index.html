@@ -100,6 +100,10 @@
 <li>
 <strong>fix</strong>:
 <ul><li>
+<code><a href="../reference/RunSCENIC.html">RunSCENIC()</a></code>: The C++ backend now writes the final filtered TF list to <code>&lt;prefix&gt;_regulators.txt</code> and records it in <code>@tools$SCENIC$files</code>, matching the persisted output bundle users expect beside the C++ adjacency, regulon list, and activity-score files.</li>
+<li>
+<code><a href="../reference/RunSCENIC.html">RunSCENIC()</a></code>: The C++ backend now labels positive regulons as <code>TF(+)</code> to match pySCENIC naming and supports optional negatively correlated regulons as <code>TF(-)</code> with <code>include_negative_regulons = TRUE</code>.</li>
+<li>
 <code><a href="../reference/SCENICPlot.html">SCENICPlot()</a></code>: <code>rss_heatmap</code> and <code>activity_heatmap</code> now return the drawable heatmap plot in <code>$plot</code> instead of the full <code><a href="../reference/FeatureHeatmap.html">FeatureHeatmap()</a></code>/<code><a href="../reference/GroupHeatmap.html">GroupHeatmap()</a></code> result list, so direct PDF export draws the heatmap rather than printing metadata.</li>
 <li>
 <code><a href="../reference/SCENICPlot.html">SCENICPlot()</a></code>: <code>plot_type = "rss_rank"</code> now keeps all requested <code>top_n</code> and highlighted TF labels by default through <code>label_max_overlaps = Inf</code>; users can lower <code>label_max_overlaps</code> to let <code>ggrepel</code> drop crowded labels.</li>

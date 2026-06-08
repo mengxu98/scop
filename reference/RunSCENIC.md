@@ -20,6 +20,7 @@ RunSCENIC(
   prefix = "scenic",
   min_expr_cells = 3,
   min_regulon_size = 10,
+  include_negative_regulons = FALSE,
   backend = c("cpp", "python"),
   n_rounds = 5000,
   learning_rate = 0.01,
@@ -119,6 +120,12 @@ RunSCENIC(
 - min_regulon_size:
 
   Minimum regulon size kept after `scenic ctx`.
+
+- include_negative_regulons:
+
+  Whether the C++ backend should also build negatively correlated
+  regulons and label them as `TF(-)`. The default matches pySCENIC's
+  positive-regulon workflow and labels C++ regulons as `TF(+)`.
 
 - backend:
 

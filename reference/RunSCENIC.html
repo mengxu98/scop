@@ -59,6 +59,7 @@
 <span>  prefix <span class="op">=</span> <span class="st">"scenic"</span>,</span>
 <span>  min_expr_cells <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  min_regulon_size <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  include_negative_regulons <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cpp"</span>, <span class="st">"python"</span><span class="op">)</span>,</span>
 <span>  n_rounds <span class="op">=</span> <span class="fl">5000</span>,</span>
 <span>  learning_rate <span class="op">=</span> <span class="fl">0.01</span>,</span>
@@ -157,6 +158,13 @@ object with <code><a href="RunMetaCell.html">RunMetaCell()</a></code> and pass t
 
 <dt id="arg-min-regulon-size">min_regulon_size<a class="anchor" aria-label="anchor" href="#arg-min-regulon-size"></a></dt>
 <dd><p>Minimum regulon size kept after <code>scenic ctx</code>.</p></dd>
+
+
+<dt id="arg-include-negative-regulons">include_negative_regulons<a class="anchor" aria-label="anchor" href="#arg-include-negative-regulons"></a></dt>
+<dd><p>Whether the C++ backend should also build
+negatively correlated regulons and label them as <code>TF(-)</code>. The default
+matches pySCENIC's positive-regulon workflow and labels C++ regulons as
+<code>TF(+)</code>.</p></dd>
 
 
 <dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
