@@ -401,6 +401,7 @@ SpatialGradientPlot <- function(
   line_fit <- match.arg(line_fit)
   result <- sgf_get_result(srt, result_name = result_name)
   features <- sgf_plot_features(result, features = features, nfeatures = nfeatures)
+  layer <- sgf_plot_layer(srt = srt, result = result, assay = assay, layer = layer, features = features)
 
   if (identical(plot_type, "surface")) {
     return(sgf_surface_plot(
@@ -1336,6 +1337,49 @@ sgf_plot_features <- function(result, features = NULL, nfeatures = 4) {
     log_message("No {.arg features} are available for plotting", message_type = "error")
   }
   features
+}
+
+sgf_plot_layer <- function(srt, result, assay, layer, features) {
+  stored_layer <- sgf_parameter_value(result, "layer")
+  if (is.null(layer) || identical(layer, "") || identical(layer, NA_character_)) {
+    return(stored_layer %||% "data")
+  }
+  if (!identical(layer, "data") || is.null(stored_layer) || identical(stored_layer, layer)) {
+    return(layer)
+  }
+  assay <- assay %||% SeuratObject::DefaultAssay(srt)
+  expr <- tryCatch(
+    suppressWarnings(GetAssayData5(srt, assay = assay, layer = layer)),
+    error = function(e) NULL
+  )
+  has_features <- !is.null(expr) && all(features %in% rownames(expr))
+  if (isTRUE(has_features)) {
+    return(layer)
+  }
+  stored_expr <- tryCatch(
+    suppressWarnings(GetAssayData5(srt, assay = assay, layer = stored_layer)),
+    error = function(e) NULL
+  )
+  if (!is.null(stored_expr) && all(features %in% rownames(stored_expr))) {
+    return(stored_layer)
+  }
+  layer
+}
+
+sgf_parameter_value <- function(result, key) {
+  params <- result$parameters
+  if (!is.data.frame(params) || !"key" %in% colnames(params) || !"value" %in% colnames(params)) {
+    return(NULL)
+  }
+  idx <- which(params$key %in% key)
+  if (length(idx) == 0L) {
+    return(NULL)
+  }
+  val <- params$value[[idx[[1L]]]]
+  if (is.na(val) || !nzchar(val)) {
+    return(NULL)
+  }
+  as.character(val)
 }
 
 sgf_surface_plot <- function(
