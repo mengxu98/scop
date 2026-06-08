@@ -189,6 +189,7 @@ RunGiottoCluster <- function(
     ),
     network_params
   )
+  network_type <- network_args[["type"]] %||% "sNN"
   gobject <- giotto_call(createNearestNetwork, network_args)
 
   giotto_cluster_name <- cluster_params[["name"]] %||% paste0(method, "_clus")
@@ -199,6 +200,7 @@ RunGiottoCluster <- function(
     list(
       gobject = gobject,
       network_name = network_name,
+      nn_network_to_use = network_type,
       resolution = resolution,
       name = giotto_cluster_name,
       return_gobject = TRUE,

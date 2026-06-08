@@ -97,7 +97,7 @@ RunGiottoCellProximity <- function(
       enrichment_params
     )
   )
-  enrichment_table <- giotto_result_to_data_frame(enrichment)
+  enrichment_table <- giotto_extract_proximity_enrichment(enrichment)
 
   tool <- list(
     enrichment = enrichment_table,
@@ -411,7 +411,25 @@ RunGiottoHMRF <- function(
     )
   )
 
-  assignments <- giotto_extract_hmrf_assignments(hmrf_result, cells = input$cells)
+  gobject_with_hmrf <- giotto_add_hmrf_result(
+    gobject = gobject,
+    hmrf_result = hmrf_result,
+    output_folder = output_folder,
+    k = as.integer(k),
+    betas = betas,
+    hmrf_name = hmrf_name
+  )
+  gobject <- gobject_with_hmrf %||% gobject
+  giotto_metadata <- giotto_get_cell_metadata(gobject)
+  assignments <- giotto_extract_hmrf_assignments_from_metadata(
+    giotto_metadata = giotto_metadata,
+    cells = input$cells,
+    cluster_colname = cluster_colname,
+    hmrf_name = hmrf_name
+  )
+  if (length(assignments) == 0L) {
+    assignments <- giotto_extract_hmrf_assignments(hmrf_result, cells = input$cells)
+  }
   if (length(assignments) > 0L) {
     for (nm in names(assignments)) {
       colname <- if (length(assignments) == 1L) {
@@ -453,7 +471,7 @@ RunGiottoHMRF <- function(
     features = input$features
   )
   if (isTRUE(store_giotto)) {
-    tool$giotto <- hmrf_result
+    tool$giotto <- gobject
   }
   srt@tools[[tool_name]] <- tool
   log_message("{.pkg Giotto} HMRF results stored in {.code srt@tools[[tool_name]]}", message_type = "success", verbose = verbose)
@@ -661,6 +679,34 @@ giotto_result_to_data_frame <- function(x) {
   data.frame(value = as.character(x), stringsAsFactors = FALSE)
 }
 
+giotto_extract_proximity_enrichment <- function(x) {
+  if (is.list(x) && !inherits(x, "data.frame") && !inherits(x, "data.table")) {
+    candidates <- c(
+      "enrichm_res",
+      "enrichment",
+      "enrichment_res",
+      "cell_proximity_enrichment",
+      "cellProximityEnrichment",
+      "results",
+      "result"
+    )
+    hit <- names(x)[match(tolower(candidates), tolower(names(x)), nomatch = 0L)]
+    hit <- hit[hit != ""][1]
+    if (!is.na(hit)) {
+      return(giotto_result_to_data_frame(x[[hit]]))
+    }
+    frames <- giotto_collect_data_frames(x)
+    enrich_hits <- grep("enrich", names(frames), ignore.case = TRUE, value = TRUE)
+    if (length(enrich_hits) > 0L) {
+      return(frames[[enrich_hits[[1L]]]])
+    }
+    if (length(frames) > 0L) {
+      return(frames[[1L]])
+    }
+  }
+  giotto_result_to_data_frame(x)
+}
+
 giotto_collect_data_frames <- function(x, prefix = "result") {
   out <- list()
   if (inherits(x, "data.frame") || inherits(x, "data.table") || is.matrix(x)) {
@@ -671,6 +717,68 @@ giotto_collect_data_frames <- function(x, prefix = "result") {
     for (nm in names(x)) {
       key <- if (nzchar(nm)) paste0(prefix, ".", nm) else prefix
       out <- c(out, giotto_collect_data_frames(x[[nm]], prefix = key))
+    }
+  }
+  out
+}
+
+giotto_add_hmrf_result <- function(
+  gobject,
+  hmrf_result,
+  output_folder,
+  k,
+  betas,
+  hmrf_name
+) {
+  addHMRF <- tryCatch(giotto_get_fun("addHMRF"), error = function(e) NULL)
+  if (!is.function(addHMRF)) {
+    return(NULL)
+  }
+  args <- list(
+    gobject = gobject,
+    HMRFoutput = hmrf_result,
+    k = k,
+    betas_to_add = betas,
+    hmrf_name = hmrf_name
+  )
+  out <- tryCatch(giotto_call(addHMRF, args), error = function(e) NULL)
+  if (!is.null(out)) {
+    return(out)
+  }
+  args[["HMRFoutput"]] <- output_folder
+  tryCatch(giotto_call(addHMRF, args), error = function(e) NULL)
+}
+
+giotto_extract_hmrf_assignments_from_metadata <- function(
+  giotto_metadata,
+  cells,
+  cluster_colname,
+  hmrf_name
+) {
+  if (nrow(giotto_metadata) == 0L) {
+    return(list())
+  }
+  ids <- tryCatch(giotto_metadata_cell_ids(giotto_metadata, cells = cells), error = function(e) NULL)
+  if (is.null(ids)) {
+    return(list())
+  }
+  candidates <- grep(
+    paste0("(", paste(c(cluster_colname, hmrf_name, "HMRF"), collapse = "|"), ")"),
+    colnames(giotto_metadata),
+    ignore.case = TRUE,
+    value = TRUE
+  )
+  candidates <- setdiff(candidates, c("cell_ID", "cell", "spat_ID", "spot", "barcode"))
+  out <- list()
+  for (col in candidates) {
+    values <- giotto_metadata[[col]]
+    if (length(values) != length(ids)) {
+      next
+    }
+    named <- values
+    names(named) <- ids
+    if (all(cells %in% names(named)) && length(unique(stats::na.omit(named[cells]))) > 1L) {
+      out[[col]] <- named[cells]
     }
   }
   out
