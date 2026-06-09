@@ -274,6 +274,7 @@ reference:
 
 - subtitle: "Cell-Cell Communication Analysis"
 - contents:
+  - RunCCC
   - RunCellChat
   - RunCellphoneDB
   - RunLIANA
