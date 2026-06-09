@@ -16,6 +16,7 @@ RunCellChat(
   thresh = 0.05,
   min.cells = 10,
   do.fast = FALSE,
+  backend = c("cpp", "r"),
   assay = NULL,
   layer = "data",
   verbose = TRUE
@@ -70,6 +71,11 @@ RunCellChat(
 
   Whether to use CellChat's fast Wilcoxon implementation backed by
   `presto`. Set to `TRUE` only when `presto` is installed.
+
+- backend:
+
+  Backend used for scop post-processing and unified CCC table
+  aggregation. Upstream CellChat inference is unchanged.
 
 - assay:
 

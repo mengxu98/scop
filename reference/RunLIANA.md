@@ -13,6 +13,7 @@ RunLIANA(
   assay = NULL,
   min_cells = 5,
   return_all = FALSE,
+  backend = c("cpp", "r"),
   verbose = TRUE,
   ...
 )
@@ -48,6 +49,11 @@ RunLIANA(
 - return_all:
 
   Whether LIANA should return all possible interactions.
+
+- backend:
+
+  Backend used for scop post-processing and unified CCC table
+  aggregation. Upstream LIANA inference is unchanged.
 
 - verbose:
 

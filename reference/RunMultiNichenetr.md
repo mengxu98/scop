@@ -26,6 +26,7 @@ RunMultiNichenetr(
   min_cells = 10,
   empirical_pval = TRUE,
   top_n_interactions = 250,
+  backend = c("cpp", "r"),
   verbose = TRUE
 )
 ```
@@ -114,6 +115,11 @@ RunMultiNichenetr(
 
   Number of top prioritized interactions kept in the standardized long
   table.
+
+- backend:
+
+  Backend used for post-processing aggregation. Upstream MultiNicheNet
+  inference is unchanged.
 
 - verbose:
 
