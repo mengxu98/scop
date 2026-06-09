@@ -10,6 +10,8 @@
 #' @param assay Assay used by LIANA. If `NULL`, LIANA uses the default assay.
 #' @param min_cells Minimum cells per identity retained by LIANA.
 #' @param return_all Whether LIANA should return all possible interactions.
+#' @param backend Backend used for scop post-processing and unified CCC table
+#' aggregation. Upstream LIANA inference is unchanged.
 #' @param ... Additional arguments passed to `liana::liana_wrap()`.
 #'
 #' @return A `Seurat` object with LIANA results stored in
@@ -23,9 +25,11 @@ RunLIANA <- function(
   assay = NULL,
   min_cells = 5,
   return_all = FALSE,
+  backend = c("cpp", "r"),
   verbose = TRUE,
   ...
 ) {
+  backend <- match.arg(backend)
   check_r(c("saezlab/liana", "SingleCellExperiment"), verbose = FALSE)
   if (!inherits(srt, "Seurat")) {
     log_message(
@@ -86,7 +90,7 @@ RunLIANA <- function(
 
   long_table <- standardize_liana_result(res)
   liana_table <- ccc_long_to_liana(long_table)
-  pair_table <- aggregate_ccc_long(long_table)
+  pair_table <- aggregate_ccc_long(long_table, backend = backend)
 
   srt@tools[["LIANA"]] <- list(
     method = "LIANA",
@@ -100,13 +104,15 @@ RunLIANA <- function(
       resource = resource,
       assay = assay,
       min_cells = min_cells,
-      return_all = return_all
+      return_all = return_all,
+      backend = backend
     )
   )
   srt <- ccc_update_unified_bundle(
     srt = srt,
     method = "LIANA",
-    bundle = srt@tools[["LIANA"]]
+    bundle = srt@tools[["LIANA"]],
+    backend = backend
   )
 
   log_message(
@@ -775,10 +781,63 @@ ccc_prepare_metric_values <- function(x, invert = FALSE, fill = 0) {
   x
 }
 
-ccc_aggregate_liana_table <- function(out, sample_col = NULL) {
+ccc_aggregate_liana_table <- function(out, sample_col = NULL, backend = c("cpp", "r")) {
+  backend <- match.arg(backend)
+  if (is.null(out) || nrow(out) == 0L) {
+    return(out)
+  }
   key_cols <- c("source", "target", "ligand_complex", "receptor_complex")
   if (!is.null(sample_col) && sample_col %in% colnames(out)) {
     key_cols <- c(key_cols, sample_col)
+  }
+  if (identical(backend, "cpp") && nrow(out) >= 1000L &&
+    all(c("source", "target", "ligand_complex", "receptor_complex", "score", "pvalue") %in% colnames(out))) {
+    has_sample <- !is.null(sample_col) && sample_col %in% colnames(out)
+    score_vals <- suppressWarnings(as.numeric(out$score))
+    pvalue_vals <- suppressWarnings(as.numeric(out$pvalue))
+    classification_chr <- if ("classification" %in% colnames(out)) as.character(out$classification) else character(nrow(out))
+    method_chr <- if ("method" %in% colnames(out)) as.character(out$method) else character(nrow(out))
+    liana_method_chr <- if ("liana_method" %in% colnames(out)) as.character(out$liana_method) else character(nrow(out))
+    resource_chr <- if ("resource" %in% colnames(out)) as.character(out$resource) else character(nrow(out))
+    sample_chr <- if (has_sample) as.character(out[[sample_col]]) else character(nrow(out))
+    cpp_result <- tryCatch(
+      ccc_aggregate_liana_table_cpp(
+        source = as.character(out$source),
+        target = as.character(out$target),
+        ligand_complex = as.character(out$ligand_complex),
+        receptor_complex = as.character(out$receptor_complex),
+        sample = sample_chr,
+        score = score_vals,
+        pvalue = pvalue_vals,
+        classification = classification_chr,
+        method = method_chr,
+        liana_method = liana_method_chr,
+        resource = resource_chr,
+        has_sample = has_sample
+      ),
+      error = function(e) NULL
+    )
+    if (!is.null(cpp_result) && nrow(cpp_result) > 0L) {
+      remaining_cols <- setdiff(colnames(out), c("source", "target", "ligand_complex", "receptor_complex", "score", "pvalue", "classification", "method", "liana_method", "resource"))
+      if (has_sample) {
+        remaining_cols <- setdiff(remaining_cols, sample_col)
+      }
+      key_vals <- do.call(paste, c(out[key_cols], sep = "\r"))
+      cpp_keys <- do.call(paste, c(cpp_result[key_cols], sep = "\r"))
+      key_to_idx <- match(cpp_keys, key_vals)
+      for (col in remaining_cols) {
+        if (col %in% colnames(cpp_result)) next
+        cpp_result[[col]] <- out[[col]][key_to_idx]
+      }
+      out_order <- match(colnames(out), colnames(cpp_result))
+      out_order <- out_order[!is.na(out_order)]
+      extra_cols <- setdiff(colnames(out), colnames(cpp_result))
+      for (col in extra_cols) {
+        cpp_result[[col]] <- out[[col]][key_to_idx]
+      }
+      cpp_result <- cpp_result[, union(colnames(out), colnames(cpp_result)), drop = FALSE]
+      return(cpp_result)
+    }
   }
   key <- do.call(paste, c(out[key_cols], sep = "\r"))
   split_idx <- split(seq_len(nrow(out)), key, drop = TRUE)

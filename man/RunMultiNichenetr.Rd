@@ -25,6 +25,7 @@ RunMultiNichenetr(
   min_cells = 10,
   empirical_pval = TRUE,
   top_n_interactions = 250,
+  backend = c("cpp", "r"),
   verbose = TRUE
 )
 }
@@ -72,6 +73,9 @@ a simple contrast table will be created from \code{condition_oi} and
 
 \item{top_n_interactions}{Number of top prioritized interactions kept in the
 standardized long table.}
+
+\item{backend}{Backend used for post-processing aggregation. Upstream
+MultiNicheNet inference is unchanged.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

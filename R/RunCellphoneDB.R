@@ -44,6 +44,8 @@
 #' @param output_suffix Optional output suffix passed to CellphoneDB.
 #' @param keep_output Whether to keep temporary output files when `output_path` is
 #' not supplied.
+#' @param backend Backend used for scop post-processing and unified CCC table
+#' aggregation. Upstream CellphoneDB inference is unchanged.
 #'
 #' @return A Seurat object with results stored in `srt@tools[["CellphoneDB"]]`.
 #' @export
@@ -77,8 +79,10 @@ RunCellphoneDB <- function(
   output_path = NULL,
   output_suffix = NULL,
   keep_output = FALSE,
+  backend = c("cpp", "r"),
   verbose = TRUE
 ) {
+  backend <- match.arg(backend)
   PrepareEnv(modules = "cellphonedb")
   check_python(c("cellphonedb==5.0.1", "scanpy"), verbose = verbose)
 
@@ -166,6 +170,7 @@ RunCellphoneDB <- function(
     layer = layer,
     method = method,
     separator = separator,
+    backend = backend,
     converted_to_human = isTRUE(convert_to_human) && species != "Homo_sapiens"
   )
 
@@ -181,7 +186,8 @@ RunCellphoneDB <- function(
   srt <- ccc_update_unified_bundle(
     srt = srt,
     method = "CellphoneDB",
-    bundle = bundle
+    bundle = bundle,
+    backend = backend
   )
 
   log_message(
@@ -264,8 +270,10 @@ standardize_cellphonedb_result <- function(
   layer,
   method,
   separator = "|",
+  backend = c("cpp", "r"),
   converted_to_human = FALSE
 ) {
+  backend <- match.arg(backend)
   results <- res[["results"]] %||% res
   tables <- lapply(results, function(x) {
     if (is.data.frame(x)) {
@@ -278,7 +286,7 @@ standardize_cellphonedb_result <- function(
   })
 
   long_table <- cpdb_tables_to_long(tables = tables, separator = separator)
-  pair_table <- aggregate_ccc_long(long_table)
+  pair_table <- aggregate_ccc_long(long_table, backend = backend)
 
   list(
     method = "CellphoneDB",
@@ -292,6 +300,7 @@ standardize_cellphonedb_result <- function(
       layer = layer,
       method = method,
       separator = separator,
+      backend = backend,
       converted_to_human = converted_to_human
     ),
     output_path = res[["output_path"]] %||% NULL,
@@ -387,7 +396,8 @@ cpdb_tables_to_long <- function(tables, separator = "|") {
   out
 }
 
-aggregate_ccc_long <- function(df) {
+aggregate_ccc_long <- function(df, backend = c("cpp", "r")) {
+  backend <- match.arg(backend)
   if (is.null(df) || nrow(df) == 0L) {
     return(data.frame())
   }
@@ -404,12 +414,6 @@ aggregate_ccc_long <- function(df) {
     return(data.frame())
   }
 
-  pair_key <- paste(
-    df$sender,
-    df$receiver,
-    sep = "
-"
-  )
   score <- df[[score_col]]
   score[is.na(score)] <- 0
   significant <- if ("significant" %in% colnames(df)) {
@@ -422,6 +426,34 @@ aggregate_ccc_long <- function(df) {
   }
   significant[!is.finite(significant)] <- 0
 
+  if (identical(backend, "cpp")) {
+    sender_chr <- as.character(df$sender)
+    receiver_chr <- as.character(df$receiver)
+    if (
+      length(sender_chr) != length(receiver_chr) ||
+        length(sender_chr) != length(score) ||
+        length(sender_chr) != length(significant) ||
+        any(!is.na(sender_chr) & grepl("\n", sender_chr, fixed = TRUE)) ||
+        any(!is.na(receiver_chr) & grepl("\n", receiver_chr, fixed = TRUE)) ||
+        any(!is.na(sender_chr) & !nzchar(sender_chr) & !is.na(receiver_chr) & !nzchar(receiver_chr))
+    ) {
+      backend <- "r"
+    } else {
+      return(ccc_aggregate_long_cpp(
+        sender = sender_chr,
+        receiver = receiver_chr,
+        score = suppressWarnings(as.numeric(score)),
+        significant = suppressWarnings(as.numeric(significant))
+      ))
+    }
+  }
+
+  pair_key <- paste(
+    df$sender,
+    df$receiver,
+    sep = "
+"
+  )
   sum_vec <- tapply(score, pair_key, sum, na.rm = TRUE)
   mean_vec <- tapply(score, pair_key, mean, na.rm = TRUE)
   max_vec <- tapply(score, pair_key, max, na.rm = TRUE)

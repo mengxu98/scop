@@ -12,6 +12,7 @@ RunLIANA(
   assay = NULL,
   min_cells = 5,
   return_all = FALSE,
+  backend = c("cpp", "r"),
   verbose = TRUE,
   ...
 )
@@ -31,6 +32,9 @@ RunLIANA(
 \item{min_cells}{Minimum cells per identity retained by LIANA.}
 
 \item{return_all}{Whether LIANA should return all possible interactions.}
+
+\item{backend}{Backend used for scop post-processing and unified CCC table
+aggregation. Upstream LIANA inference is unchanged.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
