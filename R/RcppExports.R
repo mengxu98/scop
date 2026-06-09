@@ -13,6 +13,10 @@ bayesprism_gibbs_final_cpp <- function(mixture, phi, gibbs_idx, alpha = 1.0, see
     .Call(`_scop_bayesprism_gibbs_final_cpp`, mixture, phi, gibbs_idx, alpha, seed, n_threads)
 }
 
+ccc_aggregate_long_cpp <- function(sender, receiver, score, significant) {
+    .Call(`_scop_ccc_aggregate_long_cpp`, sender, receiver, score, significant)
+}
+
 cibersort_cpp <- function(signature, mixture, perm = 0L, QN = TRUE, absolute = FALSE, n_threads = 1L, seed = 123L, verbose = FALSE) {
     .Call(`_scop_cibersort_cpp`, signature, mixture, perm, QN, absolute, n_threads, seed, verbose)
 }
@@ -25,20 +29,8 @@ cytospace_assign <- function(sc_expr, st_expr, spot_capacities, seed = 1L, upstr
     .Call(`_scop_cytospace_assign`, sc_expr, st_expr, spot_capacities, seed, upstream_tie_break, verbose)
 }
 
-cytotrace2_ensemble_predict <- function(rank_data, log2_data, parameter_dict, cores = 1L) {
-    .Call(`_scop_cytotrace2_ensemble_predict`, rank_data, log2_data, parameter_dict, cores)
-}
-
-cytotrace2_diffusion_smooth <- function(log2_data, raw_scores, smooth_groups) {
-    .Call(`_scop_cytotrace2_diffusion_smooth`, log2_data, raw_scores, smooth_groups)
-}
-
-cytotrace2_bin_data <- function(smoothed_scores, categories, category_labels) {
-    .Call(`_scop_cytotrace2_bin_data`, smoothed_scores, categories, category_labels)
-}
-
-cytotrace2_knn_smooth <- function(pca_coords, preKNN_scores, preKNN_potency, cores = 1L, seed = 14L) {
-    .Call(`_scop_cytotrace2_knn_smooth`, pca_coords, preKNN_scores, preKNN_potency, cores, seed)
+cytotrace2_preprocess_numeric <- function(expression_mapped) {
+    .Call(`_scop_cytotrace2_preprocess_numeric`, expression_mapped)
 }
 
 cytotrace2_main <- function(rank_data, log2_data, parameter_dict, smooth_groups, cores, seed, pca_coords) {
@@ -320,3 +312,4 @@ scissor_binomial_net_fit_cpp <- function(x, y, omega, alpha, lambda = NULL, nlam
 spatial_gradient_screening_cpp <- function(expr, coords, reference_spots, trajectory, variables, mode, n_bins = 50L, n_random = 0L, seed = 123L, min_spots = 3L) {
     .Call(`_scop_spatial_gradient_screening_cpp`, expr, coords, reference_spots, trajectory, variables, mode, n_bins, n_random, seed, min_spots)
 }
+

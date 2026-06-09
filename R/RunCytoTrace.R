@@ -3,7 +3,8 @@
 #' @description
 #' Predicts cellular developmental potential from single-cell RNA-seq data
 #' using the CytoTRACE 2 algorithm (Kang et al., 2025).
-#' This is a native scop implementation with C++ acceleration.
+#' By default, this function calls the official `CytoTRACE2` R package. Set
+#' `backend = "cpp"` to use the native `scop` R/C++ implementation.
 #'
 #' The algorithm consists of five stages:
 #' \enumerate{
@@ -40,11 +41,15 @@
 #' Default is `1000`.
 #' @param cores Number of cores for parallel processing.
 #' Default is `1`.
+#' @param backend Backend used to run CytoTRACE2. `"r"` calls the official
+#' `CytoTRACE2::cytotrace2()` implementation and is the default. `"cpp"` uses
+#' the native `scop` R/C++ backend.
 #' @param seed Random seed for reproducibility. Default is `14`.
 #' @param data_dir Path to the directory containing CytoTRACE2 model data files.
-#' If `NULL`, uses data prepared by `PrepareDB()`, the user data cache, or
-#' auto-downloads from the datasets repository. Default is `NULL`.
-#' @param ... Additional arguments (reserved for future use).
+#' Used only by `backend = "cpp"`. If `NULL`, uses model data prepared by
+#' `PrepareDB(db = "CytoTRACE2")`. Default is `NULL`.
+#' @param ... Additional arguments passed to the official
+#' `CytoTRACE2::cytotrace2()` call when `backend = "r"`.
 #'
 #' @rdname RunCytoTRACE
 #' @export
@@ -110,6 +115,7 @@ RunCytoTRACE.Seurat <- function(
   batch_size = 10000,
   smooth_batch_size = 1000,
   cores = 1,
+  backend = c("r", "cpp"),
   seed = 14,
   data_dir = NULL,
   verbose = TRUE,
@@ -122,7 +128,9 @@ RunCytoTRACE.Seurat <- function(
   )
 
   layer <- match.arg(layer)
+  backend <- match.arg(backend)
   species <- match.arg(species)
+  cores <- max(1L, as.integer(cores))
   if (species == "Mus_musculus") {
     species <- "mouse"
   }
@@ -138,26 +146,69 @@ RunCytoTRACE.Seurat <- function(
     verbose = verbose
   )
 
-  expression <- SeuratObject::GetAssayData(
-    object = object,
-    assay = assay,
-    layer = layer
-  )
+  if (identical(backend, "r")) {
+    check_r("digitalcytometry/cytotrace2/cytotrace2_r", verbose = FALSE)
+    if (!is.null(data_dir)) {
+      log_message(
+        "{.arg data_dir} is ignored by {.arg backend = 'r'} because the official {.pkg CytoTRACE2} package uses its installed model data.",
+        message_type = "warning",
+        verbose = verbose
+      )
+    }
 
-  result_df <- run_cytotrace2_impl(
-    expression = expression,
-    species = species,
-    batch_size = batch_size,
-    smooth_batch_size = smooth_batch_size,
-    cores = cores,
-    seed = seed,
-    data_dir = data_dir,
-    verbose = verbose
-  )
+    cytotrace2_fun <- get_namespace_fun("CytoTRACE2", "cytotrace2")
+    args <- utils::modifyList(
+      list(
+        input = object,
+        species = species,
+        is_seurat = identical(assay, "RNA"),
+        slot_type = layer,
+        batch_size = batch_size,
+        smooth_batch_size = smooth_batch_size,
+        ncores = cores,
+        seed = seed
+      ),
+      list(...)
+    )
+    if (!identical(assay, "RNA")) {
+      args$input <- SeuratObject::GetAssayData(
+        object = object,
+        assay = assay,
+        layer = layer
+      )
+      args$is_seurat <- FALSE
+    }
+    args <- args[names(args) %in% names(formals(cytotrace2_fun))]
+    result <- do.call(cytotrace2_fun, args)
+    if (inherits(result, "Seurat")) {
+      object <- result
+    } else {
+      result <- result[colnames(object), , drop = FALSE]
+      object <- Seurat::AddMetaData(object = object, metadata = result)
+    }
+  } else {
+    expression <- SeuratObject::GetAssayData(
+      object = object,
+      assay = assay,
+      layer = layer
+    )
 
-  result_df <- result_df[colnames(object), , drop = FALSE]
+    result_df <- RunCytoTRACE.default(
+      object = expression,
+      species = species,
+      batch_size = batch_size,
+      smooth_batch_size = smooth_batch_size,
+      cores = cores,
+      backend = "cpp",
+      seed = seed,
+      data_dir = data_dir,
+      verbose = verbose
+    )
 
-  object <- Seurat::AddMetaData(object = object, metadata = result_df)
+    result_df <- result_df[colnames(object), , drop = FALSE]
+
+    object <- Seurat::AddMetaData(object = object, metadata = result_df)
+  }
 
   object <- Seurat::LogSeuratCommand(object = object)
 
@@ -179,18 +230,20 @@ RunCytoTRACE.default <- function(
   batch_size = 10000,
   smooth_batch_size = 1000,
   cores = 1,
+  backend = c("r", "cpp"),
   seed = 14,
   data_dir = NULL,
   verbose = TRUE,
   ...
 ) {
+  species <- match.arg(species)
+  backend <- match.arg(backend)
+  cores <- max(1L, as.integer(cores))
   log_message(
-    "Running {.pkg CytoTRACE2} (native scop implementation)",
+    "Running {.pkg CytoTRACE2} with {.arg backend = {backend}}",
     message_type = "running",
     verbose = verbose
   )
-
-  species <- match.arg(species)
   if (species == "Mus_musculus") {
     species <- "mouse"
   }
@@ -198,11 +251,7 @@ RunCytoTRACE.default <- function(
     species <- "human"
   }
 
-  if (inherits(object, c("matrix", "Matrix"))) {
-    object <- as.data.frame(object)
-  }
-
-  if (!is.data.frame(object)) {
+  if (!inherits(object, c("matrix", "Matrix", "data.frame"))) {
     log_message(
       "{.arg object} must be a {.cls Seurat}, matrix, or data.frame",
       message_type = "error"
@@ -222,16 +271,192 @@ RunCytoTRACE.default <- function(
     )
   }
 
-  result_df <- run_cytotrace2_impl(
-    expression = object,
-    species = species,
-    batch_size = batch_size,
-    smooth_batch_size = smooth_batch_size,
-    cores = cores,
-    seed = seed,
-    data_dir = data_dir,
-    verbose = verbose
-  )
+  if (identical(backend, "r")) {
+    check_r("digitalcytometry/cytotrace2/cytotrace2_r", verbose = FALSE)
+    if (!is.null(data_dir)) {
+      log_message(
+        "{.arg data_dir} is ignored by {.arg backend = 'r'} because the official {.pkg CytoTRACE2} package uses its installed model data.",
+        message_type = "warning",
+        verbose = verbose
+      )
+    }
+    cytotrace2_fun <- get_namespace_fun("CytoTRACE2", "cytotrace2")
+    args <- utils::modifyList(
+      list(
+        input = object,
+        species = species,
+        is_seurat = FALSE,
+        slot_type = "counts",
+        batch_size = batch_size,
+        smooth_batch_size = smooth_batch_size,
+        ncores = cores,
+        seed = seed
+      ),
+      list(...)
+    )
+    args <- args[names(args) %in% names(formals(cytotrace2_fun))]
+    result_df <- do.call(cytotrace2_fun, args)
+  } else {
+    set.seed(seed)
+
+    expression <- object
+    model_data <- load_cytotrace2_data(data_dir, verbose)
+
+    if (any(duplicated(rownames(expression)))) {
+      log_message("Gene names must be unique", message_type = "error")
+    }
+    if (any(duplicated(colnames(expression)))) {
+      log_message("Cell names must be unique", message_type = "error")
+    }
+    if (max(expression, na.rm = TRUE) < 20) {
+      log_message(
+        "Data may already be log-transformed (max < 20). Please provide raw counts or CPM/TPM normalized counts.",
+        message_type = "warning",
+        verbose = verbose
+      )
+    }
+
+    log_message(
+      "Dataset contains {.val {nrow(expression)}} genes and {.val {ncol(expression)}} cells.",
+      message_type = "info",
+      verbose = verbose
+    )
+
+    init_order <- colnames(expression)
+
+    if (is.null(batch_size)) {
+      batch_size <- ncol(expression)
+    }
+    if (batch_size > ncol(expression)) {
+      batch_size <- ncol(expression)
+    }
+
+    chunk <- ceiling(ncol(expression) / batch_size)
+    if (chunk > 1) {
+      subsamples <- split(
+        seq_len(ncol(expression)),
+        sample(factor(seq_len(ncol(expression)) %% chunk))
+      )
+    } else {
+      subsamples <- list(seq_len(ncol(expression)))
+    }
+    names(subsamples) <- paste0(
+      "subsample ",
+      seq_along(subsamples),
+      "/",
+      length(subsamples)
+    )
+
+    log_message(
+      "Running on {.val {chunk}} subsample(s)",
+      message_type = "info",
+      verbose = verbose
+    )
+
+    outer_cores <- min(cores, length(subsamples))
+    inner_cores <- max(1L, floor(cores / outer_cores))
+
+    process_subsample <- function(subsample) {
+      dt <- expression[, subsample, drop = FALSE]
+
+      preprocessed <- cytotrace2_preprocess(
+        data = dt,
+        species = species,
+        features = model_data$features,
+        ortho_dict = model_data$ortho_dict,
+        alias_dict = model_data$alias_dict,
+        mouse_alias_dict = model_data$mouse_alias_dict,
+        verbose = verbose
+      )
+
+      ranked_data <- preprocessed$ranked_data
+      log2_data <- preprocessed$log2_data
+
+      smooth_groups <- cytotrace2_smooth_groups(
+        n_cells = nrow(log2_data),
+        smooth_batch_size = smooth_batch_size,
+        seed = seed
+      )
+
+      pca_coords <- matrix(0, nrow = nrow(log2_data), ncol = 0)
+      if (nrow(log2_data) > 100 && stats::sd(as.vector(log2_data)) != 0) {
+        log2_scaled <- scale_rows_custom(as.matrix(log2_data))
+        n_pcs <- min(30, nrow(log2_data) - 1)
+        svd_res <- RSpectra::svds(
+          log2_scaled,
+          k = n_pcs,
+          opts = list(center = TRUE, scale = FALSE)
+        )
+        pca_coords <- svd_res$u %*% diag(svd_res$d)
+        rownames(pca_coords) <- rownames(log2_data)
+      }
+
+      result <- cytotrace2_main(
+        rank_data = as.matrix(ranked_data),
+        log2_data = as.matrix(log2_data),
+        parameter_dict = model_data$parameter_dict,
+        smooth_groups = smooth_groups,
+        cores = inner_cores,
+        seed = seed,
+        pca_coords = pca_coords
+      )
+
+      result$count_cells_few_genes <- preprocessed$count_cells_few_genes
+      result$cell_names <- preprocessed$cell_names
+      result
+    }
+
+    results <- thisutils::parallelize_fun(
+      x = subsamples,
+      fun = process_subsample,
+      cores = outer_cores,
+      verbose = verbose
+    )
+
+    all_cell_names <- unlist(lapply(results, `[[`, "cell_names"))
+    all_scores <- do.call(c, lapply(results, `[[`, "CytoTRACE2_Score"))
+    all_potency <- do.call(c, lapply(results, `[[`, "CytoTRACE2_Potency"))
+    all_preknn_score <- do.call(
+      c,
+      lapply(results, `[[`, "preKNN_CytoTRACE2_Score")
+    )
+    all_preknn_potency <- do.call(
+      c,
+      lapply(results, `[[`, "preKNN_CytoTRACE2_Potency")
+    )
+
+    all_count_cells_few_genes <- sum(unlist(lapply(
+      results,
+      `[[`,
+      "count_cells_few_genes"
+    )))
+
+    frac_cells_few_genes <- all_count_cells_few_genes / ncol(expression)
+    if (frac_cells_few_genes >= 0.2) {
+      log_message(
+        sprintf(
+          "%.2f%% of input cells express fewer than %d genes. For best results, a minimum gene count of 500-1000 is recommended.",
+          frac_cells_few_genes * 100,
+          500
+        ),
+        message_type = "warning",
+        verbose = verbose
+      )
+    }
+
+    result_df <- data.frame(
+      CytoTRACE2_Score = all_scores,
+      CytoTRACE2_Potency = all_potency,
+      CytoTRACE2_Relative = (all_scores - min(all_scores)) /
+        (max(all_scores) - min(all_scores)),
+      preKNN_CytoTRACE2_Score = all_preknn_score,
+      preKNN_CytoTRACE2_Potency = all_preknn_potency,
+      row.names = all_cell_names,
+      stringsAsFactors = FALSE
+    )
+
+    result_df <- result_df[init_order, , drop = FALSE]
+  }
 
   log_message(
     "{.pkg CytoTRACE2} computed successfully",
@@ -242,190 +467,34 @@ RunCytoTRACE.default <- function(
   return(result_df)
 }
 
-run_cytotrace2_impl <- function(
-  expression,
-  species,
-  batch_size,
-  smooth_batch_size,
-  cores,
-  seed,
-  data_dir,
-  verbose
-) {
-  set.seed(seed)
-
-  model_data <- load_cytotrace2_data(data_dir, verbose)
-
-  if (any(duplicated(rownames(expression)))) {
-    log_message("Gene names must be unique", message_type = "error")
-  }
-  if (any(duplicated(colnames(expression)))) {
-    log_message("Cell names must be unique", message_type = "error")
-  }
-  if (max(expression, na.rm = TRUE) < 20) {
-    log_message(
-      "Data may already be log-transformed (max < 20). Please provide raw counts or CPM/TPM normalized counts.",
-      message_type = "warning",
-      verbose = verbose
-    )
-  }
-
-  log_message(
-    "Dataset contains {.val {nrow(expression)}} genes and {.val {ncol(expression)}} cells.",
-    message_type = "info",
-    verbose = verbose
-  )
-
-  init_order <- colnames(expression)
-
-  if (is.null(batch_size)) {
-    batch_size <- ncol(expression)
-  }
-  if (batch_size > ncol(expression)) {
-    batch_size <- ncol(expression)
-  }
-
-  chunk <- ceiling(ncol(expression) / batch_size)
-  if (chunk > 1) {
-    subsamples <- split(
-      seq_len(ncol(expression)),
-      sample(factor(seq_len(ncol(expression)) %% chunk))
-    )
-  } else {
-    subsamples <- list(seq_len(ncol(expression)))
-  }
-
-  log_message(
-    "Running on {.val {chunk}} subsample(s)",
-    message_type = "info",
-    verbose = verbose
-  )
-
-  results <- lapply(subsamples, function(subsample) {
-    dt <- expression[, subsample, drop = FALSE]
-
-    log_message(
-      "Preprocessing subsample ({.val {ncol(dt)}} cells)",
-      message_type = "info",
-      verbose = verbose
-    )
-    preprocessed <- cytotrace2_preprocess(
-      data = dt,
-      species = species,
-      features = model_data$features,
-      ortho_dict = model_data$ortho_dict,
-      alias_dict = model_data$alias_dict,
-      mouse_alias_dict = model_data$mouse_alias_dict,
-      verbose = verbose
-    )
-
-    ranked_data <- preprocessed$ranked_data
-    log2_data <- preprocessed$log2_data
-    cell_names <- preprocessed$cell_names
-    count_cells_few_genes <- preprocessed$count_cells_few_genes
-
-    log_message(
-      "Running ensemble prediction and postprocessing",
-      message_type = "info",
-      verbose = verbose
-    )
-
-    smooth_groups <- cytotrace2_smooth_groups(
-      n_cells = nrow(log2_data),
-      smooth_batch_size = smooth_batch_size,
-      seed = seed
-    )
-
-    pca_coords <- matrix(0, nrow = nrow(log2_data), ncol = 0)
-    if (nrow(log2_data) > 100 && stats::sd(as.vector(log2_data)) != 0) {
-      log_message(
-        "Computing PCA for kNN smoothing",
-        message_type = "info",
-        verbose = verbose
-      )
-      log2_scaled <- scale_rows_custom(as.matrix(log2_data))
-      n_pcs <- min(30, nrow(log2_data) - 1)
-      svd_res <- RSpectra::svds(
-        log2_scaled,
-        k = n_pcs,
-        opts = list(center = TRUE, scale = FALSE)
-      )
-      pca_coords <- svd_res$u %*% diag(svd_res$d)
-      rownames(pca_coords) <- rownames(log2_data)
-    }
-
-    result <- cytotrace2_main(
-      rank_data = as.matrix(ranked_data),
-      log2_data = as.matrix(log2_data),
-      parameter_dict = model_data$parameter_dict,
-      smooth_groups = smooth_groups,
-      cores = cores,
-      seed = seed,
-      pca_coords = pca_coords
-    )
-
-    result$count_cells_few_genes <- count_cells_few_genes
-    result$cell_names <- cell_names
-    return(result)
-  })
-
-  all_cell_names <- unlist(lapply(results, `[[`, "cell_names"))
-  all_scores <- do.call(c, lapply(results, `[[`, "CytoTRACE2_Score"))
-  all_potency <- do.call(c, lapply(results, `[[`, "CytoTRACE2_Potency"))
-  all_preknn_score <- do.call(
-    c,
-    lapply(results, `[[`, "preKNN_CytoTRACE2_Score")
-  )
-  all_preknn_potency <- do.call(
-    c,
-    lapply(results, `[[`, "preKNN_CytoTRACE2_Potency")
-  )
-
-  all_count_cells_few_genes <- sum(unlist(lapply(
-    results,
-    `[[`,
-    "count_cells_few_genes"
-  )))
-
-  frac_cells_few_genes <- all_count_cells_few_genes / ncol(expression)
-  if (frac_cells_few_genes >= 0.2) {
-    log_message(
-      sprintf(
-        "%.2f%% of input cells express fewer than %d genes. For best results, a minimum gene count of 500-1000 is recommended.",
-        frac_cells_few_genes * 100,
-        500
-      ),
-      message_type = "warning",
-      verbose = verbose
-    )
-  }
-
-  out <- data.frame(
-    CytoTRACE2_Score = all_scores,
-    CytoTRACE2_Potency = all_potency,
-    CytoTRACE2_Relative = (all_scores - min(all_scores)) /
-      (max(all_scores) - min(all_scores)),
-    preKNN_CytoTRACE2_Score = all_preknn_score,
-    preKNN_CytoTRACE2_Potency = all_preknn_potency,
-    row.names = all_cell_names,
-    stringsAsFactors = FALSE
-  )
-
-  out <- out[init_order, , drop = FALSE]
-
-  return(out)
-}
-
-cytotrace2_files <- c(
-  "model_parameters.rds",
-  "features_model_training_17.csv",
-  "mt_dict_human_to_mouse.csv",
-  "mt_human_alias.csv",
-  "mt_mouse_alias.csv"
-)
+.cytotrace2_data_cache <- new.env(parent = emptyenv())
 
 load_cytotrace2_data <- function(data_dir, verbose) {
-  data_dir <- resolve_cytotrace2_dir(data_dir, verbose)
+  if (!is.null(data_dir)) {
+    if (!dir.exists(data_dir)) {
+      log_message(
+        "Directory {.path {data_dir}} does not exist",
+        message_type = "error"
+      )
+    }
+  } else {
+    cyto_cache <- PrepareDB(db = "CytoTRACE2", verbose = verbose)[["CytoTRACE2"]]
+    if (
+      is.null(cyto_cache) ||
+        is.null(cyto_cache$data_dir) ||
+        !dir.exists(cyto_cache$data_dir)
+    ) {
+      log_message(
+        "Prepared CytoTRACE2 model data were not found. Run {.code PrepareDB(db = 'CytoTRACE2')} first or provide {.arg data_dir}.",
+        message_type = "error"
+      )
+    }
+    data_dir <- cyto_cache$data_dir
+  }
+  cache_key <- normalizePath(data_dir, mustWork = FALSE)
+  if (exists(cache_key, envir = .cytotrace2_data_cache, inherits = FALSE)) {
+    return(get(cache_key, envir = .cytotrace2_data_cache, inherits = FALSE))
+  }
 
   log_message(
     "Loading model from {.path {data_dir}}",
@@ -433,10 +502,14 @@ load_cytotrace2_data <- function(data_dir, verbose) {
     verbose = verbose
   )
 
-  params_file <- file.path(data_dir, "model_parameters.rds")
-  if (!file.exists(params_file)) {
+  params_candidates <- file.path(
+    data_dir,
+    c("parameter_dict_19.rds", "model_parameters.rds")
+  )
+  params_file <- params_candidates[file.exists(params_candidates)][1]
+  if (is.na(params_file)) {
     log_message(
-      "Model parameter file not found: {.path {params_file}}",
+      "Model parameter file not found in {.path {data_dir}}",
       message_type = "error"
     )
   }
@@ -456,149 +529,41 @@ load_cytotrace2_data <- function(data_dir, verbose) {
   alias_dict <- NULL
   mouse_alias_dict <- NULL
   if (file.exists(ortho_file)) {
-    ortho_dict <- utils::read.csv(
+    ortho_dict <- suppressWarnings(utils::read.csv(
       ortho_file,
       header = TRUE,
       stringsAsFactors = FALSE,
       check.names = FALSE
-    )
+    ))
   }
 
   alias_file <- file.path(data_dir, "mt_human_alias.csv")
   if (file.exists(alias_file)) {
-    alias_dict <- read.csv(alias_file, header = TRUE, check.names = FALSE)
+    alias_dict <- suppressWarnings(read.csv(
+      alias_file,
+      header = TRUE,
+      check.names = FALSE
+    ))
   }
 
   mouse_alias_file <- file.path(data_dir, "mt_mouse_alias.csv")
   if (file.exists(mouse_alias_file)) {
-    mouse_alias_dict <- read.csv(
+    mouse_alias_dict <- suppressWarnings(read.csv(
       mouse_alias_file,
       header = TRUE,
       check.names = TRUE
-    )
+    ))
   }
 
-  list(
+  model_data <- list(
     parameter_dict = parameter_dict,
     features = features,
     ortho_dict = ortho_dict,
     alias_dict = alias_dict,
     mouse_alias_dict = mouse_alias_dict
   )
-}
-
-resolve_cytotrace2_dir <- function(data_dir, verbose) {
-  if (!is.null(data_dir)) {
-    if (!dir.exists(data_dir)) {
-      log_message(
-        "Directory {.path {data_dir}} does not exist",
-        message_type = "error"
-      )
-    }
-    return(data_dir)
-  }
-
-  cache_dir <- file.path(
-    tools::R_user_dir("scop", "data"),
-    "CytoTRACE2"
-  )
-
-  if (
-    dir.exists(cache_dir) &&
-      all(file.exists(file.path(cache_dir, cytotrace2_files)))
-  ) {
-    return(cache_dir)
-  }
-
-  cyto_cache_key <- list("1.1.0", "CytoTRACE2", "CytoTRACE2")
-  if (requireNamespace("R.cache", quietly = TRUE)) {
-    cyto_cached <- R.cache::loadCache(key = cyto_cache_key)
-    cyto_cached_dir <- if (!is.null(cyto_cached$data_dir)) {
-      normalizePath(cyto_cached$data_dir, mustWork = FALSE)
-    } else {
-      NULL
-    }
-    cache_dir_norm <- normalizePath(cache_dir, mustWork = FALSE)
-    if (
-      !is.null(cyto_cached) &&
-        identical(cyto_cached_dir, cache_dir_norm) &&
-        dir.exists(cyto_cached_dir) &&
-        all(file.exists(file.path(
-          cyto_cached_dir,
-          cytotrace2_files
-        )))
-    ) {
-      log_message(
-        "Using CytoTRACE2 data from datasets cache: {.path {cyto_cached_dir}}",
-        message_type = "info",
-        verbose = verbose
-      )
-      return(cyto_cached_dir)
-    } else if (
-      !is.null(cyto_cached_dir) &&
-        dir.exists(cyto_cached_dir)
-    ) {
-      log_message(
-        "Ignoring legacy CytoTRACE2 cache outside the datasets cache: {.path {cyto_cached_dir}}",
-        message_type = "info",
-        verbose = verbose
-      )
-    }
-  }
-
-  log_message(
-    "Downloading CytoTRACE2 model data from GitHub repository...",
-    message_type = "info",
-    verbose = verbose
-  )
-
-  dir.create(cache_dir, showWarnings = FALSE, recursive = TRUE)
-
-  old_timeout <- getOption("timeout")
-  options(timeout = max(600, old_timeout))
-  on.exit(options(timeout = old_timeout), add = TRUE)
-
-  for (fname in cytotrace2_files) {
-    url <- paste0(
-      "https://raw.githubusercontent.com/mengxu98/datasets/main/CytoTRACE2",
-      "/",
-      fname
-    )
-    dest <- file.path(cache_dir, fname)
-    if (!file.exists(dest)) {
-      log_message(
-        "  Downloading {.path {fname}} ...",
-        message_type = "info",
-        verbose = verbose
-      )
-      utils::download.file(
-        url = url,
-        destfile = dest,
-        mode = "wb",
-        quiet = !verbose
-      )
-    }
-  }
-
-  if (requireNamespace("R.cache", quietly = TRUE)) {
-    cyto_cache <- list(
-      data_dir = cache_dir,
-      files = cytotrace2_files,
-      version = "1.1.0"
-    )
-    R.cache::saveCache(
-      cyto_cache,
-      key = cyto_cache_key,
-      comment = paste0(
-        "1.1.0",
-        " nterm:",
-        length(cytotrace2_files),
-        "|CytoTRACE2-CytoTRACE2"
-      )
-    )
-  }
-
-  return(cache_dir)
+  assign(cache_key, model_data, envir = .cytotrace2_data_cache)
+  model_data
 }
 
 cytotrace2_smooth_groups <- function(n_cells, smooth_batch_size, seed) {
@@ -655,7 +620,7 @@ cytotrace2_preprocess <- function(
   verbose
 ) {
   gene_names <- rownames(data)
-  expression <- as.data.frame(data)
+  expression <- as.matrix(data)
   cell_names <- colnames(expression)
 
   if (species == "human") {
@@ -738,11 +703,10 @@ cytotrace2_preprocess <- function(
     )
   }
 
-  expression_mapped <- expression
-  rownames(expression_mapped) <- mapping
+  rownames(expression) <- mapping
 
   common_genes <- intersect(mapping, features)
-  expression_mapped <- expression_mapped[common_genes, , drop = FALSE]
+  expression_mapped <- expression[common_genes, , drop = FALSE]
 
   missing_features <- setdiff(features, common_genes)
   if (length(missing_features) > 0) {
@@ -758,21 +722,11 @@ cytotrace2_preprocess <- function(
 
   expression_mapped <- expression_mapped[features, , drop = FALSE]
 
-  num_expressed_per_cell <- colSums(expression_mapped > 0)
-  count_cells_few_genes <- sum(num_expressed_per_cell < 500)
-
-  expr_mat <- as.matrix(expression_mapped)
-  check_r("Rfast", verbose = FALSE)
-  ranked_data <- t(Rfast::colRanks(
-    expr_mat,
-    descending = TRUE,
-    method = "average"
-  ))
+  preprocessed_numeric <- cytotrace2_preprocess_numeric(expression_mapped)
+  ranked_data <- preprocessed_numeric$ranked_data
+  log2_data <- preprocessed_numeric$log2_data
   colnames(ranked_data) <- features
   rownames(ranked_data) <- cell_names
-
-  col_sums <- colSums(expr_mat)
-  log2_data <- log2((1e6 * t(expr_mat) / col_sums) + 1)
   colnames(log2_data) <- features
   rownames(log2_data) <- cell_names
 
@@ -780,6 +734,6 @@ cytotrace2_preprocess <- function(
     ranked_data = ranked_data,
     log2_data = log2_data,
     cell_names = cell_names,
-    count_cells_few_genes = count_cells_few_genes
+    count_cells_few_genes = preprocessed_numeric$count_cells_few_genes
   )
 }
