@@ -26,6 +26,7 @@ RunNichenetr(
   cutoff_visualization = 0.33,
   lfc_cutoff = 0.25,
   use_sender_agnostic_background = TRUE,
+  backend = c("cpp", "r"),
   verbose = TRUE
 )
 }
@@ -76,6 +77,9 @@ RunNichenetr(
 
 \item{use_sender_agnostic_background}{Whether to use all sender cell types when
 \code{sender = "all"}.}
+
+\item{backend}{Backend used for post-processing aggregation. Upstream
+NicheNet inference is unchanged.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
