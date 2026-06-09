@@ -9,6 +9,8 @@ make_scenic_plot_mock <- function(seed = 1) {
       paste0("Cell", seq_len(12))
     )
   ), sparse = TRUE)
+  counts[1, ] <- seq_len(ncol(counts))
+  counts[2, ] <- rev(seq_len(ncol(counts)))
   srt <- Seurat::CreateSeuratObject(counts = counts)
   srt$CellType <- rep(c("A", "B", "C"), each = 4)
 
@@ -78,6 +80,76 @@ test_that("SCENICPlot rss rank keeps requested labels by default", {
   expect_equal(
     sum(out$top_table[["group"]] == unique(out$top_table[["group"]])[[1]]),
     4
+  )
+})
+
+test_that("SCENICPlot activity correlation dumbbell returns plot and statistics", {
+  dat <- make_scenic_plot_mock(seed = 5)
+  dat$auc[1, ] <- seq_len(ncol(dat$auc))
+  dat$auc[2, ] <- rev(seq_len(ncol(dat$auc)))
+  dat$srt@tools$SCENIC <- list(scores_cells_by_regulon = t(dat$auc))
+  dat$srt$AFP_score <- as.numeric(dat$auc[1, ])
+  dat$srt$CYP_signature <- as.numeric(dat$auc[2, ])
+
+  out <- SCENICPlot(
+    dat$srt,
+    group.by = "CellType",
+    plot_type = "activity_cor_dumbbell",
+    features = rownames(dat$auc)[1:2],
+    cor.features = c("AFP_score", "CYP_signature"),
+    cor.feature.labels = c("AFP expression", "CYP signature"),
+    cor_label = FALSE,
+    p_cutoff = 0.05,
+    verbose = FALSE
+  )
+
+  expect_s3_class(out$plot, "ggplot")
+  expect_s3_class(out$plots[[1]], "ggplot")
+  expect_equal(nrow(out$plot_data), 4)
+  expect_setequal(
+    as.character(unique(out$plot_data[["target"]])),
+    c("AFP expression", "CYP signature")
+  )
+  expect_true(all(c(
+    "regulon", "TF", "target", "target_feature",
+    "target_source", "cor", "p_val", "significant"
+  ) %in% colnames(out$plot_data)))
+  expect_equal(
+    out$plot_data[["significant"]],
+    out$plot_data[["p_val"]] < 0.05
+  )
+})
+
+test_that("SCENICPlot activity correlation dumbbell resolves TF and gene targets", {
+  dat <- make_scenic_plot_mock(seed = 6)
+  rownames(dat$auc)[1:2] <- c("Jun(+)", "Jun(-)")
+  dat$auc[1, ] <- seq_len(ncol(dat$auc))
+  dat$auc[2, ] <- rev(seq_len(ncol(dat$auc)))
+  dat$srt@tools$SCENIC <- list(scores_cells_by_regulon = t(dat$auc))
+  dat$srt$AFP_score <- as.numeric(dat$auc[1, ])
+
+  out <- SCENICPlot(
+    dat$srt,
+    group.by = "CellType",
+    plot_type = "activity_cor_dumbbell",
+    features = "Jun",
+    cor.features = c("AFP_score", "Gene1"),
+    layer = "counts",
+    cor_label = FALSE,
+    p_cutoff = 0.2,
+    verbose = FALSE
+  )
+
+  expect_setequal(
+    as.character(unique(out$plot_data[["regulon"]])),
+    c("Jun(+)", "Jun(-)")
+  )
+  expect_equal(nrow(out$plot_data), 4)
+  expect_true("metadata" %in% out$plot_data[["target_source"]])
+  expect_true("assay:RNA" %in% out$plot_data[["target_source"]])
+  expect_equal(
+    out$plot_data[["significant"]],
+    out$plot_data[["p_val"]] < 0.2
   )
 })
 
