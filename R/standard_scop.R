@@ -890,7 +890,7 @@ standard_spatial_scop <- function(
   )
 
   cluster_col <- paste0(prefix, "clusters")
-  spatial_cluster_col <- if (identical(spatial_cluster_method, "Giotto")) {
+  spatial_cluster_col <- if (isTRUE(do_spatial_cluster) && identical(spatial_cluster_method, "Giotto")) {
     giotto_cluster_params[["cluster_colname"]] %||% "Giotto_cluster"
   } else {
     cluster_col

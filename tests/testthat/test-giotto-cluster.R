@@ -130,3 +130,23 @@ test_that("standard_spatial_scop dispatches to Giotto clustering", {
   expect_true("Giotto_cluster" %in% colnames(out@meta.data))
   expect_equal(out@tools[["standard_spatial_scop"]][["cluster_col"]], "Giotto_cluster")
 })
+
+test_that("standard_spatial_scop keeps ordinary cluster column when Giotto clustering is skipped", {
+  srt <- make_giotto_cluster_seurat()
+
+  out <- standard_scop(
+    srt,
+    workflow = "spatial",
+    assay = "RNA",
+    do_spot_qc = FALSE,
+    do_spatial_variable_features = FALSE,
+    do_spatial_cluster = FALSE,
+    spatial_cluster_method = "Giotto",
+    linear_reduction_dims = 3,
+    nonlinear_reduction_dims = 2,
+    verbose = FALSE
+  )
+  expect_false("Giotto_cluster" %in% colnames(out@meta.data))
+  expect_equal(out@tools[["standard_spatial_scop"]][["cluster_col"]], "Standardclusters")
+  expect_true("Standardclusters" %in% colnames(out@meta.data))
+})
