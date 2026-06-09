@@ -5058,6 +5058,7 @@ def RunSCENICGrn(
     if force or not Path(adj_output).exists():
         import pandas as pd
         from arboreto.algo import grnboost2, SGBM_KWARGS
+        from dask.distributed import Client, LocalCluster
 
         SGBM_KWARGS["n_estimators"] = int(n_rounds)
         SGBM_KWARGS["learning_rate"] = float(learning_rate)
@@ -5065,20 +5066,32 @@ def RunSCENICGrn(
         SGBM_KWARGS["max_features"] = float(max_features)
         SGBM_KWARGS["subsample"] = float(subsample)
         early_stop_window_length = int(early_stop_window_length)
+        cores = max(1, int(cores))
 
         data = pd.read_csv(expression_mtx, index_col=0)
         with open(regulators) as f:
             tf_names = [line.strip() for line in f if line.strip()]
 
-        network = grnboost2(
-            expression_data=data,
-            tf_names=tf_names,
-            client_or_address="local",
-            early_stop_window_length=early_stop_window_length,
-            seed=int(seed),
-            verbose=verbose,
+        cluster = LocalCluster(
+            n_workers=cores,
+            threads_per_worker=1,
+            processes=False,
+            dashboard_address=":0",
         )
-        network.to_csv(adj_output, sep="\t", index=False)
+        client = Client(cluster)
+        try:
+            network = grnboost2(
+                expression_data=data,
+                tf_names=tf_names,
+                client_or_address=client,
+                early_stop_window_length=early_stop_window_length,
+                seed=int(seed),
+                verbose=verbose,
+            )
+            network.to_csv(adj_output, sep="\t", index=False)
+        finally:
+            client.close()
+            cluster.close()
     else:
         log_message(
             "Reusing existing GRNBoost2 output",
