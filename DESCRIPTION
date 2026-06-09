@@ -80,7 +80,6 @@ Suggests:
     irlba,
     limma,
     linkET,
-    lmtest,
     MatrixGenerics,
     metR,
     miloR,
