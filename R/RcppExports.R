@@ -17,6 +17,10 @@ ccc_aggregate_long_cpp <- function(sender, receiver, score, significant) {
     .Call(`_scop_ccc_aggregate_long_cpp`, sender, receiver, score, significant)
 }
 
+ccc_aggregate_liana_table_cpp <- function(source, target, ligand_complex, receptor_complex, sample, score, pvalue, classification, method, liana_method, resource, has_sample) {
+    .Call(`_scop_ccc_aggregate_liana_table_cpp`, source, target, ligand_complex, receptor_complex, sample, score, pvalue, classification, method, liana_method, resource, has_sample)
+}
+
 cibersort_cpp <- function(signature, mixture, perm = 0L, QN = TRUE, absolute = FALSE, n_threads = 1L, seed = 123L, verbose = FALSE) {
     .Call(`_scop_cibersort_cpp`, signature, mixture, perm, QN, absolute, n_threads, seed, verbose)
 }
