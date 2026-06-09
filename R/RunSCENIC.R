@@ -715,6 +715,10 @@ scenic_cpp <- function(
     paste0(prefix, "_regulon_activity_score_cpp.rds")
   )
   adj_file <- file.path(work_dir, paste0(prefix, "_adj_cpp.tsv"))
+  grn_input_params_file <- file.path(
+    work_dir,
+    paste0(prefix, "_grn_input_params_cpp.rds")
+  )
   regulon_file <- file.path(work_dir, paste0(prefix, "_regulon_list_cpp.rds"))
   regulon_params_file <- file.path(work_dir, paste0(prefix, "_regulon_params_cpp.rds"))
   regulators_file <- file.path(work_dir, paste0(prefix, "_regulators.txt"))
@@ -820,12 +824,37 @@ scenic_cpp <- function(
   }
   regulators_file <- scenic_write_gene_list(regulators, regulators_file)
 
+  grn_input_params <- list(
+    regulators = regulators,
+    targets = targets,
+    genes = rownames(grn_matrix),
+    n_rounds = as.integer(max(1L, n_rounds)),
+    learning_rate = as.numeric(learning_rate),
+    max_depth = as.integer(max(1L, max_depth)),
+    max_features = as.numeric(max_features),
+    subsample = as.numeric(subsample),
+    early_stop_window_length = as.integer(max(0L, early_stop_window_length)),
+    seed = as.integer(seed %||% 1234L)
+  )
+  grn_inputs_changed <- scenic_grn_inputs_changed(
+    grn_input_params_file,
+    grn_input_params
+  )
+
   log_message(
     "Running SCENIC (grnboost2) on {.val {ncol(grn_matrix)}} cells with {.val {length(regulators)}} TFs",
     verbose = verbose
   )
 
-  grn_force <- isTRUE(force) || !file.exists(adj_file)
+  grn_force <- isTRUE(force) ||
+    !file.exists(adj_file) ||
+    isTRUE(grn_inputs_changed)
+  if (isTRUE(grn_inputs_changed) && file.exists(adj_file) && isFALSE(force)) {
+    log_message(
+      "Rebuilding C++ {.pkg SCENIC} GRNBoost2 adjacency because input genes or GRN parameters changed",
+      verbose = verbose
+    )
+  }
   if (grn_force) {
     adjacency <- scenic_run_grn_method(
       grn_matrix = Matrix::t(grn_matrix),
@@ -846,6 +875,7 @@ scenic_cpp <- function(
       force = TRUE,
       verbose = verbose
     )
+    saveRDS(grn_input_params, grn_input_params_file)
   } else {
     log_message(
       "Reusing existing GRN output: {.file {adj_file}}",
@@ -941,17 +971,7 @@ scenic_cpp <- function(
   }
   ras_mat <- ras_mat[colnames(srt), , drop = FALSE]
 
-  regulon_tbl <- do.call(
-    rbind,
-    lapply(names(regulon_list), function(tf) {
-      data.frame(
-        regulon = tf,
-        target = regulon_list[[tf]],
-        target_count = length(regulon_list[[tf]]),
-        stringsAsFactors = FALSE
-      )
-    })
-  )
+  regulon_tbl <- scenic_regulon_table(regulon_list)
 
   result <- list(
     scores = Matrix::t(Matrix::Matrix(as.matrix(ras_mat), sparse = TRUE)),
@@ -962,6 +982,7 @@ scenic_cpp <- function(
     files = list(
       regulators = regulators_file,
       adj = adj_file,
+      grn_input_params = grn_input_params_file,
       regulon_params = regulon_params_file,
       regulon_list = regulon_file,
       regulon_activity_score = ras_file
@@ -1657,12 +1678,14 @@ scenic_modules_from_adjacencies <- function(
     for (tf in unique(adjacency_sign[["TF"]])) {
       tf_adj <- adjacency_sign[adjacency_sign[["TF"]] == tf, , drop = FALSE]
       tf_adj <- tf_adj[order(-tf_adj[["importance"]]), , drop = FALSE]
-      add_module(
-        tf,
-        utils::head(tf_adj[["target"]], top_n_targets),
-        paste0("top", top_n_targets),
-        regulation = regulation
-      )
+      for (n_targets in as.integer(top_n_targets)) {
+        add_module(
+          tf,
+          utils::head(tf_adj[["target"]], n_targets),
+          paste0("top", n_targets),
+          regulation = regulation
+        )
+      }
     }
 
     for (n in top_n_regulators) {
@@ -2356,6 +2379,22 @@ scenic_regulon_list <- function(regulon_tbl) {
   })
   names(regulon_list) <- scenic_regulon_tf_name(rgnames)
   regulon_list
+}
+
+scenic_regulon_table <- function(regulon_list) {
+  do.call(
+    rbind,
+    lapply(names(regulon_list), function(regulon) {
+      targets <- unique(as.character(regulon_list[[regulon]]))
+      targets <- targets[nzchar(targets)]
+      data.frame(
+        regulon = regulon,
+        target = paste(targets, collapse = ","),
+        target_count = length(targets),
+        stringsAsFactors = FALSE
+      )
+    })
+  )
 }
 
 scenic_read_python_aucell <- function(auc_file) {
