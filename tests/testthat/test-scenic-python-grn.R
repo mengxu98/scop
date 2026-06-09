@@ -1,4 +1,8 @@
 test_that("Python SCENIC GRNBoost2 uses threaded local Dask cluster", {
+  skip_if(
+    identical(Sys.info()[["sysname"]], "Darwin"),
+    "reticulate Python discovery is unstable on macOS CI"
+  )
   skip_if_not_installed("reticulate")
   skip_if_not(reticulate::py_module_available("arboreto"))
   skip_if_not(reticulate::py_module_available("distributed"))
