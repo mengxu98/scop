@@ -735,7 +735,7 @@ NumericMatrix sctenifold_tensor_decomposition(
 
   std::vector<arma::mat> tensors;
   tensors.reserve(n_net);
-  NumericMatrix first_mat(x_list[0]);
+  NumericMatrix first_mat = Rcpp::as<NumericMatrix>(x_list[0]);
   const arma::uword n_genes = first_mat.nrow();
   if (n_genes != static_cast<arma::uword>(first_mat.ncol())) {
     stop("all networks must be square matrices");
@@ -743,7 +743,7 @@ NumericMatrix sctenifold_tensor_decomposition(
 
   double tensor_ss = 0.0;
   for (arma::uword l = 0; l < n_net; ++l) {
-    NumericMatrix xm(x_list[l]);
+    NumericMatrix xm = Rcpp::as<NumericMatrix>(x_list[l]);
     if (static_cast<arma::uword>(xm.nrow()) != n_genes ||
         static_cast<arma::uword>(xm.ncol()) != n_genes) {
       stop("all networks must have the same dimensions");
