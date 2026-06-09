@@ -70,6 +70,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// ccc_aggregate_liana_table_cpp
+DataFrame ccc_aggregate_liana_table_cpp(CharacterVector source, CharacterVector target, CharacterVector ligand_complex, CharacterVector receptor_complex, CharacterVector sample, NumericVector score, NumericVector pvalue, CharacterVector classification, CharacterVector method, CharacterVector liana_method, CharacterVector resource, bool has_sample);
+RcppExport SEXP _scop_ccc_aggregate_liana_table_cpp(SEXP sourceSEXP, SEXP targetSEXP, SEXP ligand_complexSEXP, SEXP receptor_complexSEXP, SEXP sampleSEXP, SEXP scoreSEXP, SEXP pvalueSEXP, SEXP classificationSEXP, SEXP methodSEXP, SEXP liana_methodSEXP, SEXP resourceSEXP, SEXP has_sampleSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< CharacterVector >::type source(sourceSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type target(targetSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type ligand_complex(ligand_complexSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type receptor_complex(receptor_complexSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type sample(sampleSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type score(scoreSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type pvalue(pvalueSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type classification(classificationSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type method(methodSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type liana_method(liana_methodSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type resource(resourceSEXP);
+    Rcpp::traits::input_parameter< bool >::type has_sample(has_sampleSEXP);
+    rcpp_result_gen = Rcpp::wrap(ccc_aggregate_liana_table_cpp(source, target, ligand_complex, receptor_complex, sample, score, pvalue, classification, method, liana_method, resource, has_sample));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cibersort_cpp
 List cibersort_cpp(NumericMatrix signature, NumericMatrix mixture, int perm, bool QN, bool absolute, int n_threads, int seed, bool verbose);
 RcppExport SEXP _scop_cibersort_cpp(SEXP signatureSEXP, SEXP mixtureSEXP, SEXP permSEXP, SEXP QNSEXP, SEXP absoluteSEXP, SEXP n_threadsSEXP, SEXP seedSEXP, SEXP verboseSEXP) {
@@ -1373,6 +1395,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_bayesprism_gibbs_initial_cpp", (DL_FUNC) &_scop_bayesprism_gibbs_initial_cpp, 6},
     {"_scop_bayesprism_gibbs_final_cpp", (DL_FUNC) &_scop_bayesprism_gibbs_final_cpp, 6},
     {"_scop_ccc_aggregate_long_cpp", (DL_FUNC) &_scop_ccc_aggregate_long_cpp, 4},
+    {"_scop_ccc_aggregate_liana_table_cpp", (DL_FUNC) &_scop_ccc_aggregate_liana_table_cpp, 12},
     {"_scop_cibersort_cpp", (DL_FUNC) &_scop_cibersort_cpp, 8},
     {"_scop_classification_metrics", (DL_FUNC) &_scop_classification_metrics, 4},
     {"_scop_cytospace_assign", (DL_FUNC) &_scop_cytospace_assign, 6},

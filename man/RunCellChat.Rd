@@ -15,6 +15,7 @@ RunCellChat(
   thresh = 0.05,
   min.cells = 10,
   do.fast = FALSE,
+  backend = c("cpp", "r"),
   assay = NULL,
   layer = "data",
   verbose = TRUE
@@ -43,6 +44,9 @@ If not provided, all cell types will be considered.}
 
 \item{do.fast}{Whether to use CellChat's fast Wilcoxon implementation backed
 by \code{presto}. Set to \code{TRUE} only when \code{presto} is installed.}
+
+\item{backend}{Backend used for scop post-processing and unified CCC table
+aggregation. Upstream CellChat inference is unchanged.}
 
 \item{assay}{Which assay to use. If \code{NULL}, the default assay of the \code{Seurat} object will be used.}
 

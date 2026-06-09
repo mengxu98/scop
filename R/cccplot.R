@@ -897,7 +897,20 @@ ccc_long_table_for_method <- function(
   thresh = 0.05
 ) {
   method <- detect_method(srt = srt, method = method)
-  if (identical(method, "CCC") || ccc_has_unified_method(srt, method = method)) {
+  use_cellchat_direct <- identical(method, "CellChat") &&
+    (
+      !is.null(condition) ||
+        !isTRUE(dataset == 1) ||
+        !identical(slot.name, "net") ||
+        !is.null(signaling) ||
+        !is.null(pairLR.use) ||
+        !is.null(sources.use) ||
+        !is.null(targets.use)
+    )
+  if (
+    !isTRUE(use_cellchat_direct) &&
+      (identical(method, "CCC") || ccc_has_unified_method(srt, method = method))
+  ) {
     filter_method <- if (identical(method, "CCC")) NULL else method
     return(ccc_get_unified_long_table(
       srt = srt,
@@ -986,7 +999,13 @@ ccc_bundle_long_table <- function(srt, method, bundle = NULL, thresh = 0.05) {
   ccc_mark_significance(df, thresh = thresh)
 }
 
-ccc_build_unified_bundle <- function(srt, methods = NULL, thresh = 0.05) {
+ccc_build_unified_bundle <- function(
+  srt,
+  methods = NULL,
+  thresh = 0.05,
+  backend = c("cpp", "r")
+) {
+  backend <- match.arg(backend)
   methods <- methods %||% ccc_available_methods(srt)
   methods <- unique(vapply(methods, normalize_ccc_method, character(1)))
   methods <- setdiff(methods, "CCC")
@@ -1015,7 +1034,7 @@ ccc_build_unified_bundle <- function(srt, methods = NULL, thresh = 0.05) {
     out
   }
   long_table <- standardize_long_df(long_table)
-  pair_table <- aggregate_ccc_long(long_table)
+  pair_table <- aggregate_ccc_long(long_table, backend = backend)
   liana_sample_col <- if ("method" %in% colnames(long_table)) "method" else NULL
   liana_table <- ccc_long_to_liana(long_table, sample_col = liana_sample_col)
   list(
@@ -1027,12 +1046,20 @@ ccc_build_unified_bundle <- function(srt, methods = NULL, thresh = 0.05) {
     metadata = list(
       methods = methods,
       updated_at = as.character(Sys.time()),
+      backend = backend,
       schema = "scop_ccc_unified_v1"
     )
   )
 }
 
-ccc_update_unified_bundle <- function(srt, method, bundle = NULL, thresh = 0.05) {
+ccc_update_unified_bundle <- function(
+  srt,
+  method,
+  bundle = NULL,
+  thresh = 0.05,
+  backend = c("cpp", "r")
+) {
+  backend <- match.arg(backend)
   method <- normalize_ccc_method(method)
   new_long <- ccc_bundle_long_table(
     srt = srt,
@@ -1080,7 +1107,7 @@ ccc_update_unified_bundle <- function(srt, method, bundle = NULL, thresh = 0.05)
     method = "CCC",
     methods = methods,
     long_table = long_table,
-    pair_table = aggregate_ccc_long(long_table),
+    pair_table = aggregate_ccc_long(long_table, backend = backend),
     liana_table = ccc_long_to_liana(
       long_table,
       sample_col = if ("method" %in% colnames(long_table)) "method" else NULL
@@ -1089,6 +1116,7 @@ ccc_update_unified_bundle <- function(srt, method, bundle = NULL, thresh = 0.05)
       methods = methods,
       updated_method = method,
       updated_at = as.character(Sys.time()),
+      backend = backend,
       schema = "scop_ccc_unified_v1"
     )
   )
@@ -1134,8 +1162,10 @@ ccc_pair_table <- function(
   pairLR.use = NULL,
   sources.use = NULL,
   targets.use = NULL,
-  thresh = 0.05
+  thresh = 0.05,
+  backend = c("cpp", "r")
 ) {
+  backend <- match.arg(backend)
   method <- detect_method(srt = srt, method = method)
   df <- ccc_long_table_for_method(
     srt = srt,
@@ -1158,7 +1188,7 @@ ccc_pair_table <- function(
     pairLR.use = pairLR.use
   )
   df <- ccc_mark_significance(df, thresh = thresh)
-  aggregate_ccc_long(df)
+  aggregate_ccc_long(df, backend = backend)
 }
 
 ccc_plot_data <- function(
@@ -1384,7 +1414,7 @@ ccc_context_comparison_data <- function(
 
   pair_tables <- lapply(context_names, function(context_name) {
     context_df <- long_df[as.character(long_df[[context_col]]) == context_name, , drop = FALSE]
-    aggregate_ccc_long(context_df)
+    aggregate_ccc_long(context_df, backend = "r")
   })
   all_celltypes <- unique(unlist(lapply(pair_tables, function(x) {
     unique(c(as.character(x$sender), as.character(x$receiver)))
@@ -2005,7 +2035,7 @@ pair_plot_df <- function(df) {
   if (nrow(df_use) == 0L) {
     return(data.frame())
   }
-  pair_df <- aggregate_ccc_long(df_use)
+  pair_df <- aggregate_ccc_long(df_use, backend = "r")
   if (is.null(pair_df) || nrow(pair_df) == 0L) {
     return(data.frame())
   }

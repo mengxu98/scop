@@ -28,6 +28,8 @@
 #' `"aggregate_cluster_de"` modes. Default is `0.25`.
 #' @param use_sender_agnostic_background Whether to use all sender cell types when
 #' `sender = "all"`.
+#' @param backend Backend used for post-processing aggregation. Upstream
+#'   NicheNet inference is unchanged.
 #' @return A Seurat object with standardized NicheNet results stored in
 #' `srt@tools[["Nichenetr"]]`.
 #' @export
@@ -53,8 +55,10 @@ RunNichenetr <- function(
   cutoff_visualization = 0.33,
   lfc_cutoff = 0.25,
   use_sender_agnostic_background = TRUE,
+  backend = c("cpp", "r"),
   verbose = TRUE
 ) {
+  backend <- match.arg(backend)
   check_r("saeyslab/nichenetr", verbose = FALSE)
 
   mode <- match.arg(mode)
@@ -171,9 +175,17 @@ RunNichenetr <- function(
         message_type = "error"
       )
     }
+    receiver_use <- unique(as.character(receiver))
+    if (length(receiver_use) == 0L) {
+      log_message(
+        "{.arg receiver} must contain at least one receiver cell type for {.val mode = 'aggregate_cluster_de'}",
+        message_type = "error"
+      )
+    }
     raw_result <- ns_fun("nichenet_seuratobj_aggregate_cluster_de")(
       seurat_obj = srt,
-      receiver = receiver,
+      receiver_affected = receiver_use,
+      receiver_reference = receiver_use,
       condition_colname = condition.by,
       condition_oi = condition_oi,
       condition_reference = condition_reference,
@@ -278,14 +290,16 @@ RunNichenetr <- function(
     condition_oi = condition_oi,
     condition_reference = condition_reference,
     assay = assay,
-    species = species
+    species = species,
+    backend = backend
   )
 
   srt@tools[["Nichenetr"]] <- bundle
   srt <- ccc_update_unified_bundle(
     srt = srt,
     method = "Nichenetr",
-    bundle = bundle
+    bundle = bundle,
+    backend = backend
   )
   log_message(
     "{.pkg NicheNet} analysis completed",
@@ -314,6 +328,8 @@ RunNichenetr <- function(
 #' @param empirical_pval Whether to use empirical p-values.
 #' @param top_n_interactions Number of top prioritized interactions kept in the
 #' standardized long table.
+#' @param backend Backend used for post-processing aggregation. Upstream
+#'   MultiNicheNet inference is unchanged.
 #' @return A Seurat object with standardized MultiNicheNet results stored in
 #' `srt@tools[["MultiNichenetr"]]`.
 #' @export
@@ -338,8 +354,10 @@ RunMultiNichenetr <- function(
   min_cells = 10,
   empirical_pval = TRUE,
   top_n_interactions = 250,
+  backend = c("cpp", "r"),
   verbose = TRUE
 ) {
+  backend <- match.arg(backend)
   check_r(
     c("saeyslab/multinichenetr", "SingleCellExperiment", "muscat"),
     verbose = FALSE
@@ -362,12 +380,17 @@ RunMultiNichenetr <- function(
 
   assay <- assay %||% DefaultAssay(srt)
   species <- match.arg(species)
-  if (is.null(sender_celltypes)) {
+  sender_celltypes_original <- sender_celltypes
+  receiver_celltypes_original <- receiver_celltypes
+  if (is.null(sender_celltypes_original)) {
     sender_celltypes <- setdiff(
       unique(as.character(srt[[group.by]][, 1])),
       receiver_celltypes
     )
+    sender_celltypes_original <- sender_celltypes
   }
+  receiver_celltypes_original <- unique(as.character(receiver_celltypes_original))
+  sender_celltypes_original <- unique(as.character(sender_celltypes_original))
   batches <- batches %||% NA
   covariates <- covariates %||% NA
 
@@ -382,7 +405,6 @@ RunMultiNichenetr <- function(
   sce <- Seurat::as.SingleCellExperiment(srt, assay = assay)
   celltype_raw <- as.character(srt[[group.by]][, 1])
   celltype_safe <- make.names(celltype_raw)
-  celltype_map <- stats::setNames(celltype_raw, celltype_safe)
   SummarizedExperiment::colData(sce)[[group.by]] <- celltype_safe
   SummarizedExperiment::colData(sce)[[
     sample.by
@@ -394,14 +416,19 @@ RunMultiNichenetr <- function(
   receiver_celltypes <- make.names(receiver_celltypes)
   condition_oi_safe <- make.names(condition_oi)
   condition_ref_safe <- make.names(condition_reference)
-  contrast_tbl <- data.frame(
-    contrast = c(
-      paste0(condition_oi_safe, "-", condition_ref_safe),
-      paste0(condition_ref_safe, "-", condition_oi_safe)
-    ),
-    group = c(condition_oi_safe, condition_ref_safe),
-    stringsAsFactors = FALSE
-  )
+  contrast_tbl_input <- contrast_tbl
+  if (is.null(contrast_tbl)) {
+    contrast_tbl <- data.frame(
+      contrast = c(
+        paste0(condition_oi_safe, "-", condition_ref_safe),
+        paste0(condition_ref_safe, "-", condition_oi_safe)
+      ),
+      group = c(condition_oi_safe, condition_ref_safe),
+      stringsAsFactors = FALSE
+    )
+  } else {
+    contrast_tbl <- normalize_multinichenetr_contrast_tbl(contrast_tbl)
+  }
   contrasts_oi <- paste0("'", contrast_tbl$contrast, "'", collapse = ",")
 
   ns_fun <- function(name) get_namespace_fun("multinichenetr", name)
@@ -474,16 +501,22 @@ RunMultiNichenetr <- function(
     condition_reference = condition_reference,
     receiver_celltypes = receiver_celltypes,
     sender_celltypes = sender_celltypes,
+    receiver_celltypes_original = receiver_celltypes_original,
+    sender_celltypes_original = sender_celltypes_original,
+    contrast_tbl = contrast_tbl,
+    contrast_tbl_input = contrast_tbl_input,
     assay = assay,
     species = species,
-    sample_agnostic = sample_agnostic
+    sample_agnostic = sample_agnostic,
+    backend = backend
   )
 
   srt@tools[["MultiNichenetr"]] <- bundle
   srt <- ccc_update_unified_bundle(
     srt = srt,
     method = "MultiNichenetr",
-    bundle = bundle
+    bundle = bundle,
+    backend = backend
   )
   log_message(
     "{.pkg MultiNicheNet} analysis completed",
@@ -521,6 +554,37 @@ normalize_lr_network_for_multinichenetr <- function(lr_network) {
     colnames(lr_network)[match(c("from", "to"), nm)] <- c("ligand", "receptor")
   }
   lr_network
+}
+
+normalize_multinichenetr_contrast_tbl <- function(contrast_tbl) {
+  contrast_tbl <- as.data.frame(contrast_tbl)
+  if (!all(c("contrast", "group") %in% colnames(contrast_tbl))) {
+    log_message(
+      "{.arg contrast_tbl} must contain {.val contrast} and {.val group} columns",
+      message_type = "error"
+    )
+  }
+  contrast_tbl$group <- make.names(as.character(contrast_tbl$group))
+  contrast_tbl$contrast <- vapply(
+    as.character(contrast_tbl$contrast),
+    function(x) {
+      tokens <- strsplit(x, "-", fixed = TRUE)[[1]]
+      tokens <- trimws(tokens)
+      tokens <- tokens[nzchar(tokens)]
+      if (length(tokens) == 0L) {
+        return("")
+      }
+      paste(make.names(tokens), collapse = "-")
+    },
+    character(1)
+  )
+  if (any(!nzchar(contrast_tbl$contrast)) || any(!nzchar(contrast_tbl$group))) {
+    log_message(
+      "{.arg contrast_tbl} cannot contain empty {.val contrast} or {.val group} values",
+      message_type = "error"
+    )
+  }
+  contrast_tbl
 }
 
 load_nichenetr_models <- function(
@@ -728,8 +792,10 @@ standardize_nichenetr_result <- function(
   condition_oi,
   condition_reference,
   assay,
-  species
+  species,
+  backend = c("cpp", "r")
 ) {
+  backend <- match.arg(backend)
   ligand_activities <- standardize_df(ligand_activities)
   ligand_target_df <- standardize_df(ligand_target_df)
   ligand_receptor_df <- standardize_df(ligand_receptor_df)
@@ -816,7 +882,7 @@ standardize_nichenetr_result <- function(
     )
   }
 
-  pair_table <- aggregate_ccc_long(lr_table)
+  pair_table <- aggregate_ccc_long(lr_table, backend = backend)
 
   list(
     method = "Nichenetr",
@@ -838,7 +904,8 @@ standardize_nichenetr_result <- function(
       species = species,
       cutoff_visualization = cutoff_visualization,
       top_n_ligands = top_n_ligands,
-      top_n_targets = top_n_targets
+      top_n_targets = top_n_targets,
+      backend = backend
     )
   )
 }
@@ -872,10 +939,16 @@ standardize_multinichenetr_result <- function(
   condition_reference,
   receiver_celltypes,
   sender_celltypes,
+  receiver_celltypes_original = NULL,
+  sender_celltypes_original = NULL,
+  contrast_tbl = NULL,
+  contrast_tbl_input = NULL,
   assay,
   species,
-  sample_agnostic = FALSE
+  sample_agnostic = FALSE,
+  backend = c("cpp", "r")
 ) {
+  backend <- match.arg(backend)
   prior_tbl <- extract_multinichenetr_prior_table(raw_result)
   prior_tbl <- standardize_df(prior_tbl)
   lr_table <- standardize_multinichenetr_lr_table(prior_tbl)
@@ -892,7 +965,7 @@ standardize_multinichenetr_result <- function(
   }
 
   ligand_target_df <- extract_ligand_target_from_multinichenetr(raw_result)
-  pair_table <- aggregate_ccc_long(lr_table)
+  pair_table <- aggregate_ccc_long(lr_table, backend = backend)
 
   list(
     method = "MultiNichenetr",
@@ -907,11 +980,16 @@ standardize_multinichenetr_result <- function(
       condition.by = condition.by,
       condition_oi = condition_oi,
       condition_reference = condition_reference,
-      receiver_celltypes = receiver_celltypes,
-      sender_celltypes = sender_celltypes,
+      receiver_celltypes = receiver_celltypes_original %||% receiver_celltypes,
+      sender_celltypes = sender_celltypes_original %||% sender_celltypes,
+      receiver_celltypes_safe = receiver_celltypes,
+      sender_celltypes_safe = sender_celltypes,
+      contrast_tbl = contrast_tbl,
+      contrast_tbl_input = contrast_tbl_input,
       assay = assay,
       species = species,
-      sample_agnostic = sample_agnostic
+      sample_agnostic = sample_agnostic,
+      backend = backend
     )
   )
 }

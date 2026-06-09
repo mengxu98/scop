@@ -34,6 +34,7 @@ RunCellphoneDB(
   output_path = NULL,
   output_suffix = NULL,
   keep_output = FALSE,
+  backend = c("cpp", "r"),
   verbose = TRUE
 )
 }
@@ -108,6 +109,9 @@ considered.}
 
 \item{keep_output}{Whether to keep temporary output files when \code{output_path} is
 not supplied.}
+
+\item{backend}{Backend used for scop post-processing and unified CCC table
+aggregation. Upstream CellphoneDB inference is unchanged.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
