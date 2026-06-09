@@ -3,6 +3,15 @@
 ## scop 0.9.0
 
 - **feat**:
+  - Added optional support for BPCells-backed Seurat v5 assay layers in
+    [`GetAssayData5()`](https://mengxu98.github.io/scop/reference/GetAssayData5.md),
+    [`CheckDataType()`](https://mengxu98.github.io/scop/reference/CheckDataType.md),
+    [`RunSpotQC()`](https://mengxu98.github.io/scop/reference/RunSpotQC.md),
+    [`RunCellQC()`](https://mengxu98.github.io/scop/reference/RunCellQC.md),
+    and dimension-reduction variance filtering. BPCells remains a
+    `Suggests` dependency and is detected at runtime so source installs
+    do not require HDF5/C++17 unless users opt into BPCells-backed
+    matrices.
   - [`RunMetabolism()`](https://mengxu98.github.io/scop/reference/RunMetabolism.md):
     Gene sets are now built via
     [`PrepareDB()`](https://mengxu98.github.io/scop/reference/PrepareDB.md)
@@ -126,6 +135,13 @@
     for Augur cell-type perturbation prioritization from Seurat objects,
     with an optimized backend and metadata/tool-slot writeback.
   - Added
+    [`RunCCC()`](https://mengxu98.github.io/scop/reference/RunCCC.md) to
+    run CellChat, CellphoneDB, and LIANA through one scheduler and
+    rebuild a unified `srt@tools[["CCC"]]` bundle. These CCC wrappers
+    now expose `backend = c("cpp", "r")` for scop post-processing and
+    plotting-table aggregation while preserving each upstream package’s
+    inference logic.
+  - Added
     [`RunSCENIC()`](https://mengxu98.github.io/scop/reference/RunSCENIC.md)
     for a SCENIC workflow from Seurat objects, including
     GRNBoost2/`scenic ctx` execution, regulon conversion, multi-core
@@ -240,6 +256,36 @@
     highlighted TF labels by default through `label_max_overlaps = Inf`;
     users can lower `label_max_overlaps` to let `ggrepel` drop crowded
     labels.
+  - [`RunCytoTRACE()`](https://mengxu98.github.io/scop/reference/RunCytoTRACE.md):
+    Default to the official `CytoTRACE2::cytotrace2()` R package via
+    `backend = "r"` and keep the native `scop` R/C++ implementation
+    available through `backend = "cpp"`. The C++ backend remains
+    independent of the official R package and reads model files from
+    `PrepareDB(db = "CytoTRACE2")` by default. Added C++ subsample
+    progress through
+    [`thisutils::parallelize_fun()`](https://mengxu98.github.io/thisutils/reference/parallelize_fun.html),
+    in-memory model-data caching, dense BLAS multiplication for the
+    near-dense CytoTRACE2 background matrices, C++ rank/log2-CPM
+    preprocessing, top-k-only kNN smoothing, fewer exported Rcpp helper
+    entrypoints, and official-R-vs-C++ parity/benchmark scripts covering
+    mouse, human, explicit `data_dir`, multiple data sizes, and
+    1/2/4-core runs.
+  - [`GetAssayData5.Assay5()`](https://mengxu98.github.io/scop/reference/GetAssayData5.md)
+    no longer unconditionally calls
+    [`JoinLayers()`](https://satijalab.github.io/seurat-object/reference/SplitLayers.html),
+    preserving BPCells on-disk/lazy layers when the requested layer can
+    be read directly. Methods that must materialize BPCells matrices now
+    use explicit warning helpers before converting to dense matrices or
+    `dgCMatrix`, highlighting memory, tempdir, and 2^31-entry risks.
+  - Cell-cell communication wrappers now preserve upstream result
+    semantics more strictly:
+    `RunNichenetr(mode = "aggregate_cluster_de")` passes receiver
+    arguments with the current NicheNet API,
+    [`RunMultiNichenetr()`](https://mengxu98.github.io/scop/reference/RunMultiNichenetr.md)
+    respects user-provided contrast tables while keeping original
+    cell-type labels in stored parameters, and CellChat plots with
+    condition-specific filters read from the original CellChat object
+    instead of the cached unified CCC table.
   - [`RunAugur()`](https://mengxu98.github.io/scop/reference/RunAugur.md):
     The `backend = "cpp"` path now performs Augur variance and random
     feature selection inside `scop`, so it no longer requires the

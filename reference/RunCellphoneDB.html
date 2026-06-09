@@ -74,6 +74,7 @@
 <span>  output_path <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  output_suffix <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  keep_output <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cpp"</span>, <span class="st">"r"</span><span class="op">)</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -209,6 +210,11 @@ considered.</p></dd>
 <dt id="arg-keep-output">keep_output<a class="anchor" aria-label="anchor" href="#arg-keep-output"></a></dt>
 <dd><p>Whether to keep temporary output files when <code>output_path</code> is
 not supplied.</p></dd>
+
+
+<dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
+<dd><p>Backend used for scop post-processing and unified CCC table
+aggregation. Upstream CellphoneDB inference is unchanged.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>

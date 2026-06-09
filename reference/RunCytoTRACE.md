@@ -1,8 +1,9 @@
 # Run CytoTRACE 2
 
 Predicts cellular developmental potential from single-cell RNA-seq data
-using the CytoTRACE 2 algorithm (Kang et al., 2025). This is a native
-scop implementation with C++ acceleration.
+using the CytoTRACE 2 algorithm (Kang et al., 2025). By default, this
+function calls the official `CytoTRACE2` R package. Set
+`backend = "cpp"` to use the native `scop` R/C++ implementation.
 
 The algorithm consists of five stages:
 
@@ -36,6 +37,7 @@ RunCytoTRACE(
   batch_size = 10000,
   smooth_batch_size = 1000,
   cores = 1,
+  backend = c("r", "cpp"),
   seed = 14,
   data_dir = NULL,
   verbose = TRUE,
@@ -49,6 +51,7 @@ RunCytoTRACE(
   batch_size = 10000,
   smooth_batch_size = 1000,
   cores = 1,
+  backend = c("r", "cpp"),
   seed = 14,
   data_dir = NULL,
   verbose = TRUE,
@@ -65,7 +68,8 @@ RunCytoTRACE(
 
 - ...:
 
-  Additional arguments (reserved for future use).
+  Additional arguments passed to the official `CytoTRACE2::cytotrace2()`
+  call when `backend = "r"`.
 
 - assay:
 
@@ -98,17 +102,21 @@ RunCytoTRACE(
 
   Number of cores for parallel processing. Default is `1`.
 
+- backend:
+
+  Backend used to run CytoTRACE2. `"r"` calls the official
+  `CytoTRACE2::cytotrace2()` implementation and is the default. `"cpp"`
+  uses the native `scop` R/C++ backend.
+
 - seed:
 
   Random seed for reproducibility. Default is `14`.
 
 - data_dir:
 
-  Path to the directory containing CytoTRACE2 model data files. If
-  `NULL`, uses data prepared by
-  [`PrepareDB()`](https://mengxu98.github.io/scop/reference/PrepareDB.md),
-  the user data cache, or auto-downloads from the datasets repository.
-  Default is `NULL`.
+  Path to the directory containing CytoTRACE2 model data files. Used
+  only by `backend = "cpp"`. If `NULL`, uses model data prepared by
+  `PrepareDB(db = "CytoTRACE2")`. Default is `NULL`.
 
 - verbose:
 

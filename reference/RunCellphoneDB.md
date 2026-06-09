@@ -35,6 +35,7 @@ RunCellphoneDB(
   output_path = NULL,
   output_suffix = NULL,
   keep_output = FALSE,
+  backend = c("cpp", "r"),
   verbose = TRUE
 )
 ```
@@ -171,6 +172,11 @@ RunCellphoneDB(
 
   Whether to keep temporary output files when `output_path` is not
   supplied.
+
+- backend:
+
+  Backend used for scop post-processing and unified CCC table
+  aggregation. Upstream CellphoneDB inference is unchanged.
 
 - verbose:
 

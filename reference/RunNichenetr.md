@@ -27,6 +27,7 @@ RunNichenetr(
   cutoff_visualization = 0.33,
   lfc_cutoff = 0.25,
   use_sender_agnostic_background = TRUE,
+  backend = c("cpp", "r"),
   verbose = TRUE
 )
 ```
@@ -118,6 +119,11 @@ RunNichenetr(
 - use_sender_agnostic_background:
 
   Whether to use all sender cell types when `sender = "all"`.
+
+- backend:
+
+  Backend used for post-processing aggregation. Upstream NicheNet
+  inference is unchanged.
 
 - verbose:
 

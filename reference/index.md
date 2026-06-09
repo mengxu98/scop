@@ -407,6 +407,8 @@
 
 ### Cell-Cell Communication Analysis
 
+- [`RunCCC()`](https://mengxu98.github.io/scop/reference/RunCCC.md) :
+  Run common cell-cell communication analyses
 - [`RunCellChat()`](https://mengxu98.github.io/scop/reference/RunCellChat.md)
   : Run CellChat analysis
 - [`RunCellphoneDB()`](https://mengxu98.github.io/scop/reference/RunCellphoneDB.md)
