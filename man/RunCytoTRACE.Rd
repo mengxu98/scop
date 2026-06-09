@@ -16,6 +16,7 @@ RunCytoTRACE(object, ...)
   batch_size = 10000,
   smooth_batch_size = 1000,
   cores = 1,
+  backend = c("r", "cpp"),
   seed = 14,
   data_dir = NULL,
   verbose = TRUE,
@@ -28,6 +29,7 @@ RunCytoTRACE(object, ...)
   batch_size = 10000,
   smooth_batch_size = 1000,
   cores = 1,
+  backend = c("r", "cpp"),
   seed = 14,
   data_dir = NULL,
   verbose = TRUE,
@@ -38,7 +40,8 @@ RunCytoTRACE(object, ...)
 \item{object}{An object.
 This can be a Seurat object or a matrix-like object (genes as rows, cells as columns).}
 
-\item{...}{Additional arguments (reserved for future use).}
+\item{...}{Additional arguments passed to the official
+\code{CytoTRACE2::cytotrace2()} call when \code{backend = "r"}.}
 
 \item{assay}{Which assay to use.
 If \code{NULL}, the default assay of the Seurat object will be used.
@@ -66,11 +69,15 @@ Default is \code{1000}.}
 \item{cores}{Number of cores for parallel processing.
 Default is \code{1}.}
 
+\item{backend}{Backend used to run CytoTRACE2. \code{"r"} calls the official
+\code{CytoTRACE2::cytotrace2()} implementation and is the default. \code{"cpp"} uses
+the native \code{scop} R/C++ backend.}
+
 \item{seed}{Random seed for reproducibility. Default is \code{14}.}
 
 \item{data_dir}{Path to the directory containing CytoTRACE2 model data files.
-If \code{NULL}, uses data prepared by \code{PrepareDB()}, the user data cache, or
-auto-downloads from the datasets repository. Default is \code{NULL}.}
+Used only by \code{backend = "cpp"}. If \code{NULL}, uses model data prepared by
+\code{PrepareDB(db = "CytoTRACE2")}. Default is \code{NULL}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
@@ -94,7 +101,8 @@ with cell IDs as row names.
 \description{
 Predicts cellular developmental potential from single-cell RNA-seq data
 using the CytoTRACE 2 algorithm (Kang et al., 2025).
-This is a native scop implementation with C++ acceleration.
+By default, this function calls the official \code{CytoTRACE2} R package. Set
+\code{backend = "cpp"} to use the native \code{scop} R/C++ implementation.
 
 The algorithm consists of five stages:
 \enumerate{

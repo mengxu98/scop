@@ -56,6 +56,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// ccc_aggregate_long_cpp
+DataFrame ccc_aggregate_long_cpp(CharacterVector sender, CharacterVector receiver, NumericVector score, NumericVector significant);
+RcppExport SEXP _scop_ccc_aggregate_long_cpp(SEXP senderSEXP, SEXP receiverSEXP, SEXP scoreSEXP, SEXP significantSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< CharacterVector >::type sender(senderSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type receiver(receiverSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type score(scoreSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type significant(significantSEXP);
+    rcpp_result_gen = Rcpp::wrap(ccc_aggregate_long_cpp(sender, receiver, score, significant));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cibersort_cpp
 List cibersort_cpp(NumericMatrix signature, NumericMatrix mixture, int perm, bool QN, bool absolute, int n_threads, int seed, bool verbose);
 RcppExport SEXP _scop_cibersort_cpp(SEXP signatureSEXP, SEXP mixtureSEXP, SEXP permSEXP, SEXP QNSEXP, SEXP absoluteSEXP, SEXP n_threadsSEXP, SEXP seedSEXP, SEXP verboseSEXP) {
@@ -104,58 +118,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// cytotrace2_ensemble_predict
-List cytotrace2_ensemble_predict(const arma::mat& rank_data, const arma::mat& log2_data, const List& parameter_dict, int cores);
-RcppExport SEXP _scop_cytotrace2_ensemble_predict(SEXP rank_dataSEXP, SEXP log2_dataSEXP, SEXP parameter_dictSEXP, SEXP coresSEXP) {
+// cytotrace2_preprocess_numeric
+List cytotrace2_preprocess_numeric(const arma::mat& expression_mapped);
+RcppExport SEXP _scop_cytotrace2_preprocess_numeric(SEXP expression_mappedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type rank_data(rank_dataSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type log2_data(log2_dataSEXP);
-    Rcpp::traits::input_parameter< const List& >::type parameter_dict(parameter_dictSEXP);
-    Rcpp::traits::input_parameter< int >::type cores(coresSEXP);
-    rcpp_result_gen = Rcpp::wrap(cytotrace2_ensemble_predict(rank_data, log2_data, parameter_dict, cores));
-    return rcpp_result_gen;
-END_RCPP
-}
-// cytotrace2_diffusion_smooth
-arma::vec cytotrace2_diffusion_smooth(const arma::mat& log2_data, const arma::vec& raw_scores, const IntegerVector& smooth_groups);
-RcppExport SEXP _scop_cytotrace2_diffusion_smooth(SEXP log2_dataSEXP, SEXP raw_scoresSEXP, SEXP smooth_groupsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type log2_data(log2_dataSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type raw_scores(raw_scoresSEXP);
-    Rcpp::traits::input_parameter< const IntegerVector& >::type smooth_groups(smooth_groupsSEXP);
-    rcpp_result_gen = Rcpp::wrap(cytotrace2_diffusion_smooth(log2_data, raw_scores, smooth_groups));
-    return rcpp_result_gen;
-END_RCPP
-}
-// cytotrace2_bin_data
-List cytotrace2_bin_data(const arma::vec& smoothed_scores, const IntegerVector& categories, const StringVector& category_labels);
-RcppExport SEXP _scop_cytotrace2_bin_data(SEXP smoothed_scoresSEXP, SEXP categoriesSEXP, SEXP category_labelsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::vec& >::type smoothed_scores(smoothed_scoresSEXP);
-    Rcpp::traits::input_parameter< const IntegerVector& >::type categories(categoriesSEXP);
-    Rcpp::traits::input_parameter< const StringVector& >::type category_labels(category_labelsSEXP);
-    rcpp_result_gen = Rcpp::wrap(cytotrace2_bin_data(smoothed_scores, categories, category_labels));
-    return rcpp_result_gen;
-END_RCPP
-}
-// cytotrace2_knn_smooth
-List cytotrace2_knn_smooth(const arma::mat& pca_coords, const arma::vec& preKNN_scores, const StringVector& preKNN_potency, int cores, int seed);
-RcppExport SEXP _scop_cytotrace2_knn_smooth(SEXP pca_coordsSEXP, SEXP preKNN_scoresSEXP, SEXP preKNN_potencySEXP, SEXP coresSEXP, SEXP seedSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type pca_coords(pca_coordsSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type preKNN_scores(preKNN_scoresSEXP);
-    Rcpp::traits::input_parameter< const StringVector& >::type preKNN_potency(preKNN_potencySEXP);
-    Rcpp::traits::input_parameter< int >::type cores(coresSEXP);
-    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
-    rcpp_result_gen = Rcpp::wrap(cytotrace2_knn_smooth(pca_coords, preKNN_scores, preKNN_potency, cores, seed));
+    Rcpp::traits::input_parameter< const arma::mat& >::type expression_mapped(expression_mappedSEXP);
+    rcpp_result_gen = Rcpp::wrap(cytotrace2_preprocess_numeric(expression_mapped));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1402,13 +1372,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_augur_subsample_cpp", (DL_FUNC) &_scop_augur_subsample_cpp, 2},
     {"_scop_bayesprism_gibbs_initial_cpp", (DL_FUNC) &_scop_bayesprism_gibbs_initial_cpp, 6},
     {"_scop_bayesprism_gibbs_final_cpp", (DL_FUNC) &_scop_bayesprism_gibbs_final_cpp, 6},
+    {"_scop_ccc_aggregate_long_cpp", (DL_FUNC) &_scop_ccc_aggregate_long_cpp, 4},
     {"_scop_cibersort_cpp", (DL_FUNC) &_scop_cibersort_cpp, 8},
     {"_scop_classification_metrics", (DL_FUNC) &_scop_classification_metrics, 4},
     {"_scop_cytospace_assign", (DL_FUNC) &_scop_cytospace_assign, 6},
-    {"_scop_cytotrace2_ensemble_predict", (DL_FUNC) &_scop_cytotrace2_ensemble_predict, 4},
-    {"_scop_cytotrace2_diffusion_smooth", (DL_FUNC) &_scop_cytotrace2_diffusion_smooth, 3},
-    {"_scop_cytotrace2_bin_data", (DL_FUNC) &_scop_cytotrace2_bin_data, 3},
-    {"_scop_cytotrace2_knn_smooth", (DL_FUNC) &_scop_cytotrace2_knn_smooth, 5},
+    {"_scop_cytotrace2_preprocess_numeric", (DL_FUNC) &_scop_cytotrace2_preprocess_numeric, 1},
     {"_scop_cytotrace2_main", (DL_FUNC) &_scop_cytotrace2_main, 7},
     {"_scop_aucell_auc_sparse", (DL_FUNC) &_scop_aucell_auc_sparse, 6},
     {"_scop_aucell_auc_ranked", (DL_FUNC) &_scop_aucell_auc_ranked, 3},
