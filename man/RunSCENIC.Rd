@@ -89,9 +89,9 @@ object with \code{\link[=RunMetaCell]{RunMetaCell()}} and pass that object to \c
 \item{min_regulon_size}{Minimum regulon size kept after \verb{scenic ctx}.}
 
 \item{include_negative_regulons}{Whether the C++ backend should also build
-negatively correlated regulons and label them as \code{TF(-)}. The default
+negatively correlated regulons and label them as \verb{TF(-)}. The default
 matches pySCENIC's positive-regulon workflow and labels C++ regulons as
-\code{TF(+)}.}
+\verb{TF(+)}.}
 
 \item{backend}{SCENIC backend. \code{"cpp"} uses the R/C++ path and
 \code{"python"} uses the Python pySCENIC path. The selected backend controls GRN,
