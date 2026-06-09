@@ -24,6 +24,74 @@ int cytotrace2_worker_count(int requested, int n_tasks) {
 // Utility functions
 // ============================================================================
 
+// [[Rcpp::export]]
+List cytotrace2_preprocess_numeric(const arma::mat& expression_mapped) {
+  int n_genes = expression_mapped.n_rows;
+  int n_cells = expression_mapped.n_cols;
+
+  arma::mat ranked_data(n_cells, n_genes);
+  arma::mat log2_data(n_cells, n_genes);
+  int count_cells_few_genes = 0;
+
+  std::vector<std::pair<double, int>> values;
+  values.reserve(n_genes);
+
+  for (int cell = 0; cell < n_cells; cell++) {
+    values.clear();
+    double col_sum = 0.0;
+    int expressed = 0;
+    for (int gene = 0; gene < n_genes; gene++) {
+      double value = expression_mapped(gene, cell);
+      values.push_back(std::make_pair(value, gene));
+      col_sum += value;
+      if (value > 0.0) {
+        expressed++;
+      }
+    }
+    if (expressed < 500) {
+      count_cells_few_genes++;
+    }
+
+    std::sort(
+      values.begin(),
+      values.end(),
+      [](const std::pair<double, int>& a, const std::pair<double, int>& b) {
+        if (a.first > b.first) return true;
+        if (a.first < b.first) return false;
+        return a.second < b.second;
+      }
+    );
+
+    int start = 0;
+    while (start < n_genes) {
+      int end = start + 1;
+      while (end < n_genes && values[end].first == values[start].first) {
+        end++;
+      }
+      double avg_rank = (static_cast<double>(start + 1) + static_cast<double>(end)) / 2.0;
+      for (int pos = start; pos < end; pos++) {
+        ranked_data(cell, values[pos].second) = avg_rank;
+      }
+      start = end;
+    }
+
+    if (col_sum > 0.0) {
+      double scale = 1000000.0 / col_sum;
+      for (int gene = 0; gene < n_genes; gene++) {
+        log2_data(cell, gene) = std::log2(expression_mapped(gene, cell) * scale + 1.0);
+      }
+    } else {
+      log2_data.row(cell).zeros();
+    }
+  }
+
+  return List::create(
+    Named("ranked_data") = ranked_data,
+    Named("log2_data") = log2_data,
+    Named("count_cells_few_genes") = count_cells_few_genes
+  );
+}
+
 // Softmax over columns (each row independently)
 inline arma::mat softmax_rows(const arma::mat& X) {
   arma::mat Y = arma::exp(X);
@@ -41,7 +109,7 @@ struct LayerParams {
   arma::sp_mat weight;
   arma::rowvec n_vec;
   double maxrank_norm;
-  arma::sp_mat gs_backgrounds;
+  arma::mat gs_backgrounds;
   arma::rowvec scale_factors;
   arma::rowvec running_mean;
   arma::rowvec running_var;
@@ -55,7 +123,7 @@ LayerParams extract_layer_params(const List& layer_dict) {
   p.weight = as<arma::sp_mat>(layer_dict["weight"]);
   p.n_vec = as<arma::rowvec>(layer_dict["n"]);
   p.maxrank_norm = as<double>(layer_dict["maxrank_norm"]);
-  p.gs_backgrounds = as<arma::sp_mat>(layer_dict["gs.backgrounds"]);
+  p.gs_backgrounds = arma::mat(as<arma::sp_mat>(layer_dict["gs.backgrounds"]));
   p.scale_factors = as<arma::rowvec>(layer_dict["scale.factors"]);
   p.running_mean = as<arma::rowvec>(layer_dict["running_mean"]);
   p.running_var = as<arma::rowvec>(layer_dict["running_var"]);
@@ -75,9 +143,19 @@ arma::vec binary_module_forward(
   int hidden_size = p.n_vec.n_elem;
 
   // --- UCell score ---
-  arma::mat rank_clamped = rank_data;
-  rank_clamped.elem(arma::find(rank_clamped > p.maxrank_norm)).fill(p.maxrank_norm);
-  arma::mat R_UCell = rank_clamped * p.weight;
+  arma::mat R_UCell(n_cells, hidden_size, arma::fill::zeros);
+  for (int j = 0; j < hidden_size; j++) {
+    for (arma::sp_mat::const_col_iterator it = p.weight.begin_col(j);
+         it != p.weight.end_col(j);
+         ++it) {
+      arma::uword gene = it.row();
+      double weight = *it;
+      for (int cell = 0; cell < n_cells; cell++) {
+        double rank_value = rank_data(cell, gene);
+        R_UCell(cell, j) += (rank_value > p.maxrank_norm ? p.maxrank_norm : rank_value) * weight;
+      }
+    }
+  }
 
   for (int j = 0; j < hidden_size; j++) {
     double nj = p.n_vec(j);
@@ -152,7 +230,6 @@ void binary_encoder_forward(
 // Stage 2 (cont.): Ensemble Prediction (19 models)
 // ============================================================================
 
-// [[Rcpp::export]]
 List cytotrace2_ensemble_predict(
     const arma::mat& rank_data,      // [n_cells x n_genes]
     const arma::mat& log2_data,      // [n_cells x n_genes]
@@ -308,7 +385,6 @@ arma::vec smoothing_by_diffusion(
   return prev_score;
 }
 
-// [[Rcpp::export]]
 arma::vec cytotrace2_diffusion_smooth(
   const arma::mat& log2_data,      // [n_cells x n_genes]
   const arma::vec& raw_scores,     // [n_cells]
@@ -361,7 +437,6 @@ arma::vec cytotrace2_diffusion_smooth(
 // Stage 4: Binning
 // ============================================================================
 
-// [[Rcpp::export]]
 List cytotrace2_bin_data(
     const arma::vec& smoothed_scores,    // [n_cells]
     const IntegerVector& categories,     // [n_cells] values 1-6
@@ -456,7 +531,6 @@ int shortest_consensus(const arma::vec& neighbor_scores) {
   return 2 * idx_use;
 }
 
-// [[Rcpp::export]]
 List cytotrace2_knn_smooth(
     const arma::mat& pca_coords,         // [n_cells x n_pcs]
     const arma::vec& preKNN_scores,      // [n_cells]
@@ -499,17 +573,30 @@ List cytotrace2_knn_smooth(
       dists /= max_dist;
     }
 
-    // Find top 30 nearest neighbors
-    arma::uvec sorted_idx = arma::sort_index(dists);
     int n_neighbors = std::min(30, n_cells);
-    arma::uvec top30_idx = sorted_idx.head(n_neighbors);
+    std::vector<std::pair<double, int>> distance_idx;
+    distance_idx.reserve(n_cells);
+    for (int j = 0; j < n_cells; j++) {
+      distance_idx.push_back(std::make_pair(dists(j), j));
+    }
+    std::partial_sort(
+      distance_idx.begin(),
+      distance_idx.begin() + n_neighbors,
+      distance_idx.end(),
+      [](const std::pair<double, int>& a, const std::pair<double, int>& b) {
+        if (a.first < b.first) return true;
+        if (a.first > b.first) return false;
+        return a.second < b.second;
+      }
+    );
 
     // Extract neighbor scores (sorted by distance)
     arma::vec neighbor_scores(n_neighbors);
     arma::vec neighbor_dists(n_neighbors);
     for (int k = 0; k < n_neighbors; k++) {
-      neighbor_scores(k) = preKNN_scores(top30_idx(k));
-      neighbor_dists(k) = dists(top30_idx(k));
+      int neighbor_idx = distance_idx[k].second;
+      neighbor_scores(k) = preKNN_scores(neighbor_idx);
+      neighbor_dists(k) = dists(neighbor_idx);
     }
 
     int num_neighbors_keep = shortest_consensus(neighbor_scores);
