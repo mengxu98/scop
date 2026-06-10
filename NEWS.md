@@ -1,6 +1,7 @@
 # scop 0.9.0
 
 * **feat**:
+  * `FeatureStatPlot()` and `ExpressionStatPlot()`: Added `auto_comparison` to automatically compare the group with the highest median statistic against all other groups, with explicit `ref_group` and `comparisons` still taking precedence.
   * Added optional support for BPCells-backed Seurat v5 assay layers in `GetAssayData5()`, `CheckDataType()`, `RunSpotQC()`, `RunCellQC()`, and dimension-reduction variance filtering. BPCells remains a `Suggests` dependency and is detected at runtime so source installs do not require HDF5/C++17 unless users opt into BPCells-backed matrices.
   * `RunMetabolism()`: Gene sets are now built via `PrepareDB()` by default (`use_preparedb = TRUE`) for species-aware gene mapping through BioMart and KEGG/Reactome databases. The `species` parameter now automatically converts human gene symbols to the target species. scMetabolism-curated pathway lists are cross-referenced with PrepareDB TERM2GENE so mouse data receives mouse gene symbols directly. The previous GMT-only path is still available with `use_preparedb = FALSE`.
   * `RunMetabolism()`: `convert_species` now defaults to `TRUE`, enabling automatic `GeneConvert()` cross-species ortholog mapping when `species` differs from `"Homo_sapiens"`.
