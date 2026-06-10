@@ -55,6 +55,7 @@ ExpressionStatPlot <- function(
   flip = FALSE,
   comparisons = NULL,
   ref_group = NULL,
+  auto_comparison = FALSE,
   pairwise_method = "wilcox.test",
   multiplegroup_comparisons = FALSE,
   multiple_method = "kruskal.test",
@@ -124,7 +125,7 @@ ExpressionStatPlot <- function(
     }
   }
   if (
-    (isTRUE(multiplegroup_comparisons) || length(comparisons) > 0) &&
+    (isTRUE(multiplegroup_comparisons) || length(comparisons) > 0 || isTRUE(auto_comparison)) &&
       plot_type %in% c("col")
   ) {
     log_message(
@@ -133,6 +134,7 @@ ExpressionStatPlot <- function(
     )
     multiplegroup_comparisons <- FALSE
     comparisons <- NULL
+    auto_comparison <- FALSE
   }
   if (isTRUE(comparisons) && is.null(split.by)) {
     log_message(
@@ -155,6 +157,25 @@ ExpressionStatPlot <- function(
   if (is.null(split.by)) {
     split.by <- "All.groups"
     meta.data[[split.by]] <- factor("")
+  }
+  if (isTRUE(auto_comparison) && split.by != "All.groups") {
+    log_message(
+      "{.arg auto_comparison} is only supported when {.arg split.by} is {.pkg NULL}",
+      message_type = "warning"
+    )
+    auto_comparison <- FALSE
+  }
+  if (isTRUE(auto_comparison) && length(comparisons) > 0) {
+    log_message(
+      "Ignoring {.arg auto_comparison} because explicit {.arg comparisons} were provided",
+      message_type = "warning"
+    )
+    auto_comparison <- FALSE
+  }
+  if (isTRUE(auto_comparison) && !is.null(ref_group)) {
+    log_message(
+      "Using explicit {.arg ref_group} as the reference for {.arg auto_comparison}"
+    )
   }
   if (group.by == split.by && group.by == "All.groups") {
     legend.position <- "none"
@@ -224,7 +245,7 @@ ExpressionStatPlot <- function(
     )
     sort <- FALSE
   }
-  if (isTRUE(multiplegroup_comparisons) || length(comparisons) > 0) {
+  if (isTRUE(multiplegroup_comparisons) || length(comparisons) > 0 || isTRUE(auto_comparison)) {
     check_r("ggpubr", verbose = FALSE)
     ncomp <- sapply(comparisons, length)
     if (any(ncomp > 2)) {
@@ -799,8 +820,70 @@ ExpressionStatPlot <- function(
         }
       }
 
-      if (length(comparisons) > 0) {
-        if (isTRUE(comparisons)) {
+      comparisons_use <- comparisons
+      ref_group_use <- ref_group
+
+      if (isTRUE(auto_comparison) && split.by == "All.groups" && length(comparisons_use) == 0) {
+        auto_dat <- dat[
+          is.finite(dat[["value"]]) & !is.na(dat[["group.by"]]),
+          ,
+          drop = FALSE
+        ]
+        auto_groups <- split(
+          auto_dat[["value"]],
+          auto_dat[["group.by"]],
+          drop = TRUE
+        )
+        auto_group_order <- levels(dat[["group.by"]])
+        auto_summary <- data.frame(
+          group = names(auto_groups),
+          n_cells = lengths(auto_groups),
+          median_value = vapply(auto_groups, stats::median, numeric(1), na.rm = TRUE),
+          mean_value = vapply(auto_groups, mean, numeric(1), na.rm = TRUE),
+          stringsAsFactors = FALSE
+        )
+        auto_summary <- auto_summary[auto_summary[["n_cells"]] >= 2, , drop = FALSE]
+        auto_summary[["group_order"]] <- match(auto_summary[["group"]], auto_group_order)
+
+        if (nrow(auto_summary) >= 2) {
+          if (!is.null(ref_group_use)) {
+            ref_group_use <- as.character(ref_group_use)[1]
+            if (!ref_group_use %in% auto_summary[["group"]]) {
+              log_message(
+                "{.arg ref_group} is not a valid group with at least two finite values for {.arg auto_comparison}",
+                message_type = "warning"
+              )
+              ref_group_use <- NULL
+              comparisons_use <- NULL
+            }
+          } else {
+            auto_summary <- auto_summary[
+              order(
+                -auto_summary[["median_value"]],
+                -auto_summary[["mean_value"]],
+                auto_summary[["group_order"]]
+              ),
+              ,
+              drop = FALSE
+            ]
+            ref_group_use <- auto_summary[["group"]][1]
+          }
+
+          if (!is.null(ref_group_use)) {
+            other_auto_groups <- setdiff(auto_summary[["group"]], ref_group_use)
+            other_auto_groups <- auto_group_order[auto_group_order %in% other_auto_groups]
+            comparisons_use <- lapply(other_auto_groups, function(x) c(ref_group_use, x))
+            if (length(comparisons_use) == 0) {
+              comparisons_use <- NULL
+            }
+          }
+        } else {
+          comparisons_use <- NULL
+        }
+      }
+
+      if (length(comparisons_use) > 0) {
+        if (isTRUE(comparisons_use)) {
           row_sums <- Matrix::rowSums(
             table(dat[["group.by"]], dat[["split.by"]]) >= 2
           )
@@ -836,7 +919,7 @@ ExpressionStatPlot <- function(
         } else {
           if (split.by != "All.groups") {
             valid_comparisons <- list()
-            for (comp in comparisons) {
+            for (comp in comparisons_use) {
               if (length(comp) == 2 && all(comp %in% levels(dat[["split.by"]]))) {
                 valid_comparisons <- append(valid_comparisons, list(comp))
               }
@@ -856,7 +939,7 @@ ExpressionStatPlot <- function(
                   tip.length = 0.03,
                   vjust = 0,
                   comparisons = valid_comparisons,
-                  ref.group = ref_group,
+                  ref.group = ref_group_use,
                   method = pairwise_method
                 )
             }
@@ -874,8 +957,8 @@ ExpressionStatPlot <- function(
                 step.increase = 0.1,
                 tip.length = 0.03,
                 vjust = 0,
-                comparisons = comparisons,
-                ref.group = ref_group,
+                comparisons = comparisons_use,
+                ref.group = ref_group_use,
                 method = pairwise_method
               )
           }
