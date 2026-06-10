@@ -11,11 +11,19 @@ SCENICPlot(
   assay = "scenic",
   layer = "data",
   plot_type = c("rss_rank", "rss_heatmap", "rss_dotplot", "activity_heatmap",
-    "activity_violin", "activity_dim", "regulon_size", "network_graph", "network",
-    "target_bar"),
+    "activity_violin", "activity_dim", "activity_cor_dumbbell", "regulon_size",
+    "network_graph", "network", "target_bar"),
   features = NULL,
   reduction = NULL,
   dims = c(1, 2),
+  cor.features = NULL,
+  cor.feature.labels = NULL,
+  cor_method = c("spearman", "pearson", "kendall"),
+  p_cutoff = 0.05,
+  cor_sort.by = c("difference", "max_abs", "input"),
+  cor_cols = c("#56B4E9", "#E83F6F"),
+  cor_xlim = NULL,
+  cor_label = TRUE,
   top_n = 12,
   activity_scale = FALSE,
   rss_scale = FALSE,
@@ -83,6 +91,31 @@ values are resolved in input order; duplicated regulons are drawn once.}
 available.}
 
 \item{dims}{Two reduction dimensions used when \code{plot_type = "activity_dim"}.}
+
+\item{cor.features}{Two metadata columns or gene names used when
+\code{plot_type = "activity_cor_dumbbell"}. SCENIC regulon activity is
+correlated with each feature across matched cells.}
+
+\item{cor.feature.labels}{Optional labels for \code{cor.features} in the plot
+legend. If \code{NULL}, \code{cor.features} are used.}
+
+\item{cor_method}{Correlation method used by
+\code{plot_type = "activity_cor_dumbbell"}.}
+
+\item{p_cutoff}{P-value cutoff used to mark significant correlations in
+\code{plot_type = "activity_cor_dumbbell"}.}
+
+\item{cor_sort.by}{Ordering used for the dumbbell rows. \code{"difference"}
+sorts by the absolute distance between the two correlations, \code{"max_abs"}
+sorts by the strongest absolute correlation, and \code{"input"} keeps the
+resolved regulon order.}
+
+\item{cor_cols}{Two colors used for the two correlation targets.}
+
+\item{cor_xlim}{Optional x-axis limits for the dumbbell plot.}
+
+\item{cor_label}{Whether to label dumbbell points with correlation
+coefficients.}
 
 \item{top_n}{Number of top regulons labeled for each group.}
 
@@ -263,6 +296,13 @@ SCENICPlot(
   group.by = "CellType",
   plot_type = "activity_dim",
   features = example_regulons
+)
+SCENICPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "activity_cor_dumbbell",
+  features = example_regulons,
+  cor.features = c("nFeature_RNA", "nCount_RNA")
 )
 SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "regulon_size")
 SCENICPlot(
