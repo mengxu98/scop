@@ -54,11 +54,19 @@ plot the top regulons for each group.</p>
 <span>  assay <span class="op">=</span> <span class="st">"scenic"</span>,</span>
 <span>  layer <span class="op">=</span> <span class="st">"data"</span>,</span>
 <span>  plot_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rss_rank"</span>, <span class="st">"rss_heatmap"</span>, <span class="st">"rss_dotplot"</span>, <span class="st">"activity_heatmap"</span>,</span>
-<span>    <span class="st">"activity_violin"</span>, <span class="st">"activity_dim"</span>, <span class="st">"regulon_size"</span>, <span class="st">"network_graph"</span>, <span class="st">"network"</span>,</span>
-<span>    <span class="st">"target_bar"</span><span class="op">)</span>,</span>
+<span>    <span class="st">"activity_violin"</span>, <span class="st">"activity_dim"</span>, <span class="st">"activity_cor_dumbbell"</span>, <span class="st">"regulon_size"</span>,</span>
+<span>    <span class="st">"network_graph"</span>, <span class="st">"network"</span>, <span class="st">"target_bar"</span><span class="op">)</span>,</span>
 <span>  features <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  reduction <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>  cor.features <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cor.feature.labels <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cor_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"spearman"</span>, <span class="st">"pearson"</span>, <span class="st">"kendall"</span><span class="op">)</span>,</span>
+<span>  p_cutoff <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  cor_sort.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"difference"</span>, <span class="st">"max_abs"</span>, <span class="st">"input"</span><span class="op">)</span>,</span>
+<span>  cor_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#56B4E9"</span>, <span class="st">"#E83F6F"</span><span class="op">)</span>,</span>
+<span>  cor_xlim <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cor_label <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  top_n <span class="op">=</span> <span class="fl">12</span>,</span>
 <span>  activity_scale <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  rss_scale <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -147,6 +155,47 @@ available.</p></dd>
 
 <dt id="arg-dims">dims<a class="anchor" aria-label="anchor" href="#arg-dims"></a></dt>
 <dd><p>Two reduction dimensions used when <code>plot_type = "activity_dim"</code>.</p></dd>
+
+
+<dt id="arg-cor-features">cor.features<a class="anchor" aria-label="anchor" href="#arg-cor-features"></a></dt>
+<dd><p>Two metadata columns or gene names used when
+<code>plot_type = "activity_cor_dumbbell"</code>. SCENIC regulon activity is
+correlated with each feature across matched cells.</p></dd>
+
+
+<dt id="arg-cor-feature-labels">cor.feature.labels<a class="anchor" aria-label="anchor" href="#arg-cor-feature-labels"></a></dt>
+<dd><p>Optional labels for <code>cor.features</code> in the plot
+legend. If <code>NULL</code>, <code>cor.features</code> are used.</p></dd>
+
+
+<dt id="arg-cor-method">cor_method<a class="anchor" aria-label="anchor" href="#arg-cor-method"></a></dt>
+<dd><p>Correlation method used by
+<code>plot_type = "activity_cor_dumbbell"</code>.</p></dd>
+
+
+<dt id="arg-p-cutoff">p_cutoff<a class="anchor" aria-label="anchor" href="#arg-p-cutoff"></a></dt>
+<dd><p>P-value cutoff used to mark significant correlations in
+<code>plot_type = "activity_cor_dumbbell"</code>.</p></dd>
+
+
+<dt id="arg-cor-sort-by">cor_sort.by<a class="anchor" aria-label="anchor" href="#arg-cor-sort-by"></a></dt>
+<dd><p>Ordering used for the dumbbell rows. <code>"difference"</code>
+sorts by the absolute distance between the two correlations, <code>"max_abs"</code>
+sorts by the strongest absolute correlation, and <code>"input"</code> keeps the
+resolved regulon order.</p></dd>
+
+
+<dt id="arg-cor-cols">cor_cols<a class="anchor" aria-label="anchor" href="#arg-cor-cols"></a></dt>
+<dd><p>Two colors used for the two correlation targets.</p></dd>
+
+
+<dt id="arg-cor-xlim">cor_xlim<a class="anchor" aria-label="anchor" href="#arg-cor-xlim"></a></dt>
+<dd><p>Optional x-axis limits for the dumbbell plot.</p></dd>
+
+
+<dt id="arg-cor-label">cor_label<a class="anchor" aria-label="anchor" href="#arg-cor-label"></a></dt>
+<dd><p>Whether to label dumbbell points with correlation
+coefficients.</p></dd>
 
 
 <dt id="arg-top-n">top_n<a class="anchor" aria-label="anchor" href="#arg-top-n"></a></dt>
@@ -397,6 +446,13 @@ Otherwise, a plot object or list of plots.</p>
 <span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
 <span>  plot_type <span class="op">=</span> <span class="st">"activity_dim"</span>,</span>
 <span>  features <span class="op">=</span> <span class="va">example_regulons</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu">SCENICPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"activity_cor_dumbbell"</span>,</span>
+<span>  features <span class="op">=</span> <span class="va">example_regulons</span>,</span>
+<span>  cor.features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"nFeature_RNA"</span>, <span class="st">"nCount_RNA"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu">SCENICPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group.by <span class="op">=</span> <span class="st">"CellType"</span>, plot_type <span class="op">=</span> <span class="st">"regulon_size"</span><span class="op">)</span></span>
 <span><span class="fu">SCENICPlot</span><span class="op">(</span></span>

@@ -13,11 +13,19 @@ SCENICPlot(
   assay = "scenic",
   layer = "data",
   plot_type = c("rss_rank", "rss_heatmap", "rss_dotplot", "activity_heatmap",
-    "activity_violin", "activity_dim", "regulon_size", "network_graph", "network",
-    "target_bar"),
+    "activity_violin", "activity_dim", "activity_cor_dumbbell", "regulon_size",
+    "network_graph", "network", "target_bar"),
   features = NULL,
   reduction = NULL,
   dims = c(1, 2),
+  cor.features = NULL,
+  cor.feature.labels = NULL,
+  cor_method = c("spearman", "pearson", "kendall"),
+  p_cutoff = 0.05,
+  cor_sort.by = c("difference", "max_abs", "input"),
+  cor_cols = c("#56B4E9", "#E83F6F"),
+  cor_xlim = NULL,
+  cor_label = TRUE,
   top_n = 12,
   activity_scale = FALSE,
   rss_scale = FALSE,
@@ -105,6 +113,45 @@ SCENICPlot(
 - dims:
 
   Two reduction dimensions used when `plot_type = "activity_dim"`.
+
+- cor.features:
+
+  Two metadata columns or gene names used when
+  `plot_type = "activity_cor_dumbbell"`. SCENIC regulon activity is
+  correlated with each feature across matched cells.
+
+- cor.feature.labels:
+
+  Optional labels for `cor.features` in the plot legend. If `NULL`,
+  `cor.features` are used.
+
+- cor_method:
+
+  Correlation method used by `plot_type = "activity_cor_dumbbell"`.
+
+- p_cutoff:
+
+  P-value cutoff used to mark significant correlations in
+  `plot_type = "activity_cor_dumbbell"`.
+
+- cor_sort.by:
+
+  Ordering used for the dumbbell rows. `"difference"` sorts by the
+  absolute distance between the two correlations, `"max_abs"` sorts by
+  the strongest absolute correlation, and `"input"` keeps the resolved
+  regulon order.
+
+- cor_cols:
+
+  Two colors used for the two correlation targets.
+
+- cor_xlim:
+
+  Optional x-axis limits for the dumbbell plot.
+
+- cor_label:
+
+  Whether to label dumbbell points with correlation coefficients.
 
 - top_n:
 
@@ -366,6 +413,13 @@ SCENICPlot(
   group.by = "CellType",
   plot_type = "activity_dim",
   features = example_regulons
+)
+SCENICPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "activity_cor_dumbbell",
+  features = example_regulons,
+  cor.features = c("nFeature_RNA", "nCount_RNA")
 )
 SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "regulon_size")
 SCENICPlot(
