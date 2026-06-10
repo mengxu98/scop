@@ -22,6 +22,23 @@
 #' available.
 #' @param dims Two reduction dimensions used when `plot_type =
 #' "activity_dim"`.
+#' @param cor.features Two metadata columns or gene names used when
+#' `plot_type = "activity_cor_dumbbell"`. SCENIC regulon activity is
+#' correlated with each feature across matched cells.
+#' @param cor.feature.labels Optional labels for `cor.features` in the plot
+#' legend. If `NULL`, `cor.features` are used.
+#' @param cor_method Correlation method used by
+#' `plot_type = "activity_cor_dumbbell"`.
+#' @param p_cutoff P-value cutoff used to mark significant correlations in
+#' `plot_type = "activity_cor_dumbbell"`.
+#' @param cor_sort.by Ordering used for the dumbbell rows. `"difference"`
+#' sorts by the absolute distance between the two correlations, `"max_abs"`
+#' sorts by the strongest absolute correlation, and `"input"` keeps the
+#' resolved regulon order.
+#' @param cor_cols Two colors used for the two correlation targets.
+#' @param cor_xlim Optional x-axis limits for the dumbbell plot.
+#' @param cor_label Whether to label dumbbell points with correlation
+#' coefficients.
 #' @param top_n Number of top regulons labeled for each group.
 #' @param activity_scale Whether to z-score each regulon across groups in
 #' `plot_type = "activity_heatmap"`. The default is `FALSE` so that the
@@ -168,6 +185,13 @@
 #'   plot_type = "activity_dim",
 #'   features = example_regulons
 #' )
+#' SCENICPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   plot_type = "activity_cor_dumbbell",
+#'   features = example_regulons,
+#'   cor.features = c("nFeature_RNA", "nCount_RNA")
+#' )
 #' SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "regulon_size")
 #' SCENICPlot(
 #'   pancreas_sub,
@@ -205,6 +229,7 @@ SCENICPlot <- function(
     "activity_heatmap",
     "activity_violin",
     "activity_dim",
+    "activity_cor_dumbbell",
     "regulon_size",
     "network_graph",
     "network",
@@ -213,6 +238,14 @@ SCENICPlot <- function(
   features = NULL,
   reduction = NULL,
   dims = c(1, 2),
+  cor.features = NULL,
+  cor.feature.labels = NULL,
+  cor_method = c("spearman", "pearson", "kendall"),
+  p_cutoff = 0.05,
+  cor_sort.by = c("difference", "max_abs", "input"),
+  cor_cols = c("#56B4E9", "#E83F6F"),
+  cor_xlim = NULL,
+  cor_label = TRUE,
   top_n = 12,
   activity_scale = FALSE,
   rss_scale = FALSE,
@@ -259,6 +292,8 @@ SCENICPlot <- function(
   network_layout <- match.arg(network_layout)
   label_nodes <- match.arg(label_nodes)
   heatmap_order <- match.arg(heatmap_order)
+  cor_method <- match.arg(cor_method)
+  cor_sort.by <- match.arg(cor_sort.by)
   dot_args <- list(...)
   if (length(dot_args) > 0) {
     if (is.null(names(dot_args)) || any(!nzchar(names(dot_args)))) {
@@ -314,6 +349,43 @@ SCENICPlot <- function(
       heatmap_limits[[1]] >= heatmap_limits[[2]]) {
       log_message(
         "{.arg heatmap_limits} must be an increasing two-length numeric vector",
+        message_type = "error"
+      )
+    }
+  }
+  if (plot_type == "activity_cor_dumbbell") {
+    if (is.null(cor.features) || length(cor.features) != 2L) {
+      log_message(
+        "{.arg cor.features} must contain exactly two metadata columns or gene names",
+        message_type = "error"
+      )
+    }
+    if (length(p_cutoff) != 1L || !is.finite(p_cutoff) || p_cutoff < 0) {
+      log_message(
+        "{.arg p_cutoff} must be one non-negative finite number",
+        message_type = "error"
+      )
+    }
+    if (length(cor_cols) != 2L) {
+      log_message(
+        "{.arg cor_cols} must contain two colors",
+        message_type = "error"
+      )
+    }
+    if (!is.null(cor_xlim)) {
+      cor_xlim <- suppressWarnings(as.numeric(cor_xlim))
+      if (length(cor_xlim) != 2L ||
+        any(!is.finite(cor_xlim)) ||
+        cor_xlim[[1]] >= cor_xlim[[2]]) {
+        log_message(
+          "{.arg cor_xlim} must be an increasing two-length numeric vector",
+          message_type = "error"
+        )
+      }
+    }
+    if (!is.null(cor.feature.labels) && length(cor.feature.labels) != 2L) {
+      log_message(
+        "{.arg cor.feature.labels} must contain two labels when provided",
         message_type = "error"
       )
     }
@@ -513,6 +585,26 @@ SCENICPlot <- function(
       title = title,
       point_size = point_size,
       point_alpha = point_alpha
+    ),
+    activity_cor_dumbbell = scenic_plot_activity_cor_dumbbell(
+      srt = srt,
+      auc_mat = auc_mat,
+      top_table = top_table,
+      features = features,
+      cor.features = cor.features,
+      cor.feature.labels = cor.feature.labels,
+      cor_method = cor_method,
+      p_cutoff = p_cutoff,
+      cor_sort.by = cor_sort.by,
+      cor_cols = cor_cols,
+      cor_xlim = cor_xlim,
+      cor_label = cor_label,
+      assay = assay,
+      layer = layer,
+      title = title,
+      point_size = point_size,
+      label_size = label_size,
+      verbose = verbose
     ),
     regulon_size = scenic_plot_regulon_size(
       srt = srt,
@@ -1013,6 +1105,309 @@ scenic_plot_activity_dim <- function(
   )
   plot <- scenic_combine_plots(plots, combine = combine, ncol = ncol, title = title)
   list(plot = plot, plots = plots, data = data.frame(regulon = regulons))
+}
+
+scenic_plot_activity_cor_dumbbell <- function(
+  srt,
+  auc_mat,
+  top_table,
+  features = NULL,
+  cor.features,
+  cor.feature.labels = NULL,
+  cor_method = "spearman",
+  p_cutoff = 0.05,
+  cor_sort.by = "difference",
+  cor_cols = c("#56B4E9", "#E83F6F"),
+  cor_xlim = NULL,
+  cor_label = TRUE,
+  assay = "scenic",
+  layer = "data",
+  title = NULL,
+  point_size = 2,
+  label_size = 3,
+  verbose = TRUE
+) {
+  regulons <- scenic_resolve_regulon_features(
+    features = features,
+    available = rownames(auc_mat),
+    top_table = top_table
+  )
+  target_mat <- scenic_resolve_cor_targets(
+    srt = srt,
+    features = cor.features,
+    labels = cor.feature.labels,
+    cells = colnames(auc_mat),
+    assay = assay,
+    layer = layer,
+    verbose = verbose
+  )
+  target_levels <- colnames(target_mat)
+  target_features <- attr(target_mat, "features")
+  target_sources <- attr(target_mat, "sources")
+
+  plot_data <- do.call(
+    rbind,
+    lapply(regulons, function(regulon) {
+      do.call(
+        rbind,
+        lapply(seq_along(target_levels), function(target_idx) {
+          x <- as.numeric(auc_mat[regulon, ])
+          y <- as.numeric(target_mat[, target_idx])
+          keep <- is.finite(x) & is.finite(y)
+          cor_test <- NULL
+          if (sum(keep) >= 3L &&
+            stats::var(x[keep]) > 0 &&
+            stats::var(y[keep]) > 0) {
+            cor_args <- list(
+              x = x[keep],
+              y = y[keep],
+              method = cor_method
+            )
+            if (cor_method %in% c("spearman", "kendall")) {
+              cor_args$exact <- FALSE
+            }
+            cor_test <- tryCatch(
+              do.call(stats::cor.test, cor_args),
+              error = function(e) NULL
+            )
+          }
+          cor_value <- if (is.null(cor_test)) {
+            NA_real_
+          } else {
+            as.numeric(cor_test$estimate)
+          }
+          p_val <- if (is.null(cor_test)) {
+            NA_real_
+          } else {
+            as.numeric(cor_test$p.value)
+          }
+          data.frame(
+            regulon = regulon,
+            TF = scenic_tf_from_regulon(regulon),
+            target = target_levels[[target_idx]],
+            target_feature = target_features[[target_idx]],
+            target_source = target_sources[[target_idx]],
+            cor = cor_value,
+            p_val = p_val,
+            n = sum(keep),
+            stringsAsFactors = FALSE
+          )
+        })
+      )
+    })
+  )
+  rownames(plot_data) <- NULL
+  plot_data[["significant"]] <- is.finite(plot_data[["p_val"]]) &
+    plot_data[["p_val"]] < p_cutoff
+  if (!any(is.finite(plot_data[["cor"]]))) {
+    log_message(
+      "No finite correlations remain for {.arg plot_type = 'activity_cor_dumbbell'}",
+      message_type = "error"
+    )
+  }
+
+  segment_data <- do.call(
+    rbind,
+    lapply(seq_along(regulons), function(regulon_idx) {
+      regulon <- regulons[[regulon_idx]]
+      one_df <- plot_data[plot_data[["regulon"]] == regulon, , drop = FALSE]
+      data.frame(
+        regulon = regulon,
+        TF = scenic_tf_from_regulon(regulon),
+        input_rank = regulon_idx,
+        cor_1 = one_df[one_df[["target"]] == target_levels[[1]], "cor"],
+        cor_2 = one_df[one_df[["target"]] == target_levels[[2]], "cor"],
+        stringsAsFactors = FALSE
+      )
+    })
+  )
+  segment_data[["difference"]] <- abs(segment_data[["cor_1"]] - segment_data[["cor_2"]])
+  segment_data[["max_abs"]] <- pmax(
+    abs(segment_data[["cor_1"]]),
+    abs(segment_data[["cor_2"]]),
+    na.rm = TRUE
+  )
+  segment_data[["difference"]][!is.finite(segment_data[["difference"]])] <- -Inf
+  segment_data[["max_abs"]][!is.finite(segment_data[["max_abs"]])] <- -Inf
+  regulon_order <- switch(cor_sort.by,
+    difference = segment_data[order(-segment_data[["difference"]], segment_data[["input_rank"]]), "regulon"],
+    max_abs = segment_data[order(-segment_data[["max_abs"]], segment_data[["input_rank"]]), "regulon"],
+    input = segment_data[order(segment_data[["input_rank"]]), "regulon"]
+  )
+  plot_data[["regulon"]] <- factor(plot_data[["regulon"]], levels = rev(regulon_order))
+  segment_data[["regulon"]] <- factor(segment_data[["regulon"]], levels = rev(regulon_order))
+  plot_data[["target"]] <- factor(plot_data[["target"]], levels = target_levels)
+
+  sig_label <- paste0("p < ", signif(p_cutoff, 3))
+  ns_label <- paste0("p >= ", signif(p_cutoff, 3))
+  plot_data[["significance"]] <- ifelse(
+    plot_data[["significant"]],
+    sig_label,
+    ns_label
+  )
+  plot_data[["significance"]] <- factor(
+    plot_data[["significance"]],
+    levels = c(ns_label, sig_label)
+  )
+  plot_data[["cor_label"]] <- ifelse(
+    is.finite(plot_data[["cor"]]),
+    sprintf("%.2f", plot_data[["cor"]]),
+    ""
+  )
+  cor_cols <- stats::setNames(cor_cols, target_levels)
+  shape_values <- stats::setNames(c(1, 21), c(ns_label, sig_label))
+
+  p <- ggplot2::ggplot(plot_data, ggplot2::aes(x = .data[["cor"]], y = .data[["regulon"]])) +
+    ggplot2::geom_segment(
+      data = segment_data,
+      ggplot2::aes(
+        x = .data[["cor_1"]],
+        xend = .data[["cor_2"]],
+        y = .data[["regulon"]],
+        yend = .data[["regulon"]]
+      ),
+      inherit.aes = FALSE,
+      color = "grey80",
+      linewidth = 0.45,
+      na.rm = TRUE
+    ) +
+    ggplot2::geom_vline(
+      xintercept = 0,
+      linetype = "dashed",
+      color = "grey30",
+      linewidth = 0.4
+    ) +
+    ggplot2::geom_point(
+      ggplot2::aes(
+        color = .data[["target"]],
+        fill = .data[["target"]],
+        shape = .data[["significance"]]
+      ),
+      size = max(point_size * 2.2, 4.5),
+      stroke = 0.9,
+      na.rm = TRUE
+    ) +
+    ggplot2::scale_color_manual(values = cor_cols, drop = FALSE) +
+    ggplot2::scale_fill_manual(values = cor_cols, drop = FALSE, guide = "none") +
+    ggplot2::scale_shape_manual(values = shape_values, drop = FALSE) +
+    scenic_plot_theme() +
+    ggplot2::theme(
+      panel.grid.major.y = ggplot2::element_line(color = "grey86", linewidth = 0.35),
+      panel.grid.minor = ggplot2::element_blank(),
+      axis.title.y = ggplot2::element_blank()
+    ) +
+    ggplot2::guides(
+      color = ggplot2::guide_legend(
+        title = "Correlation",
+        override.aes = list(shape = 21, size = 4)
+      ),
+      shape = ggplot2::guide_legend(
+        title = "Significance",
+        override.aes = list(fill = c("white", "black"), color = "black")
+      )
+    ) +
+    ggplot2::labs(
+      x = "Correlation coefficient",
+      y = NULL,
+      title = title %||% "SCENIC regulon activity correlation"
+    )
+  if (!is.null(cor_xlim)) {
+    p <- p + ggplot2::scale_x_continuous(limits = cor_xlim, n.breaks = 5)
+  } else {
+    p <- p + ggplot2::scale_x_continuous(n.breaks = 5)
+  }
+  if (isTRUE(cor_label)) {
+    p <- p +
+      ggplot2::geom_text(
+        ggplot2::aes(label = .data[["cor_label"]]),
+        size = max(label_size * 0.6, 2),
+        color = "black",
+        na.rm = TRUE,
+        show.legend = FALSE
+      )
+  }
+
+  list(plot = p, plots = list(p), data = plot_data)
+}
+
+scenic_resolve_cor_targets <- function(
+  srt,
+  features,
+  labels = NULL,
+  cells,
+  assay = "scenic",
+  layer = "data",
+  verbose = TRUE
+) {
+  features <- as.character(features)
+  labels <- labels %||% features
+  labels <- as.character(labels)
+  if (anyDuplicated(labels)) {
+    log_message(
+      "{.arg cor.feature.labels} must be unique",
+      message_type = "error"
+    )
+  }
+  target_mat <- matrix(
+    NA_real_,
+    nrow = length(cells),
+    ncol = length(features),
+    dimnames = list(cells, labels)
+  )
+  target_sources <- character(length(features))
+
+  for (feature_idx in seq_along(features)) {
+    feature <- features[[feature_idx]]
+    if (feature %in% colnames(srt@meta.data)) {
+      raw_value <- srt@meta.data[cells, feature, drop = TRUE]
+      target_sources[[feature_idx]] <- "metadata"
+    } else {
+      raw_value <- NULL
+      assay_candidates <- unique(c(SeuratObject::DefaultAssay(srt), assay))
+      assay_candidates <- assay_candidates[
+        assay_candidates %in% SeuratObject::Assays(srt)
+      ]
+      for (assay_use in assay_candidates) {
+        if (!feature %in% rownames(srt@assays[[assay_use]])) {
+          next
+        }
+        assay_mat <- tryCatch(
+          GetAssayData5(srt, assay = assay_use, layer = layer),
+          error = function(e) NULL
+        )
+        if (is.null(assay_mat)) {
+          next
+        }
+        raw_value <- assay_mat[feature, cells, drop = TRUE]
+        target_sources[[feature_idx]] <- paste0("assay:", assay_use)
+        break
+      }
+      if (is.null(raw_value)) {
+        log_message(
+          "Cannot find {.val {feature}} in {.arg srt} metadata or selected assay features",
+          message_type = "error"
+        )
+      }
+    }
+    if (is.factor(raw_value)) {
+      raw_value <- as.character(raw_value)
+    }
+    value <- suppressWarnings(as.numeric(raw_value))
+    if (!any(is.finite(value))) {
+      log_message(
+        "{.val {feature}} must contain finite numeric values for correlation",
+        message_type = "error"
+      )
+    }
+    target_mat[, feature_idx] <- value
+  }
+  attr(target_mat, "features") <- features
+  attr(target_mat, "sources") <- target_sources
+  log_message(
+    "Resolved correlation targets: {.val {features}}",
+    verbose = verbose
+  )
+  target_mat
 }
 
 scenic_plot_regulon_size <- function(srt, tool_name, top_table, features = NULL, top_n = 12, title = NULL) {
