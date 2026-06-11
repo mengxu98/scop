@@ -19,6 +19,8 @@
 #' @param edge_palette,edge_palcolor Palette used for edge colors.
 #' @param node_size Numeric range used for node sizes.
 #' @param edge_size Numeric range used for edge widths.
+#' @param legend.position The position of the legend. The default is
+#' `"bottom"` to keep the multiple cluster-tree guides compact.
 #' @param return_data Whether to return plot data along with the plot.
 #'
 #' @return A `ggplot`, `patchwork`, list of `ggplot` objects, or a list with
@@ -29,6 +31,11 @@
 #' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub, verbose = FALSE)
+#' pancreas_sub <- Seurat::FindNeighbors(
+#'   pancreas_sub,
+#'   dims = 1:20,
+#'   verbose = FALSE
+#' )
 #' pancreas_sub <- Seurat::FindClusters(
 #'   pancreas_sub,
 #'   resolution = seq(0.2, 1, by = 0.2),
@@ -63,7 +70,7 @@ ClusterTreePlot <- function(
   subtitle = NULL,
   xlab = "Resolution",
   ylab = "Cluster",
-  legend.position = "right",
+  legend.position = "bottom",
   theme_use = "theme_scop",
   theme_args = list(),
   combine = TRUE,
@@ -160,7 +167,8 @@ ClusterTreePlot <- function(
   plot <- clustertree_combine_plots(
     plots = plots,
     combine = combine,
-    ncol = ncol
+    ncol = ncol,
+    legend.position = legend.position
   )
   if (isTRUE(return_data)) {
     return(list(
@@ -555,7 +563,7 @@ clustertree_single_plot <- function(
   subtitle = NULL,
   xlab = "Resolution",
   ylab = "Cluster",
-  legend.position = "right",
+  legend.position = "bottom",
   theme_use = "theme_scop",
   theme_args = list()
 ) {
@@ -582,19 +590,47 @@ clustertree_single_plot <- function(
         alpha = .data$in_prop
       ),
       lineend = "round",
-      arrow = grid::arrow(length = grid::unit(0.08, "inches"), type = "closed"),
+      arrow = grid::arrow(length = grid::unit(0.055, "inches"), type = "closed"),
       show.legend = TRUE
     ) +
-    ggplot2::scale_linewidth_continuous(name = "Cells", range = edge_size) +
-    ggplot2::scale_color_gradientn(name = "Cells", colours = edge_cols) +
-    ggplot2::scale_alpha_continuous(name = "Incoming", range = c(0.15, 0.95)) +
-    ggplot2::scale_size_continuous(name = "Cluster size", range = node_size) +
+    ggplot2::scale_linewidth_continuous(name = "Cells moved", range = edge_size, guide = "none") +
+    ggplot2::scale_color_gradientn(
+      name = "Cells moved",
+      colours = edge_cols,
+      guide = clustertree_colorbar_guide(legend.position, order = 1)
+    ) +
+    ggplot2::scale_alpha_continuous(
+      name = "Incoming share",
+      range = c(0.18, 0.9),
+      limits = c(0, 1),
+      labels = function(x) paste0(round(x * 100), "%"),
+      guide = ggplot2::guide_legend(
+        order = 2,
+        title.position = "top",
+        title.hjust = 0.5,
+        override.aes = list(color = "grey45", linewidth = 1.3)
+      )
+    ) +
+    ggplot2::scale_size_continuous(
+      name = "Cluster size",
+      range = node_size,
+      guide = ggplot2::guide_legend(
+        order = 3,
+        title.position = "top",
+        title.hjust = 0.5,
+        override.aes = list(fill = "grey70", color = "grey95", alpha = 1)
+      )
+    ) +
     ggplot2::scale_x_continuous(
       breaks = unique(nodes$x),
       labels = unique(nodes$resolution_label),
-      expand = ggplot2::expansion(mult = c(0.08, 0.08))
+      expand = ggplot2::expansion(mult = c(0.08, 0.16))
     ) +
-    ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.08, 0.08))) +
+    ggplot2::scale_y_continuous(
+      breaks = NULL,
+      expand = ggplot2::expansion(mult = c(0.12, 0.12), add = c(0.35, 0.35))
+    ) +
+    ggplot2::coord_cartesian(clip = "off") +
     ggplot2::labs(
       title = title,
       subtitle = subtitle %||% feature_name,
@@ -617,10 +653,19 @@ clustertree_single_plot <- function(
           fill = .data$resolution_label
         ),
         shape = 21,
-        color = "white",
-        stroke = 0.6
+        color = "grey95",
+        stroke = 0.7
       ) +
-      ggplot2::scale_fill_manual(name = "Resolution", values = node_cols)
+      ggplot2::scale_fill_manual(
+        name = "Resolution",
+        values = node_cols,
+        guide = ggplot2::guide_legend(
+          order = 4,
+          title.position = "top",
+          title.hjust = 0.5,
+          override.aes = list(color = "grey95", alpha = 1)
+        )
+      )
   } else {
     node_cols <- palette_colors(
       palette = node_palette,
@@ -637,13 +682,14 @@ clustertree_single_plot <- function(
           fill = .data$feature_value
         ),
         shape = 21,
-        color = "white",
-        stroke = 0.6
+        color = "grey95",
+        stroke = 0.7
       ) +
       ggplot2::scale_fill_gradientn(
         name = feature_name,
         colours = node_cols,
-        na.value = "grey85"
+        na.value = "grey85",
+        guide = clustertree_colorbar_guide(legend.position, order = 4)
       )
   }
   if (isTRUE(label)) {
@@ -658,13 +704,50 @@ clustertree_single_plot <- function(
   }
   p +
     do.call(theme_use, theme_args) +
-    ggplot2::theme(
-      legend.position = legend.position,
-      panel.grid.minor = ggplot2::element_blank()
-    )
+    clustertree_legend_theme(legend.position)
 }
 
-clustertree_combine_plots <- function(plots, combine = TRUE, ncol = NULL) {
+clustertree_is_horizontal_legend <- function(legend.position) {
+  is.character(legend.position) &&
+    length(legend.position) == 1L &&
+    legend.position %in% c("bottom", "top")
+}
+
+clustertree_colorbar_guide <- function(legend.position, order = 1) {
+  horizontal <- clustertree_is_horizontal_legend(legend.position)
+  ggplot2::guide_colorbar(
+    order = order,
+    title.position = "top",
+    title.hjust = 0.5,
+    barwidth = if (horizontal) grid::unit(42, "pt") else grid::unit(5, "pt"),
+    barheight = if (horizontal) grid::unit(4, "pt") else grid::unit(42, "pt")
+  )
+}
+
+clustertree_legend_theme <- function(legend.position) {
+  horizontal <- clustertree_is_horizontal_legend(legend.position)
+  ggplot2::theme(
+    legend.position = legend.position,
+    legend.direction = if (horizontal) "horizontal" else "vertical",
+    legend.box = if (horizontal) "horizontal" else "vertical",
+    legend.justification = if (horizontal) "center" else "top",
+    legend.box.just = if (horizontal) "center" else "left",
+    legend.title = ggplot2::element_text(size = 8),
+    legend.text = ggplot2::element_text(size = 7),
+    legend.key.height = grid::unit(8, "pt"),
+    legend.key.width = grid::unit(16, "pt"),
+    legend.spacing.x = grid::unit(4, "pt"),
+    legend.spacing.y = grid::unit(1, "pt"),
+    legend.margin = ggplot2::margin(t = 2, r = 2, b = 2, l = 2),
+    legend.box.margin = ggplot2::margin(t = 2, r = 4, b = 0, l = 4),
+    panel.grid.minor = ggplot2::element_blank(),
+    axis.text.y = ggplot2::element_blank(),
+    axis.ticks.y = ggplot2::element_blank(),
+    plot.margin = ggplot2::margin(t = 6, r = 12, b = 6, l = 6)
+  )
+}
+
+clustertree_combine_plots <- function(plots, combine = TRUE, ncol = NULL, legend.position = "bottom") {
   if (length(plots) == 1L) {
     return(plots[[1L]])
   }
@@ -672,5 +755,6 @@ clustertree_combine_plots <- function(plots, combine = TRUE, ncol = NULL) {
     return(plots)
   }
   check_r("patchwork", verbose = FALSE)
-  patchwork::wrap_plots(plotlist = plots, ncol = ncol)
+  patchwork::wrap_plots(plotlist = plots, ncol = ncol, guides = "collect") &
+    clustertree_legend_theme(legend.position)
 }
