@@ -88,6 +88,7 @@ FeatureStatPlot(
   force = FALSE,
   seed = 11,
   ...,
+  x_text_angle = 45,
   verbose = TRUE
 )
 }
@@ -291,6 +292,9 @@ Default is \code{3.5}.}
 
 \item{aspect.ratio}{Aspect ratio of the panel.
 Default is \code{NULL}.}
+
+\item{x_text_angle}{Rotation angle for x-axis labels.
+Default is \code{45}.}
 
 \item{title}{The text for the title.
 Default is \code{NULL}.}
