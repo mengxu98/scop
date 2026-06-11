@@ -3,6 +3,12 @@
 ## scop 0.9.0
 
 - **feat**:
+  - Added
+    [`ClusterTreePlot()`](https://mengxu98.github.io/scop/reference/ClusterTreePlot.md)
+    for SCOP-styled visualization of Seurat multi-resolution clustering
+    trees, including automatic `*_snn_res.*` metadata detection,
+    prefix/resolution filtering, edge contribution statistics, and
+    marker-expression overlays.
   - Added optional support for BPCells-backed Seurat v5 assay layers in
     [`GetAssayData5()`](https://mengxu98.github.io/scop/reference/GetAssayData5.md),
     [`CheckDataType()`](https://mengxu98.github.io/scop/reference/CheckDataType.md),
