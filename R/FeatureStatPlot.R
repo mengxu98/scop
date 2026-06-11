@@ -811,7 +811,7 @@ FeatureStatPlot <- function(
                     axis.text.y = element_blank(),
                     axis.text.x = element_text(vjust = c(1, 0)),
                     axis.ticks.length.y = grid::unit(0, "pt"),
-                    plot.margin = grid::unit(c(0, -0.5, 0, 0), "mm")
+                    plot.margin = grid::unit(c(0, 0, 0, 0), "mm")
                   )
               )
             } else {
@@ -824,7 +824,7 @@ FeatureStatPlot <- function(
                     axis.title.y = element_blank(),
                     axis.text.x = element_text(vjust = c(1, 0)),
                     axis.ticks.length.y = grid::unit(0, "pt"),
-                    plot.margin = grid::unit(c(0, -0.5, 0, 0), "mm")
+                    plot.margin = grid::unit(c(0, 0, 0, 0), "mm")
                   )
               )
             }
@@ -861,7 +861,7 @@ FeatureStatPlot <- function(
                     axis.text.x = element_blank(),
                     axis.text.y = element_text(vjust = c(0, 1)),
                     axis.ticks.length.x = grid::unit(0, "pt"),
-                    plot.margin = grid::unit(c(-0.5, 0, 0, 0), "mm")
+                    plot.margin = grid::unit(c(0, 0, 0, 0), "mm")
                   )
               )
             } else {
@@ -873,7 +873,7 @@ FeatureStatPlot <- function(
                     axis.title.y = element_blank(),
                     axis.text.y = element_text(vjust = c(0, 1)),
                     axis.ticks.length.x = grid::unit(0, "pt"),
-                    plot.margin = grid::unit(c(-0.5, 0, 0, 0), "mm")
+                    plot.margin = grid::unit(c(0, 0, 0, 0), "mm")
                   )
               )
             }
