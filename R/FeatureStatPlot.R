@@ -809,7 +809,7 @@ FeatureStatPlot <- function(
                     axis.title.x = element_blank(),
                     axis.title.y = element_blank(),
                     axis.text.y = element_blank(),
-                    axis.text.x = element_text(vjust = c(1, 0)),
+                    axis.text.x = element_text(angle = x_text_angle, vjust = 1, hjust = 1),
                     axis.ticks.length.y = grid::unit(0, "pt"),
                     plot.margin = grid::unit(c(0, 0, 0, 0), "mm")
                   )
@@ -822,7 +822,7 @@ FeatureStatPlot <- function(
                     panel.grid = element_blank(),
                     axis.title.x = element_blank(),
                     axis.title.y = element_blank(),
-                    axis.text.x = element_text(vjust = c(1, 0)),
+                    axis.text.x = element_text(angle = x_text_angle, vjust = 1, hjust = 1),
                     axis.ticks.length.y = grid::unit(0, "pt"),
                     plot.margin = grid::unit(c(0, 0, 0, 0), "mm")
                   )
