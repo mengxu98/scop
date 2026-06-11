@@ -198,6 +198,8 @@
   : 3D-Dimensional reduction plot for cell classification visualization.
 - [`CellDensityPlot()`](https://mengxu98.github.io/scop/reference/CellDensityPlot.md)
   : Cell density plot
+- [`ClusterTreePlot()`](https://mengxu98.github.io/scop/reference/ClusterTreePlot.md)
+  : Cluster tree plot
 - [`DimsEstimatePlot()`](https://mengxu98.github.io/scop/reference/DimsEstimatePlot.md)
   : Dimension estimate diagnostic plot
 - [`FeatureDimPlot()`](https://mengxu98.github.io/scop/reference/FeatureDimPlot.md)
