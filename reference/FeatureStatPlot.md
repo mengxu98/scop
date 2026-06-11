@@ -89,6 +89,7 @@ FeatureStatPlot(
   force = FALSE,
   seed = 11,
   ...,
+  x_text_angle = 45,
   verbose = TRUE
 )
 ```
@@ -389,6 +390,10 @@ FeatureStatPlot(
 - aspect.ratio:
 
   Aspect ratio of the panel. Default is `NULL`.
+
+- x_text_angle:
+
+  Rotation angle for x-axis labels. Default is `45`.
 
 - title:
 
