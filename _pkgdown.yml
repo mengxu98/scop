@@ -150,6 +150,7 @@ reference:
   - CellDimPlot
   - CellDimPlot3D
   - CellDensityPlot
+  - ClusterTreePlot
   - DimsEstimatePlot
   - FeatureDimPlot
   - FeatureDimPlot3D
