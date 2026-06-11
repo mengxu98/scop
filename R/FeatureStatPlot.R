@@ -120,6 +120,8 @@
 #' Default is `3.5`.
 #' @param aspect.ratio Aspect ratio of the panel.
 #' Default is `NULL`.
+#' @param x_text_angle The angle of the x-axis text labels.
+#' Default is `45`.
 #' @param ylab A string specifying the label of the y-axis.
 #' Default is `"Expression level"`.
 #' @param grid_major Whether to show major panel grid lines.
@@ -470,6 +472,7 @@ FeatureStatPlot <- function(
   sig_label = c("p.signif", "p.format"),
   sig_labelsize = 3.5,
   aspect.ratio = NULL,
+  x_text_angle = 45,
   title = NULL,
   subtitle = NULL,
   xlab = NULL,
@@ -621,6 +624,7 @@ FeatureStatPlot <- function(
           sig_label = sig_label,
           sig_labelsize = sig_labelsize,
           aspect.ratio = aspect.ratio,
+          x_text_angle = x_text_angle,
           title = title,
           subtitle = subtitle,
           xlab = xlab,

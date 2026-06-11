@@ -61,6 +61,7 @@ ExpressionStatPlot <- function(
   sig_label = c("p.signif", "p.format"),
   sig_labelsize = 3.5,
   aspect.ratio = NULL,
+  x_text_angle = 45,
   title = NULL,
   subtitle = NULL,
   xlab = NULL,
@@ -1148,7 +1149,7 @@ ExpressionStatPlot <- function(
             do.call(theme_use, theme_args) +
             theme(
               aspect.ratio = aspect.ratio,
-              axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
+              axis.text.x = element_text(angle = x_text_angle, hjust = 1, vjust = 1),
               strip.text.y = element_text(angle = 0),
               panel.grid.major = element_blank(),
               panel.grid.major.x = grid_major_element,
@@ -1162,7 +1163,7 @@ ExpressionStatPlot <- function(
           do.call(theme_use, theme_args) +
           theme(
             aspect.ratio = aspect.ratio,
-            axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
+            axis.text.x = element_text(angle = x_text_angle, hjust = 1, vjust = 1),
             strip.text.y = element_text(angle = 0),
             panel.grid.major = element_blank(),
             panel.grid.major.y = grid_major_element,
