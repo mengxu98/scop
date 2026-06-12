@@ -186,6 +186,7 @@ RunEnrichment <- function(
   ...
 ) {
   log_message("Start {.pkg Enrichment} analysis", verbose = verbose)
+  species <- normalize_species_name(species)
   backend <- match.arg(backend)
   if (identical(backend, "cpp") && isTRUE(GO_simplify)) {
     log_message(

@@ -150,6 +150,7 @@ RunGSEA <- function(
   ...
 ) {
   log_message("Start {.pkg GSEA} analysis", verbose = verbose)
+  species <- normalize_species_name(species)
 
   use_object <- !is.null(srt)
   if (is.null(geneID) && !is.null(srt)) {
