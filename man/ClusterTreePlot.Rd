@@ -26,7 +26,7 @@ ClusterTreePlot(
   subtitle = NULL,
   xlab = "Resolution",
   ylab = "Cluster",
-  legend.position = "right",
+  legend.position = "bottom",
   theme_use = "theme_scop",
   theme_args = list(),
   combine = TRUE,
@@ -48,8 +48,7 @@ clustering columns, for example \code{"RNA_snn"}.}
 \item{resolutions}{Optional numeric vector used to filter automatically
 detected resolutions.}
 
-\item{features}{A character vector or a named list of features to plot.
-Features can be gene names in Assay or names of numeric columns in meta.data.}
+\item{features}{A character vector of features to use.}
 
 \item{assay}{Which assay to use.
 If \code{NULL}, the default assay of the Seurat object will be used.
@@ -70,44 +69,40 @@ Edges below this threshold are still available when \code{return_data = TRUE}.}
 
 \item{edge_size}{Numeric range used for edge widths.}
 
-\item{label}{Whether the feature name is labeled in the center of the location of cells with high expression.}
+\item{label}{Whether to add labels on the plot.
+Default is \code{TRUE}.}
 
-\item{label.size}{Size of labels.}
+\item{label.size}{The size of the labels.}
 
-\item{label.fg}{Foreground color of label.}
+\item{label.fg}{The foreground color of the labels.}
 
-\item{title}{The text for the title.
+\item{title}{The title of the plot.
 Default is \code{NULL}.}
 
-\item{subtitle}{The text for the subtitle for the plot which will be displayed below the title.
+\item{subtitle}{The subtitle of the plot.
 Default is \code{NULL}.}
 
-\item{xlab}{The x-axis label of the plot.
+\item{xlab}{The label for the x-axis.
 Default is \code{NULL}.}
 
-\item{ylab}{The y-axis label of the plot.
+\item{ylab}{The label for the y-axis.
 Default is \code{NULL}.}
 
-\item{legend.position}{The position of legends,
-one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
-Default is \code{"right"}.}
+\item{legend.position}{The position of the legend. The default is
+\code{"bottom"} to keep the multiple cluster-tree guides compact.}
 
 \item{theme_use}{Theme used. Can be a character string or a theme function.
 Default is \code{"theme_scop"}.}
 
-\item{theme_args}{Other arguments passed to the \code{theme_use}.
-Default is \code{list()}.}
+\item{theme_args}{Other arguments passed to the \code{theme_use}.}
 
-\item{combine}{Combine plots into a single \code{patchwork} object.
-If \code{FALSE}, return a list of ggplot objects.}
+\item{combine}{Combine plots into a single \code{patchwork} object.}
 
-\item{ncol}{Number of columns in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
+\item{ncol}{Number of columns used when \code{combine = TRUE}.}
 
 \item{return_data}{Whether to return plot data along with the plot.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Whether to show messages.}
 }
 \value{
 A \code{ggplot}, \code{patchwork}, list of \code{ggplot} objects, or a list with
@@ -121,6 +116,11 @@ resolutions.
 \dontrun{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub, verbose = FALSE)
+pancreas_sub <- Seurat::FindNeighbors(
+  pancreas_sub,
+  dims = 1:20,
+  verbose = FALSE
+)
 pancreas_sub <- Seurat::FindClusters(
   pancreas_sub,
   resolution = seq(0.2, 1, by = 0.2),
