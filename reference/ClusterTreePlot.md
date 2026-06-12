@@ -28,7 +28,7 @@ ClusterTreePlot(
   subtitle = NULL,
   xlab = "Resolution",
   ylab = "Cluster",
-  legend.position = "right",
+  legend.position = "bottom",
   theme_use = "theme_scop",
   theme_args = list(),
   combine = TRUE,
@@ -63,8 +63,7 @@ ClusterTreePlot(
 
 - features:
 
-  A character vector or a named list of features to plot. Features can
-  be gene names in Assay or names of numeric columns in meta.data.
+  A character vector of features to use.
 
 - assay:
 
@@ -100,38 +99,36 @@ ClusterTreePlot(
 
 - label:
 
-  Whether the feature name is labeled in the center of the location of
-  cells with high expression.
+  Whether to add labels on the plot. Default is `TRUE`.
 
 - label.size:
 
-  Size of labels.
+  The size of the labels.
 
 - label.fg:
 
-  Foreground color of label.
+  The foreground color of the labels.
 
 - title:
 
-  The text for the title. Default is `NULL`.
+  The title of the plot. Default is `NULL`.
 
 - subtitle:
 
-  The text for the subtitle for the plot which will be displayed below
-  the title. Default is `NULL`.
+  The subtitle of the plot. Default is `NULL`.
 
 - xlab:
 
-  The x-axis label of the plot. Default is `NULL`.
+  The label for the x-axis. Default is `NULL`.
 
 - ylab:
 
-  The y-axis label of the plot. Default is `NULL`.
+  The label for the y-axis. Default is `NULL`.
 
 - legend.position:
 
-  The position of legends, one of `"none"`, `"left"`, `"right"`,
-  `"bottom"`, `"top"`. Default is `"right"`.
+  The position of the legend. The default is `"bottom"` to keep the
+  multiple cluster-tree guides compact.
 
 - theme_use:
 
@@ -140,18 +137,15 @@ ClusterTreePlot(
 
 - theme_args:
 
-  Other arguments passed to the `theme_use`. Default is
-  [`list()`](https://rdrr.io/r/base/list.html).
+  Other arguments passed to the `theme_use`.
 
 - combine:
 
-  Combine plots into a single `patchwork` object. If `FALSE`, return a
-  list of ggplot objects.
+  Combine plots into a single `patchwork` object.
 
 - ncol:
 
-  Number of columns in the combined plot. Default is `NULL`, which means
-  determined automatically based on the number of plots.
+  Number of columns used when `combine = TRUE`.
 
 - return_data:
 
@@ -159,7 +153,7 @@ ClusterTreePlot(
 
 - verbose:
 
-  Whether to print the message. Default is `TRUE`.
+  Whether to show messages.
 
 ## Value
 
@@ -172,6 +166,11 @@ data when `return_data = TRUE`.
 if (FALSE) { # \dontrun{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub, verbose = FALSE)
+pancreas_sub <- Seurat::FindNeighbors(
+  pancreas_sub,
+  dims = 1:20,
+  verbose = FALSE
+)
 pancreas_sub <- Seurat::FindClusters(
   pancreas_sub,
   resolution = seq(0.2, 1, by = 0.2),

@@ -69,7 +69,7 @@ resolutions.</p>
 <span>  subtitle <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  xlab <span class="op">=</span> <span class="st">"Resolution"</span>,</span>
 <span>  ylab <span class="op">=</span> <span class="st">"Cluster"</span>,</span>
-<span>  legend.position <span class="op">=</span> <span class="st">"right"</span>,</span>
+<span>  legend.position <span class="op">=</span> <span class="st">"bottom"</span>,</span>
 <span>  theme_use <span class="op">=</span> <span class="st">"theme_scop"</span>,</span>
 <span>  theme_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  combine <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -104,8 +104,7 @@ detected resolutions.</p></dd>
 
 
 <dt id="arg-features">features<a class="anchor" aria-label="anchor" href="#arg-features"></a></dt>
-<dd><p>A character vector or a named list of features to plot.
-Features can be gene names in Assay or names of numeric columns in meta.data.</p></dd>
+<dd><p>A character vector of features to use.</p></dd>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
@@ -142,41 +141,41 @@ Edges below this threshold are still available when <code>return_data = TRUE</co
 
 
 <dt id="arg-label">label<a class="anchor" aria-label="anchor" href="#arg-label"></a></dt>
-<dd><p>Whether the feature name is labeled in the center of the location of cells with high expression.</p></dd>
+<dd><p>Whether to add labels on the plot.
+Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-label-size">label.size<a class="anchor" aria-label="anchor" href="#arg-label-size"></a></dt>
-<dd><p>Size of labels.</p></dd>
+<dd><p>The size of the labels.</p></dd>
 
 
 <dt id="arg-label-fg">label.fg<a class="anchor" aria-label="anchor" href="#arg-label-fg"></a></dt>
-<dd><p>Foreground color of label.</p></dd>
+<dd><p>The foreground color of the labels.</p></dd>
 
 
 <dt id="arg-title">title<a class="anchor" aria-label="anchor" href="#arg-title"></a></dt>
-<dd><p>The text for the title.
+<dd><p>The title of the plot.
 Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-subtitle">subtitle<a class="anchor" aria-label="anchor" href="#arg-subtitle"></a></dt>
-<dd><p>The text for the subtitle for the plot which will be displayed below the title.
+<dd><p>The subtitle of the plot.
 Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-xlab">xlab<a class="anchor" aria-label="anchor" href="#arg-xlab"></a></dt>
-<dd><p>The x-axis label of the plot.
+<dd><p>The label for the x-axis.
 Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-ylab">ylab<a class="anchor" aria-label="anchor" href="#arg-ylab"></a></dt>
-<dd><p>The y-axis label of the plot.
+<dd><p>The label for the y-axis.
 Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-legend-position">legend.position<a class="anchor" aria-label="anchor" href="#arg-legend-position"></a></dt>
-<dd><p>The position of legends,
-one of <code>"none"</code>, <code>"left"</code>, <code>"right"</code>, <code>"bottom"</code>, <code>"top"</code>.
-Default is <code>"right"</code>.</p></dd>
+<dd><p>The position of the legend. The default is
+<code>"bottom"</code> to keep the multiple cluster-tree guides compact.</p></dd>
 
 
 <dt id="arg-theme-use">theme_use<a class="anchor" aria-label="anchor" href="#arg-theme-use"></a></dt>
@@ -185,18 +184,15 @@ Default is <code>"theme_scop"</code>.</p></dd>
 
 
 <dt id="arg-theme-args">theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-args"></a></dt>
-<dd><p>Other arguments passed to the <code>theme_use</code>.
-Default is <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>.</p></dd>
+<dd><p>Other arguments passed to the <code>theme_use</code>.</p></dd>
 
 
 <dt id="arg-combine">combine<a class="anchor" aria-label="anchor" href="#arg-combine"></a></dt>
-<dd><p>Combine plots into a single <code>patchwork</code> object.
-If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
+<dd><p>Combine plots into a single <code>patchwork</code> object.</p></dd>
 
 
 <dt id="arg-ncol">ncol<a class="anchor" aria-label="anchor" href="#arg-ncol"></a></dt>
-<dd><p>Number of columns in the combined plot.
-Default is <code>NULL</code>, which means determined automatically based on the number of plots.</p></dd>
+<dd><p>Number of columns used when <code>combine = TRUE</code>.</p></dd>
 
 
 <dt id="arg-return-data">return_data<a class="anchor" aria-label="anchor" href="#arg-return-data"></a></dt>
@@ -204,8 +200,7 @@ Default is <code>NULL</code>, which means determined automatically based on the 
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>Whether to print the message.
-Default is <code>TRUE</code>.</p></dd>
+<dd><p>Whether to show messages.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -219,6 +214,11 @@ plot data when <code>return_data = TRUE</code>.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
 <span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/FindNeighbors.html" class="external-link">FindNeighbors</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">20</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
 <span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/FindClusters.html" class="external-link">FindClusters</a></span><span class="op">(</span></span>
 <span>  <span class="va">pancreas_sub</span>,</span>
 <span>  resolution <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">1</span>, by <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span>,</span>
