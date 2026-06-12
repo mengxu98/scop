@@ -242,6 +242,15 @@
     format as
     [`thisutils::log_message()`](https://mengxu98.github.io/thisutils/reference/log_message.html).
 - **fix**:
+  - [`PrepareDB()`](https://mengxu98.github.io/scop/reference/PrepareDB.md),
+    [`RunEnrichment()`](https://mengxu98.github.io/scop/reference/RunEnrichment.md),
+    [`RunGSEA()`](https://mengxu98.github.io/scop/reference/RunGSEA.md),
+    and
+    [`GeneConvert()`](https://mengxu98.github.io/scop/reference/GeneConvert.md)
+    now accept Latin species names with spaces, dots, or hyphens (for
+    example, `species = "Bos taurus"`) by normalizing them to the
+    package’s underscore form before database lookup and gene ID
+    conversion.
   - [`RunSCENIC()`](https://mengxu98.github.io/scop/reference/RunSCENIC.md):
     The C++ backend now writes the final filtered TF list to
     `<prefix>_regulators.txt` and records it in `@tools$SCENIC$files`,

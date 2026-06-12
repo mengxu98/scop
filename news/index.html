@@ -103,6 +103,8 @@
 <li>
 <strong>fix</strong>:
 <ul><li>
+<code><a href="../reference/PrepareDB.html">PrepareDB()</a></code>, <code><a href="../reference/RunEnrichment.html">RunEnrichment()</a></code>, <code><a href="../reference/RunGSEA.html">RunGSEA()</a></code>, and <code><a href="../reference/GeneConvert.html">GeneConvert()</a></code> now accept Latin species names with spaces, dots, or hyphens (for example, <code>species = "Bos taurus"</code>) by normalizing them to the package’s underscore form before database lookup and gene ID conversion.</li>
+<li>
 <code><a href="../reference/RunSCENIC.html">RunSCENIC()</a></code>: The C++ backend now writes the final filtered TF list to <code>&lt;prefix&gt;_regulators.txt</code> and records it in <code>@tools$SCENIC$files</code>, matching the persisted output bundle users expect beside the C++ adjacency, regulon list, and activity-score files.</li>
 <li>
 <code><a href="../reference/RunSCENIC.html">RunSCENIC()</a></code>: The C++ backend now labels positive regulons as <code>TF(+)</code> to match pySCENIC naming and supports optional negatively correlated regulons as <code>TF(-)</code> with <code>include_negative_regulons = TRUE</code>.</li>
