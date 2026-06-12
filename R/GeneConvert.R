@@ -62,6 +62,8 @@ GeneConvert <- function(
   if (is.null(species_to)) {
     species_to <- species_from
   }
+  species_from <- normalize_species_name(species_from)
+  species_to <- normalize_species_name(species_to)
   if (is.null(Ensembl_version)) {
     Ensembl_version <- "current_release"
   }

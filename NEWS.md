@@ -41,6 +41,7 @@
   * Added a shared C++ progress helper in `src/log_message.h` for long-running C++ loops. CytoSPACE assignment, scTenifold tensor decomposition, proportion permutation/bootstrap, and sample-level proportion bootstrap now report progress with the same timestamped format as `thisutils::log_message()`.
 
 * **fix**:
+  * `PrepareDB()`, `RunEnrichment()`, `RunGSEA()`, and `GeneConvert()` now accept Latin species names with spaces, dots, or hyphens (for example, `species = "Bos taurus"`) by normalizing them to the package's underscore form before database lookup and gene ID conversion.
   * `RunSCENIC()`: The C++ backend now writes the final filtered TF list to `<prefix>_regulators.txt` and records it in `@tools$SCENIC$files`, matching the persisted output bundle users expect beside the C++ adjacency, regulon list, and activity-score files.
   * `RunSCENIC()`: The C++ backend now labels positive regulons as `TF(+)` to match pySCENIC naming and supports optional negatively correlated regulons as `TF(-)` with `include_negative_regulons = TRUE`.
   * `SCENICPlot()`: `rss_heatmap` and `activity_heatmap` now return the drawable heatmap plot in `$plot` instead of the full `FeatureHeatmap()`/`GroupHeatmap()` result list, so direct PDF export draws the heatmap rather than printing metadata.

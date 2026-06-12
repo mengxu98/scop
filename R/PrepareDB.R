@@ -168,6 +168,7 @@ PrepareDB <- function(
   ...
 ) {
   check_r("R.cache", verbose = FALSE)
+  species <- normalize_species_name(species)
   db_list <- list()
 
   # ---- CytoTRACE2 (species-independent) ----
@@ -3114,6 +3115,38 @@ PrepareDB <- function(
     }
   }
   return(db_list)
+}
+
+normalize_species_name <- function(species) {
+  if (
+    !is.character(species) ||
+      length(species) == 0L ||
+      any(is.na(species)) ||
+      any(!nzchar(trimws(species)))
+  ) {
+    log_message(
+      "{.arg species} must be a non-empty character vector",
+      message_type = "error"
+    )
+  }
+
+  vapply(species, function(x) {
+    x <- trimws(x)
+    x <- gsub("[[:space:].-]+", "_", x)
+    x <- gsub("_+", "_", x)
+    x <- gsub("^_|_$", "", x)
+    parts <- strsplit(x, "_", fixed = TRUE)[[1]]
+    parts <- parts[nzchar(parts)]
+    if (length(parts) == 0L) {
+      return(x)
+    }
+    parts <- tolower(parts)
+    parts[1] <- paste0(
+      toupper(substr(parts[1], 1, 1)),
+      substr(parts[1], 2, nchar(parts[1]))
+    )
+    paste(parts, collapse = "_")
+  }, character(1), USE.NAMES = FALSE)
 }
 
 preparedb_normalize_term2gene_id_columns <- function(TERM2GENE) {
