@@ -97,6 +97,16 @@ test_that("ClusterTreePlot returns ggplot for cluster tree", {
   plot <- ClusterTreePlot(srt, prefix = "RNA_snn")
 
   expect_s3_class(plot, "ggplot")
+  expect_identical(plot$theme$legend.position, "bottom")
+})
+
+test_that("ClusterTreePlot respects explicit legend position", {
+  srt <- make_cluster_tree_seurat()
+
+  plot <- ClusterTreePlot(srt, prefix = "RNA_snn", legend.position = "right")
+
+  expect_s3_class(plot, "ggplot")
+  expect_identical(plot$theme$legend.position, "right")
 })
 
 test_that("ClusterTreePlot returns ggplot for a single marker overlay", {
