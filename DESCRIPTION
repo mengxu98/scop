@@ -135,7 +135,9 @@ Suggests:
     yardstick
 Remotes:
     Moonerss/CIBERSORT,
-    Hy4m/linkET
+    Hy4m/linkET,
+    immunogenomics/harmony,
+    immunogenomics/symphony
 LinkingTo:
     cli,
     Rcpp,
