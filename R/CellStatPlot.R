@@ -359,6 +359,9 @@ CellStatPlot <- function(
   plot_type <- match.arg(plot_type)
   stat_type <- match.arg(stat_type)
   position <- match.arg(position)
+  if (identical(plot_type, "chord") && length(stat.by) != 2L) {
+    cli::cli_abort("{.arg stat.by} must contain exactly two metadata columns when {.arg plot_type = 'chord'}")
+  }
   check_r("geomtextpath", verbose = FALSE)
 
   if (identical(plot_type, "venn")) {
