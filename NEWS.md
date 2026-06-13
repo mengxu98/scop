@@ -38,6 +38,7 @@
   * `PrepareEnv()` now supports `modules = "scenic"` as a standalone Python 3.10 environment (`scenic_env` by default) with SCENIC 0.12.1 and numpy 1.23.5, avoiding conflicts with the default `scop_env`.
   * Added `ConvertHomologs()` for homologous feature conversion in `Seurat`, `matrix`, and `Matrix` objects. The function uses `GeneConvert()` for arbitrary Ensembl/biomaRt-supported species pairs, collapses duplicated target homologs by summing expression values, preserves Seurat cell metadata and spatial images, and stores the mapping table in `@tools$ConvertHomologs`.
   * Added `RunCytoSPACE()`, an R/C++ implementation of the default CytoSPACE spot-level assignment workflow. The C++ backend uses spot-capacity graph construction and precomputed Pearson correlation matrices, stores detailed results in `srt@tools[["CytoSPACE"]]`, and writes summary metadata columns with the requested prefix.
+  * Added `RunSpatialEcoTyper()` as an optional wrapper for single-sample de novo spatial ecotype discovery from Seurat objects, storing SE labels in metadata and raw SpatialEcoTyper results in `srt@tools`.
   * Added `SpatialSpotPlot()` for spatial visualization, including examples that show both tissue annotations and downstream CytoSPACE assignment results.
   * Added a shared C++ progress helper in `src/log_message.h` for long-running C++ loops. CytoSPACE assignment, scTenifold tensor decomposition, proportion permutation/bootstrap, and sample-level proportion bootstrap now report progress with the same timestamped format as `thisutils::log_message()`.
 
