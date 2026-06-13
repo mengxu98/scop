@@ -2,17 +2,22 @@
 % Please edit documentation in R/RunSpatialEcoTyper.R
 \name{RunSpatialEcoTyper}
 \alias{RunSpatialEcoTyper}
-\title{Run SpatialEcoTyper spatial ecotype discovery}
+\title{Run SpatialEcoTyper spatial ecotype analysis}
 \usage{
 RunSpatialEcoTyper(
   srt,
+  mode = c("single", "multi", "recover", "deconvolute"),
   assay = NULL,
   layer = "data",
-  celltype.by,
+  celltype.by = NULL,
+  sample.by = NULL,
   x.by = "X",
   y.by = "Y",
+  dat = NULL,
+  celltypes = NULL,
   features = NULL,
   outprefix = NULL,
+  outdir = NULL,
   radius = 50,
   resolution = 0.5,
   nfeatures = 300,
@@ -28,6 +33,21 @@ RunSpatialEcoTyper(
   k = 20,
   k.sn = 50,
   dropcell = FALSE,
+  normalization.method = "None",
+  nmf_ranks = 10,
+  nrun.per.rank = 30,
+  min.coph = 0.95,
+  Region = NULL,
+  downsample.by.region = TRUE,
+  subresolution = 30,
+  seed = 1,
+  scale = TRUE,
+  Ws = NULL,
+  ncell.per.run = 500,
+  min.score = 0.6,
+  W = NULL,
+  nsample.per.run = 500,
+  sum2one = TRUE,
   prefix = "SpatialEcoTyper",
   tool_name = "SpatialEcoTyper",
   store_results = TRUE,
@@ -37,33 +57,58 @@ RunSpatialEcoTyper(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object. For \code{mode = "deconvolute"}, a numeric
+expression matrix can also be supplied.}
 
-\item{assay}{Assay used for expression extraction. If \code{NULL}, the default assay is used.}
+\item{mode}{SpatialEcoTyper workflow. \code{"single"} runs single-sample de novo
+discovery, \code{"multi"} runs conserved ecotype discovery across samples,
+\code{"recover"} recovers pretrained SE labels, and \code{"deconvolute"} infers SE
+abundances from bulk or spot-level expression.}
 
-\item{layer}{Assay layer used for expression extraction. Default is \code{"data"}.}
+\item{assay}{Assay used for expression extraction. If \code{NULL}, the default
+assay is used.}
 
-\item{celltype.by}{Metadata column containing cell type annotations.}
+\item{layer}{Assay layer used for expression extraction.}
+
+\item{celltype.by}{Metadata column containing cell type annotations. Required
+for \code{"single"}, \code{"multi"}, and \code{"recover"} unless \code{celltypes} is supplied for
+\code{"recover"}.}
+
+\item{sample.by}{Metadata column identifying samples for \code{mode = "multi"}.}
 
 \item{x.by, y.by}{Metadata columns containing single-cell spatial coordinates.}
 
+\item{dat}{Optional expression matrix used by \code{"recover"} or
+\code{"deconvolute"}. If \code{NULL}, expression is extracted from \code{srt}.}
+
+\item{celltypes}{Optional named vector of cell types passed to
+\code{SpatialEcoTyper::RecoverSE()}.}
+
 \item{features}{Optional feature vector used to subset the expression matrix.}
 
-\item{outprefix}{Output prefix passed to \code{SpatialEcoTyper}. Use \code{NULL} to avoid writing result files to the working directory.}
+\item{outprefix}{Output prefix passed to \code{SpatialEcoTyper}. Use \code{NULL} to
+avoid writing single-sample result files to the working directory.}
 
-\item{radius}{Spatial neighborhood radius, in the same units as \code{x.by} and \code{y.by}.}
+\item{outdir}{Output directory passed to multi-sample SpatialEcoTyper.
+\code{NULL} creates a temporary directory.}
+
+\item{radius}{Spatial neighborhood radius, in the same units as \code{x.by} and
+\code{y.by}.}
 
 \item{resolution}{Louvain clustering resolution used by \code{SpatialEcoTyper}.}
 
 \item{nfeatures}{Number of variable features used by \code{SpatialEcoTyper}.}
 
-\item{min.cts.per.region}{Minimum number of cell types required in a spatial neighborhood.}
+\item{min.cts.per.region}{Minimum number of cell types required in a spatial
+neighborhood.}
 
 \item{npcs}{Number of principal components used for similarity networks.}
 
-\item{min.cells}{Minimum number of cells or spatial meta-cells expressing a feature.}
+\item{min.cells}{Minimum number of cells or spatial meta-cells expressing a
+feature.}
 
-\item{min.features}{Minimum number of features detected in a cell or spatial meta-cell.}
+\item{min.features}{Minimum number of features detected in a cell or spatial
+meta-cell.}
 
 \item{iterations}{Number of similarity network fusion iterations.}
 
@@ -73,39 +118,79 @@ RunSpatialEcoTyper(
 
 \item{grid.size}{Spatial grid size used to discretize coordinates.}
 
-\item{filter.region.by.celltypes}{Optional cell types used to restrict spatial neighborhoods.}
+\item{filter.region.by.celltypes}{Optional cell types used to restrict spatial
+neighborhoods.}
 
-\item{k}{Number of spatial nearest neighbors used to construct spatial meta-cells.}
+\item{k}{Number of spatial nearest neighbors used to construct spatial
+meta-cells.}
 
 \item{k.sn}{Number of nearest neighbors used to construct similarity networks.}
 
-\item{dropcell}{Whether cells without spatial ecotype assignments are removed from the returned \code{SpatialEcoTyper} metadata.}
+\item{dropcell}{Whether cells without spatial ecotype assignments are removed
+from the returned \code{SpatialEcoTyper} metadata.}
 
-\item{prefix}{Prefix used for the output metadata column.}
+\item{normalization.method, nmf_ranks, nrun.per.rank, min.coph, Region, downsample.by.region, subresolution, seed}{Parameters passed to \code{SpatialEcoTyper::MultiSpatialEcoTyper()}.}
+
+\item{scale}{Whether to scale expression for \code{"recover"} and
+\code{"deconvolute"}.}
+
+\item{Ws}{Pretrained basis matrices passed to \code{SpatialEcoTyper::RecoverSE()}.}
+
+\item{ncell.per.run}{Number of cells processed per run by
+\code{SpatialEcoTyper::RecoverSE()}.}
+
+\item{min.score}{Minimum prediction score passed to
+\code{SpatialEcoTyper::RecoverSE()}.}
+
+\item{W}{Pretrained basis matrix passed to
+\code{SpatialEcoTyper::DeconvoluteSE()}.}
+
+\item{nsample.per.run}{Number of samples processed per run by
+\code{SpatialEcoTyper::DeconvoluteSE()}.}
+
+\item{sum2one}{Whether inferred SE abundances are normalized to sum to one.}
+
+\item{prefix}{Prefix used for output metadata columns.}
 
 \item{tool_name}{Name used to store detailed results in \code{srt@tools}.}
 
 \item{store_results}{Whether to store raw results in \code{srt@tools}.}
 
-\item{allow_partial}{Whether to allow missing SE labels for cells absent from the returned \code{SpatialEcoTyper} metadata. Default is \code{FALSE} to avoid silent partial annotations.}
+\item{allow_partial}{Whether to allow missing SE labels for cells absent from
+returned \code{SpatialEcoTyper} metadata. Default is \code{FALSE} to avoid silent
+partial annotations.}
 
-\item{verbose}{Whether to print messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
-\item{...}{Additional arguments passed to \code{SpatialEcoTyper::SpatialEcoTyper()}.}
+\item{...}{Additional arguments passed to the selected SpatialEcoTyper
+function.}
 }
 \value{
-A \code{Seurat} object with spatial ecotype labels in metadata and raw results stored in \code{srt@tools[[tool_name]]} when \code{store_results = TRUE}.
+A \code{Seurat} object with SpatialEcoTyper results in metadata and raw
+results stored in \code{srt@tools[[tool_name]]} when \code{store_results = TRUE}.
+For matrix input with \code{mode = "deconvolute"}, the abundance matrix is
+returned.
 }
 \description{
-Run single-sample de novo spatial ecotype discovery with the optional
-\code{SpatialEcoTyper} package and write spatial ecotype labels back to a
-\code{Seurat} object.
+Run SpatialEcoTyper workflows through the optional \code{SpatialEcoTyper}
+package and write spatial ecotype labels or abundances back to a \code{Seurat}
+object when possible.
 }
 \examples{
 \dontrun{
 srt <- RunSpatialEcoTyper(
   srt,
   celltype.by = "CellType",
+  x.by = "X",
+  y.by = "Y"
+)
+
+srt <- RunSpatialEcoTyper(
+  srt,
+  mode = "multi",
+  celltype.by = "CellType",
+  sample.by = "sample",
   x.by = "X",
   y.by = "Y"
 )
