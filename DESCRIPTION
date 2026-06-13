@@ -124,6 +124,7 @@ Suggests:
     symphony,
     SingleR,
     SingleCellExperiment,
+    SpatialEcoTyper,
     SpatialExperiment,
     spacexr,
     tensorflow,
@@ -134,6 +135,7 @@ Suggests:
     UCell,
     yardstick
 Remotes:
+    digitalcytometry/SpatialEcoTyper,
     Moonerss/CIBERSORT,
     Hy4m/linkET,
     immunogenomics/harmony,
