@@ -163,6 +163,7 @@ reference:
   - RunBayesSpace
   - RunCytoSPACE
   - RunRCTD
+  - RunSpatialEcoTyper
   - RunSpatialGradientFeatures
   - RunSpatialVariableFeatures
 
