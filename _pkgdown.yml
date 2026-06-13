@@ -169,6 +169,8 @@ reference:
 
 - subtitle: "Spatial Visualization"
 - contents:
+  - SpatialEcoTyperCompositionPlot
+  - SpatialEcoTyperSpatialPlot
   - SpatialGradientPlot
   - SpatialSpotPlot
 
