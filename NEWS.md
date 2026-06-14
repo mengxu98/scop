@@ -1,6 +1,7 @@
 # scop 0.9.0
 
 * **feat**:
+  * `FeatureStatPlot()` and `ExpressionStatPlot()`: Added `auto_comparison` to automatically compare the group with the highest median statistic against all other groups, with explicit `ref_group` and `comparisons` still taking precedence.
   * Added `ClusterTreePlot()` for SCOP-styled visualization of Seurat multi-resolution clustering trees, including automatic `*_snn_res.*` metadata detection, prefix/resolution filtering, edge contribution statistics, and marker-expression overlays.
   * Added optional support for BPCells-backed Seurat v5 assay layers in `GetAssayData5()`, `CheckDataType()`, `RunSpotQC()`, `RunCellQC()`, and dimension-reduction variance filtering. BPCells remains a `Suggests` dependency and is detected at runtime so source installs do not require HDF5/C++17 unless users opt into BPCells-backed matrices.
   * `RunMetabolism()`: Gene sets are now built via `PrepareDB()` by default (`use_preparedb = TRUE`) for species-aware gene mapping through BioMart and KEGG/Reactome databases. The `species` parameter now automatically converts human gene symbols to the target species. scMetabolism-curated pathway lists are cross-referenced with PrepareDB TERM2GENE so mouse data receives mouse gene symbols directly. The previous GMT-only path is still available with `use_preparedb = FALSE`.
@@ -38,6 +39,7 @@
   * `PrepareEnv()` now supports `modules = "scenic"` as a standalone Python 3.10 environment (`scenic_env` by default) with SCENIC 0.12.1 and numpy 1.23.5, avoiding conflicts with the default `scop_env`.
   * Added `ConvertHomologs()` for homologous feature conversion in `Seurat`, `matrix`, and `Matrix` objects. The function uses `GeneConvert()` for arbitrary Ensembl/biomaRt-supported species pairs, collapses duplicated target homologs by summing expression values, preserves Seurat cell metadata and spatial images, and stores the mapping table in `@tools$ConvertHomologs`.
   * Added `RunCytoSPACE()`, an R/C++ implementation of the default CytoSPACE spot-level assignment workflow. The C++ backend uses spot-capacity graph construction and precomputed Pearson correlation matrices, stores detailed results in `srt@tools[["CytoSPACE"]]`, and writes summary metadata columns with the requested prefix.
+  * Added `RunSpatialEcoTyper()` as an optional SpatialEcoTyper wrapper for single-sample discovery, multi-sample conserved SE discovery, pretrained SE recovery, and SE abundance deconvolution. Results are written back to Seurat metadata and `srt@tools`, and `SpatialEcoTyperSpatialPlot()`/`SpatialEcoTyperCompositionPlot()` provide SCOP-styled visualization helpers.
   * Added `SpatialSpotPlot()` for spatial visualization, including examples that show both tissue annotations and downstream CytoSPACE assignment results.
   * Added a shared C++ progress helper in `src/log_message.h` for long-running C++ loops. CytoSPACE assignment, scTenifold tensor decomposition, proportion permutation/bootstrap, and sample-level proportion bootstrap now report progress with the same timestamped format as `thisutils::log_message()`.
 
