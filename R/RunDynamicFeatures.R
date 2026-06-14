@@ -382,8 +382,11 @@ dynamic_features_gam <- function(
     rownames(y_ordered),
     function(n) {
       family_current <- family[n]
+      y <- as.numeric(y_ordered[n, ])
+      y_min <- suppressWarnings(min(y, na.rm = TRUE))
       if (
-        min(y_ordered[n, ]) < 0 &&
+        is.finite(y_min) &&
+          y_min < 0 &&
           family_current %in% c("nb", "poisson", "binomial")
       ) {
         log_message(
@@ -400,23 +403,41 @@ dynamic_features_gam <- function(
       } else {
         l_use <- rep(stats::median(y_libsize), ncol(y_ordered))
       }
+      valid <- is.finite(y) & is.finite(t_ordered) & is.finite(l_use) & l_use > 0
+      if (sum(valid) < 4 || length(unique(t_ordered[valid])) < 3) {
+        log_message(
+          "Insufficient finite observations for GAM fitting: {.val {n}}",
+          message_type = "warning",
+          verbose = verbose
+        )
+        stop("insufficient finite observations")
+      }
       sizefactror <- stats::median(y_libsize) / l_use
       mod <- mgcv::gam(
         y ~ s(x, bs = "cs") + offset(log(l_use)),
         family = family_use,
         data = data.frame(
-          y = y_ordered[n, ],
-          x = t_ordered,
-          l_use = l_use
+          y = y[valid],
+          x = t_ordered[valid],
+          l_use = l_use[valid]
         )
       )
-      pre <- stats::predict(mod, type = "link", se.fit = TRUE)
+      newdata <- data.frame(
+        x = t_ordered,
+        l_use = l_use
+      )
+      pre <- stats::predict(
+        mod,
+        newdata = newdata,
+        type = "link",
+        se.fit = TRUE
+      )
       upr <- pre$fit + (2 * pre$se.fit)
       lwr <- pre$fit - (2 * pre$se.fit)
       upr <- mod$family$linkinv(upr)
       lwr <- mod$family$linkinv(lwr)
       res <- summary(mod)
-      fitted <- fitted(mod)
+      fitted <- mod$family$linkinv(pre$fit)
       pvalue <- res$s.table[[4]]
       dev_expl <- res$dev.expl
       r_sq <- max(0, min(1, res$r.sq))
@@ -424,7 +445,7 @@ dynamic_features_gam <- function(
       upr.values <- upr * sizefactror
       lwr.values <- lwr * sizefactror
       exp_ncells <- sum(
-        y_ordered[n, ] > min(y_ordered[n, ]),
+        y > y_min,
         na.rm = TRUE
       )
       peaktime <- stats::median(
@@ -454,6 +475,42 @@ dynamic_features_gam <- function(
     verbose = verbose
   )
   names(gam_out) <- sapply(gam_out, `[[`, "features")
+  missing_features <- setdiff(rownames(y_ordered), names(gam_out))
+  if (length(missing_features) > 0) {
+    log_message(
+      "GAM fitting failed for {.val {length(missing_features)}} feature(s); filling failed fits with NA: {.val {missing_features}}",
+      message_type = "warning",
+      verbose = verbose
+    )
+    failed_template <- function(n) {
+      y <- y_ordered[n, ]
+      min_y <- suppressWarnings(min(y, na.rm = TRUE))
+      exp_ncells <- if (is.finite(min_y)) {
+        sum(y > min_y, na.rm = TRUE)
+      } else {
+        0
+      }
+      list(
+        features = n,
+        exp_ncells = exp_ncells,
+        r.sq = NA_real_,
+        dev.expl = NA_real_,
+        peaktime = NA_real_,
+        valleytime = NA_real_,
+        pvalue = NA_real_,
+        fitted.values = rep(NA_real_, ncol(y_ordered)),
+        upr.values = rep(NA_real_, ncol(y_ordered)),
+        lwr.values = rep(NA_real_, ncol(y_ordered))
+      )
+    }
+    gam_out <- c(
+      gam_out,
+      stats::setNames(
+        lapply(missing_features, failed_template),
+        missing_features
+      )
+    )
+  }
   gam_out <- gam_out[rownames(y_ordered)]
   fitted_matrix <- do.call(
     cbind,
