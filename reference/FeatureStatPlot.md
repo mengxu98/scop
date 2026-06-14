@@ -63,6 +63,7 @@ FeatureStatPlot(
   flip = FALSE,
   comparisons = NULL,
   ref_group = NULL,
+  auto_comparison = FALSE,
   pairwise_method = "wilcox.test",
   multiplegroup_comparisons = FALSE,
   multiple_method = "kruskal.test",
@@ -363,6 +364,13 @@ FeatureStatPlot(
   A string specifying the reference group for pairwise comparisons.
   Default is `NULL`.
 
+- auto_comparison:
+
+  Whether to automatically compare the group with the highest median
+  `stat.by` value against the other groups. If `ref_group` is provided,
+  that group is used as the reference instead. Only supported when
+  `split.by` is `NULL`. Default is `FALSE`.
+
 - pairwise_method:
 
   Method to use for pairwise comparisons. Default is `"wilcox.test"`.
@@ -611,6 +619,14 @@ FeatureStatPlot(
   stat.by = c("Rbp4", "Pyy"),
   group.by = "SubCellType",
   multiplegroup_comparisons = TRUE
+)
+
+FeatureStatPlot(
+  pancreas_sub,
+  stat.by = c("Rbp4", "Pyy"),
+  group.by = "SubCellType",
+  auto_comparison = TRUE,
+  sig_label = "p.signif"
 )
 
 FeatureStatPlot(
