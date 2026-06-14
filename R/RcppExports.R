@@ -105,6 +105,42 @@ paga_connectivities_cpp <- function(knn_idx, groups, n_groups) {
     .Call(`_scop_paga_connectivities_cpp`, knn_idx, groups, n_groups)
 }
 
+palantir_compute_kernel_cpp <- function(data, knn_idx, knn_dist, knn, alpha = 0.0) {
+    .Call(`_scop_palantir_compute_kernel_cpp`, data, knn_idx, knn_dist, knn, alpha)
+}
+
+palantir_normalize_kernel_cpp <- function(kernel_i, kernel_j, kernel_x, n) {
+    .Call(`_scop_palantir_normalize_kernel_cpp`, kernel_i, kernel_j, kernel_x, n)
+}
+
+palantir_multiscale_space_cpp <- function(eigenvectors, eigenvalues) {
+    .Call(`_scop_palantir_multiscale_space_cpp`, eigenvectors, eigenvalues)
+}
+
+palantir_numpy_random_sample_cpp <- function(n, seed = 0L) {
+    .Call(`_scop_palantir_numpy_random_sample_cpp`, n, seed)
+}
+
+palantir_maxmin_waypoints_cpp <- function(ms_data, num_waypoints, seed = 20L) {
+    .Call(`_scop_palantir_maxmin_waypoints_cpp`, ms_data, num_waypoints, seed)
+}
+
+palantir_pseudotime_cpp <- function(ms_data, start_cell, waypoints, knn, max_iterations = 25L, n_jobs = 1L) {
+    .Call(`_scop_palantir_pseudotime_cpp`, ms_data, start_cell, waypoints, knn, max_iterations, n_jobs)
+}
+
+palantir_markov_chain_cpp <- function(wp_data, knn, pseudotime) {
+    .Call(`_scop_palantir_markov_chain_cpp`, wp_data, knn, pseudotime)
+}
+
+palantir_terminal_states_cpp <- function(T_i, T_j, T_x, n, wp_data) {
+    .Call(`_scop_palantir_terminal_states_cpp`, T_i, T_j, T_x, n, wp_data)
+}
+
+palantir_absorption_cpp <- function(T_i, T_j, T_x, n, terminal_state_indices) {
+    .Call(`_scop_palantir_absorption_cpp`, T_i, T_j, T_x, n, terminal_state_indices)
+}
+
 proportion_bootstrap_log2fd <- function(v1, v2, n_bootstrap = 1000L, pseudocount = 1e-5, verbose = FALSE) {
     .Call(`_scop_proportion_bootstrap_log2fd`, v1, v2, n_bootstrap, pseudocount, verbose)
 }

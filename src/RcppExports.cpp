@@ -384,6 +384,131 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// palantir_compute_kernel_cpp
+List palantir_compute_kernel_cpp(NumericMatrix data, IntegerMatrix knn_idx, NumericMatrix knn_dist, int knn, double alpha);
+RcppExport SEXP _scop_palantir_compute_kernel_cpp(SEXP dataSEXP, SEXP knn_idxSEXP, SEXP knn_distSEXP, SEXP knnSEXP, SEXP alphaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type knn_idx(knn_idxSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type knn_dist(knn_distSEXP);
+    Rcpp::traits::input_parameter< int >::type knn(knnSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    rcpp_result_gen = Rcpp::wrap(palantir_compute_kernel_cpp(data, knn_idx, knn_dist, knn, alpha));
+    return rcpp_result_gen;
+END_RCPP
+}
+// palantir_normalize_kernel_cpp
+List palantir_normalize_kernel_cpp(IntegerVector kernel_i, IntegerVector kernel_j, NumericVector kernel_x, int n);
+RcppExport SEXP _scop_palantir_normalize_kernel_cpp(SEXP kernel_iSEXP, SEXP kernel_jSEXP, SEXP kernel_xSEXP, SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type kernel_i(kernel_iSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type kernel_j(kernel_jSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type kernel_x(kernel_xSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(palantir_normalize_kernel_cpp(kernel_i, kernel_j, kernel_x, n));
+    return rcpp_result_gen;
+END_RCPP
+}
+// palantir_multiscale_space_cpp
+NumericMatrix palantir_multiscale_space_cpp(NumericMatrix eigenvectors, NumericVector eigenvalues);
+RcppExport SEXP _scop_palantir_multiscale_space_cpp(SEXP eigenvectorsSEXP, SEXP eigenvaluesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type eigenvectors(eigenvectorsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type eigenvalues(eigenvaluesSEXP);
+    rcpp_result_gen = Rcpp::wrap(palantir_multiscale_space_cpp(eigenvectors, eigenvalues));
+    return rcpp_result_gen;
+END_RCPP
+}
+// palantir_numpy_random_sample_cpp
+NumericVector palantir_numpy_random_sample_cpp(int n, int seed);
+RcppExport SEXP _scop_palantir_numpy_random_sample_cpp(SEXP nSEXP, SEXP seedSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
+    rcpp_result_gen = Rcpp::wrap(palantir_numpy_random_sample_cpp(n, seed));
+    return rcpp_result_gen;
+END_RCPP
+}
+// palantir_maxmin_waypoints_cpp
+IntegerVector palantir_maxmin_waypoints_cpp(NumericMatrix ms_data, int num_waypoints, int seed);
+RcppExport SEXP _scop_palantir_maxmin_waypoints_cpp(SEXP ms_dataSEXP, SEXP num_waypointsSEXP, SEXP seedSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type ms_data(ms_dataSEXP);
+    Rcpp::traits::input_parameter< int >::type num_waypoints(num_waypointsSEXP);
+    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
+    rcpp_result_gen = Rcpp::wrap(palantir_maxmin_waypoints_cpp(ms_data, num_waypoints, seed));
+    return rcpp_result_gen;
+END_RCPP
+}
+// palantir_pseudotime_cpp
+List palantir_pseudotime_cpp(NumericMatrix ms_data, int start_cell, IntegerVector waypoints, int knn, int max_iterations, int n_jobs);
+RcppExport SEXP _scop_palantir_pseudotime_cpp(SEXP ms_dataSEXP, SEXP start_cellSEXP, SEXP waypointsSEXP, SEXP knnSEXP, SEXP max_iterationsSEXP, SEXP n_jobsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type ms_data(ms_dataSEXP);
+    Rcpp::traits::input_parameter< int >::type start_cell(start_cellSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type waypoints(waypointsSEXP);
+    Rcpp::traits::input_parameter< int >::type knn(knnSEXP);
+    Rcpp::traits::input_parameter< int >::type max_iterations(max_iterationsSEXP);
+    Rcpp::traits::input_parameter< int >::type n_jobs(n_jobsSEXP);
+    rcpp_result_gen = Rcpp::wrap(palantir_pseudotime_cpp(ms_data, start_cell, waypoints, knn, max_iterations, n_jobs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// palantir_markov_chain_cpp
+List palantir_markov_chain_cpp(NumericMatrix wp_data, int knn, NumericVector pseudotime);
+RcppExport SEXP _scop_palantir_markov_chain_cpp(SEXP wp_dataSEXP, SEXP knnSEXP, SEXP pseudotimeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type wp_data(wp_dataSEXP);
+    Rcpp::traits::input_parameter< int >::type knn(knnSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type pseudotime(pseudotimeSEXP);
+    rcpp_result_gen = Rcpp::wrap(palantir_markov_chain_cpp(wp_data, knn, pseudotime));
+    return rcpp_result_gen;
+END_RCPP
+}
+// palantir_terminal_states_cpp
+List palantir_terminal_states_cpp(IntegerVector T_i, IntegerVector T_j, NumericVector T_x, int n, NumericMatrix wp_data);
+RcppExport SEXP _scop_palantir_terminal_states_cpp(SEXP T_iSEXP, SEXP T_jSEXP, SEXP T_xSEXP, SEXP nSEXP, SEXP wp_dataSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type T_i(T_iSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type T_j(T_jSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type T_x(T_xSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type wp_data(wp_dataSEXP);
+    rcpp_result_gen = Rcpp::wrap(palantir_terminal_states_cpp(T_i, T_j, T_x, n, wp_data));
+    return rcpp_result_gen;
+END_RCPP
+}
+// palantir_absorption_cpp
+NumericMatrix palantir_absorption_cpp(IntegerVector T_i, IntegerVector T_j, NumericVector T_x, int n, IntegerVector terminal_state_indices);
+RcppExport SEXP _scop_palantir_absorption_cpp(SEXP T_iSEXP, SEXP T_jSEXP, SEXP T_xSEXP, SEXP nSEXP, SEXP terminal_state_indicesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type T_i(T_iSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type T_j(T_jSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type T_x(T_xSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type terminal_state_indices(terminal_state_indicesSEXP);
+    rcpp_result_gen = Rcpp::wrap(palantir_absorption_cpp(T_i, T_j, T_x, n, terminal_state_indices));
+    return rcpp_result_gen;
+END_RCPP
+}
 // paga_connectivities_cpp
 List paga_connectivities_cpp(IntegerMatrix knn_idx, IntegerVector groups, int n_groups);
 RcppExport SEXP _scop_paga_connectivities_cpp(SEXP knn_idxSEXP, SEXP groupsSEXP, SEXP n_groupsSEXP) {
@@ -1416,6 +1541,15 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_wilcox_rank_sum_sparse_all_cells", (DL_FUNC) &_scop_wilcox_rank_sum_sparse_all_cells, 2},
     {"_scop_sparse_topk_by_column", (DL_FUNC) &_scop_sparse_topk_by_column, 3},
     {"_scop_dense_topk_by_column", (DL_FUNC) &_scop_dense_topk_by_column, 3},
+    {"_scop_palantir_compute_kernel_cpp", (DL_FUNC) &_scop_palantir_compute_kernel_cpp, 5},
+    {"_scop_palantir_normalize_kernel_cpp", (DL_FUNC) &_scop_palantir_normalize_kernel_cpp, 4},
+    {"_scop_palantir_multiscale_space_cpp", (DL_FUNC) &_scop_palantir_multiscale_space_cpp, 2},
+    {"_scop_palantir_numpy_random_sample_cpp", (DL_FUNC) &_scop_palantir_numpy_random_sample_cpp, 2},
+    {"_scop_palantir_maxmin_waypoints_cpp", (DL_FUNC) &_scop_palantir_maxmin_waypoints_cpp, 3},
+    {"_scop_palantir_pseudotime_cpp", (DL_FUNC) &_scop_palantir_pseudotime_cpp, 6},
+    {"_scop_palantir_markov_chain_cpp", (DL_FUNC) &_scop_palantir_markov_chain_cpp, 3},
+    {"_scop_palantir_terminal_states_cpp", (DL_FUNC) &_scop_palantir_terminal_states_cpp, 5},
+    {"_scop_palantir_absorption_cpp", (DL_FUNC) &_scop_palantir_absorption_cpp, 5},
     {"_scop_paga_connectivities_cpp", (DL_FUNC) &_scop_paga_connectivities_cpp, 3},
     {"_scop_proportion_bootstrap_log2fd", (DL_FUNC) &_scop_proportion_bootstrap_log2fd, 5},
     {"_scop_proportion_bootstrap_stats", (DL_FUNC) &_scop_proportion_bootstrap_stats, 5},
