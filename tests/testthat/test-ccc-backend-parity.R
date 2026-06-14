@@ -314,15 +314,15 @@ test_that("RunCCC with r backend dispatches correctly", {
   skip_if_not_installed("Matrix")
 
   counts <- Matrix::sparseMatrix(
-    i = c(1, 2),
-    j = c(1, 1),
-    x = c(1, 2),
-    dims = c(2, 1)
+    i = c(1, 2, 1, 2),
+    j = c(1, 1, 2, 2),
+    x = c(1, 2, 2, 1),
+    dims = c(2, 2)
   )
   rownames(counts) <- c("L1", "R1")
-  colnames(counts) <- "Cell1"
+  colnames(counts) <- c("Cell1", "Cell2")
   srt <- Seurat::CreateSeuratObject(counts = counts)
-  srt$celltype <- "TypeA"
+  srt$celltype <- c("TypeA", "TypeA")
 
   seen_backend <- character(0)
   mock_simple <- function(srt, group.by, backend = c("cpp", "r"), verbose = TRUE, ...) {

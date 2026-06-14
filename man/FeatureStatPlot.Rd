@@ -62,6 +62,7 @@ FeatureStatPlot(
   flip = FALSE,
   comparisons = NULL,
   ref_group = NULL,
+  auto_comparison = FALSE,
   pairwise_method = "wilcox.test",
   multiplegroup_comparisons = FALSE,
   multiple_method = "kruskal.test",
@@ -274,6 +275,12 @@ The entries in the vector are either the names of 2 values on the x-axis or the 
 \item{ref_group}{A string specifying the reference group for pairwise comparisons.
 Default is \code{NULL}.}
 
+\item{auto_comparison}{Whether to automatically compare the group with the
+highest median \code{stat.by} value against the other groups. If \code{ref_group} is
+provided, that group is used as the reference instead. Only supported when
+\code{split.by} is \code{NULL}.
+Default is \code{FALSE}.}
+
 \item{pairwise_method}{Method to use for pairwise comparisons.
 Default is \code{"wilcox.test"}.}
 
@@ -473,6 +480,14 @@ FeatureStatPlot(
   stat.by = c("Rbp4", "Pyy"),
   group.by = "SubCellType",
   multiplegroup_comparisons = TRUE
+)
+
+FeatureStatPlot(
+  pancreas_sub,
+  stat.by = c("Rbp4", "Pyy"),
+  group.by = "SubCellType",
+  auto_comparison = TRUE,
+  sig_label = "p.signif"
 )
 
 FeatureStatPlot(
