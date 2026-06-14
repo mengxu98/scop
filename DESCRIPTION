@@ -135,7 +135,6 @@ Suggests:
     UCell,
     yardstick
 Remotes:
-    digitalcytometry/SpatialEcoTyper,
     Moonerss/CIBERSORT,
     Hy4m/linkET,
     immunogenomics/harmony,
