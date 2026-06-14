@@ -124,7 +124,6 @@ Suggests:
     symphony,
     SingleR,
     SingleCellExperiment,
-    SpatialEcoTyper,
     SpatialExperiment,
     spacexr,
     tensorflow,
