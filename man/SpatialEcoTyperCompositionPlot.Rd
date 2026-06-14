@@ -7,7 +7,7 @@
 SpatialEcoTyperCompositionPlot(
   srt,
   se.by = "SpatialEcoTyper_SE",
-  group.by = "Celltype",
+  group.by = "CellType",
   sample.by = NULL,
   position = c("fill", "stack"),
   palette = "Spectral",
