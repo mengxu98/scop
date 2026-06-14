@@ -14,6 +14,7 @@ make_spatialecotyper_seurat <- function() {
   srt <- Seurat::NormalizeData(srt, verbose = FALSE)
   srt$CellType <- c("T", "B", "T", "Myeloid")
   srt$sample <- c("S1", "S1", "S2", "S2")
+  srt$Region <- c("R1", "R1", "R2", "R2")
   srt$X <- c(1, 2, 3, 4)
   srt$Y <- c(5, 6, 7, 8)
   srt
@@ -113,14 +114,39 @@ test_that("RunSpatialEcoTyper can keep partial labels when requested", {
 
 test_that("RunSpatialEcoTyper supports multi-sample conserved SE discovery", {
   srt <- make_spatialecotyper_seurat()
-  fake_multi <- function(data_list, metadata_list, outdir, radius, ncores, ...) {
+  fake_multi <- function(
+    data_list,
+    metadata_list,
+    outdir,
+    radius,
+    ncores,
+    Region,
+    npcs,
+    min.cells,
+    iterations,
+    grid.size,
+    k,
+    k.sn,
+    dropcell,
+    ...
+  ) {
     expect_named(data_list, c("S1", "S2"))
     expect_named(metadata_list, c("S1", "S2"))
     expect_identical(colnames(data_list$S1), c("Cell1", "Cell2"))
     expect_identical(colnames(data_list$S2), c("Cell3", "Cell4"))
+    expect_equal(metadata_list$S1$Region, c("R1", "R1"))
+    expect_equal(metadata_list$S2$Region, c("R2", "R2"))
     expect_true(dir.exists(outdir))
     expect_identical(radius, 50)
     expect_identical(ncores, 4)
+    expect_identical(Region, "Region")
+    expect_identical(npcs, 11)
+    expect_identical(min.cells, 2)
+    expect_identical(iterations, 3)
+    expect_identical(grid.size, 25)
+    expect_identical(k, 5)
+    expect_identical(k.sn, 7)
+    expect_false(dropcell)
     data.frame(
       CID = paste0("Cell", 1:4),
       Sample = c("S1", "S1", "S2", "S2"),
@@ -135,6 +161,14 @@ test_that("RunSpatialEcoTyper supports multi-sample conserved SE discovery", {
       mode = "multi",
       celltype.by = "CellType",
       sample.by = "sample",
+      Region = "Region",
+      npcs = 11,
+      min.cells = 2,
+      iterations = 3,
+      grid.size = 25,
+      k = 5,
+      k.sn = 7,
+      dropcell = FALSE,
       prefix = "SET",
       verbose = FALSE
     )
@@ -175,6 +209,38 @@ test_that("RunSpatialEcoTyper recovers pretrained SE labels", {
   expect_equal(unname(out$SET_SE), c("SE1", "SE1", "SE2", "SE2"))
   expect_equal(unname(out$SET_InitSE), c("Init1", "Init1", "Init2", "Init2"))
   expect_equal(unname(out$SET_PredScore), c(0.91, 0.83, 0.77, 0.69))
+})
+
+test_that("RunSpatialEcoTyper aligns named recovery celltypes before length checks", {
+  srt <- make_spatialecotyper_seurat()
+  dat <- GetAssayData5(srt, layer = "data")[, c("Cell1", "Cell3"), drop = FALSE]
+  full_celltypes <- stats::setNames(as.character(srt$CellType), colnames(srt))
+  fake_recover <- function(dat, celltypes, ...) {
+    expect_identical(unname(celltypes), c("T", "T"))
+    data.frame(
+      CID = colnames(dat),
+      CellType = celltypes,
+      InitSE = c("Init1", "Init2"),
+      SE = c("SE1", "SE2"),
+      PredScore = c(0.91, 0.82)
+    )
+  }
+
+  with_mock_spatialecotyper(list(RecoverSE = fake_recover), {
+    out <- RunSpatialEcoTyper(
+      srt,
+      mode = "recover",
+      dat = dat,
+      celltypes = full_celltypes,
+      prefix = "SET",
+      allow_partial = TRUE,
+      verbose = FALSE
+    )
+  })
+
+  expect_equal(out$SET_SE[["Cell1"]], "SE1")
+  expect_equal(out$SET_SE[["Cell3"]], "SE2")
+  expect_true(is.na(out$SET_SE[["Cell2"]]))
 })
 
 test_that("RunSpatialEcoTyper writes deconvoluted SE abundance to metadata", {
@@ -243,7 +309,6 @@ test_that("SpatialEcoTyper plotting helpers return ggplot objects", {
   p2 <- SpatialEcoTyperCompositionPlot(
     srt,
     se.by = "SpatialEcoTyper_SE",
-    group.by = "CellType",
     verbose = FALSE
   )
   expect_s3_class(p1, "ggplot")
