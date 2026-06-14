@@ -522,7 +522,32 @@ load_cytotrace2_data <- function(data_dir, verbose) {
       message_type = "error"
     )
   }
-  features <- read.csv(features_file, row.names = 1, check.names = FALSE)[[1]]
+  features_tbl <- utils::read.csv(
+    features_file,
+    row.names = NULL,
+    check.names = FALSE,
+    stringsAsFactors = FALSE
+  )
+  if (ncol(features_tbl) < 2) {
+    log_message(
+      "CytoTRACE2 feature file is malformed: {.path {features_file}}",
+      message_type = "error"
+    )
+  }
+  features <- as.character(features_tbl[[2]])
+  features <- features[!is.na(features) & nzchar(features)]
+  if (length(features) == 0) {
+    log_message(
+      "CytoTRACE2 feature file contains no feature names: {.path {features_file}}",
+      message_type = "error"
+    )
+  }
+  if (anyDuplicated(features) > 0) {
+    log_message(
+      "CytoTRACE2 feature file contains duplicated feature names. Re-run {.code PrepareDB(db = 'CytoTRACE2', db_update = TRUE)} to refresh the model data.",
+      message_type = "error"
+    )
+  }
 
   ortho_file <- file.path(data_dir, "mt_dict_human_to_mouse.csv")
   ortho_dict <- NULL
