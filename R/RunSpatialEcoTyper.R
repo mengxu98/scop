@@ -222,12 +222,19 @@ RunSpatialEcoTyper <- function(
       features = features,
       outdir = outdir,
       radius = radius,
+      npcs = npcs,
+      min.cells = min.cells,
+      iterations = iterations,
       min.cts.per.region = min.cts.per.region,
       nfeatures = nfeatures,
       min.features = min.features,
       minibatch = minibatch,
       ncores = ncores,
+      grid.size = grid.size,
       filter.region.by.celltypes = filter.region.by.celltypes,
+      k = k,
+      k.sn = k.sn,
+      dropcell = dropcell,
       normalization.method = normalization.method,
       nmf_ranks = nmf_ranks,
       nrun.per.rank = nrun.per.rank,
@@ -353,7 +360,7 @@ SpatialEcoTyperSpatialPlot <- function(
 SpatialEcoTyperCompositionPlot <- function(
   srt,
   se.by = "SpatialEcoTyper_SE",
-  group.by = "Celltype",
+  group.by = "CellType",
   sample.by = NULL,
   position = c("fill", "stack"),
   palette = "Spectral",
@@ -565,12 +572,19 @@ spatialecotyper_run_multi <- function(
   features,
   outdir,
   radius,
+  npcs,
+  min.cells,
+  iterations,
   min.cts.per.region,
   nfeatures,
   min.features,
   minibatch,
   ncores,
+  grid.size,
   filter.region.by.celltypes,
+  k,
+  k.sn,
+  dropcell,
   normalization.method,
   nmf_ranks,
   nrun.per.rank,
@@ -587,10 +601,13 @@ spatialecotyper_run_multi <- function(
   ...
 ) {
   spatialecotyper_assert_scalar_string(sample.by, "sample.by")
+  if (!is.null(Region)) {
+    spatialecotyper_assert_scalar_string(Region, "Region")
+  }
   meta <- srt[[]]
   spatialecotyper_check_meta_columns(
     meta = meta,
-    cols = c(celltype.by, sample.by, x.by, y.by)
+    cols = c(celltype.by, sample.by, x.by, y.by, Region)
   )
   samples <- as.character(meta[colnames(normdata), sample.by, drop = TRUE])
   if (any(is.na(samples) | !nzchar(samples))) {
@@ -613,6 +630,9 @@ spatialecotyper_run_multi <- function(
       x.by = x.by,
       y.by = y.by
     )
+    if (!is.null(Region)) {
+      metadata_list[[sample_name]][[Region]] <- meta[sample_cells, Region, drop = TRUE]
+    }
   }
   outdir <- outdir %||% spatialecotyper_temp_outdir(prefix)
   if (!dir.exists(outdir)) {
@@ -643,6 +663,13 @@ spatialecotyper_run_multi <- function(
     ncores = ncores,
     seed = seed,
     filter.region.by.celltypes = filter.region.by.celltypes,
+    npcs = npcs,
+    min.cells = min.cells,
+    iterations = iterations,
+    grid.size = grid.size,
+    k = k,
+    k.sn = k.sn,
+    dropcell = dropcell,
     ...
   )
   result_metadata <- spatialecotyper_extract_multi_metadata(result, outdir)
@@ -672,12 +699,19 @@ spatialecotyper_run_multi <- function(
       features = features,
       outdir = outdir,
       radius = radius,
+      npcs = npcs,
+      min.cells = min.cells,
+      iterations = iterations,
       min.cts.per.region = min.cts.per.region,
       nfeatures = nfeatures,
       min.features = min.features,
       minibatch = minibatch,
       ncores = ncores,
+      grid.size = grid.size,
       filter.region.by.celltypes = filter.region.by.celltypes,
+      k = k,
+      k.sn = k.sn,
+      dropcell = dropcell,
       normalization.method = normalization.method,
       nmf_ranks = nmf_ranks,
       nrun.per.rank = nrun.per.rank,
@@ -1128,14 +1162,28 @@ spatialecotyper_match_result_columns <- function(
 }
 
 spatialecotyper_prepare_celltypes <- function(celltypes, cells) {
-  if (length(celltypes) != length(cells)) {
-    log_message(
-      "{.arg celltypes} must have one value per expression column",
-      message_type = "error"
-    )
-  }
   if (is.null(names(celltypes))) {
+    if (length(celltypes) != length(cells)) {
+      log_message(
+        "{.arg celltypes} must have one value per expression column when unnamed",
+        message_type = "error"
+      )
+    }
     names(celltypes) <- cells
+  } else {
+    if (anyDuplicated(names(celltypes)) > 0L) {
+      log_message(
+        "{.arg celltypes} names must be unique",
+        message_type = "error"
+      )
+    }
+    missing_cells <- setdiff(cells, names(celltypes))
+    if (length(missing_cells) > 0L) {
+      log_message(
+        "{.arg celltypes} is missing {.val {length(missing_cells)}} expression column name{?s}",
+        message_type = "error"
+      )
+    }
   }
   celltypes <- celltypes[cells]
   if (any(is.na(celltypes) | !nzchar(as.character(celltypes)))) {
