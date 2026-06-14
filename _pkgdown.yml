@@ -162,6 +162,10 @@ reference:
 - contents:
   - RunBayesSpace
   - RunCytoSPACE
+  - RunGiottoCluster
+  - RunGiottoCellProximity
+  - RunGiottoSpatialGenes
+  - RunGiottoSpatialModules
   - RunRCTD
   - RunSpatialGradientFeatures
   - RunSpatialVariableFeatures
