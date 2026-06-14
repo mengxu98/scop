@@ -154,10 +154,18 @@ RunGSEA <- function(
 
   use_object <- !is.null(srt)
   if (is.null(geneID) && !is.null(srt)) {
+    log_message(
+      "Resolving {.fn RunDEtest} results for {.arg group.by} = {.val {group.by %||% 'custom'}} and {.arg test.use} = {.val {test.use}} ...",
+      verbose = verbose
+    )
     de_df <- resolve_detest_result(
       object = srt,
       group.by = group.by,
       test.use = test.use
+    )
+    log_message(
+      "Filtering DE results with {.arg DE_threshold}: {.val {DE_threshold}} ...",
+      verbose = verbose
     )
     de_df <- filter_de_results(
       de_results = de_df,
@@ -176,6 +184,10 @@ RunGSEA <- function(
     geneID <- de_use$gene
     geneScore <- de_use$avg_log2FC
     geneID_groups <- de_use$comparison
+    log_message(
+      "Using {.val {length(geneID)}} ranked genes across {.val {length(unique(geneID_groups))}} group(s) for GSEA.",
+      verbose = verbose
+    )
   }
 
   if (is.null(geneID_groups)) {
@@ -243,6 +255,10 @@ RunGSEA <- function(
   names(geneScore) <- paste(geneID, geneID_groups, sep = ".")
 
   if (!is.null(features)) {
+    log_message(
+      "Preparing custom GSEA database from {.arg features} ...",
+      verbose = verbose
+    )
     db <- "custom"
     custom_db <- create_custom_db_list_from_features(
       species = species,
@@ -255,6 +271,17 @@ RunGSEA <- function(
     TERM2GENE <- custom_db[["TERM2GENE"]]
     TERM2NAME <- custom_db[["TERM2NAME"]]
   } else if (is.null(TERM2GENE)) {
+    log_message(
+      "Preparing GSEA database(s): {.val {paste(db, collapse = ', ')}} for species {.val {species}} ...",
+      verbose = verbose
+    )
+    if (isTRUE(db_update)) {
+      log_message(
+        "{.arg db_update = TRUE} forces database refresh and may be slow on machines with limited network access.",
+        message_type = "warning",
+        verbose = verbose
+      )
+    }
     db_list <- PrepareDB(
       species = species,
       db = db,
@@ -264,9 +291,14 @@ RunGSEA <- function(
       convert_species = convert_species,
       Ensembl_version = Ensembl_version,
       mirror = mirror,
+      verbose = verbose,
       ...
     )
   } else {
+    log_message(
+      "Preparing custom GSEA database from {.arg TERM2GENE}/{.arg TERM2NAME} ...",
+      verbose = verbose
+    )
     db <- "custom"
     custom_db <- create_custom_db_list(
       species = species,
@@ -316,6 +348,10 @@ RunGSEA <- function(
   }
 
   if (length(unique(c(IDtype, result_IDtype))) != 1) {
+    log_message(
+      "Converting gene IDs from {.val {IDtype}} to {.val {result_IDtype}} ...",
+      verbose = verbose
+    )
     res <- GeneConvert(
       geneID = unique(geneID),
       geneID_from_IDtype = IDtype,
@@ -339,6 +375,10 @@ RunGSEA <- function(
   input[[result_IDtype]] <- geneMap[as.character(input$geneID), result_IDtype]
   input <- unnest_fun(input, cols = c(IDtype, result_IDtype))
   input <- input[!is.na(input[[IDtype]]), , drop = FALSE]
+  log_message(
+    "Prepared {.val {nrow(input)}} ranked gene rows after ID mapping.",
+    verbose = verbose
+  )
 
   comb <- expand.grid(
     group = levels(geneID_groups),
@@ -347,6 +387,10 @@ RunGSEA <- function(
   )
 
   check_r("clusterProfiler", verbose = FALSE)
+  log_message(
+    "Running GSEA for {.val {nrow(comb)}} group/database combination(s) using {.val {cores}} core(s) ...",
+    verbose = verbose
+  )
   res_list <- parallelize_fun(
     seq_len(nrow(comb)),
     function(i) {
@@ -358,6 +402,10 @@ RunGSEA <- function(
       ord <- order(geneList, decreasing = TRUE)
       geneList <- geneList[ord]
       gene_mapid <- gene_mapid[ord]
+      log_message(
+        "Running GSEA: group {.val {group}}, database {.val {term}}, genes {.val {length(geneList)}} ...",
+        verbose = verbose
+      )
       TERM2GENE_tmp <- db_list[[species]][[term]][["TERM2GENE"]][, c(
         "Term",
         IDtype
@@ -468,6 +516,10 @@ RunGSEA <- function(
       } else {
         enrich_res <- NULL
       }
+      log_message(
+        "Finished GSEA: group {.val {group}}, database {.val {term}}.",
+        verbose = verbose
+      )
       enrich_res
     },
     cores = cores,
