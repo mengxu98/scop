@@ -107,6 +107,11 @@
 #' The entries in the vector are either the names of 2 values on the x-axis or the 2 integers that correspond to the index of the groups of interest, to be compared.
 #' @param ref_group A string specifying the reference group for pairwise comparisons.
 #' Default is `NULL`.
+#' @param auto_comparison Whether to automatically compare the group with the
+#' highest median `stat.by` value against the other groups. If `ref_group` is
+#' provided, that group is used as the reference instead. Only supported when
+#' `split.by` is `NULL`.
+#' Default is `FALSE`.
 #' @param pairwise_method Method to use for pairwise comparisons.
 #' Default is `"wilcox.test"`.
 #' @param multiplegroup_comparisons Whether to add multiple group comparisons to the plot.
@@ -251,6 +256,14 @@
 #'   stat.by = c("Rbp4", "Pyy"),
 #'   group.by = "SubCellType",
 #'   multiplegroup_comparisons = TRUE
+#' )
+#'
+#' FeatureStatPlot(
+#'   pancreas_sub,
+#'   stat.by = c("Rbp4", "Pyy"),
+#'   group.by = "SubCellType",
+#'   auto_comparison = TRUE,
+#'   sig_label = "p.signif"
 #' )
 #'
 #' FeatureStatPlot(
@@ -466,6 +479,7 @@ FeatureStatPlot <- function(
   flip = FALSE,
   comparisons = NULL,
   ref_group = NULL,
+  auto_comparison = FALSE,
   pairwise_method = "wilcox.test",
   multiplegroup_comparisons = FALSE,
   multiple_method = "kruskal.test",
@@ -618,6 +632,7 @@ FeatureStatPlot <- function(
           flip = flip,
           comparisons = comparisons,
           ref_group = ref_group,
+          auto_comparison = auto_comparison,
           pairwise_method = pairwise_method,
           multiplegroup_comparisons = multiplegroup_comparisons,
           multiple_method = multiple_method,
@@ -703,6 +718,7 @@ FeatureStatPlot <- function(
       flip = flip,
       comparisons = comparisons,
       ref_group = ref_group,
+      auto_comparison = auto_comparison,
       pairwise_method = pairwise_method,
       multiplegroup_comparisons = multiplegroup_comparisons,
       multiple_method = multiple_method,
