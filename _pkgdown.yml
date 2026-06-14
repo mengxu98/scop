@@ -163,11 +163,14 @@ reference:
   - RunBayesSpace
   - RunCytoSPACE
   - RunRCTD
+  - RunSpatialEcoTyper
   - RunSpatialGradientFeatures
   - RunSpatialVariableFeatures
 
 - subtitle: "Spatial Visualization"
 - contents:
+  - SpatialEcoTyperCompositionPlot
+  - SpatialEcoTyperSpatialPlot
   - SpatialGradientPlot
   - SpatialSpotPlot
 
