@@ -3,6 +3,11 @@
 ## scop 0.9.0
 
 - **feat**:
+  - [`FeatureStatPlot()`](https://mengxu98.github.io/scop/reference/FeatureStatPlot.md)
+    and `ExpressionStatPlot()`: Added `auto_comparison` to automatically
+    compare the group with the highest median statistic against all
+    other groups, with explicit `ref_group` and `comparisons` still
+    taking precedence.
   - Added
     [`ClusterTreePlot()`](https://mengxu98.github.io/scop/reference/ClusterTreePlot.md)
     for SCOP-styled visualization of Seurat multi-resolution clustering
@@ -231,6 +236,14 @@
     construction and precomputed Pearson correlation matrices, stores
     detailed results in `srt@tools[["CytoSPACE"]]`, and writes summary
     metadata columns with the requested prefix.
+  - Added
+    [`RunSpatialEcoTyper()`](https://mengxu98.github.io/scop/reference/RunSpatialEcoTyper.md)
+    as an optional SpatialEcoTyper wrapper for single-sample discovery,
+    multi-sample conserved SE discovery, pretrained SE recovery, and SE
+    abundance deconvolution. Results are written back to Seurat metadata
+    and `srt@tools`, and
+    [`SpatialEcoTyperSpatialPlot()`](https://mengxu98.github.io/scop/reference/SpatialEcoTyperSpatialPlot.md)/[`SpatialEcoTyperCompositionPlot()`](https://mengxu98.github.io/scop/reference/SpatialEcoTyperCompositionPlot.md)
+    provide SCOP-styled visualization helpers.
   - Added
     [`SpatialSpotPlot()`](https://mengxu98.github.io/scop/reference/SpatialSpotPlot.md)
     for spatial visualization, including examples that show both tissue

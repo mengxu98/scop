@@ -219,8 +219,18 @@
   : Run BayesSpace spatial clustering
 - [`RunCytoSPACE()`](https://mengxu98.github.io/scop/reference/RunCytoSPACE.md)
   : Run CytoSPACE spatial assignment
+- [`RunGiottoCluster()`](https://mengxu98.github.io/scop/reference/RunGiottoCluster.md)
+  : Run Giotto nearest-network clustering
+- [`RunGiottoCellProximity()`](https://mengxu98.github.io/scop/reference/RunGiottoCellProximity.md)
+  : Run Giotto cell proximity enrichment
+- [`RunGiottoSpatialGenes()`](https://mengxu98.github.io/scop/reference/RunGiottoSpatialGenes.md)
+  : Run Giotto spatial gene detection
+- [`RunGiottoSpatialModules()`](https://mengxu98.github.io/scop/reference/RunGiottoSpatialModules.md)
+  : Run Giotto spatial co-expression modules
 - [`RunRCTD()`](https://mengxu98.github.io/scop/reference/RunRCTD.md) :
   Run RCTD spatial deconvolution
+- [`RunSpatialEcoTyper()`](https://mengxu98.github.io/scop/reference/RunSpatialEcoTyper.md)
+  : Run SpatialEcoTyper spatial ecotype analysis
 - [`RunSpatialGradientFeatures()`](https://mengxu98.github.io/scop/reference/RunSpatialGradientFeatures.md)
   : Run spatial gradient feature screening
 - [`RunSpatialVariableFeatures()`](https://mengxu98.github.io/scop/reference/RunSpatialVariableFeatures.md)
@@ -228,6 +238,10 @@
 
 ### Spatial Visualization
 
+- [`SpatialEcoTyperCompositionPlot()`](https://mengxu98.github.io/scop/reference/SpatialEcoTyperCompositionPlot.md)
+  : SpatialEcoTyper composition plot
+- [`SpatialEcoTyperSpatialPlot()`](https://mengxu98.github.io/scop/reference/SpatialEcoTyperSpatialPlot.md)
+  : SpatialEcoTyper spatial plot
 - [`SpatialGradientPlot()`](https://mengxu98.github.io/scop/reference/SpatialGradientPlot.md)
   : Plot spatial gradient screening results
 - [`SpatialSpotPlot()`](https://mengxu98.github.io/scop/reference/SpatialSpotPlot.md)

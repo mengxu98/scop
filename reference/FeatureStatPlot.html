@@ -102,6 +102,7 @@
 <span>  flip <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  comparisons <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ref_group <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  auto_comparison <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  pairwise_method <span class="op">=</span> <span class="st">"wilcox.test"</span>,</span>
 <span>  multiplegroup_comparisons <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  multiple_method <span class="op">=</span> <span class="st">"kruskal.test"</span>,</span>
@@ -432,6 +433,14 @@ The entries in the vector are either the names of 2 values on the x-axis or the 
 Default is <code>NULL</code>.</p></dd>
 
 
+<dt id="arg-auto-comparison">auto_comparison<a class="anchor" aria-label="anchor" href="#arg-auto-comparison"></a></dt>
+<dd><p>Whether to automatically compare the group with the
+highest median <code>stat.by</code> value against the other groups. If <code>ref_group</code> is
+provided, that group is used as the reference instead. Only supported when
+<code>split.by</code> is <code>NULL</code>.
+Default is <code>FALSE</code>.</p></dd>
+
+
 <dt id="arg-pairwise-method">pairwise_method<a class="anchor" aria-label="anchor" href="#arg-pairwise-method"></a></dt>
 <dd><p>Method to use for pairwise comparisons.
 Default is <code>"wilcox.test"</code>.</p></dd>
@@ -690,6 +699,14 @@ Default is <code>TRUE</code>.</p></dd>
 <span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Rbp4"</span>, <span class="st">"Pyy"</span><span class="op">)</span>,</span>
 <span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span>
 <span>  multiplegroup_comparisons <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">FeatureStatPlot</span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Rbp4"</span>, <span class="st">"Pyy"</span><span class="op">)</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span>
+<span>  auto_comparison <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  sig_label <span class="op">=</span> <span class="st">"p.signif"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">FeatureStatPlot</span><span class="op">(</span></span>
