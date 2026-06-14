@@ -42,6 +42,7 @@ RunPalantir(
   plot_dpi = 300,
   plot_prefix = "palantir",
   dirpath = "./",
+  backend = c("cpp", "python"),
   return_seurat = !is.null(srt),
   verbose = TRUE
 )
@@ -210,6 +211,13 @@ RunPalantir(
 
   The directory to save the plots. Default is `"./"`.
 
+- backend:
+
+  Backend used to compute Palantir. `"python"` keeps the original
+  Palantir workflow and remains the default. `"cpp"` uses the C++
+  implementation and stores results in `srt@misc$palantir`. Default is
+  `"cpp"`.
+
 - return_seurat:
 
   Whether to return a Seurat object instead of an anndata object.
@@ -219,10 +227,13 @@ RunPalantir(
 
   Whether to print the message. Default is `TRUE`.
 
+## See also
+
+[PalantirTrajectoryPlot](https://mengxu98.github.io/scop/reference/PalantirTrajectoryPlot.md)
+
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunPalantir(
@@ -246,5 +257,17 @@ FeatureDimPlot(
     "_diff_potential"
   )
 )
-} # }
+
+PalantirTrajectoryPlot(
+  pancreas_sub,
+  reduction = "UMAP",
+  pseudotime_interval = c(0, 0.9)
+)
+
+PalantirTrajectoryPlot(
+  pancreas_sub,
+  reduction = "UMAP",
+  cell_color = "branch_selection",
+  pseudotime_interval = c(0, 0.9)
+)
 ```
