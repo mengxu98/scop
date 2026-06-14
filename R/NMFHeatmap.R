@@ -169,7 +169,21 @@ NMFHeatmap <- function(
   mat <- nmf_data[["matrix"]]
   dims_use <- nmf_data[["dims"]]
 
+  n_items <- nrow(mat)
+  similarity_size_gib <- sprintf("%.2f", n_items^2 * 8 / 1024^3)
+  log_message(
+    "{.fn NMFHeatmap} input: {.val {n_items}} {plot_type} x {.val {length(dims_use)}} NMF dimensions. Computing a {.val {n_items}} x {.val {n_items}} similarity matrix (~{similarity_size_gib} GiB dense numeric matrix).",
+    verbose = verbose
+  )
+  if (n_items > 5000) {
+    log_message(
+      "{.fn NMFHeatmap} similarity calculation scales quadratically with the number of rows; use {.arg cells}, {.arg features}, or fewer {.arg dims} if this step is slow on the current machine.",
+      message_type = "warning",
+      verbose = verbose
+    )
+  }
   similarity <- nmf_heatmap_cosine(mat)
+  log_message("Ordering {.fn NMFHeatmap} rows and columns ...", verbose = verbose)
   nmf_strength <- apply(mat, 1, max, na.rm = TRUE)
   nmf_cluster <- max.col(mat, ties.method = "first")
   nmf_cluster <- factor(nmf_cluster, levels = sort(unique(nmf_cluster)))
@@ -246,6 +260,10 @@ NMFHeatmap <- function(
     identical(plot_type, "features") &&
       any(c(anno_terms, anno_keys, anno_features))
   ) {
+    log_message(
+      "Running enrichment annotation for {.fn NMFHeatmap} feature clusters ...",
+      verbose = verbose
+    )
     enrichment <- heatmap_enrichment(
       geneID = rownames(similarity),
       geneID_groups = nmf_cluster,
@@ -313,6 +331,10 @@ NMFHeatmap <- function(
     use_raster <- nrow(similarity) * ncol(similarity) > 1e6
   }
 
+  log_message(
+    "Building {.pkg ComplexHeatmap} object for {.fn NMFHeatmap} ...",
+    verbose = verbose
+  )
   ht_args <- c(
     list(
       matrix = similarity,
@@ -360,7 +382,8 @@ NMFHeatmap <- function(
     width = width,
     height = height,
     units = units,
-    legend.position = legend.position
+    legend.position = legend.position,
+    verbose = verbose
   )
 
   list(
@@ -612,9 +635,14 @@ nmf_heatmap_render_plot <- function(
   width,
   height,
   units,
-  legend.position = "right"
+  legend.position = "right",
+  verbose = TRUE
 ) {
   fix <- !is.null(width) || !is.null(height) || !is.null(right_annotation)
+  log_message(
+    "Calculating {.fn NMFHeatmap} render size ...",
+    verbose = verbose
+  )
   rendersize <- heatmap_rendersize(
     width = width,
     height = height,
@@ -629,6 +657,10 @@ nmf_heatmap_render_plot <- function(
   width_sum <- rendersize[["width_sum"]]
   height_sum <- rendersize[["height_sum"]]
   if (isTRUE(fix)) {
+    log_message(
+      "Fixing {.fn NMFHeatmap} panel size ...",
+      verbose = verbose
+    )
     fixsize <- heatmap_fixsize(
       width = width,
       width_sum = width_sum,
@@ -644,6 +676,10 @@ nmf_heatmap_render_plot <- function(
     ht_width <- grid::unit(width_sum, units = units)
     ht_height <- grid::unit(height_sum, units = units)
   }
+  log_message(
+    "Drawing {.fn NMFHeatmap}; this can take time for large similarity matrices ...",
+    verbose = verbose
+  )
   g_tree <- grid::grid.grabExpr(
     {
       ComplexHeatmap::draw(ht_list, heatmap_legend_side = legend.position)
@@ -659,6 +695,10 @@ nmf_heatmap_render_plot <- function(
     height = ht_height,
     wrap = TRUE,
     wrap.grobs = TRUE
+  )
+  log_message(
+    "Assembling {.fn NMFHeatmap} plot object ...",
+    verbose = verbose
   )
   if (isTRUE(fix)) {
     panel_fix_overall(
