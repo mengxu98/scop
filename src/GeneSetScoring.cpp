@@ -779,20 +779,26 @@ NumericMatrix ssgsea_rank_dense(
   }
 
   NumericMatrix scores(n_cells, n_sets);
-  std::vector<double> value_by_gene(n_genes, 0.0);
-  std::vector<int> touched_values;
-  std::vector<int> order(n_genes);
-  std::vector<int> ranking(n_genes);
   std::vector<int> rank_by_gene(n_genes);
   std::vector<int> position_by_gene(n_genes);
   std::vector<double> rank_weight_by_gene(n_genes);
   double min_score = R_PosInf;
   double max_score = R_NegInf;
 
-  std::iota(order.begin(), order.end(), 0);
+  // Sparse ranking optimization: only sort non-zero genes per cell.
+  // Zero-expression genes (the vast majority in scRNA-seq) are all tied
+  // at the same value (0.0) and get identical rank/weight, so we handle
+  // them as a single block instead of sorting them individually.
+  std::vector<int> nonzero_genes;
+  nonzero_genes.reserve(n_genes);
+  std::vector<double> nonzero_values;
+  nonzero_values.reserve(n_genes);
+  std::vector<unsigned char> is_nonzero(n_genes, 0);
 
   for (int cell = 0; cell < n_cells; ++cell) {
-    touched_values.clear();
+    // Collect non-zero expression values for this cell
+    nonzero_genes.clear();
+    nonzero_values.clear();
 
     for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
       const int gene = row_idx[ptr];
@@ -800,69 +806,117 @@ NumericMatrix ssgsea_rank_dense(
       if (!R_finite(value) || value == 0.0) {
         continue;
       }
-      value_by_gene[gene] = value;
-      touched_values.push_back(gene);
+      nonzero_genes.push_back(gene);
+      nonzero_values.push_back(value);
+      is_nonzero[gene] = 1;
     }
 
-    std::iota(order.begin(), order.end(), 0);
-    std::sort(
-      order.begin(),
-      order.end(),
-      [&](int a, int b) {
-        const double va = value_by_gene[a];
-        const double vb = value_by_gene[b];
-        if (va < vb) {
-          return true;
-        }
-        if (va > vb) {
-          return false;
-        }
-        return a < b;
-      }
-    );
+    const int n_nonzero = static_cast<int>(nonzero_genes.size());
+    const int n_zero = n_genes - n_nonzero;
 
-    int tie_start = 0;
-    while (tie_start < n_genes) {
-      int tie_end = tie_start + 1;
-      const double tie_value = value_by_gene[order[tie_start]];
-      while (
-        tie_end < n_genes &&
-        value_by_gene[order[tie_end]] == tie_value
-      ) {
-        ++tie_end;
+    int n_negative = 0;
+    if (n_nonzero > 0) {
+      for (int i = 0; i < n_nonzero; ++i) {
+        if (nonzero_values[i] < 0.0) {
+          ++n_negative;
+        }
       }
-      const int rank_value = static_cast<int>(
-        (static_cast<double>(tie_start + 1) + static_cast<double>(tie_end)) / 2.0
+    }
+
+    // Zero genes are all tied at value 0.0. Their rank starts after negative
+    // non-zero values and uses the original integer-truncated average rank.
+    const int zero_rank_int = (n_zero > 0) ?
+      n_negative + static_cast<int>((1.0 + static_cast<double>(n_zero)) / 2.0) : 0;
+    const double zero_rank_weight = std::pow(std::fabs(static_cast<double>(zero_rank_int)), alpha);
+
+    // Step 1: initialize all genes as zero (fast O(n_genes) fill)
+    std::fill(rank_by_gene.begin(), rank_by_gene.end(), zero_rank_int);
+    std::fill(rank_weight_by_gene.begin(), rank_weight_by_gene.end(), zero_rank_weight);
+
+    // Step 2: compute non-zero gene ranks (overwrites the zero defaults)
+    if (n_nonzero > 0) {
+      std::vector<int> nz_order(n_nonzero);
+      std::iota(nz_order.begin(), nz_order.end(), 0);
+      // Sort non-zero genes by value ascending (gene-index tiebreak)
+      std::sort(
+        nz_order.begin(),
+        nz_order.end(),
+        [&](int a, int b) {
+          if (nonzero_values[a] < nonzero_values[b]) return true;
+          if (nonzero_values[a] > nonzero_values[b]) return false;
+          return nonzero_genes[a] < nonzero_genes[b];
+        }
       );
-      const double rank_weight = std::pow(std::fabs(static_cast<double>(rank_value)), alpha);
-      for (int pos = tie_start; pos < tie_end; ++pos) {
-        const int gene = order[pos];
-        rank_by_gene[gene] = rank_value;
-        rank_weight_by_gene[gene] = rank_weight;
+
+      // Compute tied ranks. Positive values start after the zero block, while
+      // negative values keep their position before zeros in the full ordering.
+      int tie_start = 0;
+      while (tie_start < n_nonzero) {
+        int tie_end = tie_start + 1;
+        const double tie_value = nonzero_values[nz_order[tie_start]];
+        while (
+          tie_end < n_nonzero &&
+          nonzero_values[nz_order[tie_end]] == tie_value
+        ) {
+          ++tie_end;
+        }
+        const double zero_offset = (tie_value > 0.0) ? static_cast<double>(n_zero) : 0.0;
+        const double rank_val = zero_offset +
+          (static_cast<double>(tie_start + 1) + static_cast<double>(tie_end)) / 2.0;
+        const int rank_int = static_cast<int>(rank_val);
+        const double rank_weight = std::pow(std::fabs(static_cast<double>(rank_int)), alpha);
+        for (int pos = tie_start; pos < tie_end; ++pos) {
+          const int gene = nonzero_genes[nz_order[pos]];
+          rank_by_gene[gene] = rank_int;
+          rank_weight_by_gene[gene] = rank_weight;
+        }
+        tie_start = tie_end;
       }
-      tie_start = tie_end;
+
+      // Step 3: build positions by descending rank. Insert the zero block
+      // between positive and negative non-zero ranks to match a full sort.
+      std::sort(
+        nz_order.begin(),
+        nz_order.end(),
+        [&](int a, int b) {
+          const int ra = rank_by_gene[nonzero_genes[a]];
+          const int rb = rank_by_gene[nonzero_genes[b]];
+          if (ra > rb) return true;
+          if (ra < rb) return false;
+          return nonzero_genes[a] < nonzero_genes[b];
+        }
+      );
+      int pos = 0;
+      int nz_pos = 0;
+      while (
+        nz_pos < n_nonzero &&
+        (n_zero == 0 || rank_by_gene[nonzero_genes[nz_order[nz_pos]]] > zero_rank_int)
+      ) {
+        position_by_gene[nonzero_genes[nz_order[nz_pos]]] = ++pos;
+        ++nz_pos;
+      }
+
+      if (n_zero > 0) {
+        for (int g = 0; g < n_genes; ++g) {
+          if (is_nonzero[g] == 0) {
+            position_by_gene[g] = ++pos;
+          }
+        }
+      }
+
+      while (nz_pos < n_nonzero) {
+        position_by_gene[nonzero_genes[nz_order[nz_pos]]] = ++pos;
+        ++nz_pos;
+      }
+    } else {
+      for (int g = 0; g < n_genes; ++g) {
+        if (is_nonzero[g] == 0) {
+          position_by_gene[g] = g + 1;
+        }
+      }
     }
 
-    std::iota(ranking.begin(), ranking.end(), 0);
-    std::sort(
-      ranking.begin(),
-      ranking.end(),
-      [&](int a, int b) {
-        const int ra = rank_by_gene[a];
-        const int rb = rank_by_gene[b];
-        if (ra > rb) {
-          return true;
-        }
-        if (ra < rb) {
-          return false;
-        }
-        return a < b;
-      }
-    );
-    for (int pos = 0; pos < n_genes; ++pos) {
-      position_by_gene[ranking[pos]] = pos + 1;
-    }
-
+    // Step 5: compute ES scores for each gene set
     for (int set_i = 0; set_i < n_sets; ++set_i) {
       const std::vector<int>& set = sets[set_i];
       const int set_size = static_cast<int>(set.size());
@@ -905,8 +959,9 @@ NumericMatrix ssgsea_rank_dense(
       }
     }
 
-    for (std::vector<int>::const_iterator it = touched_values.begin(); it != touched_values.end(); ++it) {
-      value_by_gene[*it] = 0.0;
+    // Cleanup: reset is_nonzero markers for next cell
+    for (int i = 0; i < n_nonzero; ++i) {
+      is_nonzero[nonzero_genes[i]] = 0;
     }
   }
 
@@ -1195,7 +1250,25 @@ NumericMatrix plage_dense(
 
     arma::vec first_v;
     bool ok = false;
-    if (n_cells <= 256) {
+    if (effective_size < n_cells && effective_size <= 256) {
+      // Gene×gene covariance path: when gene set is small relative to cell count,
+      // eigendecompose ZZ' (effective_size × effective_size) instead of Z'Z (n_cells × n_cells).
+      // This is O(effective_size³ + effective_size² × n_cells) vs O(n_cells³).
+      arma::mat gene_cov = z * z.t();
+      arma::vec eigval;
+      arma::mat eigvec;
+      ok = arma::eig_sym(eigval, eigvec, gene_cov);
+      if (ok && eigvec.n_cols > 0) {
+        // u is the first left singular vector (eigenvector of ZZ')
+        arma::vec u = eigvec.col(eigvec.n_cols - 1);
+        // Convert to right singular vector: v = Z'u, then normalize
+        first_v = z.t() * u;
+        double norm_val = arma::norm(first_v, 2);
+        if (norm_val > 0.0) {
+          first_v /= norm_val;
+        }
+      }
+    } else if (n_cells <= 256) {
       arma::mat crossprod = z.t() * z;
       arma::vec eigval;
       arma::mat eigvec;
