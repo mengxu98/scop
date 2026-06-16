@@ -238,6 +238,8 @@
 
 ### Spatial Visualization
 
+- [`GiottoPlot()`](https://mengxu98.github.io/scop/reference/GiottoPlot.md)
+  : Plot Giotto backend results
 - [`SpatialEcoTyperCompositionPlot()`](https://mengxu98.github.io/scop/reference/SpatialEcoTyperCompositionPlot.md)
   : SpatialEcoTyper composition plot
 - [`SpatialEcoTyperSpatialPlot()`](https://mengxu98.github.io/scop/reference/SpatialEcoTyperSpatialPlot.md)
