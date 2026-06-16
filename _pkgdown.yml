@@ -173,6 +173,7 @@ reference:
 
 - subtitle: "Spatial Visualization"
 - contents:
+  - GiottoPlot
   - SpatialEcoTyperCompositionPlot
   - SpatialEcoTyperSpatialPlot
   - SpatialGradientPlot
