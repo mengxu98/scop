@@ -1,14 +1,17 @@
 // [[Rcpp::depends(RcppArmadillo)]]
-// [[Rcpp::plugins(cpp11)]]
+// [[Rcpp::plugins(cpp14)]]
 #include <RcppArmadillo.h>
 #include <algorithm>
+#include <atomic>
 #include <chrono>
 #include <cmath>
 #include <cstdint>
+#include <exception>
 #include <limits>
 #include <numeric>
 #include <random>
 #include <string>
+#include <thread>
 #include <unordered_map>
 #include <vector>
 
@@ -110,7 +113,7 @@ static double scenic_sse_from_sums(double sum, double sum_sq, int n) {
 }
 
 static double scenic_tree_feature_value(const NumericMatrix& expr, int row, int feature) {
-  double x = expr(row, feature);
+  double x = expr.begin()[row + feature * expr.nrow()];
   if (!R_finite(x)) x = 0.0;
   return static_cast<double>(static_cast<float>(x));
 }
@@ -173,6 +176,41 @@ static void scenic_sort_samples_by_feature(
     const std::pair<double, int>& value = values[static_cast<std::size_t>(i - start)];
     feature_values[i] = value.first;
     samples[i] = value.second;
+  }
+}
+
+static void scenic_order_samples_by_feature(
+    const NumericMatrix& expr,
+    const std::vector<std::vector<int> >& feature_orders,
+    const std::vector<std::vector<double> >& feature_order_values,
+    std::vector<int>& samples,
+    std::vector<double>& feature_values,
+    int start,
+    int end,
+    int feature,
+    std::vector<int>& row_marks,
+    int row_mark) {
+  if (
+      feature < 0 ||
+      feature >= static_cast<int>(feature_orders.size()) ||
+      feature >= static_cast<int>(feature_order_values.size()) ||
+      feature_orders[feature].empty()) {
+    scenic_sort_samples_by_feature(expr, samples, feature_values, start, end, feature);
+    return;
+  }
+  int pos = start;
+  const std::vector<int>& order = feature_orders[feature];
+  const std::vector<double>& values = feature_order_values[feature];
+  for (std::size_t i = 0; i < order.size() && pos < end; ++i) {
+    const int row = order[i];
+    if (row >= 0 && row < static_cast<int>(row_marks.size()) && row_marks[row] == row_mark) {
+      feature_values[pos] = values[i];
+      samples[pos] = row;
+      ++pos;
+    }
+  }
+  if (pos != end) {
+    scenic_sort_samples_by_feature(expr, samples, feature_values, start, end, feature);
   }
 }
 
@@ -254,10 +292,15 @@ static std::vector<unsigned char> scenic_sample_mask(
 
 static std::vector<std::vector<int> > scenic_feature_orders(
     const NumericMatrix& expr,
-    const std::vector<int>& features) {
+    const std::vector<int>& features,
+    std::vector<std::vector<double> >* order_values = nullptr) {
   const int n_samples = expr.nrow();
   const int n_genes = expr.ncol();
   std::vector<std::vector<int> > orders(n_genes);
+  if (order_values != nullptr) {
+    order_values->clear();
+    order_values->resize(n_genes);
+  }
   for (std::size_t fi = 0; fi < features.size(); ++fi) {
     const int g = features[fi];
     if (g < 0 || g >= n_genes || !orders[g].empty()) continue;
@@ -269,6 +312,13 @@ static std::vector<std::vector<int> > scenic_feature_orders(
       if (xa != xb) return xa < xb;
       return a < b;
     });
+    if (order_values != nullptr) {
+      std::vector<double> values(n_samples);
+      for (int i = 0; i < n_samples; ++i) {
+        values[i] = scenic_tree_feature_value(expr, order[i], g);
+      }
+      (*order_values)[g] = values;
+    }
     orders[g] = order;
   }
   return orders;
@@ -287,6 +337,10 @@ static ScenicSplit scenic_best_split(
     int& n_total_constants,
     int mtry,
     std::uint32_t& split_seed,
+    const std::vector<std::vector<int> >& feature_orders,
+    const std::vector<std::vector<double> >& feature_order_values,
+    std::vector<int>& row_marks,
+    int& row_mark,
     ScenicGrnProfile* profile,
     ScenicCandidateTrace* candidate_trace = nullptr) {
   if (profile != nullptr) ++profile->best_split_calls;
@@ -297,6 +351,14 @@ static ScenicSplit scenic_best_split(
   double parent_sum_sq = 0.0;
   const double parent_sse = scenic_node_sse(samples, start, end, residual, &parent_sum, &parent_sum_sq);
   if (parent_sse <= 0.0) return best;
+  ++row_mark;
+  if (row_mark == std::numeric_limits<int>::max()) {
+    std::fill(row_marks.begin(), row_marks.end(), 0);
+    row_mark = 1;
+  }
+  for (int i = start; i < end; ++i) {
+    row_marks[samples[i]] = row_mark;
+  }
 
   const int n_features = static_cast<int>(feature_pool.size());
   int f_i = n_features;
@@ -322,7 +384,9 @@ static ScenicSplit scenic_best_split(
     ++n_visited;
     if (profile != nullptr) ++profile->split_feature_visits;
 
-    scenic_sort_samples_by_feature(expr, samples, feature_values, start, end, feature);
+    scenic_order_samples_by_feature(
+      expr, feature_orders, feature_order_values, samples, feature_values, start, end, feature,
+      row_marks, row_mark);
     const double min_x = feature_values[start];
     const double max_x = feature_values[end - 1];
     if (max_x <= min_x + SCENIC_FEATURE_THRESHOLD) {
@@ -442,6 +506,10 @@ static int scenic_build_tree(
     int max_depth,
     int mtry,
     std::uint32_t& split_seed,
+    const std::vector<std::vector<int> >& feature_orders,
+    const std::vector<std::vector<double> >& feature_order_values,
+    std::vector<int>& row_marks,
+    int& row_mark,
     std::vector<ScenicTreeNode>& nodes,
     std::vector<double>& importance,
     ScenicGrnProfile* profile,
@@ -470,7 +538,9 @@ static int scenic_build_tree(
   }
   const ScenicSplit split = scenic_best_split(
     expr, residual, samples, feature_values, start, end, feature_pool, constant_features,
-    n_known_constants, n_total_constants, mtry, split_seed, profile, candidate_trace);
+    n_known_constants, n_total_constants, mtry, split_seed, feature_orders,
+    feature_order_values,
+    row_marks, row_mark, profile, candidate_trace);
   if (candidate_trace != nullptr) {
     candidate_trace->collect = old_collect;
   }
@@ -482,11 +552,13 @@ static int scenic_build_tree(
   importance[split.feature] += split.importance_gain;
   const int left = scenic_build_tree(
     expr, residual, samples, feature_values, start, split_pos, feature_pool, constant_features,
-    n_total_constants, depth + 1, max_depth, mtry, split_seed, nodes, importance, profile,
+    n_total_constants, depth + 1, max_depth, mtry, split_seed, feature_orders,
+    feature_order_values, row_marks, row_mark, nodes, importance, profile,
     candidate_trace);
   const int right = scenic_build_tree(
     expr, residual, samples, feature_values, split_pos, end, feature_pool, constant_features,
-    n_total_constants, depth + 1, max_depth, mtry, split_seed, nodes, importance, profile,
+    n_total_constants, depth + 1, max_depth, mtry, split_seed, feature_orders,
+    feature_order_values, row_marks, row_mark, nodes, importance, profile,
     candidate_trace);
   nodes[node_index].feature = split.feature;
   nodes[node_index].threshold = split.threshold;
@@ -520,76 +592,46 @@ static void scenic_profile_add_elapsed(
   profile->*slot += elapsed.count();
 }
 
-static DataFrame scenic_grnboost_tree_impl(
-    NumericMatrix expr,
-    IntegerVector regulator_idx,
-    IntegerVector target_idx,
-    int n_rounds = 5000,
-    double learning_rate = 0.01,
-    int max_edges_per_target = 0,
-    int max_depth = 3,
-    double max_features = 0.1,
-    double subsample = 0.9,
-    int early_stop_window_length = 25,
-    int random_seed = 1234,
-    bool exclude_self = true,
-    ScenicGrnProfile* profile = nullptr) {
-  std::chrono::steady_clock::time_point prepare_start;
-  if (profile != nullptr) prepare_start = std::chrono::steady_clock::now();
+static int scenic_grn_worker_count(int requested, int n_tasks) {
+  if (n_tasks <= 1) return 1;
+  int n_threads = requested < 1 ? 1 : requested;
+  const unsigned int hardware = std::thread::hardware_concurrency();
+  if (hardware > 0) {
+    n_threads = std::min(n_threads, static_cast<int>(hardware));
+  }
+  return std::max(1, std::min(n_threads, n_tasks));
+}
+
+static void scenic_grnboost_run_targets(
+    const NumericMatrix& expr,
+    const std::vector<int>& regs,
+    const std::vector<int>& targets,
+    std::size_t target_begin,
+    std::size_t target_end,
+    const std::vector<double>& means,
+    const std::vector<std::vector<int> >& feature_orders,
+    const std::vector<std::vector<double> >& feature_order_values,
+    int n_rounds,
+    double learning_rate,
+    int max_edges_per_target,
+    int max_depth,
+    double max_features,
+    double subsample,
+    int early_stop_window_length,
+    int random_seed,
+    bool exclude_self,
+    ScenicGrnProfile* profile,
+    bool check_interrupt,
+    std::vector<ScenicEdge>& edges) {
   const int n_samples = expr.nrow();
   const int n_genes = expr.ncol();
-  if (n_samples < 2 || n_genes < 1) {
-    stop("Expression matrix must contain at least two samples and one gene.");
-  }
-  if (regulator_idx.size() == 0 || target_idx.size() == 0) {
-    stop("At least one regulator and one target are required.");
-  }
-  n_rounds = std::max(1, n_rounds);
-  max_depth = std::max(1, max_depth);
-  early_stop_window_length = std::max(0, early_stop_window_length);
-  if (!R_finite(learning_rate) || learning_rate <= 0.0) learning_rate = 0.01;
-  if (!R_finite(max_features) || max_features <= 0.0) max_features = 0.1;
-  if (!R_finite(subsample) || subsample <= 0.0 || subsample > 1.0) subsample = 0.9;
-
-  std::vector<int> regs;
-  regs.reserve(regulator_idx.size());
-  for (int i = 0; i < regulator_idx.size(); ++i) {
-    const int idx = regulator_idx[i] - 1;
-    if (idx >= 0 && idx < n_genes) regs.push_back(idx);
-  }
-  std::vector<int> targets;
-  targets.reserve(target_idx.size());
-  for (int i = 0; i < target_idx.size(); ++i) {
-    const int idx = target_idx[i] - 1;
-    if (idx >= 0 && idx < n_genes) targets.push_back(idx);
-  }
-  if (regs.empty() || targets.empty()) {
-    stop("Regulator and target indices must refer to expression matrix columns.");
-  }
-
-  std::vector<double> means(n_genes, 0.0);
-  for (int g = 0; g < n_genes; ++g) {
-    double sum = 0.0;
-    for (int i = 0; i < n_samples; ++i) {
-      double x = expr(i, g);
-      if (!R_finite(x)) x = 0.0;
-      sum += x;
-    }
-    means[g] = sum / static_cast<double>(n_samples);
-  }
-
-  std::vector<int> all_rows(n_samples);
-  std::iota(all_rows.begin(), all_rows.end(), 0);
-  scenic_profile_add_elapsed(profile, &ScenicGrnProfile::prepare_seconds, prepare_start);
-
   const int sample_size = std::max(1, static_cast<int>(std::floor(subsample * n_samples)));
-  std::vector<ScenicEdge> edges;
   std::vector<double> residual(n_samples);
   std::vector<double> importance(n_genes);
   std::vector<double> tree_importance(n_genes);
   std::vector<double> feature_values(n_samples);
 
-  for (std::size_t ti = 0; ti < targets.size(); ++ti) {
+  for (std::size_t ti = target_begin; ti < target_end; ++ti) {
     std::mt19937 rng(static_cast<unsigned int>(random_seed));
     const int target = targets[ti];
     if (profile != nullptr) ++profile->targets;
@@ -618,6 +660,8 @@ static DataFrame scenic_grnboost_tree_impl(
       features.size(),
       std::max(1, static_cast<int>(std::floor(max_features * features.size())))
     );
+    std::vector<int> row_marks(n_samples, 0);
+    int row_mark = 0;
     std::vector<double> oob_improvements;
     oob_improvements.reserve(n_rounds);
     int actual_rounds = 0;
@@ -651,8 +695,8 @@ static DataFrame scenic_grnboost_tree_impl(
         );
         scenic_build_tree(
           expr, residual, train_rows, feature_values, 0, static_cast<int>(train_rows.size()),
-          feature_pool, constant_features, 0, 0, max_depth, mtry, split_seed, nodes,
-          tree_importance, profile);
+          feature_pool, constant_features, 0, 0, max_depth, mtry, split_seed,
+          feature_orders, feature_order_values, row_marks, row_mark, nodes, tree_importance, profile);
       }
       if (nodes.empty()) break;
       for (std::size_t ri = 0; ri < features.size(); ++ri) {
@@ -742,7 +786,130 @@ static DataFrame scenic_grnboost_tree_impl(
         static_cast<int>(target_edges.size());
       for (int i = 0; i < take; ++i) edges.push_back(target_edges[i]);
     }
-    Rcpp::checkUserInterrupt();
+    if (check_interrupt) Rcpp::checkUserInterrupt();
+  }
+}
+
+static DataFrame scenic_grnboost_tree_impl(
+    NumericMatrix expr,
+    IntegerVector regulator_idx,
+    IntegerVector target_idx,
+    int n_rounds = 5000,
+    double learning_rate = 0.01,
+    int max_edges_per_target = 0,
+    int max_depth = 3,
+    double max_features = 0.1,
+    double subsample = 0.9,
+    int early_stop_window_length = 25,
+    int random_seed = 1234,
+    bool exclude_self = true,
+    ScenicGrnProfile* profile = nullptr,
+    int n_threads = 1) {
+  std::chrono::steady_clock::time_point prepare_start;
+  if (profile != nullptr) prepare_start = std::chrono::steady_clock::now();
+  const int n_samples = expr.nrow();
+  const int n_genes = expr.ncol();
+  if (n_samples < 2 || n_genes < 1) {
+    stop("Expression matrix must contain at least two samples and one gene.");
+  }
+  if (regulator_idx.size() == 0 || target_idx.size() == 0) {
+    stop("At least one regulator and one target are required.");
+  }
+  n_rounds = std::max(1, n_rounds);
+  max_depth = std::max(1, max_depth);
+  early_stop_window_length = std::max(0, early_stop_window_length);
+  if (!R_finite(learning_rate) || learning_rate <= 0.0) learning_rate = 0.01;
+  if (!R_finite(max_features) || max_features <= 0.0) max_features = 0.1;
+  if (!R_finite(subsample) || subsample <= 0.0 || subsample > 1.0) subsample = 0.9;
+
+  std::vector<int> regs;
+  regs.reserve(regulator_idx.size());
+  for (int i = 0; i < regulator_idx.size(); ++i) {
+    const int idx = regulator_idx[i] - 1;
+    if (idx >= 0 && idx < n_genes) regs.push_back(idx);
+  }
+  std::vector<int> targets;
+  targets.reserve(target_idx.size());
+  for (int i = 0; i < target_idx.size(); ++i) {
+    const int idx = target_idx[i] - 1;
+    if (idx >= 0 && idx < n_genes) targets.push_back(idx);
+  }
+  if (regs.empty() || targets.empty()) {
+    stop("Regulator and target indices must refer to expression matrix columns.");
+  }
+
+  std::vector<double> means(n_genes, 0.0);
+  for (int g = 0; g < n_genes; ++g) {
+    double sum = 0.0;
+    for (int i = 0; i < n_samples; ++i) {
+      double x = expr(i, g);
+      if (!R_finite(x)) x = 0.0;
+      sum += x;
+    }
+    means[g] = sum / static_cast<double>(n_samples);
+  }
+
+  std::vector<int> all_rows(n_samples);
+  std::iota(all_rows.begin(), all_rows.end(), 0);
+  scenic_profile_add_elapsed(profile, &ScenicGrnProfile::prepare_seconds, prepare_start);
+
+  std::vector<ScenicEdge> edges;
+  std::vector<std::vector<int> > feature_orders;
+  std::vector<std::vector<double> > feature_order_values;
+  {
+    ScenicScopeTimer order_timer(
+      profile == nullptr ? nullptr : &profile->feature_order_seconds
+    );
+    feature_orders = scenic_feature_orders(expr, regs, &feature_order_values);
+  }
+
+  const int workers = profile == nullptr ?
+    scenic_grn_worker_count(n_threads, static_cast<int>(targets.size())) : 1;
+  if (workers <= 1) {
+    scenic_grnboost_run_targets(
+      expr, regs, targets, 0, targets.size(), means, feature_orders,
+      feature_order_values, n_rounds, learning_rate, max_edges_per_target,
+      max_depth, max_features, subsample, early_stop_window_length, random_seed,
+      exclude_self, profile, true, edges);
+  } else {
+    std::vector<std::vector<ScenicEdge> > worker_edges(workers);
+    std::vector<std::exception_ptr> errors(workers);
+    std::vector<std::thread> pool;
+    pool.reserve(workers);
+    std::atomic<std::size_t> next_target(0);
+    const std::size_t block = 4;
+    for (int worker = 0; worker < workers; ++worker) {
+      pool.emplace_back([&, worker]() {
+        try {
+          while (true) {
+            const std::size_t begin = next_target.fetch_add(block);
+            if (begin >= targets.size()) break;
+            const std::size_t end = std::min(targets.size(), begin + block);
+            scenic_grnboost_run_targets(
+              expr, regs, targets, begin, end, means, feature_orders,
+              feature_order_values, n_rounds, learning_rate, max_edges_per_target,
+              max_depth, max_features, subsample, early_stop_window_length,
+              random_seed, exclude_self, nullptr, false, worker_edges[worker]);
+          }
+        } catch (...) {
+          errors[worker] = std::current_exception();
+        }
+      });
+    }
+    for (std::thread& worker : pool) {
+      worker.join();
+    }
+    for (std::size_t i = 0; i < errors.size(); ++i) {
+      if (errors[i]) std::rethrow_exception(errors[i]);
+    }
+    std::size_t total_edges = 0;
+    for (std::size_t i = 0; i < worker_edges.size(); ++i) {
+      total_edges += worker_edges[i].size();
+    }
+    edges.reserve(total_edges);
+    for (std::size_t i = 0; i < worker_edges.size(); ++i) {
+      edges.insert(edges.end(), worker_edges[i].begin(), worker_edges[i].end());
+    }
   }
 
   {
@@ -791,6 +958,27 @@ DataFrame grnboost_tree(
     expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target,
     max_depth, max_features, subsample, early_stop_window_length, random_seed,
     exclude_self, nullptr);
+}
+
+// [[Rcpp::export]]
+DataFrame grnboost_tree_parallel(
+    NumericMatrix expr,
+    IntegerVector regulator_idx,
+    IntegerVector target_idx,
+    int n_rounds = 5000,
+    double learning_rate = 0.01,
+    int max_edges_per_target = 0,
+    int max_depth = 3,
+    double max_features = 0.1,
+    double subsample = 0.9,
+    int early_stop_window_length = 25,
+    int random_seed = 1234,
+    bool exclude_self = true,
+    int n_threads = 1) {
+  return scenic_grnboost_tree_impl(
+    expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target,
+    max_depth, max_features, subsample, early_stop_window_length, random_seed,
+    exclude_self, nullptr, n_threads);
 }
 
 // [[Rcpp::export]]
@@ -917,6 +1105,11 @@ DataFrame grnboost_tree_round_trace(
   std::vector<double> importance(n_genes, 0.0);
   std::vector<double> tree_importance(n_genes, 0.0);
   std::vector<double> feature_values(n_samples);
+  std::vector<std::vector<double> > feature_order_values;
+  std::vector<std::vector<int> > feature_orders = scenic_feature_orders(
+    expr, features, &feature_order_values);
+  std::vector<int> row_marks(n_samples, 0);
+  int row_mark = 0;
   std::vector<double> oob_improvements;
   oob_improvements.reserve(n_rounds);
   double previous_oob_loss = NA_REAL;
@@ -952,7 +1145,7 @@ DataFrame grnboost_tree_round_trace(
     scenic_build_tree(
       expr, residual, train_rows, feature_values, 0, static_cast<int>(train_rows.size()),
       feature_pool, constant_features, 0, 0, max_depth, mtry, split_seed,
-      nodes, tree_importance, nullptr);
+      feature_orders, feature_order_values, row_marks, row_mark, nodes, tree_importance, nullptr);
     if (nodes.empty()) break;
     for (std::size_t ri = 0; ri < features.size(); ++ri) {
       const int reg = features[ri];
@@ -1125,6 +1318,11 @@ DataFrame grnboost_tree_round_nodes(
   );
   std::vector<double> tree_importance(n_genes, 0.0);
   std::vector<double> feature_values(n_samples);
+  std::vector<std::vector<double> > feature_order_values;
+  std::vector<std::vector<int> > feature_orders = scenic_feature_orders(
+    expr, features, &feature_order_values);
+  std::vector<int> row_marks(n_samples, 0);
+  int row_mark = 0;
   std::vector<double> oob_improvements;
   oob_improvements.reserve(n_rounds);
   double previous_oob_loss = NA_REAL;
@@ -1153,7 +1351,7 @@ DataFrame grnboost_tree_round_nodes(
     scenic_build_tree(
       expr, residual, train_rows, feature_values, 0, static_cast<int>(train_rows.size()),
       feature_pool, constant_features, 0, 0, max_depth, mtry, split_seed,
-      nodes, tree_importance, nullptr);
+      feature_orders, feature_order_values, row_marks, row_mark, nodes, tree_importance, nullptr);
     if (nodes.empty()) break;
     ++actual_rounds;
 
@@ -1315,6 +1513,11 @@ DataFrame grnboost_tree_node_candidates(
   );
   std::vector<double> tree_importance(n_genes, 0.0);
   std::vector<double> feature_values(n_samples);
+  std::vector<std::vector<double> > feature_order_values;
+  std::vector<std::vector<int> > feature_orders = scenic_feature_orders(
+    expr, features, &feature_order_values);
+  std::vector<int> row_marks(n_samples, 0);
+  int row_mark = 0;
   std::vector<double> oob_improvements;
   oob_improvements.reserve(n_rounds);
   double previous_oob_loss = NA_REAL;
@@ -1343,7 +1546,7 @@ DataFrame grnboost_tree_node_candidates(
     scenic_build_tree(
       expr, residual, train_rows, feature_values, 0, static_cast<int>(train_rows.size()),
       feature_pool, constant_features, 0, 0, max_depth, mtry, split_seed,
-      nodes, tree_importance, nullptr, trace_ptr);
+      feature_orders, feature_order_values, row_marks, row_mark, nodes, tree_importance, nullptr, trace_ptr);
     if (nodes.empty()) break;
     ++actual_rounds;
     if (actual_rounds == trace_round) break;
@@ -1446,52 +1649,71 @@ List scenic_ctx_auc_avg2sd(
 
   NumericVector auc_out(n_features);
   NumericVector avg2sd_out(rank_threshold);
-  std::vector<double> recovery_sum(rank_threshold, 0.0);
-  std::vector<double> recovery_sumsq(rank_threshold, 0.0);
-  std::vector<int> counts(rank_threshold, 0);
+  std::vector<double> recovery_sum_diff(rank_threshold + 1, 0.0);
+  std::vector<double> recovery_sumsq_diff(rank_threshold + 1, 0.0);
   std::vector<int> selected;
   const double max_auc = static_cast<double>(rank_cutoff + 1) *
     static_cast<double>(n_targets);
 
   for (int feature = 0; feature < n_features; ++feature) {
-    std::fill(counts.begin(), counts.end(), 0);
     selected.clear();
     for (int target = 0; target < n_targets; ++target) {
       const int rank = ranks(feature, target);
       if (rank == NA_INTEGER) continue;
-      if (rank >= 0 && rank < rank_threshold) counts[rank] += 1;
-      if (rank < rank_cutoff) selected.push_back(rank);
+      if (rank >= 0 && rank < rank_threshold) selected.push_back(rank);
     }
 
     if (!selected.empty()) {
       std::sort(selected.begin(), selected.end());
+      std::size_t auc_n = 0;
+      while (auc_n < selected.size() && selected[auc_n] < rank_cutoff) ++auc_n;
       double auc = 0.0;
-      int previous = selected[0];
-      for (std::size_t i = 1; i < selected.size(); ++i) {
-        auc += static_cast<double>(selected[i] - previous) *
-          static_cast<double>(i);
-        previous = selected[i];
+      if (auc_n > 0) {
+        int previous = selected[0];
+        for (std::size_t i = 1; i < auc_n; ++i) {
+          auc += static_cast<double>(selected[i] - previous) *
+            static_cast<double>(i);
+          previous = selected[i];
+        }
+        auc += static_cast<double>(rank_cutoff - previous) *
+          static_cast<double>(auc_n);
+        auc_out[feature] = auc / max_auc;
       }
-      auc += static_cast<double>(rank_cutoff - previous) *
-        static_cast<double>(selected.size());
-      auc_out[feature] = auc / max_auc;
-    }
 
-    double cumulative = 0.0;
-    for (int rank = 0; rank < rank_threshold; ++rank) {
-      cumulative += static_cast<double>(counts[rank]);
-      recovery_sum[rank] += cumulative;
-      recovery_sumsq[rank] += cumulative * cumulative;
+      std::size_t pos = 0;
+      double cumulative = 0.0;
+      while (pos < selected.size()) {
+        const int rank = selected[pos];
+        std::size_t next_pos = pos + 1;
+        while (next_pos < selected.size() && selected[next_pos] == rank) {
+          ++next_pos;
+        }
+        cumulative += static_cast<double>(next_pos - pos);
+        const int next_rank = (next_pos < selected.size()) ?
+          selected[next_pos] : rank_threshold;
+        if (next_rank > rank) {
+          const double cumulative_sq = cumulative * cumulative;
+          recovery_sum_diff[rank] += cumulative;
+          recovery_sum_diff[next_rank] -= cumulative;
+          recovery_sumsq_diff[rank] += cumulative_sq;
+          recovery_sumsq_diff[next_rank] -= cumulative_sq;
+        }
+        pos = next_pos;
+      }
     }
   }
 
   if (n_features > 0) {
     const double denom = static_cast<double>(n_features);
+    double recovery_sum = 0.0;
+    double recovery_sumsq = 0.0;
     for (int rank = 0; rank < rank_threshold; ++rank) {
-      const double mean = recovery_sum[rank] / denom;
+      recovery_sum += recovery_sum_diff[rank];
+      recovery_sumsq += recovery_sumsq_diff[rank];
+      const double mean = recovery_sum / denom;
       const double variance = std::max(
         0.0,
-        recovery_sumsq[rank] / denom - mean * mean
+        recovery_sumsq / denom - mean * mean
       );
       avg2sd_out[rank] = mean + 2.0 * std::sqrt(variance);
     }

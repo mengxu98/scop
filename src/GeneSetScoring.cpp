@@ -15,8 +15,21 @@ using namespace Rcpp;
 struct AucEntry {
   int gene;
   double value;
-  double random;
+  double tiebreak;
 };
+
+// Deterministic gene-index hash for tie-breaking.
+// Replaces unif_rand() so that the same gene always gets the same tiebreaker
+// regardless of strategy (sparse / topk / full), making them produce identical
+// rankings for the same input.  Also eliminates RNG-call-order sensitivity.
+static inline double gene_hash_tiebreak(int gene) {
+  // SplitMix64-style hash, returns a deterministic value in [0, 1)
+  unsigned long long x = static_cast<unsigned long long>(gene) + 0x9e3779b97f4a7c15ULL;
+  x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9ULL;
+  x = (x ^ (x >> 27)) * 0x94d049bb133111ebULL;
+  x = x ^ (x >> 31);
+  return static_cast<double>(x & 0x7fffffffffffffffULL) / static_cast<double>(0x8000000000000000ULL);
+}
 
 static bool aucell_entry_before(const AucEntry& a, const AucEntry& b) {
   if (a.value > b.value) {
@@ -25,7 +38,7 @@ static bool aucell_entry_before(const AucEntry& a, const AucEntry& b) {
   if (a.value < b.value) {
     return false;
   }
-  return a.random < b.random;
+  return a.tiebreak < b.tiebreak;
 }
 
 static double aucell_max_auc(int n_genes, int auc_threshold, bool norm_auc) {
@@ -174,7 +187,7 @@ NumericMatrix aucell_auc_sparse(
         continue;
       }
       if (strategy == 2) {
-        entries.push_back(AucEntry{gene, value, unif_rand()});
+        entries.push_back(AucEntry{gene, value, gene_hash_tiebreak(gene)});
       } else {
         value_by_gene[gene] = value;
         touched_values.push_back(gene);
@@ -195,14 +208,16 @@ NumericMatrix aucell_auc_sparse(
         for (std::vector<int>::const_iterator it = set_gene_union.begin(); it != set_gene_union.end(); ++it) {
           const int gene = *it;
           if (rank_by_gene[gene] == 0 && n_zero > 0) {
-            rank_by_gene[gene] = static_cast<int>(entries.size()) + 1 + static_cast<int>(unif_rand() * n_zero);
+            // Deterministic zero-gene rank: hash-based offset into [K+1, n_genes]
+            const int offset = static_cast<int>(gene_hash_tiebreak(gene + 7777777) * static_cast<double>(n_zero));
+            rank_by_gene[gene] = static_cast<int>(entries.size()) + 1 + offset;
             touched_ranks.push_back(gene);
           }
         }
       }
     } else {
       for (int gene = 0; gene < n_genes; ++gene) {
-        entries.push_back(AucEntry{gene, value_by_gene[gene], unif_rand()});
+        entries.push_back(AucEntry{gene, value_by_gene[gene], gene_hash_tiebreak(gene)});
       }
 
       if (strategy == 1 && top_n < static_cast<int>(entries.size())) {
