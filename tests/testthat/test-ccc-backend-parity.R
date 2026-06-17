@@ -429,6 +429,25 @@ test_that("RunNichenetr aggregate_cluster_de maps receivers to upstream argument
   expect_equal(out@tools$Nichenetr$parameters$backend, "cpp")
 })
 
+test_that("resolve_nichenetr_object downloads fallback RDS before reading", {
+  skip_if_not_installed("R.cache")
+
+  prior <- data.frame(from = "L1", to = "R1", stringsAsFactors = FALSE)
+  source <- tempfile(fileext = ".rds")
+  saveRDS(prior, source)
+
+  candidate <- basename(tempfile("test_nichenetr_fallback_"))
+  out <- getFromNamespace("resolve_nichenetr_object", "scop")(
+    x = NULL,
+    package = "scop",
+    object_candidates = candidate,
+    fallback_url = paste0("file://", normalizePath(source)),
+    verbose = FALSE
+  )
+
+  expect_equal(out, prior)
+})
+
 test_that("RunMultiNichenetr preserves user contrast table semantics", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("Matrix")
