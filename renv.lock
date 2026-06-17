@@ -15263,16 +15263,16 @@
     },
     "thisplot": {
       "Package": "thisplot",
-      "Version": "0.3.8",
+      "Version": "0.4.1",
       "Source": "GitHub",
       "Type": "Package",
       "Title": "Utility Functions for Plotting",
-      "Date": "2026-04-23",
-      "Authors@R": "person(\"Meng\", \"Xu\", email = \"mengxu98@qq.com\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0002-8300-1054\"))",
+      "Date": "2026-05-24",
+      "Authors@R": "c(\n    person(\"Meng\", \"Xu\", email = \"mengxu98@qq.com\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0002-8300-1054\")),\n    person(given = \"Haoliang\", family = \"Zhu\", email = \"hurry060215@gmail.com\", role = c(\"aut\"), comment = c(ORCID = \"0009-0004-9766-5179\"))\n    )",
       "Maintainer": "Meng Xu <mengxu98@qq.com>",
       "Description": "Provides utility functions for plotting. Includes functions for color manipulation, plot customization, panel size control, data optimization for plots, and layout adjustments.",
       "License": "MIT+ file LICENSE",
-      "URL": "https://mengxu98.github.io/thisplot/, https://github.com/mengxu98/thisplot",
+      "URL": "https://mengxu98.github.io/thisplot/",
       "BugReports": "https://github.com/mengxu98/thisplot/issues",
       "Depends": [
         "R (>= 4.1.0)"
@@ -15280,6 +15280,7 @@
       "Imports": [
         "cli",
         "dendextend",
+        "ggforce",
         "geomtextpath",
         "ggrepel",
         "ggnewscale",
@@ -15301,6 +15302,7 @@
         "ComplexHeatmap",
         "dplyr",
         "forcats",
+        "ggalluvial",
         "ggupset",
         "ggVennDiagram",
         "htmltools",
@@ -15311,7 +15313,8 @@
         "scales",
         "stringr",
         "testthat (>= 3.0.0)",
-        "tidyr"
+        "tidyr",
+        "venny"
       ],
       "Config/Needs/website": "mengxu98/thistemplate",
       "Config/testthat/edition": "3",
@@ -15324,7 +15327,7 @@
       "RemoteUsername": "mengxu98",
       "RemotePkgRef": "mengxu98/thisplot",
       "RemoteRef": "HEAD",
-      "RemoteSha": "3202e9bd59cdf5ed01a0181de173d6721be40982",
+      "RemoteSha": "1e210674ecac99ffb738403538a1a2dfc2895664",
       "LazyData": "true",
       "NeedsCompilation": "no",
       "Author": "Meng Xu [aut, cre] (ORCID: <https://orcid.org/0000-0002-8300-1054>)"

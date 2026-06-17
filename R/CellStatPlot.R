@@ -13,6 +13,8 @@
 #' Can be one of `"bar"`, `"rose"`, `"ring"`, `"pie"`, `"trend"`,
 #' `"trend_alluvial"`, `"area"`, `"dot"`, `"sankey"`, `"chord"`,
 #' `"venn"`, or `"upset"`.
+#' @param x_text_angle Rotation angle for x-axis labels.
+#' Default is `45`.
 #' @param position The position adjustment for the plot.
 #' Can be one of `"stack"` or `"dodge"`.
 #' @param label Whether to add labels on the plot.
@@ -339,6 +341,7 @@ CellStatPlot <- function(
   legend.direction = "vertical",
   theme_use = "theme_scop",
   theme_args = list(),
+  x_text_angle = 45,
   grid_major = TRUE,
   grid_major_colour = "grey80",
   grid_major_linetype = 2,
@@ -405,6 +408,11 @@ CellStatPlot <- function(
     legend.direction = legend.direction,
     theme_use = theme_use,
     theme_args = theme_args,
+    x_text_angle = x_text_angle,
+    grid_major = grid_major,
+    grid_major_colour = grid_major_colour,
+    grid_major_linetype = grid_major_linetype,
+    grid_major_linewidth = grid_major_linewidth,
     combine = combine,
     nrow = nrow,
     ncol = ncol,
@@ -413,55 +421,6 @@ CellStatPlot <- function(
     seed = seed,
     ...
   )
-  if (!plot_type %in% c("venn", "upset", "sankey", "chord")) {
-    plot <- add_major_grid_theme(
-      plot = plot,
-      grid_major = grid_major,
-      grid_major_colour = grid_major_colour,
-      grid_major_linetype = grid_major_linetype,
-      grid_major_linewidth = grid_major_linewidth
-    )
-  }
 
   return(plot)
-}
-
-add_major_grid_theme <- function(
-  plot,
-  grid_major = TRUE,
-  grid_major_colour = "grey80",
-  grid_major_linetype = 2,
-  grid_major_linewidth = 0.3
-) {
-  grid_theme <- ggplot2::theme(
-    panel.grid.major = if (isTRUE(grid_major)) {
-      ggplot2::element_line(
-        colour = grid_major_colour,
-        linetype = grid_major_linetype,
-        linewidth = grid_major_linewidth
-      )
-    } else {
-      ggplot2::element_blank()
-    }
-  )
-  if (inherits(plot, c("gg", "ggplot"))) {
-    return(plot + grid_theme)
-  }
-  if (inherits(plot, "patchwork")) {
-    return(plot & grid_theme)
-  }
-  if (inherits(plot, "recordedplot")) {
-    return(plot)
-  }
-  if (is.list(plot)) {
-    return(lapply(
-      plot,
-      add_major_grid_theme,
-      grid_major = grid_major,
-      grid_major_colour = grid_major_colour,
-      grid_major_linetype = grid_major_linetype,
-      grid_major_linewidth = grid_major_linewidth
-    ))
-  }
-  plot
 }
