@@ -24,14 +24,17 @@
 #' current `method` values. `"r"` uses the original [GSVA::gsva()]
 #' implementation. `"cpp"` supports `method = "ssgsea"`,
 #' `method = "zscore"`, `method = "plage"`, and `method = "gsva"` with
-#' `kcdf = "Gaussian"` or `kcdf = "Poisson"`. PLAGE scores are oriented to have non-negative
+#' `kcdf = "Gaussian"`, `kcdf = "Poisson"`, or `kcdf = "none"`. PLAGE scores are oriented to have non-negative
 #' dot product with the gene set mean z-score so SVD signs are deterministic.
 #' @param cpp_chunk_size Optional cell chunk size for C++ GSVA kernels. `NULL`
 #' or `"auto"` automatically chunks large matrices to reduce peak dense
 #' intermediate memory; positive values set the chunk size manually.
 #' @param kcdf The kernel cumulative distribution function used for GSVA.
-#' Options are `"Gaussian"` (for continuous data) or `"Poisson"` (for count data).
-#' Default is `"Gaussian"`.
+#' Options are `"Gaussian"` (for continuous data), `"Poisson"` (for count data),
+#' or `"none"` (skip kernel estimation and use ranks directly).
+#' When omitted, `backend = "cpp"` with `method = "gsva"` uses `"none"` for
+#' faster single-cell scoring; explicit `"Gaussian"` or `"Poisson"` values are
+#' still honored. Other backends and methods default to `"Gaussian"`.
 #' @param abs.ranking Logical indicating whether to use absolute ranking for GSVA.
 #' Default is `FALSE`.
 #' @param min.sz Minimum size of gene sets to be included in the analysis.
@@ -118,7 +121,7 @@ RunGSVA <- function(
   method = c("gsva", "ssgsea", "zscore", "plage"),
   backend = c("cpp", "r"),
   cpp_chunk_size = NULL,
-  kcdf = c("Gaussian", "Poisson"),
+  kcdf = c("Gaussian", "Poisson", "none"),
   abs.ranking = FALSE,
   min.sz = 10,
   max.sz = Inf,
@@ -130,7 +133,9 @@ RunGSVA <- function(
 ) {
   log_message("Start {.pkg GSVA} analysis", verbose = verbose)
 
+  kcdf_defaulted <- missing(kcdf)
   method <- unique(tolower(as.character(method)))
+  backend <- match.arg(backend)
   valid_methods <- c("gsva", "ssgsea", "zscore", "plage")
   if (!all(method %in% valid_methods)) {
     log_message(
@@ -183,7 +188,7 @@ RunGSVA <- function(
         method = method_i,
         backend = backend,
         cpp_chunk_size = cpp_chunk_size,
-        kcdf = kcdf,
+        kcdf = if (isTRUE(kcdf_defaulted) && identical(backend, "cpp") && identical(method_i, "gsva")) "none" else kcdf,
         abs.ranking = abs.ranking,
         min.sz = min.sz,
         max.sz = max.sz,
@@ -203,8 +208,10 @@ RunGSVA <- function(
     return(srt)
   }
   method <- match.arg(method)
-  backend <- match.arg(backend)
   kcdf <- match.arg(kcdf)
+  if (isTRUE(kcdf_defaulted) && identical(backend, "cpp") && identical(method, "gsva")) {
+    kcdf <- "none"
+  }
   if (identical(backend, "cpp")) {
     if (!method %in% c("gsva", "ssgsea", "zscore", "plage")) {
       log_message(
@@ -664,7 +671,7 @@ RunGSVA <- function(
     )
     if (isTRUE(new_assay)) {
       srt[[assay_name]] <- Seurat::CreateAssayObject(
-        counts = Matrix::t(as_matrix(scores_mat))
+        data = Matrix::t(as_matrix(scores_mat))
       )
       srt[[assay_name]] <- Seurat::AddMetaData(
         object = srt[[assay_name]],

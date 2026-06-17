@@ -16,7 +16,11 @@
 #' `method = "VISION"` falls back to `"r"` when `backend` is not explicitly set.
 #' AUCell C++ scores may differ from the R backend when tied expression values
 #' are randomly ranked.
-#' @param cpp_strategy C++ AUCell ranking strategy. `"sparse"` ranks non-zero
+#' @param cpp_strategy C++ AUCell ranking strategy. `"topk"` ranks only genes
+#' that can contribute to AUCell AUC and is the default for better agreement
+#' with AUCell's full ranking on sparse single-cell matrices. `"aucell"` uses
+#' [AUCell::AUCell_buildRankings()] and [AUCell::AUCell_calcAUC()] for
+#' scMetabolism-compatible scores. `"sparse"` ranks non-zero
 #' @param use_preparedb When `TRUE`, gene sets are built via [PrepareDB] which
 #' provides species-aware gene mapping via BioMart and KEGG/Reactome databases.
 #' This automatically handles gene symbol conversion for non-human species
@@ -91,7 +95,7 @@ RunMetabolism <- function(
   use_preparedb = TRUE,
   method = c("AUCell", "GSVA", "ssGSEA", "VISION"),
   backend = c("cpp", "r"),
-  cpp_strategy = c("sparse", "topk", "full"),
+  cpp_strategy = c("topk", "sparse", "full", "aucell"),
   cpp_chunk_size = NULL,
   minGSSize = 10,
   maxGSSize = 500,
@@ -245,10 +249,7 @@ RunMetabolism <- function(
     skip_gmt <- FALSE
   }
 
-  gmt_urls <- c(
-    KEGG = "https://raw.githubusercontent.com/mengxu98/datasets/main/scMetabolism/KEGG_metabolism_nc.gmt",
-    Reactome = "https://raw.githubusercontent.com/mengxu98/datasets/main/scMetabolism/REACTOME_metabolism.gmt"
-  )
+  gmt_sources <- scmetabolism_gmt_sources()
 
   gene_sets_all <- list()
   term_names_all <- list()
@@ -262,7 +263,7 @@ RunMetabolism <- function(
     for (term_db in db_prepare) {
       term_db_label <- db_labels[[term_db]]
       metabolism_db <- load_scmetabolism_gmt(
-        url = gmt_urls[[term_db]],
+        source = gmt_sources[[term_db]],
         db_name = term_db,
         verbose = verbose
       )
@@ -416,11 +417,27 @@ RunMetabolism <- function(
 
   if (method == "AUCell") {
     if (identical(backend, "cpp")) {
-      scores_mat <- run_aucell_scores(
-        expr_counts = expr_counts,
-        gene_sets = gene_sets,
-        strategy = cpp_strategy
-      )
+      if (identical(cpp_strategy, "aucell")) {
+        gene_set_scoring_require_namespace("AUCell")
+        expr_rank <- AUCell::AUCell_buildRankings(
+          as_matrix(expr_counts),
+          plotStats = FALSE
+        )
+        cells_auc <- AUCell::AUCell_calcAUC(
+          geneSets = gene_sets,
+          rankings = expr_rank
+        )
+        auc_mat <- AUCell::getAUC(cells_auc)
+        scores_mat <- Matrix::t(auc_mat)
+        scores_mat <- as_matrix(scores_mat)
+        colnames(scores_mat) <- rownames(auc_mat)
+      } else {
+        scores_mat <- run_aucell_scores(
+          expr_counts = expr_counts,
+          gene_sets = gene_sets,
+          strategy = cpp_strategy
+        )
+      }
     } else {
       gene_set_scoring_require_namespace("AUCell")
       expr_rank <- AUCell::AUCell_buildRankings(
@@ -634,9 +651,32 @@ RunMetabolism <- function(
   return(srt)
 }
 
-load_scmetabolism_gmt <- function(url, db_name, verbose = TRUE) {
+scmetabolism_gmt_sources <- function() {
+  urls <- c(
+    KEGG = "https://raw.githubusercontent.com/mengxu98/datasets/main/scMetabolism/KEGG_metabolism_nc.gmt",
+    Reactome = "https://raw.githubusercontent.com/mengxu98/datasets/main/scMetabolism/REACTOME_metabolism.gmt"
+  )
+  local <- c(
+    KEGG = system.file(
+      "data",
+      "KEGG_metabolism_nc.gmt",
+      package = "scMetabolism"
+    ),
+    Reactome = system.file(
+      "data",
+      "REACTOME_metabolism.gmt",
+      package = "scMetabolism"
+    )
+  )
+  out <- urls
+  use_local <- file.exists(local) & nzchar(local)
+  out[use_local] <- local[use_local]
+  out
+}
+
+load_scmetabolism_gmt <- function(source, db_name, verbose = TRUE) {
   check_r("R.cache", verbose = FALSE)
-  cache_key <- list("scmetabolism_raw_gmt", db_name, url)
+  cache_key <- list("scmetabolism_raw_gmt", db_name, source)
   cached <- R.cache::loadCache(key = cache_key)
   if (!is.null(cached)) {
     return(cached)
@@ -644,7 +684,11 @@ load_scmetabolism_gmt <- function(url, db_name, verbose = TRUE) {
 
   tmp <- tempfile(fileext = ".gmt")
   on.exit(if (file.exists(tmp)) unlink(tmp), add = TRUE)
-  download(url = url, destfile = tmp, quiet = !verbose)
+  if (file.exists(source)) {
+    file.copy(source, tmp, overwrite = TRUE)
+  } else {
+    download(url = source, destfile = tmp, quiet = !verbose)
+  }
   lines <- readLines(tmp, warn = FALSE)
   split_lines <- strsplit(lines, "\t", fixed = TRUE)
 
@@ -685,16 +729,13 @@ load_scmetabolism_gmt <- function(url, db_name, verbose = TRUE) {
 }
 
 scmetabolism_pathway_refs <- function(db_prepare, verbose = TRUE) {
-  gmt_urls <- c(
-    KEGG = "https://raw.githubusercontent.com/mengxu98/datasets/main/scMetabolism/KEGG_metabolism_nc.gmt",
-    Reactome = "https://raw.githubusercontent.com/mengxu98/datasets/main/scMetabolism/REACTOME_metabolism.gmt"
-  )
+  gmt_sources <- scmetabolism_gmt_sources()
   kegg_refs <- character(0)
   reactome_names <- character(0)
 
-  for (term_db in intersect(db_prepare, names(gmt_urls))) {
+  for (term_db in intersect(db_prepare, names(gmt_sources))) {
     db <- load_scmetabolism_gmt(
-      url = gmt_urls[[term_db]],
+      source = gmt_sources[[term_db]],
       db_name = term_db,
       verbose = verbose
     )
