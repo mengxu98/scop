@@ -42,6 +42,7 @@ CellStatPlot(
   legend.direction = "vertical",
   theme_use = "theme_scop",
   theme_args = list(),
+  x_text_angle = 45,
   grid_major = TRUE,
   grid_major_colour = "grey80",
   grid_major_linetype = 2,
@@ -215,6 +216,10 @@ CellStatPlot(
 
   Other arguments passed to the `theme_use`. Default is
   [`list()`](https://rdrr.io/r/base/list.html).
+
+- x_text_angle:
+
+  Rotation angle for x-axis labels. Default is `45`.
 
 - grid_major:
 
