@@ -298,7 +298,7 @@ grnboost <- function(
   } else {
     as.integer(max_edges_per_target_cpp)
   }
-  regulator_idx <- as.integer(match(inputs[["regulators"]], gene_names))
+  regulator_idx <- as.integer(sort(match(inputs[["regulators"]], gene_names)))
   target_idx <- as.integer(match(inputs[["targets"]], gene_names))
   expr <- as.matrix(grn_matrix)
   run_chunk <- function(target_idx_chunk) {
@@ -324,25 +324,26 @@ grnboost <- function(
       message_type = "error"
     )
   }
-  use_tasks <- cores > 1L || (isTRUE(verbose) && n_targets > 1L)
-  edge_idx <- if (use_tasks) {
-    task_count <- min(n_targets, max(cores, min(100L, n_targets)))
-    target_tasks <- split(
-      target_idx,
-      rep(seq_len(task_count), length.out = n_targets)
-    )
+  edge_idx <- if (cores > 1L) {
     log_message(
       "Running C++ GRNBoost2 for {.val {n_targets}} target genes",
       verbose = verbose
     )
-    result_list <- thisutils::parallelize_fun(
-      x = target_tasks,
-      fun = run_chunk,
-      cores = min(cores, length(target_tasks)),
-      progress_bar_width = min(50L, length(target_tasks)),
-      verbose = verbose
+    grnboost_tree_parallel(
+      expr = expr,
+      regulator_idx = regulator_idx,
+      target_idx = target_idx,
+      n_rounds = as.integer(max(1L, n_rounds)),
+      learning_rate = learning_rate,
+      max_edges_per_target = max_edges_per_target_cpp,
+      max_depth = as.integer(max(1L, max_depth)),
+      max_features = max_features,
+      subsample = subsample,
+      early_stop_window_length = as.integer(max(0L, early_stop_window_length)),
+      random_seed = as.integer(seed %||% 1234L),
+      exclude_self = isTRUE(exclude_self),
+      n_threads = as.integer(cores)
     )
-    do.call(rbind, result_list)
   } else {
     run_chunk(target_idx)
   }

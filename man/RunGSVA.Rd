@@ -30,7 +30,7 @@ RunGSVA(
   method = c("gsva", "ssgsea", "zscore", "plage"),
   backend = c("cpp", "r"),
   cpp_chunk_size = NULL,
-  kcdf = c("Gaussian", "Poisson"),
+  kcdf = c("Gaussian", "Poisson", "none"),
   abs.ranking = FALSE,
   min.sz = 10,
   max.sz = Inf,
@@ -124,7 +124,7 @@ Default is \code{"gsva"}.}
 current \code{method} values. \code{"r"} uses the original \code{\link[GSVA:gsva]{GSVA::gsva()}}
 implementation. \code{"cpp"} supports \code{method = "ssgsea"},
 \code{method = "zscore"}, \code{method = "plage"}, and \code{method = "gsva"} with
-\code{kcdf = "Gaussian"} or \code{kcdf = "Poisson"}. PLAGE scores are oriented to have non-negative
+\code{kcdf = "Gaussian"}, \code{kcdf = "Poisson"}, or \code{kcdf = "none"}. PLAGE scores are oriented to have non-negative
 dot product with the gene set mean z-score so SVD signs are deterministic.}
 
 \item{cpp_chunk_size}{Optional cell chunk size for C++ GSVA kernels. \code{NULL}
@@ -132,8 +132,11 @@ or \code{"auto"} automatically chunks large matrices to reduce peak dense
 intermediate memory; positive values set the chunk size manually.}
 
 \item{kcdf}{The kernel cumulative distribution function used for GSVA.
-Options are \code{"Gaussian"} (for continuous data) or \code{"Poisson"} (for count data).
-Default is \code{"Gaussian"}.}
+Options are \code{"Gaussian"} (for continuous data), \code{"Poisson"} (for count data),
+or \code{"none"} (skip kernel estimation and use ranks directly).
+When omitted, \code{backend = "cpp"} with \code{method = "gsva"} uses \code{"none"} for
+faster single-cell scoring; explicit \code{"Gaussian"} or \code{"Poisson"} values are
+still honored. Other backends and methods default to \code{"Gaussian"}.}
 
 \item{abs.ranking}{Logical indicating whether to use absolute ranking for GSVA.
 Default is \code{FALSE}.}

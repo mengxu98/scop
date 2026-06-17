@@ -378,8 +378,12 @@ CellScoring <- function(
     )
   }
   dots <- list(...)
+  kcdf_defaulted <- is.null(dots[["kcdf"]])
   kcdf <- dots[["kcdf"]] %||% if (identical(layer, "counts")) "Poisson" else "Gaussian"
-  kcdf <- match.arg(kcdf, c("Gaussian", "Poisson"))
+  kcdf <- match.arg(kcdf, c("Gaussian", "Poisson", "none"))
+  if (isTRUE(kcdf_defaulted) && identical(backend, "cpp") && any(method == "GSVA")) {
+    kcdf <- "none"
+  }
   cpp_chunk_size <- dots[["cpp_chunk_size"]] %||% NULL
   abs.ranking <- dots[["abs.ranking"]] %||% FALSE
   min.sz <- dots[["min.sz"]] %||% minGSSize
