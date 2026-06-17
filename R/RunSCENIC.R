@@ -590,8 +590,10 @@ RunSCENIC <- function(
   } else {
     NULL
   }
+  score_mat <- Matrix::t(Matrix::Matrix(as.matrix(ras_mat), sparse = TRUE))
+  dimnames(score_mat) <- list(colnames(ras_mat), rownames(ras_mat))
   result <- list(
-    scores = Matrix::t(Matrix::Matrix(as.matrix(ras_mat), sparse = TRUE)),
+    scores = score_mat,
     scores_cells_by_regulon = ras_mat,
     regulons = regulon_tbl,
     regulon_list = regulon_list,
@@ -963,7 +965,8 @@ scenic_cpp <- function(
       min_regulon_size = min_regulon_size,
       cores = cores,
       backend = "cpp",
-      cpp_strategy = "full",
+      cpp_strategy = "topk",
+      cpp_algorithm = "ctxcore",
       seed = seed,
       verbose = verbose
     )
@@ -972,9 +975,11 @@ scenic_cpp <- function(
   ras_mat <- ras_mat[colnames(srt), , drop = FALSE]
 
   regulon_tbl <- scenic_regulon_table(regulon_list)
+  score_mat <- Matrix::t(Matrix::Matrix(as.matrix(ras_mat), sparse = TRUE))
+  dimnames(score_mat) <- list(colnames(ras_mat), rownames(ras_mat))
 
   result <- list(
-    scores = Matrix::t(Matrix::Matrix(as.matrix(ras_mat), sparse = TRUE)),
+    scores = score_mat,
     scores_cells_by_regulon = ras_mat,
     regulons = regulon_tbl,
     regulon_list = regulon_list,
@@ -2417,11 +2422,13 @@ scenic_compute_aucell_score <- function(
   cores = 1,
   backend = c("r", "cpp"),
   cpp_strategy = c("full", "sparse", "topk"),
+  cpp_algorithm = c("aucell", "ctxcore"),
   seed = NULL,
   verbose = TRUE
 ) {
   backend <- match.arg(backend)
   cpp_strategy <- match.arg(cpp_strategy)
+  cpp_algorithm <- match.arg(cpp_algorithm)
   regulon_list <- lapply(regulon_list, intersect, rownames(counts))
   regulon_list <- regulon_list[lengths(regulon_list) >= min_regulon_size]
   if (length(regulon_list) == 0) {
@@ -2442,7 +2449,8 @@ scenic_compute_aucell_score <- function(
     scores <- run_aucell_scores(
       expr_counts = counts,
       gene_sets = regulon_list,
-      strategy = cpp_strategy
+      strategy = cpp_strategy,
+      algorithm = cpp_algorithm
     )
     return(as.data.frame(scores, check.names = FALSE)[
       colnames(counts),
