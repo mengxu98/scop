@@ -136,6 +136,9 @@
 #'   group.by = "SubCellType"
 #' )
 #' }
+#' @param backward Whether to compute backward transitions. Default is `FALSE`.
+#' @param backend Backend for computation: `"python"` (default) or `"cpp"`.
+#' When `"cpp"`, uses the native C++ implementation.
 RunCellRank <- function(
   srt = NULL,
   assay_x = "RNA",
@@ -178,6 +181,8 @@ RunCellRank <- function(
   n_macrostates = NULL,
   schur_method = c("krylov", "brandts"),
   n_cells_terminal = 10,
+  backward = FALSE,
+  backend = c("python", "cpp"),
   show_plot = TRUE,
   save_plot = FALSE,
   plot_format = c("pdf", "png", "svg"),
@@ -191,6 +196,36 @@ RunCellRank <- function(
   verbose = TRUE
 ) {
   kernel_type <- match.arg(kernel_type)
+  backend <- match.arg(backend)
+  estimator_type_upper <- toupper(match.arg(estimator_type))
+
+  # ── C++ backend ──
+  if (identical(backend, "cpp")) {
+    if (identical(kernel_type, "wot")) {
+      log_message(
+        "{.arg backend = 'cpp'} does not support {.arg kernel_type = 'wot'}; use {.arg backend = 'python'} for Waddington-OT",
+        message_type = "error"
+      )
+    }
+    return(run_cellrank_cpp(
+      srt = srt, assay_y = assay_y, layer_y = layer_y,
+      group.by = group.by, linear_reduction = linear_reduction,
+      nonlinear_reduction = nonlinear_reduction,
+      n_pcs = n_pcs, n_neighbors = n_neighbors,
+      mode = mode, kernel_type = kernel_type,
+      velocity_weight = velocity_weight,
+      connectivity_weight = connectivity_weight,
+      use_connectivity_kernel = use_connectivity_kernel,
+      softmax_scale = softmax_scale,
+      n_macrostates = n_macrostates,
+      n_cells_terminal = n_cells_terminal,
+      estimator_type = tolower(estimator_type_upper),
+      backward = backward,
+      cores = cores, return_seurat = return_seurat,
+      verbose = verbose
+    ))
+  }
+
   PrepareEnv(modules = c(
     "cellrank",
     if (kernel_type == "wot") "wot",
@@ -321,7 +356,9 @@ RunCellRank <- function(
         "legend.position",
         "cores",
         "plot_dpi",
-        "plot_prefix"
+        "plot_prefix",
+        "backend",
+        "backward"
       )
   ]
 
@@ -362,8 +399,203 @@ RunCellRank <- function(
       return(merged)
     }
   } else {
-    adata$uns["cellrank_estimator"] <- estimator
-    adata$uns["cellrank_kernel"] <- kernel
+    adata$uns["cellrank_estimator_type"] <- estimator_type
+    adata$uns["cellrank_kernel_type"] <- kernel_type
     return(adata)
   }
+}
+run_cellrank_cpp <- function(
+  srt, assay_y, layer_y, group.by,
+  linear_reduction, nonlinear_reduction,
+  n_pcs, n_neighbors, mode, kernel_type,
+  velocity_weight, connectivity_weight, use_connectivity_kernel,
+  softmax_scale, n_macrostates, n_cells_terminal,
+  estimator_type = c("gpcca", "cflare"),
+  backward = FALSE,
+  cores, return_seurat, verbose
+) {
+  estimator_type <- match.arg(estimator_type)
+  if (is.null(srt)) {
+    log_message("{.arg backend = 'cpp'} requires {.arg srt}", message_type = "error")
+  }
+  if (!isTRUE(return_seurat)) {
+    log_message("{.arg backend = 'cpp'} returns a {.cls Seurat} object only", message_type = "error")
+  }
+  if (is.null(linear_reduction)) linear_reduction <- DefaultReduction(srt)
+  else linear_reduction <- DefaultReduction(srt, pattern = linear_reduction)
+  if (is.null(nonlinear_reduction)) nonlinear_reduction <- DefaultReduction(srt)
+  else nonlinear_reduction <- DefaultReduction(srt, pattern = nonlinear_reduction)
+  cells <- colnames(srt)
+  nonlinear_embedding <- as.matrix(srt@reductions[[nonlinear_reduction]]@cell.embeddings[cells, , drop = FALSE])
+  storage.mode(nonlinear_embedding) <- "double"
+  n_cells <- nrow(nonlinear_embedding)
+  n_dims <- ncol(nonlinear_embedding)
+
+  velocity_reduction <- paste0(mode, "_", nonlinear_reduction)
+  pt_key <- paste0(mode, "_pseudotime")
+  needs_velocity <- identical(kernel_type, "velocity") ||
+    (identical(kernel_type, "pseudotime") && !pt_key %in% colnames(srt@meta.data))
+  if (isTRUE(needs_velocity) && !velocity_reduction %in% names(srt@reductions)) {
+    log_message(
+      "Running {.fn RunSCVELO} cpp backend before {.fn RunCellRank}",
+      verbose = verbose
+    )
+    srt <- run_scvelo_cpp(srt = srt, assay_y = assay_y, layer_y = layer_y, group.by = group.by,
+      linear_reduction = linear_reduction, nonlinear_reduction = nonlinear_reduction,
+      n_pcs = n_pcs, n_neighbors = n_neighbors, mode = mode,
+      filter_genes = TRUE, normalize_per_cell = TRUE, log_transform = TRUE,
+      compute_terminal_states = FALSE, compute_pseudotime = FALSE,
+      compute_velocity_confidence = FALSE,
+      cores = cores, return_seurat = TRUE, verbose = verbose)
+  } else if (isTRUE(needs_velocity)) {
+    log_message(
+      "Reusing existing {.field {velocity_reduction}} reduction for {.fn RunCellRank}",
+      verbose = verbose
+    )
+  }
+  ve <- NULL
+  if (isTRUE(needs_velocity) || identical(kernel_type, "velocity")) {
+    if (!velocity_reduction %in% names(srt@reductions)) {
+      log_message(
+        "Velocity reduction {.val {velocity_reduction}} is not available",
+        message_type = "error"
+      )
+    }
+    ve <- as.matrix(srt@reductions[[velocity_reduction]]@cell.embeddings)
+    storage.mode(ve) <- "double"
+  }
+  le <- as.matrix(srt@reductions[[linear_reduction]]@cell.embeddings[
+    cells, seq_len(min(n_pcs, ncol(srt@reductions[[linear_reduction]]@cell.embeddings))), drop = FALSE])
+  storage.mode(le) <- "double"
+  knn_k <- max(1L, min(as.integer(n_neighbors) - 1L, n_cells - 1L))
+  knn <- run_cpp_knn(reference = le, query = le, k = knn_k, metric = "euclidean", exclude_self = TRUE, n_threads = as.integer(cores))
+
+  # Build transition matrix based on kernel_type
+  T_mat <- NULL
+  kernel_used <- kernel_type
+
+  if (kernel_type == "velocity") {
+    T_mat <- cellrank_velocity_kernel_cpp(
+      velocity_embedding = ve,
+      embedding = nonlinear_embedding,
+      knn_idx = knn[["idx"]],
+      backward = isTRUE(backward),
+      softmax_scale = softmax_scale
+    )
+    if (isTRUE(use_connectivity_kernel) && connectivity_weight > 0 && velocity_weight > 0) {
+      C_mat <- matrix(0, n_cells, n_cells)
+      knn_dist <- knn[["dist"]]
+      for (i in seq_len(n_cells)) {
+        wsum <- 0
+        valid_dists <- knn_dist[i, ][!is.na(knn_dist[i, ])]
+        sigma_i <- if (length(valid_dists) > 0) stats::median(valid_dists) + 1e-10 else 1.0
+        for (k in seq_len(knn_k)) {
+          nb <- knn[["idx"]][i, k]; if (is.na(nb)) next; nb <- as.integer(nb)
+          if (nb < 1 || nb > n_cells || nb == i) next
+          d <- knn_dist[i, k]; if (is.na(d)) next
+          w <- exp(-(d * d) / (2.0 * sigma_i * sigma_i))
+          C_mat[i, nb] <- w; wsum <- wsum + w
+        }
+        if (wsum > 0) C_mat[i, ] <- C_mat[i, ] / wsum else C_mat[i, i] <- 1.0
+      }
+      tw <- velocity_weight / (velocity_weight + connectivity_weight)
+      cw <- connectivity_weight / (velocity_weight + connectivity_weight)
+      T_mat <- tw * T_mat + cw * C_mat
+    }
+  } else if (kernel_type == "pseudotime") {
+    if (pt_key %in% colnames(srt@meta.data)) {
+      pseudotime <- as.numeric(srt@meta.data[[pt_key]])
+    } else {
+      log_message("Pseudotime not found; computing via velocity pseudotime", message_type = "warning", verbose = verbose)
+      ts_result <- scvelo_terminal_states_cpp(
+        velocity_embedding = ve, embedding = nonlinear_embedding,
+        knn_idx = knn[["idx"]], n_neighbors_velo = knn_k, seed = 0L
+      )
+      vpt_result <- scvelo_pseudotime_cpp(
+        velocity_embedding = ve, embedding = nonlinear_embedding,
+        knn_idx = knn[["idx"]], root_cells = ts_result[["root_cells"]],
+        end_points = ts_result[["end_points"]],
+        n_neighbors_velo = knn_k
+      )
+      pseudotime <- as.numeric(vpt_result[["pseudotime"]])
+    }
+    T_mat <- cellrank_pseudotime_kernel_cpp(
+      pseudotime = pseudotime,
+      knn_idx = knn[["idx"]],
+      cell_weights = rep(1, length(pseudotime)),
+      backward = isTRUE(backward)
+    )
+  } else if (kernel_type == "cytotrace") {
+    cytotrace_expr <- as.matrix(GetAssayData5(srt, assay = assay_y[[1L]], layer = layer_y))
+    gene_counts <- colSums(cytotrace_expr > 0)
+    T_mat <- cellrank_cytotrace_kernel_cpp(
+      gene_counts = as.numeric(gene_counts),
+      knn_idx = knn[["idx"]],
+      backward = isTRUE(backward)
+    )
+  } else {
+    # Default: velocity kernel (original inline computation)
+    T_mat <- matrix(0, n_cells, n_cells)
+    for (i in seq_len(n_cells)) {
+      vn <- sqrt(sum(ve[i, ]^2))
+      if (vn < 1e-10) { T_mat[i, i] <- 1.0; next }
+      wsum <- 0
+      for (k in seq_len(knn_k)) {
+        nb <- knn[["idx"]][i, k]; if (is.na(nb)) next; nb <- as.integer(nb)
+        if (nb < 1 || nb > n_cells || nb == i) next
+        delta <- nonlinear_embedding[nb, ] - nonlinear_embedding[i, ]
+        dn <- sqrt(sum(delta^2)); if (dn < 1e-10) next
+        cosine <- sum(ve[i, ] * delta) / (vn * dn)
+        if (cosine > 0) { T_mat[i, nb] <- exp(cosine * softmax_scale); wsum <- wsum + T_mat[i, nb] }
+      }
+      if (wsum > 0) T_mat[i, ] <- T_mat[i, ] / wsum else T_mat[i, i] <- 1.0
+    }
+  }
+
+  storage.mode(T_mat) <- "double"
+  n_mac <- if (is.null(n_macrostates)) 5L else as.integer(n_macrostates)
+
+  # Choose estimator
+  if (identical(estimator_type, "cflare")) {
+    result <- cellrank_cflare_cpp(T_ = T_mat, n_states = n_mac)
+  } else {
+    result <- cellrank_gpcca_cpp(T_ = T_mat, n_states = n_mac, n_cells_terminal = as.integer(n_cells_terminal))
+  }
+
+  srt[["cellrank_terminal_states"]] <- as.integer(result[["terminal_states"]])
+  srt[["cellrank_fate_confidence"]] <- as.numeric(result[["fate_confidence"]])
+  srt[["cellrank_macrostate"]] <- as.integer(result[["macrostate_assignment"]])
+  if (!is.null(ve)) {
+    colnames(ve) <- colnames(nonlinear_embedding)
+    rownames(ve) <- cells
+    srt[["cellrank_velocity"]] <- SeuratObject::CreateDimReducObject(
+      embeddings = ve, assay = SeuratObject::DefaultAssay(srt), key = "CRVELO_"
+    )
+  }
+
+  # Store absorption probabilities if available
+  if ("absorption_probabilities" %in% names(result)) {
+    ap <- result[["absorption_probabilities"]]
+    rownames(ap) <- cells
+    srt@tools[["CellRank"]]$absorption_probabilities <- ap
+  }
+
+  srt@tools[["CellRank"]] <- c(srt@tools[["CellRank"]], list(
+    backend = "cpp",
+    estimator = estimator_type,
+    kernel = kernel_used,
+    n_macrostates = result[["n_macrostates"]],
+    eigenvalues = result[["eigenvalues"]],
+    schur_vectors = result[["schur_vectors"]],
+    stationary_distribution = result[["stationary_distribution"]],
+    parameters = list(
+      mode = mode, kernel_type = kernel_type, estimator_type = estimator_type,
+      softmax_scale = softmax_scale, n_macrostates = n_mac,
+      n_cells_terminal = as.integer(n_cells_terminal),
+      backward = backward
+    )
+  ))
+  log_message("{.pkg CellRank} cpp backend ({.val {estimator_type}} + {.val {kernel_used}} kernel) completed",
+    message_type = "success", verbose = verbose)
+  srt
 }

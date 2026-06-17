@@ -46,6 +46,8 @@ RunCellRank(
   n_macrostates = NULL,
   schur_method = c("krylov", "brandts"),
   n_cells_terminal = 10,
+  backward = FALSE,
+  backend = c("python", "cpp"),
   show_plot = TRUE,
   save_plot = FALSE,
   plot_format = c("pdf", "png", "svg"),
@@ -180,6 +182,11 @@ Only used for GPCCA estimator.}
 
 \item{n_cells_terminal}{Minimum number of cells required for a state to be considered terminal.
 Default is \code{10}.}
+
+\item{backward}{Whether to compute backward transitions. Default is \code{FALSE}.}
+
+\item{backend}{Backend for computation: \code{"python"} (default) or \code{"cpp"}.
+When \code{"cpp"}, uses the native C++ implementation.}
 
 \item{show_plot}{Whether to show the plot.
 Default is \code{FALSE}.}

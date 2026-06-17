@@ -12,6 +12,8 @@ RunMilo(
   comparison = NULL,
   milo_k = 20L,
   milo_d = 30L,
+  reduction = NULL,
+  backend = c("r", "cpp"),
   n_bootstrap = 500,
   seed = 11,
   verbose = TRUE
@@ -37,6 +39,14 @@ or identical to \code{split.by}, virtual samples are created within each
 \item{milo_k}{Number of nearest neighbors used for Milo graph building.}
 
 \item{milo_d}{Number of dimensions used by Milo.}
+
+\item{reduction}{Dimensional reduction used for Milo graph construction.
+If \code{NULL}, the default PCA-like reduction is used.}
+
+\item{backend}{Backend used to compute Milo neighborhoods and tests.
+\code{"r"} calls the upstream \code{miloR} implementation. \code{"cpp"} uses native
+\code{scop} graph/neighborhood/counting kernels and keeps edgeR for the
+neighborhood-level quasi-likelihood test.}
 
 \item{n_bootstrap}{Number of bootstrap iterations used by the group-level summary.}
 
