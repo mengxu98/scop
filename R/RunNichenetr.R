@@ -752,7 +752,30 @@ resolve_nichenetr_object <- function(
       "Downloading NicheNet prior model from {.url {fallback_url}}",
       verbose = verbose
     )
-    out <- tryCatch(readRDS(url(fallback_url)), error = function(e) NULL)
+    tmp <- tempfile(fileext = ".rds")
+    on.exit(unlink(tmp), add = TRUE)
+    out <- NULL
+    for (method in c("curl", "auto", "libcurl")) {
+      unlink(tmp)
+      status <- tryCatch(
+        suppressWarnings(
+          utils::download.file(
+            url = fallback_url,
+            destfile = tmp,
+            mode = "wb",
+            quiet = !verbose,
+            method = method
+          )
+        ),
+        error = function(e) NA_integer_
+      )
+      if (isTRUE(status == 0L) && file.exists(tmp)) {
+        out <- tryCatch(readRDS(tmp), error = function(e) NULL)
+        if (!is.null(out)) {
+          break
+        }
+      }
+    }
     if (!is.null(out)) {
       tryCatch(
         R.cache::saveCache(
