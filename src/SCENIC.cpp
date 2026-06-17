@@ -183,6 +183,7 @@ static void scenic_order_samples_by_feature(
     const NumericMatrix& expr,
     const std::vector<std::vector<int> >& feature_orders,
     const std::vector<std::vector<double> >& feature_order_values,
+    const std::vector<std::vector<int> >& feature_order_ranks,
     std::vector<int>& samples,
     std::vector<double>& feature_values,
     int start,
@@ -201,9 +202,22 @@ static void scenic_order_samples_by_feature(
   int pos = start;
   const std::vector<int>& order = feature_orders[feature];
   const std::vector<double>& values = feature_order_values[feature];
+  if (
+      feature < static_cast<int>(feature_order_ranks.size()) &&
+      !feature_order_ranks[feature].empty() &&
+      (end - start) * 8 < static_cast<int>(order.size())) {
+    const std::vector<int>& ranks = feature_order_ranks[feature];
+    std::sort(samples.begin() + start, samples.begin() + end, [&](int a, int b) {
+      return ranks[a] < ranks[b];
+    });
+    for (int i = start; i < end; ++i) {
+      feature_values[i] = values[ranks[samples[i]]];
+    }
+    return;
+  }
   for (std::size_t i = 0; i < order.size() && pos < end; ++i) {
     const int row = order[i];
-    if (row >= 0 && row < static_cast<int>(row_marks.size()) && row_marks[row] == row_mark) {
+    if (row_marks[row] == row_mark) {
       feature_values[pos] = values[i];
       samples[pos] = row;
       ++pos;
@@ -293,13 +307,18 @@ static std::vector<unsigned char> scenic_sample_mask(
 static std::vector<std::vector<int> > scenic_feature_orders(
     const NumericMatrix& expr,
     const std::vector<int>& features,
-    std::vector<std::vector<double> >* order_values = nullptr) {
+    std::vector<std::vector<double> >* order_values = nullptr,
+    std::vector<std::vector<int> >* order_ranks = nullptr) {
   const int n_samples = expr.nrow();
   const int n_genes = expr.ncol();
   std::vector<std::vector<int> > orders(n_genes);
   if (order_values != nullptr) {
     order_values->clear();
     order_values->resize(n_genes);
+  }
+  if (order_ranks != nullptr) {
+    order_ranks->clear();
+    order_ranks->resize(n_genes);
   }
   for (std::size_t fi = 0; fi < features.size(); ++fi) {
     const int g = features[fi];
@@ -318,6 +337,13 @@ static std::vector<std::vector<int> > scenic_feature_orders(
         values[i] = scenic_tree_feature_value(expr, order[i], g);
       }
       (*order_values)[g] = values;
+    }
+    if (order_ranks != nullptr) {
+      std::vector<int> ranks(n_samples);
+      for (int i = 0; i < n_samples; ++i) {
+        ranks[order[i]] = i;
+      }
+      (*order_ranks)[g] = ranks;
     }
     orders[g] = order;
   }
@@ -339,6 +365,7 @@ static ScenicSplit scenic_best_split(
     std::uint32_t& split_seed,
     const std::vector<std::vector<int> >& feature_orders,
     const std::vector<std::vector<double> >& feature_order_values,
+    const std::vector<std::vector<int> >& feature_order_ranks,
     std::vector<int>& row_marks,
     int& row_mark,
     ScenicGrnProfile* profile,
@@ -385,7 +412,8 @@ static ScenicSplit scenic_best_split(
     if (profile != nullptr) ++profile->split_feature_visits;
 
     scenic_order_samples_by_feature(
-      expr, feature_orders, feature_order_values, samples, feature_values, start, end, feature,
+      expr, feature_orders, feature_order_values, feature_order_ranks,
+      samples, feature_values, start, end, feature,
       row_marks, row_mark);
     const double min_x = feature_values[start];
     const double max_x = feature_values[end - 1];
@@ -508,6 +536,7 @@ static int scenic_build_tree(
     std::uint32_t& split_seed,
     const std::vector<std::vector<int> >& feature_orders,
     const std::vector<std::vector<double> >& feature_order_values,
+    const std::vector<std::vector<int> >& feature_order_ranks,
     std::vector<int>& row_marks,
     int& row_mark,
     std::vector<ScenicTreeNode>& nodes,
@@ -539,7 +568,7 @@ static int scenic_build_tree(
   const ScenicSplit split = scenic_best_split(
     expr, residual, samples, feature_values, start, end, feature_pool, constant_features,
     n_known_constants, n_total_constants, mtry, split_seed, feature_orders,
-    feature_order_values,
+    feature_order_values, feature_order_ranks,
     row_marks, row_mark, profile, candidate_trace);
   if (candidate_trace != nullptr) {
     candidate_trace->collect = old_collect;
@@ -553,12 +582,12 @@ static int scenic_build_tree(
   const int left = scenic_build_tree(
     expr, residual, samples, feature_values, start, split_pos, feature_pool, constant_features,
     n_total_constants, depth + 1, max_depth, mtry, split_seed, feature_orders,
-    feature_order_values, row_marks, row_mark, nodes, importance, profile,
+    feature_order_values, feature_order_ranks, row_marks, row_mark, nodes, importance, profile,
     candidate_trace);
   const int right = scenic_build_tree(
     expr, residual, samples, feature_values, split_pos, end, feature_pool, constant_features,
     n_total_constants, depth + 1, max_depth, mtry, split_seed, feature_orders,
-    feature_order_values, row_marks, row_mark, nodes, importance, profile,
+    feature_order_values, feature_order_ranks, row_marks, row_mark, nodes, importance, profile,
     candidate_trace);
   nodes[node_index].feature = split.feature;
   nodes[node_index].threshold = split.threshold;
@@ -611,6 +640,7 @@ static void scenic_grnboost_run_targets(
     const std::vector<double>& means,
     const std::vector<std::vector<int> >& feature_orders,
     const std::vector<std::vector<double> >& feature_order_values,
+    const std::vector<std::vector<int> >& feature_order_ranks,
     int n_rounds,
     double learning_rate,
     int max_edges_per_target,
@@ -696,7 +726,8 @@ static void scenic_grnboost_run_targets(
         scenic_build_tree(
           expr, residual, train_rows, feature_values, 0, static_cast<int>(train_rows.size()),
           feature_pool, constant_features, 0, 0, max_depth, mtry, split_seed,
-          feature_orders, feature_order_values, row_marks, row_mark, nodes, tree_importance, profile);
+          feature_orders, feature_order_values, feature_order_ranks,
+          row_marks, row_mark, nodes, tree_importance, profile);
       }
       if (nodes.empty()) break;
       for (std::size_t ri = 0; ri < features.size(); ++ri) {
@@ -856,11 +887,12 @@ static DataFrame scenic_grnboost_tree_impl(
   std::vector<ScenicEdge> edges;
   std::vector<std::vector<int> > feature_orders;
   std::vector<std::vector<double> > feature_order_values;
+  std::vector<std::vector<int> > feature_order_ranks;
   {
     ScenicScopeTimer order_timer(
       profile == nullptr ? nullptr : &profile->feature_order_seconds
     );
-    feature_orders = scenic_feature_orders(expr, regs, &feature_order_values);
+    feature_orders = scenic_feature_orders(expr, regs, &feature_order_values, &feature_order_ranks);
   }
 
   const int workers = profile == nullptr ?
@@ -868,7 +900,7 @@ static DataFrame scenic_grnboost_tree_impl(
   if (workers <= 1) {
     scenic_grnboost_run_targets(
       expr, regs, targets, 0, targets.size(), means, feature_orders,
-      feature_order_values, n_rounds, learning_rate, max_edges_per_target,
+      feature_order_values, feature_order_ranks, n_rounds, learning_rate, max_edges_per_target,
       max_depth, max_features, subsample, early_stop_window_length, random_seed,
       exclude_self, profile, true, edges);
   } else {
@@ -877,7 +909,7 @@ static DataFrame scenic_grnboost_tree_impl(
     std::vector<std::thread> pool;
     pool.reserve(workers);
     std::atomic<std::size_t> next_target(0);
-    const std::size_t block = 4;
+    const std::size_t block = 1;
     for (int worker = 0; worker < workers; ++worker) {
       pool.emplace_back([&, worker]() {
         try {
@@ -887,7 +919,7 @@ static DataFrame scenic_grnboost_tree_impl(
             const std::size_t end = std::min(targets.size(), begin + block);
             scenic_grnboost_run_targets(
               expr, regs, targets, begin, end, means, feature_orders,
-              feature_order_values, n_rounds, learning_rate, max_edges_per_target,
+              feature_order_values, feature_order_ranks, n_rounds, learning_rate, max_edges_per_target,
               max_depth, max_features, subsample, early_stop_window_length,
               random_seed, exclude_self, nullptr, false, worker_edges[worker]);
           }
@@ -1106,8 +1138,9 @@ DataFrame grnboost_tree_round_trace(
   std::vector<double> tree_importance(n_genes, 0.0);
   std::vector<double> feature_values(n_samples);
   std::vector<std::vector<double> > feature_order_values;
+  std::vector<std::vector<int> > feature_order_ranks;
   std::vector<std::vector<int> > feature_orders = scenic_feature_orders(
-    expr, features, &feature_order_values);
+    expr, features, &feature_order_values, &feature_order_ranks);
   std::vector<int> row_marks(n_samples, 0);
   int row_mark = 0;
   std::vector<double> oob_improvements;
@@ -1145,7 +1178,8 @@ DataFrame grnboost_tree_round_trace(
     scenic_build_tree(
       expr, residual, train_rows, feature_values, 0, static_cast<int>(train_rows.size()),
       feature_pool, constant_features, 0, 0, max_depth, mtry, split_seed,
-      feature_orders, feature_order_values, row_marks, row_mark, nodes, tree_importance, nullptr);
+      feature_orders, feature_order_values, feature_order_ranks,
+      row_marks, row_mark, nodes, tree_importance, nullptr);
     if (nodes.empty()) break;
     for (std::size_t ri = 0; ri < features.size(); ++ri) {
       const int reg = features[ri];
@@ -1319,8 +1353,9 @@ DataFrame grnboost_tree_round_nodes(
   std::vector<double> tree_importance(n_genes, 0.0);
   std::vector<double> feature_values(n_samples);
   std::vector<std::vector<double> > feature_order_values;
+  std::vector<std::vector<int> > feature_order_ranks;
   std::vector<std::vector<int> > feature_orders = scenic_feature_orders(
-    expr, features, &feature_order_values);
+    expr, features, &feature_order_values, &feature_order_ranks);
   std::vector<int> row_marks(n_samples, 0);
   int row_mark = 0;
   std::vector<double> oob_improvements;
@@ -1351,7 +1386,8 @@ DataFrame grnboost_tree_round_nodes(
     scenic_build_tree(
       expr, residual, train_rows, feature_values, 0, static_cast<int>(train_rows.size()),
       feature_pool, constant_features, 0, 0, max_depth, mtry, split_seed,
-      feature_orders, feature_order_values, row_marks, row_mark, nodes, tree_importance, nullptr);
+      feature_orders, feature_order_values, feature_order_ranks,
+      row_marks, row_mark, nodes, tree_importance, nullptr);
     if (nodes.empty()) break;
     ++actual_rounds;
 
@@ -1514,8 +1550,9 @@ DataFrame grnboost_tree_node_candidates(
   std::vector<double> tree_importance(n_genes, 0.0);
   std::vector<double> feature_values(n_samples);
   std::vector<std::vector<double> > feature_order_values;
+  std::vector<std::vector<int> > feature_order_ranks;
   std::vector<std::vector<int> > feature_orders = scenic_feature_orders(
-    expr, features, &feature_order_values);
+    expr, features, &feature_order_values, &feature_order_ranks);
   std::vector<int> row_marks(n_samples, 0);
   int row_mark = 0;
   std::vector<double> oob_improvements;
@@ -1546,7 +1583,8 @@ DataFrame grnboost_tree_node_candidates(
     scenic_build_tree(
       expr, residual, train_rows, feature_values, 0, static_cast<int>(train_rows.size()),
       feature_pool, constant_features, 0, 0, max_depth, mtry, split_seed,
-      feature_orders, feature_order_values, row_marks, row_mark, nodes, tree_importance, nullptr, trace_ptr);
+      feature_orders, feature_order_values, feature_order_ranks,
+      row_marks, row_mark, nodes, tree_importance, nullptr, trace_ptr);
     if (nodes.empty()) break;
     ++actual_rounds;
     if (actual_rounds == trace_round) break;
