@@ -136,6 +136,7 @@ Suggests:
 Remotes:
     Moonerss/CIBERSORT,
     Hy4m/linkET,
+    mengxu98/thisplot,
     immunogenomics/harmony,
     immunogenomics/symphony
 LinkingTo:
