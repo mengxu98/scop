@@ -61,6 +61,8 @@ neighborhood-level result list under <code>neighborhood_results</code>.</p>
 <span>  comparison <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  milo_k <span class="op">=</span> <span class="fl">20L</span>,</span>
 <span>  milo_d <span class="op">=</span> <span class="fl">30L</span>,</span>
+<span>  reduction <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"r"</span>, <span class="st">"cpp"</span><span class="op">)</span>,</span>
 <span>  n_bootstrap <span class="op">=</span> <span class="fl">500</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">11</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
@@ -103,6 +105,18 @@ or identical to <code>split.by</code>, virtual samples are created within each
 
 <dt id="arg-milo-d">milo_d<a class="anchor" aria-label="anchor" href="#arg-milo-d"></a></dt>
 <dd><p>Number of dimensions used by Milo.</p></dd>
+
+
+<dt id="arg-reduction">reduction<a class="anchor" aria-label="anchor" href="#arg-reduction"></a></dt>
+<dd><p>Dimensional reduction used for Milo graph construction.
+If <code>NULL</code>, the default PCA-like reduction is used.</p></dd>
+
+
+<dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
+<dd><p>Backend used to compute Milo neighborhoods and tests.
+<code>"r"</code> calls the upstream <code>miloR</code> implementation. <code>"cpp"</code> uses native
+<code>scop</code> graph/neighborhood/counting kernels and keeps edgeR for the
+neighborhood-level quasi-likelihood test.</p></dd>
 
 
 <dt id="arg-n-bootstrap">n_bootstrap<a class="anchor" aria-label="anchor" href="#arg-n-bootstrap"></a></dt>

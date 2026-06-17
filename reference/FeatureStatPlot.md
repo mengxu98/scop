@@ -399,10 +399,6 @@ FeatureStatPlot(
 
   Aspect ratio of the panel. Default is `NULL`.
 
-- x_text_angle:
-
-  Rotation angle for x-axis labels. Default is `45`.
-
 - title:
 
   The text for the title. Default is `NULL`.
@@ -493,6 +489,10 @@ FeatureStatPlot(
 - ...:
 
   Additional arguments passed to the other functions.
+
+- x_text_angle:
+
+  Rotation angle for x-axis labels. Default is `45`.
 
 - verbose:
 

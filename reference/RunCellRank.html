@@ -86,6 +86,8 @@
 <span>  n_macrostates <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  schur_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"krylov"</span>, <span class="st">"brandts"</span><span class="op">)</span>,</span>
 <span>  n_cells_terminal <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  backward <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"python"</span>, <span class="st">"cpp"</span><span class="op">)</span>,</span>
 <span>  show_plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  save_plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  plot_format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pdf"</span>, <span class="st">"png"</span>, <span class="st">"svg"</span><span class="op">)</span>,</span>
@@ -305,6 +307,15 @@ Only used for GPCCA estimator.</p></dd>
 <dt id="arg-n-cells-terminal">n_cells_terminal<a class="anchor" aria-label="anchor" href="#arg-n-cells-terminal"></a></dt>
 <dd><p>Minimum number of cells required for a state to be considered terminal.
 Default is <code>10</code>.</p></dd>
+
+
+<dt id="arg-backward">backward<a class="anchor" aria-label="anchor" href="#arg-backward"></a></dt>
+<dd><p>Whether to compute backward transitions. Default is <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
+<dd><p>Backend for computation: <code>"python"</code> (default) or <code>"cpp"</code>.
+When <code>"cpp"</code>, uses the native C++ implementation.</p></dd>
 
 
 <dt id="arg-show-plot">show_plot<a class="anchor" aria-label="anchor" href="#arg-show-plot"></a></dt>
