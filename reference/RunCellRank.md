@@ -48,6 +48,8 @@ RunCellRank(
   n_macrostates = NULL,
   schur_method = c("krylov", "brandts"),
   n_cells_terminal = 10,
+  backward = FALSE,
+  backend = c("python", "cpp"),
   show_plot = TRUE,
   save_plot = FALSE,
   plot_format = c("pdf", "png", "svg"),
@@ -263,6 +265,15 @@ RunCellRank(
 
   Minimum number of cells required for a state to be considered
   terminal. Default is `10`.
+
+- backward:
+
+  Whether to compute backward transitions. Default is `FALSE`.
+
+- backend:
+
+  Backend for computation: `"python"` (default) or `"cpp"`. When
+  `"cpp"`, uses the native C++ implementation.
 
 - show_plot:
 

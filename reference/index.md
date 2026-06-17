@@ -518,6 +518,11 @@
 - [`srt_to_adata()`](https://mengxu98.github.io/scop/reference/srt_to_adata.md)
   : Convert a Seurat object to an AnnData object
 
+- [`srt_to_h5ad()`](https://mengxu98.github.io/scop/reference/srt_to_h5ad.md)
+  :
+
+  Convert a Seurat object to an `.h5ad` file
+
 ### Data Processing
 
 - [`CheckDataType()`](https://mengxu98.github.io/scop/reference/CheckDataType.md)

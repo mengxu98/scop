@@ -17,6 +17,8 @@ RunMilo(
   comparison = NULL,
   milo_k = 20L,
   milo_d = 30L,
+  reduction = NULL,
+  backend = c("r", "cpp"),
   n_bootstrap = 500,
   seed = 11,
   verbose = TRUE
@@ -58,6 +60,18 @@ RunMilo(
 - milo_d:
 
   Number of dimensions used by Milo.
+
+- reduction:
+
+  Dimensional reduction used for Milo graph construction. If `NULL`, the
+  default PCA-like reduction is used.
+
+- backend:
+
+  Backend used to compute Milo neighborhoods and tests. `"r"` calls the
+  upstream `miloR` implementation. `"cpp"` uses native `scop`
+  graph/neighborhood/counting kernels and keeps edgeR for the
+  neighborhood-level quasi-likelihood test.
 
 - n_bootstrap:
 

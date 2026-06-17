@@ -63,7 +63,8 @@ ClusterTreePlot(
 
 - features:
 
-  A character vector of features to use.
+  A character vector or a named list of features to plot. Features can
+  be gene names in Assay or names of numeric columns in meta.data.
 
 - assay:
 
@@ -99,31 +100,33 @@ ClusterTreePlot(
 
 - label:
 
-  Whether to add labels on the plot. Default is `TRUE`.
+  Whether the feature name is labeled in the center of the location of
+  cells with high expression.
 
 - label.size:
 
-  The size of the labels.
+  Size of labels.
 
 - label.fg:
 
-  The foreground color of the labels.
+  Foreground color of label.
 
 - title:
 
-  The title of the plot. Default is `NULL`.
+  The text for the title. Default is `NULL`.
 
 - subtitle:
 
-  The subtitle of the plot. Default is `NULL`.
+  The text for the subtitle for the plot which will be displayed below
+  the title. Default is `NULL`.
 
 - xlab:
 
-  The label for the x-axis. Default is `NULL`.
+  The x-axis label of the plot. Default is `NULL`.
 
 - ylab:
 
-  The label for the y-axis. Default is `NULL`.
+  The y-axis label of the plot. Default is `NULL`.
 
 - legend.position:
 
@@ -137,15 +140,18 @@ ClusterTreePlot(
 
 - theme_args:
 
-  Other arguments passed to the `theme_use`.
+  Other arguments passed to the `theme_use`. Default is
+  [`list()`](https://rdrr.io/r/base/list.html).
 
 - combine:
 
-  Combine plots into a single `patchwork` object.
+  Combine plots into a single `patchwork` object. If `FALSE`, return a
+  list of ggplot objects.
 
 - ncol:
 
-  Number of columns used when `combine = TRUE`.
+  Number of columns in the combined plot. Default is `NULL`, which means
+  determined automatically based on the number of plots.
 
 - return_data:
 
@@ -153,7 +159,7 @@ ClusterTreePlot(
 
 - verbose:
 
-  Whether to show messages.
+  Whether to print the message. Default is `TRUE`.
 
 ## Value
 

@@ -31,7 +31,7 @@ RunGSVA(
   method = c("gsva", "ssgsea", "zscore", "plage"),
   backend = c("cpp", "r"),
   cpp_chunk_size = NULL,
-  kcdf = c("Gaussian", "Poisson"),
+  kcdf = c("Gaussian", "Poisson", "none"),
   abs.ranking = FALSE,
   min.sz = 10,
   max.sz = Inf,
@@ -190,9 +190,9 @@ RunGSVA(
   [`GSVA::gsva()`](https://rdrr.io/pkg/GSVA/man/gsva.html)
   implementation. `"cpp"` supports `method = "ssgsea"`,
   `method = "zscore"`, `method = "plage"`, and `method = "gsva"` with
-  `kcdf = "Gaussian"` or `kcdf = "Poisson"`. PLAGE scores are oriented
-  to have non-negative dot product with the gene set mean z-score so SVD
-  signs are deterministic.
+  `kcdf = "Gaussian"`, `kcdf = "Poisson"`, or `kcdf = "none"`. PLAGE
+  scores are oriented to have non-negative dot product with the gene set
+  mean z-score so SVD signs are deterministic.
 
 - cpp_chunk_size:
 
@@ -203,8 +203,12 @@ RunGSVA(
 - kcdf:
 
   The kernel cumulative distribution function used for GSVA. Options are
-  `"Gaussian"` (for continuous data) or `"Poisson"` (for count data).
-  Default is `"Gaussian"`.
+  `"Gaussian"` (for continuous data), `"Poisson"` (for count data), or
+  `"none"` (skip kernel estimation and use ranks directly). When
+  omitted, `backend = "cpp"` with `method = "gsva"` uses `"none"` for
+  faster single-cell scoring; explicit `"Gaussian"` or `"Poisson"`
+  values are still honored. Other backends and methods default to
+  `"Gaussian"`.
 
 - abs.ranking:
 
