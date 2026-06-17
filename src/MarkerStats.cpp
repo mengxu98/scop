@@ -268,7 +268,7 @@ NumericVector wilcox_rank_sum_sparse(
 
   NumericVector p_values(n_rows);
   for (int row = 0; row < n_rows; ++row) {
-    p_values[row] = sparse_wilcox_two_sided_p(rows[row]);
+    p_values[row] = sparse_wilcox_two_sided_p_all_cells(rows[row], n_group1, n_cols - n_group1);
   }
   return p_values;
 }
