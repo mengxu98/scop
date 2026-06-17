@@ -118,6 +118,8 @@ CytoTRACEPlot <- function(
     reduction = reduction,
     pt.size = pt.size,
     pt.alpha = pt.alpha,
+    theme_use = theme_use,
+    theme_args = theme_args,
     combine = FALSE,
     ...
   )[[1]] +
@@ -132,6 +134,8 @@ CytoTRACEPlot <- function(
     pt.size = pt.size,
     pt.alpha = pt.alpha,
     palcolor = potency_colors,
+    theme_use = theme_use,
+    theme_args = theme_args,
     combine = FALSE,
     ...
   )[[1]] +
@@ -146,6 +150,8 @@ CytoTRACEPlot <- function(
     reduction = reduction,
     pt.size = pt.size,
     pt.alpha = pt.alpha,
+    theme_use = theme_use,
+    theme_args = theme_args,
     combine = FALSE,
     ...
   )[[1]] +
@@ -162,14 +168,27 @@ CytoTRACEPlot <- function(
       pt.alpha = pt.alpha,
       palette = palette,
       palcolor = palcolor,
+      theme_use = theme_use,
+      theme_args = theme_args,
       combine = FALSE,
       ...
     )[[1]]
+
+    boxplot_theme_args <- utils::modifyList(
+      list(
+        axis.text.x = ggplot2::element_text(
+          angle = 45, hjust = 1, vjust = 1
+        ),
+        aspect.ratio = 1
+      ),
+      theme_args
+    )
 
     plist[["Boxplot"]] <- potency_boxplot(
       srt = srt,
       group.by = group.by,
       pt.alpha = pt.alpha,
+      theme_args = boxplot_theme_args,
       verbose = verbose
     )
   }
@@ -297,9 +316,6 @@ potency_boxplot <- function(
       breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1),
       limits = c(0, 1),
       labels = labels
-    ) +
-    ggplot2::scale_x_discrete(
-      labels = function(x) stringr::str_wrap(x, width = 10)
     ) +
     ggplot2::labs(
       x = "Phenotype",

@@ -300,9 +300,6 @@ Default is \code{3.5}.}
 \item{aspect.ratio}{Aspect ratio of the panel.
 Default is \code{NULL}.}
 
-\item{x_text_angle}{Rotation angle for x-axis labels.
-Default is \code{45}.}
-
 \item{title}{The text for the title.
 Default is \code{NULL}.}
 
@@ -358,6 +355,9 @@ Default is \code{FALSE}.}
 Default is \code{11}.}
 
 \item{...}{Additional arguments passed to the other functions.}
+
+\item{x_text_angle}{Rotation angle for x-axis labels.
+Default is \code{45}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

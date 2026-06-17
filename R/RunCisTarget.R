@@ -337,22 +337,37 @@ cisTarget_r <- function(
   motif_enrichment <- cisTarget(
     tf_targets,
     motif_rankings,
-    motifAnnot_dt = motif_annotations_dt
+    motifAnnot = motif_annotations_dt
   )
 
   # Build regulons from RcisTarget output
   regulons <- list()
-  for (tf_name in names(motif_enrichment)) {
-    enriched <- motif_enrichment[[tf_name]]
-    if (is.null(enriched) || nrow(enriched) == 0) {
-      next
+  if (is.data.frame(motif_enrichment)) {
+    for (tf_name in unique(motif_enrichment[["geneSet"]])) {
+      enriched <- motif_enrichment[motif_enrichment[["geneSet"]] == tf_name, , drop = FALSE]
+      if (!nrow(enriched)) {
+        next
+      }
+      top_row <- enriched[which.max(enriched[["NES"]]), , drop = FALSE]
+      target_genes <- unique(unlist(strsplit(top_row[["enrichedGenes"]], ";")))
+      target_genes <- target_genes[nzchar(target_genes)]
+      if (length(target_genes) >= min_regulon_size) {
+        regulons[[tf_name]] <- target_genes
+      }
     }
-    # Take top motif per TF
-    top_row <- enriched[which.max(enriched[["NES"]]), ]
-    target_genes <- unique(unlist(strsplit(top_row[["enrichedGenes"]], ";")))
-    target_genes <- target_genes[nzchar(target_genes)]
-    if (length(target_genes) >= min_regulon_size) {
-      regulons[[tf_name]] <- target_genes
+  } else {
+    for (tf_name in names(motif_enrichment)) {
+      enriched <- motif_enrichment[[tf_name]]
+      if (is.null(enriched) || nrow(enriched) == 0) {
+        next
+      }
+      # Take top motif per TF
+      top_row <- enriched[which.max(enriched[["NES"]]), ]
+      target_genes <- unique(unlist(strsplit(top_row[["enrichedGenes"]], ";")))
+      target_genes <- target_genes[nzchar(target_genes)]
+      if (length(target_genes) >= min_regulon_size) {
+        regulons[[tf_name]] <- target_genes
+      }
     }
   }
 
