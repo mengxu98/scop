@@ -333,6 +333,7 @@ reference:
   - loom_to_adata
   - loom_to_srt
   - srt_to_adata
+  - srt_to_h5ad
 
 - subtitle: "Data Processing"
 - contents:

@@ -254,6 +254,89 @@ srt_to_adata <- function(
   return(adata)
 }
 
+#' @title Convert a Seurat object to an `.h5ad` file
+#'
+#' @md
+#' @inheritParams srt_to_adata
+#' @param path Path to the output `.h5ad` file.
+#' @param overwrite Whether to overwrite an existing file.
+#'   Default is `FALSE`.
+#'
+#' @return Invisibly returns the normalized `path` of the written file.
+#'
+#' @export
+#'
+#' @seealso [srt_to_adata], [h5ad_to_srt]
+#'
+#' @examples
+#' \dontrun{
+#' data(pancreas_sub)
+#' srt_to_h5ad(pancreas_sub, "pancreas_sub.h5ad")
+#' }
+srt_to_h5ad <- function(
+  srt,
+  path,
+  features = NULL,
+  assay_x = "RNA",
+  layer_x = "counts",
+  assay_y = c("spliced", "unspliced"),
+  layer_y = "counts",
+  reductions = NULL,
+  graphs = NULL,
+  neighbors = NULL,
+  convert_tools = FALSE,
+  convert_misc = FALSE,
+  overwrite = FALSE,
+  verbose = TRUE
+) {
+  old_log_verbose <- getOption("log_message.verbose", TRUE)
+  if (!isTRUE(verbose)) {
+    options(log_message.verbose = FALSE)
+    on.exit(
+      options(log_message.verbose = old_log_verbose),
+      add = TRUE
+    )
+  }
+
+  path <- normalizePath(path.expand(path), mustWork = FALSE, winslash = "/")
+  if (file.exists(path) && !isTRUE(overwrite)) {
+    log_message(
+      "{.file {path}} already exists. Set {.code overwrite = TRUE} to overwrite",
+      message_type = "error"
+    )
+  }
+
+  log_message(
+    "Converting {.cls Seurat} to {.cls AnnData} and writing to {.file {path}} ...",
+    verbose = verbose
+  )
+
+  adata <- srt_to_adata(
+    srt = srt,
+    features = features,
+    assay_x = assay_x,
+    layer_x = layer_x,
+    assay_y = assay_y,
+    layer_y = layer_y,
+    reductions = reductions,
+    graphs = graphs,
+    neighbors = neighbors,
+    convert_tools = convert_tools,
+    convert_misc = convert_misc,
+    verbose = verbose
+  )
+
+  adata$write_h5ad(path)
+
+  log_message(
+    "Successfully written to {.file {path}}",
+    message_type = "success",
+    verbose = verbose
+  )
+
+  invisible(path)
+}
+
 #' @title Convert an anndata object to a seurat object
 #'
 #' @md
