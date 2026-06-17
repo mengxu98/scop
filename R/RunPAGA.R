@@ -137,29 +137,41 @@ RunPAGA <- function(
         message_type = "error"
       )
     }
-    unsupported_cpp <- c(
-      if (isTRUE(use_rna_velocity)) "use_rna_velocity",
-      if (isTRUE(embedded_with_PAGA)) "embedded_with_PAGA",
-      if (isTRUE(infer_pseudotime)) "infer_pseudotime",
-      if (isTRUE(show_plot)) "show_plot",
-      if (isTRUE(save_plot)) "save_plot"
-    )
+    unsupported_cpp <- character(0)
+    if (isTRUE(embedded_with_PAGA)) {
+      unsupported_cpp <- c(unsupported_cpp, "embedded_with_PAGA")
+    }
+    if (isTRUE(show_plot)) {
+      unsupported_cpp <- c(unsupported_cpp, "show_plot")
+    }
+    if (isTRUE(save_plot)) {
+      unsupported_cpp <- c(unsupported_cpp, "save_plot")
+    }
     if (length(unsupported_cpp) > 0L) {
       unsupported_text <- paste0(unsupported_cpp, collapse = ", ")
       log_message(
-        "{.arg backend = 'cpp'} currently supports the standard PAGA connectivity graph only; use {.arg backend = 'python'} for {.arg {unsupported_text}}",
-        message_type = "error"
+        "{.arg backend = 'cpp'} currently does not support {.arg {unsupported_text}}; use {.arg backend = 'python'} for those features",
+        message_type = "warning"
       )
     }
     srt <- run_paga_cpp(
       srt = srt,
       group.by = group.by,
       linear_reduction = linear_reduction,
+      nonlinear_reduction = nonlinear_reduction,
       n_pcs = n_pcs,
       n_neighbors = n_neighbors,
       paga_layout = paga_layout,
       threshold = threshold,
       cores = cores,
+      infer_pseudotime = infer_pseudotime,
+      root_group = root_group,
+      root_cell = root_cell,
+      n_dcs = n_dcs,
+      n_branchings = n_branchings,
+      min_group_size = min_group_size,
+      use_rna_velocity = use_rna_velocity,
+      vkey = vkey,
       verbose = verbose
     )
     return(srt)
@@ -282,11 +294,21 @@ run_paga_cpp <- function(
   srt,
   group.by,
   linear_reduction,
+  nonlinear_reduction = NULL,
   n_pcs,
   n_neighbors,
   paga_layout,
   threshold,
   cores,
+  infer_pseudotime = FALSE,
+  root_group = NULL,
+  root_cell = NULL,
+  n_dcs = 10,
+  n_branchings = 0,
+  min_group_size = 0.01,
+  use_rna_velocity = FALSE,
+  vkey = "stochastic",
+  knn_override = NULL,
   verbose = TRUE
 ) {
   if (is.null(linear_reduction) || !linear_reduction %in% names(srt@reductions)) {
@@ -314,30 +336,40 @@ run_paga_cpp <- function(
     )
   }
 
-  embedding <- srt@reductions[[linear_reduction]]@cell.embeddings
-  if (nrow(embedding) != ncol(srt)) {
+  if (!is.null(knn_override)) {
     log_message(
-      "{.arg linear_reduction} embeddings must contain one row per cell",
-      message_type = "error"
+      "Using externally-provided KNN graph for parity comparison",
+      verbose = verbose
+    )
+    knn <- knn_override
+    knn_k <- ncol(knn[["idx"]])
+    dims_use <- NULL
+  } else {
+    embedding <- srt@reductions[[linear_reduction]]@cell.embeddings
+    if (nrow(embedding) != ncol(srt)) {
+      log_message(
+        "{.arg linear_reduction} embeddings must contain one row per cell",
+        message_type = "error"
+      )
+    }
+    dims_use <- seq_len(min(as.integer(n_pcs), ncol(embedding)))
+    embedding <- as.matrix(embedding[, dims_use, drop = FALSE])
+    storage.mode(embedding) <- "double"
+
+    knn_k <- max(1L, min(as.integer(n_neighbors) - 1L, nrow(embedding) - 1L))
+    log_message(
+      "Running {.pkg PAGA} with {.arg backend = 'cpp'} using {.val {knn_k}} neighbors",
+      verbose = verbose
+    )
+    knn <- run_cpp_knn(
+      reference = embedding,
+      query = embedding,
+      k = knn_k,
+      metric = "euclidean",
+      exclude_self = TRUE,
+      n_threads = as.integer(cores)
     )
   }
-  dims_use <- seq_len(min(as.integer(n_pcs), ncol(embedding)))
-  embedding <- as.matrix(embedding[, dims_use, drop = FALSE])
-  storage.mode(embedding) <- "double"
-
-  knn_k <- max(1L, min(as.integer(n_neighbors) - 1L, nrow(embedding) - 1L))
-  log_message(
-    "Running {.pkg PAGA} with {.arg backend = 'cpp'} using {.val {knn_k}} neighbors",
-    verbose = verbose
-  )
-  knn <- run_cpp_knn(
-    reference = embedding,
-    query = embedding,
-    k = knn_k,
-    metric = "euclidean",
-    exclude_self = TRUE,
-    n_threads = as.integer(cores)
-  )
   paga <- paga_connectivities_cpp(
     knn_idx = knn[["idx"]],
     groups = as.integer(groups),
@@ -376,6 +408,95 @@ run_paga_cpp <- function(
   )
   srt@misc[[paste0(group.by, "_sizes")]] <- as.numeric(paga[["group_sizes"]])
   names(srt@misc[[paste0(group.by, "_sizes")]]) <- group_levels
+
+  # Diffusion pseudotime
+  if (isTRUE(infer_pseudotime)) {
+    root_grp <- if (!is.null(root_group)) {
+      match(root_group, group_levels)
+    } else if (!is.null(root_cell)) {
+      match(as.character(srt@meta.data[[root_cell, group.by]]), group_levels)
+    } else {
+      1L
+    }
+    if (anyNA(root_grp) || length(root_grp) == 0L) root_grp <- 1L
+
+    dpt <- paga_diffusion_pseudotime_cpp(
+      connectivities = paga[["connectivities"]],
+      root_group = as.integer(root_grp),
+      n_dcs = as.integer(n_dcs),
+      n_branchings = as.integer(n_branchings),
+      group_sizes = as.numeric(paga[["group_sizes"]]),
+      min_group_size = min_group_size
+    )
+    srt@misc[["paga"]]$pseudotime <- dpt$pseudotime
+    srt@misc[["paga"]]$diffusion_components <- dpt$diffusion_components
+    srt@misc[["paga"]]$diffusion_eigenvalues <- dpt$diffusion_eigenvalues
+    srt@misc[["paga"]]$root_group <- dpt$root_group
+    srt@misc[["paga"]]$parameters$n_dcs <- n_dcs
+    srt@misc[["paga"]]$parameters$infer_pseudotime <- TRUE
+    srt@misc[["paga"]]$parameters$n_branchings <- n_branchings
+    names(dpt$pseudotime) <- group_levels
+    log_message(
+      "{.pkg PAGA} diffusion pseudotime computed (root: {.val {group_levels[root_grp]}})",
+      message_type = "success",
+      verbose = verbose
+    )
+  }
+
+  # Velocity-based PAGA transitions
+  if (isTRUE(use_rna_velocity)) {
+    vel_candidates <- unique(c(
+      if (!is.null(nonlinear_reduction)) paste0(vkey, "_", nonlinear_reduction),
+      paste0(vkey, "_velocity_embedding"),
+      vkey
+    ))
+    vel_key <- vel_candidates[vel_candidates %in% names(srt@reductions)][1]
+    if (!vel_key %in% names(srt@reductions)) {
+      log_message(
+        "Velocity embedding for {.val {vkey}} not found; run {.fn RunSCVELO} first",
+        message_type = "warning",
+        verbose = verbose
+      )
+    } else {
+      vel_emb <- srt@reductions[[vel_key]]@cell.embeddings
+      storage.mode(vel_emb) <- "double"
+      vel_trans <- paga_velocity_transitions_cpp(
+        velocity_embedding = vel_emb,
+        knn_idx = knn[["idx"]],
+        groups = as.integer(groups),
+        n_groups = nlevels(groups)
+      )
+      srt@misc[["paga"]]$velocity_transitions <- vel_trans[["transitions_confidence"]]
+      srt@misc[["paga"]]$velocity_transitions_tree <- vel_trans[["transitions_confidence_tree"]]
+      srt@misc[["paga"]]$velocity_group_sizes <- vel_trans[["group_sizes"]]
+      names(vel_trans[["group_sizes"]]) <- group_levels
+      log_message(
+        "{.pkg PAGA} velocity transitions computed",
+        message_type = "success",
+        verbose = verbose
+      )
+    }
+  }
+
+  # PAGA root cell selection
+  if (isTRUE(infer_pseudotime) && !is.null(nonlinear_reduction) && nonlinear_reduction %in% names(srt@reductions)) {
+    root_grp_idx <- if (!is.null(root_group)) match(root_group, group_levels) else 1L
+    if (anyNA(root_grp_idx) || length(root_grp_idx) == 0L) root_grp_idx <- 1L
+    emb_r <- srt@reductions[[nonlinear_reduction]]@cell.embeddings
+    storage.mode(emb_r) <- "double"
+    root_cells <- paga_root_cell_cpp(
+      embedding = emb_r,
+      groups = as.integer(groups),
+      root_group = as.integer(root_grp_idx[1])
+    )
+    srt@misc[["paga"]]$root_cells <- root_cells
+    log_message(
+      "PAGA root cell candidates: {.val {head(root_cells, 5)}}",
+      message_type = "success",
+      verbose = verbose
+    )
+  }
+
   log_message(
     "{.pkg PAGA} cpp backend completed",
     message_type = "success",
