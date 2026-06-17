@@ -131,12 +131,6 @@ RunCytoTRACE.Seurat <- function(
   backend <- match.arg(backend)
   species <- match.arg(species)
   cores <- max(1L, as.integer(cores))
-  if (species == "Mus_musculus") {
-    species <- "mouse"
-  }
-  if (species == "Homo_sapiens") {
-    species <- "human"
-  }
 
   assay <- assay %||% SeuratObject::DefaultAssay(object = object)
 
@@ -154,6 +148,13 @@ RunCytoTRACE.Seurat <- function(
         message_type = "warning",
         verbose = verbose
       )
+    }
+
+    if (species == "Mus_musculus") {
+      species <- "mouse"
+    }
+    if (species == "Homo_sapiens") {
+      species <- "human"
     }
 
     cytotrace2_fun <- get_namespace_fun("CytoTRACE2", "cytotrace2")

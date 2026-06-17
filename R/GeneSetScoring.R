@@ -300,11 +300,21 @@ run_seurat_module_scores <- function(
     as.integer(idx[!is.na(idx)])
   })
 
-  scores <- module_score_sparse(
-    expr = expr_data,
-    feature_sets = feature_idx,
-    control_sets = control_idx
+  feature_membership <- Matrix::sparseMatrix(
+    i = unlist(feature_idx, use.names = FALSE),
+    j = rep.int(seq_along(feature_idx), lengths(feature_idx)),
+    x = 1 / rep.int(lengths(feature_idx), lengths(feature_idx)),
+    dims = c(nrow(expr_data), length(feature_idx))
   )
+  control_membership <- Matrix::sparseMatrix(
+    i = unlist(control_idx, use.names = FALSE),
+    j = rep.int(seq_along(control_idx), lengths(control_idx)),
+    x = 1 / rep.int(lengths(control_idx), lengths(control_idx)),
+    dims = c(nrow(expr_data), length(control_idx))
+  )
+  scores <- Matrix::t(feature_membership) %*% expr_data -
+    Matrix::t(control_membership) %*% expr_data
+  scores <- Matrix::t(scores)
   dimnames(scores) <- list(colnames(expr_data), names(features))
   scores
 }
@@ -312,7 +322,7 @@ run_seurat_module_scores <- function(
 run_gsva_scores <- function(
   expr_counts,
   gene_sets,
-  kcdf = c("Poisson", "Gaussian"),
+  kcdf = c("Poisson", "Gaussian", "none"),
   min_gs_size = 10,
   max_gs_size = 500,
   max_diff = TRUE,
@@ -345,24 +355,35 @@ run_gsva_scores <- function(
     n_cells = ncol(expr_counts)
   )
 
-  scores <- switch(kcdf,
-    Gaussian = gsva_gaussian_dense(
-      expr = expr_counts,
-      gene_sets = gene_set_idx,
-      max_diff = max_diff,
-      abs_ranking = abs_ranking,
-      tau = tau,
-      chunk_size = chunk_size
-    ),
-    Poisson = gsva_poisson_dense(
-      expr = expr_counts,
-      gene_sets = gene_set_idx,
-      max_diff = max_diff,
-      abs_ranking = abs_ranking,
-      tau = tau,
-      chunk_size = chunk_size
-    )
+  gene_set_scoring_require_namespace("GSVA")
+  gene_sets_exact <- lapply(gene_set_idx, function(idx) {
+    rownames(expr_counts)[idx]
+  })
+  param <- GSVA::gsvaParam(
+    exprData = expr_counts,
+    geneSets = gene_sets_exact,
+    minSize = min_gs_size,
+    maxSize = max_gs_size,
+    kcdf = kcdf,
+    tau = tau,
+    maxDiff = max_diff,
+    absRanking = abs_ranking
   )
+  ranks <- GSVA::gsvaRanks(
+    param = param,
+    verbose = FALSE
+  )
+  scores <- GSVA::gsvaScores(
+    param = ranks,
+    verbose = FALSE
+  )
+  if (inherits(scores, "SummarizedExperiment")) {
+    scores <- SummarizedExperiment::assay(scores)
+  }
+  if (!is.matrix(scores)) {
+    scores <- as.matrix(scores)
+  }
+  scores <- Matrix::t(scores)
   dimnames(scores) <- list(colnames(expr_counts), names(gene_set_idx))
   scores
 }
