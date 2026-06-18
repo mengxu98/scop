@@ -47,9 +47,10 @@
 #'
 #' FeatureDimPlot(
 #'   pancreas_sub,
-#'   paste0(
-#'     c("Alpha", "Beta", "Delta", "Epsilon"),
-#'     "_diff_potential"
+#'   grep(
+#'     "TerminalState_.*_diff_potential$",
+#'     colnames(pancreas_sub@meta.data),
+#'     value = TRUE
 #'   )
 #' )
 #'
@@ -741,6 +742,15 @@ run_palantir_cpp <- function(
     }
     -sum(p * log(p))
   })
+  srt[["palantir_pseudotime"]] <- pseudotime[colnames(srt)]
+  srt[["palantir_diff_potential"]] <- ent[colnames(srt)]
+  branch_meta <- as.data.frame(branch_probs_all[colnames(srt), , drop = FALSE])
+  branch_meta_names <- make.unique(paste0(
+    colnames(branch_meta),
+    "_diff_potential"
+  ))
+  colnames(branch_meta) <- branch_meta_names
+  srt <- Seurat::AddMetaData(srt, metadata = branch_meta)
 
   srt@misc[["palantir"]] <- list(
     pseudotime = pseudotime,

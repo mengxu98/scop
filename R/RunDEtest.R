@@ -567,6 +567,119 @@ dispatch_de <- function(
 }
 
 
+build_context <- function(
+  mode = c("pure_bulk"),
+  bulk_se,
+  condition.by = NULL,
+  group.by = NULL,
+  bulk_assay = "counts"
+) {
+  mode <- match.arg(mode)
+  if (!methods::is(bulk_se, "SummarizedExperiment")) {
+    log_message(
+      "{.arg bulk_se} must be a {.cls SummarizedExperiment}",
+      message_type = "error"
+    )
+  }
+  assay_names <- SummarizedExperiment::assayNames(bulk_se)
+  if (!bulk_assay %in% assay_names) {
+    log_message(
+      "{.arg bulk_assay} must be one of {.val {assay_names}}",
+      message_type = "error"
+    )
+  }
+
+  counts <- SummarizedExperiment::assay(bulk_se, bulk_assay)
+  if (!inherits(counts, c("matrix", "Matrix"))) {
+    counts <- as.matrix(counts)
+  }
+  sample_meta <- as.data.frame(SummarizedExperiment::colData(bulk_se))
+  if (is.null(rownames(sample_meta)) || any(!nzchar(rownames(sample_meta)))) {
+    rownames(sample_meta) <- colnames(counts)
+  }
+
+  if (is.null(group.by)) {
+    group_factor <- factor(rep("all", ncol(counts)), levels = "all")
+  } else {
+    if (!group.by %in% colnames(sample_meta)) {
+      log_message(
+        "{.arg group.by} must be present in {.arg colData(bulk_se)}",
+        message_type = "error"
+      )
+    }
+    group_factor <- factor(sample_meta[[group.by]])
+  }
+
+  condition <- NULL
+  if (!is.null(condition.by)) {
+    if (!condition.by %in% colnames(sample_meta)) {
+      log_message(
+        "{.arg condition.by} must be present in {.arg colData(bulk_se)}",
+        message_type = "error"
+      )
+    }
+    condition <- factor(sample_meta[[condition.by]])
+  }
+
+  group_levels <- levels(group_factor)
+  counts_by_group <- stats::setNames(vector("list", length(group_levels)), group_levels)
+  condition_by_group <- stats::setNames(vector("list", length(group_levels)), group_levels)
+  sample_meta_by_group <- stats::setNames(vector("list", length(group_levels)), group_levels)
+
+  for (grp in group_levels) {
+    keep <- !is.na(group_factor) & group_factor == grp
+    counts_by_group[[grp]] <- counts[, keep, drop = FALSE]
+    sample_meta_by_group[[grp]] <- sample_meta[keep, , drop = FALSE]
+    condition_by_group[[grp]] <- if (is.null(condition)) NULL else condition[keep]
+  }
+
+  list(
+    mode = mode,
+    counts_global = counts,
+    sample_meta = sample_meta,
+    condition_global = condition,
+    group_global = group_factor,
+    counts_by_group = counts_by_group,
+    condition_by_group = condition_by_group,
+    sample_meta_by_group = sample_meta_by_group
+  )
+}
+
+
+resolve_condition_pair <- function(
+  condition,
+  condition1 = NULL,
+  condition2 = NULL,
+  strict_two_levels = FALSE
+) {
+  condition <- factor(condition)
+  levels_use <- levels(droplevels(condition))
+  if (length(levels_use) < 2L) {
+    stop("At least two condition levels are required.", call. = FALSE)
+  }
+  if (isTRUE(strict_two_levels) && length(levels_use) != 2L && (is.null(condition1) || is.null(condition2))) {
+    stop("Exactly two condition levels are required unless condition1 and condition2 are provided.", call. = FALSE)
+  }
+  condition1 <- condition1 %||% levels_use[[1]]
+  condition2 <- condition2 %||% levels_use[[2]]
+  if (!all(c(condition1, condition2) %in% levels_use)) {
+    stop("condition1 and condition2 must be present in condition.", call. = FALSE)
+  }
+  if (identical(condition1, condition2)) {
+    stop("condition1 and condition2 must be different.", call. = FALSE)
+  }
+  list(condition1 = condition1, condition2 = condition2)
+}
+
+
+compose_comparison_label <- function(group, comparison) {
+  if (identical(group, "all")) {
+    return(as.character(comparison))
+  }
+  paste(group, comparison, sep = "_")
+}
+
+
 prepare_de_comparisons <- function(
   condition,
   condition1 = NULL,

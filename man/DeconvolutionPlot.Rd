@@ -97,12 +97,11 @@ Plot deconvolution results
 }
 \examples{
 data(islet_bulk)
-data(panc8_sub)
 islet_bulk <- RunDeconvolution(
   islet_bulk,
-  reference = panc8_sub,
-  method = "MuSiC",
-  group.by = "celltype"
+  method = "CIBERSORT",
+  backend = "cpp",
+  perm = 0
 )
 DeconvolutionPlot(islet_bulk, plot_type = "bar")
 

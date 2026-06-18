@@ -67,21 +67,21 @@ Estimate cell-type proportions from a bulk-like expression matrix stored in a
 }
 \examples{
 data(islet_bulk)
-data(panc8_sub)
 islet_bulk <- RunDeconvolution(
   islet_bulk,
-  reference = panc8_sub,
-  method = "MuSiC",
-  group.by = "celltype"
+  method = "CIBERSORT",
+  backend = "cpp",
+  perm = 0
 )
 DeconvolutionPlot(islet_bulk, plot_type = "bar")
-ht <- DeconvolutionPlot(
+
+DeconvolutionPlot(
   islet_bulk,
   plot_type = "heatmap",
   sample_annotation = "condition",
   sample_split = "condition"
 )
-ComplexHeatmap::draw(ht)
+
 DeconvolutionPlot(islet_bulk, plot_type = "box")
 }
 \seealso{

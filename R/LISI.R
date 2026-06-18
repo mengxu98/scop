@@ -110,11 +110,12 @@ RunLISI <- function(
       message_type = "error"
     )
   }
-  tool_name <- tool_name %||% if (length(reductions) > 1) {
-    "LISI"
-  } else {
-    paste0(prefix[[1]], "_LISI")
-  }
+  tool_name <- tool_name %||%
+    if (length(reductions) > 1) {
+      "LISI"
+    } else {
+      paste0(prefix[[1]], "_LISI")
+    }
 
   lisi_df_all <- list()
   lisi_cols_all <- character(0)
@@ -307,7 +308,9 @@ lisi_feature_boxplot <- function(
     if (length(x) == 0) {
       return("")
     }
-    rev_split <- lapply(x, function(val) strsplit(paste(rev(strsplit(val, "")[[1]]), collapse = ""), "")[[1]])
+    rev_split <- lapply(x, function(val) {
+      strsplit(paste(rev(strsplit(val, "")[[1]]), collapse = ""), "")[[1]]
+    })
     min_len <- min(vapply(rev_split, length, integer(1)))
     chars <- character(0)
     for (i in seq_len(min_len)) {
@@ -339,8 +342,10 @@ lisi_feature_boxplot <- function(
       message_type = "warning",
       verbose = verbose
     )
-    return(ggplot2::ggplot() +
-      ggplot2::theme_void())
+    return(
+      ggplot2::ggplot() +
+        ggplot2::theme_void()
+    )
   }
 
   feature_suffix <- common_suffix(features)
