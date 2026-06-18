@@ -1,13 +1,4 @@
-#' Run mcRigor metacell partition assessment
-#'
-#' @description
-#' `RunmcRigor()` wraps the upstream `JSB-UCLA/mcRigor` package to detect
-#' dubious metacells for a supplied partition or to optimize across multiple
-#' candidate metacell partitions. Results are stored in `srt@tools[[tool_name]]`
-#' and the selected partition/status are written back to cell metadata.
-#'
-#' The upstream mcRigor package is installed at runtime when missing and is not
-#' bundled with `scop`.
+#' @title Run mcRigor metacell partition assessment
 #'
 #' @md
 #' @inheritParams standard_scop
@@ -56,7 +47,6 @@
 #' @examples
 #' data(pancreas_sub)
 #' set.seed(11)
-#' pancreas_sub <- pancreas_sub[, seq_len(200)]
 #' pancreas_sub <- standard_scop(
 #'   pancreas_sub,
 #'   nHVF = 500,
@@ -65,15 +55,20 @@
 #'   nonlinear_reduction_dims = 2,
 #'   verbose = FALSE
 #' )
-#' pancreas_sub <- RunMetaCell(
+#' mc <- RunMetaCell(
 #'   pancreas_sub,
 #'   method = "supercell",
 #'   gamma = 25
 #' )
 #'
+#' membership <- data.frame(
+#'   Metacell = mc@misc[["cell_membership"]],
+#'   row.names = names(mc@misc[["cell_membership"]])
+#' )
+#'
 #' pancreas_sub <- RunmcRigor(
-#'   pancreas_sub,
-#'   metacell.by = "Metacell_id",
+#'   mc@misc[["original_srt"]],
+#'   cell_membership = membership,
 #'   Nrep = 1,
 #'   feature_use = 100,
 #'   draw = FALSE
@@ -83,7 +78,7 @@
 #'
 #' CellDimPlot(
 #'   pancreas_sub,
-#'   group.by = "Metacell_id"
+#'   group.by = "mcRigor_metacell"
 #' )
 #'
 #' CellDimPlot(

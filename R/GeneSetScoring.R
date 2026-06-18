@@ -383,8 +383,12 @@ run_gsva_scores <- function(
   if (!is.matrix(scores)) {
     scores <- as.matrix(scores)
   }
+  score_terms <- rownames(scores)
+  if (is.null(score_terms)) {
+    score_terms <- names(gene_set_idx)[seq_len(nrow(scores))]
+  }
   scores <- Matrix::t(scores)
-  dimnames(scores) <- list(colnames(expr_counts), names(gene_set_idx))
+  dimnames(scores) <- list(colnames(expr_counts), score_terms)
   scores
 }
 

@@ -17,7 +17,8 @@
 #' `"Seurat"`, `"MNN"`, `"Harmony"`, `"BBKNN"`, `"CSS"`, `"ComBat"`.
 #' @param integration_method A character vector specifying the integration method to use.
 #' Supported methods are: `"Uncorrected"`, `"Seurat"`, `"CCA"`, `"RPCA"`, `"scVI"`,
-#' `"PeakVI"`, `"PoissonVI"`, `"WNN"`, `"MultiMAP"`, `"GLUE"`, `"scVI5"`, `"MNN"`, `"fastMNN"`, `"fastMNN5"`, `"Harmony"`, `"Harmony5"`,
+#' `"PeakVI"`, `"PoissonVI"`, `"WNN"`, `"MultiMAP"`, `"GLUE"`, `"scVI5"`, `"MNN"`,
+#' `"fastMNN"`, `"fastMNN5"`, `"Harmony"`, `"Harmony5"`,
 #' `"Scanorama"`, `"BBKNN"`, `"CSS"`, `"Coralysis"`, `"LIGER"`, `"Conos"`, `"ComBat"`.
 #' Default is `"Uncorrected"`. For `ChromatinAssay`, prefer `"Uncorrected"` or
 #' `"Harmony5"`; the latter is automatically switched to `"Harmony"`.
@@ -86,7 +87,7 @@
 #' panc8_sub <- integration_scop(
 #'   panc8_sub,
 #'   batch = "tech",
-#'   integration_method = "Uncorrected",
+#'   integration_method = "Harmony",
 #'   nHVF = 500,
 #'   linear_reduction_dims = 20,
 #'   linear_reduction_dims_use = 1:10,
@@ -98,11 +99,12 @@
 #' CellDimPlot(
 #'   panc8_sub,
 #'   group.by = c("tech", "celltype"),
-#'   reduction = "UncorrectedUMAP2D"
+#'   reduction = "HarmonyUMAP2D"
 #' )
+#'
 #' LISIPlot(
 #'   panc8_sub,
-#'   features = c("UncorrectedpcaUMAP2D_tech_LISI", "UncorrectedUMAP2D_tech_LISI")
+#'   features = c("HarmonyUMAP2D_tech_LISI")
 #' )
 #'
 #' panc8_sub <- integration_scop(
@@ -119,67 +121,65 @@
 #' )
 #' LISIPlot(
 #'   panc8_sub,
-#'   features = c("HarmonypcaUMAP2D_tech_LISI", "HarmonyUMAP2D_tech_LISI")
+#'   features = c("UncorrectedpcaUMAP2D_tech_LISI", "HarmonyUMAP2D_tech_LISI")
 #' )
 #'
-#' if (requireNamespace("Signac", quietly = TRUE)) {
-#'   data("pbmcmultiome_sub", package = "scop")
-#'   pbmcmultiome_sub$batch <- rep(c("batch1", "batch2"), length.out = ncol(pbmcmultiome_sub))
-#'   pbmcmultiome_sub <- integration_scop(
-#'     pbmcmultiome_sub,
-#'     batch = "batch",
-#'     assay = "peaks",
-#'     integration_method = "Harmony5",
-#'     normalization_method = "TFIDF"
-#'   )
+#' data("pbmcmultiome_sub", package = "scop")
+#' pbmcmultiome_sub$batch <- rep(c("batch1", "batch2"), length.out = ncol(pbmcmultiome_sub))
+#' pbmcmultiome_sub <- integration_scop(
+#'   pbmcmultiome_sub,
+#'   batch = "batch",
+#'   assay = "peaks",
+#'   integration_method = "Harmony5",
+#'   normalization_method = "TFIDF"
+#' )
 #'
-#'   integration_methods <- c(
-#'     "Uncorrected", "Seurat", "CCA", "RPCA", "scVI", "scVI5",
-#'     "MNN", "fastMNN", "fastMNN5", "Harmony", "Harmony5",
-#'     "Scanorama", "BBKNN", "CSS", "Coralysis", "LIGER", "Conos", "ComBat"
-#'   )
-#'   p_list <- list()
-#'   for (method in integration_methods) {
-#'     panc8_sub <- integration_scop(
-#'       panc8_sub,
-#'       batch = "tech",
-#'       integration_method = method,
-#'       linear_reduction_dims_use = 1:50,
-#'       nonlinear_reduction = "umap"
-#'     )
-#'     p_list[[method]] <- CellDimPlot(
-#'       panc8_sub,
-#'       group.by = c("tech", "celltype"),
-#'       reduction = paste0(method, "UMAP2D"),
-#'       xlab = "", ylab = "",
-#'       title = method,
-#'       legend.position = "none",
-#'       theme_use = "theme_blank"
-#'     )
-#'   }
-#'
-#'   nonlinear_reductions <- c(
-#'     "umap", "tsne", "dm", "phate",
-#'     "pacmap", "trimap", "largevis", "fr"
-#'   )
+#' integration_methods <- c(
+#'   "Uncorrected", "Seurat", "CCA", "RPCA", "scVI", "scVI5",
+#'   "MNN", "fastMNN", "fastMNN5", "Harmony", "Harmony5",
+#'   "Scanorama", "BBKNN", "CSS", "Coralysis", "LIGER", "Conos", "ComBat"
+#' )
+#' p_list <- list()
+#' for (method in integration_methods) {
 #'   panc8_sub <- integration_scop(
 #'     panc8_sub,
 #'     batch = "tech",
-#'     integration_method = "Seurat",
+#'     integration_method = method,
 #'     linear_reduction_dims_use = 1:50,
-#'     nonlinear_reduction = nonlinear_reductions
+#'     nonlinear_reduction = "umap"
 #'   )
-#'   for (nr in nonlinear_reductions) {
-#'     print(
-#'       CellDimPlot(
-#'         panc8_sub,
-#'         group.by = c("tech", "celltype"),
-#'         reduction = paste0("Seurat", nr, "2D"),
-#'         xlab = "", ylab = "", title = nr,
-#'         legend.position = "none", theme_use = "theme_blank"
-#'       )
+#'   p_list[[method]] <- CellDimPlot(
+#'     panc8_sub,
+#'     group.by = c("tech", "celltype"),
+#'     reduction = paste0(method, "UMAP2D"),
+#'     xlab = "", ylab = "",
+#'     title = method,
+#'     legend.position = "none",
+#'     theme_use = "theme_blank"
+#'   )
+#' }
+#'
+#' nonlinear_reductions <- c(
+#'   "umap", "tsne", "dm", "phate",
+#'   "pacmap", "trimap", "largevis", "fr"
+#' )
+#' panc8_sub <- integration_scop(
+#'   panc8_sub,
+#'   batch = "tech",
+#'   integration_method = "Seurat",
+#'   linear_reduction_dims_use = 1:50,
+#'   nonlinear_reduction = nonlinear_reductions
+#' )
+#' for (nr in nonlinear_reductions) {
+#'   print(
+#'     CellDimPlot(
+#'       panc8_sub,
+#'       group.by = c("tech", "celltype"),
+#'       reduction = paste0("Seurat", nr, "2D"),
+#'       xlab = "", ylab = "", title = nr,
+#'       legend.position = "none", theme_use = "theme_blank"
 #'     )
-#'   }
+#'   )
 #' }
 integration_scop <- function(
   srt_merge = NULL,
@@ -282,7 +282,11 @@ integration_scop <- function(
 
   assay_requested <- args[["assay"]] %||% NULL
   assay_source <- args[["srt_merge"]] %||% NULL
-  if (is.null(assay_source) && !is.null(args[["srt_list"]]) && length(args[["srt_list"]]) > 0) {
+  if (
+    is.null(assay_source) &&
+      !is.null(args[["srt_list"]]) &&
+      length(args[["srt_list"]]) > 0
+  ) {
     assay_source <- args[["srt_list"]][[1]]
   }
   if (
@@ -429,8 +433,8 @@ integration_scop <- function(
     ComBat = ComBat_integrate
   )
 
-  assay_use <- args[["assay"]] %||% (
-    if (!is.null(args[["srt_merge"]])) {
+  assay_use <- args[["assay"]] %||%
+    (if (!is.null(args[["srt_merge"]])) {
       SeuratObject::DefaultAssay(args[["srt_merge"]])
     } else if (!is.null(args[["srt_list"]]) && length(args[["srt_list"]]) > 0) {
       SeuratObject::DefaultAssay(args[["srt_list"]][[1]])
@@ -455,7 +459,9 @@ integration_scop <- function(
   if (identical(integration_method, "PoissonVI")) {
     args[["model"]] <- "POISSONVI"
   }
-  if ("append" %in% names(args) && "append" %in% names(formals(integrate_fun))) {
+  if (
+    "append" %in% names(args) && "append" %in% names(formals(integrate_fun))
+  ) {
     args[["append"]] <- FALSE
   }
   srt_integrated <- invoke_fun(
@@ -465,13 +471,21 @@ integration_scop <- function(
   if (length(batch) == 1 && batch %in% colnames(srt_integrated@meta.data)) {
     srt_integrated@misc[["integration_batch"]] <- batch
   }
-  if (inherits(srt_integrated[[SeuratObject::DefaultAssay(srt_integrated)]], "ChromatinAssay")) {
+  if (
+    inherits(
+      srt_integrated[[SeuratObject::DefaultAssay(srt_integrated)]],
+      "ChromatinAssay"
+    )
+  ) {
     srt_integrated <- standardize_atac(
       srt = srt_integrated,
       prefix = integration_method
     )
     reduction_linear_name <- tryCatch(
-      DefaultReduction(srt_integrated, pattern = paste0("^", integration_method, "(lsi|svd|Harmony|Harmony5)$")),
+      DefaultReduction(
+        srt_integrated,
+        pattern = paste0("^", integration_method, "(lsi|svd|Harmony|Harmony5)$")
+      ),
       error = function(...) character(0)
     )
     expected_umap <- paste0(integration_method, "UMAP2D")
@@ -490,10 +504,13 @@ integration_scop <- function(
           verbose = FALSE
         ),
         error = function(...) {
-          seq_len(min(10L, ncol(Seurat::Embeddings(
-            srt_integrated,
-            reduction = reduction_linear_name
-          ))))
+          seq_len(min(
+            10L,
+            ncol(Seurat::Embeddings(
+              srt_integrated,
+              reduction = reduction_linear_name
+            ))
+          ))
         }
       )
       srt_integrated <- run_nonlinear_reduction(
@@ -536,10 +553,13 @@ integration_scop <- function(
         verbose = FALSE
       ),
       error = function(...) {
-        seq_len(min(30L, ncol(Seurat::Embeddings(
-          srt_integrated,
-          reduction = pca_reduction
-        ))))
+        seq_len(min(
+          30L,
+          ncol(Seurat::Embeddings(
+            srt_integrated,
+            reduction = pca_reduction
+          ))
+        ))
       }
     )
     baseline_nr <- nonlinear_reduction[[1]] %||% "umap"
@@ -592,11 +612,12 @@ integration_scop <- function(
     if (length(lisi_prefix_use) == 1 && length(lisi_reductions) > 1) {
       lisi_prefix_use <- rep(lisi_prefix_use, length(lisi_reductions))
     }
-    lisi_tool_name_use <- lisi_tool_name %||% if (length(lisi_reductions) > 1) {
-      "LISI"
-    } else {
-      paste0(lisi_prefix_use[[1]], "_LISI")
-    }
+    lisi_tool_name_use <- lisi_tool_name %||%
+      if (length(lisi_reductions) > 1) {
+        "LISI"
+      } else {
+        paste0(lisi_prefix_use[[1]], "_LISI")
+      }
     lisi_prefix_map <- stats::setNames(lisi_prefix_use, lisi_reductions)
 
     srt_integrated <- RunLISI(
@@ -614,13 +635,12 @@ integration_scop <- function(
   }
 
   if (isTRUE(compute_metrics)) {
-    metrics_batch_col <- metrics_batch_col %||% if (
-      length(batch) == 1 && batch %in% colnames(srt_integrated@meta.data)
-    ) {
-      batch
-    } else {
-      NULL
-    }
+    metrics_batch_col <- metrics_batch_col %||%
+      if (length(batch) == 1 && batch %in% colnames(srt_integrated@meta.data)) {
+        batch
+      } else {
+        NULL
+      }
     if (
       is.null(metrics_batch_col) &&
         is.null(metrics_celltype_col)
@@ -678,7 +698,8 @@ integration_scop <- function(
       ]
       metrics_cluster_col <- cluster_candidates[[1]] %||% NULL
     }
-    metrics_tool_name <- metrics_tool_name %||% paste0(integration_method, "_metrics")
+    metrics_tool_name <- metrics_tool_name %||%
+      paste0(integration_method, "_metrics")
     metrics_lisi_prefix <- NULL
     if (
       !is.null(lisi_prefix_map) &&
@@ -938,7 +959,9 @@ run_nonlinear_reduction <- function(
   seed,
   verbose
 ) {
-  if (!is.null(reduction_use) && reduction_use %in% SeuratObject::Reductions(srt)) {
+  if (
+    !is.null(reduction_use) && reduction_use %in% SeuratObject::Reductions(srt)
+  ) {
     available_dims <- seq_len(
       ncol(Seurat::Embeddings(srt, reduction = reduction_use))
     )
@@ -1024,7 +1047,8 @@ metric_graph_connectivity <- function(
     return(NA_real_)
   }
 
-  edges <- switch(backend,
+  edges <- switch(
+    backend,
     cpp = graph_conn_edges_cpp(
       embeddings = embeddings,
       k = k_use

@@ -44,12 +44,11 @@
 #'
 #' @examples
 #' data(islet_bulk)
-#' data(panc8_sub)
 #' islet_bulk <- RunDeconvolution(
 #'   islet_bulk,
-#'   reference = panc8_sub,
-#'   method = "MuSiC",
-#'   group.by = "celltype"
+#'   method = "CIBERSORT",
+#'   backend = "cpp",
+#'   perm = 0
 #' )
 #' DeconvolutionPlot(islet_bulk, plot_type = "bar")
 #'
@@ -214,6 +213,25 @@ bulk_plot_theme <- function(theme_use = "theme_scop", theme_args = list()) {
     return(ggplot2::theme_bw())
   }
   do.call(theme_fun, theme_args)
+}
+
+add_major_grid_theme <- function(
+  plot,
+  grid_major = TRUE,
+  grid_major_colour = "grey80",
+  grid_major_linetype = 2,
+  grid_major_linewidth = 0.3
+) {
+  grid_major_element <- if (isTRUE(grid_major)) {
+    ggplot2::element_line(
+      colour = grid_major_colour,
+      linetype = grid_major_linetype,
+      linewidth = grid_major_linewidth
+    )
+  } else {
+    ggplot2::element_blank()
+  }
+  plot + ggplot2::theme(panel.grid.major = grid_major_element)
 }
 
 bulk_match_levels <- function(x, levels_use = NULL) {

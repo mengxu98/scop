@@ -22,7 +22,7 @@ RunMetabolism(
   use_preparedb = TRUE,
   method = c("AUCell", "GSVA", "ssGSEA", "VISION"),
   backend = c("cpp", "r"),
-  cpp_strategy = c("sparse", "topk", "full"),
+  cpp_strategy = c("topk", "sparse", "full", "aucell"),
   cpp_chunk_size = NULL,
   minGSSize = 10,
   maxGSSize = 500,
@@ -96,7 +96,11 @@ to AUCell AUC, and \code{"full"} ranks all genes.}
 AUCell C++ scores may differ from the R backend when tied expression values
 are randomly ranked.}
 
-\item{cpp_strategy}{C++ AUCell ranking strategy. \code{"sparse"} ranks non-zero}
+\item{cpp_strategy}{C++ AUCell ranking strategy. \code{"topk"} ranks only genes
+that can contribute to AUCell AUC and is the default for better agreement
+with AUCell's full ranking on sparse single-cell matrices. \code{"aucell"} uses
+\code{\link[AUCell:AUCell_buildRankings]{AUCell::AUCell_buildRankings()}} and \code{\link[AUCell:AUCell_calcAUC]{AUCell::AUCell_calcAUC()}} for
+scMetabolism-compatible scores. \code{"sparse"} ranks non-zero}
 
 \item{cpp_chunk_size}{Optional cell chunk size for C++ GSVA kernels. \code{NULL}
 or \code{"auto"} automatically chunks large matrices to reduce peak dense
