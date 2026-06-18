@@ -2,7 +2,6 @@
 % Please edit documentation in R/GiottoPlot.R
 \name{GiottoPlot}
 \alias{GiottoPlot}
-\alias{GiottoPlot.default}
 \alias{GiottoPlot.scop_giotto_cluster}
 \alias{GiottoPlot.scop_giotto_cell_proximity}
 \alias{GiottoPlot.scop_giotto_spatial_genes}
@@ -10,8 +9,6 @@
 \title{Plot Giotto backend results}
 \usage{
 GiottoPlot(x, ...)
-
-\method{GiottoPlot}{default}(x, ...)
 
 \method{GiottoPlot}{scop_giotto_cluster}(
   x,
@@ -85,13 +82,15 @@ GiottoPlot(x, ...)
 )
 }
 \arguments{
-\item{x}{A result returned by one of the \code{RunGiotto*()} functions.}
+\item{x}{A result returned by one of the \verb{RunGiotto*()} functions.}
 
 \item{...}{Arguments passed to S3 methods.}
 
-\item{srt}{Original \code{Seurat} object used to create the Giotto result. Required for spatial spot plots.}
+\item{srt}{Original `Seurat` object used to create the Giotto result. Required
+for spatial spot plots.}
 
-\item{image}{Name of the Seurat spatial image. If \code{NULL}, the first image is used when available.}
+\item{image}{Name of the Seurat spatial image. If `NULL`, the first image is
+used when available.}
 
 \item{coord.cols}{Metadata coordinate columns used when no image is available.}
 
@@ -115,17 +114,22 @@ GiottoPlot(x, ...)
 
 \item{theme_use}{Theme function name used by scop plots.}
 
-\item{theme_args}{Additional arguments passed to \code{theme_use}.}
+\item{theme_args}{Additional arguments passed to `theme_use`.}
 
-\item{title, subtitle}{Plot title and subtitle. If \code{NULL}, sensible defaults are used.}
+\item{title, subtitle}{Plot title and subtitle. If `NULL`, sensible defaults
+are used.}
 
 \item{heatmap_palette}{Continuous palette used for heatmaps.}
 
-\item{heatmap_palcolor}{Optional custom colors used to create \code{heatmap_palette}.}
+\item{heatmap_palcolor}{Optional custom colors used to create
+`heatmap_palette`.}
 
-\item{plot_type}{Plot type for spatial gene results. \code{"ranking"} plots the feature-level table; \code{"feature"} plots expression of one feature on spatial coordinates.}
+\item{plot_type}{Plot type for spatial gene results. `"ranking"` plots the
+feature-level table; `"feature"` plots expression of one feature on spatial
+coordinates.}
 
-\item{feature}{Feature to draw for \code{plot_type = "feature"}. If \code{NULL}, the top Giotto feature is used.}
+\item{feature}{Feature to draw for `plot_type = "feature"`. If `NULL`, the
+top Giotto feature is used.}
 
 \item{top_n}{Number of rows shown in ranking plots.}
 
@@ -133,7 +137,8 @@ GiottoPlot(x, ...)
 
 \item{layer}{Assay layer used for spatial feature expression plots.}
 
-\item{features}{Features used for spatial co-expression heatmaps. If \code{NULL}, top features from the Giotto result are used.}
+\item{features}{Features used for spatial co-expression heatmaps. If `NULL`,
+top features from the Giotto result are used.}
 }
 \value{
 A \code{ggplot} object.
@@ -142,10 +147,4 @@ A \code{ggplot} object.
 Plot standalone Giotto backend results with scop plotting conventions. The
 input \code{Seurat} object, when supplied, is copied internally for plotting and
 is not modified.
-}
-\seealso{
-\code{\link[=RunGiottoCluster]{RunGiottoCluster()}},
-\code{\link[=RunGiottoCellProximity]{RunGiottoCellProximity()}},
-\code{\link[=RunGiottoSpatialGenes]{RunGiottoSpatialGenes()}},
-\code{\link[=RunGiottoSpatialModules]{RunGiottoSpatialModules()}}
 }

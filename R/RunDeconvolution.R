@@ -36,21 +36,21 @@
 #'
 #' @examples
 #' data(islet_bulk)
-#' data(panc8_sub)
 #' islet_bulk <- RunDeconvolution(
 #'   islet_bulk,
-#'   reference = panc8_sub,
-#'   method = "MuSiC",
-#'   group.by = "celltype"
+#'   method = "CIBERSORT",
+#'   backend = "cpp",
+#'   perm = 0
 #' )
 #' DeconvolutionPlot(islet_bulk, plot_type = "bar")
-#' ht <- DeconvolutionPlot(
+#'
+#' DeconvolutionPlot(
 #'   islet_bulk,
 #'   plot_type = "heatmap",
 #'   sample_annotation = "condition",
 #'   sample_split = "condition"
 #' )
-#' ComplexHeatmap::draw(ht)
+#'
 #' DeconvolutionPlot(islet_bulk, plot_type = "box")
 RunDeconvolution <- function(object, ...) {
   if (methods::is(object, "SummarizedExperiment")) {
@@ -117,7 +117,11 @@ RunDeconvolution.SummarizedExperiment <- function(
   store <- list(
     input = list(
       bulk_assay = bulk_assay,
-      ref_assay = ref_assay %||% SeuratObject::DefaultAssay(reference),
+      ref_assay = if (is.null(reference)) {
+        ref_assay
+      } else {
+        ref_assay %||% SeuratObject::DefaultAssay(reference)
+      },
       ref_layer = ref_layer,
       group.by = group.by,
       sample.by = sample.by,
@@ -136,6 +140,68 @@ RunDeconvolution.SummarizedExperiment <- function(
     )
   )
   store_meta(object, "Deconvolution", store)
+}
+
+canonical_method <- function(method) {
+  key <- tolower(as.character(method) %||% "")
+  method_map <- list(
+    music = list(method = "deconv_MuSiC", module = "deconv"),
+    bisquerna = list(method = "deconv_BisqueRNA", module = "deconv"),
+    bayesprism = list(method = "deconv_BayesPrism", module = "deconv"),
+    cibersort = list(method = "deconv_CIBERSORT", module = "deconv")
+  )
+  out <- method_map[[key]]
+  if (is.null(out)) {
+    log_message(
+      "{.arg method} must be one of {.val {c('MuSiC', 'BisqueRNA', 'BayesPrism', 'CIBERSORT')}}",
+      message_type = "error"
+    )
+  }
+  out
+}
+
+build_reference_profiles <- function(
+  ref_srt,
+  group.by,
+  sample.by = NULL,
+  cellstate.by = NULL,
+  assay = NULL,
+  layer = "counts"
+) {
+  if (!inherits(ref_srt, "Seurat")) {
+    log_message(
+      "{.arg reference} must be a {.cls Seurat} object",
+      message_type = "error"
+    )
+  }
+  if (is.null(group.by) || !group.by %in% colnames(ref_srt@meta.data)) {
+    log_message(
+      "{.arg group.by} must be present in {.arg reference@meta.data}",
+      message_type = "error"
+    )
+  }
+  if (!is.null(sample.by) && !sample.by %in% colnames(ref_srt@meta.data)) {
+    log_message(
+      "{.arg sample.by} must be present in {.arg reference@meta.data}",
+      message_type = "error"
+    )
+  }
+  if (
+    !is.null(cellstate.by) && !cellstate.by %in% colnames(ref_srt@meta.data)
+  ) {
+    log_message(
+      "{.arg cellstate.by} must be present in {.arg reference@meta.data}",
+      message_type = "error"
+    )
+  }
+  list(
+    object = ref_srt,
+    group.by = group.by,
+    sample.by = sample.by,
+    cellstate.by = cellstate.by,
+    assay = assay,
+    layer = layer
+  )
 }
 # Internal deconvolution and CSDE method implementations for
 # RunDeconvolution() and related bulk-analysis helpers.
@@ -533,10 +599,13 @@ RunBayesPrism <- function(
     )
   } else {
     effective_n_cores <- if (isTRUE(n_cores_missing)) {
-      max(1L, min(
-        4L,
-        as.integer(parallel::detectCores(logical = FALSE) %||% 1L)
-      ))
+      max(
+        1L,
+        min(
+          4L,
+          as.integer(parallel::detectCores(logical = FALSE) %||% 1L)
+        )
+      )
     } else {
       as.integer(n.cores)
     }
@@ -858,10 +927,21 @@ run_cibersort_bundle <- function(
   n_threads <- as.integer(n_threads)
   seed <- as.integer(seed)
   if (length(perm) != 1L || is.na(perm) || !is.finite(perm) || perm < 0L) {
-    log_message("{.arg perm} must be a non-negative integer.", message_type = "error")
+    log_message(
+      "{.arg perm} must be a non-negative integer.",
+      message_type = "error"
+    )
   }
-  if (length(n_threads) != 1L || is.na(n_threads) || !is.finite(n_threads) || n_threads < 1L) {
-    log_message("{.arg n_threads} must be a positive integer.", message_type = "error")
+  if (
+    length(n_threads) != 1L ||
+      is.na(n_threads) ||
+      !is.finite(n_threads) ||
+      n_threads < 1L
+  ) {
+    log_message(
+      "{.arg n_threads} must be a positive integer.",
+      message_type = "error"
+    )
   }
   if (length(seed) != 1L || is.na(seed) || !is.finite(seed)) {
     log_message("{.arg seed} must be an integer.", message_type = "error")
@@ -869,7 +949,10 @@ run_cibersort_bundle <- function(
   count_matrix <- cibersort_check_matrix(count_matrix, "count_matrix")
   signature <- resolve_cibersort_signature(sig_matrix, verbose = verbose)
   sig_matrix_use <- cibersort_check_matrix(signature$matrix, "sig_matrix")
-  common_genes <- sort(intersect(rownames(sig_matrix_use), rownames(count_matrix)))
+  common_genes <- sort(intersect(
+    rownames(sig_matrix_use),
+    rownames(count_matrix)
+  ))
   if (length(common_genes) == 0L) {
     log_message(
       "No shared genes between {.arg sig_matrix} and {.arg count_matrix}.",
