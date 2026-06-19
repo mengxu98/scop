@@ -77,7 +77,6 @@ Suggests:
     HDF5Array,
     htmlwidgets,
     httr,
-    infercnv,
     intrinsicDimension,
     irlba,
     limma,
@@ -138,7 +137,6 @@ Suggests:
     yardstick
 Remotes:
     Moonerss/CIBERSORT,
-    broadinstitute/infercnv,
     Hy4m/linkET,
     mengxu98/thisplot,
     navinlabcode/copykat,
