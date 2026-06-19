@@ -167,6 +167,7 @@ reference:
   - RunGiottoSpatialGenes
   - RunGiottoSpatialModules
   - RunRCTD
+  - RunSemlaSpatialNetwork
   - RunSpatialEcoTyper
   - RunSpatialGradientFeatures
   - RunSpatialVariableFeatures
