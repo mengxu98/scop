@@ -57,6 +57,7 @@ Suggests:
     circlize,
     clusterProfiler,
     cowplot,
+    copykat,
     data.table,
     e1071,
     ggpubr,
@@ -76,6 +77,7 @@ Suggests:
     HDF5Array,
     htmlwidgets,
     httr,
+    infercnv,
     intrinsicDimension,
     irlba,
     limma,
@@ -136,8 +138,10 @@ Suggests:
     yardstick
 Remotes:
     Moonerss/CIBERSORT,
+    broadinstitute/infercnv,
     Hy4m/linkET,
     mengxu98/thisplot,
+    navinlabcode/copykat,
     immunogenomics/harmony,
     immunogenomics/symphony
 LinkingTo:
@@ -148,5 +152,10 @@ LinkingTo:
     RSpectra
 RoxygenNote: 7.3.3
 Config/Needs/website: mengxu98/thistemplate
+Config/Needs/cnv:
+    navinlabcode/copykat,
+    must-bioinfo/fastCNV,
+    AntonioDeFalco/SCEVAN,
+    broadinstitute/infercnv
 URL: https://mengxu98.github.io/scop/
 BugReports: https://github.com/mengxu98/scop/issues
