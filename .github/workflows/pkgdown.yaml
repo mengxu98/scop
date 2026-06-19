@@ -80,7 +80,7 @@ jobs:
             install.packages(c("future", "future.apply"), quiet = TRUE)
           }
           future::plan("sequential", gc = TRUE)
-          pkgdown::build_site()
+          pkgdown::build_site(examples = FALSE)
         shell: Rscript {0}
 
       - name: Deploy to GitHub pages 🚀
