@@ -230,6 +230,7 @@ reference:
 - contents:
   - RunDeconvolution
   - RunCIBERSORT
+  - RunESTIMATE
   - RunMilo
   - RunPermutation
   - RunPropeller
@@ -240,6 +241,8 @@ reference:
 - contents:
   - DeconvolutionPlot
   - ImmuneAbundancePlot
+  - EstimateScorePlot
+  - EstimateGenePlot
   - GeneImmuneCorPlot
   - ProportionTestPlot
 
