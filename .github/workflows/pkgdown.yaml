@@ -12,7 +12,46 @@ on:
 name: pkgdown
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      package_changed: ${{ steps.filter.outputs.package_changed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: filter
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            base="${{ github.event.pull_request.base.sha }}"
+            head="${{ github.event.pull_request.head.sha }}"
+          elif [[ "${{ github.event_name }}" == "push" ]]; then
+            base="${{ github.event.before }}"
+            head="${{ github.sha }}"
+            if [[ "$base" =~ ^0+$ ]]; then
+              echo "package_changed=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          else
+            echo "package_changed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          files="$(git diff --name-only "$base" "$head")"
+          echo "$files"
+          if printf '%s\n' "$files" |
+            grep -Ev '^(scripts/.*|\.github/workflows/(pkgdown|test-coverage)\.yaml)$' |
+            grep -q .; then
+            echo "package_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "package_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
   pkgdown:
+    needs: changes
+    if: needs.changes.outputs.package_changed == 'true'
     runs-on: ubuntu-latest
     # Only restrict concurrency for non-PR jobs
     concurrency:
@@ -36,11 +75,11 @@ jobs:
 
       - name: Build site
         run: |
-          if (!requireNamespace('future', quietly = TRUE) ||
-                !requireNamespace('future.apply', quietly = TRUE)) {
-            install.packages(c('future', 'future.apply'), quiet = TRUE)
+          if (!requireNamespace("future", quietly = TRUE) ||
+                !requireNamespace("future.apply", quietly = TRUE)) {
+            install.packages(c("future", "future.apply"), quiet = TRUE)
           }
-          future::plan('sequential', gc = TRUE)
+          future::plan("sequential", gc = TRUE)
           pkgdown::build_site(examples = FALSE)
         shell: Rscript {0}
 
