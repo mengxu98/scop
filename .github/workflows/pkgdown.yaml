@@ -36,12 +36,12 @@ jobs:
 
       - name: Build site
         run: |
-          if (!requireNamespace("future", quietly = TRUE) ||
-                !requireNamespace("future.apply", quietly = TRUE)) {
-            install.packages(c("future", "future.apply"), quiet = TRUE)
+          if (!requireNamespace(future, quietly = TRUE) ||
+                !requireNamespace(future.apply, quietly = TRUE)) {
+            install.packages(c(future, future.apply), quiet = TRUE)
           }
-          future::plan("sequential", gc = TRUE)
-          pkgdown::build_site()
+          future::plan(sequential, gc = TRUE)
+          pkgdown::build_site(examples = FALSE)
         shell: Rscript {0}
 
       - name: Deploy to GitHub pages 🚀
