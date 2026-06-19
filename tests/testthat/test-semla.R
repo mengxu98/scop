@@ -8,6 +8,15 @@ make_semla_spatial_seurat <- function(nspots = 80, nfeatures = 30) {
   srt
 }
 
+semla_installed_without_loading <- function() {
+  "semla" %in% rownames(utils::installed.packages())
+}
+
+skip_if_no_semla_backend <- function() {
+  testthat::skip_on_os("mac")
+  testthat::skip_if_not_installed("semla")
+}
+
 test_that("semla wrappers reject non-Seurat input before backend work", {
   expect_error(
     RunSemlaSpatialNetwork(matrix(1, nrow = 2, ncol = 2), verbose = FALSE),
@@ -21,7 +30,7 @@ test_that("semla wrappers reject non-Seurat input before backend work", {
 
 test_that("semla optional dependency error is clear", {
   testthat::skip_if(
-    requireNamespace("semla", quietly = TRUE),
+    semla_installed_without_loading(),
     "semla is installed"
   )
   counts <- methods::as(Matrix::Matrix(1, nrow = 2, ncol = 2, sparse = TRUE), "dgCMatrix")
@@ -33,7 +42,7 @@ test_that("semla optional dependency error is clear", {
 })
 
 test_that("semla_prepare_srt adds Staffli to spatial Seurat objects", {
-  testthat::skip_if_not_installed("semla")
+  skip_if_no_semla_backend()
   srt <- make_semla_spatial_seurat()
   srt@tools[["Staffli"]] <- NULL
   out <- semla_prepare_srt(srt, verbose = FALSE)
@@ -42,7 +51,7 @@ test_that("semla_prepare_srt adds Staffli to spatial Seurat objects", {
 })
 
 test_that("RunSemlaSpatialNetwork stores semla network results", {
-  testthat::skip_if_not_installed("semla")
+  skip_if_no_semla_backend()
   srt <- make_semla_spatial_seurat()
   out <- RunSemlaSpatialNetwork(
     srt,
@@ -57,7 +66,7 @@ test_that("RunSemlaSpatialNetwork stores semla network results", {
 })
 
 test_that("RunSemlaLocalG writes local G metadata", {
-  testthat::skip_if_not_installed("semla")
+  skip_if_no_semla_backend()
   srt <- make_semla_spatial_seurat()
   features <- rownames(srt)[1:2]
   out <- RunSemlaLocalG(
