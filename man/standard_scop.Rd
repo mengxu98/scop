@@ -108,11 +108,11 @@ labels.}
 \item{do_deconvolution}{Whether to run deconvolution in the spatial workflow.
 If \code{NULL}, deconvolution is run only when \code{reference} is provided.}
 
-\item{deconvolution_method}{Deconvolution method. Only \code{"RCTD"} is supported
-in this workflow.}
+\item{deconvolution_method}{Deconvolution method. One of \code{"RCTD"} or
+\code{"SPOTlight"}.}
 
 \item{deconvolution_params}{Named list of additional arguments passed to
-\code{\link[=RunRCTD]{RunRCTD()}}.}
+\code{\link[=RunRCTD]{RunRCTD()}} or \code{\link[=RunSPOTlight]{RunSPOTlight()}}.}
 
 \item{do_normalization}{Whether to perform normalization.
 If \code{NULL}, normalization will be performed if the specified assay does not have scaled data.}
