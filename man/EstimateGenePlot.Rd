@@ -1,0 +1,40 @@
+% Generated manually for ESTIMATE integration.
+\name{EstimateGenePlot}
+\alias{EstimateGenePlot}
+\title{Gene and ESTIMATE score relationship plots}
+\usage{
+EstimateGenePlot(
+  object = NULL,
+  score.data = NULL,
+  gene.data = NULL,
+  features,
+  assay = NULL,
+  layer = "data",
+  plot_type = c("violin", "scatter"),
+  split = c("median", "quantile"),
+  quantile = 0.5,
+  cor_method = c("spearman", "pearson", "kendall"),
+  add_stat = TRUE,
+  ...
+)
+}
+\arguments{
+\item{object}{Optional \code{RunESTIMATE()} bundle, \code{SummarizedExperiment}, or \code{Seurat} object containing ESTIMATE results.}
+\item{score.data}{Optional score matrix or data frame with samples in rows.}
+\item{gene.data}{Optional gene expression matrix with genes in rows and samples in columns.}
+\item{features}{Target genes to plot.}
+\item{assay}{Assay used for \code{Seurat} or \code{SummarizedExperiment} expression.}
+\item{layer}{Assay layer used for \code{Seurat} expression.}
+\item{plot_type}{Plot type.}
+\item{split}{Split method for high/low groups in violin plots.}
+\item{quantile}{Quantile cutoff used when \code{split = "quantile"}.}
+\item{cor_method}{Correlation method for scatter plots.}
+\item{add_stat}{Whether to add group comparison labels to violin plots.}
+\item{...}{Additional plotting arguments.}
+}
+\value{
+A \code{ggplot} object.
+}
+\description{
+Compare ESTIMATE scores between target-gene high and low expression groups, or draw continuous gene-expression correlations with ESTIMATE scores.
+}
