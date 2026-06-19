@@ -556,8 +556,12 @@ data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunLargeVis(
   object = pancreas_sub,
-  features = SeuratObject::VariableFeatures(pancreas_sub)
+  features = head(SeuratObject::VariableFeatures(pancreas_sub), 200),
+  n_epochs = 50,
+  n_neighbors = 50,
+  perplexity = 10
 )
+
 CellDimPlot(
   pancreas_sub,
   group.by = "CellType",

@@ -192,13 +192,13 @@ If <code>NULL</code>, deconvolution is run only when <code>reference</code> is p
 
 
 <dt id="arg-deconvolution-method">deconvolution_method<a class="anchor" aria-label="anchor" href="#arg-deconvolution-method"></a></dt>
-<dd><p>Deconvolution method. Only <code>"RCTD"</code> is supported
-in this workflow.</p></dd>
+<dd><p>Deconvolution method. One of <code>"RCTD"</code> or
+<code>"SPOTlight"</code>.</p></dd>
 
 
 <dt id="arg-deconvolution-params">deconvolution_params<a class="anchor" aria-label="anchor" href="#arg-deconvolution-params"></a></dt>
 <dd><p>Named list of additional arguments passed to
-<code><a href="RunRCTD.html">RunRCTD()</a></code>.</p></dd>
+<code><a href="RunRCTD.html">RunRCTD()</a></code> or <code><a href="RunSPOTlight.html">RunSPOTlight()</a></code>.</p></dd>
 
 
 <dt id="arg-do-normalization">do_normalization<a class="anchor" aria-label="anchor" href="#arg-do-normalization"></a></dt>

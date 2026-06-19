@@ -52,9 +52,6 @@ is not modified.</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">GiottoPlot</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Default S3 method</span></span>
-<span><span class="fu">GiottoPlot</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
-<span></span>
 <span><span class="co"># S3 method for class 'scop_giotto_cluster'</span></span>
 <span><span class="fu">GiottoPlot</span><span class="op">(</span></span>
 <span>  <span class="va">x</span>,</span>
@@ -144,11 +141,13 @@ is not modified.</p>
 
 
 <dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
-<dd><p>Original <code>Seurat</code> object used to create the Giotto result. Required for spatial spot plots.</p></dd>
+<dd><p>Original `Seurat` object used to create the Giotto result. Required
+for spatial spot plots.</p></dd>
 
 
 <dt id="arg-image">image<a class="anchor" aria-label="anchor" href="#arg-image"></a></dt>
-<dd><p>Name of the Seurat spatial image. If <code>NULL</code>, the first image is used when available.</p></dd>
+<dd><p>Name of the Seurat spatial image. If `NULL`, the first image is
+used when available.</p></dd>
 
 
 <dt id="arg-coord-cols">coord.cols<a class="anchor" aria-label="anchor" href="#arg-coord-cols"></a></dt>
@@ -196,11 +195,12 @@ is not modified.</p>
 
 
 <dt id="arg-theme-args">theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-args"></a></dt>
-<dd><p>Additional arguments passed to <code>theme_use</code>.</p></dd>
+<dd><p>Additional arguments passed to `theme_use`.</p></dd>
 
 
 <dt id="arg-title-subtitle">title, subtitle<a class="anchor" aria-label="anchor" href="#arg-title-subtitle"></a></dt>
-<dd><p>Plot title and subtitle. If <code>NULL</code>, sensible defaults are used.</p></dd>
+<dd><p>Plot title and subtitle. If `NULL`, sensible defaults
+are used.</p></dd>
 
 
 <dt id="arg-heatmap-palette">heatmap_palette<a class="anchor" aria-label="anchor" href="#arg-heatmap-palette"></a></dt>
@@ -208,15 +208,19 @@ is not modified.</p>
 
 
 <dt id="arg-heatmap-palcolor">heatmap_palcolor<a class="anchor" aria-label="anchor" href="#arg-heatmap-palcolor"></a></dt>
-<dd><p>Optional custom colors used to create <code>heatmap_palette</code>.</p></dd>
+<dd><p>Optional custom colors used to create
+`heatmap_palette`.</p></dd>
 
 
 <dt id="arg-plot-type">plot_type<a class="anchor" aria-label="anchor" href="#arg-plot-type"></a></dt>
-<dd><p>Plot type for spatial gene results. <code>"ranking"</code> plots the feature-level table; <code>"feature"</code> plots expression of one feature on spatial coordinates.</p></dd>
+<dd><p>Plot type for spatial gene results. `"ranking"` plots the
+feature-level table; `"feature"` plots expression of one feature on spatial
+coordinates.</p></dd>
 
 
 <dt id="arg-feature">feature<a class="anchor" aria-label="anchor" href="#arg-feature"></a></dt>
-<dd><p>Feature to draw for <code>plot_type = "feature"</code>. If <code>NULL</code>, the top Giotto feature is used.</p></dd>
+<dd><p>Feature to draw for `plot_type = "feature"`. If `NULL`, the
+top Giotto feature is used.</p></dd>
 
 
 <dt id="arg-top-n">top_n<a class="anchor" aria-label="anchor" href="#arg-top-n"></a></dt>
@@ -232,19 +236,13 @@ is not modified.</p>
 
 
 <dt id="arg-features">features<a class="anchor" aria-label="anchor" href="#arg-features"></a></dt>
-<dd><p>Features used for spatial co-expression heatmaps. If <code>NULL</code>, top features from the Giotto result are used.</p></dd>
+<dd><p>Features used for spatial co-expression heatmaps. If `NULL`,
+top features from the Giotto result are used.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A <code>ggplot</code> object.</p>
-    </div>
-    <div class="section level2">
-    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="RunGiottoCluster.html">RunGiottoCluster()</a></code>,
-<code><a href="RunGiottoCellProximity.html">RunGiottoCellProximity()</a></code>,
-<code><a href="RunGiottoSpatialGenes.html">RunGiottoSpatialGenes()</a></code>,
-<code><a href="RunGiottoSpatialModules.html">RunGiottoSpatialModules()</a></code></p></div>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

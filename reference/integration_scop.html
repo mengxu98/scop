@@ -144,7 +144,8 @@ additional <code>ChromatinAssay</code> will be preprocessed sequentially.</p></d
 <dt id="arg-integration-method">integration_method<a class="anchor" aria-label="anchor" href="#arg-integration-method"></a></dt>
 <dd><p>A character vector specifying the integration method to use.
 Supported methods are: <code>"Uncorrected"</code>, <code>"Seurat"</code>, <code>"CCA"</code>, <code>"RPCA"</code>, <code>"scVI"</code>,
-<code>"PeakVI"</code>, <code>"PoissonVI"</code>, <code>"WNN"</code>, <code>"MultiMAP"</code>, <code>"GLUE"</code>, <code>"scVI5"</code>, <code>"MNN"</code>, <code>"fastMNN"</code>, <code>"fastMNN5"</code>, <code>"Harmony"</code>, <code>"Harmony5"</code>,
+<code>"PeakVI"</code>, <code>"PoissonVI"</code>, <code>"WNN"</code>, <code>"MultiMAP"</code>, <code>"GLUE"</code>, <code>"scVI5"</code>, <code>"MNN"</code>,
+<code>"fastMNN"</code>, <code>"fastMNN5"</code>, <code>"Harmony"</code>, <code>"Harmony5"</code>,
 <code>"Scanorama"</code>, <code>"BBKNN"</code>, <code>"CSS"</code>, <code>"Coralysis"</code>, <code>"LIGER"</code>, <code>"Conos"</code>, <code>"ComBat"</code>.
 Default is <code>"Uncorrected"</code>. For <code>ChromatinAssay</code>, prefer <code>"Uncorrected"</code> or
 <code>"Harmony5"</code>; the latter is automatically switched to <code>"Harmony"</code>.</p></dd>
@@ -412,7 +413,7 @@ aliases, and <code>ATAC_default_*</code> metadata when available.</p>
 <span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu">integration_scop</span><span class="op">(</span></span>
 <span>  <span class="va">panc8_sub</span>,</span>
 <span>  batch <span class="op">=</span> <span class="st">"tech"</span>,</span>
-<span>  integration_method <span class="op">=</span> <span class="st">"Uncorrected"</span>,</span>
+<span>  integration_method <span class="op">=</span> <span class="st">"Harmony"</span>,</span>
 <span>  nHVF <span class="op">=</span> <span class="fl">500</span>,</span>
 <span>  linear_reduction_dims <span class="op">=</span> <span class="fl">20</span>,</span>
 <span>  linear_reduction_dims_use <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,</span>
@@ -424,11 +425,12 @@ aliases, and <code>ATAC_default_*</code> metadata when available.</p>
 <span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">panc8_sub</span>,</span>
 <span>  group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tech"</span>, <span class="st">"celltype"</span><span class="op">)</span>,</span>
-<span>  reduction <span class="op">=</span> <span class="st">"UncorrectedUMAP2D"</span></span>
+<span>  reduction <span class="op">=</span> <span class="st">"HarmonyUMAP2D"</span></span>
 <span><span class="op">)</span></span>
+<span></span>
 <span><span class="fu"><a href="LISIPlot.html">LISIPlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">panc8_sub</span>,</span>
-<span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"UncorrectedpcaUMAP2D_tech_LISI"</span>, <span class="st">"UncorrectedUMAP2D_tech_LISI"</span><span class="op">)</span></span>
+<span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"HarmonyUMAP2D_tech_LISI"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu">integration_scop</span><span class="op">(</span></span>
@@ -445,67 +447,65 @@ aliases, and <code>ATAC_default_*</code> metadata when available.</p>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="LISIPlot.html">LISIPlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">panc8_sub</span>,</span>
-<span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"HarmonypcaUMAP2D_tech_LISI"</span>, <span class="st">"HarmonyUMAP2D_tech_LISI"</span><span class="op">)</span></span>
+<span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"UncorrectedpcaUMAP2D_tech_LISI"</span>, <span class="st">"HarmonyUMAP2D_tech_LISI"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"Signac"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"pbmcmultiome_sub"</span>, package <span class="op">=</span> <span class="st">"scop"</span><span class="op">)</span></span>
-<span>  <span class="va">pbmcmultiome_sub</span><span class="op">$</span><span class="va">batch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"batch1"</span>, <span class="st">"batch2"</span><span class="op">)</span>, length.out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="va">pbmcmultiome_sub</span> <span class="op">&lt;-</span> <span class="fu">integration_scop</span><span class="op">(</span></span>
-<span>    <span class="va">pbmcmultiome_sub</span>,</span>
-<span>    batch <span class="op">=</span> <span class="st">"batch"</span>,</span>
-<span>    assay <span class="op">=</span> <span class="st">"peaks"</span>,</span>
-<span>    integration_method <span class="op">=</span> <span class="st">"Harmony5"</span>,</span>
-<span>    normalization_method <span class="op">=</span> <span class="st">"TFIDF"</span></span>
-<span>  <span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"pbmcmultiome_sub"</span>, package <span class="op">=</span> <span class="st">"scop"</span><span class="op">)</span></span>
+<span><span class="va">pbmcmultiome_sub</span><span class="op">$</span><span class="va">batch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"batch1"</span>, <span class="st">"batch2"</span><span class="op">)</span>, length.out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">pbmcmultiome_sub</span> <span class="op">&lt;-</span> <span class="fu">integration_scop</span><span class="op">(</span></span>
+<span>  <span class="va">pbmcmultiome_sub</span>,</span>
+<span>  batch <span class="op">=</span> <span class="st">"batch"</span>,</span>
+<span>  assay <span class="op">=</span> <span class="st">"peaks"</span>,</span>
+<span>  integration_method <span class="op">=</span> <span class="st">"Harmony5"</span>,</span>
+<span>  normalization_method <span class="op">=</span> <span class="st">"TFIDF"</span></span>
+<span><span class="op">)</span></span>
 <span></span>
-<span>  <span class="va">integration_methods</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"Uncorrected"</span>, <span class="st">"Seurat"</span>, <span class="st">"CCA"</span>, <span class="st">"RPCA"</span>, <span class="st">"scVI"</span>, <span class="st">"scVI5"</span>,</span>
-<span>    <span class="st">"MNN"</span>, <span class="st">"fastMNN"</span>, <span class="st">"fastMNN5"</span>, <span class="st">"Harmony"</span>, <span class="st">"Harmony5"</span>,</span>
-<span>    <span class="st">"Scanorama"</span>, <span class="st">"BBKNN"</span>, <span class="st">"CSS"</span>, <span class="st">"Coralysis"</span>, <span class="st">"LIGER"</span>, <span class="st">"Conos"</span>, <span class="st">"ComBat"</span></span>
-<span>  <span class="op">)</span></span>
-<span>  <span class="va">p_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">method</span> <span class="kw">in</span> <span class="va">integration_methods</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu">integration_scop</span><span class="op">(</span></span>
-<span>      <span class="va">panc8_sub</span>,</span>
-<span>      batch <span class="op">=</span> <span class="st">"tech"</span>,</span>
-<span>      integration_method <span class="op">=</span> <span class="va">method</span>,</span>
-<span>      linear_reduction_dims_use <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">50</span>,</span>
-<span>      nonlinear_reduction <span class="op">=</span> <span class="st">"umap"</span></span>
-<span>    <span class="op">)</span></span>
-<span>    <span class="va">p_list</span><span class="op">[[</span><span class="va">method</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span>
-<span>      <span class="va">panc8_sub</span>,</span>
-<span>      group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tech"</span>, <span class="st">"celltype"</span><span class="op">)</span>,</span>
-<span>      reduction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">method</span>, <span class="st">"UMAP2D"</span><span class="op">)</span>,</span>
-<span>      xlab <span class="op">=</span> <span class="st">""</span>, ylab <span class="op">=</span> <span class="st">""</span>,</span>
-<span>      title <span class="op">=</span> <span class="va">method</span>,</span>
-<span>      legend.position <span class="op">=</span> <span class="st">"none"</span>,</span>
-<span>      theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span>
-<span>    <span class="op">)</span></span>
-<span>  <span class="op">}</span></span>
-<span></span>
-<span>  <span class="va">nonlinear_reductions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"umap"</span>, <span class="st">"tsne"</span>, <span class="st">"dm"</span>, <span class="st">"phate"</span>,</span>
-<span>    <span class="st">"pacmap"</span>, <span class="st">"trimap"</span>, <span class="st">"largevis"</span>, <span class="st">"fr"</span></span>
-<span>  <span class="op">)</span></span>
+<span><span class="va">integration_methods</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Uncorrected"</span>, <span class="st">"Seurat"</span>, <span class="st">"CCA"</span>, <span class="st">"RPCA"</span>, <span class="st">"scVI"</span>, <span class="st">"scVI5"</span>,</span>
+<span>  <span class="st">"MNN"</span>, <span class="st">"fastMNN"</span>, <span class="st">"fastMNN5"</span>, <span class="st">"Harmony"</span>, <span class="st">"Harmony5"</span>,</span>
+<span>  <span class="st">"Scanorama"</span>, <span class="st">"BBKNN"</span>, <span class="st">"CSS"</span>, <span class="st">"Coralysis"</span>, <span class="st">"LIGER"</span>, <span class="st">"Conos"</span>, <span class="st">"ComBat"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">p_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">method</span> <span class="kw">in</span> <span class="va">integration_methods</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu">integration_scop</span><span class="op">(</span></span>
 <span>    <span class="va">panc8_sub</span>,</span>
 <span>    batch <span class="op">=</span> <span class="st">"tech"</span>,</span>
-<span>    integration_method <span class="op">=</span> <span class="st">"Seurat"</span>,</span>
+<span>    integration_method <span class="op">=</span> <span class="va">method</span>,</span>
 <span>    linear_reduction_dims_use <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">50</span>,</span>
-<span>    nonlinear_reduction <span class="op">=</span> <span class="va">nonlinear_reductions</span></span>
+<span>    nonlinear_reduction <span class="op">=</span> <span class="st">"umap"</span></span>
 <span>  <span class="op">)</span></span>
-<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">nr</span> <span class="kw">in</span> <span class="va">nonlinear_reductions</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span></span>
-<span>      <span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span>
-<span>        <span class="va">panc8_sub</span>,</span>
-<span>        group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tech"</span>, <span class="st">"celltype"</span><span class="op">)</span>,</span>
-<span>        reduction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Seurat"</span>, <span class="va">nr</span>, <span class="st">"2D"</span><span class="op">)</span>,</span>
-<span>        xlab <span class="op">=</span> <span class="st">""</span>, ylab <span class="op">=</span> <span class="st">""</span>, title <span class="op">=</span> <span class="va">nr</span>,</span>
-<span>        legend.position <span class="op">=</span> <span class="st">"none"</span>, theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span>
-<span>      <span class="op">)</span></span>
+<span>  <span class="va">p_list</span><span class="op">[[</span><span class="va">method</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span>
+<span>    <span class="va">panc8_sub</span>,</span>
+<span>    group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tech"</span>, <span class="st">"celltype"</span><span class="op">)</span>,</span>
+<span>    reduction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">method</span>, <span class="st">"UMAP2D"</span><span class="op">)</span>,</span>
+<span>    xlab <span class="op">=</span> <span class="st">""</span>, ylab <span class="op">=</span> <span class="st">""</span>,</span>
+<span>    title <span class="op">=</span> <span class="va">method</span>,</span>
+<span>    legend.position <span class="op">=</span> <span class="st">"none"</span>,</span>
+<span>    theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">nonlinear_reductions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"umap"</span>, <span class="st">"tsne"</span>, <span class="st">"dm"</span>, <span class="st">"phate"</span>,</span>
+<span>  <span class="st">"pacmap"</span>, <span class="st">"trimap"</span>, <span class="st">"largevis"</span>, <span class="st">"fr"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu">integration_scop</span><span class="op">(</span></span>
+<span>  <span class="va">panc8_sub</span>,</span>
+<span>  batch <span class="op">=</span> <span class="st">"tech"</span>,</span>
+<span>  integration_method <span class="op">=</span> <span class="st">"Seurat"</span>,</span>
+<span>  linear_reduction_dims_use <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">50</span>,</span>
+<span>  nonlinear_reduction <span class="op">=</span> <span class="va">nonlinear_reductions</span></span>
+<span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">nr</span> <span class="kw">in</span> <span class="va">nonlinear_reductions</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span>
+<span>      <span class="va">panc8_sub</span>,</span>
+<span>      group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tech"</span>, <span class="st">"celltype"</span><span class="op">)</span>,</span>
+<span>      reduction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Seurat"</span>, <span class="va">nr</span>, <span class="st">"2D"</span><span class="op">)</span>,</span>
+<span>      xlab <span class="op">=</span> <span class="st">""</span>, ylab <span class="op">=</span> <span class="st">""</span>, title <span class="op">=</span> <span class="va">nr</span>,</span>
+<span>      legend.position <span class="op">=</span> <span class="st">"none"</span>, theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span>
 <span>    <span class="op">)</span></span>
-<span>  <span class="op">}</span></span>
+<span>  <span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

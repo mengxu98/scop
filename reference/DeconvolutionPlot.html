@@ -189,12 +189,11 @@ For <code>plot_type = "heatmap"</code>, returns a <code><a href="https://rdrr.io
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">islet_bulk</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span>
 <span><span class="va">islet_bulk</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunDeconvolution.html">RunDeconvolution</a></span><span class="op">(</span></span>
 <span>  <span class="va">islet_bulk</span>,</span>
-<span>  reference <span class="op">=</span> <span class="va">panc8_sub</span>,</span>
-<span>  method <span class="op">=</span> <span class="st">"MuSiC"</span>,</span>
-<span>  group.by <span class="op">=</span> <span class="st">"celltype"</span></span>
+<span>  method <span class="op">=</span> <span class="st">"CIBERSORT"</span>,</span>
+<span>  backend <span class="op">=</span> <span class="st">"cpp"</span>,</span>
+<span>  perm <span class="op">=</span> <span class="fl">0</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu">DeconvolutionPlot</span><span class="op">(</span><span class="va">islet_bulk</span>, plot_type <span class="op">=</span> <span class="st">"bar"</span><span class="op">)</span></span>
 <span></span>

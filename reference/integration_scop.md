@@ -367,7 +367,7 @@ data(panc8_sub)
 panc8_sub <- integration_scop(
   panc8_sub,
   batch = "tech",
-  integration_method = "Uncorrected",
+  integration_method = "Harmony",
   nHVF = 500,
   linear_reduction_dims = 20,
   linear_reduction_dims_use = 1:10,
@@ -379,11 +379,12 @@ panc8_sub <- integration_scop(
 CellDimPlot(
   panc8_sub,
   group.by = c("tech", "celltype"),
-  reduction = "UncorrectedUMAP2D"
+  reduction = "HarmonyUMAP2D"
 )
+
 LISIPlot(
   panc8_sub,
-  features = c("UncorrectedpcaUMAP2D_tech_LISI", "UncorrectedUMAP2D_tech_LISI")
+  features = c("HarmonyUMAP2D_tech_LISI")
 )
 
 panc8_sub <- integration_scop(
@@ -400,66 +401,64 @@ panc8_sub <- integration_scop(
 )
 LISIPlot(
   panc8_sub,
-  features = c("HarmonypcaUMAP2D_tech_LISI", "HarmonyUMAP2D_tech_LISI")
+  features = c("UncorrectedpcaUMAP2D_tech_LISI", "HarmonyUMAP2D_tech_LISI")
 )
 
-if (requireNamespace("Signac", quietly = TRUE)) {
-  data("pbmcmultiome_sub", package = "scop")
-  pbmcmultiome_sub$batch <- rep(c("batch1", "batch2"), length.out = ncol(pbmcmultiome_sub))
-  pbmcmultiome_sub <- integration_scop(
-    pbmcmultiome_sub,
-    batch = "batch",
-    assay = "peaks",
-    integration_method = "Harmony5",
-    normalization_method = "TFIDF"
-  )
+data("pbmcmultiome_sub", package = "scop")
+pbmcmultiome_sub$batch <- rep(c("batch1", "batch2"), length.out = ncol(pbmcmultiome_sub))
+pbmcmultiome_sub <- integration_scop(
+  pbmcmultiome_sub,
+  batch = "batch",
+  assay = "peaks",
+  integration_method = "Harmony5",
+  normalization_method = "TFIDF"
+)
 
-  integration_methods <- c(
-    "Uncorrected", "Seurat", "CCA", "RPCA", "scVI", "scVI5",
-    "MNN", "fastMNN", "fastMNN5", "Harmony", "Harmony5",
-    "Scanorama", "BBKNN", "CSS", "Coralysis", "LIGER", "Conos", "ComBat"
-  )
-  p_list <- list()
-  for (method in integration_methods) {
-    panc8_sub <- integration_scop(
-      panc8_sub,
-      batch = "tech",
-      integration_method = method,
-      linear_reduction_dims_use = 1:50,
-      nonlinear_reduction = "umap"
-    )
-    p_list[[method]] <- CellDimPlot(
-      panc8_sub,
-      group.by = c("tech", "celltype"),
-      reduction = paste0(method, "UMAP2D"),
-      xlab = "", ylab = "",
-      title = method,
-      legend.position = "none",
-      theme_use = "theme_blank"
-    )
-  }
-
-  nonlinear_reductions <- c(
-    "umap", "tsne", "dm", "phate",
-    "pacmap", "trimap", "largevis", "fr"
-  )
+integration_methods <- c(
+  "Uncorrected", "Seurat", "CCA", "RPCA", "scVI", "scVI5",
+  "MNN", "fastMNN", "fastMNN5", "Harmony", "Harmony5",
+  "Scanorama", "BBKNN", "CSS", "Coralysis", "LIGER", "Conos", "ComBat"
+)
+p_list <- list()
+for (method in integration_methods) {
   panc8_sub <- integration_scop(
     panc8_sub,
     batch = "tech",
-    integration_method = "Seurat",
+    integration_method = method,
     linear_reduction_dims_use = 1:50,
-    nonlinear_reduction = nonlinear_reductions
+    nonlinear_reduction = "umap"
   )
-  for (nr in nonlinear_reductions) {
-    print(
-      CellDimPlot(
-        panc8_sub,
-        group.by = c("tech", "celltype"),
-        reduction = paste0("Seurat", nr, "2D"),
-        xlab = "", ylab = "", title = nr,
-        legend.position = "none", theme_use = "theme_blank"
-      )
+  p_list[[method]] <- CellDimPlot(
+    panc8_sub,
+    group.by = c("tech", "celltype"),
+    reduction = paste0(method, "UMAP2D"),
+    xlab = "", ylab = "",
+    title = method,
+    legend.position = "none",
+    theme_use = "theme_blank"
+  )
+}
+
+nonlinear_reductions <- c(
+  "umap", "tsne", "dm", "phate",
+  "pacmap", "trimap", "largevis", "fr"
+)
+panc8_sub <- integration_scop(
+  panc8_sub,
+  batch = "tech",
+  integration_method = "Seurat",
+  linear_reduction_dims_use = 1:50,
+  nonlinear_reduction = nonlinear_reductions
+)
+for (nr in nonlinear_reductions) {
+  print(
+    CellDimPlot(
+      panc8_sub,
+      group.by = c("tech", "celltype"),
+      reduction = paste0("Seurat", nr, "2D"),
+      xlab = "", ylab = "", title = nr,
+      legend.position = "none", theme_use = "theme_blank"
     )
-  }
+  )
 }
 ```

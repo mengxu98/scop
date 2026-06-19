@@ -187,12 +187,10 @@ CellDimPlot(
   label = TRUE
 )
 
-CellCorHeatmap(
+FeatureStatPlot(
   pancreas_sub,
-  group.by = "singler_annotation",
-  assay = "RNA",
-  layer = "data",
-  method = "spearman"
+  stat.by = "singler_score",
+  group.by = "singler_annotation"
 )
 
 ht1 <- CellCorHeatmap(

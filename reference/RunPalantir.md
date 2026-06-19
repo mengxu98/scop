@@ -252,9 +252,10 @@ FeatureDimPlot(
 
 FeatureDimPlot(
   pancreas_sub,
-  paste0(
-    c("Alpha", "Beta", "Delta", "Epsilon"),
-    "_diff_potential"
+  grep(
+    "TerminalState_.*_diff_potential$",
+    colnames(pancreas_sub@meta.data),
+    value = TRUE
   )
 )
 
