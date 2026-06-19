@@ -160,6 +160,17 @@ reference:
 
 - subtitle: "Spatial Analysis"
 - contents:
+  - SeuratToScopGiotto
+  - RunGiottoWorkflow
+  - GiottoPreprocess
+  - GiottoReduce
+  - GiottoCluster
+  - GiottoSpatialNetwork
+  - GiottoSpatialGenes
+  - GiottoSpatialModules
+  - GiottoCellProximity
+  - GiottoHMRF
+  - AddGiottoToSeurat
   - RunBayesSpace
   - RunCytoSPACE
   - RunGiottoCluster
@@ -168,6 +179,7 @@ reference:
   - RunGiottoSpatialModules
   - RunRCTD
   - RunSPOTlight
+  - RunSemlaSpatialNetwork
   - RunSpatialEcoTyper
   - RunSpatialGradientFeatures
   - RunSpatialVariableFeatures
@@ -230,6 +242,11 @@ reference:
   - ImmuneAbundancePlot
   - GeneImmuneCorPlot
   - ProportionTestPlot
+
+- subtitle: "Copy Number Variation Analysis"
+- contents:
+  - RunCNV
+  - CNVPlot
 
 - subtitle: "Enrichment Analysis"
 - contents:
