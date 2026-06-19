@@ -179,6 +179,7 @@ reference:
   - RunGiottoSpatialModules
   - RunRCTD
   - RunSPOTlight
+  - RunSemlaSpatialNetwork
   - RunSpatialEcoTyper
   - RunSpatialGradientFeatures
   - RunSpatialVariableFeatures
