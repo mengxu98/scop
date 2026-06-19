@@ -120,6 +120,7 @@ Suggests:
     decontX,
     edgeR,
     scmap,
+    semla,
     stringr,
     sva,
     symphony,
@@ -141,7 +142,8 @@ Remotes:
     mengxu98/thisplot,
     navinlabcode/copykat,
     immunogenomics/harmony,
-    immunogenomics/symphony
+    immunogenomics/symphony,
+    spatial-research/semla
 LinkingTo:
     cli,
     Rcpp,

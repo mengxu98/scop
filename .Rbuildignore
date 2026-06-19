@@ -14,6 +14,7 @@
 ^README.md$
 ^tmaps$
 ^scripts$
+^outputs$
 ^\.codex$
 ^\.cc-connect$
 ^\.deepseek$
