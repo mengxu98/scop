@@ -62,7 +62,7 @@
 <span>  use_preparedb <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AUCell"</span>, <span class="st">"GSVA"</span>, <span class="st">"ssGSEA"</span>, <span class="st">"VISION"</span><span class="op">)</span>,</span>
 <span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cpp"</span>, <span class="st">"r"</span><span class="op">)</span>,</span>
-<span>  cpp_strategy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sparse"</span>, <span class="st">"topk"</span>, <span class="st">"full"</span><span class="op">)</span>,</span>
+<span>  cpp_strategy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"topk"</span>, <span class="st">"sparse"</span>, <span class="st">"full"</span>, <span class="st">"aucell"</span><span class="op">)</span>,</span>
 <span>  cpp_chunk_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  minGSSize <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  maxGSSize <span class="op">=</span> <span class="fl">500</span>,</span>
@@ -175,7 +175,11 @@ are randomly ranked.</p></dd>
 
 
 <dt id="arg-cpp-strategy">cpp_strategy<a class="anchor" aria-label="anchor" href="#arg-cpp-strategy"></a></dt>
-<dd><p>C++ AUCell ranking strategy. <code>"sparse"</code> ranks non-zero</p></dd>
+<dd><p>C++ AUCell ranking strategy. <code>"topk"</code> ranks only genes
+that can contribute to AUCell AUC and is the default for better agreement
+with AUCell's full ranking on sparse single-cell matrices. <code>"aucell"</code> uses
+<code><a href="https://rdrr.io/pkg/AUCell/man/AUCell_buildRankings.html" class="external-link">AUCell::AUCell_buildRankings()</a></code> and <code><a href="https://rdrr.io/pkg/AUCell/man/AUCell_calcAUC.html" class="external-link">AUCell::AUCell_calcAUC()</a></code> for
+scMetabolism-compatible scores. <code>"sparse"</code> ranks non-zero</p></dd>
 
 
 <dt id="arg-cpp-chunk-size">cpp_chunk_size<a class="anchor" aria-label="anchor" href="#arg-cpp-chunk-size"></a></dt>

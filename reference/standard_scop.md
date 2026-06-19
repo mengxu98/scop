@@ -151,12 +151,13 @@ standard_scop(
 
 - deconvolution_method:
 
-  Deconvolution method. Only `"RCTD"` is supported in this workflow.
+  Deconvolution method. One of `"RCTD"` or `"SPOTlight"`.
 
 - deconvolution_params:
 
   Named list of additional arguments passed to
-  [`RunRCTD()`](https://mengxu98.github.io/scop/reference/RunRCTD.md).
+  [`RunRCTD()`](https://mengxu98.github.io/scop/reference/RunRCTD.md) or
+  [`RunSPOTlight()`](https://mengxu98.github.io/scop/reference/RunSPOTlight.md).
 
 - do_normalization:
 

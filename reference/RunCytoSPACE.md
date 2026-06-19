@@ -1,8 +1,6 @@
 # Run CytoSPACE spatial assignment
 
-Assign reference single cells to spatial transcriptomics spots using a
-native R/C++ implementation of the default CytoSPACE spot-level
-workflow.
+Run CytoSPACE spatial assignment
 
 ## Usage
 
@@ -115,18 +113,16 @@ stored in `srt@tools[["CytoSPACE"]]`.
 ``` r
 data(visium_human_pancreas_sub)
 data(pancreas_sub)
-pancreas_human <- ConvertHomologs(
-  pancreas_sub,
-  species_from = "Mus_musculus",
-  species_to = "Homo_sapiens",
-  verbose = FALSE
+features_use <- intersect(
+  rownames(visium_human_pancreas_sub),
+  rownames(pancreas_sub)
 )
 spatial <- RunCytoSPACE(
   visium_human_pancreas_sub,
-  reference = pancreas_human,
+  reference = pancreas_sub,
   reference_label = "CellType",
-  mean_cell_numbers = 1,
-  verbose = FALSE
+  features = features_use,
+  mean_cell_numbers = 1
 )
 
 SpatialSpotPlot(

@@ -215,6 +215,20 @@
 
 ### Spatial Analysis
 
+- [`SeuratToScopGiotto()`](https://mengxu98.github.io/scop/reference/SeuratToScopGiotto.md)
+  [`CreateScopGiotto()`](https://mengxu98.github.io/scop/reference/SeuratToScopGiotto.md)
+  [`scop_giotto()`](https://mengxu98.github.io/scop/reference/SeuratToScopGiotto.md)
+  [`RunGiottoWorkflow()`](https://mengxu98.github.io/scop/reference/SeuratToScopGiotto.md)
+  [`GiottoPreprocess()`](https://mengxu98.github.io/scop/reference/SeuratToScopGiotto.md)
+  [`GiottoReduce()`](https://mengxu98.github.io/scop/reference/SeuratToScopGiotto.md)
+  [`GiottoCluster()`](https://mengxu98.github.io/scop/reference/SeuratToScopGiotto.md)
+  [`GiottoSpatialNetwork()`](https://mengxu98.github.io/scop/reference/SeuratToScopGiotto.md)
+  [`GiottoSpatialGenes()`](https://mengxu98.github.io/scop/reference/SeuratToScopGiotto.md)
+  [`GiottoSpatialModules()`](https://mengxu98.github.io/scop/reference/SeuratToScopGiotto.md)
+  [`GiottoCellProximity()`](https://mengxu98.github.io/scop/reference/SeuratToScopGiotto.md)
+  [`GiottoHMRF()`](https://mengxu98.github.io/scop/reference/SeuratToScopGiotto.md)
+  [`AddGiottoToSeurat()`](https://mengxu98.github.io/scop/reference/SeuratToScopGiotto.md)
+  : scop-managed Giotto object workflow
 - [`RunBayesSpace()`](https://mengxu98.github.io/scop/reference/RunBayesSpace.md)
   : Run BayesSpace spatial clustering
 - [`RunCytoSPACE()`](https://mengxu98.github.io/scop/reference/RunCytoSPACE.md)
@@ -229,6 +243,13 @@
   : Run Giotto spatial co-expression modules
 - [`RunRCTD()`](https://mengxu98.github.io/scop/reference/RunRCTD.md) :
   Run RCTD spatial deconvolution
+- [`RunSPOTlight()`](https://mengxu98.github.io/scop/reference/RunSPOTlight.md)
+  : Run SPOTlight spatial deconvolution
+- [`RunSemlaSpatialNetwork()`](https://mengxu98.github.io/scop/reference/RunSemla.md)
+  [`RunSemlaLocalG()`](https://mengxu98.github.io/scop/reference/RunSemla.md)
+  [`RunSemlaRegionNeighbors()`](https://mengxu98.github.io/scop/reference/RunSemla.md)
+  [`RunSemlaRadialDistance()`](https://mengxu98.github.io/scop/reference/RunSemla.md)
+  : Run semla spatial analysis backends
 - [`RunSpatialEcoTyper()`](https://mengxu98.github.io/scop/reference/RunSpatialEcoTyper.md)
   : Run SpatialEcoTyper spatial ecotype analysis
 - [`RunSpatialGradientFeatures()`](https://mengxu98.github.io/scop/reference/RunSpatialGradientFeatures.md)

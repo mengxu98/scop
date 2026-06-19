@@ -9,9 +9,6 @@ plotting and is not modified.
 ``` r
 GiottoPlot(x, ...)
 
-# Default S3 method
-GiottoPlot(x, ...)
-
 # S3 method for class 'scop_giotto_cluster'
 GiottoPlot(
   x,
@@ -100,12 +97,12 @@ GiottoPlot(
 
 - srt:
 
-  Original `Seurat` object used to create the Giotto result. Required
+  Original \`Seurat\` object used to create the Giotto result. Required
   for spatial spot plots.
 
 - image:
 
-  Name of the Seurat spatial image. If `NULL`, the first image is used
+  Name of the Seurat spatial image. If \`NULL\`, the first image is used
   when available.
 
 - coord.cols:
@@ -154,11 +151,11 @@ GiottoPlot(
 
 - theme_args:
 
-  Additional arguments passed to `theme_use`.
+  Additional arguments passed to \`theme_use\`.
 
 - title, subtitle:
 
-  Plot title and subtitle. If `NULL`, sensible defaults are used.
+  Plot title and subtitle. If \`NULL\`, sensible defaults are used.
 
 - heatmap_palette:
 
@@ -166,18 +163,18 @@ GiottoPlot(
 
 - heatmap_palcolor:
 
-  Optional custom colors used to create `heatmap_palette`.
+  Optional custom colors used to create \`heatmap_palette\`.
 
 - plot_type:
 
-  Plot type for spatial gene results. `"ranking"` plots the
-  feature-level table; `"feature"` plots expression of one feature on
+  Plot type for spatial gene results. \`"ranking"\` plots the
+  feature-level table; \`"feature"\` plots expression of one feature on
   spatial coordinates.
 
 - feature:
 
-  Feature to draw for `plot_type = "feature"`. If `NULL`, the top Giotto
-  feature is used.
+  Feature to draw for \`plot_type = "feature"\`. If \`NULL\`, the top
+  Giotto feature is used.
 
 - top_n:
 
@@ -193,16 +190,9 @@ GiottoPlot(
 
 - features:
 
-  Features used for spatial co-expression heatmaps. If `NULL`, top
+  Features used for spatial co-expression heatmaps. If \`NULL\`, top
   features from the Giotto result are used.
 
 ## Value
 
 A `ggplot` object.
-
-## See also
-
-[`RunGiottoCluster()`](https://mengxu98.github.io/scop/reference/RunGiottoCluster.md),
-[`RunGiottoCellProximity()`](https://mengxu98.github.io/scop/reference/RunGiottoCellProximity.md),
-[`RunGiottoSpatialGenes()`](https://mengxu98.github.io/scop/reference/RunGiottoSpatialGenes.md),
-[`RunGiottoSpatialModules()`](https://mengxu98.github.io/scop/reference/RunGiottoSpatialModules.md)
