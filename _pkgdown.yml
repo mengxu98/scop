@@ -160,6 +160,17 @@ reference:
 
 - subtitle: "Spatial Analysis"
 - contents:
+  - SeuratToScopGiotto
+  - RunGiottoWorkflow
+  - GiottoPreprocess
+  - GiottoReduce
+  - GiottoCluster
+  - GiottoSpatialNetwork
+  - GiottoSpatialGenes
+  - GiottoSpatialModules
+  - GiottoCellProximity
+  - GiottoHMRF
+  - AddGiottoToSeurat
   - RunBayesSpace
   - RunCytoSPACE
   - RunGiottoCluster
