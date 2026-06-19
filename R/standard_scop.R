@@ -43,10 +43,10 @@
 #' @param reference_assay Assay used in `reference` for deconvolution.
 #' @param do_deconvolution Whether to run deconvolution in the spatial workflow.
 #' If `NULL`, deconvolution is run only when `reference` is provided.
-#' @param deconvolution_method Deconvolution method. Only `"RCTD"` is supported
-#' in this workflow.
+#' @param deconvolution_method Deconvolution method. One of `"RCTD"` or
+#' `"SPOTlight"`.
 #' @param deconvolution_params Named list of additional arguments passed to
-#' [RunRCTD()].
+#' [RunRCTD()] or [RunSPOTlight()].
 #' @param do_normalization Whether to perform normalization.
 #' If `NULL`, normalization will be performed if the specified assay does not have scaled data.
 #' @param normalization_method The method to use for normalization.
@@ -831,7 +831,7 @@ standard_spatial_scop <- function(
   )
 
   spatial_cluster_method <- match.arg(spatial_cluster_method, "BayesSpace")
-  deconvolution_method <- match.arg(deconvolution_method, "RCTD")
+  deconvolution_method <- match.arg(deconvolution_method, c("RCTD", "SPOTlight"))
   if (is.null(do_deconvolution)) {
     do_deconvolution <- !is.null(reference)
   }
@@ -952,30 +952,33 @@ standard_spatial_scop <- function(
           message_type = "error"
         )
       }
-      if (!identical(deconvolution_method, "RCTD")) {
-        log_message(
-          "{.arg deconvolution_method} only supports {.val RCTD}",
-          message_type = "error"
-        )
-      }
-      deconvolution_params <- standard_spatial_prepare_rctd_params(
-        deconvolution_params = deconvolution_params,
+      deconv_defaults <- list(
+        srt = srt,
+        reference = reference,
+        reference_label = reference_label,
+        assay = assay,
+        reference_assay = reference_assay,
         verbose = verbose
       )
-      rctd_args <- standard_scop_merge_args(
-        list(
-          srt = srt,
-          reference = reference,
-          reference_label = reference_label,
-          assay = assay,
-          reference_assay = reference_assay,
-          image = image,
-          coord.cols = coord.cols,
+      if (identical(deconvolution_method, "RCTD")) {
+        deconvolution_params <- standard_spatial_prepare_rctd_params(
+          deconvolution_params = deconvolution_params,
           verbose = verbose
-        ),
-        deconvolution_params
-      )
-      srt <- do.call(RunRCTD, rctd_args)
+        )
+        deconv_defaults$image <- image
+        deconv_defaults$coord.cols <- coord.cols
+        deconv_args <- standard_scop_merge_args(
+          deconv_defaults,
+          deconvolution_params
+        )
+        srt <- do.call(RunRCTD, deconv_args)
+      } else {
+        deconv_args <- standard_scop_merge_args(
+          deconv_defaults,
+          deconvolution_params
+        )
+        srt <- do.call(RunSPOTlight, deconv_args)
+      }
     }
   }
 
