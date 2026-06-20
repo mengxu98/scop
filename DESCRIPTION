@@ -51,6 +51,7 @@ Suggests:
     Biobase,
     BiocNeighbors,
     biomaRt,
+    CARDspa,
     CIBERSORT,
     cluster,
     Coralysis,
