@@ -6,6 +6,7 @@
 #'
 #' @md
 #' @inheritParams RunRCTD
+#' @param layer Assay layer used as STdeconvolve input.
 #' @param k Number of topics. If `NULL`, models are fit over `k_candidates` and
 #' `STdeconvolve::optimalModel()` is used to choose a model.
 #' @param k_candidates Candidate topic numbers used when `k = NULL`.
@@ -178,6 +179,7 @@ RunSTdeconvolve <- function(
 #' @param topics Topic names, topic numbers, or metadata columns to plot. If
 #' `NULL`, all `"<prefix>_prop_*"` columns are used for point plots.
 #' @param prefix Metadata prefix used by `RunSTdeconvolve()`.
+#' @param ... Additional arguments passed to `SpatialSpotPlot()`.
 #'
 #' @return A `ggplot`, `patchwork`, or list of `ggplot` objects.
 #' @export
@@ -251,9 +253,9 @@ stdeconvolve_run_backend <- function(
   }
 
   lda_input <- t(as.matrix(corpus_mat))
-  models <- do.call(fit_lda, c(list(pixels = lda_input, Ks = k), fit_lda_params))
+  models <- do.call(fit_lda, c(list(counts = lda_input, Ks = k), fit_lda_params))
   model <- do.call(optimal_model, list(models = models, opt = opt))
-  result <- do.call(get_beta_theta, c(list(deconvolved = model), get_beta_theta_params))
+  result <- do.call(get_beta_theta, c(list(lda = model), get_beta_theta_params))
   stdeconvolve_extract_result(
     result = result,
     model = model,

@@ -21,16 +21,17 @@ make_stdeconvolve_seurat <- function() {
 with_mock_stdeconvolve <- function(code) {
   clean_fun <- function(counts, ...) counts
   restrict_fun <- function(counts, ...) list(corpus = counts)
-  fit_fun <- function(pixels, Ks, ...) {
+  fit_fun <- function(counts, Ks, ...) {
     expect_equal(Ks, 2L)
-    expect_equal(rownames(pixels), paste0("Spot", 1:4))
-    list(k2 = list(pixels = pixels, Ks = Ks))
+    expect_equal(rownames(counts), paste0("Spot", 1:4))
+    list(k2 = list(counts = counts, Ks = Ks))
   }
   optimal_fun <- function(models, opt = "min", ...) {
     expect_identical(opt, "min")
     models[[1L]]
   }
-  beta_theta_fun <- function(deconvolved, ...) {
+  beta_theta_fun <- function(lda, ...) {
+    expect_named(lda, c("counts", "Ks"))
     list(
       theta = matrix(
         c(

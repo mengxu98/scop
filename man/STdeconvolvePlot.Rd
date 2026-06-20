@@ -26,6 +26,8 @@ STdeconvolvePlot(
 \code{group.by} is a single \code{"<prefix>_dominant_type"} column, matching
 \code{"<prefix>_prop_*"} or \code{"<prefix>_frac_*"} numeric metadata columns are used
 automatically.}
+
+\item{...}{Additional arguments passed to \code{SpatialSpotPlot()}.}
 }
 \value{
 A \code{ggplot}, \code{patchwork}, or list of \code{ggplot} objects.
