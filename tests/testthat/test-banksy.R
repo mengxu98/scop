@@ -20,10 +20,11 @@ make_banksy_seurat <- function() {
 }
 
 with_mock_banksy <- function(code) {
-  compute_fun <- function(se, assay_name, coord_names, M, k_geom, ...) {
+  compute_fun <- function(se, assay_name, coord_names, compute_agf, M, k_geom, ...) {
     expect_s4_class(se, "SpatialExperiment")
     expect_equal(assay_name, "scop_input")
     expect_equal(coord_names, c("x", "y"))
+    expect_false(compute_agf)
     expect_equal(M, 1)
     expect_equal(k_geom, 15)
     se
@@ -36,7 +37,8 @@ with_mock_banksy <- function(code) {
     expect_equal(seed, 1)
     se
   }
-  cluster_fun <- function(se, assay_name, M, lambda, use_agf, algo, k_neighbors, resolution, group, seed, ...) {
+  cluster_fun <- function(se, assay_name, M, lambda, use_agf, npcs, algo, k_neighbors, resolution, group, seed, ...) {
+    expect_equal(npcs, 20)
     expect_equal(algo, "leiden")
     expect_equal(k_neighbors, 50)
     expect_equal(resolution, 0.6)

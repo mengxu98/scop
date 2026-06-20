@@ -31,7 +31,10 @@
 #' @param cluster_source Optional BANKSY `colData` column to copy. If `NULL`,
 #' the first cluster name reported by `Banksy::clusterNames()` is used when
 #' available.
+#' @param cluster_colname Metadata column used for BANKSY clusters.
 #' @param tool_name Name used to store detailed results in `srt@tools`.
+#' @param store_results Whether to store detailed BANKSY results in
+#' `srt@tools`.
 #'
 #' @return A `Seurat` object with BANKSY clusters in metadata. When
 #' `store_results = TRUE`, detailed results are stored in
@@ -242,6 +245,7 @@ banksy_run_backend <- function(
     list(
       assay_name = assay_name,
       coord_names = c("x", "y"),
+      compute_agf = use_agf,
       M = M,
       k_geom = k_geom
     ),
@@ -269,6 +273,7 @@ banksy_run_backend <- function(
       M = M,
       lambda = lambda,
       use_agf = use_agf,
+      npcs = npcs,
       algo = algo,
       k_neighbors = k_neighbors,
       resolution = resolution,
