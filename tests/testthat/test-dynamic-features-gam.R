@@ -1,4 +1,7 @@
 test_that("dynamic_features_gam preserves failed feature slots", {
+  if (identical(Sys.info()[["sysname"]], "Darwin") && getRversion() >= "4.6.0") {
+    skip("mgcv can segfault while loading on macOS ARM with R >= 4.6")
+  }
   skip_if_not_installed("mgcv")
 
   cells <- paste0("cell", seq_len(30))
