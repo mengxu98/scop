@@ -203,14 +203,20 @@ cnv_plot_heatmap <- function(
     if (!is.factor(group_values)) {
       group_values <- factor(as.character(group_values), levels = unique(as.character(group_values)))
     }
+    group_order <- order(group_values, na.last = TRUE)
+    cells <- cells[group_order]
+    mat <- mat[, cells, drop = FALSE]
+    group_values <- group_values[group_order]
     top_annotation <- ComplexHeatmap::HeatmapAnnotation(
       group = group_values,
-      col = list(group = palette_colors(group_values, palette = palette, palcolor = palcolor)),
+      col = list(group = cnv_discrete_colors(group_values, palette = palette, palcolor = palcolor)),
       show_annotation_name = TRUE
     )
   }
 
-  colors <- heatmap_palcolor %||% palette_colors(palette = heatmap_palette, n = 9)
+  mat[mat > 1] <- 1
+  mat[mat < -1] <- -1
+  colors <- heatmap_palcolor %||% c("#3B6FB6", "#9ECAE1", "#F7F7F7", "#F4A261", "#C43C39")
   col_fun <- circlize::colorRamp2(
     seq(-1, 1, length.out = length(colors)),
     colors
@@ -222,11 +228,18 @@ cnv_plot_heatmap <- function(
     column_title = title %||% paste0(method, " CNV"),
     top_annotation = top_annotation,
     row_split = row_split,
+    column_split = if (!is.null(group.by)) group_values else NULL,
     cluster_columns = cluster_columns,
     cluster_rows = cluster_rows,
     show_row_names = show_row_names,
     show_column_names = show_column_names,
     use_raster = use_raster,
+    border = TRUE,
+    heatmap_legend_param = list(
+      title = "CNV",
+      at = c(-1, 0, 1),
+      labels = c("Loss", "Neutral", "Gain")
+    ),
     ...
   )
 }
@@ -263,6 +276,7 @@ cnv_plot_dim <- function(
       ...
     )
   } else {
+    palcolor <- cnv_discrete_colors(value_data, palette = palette, palcolor = palcolor)
     CellDimPlot(
       srt = srt,
       group.by = value,
@@ -293,6 +307,11 @@ cnv_plot_spatial <- function(
   ...
 ) {
   value <- value %||% group.by %||% cnv_default_value_col(srt, method = method)
+  cnv_validate_metadata(srt, value, "value")
+  value_data <- srt@meta.data[[value]]
+  if (!is.numeric(value_data) && !is.integer(value_data)) {
+    palcolor <- cnv_discrete_colors(value_data, palette = palette, palcolor = palcolor)
+  }
   p <- SpatialSpotPlot(
     srt = srt,
     group.by = value,
@@ -343,15 +362,33 @@ cnv_plot_bar <- function(
   df$value <- as.character(df$value)
   df$value[is.na(df$value) | !nzchar(df$value)] <- "NA"
   df$group <- as.character(df$group)
-  colors <- palette_colors(unique(df$value), palette = palette, palcolor = palcolor)
-  ggplot2::ggplot(df, ggplot2::aes(x = .data$group, fill = .data$value)) +
-    ggplot2::geom_bar(position = position, ...) +
+  value_levels <- cnv_order_cnv_levels(unique(df$value))
+  group_levels <- unique(df$group)
+  df$value <- factor(df$value, levels = value_levels)
+  df$group <- factor(df$group, levels = group_levels)
+  summary_df <- as.data.frame(table(group = df$group, value = df$value), stringsAsFactors = FALSE)
+  summary_df$n <- as.numeric(summary_df$Freq)
+  summary_df$Freq <- NULL
+  totals <- tapply(summary_df$n, summary_df$group, sum)
+  summary_df$fraction <- summary_df$n / totals[as.character(summary_df$group)]
+  summary_df$y <- if (identical(position, "fill")) summary_df$fraction else summary_df$n
+  colors <- cnv_discrete_colors(summary_df$value, palette = palette, palcolor = palcolor)
+  ggplot2::ggplot(summary_df, ggplot2::aes(x = .data$group, y = .data$y, fill = .data$value)) +
+    ggplot2::geom_col(position = if (identical(position, "fill")) "stack" else position, width = 0.72, ...) +
     ggplot2::scale_fill_manual(values = colors, name = value) +
     ggplot2::labs(
       x = group.by,
       y = if (identical(position, "fill")) "Fraction" else "Cells",
       title = title %||% "CNV composition",
       subtitle = subtitle
+    ) +
+    ggplot2::scale_y_continuous(
+      labels = if (identical(position, "fill")) {
+        function(x) paste0(round(x * 100), "%")
+      } else {
+        ggplot2::waiver()
+      },
+      expand = ggplot2::expansion(mult = c(0, 0.05))
     ) +
     cnv_plot_theme(theme_use = theme_use, theme_args = theme_args)
 }
@@ -495,6 +532,47 @@ cnv_bin_order <- function(bin_info) {
   start <- suppressWarnings(as.numeric(bin_info$start))
   start[!is.finite(start)] <- seq_len(length(start))[!is.finite(start)]
   order(chr_rank, start, seq_along(chr_rank), na.last = TRUE)
+}
+
+cnv_discrete_colors <- function(values, palette = "Chinese", palcolor = NULL) {
+  values <- cnv_order_cnv_levels(unique(as.character(values)))
+  values <- values[!is.na(values)]
+  fallback <- palette_colors(values, palette = palette, palcolor = palcolor)
+  defaults <- c(
+    aneuploid = "#C44E52",
+    tumor = "#C44E52",
+    malignant = "#C44E52",
+    altered = "#C44E52",
+    gain = "#E76F51",
+    amplification = "#E76F51",
+    amp = "#E76F51",
+    diploid = "#4C72B0",
+    normal = "#4C72B0",
+    neutral = "#BDBDBD",
+    loss = "#3B6FB6",
+    deletion = "#3B6FB6",
+    del = "#3B6FB6",
+    `NA` = "#BDBDBD"
+  )
+  out <- fallback
+  keys <- tolower(values)
+  matched <- keys %in% names(defaults)
+  out[matched] <- defaults[keys[matched]]
+  stats::setNames(unname(out), values)
+}
+
+cnv_order_cnv_levels <- function(values) {
+  values <- as.character(values)
+  priority <- c(
+    "aneuploid", "tumor", "malignant", "altered",
+    "gain", "amplification", "amp",
+    "loss", "deletion", "del",
+    "diploid", "normal", "neutral", "NA"
+  )
+  keys <- tolower(values)
+  rank <- match(keys, tolower(priority))
+  rank[is.na(rank)] <- length(priority) + seq_len(sum(is.na(rank)))
+  values[order(rank, values)]
 }
 
 cnv_plot_theme <- function(theme_use = "theme_scop", theme_args = list()) {

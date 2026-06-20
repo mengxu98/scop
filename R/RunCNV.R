@@ -8,10 +8,8 @@
 #' @inheritParams standard_scop
 #' @inheritParams thisutils::log_message
 #' @param srt A `Seurat` object.
-#' @param method CNA/CNV backend. First-stage expression backends are
-#' `"copykat"`, `"fastCNV"`, `"scevan"`, and `"infercnv"`. `Numbat` and
-#' `CaSpER` are intentionally not exposed in this first interface because they
-#' require allele-aware inputs.
+#' @param method CNA/CNV backend. Supported backends are `"copykat"`,
+#' `"fastCNV"`, `"scevan"`, `"infercnv"`, `"numbat"`, and `"casper"`.
 #' @param layer Assay layer used as the expression matrix.
 #' @param group.by Optional metadata column forwarded to supported backends and
 #' stored as cell annotation.
@@ -23,6 +21,13 @@
 #' contain gene, chromosome, start, and end columns. If `NULL`, SCOP tries to
 #' resolve these columns from assay feature metadata.
 #' @param sample.by Optional sample metadata column.
+#' @param allele_counts Allele count table for `"numbat"`. This is forwarded
+#' to `numbat::run_numbat()` as `df_allele`.
+#' @param reference_counts Reference expression profile for `"numbat"`. This
+#' is forwarded to `numbat::run_numbat()` as `lambdas_ref`.
+#' @param loh B-allele frequency/LOH signal for `"casper"`.
+#' @param loh_name_mapping Optional CaSpER LOH-to-cell mapping table.
+#' @param cytoband Cytoband table for `"casper"`.
 #' @param output_dir Optional backend output directory.
 #' @param prefix Prefix for metadata columns.
 #' @param tool_name Name used for `srt@tools`.
@@ -68,12 +73,31 @@
 #'   gene_order = gene_order
 #' )
 #'
+#' # Numbat and CaSpER require allele-aware inputs from matched DNA/allele
+#' # preprocessing workflows.
+#' srt <- RunCNV(
+#'   srt,
+#'   method = "numbat",
+#'   allele_counts = df_allele,
+#'   reference_counts = lambdas_ref,
+#'   genome = "hg38"
+#' )
+#' srt <- RunCNV(
+#'   srt,
+#'   method = "casper",
+#'   reference.by = "celltype",
+#'   reference = "Normal",
+#'   gene_order = gene_order,
+#'   loh = baf_signal,
+#'   cytoband = cytoband_hg38
+#' )
+#'
 #' CNVPlot(srt, plot_type = "heatmap", group.by = "CNV_prediction")
 #' CNVPlot(srt, plot_type = "dim", value = "CNV_prediction")
 #' }
 RunCNV <- function(
   srt,
-  method = c("copykat", "fastCNV", "scevan", "infercnv"),
+  method = c("copykat", "fastCNV", "scevan", "infercnv", "numbat", "casper"),
   assay = NULL,
   layer = "counts",
   group.by = NULL,
@@ -82,6 +106,11 @@ RunCNV <- function(
   genome = c("hg38", "hg19", "mm10"),
   gene_order = NULL,
   sample.by = NULL,
+  allele_counts = NULL,
+  reference_counts = NULL,
+  loh = NULL,
+  loh_name_mapping = NULL,
+  cytoband = NULL,
   output_dir = NULL,
   prefix = "CNV",
   tool_name = "CNV",
@@ -116,7 +145,15 @@ RunCNV <- function(
     srt = srt,
     assay = assay,
     method = method,
-    required = identical(method, "infercnv")
+    required = method %in% c("infercnv", "casper")
+  )
+  cnv_validate_backend_inputs(
+    method = method,
+    allele_counts = allele_counts,
+    reference_counts = reference_counts,
+    loh = loh,
+    cytoband = cytoband,
+    gene_order = gene_order_tbl
   )
   counts <- cnv_get_counts(
     srt = srt,
@@ -152,6 +189,11 @@ RunCNV <- function(
     genome = genome,
     gene_order = gene_order_tbl,
     sample.by = sample.by,
+    allele_counts = allele_counts,
+    reference_counts = reference_counts,
+    loh = loh,
+    loh_name_mapping = loh_name_mapping,
+    cytoband = cytoband,
     output_dir = output_dir,
     verbose = verbose,
     ...
@@ -171,6 +213,10 @@ RunCNV <- function(
       reference = reference,
       genome = genome,
       sample.by = sample.by,
+      allele_counts = !is.null(allele_counts),
+      reference_counts = !is.null(reference_counts),
+      loh = !is.null(loh),
+      cytoband = !is.null(cytoband),
       output_dir = output_dir,
       prefix = prefix,
       tool_name = tool_name
@@ -193,8 +239,8 @@ RunCNV <- function(
     methods = methods_store,
     metadata = list(
       schema = "scop_cnv_v1",
-      supported_methods = c("copykat", "fastCNV", "scevan", "infercnv"),
-      allele_aware_methods_deferred = c("Numbat", "CaSpER")
+      supported_methods = c("copykat", "fastCNV", "scevan", "infercnv", "numbat", "casper"),
+      allele_aware_methods = c("numbat", "casper")
     )
   )
   srt <- Seurat::LogSeuratCommand(srt)
@@ -220,6 +266,11 @@ cnv_run_backend <- function(
   genome,
   gene_order,
   sample.by,
+  allele_counts,
+  reference_counts,
+  loh,
+  loh_name_mapping,
+  cytoband,
   output_dir,
   verbose,
   ...
@@ -261,6 +312,27 @@ cnv_run_backend <- function(
       reference = reference,
       reference_cells = reference_cells,
       gene_order = gene_order,
+      output_dir = output_dir,
+      verbose = verbose,
+      ...
+    ),
+    numbat = cnv_run_numbat(
+      counts = counts,
+      allele_counts = allele_counts,
+      reference_counts = reference_counts,
+      genome = genome,
+      output_dir = output_dir,
+      verbose = verbose,
+      ...
+    ),
+    casper = cnv_run_casper(
+      counts = counts,
+      reference_cells = reference_cells,
+      gene_order = gene_order,
+      loh = loh,
+      loh_name_mapping = loh_name_mapping,
+      cytoband = cytoband,
+      genome = genome,
       output_dir = output_dir,
       verbose = verbose,
       ...
@@ -461,6 +533,96 @@ cnv_run_infercnv <- function(
   cnv_extract_generic_result(result, method = "infercnv", cells = colnames(counts))
 }
 
+cnv_run_numbat <- function(
+  counts,
+  allele_counts,
+  reference_counts,
+  genome = "hg38",
+  output_dir = NULL,
+  verbose = TRUE,
+  ...
+) {
+  check_r("numbat", verbose = FALSE)
+  out_dir <- output_dir %||% tempfile("scop_numbat_")
+  if (!dir.exists(out_dir)) {
+    dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
+  }
+  run_fun <- get_namespace_fun("numbat", "run_numbat")
+  args <- utils::modifyList(
+    list(
+      count_mat = counts,
+      lambdas_ref = reference_counts,
+      df_allele = allele_counts,
+      genome = genome,
+      out_dir = out_dir,
+      ncores = 1,
+      plot = FALSE,
+      verbose = verbose
+    ),
+    list(...)
+  )
+  result <- do.call(run_fun, args[names(args) %in% names(formals(run_fun))])
+  cnv_extract_numbat(result = result, cells = colnames(counts), output_dir = out_dir)
+}
+
+cnv_run_casper <- function(
+  counts,
+  reference_cells,
+  gene_order,
+  loh,
+  loh_name_mapping = NULL,
+  cytoband,
+  genome = "hg38",
+  output_dir = NULL,
+  verbose = TRUE,
+  ...
+) {
+  check_r("CaSpER", verbose = FALSE)
+  create_fun <- get_namespace_fun("CaSpER", "CreateCasperObject")
+  run_fun <- get_namespace_fun("CaSpER", "runCaSpER")
+  event_fun <- get_namespace_fun("CaSpER", "extractLargeScaleEvents")
+  annotation <- cnv_gene_order_to_casper_annotation(gene_order)
+  casper_args <- utils::modifyList(
+    list(
+      raw.data = as.matrix(counts),
+      annotation = annotation,
+      control.sample.ids = reference_cells,
+      cytoband = cytoband,
+      loh.name.mapping = loh_name_mapping,
+      cnv.scale = 3,
+      loh.scale = 3,
+      method = "iterative",
+      loh = loh,
+      project = "scop_cnv",
+      matrix.type = "raw",
+      sequencing.type = "single-cell",
+      log.transformed = FALSE,
+      genomeVersion = if (identical(genome, "hg19")) "hg19" else "hg38"
+    ),
+    list(...)
+  )
+  object <- do.call(create_fun, casper_args[names(casper_args) %in% names(formals(create_fun))])
+  run_args <- utils::modifyList(
+    list(
+      object = object,
+      removeCentromere = TRUE,
+      cytoband = cytoband,
+      method = casper_args$method %||% "iterative"
+    ),
+    list(...)
+  )
+  final_objects <- do.call(run_fun, run_args[names(run_args) %in% names(formals(run_fun))])
+  event_args <- list(final.objects = final_objects)
+  final_mat <- tryCatch(
+    do.call(event_fun, event_args[names(event_args) %in% names(formals(event_fun))]),
+    error = function(e) NULL
+  )
+  cnv_extract_casper(
+    result = list(final_objects = final_objects, large_scale_events = final_mat, object = object),
+    cells = colnames(counts)
+  )
+}
+
 cnv_extract_copykat <- function(result) {
   cnv_matrix <- result$CNAmat %||% result$CNA %||% result$cnv_matrix
   if (is.null(cnv_matrix)) {
@@ -523,6 +685,85 @@ cnv_extract_generic_result <- function(result, method, cells) {
   mat <- as.matrix(mat)
   storage.mode(mat) <- "double"
   cell_info <- cnv_find_cell_info(result, cells = cells)
+  list(
+    cnv_matrix = mat,
+    bin_info = bin_info,
+    cell_info = cell_info,
+    raw = cnv_light_raw(result)
+  )
+}
+
+cnv_extract_numbat <- function(result, cells, output_dir = NULL) {
+  loaded <- cnv_read_numbat_output(output_dir = output_dir)
+  merged <- if (is.list(result)) {
+    utils::modifyList(loaded, result)
+  } else {
+    loaded
+  }
+  if (isS4(result) || inherits(result, "R6")) {
+    merged <- c(loaded, cnv_object_fields(result))
+  }
+
+  mat <- NULL
+  bin_info <- NULL
+  joint_post <- merged$joint_post %||% merged$joint.post
+  if (!is.null(joint_post)) {
+    from_post <- cnv_matrix_from_numbat_joint_post(joint_post, cells = cells)
+    mat <- from_post$matrix
+    bin_info <- from_post$bin_info
+  }
+  if (is.null(mat)) {
+    candidates <- cnv_find_matrix_candidates(merged, cells = cells)
+    mat <- candidates$matrix
+  }
+  if (is.null(mat)) {
+    log_message(
+      "{.pkg numbat} did not return a detectable CNV matrix. Check {.arg output_dir} for joint_post_*.tsv files.",
+      message_type = "error"
+    )
+  }
+  mat <- as.matrix(mat)
+  storage.mode(mat) <- "double"
+  cell_info <- cnv_cell_info_from_numbat_clone_post(merged$clone_post %||% merged$clone.post, cells = cells)
+  if (is.null(cell_info)) {
+    cell_info <- cnv_find_cell_info(merged, cells = cells)
+  }
+  list(
+    cnv_matrix = mat,
+    bin_info = bin_info %||% cnv_bin_info_from_matrix(mat),
+    cell_info = cell_info,
+    raw = cnv_light_raw(merged)
+  )
+}
+
+cnv_extract_casper <- function(result, cells) {
+  mat <- result$large_scale_events %||% result$finalChrMat %||% result$final_chr_mat
+  if (is.null(mat)) {
+    mat <- cnv_casper_matrix_from_objects(result$final_objects %||% result$objects %||% result)
+  }
+  if (is.null(mat)) {
+    candidates <- cnv_find_matrix_candidates(result, cells = cells)
+    mat <- candidates$matrix
+  }
+  if (is.null(mat)) {
+    log_message(
+      "{.pkg CaSpER} did not return a detectable CNV matrix",
+      message_type = "error"
+    )
+  }
+  mat <- as.matrix(mat)
+  storage.mode(mat) <- "double"
+  mat <- cnv_orient_matrix(mat, cells = cells)
+  bin_info <- cnv_casper_bin_info(mat)
+  score <- colMeans(abs(mat), na.rm = TRUE)
+  prediction <- ifelse(score > 0, "aneuploid", "diploid")
+  cell_info <- data.frame(
+    cell = colnames(mat),
+    score = as.numeric(score),
+    prediction = prediction,
+    stringsAsFactors = FALSE
+  )
+  rownames(cell_info) <- cell_info$cell
   list(
     cnv_matrix = mat,
     bin_info = bin_info,
@@ -637,6 +878,216 @@ cnv_combine_extracted_results <- function(parts, cells, method) {
   )
 }
 
+cnv_read_numbat_output <- function(output_dir = NULL) {
+  if (is.null(output_dir) || !dir.exists(output_dir)) {
+    return(list())
+  }
+  joint_file <- cnv_latest_file(output_dir, "^joint_post_.*\\.tsv(\\.gz)?$")
+  clone_file <- cnv_latest_file(output_dir, "^clone_post_.*\\.tsv(\\.gz)?$")
+  seg_file <- cnv_latest_file(output_dir, "^segs_consensus_.*\\.tsv(\\.gz)?$")
+  out <- list()
+  if (!is.null(joint_file)) {
+    out$joint_post <- cnv_read_table(joint_file)
+  }
+  if (!is.null(clone_file)) {
+    out$clone_post <- cnv_read_table(clone_file)
+  }
+  if (!is.null(seg_file)) {
+    out$segs_consensus <- cnv_read_table(seg_file)
+  }
+  files <- c(joint_post = joint_file, clone_post = clone_file, segs_consensus = seg_file)
+  out$files <- files[!vapply(files, is.null, logical(1))]
+  out
+}
+
+cnv_latest_file <- function(path, pattern) {
+  files <- list.files(path, pattern = pattern, full.names = TRUE)
+  if (length(files) == 0L) {
+    return(NULL)
+  }
+  files[order(file.info(files)$mtime, decreasing = TRUE)][[1L]]
+}
+
+cnv_read_table <- function(path) {
+  utils::read.delim(
+    path,
+    check.names = FALSE,
+    stringsAsFactors = FALSE
+  )
+}
+
+cnv_object_fields <- function(x) {
+  fields <- c(
+    "joint_post", "exp_post", "allele_post", "clone_post",
+    "segs_consensus", "gexp_roll_wide", "P"
+  )
+  out <- list()
+  for (field in fields) {
+    value <- tryCatch(x[[field]], error = function(e) NULL)
+    if (!is.null(value)) {
+      out[[field]] <- value
+    }
+  }
+  out
+}
+
+cnv_matrix_from_numbat_joint_post <- function(joint_post, cells) {
+  df <- as.data.frame(joint_post, check.names = FALSE)
+  cell_col <- cnv_first_col(df, c("cell", "barcode", "cell_id", "Cell"))
+  seg_col <- cnv_first_col(df, c("seg_label", "seg", "seg_cons", "component", "CNV"))
+  state_col <- cnv_first_col(df, c("cnv_state_post", "cnv_state", "state_post", "state", "cnv_states"))
+  if (is.null(cell_col) || is.null(seg_col)) {
+    return(list(matrix = NULL, bin_info = NULL))
+  }
+  df <- df[as.character(df[[cell_col]]) %in% cells, , drop = FALSE]
+  if (nrow(df) == 0L) {
+    return(list(matrix = NULL, bin_info = NULL))
+  }
+  score <- if (!is.null(state_col)) {
+    cnv_state_to_numeric(df[[state_col]])
+  } else {
+    rep(NA_real_, nrow(df))
+  }
+  prob_col <- cnv_first_col(df, c("p_cnv", "p_cnv_x", "p_cnv_y", "posterior", "prob", "p"))
+  if (!is.null(prob_col)) {
+    prob <- suppressWarnings(as.numeric(df[[prob_col]]))
+    score <- score * ifelse(is.finite(prob), prob, 1)
+  }
+  if (all(!is.finite(score))) {
+    score <- rep(0, nrow(df))
+  }
+  segs <- unique(as.character(df[[seg_col]]))
+  mat <- matrix(NA_real_, nrow = length(segs), ncol = length(cells), dimnames = list(segs, cells))
+  keys <- paste(as.character(df[[seg_col]]), as.character(df[[cell_col]]), sep = "\r")
+  values <- stats::aggregate(score, by = list(key = keys), FUN = mean, na.rm = TRUE)
+  split_key <- strsplit(values$key, "\r", fixed = TRUE)
+  for (i in seq_len(nrow(values))) {
+    mat[split_key[[i]][[1L]], split_key[[i]][[2L]]] <- values$x[[i]]
+  }
+  bin_info <- cnv_numbat_bin_info(df, seg_col = seg_col, segs = segs)
+  list(matrix = mat, bin_info = bin_info)
+}
+
+cnv_state_to_numeric <- function(x) {
+  state <- tolower(as.character(x))
+  out <- rep(0, length(state))
+  out[grepl("del|loss|bdel", state)] <- -1
+  out[grepl("amp|gain|bamp", state)] <- 1
+  out[grepl("loh|neu|normal|diploid", state)] <- 0
+  out[is.na(state) | !nzchar(state)] <- NA_real_
+  out
+}
+
+cnv_numbat_bin_info <- function(df, seg_col, segs) {
+  chr_col <- cnv_first_col(df, c("CHROM", "chrom", "chr", "chromosome"))
+  start_col <- cnv_first_col(df, c("seg_start", "start", "Start"))
+  end_col <- cnv_first_col(df, c("seg_end", "end", "End"))
+  out <- data.frame(
+    bin_id = segs,
+    chr = NA_character_,
+    start = NA_real_,
+    end = NA_real_,
+    gene = segs,
+    stringsAsFactors = FALSE
+  )
+  for (seg in segs) {
+    rows <- which(as.character(df[[seg_col]]) == seg)
+    if (length(rows) == 0L) {
+      next
+    }
+    i <- match(seg, out$bin_id)
+    if (!is.null(chr_col)) {
+      out$chr[[i]] <- as.character(df[[chr_col]][[rows[[1L]]]])
+    }
+    if (!is.null(start_col)) {
+      out$start[[i]] <- suppressWarnings(min(as.numeric(df[[start_col]][rows]), na.rm = TRUE))
+    }
+    if (!is.null(end_col)) {
+      out$end[[i]] <- suppressWarnings(max(as.numeric(df[[end_col]][rows]), na.rm = TRUE))
+    }
+  }
+  out$start[!is.finite(out$start)] <- NA_real_
+  out$end[!is.finite(out$end)] <- NA_real_
+  rownames(out) <- out$bin_id
+  out
+}
+
+cnv_cell_info_from_numbat_clone_post <- function(clone_post, cells) {
+  if (is.null(clone_post)) {
+    return(NULL)
+  }
+  df <- as.data.frame(clone_post, check.names = FALSE)
+  cell_col <- cnv_first_col(df, c("cell", "barcode", "cell_id", "Cell"))
+  if (is.null(cell_col) || !any(as.character(df[[cell_col]]) %in% cells)) {
+    return(NULL)
+  }
+  score_col <- cnv_first_col(df, c("p_cnv", "p_cnv_x", "p_cnv_y", "prob", "posterior"))
+  pred_col <- cnv_first_col(df, c("compartment_opt", "compartment", "prediction", "classification"))
+  cluster_col <- cnv_first_col(df, c("clone_opt", "clone", "GT_opt", "cluster", "subclone"))
+  out <- data.frame(cell = as.character(df[[cell_col]]), stringsAsFactors = FALSE)
+  if (!is.null(score_col)) {
+    out$score <- suppressWarnings(as.numeric(df[[score_col]]))
+  }
+  if (!is.null(pred_col)) {
+    out$prediction <- as.character(df[[pred_col]])
+  }
+  if (!is.null(cluster_col)) {
+    out$cluster <- as.character(df[[cluster_col]])
+  }
+  rownames(out) <- out$cell
+  out
+}
+
+cnv_casper_matrix_from_objects <- function(x) {
+  if (is.null(x)) {
+    return(NULL)
+  }
+  objects <- if (is.list(x) && !isS4(x)) x else list(x)
+  for (object in objects) {
+    if (isS4(object) && "large.scale.cnv.events" %in% methods::slotNames(object)) {
+      events <- methods::slot(object, "large.scale.cnv.events")
+      mat <- cnv_casper_events_to_matrix(events)
+      if (!is.null(mat)) {
+        return(mat)
+      }
+    }
+  }
+  NULL
+}
+
+cnv_casper_events_to_matrix <- function(events) {
+  if (is.null(events) || !is.data.frame(events) || nrow(events) == 0L) {
+    return(NULL)
+  }
+  arms <- as.vector(rbind(paste0(seq_len(22), "p"), paste0(seq_len(22), "q")))
+  mat <- matrix(0, nrow = nrow(events), ncol = length(arms), dimnames = list(rownames(events), arms))
+  amp_col <- cnv_first_col(events, c("LargeScaleAmp", "largeScaleAmp", "amp"))
+  del_col <- cnv_first_col(events, c("LargeScaleDel", "largeScaleDel", "del"))
+  for (i in seq_len(nrow(events))) {
+    if (!is.null(amp_col)) {
+      amp <- unlist(strsplit(as.character(events[[amp_col]][[i]]), "\\s+"))
+      mat[i, intersect(amp, arms)] <- 1
+    }
+    if (!is.null(del_col)) {
+      del <- unlist(strsplit(as.character(events[[del_col]][[i]]), "\\s+"))
+      mat[i, intersect(del, arms)] <- -1
+    }
+  }
+  mat
+}
+
+cnv_casper_bin_info <- function(mat) {
+  data.frame(
+    bin_id = rownames(mat),
+    chr = sub("([0-9XYM]+)[pq]$", "chr\\1", rownames(mat), ignore.case = TRUE),
+    start = NA_real_,
+    end = NA_real_,
+    gene = rownames(mat),
+    stringsAsFactors = FALSE,
+    row.names = rownames(mat)
+  )
+}
+
 cnv_standardize_result <- function(
   result,
   method,
@@ -700,12 +1151,14 @@ cnv_match_method <- function(method) {
     copykat = "copykat",
     fastcnv = "fastCNV",
     scevan = "scevan",
-    infercnv = "infercnv"
+    infercnv = "infercnv",
+    numbat = "numbat",
+    casper = "casper"
   )
   method_key <- tolower(method)
   if (!method_key %in% names(method_map)) {
     log_message(
-      "{.arg method} must be one of {.val copykat}, {.val fastCNV}, {.val scevan}, or {.val infercnv}",
+      "{.arg method} must be one of {.val copykat}, {.val fastCNV}, {.val scevan}, {.val infercnv}, {.val numbat}, or {.val casper}",
       message_type = "error"
     )
   }
@@ -768,7 +1221,7 @@ cnv_get_counts <- function(srt, assay, layer) {
 }
 
 cnv_reference_cells <- function(srt, method, reference.by, reference) {
-  if (method %in% c("infercnv", "fastCNV") && (is.null(reference.by) || is.null(reference))) {
+  if (method %in% c("infercnv", "fastCNV", "casper") && (is.null(reference.by) || is.null(reference))) {
     log_message(
       "{.arg reference.by} and {.arg reference} are required for {.arg method = {method}}",
       message_type = "error"
@@ -787,6 +1240,51 @@ cnv_reference_cells <- function(srt, method, reference.by, reference) {
   }
   attr(reference, "cells") <- cells
   cells
+}
+
+cnv_validate_backend_inputs <- function(
+  method,
+  allele_counts = NULL,
+  reference_counts = NULL,
+  loh = NULL,
+  cytoband = NULL,
+  gene_order = NULL
+) {
+  if (identical(method, "numbat")) {
+    if (is.null(allele_counts)) {
+      log_message(
+        "{.arg allele_counts} is required for {.arg method = 'numbat'}",
+        message_type = "error"
+      )
+    }
+    if (is.null(reference_counts)) {
+      log_message(
+        "{.arg reference_counts} is required for {.arg method = 'numbat'}",
+        message_type = "error"
+      )
+    }
+  }
+  if (identical(method, "casper")) {
+    if (is.null(gene_order) || nrow(gene_order) == 0L) {
+      log_message(
+        "{.arg gene_order} is required for {.arg method = 'casper'}",
+        message_type = "error"
+      )
+    }
+    if (is.null(loh)) {
+      log_message(
+        "{.arg loh} is required for {.arg method = 'casper'}",
+        message_type = "error"
+      )
+    }
+    if (is.null(cytoband)) {
+      log_message(
+        "{.arg cytoband} is required for {.arg method = 'casper'}",
+        message_type = "error"
+      )
+    }
+  }
+  invisible(TRUE)
 }
 
 cnv_fastcnv_sample_input <- function(srt, sample.by = NULL) {
@@ -890,6 +1388,20 @@ cnv_normalize_gene_order <- function(gene_order, required = TRUE) {
     )
   }
   out
+}
+
+cnv_gene_order_to_casper_annotation <- function(gene_order) {
+  annotation <- data.frame(
+    Gene = gene_order$gene,
+    Chr = sub("^chr", "", gene_order$chr, ignore.case = TRUE),
+    Start = gene_order$start,
+    End = gene_order$end,
+    Position = rowMeans(cbind(gene_order$start, gene_order$end), na.rm = TRUE),
+    cytoband = NA_character_,
+    stringsAsFactors = FALSE
+  )
+  rownames(annotation) <- annotation$Gene
+  annotation
 }
 
 cnv_orient_matrix <- function(mat, cells) {
