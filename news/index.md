@@ -23,6 +23,24 @@
     `Suggests` dependency and is detected at runtime so source installs
     do not require HDF5/C++17 unless users opt into BPCells-backed
     matrices.
+  - Added
+    [`RunCNV()`](https://mengxu98.github.io/scop/reference/RunCNV.md) as
+    a unified CNV workflow for Seurat objects, with runtime-optional
+    `copykat`, `infercnv`, `SCEVAN`, and `fastCNV` backends,
+    standardized result storage in `srt@tools[["CNV"]]`, metadata
+    writeback, and
+    [`CNVPlot()`](https://mengxu98.github.io/scop/reference/CNVPlot.md)
+    heatmap, embedding, spatial, composition-bar, and tree
+    visualizations.
+  - Added
+    [`RunESTIMATE()`](https://mengxu98.github.io/scop/reference/RunESTIMATE.md)
+    for tumor microenvironment scoring from Seurat,
+    `SummarizedExperiment`, or matrix inputs, including stromal, immune,
+    ESTIMATE, and tumor-purity scores, Seurat metadata writeback, and
+    [`EstimateScorePlot()`](https://mengxu98.github.io/scop/reference/EstimateScorePlot.md)
+    /
+    [`EstimateGenePlot()`](https://mengxu98.github.io/scop/reference/EstimateGenePlot.md)
+    visualization helpers.
   - [`RunMetabolism()`](https://mengxu98.github.io/scop/reference/RunMetabolism.md):
     Gene sets are now built via
     [`PrepareDB()`](https://mengxu98.github.io/scop/reference/PrepareDB.md)
@@ -51,6 +69,10 @@
     implementations, with Seurat/matrix methods and `scenic_flt_adj()`
     target filtering shared with
     [`RunSCENIC()`](https://mengxu98.github.io/scop/reference/RunSCENIC.md).
+  - Added
+    [`RunCisTarget()`](https://mengxu98.github.io/scop/reference/RunCisTarget.md)
+    for standalone cisTarget motif enrichment and regulon construction
+    from TF-target tables, with Python and R execution paths.
   - [`PrepareDB()`](https://mengxu98.github.io/scop/reference/PrepareDB.md):
     Added `data_dir` to parse locally downloaded single-file database
     sources (Broad MSigDB JSON, CSPA, Surfaceome, SPRomeDB, CORUM,
@@ -96,6 +118,16 @@
     remains available via `method = "intrinsic"` or can be combined with
     `method = "ensemble"`.
   - Added
+    [`srt_to_h5ad()`](https://mengxu98.github.io/scop/reference/srt_to_h5ad.md)
+    for writing Seurat objects to `.h5ad` files, complementing the
+    existing AnnData-to-Seurat conversion utilities for scanpy
+    interoperability.
+  - Added
+    [`RunSciBet()`](https://mengxu98.github.io/scop/reference/RunSciBet.md)
+    for native SciBet-style single-cell annotation from reference/query
+    Seurat objects or expression matrices, with prediction metadata
+    written back to Seurat.
+  - Added
     [`RunRareQ()`](https://mengxu98.github.io/scop/reference/RunRareQ.md)
     for RareQ rare-cell population detection from Seurat objects,
     including automatic neighbor construction through
@@ -116,6 +148,16 @@
     embeddings, including pseudotime interval filtering,
     branch-probability path fitting, optional loess smoothing,
     branch-selection coloring, and layer-only return support.
+  - Added
+    [`BranchStreamPlot()`](https://mengxu98.github.io/scop/reference/BranchStreamPlot.md)
+    for branch-aware pseudotime density ribbons from cell-state
+    annotations and lineage pseudotime columns.
+  - Added
+    [`RunMetaCell()`](https://mengxu98.github.io/scop/reference/RunMetaCell.md)
+    and
+    [`MetaCellPlot()`](https://mengxu98.github.io/scop/reference/MetaCellPlot.md)
+    for metacell construction, original-cell to metacell mapping,
+    metacell count output, and Seurat-compatible visualization.
   - Added
     [`RunmcRigor()`](https://mengxu98.github.io/scop/reference/RunmcRigor.md)
     for detecting dubious metacells or optimizing metacell partition
@@ -201,6 +243,17 @@
     [`scTenifoldNetPlot()`](https://mengxu98.github.io/scop/reference/scTenifoldNetPlot.md)
     for condition-level scTenifoldNet QQ, effect-size, network, and
     manifold views.
+  - Added
+    [`RunCIBERSORT()`](https://mengxu98.github.io/scop/reference/RunCIBERSORT.md)
+    and
+    [`ImmuneAbundancePlot()`](https://mengxu98.github.io/scop/reference/ImmuneAbundancePlot.md)
+    for immune cell abundance deconvolution and visualization from
+    bulk-like expression matrices, with C++ benchmarking support and
+    lazy optional backend handling.
+  - Added
+    [`NMFHeatmap()`](https://mengxu98.github.io/scop/reference/NMFHeatmap.md)
+    for cell- or feature-level NMF similarity heatmaps with optional
+    enrichment annotations and progress logging for large render jobs.
   - [`RunPAGA()`](https://mengxu98.github.io/scop/reference/RunPAGA.md)
     now supports a C++ backend for the standard PAGA connectivity graph
     and uses it by default; `backend = "python"` remains available for
@@ -237,6 +290,15 @@
     detailed results in `srt@tools[["CytoSPACE"]]`, and writes summary
     metadata columns with the requested prefix.
   - Added
+    [`RunRCTD()`](https://mengxu98.github.io/scop/reference/RunRCTD.md)
+    and
+    [`RunSPOTlight()`](https://mengxu98.github.io/scop/reference/RunSPOTlight.md)
+    spatial deconvolution wrappers for estimating spot-level cell-type
+    proportions from spatial Seurat objects and single-cell references,
+    with standardized metadata columns compatible with
+    [`SpatialSpotPlot()`](https://mengxu98.github.io/scop/reference/SpatialSpotPlot.md)
+    and `standard_scop(spatial_deconv_method = ...)`.
+  - Added
     [`RunSpatialEcoTyper()`](https://mengxu98.github.io/scop/reference/RunSpatialEcoTyper.md)
     as an optional SpatialEcoTyper wrapper for single-sample discovery,
     multi-sample conserved SE discovery, pretrained SE recovery, and SE
@@ -244,6 +306,33 @@
     and `srt@tools`, and
     [`SpatialEcoTyperSpatialPlot()`](https://mengxu98.github.io/scop/reference/SpatialEcoTyperSpatialPlot.md)/[`SpatialEcoTyperCompositionPlot()`](https://mengxu98.github.io/scop/reference/SpatialEcoTyperCompositionPlot.md)
     provide SCOP-styled visualization helpers.
+  - Added
+    [`RunSpatialGradientFeatures()`](https://mengxu98.github.io/scop/reference/RunSpatialGradientFeatures.md)
+    and
+    [`SpatialGradientPlot()`](https://mengxu98.github.io/scop/reference/SpatialGradientPlot.md)
+    for SPATA2-compatible spatial gradient feature screening, including
+    a native C++ screening path, trajectory or annotation-based
+    screening modes, model-fit summaries, and spatial/line/profile
+    visualizations.
+  - Added lightweight `semla` spatial wrappers:
+    [`RunSemlaSpatialNetwork()`](https://mengxu98.github.io/scop/reference/RunSemla.md),
+    [`RunSemlaLocalG()`](https://mengxu98.github.io/scop/reference/RunSemla.md),
+    [`RunSemlaRegionNeighbors()`](https://mengxu98.github.io/scop/reference/RunSemla.md),
+    and
+    [`RunSemlaRadialDistance()`](https://mengxu98.github.io/scop/reference/RunSemla.md).
+  - Added Giotto integration helpers for spatial workflows, including
+    standalone result wrappers
+    ([`RunGiottoCluster()`](https://mengxu98.github.io/scop/reference/RunGiottoCluster.md),
+    [`RunGiottoSpatialGenes()`](https://mengxu98.github.io/scop/reference/RunGiottoSpatialGenes.md),
+    [`RunGiottoSpatialModules()`](https://mengxu98.github.io/scop/reference/RunGiottoSpatialModules.md),
+    [`RunGiottoCellProximity()`](https://mengxu98.github.io/scop/reference/RunGiottoCellProximity.md)),
+    [`GiottoPlot()`](https://mengxu98.github.io/scop/reference/GiottoPlot.md)
+    result visualizations, and the
+    [`SeuratToScopGiotto()`](https://mengxu98.github.io/scop/reference/SeuratToScopGiotto.md)
+    /
+    [`RunGiottoWorkflow()`](https://mengxu98.github.io/scop/reference/SeuratToScopGiotto.md)
+    object workflow for keeping Giotto results separate from Seurat
+    until explicitly written back.
   - Added
     [`SpatialSpotPlot()`](https://mengxu98.github.io/scop/reference/SpatialSpotPlot.md)
     for spatial visualization, including examples that show both tissue
@@ -433,6 +522,8 @@
 - **docs**:
   - Updated the pkgdown reference grouping for spatial analysis, spatial
     visualization, data conversion, and composition-analysis functions.
+  - Updated the pkgdown reference index for CNV, ESTIMATE, SPOTlight,
+    semla, Giotto, spatial-gradient, and immune-abundance workflows.
   - Updated
     [`RunCytoSPACE()`](https://mengxu98.github.io/scop/reference/RunCytoSPACE.md)
     examples to use real bundled data, convert mouse reference data with
@@ -447,6 +538,8 @@
     ([GSE254829](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE254829))
     with spatial image data and CODA-derived annotations, for spatial
     analysis.
+  - Added a Xenium package-data import script for preparing curated
+    Xenium example resources outside the installed package payload.
 
 ## scop 0.8.9
 
