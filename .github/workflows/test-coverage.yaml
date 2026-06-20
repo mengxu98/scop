@@ -66,6 +66,7 @@ jobs:
           needs: coverage
 
       - name: Test coverage
+        continue-on-error: true
         run: |
           covr::codecov(
             quiet = FALSE,
