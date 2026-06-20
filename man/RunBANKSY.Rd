@@ -86,9 +86,12 @@ scaling. It is copied into the \code{SpatialExperiment} colData.}
 the first cluster name reported by \code{Banksy::clusterNames()} is used when
 available.}
 
-\item{cluster_colname}{Metadata column used for BayesSpace clusters.}
+\item{cluster_colname}{Metadata column used for BANKSY clusters.}
 
 \item{tool_name}{Name used to store detailed results in \code{srt@tools}.}
+
+\item{store_results}{Whether to store detailed BANKSY results in
+\code{srt@tools}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

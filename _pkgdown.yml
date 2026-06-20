@@ -172,6 +172,7 @@ reference:
   - GiottoHMRF
   - AddGiottoToSeurat
   - RunBayesSpace
+  - RunBANKSY
   - RunCytoSPACE
   - RunGiottoCluster
   - RunGiottoCellProximity
