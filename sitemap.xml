@@ -13,6 +13,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/CCCHeatmap.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CCCNetworkPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CCCStatPlot.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/CNVPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CSS_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CellCorHeatmap.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CellDensityPlot.html</loc></url>
@@ -44,6 +45,8 @@
 <url><loc>https://mengxu98.github.io/scop/reference/DynamicHeatmap.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/DynamicPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/EnrichmentPlot.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/EstimateGenePlot.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/EstimateScorePlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/FeatureCorPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/FeatureDimPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/FeatureDimPlot3D.html</loc></url>
@@ -94,6 +97,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunBayesSpace.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunCCC.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunCIBERSORT.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunCNV.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunCSSMap.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunCellChat.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunCellCycle.html</loc></url>
@@ -115,6 +119,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunDoubletCalling.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunDynamicEnrichment.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunDynamicFeatures.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunESTIMATE.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunEnrichment.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunFR.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunGENIE3.html</loc></url>

@@ -1431,6 +1431,8 @@ etc.
   : Run bulk or pseudobulk deconvolution
 - [`RunCIBERSORT()`](https://mengxu98.github.io/scop/reference/RunCIBERSORT.md)
   : Run CIBERSORT deconvolution
+- [`RunESTIMATE()`](https://mengxu98.github.io/scop/reference/RunESTIMATE.md)
+  : Run ESTIMATE tumor microenvironment scoring
 - [`RunMilo()`](https://mengxu98.github.io/scop/reference/RunMilo.md) :
   Milo differential abundance wrapper
 - [`RunPermutation()`](https://mengxu98.github.io/scop/reference/RunPermutation.md)
@@ -1448,10 +1450,21 @@ etc.
   : Plot deconvolution results
 - [`ImmuneAbundancePlot()`](https://mengxu98.github.io/scop/reference/ImmuneAbundancePlot.md)
   : Immune abundance plots
+- [`EstimateScorePlot()`](https://mengxu98.github.io/scop/reference/EstimateScorePlot.md)
+  : ESTIMATE score plots
+- [`EstimateGenePlot()`](https://mengxu98.github.io/scop/reference/EstimateGenePlot.md)
+  : Gene and ESTIMATE score relationship plots
 - [`GeneImmuneCorPlot()`](https://mengxu98.github.io/scop/reference/GeneImmuneCorPlot.md)
   : Gene-immune correlation butterfly plot
 - [`ProportionTestPlot()`](https://mengxu98.github.io/scop/reference/ProportionTestPlot.md)
   : Proportion Test Plot
+
+### Copy Number Variation Analysis
+
+- [`RunCNV()`](https://mengxu98.github.io/scop/reference/RunCNV.md) :
+  Run copy-number alteration inference
+- [`CNVPlot()`](https://mengxu98.github.io/scop/reference/CNVPlot.md) :
+  Plot SCOP CNV results
 
 ### Enrichment Analysis
 
