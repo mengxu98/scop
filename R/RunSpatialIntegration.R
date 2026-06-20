@@ -514,7 +514,7 @@ spatial_integration_run_bass <- function(input, params, verbose = TRUE) {
 }
 
 spatial_integration_run_spatialmnn <- function(input, params, verbose = TRUE) {
-  pkg <- if (requireNamespace("SpatialMNN", quietly = TRUE)) "SpatialMNN" else "spatialMNN"
+  pkg <- "spatialMNN"
   check_r(pkg, verbose = FALSE)
   run_fun <- get_namespace_fun(pkg, "spatialMNN")
   res <- spatial_integration_call(
@@ -820,7 +820,7 @@ spatial_integration_composition_plot <- function(
   tab <- as.data.frame(table(dat$sample, dat$domain), stringsAsFactors = FALSE)
   colnames(tab) <- c("sample", "domain", "count")
   tab <- tab[tab$count > 0, , drop = FALSE]
-  tab$fraction <- ave(tab$count, tab$sample, FUN = function(x) x / sum(x))
+  tab$fraction <- stats::ave(tab$count, tab$sample, FUN = function(x) x / sum(x))
   cols <- palette_colors(unique(as.character(tab$domain)), palette = palette, palcolor = palcolor)
   ggplot2::ggplot(tab, ggplot2::aes(x = .data$sample, y = .data$fraction, fill = .data$domain)) +
     ggplot2::geom_col(width = 0.75, color = "white", linewidth = 0.2) +
