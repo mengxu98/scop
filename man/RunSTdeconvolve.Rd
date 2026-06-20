@@ -31,6 +31,8 @@ RunSTdeconvolve(
 
 \item{assay}{Assay used in \code{srt}. If \code{NULL}, the default assay is used.}
 
+\item{layer}{Assay layer used as STdeconvolve input.}
+
 \item{features}{Features used for RCTD. If \code{NULL}, shared features are used.}
 
 \item{k}{Number of topics. If \code{NULL}, models are fit over \code{k_candidates} and
