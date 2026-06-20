@@ -47,6 +47,7 @@ Suggests:
     arrow,
     AUCell,
     BayesSpace,
+    BASS,
     batchelor,
     Biobase,
     BiocNeighbors,
@@ -93,6 +94,7 @@ Suggests:
     keras,
     purrr,
     plotly,
+    PRECAST,
     proxyC,
     qlcMatrix,
     RANN,
@@ -128,6 +130,7 @@ Suggests:
     SingleCellExperiment,
     SPOTlight,
     SpatialExperiment,
+    spatialMNN,
     spacexr,
     tensorflow,
     testthat (>= 3.0.0),
@@ -138,11 +141,14 @@ Suggests:
     yardstick
 Remotes:
     Moonerss/CIBERSORT,
+    feiyoung/PRECAST,
     Hy4m/linkET,
     mengxu98/thisplot,
     navinlabcode/copykat,
     immunogenomics/harmony,
     immunogenomics/symphony,
+    Pixel-Dream/spatialMNN,
+    zhengli09/BASS,
     spatial-research/semla
 LinkingTo:
     cli,
