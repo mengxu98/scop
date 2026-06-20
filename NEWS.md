@@ -4,10 +4,13 @@
   * `FeatureStatPlot()` and `ExpressionStatPlot()`: Added `auto_comparison` to automatically compare the group with the highest median statistic against all other groups, with explicit `ref_group` and `comparisons` still taking precedence.
   * Added `ClusterTreePlot()` for SCOP-styled visualization of Seurat multi-resolution clustering trees, including automatic `*_snn_res.*` metadata detection, prefix/resolution filtering, edge contribution statistics, and marker-expression overlays.
   * Added optional support for BPCells-backed Seurat v5 assay layers in `GetAssayData5()`, `CheckDataType()`, `RunSpotQC()`, `RunCellQC()`, and dimension-reduction variance filtering. BPCells remains a `Suggests` dependency and is detected at runtime so source installs do not require HDF5/C++17 unless users opt into BPCells-backed matrices.
+  * Added `RunCNV()` as a unified CNV workflow for Seurat objects, with runtime-optional `copykat`, `infercnv`, `SCEVAN`, and `fastCNV` backends, standardized result storage in `srt@tools[["CNV"]]`, metadata writeback, and `CNVPlot()` heatmap, embedding, spatial, composition-bar, and tree visualizations.
+  * Added `RunESTIMATE()` for tumor microenvironment scoring from Seurat, `SummarizedExperiment`, or matrix inputs, including stromal, immune, ESTIMATE, and tumor-purity scores, Seurat metadata writeback, and `EstimateScorePlot()` / `EstimateGenePlot()` visualization helpers.
   * `RunMetabolism()`: Gene sets are now built via `PrepareDB()` by default (`use_preparedb = TRUE`) for species-aware gene mapping through BioMart and KEGG/Reactome databases. The `species` parameter now automatically converts human gene symbols to the target species. scMetabolism-curated pathway lists are cross-referenced with PrepareDB TERM2GENE so mouse data receives mouse gene symbols directly. The previous GMT-only path is still available with `use_preparedb = FALSE`.
   * `RunMetabolism()`: `convert_species` now defaults to `TRUE`, enabling automatic `GeneConvert()` cross-species ortholog mapping when `species` differs from `"Homo_sapiens"`.
   * Added `RunSCENICPlus()` for the SCENIC+ multi-omics workflow from Seurat objects, with a direct Python launcher, parallelized processing, and result readback.
   * Added `RunGRNBoost2()` and `RunGENIE3()` as standalone GRN modules wrapping the Arboreto Python implementations, with Seurat/matrix methods and `scenic_flt_adj()` target filtering shared with `RunSCENIC()`.
+  * Added `RunCisTarget()` for standalone cisTarget motif enrichment and regulon construction from TF-target tables, with Python and R execution paths.
   * `PrepareDB()`: Added `data_dir` to parse locally downloaded single-file database sources (Broad MSigDB JSON, CSPA, Surfaceome, SPRomeDB, CORUM, JASPAR, ENCODE, TFLink, hTFtarget, TRRUST, CellTalk, CellChat) into the reusable `R.cache` database cache, avoiding repeated downloads.
   * `GeneSetScoring()`: Added C++ backends `zscore_dense()` and `plage_dense()` for Z-score and PLAGE gene-set scoring, plus PLAGE score orientation via z-score dot product for deterministic SVD signs. `ssgsea_rank_dense()` now accepts a `normalize` parameter. `aucell_auc_sparse()` gained a sparse `ctxcore` algorithm option.
   * `RunSCENIC()`: Added a `genome` parameter for automatic cisTarget reference selection while keeping `species` aligned with the package-wide Latin-name convention. Human references now support the default `"hg38"` v10 databases and `"hg19"` v9 databases, while the human TF list is cached with the genome-neutral name `allTFs_hgnc.txt`.
@@ -18,9 +21,13 @@
   * `GSVAPlot()`: Added `Database` column to enrichment results for consistent downstream filtering.
   * `RunMonocle2()`: Support custom root cells via `root_cells` parameter.
   * `RunDimsEstimate()`: Switched the default dimension-selection route to a scree-based ensemble of broken-stick, elbow, cumulative-variance, and marginal-gain criteria; the previous `intrinsicDimension` route remains available via `method = "intrinsic"` or can be combined with `method = "ensemble"`.
+  * Added `srt_to_h5ad()` for writing Seurat objects to `.h5ad` files, complementing the existing AnnData-to-Seurat conversion utilities for scanpy interoperability.
+  * Added `RunSciBet()` for native SciBet-style single-cell annotation from reference/query Seurat objects or expression matrices, with prediction metadata written back to Seurat.
   * Added `RunRareQ()` for RareQ rare-cell population detection from Seurat objects, including automatic neighbor construction through `DefaultReduction()`, metadata writeback, `CellDimPlot()` examples, and detailed result storage in `srt@tools[["RareQ"]]`.
   * Added `FerrisWheelPlot()` for up/down gene-count visualization from pathway enrichment results or pre-summarized count tables, with automatic `RunEnrichment()` result summarization, SCOP palette defaults, scalable outer donuts, title-cased pathway labels, and configurable text outlines.
   * Added `PalantirTrajectoryPlot()` for branch-aware Palantir trajectory visualization on Seurat embeddings, including pseudotime interval filtering, branch-probability path fitting, optional loess smoothing, branch-selection coloring, and layer-only return support.
+  * Added `BranchStreamPlot()` for branch-aware pseudotime density ribbons from cell-state annotations and lineage pseudotime columns.
+  * Added `RunMetaCell()` and `MetaCellPlot()` for metacell construction, original-cell to metacell mapping, metacell count output, and Seurat-compatible visualization.
   * Added `RunmcRigor()` for detecting dubious metacells or optimizing metacell partition granularity with runtime-optional `JSB-UCLA/mcRigor` installation, metadata writeback, and detailed result storage in `srt@tools[["mcRigor"]]`.
   * Added `RuntAge()` for tAge transcriptomic aging-clock prediction from Seurat pseudobulk, `ExpressionSet`, or matrix inputs, with runtime-optional `Gladyshev-Lab/tAge` preprocessing, R EN model caching from `mengxu98/datasets`, Python BR fallback support, and `tAgePlot()` visualization through `thisplot::StatPlot()`.
   * Added `RunscFEA()` for scFEA metabolic flux estimation from Seurat objects, with cached M168 resources from `mengxu98/datasets`, flux and balance assays, and `scFEAHeatmap()`, `scFEAVolcanoPlot()`, and `scFEABalanceBarPlot()` visualization helpers.
@@ -33,13 +40,19 @@
   * Added `RunScissor()` and `ScissorPlot()` for Scissor phenotype-associated cell selection from Seurat and bulk/SummarizedExperiment inputs, with an optimized backend, upstream-package backend, Seurat metadata/tool writeback, embedding plots, heatmaps, and status-composition summaries.
   * Added `RunscTenifoldNet()` for condition-level scTenifoldNet network comparison from matrices or Seurat groups using `cailab-tamu/scTenifoldNet`.
   * `RunscTenifoldKnk()` now uses the optimized path directly for QC, network-ensemble construction, tensor denoising, manifold alignment, and differential-regulation summaries; `scTenifoldKnkPlot()` includes QQ, effect-size, network, manifold, volcano, and upset result views. Added `scTenifoldNetPlot()` for condition-level scTenifoldNet QQ, effect-size, network, and manifold views.
+  * Added `RunCIBERSORT()` and `ImmuneAbundancePlot()` for immune cell abundance deconvolution and visualization from bulk-like expression matrices, with C++ benchmarking support and lazy optional backend handling.
+  * Added `NMFHeatmap()` for cell- or feature-level NMF similarity heatmaps with optional enrichment annotations and progress logging for large render jobs.
   * `RunPAGA()` now supports a C++ backend for the standard PAGA connectivity graph and uses it by default; `backend = "python"` remains available for RNA-velocity transitions, PAGA-initialized embeddings, plotting side effects, and DPT pseudotime.
   * `RunSCVELO()` now includes an optimized C++ backend for stochastic velocity embedding, compatible with `VelocityPlot()` and substantially faster than the equivalent R reference calculation. The Python backend remains the default for the full scVelo workflow.
   * `VelocityPlot()` raw, grid, and stream visualizations were validated with the `RunSCVELO(backend = "cpp")` velocity embeddings.
   * `PrepareEnv()` now supports `modules = "scenic"` as a standalone Python 3.10 environment (`scenic_env` by default) with SCENIC 0.12.1 and numpy 1.23.5, avoiding conflicts with the default `scop_env`.
   * Added `ConvertHomologs()` for homologous feature conversion in `Seurat`, `matrix`, and `Matrix` objects. The function uses `GeneConvert()` for arbitrary Ensembl/biomaRt-supported species pairs, collapses duplicated target homologs by summing expression values, preserves Seurat cell metadata and spatial images, and stores the mapping table in `@tools$ConvertHomologs`.
   * Added `RunCytoSPACE()`, an R/C++ implementation of the default CytoSPACE spot-level assignment workflow. The C++ backend uses spot-capacity graph construction and precomputed Pearson correlation matrices, stores detailed results in `srt@tools[["CytoSPACE"]]`, and writes summary metadata columns with the requested prefix.
+  * Added `RunRCTD()` and `RunSPOTlight()` spatial deconvolution wrappers for estimating spot-level cell-type proportions from spatial Seurat objects and single-cell references, with standardized metadata columns compatible with `SpatialSpotPlot()` and `standard_scop(spatial_deconv_method = ...)`.
   * Added `RunSpatialEcoTyper()` as an optional SpatialEcoTyper wrapper for single-sample discovery, multi-sample conserved SE discovery, pretrained SE recovery, and SE abundance deconvolution. Results are written back to Seurat metadata and `srt@tools`, and `SpatialEcoTyperSpatialPlot()`/`SpatialEcoTyperCompositionPlot()` provide SCOP-styled visualization helpers.
+  * Added `RunSpatialGradientFeatures()` and `SpatialGradientPlot()` for SPATA2-compatible spatial gradient feature screening, including a native C++ screening path, trajectory or annotation-based screening modes, model-fit summaries, and spatial/line/profile visualizations.
+  * Added lightweight `semla` spatial wrappers: `RunSemlaSpatialNetwork()`, `RunSemlaLocalG()`, `RunSemlaRegionNeighbors()`, and `RunSemlaRadialDistance()`.
+  * Added Giotto integration helpers for spatial workflows, including standalone result wrappers (`RunGiottoCluster()`, `RunGiottoSpatialGenes()`, `RunGiottoSpatialModules()`, `RunGiottoCellProximity()`), `GiottoPlot()` result visualizations, and the `SeuratToScopGiotto()` / `RunGiottoWorkflow()` object workflow for keeping Giotto results separate from Seurat until explicitly written back.
   * Added `SpatialSpotPlot()` for spatial visualization, including examples that show both tissue annotations and downstream CytoSPACE assignment results.
   * Added a shared C++ progress helper in `src/log_message.h` for long-running C++ loops. CytoSPACE assignment, scTenifold tensor decomposition, proportion permutation/bootstrap, and sample-level proportion bootstrap now report progress with the same timestamped format as `thisutils::log_message()`.
 
@@ -77,11 +90,13 @@
 
 * **docs**:
   * Updated the pkgdown reference grouping for spatial analysis, spatial visualization, data conversion, and composition-analysis functions.
+  * Updated the pkgdown reference index for CNV, ESTIMATE, SPOTlight, semla, Giotto, spatial-gradient, and immune-abundance workflows.
   * Updated `RunCytoSPACE()` examples to use real bundled data, convert mouse reference data with `ConvertHomologs()`, and visualize assignment results.
   * Refreshed examples to use bundled real package data and removed unnecessary `dontrun` wrappers from examples that do not require Python or external command-line tools.
 
 * **data**:
   * Added `visium_human_pancreas_sub`, a Visium human pancreas spatial example dataset ([GSE254829](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE254829)) with spatial image data and CODA-derived annotations, for spatial analysis.
+  * Added a Xenium package-data import script for preparing curated Xenium example resources outside the installed package payload.
 
 # scop 0.8.9
 
