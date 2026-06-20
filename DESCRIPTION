@@ -127,6 +127,7 @@ Suggests:
     SingleR,
     SingleCellExperiment,
     SPOTlight,
+    spicyR,
     SpatialExperiment,
     spacexr,
     tensorflow,
