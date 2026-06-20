@@ -100,12 +100,54 @@ test_that("RunCNV orients cell-by-bin backend matrices", {
 
 test_that("RunCNV validates reference and gene-order requirements before backend work", {
   srt <- make_cnv_seurat()
+  gene_order <- data.frame(
+    gene = rownames(srt),
+    chr = "chr1",
+    start = seq_len(nrow(srt)) * 100,
+    end = seq_len(nrow(srt)) * 100 + 99
+  )
   testthat::local_mocked_bindings(
     cnv_run_backend = function(...) stop("backend should not run")
   )
   expect_error(
-    RunCNV(srt, method = "numbat", verbose = FALSE),
+    RunCNV(srt, method = "missing_method", verbose = FALSE),
     "method"
+  )
+  expect_error(
+    RunCNV(srt, method = "numbat", verbose = FALSE),
+    "allele_counts"
+  )
+  expect_error(
+    RunCNV(
+      srt,
+      method = "numbat",
+      allele_counts = data.frame(cell = colnames(srt)),
+      verbose = FALSE
+    ),
+    "reference_counts"
+  )
+  expect_error(
+    RunCNV(
+      srt,
+      method = "casper",
+      reference.by = "celltype",
+      reference = "Normal",
+      gene_order = gene_order,
+      verbose = FALSE
+    ),
+    "loh"
+  )
+  expect_error(
+    RunCNV(
+      srt,
+      method = "casper",
+      reference.by = "celltype",
+      reference = "Normal",
+      gene_order = gene_order,
+      loh = list(S1 = matrix(0, nrow = 1, ncol = 1)),
+      verbose = FALSE
+    ),
+    "cytoband"
   )
   expect_error(
     RunCNV(srt, method = "fastCNV", verbose = FALSE),
@@ -135,6 +177,12 @@ test_that("RunCNV validates reference and gene-order requirements before backend
 
 test_that("RunCNV accepts common method aliases", {
   srt <- make_cnv_seurat()
+  gene_order <- data.frame(
+    gene = rownames(srt),
+    chr = "chr1",
+    start = seq_len(nrow(srt)) * 100,
+    end = seq_len(nrow(srt)) * 100 + 99
+  )
   seen <- character()
   testthat::local_mocked_bindings(
     cnv_run_backend = function(method, ...) {
@@ -145,8 +193,25 @@ test_that("RunCNV accepts common method aliases", {
 
   RunCNV(srt, method = "fastcnv", reference.by = "celltype", reference = "Normal", verbose = FALSE)
   RunCNV(srt, method = "SCEVAN", verbose = FALSE)
+  RunCNV(
+    srt,
+    method = "Numbat",
+    allele_counts = data.frame(cell = colnames(srt)),
+    reference_counts = matrix(1, nrow = nrow(srt), ncol = 1, dimnames = list(rownames(srt), "ref")),
+    verbose = FALSE
+  )
+  RunCNV(
+    srt,
+    method = "CaSpER",
+    reference.by = "celltype",
+    reference = "Normal",
+    gene_order = gene_order,
+    loh = list(S1 = matrix(0, nrow = 1, ncol = 1)),
+    cytoband = data.frame(chr = "chr1", start = 1, end = 100),
+    verbose = FALSE
+  )
 
-  expect_equal(seen, c("fastCNV", "scevan"))
+  expect_equal(seen, c("fastCNV", "scevan", "numbat", "casper"))
 })
 
 test_that("RunCNV keeps method-specific metadata across multiple methods", {
@@ -263,6 +328,59 @@ test_that("SCEVAN extraction reads CNA RData output and cell assignments", {
   expect_equal(extracted$bin_info$chr, c("chr1", "chr2"))
   expect_equal(extracted$cell_info$prediction, c("malignant", "normal", "malignant"))
   expect_equal(extracted$cell_info$cluster, c("S1", NA, "S2"))
+})
+
+test_that("Numbat extraction reads posterior and clone tables", {
+  cells <- paste0("Cell", 1:3)
+  out_dir <- tempfile("numbat_")
+  dir.create(out_dir)
+  joint_post <- data.frame(
+    cell = rep(cells, each = 2),
+    seg = rep(c("seg1", "seg2"), times = 3),
+    cnv_state_post = c("amp", "neu", "del", "neu", "amp", "del"),
+    p_cnv = c(0.8, 0, 0.6, 0, 0.4, 0.9),
+    CHROM = rep(c("1", "2"), times = 3),
+    seg_start = rep(c(1, 101), times = 3),
+    seg_end = rep(c(100, 200), times = 3)
+  )
+  clone_post <- data.frame(
+    cell = cells,
+    compartment_opt = c("tumor", "normal", "tumor"),
+    clone_opt = c("clone1", "normal", "clone2"),
+    p_cnv = c(0.8, 0.1, 0.9)
+  )
+  utils::write.table(joint_post, file.path(out_dir, "joint_post_2.tsv"), sep = "\t", quote = FALSE, row.names = FALSE)
+  utils::write.table(clone_post, file.path(out_dir, "clone_post_2.tsv"), sep = "\t", quote = FALSE, row.names = FALSE)
+
+  extracted <- cnv_extract_numbat(result = 0, cells = cells, output_dir = out_dir)
+
+  expect_equal(dim(extracted$cnv_matrix), c(2, 3))
+  expect_equal(extracted$cnv_matrix["seg1", "Cell1"], 0.8)
+  expect_equal(extracted$cnv_matrix["seg1", "Cell2"], -0.6)
+  expect_equal(extracted$bin_info$chr, c("1", "2"))
+  expect_equal(extracted$cell_info$prediction, c("tumor", "normal", "tumor"))
+  expect_equal(extracted$cell_info$cluster, c("clone1", "normal", "clone2"))
+})
+
+test_that("CaSpER extraction reads chromosome-arm event matrices", {
+  cells <- paste0("Cell", 1:3)
+  final_chr_mat <- matrix(
+    c(1, 0, -1, 1, 0, 1),
+    nrow = 3,
+    byrow = TRUE,
+    dimnames = list(cells, c("1p", "1q"))
+  )
+
+  extracted <- cnv_extract_casper(
+    result = list(large_scale_events = final_chr_mat),
+    cells = cells
+  )
+
+  expect_equal(dim(extracted$cnv_matrix), c(2, 3))
+  expect_equal(extracted$cnv_matrix["1p", "Cell1"], 1)
+  expect_equal(extracted$cnv_matrix["1p", "Cell2"], -1)
+  expect_equal(extracted$bin_info$chr, c("chr1", "chr1"))
+  expect_equal(extracted$cell_info$prediction, c("aneuploid", "aneuploid", "aneuploid"))
 })
 
 test_that("fastCNV rejects unsupported mouse genome before backend execution", {

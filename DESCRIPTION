@@ -156,6 +156,8 @@ Config/Needs/cnv:
     navinlabcode/copykat,
     must-bioinfo/fastCNV,
     AntonioDeFalco/SCEVAN,
-    broadinstitute/infercnv
+    broadinstitute/infercnv,
+    numbat,
+    akdess/CaSpER
 URL: https://mengxu98.github.io/scop/
 BugReports: https://github.com/mengxu98/scop/issues
