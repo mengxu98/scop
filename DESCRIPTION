@@ -48,6 +48,7 @@ Suggests:
     AUCell,
     BayesSpace,
     BASS,
+    Banksy,
     batchelor,
     Biobase,
     BiocNeighbors,
@@ -89,6 +90,7 @@ Suggests:
     MASS,
     mgcv,
     NMF,
+    nnSVG,
     openxlsx,
     pak,
     patchwork,
@@ -129,7 +131,9 @@ Suggests:
     symphony,
     SingleR,
     SingleCellExperiment,
+    SPARK,
     SPOTlight,
+    spicyR,
     STdeconvolve,
     SpatialExperiment,
     spatialMNN,
@@ -151,6 +155,7 @@ Remotes:
     immunogenomics/symphony,
     JEFworks-Lab/STdeconvolve,
     Pixel-Dream/spatialMNN,
+    xzhoulab/SPARK,
     zhengli09/BASS,
     spatial-research/semla
 LinkingTo:
