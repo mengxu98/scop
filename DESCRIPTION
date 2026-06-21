@@ -52,6 +52,7 @@ Suggests:
     Biobase,
     BiocNeighbors,
     biomaRt,
+    CARDspa,
     CIBERSORT,
     cluster,
     Coralysis,
@@ -128,6 +129,7 @@ Suggests:
     SingleR,
     SingleCellExperiment,
     SPOTlight,
+    STdeconvolve,
     SpatialExperiment,
     spacexr,
     tensorflow,
@@ -144,6 +146,7 @@ Remotes:
     navinlabcode/copykat,
     immunogenomics/harmony,
     immunogenomics/symphony,
+    JEFworks-Lab/STdeconvolve,
     spatial-research/semla
 LinkingTo:
     cli,
