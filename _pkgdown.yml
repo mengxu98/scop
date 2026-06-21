@@ -181,6 +181,8 @@ reference:
   - RunGiottoSpatialGenes
   - RunGiottoSpatialModules
   - RunRCTD
+  - RunCSIDE
+  - RunSpaNorm
   - RunSmoothClust
   - RunMERINGUE
   - RunSpotSweeper
