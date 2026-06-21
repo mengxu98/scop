@@ -173,6 +173,7 @@ reference:
   - AddGiottoToSeurat
   - RunBayesSpace
   - RunCytoSPACE
+  - RunSTdeconvolve
   - RunGiottoCluster
   - RunGiottoCellProximity
   - RunGiottoSpatialGenes
@@ -193,6 +194,7 @@ reference:
   - SpatialGradientPlot
   - SpatialIntegrationPlot
   - SpatialSpotPlot
+  - STdeconvolvePlot
 
 - subtitle: "Cell Type Annotation"
 - contents:
