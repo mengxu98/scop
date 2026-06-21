@@ -47,6 +47,7 @@ Suggests:
     arrow,
     AUCell,
     BayesSpace,
+    Banksy,
     batchelor,
     Biobase,
     BiocNeighbors,
