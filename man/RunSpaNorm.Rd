@@ -4,7 +4,19 @@
 \alias{RunSpaNorm}
 \title{Run SpaNorm spatial normalization}
 \usage{
-RunSpaNorm(srt, assay = NULL, layer = "counts", new_assay = "SpaNorm", ...)
+RunSpaNorm(
+  srt,
+  assay = NULL,
+  layer = "counts",
+  image = NULL,
+  coord.cols = c("col", "row"),
+  new_assay = "SpaNorm",
+  tool_name = "SpaNorm",
+  store_results = TRUE,
+  store_spe = FALSE,
+  verbose = TRUE,
+  ...
+)
 }
 \arguments{
 \item{srt}{A Seurat object.}
@@ -16,25 +28,54 @@ additional \code{ChromatinAssay} will be preprocessed sequentially.}
 
 \item{layer}{Assay layer used for expression values.}
 
-\item{new_assay}{Name planned for storing SpaNorm-normalized expression.}
+\item{image}{Name of the Seurat spatial image used by the spatial workflow.
+If \code{NULL}, the first image is used when present.}
 
-\item{...}{Reserved for arguments passed to the SpaNorm backend.}
+\item{coord.cols}{Metadata coordinate columns used by the spatial workflow
+when no image is available.}
+
+\item{new_assay}{Name of the assay used to store SpaNorm-normalized data.}
+
+\item{tool_name}{Name used to store detailed SpaNorm results in \code{srt@tools}.}
+
+\item{store_results}{Whether to store the full result in \code{srt@tools}.}
+
+\item{store_spe}{Whether to store the backend \code{SpatialExperiment} returned
+by \code{SpaNorm}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
+
+\item{...}{Additional arguments passed to \code{SpaNorm::SpaNorm()}, such as
+\code{sample.p}.}
 }
 \value{
-This placeholder currently stops with an informative message.
+A \code{Seurat} object with SpaNorm-normalized expression stored in
+\code{new_assay}. When \code{store_results = TRUE}, parameters, coordinates, features,
+cells, and optional backend output are stored in \code{srt@tools[[tool_name]]}.
 }
 \description{
-Reserved wrapper entry for issue #257. The implementation will be added in a
-follow-up PR after the package API is finalized.
+Normalize spatial transcriptomics counts with the optional Bioconductor
+\code{SpaNorm} backend and store the normalized expression in a new Seurat assay.
 }
 \examples{
 \dontrun{
 data(visium_human_pancreas_sub)
+
 spatial <- RunSpaNorm(
   visium_human_pancreas_sub,
   assay = "Spatial",
   layer = "counts",
-  new_assay = "SpaNorm"
+  coord.cols = c("col", "row"),
+  new_assay = "SpaNorm",
+  sample.p = 0.25
+)
+
+SpatialSpotPlot(
+  spatial,
+  features = rownames(spatial[["SpaNorm"]])[1:2],
+  assay = "SpaNorm",
+  layer = "data"
 )
 }
 }
