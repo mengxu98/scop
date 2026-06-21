@@ -174,6 +174,7 @@ reference:
   - RunBayesSpace
   - RunBANKSY
   - RunCytoSPACE
+  - RunSTdeconvolve
   - RunGiottoCluster
   - RunGiottoCellProximity
   - RunGiottoSpatialGenes
@@ -192,6 +193,7 @@ reference:
   - SpatialEcoTyperSpatialPlot
   - SpatialGradientPlot
   - SpatialSpotPlot
+  - STdeconvolvePlot
 
 - subtitle: "Cell Type Annotation"
 - contents:
