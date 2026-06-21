@@ -173,6 +173,7 @@ reference:
   - AddGiottoToSeurat
   - RunBayesSpace
   - RunBANKSY
+  - RunCARD
   - RunCytoSPACE
   - RunSTdeconvolve
   - RunGiottoCluster
@@ -180,10 +181,10 @@ reference:
   - RunGiottoSpatialGenes
   - RunGiottoSpatialModules
   - RunRCTD
-  # Reserved for issue #256: RunCSIDE
-  # Reserved for issue #257: RunSpaNorm
+  - RunCSIDE
+  - RunSpaNorm
   - RunSmoothClust
-  # Reserved for issue #259: RunMERINGUE
+  - RunMERINGUE
   - RunSpotSweeper
   - RunSPOTlight
   - RunSemlaSpatialNetwork
