@@ -101,15 +101,13 @@ RunRCTD(
 
 - create_rctd_params:
 
-  Additional parameters passed to
-  [`spacexr::createRctd()`](https://rdrr.io/pkg/spacexr/man/createRCTD.html)
-  or `spacexr::create.RCTD()`.
+  Additional parameters passed to `spacexr::createRctd()` or
+  [`spacexr::create.RCTD()`](https://rdrr.io/pkg/spacexr/man/create.RCTD.html).
 
 - run_rctd_params:
 
-  Additional parameters passed to
-  [`spacexr::runRctd()`](https://rdrr.io/pkg/spacexr/man/runRCTD.html)
-  or `spacexr::run.RCTD()`.
+  Additional parameters passed to `spacexr::runRctd()` or
+  [`spacexr::run.RCTD()`](https://rdrr.io/pkg/spacexr/man/run.RCTD.html).
 
 - verbose:
 

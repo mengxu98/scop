@@ -1,8 +1,9 @@
 # Run spatial variable feature detection
 
-Score genes by spot-level spatial autocorrelation using a lightweight
-coordinate KNN graph. Moran's I is ranked high-to-low, while Geary's C
-is converted to `1 - C` for the stored ranking score.
+Score genes by spot-level spatial autocorrelation. The native `"moran"`
+and `"geary"` methods use a lightweight coordinate KNN graph. `"SPARKX"`
+and `"nnSVG"` use optional external backends when their packages are
+installed.
 
 ## Usage
 
@@ -12,7 +13,7 @@ RunSpatialVariableFeatures(
   assay = NULL,
   layer = "data",
   features = NULL,
-  method = c("moran", "geary"),
+  method = c("moran", "geary", "SPARKX", "nnSVG"),
   image = NULL,
   coord.cols = c("x", "y"),
   k = 6,
@@ -22,7 +23,8 @@ RunSpatialVariableFeatures(
   set_variable_features = TRUE,
   store_results = TRUE,
   verbose = TRUE,
-  seed = 11
+  seed = 11,
+  ...
 )
 ```
 
@@ -50,7 +52,7 @@ RunSpatialVariableFeatures(
 
 - method:
 
-  Spatial autocorrelation statistic.
+  Spatial variable feature detection method.
 
 - image:
 
@@ -98,6 +100,10 @@ RunSpatialVariableFeatures(
 
   Random seed used for permutation tests.
 
+- ...:
+
+  Additional arguments passed to external backends.
+
 ## Value
 
 A `Seurat` object with spatial variable feature results stored in
@@ -130,8 +136,5 @@ spatial <- RunSpatialVariableFeatures(
   assay = "Spatial",
   nfeatures = 50
 )
-SpatialSpotPlot(
-  spatial,
-  features = spatial@misc[["SpatialVariableFeatures"]][1:2]
-)
+SpatialVariableFeaturePlot(spatial, plot_type = "combined", nfeatures = 2)
 ```
