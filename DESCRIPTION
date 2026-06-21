@@ -117,6 +117,7 @@ Suggests:
     testthat,
     simplifyEnrichment,
     slingshot,
+    smoothclust,
     scattermore,
     scran,
     scuttle,
