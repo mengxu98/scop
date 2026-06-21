@@ -231,6 +231,10 @@
   : scop-managed Giotto object workflow
 - [`RunBayesSpace()`](https://mengxu98.github.io/scop/reference/RunBayesSpace.md)
   : Run BayesSpace spatial clustering
+- [`RunBANKSY()`](https://mengxu98.github.io/scop/reference/RunBANKSY.md)
+  : Run BANKSY spatial clustering
+- [`RunCARD()`](https://mengxu98.github.io/scop/reference/RunCARD.md) :
+  Run CARD spatial deconvolution
 - [`RunCytoSPACE()`](https://mengxu98.github.io/scop/reference/RunCytoSPACE.md)
   : Run CytoSPACE spatial assignment
 - [`RunSTdeconvolve()`](https://mengxu98.github.io/scop/reference/RunSTdeconvolve.md)
@@ -245,6 +249,16 @@
   : Run Giotto spatial co-expression modules
 - [`RunRCTD()`](https://mengxu98.github.io/scop/reference/RunRCTD.md) :
   Run RCTD spatial deconvolution
+- [`RunCSIDE()`](https://mengxu98.github.io/scop/reference/RunCSIDE.md)
+  : Run C-SIDE spatial differential expression
+- [`RunSpaNorm()`](https://mengxu98.github.io/scop/reference/RunSpaNorm.md)
+  : Run SpaNorm spatial normalization
+- [`RunSmoothClust()`](https://mengxu98.github.io/scop/reference/RunSmoothClust.md)
+  : Run smoothclust spatial domain clustering
+- [`RunMERINGUE()`](https://mengxu98.github.io/scop/reference/RunMERINGUE.md)
+  : Run MERINGUE spatial autocorrelation analysis
+- [`RunSpotSweeper()`](https://mengxu98.github.io/scop/reference/RunSpotSweeper.md)
+  : Run SpotSweeper spatial quality control
 - [`RunSPOTlight()`](https://mengxu98.github.io/scop/reference/RunSPOTlight.md)
   : Run SPOTlight spatial deconvolution
 - [`RunSemlaSpatialNetwork()`](https://mengxu98.github.io/scop/reference/RunSemla.md)
@@ -256,6 +270,10 @@
   : Run SpatialEcoTyper spatial ecotype analysis
 - [`RunSpatialGradientFeatures()`](https://mengxu98.github.io/scop/reference/RunSpatialGradientFeatures.md)
   : Run spatial gradient feature screening
+- [`RunSpatialIntegration()`](https://mengxu98.github.io/scop/reference/RunSpatialIntegration.md)
+  : Run multi-sample spatial integration
+- [`RunSpatialNeighborhood()`](https://mengxu98.github.io/scop/reference/RunSpatialNeighborhood.md)
+  : Run spatial neighborhood statistics
 - [`RunSpatialVariableFeatures()`](https://mengxu98.github.io/scop/reference/RunSpatialVariableFeatures.md)
   : Run spatial variable feature detection
 
@@ -269,8 +287,14 @@
   : SpatialEcoTyper spatial plot
 - [`SpatialGradientPlot()`](https://mengxu98.github.io/scop/reference/SpatialGradientPlot.md)
   : Plot spatial gradient screening results
+- [`SpatialIntegrationPlot()`](https://mengxu98.github.io/scop/reference/SpatialIntegrationPlot.md)
+  : Plot spatial integration results
+- [`SpatialNeighborhoodPlot()`](https://mengxu98.github.io/scop/reference/SpatialNeighborhoodPlot.md)
+  : Spatial neighborhood plot
 - [`SpatialSpotPlot()`](https://mengxu98.github.io/scop/reference/SpatialSpotPlot.md)
   : Spatial spot plot
+- [`SpatialVariableFeaturePlot()`](https://mengxu98.github.io/scop/reference/SpatialVariableFeaturePlot.md)
+  : Plot spatial variable feature results
 - [`STdeconvolvePlot()`](https://mengxu98.github.io/scop/reference/STdeconvolvePlot.md)
   : Plot STdeconvolve topic proportions
 
