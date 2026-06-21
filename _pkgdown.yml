@@ -180,6 +180,11 @@ reference:
   - RunGiottoSpatialGenes
   - RunGiottoSpatialModules
   - RunRCTD
+  # Reserved for issue #256: RunCSIDE
+  # Reserved for issue #257: RunSpaNorm
+  - RunSmoothClust
+  # Reserved for issue #259: RunMERINGUE
+  # Reserved for issue #260: RunSpotSweeper
   - RunSPOTlight
   - RunSemlaSpatialNetwork
   - RunSpatialEcoTyper
