@@ -184,7 +184,7 @@ reference:
   # Reserved for issue #257: RunSpaNorm
   - RunSmoothClust
   # Reserved for issue #259: RunMERINGUE
-  # Reserved for issue #260: RunSpotSweeper
+  - RunSpotSweeper
   - RunSPOTlight
   - RunSemlaSpatialNetwork
   - RunSpatialEcoTyper
