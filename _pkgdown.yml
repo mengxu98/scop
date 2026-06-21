@@ -172,6 +172,7 @@ reference:
   - GiottoHMRF
   - AddGiottoToSeurat
   - RunBayesSpace
+  - RunBANKSY
   - RunCytoSPACE
   - RunSTdeconvolve
   - RunGiottoCluster
@@ -184,6 +185,7 @@ reference:
   - RunSpatialEcoTyper
   - RunSpatialGradientFeatures
   - RunSpatialIntegration
+  - RunSpatialNeighborhood
   - RunSpatialVariableFeatures
 
 - subtitle: "Spatial Visualization"
@@ -193,7 +195,9 @@ reference:
   - SpatialEcoTyperSpatialPlot
   - SpatialGradientPlot
   - SpatialIntegrationPlot
+  - SpatialNeighborhoodPlot
   - SpatialSpotPlot
+  - SpatialVariableFeaturePlot
   - STdeconvolvePlot
 
 - subtitle: "Cell Type Annotation"
