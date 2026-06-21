@@ -84,6 +84,7 @@ Suggests:
     irlba,
     limma,
     linkET,
+    MERINGUE,
     MatrixGenerics,
     metR,
     miloR,
@@ -136,6 +137,7 @@ Suggests:
     SPOTlight,
     SpotSweeper,
     spicyR,
+    SpaNorm,
     STdeconvolve,
     SpatialExperiment,
     spatialMNN,
@@ -149,8 +151,10 @@ Suggests:
     yardstick
 Remotes:
     Moonerss/CIBERSORT,
+    dmcable/spacexr,
     feiyoung/PRECAST,
     Hy4m/linkET,
+    JEFworks-Lab/MERINGUE,
     MicTott/SpotSweeper,
     mengxu98/thisplot,
     navinlabcode/copykat,
