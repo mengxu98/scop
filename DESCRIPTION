@@ -89,6 +89,7 @@ Suggests:
     MASS,
     mgcv,
     NMF,
+    nnSVG,
     openxlsx,
     pak,
     patchwork,
@@ -128,7 +129,9 @@ Suggests:
     symphony,
     SingleR,
     SingleCellExperiment,
+    SPARK,
     SPOTlight,
+    spicyR,
     STdeconvolve,
     SpatialExperiment,
     spacexr,
@@ -147,6 +150,7 @@ Remotes:
     immunogenomics/harmony,
     immunogenomics/symphony,
     JEFworks-Lab/STdeconvolve,
+    xzhoulab/SPARK,
     spatial-research/semla
 LinkingTo:
     cli,
