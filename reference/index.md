@@ -233,6 +233,8 @@
   : Run BayesSpace spatial clustering
 - [`RunCytoSPACE()`](https://mengxu98.github.io/scop/reference/RunCytoSPACE.md)
   : Run CytoSPACE spatial assignment
+- [`RunSTdeconvolve()`](https://mengxu98.github.io/scop/reference/RunSTdeconvolve.md)
+  : Run STdeconvolve reference-free spatial deconvolution
 - [`RunGiottoCluster()`](https://mengxu98.github.io/scop/reference/RunGiottoCluster.md)
   : Run Giotto nearest-network clustering
 - [`RunGiottoCellProximity()`](https://mengxu98.github.io/scop/reference/RunGiottoCellProximity.md)
@@ -269,6 +271,8 @@
   : Plot spatial gradient screening results
 - [`SpatialSpotPlot()`](https://mengxu98.github.io/scop/reference/SpatialSpotPlot.md)
   : Spatial spot plot
+- [`STdeconvolvePlot()`](https://mengxu98.github.io/scop/reference/STdeconvolvePlot.md)
+  : Plot STdeconvolve topic proportions
 
 ### Cell Type Annotation
 
