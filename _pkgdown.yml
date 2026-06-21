@@ -184,6 +184,8 @@ reference:
   - RunSemlaSpatialNetwork
   - RunSpatialEcoTyper
   - RunSpatialGradientFeatures
+  - RunSpatialIntegration
+  - RunSpatialNeighborhood
   - RunSpatialVariableFeatures
 
 - subtitle: "Spatial Visualization"
@@ -192,7 +194,10 @@ reference:
   - SpatialEcoTyperCompositionPlot
   - SpatialEcoTyperSpatialPlot
   - SpatialGradientPlot
+  - SpatialIntegrationPlot
+  - SpatialNeighborhoodPlot
   - SpatialSpotPlot
+  - SpatialVariableFeaturePlot
   - STdeconvolvePlot
 
 - subtitle: "Cell Type Annotation"
