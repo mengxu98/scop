@@ -2,6 +2,7 @@
 
 * **feat**:
   * `FeatureStatPlot()` and `ExpressionStatPlot()`: Added `auto_comparison` to automatically compare the group with the highest median statistic against all other groups, with explicit `ref_group` and `comparisons` still taking precedence.
+  * `GSVAPlot()` now supports `mode = "diff"` for true two-group pathway activity tests on sample-aggregated GSVA scores, while keeping the original score plotting behavior as the default. Non-heatmap score-mode p-value columns are documented as score-derived plotting placeholders, not statistical significance.
   * Added `ClusterTreePlot()` for SCOP-styled visualization of Seurat multi-resolution clustering trees, including automatic `*_snn_res.*` metadata detection, prefix/resolution filtering, edge contribution statistics, and marker-expression overlays.
   * Added optional support for BPCells-backed Seurat v5 assay layers in `GetAssayData5()`, `CheckDataType()`, `RunSpotQC()`, `RunCellQC()`, and dimension-reduction variance filtering. BPCells remains a `Suggests` dependency and is detected at runtime so source installs do not require HDF5/C++17 unless users opt into BPCells-backed matrices.
   * Added `RunCNV()` as a unified CNV workflow for Seurat objects, with runtime-optional `copykat`, `infercnv`, `SCEVAN`, and `fastCNV` backends, standardized result storage in `srt@tools[["CNV"]]`, metadata writeback, and `CNVPlot()` heatmap, embedding, spatial, composition-bar, and tree visualizations.
