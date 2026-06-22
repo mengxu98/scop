@@ -213,9 +213,6 @@ db_scds <- function(
 #' @md
 #' @inheritParams RunDoubletCalling
 #' @param ... Additional arguments to be passed to [scrublet.Scrublet](https://github.com/swolock/scrublet).
-#' @param scrublet_backend Backend used for Scrublet scoring. `"python"` uses
-#' the original `scrublet.Scrublet` implementation. `"r"` uses a native
-#' approximate doublet simulation, PCA, and KNN scoring workflow.
 #'
 #' @export
 #'
@@ -241,15 +238,12 @@ db_Scrublet <- function(
   assay = "RNA",
   db_rate = ncol(srt) / 1000 * 0.01,
   data_type = NULL,
-  scrublet_backend = c("python", "r"),
   ...,
   verbose = TRUE
 ) {
-  scrublet_backend <- match.arg(scrublet_backend)
-  log_message("Running {.pkg Scrublet} with {.arg scrublet_backend = {scrublet_backend}}", verbose = verbose)
-  if (identical(scrublet_backend, "python")) {
-    PrepareEnv(modules = "scrublet")
-  }
+  user_args <- list(...)
+  log_message("Running {.pkg Scrublet}", verbose = verbose)
+  PrepareEnv(modules = "scrublet")
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} is not a {.cls Seurat}",
@@ -263,40 +257,44 @@ db_Scrublet <- function(
       message_type = "error"
     )
   }
-  raw_counts <- Matrix::t(
-    as_matrix(
-      GetAssayData5(
-        object = srt,
-        assay = assay,
-        layer = "counts"
-      )
-    )
+  counts <- GetAssayData5(
+    object = srt,
+    assay = assay,
+    layer = "counts"
   )
-  if (identical(scrublet_backend, "python")) {
-    check_python("scrublet", verbose = FALSE)
-    scr <- reticulate::import("scrublet")
-    scrub <- scr$Scrublet(raw_counts, expected_doublet_rate = db_rate, ...)
-    res <- scrub$scrub_doublets()
-    doublet_scores <- res[[1]]
-    predicted_doublets <- res[[2]]
-    scrublet_threshold <- NA_real_
-    if (reticulate::py_has_attr(scrub, "threshold_")) {
-      scrublet_threshold <- suppressWarnings(
-        as.numeric(reticulate::py_to_r(scrub$threshold_))
-      )[1]
-    }
-    parameters <- list()
-  } else {
-    res <- scrublet_native_scores(
-      raw_counts = raw_counts,
-      expected_doublet_rate = db_rate,
-      ...
-    )
-    doublet_scores <- res[["doublet_scores"]]
-    predicted_doublets <- res[["predicted_doublets"]]
-    scrublet_threshold <- res[["threshold"]]
-    parameters <- res[["parameters"]]
+  raw_counts <- Matrix::t(as_matrix(counts))
+  check_python("scrublet", verbose = FALSE)
+  scr <- reticulate::import("scrublet")
+  scrub_doublets_args <- c(
+    "synthetic_doublet_umi_subsampling",
+    "use_approx_neighbors",
+    "distance_metric",
+    "get_doublet_neighbor_parents",
+    "min_counts",
+    "min_cells",
+    "min_gene_variability_pctl",
+    "log_transform",
+    "mean_center",
+    "normalize_variance",
+    "n_prin_comps",
+    "svd_solver"
+  )
+  score_args <- user_args[intersect(names(user_args), scrub_doublets_args)]
+  constructor_args <- user_args[setdiff(names(user_args), names(score_args))]
+  scrub <- do.call(
+    scr$Scrublet,
+    c(list(raw_counts, expected_doublet_rate = db_rate), constructor_args)
+  )
+  res <- do.call(scrub$scrub_doublets, score_args)
+  doublet_scores <- res[[1]]
+  predicted_doublets <- res[[2]]
+  scrublet_threshold <- NA_real_
+  if (reticulate::py_has_attr(scrub, "threshold_")) {
+    scrublet_threshold <- suppressWarnings(
+      as.numeric(reticulate::py_to_r(scrub$threshold_))
+    )[1]
   }
+  parameters <- list()
   detected_doublet_rate <- mean(predicted_doublets)
 
   srt[["db.Scrublet_score"]] <- doublet_scores
@@ -312,7 +310,6 @@ db_Scrublet <- function(
     }
   )
   srt@tools[["Scrublet"]] <- list(
-    backend = scrublet_backend,
     expected_doublet_rate = db_rate,
     threshold = scrublet_threshold,
     detected_doublet_rate = detected_doublet_rate,
@@ -324,219 +321,6 @@ db_Scrublet <- function(
     verbose = verbose
   )
   return(srt)
-}
-
-scrublet_native_scores <- function(
-  raw_counts,
-  expected_doublet_rate = 0.06,
-  stdev_doublet_rate = 0.02,
-  sim_doublet_ratio = 2,
-  n_neighbors = NULL,
-  n_prin_comps = 30,
-  min_counts = 3,
-  min_cells = 3,
-  min_gene_variability_pctl = 85,
-  random_state = 0,
-  ...
-) {
-  unsupported <- names(list(...))
-  unsupported <- unsupported[nzchar(unsupported)]
-  if (length(unsupported) > 0L) {
-    log_message(
-      "{.arg scrublet_backend = 'r'} ignores unsupported Scrublet parameters: {.val {unsupported}}",
-      message_type = "warning"
-    )
-  }
-  raw_counts <- Matrix::Matrix(raw_counts, sparse = TRUE)
-  storage.mode(raw_counts@x) <- "double"
-  n_cells <- nrow(raw_counts)
-  obs_total_counts <- Matrix::rowSums(raw_counts)
-  if (n_cells < 3L || ncol(raw_counts) < 2L) {
-    log_message(
-      "{.arg scrublet_backend = 'r'} requires at least 3 cells and 2 genes",
-      message_type = "error"
-    )
-  }
-
-  pre_norm <- normalize_total_counts(
-    raw_counts,
-    total_counts = obs_total_counts,
-    target_total = mean(obs_total_counts)
-  )
-  gene_counts <- Matrix::colSums(pre_norm >= min_counts)
-  gene_means <- Matrix::colMeans(pre_norm)
-  gene_vars <- Matrix::colMeans(pre_norm^2) - gene_means^2
-  variability <- gene_vars / pmax(gene_means, .Machine$double.eps)
-  variability[!is.finite(variability)] <- 0
-  cutoff <- stats::quantile(
-    variability[variability > 0],
-    probs = min(max(min_gene_variability_pctl / 100, 0), 1),
-    names = FALSE,
-    type = 7
-  )
-  if (!is.finite(cutoff)) {
-    cutoff <- 0
-  }
-  keep_gene <- gene_counts >= min_cells & variability >= cutoff
-  if (sum(keep_gene) < 2L) {
-    log_message(
-      "{.arg scrublet_backend = 'r'} retained fewer than 2 genes after filtering",
-      message_type = "error"
-    )
-  }
-  raw_counts <- raw_counts[, keep_gene, drop = FALSE]
-
-  old_seed <- if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
-    get(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
-  } else {
-    NULL
-  }
-  on.exit(
-    {
-      if (is.null(old_seed)) {
-        rm(".Random.seed", envir = .GlobalEnv)
-      } else {
-        assign(".Random.seed", old_seed, envir = .GlobalEnv)
-      }
-    },
-    add = TRUE
-  )
-  set.seed(as.integer(random_state))
-
-  n_sim <- max(1L, as.integer(ceiling(n_cells * sim_doublet_ratio)))
-  pair_idx <- matrix(
-    sample.int(n_cells, size = n_sim * 2L, replace = TRUE),
-    ncol = 2L
-  )
-  sim_counts <- raw_counts[pair_idx[, 1L], , drop = FALSE] +
-    raw_counts[pair_idx[, 2L], , drop = FALSE]
-  sim_total_counts <- obs_total_counts[pair_idx[, 1L]] +
-    obs_total_counts[pair_idx[, 2L]]
-
-  obs_norm <- normalize_total_counts(
-    raw_counts,
-    total_counts = obs_total_counts,
-    target_total = 1e6
-  )
-  sim_norm <- normalize_total_counts(
-    sim_counts,
-    total_counts = sim_total_counts,
-    target_total = 1e6
-  )
-  obs_means <- Matrix::colMeans(obs_norm)
-  obs_vars <- Matrix::colMeans(obs_norm^2) - obs_means^2
-  obs_sds <- sqrt(pmax(obs_vars, .Machine$double.eps))
-  obs_scaled <- sweep(as.matrix(obs_norm), 2L, obs_means, "-")
-  obs_scaled <- sweep(obs_scaled, 2L, obs_sds, "/")
-  sim_scaled <- sweep(as.matrix(sim_norm), 2L, obs_means, "-")
-  sim_scaled <- sweep(sim_scaled, 2L, obs_sds, "/")
-  obs_scaled[!is.finite(obs_scaled)] <- 0
-  sim_scaled[!is.finite(sim_scaled)] <- 0
-
-  n_pcs <- min(as.integer(n_prin_comps), nrow(obs_scaled) - 1L, ncol(obs_scaled))
-  if (n_pcs < 1L) {
-    log_message(
-      "{.arg scrublet_backend = 'r'} could not compute a valid PCA space",
-      message_type = "error"
-    )
-  }
-  pca_fit <- stats::prcomp(
-    obs_scaled,
-    center = TRUE,
-    scale. = FALSE,
-    rank. = n_pcs
-  )
-  obs_pca <- pca_fit[["x"]][, seq_len(n_pcs), drop = FALSE]
-  sim_pca <- stats::predict(pca_fit, newdata = sim_scaled)[, seq_len(n_pcs), drop = FALSE]
-  manifold <- rbind(obs_pca, sim_pca)
-
-  if (is.null(n_neighbors)) {
-    n_neighbors <- max(1L, as.integer(round(0.5 * sqrt(n_cells))))
-  }
-  n_neighbors <- as.integer(n_neighbors)
-  k_adj <- min(
-    as.integer(round(n_neighbors * (1 + n_sim / n_cells))),
-    nrow(manifold)
-  )
-  if (k_adj < 1L) {
-    log_message(
-      "{.arg scrublet_backend = 'r'} could not build a valid KNN graph",
-      message_type = "error"
-    )
-  }
-  knn <- run_cpp_knn(
-    reference = manifold,
-    query = manifold,
-    k = k_adj,
-    metric = "euclidean",
-    exclude_self = FALSE,
-    n_threads = 0L
-  )
-  doublet_mask <- knn[["idx"]] > n_cells
-  n_sim_neigh <- rowSums(doublet_mask)
-  rho <- expected_doublet_rate
-  sim_ratio <- n_sim / n_cells
-  q <- (n_sim_neigh + 1) / (k_adj + 2)
-  denom <- 1 - rho - q * (1 - rho - rho / sim_ratio)
-  doublet_scores_all <- q * rho / sim_ratio / denom
-  doublet_scores_all[!is.finite(doublet_scores_all)] <- 0
-  se_q <- sqrt(q * (1 - q) / (k_adj + 3))
-  doublet_errors_all <- q * rho / sim_ratio / denom^2 * sqrt(
-    (se_q / pmax(q, .Machine$double.eps) * (1 - rho))^2 +
-      (stdev_doublet_rate / pmax(rho, .Machine$double.eps) * (1 - q))^2
-  )
-  doublet_errors_all[!is.finite(doublet_errors_all)] <- NA_real_
-  doublet_scores <- doublet_scores_all[seq_len(n_cells)]
-  doublet_scores_sim <- doublet_scores_all[n_cells + seq_len(n_sim)]
-  threshold <- scrublet_native_threshold(doublet_scores_sim, expected_doublet_rate)
-  predicted_doublets <- doublet_scores > threshold
-  list(
-    doublet_scores = doublet_scores,
-    predicted_doublets = predicted_doublets,
-    threshold = threshold,
-    parameters = list(
-      method = "native_approx",
-      sim_doublet_ratio = sim_doublet_ratio,
-      n_neighbors = n_neighbors,
-      adjusted_neighbors = k_adj,
-      n_prin_comps = n_pcs,
-      min_counts = min_counts,
-      min_cells = min_cells,
-      min_gene_variability_pctl = min_gene_variability_pctl,
-      n_simulated_doublets = n_sim,
-      n_retained_genes = sum(keep_gene)
-    )
-  )
-}
-
-normalize_total_counts <- function(x, total_counts, target_total) {
-  Matrix::Diagonal(x = target_total / pmax(total_counts, 1)) %*% x
-}
-
-scrublet_native_threshold <- function(scores, expected_doublet_rate) {
-  scores <- scores[is.finite(scores)]
-  if (length(unique(scores)) < 3L) {
-    return(stats::quantile(
-      scores,
-      probs = min(max(1 - expected_doublet_rate, 0), 1),
-      names = FALSE,
-      type = 7
-    ))
-  }
-  dens <- stats::density(scores, n = 512)
-  peak_idx <- which(diff(sign(diff(dens$y))) < 0) + 1L
-  if (length(peak_idx) >= 2L) {
-    peak_idx <- peak_idx[order(dens$y[peak_idx], decreasing = TRUE)[seq_len(2L)]]
-    bounds <- sort(peak_idx)
-    valley <- bounds[1L] - 1L + which.min(dens$y[bounds[1L]:bounds[2L]])
-    return(dens$x[[valley]])
-  }
-  stats::quantile(
-    scores,
-    probs = min(max(1 - expected_doublet_rate, 0), 1),
-    names = FALSE,
-    type = 7
-  )
 }
 
 #' @title Run doublet-calling with DoubletDetection

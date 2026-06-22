@@ -1021,9 +1021,9 @@ metric_graph_connectivity <- function(
   embeddings,
   labels,
   k = 15,
-  backend = c("cpp", "r")
+  backend = "r"
 ) {
-  backend <- match.arg(backend)
+  backend <- match.arg(backend, "r")
 
   embeddings <- as.matrix(embeddings)
   storage.mode(embeddings) <- "double"
@@ -1047,16 +1047,9 @@ metric_graph_connectivity <- function(
     return(NA_real_)
   }
 
-  edges <- switch(
-    backend,
-    cpp = graph_conn_edges_cpp(
-      embeddings = embeddings,
-      k = k_use
-    ),
-    r = graph_conn_edges_r(
-      embeddings = embeddings,
-      k = k_use
-    )
+  edges <- graph_conn_edges_r(
+    embeddings = embeddings,
+    k = k_use
   )
 
   graph_conn_score(
@@ -1102,20 +1095,6 @@ graph_conn_edges_r <- function(embeddings, k) {
   )
 }
 
-graph_conn_edges_cpp <- function(embeddings, k) {
-  knn <- run_knn_topk(
-    reference = embeddings,
-    k = k,
-    metric = "euclidean",
-    backend = "cpp",
-    exclude_self = TRUE
-  )
-  graph_conn_edges_from_index(
-    index = knn[["idx"]],
-    k = k,
-    remove_self = FALSE
-  )
-}
 
 graph_conn_score <- function(edges, labels) {
   if (is.null(edges) || nrow(edges) == 0L) {

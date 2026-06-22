@@ -159,6 +159,7 @@ CheckDataList <- function(
   HVF_min_intersection = 1,
   HVF = NULL,
   vars_to_regress = NULL,
+  cores = 1L,
   verbose = TRUE,
   seed = 11
 ) {
@@ -436,16 +437,26 @@ CheckDataList <- function(
       ) {
         if (type == "RNA" && HVF_method != "scran") {
           log_message(
-            "Perform {.fn Seurat::FindVariableFeatures} on {.val {i}}/{.val {length(srt_list)}} of {.arg srt_list}...",
+            "Perform {.fn FindVariableFeatures} on {.val {i}}/{.val {length(srt_list)}} of {.arg srt_list}...",
             verbose = verbose
           )
-          srt_list[[i]] <- Seurat::FindVariableFeatures(
-            srt_list[[i]],
-            assay = assay,
-            nfeatures = nHVF,
-            selection.method = HVF_method,
-            verbose = FALSE
-          )
+          srt_list[[i]] <- if (identical(HVF_method, "vst")) {
+            FindVariableFeatures(
+              srt_list[[i]],
+              assay = assay,
+              nfeatures = nHVF,
+              selection.method = HVF_method,
+              verbose = FALSE
+            )
+          } else {
+            Seurat::FindVariableFeatures(
+              srt_list[[i]],
+              assay = assay,
+              nfeatures = nHVF,
+              selection.method = HVF_method,
+              verbose = FALSE
+            )
+          }
         }
         if (type == "RNA" && HVF_method == "scran") {
           log_message(
@@ -484,16 +495,16 @@ CheckDataList <- function(
           !"SCT" %in% SeuratObject::Assays(srt_list[[i]])
       ) {
         log_message(
-          "Perform {.fn Seurat::SCTransform} on {.val {i}}/{.val {length(srt_list)}} of {.arg srt_list}...",
+          "Perform {.fn SCTransform} on {.val {i}}/{.val {length(srt_list)}} of {.arg srt_list}...",
           verbose = verbose
         )
-        srt_list[[i]] <- Seurat::SCTransform(
+        srt_list[[i]] <- SCTransform(
           object = srt_list[[i]],
           variable.features.n = nHVF,
           vars.to.regress = vars_to_regress,
           assay = assay,
-          method = "glmGamPoi",
           new.assay.name = "SCT",
+          cores = cores,
           verbose = FALSE
         )
       } else {
@@ -551,13 +562,23 @@ CheckDataList <- function(
           )
           HVF <- hvf_res[["HVF"]]
         } else {
-          srt_merge <- Seurat::FindVariableFeatures(
-            srt_merge,
-            assay = SeuratObject::DefaultAssay(srt_merge),
-            nfeatures = nHVF,
-            selection.method = HVF_method,
-            verbose = FALSE
-          )
+          srt_merge <- if (identical(HVF_method, "vst")) {
+            FindVariableFeatures(
+              srt_merge,
+              assay = SeuratObject::DefaultAssay(srt_merge),
+              nfeatures = nHVF,
+              selection.method = HVF_method,
+              verbose = FALSE
+            )
+          } else {
+            Seurat::FindVariableFeatures(
+              srt_merge,
+              assay = SeuratObject::DefaultAssay(srt_merge),
+              nfeatures = nHVF,
+              selection.method = HVF_method,
+              verbose = FALSE
+            )
+          }
           HVF <- SeuratObject::VariableFeatures(srt_merge)
         }
       }
@@ -780,6 +801,7 @@ CheckDataMerge <- function(
   HVF_min_intersection = 1,
   HVF = NULL,
   vars_to_regress = NULL,
+  cores = 1L,
   verbose = TRUE,
   seed = 11
 ) {
@@ -832,6 +854,7 @@ CheckDataMerge <- function(
     HVF_min_intersection = HVF_min_intersection,
     HVF = HVF,
     vars_to_regress = vars_to_regress,
+    cores = cores,
     seed = seed
   )
   srt_list <- checked[["srt_list"]]

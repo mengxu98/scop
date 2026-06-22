@@ -65,7 +65,7 @@
 #' @param HVF A vector of feature names to use as highly variable features.
 #' If NULL, the function will use the highly variable features identified by the HVF method.
 #' @param do_scaling Whether to perform scaling.
-#' If `TRUE`, the function will force to scale the data using the [Seurat::ScaleData] function.
+#' If `TRUE`, the function will force scaling with the package ScaleData path.
 #' @param vars_to_regress A vector of feature names to use as regressors in the scaling step.
 #' If NULL, no regressors will be used.
 #' @param regression_model The regression model to use for scaling.
@@ -103,6 +103,8 @@
 #' @param cluster_resolution The resolution parameter to use for clustering.
 #' Larger values result in fewer clusters.
 #' Default is `0.6`.
+#' @param cores Number of CPU cores used by supported preprocessing steps.
+#' Default is `1`.
 #' @param seed Random seed for reproducibility.
 #' Default is `11`.
 #' @param ... Additional parameters to pass to the dimensionality reduction methods.
@@ -317,6 +319,7 @@ standard_scop <- function(
   neighbor_k = 20L,
   cluster_algorithm = "louvain",
   cluster_resolution = 0.6,
+  cores = 1L,
   verbose = TRUE,
   seed = 11,
   ...
@@ -533,6 +536,7 @@ standard_scop <- function(
     nHVF = nHVF,
     HVF = HVF,
     vars_to_regress = vars_to_regress,
+    cores = cores,
     seed = seed,
     verbose = verbose
   )
@@ -571,11 +575,11 @@ standard_scop <- function(
   ) {
     if (normalization_method != "SCT") {
       log_message(
-        "Perform {.fn Seurat::ScaleData}",
+        "Perform {.fn ScaleData}",
         verbose = verbose
       )
       srt <- suppressWarnings(
-        Seurat::ScaleData(
+        ScaleData(
           object = srt,
           assay = assay,
           features = HVF,
@@ -592,18 +596,36 @@ standard_scop <- function(
       "Perform {.pkg {lr}} linear dimension reduction",
       verbose = verbose
     )
-    srt <- RunDimsReduction(
-      srt,
-      prefix = prefix,
-      features = HVF,
-      assay = assay,
-      linear_reduction = lr,
-      linear_reduction_dims = linear_reduction_dims,
-      linear_reduction_params = linear_reduction_params,
-      force_linear_reduction = force_linear_reduction,
-      verbose = verbose,
-      seed = seed
-    )
+    if (
+      identical(lr, "pca") &&
+        isTRUE(force_linear_reduction) &&
+        length(linear_reduction_params) == 0L
+    ) {
+      srt <- RunPCA(
+        object = srt,
+        assay = assay,
+        features = HVF,
+        npcs = linear_reduction_dims,
+        reduction.name = paste0(prefix, lr),
+        reduction.key = paste0(prefix, "PC_"),
+        verbose = FALSE,
+        seed.use = seed
+      )
+      srt@misc[["Default_reduction"]] <- paste0(prefix, lr)
+    } else {
+      srt <- RunDimsReduction(
+        srt,
+        prefix = prefix,
+        features = HVF,
+        assay = assay,
+        linear_reduction = lr,
+        linear_reduction_dims = linear_reduction_dims,
+        linear_reduction_params = linear_reduction_params,
+        force_linear_reduction = force_linear_reduction,
+        verbose = verbose,
+        seed = seed
+      )
+    }
 
     if (is.null(linear_reduction_dims_use)) {
       linear_reduction_dims_use_current <- RunDimsEstimate(
@@ -621,7 +643,7 @@ standard_scop <- function(
 
     srt <- tryCatch(
       {
-        srt <- Seurat::FindNeighbors(
+        srt <- FindNeighbors(
           object = srt,
           reduction = paste0(prefix, lr),
           dims = linear_reduction_dims_use_current,
@@ -676,19 +698,44 @@ standard_scop <- function(
             verbose = verbose
           )
           for (n in nonlinear_reduction_dims) {
-            srt <- RunDimsReduction(
-              srt,
-              prefix = paste0(prefix, lr),
-              reduction_use = paste0(prefix, lr),
-              reduction_dims = linear_reduction_dims_use_current,
-              graph_use = paste0(prefix, lr, "_SNN"),
-              nonlinear_reduction = nr,
-              nonlinear_reduction_dims = n,
-              nonlinear_reduction_params = nonlinear_reduction_params,
-              force_nonlinear_reduction = force_nonlinear_reduction,
-              verbose = verbose,
-              seed = seed
-            )
+            if (
+              identical(nr, "umap") &&
+                isTRUE(force_nonlinear_reduction) &&
+                !is.null(linear_reduction_dims_use_current)
+            ) {
+              params <- c(
+                list(
+                  object = srt,
+                  reduction = paste0(prefix, lr),
+                  dims = linear_reduction_dims_use_current,
+                  n.components = n,
+                  reduction.name = paste0(prefix, lr, "UMAP", n, "D"),
+                  reduction.key = paste0(prefix, lr, "UMAP", n, "D_"),
+                  verbose = FALSE,
+                  seed.use = seed
+                ),
+                nonlinear_reduction_params
+              )
+              if (is.null(params[["cores"]])) {
+                params[["cores"]] <- cores
+              }
+              srt <- do.call(RunUMAP, params)
+              srt@misc[["Default_reduction"]] <- paste0(prefix, lr, "UMAP")
+            } else {
+              srt <- RunDimsReduction(
+                srt,
+                prefix = paste0(prefix, lr),
+                reduction_use = paste0(prefix, lr),
+                reduction_dims = linear_reduction_dims_use_current,
+                graph_use = paste0(prefix, lr, "_SNN"),
+                nonlinear_reduction = nr,
+                nonlinear_reduction_dims = n,
+                nonlinear_reduction_params = nonlinear_reduction_params,
+                force_nonlinear_reduction = force_nonlinear_reduction,
+                verbose = verbose,
+                seed = seed
+              )
+            }
           }
         }
         srt

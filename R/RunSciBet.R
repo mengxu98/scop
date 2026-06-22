@@ -19,6 +19,9 @@
 #' @param prefix Prefix for metadata columns.
 #' @param store_model Whether to store the SciBet core and probabilities in
 #' `srt_query@tools`.
+#' @param store_probabilities Whether to store the full cell-by-class
+#' probability matrix. The default keeps annotations and maximum probability
+#' scores while avoiding a large result object on full-scale data.
 #' @param return_object Whether to return the annotated `Seurat` query object.
 #' If `FALSE`, return a lightweight list with annotations, scores,
 #' probabilities, and model components without copying `srt_query`.
@@ -80,6 +83,7 @@ RunSciBet <- function(
   input_transform = c("auto", "none", "expm1"),
   prefix = "scibet",
   store_model = TRUE,
+  store_probabilities = FALSE,
   return_object = TRUE,
   verbose = TRUE
 ) {
@@ -228,8 +232,11 @@ RunSciBet <- function(
     colnames(design) <- levels(group)
     query_expr_run <- query_expr %*% design
     query_expr_run <- sweep(query_expr_run, 2, as.numeric(table(group)), "/")
-    if (inherits(query_expr_run, "sparseMatrix")) {
-      query_expr_run <- methods::as(query_expr_run, "dgCMatrix")
+    if (inherits(query_expr_run, "Matrix")) {
+      query_expr_run <- methods::as(query_expr_run, "CsparseMatrix")
+      if (!inherits(query_expr_run, "dgCMatrix")) {
+        query_expr_run <- methods::as(query_expr_run, "dgCMatrix")
+      }
       query_expr_run <- Matrix::drop0(query_expr_run)
     } else {
       query_expr_run <- as.matrix(query_expr_run)
@@ -248,7 +255,8 @@ RunSciBet <- function(
       labels = as.integer(ref_labels),
       n_labels = nlevels(ref_labels),
       n_top = as.integer(nfeatures),
-      additional_per_label = as.integer(additional_features_per_class)
+      additional_per_label = as.integer(additional_features_per_class),
+      return_probabilities = isTRUE(store_probabilities)
     )
   } else {
     scibet_fit_predict(
@@ -257,17 +265,61 @@ RunSciBet <- function(
       labels = as.integer(ref_labels),
       n_labels = nlevels(ref_labels),
       n_top = as.integer(nfeatures),
-      additional_per_label = as.integer(additional_features_per_class)
+      additional_per_label = as.integer(additional_features_per_class),
+      return_probabilities = isTRUE(store_probabilities)
     )
   }
 
   classes <- levels(ref_labels)
   prob_run <- result[["probabilities"]]
-  colnames(prob_run) <- classes
-  rownames(prob_run) <- query_run_index
+  if (!is.null(prob_run)) {
+    colnames(prob_run) <- classes
+    rownames(prob_run) <- query_run_index
+  }
   predicted_run <- classes[result[["predicted_index"]]]
   names(predicted_run) <- query_run_index
-  score_run <- apply(prob_run, 1, max)
+  score_run <- result[["max_probability"]]
+  if (is.null(score_run)) {
+    score_run <- apply(prob_run, 1, max)
+  }
+  names(score_run) <- query_run_index
+
+  parameters <- list(
+    query_assay = query_assay,
+    ref_assay = ref_assay,
+    query_layer = query_layer,
+    ref_layer = ref_layer,
+    query_group = query_group,
+    ref_group = ref_group,
+    nfeatures = nfeatures,
+    additional_features_per_class = additional_features_per_class,
+    input_transform = input_transform,
+    store_probabilities = isTRUE(store_probabilities),
+    prefix = prefix
+  )
+
+  if (!isTRUE(return_object) && !is.null(query_labels)) {
+    payload <- list(
+      annotation = predicted_run,
+      score = score_run,
+      classes = classes,
+      parameters = parameters
+    )
+    if (isTRUE(store_probabilities)) {
+      payload$probabilities <- prob_run
+    }
+    if (isTRUE(store_model)) {
+      core <- result[["core"]]
+      feature_index <- result[["feature_index"]]
+      selected_features <- common_features[feature_index]
+      rownames(core) <- selected_features
+      colnames(core) <- classes
+      payload$model <- core
+      payload$features <- selected_features
+      payload$candidate_features <- common_features
+    }
+    return(payload)
+  }
 
   if (!is.null(query_labels)) {
     predicted <- rep(NA_character_, ncol(srt_query))
@@ -281,43 +333,37 @@ RunSciBet <- function(
   } else {
     predicted <- predicted_run[colnames(srt_query)]
     score <- score_run[colnames(srt_query)]
-    prob_store <- prob_run[colnames(srt_query), , drop = FALSE]
+    prob_store <- if (is.null(prob_run)) {
+      NULL
+    } else {
+      prob_run[colnames(srt_query), , drop = FALSE]
+    }
   }
 
   annotation_col <- paste0(prefix, "_annotation")
   score_col <- paste0(prefix, "_score")
 
-  core <- result[["core"]]
-  feature_index <- result[["feature_index"]]
-  selected_features <- common_features[feature_index]
-  rownames(core) <- selected_features
-  colnames(core) <- classes
-
   payload <- list(
     annotation = predicted,
     score = score,
-    probabilities = prob_store,
-    model = core,
-    features = selected_features,
-    candidate_features = common_features,
     classes = classes,
-    parameters = list(
-      query_assay = query_assay,
-      ref_assay = ref_assay,
-      query_layer = query_layer,
-      ref_layer = ref_layer,
-      query_group = query_group,
-      ref_group = ref_group,
-      nfeatures = nfeatures,
-      additional_features_per_class = additional_features_per_class,
-      input_transform = input_transform,
-      prefix = prefix
-    )
+    parameters = parameters
   )
-
-  if (!isTRUE(return_object)) {
-    return(payload)
+  if (isTRUE(store_probabilities)) {
+    payload$probabilities <- prob_store
   }
+  if (isTRUE(store_model)) {
+    core <- result[["core"]]
+    feature_index <- result[["feature_index"]]
+    selected_features <- common_features[feature_index]
+    rownames(core) <- selected_features
+    colnames(core) <- classes
+    payload$model <- core
+    payload$features <- selected_features
+    payload$candidate_features <- common_features
+  }
+
+  if (!isTRUE(return_object)) return(payload)
 
   srt_query[[annotation_col]] <- unname(predicted)
   srt_query[[score_col]] <- unname(score)
@@ -341,11 +387,21 @@ scibet_expr_matrix <- function(
   input_transform = c("auto", "none", "expm1")
 ) {
   input_transform <- match.arg(input_transform)
-  x <- GetAssayData5(
-    object = srt,
-    assay = assay,
-    layer = layer
-  )[features, , drop = FALSE]
+  assay_obj <- srt[[assay]]
+  x <- if (inherits(assay_obj, "Assay5")) {
+    SeuratObject::LayerData(
+      object = assay_obj,
+      layer = layer,
+      features = features,
+      fast = FALSE
+    )
+  } else {
+    GetAssayData5(
+      object = srt,
+      assay = assay,
+      layer = layer
+    )[features, , drop = FALSE]
+  }
 
   transform_use <- input_transform
   if (transform_use == "auto") {

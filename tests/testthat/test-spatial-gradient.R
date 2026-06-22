@@ -352,7 +352,7 @@ test_that("RunSpatialGradientFeatures has a clear optional SPATA2 dependency err
     RunSpatialGradientFeatures(
       srt,
       reference = "trajectory",
-      backend = "spata2",
+      backend = "r",
       variables = "Gene1",
       start = c(1, 1),
       end = c(2, 2),

@@ -6,12 +6,12 @@
 #' @param object A `Seurat` object, `ExpressionSet`, or expression matrix-like
 #' object with genes in rows and pseudobulk/bulk samples in columns.
 #' @param model_paths Named list or character vector of local tAge model files
-#' (`.rds` for `model_backend = "r"`, `.pkl` for `model_backend = "python"`).
+#' (`.rds` for `backend = "cpp"`, `.pkl` for `backend = "python"`).
 #' Names must match one or more of `"scaled"`, `"scaled_diff"`, `"yugene"`,
 #' and `"yugene_diff"`. If `NULL`, model files are downloaded from
-#' `mengxu98/datasets` for the R backend or Zenodo for the Python backend.
-#' @param model_backend Model prediction backend. `"auto"` uses `"r"` for
-#' `mode = "EN"` and `"python"` for `mode = "BR"`.
+#' `mengxu98/datasets` for the C++ backend or Zenodo for the Python backend.
+#' @param backend Model prediction backend. `"cpp"` uses converted Elastic Net
+#' models and C++ prediction. `"python"` uses `tAge::predict_tAge()`.
 #' @param clock tAge clock family used when `model_paths = NULL`.
 #' @param model_species Model species scope used when `model_paths = NULL`.
 #' `"auto"` chooses `"Mouse"` for `species = "mouse"`, `"Rodents"` for
@@ -88,7 +88,7 @@
 RuntAge <- function(
   object,
   model_paths = NULL,
-  model_backend = c("auto", "r", "python"),
+  backend = c("python", "cpp"),
   clock = c("Chronoage", "NormalizedAge", "Mortality"),
   model_species = c("auto", "Multispecies", "Mouse", "Rodents"),
   model_tissue = "Multitissue",
@@ -126,14 +126,16 @@ RuntAge <- function(
 ) {
   species <- match.arg(species)
   mode <- match.arg(mode)
-  model_backend <- match.arg(model_backend)
+  backend <- match.arg(backend)
   clock <- match.arg(clock)
   model_species <- match.arg(model_species)
   gene_mapping_type <- match.arg(gene_mapping_type)
-  model_backend <- resolve_tage_model_backend(
-    mode = mode,
-    model_backend = model_backend
-  )
+  if (identical(backend, "cpp") && !identical(mode, "EN")) {
+    log_message(
+      "The C++ tAge backend currently supports only {.val EN} models; use {.code backend = 'python'} for {.val BR}.",
+      message_type = "error"
+    )
+  }
 
   if (!is.numeric(coverage_threshold) || length(coverage_threshold) != 1L || is.na(coverage_threshold) || coverage_threshold <= 0) {
     log_message(
@@ -149,7 +151,8 @@ RuntAge <- function(
   }
 
   check_r(c("Gladyshev-Lab/tAge", "Biobase", "edgeR"), verbose = FALSE)
-  if (identical(model_backend, "python")) {
+  if (identical(backend, "python")) {
+    PrepareEnv(modules = "tage")
     configure_python_thread_env()
     if (isTRUE(check_python)) {
       check_tage_python(verbose = verbose)
@@ -158,7 +161,7 @@ RuntAge <- function(
 
   is_seurat <- inherits(object, "Seurat")
   if (is.null(model_paths)) {
-    model_paths <- if (identical(model_backend, "r")) {
+    model_paths <- if (identical(backend, "cpp")) {
       fetch_tage_r_model_paths(
         mode = mode,
         clock = clock,
@@ -189,7 +192,7 @@ RuntAge <- function(
   }
 
   log_message(
-    "Run {.pkg tAge} with {.val {length(model_paths)}} model{?s} using {.val {model_backend}} backend",
+    "Run {.pkg tAge} with {.val {length(model_paths)}} model{?s} using {.val {backend}} backend",
     message_type = "running",
     verbose = verbose
   )
@@ -239,7 +242,7 @@ RuntAge <- function(
       model_paths = model_paths,
       species = species,
       mode = mode,
-      model_backend = model_backend,
+      backend = backend,
       gene_mapping_type = gene_mapping_type,
       control_group_column = control_group_column,
       control_group_label = control_group_label,
@@ -264,7 +267,7 @@ RuntAge <- function(
       model_paths = model_paths,
       species = species,
       mode = mode,
-      model_backend = model_backend
+      backend = backend
     )
   }
 
@@ -276,7 +279,7 @@ RuntAge <- function(
     layer = layer,
     species = species,
     mode = mode,
-    model_backend = model_backend,
+    backend = backend,
     clock = clock,
     model_species = model_species,
     model_tissue = model_tissue,
@@ -361,23 +364,6 @@ normalize_tage_model_paths <- function(model_paths) {
   }
   names(model_paths) <- model_names
   model_paths
-}
-
-resolve_tage_model_backend <- function(mode, model_backend = "auto") {
-  if (!identical(model_backend, "auto")) {
-    if (identical(model_backend, "r") && !identical(mode, "EN")) {
-      log_message(
-        "The pure R tAge backend currently supports only {.val EN} models; use {.code model_backend = 'python'} for {.val BR}.",
-        message_type = "error"
-      )
-    }
-    return(model_backend)
-  }
-  if (identical(mode, "EN")) {
-    "r"
-  } else {
-    "python"
-  }
 }
 
 fetch_tage_r_model_paths <- function(
@@ -803,10 +789,10 @@ predict_tage_models <- function(
   model_paths,
   species,
   mode,
-  model_backend = c("r", "python")
+  backend = c("python", "cpp")
 ) {
-  model_backend <- match.arg(model_backend)
-  if (identical(model_backend, "python")) {
+  backend <- match.arg(backend)
+  if (identical(backend, "python")) {
     return(get_namespace_fun("tAge", "predict_tAge")(
       tAge_eset = processed,
       model_paths = model_paths,
@@ -827,7 +813,7 @@ predict_tage_models <- function(
   result <- NULL
   for (name in valid_names) {
     model <- readRDS(model_paths[[name]])
-    pred <- predict_tage_r_one(
+    pred <- predict_tage_cpp_one(
       eset = processed[[name]],
       model = model,
       species = species,
@@ -843,7 +829,7 @@ predict_tage_models <- function(
   result
 }
 
-predict_tage_r_one <- function(eset, model, species, prefix = "EN_") {
+predict_tage_cpp_one <- function(eset, model, species, prefix = "EN_") {
   if (!identical(model$model_type, "ElasticNet")) {
     log_message(
       "Unsupported converted tAge model type: {.val {model$model_type}}",
@@ -852,29 +838,23 @@ predict_tage_r_one <- function(eset, model, species, prefix = "EN_") {
   }
   expr <- Biobase::exprs(eset)
   features <- as.character(model$feature_names)
-  x <- matrix(
-    NA_real_,
-    nrow = ncol(expr),
-    ncol = length(features),
-    dimnames = list(colnames(expr), features)
+  selected <- model$selected
+  if (is.logical(selected)) {
+    selected_idx <- which(selected)
+  } else {
+    selected_idx <- as.integer(selected)
+  }
+  features_use <- features[selected_idx]
+  feature_match <- match(features_use, rownames(expr))
+  prediction <- tage_elastic_net_predict_cpp(
+    expr = expr,
+    feature_match = feature_match,
+    imputer = model$imputer_statistics[selected_idx],
+    center = model$center[selected_idx],
+    scale = model$scale %||% numeric(),
+    coef = model$coef,
+    intercept = model$intercept
   )
-  present <- intersect(features, rownames(expr))
-  if (length(present) > 0L) {
-    x[, present] <- t(expr[present, , drop = FALSE])
-  }
-
-  for (j in seq_len(ncol(x))) {
-    missing <- is.na(x[, j])
-    if (any(missing)) {
-      x[missing, j] <- model$imputer_statistics[[j]]
-    }
-  }
-  x <- sweep(x, 2, model$center, "-")
-  if (!is.null(model$scale)) {
-    x <- sweep(x, 2, model$scale, "/")
-  }
-  x <- x[, model$selected, drop = FALSE]
-  prediction <- as.numeric(x %*% model$coef + model$intercept)
 
   adjustment <- model$species_adjustment[[species]]
   if (!is.null(adjustment) && !is.na(adjustment)) {
@@ -987,7 +967,7 @@ run_tage_by_group_scop <- function(
   model_paths,
   species = "mouse",
   mode = "EN",
-  model_backend = c("r", "python"),
+  backend = c("python", "cpp"),
   gene_mapping_type = "Gene.Symbol",
   control_group_column = NULL,
   control_group_label = NULL,
@@ -996,7 +976,7 @@ run_tage_by_group_scop <- function(
   min_samples = 5,
   verbose = TRUE
 ) {
-  model_backend <- match.arg(model_backend)
+  backend <- match.arg(backend)
   groups <- unique(Biobase::pData(eset)[[split_by]])
   groups <- groups[!is.na(groups)]
   results_list <- list()
@@ -1033,7 +1013,7 @@ run_tage_by_group_scop <- function(
           model_paths = model_paths,
           species = species,
           mode = mode,
-          model_backend = model_backend
+          backend = backend
         )
         prediction[[split_by]] <- group
         prediction

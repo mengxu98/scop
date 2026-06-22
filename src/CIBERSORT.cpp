@@ -59,12 +59,12 @@ int cibersort_worker_count(int requested, int n_tasks) {
   if (requested <= 1 || n_tasks <= 1) {
     return 1;
   }
-  int n_threads = std::min(requested, n_tasks);
+  int cores = std::min(requested, n_tasks);
   const unsigned int hardware = std::thread::hardware_concurrency();
   if (hardware > 0) {
-    n_threads = std::min(n_threads, static_cast<int>(hardware));
+    cores = std::min(cores, static_cast<int>(hardware));
   }
-  return std::max(1, n_threads);
+  return std::max(1, cores);
 }
 
 std::uint64_t splitmix64(std::uint64_t x) {
@@ -321,11 +321,11 @@ arma::vec sample_null_vector(
 }
 
 template <typename Function>
-void parallel_for_tasks(int n_tasks, int n_threads, Function fn) {
+void parallel_for_tasks(int n_tasks, int cores, Function fn) {
   if (n_tasks <= 0) {
     return;
   }
-  const int workers = cibersort_worker_count(n_threads, n_tasks);
+  const int workers = cibersort_worker_count(cores, n_tasks);
   if (workers <= 1) {
     for (int i = 0; i < n_tasks; ++i) {
       fn(i);
@@ -371,7 +371,7 @@ std::vector<double> cibersort_null_distribution(
     const LinearSvrTrainingData& training,
     const arma::mat& y,
     int perm,
-    int n_threads,
+    int cores,
     int seed
 ) {
   std::vector<double> null_dist(perm);
@@ -380,7 +380,7 @@ std::vector<double> cibersort_null_distribution(
   }
   const arma::vec pool = arma::vectorise(y);
   const int n_genes = static_cast<int>(x.n_rows);
-  parallel_for_tasks(perm, n_threads, [&](int p) {
+  parallel_for_tasks(perm, cores, [&](int p) {
     const std::uint64_t task_seed = splitmix64(
       static_cast<std::uint64_t>(seed) + static_cast<std::uint64_t>(p + 1)
     );
@@ -422,7 +422,7 @@ List cibersort_cpp(
     int perm = 0,
     bool QN = true,
     bool absolute = false,
-    int n_threads = 1,
+    int cores = 1,
     int seed = 123,
     bool verbose = false
 ) {
@@ -466,14 +466,14 @@ List cibersort_cpp(
     training,
     y,
     perm,
-    n_threads,
+    cores,
     seed
   );
   Rcpp::checkUserInterrupt();
 
   arma::mat fractions(n_samples, n_cell_types, arma::fill::zeros);
   arma::mat stats(n_samples, 3, arma::fill::zeros);
-  parallel_for_tasks(n_samples, n_threads, [&](int s) {
+  parallel_for_tasks(n_samples, cores, [&](int s) {
     const arma::vec y_scaled = standardize_vector(y.col(s));
     const CibersortCoreResult result = cibersort_core(x_scaled, training, y_scaled);
     fractions.row(s) = result.weights;

@@ -26,9 +26,12 @@
 #' `method = "ssGSEA"`, `method = "zscore"`, and `method = "PLAGE"`.
 #' `method = "UCell"` and `method = "VISION"` fall back to `"r"` when
 #' `backend` is not explicitly set.
-#' @param cpp_strategy C++ AUCell ranking strategy. `"sparse"` ranks non-zero
-#' genes and approximates zero ties, `"topk"` ranks only genes that can contribute
-#' to AUCell AUC, and `"full"` ranks all genes.
+#' @param cpp_strategy AUCell scoring strategy used when `backend = "cpp"`.
+#' `"sparse"` ranks non-zero genes and approximates zero ties without
+#' densifying the expression matrix. `"aucell"` calls the official
+#' [AUCell::AUCell_buildRankings()] and [AUCell::AUCell_calcAUC()] path for
+#' exact consistency with the R backend, `"topk"` ranks only genes that can
+#' contribute to AUCell AUC, and `"full"` ranks all genes.
 #' @param classification Whether to perform classification based on the scores. Default is `TRUE`.
 #' @param name The name of the assay to store the scores in. Only used if new_assay is TRUE. Default is `""`.
 #' @param new_assay Whether to create a new assay for storing the scores. Default is `FALSE`.
@@ -186,7 +189,7 @@ CellScoring <- function(
   maxGSSize = 500,
   method = "Seurat",
   backend = c("cpp", "r"),
-  cpp_strategy = c("sparse", "topk", "full"),
+  cpp_strategy = c("sparse", "aucell", "topk", "full"),
   classification = TRUE,
   name = "",
   new_assay = FALSE,
@@ -251,7 +254,14 @@ CellScoring <- function(
   backend_missing <- missing(backend)
   backend <- match.arg(backend)
   cpp_strategy <- match.arg(cpp_strategy)
-  cpp_supported_methods <- c("Seurat", "AUCell", "GSVA", "ssGSEA", "zscore", "PLAGE")
+  cpp_supported_methods <- c(
+    "Seurat",
+    "AUCell",
+    "GSVA",
+    "ssGSEA",
+    "zscore",
+    "PLAGE"
+  )
   if (!identical(backend, "r") && !method %in% cpp_supported_methods) {
     if (isTRUE(backend_missing)) {
       log_message(
@@ -313,7 +323,11 @@ CellScoring <- function(
   if (is.null(store_metadata)) {
     store_metadata <- isTRUE(features_input_supplied) || !isTRUE(new_assay)
   } else {
-    if (!is.logical(store_metadata) || length(store_metadata) != 1L || is.na(store_metadata)) {
+    if (
+      !is.logical(store_metadata) ||
+        length(store_metadata) != 1L ||
+        is.na(store_metadata)
+    ) {
       log_message(
         "{.arg store_metadata} must be TRUE, FALSE, or NULL",
         message_type = "error"
@@ -336,11 +350,12 @@ CellScoring <- function(
       db_data <- db_list[[species]][[single_db]]
       term2gene_tmp <- db_data[["TERM2GENE"]][, c("Term", IDtype)]
       term2name_tmp <- db_data[["TERM2NAME"]]
-      dup <- duplicated(term2gene_tmp)
-      na <- Matrix::rowSums(is.na(term2gene_tmp)) > 0
-      term2gene_tmp <- term2gene_tmp[!(dup | na), , drop = FALSE]
+      keep_term_gene <- !duplicated(term2gene_tmp) &
+        stats::complete.cases(term2gene_tmp)
+      term2gene_tmp <- term2gene_tmp[keep_term_gene, , drop = FALSE]
       term2name_tmp <- term2name_tmp[
-        term2name_tmp[, "Term"] %in% term2gene_tmp[, "Term"], ,
+        term2name_tmp[, "Term"] %in% term2gene_tmp[, "Term"],
+        ,
         drop = FALSE
       ]
 
@@ -378,12 +393,9 @@ CellScoring <- function(
     )
   }
   dots <- list(...)
-  kcdf_defaulted <- is.null(dots[["kcdf"]])
-  kcdf <- dots[["kcdf"]] %||% if (identical(layer, "counts")) "Poisson" else "Gaussian"
+  kcdf <- dots[["kcdf"]] %||%
+    if (identical(layer, "counts")) "Poisson" else "Gaussian"
   kcdf <- match.arg(kcdf, c("Gaussian", "Poisson", "none"))
-  if (isTRUE(kcdf_defaulted) && identical(backend, "cpp") && any(method == "GSVA")) {
-    kcdf <- "none"
-  }
   cpp_chunk_size <- dots[["cpp_chunk_size"]] %||% NULL
   abs.ranking <- dots[["abs.ranking"]] %||% FALSE
   min.sz <- dots[["min.sz"]] %||% minGSSize
@@ -510,26 +522,28 @@ CellScoring <- function(
         assay = assay
       )
       if (identical(backend, "cpp")) {
-        auc_scores <- run_aucell_scores(
-          expr_counts = expr_sp,
-          gene_sets = features,
-          strategy = cpp_strategy
-        )
+        auc_scores <- if (identical(cpp_strategy, "aucell")) {
+          run_aucell_official_scores(
+            expr_counts = expr_sp,
+            gene_sets = features,
+            ...
+          )
+        } else {
+          run_aucell_scores(
+            expr_counts = expr_sp,
+            gene_sets = features,
+            strategy = cpp_strategy
+          )
+        }
         filtered <- names(features)[
           !names(features) %in% colnames(auc_scores)
         ]
       } else {
-        gene_set_scoring_require_namespace("AUCell")
-        cell_rank <- AUCell::AUCell_buildRankings(
-          as_matrix(expr_sp),
-          plotStats = FALSE
-        )
-        cells_auc <- AUCell::AUCell_calcAUC(
-          geneSets = features,
-          rankings = cell_rank,
+        auc_scores <- run_aucell_official_scores(
+          expr_counts = expr_sp,
+          gene_sets = features,
           ...
         )
-        auc_scores <- Matrix::t(AUCell::getAUC(cells_auc))
         filtered <- names(features)[
           !names(features) %in% colnames(auc_scores)
         ]
@@ -601,7 +615,8 @@ CellScoring <- function(
         gene_sets_filtered <- lapply(features, function(gs) {
           intersect(gs, rownames(expr_mat))
         })
-        keep <- lengths(gene_sets_filtered) >= min_size & lengths(gene_sets_filtered) <= max_size
+        keep <- lengths(gene_sets_filtered) >= min_size &
+          lengths(gene_sets_filtered) <= max_size
         gene_sets_filtered <- gene_sets_filtered[keep]
         if (length(gene_sets_filtered) == 0L) {
           log_message(
@@ -752,7 +767,9 @@ CellScoring <- function(
 
   if (isTRUE(classification)) {
     feature_labels <- features_nm_used[colnames(scores_mat)]
-    feature_labels[is.na(feature_labels)] <- colnames(scores_mat)[is.na(feature_labels)]
+    feature_labels[is.na(feature_labels)] <- colnames(scores_mat)[is.na(
+      feature_labels
+    )]
     assignments <- apply(
       scores_mat,
       MARGIN = 1,
@@ -812,7 +829,8 @@ AddModuleScore2 <- function(
   features_raw <- features
 
   features <- lapply(
-    X = features, FUN = function(x) {
+    X = features,
+    FUN = function(x) {
       features_missing <- setdiff(x, y = rownames(object))
       if (length(features_missing) > 0) {
         log_message(

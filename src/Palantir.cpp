@@ -242,16 +242,14 @@ IntegerVector palantir_maxmin_waypoints_cpp(
     ));
     std::vector<int> iter_set;
     iter_set.push_back(current);
+    std::vector<double> min_dists(n);
+    for (int i = 0; i < n; ++i) min_dists[i] = std::abs(vec[i] - vec[current]);
 
     for (int k = 1; k < per_col; ++k) {
       double max_min_dist = -1.0;
       int best = current;
       for (int i = 0; i < n; ++i) {
-        double min_dist = std::abs(vec[i] - vec[current]);
-        for (int w : iter_set) {
-          double d = std::abs(vec[i] - vec[w]);
-          if (d < min_dist) min_dist = d;
-        }
+        double min_dist = min_dists[i];
         if (min_dist > max_min_dist) {
           max_min_dist = min_dist;
           best = i;
@@ -260,6 +258,10 @@ IntegerVector palantir_maxmin_waypoints_cpp(
       if (best != current) {
         iter_set.push_back(best);
         current = best;
+        for (int i = 0; i < n; ++i) {
+          double d = std::abs(vec[i] - vec[current]);
+          if (d < min_dists[i]) min_dists[i] = d;
+        }
       }
     }
     for (int w : iter_set) wp_set.insert(w);
@@ -281,24 +283,12 @@ struct DijkstraCmp {
 };
 
 
-static void dijkstra_sparse(
+static void dijkstra_graph(
     int n,
-    const std::vector<int>& adj_i,
-    const std::vector<int>& adj_j,
-    const std::vector<double>& adj_x,
+    const std::vector<std::vector<std::pair<int,double>>>& graph,
     int source,
     std::vector<double>& dist)
 {
-  // Build adjacency list
-  std::vector<std::vector<std::pair<int,double>>> graph(n);
-  int nnz = adj_i.size();
-  for (int t = 0; t < nnz; ++t) {
-    int u = adj_i[t], v = adj_j[t];
-    double w = adj_x[t];
-    graph[u].push_back({v, w});
-    graph[v].push_back({u, w});
-  }
-
   dist.assign(n, std::numeric_limits<double>::max());
   dist[source] = 0.0;
   std::priority_queue<std::pair<double,int>, std::vector<std::pair<double,int>>, DijkstraCmp> pq;
@@ -383,13 +373,20 @@ List palantir_pseudotime_cpp(
   int n_sources = n_wp;
   std::vector<int> wp_offsets(n_wp);
   for (int w = 0; w < n_wp; ++w) wp_offsets[w] = waypoints[w] - 1;
+  std::vector<std::vector<std::pair<int,double>>> graph(n);
+  for (std::size_t t = 0; t < adj_i.size(); ++t) {
+    int u = adj_i[t], v = adj_j[t];
+    double w = adj_x[t];
+    graph[u].push_back({v, w});
+    graph[v].push_back({u, w});
+  }
 
   NumericMatrix D(n_wp, n);
   NumericMatrix W(n_wp, n);
 
   for (int s = 0; s < n_wp; ++s) {
     std::vector<double> dists_v;
-    dijkstra_sparse(n, adj_i, adj_j, adj_x, wp_offsets[s], dists_v);
+    dijkstra_graph(n, graph, wp_offsets[s], dists_v);
     for (int i = 0; i < n; ++i)
       D(s, i) = dists_v[i];
   }
@@ -491,10 +488,7 @@ List palantir_pseudotime_cpp(
 
   return List::create(
     _["pseudotime"] = pseudotime,
-    _["W"] = W,
-    _["D"] = D,
-    _["knn_idx"] = knn_idx_cpp,
-    _["knn_dist"] = knn_dist_cpp
+    _["W"] = W
   );
 }
 

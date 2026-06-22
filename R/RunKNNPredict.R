@@ -44,12 +44,11 @@
 #' If using "roc" test, `DE_threshold` should be needs to be reassigned. e.g. "power > 0.5".
 #' Default is `"p_val < 0.05"`.
 #' @param nn_method A character string specifying the nearest neighbor search method to use.
-#' Options are "raw", "annoy", "rann", and "cpp".
+#' Options are "raw", "annoy", and "rann".
 #' If "raw" is selected, the function will use the brute-force method to find the nearest neighbors.
 #' If "annoy" is selected, the function will use the Annoy library for approximate nearest neighbor search.
 #' If "rann" is selected, the function will use the RANN library for approximate nearest neighbor search.
-#' If "cpp" is selected, the function will use the compiled exact top-k search.
-#' If not provided, the function will use "cpp" for Euclidean or cosine distance, otherwise it will choose the search method based on the size of the query and reference datasets.
+#' If not provided, the function will choose the search method based on the size of the query and reference datasets.
 #' @param distance_metric A character vector specifying the distance metric to be used for calculating similarity between cells.
 #' Must be one of "cosine", "euclidean", "manhattan", or "hamming".
 #' Default is `"cosine"`.
@@ -72,11 +71,6 @@
 #' data(ref_scMCA)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #'
-#' # Set the number of threads for RcppParallel
-#' # details see: ?RcppParallel::setThreadOptions
-#' # if (requireNamespace("RcppParallel", quietly = TRUE)) {
-#' #   RcppParallel::setThreadOptions()
-#' # }
 #' pancreas_sub <- RunKNNPredict(
 #'   srt_query = pancreas_sub,
 #'   bulk_ref = ref_scMCA
@@ -638,23 +632,16 @@ RunKNNPredict <- function(
   log_message("Calculate similarity...", verbose = verbose)
 
   if (is.null(nn_method)) {
-    if (distance_metric %in% c("euclidean", "cosine")) {
-      nn_method <- "cpp"
-    } else if (as.numeric(nrow(query)) * as.numeric(nrow(ref)) >= 1e8) {
+    if (as.numeric(nrow(query)) * as.numeric(nrow(ref)) >= 1e8) {
       nn_method <- "annoy"
     } else {
       nn_method <- "raw"
     }
   }
   log_message("Use {.pkg {nn_method}} method to find neighbors", verbose = verbose)
-  if (!nn_method %in% c("raw", "annoy", "rann", "cpp")) {
-    log_message("nn_method must be one of raw, rann, annoy, and cpp",
-      message_type = "error"
-    )
-  }
-  if (identical(nn_method, "cpp") && !distance_metric %in% c("euclidean", "cosine")) {
+  if (!nn_method %in% c("raw", "annoy", "rann")) {
     log_message(
-      "distance_metric must be one of euclidean and cosine when nn_method is 'cpp'",
+      "nn_method must be one of raw, rann, and annoy",
       message_type = "error"
     )
   }
@@ -705,27 +692,7 @@ RunKNNPredict <- function(
     )
   }
 
-  if (identical(nn_method, "cpp")) {
-    query.neighbor <- run_knn_topk(
-      reference = ref,
-      query = query,
-      k = k,
-      metric = distance_metric,
-      backend = nn_method,
-      exclude_self = FALSE
-    )
-    match_k <- query.neighbor[["idx"]]
-    k <- ncol(match_k)
-    rownames(match_k) <- rownames(query)
-    match_k_cell <- matrix(
-      rownames(ref)[match_k],
-      nrow = nrow(match_k),
-      ncol = ncol(match_k),
-      dimnames = list(rownames(query), NULL)
-    )
-    match_k_distance <- query.neighbor[["dist"]]
-    rownames(match_k_distance) <- rownames(query)
-  } else if (nn_method %in% c("annoy", "rann")) {
+  if (nn_method %in% c("annoy", "rann")) {
     query.neighbor <- Seurat::FindNeighbors(
       query = query,
       object = ref,

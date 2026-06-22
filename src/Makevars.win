@@ -1,3 +1,6 @@
-PKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+RCPPPARALLEL_LIBDIR = $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e "cat(system.file('lib', package='RcppParallel'))")
+PKG_CPPFLAGS = -I.
+PKG_CFLAGS = -pthread -O3
+PKG_CXXFLAGS = -DARMA_64BIT_WORD=1 $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e "RcppParallel::CxxFlags()") -DRCPP_PARALLEL_USE_TBB=1 $(SHLIB_OPENMP_CXXFLAGS) -pthread -O3
+PKG_LIBS = $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e "RcppParallel::LdFlags()") $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) $(SHLIB_OPENMP_CXXFLAGS) -pthread
 CXX_STD = CXX17
-PKG_CXXFLAGS = -DARMA_64BIT_WORD=1

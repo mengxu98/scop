@@ -479,10 +479,9 @@ run_palantir_cpp <- function(
 
   knn_k <- max(1L, min(as.integer(n_neighbors), n_cells - 1L))
   kernel_knn_k <- max(1L, min(as.integer(n_neighbors) - 1L, n_cells - 1L))
-  log_message("Computing {.pkg Palantir} cpp KNN graph...", verbose = verbose)
-  knn_res <- run_cpp_knn(
+  log_message("Computing {.pkg Palantir} KNN graph with {.pkg BiocNeighbors}...", verbose = verbose)
+  knn_res <- run_biocneighbors_knn(
     reference = embedding,
-    query = embedding,
     k = kernel_knn_k,
     metric = "euclidean",
     exclude_self = TRUE,

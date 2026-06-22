@@ -8,6 +8,7 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 using namespace Rcpp;
@@ -361,6 +362,7 @@ DataFrame ora_hypergeom(
 
   std::vector<std::string> query_order;
   std::unordered_set<std::string> query_seen;
+  std::unordered_map<std::string, int> query_rank;
   query_order.reserve(genes.size());
   for (int i = 0; i < genes.size(); ++i) {
     if (CharacterVector::is_na(genes[i])) {
@@ -371,6 +373,7 @@ DataFrame ora_hypergeom(
       continue;
     }
     if (query_seen.insert(gene).second) {
+      query_rank[gene] = static_cast<int>(query_order.size());
       query_order.push_back(gene);
     }
   }
@@ -408,24 +411,26 @@ DataFrame ora_hypergeom(
       continue;
     }
 
-    std::vector<std::string> hits;
+    std::vector<std::pair<int, std::string> > hits;
     hits.reserve(std::min(term_size, query_size));
-    for (std::vector<std::string>::const_iterator gene_it = query_order.begin(); gene_it != query_order.end(); ++gene_it) {
-      if (term_set.find(*gene_it) != term_set.end()) {
-        hits.push_back(*gene_it);
+    for (std::unordered_set<std::string>::const_iterator gene_it = term_set.begin(); gene_it != term_set.end(); ++gene_it) {
+      std::unordered_map<std::string, int>::const_iterator rank_it = query_rank.find(*gene_it);
+      if (rank_it != query_rank.end()) {
+        hits.push_back(std::make_pair(rank_it->second, *gene_it));
       }
     }
     const int count = static_cast<int>(hits.size());
     if (count <= 0) {
       continue;
     }
+    std::sort(hits.begin(), hits.end());
 
     std::string hit_text;
     for (std::size_t hit_i = 0; hit_i < hits.size(); ++hit_i) {
       if (hit_i > 0) {
         hit_text += "/";
       }
-      hit_text += hits[hit_i];
+      hit_text += hits[hit_i].second;
     }
 
     const double pvalue = R::phyper(
@@ -480,66 +485,60 @@ NumericMatrix module_score_sparse(
   NumericVector values = expr.slot("x");
 
   NumericMatrix scores(n_cells, n_sets);
-  std::vector<double> value_by_gene(n_genes, 0.0);
-  std::vector<int> touched_values;
-
-  std::vector<std::vector<int> > features(n_sets);
-  std::vector<std::vector<int> > controls(n_sets);
+  std::vector<std::vector<std::pair<int, double> > > gene_to_scores(n_genes);
+  std::vector<bool> valid_sets(n_sets, true);
   for (int set_i = 0; set_i < n_sets; ++set_i) {
     IntegerVector feature_idx = feature_sets[set_i];
     IntegerVector control_idx = control_sets[set_i];
-    features[set_i].reserve(feature_idx.size());
-    controls[set_i].reserve(control_idx.size());
-
+    std::vector<int> features;
+    std::vector<int> controls;
+    features.reserve(feature_idx.size());
+    controls.reserve(control_idx.size());
     for (int i = 0; i < feature_idx.size(); ++i) {
       const int gene = feature_idx[i] - 1;
       if (gene >= 0 && gene < n_genes) {
-        features[set_i].push_back(gene);
+        features.push_back(gene);
       }
     }
     for (int i = 0; i < control_idx.size(); ++i) {
       const int gene = control_idx[i] - 1;
       if (gene >= 0 && gene < n_genes) {
-        controls[set_i].push_back(gene);
+        controls.push_back(gene);
+      }
+    }
+    if (features.empty() || controls.empty()) {
+      valid_sets[set_i] = false;
+      continue;
+    }
+    const double feature_weight = 1.0 / static_cast<double>(features.size());
+    const double control_weight = -1.0 / static_cast<double>(controls.size());
+    for (std::vector<int>::const_iterator it = features.begin(); it != features.end(); ++it) {
+      gene_to_scores[*it].push_back(std::make_pair(set_i, feature_weight));
+    }
+    for (std::vector<int>::const_iterator it = controls.begin(); it != controls.end(); ++it) {
+      gene_to_scores[*it].push_back(std::make_pair(set_i, control_weight));
+    }
+  }
+
+  for (int set_i = 0; set_i < n_sets; ++set_i) {
+    if (!valid_sets[set_i]) {
+      for (int cell = 0; cell < n_cells; ++cell) {
+        scores(cell, set_i) = R_NaN;
       }
     }
   }
 
   for (int cell = 0; cell < n_cells; ++cell) {
-    touched_values.clear();
     for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
       const int gene = row_idx[ptr];
       const double value = values[ptr];
       if (!R_finite(value) || value == 0.0) {
         continue;
       }
-      value_by_gene[gene] = value;
-      touched_values.push_back(gene);
-    }
-
-    for (int set_i = 0; set_i < n_sets; ++set_i) {
-      const std::vector<int>& feature_set = features[set_i];
-      const std::vector<int>& control_set = controls[set_i];
-      if (feature_set.empty() || control_set.empty()) {
-        scores(cell, set_i) = R_NaN;
-        continue;
+      const std::vector<std::pair<int, double> >& memberships = gene_to_scores[gene];
+      for (std::vector<std::pair<int, double> >::const_iterator it = memberships.begin(); it != memberships.end(); ++it) {
+        scores(cell, it->first) += value * it->second;
       }
-
-      double feature_sum = 0.0;
-      for (std::vector<int>::const_iterator it = feature_set.begin(); it != feature_set.end(); ++it) {
-        feature_sum += value_by_gene[*it];
-      }
-      double control_sum = 0.0;
-      for (std::vector<int>::const_iterator it = control_set.begin(); it != control_set.end(); ++it) {
-        control_sum += value_by_gene[*it];
-      }
-
-      scores(cell, set_i) = feature_sum / static_cast<double>(feature_set.size()) -
-        control_sum / static_cast<double>(control_set.size());
-    }
-
-    for (std::vector<int>::const_iterator it = touched_values.begin(); it != touched_values.end(); ++it) {
-      value_by_gene[*it] = 0.0;
     }
   }
 
@@ -780,6 +779,10 @@ NumericMatrix ssgsea_rank_dense(
   NumericVector values = expr.slot("x");
 
   std::vector<std::vector<int> > sets(n_sets);
+  std::vector<int> set_sizes(n_sets, 0);
+  std::vector<unsigned char> valid_sets(n_sets, 0);
+  std::vector<int> set_gene_union;
+  set_gene_union.reserve(n_sets * 64);
   for (int set_i = 0; set_i < n_sets; ++set_i) {
     IntegerVector genes = gene_sets[set_i];
     sets[set_i].reserve(genes.size());
@@ -787,11 +790,16 @@ NumericMatrix ssgsea_rank_dense(
       const int gene = genes[gene_i] - 1;
       if (gene >= 0 && gene < n_genes) {
         sets[set_i].push_back(gene);
+        set_gene_union.push_back(gene);
       }
     }
     std::sort(sets[set_i].begin(), sets[set_i].end());
     sets[set_i].erase(std::unique(sets[set_i].begin(), sets[set_i].end()), sets[set_i].end());
+    set_sizes[set_i] = static_cast<int>(sets[set_i].size());
+    valid_sets[set_i] = (set_sizes[set_i] > 0 && set_sizes[set_i] < n_genes) ? 1 : 0;
   }
+  std::sort(set_gene_union.begin(), set_gene_union.end());
+  set_gene_union.erase(std::unique(set_gene_union.begin(), set_gene_union.end()), set_gene_union.end());
 
   NumericMatrix scores(n_cells, n_sets);
   std::vector<int> rank_by_gene(n_genes);
@@ -809,6 +817,10 @@ NumericMatrix ssgsea_rank_dense(
   std::vector<double> nonzero_values;
   nonzero_values.reserve(n_genes);
   std::vector<unsigned char> is_nonzero(n_genes, 0);
+  std::vector<int> nz_order;
+  nz_order.reserve(n_genes);
+  const double total_position_sum = static_cast<double>(n_genes) *
+    static_cast<double>(n_genes + 1) / 2.0;
 
   for (int cell = 0; cell < n_cells; ++cell) {
     // Collect non-zero expression values for this cell
@@ -850,7 +862,7 @@ NumericMatrix ssgsea_rank_dense(
 
     // Step 2: compute non-zero gene ranks (overwrites the zero defaults)
     if (n_nonzero > 0) {
-      std::vector<int> nz_order(n_nonzero);
+      nz_order.resize(n_nonzero);
       std::iota(nz_order.begin(), nz_order.end(), 0);
       // Sort non-zero genes by value ascending (gene-index tiebreak)
       std::sort(
@@ -912,11 +924,18 @@ NumericMatrix ssgsea_rank_dense(
       }
 
       if (n_zero > 0) {
-        for (int g = 0; g < n_genes; ++g) {
-          if (is_nonzero[g] == 0) {
-            position_by_gene[g] = ++pos;
+        const int zero_start_pos = pos;
+        int nonzero_leq = 0;
+        for (std::vector<int>::const_iterator it = set_gene_union.begin(); it != set_gene_union.end(); ++it) {
+          const int gene = *it;
+          while (nonzero_leq < n_nonzero && nonzero_genes[nonzero_leq] <= gene) {
+            ++nonzero_leq;
+          }
+          if (is_nonzero[gene] == 0) {
+            position_by_gene[gene] = zero_start_pos + gene + 1 - nonzero_leq;
           }
         }
+        pos += n_zero;
       }
 
       while (nz_pos < n_nonzero) {
@@ -934,8 +953,8 @@ NumericMatrix ssgsea_rank_dense(
     // Step 5: compute ES scores for each gene set
     for (int set_i = 0; set_i < n_sets; ++set_i) {
       const std::vector<int>& set = sets[set_i];
-      const int set_size = static_cast<int>(set.size());
-      if (set_size <= 0 || set_size >= n_genes) {
+      const int set_size = set_sizes[set_i];
+      if (!valid_sets[set_i]) {
         scores(cell, set_i) = R_NaN;
         continue;
       }
@@ -958,8 +977,6 @@ NumericMatrix ssgsea_rank_dense(
       }
 
       const double in_step = in_weighted_position_sum / in_weight_sum;
-      const double total_position_sum = static_cast<double>(n_genes) *
-        static_cast<double>(n_genes + 1) / 2.0;
       const double out_step = (total_position_sum - in_position_sum) /
         static_cast<double>(n_genes - set_size);
       const double score = in_step - out_step;
@@ -1008,8 +1025,9 @@ NumericMatrix zscore_dense(
   IntegerVector col_ptr = expr.slot("p");
   NumericVector values = expr.slot("x");
 
-  // Per-gene z-normalization (matching GSVA::zscore: t(scale(t(X))))
-  // Compute per-gene mean and sd using ALL cells
+  // Match GSVA::zscoreParam on dgCMatrix input: GSVA scales only the stored
+  // non-zero values and leaves structural zeros as zero.
+  std::vector<int> gene_counts(n_genes, 0);
   std::vector<double> gene_sums(n_genes, 0.0);
   std::vector<double> gene_sq_sums(n_genes, 0.0);
 
@@ -1018,6 +1036,7 @@ NumericMatrix zscore_dense(
       const int gene = row_idx[ptr];
       const double value = values[ptr];
       if (R_finite(value)) {
+        ++gene_counts[gene];
         gene_sums[gene] += value;
         gene_sq_sums[gene] += value * value;
       }
@@ -1028,66 +1047,71 @@ NumericMatrix zscore_dense(
   std::vector<double> gene_sds(n_genes, 1.0);
   if (n_cells > 1) {
     for (int gene = 0; gene < n_genes; ++gene) {
-      gene_means[gene] = gene_sums[gene] / static_cast<double>(n_cells);
+      const int n_nonzero = gene_counts[gene];
+      if (n_nonzero <= 1) {
+        gene_means[gene] = R_NaN;
+        gene_sds[gene] = R_NaN;
+        continue;
+      }
+      gene_means[gene] = gene_sums[gene] / static_cast<double>(n_nonzero);
       double var_val = (gene_sq_sums[gene] -
-        static_cast<double>(n_cells) * gene_means[gene] * gene_means[gene]) /
-        static_cast<double>(n_cells - 1);
+        static_cast<double>(n_nonzero) * gene_means[gene] * gene_means[gene]) /
+        static_cast<double>(n_nonzero - 1);
       if (var_val < 0.0 && var_val > -1e-12) {
         var_val = 0.0;
       }
       gene_sds[gene] = (var_val > 0.0) ? std::sqrt(var_val) : 1.0;
     }
   }
+  std::vector<int>().swap(gene_counts);
   std::vector<double>().swap(gene_sums);
   std::vector<double>().swap(gene_sq_sums);
 
-  // Build gene→set membership lookup (boolean matrix: gene_in_set[gene * n_sets + set_i]).
-  // This replaces per-value std::binary_search with O(1) lookup and allows a
-  // single-pass sparse-matrix traversal instead of n_sets passes.
-  std::vector<bool> gene_in_set(static_cast<std::size_t>(n_genes) * n_sets, false);
+  // Build gene -> set adjacency. Only sets containing the current gene need
+  // updating during sparse traversal.
+  std::vector<std::vector<int> > gene_to_sets(n_genes);
   std::vector<int> set_sizes(n_sets, 0);
-  std::vector<double> zero_z_sum(n_sets, 0.0);
   std::vector<double> inv_sqrt_size(n_sets, 1.0);
   for (int set_i = 0; set_i < n_sets; ++set_i) {
     IntegerVector genes = gene_sets[set_i];
+    std::vector<int> seen;
+    seen.reserve(genes.size());
     for (int gene_i = 0; gene_i < genes.size(); ++gene_i) {
       const int gene = genes[gene_i] - 1;
       if (gene >= 0 && gene < n_genes) {
-        if (!gene_in_set[static_cast<std::size_t>(gene) * n_sets + set_i]) {
-          gene_in_set[static_cast<std::size_t>(gene) * n_sets + set_i] = true;
-          ++set_sizes[set_i];
-          zero_z_sum[set_i] += -gene_means[gene] / gene_sds[gene];
-        }
+        seen.push_back(gene);
       }
+    }
+    std::sort(seen.begin(), seen.end());
+    seen.erase(std::unique(seen.begin(), seen.end()), seen.end());
+    for (std::vector<int>::const_iterator it = seen.begin(); it != seen.end(); ++it) {
+      const int gene = *it;
+      gene_to_sets[gene].push_back(set_i);
+      ++set_sizes[set_i];
     }
     if (set_sizes[set_i] > 0) {
       inv_sqrt_size[set_i] = 1.0 / std::sqrt(static_cast<double>(set_sizes[set_i]));
     }
   }
 
-  // Compute z-score per gene set: (1/√n) * Σ z_gc
-  //   z_gc = (value - mean)/sd for expressed genes, -mean/sd for non-expressed.
-  // Decomposition: (value - mean)/sd = value/sd + (-mean)/sd
+  // Compute z-score per gene set: (1/√n) * Σ z_gc over stored non-zero values.
   NumericMatrix scores(n_cells, n_sets);
-  // Initialize: baseline = Σ(-mean/sd) for each set
   for (int cell = 0; cell < n_cells; ++cell) {
     for (int set_i = 0; set_i < n_sets; ++set_i) {
       scores(cell, set_i) = (set_sizes[set_i] >= min_size && set_sizes[set_i] <= max_size)
-        ? zero_z_sum[set_i] : R_NaN;
+        ? 0.0 : R_NaN;
     }
   }
-  // Single pass over sparse matrix: accumulate value/sd for expressed genes
   for (int cell = 0; cell < n_cells; ++cell) {
     for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
       const int gene = row_idx[ptr];
       const double value = values[ptr];
       if (!R_finite(value)) continue;
-      const std::size_t offset = static_cast<std::size_t>(gene) * n_sets;
-      const double contrib = value / gene_sds[gene];
-      for (int set_i = 0; set_i < n_sets; ++set_i) {
-        if (gene_in_set[offset + set_i]) {
-          scores(cell, set_i) += contrib;
-        }
+      const std::vector<int>& sets_for_gene = gene_to_sets[gene];
+      if (sets_for_gene.empty()) continue;
+      const double contrib = (value - gene_means[gene]) / gene_sds[gene];
+      for (std::vector<int>::const_iterator it = sets_for_gene.begin(); it != sets_for_gene.end(); ++it) {
+        scores(cell, *it) += contrib;
       }
     }
   }
@@ -1226,7 +1250,7 @@ NumericMatrix plage_dense(
     std::vector<int> valid_genes;
     valid_genes.reserve(set.size());
     for (std::vector<int>::const_iterator it = set.begin(); it != set.end(); ++it) {
-      if (orient_row_valid[*it]) {
+      if (row_valid[*it]) {
         valid_genes.push_back(*it);
       }
     }
@@ -1244,28 +1268,22 @@ NumericMatrix plage_dense(
       static_cast<arma::uword>(n_cells),
       arma::fill::zeros
     );
-    // Fill all cells: expressed values get z-normalized with all-cell stats,
-    // non-expressed positions get the zero-z (matching GSVA::plageParam behavior)
+    // Match GSVA::plageParam on dgCMatrix input: scale stored non-zero values
+    // and leave structural zeros as zero.
     for (int row = 0; row < effective_size; ++row) {
       const int gene = valid_genes[row];
-      // Pre-fill with zero-expression z-value
-      const double zero_z = -orient_row_means[gene] / orient_row_sds[gene];
-      for (int cell = 0; cell < n_cells; ++cell) {
-        z(static_cast<arma::uword>(row), static_cast<arma::uword>(cell)) = zero_z;
-      }
-      // Overwrite expressed positions
       const int row_start = row_ptr[gene];
       const int row_end = row_ptr[gene + 1];
       for (int ptr = row_start; ptr < row_end; ++ptr) {
         const int cell = row_cells[ptr];
         z(static_cast<arma::uword>(row), static_cast<arma::uword>(cell)) =
-          (row_values[ptr] - orient_row_means[gene]) / orient_row_sds[gene];
+          (row_values[ptr] - row_means[gene]) / row_sds[gene];
       }
     }
 
     arma::vec first_v;
     bool ok = false;
-    if (effective_size < n_cells && effective_size <= 256) {
+    if (effective_size < n_cells && effective_size <= 1024) {
       // Gene×gene covariance path: when gene set is small relative to cell count,
       // eigendecompose ZZ' (effective_size × effective_size) instead of Z'Z (n_cells × n_cells).
       // This is O(effective_size³ + effective_size² × n_cells) vs O(n_cells³).
@@ -1321,18 +1339,15 @@ NumericMatrix plage_dense(
     int orient_size = 0;
     for (std::vector<int>::const_iterator it = set.begin(); it != set.end(); ++it) {
       const int gene = *it;
-      if (!orient_row_valid[gene]) {
+      if (!row_valid[gene]) {
         continue;
       }
       ++orient_size;
-      const double base_z = -orient_row_means[gene] / orient_row_sds[gene];
-      for (int cell = 0; cell < n_cells; ++cell) {
-        mean_z_by_cell[cell] += base_z;
-      }
       const int row_start = row_ptr[gene];
       const int row_end = row_ptr[gene + 1];
       for (int ptr = row_start; ptr < row_end; ++ptr) {
-        mean_z_by_cell[row_cells[ptr]] += row_values[ptr] / orient_row_sds[gene];
+        mean_z_by_cell[row_cells[ptr]] +=
+          (row_values[ptr] - row_means[gene]) / row_sds[gene];
       }
     }
     if (orient_size > 0) {

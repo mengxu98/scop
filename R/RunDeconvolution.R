@@ -641,7 +641,7 @@ RunBayesPrism <- function(
         gibbs_idx = gibbs_idx,
         alpha = gibbs.control$alpha,
         seed = as.integer(gibbs.control$seed),
-        n_threads = as.integer(gibbs.control$n.cores)
+        cores = as.integer(gibbs.control$n.cores)
       ),
       error = function(e) e
     )
@@ -720,7 +720,7 @@ RunBayesPrism <- function(
           gibbs_idx = gibbs_idx,
           alpha = gibbs.control$alpha,
           seed = as.integer(gibbs.control$seed),
-          n_threads = as.integer(gibbs.control$n.cores)
+          cores = as.integer(gibbs.control$n.cores)
         ),
         error = function(e) e
       )
@@ -800,7 +800,7 @@ RunBayesPrism <- function(
 #' The native C++ backend currently returns relative fractions.
 #' @param backend CIBERSORT backend. `"r"` calls the external `CIBERSORT`
 #' package and `"cpp"` uses the native `scop` LIBSVM implementation.
-#' @param n_threads Number of threads used by the C++ backend.
+#' @param cores Number of CPU cores used by the C++ backend.
 #' @param seed Random seed used by the C++ permutation backend.
 #'
 #' @return A deconvolution result bundle for matrix input, or the modified
@@ -852,7 +852,7 @@ RunCIBERSORT <- function(
   QN = TRUE,
   absolute = FALSE,
   backend = c("r", "cpp"),
-  n_threads = 1L,
+  cores = 1L,
   seed = 123L,
   verbose = TRUE,
   ...
@@ -881,7 +881,7 @@ RunCIBERSORT <- function(
     QN = QN,
     absolute = absolute,
     backend = backend,
-    n_threads = n_threads,
+    cores = cores,
     seed = seed,
     verbose = verbose,
     ...
@@ -917,14 +917,14 @@ run_cibersort_bundle <- function(
   QN = TRUE,
   absolute = FALSE,
   backend = c("r", "cpp"),
-  n_threads = 1L,
+  cores = 1L,
   seed = 123L,
   verbose = TRUE,
   ...
 ) {
   backend <- match.arg(backend)
   perm <- as.integer(perm)
-  n_threads <- as.integer(n_threads)
+  cores <- as.integer(cores)
   seed <- as.integer(seed)
   if (length(perm) != 1L || is.na(perm) || !is.finite(perm) || perm < 0L) {
     log_message(
@@ -933,13 +933,13 @@ run_cibersort_bundle <- function(
     )
   }
   if (
-    length(n_threads) != 1L ||
-      is.na(n_threads) ||
-      !is.finite(n_threads) ||
-      n_threads < 1L
+    length(cores) != 1L ||
+      is.na(cores) ||
+      !is.finite(cores) ||
+      cores < 1L
   ) {
     log_message(
-      "{.arg n_threads} must be a positive integer.",
+      "{.arg cores} must be a positive integer.",
       message_type = "error"
     )
   }
@@ -976,7 +976,7 @@ run_cibersort_bundle <- function(
         perm = perm,
         QN = isTRUE(QN),
         absolute = isTRUE(absolute),
-        n_threads = n_threads,
+        cores = cores,
         seed = seed,
         verbose = verbose
       ),
@@ -998,7 +998,7 @@ run_cibersort_bundle <- function(
           perm = perm,
           QN = QN,
           absolute = absolute,
-          n_threads = n_threads,
+          cores = cores,
           seed = seed,
           sig_matrix = signature$label
         )
@@ -1027,7 +1027,7 @@ run_cibersort_bundle <- function(
         perm = perm,
         QN = QN,
         absolute = absolute,
-        n_threads = n_threads,
+        cores = cores,
         seed = seed,
         sig_matrix = signature$label
       )
@@ -1077,7 +1077,7 @@ run_cibersort_bundle <- function(
         perm = perm,
         QN = QN,
         absolute = absolute,
-        n_threads = n_threads,
+        cores = cores,
         seed = seed,
         sig_matrix = signature$label
       )
@@ -1103,7 +1103,7 @@ run_cibersort_bundle <- function(
       perm = perm,
       QN = QN,
       absolute = absolute,
-      n_threads = n_threads,
+      cores = cores,
       seed = seed,
       sig_matrix = signature$label
     )

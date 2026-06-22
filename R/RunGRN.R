@@ -342,7 +342,7 @@ grnboost <- function(
       early_stop_window_length = as.integer(max(0L, early_stop_window_length)),
       random_seed = as.integer(seed %||% 1234L),
       exclude_self = isTRUE(exclude_self),
-      n_threads = as.integer(cores)
+      cores = as.integer(cores)
     )
   } else {
     run_chunk(target_idx)

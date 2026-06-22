@@ -7,7 +7,7 @@
 RuntAge(
   object,
   model_paths = NULL,
-  model_backend = c("auto", "r", "python"),
+  backend = c("python", "cpp"),
   clock = c("Chronoage", "NormalizedAge", "Mortality"),
   model_species = c("auto", "Multispecies", "Mouse", "Rodents"),
   model_tissue = "Multitissue",
@@ -49,13 +49,13 @@ RuntAge(
 object with genes in rows and pseudobulk/bulk samples in columns.}
 
 \item{model_paths}{Named list or character vector of local tAge model files
-(\code{.rds} for \code{model_backend = "r"}, \code{.pkl} for \code{model_backend = "python"}).
+(\code{.rds} for \code{backend = "cpp"}, \code{.pkl} for \code{backend = "python"}).
 Names must match one or more of \code{"scaled"}, \code{"scaled_diff"}, \code{"yugene"},
 and \code{"yugene_diff"}. If \code{NULL}, model files are downloaded from
-\code{mengxu98/datasets} for the R backend or Zenodo for the Python backend.}
+\code{mengxu98/datasets} for the C++ backend or Zenodo for the Python backend.}
 
-\item{model_backend}{Model prediction backend. \code{"auto"} uses \code{"r"} for
-\code{mode = "EN"} and \code{"python"} for \code{mode = "BR"}.}
+\item{backend}{Model prediction backend. \code{"cpp"} uses converted Elastic Net
+models and C++ prediction. \code{"python"} uses \code{tAge::predict_tAge()}.}
 
 \item{clock}{tAge clock family used when \code{model_paths = NULL}.}
 

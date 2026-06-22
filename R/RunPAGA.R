@@ -358,12 +358,11 @@ run_paga_cpp <- function(
 
     knn_k <- max(1L, min(as.integer(n_neighbors) - 1L, nrow(embedding) - 1L))
     log_message(
-      "Running {.pkg PAGA} with {.arg backend = 'cpp'} using {.val {knn_k}} neighbors",
+      "Running {.pkg PAGA} with {.pkg BiocNeighbors} using {.val {knn_k}} neighbors",
       verbose = verbose
     )
-    knn <- run_cpp_knn(
+    knn <- run_biocneighbors_knn(
       reference = embedding,
-      query = embedding,
       k = knn_k,
       metric = "euclidean",
       exclude_self = TRUE,

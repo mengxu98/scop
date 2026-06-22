@@ -14,13 +14,11 @@
 #' `"r"` uses the original R package implementation. `"cpp"` currently supports
 #' `method = "AUCell"`, `method = "GSVA"`, and `method = "ssGSEA"`.
 #' `method = "VISION"` falls back to `"r"` when `backend` is not explicitly set.
-#' AUCell C++ scores may differ from the R backend when tied expression values
-#' are randomly ranked.
-#' @param cpp_strategy C++ AUCell ranking strategy. `"topk"` ranks only genes
-#' that can contribute to AUCell AUC and is the default for better agreement
-#' with AUCell's full ranking on sparse single-cell matrices. `"aucell"` uses
-#' [AUCell::AUCell_buildRankings()] and [AUCell::AUCell_calcAUC()] for
-#' scMetabolism-compatible scores. `"sparse"` ranks non-zero
+#' @param cpp_strategy AUCell scoring strategy used when `backend = "cpp"`.
+#' `"topk"` is the speed-first default and ranks only genes that can contribute
+#' to AUCell AUC. `"aucell"` uses [AUCell::AUCell_buildRankings()] and
+#' [AUCell::AUCell_calcAUC()] for scMetabolism-compatible scores, `"sparse"`
+#' ranks non-zero genes and approximates zero ties, and `"full"` ranks all genes.
 #' @param use_preparedb When `TRUE`, gene sets are built via [PrepareDB] which
 #' provides species-aware gene mapping via BioMart and KEGG/Reactome databases.
 #' This automatically handles gene symbol conversion for non-human species
@@ -28,8 +26,6 @@
 #' When `FALSE`, raw scMetabolism GMT files are
 #' downloaded and genes are matched case-insensitively with optional [GeneConvert]
 #' supplementation when `convert_species = TRUE`.
-#' genes and approximates zero ties, `"topk"` ranks only genes that can contribute
-#' to AUCell AUC, and `"full"` ranks all genes.
 #' @param cpp_chunk_size Optional cell chunk size for C++ GSVA kernels. `NULL`
 #' or `"auto"` automatically chunks large matrices to reduce peak dense
 #' intermediate memory; positive values set the chunk size manually.
@@ -95,7 +91,7 @@ RunMetabolism <- function(
   use_preparedb = TRUE,
   method = c("AUCell", "GSVA", "ssGSEA", "VISION"),
   backend = c("cpp", "r"),
-  cpp_strategy = c("topk", "sparse", "full", "aucell"),
+  cpp_strategy = c("topk", "aucell", "sparse", "full"),
   cpp_chunk_size = NULL,
   minGSSize = 10,
   maxGSSize = 500,
@@ -418,19 +414,10 @@ RunMetabolism <- function(
   if (method == "AUCell") {
     if (identical(backend, "cpp")) {
       if (identical(cpp_strategy, "aucell")) {
-        gene_set_scoring_require_namespace("AUCell")
-        expr_rank <- AUCell::AUCell_buildRankings(
-          as_matrix(expr_counts),
-          plotStats = FALSE
+        scores_mat <- run_aucell_official_scores(
+          expr_counts = expr_counts,
+          gene_sets = gene_sets
         )
-        cells_auc <- AUCell::AUCell_calcAUC(
-          geneSets = gene_sets,
-          rankings = expr_rank
-        )
-        auc_mat <- AUCell::getAUC(cells_auc)
-        scores_mat <- Matrix::t(auc_mat)
-        scores_mat <- as_matrix(scores_mat)
-        colnames(scores_mat) <- rownames(auc_mat)
       } else {
         scores_mat <- run_aucell_scores(
           expr_counts = expr_counts,
@@ -439,19 +426,10 @@ RunMetabolism <- function(
         )
       }
     } else {
-      gene_set_scoring_require_namespace("AUCell")
-      expr_rank <- AUCell::AUCell_buildRankings(
-        as_matrix(expr_counts),
-        plotStats = FALSE
+      scores_mat <- run_aucell_official_scores(
+        expr_counts = expr_counts,
+        gene_sets = gene_sets
       )
-      cells_auc <- AUCell::AUCell_calcAUC(
-        geneSets = gene_sets,
-        rankings = expr_rank
-      )
-      auc_mat <- AUCell::getAUC(cells_auc)
-      scores_mat <- Matrix::t(auc_mat)
-      scores_mat <- as_matrix(scores_mat)
-      colnames(scores_mat) <- rownames(auc_mat)
     }
   } else if (method %in% c("GSVA", "ssGSEA")) {
     if (identical(backend, "cpp")) {

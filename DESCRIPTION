@@ -34,6 +34,7 @@ Imports:
     methods,
     Matrix,
     Rcpp,
+    RcppParallel,
     Signac,
     S4Vectors,
     Seurat,
@@ -147,8 +148,10 @@ Remotes:
 LinkingTo:
     cli,
     Rcpp,
+    RcppAnnoy,
     RcppArmadillo,
     RcppEigen,
+    RcppParallel,
     RSpectra
 RoxygenNote: 7.3.3
 Config/Needs/website: mengxu98/thistemplate

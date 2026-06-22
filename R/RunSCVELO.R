@@ -21,6 +21,9 @@
 #' @param denoise_topn Number of genes with highest likelihood selected to infer velocity directions.
 #' @param kinetics_topn Number of genes with highest likelihood selected to infer velocity directions.
 #' @param compute_velocity_confidence Whether to compute velocity confidence metrics.
+#' @param compute_velocity_graph Whether to compute and store the velocity graph
+#' for downstream terminal-state or pseudotime calculations. If `NULL`, compute
+#' the graph only when terminal states or pseudotime are requested.
 #' @param compute_terminal_states Whether to compute terminal states (root and end points).
 #' @param compute_pseudotime Whether to compute velocity pseudotime.
 #' @param compute_paga Whether to compute PAGA (Partition-based graph abstraction).
@@ -100,9 +103,10 @@ RunSCVELO <- function(
   kinetics_topn = 100,
   calculate_velocity_genes = FALSE,
   compute_velocity_confidence = TRUE,
-  compute_terminal_states = TRUE,
-  compute_pseudotime = TRUE,
-  compute_paga = TRUE,
+  compute_velocity_graph = NULL,
+  compute_terminal_states = FALSE,
+  compute_pseudotime = FALSE,
+  compute_paga = FALSE,
   top_n = 6,
   cores = 1,
   palette = "Chinese",
@@ -139,6 +143,7 @@ RunSCVELO <- function(
       compute_terminal_states = compute_terminal_states,
       compute_pseudotime = compute_pseudotime,
       compute_velocity_confidence = compute_velocity_confidence,
+      compute_velocity_graph = compute_velocity_graph,
       fitting_by = fitting_by,
       cores = cores,
       return_seurat = return_seurat,
@@ -164,28 +169,30 @@ RunSCVELO <- function(
     )
   }
 
-  if (is.null(linear_reduction)) {
-    linear_reduction <- DefaultReduction(srt)
-  } else {
-    linear_reduction <- DefaultReduction(srt, pattern = linear_reduction)
-  }
-  if (!linear_reduction %in% names(srt@reductions)) {
-    log_message(
-      "{.val {linear_reduction}} is not in the srt reduction names",
-      message_type = "error"
-    )
-  }
+  if (!is.null(srt)) {
+    if (is.null(linear_reduction)) {
+      linear_reduction <- DefaultReduction(srt)
+    } else {
+      linear_reduction <- DefaultReduction(srt, pattern = linear_reduction)
+    }
+    if (!linear_reduction %in% names(srt@reductions)) {
+      log_message(
+        "{.val {linear_reduction}} is not in the srt reduction names",
+        message_type = "error"
+      )
+    }
 
-  if (is.null(nonlinear_reduction)) {
-    nonlinear_reduction <- DefaultReduction(srt)
-  } else {
-    nonlinear_reduction <- DefaultReduction(srt, pattern = nonlinear_reduction)
-  }
-  if (!nonlinear_reduction %in% names(srt@reductions)) {
-    log_message(
-      "{.val {nonlinear_reduction}} is not in the srt reduction names",
-      message_type = "error"
-    )
+    if (is.null(nonlinear_reduction)) {
+      nonlinear_reduction <- DefaultReduction(srt)
+    } else {
+      nonlinear_reduction <- DefaultReduction(srt, pattern = nonlinear_reduction)
+    }
+    if (!nonlinear_reduction %in% names(srt@reductions)) {
+      log_message(
+        "{.val {nonlinear_reduction}} is not in the srt reduction names",
+        message_type = "error"
+      )
+    }
   }
 
   if (is.character(mode) && length(mode) == 1) {
@@ -233,7 +240,8 @@ RunSCVELO <- function(
     "legend.position",
     "plot_dpi",
     "plot_prefix",
-    "backend"
+    "backend",
+    "compute_velocity_graph"
   )
   args <- args[!names(args) %in% params]
 
@@ -316,6 +324,7 @@ run_scvelo_cpp <- function(
   compute_terminal_states = TRUE,
   compute_pseudotime = TRUE,
   compute_velocity_confidence = FALSE,
+  compute_velocity_graph = NULL,
   fitting_by = c("stochastic", "deterministic", "em", "nm"),
   cores,
   return_seurat,
@@ -348,6 +357,10 @@ run_scvelo_cpp <- function(
       "{.arg assay_y} must contain spliced and unspliced assay names",
       message_type = "error"
     )
+  }
+  if (is.null(compute_velocity_graph)) {
+    compute_velocity_graph <- isTRUE(compute_terminal_states) ||
+      isTRUE(compute_pseudotime)
   }
   spliced_assay <- assay_y[[1L]]
   unspliced_assay <- assay_y[[2L]]
@@ -466,6 +479,7 @@ run_scvelo_cpp <- function(
       filter_genes = filter_genes,
       normalize_per_cell = normalize_per_cell,
       log_transform = log_transform,
+      compute_velocity_graph = isTRUE(compute_velocity_graph),
       n_genes_filtered = as.integer(length(features_out))
     )
   )
@@ -586,26 +600,34 @@ run_scvelo_cpp <- function(
     srt[[len_key]] <- as.numeric(vc_main[["velocity_length"]])
     srt@tools[["SCVELO"]][[m]]$confidence_detail <- vc_main[["confidence"]]
     srt@tools[["SCVELO"]][[m]]$confidence_diff <- vc_main[["confidence_diff"]]
-    # Velocity graph (cosine similarity on gene space, sparse format)
-    vg <- scvelo_velocity_graph_cpp(
-      Ms = Ms[graph_gene_idx, , drop = FALSE],
-      Mu = Mu[graph_gene_idx, , drop = FALSE],
-      residual = vg_residual[graph_gene_idx, , drop = FALSE],
-      knn_idx = knn[["idx"]],
-      sqrt_transform = identical(m, "stochastic"),
-      n_recurse_neighbors = 1L
-    )
-    srt@tools[["SCVELO"]][[m]]$velocity_graph <- list(
-      rows = vg[["velocity_graph_rows"]],
-      cols = vg[["velocity_graph_cols"]],
-      vals = vg[["velocity_graph_vals"]],
-      neg_rows = vg[["velocity_graph_neg_rows"]],
-      neg_cols = vg[["velocity_graph_neg_cols"]],
-      neg_vals = vg[["velocity_graph_neg_vals"]]
-    )
+    if (isTRUE(compute_velocity_graph)) {
+      # Velocity graph (cosine similarity on gene space, sparse format)
+      vg <- scvelo_velocity_graph_cpp(
+        Ms = Ms[graph_gene_idx, , drop = FALSE],
+        Mu = Mu[graph_gene_idx, , drop = FALSE],
+        residual = vg_residual[graph_gene_idx, , drop = FALSE],
+        knn_idx = knn[["idx"]],
+        sqrt_transform = identical(m, "stochastic"),
+        n_recurse_neighbors = 1L
+      )
+      srt@tools[["SCVELO"]][[m]]$velocity_graph <- list(
+        rows = vg[["velocity_graph_rows"]],
+        cols = vg[["velocity_graph_cols"]],
+        vals = vg[["velocity_graph_vals"]],
+        neg_rows = vg[["velocity_graph_neg_rows"]],
+        neg_cols = vg[["velocity_graph_neg_cols"]],
+        neg_vals = vg[["velocity_graph_neg_vals"]]
+      )
+    }
 
     # Terminal states
     if (isTRUE(compute_terminal_states)) {
+      if (!isTRUE(compute_velocity_graph)) {
+        log_message(
+          "{.arg compute_velocity_graph} must be TRUE when terminal states are requested",
+          message_type = "error"
+        )
+      }
       ts <- scvelo_terminal_states_graph_cpp(
         graph_rows = vg[["velocity_graph_rows"]],
         graph_cols = vg[["velocity_graph_cols"]],
@@ -651,14 +673,8 @@ run_scvelo_cpp <- function(
 
     # Velocity confidence metrics
     if (isTRUE(compute_velocity_confidence)) {
-      vc <- scvelo_velocity_confidence_cpp(
-        Ms = Ms[graph_gene_idx, , drop = FALSE],
-        residual = vg_residual[graph_gene_idx, , drop = FALSE],
-        knn_idx = knn[["idx"]]
-      )
-      conf_detail_key <- paste0(m, "_confidence_detail")
-      srt@tools[["SCVELO"]][[m]]$confidence_detail <- vc[["confidence"]]
-      srt@tools[["SCVELO"]][[m]]$confidence_diff <- vc[["confidence_diff"]]
+      srt@tools[["SCVELO"]][[m]]$confidence_detail <- vc_main[["confidence"]]
+      srt@tools[["SCVELO"]][[m]]$confidence_diff <- vc_main[["confidence_diff"]]
     }
 
     log_message(

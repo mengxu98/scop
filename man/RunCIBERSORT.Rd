@@ -13,7 +13,7 @@ RunCIBERSORT(
   QN = TRUE,
   absolute = FALSE,
   backend = c("r", "cpp"),
-  n_threads = 1L,
+  cores = 1L,
   seed = 123L,
   verbose = TRUE,
   ...
@@ -41,7 +41,7 @@ The native C++ backend currently returns relative fractions.}
 \item{backend}{CIBERSORT backend. \code{"r"} calls the external \code{CIBERSORT}
 package and \code{"cpp"} uses the native \code{scop} LIBSVM implementation.}
 
-\item{n_threads}{Number of threads used by the C++ backend.}
+\item{cores}{Number of CPU cores used by the C++ backend.}
 
 \item{seed}{Random seed used by the C++ permutation backend.}
 

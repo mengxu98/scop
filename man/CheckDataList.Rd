@@ -17,6 +17,7 @@ CheckDataList(
   HVF_min_intersection = 1,
   HVF = NULL,
   vars_to_regress = NULL,
+  cores = 1L,
   verbose = TRUE,
   seed = 11
 )
@@ -61,6 +62,9 @@ If NULL, the function will use the highly variable features identified by the HV
 
 \item{vars_to_regress}{A vector of variable names to include as additional regression variables.
 Default is \code{NULL}.}
+
+\item{cores}{Number of CPU cores used by supported preprocessing steps.
+Default is \code{1}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

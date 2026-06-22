@@ -559,7 +559,7 @@ List cytotrace2_knn_smooth(
   // ||x_i - x_j||² = ||x_i||² + ||x_j||² - 2 * x_i · x_j
   arma::vec row_norms_sq = arma::sum(arma::square(pca_coords), 1);
 
-  for (int i = 0; i < n_cells; i++) {
+  auto smooth_one_cell = [&](int i) {
     // Vectorized Euclidean distances to all other cells in PCA space
     arma::vec dists_sq = row_norms_sq + row_norms_sq(i) -
       2.0 * (pca_coords * pca_coords.row(i).t());
@@ -613,6 +613,29 @@ List cytotrace2_knn_smooth(
       final_scores(i) = score_sum / weight_sum;
     } else {
       final_scores(i) = preKNN_scores(i);
+    }
+  };
+
+  int n_workers = cytotrace2_worker_count(cores, n_cells);
+  if (n_workers == 1) {
+    for (int i = 0; i < n_cells; i++) {
+      smooth_one_cell(i);
+    }
+  } else {
+    std::atomic<int> next_cell(0);
+    std::vector<std::thread> workers;
+    workers.reserve(n_workers);
+    for (int worker = 0; worker < n_workers; worker++) {
+      workers.emplace_back([&]() {
+        while (true) {
+          int i = next_cell.fetch_add(1);
+          if (i >= n_cells) break;
+          smooth_one_cell(i);
+        }
+      });
+    }
+    for (std::thread& worker : workers) {
+      worker.join();
     }
   }
 

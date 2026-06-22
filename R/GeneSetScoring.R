@@ -131,7 +131,9 @@ gene_set_scoring_normalize_chunk_size <- function(
   n_cells = NULL,
   max_dense_entries = 1e8
 ) {
-  if (is.null(chunk_size) || length(chunk_size) == 0L || is.na(chunk_size[[1]])) {
+  if (
+    is.null(chunk_size) || length(chunk_size) == 0L || is.na(chunk_size[[1]])
+  ) {
     if (
       is.null(n_genes) ||
         is.null(n_cells) ||
@@ -143,12 +145,18 @@ gene_set_scoring_normalize_chunk_size <- function(
       return(0L)
     }
     chunk_size_auto <- floor(max_dense_entries / as.numeric(n_genes))
-    if (!is.finite(chunk_size_auto) || chunk_size_auto <= 0 || chunk_size_auto >= n_cells) {
+    if (
+      !is.finite(chunk_size_auto) ||
+        chunk_size_auto <= 0 ||
+        chunk_size_auto >= n_cells
+    ) {
       return(0L)
     }
     return(max(1L, as.integer(chunk_size_auto)))
   }
-  if (is.character(chunk_size[[1]]) && identical(tolower(chunk_size[[1]]), "auto")) {
+  if (
+    is.character(chunk_size[[1]]) && identical(tolower(chunk_size[[1]]), "auto")
+  ) {
     return(gene_set_scoring_normalize_chunk_size(
       chunk_size = NULL,
       n_genes = n_genes,
@@ -201,6 +209,25 @@ run_aucell_scores <- function(
   )
   dimnames(scores) <- list(colnames(expr_counts), names(gene_set_idx))
   scores
+}
+
+run_aucell_official_scores <- function(
+  expr_counts,
+  gene_sets,
+  ...
+) {
+  gene_set_scoring_require_namespace("AUCell")
+  expr_rank <- AUCell::AUCell_buildRankings(
+    as_matrix(expr_counts),
+    plotStats = FALSE
+  )
+  cells_auc <- AUCell::AUCell_calcAUC(
+    geneSets = gene_sets,
+    rankings = expr_rank,
+    ...
+  )
+  scores <- Matrix::t(AUCell::getAUC(cells_auc))
+  as_matrix(scores)
 }
 
 run_aucell_scores_from_rankings <- function(rankings, gene_sets) {
@@ -312,7 +339,8 @@ run_seurat_module_scores <- function(
     x = 1 / rep.int(lengths(control_idx), lengths(control_idx)),
     dims = c(nrow(expr_data), length(control_idx))
   )
-  scores <- Matrix::t(feature_membership) %*% expr_data -
+  scores <- Matrix::t(feature_membership) %*%
+    expr_data -
     Matrix::t(control_membership) %*% expr_data
   scores <- Matrix::t(scores)
   dimnames(scores) <- list(colnames(expr_data), names(features))
@@ -367,7 +395,8 @@ run_gsva_scores <- function(
     kcdf = kcdf,
     tau = tau,
     maxDiff = max_diff,
-    absRanking = abs_ranking
+    absRanking = abs_ranking,
+    sparse = identical(kcdf, "none")
   )
   ranks <- GSVA::gsvaRanks(
     param = param,
@@ -539,9 +568,10 @@ orient_plage_scores <- function(scores, expr, gene_sets) {
     }
     inv_sd <- 1 / row_sd[idx]
     ref <- rep(sum(-row_mean[idx] * inv_sd), n_cells)
-    ref <- ref + as.numeric(Matrix::colSums(
-      Matrix::Diagonal(x = inv_sd) %*% expr[idx, , drop = FALSE]
-    ))
+    ref <- ref +
+      as.numeric(Matrix::colSums(
+        Matrix::Diagonal(x = inv_sd) %*% expr[idx, , drop = FALSE]
+      ))
     ref <- ref / length(idx)
     score <- as.numeric(scores[set_name, ])
     dot <- sum(score * ref, na.rm = TRUE)
@@ -552,7 +582,11 @@ orient_plage_scores <- function(scores, expr, gene_sets) {
   scores
 }
 
-run_metabolism_auc <- function(expr_counts, gene_sets, strategy = c("sparse", "topk", "full")) {
+run_metabolism_auc <- function(
+  expr_counts,
+  gene_sets,
+  strategy = c("sparse", "topk", "full")
+) {
   run_aucell_scores(
     expr_counts = expr_counts,
     gene_sets = gene_sets,
@@ -568,8 +602,14 @@ run_vision_scores <- function(
 ) {
   gene_set_scoring_require_namespace("VISION", install_hint = "YosefLab/VISION")
   Vision_fun <- get_namespace_fun("VISION", "Vision")
-  calc_signature_scores_fun <- get_namespace_fun("VISION", "calcSignatureScores")
-  create_gene_signature_fun <- get_namespace_fun("VISION", "createGeneSignature")
+  calc_signature_scores_fun <- get_namespace_fun(
+    "VISION",
+    "calcSignatureScores"
+  )
+  create_gene_signature_fun <- get_namespace_fun(
+    "VISION",
+    "createGeneSignature"
+  )
 
   expr_mat <- as_matrix(expr_counts)
   if (isTRUE(scale_by_library)) {
