@@ -26,35 +26,47 @@ SpatialIntegrationPlot(
 \arguments{
 \item{srt}{A \code{Seurat} object containing spatial integration results.}
 
-\item{method}{Stored integration method. If \code{NULL}, the active method stored in \code{srt@tools[[tool_name]]} is used.}
+\item{method}{Stored integration method. If \code{NULL}, the active method stored
+in \code{srt@tools[[tool_name]]} is used.}
 
-\item{plot_type}{Plot type: \code{"spatial"}, \code{"embedding"}, \code{"alignment"}, or \code{"composition"}.}
+\item{plot_type}{Plot type: \code{"spatial"}, \code{"embedding"}, \code{"alignment"}, or
+\code{"composition"}.}
 
-\item{group.by}{Metadata column used for coloring. Defaults to the stored spatial domain column.}
+\item{group.by}{Metadata column used for coloring. Defaults to the stored
+spatial domain column.}
 
-\item{sample.by}{Metadata column used for facets or composition grouping. Defaults to the stored sample column.}
+\item{sample.by}{Metadata column used for facets or composition grouping.
+Defaults to the stored sample column.}
 
-\item{reduction}{Reduction used for embedding plots. Defaults to the stored integration reduction.}
+\item{reduction}{Reduction used for embedding plots. Defaults to the stored
+integration reduction.}
 
-\item{cluster_colname}{Metadata column used for spatial domain labels.}
+\item{coord.cols}{Metadata coordinate columns used when no image is available.}
 
-\item{coord.cols}{Metadata coordinate columns used when no image coordinate source is available.}
+\item{use_aligned}{Whether spatial plots should use aligned coordinates when
+available.}
 
-\item{use_aligned}{Whether spatial plots should use aligned coordinates when available.}
+\item{tool_name}{Name of the \code{srt@tools} entry created by
+\code{\link[=RunSpatialIntegration]{RunSpatialIntegration()}}.}
 
-\item{tool_name}{Name of the \code{srt@tools} entry created by \code{\link[=RunSpatialIntegration]{RunSpatialIntegration()}}.}
+\item{combine}{Whether to combine plots when delegated plotting returns a
+list.}
 
-\item{combine}{Whether to combine plots when delegated plotting returns a list.}
+\item{palette}{Color palette name.
+Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
+Default is \code{"Chinese"}.}
 
-\item{palette}{Color palette name.}
+\item{palcolor}{Custom colors used to create a color palette.
+Default is \code{NULL}.}
 
-\item{palcolor}{Custom colors used to create a color palette.}
+\item{theme_use}{Theme used. Can be a character string or a theme function.
+Default is \code{"theme_scop"}.}
 
-\item{theme_use}{Theme function name.}
+\item{theme_args}{Other arguments passed to the \code{theme_use}.
+Default is \code{list()}.}
 
-\item{theme_args}{Additional arguments passed to \code{theme_use}.}
-
-\item{...}{Additional arguments passed to \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}} or \code{\link[=CellDimPlot]{CellDimPlot()}}.}
+\item{...}{Additional arguments passed to \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}} or
+\code{\link[=CellDimPlot]{CellDimPlot()}}.}
 }
 \value{
 A \code{ggplot}, patchwork object, or list of plots.

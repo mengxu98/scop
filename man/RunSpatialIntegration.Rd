@@ -22,31 +22,42 @@ RunSpatialIntegration(
 )
 }
 \arguments{
-\item{object}{A merged spatial \code{Seurat} object or a list of spatial \code{Seurat} objects.}
+\item{object}{A merged spatial \code{Seurat} object or a list of spatial \code{Seurat}
+objects.}
 
 \item{method}{Spatial integration backend.}
 
-\item{sample.by}{Metadata column identifying samples for a merged \code{Seurat} object. For list input, list names are copied into this column.}
+\item{sample.by}{Metadata column identifying samples for a merged \code{Seurat}
+object. For list input, list names are copied into this column.}
 
-\item{assay}{Assay used for expression extraction. If \code{NULL}, the default assay is used.}
+\item{assay}{Which assay to use.
+If \code{NULL}, the default assay of the Seurat object will be used.
+When the object also contains \code{ChromatinAssay}, the default assay and
+additional \code{ChromatinAssay} will be preprocessed sequentially.}
 
-\item{layer}{Assay layer used as backend input.}
+\item{layer}{Assay layer used for expression values.}
 
-\item{coord.cols}{Metadata coordinate columns used when no image coordinate source is available.}
+\item{coord.cols}{Metadata coordinate columns used by the spatial workflow
+when no image is available.}
 
-\item{features}{Optional features to use. If \code{NULL}, shared assay features are used.}
+\item{features}{Features to score. If \code{NULL}, current variable features are
+used; if no variable features are present, all assay features are used.}
 
-\item{image}{Name of the Seurat spatial image used to recover coordinates when available.}
+\item{image}{Name of the Seurat spatial image used by the spatial workflow.
+If \code{NULL}, the first image is used when present.}
 
-\item{reduction.name}{Name of the integrated embedding reduction. If \code{NULL}, a method-specific name is used.}
+\item{reduction.name}{Name of the integrated embedding reduction. If \code{NULL},
+a method-specific name is used.}
 
-\item{cluster_colname}{Metadata column used for spatial domain labels. If \code{NULL}, a method-specific name is used.}
+\item{cluster_colname}{Metadata column used for spatial domain labels. If
+\code{NULL}, a method-specific name is used.}
 
 \item{tool_name}{Name used to store detailed results in \code{srt@tools}.}
 
-\item{store_results}{Whether to store detailed results in \code{srt@tools}.}
+\item{store_results}{Whether to store the full result in \code{srt@tools}.}
 
-\item{verbose}{Whether to print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{...}{Additional backend-specific arguments.}
 }

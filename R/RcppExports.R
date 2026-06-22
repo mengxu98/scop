@@ -529,36 +529,8 @@ parallel_all_in_one_dgc <- function(x_sexp, groups, group_sizes) {
     .Call(`_scop_parallel_all_in_one_dgc`, x_sexp, groups, group_sizes)
 }
 
-annoy_build_search <- function(data, k, n_trees, cores) {
-    .Call(`_scop_annoy_build_search`, data, k, n_trees, cores)
-}
-
-exact_knn_f32 <- function(data, k, cores) {
-    .Call(`_scop_exact_knn_f32`, data, k, cores)
-}
-
 log_normalize_dgc <- function(mat, scale_factor, grain_size = 100L) {
     invisible(.Call(`_scop_log_normalize_dgc`, mat, scale_factor, grain_size))
-}
-
-pca_backend_run <- function(X, npcs, weight_by_var = TRUE) {
-    .Call(`_scop_pca_backend_run`, X, npcs, weight_by_var)
-}
-
-cca_crossprod_matrix <- function(X1, X2) {
-    .Call(`_scop_cca_crossprod_matrix`, X1, X2)
-}
-
-matrix_product <- function(A, B) {
-    .Call(`_scop_matrix_product`, A, B)
-}
-
-runumap_knn <- function(X, k, n_trees, n_iters, leaf_size, seed, cores) {
-    .Call(`_scop_runumap_knn`, X, k, n_trees, n_iters, leaf_size, seed, cores)
-}
-
-runumap_layout <- function(init, head, tail, epochs_per_sample, n_epochs, a, b, gamma, initial_alpha, negative_sample_rate, seed, cores) {
-    .Call(`_scop_runumap_layout`, init, head, tail, epochs_per_sample, n_epochs, a, b, gamma, initial_alpha, negative_sample_rate, seed, cores)
 }
 
 scale_sparse_full <- function(sparse_mat, gene_indices, scale_max) {
@@ -588,3 +560,4 @@ sparse_row_mean_var <- function(p, i, x, nrow, ncol) {
 sparse_row_var_std <- function(p, i, x, nrow, ncol, mu, sd, vmax, nnzPerRow) {
     .Call(`_scop_sparse_row_var_std`, p, i, x, nrow, ncol, mu, sd, vmax, nnzPerRow)
 }
+

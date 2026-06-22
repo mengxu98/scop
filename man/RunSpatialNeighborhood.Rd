@@ -28,27 +28,54 @@ RunSpatialNeighborhood(
 }
 \arguments{
 \item{srt}{A \code{Seurat} object.}
+
 \item{group.by}{Metadata column containing spatial cell or spot labels.}
+
 \item{method}{Neighborhood backend. Currently \code{"spicyR"} is supported.}
+
 \item{assay}{Assay used when \code{features} are requested.}
+
 \item{layer}{Assay layer used when \code{features} are requested.}
-\item{coord.cols}{Metadata coordinate columns used when no Seurat image coordinates are available.}
-\item{image}{Name of the Seurat spatial image. If \code{NULL}, the first image is used when present.}
-\item{sample.by}{Metadata column identifying images or samples. If \code{NULL}, all spots are treated as one sample.}
-\item{split.by}{Optional metadata column identifying conditions for differential neighborhood statistics.}
-\item{subject.by}{Optional metadata column identifying subjects for backends that support paired or repeated designs.}
-\item{radius}{Optional spatial radius used for scop-native neighborhood summaries.}
-\item{k}{Optional number of nearest neighbors used for scop-native neighborhood summaries. When both \code{radius} and \code{k} are \code{NULL}, \code{k = 6} is used.}
+
+\item{coord.cols}{Metadata coordinate columns used when no Seurat image
+coordinates are available.}
+
+\item{image}{Name of the Seurat spatial image. If \code{NULL}, the first image is
+used when present.}
+
+\item{sample.by}{Metadata column identifying images or samples. If \code{NULL},
+all spots are treated as one sample.}
+
+\item{split.by}{Optional metadata column identifying conditions for
+differential neighborhood statistics.}
+
+\item{subject.by}{Optional metadata column identifying subjects for backends
+that support paired or repeated designs.}
+
+\item{radius}{Optional spatial radius used for scop-native neighborhood
+summaries.}
+
+\item{k}{Optional number of nearest neighbors used for scop-native
+neighborhood summaries. When both \code{radius} and \code{k} are \code{NULL}, \code{k = 6} is
+used.}
+
 \item{features}{Optional features to extract into the backend input table.}
+
 \item{from, to}{Optional cell or spot label filters.}
+
 \item{tool_name}{Name used to store results in \code{srt@tools}.}
+
 \item{store_results}{Whether to store results in \code{srt@tools}.}
-\item{verbose}{Whether to print messages.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
+
 \item{...}{Additional arguments passed to the selected backend.}
 }
 \value{
 A \code{Seurat} object with results stored in \code{srt@tools[[tool_name]]}.
 }
 \description{
-Build a scop-style spatial neighborhood result bundle and optionally dispatch to a supported backend for colocalization or local-effect statistics.
+Build a scop-style spatial neighborhood result bundle and optionally dispatch
+to a supported backend for colocalization or local-effect statistics.
 }
