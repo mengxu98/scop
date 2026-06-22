@@ -41,9 +41,10 @@ RunSCVELO(
   kinetics_topn = 100,
   calculate_velocity_genes = FALSE,
   compute_velocity_confidence = TRUE,
-  compute_terminal_states = TRUE,
-  compute_pseudotime = TRUE,
-  compute_paga = TRUE,
+  compute_velocity_graph = NULL,
+  compute_terminal_states = FALSE,
+  compute_pseudotime = FALSE,
+  compute_paga = FALSE,
   top_n = 6,
   cores = 1,
   palette = "Chinese",
@@ -155,6 +156,10 @@ Default is \code{5}.}
 \item{calculate_velocity_genes}{Boolean flag indicating whether to calculate velocity genes.}
 
 \item{compute_velocity_confidence}{Whether to compute velocity confidence metrics.}
+
+\item{compute_velocity_graph}{Whether to compute and store the velocity graph
+for downstream terminal-state or pseudotime calculations. If \code{NULL}, compute
+the graph only when terminal states or pseudotime are requested.}
 
 \item{compute_terminal_states}{Whether to compute terminal states (root and end points).}
 

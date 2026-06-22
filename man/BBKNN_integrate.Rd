@@ -34,7 +34,6 @@ BBKNN_integrate(
   cluster_algorithm = "louvain",
   cluster_resolution = 0.6,
   bbknn_params = list(),
-  bbknn_backend = c("python", "r"),
   verbose = TRUE,
   seed = 11
 )
@@ -83,7 +82,7 @@ Default is \code{1}.}
 If NULL, the function will use the highly variable features identified by the HVF method.}
 
 \item{do_scaling}{Whether to perform scaling.
-If \code{TRUE}, the function will force to scale the data using the \link[Seurat:ScaleData]{Seurat::ScaleData} function.}
+If \code{TRUE}, the function will force scaling with the package ScaleData path.}
 
 \item{vars_to_regress}{A vector of variable names to include as additional regression variables.
 Default is \code{NULL}.}
@@ -134,10 +133,6 @@ Larger values result in fewer clusters.
 Default is \code{0.6}.}
 
 \item{bbknn_params}{A list of parameters for the bbknn.matrix.bbknn function, default is an empty list.}
-
-\item{bbknn_backend}{Backend used for BBKNN graph construction. `"python"`
-uses the original `bbknn.matrix.bbknn` implementation. `"r"` uses a native
-R/C++ balanced KNN graph with approximate connectivity weights.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

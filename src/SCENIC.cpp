@@ -623,12 +623,12 @@ static void scenic_profile_add_elapsed(
 
 static int scenic_grn_worker_count(int requested, int n_tasks) {
   if (n_tasks <= 1) return 1;
-  int n_threads = requested < 1 ? 1 : requested;
+  int cores = requested < 1 ? 1 : requested;
   const unsigned int hardware = std::thread::hardware_concurrency();
   if (hardware > 0) {
-    n_threads = std::min(n_threads, static_cast<int>(hardware));
+    cores = std::min(cores, static_cast<int>(hardware));
   }
-  return std::max(1, std::min(n_threads, n_tasks));
+  return std::max(1, std::min(cores, n_tasks));
 }
 
 static void scenic_grnboost_run_targets(
@@ -835,7 +835,7 @@ static DataFrame scenic_grnboost_tree_impl(
     int random_seed = 1234,
     bool exclude_self = true,
     ScenicGrnProfile* profile = nullptr,
-    int n_threads = 1) {
+    int cores = 1) {
   std::chrono::steady_clock::time_point prepare_start;
   if (profile != nullptr) prepare_start = std::chrono::steady_clock::now();
   const int n_samples = expr.nrow();
@@ -896,7 +896,7 @@ static DataFrame scenic_grnboost_tree_impl(
   }
 
   const int workers = profile == nullptr ?
-    scenic_grn_worker_count(n_threads, static_cast<int>(targets.size())) : 1;
+    scenic_grn_worker_count(cores, static_cast<int>(targets.size())) : 1;
   if (workers <= 1) {
     scenic_grnboost_run_targets(
       expr, regs, targets, 0, targets.size(), means, feature_orders,
@@ -1006,11 +1006,11 @@ DataFrame grnboost_tree_parallel(
     int early_stop_window_length = 25,
     int random_seed = 1234,
     bool exclude_self = true,
-    int n_threads = 1) {
+    int cores = 1) {
   return scenic_grnboost_tree_impl(
     expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target,
     max_depth, max_features, subsample, early_stop_window_length, random_seed,
-    exclude_self, nullptr, n_threads);
+    exclude_self, nullptr, cores);
 }
 
 // [[Rcpp::export]]

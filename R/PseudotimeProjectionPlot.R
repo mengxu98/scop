@@ -659,11 +659,10 @@ compute_pseudotime_on_knn <- function(
     )
     k_use <- min(k, nrow(x_emb) - 1L)
     if (k_use > 0) {
-      topk <- run_knn_topk(
+      topk <- run_biocneighbors_knn(
         reference = x_emb,
         k = k_use,
         metric = "euclidean",
-        backend = "cpp",
         exclude_self = TRUE
       )[["idx"]]
       neighbors_list <- lapply(seq_len(nrow(topk)), function(i) {
@@ -753,11 +752,10 @@ compute_pseudotime_on_gradient <- function(
   k_use <- min(k_local, n_cells - 1L)
   neighbors_matrix <- NULL
   if (k_use > 0) {
-    neighbors_matrix <- run_knn_topk(
+    neighbors_matrix <- run_biocneighbors_knn(
       reference = x_emb,
       k = k_use,
       metric = "euclidean",
-      backend = "cpp",
       exclude_self = TRUE
     )[["idx"]]
   }

@@ -397,7 +397,7 @@ atac_add_activity <- function(
   }
 
   srt[[gene_activity_assay]] <- Seurat::CreateAssayObject(counts = ga)
-  srt <- Seurat::NormalizeData(
+  srt <- NormalizeData(
     object = srt,
     assay = gene_activity_assay,
     normalization.method = "LogNormalize",

@@ -468,7 +468,13 @@ run_cellrank_cpp <- function(
     cells, seq_len(min(n_pcs, ncol(srt@reductions[[linear_reduction]]@cell.embeddings))), drop = FALSE])
   storage.mode(le) <- "double"
   knn_k <- max(1L, min(as.integer(n_neighbors) - 1L, n_cells - 1L))
-  knn <- run_cpp_knn(reference = le, query = le, k = knn_k, metric = "euclidean", exclude_self = TRUE, n_threads = as.integer(cores))
+  knn <- run_biocneighbors_knn(
+    reference = le,
+    k = knn_k,
+    metric = "euclidean",
+    exclude_self = TRUE,
+    n_threads = as.integer(cores)
+  )
 
   # Build transition matrix based on kernel_type
   T_mat <- NULL
