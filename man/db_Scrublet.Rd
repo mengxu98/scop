@@ -9,7 +9,6 @@ db_Scrublet(
   assay = "RNA",
   db_rate = ncol(srt)/1000 * 0.01,
   data_type = NULL,
-  scrublet_backend = c("python", "r"),
   ...,
   verbose = TRUE
 )
@@ -26,10 +25,6 @@ Default is calculated as \code{ncol(srt) / 1000 * 0.01}.}
 \item{data_type}{Optional precomputed result from \link{CheckDataType} for the
 input assay. Primarily used internally to avoid repeated scans of the same
 count matrix across nested QC calls.}
-
-\item{scrublet_backend}{Backend used for Scrublet scoring. \code{"python"} uses
-the original \code{scrublet.Scrublet} implementation. \code{"r"} uses a native
-approximate doublet simulation, PCA, and KNN scoring workflow.}
 
 \item{...}{Additional arguments to be passed to \href{https://github.com/swolock/scrublet}{scrublet.Scrublet}.}
 

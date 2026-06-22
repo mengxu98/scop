@@ -1,0 +1,111 @@
+#' @export
+NormalizeData.Seurat <- function(
+  object,
+  assay = NULL,
+  normalization.method = "LogNormalize",
+  scale.factor = 10000,
+  margin = 1,
+  block.size = NULL,
+  verbose = TRUE,
+  ...
+) {
+  dots_call <- match.call(expand.dots = FALSE)$...
+  if (
+    !identical(normalization.method, "LogNormalize") ||
+      !is.numeric(scale.factor) ||
+      length(scale.factor) != 1L ||
+      !is.finite(scale.factor) ||
+      !is.numeric(margin) ||
+      length(margin) != 1L ||
+      !is.finite(margin) ||
+      margin != 1 ||
+      !is.null(block.size) ||
+      length(dots_call) != 0L
+  ) {
+    stop("NormalizeData.Seurat supports LogNormalize, margin = 1, and no extra arguments.", call. = FALSE)
+  }
+
+  assay <- if (is.null(assay)) {
+    SeuratObject::DefaultAssay(object)
+  } else {
+    if (!is.character(assay) || length(assay) != 1L || is.na(assay)) {
+      stop("NormalizeData.Seurat requires a single assay name.", call. = FALSE)
+    }
+    assay
+  }
+  assays <- methods::slot(object, "assays")
+  if (!assay %in% names(assays)) {
+    stop(sprintf("Assay '%s' is not present in object.", assay), call. = FALSE)
+  }
+  assay_obj <- assays[[assay]]
+  assay_slots <- methods::slotNames(assay_obj)
+  if (
+    !inherits(assay_obj, "StdAssay") ||
+      !all(c("layers", "cells", "features") %in% assay_slots)
+  ) {
+    stop("NormalizeData.Seurat requires an assay with layers, cells, and features slots.", call. = FALSE)
+  }
+  counts_layers <- tryCatch(
+    SeuratObject::Layers(assay_obj, search = "counts"),
+    error = function(e) NULL
+  )
+  if (!identical(counts_layers, "counts")) {
+    stop("NormalizeData.Seurat requires one counts layer named 'counts'.", call. = FALSE)
+  }
+  layers <- methods::slot(assay_obj, "layers")
+  counts <- layers[["counts"]]
+  if (is.null(counts)) {
+    stop("NormalizeData.Seurat requires a counts layer.", call. = FALSE)
+  }
+  if (!inherits(counts, "dgCMatrix")) {
+    counts <- tryCatch(
+      methods::as(counts, "dgCMatrix"),
+      error = function(e) NULL
+    )
+    if (is.null(counts)) {
+      stop("NormalizeData.Seurat requires counts convertible to dgCMatrix.", call. = FALSE)
+    }
+  }
+
+  data_mat <- counts
+  data_mat@x <- counts@x + 0
+  log_normalize_dgc(data_mat, scale.factor, 100L)
+  layers[["data"]] <- data_mat
+  methods::slot(assay_obj, "layers") <- layers
+
+  cm <- methods::slot(assay_obj, "cells")
+  if (!"data" %in% colnames(cm)) {
+    new_col <- matrix(
+      TRUE,
+      nrow = nrow(cm),
+      ncol = 1,
+      dimnames = list(rownames(cm), "data")
+    )
+    methods::slot(cm, ".Data") <- cbind(cm, new_col)
+    methods::slot(assay_obj, "cells") <- cm
+  }
+  fm <- methods::slot(assay_obj, "features")
+  if (!"data" %in% colnames(fm)) {
+    new_col <- matrix(
+      TRUE,
+      nrow = nrow(fm),
+      ncol = 1,
+      dimnames = list(rownames(fm), "data")
+    )
+    methods::slot(fm, ".Data") <- cbind(fm, new_col)
+    methods::slot(assay_obj, "features") <- fm
+  }
+  assays[[assay]] <- assay_obj
+  methods::slot(object, "assays") <- assays
+  SeuratObject::LogSeuratCommand(object)
+}
+
+#' @export
+NormalizeData <- function(object, ...) {
+  UseMethod("NormalizeData")
+}
+
+#' @export
+NormalizeData.default <- function(object, ...) {
+  stop("NormalizeData supports Seurat objects.", call. = FALSE)
+}

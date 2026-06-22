@@ -546,15 +546,15 @@ scissor_network <- function(
     verbose = verbose
   )
   tmp <- Seurat::CreateSeuratObject(counts = sc_matrix)
-  tmp <- Seurat::NormalizeData(tmp, verbose = FALSE)
-  tmp <- Seurat::FindVariableFeatures(
+  tmp <- NormalizeData(tmp, verbose = FALSE)
+  tmp <- FindVariableFeatures(
     tmp,
     selection.method = "vst",
     nfeatures = nfeatures,
     verbose = FALSE
   )
-  tmp <- Seurat::ScaleData(tmp, verbose = FALSE)
-  tmp <- Seurat::RunPCA(
+  tmp <- ScaleData(tmp, verbose = FALSE)
+  tmp <- RunPCA(
     tmp,
     features = SeuratObject::VariableFeatures(tmp),
     verbose = FALSE
@@ -566,7 +566,7 @@ scissor_network <- function(
       message_type = "error"
     )
   }
-  tmp <- Seurat::FindNeighbors(tmp, dims = dims_use, verbose = FALSE)
+  tmp <- FindNeighbors(tmp, dims = dims_use, verbose = FALSE)
   network <- scissor_binary_network(
     tmp@graphs[[paste0(SeuratObject::DefaultAssay(tmp), "_snn")]]
   )

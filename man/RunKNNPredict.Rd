@@ -93,12 +93,11 @@ If using "roc" test, \code{DE_threshold} should be needs to be reassigned. e.g. 
 Default is \code{"p_val < 0.05"}.}
 
 \item{nn_method}{A character string specifying the nearest neighbor search method to use.
-Options are "raw", "annoy", "rann", and "cpp".
+Options are "raw", "annoy", and "rann".
 If "raw" is selected, the function will use the brute-force method to find the nearest neighbors.
 If "annoy" is selected, the function will use the Annoy library for approximate nearest neighbor search.
 If "rann" is selected, the function will use the RANN library for approximate nearest neighbor search.
-If "cpp" is selected, the function will use the compiled exact top-k search.
-If not provided, the function will use "cpp" for Euclidean or cosine distance, otherwise it will choose the search method based on the size of the query and reference datasets.}
+If not provided, the function will choose the search method based on the size of the query and reference datasets.}
 
 \item{distance_metric}{A character vector specifying the distance metric to be used for calculating similarity between cells.
 Must be one of "cosine", "euclidean", "manhattan", or "hamming".
@@ -126,11 +125,6 @@ data(pancreas_sub)
 data(ref_scMCA)
 pancreas_sub <- standard_scop(pancreas_sub)
 
-# Set the number of threads for RcppParallel
-# details see: ?RcppParallel::setThreadOptions
-# if (requireNamespace("RcppParallel", quietly = TRUE)) {
-#   RcppParallel::setThreadOptions()
-# }
 pancreas_sub <- RunKNNPredict(
   srt_query = pancreas_sub,
   bulk_ref = ref_scMCA

@@ -1,3 +1,20 @@
-PKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+RCPPPARALLEL_LIBDIR = $(shell "${R_HOME}/bin/Rscript" -e "cat(system.file('lib', package='RcppParallel'))")
+PKG_CPPFLAGS = -I.
+
+OMP_INCLUDE_DIR = $(shell \
+  for d in /opt/homebrew/opt/libomp/include /opt/anaconda3/include /opt/local/include/libomp /opt/local/include /usr/local/include; do \
+    if [ -f "$$d/omp.h" ]; then echo "$$d"; break; fi; \
+  done)
+OMP_LIB_DIR = $(shell \
+  for d in /opt/homebrew/opt/libomp/lib /opt/anaconda3/lib /opt/local/lib/libomp /opt/local/lib /usr/local/lib; do \
+    if [ -f "$$d/libomp.dylib" ]; then echo "$$d"; break; fi; \
+  done)
+DARWIN_OMP_CXX = $(shell uname -s | grep -q Darwin && test -n "$(OMP_INCLUDE_DIR)" && echo "-Xclang -fopenmp -I$(OMP_INCLUDE_DIR)")
+DARWIN_OMP_LD = $(shell uname -s | grep -q Darwin && { \
+  if [ -f "${R_HOME}/lib/libomp.dylib" ]; then echo "${R_HOME}/lib/libomp.dylib"; \
+  elif [ -n "$(OMP_LIB_DIR)" ]; then echo "$(OMP_LIB_DIR)/libomp.dylib -Wl,-rpath,$(OMP_LIB_DIR)"; fi; })
+
+PKG_CFLAGS = -pthread -O3
+PKG_CXXFLAGS = -DARMA_64BIT_WORD=1 $(shell "${R_HOME}/bin/Rscript" -e "RcppParallel::CxxFlags()") -DRCPP_PARALLEL_USE_TBB=1 $(SHLIB_OPENMP_CXXFLAGS) $(DARWIN_OMP_CXX) -O3
+PKG_LIBS = $(shell "${R_HOME}/bin/Rscript" -e "RcppParallel::LdFlags()") -Wl,-rpath,$(RCPPPARALLEL_LIBDIR) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) $(SHLIB_OPENMP_CXXFLAGS) $(DARWIN_OMP_LD)
 CXX_STD = CXX17
-PKG_CXXFLAGS = -DARMA_64BIT_WORD=1

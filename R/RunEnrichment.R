@@ -188,6 +188,12 @@ RunEnrichment <- function(
   log_message("Start {.pkg Enrichment} analysis", verbose = verbose)
   species <- normalize_species_name(species)
   backend <- match.arg(backend)
+  direct_cpp_custom <- identical(backend, "cpp") &&
+    is.null(features) &&
+    !is.null(TERM2GENE) &&
+    !isTRUE(db_combine) &&
+    !isTRUE(GO_simplify) &&
+    is.null(srt)
   if (identical(backend, "cpp") && isTRUE(GO_simplify)) {
     log_message(
       "{.arg GO_simplify = TRUE} requires {.pkg clusterProfiler} result objects; using {.arg backend = 'r'} for this run.",
@@ -331,68 +337,52 @@ RunEnrichment <- function(
     colnames(geneMap)[1] <- IDtype
   }
 
-  input[[IDtype]] <- geneMap[as.character(input$geneID), IDtype]
-  input[[result_IDtype]] <- geneMap[as.character(input$geneID), result_IDtype]
-  input <- unnest_fun(input, cols = c(IDtype, result_IDtype))
-  input <- input[!is.na(input[[IDtype]]), , drop = FALSE]
+  if (isTRUE(direct_cpp_custom) && identical(IDtype, result_IDtype)) {
+    input[[IDtype]] <- as.character(input$geneID)
+  } else {
+    input[[IDtype]] <- geneMap[as.character(input$geneID), IDtype]
+    input[[result_IDtype]] <- geneMap[as.character(input$geneID), result_IDtype]
+    input <- unnest_fun(input, cols = c(IDtype, result_IDtype))
+    input <- input[!is.na(input[[IDtype]]), , drop = FALSE]
+  }
 
-  log_message("Permform enrichment...")
-  comb <- expand.grid(
-    group = levels(geneID_groups),
-    term = db,
-    stringsAsFactors = FALSE
-  )
-
-  res_list <- parallelize_fun(
-    seq_len(nrow(comb)),
-    function(i) {
-      group <- comb[i, "group"]
-      term <- comb[i, "term"]
-      gene <- input[input$geneID_groups == group, IDtype]
-      gene_mapid <- input[input$geneID_groups == group, result_IDtype]
-      TERM2GENE_tmp <- db_list[[species]][[term]][["TERM2GENE"]][, c(
-        "Term",
-        IDtype
-      )]
-      TERM2NAME_tmp <- db_list[[species]][[term]][["TERM2NAME"]]
-      dup <- duplicated(TERM2GENE_tmp)
-      na <- rowSums(is.na(TERM2GENE_tmp)) > 0
-      TERM2GENE_tmp <- TERM2GENE_tmp[!(dup | na), , drop = FALSE]
-      TERM2NAME_tmp <- TERM2NAME_tmp[
-        TERM2NAME_tmp[["Term"]] %in% TERM2GENE_tmp[["Term"]], ,
-        drop = FALSE
-      ]
-      if (identical(backend, "cpp")) {
-        result <- run_ora_result(
-          gene = gene,
-          TERM2GENE = TERM2GENE_tmp,
-          TERM2NAME = TERM2NAME_tmp,
-          IDtype = IDtype,
-          min_gs_size = ifelse(term %in% unlimited_db, 1, minGSSize),
-          max_gs_size = ifelse(term %in% unlimited_db, Inf, maxGSSize)
-        )
-        enrich_res <- result
-      } else {
-        enrich_res <- clusterProfiler::enricher(
-          gene = gene,
-          minGSSize = ifelse(term %in% unlimited_db, 1, minGSSize),
-          maxGSSize = ifelse(term %in% unlimited_db, Inf, maxGSSize),
-          pAdjustMethod = "BH",
-          pvalueCutoff = Inf,
-          qvalueCutoff = Inf,
-          universe = NULL,
-          TERM2GENE = TERM2GENE_tmp,
-          TERM2NAME = TERM2NAME_tmp
-        )
-        result <- if (!is.null(enrich_res)) enrich_res@result else NULL
+  if (isTRUE(direct_cpp_custom)) {
+    term <- db[[1]]
+    TERM2GENE_tmp <- db_list[[species]][[term]][["TERM2GENE"]][, c(
+      "Term",
+      IDtype
+    )]
+    TERM2NAME_tmp <- db_list[[species]][[term]][["TERM2NAME"]]
+    keep_term_gene <- !duplicated(TERM2GENE_tmp) &
+      stats::complete.cases(TERM2GENE_tmp)
+    TERM2GENE_tmp <- TERM2GENE_tmp[keep_term_gene, , drop = FALSE]
+    TERM2NAME_tmp <- TERM2NAME_tmp[
+      TERM2NAME_tmp[["Term"]] %in% TERM2GENE_tmp[["Term"]], ,
+      drop = FALSE
+    ]
+    term_version <- as.character(db_list[[species]][[term]][["version"]])
+    group_levels <- levels(geneID_groups)
+    genes_by_group <- split(input[[IDtype]], input$geneID_groups, drop = TRUE)
+    result_list <- lapply(group_levels, function(group) {
+      gene <- genes_by_group[[group]]
+      if (is.null(gene)) {
+        gene <- character(0)
       }
-
-      if (!is.null(result) && nrow(result) > 0) {
-        result[["Groups"]] <- group
-        result[["Database"]] <- term
-        result[["Version"]] <- as.character(db_list[[species]][[term]][[
-          "version"
-        ]])
+      result <- run_ora_result(
+        gene = gene,
+        TERM2GENE = TERM2GENE_tmp,
+        TERM2NAME = TERM2NAME_tmp,
+        IDtype = IDtype,
+        min_gs_size = ifelse(term %in% unlimited_db, 1, minGSSize),
+        max_gs_size = ifelse(term %in% unlimited_db, Inf, maxGSSize)
+      )
+      if (is.null(result) || nrow(result) == 0L) {
+        return(NULL)
+      }
+      result[["Groups"]] <- group
+      result[["Database"]] <- term
+      result[["Version"]] <- term_version
+      if (!identical(IDtype, result_IDtype)) {
         IDlist <- strsplit(result$geneID, split = "/")
         result$geneID <- unlist(lapply(IDlist, function(x) {
           x_result <- NULL
@@ -406,8 +396,115 @@ RunEnrichment <- function(
               x_result <- c(x_result, i)
             }
           }
-          return(paste0(x_result, collapse = "/"))
+          paste0(x_result, collapse = "/")
         }))
+      }
+      result
+    })
+    names(result_list) <- paste(group_levels, term, sep = "-")
+    results <- result_list[!vapply(result_list, is.null, logical(1))]
+    enrichment <- if (length(results) == 0L) {
+      data.frame()
+    } else {
+      do.call(rbind, results)
+    }
+    rownames(enrichment) <- NULL
+    return(list(
+      enrichment = enrichment,
+      results = results,
+      geneMap = geneMap,
+      input = input,
+      backend = backend
+    ))
+  }
+
+  log_message("Permform enrichment...")
+  comb <- expand.grid(
+    group = levels(geneID_groups),
+    term = db,
+    stringsAsFactors = FALSE
+  )
+  term_inputs <- stats::setNames(
+    lapply(db, function(term) {
+      TERM2GENE_tmp <- db_list[[species]][[term]][["TERM2GENE"]][, c(
+        "Term",
+        IDtype
+      )]
+      TERM2NAME_tmp <- db_list[[species]][[term]][["TERM2NAME"]]
+      keep_term_gene <- !duplicated(TERM2GENE_tmp) &
+        stats::complete.cases(TERM2GENE_tmp)
+      TERM2GENE_tmp <- TERM2GENE_tmp[keep_term_gene, , drop = FALSE]
+      TERM2NAME_tmp <- TERM2NAME_tmp[
+        TERM2NAME_tmp[["Term"]] %in% TERM2GENE_tmp[["Term"]], ,
+        drop = FALSE
+      ]
+      list(
+        TERM2GENE = TERM2GENE_tmp,
+        TERM2NAME = TERM2NAME_tmp,
+        minGSSize = ifelse(term %in% unlimited_db, 1, minGSSize),
+        maxGSSize = ifelse(term %in% unlimited_db, Inf, maxGSSize),
+        version = as.character(db_list[[species]][[term]][["version"]])
+      )
+    }),
+    db
+  )
+
+  res_list <- parallelize_fun(
+    seq_len(nrow(comb)),
+    function(i) {
+      group <- comb[i, "group"]
+      term <- comb[i, "term"]
+      gene <- input[input$geneID_groups == group, IDtype]
+      gene_mapid <- input[input$geneID_groups == group, result_IDtype]
+      term_input <- term_inputs[[term]]
+      TERM2GENE_tmp <- term_input[["TERM2GENE"]]
+      TERM2NAME_tmp <- term_input[["TERM2NAME"]]
+      if (identical(backend, "cpp")) {
+        result <- run_ora_result(
+          gene = gene,
+          TERM2GENE = TERM2GENE_tmp,
+          TERM2NAME = TERM2NAME_tmp,
+          IDtype = IDtype,
+          min_gs_size = term_input[["minGSSize"]],
+          max_gs_size = term_input[["maxGSSize"]]
+        )
+        enrich_res <- result
+      } else {
+        enrich_res <- clusterProfiler::enricher(
+          gene = gene,
+          minGSSize = term_input[["minGSSize"]],
+          maxGSSize = term_input[["maxGSSize"]],
+          pAdjustMethod = "BH",
+          pvalueCutoff = Inf,
+          qvalueCutoff = Inf,
+          universe = NULL,
+          TERM2GENE = TERM2GENE_tmp,
+          TERM2NAME = TERM2NAME_tmp
+        )
+        result <- if (!is.null(enrich_res)) enrich_res@result else NULL
+      }
+
+      if (!is.null(result) && nrow(result) > 0) {
+        result[["Groups"]] <- group
+        result[["Database"]] <- term
+        result[["Version"]] <- term_input[["version"]]
+        if (!identical(IDtype, result_IDtype)) {
+          IDlist <- strsplit(result$geneID, split = "/")
+          result$geneID <- unlist(lapply(IDlist, function(x) {
+            x_result <- NULL
+            for (i in x) {
+              if (i %in% geneMap[[IDtype]]) {
+                x_result <- c(
+                  x_result,
+                  unique(geneMap[geneMap[[IDtype]] == i, result_IDtype])
+                )
+              } else {
+                x_result <- c(x_result, i)
+              }
+            }
+            return(paste0(x_result, collapse = "/"))
+          }))
+        }
         if (identical(backend, "cpp")) {
           enrich_res <- result
         } else {
