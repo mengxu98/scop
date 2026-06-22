@@ -9,15 +9,22 @@ GSVAPlot(
   srt = NULL,
   res = NULL,
   group.by = NULL,
+  sample.by = NULL,
   assay_name = "GSVA",
   db = NULL,
-  plot_type = c("heatmap", "bar", "network", "enrichmap", "wordcloud", "comparison"),
+  mode = c("score", "diff"),
+  plot_type = c("heatmap", "bar", "network", "enrichmap", "wordcloud", "comparison",
+    "volcano"),
   split_by = c("Database", "Groups"),
   color_by = "Database",
   group_use = NULL,
   features = NULL,
   topTerm = NULL,
   score_cutoff = NULL,
+  sort.by = c("abs", "score"),
+  aggregate.fun = c("mean", "median"),
+  test.use = c("wilcox", "t.test"),
+  p.adjust.method = "BH",
   pvalueCutoff = NULL,
   padjustCutoff = NULL,
   topWord = 100,
@@ -75,6 +82,7 @@ GSVAPlot(
   theme_use = "theme_scop",
   theme_args = list(),
   combine = TRUE,
+  return_data = FALSE,
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
@@ -102,6 +110,11 @@ GSVAPlot(
 
   A character vector specifying the grouping variable used in RunGSVA.
 
+- sample.by:
+
+  Metadata column identifying biological samples for sample-level
+  aggregation. Required when `mode = "diff"`.
+
 - assay_name:
 
   The name of the assay or tools slot containing GSVA results. Default
@@ -113,12 +126,18 @@ GSVAPlot(
   EnrichmentPlot. Default is `NULL` (will be inferred from GSVA results
   or set to "GSVA").
 
+- mode:
+
+  Plot mode. `"score"` keeps the original GSVA score plotting behavior;
+  `"diff"` performs a two-group differential pathway activity test on
+  sample-aggregated GSVA scores.
+
 - plot_type:
 
   The type of plot to generate. Options are: `"heatmap"`, `"bar"`,
-  `"network"`, `"enrichmap"`, `"wordcloud"`, `"comparison"`. Default is
-  `"heatmap"`. Note: `"heatmap"` uses ComplexHeatmap directly, while
-  other types reuse EnrichmentPlot logic.
+  `"network"`, `"enrichmap"`, `"wordcloud"`, `"comparison"`, and
+  `"volcano"`. When omitted, the default is `"heatmap"` for
+  `mode = "score"` and `"volcano"` for `mode = "diff"`.
 
 - split_by:
 
@@ -145,6 +164,28 @@ GSVAPlot(
 
   The score cutoff for the GSVA plot. Default is `NULL` (no cutoff).
 
+- sort.by:
+
+  Ranking metric used when `return_data = TRUE` in `mode = "score"`.
+  `"abs"` uses absolute GSVA score and `"score"` uses signed GSVA score.
+
+- aggregate.fun:
+
+  Function used to aggregate cells within each `sample.by` and
+  `group.by` combination in `mode = "diff"`. Supports `"mean"` and
+  `"median"`.
+
+- test.use:
+
+  Statistical test for `mode = "diff"`. Supports `"wilcox"` and
+  `"t.test"`.
+
+- p.adjust.method:
+
+  Multiple-testing correction method passed to
+  [`stats::p.adjust()`](https://rdrr.io/r/stats/p.adjust.html) in
+  `mode = "diff"`.
+
 - pvalueCutoff:
 
   A numeric vector specifying the p-value cutoff(s) for significance.
@@ -152,7 +193,7 @@ GSVAPlot(
 
 - padjustCutoff:
 
-  The adjusted p-value cutoff for significance. Default is `0.05`.
+  The adjusted p-value cutoff for significance. Default is `NULL`.
 
 - topWord:
 
@@ -315,7 +356,7 @@ GSVAPlot(
 
   Color palette name. Available palettes can be found in
   [thisplot::show_palettes](https://mengxu98.github.io/thisplot/reference/show_palettes.html).
-  Default is `"Chinese"`.
+  Default is `"simspec"`.
 
 - palcolor:
 
@@ -415,6 +456,10 @@ GSVAPlot(
   Combine plots into a single `patchwork` object. If `FALSE`, return a
   list of ggplot objects.
 
+- return_data:
+
+  Whether to return the ranking/statistics table instead of a plot.
+
 - nrow:
 
   Number of rows in the combined plot. Default is `NULL`, which means
@@ -445,6 +490,16 @@ GSVAPlot(
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
+
+## Details
+
+GSVA itself returns pathway activity/enrichment scores, not statistical
+p-values. In `mode = "score"`, non-heatmap plot types fill `pvalue` and
+`p.adjust` internally only to satisfy the shared
+[`EnrichmentPlot()`](https://mengxu98.github.io/scop/reference/EnrichmentPlot.md)
+interface; these score-derived placeholders should not be interpreted as
+pathway significance. Use `mode = "diff"` for real group-level
+statistical tests on GSVA scores.
 
 ## See also
 

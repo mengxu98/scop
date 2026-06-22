@@ -8,6 +8,12 @@
     compare the group with the highest median statistic against all
     other groups, with explicit `ref_group` and `comparisons` still
     taking precedence.
+  - [`GSVAPlot()`](https://mengxu98.github.io/scop/reference/GSVAPlot.md)
+    now supports `mode = "diff"` for true two-group pathway activity
+    tests on sample-aggregated GSVA scores, while keeping the original
+    score plotting behavior as the default. Non-heatmap score-mode
+    p-value columns are documented as score-derived plotting
+    placeholders, not statistical significance.
   - Added
     [`ClusterTreePlot()`](https://mengxu98.github.io/scop/reference/ClusterTreePlot.md)
     for SCOP-styled visualization of Seurat multi-resolution clustering
