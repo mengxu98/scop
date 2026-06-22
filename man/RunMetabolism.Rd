@@ -83,9 +83,7 @@ This automatically handles gene symbol conversion for non-human species
 (e.g., \code{species = "Mus_musculus"} → mouse gene symbols in metabolism pathways).
 When \code{FALSE}, raw scMetabolism GMT files are
 downloaded and genes are matched case-insensitively with optional \link{GeneConvert}
-supplementation when \code{convert_species = TRUE}.
-genes and approximates zero ties, \code{"topk"} ranks only genes that can contribute
-to AUCell AUC, and \code{"full"} ranks all genes.}
+supplementation when \code{convert_species = TRUE}.}
 
 \item{method}{Scoring method, one of \code{"AUCell"}, \code{"GSVA"}, \code{"ssGSEA"}, \code{"VISION"}.}
 
@@ -97,8 +95,8 @@ to AUCell AUC, and \code{"full"} ranks all genes.}
 \item{cpp_strategy}{AUCell scoring strategy used when \code{backend = "cpp"}.
 \code{"topk"} is the speed-first default and ranks only genes that can contribute
 to AUCell AUC. \code{"aucell"} uses \code{\link[AUCell:AUCell_buildRankings]{AUCell::AUCell_buildRankings()}} and
-\code{\link[AUCell:AUCell_calcAUC]{AUCell::AUCell_calcAUC()}} for scMetabolism-compatible scores.
-\code{"sparse"} ranks non-zero}
+\code{\link[AUCell:AUCell_calcAUC]{AUCell::AUCell_calcAUC()}} for scMetabolism-compatible scores, \code{"sparse"}
+ranks non-zero genes and approximates zero ties, and \code{"full"} ranks all genes.}
 
 \item{cpp_chunk_size}{Optional cell chunk size for C++ GSVA kernels. \code{NULL}
 or \code{"auto"} automatically chunks large matrices to reduce peak dense

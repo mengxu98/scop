@@ -40,23 +40,85 @@ SpatialNeighborhoodPlot(
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object containing \code{RunSpatialNeighborhood()} results.}
-\item{method}{Stored neighborhood method to plot. If \code{NULL}, the active method is used.}
-\item{plot_type}{Plot type. One of \code{"heatmap"}, \code{"network"}, \code{"stat"}, or \code{"spatial"}.}
+\item{srt}{A \code{Seurat} object.}
+
+\item{method}{Stored neighborhood method to plot. If \code{NULL}, the active
+method is used.}
+
+\item{plot_type}{Plot type. One of \code{"heatmap"}, \code{"network"}, \code{"stat"}, or
+\code{"spatial"}.}
+
 \item{comparison, condition}{Optional filters for stored result tables.}
+
 \item{value}{Column used as the plotted effect value.}
+
 \item{FDR_threshold}{FDR cutoff used to mark significant pairs.}
+
 \item{top_n}{Number of pairs to show for network and statistic plots.}
+
 \item{layout}{Network layout.}
+
 \item{edge_size}{Network edge size range.}
+
 \item{cols.enriched, cols.depleted, cols.ns}{Colors for direction categories.}
-\item{pair}{Pair to visualize for \code{plot_type = "spatial"}, either \code{"from|to"} or a length-2 character vector.}
-\item{image, overlay_image, coord.cols, split.by, palette, palcolor, legend.position, legend.direction, legend.title, theme_use, theme_args, combine, nrow, ncol, byrow, verbose, ...}{Arguments forwarded to the corresponding plotting backend.}
-\item{seed}{Random seed used by network layout.}
+
+\item{pair}{Pair to visualize for \code{plot_type = "spatial"}, either
+\code{"from|to"} or a length-2 character vector.}
+
+\item{image}{Name of the Seurat spatial image. If \code{NULL}, the first image is
+used when present.}
+
+\item{overlay_image}{Whether to draw the spatial image beneath spots.}
+
+\item{coord.cols}{Metadata coordinate columns used when no Seurat image
+coordinates are available.}
+
+\item{split.by}{Optional metadata column identifying conditions for
+differential neighborhood statistics.}
+
+\item{palette}{Color palette name.
+Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
+Default is \code{"Chinese"}.}
+
+\item{palcolor}{Custom colors used to create a color palette.
+Default is \code{NULL}.}
+
+\item{legend.position}{The position of legends,
+one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
+Default is \code{"right"}.}
+
+\item{legend.direction}{The direction of the legend in the plot.
+Can be one of \code{"vertical"} or \code{"horizontal"}.}
+
+\item{legend.title}{Title for the legend. Default is \code{NULL}, which uses the group name.}
+
+\item{theme_use}{Theme used. Can be a character string or a theme function.
+Default is \code{"theme_scop"}.}
+
+\item{theme_args}{Other arguments passed to the \code{theme_use}.
+Default is \code{list()}.}
+
+\item{combine}{Combine plots into a single \code{patchwork} object.
+If \code{FALSE}, return a list of ggplot objects.}
+
+\item{nrow}{Number of rows in the combined plot.
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
+
+\item{ncol}{Number of columns in the combined plot.
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
+
+\item{byrow}{Whether to arrange the plots by row in the combined plot.
+Default is \code{TRUE}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
+
+\item{...}{Additional arguments passed to the selected backend.}
 }
 \value{
 A \code{ggplot}, \code{patchwork}, or list of \code{ggplot} objects.
 }
 \description{
-Visualize results produced by \code{RunSpatialNeighborhood()} using scop spatial, statistical, and network plotting conventions.
+Visualize results produced by \code{\link[=RunSpatialNeighborhood]{RunSpatialNeighborhood()}} using scop spatial,
+statistical, and network plotting conventions.
 }
