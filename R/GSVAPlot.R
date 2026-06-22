@@ -12,9 +12,15 @@
 #' If provided, 'srt' and 'group.by' are ignored.
 #' @param assay_name The name of the assay or tools slot containing GSVA results.
 #' Default is `"GSVA"`.
+#' @param sample.by Metadata column identifying biological samples for
+#' sample-level aggregation. Required when `mode = "diff"`.
+#' @param mode Plot mode. `"score"` keeps the original GSVA score plotting
+#' behavior; `"diff"` performs a two-group differential pathway activity test
+#' on sample-aggregated GSVA scores.
 #' @param plot_type The type of plot to generate.
-#' Options are: `"heatmap"`, `"bar"`, `"network"`, `"enrichmap"`, `"wordcloud"`, `"comparison"`.
-#' Default is `"heatmap"`. Note: `"heatmap"` uses ComplexHeatmap directly, while other types reuse EnrichmentPlot logic.
+#' Options are: `"heatmap"`, `"bar"`, `"network"`, `"enrichmap"`, `"wordcloud"`,
+#' `"comparison"`, and `"volcano"`. When omitted, the default is `"heatmap"`
+#' for `mode = "score"` and `"volcano"` for `mode = "diff"`.
 #' @param db The database name used in RunGSVA. Only used for compatibility with EnrichmentPlot.
 #' Default is `NULL` (will be inferred from GSVA results or set to "GSVA").
 #' @param split_by The splitting variable(s) for the plot.
@@ -26,6 +32,25 @@
 #' Default is `NULL` (all groups).
 #' @param score_cutoff The score cutoff for the GSVA plot.
 #' Default is `NULL` (no cutoff).
+#' @param sort.by Ranking metric used when `return_data = TRUE` in
+#' `mode = "score"`. `"abs"` uses absolute GSVA score and `"score"` uses signed
+#' GSVA score.
+#' @param aggregate.fun Function used to aggregate cells within each
+#' `sample.by` and `group.by` combination in `mode = "diff"`. Supports `"mean"`
+#' and `"median"`.
+#' @param test.use Statistical test for `mode = "diff"`. Supports `"wilcox"`
+#' and `"t.test"`.
+#' @param p.adjust.method Multiple-testing correction method passed to
+#' [stats::p.adjust()] in `mode = "diff"`.
+#' @param return_data Whether to return the ranking/statistics table instead of
+#' a plot.
+#' @details
+#' GSVA itself returns pathway activity/enrichment scores, not statistical
+#' p-values. In `mode = "score"`, non-heatmap plot types fill `pvalue` and
+#' `p.adjust` internally only to satisfy the shared [EnrichmentPlot()] interface;
+#' these score-derived placeholders should not be interpreted as pathway
+#' significance. Use `mode = "diff"` for real group-level statistical tests on
+#' GSVA scores.
 #'
 #' @seealso
 #' [RunGSVA], [EnrichmentPlot]
@@ -151,15 +176,18 @@ GSVAPlot <- function(
   srt = NULL,
   res = NULL,
   group.by = NULL,
+  sample.by = NULL,
   assay_name = "GSVA",
   db = NULL,
+  mode = c("score", "diff"),
   plot_type = c(
     "heatmap",
     "bar",
     "network",
     "enrichmap",
     "wordcloud",
-    "comparison"
+    "comparison",
+    "volcano"
   ),
   split_by = c("Database", "Groups"),
   color_by = "Database",
@@ -167,6 +195,10 @@ GSVAPlot <- function(
   features = NULL,
   topTerm = NULL,
   score_cutoff = NULL,
+  sort.by = c("abs", "score"),
+  aggregate.fun = c("mean", "median"),
+  test.use = c("wilcox", "t.test"),
+  p.adjust.method = "BH",
   pvalueCutoff = NULL,
   padjustCutoff = NULL,
   topWord = 100,
@@ -224,6 +256,7 @@ GSVAPlot <- function(
   theme_use = "theme_scop",
   theme_args = list(),
   combine = TRUE,
+  return_data = FALSE,
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
@@ -236,11 +269,40 @@ GSVAPlot <- function(
   if (isTRUE(raster_by_magick)) {
     check_r("magick", verbose = FALSE)
   }
-  plot_type <- match.arg(plot_type)
+  mode <- match.arg(mode)
+  sort.by <- match.arg(sort.by)
+  aggregate.fun <- match.arg(aggregate.fun)
+  test.use <- match.arg(test.use)
+  plot_type_missing <- missing(plot_type) || is.null(plot_type)
+  plot_type_choices <- c(
+    "heatmap",
+    "bar",
+    "network",
+    "enrichmap",
+    "wordcloud",
+    "comparison",
+    "volcano"
+  )
+  if (isTRUE(plot_type_missing)) {
+    plot_type <- if (identical(mode, "diff")) "volcano" else "heatmap"
+  }
+  plot_type <- match.arg(plot_type, plot_type_choices)
   word_type <- match.arg(word_type)
   split_method <- match.arg(split_method)
   enrichmap_label <- match.arg(enrichmap_label)
   enrichmap_mark <- match.arg(enrichmap_mark)
+  if (identical(mode, "score") && identical(plot_type, "volcano")) {
+    log_message(
+      "{.arg plot_type = 'volcano'} is only available when {.arg mode = 'diff'}",
+      message_type = "error"
+    )
+  }
+  if (identical(mode, "diff") && !plot_type %in% c("volcano", "bar")) {
+    log_message(
+      "{.arg mode = 'diff'} supports {.arg plot_type} values {.val volcano} and {.val bar}",
+      message_type = "error"
+    )
+  }
   if (plot_type == "wordcloud") {
     check_r("ggwordcloud", verbose = FALSE)
     check_r("simplifyEnrichment", verbose = FALSE)
@@ -253,6 +315,7 @@ GSVAPlot <- function(
   gsva_db <- NULL
   gsva_scores <- NULL
   enrichment <- NULL
+  gsva_is_group_level <- FALSE
   if (is.null(res)) {
     if (is.null(srt)) {
       log_message(
@@ -310,6 +373,7 @@ GSVAPlot <- function(
       enrichment <- gsva_result[["enrichment"]]
       group.by <- gsva_result[["group.by"]] %||% group.by
       gsva_db <- gsva_result[["db"]] %||% db
+      gsva_is_group_level <- !is.null(gsva_result[["group.by"]])
     }
   } else {
     if (is.list(res) && "scores" %in% names(res)) {
@@ -317,6 +381,7 @@ GSVAPlot <- function(
       enrichment <- res[["enrichment"]]
       group.by <- res[["group.by"]] %||% group.by
       gsva_db <- res[["db"]] %||% db
+      gsva_is_group_level <- !is.null(res[["group.by"]])
     } else if (is.matrix(res) || inherits(res, "Matrix")) {
       gsva_scores <- res
       gsva_db <- db
@@ -334,6 +399,65 @@ GSVAPlot <- function(
 
   if (is.null(gsva_db)) {
     gsva_db <- db %||% "GSVA"
+  }
+
+  if (identical(mode, "diff")) {
+    scores_for_diff <- gsva_scores
+    if (!is.null(features)) {
+      keep <- gsva_plot_match_features(features, scores_for_diff, enrichment)
+      if (length(keep) == 0L) {
+        log_message(
+          "No matching gene sets found in GSVA results",
+          message_type = "error"
+        )
+      }
+      scores_for_diff <- scores_for_diff[keep, , drop = FALSE]
+    }
+    diff_df <- gsva_plot_diff_table(
+      scores = scores_for_diff,
+      enrichment = enrichment,
+      srt = srt,
+      group.by = group.by,
+      sample.by = sample.by,
+      group_use = group_use,
+      aggregate.fun = aggregate.fun,
+      test.use = test.use,
+      p.adjust.method = p.adjust.method,
+      is_group_level = gsva_is_group_level
+    )
+    if (!is.null(padjustCutoff)) {
+      diff_df <- diff_df[
+        is.finite(diff_df[["p.adjust"]]) & diff_df[["p.adjust"]] <= padjustCutoff, ,
+        drop = FALSE
+      ]
+      if (nrow(diff_df) == 0L) {
+        log_message(
+          "No GSVA differential results pass {.arg padjustCutoff}",
+          message_type = "error"
+        )
+      }
+    }
+    if (isTRUE(return_data)) {
+      return(diff_df)
+    }
+    if (identical(plot_type, "bar")) {
+      return(gsva_plot_diff_bar(
+        diff_df,
+        topTerm = topTerm,
+        palette = palette,
+        palcolor = palcolor,
+        theme_use = theme_use,
+        theme_args = theme_args
+      ))
+    }
+    return(gsva_plot_diff_volcano(
+      diff_df,
+      padjustCutoff = padjustCutoff,
+      palette = palette,
+      palcolor = palcolor,
+      theme_use = theme_use,
+      theme_args = theme_args
+    ))
   }
 
   if (!is.null(group_use)) {
@@ -389,6 +513,19 @@ GSVAPlot <- function(
         message_type = "error"
       )
     }
+  }
+
+  if (isTRUE(return_data)) {
+    return(gsva_plot_score_table(
+      scores = gsva_scores,
+      enrichment = enrichment,
+      srt = srt,
+      group.by = group.by,
+      group_use = group_use,
+      sort.by = sort.by,
+      topTerm = topTerm,
+      score_cutoff = NULL
+    ))
   }
 
   if (plot_type != "heatmap") {

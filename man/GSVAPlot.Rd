@@ -8,15 +8,22 @@ GSVAPlot(
   srt = NULL,
   res = NULL,
   group.by = NULL,
+  sample.by = NULL,
   assay_name = "GSVA",
   db = NULL,
-  plot_type = c("heatmap", "bar", "network", "enrichmap", "wordcloud", "comparison"),
+  mode = c("score", "diff"),
+  plot_type = c("heatmap", "bar", "network", "enrichmap", "wordcloud", "comparison",
+    "volcano"),
   split_by = c("Database", "Groups"),
   color_by = "Database",
   group_use = NULL,
   features = NULL,
   topTerm = NULL,
   score_cutoff = NULL,
+  sort.by = c("abs", "score"),
+  aggregate.fun = c("mean", "median"),
+  test.use = c("wilcox", "t.test"),
+  p.adjust.method = "BH",
   pvalueCutoff = NULL,
   padjustCutoff = NULL,
   topWord = 100,
@@ -74,6 +81,7 @@ GSVAPlot(
   theme_use = "theme_scop",
   theme_args = list(),
   combine = TRUE,
+  return_data = FALSE,
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
@@ -93,15 +101,23 @@ If provided, 'srt' and 'group.by' are ignored.}
 
 \item{group.by}{A character vector specifying the grouping variable used in RunGSVA.}
 
+\item{sample.by}{Metadata column identifying biological samples for
+sample-level aggregation. Required when \code{mode = "diff"}.}
+
 \item{assay_name}{The name of the assay or tools slot containing GSVA results.
 Default is \code{"GSVA"}.}
 
 \item{db}{The database name used in RunGSVA. Only used for compatibility with EnrichmentPlot.
 Default is \code{NULL} (will be inferred from GSVA results or set to "GSVA").}
 
+\item{mode}{Plot mode. \code{"score"} keeps the original GSVA score plotting
+behavior; \code{"diff"} performs a two-group differential pathway activity test
+on sample-aggregated GSVA scores.}
+
 \item{plot_type}{The type of plot to generate.
-Options are: \code{"heatmap"}, \code{"bar"}, \code{"network"}, \code{"enrichmap"}, \code{"wordcloud"}, \code{"comparison"}.
-Default is \code{"heatmap"}. Note: \code{"heatmap"} uses ComplexHeatmap directly, while other types reuse EnrichmentPlot logic.}
+Options are: \code{"heatmap"}, \code{"bar"}, \code{"network"}, \code{"enrichmap"}, \code{"wordcloud"},
+\code{"comparison"}, and \code{"volcano"}. When omitted, the default is \code{"heatmap"}
+for \code{mode = "score"} and \code{"volcano"} for \code{mode = "diff"}.}
 
 \item{split_by}{The splitting variable(s) for the plot.
 Can be \code{"Database"}, \code{"Groups"}, or both.
@@ -122,11 +138,25 @@ Default is \code{5}.}
 \item{score_cutoff}{The score cutoff for the GSVA plot.
 Default is \code{NULL} (no cutoff).}
 
+\item{sort.by}{Ranking metric used when \code{return_data = TRUE} in
+\code{mode = "score"}. \code{"abs"} uses absolute GSVA score and \code{"score"} uses signed
+GSVA score.}
+
+\item{aggregate.fun}{Function used to aggregate cells within each
+\code{sample.by} and \code{group.by} combination in \code{mode = "diff"}. Supports \code{"mean"}
+and \code{"median"}.}
+
+\item{test.use}{Statistical test for \code{mode = "diff"}. Supports \code{"wilcox"}
+and \code{"t.test"}.}
+
+\item{p.adjust.method}{Multiple-testing correction method passed to
+\code{\link[stats:p.adjust]{stats::p.adjust()}} in \code{mode = "diff"}.}
+
 \item{pvalueCutoff}{A numeric vector specifying the p-value cutoff(s) for significance.
 Default is \code{NULL}.}
 
 \item{padjustCutoff}{The adjusted p-value cutoff for significance.
-Default is \code{0.05}.}
+Default is \code{NULL}.}
 
 \item{topWord}{A number of top words to include.
 Default is \code{20}.}
@@ -238,7 +268,7 @@ Default is \code{50}.}
 
 \item{palette}{Color palette name.
 Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Chinese"}.}
+Default is \code{"simspec"}.}
 
 \item{palcolor}{Custom colors used to create a color palette.
 Default is \code{NULL}.}
@@ -299,6 +329,9 @@ Default is \code{list()}.}
 \item{combine}{Combine plots into a single \code{patchwork} object.
 If \code{FALSE}, return a list of ggplot objects.}
 
+\item{return_data}{Whether to return the ranking/statistics table instead of
+a plot.}
+
 \item{nrow}{Number of rows in the combined plot.
 Default is \code{NULL}, which means determined automatically based on the number of plots.}
 
@@ -322,6 +355,14 @@ Default is \code{TRUE}.}
 }
 \description{
 Plots for GSVA (Gene Set Variation Analysis)
+}
+\details{
+GSVA itself returns pathway activity/enrichment scores, not statistical
+p-values. In \code{mode = "score"}, non-heatmap plot types fill \code{pvalue} and
+\code{p.adjust} internally only to satisfy the shared \code{\link[=EnrichmentPlot]{EnrichmentPlot()}} interface;
+these score-derived placeholders should not be interpreted as pathway
+significance. Use \code{mode = "diff"} for real group-level statistical tests on
+GSVA scores.
 }
 \examples{
 data(pancreas_sub)
