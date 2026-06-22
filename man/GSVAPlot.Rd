@@ -156,7 +156,7 @@ and \code{"t.test"}.}
 Default is \code{NULL}.}
 
 \item{padjustCutoff}{The adjusted p-value cutoff for significance.
-Default is \code{NULL}.}
+Default is \code{0.05}.}
 
 \item{topWord}{A number of top words to include.
 Default is \code{20}.}
@@ -268,7 +268,7 @@ Default is \code{50}.}
 
 \item{palette}{Color palette name.
 Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"simspec"}.}
+Default is \code{"Chinese"}.}
 
 \item{palcolor}{Custom colors used to create a color palette.
 Default is \code{NULL}.}
