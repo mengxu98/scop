@@ -9,7 +9,7 @@ RunSpatialVariableFeatures(
   assay = NULL,
   layer = "data",
   features = NULL,
-  method = c("moran", "geary"),
+  method = c("moran", "geary", "SPARKX", "nnSVG"),
   image = NULL,
   coord.cols = c("x", "y"),
   k = 6,
@@ -19,7 +19,8 @@ RunSpatialVariableFeatures(
   set_variable_features = TRUE,
   store_results = TRUE,
   verbose = TRUE,
-  seed = 11
+  seed = 11,
+  ...
 )
 }
 \arguments{
@@ -35,7 +36,7 @@ additional \code{ChromatinAssay} will be preprocessed sequentially.}
 \item{features}{Features to score. If \code{NULL}, current variable features are
 used; if no variable features are present, all assay features are used.}
 
-\item{method}{Spatial autocorrelation statistic.}
+\item{method}{Spatial variable feature detection method.}
 
 \item{image}{Name of the Seurat spatial image used by the spatial workflow.
 If \code{NULL}, the first image is used when present.}
@@ -63,6 +64,8 @@ variable features for \code{assay}.}
 Default is \code{TRUE}.}
 
 \item{seed}{Random seed used for permutation tests.}
+
+\item{...}{Additional arguments passed to external backends.}
 }
 \value{
 A \code{Seurat} object with spatial variable feature results stored in
@@ -70,9 +73,9 @@ A \code{Seurat} object with spatial variable feature results stored in
 \code{srt@misc[["SpatialVariableFeatures"]]}.
 }
 \description{
-Score genes by spot-level spatial autocorrelation using a lightweight
-coordinate KNN graph. Moran's I is ranked high-to-low, while Geary's C is
-converted to \code{1 - C} for the stored ranking score.
+Score genes by spot-level spatial autocorrelation. The native \code{"moran"} and
+\code{"geary"} methods use a lightweight coordinate KNN graph. \code{"SPARKX"} and
+\code{"nnSVG"} use optional external backends when their packages are installed.
 }
 \examples{
 data(visium_human_pancreas_sub)
@@ -98,8 +101,5 @@ spatial <- RunSpatialVariableFeatures(
   assay = "Spatial",
   nfeatures = 50
 )
-SpatialSpotPlot(
-  spatial,
-  features = spatial@misc[["SpatialVariableFeatures"]][1:2]
-)
+SpatialVariableFeaturePlot(spatial, plot_type = "combined", nfeatures = 2)
 }

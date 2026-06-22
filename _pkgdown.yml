@@ -172,16 +172,26 @@ reference:
   - GiottoHMRF
   - AddGiottoToSeurat
   - RunBayesSpace
+  - RunBANKSY
+  - RunCARD
   - RunCytoSPACE
+  - RunSTdeconvolve
   - RunGiottoCluster
   - RunGiottoCellProximity
   - RunGiottoSpatialGenes
   - RunGiottoSpatialModules
   - RunRCTD
+  - RunCSIDE
+  - RunSpaNorm
+  - RunSmoothClust
+  - RunMERINGUE
+  - RunSpotSweeper
   - RunSPOTlight
   - RunSemlaSpatialNetwork
   - RunSpatialEcoTyper
   - RunSpatialGradientFeatures
+  - RunSpatialIntegration
+  - RunSpatialNeighborhood
   - RunSpatialVariableFeatures
 
 - subtitle: "Spatial Visualization"
@@ -190,7 +200,11 @@ reference:
   - SpatialEcoTyperCompositionPlot
   - SpatialEcoTyperSpatialPlot
   - SpatialGradientPlot
+  - SpatialIntegrationPlot
+  - SpatialNeighborhoodPlot
   - SpatialSpotPlot
+  - SpatialVariableFeaturePlot
+  - STdeconvolvePlot
 
 - subtitle: "Cell Type Annotation"
 - contents:
