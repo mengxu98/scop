@@ -1155,22 +1155,26 @@ RunDEtestFindMarkers <- function(
     layer %in% c("data", "counts") &&
     identical(norm.method, "LogNormalize") &&
     length(extra_args) == 0 &&
-    !isTRUE(check_pkg_status("presto"))
+    !requireNamespace("presto", quietly = TRUE)
   if (isTRUE(use_sparse_wilcox)) {
-    return(RunDEtestSparseWilcoxMarkers(
-      srt = srt,
+    return(FindMarkers(
+      object = srt,
+      .scop_backend = "sparse_wilcox",
       assay = assay,
       layer = layer,
       cells.1 = cells.1,
       cells.2 = cells.2,
       features = features,
+      test.use = test.use,
       logfc.threshold = logfc.threshold,
       base = base,
       min.pct = min.pct,
       min.diff.pct = min.diff.pct,
       max.cells.per.ident = max.cells.per.ident,
+      min.cells.feature = min.cells.feature,
       min.cells.group = min.cells.group,
       only.pos = only.pos,
+      norm.method = norm.method,
       pseudocount.use = pseudocount.use,
       random.seed = random.seed,
       verbose = verbose
@@ -2466,15 +2470,8 @@ RunDEtest.Seurat <- function(
             method = p.adjust.method
           )
         }
-        markers[, "test_group_number"] <- as.integer(
-          table(markers[["gene"]])[markers[, "gene"]]
-        )
-        markers_matrix <- as.data.frame.matrix(
-          table(markers[, c("gene", "group1")])
-        )
-        markers[, "test_group"] <- apply(markers_matrix, 1, function(x) {
-          paste0(colnames(markers_matrix)[x > 0], collapse = ";")
-        })[markers[, "gene"]]
+        markers[, "test_group_number"] <- 1L
+        markers[, "test_group"] <- as.character(markers[, "group1"])
         srt@tools[["DEtest_custom"]][[paste0(
           "AllMarkers_",
           test.use

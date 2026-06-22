@@ -3,8 +3,8 @@
 #' @description
 #' Predicts cellular developmental potential from single-cell RNA-seq data
 #' using the CytoTRACE 2 algorithm (Kang et al., 2025).
-#' By default, this function calls the official `CytoTRACE2` R package. Set
-#' `backend = "cpp"` to use the native `scop` R/C++ implementation.
+#' By default, this function uses the native `scop` R/C++ implementation. Set
+#' `backend = "r"` to call the official `CytoTRACE2` R package.
 #'
 #' The algorithm consists of five stages:
 #' \enumerate{
@@ -39,11 +39,14 @@
 #' diffusion smoothing step.
 #' No diffusion subsampling if `NULL`.
 #' Default is `1000`.
+#' @param compute_knn_smoothing Whether to run the final PCA-based adaptive
+#' kNN smoothing step. Set to `FALSE` for a faster score using the pre-kNN
+#' binned CytoTRACE2 output.
 #' @param cores Number of cores for parallel processing.
 #' Default is `1`.
-#' @param backend Backend used to run CytoTRACE2. `"r"` calls the official
-#' `CytoTRACE2::cytotrace2()` implementation and is the default. `"cpp"` uses
-#' the native `scop` R/C++ backend.
+#' @param backend Backend used to run CytoTRACE2. `"cpp"` uses the native
+#' `scop` R/C++ backend and is the default. `"r"` calls the official
+#' `CytoTRACE2::cytotrace2()` implementation.
 #' @param seed Random seed for reproducibility. Default is `14`.
 #' @param data_dir Path to the directory containing CytoTRACE2 model data files.
 #' Used only by `backend = "cpp"`. If `NULL`, uses model data prepared by
@@ -114,8 +117,9 @@ RunCytoTRACE.Seurat <- function(
   species = c("Homo_sapiens", "Mus_musculus"),
   batch_size = 10000,
   smooth_batch_size = 1000,
+  compute_knn_smoothing = TRUE,
   cores = 1,
-  backend = c("r", "cpp"),
+  backend = c("cpp", "r"),
   seed = 14,
   data_dir = NULL,
   verbose = TRUE,
@@ -199,6 +203,7 @@ RunCytoTRACE.Seurat <- function(
       species = species,
       batch_size = batch_size,
       smooth_batch_size = smooth_batch_size,
+      compute_knn_smoothing = compute_knn_smoothing,
       cores = cores,
       backend = "cpp",
       seed = seed,
@@ -230,8 +235,9 @@ RunCytoTRACE.default <- function(
   species = c("Homo_sapiens", "Mus_musculus"),
   batch_size = 10000,
   smooth_batch_size = 1000,
+  compute_knn_smoothing = TRUE,
   cores = 1,
-  backend = c("r", "cpp"),
+  backend = c("cpp", "r"),
   seed = 14,
   data_dir = NULL,
   verbose = TRUE,
@@ -380,7 +386,11 @@ RunCytoTRACE.default <- function(
       )
 
       pca_coords <- matrix(0, nrow = nrow(log2_data), ncol = 0)
-      if (nrow(log2_data) > 100 && stats::sd(as.vector(log2_data)) != 0) {
+      if (
+        isTRUE(compute_knn_smoothing) &&
+          nrow(log2_data) > 100 &&
+          stats::sd(as.vector(log2_data)) != 0
+      ) {
         log2_scaled <- scale_rows_custom(as.matrix(log2_data))
         n_pcs <- min(30, nrow(log2_data) - 1)
         svd_res <- RSpectra::svds(
@@ -388,7 +398,7 @@ RunCytoTRACE.default <- function(
           k = n_pcs,
           opts = list(center = TRUE, scale = FALSE)
         )
-        pca_coords <- svd_res$u %*% diag(svd_res$d)
+        pca_coords <- sweep(svd_res$u, 2, svd_res$d, "*")
         rownames(pca_coords) <- rownames(log2_data)
       }
 
@@ -615,13 +625,9 @@ scale_rows_custom <- function(
   mean_tolerance = 1e-10
 ) {
   row_means <- rowMeans(x, na.rm = TRUE)
-  pop_sd <- function(x, na.rm = TRUE) {
-    sqrt(mean((x - mean(x, na.rm = na.rm))^2, na.rm = na.rm))
-  }
-  row_sds <- apply(x, 1, pop_sd)
+  row_sds <- sqrt(rowMeans((x - row_means)^2, na.rm = TRUE))
   row_sds_handled <- ifelse(row_sds < constant_threshold, 1, row_sds)
-  scaled_x <- sweep(x, 1, row_means, "-")
-  scaled_x <- sweep(scaled_x, 1, row_sds_handled, "/")
+  scaled_x <- (x - row_means) / row_sds_handled
 
   residual_means <- rowMeans(scaled_x, na.rm = TRUE)
   rows_to_adjust <- which(abs(residual_means) > mean_tolerance)

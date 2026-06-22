@@ -7,6 +7,7 @@
 #' @importFrom grDevices as.raster
 #' @importFrom methods slot
 #' @importFrom Rcpp evalCpp
+#' @importFrom RcppParallel RcppParallelLibs
 #' @export
 dplyr::`%>%`
 

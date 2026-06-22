@@ -21,12 +21,12 @@ int bayesprism_worker_count(int requested, int n_tasks) {
     return 1;
   }
 
-  int n_threads = std::min(requested, n_tasks);
+  int cores = std::min(requested, n_tasks);
   const unsigned int hardware = std::thread::hardware_concurrency();
   if (hardware > 0) {
-    n_threads = std::min(n_threads, static_cast<int>(hardware));
+    cores = std::min(cores, static_cast<int>(hardware));
   }
-  return std::max(1, n_threads);
+  return std::max(1, cores);
 }
 
 BayesPrismSampleSpec bayesprism_prepare_sample(
@@ -123,7 +123,7 @@ List bayesprism_gibbs_initial_cpp(
   IntegerVector gibbs_idx,
   double alpha = 1.0,
   int seed = 123,
-  int n_threads = 1
+  int cores = 1
 ) {
   const int n_samples = mixture.nrow();
   const int n_genes = mixture.ncol();
@@ -173,7 +173,7 @@ List bayesprism_gibbs_initial_cpp(
   double* theta_ptr = REAL(theta_out);
   double* theta_cv_ptr = REAL(theta_cv_out);
 
-  const int workers = bayesprism_worker_count(n_threads, n_samples);
+  const int workers = bayesprism_worker_count(cores, n_samples);
   std::vector<std::thread> pool;
   pool.reserve(static_cast<std::size_t>(workers));
 
@@ -282,7 +282,7 @@ List bayesprism_gibbs_final_cpp(
   IntegerVector gibbs_idx,
   double alpha = 1.0,
   int seed = 123,
-  int n_threads = 1
+  int cores = 1
 ) {
   const int n_samples = mixture.nrow();
   const int n_genes = mixture.ncol();
@@ -330,7 +330,7 @@ List bayesprism_gibbs_final_cpp(
   double* theta_ptr = REAL(theta_out);
   double* theta_cv_ptr = REAL(theta_cv_out);
 
-  const int workers = bayesprism_worker_count(n_threads, n_samples);
+  const int workers = bayesprism_worker_count(cores, n_samples);
   std::vector<std::thread> pool;
   pool.reserve(static_cast<std::size_t>(workers));
 

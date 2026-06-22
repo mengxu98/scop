@@ -68,6 +68,8 @@ jobs:
       - name: Test coverage
         continue-on-error: true
         run: |
+          covr_flags <- getOption("covr.flags")
+          options(covr.flags = stats::setNames(rep("", length(covr_flags)), names(covr_flags)))
           covr::codecov(
             quiet = FALSE,
             clean = FALSE,

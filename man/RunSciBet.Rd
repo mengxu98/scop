@@ -19,6 +19,7 @@ RunSciBet(
   input_transform = c("auto", "none", "expm1"),
   prefix = "scibet",
   store_model = TRUE,
+  store_probabilities = FALSE,
   return_object = TRUE,
   verbose = TRUE
 )
@@ -56,6 +57,10 @@ transform otherwise.}
 
 \item{store_model}{Whether to store the SciBet core and probabilities in
 \code{srt_query@tools}.}
+
+\item{store_probabilities}{Whether to store the full cell-by-class
+probability matrix. The default keeps annotations and maximum probability
+scores while avoiding a large result object on full-scale data.}
 
 \item{return_object}{Whether to return the annotated \code{Seurat} query object.
 If \code{FALSE}, return a lightweight list with annotations, scores,

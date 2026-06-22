@@ -111,9 +111,11 @@ hypergeometric ORA implementation and returns the enrichment table without
 \code{enrichResult} objects. \code{"r"} uses \code{\link[clusterProfiler:enricher]{clusterProfiler::enricher()}} and returns
 \code{enrichResult} objects in \code{results}. \code{GO_simplify = TRUE} currently uses the R backend.}
 
-\item{cpp_strategy}{C++ AUCell ranking strategy. \code{"sparse"} ranks non-zero
-genes and approximates zero ties, \code{"topk"} ranks only genes that can contribute
-to AUCell AUC, and \code{"full"} ranks all genes.}
+\item{cpp_strategy}{AUCell scoring strategy used when \code{backend = "cpp"}.
+\code{"aucell"} calls the official \code{\link[AUCell:AUCell_buildRankings]{AUCell::AUCell_buildRankings()}} and
+\code{\link[AUCell:AUCell_calcAUC]{AUCell::AUCell_calcAUC()}} path for consistency with the R backend.
+\code{"sparse"} ranks non-zero genes and approximates zero ties, \code{"topk"} ranks
+only genes that can contribute to AUCell AUC, and \code{"full"} ranks all genes.}
 
 \item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
 Default is \code{1}.}
