@@ -1,9 +1,9 @@
 #' @title Run spatial variable feature detection
 #'
 #' @description
-#' Score genes by spot-level spatial autocorrelation using a lightweight
-#' coordinate KNN graph. Moran's I is ranked high-to-low, while Geary's C is
-#' converted to `1 - C` for the stored ranking score.
+#' Score genes by spot-level spatial autocorrelation. The native `"moran"` and
+#' `"geary"` methods use a lightweight coordinate KNN graph. `"SPARKX"` and
+#' `"nnSVG"` use optional external backends when their packages are installed.
 #'
 #' @md
 #' @inheritParams standard_scop
@@ -11,7 +11,7 @@
 #' @param layer Assay layer used for expression values.
 #' @param features Features to score. If `NULL`, current variable features are
 #' used; if no variable features are present, all assay features are used.
-#' @param method Spatial autocorrelation statistic.
+#' @param method Spatial variable feature detection method.
 #' @param k Number of nearest spatial neighbors per spot.
 #' @param nfeatures Number of top spatial features stored in
 #' `srt@misc[["SpatialVariableFeatures"]]`.
@@ -23,6 +23,7 @@
 #' variable features for `assay`.
 #' @param store_results Whether to store the full result in `srt@tools`.
 #' @param seed Random seed used for permutation tests.
+#' @param ... Additional arguments passed to external backends.
 #'
 #' @return A `Seurat` object with spatial variable feature results stored in
 #' `srt@tools[["SpatialVariableFeatures"]]` and top feature names stored in
@@ -53,16 +54,13 @@
 #'   assay = "Spatial",
 #'   nfeatures = 50
 #' )
-#' SpatialSpotPlot(
-#'   spatial,
-#'   features = spatial@misc[["SpatialVariableFeatures"]][1:2]
-#' )
+#' SpatialVariableFeaturePlot(spatial, plot_type = "combined", nfeatures = 2)
 RunSpatialVariableFeatures <- function(
   srt,
   assay = NULL,
   layer = "data",
   features = NULL,
-  method = c("moran", "geary"),
+  method = c("moran", "geary", "SPARKX", "nnSVG"),
   image = NULL,
   coord.cols = c("x", "y"),
   k = 6,
@@ -72,7 +70,8 @@ RunSpatialVariableFeatures <- function(
   set_variable_features = TRUE,
   store_results = TRUE,
   verbose = TRUE,
-  seed = 11
+  seed = 11,
+  ...
 ) {
   log_message(
     "Running spatial variable feature detection",
@@ -178,31 +177,36 @@ RunSpatialVariableFeatures <- function(
   expr <- expr[keep_features, , drop = FALSE]
   expressed_spots <- expressed_spots[keep_features]
 
-  edges <- spatial_variable_knn_edges(coords, k = k)
   expr_mat <- as.matrix(expr)
-  scores <- spatial_variable_score_matrix(
+  edges <- NULL
+  if (method %in% c("moran", "geary")) {
+    edges <- spatial_variable_knn_edges(coords, k = k)
+    result <- spatial_variable_run_knn(
+      expr = expr_mat,
+      edges = edges,
+      method = method,
+      nperm = nperm
+    )
+  } else if (identical(method, "SPARKX")) {
+    result <- spatial_variable_run_sparkx(
+      expr = expr_mat,
+      coords = coords,
+      ...
+    )
+  } else {
+    result <- spatial_variable_run_nnsvg(
+      expr = expr_mat,
+      coords = coords,
+      assay = assay,
+      ...
+    )
+  }
+  result <- spatial_variable_finalize_result(
+    result = result,
     expr = expr_mat,
-    edges = edges,
-    method = method,
-    nperm = nperm
+    expressed_spots = expressed_spots,
+    method = method
   )
-  result <- data.frame(
-    feature = rownames(expr_mat),
-    statistic = scores$statistic,
-    score = scores$score,
-    p_value = scores$p_value,
-    q_value = if (all(is.na(scores$p_value))) {
-      NA_real_
-    } else {
-      stats::p.adjust(scores$p_value, method = "BH")
-    },
-    mean = rowMeans(expr_mat),
-    variance = fast_row_vars(expr_mat),
-    n_spots = as.integer(expressed_spots[rownames(expr_mat)]),
-    stringsAsFactors = FALSE
-  )
-  result <- result[order(result$score, decreasing = TRUE, na.last = TRUE), , drop = FALSE]
-  rownames(result) <- NULL
   top_features <- utils::head(result$feature[is.finite(result$score)], nfeatures)
   srt@misc[["SpatialVariableFeatures"]] <- top_features
   if (isTRUE(set_variable_features) && length(top_features) > 0L) {
@@ -223,6 +227,7 @@ RunSpatialVariableFeatures <- function(
         nfeatures = nfeatures,
         min_spots = min_spots,
         nperm = nperm,
+        seed = seed,
         set_variable_features = set_variable_features
       )
     )
@@ -233,6 +238,510 @@ RunSpatialVariableFeatures <- function(
     verbose = verbose
   )
   srt
+}
+
+spatial_variable_run_knn <- function(expr, edges, method, nperm = 0) {
+  scores <- spatial_variable_score_matrix(
+    expr = expr,
+    edges = edges,
+    method = method,
+    nperm = nperm
+  )
+  data.frame(
+    feature = rownames(expr),
+    statistic = scores$statistic,
+    score = scores$score,
+    p_value = scores$p_value,
+    q_value = if (all(is.na(scores$p_value))) {
+      NA_real_
+    } else {
+      stats::p.adjust(scores$p_value, method = "BH")
+    },
+    stringsAsFactors = FALSE
+  )
+}
+
+spatial_variable_run_sparkx <- function(expr, coords, ...) {
+  sparkx <- spatial_variable_get_fun("SPARK", "sparkx")
+  out <- sparkx(
+    count_in = expr,
+    locus_in = as.matrix(coords[, c("x", "y"), drop = FALSE]),
+    ...
+  )
+  res <- if (is.data.frame(out)) {
+    out
+  } else if (is.list(out) && is.data.frame(out$res_mtest)) {
+    out$res_mtest
+  } else if (is.list(out) && is.data.frame(out$result)) {
+    out$result
+  } else {
+    log_message(
+      "{.pkg SPARK} returned an unsupported SPARK-X result format",
+      message_type = "error"
+    )
+  }
+  res <- as.data.frame(res, stringsAsFactors = FALSE, check.names = FALSE)
+  features <- spatial_variable_result_features(res, rownames(expr))
+  p_value <- spatial_variable_pick_numeric(res, c("combinedPval", "combined_pvalue", "p_value", "pvalue", "pval"))
+  q_value <- spatial_variable_pick_numeric(res, c("adjustedPval", "adjusted_pvalue", "q_value", "qvalue", "padj", "fdr"))
+  statistic <- spatial_variable_pick_numeric(res, c("statistic", "score", "combinedStat", "combined_stat"))
+  data.frame(
+    feature = features,
+    statistic = statistic,
+    p_value = p_value,
+    q_value = q_value,
+    stringsAsFactors = FALSE
+  )
+}
+
+spatial_variable_run_nnsvg <- function(expr, coords, assay, ...) {
+  spatial_variable_require_package("SpatialExperiment")
+  spatial_variable_require_package("SummarizedExperiment")
+  spatial_variable_require_package("S4Vectors")
+  spatial_variable_require_package("nnSVG")
+  spe <- spatial_variable_make_spe(expr = expr, coords = coords, assay = assay)
+  extra_args <- list(...)
+  args <- c(list(spe), extra_args)
+  if (!"assay_name" %in% names(extra_args)) {
+    args$assay_name <- "counts"
+  }
+  out <- do.call(spatial_variable_get_fun("nnSVG", "nnSVG"), args)
+  res <- spatial_variable_row_data(out)
+  features <- spatial_variable_result_features(res, rownames(expr))
+  statistic <- spatial_variable_pick_numeric(res, c("LR_stat", "LR.stat", "statistic", "score", "prop_sv", "prop.sv"))
+  p_value <- spatial_variable_pick_numeric(res, c("pval", "p_value", "p.value"))
+  q_value <- spatial_variable_pick_numeric(res, c("padj", "q_value", "q.value", "fdr"))
+  rank <- spatial_variable_pick_numeric(res, c("rank", "Rank"))
+  data.frame(
+    feature = features,
+    statistic = statistic,
+    p_value = p_value,
+    q_value = q_value,
+    rank = rank,
+    stringsAsFactors = FALSE
+  )
+}
+
+spatial_variable_make_spe <- function(expr, coords, assay = NULL) {
+  spe <- SpatialExperiment::SpatialExperiment(
+    assays = list(counts = expr),
+    spatialCoords = as.matrix(coords[, c("x", "y"), drop = FALSE])
+  )
+  if (!is.null(assay)) {
+    SummarizedExperiment::rowData(spe)$feature <- rownames(expr)
+  }
+  spe
+}
+
+spatial_variable_row_data <- function(x) {
+  as.data.frame(SummarizedExperiment::rowData(x), stringsAsFactors = FALSE, check.names = FALSE)
+}
+
+spatial_variable_finalize_result <- function(result, expr, expressed_spots, method) {
+  result <- as.data.frame(result, stringsAsFactors = FALSE, check.names = FALSE)
+  if (!"feature" %in% colnames(result)) {
+    log_message(
+      "Spatial variable feature result is missing a {.field feature} column",
+      message_type = "error"
+    )
+  }
+  result$feature <- as.character(result$feature)
+  result <- result[result$feature %in% rownames(expr), , drop = FALSE]
+  result <- result[!duplicated(result$feature), , drop = FALSE]
+  if (nrow(result) == 0L) {
+    log_message(
+      "Spatial variable feature backend returned no tested features",
+      message_type = "error"
+    )
+  }
+  for (col in c("statistic", "score", "p_value", "q_value", "rank")) {
+    if (!col %in% colnames(result)) {
+      result[[col]] <- NA_real_
+    }
+    result[[col]] <- suppressWarnings(as.numeric(result[[col]]))
+  }
+  missing_q <- is.na(result$q_value) & is.finite(result$p_value)
+  if (any(missing_q)) {
+    result$q_value[missing_q] <- stats::p.adjust(result$p_value[missing_q], method = "BH")
+  }
+  if (all(!is.finite(result$score))) {
+    result$score <- spatial_variable_score_from_significance(
+      q_value = result$q_value,
+      p_value = result$p_value,
+      statistic = result$statistic,
+      rank = result$rank
+    )
+  }
+  result$mean <- rowMeans(expr[result$feature, , drop = FALSE])
+  result$variance <- fast_row_vars(expr[result$feature, , drop = FALSE])
+  result$n_spots <- as.integer(expressed_spots[result$feature])
+  result$method <- method
+  score_order <- ifelse(is.finite(result$score), result$score, -Inf)
+  p_order <- ifelse(is.finite(result$p_value), result$p_value, Inf)
+  q_order <- ifelse(is.finite(result$q_value), result$q_value, Inf)
+  result <- result[order(-score_order, p_order, q_order), , drop = FALSE]
+  result$rank <- seq_len(nrow(result))
+  rownames(result) <- NULL
+  spatial_variable_reorder_cols(
+    result,
+    c("feature", "rank", "method", "statistic", "score", "p_value", "q_value", "mean", "variance", "n_spots")
+  )
+}
+
+spatial_variable_score_from_significance <- function(q_value, p_value, statistic, rank) {
+  sig <- q_value
+  sig[!is.finite(sig)] <- p_value[!is.finite(sig)]
+  if (any(is.finite(sig))) {
+    positive <- sig[is.finite(sig) & sig > 0]
+    floor_value <- if (length(positive) > 0L) min(positive) * 0.1 else .Machine$double.xmin
+    sig[is.finite(sig) & sig <= 0] <- floor_value
+    return(-log10(sig))
+  }
+  if (any(is.finite(rank))) {
+    return(-rank)
+  }
+  statistic
+}
+
+spatial_variable_result_features <- function(df, fallback) {
+  feature_col <- intersect(c("feature", "features", "gene", "genes", "gene_id", "geneid"), colnames(df))
+  if (length(feature_col) > 0L) {
+    return(as.character(df[[feature_col[[1L]]]]))
+  }
+  rn <- rownames(df)
+  if (!is.null(rn) && length(rn) == nrow(df) && !all(grepl("^[0-9]+$", rn))) {
+    return(as.character(rn))
+  }
+  utils::head(fallback, nrow(df))
+}
+
+spatial_variable_pick_numeric <- function(df, candidates) {
+  hit <- intersect(candidates, colnames(df))
+  if (length(hit) == 0L) {
+    return(rep(NA_real_, nrow(df)))
+  }
+  suppressWarnings(as.numeric(df[[hit[[1L]]]]))
+}
+
+spatial_variable_reorder_cols <- function(df, first_cols) {
+  first_cols <- intersect(first_cols, colnames(df))
+  df[, c(first_cols, setdiff(colnames(df), first_cols)), drop = FALSE]
+}
+
+spatial_variable_require_package <- function(pkg) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    log_message(
+      "Please install required package before running this function: {.val {pkg}}",
+      message_type = "error"
+    )
+  }
+  invisible(TRUE)
+}
+
+spatial_variable_get_fun <- function(pkg, fun) {
+  spatial_variable_require_package(pkg)
+  tryCatch(
+    getExportedValue(pkg, fun),
+    error = function(e) {
+      log_message(
+        "{.pkg {pkg}} does not export required function {.fn {fun}}",
+        message_type = "error"
+      )
+    }
+  )
+}
+
+#' @title Plot spatial variable feature results
+#'
+#' @description
+#' Visualize normalized results produced by [RunSpatialVariableFeatures()]. The
+#' summary view shows feature ranks and significance, while the surface view
+#' reuses [SpatialSpotPlot()] to draw spatial expression for selected features.
+#'
+#' @md
+#' @inheritParams SpatialSpotPlot
+#' @param plot_type Plot type: `"summary"`, `"surface"`, or `"combined"`.
+#' @param features Features to plot. If `NULL`, top features from the stored
+#' spatial variable feature result are used.
+#' @param nfeatures Number of top features used when `features = NULL`.
+#' @param score_col Result column used for the summary x-axis.
+#'
+#' @return A `ggplot` or `patchwork` object.
+#' @export
+#'
+#' @examples
+#' data(visium_human_pancreas_sub)
+#' spatial <- Seurat::NormalizeData(
+#'   visium_human_pancreas_sub,
+#'   assay = "Spatial",
+#'   verbose = FALSE
+#' )
+#' spatial <- RunSpatialVariableFeatures(
+#'   spatial,
+#'   assay = "Spatial",
+#'   nfeatures = 10,
+#'   verbose = FALSE
+#' )
+#' SpatialVariableFeaturePlot(spatial, plot_type = "summary")
+SpatialVariableFeaturePlot <- function(
+  srt,
+  plot_type = c("summary", "surface", "combined"),
+  features = NULL,
+  nfeatures = 10,
+  score_col = "score",
+  assay = NULL,
+  layer = NULL,
+  image = NULL,
+  overlay_image = TRUE,
+  image.alpha = 1,
+  coord.cols = c("col", "row"),
+  flip.y = TRUE,
+  pt.size = NULL,
+  pt.alpha = 0.9,
+  stroke = 0.1,
+  palette = "Spectral",
+  palcolor = NULL,
+  legend.position = "right",
+  theme_use = "theme_scop",
+  theme_args = list(),
+  combine = TRUE,
+  nrow = NULL,
+  ncol = NULL,
+  byrow = TRUE
+) {
+  if (!inherits(srt, "Seurat")) {
+    log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
+  }
+  plot_type <- match.arg(plot_type)
+  stored <- spatial_variable_get_stored_result(srt)
+  result <- stored$result
+  features <- spatial_variable_plot_features(result, features = features, nfeatures = nfeatures)
+  if (identical(plot_type, "summary")) {
+    return(spatial_variable_summary_plot(
+      result = result,
+      features = features,
+      score_col = score_col,
+      palette = palette,
+      palcolor = palcolor,
+      legend.position = legend.position,
+      theme_use = theme_use,
+      theme_args = theme_args
+    ))
+  }
+  if (is.null(layer)) {
+    layer <- stored$parameters$layer %||% "data"
+  }
+  if (identical(plot_type, "surface")) {
+    return(spatial_variable_surface_plot(
+      srt = srt,
+      features = features,
+      assay = assay,
+      layer = layer,
+      image = image,
+      overlay_image = overlay_image,
+      image.alpha = image.alpha,
+      coord.cols = coord.cols,
+      flip.y = flip.y,
+      pt.size = pt.size,
+      pt.alpha = pt.alpha,
+      stroke = stroke,
+      palette = palette,
+      palcolor = palcolor,
+      legend.position = legend.position,
+      theme_use = theme_use,
+      theme_args = theme_args,
+      combine = combine,
+      nrow = nrow,
+      ncol = ncol,
+      byrow = byrow
+    ))
+  }
+  spatial_variable_require_package("patchwork")
+  summary_plot <- spatial_variable_summary_plot(
+    result = result,
+    features = features,
+    score_col = score_col,
+    palette = palette,
+    palcolor = palcolor,
+    legend.position = legend.position,
+    theme_use = theme_use,
+    theme_args = theme_args
+  )
+  surface_plot <- spatial_variable_surface_plot(
+    srt = srt,
+    features = features,
+    assay = assay,
+    layer = layer,
+    image = image,
+    overlay_image = overlay_image,
+    image.alpha = image.alpha,
+    coord.cols = coord.cols,
+    flip.y = flip.y,
+    pt.size = pt.size,
+    pt.alpha = pt.alpha,
+    stroke = stroke,
+    palette = palette,
+    palcolor = palcolor,
+    legend.position = legend.position,
+    theme_use = theme_use,
+    theme_args = theme_args,
+    combine = TRUE,
+    nrow = nrow,
+    ncol = ncol,
+    byrow = byrow
+  )
+  patchwork::wrap_plots(summary_plot, surface_plot, ncol = 1)
+}
+
+spatial_variable_get_stored_result <- function(srt) {
+  stored <- srt@tools[["SpatialVariableFeatures"]]
+  if (is.null(stored) || !is.list(stored) || is.null(stored$result)) {
+    log_message(
+      "No spatial variable feature result is stored in {.code srt@tools[['SpatialVariableFeatures']]}",
+      message_type = "error"
+    )
+  }
+  if (!is.data.frame(stored$result) || nrow(stored$result) == 0L) {
+    log_message(
+      "Stored spatial variable feature result is empty",
+      message_type = "error"
+    )
+  }
+  stored
+}
+
+spatial_variable_plot_features <- function(result, features = NULL, nfeatures = 10) {
+  if (is.null(features)) {
+    features <- utils::head(result$feature, nfeatures)
+  }
+  features <- unique(as.character(features))
+  features <- features[!is.na(features) & nzchar(features)]
+  if (length(features) == 0L) {
+    log_message("No {.arg features} are available for plotting", message_type = "error")
+  }
+  missing <- setdiff(features, result$feature)
+  if (length(missing) > 0L) {
+    log_message(
+      "Requested feature(s) are not present in stored spatial variable feature results: {.val {missing}}",
+      message_type = "error"
+    )
+  }
+  features
+}
+
+spatial_variable_summary_plot <- function(
+  result,
+  features,
+  score_col,
+  palette,
+  palcolor,
+  legend.position,
+  theme_use,
+  theme_args
+) {
+  if (!score_col %in% colnames(result)) {
+    log_message(
+      "{.arg score_col} {.val {score_col}} is not present in the stored result",
+      message_type = "error"
+    )
+  }
+  df <- result[result$feature %in% features, , drop = FALSE]
+  df$feature <- factor(df$feature, levels = rev(features))
+  df[[".score"]] <- suppressWarnings(as.numeric(df[[score_col]]))
+  df[[".significance"]] <- if ("q_value" %in% colnames(df) && any(is.finite(df$q_value))) {
+    -log10(pmax(df$q_value, .Machine$double.xmin))
+  } else if ("p_value" %in% colnames(df) && any(is.finite(df$p_value))) {
+    -log10(pmax(df$p_value, .Machine$double.xmin))
+  } else {
+    rep(1, nrow(df))
+  }
+  cols <- palette_colors(as.character(features), palette = palette, palcolor = palcolor)
+  ggplot2::ggplot(df, ggplot2::aes(x = .data[[".score"]], y = .data[["feature"]], color = .data[["feature"]])) +
+    ggplot2::geom_segment(
+      ggplot2::aes(x = 0, xend = .data[[".score"]], yend = .data[["feature"]]),
+      linewidth = 0.35,
+      alpha = 0.5,
+      na.rm = TRUE
+    ) +
+    ggplot2::geom_point(
+      ggplot2::aes(size = .data[[".significance"]]),
+      na.rm = TRUE
+    ) +
+    ggplot2::scale_color_manual(values = cols, drop = FALSE) +
+    ggplot2::labs(
+      x = score_col,
+      y = NULL,
+      color = "Feature",
+      size = "-log10(q/p)"
+    ) +
+    spatial_variable_plot_theme(theme_use = theme_use, theme_args = theme_args) +
+    ggplot2::theme(legend.position = legend.position)
+}
+
+spatial_variable_surface_plot <- function(
+  srt,
+  features,
+  assay,
+  layer,
+  image,
+  overlay_image,
+  image.alpha,
+  coord.cols,
+  flip.y,
+  pt.size,
+  pt.alpha,
+  stroke,
+  palette,
+  palcolor,
+  legend.position,
+  theme_use,
+  theme_args,
+  combine,
+  nrow,
+  ncol,
+  byrow
+) {
+  if (is.null(theme_use)) {
+    theme_use <- ggplot2::theme_minimal
+  }
+  SpatialSpotPlot(
+    srt = srt,
+    features = features,
+    assay = assay,
+    layer = layer,
+    image = image,
+    overlay_image = overlay_image,
+    image.alpha = image.alpha,
+    coord.cols = coord.cols,
+    flip.y = flip.y,
+    pt.size = pt.size,
+    pt.alpha = pt.alpha,
+    stroke = stroke,
+    palette = palette,
+    palcolor = palcolor,
+    legend.position = legend.position,
+    theme_use = theme_use,
+    theme_args = theme_args,
+    combine = combine,
+    nrow = nrow,
+    ncol = ncol,
+    byrow = byrow
+  )
+}
+
+spatial_variable_plot_theme <- function(theme_use = "theme_scop", theme_args = list()) {
+  if (is.null(theme_use)) {
+    return(ggplot2::theme_minimal())
+  }
+  if (inherits(theme_use, "theme")) {
+    return(theme_use)
+  }
+  theme_fun <- if (is.character(theme_use)) {
+    get(theme_use, mode = "function", inherits = TRUE)
+  } else {
+    theme_use
+  }
+  do.call(theme_fun, theme_args)
 }
 
 spatial_variable_knn_edges <- function(coords, k = 6) {
