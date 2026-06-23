@@ -88,7 +88,7 @@
 #' Default is `"umap"`.
 #' @param nonlinear_reduction_dims The number of dimensions to keep after nonlinear dimensionality reduction.
 #' If a vector is provided, different numbers of dimensions can be specified for each method.
-#' Default is `c(2, 3)`.
+#' Default is `2`.
 #' @param nonlinear_reduction_params A list of parameters to pass to the nonlinear dimensionality reduction method.
 #' @param force_nonlinear_reduction Whether to force nonlinear dimensionality reduction even if the specified reduction is already present in the Seurat object.
 #' Default is `TRUE`.
@@ -312,7 +312,7 @@ standard_scop <- function(
   linear_reduction_params = list(),
   force_linear_reduction = FALSE,
   nonlinear_reduction = "umap",
-  nonlinear_reduction_dims = c(2, 3),
+  nonlinear_reduction_dims = 2,
   nonlinear_reduction_params = list(),
   force_nonlinear_reduction = TRUE,
   neighbor_metric = "euclidean",
@@ -701,7 +701,8 @@ standard_scop <- function(
             if (
               identical(nr, "umap") &&
                 isTRUE(force_nonlinear_reduction) &&
-                !is.null(linear_reduction_dims_use_current)
+                !is.null(linear_reduction_dims_use_current) &&
+                identical(as.integer(n), 2L)
             ) {
               params <- c(
                 list(
@@ -747,7 +748,8 @@ standard_scop <- function(
         log_message(err_msg, message_type = "warning", verbose = verbose)
         log_message(
           "Error when performing {.pkg {nr}} nonlinear dimension reduction. Skip it",
-          message_type = "error"
+          message_type = "warning",
+          verbose = verbose
         )
         srt
       }
@@ -830,7 +832,7 @@ standard_spatial_scop <- function(
   linear_reduction_params = list(),
   force_linear_reduction = FALSE,
   nonlinear_reduction = "umap",
-  nonlinear_reduction_dims = c(2, 3),
+  nonlinear_reduction_dims = 2,
   nonlinear_reduction_params = list(),
   force_nonlinear_reduction = TRUE,
   neighbor_metric = "euclidean",

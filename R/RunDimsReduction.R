@@ -307,7 +307,21 @@ RunDimsReduction <- function(
     for (nm in names(linear_reduction_params)) {
       params[[nm]] <- linear_reduction_params[[nm]]
     }
-    srt <- if (identical(fun_use, "RunPCA")) {
+    srt <- if (
+      identical(fun_use, "RunPCA") &&
+        length(linear_reduction_params) == 0L
+    ) {
+      RunPCA(
+        object = srt,
+        assay = assay,
+        features = features,
+        npcs = linear_reduction_dims,
+        reduction.name = paste0(prefix, linear_reduction),
+        reduction.key = paste0(prefix, key_use),
+        verbose = FALSE,
+        seed.use = seed
+      )
+    } else if (identical(fun_use, "RunPCA")) {
       do.call(RunPCA, params)
     } else {
       invoke_fun(.fn = fun_use, .args = params)
