@@ -41,14 +41,16 @@ RunDimsEstimate(
 
 - k:
 
-  Number of neighbors used by intrinsicDimension::maxLikGlobalDimEst.
+  Number of neighbors used by
+  [intrinsicDimension::maxLikGlobalDimEst](https://rdrr.io/pkg/intrinsicDimension/man/maxLik.html).
   Default is `30`.
 
 - method:
 
   Dimension-selection method. `"scree"` uses PCA standard deviations
   with broken-stick, elbow, cumulative-variance, and marginal-gain
-  criteria. `"intrinsic"` uses intrinsicDimension::maxLikGlobalDimEst.
+  criteria. `"intrinsic"` uses
+  [intrinsicDimension::maxLikGlobalDimEst](https://rdrr.io/pkg/intrinsicDimension/man/maxLik.html).
   `"ensemble"` keeps the larger recommendation from both methods when
   both are available. Default is `"scree"`.
 
