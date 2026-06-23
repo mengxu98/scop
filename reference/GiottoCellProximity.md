@@ -17,3 +17,45 @@ GiottoCellProximity(
   seed = 11
 )
 ```
+
+## Arguments
+
+- x:
+
+  A \`giotto2\` workflow object.
+
+- group.by:
+
+  Metadata column containing cell or spot groups.
+
+- network_method:
+
+  Spatial network method.
+
+- network_name:
+
+  Name for the Giotto spatial network.
+
+- number_of_simulations:
+
+  Number of label simulations used by Giotto.
+
+- adjust_method:
+
+  Multiple-testing correction method.
+
+- params:
+
+  Additional parameters passed to \`Giotto::cellProximityEnrichment()\`.
+
+- verbose:
+
+  Whether to print progress messages.
+
+- seed:
+
+  Random seed for reproducible Giotto calls.
+
+## Value
+
+A \`giotto2\` workflow object.

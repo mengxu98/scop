@@ -732,7 +732,7 @@
     /
     [`standard_scop()`](https://mengxu98.github.io/scop/reference/standard_scop.md):
     Removed an unnecessary all-feature
-    [`ScaleData()`](https://satijalab.org/seurat/reference/ScaleData.html)
+    [`ScaleData()`](https://mengxu98.github.io/scop/reference/ScaleData.md)
     call immediately after `LogNormalize`. Downstream workflows still
     scale the selected HVFs before PCA, but large raw-count inputs no
     longer create a dense all-gene `scale.data` intermediate during

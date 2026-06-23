@@ -57,6 +57,10 @@ SpatialIntegrationPlot(
   Reduction used for embedding plots. Defaults to the stored integration
   reduction.
 
+- cluster_colname:
+
+  Backward-compatible alias for `group.by`.
+
 - coord.cols:
 
   Metadata coordinate columns used when no image is available.

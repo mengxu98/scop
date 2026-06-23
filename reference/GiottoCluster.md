@@ -18,3 +18,49 @@ GiottoCluster(
   seed = 11
 )
 ```
+
+## Arguments
+
+- x:
+
+  A \`giotto2\` workflow object.
+
+- method:
+
+  Giotto clustering method.
+
+- dims:
+
+  Dimensions used to build the nearest-neighbor network.
+
+- k:
+
+  Number of nearest neighbors.
+
+- resolution:
+
+  Clustering resolution.
+
+- network_name:
+
+  Name for the Giotto nearest-neighbor network.
+
+- cluster_name:
+
+  Name for the Giotto cluster result.
+
+- params:
+
+  Additional parameters passed to the Giotto clustering function.
+
+- verbose:
+
+  Whether to print progress messages.
+
+- seed:
+
+  Random seed for reproducible Giotto calls.
+
+## Value
+
+A \`giotto2\` workflow object.

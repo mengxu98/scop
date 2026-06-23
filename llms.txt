@@ -1260,6 +1260,22 @@ etc.
 
 ### Dimensionality Reduction and Clustering
 
+- [`NormalizeData()`](https://mengxu98.github.io/scop/reference/NormalizeData.md)
+  : Normalize a single-cell object
+- [`FindVariableFeatures()`](https://mengxu98.github.io/scop/reference/FindVariableFeatures.md)
+  : Find variable features
+- [`ScaleData()`](https://mengxu98.github.io/scop/reference/ScaleData.md)
+  : Scale expression data
+- [`RunPCA()`](https://mengxu98.github.io/scop/reference/RunPCA.md) :
+  Run principal component analysis
+- [`RunCCA()`](https://mengxu98.github.io/scop/reference/RunCCA.md) :
+  Run canonical correlation analysis
+- [`RunUMAP()`](https://mengxu98.github.io/scop/reference/RunUMAP.md) :
+  Run UMAP
+- [`FindNeighbors()`](https://mengxu98.github.io/scop/reference/FindNeighbors.md)
+  : Find nearest neighbors
+- [`SCTransform()`](https://mengxu98.github.io/scop/reference/SCTransform.md)
+  : Apply SCTransform normalization
 - [`RunDimsEstimate()`](https://mengxu98.github.io/scop/reference/RunDimsEstimate.md)
   : Estimate useful dimensions from a reduction
 - [`RunDimsReduction()`](https://mengxu98.github.io/scop/reference/RunDimsReduction.md)
@@ -1316,7 +1332,7 @@ etc.
 - [`RunGiottoWorkflow()`](https://mengxu98.github.io/scop/reference/RunGiottoWorkflow.md)
   : Run a Giotto workflow
 - [`GiottoPreprocess()`](https://mengxu98.github.io/scop/reference/GiottoPreprocess.md)
-  : Preprocess a scop Giotto object
+  : Preprocess an internal Giotto workflow object
 - [`GiottoReduce()`](https://mengxu98.github.io/scop/reference/GiottoReduce.md)
   : Run Giotto dimensional reduction
 - [`GiottoCluster()`](https://mengxu98.github.io/scop/reference/GiottoCluster.md)
@@ -1432,6 +1448,12 @@ etc.
 
 ### Differential Expression and Perturbation
 
+- [`FindAllMarkers()`](https://mengxu98.github.io/scop/reference/FindAllMarkers.md)
+  : Find markers for all groups
+- [`FindMarkers()`](https://mengxu98.github.io/scop/reference/FindMarkers.md)
+  : Find markers between groups
+- [`FoldChange()`](https://mengxu98.github.io/scop/reference/FoldChange.md)
+  : Calculate expression fold change
 - [`FindExpressedMarkers()`](https://mengxu98.github.io/scop/reference/FindExpressedMarkers.md)
   : Find Expressed Markers
 - [`RunAugur()`](https://mengxu98.github.io/scop/reference/RunAugur.md)
