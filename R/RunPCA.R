@@ -151,6 +151,12 @@ RunPCA.Seurat <- function(
   SeuratObject::LogSeuratCommand(object = object)
 }
 
+#' Run principal component analysis
+#'
+#' @param object Object containing expression data.
+#' @param ... Passed to methods.
+#'
+#' @return PCA results or an object containing PCA results.
 #' @export
 RunPCA <- function(object, ...) {
   UseMethod("RunPCA")

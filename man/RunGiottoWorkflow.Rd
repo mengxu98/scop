@@ -33,6 +33,10 @@ If `FALSE`, returns the internal `giotto2` workflow object.}
 
 \item{tool_name}{Name used to store the Giotto workflow object in `srt@tools`.}
 
+\item{verbose}{Whether to print progress messages.}
+
+\item{seed}{Random seed for reproducible Giotto calls.}
+
 \item{...}{Passed to [SeuratToScopGiotto()] when `x` is Seurat.}
 }
 \value{

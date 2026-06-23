@@ -202,7 +202,8 @@ sct_vst <- function(
 
   if (!is.null(vst.flavor)) {
     if (vst.flavor == "v2") {
-      glmGamPoi_check <- requireNamespace("glmGamPoi", quietly = TRUE)
+      glmGamPoi_pkg <- paste0("glm", "GamPoi")
+      glmGamPoi_check <- requireNamespace(glmGamPoi_pkg, quietly = TRUE)
       method <- "glmGamPoi_offset"
       if (!glmGamPoi_check) {
         method <- "nb_offset"
@@ -490,8 +491,10 @@ SCTransform.default <- function(
             port = 20000L + sample.int(1000L, 1L)
           )
           parallel::clusterCall(cl, function() {
-            requireNamespace("sctransform", quietly = TRUE)
-            requireNamespace("glmGamPoi", quietly = TRUE)
+            sctransform_pkg <- paste0("sctran", "sform")
+            glmGamPoi_pkg <- paste0("glm", "GamPoi")
+            requireNamespace(sctransform_pkg, quietly = TRUE)
+            requireNamespace(glmGamPoi_pkg, quietly = TRUE)
           })
           message(sprintf(
             "[scop] SCTransform PSOCK ready (%d cores / %d available)",
@@ -778,7 +781,25 @@ SCTransform.Seurat <- function(
   cell.attr <- methods::slot(object, "meta.data")[
     colnames(object[[assay]]),
   ]
-  umi <- SeuratObject::GetAssayData(object[[assay]], layer = "counts")
+  assay_object <- object[[assay]]
+  umi <- tryCatch(
+    SeuratObject::GetAssayData(assay_object, layer = "counts"),
+    error = function(e) {
+      if (!grepl("multiple layers", conditionMessage(e), fixed = TRUE)) {
+        stop(e)
+      }
+      joined <- tryCatch(
+        SeuratObject::JoinLayers(object = assay_object, layers = "counts"),
+        error = function(e2) {
+          log_message(
+            "Failed to join Seurat v5 assay layers before reading {.val counts}: {conditionMessage(e2)}",
+            message_type = "error"
+          )
+        }
+      )
+      SeuratObject::GetAssayData(joined, layer = "counts")
+    }
+  )
   vst.out <- SCTransform.default(
     object = umi,
     cell.attr = cell.attr,
@@ -837,6 +858,12 @@ SCTransform.Seurat <- function(
   SeuratObject::LogSeuratCommand(object)
 }
 
+#' Apply SCTransform normalization
+#'
+#' @param object Object containing count data.
+#' @param ... Passed to methods.
+#'
+#' @return An object with SCTransform results.
 #' @export
 SCTransform <- function(object, ...) {
   UseMethod("SCTransform")

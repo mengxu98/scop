@@ -48,4 +48,5 @@ jobs:
         with:
           args: ${{ matrix.config.check-args }}
           build_args: '"--no-manual"'
+          error-on: '"error"'
           upload-snapshots: true

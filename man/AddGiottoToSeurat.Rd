@@ -13,6 +13,24 @@ AddGiottoToSeurat(
   store_result = TRUE
 )
 }
+\arguments{
+\item{srt}{A Seurat object.}
+
+\item{x}{A `giotto2` workflow object.}
+
+\item{result}{Giotto result to copy back.}
+
+\item{name}{Metadata column name to write. If `NULL`, a default name is used.}
+
+\item{tool_name}{Name used to store the Giotto workflow object in
+`srt@tools`.}
+
+\item{store_result}{Whether to store the Giotto workflow object in
+`srt@tools[[tool_name]]`.}
+}
+\value{
+A Seurat object.
+}
 \description{
 Add Giotto results back to Seurat
 }

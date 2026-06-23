@@ -227,6 +227,12 @@ RunUMAP.Seurat <- function(
   runumap_store(object, reduction.name, reduction.key, assay, emb)
 }
 
+#' Run UMAP
+#'
+#' @param object Object containing reduced-dimensional data.
+#' @param ... Passed to methods.
+#'
+#' @return The input object with a UMAP reduction added.
 #' @export
 RunUMAP <- function(object, ...) {
   UseMethod("RunUMAP")
