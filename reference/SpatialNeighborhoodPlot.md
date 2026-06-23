@@ -164,6 +164,10 @@ SpatialNeighborhoodPlot(
   Whether to arrange the plots by row in the combined plot. Default is
   `TRUE`.
 
+- seed:
+
+  Random seed used by layouts and jittered plot layers.
+
 - verbose:
 
   Whether to print the message. Default is `TRUE`.

@@ -49,6 +49,14 @@ RunGiottoWorkflow(
 
   Name used to store the Giotto workflow object in \`srt@tools\`.
 
+- verbose:
+
+  Whether to print progress messages.
+
+- seed:
+
+  Random seed for reproducible Giotto calls.
+
 - ...:
 
   Passed to \[SeuratToScopGiotto()\] when \`x\` is Seurat.

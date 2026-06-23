@@ -56,7 +56,12 @@
 <url><loc>https://mengxu98.github.io/scop/reference/FerrisWheelPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/FetchDataZero.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/FetchH5.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/FindAllMarkers.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/FindExpressedMarkers.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/FindMarkers.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/FindNeighbors.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/FindVariableFeatures.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/FoldChange.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/GLUE_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/GSEAPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/GSVAPlot.html</loc></url>
@@ -88,6 +93,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/MetabolismPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/MultiMAP_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/NMFHeatmap.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/NormalizeData.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/PAGAPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/PalantirTrajectoryPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/PrepareDB.html</loc></url>
@@ -106,6 +112,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunBANKSY.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunBayesSpace.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunCARD.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunCCA.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunCCC.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunCIBERSORT.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunCNV.html</loc></url>
@@ -162,6 +169,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunNMF.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunNichenetr.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunPAGA.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunPCA.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunPCAMap.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunPHATE.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunPaCMAP.html</loc></url>
@@ -200,6 +208,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunSpotSweeper.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunSymphonyMap.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunTriMap.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunUMAP.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunUMAP2.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunWOT.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunmcRigor.html</loc></url>
@@ -209,7 +218,9 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunscTenifoldNet.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RuntAge.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/SCENICPlot.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/SCTransform.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/STdeconvolvePlot.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/ScaleData.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/Scanorama_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/ScissorPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/SeuratToScopGiotto.html</loc></url>

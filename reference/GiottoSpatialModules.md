@@ -18,3 +18,49 @@ GiottoSpatialModules(
   seed = 11
 )
 ```
+
+## Arguments
+
+- x:
+
+  A \`giotto2\` workflow object.
+
+- features:
+
+  Features to test.
+
+- network_method:
+
+  Spatial network method.
+
+- network_name:
+
+  Name for the Giotto spatial network.
+
+- cor_method:
+
+  Correlation method used by Giotto.
+
+- k:
+
+  Number of spatial co-expression modules.
+
+- detect_params:
+
+  Additional parameters passed to \`Giotto::detectSpatialCorFeats()\`.
+
+- cluster_params:
+
+  Additional parameters passed to \`Giotto::clusterSpatialCorFeats()\`.
+
+- verbose:
+
+  Whether to print progress messages.
+
+- seed:
+
+  Random seed for reproducible Giotto calls.
+
+## Value
+
+A \`giotto2\` workflow object.
