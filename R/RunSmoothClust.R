@@ -82,7 +82,7 @@ RunSmoothClust <- function(
   k = 18,
   truncate = 0.05,
   n_threads = 1,
-  n_clusters = NULL,
+  n_clusters,
   n_pcs = 15,
   center = TRUE,
   scale = TRUE,
@@ -110,6 +110,12 @@ RunSmoothClust <- function(
   min_spots <- smoothclust_assert_positive_integer(min_spots, "min_spots")
   k <- smoothclust_assert_positive_integer(k, "k")
   n_threads <- smoothclust_assert_positive_integer(n_threads, "n_threads")
+  if (missing(n_clusters)) {
+    log_message(
+      "{.arg n_clusters} must be supplied explicitly",
+      message_type = "error"
+    )
+  }
   n_clusters <- smoothclust_assert_positive_integer(
     n_clusters,
     "n_clusters",
