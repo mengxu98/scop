@@ -42,7 +42,7 @@ standard_scop(
   linear_reduction_params = list(),
   force_linear_reduction = FALSE,
   nonlinear_reduction = "umap",
-  nonlinear_reduction_dims = c(2, 3),
+  nonlinear_reduction_dims = 2,
   nonlinear_reduction_params = list(),
   force_nonlinear_reduction = TRUE,
   neighbor_metric = "euclidean",
@@ -246,7 +246,7 @@ standard_scop(
 
   The number of dimensions to keep after nonlinear dimensionality
   reduction. If a vector is provided, different numbers of dimensions
-  can be specified for each method. Default is `c(2, 3)`.
+  can be specified for each method. Default is `2`.
 
 - nonlinear_reduction_params:
 
