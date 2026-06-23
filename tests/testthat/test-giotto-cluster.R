@@ -40,8 +40,8 @@ test_that("Giotto result helper keeps the full Giotto object outside Seurat", {
     clusters = data.frame(cluster = c("1", "2"), row.names = c("Spot1", "Spot2"))
   )
 
-  expect_s3_class(result, "scop_giotto_result")
-  expect_s3_class(result, "scop_giotto_cluster")
+  expect_s3_class(result, "giotto2_result")
+  expect_s3_class(result, "giotto2_cluster")
   expect_equal(result$giotto, list(mock = TRUE))
   expect_s3_class(result$clusters, "data.frame")
 })
@@ -112,8 +112,8 @@ test_that("RunGiottoCluster runs with installed Giotto", {
     store_giotto = FALSE,
     verbose = FALSE
   )
-  expect_s3_class(out, "scop_giotto_result")
-  expect_s3_class(out, "scop_giotto_cluster")
+  expect_s3_class(out, "giotto2_result")
+  expect_s3_class(out, "giotto2_cluster")
   expect_false(inherits(out, "Seurat"))
   expect_false(is.null(out$giotto))
   expect_s3_class(out$clusters, "data.frame")

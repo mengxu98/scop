@@ -6,6 +6,7 @@ static int component_count(int requested, int features, int cells) {
   return std::max(1, std::min(requested, limit));
 }
 
+// [[Rcpp::export]]
 Rcpp::List pca_backend_run(const arma::mat& X,
                            int npcs,
                            bool weight_by_var = true) {

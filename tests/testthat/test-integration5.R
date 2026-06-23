@@ -12,11 +12,6 @@ test_that("RunDimsReduction tolerates SCT scale.data missing some HVF", {
   s2$batch <- "B"
 
   srt <- merge(s1, s2)
-  srt[["RNA"]] <- SeuratObject::JoinLayers(srt[["RNA"]])
-  srt[["RNA"]] <- split(
-    x = srt[["RNA"]],
-    f = srt[["batch", drop = TRUE]]
-  )
   srt <- Seurat::SCTransform(
     object = srt,
     assay = "RNA",
