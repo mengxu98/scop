@@ -67,9 +67,7 @@ SpatialVariableFeaturePlot(
 
 - layer:
 
-  Assay layer used for `features`. If `NULL`, the layer stored by
-  [`RunSpatialVariableFeatures()`](https://mengxu98.github.io/scop/reference/RunSpatialVariableFeatures.md)
-  is used.
+  Assay layer used for `features`.
 
 - image:
 
@@ -106,15 +104,18 @@ SpatialVariableFeaturePlot(
 
 - palette:
 
-  Color palette name.
+  Color palette name. Available palettes can be found in
+  [thisplot::show_palettes](https://mengxu98.github.io/thisplot/reference/show_palettes.html).
+  Default is `"Chinese"`.
 
 - palcolor:
 
-  Custom colors used to create a color palette.
+  Custom colors used to create a color palette. Default is `NULL`.
 
 - legend.position:
 
-  The position of legends.
+  The position of legends, one of `"none"`, `"left"`, `"right"`,
+  `"bottom"`, `"top"`. Default is `"right"`.
 
 - theme_use:
 
@@ -123,23 +124,28 @@ SpatialVariableFeaturePlot(
 
 - theme_args:
 
-  Other arguments passed to the `theme_use`.
+  Other arguments passed to the `theme_use`. Default is
+  [`list()`](https://rdrr.io/r/base/list.html).
 
 - combine:
 
-  Combine plots into a single `patchwork` object.
+  Combine plots into a single `patchwork` object. If `FALSE`, return a
+  list of ggplot objects.
 
 - nrow:
 
-  Number of rows in the combined plot.
+  Number of rows in the combined plot. Default is `NULL`, which means
+  determined automatically based on the number of plots.
 
 - ncol:
 
-  Number of columns in the combined plot.
+  Number of columns in the combined plot. Default is `NULL`, which means
+  determined automatically based on the number of plots.
 
 - byrow:
 
-  Whether to arrange the plots by row in the combined plot.
+  Whether to arrange the plots by row in the combined plot. Default is
+  `TRUE`.
 
 ## Value
 

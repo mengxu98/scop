@@ -9,7 +9,7 @@ plotting and is not modified.
 ``` r
 GiottoPlot(x, ...)
 
-# S3 method for class 'scop_giotto_cluster'
+# S3 method for class 'giotto2_cluster'
 GiottoPlot(
   x,
   srt,
@@ -31,7 +31,7 @@ GiottoPlot(
   ...
 )
 
-# S3 method for class 'scop_giotto_cell_proximity'
+# S3 method for class 'giotto2_cell_proximity'
 GiottoPlot(
   x,
   heatmap_palette = "RdBu",
@@ -43,7 +43,7 @@ GiottoPlot(
   ...
 )
 
-# S3 method for class 'scop_giotto_spatial_genes'
+# S3 method for class 'giotto2_spatial_genes'
 GiottoPlot(
   x,
   srt = NULL,
@@ -70,7 +70,7 @@ GiottoPlot(
   ...
 )
 
-# S3 method for class 'scop_giotto_spatial_modules'
+# S3 method for class 'giotto2_spatial_modules'
 GiottoPlot(
   x,
   features = NULL,

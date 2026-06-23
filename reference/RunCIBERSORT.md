@@ -17,7 +17,7 @@ RunCIBERSORT(
   QN = TRUE,
   absolute = FALSE,
   backend = c("r", "cpp"),
-  n_threads = 1L,
+  cores = 1L,
   seed = 123L,
   verbose = TRUE,
   ...
@@ -63,9 +63,9 @@ RunCIBERSORT(
   CIBERSORT backend. `"r"` calls the external `CIBERSORT` package and
   `"cpp"` uses the native `scop` LIBSVM implementation.
 
-- n_threads:
+- cores:
 
-  Number of threads used by the C++ backend.
+  Number of CPU cores used by the C++ backend.
 
 - seed:
 

@@ -73,7 +73,8 @@ aligned coordinates in a <code>Seurat</code> object.</p>
 
 
 <dl><dt id="arg-object">object<a class="anchor" aria-label="anchor" href="#arg-object"></a></dt>
-<dd><p>A merged spatial <code>Seurat</code> object or a list of spatial <code>Seurat</code> objects.</p></dd>
+<dd><p>A merged spatial <code>Seurat</code> object or a list of spatial <code>Seurat</code>
+objects.</p></dd>
 
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
@@ -81,35 +82,44 @@ aligned coordinates in a <code>Seurat</code> object.</p>
 
 
 <dt id="arg-sample-by">sample.by<a class="anchor" aria-label="anchor" href="#arg-sample-by"></a></dt>
-<dd><p>Metadata column identifying samples for a merged <code>Seurat</code> object. For list input, list names are copied into this column.</p></dd>
+<dd><p>Metadata column identifying samples for a merged <code>Seurat</code>
+object. For list input, list names are copied into this column.</p></dd>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
-<dd><p>Assay used for expression extraction. If <code>NULL</code>, the default assay is used.</p></dd>
+<dd><p>Which assay to use.
+If <code>NULL</code>, the default assay of the Seurat object will be used.
+When the object also contains <code>ChromatinAssay</code>, the default assay and
+additional <code>ChromatinAssay</code> will be preprocessed sequentially.</p></dd>
 
 
 <dt id="arg-layer">layer<a class="anchor" aria-label="anchor" href="#arg-layer"></a></dt>
-<dd><p>Assay layer used as backend input.</p></dd>
+<dd><p>Assay layer used for expression values.</p></dd>
 
 
 <dt id="arg-coord-cols">coord.cols<a class="anchor" aria-label="anchor" href="#arg-coord-cols"></a></dt>
-<dd><p>Metadata coordinate columns used when no image coordinate source is available.</p></dd>
+<dd><p>Metadata coordinate columns used by the spatial workflow
+when no image is available.</p></dd>
 
 
 <dt id="arg-features">features<a class="anchor" aria-label="anchor" href="#arg-features"></a></dt>
-<dd><p>Optional features to use. If <code>NULL</code>, shared assay features are used.</p></dd>
+<dd><p>Features to score. If <code>NULL</code>, current variable features are
+used; if no variable features are present, all assay features are used.</p></dd>
 
 
 <dt id="arg-image">image<a class="anchor" aria-label="anchor" href="#arg-image"></a></dt>
-<dd><p>Name of the Seurat spatial image used to recover coordinates when available.</p></dd>
+<dd><p>Name of the Seurat spatial image used by the spatial workflow.
+If <code>NULL</code>, the first image is used when present.</p></dd>
 
 
 <dt id="arg-reduction-name">reduction.name<a class="anchor" aria-label="anchor" href="#arg-reduction-name"></a></dt>
-<dd><p>Name of the integrated embedding reduction. If <code>NULL</code>, a method-specific name is used.</p></dd>
+<dd><p>Name of the integrated embedding reduction. If <code>NULL</code>,
+a method-specific name is used.</p></dd>
 
 
 <dt id="arg-cluster-colname">cluster_colname<a class="anchor" aria-label="anchor" href="#arg-cluster-colname"></a></dt>
-<dd><p>Metadata column used for spatial domain labels. If <code>NULL</code>, a method-specific name is used.</p></dd>
+<dd><p>Metadata column used for spatial domain labels. If
+<code>NULL</code>, a method-specific name is used.</p></dd>
 
 
 <dt id="arg-tool-name">tool_name<a class="anchor" aria-label="anchor" href="#arg-tool-name"></a></dt>
@@ -117,11 +127,12 @@ aligned coordinates in a <code>Seurat</code> object.</p>
 
 
 <dt id="arg-store-results">store_results<a class="anchor" aria-label="anchor" href="#arg-store-results"></a></dt>
-<dd><p>Whether to store detailed results in <code>srt@tools</code>.</p></dd>
+<dd><p>Whether to store the full result in <code>srt@tools</code>.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>Whether to print progress messages.</p></dd>
+<dd><p>Whether to print the message.
+Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

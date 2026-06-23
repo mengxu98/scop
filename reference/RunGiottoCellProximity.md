@@ -108,5 +108,5 @@ RunGiottoCellProximity(
 
 ## Value
 
-A `scop_giotto_result` list containing the full Giotto object,
-enrichment table, raw Giotto result, parameters, features, and cells.
+A `giotto2_result` list containing the full Giotto object, enrichment
+table, raw Giotto result, parameters, features, and cells.

@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Run scTenifoldKnk in-silico knockout analysis</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/RunscTenifoldKnk.R" class="external-link"><code>R/RunscTenifoldKnk.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/RunScTenifoldKnk.R" class="external-link"><code>R/RunScTenifoldKnk.R</code></a></small>
       <div class="d-none name"><code>RunScTenifoldKnk.Rd</code></div>
     </div>
 
@@ -67,7 +67,7 @@
 <span>  td_nDecimal <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  ma_nDim <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  cores <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cpp"</span>, <span class="st">"r"</span><span class="op">)</span>,</span>
+<span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"r"</span>, <span class="st">"cpp"</span><span class="op">)</span>,</span>
 <span>  store_networks <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  store_manifold <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  tool_name <span class="op">=</span> <span class="st">"scTenifoldKnk"</span>,</span>
@@ -140,11 +140,16 @@ forwarded to downstream linear algebra where applicable.</p></dd>
 
 
 <dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
-<dd><p><code>cpp</code> is a native equivalent covariance-based network construction,
-direct sparse network assembly, controlled per-gene eigensolver parallelism,
-and helpers for tensor decomposition, manifold matrix construction, directionality, and
-distance calculation.
-<code>r</code> calls <code>scTenifoldKnk::scTenifoldKnk()</code> directly for comparison.</p></dd>
+<dd><p><code>r</code> calls <code>scTenifoldKnk::scTenifoldKnk()</code> directly and is the
+default high-consistency path. <code>cpp</code> uses upstream <code>pcNet()</code> by default,
+plus native helpers for manifold matrix construction, directionality, and
+distance calculation. Tensor decomposition uses upstream <code>scTenifoldNet</code> by
+default because it is faster on the benchmarked 10k workflow; set
+<code>options(scop.sctenifold.native_tensor = TRUE)</code> or
+<code>SCOP_SCTENIFOLD_NATIVE_TENSOR=true</code> to use the native ALS tensor path. Set
+<code>options(scop.sctenifold.upstream_pcnet = FALSE)</code> or
+<code>SCOP_SCTENIFOLD_UPSTREAM_PCNET=false</code> to use the native covariance-based
+network construction path.</p></dd>
 
 
 <dt id="arg-store-networks">store_networks<a class="anchor" aria-label="anchor" href="#arg-store-networks"></a></dt>

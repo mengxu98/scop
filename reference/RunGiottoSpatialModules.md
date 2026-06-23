@@ -114,6 +114,6 @@ RunGiottoSpatialModules(
 
 ## Value
 
-A `scop_giotto_result` list containing the full Giotto object, spatial
+A `giotto2_result` list containing the full Giotto object, spatial
 correlation object, module object, extracted module tables, parameters,
 features, and cells.

@@ -43,26 +43,29 @@ RunSpatialIntegration(
 
 - assay:
 
-  Assay used for expression extraction. If `NULL`, the default assay is
-  used.
+  Which assay to use. If `NULL`, the default assay of the Seurat object
+  will be used. When the object also contains `ChromatinAssay`, the
+  default assay and additional `ChromatinAssay` will be preprocessed
+  sequentially.
 
 - layer:
 
-  Assay layer used as backend input.
+  Assay layer used for expression values.
 
 - coord.cols:
 
-  Metadata coordinate columns used when no image coordinate source is
-  available.
+  Metadata coordinate columns used by the spatial workflow when no image
+  is available.
 
 - features:
 
-  Optional features to use. If `NULL`, shared assay features are used.
+  Features to score. If `NULL`, current variable features are used; if
+  no variable features are present, all assay features are used.
 
 - image:
 
-  Name of the Seurat spatial image used to recover coordinates when
-  available.
+  Name of the Seurat spatial image used by the spatial workflow. If
+  `NULL`, the first image is used when present.
 
 - reduction.name:
 
@@ -80,11 +83,11 @@ RunSpatialIntegration(
 
 - store_results:
 
-  Whether to store detailed results in `srt@tools`.
+  Whether to store the full result in `srt@tools`.
 
 - verbose:
 
-  Whether to print progress messages.
+  Whether to print the message. Default is `TRUE`.
 
 - ...:
 

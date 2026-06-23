@@ -57,6 +57,7 @@
 <span>  HVF_min_intersection <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  HVF <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  vars_to_regress <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cores <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">11</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -128,6 +129,11 @@ If NULL, the function will use the highly variable features identified by the HV
 <dt id="arg-vars-to-regress">vars_to_regress<a class="anchor" aria-label="anchor" href="#arg-vars-to-regress"></a></dt>
 <dd><p>A vector of variable names to include as additional regression variables.
 Default is <code>NULL</code>.</p></dd>
+
+
+<dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
+<dd><p>Number of CPU cores used by supported preprocessing steps.
+Default is <code>1</code>.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>

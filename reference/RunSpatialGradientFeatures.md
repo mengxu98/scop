@@ -2,8 +2,8 @@
 
 Run spatial trajectory or annotation gradient screening for Seurat
 objects. The native `"cpp"` backend avoids SPATA2 object construction
-for fast distance-based screening, while the `"spata2"` backend keeps
-full upstream SPATA2 SAS/STS behavior. Results are normalized into plain
+for fast distance-based screening, while the `"r"` backend keeps full
+upstream SPATA2 SAS/STS behavior. Results are normalized into plain
 data.frames and stored in `srt@tools[["SpatialGradientFeatures"]]`; the
 SPATA2 object itself is never stored.
 
@@ -13,7 +13,7 @@ SPATA2 object itself is never stored.
 RunSpatialGradientFeatures(
   srt,
   reference = c("trajectory", "annotation"),
-  backend = c("cpp", "spata2"),
+  backend = c("cpp", "r"),
   result_name = NULL,
   spata_object = NULL,
   assay = NULL,
@@ -73,7 +73,7 @@ RunSpatialGradientFeatures(
 - backend:
 
   Computation backend. `"cpp"` uses SCOP's native fast spatial gradient
-  implementation and avoids SPATA2 object construction. `"spata2"` uses
+  implementation and avoids SPATA2 object construction. `"r"` uses
   SPATA2 directly for full upstream SAS/STS behavior.
 
 - result_name:

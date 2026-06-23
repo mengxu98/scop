@@ -36,7 +36,7 @@ RunSPOTlight(
 
 - srt:
 
-  Spatial `Seurat` object used as the query.
+  Spatial `Seurat` object used as the RCTD query.
 
 - reference:
 
@@ -56,11 +56,11 @@ RunSPOTlight(
 
 - layer, reference_layer:
 
-  Assay layers used for spatial and reference counts.
+  Assay layers used for spatial and reference raw counts.
 
 - features:
 
-  Features used for SPOTlight. If `NULL`, shared features are used.
+  Features used for RCTD. If `NULL`, shared features are used.
 
 - mgs:
 
@@ -102,11 +102,11 @@ RunSPOTlight(
 
 - store_results:
 
-  Whether to store detailed results in `srt@tools`.
+  Whether to store detailed RCTD results in `srt@tools`.
 
 - verbose:
 
-  Whether to print progress messages.
+  Whether to print the message. Default is `TRUE`.
 
 - ...:
 

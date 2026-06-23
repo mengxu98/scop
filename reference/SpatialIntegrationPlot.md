@@ -57,14 +57,9 @@ SpatialIntegrationPlot(
   Reduction used for embedding plots. Defaults to the stored integration
   reduction.
 
-- cluster_colname:
-
-  Metadata column used for spatial domain labels.
-
 - coord.cols:
 
-  Metadata coordinate columns used when no image coordinate source is
-  available.
+  Metadata coordinate columns used when no image is available.
 
 - use_aligned:
 
@@ -81,19 +76,23 @@ SpatialIntegrationPlot(
 
 - palette:
 
-  Color palette name.
+  Color palette name. Available palettes can be found in
+  [thisplot::show_palettes](https://mengxu98.github.io/thisplot/reference/show_palettes.html).
+  Default is `"Chinese"`.
 
 - palcolor:
 
-  Custom colors used to create a color palette.
+  Custom colors used to create a color palette. Default is `NULL`.
 
 - theme_use:
 
-  Theme function name.
+  Theme used. Can be a character string or a theme function. Default is
+  `"theme_scop"`.
 
 - theme_args:
 
-  Additional arguments passed to `theme_use`.
+  Other arguments passed to the `theme_use`. Default is
+  [`list()`](https://rdrr.io/r/base/list.html).
 
 - ...:
 

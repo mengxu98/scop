@@ -35,7 +35,6 @@ BBKNN_integrate(
   cluster_algorithm = "louvain",
   cluster_resolution = 0.6,
   bbknn_params = list(),
-  bbknn_backend = c("python", "r"),
   verbose = TRUE,
   seed = 11
 )
@@ -111,10 +110,8 @@ BBKNN_integrate(
 
 - do_scaling:
 
-  Whether to perform scaling. If `TRUE`, the function will force to
-  scale the data using the
-  [Seurat::ScaleData](https://satijalab.org/seurat/reference/ScaleData.html)
-  function.
+  Whether to perform scaling. If `TRUE`, the function will force scaling
+  with the package ScaleData path.
 
 - vars_to_regress:
 
@@ -196,12 +193,6 @@ BBKNN_integrate(
 
   A list of parameters for the bbknn.matrix.bbknn function, default is
   an empty list.
-
-- bbknn_backend:
-
-  Backend used for BBKNN graph construction. \`"python"\` uses the
-  original \`bbknn.matrix.bbknn\` implementation. \`"r"\` uses a native
-  R/C++ balanced KNN graph with approximate connectivity weights.
 
 - verbose:
 

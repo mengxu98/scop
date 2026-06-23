@@ -119,5 +119,5 @@ RunGiottoCluster(
 
 ## Value
 
-A `scop_giotto_result` list containing the full Giotto object, cluster
+A `giotto2_result` list containing the full Giotto object, cluster
 assignments, Giotto metadata, parameters, features, and cells.

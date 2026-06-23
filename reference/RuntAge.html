@@ -47,7 +47,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">RuntAge</span><span class="op">(</span></span>
 <span>  <span class="va">object</span>,</span>
 <span>  model_paths <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  model_backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auto"</span>, <span class="st">"r"</span>, <span class="st">"python"</span><span class="op">)</span>,</span>
+<span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"python"</span>, <span class="st">"cpp"</span><span class="op">)</span>,</span>
 <span>  clock <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Chronoage"</span>, <span class="st">"NormalizedAge"</span>, <span class="st">"Mortality"</span><span class="op">)</span>,</span>
 <span>  model_species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auto"</span>, <span class="st">"Multispecies"</span>, <span class="st">"Mouse"</span>, <span class="st">"Rodents"</span><span class="op">)</span>,</span>
 <span>  model_tissue <span class="op">=</span> <span class="st">"Multitissue"</span>,</span>
@@ -96,15 +96,15 @@ object with genes in rows and pseudobulk/bulk samples in columns.</p></dd>
 
 <dt id="arg-model-paths">model_paths<a class="anchor" aria-label="anchor" href="#arg-model-paths"></a></dt>
 <dd><p>Named list or character vector of local tAge model files
-(<code>.rds</code> for <code>model_backend = "r"</code>, <code>.pkl</code> for <code>model_backend = "python"</code>).
+(<code>.rds</code> for <code>backend = "cpp"</code>, <code>.pkl</code> for <code>backend = "python"</code>).
 Names must match one or more of <code>"scaled"</code>, <code>"scaled_diff"</code>, <code>"yugene"</code>,
 and <code>"yugene_diff"</code>. If <code>NULL</code>, model files are downloaded from
-<code>mengxu98/datasets</code> for the R backend or Zenodo for the Python backend.</p></dd>
+<code>mengxu98/datasets</code> for the C++ backend or Zenodo for the Python backend.</p></dd>
 
 
-<dt id="arg-model-backend">model_backend<a class="anchor" aria-label="anchor" href="#arg-model-backend"></a></dt>
-<dd><p>Model prediction backend. <code>"auto"</code> uses <code>"r"</code> for
-<code>mode = "EN"</code> and <code>"python"</code> for <code>mode = "BR"</code>.</p></dd>
+<dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
+<dd><p>Model prediction backend. <code>"cpp"</code> uses converted Elastic Net
+models and C++ prediction. <code>"python"</code> uses <code>tAge::predict_tAge()</code>.</p></dd>
 
 
 <dt id="arg-clock">clock<a class="anchor" aria-label="anchor" href="#arg-clock"></a></dt>

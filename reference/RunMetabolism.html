@@ -62,7 +62,7 @@
 <span>  use_preparedb <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AUCell"</span>, <span class="st">"GSVA"</span>, <span class="st">"ssGSEA"</span>, <span class="st">"VISION"</span><span class="op">)</span>,</span>
 <span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cpp"</span>, <span class="st">"r"</span><span class="op">)</span>,</span>
-<span>  cpp_strategy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"topk"</span>, <span class="st">"sparse"</span>, <span class="st">"full"</span>, <span class="st">"aucell"</span><span class="op">)</span>,</span>
+<span>  cpp_strategy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"topk"</span>, <span class="st">"aucell"</span>, <span class="st">"sparse"</span>, <span class="st">"full"</span><span class="op">)</span>,</span>
 <span>  cpp_chunk_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  minGSSize <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  maxGSSize <span class="op">=</span> <span class="fl">500</span>,</span>
@@ -156,9 +156,7 @@ This automatically handles gene symbol conversion for non-human species
 (e.g., <code>species = "Mus_musculus"</code> → mouse gene symbols in metabolism pathways).
 When <code>FALSE</code>, raw scMetabolism GMT files are
 downloaded and genes are matched case-insensitively with optional <a href="GeneConvert.html">GeneConvert</a>
-supplementation when <code>convert_species = TRUE</code>.
-genes and approximates zero ties, <code>"topk"</code> ranks only genes that can contribute
-to AUCell AUC, and <code>"full"</code> ranks all genes.</p></dd>
+supplementation when <code>convert_species = TRUE</code>.</p></dd>
 
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
@@ -169,17 +167,15 @@ to AUCell AUC, and <code>"full"</code> ranks all genes.</p></dd>
 <dd><p>Scoring backend. <code>"cpp"</code> is the default for supported methods.
 <code>"r"</code> uses the original R package implementation. <code>"cpp"</code> currently supports
 <code>method = "AUCell"</code>, <code>method = "GSVA"</code>, and <code>method = "ssGSEA"</code>.
-<code>method = "VISION"</code> falls back to <code>"r"</code> when <code>backend</code> is not explicitly set.
-AUCell C++ scores may differ from the R backend when tied expression values
-are randomly ranked.</p></dd>
+<code>method = "VISION"</code> falls back to <code>"r"</code> when <code>backend</code> is not explicitly set.</p></dd>
 
 
 <dt id="arg-cpp-strategy">cpp_strategy<a class="anchor" aria-label="anchor" href="#arg-cpp-strategy"></a></dt>
-<dd><p>C++ AUCell ranking strategy. <code>"topk"</code> ranks only genes
-that can contribute to AUCell AUC and is the default for better agreement
-with AUCell's full ranking on sparse single-cell matrices. <code>"aucell"</code> uses
-<code><a href="https://rdrr.io/pkg/AUCell/man/AUCell_buildRankings.html" class="external-link">AUCell::AUCell_buildRankings()</a></code> and <code><a href="https://rdrr.io/pkg/AUCell/man/AUCell_calcAUC.html" class="external-link">AUCell::AUCell_calcAUC()</a></code> for
-scMetabolism-compatible scores. <code>"sparse"</code> ranks non-zero</p></dd>
+<dd><p>AUCell scoring strategy used when <code>backend = "cpp"</code>.
+<code>"topk"</code> is the speed-first default and ranks only genes that can contribute
+to AUCell AUC. <code>"aucell"</code> uses <code><a href="https://rdrr.io/pkg/AUCell/man/AUCell_buildRankings.html" class="external-link">AUCell::AUCell_buildRankings()</a></code> and
+<code><a href="https://rdrr.io/pkg/AUCell/man/AUCell_calcAUC.html" class="external-link">AUCell::AUCell_calcAUC()</a></code> for scMetabolism-compatible scores, <code>"sparse"</code>
+ranks non-zero genes and approximates zero ties, and <code>"full"</code> ranks all genes.</p></dd>
 
 
 <dt id="arg-cpp-chunk-size">cpp_chunk_size<a class="anchor" aria-label="anchor" href="#arg-cpp-chunk-size"></a></dt>

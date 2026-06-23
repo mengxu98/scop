@@ -21,6 +21,7 @@ RunSciBet(
   input_transform = c("auto", "none", "expm1"),
   prefix = "scibet",
   store_model = TRUE,
+  store_probabilities = FALSE,
   return_object = TRUE,
   verbose = TRUE
 )
@@ -87,6 +88,12 @@ RunSciBet(
 
   Whether to store the SciBet core and probabilities in
   `srt_query@tools`.
+
+- store_probabilities:
+
+  Whether to store the full cell-by-class probability matrix. The
+  default keeps annotations and maximum probability scores while
+  avoiding a large result object on full-scale data.
 
 - return_object:
 

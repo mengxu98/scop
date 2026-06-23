@@ -112,10 +112,8 @@ Harmony5_integrate(
 
 - do_scaling:
 
-  Whether to perform scaling. If `TRUE`, the function will force to
-  scale the data using the
-  [Seurat::ScaleData](https://satijalab.org/seurat/reference/ScaleData.html)
-  function.
+  Whether to perform scaling. If `TRUE`, the function will force scaling
+  with the package ScaleData path.
 
 - vars_to_regress:
 

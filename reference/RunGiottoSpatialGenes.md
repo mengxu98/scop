@@ -115,6 +115,5 @@ RunGiottoSpatialGenes(
 
 ## Value
 
-A `scop_giotto_result` list containing the full Giotto object, spatial
-gene table, top features, raw Giotto result, parameters, features, and
-cells.
+A `giotto2_result` list containing the full Giotto object, spatial gene
+table, top features, raw Giotto result, parameters, features, and cells.

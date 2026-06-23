@@ -8,7 +8,7 @@ Run tAge transcriptomic aging-clock prediction
 RuntAge(
   object,
   model_paths = NULL,
-  model_backend = c("auto", "r", "python"),
+  backend = c("python", "cpp"),
   clock = c("Chronoage", "NormalizedAge", "Mortality"),
   model_species = c("auto", "Multispecies", "Mouse", "Rodents"),
   model_tissue = "Multitissue",
@@ -56,16 +56,16 @@ RuntAge(
 - model_paths:
 
   Named list or character vector of local tAge model files (`.rds` for
-  `model_backend = "r"`, `.pkl` for `model_backend = "python"`). Names
-  must match one or more of `"scaled"`, `"scaled_diff"`, `"yugene"`, and
+  `backend = "cpp"`, `.pkl` for `backend = "python"`). Names must match
+  one or more of `"scaled"`, `"scaled_diff"`, `"yugene"`, and
   `"yugene_diff"`. If `NULL`, model files are downloaded from
-  `mengxu98/datasets` for the R backend or Zenodo for the Python
+  `mengxu98/datasets` for the C++ backend or Zenodo for the Python
   backend.
 
-- model_backend:
+- backend:
 
-  Model prediction backend. `"auto"` uses `"r"` for `mode = "EN"` and
-  `"python"` for `mode = "BR"`.
+  Model prediction backend. `"cpp"` uses converted Elastic Net models
+  and C++ prediction. `"python"` uses `tAge::predict_tAge()`.
 
 - clock:
 

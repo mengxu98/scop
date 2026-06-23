@@ -73,63 +73,73 @@
 
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
-<dd><p>Stored integration method. If <code>NULL</code>, the active method stored in <code>srt@tools[[tool_name]]</code> is used.</p></dd>
+<dd><p>Stored integration method. If <code>NULL</code>, the active method stored
+in <code>srt@tools[[tool_name]]</code> is used.</p></dd>
 
 
 <dt id="arg-plot-type">plot_type<a class="anchor" aria-label="anchor" href="#arg-plot-type"></a></dt>
-<dd><p>Plot type: <code>"spatial"</code>, <code>"embedding"</code>, <code>"alignment"</code>, or <code>"composition"</code>.</p></dd>
+<dd><p>Plot type: <code>"spatial"</code>, <code>"embedding"</code>, <code>"alignment"</code>, or
+<code>"composition"</code>.</p></dd>
 
 
 <dt id="arg-group-by">group.by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
-<dd><p>Metadata column used for coloring. Defaults to the stored spatial domain column.</p></dd>
+<dd><p>Metadata column used for coloring. Defaults to the stored
+spatial domain column.</p></dd>
 
 
 <dt id="arg-sample-by">sample.by<a class="anchor" aria-label="anchor" href="#arg-sample-by"></a></dt>
-<dd><p>Metadata column used for facets or composition grouping. Defaults to the stored sample column.</p></dd>
+<dd><p>Metadata column used for facets or composition grouping.
+Defaults to the stored sample column.</p></dd>
 
 
 <dt id="arg-reduction">reduction<a class="anchor" aria-label="anchor" href="#arg-reduction"></a></dt>
-<dd><p>Reduction used for embedding plots. Defaults to the stored integration reduction.</p></dd>
-
-
-<dt id="arg-cluster-colname">cluster_colname<a class="anchor" aria-label="anchor" href="#arg-cluster-colname"></a></dt>
-<dd><p>Metadata column used for spatial domain labels.</p></dd>
+<dd><p>Reduction used for embedding plots. Defaults to the stored
+integration reduction.</p></dd>
 
 
 <dt id="arg-coord-cols">coord.cols<a class="anchor" aria-label="anchor" href="#arg-coord-cols"></a></dt>
-<dd><p>Metadata coordinate columns used when no image coordinate source is available.</p></dd>
+<dd><p>Metadata coordinate columns used when no image is available.</p></dd>
 
 
 <dt id="arg-use-aligned">use_aligned<a class="anchor" aria-label="anchor" href="#arg-use-aligned"></a></dt>
-<dd><p>Whether spatial plots should use aligned coordinates when available.</p></dd>
+<dd><p>Whether spatial plots should use aligned coordinates when
+available.</p></dd>
 
 
 <dt id="arg-tool-name">tool_name<a class="anchor" aria-label="anchor" href="#arg-tool-name"></a></dt>
-<dd><p>Name of the <code>srt@tools</code> entry created by <code><a href="RunSpatialIntegration.html">RunSpatialIntegration()</a></code>.</p></dd>
+<dd><p>Name of the <code>srt@tools</code> entry created by
+<code><a href="RunSpatialIntegration.html">RunSpatialIntegration()</a></code>.</p></dd>
 
 
 <dt id="arg-combine">combine<a class="anchor" aria-label="anchor" href="#arg-combine"></a></dt>
-<dd><p>Whether to combine plots when delegated plotting returns a list.</p></dd>
+<dd><p>Whether to combine plots when delegated plotting returns a
+list.</p></dd>
 
 
 <dt id="arg-palette">palette<a class="anchor" aria-label="anchor" href="#arg-palette"></a></dt>
-<dd><p>Color palette name.</p></dd>
+<dd><p>Color palette name.
+Available palettes can be found in <a href="https://mengxu98.github.io/thisplot/reference/show_palettes.html" class="external-link">thisplot::show_palettes</a>.
+Default is <code>"Chinese"</code>.</p></dd>
 
 
 <dt id="arg-palcolor">palcolor<a class="anchor" aria-label="anchor" href="#arg-palcolor"></a></dt>
-<dd><p>Custom colors used to create a color palette.</p></dd>
+<dd><p>Custom colors used to create a color palette.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-theme-use">theme_use<a class="anchor" aria-label="anchor" href="#arg-theme-use"></a></dt>
-<dd><p>Theme function name.</p></dd>
+<dd><p>Theme used. Can be a character string or a theme function.
+Default is <code>"theme_scop"</code>.</p></dd>
 
 
 <dt id="arg-theme-args">theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-args"></a></dt>
-<dd><p>Additional arguments passed to <code>theme_use</code>.</p></dd>
+<dd><p>Other arguments passed to the <code>theme_use</code>.
+Default is <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional arguments passed to <code><a href="SpatialSpotPlot.html">SpatialSpotPlot()</a></code> or <code><a href="CellDimPlot.html">CellDimPlot()</a></code>.</p></dd>
+<dd><p>Additional arguments passed to <code><a href="SpatialSpotPlot.html">SpatialSpotPlot()</a></code> or
+<code><a href="CellDimPlot.html">CellDimPlot()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
