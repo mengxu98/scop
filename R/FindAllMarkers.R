@@ -212,6 +212,12 @@ FindAllMarkers.Seurat <- function(
   }))
 }
 
+#' Find markers for all groups
+#'
+#' @param object Object containing expression data.
+#' @param ... Passed to methods.
+#'
+#' @return A data frame of marker statistics.
 #' @export
 FindAllMarkers <- function(object, ...) {
   UseMethod("FindAllMarkers")

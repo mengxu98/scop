@@ -224,6 +224,12 @@ FindMarkers.Seurat <- function(
   )
 }
 
+#' Find markers between groups
+#'
+#' @param object Object containing expression data.
+#' @param ... Passed to methods.
+#'
+#' @return A data frame of marker statistics.
 #' @export
 FindMarkers <- function(object, ...) {
   UseMethod("FindMarkers")

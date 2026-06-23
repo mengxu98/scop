@@ -16,6 +16,28 @@ GiottoSpatialGenes(
   seed = 11
 )
 }
+\arguments{
+\item{x}{A `giotto2` workflow object.}
+
+\item{features}{Features to test.}
+
+\item{network_method}{Spatial network method.}
+
+\item{network_name}{Name for the Giotto spatial network.}
+
+\item{bin_method}{Binarization method passed to `Giotto::binSpect()`.}
+
+\item{top_n}{Number of top spatial genes to store.}
+
+\item{params}{Additional parameters passed to `Giotto::binSpect()`.}
+
+\item{verbose}{Whether to print progress messages.}
+
+\item{seed}{Random seed for reproducible Giotto calls.}
+}
+\value{
+A `giotto2` workflow object.
+}
 \description{
 Run Giotto spatial gene detection
 }

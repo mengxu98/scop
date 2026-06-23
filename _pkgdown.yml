@@ -132,6 +132,14 @@ reference:
 
 - subtitle: "Dimensionality Reduction and Clustering"
 - contents:
+  - NormalizeData
+  - FindVariableFeatures
+  - ScaleData
+  - RunPCA
+  - RunCCA
+  - RunUMAP
+  - FindNeighbors
+  - SCTransform
   - RunDimsEstimate
   - RunDimsReduction
   - RunDM
@@ -225,6 +233,9 @@ reference:
 
 - subtitle: "Differential Expression and Perturbation"
 - contents:
+  - FindAllMarkers
+  - FindMarkers
+  - FoldChange
   - FindExpressedMarkers
   - RunAugur
   - RunDEtest

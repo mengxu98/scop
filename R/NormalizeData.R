@@ -100,6 +100,12 @@ NormalizeData.Seurat <- function(
   SeuratObject::LogSeuratCommand(object)
 }
 
+#' Normalize a single-cell object
+#'
+#' @param object Object to normalize.
+#' @param ... Passed to methods.
+#'
+#' @return A normalized object of the same class.
 #' @export
 NormalizeData <- function(object, ...) {
   UseMethod("NormalizeData")

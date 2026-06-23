@@ -41,6 +41,8 @@ Defaults to the stored sample column.}
 \item{reduction}{Reduction used for embedding plots. Defaults to the stored
 integration reduction.}
 
+\item{cluster_colname}{Backward-compatible alias for \code{group.by}.}
+
 \item{coord.cols}{Metadata coordinate columns used when no image is available.}
 
 \item{use_aligned}{Whether spatial plots should use aligned coordinates when

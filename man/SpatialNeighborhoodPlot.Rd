@@ -110,6 +110,8 @@ Default is \code{NULL}, which means determined automatically based on the number
 \item{byrow}{Whether to arrange the plots by row in the combined plot.
 Default is \code{TRUE}.}
 
+\item{seed}{Random seed used by layouts and jittered plot layers.}
+
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 

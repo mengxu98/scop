@@ -15,6 +15,26 @@ GiottoReduce(
   seed = 11
 )
 }
+\arguments{
+\item{x}{A `giotto2` workflow object.}
+
+\item{reduction}{Dimensional reduction to run.}
+
+\item{dims}{Dimensions to use.}
+
+\item{name}{Name for the Giotto reduction.}
+
+\item{features}{Features used for the reduction.}
+
+\item{params}{Additional parameters passed to the Giotto reduction function.}
+
+\item{verbose}{Whether to print progress messages.}
+
+\item{seed}{Random seed for reproducible Giotto calls.}
+}
+\value{
+A `giotto2` workflow object.
+}
 \description{
 Run Giotto dimensional reduction
 }

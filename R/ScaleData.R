@@ -82,6 +82,12 @@ ScaleData.Seurat <- function(
   object
 }
 
+#' Scale expression data
+#'
+#' @param object Object containing expression data.
+#' @param ... Passed to methods.
+#'
+#' @return The input object with scaled data.
 #' @export
 ScaleData <- function(object, ...) {
   UseMethod("ScaleData")
