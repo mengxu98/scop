@@ -17,6 +17,32 @@ GiottoSpatialModules(
   seed = 11
 )
 }
+\arguments{
+\item{x}{A `giotto2` workflow object.}
+
+\item{features}{Features to test.}
+
+\item{network_method}{Spatial network method.}
+
+\item{network_name}{Name for the Giotto spatial network.}
+
+\item{cor_method}{Correlation method used by Giotto.}
+
+\item{k}{Number of spatial co-expression modules.}
+
+\item{detect_params}{Additional parameters passed to
+`Giotto::detectSpatialCorFeats()`.}
+
+\item{cluster_params}{Additional parameters passed to
+`Giotto::clusterSpatialCorFeats()`.}
+
+\item{verbose}{Whether to print progress messages.}
+
+\item{seed}{Random seed for reproducible Giotto calls.}
+}
+\value{
+A `giotto2` workflow object.
+}
 \description{
 Run Giotto spatial co-expression modules
 }

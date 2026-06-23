@@ -388,6 +388,8 @@ giotto_validate_runtime_object <- function(x, verbose = TRUE) {
 #' @param store_results Whether to store the internal Giotto workflow object in
 #' `srt@tools[[tool_name]]` when returning Seurat.
 #' @param tool_name Name used to store the Giotto workflow object in `srt@tools`.
+#' @param verbose Whether to print progress messages.
+#' @param seed Random seed for reproducible Giotto calls.
 #' @param ... Passed to [SeuratToScopGiotto()] when `x` is Seurat.
 #'
 #' @return A Seurat object by default for Seurat input, otherwise a `giotto2`
@@ -600,7 +602,17 @@ RunGiottoWorkflow <- function(
   x
 }
 
-#' @title Preprocess a scop Giotto object
+#' @title Preprocess an internal Giotto workflow object
+#'
+#' @param x A `giotto2` workflow object.
+#' @param filter_params Additional parameters reserved for future filtering.
+#' @param norm_params Additional parameters passed to `Giotto::normalizeGiotto()`.
+#' @param stat_params Additional parameters passed to `Giotto::addStatistics()`.
+#' @param hvf_params Additional parameters passed to `Giotto::calculateHVF()`.
+#' @param verbose Whether to print progress messages.
+#' @param seed Random seed for reproducible Giotto calls.
+#'
+#' @return A `giotto2` workflow object.
 #' @export
 GiottoPreprocess <- function(
   x,
@@ -721,6 +733,17 @@ GiottoPreprocess <- function(
 }
 
 #' @title Run Giotto dimensional reduction
+#'
+#' @param x A `giotto2` workflow object.
+#' @param reduction Dimensional reduction to run.
+#' @param dims Dimensions to use.
+#' @param name Name for the Giotto reduction.
+#' @param features Features used for the reduction.
+#' @param params Additional parameters passed to the Giotto reduction function.
+#' @param verbose Whether to print progress messages.
+#' @param seed Random seed for reproducible Giotto calls.
+#'
+#' @return A `giotto2` workflow object.
 #' @export
 GiottoReduce <- function(
   x,
@@ -802,6 +825,19 @@ GiottoReduce <- function(
 }
 
 #' @title Run Giotto nearest-network clustering
+#'
+#' @param x A `giotto2` workflow object.
+#' @param method Giotto clustering method.
+#' @param dims Dimensions used to build the nearest-neighbor network.
+#' @param k Number of nearest neighbors.
+#' @param resolution Clustering resolution.
+#' @param network_name Name for the Giotto nearest-neighbor network.
+#' @param cluster_name Name for the Giotto cluster result.
+#' @param params Additional parameters passed to the Giotto clustering function.
+#' @param verbose Whether to print progress messages.
+#' @param seed Random seed for reproducible Giotto calls.
+#'
+#' @return A `giotto2` workflow object.
 #' @export
 GiottoCluster <- function(
   x,
@@ -895,6 +931,14 @@ GiottoCluster <- function(
 }
 
 #' @title Create a Giotto spatial network
+#'
+#' @param x A `giotto2` workflow object.
+#' @param network_method Spatial network method.
+#' @param network_name Name for the Giotto spatial network.
+#' @param params Additional parameters passed to `Giotto::createSpatialNetwork()`.
+#' @param verbose Whether to print progress messages.
+#'
+#' @return A `giotto2` workflow object.
 #' @export
 GiottoSpatialNetwork <- function(
   x,
@@ -960,6 +1004,18 @@ giotto_get_spatial_network_table <- function(gobject, network_name, spat_unit = 
 }
 
 #' @title Run Giotto spatial gene detection
+#'
+#' @param x A `giotto2` workflow object.
+#' @param features Features to test.
+#' @param network_method Spatial network method.
+#' @param network_name Name for the Giotto spatial network.
+#' @param bin_method Binarization method passed to `Giotto::binSpect()`.
+#' @param top_n Number of top spatial genes to store.
+#' @param params Additional parameters passed to `Giotto::binSpect()`.
+#' @param verbose Whether to print progress messages.
+#' @param seed Random seed for reproducible Giotto calls.
+#'
+#' @return A `giotto2` workflow object.
 #' @export
 GiottoSpatialGenes <- function(
   x,
@@ -1024,6 +1080,21 @@ GiottoSpatialGenes <- function(
 }
 
 #' @title Run Giotto spatial co-expression modules
+#'
+#' @param x A `giotto2` workflow object.
+#' @param features Features to test.
+#' @param network_method Spatial network method.
+#' @param network_name Name for the Giotto spatial network.
+#' @param cor_method Correlation method used by Giotto.
+#' @param k Number of spatial co-expression modules.
+#' @param detect_params Additional parameters passed to
+#' `Giotto::detectSpatialCorFeats()`.
+#' @param cluster_params Additional parameters passed to
+#' `Giotto::clusterSpatialCorFeats()`.
+#' @param verbose Whether to print progress messages.
+#' @param seed Random seed for reproducible Giotto calls.
+#'
+#' @return A `giotto2` workflow object.
 #' @export
 GiottoSpatialModules <- function(
   x,
@@ -1101,6 +1172,18 @@ GiottoSpatialModules <- function(
 }
 
 #' @title Run Giotto cell proximity enrichment
+#'
+#' @param x A `giotto2` workflow object.
+#' @param group.by Metadata column containing cell or spot groups.
+#' @param network_method Spatial network method.
+#' @param network_name Name for the Giotto spatial network.
+#' @param number_of_simulations Number of label simulations used by Giotto.
+#' @param adjust_method Multiple-testing correction method.
+#' @param params Additional parameters passed to `Giotto::cellProximityEnrichment()`.
+#' @param verbose Whether to print progress messages.
+#' @param seed Random seed for reproducible Giotto calls.
+#'
+#' @return A `giotto2` workflow object.
 #' @export
 GiottoCellProximity <- function(
   x,
@@ -1161,6 +1244,18 @@ GiottoCellProximity <- function(
 }
 
 #' @title Run Giotto HMRF spatial domains
+#'
+#' @param x A `giotto2` workflow object.
+#' @param spatial_genes Spatial genes used by Giotto HMRF.
+#' @param network_name Name for the Giotto spatial network.
+#' @param k Number of HMRF domains.
+#' @param betas HMRF beta values.
+#' @param hmrf_name Name for the HMRF result.
+#' @param params Additional parameters passed to `Giotto::doHMRF()`.
+#' @param verbose Whether to print progress messages.
+#' @param seed Random seed for reproducible Giotto calls.
+#'
+#' @return A `giotto2` workflow object.
 #' @export
 GiottoHMRF <- function(
   x,
@@ -1255,6 +1350,17 @@ giotto_ensure_spatial_network <- function(x, network_method = "Delaunay", networ
 }
 
 #' @title Add Giotto results back to Seurat
+#'
+#' @param srt A Seurat object.
+#' @param x A `giotto2` workflow object.
+#' @param result Giotto result to copy back.
+#' @param name Metadata column name to write. If `NULL`, a default name is used.
+#' @param tool_name Name used to store the Giotto workflow object in
+#' `srt@tools`.
+#' @param store_result Whether to store the Giotto workflow object in
+#' `srt@tools[[tool_name]]`.
+#'
+#' @return A Seurat object.
 #' @export
 AddGiottoToSeurat <- function(
   srt,

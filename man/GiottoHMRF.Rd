@@ -16,6 +16,28 @@ GiottoHMRF(
   seed = 11
 )
 }
+\arguments{
+\item{x}{A `giotto2` workflow object.}
+
+\item{spatial_genes}{Spatial genes used by Giotto HMRF.}
+
+\item{network_name}{Name for the Giotto spatial network.}
+
+\item{k}{Number of HMRF domains.}
+
+\item{betas}{HMRF beta values.}
+
+\item{hmrf_name}{Name for the HMRF result.}
+
+\item{params}{Additional parameters passed to `Giotto::doHMRF()`.}
+
+\item{verbose}{Whether to print progress messages.}
+
+\item{seed}{Random seed for reproducible Giotto calls.}
+}
+\value{
+A `giotto2` workflow object.
+}
 \description{
 Run Giotto HMRF spatial domains
 }

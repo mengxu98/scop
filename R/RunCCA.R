@@ -14,8 +14,9 @@ RunCCA.default <- function(
   cells1 <- colnames(object1)
   cells2 <- colnames(object2)
   if (standardize) {
-    object1 <- Seurat:::Standardize(mat = object1, display_progress = FALSE)
-    object2 <- Seurat:::Standardize(mat = object2, display_progress = FALSE)
+    standardize_fun <- get_namespace_fun("Seurat", "Standardize")
+    object1 <- standardize_fun(mat = object1, display_progress = FALSE)
+    object2 <- standardize_fun(mat = object2, display_progress = FALSE)
   }
   if (inherits(object1, "sparseMatrix")) {
     object1 <- as.matrix(object1)
@@ -103,13 +104,14 @@ RunCCA.Seurat <- function(
     assay = assay2,
     layer = "scale.data"
   )
-  features <- Seurat:::CheckFeatures(
+  check_features <- get_namespace_fun("Seurat", "CheckFeatures")
+  features <- check_features(
     data.use = data.use1,
     features = features,
     object.name = "object1",
     verbose = FALSE
   )
-  features <- Seurat:::CheckFeatures(
+  features <- check_features(
     data.use = data.use2,
     features = features,
     object.name = "object2",
@@ -148,6 +150,13 @@ RunCCA.Seurat <- function(
   combined.object
 }
 
+#' Run canonical correlation analysis
+#'
+#' @param object1 First object or matrix.
+#' @param object2 Second object or matrix.
+#' @param ... Passed to methods.
+#'
+#' @return CCA results or an object containing CCA results.
 #' @export
 RunCCA <- function(object1, object2, ...) {
   UseMethod("RunCCA", object1)

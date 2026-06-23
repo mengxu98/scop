@@ -2,7 +2,7 @@
 % Please edit documentation in R/GiottoObject.R
 \name{GiottoPreprocess}
 \alias{GiottoPreprocess}
-\title{Preprocess a scop Giotto object}
+\title{Preprocess an internal Giotto workflow object}
 \usage{
 GiottoPreprocess(
   x,
@@ -14,6 +14,24 @@ GiottoPreprocess(
   seed = 11
 )
 }
+\arguments{
+\item{x}{A `giotto2` workflow object.}
+
+\item{filter_params}{Additional parameters reserved for future filtering.}
+
+\item{norm_params}{Additional parameters passed to `Giotto::normalizeGiotto()`.}
+
+\item{stat_params}{Additional parameters passed to `Giotto::addStatistics()`.}
+
+\item{hvf_params}{Additional parameters passed to `Giotto::calculateHVF()`.}
+
+\item{verbose}{Whether to print progress messages.}
+
+\item{seed}{Random seed for reproducible Giotto calls.}
+}
+\value{
+A `giotto2` workflow object.
+}
 \description{
-Preprocess a scop Giotto object
+Preprocess an internal Giotto workflow object
 }

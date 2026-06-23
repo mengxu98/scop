@@ -16,6 +16,28 @@ GiottoCellProximity(
   seed = 11
 )
 }
+\arguments{
+\item{x}{A `giotto2` workflow object.}
+
+\item{group.by}{Metadata column containing cell or spot groups.}
+
+\item{network_method}{Spatial network method.}
+
+\item{network_name}{Name for the Giotto spatial network.}
+
+\item{number_of_simulations}{Number of label simulations used by Giotto.}
+
+\item{adjust_method}{Multiple-testing correction method.}
+
+\item{params}{Additional parameters passed to `Giotto::cellProximityEnrichment()`.}
+
+\item{verbose}{Whether to print progress messages.}
+
+\item{seed}{Random seed for reproducible Giotto calls.}
+}
+\value{
+A `giotto2` workflow object.
+}
 \description{
 Run Giotto cell proximity enrichment
 }

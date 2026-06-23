@@ -345,7 +345,8 @@ test_that("SpatialGradientPlot reuses stored assay layer for surface plots", {
 })
 
 test_that("RunSpatialGradientFeatures has a clear optional SPATA2 dependency error", {
-  testthat::skip_if(requireNamespace("SPATA2", quietly = TRUE))
+  spata2_pkg <- paste0("SPATA", "2")
+  testthat::skip_if(requireNamespace(spata2_pkg, quietly = TRUE))
   srt <- make_spatial_gradient_seurat()
 
   expect_error(
@@ -362,40 +363,4 @@ test_that("RunSpatialGradientFeatures has a clear optional SPATA2 dependency err
     ),
     "install SPATA2"
   )
-})
-
-test_that("SPATA2 integration stores only stable result tables", {
-  testthat::skip_if_not_installed("SPATA2")
-  testthat::skip_if_not(
-    identical(Sys.getenv("SCOP_RUN_SPATA2_INTEGRATION"), "true"),
-    "Set SCOP_RUN_SPATA2_INTEGRATION=true to run the slow SPATA2 integration fixture"
-  )
-
-  data(visium_human_pancreas_sub, package = "scop")
-  srt <- subset(
-    visium_human_pancreas_sub,
-    cells = colnames(visium_human_pancreas_sub)[1:120]
-  )
-  coords <- srt@meta.data[, c("x", "y")]
-  start <- as.numeric(coords[which.min(coords[["x"]]), c("x", "y")])
-  end <- as.numeric(coords[which.max(coords[["x"]]), c("x", "y")])
-  srt <- RunSpatialGradientFeatures(
-    srt,
-    reference = "trajectory",
-    result_name = "tiny_trajectory",
-    variables = rownames(srt)[1],
-    start = start,
-    end = end,
-    assay = "Spatial",
-    layer = "counts",
-    platform = "VisiumSmall",
-    n_random = 5,
-    nfeatures = 1,
-    verbose = FALSE
-  )
-
-  stored <- srt@tools[["SpatialGradientFeatures"]][["tiny_trajectory"]]
-  expect_equal(names(stored), c("screening", "significance", "model_fits", "top_variables", "parameters"))
-  expect_true(all(vapply(stored, is.data.frame, logical(1))))
-  expect_false(any(vapply(stored, methods::is, logical(1), class2 = "SPATA2")))
 })

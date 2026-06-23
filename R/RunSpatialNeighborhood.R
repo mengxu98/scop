@@ -196,6 +196,7 @@ RunSpatialNeighborhood <- function(
 #' @param cols.enriched,cols.depleted,cols.ns Colors for direction categories.
 #' @param pair Pair to visualize for `plot_type = "spatial"`, either
 #' `"from|to"` or a length-2 character vector.
+#' @param seed Random seed used by layouts and jittered plot layers.
 #'
 #' @return A `ggplot`, `patchwork`, or list of `ggplot` objects.
 #' @export

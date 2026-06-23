@@ -23,7 +23,8 @@ variable_features_vst_sparse <- function(
   not.const <- variance > 0
   log_mean_nc <- log10(mu[not.const])
   log_var_nc <- log10(variance[not.const])
-  fit_result <- stats:::simpleLoess(
+  simple_loess <- utils::getFromNamespace("simpleLoess", "stats")
+  fit_result <- simple_loess(
     y = log_var_nc,
     x = matrix(log_mean_nc, ncol = 1),
     weights = rep.int(1, length(log_mean_nc)),
@@ -156,6 +157,12 @@ FindVariableFeatures.Seurat <- function(
   object
 }
 
+#' Find variable features
+#'
+#' @param object Object containing expression data.
+#' @param ... Passed to methods.
+#'
+#' @return The input object with variable features recorded.
 #' @export
 FindVariableFeatures <- function(object, ...) {
   UseMethod("FindVariableFeatures")

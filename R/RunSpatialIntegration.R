@@ -126,6 +126,7 @@ RunSpatialIntegration <- function(
 #' Defaults to the stored sample column.
 #' @param reduction Reduction used for embedding plots. Defaults to the stored
 #' integration reduction.
+#' @param cluster_colname Backward-compatible alias for `group.by`.
 #' @param use_aligned Whether spatial plots should use aligned coordinates when
 #' available.
 #' @param tool_name Name of the `srt@tools` entry created by

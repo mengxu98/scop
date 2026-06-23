@@ -14,7 +14,7 @@ DARWIN_OMP_LD = $(shell uname -s | grep -q Darwin && { \
   if [ -f "${R_HOME}/lib/libomp.dylib" ]; then echo "${R_HOME}/lib/libomp.dylib"; \
   elif [ -n "$(OMP_LIB_DIR)" ]; then echo "$(OMP_LIB_DIR)/libomp.dylib -Wl,-rpath,$(OMP_LIB_DIR)"; fi; })
 
-PKG_CFLAGS = -pthread -O3
-PKG_CXXFLAGS = -DARMA_64BIT_WORD=1 $(shell "${R_HOME}/bin/Rscript" -e "RcppParallel::CxxFlags()") -DRCPP_PARALLEL_USE_TBB=1 $(SHLIB_OPENMP_CXXFLAGS) $(DARWIN_OMP_CXX) -O3
+PKG_CFLAGS = -pthread
+PKG_CXXFLAGS = -DARMA_64BIT_WORD=1 $(shell "${R_HOME}/bin/Rscript" -e "RcppParallel::CxxFlags()") -DRCPP_PARALLEL_USE_TBB=1 $(SHLIB_OPENMP_CXXFLAGS) $(DARWIN_OMP_CXX)
 PKG_LIBS = $(shell "${R_HOME}/bin/Rscript" -e "RcppParallel::LdFlags()") -Wl,-rpath,$(RCPPPARALLEL_LIBDIR) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) $(SHLIB_OPENMP_CXXFLAGS) $(DARWIN_OMP_LD)
 CXX_STD = CXX17

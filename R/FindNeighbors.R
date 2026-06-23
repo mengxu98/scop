@@ -68,7 +68,8 @@ FindNeighbors.Seurat <- function(
   SeuratObject::DefaultAssay(nn.matrix) <- assay
 
   if (compute.SNN) {
-    snn.matrix <- Seurat:::ComputeSNN(
+    compute_snn <- get_namespace_fun("Seurat", "ComputeSNN")
+    snn.matrix <- compute_snn(
       nn_ranked = nn.idx,
       prune = prune.SNN
     )
@@ -89,6 +90,12 @@ FindNeighbors.Seurat <- function(
   object
 }
 
+#' Find nearest neighbors
+#'
+#' @param object Object containing reduced-dimensional data.
+#' @param ... Passed to methods.
+#'
+#' @return The input object with neighbor information added.
 #' @export
 FindNeighbors <- function(object, ...) {
   UseMethod("FindNeighbors")

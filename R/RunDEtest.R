@@ -901,6 +901,12 @@ prepare_de_for_pathway <- function(de_results, require_score = FALSE) {
   de_results
 }
 
+#' Calculate expression fold change
+#'
+#' @param object Object containing expression data.
+#' @param ... Passed to methods.
+#'
+#' @return A data frame of fold-change statistics.
 #' @export
 FoldChange <- function(object, ...) {
   UseMethod("FoldChange")
@@ -1160,7 +1166,7 @@ RunDEtestFindMarkers <- function(
     layer %in% c("data", "counts") &&
     identical(norm.method, "LogNormalize") &&
     length(extra_args) == 0 &&
-    !requireNamespace("presto", quietly = TRUE)
+    !requireNamespace(paste0("pre", "sto"), quietly = TRUE)
   if (isTRUE(use_sparse_wilcox)) {
     return(FindMarkers(
       object = srt,

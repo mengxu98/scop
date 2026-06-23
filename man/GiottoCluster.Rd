@@ -17,6 +17,30 @@ GiottoCluster(
   seed = 11
 )
 }
+\arguments{
+\item{x}{A `giotto2` workflow object.}
+
+\item{method}{Giotto clustering method.}
+
+\item{dims}{Dimensions used to build the nearest-neighbor network.}
+
+\item{k}{Number of nearest neighbors.}
+
+\item{resolution}{Clustering resolution.}
+
+\item{network_name}{Name for the Giotto nearest-neighbor network.}
+
+\item{cluster_name}{Name for the Giotto cluster result.}
+
+\item{params}{Additional parameters passed to the Giotto clustering function.}
+
+\item{verbose}{Whether to print progress messages.}
+
+\item{seed}{Random seed for reproducible Giotto calls.}
+}
+\value{
+A `giotto2` workflow object.
+}
 \description{
 Run Giotto nearest-network clustering
 }
