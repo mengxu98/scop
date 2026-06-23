@@ -79,7 +79,7 @@ Default is \code{TRUE}.}
 Default is \code{11}.}
 }
 \value{
-A \code{scop_giotto_result} list containing the full Giotto object,
+A \code{giotto2_result} list containing the full Giotto object,
 spatial correlation object, module object, extracted module tables,
 parameters, features, and cells.
 }

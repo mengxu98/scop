@@ -33,9 +33,14 @@ sct_get_model_pars <- function(
   cluster = NULL,
   cores = 1L
 ) {
-  row_var <- utils::getFromNamespace("row_var", "sctransform")
+  row_var <- get_namespace_fun("sctransform", "row_var")
+  get_model_pars <- get_namespace_fun("sctransform", "get_model_pars")
+  fit_glmGamPoi_offset <- get_namespace_fun(
+    "sctransform",
+    "fit_glmGamPoi_offset"
+  )
   if (startsWith(method, "offset") || is.null(cluster)) {
-    return(sctransform:::get_model_pars(
+    return(get_model_pars(
       genes_step1,
       bin_size,
       umi,
@@ -75,8 +80,9 @@ sct_get_model_pars <- function(
     task_env$model_str <- model_str
     task_env$data_step1 <- data_step1
     task_env$exclude_poisson <- exclude_poisson
+    task_env$fit_glmGamPoi_offset <- fit_glmGamPoi_offset
     task_fn <- function(chunk) {
-      sctransform:::fit_glmGamPoi_offset(
+      fit_glmGamPoi_offset(
         umi = chunk,
         model_str = model_str,
         data = data_step1,
@@ -484,12 +490,8 @@ SCTransform.default <- function(
             port = 20000L + sample.int(1000L, 1L)
           )
           parallel::clusterCall(cl, function() {
-            suppressPackageStartupMessages({
-              if (requireNamespace("glmGamPoi", quietly = TRUE)) {
-                library(glmGamPoi)
-              }
-              library(sctransform)
-            })
+            requireNamespace("sctransform", quietly = TRUE)
+            requireNamespace("glmGamPoi", quietly = TRUE)
           })
           message(sprintf(
             "[scop] SCTransform PSOCK ready (%d cores / %d available)",
@@ -524,6 +526,8 @@ SCTransform.default <- function(
   if (!is.null(seed.use)) {
     set.seed(seed.use)
   }
+  check_r("sctransform", verbose = FALSE)
+  check_r("glmGamPoi", verbose = FALSE)
   vst.args <- list(...)
   object <- SeuratObject::as.sparse(object)
   umi <- object
@@ -543,8 +547,8 @@ SCTransform.default <- function(
   vst.args[["sct_cluster"]] <- sct_cluster
   vst.args[["sct_cores"]] <- sct_cores
 
-  orig_sct_vst <- utils::getFromNamespace("vst", "sctransform")
-  orig_sct_rowgmean <- utils::getFromNamespace("row_gmean", "sctransform")
+  orig_sct_vst <- get_namespace_fun("sctransform", "vst")
+  orig_sct_rowgmean <- get_namespace_fun("sctransform", "row_gmean")
   row_gmean_cache <- new.env(parent = emptyenv())
   row_gmean_cache$full_result <- NULL
   row_gmean_cache$full_ncol <- NULL
@@ -585,12 +589,10 @@ SCTransform.default <- function(
     },
     add = TRUE
   )
-  vst.out <- do.call(sctransform::vst, args = vst.args)
+  sct_vst_fun <- get_namespace_fun("sctransform", "vst")
+  vst.out <- do.call(sct_vst_fun, args = vst.args)
 
-  get_model_formula <- utils::getFromNamespace(
-    "get_model_formula",
-    "sctransform"
-  )
+  get_model_formula <- get_namespace_fun("sctransform", "get_model_formula")
   regressor_data_orig <- model.matrix(
     get_model_formula(vst.out$model_str),
     vst.out$cell_attr

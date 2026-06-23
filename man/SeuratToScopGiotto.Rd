@@ -2,8 +2,7 @@
 % Please edit documentation in R/GiottoObject.R
 \name{SeuratToScopGiotto}
 \alias{SeuratToScopGiotto}
-\alias{CreateScopGiotto}
-\title{Convert Seurat to a scop Giotto object}
+\title{Convert Seurat to an internal Giotto workflow object}
 \usage{
 SeuratToScopGiotto(
   srt,
@@ -19,8 +18,6 @@ SeuratToScopGiotto(
   verbose = TRUE,
   seed = 11
 )
-
-CreateScopGiotto(...)
 }
 \arguments{
 \item{srt}{A Seurat object.}
@@ -60,10 +57,10 @@ Default is \code{TRUE}.}
 Default is \code{11}.}
 }
 \value{
-A `scop_giotto` object.
+A `giotto2` object.
 }
 \description{
-Create a `scop_giotto` object from a Seurat object. The converter is
+Create a `giotto2` object from a Seurat object. The converter is
 SCT-aware: raw counts remain the default Giotto input, while SCT normalized
 values are optionally added as an extra Giotto expression layer. The input
 Seurat object is not modified.
