@@ -74,7 +74,6 @@
 <span>  cluster_algorithm <span class="op">=</span> <span class="st">"louvain"</span>,</span>
 <span>  cluster_resolution <span class="op">=</span> <span class="fl">0.6</span>,</span>
 <span>  bbknn_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  bbknn_backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"python"</span>, <span class="st">"r"</span><span class="op">)</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">11</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -154,7 +153,7 @@ If NULL, the function will use the highly variable features identified by the HV
 
 <dt id="arg-do-scaling">do_scaling<a class="anchor" aria-label="anchor" href="#arg-do-scaling"></a></dt>
 <dd><p>Whether to perform scaling.
-If <code>TRUE</code>, the function will force to scale the data using the <a href="https://satijalab.org/seurat/reference/ScaleData.html" class="external-link">Seurat::ScaleData</a> function.</p></dd>
+If <code>TRUE</code>, the function will force scaling with the package ScaleData path.</p></dd>
 
 
 <dt id="arg-vars-to-regress">vars_to_regress<a class="anchor" aria-label="anchor" href="#arg-vars-to-regress"></a></dt>
@@ -235,12 +234,6 @@ Default is <code>0.6</code>.</p></dd>
 
 <dt id="arg-bbknn-params">bbknn_params<a class="anchor" aria-label="anchor" href="#arg-bbknn-params"></a></dt>
 <dd><p>A list of parameters for the bbknn.matrix.bbknn function, default is an empty list.</p></dd>
-
-
-<dt id="arg-bbknn-backend">bbknn_backend<a class="anchor" aria-label="anchor" href="#arg-bbknn-backend"></a></dt>
-<dd><p>Backend used for BBKNN graph construction. `"python"`
-uses the original `bbknn.matrix.bbknn` implementation. `"r"` uses a native
-R/C++ balanced KNN graph with approximate connectivity weights.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>

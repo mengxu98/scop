@@ -44,9 +44,10 @@ RunSCVELO(
   kinetics_topn = 100,
   calculate_velocity_genes = FALSE,
   compute_velocity_confidence = TRUE,
-  compute_terminal_states = TRUE,
-  compute_pseudotime = TRUE,
-  compute_paga = TRUE,
+  compute_velocity_graph = NULL,
+  compute_terminal_states = FALSE,
+  compute_pseudotime = FALSE,
+  compute_paga = FALSE,
   top_n = 6,
   cores = 1,
   palette = "Chinese",
@@ -229,6 +230,12 @@ RunSCVELO(
 - compute_velocity_confidence:
 
   Whether to compute velocity confidence metrics.
+
+- compute_velocity_graph:
+
+  Whether to compute and store the velocity graph for downstream
+  terminal-state or pseudotime calculations. If `NULL`, compute the
+  graph only when terminal states or pseudotime are requested.
 
 - compute_terminal_states:
 

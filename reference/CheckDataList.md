@@ -23,6 +23,7 @@ CheckDataList(
   HVF_min_intersection = 1,
   HVF = NULL,
   vars_to_regress = NULL,
+  cores = 1L,
   verbose = TRUE,
   seed = 11
 )
@@ -91,6 +92,11 @@ CheckDataList(
 
   A vector of variable names to include as additional regression
   variables. Default is `NULL`.
+
+- cores:
+
+  Number of CPU cores used by supported preprocessing steps. Default is
+  `1`.
 
 - verbose:
 

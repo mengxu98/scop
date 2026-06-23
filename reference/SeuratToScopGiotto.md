@@ -1,9 +1,9 @@
-# scop-managed Giotto object workflow
+# Convert Seurat to an internal Giotto workflow object
 
-These functions implement a standalone Giotto object flow inside scop.
-Seurat and SCT data are used as inputs, but Giotto results are kept in a
-`scop_giotto` object and are not written back to Seurat unless
-`AddGiottoToSeurat()` is called explicitly.
+Create a \`giotto2\` object from a Seurat object. The converter is
+SCT-aware: raw counts remain the default Giotto input, while SCT
+normalized values are optionally added as an extra Giotto expression
+layer. The input Seurat object is not modified.
 
 ## Usage
 
@@ -22,126 +22,6 @@ SeuratToScopGiotto(
   verbose = TRUE,
   seed = 11
 )
-
-CreateScopGiotto(...)
-
-scop_giotto(
-  giotto,
-  source = list(),
-  results = list(),
-  active = NULL,
-  history = list(),
-  parameters = list()
-)
-
-RunGiottoWorkflow(
-  x,
-  steps = c("basic", "full"),
-  group.by = NULL,
-  verbose = TRUE,
-  seed = 11,
-  ...
-)
-
-GiottoPreprocess(
-  x,
-  filter_params = list(),
-  norm_params = list(),
-  stat_params = list(),
-  hvf_params = list(),
-  verbose = TRUE,
-  seed = 11
-)
-
-GiottoReduce(
-  x,
-  reduction = c("pca", "umap"),
-  dims = 1:20,
-  name = NULL,
-  features = NULL,
-  params = list(),
-  verbose = TRUE,
-  seed = 11
-)
-
-GiottoCluster(
-  x,
-  method = c("leiden", "louvain"),
-  dims = 1:20,
-  k = 20,
-  resolution = 1,
-  network_name = "scop_NN",
-  cluster_name = NULL,
-  params = list(),
-  verbose = TRUE,
-  seed = 11
-)
-
-GiottoSpatialNetwork(
-  x,
-  network_method = c("Delaunay", "kNN"),
-  network_name = NULL,
-  params = list(),
-  verbose = TRUE
-)
-
-GiottoSpatialGenes(
-  x,
-  features = NULL,
-  network_method = c("Delaunay", "kNN"),
-  network_name = NULL,
-  bin_method = c("kmeans", "rank"),
-  top_n = 100,
-  params = list(),
-  verbose = TRUE,
-  seed = 11
-)
-
-GiottoSpatialModules(
-  x,
-  features = NULL,
-  network_method = c("Delaunay", "kNN"),
-  network_name = NULL,
-  cor_method = c("pearson", "spearman", "kendall"),
-  k = 10,
-  detect_params = list(),
-  cluster_params = list(),
-  verbose = TRUE,
-  seed = 11
-)
-
-GiottoCellProximity(
-  x,
-  group.by,
-  network_method = c("Delaunay", "kNN"),
-  network_name = NULL,
-  number_of_simulations = 1000,
-  adjust_method = "fdr",
-  params = list(),
-  verbose = TRUE,
-  seed = 11
-)
-
-GiottoHMRF(
-  x,
-  spatial_genes = NULL,
-  network_name = "Delaunay_full",
-  k = 20,
-  betas = c(0, 10, 20),
-  hmrf_name = "scop_HMRF",
-  params = list(),
-  verbose = TRUE,
-  seed = 11
-)
-
-AddGiottoToSeurat(
-  srt,
-  x,
-  result = c("cluster", "hmrf"),
-  name = NULL,
-  tool_name = "Giotto",
-  store_result = TRUE
-)
 ```
 
 ## Arguments
@@ -150,9 +30,16 @@ AddGiottoToSeurat(
 
   A Seurat object.
 
-- assay, layer:
+- assay:
 
-  Assay and layer used for Giotto input. Raw counts are recommended.
+  Which assay to use. If `NULL`, the default assay of the Seurat object
+  will be used. When the object also contains `ChromatinAssay`, the
+  default assay and additional `ChromatinAssay` will be preprocessed
+  sequentially.
+
+- layer:
+
+  Assay layer used as the expression matrix.
 
 - sct.assay:
 
@@ -160,83 +47,46 @@ AddGiottoToSeurat(
 
 - use_sct:
 
-  How SCT data are handled. The default keeps counts as the main Giotto
-  input.
+  How to handle SCT data. \`"auto"\` keeps counts as the main Giotto
+  expression and records SCT availability. \`"none"\` ignores SCT.
+  \`"normalized"\` adds SCT normalized values as an additional
+  expression layer.
 
-- image, coord.cols:
+- image:
 
-  Spatial image name or metadata coordinate columns.
+  Name of the Seurat spatial image used by the spatial workflow. If
+  `NULL`, the first image is used when present.
+
+- coord.cols:
+
+  Metadata coordinate columns used by the spatial workflow when no image
+  is available.
 
 - features:
 
-  Features used for conversion or downstream Giotto methods.
+  Features used for PCA and clustering. If `NULL`, current variable
+  features are used, falling back to all assay features.
 
-- conversion_params, filter_params, norm_params, stat_params,
-  hvf_params, params, detect_params, cluster_params:
+- conversion_params:
 
-  Named lists passed to Giotto functions.
+  Additional parameters passed to `Giotto::createGiottoObject()`.
 
 - use_official:
 
-  Whether to try `Giotto::seuratToGiottoV5()` before using the scop
-  fallback converter.
+  Whether to try \`Giotto::seuratToGiottoV5()\` before falling back to
+  the scop-controlled converter.
 
 - verbose:
 
-  Whether to print progress messages.
+  Whether to print the message. Default is `TRUE`.
 
 - seed:
 
-  Random seed passed to Giotto methods.
-
-- giotto:
-
-  A Giotto object.
-
-- source, results, active, history, parameters:
-
-  Components of a `scop_giotto` object.
-
-- x:
-
-  A `scop_giotto` object, or a Seurat object for `RunGiottoWorkflow()`.
-
-- steps:
-
-  Workflow preset: `"basic"` or `"full"`.
-
-- group.by:
-
-  Metadata group column for cell proximity enrichment.
-
-- reduction, dims, name, method, k, resolution, network_name,
-  cluster_name, network_method, bin_method, top_n, cor_method,
-  number_of_simulations, adjust_method, spatial_genes, betas, hmrf_name:
-
-  Giotto analysis parameters.
-
-- result:
-
-  Result to bridge or plot.
-
-- tool_name:
-
-  Name used when explicitly storing the Giotto object in Seurat tools.
-
-- store_result:
-
-  Whether `AddGiottoToSeurat()` stores the full `scop_giotto` object in
-  `srt@tools`.
-
-- ...:
-
-  Additional arguments passed through to the underlying converter or
-  method.
+  Random seed for reproducibility. Default is `11`.
 
 ## Value
 
-A `scop_giotto` object for conversion and Giotto analysis functions; a
-Seurat object for `AddGiottoToSeurat()`.
+A \`giotto2\` object.
 
 ## Examples
 

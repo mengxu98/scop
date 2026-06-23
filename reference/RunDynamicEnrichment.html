@@ -205,9 +205,12 @@ hypergeometric ORA implementation and returns the enrichment table without
 
 
 <dt id="arg-cpp-strategy">cpp_strategy<a class="anchor" aria-label="anchor" href="#arg-cpp-strategy"></a></dt>
-<dd><p>C++ AUCell ranking strategy. <code>"sparse"</code> ranks non-zero
-genes and approximates zero ties, <code>"topk"</code> ranks only genes that can contribute
-to AUCell AUC, and <code>"full"</code> ranks all genes.</p></dd>
+<dd><p>AUCell scoring strategy used when <code>backend = "cpp"</code>.
+<code>"sparse"</code> ranks non-zero genes and approximates zero ties without
+densifying the expression matrix. <code>"aucell"</code> calls the official
+<code><a href="https://rdrr.io/pkg/AUCell/man/AUCell_buildRankings.html" class="external-link">AUCell::AUCell_buildRankings()</a></code> and <code><a href="https://rdrr.io/pkg/AUCell/man/AUCell_calcAUC.html" class="external-link">AUCell::AUCell_calcAUC()</a></code> path for
+exact consistency with the R backend, <code>"topk"</code> ranks only genes that can
+contribute to AUCell AUC, and <code>"full"</code> ranks all genes.</p></dd>
 
 
 <dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>

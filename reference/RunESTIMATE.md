@@ -1,8 +1,9 @@
 # Run ESTIMATE tumor microenvironment scoring
 
 Compute ESTIMATE stromal, immune, combined ESTIMATE, and tumor-purity
-scores from bulk or pseudo-bulk expression data without requiring the
-external `estimate` package.
+scores from bulk or pseudo-bulk expression data. The implementation uses
+the original stromal and immune ESTIMATE signatures with an in-package
+scoring routine, so it does not require the external `estimate` package.
 
 ## Usage
 
@@ -33,7 +34,8 @@ RunESTIMATE(
 
 - count_matrix:
 
-  Optional genes-by-samples expression matrix.
+  Optional expression matrix with genes in rows and samples in columns.
+  Used when `object` is not provided as a matrix.
 
 - assay:
 
@@ -54,8 +56,9 @@ RunESTIMATE(
 
 - group.by:
 
-  Optional grouping metadata column. If `sample.by` is absent, this is
-  also used for pseudo-bulk aggregation.
+  Optional metadata column used for grouping pseudo-bulk samples. If
+  `sample.by` is not supplied, `group.by` is used as the aggregation
+  variable.
 
 - aggregate_fun:
 
@@ -63,20 +66,23 @@ RunESTIMATE(
 
 - platform:
 
-  Platform label stored in result metadata.
+  Platform label stored in the result metadata.
 
 - filter_common_genes:
 
-  Whether to restrict expression to the ESTIMATE common-gene universe.
+  Whether to restrict the expression matrix to the ESTIMATE common-gene
+  universe before scoring.
 
 - min_sig_genes:
 
-  Minimum observed stromal and immune signature genes required after
-  filtering.
+  Minimum number of observed stromal and immune signature genes required
+  after filtering.
 
 - purity:
 
-  Whether to calculate ESTIMATE tumor purity.
+  Whether to calculate ESTIMATE tumor purity. The purity formula was
+  calibrated in the original ESTIMATE work primarily for Affymetrix
+  data; for RNA-seq it is best interpreted cautiously.
 
 - verbose:
 
@@ -84,19 +90,11 @@ RunESTIMATE(
 
 ## Value
 
-A result bundle for matrix input, or the modified `SummarizedExperiment`
-or `Seurat` object.
-
-## Details
-
-`ESTIMATEScore` is `StromalScore + ImmuneScore`. `TumorPurity` is
-calculated as `cos(0.6049872018 + 0.0001467884 * ESTIMATEScore)`. The
-purity formula was calibrated in the original ESTIMATE work primarily
-for Affymetrix data.
+A result bundle for matrix input, the modified `SummarizedExperiment`
+for `SummarizedExperiment` input, or the modified `Seurat` object for
+`Seurat` input.
 
 ## References
 
-Yoshihara et al. (2013)
-[doi:10.1038/ncomms3612](https://doi.org/10.1038/ncomms3612) . Barbie et
-al. (2009)
-[doi:10.1038/nature08460](https://doi.org/10.1038/nature08460) .
+Yoshihara et al. (2013) <doi:10.1038/ncomms3612>. Barbie et al. (2009)
+<doi:10.1038/nature08460>.

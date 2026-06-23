@@ -104,7 +104,7 @@ RunSpatialNeighborhood(
 
 - verbose:
 
-  Whether to print messages.
+  Whether to print the message. Default is `TRUE`.
 
 - ...:
 

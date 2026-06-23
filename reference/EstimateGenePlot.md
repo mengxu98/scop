@@ -47,11 +47,11 @@ EstimateGenePlot(
 
 - assay:
 
-  Assay used for `Seurat` or `SummarizedExperiment` expression.
+  Assay used for \`Seurat\` or \`SummarizedExperiment\` expression.
 
 - layer:
 
-  Assay layer used for `Seurat` expression.
+  Assay layer used for \`Seurat\` expression.
 
 - plot_type:
 
@@ -63,7 +63,7 @@ EstimateGenePlot(
 
 - quantile:
 
-  Quantile cutoff used when `split = "quantile"`.
+  Quantile cutoff used when \`split = "quantile"\`.
 
 - cor_method:
 
@@ -71,7 +71,8 @@ EstimateGenePlot(
 
 - add_stat:
 
-  Whether to add group comparison labels to violin plots.
+  Whether to add group comparison labels to violin or box plots.
+  Requires `ggpubr`.
 
 - ...:
 
@@ -79,4 +80,4 @@ EstimateGenePlot(
 
 ## Value
 
-A `ggplot` object.
+A \`ggplot\` object.

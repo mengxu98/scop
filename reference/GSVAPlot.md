@@ -193,7 +193,7 @@ GSVAPlot(
 
 - padjustCutoff:
 
-  The adjusted p-value cutoff for significance. Default is `NULL`.
+  The adjusted p-value cutoff for significance. Default is `0.05`.
 
 - topWord:
 
@@ -356,7 +356,7 @@ GSVAPlot(
 
   Color palette name. Available palettes can be found in
   [thisplot::show_palettes](https://mengxu98.github.io/thisplot/reference/show_palettes.html).
-  Default is `"simspec"`.
+  Default is `"Chinese"`.
 
 - palcolor:
 

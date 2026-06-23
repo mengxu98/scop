@@ -5,6 +5,7 @@
 <url><loc>https://mengxu98.github.io/scop/index.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/news/index.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/AddFeaturesData.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/AddGiottoToSeurat.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/AnnotateFeatures.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/BBKNN_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/BenchmarkPlot.html</loc></url>
@@ -64,7 +65,15 @@
 <url><loc>https://mengxu98.github.io/scop/reference/GetAssayData5.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/GetFeaturesData.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/GetSimilarFeatures.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/GiottoCellProximity.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/GiottoCluster.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/GiottoHMRF.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/GiottoPlot.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/GiottoPreprocess.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/GiottoReduce.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/GiottoSpatialGenes.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/GiottoSpatialModules.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/GiottoSpatialNetwork.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/GroupHeatmap.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/Harmony5_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/Harmony_integrate.html</loc></url>
@@ -134,6 +143,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunGiottoCluster.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunGiottoSpatialGenes.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunGiottoSpatialModules.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunGiottoWorkflow.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunHarmony2.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunKNNMap.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunKNNPredict.html</loc></url>
@@ -172,7 +182,10 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunSciBet.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunScissor.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunScmap.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/RunSemla.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunSemlaLocalG.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunSemlaRadialDistance.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunSemlaRegionNeighbors.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunSemlaSpatialNetwork.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunSeuratMap.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunSingleR.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunSlingshot.html</loc></url>

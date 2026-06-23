@@ -28,7 +28,7 @@ RunscTenifoldKnk(
   td_nDecimal = 3,
   ma_nDim = 2,
   cores = 1,
-  backend = c("cpp", "r"),
+  backend = c("r", "cpp"),
   store_networks = TRUE,
   store_manifold = TRUE,
   tool_name = "scTenifoldKnk",
@@ -102,11 +102,16 @@ RunscTenifoldKnk(
 
 - backend:
 
-  `cpp` is a native equivalent covariance-based network construction,
-  direct sparse network assembly, controlled per-gene eigensolver
-  parallelism, and helpers for tensor decomposition, manifold matrix
-  construction, directionality, and distance calculation. `r` calls
-  `scTenifoldKnk::scTenifoldKnk()` directly for comparison.
+  `r` calls `scTenifoldKnk::scTenifoldKnk()` directly and is the default
+  high-consistency path. `cpp` uses upstream `pcNet()` by default, plus
+  native helpers for manifold matrix construction, directionality, and
+  distance calculation. Tensor decomposition uses upstream
+  `scTenifoldNet` by default because it is faster on the benchmarked 10k
+  workflow; set `options(scop.sctenifold.native_tensor = TRUE)` or
+  `SCOP_SCTENIFOLD_NATIVE_TENSOR=true` to use the native ALS tensor
+  path. Set `options(scop.sctenifold.upstream_pcnet = FALSE)` or
+  `SCOP_SCTENIFOLD_UPSTREAM_PCNET=false` to use the native
+  covariance-based network construction path.
 
 - store_networks:
 

@@ -321,11 +321,11 @@
     screening modes, model-fit summaries, and spatial/line/profile
     visualizations.
   - Added lightweight `semla` spatial wrappers:
-    [`RunSemlaSpatialNetwork()`](https://mengxu98.github.io/scop/reference/RunSemla.md),
-    [`RunSemlaLocalG()`](https://mengxu98.github.io/scop/reference/RunSemla.md),
-    [`RunSemlaRegionNeighbors()`](https://mengxu98.github.io/scop/reference/RunSemla.md),
+    [`RunSemlaSpatialNetwork()`](https://mengxu98.github.io/scop/reference/RunSemlaSpatialNetwork.md),
+    [`RunSemlaLocalG()`](https://mengxu98.github.io/scop/reference/RunSemlaLocalG.md),
+    [`RunSemlaRegionNeighbors()`](https://mengxu98.github.io/scop/reference/RunSemlaRegionNeighbors.md),
     and
-    [`RunSemlaRadialDistance()`](https://mengxu98.github.io/scop/reference/RunSemla.md).
+    [`RunSemlaRadialDistance()`](https://mengxu98.github.io/scop/reference/RunSemlaRadialDistance.md).
   - Added Giotto integration helpers for spatial workflows, including
     standalone result wrappers
     ([`RunGiottoCluster()`](https://mengxu98.github.io/scop/reference/RunGiottoCluster.md),
@@ -336,7 +336,7 @@
     result visualizations, and the
     [`SeuratToScopGiotto()`](https://mengxu98.github.io/scop/reference/SeuratToScopGiotto.md)
     /
-    [`RunGiottoWorkflow()`](https://mengxu98.github.io/scop/reference/SeuratToScopGiotto.md)
+    [`RunGiottoWorkflow()`](https://mengxu98.github.io/scop/reference/RunGiottoWorkflow.md)
     object workflow for keeping Giotto results separate from Seurat
     until explicitly written back.
   - Added

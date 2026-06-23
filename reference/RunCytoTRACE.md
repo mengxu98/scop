@@ -2,8 +2,8 @@
 
 Predicts cellular developmental potential from single-cell RNA-seq data
 using the CytoTRACE 2 algorithm (Kang et al., 2025). By default, this
-function calls the official `CytoTRACE2` R package. Set
-`backend = "cpp"` to use the native `scop` R/C++ implementation.
+function uses the native `scop` R/C++ implementation. Set
+`backend = "r"` to call the official `CytoTRACE2` R package.
 
 The algorithm consists of five stages:
 
@@ -36,8 +36,9 @@ RunCytoTRACE(
   species = c("Homo_sapiens", "Mus_musculus"),
   batch_size = 10000,
   smooth_batch_size = 1000,
+  compute_knn_smoothing = TRUE,
   cores = 1,
-  backend = c("r", "cpp"),
+  backend = c("cpp", "r"),
   seed = 14,
   data_dir = NULL,
   verbose = TRUE,
@@ -50,8 +51,9 @@ RunCytoTRACE(
   species = c("Homo_sapiens", "Mus_musculus"),
   batch_size = 10000,
   smooth_batch_size = 1000,
+  compute_knn_smoothing = TRUE,
   cores = 1,
-  backend = c("r", "cpp"),
+  backend = c("cpp", "r"),
   seed = 14,
   data_dir = NULL,
   verbose = TRUE,
@@ -98,15 +100,20 @@ RunCytoTRACE(
   The number of cells per subsample for the diffusion smoothing step. No
   diffusion subsampling if `NULL`. Default is `1000`.
 
+- compute_knn_smoothing:
+
+  Whether to run the final PCA-based adaptive kNN smoothing step. Set to
+  `FALSE` for a faster score using the pre-kNN binned CytoTRACE2 output.
+
 - cores:
 
   Number of cores for parallel processing. Default is `1`.
 
 - backend:
 
-  Backend used to run CytoTRACE2. `"r"` calls the official
-  `CytoTRACE2::cytotrace2()` implementation and is the default. `"cpp"`
-  uses the native `scop` R/C++ backend.
+  Backend used to run CytoTRACE2. `"cpp"` uses the native `scop` R/C++
+  backend and is the default. `"r"` calls the official
+  `CytoTRACE2::cytotrace2()` implementation.
 
 - seed:
 

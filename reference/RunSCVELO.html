@@ -87,9 +87,10 @@ version compatibility, and modular design.</p>
 <span>  kinetics_topn <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  calculate_velocity_genes <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  compute_velocity_confidence <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  compute_terminal_states <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  compute_pseudotime <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  compute_paga <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  compute_velocity_graph <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  compute_terminal_states <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  compute_pseudotime <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  compute_paga <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  top_n <span class="op">=</span> <span class="fl">6</span>,</span>
 <span>  cores <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  palette <span class="op">=</span> <span class="st">"Chinese"</span>,</span>
@@ -276,6 +277,12 @@ Default is <code>5</code>.</p></dd>
 
 <dt id="arg-compute-velocity-confidence">compute_velocity_confidence<a class="anchor" aria-label="anchor" href="#arg-compute-velocity-confidence"></a></dt>
 <dd><p>Whether to compute velocity confidence metrics.</p></dd>
+
+
+<dt id="arg-compute-velocity-graph">compute_velocity_graph<a class="anchor" aria-label="anchor" href="#arg-compute-velocity-graph"></a></dt>
+<dd><p>Whether to compute and store the velocity graph
+for downstream terminal-state or pseudotime calculations. If <code>NULL</code>, compute
+the graph only when terminal states or pseudotime are requested.</p></dd>
 
 
 <dt id="arg-compute-terminal-states">compute_terminal_states<a class="anchor" aria-label="anchor" href="#arg-compute-terminal-states"></a></dt>

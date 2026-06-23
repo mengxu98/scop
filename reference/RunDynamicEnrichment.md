@@ -179,9 +179,14 @@ RunDynamicEnrichment(
 
 - cpp_strategy:
 
-  C++ AUCell ranking strategy. `"sparse"` ranks non-zero genes and
-  approximates zero ties, `"topk"` ranks only genes that can contribute
-  to AUCell AUC, and `"full"` ranks all genes.
+  AUCell scoring strategy used when `backend = "cpp"`. `"sparse"` ranks
+  non-zero genes and approximates zero ties without densifying the
+  expression matrix. `"aucell"` calls the official
+  [`AUCell::AUCell_buildRankings()`](https://rdrr.io/pkg/AUCell/man/AUCell_buildRankings.html)
+  and
+  [`AUCell::AUCell_calcAUC()`](https://rdrr.io/pkg/AUCell/man/AUCell_calcAUC.html)
+  path for exact consistency with the R backend, `"topk"` ranks only
+  genes that can contribute to AUCell AUC, and `"full"` ranks all genes.
 
 - cores:
 

@@ -49,6 +49,7 @@ standard_scop(
   neighbor_k = 20L,
   cluster_algorithm = "louvain",
   cluster_resolution = 0.6,
+  cores = 1L,
   verbose = TRUE,
   seed = 11,
   ...
@@ -195,10 +196,8 @@ standard_scop(
 
 - do_scaling:
 
-  Whether to perform scaling. If `TRUE`, the function will force to
-  scale the data using the
-  [Seurat::ScaleData](https://satijalab.org/seurat/reference/ScaleData.html)
-  function.
+  Whether to perform scaling. If `TRUE`, the function will force scaling
+  with the package ScaleData path.
 
 - vars_to_regress:
 
@@ -280,6 +279,11 @@ standard_scop(
 
   The resolution parameter to use for clustering. Larger values result
   in fewer clusters. Default is `0.6`.
+
+- cores:
+
+  Number of CPU cores used by supported preprocessing steps. Default is
+  `1`.
 
 - verbose:
 

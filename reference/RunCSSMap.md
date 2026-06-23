@@ -73,16 +73,13 @@ RunCSSMap(
 - nn_method:
 
   A character string specifying the nearest neighbor search method to
-  use. Options are "raw", "annoy", "rann", and "cpp". If "raw" is
-  selected, the function will use the brute-force method to find the
-  nearest neighbors. If "annoy" is selected, the function will use the
-  Annoy library for approximate nearest neighbor search. If "rann" is
+  use. Options are "raw", "annoy", and "rann". If "raw" is selected, the
+  function will use the brute-force method to find the nearest
+  neighbors. If "annoy" is selected, the function will use the Annoy
+  library for approximate nearest neighbor search. If "rann" is
   selected, the function will use the RANN library for approximate
-  nearest neighbor search. If "cpp" is selected, the function will use
-  the compiled exact top-k search. If not provided, the function will
-  use "cpp" for Euclidean or cosine distance, otherwise it will choose
-  the search method based on the size of the query and reference
-  datasets.
+  nearest neighbor search. If not provided, the function will choose the
+  search method based on the size of the query and reference datasets.
 
 - k:
 

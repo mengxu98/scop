@@ -77,7 +77,7 @@ using a single-cell <code>Seurat</code> reference and the optional <code>SPOTlig
 
 
 <dl><dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
-<dd><p>Spatial <code>Seurat</code> object used as the query.</p></dd>
+<dd><p>Spatial <code>Seurat</code> object used as the RCTD query.</p></dd>
 
 
 <dt id="arg-reference">reference<a class="anchor" aria-label="anchor" href="#arg-reference"></a></dt>
@@ -97,11 +97,12 @@ using a single-cell <code>Seurat</code> reference and the optional <code>SPOTlig
 
 
 <dt id="arg-layer-reference-layer">layer, reference_layer<a class="anchor" aria-label="anchor" href="#arg-layer-reference-layer"></a></dt>
-<dd><p>Assay layers used for spatial and reference counts.</p></dd>
+<dd><p>Assay layers used for spatial and reference
+raw counts.</p></dd>
 
 
 <dt id="arg-features">features<a class="anchor" aria-label="anchor" href="#arg-features"></a></dt>
-<dd><p>Features used for SPOTlight. If <code>NULL</code>, shared features are used.</p></dd>
+<dd><p>Features used for RCTD. If <code>NULL</code>, shared features are used.</p></dd>
 
 
 <dt id="arg-mgs">mgs<a class="anchor" aria-label="anchor" href="#arg-mgs"></a></dt>
@@ -142,11 +143,12 @@ type labels, and marker weights.</p></dd>
 
 
 <dt id="arg-store-results">store_results<a class="anchor" aria-label="anchor" href="#arg-store-results"></a></dt>
-<dd><p>Whether to store detailed results in <code>srt@tools</code>.</p></dd>
+<dd><p>Whether to store detailed RCTD results in <code>srt@tools</code>.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>Whether to print progress messages.</p></dd>
+<dd><p>Whether to print the message.
+Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

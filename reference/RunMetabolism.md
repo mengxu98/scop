@@ -23,7 +23,7 @@ RunMetabolism(
   use_preparedb = TRUE,
   method = c("AUCell", "GSVA", "ssGSEA", "VISION"),
   backend = c("cpp", "r"),
-  cpp_strategy = c("topk", "sparse", "full", "aucell"),
+  cpp_strategy = c("topk", "aucell", "sparse", "full"),
   cpp_chunk_size = NULL,
   minGSSize = 10,
   maxGSSize = 500,
@@ -130,9 +130,7 @@ RunMetabolism(
   scMetabolism GMT files are downloaded and genes are matched
   case-insensitively with optional
   [GeneConvert](https://mengxu98.github.io/scop/reference/GeneConvert.md)
-  supplementation when `convert_species = TRUE`. genes and approximates
-  zero ties, `"topk"` ranks only genes that can contribute to AUCell
-  AUC, and `"full"` ranks all genes.
+  supplementation when `convert_species = TRUE`.
 
 - method:
 
@@ -144,18 +142,18 @@ RunMetabolism(
   uses the original R package implementation. `"cpp"` currently supports
   `method = "AUCell"`, `method = "GSVA"`, and `method = "ssGSEA"`.
   `method = "VISION"` falls back to `"r"` when `backend` is not
-  explicitly set. AUCell C++ scores may differ from the R backend when
-  tied expression values are randomly ranked.
+  explicitly set.
 
 - cpp_strategy:
 
-  C++ AUCell ranking strategy. `"topk"` ranks only genes that can
-  contribute to AUCell AUC and is the default for better agreement with
-  AUCell's full ranking on sparse single-cell matrices. `"aucell"` uses
+  AUCell scoring strategy used when `backend = "cpp"`. `"topk"` is the
+  speed-first default and ranks only genes that can contribute to AUCell
+  AUC. `"aucell"` uses
   [`AUCell::AUCell_buildRankings()`](https://rdrr.io/pkg/AUCell/man/AUCell_buildRankings.html)
   and
   [`AUCell::AUCell_calcAUC()`](https://rdrr.io/pkg/AUCell/man/AUCell_calcAUC.html)
-  for scMetabolism-compatible scores. `"sparse"` ranks non-zero
+  for scMetabolism-compatible scores, `"sparse"` ranks non-zero genes
+  and approximates zero ties, and `"full"` ranks all genes.
 
 - cpp_chunk_size:
 

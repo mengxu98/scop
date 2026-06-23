@@ -90,6 +90,7 @@ workflow.</p>
 <span>  neighbor_k <span class="op">=</span> <span class="fl">20L</span>,</span>
 <span>  cluster_algorithm <span class="op">=</span> <span class="st">"louvain"</span>,</span>
 <span>  cluster_resolution <span class="op">=</span> <span class="fl">0.6</span>,</span>
+<span>  cores <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">11</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -238,7 +239,7 @@ If NULL, the function will use the highly variable features identified by the HV
 
 <dt id="arg-do-scaling">do_scaling<a class="anchor" aria-label="anchor" href="#arg-do-scaling"></a></dt>
 <dd><p>Whether to perform scaling.
-If <code>TRUE</code>, the function will force to scale the data using the <a href="https://satijalab.org/seurat/reference/ScaleData.html" class="external-link">Seurat::ScaleData</a> function.</p></dd>
+If <code>TRUE</code>, the function will force scaling with the package ScaleData path.</p></dd>
 
 
 <dt id="arg-vars-to-regress">vars_to_regress<a class="anchor" aria-label="anchor" href="#arg-vars-to-regress"></a></dt>
@@ -320,6 +321,11 @@ Default is <code>"louvain"</code>.</p></dd>
 <dd><p>The resolution parameter to use for clustering.
 Larger values result in fewer clusters.
 Default is <code>0.6</code>.</p></dd>
+
+
+<dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
+<dd><p>Number of CPU cores used by supported preprocessing steps.
+Default is <code>1</code>.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>

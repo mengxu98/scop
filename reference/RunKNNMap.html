@@ -141,12 +141,11 @@ If "knn" is selected, the function will directly find the nearest neighbors usin
 
 <dt id="arg-nn-method">nn_method<a class="anchor" aria-label="anchor" href="#arg-nn-method"></a></dt>
 <dd><p>A character string specifying the nearest neighbor search method to use.
-Options are "raw", "annoy", "rann", and "cpp".
+Options are "raw", "annoy", and "rann".
 If "raw" is selected, the function will use the brute-force method to find the nearest neighbors.
 If "annoy" is selected, the function will use the Annoy library for approximate nearest neighbor search.
 If "rann" is selected, the function will use the RANN library for approximate nearest neighbor search.
-If "cpp" is selected, the function will use the compiled exact top-k search.
-If not provided, the function will use "cpp" for Euclidean or cosine distance, otherwise it will choose the search method based on the size of the query and reference datasets.</p></dd>
+If not provided, the function will choose the search method based on the size of the query and reference datasets.</p></dd>
 
 
 <dt id="arg-k">k<a class="anchor" aria-label="anchor" href="#arg-k"></a></dt>
@@ -197,11 +196,6 @@ If <code>ref_group</code> is provided, the function will also add a new metadata
 <span>  group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"celltype"</span>, <span class="st">"tech"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Set the number of threads for RcppParallel</span></span>
-<span><span class="co"># details see: ?RcppParallel::setThreadOptions</span></span>
-<span><span class="co"># if (requireNamespace("RcppParallel", quietly = TRUE)) {</span></span>
-<span><span class="co">#   RcppParallel::setThreadOptions()</span></span>
-<span><span class="co"># }</span></span>
 <span><span class="co"># Projection</span></span>
 <span><span class="va">srt_query</span> <span class="op">&lt;-</span> <span class="fu">RunKNNMap</span><span class="op">(</span></span>
 <span>  srt_query <span class="op">=</span> <span class="va">srt_query</span>,</span>

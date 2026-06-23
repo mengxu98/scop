@@ -228,9 +228,8 @@ DynamicPlot(
 
 - cores:
 
-  The number of cores to use for parallelization with
-  [foreach::foreach](https://rdrr.io/pkg/foreach/man/foreach.html).
-  Default is `1`.
+  Number of CPU cores used by supported preprocessing steps. Default is
+  `1`.
 
 - verbose:
 

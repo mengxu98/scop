@@ -69,7 +69,7 @@ and/or a score assay, depending on <code>new_assay</code> and <code>store_metada
 <span>  maxGSSize <span class="op">=</span> <span class="fl">500</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"Seurat"</span>,</span>
 <span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cpp"</span>, <span class="st">"r"</span><span class="op">)</span>,</span>
-<span>  cpp_strategy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sparse"</span>, <span class="st">"topk"</span>, <span class="st">"full"</span><span class="op">)</span>,</span>
+<span>  cpp_strategy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sparse"</span>, <span class="st">"aucell"</span>, <span class="st">"topk"</span>, <span class="st">"full"</span><span class="op">)</span>,</span>
 <span>  classification <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  name <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  new_assay <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -185,9 +185,12 @@ separately and stored with a method suffix such as <code>"GO_AUCell"</code> or
 
 
 <dt id="arg-cpp-strategy">cpp_strategy<a class="anchor" aria-label="anchor" href="#arg-cpp-strategy"></a></dt>
-<dd><p>C++ AUCell ranking strategy. <code>"sparse"</code> ranks non-zero
-genes and approximates zero ties, <code>"topk"</code> ranks only genes that can contribute
-to AUCell AUC, and <code>"full"</code> ranks all genes.</p></dd>
+<dd><p>AUCell scoring strategy used when <code>backend = "cpp"</code>.
+<code>"sparse"</code> ranks non-zero genes and approximates zero ties without
+densifying the expression matrix. <code>"aucell"</code> calls the official
+<code><a href="https://rdrr.io/pkg/AUCell/man/AUCell_buildRankings.html" class="external-link">AUCell::AUCell_buildRankings()</a></code> and <code><a href="https://rdrr.io/pkg/AUCell/man/AUCell_calcAUC.html" class="external-link">AUCell::AUCell_calcAUC()</a></code> path for
+exact consistency with the R backend, <code>"topk"</code> ranks only genes that can
+contribute to AUCell AUC, and <code>"full"</code> ranks all genes.</p></dd>
 
 
 <dt id="arg-classification">classification<a class="anchor" aria-label="anchor" href="#arg-classification"></a></dt>

@@ -178,12 +178,11 @@ Default is <code>"p_val &lt; 0.05"</code>.</p></dd>
 
 <dt id="arg-nn-method">nn_method<a class="anchor" aria-label="anchor" href="#arg-nn-method"></a></dt>
 <dd><p>A character string specifying the nearest neighbor search method to use.
-Options are "raw", "annoy", "rann", and "cpp".
+Options are "raw", "annoy", and "rann".
 If "raw" is selected, the function will use the brute-force method to find the nearest neighbors.
 If "annoy" is selected, the function will use the Annoy library for approximate nearest neighbor search.
 If "rann" is selected, the function will use the RANN library for approximate nearest neighbor search.
-If "cpp" is selected, the function will use the compiled exact top-k search.
-If not provided, the function will use "cpp" for Euclidean or cosine distance, otherwise it will choose the search method based on the size of the query and reference datasets.</p></dd>
+If not provided, the function will choose the search method based on the size of the query and reference datasets.</p></dd>
 
 
 <dt id="arg-distance-metric">distance_metric<a class="anchor" aria-label="anchor" href="#arg-distance-metric"></a></dt>
@@ -225,11 +224,6 @@ Default is <code>TRUE</code>.</p></dd>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ref_scMCA</span><span class="op">)</span></span>
 <span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Set the number of threads for RcppParallel</span></span>
-<span><span class="co"># details see: ?RcppParallel::setThreadOptions</span></span>
-<span><span class="co"># if (requireNamespace("RcppParallel", quietly = TRUE)) {</span></span>
-<span><span class="co">#   RcppParallel::setThreadOptions()</span></span>
-<span><span class="co"># }</span></span>
 <span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunKNNPredict</span><span class="op">(</span></span>
 <span>  srt_query <span class="op">=</span> <span class="va">pancreas_sub</span>,</span>
 <span>  bulk_ref <span class="op">=</span> <span class="va">ref_scMCA</span></span>

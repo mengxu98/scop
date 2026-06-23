@@ -62,7 +62,7 @@ external <code>CIBERSORT</code> package or the native <code>scop</code> C++ back
 <span>  QN <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  absolute <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"r"</span>, <span class="st">"cpp"</span><span class="op">)</span>,</span>
-<span>  n_threads <span class="op">=</span> <span class="fl">1L</span>,</span>
+<span>  cores <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">123L</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -110,8 +110,8 @@ The native C++ backend currently returns relative fractions.</p></dd>
 package and <code>"cpp"</code> uses the native <code>scop</code> LIBSVM implementation.</p></dd>
 
 
-<dt id="arg-n-threads">n_threads<a class="anchor" aria-label="anchor" href="#arg-n-threads"></a></dt>
-<dd><p>Number of threads used by the C++ backend.</p></dd>
+<dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
+<dd><p>Number of CPU cores used by the C++ backend.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
