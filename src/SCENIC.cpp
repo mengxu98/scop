@@ -76,6 +76,39 @@ struct ScenicCandidateTrace {
   std::vector<int> n_right;
 };
 
+struct ScenicSparseDgcMatrix {
+  IntegerVector p;
+  IntegerVector i;
+  NumericVector x;
+  IntegerVector dim;
+  int n_rows;
+  int n_cols;
+
+  explicit ScenicSparseDgcMatrix(S4 mat) :
+      p(mat.slot("p")),
+      i(mat.slot("i")),
+      x(mat.slot("x")),
+      dim(mat.slot("Dim")) {
+    if (!mat.is("dgCMatrix")) {
+      stop("expr must be a dgCMatrix.");
+    }
+    if (dim.size() != 2) {
+      stop("expr must have two dimensions.");
+    }
+    n_rows = dim[0];
+    n_cols = dim[1];
+    if (p.size() != n_cols + 1) {
+      stop("Invalid dgCMatrix column pointer.");
+    }
+    if (i.size() != x.size()) {
+      stop("Invalid dgCMatrix index/value slots.");
+    }
+  }
+
+  inline int nrow() const { return n_rows; }
+  inline int ncol() const { return n_cols; }
+};
+
 struct ScenicScopeTimer {
   double* seconds;
   std::chrono::steady_clock::time_point start;
@@ -118,6 +151,22 @@ static double scenic_tree_feature_value(const NumericMatrix& expr, int row, int 
   return static_cast<double>(static_cast<float>(x));
 }
 
+static double scenic_tree_feature_value(const ScenicSparseDgcMatrix& expr, int row, int feature) {
+  if (row < 0 || row >= expr.nrow() || feature < 0 || feature >= expr.ncol()) {
+    return 0.0;
+  }
+  const int* p = INTEGER(expr.p);
+  const int* i = INTEGER(expr.i);
+  const double* x = REAL(expr.x);
+  const int begin = p[feature];
+  const int end = p[feature + 1];
+  const int* found = std::lower_bound(i + begin, i + end, row);
+  if (found == i + end || *found != row) return 0.0;
+  double value = x[found - i];
+  if (!R_finite(value)) value = 0.0;
+  return static_cast<double>(static_cast<float>(value));
+}
+
 static double scenic_node_mean(
     const std::vector<int>& rows,
     const std::vector<double>& residual) {
@@ -157,8 +206,9 @@ static double scenic_node_sse(
   return scenic_sse_from_sums(sum, sum_sq, end - start);
 }
 
+template <typename Expr>
 static void scenic_sort_samples_by_feature(
-    const NumericMatrix& expr,
+    const Expr& expr,
     std::vector<int>& samples,
     std::vector<double>& feature_values,
     int start,
@@ -170,7 +220,8 @@ static void scenic_sort_samples_by_feature(
     values.push_back(std::make_pair(scenic_tree_feature_value(expr, samples[i], feature), samples[i]));
   }
   std::sort(values.begin(), values.end(), [](const std::pair<double, int>& a, const std::pair<double, int>& b) {
-    return a.first < b.first;
+    if (a.first != b.first) return a.first < b.first;
+    return a.second < b.second;
   });
   for (int i = start; i < end; ++i) {
     const std::pair<double, int>& value = values[static_cast<std::size_t>(i - start)];
@@ -179,8 +230,9 @@ static void scenic_sort_samples_by_feature(
   }
 }
 
+template <typename Expr>
 static void scenic_order_samples_by_feature(
-    const NumericMatrix& expr,
+    const Expr& expr,
     const std::vector<std::vector<int> >& feature_orders,
     const std::vector<std::vector<double> >& feature_order_values,
     const std::vector<std::vector<int> >& feature_order_ranks,
@@ -202,6 +254,49 @@ static void scenic_order_samples_by_feature(
   int pos = start;
   const std::vector<int>& order = feature_orders[feature];
   const std::vector<double>& values = feature_order_values[feature];
+  if (
+      static_cast<int>(order.size()) < expr.nrow() &&
+      values.size() == order.size()) {
+    std::vector<int> original(samples.begin() + start, samples.begin() + end);
+    std::vector<std::pair<int, double> > positive_nonzero;
+    std::vector<int> emitted_nonzero;
+    positive_nonzero.reserve(order.size());
+    emitted_nonzero.reserve(order.size());
+    for (std::size_t i = 0; i < order.size(); ++i) {
+      const int row = order[i];
+      if (row_marks[row] != row_mark) continue;
+      row_marks[row] = row_mark + 1;
+      emitted_nonzero.push_back(row);
+      const double value = values[i];
+      if (value < -SCENIC_FEATURE_THRESHOLD) {
+        feature_values[pos] = value;
+        samples[pos] = row;
+        ++pos;
+      } else {
+        positive_nonzero.push_back(std::make_pair(row, value));
+      }
+    }
+    for (std::size_t i = 0; i < original.size(); ++i) {
+      const int row = original[i];
+      if (row_marks[row] == row_mark) {
+        feature_values[pos] = 0.0;
+        samples[pos] = row;
+        ++pos;
+      }
+    }
+    for (std::size_t i = 0; i < positive_nonzero.size(); ++i) {
+      feature_values[pos] = positive_nonzero[i].second;
+      samples[pos] = positive_nonzero[i].first;
+      ++pos;
+    }
+    for (std::size_t i = 0; i < emitted_nonzero.size(); ++i) {
+      row_marks[emitted_nonzero[i]] = row_mark;
+    }
+    if (pos != end) {
+      scenic_sort_samples_by_feature(expr, samples, feature_values, start, end, feature);
+    }
+    return;
+  }
   if (
       feature < static_cast<int>(feature_order_ranks.size()) &&
       !feature_order_ranks[feature].empty() &&
@@ -228,8 +323,9 @@ static void scenic_order_samples_by_feature(
   }
 }
 
+template <typename Expr>
 static int scenic_partition_samples_final(
-    const NumericMatrix& expr,
+    const Expr& expr,
     std::vector<int>& samples,
     int start,
     int end,
@@ -304,8 +400,9 @@ static std::vector<unsigned char> scenic_sample_mask(
   return mask;
 }
 
+template <typename Expr>
 static std::vector<std::vector<int> > scenic_feature_orders(
-    const NumericMatrix& expr,
+    const Expr& expr,
     const std::vector<int>& features,
     std::vector<std::vector<double> >* order_values = nullptr,
     std::vector<std::vector<int> >* order_ranks = nullptr) {
@@ -350,8 +447,57 @@ static std::vector<std::vector<int> > scenic_feature_orders(
   return orders;
 }
 
+static std::vector<std::vector<int> > scenic_feature_orders(
+    const ScenicSparseDgcMatrix& expr,
+    const std::vector<int>& features,
+    std::vector<std::vector<double> >* order_values = nullptr,
+    std::vector<std::vector<int> >* order_ranks = nullptr) {
+  std::vector<std::vector<int> > orders(expr.ncol());
+  if (order_values != nullptr) {
+    order_values->clear();
+    order_values->resize(expr.ncol());
+  }
+  if (order_ranks != nullptr) {
+    order_ranks->clear();
+    order_ranks->resize(expr.ncol());
+  }
+  const int* p = INTEGER(expr.p);
+  const int* row_idx = INTEGER(expr.i);
+  const double* x = REAL(expr.x);
+  for (std::size_t fi = 0; fi < features.size(); ++fi) {
+    const int g = features[fi];
+    if (g < 0 || g >= expr.ncol() || !orders[g].empty()) continue;
+    std::vector<std::pair<double, int> > nonzero;
+    nonzero.reserve(p[g + 1] - p[g]);
+    for (int ptr = p[g]; ptr < p[g + 1]; ++ptr) {
+      double value = x[ptr];
+      if (!R_finite(value) || std::fabs(value) <= SCENIC_FEATURE_THRESHOLD) continue;
+      nonzero.push_back(std::make_pair(
+        static_cast<double>(static_cast<float>(value)),
+        row_idx[ptr]
+      ));
+    }
+    std::sort(nonzero.begin(), nonzero.end(), [](const std::pair<double, int>& a, const std::pair<double, int>& b) {
+      if (a.first != b.first) return a.first < b.first;
+      return a.second < b.second;
+    });
+    std::vector<int> order(nonzero.size());
+    std::vector<double> values(nonzero.size());
+    for (std::size_t i = 0; i < nonzero.size(); ++i) {
+      order[i] = nonzero[i].second;
+      values[i] = nonzero[i].first;
+    }
+    orders[g] = order;
+    if (order_values != nullptr) {
+      (*order_values)[g] = values;
+    }
+  }
+  return orders;
+}
+
+template <typename Expr>
 static ScenicSplit scenic_best_split(
-    const NumericMatrix& expr,
+    const Expr& expr,
     const std::vector<double>& residual,
     std::vector<int>& samples,
     std::vector<double>& feature_values,
@@ -520,8 +666,9 @@ static ScenicSplit scenic_best_split(
   return best;
 }
 
+template <typename Expr>
 static int scenic_build_tree(
-    const NumericMatrix& expr,
+    const Expr& expr,
     const std::vector<double>& residual,
     std::vector<int>& samples,
     std::vector<double>& feature_values,
@@ -597,8 +744,9 @@ static int scenic_build_tree(
   return node_index;
 }
 
+template <typename Expr>
 static double scenic_predict_tree(
-    const NumericMatrix& expr,
+    const Expr& expr,
     const std::vector<ScenicTreeNode>& nodes,
     int row) {
   int node_index = 0;
@@ -631,8 +779,9 @@ static int scenic_grn_worker_count(int requested, int n_tasks) {
   return std::max(1, std::min(cores, n_tasks));
 }
 
+template <typename Expr>
 static void scenic_grnboost_run_targets(
-    const NumericMatrix& expr,
+    const Expr& expr,
     const std::vector<int>& regs,
     const std::vector<int>& targets,
     std::size_t target_begin,
@@ -680,8 +829,7 @@ static void scenic_grnboost_run_targets(
 
     std::fill(importance.begin(), importance.end(), 0.0);
     for (int i = 0; i < n_samples; ++i) {
-      double y = expr(i, target);
-      if (!R_finite(y)) y = 0.0;
+      double y = scenic_tree_feature_value(expr, i, target);
       residual[i] = y - means[target];
     }
     scenic_profile_add_elapsed(
@@ -821,8 +969,9 @@ static void scenic_grnboost_run_targets(
   }
 }
 
+template <typename Expr>
 static DataFrame scenic_grnboost_tree_impl(
-    NumericMatrix expr,
+    const Expr& expr,
     IntegerVector regulator_idx,
     IntegerVector target_idx,
     int n_rounds = 5000,
@@ -873,8 +1022,7 @@ static DataFrame scenic_grnboost_tree_impl(
   for (int g = 0; g < n_genes; ++g) {
     double sum = 0.0;
     for (int i = 0; i < n_samples; ++i) {
-      double x = expr(i, g);
-      if (!R_finite(x)) x = 0.0;
+      double x = scenic_tree_feature_value(expr, i, g);
       sum += x;
     }
     means[g] = sum / static_cast<double>(n_samples);
@@ -1009,6 +1157,49 @@ DataFrame grnboost_tree_parallel(
     int cores = 1) {
   return scenic_grnboost_tree_impl(
     expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target,
+    max_depth, max_features, subsample, early_stop_window_length, random_seed,
+    exclude_self, nullptr, cores);
+}
+
+// [[Rcpp::export]]
+DataFrame grnboost_tree_sparse(
+    S4 expr,
+    IntegerVector regulator_idx,
+    IntegerVector target_idx,
+    int n_rounds = 5000,
+    double learning_rate = 0.01,
+    int max_edges_per_target = 0,
+    int max_depth = 3,
+    double max_features = 0.1,
+    double subsample = 0.9,
+    int early_stop_window_length = 25,
+    int random_seed = 1234,
+    bool exclude_self = true) {
+  ScenicSparseDgcMatrix sparse_expr(expr);
+  return scenic_grnboost_tree_impl(
+    sparse_expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target,
+    max_depth, max_features, subsample, early_stop_window_length, random_seed,
+    exclude_self, nullptr);
+}
+
+// [[Rcpp::export]]
+DataFrame grnboost_tree_sparse_parallel(
+    S4 expr,
+    IntegerVector regulator_idx,
+    IntegerVector target_idx,
+    int n_rounds = 5000,
+    double learning_rate = 0.01,
+    int max_edges_per_target = 0,
+    int max_depth = 3,
+    double max_features = 0.1,
+    double subsample = 0.9,
+    int early_stop_window_length = 25,
+    int random_seed = 1234,
+    bool exclude_self = true,
+    int cores = 1) {
+  ScenicSparseDgcMatrix sparse_expr(expr);
+  return scenic_grnboost_tree_impl(
+    sparse_expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target,
     max_depth, max_features, subsample, early_stop_window_length, random_seed,
     exclude_self, nullptr, cores);
 }

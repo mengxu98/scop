@@ -281,6 +281,14 @@ grnboost_tree_parallel <- function(expr, regulator_idx, target_idx, n_rounds = 5
     .Call(`_scop_grnboost_tree_parallel`, expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self, cores)
 }
 
+grnboost_tree_sparse <- function(expr, regulator_idx, target_idx, n_rounds = 5000L, learning_rate = 0.01, max_edges_per_target = 0L, max_depth = 3L, max_features = 0.1, subsample = 0.9, early_stop_window_length = 25L, random_seed = 1234L, exclude_self = TRUE) {
+    .Call(`_scop_grnboost_tree_sparse`, expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self)
+}
+
+grnboost_tree_sparse_parallel <- function(expr, regulator_idx, target_idx, n_rounds = 5000L, learning_rate = 0.01, max_edges_per_target = 0L, max_depth = 3L, max_features = 0.1, subsample = 0.9, early_stop_window_length = 25L, random_seed = 1234L, exclude_self = TRUE, cores = 1L) {
+    .Call(`_scop_grnboost_tree_sparse_parallel`, expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self, cores)
+}
+
 grnboost_tree_profile <- function(expr, regulator_idx, target_idx, n_rounds = 5000L, learning_rate = 0.01, max_edges_per_target = 0L, max_depth = 3L, max_features = 0.1, subsample = 0.9, early_stop_window_length = 25L, random_seed = 1234L, exclude_self = TRUE) {
     .Call(`_scop_grnboost_tree_profile`, expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self)
 }
