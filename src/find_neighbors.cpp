@@ -218,6 +218,7 @@ static void exact_worker(const std::vector<float>& data,
   }
 }
 
+// [[Rcpp::export]]
 Rcpp::IntegerMatrix annoy_build_search(Rcpp::NumericMatrix data,
                                        int k,
                                        int n_trees,
@@ -262,6 +263,7 @@ Rcpp::IntegerMatrix annoy_build_search(Rcpp::NumericMatrix data,
   return neighbors;
 }
 
+// [[Rcpp::export]]
 Rcpp::IntegerMatrix exact_knn_f32(Rcpp::NumericMatrix data,
                                  int k,
                                  int cores) {

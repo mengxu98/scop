@@ -537,6 +537,14 @@ parallel_all_in_one_dgc <- function(x_sexp, groups, group_sizes) {
     .Call(`_scop_parallel_all_in_one_dgc`, x_sexp, groups, group_sizes)
 }
 
+annoy_build_search <- function(data, k, n_trees, cores) {
+    .Call(`_scop_annoy_build_search`, data, k, n_trees, cores)
+}
+
+exact_knn_f32 <- function(data, k, cores) {
+    .Call(`_scop_exact_knn_f32`, data, k, cores)
+}
+
 log_normalize_dgc <- function(mat, scale_factor, grain_size = 100L) {
     invisible(.Call(`_scop_log_normalize_dgc`, mat, scale_factor, grain_size))
 }

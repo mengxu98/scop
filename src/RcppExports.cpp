@@ -2202,6 +2202,33 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// annoy_build_search
+Rcpp::IntegerMatrix annoy_build_search(Rcpp::NumericMatrix data, int k, int n_trees, int cores);
+RcppExport SEXP _scop_annoy_build_search(SEXP dataSEXP, SEXP kSEXP, SEXP n_treesSEXP, SEXP coresSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< int >::type n_trees(n_treesSEXP);
+    Rcpp::traits::input_parameter< int >::type cores(coresSEXP);
+    rcpp_result_gen = Rcpp::wrap(annoy_build_search(data, k, n_trees, cores));
+    return rcpp_result_gen;
+END_RCPP
+}
+// exact_knn_f32
+Rcpp::IntegerMatrix exact_knn_f32(Rcpp::NumericMatrix data, int k, int cores);
+RcppExport SEXP _scop_exact_knn_f32(SEXP dataSEXP, SEXP kSEXP, SEXP coresSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< int >::type cores(coresSEXP);
+    rcpp_result_gen = Rcpp::wrap(exact_knn_f32(data, k, cores));
+    return rcpp_result_gen;
+END_RCPP
+}
 // log_normalize_dgc
 void log_normalize_dgc(S4 mat, double scale_factor, int grain_size);
 RcppExport SEXP _scop_log_normalize_dgc(SEXP matSEXP, SEXP scale_factorSEXP, SEXP grain_sizeSEXP) {
@@ -2485,6 +2512,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_scissor_binomial_net_fit_cpp", (DL_FUNC) &_scop_scissor_binomial_net_fit_cpp, 12},
     {"_scop_spatial_gradient_screening_cpp", (DL_FUNC) &_scop_spatial_gradient_screening_cpp, 10},
     {"_scop_parallel_all_in_one_dgc", (DL_FUNC) &_scop_parallel_all_in_one_dgc, 3},
+    {"_scop_annoy_build_search", (DL_FUNC) &_scop_annoy_build_search, 4},
+    {"_scop_exact_knn_f32", (DL_FUNC) &_scop_exact_knn_f32, 3},
     {"_scop_log_normalize_dgc", (DL_FUNC) &_scop_log_normalize_dgc, 3},
     {"_scop_pca_backend_run", (DL_FUNC) &_scop_pca_backend_run, 3},
     {"_scop_scale_sparse_full", (DL_FUNC) &_scop_scale_sparse_full, 3},
