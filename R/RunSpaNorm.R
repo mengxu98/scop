@@ -179,6 +179,9 @@ spanorm_prepare_input <- function(
     counts <- Matrix::Matrix(as.matrix(counts), sparse = TRUE)
   }
   if (!inherits(counts, "dgCMatrix")) {
+    counts <- methods::as(counts, "CsparseMatrix")
+  }
+  if (!inherits(counts, "dgCMatrix")) {
     counts <- methods::as(counts, "dgCMatrix")
   }
   counts@x[!is.finite(counts@x) | counts@x < 0] <- 0
@@ -223,6 +226,9 @@ spanorm_extract_logcounts <- function(result, features, cells) {
   mat <- SummarizedExperiment::assay(result, "logcounts")
   if (!inherits(mat, "Matrix")) {
     mat <- Matrix::Matrix(as.matrix(mat), sparse = TRUE)
+  }
+  if (!inherits(mat, "dgCMatrix")) {
+    mat <- methods::as(mat, "CsparseMatrix")
   }
   if (!inherits(mat, "dgCMatrix")) {
     mat <- methods::as(mat, "dgCMatrix")

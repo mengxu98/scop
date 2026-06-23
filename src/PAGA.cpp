@@ -10,6 +10,7 @@ List paga_connectivities_cpp(IntegerMatrix knn_idx, IntegerVector groups, int n_
   if (n_groups < 1) stop("n_groups must be positive");
 
   NumericMatrix directed_edges(n_groups, n_groups);
+  NumericMatrix expected_n_edges_random(n_groups, n_groups);
   NumericVector group_sizes(n_groups);
   NumericVector edge_totals(n_groups);
   for (int cell = 0; cell < n_cells; ++cell) {
@@ -41,6 +42,8 @@ List paga_connectivities_cpp(IntegerMatrix knn_idx, IntegerVector groups, int n_
       if (observed <= 0.0) continue;
       const double expected =
         (edge_totals[i] * group_sizes[j] + edge_totals[j] * group_sizes[i]) / denom;
+      expected_n_edges_random(i, j) = expected;
+      expected_n_edges_random(j, i) = expected;
       double scaled = expected > 0.0 ? observed / expected : 1.0;
       if (scaled > 1.0) scaled = 1.0;
       connectivities(i, j) = scaled;
@@ -69,7 +72,9 @@ List paga_connectivities_cpp(IntegerMatrix knn_idx, IntegerVector groups, int n_
   return List::create(
     _["connectivities"] = connectivities,
     _["connectivities_tree"] = connectivities_tree,
-    _["group_sizes"] = group_sizes
+    _["expected_n_edges_random"] = expected_n_edges_random,
+    _["group_sizes"] = group_sizes,
+    _["directed_edges"] = directed_edges
   );
 }
 

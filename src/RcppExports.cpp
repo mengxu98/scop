@@ -2214,6 +2214,19 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// pca_backend_run
+Rcpp::List pca_backend_run(const arma::mat& X, int npcs, bool weight_by_var);
+RcppExport SEXP _scop_pca_backend_run(SEXP XSEXP, SEXP npcsSEXP, SEXP weight_by_varSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< int >::type npcs(npcsSEXP);
+    Rcpp::traits::input_parameter< bool >::type weight_by_var(weight_by_varSEXP);
+    rcpp_result_gen = Rcpp::wrap(pca_backend_run(X, npcs, weight_by_var));
+    return rcpp_result_gen;
+END_RCPP
+}
 // scale_sparse_full
 NumericMatrix scale_sparse_full(S4 sparse_mat, IntegerVector gene_indices, double scale_max);
 RcppExport SEXP _scop_scale_sparse_full(SEXP sparse_matSEXP, SEXP gene_indicesSEXP, SEXP scale_maxSEXP) {
@@ -2473,6 +2486,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_spatial_gradient_screening_cpp", (DL_FUNC) &_scop_spatial_gradient_screening_cpp, 10},
     {"_scop_parallel_all_in_one_dgc", (DL_FUNC) &_scop_parallel_all_in_one_dgc, 3},
     {"_scop_log_normalize_dgc", (DL_FUNC) &_scop_log_normalize_dgc, 3},
+    {"_scop_pca_backend_run", (DL_FUNC) &_scop_pca_backend_run, 3},
     {"_scop_scale_sparse_full", (DL_FUNC) &_scop_scale_sparse_full, 3},
     {"_scop_csc_to_csr", (DL_FUNC) &_scop_csc_to_csr, 5},
     {"_scop_sct_stats_correct_sparse", (DL_FUNC) &_scop_sct_stats_correct_sparse, 12},

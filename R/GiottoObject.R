@@ -1,20 +1,4 @@
-#' @title Create a scop Giotto object
-#'
-#' @description
-#' Wrap a Giotto object in a lightweight scop-managed object. The wrapper keeps
-#' Giotto state, normalized result tables, provenance, and run history outside
-#' the input Seurat object.
-#'
-#' @param giotto A Giotto object.
-#' @param source Source metadata used to create the Giotto object.
-#' @param results Named list of normalized result tables and raw results.
-#' @param active Name of the active/default result.
-#' @param history List of processing steps.
-#' @param parameters Global Giotto/scop parameters.
-#'
-#' @return A `scop_giotto` object.
-#' @export
-scop_giotto <- function(
+new_giotto2 <- function(
   giotto,
   source = list(),
   results = list(),
@@ -31,13 +15,13 @@ scop_giotto <- function(
       history = history,
       parameters = parameters
     ),
-    class = c("scop_giotto", "list")
+    class = c("giotto2", "list")
   )
 }
 
 #' @export
-print.scop_giotto <- function(x, ...) {
-  cat("<scop_giotto>\n")
+print.giotto2 <- function(x, ...) {
+  cat("<giotto2>\n")
   cat("  cells: ", length(x$source$cells %||% character()), "\n", sep = "")
   cat("  features: ", length(x$source$features %||% character()), "\n", sep = "")
   cat("  results: ", paste(names(x$results), collapse = ", "), "\n", sep = "")
@@ -46,16 +30,26 @@ print.scop_giotto <- function(x, ...) {
 }
 
 giotto_validate_scop_object <- function(x, allow_seurat = FALSE) {
-  if (inherits(x, "scop_giotto")) {
+  if (inherits(x, "giotto2")) {
     return(invisible(TRUE))
   }
   if (isTRUE(allow_seurat) && inherits(x, "Seurat")) {
     return(invisible(TRUE))
   }
   log_message(
-    "{.arg x} must be a {.cls scop_giotto} object",
+    "{.arg x} must be a {.cls giotto2} object",
     message_type = "error"
   )
+}
+
+giotto_validate_flag <- function(x, arg) {
+  if (!is.logical(x) || length(x) != 1L || is.na(x)) {
+    log_message(
+      "{.arg {arg}} must be TRUE or FALSE",
+      message_type = "error"
+    )
+  }
+  invisible(TRUE)
 }
 
 giotto_append_history <- function(x, step, parameters = list()) {
@@ -107,10 +101,10 @@ giotto_do_call <- function(name, args) {
   do.call(name, args, envir = asNamespace("Giotto"))
 }
 
-#' @title Convert Seurat to a scop Giotto object
+#' @title Convert Seurat to an internal Giotto workflow object
 #'
 #' @description
-#' Create a `scop_giotto` object from a Seurat object. The converter is
+#' Create a `giotto2` object from a Seurat object. The converter is
 #' SCT-aware: raw counts remain the default Giotto input, while SCT normalized
 #' values are optionally added as an extra Giotto expression layer. The input
 #' Seurat object is not modified.
@@ -123,7 +117,7 @@ giotto_do_call <- function(name, args) {
 #' @param use_official Whether to try `Giotto::seuratToGiottoV5()` before
 #' falling back to the scop-controlled converter.
 #'
-#' @return A `scop_giotto` object.
+#' @return A `giotto2` object.
 #'
 #' @examples
 #' \dontrun{
@@ -224,7 +218,7 @@ SeuratToScopGiotto <- function(
   )
   gobject <- sct_info$gobject
 
-  out <- scop_giotto(
+  out <- new_giotto2(
     giotto = gobject,
     source = list(
       type = "Seurat",
@@ -265,12 +259,6 @@ SeuratToScopGiotto <- function(
   )
   giotto_validate_runtime_object(out, verbose = verbose)
   out
-}
-
-#' @rdname SeuratToScopGiotto
-#' @export
-CreateScopGiotto <- function(...) {
-  SeuratToScopGiotto(...)
 }
 
 giotto_pick_seurat_assay <- function(srt, assay = NULL, sct.assay = "SCT") {
@@ -387,27 +375,39 @@ giotto_validate_runtime_object <- function(x, verbose = TRUE) {
 #' @title Run a Giotto workflow
 #'
 #' @description
-#' Run basic or full Giotto analysis on a `scop_giotto` object. Seurat input is
+#' Run basic or full Giotto analysis on a `giotto2` object. Seurat input is
 #' converted first with [SeuratToScopGiotto()].
 #'
-#' @param x A `scop_giotto` or Seurat object.
+#' @param x A `giotto2` or Seurat object.
 #' @param steps `"basic"` runs preprocessing, PCA/UMAP, nearest-network
 #' clustering, and spatial network construction. `"full"` additionally runs
 #' spatial genes, spatial modules, optional cell proximity, and HMRF.
 #' @param group.by Metadata column used for cell proximity enrichment.
+#' @param return_seurat Whether to return a Seurat object when `x` is Seurat.
+#' If `FALSE`, returns the internal `giotto2` workflow object.
+#' @param store_results Whether to store the internal Giotto workflow object in
+#' `srt@tools[[tool_name]]` when returning Seurat.
+#' @param tool_name Name used to store the Giotto workflow object in `srt@tools`.
 #' @param ... Passed to [SeuratToScopGiotto()] when `x` is Seurat.
 #'
-#' @return A `scop_giotto` object.
+#' @return A Seurat object by default for Seurat input, otherwise a `giotto2`
+#' workflow object.
 #' @export
 RunGiottoWorkflow <- function(
   x,
   steps = c("basic", "full"),
   group.by = NULL,
+  return_seurat = inherits(x, "Seurat"),
+  store_results = TRUE,
+  tool_name = "Giotto",
   verbose = TRUE,
   seed = 11,
   ...
 ) {
   steps <- match.arg(steps)
+  giotto_validate_flag(return_seurat, "return_seurat")
+  giotto_validate_flag(store_results, "store_results")
+  giotto_validate_scalar_string(tool_name, "tool_name")
   if (inherits(x, "Seurat")) {
     srt <- x
     dots <- list(...)
@@ -569,6 +569,17 @@ RunGiottoWorkflow <- function(
           x
         }
       )
+    }
+    if (isTRUE(return_seurat)) {
+      result <- if (!is.null(x$results$hmrf)) "hmrf" else "cluster"
+      srt <- AddGiottoToSeurat(
+        srt = srt,
+        x = x,
+        result = result,
+        tool_name = tool_name,
+        store_result = store_results
+      )
+      return(srt)
     }
     return(x)
   }
@@ -1288,7 +1299,7 @@ AddGiottoToSeurat <- function(
 }
 
 #' @export
-GiottoPlot.scop_giotto <- function(
+GiottoPlot.giotto2 <- function(
   x,
   plot_type = c("spatial", "cluster", "dim", "network", "spatial_genes", "spatial_modules", "cell_proximity", "hmrf"),
   result = NULL,
@@ -1383,14 +1394,14 @@ GiottoPlot.scop_giotto <- function(
 }
 
 #' @export
-plot.scop_giotto <- function(x, y = NULL, ...) {
+plot.giotto2 <- function(x, y = NULL, ...) {
   GiottoPlot(x, ...)
 }
 
 giotto_plot_spatial_data <- function(x, plot_type = "spatial", result = NULL) {
   coords <- x$source$coordinates
   if (is.null(coords) || nrow(coords) == 0L) {
-    log_message("No spatial coordinates are available in {.cls scop_giotto}", message_type = "error")
+    log_message("No spatial coordinates are available in {.cls giotto2}", message_type = "error")
   }
   dat <- data.frame(
     cell = coords$cell_ID %||% rownames(coords),
@@ -1698,7 +1709,7 @@ giotto_plot_proximity_scop <- function(x, heatmap_palette = "RdBu", heatmap_palc
     enrichment = table,
     parameters = x$results$cell_proximity$parameters %||% list()
   )
-  GiottoPlot.scop_giotto_cell_proximity(
+  GiottoPlot.giotto2_cell_proximity(
     pseudo,
     heatmap_palette = heatmap_palette,
     heatmap_palcolor = heatmap_palcolor,
@@ -1717,7 +1728,7 @@ giotto_plot_modules_scop <- function(x, top_n = 20, heatmap_palette = "RdBu", he
     features = x$source$features,
     parameters = x$results$spatial_modules$parameters %||% list()
   )
-  GiottoPlot.scop_giotto_spatial_modules(
+  GiottoPlot.giotto2_spatial_modules(
     pseudo,
     top_n = top_n,
     heatmap_palette = heatmap_palette,

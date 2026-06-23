@@ -62,8 +62,8 @@ test_that("Giotto cell proximity returns standalone enrichment result", {
     verbose = FALSE
   )
 
-  expect_s3_class(out, "scop_giotto_result")
-  expect_s3_class(out, "scop_giotto_cell_proximity")
+  expect_s3_class(out, "giotto2_result")
+  expect_s3_class(out, "giotto2_cell_proximity")
   expect_false(inherits(out, "Seurat"))
   expect_false(is.null(out$giotto))
   expect_s3_class(out$enrichment, "data.frame")
@@ -96,8 +96,8 @@ test_that("Giotto spatial genes returns standalone feature result", {
     verbose = FALSE
   )
 
-  expect_s3_class(out, "scop_giotto_result")
-  expect_s3_class(out, "scop_giotto_spatial_genes")
+  expect_s3_class(out, "giotto2_result")
+  expect_s3_class(out, "giotto2_spatial_genes")
   expect_false(inherits(out, "Seurat"))
   expect_false(is.null(out$giotto))
   expect_s3_class(out$results, "data.frame")
@@ -124,8 +124,8 @@ test_that("Giotto spatial modules returns standalone module result", {
     verbose = FALSE
   )
 
-  expect_s3_class(out, "scop_giotto_result")
-  expect_s3_class(out, "scop_giotto_spatial_modules")
+  expect_s3_class(out, "giotto2_result")
+  expect_s3_class(out, "giotto2_spatial_modules")
   expect_false(inherits(out, "Seurat"))
   expect_false(is.null(out$giotto))
   expect_true("spatial_cor" %in% names(out))

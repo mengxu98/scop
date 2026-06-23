@@ -188,6 +188,9 @@ reference:
   - RunSpotSweeper
   - RunSPOTlight
   - RunSemlaSpatialNetwork
+  - RunSemlaLocalG
+  - RunSemlaRadialDistance
+  - RunSemlaRegionNeighbors
   - RunSpatialEcoTyper
   - RunSpatialGradientFeatures
   - RunSpatialIntegration

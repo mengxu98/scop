@@ -1,4 +1,4 @@
-make_scop_giotto_seurat <- function(with_sct = FALSE) {
+make_giotto2_seurat <- function(with_sct = FALSE) {
   counts <- matrix(
     c(
       5, 0, 1, 0, 4, 1,
@@ -25,9 +25,9 @@ make_scop_giotto_seurat <- function(with_sct = FALSE) {
   srt
 }
 
-make_mock_scop_giotto <- function() {
+make_mock_giotto2 <- function() {
   cells <- paste0("Spot", 1:4)
-  scop_giotto(
+  scop:::new_giotto2(
     giotto = list(mock = TRUE),
     source = list(
       cells = cells,
@@ -70,16 +70,18 @@ make_mock_scop_giotto <- function() {
   )
 }
 
-test_that("scop_giotto constructor and print keep object state", {
-  g <- make_mock_scop_giotto()
+test_that("internal giotto2 object and print keep object state", {
+  g <- make_mock_giotto2()
 
-  expect_s3_class(g, "scop_giotto")
+  expect_s3_class(g, "giotto2")
   expect_equal(g$active, "cluster")
-  expect_output(print(g), "scop_giotto")
+  expect_output(print(g), "giotto2")
+  expect_false("giotto2" %in% getNamespaceExports("scop"))
+  expect_false(exists(paste0("scop", "_giotto"), envir = asNamespace("scop"), inherits = FALSE))
 })
 
-test_that("GiottoPlot supports scop_giotto without original Seurat", {
-  g <- make_mock_scop_giotto()
+test_that("GiottoPlot supports giotto2 without original Seurat", {
+  g <- make_mock_giotto2()
 
   expect_s3_class(GiottoPlot(g, plot_type = "spatial"), "ggplot")
   expect_s3_class(GiottoPlot(g, plot_type = "cluster"), "ggplot")
@@ -90,7 +92,7 @@ test_that("GiottoPlot supports scop_giotto without original Seurat", {
 
 test_that("SeuratToScopGiotto returns standalone object without modifying Seurat", {
   testthat::skip_if_not_installed("Giotto")
-  srt <- make_scop_giotto_seurat(with_sct = TRUE)
+  srt <- make_giotto2_seurat(with_sct = TRUE)
   before_meta <- srt@meta.data
   before_tools <- srt@tools
   before_variable_features <- SeuratObject::VariableFeatures(srt)
@@ -104,7 +106,7 @@ test_that("SeuratToScopGiotto returns standalone object without modifying Seurat
     verbose = FALSE
   )
 
-  expect_s3_class(g, "scop_giotto")
+  expect_s3_class(g, "giotto2")
   expect_false(inherits(g, "Seurat"))
   expect_equal(g$source$assay, "RNA")
   expect_equal(g$source$sct_mode, "auto")
@@ -116,7 +118,7 @@ test_that("SeuratToScopGiotto returns standalone object without modifying Seurat
 
 test_that("SeuratToScopGiotto can use SCT counts as fallback", {
   testthat::skip_if_not_installed("Giotto")
-  srt <- make_scop_giotto_seurat(with_sct = TRUE)
+  srt <- make_giotto2_seurat(with_sct = TRUE)
   SeuratObject::DefaultAssay(srt) <- "SCT"
   srt[["RNA"]] <- NULL
 
@@ -127,14 +129,14 @@ test_that("SeuratToScopGiotto can use SCT counts as fallback", {
     verbose = FALSE
   )
 
-  expect_s3_class(g, "scop_giotto")
+  expect_s3_class(g, "giotto2")
   expect_equal(g$source$assay, "SCT")
   expect_true(any(vapply(g$history, function(x) identical(x$step, "SeuratToScopGiotto"), logical(1))))
 })
 
 test_that("AddGiottoToSeurat is the explicit bridge back to Seurat", {
-  srt <- make_scop_giotto_seurat()
-  g <- make_mock_scop_giotto()
+  srt <- make_giotto2_seurat()
+  g <- make_mock_giotto2()
 
   out <- AddGiottoToSeurat(srt, g, result = "cluster", name = "Giotto_bridge", store_result = FALSE)
 
@@ -143,9 +145,9 @@ test_that("AddGiottoToSeurat is the explicit bridge back to Seurat", {
   expect_false("Giotto" %in% names(out@tools))
 })
 
-test_that("scop_giotto single-step preprocessing and reduction run", {
+test_that("giotto2 single-step preprocessing and reduction run", {
   testthat::skip_if_not_installed("Giotto")
-  srt <- make_scop_giotto_seurat()
+  srt <- make_giotto2_seurat()
   g <- SeuratToScopGiotto(
     srt,
     assay = "RNA",
@@ -157,15 +159,15 @@ test_that("scop_giotto single-step preprocessing and reduction run", {
   g <- GiottoPreprocess(g, verbose = FALSE)
   g <- GiottoReduce(g, reduction = "pca", dims = 1:2, verbose = FALSE)
 
-  expect_s3_class(g, "scop_giotto")
+  expect_s3_class(g, "giotto2")
   expect_equal(g$parameters$pca_name, "pca")
 })
 
-test_that("RunGiottoWorkflow basic returns a scop_giotto object", {
+test_that("RunGiottoWorkflow basic returns Seurat by default and can return giotto2", {
   testthat::skip_if_not_installed("Giotto")
-  srt <- make_scop_giotto_seurat()
+  srt <- make_giotto2_seurat()
 
-  g <- RunGiottoWorkflow(
+  out <- RunGiottoWorkflow(
     srt,
     steps = "basic",
     assay = "RNA",
@@ -175,7 +177,22 @@ test_that("RunGiottoWorkflow basic returns a scop_giotto object", {
     seed = 11
   )
 
-  expect_s3_class(g, "scop_giotto")
+  expect_s4_class(out, "Seurat")
+  expect_true("Giotto_cluster" %in% colnames(out@meta.data))
+  expect_true("Giotto" %in% names(out@tools))
+
+  g <- RunGiottoWorkflow(
+    srt,
+    steps = "basic",
+    assay = "RNA",
+    layer = "counts",
+    use_official = FALSE,
+    return_seurat = FALSE,
+    verbose = FALSE,
+    seed = 11
+  )
+
+  expect_s3_class(g, "giotto2")
   expect_true("cluster" %in% names(g$results))
   expect_true("spatial_network" %in% names(g$results))
   expect_gt(nrow(g$results$spatial_network$table), 0)

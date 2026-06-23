@@ -2,15 +2,15 @@
 % Please edit documentation in R/GiottoPlot.R
 \name{GiottoPlot}
 \alias{GiottoPlot}
-\alias{GiottoPlot.scop_giotto_cluster}
-\alias{GiottoPlot.scop_giotto_cell_proximity}
-\alias{GiottoPlot.scop_giotto_spatial_genes}
-\alias{GiottoPlot.scop_giotto_spatial_modules}
+\alias{GiottoPlot.giotto2_cluster}
+\alias{GiottoPlot.giotto2_cell_proximity}
+\alias{GiottoPlot.giotto2_spatial_genes}
+\alias{GiottoPlot.giotto2_spatial_modules}
 \title{Plot Giotto backend results}
 \usage{
 GiottoPlot(x, ...)
 
-\method{GiottoPlot}{scop_giotto_cluster}(
+\method{GiottoPlot}{giotto2_cluster}(
   x,
   srt,
   image = x$parameters$image \%||\% NULL,
@@ -31,7 +31,7 @@ GiottoPlot(x, ...)
   ...
 )
 
-\method{GiottoPlot}{scop_giotto_cell_proximity}(
+\method{GiottoPlot}{giotto2_cell_proximity}(
   x,
   heatmap_palette = "RdBu",
   heatmap_palcolor = NULL,
@@ -42,7 +42,7 @@ GiottoPlot(x, ...)
   ...
 )
 
-\method{GiottoPlot}{scop_giotto_spatial_genes}(
+\method{GiottoPlot}{giotto2_spatial_genes}(
   x,
   srt = NULL,
   plot_type = c("ranking", "feature"),
@@ -68,7 +68,7 @@ GiottoPlot(x, ...)
   ...
 )
 
-\method{GiottoPlot}{scop_giotto_spatial_modules}(
+\method{GiottoPlot}{giotto2_spatial_modules}(
   x,
   features = NULL,
   top_n = 20,

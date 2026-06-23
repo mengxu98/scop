@@ -8,13 +8,16 @@ RunGiottoWorkflow(
   x,
   steps = c("basic", "full"),
   group.by = NULL,
+  return_seurat = inherits(x, "Seurat"),
+  store_results = TRUE,
+  tool_name = "Giotto",
   verbose = TRUE,
   seed = 11,
   ...
 )
 }
 \arguments{
-\item{x}{A `scop_giotto` or Seurat object.}
+\item{x}{A `giotto2` or Seurat object.}
 
 \item{steps}{`"basic"` runs preprocessing, PCA/UMAP, nearest-network
 clustering, and spatial network construction. `"full"` additionally runs
@@ -22,12 +25,21 @@ spatial genes, spatial modules, optional cell proximity, and HMRF.}
 
 \item{group.by}{Metadata column used for cell proximity enrichment.}
 
+\item{return_seurat}{Whether to return a Seurat object when `x` is Seurat.
+If `FALSE`, returns the internal `giotto2` workflow object.}
+
+\item{store_results}{Whether to store the internal Giotto workflow object in
+`srt@tools[[tool_name]]` when returning Seurat.}
+
+\item{tool_name}{Name used to store the Giotto workflow object in `srt@tools`.}
+
 \item{...}{Passed to [SeuratToScopGiotto()] when `x` is Seurat.}
 }
 \value{
-A `scop_giotto` object.
+A Seurat object by default for Seurat input, otherwise a `giotto2`
+workflow object.
 }
 \description{
-Run basic or full Giotto analysis on a `scop_giotto` object. Seurat input is
+Run basic or full Giotto analysis on a `giotto2` object. Seurat input is
 converted first with [SeuratToScopGiotto()].
 }
