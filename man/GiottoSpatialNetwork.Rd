@@ -12,6 +12,20 @@ GiottoSpatialNetwork(
   verbose = TRUE
 )
 }
+\arguments{
+\item{x}{A `giotto2` workflow object.}
+
+\item{network_method}{Spatial network method.}
+
+\item{network_name}{Name for the Giotto spatial network.}
+
+\item{params}{Additional parameters passed to `Giotto::createSpatialNetwork()`.}
+
+\item{verbose}{Whether to print progress messages.}
+}
+\value{
+A `giotto2` workflow object.
+}
 \description{
 Create a Giotto spatial network
 }
