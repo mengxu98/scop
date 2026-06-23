@@ -902,6 +902,11 @@ prepare_de_for_pathway <- function(de_results, require_score = FALSE) {
 }
 
 #' @export
+FoldChange <- function(object, ...) {
+  UseMethod("FoldChange")
+}
+
+#' @export
 FoldChange.default <- function(
   object,
   cells.1,
