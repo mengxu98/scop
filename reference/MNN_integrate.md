@@ -168,7 +168,7 @@ MNN_integrate(
 
   The number of dimensions to keep after nonlinear dimensionality
   reduction. If a vector is provided, different numbers of dimensions
-  can be specified for each method. Default is `c(2, 3)`.
+  can be specified for each method. Default is `2`.
 
 - nonlinear_reduction_params:
 
