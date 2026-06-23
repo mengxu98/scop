@@ -300,9 +300,22 @@ grnboost <- function(
   }
   regulator_idx <- as.integer(sort(match(inputs[["regulators"]], gene_names)))
   target_idx <- as.integer(match(inputs[["targets"]], gene_names))
-  expr <- as.matrix(grn_matrix)
+  n_targets <- length(target_idx)
+  if (n_targets == 0L) {
+    log_message(
+      "No target genes remain after filtering",
+      message_type = "error"
+    )
+  }
+  is_sparse <- inherits(grn_matrix, "dgCMatrix")
+  expr <- if (is_sparse) {
+    grn_matrix
+  } else {
+    as.matrix(grn_matrix)
+  }
   run_chunk <- function(target_idx_chunk) {
-    grnboost_tree(
+    grn_fun <- if (is_sparse) grnboost_tree_sparse else grnboost_tree
+    grn_fun(
       expr = expr,
       regulator_idx = regulator_idx,
       target_idx = as.integer(target_idx_chunk),
@@ -317,19 +330,13 @@ grnboost <- function(
       exclude_self = isTRUE(exclude_self)
     )
   }
-  n_targets <- length(target_idx)
-  if (n_targets == 0L) {
-    log_message(
-      "No target genes remain after filtering",
-      message_type = "error"
-    )
-  }
   edge_idx <- if (cores > 1L) {
     log_message(
-      "Running C++ GRNBoost2 for {.val {n_targets}} target genes",
+      "Running C++ GRNBoost2 for {.val {n_targets}} target genes{if (is_sparse) ' with sparse matrix input' else ''}",
       verbose = verbose
     )
-    grnboost_tree_parallel(
+    grn_fun_parallel <- if (is_sparse) grnboost_tree_sparse_parallel else grnboost_tree_parallel
+    grn_fun_parallel(
       expr = expr,
       regulator_idx = regulator_idx,
       target_idx = target_idx,

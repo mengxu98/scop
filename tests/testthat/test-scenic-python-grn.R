@@ -1,4 +1,4 @@
-test_that("Python SCENIC GRNBoost2 uses threaded local Dask cluster", {
+test_that("Python SCENIC GRNBoost2 runs through local Dask cluster", {
   skip_if(
     identical(Sys.info()[["sysname"]], "Darwin"),
     "reticulate Python discovery is unstable on macOS CI"
@@ -47,4 +47,13 @@ test_that("Python SCENIC GRNBoost2 uses threaded local Dask cluster", {
   adj <- utils::read.delim(adj_file, stringsAsFactors = FALSE)
   expect_true(all(c("TF", "target", "importance") %in% colnames(adj)))
   expect_gt(nrow(adj), 0)
+})
+
+test_that("Python SCENIC GRNBoost2 configures process workers for multicore runs", {
+  functions_file <- system.file("python", "functions.py", package = "scop", mustWork = TRUE)
+  source <- paste(readLines(functions_file, warn = FALSE), collapse = "\n")
+
+  expect_match(source, "\"n_workers\": cores", fixed = TRUE)
+  expect_match(source, "\"threads_per_worker\": 1", fixed = TRUE)
+  expect_match(source, "\"processes\": True", fixed = TRUE)
 })

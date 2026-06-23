@@ -1029,6 +1029,51 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// grnboost_tree_sparse
+DataFrame grnboost_tree_sparse(S4 expr, IntegerVector regulator_idx, IntegerVector target_idx, int n_rounds, double learning_rate, int max_edges_per_target, int max_depth, double max_features, double subsample, int early_stop_window_length, int random_seed, bool exclude_self);
+RcppExport SEXP _scop_grnboost_tree_sparse(SEXP exprSEXP, SEXP regulator_idxSEXP, SEXP target_idxSEXP, SEXP n_roundsSEXP, SEXP learning_rateSEXP, SEXP max_edges_per_targetSEXP, SEXP max_depthSEXP, SEXP max_featuresSEXP, SEXP subsampleSEXP, SEXP early_stop_window_lengthSEXP, SEXP random_seedSEXP, SEXP exclude_selfSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< S4 >::type expr(exprSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type regulator_idx(regulator_idxSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type target_idx(target_idxSEXP);
+    Rcpp::traits::input_parameter< int >::type n_rounds(n_roundsSEXP);
+    Rcpp::traits::input_parameter< double >::type learning_rate(learning_rateSEXP);
+    Rcpp::traits::input_parameter< int >::type max_edges_per_target(max_edges_per_targetSEXP);
+    Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);
+    Rcpp::traits::input_parameter< double >::type max_features(max_featuresSEXP);
+    Rcpp::traits::input_parameter< double >::type subsample(subsampleSEXP);
+    Rcpp::traits::input_parameter< int >::type early_stop_window_length(early_stop_window_lengthSEXP);
+    Rcpp::traits::input_parameter< int >::type random_seed(random_seedSEXP);
+    Rcpp::traits::input_parameter< bool >::type exclude_self(exclude_selfSEXP);
+    rcpp_result_gen = Rcpp::wrap(grnboost_tree_sparse(expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self));
+    return rcpp_result_gen;
+END_RCPP
+}
+// grnboost_tree_sparse_parallel
+DataFrame grnboost_tree_sparse_parallel(S4 expr, IntegerVector regulator_idx, IntegerVector target_idx, int n_rounds, double learning_rate, int max_edges_per_target, int max_depth, double max_features, double subsample, int early_stop_window_length, int random_seed, bool exclude_self, int cores);
+RcppExport SEXP _scop_grnboost_tree_sparse_parallel(SEXP exprSEXP, SEXP regulator_idxSEXP, SEXP target_idxSEXP, SEXP n_roundsSEXP, SEXP learning_rateSEXP, SEXP max_edges_per_targetSEXP, SEXP max_depthSEXP, SEXP max_featuresSEXP, SEXP subsampleSEXP, SEXP early_stop_window_lengthSEXP, SEXP random_seedSEXP, SEXP exclude_selfSEXP, SEXP coresSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< S4 >::type expr(exprSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type regulator_idx(regulator_idxSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type target_idx(target_idxSEXP);
+    Rcpp::traits::input_parameter< int >::type n_rounds(n_roundsSEXP);
+    Rcpp::traits::input_parameter< double >::type learning_rate(learning_rateSEXP);
+    Rcpp::traits::input_parameter< int >::type max_edges_per_target(max_edges_per_targetSEXP);
+    Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);
+    Rcpp::traits::input_parameter< double >::type max_features(max_featuresSEXP);
+    Rcpp::traits::input_parameter< double >::type subsample(subsampleSEXP);
+    Rcpp::traits::input_parameter< int >::type early_stop_window_length(early_stop_window_lengthSEXP);
+    Rcpp::traits::input_parameter< int >::type random_seed(random_seedSEXP);
+    Rcpp::traits::input_parameter< bool >::type exclude_self(exclude_selfSEXP);
+    Rcpp::traits::input_parameter< int >::type cores(coresSEXP);
+    rcpp_result_gen = Rcpp::wrap(grnboost_tree_sparse_parallel(expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self, cores));
+    return rcpp_result_gen;
+END_RCPP
+}
 // grnboost_tree_profile
 List grnboost_tree_profile(NumericMatrix expr, IntegerVector regulator_idx, IntegerVector target_idx, int n_rounds, double learning_rate, int max_edges_per_target, int max_depth, double max_features, double subsample, int early_stop_window_length, int random_seed, bool exclude_self);
 RcppExport SEXP _scop_grnboost_tree_profile(SEXP exprSEXP, SEXP regulator_idxSEXP, SEXP target_idxSEXP, SEXP n_roundsSEXP, SEXP learning_rateSEXP, SEXP max_edges_per_targetSEXP, SEXP max_depthSEXP, SEXP max_featuresSEXP, SEXP subsampleSEXP, SEXP early_stop_window_lengthSEXP, SEXP random_seedSEXP, SEXP exclude_selfSEXP) {
@@ -2363,6 +2408,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_rctd_finalize_weights_cpp", (DL_FUNC) &_scop_rctd_finalize_weights_cpp, 2},
     {"_scop_grnboost_tree", (DL_FUNC) &_scop_grnboost_tree, 12},
     {"_scop_grnboost_tree_parallel", (DL_FUNC) &_scop_grnboost_tree_parallel, 13},
+    {"_scop_grnboost_tree_sparse", (DL_FUNC) &_scop_grnboost_tree_sparse, 12},
+    {"_scop_grnboost_tree_sparse_parallel", (DL_FUNC) &_scop_grnboost_tree_sparse_parallel, 13},
     {"_scop_grnboost_tree_profile", (DL_FUNC) &_scop_grnboost_tree_profile, 12},
     {"_scop_grnboost_tree_round_trace", (DL_FUNC) &_scop_grnboost_tree_round_trace, 12},
     {"_scop_grnboost_tree_round_nodes", (DL_FUNC) &_scop_grnboost_tree_round_nodes, 12},
