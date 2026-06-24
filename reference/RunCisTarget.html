@@ -189,24 +189,25 @@ reference files. If <code>NULL</code>, files are stored under
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
-<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># First run GRN inference</span></span>
-<span><span class="va">grn</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunGRNBoost2.html">RunGRNBoost2</a></span><span class="op">(</span></span>
-<span>  <span class="va">pancreas_sub</span>,</span>
-<span>  regulators <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Neurod1"</span>, <span class="st">"Arx"</span>, <span class="st">"Pax6"</span><span class="op">)</span>,</span>
-<span>  backend <span class="op">=</span> <span class="st">"cpp"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Then run cisTarget (Python backend)</span></span>
-<span><span class="va">regulons</span> <span class="op">&lt;-</span> <span class="fu">RunCisTarget</span><span class="op">(</span></span>
-<span>  <span class="va">grn</span>,</span>
-<span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span>
-<span>  backend <span class="op">=</span> <span class="st">"python"</span></span>
-<span><span class="op">)</span></span>
-<span><span class="op">}</span> <span class="co"># }</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># First run GRN inference</span></span></span>
+<span class="r-in"><span><span class="va">grn</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunGRNBoost2.html">RunGRNBoost2</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
+<span class="r-in"><span>  regulators <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Neurod1"</span>, <span class="st">"Arx"</span>, <span class="st">"Pax6"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  backend <span class="op">=</span> <span class="st">"cpp"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Then run cisTarget (Python backend)</span></span></span>
+<span class="r-in"><span><span class="va">regulons</span> <span class="op">&lt;-</span> <span class="fu">RunCisTarget</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">grn</span>,</span></span>
+<span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span></span>
+<span class="r-in"><span>  backend <span class="op">=</span> <span class="st">"python"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+</code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

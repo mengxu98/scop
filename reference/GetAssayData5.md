@@ -57,6 +57,19 @@ GetAssayData5(
   layer = "counts",
   assay = "RNA"
 )[1:5, 1:5]
+#> 5 x 5 sparse Matrix of class "dgCMatrix"
+#>               AAACCTGAGCCTTGAT AAACCTGGTAAGTGGC AAACGGGAGATATGGT
+#> Xkr4                         .                .                .
+#> Mrpl15                       .                .                .
+#> Npbwr1                       .                .                .
+#> 4732440D04Rik                .                .                .
+#> Gm26901                      1                .                .
+#>               AAACGGGCAAAGAATC AAACGGGGTACAGTTC
+#> Xkr4                         .                .
+#> Mrpl15                       .                .
+#> Npbwr1                       .                .
+#> 4732440D04Rik                .                .
+#> Gm26901                      .                .
 
 data(panc8_sub)
 GetAssayData5(
@@ -64,4 +77,11 @@ GetAssayData5(
   layer = "counts",
   assay = "RNA"
 )[1:5, 1:5]
+#> 5 x 5 sparse Matrix of class "dgCMatrix"
+#>         D101_13 D101_22 D101_43  D101_50   D102_7
+#> A1CF   3.017717       .       . .        .       
+#> A4GALT .              .       . .        .       
+#> AAAS   .              .       . .        .       
+#> AACS   .              .       . 1.001958 2.007853
+#> AADAC  .              .       . .        .       
 ```

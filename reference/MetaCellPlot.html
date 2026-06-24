@@ -209,37 +209,44 @@ centroids.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
-<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="va">mc</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunMetaCell.html">RunMetaCell</a></span><span class="op">(</span></span>
-<span>  <span class="va">pancreas_sub</span>,</span>
-<span>  method <span class="op">=</span> <span class="st">"supercell"</span>,</span>
-<span>  gamma <span class="op">=</span> <span class="fl">20</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">MetaCellPlot</span><span class="op">(</span></span>
-<span>  <span class="va">mc</span>,</span>
-<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
-<span>  palette_metacell <span class="op">=</span> <span class="st">"ChineseSet8"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">MetaCellPlot</span><span class="op">(</span></span>
-<span>  <span class="va">mc</span>,</span>
-<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
-<span>  reduction <span class="op">=</span> <span class="st">"umap"</span>,</span>
-<span>  palette <span class="op">=</span> <span class="st">"ChineseSet8"</span>,</span>
-<span>  show_cells <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span>
-<span>  <span class="va">pancreas_sub</span>, group.by <span class="op">=</span> <span class="st">"CellType"</span></span>
-<span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">MetaCellPlot</span><span class="op">(</span></span>
-<span>    <span class="va">mc</span>,</span>
-<span>    group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
-<span>    return_layer <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>    palette_metacell <span class="op">=</span> <span class="st">"ChineseSet8"</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 03:51:38] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-in"><span><span class="va">mc</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunMetaCell.html">RunMetaCell</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
+<span class="r-in"><span>  method <span class="op">=</span> <span class="st">"supercell"</span>,</span></span>
+<span class="r-in"><span>  gamma <span class="op">=</span> <span class="fl">20</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 03:51:51] Running <span style="color: #0000BB;">SuperCell</span> with gamma = <span style="color: #0000BB;">20</span>, k.knn = <span style="color: #0000BB;">5</span> on <span style="color: #0000BB;">1000</span> cells</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in loadNamespace(name):</span> there is no package called ‘SuperCell’</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">MetaCellPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">mc</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>  palette_metacell <span class="op">=</span> <span class="st">"ChineseSet8"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'mc' not found</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">MetaCellPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">mc</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"umap"</span>,</span></span>
+<span class="r-in"><span>  palette <span class="op">=</span> <span class="st">"ChineseSet8"</span>,</span></span>
+<span class="r-in"><span>  show_cells <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'mc' not found</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span>, group.by <span class="op">=</span> <span class="st">"CellType"</span></span></span>
+<span class="r-in"><span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>  <span class="fu">MetaCellPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">mc</span>,</span></span>
+<span class="r-in"><span>    group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>    return_layer <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>    palette_metacell <span class="op">=</span> <span class="st">"ChineseSet8"</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'mc' not found</span>
+</code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

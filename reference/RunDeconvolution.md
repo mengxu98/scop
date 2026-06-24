@@ -101,7 +101,9 @@ islet_bulk <- RunDeconvolution(
   backend = "cpp",
   perm = 0
 )
+#> ℹ [2026-06-24 04:07:57] Use 400 shared genes for CIBERSORT
 DeconvolutionPlot(islet_bulk, plot_type = "bar")
+
 
 DeconvolutionPlot(
   islet_bulk,
@@ -109,6 +111,7 @@ DeconvolutionPlot(
   sample_annotation = "condition",
   sample_split = "condition"
 )
+
 
 DeconvolutionPlot(islet_bulk, plot_type = "box")
 ```

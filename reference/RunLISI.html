@@ -137,22 +137,31 @@ Default is <code>TRUE</code>.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span>
-<span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="integration_scop.html">integration_scop</a></span><span class="op">(</span></span>
-<span>  <span class="va">panc8_sub</span>,</span>
-<span>  batch <span class="op">=</span> <span class="st">"tech"</span>,</span>
-<span>  integration_method <span class="op">=</span> <span class="st">"Harmony5"</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">@</span><span class="va">reductions</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu">RunLISI</span><span class="op">(</span></span>
-<span>  <span class="va">panc8_sub</span>,</span>
-<span>  reductions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pcaUMAP2D"</span>, <span class="st">"Harmony5UMAP2D"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu"><a href="LISIPlot.html">LISIPlot</a></span><span class="op">(</span></span>
-<span>  <span class="va">panc8_sub</span>,</span>
-<span>  combine <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="integration_scop.html">integration_scop</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
+<span class="r-in"><span>  batch <span class="op">=</span> <span class="st">"tech"</span>,</span></span>
+<span class="r-in"><span>  integration_method <span class="op">=</span> <span class="st">"Harmony5"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">◌</span> [2026-06-24 04:25:12] <span style="color: #0000BB;">Run integration workflow...</span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No layers found matching search pattern provided</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 04:25:13] Perform `Seurat::NormalizeData()` on split layers for Seurat v5 integration</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> NormalizeData.Seurat requires one counts layer named 'counts'.</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">@</span><span class="va">reductions</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu">RunLISI</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
+<span class="r-in"><span>  reductions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pcaUMAP2D"</span>, <span class="st">"Harmony5UMAP2D"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in RunLISI(panc8_sub, reductions = c("pcaUMAP2D", "Harmony5UMAP2D")):</span> Reductions not found in <span style="color: #0000BB;">&lt;Seurat&gt;</span>: <span style="color: #0000BB;">"pcaUMAP2D"</span> and <span style="color: #0000BB;">"Harmony5UMAP2D"</span></span>
+<span class="r-in"><span><span class="fu"><a href="LISIPlot.html">LISIPlot</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
+<span class="r-in"><span>  combine <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in benchmark_feature_plot(srt = srt, features = features, tool_name = tool_name,     reduction = reduction, plot_type = plot_type, plot_boxplot = plot_boxplot,     boxplot_jitter = boxplot_jitter, combine = combine, nrow = nrow,     ncol = ncol, byrow = byrow, pt.size = pt.size, pt.alpha = pt.alpha,     palette = palette, palcolor = palcolor, theme_use = theme_use,     theme_args = theme_args, verbose = verbose, ...):</span> No per-cell benchmark columns found. Please provide `features` or a</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> valid `tool_name`.</span>
+</code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

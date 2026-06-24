@@ -83,17 +83,17 @@ RunscTenifoldKnk(
   nc_q:
 
   Network construction parameters forwarded to
-  `scTenifoldNet::makeNetworks()`.
+  [`scTenifoldNet::makeNetworks()`](https://rdrr.io/pkg/scTenifoldNet/man/makeNetworks.html).
 
 - td_K, td_maxIter, td_maxError, td_nDecimal:
 
   Tensor decomposition parameters forwarded to
-  `scTenifoldNet::tensorDecomposition()`.
+  [`scTenifoldNet::tensorDecomposition()`](https://rdrr.io/pkg/scTenifoldNet/man/tensorDecomposition.html).
 
 - ma_nDim:
 
   Manifold-alignment dimension forwarded to
-  `scTenifoldNet::manifoldAlignment()`.
+  [`scTenifoldNet::manifoldAlignment()`](https://rdrr.io/pkg/scTenifoldNet/man/manifoldAlignment.html).
 
 - cores:
 
@@ -102,12 +102,14 @@ RunscTenifoldKnk(
 
 - backend:
 
-  `r` calls `scTenifoldKnk::scTenifoldKnk()` directly and is the default
-  high-consistency path. `cpp` uses upstream `pcNet()` by default, plus
-  native helpers for manifold matrix construction, directionality, and
-  distance calculation. Tensor decomposition uses upstream
-  `scTenifoldNet` by default because it is faster on the benchmarked 10k
-  workflow; set `options(scop.sctenifold.native_tensor = TRUE)` or
+  `r` calls
+  [`scTenifoldKnk::scTenifoldKnk()`](https://rdrr.io/pkg/scTenifoldKnk/man/scTenifoldKnk.html)
+  directly and is the default high-consistency path. `cpp` uses upstream
+  `pcNet()` by default, plus native helpers for manifold matrix
+  construction, directionality, and distance calculation. Tensor
+  decomposition uses upstream `scTenifoldNet` by default because it is
+  faster on the benchmarked 10k workflow; set
+  `options(scop.sctenifold.native_tensor = TRUE)` or
   `SCOP_SCTENIFOLD_NATIVE_TENSOR=true` to use the native ALS tensor
   path. Set `options(scop.sctenifold.upstream_pcnet = FALSE)` or
   `SCOP_SCTENIFOLD_UPSTREAM_PCNET=false` to use the native
@@ -162,9 +164,19 @@ pancreas_sub <- RunscTenifoldKnk(
   store_networks = FALSE,
   store_manifold = TRUE
 )
+#> ℹ [2026-06-24 04:29:06] Run scTenifoldKnk knockout for "Pdx1" using "r" backend
+#>   |                                                                              |                                                                      |   0%  |                                                                              |=                                                                     |   1%  |                                                                              |=                                                                     |   2%  |                                                                              |==                                                                    |   2%  |                                                                              |==                                                                    |   3%  |                                                                              |======================================================================| 100%
+#> ✔ [2026-06-24 04:29:12] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
 
 dr <- pancreas_sub@tools$scTenifoldKnk$diffRegulation
 head(dr)
+#>       gene     distance        Z         FC      p.value        p.adj
+#> 1     Pdx1 6.561133e-04 3.961694 7251.32977 0.000000e+00 0.000000e+00
+#> 292   Cd81 7.531816e-05 2.334319   95.55631 1.437441e-22 2.163349e-20
+#> 256   Myl6 3.422043e-05 1.852224   19.72563 8.939449e-06 8.969248e-04
+#> 84   Actg1 3.355487e-05 1.840879   18.96580 1.330824e-05 1.001445e-03
+#> 148   Ssr2 2.707015e-05 1.718822   12.34359 4.425038e-04 2.663873e-02
+#> 156 Sec61b 2.486587e-05 1.671538   10.41519 1.249829e-03 6.269975e-02
 
 scTenifoldKnkPlot(pancreas_sub, plot_type = "effect")
 ```

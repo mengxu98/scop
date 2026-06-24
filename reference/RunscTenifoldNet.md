@@ -76,26 +76,28 @@ RunscTenifoldNet(
 - qc_min_library_size, qc_remove_outlier_cells, qc_min_pct,
   qc_max_mt_ratio:
 
-  Quality-control parameters forwarded to `scTenifoldNet::scQC()`.
+  Quality-control parameters forwarded to
+  [`scTenifoldNet::scQC()`](https://rdrr.io/pkg/scTenifoldNet/man/scQC.html).
 
 - nc_nNet, nc_nCells, nc_nComp, nc_symmetric, nc_scaleScores, nc_q:
 
   Network construction parameters forwarded to
-  `scTenifoldNet::makeNetworks()`.
+  [`scTenifoldNet::makeNetworks()`](https://rdrr.io/pkg/scTenifoldNet/man/makeNetworks.html).
 
 - td_K, td_nDecimal, td_maxIter, td_maxError:
 
   Tensor decomposition parameters forwarded to
-  `scTenifoldNet::tensorDecomposition()`.
+  [`scTenifoldNet::tensorDecomposition()`](https://rdrr.io/pkg/scTenifoldNet/man/tensorDecomposition.html).
 
 - ma_nDim:
 
   Manifold-alignment dimension forwarded to
-  `scTenifoldNet::manifoldAlignment()`.
+  [`scTenifoldNet::manifoldAlignment()`](https://rdrr.io/pkg/scTenifoldNet/man/manifoldAlignment.html).
 
 - cores:
 
-  Number of cores forwarded to `scTenifoldNet::scTenifoldNet()`.
+  Number of cores forwarded to
+  [`scTenifoldNet::scTenifoldNet()`](https://rdrr.io/pkg/scTenifoldNet/man/scTenifoldNet.html).
 
 - store_networks:
 
@@ -142,9 +144,20 @@ pancreas_sub <- RunscTenifoldNet(
   store_networks = FALSE,
   store_manifold = TRUE
 )
+#> ℹ [2026-06-24 04:41:47] Run scTenifoldNet comparison using upstream implementation
+#>   |                                                                              |                                                                      |   0%  |                                                                              |=                                                                     |   1%  |                                                                              |=                                                                     |   2%  |                                                                              |==                                                                    |   2%  |                                                                              |==                                                                    |   3%  |                                                                              |==                                                                    |   4%  |                                                                              |===                                                                   |   4%  |                                                                              |====                                                                  |   5%  |                                                                              |====                                                                  |   6%  |                                                                              |=====                                                                 |   6%  |                                                                              |=====                                                                 |   7%  |                                                                              |======================================================================| 100%
+#>   |                                                                              |                                                                      |   0%  |                                                                              |                                                                      |   1%  |                                                                              |=                                                                     |   1%  |                                                                              |=                                                                     |   2%  |                                                                              |==                                                                    |   2%  |                                                                              |======================================================================| 100%
+#> ✔ [2026-06-24 04:41:51] scTenifoldNet results stored in `object@tools[[scTenifoldNet]]`
 
 dr <- pancreas_sub@tools$scTenifoldNet$diffRegulation
 head(dr)
+#>         gene    distance        Z        FC      p.value       p.adj
+#> 25  Hsp90ab1 0.004553045 1.660546 20.824368 5.033841e-06 0.001510152
+#> 26      Rps2 0.004154439 1.590437 17.337751 3.129086e-05 0.004693629
+#> 125    Hspa8 0.003136144 1.383049  9.880067 1.670788e-03 0.167078817
+#> 47      Ftl1 0.002977463 1.346001  8.905553 2.843048e-03 0.193654167
+#> 177 Hsp90aa1 0.002938524 1.336669  8.674141 3.227569e-03 0.193654167
+#> 155   Sec61b 0.002786133 1.299164  7.797794 5.231006e-03 0.240336435
 
 scTenifoldNetPlot(pancreas_sub, plot_type = "effect")
 ```

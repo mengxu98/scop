@@ -38,4 +38,14 @@ if (requireNamespace("R.cache", quietly = TRUE)) {
   ListDB(species = c("Homo_sapiens", "Mus_musculus"))
   ListDB(species = "Mus_musculus", db = "GO_BP")
 }
+#>                                                         identifier version
+#> 1 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7
+#>                                 comment  timestamp                       date
+#> 1 3.23.0 nterm:14957|Mus_musculus-GO_BP 1782271428 2026-06-24 03:23:47.768831
+#>           db_version            db_name
+#> 1 3.23.0 nterm:14957 Mus_musculus-GO_BP
+#>                                                                    file
+#> 1 /home/runner/.cache/R/R.cache/a759db6d549ed9ffa83592264ac75787.Rcache
+#>        Species    DB
+#> 1 Mus_musculus GO_BP
 ```

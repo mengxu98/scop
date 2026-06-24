@@ -140,35 +140,36 @@ Default is <code>11</code>.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
-<span><span class="co"># Convert Seurat/SCT data into a standalone Giotto workflow object.</span></span>
-<span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu">SeuratToScopGiotto</span><span class="op">(</span></span>
-<span>  <span class="va">spatial_seurat</span>,</span>
-<span>  assay <span class="op">=</span> <span class="st">"RNA"</span>,</span>
-<span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span>
-<span>  use_sct <span class="op">=</span> <span class="st">"normalized"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Run the basic Giotto pipeline and plot directly from the Giotto object.</span></span>
-<span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunGiottoWorkflow.html">RunGiottoWorkflow</a></span><span class="op">(</span><span class="va">g</span>, steps <span class="op">=</span> <span class="st">"basic"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="GiottoPlot.html">GiottoPlot</a></span><span class="op">(</span><span class="va">g</span>, plot_type <span class="op">=</span> <span class="st">"cluster"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="GiottoPlot.html">GiottoPlot</a></span><span class="op">(</span><span class="va">g</span>, plot_type <span class="op">=</span> <span class="st">"network"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="GiottoPlot.html">GiottoPlot</a></span><span class="op">(</span><span class="va">g</span>, plot_type <span class="op">=</span> <span class="st">"dim"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Add selected Giotto analyses without writing to the Seurat object.</span></span>
-<span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="GiottoSpatialGenes.html">GiottoSpatialGenes</a></span><span class="op">(</span><span class="va">g</span>, top_n <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
-<span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="GiottoCellProximity.html">GiottoCellProximity</a></span><span class="op">(</span><span class="va">g</span>, group.by <span class="op">=</span> <span class="st">"celltype"</span>, number_of_simulations <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span>
-<span><span class="fu"><a href="GiottoPlot.html">GiottoPlot</a></span><span class="op">(</span><span class="va">g</span>, plot_type <span class="op">=</span> <span class="st">"spatial_genes"</span>, top_n <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
-<span><span class="fu"><a href="GiottoPlot.html">GiottoPlot</a></span><span class="op">(</span><span class="va">g</span>, plot_type <span class="op">=</span> <span class="st">"cell_proximity"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Export a result back to Seurat only when explicitly requested.</span></span>
-<span><span class="va">spatial_seurat</span> <span class="op">&lt;-</span> <span class="fu"><a href="AddGiottoToSeurat.html">AddGiottoToSeurat</a></span><span class="op">(</span></span>
-<span>  <span class="va">spatial_seurat</span>,</span>
-<span>  <span class="va">g</span>,</span>
-<span>  result <span class="op">=</span> <span class="st">"cluster"</span>,</span>
-<span>  name <span class="op">=</span> <span class="st">"Giotto_cluster"</span></span>
-<span><span class="op">)</span></span>
-<span><span class="op">}</span> <span class="co"># }</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="co"># Convert Seurat/SCT data into a standalone Giotto workflow object.</span></span></span>
+<span class="r-in"><span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu">SeuratToScopGiotto</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">spatial_seurat</span>,</span></span>
+<span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"RNA"</span>,</span></span>
+<span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span></span>
+<span class="r-in"><span>  use_sct <span class="op">=</span> <span class="st">"normalized"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Run the basic Giotto pipeline and plot directly from the Giotto object.</span></span></span>
+<span class="r-in"><span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunGiottoWorkflow.html">RunGiottoWorkflow</a></span><span class="op">(</span><span class="va">g</span>, steps <span class="op">=</span> <span class="st">"basic"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="GiottoPlot.html">GiottoPlot</a></span><span class="op">(</span><span class="va">g</span>, plot_type <span class="op">=</span> <span class="st">"cluster"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="GiottoPlot.html">GiottoPlot</a></span><span class="op">(</span><span class="va">g</span>, plot_type <span class="op">=</span> <span class="st">"network"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="GiottoPlot.html">GiottoPlot</a></span><span class="op">(</span><span class="va">g</span>, plot_type <span class="op">=</span> <span class="st">"dim"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Add selected Giotto analyses without writing to the Seurat object.</span></span></span>
+<span class="r-in"><span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="GiottoSpatialGenes.html">GiottoSpatialGenes</a></span><span class="op">(</span><span class="va">g</span>, top_n <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="GiottoCellProximity.html">GiottoCellProximity</a></span><span class="op">(</span><span class="va">g</span>, group.by <span class="op">=</span> <span class="st">"celltype"</span>, number_of_simulations <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="GiottoPlot.html">GiottoPlot</a></span><span class="op">(</span><span class="va">g</span>, plot_type <span class="op">=</span> <span class="st">"spatial_genes"</span>, top_n <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="GiottoPlot.html">GiottoPlot</a></span><span class="op">(</span><span class="va">g</span>, plot_type <span class="op">=</span> <span class="st">"cell_proximity"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Export a result back to Seurat only when explicitly requested.</span></span></span>
+<span class="r-in"><span><span class="va">spatial_seurat</span> <span class="op">&lt;-</span> <span class="fu"><a href="AddGiottoToSeurat.html">AddGiottoToSeurat</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">spatial_seurat</span>,</span></span>
+<span class="r-in"><span>  <span class="va">g</span>,</span></span>
+<span class="r-in"><span>  result <span class="op">=</span> <span class="st">"cluster"</span>,</span></span>
+<span class="r-in"><span>  name <span class="op">=</span> <span class="st">"Giotto_cluster"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+</code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

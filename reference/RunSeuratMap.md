@@ -153,6 +153,22 @@ RunSeuratMap(
 ``` r
 data(panc8_sub)
 panc8_sub <- standard_scop(panc8_sub)
+#> ℹ [2026-06-24 04:30:53] Start standard processing workflow...
+#> ℹ [2026-06-24 04:30:53] Checking a list of <Seurat>...
+#> ! [2026-06-24 04:30:53] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 04:30:53] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 04:30:53] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 04:30:54] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-24 04:30:54] Number of available HVF: 2000
+#> ℹ [2026-06-24 04:30:54] Finished check
+#> ℹ [2026-06-24 04:30:54] Perform `ScaleData()`
+#> ℹ [2026-06-24 04:30:54] Perform pca linear dimension reduction
+#> ℹ [2026-06-24 04:30:55] Use stored estimated dimensions 1:27 for Standardpca
+#> ℹ [2026-06-24 04:30:56] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-24 04:30:56] Reorder clusters...
+#> ℹ [2026-06-24 04:30:56] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-24 04:30:56] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-24 04:31:05] Standard processing workflow completed
 srt_ref <- panc8_sub[, panc8_sub$tech != "fluidigmc1"]
 srt_query <- panc8_sub[, panc8_sub$tech == "fluidigmc1"]
 srt_ref <- integration_scop(
@@ -160,7 +176,25 @@ srt_ref <- integration_scop(
   batch = "tech",
   integration_method = "Uncorrected"
 )
+#> ◌ [2026-06-24 04:31:05] Run integration workflow...
+#> ℹ [2026-06-24 04:31:05] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-06-24 04:31:06] Checking a list of <Seurat>...
+#> ℹ [2026-06-24 04:31:06] Data 1/4 of the `srt_list` has been log-normalized
+#> ℹ [2026-06-24 04:31:06] Perform `FindVariableFeatures()` on 1/4 of `srt_list`...
+#> ℹ [2026-06-24 04:31:07] Data 2/4 of the `srt_list` has been log-normalized
+#> ℹ [2026-06-24 04:31:07] Perform `FindVariableFeatures()` on 2/4 of `srt_list`...
+#> ℹ [2026-06-24 04:31:07] Data 3/4 of the `srt_list` has been log-normalized
+#> ℹ [2026-06-24 04:31:07] Perform `FindVariableFeatures()` on 3/4 of `srt_list`...
+#> ℹ [2026-06-24 04:31:07] Data 4/4 of the `srt_list` has been log-normalized
+#> ℹ [2026-06-24 04:31:07] Perform `FindVariableFeatures()` on 4/4 of `srt_list`...
+#> ℹ [2026-06-24 04:31:08] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-24 04:31:08] Number of available HVF: 2000
+#> ℹ [2026-06-24 04:31:09] Finished check
+#> ℹ [2026-06-24 04:31:10] Perform Uncorrected integration
+#> ℹ [2026-06-24 04:31:11] Perform `Seurat::ScaleData()`
+#> Error: ScaleData.Seurat requires an Assay5 object with a data layer.
 CellDimPlot(srt_ref, group.by = c("celltype", "tech"))
+
 
 # Projection
 srt_query <- RunSeuratMap(
@@ -170,10 +204,14 @@ srt_query <- RunSeuratMap(
   ref_umap = "UncorrectedUMAP2D",
   k.weight = 50
 )
+#> Error in srt_ref[[ref_pca]]: ‘Uncorrectedpca’ not found in this Seurat object
+#>  
 ProjectionPlot(
   srt_query = srt_query,
   srt_ref = srt_ref,
   query_group = "celltype",
   ref_group = "celltype"
 )
+#> Error in srt_query[[query_reduction]]: ‘ref.embeddings’ not found in this Seurat object
+#>  
 ```

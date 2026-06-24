@@ -157,33 +157,46 @@ prioritization in single-cell data. <em>Nature Biotechnology</em>, 39,
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span>
-<span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">panc8_sub</span>, subset <span class="op">=</span> <span class="va">tech</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"celseq"</span>, <span class="st">"celseq2"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">panc8_sub</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu">RunAugur</span><span class="op">(</span></span>
-<span>  <span class="va">panc8_sub</span>,</span>
-<span>  celltype.by <span class="op">=</span> <span class="st">"celltype"</span>,</span>
-<span>  label.by <span class="op">=</span> <span class="st">"tech"</span>,</span>
-<span>  n_subsamples <span class="op">=</span> <span class="fl">5</span>,</span>
-<span>  subsample_size <span class="op">=</span> <span class="fl">20</span>,</span>
-<span>  min_cells <span class="op">=</span> <span class="fl">20</span>,</span>
-<span>  cores <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  rf_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    trees <span class="op">=</span> <span class="fl">20</span>,</span>
-<span>    mtry <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>    min_n <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>    importance <span class="op">=</span> <span class="st">"accuracy"</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">panc8_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Augur</span><span class="op">$</span><span class="va">AUC</span></span>
-<span><span class="fu"><a href="FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span></span>
-<span>  <span class="va">panc8_sub</span>,</span>
-<span>  features <span class="op">=</span> <span class="st">"augur_auc"</span>,</span>
-<span>  reduction <span class="op">=</span> <span class="st">"StandardUMAP2D"</span>,</span>
-<span>  bg_cutoff <span class="op">=</span> <span class="op">-</span><span class="cn">Inf</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">panc8_sub</span>, subset <span class="op">=</span> <span class="va">tech</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"celseq"</span>, <span class="st">"celseq2"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">panc8_sub</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 03:54:35] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-in"><span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu">RunAugur</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
+<span class="r-in"><span>  celltype.by <span class="op">=</span> <span class="st">"celltype"</span>,</span></span>
+<span class="r-in"><span>  label.by <span class="op">=</span> <span class="st">"tech"</span>,</span></span>
+<span class="r-in"><span>  n_subsamples <span class="op">=</span> <span class="fl">5</span>,</span></span>
+<span class="r-in"><span>  subsample_size <span class="op">=</span> <span class="fl">20</span>,</span></span>
+<span class="r-in"><span>  min_cells <span class="op">=</span> <span class="fl">20</span>,</span></span>
+<span class="r-in"><span>  cores <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span>  rf_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    trees <span class="op">=</span> <span class="fl">20</span>,</span></span>
+<span class="r-in"><span>    mtry <span class="op">=</span> <span class="fl">2</span>,</span></span>
+<span class="r-in"><span>    min_n <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span>    importance <span class="op">=</span> <span class="st">"accuracy"</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Registered S3 method overwritten by 'yardstick':</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   method       from         </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   print.metric spatstat.geom</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">panc8_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Augur</span><span class="op">$</span><span class="va">AUC</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 4 × 2</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   cell_type   auc</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> alpha     0.994</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> beta      0.991</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> ductal    0.982</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> acinar    0.969</span>
+<span class="r-in"><span><span class="fu"><a href="FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
+<span class="r-in"><span>  features <span class="op">=</span> <span class="st">"augur_auc"</span>,</span></span>
+<span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"StandardUMAP2D"</span>,</span></span>
+<span class="r-in"><span>  bg_cutoff <span class="op">=</span> <span class="op">-</span><span class="cn">Inf</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="RunAugur-1.png" alt="" width="700" height="433"></span>
+</code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

@@ -124,6 +124,43 @@ pbmcmultiome_sub <- standard_scop(
   assay = c("RNA", "peaks"),
   linear_reduction_dims = 20
 )
+#> ℹ [2026-06-24 04:04:08] Start standard processing workflow...
+#> ℹ [2026-06-24 04:04:08] Auto preprocess assays: "RNA" and "peaks"
+#> ℹ [2026-06-24 04:04:08] Start standard processing workflow...
+#> ℹ [2026-06-24 04:04:08] Checking a list of <Seurat>...
+#> ! [2026-06-24 04:04:08] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 04:04:08] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 04:04:09] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> Warning: pseudoinverse used at -2.3979
+#> Warning: neighborhood radius 0.30103
+#> Warning: reciprocal condition number  1.2589e-15
+#> ℹ [2026-06-24 04:04:09] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-24 04:04:09] Number of available HVF: 2000
+#> ℹ [2026-06-24 04:04:09] Finished check
+#> ℹ [2026-06-24 04:04:09] Perform `ScaleData()`
+#> ℹ [2026-06-24 04:04:09] Perform pca linear dimension reduction
+#> ℹ [2026-06-24 04:04:10] Use stored estimated dimensions 1:9 for RNApca
+#> ℹ [2026-06-24 04:04:10] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-24 04:04:10] Reorder clusters...
+#> ℹ [2026-06-24 04:04:10] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-24 04:04:10] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-24 04:04:16] Standard processing workflow completed
+#> ℹ [2026-06-24 04:04:16] Start standard processing workflow...
+#> ℹ [2026-06-24 04:04:16] Checking a list of <Seurat>...
+#> ! [2026-06-24 04:04:16] Data 1/1 of the `srt_list` is "raw_counts"
+#> ℹ [2026-06-24 04:04:16] Perform `RunTFIDF()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 04:04:16] Perform `FindTopFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 04:04:16] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-24 04:04:16] Number of available HVF: 11413
+#> ℹ [2026-06-24 04:04:17] Finished check
+#> ℹ [2026-06-24 04:04:17] `normalization_method` is TFIDF. Use lsi workflow
+#> ℹ [2026-06-24 04:04:17] Perform svd linear dimension reduction
+#> Running SVD
+#> Scaling cell embeddings
+#> ! [2026-06-24 04:04:17] FindNeighbors.Seurat received unsupported arguments for the scop implementation.
+#> ! [2026-06-24 04:04:17] Error when performing `Seurat::FindClusters()`. Skip it
+#> ℹ [2026-06-24 04:04:17] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-24 04:04:24] Standard processing workflow completed
 coembed <- RunCoEmbedding(
   srt = pbmcmultiome_sub,
   reference = pbmcmultiome_sub,
@@ -135,6 +172,14 @@ coembed <- RunCoEmbedding(
   dims = 2:10,
   umap_dims = 1:10
 )
+#> ℹ [2026-06-24 04:04:24] Use "ATAClsi" as the ATAC weight reduction
+#> ℹ [2026-06-24 04:04:24] Finding RNA-to-ATAC transfer anchors...
+#> ℹ [2026-06-24 04:04:28] Imputing RNA expression into ATAC cells...
+#> Warning: Assay RNA changing from Assay5 to Assay
+#> Warning: Different cells and/or features from existing assay RNA
+#> Warning: Layer counts isn't present in the assay object; returning NULL
+#> Warning: Some cell names are duplicated across objects provided. Renaming to enforce unique cell names.
+#> Error: ScaleData.Seurat supports linear scaling without regression, split.by, or use.umi.
 
 CellDimPlot(
   coembed,
@@ -142,4 +187,5 @@ CellDimPlot(
   xlab = "CoEmbedUMAP_1",
   ylab = "CoEmbedUMAP_2"
 )
+#> Error: object 'coembed' not found
 ```

@@ -102,16 +102,42 @@ RunSlingshot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
+#> ℹ [2026-06-24 04:39:50] Start standard processing workflow...
+#> ℹ [2026-06-24 04:39:51] Checking a list of <Seurat>...
+#> ! [2026-06-24 04:39:51] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 04:39:51] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 04:39:51] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 04:39:51] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-24 04:39:52] Number of available HVF: 2000
+#> ℹ [2026-06-24 04:39:52] Finished check
+#> ℹ [2026-06-24 04:39:52] Perform `ScaleData()`
+#> ℹ [2026-06-24 04:39:52] Perform pca linear dimension reduction
+#> ℹ [2026-06-24 04:39:53] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-24 04:39:53] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-24 04:39:53] Reorder clusters...
+#> ℹ [2026-06-24 04:39:53] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-24 04:39:53] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-24 04:40:01] Standard processing workflow completed
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",
   reduction = "UMAP"
 )
+#> Warning: Removed 11 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+#> Warning: Removed 11 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",
   reduction = "PCA"
 )
+#> Warning: Removed 11 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+#> Warning: Removed 11 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+
 CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -120,12 +146,18 @@ CellDimPlot(
   lineages_span = 0.1
 )
 
+
 # 3D lineage
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",
   reduction = "StandardpcaUMAP3D"
 )
+#> Warning: Removed 11 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+#> Warning: Removed 11 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+
 CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",

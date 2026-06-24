@@ -511,6 +511,22 @@ statistical tests on GSVA scores.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
+#> ℹ [2026-06-24 03:31:05] Start standard processing workflow...
+#> ℹ [2026-06-24 03:31:06] Checking a list of <Seurat>...
+#> ! [2026-06-24 03:31:06] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 03:31:06] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 03:31:06] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 03:31:06] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-24 03:31:06] Number of available HVF: 2000
+#> ℹ [2026-06-24 03:31:06] Finished check
+#> ℹ [2026-06-24 03:31:06] Perform `ScaleData()`
+#> ℹ [2026-06-24 03:31:06] Perform pca linear dimension reduction
+#> ℹ [2026-06-24 03:31:07] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-24 03:31:07] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-24 03:31:07] Reorder clusters...
+#> ℹ [2026-06-24 03:31:07] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-24 03:31:07] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-24 03:31:14] Standard processing workflow completed
 pancreas_sub <- RunGSVA(
   pancreas_sub,
   db = "GO_BP",
@@ -519,6 +535,17 @@ pancreas_sub <- RunGSVA(
   method = "gsva",
   kcdf = "Gaussian"
 )
+#> ℹ [2026-06-24 03:31:14] Start GSVA analysis
+#> ℹ [2026-06-24 03:31:14] Species: "Mus_musculus"
+#> ℹ [2026-06-24 03:31:14] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-06-24 03:23:47
+#> ℹ [2026-06-24 03:31:15] Averaging expression by "CellType" ...
+#> ℹ [2026-06-24 03:31:15] Aggregated expression matrix: 15998 genes x 5 groups
+#> ℹ [2026-06-24 03:31:15] Processing database: "GO_BP" ...
+#> ℹ [2026-06-24 03:31:17] Initial overlap: 11277 genes out of 15998 expression genes and 16594 genes in gene sets
+#> ℹ [2026-06-24 03:31:17] Running GSVA for 5633 gene sets ...
+#> ℹ 47266 nonzeros (less than 2^31) and 16.17% sparsity
+#> ℹ [2026-06-24 03:31:21] GSVA results stored in `tools` slot: "GSVA_CellType_gsva"
+#> ✔ [2026-06-24 03:31:21] GSVA analysis done
 
 ht1 <- GSVAPlot(
   pancreas_sub,
@@ -528,7 +555,10 @@ ht1 <- GSVAPlot(
   width = 1,
   height = 2
 )
+#> Warning: Data is of class matrix. Coercing to dgCMatrix.
+
 ht1$plot
+
 
 ht2 <- GSVAPlot(
   pancreas_sub,
@@ -540,7 +570,10 @@ ht2 <- GSVAPlot(
   width = 1,
   height = 2
 )
+#> Warning: Data is of class matrix. Coercing to dgCMatrix.
+
 ht2$plot
+
 
 GSVAPlot(
   srt = pancreas_sub,
@@ -549,6 +582,7 @@ GSVAPlot(
   plot_type = "comparison",
   topTerm = 1
 )
+
 
 GSVAPlot(
   srt = pancreas_sub,
@@ -559,6 +593,7 @@ GSVAPlot(
   topTerm = 5
 )
 
+
 GSVAPlot(
   srt = pancreas_sub,
   group.by = "CellType",
@@ -566,6 +601,8 @@ GSVAPlot(
   db = "GO_BP",
   plot_type = "network"
 )
+#> ✔ [2026-06-24 03:31:26] shadowtext installed successfully
+
 
 GSVAPlot(
   srt = pancreas_sub,
@@ -575,6 +612,7 @@ GSVAPlot(
   plot_type = "enrichmap"
 )
 
+
 GSVAPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -583,6 +621,12 @@ GSVAPlot(
   plot_type = "wordcloud",
   topWord = 50
 )
+#> Warning: Some words could not fit on page. They have been removed.
+#> Warning: Some words could not fit on page. They have been removed.
+#> Warning: Some words could not fit on page. They have been removed.
+#> Warning: Some words could not fit on page. They have been removed.
+#> Warning: Some words could not fit on page. They have been removed.
+
 
 GSVAPlot(
   pancreas_sub,
@@ -593,12 +637,64 @@ GSVAPlot(
   word_type = "feature"
 )
 
+
 pancreas_sub <- RunGSVA(
   pancreas_sub,
   assay_name = "GSVA",
   db = "GO_BP",
   species = "Mus_musculus"
 )
+#> ℹ [2026-06-24 03:32:30] Start GSVA analysis
+#> ℹ [2026-06-24 03:32:30] Start GSVA analysis
+#> ℹ [2026-06-24 03:32:30] Single-cell GSVA mode: using expression matrix directly ...
+#> ℹ [2026-06-24 03:32:30] Expression matrix: 15998 genes x 1000 cells
+#> ℹ [2026-06-24 03:32:30] Species: "Mus_musculus"
+#> ℹ [2026-06-24 03:32:30] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-06-24 03:23:47
+#> ℹ [2026-06-24 03:32:31] Processing database: "GO_BP" ...
+#> ℹ [2026-06-24 03:32:33] Initial overlap: 11277 genes out of 15998 expression genes and 16594 genes in gene sets
+#> ℹ [2026-06-24 03:32:33] Running GSVA for 5633 gene sets ...
+#> ℹ 2038175 nonzeros (less than 2^31) and 81.93% sparsity
+#> Warning: Feature names cannot have underscores ('_'), replacing with dashes ('-')
+#> Warning: Layer counts isn't present in the assay object; returning NULL
+#> ℹ [2026-06-24 03:39:34] GSVA results stored in assay "GSVA_gsva" and tools slot "GSVA_cell_gsva"
+#> ✔ [2026-06-24 03:39:34] GSVA analysis done
+#> ℹ [2026-06-24 03:39:34] Start GSVA analysis
+#> ℹ [2026-06-24 03:39:34] Single-cell GSVA mode: using expression matrix directly ...
+#> ℹ [2026-06-24 03:39:34] Expression matrix: 15998 genes x 1000 cells
+#> ℹ [2026-06-24 03:39:34] Species: "Mus_musculus"
+#> ℹ [2026-06-24 03:39:34] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-06-24 03:23:47
+#> ℹ [2026-06-24 03:39:35] Processing database: "GO_BP" ...
+#> ℹ [2026-06-24 03:39:37] Initial overlap: 11277 genes out of 15998 expression genes and 16594 genes in gene sets
+#> ℹ [2026-06-24 03:39:37] Running GSVA for 5633 gene sets ...
+#> Warning: Feature names cannot have underscores ('_'), replacing with dashes ('-')
+#> Warning: Layer counts isn't present in the assay object; returning NULL
+#> ℹ [2026-06-24 03:39:47] GSVA results stored in assay "GSVA_ssgsea" and tools slot "GSVA_cell_ssgsea"
+#> ✔ [2026-06-24 03:39:47] GSVA analysis done
+#> ℹ [2026-06-24 03:39:47] Start GSVA analysis
+#> ℹ [2026-06-24 03:39:47] Single-cell GSVA mode: using expression matrix directly ...
+#> ℹ [2026-06-24 03:39:47] Expression matrix: 15998 genes x 1000 cells
+#> ℹ [2026-06-24 03:39:47] Species: "Mus_musculus"
+#> ℹ [2026-06-24 03:39:47] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-06-24 03:23:47
+#> ℹ [2026-06-24 03:39:48] Processing database: "GO_BP" ...
+#> ℹ [2026-06-24 03:39:50] Initial overlap: 11277 genes out of 15998 expression genes and 16594 genes in gene sets
+#> ℹ [2026-06-24 03:39:50] Running GSVA for 5633 gene sets ...
+#> Warning: Feature names cannot have underscores ('_'), replacing with dashes ('-')
+#> Warning: Layer counts isn't present in the assay object; returning NULL
+#> ℹ [2026-06-24 03:39:59] GSVA results stored in assay "GSVA_zscore" and tools slot "GSVA_cell_zscore"
+#> ✔ [2026-06-24 03:39:59] GSVA analysis done
+#> ℹ [2026-06-24 03:39:59] Start GSVA analysis
+#> ℹ [2026-06-24 03:39:59] Single-cell GSVA mode: using expression matrix directly ...
+#> ℹ [2026-06-24 03:39:59] Expression matrix: 15998 genes x 1000 cells
+#> ℹ [2026-06-24 03:39:59] Species: "Mus_musculus"
+#> ℹ [2026-06-24 03:39:59] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-06-24 03:23:47
+#> ℹ [2026-06-24 03:40:00] Processing database: "GO_BP" ...
+#> ℹ [2026-06-24 03:40:01] Initial overlap: 11277 genes out of 15998 expression genes and 16594 genes in gene sets
+#> ℹ [2026-06-24 03:40:01] Running GSVA for 5633 gene sets ...
+#> Warning: Feature names cannot have underscores ('_'), replacing with dashes ('-')
+#> Warning: Layer counts isn't present in the assay object; returning NULL
+#> ℹ [2026-06-24 03:40:54] GSVA results stored in assay "GSVA_plage" and tools slot "GSVA_cell_plage"
+#> ✔ [2026-06-24 03:40:54] GSVA analysis done
+#> Warning: Key ‘gsvagsva_’ taken, using ‘gsva_’ instead
 
 FeatureDimPlot(
   pancreas_sub,
@@ -607,12 +703,18 @@ FeatureDimPlot(
   reduction = "umap"
 )
 
+
 FeatureStatPlot(
   pancreas_sub,
   stat.by = rownames(pancreas_sub[["GSVA"]])[1:2],
   group.by = "CellType",
   assay = "GSVA"
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+
 
 ht <- GroupHeatmap(
   pancreas_sub,
@@ -623,4 +725,5 @@ ht <- GroupHeatmap(
   width = 1,
   height = 2
 )
+#> Error in GetAssayData5(srt, assay = assay, layer = layer)[gene, cells,     drop = FALSE]: no 'dimnames' attribute for array
 ```
