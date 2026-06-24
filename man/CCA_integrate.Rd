@@ -114,7 +114,7 @@ Default is \code{"umap"}.}
 
 \item{nonlinear_reduction_dims}{The number of dimensions to keep after nonlinear dimensionality reduction.
 If a vector is provided, different numbers of dimensions can be specified for each method.
-Default is \code{c(2, 3)}.}
+Default is \code{2}.}
 
 \item{nonlinear_reduction_params}{A list of parameters to pass to the nonlinear dimensionality reduction method.}
 

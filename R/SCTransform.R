@@ -14,6 +14,19 @@ sct_is_default_clip <- function(clip.range, n_cells) {
   ))
 }
 
+sct_model_formula <- function(model_str) {
+  stats::as.formula(sub("^\\s*y\\s*~", "~", model_str))
+}
+
+sct_clip_matrix_values <- function(x, range) {
+  if (!length(x)) {
+    return(x)
+  }
+  x[x < range[1]] <- range[1]
+  x[x > range[2]] <- range[2]
+  x
+}
+
 sct_get_model_pars <- function(
   genes_step1,
   bin_size,
@@ -152,16 +165,8 @@ sct_vst <- function(
 ) {
   make_cell_attr <- utils::getFromNamespace("make_cell_attr", "sctransform")
   reg_model_pars <- utils::getFromNamespace("reg_model_pars", "sctransform")
-  get_model_formula <- utils::getFromNamespace(
-    "get_model_formula",
-    "sctransform"
-  )
   row_gmean <- utils::getFromNamespace("row_gmean", "sctransform")
   row_var <- utils::getFromNamespace("row_var", "sctransform")
-  clip_matrix_values <- utils::getFromNamespace(
-    "clip_matrix_values",
-    "sctransform"
-  )
   get_model_pars <- function(
     genes_step1,
     bin_size,
@@ -386,7 +391,7 @@ sct_vst <- function(
     model_pars_fit <- model_pars
     model_pars_outliers <- rep(FALSE, nrow(model_pars))
   }
-  regressor_data <- model.matrix(get_model_formula(model_str), cell_attr)
+  regressor_data <- model.matrix(sct_model_formula(model_str), cell_attr)
   times$get_residuals <- Sys.time()
   res <- matrix(NA, nrow = 0, ncol = 0)
   rv <- list(
@@ -403,7 +408,7 @@ sct_vst <- function(
     cell_attr = cell_attr
   )
   rm(res)
-  rv$y <- clip_matrix_values(rv$y, res_clip_range)
+  rv$y <- sct_clip_matrix_values(rv$y, res_clip_range)
   if (!return_cell_attr) {
     rv[["cell_attr"]] <- NULL
   }
@@ -595,9 +600,8 @@ SCTransform.default <- function(
   sct_vst_fun <- get_namespace_fun("sctransform", "vst")
   vst.out <- do.call(sct_vst_fun, args = vst.args)
 
-  get_model_formula <- get_namespace_fun("sctransform", "get_model_formula")
   regressor_data_orig <- model.matrix(
-    get_model_formula(vst.out$model_str),
+    sct_model_formula(vst.out$model_str),
     vst.out$cell_attr
   )
   cell_attr_corr <- vst.out$cell_attr
@@ -608,7 +612,7 @@ SCTransform.default <- function(
     function(x) rep(median(x), length(x))
   )
   regressor_data_corr <- model.matrix(
-    get_model_formula(vst.out$model_str),
+    sct_model_formula(vst.out$model_str),
     cell_attr_corr
   )
   model_pars_fit <- vst.out$model_pars_fit
