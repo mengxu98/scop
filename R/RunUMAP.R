@@ -72,10 +72,26 @@ runumap_embedding <- function(
   cores
 ) {
   epochs <- runumap_default_epochs(nrow(X), n.epochs)
+  if (is.null(a) || is.null(b)) {
+    find_ab_params <- get("find_ab_params", envir = asNamespace("uwot"))
+    ab <- find_ab_params(spread = spread, min_dist = min.dist)
+    if (is.null(a)) {
+      a <- unname(ab[["a"]])
+    }
+    if (is.null(b)) {
+      b <- unname(ab[["b"]])
+    }
+  }
   if (!is.null(seed.use)) {
     set.seed(seed.use)
   }
-  uwot::umap(
+  use_umap2 <- exists("umap2", envir = asNamespace("uwot"), inherits = FALSE)
+  umap_fun <- if (use_umap2) {
+    get("umap2", envir = asNamespace("uwot"))
+  } else {
+    get("umap", envir = asNamespace("uwot"))
+  }
+  args <- list(
     X = X,
     n_threads = if (is.null(cores)) NULL else as.integer(cores),
     n_neighbors = as.integer(n.neighbors),
@@ -98,6 +114,10 @@ runumap_embedding <- function(
     verbose = FALSE,
     ret_model = FALSE
   )
+  if (use_umap2) {
+    args$seed <- seed.use
+  }
+  do.call(umap_fun, args)
 }
 
 runumap_store <- function(
@@ -168,7 +188,6 @@ RunUMAP.Seurat <- function(
     }
     cores <- as.integer(min(cores, 16L))
   }
-
   if (
     !runumap_supported(
       extra = extra,
@@ -193,7 +212,46 @@ RunUMAP.Seurat <- function(
       densmap = densmap
     )
   ) {
-    stop("RunUMAP.Seurat received unsupported arguments for the scop implementation.", call. = FALSE)
+    seurat_runumap <- get("RunUMAP.Seurat", envir = asNamespace("Seurat"))
+    return(seurat_runumap(
+      object = object,
+      dims = dims,
+      reduction = reduction,
+      features = features,
+      graph = graph,
+      assay = assay,
+      nn.name = nn.name,
+      slot = slot,
+      umap.method = umap.method,
+      reduction.model = reduction.model,
+      return.model = return.model,
+      n.neighbors = n.neighbors,
+      n.components = n.components,
+      metric = metric,
+      n.epochs = n.epochs,
+      learning.rate = learning.rate,
+      min.dist = min.dist,
+      spread = spread,
+      set.op.mix.ratio = set.op.mix.ratio,
+      local.connectivity = local.connectivity,
+      repulsion.strength = repulsion.strength,
+      negative.sample.rate = negative.sample.rate,
+      a = a,
+      b = b,
+      uwot.sgd = uwot.sgd,
+      uwot.approx_pow = uwot.approx_pow,
+      seed.use = seed.use,
+      metric.kwds = metric.kwds,
+      angular.rp.forest = angular.rp.forest,
+      densmap = densmap,
+      dens.lambda = dens.lambda,
+      dens.frac = dens.frac,
+      dens.var.shift = dens.var.shift,
+      verbose = verbose,
+      reduction.name = reduction.name,
+      reduction.key = reduction.key,
+      ...
+    ))
   }
 
   emb_src <- SeuratObject::Embeddings(object[[reduction]])

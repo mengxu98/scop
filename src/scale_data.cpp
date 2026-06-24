@@ -1,6 +1,7 @@
 #include <Rcpp.h>
 #include <vector>
 #include <cmath>
+#include <cstring>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -34,6 +35,37 @@ NumericMatrix scale_sparse_full(S4 sparse_mat,
   std::vector<double> zero_score(n_sel, 0.0);
   std::vector<double> sum(n_sel, 0.0);
   std::vector<double> sumsq(n_sel, 0.0);
+
+  #ifdef _OPENMP
+  const int max_threads = omp_get_max_threads();
+  std::vector<double> thread_sum(static_cast<size_t>(max_threads) * n_sel, 0.0);
+  std::vector<double> thread_sumsq(static_cast<size_t>(max_threads) * n_sel, 0.0);
+  #pragma omp parallel
+  {
+    const int tid = omp_get_thread_num();
+    double* local_sum = thread_sum.data() + static_cast<size_t>(tid) * n_sel;
+    double* local_sumsq = thread_sumsq.data() + static_cast<size_t>(tid) * n_sel;
+    #pragma omp for schedule(static)
+    for (int col = 0; col < n_cells; ++col) {
+      for (int pos = pp[col]; pos < pp[col + 1]; ++pos) {
+        const int mapped = selected_lookup[ip[pos]];
+        if (mapped >= 0) {
+          const double value = xp[pos];
+          local_sum[mapped] += value;
+          local_sumsq[mapped] += value * value;
+        }
+      }
+    }
+  }
+  for (int tid = 0; tid < max_threads; ++tid) {
+    const double* local_sum = thread_sum.data() + static_cast<size_t>(tid) * n_sel;
+    const double* local_sumsq = thread_sumsq.data() + static_cast<size_t>(tid) * n_sel;
+    for (int row = 0; row < n_sel; ++row) {
+      sum[row] += local_sum[row];
+      sumsq[row] += local_sumsq[row];
+    }
+  }
+  #else
   for (int col = 0; col < n_cells; ++col) {
     for (int pos = pp[col]; pos < pp[col + 1]; ++pos) {
       const int mapped = selected_lookup[ip[pos]];
@@ -44,6 +76,7 @@ NumericMatrix scale_sparse_full(S4 sparse_mat,
       }
     }
   }
+  #endif
   for (int row = 0; row < n_sel; ++row) {
     center[row] = sum[row] / n_cells;
     double variance = (sumsq[row] / n_cells - center[row] * center[row]) *
@@ -62,16 +95,7 @@ NumericMatrix scale_sparse_full(S4 sparse_mat,
   #endif
   for (int col = 0; col < n_cells; ++col) {
     const size_t col_offset = static_cast<size_t>(col) * n_sel;
-    for (int row = 0; row < n_sel; ++row) {
-      out[col_offset + row] = zero_score[row];
-    }
-  }
-
-  #ifdef _OPENMP
-  #pragma omp parallel for schedule(static)
-  #endif
-  for (int col = 0; col < n_cells; ++col) {
-    const size_t col_offset = static_cast<size_t>(col) * n_sel;
+    std::memcpy(out + col_offset, zero_score.data(), n_sel * sizeof(double));
     for (int pos = pp[col]; pos < pp[col + 1]; ++pos) {
       const int row = selected_lookup[ip[pos]];
       if (row >= 0) {
