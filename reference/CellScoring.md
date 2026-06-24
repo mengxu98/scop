@@ -202,22 +202,22 @@ CellScoring(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-24 02:53:03] Start standard processing workflow...
-#> ℹ [2026-06-24 02:53:04] Checking a list of <Seurat>...
-#> ! [2026-06-24 02:53:04] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-24 02:53:04] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-24 02:53:04] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-24 02:53:04] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-24 02:53:04] Number of available HVF: 2000
-#> ℹ [2026-06-24 02:53:04] Finished check
-#> ℹ [2026-06-24 02:53:04] Perform `ScaleData()`
-#> ℹ [2026-06-24 02:53:04] Perform pca linear dimension reduction
-#> ℹ [2026-06-24 02:53:05] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-24 02:53:05] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-24 02:53:05] Reorder clusters...
-#> ℹ [2026-06-24 02:53:05] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-24 02:53:05] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-24 02:53:10] Standard processing workflow completed
+#> ℹ [2026-06-24 17:39:45] Start standard processing workflow...
+#> ℹ [2026-06-24 17:39:46] Checking a list of <Seurat>...
+#> ! [2026-06-24 17:39:46] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 17:39:46] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 17:39:46] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 17:39:46] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-24 17:39:46] Number of available HVF: 2000
+#> ℹ [2026-06-24 17:39:46] Finished check
+#> ℹ [2026-06-24 17:39:46] Perform `ScaleData()`
+#> ℹ [2026-06-24 17:39:46] Perform pca linear dimension reduction
+#> ℹ [2026-06-24 17:39:46] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-24 17:39:47] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-24 17:39:47] Reorder clusters...
+#> ℹ [2026-06-24 17:39:47] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-24 17:39:47] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-24 17:39:51] Standard processing workflow completed
 features_all <- rownames(pancreas_sub)
 pancreas_sub <- CellScoring(
   pancreas_sub,
@@ -228,10 +228,10 @@ pancreas_sub <- CellScoring(
   method = "AUCell",
   name = "test"
 )
-#> ℹ [2026-06-24 02:53:10] Start cell scoring
-#> ℹ [2026-06-24 02:53:10] Data type is log-normalized
-#> ℹ [2026-06-24 02:53:10] Number of feature lists to be scored: 2
-#> ✔ [2026-06-24 02:53:10] Cell scoring completed
+#> ℹ [2026-06-24 17:39:51] Start cell scoring
+#> ℹ [2026-06-24 17:39:51] Data type is log-normalized
+#> ℹ [2026-06-24 17:39:51] Number of feature lists to be scored: 2
+#> ✔ [2026-06-24 17:39:52] Cell scoring completed
 CellDimPlot(pancreas_sub, "test_classification")
 
 
@@ -246,16 +246,16 @@ pancreas_sub <- CellScoring(
   features = list(A = features_all[1:100]),
   method = c("AUCell", "GSVA")
 )
-#> ℹ [2026-06-24 02:53:11] Start cell scoring
-#> ℹ [2026-06-24 02:53:11] Start cell scoring
-#> ℹ [2026-06-24 02:53:11] Data type is log-normalized
-#> ℹ [2026-06-24 02:53:11] Number of feature lists to be scored: 1
-#> ✔ [2026-06-24 02:53:12] Cell scoring completed
-#> ℹ [2026-06-24 02:53:12] Start cell scoring
-#> ℹ [2026-06-24 02:53:12] Data type is log-normalized
-#> ℹ [2026-06-24 02:53:12] Number of feature lists to be scored: 1
+#> ℹ [2026-06-24 17:39:52] Start cell scoring
+#> ℹ [2026-06-24 17:39:52] Start cell scoring
+#> ℹ [2026-06-24 17:39:53] Data type is log-normalized
+#> ℹ [2026-06-24 17:39:53] Number of feature lists to be scored: 1
+#> ✔ [2026-06-24 17:39:53] Cell scoring completed
+#> ℹ [2026-06-24 17:39:53] Start cell scoring
+#> ℹ [2026-06-24 17:39:54] Data type is log-normalized
+#> ℹ [2026-06-24 17:39:54] Number of feature lists to be scored: 1
 #> ℹ 2516278 nonzeros (less than 2^31) and 84.27% sparsity
-#> ✔ [2026-06-24 02:54:39] Cell scoring completed
+#> ✔ [2026-06-24 17:41:20] Cell scoring completed
 FeatureStatPlot(
   pancreas_sub,
   stat.by = c("AUCell_A", "GSVA_A"),
@@ -264,7 +264,7 @@ FeatureStatPlot(
   plot_type = "violin",
   stack = TRUE
 )
-#> ℹ [2026-06-24 02:54:39] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ℹ [2026-06-24 17:41:20] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 
 
 FeatureDimPlot(
@@ -284,7 +284,7 @@ GroupHeatmap(
 
 #> 
 #> $g_tree
-#> gTree[GRID.gTree.11554] 
+#> gTree[GRID.gTree.11599] 
 #> 
 #> $matrix_list
 #> $matrix_list$CellType
@@ -1326,29 +1326,29 @@ panc8_sub <- integration_scop(
   batch = "tech",
   integration_method = "Harmony"
 )
-#> ◌ [2026-06-24 02:54:42] Run integration workflow...
-#> ℹ [2026-06-24 02:54:42] Split `srt_merge` into `srt_list` by "tech"
-#> ℹ [2026-06-24 02:54:43] Checking a list of <Seurat>...
-#> ! [2026-06-24 02:54:43] Data 1/5 of the `srt_list` is "unknown"
-#> ℹ [2026-06-24 02:54:43] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/5 of `srt_list`...
-#> ℹ [2026-06-24 02:54:43] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
-#> ! [2026-06-24 02:54:43] Data 2/5 of the `srt_list` is "unknown"
-#> ℹ [2026-06-24 02:54:43] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 2/5 of `srt_list`...
-#> ℹ [2026-06-24 02:54:43] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
-#> ! [2026-06-24 02:54:43] Data 3/5 of the `srt_list` is "unknown"
-#> ℹ [2026-06-24 02:54:43] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 3/5 of `srt_list`...
-#> ℹ [2026-06-24 02:54:43] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
-#> ! [2026-06-24 02:54:44] Data 4/5 of the `srt_list` is "unknown"
-#> ℹ [2026-06-24 02:54:44] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 4/5 of `srt_list`...
-#> ℹ [2026-06-24 02:54:44] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
-#> ! [2026-06-24 02:54:44] Data 5/5 of the `srt_list` is "unknown"
-#> ℹ [2026-06-24 02:54:44] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 5/5 of `srt_list`...
-#> ℹ [2026-06-24 02:54:44] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
-#> ℹ [2026-06-24 02:54:44] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-24 02:54:44] Number of available HVF: 2000
-#> ℹ [2026-06-24 02:54:45] Finished check
+#> ◌ [2026-06-24 17:41:23] Run integration workflow...
+#> ℹ [2026-06-24 17:41:23] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-06-24 17:41:24] Checking a list of <Seurat>...
+#> ! [2026-06-24 17:41:24] Data 1/5 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 17:41:24] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/5 of `srt_list`...
+#> ℹ [2026-06-24 17:41:24] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ! [2026-06-24 17:41:24] Data 2/5 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 17:41:24] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 2/5 of `srt_list`...
+#> ℹ [2026-06-24 17:41:24] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
+#> ! [2026-06-24 17:41:24] Data 3/5 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 17:41:24] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 3/5 of `srt_list`...
+#> ℹ [2026-06-24 17:41:24] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
+#> ! [2026-06-24 17:41:24] Data 4/5 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 17:41:24] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 4/5 of `srt_list`...
+#> ℹ [2026-06-24 17:41:24] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
+#> ! [2026-06-24 17:41:25] Data 5/5 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 17:41:25] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 5/5 of `srt_list`...
+#> ℹ [2026-06-24 17:41:25] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
+#> ℹ [2026-06-24 17:41:25] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-24 17:41:25] Number of available HVF: 2000
+#> ℹ [2026-06-24 17:41:25] Finished check
 #> Warning: Layer ‘scale.data’ is empty
-#> ℹ [2026-06-24 02:54:47] Perform `Seurat::ScaleData()`
+#> ℹ [2026-06-24 17:41:28] Perform `Seurat::ScaleData()`
 #> Error: ScaleData.Seurat requires an Assay5 object with a data layer.
 
 panc8_sub <- CellScoring(
@@ -1363,21 +1363,21 @@ panc8_sub <- CellScoring(
   name = "GO",
   new_assay = TRUE
 )
-#> ℹ [2026-06-24 02:54:47] Start cell scoring
+#> ℹ [2026-06-24 17:41:28] Start cell scoring
 #> Warning: Layer ‘data’ is empty
 #> Warning: no non-missing arguments to min; returning Inf
 #> Warning: no non-missing arguments to max; returning -Inf
 #> Warning: no non-missing arguments to max; returning -Inf
-#> ! [2026-06-24 02:54:47] Infinite values detected
-#> ℹ [2026-06-24 02:54:47] Species: "Homo_sapiens"
+#> ! [2026-06-24 17:41:28] Infinite values detected
+#> ℹ [2026-06-24 17:41:28] Species: "Homo_sapiens"
 #> 
 #> 
-#> ℹ [2026-06-24 03:00:59] Preparing database: GO_BP
-#> ℹ [2026-06-24 03:01:30] Convert ID types for the GO_BP database
-#> ℹ [2026-06-24 03:01:30] Converted ID types using local annotation package org.Hs.eg.db
+#> ℹ [2026-06-24 17:47:34] Preparing database: GO_BP
+#> ℹ [2026-06-24 17:48:02] Convert ID types for the GO_BP database
+#> ℹ [2026-06-24 17:48:03] Converted ID types using local annotation package org.Hs.eg.db
 #> Warning: Layer ‘data’ is empty
-#> ! [2026-06-24 03:01:33] The following features were filtered because not found in the srt assay: "'de novo' NAD+ biosynthetic process from L-tryptophan", "'de novo' protein folding", "'de novo' pyrimidine nucleobase biosynthetic process", "1-phosphatidyl-1D-myo-inositol 4,5-bisphosphate metabolic process", "2'-deoxyribonucleotide biosynthetic process", "2'-deoxyribonucleotide metabolic process", "2-oxoglutarate metabolic process", "3'-UTR-mediated mRNA destabilization", "3'-UTR-mediated mRNA stabilization", "3'-phosphoadenosine 5'-phosphosulfate metabolic process", "7-methylguanosine cap hypermethylation", "ADP catabolic process", "ADP metabolic process", "ADP transport", "AMP biosynthetic process", "AMP metabolic process", "ARF protein signal transduction", "ATF6-mediated unfolded protein response", …, "zymosterol biosynthetic process", and "zymosterol metabolic process"
-#> ℹ [2026-06-24 03:01:33] Number of feature lists to be scored: 0
+#> ! [2026-06-24 17:48:06] The following features were filtered because not found in the srt assay: "'de novo' NAD+ biosynthetic process from L-tryptophan", "'de novo' protein folding", "'de novo' pyrimidine nucleobase biosynthetic process", "1-phosphatidyl-1D-myo-inositol 4,5-bisphosphate metabolic process", "2'-deoxyribonucleotide biosynthetic process", "2'-deoxyribonucleotide metabolic process", "2-oxoglutarate metabolic process", "3'-UTR-mediated mRNA destabilization", "3'-UTR-mediated mRNA stabilization", "3'-phosphoadenosine 5'-phosphosulfate metabolic process", "7-methylguanosine cap hypermethylation", "ADP catabolic process", "ADP metabolic process", "ADP transport", "AMP biosynthetic process", "AMP metabolic process", "ARF protein signal transduction", "ATF6-mediated unfolded protein response", …, "zymosterol biosynthetic process", and "zymosterol metabolic process"
+#> ℹ [2026-06-24 17:48:06] Number of feature lists to be scored: 0
 #> Warning: Layer ‘data’ is empty
 #> Error in run_aucell_scores(expr_counts = expr_sp, gene_sets = features,     strategy = cpp_strategy): No gene sets retain genes after intersecting with the expression matrix
 
@@ -1387,7 +1387,7 @@ panc8_sub <- integration_scop(
   batch = "tech",
   integration_method = "Harmony"
 )
-#> ◌ [2026-06-24 03:01:33] Run integration workflow...
+#> ◌ [2026-06-24 17:48:06] Run integration workflow...
 #> Error in GetAssay.Seurat(assay_source, assay = assay_use): GO is not an assay present in the given object. Available assays are: RNA
 CellDimPlot(
   panc8_sub,
@@ -1406,20 +1406,20 @@ pancreas_sub <- CellScoring(
   name = "GO",
   new_assay = TRUE
 )
-#> ℹ [2026-06-24 03:01:33] Start cell scoring
-#> ℹ [2026-06-24 03:01:34] Data type is log-normalized
-#> ℹ [2026-06-24 03:01:34] Species: "Mus_musculus"
+#> ℹ [2026-06-24 17:48:06] Start cell scoring
+#> ℹ [2026-06-24 17:48:07] Data type is log-normalized
+#> ℹ [2026-06-24 17:48:07] Species: "Mus_musculus"
 #> 
-#> ℹ [2026-06-24 03:05:48] Preparing database: GO_BP
-#> ℹ [2026-06-24 03:05:58] Convert ID types for the GO_BP database
-#> ℹ [2026-06-24 03:05:59] Converted ID types using local annotation package org.Mm.eg.db
+#> ℹ [2026-06-24 17:52:20] Preparing database: GO_BP
+#> ℹ [2026-06-24 17:52:30] Convert ID types for the GO_BP database
+#> ℹ [2026-06-24 17:52:30] Converted ID types using local annotation package org.Mm.eg.db
 #> Error in panc8_sub[["GO"]]: ‘GO’ not found in this Seurat object
 #>  
 pancreas_sub <- standard_scop(
   pancreas_sub,
   assay = "GO"
 )
-#> ℹ [2026-06-24 03:06:02] Start standard processing workflow...
+#> ℹ [2026-06-24 17:52:34] Start standard processing workflow...
 #> Error in standard_scop_resolve_assays(srt = srt, assay = assay): `assay` must be present in <Seurat>: "GO"
 
 pancreas_sub[["tech"]] <- "Mouse"
@@ -1429,7 +1429,7 @@ panc_merge <- integration_scop(
   batch = "tech",
   integration_method = "Harmony"
 )
-#> ◌ [2026-06-24 03:06:02] Run integration workflow...
+#> ◌ [2026-06-24 17:52:34] Run integration workflow...
 #> Error in GetAssay.Seurat(assay_source, assay = assay_use): GO is not an assay present in the given object. Available assays are: RNA
 CellDimPlot(
   srt = panc_merge,
@@ -1449,43 +1449,43 @@ panc8_sub <- RenameFeatures(
   newnames = genenames,
   assay = "RNA"
 )
-#> ℹ [2026-06-24 03:06:02] Rename features for the assay: RNA
+#> ℹ [2026-06-24 17:52:34] Rename features for the assay: RNA
 panc_merge <- integration_scop(
   srt_list = list(panc8_sub, pancreas_sub),
   assay = "RNA",
   batch = "tech",
   integration_method = "Harmony"
 )
-#> ◌ [2026-06-24 03:06:02] Run integration workflow...
-#> ℹ [2026-06-24 03:06:02] Checking a list of <Seurat>...
-#> ! [2026-06-24 03:06:03] `srt_list` have different feature names! Will subset the common features (12928) for downstream analysis
+#> ◌ [2026-06-24 17:52:34] Run integration workflow...
+#> ℹ [2026-06-24 17:52:34] Checking a list of <Seurat>...
+#> ! [2026-06-24 17:52:34] `srt_list` have different feature names! Will subset the common features (12928) for downstream analysis
 #> Warning: Different features in new layer data than already exists for counts
 #> Warning: Different cells and/or features from existing assay RNA
 #> Warning: Different features in new layer data than already exists for counts
 #> Warning: Different features in new layer data than already exists for data
 #> Warning: Different features in new layer data than already exists for scale.data
 #> Warning: Different cells and/or features from existing assay RNA
-#> ℹ [2026-06-24 03:06:04] Data 1/6 of the `srt_list` has been log-normalized
-#> ℹ [2026-06-24 03:06:04] Perform `FindVariableFeatures()` on 1/6 of `srt_list`...
-#> ! [2026-06-24 03:06:04] Data 2/6 of the `srt_list` is "unknown"
-#> ℹ [2026-06-24 03:06:04] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 2/6 of `srt_list`...
-#> ℹ [2026-06-24 03:06:04] Perform `FindVariableFeatures()` on 2/6 of `srt_list`...
-#> ! [2026-06-24 03:06:04] Data 3/6 of the `srt_list` is "unknown"
-#> ℹ [2026-06-24 03:06:04] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 3/6 of `srt_list`...
-#> ℹ [2026-06-24 03:06:04] Perform `FindVariableFeatures()` on 3/6 of `srt_list`...
-#> ! [2026-06-24 03:06:04] Data 4/6 of the `srt_list` is "unknown"
-#> ℹ [2026-06-24 03:06:04] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 4/6 of `srt_list`...
-#> ℹ [2026-06-24 03:06:05] Perform `FindVariableFeatures()` on 4/6 of `srt_list`...
-#> ! [2026-06-24 03:06:05] Data 5/6 of the `srt_list` is "unknown"
-#> ℹ [2026-06-24 03:06:05] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 5/6 of `srt_list`...
-#> ℹ [2026-06-24 03:06:05] Perform `FindVariableFeatures()` on 5/6 of `srt_list`...
-#> ! [2026-06-24 03:06:05] Data 6/6 of the `srt_list` is "unknown"
-#> ℹ [2026-06-24 03:06:05] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 6/6 of `srt_list`...
-#> ℹ [2026-06-24 03:06:05] Perform `FindVariableFeatures()` on 6/6 of `srt_list`...
-#> ℹ [2026-06-24 03:06:05] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-24 03:06:06] Number of available HVF: 2000
-#> ℹ [2026-06-24 03:06:06] Finished check
-#> ℹ [2026-06-24 03:06:12] Perform `Seurat::ScaleData()`
+#> ℹ [2026-06-24 17:52:37] Data 1/6 of the `srt_list` has been log-normalized
+#> ℹ [2026-06-24 17:52:37] Perform `FindVariableFeatures()` on 1/6 of `srt_list`...
+#> ! [2026-06-24 17:52:37] Data 2/6 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 17:52:37] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 2/6 of `srt_list`...
+#> ℹ [2026-06-24 17:52:37] Perform `FindVariableFeatures()` on 2/6 of `srt_list`...
+#> ! [2026-06-24 17:52:37] Data 3/6 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 17:52:37] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 3/6 of `srt_list`...
+#> ℹ [2026-06-24 17:52:37] Perform `FindVariableFeatures()` on 3/6 of `srt_list`...
+#> ! [2026-06-24 17:52:38] Data 4/6 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 17:52:38] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 4/6 of `srt_list`...
+#> ℹ [2026-06-24 17:52:38] Perform `FindVariableFeatures()` on 4/6 of `srt_list`...
+#> ! [2026-06-24 17:52:38] Data 5/6 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 17:52:38] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 5/6 of `srt_list`...
+#> ℹ [2026-06-24 17:52:38] Perform `FindVariableFeatures()` on 5/6 of `srt_list`...
+#> ! [2026-06-24 17:52:38] Data 6/6 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 17:52:38] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 6/6 of `srt_list`...
+#> ℹ [2026-06-24 17:52:38] Perform `FindVariableFeatures()` on 6/6 of `srt_list`...
+#> ℹ [2026-06-24 17:52:38] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-24 17:52:39] Number of available HVF: 2000
+#> ℹ [2026-06-24 17:52:39] Finished check
+#> ℹ [2026-06-24 17:52:44] Perform `Seurat::ScaleData()`
 #> Error: ScaleData.Seurat requires an Assay5 object with a data layer.
 CellDimPlot(
   srt = panc_merge,

@@ -312,58 +312,60 @@ RunDEtest(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-24 04:05:05] Start standard processing workflow...
-#> ℹ [2026-06-24 04:05:06] Checking a list of <Seurat>...
-#> ! [2026-06-24 04:05:06] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-24 04:05:06] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-24 04:05:06] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-24 04:05:06] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-24 04:05:06] Number of available HVF: 2000
-#> ℹ [2026-06-24 04:05:06] Finished check
-#> ℹ [2026-06-24 04:05:06] Perform `ScaleData()`
-#> ℹ [2026-06-24 04:05:06] Perform pca linear dimension reduction
-#> ℹ [2026-06-24 04:05:07] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-24 04:05:07] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-24 04:05:07] Reorder clusters...
-#> ℹ [2026-06-24 04:05:07] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-24 04:05:08] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-24 04:05:15] Standard processing workflow completed
+#> ℹ [2026-06-24 18:43:48] Start standard processing workflow...
+#> ℹ [2026-06-24 18:43:49] Checking a list of <Seurat>...
+#> ! [2026-06-24 18:43:49] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 18:43:49] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 18:43:49] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 18:43:49] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-24 18:43:49] Number of available HVF: 2000
+#> ℹ [2026-06-24 18:43:51] Finished check
+#> ℹ [2026-06-24 18:43:51] Perform `ScaleData()`
+#> ℹ [2026-06-24 18:43:51] Perform pca linear dimension reduction
+#> ℹ [2026-06-24 18:43:51] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-24 18:43:51] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-24 18:43:52] Reorder clusters...
+#> ℹ [2026-06-24 18:43:52] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-24 18:43:52] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-24 18:43:58] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "SubCellType",
   only.pos = FALSE
 )
-#> ℹ [2026-06-24 04:05:15] Data type is log-normalized
-#> ℹ [2026-06-24 04:05:15] Start differential expression test
-#> ℹ [2026-06-24 04:05:15] Find all markers(wilcox) among [1] 8 groups...
-#> ℹ [2026-06-24 04:05:15] Using 1 core
-#> ⠙ [2026-06-24 04:05:15] Running for Ductal [1/8] ■           12% | ETA:  2s
-#> ✔ [2026-06-24 04:05:15] Completed 8 tasks in 2.3s
+#> ℹ [2026-06-24 18:43:58] Data type is log-normalized
+#> ℹ [2026-06-24 18:43:58] Start differential expression test
+#> ℹ [2026-06-24 18:43:58] Find all markers(wilcox) among [1] 8 groups...
+#> ℹ [2026-06-24 18:43:58] Using 1 core
+#> ⠙ [2026-06-24 18:43:58] Running for Ductal [1/8] ■           12% | ETA:  0s
+#> ✔ [2026-06-24 18:43:58] Completed 8 tasks in 30ms
 #> 
-#> ℹ [2026-06-24 04:05:15] Building results
-#> ✔ [2026-06-24 04:05:17] Differential expression test completed
+#> ℹ [2026-06-24 18:43:58] Building results
+#> ! [2026-06-24 18:43:58] Found 8 failed results
+#> ℹ [2026-06-24 18:43:58] ✖ Error details:
+#> ℹ                       ✖ At least 1 ident must be specified in `ident.1` (8): "Ductal", "Ngn3-high-EP", "Beta" and 5 more
+#> Error in `[.data.frame`(AllMarkers, , "group1"): undefined columns selected
 AllMarkers <- dplyr::filter(
   pancreas_sub@tools$DEtest_SubCellType$AllMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
 )
+#> Error in UseMethod("filter"): no applicable method for 'filter' applied to an object of class "NULL"
 ht1 <- GroupHeatmap(
   pancreas_sub,
   features = AllMarkers$gene,
   feature_split = AllMarkers$group1,
   group.by = "SubCellType"
 )
-#> ℹ [2026-06-24 04:05:20] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-06-24 04:05:20] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-06-24 04:05:20] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
-
+#> Error: object 'AllMarkers' not found
 ht1$plot
-
+#> Error: object 'ht1' not found
 
 TopMarkers <- AllMarkers |>
   dplyr::group_by(gene) |>
   dplyr::top_n(1, avg_log2FC) |>
   dplyr::group_by(group1) |>
   dplyr::top_n(3, avg_log2FC)
+#> Error: object 'AllMarkers' not found
 ht2 <- GroupHeatmap(
   pancreas_sub,
   features = TopMarkers$gene,
@@ -371,12 +373,9 @@ ht2 <- GroupHeatmap(
   group.by = "SubCellType",
   show_row_names = TRUE
 )
-#> ℹ [2026-06-24 04:05:23] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-06-24 04:05:23] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-06-24 04:05:23] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
-
+#> Error: object 'TopMarkers' not found
 ht2$plot
-
+#> Error: object 'ht2' not found
 
 pancreas_sub <- RunDEtest(
   pancreas_sub,
@@ -384,35 +383,29 @@ pancreas_sub <- RunDEtest(
   markers_type = "paired",
   cores = 2
 )
-#> ℹ [2026-06-24 04:05:24] Data type is log-normalized
-#> ℹ [2026-06-24 04:05:24] Start differential expression test
-#> ℹ [2026-06-24 04:05:24] Find paired markers(wilcox) among [1] 8 groups...
-#> ℹ [2026-06-24 04:05:24] Using 2 cores
-#> ⠙ [2026-06-24 04:05:24] Running for 1 [1/56]              2% | ETA: 25s
-#> ⠹ [2026-06-24 04:05:24] Running for 10 [9/56] ■           16% | ETA: 14s
-#> ⠸ [2026-06-24 04:05:24] Running for 21 [21/56] ■■■         38% | ETA:  9s
-#> ⠼ [2026-06-24 04:05:24] Running for 33 [33/56] ■■■■■       59% | ETA:  6s
-#> ⠴ [2026-06-24 04:05:24] Running for 46 [45/56] ■■■■■■■■    80% | ETA:  3s
-#> ✔ [2026-06-24 04:05:24] Completed 56 tasks in 14.1s
-#> 
-#> ℹ [2026-06-24 04:05:24] Building results
-#> ✔ [2026-06-24 04:05:38] Differential expression test completed
+#> ℹ [2026-06-24 18:43:59] Data type is log-normalized
+#> ℹ [2026-06-24 18:43:59] Start differential expression test
+#> ℹ [2026-06-24 18:43:59] Find paired markers(wilcox) among [1] 8 groups...
+#> ℹ [2026-06-24 18:43:59] Using 2 cores
+#> ℹ [2026-06-24 18:43:59] Building results
+#> ! [2026-06-24 18:43:59] Found 56 failed results
+#> ℹ [2026-06-24 18:44:01] ✖ Error details:
+#> ℹ                       ✖ At least 1 ident must be specified in `ident.1` (56): "1", "2", "3" and 53 more
+#> Error in `[.data.frame`(PairedMarkers, , "group1"): undefined columns selected
 PairedMarkers <- dplyr::filter(
   pancreas_sub@tools$DEtest_SubCellType$PairedMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
 )
+#> Error in UseMethod("filter"): no applicable method for 'filter' applied to an object of class "NULL"
 ht3 <- GroupHeatmap(
   pancreas_sub,
   features = PairedMarkers$gene,
   feature_split = PairedMarkers$group1,
   group.by = "SubCellType"
 )
-#> ℹ [2026-06-24 04:06:24] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-06-24 04:06:24] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-06-24 04:06:24] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
-
+#> Error: object 'PairedMarkers' not found
 ht3$plot
-
+#> Error: object 'ht3' not found
 
 data(panc8_sub)
 panc8_sub <- integration_scop(
@@ -420,30 +413,30 @@ panc8_sub <- integration_scop(
   batch = "tech",
   integration_method = "Uncorrected"
 )
-#> ◌ [2026-06-24 04:06:27] Run integration workflow...
-#> ℹ [2026-06-24 04:06:28] Split `srt_merge` into `srt_list` by "tech"
-#> ℹ [2026-06-24 04:06:29] Checking a list of <Seurat>...
-#> ! [2026-06-24 04:06:29] Data 1/5 of the `srt_list` is "unknown"
-#> ℹ [2026-06-24 04:06:29] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/5 of `srt_list`...
-#> ℹ [2026-06-24 04:06:29] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
-#> ! [2026-06-24 04:06:29] Data 2/5 of the `srt_list` is "unknown"
-#> ℹ [2026-06-24 04:06:29] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 2/5 of `srt_list`...
-#> ℹ [2026-06-24 04:06:29] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
-#> ! [2026-06-24 04:06:29] Data 3/5 of the `srt_list` is "unknown"
-#> ℹ [2026-06-24 04:06:29] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 3/5 of `srt_list`...
-#> ℹ [2026-06-24 04:06:29] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
-#> ! [2026-06-24 04:06:29] Data 4/5 of the `srt_list` is "unknown"
-#> ℹ [2026-06-24 04:06:29] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 4/5 of `srt_list`...
-#> ℹ [2026-06-24 04:06:29] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
-#> ! [2026-06-24 04:06:30] Data 5/5 of the `srt_list` is "unknown"
-#> ℹ [2026-06-24 04:06:30] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 5/5 of `srt_list`...
-#> ℹ [2026-06-24 04:06:30] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
-#> ℹ [2026-06-24 04:06:30] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-24 04:06:30] Number of available HVF: 2000
-#> ℹ [2026-06-24 04:06:31] Finished check
-#> ℹ [2026-06-24 04:06:33] Perform Uncorrected integration
+#> ◌ [2026-06-24 18:44:01] Run integration workflow...
+#> ℹ [2026-06-24 18:44:01] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-06-24 18:44:02] Checking a list of <Seurat>...
+#> ! [2026-06-24 18:44:02] Data 1/5 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 18:44:02] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/5 of `srt_list`...
+#> ℹ [2026-06-24 18:44:02] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ! [2026-06-24 18:44:03] Data 2/5 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 18:44:03] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 2/5 of `srt_list`...
+#> ℹ [2026-06-24 18:44:03] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
+#> ! [2026-06-24 18:44:03] Data 3/5 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 18:44:03] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 3/5 of `srt_list`...
+#> ℹ [2026-06-24 18:44:03] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
+#> ! [2026-06-24 18:44:03] Data 4/5 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 18:44:03] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 4/5 of `srt_list`...
+#> ℹ [2026-06-24 18:44:03] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
+#> ! [2026-06-24 18:44:03] Data 5/5 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 18:44:03] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 5/5 of `srt_list`...
+#> ℹ [2026-06-24 18:44:03] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
+#> ℹ [2026-06-24 18:44:04] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-24 18:44:04] Number of available HVF: 2000
+#> ℹ [2026-06-24 18:44:05] Finished check
+#> ℹ [2026-06-24 18:44:06] Perform Uncorrected integration
 #> Warning: Layer ‘scale.data’ is empty
-#> ℹ [2026-06-24 04:06:33] Perform `Seurat::ScaleData()`
+#> ℹ [2026-06-24 18:44:07] Perform `Seurat::ScaleData()`
 #> Error: ScaleData.Seurat requires an Assay5 object with a data layer.
 CellDimPlot(
   panc8_sub,
@@ -462,18 +455,18 @@ panc8_sub <- RunDEtest(
 #> Warning: no non-missing arguments to min; returning Inf
 #> Warning: no non-missing arguments to max; returning -Inf
 #> Warning: no non-missing arguments to max; returning -Inf
-#> ! [2026-06-24 04:07:06] Infinite values detected
-#> ! [2026-06-24 04:07:06] Data in the 'data' layer is unknown. Please check the data type
-#> ℹ [2026-06-24 04:07:06] Start differential expression test
-#> ℹ [2026-06-24 04:07:06] Find conserved markers(wilcox) among [1] 13 groups...
-#> ℹ [2026-06-24 04:07:06] Using 2 cores
-#> ⠙ [2026-06-24 04:07:06] Running for delta [1/13]              8% | ETA:  3s
-#> ⠹ [2026-06-24 04:07:06] Running for quiescent-stellate [10/13] ■■■■■■■     77% …
-#> ✔ [2026-06-24 04:07:06] Completed 13 tasks in 2.2s
+#> ! [2026-06-24 18:44:38] Infinite values detected
+#> ! [2026-06-24 18:44:38] Data in the 'data' layer is unknown. Please check the data type
+#> ℹ [2026-06-24 18:44:38] Start differential expression test
+#> ℹ [2026-06-24 18:44:38] Find conserved markers(wilcox) among [1] 13 groups...
+#> ℹ [2026-06-24 18:44:38] Using 2 cores
+#> ⠙ [2026-06-24 18:44:38] Running for delta [1/13]              8% | ETA:  3s
+#> ⠹ [2026-06-24 18:44:38] Running for macrophage [9/13] ■■■■■■      69% | ETA:  1s
+#> ✔ [2026-06-24 18:44:38] Completed 13 tasks in 2.1s
 #> 
-#> ℹ [2026-06-24 04:07:06] Building results
-#> ! [2026-06-24 04:07:06] Found 11 failed results
-#> ℹ [2026-06-24 04:07:09] ✖ Error details:
+#> ℹ [2026-06-24 18:44:38] Building results
+#> ! [2026-06-24 18:44:38] Found 11 failed results
+#> ℹ [2026-06-24 18:44:40] ✖ Error details:
 #> ℹ                       ✖ error in evaluating the argument 'x' in selecting a method for function 'rowSums': subscript out of bounds (11): "delta", "gamma", "acinar" and 8 more
 #> Error in x[, c("avg_log2FC", "pct.1", "pct.2", "max_pval", "p_val", "p_val_adj",     "gene", "group1", "group2")]: incorrect number of dimensions
 ConservedMarkers1 <- dplyr::filter(
@@ -505,14 +498,14 @@ panc8_sub <- RunDEtest(
 #> Warning: no non-missing arguments to min; returning Inf
 #> Warning: no non-missing arguments to max; returning -Inf
 #> Warning: no non-missing arguments to max; returning -Inf
-#> ! [2026-06-24 04:07:09] Infinite values detected
-#> ! [2026-06-24 04:07:09] Data in the 'data' layer is unknown. Please check the data type
-#> ℹ [2026-06-24 04:07:09] Start differential expression test
-#> ℹ [2026-06-24 04:07:09] Find conserved markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-06-24 04:07:09] Using 2 cores
-#> ℹ [2026-06-24 04:07:09] Building results
-#> ! [2026-06-24 04:07:09] Found 5 failed results
-#> ℹ [2026-06-24 04:07:10] ✖ Error details:
+#> ! [2026-06-24 18:44:40] Infinite values detected
+#> ! [2026-06-24 18:44:40] Data in the 'data' layer is unknown. Please check the data type
+#> ℹ [2026-06-24 18:44:40] Start differential expression test
+#> ℹ [2026-06-24 18:44:40] Find conserved markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-06-24 18:44:40] Using 2 cores
+#> ℹ [2026-06-24 18:44:40] Building results
+#> ! [2026-06-24 18:44:40] Found 5 failed results
+#> ℹ [2026-06-24 18:44:42] ✖ Error details:
 #> ℹ                       ✖ error in evaluating the argument 'x' in selecting a method for function 'rowSums': subscript out of bounds (5): "celseq", "celseq2", "smartseq2" and 2 more
 #> Error in x[, c("avg_log2FC", "pct.1", "pct.2", "max_pval", "p_val", "p_val_adj",     "gene", "group1", "group2")]: incorrect number of dimensions
 ConservedMarkers2 <- dplyr::filter(
@@ -543,18 +536,19 @@ panc8_sub <- RunDEtest(
 #> Warning: no non-missing arguments to min; returning Inf
 #> Warning: no non-missing arguments to max; returning -Inf
 #> Warning: no non-missing arguments to max; returning -Inf
-#> ! [2026-06-24 04:07:11] Infinite values detected
-#> ! [2026-06-24 04:07:11] Data in the 'data' layer is unknown. Please check the data type
-#> ℹ [2026-06-24 04:07:11] Start differential expression test
-#> ℹ [2026-06-24 04:07:11] Find disturbed markers(wilcox) among [1] 13 groups...
-#> ℹ [2026-06-24 04:07:11] Using 2 cores
-#> ⠙ [2026-06-24 04:07:11] Running for delta [1/13]              8% | ETA: 15s
-#> ⠹ [2026-06-24 04:07:11] Running for alpha [5/13] ■■■         38% | ETA:  7s
-#> ✔ [2026-06-24 04:07:11] Completed 13 tasks in 6.6s
+#> ! [2026-06-24 18:44:42] Infinite values detected
+#> ! [2026-06-24 18:44:42] Data in the 'data' layer is unknown. Please check the data type
+#> ℹ [2026-06-24 18:44:42] Start differential expression test
+#> ℹ [2026-06-24 18:44:42] Find disturbed markers(wilcox) among [1] 13 groups...
+#> ℹ [2026-06-24 18:44:42] Using 2 cores
+#> ⠙ [2026-06-24 18:44:42] Running for delta [1/13]              8% | ETA: 21s
+#> ⠹ [2026-06-24 18:44:42] Running for alpha [5/13] ■■■         38% | ETA:  9s
+#> ⠸ [2026-06-24 18:44:42] Running for quiescent-stellate [10/13] ■■■■■■■     77% …
+#> ✔ [2026-06-24 18:44:42] Completed 13 tasks in 7.9s
 #> 
-#> ℹ [2026-06-24 04:07:11] Building results
-#> ! [2026-06-24 04:07:11] Found 9 failed results
-#> ℹ [2026-06-24 04:07:17] ✖ Error details:
+#> ℹ [2026-06-24 18:44:42] Building results
+#> ! [2026-06-24 18:44:42] Found 9 failed results
+#> ℹ [2026-06-24 18:44:50] ✖ Error details:
 #> ℹ                       ✖ undefined columns selected (9): "delta", "gamma", "acinar" and 6 more
 #> Error in `[.data.frame`(DisturbedMarkers, , "group1"): undefined columns selected
 DisturbedMarkers <- dplyr::filter(
@@ -630,13 +624,13 @@ pancreas_sub <- RunDEtest(
   layer = "counts",
   only.pos = FALSE
 )
-#> ℹ [2026-06-24 04:07:18] Start sample-level differential testing
+#> ℹ [2026-06-24 18:44:50] Start sample-level differential testing
 #> calcNormFactors has been renamed to normLibSizes
 #> calcNormFactors has been renamed to normLibSizes
 #> calcNormFactors has been renamed to normLibSizes
 #> calcNormFactors has been renamed to normLibSizes
 #> calcNormFactors has been renamed to normLibSizes
-#> ✔ [2026-06-24 04:07:20] Sample-level differential testing completed
+#> ✔ [2026-06-24 18:44:52] Sample-level differential testing completed
 DEtestPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -658,13 +652,13 @@ pancreas_sub <- RunDEtest(
   fc.threshold = 1,
   only.pos = FALSE
 )
-#> ℹ [2026-06-24 04:07:21] Start sample-level differential testing
+#> ℹ [2026-06-24 18:44:53] Start sample-level differential testing
 #> calcNormFactors has been renamed to normLibSizes
 #> calcNormFactors has been renamed to normLibSizes
 #> calcNormFactors has been renamed to normLibSizes
 #> calcNormFactors has been renamed to normLibSizes
 #> calcNormFactors has been renamed to normLibSizes
-#> ✔ [2026-06-24 04:07:24] Sample-level differential testing completed
+#> ✔ [2026-06-24 18:44:56] Sample-level differential testing completed
 DEtestPlot(
   pancreas_sub,
   group.by = "CellType",

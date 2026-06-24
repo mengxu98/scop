@@ -137,7 +137,7 @@ spatial <- RunSpatialVariableFeatures(
   assay = "Spatial",
   nfeatures = 50
 )
-#> ◌ [2026-06-24 04:40:13] Running spatial variable feature detection
-#> ✔ [2026-06-24 04:40:14] Stored 50 spatial variable features
+#> ◌ [2026-06-24 19:16:52] Running spatial variable feature detection
+#> ✔ [2026-06-24 19:16:52] Stored 50 spatial variable features
 SpatialVariableFeaturePlot(spatial, plot_type = "combined", nfeatures = 2)
 ```

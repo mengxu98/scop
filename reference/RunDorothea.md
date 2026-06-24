@@ -136,7 +136,7 @@ pancreas_sub <- standard_scop(
   pancreas_sub,
   verbose = FALSE
 )
-#> ℹ [2026-06-24 04:08:14] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-24 18:45:42] Skip `log1p()` because `layer = data` is not "counts"
 
 pancreas_sub <- RunDorothea(
   pancreas_sub,
@@ -147,8 +147,8 @@ pancreas_sub <- RunDorothea(
   minsize = 5,
   new_assay = FALSE
 )
-#> ℹ [2026-06-24 04:08:22] Run DoRothEA/decoupleR with 12895 regulon edges
-#> ℹ [2026-06-24 04:08:33] DoRothEA TF activity scores stored in <Seurat> metadata
+#> ℹ [2026-06-24 18:45:49] Run DoRothEA/decoupleR with 12895 regulon edges
+#> ℹ [2026-06-24 18:46:00] DoRothEA TF activity scores stored in <Seurat> metadata
 
 pancreas_sub@tools$Dorothea$regulon_summary
 #>   n_tfs n_targets n_edges confidence

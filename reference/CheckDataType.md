@@ -56,6 +56,6 @@ CheckDataType(pancreas_sub)
 #> Warning: no non-missing arguments to min; returning Inf
 #> Warning: no non-missing arguments to max; returning -Inf
 #> Warning: no non-missing arguments to max; returning -Inf
-#> ! [2026-06-24 03:07:03] Infinite values detected
+#> ! [2026-06-24 17:53:33] Infinite values detected
 #> [1] "unknown"
 ```
