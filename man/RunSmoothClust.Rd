@@ -18,7 +18,7 @@ RunSmoothClust(
   k = 18,
   truncate = 0.05,
   n_threads = 1,
-  n_clusters = NULL,
+  n_clusters,
   n_pcs = 15,
   center = TRUE,
   scale = TRUE,
