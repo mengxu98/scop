@@ -35,9 +35,24 @@ RunPCA.default <- function(
   if (!is.double(obj)) {
     storage.mode(obj) <- "double"
   }
-  nv <- pca_backend_run(obj, as.integer(npcs), isTRUE(weight.by.var))
-  feature.loadings <- nv$loadings
-  cell.embeddings <- nv$embeddings
+  pca <- tryCatch(
+    irlba::irlba(A = t(obj), nv = npcs, ...),
+    error = function(e) NULL
+  )
+  if (!is.null(pca)) {
+    feature.loadings <- pca$v
+    if (isTRUE(weight.by.var)) {
+      cell.embeddings <- pca$u %*% diag(pca$d, nrow = length(pca$d))
+    } else {
+      cell.embeddings <- pca$u
+    }
+    sdev <- pca$d / sqrt(max(1, n - 1))
+  } else {
+    nv <- pca_backend_run(obj, as.integer(npcs), isTRUE(weight.by.var))
+    feature.loadings <- nv$loadings
+    cell.embeddings <- nv$embeddings
+    sdev <- as.numeric(nv$sdev)
+  }
   rownames(feature.loadings) <- feature.names
   colnames(feature.loadings) <- paste0(reduction.key, 1:npcs)
   rownames(cell.embeddings) <- cell.names
@@ -49,9 +64,9 @@ RunPCA.default <- function(
     feature.loadings.projected = matrix(nrow = 0L, ncol = 0L),
     assay.used = assay %||% character(0),
     global = FALSE,
-    stdev = as.numeric(nv$sdev),
+    stdev = as.numeric(sdev),
     jackstraw = methods::new("JackStrawData"),
-    misc = list(),
+    misc = list(total.variance = sum(apply(obj, 1L, stats::var))),
     key = reduction.key
   )
 }
@@ -90,12 +105,11 @@ RunPCA.StdAssay <- function(
   if (is.null(features)) {
     features <- SeuratObject::VariableFeatures(object)
   }
-  if (!isTRUE(setequal(features, feature.names))) {
-    features <- features[!is.na(features)]
-    idx <- match(features, feature.names, nomatch = 0L)
-    data.use <- data.use[idx[idx > 0L], , drop = FALSE]
-    feature.names <- feature.names[idx[idx > 0L]]
-  }
+  features <- features[!is.na(features)]
+  idx <- match(features, feature.names, nomatch = 0L)
+  idx <- idx[idx > 0L]
+  data.use <- data.use[idx, , drop = FALSE]
+  feature.names <- feature.names[idx]
   RunPCA.default(
     object = data.use,
     assay = assay,
@@ -129,26 +143,55 @@ RunPCA.Seurat <- function(
   seed.use = 42,
   ...
 ) {
-  assay <- assay %||% SeuratObject::DefaultAssay(object = object)
-  if (!assay %in% SeuratObject::Assays(object)) {
-    stop(sprintf("Assay '%s' is not present in object.", assay), call. = FALSE)
+  extra <- list(...)
+  run_seurat <- function() {
+    seurat_runpca <- get("RunPCA.Seurat", envir = asNamespace("Seurat"))
+    seurat_runpca(
+      object = object,
+      assay = assay,
+      features = features,
+      npcs = npcs,
+      rev.pca = rev.pca,
+      weight.by.var = weight.by.var,
+      verbose = verbose,
+      ndims.print = ndims.print,
+      nfeatures.print = nfeatures.print,
+      reduction.name = reduction.name,
+      reduction.key = reduction.key,
+      seed.use = seed.use,
+      ...
+    )
   }
-  reduction.data <- RunPCA.StdAssay(
-    object = object[[assay]],
-    assay = assay,
-    features = features,
-    npcs = npcs,
-    rev.pca = rev.pca,
-    weight.by.var = weight.by.var,
-    verbose = verbose,
-    ndims.print = ndims.print,
-    nfeatures.print = nfeatures.print,
-    reduction.key = reduction.key,
-    seed.use = seed.use,
-    ...
+  assay <- assay %||% SeuratObject::DefaultAssay(object)
+  if (
+      isTRUE(rev.pca) ||
+      isFALSE(extra[["approx"]]) ||
+      !assay %in% SeuratObject::Assays(object)
+  ) {
+    return(run_seurat())
+  }
+  reduction <- tryCatch(
+    RunPCA.StdAssay(
+      object = object[[assay]],
+      assay = assay,
+      features = features,
+      npcs = npcs,
+      rev.pca = rev.pca,
+      weight.by.var = weight.by.var,
+      verbose = verbose,
+      ndims.print = ndims.print,
+      nfeatures.print = nfeatures.print,
+      reduction.key = reduction.key,
+      seed.use = seed.use,
+      ...
+    ),
+    error = function(e) NULL
   )
-  object[[reduction.name]] <- reduction.data
-  SeuratObject::LogSeuratCommand(object = object)
+  if (!is.null(reduction)) {
+    object[[reduction.name]] <- reduction
+    return(SeuratObject::LogSeuratCommand(object = object))
+  }
+  run_seurat()
 }
 
 #' Run principal component analysis

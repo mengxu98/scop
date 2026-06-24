@@ -18,76 +18,30 @@ FindNeighbors.Seurat <- function(
   graph.name = NULL,
   l2.norm = FALSE,
   cache.index = FALSE,
-  backend = c("exact", "annoy"),
-  cores = 1L,
   ...
 ) {
-  if (
-    !inherits(object, "Seurat") ||
-      !identical(nn.method, "annoy") ||
-      !identical(annoy.metric, "euclidean") ||
-      !isFALSE(return.neighbor) ||
-      !isFALSE(l2.norm) ||
-      !is.null(features) ||
-      is.null(dims) ||
-      !isFALSE(cache.index) ||
-      !isFALSE(do.plot) ||
-      !isTRUE(nn.eps == 0)
-  ) {
-    stop("FindNeighbors.Seurat received unsupported arguments for the scop implementation.", call. = FALSE)
-  }
-  assay <- SeuratObject::DefaultAssay(object[[reduction]])
-  data.use <- SeuratObject::Embeddings(object[[reduction]])[
-    ,
-    dims,
-    drop = FALSE
-  ]
-  cell.names <- rownames(data.use)
-  n.cells <- nrow(data.use)
-  cores <- suppressWarnings(as.integer(cores[[1L]]))
-  if (is.na(cores) || cores < 1L) {
-    stop("cores must be a positive integer.", call. = FALSE)
-  }
-  backend <- match.arg(backend)
-  if (identical(backend, "exact")) {
-    nn.idx <- exact_knn_f32(data.use, k.param, cores)
-  } else {
-    nn.idx <- annoy_build_search(data.use, k.param, n.trees, cores)
-  }
-
-  j <- as.numeric(t(nn.idx))
-  i <- rep(seq_len(n.cells), each = k.param)
-  nn.matrix <- Matrix::sparseMatrix(
-    i = i,
-    j = j,
-    x = 1,
-    dims = c(n.cells, n.cells),
-    dimnames = list(cell.names, cell.names)
+  seurat_find_neighbors <- get("FindNeighbors.Seurat", envir = asNamespace("Seurat"))
+  seurat_find_neighbors(
+    object = object,
+    reduction = reduction,
+    dims = dims,
+    assay = assay,
+    features = features,
+    k.param = k.param,
+    return.neighbor = return.neighbor,
+    compute.SNN = compute.SNN,
+    prune.SNN = prune.SNN,
+    nn.method = nn.method,
+    n.trees = n.trees,
+    annoy.metric = annoy.metric,
+    nn.eps = nn.eps,
+    verbose = verbose,
+    do.plot = do.plot,
+    graph.name = graph.name,
+    l2.norm = l2.norm,
+    cache.index = cache.index,
+    ...
   )
-  nn.matrix <- methods::as(nn.matrix, "Graph")
-  SeuratObject::DefaultAssay(nn.matrix) <- assay
-
-  if (compute.SNN) {
-    compute_snn <- get_namespace_fun("Seurat", "ComputeSNN")
-    snn.matrix <- compute_snn(
-      nn_ranked = nn.idx,
-      prune = prune.SNN
-    )
-    rownames(snn.matrix) <- cell.names
-    colnames(snn.matrix) <- cell.names
-    snn.matrix <- SeuratObject::as.Graph(snn.matrix)
-    SeuratObject::DefaultAssay(snn.matrix) <- assay
-  }
-  graph.name <- if (is.null(graph.name)) {
-    paste0(assay, "_", c("nn", "snn"))
-  } else {
-    graph.name
-  }
-  object[[graph.name[1]]] <- nn.matrix
-  if (compute.SNN && length(graph.name) >= 2) {
-    object[[graph.name[2]]] <- snn.matrix
-  }
-  object
 }
 
 #' Find nearest neighbors

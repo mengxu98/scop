@@ -8,14 +8,10 @@
 using namespace Rcpp;
 using namespace RcppParallel;
 
-struct NonzeroValue {
-  int cell;
-  double value;
-};
-
 struct RowSparseBlock {
-  std::vector<int> offset;
-  std::vector<NonzeroValue> entries;
+  std::vector<int> row_ptr;
+  std::vector<int> col_index;
+  std::vector<double> value;
   int cells;
   int features;
 };
@@ -29,30 +25,33 @@ static RowSparseBlock make_row_blocks(S4 matrix) {
   RowSparseBlock block;
   block.features = dims[0];
   block.cells = dims[1];
-  block.offset.assign(block.features + 1, 0);
-  block.entries.resize(values.size());
+  block.row_ptr.assign(block.features + 1, 0);
+  block.col_index.resize(values.size());
+  block.value.resize(values.size());
 
   for (int pos = 0; pos < rows.size(); ++pos) {
-    ++block.offset[rows[pos] + 1];
+    ++block.row_ptr[rows[pos] + 1];
   }
   for (int feature = 0; feature < block.features; ++feature) {
-    block.offset[feature + 1] += block.offset[feature];
+    block.row_ptr[feature + 1] += block.row_ptr[feature];
   }
 
-  std::vector<int> cursor = block.offset;
+  std::vector<int> cursor = block.row_ptr;
   for (int cell = 0; cell < block.cells; ++cell) {
     for (int pos = colptr[cell]; pos < colptr[cell + 1]; ++pos) {
       int feature = rows[pos];
       int target = cursor[feature]++;
-      block.entries[target] = NonzeroValue{cell, values[pos]};
+      block.col_index[target] = cell;
+      block.value[target] = values[pos];
     }
   }
   return block;
 }
 
 struct MarkerSummaryWorker : public Worker {
-  const std::vector<int>& offset;
-  const std::vector<NonzeroValue>& entries;
+  const std::vector<int>& row_ptr;
+  const std::vector<int>& col_index;
+  const std::vector<double>& value;
   const RVector<int> groups;
   const RVector<int> group_size;
   RMatrix<double> p_value;
@@ -69,7 +68,8 @@ struct MarkerSummaryWorker : public Worker {
                       NumericMatrix p_value,
                       NumericMatrix sum_value,
                       NumericMatrix detected)
-      : offset(block.offset), entries(block.entries), groups(groups),
+      : row_ptr(block.row_ptr), col_index(block.col_index), value(block.value),
+        groups(groups),
         group_size(group_size), p_value(p_value), sum_value(sum_value),
         detected(detected), cells(block.cells), group_count(group_size.size()) {
     const double n = static_cast<double>(cells);
@@ -81,24 +81,26 @@ struct MarkerSummaryWorker : public Worker {
     std::vector<int> counts(group_count);
     std::vector<double> sums(group_count);
     std::vector<double> ranks(group_count);
-    std::vector<NonzeroValue> ordered;
+    std::vector<int> order;
 
     for (std::size_t feature = first_feature; feature < last_feature; ++feature) {
       std::fill(counts.begin(), counts.end(), 0);
       std::fill(sums.begin(), sums.end(), 0.0);
       std::fill(ranks.begin(), ranks.end(), 0.0);
 
-      const int begin = offset[feature];
-      const int end = offset[feature + 1];
+      const int begin = row_ptr[feature];
+      const int end = row_ptr[feature + 1];
       const int nonzero = end - begin;
       const int zero = cells - nonzero;
-      ordered.assign(entries.begin() + begin, entries.begin() + end);
+      order.resize(nonzero);
 
       for (int k = 0; k < nonzero; ++k) {
-        int group = groups[ordered[k].cell] - 1;
+        const int pos = begin + k;
+        order[k] = pos;
+        int group = groups[col_index[pos]] - 1;
         if (group >= 0 && group < group_count) {
           ++counts[group];
-          sums[group] += std::expm1(ordered[k].value);
+          sums[group] += std::expm1(value[pos]);
         }
       }
 
@@ -110,9 +112,12 @@ struct MarkerSummaryWorker : public Worker {
           zero_rank;
       }
 
-      std::sort(ordered.begin(), ordered.end(),
-                [](const NonzeroValue& a, const NonzeroValue& b) {
-                  return a.value < b.value;
+      std::sort(order.begin(), order.end(),
+                [&](int a, int b) {
+                  if (value[a] == value[b]) {
+                    return col_index[a] < col_index[b];
+                  }
+                  return value[a] < value[b];
                 });
 
       double tie_penalty = zero > 1 ?
@@ -122,13 +127,13 @@ struct MarkerSummaryWorker : public Worker {
       while (run_begin < nonzero) {
         int run_end = run_begin + 1;
         while (run_end < nonzero &&
-               ordered[run_end].value == ordered[run_begin].value) {
+               value[order[run_end]] == value[order[run_begin]]) {
           ++run_end;
         }
         const int width = run_end - run_begin;
         const double rank = rank_base + (width - 1.0) * 0.5;
         for (int pos = run_begin; pos < run_end; ++pos) {
-          int group = groups[ordered[pos].cell] - 1;
+          int group = groups[col_index[order[pos]]] - 1;
           if (group >= 0 && group < group_count) {
             ranks[group] += rank;
           }

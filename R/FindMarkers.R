@@ -108,6 +108,86 @@ marker_pair_cells <- function(object, assay, layer, ident.1, ident.2, cells.1, c
   list(cells.1 = cells.1, cells.2 = cells.2)
 }
 
+marker_pair_parallel <- function(
+  object,
+  assay,
+  layer,
+  cells.1,
+  cells.2,
+  logfc.threshold,
+  base,
+  min.pct,
+  min.diff.pct,
+  min.cells.group,
+  min.cells.feature,
+  only.pos,
+  pseudocount.use
+) {
+  if (
+    !identical(layer, "data") ||
+      is.finite(min.diff.pct) ||
+      !identical(as.numeric(min.cells.group), 3) ||
+      !identical(as.numeric(min.cells.feature), 3)
+  ) {
+    return(NULL)
+  }
+  data.use <- SeuratObject::LayerData(object, layer = layer, assay = assay)
+  if (!inherits(data.use, "dgCMatrix")) {
+    return(NULL)
+  }
+  cell.use <- c(cells.1, cells.2)
+  data.use <- data.use[, cell.use, drop = FALSE]
+  group <- factor(
+    c(rep("group1", length(cells.1)), rep("group2", length(cells.2))),
+    levels = c("group1", "group2")
+  )
+  group_sizes <- tabulate(as.integer(group), nbins = 2L)
+  if (any(group_sizes < min.cells.group)) {
+    return(NULL)
+  }
+  marker_result <- parallel_all_in_one_dgc(
+    x_sexp = data.use,
+    groups = as.integer(group),
+    group_sizes = as.integer(group_sizes)
+  )
+  n1 <- group_sizes[[1L]]
+  n2 <- group_sizes[[2L]]
+  sums1 <- marker_result$sum_by_group[, 1L]
+  sums2 <- marker_result$sum_by_group[, 2L]
+  counts1 <- marker_result$detected_by_group[, 1L]
+  counts2 <- marker_result$detected_by_group[, 2L]
+  fc <- log((sums1 + pseudocount.use) / n1, base = base) -
+    log((sums2 + pseudocount.use) / n2, base = base)
+  pct1 <- round(counts1 / n1, digits = 3)
+  pct2 <- round(counts2 / n2, digits = 3)
+  pass <- pmax(pct1, pct2) >= min.pct
+  pass <- pass & if (isTRUE(only.pos)) fc >= logfc.threshold else abs(fc) >= logfc.threshold
+  selected <- which(pass)
+  if (!length(selected)) {
+    return(data.frame(
+      p_val = numeric(),
+      avg_log2FC = numeric(),
+      pct.1 = numeric(),
+      pct.2 = numeric(),
+      p_val_adj = numeric()
+    ))
+  }
+  out <- data.frame(
+    p_val = marker_result$pval_by_group[selected, 1L],
+    avg_log2FC = fc[selected],
+    pct.1 = pct1[selected],
+    pct.2 = pct2[selected],
+    row.names = rownames(data.use)[selected],
+    check.names = FALSE
+  )
+  if (isTRUE(only.pos)) {
+    out <- out[out$avg_log2FC > 0, , drop = FALSE]
+  }
+  out <- out[order(out$p_val, -abs(out$pct.1 - out$pct.2)), , drop = FALSE]
+  out$p_val_adj <- stats::p.adjust(out$p_val, method = "bonferroni", n = nrow(data.use))
+  out
+}
+
 #' @export
 FindMarkers.Seurat <- function(
   object,
@@ -121,10 +201,8 @@ FindMarkers.Seurat <- function(
   ...
 ) {
   dots <- list(...)
-  scop_backend <- dots[[".scop_backend"]] %||% "seurat"
-  dots[[".scop_backend"]] <- NULL
-  if (!identical(scop_backend, "sparse_wilcox")) {
-    return(do.call(
+  run_seurat <- function() {
+    do.call(
       get_namespace_fun("Seurat", "FindMarkers.Seurat"),
       c(
         list(
@@ -139,7 +217,7 @@ FindMarkers.Seurat <- function(
         ),
         dots
       )
-    ))
+    )
   }
 
   cells.1 <- dots[["cells.1"]]
@@ -198,11 +276,32 @@ FindMarkers.Seurat <- function(
       extra_args = extra_args
     )
   ) {
-    stop("FindMarkers.Seurat received unsupported arguments for the scop implementation.", call. = FALSE)
+    return(run_seurat())
   }
   cells <- marker_pair_cells(object, assay, opts$layer, ident.1, ident.2, cells.1, cells.2)
   if (is.null(cells)) {
-    stop("FindMarkers.Seurat could not prepare marker context.", call. = FALSE)
+    return(run_seurat())
+  }
+  fast <- tryCatch(
+    marker_pair_parallel(
+      object = object,
+      assay = assay %||% SeuratObject::DefaultAssay(object),
+      layer = opts$layer,
+      cells.1 = cells$cells.1,
+      cells.2 = cells$cells.2,
+      logfc.threshold = opts$logfc,
+      base = opts$base,
+      min.pct = opts$min_pct,
+      min.diff.pct = opts$min_diff,
+      min.cells.group = opts$min_group,
+      min.cells.feature = opts$min_feature,
+      only.pos = opts$positive,
+      pseudocount.use = opts$pseudocount
+    ),
+    error = function(e) NULL
+  )
+  if (!is.null(fast)) {
+    return(fast)
   }
   RunDEtestSparseWilcoxMarkers(
     srt = object,
