@@ -240,6 +240,22 @@ FindExpressedMarkers(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
+#> ℹ [2026-06-24 03:29:58] Start standard processing workflow...
+#> ℹ [2026-06-24 03:29:59] Checking a list of <Seurat>...
+#> ! [2026-06-24 03:29:59] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 03:29:59] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 03:29:59] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 03:29:59] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-24 03:29:59] Number of available HVF: 2000
+#> ℹ [2026-06-24 03:29:59] Finished check
+#> ℹ [2026-06-24 03:29:59] Perform `ScaleData()`
+#> ℹ [2026-06-24 03:29:59] Perform pca linear dimension reduction
+#> ℹ [2026-06-24 03:30:00] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-24 03:30:00] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-24 03:30:00] Reorder clusters...
+#> ℹ [2026-06-24 03:30:00] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-24 03:30:00] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-24 03:30:06] Standard processing workflow completed
 markers <- FindExpressedMarkers(
   pancreas_sub,
   cells.1 = SeuratObject::WhichCells(
@@ -248,6 +264,13 @@ markers <- FindExpressedMarkers(
   )
 )
 head(markers)
+#>               p_val avg_log2FC pct.1 pct.2     p_val_adj
+#> Ccnb2 1.166336e-110  0.7813704 0.957 0.064 1.865904e-106
+#> Tpx2  5.535244e-102  0.4911068 0.783 0.037  8.855283e-98
+#> Cdkn3 5.362442e-100  0.2741094 0.696 0.024  8.578835e-96
+#> Cenpf  8.562688e-97  1.0483156 0.797 0.045  1.369859e-92
+#> Mki67  2.062900e-94  0.3656001 0.812 0.048  3.300227e-90
+#> Cdca3  8.144608e-94  1.0334010 0.971 0.101  1.302974e-89
 
 FeatureStatPlot(
   pancreas_sub,
@@ -255,4 +278,6 @@ FeatureStatPlot(
   group.by = "Phase",
   add_point = TRUE
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
 ```

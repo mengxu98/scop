@@ -191,10 +191,16 @@ pancreas_sub <- RunscTenifoldNet(
   store_networks = TRUE,
   store_manifold = TRUE
 )
+#> ℹ [2026-06-24 04:47:53] Run scTenifoldNet comparison using upstream implementation
+#>   |                                                                              |                                                                      |   0%  |                                                                              |=                                                                     |   1%  |                                                                              |=                                                                     |   2%  |                                                                              |==                                                                    |   2%  |                                                                              |==                                                                    |   3%  |                                                                              |==                                                                    |   4%  |                                                                              |===                                                                   |   4%  |                                                                              |====                                                                  |   5%  |                                                                              |====                                                                  |   6%  |                                                                              |=====                                                                 |   6%  |                                                                              |=====                                                                 |   7%  |                                                                              |======================================================================| 100%
+#>   |                                                                              |                                                                      |   0%  |                                                                              |                                                                      |   1%  |                                                                              |=                                                                     |   1%  |                                                                              |=                                                                     |   2%  |                                                                              |==                                                                    |   2%  |                                                                              |======================================================================| 100%
+#> ✔ [2026-06-24 04:47:57] scTenifoldNet results stored in `object@tools[[scTenifoldNet]]`
 
 scTenifoldNetPlot(pancreas_sub, plot_type = "effect")
 
+
 scTenifoldNetPlot(pancreas_sub, plot_type = "network", network = "X")
+
 
 scTenifoldNetPlot(pancreas_sub, plot_type = "manifold")
 ```

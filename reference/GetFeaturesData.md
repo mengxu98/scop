@@ -44,4 +44,11 @@ A data frame containing the features data.
 data(pancreas_sub)
 features <- GetFeaturesData(pancreas_sub)
 head(features)
+#>               highly_variable_genes
+#> Xkr4                          False
+#> Mrpl15                        False
+#> Npbwr1                         <NA>
+#> 4732440D04Rik                 False
+#> Gm26901                       False
+#> Sntg1                          True
 ```

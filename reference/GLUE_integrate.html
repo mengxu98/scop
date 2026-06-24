@@ -288,19 +288,20 @@ Default is <code>11</code>.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"pbmcmultiome_sub"</span>, package <span class="op">=</span> <span class="st">"scop"</span><span class="op">)</span></span>
-<span><span class="va">pbmcmultiome_sub</span><span class="op">$</span><span class="va">batch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"batch1"</span>, <span class="st">"batch2"</span><span class="op">)</span>, length.out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">pbmcmultiome_sub</span> <span class="op">&lt;-</span> <span class="fu">GLUE_integrate</span><span class="op">(</span></span>
-<span>  srt_merge <span class="op">=</span> <span class="va">pbmcmultiome_sub</span>,</span>
-<span>  batch <span class="op">=</span> <span class="st">"batch"</span>,</span>
-<span>  GLUE_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    skip_balance <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>    init_kws <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>latent_dim <span class="op">=</span> <span class="fl">20L</span><span class="op">)</span>,</span>
-<span>    fit_kws <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>max_epochs <span class="op">=</span> <span class="fl">10L</span>, patience <span class="op">=</span> <span class="fl">2L</span>, reduce_lr_patience <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="op">}</span> <span class="co"># }</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"pbmcmultiome_sub"</span>, package <span class="op">=</span> <span class="st">"scop"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pbmcmultiome_sub</span><span class="op">$</span><span class="va">batch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"batch1"</span>, <span class="st">"batch2"</span><span class="op">)</span>, length.out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pbmcmultiome_sub</span> <span class="op">&lt;-</span> <span class="fu">GLUE_integrate</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  srt_merge <span class="op">=</span> <span class="va">pbmcmultiome_sub</span>,</span></span>
+<span class="r-in"><span>  batch <span class="op">=</span> <span class="st">"batch"</span>,</span></span>
+<span class="r-in"><span>  GLUE_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    skip_balance <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>    init_kws <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>latent_dim <span class="op">=</span> <span class="fl">20L</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    fit_kws <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>max_epochs <span class="op">=</span> <span class="fl">10L</span>, patience <span class="op">=</span> <span class="fl">2L</span>, reduce_lr_patience <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+</code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

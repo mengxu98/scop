@@ -123,6 +123,31 @@ spatial <- RunBayesSpace(
     save.chain = FALSE
   )
 )
+#> ℹ [2026-06-24 03:58:47] Convert <Seurat> to <SingleCellExperiment> for BayesSpace
+#> Warning: Layer ‘data’ is empty
+#> Warning: Layer ‘scale.data’ is empty
+#> Warning: 'librarySizeFactors' is deprecated.
+#> Use 'scrapper::centerSizeFactors' instead.
+#> See help("Deprecated")
+#> Warning: 'normalizeCounts' is deprecated.
+#> Use 'scrapper::normalizeCounts' instead.
+#> See help("Deprecated")
+#> Warning: 'fitTrendVar' is deprecated.
+#> Use 'scrapper::fitVarianceTrend' instead.
+#> See help("Deprecated")
+#> Warning: 'combineBlocks' is deprecated.
+#> See help("Deprecated")
+#> Warning: 'getTopHVGs' is deprecated.
+#> Use 'scrapper::chooseHighlyVariableGenes' instead.
+#> See help("Deprecated")
+#> ℹ [2026-06-24 03:58:48] Run BayesSpace spatial clustering with `q = 3`
+#> Neighbors were identified for 1974 out of 1986 spots.
+#> Fitting model...
+#> Calculating labels using iterations 51 through 200.
+#> ℹ [2026-06-24 03:58:52] BayesSpace clusters stored in metadata column "BayesSpace_cluster"
 table(spatial$BayesSpace_cluster)
+#> 
+#>    1    2    3 
+#> 1237  549  200 
 SpatialSpotPlot(spatial, group.by = "BayesSpace_cluster")
 ```

@@ -197,27 +197,30 @@ returned.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="va">metrics_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Raw"</span>, <span class="st">"Raw"</span>, <span class="st">"Harmony"</span>, <span class="st">"Harmony"</span><span class="op">)</span>,</span>
-<span>  metric <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"batch_ASW_mixing"</span>, <span class="st">"celltype_ASW"</span>, <span class="st">"batch_ASW_mixing"</span>, <span class="st">"celltype_ASW"</span><span class="op">)</span>,</span>
-<span>  value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.42</span>, <span class="fl">0.71</span>, <span class="fl">0.68</span>, <span class="fl">0.66</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu">BenchmarkPlot</span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">metrics_df</span>,</span>
-<span>  plot_type <span class="op">=</span> <span class="st">"bar"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"pbmcmultiome_sub"</span>, package <span class="op">=</span> <span class="st">"scop"</span><span class="op">)</span></span>
-<span><span class="va">pbmcmultiome_sub</span><span class="op">[[</span><span class="st">"MethodA_batch_LISI"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span><span class="op">)</span></span>
-<span><span class="va">pbmcmultiome_sub</span><span class="op">[[</span><span class="st">"MethodB_batch_LISI"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/rev.html" class="external-link">rev</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span><span class="op">[[</span><span class="st">"MethodA_batch_LISI"</span>, drop <span class="op">=</span> <span class="cn">TRUE</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="fu">BenchmarkPlot</span><span class="op">(</span></span>
-<span>  <span class="va">pbmcmultiome_sub</span>,</span>
-<span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MethodA_batch_LISI"</span>, <span class="st">"MethodB_batch_LISI"</span><span class="op">)</span>,</span>
-<span>  plot_type <span class="op">=</span> <span class="st">"boxplot"</span></span>
-<span><span class="op">)</span></span>
-<span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">metrics_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Raw"</span>, <span class="st">"Raw"</span>, <span class="st">"Harmony"</span>, <span class="st">"Harmony"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  metric <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"batch_ASW_mixing"</span>, <span class="st">"celltype_ASW"</span>, <span class="st">"batch_ASW_mixing"</span>, <span class="st">"celltype_ASW"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.42</span>, <span class="fl">0.71</span>, <span class="fl">0.68</span>, <span class="fl">0.66</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">BenchmarkPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  data <span class="op">=</span> <span class="va">metrics_df</span>,</span></span>
+<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="BenchmarkPlot-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"pbmcmultiome_sub"</span>, package <span class="op">=</span> <span class="st">"scop"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pbmcmultiome_sub</span><span class="op">[[</span><span class="st">"MethodA_batch_LISI"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pbmcmultiome_sub</span><span class="op">[[</span><span class="st">"MethodB_batch_LISI"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/rev.html" class="external-link">rev</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span><span class="op">[[</span><span class="st">"MethodA_batch_LISI"</span>, drop <span class="op">=</span> <span class="cn">TRUE</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">BenchmarkPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pbmcmultiome_sub</span>,</span></span>
+<span class="r-in"><span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MethodA_batch_LISI"</span>, <span class="st">"MethodB_batch_LISI"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"boxplot"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="BenchmarkPlot-2.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

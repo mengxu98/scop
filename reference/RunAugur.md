@@ -119,6 +119,7 @@ prioritization in single-cell data. *Nature Biotechnology*, 39, 30-34.
 data(panc8_sub)
 panc8_sub <- subset(panc8_sub, subset = tech %in% c("celseq", "celseq2"))
 panc8_sub <- standard_scop(panc8_sub, verbose = FALSE)
+#> ℹ [2026-06-24 03:54:35] Skip `log1p()` because `layer = data` is not "counts"
 panc8_sub <- RunAugur(
   panc8_sub,
   celltype.by = "celltype",
@@ -135,8 +136,18 @@ panc8_sub <- RunAugur(
     importance = "accuracy"
   )
 )
+#> Registered S3 method overwritten by 'yardstick':
+#>   method       from         
+#>   print.metric spatstat.geom
 
 panc8_sub@tools$Augur$AUC
+#> # A tibble: 4 × 2
+#>   cell_type   auc
+#>   <fct>     <dbl>
+#> 1 alpha     0.994
+#> 2 beta      0.991
+#> 3 ductal    0.982
+#> 4 acinar    0.969
 FeatureDimPlot(
   panc8_sub,
   features = "augur_auc",

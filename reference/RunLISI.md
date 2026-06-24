@@ -100,14 +100,22 @@ panc8_sub <- integration_scop(
   batch = "tech",
   integration_method = "Harmony5"
 )
+#> ◌ [2026-06-24 04:25:12] Run integration workflow...
+#> Warning: No layers found matching search pattern provided
+#> ℹ [2026-06-24 04:25:13] Perform `Seurat::NormalizeData()` on split layers for Seurat v5 integration
+#> Error: NormalizeData.Seurat requires one counts layer named 'counts'.
 names(panc8_sub@reductions)
+#> NULL
 
 panc8_sub <- RunLISI(
   panc8_sub,
   reductions = c("pcaUMAP2D", "Harmony5UMAP2D")
 )
+#> Error in RunLISI(panc8_sub, reductions = c("pcaUMAP2D", "Harmony5UMAP2D")): Reductions not found in <Seurat>: "pcaUMAP2D" and "Harmony5UMAP2D"
 LISIPlot(
   panc8_sub,
   combine = TRUE
 )
+#> Error in benchmark_feature_plot(srt = srt, features = features, tool_name = tool_name,     reduction = reduction, plot_type = plot_type, plot_boxplot = plot_boxplot,     boxplot_jitter = boxplot_jitter, combine = combine, nrow = nrow,     ncol = ncol, byrow = byrow, pt.size = pt.size, pt.alpha = pt.alpha,     palette = palette, palcolor = palcolor, theme_use = theme_use,     theme_args = theme_args, verbose = verbose, ...): No per-cell benchmark columns found. Please provide `features` or a
+#> valid `tool_name`.
 ```

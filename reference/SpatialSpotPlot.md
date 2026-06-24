@@ -240,6 +240,7 @@ SpatialSpotPlot(
   group.by = "coda_label"
 )
 
+
 SpatialSpotPlot(
   visium_human_pancreas_sub,
   features = rownames(visium_human_pancreas_sub)[1:2],

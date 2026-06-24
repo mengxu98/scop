@@ -110,23 +110,45 @@ A `Seurat` object with `CellChat` results stored in
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
+#> ℹ [2026-06-24 03:59:28] Start standard processing workflow...
+#> ℹ [2026-06-24 03:59:29] Checking a list of <Seurat>...
+#> ! [2026-06-24 03:59:29] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 03:59:29] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 03:59:29] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 03:59:30] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-24 03:59:30] Number of available HVF: 2000
+#> ℹ [2026-06-24 03:59:30] Finished check
+#> ℹ [2026-06-24 03:59:30] Perform `ScaleData()`
+#> ℹ [2026-06-24 03:59:30] Perform pca linear dimension reduction
+#> ℹ [2026-06-24 03:59:31] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-24 03:59:31] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-24 03:59:31] Reorder clusters...
+#> ℹ [2026-06-24 03:59:31] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-24 03:59:31] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-24 03:59:38] Standard processing workflow completed
 pancreas_sub <- RunCellChat(
   pancreas_sub,
   group.by = "CellType",
   species = "Mus_musculus"
 )
+#> ℹ [2026-06-24 03:59:38] Start CellChat analysis
+#> Error in loadNamespace(name): there is no package called ‘CellChat’
 
 CCCNetworkPlot(
   pancreas_sub,
   method = "CellChat",
   plot_type = "bipartite"
 )
+#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
+#> `condition`
 
 CCCHeatmap(
   pancreas_sub,
   method = "CellChat",
   plot_type = "heatmap"
 )
+#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
+#> `condition`
 
 CCCStatPlot(
   pancreas_sub,
@@ -134,4 +156,6 @@ CCCStatPlot(
   plot_type = "violin",
   top_n = 50
 )
+#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
+#> `condition`
 ```

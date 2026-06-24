@@ -271,11 +271,28 @@ FeatureCorPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
+#> ℹ [2026-06-24 03:24:48] Start standard processing workflow...
+#> ℹ [2026-06-24 03:24:49] Checking a list of <Seurat>...
+#> ! [2026-06-24 03:24:49] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 03:24:49] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 03:24:49] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 03:24:49] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-24 03:24:49] Number of available HVF: 2000
+#> ℹ [2026-06-24 03:24:49] Finished check
+#> ℹ [2026-06-24 03:24:49] Perform `ScaleData()`
+#> ℹ [2026-06-24 03:24:49] Perform pca linear dimension reduction
+#> ℹ [2026-06-24 03:24:50] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-24 03:24:50] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-24 03:24:50] Reorder clusters...
+#> ℹ [2026-06-24 03:24:50] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-24 03:24:50] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-24 03:24:57] Standard processing workflow completed
 FeatureCorPlot(
   pancreas_sub,
   features = rownames(pancreas_sub)[1:5],
   group.by = "SubCellType"
 )
+
 
 FeatureCorPlot(
   pancreas_sub,
@@ -291,6 +308,11 @@ FeatureCorPlot(
   cor_palette = "Greys",
   cor_range = c(0, 1)
 )
+#> Warning: essentially perfect fit: summary may be unreliable
+#> Warning: essentially perfect fit: summary may be unreliable
+#> Warning: essentially perfect fit: summary may be unreliable
+#> Warning: essentially perfect fit: summary may be unreliable
+
 
 FeatureCorPlot(
   pancreas_sub,

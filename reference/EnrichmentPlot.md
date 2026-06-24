@@ -295,10 +295,35 @@ EnrichmentPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
+#> ℹ [2026-06-24 03:22:48] Start standard processing workflow...
+#> ℹ [2026-06-24 03:22:49] Checking a list of <Seurat>...
+#> ! [2026-06-24 03:22:49] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 03:22:49] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 03:22:49] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 03:22:49] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-24 03:22:49] Number of available HVF: 2000
+#> ℹ [2026-06-24 03:22:50] Finished check
+#> ℹ [2026-06-24 03:22:50] Perform `ScaleData()`
+#> ℹ [2026-06-24 03:22:50] Perform pca linear dimension reduction
+#> ℹ [2026-06-24 03:22:51] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-24 03:22:51] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-24 03:22:51] Reorder clusters...
+#> ℹ [2026-06-24 03:22:51] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-24 03:22:51] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-24 03:22:57] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
+#> ℹ [2026-06-24 03:22:58] Data type is log-normalized
+#> ℹ [2026-06-24 03:22:58] Start differential expression test
+#> ℹ [2026-06-24 03:22:58] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-06-24 03:22:58] Using 1 core
+#> ⠙ [2026-06-24 03:22:58] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ✔ [2026-06-24 03:22:58] Completed 5 tasks in 1.2s
+#> 
+#> ℹ [2026-06-24 03:22:58] Building results
+#> ✔ [2026-06-24 03:22:59] Differential expression test completed
 
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
@@ -306,6 +331,23 @@ pancreas_sub <- RunEnrichment(
   group.by = "CellType",
   species = "Mus_musculus"
 )
+#> ℹ [2026-06-24 03:22:59] Start Enrichment analysis
+#> ℹ [2026-06-24 03:22:59] Species: "Mus_musculus"
+#> ℹ [2026-06-24 03:22:59] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-06-24 03:05:59
+#> ℹ [2026-06-24 03:23:29] Preparing database: GO_BP
+#> ℹ [2026-06-24 03:23:42] Preparing database: GO_CC
+#> ℹ [2026-06-24 03:23:46] Convert ID types for the GO_BP database
+#> ℹ [2026-06-24 03:23:47] Converted ID types using local annotation package org.Mm.eg.db
+#> ℹ [2026-06-24 03:23:48] Convert ID types for the GO_CC database
+#> ℹ [2026-06-24 03:23:48] Converted ID types using local annotation package org.Mm.eg.db
+#> ℹ [2026-06-24 03:23:49] Permform enrichment...
+#> ℹ [2026-06-24 03:23:50] Using 1 core
+#> ⠙ [2026-06-24 03:23:50] Running for 1 [1/10] ■           10% | ETA:  5s
+#> ⠹ [2026-06-24 03:23:50] Running for 7 [7/10] ■■■■■■■     70% | ETA:  1s
+#> ✔ [2026-06-24 03:23:50] Completed 10 tasks in 3.6s
+#> 
+#> ℹ [2026-06-24 03:23:50] Building results
+#> ✔ [2026-06-24 03:23:54] Enrichment analysis done
 
 EnrichmentPlot(
   pancreas_sub,
@@ -315,6 +357,7 @@ EnrichmentPlot(
   plot_type = "bar"
 )
 
+
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -323,6 +366,7 @@ EnrichmentPlot(
   color_by = "Groups",
   ncol = 2
 )
+
 
 EnrichmentPlot(
   pancreas_sub,
@@ -349,6 +393,7 @@ EnrichmentPlot(
   )
 )
 
+
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -356,6 +401,7 @@ EnrichmentPlot(
   topTerm = 3,
   plot_type = "comparison"
 )
+
 
 EnrichmentPlot(
   pancreas_sub,
@@ -366,6 +412,7 @@ EnrichmentPlot(
   compare_only_sig = TRUE
 )
 
+
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -373,6 +420,7 @@ EnrichmentPlot(
   group_use = c("Ductal", "Endocrine"),
   plot_type = "comparison"
 )
+
 
 EnrichmentPlot(
   pancreas_sub,
@@ -382,6 +430,7 @@ EnrichmentPlot(
   plot_type = "bar",
   split_by = "Groups"
 )
+
 
 EnrichmentPlot(
   pancreas_sub,
@@ -393,6 +442,7 @@ EnrichmentPlot(
   color_by = "Groups"
 )
 
+
 EnrichmentPlot(
   pancreas_sub,
   db = c("GO_BP", "GO_CC"),
@@ -401,6 +451,7 @@ EnrichmentPlot(
   plot_type = "bar",
   split_by = c("Database", "Groups")
 )
+
 
 EnrichmentPlot(
   pancreas_sub,
@@ -412,6 +463,7 @@ EnrichmentPlot(
   palette = "Set1"
 )
 
+
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -420,6 +472,7 @@ EnrichmentPlot(
   plot_type = "dot",
   palette = "GdRd"
 )
+
 
 EnrichmentPlot(
   pancreas_sub,
@@ -430,6 +483,7 @@ EnrichmentPlot(
   palette = "GdRd"
 )
 
+
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -437,6 +491,7 @@ EnrichmentPlot(
   group_use = "Ductal",
   plot_type = "wordcloud"
 )
+
 
 EnrichmentPlot(
   pancreas_sub,
@@ -447,6 +502,7 @@ EnrichmentPlot(
   word_type = "feature"
 )
 
+
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -454,6 +510,48 @@ EnrichmentPlot(
   group_use = "Ductal",
   plot_type = "network"
 )
+#> Found more than one class "dist" in cache; using the first, from namespace 'spam'
+#> Also defined by ‘BiocGenerics’
+#> Found more than one class "dist" in cache; using the first, from namespace 'spam'
+#> Also defined by ‘BiocGenerics’
+#> ◌ [2026-06-24 03:24:20] Installing: shadowtext...
+#>  
+#> → Package library at /tmp/RtmptoHiaJ/temp_libpath297a1643eee1.
+#> → Will install 1 package.
+#> → The package (0 B) is cached.
+#> + shadowtext   0.1.6 
+#> ✔ All system requirements are already installed.
+#>   
+#> ℹ No downloads are needed, 1 pkg is cached
+#> ✔ Got shadowtext 0.1.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (243.58 kB)
+#> ℹ Installing system requirements
+#> ℹ Executing `sudo sh -c apt-get -y update`
+#> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
+#> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
+#> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
+#> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
+#> Hit:8 https://dl.google.com/linux/chrome-stable/deb stable InRelease
+#> Reading package lists...
+#> ℹ Executing `sudo sh -c apt-get -y install cmake make libuv1-dev libcairo2-dev libfontconfig1-dev libfreetype6-dev libpng-dev pandoc`
+#> Reading package lists...
+#> Building dependency tree...
+#> Reading state information...
+#> cmake is already the newest version (3.28.3-1build7).
+#> make is already the newest version (4.3-4.1build2).
+#> libuv1-dev is already the newest version (1.48.0-1.1build1).
+#> libcairo2-dev is already the newest version (1.18.0-3build1).
+#> libfontconfig1-dev is already the newest version (2.15.0-1.1ubuntu2).
+#> libfreetype-dev is already the newest version (2.13.2+dfsg-1ubuntu0.1).
+#> libpng-dev is already the newest version (1.6.43-5ubuntu0.6).
+#> pandoc is already the newest version (3.1.3+ds-2).
+#> 0 upgraded, 0 newly installed, 0 to remove and 22 not upgraded.
+#> ✔ Installed shadowtext 0.1.6  (1s)
+#> ✔ 1 pkg + 56 deps: kept 56, added 1, dld 1 (243.58 kB) [4.9s]
+#> ✔ [2026-06-24 03:24:25] shadowtext installed successfully
+
 
 EnrichmentPlot(
   pancreas_sub,
@@ -468,6 +566,8 @@ EnrichmentPlot(
     "GO:0030073"
   )
 )
+#> ✔ [2026-06-24 03:24:26] shadowtext installed successfully
+
 
 EnrichmentPlot(
   pancreas_sub,
@@ -477,6 +577,8 @@ EnrichmentPlot(
   plot_type = "network",
   network_layoutadjust = FALSE
 )
+#> ✔ [2026-06-24 03:24:26] shadowtext installed successfully
+
 
 EnrichmentPlot(
   pancreas_sub,
@@ -489,6 +591,8 @@ EnrichmentPlot(
   theme_use = "theme_blank",
   theme_args = list(add_coord = FALSE)
 ) |> thisplot::panel_fix(height = 5)
+#> ✔ [2026-06-24 03:24:28] shadowtext installed successfully
+
 
 EnrichmentPlot(
   pancreas_sub,
@@ -497,6 +601,7 @@ EnrichmentPlot(
   group_use = "Ductal",
   plot_type = "enrichmap"
 )
+
 
 EnrichmentPlot(
   pancreas_sub,
@@ -507,6 +612,7 @@ EnrichmentPlot(
   enrichmap_expand = c(2, 1)
 )
 
+
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -516,6 +622,7 @@ EnrichmentPlot(
   enrichmap_show_keyword = TRUE,
   character_width = 10
 )
+
 
 EnrichmentPlot(
   pancreas_sub,
@@ -531,6 +638,7 @@ EnrichmentPlot(
   theme_use = "theme_blank",
   theme_args = list(add_coord = FALSE)
 ) |> thisplot::panel_fix(height = 4)
+
 
 if (interactive()) {
   pancreas_sub <- RunEnrichment(

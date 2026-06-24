@@ -161,33 +161,43 @@ Default is <code>TRUE</code>.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"R.cache"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
-<span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">AnnotateFeatures</span><span class="op">(</span></span>
-<span>    <span class="va">pancreas_sub</span>,</span>
-<span>    species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span>
-<span>    db <span class="op">=</span> <span class="st">"TF"</span></span>
-<span>  <span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="GetFeaturesData.html">GetFeaturesData</a></span><span class="op">(</span></span>
-<span>      <span class="va">pancreas_sub</span></span>
-<span>    <span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="co"># Annotate features using a GTF file</span></span>
-<span><span class="va">gtf_file</span> <span class="op">&lt;-</span> <span class="st">"/refdata-gex-mm10-2020-A/genes/genes.gtf"</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="va">gtf_file</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">AnnotateFeatures</span><span class="op">(</span></span>
-<span>    <span class="va">pancreas_sub</span>,</span>
-<span>    gtf <span class="op">=</span> <span class="va">gtf_file</span></span>
-<span>  <span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="GetFeaturesData.html">GetFeaturesData</a></span><span class="op">(</span></span>
-<span>      <span class="va">pancreas_sub</span></span>
-<span>    <span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"R.cache"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">AnnotateFeatures</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">pancreas_sub</span>,</span></span>
+<span class="r-in"><span>    species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span></span>
+<span class="r-in"><span>    db <span class="op">=</span> <span class="st">"TF"</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="GetFeaturesData.html">GetFeaturesData</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>      <span class="va">pancreas_sub</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 02:41:21] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 02:41:21] Preparing database: TF</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               highly_variable_genes   TF</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Xkr4                          False &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Mrpl15                        False &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Npbwr1                         &lt;NA&gt; &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4732440D04Rik                 False &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Gm26901                       False &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sntg1                          True &lt;NA&gt;</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Annotate features using a GTF file</span></span></span>
+<span class="r-in"><span><span class="va">gtf_file</span> <span class="op">&lt;-</span> <span class="st">"/refdata-gex-mm10-2020-A/genes/genes.gtf"</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="va">gtf_file</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">AnnotateFeatures</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">pancreas_sub</span>,</span></span>
+<span class="r-in"><span>    gtf <span class="op">=</span> <span class="va">gtf_file</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="GetFeaturesData.html">GetFeaturesData</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>      <span class="va">pancreas_sub</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+</code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

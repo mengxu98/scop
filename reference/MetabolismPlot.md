@@ -55,6 +55,22 @@ MetabolismPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
+#> ℹ [2026-06-24 03:51:51] Start standard processing workflow...
+#> ℹ [2026-06-24 03:51:52] Checking a list of <Seurat>...
+#> ! [2026-06-24 03:51:52] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 03:51:52] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 03:51:52] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 03:51:52] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-24 03:51:52] Number of available HVF: 2000
+#> ℹ [2026-06-24 03:51:52] Finished check
+#> ℹ [2026-06-24 03:51:52] Perform `ScaleData()`
+#> ℹ [2026-06-24 03:51:52] Perform pca linear dimension reduction
+#> ℹ [2026-06-24 03:51:53] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-24 03:51:53] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-24 03:51:53] Reorder clusters...
+#> ℹ [2026-06-24 03:51:53] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-24 03:51:54] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-24 03:52:00] Standard processing workflow completed
 pancreas_sub <- RunMetabolism(
   pancreas_sub,
   db = c("KEGG", "REACTOME"),
@@ -62,6 +78,21 @@ pancreas_sub <- RunMetabolism(
   species = "Mus_musculus",
   method = "AUCell"
 )
+#> ℹ [2026-06-24 03:52:00] Start metabolism pathway scoring
+#> ℹ [2026-06-24 03:52:00] Data type is raw counts
+#> ℹ [2026-06-24 03:52:00] Averaging expression by "CellType" ...
+#> ℹ [2026-06-24 03:52:00] Aggregated expression: 15998 genes x 5 groups
+#> ℹ [2026-06-24 03:52:00] Using `PrepareDB()` for species-aware gene set construction
+#> ℹ [2026-06-24 03:52:01]   KEGG pathway refs: 85, Reactome pathway names: 82
+#> ℹ [2026-06-24 03:52:01] Species: "Mus_musculus"
+#> ℹ [2026-06-24 03:52:01] Preparing KEGG database
+#> ℹ [2026-06-24 03:52:03] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): cannot open URL 'https://rest.kegg.jp/list/organism'>
+#> ! [2026-06-24 03:52:03] Failed to download using auto, from <https://rest.kegg.jp/list/organism>
+#> ℹ [2026-06-24 03:52:05] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): 'wget' call had nonzero exit status>
+#> ! [2026-06-24 03:52:05] Failed to download using wget, from <https://rest.kegg.jp/list/organism>
+#> ℹ [2026-06-24 03:52:08] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): cannot open URL 'https://rest.kegg.jp/list/organism'>
+#> ! [2026-06-24 03:52:08] Failed to download using libcurl, from <https://rest.kegg.jp/list/organism>
+#> Error in `[.data.frame`(orgs, , 3): undefined columns selected
 
 ht1 <- MetabolismPlot(
   pancreas_sub,
@@ -72,7 +103,9 @@ ht1 <- MetabolismPlot(
   width = 1,
   height = 2
 )
+#> Error in MetabolismPlot(pancreas_sub, group.by = "CellType", plot_type = "heatmap",     topTerm = 10, show_row_names = TRUE, width = 1, height = 2): Metabolism results not found. Please run RunMetabolism first
 ht1$plot
+#> Error: object 'ht1' not found
 
 ht2 <- MetabolismPlot(
   pancreas_sub,
@@ -84,7 +117,9 @@ ht2 <- MetabolismPlot(
   width = 1,
   height = 2
 )
+#> Error in MetabolismPlot(pancreas_sub, group.by = "CellType", plot_type = "heatmap",     n_split = 3, topTerm = 100, use_raster = TRUE, width = 1,     height = 2): Metabolism results not found. Please run RunMetabolism first
 ht2$plot
+#> Error: object 'ht2' not found
 
 MetabolismPlot(
   pancreas_sub,
@@ -93,6 +128,7 @@ MetabolismPlot(
   plot_type = "comparison",
   topTerm = 5
 )
+#> Error in MetabolismPlot(pancreas_sub, group.by = "CellType", db = "GO_BP",     plot_type = "comparison", topTerm = 5): Metabolism results not found. Please run RunMetabolism first
 
 MetabolismPlot(
   pancreas_sub,
@@ -102,6 +138,7 @@ MetabolismPlot(
   plot_type = "bar",
   topTerm = 5
 )
+#> Error in MetabolismPlot(pancreas_sub, group.by = "CellType", db = "GO_BP",     group_use = "Ductal", plot_type = "bar", topTerm = 5): Metabolism results not found. Please run RunMetabolism first
 
 MetabolismPlot(
   pancreas_sub,
@@ -111,6 +148,7 @@ MetabolismPlot(
   plot_type = "network",
   topTerm = 3
 )
+#> Error in MetabolismPlot(pancreas_sub, group.by = "CellType", group_use = "Ductal",     db = "GO_BP", plot_type = "network", topTerm = 3): Metabolism results not found. Please run RunMetabolism first
 
 MetabolismPlot(
   pancreas_sub,
@@ -119,6 +157,7 @@ MetabolismPlot(
   db = "GO_BP",
   plot_type = "enrichmap"
 )
+#> Error in MetabolismPlot(pancreas_sub, group.by = "CellType", group_use = "Ductal",     db = "GO_BP", plot_type = "enrichmap"): Metabolism results not found. Please run RunMetabolism first
 
 MetabolismPlot(
   pancreas_sub,
@@ -127,6 +166,7 @@ MetabolismPlot(
   plot_type = "wordcloud",
   word_type = "feature"
 )
+#> Error in MetabolismPlot(pancreas_sub, group.by = "CellType", group_use = "Ductal",     plot_type = "wordcloud", word_type = "feature"): Metabolism results not found. Please run RunMetabolism first
 
 pancreas_sub <- RunMetabolism(
   pancreas_sub,
@@ -134,6 +174,19 @@ pancreas_sub <- RunMetabolism(
   db = c("KEGG", "REACTOME"),
   species = "Mus_musculus"
 )
+#> ℹ [2026-06-24 03:52:10] Start metabolism pathway scoring
+#> ℹ [2026-06-24 03:52:10] Data type is raw counts
+#> ℹ [2026-06-24 03:52:10] Using `PrepareDB()` for species-aware gene set construction
+#> ℹ [2026-06-24 03:52:10]   KEGG pathway refs: 85, Reactome pathway names: 82
+#> ℹ [2026-06-24 03:52:10] Species: "Mus_musculus"
+#> ℹ [2026-06-24 03:52:11] Preparing KEGG database
+#> ℹ [2026-06-24 03:52:12] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): cannot open URL 'https://rest.kegg.jp/list/organism'>
+#> ! [2026-06-24 03:52:12] Failed to download using auto, from <https://rest.kegg.jp/list/organism>
+#> ℹ [2026-06-24 03:52:14] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): 'wget' call had nonzero exit status>
+#> ! [2026-06-24 03:52:14] Failed to download using wget, from <https://rest.kegg.jp/list/organism>
+#> ℹ [2026-06-24 03:52:16] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): cannot open URL 'https://rest.kegg.jp/list/organism'>
+#> ! [2026-06-24 03:52:16] Failed to download using libcurl, from <https://rest.kegg.jp/list/organism>
+#> Error in `[.data.frame`(orgs, , 3): undefined columns selected
 
 FeatureDimPlot(
   pancreas_sub,
@@ -141,6 +194,8 @@ FeatureDimPlot(
   features = rownames(pancreas_sub[["METABOLISM"]])[1:2],
   reduction = "umap"
 )
+#> Error in pancreas_sub[["METABOLISM"]]: ‘METABOLISM’ not found in this Seurat object
+#>  
 
 FeatureStatPlot(
   pancreas_sub,
@@ -148,6 +203,8 @@ FeatureStatPlot(
   group.by = "CellType",
   assay = "METABOLISM"
 )
+#> Error in GetAssayData5(srt, assay = assay, layer = layer): "METABOLISM" is not an assay present in the given object. Available
+#> assays are: "RNA", "spliced", and "unspliced"
 
 ht <- GroupHeatmap(
   pancreas_sub,
@@ -158,4 +215,6 @@ ht <- GroupHeatmap(
   width = 1,
   height = 2
 )
+#> Error in pancreas_sub[["METABOLISM"]]: ‘METABOLISM’ not found in this Seurat object
+#>  
 ```

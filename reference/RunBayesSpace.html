@@ -151,22 +151,49 @@ results in <code>srt@tools[["BayesSpace"]]</code>.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span>
-<span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">RunBayesSpace</span><span class="op">(</span></span>
-<span>  <span class="va">visium_human_pancreas_sub</span>,</span>
-<span>  q <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>  n.PCs <span class="op">=</span> <span class="fl">5</span>,</span>
-<span>  n.HVGs <span class="op">=</span> <span class="fl">200</span>,</span>
-<span>  store_sce <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  spatial_cluster_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    nrep <span class="op">=</span> <span class="fl">200</span>,</span>
-<span>    burn.in <span class="op">=</span> <span class="fl">50</span>,</span>
-<span>    thin <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>    save.chain <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">$</span><span class="va">BayesSpace_cluster</span><span class="op">)</span></span>
-<span><span class="fu"><a href="SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span><span class="va">spatial</span>, group.by <span class="op">=</span> <span class="st">"BayesSpace_cluster"</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">RunBayesSpace</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">visium_human_pancreas_sub</span>,</span></span>
+<span class="r-in"><span>  q <span class="op">=</span> <span class="fl">3</span>,</span></span>
+<span class="r-in"><span>  n.PCs <span class="op">=</span> <span class="fl">5</span>,</span></span>
+<span class="r-in"><span>  n.HVGs <span class="op">=</span> <span class="fl">200</span>,</span></span>
+<span class="r-in"><span>  store_sce <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span>  spatial_cluster_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    nrep <span class="op">=</span> <span class="fl">200</span>,</span></span>
+<span class="r-in"><span>    burn.in <span class="op">=</span> <span class="fl">50</span>,</span></span>
+<span class="r-in"><span>    thin <span class="op">=</span> <span class="fl">10</span>,</span></span>
+<span class="r-in"><span>    save.chain <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 03:58:47] Convert <span style="color: #0000BB;">&lt;Seurat&gt;</span> to <span style="color: #0000BB;">&lt;SingleCellExperiment&gt;</span> for <span style="color: #0000BB;">BayesSpace</span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘scale.data’ is empty</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'librarySizeFactors' is deprecated.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> Use 'scrapper::centerSizeFactors' instead.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> See help("Deprecated")</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'normalizeCounts' is deprecated.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> Use 'scrapper::normalizeCounts' instead.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> See help("Deprecated")</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'fitTrendVar' is deprecated.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> Use 'scrapper::fitVarianceTrend' instead.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> See help("Deprecated")</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'combineBlocks' is deprecated.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> See help("Deprecated")</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'getTopHVGs' is deprecated.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> Use 'scrapper::chooseHighlyVariableGenes' instead.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> See help("Deprecated")</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 03:58:48] Run <span style="color: #0000BB;">BayesSpace</span> spatial clustering with `q = 3`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Neighbors were identified for 1974 out of 1986 spots.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Fitting model...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating labels using iterations 51 through 200.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 03:58:52] <span style="color: #0000BB;">BayesSpace</span> clusters stored in metadata column <span style="color: #0000BB;">"BayesSpace_cluster"</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">$</span><span class="va">BayesSpace_cluster</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1    2    3 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1237  549  200 </span>
+<span class="r-in"><span><span class="fu"><a href="SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span><span class="va">spatial</span>, group.by <span class="op">=</span> <span class="st">"BayesSpace_cluster"</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="RunBayesSpace-1.png" alt="" width="700" height="433"></span>
+</code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

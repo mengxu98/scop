@@ -45,11 +45,31 @@ Default reduction name.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
+#> ℹ [2026-06-24 03:16:34] Start standard processing workflow...
+#> ℹ [2026-06-24 03:16:34] Checking a list of <Seurat>...
+#> ! [2026-06-24 03:16:34] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 03:16:34] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 03:16:35] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 03:16:35] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-24 03:16:35] Number of available HVF: 2000
+#> ℹ [2026-06-24 03:16:35] Finished check
+#> ℹ [2026-06-24 03:16:35] Perform `ScaleData()`
+#> ℹ [2026-06-24 03:16:35] Perform pca linear dimension reduction
+#> ℹ [2026-06-24 03:16:36] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-24 03:16:36] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-24 03:16:36] Reorder clusters...
+#> ℹ [2026-06-24 03:16:36] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-24 03:16:36] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-24 03:16:42] Standard processing workflow completed
 names(pancreas_sub@reductions)
+#> [1] "Standardpca"       "StandardpcaUMAP2D" "StandardUMAP2D"   
 
 DefaultReduction(pancreas_sub)
+#> [1] "StandardUMAP2D"
 
 DefaultReduction(pancreas_sub, pattern = "pca")
+#> [1] "Standardpca"
 
 DefaultReduction(pancreas_sub, pattern = "umap")
+#> [1] "StandardUMAP2D"
 ```

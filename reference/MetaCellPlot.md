@@ -171,17 +171,21 @@ A `ggplot` object, or a named list of ggplot2 layers when
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub, verbose = FALSE)
+#> ℹ [2026-06-24 03:51:38] Skip `log1p()` because `layer = data` is not "counts"
 mc <- RunMetaCell(
   pancreas_sub,
   method = "supercell",
   gamma = 20
 )
+#> ℹ [2026-06-24 03:51:51] Running SuperCell with gamma = 20, k.knn = 5 on 1000 cells
+#> Error in loadNamespace(name): there is no package called ‘SuperCell’
 
 MetaCellPlot(
   mc,
   group.by = "CellType",
   palette_metacell = "ChineseSet8"
 )
+#> Error: object 'mc' not found
 
 MetaCellPlot(
   mc,
@@ -190,6 +194,7 @@ MetaCellPlot(
   palette = "ChineseSet8",
   show_cells = TRUE
 )
+#> Error: object 'mc' not found
 
 CellDimPlot(
   pancreas_sub, group.by = "CellType"
@@ -200,4 +205,5 @@ CellDimPlot(
     return_layer = TRUE,
     palette_metacell = "ChineseSet8"
   )
+#> Error: object 'mc' not found
 ```

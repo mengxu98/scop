@@ -67,11 +67,13 @@ RunRareQ(
 
 - Q_cut:
 
-  Q-value threshold passed to `RareQ::FindRare()`.
+  Q-value threshold passed to
+  [`RareQ::FindRare()`](https://rdrr.io/pkg/RareQ/man/FindRare.html).
 
 - ratio:
 
-  Merge-ratio threshold passed to `RareQ::FindRare()`.
+  Merge-ratio threshold passed to
+  [`RareQ::FindRare()`](https://rdrr.io/pkg/RareQ/man/FindRare.html).
 
 - max_iter:
 
@@ -89,9 +91,10 @@ RunRareQ(
 
   Name of the Seurat `Neighbor` object to reuse or create. If `NULL`,
   defaults to `{assay}.nn`, which is the neighbor slot required by
-  `RareQ::ComputeQ()` and `RareQ::FindRare()`. A non-default neighbor is
-  copied to `{assay}.nn` before running RareQ because RareQ reads that
-  slot directly.
+  [`RareQ::ComputeQ()`](https://rdrr.io/pkg/RareQ/man/ComputeQ.html) and
+  [`RareQ::FindRare()`](https://rdrr.io/pkg/RareQ/man/FindRare.html). A
+  non-default neighbor is copied to `{assay}.nn` before running RareQ
+  because RareQ reads that slot directly.
 
 - find_neighbors_params:
 
@@ -141,23 +144,30 @@ pancreas_sub <- standard_scop(
   pancreas_sub,
   verbose = FALSE
 )
+#> ℹ [2026-06-24 04:27:49] Skip `log1p()` because `layer = data` is not "counts"
 pancreas_sub <- RunRareQ(
   pancreas_sub,
   dims = 1:20
 )
+#> ℹ [2026-06-24 04:28:24] Build Seurat nearest neighbors for RareQ using reduction "Standardpca"
+#> Error: FindNeighbors.Seurat received unsupported arguments for the scop implementation.
 
 CellDimPlot(
   pancreas_sub,
   group.by = "RareQ_cluster"
 )
+#> Error in CellDimPlot(pancreas_sub, group.by = "RareQ_cluster"): "RareQ_cluster" is not in the meta.data of srt object
 
 CellDimPlot(
   pancreas_sub,
   group.by = "RareQ_is_rare"
 )
+#> Error in CellDimPlot(pancreas_sub, group.by = "RareQ_is_rare"): "RareQ_is_rare" is not in the meta.data of srt object
 
 FeatureDimPlot(
   pancreas_sub,
   features = "RareQ_Q"
 )
+#> ! [2026-06-24 04:28:24] "RareQ_Q" are not in the features of <Seurat>
+#> Error in FeatureDimPlot(pancreas_sub, features = "RareQ_Q"): There are no valid features present.
 ```

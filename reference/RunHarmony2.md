@@ -89,17 +89,49 @@ RunHarmony2(
 ``` r
 data(panc8_sub)
 panc8_sub <- standard_scop(panc8_sub)
+#> ℹ [2026-06-24 04:23:41] Start standard processing workflow...
+#> ℹ [2026-06-24 04:23:42] Checking a list of <Seurat>...
+#> ! [2026-06-24 04:23:42] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 04:23:42] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 04:23:42] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 04:23:42] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-24 04:23:42] Number of available HVF: 2000
+#> ℹ [2026-06-24 04:23:42] Finished check
+#> ℹ [2026-06-24 04:23:42] Perform `ScaleData()`
+#> ℹ [2026-06-24 04:23:42] Perform pca linear dimension reduction
+#> ℹ [2026-06-24 04:23:43] Use stored estimated dimensions 1:27 for Standardpca
+#> ℹ [2026-06-24 04:23:43] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-24 04:23:43] Reorder clusters...
+#> ℹ [2026-06-24 04:23:44] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-24 04:23:44] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-24 04:23:52] Standard processing workflow completed
 panc8_sub <- RunHarmony2(
   panc8_sub,
   group.by.vars = "tech",
   reduction = "pca"
 )
+#> Transposing data matrix
+#> Using automatic lambda estimation
+#> Thetas: 2
+#> Initializing state using k-means centroids initialization
+#> Initializing centroids
+#> Harmony 1/10
+#> Harmony 2/10
+#> Harmony 3/10
+#> Harmony 4/10
+#> Harmony 5/10
+#> Harmony 6/10
+#> Harmony 7/10
+#> Harmony 8/10
+#> Harmony 9/10
+#> Harmony converged after 9 iterations
 
 CellDimPlot(
   panc8_sub,
   group.by = c("tech", "celltype"),
   reduction = "pca"
 )
+
 
 CellDimPlot(
   panc8_sub,
@@ -107,17 +139,35 @@ CellDimPlot(
   reduction = "Harmony"
 )
 
+
 panc8_sub <- standard_scop(
   panc8_sub,
   prefix = "Harmony",
   linear_reduction = "Harmony"
 )
+#> ℹ [2026-06-24 04:24:02] Start standard processing workflow...
+#> ℹ [2026-06-24 04:24:02] Checking a list of <Seurat>...
+#> ℹ [2026-06-24 04:24:03] Data 1/1 of the `srt_list` has been log-normalized
+#> ℹ [2026-06-24 04:24:03] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 04:24:03] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-24 04:24:04] Number of available HVF: 2000
+#> ℹ [2026-06-24 04:24:04] Finished check
+#> ℹ [2026-06-24 04:24:04] Perform `ScaleData()`
+#> ℹ [2026-06-24 04:24:04] Perform Harmony linear dimension reduction
+#> ℹ [2026-06-24 04:24:04] `linear_reduction` Harmony is already existed. Skip calculation
+#> ℹ [2026-06-24 04:24:04] Use stored estimated dimensions 1:15 for HarmonyHarmony
+#> ℹ [2026-06-24 04:24:04] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-24 04:24:04] Reorder clusters...
+#> ℹ [2026-06-24 04:24:04] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-24 04:24:04] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-24 04:24:13] Standard processing workflow completed
 
 CellDimPlot(
   panc8_sub,
   group.by = c("tech", "celltype"),
   reduction = "StandardpcaUMAP2D"
 )
+
 
 CellDimPlot(
   panc8_sub,

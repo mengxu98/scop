@@ -384,100 +384,101 @@ Otherwise, a plot object or list of plots.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
-<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
-<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunSCENIC.html">RunSCENIC</a></span><span class="op">(</span></span>
-<span>  <span class="va">pancreas_sub</span>,</span>
-<span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span>
-<span>  backend <span class="op">=</span> <span class="st">"cpp"</span>,</span>
-<span>  work_dir <span class="op">=</span> <span class="st">"test/scenic"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">scenic_rss</span> <span class="op">&lt;-</span> <span class="fu">SCENICPlot</span><span class="op">(</span></span>
-<span>  <span class="va">pancreas_sub</span>,</span>
-<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
-<span>  plot_type <span class="op">=</span> <span class="st">"rss_rank"</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">scenic_rss</span><span class="op">$</span><span class="va">plot</span></span>
-<span><span class="va">example_regulons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">scenic_rss</span><span class="op">$</span><span class="va">top_table</span><span class="op">$</span><span class="va">regulon</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span></span>
-<span><span class="va">example_tfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">scenic_rss</span><span class="op">$</span><span class="va">top_table</span><span class="op">$</span><span class="va">TF</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span></span>
-<span></span>
-<span><span class="fu">SCENICPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group.by <span class="op">=</span> <span class="st">"CellType"</span>, plot_type <span class="op">=</span> <span class="st">"rss_heatmap"</span><span class="op">)</span></span>
-<span><span class="fu">SCENICPlot</span><span class="op">(</span></span>
-<span>  <span class="va">pancreas_sub</span>,</span>
-<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
-<span>  plot_type <span class="op">=</span> <span class="st">"rss_heatmap"</span>,</span>
-<span>  width <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>  height <span class="op">=</span> <span class="fl">3</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu">SCENICPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group.by <span class="op">=</span> <span class="st">"CellType"</span>, plot_type <span class="op">=</span> <span class="st">"rss_dotplot"</span><span class="op">)</span></span>
-<span><span class="fu">SCENICPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group.by <span class="op">=</span> <span class="st">"CellType"</span>, plot_type <span class="op">=</span> <span class="st">"activity_heatmap"</span><span class="op">)</span></span>
-<span><span class="fu">SCENICPlot</span><span class="op">(</span></span>
-<span>  <span class="va">pancreas_sub</span>,</span>
-<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
-<span>  plot_type <span class="op">=</span> <span class="st">"rss_heatmap"</span>,</span>
-<span>  heatmap_order <span class="op">=</span> <span class="st">"group"</span>,</span>
-<span>  heatmap_cluster_columns <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu">SCENICPlot</span><span class="op">(</span></span>
-<span>  <span class="va">pancreas_sub</span>,</span>
-<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
-<span>  plot_type <span class="op">=</span> <span class="st">"rss_heatmap"</span>,</span>
-<span>  rss_scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  heatmap_order <span class="op">=</span> <span class="st">"group"</span>,</span>
-<span>  heatmap_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu">SCENICPlot</span><span class="op">(</span></span>
-<span>  <span class="va">pancreas_sub</span>,</span>
-<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
-<span>  plot_type <span class="op">=</span> <span class="st">"activity_heatmap"</span>,</span>
-<span>  activity_scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  heatmap_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu">SCENICPlot</span><span class="op">(</span></span>
-<span>  <span class="va">pancreas_sub</span>,</span>
-<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
-<span>  plot_type <span class="op">=</span> <span class="st">"activity_violin"</span>,</span>
-<span>  features <span class="op">=</span> <span class="va">example_regulons</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu">SCENICPlot</span><span class="op">(</span></span>
-<span>  <span class="va">pancreas_sub</span>,</span>
-<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
-<span>  plot_type <span class="op">=</span> <span class="st">"activity_dim"</span>,</span>
-<span>  features <span class="op">=</span> <span class="va">example_regulons</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu">SCENICPlot</span><span class="op">(</span></span>
-<span>  <span class="va">pancreas_sub</span>,</span>
-<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
-<span>  plot_type <span class="op">=</span> <span class="st">"activity_cor_dumbbell"</span>,</span>
-<span>  features <span class="op">=</span> <span class="va">example_regulons</span>,</span>
-<span>  cor.features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"nFeature_RNA"</span>, <span class="st">"nCount_RNA"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu">SCENICPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group.by <span class="op">=</span> <span class="st">"CellType"</span>, plot_type <span class="op">=</span> <span class="st">"regulon_size"</span><span class="op">)</span></span>
-<span><span class="fu">SCENICPlot</span><span class="op">(</span></span>
-<span>  <span class="va">pancreas_sub</span>,</span>
-<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
-<span>  plot_type <span class="op">=</span> <span class="st">"network_graph"</span>,</span>
-<span>  max_targets <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>  max_edges <span class="op">=</span> <span class="fl">500</span>,</span>
-<span>  label_nodes <span class="op">=</span> <span class="st">"tfs"</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu">SCENICPlot</span><span class="op">(</span></span>
-<span>  <span class="va">pancreas_sub</span>,</span>
-<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
-<span>  plot_type <span class="op">=</span> <span class="st">"network"</span>,</span>
-<span>  network_tf <span class="op">=</span> <span class="va">example_tfs</span>,</span>
-<span>  max_targets <span class="op">=</span> <span class="fl">30</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu">SCENICPlot</span><span class="op">(</span></span>
-<span>  <span class="va">pancreas_sub</span>,</span>
-<span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
-<span>  plot_type <span class="op">=</span> <span class="st">"target_bar"</span>,</span>
-<span>  features <span class="op">=</span> <span class="va">example_regulons</span>,</span>
-<span>  max_targets <span class="op">=</span> <span class="fl">20</span></span>
-<span><span class="op">)</span></span>
-<span><span class="op">}</span> <span class="co"># }</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunSCENIC.html">RunSCENIC</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
+<span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span></span>
+<span class="r-in"><span>  backend <span class="op">=</span> <span class="st">"cpp"</span>,</span></span>
+<span class="r-in"><span>  work_dir <span class="op">=</span> <span class="st">"test/scenic"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">scenic_rss</span> <span class="op">&lt;-</span> <span class="fu">SCENICPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"rss_rank"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">scenic_rss</span><span class="op">$</span><span class="va">plot</span></span></span>
+<span class="r-in"><span><span class="va">example_regulons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">scenic_rss</span><span class="op">$</span><span class="va">top_table</span><span class="op">$</span><span class="va">regulon</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">example_tfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">scenic_rss</span><span class="op">$</span><span class="va">top_table</span><span class="op">$</span><span class="va">TF</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">SCENICPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group.by <span class="op">=</span> <span class="st">"CellType"</span>, plot_type <span class="op">=</span> <span class="st">"rss_heatmap"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">SCENICPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"rss_heatmap"</span>,</span></span>
+<span class="r-in"><span>  width <span class="op">=</span> <span class="fl">2</span>,</span></span>
+<span class="r-in"><span>  height <span class="op">=</span> <span class="fl">3</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">SCENICPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group.by <span class="op">=</span> <span class="st">"CellType"</span>, plot_type <span class="op">=</span> <span class="st">"rss_dotplot"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">SCENICPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group.by <span class="op">=</span> <span class="st">"CellType"</span>, plot_type <span class="op">=</span> <span class="st">"activity_heatmap"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">SCENICPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"rss_heatmap"</span>,</span></span>
+<span class="r-in"><span>  heatmap_order <span class="op">=</span> <span class="st">"group"</span>,</span></span>
+<span class="r-in"><span>  heatmap_cluster_columns <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">SCENICPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"rss_heatmap"</span>,</span></span>
+<span class="r-in"><span>  rss_scale <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  heatmap_order <span class="op">=</span> <span class="st">"group"</span>,</span></span>
+<span class="r-in"><span>  heatmap_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">SCENICPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"activity_heatmap"</span>,</span></span>
+<span class="r-in"><span>  activity_scale <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  heatmap_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">SCENICPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"activity_violin"</span>,</span></span>
+<span class="r-in"><span>  features <span class="op">=</span> <span class="va">example_regulons</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">SCENICPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"activity_dim"</span>,</span></span>
+<span class="r-in"><span>  features <span class="op">=</span> <span class="va">example_regulons</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">SCENICPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"activity_cor_dumbbell"</span>,</span></span>
+<span class="r-in"><span>  features <span class="op">=</span> <span class="va">example_regulons</span>,</span></span>
+<span class="r-in"><span>  cor.features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"nFeature_RNA"</span>, <span class="st">"nCount_RNA"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">SCENICPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, group.by <span class="op">=</span> <span class="st">"CellType"</span>, plot_type <span class="op">=</span> <span class="st">"regulon_size"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">SCENICPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"network_graph"</span>,</span></span>
+<span class="r-in"><span>  max_targets <span class="op">=</span> <span class="fl">10</span>,</span></span>
+<span class="r-in"><span>  max_edges <span class="op">=</span> <span class="fl">500</span>,</span></span>
+<span class="r-in"><span>  label_nodes <span class="op">=</span> <span class="st">"tfs"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">SCENICPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"network"</span>,</span></span>
+<span class="r-in"><span>  network_tf <span class="op">=</span> <span class="va">example_tfs</span>,</span></span>
+<span class="r-in"><span>  max_targets <span class="op">=</span> <span class="fl">30</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">SCENICPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"target_bar"</span>,</span></span>
+<span class="r-in"><span>  features <span class="op">=</span> <span class="va">example_regulons</span>,</span></span>
+<span class="r-in"><span>  max_targets <span class="op">=</span> <span class="fl">20</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+</code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

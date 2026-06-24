@@ -297,15 +297,41 @@ VolcanoPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
+#> ℹ [2026-06-24 04:42:59] Start standard processing workflow...
+#> ℹ [2026-06-24 04:43:00] Checking a list of <Seurat>...
+#> ! [2026-06-24 04:43:00] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 04:43:00] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 04:43:00] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 04:43:00] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-24 04:43:00] Number of available HVF: 2000
+#> ℹ [2026-06-24 04:43:00] Finished check
+#> ℹ [2026-06-24 04:43:00] Perform `ScaleData()`
+#> ℹ [2026-06-24 04:43:00] Perform pca linear dimension reduction
+#> ℹ [2026-06-24 04:43:02] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-24 04:43:02] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-24 04:43:02] Reorder clusters...
+#> ℹ [2026-06-24 04:43:02] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-24 04:43:02] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-24 04:43:10] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
+#> ℹ [2026-06-24 04:43:10] Data type is log-normalized
+#> ℹ [2026-06-24 04:43:10] Start differential expression test
+#> ℹ [2026-06-24 04:43:10] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-06-24 04:43:10] Using 1 core
+#> ⠙ [2026-06-24 04:43:10] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ✔ [2026-06-24 04:43:10] Completed 5 tasks in 831ms
+#> 
+#> ℹ [2026-06-24 04:43:10] Building results
+#> ✔ [2026-06-24 04:43:11] Differential expression test completed
 VolcanoPlot(
   pancreas_sub,
   group.by = "CellType",
   ncol = 2
 )
+
 
 VolcanoPlot(
   pancreas_sub,
@@ -314,12 +340,14 @@ VolcanoPlot(
   ncol = 2
 )
 
+
 VolcanoPlot(
   pancreas_sub,
   group.by = "CellType",
   DE_threshold = "abs(diff_pct) > 0.3 & p_val_adj < 0.05",
   ncol = 2
 )
+
 
 VolcanoPlot(
   pancreas_sub,
@@ -330,6 +358,7 @@ VolcanoPlot(
   ncol = 2
 )
 
+
 VolcanoPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -337,6 +366,17 @@ VolcanoPlot(
   hyperbola_c = 6,
   ncol = 2
 )
+#> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> (`geom_line()`).
+#> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> (`geom_line()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_line()`).
+#> Warning: Removed 11 rows containing missing values or values outside the scale range
+#> (`geom_line()`).
+#> Warning: Removed 5 rows containing missing values or values outside the scale range
+#> (`geom_line()`).
+
 
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
@@ -344,6 +384,17 @@ pancreas_sub <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
+#> ℹ [2026-06-24 04:43:19] Start Enrichment analysis
+#> ℹ [2026-06-24 04:43:19] Species: "Mus_musculus"
+#> ℹ [2026-06-24 04:43:19] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-06-24 03:23:47
+#> ℹ [2026-06-24 04:43:21] Permform enrichment...
+#> ℹ [2026-06-24 04:43:22] Using 1 core
+#> ⠙ [2026-06-24 04:43:22] Running for 1 [1/5] ■■          20% | ETA:  3s
+#> ⠹ [2026-06-24 04:43:22] Running for 2 [2/5] ■■■■        40% | ETA:  2s
+#> ✔ [2026-06-24 04:43:22] Completed 5 tasks in 3.2s
+#> 
+#> ℹ [2026-06-24 04:43:22] Building results
+#> ✔ [2026-06-24 04:43:25] Enrichment analysis done
 VolcanoPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -354,4 +405,14 @@ VolcanoPlot(
   enrich_db = "GO_BP",
   ncol = 2
 )
+#> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> (`geom_line()`).
+#> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> (`geom_line()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_line()`).
+#> Warning: Removed 11 rows containing missing values or values outside the scale range
+#> (`geom_line()`).
+#> Warning: Removed 5 rows containing missing values or values outside the scale range
+#> (`geom_line()`).
 ```

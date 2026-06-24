@@ -189,12 +189,18 @@ pancreas_sub <- RunscTenifoldKnk(
   store_networks = TRUE,
   store_manifold = TRUE
 )
+#> ℹ [2026-06-24 04:47:45] Run scTenifoldKnk knockout for "Pdx1" using "r" backend
+#>   |                                                                              |                                                                      |   0%  |                                                                              |=                                                                     |   1%  |                                                                              |=                                                                     |   2%  |                                                                              |==                                                                    |   2%  |                                                                              |==                                                                    |   3%  |                                                                              |==                                                                    |   4%  |                                                                              |===                                                                   |   4%  |                                                                              |====                                                                  |   5%  |                                                                              |====                                                                  |   6%  |                                                                              |======================================================================| 100%
+#> ✔ [2026-06-24 04:47:49] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
 
 scTenifoldKnkPlot(pancreas_sub, plot_type = "qq")
 
+
 scTenifoldKnkPlot(pancreas_sub, plot_type = "effect")
 
+
 scTenifoldKnkPlot(pancreas_sub, plot_type = "network")
+
 
 scTenifoldKnkPlot(pancreas_sub, plot_type = "manifold")
 ```

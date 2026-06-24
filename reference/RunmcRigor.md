@@ -148,16 +148,20 @@ pancreas_sub <- standard_scop(
   nonlinear_reduction_dims = 2,
   verbose = FALSE
 )
+#> ℹ [2026-06-24 04:41:31] Skip `log1p()` because `layer = data` is not "counts"
 mc <- RunMetaCell(
   pancreas_sub,
   method = "supercell",
   gamma = 25
 )
+#> ℹ [2026-06-24 04:41:45] Running SuperCell with gamma = 25, k.knn = 5 on 1000 cells
+#> Error in loadNamespace(name): there is no package called ‘SuperCell’
 
 membership <- data.frame(
   Metacell = mc@misc[["cell_membership"]],
   row.names = names(mc@misc[["cell_membership"]])
 )
+#> Error: object 'mc' not found
 
 pancreas_sub <- RunmcRigor(
   mc@misc[["original_srt"]],
@@ -166,16 +170,21 @@ pancreas_sub <- RunmcRigor(
   feature_use = 100,
   draw = FALSE
 )
+#> Error: object 'mc' not found
 
 table(pancreas_sub$mcRigor_status)
+#> Error in x[[i, drop = TRUE]]: ‘mcRigor_status’ not found in this Seurat object
+#>  
 
 CellDimPlot(
   pancreas_sub,
   group.by = "mcRigor_metacell"
 )
+#> Error in CellDimPlot(pancreas_sub, group.by = "mcRigor_metacell"): "mcRigor_metacell" is not in the meta.data of srt object
 
 CellDimPlot(
   pancreas_sub,
   group.by = "mcRigor_status"
 )
+#> Error in CellDimPlot(pancreas_sub, group.by = "mcRigor_status"): "mcRigor_status" is not in the meta.data of srt object
 ```

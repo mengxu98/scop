@@ -140,6 +140,7 @@ A `ggplot` object, or a list with `plot` and `data` when
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub, verbose = FALSE)
+#> ℹ [2026-06-24 03:16:53] Skip `log1p()` because `layer = data` is not "counts"
 pancreas_sub <- RunDorothea(
   pancreas_sub,
   layer = "counts",
@@ -148,6 +149,8 @@ pancreas_sub <- RunDorothea(
   minsize = 5,
   new_assay = FALSE
 )
+#> ℹ [2026-06-24 03:18:55] Run DoRothEA/decoupleR with 12895 regulon edges
+#> ℹ [2026-06-24 03:19:06] DoRothEA TF activity scores stored in <Seurat> metadata
 groups <- unique(as.character(pancreas_sub$CellType))
 DorotheaPlot(
   pancreas_sub,
@@ -155,4 +158,5 @@ DorotheaPlot(
   group1 = groups[1],
   group2 = groups[2]
 )
+#> ℹ [2026-06-24 03:19:06] Compare DoRothEA TF activity: "Ductal" vs "Ngn3-high-EP"
 ```
