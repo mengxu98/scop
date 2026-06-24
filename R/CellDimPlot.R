@@ -1512,7 +1512,10 @@ CellDimPlot <- function(
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- standard_scop(
+#'   pancreas_sub,
+#'   nonlinear_reduction_dims = 3
+#' )
 #' CellDimPlot3D(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
