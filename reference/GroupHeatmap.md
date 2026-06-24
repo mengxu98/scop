@@ -731,22 +731,22 @@ A list with the following elements:
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-24 03:41:30] Start standard processing workflow...
-#> ℹ [2026-06-24 03:41:31] Checking a list of <Seurat>...
-#> ! [2026-06-24 03:41:31] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-24 03:41:31] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-24 03:41:31] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-24 03:41:31] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-24 03:41:32] Number of available HVF: 2000
-#> ℹ [2026-06-24 03:41:32] Finished check
-#> ℹ [2026-06-24 03:41:32] Perform `ScaleData()`
-#> ℹ [2026-06-24 03:41:32] Perform pca linear dimension reduction
-#> ℹ [2026-06-24 03:41:32] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-24 03:41:33] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-24 03:41:33] Reorder clusters...
-#> ℹ [2026-06-24 03:41:33] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-24 03:41:33] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-24 03:41:41] Standard processing workflow completed
+#> ℹ [2026-06-24 18:22:00] Start standard processing workflow...
+#> ℹ [2026-06-24 18:22:01] Checking a list of <Seurat>...
+#> ! [2026-06-24 18:22:01] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 18:22:01] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 18:22:01] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 18:22:02] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-24 18:22:02] Number of available HVF: 2000
+#> ℹ [2026-06-24 18:22:02] Finished check
+#> ℹ [2026-06-24 18:22:02] Perform `ScaleData()`
+#> ℹ [2026-06-24 18:22:02] Perform pca linear dimension reduction
+#> ℹ [2026-06-24 18:22:02] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-24 18:22:04] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-24 18:22:05] Reorder clusters...
+#> ℹ [2026-06-24 18:22:05] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-24 18:22:05] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-24 18:22:11] Standard processing workflow completed
 ht1 <- GroupHeatmap(
   pancreas_sub,
   features = c(
@@ -776,27 +776,30 @@ pancreas_sub <- AnnotateFeatures(
   species = "Mus_musculus",
   db = c("CSPA", "TF")
 )
-#> ℹ [2026-06-24 03:41:42] Species: "Mus_musculus"
-#> ℹ [2026-06-24 03:41:42] Loading cached: CSPA version: CSPA nterm:1 created: 2026-06-24 03:21:51
-#> ℹ [2026-06-24 03:41:42] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-06-24 02:41:21
+#> ℹ [2026-06-24 18:22:12] Species: "Mus_musculus"
+#> ℹ [2026-06-24 18:22:12] Loading cached: CSPA version: CSPA nterm:1 created: 2026-06-24 18:07:39
+#> ℹ [2026-06-24 18:22:13] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-06-24 17:28:14
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-06-24 03:41:44] Data type is log-normalized
-#> ℹ [2026-06-24 03:41:44] Start differential expression test
-#> ℹ [2026-06-24 03:41:44] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-06-24 03:41:44] Using 1 core
-#> ⠙ [2026-06-24 03:41:44] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ⠹ [2026-06-24 03:41:44] Running for Ngn3-high-EP [2/5] ■■■■        40% | ETA:  …
-#> ✔ [2026-06-24 03:41:44] Completed 5 tasks in 1.6s
+#> ℹ [2026-06-24 18:22:14] Data type is log-normalized
+#> ℹ [2026-06-24 18:22:14] Start differential expression test
+#> ℹ [2026-06-24 18:22:14] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-06-24 18:22:14] Using 1 core
+#> ⠙ [2026-06-24 18:22:14] Running for Ductal [1/5] ■■          20% | ETA:  0s
+#> ✔ [2026-06-24 18:22:14] Completed 5 tasks in 30ms
 #> 
-#> ℹ [2026-06-24 03:41:44] Building results
-#> ✔ [2026-06-24 03:41:45] Differential expression test completed
+#> ℹ [2026-06-24 18:22:14] Building results
+#> ! [2026-06-24 18:22:14] Found 5 failed results
+#> ℹ [2026-06-24 18:22:14] ✖ Error details:
+#> ℹ                       ✖ At least 1 ident must be specified in `ident.1` (5): "Ductal", "Ngn3-high-EP", "Endocrine" and 2 more
+#> Error in `[.data.frame`(AllMarkers, , "group1"): undefined columns selected
 de_filter <- dplyr::filter(
   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
 )
+#> Error in UseMethod("filter"): no applicable method for 'filter' applied to an object of class "NULL"
 
 ht2 <- GroupHeatmap(
   pancreas_sub,
@@ -807,13 +810,9 @@ ht2 <- GroupHeatmap(
   cluster_rows = TRUE,
   cluster_columns = TRUE
 )
-#> `use_raster` is automatically set to TRUE for a matrix with more than
-#> 2000 rows. You can control `use_raster` argument by explicitly setting
-#> TRUE/FALSE to it.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
+#> Error: object 'de_filter' not found
 ht2$plot
-
+#> Error: object 'ht2' not found
 
 ht3 <- GroupHeatmap(
   pancreas_sub,
@@ -826,29 +825,16 @@ ht3 <- GroupHeatmap(
   anno_keys = TRUE,
   anno_features = TRUE
 )
-#> ℹ [2026-06-24 03:41:55] Start Enrichment analysis
-#> ℹ [2026-06-24 03:41:56] Species: "Mus_musculus"
-#> ℹ [2026-06-24 03:41:56] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-06-24 03:23:47
-#> ℹ [2026-06-24 03:41:57] Permform enrichment...
-#> ℹ [2026-06-24 03:41:58] Using 1 core
-#> ⠙ [2026-06-24 03:41:58] Running for 1 [1/5] ■■          20% | ETA:  3s
-#> ⠹ [2026-06-24 03:41:58] Running for 2 [2/5] ■■■■        40% | ETA:  2s
-#> ✔ [2026-06-24 03:41:58] Completed 5 tasks in 3.2s
-#> 
-#> ℹ [2026-06-24 03:41:58] Building results
-#> ✔ [2026-06-24 03:42:02] Enrichment analysis done
-#> ℹ [2026-06-24 03:42:43] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-06-24 03:42:43] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-06-24 03:42:43] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
-
+#> Error: object 'de_filter' not found
 ht3$plot
-
+#> Error: object 'ht3' not found
 
 de_top <- de_filter |>
   dplyr::group_by(gene) |>
   dplyr::top_n(1, avg_log2FC) |>
   dplyr::group_by(group1) |>
   dplyr::top_n(3, avg_log2FC)
+#> Error: object 'de_filter' not found
 ht4 <- GroupHeatmap(
   pancreas_sub,
   features = de_top$gene,
@@ -874,28 +860,9 @@ ht4 <- GroupHeatmap(
   nlabel = 0,
   show_row_names = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
+#> Error: object 'de_top' not found
 ht4$plot
-
+#> Error: object 'ht4' not found
 
 ht5 <- GroupHeatmap(
   pancreas_sub,
@@ -923,28 +890,9 @@ ht5 <- GroupHeatmap(
   nlabel = 0,
   show_row_names = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
+#> Error: object 'de_top' not found
 ht5$plot
-
+#> Error: object 'ht5' not found
 
 ht6 <- GroupHeatmap(
   pancreas_sub,
@@ -956,158 +904,9 @@ ht6 <- GroupHeatmap(
   nlabel = 0,
   show_row_names = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
+#> Error: object 'de_top' not found
 ht6$plot
-
+#> Error: object 'ht6' not found
 
 ht7 <- GroupHeatmap(
   pancreas_sub,
@@ -1121,8 +920,9 @@ ht7 <- GroupHeatmap(
   nlabel = 0,
   show_row_names = TRUE
 )
+#> Error: object 'de_top' not found
 ht7$plot
-
+#> Error: object 'ht7' not found
 
 ht8 <- GroupHeatmap(
   pancreas_sub,
@@ -1144,5 +944,7 @@ ht8 <- GroupHeatmap(
     row_names_gp = grid::gpar(fontsize = 10)
   )
 )
+#> Error: object 'de_top' not found
 ht8$plot
+#> Error: object 'ht8' not found
 ```

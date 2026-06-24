@@ -214,36 +214,39 @@ A `ggplot` object.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-24 03:29:42] Start standard processing workflow...
-#> ℹ [2026-06-24 03:29:43] Checking a list of <Seurat>...
-#> ! [2026-06-24 03:29:43] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-24 03:29:43] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-24 03:29:43] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-24 03:29:43] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-24 03:29:43] Number of available HVF: 2000
-#> ℹ [2026-06-24 03:29:43] Finished check
-#> ℹ [2026-06-24 03:29:43] Perform `ScaleData()`
-#> ℹ [2026-06-24 03:29:43] Perform pca linear dimension reduction
-#> ℹ [2026-06-24 03:29:44] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-24 03:29:44] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-24 03:29:44] Reorder clusters...
-#> ℹ [2026-06-24 03:29:44] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-24 03:29:44] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-24 03:29:50] Standard processing workflow completed
+#> ℹ [2026-06-24 18:11:20] Start standard processing workflow...
+#> ℹ [2026-06-24 18:11:21] Checking a list of <Seurat>...
+#> ! [2026-06-24 18:11:21] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 18:11:21] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 18:11:21] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 18:11:21] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-24 18:11:21] Number of available HVF: 2000
+#> ℹ [2026-06-24 18:11:21] Finished check
+#> ℹ [2026-06-24 18:11:21] Perform `ScaleData()`
+#> ℹ [2026-06-24 18:11:21] Perform pca linear dimension reduction
+#> ℹ [2026-06-24 18:11:22] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-24 18:11:22] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-24 18:11:22] Reorder clusters...
+#> ℹ [2026-06-24 18:11:23] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-24 18:11:23] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-24 18:11:28] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
   only.pos = FALSE
 )
-#> ℹ [2026-06-24 03:29:51] Data type is log-normalized
-#> ℹ [2026-06-24 03:29:51] Start differential expression test
-#> ℹ [2026-06-24 03:29:51] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-06-24 03:29:51] Using 1 core
-#> ⠙ [2026-06-24 03:29:51] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ✔ [2026-06-24 03:29:51] Completed 5 tasks in 1.4s
+#> ℹ [2026-06-24 18:11:29] Data type is log-normalized
+#> ℹ [2026-06-24 18:11:29] Start differential expression test
+#> ℹ [2026-06-24 18:11:29] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-06-24 18:11:29] Using 1 core
+#> ⠙ [2026-06-24 18:11:29] Running for Ductal [1/5] ■■          20% | ETA:  0s
+#> ✔ [2026-06-24 18:11:29] Completed 5 tasks in 27ms
 #> 
-#> ℹ [2026-06-24 03:29:51] Building results
-#> ✔ [2026-06-24 03:29:52] Differential expression test completed
+#> ℹ [2026-06-24 18:11:29] Building results
+#> ! [2026-06-24 18:11:29] Found 5 failed results
+#> ℹ [2026-06-24 18:11:29] ✖ Error details:
+#> ℹ                       ✖ At least 1 ident must be specified in `ident.1` (5): "Ductal", "Ngn3-high-EP", "Endocrine" and 2 more
+#> Error in `[.data.frame`(AllMarkers, , "group1"): undefined columns selected
 
 de_df <- pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox
 de_df <- de_df[
@@ -251,6 +254,7 @@ de_df <- de_df[
   ,
   drop = FALSE
 ]
+#> Error in abs(de_df$avg_log2FC): non-numeric argument to mathematical function
 de_df$direction <- ifelse(de_df$avg_log2FC > 0, "Up", "Down")
 
 enrich_out <- RunEnrichment(
@@ -259,18 +263,13 @@ enrich_out <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-06-24 03:29:52] Start Enrichment analysis
-#> ℹ [2026-06-24 03:29:52] Species: "Mus_musculus"
-#> ℹ [2026-06-24 03:29:52] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-06-24 03:23:47
-#> ℹ [2026-06-24 03:29:54] Permform enrichment...
-#> ℹ [2026-06-24 03:29:55] Using 1 core
-#> ⠙ [2026-06-24 03:29:55] Running for 1 [1/2] ■■■■■       50% | ETA:  1s
-#> ✔ [2026-06-24 03:29:55] Completed 2 tasks in 1.2s
-#> 
-#> ℹ [2026-06-24 03:29:55] Building results
-#> ✔ [2026-06-24 03:29:56] Enrichment analysis done
+#> ℹ [2026-06-24 18:11:29] Start Enrichment analysis
+#> ℹ [2026-06-24 18:11:29] Species: "Mus_musculus"
+#> ℹ [2026-06-24 18:11:29] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-06-24 17:52:31
+#> Error in names(x) <- value: 'names' attribute [1] must be the same length as the vector [0]
 FerrisWheelPlot(
   res = enrich_out,
   de_results = de_df
 )
+#> Error: object 'enrich_out' not found
 ```

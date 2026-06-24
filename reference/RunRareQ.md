@@ -144,30 +144,31 @@ pancreas_sub <- standard_scop(
   pancreas_sub,
   verbose = FALSE
 )
-#> ℹ [2026-06-24 04:27:49] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-24 19:04:41] Skip `log1p()` because `layer = data` is not "counts"
 pancreas_sub <- RunRareQ(
   pancreas_sub,
   dims = 1:20
 )
-#> ℹ [2026-06-24 04:28:24] Build Seurat nearest neighbors for RareQ using reduction "Standardpca"
-#> Error: FindNeighbors.Seurat received unsupported arguments for the scop implementation.
+#> ℹ [2026-06-24 19:05:15] Build Seurat nearest neighbors for RareQ using reduction "Standardpca"
+#> Computing nearest neighbors
+#> Only one graph name supplied, storing nearest-neighbor graph only
+#> ℹ [2026-06-24 19:05:15] Run RareQ with `k = 6`, `Q_cut = 0.6`, and `ratio = 0.2`
+#> ℹ [2026-06-24 19:05:16] RareQ clusters stored in metadata column "RareQ_cluster"
 
 CellDimPlot(
   pancreas_sub,
   group.by = "RareQ_cluster"
 )
-#> Error in CellDimPlot(pancreas_sub, group.by = "RareQ_cluster"): "RareQ_cluster" is not in the meta.data of srt object
+
 
 CellDimPlot(
   pancreas_sub,
   group.by = "RareQ_is_rare"
 )
-#> Error in CellDimPlot(pancreas_sub, group.by = "RareQ_is_rare"): "RareQ_is_rare" is not in the meta.data of srt object
+
 
 FeatureDimPlot(
   pancreas_sub,
   features = "RareQ_Q"
 )
-#> ! [2026-06-24 04:28:24] "RareQ_Q" are not in the features of <Seurat>
-#> Error in FeatureDimPlot(pancreas_sub, features = "RareQ_Q"): There are no valid features present.
 ```

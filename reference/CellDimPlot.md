@@ -666,22 +666,22 @@ CellDimPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-24 02:51:00] Start standard processing workflow...
-#> ℹ [2026-06-24 02:51:01] Checking a list of <Seurat>...
-#> ! [2026-06-24 02:51:01] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-24 02:51:01] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-24 02:51:01] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-24 02:51:01] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-24 02:51:01] Number of available HVF: 2000
-#> ℹ [2026-06-24 02:51:02] Finished check
-#> ℹ [2026-06-24 02:51:02] Perform `ScaleData()`
-#> ℹ [2026-06-24 02:51:02] Perform pca linear dimension reduction
-#> ℹ [2026-06-24 02:51:02] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-24 02:51:02] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-24 02:51:02] Reorder clusters...
-#> ℹ [2026-06-24 02:51:03] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-24 02:51:03] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-24 02:51:07] Standard processing workflow completed
+#> ℹ [2026-06-24 17:37:42] Start standard processing workflow...
+#> ℹ [2026-06-24 17:37:43] Checking a list of <Seurat>...
+#> ! [2026-06-24 17:37:43] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 17:37:43] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 17:37:43] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 17:37:43] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-24 17:37:43] Number of available HVF: 2000
+#> ℹ [2026-06-24 17:37:43] Finished check
+#> ℹ [2026-06-24 17:37:43] Perform `ScaleData()`
+#> ℹ [2026-06-24 17:37:43] Perform pca linear dimension reduction
+#> ℹ [2026-06-24 17:37:43] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-24 17:37:44] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-24 17:37:44] Reorder clusters...
+#> ℹ [2026-06-24 17:37:44] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-24 17:37:44] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-24 17:37:48] Standard processing workflow completed
 p1 <- CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -935,7 +935,7 @@ CellDimPlot(
   reduction = "UMAP",
   hex = TRUE
 )
-#> Warning: Removed 6 rows containing missing values or values outside the scale range
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
 
 
@@ -957,7 +957,7 @@ CellDimPlot(
   hex = TRUE,
   hex.count = FALSE
 )
-#> Warning: Removed 6 rows containing missing values or values outside the scale range
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
 
 
@@ -1000,6 +1000,10 @@ CellDimPlot(
   reduction = "UMAP",
   lineages = paste0("Lineage", 1:2)
 )
+#> Warning: Removed 18 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+#> Warning: Removed 18 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
 
 
 CellDimPlot(
@@ -1009,6 +1013,12 @@ CellDimPlot(
   lineages = paste0("Lineage", 1:2),
   lineages_whiskers = TRUE
 )
+#> Warning: Removed 18 rows containing missing values or values outside the scale range
+#> (`geom_segment()`).
+#> Warning: Removed 18 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+#> Warning: Removed 18 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
 
 
 CellDimPlot(
@@ -1029,8 +1039,8 @@ pancreas_sub <- RunPAGA(
   backend = "cpp",
   return_seurat = TRUE
 )
-#> ℹ [2026-06-24 02:51:40] Running PAGA with BiocNeighbors using 29 neighbors
-#> ✔ [2026-06-24 02:52:27] PAGA cpp backend completed
+#> ℹ [2026-06-24 17:38:22] Running PAGA with BiocNeighbors using 29 neighbors
+#> ✔ [2026-06-24 17:39:09] PAGA cpp backend completed
 
 CellDimPlot(
   pancreas_sub,
@@ -1078,10 +1088,10 @@ pancreas_sub <- RunSCVELO(
   backend = "cpp",
   return_seurat = TRUE
 )
-#> ℹ [2026-06-24 02:52:28] Running scanpy-compatible preprocessing (15998 features -> filter + normalize)...
-#> ℹ [2026-06-24 02:52:31] Running scVelo "stochastic" mode with `backend = 'cpp'` (10590 features)
-#> ✔ [2026-06-24 02:52:33] scVelo "stochastic" mode completed
-#> ✔ [2026-06-24 02:52:33] scVelo cpp backend completed
+#> ℹ [2026-06-24 17:39:10] Running scanpy-compatible preprocessing (15998 features -> filter + normalize)...
+#> ℹ [2026-06-24 17:39:12] Running scVelo "stochastic" mode with `backend = 'cpp'` (10590 features)
+#> ✔ [2026-06-24 17:39:15] scVelo "stochastic" mode completed
+#> ✔ [2026-06-24 17:39:15] scVelo cpp backend completed
 
 CellDimPlot(
   pancreas_sub,
@@ -1100,7 +1110,7 @@ CellDimPlot(
   velocity = "stochastic",
   velocity_plot_type = "grid"
 )
-#> Warning: Removed 3 rows containing missing values or values outside the scale range
+#> Warning: Removed 1 row containing missing values or values outside the scale range
 #> (`geom_segment()`).
 
 
@@ -1114,7 +1124,7 @@ CellDimPlot(
   velocity_plot_type = "grid",
   velocity_scale = 1.5
 )
-#> Warning: Removed 3 rows containing missing values or values outside the scale range
+#> Warning: Removed 1 row containing missing values or values outside the scale range
 #> (`geom_segment()`).
 
 

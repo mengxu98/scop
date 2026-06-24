@@ -639,39 +639,43 @@ FeatureHeatmap(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-24 03:25:58] Start standard processing workflow...
-#> ℹ [2026-06-24 03:25:59] Checking a list of <Seurat>...
-#> ! [2026-06-24 03:25:59] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-24 03:25:59] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-24 03:25:59] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-24 03:25:59] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-24 03:26:00] Number of available HVF: 2000
-#> ℹ [2026-06-24 03:26:00] Finished check
-#> ℹ [2026-06-24 03:26:00] Perform `ScaleData()`
-#> ℹ [2026-06-24 03:26:00] Perform pca linear dimension reduction
-#> ℹ [2026-06-24 03:26:00] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-24 03:26:01] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-24 03:26:01] Reorder clusters...
-#> ℹ [2026-06-24 03:26:01] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-24 03:26:01] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-24 03:26:07] Standard processing workflow completed
+#> ℹ [2026-06-24 18:09:56] Start standard processing workflow...
+#> ℹ [2026-06-24 18:09:57] Checking a list of <Seurat>...
+#> ! [2026-06-24 18:09:57] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-24 18:09:57] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 18:09:57] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-24 18:09:57] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-24 18:09:57] Number of available HVF: 2000
+#> ℹ [2026-06-24 18:09:57] Finished check
+#> ℹ [2026-06-24 18:09:57] Perform `ScaleData()`
+#> ℹ [2026-06-24 18:09:57] Perform pca linear dimension reduction
+#> ℹ [2026-06-24 18:09:58] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-24 18:09:58] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-24 18:09:58] Reorder clusters...
+#> ℹ [2026-06-24 18:09:58] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-24 18:09:58] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-24 18:10:04] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-06-24 03:26:07] Data type is log-normalized
-#> ℹ [2026-06-24 03:26:07] Start differential expression test
-#> ℹ [2026-06-24 03:26:07] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-06-24 03:26:07] Using 1 core
-#> ⠙ [2026-06-24 03:26:07] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ✔ [2026-06-24 03:26:07] Completed 5 tasks in 1.2s
+#> ℹ [2026-06-24 18:10:04] Data type is log-normalized
+#> ℹ [2026-06-24 18:10:04] Start differential expression test
+#> ℹ [2026-06-24 18:10:04] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-06-24 18:10:04] Using 1 core
+#> ⠙ [2026-06-24 18:10:04] Running for Ductal [1/5] ■■          20% | ETA:  0s
+#> ✔ [2026-06-24 18:10:04] Completed 5 tasks in 27ms
 #> 
-#> ℹ [2026-06-24 03:26:07] Building results
-#> ✔ [2026-06-24 03:26:08] Differential expression test completed
+#> ℹ [2026-06-24 18:10:04] Building results
+#> ! [2026-06-24 18:10:04] Found 5 failed results
+#> ℹ [2026-06-24 18:10:04] ✖ Error details:
+#> ℹ                       ✖ At least 1 ident must be specified in `ident.1` (5): "Ductal", "Ngn3-high-EP", "Endocrine" and 2 more
+#> Error in `[.data.frame`(AllMarkers, , "group1"): undefined columns selected
 de_filter <- dplyr::filter(
   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
 )
+#> Error in UseMethod("filter"): no applicable method for 'filter' applied to an object of class "NULL"
 ht1 <- FeatureHeatmap(
   pancreas_sub,
   features = de_filter$gene,
@@ -679,13 +683,9 @@ ht1 <- FeatureHeatmap(
   split.by = "Phase",
   cell_split_palette = "Dark2"
 )
-#> `use_raster` is automatically set to TRUE for a matrix with more than
-#> 2000 rows. You can control `use_raster` argument by explicitly setting
-#> TRUE/FALSE to it.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
+#> Error: object 'de_filter' not found
 ht1$plot
-
+#> Error: object 'ht1' not found
 
 thisplot::panel_fix(
   ht1$plot,
@@ -694,7 +694,7 @@ thisplot::panel_fix(
   raster = TRUE,
   dpi = 50
 )
-
+#> Error: object 'ht1' not found
 
 ht2 <- FeatureHeatmap(
   pancreas_sub,
@@ -708,12 +708,9 @@ ht2 <- FeatureHeatmap(
   ht_params = list(row_gap = grid::unit(0, "mm")),
   use_raster = FALSE
 )
-#> ℹ [2026-06-24 03:26:21] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-06-24 03:26:21] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-06-24 03:26:21] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
-
+#> Error: object 'de_filter' not found
 ht2$plot
-
+#> Error: object 'ht2' not found
 
 ht3 <- FeatureHeatmap(
   pancreas_sub,
@@ -726,37 +723,18 @@ ht3 <- FeatureHeatmap(
   anno_keys = TRUE,
   anno_features = TRUE
 )
-#> ℹ [2026-06-24 03:26:48] Start Enrichment analysis
-#> ℹ [2026-06-24 03:26:49] Species: "Mus_musculus"
-#> ℹ [2026-06-24 03:26:49] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-06-24 03:23:47
-#> ℹ [2026-06-24 03:26:50] Permform enrichment...
-#> ℹ [2026-06-24 03:26:52] Using 1 core
-#> ⠙ [2026-06-24 03:26:52] Running for 1 [1/5] ■■          20% | ETA:  4s
-#> ⠹ [2026-06-24 03:26:52] Running for 2 [2/5] ■■■■        40% | ETA:  3s
-#> ✔ [2026-06-24 03:26:52] Completed 5 tasks in 3.7s
-#> 
-#> ℹ [2026-06-24 03:26:52] Building results
-#> ✔ [2026-06-24 03:26:56] Enrichment analysis done
-#> `use_raster` is automatically set to TRUE for a matrix with more than
-#> 2000 rows. You can control `use_raster` argument by explicitly setting
-#> TRUE/FALSE to it.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
-#> ℹ [2026-06-24 03:27:41] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-06-24 03:27:42] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-06-24 03:27:42] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
-
+#> Error: object 'de_filter' not found
 ht3$plot
-
+#> Error: object 'ht3' not found
 
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",
   reduction = "UMAP"
 )
-#> Warning: Removed 11 rows containing missing values or values outside the scale range
+#> Warning: Removed 14 rows containing missing values or values outside the scale range
 #> (`geom_path()`).
-#> Warning: Removed 11 rows containing missing values or values outside the scale range
+#> Warning: Removed 14 rows containing missing values or values outside the scale range
 #> (`geom_path()`).
 
 ht4 <- FeatureHeatmap(
@@ -767,22 +745,18 @@ ht4 <- FeatureHeatmap(
   cell_annotation = c("SubCellType", "Lineage1"),
   cell_annotation_palette = c("Chinese", "cividis")
 )
-#> `use_raster` is automatically set to TRUE for a matrix with more than
-#> 2000 rows. You can control `use_raster` argument by explicitly setting
-#> TRUE/FALSE to it.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
+#> Error: object 'de_filter' not found
 ht4$plot
-
+#> Error: object 'ht4' not found
 
 pancreas_sub <- AnnotateFeatures(
   pancreas_sub,
   species = "Mus_musculus",
   db = c("CSPA", "TF")
 )
-#> ℹ [2026-06-24 03:27:56] Species: "Mus_musculus"
-#> ℹ [2026-06-24 03:27:56] Loading cached: CSPA version: CSPA nterm:1 created: 2026-06-24 03:21:51
-#> ℹ [2026-06-24 03:27:56] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-06-24 02:41:21
+#> ℹ [2026-06-24 18:10:06] Species: "Mus_musculus"
+#> ℹ [2026-06-24 18:10:06] Loading cached: CSPA version: CSPA nterm:1 created: 2026-06-24 18:07:39
+#> ℹ [2026-06-24 18:10:07] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-06-24 17:28:14
 
 ht5 <- FeatureHeatmap(
   pancreas_sub,
@@ -797,17 +771,9 @@ ht5 <- FeatureHeatmap(
   cell_annotation = c("Phase", "G2M_score"),
   cell_annotation_palette = c("Dark2", "Purples")
 )
-#> `use_raster` is automatically set to TRUE for a matrix with more than
-#> 2000 rows. You can control `use_raster` argument by explicitly setting
-#> TRUE/FALSE to it.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
-#> ℹ [2026-06-24 03:28:00] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-06-24 03:28:00] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-06-24 03:28:00] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
-
+#> Error: object 'de_filter' not found
 ht5$plot
-
+#> Error: object 'ht5' not found
 
 ht6 <- FeatureHeatmap(
   pancreas_sub,
@@ -824,14 +790,7 @@ ht6 <- FeatureHeatmap(
   flip = TRUE,
   column_title_rot = 45
 )
-#> `use_raster` is automatically set to TRUE for a matrix with more than
-#> 2000 columns You can control `use_raster` argument by explicitly
-#> setting TRUE/FALSE to it.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
-#> ℹ [2026-06-24 03:28:12] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-06-24 03:28:12] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-06-24 03:28:12] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
-
+#> Error: object 'de_filter' not found
 ht6$plot
+#> Error: object 'ht6' not found
 ```

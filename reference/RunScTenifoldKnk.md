@@ -164,9 +164,9 @@ pancreas_sub <- RunscTenifoldKnk(
   store_networks = FALSE,
   store_manifold = TRUE
 )
-#> ℹ [2026-06-24 04:29:06] Run scTenifoldKnk knockout for "Pdx1" using "r" backend
+#> ℹ [2026-06-24 19:06:08] Run scTenifoldKnk knockout for "Pdx1" using "r" backend
 #>   |                                                                              |                                                                      |   0%  |                                                                              |=                                                                     |   1%  |                                                                              |=                                                                     |   2%  |                                                                              |==                                                                    |   2%  |                                                                              |==                                                                    |   3%  |                                                                              |======================================================================| 100%
-#> ✔ [2026-06-24 04:29:12] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
+#> ✔ [2026-06-24 19:06:14] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
 
 dr <- pancreas_sub@tools$scTenifoldKnk$diffRegulation
 head(dr)
