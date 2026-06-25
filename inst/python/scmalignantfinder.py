@@ -8,6 +8,19 @@ def _expand_path(path):
     return str(Path(str(path)).expanduser())
 
 
+def _expand_pathlike(value):
+    if isinstance(value, (str, os.PathLike)):
+        return _expand_path(value)
+    return value
+
+
+def _copy_obsm_value(value):
+    try:
+        return value.copy()
+    except AttributeError:
+        return value
+
+
 def _as_list(value):
     if value is None:
         return None
@@ -60,7 +73,7 @@ def run_scmalignantfinder(
     from scMalignantFinder import classifier
 
     kwargs = {
-        "test_input": test_input,
+        "test_input": _expand_pathlike(test_input),
         "pretrain_dir": _expand_path(pretrain_dir),
         "train_h5ad_path": _expand_path(train_h5ad_path),
         "feature_path": _expand_path(feature_path),
@@ -72,7 +85,7 @@ def run_scmalignantfinder(
     kwargs = {key: value for key, value in kwargs.items() if value is not None}
 
     try:
-        model = classifier.scMalignantFinder(**kwargs)
+        model = classifier.scMalignantFinder***wargs)
     except TypeError as exc:
         if "use_raw" not in kwargs:
             raise
@@ -111,13 +124,14 @@ def run_scmalignant_region(
     from scMalignantFinder import spatial as smf_spatial
 
     adata = _read_anndata(test_input)
+    spatial_key = "spatial" if spatial_key is None else str(spatial_key)
     if spatial_coordinates is not None:
         spatial_coordinates = np.asarray(spatial_coordinates, dtype=float)
         if spatial_coordinates.shape[0] != adata.n_obs:
             raise ValueError(
                 "spatial_coordinates must have one row for each observation"
             )
-        adata.obsm[str(spatial_key)] = spatial_coordinates
+        adata.obsm[spatial_key] = spatial_coordinates
 
     adata = _run_aucell(adata, signature_gmt, norm_type=norm_type)
     if image:
@@ -129,13 +143,31 @@ def run_scmalignant_region(
         if image:
             features.append("image_score")
 
-    adata = smf_spatial.region_identification(
-        adata,
-        features=features,
-        nclus=int(nclus),
-        define_feature=define_feature,
-        spatial_nn=bool(spatial_nn),
-    )
+    alias_spatial = bool(spatial_nn) and spatial_key != "spatial"
+    had_spatial = False
+    old_spatial = None
+    if alias_spatial:
+        if spatial_key not in adata.obsm:
+            raise ValueError(f"spatial_key '{spatial_key}' was not found in adata.obsm")
+        had_spatial = "spatial" in adata.obsm
+        if had_spatial:
+            old_spatial = _copy_obsm_value(adata.obsm["spatial"])
+        adata.obsm["spatial"] = _copy_obsm_value(adata.obsm[spatial_key])
+
+    try:
+        adata = smf_spatial.region_identification(
+            adata,
+            features=features,
+            nclus=int(nclus),
+            define_feature=define_feature,
+            spatial_nn=bool(spatial_nn),
+        )
+    finally:
+        if alias_spatial:
+            if had_spatial:
+                adata.obsm["spatial"] = old_spatial
+            elif "spatial" in adata.obsm:
+                del adata.obsm["spatial"]
 
     if return_obs:
         preferred = ["cluster", "region_prediction", "Malignant_up", "image_score"]
