@@ -604,6 +604,11 @@ CellScoring <- function(
             min_gs_size = min_size,
             max_gs_size = max_size
           )
+          gs_scores <- Matrix::t(orient_plage_scores(
+            scores = Matrix::t(as_matrix(gs_scores)),
+            expr = expr_sp,
+            gene_sets = features
+          ))
         }
         filtered <- names(features)[
           !names(features) %in% colnames(gs_scores)

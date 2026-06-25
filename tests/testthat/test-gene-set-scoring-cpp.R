@@ -70,15 +70,8 @@ reference_plage_scores <- function(expr, gene_sets, min_size = 1L, max_size = .M
   n_genes <- nrow(expr)
   n_cells <- ncol(expr)
   scores <- matrix(NA_real_, n_cells, length(gene_sets))
-  row_means <- rep(NA_real_, n_genes)
-  row_sds <- rep(NA_real_, n_genes)
-  for (gene in seq_len(n_genes)) {
-    nonzero <- expr[gene, ] != 0 & is.finite(expr[gene, ])
-    if (sum(nonzero) > 1L) {
-      row_means[gene] <- mean(expr[gene, nonzero])
-      row_sds[gene] <- stats::sd(expr[gene, nonzero])
-    }
-  }
+  row_means <- rowMeans(expr)
+  row_sds <- apply(expr, 1L, stats::sd)
   row_valid <- is.finite(row_sds) & row_sds > 0
 
   for (set_i in seq_along(gene_sets)) {
@@ -90,11 +83,10 @@ reference_plage_scores <- function(expr, gene_sets, min_size = 1L, max_size = .M
       next
     }
 
-    z <- matrix(0, nrow = length(valid), ncol = n_cells)
+    z <- matrix(NA_real_, nrow = length(valid), ncol = n_cells)
     for (row in seq_along(valid)) {
       gene <- valid[[row]]
-      nonzero <- expr[gene, ] != 0 & is.finite(expr[gene, ])
-      z[row, nonzero] <- (expr[gene, nonzero] - row_means[gene]) / row_sds[gene]
+      z[row, ] <- (expr[gene, ] - row_means[gene]) / row_sds[gene]
     }
     first_v <- svd(z, nu = 0, nv = 1)$v[, 1]
     mean_z_by_cell <- colMeans(z)
