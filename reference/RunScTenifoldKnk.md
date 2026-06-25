@@ -104,16 +104,10 @@ RunscTenifoldKnk(
 
   `r` calls
   [`scTenifoldKnk::scTenifoldKnk()`](https://rdrr.io/pkg/scTenifoldKnk/man/scTenifoldKnk.html)
-  directly and is the default high-consistency path. `cpp` uses upstream
-  `pcNet()` by default, plus native helpers for manifold matrix
-  construction, directionality, and distance calculation. Tensor
-  decomposition uses upstream `scTenifoldNet` by default because it is
-  faster on the benchmarked 10k workflow; set
-  `options(scop.sctenifold.native_tensor = TRUE)` or
-  `SCOP_SCTENIFOLD_NATIVE_TENSOR=true` to use the native ALS tensor
-  path. Set `options(scop.sctenifold.upstream_pcnet = FALSE)` or
-  `SCOP_SCTENIFOLD_UPSTREAM_PCNET=false` to use the native
-  covariance-based network construction path.
+  directly and is the default high-consistency path. `cpp` follows the
+  upstream `scTenifoldNet`/`scTenifoldKnk` network construction, tensor
+  decomposition, manifold alignment, and differential-regulation steps
+  while keeping input handling and result storage inside `scop`.
 
 - store_networks:
 
@@ -164,9 +158,9 @@ pancreas_sub <- RunscTenifoldKnk(
   store_networks = FALSE,
   store_manifold = TRUE
 )
-#> ℹ [2026-06-24 19:06:08] Run scTenifoldKnk knockout for "Pdx1" using "r" backend
+#> ℹ [2026-06-25 08:18:55] Run scTenifoldKnk knockout for "Pdx1" using "r" backend
 #>   |                                                                              |                                                                      |   0%  |                                                                              |=                                                                     |   1%  |                                                                              |=                                                                     |   2%  |                                                                              |==                                                                    |   2%  |                                                                              |==                                                                    |   3%  |                                                                              |======================================================================| 100%
-#> ✔ [2026-06-24 19:06:14] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
+#> ✔ [2026-06-25 08:19:00] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
 
 dr <- pancreas_sub@tools$scTenifoldKnk$diffRegulation
 head(dr)

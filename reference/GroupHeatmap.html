@@ -93,6 +93,9 @@
 <span>  anno_features <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  terms_width <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">4</span>, <span class="st">"in"</span><span class="op">)</span>,</span>
 <span>  terms_fontsize <span class="op">=</span> <span class="fl">8</span>,</span>
+<span>  terms_stat <span class="op">=</span> <span class="st">"none"</span>,</span>
+<span>  terms_stat_digits <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  terms_stat_test <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  keys_width <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">2</span>, <span class="st">"in"</span><span class="op">)</span>,</span>
 <span>  keys_fontsize <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">10</span><span class="op">)</span>,</span>
 <span>  features_width <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">2</span>, <span class="st">"in"</span><span class="op">)</span>,</span>
@@ -415,6 +418,24 @@ Default is <code>unit(4, "in")</code>.</p></dd>
 <dt id="arg-terms-fontsize">terms_fontsize<a class="anchor" aria-label="anchor" href="#arg-terms-fontsize"></a></dt>
 <dd><p>A numeric vector specifying the font size(s) for term annotations.
 Default is <code>8</code>.</p></dd>
+
+
+<dt id="arg-terms-stat">terms_stat<a class="anchor" aria-label="anchor" href="#arg-terms-stat"></a></dt>
+<dd><p>Which enrichment statistic to show after each term.
+Use <code>"none"</code> to hide the bar background, <code>"score"</code> for <code>-log10</code> of the
+active p-value metric, or any column from the enrichment result such as
+<code>"p.adjust"</code>, <code>"pvalue"</code>, <code>"qvalue"</code>,
+<code>"GeneRatio"</code>, <code>"RichFactor"</code>, <code>"FoldEnrichment"</code>, <code>"zScore"</code>, or <code>"Count"</code>.</p></dd>
+
+
+<dt id="arg-terms-stat-digits">terms_stat_digits<a class="anchor" aria-label="anchor" href="#arg-terms-stat-digits"></a></dt>
+<dd><p>Number of significant digits for numeric term
+statistics.</p></dd>
+
+
+<dt id="arg-terms-stat-test">terms_stat_test<a class="anchor" aria-label="anchor" href="#arg-terms-stat-test"></a></dt>
+<dd><p>Logical. Whether to show the numeric term statistic
+value at the right side of each term when <code>terms_stat</code> is enabled.</p></dd>
 
 
 <dt id="arg-keys-width">keys_width<a class="anchor" aria-label="anchor" href="#arg-keys-width"></a></dt>
@@ -790,22 +811,22 @@ Default is <code>TRUE</code>.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:22:00] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:22:01] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-24 18:22:01] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:22:01] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:22:01] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:22:02] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:22:02] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:22:02] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:22:02] Perform `ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:22:02] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:22:02] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:22:04] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:22:05] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:22:05] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:22:05] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-24 18:22:11] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:29:11] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:29:12] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-25 07:29:12] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:29:12] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:29:12] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:29:12] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:29:13] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:29:13] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:29:13] Perform `ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:29:13] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:29:13] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:29:14] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:29:14] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:29:14] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:29:14] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-25 07:29:22] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
 <span class="r-in"><span><span class="va">ht1</span> <span class="op">&lt;-</span> <span class="fu">GroupHeatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
@@ -835,23 +856,23 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span></span>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CSPA"</span>, <span class="st">"TF"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:22:12] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:22:12] Loading cached: <span style="color: #0000BB;">CSPA</span> version: <span style="color: #0000BB;">CSPA nterm:1</span> created: <span style="color: #0000BB;">2026-06-24 18:07:39</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:22:13] Loading cached: <span style="color: #0000BB;">TF</span> version: <span style="color: #0000BB;">AnimalTFDB4 nterm:2</span> created: <span style="color: #0000BB;">2026-06-24 17:28:14</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:29:23] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:29:23] Loading cached: <span style="color: #0000BB;">CSPA</span> version: <span style="color: #0000BB;">CSPA nterm:1</span> created: <span style="color: #0000BB;">2026-06-25 07:13:01</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:29:24] Loading cached: <span style="color: #0000BB;">TF</span> version: <span style="color: #0000BB;">AnimalTFDB4 nterm:2</span> created: <span style="color: #0000BB;">2026-06-25 06:29:27</span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunDEtest.html">RunDEtest</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:22:14] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:22:14] Start differential expression test</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:22:14] Find all markers(wilcox) among [1] 5 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:22:14] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-06-24 18:22:14] Running for <span style="color: #0000BB;">Ductal </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■</span>          20% | ETA: <span style="color: #0000BB;"> 0s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-24 18:22:14] Completed <span style="color: #0000BB;">5</span> tasks in <span style="color: #0000BB;">30ms</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:29:25] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:29:25] Start differential expression test</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:29:25] Find all markers(wilcox) among [1] 5 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:29:25] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-06-25 07:29:25] Running for <span style="color: #0000BB;">Ductal </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■</span>          20% | ETA: <span style="color: #0000BB;"> 0s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-25 07:29:25] Completed <span style="color: #0000BB;">5</span> tasks in <span style="color: #0000BB;">31ms</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:22:14] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-24 18:22:14] Found <span style="color: #0000BB;">5</span> failed results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:22:14] ✖ <span style="color: #BB0000;">Error details:</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:29:25] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-25 07:29:25] Found <span style="color: #0000BB;">5</span> failed results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:29:25] ✖ <span style="color: #BB0000;">Error details:</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       ✖ <span style="color: #BB0000; font-style: italic;">At least 1 ident must be specified in `ident.1`</span><span style="color: #BB0000;"> (5): </span><span style="color: #0000BB;">"Ductal"</span>, <span style="color: #0000BB;">"Ngn3-high-EP"</span>, <span style="color: #0000BB;">"Endocrine"</span> and 2 more</span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in `[.data.frame`(AllMarkers, , "group1"):</span> undefined columns selected</span>
 <span class="r-in"><span><span class="va">de_filter</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span></span>

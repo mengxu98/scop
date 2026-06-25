@@ -141,15 +141,10 @@ forwarded to downstream linear algebra where applicable.</p></dd>
 
 <dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
 <dd><p><code>r</code> calls <code><a href="https://rdrr.io/pkg/scTenifoldKnk/man/scTenifoldKnk.html" class="external-link">scTenifoldKnk::scTenifoldKnk()</a></code> directly and is the
-default high-consistency path. <code>cpp</code> uses upstream <code>pcNet()</code> by default,
-plus native helpers for manifold matrix construction, directionality, and
-distance calculation. Tensor decomposition uses upstream <code>scTenifoldNet</code> by
-default because it is faster on the benchmarked 10k workflow; set
-<code>options(scop.sctenifold.native_tensor = TRUE)</code> or
-<code>SCOP_SCTENIFOLD_NATIVE_TENSOR=true</code> to use the native ALS tensor path. Set
-<code>options(scop.sctenifold.upstream_pcnet = FALSE)</code> or
-<code>SCOP_SCTENIFOLD_UPSTREAM_PCNET=false</code> to use the native covariance-based
-network construction path.</p></dd>
+default high-consistency path. <code>cpp</code> follows the upstream
+<code>scTenifoldNet</code>/<code>scTenifoldKnk</code> network construction, tensor decomposition,
+manifold alignment, and differential-regulation steps while keeping input
+handling and result storage inside <code>scop</code>.</p></dd>
 
 
 <dt id="arg-store-networks">store_networks<a class="anchor" aria-label="anchor" href="#arg-store-networks"></a></dt>
@@ -204,9 +199,9 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  store_networks <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>  store_manifold <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 19:06:08] Run <span style="color: #0000BB;">scTenifoldKnk</span> knockout for <span style="color: #0000BB;">"Pdx1"</span> using <span style="color: #0000BB;">"r"</span> backend</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 08:18:55] Run <span style="color: #0000BB;">scTenifoldKnk</span> knockout for <span style="color: #0000BB;">"Pdx1"</span> using <span style="color: #0000BB;">"r"</span> backend</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |=                                                                     |   1%  |                                                                              |=                                                                     |   2%  |                                                                              |==                                                                    |   2%  |                                                                              |==                                                                    |   3%  |                                                                              |======================================================================| 100%</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-24 19:06:14] <span style="color: #0000BB;">scTenifoldKnk</span> results stored in `srt@tools[[scTenifoldKnk]]`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-25 08:19:00] <span style="color: #0000BB;">scTenifoldKnk</span> results stored in `srt@tools[[scTenifoldKnk]]`</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">dr</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">scTenifoldKnk</span><span class="op">$</span><span class="va">diffRegulation</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dr</span><span class="op">)</span></span></span>

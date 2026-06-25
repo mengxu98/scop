@@ -581,22 +581,22 @@ GSVA scores.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:11:49] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:11:50] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-24 18:11:50] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:11:50] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:11:50] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:11:50] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:11:51] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:11:51] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:11:51] Perform `ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:11:51] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:11:51] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:11:51] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:11:52] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:11:52] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:11:52] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-24 18:11:57] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:17:25] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:17:26] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-25 07:17:26] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:17:26] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:17:26] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:17:26] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:17:26] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:17:26] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:17:26] Perform `ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:17:26] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:17:27] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:17:27] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:17:27] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:17:27] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:17:27] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-25 07:17:35] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunGSVA.html">RunGSVA</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
@@ -605,17 +605,17 @@ GSVA scores.</p>
 <span class="r-in"><span>  method <span class="op">=</span> <span class="st">"gsva"</span>,</span></span>
 <span class="r-in"><span>  kcdf <span class="op">=</span> <span class="st">"Gaussian"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:11:57] Start <span style="color: #0000BB;">GSVA</span> analysis</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:11:57] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:11:57] Loading cached: <span style="color: #0000BB;">GO_BP</span> version: <span style="color: #0000BB;">3.23.0 nterm:14957</span> created: <span style="color: #0000BB;">2026-06-24 17:52:31</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:11:58] Averaging expression by <span style="color: #0000BB;">"CellType"</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:11:58] Aggregated expression matrix: <span style="color: #0000BB;">15998</span> genes x <span style="color: #0000BB;">5</span> groups</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:11:58] Processing database: <span style="color: #0000BB;">"GO_BP"</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:12:00] Initial overlap: <span style="color: #0000BB;">11277</span> genes out of <span style="color: #0000BB;">15998</span> expression genes and <span style="color: #0000BB;">16594</span> genes in gene sets</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:12:00] Running GSVA for <span style="color: #0000BB;">5633</span> gene sets ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:17:35] Start <span style="color: #0000BB;">GSVA</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:17:35] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:17:35] Loading cached: <span style="color: #0000BB;">GO_BP</span> version: <span style="color: #0000BB;">3.23.0 nterm:14957</span> created: <span style="color: #0000BB;">2026-06-25 06:56:08</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:17:36] Averaging expression by <span style="color: #0000BB;">"CellType"</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:17:36] Aggregated expression matrix: <span style="color: #0000BB;">15998</span> genes x <span style="color: #0000BB;">5</span> groups</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:17:36] Processing database: <span style="color: #0000BB;">"GO_BP"</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:17:38] Initial overlap: <span style="color: #0000BB;">11277</span> genes out of <span style="color: #0000BB;">15998</span> expression genes and <span style="color: #0000BB;">16594</span> genes in gene sets</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:17:38] Running GSVA for <span style="color: #0000BB;">5633</span> gene sets ...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 47266 nonzeros (less than 2^31) and 16.17% sparsity</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:12:03] <span style="color: #0000BB;">GSVA</span> results stored in `tools` slot: <span style="color: #0000BB;">"GSVA_CellType_gsva"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-24 18:12:03] <span style="color: #0000BB;">GSVA</span> analysis done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:17:42] <span style="color: #0000BB;">GSVA</span> results stored in `tools` slot: <span style="color: #0000BB;">"GSVA_CellType_gsva"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-25 07:17:42] <span style="color: #0000BB;">GSVA</span> analysis done</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">ht1</span> <span class="op">&lt;-</span> <span class="fu">GSVAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -626,9 +626,8 @@ GSVA scores.</p>
 <span class="r-in"><span>  height <span class="op">=</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data is of class matrix. Coercing to dgCMatrix.</span>
-<span class="r-plt img"><img src="GSVAPlot-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="va">ht1</span><span class="op">$</span><span class="va">plot</span></span></span>
-<span class="r-plt img"><img src="GSVAPlot-2.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="GSVAPlot-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">ht2</span> <span class="op">&lt;-</span> <span class="fu">GSVAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -641,9 +640,8 @@ GSVA scores.</p>
 <span class="r-in"><span>  height <span class="op">=</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data is of class matrix. Coercing to dgCMatrix.</span>
-<span class="r-plt img"><img src="GSVAPlot-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="va">ht2</span><span class="op">$</span><span class="va">plot</span></span></span>
-<span class="r-plt img"><img src="GSVAPlot-4.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="GSVAPlot-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">GSVAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  srt <span class="op">=</span> <span class="va">pancreas_sub</span>,</span></span>
@@ -652,7 +650,7 @@ GSVA scores.</p>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"comparison"</span>,</span></span>
 <span class="r-in"><span>  topTerm <span class="op">=</span> <span class="fl">1</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="GSVAPlot-5.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="GSVAPlot-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">GSVAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  srt <span class="op">=</span> <span class="va">pancreas_sub</span>,</span></span>
@@ -662,7 +660,7 @@ GSVA scores.</p>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span></span>
 <span class="r-in"><span>  topTerm <span class="op">=</span> <span class="fl">5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="GSVAPlot-6.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="GSVAPlot-4.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">GSVAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  srt <span class="op">=</span> <span class="va">pancreas_sub</span>,</span></span>
@@ -675,9 +673,9 @@ GSVA scores.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Also defined by ‘BiocGenerics’</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Found more than one class "dist" in cache; using the first, from namespace 'spam'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Also defined by ‘BiocGenerics’</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">◌</span> [2026-06-24 18:12:09] Installing: <span style="color: #0000BB;">shadowtext</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">◌</span> [2026-06-25 07:17:47] Installing: <span style="color: #0000BB;">shadowtext</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> → Package library at <span style="color: #0000BB;">/tmp/Rtmp92Akys/temp_libpath2926b4d972b</span>.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> → Package library at <span style="color: #0000BB;">/tmp/RtmpwDcpB4/temp_libpath7fa446320404</span>.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → Will <span style="font-style: italic;">install</span> 1 package.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → The package (0 B) is cached.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">shadowtext</span>   0.1.6 </span>
@@ -688,15 +686,13 @@ GSVA scores.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:8 https://dl.google.com/linux/chrome-stable/deb stable InRelease</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:8 https://dl.google.com/linux/chrome-stable/deb stable InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:9 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 c-n-f Metadata [17.4 kB]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Fetched 144 kB in 0s (347 kB/s)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install cmake make libuv1-dev libcairo2-dev libfontconfig1-dev libfreetype6-dev libpng-dev pandoc`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
@@ -712,9 +708,9 @@ GSVA scores.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> pandoc is already the newest version (3.1.3+ds-2).</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 22 not upgraded.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">shadowtext</span> 0.1.6  <span style="color: #9E9E9E;">(1s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 56 deps: kept 56, added 1, dld 1 (243.58 kB) <span style="color: #B2B2B2;">[6.1s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-24 18:12:15] <span style="color: #0000BB;">shadowtext</span> installed successfully</span>
-<span class="r-plt img"><img src="GSVAPlot-7.png" alt="" width="700" height="433"></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 56 deps: kept 56, added 1, dld 1 (243.58 kB) <span style="color: #B2B2B2;">[5.5s]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-25 07:17:53] <span style="color: #0000BB;">shadowtext</span> installed successfully</span>
+<span class="r-plt img"><img src="GSVAPlot-5.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">GSVAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  srt <span class="op">=</span> <span class="va">pancreas_sub</span>,</span></span>
@@ -723,7 +719,7 @@ GSVA scores.</p>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"enrichmap"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="GSVAPlot-8.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="GSVAPlot-6.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">GSVAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -738,7 +734,7 @@ GSVA scores.</p>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Some words could not fit on page. They have been removed.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Some words could not fit on page. They have been removed.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Some words could not fit on page. They have been removed.</span>
-<span class="r-plt img"><img src="GSVAPlot-9.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="GSVAPlot-7.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">GSVAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -748,7 +744,7 @@ GSVA scores.</p>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"wordcloud"</span>,</span></span>
 <span class="r-in"><span>  word_type <span class="op">=</span> <span class="st">"feature"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="GSVAPlot-10.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="GSVAPlot-8.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunGSVA.html">RunGSVA</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -756,56 +752,56 @@ GSVA scores.</p>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
 <span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:13:23] Start <span style="color: #0000BB;">GSVA</span> analysis</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:13:23] Start <span style="color: #0000BB;">GSVA</span> analysis</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:13:23] Single-cell GSVA mode: using expression matrix directly ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:13:24] Expression matrix: <span style="color: #0000BB;">15998</span> genes x <span style="color: #0000BB;">1000</span> cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:13:24] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:13:24] Loading cached: <span style="color: #0000BB;">GO_BP</span> version: <span style="color: #0000BB;">3.23.0 nterm:14957</span> created: <span style="color: #0000BB;">2026-06-24 17:52:31</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:13:25] Processing database: <span style="color: #0000BB;">"GO_BP"</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:13:26] Initial overlap: <span style="color: #0000BB;">11277</span> genes out of <span style="color: #0000BB;">15998</span> expression genes and <span style="color: #0000BB;">16594</span> genes in gene sets</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:13:26] Running GSVA for <span style="color: #0000BB;">5633</span> gene sets ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:19:11] Start <span style="color: #0000BB;">GSVA</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:19:11] Start <span style="color: #0000BB;">GSVA</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:19:11] Single-cell GSVA mode: using expression matrix directly ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:19:11] Expression matrix: <span style="color: #0000BB;">15998</span> genes x <span style="color: #0000BB;">1000</span> cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:19:11] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:19:11] Loading cached: <span style="color: #0000BB;">GO_BP</span> version: <span style="color: #0000BB;">3.23.0 nterm:14957</span> created: <span style="color: #0000BB;">2026-06-25 06:56:08</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:19:12] Processing database: <span style="color: #0000BB;">"GO_BP"</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:19:14] Initial overlap: <span style="color: #0000BB;">11277</span> genes out of <span style="color: #0000BB;">15998</span> expression genes and <span style="color: #0000BB;">16594</span> genes in gene sets</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:19:14] Running GSVA for <span style="color: #0000BB;">5633</span> gene sets ...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 2038175 nonzeros (less than 2^31) and 81.93% sparsity</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Feature names cannot have underscores ('_'), replacing with dashes ('-')</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:20:23] <span style="color: #0000BB;">GSVA</span> results stored in assay <span style="color: #0000BB;">"GSVA_gsva"</span> and tools slot <span style="color: #0000BB;">"GSVA_cell_gsva"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-24 18:20:23] <span style="color: #0000BB;">GSVA</span> analysis done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:20:23] Start <span style="color: #0000BB;">GSVA</span> analysis</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:20:23] Single-cell GSVA mode: using expression matrix directly ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:20:23] Expression matrix: <span style="color: #0000BB;">15998</span> genes x <span style="color: #0000BB;">1000</span> cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:20:23] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:20:23] Loading cached: <span style="color: #0000BB;">GO_BP</span> version: <span style="color: #0000BB;">3.23.0 nterm:14957</span> created: <span style="color: #0000BB;">2026-06-24 17:52:31</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:20:24] Processing database: <span style="color: #0000BB;">"GO_BP"</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:20:27] Initial overlap: <span style="color: #0000BB;">11277</span> genes out of <span style="color: #0000BB;">15998</span> expression genes and <span style="color: #0000BB;">16594</span> genes in gene sets</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:20:27] Running GSVA for <span style="color: #0000BB;">5633</span> gene sets ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:27:19] <span style="color: #0000BB;">GSVA</span> results stored in assay <span style="color: #0000BB;">"GSVA_gsva"</span> and tools slot <span style="color: #0000BB;">"GSVA_cell_gsva"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-25 07:27:19] <span style="color: #0000BB;">GSVA</span> analysis done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:27:19] Start <span style="color: #0000BB;">GSVA</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:27:19] Single-cell GSVA mode: using expression matrix directly ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:27:22] Expression matrix: <span style="color: #0000BB;">15998</span> genes x <span style="color: #0000BB;">1000</span> cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:27:22] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:27:22] Loading cached: <span style="color: #0000BB;">GO_BP</span> version: <span style="color: #0000BB;">3.23.0 nterm:14957</span> created: <span style="color: #0000BB;">2026-06-25 06:56:08</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:27:23] Processing database: <span style="color: #0000BB;">"GO_BP"</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:27:24] Initial overlap: <span style="color: #0000BB;">11277</span> genes out of <span style="color: #0000BB;">15998</span> expression genes and <span style="color: #0000BB;">16594</span> genes in gene sets</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:27:24] Running GSVA for <span style="color: #0000BB;">5633</span> gene sets ...</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Feature names cannot have underscores ('_'), replacing with dashes ('-')</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:20:36] <span style="color: #0000BB;">GSVA</span> results stored in assay <span style="color: #0000BB;">"GSVA_ssgsea"</span> and tools slot <span style="color: #0000BB;">"GSVA_cell_ssgsea"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-24 18:20:36] <span style="color: #0000BB;">GSVA</span> analysis done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:20:36] Start <span style="color: #0000BB;">GSVA</span> analysis</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:20:36] Single-cell GSVA mode: using expression matrix directly ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:20:36] Expression matrix: <span style="color: #0000BB;">15998</span> genes x <span style="color: #0000BB;">1000</span> cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:20:36] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:20:36] Loading cached: <span style="color: #0000BB;">GO_BP</span> version: <span style="color: #0000BB;">3.23.0 nterm:14957</span> created: <span style="color: #0000BB;">2026-06-24 17:52:31</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:20:37] Processing database: <span style="color: #0000BB;">"GO_BP"</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:20:40] Initial overlap: <span style="color: #0000BB;">11277</span> genes out of <span style="color: #0000BB;">15998</span> expression genes and <span style="color: #0000BB;">16594</span> genes in gene sets</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:20:40] Running GSVA for <span style="color: #0000BB;">5633</span> gene sets ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:27:33] <span style="color: #0000BB;">GSVA</span> results stored in assay <span style="color: #0000BB;">"GSVA_ssgsea"</span> and tools slot <span style="color: #0000BB;">"GSVA_cell_ssgsea"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-25 07:27:33] <span style="color: #0000BB;">GSVA</span> analysis done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:27:33] Start <span style="color: #0000BB;">GSVA</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:27:33] Single-cell GSVA mode: using expression matrix directly ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:27:33] Expression matrix: <span style="color: #0000BB;">15998</span> genes x <span style="color: #0000BB;">1000</span> cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:27:33] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:27:33] Loading cached: <span style="color: #0000BB;">GO_BP</span> version: <span style="color: #0000BB;">3.23.0 nterm:14957</span> created: <span style="color: #0000BB;">2026-06-25 06:56:08</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:27:35] Processing database: <span style="color: #0000BB;">"GO_BP"</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:27:36] Initial overlap: <span style="color: #0000BB;">11277</span> genes out of <span style="color: #0000BB;">15998</span> expression genes and <span style="color: #0000BB;">16594</span> genes in gene sets</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:27:36] Running GSVA for <span style="color: #0000BB;">5633</span> gene sets ...</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Feature names cannot have underscores ('_'), replacing with dashes ('-')</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:20:46] <span style="color: #0000BB;">GSVA</span> results stored in assay <span style="color: #0000BB;">"GSVA_zscore"</span> and tools slot <span style="color: #0000BB;">"GSVA_cell_zscore"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-24 18:20:46] <span style="color: #0000BB;">GSVA</span> analysis done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:20:46] Start <span style="color: #0000BB;">GSVA</span> analysis</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:20:46] Single-cell GSVA mode: using expression matrix directly ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:20:46] Expression matrix: <span style="color: #0000BB;">15998</span> genes x <span style="color: #0000BB;">1000</span> cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:20:46] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:20:46] Loading cached: <span style="color: #0000BB;">GO_BP</span> version: <span style="color: #0000BB;">3.23.0 nterm:14957</span> created: <span style="color: #0000BB;">2026-06-24 17:52:31</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:20:48] Processing database: <span style="color: #0000BB;">"GO_BP"</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:20:49] Initial overlap: <span style="color: #0000BB;">11277</span> genes out of <span style="color: #0000BB;">15998</span> expression genes and <span style="color: #0000BB;">16594</span> genes in gene sets</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:20:49] Running GSVA for <span style="color: #0000BB;">5633</span> gene sets ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:27:45] <span style="color: #0000BB;">GSVA</span> results stored in assay <span style="color: #0000BB;">"GSVA_zscore"</span> and tools slot <span style="color: #0000BB;">"GSVA_cell_zscore"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-25 07:27:45] <span style="color: #0000BB;">GSVA</span> analysis done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:27:45] Start <span style="color: #0000BB;">GSVA</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:27:45] Single-cell GSVA mode: using expression matrix directly ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:27:45] Expression matrix: <span style="color: #0000BB;">15998</span> genes x <span style="color: #0000BB;">1000</span> cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:27:45] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:27:45] Loading cached: <span style="color: #0000BB;">GO_BP</span> version: <span style="color: #0000BB;">3.23.0 nterm:14957</span> created: <span style="color: #0000BB;">2026-06-25 06:56:08</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:27:47] Processing database: <span style="color: #0000BB;">"GO_BP"</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:27:48] Initial overlap: <span style="color: #0000BB;">11277</span> genes out of <span style="color: #0000BB;">15998</span> expression genes and <span style="color: #0000BB;">16594</span> genes in gene sets</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:27:48] Running GSVA for <span style="color: #0000BB;">5633</span> gene sets ...</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Feature names cannot have underscores ('_'), replacing with dashes ('-')</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 18:21:36] <span style="color: #0000BB;">GSVA</span> results stored in assay <span style="color: #0000BB;">"GSVA_plage"</span> and tools slot <span style="color: #0000BB;">"GSVA_cell_plage"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-24 18:21:36] <span style="color: #0000BB;">GSVA</span> analysis done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 07:28:45] <span style="color: #0000BB;">GSVA</span> results stored in assay <span style="color: #0000BB;">"GSVA_plage"</span> and tools slot <span style="color: #0000BB;">"GSVA_cell_plage"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-25 07:28:45] <span style="color: #0000BB;">GSVA</span> analysis done</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Key ‘gsvagsva_’ taken, using ‘gsva_’ instead</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span></span></span>
@@ -814,7 +810,7 @@ GSVA scores.</p>
 <span class="r-in"><span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">[[</span><span class="st">"GSVA"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>,</span></span>
 <span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"umap"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="GSVAPlot-11.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="GSVAPlot-9.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="FeatureStatPlot.html">FeatureStatPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -826,7 +822,7 @@ GSVA scores.</p>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-plt img"><img src="GSVAPlot-12.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="GSVAPlot-10.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">ht</span> <span class="op">&lt;-</span> <span class="fu"><a href="GroupHeatmap.html">GroupHeatmap</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>

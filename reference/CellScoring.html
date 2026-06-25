@@ -235,22 +235,22 @@ Default is <code>TRUE</code>.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:39:45] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:39:46] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-24 17:39:46] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:39:46] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:39:46] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:39:46] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:39:46] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:39:46] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:39:46] Perform `ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:39:46] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:39:46] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:39:47] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:39:47] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:39:47] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:39:47] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-24 17:39:51] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:41:20] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:41:21] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-25 06:41:21] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:41:21] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:41:21] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:41:21] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:41:21] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:41:21] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:41:21] Perform `ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:41:21] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:41:22] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:41:22] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:41:22] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:41:22] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:41:22] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-25 06:41:27] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
 <span class="r-in"><span><span class="va">features_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">CellScoring</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -261,10 +261,10 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  method <span class="op">=</span> <span class="st">"AUCell"</span>,</span></span>
 <span class="r-in"><span>  name <span class="op">=</span> <span class="st">"test"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:39:51] Start cell scoring</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:39:51] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:39:51] Number of feature lists to be scored: <span style="color: #0000BB;">2</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-24 17:39:52] Cell scoring completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:41:27] Start cell scoring</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:41:28] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:41:28] Number of feature lists to be scored: <span style="color: #0000BB;">2</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-25 06:41:28] Cell scoring completed</span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, <span class="st">"test_classification"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="CellScoring-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -279,16 +279,16 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>A <span class="op">=</span> <span class="va">features_all</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span><span class="op">]</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AUCell"</span>, <span class="st">"GSVA"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:39:52] Start cell scoring</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:39:52] Start cell scoring</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:39:53] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:39:53] Number of feature lists to be scored: <span style="color: #0000BB;">1</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-24 17:39:53] Cell scoring completed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:39:53] Start cell scoring</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:39:54] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:39:54] Number of feature lists to be scored: <span style="color: #0000BB;">1</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:41:29] Start cell scoring</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:41:29] Start cell scoring</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:41:29] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:41:30] Number of feature lists to be scored: <span style="color: #0000BB;">1</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-25 06:41:30] Cell scoring completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:41:30] Start cell scoring</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:41:30] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:41:30] Number of feature lists to be scored: <span style="color: #0000BB;">1</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 2516278 nonzeros (less than 2^31) and 84.27% sparsity</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-24 17:41:20] Cell scoring completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-25 06:42:52] Cell scoring completed</span>
 <span class="r-in"><span><span class="fu"><a href="FeatureStatPlot.html">FeatureStatPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AUCell_A"</span>, <span class="st">"GSVA_A"</span><span class="op">)</span>,</span></span>
@@ -297,7 +297,7 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"violin"</span>,</span></span>
 <span class="r-in"><span>  stack <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:41:20] Setting `group.by` to <span style="color: #0000BB;">"Features"</span> as `plot.by` is set to <span style="color: #0000BB;">"feature"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:42:52] Setting `group.by` to <span style="color: #0000BB;">"Features"</span> as `plot.by` is set to <span style="color: #0000BB;">"feature"</span></span>
 <span class="r-plt img"><img src="CellScoring-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span></span></span>
@@ -1359,30 +1359,40 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  batch <span class="op">=</span> <span class="st">"tech"</span>,</span></span>
 <span class="r-in"><span>  integration_method <span class="op">=</span> <span class="st">"Harmony"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">◌</span> [2026-06-24 17:41:23] <span style="color: #0000BB;">Run integration workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:41:23] Split `srt_merge` into `srt_list` by <span style="color: #0000BB;">"tech"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:41:24] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-24 17:41:24] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:41:24] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:41:24] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-24 17:41:24] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:41:24] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:41:24] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-24 17:41:24] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:41:24] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:41:24] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-24 17:41:24] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:41:24] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:41:24] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-24 17:41:25] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:41:25] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:41:25] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:41:25] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:41:25] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:41:25] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">◌</span> [2026-06-25 06:42:54] <span style="color: #0000BB;">Run integration workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:42:54] Split `srt_merge` into `srt_list` by <span style="color: #0000BB;">"tech"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:42:55] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-25 06:42:55] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:42:55] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:42:55] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-25 06:42:55] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:42:55] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:42:55] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-25 06:42:56] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:42:56] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:42:56] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-25 06:42:56] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:42:56] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:42:56] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-25 06:42:56] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:42:56] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:42:56] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:42:56] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:42:57] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:42:57] Finished check</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘scale.data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:41:28] Perform `Seurat::ScaleData()`</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> ScaleData.Seurat requires an Assay5 object with a data layer.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:42:59] Perform `Seurat::ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:43:00] Perform linear dimension reduction(<span style="color: #0000BB;">"pca"</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:43:00] Perform <span style="color: #0000BB;">Harmony</span> integration</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:43:00] Using <span style="color: #0000BB;">"Harmonypca"</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:43:15] Adjust neighbor k from <span style="color: #0000BB;">20</span> to <span style="color: #0000BB;">20</span> for small-sample clustering</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:43:16] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">"louvain"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:43:16] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:43:16] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:43:17] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Harmony</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:43:21] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Harmony</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:43:26] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Harmonypca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-25 06:43:31] <span style="color: #0000BB;">Harmony</span> integration completed</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu">CellScoring</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
@@ -1396,23 +1406,19 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  name <span class="op">=</span> <span class="st">"GO"</span>,</span></span>
 <span class="r-in"><span>  new_assay <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:41:28] Start cell scoring</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to min; returning Inf</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to max; returning -Inf</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to max; returning -Inf</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-24 17:41:28] Infinite values detected</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:41:28] Species: <span style="color: #0000BB;">"Homo_sapiens"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:43:31] Start cell scoring</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:43:32] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:43:32] Species: <span style="color: #0000BB;">"Homo_sapiens"</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:47:34] Preparing database: <span style="color: #0000BB;">GO_BP</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:48:02] Convert ID types for the <span style="color: #0000BB;">GO_BP</span> database</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:48:03] Converted ID types using local annotation package <span style="color: #0000BB;">org.Hs.eg.db</span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-24 17:48:06] The following features were filtered because not found in the srt assay: <span style="color: #0000BB;">"'de novo' NAD+ biosynthetic process from L-tryptophan"</span>, <span style="color: #0000BB;">"'de novo' protein folding"</span>, <span style="color: #0000BB;">"'de novo' pyrimidine nucleobase biosynthetic process"</span>, <span style="color: #0000BB;">"1-phosphatidyl-1D-myo-inositol 4,5-bisphosphate metabolic process"</span>, <span style="color: #0000BB;">"2'-deoxyribonucleotide biosynthetic process"</span>, <span style="color: #0000BB;">"2'-deoxyribonucleotide metabolic process"</span>, <span style="color: #0000BB;">"2-oxoglutarate metabolic process"</span>, <span style="color: #0000BB;">"3'-UTR-mediated mRNA destabilization"</span>, <span style="color: #0000BB;">"3'-UTR-mediated mRNA stabilization"</span>, <span style="color: #0000BB;">"3'-phosphoadenosine 5'-phosphosulfate metabolic process"</span>, <span style="color: #0000BB;">"7-methylguanosine cap hypermethylation"</span>, <span style="color: #0000BB;">"ADP catabolic process"</span>, <span style="color: #0000BB;">"ADP metabolic process"</span>, <span style="color: #0000BB;">"ADP transport"</span>, <span style="color: #0000BB;">"AMP biosynthetic process"</span>, <span style="color: #0000BB;">"AMP metabolic process"</span>, <span style="color: #0000BB;">"ARF protein signal transduction"</span>, <span style="color: #0000BB;">"ATF6-mediated unfolded protein response"</span>, …, <span style="color: #0000BB;">"zymosterol biosynthetic process"</span>, and <span style="color: #0000BB;">"zymosterol metabolic process"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:48:06] Number of feature lists to be scored: <span style="color: #0000BB;">0</span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in run_aucell_scores(expr_counts = expr_sp, gene_sets = features,     strategy = cpp_strategy):</span> No gene sets retain genes after intersecting with the expression matrix</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:50:17] Preparing database: <span style="color: #0000BB;">GO_BP</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:50:49] Convert ID types for the <span style="color: #0000BB;">GO_BP</span> database</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:50:49] Converted ID types using local annotation package <span style="color: #0000BB;">org.Hs.eg.db</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-25 06:50:54] The following features were filtered because not found in the srt assay: <span style="color: #0000BB;">"antibody-dependent cellular cytotoxicity"</span>, <span style="color: #0000BB;">"epoxygenase P450 pathway"</span>, <span style="color: #0000BB;">"flavone metabolic process"</span>, <span style="color: #0000BB;">"negative regulation of response to drug"</span>, <span style="color: #0000BB;">"negative regulation of vascular endothelial growth factor production"</span>, <span style="color: #0000BB;">"negative regulation of xenobiotic detoxification by transmembrane export across the plasma membrane"</span>, <span style="color: #0000BB;">"type II hypersensitivity"</span>, and <span style="color: #0000BB;">"type IIa hypersensitivity"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:50:54] Number of feature lists to be scored: <span style="color: #0000BB;">4742</span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Feature names cannot have underscores ('_'), replacing with dashes ('-')</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Feature names cannot have underscores ('_'), replacing with dashes ('-')</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-25 06:50:59] Cell scoring completed</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="integration_scop.html">integration_scop</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
@@ -1420,13 +1426,17 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  batch <span class="op">=</span> <span class="st">"tech"</span>,</span></span>
 <span class="r-in"><span>  integration_method <span class="op">=</span> <span class="st">"Harmony"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">◌</span> [2026-06-24 17:48:06] <span style="color: #0000BB;">Run integration workflow...</span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in GetAssay.Seurat(assay_source, assay = assay_use):</span> GO is not an assay present in the given object. Available assays are: RNA</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">◌</span> [2026-06-25 06:50:59] <span style="color: #0000BB;">Run integration workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:50:59] Split `srt_merge` into `srt_list` by <span style="color: #0000BB;">"tech"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:51:00] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:51:00] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:51:00] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> FindVariableFeatures.Seurat requires an Assay5 object with a counts layer.</span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tech"</span>, <span class="st">"celltype"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in DefaultReduction(srt):</span> Unable to find any reductions</span>
+<span class="r-plt img"><img src="CellScoring-6.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">CellScoring</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -1439,21 +1449,27 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  name <span class="op">=</span> <span class="st">"GO"</span>,</span></span>
 <span class="r-in"><span>  new_assay <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:48:06] Start cell scoring</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:48:07] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:48:07] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:51:01] Start cell scoring</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:51:02] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:51:02] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:52:20] Preparing database: <span style="color: #0000BB;">GO_BP</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:52:30] Convert ID types for the <span style="color: #0000BB;">GO_BP</span> database</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:52:30] Converted ID types using local annotation package <span style="color: #0000BB;">org.Mm.eg.db</span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in panc8_sub[["GO"]]:</span> ‘GO’ not found in this Seurat object</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span>  </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:55:54] Preparing database: <span style="color: #0000BB;">GO_BP</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:07] Convert ID types for the <span style="color: #0000BB;">GO_BP</span> database</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:08] Converted ID types using local annotation package <span style="color: #0000BB;">org.Mm.eg.db</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-25 06:56:13] The following features were filtered because not found in the srt assay: <span style="color: #0000BB;">"G protein-coupled opsin signaling pathway"</span>, <span style="color: #0000BB;">"L-fucose catabolic process"</span>, <span style="color: #0000BB;">"alkaloid metabolic process"</span>, and <span style="color: #0000BB;">"fucose catabolic process"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:13] Number of feature lists to be scored: <span style="color: #0000BB;">4735</span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Feature names cannot have underscores ('_'), replacing with dashes ('-')</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Feature names cannot have underscores ('_'), replacing with dashes ('-')</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-25 06:56:17] Cell scoring completed</span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"GO"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:52:34] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in standard_scop_resolve_assays(srt = srt, assay = assay):</span> `assay` must be present in <span style="color: #0000BB;">&lt;Seurat&gt;</span>: <span style="color: #0000BB;">"GO"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:17] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:17] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:18] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:18] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> FindVariableFeatures.Seurat requires an Assay5 object with a counts layer.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span><span class="op">[[</span><span class="st">"tech"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"Mouse"</span></span></span>
 <span class="r-in"><span><span class="va">panc_merge</span> <span class="op">&lt;-</span> <span class="fu"><a href="integration_scop.html">integration_scop</a></span><span class="op">(</span></span></span>
@@ -1462,8 +1478,13 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  batch <span class="op">=</span> <span class="st">"tech"</span>,</span></span>
 <span class="r-in"><span>  integration_method <span class="op">=</span> <span class="st">"Harmony"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">◌</span> [2026-06-24 17:52:34] <span style="color: #0000BB;">Run integration workflow...</span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in GetAssay.Seurat(assay_source, assay = assay_use):</span> GO is not an assay present in the given object. Available assays are: RNA</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">◌</span> [2026-06-25 06:56:18] <span style="color: #0000BB;">Run integration workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:18] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-25 06:56:18] `srt_list` have different feature names! Will subset the common features (<span style="color: #0000BB;">4735</span>) for downstream analysis</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different cells and/or features from existing assay GO</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:21] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">6</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:21] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">6</span> of `srt_list`...</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> FindVariableFeatures.Seurat requires an Assay5 object with a counts layer.</span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  srt <span class="op">=</span> <span class="va">panc_merge</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tech"</span>, <span class="st">"celltype"</span>, <span class="st">"SubCellType"</span>, <span class="st">"Phase"</span><span class="op">)</span></span></span>
@@ -1482,44 +1503,45 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  newnames <span class="op">=</span> <span class="va">genenames</span>,</span></span>
 <span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"RNA"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:52:34] Rename features for the assay: RNA</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:21] Rename features for the assay: RNA</span>
 <span class="r-in"><span><span class="va">panc_merge</span> <span class="op">&lt;-</span> <span class="fu"><a href="integration_scop.html">integration_scop</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  srt_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">panc8_sub</span>, <span class="va">pancreas_sub</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"RNA"</span>,</span></span>
 <span class="r-in"><span>  batch <span class="op">=</span> <span class="st">"tech"</span>,</span></span>
 <span class="r-in"><span>  integration_method <span class="op">=</span> <span class="st">"Harmony"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">◌</span> [2026-06-24 17:52:34] <span style="color: #0000BB;">Run integration workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:52:34] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-24 17:52:34] `srt_list` have different feature names! Will subset the common features (<span style="color: #0000BB;">12928</span>) for downstream analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">◌</span> [2026-06-25 06:56:21] <span style="color: #0000BB;">Run integration workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:21] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-25 06:56:21] `srt_list` have different feature names! Will subset the common features (<span style="color: #0000BB;">12928</span>) for downstream analysis</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for counts</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for data</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different cells and/or features from existing assay RNA</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for counts</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for data</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for scale.data</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different cells and/or features from existing assay RNA</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:52:37] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">6</span> of the `srt_list` has been log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:52:37] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">6</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-24 17:52:37] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">6</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:52:37] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">6</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:52:37] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">6</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-24 17:52:37] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">6</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:52:37] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">6</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:52:37] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">6</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-24 17:52:38] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">6</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:52:38] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">6</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:52:38] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">6</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-24 17:52:38] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">6</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:52:38] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">6</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:52:38] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">6</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-24 17:52:38] Data <span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">6</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:52:38] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">6</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:52:38] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">6</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:52:38] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:52:39] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:52:39] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-24 17:52:44] Perform `Seurat::ScaleData()`</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> ScaleData.Seurat requires an Assay5 object with a data layer.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:23] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">6</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:23] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">6</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:24] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">6</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:24] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">6</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:24] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">6</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:24] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">6</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:24] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">6</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:24] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">6</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:25] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">6</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:25] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">6</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:25] Data <span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">6</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:25] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">6</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:25] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:26] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:26] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:43] Perform `Seurat::ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:44] Perform linear dimension reduction(<span style="color: #0000BB;">"pca"</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-06-25 06:56:44] Some PCA features are absent from scale.data and will be dropped: <span style="color: #0000BB;">"Pnliprp2"</span>, <span style="color: #0000BB;">"Pnlip"</span>, <span style="color: #0000BB;">"Cela2a"</span>, <span style="color: #0000BB;">"Cpb1"</span>, <span style="color: #0000BB;">"Ccl2"</span>, <span style="color: #0000BB;">"Aldob"</span>, <span style="color: #0000BB;">"Cela3a"</span>, <span style="color: #0000BB;">"Pdgfrb"</span>, <span style="color: #0000BB;">"Pnliprp1"</span>, <span style="color: #0000BB;">"Ctrc"</span>, <span style="color: #0000BB;">"Prss1"</span>, <span style="color: #0000BB;">"Gsta2"</span>, <span style="color: #0000BB;">"Ctrb1"</span>, <span style="color: #0000BB;">"Akr1b10"</span>, <span style="color: #0000BB;">"Cftr"</span>, <span style="color: #0000BB;">"Rnase1"</span>, <span style="color: #0000BB;">"Crp"</span>, <span style="color: #0000BB;">"Gsta1"</span>, …, <span style="color: #0000BB;">"Pde4c"</span>, and <span style="color: #0000BB;">"Apex2"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:44] Perform <span style="color: #0000BB;">Harmony</span> integration</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-25 06:56:44] Using <span style="color: #0000BB;">"Harmonypca"</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">21</span>) as input</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in validObject(object = object):</span> invalid class “Assay5” object: 1: Layers must have the same cells as present in the map (offending layer: scale.data)</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> invalid class “Assay5” object: 2: Layers must have the same features as present in the map (offending layer: scale.data)</span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  srt <span class="op">=</span> <span class="va">panc_merge</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tech"</span>, <span class="st">"celltype"</span>, <span class="st">"SubCellType"</span>, <span class="st">"Phase"</span><span class="op">)</span></span></span>
