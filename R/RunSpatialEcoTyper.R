@@ -309,6 +309,27 @@ RunSpatialEcoTyper <- function(
 #' @param ... Additional arguments passed to [SpatialSpotPlot()].
 #'
 #' @return A `ggplot`, `patchwork`, or list of `ggplot` objects.
+#'
+#' @examples
+#' counts <- matrix(
+#'   c(3, 0, 1, 2, 0, 4, 1, 0, 2, 1, 3, 0),
+#'   nrow = 3,
+#'   byrow = TRUE
+#' )
+#' rownames(counts) <- c("EPCAM", "COL1A1", "PTPRC")
+#' colnames(counts) <- paste0("spot", 1:4)
+#' srt <- Seurat::CreateSeuratObject(counts)
+#' srt$X <- c(0, 1, 0, 1)
+#' srt$Y <- c(0, 0, 1, 1)
+#' srt$SpatialEcoTyper_SE <- c("SE1", "SE1", "SE2", "SE2")
+#' srt$CellType <- c("Epithelial", "Fibroblast", "Immune", "Epithelial")
+#'
+#' SpatialEcoTyperSpatialPlot(
+#'   srt,
+#'   overlay_image = FALSE,
+#'   coord.cols = c("X", "Y"),
+#'   pt.size = 4
+#' )
 #' @export
 SpatialEcoTyperSpatialPlot <- function(
   srt,
@@ -356,6 +377,26 @@ SpatialEcoTyperSpatialPlot <- function(
 #' @param theme_args Additional arguments passed to the theme function.
 #'
 #' @return A `ggplot` object.
+#'
+#' @examples
+#' counts <- matrix(
+#'   c(3, 0, 1, 2, 0, 4, 1, 0, 2, 1, 3, 0),
+#'   nrow = 3,
+#'   byrow = TRUE
+#' )
+#' rownames(counts) <- c("EPCAM", "COL1A1", "PTPRC")
+#' colnames(counts) <- paste0("spot", 1:4)
+#' srt <- Seurat::CreateSeuratObject(counts)
+#' srt$SpatialEcoTyper_SE <- c("SE1", "SE1", "SE2", "SE2")
+#' srt$CellType <- c("Epithelial", "Fibroblast", "Immune", "Epithelial")
+#' srt$sample <- c("slice1", "slice1", "slice2", "slice2")
+#'
+#' SpatialEcoTyperCompositionPlot(
+#'   srt,
+#'   group.by = "CellType",
+#'   sample.by = "sample",
+#'   position = "fill"
+#' )
 #' @export
 SpatialEcoTyperCompositionPlot <- function(
   srt,

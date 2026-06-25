@@ -22,6 +22,34 @@
 #' @return A `giotto2_result` list containing the full Giotto object,
 #' enrichment table, raw Giotto result, parameters, features, and cells.
 #'
+#' @examples
+#' \dontrun{
+#' data(visium_human_pancreas_sub)
+#' spatial <- Seurat::NormalizeData(
+#'   visium_human_pancreas_sub,
+#'   assay = "Spatial",
+#'   verbose = FALSE
+#' )
+#' spatial$region <- ifelse(
+#'   spatial$col > stats::median(spatial$col),
+#'   "right",
+#'   "left"
+#' )
+#'
+#' proximity <- RunGiottoCellProximity(
+#'   spatial,
+#'   group.by = "region",
+#'   assay = "Spatial",
+#'   layer = "data",
+#'   coord.cols = c("col", "row"),
+#'   network_method = "Delaunay",
+#'   number_of_simulations = 100
+#' )
+#'
+#' head(proximity$enrichment)
+#' GiottoPlot(proximity)
+#' }
+#'
 #' @export
 RunGiottoCellProximity <- function(
   srt,
@@ -168,6 +196,41 @@ RunGiottoCellProximity <- function(
 #' @return A `giotto2_result` list containing the full Giotto object,
 #' spatial gene table, top features, raw Giotto result, parameters, features,
 #' and cells.
+#'
+#' @examples
+#' \dontrun{
+#' data(visium_human_pancreas_sub)
+#' spatial <- Seurat::NormalizeData(
+#'   visium_human_pancreas_sub,
+#'   assay = "Spatial",
+#'   verbose = FALSE
+#' )
+#' spatial <- Seurat::FindVariableFeatures(
+#'   spatial,
+#'   assay = "Spatial",
+#'   nfeatures = 500,
+#'   verbose = FALSE
+#' )
+#'
+#' giotto_genes <- RunGiottoSpatialGenes(
+#'   spatial,
+#'   assay = "Spatial",
+#'   layer = "data",
+#'   features = Seurat::VariableFeatures(spatial, assay = "Spatial"),
+#'   coord.cols = c("col", "row"),
+#'   top_n = 50
+#' )
+#'
+#' head(giotto_genes$results)
+#' GiottoPlot(giotto_genes, plot_type = "ranking", top_n = 10)
+#' GiottoPlot(
+#'   giotto_genes,
+#'   srt = spatial,
+#'   plot_type = "feature",
+#'   overlay_image = FALSE,
+#'   coord.cols = c("col", "row")
+#' )
+#' }
 #'
 #' @export
 RunGiottoSpatialGenes <- function(
@@ -325,6 +388,35 @@ RunGiottoSpatialGenes <- function(
 #' @return A `giotto2_result` list containing the full Giotto object,
 #' spatial correlation object, module object, extracted module tables,
 #' parameters, features, and cells.
+#'
+#' @examples
+#' \dontrun{
+#' data(visium_human_pancreas_sub)
+#' spatial <- Seurat::NormalizeData(
+#'   visium_human_pancreas_sub,
+#'   assay = "Spatial",
+#'   verbose = FALSE
+#' )
+#' spatial <- Seurat::FindVariableFeatures(
+#'   spatial,
+#'   assay = "Spatial",
+#'   nfeatures = 500,
+#'   verbose = FALSE
+#' )
+#'
+#' giotto_modules <- RunGiottoSpatialModules(
+#'   spatial,
+#'   assay = "Spatial",
+#'   layer = "data",
+#'   features = Seurat::VariableFeatures(spatial, assay = "Spatial")[1:50],
+#'   coord.cols = c("col", "row"),
+#'   cor_method = "pearson",
+#'   k = 6
+#' )
+#'
+#' names(giotto_modules$module_tables)
+#' GiottoPlot(giotto_modules, top_n = 12)
+#' }
 #'
 #' @export
 RunGiottoSpatialModules <- function(

@@ -48,3 +48,23 @@ A \code{ggplot} object.
 Plot SpatialEcoTyper composition across cell types, samples, or other
 metadata groups using scop's default plotting theme and palettes.
 }
+\examples{
+counts <- matrix(
+  c(3, 0, 1, 2, 0, 4, 1, 0, 2, 1, 3, 0),
+  nrow = 3,
+  byrow = TRUE
+)
+rownames(counts) <- c("EPCAM", "COL1A1", "PTPRC")
+colnames(counts) <- paste0("spot", 1:4)
+srt <- Seurat::CreateSeuratObject(counts)
+srt$SpatialEcoTyper_SE <- c("SE1", "SE1", "SE2", "SE2")
+srt$CellType <- c("Epithelial", "Fibroblast", "Immune", "Epithelial")
+srt$sample <- c("slice1", "slice1", "slice2", "slice2")
+
+SpatialEcoTyperCompositionPlot(
+  srt,
+  group.by = "CellType",
+  sample.by = "sample",
+  position = "fill"
+)
+}

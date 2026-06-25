@@ -42,3 +42,25 @@ A \code{Seurat} object.
 Use \code{semla::RegionNeighbors()} to identify neighboring spots for selected
 metadata labels and write the returned columns to Seurat metadata.
 }
+\examples{
+\dontrun{
+data(visium_human_pancreas_sub)
+spatial <- visium_human_pancreas_sub
+spatial$region <- ifelse(
+  spatial$col > stats::median(spatial$col),
+  "right",
+  "left"
+)
+
+spatial <- RunSemlaRegionNeighbors(
+  spatial,
+  column_name = "region",
+  column_labels = "right",
+  mode = "outer",
+  column_key = "right_border"
+)
+
+grep("right_border", colnames(spatial[[]]), value = TRUE)
+SpatialSpotPlot(spatial, group.by = "region")
+}
+}
