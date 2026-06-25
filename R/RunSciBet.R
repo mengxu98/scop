@@ -245,6 +245,14 @@ RunSciBet <- function(
     query_run_index <- colnames(query_expr_run)
   }
 
+  if (!isTRUE(return_object)) {
+    rm(srt_query, srt_ref)
+    if (exists("query_expr", inherits = FALSE)) {
+      rm(query_expr)
+    }
+    gc(verbose = FALSE)
+  }
+
   result <- if (
     inherits(ref_expr, "dgCMatrix") &&
       inherits(query_expr_run, "dgCMatrix")
