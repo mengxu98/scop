@@ -92,6 +92,15 @@
 #' Default is `unit(4, "in")`.
 #' @param terms_fontsize A numeric vector specifying the font size(s) for term annotations.
 #' Default is `8`.
+#' @param terms_stat Which enrichment statistic to show after each term.
+#' Use `"none"` to hide the bar background, `"score"` for `-log10` of the
+#' active p-value metric, or any column from the enrichment result such as
+#' `"p.adjust"`, `"pvalue"`, `"qvalue"`,
+#' `"GeneRatio"`, `"RichFactor"`, `"FoldEnrichment"`, `"zScore"`, or `"Count"`.
+#' @param terms_stat_digits Number of significant digits for numeric term
+#' statistics.
+#' @param terms_stat_test Logical. Whether to show the numeric term statistic
+#' value at the right side of each term when `terms_stat` is enabled.
 #' @param keys_width A unit specifying the width of key annotations.
 #' Default is `unit(2, "in")`.
 #' @param keys_fontsize A two-length numeric vector specifying the minimum and maximum font size(s) for key annotations.
@@ -460,6 +469,9 @@ GroupHeatmap <- function(
   anno_features = FALSE,
   terms_width = grid::unit(4, "in"),
   terms_fontsize = 8,
+  terms_stat = "none",
+  terms_stat_digits = 2,
+  terms_stat_test = TRUE,
   keys_width = grid::unit(2, "in"),
   keys_fontsize = c(6, 10),
   features_width = grid::unit(2, "in"),
@@ -1968,6 +1980,9 @@ GroupHeatmap <- function(
     anno_features = anno_features,
     terms_width = terms_width,
     terms_fontsize = terms_fontsize,
+    terms_stat = terms_stat,
+    terms_stat_digits = terms_stat_digits,
+    terms_stat_test = terms_stat_test,
     keys_width = keys_width,
     keys_fontsize = keys_fontsize,
     features_width = features_width,
@@ -1999,6 +2014,7 @@ GroupHeatmap <- function(
   )
   res <- enrichment$res
   ha_right <- enrichment$ha_right
+  lgd <- c(lgd, enrichment$lgd)
 
   ht_list <- NULL
   vlnplots_list <- NULL
@@ -2325,15 +2341,22 @@ GroupHeatmap <- function(
   height_sum <- rendersize[["height_sum"]]
 
   if (isTRUE(fix)) {
-    fixsize <- heatmap_fixsize(
-      width = width,
-      width_sum = width_sum,
-      height = height,
-      height_sum = height_sum,
-      units = units,
-      ht_list = ht_list,
-      legend_list = lgd
-    )
+    fixsize_env <- new.env(parent = emptyenv())
+    invisible(grid::grid.grabExpr(
+      {
+        fixsize_env[["value"]] <- heatmap_fixsize(
+          width = width,
+          width_sum = width_sum,
+          height = height,
+          height_sum = height_sum,
+          units = units,
+          ht_list = ht_list,
+          legend_list = lgd
+        )
+      }
+    ))
+    fixsize <- fixsize_env[["value"]]
+    rm(fixsize_env)
     ht_width <- fixsize[["ht_width"]]
     ht_height <- fixsize[["ht_height"]]
   } else {
