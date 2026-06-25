@@ -21,15 +21,10 @@
 #' @param cores Number of cores used by native network-construction workers and
 #' forwarded to downstream linear algebra where applicable.
 #' @param backend `r` calls `scTenifoldKnk::scTenifoldKnk()` directly and is the
-#' default high-consistency path. `cpp` uses upstream `pcNet()` by default,
-#' plus native helpers for manifold matrix construction, directionality, and
-#' distance calculation. Tensor decomposition uses upstream `scTenifoldNet` by
-#' default because it is faster on the benchmarked 10k workflow; set
-#' `options(scop.sctenifold.native_tensor = TRUE)` or
-#' `SCOP_SCTENIFOLD_NATIVE_TENSOR=true` to use the native ALS tensor path. Set
-#' `options(scop.sctenifold.upstream_pcnet = FALSE)` or
-#' `SCOP_SCTENIFOLD_UPSTREAM_PCNET=false` to use the native covariance-based
-#' network construction path.
+#' default high-consistency path. `cpp` follows the upstream
+#' `scTenifoldNet`/`scTenifoldKnk` network construction, tensor decomposition,
+#' manifold alignment, and differential-regulation steps while keeping input
+#' handling and result storage inside `scop`.
 #' @param store_networks Whether to keep WT/KO tensor networks in
 #' `srt@tools`.
 #' @param store_manifold Whether to keep manifold-alignment coordinates in
@@ -334,57 +329,15 @@ RunscTenifoldKnk <- function(
           Z <- sample(x = seq_len(nCol), size = nc_nCells, replace = TRUE)
           Z <- as.matrix(count_matrix[, Z])
           Z <- Z[rowSums(Z) > 0, , drop = FALSE]
-          use_upstream_pcnet <- !identical(
-            tolower(Sys.getenv("SCOP_SCTENIFOLD_UPSTREAM_PCNET", "true")),
-            "false"
-          ) &&
-            isTRUE(getOption("scop.sctenifold.upstream_pcnet", FALSE))
-          use_native_pcnet <- !isTRUE(use_upstream_pcnet)
-          if (isTRUE(use_native_pcnet)) {
-            if (!all(Matrix::rowSums(Z) > 0)) {
-              log_message(
-                "Quality control has not been applied over the matrix",
-                message_type = "error"
-              )
-            }
-            xClass <- class(Z)[[1]]
-            validClass <- xClass %in% c("matrix", "dgCMatrix")
-            if (!validClass) {
-              log_message(
-                "Input should be a matrix with cells as columns and genes as rows",
-                message_type = "error"
-              )
-            }
-            if (nc_nComp < 2L || nc_nComp >= nrow(Z)) {
-              log_message(
-                "{.arg nc_nComp} should be greater or equal than 2 and lower than the total number of genes",
-                message_type = "error"
-              )
-            }
-
-            gNames <- rownames(Z)
-            RhpcBLASctl::omp_set_num_threads(1L)
-            RhpcBLASctl::blas_set_num_threads(1L)
-            Z <- sctenifold_pcnet_covariance_sparse(
-              x = as.matrix(Z),
-              n_comp = as.integer(nc_nComp),
-              scale_scores = isTRUE(nc_scaleScores),
-              symmetric = isTRUE(nc_symmetric),
-              q = nc_q,
-              cores = as.integer(cores)
-            )
-            colnames(Z) <- rownames(Z) <- gNames
-          } else {
-            Z <- get_namespace_fun("scTenifoldNet", "pcNet")(
-              X = Z,
-              nComp = as.integer(nc_nComp),
-              scaleScores = isTRUE(nc_scaleScores),
-              symmetric = isTRUE(nc_symmetric),
-              q = nc_q,
-              verbose = FALSE,
-              nCores = as.integer(cores)
-            )
-          }
+          Z <- get_namespace_fun("scTenifoldNet", "pcNet")(
+            X = Z,
+            nComp = as.integer(nc_nComp),
+            scaleScores = isTRUE(nc_scaleScores),
+            symmetric = isTRUE(nc_symmetric),
+            q = nc_q,
+            verbose = FALSE,
+            nCores = as.integer(cores)
+          )
           if (nrow(Z) == nGenes && identical(rownames(Z), geneList)) {
             return(Z)
           }
@@ -416,183 +369,40 @@ RunscTenifoldKnk <- function(
           logical(1)
         ))
 
-      use_native_tensor <- !identical(
-        tolower(Sys.getenv("SCOP_SCTENIFOLD_NATIVE_TENSOR", "false")),
-        "false"
-      ) &&
-        isTRUE(getOption("scop.sctenifold.native_tensor", FALSE))
-
-      if (!same_names || !isTRUE(use_native_tensor)) {
-        log_message(
-          if (!same_names) {
-            "Network names are not identical across tensors; falling back to {.pkg scTenifoldNet} tensor decomposition"
-          } else {
-            "Use {.pkg scTenifoldNet} tensor decomposition"
-          },
-          message_type = if (!same_names) "warning" else NULL,
-          verbose = verbose
-        )
-        wt <- get_namespace_fun("scTenifoldNet", "tensorDecomposition")(
-          xList = wt_networks,
-          nDecimal = as.integer(td_nDecimal),
-          K = as.integer(td_K),
-          maxError = td_maxError,
-          maxIter = as.integer(td_maxIter)
-        )
-      } else {
-        n_genes <- length(gene_list)
-        n_net <- length(wt_networks)
-        set.seed(1)
-        init_u <- list(
-          matrix(stats::rnorm(n_genes * td_K), nrow = n_genes, ncol = td_K),
-          matrix(stats::rnorm(n_genes * td_K), nrow = n_genes, ncol = td_K),
-          matrix(stats::rnorm(td_K), nrow = 1, ncol = td_K),
-          matrix(stats::rnorm(n_net * td_K), nrow = n_net, ncol = td_K)
-        )
-        x_dense <- lapply(
-          wt_networks,
-          function(x) {
-            x <- as.matrix(x)
-            storage.mode(x) <- "double"
-            x
-          }
-        )
-
-        wt <- sctenifold_tensor_decomposition(
-          x_list = x_dense,
-          init_u = init_u,
-          max_iter = as.integer(td_maxIter),
-          tol = td_maxError,
-          verbose = verbose
-        )
-        wt <- round(wt, digits = as.integer(td_nDecimal))
-        wt <- Matrix::Matrix(wt, sparse = TRUE)
-        rownames(wt) <- colnames(wt) <- gene_list
-        wt <- list(X = wt)
-      }
-
-      wt <- as.matrix(wt$X)
-      wt <- sctenifold_strict_direction(
-        x = wt,
-        lambda = nc_lambda
-      )
-      diag(wt) <- 0
-      wt <- t(wt)
-
-      ko <- wt
-      ko[gKO, ] <- 0
-
       log_message(
-        "Align WT and KO network manifolds",
+        if (!same_names) {
+          "Network names are not identical across tensors; falling back to {.pkg scTenifoldNet} tensor decomposition"
+        } else {
+          "Use {.pkg scTenifoldNet} tensor decomposition"
+        },
+        message_type = if (!same_names) "warning" else NULL,
         verbose = verbose
       )
-      sharedGenes <- intersect(rownames(wt), rownames(ko))
-      X <- wt[sharedGenes, sharedGenes]
-      Y <- ko[sharedGenes, sharedGenes]
-      check_r("RSpectra", verbose = FALSE)
-      W <- sctenifold_manifold_matrix(
-        x = as.matrix(X),
-        y = as.matrix(Y)
+      wt <- get_namespace_fun("scTenifoldNet", "tensorDecomposition")(
+        xList = wt_networks,
+        nDecimal = as.integer(td_nDecimal),
+        K = as.integer(td_K),
+        maxError = td_maxError,
+        maxIter = as.integer(td_maxIter)
       )
-      RhpcBLASctl::omp_set_num_threads(as.integer(cores))
-      RhpcBLASctl::blas_set_num_threads(as.integer(cores))
-      E <- suppressWarnings(RSpectra::eigs(W, as.integer(ma_nDim) * 2, "SR"))
-      E$values <- suppressWarnings(as.numeric(E$values))
-      suppressWarnings(storage.mode(E$vectors) <- "double")
-      newOrder <- order(E$values)
-      E$values <- E$values[newOrder]
-      E$vectors <- E$vectors[, newOrder]
-      E$vectors <- E$vectors[, E$values > 1e-08, drop = FALSE]
-      ma <- E$vectors[, seq_len(ma_nDim), drop = FALSE]
-      if (isTRUE(store_manifold)) {
-        colnames(ma) <- paste0("NLMA ", seq_len(ma_nDim))
-        rownames(ma) <- c(
-          paste0("X_", sharedGenes),
-          paste0("Y_", sharedGenes)
-        )
-      }
 
-      aligned <- as.matrix(ma)
-      if (nrow(aligned) %% 2L != 0L) {
-        log_message(
-          "Unexpected scTenifoldNet manifold-alignment output",
-          message_type = "error"
-        )
-      }
-
-      n_genes <- nrow(aligned) / 2L
-      if (isTRUE(store_manifold)) {
-        x_names <- rownames(aligned)[seq_len(n_genes)]
-        y_names <- rownames(aligned)[seq.int(n_genes + 1L, nrow(aligned))]
-        gene_list <- sub("^X_", "", x_names)
-        expected_gene_list <- sub("^Y_", "", y_names)
-
-        if (
-          !all(grepl("^X_", x_names)) ||
-            !all(grepl("^Y_", y_names)) ||
-            !identical(gene_list, expected_gene_list)
-        ) {
-          log_message(
-            "Genes are not ordered as expected in scTenifoldNet manifold output",
-            message_type = "error"
-          )
-        }
-      } else {
-        gene_list <- sharedGenes
-      }
-
-      distances <- sctenifold_pair_distances(aligned)
-      names(distances) <- gene_list
-
-      positive <- distances[is.finite(distances) & distances > 0]
-      if (length(positive) > 1L && length(unique(positive)) > 1L) {
-        lambda_values <- seq(-2, 2, length.out = 1000)
-        lambda_values <- lambda_values[lambda_values != 0]
-        bc <- try(
-          MASS::boxcox(positive ~ 1, plot = FALSE, lambda = lambda_values),
-          silent = TRUE
-        )
-        if (inherits(bc, "try-error")) {
-          normalized_distances <- distances
-        } else {
-          bc_lambda <- bc$x[which.max(bc$y)]
-          if (bc_lambda < 0) {
-            normalized_distances <- 1 / (distances^bc_lambda)
-          } else {
-            normalized_distances <- distances^bc_lambda
-          }
-        }
-      } else {
-        normalized_distances <- distances
-      }
-
-      z_score <- as.numeric(scale(normalized_distances))
-      dr <- data.frame(
-        gene = gene_list,
-        distance = as.numeric(distances),
-        Z = z_score,
-        stringsAsFactors = FALSE
+      wt <- as.matrix(wt$X)
+      wt <- getFromNamespace("strictDirection", "scTenifoldKnk")(
+        wt,
+        lambda = nc_lambda
       )
-      dr <- dr[order(dr$distance, decreasing = TRUE), , drop = FALSE]
-      background_idx <- setdiff(seq_len(nrow(dr)), seq_len(length(gKO)))
-      if (length(background_idx) == 0L) {
-        log_message(
-          "Not enough non-KO genes to compute scTenifoldKnk differential regulation statistics",
-          message_type = "error"
-        )
-      }
-      distance_mean <- mean(dr$distance[background_idx]^2)
-      if (!is.finite(distance_mean) || distance_mean <= 0) {
-        log_message(
-          "Unable to compute finite scTenifoldKnk background distance",
-          message_type = "error"
-        )
-      }
-      fc <- (dr$distance^2) / distance_mean
-      dr$FC <- fc
-      dr$p.value <- stats::pchisq(q = fc, df = 1, lower.tail = FALSE)
-      dr$p.adj <- stats::p.adjust(dr$p.value, method = "fdr")
-      rownames(dr) <- NULL
+      wt <- as.matrix(wt)
+      diag(wt) <- 0
+      wt <- t(wt)
+      ko <- wt
+      ko[gKO, ] <- 0
+      ma <- get_namespace_fun("scTenifoldNet", "manifoldAlignment")(
+        wt,
+        ko,
+        d = as.integer(ma_nDim),
+        nCores = as.integer(cores)
+      )
+      dr <- getFromNamespace("dRegulation", "scTenifoldKnk")(ma, gKO)
 
       list(
         tensorNetworks = if (isTRUE(store_networks)) {
