@@ -378,6 +378,10 @@ RunCytoTRACE.default <- function(
 
       ranked_data <- preprocessed$ranked_data
       log2_data <- preprocessed$log2_data
+      count_cells_few_genes <- preprocessed$count_cells_few_genes
+      cell_names <- preprocessed$cell_names
+      rm(dt, preprocessed)
+      gc(verbose = FALSE)
 
       smooth_groups <- cytotrace2_smooth_groups(
         n_cells = nrow(log2_data),
@@ -400,6 +404,8 @@ RunCytoTRACE.default <- function(
         )
         pca_coords <- sweep(svd_res$u, 2, svd_res$d, "*")
         rownames(pca_coords) <- rownames(log2_data)
+        rm(log2_scaled, svd_res)
+        gc(verbose = FALSE)
       }
 
       result <- cytotrace2_main(
@@ -412,8 +418,8 @@ RunCytoTRACE.default <- function(
         pca_coords = pca_coords
       )
 
-      result$count_cells_few_genes <- preprocessed$count_cells_few_genes
-      result$cell_names <- preprocessed$cell_names
+      result$count_cells_few_genes <- count_cells_few_genes
+      result$cell_names <- cell_names
       result
     }
 
