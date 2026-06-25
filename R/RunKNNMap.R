@@ -51,11 +51,6 @@
 #'   group.by = c("celltype", "tech")
 #' )
 #'
-#' # Set the number of threads for RcppParallel
-#' # details see: ?RcppParallel::setThreadOptions
-#' # if (requireNamespace("RcppParallel", quietly = TRUE)) {
-#' #   RcppParallel::setThreadOptions()
-#' # }
 #' # Projection
 #' srt_query <- RunKNNMap(
 #'   srt_query = srt_query,
@@ -313,24 +308,16 @@ RunKNNMap <- function(
   }
 
   if (is.null(nn_method)) {
-    if (distance_metric %in% c("euclidean", "cosine")) {
-      nn_method <- "cpp"
-    } else if (as.numeric(nrow(query)) * as.numeric(nrow(ref)) >= 1e8) {
+    if (as.numeric(nrow(query)) * as.numeric(nrow(ref)) >= 1e8) {
       nn_method <- "annoy"
     } else {
       nn_method <- "raw"
     }
   }
   log_message("Use {.pkg {nn_method}} method to find neighbors", verbose = verbose)
-  if (!nn_method %in% c("raw", "annoy", "rann", "cpp")) {
+  if (!nn_method %in% c("raw", "annoy", "rann")) {
     log_message(
-      "{.arg nn_method} must be one of {.val {c('raw', 'annoy', 'rann', 'cpp')}}",
-      message_type = "error"
-    )
-  }
-  if (identical(nn_method, "cpp") && !distance_metric %in% c("euclidean", "cosine")) {
-    log_message(
-      "{.arg distance_metric} must be one of {.val {c('euclidean', 'cosine')}} when {.arg nn_method = 'cpp'}",
+      "{.arg nn_method} must be one of {.val {c('raw', 'annoy', 'rann')}}",
       message_type = "error"
     )
   }
@@ -341,33 +328,7 @@ RunKNNMap <- function(
     )
   }
 
-  if (identical(nn_method, "cpp")) {
-    query_neighbor <- run_knn_topk(
-      reference = ref,
-      query = query,
-      k = k,
-      metric = distance_metric,
-      backend = nn_method,
-      exclude_self = FALSE
-    )
-    match_k <- query_neighbor[["idx"]]
-    k <- ncol(match_k)
-    rownames(match_k) <- rownames(query)
-    match_k_cell <- matrix(
-      rownames(ref)[match_k],
-      nrow = nrow(match_k),
-      ncol = ncol(match_k),
-      dimnames = list(rownames(query), NULL)
-    )
-    knn_cells <- match_k_cell
-    match_k_distance <- query_neighbor[["dist"]]
-    rownames(match_k_distance) <- rownames(query)
-    refumap_all <- srt_ref[[ref_umap]]@cell.embeddings[
-      knn_cells, ,
-      drop = FALSE
-    ]
-    group <- rep(rownames(query), k)
-  } else if (nn_method %in% c("annoy", "rann")) {
+  if (nn_method %in% c("annoy", "rann")) {
     query_neighbor <- Seurat::FindNeighbors(
       query = query,
       object = ref,

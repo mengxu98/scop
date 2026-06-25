@@ -80,7 +80,7 @@ Default is \code{1}.}
 If NULL, the function will use the highly variable features identified by the HVF method.}
 
 \item{do_scaling}{Whether to perform scaling.
-If \code{TRUE}, the function will force to scale the data using the \link[Seurat:ScaleData]{Seurat::ScaleData} function.}
+If \code{TRUE}, the function will force scaling with the package ScaleData path.}
 
 \item{vars_to_regress}{A vector of variable names to include as additional regression variables.
 Default is \code{NULL}.}

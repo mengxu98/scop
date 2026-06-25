@@ -3,7 +3,7 @@
 #' @description
 #' Run spatial trajectory or annotation gradient screening for Seurat objects.
 #' The native `"cpp"` backend avoids SPATA2 object construction for fast
-#' distance-based screening, while the `"spata2"` backend keeps full upstream
+#' distance-based screening, while the `"r"` backend keeps full upstream
 #' SPATA2 SAS/STS behavior. Results are normalized into plain data.frames and
 #' stored in `srt@tools[["SpatialGradientFeatures"]]`; the SPATA2 object itself
 #' is never stored.
@@ -14,7 +14,7 @@
 #' @param reference Spatial reference type: `"trajectory"` for STS or
 #' `"annotation"` for SAS.
 #' @param backend Computation backend. `"cpp"` uses SCOP's native fast spatial
-#' gradient implementation and avoids SPATA2 object construction. `"spata2"`
+#' gradient implementation and avoids SPATA2 object construction. `"r"`
 #' uses SPATA2 directly for full upstream SAS/STS behavior.
 #' @param result_name Name used to store this result. If `NULL`, a name is
 #' generated from `reference`.
@@ -70,7 +70,7 @@
 RunSpatialGradientFeatures <- function(
   srt,
   reference = c("trajectory", "annotation"),
-  backend = c("cpp", "spata2"),
+  backend = c("cpp", "r"),
   result_name = NULL,
   spata_object = NULL,
   assay = NULL,
@@ -695,7 +695,7 @@ sgf_run_cpp_gradient <- function(
 ) {
   if (!is.null(annotation_ids) && length(annotation_ids) > 0L) {
     log_message(
-      "{.arg annotation_ids} requires {.arg backend = 'spata2'} because SPATA2 annotation ids are not stored in Seurat metadata",
+      "{.arg annotation_ids} requires {.arg backend = 'r'} because SPATA2 annotation ids are not stored in Seurat metadata",
       message_type = "error"
     )
   }

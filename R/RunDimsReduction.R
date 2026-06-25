@@ -253,7 +253,7 @@ RunDimsReduction <- function(
     if (is.null(features) || length(features) == 0) {
       log_message("No features provided. Use variable features")
       if (length(SeuratObject::DefaultAssay(srt)) == 0) {
-        srt <- Seurat::FindVariableFeatures(srt, assay = assay, verbose = FALSE)
+        srt <- FindVariableFeatures(srt, assay = assay, verbose = FALSE)
       }
       features <- SeuratObject::VariableFeatures(srt, assay = assay)
     }
@@ -307,7 +307,11 @@ RunDimsReduction <- function(
     for (nm in names(linear_reduction_params)) {
       params[[nm]] <- linear_reduction_params[[nm]]
     }
-    srt <- invoke_fun(.fn = fun_use, .args = params)
+    srt <- if (identical(fun_use, "RunPCA")) {
+      do.call(RunPCA, params)
+    } else {
+      invoke_fun(.fn = fun_use, .args = params)
+    }
 
     if (is.null(rownames(srt[[paste0(prefix, linear_reduction)]]))) {
       rownames(

@@ -25,8 +25,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // bayesprism_gibbs_initial_cpp
-List bayesprism_gibbs_initial_cpp(NumericMatrix mixture, NumericMatrix phi, IntegerVector gibbs_idx, double alpha, int seed, int n_threads);
-RcppExport SEXP _scop_bayesprism_gibbs_initial_cpp(SEXP mixtureSEXP, SEXP phiSEXP, SEXP gibbs_idxSEXP, SEXP alphaSEXP, SEXP seedSEXP, SEXP n_threadsSEXP) {
+List bayesprism_gibbs_initial_cpp(NumericMatrix mixture, NumericMatrix phi, IntegerVector gibbs_idx, double alpha, int seed, int cores);
+RcppExport SEXP _scop_bayesprism_gibbs_initial_cpp(SEXP mixtureSEXP, SEXP phiSEXP, SEXP gibbs_idxSEXP, SEXP alphaSEXP, SEXP seedSEXP, SEXP coresSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -35,14 +35,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< IntegerVector >::type gibbs_idx(gibbs_idxSEXP);
     Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
     Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
-    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(bayesprism_gibbs_initial_cpp(mixture, phi, gibbs_idx, alpha, seed, n_threads));
+    Rcpp::traits::input_parameter< int >::type cores(coresSEXP);
+    rcpp_result_gen = Rcpp::wrap(bayesprism_gibbs_initial_cpp(mixture, phi, gibbs_idx, alpha, seed, cores));
     return rcpp_result_gen;
 END_RCPP
 }
 // bayesprism_gibbs_final_cpp
-List bayesprism_gibbs_final_cpp(NumericMatrix mixture, NumericMatrix phi, IntegerVector gibbs_idx, double alpha, int seed, int n_threads);
-RcppExport SEXP _scop_bayesprism_gibbs_final_cpp(SEXP mixtureSEXP, SEXP phiSEXP, SEXP gibbs_idxSEXP, SEXP alphaSEXP, SEXP seedSEXP, SEXP n_threadsSEXP) {
+List bayesprism_gibbs_final_cpp(NumericMatrix mixture, NumericMatrix phi, IntegerVector gibbs_idx, double alpha, int seed, int cores);
+RcppExport SEXP _scop_bayesprism_gibbs_final_cpp(SEXP mixtureSEXP, SEXP phiSEXP, SEXP gibbs_idxSEXP, SEXP alphaSEXP, SEXP seedSEXP, SEXP coresSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -51,8 +51,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< IntegerVector >::type gibbs_idx(gibbs_idxSEXP);
     Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
     Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
-    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(bayesprism_gibbs_final_cpp(mixture, phi, gibbs_idx, alpha, seed, n_threads));
+    Rcpp::traits::input_parameter< int >::type cores(coresSEXP);
+    rcpp_result_gen = Rcpp::wrap(bayesprism_gibbs_final_cpp(mixture, phi, gibbs_idx, alpha, seed, cores));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -93,8 +93,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // cibersort_cpp
-List cibersort_cpp(NumericMatrix signature, NumericMatrix mixture, int perm, bool QN, bool absolute, int n_threads, int seed, bool verbose);
-RcppExport SEXP _scop_cibersort_cpp(SEXP signatureSEXP, SEXP mixtureSEXP, SEXP permSEXP, SEXP QNSEXP, SEXP absoluteSEXP, SEXP n_threadsSEXP, SEXP seedSEXP, SEXP verboseSEXP) {
+List cibersort_cpp(NumericMatrix signature, NumericMatrix mixture, int perm, bool QN, bool absolute, int cores, int seed, bool verbose);
+RcppExport SEXP _scop_cibersort_cpp(SEXP signatureSEXP, SEXP mixtureSEXP, SEXP permSEXP, SEXP QNSEXP, SEXP absoluteSEXP, SEXP coresSEXP, SEXP seedSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -103,10 +103,10 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type perm(permSEXP);
     Rcpp::traits::input_parameter< bool >::type QN(QNSEXP);
     Rcpp::traits::input_parameter< bool >::type absolute(absoluteSEXP);
-    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
+    Rcpp::traits::input_parameter< int >::type cores(coresSEXP);
     Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(cibersort_cpp(signature, mixture, perm, QN, absolute, n_threads, seed, verbose));
+    rcpp_result_gen = Rcpp::wrap(cibersort_cpp(signature, mixture, perm, QN, absolute, cores, seed, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -521,22 +521,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type tau(tauSEXP);
     Rcpp::traits::input_parameter< int >::type chunk_size(chunk_sizeSEXP);
     rcpp_result_gen = Rcpp::wrap(gsva_poisson_dense(expr, gene_sets, max_diff, abs_ranking, tau, chunk_size));
-    return rcpp_result_gen;
-END_RCPP
-}
-// knn_topk_cpp
-List knn_topk_cpp(NumericMatrix reference, NumericMatrix query, int k, std::string metric, bool exclude_self, int n_threads);
-RcppExport SEXP _scop_knn_topk_cpp(SEXP referenceSEXP, SEXP querySEXP, SEXP kSEXP, SEXP metricSEXP, SEXP exclude_selfSEXP, SEXP n_threadsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type reference(referenceSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type query(querySEXP);
-    Rcpp::traits::input_parameter< int >::type k(kSEXP);
-    Rcpp::traits::input_parameter< std::string >::type metric(metricSEXP);
-    Rcpp::traits::input_parameter< bool >::type exclude_self(exclude_selfSEXP);
-    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(knn_topk_cpp(reference, query, k, metric, exclude_self, n_threads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1023,8 +1007,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // grnboost_tree_parallel
-DataFrame grnboost_tree_parallel(NumericMatrix expr, IntegerVector regulator_idx, IntegerVector target_idx, int n_rounds, double learning_rate, int max_edges_per_target, int max_depth, double max_features, double subsample, int early_stop_window_length, int random_seed, bool exclude_self, int n_threads);
-RcppExport SEXP _scop_grnboost_tree_parallel(SEXP exprSEXP, SEXP regulator_idxSEXP, SEXP target_idxSEXP, SEXP n_roundsSEXP, SEXP learning_rateSEXP, SEXP max_edges_per_targetSEXP, SEXP max_depthSEXP, SEXP max_featuresSEXP, SEXP subsampleSEXP, SEXP early_stop_window_lengthSEXP, SEXP random_seedSEXP, SEXP exclude_selfSEXP, SEXP n_threadsSEXP) {
+DataFrame grnboost_tree_parallel(NumericMatrix expr, IntegerVector regulator_idx, IntegerVector target_idx, int n_rounds, double learning_rate, int max_edges_per_target, int max_depth, double max_features, double subsample, int early_stop_window_length, int random_seed, bool exclude_self, int cores);
+RcppExport SEXP _scop_grnboost_tree_parallel(SEXP exprSEXP, SEXP regulator_idxSEXP, SEXP target_idxSEXP, SEXP n_roundsSEXP, SEXP learning_rateSEXP, SEXP max_edges_per_targetSEXP, SEXP max_depthSEXP, SEXP max_featuresSEXP, SEXP subsampleSEXP, SEXP early_stop_window_lengthSEXP, SEXP random_seedSEXP, SEXP exclude_selfSEXP, SEXP coresSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1040,8 +1024,53 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type early_stop_window_length(early_stop_window_lengthSEXP);
     Rcpp::traits::input_parameter< int >::type random_seed(random_seedSEXP);
     Rcpp::traits::input_parameter< bool >::type exclude_self(exclude_selfSEXP);
-    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(grnboost_tree_parallel(expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self, n_threads));
+    Rcpp::traits::input_parameter< int >::type cores(coresSEXP);
+    rcpp_result_gen = Rcpp::wrap(grnboost_tree_parallel(expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self, cores));
+    return rcpp_result_gen;
+END_RCPP
+}
+// grnboost_tree_sparse
+DataFrame grnboost_tree_sparse(S4 expr, IntegerVector regulator_idx, IntegerVector target_idx, int n_rounds, double learning_rate, int max_edges_per_target, int max_depth, double max_features, double subsample, int early_stop_window_length, int random_seed, bool exclude_self);
+RcppExport SEXP _scop_grnboost_tree_sparse(SEXP exprSEXP, SEXP regulator_idxSEXP, SEXP target_idxSEXP, SEXP n_roundsSEXP, SEXP learning_rateSEXP, SEXP max_edges_per_targetSEXP, SEXP max_depthSEXP, SEXP max_featuresSEXP, SEXP subsampleSEXP, SEXP early_stop_window_lengthSEXP, SEXP random_seedSEXP, SEXP exclude_selfSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< S4 >::type expr(exprSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type regulator_idx(regulator_idxSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type target_idx(target_idxSEXP);
+    Rcpp::traits::input_parameter< int >::type n_rounds(n_roundsSEXP);
+    Rcpp::traits::input_parameter< double >::type learning_rate(learning_rateSEXP);
+    Rcpp::traits::input_parameter< int >::type max_edges_per_target(max_edges_per_targetSEXP);
+    Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);
+    Rcpp::traits::input_parameter< double >::type max_features(max_featuresSEXP);
+    Rcpp::traits::input_parameter< double >::type subsample(subsampleSEXP);
+    Rcpp::traits::input_parameter< int >::type early_stop_window_length(early_stop_window_lengthSEXP);
+    Rcpp::traits::input_parameter< int >::type random_seed(random_seedSEXP);
+    Rcpp::traits::input_parameter< bool >::type exclude_self(exclude_selfSEXP);
+    rcpp_result_gen = Rcpp::wrap(grnboost_tree_sparse(expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self));
+    return rcpp_result_gen;
+END_RCPP
+}
+// grnboost_tree_sparse_parallel
+DataFrame grnboost_tree_sparse_parallel(S4 expr, IntegerVector regulator_idx, IntegerVector target_idx, int n_rounds, double learning_rate, int max_edges_per_target, int max_depth, double max_features, double subsample, int early_stop_window_length, int random_seed, bool exclude_self, int cores);
+RcppExport SEXP _scop_grnboost_tree_sparse_parallel(SEXP exprSEXP, SEXP regulator_idxSEXP, SEXP target_idxSEXP, SEXP n_roundsSEXP, SEXP learning_rateSEXP, SEXP max_edges_per_targetSEXP, SEXP max_depthSEXP, SEXP max_featuresSEXP, SEXP subsampleSEXP, SEXP early_stop_window_lengthSEXP, SEXP random_seedSEXP, SEXP exclude_selfSEXP, SEXP coresSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< S4 >::type expr(exprSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type regulator_idx(regulator_idxSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type target_idx(target_idxSEXP);
+    Rcpp::traits::input_parameter< int >::type n_rounds(n_roundsSEXP);
+    Rcpp::traits::input_parameter< double >::type learning_rate(learning_rateSEXP);
+    Rcpp::traits::input_parameter< int >::type max_edges_per_target(max_edges_per_targetSEXP);
+    Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);
+    Rcpp::traits::input_parameter< double >::type max_features(max_featuresSEXP);
+    Rcpp::traits::input_parameter< double >::type subsample(subsampleSEXP);
+    Rcpp::traits::input_parameter< int >::type early_stop_window_length(early_stop_window_lengthSEXP);
+    Rcpp::traits::input_parameter< int >::type random_seed(random_seedSEXP);
+    Rcpp::traits::input_parameter< bool >::type exclude_self(exclude_selfSEXP);
+    Rcpp::traits::input_parameter< int >::type cores(coresSEXP);
+    rcpp_result_gen = Rcpp::wrap(grnboost_tree_sparse_parallel(expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self, cores));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1471,8 +1500,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // sctenifold_pcnet_covariance_raw
-NumericMatrix sctenifold_pcnet_covariance_raw(NumericMatrix x, int n_comp, int ncv, int maxit, double tol, int n_threads);
-RcppExport SEXP _scop_sctenifold_pcnet_covariance_raw(SEXP xSEXP, SEXP n_compSEXP, SEXP ncvSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP n_threadsSEXP) {
+NumericMatrix sctenifold_pcnet_covariance_raw(NumericMatrix x, int n_comp, int ncv, int maxit, double tol, int cores);
+RcppExport SEXP _scop_sctenifold_pcnet_covariance_raw(SEXP xSEXP, SEXP n_compSEXP, SEXP ncvSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP coresSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1481,14 +1510,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type ncv(ncvSEXP);
     Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP);
     Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
-    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(sctenifold_pcnet_covariance_raw(x, n_comp, ncv, maxit, tol, n_threads));
+    Rcpp::traits::input_parameter< int >::type cores(coresSEXP);
+    rcpp_result_gen = Rcpp::wrap(sctenifold_pcnet_covariance_raw(x, n_comp, ncv, maxit, tol, cores));
     return rcpp_result_gen;
 END_RCPP
 }
 // sctenifold_pcnet_covariance_sparse
-S4 sctenifold_pcnet_covariance_sparse(NumericMatrix x, int n_comp, bool scale_scores, bool symmetric, double q, int ncv, int maxit, double tol, int n_threads);
-RcppExport SEXP _scop_sctenifold_pcnet_covariance_sparse(SEXP xSEXP, SEXP n_compSEXP, SEXP scale_scoresSEXP, SEXP symmetricSEXP, SEXP qSEXP, SEXP ncvSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP n_threadsSEXP) {
+S4 sctenifold_pcnet_covariance_sparse(NumericMatrix x, int n_comp, bool scale_scores, bool symmetric, double q, int ncv, int maxit, double tol, int cores);
+RcppExport SEXP _scop_sctenifold_pcnet_covariance_sparse(SEXP xSEXP, SEXP n_compSEXP, SEXP scale_scoresSEXP, SEXP symmetricSEXP, SEXP qSEXP, SEXP ncvSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP coresSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1500,8 +1529,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type ncv(ncvSEXP);
     Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP);
     Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
-    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(sctenifold_pcnet_covariance_sparse(x, n_comp, scale_scores, symmetric, q, ncv, maxit, tol, n_threads));
+    Rcpp::traits::input_parameter< int >::type cores(coresSEXP);
+    rcpp_result_gen = Rcpp::wrap(sctenifold_pcnet_covariance_sparse(x, n_comp, scale_scores, symmetric, q, ncv, maxit, tol, cores));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1556,8 +1585,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // scibet_fit_predict
-List scibet_fit_predict(NumericMatrix ref, NumericMatrix query, IntegerVector labels, int n_labels, int n_top, int additional_per_label);
-RcppExport SEXP _scop_scibet_fit_predict(SEXP refSEXP, SEXP querySEXP, SEXP labelsSEXP, SEXP n_labelsSEXP, SEXP n_topSEXP, SEXP additional_per_labelSEXP) {
+List scibet_fit_predict(NumericMatrix ref, NumericMatrix query, IntegerVector labels, int n_labels, int n_top, int additional_per_label, bool return_probabilities);
+RcppExport SEXP _scop_scibet_fit_predict(SEXP refSEXP, SEXP querySEXP, SEXP labelsSEXP, SEXP n_labelsSEXP, SEXP n_topSEXP, SEXP additional_per_labelSEXP, SEXP return_probabilitiesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1567,13 +1596,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type n_labels(n_labelsSEXP);
     Rcpp::traits::input_parameter< int >::type n_top(n_topSEXP);
     Rcpp::traits::input_parameter< int >::type additional_per_label(additional_per_labelSEXP);
-    rcpp_result_gen = Rcpp::wrap(scibet_fit_predict(ref, query, labels, n_labels, n_top, additional_per_label));
+    Rcpp::traits::input_parameter< bool >::type return_probabilities(return_probabilitiesSEXP);
+    rcpp_result_gen = Rcpp::wrap(scibet_fit_predict(ref, query, labels, n_labels, n_top, additional_per_label, return_probabilities));
     return rcpp_result_gen;
 END_RCPP
 }
 // scibet_fit_predict_sparse
-List scibet_fit_predict_sparse(S4 ref, S4 query, IntegerVector labels, int n_labels, int n_top, int additional_per_label);
-RcppExport SEXP _scop_scibet_fit_predict_sparse(SEXP refSEXP, SEXP querySEXP, SEXP labelsSEXP, SEXP n_labelsSEXP, SEXP n_topSEXP, SEXP additional_per_labelSEXP) {
+List scibet_fit_predict_sparse(S4 ref, S4 query, IntegerVector labels, int n_labels, int n_top, int additional_per_label, bool return_probabilities);
+RcppExport SEXP _scop_scibet_fit_predict_sparse(SEXP refSEXP, SEXP querySEXP, SEXP labelsSEXP, SEXP n_labelsSEXP, SEXP n_topSEXP, SEXP additional_per_labelSEXP, SEXP return_probabilitiesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1583,7 +1613,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type n_labels(n_labelsSEXP);
     Rcpp::traits::input_parameter< int >::type n_top(n_topSEXP);
     Rcpp::traits::input_parameter< int >::type additional_per_label(additional_per_labelSEXP);
-    rcpp_result_gen = Rcpp::wrap(scibet_fit_predict_sparse(ref, query, labels, n_labels, n_top, additional_per_label));
+    Rcpp::traits::input_parameter< bool >::type return_probabilities(return_probabilitiesSEXP);
+    rcpp_result_gen = Rcpp::wrap(scibet_fit_predict_sparse(ref, query, labels, n_labels, n_top, additional_per_label, return_probabilities));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -2158,6 +2189,166 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// parallel_all_in_one_dgc
+List parallel_all_in_one_dgc(SEXP x_sexp, IntegerVector groups, IntegerVector group_sizes);
+RcppExport SEXP _scop_parallel_all_in_one_dgc(SEXP x_sexpSEXP, SEXP groupsSEXP, SEXP group_sizesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type x_sexp(x_sexpSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type groups(groupsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type group_sizes(group_sizesSEXP);
+    rcpp_result_gen = Rcpp::wrap(parallel_all_in_one_dgc(x_sexp, groups, group_sizes));
+    return rcpp_result_gen;
+END_RCPP
+}
+// log_normalize_dgc
+void log_normalize_dgc(S4 mat, double scale_factor, int grain_size);
+RcppExport SEXP _scop_log_normalize_dgc(SEXP matSEXP, SEXP scale_factorSEXP, SEXP grain_sizeSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< S4 >::type mat(matSEXP);
+    Rcpp::traits::input_parameter< double >::type scale_factor(scale_factorSEXP);
+    Rcpp::traits::input_parameter< int >::type grain_size(grain_sizeSEXP);
+    log_normalize_dgc(mat, scale_factor, grain_size);
+    return R_NilValue;
+END_RCPP
+}
+// pca_backend_run
+Rcpp::List pca_backend_run(const arma::mat& X, int npcs, bool weight_by_var);
+RcppExport SEXP _scop_pca_backend_run(SEXP XSEXP, SEXP npcsSEXP, SEXP weight_by_varSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< int >::type npcs(npcsSEXP);
+    Rcpp::traits::input_parameter< bool >::type weight_by_var(weight_by_varSEXP);
+    rcpp_result_gen = Rcpp::wrap(pca_backend_run(X, npcs, weight_by_var));
+    return rcpp_result_gen;
+END_RCPP
+}
+// scale_sparse_full
+NumericMatrix scale_sparse_full(S4 sparse_mat, IntegerVector gene_indices, double scale_max);
+RcppExport SEXP _scop_scale_sparse_full(SEXP sparse_matSEXP, SEXP gene_indicesSEXP, SEXP scale_maxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< S4 >::type sparse_mat(sparse_matSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type gene_indices(gene_indicesSEXP);
+    Rcpp::traits::input_parameter< double >::type scale_max(scale_maxSEXP);
+    rcpp_result_gen = Rcpp::wrap(scale_sparse_full(sparse_mat, gene_indices, scale_max));
+    return rcpp_result_gen;
+END_RCPP
+}
+// csc_to_csr
+List csc_to_csr(IntegerVector csc_i, IntegerVector csc_p, NumericVector csc_x, int nrow, int ncol);
+RcppExport SEXP _scop_csc_to_csr(SEXP csc_iSEXP, SEXP csc_pSEXP, SEXP csc_xSEXP, SEXP nrowSEXP, SEXP ncolSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type csc_i(csc_iSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type csc_p(csc_pSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type csc_x(csc_xSEXP);
+    Rcpp::traits::input_parameter< int >::type nrow(nrowSEXP);
+    Rcpp::traits::input_parameter< int >::type ncol(ncolSEXP);
+    rcpp_result_gen = Rcpp::wrap(csc_to_csr(csc_i, csc_p, csc_x, nrow, ncol));
+    return rcpp_result_gen;
+END_RCPP
+}
+// sct_stats_correct_sparse
+List sct_stats_correct_sparse(NumericVector intercepts, NumericVector cell_mu_base, IntegerVector csr_row_ptr, IntegerVector csr_col_idx, NumericVector csr_vals, IntegerVector gene_idx, NumericVector theta, NumericVector corr_factor, double min_var, double clip_lo, double clip_hi, bool do_correct);
+RcppExport SEXP _scop_sct_stats_correct_sparse(SEXP interceptsSEXP, SEXP cell_mu_baseSEXP, SEXP csr_row_ptrSEXP, SEXP csr_col_idxSEXP, SEXP csr_valsSEXP, SEXP gene_idxSEXP, SEXP thetaSEXP, SEXP corr_factorSEXP, SEXP min_varSEXP, SEXP clip_loSEXP, SEXP clip_hiSEXP, SEXP do_correctSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type intercepts(interceptsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type cell_mu_base(cell_mu_baseSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type csr_row_ptr(csr_row_ptrSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type csr_col_idx(csr_col_idxSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type csr_vals(csr_valsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type gene_idx(gene_idxSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type theta(thetaSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type corr_factor(corr_factorSEXP);
+    Rcpp::traits::input_parameter< double >::type min_var(min_varSEXP);
+    Rcpp::traits::input_parameter< double >::type clip_lo(clip_loSEXP);
+    Rcpp::traits::input_parameter< double >::type clip_hi(clip_hiSEXP);
+    Rcpp::traits::input_parameter< bool >::type do_correct(do_correctSEXP);
+    rcpp_result_gen = Rcpp::wrap(sct_stats_correct_sparse(intercepts, cell_mu_base, csr_row_ptr, csr_col_idx, csr_vals, gene_idx, theta, corr_factor, min_var, clip_lo, clip_hi, do_correct));
+    return rcpp_result_gen;
+END_RCPP
+}
+// sct_fused_resid_center_sparse
+NumericMatrix sct_fused_resid_center_sparse(NumericVector intercepts, NumericVector cell_mu_base, IntegerVector csr_row_ptr, IntegerVector csr_col_idx, NumericVector csr_vals, IntegerVector gene_idx, NumericVector theta, double min_var, double wide_clip_lo, double wide_clip_hi, double narrow_clip_lo, double narrow_clip_hi);
+RcppExport SEXP _scop_sct_fused_resid_center_sparse(SEXP interceptsSEXP, SEXP cell_mu_baseSEXP, SEXP csr_row_ptrSEXP, SEXP csr_col_idxSEXP, SEXP csr_valsSEXP, SEXP gene_idxSEXP, SEXP thetaSEXP, SEXP min_varSEXP, SEXP wide_clip_loSEXP, SEXP wide_clip_hiSEXP, SEXP narrow_clip_loSEXP, SEXP narrow_clip_hiSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type intercepts(interceptsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type cell_mu_base(cell_mu_baseSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type csr_row_ptr(csr_row_ptrSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type csr_col_idx(csr_col_idxSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type csr_vals(csr_valsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type gene_idx(gene_idxSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type theta(thetaSEXP);
+    Rcpp::traits::input_parameter< double >::type min_var(min_varSEXP);
+    Rcpp::traits::input_parameter< double >::type wide_clip_lo(wide_clip_loSEXP);
+    Rcpp::traits::input_parameter< double >::type wide_clip_hi(wide_clip_hiSEXP);
+    Rcpp::traits::input_parameter< double >::type narrow_clip_lo(narrow_clip_loSEXP);
+    Rcpp::traits::input_parameter< double >::type narrow_clip_hi(narrow_clip_hiSEXP);
+    rcpp_result_gen = Rcpp::wrap(sct_fused_resid_center_sparse(intercepts, cell_mu_base, csr_row_ptr, csr_col_idx, csr_vals, gene_idx, theta, min_var, wide_clip_lo, wide_clip_hi, narrow_clip_lo, narrow_clip_hi));
+    return rcpp_result_gen;
+END_RCPP
+}
+// tage_elastic_net_predict_cpp
+NumericVector tage_elastic_net_predict_cpp(NumericMatrix expr, IntegerVector feature_match, NumericVector imputer, NumericVector center, NumericVector scale, NumericVector coef, double intercept);
+RcppExport SEXP _scop_tage_elastic_net_predict_cpp(SEXP exprSEXP, SEXP feature_matchSEXP, SEXP imputerSEXP, SEXP centerSEXP, SEXP scaleSEXP, SEXP coefSEXP, SEXP interceptSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type expr(exprSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type feature_match(feature_matchSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type imputer(imputerSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type center(centerSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type scale(scaleSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type coef(coefSEXP);
+    Rcpp::traits::input_parameter< double >::type intercept(interceptSEXP);
+    rcpp_result_gen = Rcpp::wrap(tage_elastic_net_predict_cpp(expr, feature_match, imputer, center, scale, coef, intercept));
+    return rcpp_result_gen;
+END_RCPP
+}
+// sparse_row_mean_var
+List sparse_row_mean_var(IntegerVector p, IntegerVector i, NumericVector x, int nrow, int ncol);
+RcppExport SEXP _scop_sparse_row_mean_var(SEXP pSEXP, SEXP iSEXP, SEXP xSEXP, SEXP nrowSEXP, SEXP ncolSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type p(pSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type i(iSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< int >::type nrow(nrowSEXP);
+    Rcpp::traits::input_parameter< int >::type ncol(ncolSEXP);
+    rcpp_result_gen = Rcpp::wrap(sparse_row_mean_var(p, i, x, nrow, ncol));
+    return rcpp_result_gen;
+END_RCPP
+}
+// sparse_row_var_std
+NumericVector sparse_row_var_std(IntegerVector p, IntegerVector i, NumericVector x, int nrow, int ncol, NumericVector mu, NumericVector sd, double vmax, IntegerVector nnzPerRow);
+RcppExport SEXP _scop_sparse_row_var_std(SEXP pSEXP, SEXP iSEXP, SEXP xSEXP, SEXP nrowSEXP, SEXP ncolSEXP, SEXP muSEXP, SEXP sdSEXP, SEXP vmaxSEXP, SEXP nnzPerRowSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type p(pSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type i(iSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< int >::type nrow(nrowSEXP);
+    Rcpp::traits::input_parameter< int >::type ncol(ncolSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type sd(sdSEXP);
+    Rcpp::traits::input_parameter< double >::type vmax(vmaxSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type nnzPerRow(nnzPerRowSEXP);
+    rcpp_result_gen = Rcpp::wrap(sparse_row_var_std(p, i, x, nrow, ncol, mu, sd, vmax, nnzPerRow));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_scop_augur_subsample_cpp", (DL_FUNC) &_scop_augur_subsample_cpp, 2},
@@ -2194,7 +2385,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_plage_dense", (DL_FUNC) &_scop_plage_dense, 4},
     {"_scop_gsva_gaussian_dense", (DL_FUNC) &_scop_gsva_gaussian_dense, 6},
     {"_scop_gsva_poisson_dense", (DL_FUNC) &_scop_gsva_poisson_dense, 6},
-    {"_scop_knn_topk_cpp", (DL_FUNC) &_scop_knn_topk_cpp, 6},
     {"_scop_wilcox_rank_sum_sparse", (DL_FUNC) &_scop_wilcox_rank_sum_sparse, 3},
     {"_scop_wilcox_rank_sum_sparse_all_cells", (DL_FUNC) &_scop_wilcox_rank_sum_sparse_all_cells, 2},
     {"_scop_sparse_topk_by_column", (DL_FUNC) &_scop_sparse_topk_by_column, 3},
@@ -2231,6 +2421,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_rctd_finalize_weights_cpp", (DL_FUNC) &_scop_rctd_finalize_weights_cpp, 2},
     {"_scop_grnboost_tree", (DL_FUNC) &_scop_grnboost_tree, 12},
     {"_scop_grnboost_tree_parallel", (DL_FUNC) &_scop_grnboost_tree_parallel, 13},
+    {"_scop_grnboost_tree_sparse", (DL_FUNC) &_scop_grnboost_tree_sparse, 12},
+    {"_scop_grnboost_tree_sparse_parallel", (DL_FUNC) &_scop_grnboost_tree_sparse_parallel, 13},
     {"_scop_grnboost_tree_profile", (DL_FUNC) &_scop_grnboost_tree_profile, 12},
     {"_scop_grnboost_tree_round_trace", (DL_FUNC) &_scop_grnboost_tree_round_trace, 12},
     {"_scop_grnboost_tree_round_nodes", (DL_FUNC) &_scop_grnboost_tree_round_nodes, 12},
@@ -2264,8 +2456,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_sctenifold_strict_direction", (DL_FUNC) &_scop_sctenifold_strict_direction, 2},
     {"_scop_sctenifold_manifold_matrix", (DL_FUNC) &_scop_sctenifold_manifold_matrix, 2},
     {"_scop_sctenifold_pair_distances", (DL_FUNC) &_scop_sctenifold_pair_distances, 1},
-    {"_scop_scibet_fit_predict", (DL_FUNC) &_scop_scibet_fit_predict, 6},
-    {"_scop_scibet_fit_predict_sparse", (DL_FUNC) &_scop_scibet_fit_predict_sparse, 6},
+    {"_scop_scibet_fit_predict", (DL_FUNC) &_scop_scibet_fit_predict, 7},
+    {"_scop_scibet_fit_predict_sparse", (DL_FUNC) &_scop_scibet_fit_predict_sparse, 7},
     {"_scop_scibet_predict", (DL_FUNC) &_scop_scibet_predict, 3},
     {"_scop_scaleC", (DL_FUNC) &_scop_scaleC, 1},
     {"_scop_OmegaC", (DL_FUNC) &_scop_OmegaC, 2},
@@ -2292,6 +2484,16 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_scissor_gaussian_net_fit_cpp", (DL_FUNC) &_scop_scissor_gaussian_net_fit_cpp, 12},
     {"_scop_scissor_binomial_net_fit_cpp", (DL_FUNC) &_scop_scissor_binomial_net_fit_cpp, 12},
     {"_scop_spatial_gradient_screening_cpp", (DL_FUNC) &_scop_spatial_gradient_screening_cpp, 10},
+    {"_scop_parallel_all_in_one_dgc", (DL_FUNC) &_scop_parallel_all_in_one_dgc, 3},
+    {"_scop_log_normalize_dgc", (DL_FUNC) &_scop_log_normalize_dgc, 3},
+    {"_scop_pca_backend_run", (DL_FUNC) &_scop_pca_backend_run, 3},
+    {"_scop_scale_sparse_full", (DL_FUNC) &_scop_scale_sparse_full, 3},
+    {"_scop_csc_to_csr", (DL_FUNC) &_scop_csc_to_csr, 5},
+    {"_scop_sct_stats_correct_sparse", (DL_FUNC) &_scop_sct_stats_correct_sparse, 12},
+    {"_scop_sct_fused_resid_center_sparse", (DL_FUNC) &_scop_sct_fused_resid_center_sparse, 12},
+    {"_scop_tage_elastic_net_predict_cpp", (DL_FUNC) &_scop_tage_elastic_net_predict_cpp, 7},
+    {"_scop_sparse_row_mean_var", (DL_FUNC) &_scop_sparse_row_mean_var, 5},
+    {"_scop_sparse_row_var_std", (DL_FUNC) &_scop_sparse_row_var_std, 9},
     {NULL, NULL, 0}
 };
 

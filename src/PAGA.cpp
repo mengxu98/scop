@@ -10,7 +10,9 @@ List paga_connectivities_cpp(IntegerMatrix knn_idx, IntegerVector groups, int n_
   if (n_groups < 1) stop("n_groups must be positive");
 
   NumericMatrix directed_edges(n_groups, n_groups);
+  NumericMatrix expected_n_edges_random(n_groups, n_groups);
   NumericVector group_sizes(n_groups);
+  NumericVector edge_totals(n_groups);
   for (int cell = 0; cell < n_cells; ++cell) {
     const int group = groups[cell] - 1;
     if (group < 0 || group >= n_groups) stop("groups must be 1-based integers within n_groups");
@@ -26,16 +28,11 @@ List paga_connectivities_cpp(IntegerMatrix knn_idx, IntegerVector groups, int n_
       const int to_group = groups[neighbor0] - 1;
       if (to_group < 0 || to_group >= n_groups) continue;
       directed_edges(from_group, to_group) += 1.0;
+      edge_totals[from_group] += 1.0;
     }
   }
 
-  NumericVector edge_totals(n_groups);
-  for (int i = 0; i < n_groups; ++i)
-    for (int j = 0; j < n_groups; ++j)
-      edge_totals[i] += directed_edges(i, j);
-
   NumericMatrix connectivities(n_groups, n_groups);
-  NumericMatrix expected_edges(n_groups, n_groups);
 
   const double total_edges = std::accumulate(edge_totals.begin(), edge_totals.end(), 0.0);
   const double denom = std::max(total_edges, 1.0);
@@ -45,12 +42,12 @@ List paga_connectivities_cpp(IntegerMatrix knn_idx, IntegerVector groups, int n_
       if (observed <= 0.0) continue;
       const double expected =
         (edge_totals[i] * group_sizes[j] + edge_totals[j] * group_sizes[i]) / denom;
+      expected_n_edges_random(i, j) = expected;
+      expected_n_edges_random(j, i) = expected;
       double scaled = expected > 0.0 ? observed / expected : 1.0;
       if (scaled > 1.0) scaled = 1.0;
       connectivities(i, j) = scaled;
       connectivities(j, i) = scaled;
-      expected_edges(i, j) = expected;
-      expected_edges(j, i) = expected;
     }
   }
 
@@ -75,7 +72,7 @@ List paga_connectivities_cpp(IntegerMatrix knn_idx, IntegerVector groups, int n_
   return List::create(
     _["connectivities"] = connectivities,
     _["connectivities_tree"] = connectivities_tree,
-    _["expected_n_edges_random"] = expected_edges,
+    _["expected_n_edges_random"] = expected_n_edges_random,
     _["group_sizes"] = group_sizes,
     _["directed_edges"] = directed_edges
   );

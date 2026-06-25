@@ -5072,12 +5072,8 @@ def RunSCENICGrn(
         with open(regulators) as f:
             tf_names = [line.strip() for line in f if line.strip()]
 
-        cluster = LocalCluster(
-            n_workers=cores,
-            threads_per_worker=1,
-            processes=False,
-            dashboard_address=":0",
-        )
+        cluster_config = SCENICGrnClusterConfig(cores)
+        cluster = LocalCluster(**cluster_config)
         client = Client(cluster)
         try:
             network = grnboost2(
@@ -5099,6 +5095,17 @@ def RunSCENICGrn(
         )
 
     return {"adj_output": adj_output}
+
+
+def SCENICGrnClusterConfig(cores=1):
+    """Return the Dask LocalCluster configuration used by SCENIC GRNBoost2."""
+    cores = max(1, int(cores))
+    return {
+        "n_workers": cores,
+        "threads_per_worker": 1,
+        "processes": True,
+        "dashboard_address": ":0",
+    }
 
 
 def RunSCENICRegDiffusion(

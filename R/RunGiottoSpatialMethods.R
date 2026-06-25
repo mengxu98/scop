@@ -19,7 +19,7 @@
 #' @param enrichment_params Additional parameters passed to
 #' `Giotto::cellProximityEnrichment()`.
 #'
-#' @return A `scop_giotto_result` list containing the full Giotto object,
+#' @return A `giotto2_result` list containing the full Giotto object,
 #' enrichment table, raw Giotto result, parameters, features, and cells.
 #'
 #' @examples
@@ -193,7 +193,7 @@ RunGiottoCellProximity <- function(
 #' @param top_n Number of top genes to store.
 #' @param binSpect_params Additional parameters passed to `Giotto::binSpect()`.
 #'
-#' @return A `scop_giotto_result` list containing the full Giotto object,
+#' @return A `giotto2_result` list containing the full Giotto object,
 #' spatial gene table, top features, raw Giotto result, parameters, features,
 #' and cells.
 #'
@@ -385,7 +385,7 @@ RunGiottoSpatialGenes <- function(
 #' @param cluster_params Additional parameters passed to
 #' `Giotto::clusterSpatialCorFeats()`.
 #'
-#' @return A `scop_giotto_result` list containing the full Giotto object,
+#' @return A `giotto2_result` list containing the full Giotto object,
 #' spatial correlation object, module object, extracted module tables,
 #' parameters, features, and cells.
 #'

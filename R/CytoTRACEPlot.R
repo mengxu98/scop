@@ -296,7 +296,7 @@ potency_boxplot <- function(
       breaks = seq(0, 1, by = 0.2),
       limits = c(0, 1),
       sec.axis = ggplot2::sec_axis(
-        trans = ~.,
+        transform = ~.,
         breaks = seq(0, 1, by = 1 / 12),
         labels = c(
           "", "Differentiated", "", "Unipotent", "",

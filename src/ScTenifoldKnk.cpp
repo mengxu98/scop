@@ -42,20 +42,20 @@ public:
 
 class SctenifoldEigenThreadGuard {
 private:
-  int old_threads_;
+  int old_cores_;
   bool active_;
 
 public:
-  explicit SctenifoldEigenThreadGuard(int n_threads) :
-    old_threads_(Eigen::nbThreads()), active_(n_threads > 0) {
+  explicit SctenifoldEigenThreadGuard(int cores) :
+    old_cores_(Eigen::nbThreads()), active_(cores > 0) {
     if (active_) {
-      Eigen::setNbThreads(n_threads);
+      Eigen::setNbThreads(cores);
     }
   }
 
   ~SctenifoldEigenThreadGuard() {
     if (active_) {
-      Eigen::setNbThreads(old_threads_);
+      Eigen::setNbThreads(old_cores_);
     }
   }
 };
@@ -107,12 +107,12 @@ static int sctenifold_worker_count(int requested, int n_tasks) {
     return 1;
   }
 
-  int n_threads = std::min(requested, n_tasks);
+  int cores = std::min(requested, n_tasks);
   const unsigned int hardware = std::thread::hardware_concurrency();
   if (hardware > 0) {
-    n_threads = std::min(n_threads, static_cast<int>(hardware));
+    cores = std::min(cores, static_cast<int>(hardware));
   }
-  return std::max(1, n_threads);
+  return std::max(1, cores);
 }
 
 static arma::mat sctenifold_crossprod(const arma::mat& x) {
@@ -281,7 +281,7 @@ static Eigen::MatrixXd sctenifold_pcnet_dual_raw_eigen(
   int ncv,
   int maxit,
   double tol,
-  int n_threads
+  int cores
 ) {
   const int n_genes = x.nrow();
   const int n_cells = x.ncol();
@@ -328,13 +328,13 @@ static Eigen::MatrixXd sctenifold_pcnet_dual_raw_eigen(
     }
   };
 
-  const int n_workers = sctenifold_worker_count(n_threads, n_genes);
+  const int n_workers = sctenifold_worker_count(cores, n_genes);
   if (n_workers == 1) {
     for (int g = 0; g < n_genes; ++g) {
       compute_gene(g);
     }
   } else {
-    SctenifoldEigenThreadGuard eigen_threads(1);
+    SctenifoldEigenThreadGuard eigen_cores(1);
     std::atomic<int> next_gene(0);
     std::atomic<int> failed(0);
     std::vector<std::string> errors(static_cast<std::size_t>(n_workers));
@@ -387,7 +387,7 @@ static Eigen::MatrixXd sctenifold_pcnet_primal_raw_eigen(
   int ncv,
   int maxit,
   double tol,
-  int n_threads
+  int cores
 ) {
   const int n_genes = x.nrow();
   const int n_cells = x.ncol();
@@ -435,13 +435,13 @@ static Eigen::MatrixXd sctenifold_pcnet_primal_raw_eigen(
     }
   };
 
-  const int n_workers = sctenifold_worker_count(n_threads, n_genes);
+  const int n_workers = sctenifold_worker_count(cores, n_genes);
   if (n_workers == 1) {
     for (int g = 0; g < n_genes; ++g) {
       compute_gene(g);
     }
   } else {
-    SctenifoldEigenThreadGuard eigen_threads(1);
+    SctenifoldEigenThreadGuard eigen_cores(1);
     std::atomic<int> next_gene(0);
     std::atomic<int> failed(0);
     std::vector<std::string> errors(static_cast<std::size_t>(n_workers));
@@ -539,7 +539,7 @@ static Eigen::MatrixXd sctenifold_pcnet_raw_eigen(
   int ncv,
   int maxit,
   double tol,
-  int n_threads
+  int cores
 ) {
   const int n_genes = x.nrow();
   const int n_cells = x.ncol();
@@ -550,7 +550,7 @@ static Eigen::MatrixXd sctenifold_pcnet_raw_eigen(
       ncv,
       maxit,
       tol,
-      n_threads
+      cores
     );
   }
   if (n_cells == n_genes) {
@@ -568,7 +568,7 @@ static Eigen::MatrixXd sctenifold_pcnet_raw_eigen(
     ncv,
     maxit,
     tol,
-    n_threads
+    cores
   );
 }
 
@@ -672,7 +672,7 @@ NumericMatrix sctenifold_pcnet_covariance_raw(
   int ncv = 0,
   int maxit = 1000,
   double tol = 1e-10,
-  int n_threads = 1
+  int cores = 1
 ) {
   Eigen::MatrixXd coefficients = sctenifold_pcnet_raw_eigen(
     x,
@@ -680,7 +680,7 @@ NumericMatrix sctenifold_pcnet_covariance_raw(
     ncv,
     maxit,
     tol,
-    n_threads
+    cores
   );
   NumericMatrix out(coefficients.rows(), coefficients.cols());
   for (int j = 0; j < coefficients.cols(); ++j) {
@@ -701,7 +701,7 @@ S4 sctenifold_pcnet_covariance_sparse(
   int ncv = 0,
   int maxit = 1000,
   double tol = 1e-10,
-  int n_threads = 1
+  int cores = 1
 ) {
   Eigen::MatrixXd coefficients = sctenifold_pcnet_raw_eigen(
     x,
@@ -709,7 +709,7 @@ S4 sctenifold_pcnet_covariance_sparse(
     ncv,
     maxit,
     tol,
-    n_threads
+    cores
   );
   return sctenifold_dgCMatrix_from_dense_threshold(
     coefficients,

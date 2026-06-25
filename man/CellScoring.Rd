@@ -23,7 +23,7 @@ CellScoring(
   maxGSSize = 500,
   method = "Seurat",
   backend = c("cpp", "r"),
-  cpp_strategy = c("sparse", "topk", "full"),
+  cpp_strategy = c("sparse", "aucell", "topk", "full"),
   classification = TRUE,
   name = "",
   new_assay = FALSE,
@@ -98,9 +98,12 @@ separately and stored with a method suffix such as \code{"GO_AUCell"} or
 \code{method = "UCell"} and \code{method = "VISION"} fall back to \code{"r"} when
 \code{backend} is not explicitly set.}
 
-\item{cpp_strategy}{C++ AUCell ranking strategy. \code{"sparse"} ranks non-zero
-genes and approximates zero ties, \code{"topk"} ranks only genes that can contribute
-to AUCell AUC, and \code{"full"} ranks all genes.}
+\item{cpp_strategy}{AUCell scoring strategy used when \code{backend = "cpp"}.
+\code{"sparse"} ranks non-zero genes and approximates zero ties without
+densifying the expression matrix. \code{"aucell"} calls the official
+\code{\link[AUCell:AUCell_buildRankings]{AUCell::AUCell_buildRankings()}} and \code{\link[AUCell:AUCell_calcAUC]{AUCell::AUCell_calcAUC()}} path for
+exact consistency with the R backend, \code{"topk"} ranks only genes that can
+contribute to AUCell AUC, and \code{"full"} ranks all genes.}
 
 \item{classification}{Whether to perform classification based on the scores. Default is \code{TRUE}.}
 

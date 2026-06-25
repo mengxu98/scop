@@ -29,7 +29,7 @@ RunSPOTlight(
 )
 }
 \arguments{
-\item{srt}{Spatial \code{Seurat} object used as the query.}
+\item{srt}{Spatial \code{Seurat} object used as the RCTD query.}
 
 \item{reference}{Reference \code{Seurat} object containing annotated single cells.}
 
@@ -39,9 +39,10 @@ RunSPOTlight(
 
 \item{reference_assay}{Assay used in \code{reference}.}
 
-\item{layer, reference_layer}{Assay layers used for spatial and reference counts.}
+\item{layer, reference_layer}{Assay layers used for spatial and reference
+raw counts.}
 
-\item{features}{Features used for SPOTlight. If \code{NULL}, shared features are used.}
+\item{features}{Features used for RCTD. If \code{NULL}, shared features are used.}
 
 \item{mgs}{Optional marker-gene table passed to \code{SPOTlight}. It must contain
 columns named by \code{gene_id}, \code{group_id}, and \code{weight_id}. If \code{NULL}, a simple
@@ -64,9 +65,10 @@ type labels, and marker weights.}
 
 \item{tool_name}{Name used to store detailed results in \code{srt@tools}.}
 
-\item{store_results}{Whether to store detailed results in \code{srt@tools}.}
+\item{store_results}{Whether to store detailed RCTD results in \code{srt@tools}.}
 
-\item{verbose}{Whether to print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{...}{Additional parameters passed to \code{SPOTlight::SPOTlight()}.}
 }

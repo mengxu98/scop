@@ -7,7 +7,7 @@
 RunSpatialGradientFeatures(
   srt,
   reference = c("trajectory", "annotation"),
-  backend = c("cpp", "spata2"),
+  backend = c("cpp", "r"),
   result_name = NULL,
   spata_object = NULL,
   assay = NULL,
@@ -59,7 +59,7 @@ RunSpatialGradientFeatures(
 \code{"annotation"} for SAS.}
 
 \item{backend}{Computation backend. \code{"cpp"} uses SCOP's native fast spatial
-gradient implementation and avoids SPATA2 object construction. \code{"spata2"}
+gradient implementation and avoids SPATA2 object construction. \code{"r"}
 uses SPATA2 directly for full upstream SAS/STS behavior.}
 
 \item{result_name}{Name used to store this result. If \code{NULL}, a name is
@@ -134,7 +134,7 @@ A \code{Seurat} object with spatial gradient screening results stored in
 \description{
 Run spatial trajectory or annotation gradient screening for Seurat objects.
 The native \code{"cpp"} backend avoids SPATA2 object construction for fast
-distance-based screening, while the \code{"spata2"} backend keeps full upstream
+distance-based screening, while the \code{"r"} backend keeps full upstream
 SPATA2 SAS/STS behavior. Results are normalized into plain data.frames and
 stored in \code{srt@tools[["SpatialGradientFeatures"]]}; the SPATA2 object itself
 is never stored.

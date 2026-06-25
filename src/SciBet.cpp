@@ -255,7 +255,7 @@ NumericMatrix build_log_probability_core_sparse(
   NumericMatrix core(n_gene, n_labels);
   std::vector<double> sums(n_labels, 0.0);
   std::vector<int> gene_to_selected(ref.n_gene, -1);
-  const double log2 = std::log(2.0);
+  const double inv_log2 = 1.0 / std::log(2.0);
 
   for (int g = 0; g < n_gene; ++g) {
     gene_to_selected[genes[g]] = g;
@@ -279,7 +279,7 @@ NumericMatrix build_log_probability_core_sparse(
       if (!R_finite(value) || value < 0.0) {
         value = 0.0;
       }
-      const double log_value = std::log(value + 1.0) / log2;
+      const double log_value = std::log1p(value) * inv_log2;
       core(g, lab) += log_value;
       sums[lab] += log_value;
     }
@@ -411,6 +411,156 @@ IntegerVector max_label_indices(const NumericMatrix& prob) {
   return out;
 }
 
+List predict_labels_and_scores(
+    const NumericMatrix& query,
+    const NumericMatrix& core,
+    const std::vector<int>& genes,
+    bool return_probabilities) {
+  const int n_query = query.ncol();
+  const int n_labels = core.ncol();
+  const int n_gene = genes.size();
+  NumericMatrix prob;
+  if (return_probabilities) {
+    prob = NumericMatrix(n_query, n_labels);
+  }
+  IntegerVector predicted(n_query);
+  NumericVector max_probability(n_query);
+  const double log2 = std::log(2.0);
+
+  for (int cell = 0; cell < n_query; ++cell) {
+    std::vector<double> scores(n_labels, 0.0);
+    double max_score = -std::numeric_limits<double>::infinity();
+    int best = 0;
+    for (int lab = 0; lab < n_labels; ++lab) {
+      double score = 0.0;
+      for (int g = 0; g < n_gene; ++g) {
+        double value = query(genes[g], cell);
+        if (!R_finite(value) || value < 0.0) {
+          value = 0.0;
+        }
+        score += (std::log(value + 1.0) / log2) * core(g, lab);
+      }
+      scores[lab] = score;
+      if (score > max_score) {
+        max_score = score;
+        best = lab;
+      }
+    }
+
+    double sum_exp = 0.0;
+    double best_exp = 0.0;
+    for (int lab = 0; lab < n_labels; ++lab) {
+      const double val = std::exp(scores[lab] - max_score);
+      if (return_probabilities) {
+        prob(cell, lab) = val;
+      }
+      if (lab == best) {
+        best_exp = val;
+      }
+      sum_exp += val;
+    }
+    if (sum_exp > 0.0) {
+      max_probability[cell] = best_exp / sum_exp;
+      if (return_probabilities) {
+        for (int lab = 0; lab < n_labels; ++lab) {
+          prob(cell, lab) /= sum_exp;
+        }
+      }
+    } else {
+      max_probability[cell] = NA_REAL;
+    }
+    predicted[cell] = best + 1;
+  }
+
+  return List::create(
+    _["probabilities"] = return_probabilities ? wrap(prob) : R_NilValue,
+    _["predicted_index"] = predicted,
+    _["max_probability"] = max_probability
+  );
+}
+
+List predict_labels_and_scores_sparse(
+    const DgcMatrixView& query,
+    const NumericMatrix& core,
+    const std::vector<int>& genes,
+    bool return_probabilities) {
+  const int n_query = query.n_cell;
+  const int n_labels = core.ncol();
+  NumericMatrix prob;
+  if (return_probabilities) {
+    prob = NumericMatrix(n_query, n_labels);
+  }
+  IntegerVector predicted(n_query);
+  NumericVector max_probability(n_query);
+  std::vector<int> gene_to_selected(query.n_gene, -1);
+  std::vector<double> scores(n_labels, 0.0);
+  const double log2 = std::log(2.0);
+
+  for (int g = 0; g < static_cast<int>(genes.size()); ++g) {
+    gene_to_selected[genes[g]] = g;
+  }
+
+  for (int cell = 0; cell < n_query; ++cell) {
+    std::fill(scores.begin(), scores.end(), 0.0);
+    for (int ptr = query.col_ptr[cell]; ptr < query.col_ptr[cell + 1]; ++ptr) {
+      const int gene = query.row_idx[ptr];
+      if (gene < 0 || gene >= query.n_gene) {
+        continue;
+      }
+      const int g = gene_to_selected[gene];
+      if (g < 0) {
+        continue;
+      }
+      double value = query.values[ptr];
+      if (!R_finite(value) || value < 0.0) {
+        value = 0.0;
+      }
+      const double log_value = std::log(value + 1.0) / log2;
+      for (int lab = 0; lab < n_labels; ++lab) {
+        scores[lab] += log_value * core(g, lab);
+      }
+    }
+
+    double max_score = -std::numeric_limits<double>::infinity();
+    int best = 0;
+    for (int lab = 0; lab < n_labels; ++lab) {
+      if (scores[lab] > max_score) {
+        max_score = scores[lab];
+        best = lab;
+      }
+    }
+    double sum_exp = 0.0;
+    double best_exp = 0.0;
+    for (int lab = 0; lab < n_labels; ++lab) {
+      const double val = std::exp(scores[lab] - max_score);
+      if (return_probabilities) {
+        prob(cell, lab) = val;
+      }
+      if (lab == best) {
+        best_exp = val;
+      }
+      sum_exp += val;
+    }
+    if (sum_exp > 0.0) {
+      max_probability[cell] = best_exp / sum_exp;
+      if (return_probabilities) {
+        for (int lab = 0; lab < n_labels; ++lab) {
+          prob(cell, lab) /= sum_exp;
+        }
+      }
+    } else {
+      max_probability[cell] = NA_REAL;
+    }
+    predicted[cell] = best + 1;
+  }
+
+  return List::create(
+    _["probabilities"] = return_probabilities ? wrap(prob) : R_NilValue,
+    _["predicted_index"] = predicted,
+    _["max_probability"] = max_probability
+  );
+}
+
 }  // namespace
 
 // [[Rcpp::export]]
@@ -420,7 +570,8 @@ List scibet_fit_predict(
     IntegerVector labels,
     int n_labels,
     int n_top,
-    int additional_per_label = 0) {
+    int additional_per_label = 0,
+    bool return_probabilities = true) {
   if (ref.nrow() != query.nrow()) {
     stop("ref and query must have the same number of rows");
   }
@@ -446,8 +597,12 @@ List scibet_fit_predict(
   }
 
   NumericMatrix core = build_log_probability_core(ref, labels, genes, n_labels);
-  NumericMatrix prob = predict_probabilities(query, core, genes);
-  IntegerVector predicted = max_label_indices(prob);
+  List prediction = predict_labels_and_scores(
+    query,
+    core,
+    genes,
+    return_probabilities
+  );
 
   IntegerVector genes_out(genes.size());
   for (int i = 0; i < static_cast<int>(genes.size()); ++i) {
@@ -457,8 +612,9 @@ List scibet_fit_predict(
   return List::create(
     _["feature_index"] = genes_out,
     _["core"] = core,
-    _["probabilities"] = prob,
-    _["predicted_index"] = predicted
+    _["probabilities"] = prediction["probabilities"],
+    _["predicted_index"] = prediction["predicted_index"],
+    _["max_probability"] = prediction["max_probability"]
   );
 }
 
@@ -469,7 +625,8 @@ List scibet_fit_predict_sparse(
     IntegerVector labels,
     int n_labels,
     int n_top,
-    int additional_per_label = 0) {
+    int additional_per_label = 0,
+    bool return_probabilities = true) {
   DgcMatrixView ref_view = dgc_view(ref);
   DgcMatrixView query_view = dgc_view(query);
   if (ref_view.n_gene != query_view.n_gene) {
@@ -497,8 +654,12 @@ List scibet_fit_predict_sparse(
   }
 
   NumericMatrix core = build_log_probability_core_sparse(ref_view, labels, genes, n_labels);
-  NumericMatrix prob = predict_probabilities_sparse(query_view, core, genes);
-  IntegerVector predicted = max_label_indices(prob);
+  List prediction = predict_labels_and_scores_sparse(
+    query_view,
+    core,
+    genes,
+    return_probabilities
+  );
 
   IntegerVector genes_out(genes.size());
   for (int i = 0; i < static_cast<int>(genes.size()); ++i) {
@@ -508,8 +669,9 @@ List scibet_fit_predict_sparse(
   return List::create(
     _["feature_index"] = genes_out,
     _["core"] = core,
-    _["probabilities"] = prob,
-    _["predicted_index"] = predicted
+    _["probabilities"] = prediction["probabilities"],
+    _["predicted_index"] = prediction["predicted_index"],
+    _["max_probability"] = prediction["max_probability"]
   );
 }
 

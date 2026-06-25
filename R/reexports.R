@@ -7,6 +7,9 @@
 #' @importFrom grDevices as.raster
 #' @importFrom methods slot
 #' @importFrom Rcpp evalCpp
+#' @importFrom RcppParallel RcppParallelLibs
+#' @importFrom stats approx density median model.matrix p.adjust setNames
+#' @importFrom utils getFromNamespace head
 #' @export
 dplyr::`%>%`
 
@@ -22,6 +25,7 @@ utils::globalVariables(
     ":=",
     ".",
     ".data",
+    "annoy_build_search",
     "auc",
     "abs_Cor",
     "abundance",
@@ -44,6 +48,7 @@ utils::globalVariables(
     "cor",
     "combn",
     "conda_info",
+    "cores",
     "count",
     "Count",
     "Database",
@@ -55,6 +60,7 @@ utils::globalVariables(
     "dy",
     "error",
     "extract_sccoda_comparison",
+    "exact_knn_f32",
     "fill",
     "Freq",
     "from_dim1",
@@ -75,6 +81,7 @@ utils::globalVariables(
     "label",
     "label_color",
     "Lineages",
+    "matrix_product",
     "name",
     "NES",
     "next_node",
@@ -88,6 +95,9 @@ utils::globalVariables(
     "raw_Axis_2",
     "runningScore",
     "score",
+    "score_type",
+    "score_type_1",
+    "score_type_2",
     "setSize",
     "significance",
     "Significant",
@@ -200,6 +210,7 @@ utils::globalVariables(
     "compose_comparison_label",
     "resolve_condition_pair",
     "scenic_prepare_python_env",
-    "scenic_py_pkgs"
+    "scenic_py_pkgs",
+    "cca_crossprod_matrix"
   )
 )

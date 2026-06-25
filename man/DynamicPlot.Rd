@@ -138,7 +138,7 @@ Default is \code{NULL}, which means determined automatically based on the number
 \item{byrow}{Whether to arrange the plots by row in the combined plot.
 Default is \code{TRUE}.}
 
-\item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
+\item{cores}{Number of CPU cores used by supported preprocessing steps.
 Default is \code{1}.}
 
 \item{verbose}{Whether to print the message.

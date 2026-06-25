@@ -68,7 +68,7 @@ GiottoPlot.default <- function(x, ...) {
 #' @param title,subtitle Plot title and subtitle. If `NULL`, sensible defaults
 #' are used.
 #' @export
-GiottoPlot.scop_giotto_cluster <- function(
+GiottoPlot.giotto2_cluster <- function(
   x,
   srt,
   image = x$parameters$image %||% NULL,
@@ -132,7 +132,7 @@ GiottoPlot.scop_giotto_cluster <- function(
 }
 
 #' @export
-plot.scop_giotto_cluster <- function(x, y = NULL, ...) {
+plot.giotto2_cluster <- function(x, y = NULL, ...) {
   GiottoPlot(x, ...)
 }
 
@@ -141,7 +141,7 @@ plot.scop_giotto_cluster <- function(x, y = NULL, ...) {
 #' @param heatmap_palcolor Optional custom colors used to create
 #' `heatmap_palette`.
 #' @export
-GiottoPlot.scop_giotto_cell_proximity <- function(
+GiottoPlot.giotto2_cell_proximity <- function(
   x,
   heatmap_palette = "RdBu",
   heatmap_palcolor = NULL,
@@ -201,7 +201,7 @@ GiottoPlot.scop_giotto_cell_proximity <- function(
 }
 
 #' @export
-plot.scop_giotto_cell_proximity <- function(x, y = NULL, ...) {
+plot.giotto2_cell_proximity <- function(x, y = NULL, ...) {
   GiottoPlot(x, ...)
 }
 
@@ -215,7 +215,7 @@ plot.scop_giotto_cell_proximity <- function(x, y = NULL, ...) {
 #' @param assay Assay used for spatial feature expression plots.
 #' @param layer Assay layer used for spatial feature expression plots.
 #' @export
-GiottoPlot.scop_giotto_spatial_genes <- function(
+GiottoPlot.giotto2_spatial_genes <- function(
   x,
   srt = NULL,
   plot_type = c("ranking", "feature"),
@@ -303,7 +303,7 @@ GiottoPlot.scop_giotto_spatial_genes <- function(
 }
 
 #' @export
-plot.scop_giotto_spatial_genes <- function(x, y = NULL, ...) {
+plot.giotto2_spatial_genes <- function(x, y = NULL, ...) {
   GiottoPlot(x, ...)
 }
 
@@ -311,7 +311,7 @@ plot.scop_giotto_spatial_genes <- function(x, y = NULL, ...) {
 #' @param features Features used for spatial co-expression heatmaps. If `NULL`,
 #' top features from the Giotto result are used.
 #' @export
-GiottoPlot.scop_giotto_spatial_modules <- function(
+GiottoPlot.giotto2_spatial_modules <- function(
   x,
   features = NULL,
   top_n = 20,
@@ -377,7 +377,7 @@ GiottoPlot.scop_giotto_spatial_modules <- function(
 }
 
 #' @export
-plot.scop_giotto_spatial_modules <- function(x, y = NULL, ...) {
+plot.giotto2_spatial_modules <- function(x, y = NULL, ...) {
   GiottoPlot(x, ...)
 }
 

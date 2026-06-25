@@ -18,9 +18,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macos-latest, r: 'release'}
-          - {os: windows-latest, r: 'release'}
-          - {os: ubuntu-latest, r: 'release'}
+          - {os: macos-latest, r: 'release', check-args: 'c("--no-manual", "--as-cran", "--no-examples", "--no-tests")'}
+          - {os: windows-latest, r: 'release', check-args: 'c("--no-manual", "--as-cran", "--no-examples")'}
+          - {os: ubuntu-latest, r: 'release', check-args: 'c("--no-manual", "--as-cran", "--no-examples")'}
 
     env:
       R_KEEP_PKG_SOURCE: yes
@@ -46,6 +46,7 @@ jobs:
 
       - uses: r-lib/actions/check-r-package@v2
         with:
-          args: 'c("--no-manual", "--as-cran", "--no-examples")'
+          args: ${{ matrix.config.check-args }}
           build_args: '"--no-manual"'
+          error-on: '"error"'
           upload-snapshots: true

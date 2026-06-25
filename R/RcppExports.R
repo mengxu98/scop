@@ -5,12 +5,12 @@ augur_subsample_cpp <- function(mat, cols) {
     .Call(`_scop_augur_subsample_cpp`, mat, cols)
 }
 
-bayesprism_gibbs_initial_cpp <- function(mixture, phi, gibbs_idx, alpha = 1.0, seed = 123L, n_threads = 1L) {
-    .Call(`_scop_bayesprism_gibbs_initial_cpp`, mixture, phi, gibbs_idx, alpha, seed, n_threads)
+bayesprism_gibbs_initial_cpp <- function(mixture, phi, gibbs_idx, alpha = 1.0, seed = 123L, cores = 1L) {
+    .Call(`_scop_bayesprism_gibbs_initial_cpp`, mixture, phi, gibbs_idx, alpha, seed, cores)
 }
 
-bayesprism_gibbs_final_cpp <- function(mixture, phi, gibbs_idx, alpha = 1.0, seed = 123L, n_threads = 1L) {
-    .Call(`_scop_bayesprism_gibbs_final_cpp`, mixture, phi, gibbs_idx, alpha, seed, n_threads)
+bayesprism_gibbs_final_cpp <- function(mixture, phi, gibbs_idx, alpha = 1.0, seed = 123L, cores = 1L) {
+    .Call(`_scop_bayesprism_gibbs_final_cpp`, mixture, phi, gibbs_idx, alpha, seed, cores)
 }
 
 ccc_aggregate_long_cpp <- function(sender, receiver, score, significant) {
@@ -21,8 +21,8 @@ ccc_aggregate_liana_table_cpp <- function(source, target, ligand_complex, recept
     .Call(`_scop_ccc_aggregate_liana_table_cpp`, source, target, ligand_complex, receptor_complex, sample, score, pvalue, classification, method, liana_method, resource, has_sample)
 }
 
-cibersort_cpp <- function(signature, mixture, perm = 0L, QN = TRUE, absolute = FALSE, n_threads = 1L, seed = 123L, verbose = FALSE) {
-    .Call(`_scop_cibersort_cpp`, signature, mixture, perm, QN, absolute, n_threads, seed, verbose)
+cibersort_cpp <- function(signature, mixture, perm = 0L, QN = TRUE, absolute = FALSE, cores = 1L, seed = 123L, verbose = FALSE) {
+    .Call(`_scop_cibersort_cpp`, signature, mixture, perm, QN, absolute, cores, seed, verbose)
 }
 
 cellrank_validate_transition_matrix_cpp <- function(T_, eps = 1e-10, min_self_loop = 0.01) {
@@ -135,10 +135,6 @@ gsva_gaussian_dense <- function(expr, gene_sets, max_diff = TRUE, abs_ranking = 
 
 gsva_poisson_dense <- function(expr, gene_sets, max_diff = TRUE, abs_ranking = FALSE, tau = 1.0, chunk_size = 0L) {
     .Call(`_scop_gsva_poisson_dense`, expr, gene_sets, max_diff, abs_ranking, tau, chunk_size)
-}
-
-knn_topk_cpp <- function(reference, query, k, metric = "euclidean", exclude_self = FALSE, n_threads = 0L) {
-    .Call(`_scop_knn_topk_cpp`, reference, query, k, metric, exclude_self, n_threads)
 }
 
 wilcox_rank_sum_sparse <- function(mat, n_group1, min_expression = 0.0) {
@@ -281,8 +277,16 @@ grnboost_tree <- function(expr, regulator_idx, target_idx, n_rounds = 5000L, lea
     .Call(`_scop_grnboost_tree`, expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self)
 }
 
-grnboost_tree_parallel <- function(expr, regulator_idx, target_idx, n_rounds = 5000L, learning_rate = 0.01, max_edges_per_target = 0L, max_depth = 3L, max_features = 0.1, subsample = 0.9, early_stop_window_length = 25L, random_seed = 1234L, exclude_self = TRUE, n_threads = 1L) {
-    .Call(`_scop_grnboost_tree_parallel`, expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self, n_threads)
+grnboost_tree_parallel <- function(expr, regulator_idx, target_idx, n_rounds = 5000L, learning_rate = 0.01, max_edges_per_target = 0L, max_depth = 3L, max_features = 0.1, subsample = 0.9, early_stop_window_length = 25L, random_seed = 1234L, exclude_self = TRUE, cores = 1L) {
+    .Call(`_scop_grnboost_tree_parallel`, expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self, cores)
+}
+
+grnboost_tree_sparse <- function(expr, regulator_idx, target_idx, n_rounds = 5000L, learning_rate = 0.01, max_edges_per_target = 0L, max_depth = 3L, max_features = 0.1, subsample = 0.9, early_stop_window_length = 25L, random_seed = 1234L, exclude_self = TRUE) {
+    .Call(`_scop_grnboost_tree_sparse`, expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self)
+}
+
+grnboost_tree_sparse_parallel <- function(expr, regulator_idx, target_idx, n_rounds = 5000L, learning_rate = 0.01, max_edges_per_target = 0L, max_depth = 3L, max_features = 0.1, subsample = 0.9, early_stop_window_length = 25L, random_seed = 1234L, exclude_self = TRUE, cores = 1L) {
+    .Call(`_scop_grnboost_tree_sparse_parallel`, expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self, cores)
 }
 
 grnboost_tree_profile <- function(expr, regulator_idx, target_idx, n_rounds = 5000L, learning_rate = 0.01, max_edges_per_target = 0L, max_depth = 3L, max_features = 0.1, subsample = 0.9, early_stop_window_length = 25L, random_seed = 1234L, exclude_self = TRUE) {
@@ -393,12 +397,12 @@ scvelo_stochastic_embedding_cpp <- function(spliced, unspliced, knn_idx, embeddi
     .Call(`_scop_scvelo_stochastic_embedding_cpp`, spliced, unspliced, knn_idx, embedding)
 }
 
-sctenifold_pcnet_covariance_raw <- function(x, n_comp = 3L, ncv = 0L, maxit = 1000L, tol = 1e-10, n_threads = 1L) {
-    .Call(`_scop_sctenifold_pcnet_covariance_raw`, x, n_comp, ncv, maxit, tol, n_threads)
+sctenifold_pcnet_covariance_raw <- function(x, n_comp = 3L, ncv = 0L, maxit = 1000L, tol = 1e-10, cores = 1L) {
+    .Call(`_scop_sctenifold_pcnet_covariance_raw`, x, n_comp, ncv, maxit, tol, cores)
 }
 
-sctenifold_pcnet_covariance_sparse <- function(x, n_comp = 3L, scale_scores = TRUE, symmetric = FALSE, q = 0.0, ncv = 0L, maxit = 1000L, tol = 1e-10, n_threads = 1L) {
-    .Call(`_scop_sctenifold_pcnet_covariance_sparse`, x, n_comp, scale_scores, symmetric, q, ncv, maxit, tol, n_threads)
+sctenifold_pcnet_covariance_sparse <- function(x, n_comp = 3L, scale_scores = TRUE, symmetric = FALSE, q = 0.0, ncv = 0L, maxit = 1000L, tol = 1e-10, cores = 1L) {
+    .Call(`_scop_sctenifold_pcnet_covariance_sparse`, x, n_comp, scale_scores, symmetric, q, ncv, maxit, tol, cores)
 }
 
 sctenifold_tensor_decomposition <- function(x_list, init_u, max_iter = 1000L, tol = 1e-5, verbose = FALSE) {
@@ -417,12 +421,12 @@ sctenifold_pair_distances <- function(aligned) {
     .Call(`_scop_sctenifold_pair_distances`, aligned)
 }
 
-scibet_fit_predict <- function(ref, query, labels, n_labels, n_top, additional_per_label = 0L) {
-    .Call(`_scop_scibet_fit_predict`, ref, query, labels, n_labels, n_top, additional_per_label)
+scibet_fit_predict <- function(ref, query, labels, n_labels, n_top, additional_per_label = 0L, return_probabilities = TRUE) {
+    .Call(`_scop_scibet_fit_predict`, ref, query, labels, n_labels, n_top, additional_per_label, return_probabilities)
 }
 
-scibet_fit_predict_sparse <- function(ref, query, labels, n_labels, n_top, additional_per_label = 0L) {
-    .Call(`_scop_scibet_fit_predict_sparse`, ref, query, labels, n_labels, n_top, additional_per_label)
+scibet_fit_predict_sparse <- function(ref, query, labels, n_labels, n_top, additional_per_label = 0L, return_probabilities = TRUE) {
+    .Call(`_scop_scibet_fit_predict_sparse`, ref, query, labels, n_labels, n_top, additional_per_label, return_probabilities)
 }
 
 scibet_predict <- function(query, core, feature_index) {
@@ -527,5 +531,45 @@ scissor_binomial_net_fit_cpp <- function(x, y, omega, alpha, lambda = NULL, nlam
 
 spatial_gradient_screening_cpp <- function(expr, coords, reference_spots, trajectory, variables, mode, n_bins = 50L, n_random = 0L, seed = 123L, min_spots = 3L) {
     .Call(`_scop_spatial_gradient_screening_cpp`, expr, coords, reference_spots, trajectory, variables, mode, n_bins, n_random, seed, min_spots)
+}
+
+parallel_all_in_one_dgc <- function(x_sexp, groups, group_sizes) {
+    .Call(`_scop_parallel_all_in_one_dgc`, x_sexp, groups, group_sizes)
+}
+
+log_normalize_dgc <- function(mat, scale_factor, grain_size = 100L) {
+    invisible(.Call(`_scop_log_normalize_dgc`, mat, scale_factor, grain_size))
+}
+
+pca_backend_run <- function(X, npcs, weight_by_var = TRUE) {
+    .Call(`_scop_pca_backend_run`, X, npcs, weight_by_var)
+}
+
+scale_sparse_full <- function(sparse_mat, gene_indices, scale_max) {
+    .Call(`_scop_scale_sparse_full`, sparse_mat, gene_indices, scale_max)
+}
+
+csc_to_csr <- function(csc_i, csc_p, csc_x, nrow, ncol) {
+    .Call(`_scop_csc_to_csr`, csc_i, csc_p, csc_x, nrow, ncol)
+}
+
+sct_stats_correct_sparse <- function(intercepts, cell_mu_base, csr_row_ptr, csr_col_idx, csr_vals, gene_idx, theta, corr_factor, min_var, clip_lo, clip_hi, do_correct) {
+    .Call(`_scop_sct_stats_correct_sparse`, intercepts, cell_mu_base, csr_row_ptr, csr_col_idx, csr_vals, gene_idx, theta, corr_factor, min_var, clip_lo, clip_hi, do_correct)
+}
+
+sct_fused_resid_center_sparse <- function(intercepts, cell_mu_base, csr_row_ptr, csr_col_idx, csr_vals, gene_idx, theta, min_var, wide_clip_lo, wide_clip_hi, narrow_clip_lo, narrow_clip_hi) {
+    .Call(`_scop_sct_fused_resid_center_sparse`, intercepts, cell_mu_base, csr_row_ptr, csr_col_idx, csr_vals, gene_idx, theta, min_var, wide_clip_lo, wide_clip_hi, narrow_clip_lo, narrow_clip_hi)
+}
+
+tage_elastic_net_predict_cpp <- function(expr, feature_match, imputer, center, scale, coef, intercept) {
+    .Call(`_scop_tage_elastic_net_predict_cpp`, expr, feature_match, imputer, center, scale, coef, intercept)
+}
+
+sparse_row_mean_var <- function(p, i, x, nrow, ncol) {
+    .Call(`_scop_sparse_row_mean_var`, p, i, x, nrow, ncol)
+}
+
+sparse_row_var_std <- function(p, i, x, nrow, ncol, mu, sd, vmax, nnzPerRow) {
+    .Call(`_scop_sparse_row_var_std`, p, i, x, nrow, ncol, mu, sd, vmax, nnzPerRow)
 }
 

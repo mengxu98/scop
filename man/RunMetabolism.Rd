@@ -22,7 +22,7 @@ RunMetabolism(
   use_preparedb = TRUE,
   method = c("AUCell", "GSVA", "ssGSEA", "VISION"),
   backend = c("cpp", "r"),
-  cpp_strategy = c("topk", "sparse", "full", "aucell"),
+  cpp_strategy = c("topk", "aucell", "sparse", "full"),
   cpp_chunk_size = NULL,
   minGSSize = 10,
   maxGSSize = 500,
@@ -83,24 +83,20 @@ This automatically handles gene symbol conversion for non-human species
 (e.g., \code{species = "Mus_musculus"} → mouse gene symbols in metabolism pathways).
 When \code{FALSE}, raw scMetabolism GMT files are
 downloaded and genes are matched case-insensitively with optional \link{GeneConvert}
-supplementation when \code{convert_species = TRUE}.
-genes and approximates zero ties, \code{"topk"} ranks only genes that can contribute
-to AUCell AUC, and \code{"full"} ranks all genes.}
+supplementation when \code{convert_species = TRUE}.}
 
 \item{method}{Scoring method, one of \code{"AUCell"}, \code{"GSVA"}, \code{"ssGSEA"}, \code{"VISION"}.}
 
 \item{backend}{Scoring backend. \code{"cpp"} is the default for supported methods.
 \code{"r"} uses the original R package implementation. \code{"cpp"} currently supports
 \code{method = "AUCell"}, \code{method = "GSVA"}, and \code{method = "ssGSEA"}.
-\code{method = "VISION"} falls back to \code{"r"} when \code{backend} is not explicitly set.
-AUCell C++ scores may differ from the R backend when tied expression values
-are randomly ranked.}
+\code{method = "VISION"} falls back to \code{"r"} when \code{backend} is not explicitly set.}
 
-\item{cpp_strategy}{C++ AUCell ranking strategy. \code{"topk"} ranks only genes
-that can contribute to AUCell AUC and is the default for better agreement
-with AUCell's full ranking on sparse single-cell matrices. \code{"aucell"} uses
-\code{\link[AUCell:AUCell_buildRankings]{AUCell::AUCell_buildRankings()}} and \code{\link[AUCell:AUCell_calcAUC]{AUCell::AUCell_calcAUC()}} for
-scMetabolism-compatible scores. \code{"sparse"} ranks non-zero}
+\item{cpp_strategy}{AUCell scoring strategy used when \code{backend = "cpp"}.
+\code{"topk"} is the speed-first default and ranks only genes that can contribute
+to AUCell AUC. \code{"aucell"} uses \code{\link[AUCell:AUCell_buildRankings]{AUCell::AUCell_buildRankings()}} and
+\code{\link[AUCell:AUCell_calcAUC]{AUCell::AUCell_calcAUC()}} for scMetabolism-compatible scores, \code{"sparse"}
+ranks non-zero genes and approximates zero ties, and \code{"full"} ranks all genes.}
 
 \item{cpp_chunk_size}{Optional cell chunk size for C++ GSVA kernels. \code{NULL}
 or \code{"auto"} automatically chunks large matrices to reduce peak dense

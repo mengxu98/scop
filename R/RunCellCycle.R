@@ -175,10 +175,10 @@ RunCellCycleSeurat <- function(
   )
   if (status %in% c("raw_counts", "raw_normalized_counts", "unknown")) {
     log_message(
-      "Perform {.fn Seurat::NormalizeData} before cell cycle scoring",
+      "Perform {.fn NormalizeData} before cell cycle scoring",
       verbose = verbose
     )
-    srt <- Seurat::NormalizeData(
+    srt <- NormalizeData(
       object = srt,
       assay = assay,
       normalization.method = "LogNormalize",

@@ -28,7 +28,7 @@
 #' `Giotto::createNearestNetwork()`.
 #' @param cluster_params Additional parameters passed to Giotto clustering.
 #'
-#' @return A `scop_giotto_result` list containing the full Giotto object,
+#' @return A `giotto2_result` list containing the full Giotto object,
 #' cluster assignments, Giotto metadata, parameters, features, and cells.
 #'
 #' @examples
@@ -659,6 +659,6 @@ giotto_result <- function(result_type, giotto, ...) {
       giotto = giotto,
       ...
     ),
-    class = c(paste0("scop_giotto_", result_type), "scop_giotto_result", "list")
+    class = c(paste0("giotto2_", result_type), "giotto2_result", "list")
   )
 }
