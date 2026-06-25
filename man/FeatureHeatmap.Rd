@@ -51,6 +51,9 @@ FeatureHeatmap(
   anno_features = FALSE,
   terms_width = grid::unit(4, "in"),
   terms_fontsize = 8,
+  terms_stat = "none",
+  terms_stat_digits = 2,
+  terms_stat_test = TRUE,
   keys_width = grid::unit(2, "in"),
   keys_fontsize = c(6, 10),
   features_width = grid::unit(2, "in"),
@@ -258,6 +261,18 @@ Default is \code{unit(4, "in")}.}
 
 \item{terms_fontsize}{A numeric vector specifying the font size(s) for term annotations.
 Default is \code{8}.}
+
+\item{terms_stat}{Which enrichment statistic to show after each term.
+Use \code{"none"} to hide the bar background, \code{"score"} for \code{-log10} of the
+active p-value metric, or any column from the enrichment result such as
+\code{"p.adjust"}, \code{"pvalue"}, \code{"qvalue"},
+\code{"GeneRatio"}, \code{"RichFactor"}, \code{"FoldEnrichment"}, \code{"zScore"}, or \code{"Count"}.}
+
+\item{terms_stat_digits}{Number of significant digits for numeric term
+statistics.}
+
+\item{terms_stat_test}{Logical. Whether to show the numeric term statistic
+value at the right side of each term when \code{terms_stat} is enabled.}
 
 \item{keys_width}{A unit specifying the width of key annotations.
 Default is \code{unit(2, "in")}.}
