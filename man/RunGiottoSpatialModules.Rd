@@ -89,3 +89,33 @@ temporary backend for feature-level spatial co-expression modules. The
 complete Giotto object and module results are returned as a standalone
 result; the input \code{Seurat} object is not modified.
 }
+\examples{
+\dontrun{
+data(visium_human_pancreas_sub)
+spatial <- Seurat::NormalizeData(
+  visium_human_pancreas_sub,
+  assay = "Spatial",
+  verbose = FALSE
+)
+spatial <- Seurat::FindVariableFeatures(
+  spatial,
+  assay = "Spatial",
+  nfeatures = 500,
+  verbose = FALSE
+)
+
+giotto_modules <- RunGiottoSpatialModules(
+  spatial,
+  assay = "Spatial",
+  layer = "data",
+  features = Seurat::VariableFeatures(spatial, assay = "Spatial")[1:50],
+  coord.cols = c("col", "row"),
+  cor_method = "pearson",
+  k = 6
+)
+
+names(giotto_modules$module_tables)
+GiottoPlot(giotto_modules, top_n = 12)
+}
+
+}

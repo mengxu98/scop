@@ -11,6 +11,30 @@
 #'
 #' @return A `ggplot` object.
 #'
+#' @examples
+#' proximity <- list(
+#'   enrichment = data.frame(
+#'     group_1 = c("Tumor", "Tumor", "Stroma", "Immune"),
+#'     group_2 = c("Stroma", "Immune", "Immune", "Tumor"),
+#'     enrichment = c(1.6, -0.7, 0.9, -1.2),
+#'     type_int = c("enriched", "depleted", "enriched", "depleted")
+#'   ),
+#'   parameters = list(network_method = "Delaunay", number_of_simulations = 100)
+#' )
+#' class(proximity) <- c("scop_giotto_cell_proximity", "scop_giotto_result")
+#' GiottoPlot(proximity)
+#'
+#' spatial_genes <- list(
+#'   results = data.frame(
+#'     feat_ID = c("COL1A1", "KRT19", "MS4A1", "PECAM1"),
+#'     spatGeneRank = c(41.2, 32.8, 18.4, 11.9)
+#'   ),
+#'   top_features = c("COL1A1", "KRT19", "MS4A1"),
+#'   parameters = list(assay = "Spatial", layer = "data")
+#' )
+#' class(spatial_genes) <- c("scop_giotto_spatial_genes", "scop_giotto_result")
+#' GiottoPlot(spatial_genes, plot_type = "ranking", top_n = 4)
+#'
 #' @export
 GiottoPlot <- function(x, ...) {
   UseMethod("GiottoPlot")

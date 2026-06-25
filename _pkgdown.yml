@@ -158,28 +158,39 @@ reference:
   - ProjectionPlot
   - TACSPlot
 
-- subtitle: "Spatial Analysis"
+- title: "Spatial Analysis"
+
+- subtitle: "Giotto and Semla Workflows"
 - contents:
-  - RunBayesSpace
-  - RunCytoSPACE
   - RunGiottoCluster
   - RunGiottoCellProximity
   - RunGiottoSpatialGenes
   - RunGiottoSpatialModules
-  - RunRCTD
   - RunSemlaSpatialNetwork
+  - RunSemlaLocalG
+  - RunSemlaRegionNeighbors
+  - RunSemlaRadialDistance
+
+- subtitle: "Spatial Deconvolution and Ecotypes"
+- contents:
+  - RunRCTD
   - RunSPOTlight
   - RunSpatialEcoTyper
-  - RunSpatialGradientFeatures
+
+- subtitle: "Spatial Domains and Feature Patterns"
+- contents:
+  - RunBayesSpace
+  - RunCytoSPACE
   - RunSpatialVariableFeatures
+  - RunSpatialGradientFeatures
 
 - subtitle: "Spatial Visualization"
 - contents:
   - GiottoPlot
+  - SpatialSpotPlot
+  - SpatialGradientPlot
   - SpatialEcoTyperCompositionPlot
   - SpatialEcoTyperSpatialPlot
-  - SpatialGradientPlot
-  - SpatialSpotPlot
 
 - subtitle: "Cell Type Annotation"
 - contents:
