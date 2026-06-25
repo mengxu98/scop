@@ -70,15 +70,10 @@ parameters forwarded to \code{scTenifoldNet::tensorDecomposition()}.}
 forwarded to downstream linear algebra where applicable.}
 
 \item{backend}{\code{r} calls \code{scTenifoldKnk::scTenifoldKnk()} directly and is the
-default high-consistency path. \code{cpp} uses upstream \code{pcNet()} by default,
-plus native helpers for manifold matrix construction, directionality, and
-distance calculation. Tensor decomposition uses upstream \code{scTenifoldNet} by
-default because it is faster on the benchmarked 10k workflow; set
-\code{options(scop.sctenifold.native_tensor = TRUE)} or
-\code{SCOP_SCTENIFOLD_NATIVE_TENSOR=true} to use the native ALS tensor path. Set
-\code{options(scop.sctenifold.upstream_pcnet = FALSE)} or
-\code{SCOP_SCTENIFOLD_UPSTREAM_PCNET=false} to use the native covariance-based
-network construction path.}
+default high-consistency path. \code{cpp} follows the upstream
+\code{scTenifoldNet}/\code{scTenifoldKnk} network construction, tensor decomposition,
+manifold alignment, and differential-regulation steps while keeping input
+handling and result storage inside \code{scop}.}
 
 \item{store_networks}{Whether to keep WT/KO tensor networks in
 \code{srt@tools}.}
