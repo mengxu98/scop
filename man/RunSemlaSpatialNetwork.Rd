@@ -49,3 +49,17 @@ Use the optional \code{semla} package as a backend to prepare a Staffli-enabled
 Seurat object and compute spot-level spatial networks. The network is stored
 in \code{srt@tools[[tool_name]]} when \code{store_results = TRUE}.
 }
+\examples{
+\dontrun{
+data(visium_human_pancreas_sub)
+
+spatial <- RunSemlaSpatialNetwork(
+  visium_human_pancreas_sub,
+  nNeighbors = 6,
+  coords = "array"
+)
+
+head(spatial@tools$SemlaSpatialNetwork$network)
+SpatialSpotPlot(spatial, group.by = "orig.ident")
+}
+}
