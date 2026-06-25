@@ -54,6 +54,9 @@ GroupHeatmap(
   anno_features = FALSE,
   terms_width = grid::unit(4, "in"),
   terms_fontsize = 8,
+  terms_stat = "none",
+  terms_stat_digits = 2,
+  terms_stat_test = TRUE,
   keys_width = grid::unit(2, "in"),
   keys_fontsize = c(6, 10),
   features_width = grid::unit(2, "in"),
@@ -355,6 +358,23 @@ GroupHeatmap(
 
   A numeric vector specifying the font size(s) for term annotations.
   Default is `8`.
+
+- terms_stat:
+
+  Which enrichment statistic to show after each term. Use `"none"` to
+  hide the bar background, `"score"` for `-log10` of the active p-value
+  metric, or any column from the enrichment result such as `"p.adjust"`,
+  `"pvalue"`, `"qvalue"`, `"GeneRatio"`, `"RichFactor"`,
+  `"FoldEnrichment"`, `"zScore"`, or `"Count"`.
+
+- terms_stat_digits:
+
+  Number of significant digits for numeric term statistics.
+
+- terms_stat_test:
+
+  Logical. Whether to show the numeric term statistic value at the right
+  side of each term when `terms_stat` is enabled.
 
 - keys_width:
 
@@ -731,22 +751,22 @@ A list with the following elements:
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-24 18:22:00] Start standard processing workflow...
-#> ℹ [2026-06-24 18:22:01] Checking a list of <Seurat>...
-#> ! [2026-06-24 18:22:01] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-24 18:22:01] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-24 18:22:01] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-24 18:22:02] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-24 18:22:02] Number of available HVF: 2000
-#> ℹ [2026-06-24 18:22:02] Finished check
-#> ℹ [2026-06-24 18:22:02] Perform `ScaleData()`
-#> ℹ [2026-06-24 18:22:02] Perform pca linear dimension reduction
-#> ℹ [2026-06-24 18:22:02] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-24 18:22:04] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-24 18:22:05] Reorder clusters...
-#> ℹ [2026-06-24 18:22:05] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-24 18:22:05] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-24 18:22:11] Standard processing workflow completed
+#> ℹ [2026-06-25 07:29:11] Start standard processing workflow...
+#> ℹ [2026-06-25 07:29:12] Checking a list of <Seurat>...
+#> ! [2026-06-25 07:29:12] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-25 07:29:12] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-25 07:29:12] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-25 07:29:12] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-25 07:29:13] Number of available HVF: 2000
+#> ℹ [2026-06-25 07:29:13] Finished check
+#> ℹ [2026-06-25 07:29:13] Perform `ScaleData()`
+#> ℹ [2026-06-25 07:29:13] Perform pca linear dimension reduction
+#> ℹ [2026-06-25 07:29:13] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-25 07:29:14] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-25 07:29:14] Reorder clusters...
+#> ℹ [2026-06-25 07:29:14] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-25 07:29:14] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-25 07:29:22] Standard processing workflow completed
 ht1 <- GroupHeatmap(
   pancreas_sub,
   features = c(
@@ -776,23 +796,23 @@ pancreas_sub <- AnnotateFeatures(
   species = "Mus_musculus",
   db = c("CSPA", "TF")
 )
-#> ℹ [2026-06-24 18:22:12] Species: "Mus_musculus"
-#> ℹ [2026-06-24 18:22:12] Loading cached: CSPA version: CSPA nterm:1 created: 2026-06-24 18:07:39
-#> ℹ [2026-06-24 18:22:13] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-06-24 17:28:14
+#> ℹ [2026-06-25 07:29:23] Species: "Mus_musculus"
+#> ℹ [2026-06-25 07:29:23] Loading cached: CSPA version: CSPA nterm:1 created: 2026-06-25 07:13:01
+#> ℹ [2026-06-25 07:29:24] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-06-25 06:29:27
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-06-24 18:22:14] Data type is log-normalized
-#> ℹ [2026-06-24 18:22:14] Start differential expression test
-#> ℹ [2026-06-24 18:22:14] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-06-24 18:22:14] Using 1 core
-#> ⠙ [2026-06-24 18:22:14] Running for Ductal [1/5] ■■          20% | ETA:  0s
-#> ✔ [2026-06-24 18:22:14] Completed 5 tasks in 30ms
+#> ℹ [2026-06-25 07:29:25] Data type is log-normalized
+#> ℹ [2026-06-25 07:29:25] Start differential expression test
+#> ℹ [2026-06-25 07:29:25] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-06-25 07:29:25] Using 1 core
+#> ⠙ [2026-06-25 07:29:25] Running for Ductal [1/5] ■■          20% | ETA:  0s
+#> ✔ [2026-06-25 07:29:25] Completed 5 tasks in 31ms
 #> 
-#> ℹ [2026-06-24 18:22:14] Building results
-#> ! [2026-06-24 18:22:14] Found 5 failed results
-#> ℹ [2026-06-24 18:22:14] ✖ Error details:
+#> ℹ [2026-06-25 07:29:25] Building results
+#> ! [2026-06-25 07:29:25] Found 5 failed results
+#> ℹ [2026-06-25 07:29:25] ✖ Error details:
 #> ℹ                       ✖ At least 1 ident must be specified in `ident.1` (5): "Ductal", "Ngn3-high-EP", "Endocrine" and 2 more
 #> Error in `[.data.frame`(AllMarkers, , "group1"): undefined columns selected
 de_filter <- dplyr::filter(

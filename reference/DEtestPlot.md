@@ -366,37 +366,37 @@ DEtestPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-24 17:55:03] Start standard processing workflow...
-#> ℹ [2026-06-24 17:55:04] Checking a list of <Seurat>...
-#> ! [2026-06-24 17:55:04] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-24 17:55:04] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-24 17:55:04] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-24 17:55:04] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-24 17:55:04] Number of available HVF: 2000
-#> ℹ [2026-06-24 17:55:04] Finished check
-#> ℹ [2026-06-24 17:55:04] Perform `ScaleData()`
-#> ℹ [2026-06-24 17:55:04] Perform pca linear dimension reduction
-#> ℹ [2026-06-24 17:55:05] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-24 17:55:05] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-24 17:55:05] Reorder clusters...
-#> ℹ [2026-06-24 17:55:05] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-24 17:55:06] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-24 17:55:10] Standard processing workflow completed
+#> ℹ [2026-06-25 06:59:12] Start standard processing workflow...
+#> ℹ [2026-06-25 06:59:13] Checking a list of <Seurat>...
+#> ! [2026-06-25 06:59:13] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-25 06:59:13] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-25 06:59:13] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-25 06:59:13] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-25 06:59:13] Number of available HVF: 2000
+#> ℹ [2026-06-25 06:59:14] Finished check
+#> ℹ [2026-06-25 06:59:14] Perform `ScaleData()`
+#> ℹ [2026-06-25 06:59:14] Perform pca linear dimension reduction
+#> ℹ [2026-06-25 06:59:14] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-25 06:59:14] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-25 06:59:15] Reorder clusters...
+#> ℹ [2026-06-25 06:59:15] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-25 06:59:15] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-25 06:59:21] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
   only.pos = FALSE
 )
-#> ℹ [2026-06-24 17:55:11] Data type is log-normalized
-#> ℹ [2026-06-24 17:55:11] Start differential expression test
-#> ℹ [2026-06-24 17:55:11] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-06-24 17:55:11] Using 1 core
-#> ⠙ [2026-06-24 17:55:11] Running for Ductal [1/5] ■■          20% | ETA:  0s
-#> ✔ [2026-06-24 17:55:11] Completed 5 tasks in 26ms
+#> ℹ [2026-06-25 06:59:22] Data type is log-normalized
+#> ℹ [2026-06-25 06:59:22] Start differential expression test
+#> ℹ [2026-06-25 06:59:22] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-06-25 06:59:22] Using 1 core
+#> ⠙ [2026-06-25 06:59:22] Running for Ductal [1/5] ■■          20% | ETA:  0s
+#> ✔ [2026-06-25 06:59:22] Completed 5 tasks in 27ms
 #> 
-#> ℹ [2026-06-24 17:55:11] Building results
-#> ! [2026-06-24 17:55:11] Found 5 failed results
-#> ℹ [2026-06-24 17:55:11] ✖ Error details:
+#> ℹ [2026-06-25 06:59:22] Building results
+#> ! [2026-06-25 06:59:22] Found 5 failed results
+#> ℹ [2026-06-25 06:59:22] ✖ Error details:
 #> ℹ                       ✖ At least 1 ident must be specified in `ident.1` (5): "Ductal", "Ngn3-high-EP", "Endocrine" and 2 more
 #> Error in `[.data.frame`(AllMarkers, , "group1"): undefined columns selected
 
@@ -449,7 +449,7 @@ pancreas_sub <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-06-24 17:55:11] Start Enrichment analysis
+#> ℹ [2026-06-25 06:59:22] Start Enrichment analysis
 #> Error in resolve_detest_result(object = srt, group.by = group.by, test.use = test.use): Cannot find the DEtest result for the group "CellType". Perform
 #> `RunDEtest()` first
 DEtestPlot(

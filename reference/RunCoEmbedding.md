@@ -124,44 +124,44 @@ pbmcmultiome_sub <- standard_scop(
   assay = c("RNA", "peaks"),
   linear_reduction_dims = 20
 )
-#> ℹ [2026-06-24 18:42:52] Start standard processing workflow...
-#> ℹ [2026-06-24 18:42:53] Auto preprocess assays: "RNA" and "peaks"
-#> ℹ [2026-06-24 18:42:53] Start standard processing workflow...
-#> ℹ [2026-06-24 18:42:53] Checking a list of <Seurat>...
-#> ! [2026-06-24 18:42:53] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-24 18:42:53] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-24 18:42:53] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-25 07:51:34] Start standard processing workflow...
+#> ℹ [2026-06-25 07:51:35] Auto preprocess assays: "RNA" and "peaks"
+#> ℹ [2026-06-25 07:51:35] Start standard processing workflow...
+#> ℹ [2026-06-25 07:51:35] Checking a list of <Seurat>...
+#> ! [2026-06-25 07:51:35] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-25 07:51:35] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-25 07:51:35] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
 #> Warning: pseudoinverse used at -2.3979
 #> Warning: neighborhood radius 0.30103
 #> Warning: reciprocal condition number  1.2589e-15
-#> ℹ [2026-06-24 18:42:53] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-24 18:42:53] Number of available HVF: 2000
-#> ℹ [2026-06-24 18:42:53] Finished check
-#> ℹ [2026-06-24 18:42:53] Perform `ScaleData()`
-#> ℹ [2026-06-24 18:42:53] Perform pca linear dimension reduction
-#> ℹ [2026-06-24 18:42:53] Use stored estimated dimensions 1:9 for RNApca
-#> ℹ [2026-06-24 18:42:54] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-24 18:42:54] Reorder clusters...
-#> ℹ [2026-06-24 18:42:54] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-24 18:42:54] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-24 18:43:00] Standard processing workflow completed
-#> ℹ [2026-06-24 18:43:00] Start standard processing workflow...
-#> ℹ [2026-06-24 18:43:00] Checking a list of <Seurat>...
-#> ! [2026-06-24 18:43:00] Data 1/1 of the `srt_list` is "raw_counts"
-#> ℹ [2026-06-24 18:43:00] Perform `RunTFIDF()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-24 18:43:00] Perform `FindTopFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-24 18:43:00] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-24 18:43:00] Number of available HVF: 11413
-#> ℹ [2026-06-24 18:43:00] Finished check
-#> ℹ [2026-06-24 18:43:00] `normalization_method` is TFIDF. Use lsi workflow
-#> ℹ [2026-06-24 18:43:00] Perform svd linear dimension reduction
+#> ℹ [2026-06-25 07:51:35] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-25 07:51:35] Number of available HVF: 2000
+#> ℹ [2026-06-25 07:51:35] Finished check
+#> ℹ [2026-06-25 07:51:35] Perform `ScaleData()`
+#> ℹ [2026-06-25 07:51:35] Perform pca linear dimension reduction
+#> ℹ [2026-06-25 07:51:35] Use stored estimated dimensions 1:9 for RNApca
+#> ℹ [2026-06-25 07:51:36] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-25 07:51:36] Reorder clusters...
+#> ℹ [2026-06-25 07:51:36] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-25 07:51:36] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-25 07:51:44] Standard processing workflow completed
+#> ℹ [2026-06-25 07:51:44] Start standard processing workflow...
+#> ℹ [2026-06-25 07:51:44] Checking a list of <Seurat>...
+#> ! [2026-06-25 07:51:44] Data 1/1 of the `srt_list` is "raw_counts"
+#> ℹ [2026-06-25 07:51:44] Perform `RunTFIDF()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-25 07:51:44] Perform `FindTopFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-25 07:51:44] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-25 07:51:44] Number of available HVF: 11413
+#> ℹ [2026-06-25 07:51:44] Finished check
+#> ℹ [2026-06-25 07:51:44] `normalization_method` is TFIDF. Use lsi workflow
+#> ℹ [2026-06-25 07:51:44] Perform svd linear dimension reduction
 #> Running SVD
 #> Scaling cell embeddings
-#> ℹ [2026-06-24 18:43:02] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-24 18:43:02] Reorder clusters...
-#> ℹ [2026-06-24 18:43:02] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-24 18:43:02] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-24 18:43:07] Standard processing workflow completed
+#> ℹ [2026-06-25 07:51:45] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-25 07:51:46] Reorder clusters...
+#> ℹ [2026-06-25 07:51:46] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-25 07:51:46] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-25 07:51:53] Standard processing workflow completed
 coembed <- RunCoEmbedding(
   srt = pbmcmultiome_sub,
   reference = pbmcmultiome_sub,
@@ -173,9 +173,9 @@ coembed <- RunCoEmbedding(
   dims = 2:10,
   umap_dims = 1:10
 )
-#> ℹ [2026-06-24 18:43:08] Use "ATAClsi" as the ATAC weight reduction
-#> ℹ [2026-06-24 18:43:08] Finding RNA-to-ATAC transfer anchors...
-#> ℹ [2026-06-24 18:43:12] Imputing RNA expression into ATAC cells...
+#> ℹ [2026-06-25 07:51:53] Use "ATAClsi" as the ATAC weight reduction
+#> ℹ [2026-06-25 07:51:53] Finding RNA-to-ATAC transfer anchors...
+#> ℹ [2026-06-25 07:51:57] Imputing RNA expression into ATAC cells...
 #> Warning: Assay RNA changing from Assay5 to Assay
 #> Warning: Different cells and/or features from existing assay RNA
 #> Warning: Layer counts isn't present in the assay object; returning NULL

@@ -338,36 +338,36 @@ GSEAPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-24 18:11:40] Start standard processing workflow...
-#> ℹ [2026-06-24 18:11:41] Checking a list of <Seurat>...
-#> ! [2026-06-24 18:11:41] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-24 18:11:41] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-24 18:11:41] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-24 18:11:41] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-24 18:11:41] Number of available HVF: 2000
-#> ℹ [2026-06-24 18:11:42] Finished check
-#> ℹ [2026-06-24 18:11:42] Perform `ScaleData()`
-#> ℹ [2026-06-24 18:11:42] Perform pca linear dimension reduction
-#> ℹ [2026-06-24 18:11:42] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-24 18:11:42] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-24 18:11:43] Reorder clusters...
-#> ℹ [2026-06-24 18:11:43] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-24 18:11:43] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-24 18:11:48] Standard processing workflow completed
+#> ℹ [2026-06-25 07:17:14] Start standard processing workflow...
+#> ℹ [2026-06-25 07:17:15] Checking a list of <Seurat>...
+#> ! [2026-06-25 07:17:15] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-25 07:17:15] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-25 07:17:15] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-25 07:17:15] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-25 07:17:15] Number of available HVF: 2000
+#> ℹ [2026-06-25 07:17:15] Finished check
+#> ℹ [2026-06-25 07:17:15] Perform `ScaleData()`
+#> ℹ [2026-06-25 07:17:15] Perform pca linear dimension reduction
+#> ℹ [2026-06-25 07:17:16] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-25 07:17:16] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-25 07:17:16] Reorder clusters...
+#> ℹ [2026-06-25 07:17:16] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-25 07:17:16] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-25 07:17:23] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-06-24 18:11:49] Data type is log-normalized
-#> ℹ [2026-06-24 18:11:49] Start differential expression test
-#> ℹ [2026-06-24 18:11:49] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-06-24 18:11:49] Using 1 core
-#> ⠙ [2026-06-24 18:11:49] Running for Ductal [1/5] ■■          20% | ETA:  0s
-#> ✔ [2026-06-24 18:11:49] Completed 5 tasks in 27ms
+#> ℹ [2026-06-25 07:17:24] Data type is log-normalized
+#> ℹ [2026-06-25 07:17:24] Start differential expression test
+#> ℹ [2026-06-25 07:17:24] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-06-25 07:17:24] Using 1 core
+#> ⠙ [2026-06-25 07:17:24] Running for Ductal [1/5] ■■          20% | ETA:  0s
+#> ✔ [2026-06-25 07:17:24] Completed 5 tasks in 27ms
 #> 
-#> ℹ [2026-06-24 18:11:49] Building results
-#> ! [2026-06-24 18:11:49] Found 5 failed results
-#> ℹ [2026-06-24 18:11:49] ✖ Error details:
+#> ℹ [2026-06-25 07:17:24] Building results
+#> ! [2026-06-25 07:17:24] Found 5 failed results
+#> ℹ [2026-06-25 07:17:24] ✖ Error details:
 #> ℹ                       ✖ At least 1 ident must be specified in `ident.1` (5): "Ductal", "Ngn3-high-EP", "Endocrine" and 2 more
 #> Error in `[.data.frame`(AllMarkers, , "group1"): undefined columns selected
 pancreas_sub <- RunGSEA(
@@ -376,8 +376,8 @@ pancreas_sub <- RunGSEA(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-06-24 18:11:49] Start GSEA analysis
-#> ℹ [2026-06-24 18:11:49] Resolving `RunDEtest()` results for `group.by` = "CellType" and `test.use` = "wilcox" ...
+#> ℹ [2026-06-25 07:17:24] Start GSEA analysis
+#> ℹ [2026-06-25 07:17:24] Resolving `RunDEtest()` results for `group.by` = "CellType" and `test.use` = "wilcox" ...
 #> Error in resolve_detest_result(object = srt, group.by = group.by, test.use = test.use): Cannot find the DEtest result for the group "CellType". Perform
 #> `RunDEtest()` first
 GSEAPlot(
