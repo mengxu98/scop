@@ -96,6 +96,9 @@ NMFHeatmap <- function(
   anno_features = FALSE,
   terms_width = grid::unit(4, "in"),
   terms_fontsize = 8,
+  terms_stat = "none",
+  terms_stat_digits = 2,
+  terms_stat_test = TRUE,
   keys_width = grid::unit(2, "in"),
   keys_fontsize = c(6, 10),
   features_width = grid::unit(2, "in"),
@@ -276,6 +279,9 @@ NMFHeatmap <- function(
       anno_features = anno_features,
       terms_width = terms_width,
       terms_fontsize = terms_fontsize,
+      terms_stat = terms_stat,
+      terms_stat_digits = terms_stat_digits,
+      terms_stat_test = terms_stat_test,
       keys_width = keys_width,
       keys_fontsize = keys_fontsize,
       features_width = features_width,
@@ -315,6 +321,7 @@ NMFHeatmap <- function(
       verbose = verbose
     )
   }
+  lgd <- enrichment[["lgd"]]
 
   heatmap_col <- nmf_heatmap_col_fun(
     values = similarity,
@@ -382,6 +389,7 @@ NMFHeatmap <- function(
     width = width,
     height = height,
     units = units,
+    legend_list = lgd,
     legend.position = legend.position,
     verbose = verbose
   )
@@ -635,6 +643,7 @@ nmf_heatmap_render_plot <- function(
   width,
   height,
   units,
+  legend_list = NULL,
   legend.position = "right",
   verbose = TRUE
 ) {
@@ -651,7 +660,7 @@ nmf_heatmap_render_plot <- function(
     ha_left = left_annotation,
     ha_right = right_annotation,
     ht_list = ht_list,
-    legend_list = NULL,
+    legend_list = legend_list,
     flip = FALSE
   )
   width_sum <- rendersize[["width_sum"]]
@@ -661,15 +670,22 @@ nmf_heatmap_render_plot <- function(
       "Fixing {.fn NMFHeatmap} panel size ...",
       verbose = verbose
     )
-    fixsize <- heatmap_fixsize(
-      width = width,
-      width_sum = width_sum,
-      height = height,
-      height_sum = height_sum,
-      units = units,
-      ht_list = ht_list,
-      legend_list = NULL
-    )
+    fixsize_env <- new.env(parent = emptyenv())
+    invisible(grid::grid.grabExpr(
+      {
+        fixsize_env[["value"]] <- heatmap_fixsize(
+          width = width,
+          width_sum = width_sum,
+          height = height,
+          height_sum = height_sum,
+          units = units,
+          ht_list = ht_list,
+          legend_list = legend_list
+        )
+      }
+    ))
+    fixsize <- fixsize_env[["value"]]
+    rm(fixsize_env)
     ht_width <- fixsize[["ht_width"]]
     ht_height <- fixsize[["ht_height"]]
   } else {
@@ -682,7 +698,12 @@ nmf_heatmap_render_plot <- function(
   )
   g_tree <- grid::grid.grabExpr(
     {
-      ComplexHeatmap::draw(ht_list, heatmap_legend_side = legend.position)
+      ComplexHeatmap::draw(
+        ht_list,
+        heatmap_legend_side = legend.position,
+        annotation_legend_list = legend_list,
+        annotation_legend_side = legend.position
+      )
       nmf_heatmap_decorate_blocks(ht_name, nmf_cluster)
       if (
         !is.null(right_annotation) &&
