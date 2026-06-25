@@ -250,6 +250,8 @@ Rcpp::IntegerMatrix annoy_build_search(Rcpp::NumericMatrix data,
       std::vector<int> found;
       std::vector<float> distances;
       for (int row = begin; row < end; ++row) {
+        found.clear();
+        distances.clear();
         index.get_nns_by_vector(
           packed.data() + static_cast<size_t>(row) * dims,
           k, -1, &found, &distances);
