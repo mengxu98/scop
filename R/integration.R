@@ -189,6 +189,12 @@ Uncorrected_integrate <- function(
         "Perform {.fn Seurat::ScaleData}",
         verbose = verbose
       )
+      assay_merge <- SeuratObject::DefaultAssay(srt_merge)
+      if (inherits(srt_merge[[assay_merge]], "Assay5")) {
+        srt_merge[[assay_merge]] <- SeuratObject::JoinLayers(
+          srt_merge[[assay_merge]]
+        )
+      }
       srt_merge <- Seurat::ScaleData(
         object = srt_merge,
         split.by = if (isTRUE(scale_within_batch)) batch else NULL,
@@ -2709,6 +2715,12 @@ Harmony_integrate <- function(
     isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))
   ) {
     log_message("Perform {.fn Seurat::ScaleData}")
+    assay_merge <- SeuratObject::DefaultAssay(srt_merge)
+    if (inherits(srt_merge[[assay_merge]], "Assay5")) {
+      srt_merge[[assay_merge]] <- SeuratObject::JoinLayers(
+        srt_merge[[assay_merge]]
+      )
+    }
     srt_merge <- Seurat::ScaleData(
       object = srt_merge,
       split.by = if (isTRUE(scale_within_batch)) batch else NULL,
@@ -3289,6 +3301,12 @@ BBKNN_integrate <- function(
     isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))
   ) {
     log_message("Perform {.fn Seurat::ScaleData}")
+    assay_merge <- SeuratObject::DefaultAssay(srt_merge)
+    if (inherits(srt_merge[[assay_merge]], "Assay5")) {
+      srt_merge[[assay_merge]] <- SeuratObject::JoinLayers(
+        srt_merge[[assay_merge]]
+      )
+    }
     srt_merge <- Seurat::ScaleData(
       object = srt_merge,
       split.by = if (isTRUE(scale_within_batch)) batch else NULL,
@@ -3649,6 +3667,12 @@ CSS_integrate <- function(
     isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))
   ) {
     log_message("Perform ScaleData")
+    assay_merge <- SeuratObject::DefaultAssay(srt_merge)
+    if (inherits(srt_merge[[assay_merge]], "Assay5")) {
+      srt_merge[[assay_merge]] <- SeuratObject::JoinLayers(
+        srt_merge[[assay_merge]]
+      )
+    }
     srt_merge <- Seurat::ScaleData(
       object = srt_merge,
       split.by = if (isTRUE(scale_within_batch)) batch else NULL,
