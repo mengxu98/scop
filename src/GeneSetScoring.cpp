@@ -1025,9 +1025,6 @@ NumericMatrix zscore_dense(
   IntegerVector col_ptr = expr.slot("p");
   NumericVector values = expr.slot("x");
 
-  // Match GSVA::zscoreParam on dgCMatrix input: GSVA scales only the stored
-  // non-zero values and leaves structural zeros as zero.
-  std::vector<int> gene_counts(n_genes, 0);
   std::vector<double> gene_sums(n_genes, 0.0);
   std::vector<double> gene_sq_sums(n_genes, 0.0);
 
@@ -1036,7 +1033,6 @@ NumericMatrix zscore_dense(
       const int gene = row_idx[ptr];
       const double value = values[ptr];
       if (R_finite(value)) {
-        ++gene_counts[gene];
         gene_sums[gene] += value;
         gene_sq_sums[gene] += value * value;
       }
@@ -1047,23 +1043,21 @@ NumericMatrix zscore_dense(
   std::vector<double> gene_sds(n_genes, 1.0);
   if (n_cells > 1) {
     for (int gene = 0; gene < n_genes; ++gene) {
-      const int n_nonzero = gene_counts[gene];
-      if (n_nonzero <= 1) {
-        gene_means[gene] = R_NaN;
-        gene_sds[gene] = R_NaN;
-        continue;
-      }
-      gene_means[gene] = gene_sums[gene] / static_cast<double>(n_nonzero);
+      gene_means[gene] = gene_sums[gene] / static_cast<double>(n_cells);
       double var_val = (gene_sq_sums[gene] -
-        static_cast<double>(n_nonzero) * gene_means[gene] * gene_means[gene]) /
-        static_cast<double>(n_nonzero - 1);
+        static_cast<double>(n_cells) * gene_means[gene] * gene_means[gene]) /
+        static_cast<double>(n_cells - 1);
       if (var_val < 0.0 && var_val > -1e-12) {
         var_val = 0.0;
       }
-      gene_sds[gene] = (var_val > 0.0) ? std::sqrt(var_val) : 1.0;
+      if (R_finite(var_val) && var_val > 0.0) {
+        gene_sds[gene] = std::sqrt(var_val);
+      } else {
+        gene_means[gene] = R_NaN;
+        gene_sds[gene] = R_NaN;
+      }
     }
   }
-  std::vector<int>().swap(gene_counts);
   std::vector<double>().swap(gene_sums);
   std::vector<double>().swap(gene_sq_sums);
 
@@ -1094,22 +1088,38 @@ NumericMatrix zscore_dense(
     }
   }
 
-  // Compute z-score per gene set: (1/√n) * Σ z_gc over stored non-zero values.
+  // Compute z-score per gene set over the dense expression view used by
+  // GSVA::zscoreParam in the R benchmark. Structural zeros contribute
+  // (0 - mean) / sd, then stored values add value / sd.
   NumericMatrix scores(n_cells, n_sets);
+  std::vector<double> zero_sum(n_sets, 0.0);
+  std::vector<int> valid_set_sizes(n_sets, 0);
+  for (int gene = 0; gene < n_genes; ++gene) {
+    if (!R_finite(gene_means[gene]) || !R_finite(gene_sds[gene]) || gene_sds[gene] <= 0.0) {
+      continue;
+    }
+    const std::vector<int>& sets_for_gene = gene_to_sets[gene];
+    if (sets_for_gene.empty()) continue;
+    const double zero_contrib = -gene_means[gene] / gene_sds[gene];
+    for (std::vector<int>::const_iterator it = sets_for_gene.begin(); it != sets_for_gene.end(); ++it) {
+      zero_sum[*it] += zero_contrib;
+      ++valid_set_sizes[*it];
+    }
+  }
   for (int cell = 0; cell < n_cells; ++cell) {
     for (int set_i = 0; set_i < n_sets; ++set_i) {
-      scores(cell, set_i) = (set_sizes[set_i] >= min_size && set_sizes[set_i] <= max_size)
-        ? 0.0 : R_NaN;
+      scores(cell, set_i) = (valid_set_sizes[set_i] >= min_size && valid_set_sizes[set_i] <= max_size)
+        ? zero_sum[set_i] : R_NaN;
     }
   }
   for (int cell = 0; cell < n_cells; ++cell) {
     for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
       const int gene = row_idx[ptr];
       const double value = values[ptr];
-      if (!R_finite(value)) continue;
+      if (!R_finite(value) || !R_finite(gene_sds[gene]) || gene_sds[gene] <= 0.0) continue;
       const std::vector<int>& sets_for_gene = gene_to_sets[gene];
       if (sets_for_gene.empty()) continue;
-      const double contrib = (value - gene_means[gene]) / gene_sds[gene];
+      const double contrib = value / gene_sds[gene];
       for (std::vector<int>::const_iterator it = sets_for_gene.begin(); it != sets_for_gene.end(); ++it) {
         scores(cell, *it) += contrib;
       }
@@ -1119,7 +1129,9 @@ NumericMatrix zscore_dense(
   for (int cell = 0; cell < n_cells; ++cell) {
     for (int set_i = 0; set_i < n_sets; ++set_i) {
       if (R_finite(scores(cell, set_i))) {
-        scores(cell, set_i) *= inv_sqrt_size[set_i];
+        scores(cell, set_i) *= (valid_set_sizes[set_i] > 0)
+          ? 1.0 / std::sqrt(static_cast<double>(valid_set_sizes[set_i]))
+          : inv_sqrt_size[set_i];
       }
     }
   }
@@ -1143,7 +1155,6 @@ NumericMatrix plage_dense(
   IntegerVector col_ptr = expr.slot("p");
   NumericVector values = expr.slot("x");
 
-  std::vector<int> row_counts(n_genes, 0);
   std::vector<double> row_sums(n_genes, 0.0);
   std::vector<double> row_sq_sums(n_genes, 0.0);
 
@@ -1152,7 +1163,6 @@ NumericMatrix plage_dense(
       const int gene = row_idx[ptr];
       const double value = values[ptr];
       if (R_finite(value) && value != 0.0) {
-        ++row_counts[gene];
         row_sums[gene] += value;
         row_sq_sums[gene] += value * value;
       }
@@ -1160,6 +1170,16 @@ NumericMatrix plage_dense(
   }
 
   std::vector<int> row_ptr(n_genes + 1, 0);
+  std::vector<int> row_counts(n_genes, 0);
+  for (int cell = 0; cell < n_cells; ++cell) {
+    for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
+      const int gene = row_idx[ptr];
+      const double value = values[ptr];
+      if (R_finite(value) && value != 0.0) {
+        ++row_counts[gene];
+      }
+    }
+  }
   for (int gene = 0; gene < n_genes; ++gene) {
     row_ptr[gene + 1] = row_ptr[gene] + row_counts[gene];
   }
@@ -1189,24 +1209,9 @@ NumericMatrix plage_dense(
   std::vector<unsigned char> orient_row_valid(n_genes, 0);
   if (n_cells > 1) {
     for (int gene = 0; gene < n_genes; ++gene) {
-      const int nz = row_counts[gene];
-      if (nz <= 1) {
-        const double full_mean = row_sums[gene] / static_cast<double>(n_cells);
-        double full_var = (row_sq_sums[gene] - static_cast<double>(n_cells) * full_mean * full_mean) /
-          static_cast<double>(n_cells - 1);
-        if (full_var < 0.0 && full_var > -1e-12) {
-          full_var = 0.0;
-        }
-        if (R_finite(full_var) && full_var > 0.0) {
-          orient_row_means[gene] = full_mean;
-          orient_row_sds[gene] = std::sqrt(full_var);
-          orient_row_valid[gene] = 1;
-        }
-        continue;
-      }
-      const double mean = row_sums[gene] / static_cast<double>(nz);
-      double var = (row_sq_sums[gene] - static_cast<double>(nz) * mean * mean) /
-        static_cast<double>(nz - 1);
+      const double mean = row_sums[gene] / static_cast<double>(n_cells);
+      double var = (row_sq_sums[gene] - static_cast<double>(n_cells) * mean * mean) /
+        static_cast<double>(n_cells - 1);
       if (var < 0.0 && var > -1e-12) {
         var = 0.0;
       }
@@ -1214,16 +1219,8 @@ NumericMatrix plage_dense(
         row_means[gene] = mean;
         row_sds[gene] = std::sqrt(var);
         row_valid[gene] = 1;
-      }
-      const double full_mean = row_sums[gene] / static_cast<double>(n_cells);
-      double full_var = (row_sq_sums[gene] - static_cast<double>(n_cells) * full_mean * full_mean) /
-        static_cast<double>(n_cells - 1);
-      if (full_var < 0.0 && full_var > -1e-12) {
-        full_var = 0.0;
-      }
-      if (R_finite(full_var) && full_var > 0.0) {
-        orient_row_means[gene] = full_mean;
-        orient_row_sds[gene] = std::sqrt(full_var);
+        orient_row_means[gene] = mean;
+        orient_row_sds[gene] = row_sds[gene];
         orient_row_valid[gene] = 1;
       }
     }
@@ -1268,16 +1265,17 @@ NumericMatrix plage_dense(
       static_cast<arma::uword>(n_cells),
       arma::fill::zeros
     );
-    // Match GSVA::plageParam on dgCMatrix input: scale stored non-zero values
-    // and leave structural zeros as zero.
+    // Match the dense expression view used by GSVA::plageParam in the R
+    // benchmark. Structural zeros contribute (0 - mean) / sd.
     for (int row = 0; row < effective_size; ++row) {
       const int gene = valid_genes[row];
+      z.row(static_cast<arma::uword>(row)).fill(-row_means[gene] / row_sds[gene]);
       const int row_start = row_ptr[gene];
       const int row_end = row_ptr[gene + 1];
       for (int ptr = row_start; ptr < row_end; ++ptr) {
         const int cell = row_cells[ptr];
-        z(static_cast<arma::uword>(row), static_cast<arma::uword>(cell)) =
-          (row_values[ptr] - row_means[gene]) / row_sds[gene];
+        z(static_cast<arma::uword>(row), static_cast<arma::uword>(cell)) +=
+          row_values[ptr] / row_sds[gene];
       }
     }
 
