@@ -290,6 +290,9 @@ DynamicHeatmap <- function(
   anno_features = FALSE,
   terms_width = grid::unit(4, "in"),
   terms_fontsize = 8,
+  terms_stat = "none",
+  terms_stat_digits = 2,
+  terms_stat_test = TRUE,
   keys_width = grid::unit(2, "in"),
   keys_fontsize = c(6, 10),
   features_width = grid::unit(2, "in"),
@@ -916,7 +919,11 @@ DynamicHeatmap <- function(
     )
 
     for (l in lineages) {
-      cells <- gsub(pattern = l, replacement = "", x = cell_order_list[[l]])
+      cells <- dynamic_heatmap_lineage_cells(
+        cell_order_list[[l]],
+        l,
+        available = colnames(srt)
+      )
       mat_tmp <- as_matrix(
         rbind(
           GetAssayData5(
@@ -1022,7 +1029,11 @@ DynamicHeatmap <- function(
     ha_top_list[[l]] <- ComplexHeatmap::HeatmapAnnotation(
       Pseudotime = ComplexHeatmap::anno_simple(
         x = cell_metadata[
-          gsub(pattern = l, replacement = "", x = cell_order_list[[l]]),
+          dynamic_heatmap_lineage_cells(
+            cell_order_list[[l]],
+            l,
+            available = rownames(cell_metadata)
+          ),
           l
         ],
         col = pseudotime_col,
@@ -1058,29 +1069,34 @@ DynamicHeatmap <- function(
             levels = unique(as.character(cell_anno[!is.na(cell_anno)]))
           )
         }
+        cell_anno_cols <- palette_colors(
+          levels(cell_anno),
+          palette = palette,
+          palcolor = palcolor
+        )
         for (l in lineages) {
-          lineage_cells <- gsub(
-            pattern = l,
-            replacement = "",
-            x = cell_order_list[[l]]
+          lineage_cells <- dynamic_heatmap_lineage_cells(
+            cell_order_list[[l]],
+            l,
+            available = names(cell_anno)
           )
+          cell_anno_lineage <- as.character(cell_anno[lineage_cells])
           ha_cell <- list()
           ha_cell[[cellan]] <- ComplexHeatmap::anno_simple(
-            x = as.character(cell_anno[lineage_cells]),
-            col = palette_colors(
-              cell_anno,
-              palette = palette,
-              palcolor = palcolor
-            ),
+            x = cell_anno_lineage,
+            col = cell_anno_cols,
             which = ifelse(flip, "row", "column"),
             na_col = "transparent",
             border = TRUE
           )
           anno_args <- c(
             ha_cell,
-            which = ifelse(flip, "row", "column"),
-            show_annotation_name = l == lineages[1],
-            annotation_name_side = ifelse(flip, "top", "left")
+            list(
+              which = ifelse(flip, "row", "column"),
+              show_legend = FALSE,
+              show_annotation_name = l == lineages[1],
+              annotation_name_side = ifelse(flip, "top", "left")
+            )
           )
           anno_args <- c(
             anno_args,
@@ -1100,11 +1116,7 @@ DynamicHeatmap <- function(
           title = cellan,
           labels = levels(cell_anno),
           legend_gp = grid::gpar(
-            fill = palette_colors(
-              cell_anno,
-              palette = palette,
-              palcolor = palcolor
-            )
+            fill = cell_anno_cols
           ),
           border = TRUE
         )
@@ -1118,10 +1130,10 @@ DynamicHeatmap <- function(
           colors = palette_colors(palette = palette, palcolor = palcolor)
         )
         for (l in lineages) {
-          lineage_cells <- gsub(
-            pattern = l,
-            replacement = "",
-            x = cell_order_list[[l]]
+          lineage_cells <- dynamic_heatmap_lineage_cells(
+            cell_order_list[[l]],
+            l,
+            available = names(cell_anno)
           )
           ha_cell <- list()
           ha_cell[[cellan]] <- ComplexHeatmap::anno_simple(
@@ -1187,10 +1199,10 @@ DynamicHeatmap <- function(
         srt_anno <- srt
         srt_anno@meta.data[[cellan]] <- cell_anno
         for (l in lineages) {
-          lineage_cells <- gsub(
-            pattern = l,
-            replacement = "",
-            x = cell_order_list[[l]]
+          lineage_cells <- dynamic_heatmap_lineage_cells(
+            cell_order_list[[l]],
+            l,
+            available = colnames(srt)
           )
           subplots <- CellDensityPlot(
             srt = srt_anno,
@@ -1252,10 +1264,10 @@ DynamicHeatmap <- function(
         )
       } else {
         for (l in lineages) {
-          lineage_cells <- gsub(
-            pattern = l,
-            replacement = "",
-            x = cell_order_list[[l]]
+          lineage_cells <- dynamic_heatmap_lineage_cells(
+            cell_order_list[[l]],
+            l,
+            available = colnames(srt)
           )
           subplots <- DynamicPlot(
             srt = srt,
@@ -1761,6 +1773,9 @@ DynamicHeatmap <- function(
     anno_features = anno_features,
     terms_width = terms_width,
     terms_fontsize = terms_fontsize,
+    terms_stat = terms_stat,
+    terms_stat_digits = terms_stat_digits,
+    terms_stat_test = terms_stat_test,
     keys_width = keys_width,
     keys_fontsize = keys_fontsize,
     features_width = features_width,
@@ -1793,6 +1808,7 @@ DynamicHeatmap <- function(
   )
   res <- enrichment$res
   ha_right <- enrichment$ha_right
+  lgd <- c(lgd, enrichment$lgd)
 
   ht_list <- NULL
   for (l in lineages) {
@@ -1914,15 +1930,22 @@ DynamicHeatmap <- function(
   }
 
   if (isTRUE(fix)) {
-    fixsize <- heatmap_fixsize(
-      width = width,
-      width_sum = width_sum,
-      height = height,
-      height_sum = height_sum,
-      units = units,
-      ht_list = ht_list,
-      legend_list = lgd
-    )
+    fixsize_env <- new.env(parent = emptyenv())
+    invisible(grid::grid.grabExpr(
+      {
+        fixsize_env[["value"]] <- heatmap_fixsize(
+          width = width,
+          width_sum = width_sum,
+          height = height,
+          height_sum = height_sum,
+          units = units,
+          ht_list = ht_list,
+          legend_list = lgd
+        )
+      }
+    ))
+    fixsize <- fixsize_env[["value"]]
+    rm(fixsize_env)
     ht_width <- fixsize[["ht_width"]]
     ht_height <- fixsize[["ht_height"]]
 
@@ -1967,10 +1990,10 @@ DynamicHeatmap <- function(
                   l,
                   {
                     pseudotime <- cell_metadata[
-                      gsub(
-                        pattern = l,
-                        replacement = "",
-                        x = cell_order_list[[l]]
+                      dynamic_heatmap_lineage_cells(
+                        cell_order_list[[l]],
+                        l,
+                        available = rownames(cell_metadata)
                       ),
                       l
                     ]
@@ -2049,10 +2072,10 @@ DynamicHeatmap <- function(
                   l,
                   {
                     pseudotime <- cell_metadata[
-                      gsub(
-                        pattern = l,
-                        replacement = "",
-                        x = cell_order_list[[l]]
+                      dynamic_heatmap_lineage_cells(
+                        cell_order_list[[l]],
+                        l,
+                        available = rownames(cell_metadata)
                       ),
                       l
                     ]
@@ -2111,4 +2134,32 @@ DynamicHeatmap <- function(
       enrichment = res
     )
   )
+}
+
+dynamic_heatmap_lineage_cells <- function(x, lineage, available = NULL) {
+  out <- dynamic_heatmap_strip_lineage_suffix(x, lineage)
+  if (!is.null(available) && !any(out %in% available)) {
+    fallback <- gsub(
+      pattern = lineage,
+      replacement = "",
+      x = x,
+      fixed = TRUE
+    )
+    if (any(fallback %in% available)) {
+      out <- fallback
+    }
+  }
+  out
+}
+
+dynamic_heatmap_strip_lineage_suffix <- function(x, lineage) {
+  suffix_width <- nchar(lineage, type = "chars")
+  has_suffix <- substr(x, nchar(x, type = "chars") - suffix_width + 1L, nchar(x, type = "chars")) == lineage
+  out <- x
+  out[has_suffix] <- substr(
+    x[has_suffix],
+    1L,
+    nchar(x[has_suffix], type = "chars") - suffix_width
+  )
+  out
 }
