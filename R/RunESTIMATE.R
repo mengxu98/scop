@@ -217,7 +217,9 @@ estimate_score_columns <- function() {
 }
 
 estimate_get_signatures <- function() {
-  sig <- estimate_signatures
+  env <- new.env(parent = emptyenv())
+  utils::data("estimate_signatures", package = "scop", envir = env)
+  sig <- env$estimate_signatures
   list(
     stromal_signature = unique(toupper(sig$stromal_signature)),
     immune_signature = unique(toupper(sig$immune_signature)),
