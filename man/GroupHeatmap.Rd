@@ -16,6 +16,15 @@ GroupHeatmap(
   aggregate_fun = base::mean,
   exp_cutoff = 0,
   border = TRUE,
+  heatmap_border = NULL,
+  cell_annotation_border = NULL,
+  feature_annotation_border = NULL,
+  heatmap_border_palcolor = "black",
+  cell_annotation_border_palcolor = "black",
+  feature_annotation_border_palcolor = "black",
+  heatmap_border_size = 1,
+  cell_annotation_border_size = 1,
+  feature_annotation_border_size = 1,
   flip = FALSE,
   layer = "counts",
   assay = NULL,
@@ -166,8 +175,21 @@ Default is \link[base:mean]{base::mean}.}
 \item{exp_cutoff}{The threshold for cell counting if \code{add_dot} is \code{TRUE}.
 Default is \code{0}.}
 
-\item{border}{Whether to add a border to the heatmap.
-Default is \code{TRUE}.}
+\item{border}{Whether to add borders to the heatmap body and annotations.
+Kept for backward compatibility. The more specific \code{heatmap_border},
+\code{cell_annotation_border}, and \code{feature_annotation_border} arguments inherit
+from this value when left as \code{NULL}.}
+
+\item{heatmap_border, cell_annotation_border, feature_annotation_border}{Whether to draw borders for the heatmap body, cell annotations, and feature
+annotations, respectively. Defaults inherit from \code{border}.}
+
+\item{heatmap_border_palcolor, cell_annotation_border_palcolor, feature_annotation_border_palcolor}{Border colors for the heatmap body, cell annotations, and feature
+annotations when their matching border argument is \code{TRUE}.
+Default is \code{"black"}.}
+
+\item{heatmap_border_size, cell_annotation_border_size, feature_annotation_border_size}{Border line widths for the heatmap body, cell annotations, and feature
+annotations when their matching border argument is \code{TRUE}.
+Default is \code{1}.}
 
 \item{flip}{Whether to flip the heatmap.
 Default is \code{FALSE}.}

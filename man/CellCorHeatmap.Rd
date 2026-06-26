@@ -30,6 +30,15 @@ CellCorHeatmap(
   prefix = "KNNPredict",
   exp_legend_title = NULL,
   border = TRUE,
+  heatmap_border = NULL,
+  cell_annotation_border = NULL,
+  feature_annotation_border = NULL,
+  heatmap_border_palcolor = "black",
+  cell_annotation_border_palcolor = "black",
+  feature_annotation_border_palcolor = "black",
+  heatmap_border_size = 1,
+  cell_annotation_border_size = 1,
+  feature_annotation_border_size = 1,
   flip = FALSE,
   limits = NULL,
   cluster_rows = FALSE,
@@ -170,6 +179,17 @@ If not provided, a default title based on the similarity metric will be used.}
 
 \item{border}{Whether to add a border around each heatmap cell.
 The default is \code{TRUE}.}
+
+\item{heatmap_border, cell_annotation_border, feature_annotation_border}{Whether to draw borders for the heatmap body, cell annotations, and feature
+annotations, respectively. Defaults inherit from \code{border}.}
+
+\item{heatmap_border_palcolor, cell_annotation_border_palcolor, feature_annotation_border_palcolor}{Border colors for the heatmap body, cell annotations, and feature
+annotations when their matching border argument is \code{TRUE}.
+Default is \code{"black"}.}
+
+\item{heatmap_border_size, cell_annotation_border_size, feature_annotation_border_size}{Border line widths for the heatmap body, cell annotations, and feature
+annotations when their matching border argument is \code{TRUE}.
+Default is \code{1}.}
 
 \item{flip}{Whether to flip the orientation of the heatmap.
 If set to TRUE, the rows and columns of the heatmap will be swapped.
