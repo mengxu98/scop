@@ -28,6 +28,7 @@ RunPCA.default <- function(
   nfeatures <- nrow(object)
   n <- ncol(object)
 
+  total_variance <- sum(fast_row_vars(object), na.rm = TRUE)
   obj <- object
   if (!is.matrix(obj)) {
     obj <- as.matrix(obj)
@@ -35,11 +36,16 @@ RunPCA.default <- function(
   if (!is.double(obj)) {
     storage.mode(obj) <- "double"
   }
-  pca <- tryCatch(
-    irlba::irlba(A = t(obj), nv = npcs, ...),
+  nv <- tryCatch(
+    pca_backend_run(obj, as.integer(npcs), isTRUE(weight.by.var)),
     error = function(e) NULL
   )
-  if (!is.null(pca)) {
+  if (!is.null(nv)) {
+    feature.loadings <- nv$loadings
+    cell.embeddings <- nv$embeddings
+    sdev <- as.numeric(nv$sdev)
+  } else {
+    pca <- irlba::irlba(A = Matrix::t(obj), nv = npcs, ...)
     feature.loadings <- pca$v
     if (isTRUE(weight.by.var)) {
       cell.embeddings <- pca$u %*% diag(pca$d, nrow = length(pca$d))
@@ -47,11 +53,6 @@ RunPCA.default <- function(
       cell.embeddings <- pca$u
     }
     sdev <- pca$d / sqrt(max(1, n - 1))
-  } else {
-    nv <- pca_backend_run(obj, as.integer(npcs), isTRUE(weight.by.var))
-    feature.loadings <- nv$loadings
-    cell.embeddings <- nv$embeddings
-    sdev <- as.numeric(nv$sdev)
   }
   rownames(feature.loadings) <- feature.names
   colnames(feature.loadings) <- paste0(reduction.key, 1:npcs)
@@ -66,7 +67,7 @@ RunPCA.default <- function(
     global = FALSE,
     stdev = as.numeric(sdev),
     jackstraw = methods::new("JackStrawData"),
-    misc = list(total.variance = sum(apply(obj, 1L, stats::var))),
+    misc = list(total.variance = total_variance),
     key = reduction.key
   )
 }
