@@ -1003,7 +1003,6 @@ CellCorHeatmap <- function(
             ),
             which = ifelse(flip, "column", "row"),
             na_col = "transparent",
-            gp = heatmap_border_gp(cell_annotation_border, cell_annotation_border_color, cell_annotation_border_size),
             border = cell_annotation_border
           )
           ha_query <- build_heatmap_annotation(
@@ -1120,7 +1119,6 @@ CellCorHeatmap <- function(
             col = col_fun,
             which = ifelse(flip, "column", "row"),
             na_col = "transparent",
-            gp = heatmap_border_gp(cell_annotation_border, cell_annotation_border_color, cell_annotation_border_size),
             border = cell_annotation_border
           )
           ha_query <- build_heatmap_annotation(
@@ -1249,7 +1247,6 @@ CellCorHeatmap <- function(
             ),
             which = ifelse(!flip, "column", "row"),
             na_col = "transparent",
-            gp = heatmap_border_gp(cell_annotation_border, cell_annotation_border_color, cell_annotation_border_size),
             border = cell_annotation_border
           )
           ha_ref <- build_heatmap_annotation(
@@ -1353,7 +1350,6 @@ CellCorHeatmap <- function(
             col = col_fun,
             which = ifelse(!flip, "column", "row"),
             na_col = "transparent",
-            gp = heatmap_border_gp(cell_annotation_border, cell_annotation_border_color, cell_annotation_border_size),
             border = cell_annotation_border
           )
           ha_ref <- build_heatmap_annotation(

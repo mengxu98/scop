@@ -994,7 +994,6 @@ FeatureHeatmap <- function(
             ),
             which = ifelse(flip, "row", "column"),
             na_col = "transparent",
-            gp = heatmap_border_gp(cell_annotation_border, cell_annotation_border_color, cell_annotation_border_size),
             border = cell_annotation_border
           )
           ha_top <- build_heatmap_annotation(
@@ -1378,7 +1377,6 @@ FeatureHeatmap <- function(
           ),
           which = ifelse(flip, "column", "row"),
           na_col = "transparent",
-          gp = heatmap_border_gp(feature_annotation_border, feature_annotation_border_color, feature_annotation_border_size),
           border = feature_annotation_border
         )
         ha_feature <- build_heatmap_annotation(
@@ -1427,7 +1425,6 @@ FeatureHeatmap <- function(
           col = col_fun,
           which = ifelse(flip, "column", "row"),
           na_col = "transparent",
-          gp = heatmap_border_gp(feature_annotation_border, feature_annotation_border_color, feature_annotation_border_size),
           border = feature_annotation_border
         )
         ha_feature <- build_heatmap_annotation(

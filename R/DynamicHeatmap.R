@@ -1771,12 +1771,7 @@ DynamicHeatmap <- function(
           which = ifelse(flip, "column", "row"),
           show_annotation_name = TRUE,
           annotation_name_side = ifelse(flip, "left", "top"),
-          border = feature_annotation_border,
-          gp = heatmap_border_gp(
-            feature_annotation_border,
-            feature_annotation_border_color,
-            feature_annotation_border_size
-          )
+          border = FALSE
         )
         anno_args <- c(
           anno_args,
@@ -1841,12 +1836,7 @@ DynamicHeatmap <- function(
           which = ifelse(flip, "column", "row"),
           show_annotation_name = TRUE,
           annotation_name_side = ifelse(flip, "left", "top"),
-          border = feature_annotation_border,
-          gp = heatmap_border_gp(
-            feature_annotation_border,
-            feature_annotation_border_color,
-            feature_annotation_border_size
-          )
+          border = FALSE
         )
         anno_args <- c(
           anno_args,
