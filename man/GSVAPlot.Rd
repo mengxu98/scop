@@ -368,42 +368,33 @@ GSVA scores.
 }
 \examples{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- pancreas_sub[, 1:80]
+pancreas_sub <- Seurat::NormalizeData(pancreas_sub, verbose = FALSE)
+features_all <- rownames(pancreas_sub)
 pancreas_sub <- RunGSVA(
   pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  species = "Mus_musculus",
-  method = "gsva",
-  kcdf = "Gaussian"
+  features = list(
+    A = features_all[1:5],
+    B = features_all[6:10]
+  ),
+  method = "zscore",
+  minGSSize = 2,
+  min.sz = 2
 )
 
-ht1 <- GSVAPlot(
+ht <- GSVAPlot(
   pancreas_sub,
   plot_type = "heatmap",
   group.by = "CellType",
-  topTerm = 10,
+  topTerm = 2,
   width = 1,
   height = 2
 )
-ht1$plot
-
-ht2 <- GSVAPlot(
-  pancreas_sub,
-  group.by = "CellType",
-  plot_type = "heatmap",
-  n_split = 3,
-  topTerm = 100,
-  use_raster = TRUE,
-  width = 1,
-  height = 2
-)
-ht2$plot
+ht$plot
 
 GSVAPlot(
   srt = pancreas_sub,
   group.by = "CellType",
-  db = "GO_BP",
   plot_type = "comparison",
   topTerm = 1
 )
@@ -411,75 +402,8 @@ GSVAPlot(
 GSVAPlot(
   srt = pancreas_sub,
   group.by = "CellType",
-  db = "GO_BP",
-  group_use = "Ductal",
   plot_type = "bar",
-  topTerm = 5
-)
-
-GSVAPlot(
-  srt = pancreas_sub,
-  group.by = "CellType",
-  group_use = "Ductal",
-  db = "GO_BP",
-  plot_type = "network"
-)
-
-GSVAPlot(
-  srt = pancreas_sub,
-  group.by = "CellType",
-  group_use = "Ductal",
-  db = "GO_BP",
-  plot_type = "enrichmap"
-)
-
-GSVAPlot(
-  pancreas_sub,
-  group.by = "CellType",
-  db = "GO_BP",
-  nrow = 2,
-  plot_type = "wordcloud",
-  topWord = 50
-)
-
-GSVAPlot(
-  pancreas_sub,
-  group.by = "CellType",
-  group_use = "Ductal",
-  db = "GO_BP",
-  plot_type = "wordcloud",
-  word_type = "feature"
-)
-
-pancreas_sub <- RunGSVA(
-  pancreas_sub,
-  assay_name = "GSVA",
-  db = "GO_BP",
-  species = "Mus_musculus"
-)
-
-FeatureDimPlot(
-  pancreas_sub,
-  assay = "GSVA",
-  features = rownames(pancreas_sub[["GSVA"]])[1:2],
-  reduction = "umap"
-)
-
-FeatureStatPlot(
-  pancreas_sub,
-  stat.by = rownames(pancreas_sub[["GSVA"]])[1:2],
-  group.by = "CellType",
-  assay = "GSVA"
-)
-
-ht <- GroupHeatmap(
-  pancreas_sub,
-  exp_legend_title = "Z-score",
-  features = rownames(pancreas_sub[["GSVA"]])[1:10],
-  group.by = "CellType",
-  assay = "GSVA",
-  width = 1,
-  height = 2
+  topTerm = 2
 )
 }
 \seealso{

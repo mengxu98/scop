@@ -233,112 +233,22 @@ Default is \code{TRUE}.}
 This function generates various types of plots for Gene Set Enrichment Analysis (GSEA) results.
 }
 \examples{
-data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
-pancreas_sub <- RunDEtest(
-  pancreas_sub,
-  group.by = "CellType"
+term2gene <- data.frame(
+  Term = c(rep("Endocrine markers", 5), rep("Ductal markers", 5)),
+  symbol = c("INS", "GCG", "SST", "IAPP", "PCSK1", "KRT19", "SOX9", "MUC1", "CFTR", "KRT7")
 )
-pancreas_sub <- RunGSEA(
-  pancreas_sub,
-  group.by = "CellType",
-  db = "GO_BP",
-  species = "Mus_musculus"
+genes <- unique(term2gene$symbol)
+scores <- seq_along(genes)
+names(scores) <- genes
+gsea_out <- RunGSEA(
+  geneID = genes,
+  geneScore = scores,
+  geneID_groups = rep("Cluster1", length(genes)),
+  TERM2GENE = term2gene,
+  minGSSize = 2
 )
-GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal"
-)
-
-p1 <- GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal",
-  id_use = "GO:0006412"
-)
-p1
-
-thisplot::panel_fix_overall(p1, height = 6)
-
-GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  topTerm = 3,
-  plot_type = "comparison"
-)
-GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  topTerm = 3,
-  plot_type = "comparison",
-  direction = "pos"
-)
-GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  topTerm = 3,
-  plot_type = "comparison",
-  compare_only_sig = TRUE
-)
-GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  plot_type = "bar"
-)
-GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  plot_type = "bar",
-  direction = "both"
-)
-GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal",
-  plot_type = "bar",
-  topTerm = 20,
-  direction = "both",
-  palcolor = c("red3", "steelblue")
-)
-
-GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal",
-  plot_type = "network"
-)
-GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal",
-  plot_type = "enrichmap"
-)
-GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal",
-  plot_type = "wordcloud"
-)
-GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal",
-  plot_type = "wordcloud",
-  word_type = "feature"
-)
+GSEAPlot(res = gsea_out, db = "custom", plot_type = "comparison")
+GSEAPlot(res = gsea_out, db = "custom", plot_type = "bar")
 }
 \seealso{
 \link{RunGSEA}

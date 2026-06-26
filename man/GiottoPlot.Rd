@@ -158,7 +158,7 @@ proximity <- list(
   ),
   parameters = list(network_method = "Delaunay", number_of_simulations = 100)
 )
-class(proximity) <- c("scop_giotto_cell_proximity", "scop_giotto_result")
+class(proximity) <- c("giotto2_cell_proximity", "scop_giotto_result")
 GiottoPlot(proximity)
 
 spatial_genes <- list(
@@ -169,7 +169,7 @@ spatial_genes <- list(
   top_features = c("COL1A1", "KRT19", "MS4A1"),
   parameters = list(assay = "Spatial", layer = "data")
 )
-class(spatial_genes) <- c("scop_giotto_spatial_genes", "scop_giotto_result")
+class(spatial_genes) <- c("giotto2_spatial_genes", "scop_giotto_result")
 GiottoPlot(spatial_genes, plot_type = "ranking", top_n = 4)
 
 }
