@@ -1,6 +1,6 @@
 make_estimate_mock <- function(n_samples = 6, seed = 1) {
   set.seed(seed)
-  sig <- get("estimate_signatures", envir = asNamespace("scop"))
+  sig <- scop:::estimate_get_signatures()
   genes <- unique(c(
     sig$stromal_signature[seq_len(20)],
     sig$immune_signature[seq_len(20)],
