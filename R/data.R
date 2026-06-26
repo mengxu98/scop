@@ -223,6 +223,37 @@ NULL
 #' @name islet_bulk
 NULL
 
+#' @title ESTIMATE gene signatures
+#'
+#' @description
+#' Gene signatures and common-gene universe used by [RunESTIMATE()] to compute
+#' stromal, immune, combined ESTIMATE, and tumor-purity scores without requiring
+#' the external `estimate` package.
+#'
+#' @md
+#' @format A `list` with five entries:
+#' \describe{
+#'   \item{stromal_signature}{Character vector of stromal signature genes.}
+#'   \item{immune_signature}{Character vector of immune signature genes.}
+#'   \item{common_genes}{Character vector of common genes used for filtering.}
+#'   \item{common_gene_aliases}{Data frame mapping common gene symbols to aliases.}
+#'   \item{source}{List with source method, source data, and DOI metadata.}
+#' }
+#' @concept data
+#' @source
+#' Derived from `tidyestimate` 1.1.1 CRAN data files, which are derived from the
+#' MD Anderson ESTIMATE implementation. The scoring references are
+#' \href{https://doi.org/10.1038/ncomms3612}{Yoshihara et al. (2013)} and
+#' \href{https://doi.org/10.1038/nature08460}{Barbie et al. (2009)}.
+#'
+#' @examples
+#' data(estimate_signatures)
+#' names(estimate_signatures)
+#' lengths(estimate_signatures[c("stromal_signature", "immune_signature", "common_genes")])
+#'
+#' @name estimate_signatures
+NULL
+
 #' @title Excluded words in keyword enrichment analysis and extraction
 #'
 #' @md
