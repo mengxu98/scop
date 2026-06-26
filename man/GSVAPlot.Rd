@@ -341,8 +341,10 @@ Default is \code{NULL}, which means determined automatically based on the number
 \item{byrow}{Whether to arrange the plots by row in the combined plot.
 Default is \code{TRUE}.}
 
-\item{border}{Whether to add a border to the heatmap.
-Default is \code{TRUE}.}
+\item{border}{Whether to add borders to the heatmap body and annotations.
+Kept for backward compatibility. The more specific \code{heatmap_border},
+\code{cell_annotation_border}, and \code{feature_annotation_border} arguments inherit
+from this value when left as \code{NULL}.}
 
 \item{nlabel}{A number of labels to include.
 Default is \code{20}.}
