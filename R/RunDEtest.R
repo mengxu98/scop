@@ -1170,7 +1170,6 @@ RunDEtestFindMarkers <- function(
   if (isTRUE(use_sparse_wilcox)) {
     return(FindMarkers(
       object = srt,
-      .scop_backend = "sparse_wilcox",
       assay = assay,
       layer = layer,
       cells.1 = cells.1,
