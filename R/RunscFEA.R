@@ -340,7 +340,19 @@ os.environ['NUMBA_NUM_THREADS'] = '1'
 #' @param group_palette,group_palcolor Palette for the top group annotation.
 #' @param feature_split_palette,feature_split_palcolor Palette for `SM_anno`
 #' row annotation.
-#' @param border Whether to draw borders around heatmap cells and annotations.
+#' @param border Whether to draw borders around the heatmap body and
+#' annotations. Kept for backward compatibility. The more specific
+#' `heatmap_border`, `cell_annotation_border`, and `feature_annotation_border`
+#' arguments inherit from this value when left as `NULL`.
+#' @param heatmap_border,cell_annotation_border,feature_annotation_border
+#' Whether to draw borders for the heatmap body, cell annotations, and feature
+#' annotations, respectively. Defaults inherit from `border`.
+#' @param heatmap_border_palcolor,cell_annotation_border_palcolor,feature_annotation_border_palcolor
+#' Border colors for the heatmap body, cell annotations, and feature
+#' annotations when their matching border argument is `TRUE`.
+#' @param heatmap_border_size,cell_annotation_border_size,feature_annotation_border_size
+#' Border line widths for the heatmap body, cell annotations, and feature
+#' annotations when their matching border argument is `TRUE`.
 #' @param use_raster,raster_by_magick Raster settings passed to
 #' [ComplexHeatmap::Heatmap()].
 #' @param column_names_gp,column_title_gp,row_title_gp Font settings passed to
@@ -393,6 +405,15 @@ scFEAHeatmap <- function(
   feature_split_palette = "simspec",
   feature_split_palcolor = NULL,
   border = TRUE,
+  heatmap_border = NULL,
+  cell_annotation_border = NULL,
+  feature_annotation_border = NULL,
+  heatmap_border_palcolor = "black",
+  cell_annotation_border_palcolor = "black",
+  feature_annotation_border_palcolor = "black",
+  heatmap_border_size = 1,
+  cell_annotation_border_size = 1,
+  feature_annotation_border_size = 1,
   use_raster = TRUE,
   raster_by_magick = FALSE,
   column_names_gp = grid::gpar(fontsize = 8),
@@ -414,6 +435,28 @@ scFEAHeatmap <- function(
   height = NULL,
   verbose = TRUE
 ) {
+  heatmap_border <- heatmap_border %||% border
+  cell_annotation_border <- cell_annotation_border %||% border
+  feature_annotation_border <- feature_annotation_border %||% border
+  heatmap_border_color <- heatmap_border_color(
+    heatmap_border,
+    heatmap_border_palcolor
+  )
+  cell_annotation_border_color <- heatmap_border_color(
+    cell_annotation_border,
+    cell_annotation_border_palcolor
+  )
+  feature_annotation_border_color <- heatmap_border_color(
+    feature_annotation_border,
+    feature_annotation_border_palcolor
+  )
+  heatmap_border_size <- heatmap_border_size_value(heatmap_border_size)
+  cell_annotation_border_size <- heatmap_border_size_value(cell_annotation_border_size)
+  feature_annotation_border_size <- heatmap_border_size_value(feature_annotation_border_size)
+  heatmap_border <- heatmap_border_enabled(heatmap_border)
+  cell_annotation_border <- heatmap_border_enabled(cell_annotation_border)
+  feature_annotation_border <- heatmap_border_enabled(feature_annotation_border)
+
   label_by <- match.arg(label_by)
   mark_label_by <- mark_label_by %||% label_by
   mark_label_by <- match.arg(mark_label_by, c("module", "reaction", "module_reaction"))
@@ -507,7 +550,11 @@ scFEAHeatmap <- function(
       col = list(SM_anno = sm_cols),
       show_annotation_name = FALSE,
       simple_anno_size = sm_anno_size,
-      border = border,
+      border = feature_annotation_border,
+      gp = heatmap_border_gp(
+        feature_annotation_border,
+        feature_annotation_border_color
+      ),
       annotation_legend_param = list(
         SM_anno = list(
           title = "SM_anno",
@@ -533,7 +580,11 @@ scFEAHeatmap <- function(
       col = stats::setNames(list(group_cols), group.by),
       show_annotation_name = FALSE,
       simple_anno_size = group_anno_size,
-      border = border,
+      border = cell_annotation_border,
+      gp = heatmap_border_gp(
+        cell_annotation_border,
+        cell_annotation_border_color
+      ),
       annotation_legend_param = stats::setNames(
         list(list(
           title = group.by,
@@ -612,7 +663,7 @@ scFEAHeatmap <- function(
     row_title_rot = sm_anno_label_rot,
     row_title_gp = row_title_gp,
     row_gap = row_gap,
-    border = border,
+    border = heatmap_border,
     column_title = group.by %||% "All cells",
     heatmap_legend_param = list(
       legend_height = grid::unit(5, "cm"),

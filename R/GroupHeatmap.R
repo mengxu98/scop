@@ -20,8 +20,21 @@
 #' Default is [base::mean].
 #' @param exp_cutoff The threshold for cell counting if `add_dot` is `TRUE`.
 #' Default is `0`.
-#' @param border Whether to add a border to the heatmap.
-#' Default is `TRUE`.
+#' @param border Whether to add borders to the heatmap body and annotations.
+#' Kept for backward compatibility. The more specific `heatmap_border`,
+#' `cell_annotation_border`, and `feature_annotation_border` arguments inherit
+#' from this value when left as `NULL`.
+#' @param heatmap_border,cell_annotation_border,feature_annotation_border
+#' Whether to draw borders for the heatmap body, cell annotations, and feature
+#' annotations, respectively. Defaults inherit from `border`.
+#' @param heatmap_border_palcolor,cell_annotation_border_palcolor,feature_annotation_border_palcolor
+#' Border colors for the heatmap body, cell annotations, and feature
+#' annotations when their matching border argument is `TRUE`.
+#' Default is `"black"`.
+#' @param heatmap_border_size,cell_annotation_border_size,feature_annotation_border_size
+#' Border line widths for the heatmap body, cell annotations, and feature
+#' annotations when their matching border argument is `TRUE`.
+#' Default is `1`.
 #' @param flip Whether to flip the heatmap.
 #' Default is `FALSE`.
 #' @param layer Which layer to use.
@@ -432,6 +445,15 @@ GroupHeatmap <- function(
   aggregate_fun = base::mean,
   exp_cutoff = 0,
   border = TRUE,
+  heatmap_border = NULL,
+  cell_annotation_border = NULL,
+  feature_annotation_border = NULL,
+  heatmap_border_palcolor = "black",
+  cell_annotation_border_palcolor = "black",
+  feature_annotation_border_palcolor = "black",
+  heatmap_border_size = 1,
+  cell_annotation_border_size = 1,
+  feature_annotation_border_size = 1,
   flip = FALSE,
   layer = "counts",
   assay = NULL,
@@ -551,6 +573,27 @@ GroupHeatmap <- function(
   ...
 ) {
   set.seed(seed)
+  heatmap_border <- heatmap_border %||% border
+  cell_annotation_border <- cell_annotation_border %||% border
+  feature_annotation_border <- feature_annotation_border %||% border
+  heatmap_border_color <- heatmap_border_color(
+    heatmap_border,
+    heatmap_border_palcolor
+  )
+  cell_annotation_border_color <- heatmap_border_color(
+    cell_annotation_border,
+    cell_annotation_border_palcolor
+  )
+  feature_annotation_border_color <- heatmap_border_color(
+    feature_annotation_border,
+    feature_annotation_border_palcolor
+  )
+  heatmap_border_size <- heatmap_border_size_value(heatmap_border_size)
+  cell_annotation_border_size <- heatmap_border_size_value(cell_annotation_border_size)
+  feature_annotation_border_size <- heatmap_border_size_value(feature_annotation_border_size)
+  heatmap_border <- heatmap_border_enabled(heatmap_border)
+  cell_annotation_border <- heatmap_border_enabled(cell_annotation_border)
+  feature_annotation_border <- heatmap_border_enabled(feature_annotation_border)
 
   if (isTRUE(raster_by_magick)) {
     check_r("magick", verbose = FALSE)
@@ -1250,7 +1293,15 @@ GroupHeatmap <- function(
   lgd[["ht"]] <- ComplexHeatmap::Legend(
     title = exp_name,
     col_fun = colors,
-    border = TRUE
+    legend_gp = heatmap_border_gp(
+      heatmap_border,
+      heatmap_border_color,
+      heatmap_border_size
+    ),
+    border = heatmap_legend_border(
+      heatmap_border,
+      heatmap_border_color
+    )
   )
   if (isTRUE(add_dot)) {
     lgd[["point"]] <- ComplexHeatmap::Legend(
@@ -1302,11 +1353,13 @@ GroupHeatmap <- function(
     }
 
     if (cell_group != "All.groups") {
-      block_graphics <- annotation_block_fill_graphics(
+      block_graphics <- heatmap_bordered_block_fill_graphics(
         levels = levels(srt@meta.data[[cell_group]]),
         palette = group_palette[i],
         palcolor = group_palcolor[[i]],
-        border = border
+        border = cell_annotation_border,
+        border_color = cell_annotation_border_color,
+        border_size = cell_annotation_border_size
       )
 
       anno <- list()
@@ -1330,18 +1383,20 @@ GroupHeatmap <- function(
           which = ifelse(flip, "row", "column"),
           show_annotation_name = TRUE,
           annotation_name_side = ifelse(flip, "top", "left"),
-          border = TRUE
+          border = cell_annotation_border
         )
       )
       ha_top_list[[cell_group]] <- ha_cell_group
     }
 
     if (!is.null(split.by)) {
-      block_graphics <- annotation_block_fill_graphics(
+      block_graphics <- heatmap_bordered_block_fill_graphics(
         levels = levels(srt@meta.data[[split.by]]),
         palette = cell_split_palette,
         palcolor = unlist(cell_split_palcolor),
-        border = border
+        border = cell_annotation_border,
+        border_color = cell_annotation_border_color,
+        border_size = cell_annotation_border_size
       )
 
       anno <- list()
@@ -1365,7 +1420,7 @@ GroupHeatmap <- function(
           which = ifelse(flip, "row", "column"),
           show_annotation_name = TRUE,
           annotation_name_side = ifelse(flip, "top", "left"),
-          border = TRUE
+          border = cell_annotation_border
         )
       )
       if (is.null(ha_top_list[[cell_group]])) {
@@ -1459,7 +1514,7 @@ GroupHeatmap <- function(
                 x = x_nm,
                 graphics = graphics,
                 which = ifelse(flip, "row", "column"),
-                border = TRUE,
+                border = cell_annotation_border,
                 verbose = FALSE
               )
               build_heatmap_annotation(
@@ -1549,7 +1604,7 @@ GroupHeatmap <- function(
                 x = x_nm,
                 graphics = graphics,
                 which = ifelse(flip, "row", "column"),
-                border = TRUE,
+                border = cell_annotation_border,
                 verbose = FALSE
               )
               build_heatmap_annotation(
@@ -1730,11 +1785,13 @@ GroupHeatmap <- function(
         row_split <- length(unique(row_split_raw))
       }
     }
-    block_graphics <- annotation_block_fill_graphics(
+    block_graphics <- heatmap_bordered_block_fill_graphics(
       levels = levels(row_split_raw),
       palette = feature_split_palette,
       palcolor = unlist(feature_split_palcolor),
-      border = border
+      border = feature_annotation_border,
+      border_color = feature_annotation_border_color,
+      border_size = feature_annotation_border_size
     )
     ha_clusters <- ComplexHeatmap::HeatmapAnnotation(
       features_split = ComplexHeatmap::anno_block(
@@ -1894,14 +1951,15 @@ GroupHeatmap <- function(
           ),
           which = ifelse(flip, "column", "row"),
           na_col = "transparent",
-          border = TRUE
+          gp = heatmap_border_gp(feature_annotation_border, feature_annotation_border_color, feature_annotation_border_size),
+          border = feature_annotation_border
         )
         ha_feature <- build_heatmap_annotation(
           annotations = ha_feature,
           which = ifelse(flip, "column", "row"),
           show_annotation_name = TRUE,
           annotation_name_side = ifelse(flip, "left", "top"),
-          border = TRUE,
+          border = feature_annotation_border,
           params = feature_annotation_params
         )
         if (is.null(ha_right)) {
@@ -1944,14 +2002,15 @@ GroupHeatmap <- function(
           col = col_fun,
           which = ifelse(flip, "column", "row"),
           na_col = "transparent",
-          border = TRUE
+          gp = heatmap_border_gp(feature_annotation_border, feature_annotation_border_color, feature_annotation_border_size),
+          border = feature_annotation_border
         )
         ha_feature <- build_heatmap_annotation(
           annotations = ha_feature,
           which = ifelse(flip, "column", "row"),
           show_annotation_name = TRUE,
           annotation_name_side = ifelse(flip, "left", "top"),
-          border = TRUE,
+          border = feature_annotation_border,
           params = feature_annotation_params
         )
         if (is.null(ha_right)) {
@@ -1962,7 +2021,15 @@ GroupHeatmap <- function(
         lgd[[featan]] <- ComplexHeatmap::Legend(
           title = featan,
           col_fun = col_fun,
-          border = TRUE
+          legend_gp = heatmap_border_gp(
+            feature_annotation_border,
+            feature_annotation_border_color,
+            feature_annotation_border_size
+          ),
+          border = heatmap_legend_border(
+            feature_annotation_border,
+            feature_annotation_border_color
+          )
         )
       }
     }
@@ -2264,7 +2331,8 @@ GroupHeatmap <- function(
       bottom_annotation = if (flip) right_annotation else NULL,
       right_annotation = if (flip) NULL else right_annotation,
       show_heatmap_legend = FALSE,
-      border = border,
+      border = heatmap_border,
+      border_gp = heatmap_border_gp(heatmap_border, heatmap_border_color, heatmap_border_size),
       use_raster = use_raster,
       raster_device = raster_device,
       raster_by_magick = raster_by_magick,
@@ -2422,4 +2490,96 @@ GroupHeatmap <- function(
       enrichment = res
     )
   )
+}
+
+heatmap_border_enabled <- function(border) {
+  !is.null(border) && !isFALSE(border)
+}
+
+heatmap_border_color <- function(border, palcolor = "black") {
+  if (is.character(border) && length(border) > 0 && nzchar(border[[1]])) {
+    return(border[[1]])
+  }
+  palcolor %||% "black"
+}
+
+heatmap_border_size_value <- function(size) {
+  size <- suppressWarnings(as.numeric(size)[1])
+  if (!is.finite(size) || size < 0) {
+    size <- 1
+  }
+  size
+}
+
+heatmap_border_gp <- function(border, color, size = 1) {
+  grid::gpar(col = if (isTRUE(border)) color else NA, lwd = size)
+}
+
+heatmap_legend_border <- function(border, color) {
+  if (isTRUE(border)) {
+    color
+  } else {
+    FALSE
+  }
+}
+
+heatmap_bordered_block_fill_graphics <- function(
+  levels,
+  palette = NULL,
+  palcolor = NULL,
+  fill_values = NULL,
+  border = TRUE,
+  border_color = "black",
+  border_size = 1
+) {
+  if (is.null(fill_values)) {
+    fill_values <- palette_colors(
+      levels,
+      type = "discrete",
+      palette = palette,
+      palcolor = palcolor,
+      matched = TRUE
+    )
+  }
+  names(fill_values) <- as.character(levels)
+  function(index, levels) {
+    level_key <- as.character(levels[1])
+    fill <- unname(fill_values[[level_key]])
+    if (is.null(fill) || length(fill) == 0 || is.na(fill)) {
+      fill <- "transparent"
+    }
+    grid::grid.rect(
+      gp = grid::gpar(
+        fill = fill,
+        col = if (isTRUE(border)) border_color else NA,
+        lwd = border_size
+      )
+    )
+  }
+}
+
+heatmap_bordered_block_subplot_graphics <- function(
+  subplot,
+  name,
+  border = TRUE,
+  border_color = "black",
+  border_size = 1
+) {
+  base_graphics <- annotation_block_graphics(
+    subplot = subplot,
+    name = name,
+    border = FALSE
+  )
+  function(index, levels) {
+    base_graphics(index, levels)
+    if (isTRUE(border)) {
+      grid::grid.rect(
+        gp = grid::gpar(
+          fill = "transparent",
+          col = border_color,
+          lwd = border_size
+        )
+      )
+    }
+  }
 }
