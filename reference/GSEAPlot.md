@@ -338,55 +338,85 @@ GSEAPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-25 07:17:14] Start standard processing workflow...
-#> ℹ [2026-06-25 07:17:15] Checking a list of <Seurat>...
-#> ! [2026-06-25 07:17:15] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-25 07:17:15] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-25 07:17:15] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-25 07:17:15] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-25 07:17:15] Number of available HVF: 2000
-#> ℹ [2026-06-25 07:17:15] Finished check
-#> ℹ [2026-06-25 07:17:15] Perform `ScaleData()`
-#> ℹ [2026-06-25 07:17:15] Perform pca linear dimension reduction
-#> ℹ [2026-06-25 07:17:16] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-25 07:17:16] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-25 07:17:16] Reorder clusters...
-#> ℹ [2026-06-25 07:17:16] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-25 07:17:16] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-25 07:17:23] Standard processing workflow completed
+#> ℹ [2026-06-26 11:03:41] Start standard processing workflow...
+#> ℹ [2026-06-26 11:03:41] Checking a list of <Seurat>...
+#> ! [2026-06-26 11:03:42] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-26 11:03:42] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-26 11:03:42] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-26 11:03:42] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-26 11:03:42] Number of available HVF: 2000
+#> ℹ [2026-06-26 11:03:42] Finished check
+#> ℹ [2026-06-26 11:03:42] Perform `ScaleData()`
+#> ℹ [2026-06-26 11:03:42] Perform pca linear dimension reduction
+#> ℹ [2026-06-26 11:03:42] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-26 11:03:43] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-26 11:03:43] Reorder clusters...
+#> ℹ [2026-06-26 11:03:43] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-26 11:03:43] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-26 11:03:50] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-06-25 07:17:24] Data type is log-normalized
-#> ℹ [2026-06-25 07:17:24] Start differential expression test
-#> ℹ [2026-06-25 07:17:24] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-06-25 07:17:24] Using 1 core
-#> ⠙ [2026-06-25 07:17:24] Running for Ductal [1/5] ■■          20% | ETA:  0s
-#> ✔ [2026-06-25 07:17:24] Completed 5 tasks in 27ms
+#> ℹ [2026-06-26 11:03:50] Data type is log-normalized
+#> ℹ [2026-06-26 11:03:50] Start differential expression test
+#> ℹ [2026-06-26 11:03:50] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-06-26 11:03:50] Using 1 core
+#> ⠙ [2026-06-26 11:03:50] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ✔ [2026-06-26 11:03:50] Completed 5 tasks in 632ms
 #> 
-#> ℹ [2026-06-25 07:17:24] Building results
-#> ! [2026-06-25 07:17:24] Found 5 failed results
-#> ℹ [2026-06-25 07:17:24] ✖ Error details:
-#> ℹ                       ✖ At least 1 ident must be specified in `ident.1` (5): "Ductal", "Ngn3-high-EP", "Endocrine" and 2 more
-#> Error in `[.data.frame`(AllMarkers, , "group1"): undefined columns selected
+#> ℹ [2026-06-26 11:03:50] Building results
+#> ✔ [2026-06-26 11:03:51] Differential expression test completed
 pancreas_sub <- RunGSEA(
   pancreas_sub,
   group.by = "CellType",
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-06-25 07:17:24] Start GSEA analysis
-#> ℹ [2026-06-25 07:17:24] Resolving `RunDEtest()` results for `group.by` = "CellType" and `test.use` = "wilcox" ...
-#> Error in resolve_detest_result(object = srt, group.by = group.by, test.use = test.use): Cannot find the DEtest result for the group "CellType". Perform
-#> `RunDEtest()` first
+#> ℹ [2026-06-26 11:03:51] Start GSEA analysis
+#> ℹ [2026-06-26 11:03:51] Resolving `RunDEtest()` results for `group.by` = "CellType" and `test.use` = "wilcox" ...
+#> ℹ [2026-06-26 11:03:51] Filtering DE results with `DE_threshold`: "p_val_adj < 0.05" ...
+#> ℹ [2026-06-26 11:03:51] Using 3754 ranked genes across 5 group(s) for GSEA.
+#> ! [2026-06-26 11:03:51] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
+#> ℹ [2026-06-26 11:03:51] Preparing GSEA database(s): "GO_BP" for species "Mus_musculus" ...
+#> ℹ [2026-06-26 11:03:51] Species: "Mus_musculus"
+#> ℹ [2026-06-26 11:03:51] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-06-26 10:57:26
+#> ℹ [2026-06-26 11:03:52] Prepared 3754 ranked gene rows after ID mapping.
+#> ℹ [2026-06-26 11:03:52] Running GSEA for 5 group/database combination(s) using 1 core(s) ...
+#> ℹ [2026-06-26 11:03:52] Using 1 core
+#> ℹ [2026-06-26 11:03:52] Running GSEA: group "Ductal", database "GO_BP", genes 1557 ...
+#> ℹ [2026-06-26 11:04:01] Finished GSEA: group "Ductal", database "GO_BP".
+#> ⠙ [2026-06-26 11:03:52] Running for 1 [1/5] ■■          20% | ETA: 34s
+#> ℹ [2026-06-26 11:04:01] Running GSEA: group "Ngn3-high-EP", database "GO_BP", genes 482 ...
+#> ⠙ [2026-06-26 11:03:52] Running for 1 [1/5] ■■          20% | ETA: 34s
+#> ℹ [2026-06-26 11:04:04] Finished GSEA: group "Ngn3-high-EP", database "GO_BP".
+#> ⠙ [2026-06-26 11:03:52] Running for 1 [1/5] ■■          20% | ETA: 34s
+#> ⠹ [2026-06-26 11:03:52] Running for 2 [2/5] ■■■■        40% | ETA: 17s
+#> ℹ [2026-06-26 11:04:04] Running GSEA: group "Endocrine", database "GO_BP", genes 912 ...
+#> ⠹ [2026-06-26 11:03:52] Running for 2 [2/5] ■■■■        40% | ETA: 17s
+#> ℹ [2026-06-26 11:04:09] Finished GSEA: group "Endocrine", database "GO_BP".
+#> ⠹ [2026-06-26 11:03:52] Running for 2 [2/5] ■■■■        40% | ETA: 17s
+#> ⠸ [2026-06-26 11:03:52] Running for 3 [3/5] ■■■■■■      60% | ETA: 11s
+#> ℹ [2026-06-26 11:04:09] Running GSEA: group "Ngn3-low-EP", database "GO_BP", genes 423 ...
+#> ⠸ [2026-06-26 11:03:52] Running for 3 [3/5] ■■■■■■      60% | ETA: 11s
+#> ℹ [2026-06-26 11:04:12] Finished GSEA: group "Ngn3-low-EP", database "GO_BP".
+#> ⠸ [2026-06-26 11:03:52] Running for 3 [3/5] ■■■■■■      60% | ETA: 11s
+#> ⠼ [2026-06-26 11:03:52] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  5s
+#> ℹ [2026-06-26 11:04:12] Running GSEA: group "Pre-endocrine", database "GO_BP", genes 380 ...
+#> ⠼ [2026-06-26 11:03:52] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  5s
+#> ℹ [2026-06-26 11:04:15] Finished GSEA: group "Pre-endocrine", database "GO_BP".
+#> ⠼ [2026-06-26 11:03:52] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  5s
+#> ✔ [2026-06-26 11:03:52] Completed 5 tasks in 22.6s
+#> 
+#> ℹ [2026-06-26 11:03:52] Building results
+#> ✔ [2026-06-26 11:04:15] GSEA analysis done
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
   group.by = "CellType",
   group_use = "Ductal"
 )
-#> Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", group_use = "Ductal"): No enrichment result found. You may perform `RunGSEA()` first
+
 
 p1 <- GSEAPlot(
   pancreas_sub,
@@ -395,7 +425,7 @@ p1 <- GSEAPlot(
   group_use = "Ductal",
   id_use = "GO:0006412"
 )
-#> Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", group_use = "Ductal",     id_use = "GO:0006412"): No enrichment result found. You may perform `RunGSEA()` first
+#> Error in `.rowNamesDF<-`(x, value = value): missing values in 'row.names' are not allowed
 p1
 #> Error: object 'p1' not found
 
@@ -409,7 +439,11 @@ GSEAPlot(
   topTerm = 3,
   plot_type = "comparison"
 )
-#> Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", topTerm = 3,     plot_type = "comparison"): No enrichment result found. You may perform `RunGSEA()` first
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's alpha values.
+#> Warning: Removed 9786 rows containing missing values or values outside the scale range
+#> (`geom_point()`).
+
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -418,7 +452,11 @@ GSEAPlot(
   plot_type = "comparison",
   direction = "pos"
 )
-#> Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", topTerm = 3,     plot_type = "comparison", direction = "pos"): No enrichment result found. You may perform `RunGSEA()` first
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's alpha values.
+#> Warning: Removed 9786 rows containing missing values or values outside the scale range
+#> (`geom_point()`).
+
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -427,14 +465,18 @@ GSEAPlot(
   plot_type = "comparison",
   compare_only_sig = TRUE
 )
-#> Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", topTerm = 3,     plot_type = "comparison", compare_only_sig = TRUE): No enrichment result found. You may perform `RunGSEA()` first
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's alpha values.
+#> Warning: Removed 9786 rows containing missing values or values outside the scale range
+#> (`geom_point()`).
+
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
   group.by = "CellType",
   plot_type = "bar"
 )
-#> Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", plot_type = "bar"): No enrichment result found. You may perform `RunGSEA()` first
+#> Error in `.rowNamesDF<-`(x, value = value): missing values in 'row.names' are not allowed
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -442,7 +484,7 @@ GSEAPlot(
   plot_type = "bar",
   direction = "both"
 )
-#> Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", plot_type = "bar",     direction = "both"): No enrichment result found. You may perform `RunGSEA()` first
+#> Error in `.rowNamesDF<-`(x, value = value): missing values in 'row.names' are not allowed
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -453,7 +495,9 @@ GSEAPlot(
   direction = "both",
   palcolor = c("red3", "steelblue")
 )
-#> Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", group_use = "Ductal",     plot_type = "bar", topTerm = 20, direction = "both", palcolor = c("red3",         "steelblue")): No enrichment result found. You may perform `RunGSEA()` first
+#> Warning: `guide_colourbar()` cannot be used for alpha.
+#> ℹ Use one of colour, color, or fill instead.
+
 
 GSEAPlot(
   pancreas_sub,
@@ -462,7 +506,8 @@ GSEAPlot(
   group_use = "Ductal",
   plot_type = "network"
 )
-#> Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", group_use = "Ductal",     plot_type = "network"): No enrichment result found. You may perform `RunGSEA()` first
+#> ✔ [2026-06-26 11:04:18] shadowtext installed successfully
+
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -470,7 +515,7 @@ GSEAPlot(
   group_use = "Ductal",
   plot_type = "enrichmap"
 )
-#> Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", group_use = "Ductal",     plot_type = "enrichmap"): No enrichment result found. You may perform `RunGSEA()` first
+
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -478,7 +523,7 @@ GSEAPlot(
   group_use = "Ductal",
   plot_type = "wordcloud"
 )
-#> Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", group_use = "Ductal",     plot_type = "wordcloud"): No enrichment result found. You may perform `RunGSEA()` first
+
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -487,5 +532,4 @@ GSEAPlot(
   plot_type = "wordcloud",
   word_type = "feature"
 )
-#> Error in GSEAPlot(pancreas_sub, db = "GO_BP", group.by = "CellType", group_use = "Ductal",     plot_type = "wordcloud", word_type = "feature"): No enrichment result found. You may perform `RunGSEA()` first
 ```

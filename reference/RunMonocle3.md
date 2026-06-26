@@ -22,6 +22,7 @@ RunMonocle3(
   close_loop = TRUE,
   root_pr_nodes = NULL,
   root_cells = NULL,
+  show_plot = FALSE,
   xlab = NULL,
   ylab = NULL,
   seed = 11,
@@ -105,6 +106,10 @@ RunMonocle3(
 
   The root cells to order cells. If not specified, user will be prompted
   for input. Defaults to NULL.
+
+- show_plot:
+
+  Whether to print diagnostic plots during the run. Default is `FALSE`.
 
 - xlab:
 

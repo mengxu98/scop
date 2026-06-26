@@ -110,6 +110,31 @@ Default is <code>"theme_scop"</code>.</p></dd>
     <p>A <code>ggplot</code>, <code>patchwork</code>, or list of <code>ggplot</code> objects.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">0</span>, <span class="fl">4</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">2</span>, <span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">0</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  nrow <span class="op">=</span> <span class="fl">3</span>,</span></span>
+<span class="r-in"><span>  byrow <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"EPCAM"</span>, <span class="st">"COL1A1"</span>, <span class="st">"PTPRC"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"spot"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">srt</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/CreateSeuratObject.html" class="external-link">CreateSeuratObject</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data is of class matrix. Coercing to dgCMatrix.</span>
+<span class="r-in"><span><span class="va">srt</span><span class="op">$</span><span class="va">X</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">srt</span><span class="op">$</span><span class="va">Y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">srt</span><span class="op">$</span><span class="va">SpatialEcoTyper_SE</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SE1"</span>, <span class="st">"SE1"</span>, <span class="st">"SE2"</span>, <span class="st">"SE2"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">srt</span><span class="op">$</span><span class="va">CellType</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Epithelial"</span>, <span class="st">"Fibroblast"</span>, <span class="st">"Immune"</span>, <span class="st">"Epithelial"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">SpatialEcoTyperSpatialPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">srt</span>,</span></span>
+<span class="r-in"><span>  overlay_image <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"X"</span>, <span class="st">"Y"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  pt.size <span class="op">=</span> <span class="fl">4</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="SpatialEcoTyperSpatialPlot-1.png" alt="" width="700" height="433"></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

@@ -100,9 +100,9 @@ panc8_sub <- integration_scop(
   batch = "tech",
   integration_method = "Harmony5"
 )
-#> ◌ [2026-06-25 08:14:12] Run integration workflow...
+#> ◌ [2026-06-26 12:03:41] Run integration workflow...
 #> Warning: No layers found matching search pattern provided
-#> ℹ [2026-06-25 08:14:12] Perform `Seurat::NormalizeData()` on split layers for Seurat v5 integration
+#> ℹ [2026-06-26 12:03:42] Perform `Seurat::NormalizeData()` on split layers for Seurat v5 integration
 #> Error: NormalizeData.Seurat requires one counts layer named 'counts'.
 names(panc8_sub@reductions)
 #> NULL

@@ -117,3 +117,41 @@ RunGiottoSpatialGenes(
 
 A `giotto2_result` list containing the full Giotto object, spatial gene
 table, top features, raw Giotto result, parameters, features, and cells.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+data(visium_human_pancreas_sub)
+spatial <- Seurat::NormalizeData(
+  visium_human_pancreas_sub,
+  assay = "Spatial",
+  verbose = FALSE
+)
+spatial <- Seurat::FindVariableFeatures(
+  spatial,
+  assay = "Spatial",
+  nfeatures = 500,
+  verbose = FALSE
+)
+
+giotto_genes <- RunGiottoSpatialGenes(
+  spatial,
+  assay = "Spatial",
+  layer = "data",
+  features = Seurat::VariableFeatures(spatial, assay = "Spatial"),
+  coord.cols = c("col", "row"),
+  top_n = 50
+)
+
+head(giotto_genes$results)
+GiottoPlot(giotto_genes, plot_type = "ranking", top_n = 10)
+GiottoPlot(
+  giotto_genes,
+  srt = spatial,
+  plot_type = "feature",
+  overlay_image = FALSE,
+  coord.cols = c("col", "row")
+)
+} # }
+```

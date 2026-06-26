@@ -110,3 +110,34 @@ RunGiottoCellProximity(
 
 A `giotto2_result` list containing the full Giotto object, enrichment
 table, raw Giotto result, parameters, features, and cells.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+data(visium_human_pancreas_sub)
+spatial <- Seurat::NormalizeData(
+  visium_human_pancreas_sub,
+  assay = "Spatial",
+  verbose = FALSE
+)
+spatial$region <- ifelse(
+  spatial$col > stats::median(spatial$col),
+  "right",
+  "left"
+)
+
+proximity <- RunGiottoCellProximity(
+  spatial,
+  group.by = "region",
+  assay = "Spatial",
+  layer = "data",
+  coord.cols = c("col", "row"),
+  network_method = "Delaunay",
+  number_of_simulations = 100
+)
+
+head(proximity$enrichment)
+GiottoPlot(proximity)
+} # }
+```

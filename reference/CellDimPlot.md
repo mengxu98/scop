@@ -9,6 +9,9 @@ points on a reduced 2D plane and coloring according to the groups.
 CellDimPlot(
   srt,
   group.by,
+  label.by = NULL,
+  mark.by = NULL,
+  legend.by = NULL,
   reduction = NULL,
   dims = c(1, 2),
   split.by = NULL,
@@ -46,6 +49,15 @@ CellDimPlot(
   mark_expand = grid::unit(3, "mm"),
   mark_alpha = 0.1,
   mark_linetype = 1,
+  mark_linewidth = 0.5,
+  mark_border = NULL,
+  mark_palette = palette,
+  mark_palcolor = NULL,
+  add_grid = FALSE,
+  grid_n = 12,
+  grid_color = "black",
+  grid_size = 0.25,
+  grid_alpha = 0.35,
   lineages = NULL,
   lineages_trim = c(0.01, 0.99),
   lineages_span = 0.75,
@@ -141,6 +153,23 @@ CellDimPlot(
 - group.by:
 
   Name of one or more meta.data columns to group (color) cells by.
+
+- label.by:
+
+  Name of a meta.data column used to place group labels. If `NULL`,
+  labels use `group.by`.
+
+- mark.by:
+
+  Name of a meta.data column used to draw group marks. If `NULL`, marks
+  use `legend.by` when a nested legend is requested, otherwise marks use
+  `group.by`.
+
+- legend.by:
+
+  Name of a meta.data column used as the parent group in a nested
+  legend. The `group.by` levels are shown under each `legend.by` level.
+  If `NULL`, the standard legend is used.
 
 - reduction:
 
@@ -304,6 +333,37 @@ CellDimPlot(
 - mark_linetype:
 
   Line type of the mark border. Default is `1` (solid line).
+
+- mark_linewidth:
+
+  Line width of the mark border.
+
+- mark_border:
+
+  Fixed border color for marks. If `NULL`, mark borders use the group
+  colors.
+
+- mark_palette:
+
+  Color palette name for `mark.by` groups and nested legend parent
+  headers. Defaults to `palette`.
+
+- mark_palcolor:
+
+  Custom colors for `mark.by` groups and nested legend parent headers.
+
+- add_grid:
+
+  Whether to add a background point grid on the reduction panel. This is
+  useful for atlas-style panels with blank axes.
+
+- grid_n:
+
+  Number of grid points along each axis when `add_grid = TRUE`.
+
+- grid_color, grid_size, grid_alpha:
+
+  Color, size, and alpha of the background grid points.
 
 - lineages:
 
@@ -666,22 +726,22 @@ CellDimPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-25 06:39:10] Start standard processing workflow...
-#> ℹ [2026-06-25 06:39:11] Checking a list of <Seurat>...
-#> ! [2026-06-25 06:39:11] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-25 06:39:11] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-25 06:39:11] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-25 06:39:11] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-25 06:39:11] Number of available HVF: 2000
-#> ℹ [2026-06-25 06:39:11] Finished check
-#> ℹ [2026-06-25 06:39:11] Perform `ScaleData()`
-#> ℹ [2026-06-25 06:39:11] Perform pca linear dimension reduction
-#> ℹ [2026-06-25 06:39:12] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-25 06:39:12] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-25 06:39:12] Reorder clusters...
-#> ℹ [2026-06-25 06:39:12] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-25 06:39:12] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-25 06:39:17] Standard processing workflow completed
+#> ℹ [2026-06-26 10:21:41] Start standard processing workflow...
+#> ℹ [2026-06-26 10:21:41] Checking a list of <Seurat>...
+#> ! [2026-06-26 10:21:41] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-26 10:21:41] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-26 10:21:41] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-26 10:21:42] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-26 10:21:42] Number of available HVF: 2000
+#> ℹ [2026-06-26 10:21:42] Finished check
+#> ℹ [2026-06-26 10:21:42] Perform `ScaleData()`
+#> ℹ [2026-06-26 10:21:42] Perform pca linear dimension reduction
+#> ℹ [2026-06-26 10:21:42] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-26 10:21:43] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-26 10:21:43] Reorder clusters...
+#> ℹ [2026-06-26 10:21:43] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-26 10:21:43] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-26 10:21:48] Standard processing workflow completed
 p1 <- CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -1039,8 +1099,8 @@ pancreas_sub <- RunPAGA(
   backend = "cpp",
   return_seurat = TRUE
 )
-#> ℹ [2026-06-25 06:39:51] Running PAGA with BiocNeighbors using 29 neighbors
-#> ✔ [2026-06-25 06:40:43] PAGA cpp backend completed
+#> ℹ [2026-06-26 10:22:19] Running PAGA with BiocNeighbors using 29 neighbors
+#> ✔ [2026-06-26 10:23:09] PAGA cpp backend completed
 
 CellDimPlot(
   pancreas_sub,
@@ -1088,10 +1148,10 @@ pancreas_sub <- RunSCVELO(
   backend = "cpp",
   return_seurat = TRUE
 )
-#> ℹ [2026-06-25 06:40:45] Running scanpy-compatible preprocessing (15998 features -> filter + normalize)...
-#> ℹ [2026-06-25 06:40:46] Running scVelo "stochastic" mode with `backend = 'cpp'` (10590 features)
-#> ✔ [2026-06-25 06:40:50] scVelo "stochastic" mode completed
-#> ✔ [2026-06-25 06:40:50] scVelo cpp backend completed
+#> ℹ [2026-06-26 10:23:11] Running scanpy-compatible preprocessing (15998 features -> filter + normalize)...
+#> ℹ [2026-06-26 10:23:13] Running scVelo "stochastic" mode with `backend = 'cpp'` (10590 features)
+#> ✔ [2026-06-26 10:23:16] scVelo "stochastic" mode completed
+#> ✔ [2026-06-26 10:23:16] scVelo cpp backend completed
 
 CellDimPlot(
   pancreas_sub,

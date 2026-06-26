@@ -232,43 +232,38 @@ DEtestManhattanPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-25 06:59:02] Start standard processing workflow...
-#> ℹ [2026-06-25 06:59:03] Checking a list of <Seurat>...
-#> ! [2026-06-25 06:59:03] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-25 06:59:03] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-25 06:59:03] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-25 06:59:03] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-25 06:59:03] Number of available HVF: 2000
-#> ℹ [2026-06-25 06:59:03] Finished check
-#> ℹ [2026-06-25 06:59:03] Perform `ScaleData()`
-#> ℹ [2026-06-25 06:59:03] Perform pca linear dimension reduction
-#> ℹ [2026-06-25 06:59:04] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-25 06:59:04] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-25 06:59:04] Reorder clusters...
-#> ℹ [2026-06-25 06:59:05] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-25 06:59:05] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-25 06:59:11] Standard processing workflow completed
+#> ℹ [2026-06-26 10:41:56] Start standard processing workflow...
+#> ℹ [2026-06-26 10:41:56] Checking a list of <Seurat>...
+#> ! [2026-06-26 10:41:56] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-26 10:41:56] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-26 10:41:56] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-26 10:41:57] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-26 10:41:57] Number of available HVF: 2000
+#> ℹ [2026-06-26 10:41:57] Finished check
+#> ℹ [2026-06-26 10:41:57] Perform `ScaleData()`
+#> ℹ [2026-06-26 10:41:57] Perform pca linear dimension reduction
+#> ℹ [2026-06-26 10:41:57] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-26 10:41:58] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-26 10:41:58] Reorder clusters...
+#> ℹ [2026-06-26 10:41:58] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-26 10:41:58] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-26 10:42:04] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
   only.pos = FALSE
 )
-#> ℹ [2026-06-25 06:59:12] Data type is log-normalized
-#> ℹ [2026-06-25 06:59:12] Start differential expression test
-#> ℹ [2026-06-25 06:59:12] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-06-25 06:59:12] Using 1 core
-#> ⠙ [2026-06-25 06:59:12] Running for Ductal [1/5] ■■          20% | ETA:  0s
-#> ✔ [2026-06-25 06:59:12] Completed 5 tasks in 28ms
+#> ℹ [2026-06-26 10:42:05] Data type is log-normalized
+#> ℹ [2026-06-26 10:42:05] Start differential expression test
+#> ℹ [2026-06-26 10:42:05] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-06-26 10:42:05] Using 1 core
+#> ⠙ [2026-06-26 10:42:05] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ✔ [2026-06-26 10:42:05] Completed 5 tasks in 635ms
 #> 
-#> ℹ [2026-06-25 06:59:12] Building results
-#> ! [2026-06-25 06:59:12] Found 5 failed results
-#> ℹ [2026-06-25 06:59:12] ✖ Error details:
-#> ℹ                       ✖ At least 1 ident must be specified in `ident.1` (5): "Ductal", "Ngn3-high-EP", "Endocrine" and 2 more
-#> Error in `[.data.frame`(AllMarkers, , "group1"): undefined columns selected
+#> ℹ [2026-06-26 10:42:05] Building results
+#> ✔ [2026-06-26 10:42:05] Differential expression test completed
 DEtestManhattanPlot(
   pancreas_sub,
   group.by = "CellType"
 )
-#> Error in resolve_detest_result(object = srt, group.by = group.by, test.use = test.use,     res = res): Cannot find the DEtest result for the group "CellType". Perform
-#> `RunDEtest()` first
 ```

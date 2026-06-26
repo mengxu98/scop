@@ -202,22 +202,22 @@ CellScoring(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-25 06:41:20] Start standard processing workflow...
-#> ℹ [2026-06-25 06:41:21] Checking a list of <Seurat>...
-#> ! [2026-06-25 06:41:21] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-25 06:41:21] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-25 06:41:21] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-25 06:41:21] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-25 06:41:21] Number of available HVF: 2000
-#> ℹ [2026-06-25 06:41:21] Finished check
-#> ℹ [2026-06-25 06:41:21] Perform `ScaleData()`
-#> ℹ [2026-06-25 06:41:21] Perform pca linear dimension reduction
-#> ℹ [2026-06-25 06:41:22] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-25 06:41:22] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-25 06:41:22] Reorder clusters...
-#> ℹ [2026-06-25 06:41:22] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-25 06:41:22] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-25 06:41:27] Standard processing workflow completed
+#> ℹ [2026-06-26 10:23:45] Start standard processing workflow...
+#> ℹ [2026-06-26 10:23:46] Checking a list of <Seurat>...
+#> ! [2026-06-26 10:23:46] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-26 10:23:46] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-26 10:23:46] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-26 10:23:46] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-26 10:23:47] Number of available HVF: 2000
+#> ℹ [2026-06-26 10:23:47] Finished check
+#> ℹ [2026-06-26 10:23:47] Perform `ScaleData()`
+#> ℹ [2026-06-26 10:23:47] Perform pca linear dimension reduction
+#> ℹ [2026-06-26 10:23:47] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-26 10:23:47] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-26 10:23:47] Reorder clusters...
+#> ℹ [2026-06-26 10:23:48] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-26 10:23:48] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-26 10:23:52] Standard processing workflow completed
 features_all <- rownames(pancreas_sub)
 pancreas_sub <- CellScoring(
   pancreas_sub,
@@ -228,10 +228,10 @@ pancreas_sub <- CellScoring(
   method = "AUCell",
   name = "test"
 )
-#> ℹ [2026-06-25 06:41:27] Start cell scoring
-#> ℹ [2026-06-25 06:41:28] Data type is log-normalized
-#> ℹ [2026-06-25 06:41:28] Number of feature lists to be scored: 2
-#> ✔ [2026-06-25 06:41:28] Cell scoring completed
+#> ℹ [2026-06-26 10:23:52] Start cell scoring
+#> ℹ [2026-06-26 10:23:53] Data type is log-normalized
+#> ℹ [2026-06-26 10:23:53] Number of feature lists to be scored: 2
+#> ✔ [2026-06-26 10:23:53] Cell scoring completed
 CellDimPlot(pancreas_sub, "test_classification")
 
 
@@ -246,16 +246,16 @@ pancreas_sub <- CellScoring(
   features = list(A = features_all[1:100]),
   method = c("AUCell", "GSVA")
 )
-#> ℹ [2026-06-25 06:41:29] Start cell scoring
-#> ℹ [2026-06-25 06:41:29] Start cell scoring
-#> ℹ [2026-06-25 06:41:29] Data type is log-normalized
-#> ℹ [2026-06-25 06:41:30] Number of feature lists to be scored: 1
-#> ✔ [2026-06-25 06:41:30] Cell scoring completed
-#> ℹ [2026-06-25 06:41:30] Start cell scoring
-#> ℹ [2026-06-25 06:41:30] Data type is log-normalized
-#> ℹ [2026-06-25 06:41:30] Number of feature lists to be scored: 1
+#> ℹ [2026-06-26 10:23:53] Start cell scoring
+#> ℹ [2026-06-26 10:23:53] Start cell scoring
+#> ℹ [2026-06-26 10:23:54] Data type is log-normalized
+#> ℹ [2026-06-26 10:23:54] Number of feature lists to be scored: 1
+#> ✔ [2026-06-26 10:23:54] Cell scoring completed
+#> ℹ [2026-06-26 10:23:54] Start cell scoring
+#> ℹ [2026-06-26 10:23:55] Data type is log-normalized
+#> ℹ [2026-06-26 10:23:55] Number of feature lists to be scored: 1
 #> ℹ 2516278 nonzeros (less than 2^31) and 84.27% sparsity
-#> ✔ [2026-06-25 06:42:52] Cell scoring completed
+#> ✔ [2026-06-26 10:25:14] Cell scoring completed
 FeatureStatPlot(
   pancreas_sub,
   stat.by = c("AUCell_A", "GSVA_A"),
@@ -264,7 +264,7 @@ FeatureStatPlot(
   plot_type = "violin",
   stack = TRUE
 )
-#> ℹ [2026-06-25 06:42:52] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ℹ [2026-06-26 10:25:14] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 
 
 FeatureDimPlot(
@@ -1326,40 +1326,40 @@ panc8_sub <- integration_scop(
   batch = "tech",
   integration_method = "Harmony"
 )
-#> ◌ [2026-06-25 06:42:54] Run integration workflow...
-#> ℹ [2026-06-25 06:42:54] Split `srt_merge` into `srt_list` by "tech"
-#> ℹ [2026-06-25 06:42:55] Checking a list of <Seurat>...
-#> ! [2026-06-25 06:42:55] Data 1/5 of the `srt_list` is "unknown"
-#> ℹ [2026-06-25 06:42:55] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/5 of `srt_list`...
-#> ℹ [2026-06-25 06:42:55] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
-#> ! [2026-06-25 06:42:55] Data 2/5 of the `srt_list` is "unknown"
-#> ℹ [2026-06-25 06:42:55] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 2/5 of `srt_list`...
-#> ℹ [2026-06-25 06:42:55] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
-#> ! [2026-06-25 06:42:56] Data 3/5 of the `srt_list` is "unknown"
-#> ℹ [2026-06-25 06:42:56] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 3/5 of `srt_list`...
-#> ℹ [2026-06-25 06:42:56] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
-#> ! [2026-06-25 06:42:56] Data 4/5 of the `srt_list` is "unknown"
-#> ℹ [2026-06-25 06:42:56] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 4/5 of `srt_list`...
-#> ℹ [2026-06-25 06:42:56] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
-#> ! [2026-06-25 06:42:56] Data 5/5 of the `srt_list` is "unknown"
-#> ℹ [2026-06-25 06:42:56] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 5/5 of `srt_list`...
-#> ℹ [2026-06-25 06:42:56] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
-#> ℹ [2026-06-25 06:42:56] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-25 06:42:57] Number of available HVF: 2000
-#> ℹ [2026-06-25 06:42:57] Finished check
+#> ◌ [2026-06-26 10:25:17] Run integration workflow...
+#> ℹ [2026-06-26 10:25:17] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-06-26 10:25:18] Checking a list of <Seurat>...
+#> ! [2026-06-26 10:25:18] Data 1/5 of the `srt_list` is "unknown"
+#> ℹ [2026-06-26 10:25:18] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/5 of `srt_list`...
+#> ℹ [2026-06-26 10:25:18] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ! [2026-06-26 10:25:18] Data 2/5 of the `srt_list` is "unknown"
+#> ℹ [2026-06-26 10:25:18] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 2/5 of `srt_list`...
+#> ℹ [2026-06-26 10:25:18] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
+#> ! [2026-06-26 10:25:18] Data 3/5 of the `srt_list` is "unknown"
+#> ℹ [2026-06-26 10:25:18] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 3/5 of `srt_list`...
+#> ℹ [2026-06-26 10:25:18] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
+#> ! [2026-06-26 10:25:18] Data 4/5 of the `srt_list` is "unknown"
+#> ℹ [2026-06-26 10:25:18] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 4/5 of `srt_list`...
+#> ℹ [2026-06-26 10:25:18] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
+#> ! [2026-06-26 10:25:19] Data 5/5 of the `srt_list` is "unknown"
+#> ℹ [2026-06-26 10:25:19] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 5/5 of `srt_list`...
+#> ℹ [2026-06-26 10:25:19] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
+#> ℹ [2026-06-26 10:25:19] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-26 10:25:19] Number of available HVF: 2000
+#> ℹ [2026-06-26 10:25:19] Finished check
 #> Warning: Layer ‘scale.data’ is empty
-#> ℹ [2026-06-25 06:42:59] Perform `Seurat::ScaleData()`
-#> ℹ [2026-06-25 06:43:00] Perform linear dimension reduction("pca")
-#> ℹ [2026-06-25 06:43:00] Perform Harmony integration
-#> ℹ [2026-06-25 06:43:00] Using "Harmonypca" (1:20) as input
-#> ℹ [2026-06-25 06:43:15] Adjust neighbor k from 20 to 20 for small-sample clustering
-#> ℹ [2026-06-25 06:43:16] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-06-25 06:43:16] Reorder clusters...
-#> ℹ [2026-06-25 06:43:16] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-25 06:43:17] Perform umap nonlinear dimension reduction using Harmony (1:20)
-#> ℹ [2026-06-25 06:43:21] Perform umap nonlinear dimension reduction using Harmony (1:20)
-#> ℹ [2026-06-25 06:43:26] Perform umap nonlinear dimension reduction using Harmonypca (1:20)
-#> ✔ [2026-06-25 06:43:31] Harmony integration completed
+#> ℹ [2026-06-26 10:25:22] Perform `Seurat::ScaleData()`
+#> ℹ [2026-06-26 10:25:22] Perform linear dimension reduction("pca")
+#> ℹ [2026-06-26 10:25:22] Perform Harmony integration
+#> ℹ [2026-06-26 10:25:22] Using "Harmonypca" (1:20) as input
+#> ℹ [2026-06-26 10:25:40] Adjust neighbor k from 20 to 20 for small-sample clustering
+#> ℹ [2026-06-26 10:25:41] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-06-26 10:25:41] Reorder clusters...
+#> ℹ [2026-06-26 10:25:41] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-26 10:25:41] Perform umap nonlinear dimension reduction using Harmony (1:20)
+#> ℹ [2026-06-26 10:25:45] Perform umap nonlinear dimension reduction using Harmony (1:20)
+#> ℹ [2026-06-26 10:25:50] Perform umap nonlinear dimension reduction using Harmonypca (1:20)
+#> ✔ [2026-06-26 10:25:55] Harmony integration completed
 
 panc8_sub <- CellScoring(
   panc8_sub,
@@ -1373,19 +1373,19 @@ panc8_sub <- CellScoring(
   name = "GO",
   new_assay = TRUE
 )
-#> ℹ [2026-06-25 06:43:31] Start cell scoring
-#> ℹ [2026-06-25 06:43:32] Data type is log-normalized
-#> ℹ [2026-06-25 06:43:32] Species: "Homo_sapiens"
+#> ℹ [2026-06-26 10:25:55] Start cell scoring
+#> ℹ [2026-06-26 10:25:56] Data type is log-normalized
+#> ℹ [2026-06-26 10:25:56] Species: "Homo_sapiens"
 #> 
 #> 
-#> ℹ [2026-06-25 06:50:17] Preparing database: GO_BP
-#> ℹ [2026-06-25 06:50:49] Convert ID types for the GO_BP database
-#> ℹ [2026-06-25 06:50:49] Converted ID types using local annotation package org.Hs.eg.db
-#> ! [2026-06-25 06:50:54] The following features were filtered because not found in the srt assay: "antibody-dependent cellular cytotoxicity", "epoxygenase P450 pathway", "flavone metabolic process", "negative regulation of response to drug", "negative regulation of vascular endothelial growth factor production", "negative regulation of xenobiotic detoxification by transmembrane export across the plasma membrane", "type II hypersensitivity", and "type IIa hypersensitivity"
-#> ℹ [2026-06-25 06:50:54] Number of feature lists to be scored: 4742
+#> ℹ [2026-06-26 10:32:33] Preparing database: GO_BP
+#> ℹ [2026-06-26 10:33:03] Convert ID types for the GO_BP database
+#> ℹ [2026-06-26 10:33:03] Converted ID types using local annotation package org.Hs.eg.db
+#> ! [2026-06-26 10:33:08] The following features were filtered because not found in the srt assay: "antibody-dependent cellular cytotoxicity", "epoxygenase P450 pathway", "flavone metabolic process", "negative regulation of response to drug", "negative regulation of vascular endothelial growth factor production", "negative regulation of xenobiotic detoxification by transmembrane export across the plasma membrane", "type II hypersensitivity", and "type IIa hypersensitivity"
+#> ℹ [2026-06-26 10:33:08] Number of feature lists to be scored: 4742
 #> Warning: Feature names cannot have underscores ('_'), replacing with dashes ('-')
 #> Warning: Feature names cannot have underscores ('_'), replacing with dashes ('-')
-#> ✔ [2026-06-25 06:50:59] Cell scoring completed
+#> ✔ [2026-06-26 10:33:12] Cell scoring completed
 
 panc8_sub <- integration_scop(
   panc8_sub,
@@ -1393,11 +1393,11 @@ panc8_sub <- integration_scop(
   batch = "tech",
   integration_method = "Harmony"
 )
-#> ◌ [2026-06-25 06:50:59] Run integration workflow...
-#> ℹ [2026-06-25 06:50:59] Split `srt_merge` into `srt_list` by "tech"
-#> ℹ [2026-06-25 06:51:00] Checking a list of <Seurat>...
-#> ℹ [2026-06-25 06:51:00] Data 1/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-06-25 06:51:00] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ◌ [2026-06-26 10:33:12] Run integration workflow...
+#> ℹ [2026-06-26 10:33:12] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-06-26 10:33:14] Checking a list of <Seurat>...
+#> ℹ [2026-06-26 10:33:14] Data 1/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-06-26 10:33:14] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
 #> Error: FindVariableFeatures.Seurat requires an Assay5 object with a counts layer.
 CellDimPlot(
   panc8_sub,
@@ -1416,26 +1416,26 @@ pancreas_sub <- CellScoring(
   name = "GO",
   new_assay = TRUE
 )
-#> ℹ [2026-06-25 06:51:01] Start cell scoring
-#> ℹ [2026-06-25 06:51:02] Data type is log-normalized
-#> ℹ [2026-06-25 06:51:02] Species: "Mus_musculus"
+#> ℹ [2026-06-26 10:33:14] Start cell scoring
+#> ℹ [2026-06-26 10:33:16] Data type is log-normalized
+#> ℹ [2026-06-26 10:33:16] Species: "Mus_musculus"
 #> 
-#> ℹ [2026-06-25 06:55:54] Preparing database: GO_BP
-#> ℹ [2026-06-25 06:56:07] Convert ID types for the GO_BP database
-#> ℹ [2026-06-25 06:56:08] Converted ID types using local annotation package org.Mm.eg.db
-#> ! [2026-06-25 06:56:13] The following features were filtered because not found in the srt assay: "G protein-coupled opsin signaling pathway", "L-fucose catabolic process", "alkaloid metabolic process", and "fucose catabolic process"
-#> ℹ [2026-06-25 06:56:13] Number of feature lists to be scored: 4735
+#> ℹ [2026-06-26 10:38:01] Preparing database: GO_BP
+#> ℹ [2026-06-26 10:38:13] Convert ID types for the GO_BP database
+#> ℹ [2026-06-26 10:38:13] Converted ID types using local annotation package org.Mm.eg.db
+#> ! [2026-06-26 10:38:18] The following features were filtered because not found in the srt assay: "G protein-coupled opsin signaling pathway", "L-fucose catabolic process", "alkaloid metabolic process", and "fucose catabolic process"
+#> ℹ [2026-06-26 10:38:18] Number of feature lists to be scored: 4735
 #> Warning: Feature names cannot have underscores ('_'), replacing with dashes ('-')
 #> Warning: Feature names cannot have underscores ('_'), replacing with dashes ('-')
-#> ✔ [2026-06-25 06:56:17] Cell scoring completed
+#> ✔ [2026-06-26 10:38:22] Cell scoring completed
 pancreas_sub <- standard_scop(
   pancreas_sub,
   assay = "GO"
 )
-#> ℹ [2026-06-25 06:56:17] Start standard processing workflow...
-#> ℹ [2026-06-25 06:56:17] Checking a list of <Seurat>...
-#> ℹ [2026-06-25 06:56:18] Data 1/1 of the `srt_list` has been log-normalized
-#> ℹ [2026-06-25 06:56:18] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-26 10:38:22] Start standard processing workflow...
+#> ℹ [2026-06-26 10:38:22] Checking a list of <Seurat>...
+#> ℹ [2026-06-26 10:38:22] Data 1/1 of the `srt_list` has been log-normalized
+#> ℹ [2026-06-26 10:38:22] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
 #> Error: FindVariableFeatures.Seurat requires an Assay5 object with a counts layer.
 
 pancreas_sub[["tech"]] <- "Mouse"
@@ -1445,12 +1445,12 @@ panc_merge <- integration_scop(
   batch = "tech",
   integration_method = "Harmony"
 )
-#> ◌ [2026-06-25 06:56:18] Run integration workflow...
-#> ℹ [2026-06-25 06:56:18] Checking a list of <Seurat>...
-#> ! [2026-06-25 06:56:18] `srt_list` have different feature names! Will subset the common features (4735) for downstream analysis
+#> ◌ [2026-06-26 10:38:22] Run integration workflow...
+#> ℹ [2026-06-26 10:38:22] Checking a list of <Seurat>...
+#> ! [2026-06-26 10:38:22] `srt_list` have different feature names! Will subset the common features (4735) for downstream analysis
 #> Warning: Different cells and/or features from existing assay GO
-#> ℹ [2026-06-25 06:56:21] Data 1/6 of the `srt_list` has been log-normalized
-#> ℹ [2026-06-25 06:56:21] Perform `FindVariableFeatures()` on 1/6 of `srt_list`...
+#> ℹ [2026-06-26 10:38:25] Data 1/6 of the `srt_list` has been log-normalized
+#> ℹ [2026-06-26 10:38:25] Perform `FindVariableFeatures()` on 1/6 of `srt_list`...
 #> Error: FindVariableFeatures.Seurat requires an Assay5 object with a counts layer.
 CellDimPlot(
   srt = panc_merge,
@@ -1470,16 +1470,16 @@ panc8_sub <- RenameFeatures(
   newnames = genenames,
   assay = "RNA"
 )
-#> ℹ [2026-06-25 06:56:21] Rename features for the assay: RNA
+#> ℹ [2026-06-26 10:38:25] Rename features for the assay: RNA
 panc_merge <- integration_scop(
   srt_list = list(panc8_sub, pancreas_sub),
   assay = "RNA",
   batch = "tech",
   integration_method = "Harmony"
 )
-#> ◌ [2026-06-25 06:56:21] Run integration workflow...
-#> ℹ [2026-06-25 06:56:21] Checking a list of <Seurat>...
-#> ! [2026-06-25 06:56:21] `srt_list` have different feature names! Will subset the common features (12928) for downstream analysis
+#> ◌ [2026-06-26 10:38:26] Run integration workflow...
+#> ℹ [2026-06-26 10:38:26] Checking a list of <Seurat>...
+#> ! [2026-06-26 10:38:26] `srt_list` have different feature names! Will subset the common features (12928) for downstream analysis
 #> Warning: Different features in new layer data than already exists for counts
 #> Warning: Different features in new layer data than already exists for data
 #> Warning: Different cells and/or features from existing assay RNA
@@ -1487,26 +1487,26 @@ panc_merge <- integration_scop(
 #> Warning: Different features in new layer data than already exists for data
 #> Warning: Different features in new layer data than already exists for scale.data
 #> Warning: Different cells and/or features from existing assay RNA
-#> ℹ [2026-06-25 06:56:23] Data 1/6 of the `srt_list` has been log-normalized
-#> ℹ [2026-06-25 06:56:23] Perform `FindVariableFeatures()` on 1/6 of `srt_list`...
-#> ℹ [2026-06-25 06:56:24] Data 2/6 of the `srt_list` has been log-normalized
-#> ℹ [2026-06-25 06:56:24] Perform `FindVariableFeatures()` on 2/6 of `srt_list`...
-#> ℹ [2026-06-25 06:56:24] Data 3/6 of the `srt_list` has been log-normalized
-#> ℹ [2026-06-25 06:56:24] Perform `FindVariableFeatures()` on 3/6 of `srt_list`...
-#> ℹ [2026-06-25 06:56:24] Data 4/6 of the `srt_list` has been log-normalized
-#> ℹ [2026-06-25 06:56:24] Perform `FindVariableFeatures()` on 4/6 of `srt_list`...
-#> ℹ [2026-06-25 06:56:25] Data 5/6 of the `srt_list` has been log-normalized
-#> ℹ [2026-06-25 06:56:25] Perform `FindVariableFeatures()` on 5/6 of `srt_list`...
-#> ℹ [2026-06-25 06:56:25] Data 6/6 of the `srt_list` has been log-normalized
-#> ℹ [2026-06-25 06:56:25] Perform `FindVariableFeatures()` on 6/6 of `srt_list`...
-#> ℹ [2026-06-25 06:56:25] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-25 06:56:26] Number of available HVF: 2000
-#> ℹ [2026-06-25 06:56:26] Finished check
-#> ℹ [2026-06-25 06:56:43] Perform `Seurat::ScaleData()`
-#> ℹ [2026-06-25 06:56:44] Perform linear dimension reduction("pca")
-#> ! [2026-06-25 06:56:44] Some PCA features are absent from scale.data and will be dropped: "Pnliprp2", "Pnlip", "Cela2a", "Cpb1", "Ccl2", "Aldob", "Cela3a", "Pdgfrb", "Pnliprp1", "Ctrc", "Prss1", "Gsta2", "Ctrb1", "Akr1b10", "Cftr", "Rnase1", "Crp", "Gsta1", …, "Pde4c", and "Apex2"
-#> ℹ [2026-06-25 06:56:44] Perform Harmony integration
-#> ℹ [2026-06-25 06:56:44] Using "Harmonypca" (1:21) as input
+#> ℹ [2026-06-26 10:38:28] Data 1/6 of the `srt_list` has been log-normalized
+#> ℹ [2026-06-26 10:38:28] Perform `FindVariableFeatures()` on 1/6 of `srt_list`...
+#> ℹ [2026-06-26 10:38:28] Data 2/6 of the `srt_list` has been log-normalized
+#> ℹ [2026-06-26 10:38:28] Perform `FindVariableFeatures()` on 2/6 of `srt_list`...
+#> ℹ [2026-06-26 10:38:28] Data 3/6 of the `srt_list` has been log-normalized
+#> ℹ [2026-06-26 10:38:28] Perform `FindVariableFeatures()` on 3/6 of `srt_list`...
+#> ℹ [2026-06-26 10:38:28] Data 4/6 of the `srt_list` has been log-normalized
+#> ℹ [2026-06-26 10:38:28] Perform `FindVariableFeatures()` on 4/6 of `srt_list`...
+#> ℹ [2026-06-26 10:38:29] Data 5/6 of the `srt_list` has been log-normalized
+#> ℹ [2026-06-26 10:38:29] Perform `FindVariableFeatures()` on 5/6 of `srt_list`...
+#> ℹ [2026-06-26 10:38:29] Data 6/6 of the `srt_list` has been log-normalized
+#> ℹ [2026-06-26 10:38:29] Perform `FindVariableFeatures()` on 6/6 of `srt_list`...
+#> ℹ [2026-06-26 10:38:29] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-26 10:38:30] Number of available HVF: 2000
+#> ℹ [2026-06-26 10:38:30] Finished check
+#> ℹ [2026-06-26 10:38:45] Perform `Seurat::ScaleData()`
+#> ℹ [2026-06-26 10:38:46] Perform linear dimension reduction("pca")
+#> ! [2026-06-26 10:38:46] Some PCA features are absent from scale.data and will be dropped: "Pnliprp2", "Pnlip", "Cela2a", "Cpb1", "Ccl2", "Aldob", "Cela3a", "Pdgfrb", "Pnliprp1", "Ctrc", "Prss1", "Gsta2", "Ctrb1", "Akr1b10", "Cftr", "Rnase1", "Crp", "Gsta1", …, "Pde4c", and "Apex2"
+#> ℹ [2026-06-26 10:38:46] Perform Harmony integration
+#> ℹ [2026-06-26 10:38:46] Using "Harmonypca" (1:21) as input
 #> Error in validObject(object = object): invalid class “Assay5” object: 1: Layers must have the same cells as present in the map (offending layer: scale.data)
 #> invalid class “Assay5” object: 2: Layers must have the same features as present in the map (offending layer: scale.data)
 CellDimPlot(

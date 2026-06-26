@@ -69,6 +69,15 @@
 <span>  feature_split_palette <span class="op">=</span> <span class="st">"simspec"</span>,</span>
 <span>  feature_split_palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  border <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  heatmap_border <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cell_annotation_border <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  feature_annotation_border <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  heatmap_border_palcolor <span class="op">=</span> <span class="st">"black"</span>,</span>
+<span>  cell_annotation_border_palcolor <span class="op">=</span> <span class="st">"black"</span>,</span>
+<span>  feature_annotation_border_palcolor <span class="op">=</span> <span class="st">"black"</span>,</span>
+<span>  heatmap_border_size <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  cell_annotation_border_size <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  feature_annotation_border_size <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  use_raster <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  raster_by_magick <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  column_names_gp <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/gpar.html" class="external-link">gpar</a></span><span class="op">(</span>fontsize <span class="op">=</span> <span class="fl">8</span><span class="op">)</span>,</span>
@@ -180,7 +189,25 @@ row annotation.</p></dd>
 
 
 <dt id="arg-border">border<a class="anchor" aria-label="anchor" href="#arg-border"></a></dt>
-<dd><p>Whether to draw borders around heatmap cells and annotations.</p></dd>
+<dd><p>Whether to draw borders around the heatmap body and
+annotations. Kept for backward compatibility. The more specific
+`heatmap_border`, `cell_annotation_border`, and `feature_annotation_border`
+arguments inherit from this value when left as `NULL`.</p></dd>
+
+
+<dt id="arg-heatmap-border-cell-annotation-border-feature-annotation-border">heatmap_border, cell_annotation_border, feature_annotation_border<a class="anchor" aria-label="anchor" href="#arg-heatmap-border-cell-annotation-border-feature-annotation-border"></a></dt>
+<dd><p>Whether to draw borders for the heatmap body, cell annotations, and feature
+annotations, respectively. Defaults inherit from `border`.</p></dd>
+
+
+<dt id="arg-heatmap-border-palcolor-cell-annotation-border-palcolor-feature-annotation-border-palcolor">heatmap_border_palcolor, cell_annotation_border_palcolor, feature_annotation_border_palcolor<a class="anchor" aria-label="anchor" href="#arg-heatmap-border-palcolor-cell-annotation-border-palcolor-feature-annotation-border-palcolor"></a></dt>
+<dd><p>Border colors for the heatmap body, cell annotations, and feature
+annotations when their matching border argument is `TRUE`.</p></dd>
+
+
+<dt id="arg-heatmap-border-size-cell-annotation-border-size-feature-annotation-border-size">heatmap_border_size, cell_annotation_border_size, feature_annotation_border_size<a class="anchor" aria-label="anchor" href="#arg-heatmap-border-size-cell-annotation-border-size-feature-annotation-border-size"></a></dt>
+<dd><p>Border line widths for the heatmap body, cell annotations, and feature
+annotations when their matching border argument is `TRUE`.</p></dd>
 
 
 <dt id="arg-use-raster-raster-by-magick">use_raster, raster_by_magick<a class="anchor" aria-label="anchor" href="#arg-use-raster-raster-by-magick"></a></dt>
