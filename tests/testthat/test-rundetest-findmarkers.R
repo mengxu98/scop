@@ -34,9 +34,8 @@ test_that("RunDEtest uses scop FindMarkers-compatible sparse Wilcoxon path", {
     only.pos = FALSE,
     verbose = FALSE
   )
-  fast_fm <- scop::FindMarkers(
+  cell_fm <- scop::FindMarkers(
     srt,
-    .scop_backend = "sparse_wilcox",
     cells.1 = cells1,
     cells.2 = cells2,
     features = features,
@@ -57,22 +56,10 @@ test_that("RunDEtest uses scop FindMarkers-compatible sparse Wilcoxon path", {
   markers <- out@tools$DEtest_custom$AllMarkers_wilcox
 
   expect_equal(scop_fm, seurat_fm)
-  expect_error(
-    scop::FindMarkers(
-      srt,
-      cells.1 = cells1,
-      cells.2 = cells2,
-      features = features,
-      logfc.threshold = 0,
-      min.pct = 0,
-      only.pos = FALSE,
-      verbose = FALSE
-    ),
-    "At least 1 ident"
-  )
-  expect_identical(rownames(fast_fm), markers$gene)
-  expect_equal(fast_fm$p_val, markers$p_val, tolerance = 1e-12)
-  expect_equal(fast_fm$avg_log2FC, markers$avg_log2FC, tolerance = 0)
-  expect_equal(fast_fm$pct.1, markers$pct.1, tolerance = 0)
-  expect_equal(fast_fm$pct.2, markers$pct.2, tolerance = 0)
+  expect_equal(cell_fm, scop_fm)
+  expect_identical(rownames(cell_fm), markers$gene)
+  expect_equal(cell_fm$p_val, markers$p_val, tolerance = 1e-12)
+  expect_equal(cell_fm$avg_log2FC, markers$avg_log2FC, tolerance = 0)
+  expect_equal(cell_fm$pct.1, markers$pct.1, tolerance = 0)
+  expect_equal(cell_fm$pct.2, markers$pct.2, tolerance = 0)
 })
