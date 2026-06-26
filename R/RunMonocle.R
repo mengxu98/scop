@@ -340,6 +340,8 @@ RunMonocle2 <- function(
 #' @param root_cells The root cells to order cells.
 #' If not specified, user will be prompted for input.
 #' Defaults to NULL.
+#' @param show_plot Whether to print diagnostic plots during the run.
+#' Default is `FALSE`.
 #'
 #' @export
 #'
@@ -497,6 +499,7 @@ RunMonocle3 <- function(
   close_loop = TRUE,
   root_pr_nodes = NULL,
   root_cells = NULL,
+  show_plot = FALSE,
   xlab = NULL,
   ylab = NULL,
   seed = 11,
@@ -739,9 +742,24 @@ RunMonocle3 <- function(
       trajectory
     p5 <- p4 +
       milestones
-    print(p1 + p3 + p5)
-  } else {
-    print(p1 + p3)
+  }
+  if (isTRUE(show_plot)) {
+    tryCatch(
+      {
+        if (!is.null(group.by)) {
+          print(p1 + p3 + p5)
+        } else {
+          print(p1 + p3)
+        }
+      },
+      error = function(e) {
+        log_message(
+          "Failed to print trajectory plots: {.val {conditionMessage(e)}}",
+          message_type = "warning",
+          verbose = verbose
+        )
+      }
+    )
   }
 
   if (is.null(root_pr_nodes) && is.null(root_cells)) {
@@ -777,10 +795,23 @@ RunMonocle3 <- function(
   ) +
     theme(legend.position = "none") +
     trajectory
-  if (!is.null(group.by)) {
-    print((p1 + p2) / (p4 + p6))
-  } else {
-    print(p1 + p2 + p6)
+  if (isTRUE(show_plot)) {
+    tryCatch(
+      {
+        if (!is.null(group.by)) {
+          print((p1 + p2) / (p4 + p6))
+        } else {
+          print(p1 + p2 + p6)
+        }
+      },
+      error = function(e) {
+        log_message(
+          "Failed to print pseudotime plots: {.val {conditionMessage(e)}}",
+          message_type = "warning",
+          verbose = verbose
+        )
+      }
+    )
   }
 
   log_message(
