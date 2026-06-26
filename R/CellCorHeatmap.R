@@ -277,6 +277,15 @@ CellCorHeatmap <- function(
   prefix = "KNNPredict",
   exp_legend_title = NULL,
   border = TRUE,
+  heatmap_border = NULL,
+  cell_annotation_border = NULL,
+  feature_annotation_border = NULL,
+  heatmap_border_palcolor = "black",
+  cell_annotation_border_palcolor = "black",
+  feature_annotation_border_palcolor = "black",
+  heatmap_border_size = 1,
+  cell_annotation_border_size = 1,
+  feature_annotation_border_size = 1,
   flip = FALSE,
   limits = NULL,
   cluster_rows = FALSE,
@@ -331,6 +340,27 @@ CellCorHeatmap <- function(
   verbose = TRUE
 ) {
   set.seed(seed)
+  heatmap_border <- heatmap_border %||% border
+  cell_annotation_border <- cell_annotation_border %||% border
+  feature_annotation_border <- feature_annotation_border %||% border
+  heatmap_border_color <- heatmap_border_color(
+    heatmap_border,
+    heatmap_border_palcolor
+  )
+  cell_annotation_border_color <- heatmap_border_color(
+    cell_annotation_border,
+    cell_annotation_border_palcolor
+  )
+  feature_annotation_border_color <- heatmap_border_color(
+    feature_annotation_border,
+    feature_annotation_border_palcolor
+  )
+  heatmap_border_size <- heatmap_border_size_value(heatmap_border_size)
+  cell_annotation_border_size <- heatmap_border_size_value(cell_annotation_border_size)
+  feature_annotation_border_size <- heatmap_border_size_value(feature_annotation_border_size)
+  heatmap_border <- heatmap_border_enabled(heatmap_border)
+  cell_annotation_border <- heatmap_border_enabled(cell_annotation_border)
+  feature_annotation_border <- heatmap_border_enabled(feature_annotation_border)
   if (isTRUE(raster_by_magick)) {
     check_r("magick", verbose = FALSE)
   }
@@ -730,7 +760,15 @@ CellCorHeatmap <- function(
   lgd[["ht"]] <- ComplexHeatmap::Legend(
     title = exp_name,
     col_fun = colors,
-    border = TRUE
+    legend_gp = heatmap_border_gp(
+      heatmap_border,
+      heatmap_border_color,
+      heatmap_border_size
+    ),
+    border = heatmap_legend_border(
+      heatmap_border,
+      heatmap_border_color
+    )
   )
 
   ha_query_list <- NULL
@@ -750,11 +788,13 @@ CellCorHeatmap <- function(
         query_annotation_palcolor %||% list(NULL)
       )
     } else {
-      block_graphics <- annotation_block_fill_graphics(
+      block_graphics <- heatmap_bordered_block_fill_graphics(
         levels = levels(srt_query[[query_group, drop = TRUE]]),
         palette = query_group_palette,
         palcolor = query_group_palcolor,
-        border = border
+        border = cell_annotation_border,
+        border_color = cell_annotation_border_color,
+        border_size = cell_annotation_border_size
       )
 
       anno <- list()
@@ -787,7 +827,7 @@ CellCorHeatmap <- function(
           which = ifelse(flip, "column", "row"),
           show_annotation_name = TRUE,
           annotation_name_side = ifelse(flip, "left", "bottom"),
-          border = TRUE
+          border = cell_annotation_border
         )
       )
       ha_query_list[[query_group_name]] <- ha_cell_group
@@ -823,11 +863,13 @@ CellCorHeatmap <- function(
         ref_annotation_palcolor %||% list(NULL)
       )
     } else {
-      block_graphics <- annotation_block_fill_graphics(
+      block_graphics <- heatmap_bordered_block_fill_graphics(
         levels = levels(srt_ref[[ref_group, drop = TRUE]]),
         palette = ref_group_palette,
         palcolor = ref_group_palcolor,
-        border = border
+        border = cell_annotation_border,
+        border_color = cell_annotation_border_color,
+        border_size = cell_annotation_border_size
       )
 
       anno <- list()
@@ -861,7 +903,7 @@ CellCorHeatmap <- function(
           which = ifelse(!flip, "column", "row"),
           show_annotation_name = TRUE,
           annotation_name_side = ifelse(!flip, "left", "bottom"),
-          border = TRUE
+          border = cell_annotation_border
         )
       )
       ha_ref_list[[ref_group_name]] <- ha_cell_group
@@ -928,7 +970,7 @@ CellCorHeatmap <- function(
             x = x_nm,
             graphics = graphics,
             which = ifelse(flip, "column", "row"),
-            border = TRUE,
+            border = cell_annotation_border,
             verbose = FALSE
           )
           ha_query <- build_heatmap_annotation(
@@ -961,7 +1003,8 @@ CellCorHeatmap <- function(
             ),
             which = ifelse(flip, "column", "row"),
             na_col = "transparent",
-            border = TRUE
+            gp = heatmap_border_gp(cell_annotation_border, cell_annotation_border_color, cell_annotation_border_size),
+            border = cell_annotation_border
           )
           ha_query <- build_heatmap_annotation(
             annotations = ha_cell,
@@ -1030,7 +1073,7 @@ CellCorHeatmap <- function(
             x = x_nm,
             graphics = graphics,
             which = ifelse(flip, "column", "row"),
-            border = TRUE,
+            border = cell_annotation_border,
             verbose = FALSE
           )
           ha_query <- build_heatmap_annotation(
@@ -1077,7 +1120,8 @@ CellCorHeatmap <- function(
             col = col_fun,
             which = ifelse(flip, "column", "row"),
             na_col = "transparent",
-            border = TRUE
+            gp = heatmap_border_gp(cell_annotation_border, cell_annotation_border_color, cell_annotation_border_size),
+            border = cell_annotation_border
           )
           ha_query <- build_heatmap_annotation(
             annotations = ha_cell,
@@ -1109,7 +1153,15 @@ CellCorHeatmap <- function(
           lgd[[query_cell_name]] <- ComplexHeatmap::Legend(
             title = query_cell_name,
             col_fun = col_fun,
-            border = TRUE
+            legend_gp = heatmap_border_gp(
+              cell_annotation_border,
+              cell_annotation_border_color,
+              cell_annotation_border_size
+            ),
+            border = heatmap_legend_border(
+              cell_annotation_border,
+              cell_annotation_border_color
+            )
           )
         }
       }
@@ -1164,7 +1216,7 @@ CellCorHeatmap <- function(
             x = x_nm,
             graphics = graphics,
             which = ifelse(!flip, "column", "row"),
-            border = TRUE,
+            border = cell_annotation_border,
             verbose = FALSE
           )
           ha_ref <- build_heatmap_annotation(
@@ -1197,7 +1249,8 @@ CellCorHeatmap <- function(
             ),
             which = ifelse(!flip, "column", "row"),
             na_col = "transparent",
-            border = TRUE
+            gp = heatmap_border_gp(cell_annotation_border, cell_annotation_border_color, cell_annotation_border_size),
+            border = cell_annotation_border
           )
           ha_ref <- build_heatmap_annotation(
             annotations = ha_cell,
@@ -1266,7 +1319,7 @@ CellCorHeatmap <- function(
             x = x_nm,
             graphics = graphics,
             which = ifelse(!flip, "column", "row"),
-            border = TRUE,
+            border = cell_annotation_border,
             verbose = FALSE
           )
           ha_ref <- build_heatmap_annotation(
@@ -1300,7 +1353,8 @@ CellCorHeatmap <- function(
             col = col_fun,
             which = ifelse(!flip, "column", "row"),
             na_col = "transparent",
-            border = TRUE
+            gp = heatmap_border_gp(cell_annotation_border, cell_annotation_border_color, cell_annotation_border_size),
+            border = cell_annotation_border
           )
           ha_ref <- build_heatmap_annotation(
             annotations = ha_cell,
@@ -1322,7 +1376,15 @@ CellCorHeatmap <- function(
           lgd[[ref_cell_name]] <- ComplexHeatmap::Legend(
             title = ref_cell_name,
             col_fun = col_fun,
-            border = TRUE
+            legend_gp = heatmap_border_gp(
+              cell_annotation_border,
+              cell_annotation_border_color,
+              cell_annotation_border_size
+            ),
+            border = heatmap_legend_border(
+              cell_annotation_border,
+              cell_annotation_border_color
+            )
           )
         }
       }
@@ -1430,7 +1492,8 @@ CellCorHeatmap <- function(
     top_annotation = if (flip) ha_query_list[[1]] else ha_ref_list[[1]],
     left_annotation = if (flip) ha_ref_list[[1]] else ha_query_list[[1]],
     show_heatmap_legend = FALSE,
-    border = border,
+    border = heatmap_border,
+    border_gp = heatmap_border_gp(heatmap_border, heatmap_border_color, heatmap_border_size),
     use_raster = use_raster,
     raster_device = raster_device,
     raster_by_magick = raster_by_magick,

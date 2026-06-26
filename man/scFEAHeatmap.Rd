@@ -29,6 +29,15 @@ scFEAHeatmap(
   feature_split_palette = "simspec",
   feature_split_palcolor = NULL,
   border = TRUE,
+  heatmap_border = NULL,
+  cell_annotation_border = NULL,
+  feature_annotation_border = NULL,
+  heatmap_border_palcolor = "black",
+  cell_annotation_border_palcolor = "black",
+  feature_annotation_border_palcolor = "black",
+  heatmap_border_size = 1,
+  cell_annotation_border_size = 1,
+  feature_annotation_border_size = 1,
   use_raster = TRUE,
   raster_by_magick = FALSE,
   column_names_gp = grid::gpar(fontsize = 8),
@@ -97,7 +106,19 @@ values are interpreted as millimeters.}
 \item{feature_split_palette, feature_split_palcolor}{Palette for `SM_anno`
 row annotation.}
 
-\item{border}{Whether to draw borders around heatmap cells and annotations.}
+\item{border}{Whether to draw borders around the heatmap body and
+annotations. Kept for backward compatibility. The more specific
+`heatmap_border`, `cell_annotation_border`, and `feature_annotation_border`
+arguments inherit from this value when left as `NULL`.}
+
+\item{heatmap_border, cell_annotation_border, feature_annotation_border}{Whether to draw borders for the heatmap body, cell annotations, and feature
+annotations, respectively. Defaults inherit from `border`.}
+
+\item{heatmap_border_palcolor, cell_annotation_border_palcolor, feature_annotation_border_palcolor}{Border colors for the heatmap body, cell annotations, and feature
+annotations when their matching border argument is `TRUE`.}
+
+\item{heatmap_border_size, cell_annotation_border_size, feature_annotation_border_size}{Border line widths for the heatmap body, cell annotations, and feature
+annotations when their matching border argument is `TRUE`.}
 
 \item{use_raster, raster_by_magick}{Raster settings passed to
 [ComplexHeatmap::Heatmap()].}

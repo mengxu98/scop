@@ -231,6 +231,15 @@ DynamicHeatmap <- function(
   features = NULL,
   use_fitted = FALSE,
   border = TRUE,
+  heatmap_border = NULL,
+  cell_annotation_border = NULL,
+  feature_annotation_border = NULL,
+  heatmap_border_palcolor = "black",
+  cell_annotation_border_palcolor = "black",
+  feature_annotation_border_palcolor = "black",
+  heatmap_border_size = 1,
+  cell_annotation_border_size = 1,
+  feature_annotation_border_size = 1,
   flip = FALSE,
   min_expcells = 20,
   r.sq = 0.2,
@@ -373,6 +382,27 @@ DynamicHeatmap <- function(
   ...
 ) {
   set.seed(seed)
+  heatmap_border <- heatmap_border %||% border
+  cell_annotation_border <- cell_annotation_border %||% border
+  feature_annotation_border <- feature_annotation_border %||% border
+  heatmap_border_color <- heatmap_border_color(
+    heatmap_border,
+    heatmap_border_palcolor
+  )
+  cell_annotation_border_color <- heatmap_border_color(
+    cell_annotation_border,
+    cell_annotation_border_palcolor
+  )
+  feature_annotation_border_color <- heatmap_border_color(
+    feature_annotation_border,
+    feature_annotation_border_palcolor
+  )
+  heatmap_border_size <- heatmap_border_size_value(heatmap_border_size)
+  cell_annotation_border_size <- heatmap_border_size_value(cell_annotation_border_size)
+  feature_annotation_border_size <- heatmap_border_size_value(feature_annotation_border_size)
+  heatmap_border <- heatmap_border_enabled(heatmap_border)
+  cell_annotation_border <- heatmap_border_enabled(cell_annotation_border)
+  feature_annotation_border <- heatmap_border_enabled(feature_annotation_border)
   if (isTRUE(raster_by_magick)) {
     check_r("magick", verbose = FALSE)
   }
@@ -686,12 +716,17 @@ DynamicHeatmap <- function(
   }
 
   if (!is.null(cell_annotation)) {
+    cell_annotation_meta <- intersect(cell_annotation, colnames(srt@meta.data))
+    cell_annotation_feature <- setdiff(
+      intersect(cell_annotation, rownames(srt@assays[[assay]])),
+      cell_annotation_meta
+    )
     cell_metadata <- cbind.data.frame(
       cell_metadata,
       cbind.data.frame(
         srt@meta.data[
           rownames(cell_metadata),
-          c(intersect(cell_annotation, colnames(srt@meta.data))),
+          cell_annotation_meta,
           drop = FALSE
         ],
         Matrix::t(
@@ -700,8 +735,7 @@ DynamicHeatmap <- function(
             assay = assay,
             layer = "data"
           )[
-            intersect(cell_annotation, rownames(srt@assays[[assay]])) %||%
-              integer(),
+            cell_annotation_feature %||% integer(),
             rownames(cell_metadata),
             drop = FALSE
           ]
@@ -1008,7 +1042,15 @@ DynamicHeatmap <- function(
   lgd[["ht"]] <- ComplexHeatmap::Legend(
     title = exp_name,
     col_fun = colors,
-    border = TRUE
+    legend_gp = heatmap_border_gp(
+      heatmap_border,
+      heatmap_border_color,
+      heatmap_border_size
+    ),
+    border = heatmap_legend_border(
+      heatmap_border,
+      heatmap_border_color
+    )
   )
 
   ha_top_list <- list()
@@ -1039,18 +1081,27 @@ DynamicHeatmap <- function(
         col = pseudotime_col,
         which = ifelse(flip, "row", "column"),
         na_col = "transparent",
-        border = TRUE
+        border = FALSE
       ),
       which = ifelse(flip, "row", "column"),
       show_annotation_name = l == lineages[1],
-      annotation_name_side = ifelse(flip, "top", "left")
+      annotation_name_side = ifelse(flip, "top", "left"),
+      border = FALSE
     )
   }
 
   lgd[["pseudotime"]] <- ComplexHeatmap::Legend(
     title = "Pseudotime",
     col_fun = pseudotime_col,
-    border = TRUE
+    legend_gp = heatmap_border_gp(
+      cell_annotation_border,
+      cell_annotation_border_color,
+      cell_annotation_border_size
+    ),
+    border = heatmap_legend_border(
+      cell_annotation_border,
+      cell_annotation_border_color
+    )
   )
 
   if (!is.null(cell_annotation)) {
@@ -1058,7 +1109,7 @@ DynamicHeatmap <- function(
       cellan <- cell_annotation[i]
       palette <- cell_annotation_palette[i]
       palcolor <- cell_annotation_palcolor[[i]]
-      cell_anno <- cell_metadata[, cellan]
+      cell_anno <- cell_metadata[[cellan]]
       names(cell_anno) <- rownames(cell_metadata)
       if (!is.numeric(cell_anno) || cellan == "RNA_snn_res.0.8") {
         if (is.logical(cell_anno)) {
@@ -1080,14 +1131,15 @@ DynamicHeatmap <- function(
             l,
             available = names(cell_anno)
           )
-          cell_anno_lineage <- as.character(cell_anno[lineage_cells])
+          lineage_idx <- match(lineage_cells, rownames(cell_metadata))
+          cell_anno_lineage <- unname(as.character(cell_anno[lineage_idx]))
           ha_cell <- list()
           ha_cell[[cellan]] <- ComplexHeatmap::anno_simple(
             x = cell_anno_lineage,
             col = cell_anno_cols,
             which = ifelse(flip, "row", "column"),
             na_col = "transparent",
-            border = TRUE
+            border = FALSE
           )
           anno_args <- c(
             ha_cell,
@@ -1095,7 +1147,8 @@ DynamicHeatmap <- function(
               which = ifelse(flip, "row", "column"),
               show_legend = FALSE,
               show_annotation_name = l == lineages[1],
-              annotation_name_side = ifelse(flip, "top", "left")
+              annotation_name_side = ifelse(flip, "top", "left"),
+              border = FALSE
             )
           )
           anno_args <- c(
@@ -1116,9 +1169,14 @@ DynamicHeatmap <- function(
           title = cellan,
           labels = levels(cell_anno),
           legend_gp = grid::gpar(
-            fill = cell_anno_cols
+            fill = cell_anno_cols,
+            col = cell_annotation_border_color,
+            lwd = cell_annotation_border_size
           ),
-          border = TRUE
+          border = heatmap_legend_border(
+            cell_annotation_border,
+            cell_annotation_border_color
+          )
         )
       } else {
         col_fun <- circlize::colorRamp2(
@@ -1135,19 +1193,21 @@ DynamicHeatmap <- function(
             l,
             available = names(cell_anno)
           )
+          lineage_idx <- match(lineage_cells, rownames(cell_metadata))
           ha_cell <- list()
           ha_cell[[cellan]] <- ComplexHeatmap::anno_simple(
-            x = cell_anno[lineage_cells],
+            x = unname(cell_anno[lineage_idx]),
             col = col_fun,
             which = ifelse(flip, "row", "column"),
             na_col = "transparent",
-            border = TRUE
+            border = FALSE
           )
           anno_args <- c(
             ha_cell,
             which = ifelse(flip, "row", "column"),
             show_annotation_name = l == lineages[1],
-            annotation_name_side = ifelse(flip, "top", "left")
+            annotation_name_side = ifelse(flip, "top", "left"),
+            border = FALSE
           )
           anno_args <- c(
             anno_args,
@@ -1166,7 +1226,15 @@ DynamicHeatmap <- function(
         lgd[[cellan]] <- ComplexHeatmap::Legend(
           title = cellan,
           col_fun = col_fun,
-          border = TRUE
+          legend_gp = heatmap_border_gp(
+            cell_annotation_border,
+            cell_annotation_border_color,
+            cell_annotation_border_size
+          ),
+          border = heatmap_legend_border(
+            cell_annotation_border,
+            cell_annotation_border_color
+          )
         )
       }
     }
@@ -1218,10 +1286,12 @@ DynamicHeatmap <- function(
           ) +
             theme_void()
           nm <- paste0(cellan, ":", l)
-          block_graphics <- annotation_block_graphics(
+          block_graphics <- heatmap_bordered_block_subplot_graphics(
             subplot = subplots,
             name = nm,
-            border = TRUE
+            border = cell_annotation_border,
+            border_color = cell_annotation_border_color,
+            border_size = cell_annotation_border_size
           )
 
           ha_cell <- list()
@@ -1258,9 +1328,14 @@ DynamicHeatmap <- function(
               cell_anno,
               palette = palette,
               palcolor = palcolor
-            )
+            ),
+            col = cell_annotation_border_color,
+            lwd = cell_annotation_border_size
           ),
-          border = TRUE
+          border = heatmap_legend_border(
+            cell_annotation_border,
+            cell_annotation_border_color
+          )
         )
       } else {
         for (l in lineages) {
@@ -1286,10 +1361,12 @@ DynamicHeatmap <- function(
           ) +
             theme_void()
           nm <- paste0(paste0(cellan, collapse = ","), ":", l)
-          block_graphics <- annotation_block_graphics(
+          block_graphics <- heatmap_bordered_block_subplot_graphics(
             subplot = subplots,
             name = nm,
-            border = TRUE
+            border = cell_annotation_border,
+            border_color = cell_annotation_border_color,
+            border_size = cell_annotation_border_size
           )
 
           ha_cell <- list()
@@ -1325,9 +1402,14 @@ DynamicHeatmap <- function(
           title = "Features\n(separate)",
           labels = cellan,
           legend_gp = grid::gpar(
-            fill = palette_colors(cellan, palette = palette, palcolor = palcolor)
+            fill = palette_colors(cellan, palette = palette, palcolor = palcolor),
+            col = cell_annotation_border_color,
+            lwd = cell_annotation_border_size
           ),
-          border = TRUE
+          border = heatmap_legend_border(
+            cell_annotation_border,
+            cell_annotation_border_color
+          )
         )
       }
     }
@@ -1473,11 +1555,13 @@ DynamicHeatmap <- function(
         row_split <- length(unique(row_split_raw))
       }
     }
-    block_graphics <- annotation_block_fill_graphics(
+    block_graphics <- heatmap_bordered_block_fill_graphics(
       levels = levels(row_split_raw),
       palette = feature_split_palette,
       palcolor = unlist(feature_split_palcolor),
-      border = border
+      border = feature_annotation_border,
+      border_color = feature_annotation_border_color,
+      border_size = feature_annotation_border_size
     )
     ha_clusters <- ComplexHeatmap::HeatmapAnnotation(
       features_split = ComplexHeatmap::anno_block(
@@ -1489,7 +1573,12 @@ DynamicHeatmap <- function(
         which = ifelse(flip, "column", "row")
       ),
       which = ifelse(flip, "column", "row"),
-      border = TRUE
+      border = feature_annotation_border,
+      gp = heatmap_border_gp(
+        feature_annotation_border,
+        feature_annotation_border_color,
+        feature_annotation_border_size
+      )
     )
     if (is.null(ha_left)) {
       ha_left <- ha_clusters
@@ -1506,9 +1595,14 @@ DynamicHeatmap <- function(
           palette = feature_split_palette,
           palcolor = feature_split_palcolor,
           matched = TRUE
-        )
+        ),
+        col = feature_annotation_border_color,
+        lwd = feature_annotation_border_size
       ),
-      border = TRUE
+      border = heatmap_legend_border(
+        feature_annotation_border,
+        feature_annotation_border_color
+      )
     )
   }
 
@@ -1638,7 +1732,7 @@ DynamicHeatmap <- function(
         ha_list,
         which = ifelse(flip, "column", "row"),
         annotation_name_side = ifelse(flip, "left", "top"),
-        border = TRUE
+        border = feature_annotation_border
       )
     )
     if (is.null(ha_right)) {
@@ -1670,14 +1764,19 @@ DynamicHeatmap <- function(
           ),
           which = ifelse(flip, "column", "row"),
           na_col = "transparent",
-          border = TRUE
+          border = FALSE
         )
         anno_args <- c(
           ha_feature,
           which = ifelse(flip, "column", "row"),
           show_annotation_name = TRUE,
           annotation_name_side = ifelse(flip, "left", "top"),
-          border = TRUE
+          border = feature_annotation_border,
+          gp = heatmap_border_gp(
+            feature_annotation_border,
+            feature_annotation_border_color,
+            feature_annotation_border_size
+          )
         )
         anno_args <- c(
           anno_args,
@@ -1706,9 +1805,14 @@ DynamicHeatmap <- function(
                 featan_levels,
                 palette = palette,
                 palcolor = palcolor
-              )
+              ),
+              col = feature_annotation_border_color,
+              lwd = feature_annotation_border_size
             ),
-            border = TRUE
+            border = heatmap_legend_border(
+              feature_annotation_border,
+              feature_annotation_border_color
+            )
           )
         } else {
           lgd[[featan]] <- NULL
@@ -1730,14 +1834,19 @@ DynamicHeatmap <- function(
           col = col_fun,
           which = ifelse(flip, "column", "row"),
           na_col = "transparent",
-          border = TRUE
+          border = FALSE
         )
         anno_args <- c(
           ha_feature,
           which = ifelse(flip, "column", "row"),
           show_annotation_name = TRUE,
           annotation_name_side = ifelse(flip, "left", "top"),
-          border = TRUE
+          border = feature_annotation_border,
+          gp = heatmap_border_gp(
+            feature_annotation_border,
+            feature_annotation_border_color,
+            feature_annotation_border_size
+          )
         )
         anno_args <- c(
           anno_args,
@@ -1755,7 +1864,15 @@ DynamicHeatmap <- function(
         lgd[[featan]] <- ComplexHeatmap::Legend(
           title = featan,
           col_fun = col_fun,
-          border = TRUE
+          legend_gp = heatmap_border_gp(
+            feature_annotation_border,
+            feature_annotation_border_color,
+            feature_annotation_border_size
+          ),
+          border = heatmap_legend_border(
+            feature_annotation_border,
+            feature_annotation_border_color
+          )
         )
       }
     }
@@ -1861,7 +1978,8 @@ DynamicHeatmap <- function(
       bottom_annotation = if (flip) right_annotation else NULL,
       right_annotation = if (flip) NULL else right_annotation,
       show_heatmap_legend = FALSE,
-      border = border,
+      border = heatmap_border,
+      border_gp = heatmap_border_gp(heatmap_border, heatmap_border_color, heatmap_border_size),
       use_raster = use_raster,
       raster_device = raster_device,
       raster_by_magick = raster_by_magick,
@@ -1955,6 +2073,20 @@ DynamicHeatmap <- function(
           annotation_legend_list = lgd,
           annotation_legend_side = legend.position
         )
+        dynamic_heatmap_decorate_borders(
+          cell_annotation_names = c("Pseudotime", cell_annotation),
+          cell_annotation_border = cell_annotation_border,
+          cell_annotation_border_color = cell_annotation_border_color,
+          cell_annotation_border_size = cell_annotation_border_size,
+          feature_annotation_names = c(
+            "features_split",
+            if (length(lineages) > 1) lineages else NULL,
+            feature_annotation
+          ),
+          feature_annotation_border = feature_annotation_border,
+          feature_annotation_border_color = feature_annotation_border_color,
+          feature_annotation_border_size = feature_annotation_border_size
+        )
         for (enrich in db) {
           enrich_anno <- names(ha_right)[grep(
             paste0("_split_", enrich),
@@ -2036,6 +2168,20 @@ DynamicHeatmap <- function(
         ComplexHeatmap::draw(ht_list,
           annotation_legend_list = lgd,
           annotation_legend_side = legend.position
+        )
+        dynamic_heatmap_decorate_borders(
+          cell_annotation_names = c("Pseudotime", cell_annotation),
+          cell_annotation_border = cell_annotation_border,
+          cell_annotation_border_color = cell_annotation_border_color,
+          cell_annotation_border_size = cell_annotation_border_size,
+          feature_annotation_names = c(
+            "features_split",
+            if (length(lineages) > 1) lineages else NULL,
+            feature_annotation
+          ),
+          feature_annotation_border = feature_annotation_border,
+          feature_annotation_border_color = feature_annotation_border_color,
+          feature_annotation_border_size = feature_annotation_border_size
         )
         for (enrich in db) {
           enrich_anno <- names(ha_right)[grep(
@@ -2162,4 +2308,47 @@ dynamic_heatmap_strip_lineage_suffix <- function(x, lineage) {
     nchar(x[has_suffix], type = "chars") - suffix_width
   )
   out
+}
+
+dynamic_heatmap_decorate_borders <- function(
+  cell_annotation_names,
+  cell_annotation_border,
+  cell_annotation_border_color,
+  cell_annotation_border_size,
+  feature_annotation_names,
+  feature_annotation_border,
+  feature_annotation_border_color,
+  feature_annotation_border_size
+) {
+  draw_annotation_border <- function(annotation, border, color, size) {
+    if (!isTRUE(border) || is.na(annotation) || !nzchar(annotation)) {
+      return(invisible(NULL))
+    }
+    try(
+      ComplexHeatmap::decorate_annotation(annotation, slice = 1, {
+        grid::grid.rect(
+          gp = grid::gpar(fill = "transparent", col = color, lwd = size)
+        )
+      }),
+      silent = TRUE
+    )
+    invisible(NULL)
+  }
+  for (annotation in unique(as.character(cell_annotation_names))) {
+    draw_annotation_border(
+      annotation,
+      cell_annotation_border,
+      cell_annotation_border_color,
+      cell_annotation_border_size
+    )
+  }
+  for (annotation in unique(as.character(feature_annotation_names))) {
+    draw_annotation_border(
+      annotation,
+      feature_annotation_border,
+      feature_annotation_border_color,
+      feature_annotation_border_size
+    )
+  }
+  invisible(NULL)
 }
