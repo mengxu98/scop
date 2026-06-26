@@ -43,3 +43,24 @@ Use \code{semla::RunLocalG()} on a Staffli-enabled Seurat object. Results are
 written by semla to metadata or to an assay, depending on
 \code{store_in_metadata}.
 }
+\examples{
+\dontrun{
+data(visium_human_pancreas_sub)
+spatial <- Seurat::NormalizeData(
+  visium_human_pancreas_sub,
+  assay = "Spatial",
+  verbose = FALSE
+)
+features <- rownames(spatial)[1:3]
+
+spatial <- RunSemlaLocalG(
+  spatial,
+  features = features,
+  store_in_metadata = TRUE
+)
+
+local_g_cols <- grep(features[1], colnames(spatial[[]]), value = TRUE)
+head(spatial[[]][local_g_cols])
+SpatialSpotPlot(spatial, group.by = local_g_cols[1])
+}
+}

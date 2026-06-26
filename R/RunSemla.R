@@ -20,6 +20,20 @@
 #' @param ... Additional arguments passed to semla.
 #'
 #' @return A `Seurat` object.
+#'
+#' @examples
+#' \dontrun{
+#' data(visium_human_pancreas_sub)
+#'
+#' spatial <- RunSemlaSpatialNetwork(
+#'   visium_human_pancreas_sub,
+#'   nNeighbors = 6,
+#'   coords = "array"
+#' )
+#'
+#' head(spatial@tools$SemlaSpatialNetwork$network)
+#' SpatialSpotPlot(spatial, group.by = "orig.ident")
+#' }
 #' @export
 RunSemlaSpatialNetwork <- function(
   srt,
@@ -91,6 +105,27 @@ RunSemlaSpatialNetwork <- function(
 #' @param assay_name Assay name used by semla when `store_in_metadata = FALSE`.
 #'
 #' @return A `Seurat` object.
+#'
+#' @examples
+#' \dontrun{
+#' data(visium_human_pancreas_sub)
+#' spatial <- Seurat::NormalizeData(
+#'   visium_human_pancreas_sub,
+#'   assay = "Spatial",
+#'   verbose = FALSE
+#' )
+#' features <- rownames(spatial)[1:3]
+#'
+#' spatial <- RunSemlaLocalG(
+#'   spatial,
+#'   features = features,
+#'   store_in_metadata = TRUE
+#' )
+#'
+#' local_g_cols <- grep(features[1], colnames(spatial[[]]), value = TRUE)
+#' head(spatial[[]][local_g_cols])
+#' SpatialSpotPlot(spatial, group.by = local_g_cols[1])
+#' }
 #' @export
 RunSemlaLocalG <- function(
   srt,
@@ -136,6 +171,28 @@ RunSemlaLocalG <- function(
 #' @param column_key Prefix for metadata columns returned by semla.
 #'
 #' @return A `Seurat` object.
+#'
+#' @examples
+#' \dontrun{
+#' data(visium_human_pancreas_sub)
+#' spatial <- visium_human_pancreas_sub
+#' spatial$region <- ifelse(
+#'   spatial$col > stats::median(spatial$col),
+#'   "right",
+#'   "left"
+#' )
+#'
+#' spatial <- RunSemlaRegionNeighbors(
+#'   spatial,
+#'   column_name = "region",
+#'   column_labels = "right",
+#'   mode = "outer",
+#'   column_key = "right_border"
+#' )
+#'
+#' grep("right_border", colnames(spatial[[]]), value = TRUE)
+#' SpatialSpotPlot(spatial, group.by = "region")
+#' }
 #' @export
 RunSemlaRegionNeighbors <- function(
   srt,
@@ -181,6 +238,28 @@ RunSemlaRegionNeighbors <- function(
 #' @param column_suffix Optional suffix for metadata columns returned by semla.
 #'
 #' @return A `Seurat` object.
+#'
+#' @examples
+#' \dontrun{
+#' data(visium_human_pancreas_sub)
+#' spatial <- visium_human_pancreas_sub
+#' spatial$region <- ifelse(
+#'   spatial$row > stats::median(spatial$row),
+#'   "upper",
+#'   "lower"
+#' )
+#'
+#' spatial <- RunSemlaRadialDistance(
+#'   spatial,
+#'   column_name = "region",
+#'   selected_groups = "upper",
+#'   column_suffix = "upper_distance"
+#' )
+#'
+#' distance_cols <- grep("upper_distance", colnames(spatial[[]]), value = TRUE)
+#' head(spatial[[]][distance_cols])
+#' SpatialSpotPlot(spatial, group.by = distance_cols[1])
+#' }
 #' @export
 RunSemlaRadialDistance <- function(
   srt,
