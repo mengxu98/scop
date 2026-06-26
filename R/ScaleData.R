@@ -33,11 +33,41 @@ ScaleData.Seurat <- function(
   assay_obj <- methods::slot(object, "assays")[[assay_name]]
   if (
     !inherits(assay_obj, "Assay5") ||
-      !("data" %in% SeuratObject::Layers(assay_obj))
+      length(SeuratObject::Layers(assay_obj, search = "data")) == 0L
   ) {
     stop("ScaleData.Seurat requires an Assay5 object with a data layer.", call. = FALSE)
   }
-  data_mat <- methods::slot(assay_obj, "layers")[["data"]]
+  data_layers <- SeuratObject::Layers(assay_obj, search = "data")
+  data_layers <- data_layers[grepl("^data(\\.|$)", data_layers)]
+  if (length(data_layers) == 0L) {
+    stop("ScaleData.Seurat requires an Assay5 object with a data layer.", call. = FALSE)
+  }
+  layers <- methods::slot(assay_obj, "layers")
+  data_mat <- if (length(data_layers) == 1L) {
+    layers[[data_layers]]
+  } else {
+    cells_map <- methods::slot(assay_obj, "cells")
+    data_mats <- lapply(data_layers, function(data_layer) {
+      mat <- layers[[data_layer]]
+      if (is.null(colnames(mat))) {
+        colnames(mat) <- rownames(cells_map)[cells_map[, data_layer, drop = TRUE]]
+      }
+      mat
+    })
+    do.call(cbind, unname(data_mats))
+  }
+  if (!inherits(data_mat, "dgCMatrix")) {
+    data_mat <- tryCatch(
+      methods::as(data_mat, "dgCMatrix"),
+      error = function(e) NULL
+    )
+    if (is.null(data_mat)) {
+      stop("ScaleData.Seurat requires data convertible to dgCMatrix.", call. = FALSE)
+    }
+  }
+  if (length(data_layers) > 1L) {
+    data_mat <- data_mat[, colnames(object), drop = FALSE]
+  }
   features <- if (is.null(features)) {
     SeuratObject::VariableFeatures(object)
   } else {

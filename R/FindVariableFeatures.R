@@ -87,11 +87,30 @@ FindVariableFeatures.StdAssay <- function(
   }
   if (
     !inherits(object, "Assay5") ||
-      !("counts" %in% SeuratObject::Layers(object))
+      length(SeuratObject::Layers(object, search = "counts")) == 0L
   ) {
     stop("FindVariableFeatures.StdAssay requires an Assay5 object with a counts layer.", call. = FALSE)
   }
-  data <- methods::slot(object, "layers")[["counts"]]
+  counts_layers <- SeuratObject::Layers(object, search = "counts")
+  counts_layers <- counts_layers[grepl("^counts(\\.|$)", counts_layers)]
+  if (length(counts_layers) == 0L) {
+    stop("FindVariableFeatures.StdAssay requires an Assay5 object with a counts layer.", call. = FALSE)
+  }
+  layers <- methods::slot(object, "layers")
+  data <- if (length(counts_layers) == 1L) {
+    layers[[counts_layers]]
+  } else {
+    do.call(cbind, unname(layers[counts_layers]))
+  }
+  if (!inherits(data, "dgCMatrix")) {
+    data <- tryCatch(
+      methods::as(data, "dgCMatrix"),
+      error = function(e) NULL
+    )
+    if (is.null(data)) {
+      stop("FindVariableFeatures.StdAssay requires counts convertible to dgCMatrix.", call. = FALSE)
+    }
+  }
   hvf.info <- variable_features_vst_sparse(
     data,
     nselect = nfeatures,
@@ -105,12 +124,9 @@ FindVariableFeatures.StdAssay <- function(
   object[["var.features.rank"]] <- NULL
   object[[names(hvf.info)]] <- NULL
   object[[names(hvf.info)]] <- hvf.info
-  SeuratObject::VariableFeatures(object) <-
-    SeuratObject::VariableFeatures(
-      object,
-      nfeatures = nfeatures,
-      method = "vst"
-    )
+  SeuratObject::VariableFeatures(object) <- rownames(hvf.info)[
+    order(hvf.info$vf_vst_counts_rank, na.last = NA)
+  ]
   object
 }
 
@@ -142,7 +158,7 @@ FindVariableFeatures.Seurat <- function(
   assay_obj <- object[[assay]]
   if (
     !inherits(assay_obj, "Assay5") ||
-      !("counts" %in% SeuratObject::Layers(assay_obj))
+      length(SeuratObject::Layers(assay_obj, search = "counts")) == 0L
   ) {
     stop("FindVariableFeatures.Seurat requires an Assay5 object with a counts layer.", call. = FALSE)
   }
