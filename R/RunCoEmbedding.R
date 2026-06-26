@@ -143,6 +143,7 @@ RunCoEmbedding <- function(
     layer = "data"
   )
   ref_data <- ref_data[anchor_features, , drop = FALSE]
+  reference[[reference_assay]] <- SeuratObject::CreateAssay5Object(data = ref_data)
 
   log_message("Imputing RNA expression into ATAC cells...", verbose = verbose)
   imputed <- Seurat::TransferData(
@@ -154,9 +155,18 @@ RunCoEmbedding <- function(
     verbose = FALSE
   )
   if (inherits(imputed, "Assay") || inherits(imputed, "StdAssay")) {
-    srt[[imputed_assay]] <- imputed
+    if (imputed_assay %in% names(srt@assays)) {
+      SeuratObject::DefaultAssay(srt) <- assay
+      srt[[imputed_assay]] <- NULL
+    }
+    imputed_data <- SeuratObject::GetAssayData(imputed, layer = "data")
+    srt[[imputed_assay]] <- SeuratObject::CreateAssay5Object(data = imputed_data)
   } else {
-    srt[[imputed_assay]] <- Seurat::CreateAssayObject(data = imputed)
+    if (imputed_assay %in% names(srt@assays)) {
+      SeuratObject::DefaultAssay(srt) <- assay
+      srt[[imputed_assay]] <- NULL
+    }
+    srt[[imputed_assay]] <- SeuratObject::CreateAssay5Object(data = imputed)
   }
 
   reference[[modality_col]] <- "RNA"
@@ -169,7 +179,6 @@ RunCoEmbedding <- function(
   coembed <- Seurat::ScaleData(
     coembed,
     features = anchor_features,
-    do.scale = FALSE,
     verbose = FALSE
   )
   coembed <- Seurat::RunPCA(
