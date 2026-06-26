@@ -112,6 +112,7 @@ marker_pair_parallel <- function(
   object,
   assay,
   layer,
+  features,
   cells.1,
   cells.2,
   logfc.threshold,
@@ -134,6 +135,9 @@ marker_pair_parallel <- function(
   data.use <- SeuratObject::LayerData(object, layer = layer, assay = assay)
   if (!inherits(data.use, "dgCMatrix")) {
     return(NULL)
+  }
+  if (!is.null(features)) {
+    data.use <- data.use[features, , drop = FALSE]
   }
   cell.use <- c(cells.1, cells.2)
   data.use <- data.use[, cell.use, drop = FALSE]
@@ -287,6 +291,7 @@ FindMarkers.Seurat <- function(
       object = object,
       assay = assay %||% SeuratObject::DefaultAssay(object),
       layer = opts$layer,
+      features = features,
       cells.1 = cells$cells.1,
       cells.2 = cells$cells.2,
       logfc.threshold = opts$logfc,
