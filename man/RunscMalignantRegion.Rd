@@ -9,7 +9,7 @@ RunscMalignantRegion(
   adata = NULL,
   h5ad = NULL,
   assay = "RNA",
-  layer = "data",
+  layer = "counts",
   cells = NULL,
   signature_gmt,
   features = NULL,
@@ -19,7 +19,7 @@ RunscMalignantRegion(
   spatial.cols = NULL,
   spatial_key = "spatial",
   image = FALSE,
-  norm_type = FALSE,
+  norm_type = NULL,
   prefix = "scMalignantFinder_",
   return_seurat = !is.null(srt),
   verbose = TRUE
@@ -34,7 +34,7 @@ RunscMalignantRegion(
 
 \item{assay}{Assay used when \code{srt} is supplied. Default is \code{"RNA"}.}
 
-\item{layer}{Layer used when \code{srt} is supplied. Default is \code{"data"}.}
+\item{layer}{Layer used when \code{srt} is supplied. Default is \code{"counts"}.}
 
 \item{cells}{Optional cells to run. If supplied with \code{srt}, results are
 appended to these cells and other cells receive \code{NA}.}
@@ -63,7 +63,7 @@ carry histology images.}
 
 \item{norm_type}{Passed to \code{scMalignantFinder}. Use \code{TRUE} for raw counts
 that should be library-size normalized; use \code{FALSE} for already normalized
-input. Default is \code{FALSE}.}
+input. If \code{NULL}, defaults to \code{TRUE} only for Seurat counts input.}
 
 \item{prefix}{Optional prefix for output metadata columns. Default preserves
 the original \code{scMalignantFinder} column names.}

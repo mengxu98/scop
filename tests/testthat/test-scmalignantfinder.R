@@ -1,3 +1,5 @@
+pkgload::load_all(".", export_all = FALSE, helpers = FALSE, quiet = TRUE)
+
 make_scmf_seurat <- function() {
   counts <- matrix(
     c(
@@ -24,10 +26,11 @@ with_mock_scmalignantfinder <- function(funs, code) {
       invisible(TRUE)
     },
     check_python = function(packages, ...) {
-      expect_identical(packages, "scMalignantFinder")
+      expect_true(packages %in% c("scMalignantFinder", "xgboost"))
       invisible(TRUE)
     },
-    srt_to_adata = function(srt, ...) {
+    srt_to_adata = function(srt, layer_x, ...) {
+      expect_identical(layer_x, "counts")
       list(cells = colnames(srt))
     },
     import_scmalignantfinder = function(convert = TRUE) {
@@ -45,9 +48,10 @@ test_that("RunscMalignantFinder appends predictions by cell barcode", {
     row.names = c("Cell1", "Cell2")
   )
   funs <- list(
-    run_scmalignantfinder = function(test_input, pretrain_dir, ...) {
+    run_scmalignantfinder = function(test_input, pretrain_dir, norm_type, ...) {
       expect_identical(test_input$cells, c("Cell1", "Cell2"))
       expect_identical(pretrain_dir, "model_dir")
+      expect_true(norm_type)
       obs
     }
   )
@@ -70,6 +74,66 @@ test_that("RunscMalignantFinder appends predictions by cell barcode", {
   expect_true("scMalignantFinder" %in% names(out@tools))
 })
 
+test_that("RunscMalignantFinder respects explicit norm_type and expands h5ad paths", {
+  obs <- data.frame(
+    scMalignantFinder_prediction = "Normal",
+    malignancy_probability = 0.1,
+    row.names = "Cell1"
+  )
+  funs <- list(
+    run_scmalignantfinder = function(test_input, norm_type, ...) {
+      expect_identical(test_input, path.expand("~/input.h5ad"))
+      expect_false(norm_type)
+      obs
+    }
+  )
+
+  with_mock_scmalignantfinder(funs, {
+    out <- RunscMalignantFinder(
+      h5ad = "~/input.h5ad",
+      pretrain_dir = "model_dir",
+      norm_type = FALSE,
+      return_seurat = FALSE,
+      verbose = FALSE
+    )
+  })
+
+  expect_equal(out$malignancy_probability, 0.1)
+})
+
+test_that("RunscMalignantFinder checks xgboost for scratch XGBoost training", {
+  checks <- character()
+  testthat::local_mocked_bindings(
+    PrepareEnv = function(...) invisible(TRUE),
+    check_python = function(packages, ...) {
+      checks <<- c(checks, packages)
+      invisible(TRUE)
+    },
+    import_scmalignantfinder = function(convert = TRUE) {
+      list(
+        run_scmalignantfinder = function(...) {
+          data.frame(
+            scMalignantFinder_prediction = "Normal",
+            malignancy_probability = 0.1,
+            row.names = "Cell1"
+          )
+        }
+      )
+    }
+  )
+
+  RunscMalignantFinder(
+    h5ad = "input.h5ad",
+    train_h5ad_path = "train.h5ad",
+    feature_path = "features.tsv",
+    model_method = "XGBoost",
+    return_seurat = FALSE,
+    verbose = FALSE
+  )
+
+  expect_true("xgboost" %in% checks)
+})
+
 test_that("RunscMalignantRegion appends spatial region outputs", {
   srt <- make_scmf_seurat()
   gmt <- tempfile(fileext = ".gmt")
@@ -85,10 +149,12 @@ test_that("RunscMalignantRegion appends spatial region outputs", {
       test_input,
       signature_gmt,
       spatial_coordinates,
+      spatial_key,
       ...
     ) {
       expect_identical(signature_gmt, gmt)
       expect_equal(dim(spatial_coordinates), c(3, 2))
+      expect_identical(spatial_key, "custom_spatial")
       obs
     }
   )
@@ -98,6 +164,7 @@ test_that("RunscMalignantRegion appends spatial region outputs", {
       srt,
       signature_gmt = gmt,
       spatial.cols = c("x", "y"),
+      spatial_key = "custom_spatial",
       verbose = FALSE
     )
   })
@@ -110,6 +177,32 @@ test_that("RunscMalignantRegion appends spatial region outputs", {
   expect_true("scMalignantFinder_region" %in% names(out@tools))
 })
 
+test_that("RunscMalignantRegion rejects invalid spatial metadata", {
+  srt <- make_scmf_seurat()
+  gmt <- tempfile(fileext = ".gmt")
+  writeLines(paste("Malignant_up", "na", "Gene1", "Gene2", sep = intToUtf8(9)), gmt)
+  srt$bad <- c(1, Inf, 3)
+
+  expect_error(
+    RunscMalignantRegion(
+      srt,
+      signature_gmt = gmt,
+      spatial.cols = c("x", "bad"),
+      verbose = FALSE
+    ),
+    "finite numeric"
+  )
+  expect_error(
+    RunscMalignantRegion(
+      srt,
+      signature_gmt = gmt,
+      spatial.cols = "x",
+      verbose = FALSE
+    ),
+    "exactly two"
+  )
+})
+
 test_that("RunscMalignantStates appends cancer state scores", {
   srt <- make_scmf_seurat()
   gmt <- tempfile(fileext = ".gmt")
@@ -118,8 +211,8 @@ test_that("RunscMalignantStates appends cancer state scores", {
     gmt
   )
   obs <- data.frame(
-    "MP1 Cell Cycle - G2/M" = c(0.1, 0.2, 0.3),
-    "MP2 EMT" = c(0.4, 0.5, 0.6),
+    "MP1-A" = c(0.1, 0.2, 0.3),
+    "MP1 A" = c(0.4, 0.5, 0.6),
     row.names = paste0("Cell", 1:3),
     check.names = FALSE
   )
@@ -140,6 +233,7 @@ test_that("RunscMalignantStates appends cancer state scores", {
 
   state_cols <- grep("^scMalignantState_MP", colnames(out[[]]), value = TRUE)
   expect_length(state_cols, 2)
+  expect_identical(anyDuplicated(state_cols), 0L)
   expect_equal(unname(out[[state_cols[[1]]]][, 1]), c(0.1, 0.2, 0.3))
   expect_true("scMalignantFinder_states" %in% names(out@tools))
 })
