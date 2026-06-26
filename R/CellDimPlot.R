@@ -7,6 +7,14 @@
 #' @md
 #' @inheritParams standard_scop
 #' @param group.by Name of one or more meta.data columns to group (color) cells by.
+#' @param label.by Name of a meta.data column used to place group labels. If
+#' `NULL`, labels use `group.by`.
+#' @param mark.by Name of a meta.data column used to draw group marks. If
+#' `NULL`, marks use `legend.by` when a nested legend is requested, otherwise
+#' marks use `group.by`.
+#' @param legend.by Name of a meta.data column used as the parent group in a
+#' nested legend. The `group.by` levels are shown under each `legend.by` level.
+#' If `NULL`, the standard legend is used.
 #' @param reduction Which dimensionality reduction to use.
 #' If not specified, will use the reduction returned by [DefaultReduction].
 #' @param split.by Name of a column in meta.data column to split plot by.
@@ -72,6 +80,18 @@
 #' Default is `0.1`.
 #' @param mark_linetype Line type of the mark border.
 #' Default is `1` (solid line).
+#' @param mark_linewidth Line width of the mark border.
+#' @param mark_border Fixed border color for marks. If `NULL`, mark borders use
+#' the group colors.
+#' @param mark_palette Color palette name for `mark.by` groups and nested legend
+#' parent headers. Defaults to `palette`.
+#' @param mark_palcolor Custom colors for `mark.by` groups and nested legend
+#' parent headers.
+#' @param add_grid Whether to add a background point grid on the reduction panel.
+#' This is useful for atlas-style panels with blank axes.
+#' @param grid_n Number of grid points along each axis when `add_grid = TRUE`.
+#' @param grid_color,grid_size,grid_alpha Color, size, and alpha of the
+#' background grid points.
 #' @param lineages Lineages/pseudotime to add to the plot.
 #' If specified, curves will be fitted using [stats::loess] method.
 #' @param lineages_trim Trim the leading and the trailing data in the lineages.
@@ -551,6 +571,9 @@
 CellDimPlot <- function(
   srt,
   group.by,
+  label.by = NULL,
+  mark.by = NULL,
+  legend.by = NULL,
   reduction = NULL,
   dims = c(1, 2),
   split.by = NULL,
@@ -588,6 +611,15 @@ CellDimPlot <- function(
   mark_expand = grid::unit(3, "mm"),
   mark_alpha = 0.1,
   mark_linetype = 1,
+  mark_linewidth = 0.5,
+  mark_border = NULL,
+  mark_palette = palette,
+  mark_palcolor = NULL,
+  add_grid = FALSE,
+  grid_n = 12,
+  grid_color = "black",
+  grid_size = 0.25,
+  grid_alpha = 0.35,
   lineages = NULL,
   lineages_trim = c(0.01, 0.99),
   lineages_span = 0.75,
@@ -674,13 +706,31 @@ CellDimPlot <- function(
 ) {
   set.seed(seed)
   mark_type <- match.arg(mark_type)
+  if (!is.null(label.by) && length(label.by) != 1L) {
+    log_message(
+      "{.arg label.by} must be a single meta.data column name",
+      message_type = "error"
+    )
+  }
+  if (!is.null(mark.by) && length(mark.by) != 1L) {
+    log_message(
+      "{.arg mark.by} must be a single meta.data column name",
+      message_type = "error"
+    )
+  }
+  if (!is.null(legend.by) && length(legend.by) != 1L) {
+    log_message(
+      "{.arg legend.by} must be a single meta.data column name",
+      message_type = "error"
+    )
+  }
 
   check_r("ggnewscale", verbose = FALSE)
   if (is.null(split.by)) {
     split.by <- "All.groups"
     srt@meta.data[[split.by]] <- factor("")
   }
-  for (i in unique(c(group.by, split.by))) {
+  for (i in unique(c(group.by, label.by, mark.by, legend.by, split.by))) {
     if (!i %in% colnames(srt@meta.data)) {
       log_message(
         "{.val {i}} is not in the meta.data of srt object",
@@ -745,7 +795,11 @@ CellDimPlot <- function(
     cells.highlight <- intersect(cells.highlight, colnames(srt@assays[[1]]))
   }
 
-  dat_meta <- srt@meta.data[, unique(c(group.by, split.by)), drop = FALSE]
+  dat_meta <- srt@meta.data[
+    ,
+    unique(c(group.by, label.by, mark.by, legend.by, split.by)),
+    drop = FALSE
+  ]
   nlev <- sapply(dat_meta, nlevels)
   nlev <- nlev[nlev > 100]
   if (length(nlev) > 0 && isFALSE(force)) {
@@ -953,7 +1007,10 @@ CellDimPlot <- function(
     stats::setNames(rownames(comb), rownames(comb)), function(i) {
       g <- comb[i, "group"]
       s <- comb[i, "split"]
-      colors <- palette_colors(
+      legend_by_use <- legend.by
+      label_by_use <- label.by %||% g
+      mark_by_use <- mark.by %||% legend_by_use %||% g
+      colors <- cell_dim_palette_colors(
         levels(dat_use[[g]]),
         palette = palette,
         palcolor = palcolor,
@@ -1006,6 +1063,11 @@ CellDimPlot <- function(
       dat[["x"]] <- dat[[paste0(reduction_key, dims[1])]]
       dat[["y"]] <- dat[[paste0(reduction_key, dims[2])]]
       dat[["group.by"]] <- dat[[g]]
+      dat[["label.by"]] <- dat[[label_by_use]]
+      dat[["mark.by"]] <- dat[[mark_by_use]]
+      if (!is.null(legend_by_use)) {
+        dat[["legend.by"]] <- dat[[legend_by_use]]
+      }
       dat[, "split.by"] <- s
       dat <- dat[
         order(dat[, "group.by"], decreasing = FALSE, na.last = FALSE), ,
@@ -1032,29 +1094,49 @@ CellDimPlot <- function(
           "rect" = "geom_mark_rect",
           "circle" = "geom_mark_circle"
         )
-        mark <- list(
-          do.call(
-            mark_fun,
-            list(
-              data = dat[!is.na(dat[["group.by"]]), , drop = FALSE],
-              mapping = aes(
-                x = .data[["x"]],
-                y = .data[["y"]],
-                color = .data[["group.by"]],
-                fill = .data[["group.by"]]
-              ),
-              expand = mark_expand,
-              alpha = mark_alpha,
-              linetype = mark_linetype,
-              show.legend = FALSE,
-              inherit.aes = FALSE
-            ),
-          ),
-          scale_fill_manual(values = colors[names(labels_tb)]),
-          scale_color_manual(values = colors[names(labels_tb)]),
-          ggnewscale::new_scale_fill(),
-          ggnewscale::new_scale_color()
+        mark_mapping <- aes(
+          x = .data[["x"]],
+          y = .data[["y"]],
+          fill = .data[["mark.by"]]
         )
+        mark_colors <- cell_dim_palette_colors(
+          levels(droplevels(dat[["mark.by"]])),
+          palette = mark_palette,
+          palcolor = mark_palcolor,
+          NA_keep = TRUE
+        )
+        mark_scales <- list(
+          scale_fill_manual(values = mark_colors),
+          ggnewscale::new_scale_fill()
+        )
+        if (is.null(mark_border)) {
+          mark_mapping <- aes(
+            x = .data[["x"]],
+            y = .data[["y"]],
+            color = .data[["mark.by"]],
+            fill = .data[["mark.by"]]
+          )
+          mark_scales <- c(
+            list(scale_color_manual(values = mark_colors)),
+            mark_scales,
+            list(ggnewscale::new_scale_color())
+          )
+        }
+        mark_args <- list(
+          data = dat[!is.na(dat[["mark.by"]]), , drop = FALSE],
+          mapping = mark_mapping,
+          expand = mark_expand,
+          alpha = mark_alpha,
+          linetype = mark_linetype,
+          linewidth = mark_linewidth,
+          con.size = mark_linewidth,
+          show.legend = FALSE,
+          inherit.aes = FALSE
+        )
+        if (!is.null(mark_border)) {
+          mark_args[["colour"]] <- mark_border
+        }
+        mark <- c(list(do.call(mark_fun, mark_args)), mark_scales)
       } else {
         mark <- NULL
       }
@@ -1120,7 +1202,17 @@ CellDimPlot <- function(
         density <- NULL
       }
 
+      grid_layer <- cell_dim_grid_layer(
+        dat = dat,
+        add_grid = add_grid,
+        grid_n = grid_n,
+        grid_color = grid_color,
+        grid_size = grid_size,
+        grid_alpha = grid_alpha
+      )
+
       p <- ggplot(dat) +
+        grid_layer +
         mark +
         net +
         density +
@@ -1262,32 +1354,55 @@ CellDimPlot <- function(
         }
       }
       legend_title_use <- if (is.null(legend.title)) paste0(g, ":") else legend.title
+      color_guide <- if (is.null(legend.by)) {
+        guide_legend(
+          title.hjust = 0,
+          order = 1,
+          override.aes = list(shape = "circle", size = 4, alpha = 1)
+        )
+      } else {
+        "none"
+      }
       p <- p +
         scale_color_manual(
           name = legend_title_use,
           values = colors[names(labels_tb)],
           labels = label_use,
           na.value = bg_color,
-          guide = guide_legend(
-            title.hjust = 0,
-            order = 1,
-            override.aes = list(shape = "circle", size = 4, alpha = 1)
-          )
+          guide = color_guide
         )
       if (isTRUE(hex)) {
+        fill_guide <- if (is.null(legend.by)) {
+          guide_legend(title.hjust = 0, order = 1)
+        } else {
+          "none"
+        }
         p <- p +
           scale_fill_manual(
             name = legend_title_use,
             values = colors[names(labels_tb)],
             labels = label_use,
             na.value = bg_color,
-            guide = guide_legend(
-              title.hjust = 0,
-              order = 1
-            )
+            guide = fill_guide
           )
       }
       p_base <- p
+      nested_legend <- NULL
+      if (!is.null(legend.by)) {
+        nested_legend <- cell_dim_nested_legend_grob(
+          dat = dat[!is.na(dat[["group.by"]]) & !is.na(dat[["legend.by"]]), , drop = FALSE],
+          colors = colors[names(labels_tb)],
+          parent_colors = cell_dim_palette_colors(
+            levels(droplevels(dat[["legend.by"]])),
+            palette = mark_palette,
+            palcolor = mark_palcolor,
+            NA_keep = TRUE
+          ),
+          title = if (is.null(legend.title)) paste0(legend.by, ":") else legend.title,
+          legend_direction = legend.direction,
+          legend_position = legend.position
+        )
+      }
 
       if (!is.null(stat.by)) {
         coor_df <- stats::aggregate(
@@ -1393,7 +1508,7 @@ CellDimPlot <- function(
       if (isTRUE(label)) {
         label_df <- stats::aggregate(
           p$data[, c("x", "y")],
-          by = list(p$data[["group.by"]]),
+          by = list(p$data[["label.by"]]),
           FUN = stats::median
         )
         colnames(label_df)[1] <- "label"
@@ -1451,13 +1566,17 @@ CellDimPlot <- function(
 
       if (length(legend_list) > 0) {
         legend_list <- legend_list[!sapply(legend_list, is.null)]
-        legend_base <- get_legend(
-          p_base +
-            theme_scop(
-              legend.position = "bottom",
-              legend.direction = legend.direction
-            )
-        )
+        if (is.null(nested_legend)) {
+          legend_base <- get_legend(
+            p_base +
+              theme_scop(
+                legend.position = "bottom",
+                legend.direction = legend.direction
+              )
+          )
+        } else {
+          legend_base <- nested_legend
+        }
         if (legend.direction == "vertical") {
           legend <- do.call(cbind, c(list(base = legend_base), legend_list))
         } else {
@@ -1465,6 +1584,16 @@ CellDimPlot <- function(
         }
         gtable <- as_grob(p + theme(legend.position = "none"))
         gtable <- add_grob(gtable, legend, legend.position)
+        p <- patchwork::wrap_plots(gtable)
+      } else if (!is.null(nested_legend)) {
+        gtable <- as_grob(p + theme(legend.position = "none"))
+        gtable <- add_grob(
+          gtable,
+          nested_legend,
+          legend.position,
+          space = attr(nested_legend, "legend_space") %||% NULL,
+          clip = "off"
+        )
         p <- patchwork::wrap_plots(gtable)
       }
 
@@ -1487,6 +1616,298 @@ CellDimPlot <- function(
   } else {
     return(plist)
   }
+}
+
+cell_dim_grid_layer <- function(
+  dat,
+  add_grid = FALSE,
+  grid_n = 12,
+  grid_color = "black",
+  grid_size = 0.25,
+  grid_alpha = 0.35
+) {
+  if (!isTRUE(add_grid)) {
+    return(NULL)
+  }
+  if (!is.numeric(grid_n) || length(grid_n) != 1L || is.na(grid_n) || grid_n < 2) {
+    log_message(
+      "{.arg grid_n} must be a single numeric value greater than or equal to 2",
+      message_type = "error"
+    )
+  }
+  x_range <- range(dat[["x"]], na.rm = TRUE)
+  y_range <- range(dat[["y"]], na.rm = TRUE)
+  if (!all(is.finite(c(x_range, y_range)))) {
+    return(NULL)
+  }
+  grid_df <- expand.grid(
+    x = seq(x_range[1], x_range[2], length.out = grid_n),
+    y = seq(y_range[1], y_range[2], length.out = grid_n)
+  )
+  ggplot2::geom_point(
+    data = grid_df,
+    mapping = ggplot2::aes(x = .data[["x"]], y = .data[["y"]]),
+    inherit.aes = FALSE,
+    shape = 16,
+    color = grid_color,
+    size = grid_size,
+    alpha = grid_alpha,
+    show.legend = FALSE
+  )
+}
+
+cell_dim_palette_colors <- function(
+  x,
+  palette = "Chinese",
+  palcolor = NULL,
+  ...
+) {
+  if (!is.null(palcolor) && !is.null(names(palcolor))) {
+    x_levels <- if (is.factor(x)) {
+      levels(x)
+    } else {
+      unique(as.character(x))
+    }
+    x_levels <- x_levels[!is.na(x_levels) & nzchar(x_levels)]
+    if (length(x_levels) > 0L && all(x_levels %in% names(palcolor))) {
+      palcolor <- palcolor[x_levels]
+    }
+  }
+  palette_colors(
+    x = x,
+    palette = palette,
+    palcolor = palcolor,
+    ...
+  )
+}
+
+cell_dim_nested_legend_grob <- function(
+  dat,
+  colors,
+  parent_colors = NULL,
+  title = NULL,
+  legend_direction = "horizontal",
+  legend_position = "bottom"
+) {
+  if (nrow(dat) == 0L) {
+    return(NULL)
+  }
+  legend_data <- cell_dim_nested_legend_data(
+    dat = dat,
+    colors = colors,
+    parent_colors = parent_colors
+  )
+  if (is.null(legend_data)) {
+    return(NULL)
+  }
+  parent_levels <- legend_data[["parent_levels"]]
+  parent_colors <- legend_data[["parent_colors"]]
+  nested_items <- legend_data[["nested_items"]]
+  side_legend <- legend_position %in% c("left", "right")
+  dense_side_legend <- isTRUE(side_legend) && length(parent_levels) > 8L
+  parent_text_size <- if (isTRUE(dense_side_legend)) 2.45 else 3
+  child_text_size <- if (isTRUE(dense_side_legend)) 2.45 else 3
+  child_point_size <- if (isTRUE(dense_side_legend)) 1.8 else 2.2
+
+  if (isTRUE(side_legend)) {
+    item_step <- 0.9
+    group_gap <- 1.1
+    max_column_depth <- if (isTRUE(dense_side_legend)) 35 else 18
+    label_values <- c(parent_levels, unlist(nested_items, use.names = FALSE))
+    max_label_chars <- max(nchar(label_values), na.rm = TRUE)
+    column_width <- max(2.8, min(4.8, 0.18 * max_label_chars + 1.35))
+
+    side_layout <- data.frame(
+      parent = character(),
+      column = integer(),
+      header_y = numeric(),
+      stringsAsFactors = FALSE
+    )
+    column_i <- 1L
+    y_cursor <- 0
+    for (parent_i in parent_levels) {
+      n_items <- length(nested_items[[parent_i]])
+      group_depth <- item_step * n_items + group_gap
+      if (nrow(side_layout) > 0L && abs(y_cursor - group_depth) > max_column_depth) {
+        column_i <- column_i + 1L
+        y_cursor <- 0
+      }
+      side_layout <- rbind(
+        side_layout,
+        data.frame(
+          parent = parent_i,
+          column = column_i,
+          header_y = y_cursor,
+          stringsAsFactors = FALSE
+        )
+      )
+      y_cursor <- y_cursor - group_depth
+    }
+    side_layout[["base_x"]] <- 0.34 + (side_layout[["column"]] - 1L) * column_width
+    header_df <- do.call(rbind, lapply(seq_len(nrow(side_layout)), function(i) {
+      parent_i <- side_layout[["parent"]][i]
+      data.frame(
+        parent = parent_i,
+        x = side_layout[["base_x"]][i],
+        y = side_layout[["header_y"]][i],
+        fill = unname(parent_colors[parent_i]),
+        stringsAsFactors = FALSE
+      )
+    }))
+    legend_items <- do.call(rbind, lapply(seq_len(nrow(side_layout)), function(i) {
+      parent_i <- side_layout[["parent"]][i]
+      subgroup_i <- nested_items[[parent_i]]
+      data.frame(
+        parent = parent_i,
+        subgroup = subgroup_i,
+        x = side_layout[["base_x"]][i] + 0.58,
+        y = side_layout[["header_y"]][i] - seq_along(subgroup_i) * item_step,
+        color = unname(colors[subgroup_i]),
+        stringsAsFactors = FALSE
+      )
+    }))
+    n_columns <- max(side_layout[["column"]])
+    x_limits <- c(0, 0.34 + n_columns * column_width)
+    y_limits <- c(-max_column_depth - 0.2, 0.22)
+  } else {
+    label_values <- c(parent_levels, unlist(nested_items, use.names = FALSE))
+    max_label_chars <- max(nchar(label_values), na.rm = TRUE)
+    column_width <- max(2, min(3.5, 0.16 * max_label_chars + 1.15))
+    parent_x <- 0.35 + (seq_along(parent_levels) - 1) * column_width
+    names(parent_x) <- parent_levels
+    header_df <- data.frame(
+      parent = parent_levels,
+      x = unname(parent_x[parent_levels]),
+      y = 0,
+      fill = unname(parent_colors[parent_levels]),
+      stringsAsFactors = FALSE
+    )
+    legend_items <- do.call(rbind, lapply(parent_levels, function(parent_i) {
+      subgroup_i <- nested_items[[parent_i]]
+      data.frame(
+        parent = parent_i,
+        subgroup = subgroup_i,
+        x = unname(parent_x[parent_i]) + 0.58,
+        y = -seq_along(subgroup_i),
+        color = unname(colors[subgroup_i]),
+        stringsAsFactors = FALSE
+      )
+    }))
+    x_limits <- c(0, max(parent_x) + column_width * 0.55)
+    y_limits <- c(min(legend_items[["y"]], -1) - 0.35, 0.45)
+  }
+  legend_plot <- ggplot() +
+    geom_label(
+      data = header_df,
+      mapping = aes(
+        x = .data[["x"]],
+        y = .data[["y"]],
+        label = .data[["parent"]],
+        fill = .data[["parent"]]
+      ),
+      color = "white",
+      fontface = "bold",
+      label.size = 0,
+      label.r = grid::unit(0, "pt"),
+      label.padding = grid::unit(1.8, "pt"),
+      hjust = 0,
+      size = parent_text_size,
+      show.legend = FALSE,
+      inherit.aes = FALSE
+    ) +
+    geom_point(
+      data = legend_items,
+      mapping = aes(x = .data[["x"]] - 0.26, y = .data[["y"]]),
+      color = legend_items[["color"]],
+      size = child_point_size,
+      show.legend = FALSE,
+      inherit.aes = FALSE
+    ) +
+    geom_text(
+      data = legend_items,
+      mapping = aes(x = .data[["x"]] - 0.08, y = .data[["y"]], label = .data[["subgroup"]]),
+      hjust = 0,
+      size = child_text_size,
+      show.legend = FALSE,
+      inherit.aes = FALSE
+    ) +
+    scale_fill_manual(values = stats::setNames(header_df[["fill"]], header_df[["parent"]])) +
+    coord_cartesian(
+      xlim = x_limits,
+      ylim = y_limits,
+      clip = "off"
+    ) +
+    theme_void() +
+    theme(
+      plot.margin = grid::unit(c(1, 2, 1, 2), "pt"),
+      legend.position = "none"
+    )
+
+  legend_grob <- as_grob(legend_plot)
+  if (isTRUE(side_legend)) {
+    attr(legend_grob, "legend_space") <- grid::unit(
+      max(1.85, min(7.2, 0.82 * diff(x_limits))),
+      "in"
+    )
+  } else {
+    attr(legend_grob, "legend_space") <- grid::unit(
+      max(0.42, 0.16 * abs(min(y_limits)) + 0.2),
+      "in"
+    )
+  }
+  legend_grob
+}
+
+cell_dim_nested_legend_data <- function(
+  dat,
+  colors,
+  parent_colors = NULL
+) {
+  group_levels <- names(colors)
+  group_levels <- group_levels[group_levels %in% as.character(dat[["group.by"]])]
+  if (length(group_levels) == 0L) {
+    return(NULL)
+  }
+  parent_levels <- if (is.factor(dat[["legend.by"]])) {
+    levels(droplevels(dat[["legend.by"]]))
+  } else {
+    unique(as.character(dat[["legend.by"]]))
+  }
+  parent_levels <- parent_levels[nzchar(parent_levels)]
+  if (length(parent_levels) == 0L) {
+    return(NULL)
+  }
+  nested_items <- lapply(parent_levels, function(parent_i) {
+    subgroup_i <- group_levels[
+      group_levels %in% as.character(dat[dat[["legend.by"]] == parent_i, "group.by"])
+    ]
+    subgroup_i
+  })
+  names(nested_items) <- parent_levels
+  parent_levels <- parent_levels[lengths(nested_items) > 0L]
+  nested_items <- nested_items[parent_levels]
+  if (length(parent_levels) == 0L) {
+    return(NULL)
+  }
+
+  fallback_parent_colors <- vapply(parent_levels, function(parent_i) {
+    subgroup_i <- nested_items[[parent_i]]
+    unname(colors[subgroup_i[1]])
+  }, character(1))
+  if (is.null(parent_colors)) {
+    parent_colors <- fallback_parent_colors
+  } else {
+    parent_colors <- parent_colors[parent_levels]
+    missing_parent_colors <- is.na(parent_colors) | !nzchar(parent_colors)
+    parent_colors[missing_parent_colors] <- fallback_parent_colors[missing_parent_colors]
+  }
+
+  list(
+    group_levels = group_levels,
+    parent_levels = parent_levels,
+    nested_items = nested_items,
+    parent_colors = parent_colors
+  )
 }
 
 #' @title 3D-Dimensional reduction plot for cell classification visualization.

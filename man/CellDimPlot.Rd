@@ -7,6 +7,9 @@
 CellDimPlot(
   srt,
   group.by,
+  label.by = NULL,
+  mark.by = NULL,
+  legend.by = NULL,
   reduction = NULL,
   dims = c(1, 2),
   split.by = NULL,
@@ -44,6 +47,15 @@ CellDimPlot(
   mark_expand = grid::unit(3, "mm"),
   mark_alpha = 0.1,
   mark_linetype = 1,
+  mark_linewidth = 0.5,
+  mark_border = NULL,
+  mark_palette = palette,
+  mark_palcolor = NULL,
+  add_grid = FALSE,
+  grid_n = 12,
+  grid_color = "black",
+  grid_size = 0.25,
+  grid_alpha = 0.35,
   lineages = NULL,
   lineages_trim = c(0.01, 0.99),
   lineages_span = 0.75,
@@ -134,6 +146,17 @@ CellDimPlot(
 
 \item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
 
+\item{label.by}{Name of a meta.data column used to place group labels. If
+\code{NULL}, labels use \code{group.by}.}
+
+\item{mark.by}{Name of a meta.data column used to draw group marks. If
+\code{NULL}, marks use \code{legend.by} when a nested legend is requested, otherwise
+marks use \code{group.by}.}
+
+\item{legend.by}{Name of a meta.data column used as the parent group in a
+nested legend. The \code{group.by} levels are shown under each \code{legend.by} level.
+If \code{NULL}, the standard legend is used.}
+
 \item{reduction}{Which dimensionality reduction to use.
 If not specified, will use the reduction returned by \link{DefaultReduction}.}
 
@@ -222,6 +245,25 @@ Default is \code{0.1}.}
 
 \item{mark_linetype}{Line type of the mark border.
 Default is \code{1} (solid line).}
+
+\item{mark_linewidth}{Line width of the mark border.}
+
+\item{mark_border}{Fixed border color for marks. If \code{NULL}, mark borders use
+the group colors.}
+
+\item{mark_palette}{Color palette name for \code{mark.by} groups and nested legend
+parent headers. Defaults to \code{palette}.}
+
+\item{mark_palcolor}{Custom colors for \code{mark.by} groups and nested legend
+parent headers.}
+
+\item{add_grid}{Whether to add a background point grid on the reduction panel.
+This is useful for atlas-style panels with blank axes.}
+
+\item{grid_n}{Number of grid points along each axis when \code{add_grid = TRUE}.}
+
+\item{grid_color, grid_size, grid_alpha}{Color, size, and alpha of the
+background grid points.}
 
 \item{lineages}{Lineages/pseudotime to add to the plot.
 If specified, curves will be fitted using \link[stats:loess]{stats::loess} method.}
