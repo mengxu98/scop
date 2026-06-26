@@ -372,82 +372,37 @@ run_milo_da_cpp <- function(
         )
       }
       knn_k <- max(1L, min(as.integer(milo_k), n_cells - 1L))
-      exact_limit <- as.integer(Sys.getenv("SCOP_MILO_CPP_EXACT_LIMIT", unset = "10000"))
-      use_hnsw <- n_cells > exact_limit
       log_message(
-        "Computing {.pkg Milo} cpp KNN graph ({.val {if (use_hnsw) 'hnsw' else 'exact'}})...",
+        "Computing {.pkg Milo} cpp KNN graph...",
         verbose = verbose
       )
-      if (use_hnsw) {
-        n_threads <- parallel::detectCores(logical = FALSE)
-        if (is.na(n_threads) || n_threads < 1L) {
-          n_threads <- 1L
-        }
-        n_threads <- min(8L, as.integer(n_threads))
-        hnsw_param <- BiocNeighbors::HnswParam()
-        knn_raw <- BiocNeighbors::findKNN(
-          coords,
-          k = knn_k,
-          get.index = TRUE,
-          get.distance = TRUE,
-          num.threads = n_threads,
-          BNPARAM = hnsw_param
-        )
-        knn <- list(idx = knn_raw[["index"]], dist = knn_raw[["distance"]])
-      } else {
-        knn_raw <- BiocNeighbors::findKNN(
-          coords,
-          k = knn_k,
-          get.index = TRUE,
-          get.distance = TRUE,
-          BNPARAM = BiocNeighbors::KmknnParam()
-        )
-        knn <- list(idx = knn_raw[["index"]], dist = knn_raw[["distance"]])
-      }
+      knn_raw <- BiocNeighbors::findKNN(
+        coords,
+        k = knn_k,
+        get.index = TRUE,
+        get.distance = TRUE,
+        BNPARAM = BiocNeighbors::KmknnParam()
+      )
+      knn <- list(idx = knn_raw[["index"]], dist = knn_raw[["distance"]])
 
       set.seed(seed)
       n_seeds <- max(1L, floor(0.1 * n_cells))
       random_vertices <- sample.int(n_cells, n_seeds)
-      if (use_hnsw) {
-        seed_knn_raw <- BiocNeighbors::findKNN(
-          coords,
-          k = knn_k,
-          get.index = TRUE,
-          get.distance = FALSE,
-          subset = random_vertices,
-          num.threads = n_threads,
-          BNPARAM = hnsw_param
-        )
-        seed_knn <- list(idx = seed_knn_raw[["index"]])
-      } else {
-        seed_knn_raw <- BiocNeighbors::findKNN(
-          coords,
-          k = knn_k,
-          get.index = TRUE,
-          get.distance = FALSE,
-          subset = random_vertices,
-          BNPARAM = BiocNeighbors::KmknnParam()
-        )
-        seed_knn <- list(idx = seed_knn_raw[["index"]])
-      }
+      seed_knn_raw <- BiocNeighbors::findKNN(
+        coords,
+        k = knn_k,
+        get.index = TRUE,
+        get.distance = FALSE,
+        subset = random_vertices,
+        BNPARAM = BiocNeighbors::KmknnParam()
+      )
+      seed_knn <- list(idx = seed_knn_raw[["index"]])
       medians <- milo_neighborhood_medians_cpp(coords, seed_knn[["idx"]])
-      refined <- if (use_hnsw) {
-        BiocNeighbors::queryKNN(
-          coords,
-          medians,
-          k = 1L,
-          get.index = TRUE,
-          get.distance = FALSE,
-          num.threads = n_threads,
-          BNPARAM = hnsw_param
-        )[["index"]][, 1]
-      } else {
-        milo_refined_vertices(
-          random_vertices = random_vertices,
-          coords = coords,
-          k = knn_k
-        )
-      }
+      refined <- milo_refined_vertices(
+        random_vertices = random_vertices,
+        coords = coords,
+        k = knn_k
+      )
       sampled_vertices <- unique(as.integer(refined))
 
       meta_data <- srt@meta.data
