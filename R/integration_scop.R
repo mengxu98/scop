@@ -118,7 +118,7 @@
 #' )
 #' LISIPlot(
 #'   panc8_sub,
-#'   features = c("UncorrectedpcaUMAP2D_tech_LISI", "HarmonyUMAP2D_tech_LISI")
+#'   features = c("HarmonypcaUMAP2D_tech_LISI", "HarmonyUMAP2D_tech_LISI")
 #' )
 #'
 #' data("pbmcmultiome_sub", package = "scop")

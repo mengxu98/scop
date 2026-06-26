@@ -28,91 +28,31 @@
 #' @export
 #'
 #' @examples
-#' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
-#' pancreas_sub <- RunDEtest(
-#'   pancreas_sub,
-#'   group.by = "CellType"
-#' )
-#' pancreas_sub <- RunGSEA(
-#'   pancreas_sub,
-#'   group.by = "CellType",
-#'   DE_threshold = "p_val_adj < 0.05",
-#'   scoreType = "std",
-#'   db = "GO_BP",
-#'   species = "Mus_musculus"
-#' )
-#' GSEAPlot(
-#'   pancreas_sub,
-#'   db = "GO_BP",
-#'   group.by = "CellType",
-#'   plot_type = "comparison"
-#' )
-#' GSEAPlot(
-#'   pancreas_sub,
-#'   db = "GO_BP",
-#'   group.by = "CellType",
-#'   group_use = "Ductal",
-#'   id_use = "GO:0006412"
-#' )
-#' GSEAPlot(
-#'   pancreas_sub,
-#'   db = "GO_BP",
-#'   group.by = "CellType",
-#'   group_use = "Ductal",
-#'   id_use = c(
-#'     "GO:0046903", "GO:0015031", "GO:0007600"
+#' term2gene <- data.frame(
+#'   Term = c(
+#'     rep("Endocrine markers", 5),
+#'     rep("Exocrine markers", 5),
+#'     rep("Ductal markers", 5)
+#'   ),
+#'   symbol = c(
+#'     "INS", "GCG", "SST", "IAPP", "PCSK1",
+#'     "PRSS1", "CPA1", "CELA3A", "REG1A", "CTRB1",
+#'     "KRT19", "SOX9", "MUC1", "CFTR", "KRT7"
 #'   )
 #' )
-#'
-#' # Remove redundant GO terms
-#' pancreas_sub <- RunGSEA(
-#'   pancreas_sub,
-#'   group.by = "CellType",
-#'   db = "GO_BP",
-#'   GO_simplify = TRUE,
-#'   species = "Mus_musculus"
-#' )
-#' GSEAPlot(
-#'   pancreas_sub,
-#'   db = "GO_BP_sim",
-#'   group.by = "CellType",
-#'   plot_type = "comparison"
-#' )
-#'
-#' # Or use "geneID", "geneScore" and
-#' # "geneID_groups" as input to run GSEA
-#' de_df <- dplyr::filter(
-#'   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
-#'   p_val_adj < 0.05
-#' )
+#' genes <- unique(term2gene$symbol)
+#' scores <- seq_along(genes)
+#' names(scores) <- genes
 #' gsea_out <- RunGSEA(
-#'   geneID = de_df[["gene"]],
-#'   geneScore = de_df[["avg_log2FC"]],
-#'   geneID_groups = de_df[["group1"]],
-#'   db = "GO_BP",
-#'   species = "Mus_musculus"
+#'   geneID = genes,
+#'   geneScore = scores,
+#'   geneID_groups = rep("Cluster1", length(genes)),
+#'   TERM2GENE = term2gene,
+#'   minGSSize = 2
 #' )
 #' GSEAPlot(
 #'   res = gsea_out,
-#'   db = "GO_BP",
-#'   plot_type = "comparison"
-#' )
-#'
-#' # Use a combined database
-#' pancreas_sub <- RunGSEA(
-#'   pancreas_sub,
-#'   group.by = "CellType",
-#'   db = c(
-#'     "KEGG", "WikiPathway", "Reactome", "PFAM", "MP"
-#'   ),
-#'   db_combine = TRUE,
-#'   species = "Mus_musculus"
-#' )
-#' GSEAPlot(
-#'   pancreas_sub,
-#'   db = "Combined",
-#'   group.by = "CellType",
+#'   db = "custom",
 #'   plot_type = "comparison"
 #' )
 RunGSEA <- function(

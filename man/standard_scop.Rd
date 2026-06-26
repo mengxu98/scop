@@ -271,30 +271,6 @@ plist2 <- lapply(
 )
 patchwork::wrap_plots(plist2)
 
-if (requireNamespace("scran", quietly = TRUE)) {
-  data(pancreas_sub)
-  pancreas_scran <- pancreas_sub[, 1:80]
-  pancreas_scran <- standard_scop(
-    pancreas_scran,
-    assay = "RNA",
-    do_normalization = TRUE,
-    normalization_method = "scran",
-    do_HVF_finding = TRUE,
-    HVF_method = "scran",
-    nHVF = 100,
-    linear_reduction_dims = 10,
-    linear_reduction_dims_use = 1:5,
-    nonlinear_reduction = "umap",
-    nonlinear_reduction_dims = 2
-  )
-  CellDimPlot(
-    pancreas_scran,
-    reduction = "StandardUMAP2D",
-    group.by = "Standardclusters"
-  )
-}
-
-\dontrun{
 data(visium_human_pancreas_sub)
 spatial <- standard_scop(
   visium_human_pancreas_sub,
@@ -310,7 +286,6 @@ spatial <- standard_scop(
   spatial_variable_features_params = list(nfeatures = 50)
 )
 SpatialSpotPlot(spatial, group.by = "SpotQC")
-SpatialSpotPlot(spatial, group.by = "Standardclusters")
 SpatialSpotPlot(
   spatial,
   features = spatial@misc[["SpatialVariableFeatures"]][1:2]
@@ -338,39 +313,4 @@ spatial_bayes <- standard_scop(
   )
 )
 SpatialSpotPlot(spatial_bayes, group.by = "BayesSpace_cluster")
-
-data(panc8_sub)
-spatial_rctd <- standard_scop(
-  visium_human_pancreas_sub,
-  workflow = "spatial",
-  assay = "Spatial",
-  do_spatial_cluster = FALSE,
-  spatial_cluster_method = "BayesSpace",
-  do_deconvolution = TRUE,
-  deconvolution_method = "RCTD",
-  reference = panc8_sub,
-  reference_assay = "RNA",
-  reference_label = "celltype",
-  deconvolution_params = list(
-    max_cores = 1,
-    min_cells = 25
-  )
-)
-SpatialSpotPlot(spatial_rctd, group.by = "RCTD_dominant_type")
-
-rctd_cols <- grep(
-  "^RCTD_prop_",
-  colnames(spatial_rctd@meta.data),
-  value = TRUE
-)
-SpatialSpotPlot(
-  spatial_rctd,
-  group.by = rctd_cols[1:min(4, length(rctd_cols))]
-)
-SpatialSpotPlot(
-  spatial_rctd,
-  group.by = "RCTD_dominant_type",
-  plot_type = "pie"
-)
-}
 }
