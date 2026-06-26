@@ -260,10 +260,7 @@ CellDimPlot(
   reduction = "HarmonyUMAP2D"
 )
 
-LISIPlot(
-  panc8_sub,
-  features = c("HarmonyUMAP2D_tech_LISI")
-)
+LISIPlot(panc8_sub)
 
 panc8_sub <- integration_scop(
   panc8_sub,
