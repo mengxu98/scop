@@ -105,3 +105,58 @@ A \code{ggplot} or \code{patchwork} object.
 Visualize normalized results produced by \code{RunSpatialGradientFeatures()}
 without requiring the original SPATA2 object.
 }
+\examples{
+counts <- matrix(
+  c(4, 1, 0, 2, 1, 3, 2, 0),
+  nrow = 2,
+  byrow = TRUE
+)
+rownames(counts) <- c("REG1A", "COL1A1")
+colnames(counts) <- paste0("spot", 1:4)
+srt <- Seurat::CreateSeuratObject(counts)
+srt <- Seurat::NormalizeData(srt, verbose = FALSE)
+srt$col <- c(0, 1, 0, 1)
+srt$row <- c(0, 0, 1, 1)
+
+gradient_result <- list(
+  screening = data.frame(
+    variable = rep(c("REG1A", "COL1A1"), each = 4),
+    distance = rep(seq(0, 1, length.out = 4), 2),
+    value = c(0.1, 0.4, 0.8, 1.1, 1.0, 0.7, 0.3, 0.1),
+    estimate = c(0.15, 0.45, 0.75, 1.05, 0.95, 0.65, 0.35, 0.05)
+  ),
+  significance = data.frame(
+    variable = c("REG1A", "COL1A1"),
+    p_value = c(0.004, 0.018),
+    q_value = c(0.008, 0.024)
+  ),
+  model_fits = data.frame(
+    variable = rep(c("REG1A", "COL1A1"), each = 2),
+    model = rep(c("linear", "spline"), 2),
+    rmse = c(0.12, 0.08, 0.18, 0.11)
+  ),
+  top_variables = data.frame(
+    variable = c("REG1A", "COL1A1"),
+    rank = 1:2,
+    rmse = c(0.08, 0.11)
+  ),
+  parameters = data.frame(
+    key = c("assay", "layer", "reference"),
+    value = c("RNA", "data", "ductal_axis")
+  )
+)
+srt@tools[["SpatialGradientFeatures"]] <- list(ductal_axis = gradient_result)
+srt@misc[["SpatialGradientFeaturesResult"]] <- "ductal_axis"
+
+SpatialGradientPlot(srt, plot_type = "summary", nfeatures = 2)
+SpatialGradientPlot(srt, plot_type = "line", nfeatures = 2)
+SpatialGradientPlot(srt, plot_type = "model", nfeatures = 2)
+SpatialGradientPlot(
+  srt,
+  plot_type = "surface",
+  nfeatures = 2,
+  overlay_image = FALSE,
+  coord.cols = c("col", "row"),
+  pt.size = 4
+)
+}
