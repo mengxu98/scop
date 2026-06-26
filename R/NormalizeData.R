@@ -49,50 +49,69 @@ NormalizeData.Seurat <- function(
     SeuratObject::Layers(assay_obj, search = "counts"),
     error = function(e) NULL
   )
-  if (!identical(counts_layers, "counts")) {
-    stop("NormalizeData.Seurat requires one counts layer named 'counts'.", call. = FALSE)
+  if (
+    length(counts_layers) == 0L ||
+      anyNA(counts_layers) ||
+      !all(grepl("^counts(\\.|$)", counts_layers))
+  ) {
+    stop("NormalizeData.Seurat requires counts layers named 'counts' or 'counts.*'.", call. = FALSE)
   }
   layers <- methods::slot(assay_obj, "layers")
-  counts <- layers[["counts"]]
-  if (is.null(counts)) {
-    stop("NormalizeData.Seurat requires a counts layer.", call. = FALSE)
-  }
-  if (!inherits(counts, "dgCMatrix")) {
-    counts <- tryCatch(
-      methods::as(counts, "dgCMatrix"),
-      error = function(e) NULL
-    )
+  data_layers <- sub("^counts", "data", counts_layers)
+  for (i in seq_along(counts_layers)) {
+    counts_layer <- counts_layers[[i]]
+    data_layer <- data_layers[[i]]
+    counts <- layers[[counts_layer]]
     if (is.null(counts)) {
-      stop("NormalizeData.Seurat requires counts convertible to dgCMatrix.", call. = FALSE)
+      stop("NormalizeData.Seurat requires a counts layer.", call. = FALSE)
     }
-  }
+    if (!inherits(counts, "dgCMatrix")) {
+      counts <- tryCatch(
+        methods::as(counts, "dgCMatrix"),
+        error = function(e) NULL
+      )
+      if (is.null(counts)) {
+        stop("NormalizeData.Seurat requires counts convertible to dgCMatrix.", call. = FALSE)
+      }
+    }
 
-  data_mat <- counts
-  data_mat@x <- counts@x + 0
-  log_normalize_dgc(data_mat, scale.factor, 100L)
-  layers[["data"]] <- data_mat
+    data_mat <- counts
+    data_mat@x <- counts@x + 0
+    log_normalize_dgc(data_mat, scale.factor, 100L)
+    layers[[data_layer]] <- data_mat
+  }
   methods::slot(assay_obj, "layers") <- layers
 
   cm <- methods::slot(assay_obj, "cells")
-  if (!"data" %in% colnames(cm)) {
-    new_col <- matrix(
-      TRUE,
-      nrow = nrow(cm),
-      ncol = 1,
-      dimnames = list(rownames(cm), "data")
-    )
-    methods::slot(cm, ".Data") <- cbind(cm, new_col)
+  missing_data_layers <- setdiff(data_layers, colnames(cm))
+  if (length(missing_data_layers) > 0L) {
+    cm_data <- methods::slot(cm, ".Data")
+    for (i in seq_along(counts_layers)) {
+      counts_layer <- counts_layers[[i]]
+      data_layer <- data_layers[[i]]
+      if (!data_layer %in% missing_data_layers) {
+        next
+      }
+      cm_data <- cbind(cm_data, cm_data[, counts_layer, drop = FALSE])
+      colnames(cm_data)[ncol(cm_data)] <- data_layer
+    }
+    methods::slot(cm, ".Data") <- cm_data
     methods::slot(assay_obj, "cells") <- cm
   }
   fm <- methods::slot(assay_obj, "features")
-  if (!"data" %in% colnames(fm)) {
-    new_col <- matrix(
-      TRUE,
-      nrow = nrow(fm),
-      ncol = 1,
-      dimnames = list(rownames(fm), "data")
-    )
-    methods::slot(fm, ".Data") <- cbind(fm, new_col)
+  missing_data_layers <- setdiff(data_layers, colnames(fm))
+  if (length(missing_data_layers) > 0L) {
+    fm_data <- methods::slot(fm, ".Data")
+    for (i in seq_along(counts_layers)) {
+      counts_layer <- counts_layers[[i]]
+      data_layer <- data_layers[[i]]
+      if (!data_layer %in% missing_data_layers) {
+        next
+      }
+      fm_data <- cbind(fm_data, fm_data[, counts_layer, drop = FALSE])
+      colnames(fm_data)[ncol(fm_data)] <- data_layer
+    }
+    methods::slot(fm, ".Data") <- fm_data
     methods::slot(assay_obj, "features") <- fm
   }
   assays[[assay]] <- assay_obj
