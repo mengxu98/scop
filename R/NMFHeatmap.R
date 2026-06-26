@@ -83,6 +83,15 @@ NMFHeatmap <- function(
   feature_annotation = NULL,
   assay = NULL,
   border = TRUE,
+  heatmap_border = NULL,
+  cell_annotation_border = NULL,
+  feature_annotation_border = NULL,
+  heatmap_border_palcolor = "black",
+  cell_annotation_border_palcolor = "black",
+  feature_annotation_border_palcolor = "black",
+  heatmap_border_size = 1,
+  cell_annotation_border_size = 1,
+  feature_annotation_border_size = 1,
   show_row_names = FALSE,
   show_column_names = FALSE,
   row_names_side = "left",
@@ -148,6 +157,27 @@ NMFHeatmap <- function(
   verbose = TRUE
 ) {
   set.seed(seed)
+  heatmap_border <- heatmap_border %||% border
+  cell_annotation_border <- cell_annotation_border %||% border
+  feature_annotation_border <- feature_annotation_border %||% border
+  heatmap_border_color <- heatmap_border_color(
+    heatmap_border,
+    heatmap_border_palcolor
+  )
+  cell_annotation_border_color <- heatmap_border_color(
+    cell_annotation_border,
+    cell_annotation_border_palcolor
+  )
+  feature_annotation_border_color <- heatmap_border_color(
+    feature_annotation_border,
+    feature_annotation_border_palcolor
+  )
+  heatmap_border_size <- heatmap_border_size_value(heatmap_border_size)
+  cell_annotation_border_size <- heatmap_border_size_value(cell_annotation_border_size)
+  feature_annotation_border_size <- heatmap_border_size_value(feature_annotation_border_size)
+  heatmap_border <- heatmap_border_enabled(heatmap_border)
+  cell_annotation_border <- heatmap_border_enabled(cell_annotation_border)
+  feature_annotation_border <- heatmap_border_enabled(feature_annotation_border)
   plot_type <- match.arg(plot_type)
   similarity_metric <- match.arg(similarity_metric, choices = "cosine")
   if (isTRUE(raster_by_magick)) {
@@ -243,7 +273,11 @@ NMFHeatmap <- function(
     } else {
       feature_annotation_palcolor
     },
-    border = border
+    border = if (identical(plot_type, "cells")) {
+      cell_annotation_border
+    } else {
+      feature_annotation_border
+    }
   )
   left_annotation <- do.call(
     ComplexHeatmap::rowAnnotation,
@@ -253,7 +287,11 @@ NMFHeatmap <- function(
         col = stats::setNames(list(cluster_cols), cluster_title),
         annotation_name_side = "bottom",
         annotation_width = grid::unit(5, "mm"),
-        border = border
+        border = if (identical(plot_type, "cells")) {
+          cell_annotation_border
+        } else {
+          feature_annotation_border
+        }
       )
     )
   )
@@ -362,7 +400,8 @@ NMFHeatmap <- function(
       column_names_rot = column_names_rot,
       row_title = row_title,
       column_title = column_title,
-      border = border,
+      border = heatmap_border,
+      border_gp = heatmap_border_gp(heatmap_border, heatmap_border_color, heatmap_border_size),
       use_raster = use_raster,
       raster_device = raster_device,
       raster_by_magick = raster_by_magick,
