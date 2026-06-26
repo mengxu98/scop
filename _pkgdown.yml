@@ -255,6 +255,9 @@ reference:
   - RunDEtest
   - RunRareQ
   - RunScissor
+  - RunscMalignantFinder
+  - RunscMalignantRegion
+  - RunscMalignantStates
   - RunscTenifoldKnk
   - RunscTenifoldNet
 
@@ -273,6 +276,7 @@ reference:
   - RunDeconvolution
   - RunCIBERSORT
   - RunESTIMATE
+  - estimate_signatures
   - RunMilo
   - RunPermutation
   - RunPropeller

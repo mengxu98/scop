@@ -2,9 +2,7 @@
 % Please edit documentation in R/RunscMalignantFinder.R
 \name{RunscMalignantFinder}
 \alias{RunscMalignantFinder}
-\alias{RunscMalignantRegion}
-\alias{RunscMalignantStates}
-\title{Run scMalignantFinder wrappers}
+\title{Run scMalignantFinder malignant cell identification}
 \usage{
 RunscMalignantFinder(
   srt = NULL,
@@ -21,41 +19,6 @@ RunscMalignantFinder(
   use_raw = FALSE,
   n_thread = 1,
   prefix = "",
-  return_seurat = !is.null(srt),
-  verbose = TRUE
-)
-
-RunscMalignantRegion(
-  srt = NULL,
-  adata = NULL,
-  h5ad = NULL,
-  assay = "RNA",
-  layer = "data",
-  cells = NULL,
-  signature_gmt,
-  features = NULL,
-  nclus = 3,
-  define_feature = "Malignant_up",
-  spatial_nn = TRUE,
-  spatial.cols = NULL,
-  spatial_key = "spatial",
-  image = FALSE,
-  norm_type = FALSE,
-  prefix = "scMalignantFinder_",
-  return_seurat = !is.null(srt),
-  verbose = TRUE
-)
-
-RunscMalignantStates(
-  srt = NULL,
-  adata = NULL,
-  h5ad = NULL,
-  assay = "RNA",
-  layer = "data",
-  cells = NULL,
-  gene_sets,
-  norm_type = FALSE,
-  prefix = "scMalignantState_",
   return_seurat = !is.null(srt),
   verbose = TRUE
 )
@@ -80,81 +43,51 @@ model files: \code{model.joblib} and \code{ordered_feature.tsv}.}
 \item{train_h5ad_path}{Optional training \code{.h5ad} file used when training a
 model from scratch.}
 
-\item{feature_path}{Optional feature file used when training a model from
+\item{feature_path}{Optional feature file used when training from
 scratch.}
 
 \item{model_method}{Model used when training from scratch. One of
 \code{"LogisticRegression"}, \code{"RandomForest"}, or \code{"XGBoost"}.}
 
-\item{norm_type}{Passed to \code{scMalignantFinder}. Use \code{TRUE} for raw
-counts that should be library-size normalized; use \code{FALSE} for already
-normalized input. Default is \code{FALSE}.}
+\item{norm_type}{Passed to \code{scMalignantFinder}. Use \code{TRUE} for raw counts
+that should be library-size normalized; use \code{FALSE} for already normalized
+input. Default is \code{FALSE}.}
 
 \item{use_raw}{Whether to use \code{adata.raw.X} when available.}
 
 \item{n_thread}{Number of threads used by \code{scMalignantFinder}.}
 
-\item{prefix}{Optional prefix for output metadata columns.}
+\item{prefix}{Optional prefix for output metadata columns. Default preserves
+the original \code{scMalignantFinder} column names.}
 
 \item{return_seurat}{Whether to return a Seurat object when \code{srt} is
 supplied. If \code{FALSE}, returns a data frame of predictions.}
 
-\item{verbose}{Whether to print messages.}
-
-\item{signature_gmt}{Path to the malignant signature \code{.gmt} file, such as
-\code{sc_malignant_deg.gmt} from the scMalignantFinder resources.}
-
-\item{features}{Features in \code{adata.obs} used for region clustering. If
-\code{NULL}, uses \code{malignancy_probability} and \code{Malignant_up}, plus
-\code{image_score} when \code{image = TRUE}.}
-
-\item{nclus}{Number of clusters used by the spatial region model.}
-
-\item{define_feature}{Feature used to select the malignant region cluster.}
-
-\item{spatial_nn}{Whether to refine labels by spatial neighbors.}
-
-\item{spatial.cols}{Optional two metadata columns used as spatial coordinates
-for Seurat input.}
-
-\item{spatial_key}{Key written to \code{adata.obsm} for spatial coordinates.}
-
-\item{image}{Whether to call \code{scMalignantFinder.spatial.image_cal}.}
-
-\item{gene_sets}{Path to a \code{.gmt} file containing cancer cell state gene
-sets, such as \code{Malignant_MPs.Gavish_2023.gmt} from the scMalignantFinder
-resources.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
-A Seurat object with scMalignantFinder metadata columns added, or a data frame
-when \code{return_seurat = FALSE}.
+A Seurat object with \code{scMalignantFinder_prediction} and
+\code{malignancy_probability} added, or a data frame when \code{return_seurat = FALSE}.
 }
 \description{
-Run the Python package \code{scMalignantFinder} from \code{scop}. The wrappers
-support malignant-cell probability prediction, malignant spatial region
-identification, and cancer cell state AUCell scoring. Pretrained models and
-gene set resources are not bundled with \code{scop}; users should provide local
-paths to the resources downloaded from scMalignantFinder.
+Run the Python package \code{scMalignantFinder} on a Seurat or AnnData object and
+append malignant-cell predictions to Seurat metadata. The pretrained model
+files are not bundled with \code{scop}; provide a directory containing
+\code{model.joblib} and \code{ordered_feature.tsv} through \code{pretrain_dir}.
 }
 \examples{
-\dontrun{
-srt <- RunscMalignantFinder(
-  srt,
+\dontshow{if (FALSE) withAutoprint(\{ # examplesIf}
+data(pancreas_sub)
+pancreas_sub <- RunscMalignantFinder(
+  pancreas_sub,
+  assay = "RNA",
+  layer = "data",
   pretrain_dir = "path/to/pretrained_model",
   norm_type = FALSE
 )
-
-srt <- RunscMalignantRegion(
-  srt,
-  signature_gmt = "path/to/sc_malignant_deg.gmt",
-  spatial.cols = c("x", "y")
-)
-
-srt <- RunscMalignantStates(
-  srt,
-  gene_sets = "path/to/Malignant_MPs.Gavish_2023.gmt"
-)
-}
+CellDimPlot(pancreas_sub, group.by = "malignancy_probability")
+\dontshow{\}) # examplesIf}
 }
 \references{
 Yu Q, Li YY, Chen Y. scMalignantFinder distinguishes malignant cells in
@@ -162,5 +95,5 @@ single-cell and spatial transcriptomics by leveraging cancer signatures.
 Communications Biology. 2025.
 }
 \seealso{
-\code{\link{srt_to_adata}}
+\link{srt_to_adata}, \link{RunscMalignantRegion}, \link{RunscMalignantStates}
 }
