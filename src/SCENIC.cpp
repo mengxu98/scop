@@ -400,6 +400,32 @@ static std::vector<unsigned char> scenic_sample_mask(
   return mask;
 }
 
+static void scenic_sample_mask_fill(
+    int n_samples,
+    int n_inbag,
+    std::mt19937& rng,
+    std::vector<unsigned char>& mask,
+    std::vector<int>& train_rows) {
+  mask.assign(n_samples, 0);
+  train_rows.clear();
+  train_rows.reserve(n_inbag);
+  if (n_inbag >= n_samples) {
+    std::fill(mask.begin(), mask.end(), 1);
+    train_rows.resize(n_samples);
+    std::iota(train_rows.begin(), train_rows.end(), 0);
+    return;
+  }
+  int n_bagged = 0;
+  for (int i = 0; i < n_samples; ++i) {
+    if (scenic_numpy_random_sample(rng) * static_cast<double>(n_samples - i) <
+        static_cast<double>(n_inbag - n_bagged)) {
+      mask[i] = 1;
+      train_rows.push_back(i);
+      ++n_bagged;
+    }
+  }
+}
+
 template <typename Expr>
 static std::vector<std::vector<int> > scenic_feature_orders(
     const Expr& expr,
@@ -816,6 +842,12 @@ static void scenic_grnboost_run_targets(
     if (profile != nullptr) ++profile->targets;
     std::chrono::steady_clock::time_point target_setup_start;
     if (profile != nullptr) target_setup_start = std::chrono::steady_clock::now();
+
+    std::fill(importance.begin(), importance.end(), 0.0);
+    for (int i = 0; i < n_samples; ++i) {
+      double y = scenic_tree_feature_value(expr, i, target);
+      residual[i] = y - means[target];
+    }
     std::vector<int> features;
     features.reserve(regs.size());
     for (std::size_t ri = 0; ri < regs.size(); ++ri) {
@@ -825,12 +857,6 @@ static void scenic_grnboost_run_targets(
       scenic_profile_add_elapsed(
         profile, &ScenicGrnProfile::target_setup_seconds, target_setup_start);
       continue;
-    }
-
-    std::fill(importance.begin(), importance.end(), 0.0);
-    for (int i = 0; i < n_samples; ++i) {
-      double y = scenic_tree_feature_value(expr, i, target);
-      residual[i] = y - means[target];
     }
     scenic_profile_add_elapsed(
       profile, &ScenicGrnProfile::target_setup_seconds, target_setup_start);
@@ -844,29 +870,29 @@ static void scenic_grnboost_run_targets(
     oob_improvements.reserve(n_rounds);
     int actual_rounds = 0;
     double previous_oob_loss = NA_REAL;
+    std::vector<int> train_rows;
+    train_rows.reserve(sample_size);
+    std::vector<unsigned char> is_train(n_samples);
+    std::vector<ScenicTreeNode> nodes;
+    nodes.reserve((1 << (max_depth + 1)) - 1);
+    std::vector<int> feature_pool;
+    feature_pool.reserve(features.size());
+    std::vector<int> constant_features(features.size());
 
     for (int round = 0; round < n_rounds; ++round) {
-      std::vector<int> train_rows;
-      train_rows.reserve(sample_size);
-      std::vector<unsigned char> is_train;
       {
         ScenicScopeTimer sample_timer(
           profile == nullptr ? nullptr : &profile->sample_seconds
         );
-        is_train = scenic_sample_mask(n_samples, sample_size, rng);
-        for (int i = 0; i < n_samples; ++i) {
-          if (is_train[i]) train_rows.push_back(i);
-        }
+        scenic_sample_mask_fill(n_samples, sample_size, rng, is_train, train_rows);
       }
 
-      std::vector<ScenicTreeNode> nodes;
-      nodes.reserve((1 << (max_depth + 1)) - 1);
+      nodes.clear();
       std::fill(tree_importance.begin(), tree_importance.end(), 0.0);
       std::uint32_t split_seed = static_cast<std::uint32_t>(
         scenic_numpy_randint(rng, 0, SCENIC_RAND_R_MAX)
       );
-      std::vector<int> feature_pool(features);
-      std::vector<int> constant_features(features.size());
+      feature_pool.assign(features.begin(), features.end());
       {
         ScenicScopeTimer build_timer(
           profile == nullptr ? nullptr : &profile->build_tree_seconds
@@ -1057,7 +1083,10 @@ static DataFrame scenic_grnboost_tree_impl(
     std::vector<std::thread> pool;
     pool.reserve(workers);
     std::atomic<std::size_t> next_target(0);
-    const std::size_t block = 1;
+    const std::size_t block = std::max<std::size_t>(
+      1,
+      targets.size() / static_cast<std::size_t>(workers * 8)
+    );
     for (int worker = 0; worker < workers; ++worker) {
       pool.emplace_back([&, worker]() {
         try {

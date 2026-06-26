@@ -19,9 +19,11 @@ scenic_grn_matrix_from_object <- function(
     )
   }
   if (identical(genes_in, "rows")) {
-    mat <- Matrix::t(mat)
+    mat <- if (inherits(mat, "Matrix")) Matrix::t(mat) else t(mat)
   }
-  mat <- as.matrix(mat)
+  if (inherits(mat, "sparseMatrix") && !inherits(mat, "dgCMatrix")) {
+    mat <- methods::as(mat, "dgCMatrix")
+  }
   if (nrow(mat) < 2L || ncol(mat) < 2L) {
     log_message(
       "GRN inference requires at least two samples and two genes",
@@ -298,7 +300,7 @@ grnboost <- function(
   } else {
     as.integer(max_edges_per_target_cpp)
   }
-  regulator_idx <- as.integer(sort(match(inputs[["regulators"]], gene_names)))
+  regulator_idx <- as.integer(match(inputs[["regulators"]], gene_names))
   target_idx <- as.integer(match(inputs[["targets"]], gene_names))
   n_targets <- length(target_idx)
   if (n_targets == 0L) {
@@ -307,15 +309,9 @@ grnboost <- function(
       message_type = "error"
     )
   }
-  is_sparse <- inherits(grn_matrix, "dgCMatrix")
-  expr <- if (is_sparse) {
-    grn_matrix
-  } else {
-    as.matrix(grn_matrix)
-  }
+  expr <- as.matrix(grn_matrix)
   run_chunk <- function(target_idx_chunk) {
-    grn_fun <- if (is_sparse) grnboost_tree_sparse else grnboost_tree
-    grn_fun(
+    grnboost_tree(
       expr = expr,
       regulator_idx = regulator_idx,
       target_idx = as.integer(target_idx_chunk),
@@ -332,11 +328,10 @@ grnboost <- function(
   }
   edge_idx <- if (cores > 1L) {
     log_message(
-      "Running C++ GRNBoost2 for {.val {n_targets}} target genes{if (is_sparse) ' with sparse matrix input' else ''}",
+      "Running C++ GRNBoost2 for {.val {n_targets}} target genes",
       verbose = verbose
     )
-    grn_fun_parallel <- if (is_sparse) grnboost_tree_sparse_parallel else grnboost_tree_parallel
-    grn_fun_parallel(
+    grnboost_tree_parallel(
       expr = expr,
       regulator_idx = regulator_idx,
       target_idx = target_idx,

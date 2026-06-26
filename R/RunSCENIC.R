@@ -1341,13 +1341,7 @@ cistarget2 <- function(
       return(NULL)
     }
 
-    cluster_scores <- data.frame(
-      cluster = character(0),
-      auc = numeric(0),
-      nes = numeric(0),
-      leading_edge_genes = I(list()),
-      stringsAsFactors = FALSE
-    )
+    cluster_score_list <- list()
 
     for (rm in rank_matrices) {
       gene_idx <- unname(rm[["gene_index"]][target_set])
@@ -1430,22 +1424,20 @@ cistarget2 <- function(
           next
         }
 
-        cluster_scores <- rbind(
-          cluster_scores,
-          data.frame(
-            cluster = cluster_name,
-            auc = aucs[[annotated_feature_idx[[row_i]]]],
-            nes = ness[[annotated_feature_idx[[row_i]]]],
-            leading_edge_genes = I(list(unique(leading))),
-            stringsAsFactors = FALSE
-          )
+        cluster_score_list[[length(cluster_score_list) + 1L]] <- data.frame(
+          cluster = cluster_name,
+          auc = aucs[[annotated_feature_idx[[row_i]]]],
+          nes = ness[[annotated_feature_idx[[row_i]]]],
+          leading_edge_genes = I(list(unique(leading))),
+          stringsAsFactors = FALSE
         )
       }
     }
 
-    if (nrow(cluster_scores) == 0) {
+    if (length(cluster_score_list) == 0L) {
       return(list(tf = NULL, genes = NULL, profile = local_profile))
     }
+    cluster_scores <- do.call(rbind, cluster_score_list)
 
     cluster_scores <- cluster_scores[
       order(-cluster_scores[["nes"]]),
