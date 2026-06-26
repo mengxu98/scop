@@ -37,3 +37,103 @@ test_that("legacy integration scaling handles split Assay5 data layers", {
     )
   )
 })
+
+test_that("NormalizeData handles split Assay5 counts layers", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("SeuratObject")
+  skip_if_not_installed("Matrix")
+
+  set.seed(1)
+  counts <- Matrix::rsparsematrix(80, 60, density = 0.2)
+  counts@x <- abs(round(counts@x * 10)) + 1
+  rownames(counts) <- paste0("g", seq_len(nrow(counts)))
+  colnames(counts) <- paste0("c", seq_len(ncol(counts)))
+
+  srt <- Seurat::CreateSeuratObject(counts)
+  srt$batch <- rep(c("a", "b"), each = 30)
+  assay <- SeuratObject::DefaultAssay(srt)
+  srt[[assay]] <- split(srt[[assay]], f = srt$batch)
+
+  expect_setequal(
+    SeuratObject::Layers(srt[[assay]], search = "counts"),
+    c("counts.a", "counts.b")
+  )
+  expect_no_error(srt <- NormalizeData(srt, verbose = FALSE))
+  expect_setequal(
+    SeuratObject::Layers(srt[[assay]], search = "data"),
+    c("data.a", "data.b")
+  )
+  expect_true(all(Matrix::colSums(SeuratObject::LayerData(srt, layer = "data.a")) > 0))
+})
+
+test_that("FindVariableFeatures handles split Assay5 counts layers", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("SeuratObject")
+  skip_if_not_installed("Matrix")
+
+  set.seed(1)
+  counts <- Matrix::rsparsematrix(80, 60, density = 0.2)
+  counts@x <- abs(round(counts@x * 10)) + 1
+  rownames(counts) <- paste0("g", seq_len(nrow(counts)))
+  colnames(counts) <- paste0("c", seq_len(ncol(counts)))
+
+  srt <- Seurat::CreateSeuratObject(counts)
+  srt$batch <- rep(c("a", "b"), each = 30)
+  assay <- SeuratObject::DefaultAssay(srt)
+  srt[[assay]] <- split(srt[[assay]], f = srt$batch)
+
+  expect_no_error(
+    srt <- FindVariableFeatures(srt, nfeatures = 20, verbose = FALSE)
+  )
+  expect_length(SeuratObject::VariableFeatures(srt), 20)
+})
+
+test_that("ScaleData handles split Assay5 data layers", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("SeuratObject")
+  skip_if_not_installed("Matrix")
+
+  set.seed(1)
+  counts <- Matrix::rsparsematrix(80, 60, density = 0.2)
+  counts@x <- abs(round(counts@x * 10)) + 1
+  rownames(counts) <- paste0("g", seq_len(nrow(counts)))
+  colnames(counts) <- paste0("c", seq_len(ncol(counts)))
+
+  srt <- Seurat::CreateSeuratObject(counts)
+  srt$batch <- rep(c("a", "b"), each = 30)
+  assay <- SeuratObject::DefaultAssay(srt)
+  srt_single <- srt
+  srt_single <- NormalizeData(srt_single, verbose = FALSE)
+  srt_single <- FindVariableFeatures(srt_single, nfeatures = 20, verbose = FALSE)
+  srt_single <- ScaleData(
+    srt_single,
+    features = SeuratObject::VariableFeatures(srt_single),
+    verbose = FALSE
+  )
+
+  srt[[assay]] <- split(srt[[assay]], f = srt$batch)
+  srt <- NormalizeData(srt, verbose = FALSE)
+  srt <- FindVariableFeatures(srt, nfeatures = 20, verbose = FALSE)
+
+  expect_no_error(
+    srt <- ScaleData(
+      srt,
+      features = SeuratObject::VariableFeatures(srt),
+      verbose = FALSE
+    )
+  )
+  expect_true("scale.data" %in% SeuratObject::Layers(srt[[assay]], search = NA))
+  expect_equal(
+    nrow(SeuratObject::LayerData(srt, layer = "scale.data")),
+    20L
+  )
+  expect_equal(
+    SeuratObject::VariableFeatures(srt),
+    SeuratObject::VariableFeatures(srt_single)
+  )
+  expect_equal(
+    as.matrix(SeuratObject::LayerData(srt, layer = "scale.data")),
+    as.matrix(SeuratObject::LayerData(srt_single, layer = "scale.data")),
+    tolerance = 1e-12
+  )
+})
