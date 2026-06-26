@@ -166,7 +166,14 @@ reference:
   - ProjectionPlot
   - TACSPlot
 
-- subtitle: "Spatial Analysis"
+- title: "Spatial Analysis"
+
+- subtitle: "Spatial QC and Normalization"
+- contents:
+  - RunSpaNorm
+  - RunSpotSweeper
+
+- subtitle: "Spatial Workflow and Giotto Backends"
 - contents:
   - SeuratToScopGiotto
   - RunGiottoWorkflow
@@ -179,31 +186,38 @@ reference:
   - GiottoCellProximity
   - GiottoHMRF
   - AddGiottoToSeurat
-  - RunBayesSpace
-  - RunBANKSY
-  - RunCARD
-  - RunCytoSPACE
-  - RunSTdeconvolve
   - RunGiottoCluster
   - RunGiottoCellProximity
   - RunGiottoSpatialGenes
   - RunGiottoSpatialModules
+
+- subtitle: "Spatial Deconvolution and Ecotypes"
+- contents:
   - RunRCTD
   - RunCSIDE
-  - RunSpaNorm
+  - RunCARD
+  - RunSTdeconvolve
+  - RunSPOTlight
+  - RunSpatialEcoTyper
+
+- subtitle: "Spatial Domains and Feature Patterns"
+- contents:
+  - RunBayesSpace
+  - RunBANKSY
+  - RunCytoSPACE
   - RunSmoothClust
   - RunMERINGUE
-  - RunSpotSweeper
-  - RunSPOTlight
+  - RunSpatialVariableFeatures
+  - RunSpatialGradientFeatures
+
+- subtitle: "Spatial Neighborhoods and Multi-Sample Integration"
+- contents:
+  - RunSpatialNeighborhood
+  - RunSpatialIntegration
   - RunSemlaSpatialNetwork
   - RunSemlaLocalG
   - RunSemlaRadialDistance
   - RunSemlaRegionNeighbors
-  - RunSpatialEcoTyper
-  - RunSpatialGradientFeatures
-  - RunSpatialIntegration
-  - RunSpatialNeighborhood
-  - RunSpatialVariableFeatures
 
 - subtitle: "Spatial Visualization"
 - contents:
