@@ -117,3 +117,35 @@ RunGiottoSpatialModules(
 A `giotto2_result` list containing the full Giotto object, spatial
 correlation object, module object, extracted module tables, parameters,
 features, and cells.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+data(visium_human_pancreas_sub)
+spatial <- Seurat::NormalizeData(
+  visium_human_pancreas_sub,
+  assay = "Spatial",
+  verbose = FALSE
+)
+spatial <- Seurat::FindVariableFeatures(
+  spatial,
+  assay = "Spatial",
+  nfeatures = 500,
+  verbose = FALSE
+)
+
+giotto_modules <- RunGiottoSpatialModules(
+  spatial,
+  assay = "Spatial",
+  layer = "data",
+  features = Seurat::VariableFeatures(spatial, assay = "Spatial")[1:50],
+  coord.cols = c("col", "row"),
+  cor_method = "pearson",
+  k = 6
+)
+
+names(giotto_modules$module_tables)
+GiottoPlot(giotto_modules, top_n = 12)
+} # }
+```

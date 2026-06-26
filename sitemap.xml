@@ -214,6 +214,9 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunmcRigor.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunscCODA.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunscFEA.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunscMalignantFinder.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunscMalignantRegion.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunscMalignantStates.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunscOMM.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunscTenifoldNet.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RuntAge.html</loc></url>
@@ -248,6 +251,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/db_scds.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/env_info.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/env_requirements.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/estimate_signatures.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/fastMNN5_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/fastMNN_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/h5ad_to_srt.html</loc></url>

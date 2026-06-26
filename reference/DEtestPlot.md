@@ -366,39 +366,37 @@ DEtestPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-25 06:59:12] Start standard processing workflow...
-#> ℹ [2026-06-25 06:59:13] Checking a list of <Seurat>...
-#> ! [2026-06-25 06:59:13] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-25 06:59:13] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-25 06:59:13] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-25 06:59:13] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-25 06:59:13] Number of available HVF: 2000
-#> ℹ [2026-06-25 06:59:14] Finished check
-#> ℹ [2026-06-25 06:59:14] Perform `ScaleData()`
-#> ℹ [2026-06-25 06:59:14] Perform pca linear dimension reduction
-#> ℹ [2026-06-25 06:59:14] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-25 06:59:14] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-25 06:59:15] Reorder clusters...
-#> ℹ [2026-06-25 06:59:15] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-25 06:59:15] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-25 06:59:21] Standard processing workflow completed
+#> ℹ [2026-06-26 10:42:08] Start standard processing workflow...
+#> ℹ [2026-06-26 10:42:09] Checking a list of <Seurat>...
+#> ! [2026-06-26 10:42:09] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-26 10:42:09] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-26 10:42:09] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-26 10:42:09] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-26 10:42:09] Number of available HVF: 2000
+#> ℹ [2026-06-26 10:42:09] Finished check
+#> ℹ [2026-06-26 10:42:09] Perform `ScaleData()`
+#> ℹ [2026-06-26 10:42:09] Perform pca linear dimension reduction
+#> ℹ [2026-06-26 10:42:10] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-26 10:42:10] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-26 10:42:10] Reorder clusters...
+#> ℹ [2026-06-26 10:42:10] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-26 10:42:10] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-26 10:42:16] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
   only.pos = FALSE
 )
-#> ℹ [2026-06-25 06:59:22] Data type is log-normalized
-#> ℹ [2026-06-25 06:59:22] Start differential expression test
-#> ℹ [2026-06-25 06:59:22] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-06-25 06:59:22] Using 1 core
-#> ⠙ [2026-06-25 06:59:22] Running for Ductal [1/5] ■■          20% | ETA:  0s
-#> ✔ [2026-06-25 06:59:22] Completed 5 tasks in 27ms
+#> ℹ [2026-06-26 10:42:17] Data type is log-normalized
+#> ℹ [2026-06-26 10:42:17] Start differential expression test
+#> ℹ [2026-06-26 10:42:17] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-06-26 10:42:17] Using 1 core
+#> ⠙ [2026-06-26 10:42:17] Running for Ductal [1/5] ■■          20% | ETA:  0s
+#> ⠹ [2026-06-26 10:42:17] Running for Ngn3-high-EP [2/5] ■■■■        40% | ETA:  …
+#> ✔ [2026-06-26 10:42:17] Completed 5 tasks in 642ms
 #> 
-#> ℹ [2026-06-25 06:59:22] Building results
-#> ! [2026-06-25 06:59:22] Found 5 failed results
-#> ℹ [2026-06-25 06:59:22] ✖ Error details:
-#> ℹ                       ✖ At least 1 ident must be specified in `ident.1` (5): "Ductal", "Ngn3-high-EP", "Endocrine" and 2 more
-#> Error in `[.data.frame`(AllMarkers, , "group1"): undefined columns selected
+#> ℹ [2026-06-26 10:42:17] Building results
+#> ✔ [2026-06-26 10:42:18] Differential expression test completed
 
 DEtestPlot(
   pancreas_sub,
@@ -406,8 +404,7 @@ DEtestPlot(
   plot_type = "volcano",
   ncol = 2
 )
-#> Error in resolve_detest_result(object = srt, group.by = group.by, test.use = test.use,     res = res): Cannot find the DEtest result for the group "CellType". Perform
-#> `RunDEtest()` first
+
 
 DEtestPlot(
   pancreas_sub,
@@ -416,8 +413,7 @@ DEtestPlot(
   group_use = c("Ductal", "Endocrine"),
   ncol = 2
 )
-#> Error in resolve_detest_result(object = srt, group.by = group.by, test.use = test.use,     res = res): Cannot find the DEtest result for the group "CellType". Perform
-#> `RunDEtest()` first
+
 
 DEtestPlot(
   pancreas_sub,
@@ -429,8 +425,7 @@ DEtestPlot(
   group_use = c("Ductal", "Endocrine"),
   DE_threshold = "abs(avg_log2FC) > 0.25 & p_val_adj < 0.05"
 )
-#> Error in resolve_detest_result(object = srt, group.by = group.by, test.use = test.use,     res = res): Cannot find the DEtest result for the group "CellType". Perform
-#> `RunDEtest()` first
+
 
 DEtestPlot(
   pancreas_sub,
@@ -440,8 +435,7 @@ DEtestPlot(
   hyperbola_c = 6,
   ncol = 2
 )
-#> Error in resolve_detest_result(object = srt, group.by = group.by, test.use = test.use,     res = res): Cannot find the DEtest result for the group "CellType". Perform
-#> `RunDEtest()` first
+
 
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
@@ -449,9 +443,16 @@ pancreas_sub <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-06-25 06:59:22] Start Enrichment analysis
-#> Error in resolve_detest_result(object = srt, group.by = group.by, test.use = test.use): Cannot find the DEtest result for the group "CellType". Perform
-#> `RunDEtest()` first
+#> ℹ [2026-06-26 10:42:23] Start Enrichment analysis
+#> ℹ [2026-06-26 10:42:23] Species: "Mus_musculus"
+#> ℹ [2026-06-26 10:42:23] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-06-26 10:38:14
+#> ℹ [2026-06-26 10:42:25] Permform enrichment...
+#> ℹ [2026-06-26 10:42:26] Using 1 core
+#> ⠙ [2026-06-26 10:42:26] Running for 1 [1/5] ■■          20% | ETA:  2s
+#> ✔ [2026-06-26 10:42:26] Completed 5 tasks in 2.5s
+#> 
+#> ℹ [2026-06-26 10:42:26] Building results
+#> ✔ [2026-06-26 10:42:28] Enrichment analysis done
 DEtestPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -465,24 +466,21 @@ DEtestPlot(
   enrich_nlabel = 15,
   ncol = 2
 )
-#> Error in resolve_detest_result(object = srt, group.by = group.by, test.use = test.use,     res = res): Cannot find the DEtest result for the group "CellType". Perform
-#> `RunDEtest()` first
+
 
 DEtestPlot(
   pancreas_sub,
   group.by = "CellType",
   plot_type = "manhattan"
 )
-#> Error in resolve_detest_result(object = srt, group.by = group.by, test.use = test.use,     res = res): Cannot find the DEtest result for the group "CellType". Perform
-#> `RunDEtest()` first
+
 
 DEtestPlot(
   pancreas_sub,
   group.by = "CellType",
   plot_type = "ring"
 )
-#> Error in resolve_detest_result(object = srt, group.by = group.by, test.use = test.use,     res = res): Cannot find the DEtest result for the group "CellType". Perform
-#> `RunDEtest()` first
+
 
 de_results1 <- pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox
 DEtestPlot(
@@ -490,7 +488,7 @@ DEtestPlot(
   plot_type = "volcano",
   ncol = 2
 )
-#> Error in DEtestPlot(res = de_results1, plot_type = "volcano", ncol = 2): argument "srt" is missing, with no default
+
 
 de_results2 <- Seurat::FindMarkers(
   pancreas_sub,

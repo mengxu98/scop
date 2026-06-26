@@ -121,3 +121,40 @@ RunGiottoCluster(
 
 A `giotto2_result` list containing the full Giotto object, cluster
 assignments, Giotto metadata, parameters, features, and cells.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+data(visium_human_pancreas_sub)
+spatial <- Seurat::NormalizeData(
+  visium_human_pancreas_sub,
+  assay = "Spatial",
+  verbose = FALSE
+)
+spatial <- Seurat::FindVariableFeatures(
+  spatial,
+  assay = "Spatial",
+  nfeatures = 500,
+  verbose = FALSE
+)
+
+giotto_clusters <- RunGiottoCluster(
+  spatial,
+  assay = "Spatial",
+  layer = "data",
+  dims = 1:10,
+  k = 8,
+  resolution = 0.4,
+  coord.cols = c("col", "row")
+)
+
+head(giotto_clusters$clusters)
+GiottoPlot(
+  giotto_clusters,
+  srt = spatial,
+  overlay_image = FALSE,
+  coord.cols = c("col", "row")
+)
+} # }
+```

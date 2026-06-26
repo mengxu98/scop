@@ -15,6 +15,15 @@ FeatureHeatmap(
   max_cells = 100,
   cell_order = NULL,
   border = TRUE,
+  heatmap_border = NULL,
+  cell_annotation_border = NULL,
+  feature_annotation_border = NULL,
+  heatmap_border_palcolor = "black",
+  cell_annotation_border_palcolor = "black",
+  feature_annotation_border_palcolor = "black",
+  heatmap_border_size = 1,
+  cell_annotation_border_size = 1,
+  feature_annotation_border_size = 1,
   flip = FALSE,
   layer = "counts",
   assay = NULL,
@@ -166,7 +175,29 @@ FeatureHeatmap(
 
 - border:
 
-  Whether to add a border to the heatmap. Default is `TRUE`.
+  Whether to add borders to the heatmap body and annotations. Kept for
+  backward compatibility. The more specific `heatmap_border`,
+  `cell_annotation_border`, and `feature_annotation_border` arguments
+  inherit from this value when left as `NULL`.
+
+- heatmap_border, cell_annotation_border, feature_annotation_border:
+
+  Whether to draw borders for the heatmap body, cell annotations, and
+  feature annotations, respectively. Defaults inherit from `border`.
+
+- heatmap_border_palcolor, cell_annotation_border_palcolor,
+  feature_annotation_border_palcolor:
+
+  Border colors for the heatmap body, cell annotations, and feature
+  annotations when their matching border argument is `TRUE`. Default is
+  `"black"`.
+
+- heatmap_border_size, cell_annotation_border_size,
+  feature_annotation_border_size:
+
+  Border line widths for the heatmap body, cell annotations, and feature
+  annotations when their matching border argument is `TRUE`. Default is
+  `1`.
 
 - flip:
 
@@ -659,43 +690,39 @@ FeatureHeatmap(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-25 07:15:25] Start standard processing workflow...
-#> ℹ [2026-06-25 07:15:26] Checking a list of <Seurat>...
-#> ! [2026-06-25 07:15:26] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-25 07:15:26] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-25 07:15:26] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-25 07:15:26] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-25 07:15:27] Number of available HVF: 2000
-#> ℹ [2026-06-25 07:15:27] Finished check
-#> ℹ [2026-06-25 07:15:27] Perform `ScaleData()`
-#> ℹ [2026-06-25 07:15:27] Perform pca linear dimension reduction
-#> ℹ [2026-06-25 07:15:27] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-25 07:15:28] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-25 07:15:28] Reorder clusters...
-#> ℹ [2026-06-25 07:15:28] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-25 07:15:28] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-25 07:15:35] Standard processing workflow completed
+#> ℹ [2026-06-26 10:59:37] Start standard processing workflow...
+#> ℹ [2026-06-26 10:59:38] Checking a list of <Seurat>...
+#> ! [2026-06-26 10:59:38] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-26 10:59:38] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-26 10:59:38] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-26 10:59:38] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-26 10:59:38] Number of available HVF: 2000
+#> ℹ [2026-06-26 10:59:38] Finished check
+#> ℹ [2026-06-26 10:59:38] Perform `ScaleData()`
+#> ℹ [2026-06-26 10:59:38] Perform pca linear dimension reduction
+#> ℹ [2026-06-26 10:59:38] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-26 10:59:39] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-26 10:59:39] Reorder clusters...
+#> ℹ [2026-06-26 10:59:39] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-26 10:59:39] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-26 10:59:46] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-06-25 07:15:35] Data type is log-normalized
-#> ℹ [2026-06-25 07:15:35] Start differential expression test
-#> ℹ [2026-06-25 07:15:35] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-06-25 07:15:35] Using 1 core
-#> ⠙ [2026-06-25 07:15:35] Running for Ductal [1/5] ■■          20% | ETA:  0s
-#> ✔ [2026-06-25 07:15:35] Completed 5 tasks in 28ms
+#> ℹ [2026-06-26 10:59:46] Data type is log-normalized
+#> ℹ [2026-06-26 10:59:46] Start differential expression test
+#> ℹ [2026-06-26 10:59:46] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-06-26 10:59:46] Using 1 core
+#> ⠙ [2026-06-26 10:59:46] Running for Ductal [1/5] ■■          20% | ETA:  1s
+#> ✔ [2026-06-26 10:59:46] Completed 5 tasks in 627ms
 #> 
-#> ℹ [2026-06-25 07:15:35] Building results
-#> ! [2026-06-25 07:15:35] Found 5 failed results
-#> ℹ [2026-06-25 07:15:35] ✖ Error details:
-#> ℹ                       ✖ At least 1 ident must be specified in `ident.1` (5): "Ductal", "Ngn3-high-EP", "Endocrine" and 2 more
-#> Error in `[.data.frame`(AllMarkers, , "group1"): undefined columns selected
+#> ℹ [2026-06-26 10:59:46] Building results
+#> ✔ [2026-06-26 10:59:47] Differential expression test completed
 de_filter <- dplyr::filter(
   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
 )
-#> Error in UseMethod("filter"): no applicable method for 'filter' applied to an object of class "NULL"
 ht1 <- FeatureHeatmap(
   pancreas_sub,
   features = de_filter$gene,
@@ -703,9 +730,13 @@ ht1 <- FeatureHeatmap(
   split.by = "Phase",
   cell_split_palette = "Dark2"
 )
-#> Error: object 'de_filter' not found
+#> `use_raster` is automatically set to TRUE for a matrix with more than
+#> 2000 rows. You can control `use_raster` argument by explicitly setting
+#> TRUE/FALSE to it.
+#> 
+#> Set `ht_opt$message = FALSE` to turn off this message.
 ht1$plot
-#> Error: object 'ht1' not found
+
 
 thisplot::panel_fix(
   ht1$plot,
@@ -714,7 +745,7 @@ thisplot::panel_fix(
   raster = TRUE,
   dpi = 50
 )
-#> Error: object 'ht1' not found
+
 
 ht2 <- FeatureHeatmap(
   pancreas_sub,
@@ -728,9 +759,11 @@ ht2 <- FeatureHeatmap(
   ht_params = list(row_gap = grid::unit(0, "mm")),
   use_raster = FALSE
 )
-#> Error: object 'de_filter' not found
+#> ℹ [2026-06-26 11:00:00] The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ [2026-06-26 11:00:00] The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ [2026-06-26 11:00:00] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 ht2$plot
-#> Error: object 'ht2' not found
+
 
 ht3 <- FeatureHeatmap(
   pancreas_sub,
@@ -743,9 +776,27 @@ ht3 <- FeatureHeatmap(
   anno_keys = TRUE,
   anno_features = TRUE
 )
-#> Error: object 'de_filter' not found
+#> ℹ [2026-06-26 11:00:26] Start Enrichment analysis
+#> ℹ [2026-06-26 11:00:26] Species: "Mus_musculus"
+#> ℹ [2026-06-26 11:00:27] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-06-26 10:57:26
+#> ℹ [2026-06-26 11:00:28] Permform enrichment...
+#> ℹ [2026-06-26 11:00:30] Using 1 core
+#> ⠙ [2026-06-26 11:00:30] Running for 1 [1/5] ■■          20% | ETA:  3s
+#> ⠹ [2026-06-26 11:00:30] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  1s
+#> ✔ [2026-06-26 11:00:30] Completed 5 tasks in 3.6s
+#> 
+#> ℹ [2026-06-26 11:00:30] Building results
+#> ✔ [2026-06-26 11:00:34] Enrichment analysis done
+#> `use_raster` is automatically set to TRUE for a matrix with more than
+#> 2000 rows. You can control `use_raster` argument by explicitly setting
+#> TRUE/FALSE to it.
+#> 
+#> Set `ht_opt$message = FALSE` to turn off this message.
+#> ℹ [2026-06-26 11:01:19] The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ [2026-06-26 11:01:19] The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ [2026-06-26 11:01:20] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 ht3$plot
-#> Error: object 'ht3' not found
+
 
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
@@ -765,18 +816,22 @@ ht4 <- FeatureHeatmap(
   cell_annotation = c("SubCellType", "Lineage1"),
   cell_annotation_palette = c("Chinese", "cividis")
 )
-#> Error: object 'de_filter' not found
+#> `use_raster` is automatically set to TRUE for a matrix with more than
+#> 2000 rows. You can control `use_raster` argument by explicitly setting
+#> TRUE/FALSE to it.
+#> 
+#> Set `ht_opt$message = FALSE` to turn off this message.
 ht4$plot
-#> Error: object 'ht4' not found
+
 
 pancreas_sub <- AnnotateFeatures(
   pancreas_sub,
   species = "Mus_musculus",
   db = c("CSPA", "TF")
 )
-#> ℹ [2026-06-25 07:15:38] Species: "Mus_musculus"
-#> ℹ [2026-06-25 07:15:38] Loading cached: CSPA version: CSPA nterm:1 created: 2026-06-25 07:13:01
-#> ℹ [2026-06-25 07:15:38] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-06-25 06:29:27
+#> ℹ [2026-06-26 11:01:33] Species: "Mus_musculus"
+#> ℹ [2026-06-26 11:01:33] Loading cached: CSPA version: CSPA nterm:1 created: 2026-06-26 10:55:40
+#> ℹ [2026-06-26 11:01:34] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-06-26 10:12:08
 
 ht5 <- FeatureHeatmap(
   pancreas_sub,
@@ -791,9 +846,16 @@ ht5 <- FeatureHeatmap(
   cell_annotation = c("Phase", "G2M_score"),
   cell_annotation_palette = c("Dark2", "Purples")
 )
-#> Error: object 'de_filter' not found
+#> `use_raster` is automatically set to TRUE for a matrix with more than
+#> 2000 rows. You can control `use_raster` argument by explicitly setting
+#> TRUE/FALSE to it.
+#> 
+#> Set `ht_opt$message = FALSE` to turn off this message.
+#> ℹ [2026-06-26 11:01:38] The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ [2026-06-26 11:01:38] The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ [2026-06-26 11:01:38] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 ht5$plot
-#> Error: object 'ht5' not found
+
 
 ht6 <- FeatureHeatmap(
   pancreas_sub,
@@ -810,7 +872,13 @@ ht6 <- FeatureHeatmap(
   flip = TRUE,
   column_title_rot = 45
 )
-#> Error: object 'de_filter' not found
+#> `use_raster` is automatically set to TRUE for a matrix with more than
+#> 2000 columns You can control `use_raster` argument by explicitly
+#> setting TRUE/FALSE to it.
+#> 
+#> Set `ht_opt$message = FALSE` to turn off this message.
+#> ℹ [2026-06-26 11:01:51] The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ [2026-06-26 11:01:51] The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ [2026-06-26 11:01:51] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 ht6$plot
-#> Error: object 'ht6' not found
 ```

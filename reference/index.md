@@ -229,7 +229,16 @@
 - [`TACSPlot()`](https://mengxu98.github.io/scop/reference/TACSPlot.md)
   : Transcript-averaged cell scoring (TACS)
 
-### Spatial Analysis
+## Spatial Analysis
+
+### Spatial QC and Normalization
+
+- [`RunSpaNorm()`](https://mengxu98.github.io/scop/reference/RunSpaNorm.md)
+  : Run SpaNorm spatial normalization
+- [`RunSpotSweeper()`](https://mengxu98.github.io/scop/reference/RunSpotSweeper.md)
+  : Run SpotSweeper spatial quality control
+
+### Spatial Workflow and Giotto Backends
 
 - [`SeuratToScopGiotto()`](https://mengxu98.github.io/scop/reference/SeuratToScopGiotto.md)
   : Convert Seurat to an internal Giotto workflow object
@@ -253,16 +262,6 @@
   : Run Giotto HMRF spatial domains
 - [`AddGiottoToSeurat()`](https://mengxu98.github.io/scop/reference/AddGiottoToSeurat.md)
   : Add Giotto results back to Seurat
-- [`RunBayesSpace()`](https://mengxu98.github.io/scop/reference/RunBayesSpace.md)
-  : Run BayesSpace spatial clustering
-- [`RunBANKSY()`](https://mengxu98.github.io/scop/reference/RunBANKSY.md)
-  : Run BANKSY spatial clustering
-- [`RunCARD()`](https://mengxu98.github.io/scop/reference/RunCARD.md) :
-  Run CARD spatial deconvolution
-- [`RunCytoSPACE()`](https://mengxu98.github.io/scop/reference/RunCytoSPACE.md)
-  : Run CytoSPACE spatial assignment
-- [`RunSTdeconvolve()`](https://mengxu98.github.io/scop/reference/RunSTdeconvolve.md)
-  : Run STdeconvolve reference-free spatial deconvolution
 - [`RunGiottoCluster()`](https://mengxu98.github.io/scop/reference/RunGiottoCluster.md)
   : Run Giotto nearest-network clustering
 - [`RunGiottoCellProximity()`](https://mengxu98.github.io/scop/reference/RunGiottoCellProximity.md)
@@ -271,20 +270,45 @@
   : Run Giotto spatial gene detection
 - [`RunGiottoSpatialModules()`](https://mengxu98.github.io/scop/reference/RunGiottoSpatialModules.md)
   : Run Giotto spatial co-expression modules
+
+### Spatial Deconvolution and Ecotypes
+
 - [`RunRCTD()`](https://mengxu98.github.io/scop/reference/RunRCTD.md) :
   Run RCTD spatial deconvolution
 - [`RunCSIDE()`](https://mengxu98.github.io/scop/reference/RunCSIDE.md)
   : Run C-SIDE spatial differential expression
-- [`RunSpaNorm()`](https://mengxu98.github.io/scop/reference/RunSpaNorm.md)
-  : Run SpaNorm spatial normalization
+- [`RunCARD()`](https://mengxu98.github.io/scop/reference/RunCARD.md) :
+  Run CARD spatial deconvolution
+- [`RunSTdeconvolve()`](https://mengxu98.github.io/scop/reference/RunSTdeconvolve.md)
+  : Run STdeconvolve reference-free spatial deconvolution
+- [`RunSPOTlight()`](https://mengxu98.github.io/scop/reference/RunSPOTlight.md)
+  : Run SPOTlight spatial deconvolution
+- [`RunSpatialEcoTyper()`](https://mengxu98.github.io/scop/reference/RunSpatialEcoTyper.md)
+  : Run SpatialEcoTyper spatial ecotype analysis
+
+### Spatial Domains and Feature Patterns
+
+- [`RunBayesSpace()`](https://mengxu98.github.io/scop/reference/RunBayesSpace.md)
+  : Run BayesSpace spatial clustering
+- [`RunBANKSY()`](https://mengxu98.github.io/scop/reference/RunBANKSY.md)
+  : Run BANKSY spatial clustering
+- [`RunCytoSPACE()`](https://mengxu98.github.io/scop/reference/RunCytoSPACE.md)
+  : Run CytoSPACE spatial assignment
 - [`RunSmoothClust()`](https://mengxu98.github.io/scop/reference/RunSmoothClust.md)
   : Run smoothclust spatial domain clustering
 - [`RunMERINGUE()`](https://mengxu98.github.io/scop/reference/RunMERINGUE.md)
   : Run MERINGUE spatial autocorrelation analysis
-- [`RunSpotSweeper()`](https://mengxu98.github.io/scop/reference/RunSpotSweeper.md)
-  : Run SpotSweeper spatial quality control
-- [`RunSPOTlight()`](https://mengxu98.github.io/scop/reference/RunSPOTlight.md)
-  : Run SPOTlight spatial deconvolution
+- [`RunSpatialVariableFeatures()`](https://mengxu98.github.io/scop/reference/RunSpatialVariableFeatures.md)
+  : Run spatial variable feature detection
+- [`RunSpatialGradientFeatures()`](https://mengxu98.github.io/scop/reference/RunSpatialGradientFeatures.md)
+  : Run spatial gradient feature screening
+
+### Spatial Neighborhoods and Multi-Sample Integration
+
+- [`RunSpatialNeighborhood()`](https://mengxu98.github.io/scop/reference/RunSpatialNeighborhood.md)
+  : Run spatial neighborhood statistics
+- [`RunSpatialIntegration()`](https://mengxu98.github.io/scop/reference/RunSpatialIntegration.md)
+  : Run multi-sample spatial integration
 - [`RunSemlaSpatialNetwork()`](https://mengxu98.github.io/scop/reference/RunSemlaSpatialNetwork.md)
   : Run semla spatial network construction
 - [`RunSemlaLocalG()`](https://mengxu98.github.io/scop/reference/RunSemlaLocalG.md)
@@ -293,16 +317,6 @@
   : Run semla radial distance analysis
 - [`RunSemlaRegionNeighbors()`](https://mengxu98.github.io/scop/reference/RunSemlaRegionNeighbors.md)
   : Run semla region neighbor detection
-- [`RunSpatialEcoTyper()`](https://mengxu98.github.io/scop/reference/RunSpatialEcoTyper.md)
-  : Run SpatialEcoTyper spatial ecotype analysis
-- [`RunSpatialGradientFeatures()`](https://mengxu98.github.io/scop/reference/RunSpatialGradientFeatures.md)
-  : Run spatial gradient feature screening
-- [`RunSpatialIntegration()`](https://mengxu98.github.io/scop/reference/RunSpatialIntegration.md)
-  : Run multi-sample spatial integration
-- [`RunSpatialNeighborhood()`](https://mengxu98.github.io/scop/reference/RunSpatialNeighborhood.md)
-  : Run spatial neighborhood statistics
-- [`RunSpatialVariableFeatures()`](https://mengxu98.github.io/scop/reference/RunSpatialVariableFeatures.md)
-  : Run spatial variable feature detection
 
 ### Spatial Visualization
 
@@ -368,6 +382,12 @@
   : RareQ rare-cell population detection
 - [`RunScissor()`](https://mengxu98.github.io/scop/reference/RunScissor.md)
   : Run Scissor phenotype-associated cell selection
+- [`RunscMalignantFinder()`](https://mengxu98.github.io/scop/reference/RunscMalignantFinder.md)
+  : Run scMalignantFinder malignant cell identification
+- [`RunscMalignantRegion()`](https://mengxu98.github.io/scop/reference/RunscMalignantRegion.md)
+  : Run scMalignantFinder malignant spatial region identification
+- [`RunscMalignantStates()`](https://mengxu98.github.io/scop/reference/RunscMalignantStates.md)
+  : Run scMalignantFinder cancer cell state scoring
 - [`RunscTenifoldKnk()`](https://mengxu98.github.io/scop/reference/RunScTenifoldKnk.md)
   : Run scTenifoldKnk in-silico knockout analysis
 - [`RunscTenifoldNet()`](https://mengxu98.github.io/scop/reference/RunscTenifoldNet.md)
@@ -398,6 +418,8 @@
   : Run CIBERSORT deconvolution
 - [`RunESTIMATE()`](https://mengxu98.github.io/scop/reference/RunESTIMATE.md)
   : Run ESTIMATE tumor microenvironment scoring
+- [`estimate_signatures`](https://mengxu98.github.io/scop/reference/estimate_signatures.md)
+  : ESTIMATE gene signatures
 - [`RunMilo()`](https://mengxu98.github.io/scop/reference/RunMilo.md) :
   Milo differential abundance wrapper
 - [`RunPermutation()`](https://mengxu98.github.io/scop/reference/RunPermutation.md)

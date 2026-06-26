@@ -70,3 +70,20 @@ RunSemlaSpatialNetwork(
 ## Value
 
 A `Seurat` object.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+data(visium_human_pancreas_sub)
+
+spatial <- RunSemlaSpatialNetwork(
+  visium_human_pancreas_sub,
+  nNeighbors = 6,
+  coords = "array"
+)
+
+head(spatial@tools$SemlaSpatialNetwork$network)
+SpatialSpotPlot(spatial, group.by = "orig.ident")
+} # }
+```

@@ -55,3 +55,28 @@ RunSemlaRadialDistance(
 ## Value
 
 A `Seurat` object.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+data(visium_human_pancreas_sub)
+spatial <- visium_human_pancreas_sub
+spatial$region <- ifelse(
+  spatial$row > stats::median(spatial$row),
+  "upper",
+  "lower"
+)
+
+spatial <- RunSemlaRadialDistance(
+  spatial,
+  column_name = "region",
+  selected_groups = "upper",
+  column_suffix = "upper_distance"
+)
+
+distance_cols <- grep("upper_distance", colnames(spatial[[]]), value = TRUE)
+head(spatial[[]][distance_cols])
+SpatialSpotPlot(spatial, group.by = distance_cols[1])
+} # }
+```

@@ -17,6 +17,15 @@ NMFHeatmap(
   feature_annotation = NULL,
   assay = NULL,
   border = TRUE,
+  heatmap_border = NULL,
+  cell_annotation_border = NULL,
+  feature_annotation_border = NULL,
+  heatmap_border_palcolor = "black",
+  cell_annotation_border_palcolor = "black",
+  feature_annotation_border_palcolor = "black",
+  heatmap_border_size = 1,
+  cell_annotation_border_size = 1,
+  feature_annotation_border_size = 1,
   show_row_names = FALSE,
   show_column_names = FALSE,
   row_names_side = "left",
@@ -135,7 +144,29 @@ NMFHeatmap(
 
 - border:
 
-  Whether to add a border to the heatmap. Default is `TRUE`.
+  Whether to add borders to the heatmap body and annotations. Kept for
+  backward compatibility. The more specific `heatmap_border`,
+  `cell_annotation_border`, and `feature_annotation_border` arguments
+  inherit from this value when left as `NULL`.
+
+- heatmap_border, cell_annotation_border, feature_annotation_border:
+
+  Whether to draw borders for the heatmap body, cell annotations, and
+  feature annotations, respectively. Defaults inherit from `border`.
+
+- heatmap_border_palcolor, cell_annotation_border_palcolor,
+  feature_annotation_border_palcolor:
+
+  Border colors for the heatmap body, cell annotations, and feature
+  annotations when their matching border argument is `TRUE`. Default is
+  `"black"`.
+
+- heatmap_border_size, cell_annotation_border_size,
+  feature_annotation_border_size:
+
+  Border line widths for the heatmap body, cell annotations, and feature
+  annotations when their matching border argument is `TRUE`. Default is
+  `1`.
 
 - show_row_names:
 
@@ -492,13 +523,13 @@ ht_cells <- NMFHeatmap(
   width = 3,
   height = 0.5
 )
-#> ℹ [2026-06-25 07:39:01] `NMFHeatmap()` input: 1000 cells x 5 NMF dimensions. Computing a 1000 x 1000 similarity matrix (~0.01 GiB dense numeric matrix).
-#> ℹ [2026-06-25 07:39:02] Ordering `NMFHeatmap()` rows and columns ...
-#> ℹ [2026-06-25 07:39:02] Building ComplexHeatmap object for `NMFHeatmap()` ...
-#> ℹ [2026-06-25 07:39:02] Calculating `NMFHeatmap()` render size ...
-#> ℹ [2026-06-25 07:39:02] Fixing `NMFHeatmap()` panel size ...
-#> ℹ [2026-06-25 07:39:03] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...
-#> ℹ [2026-06-25 07:39:04] Assembling `NMFHeatmap()` plot object ...
+#> ℹ [2026-06-26 11:27:43] `NMFHeatmap()` input: 1000 cells x 5 NMF dimensions. Computing a 1000 x 1000 similarity matrix (~0.01 GiB dense numeric matrix).
+#> ℹ [2026-06-26 11:27:43] Ordering `NMFHeatmap()` rows and columns ...
+#> ℹ [2026-06-26 11:27:43] Building ComplexHeatmap object for `NMFHeatmap()` ...
+#> ℹ [2026-06-26 11:27:43] Calculating `NMFHeatmap()` render size ...
+#> ℹ [2026-06-26 11:27:43] Fixing `NMFHeatmap()` panel size ...
+#> ℹ [2026-06-26 11:27:45] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...
+#> ℹ [2026-06-26 11:27:46] Assembling `NMFHeatmap()` plot object ...
 ht_cells$plot
 
 
@@ -508,12 +539,12 @@ ht_features <- NMFHeatmap(
   width = 3,
   height = 0.5
 )
-#> ℹ [2026-06-25 07:39:05] `NMFHeatmap()` input: 1000 features x 5 NMF dimensions. Computing a 1000 x 1000 similarity matrix (~0.01 GiB dense numeric matrix).
-#> ℹ [2026-06-25 07:39:05] Ordering `NMFHeatmap()` rows and columns ...
-#> ℹ [2026-06-25 07:39:05] Building ComplexHeatmap object for `NMFHeatmap()` ...
-#> ℹ [2026-06-25 07:39:05] Calculating `NMFHeatmap()` render size ...
-#> ℹ [2026-06-25 07:39:05] Fixing `NMFHeatmap()` panel size ...
-#> ℹ [2026-06-25 07:39:07] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...
-#> ℹ [2026-06-25 07:39:08] Assembling `NMFHeatmap()` plot object ...
+#> ℹ [2026-06-26 11:27:46] `NMFHeatmap()` input: 1000 features x 5 NMF dimensions. Computing a 1000 x 1000 similarity matrix (~0.01 GiB dense numeric matrix).
+#> ℹ [2026-06-26 11:27:46] Ordering `NMFHeatmap()` rows and columns ...
+#> ℹ [2026-06-26 11:27:47] Building ComplexHeatmap object for `NMFHeatmap()` ...
+#> ℹ [2026-06-26 11:27:47] Calculating `NMFHeatmap()` render size ...
+#> ℹ [2026-06-26 11:27:47] Fixing `NMFHeatmap()` panel size ...
+#> ℹ [2026-06-26 11:27:48] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...
+#> ℹ [2026-06-26 11:27:50] Assembling `NMFHeatmap()` plot object ...
 ht_features$plot
 ```
