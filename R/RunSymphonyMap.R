@@ -284,9 +284,7 @@ mapQuery <- function(
     "Clustering query cells to reference centroids",
     verbose = verbose
   )
-  Z_pca_query_cos <- get_namespace_fun(
-    "symphony", "cosine_normalize"
-  )(
+  Z_pca_query_cos <- symphony_cosine_normalize(
     V = Z_pca_query,
     dim = 2
   )
@@ -371,6 +369,10 @@ buildReferenceFromSeurat <- function(
   log_message("Saved soft cluster assignments")
 
   var_features <- SeuratObject::VariableFeatures(obj)
+  var_features <- intersect(
+    var_features,
+    intersect(rownames(obj[[pca]]@feature.loadings), rownames(obj[[assay]]))
+  )
 
   if (assay == "RNA") {
     vargenes_means_sds <- data.frame(
@@ -427,7 +429,7 @@ buildReferenceFromSeurat <- function(
     verbose = verbose
   )
 
-  res$loadings <- obj[[pca]]@feature.loadings[, pca_dims, drop = FALSE]
+  res$loadings <- obj[[pca]]@feature.loadings[var_features, pca_dims, drop = FALSE]
   log_message("Saved PCA loadings", verbose = verbose)
 
   res$meta_data <- obj@meta.data
@@ -447,9 +449,7 @@ buildReferenceFromSeurat <- function(
     verbose = verbose
   )
   res$centroids <- Matrix::t(
-    get_namespace_fun(
-      "symphony", "cosine_normalize"
-    )(
+    symphony_cosine_normalize(
       V = res$R %*% Matrix::t(res$Z_corr),
       dim = 1
     )
@@ -479,4 +479,25 @@ buildReferenceFromSeurat <- function(
   )
 
   return(res)
+}
+
+symphony_cosine_normalize <- function(V, dim = 2) {
+  normalizer <- tryCatch(
+    get_namespace_fun("symphony", "cosine_normalize"),
+    error = function(e) NULL
+  )
+  if (is.function(normalizer)) {
+    return(normalizer(V = V, dim = dim))
+  }
+  if (dim == 1) {
+    denom <- sqrt(Matrix::rowSums(V^2))
+    denom[denom == 0] <- 1
+    return(V / denom)
+  }
+  if (dim == 2) {
+    denom <- sqrt(Matrix::colSums(V^2))
+    denom[denom == 0] <- 1
+    return(Matrix::t(Matrix::t(V) / denom))
+  }
+  log_message("{.arg dim} must be 1 or 2", message_type = "error")
 }

@@ -92,7 +92,8 @@ data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunFR(
   object = pancreas_sub,
-  features = SeuratObject::VariableFeatures(pancreas_sub)
+  graph = "Standardpca_SNN",
+  niter = 100
 )
 CellDimPlot(
   pancreas_sub,
