@@ -38,6 +38,25 @@ NormalizeData.Seurat <- function(
     stop(sprintf("Assay '%s' is not present in object.", assay), call. = FALSE)
   }
   assay_obj <- assays[[assay]]
+  if (inherits(assay_obj, "Assay") && !inherits(assay_obj, "StdAssay")) {
+    counts <- methods::slot(assay_obj, "counts")
+    if (!inherits(counts, "dgCMatrix")) {
+      counts <- tryCatch(
+        methods::as(counts, "dgCMatrix"),
+        error = function(e) NULL
+      )
+      if (is.null(counts)) {
+        stop("NormalizeData.Seurat requires counts convertible to dgCMatrix.", call. = FALSE)
+      }
+    }
+    data_mat <- counts
+    data_mat@x <- counts@x + 0
+    log_normalize_dgc(data_mat, scale.factor, 100L)
+    methods::slot(assay_obj, "data") <- data_mat
+    assays[[assay]] <- assay_obj
+    methods::slot(object, "assays") <- assays
+    return(SeuratObject::LogSeuratCommand(object))
+  }
   assay_slots <- methods::slotNames(assay_obj)
   if (
     !inherits(assay_obj, "StdAssay") ||

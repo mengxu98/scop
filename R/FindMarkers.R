@@ -56,10 +56,7 @@ marker_pair_supported <- function(
 marker_pair_cells <- function(object, assay, layer, ident.1, ident.2, cells.1, cells.2) {
   assay <- assay %||% SeuratObject::DefaultAssay(object)
   assay.obj <- object[[assay]]
-  if (length(SeuratObject::Layers(assay.obj, search = layer)) > 1L) {
-    return(NULL)
-  }
-  data.use <- SeuratObject::LayerData(object, layer = layer, assay = assay)
+  data.use <- marker_get_data(object, assay.obj, layer)
   if (is.null(data.use) || !inherits(data.use, "dgCMatrix")) {
     return(NULL)
   }
@@ -132,7 +129,7 @@ marker_pair_parallel <- function(
   ) {
     return(NULL)
   }
-  data.use <- SeuratObject::LayerData(object, layer = layer, assay = assay)
+  data.use <- marker_get_data(object, object[[assay]], layer)
   if (!inherits(data.use, "dgCMatrix")) {
     return(NULL)
   }
