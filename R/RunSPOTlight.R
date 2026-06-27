@@ -26,31 +26,70 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(visium_human_pancreas_sub)
-#' data(panc8_sub)
-#'
-#' spatial <- RunSPOTlight(
-#'   srt = visium_human_pancreas_sub,
-#'   reference = panc8_sub,
-#'   reference_label = "celltype",
-#'   assay = "Spatial",
-#'   reference_assay = "RNA"
+#' spatial <- subset(
+#'   visium_human_pancreas_sub,
+#'   cells = colnames(visium_human_pancreas_sub)[1:120],
+#'   features = rownames(visium_human_pancreas_sub)[1:400]
 #' )
+#' spotlight_weights <- data.frame(
+#'   SPOTlight_prop_Ductal = seq(0.70, 0.20, length.out = ncol(spatial)),
+#'   SPOTlight_prop_Endocrine = seq(0.20, 0.70, length.out = ncol(spatial)),
+#'   SPOTlight_prop_Immune = 0.10,
+#'   row.names = colnames(spatial)
+#' )
+#' spotlight_weights <- spotlight_weights / rowSums(spotlight_weights)
+#' spatial <- Seurat::AddMetaData(spatial, spotlight_weights)
+#' spatial$SPOTlight_dominant_type <- sub(
+#'   "^SPOTlight_prop_",
+#'   "",
+#'   colnames(spotlight_weights)[max.col(spotlight_weights)]
+#' )
+#' spatial$SPOTlight_max_prop <- apply(spotlight_weights, 1, max)
 #'
-#' SpatialSpotPlot(spatial, group.by = "SPOTlight_dominant_type")
+#' SpatialSpotPlot(
+#'   spatial,
+#'   group.by = "SPOTlight_dominant_type",
+#'   overlay_image = FALSE,
+#'   coord.cols = c("x", "y")
+#' )
+#' if (requireNamespace("scatterpie", quietly = TRUE)) {
+#'   SpatialSpotPlot(
+#'     spatial,
+#'     group.by = "SPOTlight_dominant_type",
+#'     plot_type = "pie",
+#'     overlay_image = FALSE,
+#'     coord.cols = c("x", "y")
+#'   )
+#' }
+#'
+#' if (
+#'   requireNamespace("SPOTlight", quietly = TRUE) &&
+#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#' ) {
+#' data(pancreas_sub)
+#' features_use <- head(intersect(rownames(spatial), rownames(pancreas_sub)), 300)
+#' spatial <- RunSPOTlight(
+#'   srt = spatial,
+#'   reference = pancreas_sub,
+#'   reference_label = "CellType",
+#'   assay = "Spatial",
+#'   reference_assay = "RNA",
+#'   features = features_use,
+#'   marker_top_n = 20,
+#'   verbose = FALSE
+#' )
 #'
 #' spotlight_cols <- grep(
 #'   "^SPOTlight_prop_",
 #'   colnames(spatial@meta.data),
 #'   value = TRUE
 #' )
-#' SpatialSpotPlot(spatial, group.by = spotlight_cols[1:4])
-#'
 #' SpatialSpotPlot(
 #'   spatial,
-#'   group.by = "SPOTlight_dominant_type",
-#'   plot_type = "pie"
+#'   group.by = spotlight_cols[1:min(3, length(spotlight_cols))],
+#'   overlay_image = FALSE,
+#'   coord.cols = c("x", "y")
 #' )
 #' }
 RunSPOTlight <- function(
