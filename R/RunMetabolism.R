@@ -535,7 +535,7 @@ RunMetabolism <- function(
     scores_mat <- scores_mat[colnames(srt), , drop = FALSE]
   }
 
-  scores_for_plot <- Matrix::t(as_matrix(scores_mat))
+  scores_for_plot <- as_matrix(Matrix::t(scores_mat))
   term_ids <- rownames(scores_for_plot)
   term_labels <- term_names_final[term_ids]
   term_labels[is.na(term_labels) | !nzchar(trimws(term_labels))] <- term_ids[is.na(term_labels) | !nzchar(trimws(term_labels))]
@@ -548,7 +548,7 @@ RunMetabolism <- function(
   if (single_cell_mode) {
     if (isTRUE(new_assay)) {
       srt[[assay_name]] <- Seurat::CreateAssayObject(
-        counts = as_matrix(scores_for_plot)
+        counts = scores_for_plot
       )
       srt[[assay_name]] <- Seurat::AddMetaData(
         object = srt[[assay_name]],
@@ -560,7 +560,7 @@ RunMetabolism <- function(
     } else {
       srt <- Seurat::AddMetaData(
         object = srt,
-        metadata = as.data.frame(Matrix::t(as_matrix(scores_for_plot)))
+        metadata = as.data.frame(Matrix::t(scores_for_plot))
       )
     }
   }
