@@ -61,6 +61,52 @@ test_that("SCENICPlot activity heatmap returns drawable plot object", {
   expect_true("matrix_list" %in% names(out$heatmap))
 })
 
+test_that("SCENICPlot activity heatmap can order rows by RSS source group", {
+  dat <- make_scenic_plot_mock(seed = 22)
+  dat$auc[,] <- 0
+  dat$auc["Jun(+)", dat$srt$CellType == "A"] <- 4
+  dat$auc["Atf3(+)", dat$srt$CellType == "A"] <- 3
+  dat$auc["Fos(+)", dat$srt$CellType == "B"] <- 4
+  dat$auc["Klf4(+)", dat$srt$CellType == "B"] <- 3
+  dat$auc["Sox9(+)", dat$srt$CellType == "C"] <- 4
+  dat$auc["Birc3(+)", dat$srt$CellType == "C"] <- 3
+  dat$srt@tools$SCENIC <- list(scores_cells_by_regulon = t(dat$auc))
+
+  out <- SCENICPlot(
+    dat$srt,
+    group.by = "CellType",
+    plot_type = "activity_heatmap",
+    heatmap_order = "group",
+    heatmap_cluster_rows = FALSE,
+    top_n = 1,
+    verbose = FALSE
+  )
+
+  regulons <- rev(levels(out$plot_data$regulon))
+  expect_length(regulons, 3)
+  expect_equal(
+    as.character(unique(out$plot_data$rss_group[match(regulons, out$plot_data$regulon)])),
+    c("A", "B", "C")
+  )
+  expect_true(all(c("rss_group", "rss_rank") %in% colnames(out$plot_data)))
+})
+
+test_that("SCENICPlot activity heatmap explicit features are not replaced by top_n", {
+  dat <- make_scenic_plot_mock(seed = 23)
+  out <- SCENICPlot(
+    dat$srt,
+    group.by = "CellType",
+    plot_type = "activity_heatmap",
+    features = rownames(dat$auc)[1:4],
+    heatmap_order = "input",
+    top_n = 1,
+    verbose = FALSE
+  )
+
+  expect_equal(rev(levels(out$plot_data$regulon)), rownames(dat$auc)[1:4])
+  expect_true(all(c("rss_group", "rss_rank") %in% colnames(out$plot_data)))
+})
+
 test_that("SCENICPlot rss rank keeps requested labels by default", {
   dat <- make_scenic_plot_mock(seed = 3)
   out <- SCENICPlot(
