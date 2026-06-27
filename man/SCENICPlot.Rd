@@ -138,9 +138,12 @@ and columns in SCENIC heatmaps.}
 \item{heatmap_order}{Row ordering strategy for \code{plot_type = "rss_heatmap"}
 and \code{plot_type = "activity_heatmap"}. \code{"cluster"} keeps the existing
 dendrogram-based order, \code{"group"} groups regulons by the group where each
-regulon reaches its maximum heatmap value, and \code{"input"} keeps the resolved
-feature order. \code{"group"} and \code{"input"} disable row clustering so the chosen
-order is preserved.}
+regulon reaches its maximum heatmap value. For \code{activity_heatmap} without
+explicit \code{features}, \code{"group"} uses the RSS group that first selected each
+displayed regulon, so \code{top_n} controls both the displayed feature set and
+source-group row blocks. \code{"input"} keeps the resolved feature order.
+\code{"group"} and \code{"input"} disable row clustering so the chosen order is
+preserved.}
 
 \item{heatmap_row_names_side, heatmap_column_names_side}{Sides used for row
 and column names in SCENIC heatmaps.}
