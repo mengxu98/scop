@@ -55,12 +55,20 @@ test_that("RunscPagwas validates required GWAS columns early", {
 test_that("RunscPagwas passes Seurat input and stores tools metadata", {
   srt <- make_scpagwas_seurat()
   gwas <- make_scpagwas_gwas()
-  runner <- function(single_data, gwas_data, block_annotation, output.dirs) {
-    expect_s4_class(single_data, "Seurat")
+  block <- tempfile(fileext = ".tsv")
+  write.table(
+    data.frame(chrom = "chr1", start = 1, end = 2, label = "Gene1"),
+    block,
+    sep = "\t",
+    quote = FALSE,
+    row.names = FALSE
+  )
+  runner <- function(Single_data, gwas_data, block_annotation, output.dirs) {
+    expect_s4_class(Single_data, "Seurat")
     expect_identical(gwas_data, gwas)
-    expect_identical(block_annotation, "hg38")
+    expect_s3_class(block_annotation, "data.frame")
     expect_true(grepl("^/", output.dirs))
-    single_data
+    Single_data
   }
 
   with_mock_scpagwas(runner, {
@@ -68,6 +76,7 @@ test_that("RunscPagwas passes Seurat input and stores tools metadata", {
       srt = srt,
       gwas_data = gwas,
       celltype_meta = "celltype",
+      block_annotation = block,
       output.dirs = "relative-output",
       cleanup_soar = FALSE,
       verbose = FALSE
@@ -83,9 +92,16 @@ test_that("RunscPagwas supports RDS paths, custom block annotation, and list att
   gwas <- make_scpagwas_gwas()
   single_data <- tempfile(fileext = ".rds")
   block <- tempfile(fileext = ".tsv")
-  runner <- function(single_data, block_annotation, unused = NULL) {
-    expect_identical(single_data, normalizePath(single_data, mustWork = FALSE))
-    expect_identical(block_annotation, normalizePath(block, mustWork = FALSE))
+  write.table(
+    data.frame(chrom = "chr1", start = 1, end = 2, label = "Gene1"),
+    block,
+    sep = "\t",
+    quote = FALSE,
+    row.names = FALSE
+  )
+  runner <- function(Single_data, block_annotation, unused = NULL) {
+    expect_identical(Single_data, normalizePath(single_data, mustWork = FALSE))
+    expect_s3_class(block_annotation, "data.frame")
     list(score = 1)
   }
 

@@ -479,15 +479,43 @@ RunscMalignantStates <- function(
 }
 
 ensure_scmalignantfinder_python <- function(verbose = TRUE) {
+  if ((nzchar(Sys.getenv("RETICULATE_PYTHON")) || reticulate::py_available(initialize = FALSE)) &&
+    isTRUE(scmf_python_classifier_available())) {
+    return(invisible(TRUE))
+  }
   PrepareEnv(modules = "scanpy", verbose = verbose)
+  if (isTRUE(scmf_python_classifier_available())) {
+    return(invisible(TRUE))
+  }
   ok <- check_python("scMalignantFinder", pip = TRUE, verbose = verbose)
-  if (isFALSE(ok)) {
+  if (isFALSE(ok) || !isTRUE(scmf_python_classifier_available())) {
     log_message(
-      "Failed to install or locate {.pkg scMalignantFinder}. Install it manually in the active {.pkg scop} Python environment.",
+      "Failed to install or locate a usable {.pkg scMalignantFinder} classifier module. Install it manually in the active {.pkg scop} Python environment.",
       message_type = "error"
     )
   }
   invisible(TRUE)
+}
+
+scmf_python_classifier_available <- function() {
+  code <- paste(
+    "import importlib.util, pathlib, sys",
+    "spec = importlib.util.find_spec('scMalignantFinder')",
+    "assert spec is not None and spec.submodule_search_locations",
+    "pkg_dir = pathlib.Path(list(spec.submodule_search_locations)[0])",
+    "module_path = pkg_dir / 'classifier.py'",
+    "assert module_path.exists()",
+    "module_spec = importlib.util.spec_from_file_location('_scop_scmf_classifier_check', module_path)",
+    "module = importlib.util.module_from_spec(module_spec)",
+    "sys.modules['_scop_scmf_classifier_check'] = module",
+    "module_spec.loader.exec_module(module)",
+    "assert hasattr(module, 'scMalignantFinder')",
+    sep = "\n"
+  )
+  isTRUE(tryCatch({
+    reticulate::py_run_string(code, local = TRUE)
+    TRUE
+  }, error = function(e) FALSE))
 }
 
 scmf_check_xgboost_python <- function(verbose = TRUE) {
