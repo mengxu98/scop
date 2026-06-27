@@ -230,9 +230,12 @@ and columns in SCENIC heatmaps.</p></dd>
 <dd><p>Row ordering strategy for <code>plot_type = "rss_heatmap"</code>
 and <code>plot_type = "activity_heatmap"</code>. <code>"cluster"</code> keeps the existing
 dendrogram-based order, <code>"group"</code> groups regulons by the group where each
-regulon reaches its maximum heatmap value, and <code>"input"</code> keeps the resolved
-feature order. <code>"group"</code> and <code>"input"</code> disable row clustering so the chosen
-order is preserved.</p></dd>
+regulon reaches its maximum heatmap value. For <code>activity_heatmap</code> without
+explicit <code>features</code>, <code>"group"</code> uses the RSS group that first selected each
+displayed regulon, so <code>top_n</code> controls both the displayed feature set and
+source-group row blocks. <code>"input"</code> keeps the resolved feature order.
+<code>"group"</code> and <code>"input"</code> disable row clustering so the chosen order is
+preserved.</p></dd>
 
 
 <dt id="arg-heatmap-row-names-side-heatmap-column-names-side">heatmap_row_names_side, heatmap_column_names_side<a class="anchor" aria-label="anchor" href="#arg-heatmap-row-names-side-heatmap-column-names-side"></a></dt>

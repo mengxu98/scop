@@ -202,7 +202,7 @@ Biotechnology</em> (2021). <a href="https://doi.org/10.1038/s41587-021-01091-3" 
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">islet_bulk</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">panc8_sub</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-26 12:09:07] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-27 18:13:46] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
 <span class="r-in"><span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu">RunScissor</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
 <span class="r-in"><span>  bulk_dataset <span class="op">=</span> <span class="va">islet_bulk</span>,</span></span>
@@ -218,8 +218,8 @@ Biotechnology</em> (2021). <a href="https://doi.org/10.1038/s41587-021-01091-3" 
 <span class="r-in"><span>  alpha <span class="op">=</span> <span class="fl">0.2</span>,</span></span>
 <span class="r-in"><span>  cutoff <span class="op">=</span> <span class="fl">0.5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-26 12:09:19] Scissor alpha <span style="color: #0000BB;">0.2</span> selected <span style="color: #0000BB;">4</span> positive and <span style="color: #0000BB;">445</span> negative cells (<span style="color: #0000BB;">28.062</span>%)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-26 12:09:19] <span style="color: #0000BB;">Scissor</span> stored <span style="color: #0000BB;">4</span> Scissor+ and <span style="color: #0000BB;">445</span> Scissor- cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-27 18:13:56] Scissor alpha <span style="color: #0000BB;">0.2</span> selected <span style="color: #0000BB;">4</span> positive and <span style="color: #0000BB;">441</span> negative cells (<span style="color: #0000BB;">27.812</span>%)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-27 18:13:56] <span style="color: #0000BB;">Scissor</span> stored <span style="color: #0000BB;">4</span> Scissor+ and <span style="color: #0000BB;">441</span> Scissor- cells</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="ScissorPlot.html">ScissorPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>

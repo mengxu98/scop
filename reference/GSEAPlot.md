@@ -336,200 +336,35 @@ GSEAPlot(
 ## Examples
 
 ``` r
-data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-26 11:03:41] Start standard processing workflow...
-#> ℹ [2026-06-26 11:03:41] Checking a list of <Seurat>...
-#> ! [2026-06-26 11:03:42] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-26 11:03:42] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-26 11:03:42] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-26 11:03:42] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-26 11:03:42] Number of available HVF: 2000
-#> ℹ [2026-06-26 11:03:42] Finished check
-#> ℹ [2026-06-26 11:03:42] Perform `ScaleData()`
-#> ℹ [2026-06-26 11:03:42] Perform pca linear dimension reduction
-#> ℹ [2026-06-26 11:03:42] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-26 11:03:43] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-26 11:03:43] Reorder clusters...
-#> ℹ [2026-06-26 11:03:43] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-26 11:03:43] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-26 11:03:50] Standard processing workflow completed
-pancreas_sub <- RunDEtest(
-  pancreas_sub,
-  group.by = "CellType"
+term2gene <- data.frame(
+  Term = c(rep("Endocrine markers", 5), rep("Ductal markers", 5)),
+  symbol = c("INS", "GCG", "SST", "IAPP", "PCSK1", "KRT19", "SOX9", "MUC1", "CFTR", "KRT7")
 )
-#> ℹ [2026-06-26 11:03:50] Data type is log-normalized
-#> ℹ [2026-06-26 11:03:50] Start differential expression test
-#> ℹ [2026-06-26 11:03:50] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-06-26 11:03:50] Using 1 core
-#> ⠙ [2026-06-26 11:03:50] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ✔ [2026-06-26 11:03:50] Completed 5 tasks in 632ms
-#> 
-#> ℹ [2026-06-26 11:03:50] Building results
-#> ✔ [2026-06-26 11:03:51] Differential expression test completed
-pancreas_sub <- RunGSEA(
-  pancreas_sub,
-  group.by = "CellType",
-  db = "GO_BP",
-  species = "Mus_musculus"
+genes <- unique(term2gene$symbol)
+scores <- seq_along(genes)
+names(scores) <- genes
+gsea_out <- RunGSEA(
+  geneID = genes,
+  geneScore = scores,
+  geneID_groups = rep("Cluster1", length(genes)),
+  TERM2GENE = term2gene,
+  minGSSize = 2
 )
-#> ℹ [2026-06-26 11:03:51] Start GSEA analysis
-#> ℹ [2026-06-26 11:03:51] Resolving `RunDEtest()` results for `group.by` = "CellType" and `test.use` = "wilcox" ...
-#> ℹ [2026-06-26 11:03:51] Filtering DE results with `DE_threshold`: "p_val_adj < 0.05" ...
-#> ℹ [2026-06-26 11:03:51] Using 3754 ranked genes across 5 group(s) for GSEA.
-#> ! [2026-06-26 11:03:51] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
-#> ℹ [2026-06-26 11:03:51] Preparing GSEA database(s): "GO_BP" for species "Mus_musculus" ...
-#> ℹ [2026-06-26 11:03:51] Species: "Mus_musculus"
-#> ℹ [2026-06-26 11:03:51] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-06-26 10:57:26
-#> ℹ [2026-06-26 11:03:52] Prepared 3754 ranked gene rows after ID mapping.
-#> ℹ [2026-06-26 11:03:52] Running GSEA for 5 group/database combination(s) using 1 core(s) ...
-#> ℹ [2026-06-26 11:03:52] Using 1 core
-#> ℹ [2026-06-26 11:03:52] Running GSEA: group "Ductal", database "GO_BP", genes 1557 ...
-#> ℹ [2026-06-26 11:04:01] Finished GSEA: group "Ductal", database "GO_BP".
-#> ⠙ [2026-06-26 11:03:52] Running for 1 [1/5] ■■          20% | ETA: 34s
-#> ℹ [2026-06-26 11:04:01] Running GSEA: group "Ngn3-high-EP", database "GO_BP", genes 482 ...
-#> ⠙ [2026-06-26 11:03:52] Running for 1 [1/5] ■■          20% | ETA: 34s
-#> ℹ [2026-06-26 11:04:04] Finished GSEA: group "Ngn3-high-EP", database "GO_BP".
-#> ⠙ [2026-06-26 11:03:52] Running for 1 [1/5] ■■          20% | ETA: 34s
-#> ⠹ [2026-06-26 11:03:52] Running for 2 [2/5] ■■■■        40% | ETA: 17s
-#> ℹ [2026-06-26 11:04:04] Running GSEA: group "Endocrine", database "GO_BP", genes 912 ...
-#> ⠹ [2026-06-26 11:03:52] Running for 2 [2/5] ■■■■        40% | ETA: 17s
-#> ℹ [2026-06-26 11:04:09] Finished GSEA: group "Endocrine", database "GO_BP".
-#> ⠹ [2026-06-26 11:03:52] Running for 2 [2/5] ■■■■        40% | ETA: 17s
-#> ⠸ [2026-06-26 11:03:52] Running for 3 [3/5] ■■■■■■      60% | ETA: 11s
-#> ℹ [2026-06-26 11:04:09] Running GSEA: group "Ngn3-low-EP", database "GO_BP", genes 423 ...
-#> ⠸ [2026-06-26 11:03:52] Running for 3 [3/5] ■■■■■■      60% | ETA: 11s
-#> ℹ [2026-06-26 11:04:12] Finished GSEA: group "Ngn3-low-EP", database "GO_BP".
-#> ⠸ [2026-06-26 11:03:52] Running for 3 [3/5] ■■■■■■      60% | ETA: 11s
-#> ⠼ [2026-06-26 11:03:52] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  5s
-#> ℹ [2026-06-26 11:04:12] Running GSEA: group "Pre-endocrine", database "GO_BP", genes 380 ...
-#> ⠼ [2026-06-26 11:03:52] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  5s
-#> ℹ [2026-06-26 11:04:15] Finished GSEA: group "Pre-endocrine", database "GO_BP".
-#> ⠼ [2026-06-26 11:03:52] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  5s
-#> ✔ [2026-06-26 11:03:52] Completed 5 tasks in 22.6s
-#> 
-#> ℹ [2026-06-26 11:03:52] Building results
-#> ✔ [2026-06-26 11:04:15] GSEA analysis done
-GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal"
-)
-
-
-p1 <- GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal",
-  id_use = "GO:0006412"
-)
-#> Error in `.rowNamesDF<-`(x, value = value): missing values in 'row.names' are not allowed
-p1
-#> Error: object 'p1' not found
-
-thisplot::panel_fix_overall(p1, height = 6)
-#> Error: object 'p1' not found
-
-GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  topTerm = 3,
-  plot_type = "comparison"
-)
+#> ℹ [2026-06-27 17:26:44] Start GSEA analysis
+#> ! [2026-06-27 17:26:44] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
+#> ℹ [2026-06-27 17:26:44] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...
+#> ℹ [2026-06-27 17:26:44] Prepared 10 ranked gene rows after ID mapping.
+#> ℹ [2026-06-27 17:26:44] Running GSEA for 1 group/database combination(s) using 1 core(s) ...
+#> ℹ [2026-06-27 17:26:44] Using 1 core
+#> ℹ [2026-06-27 17:26:44] Running GSEA: group "Cluster1", database "custom", genes 10 ...
+#> ℹ [2026-06-27 17:26:44] Finished GSEA: group "Cluster1", database "custom".
+#> ℹ [2026-06-27 17:26:44] Building results
+#> ✔ [2026-06-27 17:26:44] GSEA analysis done
+GSEAPlot(res = gsea_out, db = "custom", plot_type = "comparison")
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's alpha values.
-#> Warning: Removed 9786 rows containing missing values or values outside the scale range
-#> (`geom_point()`).
 
-GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  topTerm = 3,
-  plot_type = "comparison",
-  direction = "pos"
-)
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's alpha values.
-#> Warning: Removed 9786 rows containing missing values or values outside the scale range
-#> (`geom_point()`).
-
-GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  topTerm = 3,
-  plot_type = "comparison",
-  compare_only_sig = TRUE
-)
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's alpha values.
-#> Warning: Removed 9786 rows containing missing values or values outside the scale range
-#> (`geom_point()`).
-
-GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  plot_type = "bar"
-)
-#> Error in `.rowNamesDF<-`(x, value = value): missing values in 'row.names' are not allowed
-GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  plot_type = "bar",
-  direction = "both"
-)
-#> Error in `.rowNamesDF<-`(x, value = value): missing values in 'row.names' are not allowed
-GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal",
-  plot_type = "bar",
-  topTerm = 20,
-  direction = "both",
-  palcolor = c("red3", "steelblue")
-)
+GSEAPlot(res = gsea_out, db = "custom", plot_type = "bar")
 #> Warning: `guide_colourbar()` cannot be used for alpha.
 #> ℹ Use one of colour, color, or fill instead.
-
-
-GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal",
-  plot_type = "network"
-)
-#> ✔ [2026-06-26 11:04:18] shadowtext installed successfully
-
-GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal",
-  plot_type = "enrichmap"
-)
-
-GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal",
-  plot_type = "wordcloud"
-)
-
-GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal",
-  plot_type = "wordcloud",
-  word_type = "feature"
-)
 ```

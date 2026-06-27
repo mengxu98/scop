@@ -74,16 +74,54 @@ A `Seurat` object.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 data(visium_human_pancreas_sub)
-
-spatial <- RunSemlaSpatialNetwork(
+spatial <- subset(
   visium_human_pancreas_sub,
-  nNeighbors = 6,
-  coords = "array"
+  cells = colnames(visium_human_pancreas_sub)[1:120],
+  features = rownames(visium_human_pancreas_sub)[1:400]
+)
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating Seurat objects
+spatial@tools$SemlaSpatialNetwork <- list(
+  network = data.frame(
+    from = colnames(spatial)[1:6],
+    to = colnames(spatial)[2:7],
+    distance = sqrt(diff(spatial$x[1:7])^2 + diff(spatial$y[1:7])^2)
+  )
 )
 
 head(spatial@tools$SemlaSpatialNetwork$network)
-SpatialSpotPlot(spatial, group.by = "orig.ident")
-} # }
+#>                                  from                 to distance
+#> ATTATCTCGACAGATC-1 TGGTATCGGTCTGTAT-1 ATTATCTCGACAGATC-1       55
+#> TGAGATCAAATACTCA-1 ATTATCTCGACAGATC-1 TGAGATCAAATACTCA-1       55
+#> CTGGTCCTAACTTGGC-1 TGAGATCAAATACTCA-1 CTGGTCCTAACTTGGC-1       55
+#> ATAGTCTTTGACGTGC-1 CTGGTCCTAACTTGGC-1 ATAGTCTTTGACGTGC-1       55
+#> GGGTGGTCCAGCCTGT-1 ATAGTCTTTGACGTGC-1 GGGTGGTCCAGCCTGT-1       55
+#> ACACGGCACTATGCAT-1 GGGTGGTCCAGCCTGT-1 ACACGGCACTATGCAT-1       55
+SpatialSpotPlot(
+  spatial,
+  group.by = "coda_label",
+  overlay_image = FALSE,
+  coord.cols = c("x", "y")
+)
+
+
+if (
+  requireNamespace("semla", quietly = TRUE) &&
+    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+) {
+spatial <- RunSemlaSpatialNetwork(
+  spatial,
+  nNeighbors = 6,
+  coords = "pixels",
+  verbose = FALSE
+)
+}
 ```

@@ -249,248 +249,43 @@ Enrichment result is a list with the following component:
 ## Examples
 
 ``` r
-data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-26 11:59:35] Start standard processing workflow...
-#> ℹ [2026-06-26 11:59:36] Checking a list of <Seurat>...
-#> ! [2026-06-26 11:59:36] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-26 11:59:36] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-26 11:59:36] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-26 11:59:36] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-26 11:59:36] Number of available HVF: 2000
-#> ℹ [2026-06-26 11:59:36] Finished check
-#> ℹ [2026-06-26 11:59:36] Perform `ScaleData()`
-#> ℹ [2026-06-26 11:59:37] Perform pca linear dimension reduction
-#> ℹ [2026-06-26 11:59:37] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-26 11:59:37] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-26 11:59:37] Reorder clusters...
-#> ℹ [2026-06-26 11:59:38] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-26 11:59:38] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-26 11:59:46] Standard processing workflow completed
-pancreas_sub <- RunDEtest(
-  pancreas_sub,
-  group.by = "CellType"
-)
-#> ℹ [2026-06-26 11:59:46] Data type is log-normalized
-#> ℹ [2026-06-26 11:59:46] Start differential expression test
-#> ℹ [2026-06-26 11:59:46] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-06-26 11:59:46] Using 1 core
-#> ⠙ [2026-06-26 11:59:46] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ✔ [2026-06-26 11:59:46] Completed 5 tasks in 855ms
-#> 
-#> ℹ [2026-06-26 11:59:46] Building results
-#> ✔ [2026-06-26 11:59:47] Differential expression test completed
-pancreas_sub <- RunGSEA(
-  pancreas_sub,
-  group.by = "CellType",
-  DE_threshold = "p_val_adj < 0.05",
-  scoreType = "std",
-  db = "GO_BP",
-  species = "Mus_musculus"
-)
-#> ℹ [2026-06-26 11:59:47] Start GSEA analysis
-#> ℹ [2026-06-26 11:59:47] Resolving `RunDEtest()` results for `group.by` = "CellType" and `test.use` = "wilcox" ...
-#> ℹ [2026-06-26 11:59:47] Filtering DE results with `DE_threshold`: "p_val_adj < 0.05" ...
-#> ℹ [2026-06-26 11:59:47] Using 3754 ranked genes across 5 group(s) for GSEA.
-#> ! [2026-06-26 11:59:47] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
-#> ℹ [2026-06-26 11:59:47] Preparing GSEA database(s): "GO_BP" for species "Mus_musculus" ...
-#> ℹ [2026-06-26 11:59:47] Species: "Mus_musculus"
-#> ℹ [2026-06-26 11:59:47] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-06-26 10:57:26
-#> ℹ [2026-06-26 11:59:48] Prepared 3754 ranked gene rows after ID mapping.
-#> ℹ [2026-06-26 11:59:48] Running GSEA for 5 group/database combination(s) using 1 core(s) ...
-#> ℹ [2026-06-26 11:59:48] Using 1 core
-#> ℹ [2026-06-26 11:59:48] Running GSEA: group "Ductal", database "GO_BP", genes 1557 ...
-#> ℹ [2026-06-26 11:59:57] Finished GSEA: group "Ductal", database "GO_BP".
-#> ⠙ [2026-06-26 11:59:48] Running for 1 [1/5] ■■          20% | ETA: 33s
-#> ℹ [2026-06-26 11:59:57] Running GSEA: group "Ngn3-high-EP", database "GO_BP", genes 482 ...
-#> ⠙ [2026-06-26 11:59:48] Running for 1 [1/5] ■■          20% | ETA: 33s
-#> ℹ [2026-06-26 12:00:00] Finished GSEA: group "Ngn3-high-EP", database "GO_BP".
-#> ⠙ [2026-06-26 11:59:48] Running for 1 [1/5] ■■          20% | ETA: 33s
-#> ⠹ [2026-06-26 11:59:48] Running for 2 [2/5] ■■■■        40% | ETA: 17s
-#> ℹ [2026-06-26 12:00:00] Running GSEA: group "Endocrine", database "GO_BP", genes 912 ...
-#> ⠹ [2026-06-26 11:59:48] Running for 2 [2/5] ■■■■        40% | ETA: 17s
-#> ℹ [2026-06-26 12:00:05] Finished GSEA: group "Endocrine", database "GO_BP".
-#> ⠹ [2026-06-26 11:59:48] Running for 2 [2/5] ■■■■        40% | ETA: 17s
-#> ⠸ [2026-06-26 11:59:48] Running for 3 [3/5] ■■■■■■      60% | ETA: 11s
-#> ℹ [2026-06-26 12:00:05] Running GSEA: group "Ngn3-low-EP", database "GO_BP", genes 423 ...
-#> ⠸ [2026-06-26 11:59:48] Running for 3 [3/5] ■■■■■■      60% | ETA: 11s
-#> ℹ [2026-06-26 12:00:08] Finished GSEA: group "Ngn3-low-EP", database "GO_BP".
-#> ⠸ [2026-06-26 11:59:48] Running for 3 [3/5] ■■■■■■      60% | ETA: 11s
-#> ⠼ [2026-06-26 11:59:48] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  5s
-#> ℹ [2026-06-26 12:00:08] Running GSEA: group "Pre-endocrine", database "GO_BP", genes 380 ...
-#> ⠼ [2026-06-26 11:59:48] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  5s
-#> ℹ [2026-06-26 12:00:11] Finished GSEA: group "Pre-endocrine", database "GO_BP".
-#> ⠼ [2026-06-26 11:59:48] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  5s
-#> ✔ [2026-06-26 11:59:48] Completed 5 tasks in 22.6s
-#> 
-#> ℹ [2026-06-26 11:59:48] Building results
-#> ✔ [2026-06-26 12:00:11] GSEA analysis done
-GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  plot_type = "comparison"
-)
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's alpha values.
-#> Warning: Removed 9786 rows containing missing values or values outside the scale range
-#> (`geom_point()`).
-
-GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal",
-  id_use = "GO:0006412"
-)
-#> Error in `.rowNamesDF<-`(x, value = value): missing values in 'row.names' are not allowed
-GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  group_use = "Ductal",
-  id_use = c(
-    "GO:0046903", "GO:0015031", "GO:0007600"
+term2gene <- data.frame(
+  Term = c(
+    rep("Endocrine markers", 5),
+    rep("Exocrine markers", 5),
+    rep("Ductal markers", 5)
+  ),
+  symbol = c(
+    "INS", "GCG", "SST", "IAPP", "PCSK1",
+    "PRSS1", "CPA1", "CELA3A", "REG1A", "CTRB1",
+    "KRT19", "SOX9", "MUC1", "CFTR", "KRT7"
   )
 )
-#> Warning: non-unique values when setting 'row.names': 
-#> Error in `.rowNamesDF<-`(x, value = value): duplicate 'row.names' are not allowed
-
-# Remove redundant GO terms
-pancreas_sub <- RunGSEA(
-  pancreas_sub,
-  group.by = "CellType",
-  db = "GO_BP",
-  GO_simplify = TRUE,
-  species = "Mus_musculus"
-)
-#> ℹ [2026-06-26 12:00:12] Start GSEA analysis
-#> ℹ [2026-06-26 12:00:12] Resolving `RunDEtest()` results for `group.by` = "CellType" and `test.use` = "wilcox" ...
-#> ℹ [2026-06-26 12:00:12] Filtering DE results with `DE_threshold`: "p_val_adj < 0.05" ...
-#> ℹ [2026-06-26 12:00:12] Using 3754 ranked genes across 5 group(s) for GSEA.
-#> ! [2026-06-26 12:00:12] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
-#> ℹ [2026-06-26 12:00:12] Preparing GSEA database(s): "GO_BP" for species "Mus_musculus" ...
-#> ℹ [2026-06-26 12:00:12] Species: "Mus_musculus"
-#> ℹ [2026-06-26 12:00:12] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-06-26 10:57:26
-#> ℹ [2026-06-26 12:00:13] Prepared 3754 ranked gene rows after ID mapping.
-#> ℹ [2026-06-26 12:00:13] Running GSEA for 5 group/database combination(s) using 1 core(s) ...
-#> ℹ [2026-06-26 12:00:13] Using 1 core
-#> ℹ [2026-06-26 12:00:13] Running GSEA: group "Ductal", database "GO_BP", genes 1557 ...
-#> ⠙ [2026-06-26 12:00:13] Running for 1 [1/5] ■■          20% | ETA: 34s
-#> ℹ [2026-06-26 12:00:22] Running GSEA: group "Ngn3-high-EP", database "GO_BP", genes 482 ...
-#> ⠙ [2026-06-26 12:00:13] Running for 1 [1/5] ■■          20% | ETA: 34s
-#> ⠹ [2026-06-26 12:00:13] Running for 2 [2/5] ■■■■        40% | ETA: 18s
-#> ℹ [2026-06-26 12:00:25] Running GSEA: group "Endocrine", database "GO_BP", genes 912 ...
-#> ⠹ [2026-06-26 12:00:13] Running for 2 [2/5] ■■■■        40% | ETA: 18s
-#> ⠸ [2026-06-26 12:00:13] Running for 3 [3/5] ■■■■■■      60% | ETA: 11s
-#> ℹ [2026-06-26 12:00:30] Running GSEA: group "Ngn3-low-EP", database "GO_BP", genes 423 ...
-#> ⠸ [2026-06-26 12:00:13] Running for 3 [3/5] ■■■■■■      60% | ETA: 11s
-#> ⠼ [2026-06-26 12:00:13] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  5s
-#> ℹ [2026-06-26 12:00:33] Running GSEA: group "Pre-endocrine", database "GO_BP", genes 380 ...
-#> ⠼ [2026-06-26 12:00:13] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  5s
-#> ✔ [2026-06-26 12:00:13] Completed 5 tasks in 23.4s
-#> 
-#> ℹ [2026-06-26 12:00:13] Building results
-#> ! [2026-06-26 12:00:13] Found 5 failed results
-#> ℹ [2026-06-26 12:00:36] ✖ Error details:
-#> ℹ                       ✖ missing value where TRUE/FALSE needed (5): "1", "2", "3" and 2 more
-#> Error in x@result: no applicable method for `@` applied to an object of class "parallelize_error"
-GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP_sim",
-  group.by = "CellType",
-  plot_type = "comparison"
-)
-#> Error in resolve_enrichment_plot_db(db = db, enrichment = enrichment): GO_BP_sim is not in the enrichment result
-
-# Or use "geneID", "geneScore" and
-# "geneID_groups" as input to run GSEA
-de_df <- dplyr::filter(
-  pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
-  p_val_adj < 0.05
-)
+genes <- unique(term2gene$symbol)
+scores <- seq_along(genes)
+names(scores) <- genes
 gsea_out <- RunGSEA(
-  geneID = de_df[["gene"]],
-  geneScore = de_df[["avg_log2FC"]],
-  geneID_groups = de_df[["group1"]],
-  db = "GO_BP",
-  species = "Mus_musculus"
+  geneID = genes,
+  geneScore = scores,
+  geneID_groups = rep("Cluster1", length(genes)),
+  TERM2GENE = term2gene,
+  minGSSize = 2
 )
-#> ℹ [2026-06-26 12:00:36] Start GSEA analysis
-#> ! [2026-06-26 12:00:36] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
-#> ℹ [2026-06-26 12:00:36] Preparing GSEA database(s): "GO_BP" for species "Mus_musculus" ...
-#> ℹ [2026-06-26 12:00:36] Species: "Mus_musculus"
-#> ℹ [2026-06-26 12:00:37] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-06-26 10:57:26
-#> ℹ [2026-06-26 12:00:38] Prepared 3754 ranked gene rows after ID mapping.
-#> ℹ [2026-06-26 12:00:38] Running GSEA for 5 group/database combination(s) using 1 core(s) ...
-#> ℹ [2026-06-26 12:00:38] Using 1 core
-#> ℹ [2026-06-26 12:00:38] Running GSEA: group "Ductal", database "GO_BP", genes 1557 ...
-#> ℹ [2026-06-26 12:00:47] Finished GSEA: group "Ductal", database "GO_BP".
-#> ⠙ [2026-06-26 12:00:38] Running for 1 [1/5] ■■          20% | ETA: 37s
-#> ℹ [2026-06-26 12:00:47] Running GSEA: group "Ngn3-high-EP", database "GO_BP", genes 482 ...
-#> ⠙ [2026-06-26 12:00:38] Running for 1 [1/5] ■■          20% | ETA: 37s
-#> ℹ [2026-06-26 12:00:50] Finished GSEA: group "Ngn3-high-EP", database "GO_BP".
-#> ⠙ [2026-06-26 12:00:38] Running for 1 [1/5] ■■          20% | ETA: 37s
-#> ⠹ [2026-06-26 12:00:38] Running for 2 [2/5] ■■■■        40% | ETA: 19s
-#> ℹ [2026-06-26 12:00:50] Running GSEA: group "Endocrine", database "GO_BP", genes 912 ...
-#> ⠹ [2026-06-26 12:00:38] Running for 2 [2/5] ■■■■        40% | ETA: 19s
-#> ℹ [2026-06-26 12:00:55] Finished GSEA: group "Endocrine", database "GO_BP".
-#> ⠹ [2026-06-26 12:00:38] Running for 2 [2/5] ■■■■        40% | ETA: 19s
-#> ⠸ [2026-06-26 12:00:38] Running for 3 [3/5] ■■■■■■      60% | ETA: 12s
-#> ℹ [2026-06-26 12:00:55] Running GSEA: group "Ngn3-low-EP", database "GO_BP", genes 423 ...
-#> ⠸ [2026-06-26 12:00:38] Running for 3 [3/5] ■■■■■■      60% | ETA: 12s
-#> ℹ [2026-06-26 12:00:59] Finished GSEA: group "Ngn3-low-EP", database "GO_BP".
-#> ⠸ [2026-06-26 12:00:38] Running for 3 [3/5] ■■■■■■      60% | ETA: 12s
-#> ⠼ [2026-06-26 12:00:38] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  5s
-#> ℹ [2026-06-26 12:00:59] Running GSEA: group "Pre-endocrine", database "GO_BP", genes 380 ...
-#> ⠼ [2026-06-26 12:00:38] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  5s
-#> ℹ [2026-06-26 12:01:02] Finished GSEA: group "Pre-endocrine", database "GO_BP".
-#> ⠼ [2026-06-26 12:00:38] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  5s
-#> ✔ [2026-06-26 12:00:38] Completed 5 tasks in 24.2s
-#> 
-#> ℹ [2026-06-26 12:00:38] Building results
-#> ✔ [2026-06-26 12:01:02] GSEA analysis done
+#> ℹ [2026-06-27 18:05:57] Start GSEA analysis
+#> ! [2026-06-27 18:05:57] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
+#> ℹ [2026-06-27 18:05:57] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...
+#> ℹ [2026-06-27 18:05:57] Prepared 15 ranked gene rows after ID mapping.
+#> ℹ [2026-06-27 18:05:57] Running GSEA for 1 group/database combination(s) using 1 core(s) ...
+#> ℹ [2026-06-27 18:05:57] Using 1 core
+#> ℹ [2026-06-27 18:05:57] Running GSEA: group "Cluster1", database "custom", genes 15 ...
+#> ℹ [2026-06-27 18:05:57] Finished GSEA: group "Cluster1", database "custom".
+#> ℹ [2026-06-27 18:05:57] Building results
+#> ✔ [2026-06-27 18:05:57] GSEA analysis done
 GSEAPlot(
   res = gsea_out,
-  db = "GO_BP",
+  db = "custom",
   plot_type = "comparison"
 )
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's alpha values.
-#> Warning: Removed 9786 rows containing missing values or values outside the scale range
-#> (`geom_point()`).
-
-
-# Use a combined database
-pancreas_sub <- RunGSEA(
-  pancreas_sub,
-  group.by = "CellType",
-  db = c(
-    "KEGG", "WikiPathway", "Reactome", "PFAM", "MP"
-  ),
-  db_combine = TRUE,
-  species = "Mus_musculus"
-)
-#> ℹ [2026-06-26 12:01:03] Start GSEA analysis
-#> ℹ [2026-06-26 12:01:03] Resolving `RunDEtest()` results for `group.by` = "CellType" and `test.use` = "wilcox" ...
-#> ℹ [2026-06-26 12:01:03] Filtering DE results with `DE_threshold`: "p_val_adj < 0.05" ...
-#> ℹ [2026-06-26 12:01:03] Using 3754 ranked genes across 5 group(s) for GSEA.
-#> ! [2026-06-26 12:01:03] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
-#> ℹ [2026-06-26 12:01:03] Preparing GSEA database(s): "KEGG, WikiPathway, Reactome, PFAM, MP" for species "Mus_musculus" ...
-#> ℹ [2026-06-26 12:01:03] Species: "Mus_musculus"
-#> ℹ [2026-06-26 12:01:03] Preparing KEGG database
-#> ℹ [2026-06-26 12:01:05] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): cannot open URL 'https://rest.kegg.jp/list/organism'>
-#> ! [2026-06-26 12:01:05] Failed to download using auto, from <https://rest.kegg.jp/list/organism>
-#> ℹ [2026-06-26 12:01:08] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): 'wget' call had nonzero exit status>
-#> ! [2026-06-26 12:01:08] Failed to download using wget, from <https://rest.kegg.jp/list/organism>
-#> ℹ [2026-06-26 12:01:11] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): cannot open URL 'https://rest.kegg.jp/list/organism'>
-#> ! [2026-06-26 12:01:11] Failed to download using libcurl, from <https://rest.kegg.jp/list/organism>
-#> Error in `[.data.frame`(orgs, , 3): undefined columns selected
-GSEAPlot(
-  pancreas_sub,
-  db = "Combined",
-  group.by = "CellType",
-  plot_type = "comparison"
-)
-#> Error in resolve_enrichment_plot_db(db = db, enrichment = enrichment): Combined is not in the enrichment result
 ```

@@ -121,31 +121,63 @@ features, and cells.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 data(visium_human_pancreas_sub)
-spatial <- Seurat::NormalizeData(
+spatial <- subset(
   visium_human_pancreas_sub,
-  assay = "Spatial",
-  verbose = FALSE
+  cells = colnames(visium_human_pancreas_sub)[1:120],
+  features = rownames(visium_human_pancreas_sub)[1:400]
 )
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating Seurat objects
+module_features <- rownames(spatial)[1:4]
+module_cor <- expand.grid(
+  feat_ID = module_features,
+  variable = module_features
+)
+module_cor$spat_cor <- c(
+  1, 0.4, 0.1, -0.2,
+  0.4, 1, 0.3, 0.0,
+  0.1, 0.3, 1, 0.5,
+  -0.2, 0.0, 0.5, 1
+)
+giotto_modules <- list(
+  module_tables = list(result.cor_DT = module_cor),
+  features = module_features,
+  parameters = list(assay = "Spatial", layer = "data")
+)
+class(giotto_modules) <- c("giotto2_spatial_modules", "giotto2_result", "list")
+
+names(giotto_modules$module_tables)
+#> [1] "result.cor_DT"
+GiottoPlot(giotto_modules, top_n = 4)
+
+
+if (
+  requireNamespace("Giotto", quietly = TRUE) &&
+    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+) {
+spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 spatial <- Seurat::FindVariableFeatures(
   spatial,
   assay = "Spatial",
-  nfeatures = 500,
+  nfeatures = 300,
   verbose = FALSE
 )
-
 giotto_modules <- RunGiottoSpatialModules(
   spatial,
   assay = "Spatial",
   layer = "data",
   features = Seurat::VariableFeatures(spatial, assay = "Spatial")[1:50],
-  coord.cols = c("col", "row"),
+  coord.cols = c("x", "y"),
   cor_method = "pearson",
   k = 6
 )
-
-names(giotto_modules$module_tables)
-GiottoPlot(giotto_modules, top_n = 12)
-} # }
+}
 ```

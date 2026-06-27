@@ -139,25 +139,57 @@ A `Seurat` object with MERINGUE results stored in
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 data(visium_human_pancreas_sub)
-spatial <- Seurat::NormalizeData(
+spatial <- subset(
   visium_human_pancreas_sub,
-  assay = "Spatial",
-  verbose = FALSE
+  cells = colnames(visium_human_pancreas_sub)[1:120],
+  features = rownames(visium_human_pancreas_sub)[1:400]
 )
-
-spatial <- RunMERINGUE(
-  spatial,
-  assay = "Spatial",
-  mode = c("autocorrelation", "cross_correlation"),
-  nfeatures = 50
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating Seurat objects
+spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
+spatial@misc[["MERINGUEFeatures"]] <- rownames(spatial)[1:4]
+spatial@tools[["MERINGUE"]] <- list(
+  autocorrelation = data.frame(
+    feature = rownames(spatial)[1:4],
+    statistic = c(0.42, 0.35, 0.28, 0.22),
+    p_value = c(0.001, 0.004, 0.010, 0.020),
+    q_value = c(0.004, 0.008, 0.015, 0.030)
+  )
 )
 
 head(spatial@tools[["MERINGUE"]]$autocorrelation)
+#>   feature statistic p_value q_value
+#> 1  TMSB4X      0.42   0.001   0.004
+#> 2     UBC      0.35   0.004   0.008
+#> 3     GCG      0.28   0.010   0.015
+#> 4    ACTB      0.22   0.020   0.030
 SpatialSpotPlot(
   spatial,
-  features = spatial@misc[["MERINGUEFeatures"]][1:2]
+  features = spatial@misc[["MERINGUEFeatures"]][1:2],
+  overlay_image = FALSE,
+  coord.cols = c("x", "y")
 )
-} # }
+
+
+if (
+  requireNamespace("MERINGUE", quietly = TRUE) &&
+    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+) {
+spatial <- RunMERINGUE(
+  spatial,
+  assay = "Spatial",
+  coord.cols = c("x", "y"),
+  mode = c("autocorrelation", "cross_correlation"),
+  nfeatures = 50,
+  verbose = FALSE
+)
+}
 ```

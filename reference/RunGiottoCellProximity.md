@@ -114,30 +114,59 @@ table, raw Giotto result, parameters, features, and cells.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 data(visium_human_pancreas_sub)
-spatial <- Seurat::NormalizeData(
+spatial <- subset(
   visium_human_pancreas_sub,
-  assay = "Spatial",
-  verbose = FALSE
+  cells = colnames(visium_human_pancreas_sub)[1:120],
+  features = rownames(visium_human_pancreas_sub)[1:400]
 )
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating Seurat objects
 spatial$region <- ifelse(
-  spatial$col > stats::median(spatial$col),
+  spatial$x > stats::median(spatial$x),
   "right",
   "left"
 )
+proximity <- list(
+  enrichment = data.frame(
+    group_1 = c("left", "left", "right", "right"),
+    group_2 = c("left", "right", "left", "right"),
+    enrichment = c(1.1, -0.7, -0.5, 1.3),
+    type_int = c("enriched", "depleted", "depleted", "enriched")
+  ),
+  parameters = list(network_method = "Delaunay", number_of_simulations = 100)
+)
+class(proximity) <- c("giotto2_cell_proximity", "giotto2_result", "list")
 
+head(proximity$enrichment)
+#>   group_1 group_2 enrichment type_int
+#> 1    left    left        1.1 enriched
+#> 2    left   right       -0.7 depleted
+#> 3   right    left       -0.5 depleted
+#> 4   right   right        1.3 enriched
+GiottoPlot(proximity)
+
+
+if (
+  requireNamespace("Giotto", quietly = TRUE) &&
+    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+) {
+spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 proximity <- RunGiottoCellProximity(
   spatial,
   group.by = "region",
   assay = "Spatial",
   layer = "data",
-  coord.cols = c("col", "row"),
+  coord.cols = c("x", "y"),
   network_method = "Delaunay",
   number_of_simulations = 100
 )
-
-head(proximity$enrichment)
-GiottoPlot(proximity)
-} # }
+}
 ```

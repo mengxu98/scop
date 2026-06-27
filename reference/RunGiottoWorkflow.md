@@ -65,3 +65,63 @@ RunGiottoWorkflow(
 
 A Seurat object by default for Seurat input, otherwise a \`giotto2\`
 workflow object.
+
+## Examples
+
+``` r
+data(visium_human_pancreas_sub)
+spatial <- subset(
+  visium_human_pancreas_sub,
+  cells = colnames(visium_human_pancreas_sub)[1:80],
+  features = rownames(visium_human_pancreas_sub)[1:300]
+)
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating Seurat objects
+g <- structure(
+  list(
+    source = list(
+      cells = colnames(spatial),
+      features = rownames(spatial),
+      coordinates = data.frame(
+        cell_ID = colnames(spatial),
+        sdimx = spatial$x,
+        sdimy = spatial$y
+      )
+    ),
+    results = list(
+      cluster = list(
+        table = data.frame(
+          cluster = paste0("cluster_", (seq_len(ncol(spatial)) - 1) %% 3 + 1),
+          row.names = colnames(spatial)
+        )
+      )
+    ),
+    active = "cluster"
+  ),
+  class = c("giotto2", "list")
+)
+GiottoPlot(g, plot_type = "cluster")
+
+
+if (
+  requireNamespace("Giotto", quietly = TRUE) &&
+    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+) {
+g <- RunGiottoWorkflow(
+  spatial,
+  steps = "basic",
+  assay = "Spatial",
+  layer = "counts",
+  coord.cols = c("x", "y"),
+  return_seurat = FALSE,
+  verbose = FALSE
+)
+}
+```

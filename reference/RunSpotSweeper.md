@@ -159,17 +159,61 @@ A `Seurat` object with SpotSweeper QC metadata. When
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 data(visium_human_pancreas_sub)
-
-spatial <- RunSpotSweeper(
+spatial <- subset(
   visium_human_pancreas_sub,
-  assay = "Spatial",
-  n_neighbors = 18,
-  n_order = 2
+  cells = colnames(visium_human_pancreas_sub)[1:120],
+  features = rownames(visium_human_pancreas_sub)[1:400]
+)
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating Seurat objects
+spatial$SpotSweeper_QC <- factor(
+  ifelse(seq_len(ncol(spatial)) %% 9 == 0, "Fail", "Pass"),
+  levels = c("Pass", "Fail")
+)
+spatial$SpotSweeper_nCount_Spatial_z <- as.numeric(scale(spatial$nCount_Spatial))
+
+SpatialSpotPlot(
+  spatial,
+  group.by = "SpotSweeper_QC",
+  overlay_image = FALSE,
+  coord.cols = c("x", "y")
 )
 
-SpatialSpotPlot(spatial, group.by = "SpotSweeper_QC")
-SpatialSpotPlot(spatial, group.by = "SpotSweeper_nCount_Spatial_z")
-} # }
+SpatialSpotPlot(
+  spatial,
+  group.by = "SpotSweeper_nCount_Spatial_z",
+  overlay_image = FALSE,
+  coord.cols = c("x", "y")
+)
+
+
+if (
+  requireNamespace("SpotSweeper", quietly = TRUE) &&
+    requireNamespace("SpatialExperiment", quietly = TRUE) &&
+    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+) {
+  spatial <- RunSpotSweeper(
+    spatial,
+    assay = "Spatial",
+    coord.cols = c("x", "y"),
+    n_neighbors = 12,
+    run_artifact = FALSE,
+    verbose = FALSE
+  )
+
+  SpatialSpotPlot(
+    spatial,
+    group.by = "SpotSweeper_QC",
+    overlay_image = FALSE,
+    coord.cols = c("x", "y")
+  )
+}
 ```

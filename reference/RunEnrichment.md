@@ -247,180 +247,29 @@ Enrichment result is a list with the following component:
 ## Examples
 
 ``` r
-data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-26 11:52:24] Start standard processing workflow...
-#> ℹ [2026-06-26 11:52:25] Checking a list of <Seurat>...
-#> ! [2026-06-26 11:52:25] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-26 11:52:25] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-26 11:52:25] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-26 11:52:25] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-26 11:52:25] Number of available HVF: 2000
-#> ℹ [2026-06-26 11:52:25] Finished check
-#> ℹ [2026-06-26 11:52:25] Perform `ScaleData()`
-#> ℹ [2026-06-26 11:52:25] Perform pca linear dimension reduction
-#> ℹ [2026-06-26 11:52:26] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-26 11:52:26] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-26 11:52:26] Reorder clusters...
-#> ℹ [2026-06-26 11:52:26] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-26 11:52:26] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-26 11:52:35] Standard processing workflow completed
-pancreas_sub <- RunDEtest(
-  pancreas_sub,
-  group.by = "CellType"
+term2gene <- data.frame(
+  Term = c(
+    rep("Endocrine markers", 5),
+    rep("Exocrine markers", 5),
+    rep("Ductal markers", 5)
+  ),
+  symbol = c(
+    "INS", "GCG", "SST", "IAPP", "PCSK1",
+    "PRSS1", "CPA1", "CELA3A", "REG1A", "CTRB1",
+    "KRT19", "SOX9", "MUC1", "CFTR", "KRT7"
+  )
 )
-#> ℹ [2026-06-26 11:52:35] Data type is log-normalized
-#> ℹ [2026-06-26 11:52:35] Start differential expression test
-#> ℹ [2026-06-26 11:52:35] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-06-26 11:52:35] Using 1 core
-#> ⠙ [2026-06-26 11:52:35] Running for Ductal [1/5] ■■          20% | ETA:  1s
-#> ✔ [2026-06-26 11:52:35] Completed 5 tasks in 876ms
-#> 
-#> ℹ [2026-06-26 11:52:35] Building results
-#> ✔ [2026-06-26 11:52:36] Differential expression test completed
-pancreas_sub <- RunEnrichment(
-  pancreas_sub,
-  group.by = "CellType",
-  DE_threshold = "p_val_adj < 0.05",
-  db = "GO_BP",
-  species = "Mus_musculus"
-)
-#> ℹ [2026-06-26 11:52:36] Start Enrichment analysis
-#> ℹ [2026-06-26 11:52:36] Species: "Mus_musculus"
-#> ℹ [2026-06-26 11:52:36] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-06-26 10:57:26
-#> ℹ [2026-06-26 11:52:38] Permform enrichment...
-#> ℹ [2026-06-26 11:52:39] Using 1 core
-#> ⠙ [2026-06-26 11:52:39] Running for 1 [1/5] ■■          20% | ETA:  4s
-#> ⠹ [2026-06-26 11:52:39] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  1s
-#> ✔ [2026-06-26 11:52:39] Completed 5 tasks in 3.5s
-#> 
-#> ℹ [2026-06-26 11:52:39] Building results
-#> ✔ [2026-06-26 11:52:43] Enrichment analysis done
-EnrichmentPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group.by = "CellType",
-  plot_type = "comparison"
-)
-
-
-pancreas_sub <- RunEnrichment(
-  pancreas_sub,
-  group.by = "CellType",
-  DE_threshold = "p_val_adj < 0.05",
-  db = c("MSigDB", "MSigDB_MH"),
-  species = "Mus_musculus"
-)
-#> ℹ [2026-06-26 11:52:43] Start Enrichment analysis
-#> ℹ [2026-06-26 11:52:43] Species: "Mus_musculus"
-#> ℹ [2026-06-26 11:52:43] Preparing MSigDB database
-#> ℹ [2026-06-26 11:52:55] Permform enrichment...
-#> ℹ [2026-06-26 11:52:56] Using 1 core
-#> ⠙ [2026-06-26 11:52:56] Running for 1 [1/10] ■           10% | ETA:  7s
-#> ⠹ [2026-06-26 11:52:56] Running for 4 [4/10] ■■■■        40% | ETA:  5s
-#> ✔ [2026-06-26 11:52:56] Completed 10 tasks in 4s
-#> 
-#> ℹ [2026-06-26 11:52:56] Building results
-#> ✔ [2026-06-26 11:53:00] Enrichment analysis done
-EnrichmentPlot(
-  pancreas_sub,
-  db = "MSigDB",
-  group.by = "CellType",
-  plot_type = "comparison"
-)
-
-EnrichmentPlot(
-  pancreas_sub,
-  db = "MSigDB_MH",
-  group.by = "CellType",
-  plot_type = "comparison"
-)
-
-
-# Remove redundant GO terms
-pancreas_sub <- RunEnrichment(
-  pancreas_sub,
-  group.by = "CellType",
-  db = "GO_BP",
-  GO_simplify = TRUE,
-  species = "Mus_musculus"
-)
-#> ℹ [2026-06-26 11:53:01] Start Enrichment analysis
-#> ! [2026-06-26 11:53:01] `GO_simplify = TRUE` requires clusterProfiler result objects; using `backend = 'r'` for this run.
-#> ℹ [2026-06-26 11:53:01] Species: "Mus_musculus"
-#> ℹ [2026-06-26 11:53:01] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-06-26 10:57:26
-#> ℹ [2026-06-26 11:53:03] Permform enrichment...
-#> ℹ [2026-06-26 11:53:05] Using 1 core
-#> ⠙ [2026-06-26 11:53:05] Running for 1 [1/5] ■■          20% | ETA: 12m
-#> ⠹ [2026-06-26 11:53:05] Running for 2 [2/5] ■■■■        40% | ETA:  5m
-#> ⠸ [2026-06-26 11:53:05] Running for 3 [3/5] ■■■■■■      60% | ETA:  3m
-#> ⠼ [2026-06-26 11:53:05] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  1m
-#> ✔ [2026-06-26 11:53:05] Completed 5 tasks in 5m 19.9s
-#> 
-#> ℹ [2026-06-26 11:53:05] Building results
-#> ✔ [2026-06-26 11:58:24] Enrichment analysis done
-EnrichmentPlot(
-  pancreas_sub,
-  db = "GO_BP_sim",
-  group.by = "CellType",
-  plot_type = "comparison"
-)
-
-
-# Or use "geneID" and "geneID_groups" as input to run enrichment
-de_df <- dplyr::filter(
-  pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
-  p_val_adj < 0.05
-)
+gene_groups <- rep(c("Cluster1", "Cluster2"), each = 6)
 enrich_out <- RunEnrichment(
-  geneID = de_df[["gene"]],
-  geneID_groups = de_df[["group1"]],
-  db = "GO_BP",
-  species = "Mus_musculus"
+  geneID = c("INS", "GCG", "SST", "IAPP", "PRSS1", "CPA1", "KRT19", "SOX9", "MUC1", "CFTR", "KRT7", "REG1A"),
+  geneID_groups = gene_groups,
+  TERM2GENE = term2gene,
+  minGSSize = 2
 )
-#> ℹ [2026-06-26 11:58:25] Start Enrichment analysis
-#> ℹ [2026-06-26 11:58:25] Species: "Mus_musculus"
-#> ℹ [2026-06-26 11:58:25] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-06-26 10:57:26
-#> ℹ [2026-06-26 11:58:26] Permform enrichment...
-#> ℹ [2026-06-26 11:58:28] Using 1 core
-#> ⠙ [2026-06-26 11:58:28] Running for 1 [1/5] ■■          20% | ETA:  2s
-#> ⠹ [2026-06-26 11:58:28] Running for 3 [3/5] ■■■■■■      60% | ETA:  1s
-#> ✔ [2026-06-26 11:58:28] Completed 5 tasks in 3s
-#> 
-#> ℹ [2026-06-26 11:58:28] Building results
-#> ✔ [2026-06-26 11:58:31] Enrichment analysis done
+#> ℹ [2026-06-27 18:05:25] Start Enrichment analysis
 EnrichmentPlot(
   res = enrich_out,
-  db = "GO_BP",
+  db = "custom",
   plot_type = "comparison"
 )
-
-
-# Use a combined database
-pancreas_sub <- RunEnrichment(
-  pancreas_sub,
-  group.by = "CellType",
-  db = c(
-    "KEGG", "WikiPathway", "Reactome", "PFAM", "MP"
-  ),
-  db_combine = TRUE,
-  species = "Mus_musculus"
-)
-#> ℹ [2026-06-26 11:58:31] Start Enrichment analysis
-#> ℹ [2026-06-26 11:58:31] Species: "Mus_musculus"
-#> ℹ [2026-06-26 11:58:51] Preparing KEGG database
-#> ℹ [2026-06-26 11:58:53] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): cannot open URL 'https://rest.kegg.jp/list/organism'>
-#> ! [2026-06-26 11:58:53] Failed to download using auto, from <https://rest.kegg.jp/list/organism>
-#> ℹ [2026-06-26 11:58:55] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): 'wget' call had nonzero exit status>
-#> ! [2026-06-26 11:58:55] Failed to download using wget, from <https://rest.kegg.jp/list/organism>
-#> ℹ [2026-06-26 11:58:58] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): cannot open URL 'https://rest.kegg.jp/list/organism'>
-#> ! [2026-06-26 11:58:58] Failed to download using libcurl, from <https://rest.kegg.jp/list/organism>
-#> Error in `[.data.frame`(orgs, , 3): undefined columns selected
-EnrichmentPlot(
-  pancreas_sub,
-  db = "Combined",
-  group.by = "CellType",
-  plot_type = "comparison"
-)
-#> Error in resolve_enrichment_plot_db(db = db, enrichment = enrichment): Combined is not in the enrichment result
 ```

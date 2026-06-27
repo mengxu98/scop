@@ -190,14 +190,50 @@ A `Seurat` object with spatial gradient screening results stored in
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
+data(visium_human_pancreas_sub)
+spatial <- subset(
+  visium_human_pancreas_sub,
+  cells = colnames(visium_human_pancreas_sub)[1:120],
+  features = rownames(visium_human_pancreas_sub)[1:400]
+)
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating Seurat objects
 spatial <- RunSpatialGradientFeatures(
   spatial,
-  reference = "annotation",
-  annotation.by = "BayesSpace_cluster",
-  annotation.groups = "1",
-  variables = spatial@misc[["SpatialVariableFeatures"]]
+  reference = "trajectory",
+  backend = "cpp",
+  result_name = "ductal_axis",
+  variables = rownames(spatial)[1:8],
+  start = c(min(spatial$x), min(spatial$y)),
+  end = c(max(spatial$x), max(spatial$y)),
+  layer = "counts",
+  coord.cols = c("x", "y"),
+  n_random = 0,
+  n_bins = 5,
+  min_spots = 3,
+  sign_threshold = 1,
+  nfeatures = 4,
+  verbose = FALSE
 )
-SpatialGradientPlot(spatial, plot_type = "combined")
-} # }
+
+SpatialGradientPlot(spatial, plot_type = "summary", nfeatures = 4)
+
+SpatialGradientPlot(spatial, plot_type = "line", nfeatures = 2)
+
+SpatialGradientPlot(spatial, plot_type = "model", nfeatures = 2)
+
+SpatialGradientPlot(
+  spatial,
+  plot_type = "surface",
+  nfeatures = 2,
+  overlay_image = FALSE,
+  coord.cols = c("x", "y")
+)
 ```
