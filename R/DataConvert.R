@@ -72,7 +72,7 @@ srt_to_adata <- function(
     }
     PrepareEnv(modules = "scanpy")
     check_python(
-      c("anndata", "numpy"),
+      c("anndata", "numpy", "scipy"),
       verbose = FALSE
     )
   }
@@ -103,8 +103,20 @@ srt_to_adata <- function(
 
   ad <- reticulate::import("anndata", convert = FALSE)
   np <- reticulate::import("numpy", convert = FALSE)
+  scipy_sparse <- reticulate::import("scipy.sparse", convert = FALSE)
 
-  obs <- srt@meta.data
+  assay_x_data <- get_adata_sparse_assay_layer(
+    srt = srt,
+    assay = assay_x,
+    layer = layer_x,
+    features = features,
+    scipy_sparse = scipy_sparse,
+    np = np
+  )
+  X <- assay_x_data$X
+  cell_order <- assay_x_data$cells
+
+  obs <- srt@meta.data[cell_order, , drop = FALSE]
   if (ncol(obs) > 0) {
     for (i in seq_len(ncol(obs))) {
       if (is.logical(obs[, i])) {
@@ -138,15 +150,8 @@ srt_to_adata <- function(
     var[["highly_variable"]] <- features %in% var_features
   }
 
-  X <- Matrix::t(
-    GetAssayData5(
-      srt,
-      assay = assay_x,
-      layer = layer_x
-    )[features, , drop = FALSE]
-  )
   adata <- ad$AnnData(
-    X = reticulate::np_array(X, dtype = np$float32),
+    X = X,
     obs = obs,
     var = cbind(
       data.frame(features = features),
@@ -158,26 +163,33 @@ srt_to_adata <- function(
   layer_list <- list()
   for (assay in names(srt@assays)[names(srt@assays) != assay_x]) {
     if (assay %in% assay_y) {
-      layer <- Matrix::t(
-        GetAssayData5(
-          srt,
-          assay = assay,
-          layer = layer_y[assay]
-        )
+      layer <- GetAssayData5(
+        srt,
+        assay = assay,
+        layer = layer_y[assay]
       )
-      if (!identical(dim(layer), dim(X))) {
-        if (all(colnames(X) %in% colnames(layer))) {
-          layer <- layer[, colnames(X)]
+      if (!identical(dim(layer), c(length(features), length(cell_order)))) {
+        if (all(features %in% rownames(layer)) && all(cell_order %in% colnames(layer))) {
+          layer <- layer[features, cell_order, drop = FALSE]
         } else {
-          features_null <- colnames(X)[!colnames(X) %in% colnames(layer)]
+          features_null <- features[!features %in% rownames(layer)]
+          cells_null <- cell_order[!cell_order %in% colnames(layer)]
           log_message(
             "The following features in the {.val {assay_x}} are not found in the {.val {assay}}: {.val {features_null}}",
             message_type = "warning",
             verbose = verbose
           )
+          log_message(
+            "The following cells in the {.val {assay_x}} are not found in the {.val {assay}}: {.val {cells_null}}",
+            message_type = "warning",
+            verbose = verbose
+          )
         }
       }
-      layer_list[[assay]] <- layer
+      layer_list[[assay]] <- scipy_sparse$csr_matrix(
+        reticulate::r_to_py(Matrix::t(layer)),
+        dtype = np$float32
+      )
     } else {
       log_message(
         "{.val {assay}} is in the srt object but not converted",
@@ -194,7 +206,8 @@ srt_to_adata <- function(
   reduction_names <- intersect(reduction_names, names(srt@reductions))
   reduction_list <- list()
   for (reduction in reduction_names) {
-    reduction_list[[reduction]] <- srt[[reduction]]@cell.embeddings
+    embeddings <- srt[[reduction]]@cell.embeddings
+    reduction_list[[reduction]] <- embeddings[cell_order, , drop = FALSE]
   }
   if (length(reduction_list) > 0) {
     adata$obsm <- reduction_list
@@ -252,6 +265,50 @@ srt_to_adata <- function(
   )
 
   return(adata)
+}
+
+get_adata_sparse_assay_layer <- function(
+  srt,
+  assay,
+  layer,
+  features,
+  scipy_sparse,
+  np
+) {
+  layer_names <- SeuratObject::Layers(srt[[assay]], search = layer)
+  if (length(layer_names) == 0L) {
+    log_message(
+      "No layer matching {.val {layer}} was found in assay {.val {assay}}",
+      message_type = "error"
+    )
+  }
+
+  x_list <- vector("list", length(layer_names))
+  cell_list <- vector("list", length(layer_names))
+  for (i in seq_along(layer_names)) {
+    mat <- SeuratObject::LayerData(
+      srt,
+      assay = assay,
+      layer = layer_names[i]
+    )
+    mat <- mat[features, , drop = FALSE]
+    cell_list[[i]] <- colnames(mat)
+    x_list[[i]] <- scipy_sparse$csr_matrix(
+      reticulate::r_to_py(Matrix::t(mat)),
+      dtype = np$float32
+    )
+  }
+
+  X <- if (length(x_list) == 1L) {
+    x_list[[1]]
+  } else {
+    scipy_sparse$vstack(x_list, format = "csr")
+  }
+
+  list(
+    X = X,
+    cells = unlist(cell_list, use.names = FALSE)
+  )
 }
 
 #' @title Convert a Seurat object to an `.h5ad` file
