@@ -614,6 +614,62 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// monocle2_order_from_mst_cpp
+List monocle2_order_from_mst_cpp(NumericMatrix distances, IntegerMatrix edges, int root_cell);
+RcppExport SEXP _scop_monocle2_order_from_mst_cpp(SEXP distancesSEXP, SEXP edgesSEXP, SEXP root_cellSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type distances(distancesSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type edges(edgesSEXP);
+    Rcpp::traits::input_parameter< int >::type root_cell(root_cellSEXP);
+    rcpp_result_gen = Rcpp::wrap(monocle2_order_from_mst_cpp(distances, edges, root_cell));
+    return rcpp_result_gen;
+END_RCPP
+}
+// monocle2_order_from_weighted_edges_cpp
+List monocle2_order_from_weighted_edges_cpp(int n_cells, IntegerMatrix edges, NumericVector weights, int root_cell);
+RcppExport SEXP _scop_monocle2_order_from_weighted_edges_cpp(SEXP n_cellsSEXP, SEXP edgesSEXP, SEXP weightsSEXP, SEXP root_cellSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n_cells(n_cellsSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type edges(edgesSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type weights(weightsSEXP);
+    Rcpp::traits::input_parameter< int >::type root_cell(root_cellSEXP);
+    rcpp_result_gen = Rcpp::wrap(monocle2_order_from_weighted_edges_cpp(n_cells, edges, weights, root_cell));
+    return rcpp_result_gen;
+END_RCPP
+}
+// monocle2_project_cells_to_mst_cpp
+List monocle2_project_cells_to_mst_cpp(NumericMatrix z, NumericMatrix y, IntegerMatrix graph_edges, IntegerVector closest_vertex);
+RcppExport SEXP _scop_monocle2_project_cells_to_mst_cpp(SEXP zSEXP, SEXP ySEXP, SEXP graph_edgesSEXP, SEXP closest_vertexSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type z(zSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type y(ySEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type graph_edges(graph_edgesSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type closest_vertex(closest_vertexSEXP);
+    rcpp_result_gen = Rcpp::wrap(monocle2_project_cells_to_mst_cpp(z, y, graph_edges, closest_vertex));
+    return rcpp_result_gen;
+END_RCPP
+}
+// monocle2_select_root_by_state_cpp
+int monocle2_select_root_by_state_cpp(NumericMatrix coords, IntegerVector candidate_cells, NumericVector pseudotime, IntegerVector closest_vertex, bool use_min_pseudotime);
+RcppExport SEXP _scop_monocle2_select_root_by_state_cpp(SEXP coordsSEXP, SEXP candidate_cellsSEXP, SEXP pseudotimeSEXP, SEXP closest_vertexSEXP, SEXP use_min_pseudotimeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type coords(coordsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type candidate_cells(candidate_cellsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type pseudotime(pseudotimeSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type closest_vertex(closest_vertexSEXP);
+    Rcpp::traits::input_parameter< bool >::type use_min_pseudotime(use_min_pseudotimeSEXP);
+    rcpp_result_gen = Rcpp::wrap(monocle2_select_root_by_state_cpp(coords, candidate_cells, pseudotime, closest_vertex, use_min_pseudotime));
+    return rcpp_result_gen;
+END_RCPP
+}
 // paga_connectivities_cpp
 List paga_connectivities_cpp(IntegerMatrix knn_idx, IntegerVector groups, int n_groups);
 RcppExport SEXP _scop_paga_connectivities_cpp(SEXP knn_idxSEXP, SEXP groupsSEXP, SEXP n_groupsSEXP) {
@@ -2419,6 +2475,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_milo_neighborhood_medians_cpp", (DL_FUNC) &_scop_milo_neighborhood_medians_cpp, 2},
     {"_scop_milo_nhood_counts_cpp", (DL_FUNC) &_scop_milo_nhood_counts_cpp, 5},
     {"_scop_milo_weighted_fdr_cpp", (DL_FUNC) &_scop_milo_weighted_fdr_cpp, 2},
+    {"_scop_monocle2_order_from_mst_cpp", (DL_FUNC) &_scop_monocle2_order_from_mst_cpp, 3},
+    {"_scop_monocle2_order_from_weighted_edges_cpp", (DL_FUNC) &_scop_monocle2_order_from_weighted_edges_cpp, 4},
+    {"_scop_monocle2_project_cells_to_mst_cpp", (DL_FUNC) &_scop_monocle2_project_cells_to_mst_cpp, 4},
+    {"_scop_monocle2_select_root_by_state_cpp", (DL_FUNC) &_scop_monocle2_select_root_by_state_cpp, 5},
     {"_scop_paga_connectivities_cpp", (DL_FUNC) &_scop_paga_connectivities_cpp, 3},
     {"_scop_paga_diffusion_pseudotime_cpp", (DL_FUNC) &_scop_paga_diffusion_pseudotime_cpp, 6},
     {"_scop_paga_velocity_transitions_cpp", (DL_FUNC) &_scop_paga_velocity_transitions_cpp, 5},

@@ -165,6 +165,22 @@ milo_weighted_fdr_cpp <- function(pvalues, weights) {
     .Call(`_scop_milo_weighted_fdr_cpp`, pvalues, weights)
 }
 
+monocle2_order_from_mst_cpp <- function(distances, edges, root_cell = 1L) {
+    .Call(`_scop_monocle2_order_from_mst_cpp`, distances, edges, root_cell)
+}
+
+monocle2_order_from_weighted_edges_cpp <- function(n_cells, edges, weights, root_cell = 1L) {
+    .Call(`_scop_monocle2_order_from_weighted_edges_cpp`, n_cells, edges, weights, root_cell)
+}
+
+monocle2_project_cells_to_mst_cpp <- function(z, y, graph_edges, closest_vertex) {
+    .Call(`_scop_monocle2_project_cells_to_mst_cpp`, z, y, graph_edges, closest_vertex)
+}
+
+monocle2_select_root_by_state_cpp <- function(coords, candidate_cells, pseudotime, closest_vertex, use_min_pseudotime = FALSE) {
+    .Call(`_scop_monocle2_select_root_by_state_cpp`, coords, candidate_cells, pseudotime, closest_vertex, use_min_pseudotime)
+}
+
 paga_connectivities_cpp <- function(knn_idx, groups, n_groups) {
     .Call(`_scop_paga_connectivities_cpp`, knn_idx, groups, n_groups)
 }

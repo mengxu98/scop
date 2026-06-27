@@ -28,7 +28,25 @@
 #' @param pseudo_expr Amount to increase expression values before dimensionality reduction.
 #' Default is 1.
 #' @param root_state The state to use as the root of the trajectory.
-#' If NULL, will prompt for user input.
+#' If NULL, the R backend prompts for user input, and the C++ backend prompts
+#' in interactive sessions after initial ordering. In non-interactive C++ runs,
+#' the first cell is used. For `backend = "cpp"`, `root_state` can also match a
+#' C++ trajectory state id after initial ordering, or a `group.by` label when
+#' `group.by` is provided.
+#' @param backend Backend used to compute the trajectory. `"r"` keeps the
+#' original Monocle2 workflow and remains the default. `"cpp"` keeps Monocle2
+#' dimensional reduction, uses native C++ ordering for DDRTree, and falls back
+#' to Monocle2 ordering for other reduction methods.
+#' @param n_neighbors Deprecated compatibility parameter for the C++ backend.
+#' The current C++ backend reuses Monocle2's learned minimum spanning tree and
+#' ignores this value.
+#' @param ddrtree_maxIter Optional maximum iteration count passed to
+#' `DDRTree::DDRTree()` when `reduction_method = "DDRTree"`. Lower values can
+#' speed up exploratory runs but may reduce agreement with the default Monocle2
+#' trajectory.
+#' @param ddrtree_ncenter Optional number of DDRTree centers. This can change
+#' trajectory topology and is intended for advanced exploratory use.
+#' @param ddrtree_tol Optional convergence tolerance passed to `DDRTree::DDRTree()`.
 #' @param show_plot Whether to print diagnostic plots during the run.
 #' Default is `FALSE`.
 #'
@@ -109,12 +127,45 @@ RunMonocle2 <- function(
   residualModelFormulaStr = NULL,
   pseudo_expr = 1,
   root_state = NULL,
+  backend = c("r", "cpp"),
+  n_neighbors = 30,
+  ddrtree_maxIter = NULL,
+  ddrtree_ncenter = NULL,
+  ddrtree_tol = NULL,
   show_plot = FALSE,
   xlab = NULL,
   ylab = NULL,
   seed = 11,
   verbose = TRUE
 ) {
+  backend <- match.arg(backend)
+  if (identical(backend, "cpp")) {
+    return(run_monocle2_cpp(
+      srt = srt,
+      assay = assay,
+      layer = layer,
+      group.by = group.by,
+      expressionFamily = expressionFamily,
+      features = features,
+      feature_type = feature_type,
+      disp_filter = disp_filter,
+      max_components = max_components,
+      reduction_method = reduction_method,
+      norm_method = norm_method,
+      residualModelFormulaStr = residualModelFormulaStr,
+      pseudo_expr = pseudo_expr,
+      root_state = root_state,
+      n_neighbors = n_neighbors,
+      ddrtree_maxIter = ddrtree_maxIter,
+      ddrtree_ncenter = ddrtree_ncenter,
+      ddrtree_tol = ddrtree_tol,
+      show_plot = show_plot,
+      xlab = xlab,
+      ylab = ylab,
+      seed = seed,
+      verbose = verbose
+    ))
+  }
   log_message("Run {.pkg monocle2}...", verbose = verbose)
   set.seed(seed)
   check_r(
@@ -163,10 +214,12 @@ RunMonocle2 <- function(
       args = list()
     )
   )
-  if (any(c("negbinomial", "negbinomial.size") %in% expressionFamily)) {
+  uses_negbinomial <- any(c("negbinomial", "negbinomial.size") %in% expressionFamily)
+  if (isTRUE(uses_negbinomial)) {
     cds <- get_namespace_fun("BiocGenerics", "estimateSizeFactors")(cds)
     cds <- get_namespace_fun("BiocGenerics", "estimateDispersions")(cds)
   }
+  dispersion_table <- NULL
   if (is.null(features)) {
     if (feature_type == "HVF") {
       features <- SeuratObject::VariableFeatures(
@@ -181,8 +234,9 @@ RunMonocle2 <- function(
       }
     }
     if (feature_type == "Disp") {
+      dispersion_table <- get_namespace_fun("monocle", "dispersionTable")(cds)
       features <- subset(
-        get_namespace_fun("monocle", "dispersionTable")(cds),
+        dispersion_table,
         eval(rlang::parse_expr(disp_filter))
       )$gene_id
     }
@@ -192,19 +246,23 @@ RunMonocle2 <- function(
     verbose = verbose
   )
   cds <- get_namespace_fun("monocle", "setOrderingFilter")(cds, features)
-  p <- get_namespace_fun("monocle", "plot_ordering_genes")(cds)
-  if (isTRUE(show_plot)) {
+  if (isTRUE(show_plot) && isTRUE(uses_negbinomial)) {
+    p <- get_namespace_fun("monocle", "plot_ordering_genes")(cds)
     print(p)
   }
 
-  cds <- get_namespace_fun("monocle", "reduceDimension")(
+  reduce_args <- monocle2_reduce_dimension_args(
     cds = cds,
     max_components = max_components,
     reduction_method = reduction_method,
     norm_method = norm_method,
     residualModelFormulaStr = residualModelFormulaStr,
-    pseudo_expr = pseudo_expr
+    pseudo_expr = pseudo_expr,
+    ddrtree_maxIter = ddrtree_maxIter,
+    ddrtree_ncenter = ddrtree_ncenter,
+    ddrtree_tol = ddrtree_tol
   )
+  cds <- do.call(get_namespace_fun("monocle", "reduceDimension"), reduce_args)
   cds <- get_namespace_fun("monocle", "orderCells")(cds)
 
   embeddings <- Matrix::t(cds@reducedDimS)
@@ -230,32 +288,30 @@ RunMonocle2 <- function(
     aes(x = x, y = y, xend = xend, yend = yend)
   )
 
-  p1 <- CellDimPlot(
-    srt,
-    group.by = "Monocle2_State",
-    reduction = reduction_method,
-    label = TRUE,
-    force = TRUE,
-    xlab = xlab,
-    ylab = ylab
-  ) +
-    trajectory
-  if (!is.null(group.by)) {
-    p2 <- CellDimPlot(
+  if (isTRUE(show_plot)) {
+    p1 <- CellDimPlot(
       srt,
-      group.by = group.by,
-      reduction = reduction_method,
+      group.by = "Monocle2_State",
+      reduction = cds@dim_reduce_type,
       label = TRUE,
       force = TRUE,
       xlab = xlab,
       ylab = ylab
     ) +
       trajectory
-    if (isTRUE(show_plot)) {
+    if (!is.null(group.by)) {
+      p2 <- CellDimPlot(
+        srt,
+        group.by = group.by,
+        reduction = cds@dim_reduce_type,
+        label = TRUE,
+        force = TRUE,
+        xlab = xlab,
+        ylab = ylab
+      ) +
+        trajectory
       print(p1 + p2)
-    }
-  } else {
-    if (isTRUE(show_plot)) {
+    } else {
       print(p1)
     }
   }
@@ -280,21 +336,38 @@ RunMonocle2 <- function(
     trajectory = trajectory
   )
 
-  p3 <- FeatureDimPlot(
-    srt,
-    features = "Monocle2_Pseudotime",
-    reduction = reduction_method,
-    xlab = xlab,
-    ylab = ylab
-  ) +
-    trajectory
-
-  if (!is.null(group.by)) {
-    if (isTRUE(show_plot)) {
+  if (isTRUE(show_plot)) {
+    p1 <- CellDimPlot(
+      srt,
+      group.by = "Monocle2_State",
+      reduction = cds@dim_reduce_type,
+      label = TRUE,
+      force = TRUE,
+      xlab = xlab,
+      ylab = ylab
+    ) +
+      trajectory
+    p3 <- FeatureDimPlot(
+      srt,
+      features = "Monocle2_Pseudotime",
+      reduction = cds@dim_reduce_type,
+      xlab = xlab,
+      ylab = ylab
+    ) +
+      trajectory
+    if (!is.null(group.by)) {
+      p2 <- CellDimPlot(
+        srt,
+        group.by = group.by,
+        reduction = cds@dim_reduce_type,
+        label = TRUE,
+        force = TRUE,
+        xlab = xlab,
+        ylab = ylab
+      ) +
+        trajectory
       print(p1 + p2 + p3)
-    }
-  } else {
-    if (isTRUE(show_plot)) {
+    } else {
       print(p1 + p3)
     }
   }
@@ -305,6 +378,538 @@ RunMonocle2 <- function(
   )
 
   return(srt)
+}
+
+monocle2_reduce_dimension_args <- function(
+  cds,
+  max_components = 2,
+  reduction_method = "DDRTree",
+  norm_method = "log",
+  residualModelFormulaStr = NULL,
+  pseudo_expr = 1,
+  ddrtree_maxIter = NULL,
+  ddrtree_ncenter = NULL,
+  ddrtree_tol = NULL
+) {
+  args <- list(
+    cds = cds,
+    max_components = max_components,
+    reduction_method = reduction_method,
+    norm_method = norm_method,
+    residualModelFormulaStr = residualModelFormulaStr,
+    pseudo_expr = pseudo_expr
+  )
+  if (identical(reduction_method, "DDRTree")) {
+    if (!is.null(ddrtree_maxIter)) {
+      args[["maxIter"]] <- as.integer(ddrtree_maxIter)
+    }
+    if (!is.null(ddrtree_ncenter)) {
+      args[["ncenter"]] <- as.integer(ddrtree_ncenter)
+    }
+    if (!is.null(ddrtree_tol)) {
+      args[["tol"]] <- as.numeric(ddrtree_tol)
+    }
+  }
+  args
+}
+
+run_monocle2_cpp <- function(
+  srt,
+  assay = NULL,
+  layer = "counts",
+  group.by = NULL,
+  expressionFamily = "negbinomial.size",
+  features = NULL,
+  feature_type = "HVF",
+  disp_filter = "mean_expression >= 0.1 & dispersion_empirical >= 1 * dispersion_fit",
+  max_components = 2,
+  reduction_method = "DDRTree",
+  norm_method = "log",
+  residualModelFormulaStr = NULL,
+  pseudo_expr = 1,
+  root_state = NULL,
+  n_neighbors = 30,
+  ddrtree_maxIter = NULL,
+  ddrtree_ncenter = NULL,
+  ddrtree_tol = NULL,
+  show_plot = FALSE,
+  xlab = NULL,
+  ylab = NULL,
+  seed = 11,
+  verbose = TRUE
+) {
+  log_message(
+    "Run {.pkg monocle2} hybrid cpp backend...",
+    verbose = verbose
+  )
+  set.seed(seed)
+  check_r(
+    c("mengxu98/monocle", "DDRTree", "BiocGenerics", "Biobase", "VGAM"),
+    verbose = FALSE
+  )
+
+  for (pkg in c("DDRTree", "Biobase")) {
+    if (!paste0("package:", pkg) %in% search()) {
+      suppressMessages(
+        suppressWarnings(
+          attachNamespace(pkg)
+        )
+      )
+    }
+  }
+
+  assay <- assay %||% SeuratObject::DefaultAssay(srt)
+  expr_matrix <- SeuratObject::as.sparse(
+    GetAssayData5(
+      srt,
+      assay = assay,
+      layer = layer
+    )
+  )
+  f_data <- data.frame(
+    gene_short_name = row.names(expr_matrix),
+    row.names = row.names(expr_matrix)
+  )
+  pd <- methods::new("AnnotatedDataFrame", data = srt@meta.data)
+  fd <- methods::new("AnnotatedDataFrame", data = f_data)
+  cds <- get_namespace_fun("monocle", "newCellDataSet")(
+    expr_matrix,
+    phenoData = pd,
+    featureData = fd,
+    expressionFamily = do.call(
+      get(
+        expressionFamily,
+        envir = getNamespace("VGAM")
+      ),
+      args = list()
+    )
+  )
+  need_dispersion <- isTRUE(show_plot) || (is.null(features) && identical(feature_type, "Disp"))
+  uses_negbinomial <- any(c("negbinomial", "negbinomial.size") %in% expressionFamily)
+  if (isTRUE(uses_negbinomial)) {
+    cds <- get_namespace_fun("BiocGenerics", "estimateSizeFactors")(cds)
+    if (isTRUE(need_dispersion)) {
+      cds <- get_namespace_fun("BiocGenerics", "estimateDispersions")(cds)
+    }
+  }
+  dispersion_table <- NULL
+  if (is.null(features)) {
+    if (feature_type == "HVF") {
+      features <- SeuratObject::VariableFeatures(
+        srt,
+        assay = assay
+      )
+      if (length(features) == 0) {
+        features <- SeuratObject::VariableFeatures(
+          Seurat::FindVariableFeatures(srt, assay = assay, verbose = FALSE),
+          assay = assay
+        )
+      }
+    }
+    if (feature_type == "Disp") {
+      dispersion_table <- get_namespace_fun("monocle", "dispersionTable")(cds)
+      features <- subset(
+        dispersion_table,
+        eval(rlang::parse_expr(disp_filter))
+      )$gene_id
+    }
+  }
+  log_message(
+    "{.val {length(features)}} features selected",
+    verbose = verbose
+  )
+  cds <- get_namespace_fun("monocle", "setOrderingFilter")(cds, features)
+  if (isTRUE(show_plot) && isTRUE(uses_negbinomial)) {
+    p <- get_namespace_fun("monocle", "plot_ordering_genes")(cds)
+    print(p)
+  }
+
+  reduce_args <- monocle2_reduce_dimension_args(
+    cds = cds,
+    max_components = max_components,
+    reduction_method = reduction_method,
+    norm_method = norm_method,
+    residualModelFormulaStr = residualModelFormulaStr,
+    pseudo_expr = pseudo_expr,
+    ddrtree_maxIter = ddrtree_maxIter,
+    ddrtree_ncenter = ddrtree_ncenter,
+    ddrtree_tol = ddrtree_tol
+  )
+  cds <- do.call(get_namespace_fun("monocle", "reduceDimension"), reduce_args)
+
+  embeddings <- Matrix::t(cds@reducedDimS)
+  colnames(embeddings) <- paste0(
+    cds@dim_reduce_type, "_", seq_len(ncol(embeddings))
+  )
+  srt[[cds@dim_reduce_type]] <- SeuratObject::CreateDimReducObject(
+    embeddings = embeddings,
+    key = paste0(cds@dim_reduce_type, "_"),
+    assay = assay
+  )
+
+  initialized_ordering <- monocle2_cpp_initialize_ordering(cds)
+  cds <- initialized_ordering[["cds"]]
+  initial_state <- Biobase::pData(cds)[["State"]]
+  root_state_resolved <- monocle2_cpp_resolve_root_state(
+    srt = srt,
+    root_state = root_state,
+    group.by = group.by,
+    initial_state = initial_state
+  )
+  if (identical(cds@dim_reduce_type, "DDRTree")) {
+    tree <- monocle2_cpp_order_cells(
+      cds,
+      root_state = root_state_resolved,
+      initial_root_state = root_state_resolved,
+      projection = initialized_ordering[["projection"]]
+    )
+    states <- factor(tree[["state"]])
+    pseudotime <- as.numeric(tree[["pseudotime"]])
+    engine <- "monocle_mst_cpp_order"
+  } else {
+    cds <- get_namespace_fun("monocle", "orderCells")(cds, root_state = root_state_resolved)
+    states <- Biobase::pData(cds)[["State"]]
+    pseudotime <- Biobase::pData(cds)[["Pseudotime"]]
+    engine <- "monocle_orderCells_fallback"
+  }
+  srt[["Monocle2_State"]] <- states
+  srt[["Monocle2_Pseudotime"]] <- pseudotime
+
+  pdata <- Biobase::pData(cds)
+  pdata[["State"]] <- states
+  pdata[["Pseudotime"]] <- pseudotime
+  Biobase::pData(cds) <- pdata
+
+  if (cds@dim_reduce_type == "ICA") {
+    reduced_dim_coords <- as.data.frame(Matrix::t(cds@reducedDimS))
+  } else if (cds@dim_reduce_type %in% c("simplePPT", "DDRTree")) {
+    reduced_dim_coords <- as.data.frame(Matrix::t(cds@reducedDimK))
+  } else {
+    reduced_dim_coords <- as.data.frame(Matrix::t(cds@reducedDimS))
+  }
+  edge_df <- igraph::as_data_frame(cds@minSpanningTree)
+  edge_df[, c("x", "y")] <- reduced_dim_coords[edge_df[["from"]], 1:2]
+  edge_df[, c("xend", "yend")] <- reduced_dim_coords[edge_df[["to"]], 1:2]
+  trajectory <- ggplot2::geom_segment(
+    data = edge_df,
+    aes(x = x, y = y, xend = xend, yend = yend)
+  )
+
+  if (isTRUE(show_plot)) {
+    p1 <- CellDimPlot(
+      srt,
+      group.by = "Monocle2_State",
+      reduction = cds@dim_reduce_type,
+      label = TRUE,
+      force = TRUE,
+      xlab = xlab,
+      ylab = ylab
+    ) +
+      trajectory
+    if (!is.null(group.by)) {
+      p2 <- CellDimPlot(
+        srt,
+        group.by = group.by,
+        reduction = cds@dim_reduce_type,
+        label = TRUE,
+        force = TRUE,
+        xlab = xlab,
+        ylab = ylab
+      ) +
+        trajectory
+      print(p1 + p2)
+    } else {
+      print(p1)
+    }
+  }
+
+  srt@tools$Monocle2 <- list(
+    cds = cds,
+    features = features,
+    trajectory = trajectory,
+    graph = edge_df,
+    dispersion_table = dispersion_table,
+    backend = "cpp",
+    parameters = list(
+      backend = "cpp",
+      engine = engine,
+      reduction = cds@dim_reduce_type,
+      n_neighbors = as.integer(n_neighbors),
+      ddrtree_maxIter = ddrtree_maxIter,
+      ddrtree_ncenter = ddrtree_ncenter,
+      ddrtree_tol = ddrtree_tol,
+      root_state = root_state_resolved,
+      root_cell = names(which.min(pseudotime)),
+      state_count = length(levels(states))
+    )
+  )
+
+  if (isTRUE(show_plot)) {
+    p1 <- CellDimPlot(
+      srt,
+      group.by = "Monocle2_State",
+      reduction = cds@dim_reduce_type,
+      label = TRUE,
+      force = TRUE,
+      xlab = xlab,
+      ylab = ylab
+    ) +
+      trajectory
+    p3 <- FeatureDimPlot(
+      srt,
+      features = "Monocle2_Pseudotime",
+      reduction = cds@dim_reduce_type,
+      xlab = xlab,
+      ylab = ylab
+    ) +
+      trajectory
+    if (!is.null(group.by)) {
+      p2 <- CellDimPlot(
+        srt,
+        group.by = group.by,
+        reduction = cds@dim_reduce_type,
+        label = TRUE,
+        force = TRUE,
+        xlab = xlab,
+        ylab = ylab
+      ) +
+        trajectory
+      print(p1 + p2 + p3)
+    } else {
+      print(p1 + p3)
+    }
+  }
+  log_message(
+    "{.pkg monocle2} hybrid cpp backend completed",
+    message_type = "success",
+    verbose = verbose
+  )
+
+  srt
+}
+
+monocle2_cpp_order_cells <- function(cds, root_state = NULL, initial_root_state = NULL, projection = NULL) {
+  if (cds@dim_reduce_type != "DDRTree") {
+    select_root_cell <- get_namespace_fun("monocle", "select_root_cell")
+    root_cell <- select_root_cell(cds, root_state, reverse = NULL)
+    return(monocle2_cpp_extract_ordering(cds, root_cell = root_cell))
+  }
+
+  old_mst <- get_namespace_fun("monocle", "minSpanningTree")(cds)
+  if (is.null(projection)) {
+    projection <- monocle2_cpp_project_cells_to_mst(cds)
+  }
+  root_cell <- monocle2_cpp_select_root_cell(
+    cds = cds,
+    root_state = root_state,
+    projection = projection,
+    initial_root_state = initial_root_state
+  )
+
+  root_cell_idx <- which(igraph::V(old_mst)$name == root_cell)
+  cells_mapped_to_graph_root <- which(
+    projection[["closest_vertex"]] == root_cell_idx
+  )
+  if (length(cells_mapped_to_graph_root) == 0L) {
+    cells_mapped_to_graph_root <- root_cell_idx
+  }
+  cells_mapped_to_graph_root <- projection[["vertex_names"]][cells_mapped_to_graph_root]
+  tip_leaves <- projection[["tip_leaves"]]
+  projected_root_cell <- cells_mapped_to_graph_root[cells_mapped_to_graph_root %in% tip_leaves][1]
+  if (is.na(projected_root_cell)) {
+    projected_root_cell <- cells_mapped_to_graph_root[1]
+  }
+
+  tree <- monocle2_cpp_order_projection(projection, root_cell = projected_root_cell)
+  tree[["state"]] <- Biobase::pData(cds)[["State"]]
+
+  tree
+}
+
+monocle2_cpp_select_root_cell <- function(cds, root_state = NULL, projection = NULL, initial_root_state = NULL) {
+  mst <- get_namespace_fun("monocle", "minSpanningTree")(cds)
+  if (is.null(root_state)) {
+    diameter <- igraph::get_diameter(mst)
+    return(names(diameter[1]))
+  }
+  pdata <- Biobase::pData(cds)
+  if (is.null(pdata[["State"]])) {
+    stop("Error: State has not yet been set. Please call orderCells() without specifying root_state, then try this call again.")
+  }
+  root_cell_candidates <- which(as.character(pdata[["State"]]) == as.character(root_state))
+  if (length(root_cell_candidates) == 0L) {
+    stop(paste("Error: no cells for State =", root_state))
+  }
+  if (is.null(projection)) {
+    projection <- monocle2_cpp_project_cells_to_mst(cds)
+  }
+  previous_root_cell <- cds@auxOrderingData[[cds@dim_reduce_type]][["root_cell"]]
+  use_min_pseudotime <- !is.null(previous_root_cell) &&
+    !is.na(match(previous_root_cell, rownames(pdata))) &&
+    as.character(pdata[previous_root_cell, "State"]) == as.character(root_state)
+  root_vertex_idx <- monocle2_select_root_by_state_cpp(
+    coords = get_namespace_fun("monocle", "reducedDimS")(cds),
+    candidate_cells = as.integer(root_cell_candidates),
+    pseudotime = as.numeric(pdata[["Pseudotime"]]),
+    closest_vertex = as.integer(projection[["closest_vertex"]]),
+    use_min_pseudotime = isTRUE(use_min_pseudotime)
+  )
+  igraph::V(mst)[root_vertex_idx]$name
+}
+
+monocle2_cpp_initialize_ordering <- function(cds) {
+  if (cds@dim_reduce_type != "DDRTree") {
+    return(list(
+      cds = get_namespace_fun("monocle", "orderCells")(cds),
+      projection = NULL
+    ))
+  }
+
+  select_root_cell <- get_namespace_fun("monocle", "select_root_cell")
+  root_cell <- select_root_cell(cds, root_state = NULL, reverse = NULL)
+  graph_ordering <- monocle2_cpp_extract_ordering(
+    cds,
+    root_cell = root_cell,
+    reorder_to_cells = FALSE
+  )
+
+  old_mst <- get_namespace_fun("monocle", "minSpanningTree")(cds)
+  projection <- monocle2_cpp_project_cells_to_mst(cds)
+
+  root_cell_idx <- which(igraph::V(old_mst)$name == root_cell)
+  cells_mapped_to_graph_root <- which(
+    projection[["closest_vertex"]] == root_cell_idx
+  )
+  if (length(cells_mapped_to_graph_root) == 0L) {
+    cells_mapped_to_graph_root <- root_cell_idx
+  }
+  cells_mapped_to_graph_root <- projection[["vertex_names"]][cells_mapped_to_graph_root]
+  tip_leaves <- projection[["tip_leaves"]]
+  projected_root_cell <- cells_mapped_to_graph_root[cells_mapped_to_graph_root %in% tip_leaves][1]
+  if (is.na(projected_root_cell)) {
+    projected_root_cell <- cells_mapped_to_graph_root[1]
+  }
+
+  projected_ordering <- monocle2_cpp_order_projection(projection, root_cell = projected_root_cell)
+  closest_vertex <- projection[["closest_vertex"]]
+  initial_state <- graph_ordering[["state"]][closest_vertex]
+
+  pdata <- Biobase::pData(cds)
+  pdata[["Pseudotime"]] <- as.numeric(projected_ordering[["pseudotime"]])
+  pdata[["State"]] <- factor(initial_state)
+  Biobase::pData(cds) <- pdata
+  cds@auxOrderingData[["DDRTree"]]$pr_graph_cell_proj_tree <- projection[["graph"]]
+  cds@auxOrderingData[["DDRTree"]]$pr_graph_cell_proj_dist <- projection[["projected"]]
+  cds@auxOrderingData[["DDRTree"]]$pr_graph_cell_proj_closest_vertex <- matrix(
+    closest_vertex,
+    ncol = 1,
+    dimnames = list(projection[["vertex_names"]], NULL)
+  )
+  cds@auxOrderingData[[cds@dim_reduce_type]]$root_cell <- projected_root_cell
+
+  list(cds = cds, projection = projection)
+}
+
+monocle2_cpp_project_cells_to_mst <- function(cds) {
+  mst <- get_namespace_fun("monocle", "minSpanningTree")(cds)
+  z <- get_namespace_fun("monocle", "reducedDimS")(cds)
+  y <- get_namespace_fun("monocle", "reducedDimK")(cds)
+  closest_vertex <- cds@auxOrderingData[["DDRTree"]]$pr_graph_cell_proj_closest_vertex
+  if (is.null(closest_vertex)) {
+    cds <- get_namespace_fun("monocle", "findNearestPointOnMST")(cds)
+    closest_vertex <- cds@auxOrderingData[["DDRTree"]]$pr_graph_cell_proj_closest_vertex
+  }
+  closest_vertex <- as.integer(closest_vertex[, 1])
+  graph_edges <- igraph::as_edgelist(mst, names = FALSE)
+  if (is.null(dim(graph_edges))) {
+    graph_edges <- matrix(graph_edges, ncol = 2L)
+  }
+  projection <- monocle2_project_cells_to_mst_cpp(
+    z = z,
+    y = y,
+    graph_edges = matrix(as.integer(graph_edges), ncol = 2L),
+    closest_vertex = closest_vertex
+  )
+  vertex_names <- colnames(z)
+  colnames(projection[["projected"]]) <- vertex_names
+  rownames(projection[["projected"]]) <- rownames(z)
+  projection[["vertex_names"]] <- vertex_names
+  graph <- igraph::graph_from_edgelist(
+    matrix(vertex_names[as.integer(projection[["edges"]])], ncol = 2L),
+    directed = FALSE
+  )
+  igraph::E(graph)$weight <- projection[["weights"]]
+  projection[["graph"]] <- graph
+  projection[["tip_leaves"]] <- names(which(igraph::degree(graph) == 1))
+  projection
+}
+
+monocle2_cpp_order_projection <- function(projection, root_cell) {
+  root_idx <- match(root_cell, projection[["vertex_names"]])
+  if (is.na(root_idx)) {
+    root_idx <- 1L
+  }
+  tree <- monocle2_order_from_weighted_edges_cpp(
+    n_cells = length(projection[["vertex_names"]]),
+    edges = projection[["edges"]],
+    weights = projection[["weights"]],
+    root_cell = as.integer(root_idx)
+  )
+  names(tree[["pseudotime"]]) <- projection[["vertex_names"]]
+  names(tree[["state"]]) <- projection[["vertex_names"]]
+  tree
+}
+
+monocle2_cpp_extract_ordering <- function(cds, root_cell, reorder_to_cells = TRUE) {
+  dp <- get_namespace_fun("monocle", "cellPairwiseDistances")(cds)
+  mst <- get_namespace_fun("monocle", "minSpanningTree")(cds)
+  edges <- igraph::as_edgelist(mst, names = FALSE)
+  if (is.null(dim(edges))) {
+    edges <- matrix(edges, ncol = 2L)
+  }
+  root_idx <- match(root_cell, igraph::V(mst)$name)
+  if (is.na(root_idx)) {
+    root_idx <- 1L
+  }
+  vertex_names <- igraph::V(mst)$name
+  dp_mat <- if (is.matrix(dp)) dp else as.matrix(dp)
+  if (!identical(rownames(dp_mat), vertex_names) || !identical(colnames(dp_mat), vertex_names)) {
+    dp_mat <- dp_mat[vertex_names, vertex_names, drop = FALSE]
+  }
+  tree <- monocle2_order_from_mst_cpp(
+    distances = dp_mat,
+    edges = matrix(as.integer(edges), ncol = 2L),
+    root_cell = as.integer(root_idx)
+  )
+  names(tree[["pseudotime"]]) <- vertex_names
+  names(tree[["state"]]) <- vertex_names
+  if (isTRUE(reorder_to_cells)) {
+    tree[["pseudotime"]] <- tree[["pseudotime"]][rownames(Biobase::pData(cds))]
+    tree[["state"]] <- tree[["state"]][rownames(Biobase::pData(cds))]
+  }
+  tree
+}
+
+monocle2_cpp_resolve_root_state <- function(srt, root_state = NULL, group.by = NULL, initial_state = NULL) {
+  if (is.null(root_state) && !is.null(initial_state) && interactive()) {
+    root_state <- utils::select.list(
+      sort(unique(as.character(initial_state))),
+      title = "Select the root state to order cells:"
+    )
+    if (root_state == "" || length(root_state) == 0L) {
+      root_state <- NULL
+    }
+  }
+  if (!is.null(root_state) && !is.null(group.by) && group.by %in% colnames(srt@meta.data)) {
+    group_cells <- which(as.character(srt@meta.data[[group.by]]) %in% as.character(root_state))
+    if (length(group_cells) > 0L && !is.null(initial_state)) {
+      state_table <- sort(table(as.character(initial_state[group_cells])), decreasing = TRUE)
+      if (length(state_table) > 0L) {
+        return(names(state_table)[1L])
+      }
+    }
+  }
+  root_state
 }
 
 #' @title Run Monocle3 analysis
