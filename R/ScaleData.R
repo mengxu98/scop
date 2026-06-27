@@ -31,6 +31,37 @@ ScaleData.Seurat <- function(
     assay[1L]
   }
   assay_obj <- methods::slot(object, "assays")[[assay_name]]
+  if (inherits(assay_obj, "Assay") && !inherits(assay_obj, "StdAssay")) {
+    data_mat <- methods::slot(assay_obj, "data")
+    if (!inherits(data_mat, "dgCMatrix")) {
+      data_mat <- tryCatch(
+        methods::as(data_mat, "dgCMatrix"),
+        error = function(e) NULL
+      )
+      if (is.null(data_mat)) {
+        stop("ScaleData.Seurat requires data convertible to dgCMatrix.", call. = FALSE)
+      }
+    }
+    features <- if (is.null(features)) {
+      SeuratObject::VariableFeatures(object)
+    } else {
+      features
+    }
+    if (length(features) == 0) {
+      features <- rownames(assay_obj)
+    }
+
+    all_genes <- rownames(assay_obj)
+    features <- intersect(features, all_genes)
+    features <- features[order(match(features, all_genes))]
+    idx <- match(features, all_genes) - 1L
+
+    result <- scale_sparse_full(data_mat, idx, scale.max)
+    dimnames(result) <- list(features, colnames(object))
+    methods::slot(assay_obj, "scale.data") <- result
+    methods::slot(object, "assays")[[assay_name]] <- assay_obj
+    return(object)
+  }
   if (
     !inherits(assay_obj, "Assay5") ||
       length(SeuratObject::Layers(assay_obj, search = "data")) == 0L

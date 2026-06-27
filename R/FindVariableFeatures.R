@@ -85,6 +85,38 @@ FindVariableFeatures.StdAssay <- function(
   if (!identical(selection.method, "vst")) {
     stop("FindVariableFeatures.StdAssay supports selection.method = 'vst'.", call. = FALSE)
   }
+  if (inherits(object, "Assay") && !inherits(object, "StdAssay")) {
+    data <- methods::slot(object, "counts")
+    if (!inherits(data, "dgCMatrix")) {
+      data <- tryCatch(
+        methods::as(data, "dgCMatrix"),
+        error = function(e) NULL
+      )
+      if (is.null(data)) {
+        stop("FindVariableFeatures.StdAssay requires counts convertible to dgCMatrix.", call. = FALSE)
+      }
+    }
+    hvf.info <- variable_features_vst_sparse(
+      data,
+      nselect = nfeatures,
+      span = span,
+      clip = clip,
+      verbose = verbose
+    )
+    colnames(hvf.info) <- paste("vf_vst_counts", colnames(hvf.info), sep = "_")
+    rownames(hvf.info) <- rownames(object)
+    meta_features <- methods::slot(object, "meta.features")
+    meta_features <- meta_features[
+      ,
+      setdiff(colnames(meta_features), c("var.features", "var.features.rank", names(hvf.info))),
+      drop = FALSE
+    ]
+    methods::slot(object, "meta.features") <- cbind(meta_features, hvf.info)
+    SeuratObject::VariableFeatures(object) <- rownames(hvf.info)[
+      order(hvf.info$vf_vst_counts_rank, na.last = NA)
+    ]
+    return(object)
+  }
   if (
     !inherits(object, "Assay5") ||
       length(SeuratObject::Layers(object, search = "counts")) == 0L
@@ -157,10 +189,10 @@ FindVariableFeatures.Seurat <- function(
   }
   assay_obj <- object[[assay]]
   if (
-    !inherits(assay_obj, "Assay5") ||
+    !inherits(assay_obj, "Assay") && !inherits(assay_obj, "Assay5") ||
       length(SeuratObject::Layers(assay_obj, search = "counts")) == 0L
   ) {
-    stop("FindVariableFeatures.Seurat requires an Assay5 object with a counts layer.", call. = FALSE)
+    stop("FindVariableFeatures.Seurat requires an assay with a counts layer.", call. = FALSE)
   }
   assay_obj <- FindVariableFeatures.StdAssay(
     object = assay_obj,
