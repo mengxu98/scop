@@ -97,13 +97,21 @@ RunCellChat <- function(
 
   assay <- assay %||% DefaultAssay(srt)
   species <- match.arg(species)
+  srt_cc <- Seurat::DietSeurat(
+    object = srt,
+    assays = assay,
+    dimreducs = NULL,
+    graphs = NULL,
+    misc = FALSE
+  )
+  SeuratObject::DefaultAssay(srt_cc) <- assay
 
   results <- list()
   comparisons <- list()
 
   if (is.null(group_column)) {
     res <- run_one_cc(
-      seu = srt,
+      seu = srt_cc,
       label = "ALL",
       group.by = group.by,
       split.by = split.by,
@@ -136,8 +144,8 @@ RunCellChat <- function(
         "Processing condition: {.val {condition}}",
         verbose = verbose
       )
-      cells_i <- colnames(srt)[cond_vec == condition]
-      seu_i <- srt[, cells_i, drop = FALSE]
+      cells_i <- colnames(srt_cc)[cond_vec == condition]
+      seu_i <- srt_cc[, cells_i, drop = FALSE]
       res_i <- run_one_cc(
         seu = seu_i,
         label = condition,

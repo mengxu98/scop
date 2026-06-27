@@ -1275,30 +1275,35 @@ FeatureHeatmap <- function(
     }
   }
 
-  cell_group <- group.by[1]
-  ht_args <- list(
-    name = cell_group,
-    matrix = mat_list[[cell_group]],
-    col = colors,
-    row_split = row_split,
-    column_split = column_split_list[[cell_group]],
-    cluster_rows = cluster_rows,
-    cluster_columns = cluster_columns_list[[cell_group]],
-    cluster_row_slices = cluster_row_slices,
-    cluster_column_slices = cluster_column_slices,
-    use_raster = TRUE
-  )
-  ht_args <- c(ht_args, ht_params[setdiff(names(ht_params), names(ht_args))])
-  ht_list <- do.call(ComplexHeatmap::Heatmap, args = ht_args)
-  features_ordered <- rownames(
-    mat_list[[1]]
-  )[unlist(
-    suppressWarnings(
-      ComplexHeatmap::row_order(
-        ht_list
-      )
+  need_feature_order <- !is.null(features_label) || nlabel > 0
+  if (isTRUE(need_feature_order)) {
+    cell_group <- group.by[1]
+    ht_args <- list(
+      name = cell_group,
+      matrix = mat_list[[cell_group]],
+      col = colors,
+      row_split = row_split,
+      column_split = column_split_list[[cell_group]],
+      cluster_rows = cluster_rows,
+      cluster_columns = cluster_columns_list[[cell_group]],
+      cluster_row_slices = cluster_row_slices,
+      cluster_column_slices = cluster_column_slices,
+      use_raster = TRUE
     )
-  )]
+    ht_args <- c(ht_args, ht_params[setdiff(names(ht_params), names(ht_args))])
+    ht_list <- do.call(ComplexHeatmap::Heatmap, args = ht_args)
+    features_ordered <- rownames(
+      mat_list[[1]]
+    )[unlist(
+      suppressWarnings(
+        ComplexHeatmap::row_order(
+          ht_list
+        )
+      )
+    )]
+  } else {
+    features_ordered <- rownames(mat_list[[1]])
+  }
   feature_metadata[["index"]] <- stats::setNames(
     object = seq_along(features_ordered),
     nm = features_ordered
