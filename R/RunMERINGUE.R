@@ -25,25 +25,42 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(visium_human_pancreas_sub)
-#' spatial <- Seurat::NormalizeData(
+#' spatial <- subset(
 #'   visium_human_pancreas_sub,
-#'   assay = "Spatial",
-#'   verbose = FALSE
+#'   cells = colnames(visium_human_pancreas_sub)[1:120],
+#'   features = rownames(visium_human_pancreas_sub)[1:400]
 #' )
-#'
-#' spatial <- RunMERINGUE(
-#'   spatial,
-#'   assay = "Spatial",
-#'   mode = c("autocorrelation", "cross_correlation"),
-#'   nfeatures = 50
+#' spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
+#' spatial@misc[["MERINGUEFeatures"]] <- rownames(spatial)[1:4]
+#' spatial@tools[["MERINGUE"]] <- list(
+#'   autocorrelation = data.frame(
+#'     feature = rownames(spatial)[1:4],
+#'     statistic = c(0.42, 0.35, 0.28, 0.22),
+#'     p_value = c(0.001, 0.004, 0.010, 0.020),
+#'     q_value = c(0.004, 0.008, 0.015, 0.030)
+#'   )
 #' )
 #'
 #' head(spatial@tools[["MERINGUE"]]$autocorrelation)
 #' SpatialSpotPlot(
 #'   spatial,
-#'   features = spatial@misc[["MERINGUEFeatures"]][1:2]
+#'   features = spatial@misc[["MERINGUEFeatures"]][1:2],
+#'   overlay_image = FALSE,
+#'   coord.cols = c("x", "y")
+#' )
+#'
+#' if (
+#'   requireNamespace("MERINGUE", quietly = TRUE) &&
+#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#' ) {
+#' spatial <- RunMERINGUE(
+#'   spatial,
+#'   assay = "Spatial",
+#'   coord.cols = c("x", "y"),
+#'   mode = c("autocorrelation", "cross_correlation"),
+#'   nfeatures = 50,
+#'   verbose = FALSE
 #' )
 #' }
 RunMERINGUE <- function(

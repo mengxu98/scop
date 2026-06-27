@@ -34,3 +34,40 @@ A Seurat object.
 \description{
 Add Giotto results back to Seurat
 }
+\examples{
+data(visium_human_pancreas_sub)
+spatial <- subset(
+  visium_human_pancreas_sub,
+  cells = colnames(visium_human_pancreas_sub)[1:80],
+  features = rownames(visium_human_pancreas_sub)[1:200]
+)
+g <- structure(
+  list(
+    source = list(cells = colnames(spatial)),
+    results = list(
+      cluster = list(
+        table = data.frame(
+          cell = colnames(spatial),
+          cluster = spatial$coda_label,
+          row.names = colnames(spatial)
+        )
+      )
+    )
+  ),
+  class = c("giotto2", "list")
+)
+spatial <- AddGiottoToSeurat(
+  spatial,
+  g,
+  result = "cluster",
+  name = "Giotto_cluster",
+  store_result = FALSE
+)
+SpatialSpotPlot(
+  spatial,
+  group.by = "Giotto_cluster",
+  plot_type = "point",
+  overlay_image = FALSE,
+  coord.cols = c("x", "y")
+)
+}

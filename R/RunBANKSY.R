@@ -42,17 +42,38 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(visium_human_pancreas_sub)
-#' spatial <- RunBANKSY(
+#' spatial <- subset(
 #'   visium_human_pancreas_sub,
+#'   cells = colnames(visium_human_pancreas_sub)[1:120],
+#'   features = rownames(visium_human_pancreas_sub)[1:400]
+#' )
+#' spatial$BANKSY_cluster <- factor(
+#'   paste0("BANKSY", (seq_len(ncol(spatial)) - 1) %% 3 + 1)
+#' )
+#'
+#' SpatialSpotPlot(
+#'   spatial,
+#'   group.by = "BANKSY_cluster",
+#'   overlay_image = FALSE,
+#'   coord.cols = c("x", "y")
+#' )
+#'
+#' if (
+#'   requireNamespace("Banksy", quietly = TRUE) &&
+#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#' ) {
+#' spatial <- RunBANKSY(
+#'   spatial,
 #'   assay = "Spatial",
 #'   layer = "counts",
+#'   coord.cols = c("x", "y"),
+#'   features = rownames(spatial)[1:300],
 #'   lambda = 0.2,
-#'   k_geom = 15,
-#'   resolution = 0.6
+#'   k_geom = 8,
+#'   resolution = 0.6,
+#'   verbose = FALSE
 #' )
-#' SpatialSpotPlot(spatial, group.by = "BANKSY_cluster")
 #' }
 RunBANKSY <- function(
   srt,

@@ -120,33 +120,61 @@ giotto_do_call <- function(name, args) {
 #' @return A `giotto2` object.
 #'
 #' @examples
-#' \dontrun{
-#' # Convert Seurat/SCT data into a standalone Giotto workflow object.
-#' g <- SeuratToScopGiotto(
-#'   spatial_seurat,
-#'   assay = "RNA",
-#'   layer = "counts",
-#'   use_sct = "normalized"
+#' data(visium_human_pancreas_sub)
+#' spatial <- subset(
+#'   visium_human_pancreas_sub,
+#'   cells = colnames(visium_human_pancreas_sub)[1:80],
+#'   features = rownames(visium_human_pancreas_sub)[1:300]
+#' )
+#' g <- structure(
+#'   list(
+#'     giotto = list(
+#'       umap = cbind(
+#'         UMAP_1 = as.numeric(scale(spatial$x)),
+#'         UMAP_2 = as.numeric(scale(spatial$y))
+#'       )
+#'     ),
+#'     source = list(
+#'       cells = colnames(spatial),
+#'       features = rownames(spatial),
+#'       coordinates = data.frame(
+#'         cell_ID = colnames(spatial),
+#'         sdimx = spatial$x,
+#'         sdimy = spatial$y
+#'       )
+#'     ),
+#'     results = list(
+#'       cluster = list(
+#'         table = data.frame(
+#'           cluster = paste0("cluster_", (seq_len(ncol(spatial)) - 1) %% 3 + 1),
+#'           row.names = colnames(spatial)
+#'         )
+#'       ),
+#'       spatial_network = list(
+#'         table = data.frame(
+#'           from = colnames(spatial)[1:8],
+#'           to = colnames(spatial)[2:9]
+#'         )
+#'       )
+#'     ),
+#'     active = "cluster"
+#'   ),
+#'   class = c("giotto2", "list")
 #' )
 #'
-#' # Run the basic Giotto pipeline and plot directly from the Giotto object.
-#' g <- RunGiottoWorkflow(g, steps = "basic")
 #' GiottoPlot(g, plot_type = "cluster")
 #' GiottoPlot(g, plot_type = "network")
-#' GiottoPlot(g, plot_type = "dim")
 #'
-#' # Add selected Giotto analyses without writing to the Seurat object.
-#' g <- GiottoSpatialGenes(g, top_n = 50)
-#' g <- GiottoCellProximity(g, group.by = "celltype", number_of_simulations = 100)
-#' GiottoPlot(g, plot_type = "spatial_genes", top_n = 20)
-#' GiottoPlot(g, plot_type = "cell_proximity")
-#'
-#' # Export a result back to Seurat only when explicitly requested.
-#' spatial_seurat <- AddGiottoToSeurat(
-#'   spatial_seurat,
-#'   g,
-#'   result = "cluster",
-#'   name = "Giotto_cluster"
+#' if (
+#'   requireNamespace("Giotto", quietly = TRUE) &&
+#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#' ) {
+#' g <- SeuratToScopGiotto(
+#'   spatial,
+#'   assay = "Spatial",
+#'   layer = "counts",
+#'   coord.cols = c("x", "y"),
+#'   verbose = FALSE
 #' )
 #' }
 #' @export
@@ -394,6 +422,53 @@ giotto_validate_runtime_object <- function(x, verbose = TRUE) {
 #'
 #' @return A Seurat object by default for Seurat input, otherwise a `giotto2`
 #' workflow object.
+#'
+#' @examples
+#' data(visium_human_pancreas_sub)
+#' spatial <- subset(
+#'   visium_human_pancreas_sub,
+#'   cells = colnames(visium_human_pancreas_sub)[1:80],
+#'   features = rownames(visium_human_pancreas_sub)[1:300]
+#' )
+#' g <- structure(
+#'   list(
+#'     source = list(
+#'       cells = colnames(spatial),
+#'       features = rownames(spatial),
+#'       coordinates = data.frame(
+#'         cell_ID = colnames(spatial),
+#'         sdimx = spatial$x,
+#'         sdimy = spatial$y
+#'       )
+#'     ),
+#'     results = list(
+#'       cluster = list(
+#'         table = data.frame(
+#'           cluster = paste0("cluster_", (seq_len(ncol(spatial)) - 1) %% 3 + 1),
+#'           row.names = colnames(spatial)
+#'         )
+#'       )
+#'     ),
+#'     active = "cluster"
+#'   ),
+#'   class = c("giotto2", "list")
+#' )
+#' GiottoPlot(g, plot_type = "cluster")
+#'
+#' if (
+#'   requireNamespace("Giotto", quietly = TRUE) &&
+#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#' ) {
+#' g <- RunGiottoWorkflow(
+#'   spatial,
+#'   steps = "basic",
+#'   assay = "Spatial",
+#'   layer = "counts",
+#'   coord.cols = c("x", "y"),
+#'   return_seurat = FALSE,
+#'   verbose = FALSE
+#' )
+#' }
 #' @export
 RunGiottoWorkflow <- function(
   x,
@@ -613,6 +688,31 @@ RunGiottoWorkflow <- function(
 #' @param seed Random seed for reproducible Giotto calls.
 #'
 #' @return A `giotto2` workflow object.
+#'
+#' @examples
+#' data(visium_human_pancreas_sub)
+#' spatial <- subset(visium_human_pancreas_sub, cells = colnames(visium_human_pancreas_sub)[1:60])
+#' g <- structure(
+#'   list(
+#'     source = list(
+#'       cells = colnames(spatial),
+#'       features = rownames(spatial)[1:100],
+#'       coordinates = data.frame(cell_ID = colnames(spatial), sdimx = spatial$x, sdimy = spatial$y)
+#'     ),
+#'     results = list(),
+#'     active = NULL
+#'   ),
+#'   class = c("giotto2", "list")
+#' )
+#' GiottoPlot(g, plot_type = "spatial")
+#'
+#' if (
+#'   requireNamespace("Giotto", quietly = TRUE) &&
+#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#' ) {
+#' g <- SeuratToScopGiotto(spatial, assay = "Spatial", coord.cols = c("x", "y"), verbose = FALSE)
+#' g <- GiottoPreprocess(g, verbose = FALSE)
+#' }
 #' @export
 GiottoPreprocess <- function(
   x,
@@ -744,6 +844,46 @@ GiottoPreprocess <- function(
 #' @param seed Random seed for reproducible Giotto calls.
 #'
 #' @return A `giotto2` workflow object.
+#' @examples
+#' data(visium_human_pancreas_sub)
+#' spatial <- subset(
+#'   visium_human_pancreas_sub,
+#'   cells = colnames(visium_human_pancreas_sub)[1:80],
+#'   features = rownames(visium_human_pancreas_sub)[1:200]
+#' )
+#' embedding <- cbind(
+#'   UMAP_1 = as.numeric(scale(spatial$x)),
+#'   UMAP_2 = as.numeric(scale(spatial$y))
+#' )
+#' rownames(embedding) <- colnames(spatial)
+#' g <- structure(
+#'   list(
+#'     giotto = list(umap = embedding),
+#'     source = list(cells = colnames(spatial), features = rownames(spatial)),
+#'     results = list(
+#'       cluster = list(
+#'         table = data.frame(
+#'           cell = colnames(spatial),
+#'           cluster = spatial$coda_label,
+#'           row.names = colnames(spatial)
+#'         )
+#'       )
+#'     ),
+#'     parameters = list(umap_name = "umap")
+#'   ),
+#'   class = c("giotto2", "list")
+#' )
+#' GiottoPlot(g, plot_type = "dim")
+#'
+#' if (
+#'   requireNamespace("Giotto", quietly = TRUE) &&
+#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#' ) {
+#'   g <- SeuratToScopGiotto(spatial, coord.cols = c("x", "y"))
+#'   g <- GiottoPreprocess(g)
+#'   g <- GiottoReduce(g, reduction = "pca", dims = 1:10)
+#'   g <- GiottoReduce(g, reduction = "umap", dims = 1:10)
+#' }
 #' @export
 GiottoReduce <- function(
   x,
@@ -838,6 +978,46 @@ GiottoReduce <- function(
 #' @param seed Random seed for reproducible Giotto calls.
 #'
 #' @return A `giotto2` workflow object.
+#' @examples
+#' data(visium_human_pancreas_sub)
+#' spatial <- subset(
+#'   visium_human_pancreas_sub,
+#'   cells = colnames(visium_human_pancreas_sub)[1:80],
+#'   features = rownames(visium_human_pancreas_sub)[1:200]
+#' )
+#' coords <- data.frame(
+#'   cell_ID = colnames(spatial),
+#'   sdimx = spatial$x,
+#'   sdimy = spatial$y,
+#'   row.names = colnames(spatial)
+#' )
+#' g <- structure(
+#'   list(
+#'     source = list(cells = colnames(spatial), coordinates = coords),
+#'     results = list(
+#'       cluster = list(
+#'         table = data.frame(
+#'           cell = colnames(spatial),
+#'           cluster = spatial$coda_label,
+#'           row.names = colnames(spatial)
+#'         )
+#'       )
+#'     ),
+#'     parameters = list(k = 8, resolution = 0.4)
+#'   ),
+#'   class = c("giotto2", "list")
+#' )
+#' GiottoPlot(g, plot_type = "cluster")
+#'
+#' if (
+#'   requireNamespace("Giotto", quietly = TRUE) &&
+#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#' ) {
+#'   g <- SeuratToScopGiotto(spatial, coord.cols = c("x", "y"))
+#'   g <- GiottoPreprocess(g)
+#'   g <- GiottoReduce(g, reduction = "pca", dims = 1:10)
+#'   g <- GiottoCluster(g, dims = 1:10, k = 8, resolution = 0.4)
+#' }
 #' @export
 GiottoCluster <- function(
   x,
@@ -939,6 +1119,39 @@ GiottoCluster <- function(
 #' @param verbose Whether to print progress messages.
 #'
 #' @return A `giotto2` workflow object.
+#' @examples
+#' data(visium_human_pancreas_sub)
+#' spatial <- subset(
+#'   visium_human_pancreas_sub,
+#'   cells = colnames(visium_human_pancreas_sub)[1:80],
+#'   features = rownames(visium_human_pancreas_sub)[1:200]
+#' )
+#' coords <- data.frame(
+#'   cell_ID = colnames(spatial),
+#'   sdimx = spatial$x,
+#'   sdimy = spatial$y,
+#'   row.names = colnames(spatial)
+#' )
+#' edges <- data.frame(
+#'   from = colnames(spatial)[1:79],
+#'   to = colnames(spatial)[2:80]
+#' )
+#' g <- structure(
+#'   list(
+#'     source = list(cells = colnames(spatial), coordinates = coords),
+#'     results = list(spatial_network = list(name = "Delaunay_network", table = edges))
+#'   ),
+#'   class = c("giotto2", "list")
+#' )
+#' GiottoPlot(g, plot_type = "network")
+#'
+#' if (
+#'   requireNamespace("Giotto", quietly = TRUE) &&
+#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#' ) {
+#'   g <- SeuratToScopGiotto(spatial, coord.cols = c("x", "y"))
+#'   g <- GiottoSpatialNetwork(g, network_method = "Delaunay")
+#' }
 #' @export
 GiottoSpatialNetwork <- function(
   x,
@@ -1016,6 +1229,47 @@ giotto_get_spatial_network_table <- function(gobject, network_name, spat_unit = 
 #' @param seed Random seed for reproducible Giotto calls.
 #'
 #' @return A `giotto2` workflow object.
+#' @examples
+#' data(visium_human_pancreas_sub)
+#' spatial <- subset(
+#'   visium_human_pancreas_sub,
+#'   cells = colnames(visium_human_pancreas_sub)[1:80],
+#'   features = rownames(visium_human_pancreas_sub)[1:200]
+#' )
+#' coords <- data.frame(
+#'   cell_ID = colnames(spatial),
+#'   sdimx = spatial$x,
+#'   sdimy = spatial$y,
+#'   row.names = colnames(spatial)
+#' )
+#' spatial_gene_table <- data.frame(
+#'   feat_ID = rownames(spatial)[1:8],
+#'   spatGeneRank = seq_len(8),
+#'   adj.p.value = seq(0.001, 0.04, length.out = 8)
+#' )
+#' g <- structure(
+#'   list(
+#'     source = list(cells = colnames(spatial), coordinates = coords),
+#'     results = list(
+#'       spatial_genes = list(
+#'         table = spatial_gene_table,
+#'         top_features = spatial_gene_table$feat_ID
+#'       )
+#'     )
+#'   ),
+#'   class = c("giotto2", "list")
+#' )
+#' GiottoPlot(g, plot_type = "spatial_genes", top_n = 6)
+#'
+#' if (
+#'   requireNamespace("Giotto", quietly = TRUE) &&
+#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#' ) {
+#'   g <- SeuratToScopGiotto(spatial, coord.cols = c("x", "y"))
+#'   g <- GiottoPreprocess(g)
+#'   g <- GiottoSpatialNetwork(g)
+#'   g <- GiottoSpatialGenes(g, features = rownames(spatial)[1:50], top_n = 10)
+#' }
 #' @export
 GiottoSpatialGenes <- function(
   x,
@@ -1095,6 +1349,43 @@ GiottoSpatialGenes <- function(
 #' @param seed Random seed for reproducible Giotto calls.
 #'
 #' @return A `giotto2` workflow object.
+#' @examples
+#' data(visium_human_pancreas_sub)
+#' spatial <- subset(
+#'   visium_human_pancreas_sub,
+#'   cells = colnames(visium_human_pancreas_sub)[1:80],
+#'   features = rownames(visium_human_pancreas_sub)[1:200]
+#' )
+#' features <- rownames(spatial)[1:6]
+#' module_table <- expand.grid(
+#'   feat_ID = features,
+#'   variable = paste0("module_", 1:3),
+#'   stringsAsFactors = FALSE
+#' )
+#' module_table$spat_cor <- seq(-0.7, 0.8, length.out = nrow(module_table))
+#' g <- structure(
+#'   list(
+#'     source = list(cells = colnames(spatial), features = features),
+#'     results = list(
+#'       spatial_modules = list(
+#'         module_tables = list(result.cor_DT = module_table),
+#'         features = features
+#'       )
+#'     )
+#'   ),
+#'   class = c("giotto2", "list")
+#' )
+#' GiottoPlot(g, plot_type = "spatial_modules", top_n = 6)
+#'
+#' if (
+#'   requireNamespace("Giotto", quietly = TRUE) &&
+#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#' ) {
+#'   g <- SeuratToScopGiotto(spatial, coord.cols = c("x", "y"))
+#'   g <- GiottoPreprocess(g)
+#'   g <- GiottoSpatialNetwork(g)
+#'   g <- GiottoSpatialModules(g, features = rownames(spatial)[1:50], k = 3)
+#' }
 #' @export
 GiottoSpatialModules <- function(
   x,
@@ -1184,6 +1475,36 @@ GiottoSpatialModules <- function(
 #' @param seed Random seed for reproducible Giotto calls.
 #'
 #' @return A `giotto2` workflow object.
+#' @examples
+#' proximity <- data.frame(
+#'   group_1 = c("Ductal", "Ductal", "Endocrine", "Stromal"),
+#'   group_2 = c("Endocrine", "Stromal", "Stromal", "Ductal"),
+#'   enrichment = c(1.6, 0.8, 1.3, 0.7),
+#'   p.adj = c(0.01, 0.08, 0.03, 0.12)
+#' )
+#' g <- structure(
+#'   list(
+#'     results = list(cell_proximity = list(table = proximity)),
+#'     parameters = list(network_method = "Delaunay", number_of_simulations = 100)
+#'   ),
+#'   class = c("giotto2", "list")
+#' )
+#' GiottoPlot(g, plot_type = "cell_proximity")
+#'
+#' if (
+#'   requireNamespace("Giotto", quietly = TRUE) &&
+#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#' ) {
+#'   data(visium_human_pancreas_sub)
+#'   spatial <- subset(
+#'     visium_human_pancreas_sub,
+#'     cells = colnames(visium_human_pancreas_sub)[1:80],
+#'     features = rownames(visium_human_pancreas_sub)[1:200]
+#'   )
+#'   g <- SeuratToScopGiotto(spatial, coord.cols = c("x", "y"))
+#'   g <- GiottoSpatialNetwork(g)
+#'   g <- GiottoCellProximity(g, group.by = "coda_label", number_of_simulations = 100)
+#' }
 #' @export
 GiottoCellProximity <- function(
   x,
@@ -1256,6 +1577,47 @@ GiottoCellProximity <- function(
 #' @param seed Random seed for reproducible Giotto calls.
 #'
 #' @return A `giotto2` workflow object.
+#' @examples
+#' data(visium_human_pancreas_sub)
+#' spatial <- subset(
+#'   visium_human_pancreas_sub,
+#'   cells = colnames(visium_human_pancreas_sub)[1:80],
+#'   features = rownames(visium_human_pancreas_sub)[1:200]
+#' )
+#' coords <- data.frame(
+#'   cell_ID = colnames(spatial),
+#'   sdimx = spatial$x,
+#'   sdimy = spatial$y,
+#'   row.names = colnames(spatial)
+#' )
+#' hmrf_meta <- data.frame(
+#'   cell_ID = colnames(spatial),
+#'   scop_HMRF_k4_b10 = paste0("domain_", as.integer(factor(spatial$coda_label)) %% 4 + 1),
+#'   row.names = colnames(spatial)
+#' )
+#' g <- structure(
+#'   list(
+#'     source = list(cells = colnames(spatial), coordinates = coords),
+#'     results = list(
+#'       hmrf = list(
+#'         table = hmrf_meta["scop_HMRF_k4_b10"],
+#'         metadata = hmrf_meta
+#'       )
+#'     )
+#'   ),
+#'   class = c("giotto2", "list")
+#' )
+#' GiottoPlot(g, plot_type = "hmrf")
+#'
+#' if (
+#'   requireNamespace("Giotto", quietly = TRUE) &&
+#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#' ) {
+#'   g <- SeuratToScopGiotto(spatial, coord.cols = c("x", "y"))
+#'   g <- GiottoPreprocess(g)
+#'   g <- GiottoSpatialNetwork(g)
+#'   g <- GiottoHMRF(g, spatial_genes = rownames(spatial)[1:30], k = 4)
+#' }
 #' @export
 GiottoHMRF <- function(
   x,
@@ -1361,6 +1723,42 @@ giotto_ensure_spatial_network <- function(x, network_method = "Delaunay", networ
 #' `srt@tools[[tool_name]]`.
 #'
 #' @return A Seurat object.
+#' @examples
+#' data(visium_human_pancreas_sub)
+#' spatial <- subset(
+#'   visium_human_pancreas_sub,
+#'   cells = colnames(visium_human_pancreas_sub)[1:80],
+#'   features = rownames(visium_human_pancreas_sub)[1:200]
+#' )
+#' g <- structure(
+#'   list(
+#'     source = list(cells = colnames(spatial)),
+#'     results = list(
+#'       cluster = list(
+#'         table = data.frame(
+#'           cell = colnames(spatial),
+#'           cluster = spatial$coda_label,
+#'           row.names = colnames(spatial)
+#'         )
+#'       )
+#'     )
+#'   ),
+#'   class = c("giotto2", "list")
+#' )
+#' spatial <- AddGiottoToSeurat(
+#'   spatial,
+#'   g,
+#'   result = "cluster",
+#'   name = "Giotto_cluster",
+#'   store_result = FALSE
+#' )
+#' SpatialSpotPlot(
+#'   spatial,
+#'   group.by = "Giotto_cluster",
+#'   plot_type = "point",
+#'   overlay_image = FALSE,
+#'   coord.cols = c("x", "y")
+#' )
 #' @export
 AddGiottoToSeurat <- function(
   srt,
