@@ -189,9 +189,9 @@ pancreas_sub <- RunscTenifoldKnk(
   store_networks = TRUE,
   store_manifold = TRUE
 )
-#> ℹ [2026-06-26 12:52:27] Run scTenifoldKnk knockout for "Pdx1" using "r" backend
+#> ℹ [2026-06-27 18:31:16] Run scTenifoldKnk knockout for "Pdx1" using "r" backend
 #>   |                                                                              |                                                                      |   0%  |                                                                              |=                                                                     |   1%  |                                                                              |=                                                                     |   2%  |                                                                              |==                                                                    |   2%  |                                                                              |==                                                                    |   3%  |                                                                              |==                                                                    |   4%  |                                                                              |===                                                                   |   4%  |                                                                              |====                                                                  |   5%  |                                                                              |====                                                                  |   6%  |                                                                              |======================================================================| 100%
-#> ✔ [2026-06-26 12:52:31] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
+#> ✔ [2026-06-27 18:31:18] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
 
 scTenifoldKnkPlot(pancreas_sub, plot_type = "qq")
 

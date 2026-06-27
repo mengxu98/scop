@@ -5,12 +5,6 @@ Gene signatures and common-gene universe used by
 to compute stromal, immune, combined ESTIMATE, and tumor-purity scores
 without requiring the external `estimate` package.
 
-## Usage
-
-``` r
-data(estimate_signatures)
-```
-
 ## Format
 
 A `list` with five entries:

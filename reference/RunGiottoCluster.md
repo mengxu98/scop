@@ -125,20 +125,61 @@ assignments, Giotto metadata, parameters, features, and cells.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 data(visium_human_pancreas_sub)
-spatial <- Seurat::NormalizeData(
+spatial <- subset(
   visium_human_pancreas_sub,
-  assay = "Spatial",
-  verbose = FALSE
+  cells = colnames(visium_human_pancreas_sub)[1:120],
+  features = rownames(visium_human_pancreas_sub)[1:400]
 )
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating Seurat objects
+giotto_clusters <- list(
+  clusters = data.frame(
+    cluster = paste0("cluster_", (seq_len(ncol(spatial)) - 1) %% 3 + 1),
+    row.names = colnames(spatial)
+  ),
+  parameters = list(
+    cluster_colname = "Giotto_cluster",
+    coord.cols = c("x", "y"),
+    k = 8,
+    resolution = 0.4
+  )
+)
+class(giotto_clusters) <- c("giotto2_cluster", "giotto2_result", "list")
+head(giotto_clusters$clusters)
+#>                      cluster
+#> TGGTATCGGTCTGTAT-1 cluster_1
+#> ATTATCTCGACAGATC-1 cluster_2
+#> TGAGATCAAATACTCA-1 cluster_3
+#> CTGGTCCTAACTTGGC-1 cluster_1
+#> ATAGTCTTTGACGTGC-1 cluster_2
+#> GGGTGGTCCAGCCTGT-1 cluster_3
+GiottoPlot(
+  giotto_clusters,
+  srt = spatial,
+  overlay_image = FALSE,
+  coord.cols = c("x", "y")
+)
+
+
+if (
+  requireNamespace("Giotto", quietly = TRUE) &&
+    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+) {
+spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 spatial <- Seurat::FindVariableFeatures(
   spatial,
   assay = "Spatial",
-  nfeatures = 500,
+  nfeatures = 300,
   verbose = FALSE
 )
-
 giotto_clusters <- RunGiottoCluster(
   spatial,
   assay = "Spatial",
@@ -146,15 +187,9 @@ giotto_clusters <- RunGiottoCluster(
   dims = 1:10,
   k = 8,
   resolution = 0.4,
-  coord.cols = c("col", "row")
+  coord.cols = c("x", "y")
 )
 
 head(giotto_clusters$clusters)
-GiottoPlot(
-  giotto_clusters,
-  srt = spatial,
-  overlay_image = FALSE,
-  coord.cols = c("col", "row")
-)
-} # }
+}
 ```

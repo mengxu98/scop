@@ -100,22 +100,39 @@ panc8_sub <- integration_scop(
   batch = "tech",
   integration_method = "Harmony5"
 )
-#> ◌ [2026-06-26 12:03:41] Run integration workflow...
+#> ◌ [2026-06-27 18:08:48] Run integration workflow...
 #> Warning: No layers found matching search pattern provided
-#> ℹ [2026-06-26 12:03:42] Perform `Seurat::NormalizeData()` on split layers for Seurat v5 integration
-#> Error: NormalizeData.Seurat requires one counts layer named 'counts'.
+#> ℹ [2026-06-27 18:08:49] Perform `Seurat::NormalizeData()` on split layers for Seurat v5 integration
+#> ℹ [2026-06-27 18:08:49] Perform `Seurat::FindVariableFeatures()` per batch (`HVF_source = 'separate'`)
+#> ℹ [2026-06-27 18:08:49] Number of available HVF: 2000
+#> Warning: Layer ‘scale.data’ is empty
+#> ℹ [2026-06-27 18:08:51] Perform `Seurat::ScaleData()` on split layers for Seurat v5 integration
+#> ℹ [2026-06-27 18:08:51] Perform PCA on split layers before `Seurat::IntegrateLayers()`
+#> ℹ [2026-06-27 18:08:52] Perform Seurat v5 integration with `HarmonyIntegration()`
+#> The `features` argument is ignored by `HarmonyIntegration`.
+#> This message is displayed once per session.
+#> ! [2026-06-27 18:08:52] No valid estimated dimensions found for Harmony5. Use fallback dimensions 1:50
+#> ℹ [2026-06-27 18:08:52] Adjust neighbor k from 20 to 20 for small-sample clustering
+#> ℹ [2026-06-27 18:08:53] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-06-27 18:08:53] Reorder clusters...
+#> ℹ [2026-06-27 18:08:53] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-27 18:08:53] Perform umap nonlinear dimension reduction using Harmony5 (1:50)
+#> ℹ [2026-06-27 18:08:58] Perform umap nonlinear dimension reduction using Harmony5 (1:50)
+#> ℹ [2026-06-27 18:09:04] Perform umap nonlinear dimension reduction using pca (1:27)
+#> ✔ [2026-06-27 18:09:10] Harmony5 integration completed
 names(panc8_sub@reductions)
-#> NULL
+#> [1] "pca"            "Harmony5"       "Harmony5UMAP2D" "Harmony5UMAP3D"
+#> [5] "pcaUMAP2D"     
 
 panc8_sub <- RunLISI(
   panc8_sub,
   reductions = c("pcaUMAP2D", "Harmony5UMAP2D")
 )
-#> Error in RunLISI(panc8_sub, reductions = c("pcaUMAP2D", "Harmony5UMAP2D")): Reductions not found in <Seurat>: "pcaUMAP2D" and "Harmony5UMAP2D"
+#> ℹ [2026-06-27 18:09:10] Compute LISI scores from reduction "pcaUMAP2D"
+#> ℹ [2026-06-27 18:09:10] Compute LISI scores from reduction "Harmony5UMAP2D"
+#> ✔ [2026-06-27 18:09:10] Stored LISI scores in metadata: "pcaUMAP2D_tech_LISI" and "Harmony5UMAP2D_tech_LISI"
 LISIPlot(
   panc8_sub,
   combine = TRUE
 )
-#> Error in benchmark_feature_plot(srt = srt, features = features, tool_name = tool_name,     reduction = reduction, plot_type = plot_type, plot_boxplot = plot_boxplot,     boxplot_jitter = boxplot_jitter, combine = combine, nrow = nrow,     ncol = ncol, byrow = byrow, pt.size = pt.size, pt.alpha = pt.alpha,     palette = palette, palcolor = palcolor, theme_use = theme_use,     theme_args = theme_args, verbose = verbose, ...): No per-cell benchmark columns found. Please provide `features` or a
-#> valid `tool_name`.
 ```

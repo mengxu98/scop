@@ -65,23 +65,42 @@ A `Seurat` object.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 data(visium_human_pancreas_sub)
-spatial <- Seurat::NormalizeData(
+spatial <- subset(
   visium_human_pancreas_sub,
-  assay = "Spatial",
-  verbose = FALSE
+  cells = colnames(visium_human_pancreas_sub)[1:120],
+  features = rownames(visium_human_pancreas_sub)[1:400]
 )
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating Seurat objects
+spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 features <- rownames(spatial)[1:3]
+spatial[[paste0(features[1], "_localG")]] <- as.numeric(scale(spatial$x))
 
+SpatialSpotPlot(
+  spatial,
+  group.by = paste0(features[1], "_localG"),
+  overlay_image = FALSE,
+  coord.cols = c("x", "y")
+)
+
+
+if (
+  requireNamespace("semla", quietly = TRUE) &&
+    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+) {
 spatial <- RunSemlaLocalG(
   spatial,
   features = features,
-  store_in_metadata = TRUE
+  store_in_metadata = TRUE,
+  verbose = FALSE
 )
-
-local_g_cols <- grep(features[1], colnames(spatial[[]]), value = TRUE)
-head(spatial[[]][local_g_cols])
-SpatialSpotPlot(spatial, group.by = local_g_cols[1])
-} # }
+}
 ```

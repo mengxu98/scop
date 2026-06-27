@@ -176,33 +176,65 @@ parameters, features, and cells.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">visium_human_pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span></span>
-<span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span>  cells <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">120</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">400</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Centroids objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Centroids objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Seurat objects</span>
+<span class="r-in"><span><span class="va">module_features</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">module_cor</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  feat_ID <span class="op">=</span> <span class="va">module_features</span>,</span></span>
+<span class="r-in"><span>  variable <span class="op">=</span> <span class="va">module_features</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">module_cor</span><span class="op">$</span><span class="va">spat_cor</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fl">1</span>, <span class="fl">0.4</span>, <span class="fl">0.1</span>, <span class="op">-</span><span class="fl">0.2</span>,</span></span>
+<span class="r-in"><span>  <span class="fl">0.4</span>, <span class="fl">1</span>, <span class="fl">0.3</span>, <span class="fl">0.0</span>,</span></span>
+<span class="r-in"><span>  <span class="fl">0.1</span>, <span class="fl">0.3</span>, <span class="fl">1</span>, <span class="fl">0.5</span>,</span></span>
+<span class="r-in"><span>  <span class="op">-</span><span class="fl">0.2</span>, <span class="fl">0.0</span>, <span class="fl">0.5</span>, <span class="fl">1</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">giotto_modules</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  module_tables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>result.cor_DT <span class="op">=</span> <span class="va">module_cor</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  features <span class="op">=</span> <span class="va">module_features</span>,</span></span>
+<span class="r-in"><span>  parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>assay <span class="op">=</span> <span class="st">"Spatial"</span>, layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">giotto_modules</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"giotto2_spatial_modules"</span>, <span class="st">"giotto2_result"</span>, <span class="st">"list"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">giotto_modules</span><span class="op">$</span><span class="va">module_tables</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "result.cor_DT"</span>
+<span class="r-in"><span><span class="fu"><a href="GiottoPlot.html">GiottoPlot</a></span><span class="op">(</span><span class="va">giotto_modules</span>, top_n <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="RunGiottoSpatialModules-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"Giotto"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"</span><span class="op">)</span>, <span class="st">"true"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">spatial</span>, assay <span class="op">=</span> <span class="st">"Spatial"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/FindVariableFeatures.html" class="external-link">FindVariableFeatures</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">spatial</span>,</span></span>
 <span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span></span>
-<span class="r-in"><span>  nfeatures <span class="op">=</span> <span class="fl">500</span>,</span></span>
+<span class="r-in"><span>  nfeatures <span class="op">=</span> <span class="fl">300</span>,</span></span>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">giotto_modules</span> <span class="op">&lt;-</span> <span class="fu">RunGiottoSpatialModules</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">spatial</span>,</span></span>
 <span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span></span>
 <span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"data"</span>,</span></span>
 <span class="r-in"><span>  features <span class="op">=</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/VariableFeatures.html" class="external-link">VariableFeatures</a></span><span class="op">(</span><span class="va">spatial</span>, assay <span class="op">=</span> <span class="st">"Spatial"</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">50</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"col"</span>, <span class="st">"row"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  cor_method <span class="op">=</span> <span class="st">"pearson"</span>,</span></span>
 <span class="r-in"><span>  k <span class="op">=</span> <span class="fl">6</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">giotto_modules</span><span class="op">$</span><span class="va">module_tables</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="GiottoPlot.html">GiottoPlot</a></span><span class="op">(</span><span class="va">giotto_modules</span>, top_n <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

@@ -200,6 +200,42 @@ A `ggplot` object.
 ## Examples
 
 ``` r
+data(visium_human_pancreas_sub)
+spatial <- subset(
+  visium_human_pancreas_sub,
+  cells = colnames(visium_human_pancreas_sub)[1:80],
+  features = rownames(visium_human_pancreas_sub)[1:300]
+)
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating Seurat objects
+cluster_result <- list(
+  clusters = data.frame(
+    cluster = paste0("cluster_", (seq_len(ncol(spatial)) - 1) %% 3 + 1),
+    row.names = colnames(spatial)
+  ),
+  parameters = list(
+    cluster_colname = "Giotto_cluster",
+    coord.cols = c("x", "y"),
+    k = 8,
+    resolution = 0.4
+  )
+)
+class(cluster_result) <- c("giotto2_cluster", "giotto2_result", "list")
+GiottoPlot(
+  cluster_result,
+  srt = spatial,
+  overlay_image = FALSE,
+  coord.cols = c("x", "y")
+)
+
+
 proximity <- list(
   enrichment = data.frame(
     group_1 = c("Tumor", "Tumor", "Stroma", "Immune"),
@@ -209,9 +245,9 @@ proximity <- list(
   ),
   parameters = list(network_method = "Delaunay", number_of_simulations = 100)
 )
-class(proximity) <- c("scop_giotto_cell_proximity", "scop_giotto_result")
+class(proximity) <- c("giotto2_cell_proximity", "giotto2_result", "list")
 GiottoPlot(proximity)
-#> Error in GiottoPlot.default(proximity): `x` must be a standalone result returned by a `RunGiotto*()` function
+
 
 spatial_genes <- list(
   results = data.frame(
@@ -221,7 +257,25 @@ spatial_genes <- list(
   top_features = c("COL1A1", "KRT19", "MS4A1"),
   parameters = list(assay = "Spatial", layer = "data")
 )
-class(spatial_genes) <- c("scop_giotto_spatial_genes", "scop_giotto_result")
+class(spatial_genes) <- c("giotto2_spatial_genes", "giotto2_result", "list")
 GiottoPlot(spatial_genes, plot_type = "ranking", top_n = 4)
-#> Error in GiottoPlot.default(spatial_genes, plot_type = "ranking", top_n = 4): `x` must be a standalone result returned by a `RunGiotto*()` function
+
+
+modules <- list(
+  module_tables = list(
+    result.cor_DT = expand.grid(
+      feat_ID = c("COL1A1", "KRT19", "MS4A1"),
+      variable = c("COL1A1", "KRT19", "MS4A1")
+    )
+  ),
+  features = c("COL1A1", "KRT19", "MS4A1")
+)
+modules$module_tables$result.cor_DT$spat_cor <- c(
+  1, 0.35, -0.20,
+  0.35, 1, 0.15,
+  -0.20, 0.15, 1
+)
+class(modules) <- c("giotto2_spatial_modules", "giotto2_result", "list")
+GiottoPlot(modules, top_n = 3)
+
 ```

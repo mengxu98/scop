@@ -227,6 +227,46 @@ Default is <code>TRUE</code>.</p></dd>
     <p>A <code>ggplot</code>, <code>patchwork</code>, or list of <code>ggplot</code> objects.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">visium_human_pancreas_sub</span>,</span></span>
+<span class="r-in"><span>  cells <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">120</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">400</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Centroids objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Centroids objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Seurat objects</span>
+<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunSpatialNeighborhood.html">RunSpatialNeighborhood</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">spatial</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"coda_label"</span>,</span></span>
+<span class="r-in"><span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  k <span class="op">=</span> <span class="fl">4</span>,</span></span>
+<span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">SpatialNeighborhoodPlot</span><span class="op">(</span><span class="va">spatial</span>, plot_type <span class="op">=</span> <span class="st">"heatmap"</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="SpatialNeighborhoodPlot-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="fu">SpatialNeighborhoodPlot</span><span class="op">(</span><span class="va">spatial</span>, plot_type <span class="op">=</span> <span class="st">"network"</span>, top_n <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in calcCurveGrob(x, x$debug):</span> end points must not be identical</span>
+<span class="r-in"><span><span class="fu">SpatialNeighborhoodPlot</span><span class="op">(</span><span class="va">spatial</span>, plot_type <span class="op">=</span> <span class="st">"stat"</span>, top_n <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="SpatialNeighborhoodPlot-2.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="fu">SpatialNeighborhoodPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">spatial</span>,</span></span>
+<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"spatial"</span>,</span></span>
+<span class="r-in"><span>  overlay_image <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="SpatialNeighborhoodPlot-3.png" alt="" width="700" height="433"></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

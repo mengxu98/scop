@@ -20,6 +20,11 @@ RunMonocle2(
   residualModelFormulaStr = NULL,
   pseudo_expr = 1,
   root_state = NULL,
+  backend = c("r", "cpp"),
+  n_neighbors = 30,
+  ddrtree_maxIter = NULL,
+  ddrtree_ncenter = NULL,
+  ddrtree_tol = NULL,
   show_plot = FALSE,
   xlab = NULL,
   ylab = NULL,
@@ -98,8 +103,40 @@ RunMonocle2(
 
 - root_state:
 
-  The state to use as the root of the trajectory. If NULL, will prompt
-  for user input.
+  The state to use as the root of the trajectory. If NULL, the R backend
+  prompts for user input, and the C++ backend prompts in interactive
+  sessions after initial ordering. In non-interactive C++ runs, the
+  first cell is used. For `backend = "cpp"`, `root_state` can also match
+  a C++ trajectory state id after initial ordering, or a `group.by`
+  label when `group.by` is provided.
+
+- backend:
+
+  Backend used to compute the trajectory. `"r"` keeps the original
+  Monocle2 workflow and remains the default. `"cpp"` keeps Monocle2
+  dimensional reduction, uses native C++ ordering for DDRTree, and falls
+  back to Monocle2 ordering for other reduction methods.
+
+- n_neighbors:
+
+  Deprecated compatibility parameter for the C++ backend. The current
+  C++ backend reuses Monocle2's learned minimum spanning tree and
+  ignores this value.
+
+- ddrtree_maxIter:
+
+  Optional maximum iteration count passed to `DDRTree::DDRTree()` when
+  `reduction_method = "DDRTree"`. Lower values can speed up exploratory
+  runs but may reduce agreement with the default Monocle2 trajectory.
+
+- ddrtree_ncenter:
+
+  Optional number of DDRTree centers. This can change trajectory
+  topology and is intended for advanced exploratory use.
+
+- ddrtree_tol:
+
+  Optional convergence tolerance passed to `DDRTree::DDRTree()`.
 
 - show_plot:
 

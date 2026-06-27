@@ -49,3 +49,41 @@ GiottoPreprocess(
 ## Value
 
 A \`giotto2\` workflow object.
+
+## Examples
+
+``` r
+data(visium_human_pancreas_sub)
+spatial <- subset(visium_human_pancreas_sub, cells = colnames(visium_human_pancreas_sub)[1:60])
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating Seurat objects
+g <- structure(
+  list(
+    source = list(
+      cells = colnames(spatial),
+      features = rownames(spatial)[1:100],
+      coordinates = data.frame(cell_ID = colnames(spatial), sdimx = spatial$x, sdimy = spatial$y)
+    ),
+    results = list(),
+    active = NULL
+  ),
+  class = c("giotto2", "list")
+)
+GiottoPlot(g, plot_type = "spatial")
+
+
+if (
+  requireNamespace("Giotto", quietly = TRUE) &&
+    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+) {
+g <- SeuratToScopGiotto(spatial, assay = "Spatial", coord.cols = c("x", "y"), verbose = FALSE)
+g <- GiottoPreprocess(g, verbose = FALSE)
+}
+```

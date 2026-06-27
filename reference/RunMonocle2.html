@@ -59,6 +59,11 @@
 <span>  residualModelFormulaStr <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  pseudo_expr <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  root_state <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"r"</span>, <span class="st">"cpp"</span><span class="op">)</span>,</span>
+<span>  n_neighbors <span class="op">=</span> <span class="fl">30</span>,</span>
+<span>  ddrtree_maxIter <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ddrtree_ncenter <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ddrtree_tol <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  show_plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  xlab <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ylab <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -142,7 +147,40 @@ Default is 1.</p></dd>
 
 <dt id="arg-root-state">root_state<a class="anchor" aria-label="anchor" href="#arg-root-state"></a></dt>
 <dd><p>The state to use as the root of the trajectory.
-If NULL, will prompt for user input.</p></dd>
+If NULL, the R backend prompts for user input, and the C++ backend prompts
+in interactive sessions after initial ordering. In non-interactive C++ runs,
+the first cell is used. For <code>backend = "cpp"</code>, <code>root_state</code> can also match a
+C++ trajectory state id after initial ordering, or a <code>group.by</code> label when
+<code>group.by</code> is provided.</p></dd>
+
+
+<dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
+<dd><p>Backend used to compute the trajectory. <code>"r"</code> keeps the
+original Monocle2 workflow and remains the default. <code>"cpp"</code> keeps Monocle2
+dimensional reduction, uses native C++ ordering for DDRTree, and falls back
+to Monocle2 ordering for other reduction methods.</p></dd>
+
+
+<dt id="arg-n-neighbors">n_neighbors<a class="anchor" aria-label="anchor" href="#arg-n-neighbors"></a></dt>
+<dd><p>Deprecated compatibility parameter for the C++ backend.
+The current C++ backend reuses Monocle2's learned minimum spanning tree and
+ignores this value.</p></dd>
+
+
+<dt id="arg-ddrtree-maxiter">ddrtree_maxIter<a class="anchor" aria-label="anchor" href="#arg-ddrtree-maxiter"></a></dt>
+<dd><p>Optional maximum iteration count passed to
+<code>DDRTree::DDRTree()</code> when <code>reduction_method = "DDRTree"</code>. Lower values can
+speed up exploratory runs but may reduce agreement with the default Monocle2
+trajectory.</p></dd>
+
+
+<dt id="arg-ddrtree-ncenter">ddrtree_ncenter<a class="anchor" aria-label="anchor" href="#arg-ddrtree-ncenter"></a></dt>
+<dd><p>Optional number of DDRTree centers. This can change
+trajectory topology and is intended for advanced exploratory use.</p></dd>
+
+
+<dt id="arg-ddrtree-tol">ddrtree_tol<a class="anchor" aria-label="anchor" href="#arg-ddrtree-tol"></a></dt>
+<dd><p>Optional convergence tolerance passed to <code>DDRTree::DDRTree()</code>.</p></dd>
 
 
 <dt id="arg-show-plot">show_plot<a class="anchor" aria-label="anchor" href="#arg-show-plot"></a></dt>

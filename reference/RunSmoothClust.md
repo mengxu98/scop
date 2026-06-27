@@ -144,13 +144,38 @@ A `Seurat` object with smoothclust clusters in metadata. When
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 data(visium_human_pancreas_sub)
-spatial <- Seurat::NormalizeData(
+spatial <- subset(
   visium_human_pancreas_sub,
-  assay = "Spatial",
-  verbose = FALSE
+  cells = colnames(visium_human_pancreas_sub)[1:120],
+  features = rownames(visium_human_pancreas_sub)[1:400]
 )
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating Seurat objects
+spatial$SmoothClust_cluster <- factor(
+  paste0("SmoothClust", (seq_len(ncol(spatial)) - 1) %% 3 + 1)
+)
+
+SpatialSpotPlot(
+  spatial,
+  group.by = "SmoothClust_cluster",
+  overlay_image = FALSE,
+  coord.cols = c("x", "y")
+)
+
+
+if (
+  requireNamespace("smoothclust", quietly = TRUE) &&
+    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+) {
+spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 spatial <- Seurat::FindVariableFeatures(
   spatial,
   assay = "Spatial",
@@ -163,10 +188,11 @@ spatial <- RunSmoothClust(
   assay = "Spatial",
   n_clusters = 3,
   smooth_method = "knn",
-  k = 6
+  coord.cols = c("x", "y"),
+  k = 6,
+  verbose = FALSE
 )
 
 table(spatial$SmoothClust_cluster)
-SpatialSpotPlot(spatial, group.by = "SmoothClust_cluster")
-} # }
+}
 ```

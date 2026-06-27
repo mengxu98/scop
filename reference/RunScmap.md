@@ -78,22 +78,22 @@ RunScmap(
 ``` r
 data(panc8_sub)
 panc8_sub <- standard_scop(panc8_sub)
-#> ℹ [2026-06-26 12:09:20] Start standard processing workflow...
-#> ℹ [2026-06-26 12:09:20] Checking a list of <Seurat>...
-#> ! [2026-06-26 12:09:20] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-26 12:09:20] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-26 12:09:20] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-26 12:09:21] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-26 12:09:21] Number of available HVF: 2000
-#> ℹ [2026-06-26 12:09:21] Finished check
-#> ℹ [2026-06-26 12:09:21] Perform `ScaleData()`
-#> ℹ [2026-06-26 12:09:21] Perform pca linear dimension reduction
-#> ℹ [2026-06-26 12:09:22] Use stored estimated dimensions 1:27 for Standardpca
-#> ℹ [2026-06-26 12:09:22] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-26 12:09:22] Reorder clusters...
-#> ℹ [2026-06-26 12:09:23] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-26 12:09:23] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-26 12:09:32] Standard processing workflow completed
+#> ℹ [2026-06-27 18:13:57] Start standard processing workflow...
+#> ℹ [2026-06-27 18:13:58] Checking a list of <Seurat>...
+#> ! [2026-06-27 18:13:58] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-27 18:13:58] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-27 18:13:58] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-27 18:13:58] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-27 18:13:58] Number of available HVF: 2000
+#> ℹ [2026-06-27 18:13:58] Finished check
+#> ℹ [2026-06-27 18:13:58] Perform `ScaleData()`
+#> ℹ [2026-06-27 18:13:58] Perform pca linear dimension reduction
+#> ℹ [2026-06-27 18:14:00] Use stored estimated dimensions 1:27 for Standardpca
+#> ℹ [2026-06-27 18:14:00] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-27 18:14:00] Reorder clusters...
+#> ℹ [2026-06-27 18:14:00] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-27 18:14:00] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-27 18:14:07] Standard processing workflow completed
 
 genenames <- make.unique(
   thisutils::capitalize(
@@ -106,59 +106,59 @@ panc8_sub <- RenameFeatures(
   panc8_sub,
   newnames = genenames
 )
-#> ℹ [2026-06-26 12:09:32] Rename features for the assay: RNA
+#> ℹ [2026-06-27 18:14:07] Rename features for the assay: RNA
 panc8_sub <- CheckDataMerge(
   panc8_sub,
   batch = "tech"
 )[["srt_merge"]]
-#> ℹ [2026-06-26 12:09:32] Split `srt_merge` into `srt_list` by "tech"
-#> ℹ [2026-06-26 12:09:33] Checking a list of <Seurat>...
-#> ℹ [2026-06-26 12:09:34] Data 1/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-06-26 12:09:34] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
-#> ℹ [2026-06-26 12:09:34] Data 2/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-06-26 12:09:34] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
-#> ℹ [2026-06-26 12:09:34] Data 3/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-06-26 12:09:34] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
-#> ℹ [2026-06-26 12:09:35] Data 4/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-06-26 12:09:35] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
-#> ℹ [2026-06-26 12:09:35] Data 5/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-06-26 12:09:35] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
-#> ℹ [2026-06-26 12:09:35] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-26 12:09:36] Number of available HVF: 2000
-#> ℹ [2026-06-26 12:09:36] Finished check
-#> Warning: Key ‘StandardpcaUMAP2D_’ taken, using ‘standardumap2d_’ instead
+#> ℹ [2026-06-27 18:14:08] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-06-27 18:14:09] Checking a list of <Seurat>...
+#> ℹ [2026-06-27 18:14:09] Data 1/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-06-27 18:14:09] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ℹ [2026-06-27 18:14:10] Data 2/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-06-27 18:14:10] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
+#> ℹ [2026-06-27 18:14:10] Data 3/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-06-27 18:14:10] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
+#> ℹ [2026-06-27 18:14:10] Data 4/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-06-27 18:14:10] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
+#> ℹ [2026-06-27 18:14:11] Data 5/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-06-27 18:14:11] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
+#> ℹ [2026-06-27 18:14:11] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-27 18:14:11] Number of available HVF: 2000
+#> ℹ [2026-06-27 18:14:11] Finished check
+#> Warning: Key ‘StandardpcaUMAP2D_’ taken, using ‘standardpcaumap2d_’ instead
 
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-26 12:09:38] Start standard processing workflow...
-#> ℹ [2026-06-26 12:09:39] Checking a list of <Seurat>...
-#> ! [2026-06-26 12:09:39] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-26 12:09:39] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-26 12:09:39] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-26 12:09:39] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-26 12:09:40] Number of available HVF: 2000
-#> ℹ [2026-06-26 12:09:40] Finished check
-#> ℹ [2026-06-26 12:09:40] Perform `ScaleData()`
-#> ℹ [2026-06-26 12:09:40] Perform pca linear dimension reduction
-#> ℹ [2026-06-26 12:09:40] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-26 12:09:41] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-26 12:09:41] Reorder clusters...
-#> ℹ [2026-06-26 12:09:41] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-26 12:09:41] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-26 12:09:50] Standard processing workflow completed
+#> ℹ [2026-06-27 18:14:12] Start standard processing workflow...
+#> ℹ [2026-06-27 18:14:12] Checking a list of <Seurat>...
+#> ! [2026-06-27 18:14:12] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-27 18:14:12] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-27 18:14:12] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-27 18:14:12] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-27 18:14:13] Number of available HVF: 2000
+#> ℹ [2026-06-27 18:14:13] Finished check
+#> ℹ [2026-06-27 18:14:13] Perform `ScaleData()`
+#> ℹ [2026-06-27 18:14:13] Perform pca linear dimension reduction
+#> ℹ [2026-06-27 18:14:14] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-27 18:14:14] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-27 18:14:14] Reorder clusters...
+#> ℹ [2026-06-27 18:14:14] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-27 18:14:14] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-27 18:14:21] Standard processing workflow completed
 pancreas_sub <- RunScmap(
   srt_query = pancreas_sub,
   srt_ref = panc8_sub,
   ref_group = "celltype",
   method = "scmapCluster"
 )
-#> ℹ [2026-06-26 12:10:23] Data type is log-normalized
-#> ℹ [2026-06-26 12:10:23] Detected `srt_query` data type: "log_normalized_counts"
-#> ℹ [2026-06-26 12:10:24] Data type is log-normalized
-#> ℹ [2026-06-26 12:10:24] Detected `srt_ref` data type: "log_normalized_counts"
-#> ℹ [2026-06-26 12:10:26] Perform selectFeatures
-#> ℹ [2026-06-26 12:10:27] Perform indexCluster
-#> ℹ [2026-06-26 12:10:27] Perform scmapCluster
+#> ℹ [2026-06-27 18:14:52] Data type is log-normalized
+#> ℹ [2026-06-27 18:14:52] Detected `srt_query` data type: "log_normalized_counts"
+#> ℹ [2026-06-27 18:14:53] Data type is log-normalized
+#> ℹ [2026-06-27 18:14:53] Detected `srt_ref` data type: "log_normalized_counts"
+#> ℹ [2026-06-27 18:14:54] Perform selectFeatures
+#> ℹ [2026-06-27 18:14:54] Perform indexCluster
+#> ℹ [2026-06-27 18:14:55] Perform scmapCluster
 #> Warning: Features Mt-atp6, Mt-co1, Mt-co2, Mt-co3, Mt-nd1, Mt-nd2, Mt-nd4, Mt-nd4l, Mt-nd5 are not present in the 'SCESet' object and therefore were not set.
 CellDimPlot(
   pancreas_sub,
@@ -172,14 +172,14 @@ pancreas_sub <- RunScmap(
   ref_group = "celltype",
   method = "scmapCell"
 )
-#> ℹ [2026-06-26 12:10:28] Data type is log-normalized
-#> ℹ [2026-06-26 12:10:28] Detected `srt_query` data type: "log_normalized_counts"
-#> ℹ [2026-06-26 12:10:30] Data type is log-normalized
-#> ℹ [2026-06-26 12:10:30] Detected `srt_ref` data type: "log_normalized_counts"
-#> ℹ [2026-06-26 12:10:34] Perform selectFeatures
-#> ℹ [2026-06-26 12:10:34] Perform indexCell
-#> ℹ [2026-06-26 12:10:35] Perform scmapCell
-#> ℹ [2026-06-26 12:10:36] Perform scmapCell2Cluster
+#> ℹ [2026-06-27 18:14:55] Data type is log-normalized
+#> ℹ [2026-06-27 18:14:55] Detected `srt_query` data type: "log_normalized_counts"
+#> ℹ [2026-06-27 18:14:56] Data type is log-normalized
+#> ℹ [2026-06-27 18:14:56] Detected `srt_ref` data type: "log_normalized_counts"
+#> ℹ [2026-06-27 18:14:57] Perform selectFeatures
+#> ℹ [2026-06-27 18:14:57] Perform indexCell
+#> ℹ [2026-06-27 18:14:58] Perform scmapCell
+#> ℹ [2026-06-27 18:14:58] Perform scmapCell2Cluster
 CellDimPlot(
   pancreas_sub,
   group.by = "scmap_annotation"

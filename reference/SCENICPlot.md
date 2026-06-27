@@ -185,9 +185,12 @@ SCENICPlot(
   Row ordering strategy for `plot_type = "rss_heatmap"` and
   `plot_type = "activity_heatmap"`. `"cluster"` keeps the existing
   dendrogram-based order, `"group"` groups regulons by the group where
-  each regulon reaches its maximum heatmap value, and `"input"` keeps
-  the resolved feature order. `"group"` and `"input"` disable row
-  clustering so the chosen order is preserved.
+  each regulon reaches its maximum heatmap value. For `activity_heatmap`
+  without explicit `features`, `"group"` uses the RSS group that first
+  selected each displayed regulon, so `top_n` controls both the
+  displayed feature set and source-group row blocks. `"input"` keeps the
+  resolved feature order. `"group"` and `"input"` disable row clustering
+  so the chosen order is preserved.
 
 - heatmap_row_names_side, heatmap_column_names_side:
 

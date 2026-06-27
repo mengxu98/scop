@@ -64,3 +64,54 @@ GiottoSpatialModules(
 ## Value
 
 A \`giotto2\` workflow object.
+
+## Examples
+
+``` r
+data(visium_human_pancreas_sub)
+spatial <- subset(
+  visium_human_pancreas_sub,
+  cells = colnames(visium_human_pancreas_sub)[1:80],
+  features = rownames(visium_human_pancreas_sub)[1:200]
+)
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating Seurat objects
+features <- rownames(spatial)[1:6]
+module_table <- expand.grid(
+  feat_ID = features,
+  variable = paste0("module_", 1:3),
+  stringsAsFactors = FALSE
+)
+module_table$spat_cor <- seq(-0.7, 0.8, length.out = nrow(module_table))
+g <- structure(
+  list(
+    source = list(cells = colnames(spatial), features = features),
+    results = list(
+      spatial_modules = list(
+        module_tables = list(result.cor_DT = module_table),
+        features = features
+      )
+    )
+  ),
+  class = c("giotto2", "list")
+)
+GiottoPlot(g, plot_type = "spatial_modules", top_n = 6)
+
+
+if (
+  requireNamespace("Giotto", quietly = TRUE) &&
+    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+) {
+  g <- SeuratToScopGiotto(spatial, coord.cols = c("x", "y"))
+  g <- GiottoPreprocess(g)
+  g <- GiottoSpatialNetwork(g)
+  g <- GiottoSpatialModules(g, features = rownames(spatial)[1:50], k = 3)
+}
+```

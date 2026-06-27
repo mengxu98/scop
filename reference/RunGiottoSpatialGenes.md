@@ -121,37 +121,68 @@ table, top features, raw Giotto result, parameters, features, and cells.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 data(visium_human_pancreas_sub)
-spatial <- Seurat::NormalizeData(
+spatial <- subset(
   visium_human_pancreas_sub,
-  assay = "Spatial",
-  verbose = FALSE
+  cells = colnames(visium_human_pancreas_sub)[1:120],
+  features = rownames(visium_human_pancreas_sub)[1:400]
 )
-spatial <- Seurat::FindVariableFeatures(
-  spatial,
-  assay = "Spatial",
-  nfeatures = 500,
-  verbose = FALSE
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating Seurat objects
+spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
+giotto_genes <- list(
+  results = data.frame(
+    feat_ID = rownames(spatial)[1:6],
+    spatGeneRank = c(40, 35, 28, 20, 16, 10)
+  ),
+  top_features = rownames(spatial)[1:4],
+  parameters = list(assay = "Spatial", layer = "data", coord.cols = c("x", "y"))
 )
-
-giotto_genes <- RunGiottoSpatialGenes(
-  spatial,
-  assay = "Spatial",
-  layer = "data",
-  features = Seurat::VariableFeatures(spatial, assay = "Spatial"),
-  coord.cols = c("col", "row"),
-  top_n = 50
-)
+class(giotto_genes) <- c("giotto2_spatial_genes", "giotto2_result", "list")
 
 head(giotto_genes$results)
-GiottoPlot(giotto_genes, plot_type = "ranking", top_n = 10)
+#>   feat_ID spatGeneRank
+#> 1  TMSB4X           40
+#> 2     UBC           35
+#> 3     GCG           28
+#> 4    ACTB           20
+#> 5  COL3A1           16
+#> 6  COL1A1           10
+GiottoPlot(giotto_genes, plot_type = "ranking", top_n = 6)
+
 GiottoPlot(
   giotto_genes,
   srt = spatial,
   plot_type = "feature",
   overlay_image = FALSE,
-  coord.cols = c("col", "row")
+  coord.cols = c("x", "y")
 )
-} # }
+
+
+if (
+  requireNamespace("Giotto", quietly = TRUE) &&
+    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+) {
+spatial <- Seurat::FindVariableFeatures(
+  spatial,
+  assay = "Spatial",
+  nfeatures = 300,
+  verbose = FALSE
+)
+giotto_genes <- RunGiottoSpatialGenes(
+  spatial,
+  assay = "Spatial",
+  layer = "data",
+  features = Seurat::VariableFeatures(spatial, assay = "Spatial"),
+  coord.cols = c("x", "y"),
+  top_n = 50
+)
+}
 ```

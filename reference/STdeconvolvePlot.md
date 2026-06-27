@@ -47,3 +47,52 @@ STdeconvolvePlot(
 ## Value
 
 A `ggplot`, `patchwork`, or list of `ggplot` objects.
+
+## Examples
+
+``` r
+data(visium_human_pancreas_sub)
+spatial <- subset(
+  visium_human_pancreas_sub,
+  cells = colnames(visium_human_pancreas_sub)[1:120],
+  features = rownames(visium_human_pancreas_sub)[1:400]
+)
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating Centroids objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating FOV objects
+#> Warning: Not validating Seurat objects
+topic_weights <- data.frame(
+  STdeconvolve_prop_topic_1 = seq(0.75, 0.20, length.out = ncol(spatial)),
+  STdeconvolve_prop_topic_2 = seq(0.20, 0.70, length.out = ncol(spatial)),
+  STdeconvolve_prop_topic_3 = 0.10,
+  row.names = colnames(spatial)
+)
+topic_weights <- topic_weights / rowSums(topic_weights)
+spatial <- Seurat::AddMetaData(spatial, topic_weights)
+spatial$STdeconvolve_dominant_type <- sub(
+  "^STdeconvolve_prop_",
+  "",
+  colnames(topic_weights)[max.col(topic_weights)]
+)
+
+STdeconvolvePlot(
+  spatial,
+  topics = 1:2,
+  overlay_image = FALSE,
+  coord.cols = c("x", "y")
+)
+
+if (requireNamespace("scatterpie", quietly = TRUE)) {
+  STdeconvolvePlot(
+    spatial,
+    plot_type = "pie",
+    overlay_image = FALSE,
+    coord.cols = c("x", "y")
+  )
+}
+```
