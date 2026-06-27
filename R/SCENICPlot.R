@@ -56,9 +56,12 @@
 #' @param heatmap_order Row ordering strategy for `plot_type = "rss_heatmap"`
 #' and `plot_type = "activity_heatmap"`. `"cluster"` keeps the existing
 #' dendrogram-based order, `"group"` groups regulons by the group where each
-#' regulon reaches its maximum heatmap value, and `"input"` keeps the resolved
-#' feature order. `"group"` and `"input"` disable row clustering so the chosen
-#' order is preserved.
+#' regulon reaches its maximum heatmap value. For `activity_heatmap` without
+#' explicit `features`, `"group"` uses the RSS group that first selected each
+#' displayed regulon, so `top_n` controls both the displayed feature set and
+#' source-group row blocks. `"input"` keeps the resolved feature order.
+#' `"group"` and `"input"` disable row clustering so the chosen order is
+#' preserved.
 #' @param heatmap_row_names_side,heatmap_column_names_side Sides used for row
 #' and column names in SCENIC heatmaps.
 #' @param heatmap_row_names_rot,heatmap_column_names_rot Rotation angles for
@@ -932,6 +935,7 @@ scenic_plot_activity_heatmap <- function(
     top_table = top_table
   )
   heatmap_order <- match.arg(heatmap_order)
+  rss_source <- scenic_top_regulon_source(top_table, regulons)
   avg_mat <- scenic_group_average_matrix(auc_mat[regulons, , drop = FALSE], group_annotation, group_names)
   feature_split <- scenic_align_heatmap_feature_split(
     feature_split = heatmap_args[["feature_split"]],
@@ -939,6 +943,14 @@ scenic_plot_activity_heatmap <- function(
     regulons = regulons,
     available = rownames(auc_mat)
   )
+  if (
+    is.null(feature_split) &&
+      is.null(features) &&
+      identical(heatmap_order, "group") &&
+      !is.null(rss_source)
+  ) {
+    feature_split <- rss_source[["group"]]
+  }
   value_name <- "activity"
   if (isTRUE(scale)) {
     avg_mat <- scenic_scale_rows(avg_mat)
@@ -951,7 +963,11 @@ scenic_plot_activity_heatmap <- function(
     }
     value_name <- "activity_z"
   }
-  regulons <- scenic_order_heatmap_features(avg_mat, regulons, heatmap_order)
+  if (identical(heatmap_order, "group") && is.null(features) && !is.null(rss_source)) {
+    regulons <- rss_source[["regulon"]]
+  } else {
+    regulons <- scenic_order_heatmap_features(avg_mat, regulons, heatmap_order)
+  }
   if (!is.null(feature_split)) {
     feature_split <- feature_split[regulons]
     heatmap_args[["feature_split"]] <- feature_split
@@ -968,6 +984,11 @@ scenic_plot_activity_heatmap <- function(
   )
   plot_data[["regulon"]] <- factor(plot_data[["regulon"]], levels = rev(regulons))
   plot_data[["group"]] <- factor(plot_data[["group"]], levels = colnames(avg_mat))
+  if (!is.null(rss_source)) {
+    source_idx <- match(as.character(plot_data[["regulon"]]), rss_source[["regulon"]])
+    plot_data[["rss_group"]] <- rss_source[["group"]][source_idx]
+    plot_data[["rss_rank"]] <- rss_source[["rank"]][source_idx]
+  }
 
   srt_use <- scenic_attach_auc_assay(srt = srt, auc_mat = auc_mat, assay = assay)
   heatmap_palette <- heatmap_palette %||% if (isTRUE(scale)) "RdBu" else "viridis"
@@ -2040,6 +2061,31 @@ scenic_align_heatmap_feature_split <- function(
   stats::setNames(factor(out[regulons], levels = split_levels), regulons)
 }
 
+scenic_top_regulon_source <- function(top_table, regulons) {
+  if (is.null(top_table) || nrow(top_table) == 0L || length(regulons) == 0L) {
+    return(NULL)
+  }
+  top_table <- top_table[top_table[["regulon"]] %in% regulons, , drop = FALSE]
+  if (nrow(top_table) == 0L) {
+    return(NULL)
+  }
+  top_table <- top_table[!duplicated(top_table[["regulon"]]), , drop = FALSE]
+  top_table <- top_table[match(regulons, top_table[["regulon"]]), , drop = FALSE]
+  top_table <- top_table[!is.na(top_table[["regulon"]]), , drop = FALSE]
+  if (nrow(top_table) == 0L) {
+    return(NULL)
+  }
+  source_group <- factor(
+    top_table[["group"]],
+    levels = unique(as.character(top_table[["group"]]))
+  )
+  list(
+    regulon = top_table[["regulon"]],
+    group = stats::setNames(source_group, top_table[["regulon"]]),
+    rank = stats::setNames(top_table[["rank"]], top_table[["regulon"]])
+  )
+}
+
 scenic_order_heatmap_features <- function(
   mat,
   features,
@@ -2082,6 +2128,9 @@ scenic_group_average_matrix <- function(auc_mat, group_annotation, group_names) 
     },
     numeric(nrow(auc_mat))
   )
+  if (is.null(dim(out))) {
+    out <- matrix(out, nrow = nrow(auc_mat), dimnames = list(rownames(auc_mat), group_names))
+  }
   rownames(out) <- rownames(auc_mat)
   colnames(out) <- group_names
   out
@@ -2251,7 +2300,7 @@ scenic_calc_rss_matrix <- function(
 
 scenic_calc_one_rss <- function(p_regulon, p_cell_type) {
   jsd <- scenic_calc_jsd(p_regulon, p_cell_type)
-  1 - sqrt(jsd)
+  1 - sqrt(pmax(jsd, 0))
 }
 
 scenic_calc_jsd <- function(p_regulon, p_cell_type) {
