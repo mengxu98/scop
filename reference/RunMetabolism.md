@@ -201,22 +201,22 @@ tools slot `Metabolism_<group.by>_<method>` for
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-27 18:10:21] Start standard processing workflow...
-#> ℹ [2026-06-27 18:10:22] Checking a list of <Seurat>...
-#> ! [2026-06-27 18:10:22] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-27 18:10:22] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-27 18:10:22] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-27 18:10:22] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-27 18:10:22] Number of available HVF: 2000
-#> ℹ [2026-06-27 18:10:22] Finished check
-#> ℹ [2026-06-27 18:10:22] Perform `ScaleData()`
-#> ℹ [2026-06-27 18:10:22] Perform pca linear dimension reduction
-#> ℹ [2026-06-27 18:10:23] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-27 18:10:23] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-27 18:10:23] Reorder clusters...
-#> ℹ [2026-06-27 18:10:23] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-27 18:10:23] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-27 18:10:30] Standard processing workflow completed
+#> ℹ [2026-06-27 20:21:15] Start standard processing workflow...
+#> ℹ [2026-06-27 20:21:16] Checking a list of <Seurat>...
+#> ! [2026-06-27 20:21:16] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-27 20:21:16] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-27 20:21:16] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-27 20:21:16] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-27 20:21:16] Number of available HVF: 2000
+#> ℹ [2026-06-27 20:21:16] Finished check
+#> ℹ [2026-06-27 20:21:16] Perform `ScaleData()`
+#> ℹ [2026-06-27 20:21:16] Perform pca linear dimension reduction
+#> ℹ [2026-06-27 20:21:17] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-27 20:21:17] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-27 20:21:17] Reorder clusters...
+#> ℹ [2026-06-27 20:21:17] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-27 20:21:17] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-27 20:21:24] Standard processing workflow completed
 pancreas_sub <- RunMetabolism(
   pancreas_sub,
   assay = "RNA",
@@ -226,20 +226,20 @@ pancreas_sub <- RunMetabolism(
   species = "Mus_musculus",
   method = "AUCell"
 )
-#> ℹ [2026-06-27 18:10:30] Start metabolism pathway scoring
-#> ℹ [2026-06-27 18:10:30] Data type is raw counts
-#> ℹ [2026-06-27 18:10:30] Averaging expression by "CellType" ...
-#> ℹ [2026-06-27 18:10:30] Aggregated expression: 15998 genes x 5 groups
-#> ℹ [2026-06-27 18:10:30] Using `PrepareDB()` for species-aware gene set construction
-#> ℹ [2026-06-27 18:10:30]   KEGG pathway refs: 85, Reactome pathway names: 82
-#> ℹ [2026-06-27 18:10:30] Species: "Mus_musculus"
-#> ℹ [2026-06-27 18:10:30] Preparing KEGG database
-#> ℹ [2026-06-27 18:10:32] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): cannot open URL 'https://rest.kegg.jp/list/organism'>
-#> ! [2026-06-27 18:10:32] Failed to download using auto, from <https://rest.kegg.jp/list/organism>
-#> ℹ [2026-06-27 18:10:34] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): 'wget' call had nonzero exit status>
-#> ! [2026-06-27 18:10:34] Failed to download using wget, from <https://rest.kegg.jp/list/organism>
-#> ℹ [2026-06-27 18:10:37] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): cannot open URL 'https://rest.kegg.jp/list/organism'>
-#> ! [2026-06-27 18:10:37] Failed to download using libcurl, from <https://rest.kegg.jp/list/organism>
+#> ℹ [2026-06-27 20:21:24] Start metabolism pathway scoring
+#> ℹ [2026-06-27 20:21:24] Data type is raw counts
+#> ℹ [2026-06-27 20:21:24] Averaging expression by "CellType" ...
+#> ℹ [2026-06-27 20:21:24] Aggregated expression: 15998 genes x 5 groups
+#> ℹ [2026-06-27 20:21:24] Using `PrepareDB()` for species-aware gene set construction
+#> ℹ [2026-06-27 20:21:24]   KEGG pathway refs: 85, Reactome pathway names: 82
+#> ℹ [2026-06-27 20:21:24] Species: "Mus_musculus"
+#> ℹ [2026-06-27 20:21:24] Preparing KEGG database
+#> ℹ [2026-06-27 20:21:26] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): cannot open URL 'https://rest.kegg.jp/list/organism'>
+#> ! [2026-06-27 20:21:26] Failed to download using auto, from <https://rest.kegg.jp/list/organism>
+#> ℹ [2026-06-27 20:21:29] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): 'wget' call had nonzero exit status>
+#> ! [2026-06-27 20:21:29] Failed to download using wget, from <https://rest.kegg.jp/list/organism>
+#> ℹ [2026-06-27 20:21:31] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): cannot open URL 'https://rest.kegg.jp/list/organism'>
+#> ! [2026-06-27 20:21:31] Failed to download using libcurl, from <https://rest.kegg.jp/list/organism>
 #> Error in `[.data.frame`(orgs, , 3): undefined columns selected
 ht <- MetabolismPlot(
   pancreas_sub,
