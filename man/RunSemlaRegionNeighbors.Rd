@@ -43,24 +43,38 @@ Use \code{semla::RegionNeighbors()} to identify neighboring spots for selected
 metadata labels and write the returned columns to Seurat metadata.
 }
 \examples{
-\dontrun{
 data(visium_human_pancreas_sub)
-spatial <- visium_human_pancreas_sub
+spatial <- subset(
+  visium_human_pancreas_sub,
+  cells = colnames(visium_human_pancreas_sub)[1:120],
+  features = rownames(visium_human_pancreas_sub)[1:400]
+)
 spatial$region <- ifelse(
-  spatial$col > stats::median(spatial$col),
+  spatial$x > stats::median(spatial$x),
   "right",
   "left"
 )
+spatial$right_border <- spatial$region == "right" &
+  abs(spatial$x - stats::median(spatial$x)) < stats::sd(spatial$x) * 0.25
 
+SpatialSpotPlot(
+  spatial,
+  group.by = c("region", "right_border"),
+  overlay_image = FALSE,
+  coord.cols = c("x", "y")
+)
+
+if (
+  requireNamespace("semla", quietly = TRUE) &&
+    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+) {
 spatial <- RunSemlaRegionNeighbors(
   spatial,
   column_name = "region",
   column_labels = "right",
   mode = "outer",
-  column_key = "right_border"
+  column_key = "right_border",
+  verbose = FALSE
 )
-
-grep("right_border", colnames(spatial[[]]), value = TRUE)
-SpatialSpotPlot(spatial, group.by = "region")
 }
 }

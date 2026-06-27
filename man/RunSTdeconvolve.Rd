@@ -80,14 +80,58 @@ Estimate spot-level topic proportions from a spatial \code{Seurat} object using
 the optional \code{STdeconvolve} package.
 }
 \examples{
-\dontrun{
 data(visium_human_pancreas_sub)
-spatial <- RunSTdeconvolve(
+spatial <- subset(
   visium_human_pancreas_sub,
-  assay = "Spatial",
-  k = 5
+  cells = colnames(visium_human_pancreas_sub)[1:120],
+  features = rownames(visium_human_pancreas_sub)[1:400]
 )
-SpatialSpotPlot(spatial, group.by = "STdeconvolve_dominant_type")
-STdeconvolvePlot(spatial, plot_type = "pie")
+topic_weights <- data.frame(
+  STdeconvolve_prop_topic_1 = seq(0.75, 0.20, length.out = ncol(spatial)),
+  STdeconvolve_prop_topic_2 = seq(0.20, 0.70, length.out = ncol(spatial)),
+  STdeconvolve_prop_topic_3 = 0.10,
+  row.names = colnames(spatial)
+)
+topic_weights <- topic_weights / rowSums(topic_weights)
+spatial <- Seurat::AddMetaData(spatial, topic_weights)
+spatial$STdeconvolve_dominant_type <- sub(
+  "^STdeconvolve_prop_",
+  "",
+  colnames(topic_weights)[max.col(topic_weights)]
+)
+spatial$STdeconvolve_max_prop <- apply(topic_weights, 1, max)
+
+SpatialSpotPlot(
+  spatial,
+  group.by = "STdeconvolve_dominant_type",
+  overlay_image = FALSE,
+  coord.cols = c("x", "y")
+)
+STdeconvolvePlot(
+  spatial,
+  topics = 1:2,
+  overlay_image = FALSE,
+  coord.cols = c("x", "y")
+)
+if (requireNamespace("scatterpie", quietly = TRUE)) {
+  STdeconvolvePlot(
+    spatial,
+    plot_type = "pie",
+    overlay_image = FALSE,
+    coord.cols = c("x", "y")
+  )
+}
+
+if (
+  requireNamespace("STdeconvolve", quietly = TRUE) &&
+    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+) {
+spatial <- RunSTdeconvolve(
+  spatial,
+  assay = "Spatial",
+  features = rownames(spatial)[1:300],
+  k = 3,
+  verbose = FALSE
+)
 }
 }
