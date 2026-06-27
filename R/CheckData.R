@@ -831,6 +831,18 @@ CheckDataMerge <- function(
   }
   assay <- assay %||% SeuratObject::DefaultAssay(srt_merge)
   srt_merge_raw <- srt_merge
+  reuse_log_normalized_merge <- is.null(vars_to_regress) &&
+    !isTRUE(do_normalization) &&
+    identical(normalization_method, "LogNormalize") &&
+    identical(
+      suppressWarnings(CheckDataType(
+        srt_merge_raw,
+        layer = "data",
+        assay = assay,
+        verbose = FALSE
+      )),
+      "log_normalized_counts"
+    )
 
   log_message(
     "Split {.arg srt_merge} into {.arg srt_list} by {.val {batch}}",
@@ -861,7 +873,11 @@ CheckDataMerge <- function(
   HVF <- checked[["HVF"]]
   assay <- checked[["assay"]]
   type <- checked[["type"]]
-  srt_merge <- Reduce(merge, srt_list)
+  if (isTRUE(reuse_log_normalized_merge) && identical(type, "RNA")) {
+    srt_merge <- srt_merge_raw
+  } else {
+    srt_merge <- Reduce(merge, srt_list)
+  }
   if (type == "Chromatin") {
     assay_obj <- Seurat::GetAssay(srt_merge, assay = assay)
     feature_order <- rownames(assay_obj@counts)

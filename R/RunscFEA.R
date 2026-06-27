@@ -135,7 +135,7 @@ os.environ['NUMBA_NUM_THREADS'] = '1'
     )
   }
   if (!inherits(expr_mat, c("dgCMatrix", "matrix", "Matrix"))) {
-    expr_mat <- as.matrix(expr_mat)
+    expr_mat <- as_matrix(expr_mat)
   }
   if (nrow(expr_mat) == 0 || ncol(expr_mat) == 0) {
     log_message(
@@ -187,7 +187,7 @@ os.environ['NUMBA_NUM_THREADS'] = '1'
     verbose = verbose
   )
 
-  expr_cells_genes <- as.matrix(Matrix::t(expr_mat))
+  expr_cells_genes <- as_matrix(Matrix::t(expr_mat))
   storage.mode(expr_cells_genes) <- "double"
 
   conda <- resolve_conda("auto")
@@ -239,12 +239,12 @@ os.environ['NUMBA_NUM_THREADS'] = '1'
   flux_df <- flux_df[colnames(expr_mat), , drop = FALSE]
   balance_df <- balance_df[colnames(expr_mat), , drop = FALSE]
 
-  flux_mat <- t(as.matrix(flux_df))
+  flux_mat <- t(as_matrix(flux_df))
   storage.mode(flux_mat) <- "double"
   rownames(flux_mat) <- scfea_module_feature_id(rownames(flux_mat))
   colnames(flux_mat) <- colnames(expr_mat)
 
-  balance_mat <- t(as.matrix(balance_df))
+  balance_mat <- t(as_matrix(balance_df))
   storage.mode(balance_mat) <- "double"
   colnames(balance_mat) <- colnames(expr_mat)
 
@@ -1208,7 +1208,7 @@ scfea_get_assay_matrix <- function(srt, assay, layer) {
     )
   }
   if (!inherits(mat, c("dgCMatrix", "matrix", "Matrix"))) {
-    mat <- as.matrix(mat)
+    mat <- as_matrix(mat)
   }
   mat
 }
@@ -1355,12 +1355,12 @@ scfea_compare_features <- function(mat, srt = NULL, group.by = NULL, ident.1, id
     )
   }
 
-  x1 <- as.matrix(mat[, cells1, drop = FALSE])
-  x2 <- as.matrix(mat[, cells2, drop = FALSE])
+  x1 <- mat[, cells1, drop = FALSE]
+  x2 <- mat[, cells2, drop = FALSE]
   mean1 <- Matrix::rowMeans(x1)
   mean2 <- Matrix::rowMeans(x2)
-  sd1 <- apply(x1, 1, stats::sd)
-  sd2 <- apply(x2, 1, stats::sd)
+  sd1 <- MatrixGenerics::rowSds(x1)
+  sd2 <- MatrixGenerics::rowSds(x2)
   pooled_sd <- sqrt(
     ((length(cells1) - 1) * sd1^2 + (length(cells2) - 1) * sd2^2) /
       (length(cells1) + length(cells2) - 2)
@@ -1373,8 +1373,8 @@ scfea_compare_features <- function(mat, srt = NULL, group.by = NULL, ident.1, id
     function(i) {
       tryCatch(
         stats::wilcox.test(
-          x = x1[i, ],
-          y = x2[i, ],
+          x = as.numeric(x1[i, ]),
+          y = as.numeric(x2[i, ]),
           exact = FALSE
         )$p.value,
         error = function(e) NA_real_

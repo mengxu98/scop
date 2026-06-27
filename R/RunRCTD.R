@@ -532,7 +532,7 @@ rctd_get_count_matrix <- function(
   mat <- GetAssayData5(srt, assay = assay, layer = layer)
   mat <- mat[features, , drop = FALSE]
   if (!inherits(mat, "Matrix")) {
-    mat <- Matrix::Matrix(as.matrix(mat), sparse = TRUE)
+    mat <- Matrix::Matrix(mat, sparse = TRUE)
   }
   if (!inherits(mat, "dgCMatrix")) {
     mat <- methods::as(mat, "dgCMatrix")

@@ -150,6 +150,7 @@ GeneConvert <- function(
       error_message = "Get errors when connecting with EnsemblArchives..."
     )
     Ensembl_version <- as.character(Ensembl_version)
+    use_current_release <- identical(Ensembl_version, "current_release")
     if (Ensembl_version == "current_release") {
       url <- archives[which(archives$current_release == "*"), "url"]
       version <- as.character(
@@ -174,7 +175,25 @@ GeneConvert <- function(
     )
     mart <- try_get(
       expr = {
-        if (!is.null(mirror)) {
+        if (isTRUE(use_current_release)) {
+          mirror_candidates <- unique(
+            stats::na.omit(c(mirror, "useast", "uswest", "asia", "www"))
+          )
+          mart_try <- NULL
+          for (mirror_i in mirror_candidates) {
+            mart_try <- tryCatch(
+              biomaRt::useEnsembl(biomart = "ensembl", mirror = mirror_i),
+              error = function(e) e
+            )
+            if (!inherits(mart_try, "error")) {
+              break
+            }
+          }
+          if (inherits(mart_try, "error")) {
+            stop(mart_try)
+          }
+          mart_try
+        } else if (!is.null(mirror)) {
           biomaRt::useEnsembl(biomart = "ensembl", mirror = mirror)
         } else {
           mart_try <- tryCatch(
