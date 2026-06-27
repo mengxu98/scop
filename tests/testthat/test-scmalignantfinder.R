@@ -249,4 +249,14 @@ test_that("scMalignantFinder Python bridge is installed as an isolated module", 
   expect_match(source, "def run_scmalignantfinder", fixed = TRUE)
   expect_match(source, "def run_scmalignant_region", fixed = TRUE)
   expect_match(source, "def run_scmalignant_states", fixed = TRUE)
+
+  python <- Sys.which("python3")
+  skip_if(!nzchar(python), "python3 is not available")
+  out <- system2(
+    python,
+    c("-m", "py_compile", py_file),
+    stdout = TRUE,
+    stderr = TRUE
+  )
+  expect_equal(attr(out, "status") %||% 0L, 0L, info = paste(out, collapse = "\n"))
 })

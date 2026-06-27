@@ -85,7 +85,7 @@ def run_scmalignantfinder(
     kwargs = {key: value for key, value in kwargs.items() if value is not None}
 
     try:
-        model = classifier.scMalignantFinder***wargs)
+        model = classifier.scMalignantFinder(**kwargs)
     except TypeError as exc:
         if "use_raw" not in kwargs:
             raise
