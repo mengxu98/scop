@@ -417,7 +417,7 @@ RunSCENICPlus <- function(
     colnames(auc_counts), ,
     drop = FALSE
   ]
-  scores <- Matrix::t(Matrix::Matrix(as.matrix(auc), sparse = TRUE))
+  scores <- Matrix::t(methods::as(Matrix::Matrix(as_matrix(auc), sparse = TRUE), "dgCMatrix"))
   rss <- scenicplus_calc_rss(
     auc = auc,
     srt = srt,
@@ -564,7 +564,7 @@ scenicplus_store_result <- function(srt, result, assay_name, tool_name) {
   scores <- result[["scores"]]
   if (is.null(scores)) {
     auc <- result[["auc"]]
-    scores <- Matrix::t(Matrix::Matrix(as.matrix(auc), sparse = TRUE))
+    scores <- Matrix::t(methods::as(Matrix::Matrix(as_matrix(auc), sparse = TRUE), "dgCMatrix"))
     result[["scores"]] <- scores
   }
   regulon_list <- result[["regulon_list"]]
@@ -655,7 +655,7 @@ scenicplus_read_python_result <- function(
     cells = rownames(auc),
     group.by = group.by
   )
-  scores <- Matrix::t(Matrix::Matrix(as.matrix(auc), sparse = TRUE))
+  scores <- Matrix::t(methods::as(Matrix::Matrix(as_matrix(auc), sparse = TRUE), "dgCMatrix"))
   list(
     tf_gene = tf_gene,
     region_gene = region_gene,
@@ -717,9 +717,9 @@ scenicplus_prepare_rna_expr <- function(rna_expr, fallback, cells) {
     return(fallback)
   }
   if (!is.matrix(rna_expr) && !inherits(rna_expr, "Matrix")) {
-    rna_expr <- as.matrix(rna_expr)
+    rna_expr <- as_matrix(rna_expr)
   }
-  rna_expr <- Matrix::Matrix(rna_expr, sparse = TRUE)
+  rna_expr <- methods::as(Matrix::Matrix(rna_expr, sparse = TRUE), "dgCMatrix")
   if (is.null(rownames(rna_expr)) || is.null(colnames(rna_expr))) {
     log_message(
       "{.arg rna_expr} must have gene and cell dimnames",
@@ -752,9 +752,9 @@ scenicplus_prepare_atac_expr <- function(atac_expr, fallback, cells) {
     return(fallback)
   }
   if (!is.matrix(atac_expr) && !inherits(atac_expr, "Matrix")) {
-    atac_expr <- as.matrix(atac_expr)
+    atac_expr <- as_matrix(atac_expr)
   }
-  atac_expr <- Matrix::Matrix(atac_expr, sparse = TRUE)
+  atac_expr <- methods::as(Matrix::Matrix(atac_expr, sparse = TRUE), "dgCMatrix")
   if (is.null(rownames(atac_expr)) || is.null(colnames(atac_expr))) {
     log_message(
       "{.arg atac_expr} must have region and cell dimnames",
@@ -984,9 +984,9 @@ scenicplus_prepare_auc_expr <- function(auc_expr, fallback, cells) {
     return(fallback)
   }
   if (!is.matrix(auc_expr) && !inherits(auc_expr, "Matrix")) {
-    auc_expr <- as.matrix(auc_expr)
+    auc_expr <- as_matrix(auc_expr)
   }
-  auc_expr <- Matrix::Matrix(auc_expr, sparse = TRUE)
+  auc_expr <- methods::as(Matrix::Matrix(auc_expr, sparse = TRUE), "dgCMatrix")
   if (is.null(rownames(auc_expr)) || is.null(colnames(auc_expr))) {
     log_message(
       "{.arg auc_expr} must have gene and cell dimnames",
@@ -1021,7 +1021,7 @@ scenicplus_prep_auc_rank <- function(auc_rankings, auc_counts) {
     return(NULL)
   }
   if (!is.matrix(auc_rankings)) {
-    auc_rankings <- as.matrix(auc_rankings)
+    auc_rankings <- as_matrix(auc_rankings)
   }
   if (is.null(rownames(auc_rankings)) || is.null(colnames(auc_rankings))) {
     log_message(
@@ -1166,7 +1166,7 @@ scenicplus_calc_rss <- function(auc, srt, cells, group.by = NULL) {
     )
   }
   groups <- as.character(srt@meta.data[cells, group.by, drop = TRUE])
-  auc_mat <- t(as.matrix(auc[cells, , drop = FALSE]))
+  auc_mat <- t(as_matrix(auc[cells, , drop = FALSE]))
   rss_matrix <- scenic_calc_rss_matrix(
     auc_mat = auc_mat,
     cell_annotation = groups
@@ -1240,7 +1240,7 @@ scenicplus_add_tfg_cor <- function(
     adjacency[["rho"]] <- NA_real_
     return(adjacency)
   }
-  expr <- as.matrix(rna_counts[genes, , drop = FALSE])
+  expr <- as_matrix(rna_counts[genes, , drop = FALSE])
   corr <- suppressWarnings(stats::cor(
     t(expr),
     method = "pearson",
@@ -1342,8 +1342,8 @@ scenicplus_region_gene_native <- function(
   }
   hit_regions <- unique(hits[["region"]])
   hit_genes <- unique(hits[["gene"]])
-  atac_mat <- as.matrix(atac_counts[hit_regions, , drop = FALSE])
-  rna_mat <- as.matrix(rna_counts[hit_genes, , drop = FALSE])
+  atac_mat <- as_matrix(atac_counts[hit_regions, , drop = FALSE])
+  rna_mat <- as_matrix(rna_counts[hit_genes, , drop = FALSE])
   hits[["score"]] <- scenicplus_region_gene_cor(
     atac_log = atac_mat,
     rna_log = rna_mat,
@@ -1454,8 +1454,8 @@ scenicplus_rg_gbm <- function(
       message_type = "error"
     )
   }
-  atac_mat <- as.matrix(atac_counts[unique(hits[["region"]]), , drop = FALSE])
-  rna_mat <- as.matrix(rna_counts[unique(hits[["gene"]]), , drop = FALSE])
+  atac_mat <- atac_counts[unique(hits[["region"]]), , drop = FALSE]
+  rna_mat <- rna_counts[unique(hits[["gene"]]), , drop = FALSE]
   rows <- lapply(split(hits, hits[["gene"]]), function(df) {
     regions <- unique(df[["region"]])
     gene <- df[["gene"]][[1L]]
@@ -1464,7 +1464,7 @@ scenicplus_rg_gbm <- function(
       return(NULL)
     }
     expr <- cbind(
-      t(atac_mat[regions, , drop = FALSE]),
+      as_matrix(Matrix::t(atac_mat[regions, , drop = FALSE])),
       target = as.numeric(rna_mat[gene, ])
     )
     edge_idx <- grnboost_tree(
@@ -2154,7 +2154,7 @@ scenicplus_tf_gene_rho <- function(pairs, rna_counts) {
   if (nrow(pairs) == 0L) {
     return(NULL)
   }
-  expr <- log1p(as.matrix(rna_counts[
+  expr <- log1p(as_matrix(rna_counts[
     unique(c(pairs[["TF"]], pairs[["gene"]])), ,
     drop = FALSE
   ]))

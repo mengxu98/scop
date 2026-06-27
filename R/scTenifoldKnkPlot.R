@@ -601,7 +601,6 @@ sctenifold_plot_network <- function(
       message_type = "error"
     )
   }
-  net <- as.matrix(net)
   highlight_genes <- intersect(as.character(highlight_genes), dr$gene)
   genes_use <- unique(c(
     highlight_genes,
@@ -614,7 +613,7 @@ sctenifold_plot_network <- function(
       message_type = "error"
     )
   }
-  sub_net <- net[genes_use, genes_use, drop = FALSE]
+  sub_net <- as_matrix(net[genes_use, genes_use, drop = FALSE])
   edge_idx <- which(is.finite(sub_net) & sub_net != 0, arr.ind = TRUE)
   edge_df <- data.frame(
     from = rownames(sub_net)[edge_idx[, 1]],

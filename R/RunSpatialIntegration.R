@@ -382,13 +382,11 @@ spatial_integration_prepare_input <- function(
       )
     }
     srt <- object
-    srt_list <- Seurat::SplitObject(object, split.by = sample.by)
-    names(srt_list) <- names(srt_list) %||% unique(samples)
+    srt_list <- NULL
   } else {
     srt_list <- spatial_integration_as_list(object, sample.by = sample.by)
     srt <- spatial_integration_merge_list(srt_list, sample.by = sample.by)
   }
-  samples <- names(srt_list)
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   if (!assay %in% SeuratObject::Assays(srt)) {
     log_message(
@@ -397,12 +395,21 @@ spatial_integration_prepare_input <- function(
     )
   }
   expr <- GetAssayData5(srt, assay = assay, layer = layer)
-  features_use <- spatial_integration_features(
-    features = features,
-    expr = expr,
-    srt_list = srt_list,
-    assay = assay
-  )
+  features_use <- if (is.null(srt_list)) {
+    spatial_integration_features_merged(
+      features = features,
+      expr = expr,
+      srt = srt,
+      assay = assay
+    )
+  } else {
+    spatial_integration_features(
+      features = features,
+      expr = expr,
+      srt_list = srt_list,
+      assay = assay
+    )
+  }
   coords <- spatial_dim_coords(
     srt = srt,
     image = image,
@@ -535,9 +542,23 @@ spatial_integration_features <- function(features, expr, srt_list, assay) {
   common
 }
 
+spatial_integration_features_merged <- function(features, expr, srt, assay) {
+  common <- intersect(rownames(srt[[assay]]), rownames(expr))
+  if (!is.null(features)) {
+    common <- intersect(unique(features), common)
+  }
+  if (length(common) == 0L) {
+    log_message(
+      "No requested {.arg features} are available in the merged spatial object",
+      message_type = "error"
+    )
+  }
+  common
+}
+
 spatial_integration_sparse_matrix <- function(mat) {
   if (!inherits(mat, "Matrix")) {
-    mat <- Matrix::Matrix(as.matrix(mat), sparse = TRUE)
+    mat <- Matrix::Matrix(mat, sparse = TRUE)
   }
   if (!inherits(mat, "dgCMatrix")) {
     mat <- methods::as(mat, "dgCMatrix")
