@@ -41,3 +41,45 @@ A `giotto2` workflow object.
 \description{
 Run Giotto HMRF spatial domains
 }
+\examples{
+data(visium_human_pancreas_sub)
+spatial <- subset(
+  visium_human_pancreas_sub,
+  cells = colnames(visium_human_pancreas_sub)[1:80],
+  features = rownames(visium_human_pancreas_sub)[1:200]
+)
+coords <- data.frame(
+  cell_ID = colnames(spatial),
+  sdimx = spatial$x,
+  sdimy = spatial$y,
+  row.names = colnames(spatial)
+)
+hmrf_meta <- data.frame(
+  cell_ID = colnames(spatial),
+  scop_HMRF_k4_b10 = paste0("domain_", as.integer(factor(spatial$coda_label)) \%\% 4 + 1),
+  row.names = colnames(spatial)
+)
+g <- structure(
+  list(
+    source = list(cells = colnames(spatial), coordinates = coords),
+    results = list(
+      hmrf = list(
+        table = hmrf_meta["scop_HMRF_k4_b10"],
+        metadata = hmrf_meta
+      )
+    )
+  ),
+  class = c("giotto2", "list")
+)
+GiottoPlot(g, plot_type = "hmrf")
+
+if (
+  requireNamespace("Giotto", quietly = TRUE) &&
+    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+) {
+  g <- SeuratToScopGiotto(spatial, coord.cols = c("x", "y"))
+  g <- GiottoPreprocess(g)
+  g <- GiottoSpatialNetwork(g)
+  g <- GiottoHMRF(g, spatial_genes = rownames(spatial)[1:30], k = 4)
+}
+}
