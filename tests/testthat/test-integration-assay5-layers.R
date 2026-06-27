@@ -137,3 +137,48 @@ test_that("ScaleData handles split Assay5 data layers", {
     tolerance = 1e-12
   )
 })
+
+test_that("srt_to_adata stacks split Assay5 layers into sparse X", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("SeuratObject")
+  skip_if_not_installed("Matrix")
+  skip_if_not_installed("reticulate")
+  skip_if_not(reticulate::py_module_available("anndata"))
+  skip_if_not(reticulate::py_module_available("scipy"))
+
+  old_skip_python_prepare <- getOption("scop_skip_python_prepare", FALSE)
+  options(scop_skip_python_prepare = TRUE)
+  on.exit(options(scop_skip_python_prepare = old_skip_python_prepare), add = TRUE)
+
+  set.seed(1)
+  counts <- Matrix::rsparsematrix(20, 12, density = 0.2)
+  counts@x <- abs(round(counts@x * 10)) + 1
+  rownames(counts) <- paste0("g", seq_len(nrow(counts)))
+  colnames(counts) <- paste0("c", seq_len(ncol(counts)))
+
+  srt <- Seurat::CreateSeuratObject(counts)
+  srt$batch <- rep(c("a", "b"), each = 6)
+  assay <- SeuratObject::DefaultAssay(srt)
+  srt[[assay]] <- split(srt[[assay]], f = srt$batch)
+
+  layers <- SeuratObject::Layers(srt[[assay]], search = "counts")
+  expect_setequal(layers, c("counts.a", "counts.b"))
+
+  adata <- srt_to_adata(
+    srt,
+    assay_x = assay,
+    layer_x = "counts",
+    verbose = FALSE
+  )
+
+  expect_identical(reticulate::py_to_r(adata$X$format), "csr")
+  expect_equal(
+    unlist(reticulate::py_to_r(adata$X$shape)),
+    c(ncol(srt), nrow(srt[[assay]]))
+  )
+  expect_identical(
+    reticulate::py_to_r(adata$obs_names$to_list()),
+    colnames(srt)
+  )
+  expect_equal(nrow(reticulate::py_to_r(adata$obs)), ncol(srt))
+})
