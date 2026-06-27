@@ -50,16 +50,37 @@ Seurat object and compute spot-level spatial networks. The network is stored
 in \code{srt@tools[[tool_name]]} when \code{store_results = TRUE}.
 }
 \examples{
-\dontrun{
 data(visium_human_pancreas_sub)
-
-spatial <- RunSemlaSpatialNetwork(
+spatial <- subset(
   visium_human_pancreas_sub,
-  nNeighbors = 6,
-  coords = "array"
+  cells = colnames(visium_human_pancreas_sub)[1:120],
+  features = rownames(visium_human_pancreas_sub)[1:400]
+)
+spatial@tools$SemlaSpatialNetwork <- list(
+  network = data.frame(
+    from = colnames(spatial)[1:6],
+    to = colnames(spatial)[2:7],
+    distance = sqrt(diff(spatial$x[1:7])^2 + diff(spatial$y[1:7])^2)
+  )
 )
 
 head(spatial@tools$SemlaSpatialNetwork$network)
-SpatialSpotPlot(spatial, group.by = "orig.ident")
+SpatialSpotPlot(
+  spatial,
+  group.by = "coda_label",
+  overlay_image = FALSE,
+  coord.cols = c("x", "y")
+)
+
+if (
+  requireNamespace("semla", quietly = TRUE) &&
+    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+) {
+spatial <- RunSemlaSpatialNetwork(
+  spatial,
+  nNeighbors = 6,
+  coords = "pixels",
+  verbose = FALSE
+)
 }
 }
