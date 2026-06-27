@@ -38,3 +38,44 @@ A `giotto2` workflow object.
 \description{
 Run Giotto dimensional reduction
 }
+\examples{
+data(visium_human_pancreas_sub)
+spatial <- subset(
+  visium_human_pancreas_sub,
+  cells = colnames(visium_human_pancreas_sub)[1:80],
+  features = rownames(visium_human_pancreas_sub)[1:200]
+)
+embedding <- cbind(
+  UMAP_1 = as.numeric(scale(spatial$x)),
+  UMAP_2 = as.numeric(scale(spatial$y))
+)
+rownames(embedding) <- colnames(spatial)
+g <- structure(
+  list(
+    giotto = list(umap = embedding),
+    source = list(cells = colnames(spatial), features = rownames(spatial)),
+    results = list(
+      cluster = list(
+        table = data.frame(
+          cell = colnames(spatial),
+          cluster = spatial$coda_label,
+          row.names = colnames(spatial)
+        )
+      )
+    ),
+    parameters = list(umap_name = "umap")
+  ),
+  class = c("giotto2", "list")
+)
+GiottoPlot(g, plot_type = "dim")
+
+if (
+  requireNamespace("Giotto", quietly = TRUE) &&
+    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+) {
+  g <- SeuratToScopGiotto(spatial, coord.cols = c("x", "y"))
+  g <- GiottoPreprocess(g)
+  g <- GiottoReduce(g, reduction = "pca", dims = 1:10)
+  g <- GiottoReduce(g, reduction = "umap", dims = 1:10)
+}
+}

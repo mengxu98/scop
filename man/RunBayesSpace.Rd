@@ -76,8 +76,28 @@ Run BayesSpace spatial clustering
 }
 \examples{
 data(visium_human_pancreas_sub)
-spatial <- RunBayesSpace(
+spatial <- subset(
   visium_human_pancreas_sub,
+  cells = colnames(visium_human_pancreas_sub)[1:120],
+  features = rownames(visium_human_pancreas_sub)[1:400]
+)
+spatial$BayesSpace_cluster <- factor(
+  paste0("domain_", (seq_len(ncol(spatial)) - 1) \%\% 3 + 1)
+)
+
+SpatialSpotPlot(
+  spatial,
+  group.by = "BayesSpace_cluster",
+  overlay_image = FALSE,
+  coord.cols = c("x", "y")
+)
+
+if (
+  requireNamespace("BayesSpace", quietly = TRUE) &&
+    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+) {
+spatial <- RunBayesSpace(
+  spatial,
   q = 3,
   n.PCs = 5,
   n.HVGs = 200,
@@ -90,5 +110,5 @@ spatial <- RunBayesSpace(
   )
 )
 table(spatial$BayesSpace_cluster)
-SpatialSpotPlot(spatial, group.by = "BayesSpace_cluster")
+}
 }

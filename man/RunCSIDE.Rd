@@ -87,35 +87,58 @@ Run \code{spacexr} C-SIDE after RCTD to test cell type-specific spatial or
 condition-aware differential expression.
 }
 \examples{
-\dontrun{
-library(scop)
-
 data(visium_human_pancreas_sub)
-data(panc8_sub)
-
-spatial <- RunRCTD(
-  srt = visium_human_pancreas_sub,
-  reference = panc8_sub,
-  reference_label = "celltype",
-  assay = "Spatial",
-  reference_assay = "RNA",
-  rctd_mode = "full",
-  max_cores = 1
+spatial <- subset(
+  visium_human_pancreas_sub,
+  cells = colnames(visium_human_pancreas_sub)[1:120],
+  features = rownames(visium_human_pancreas_sub)[1:400]
+)
+spatial$region <- ifelse(spatial$x > stats::median(spatial$x), "right", "left")
+spatial$CSIDE_n_sig <- ifelse(spatial$region == "right", 12, 4)
+spatial$CSIDE_mode <- "regions"
+cside_result <- data.frame(
+  feature = rownames(spatial)[1:4],
+  celltype = rep(c("Ductal", "Endocrine"), each = 2),
+  parameter = "right_vs_left",
+  logFC = c(1.2, 0.8, -0.9, -1.1),
+  statistic = c(4.1, 3.5, -3.2, -3.8),
+  p_value = c(0.001, 0.004, 0.006, 0.002),
+  q_value = c(0.004, 0.008, 0.010, 0.006),
+  significant = TRUE,
+  method = "regions"
+)
+spatial@tools$CSIDE <- list(
+  result_table = cside_result,
+  parameters = list(mode = "regions", group.by = "region")
 )
 
-spatial$region <- ifelse(spatial$col > stats::median(spatial$col), "right", "left")
-spatial <- RunCSIDE(
+SpatialSpotPlot(
   spatial,
-  group.by = "region",
-  celltypes = c("alpha", "beta"),
-  gene_threshold = 0.00005,
-  cell_type_threshold = 125
+  group.by = "CSIDE_n_sig",
+  overlay_image = FALSE,
+  coord.cols = c("x", "y")
+)
+SpatialSpotPlot(
+  spatial,
+  features = cside_result$feature[1:2],
+  assay = "Spatial",
+  layer = "counts",
+  overlay_image = FALSE,
+  coord.cols = c("x", "y")
 )
 
-head(spatial@tools$CSIDE$result_table)
-SpatialSpotPlot(spatial, group.by = "CSIDE_n_sig")
-
-cside_genes <- head(spatial@tools$CSIDE$result_table$feature, 2)
-SpatialSpotPlot(spatial, features = cside_genes, assay = "Spatial")
+if (
+  requireNamespace("spacexr", quietly = TRUE) &&
+    !is.null(spatial@tools$RCTD) &&
+    inherits(spatial@tools$RCTD$object, "RCTD") &&
+    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+) {
+  spatial <- RunCSIDE(
+    spatial,
+    group.by = "region",
+    celltypes = c("Ductal", "Endocrine"),
+    gene_threshold = 0.00005,
+    cell_type_threshold = 125
+  )
 }
 }

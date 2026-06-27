@@ -59,23 +59,46 @@ Normalize spatial transcriptomics counts with the optional Bioconductor
 \code{SpaNorm} backend and store the normalized expression in a new Seurat assay.
 }
 \examples{
-\dontrun{
 data(visium_human_pancreas_sub)
-
-spatial <- RunSpaNorm(
+spatial <- subset(
   visium_human_pancreas_sub,
-  assay = "Spatial",
-  layer = "counts",
-  coord.cols = c("col", "row"),
-  new_assay = "SpaNorm",
-  sample.p = 0.25
+  cells = colnames(visium_human_pancreas_sub)[1:80],
+  features = rownames(visium_human_pancreas_sub)[1:300]
 )
+spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 
 SpatialSpotPlot(
   spatial,
-  features = rownames(spatial[["SpaNorm"]])[1:2],
-  assay = "SpaNorm",
-  layer = "data"
+  features = rownames(spatial)[1:2],
+  assay = "Spatial",
+  layer = "data",
+  overlay_image = FALSE,
+  coord.cols = c("x", "y")
 )
+
+if (
+  requireNamespace("SpaNorm", quietly = TRUE) &&
+    requireNamespace("SpatialExperiment", quietly = TRUE) &&
+    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+) {
+  spatial <- RunSpaNorm(
+    spatial,
+    assay = "Spatial",
+    layer = "counts",
+    coord.cols = c("x", "y"),
+    new_assay = "SpaNorm",
+    store_spe = FALSE,
+    sample.p = 0.25,
+    verbose = FALSE
+  )
+
+  SpatialSpotPlot(
+    spatial,
+    features = rownames(spatial[["SpaNorm"]])[1:2],
+    assay = "SpaNorm",
+    layer = "data",
+    overlay_image = FALSE,
+    coord.cols = c("x", "y")
+  )
 }
 }
