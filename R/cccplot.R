@@ -3014,6 +3014,31 @@ ccc_network_df <- function(
   edge_df
 }
 
+ccc_reduce_chord_pairs <- function(pair_plot, strength_df, max.groups = 8) {
+  keep_cells <- utils::head(strength_df$cell, max.groups)
+  reduced <- pair_plot[
+    pair_plot$sender %in% keep_cells &
+      pair_plot$receiver %in% keep_cells, ,
+    drop = FALSE
+  ]
+  if (nrow(reduced) > 0L) {
+    return(list(
+      pair_plot = reduced,
+      strength_df = strength_df[strength_df$cell %in% keep_cells, , drop = FALSE]
+    ))
+  }
+
+  keep_cells <- unique(c(
+    as.character(pair_plot$sender),
+    as.character(pair_plot$receiver)
+  ))
+  keep_cells <- keep_cells[!is.na(keep_cells) & nzchar(keep_cells)]
+  list(
+    pair_plot = pair_plot,
+    strength_df = strength_df[strength_df$cell %in% keep_cells, , drop = FALSE]
+  )
+}
+
 ccc_heatmap_plot <- function(
   pair_df,
   interaction_df = NULL,
@@ -4464,19 +4489,13 @@ ccc_chord_plot <- function(
       is.finite(max.groups) &&
       nrow(strength_df) > max.groups
   ) {
-    keep_cells <- utils::head(strength_df$cell, max.groups)
-    pair_plot <- pair_plot[
-      pair_plot$sender %in% keep_cells &
-        pair_plot$receiver %in% keep_cells, ,
-      drop = FALSE
-    ]
-    if (nrow(pair_plot) == 0L) {
-      log_message(
-        "No CCC records remain for chord plotting after cell-group reduction",
-        message_type = "error"
-      )
-    }
-    strength_df <- strength_df[strength_df$cell %in% keep_cells, , drop = FALSE]
+    reduced <- ccc_reduce_chord_pairs(
+      pair_plot = pair_plot,
+      strength_df = strength_df,
+      max.groups = max.groups
+    )
+    pair_plot <- reduced$pair_plot
+    strength_df <- reduced$strength_df
   }
 
   cell_order <- unique(c(

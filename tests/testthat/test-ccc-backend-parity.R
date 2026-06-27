@@ -89,6 +89,31 @@ test_that("aggregate_ccc_long cpp backend handles empty data frame", {
   expect_equal(nrow(cpp_out), 0)
 })
 
+test_that("chord pair reduction keeps selected edges when top cell groups have no internal edge", {
+  pair_plot <- data.frame(
+    sender = c("S1", "S2"),
+    receiver = c("R1", "R2"),
+    sum = c(10, 9),
+    stringsAsFactors = FALSE
+  )
+  strength_df <- data.frame(
+    cell = c("S1", "S2", "R1", "R2"),
+    strength = c(20, 18, 10, 9),
+    stringsAsFactors = FALSE
+  )
+
+  reduced <- getFromNamespace("ccc_reduce_chord_pairs", "scop")(
+    pair_plot = pair_plot,
+    strength_df = strength_df,
+    max.groups = 2
+  )
+
+  expect_equal(nrow(reduced$pair_plot), 2)
+  expect_equal(reduced$pair_plot$sender, pair_plot$sender)
+  expect_equal(reduced$pair_plot$receiver, pair_plot$receiver)
+  expect_setequal(reduced$strength_df$cell, c("S1", "S2", "R1", "R2"))
+})
+
 test_that("aggregate_ccc_long cpp backend lumped NA as string group", {
   df <- data.frame(
     sender = c("A", NA, "A"),
