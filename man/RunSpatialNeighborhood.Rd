@@ -79,3 +79,28 @@ A \code{Seurat} object with results stored in \code{srt@tools[[tool_name]]}.
 Build a scop-style spatial neighborhood result bundle and optionally dispatch
 to a supported backend for colocalization or local-effect statistics.
 }
+\examples{
+data(visium_human_pancreas_sub)
+spatial <- subset(
+  visium_human_pancreas_sub,
+  cells = colnames(visium_human_pancreas_sub)[1:120],
+  features = rownames(visium_human_pancreas_sub)[1:400]
+)
+spatial <- RunSpatialNeighborhood(
+  spatial,
+  group.by = "coda_label",
+  coord.cols = c("x", "y"),
+  k = 4,
+  verbose = FALSE
+)
+
+SpatialNeighborhoodPlot(spatial, plot_type = "heatmap")
+SpatialNeighborhoodPlot(spatial, plot_type = "network", top_n = 12)
+SpatialNeighborhoodPlot(spatial, plot_type = "stat", top_n = 12)
+SpatialNeighborhoodPlot(
+  spatial,
+  plot_type = "spatial",
+  overlay_image = FALSE,
+  coord.cols = c("x", "y")
+)
+}

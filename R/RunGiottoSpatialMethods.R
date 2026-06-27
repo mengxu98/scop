@@ -23,31 +23,45 @@
 #' enrichment table, raw Giotto result, parameters, features, and cells.
 #'
 #' @examples
-#' \dontrun{
 #' data(visium_human_pancreas_sub)
-#' spatial <- Seurat::NormalizeData(
+#' spatial <- subset(
 #'   visium_human_pancreas_sub,
-#'   assay = "Spatial",
-#'   verbose = FALSE
+#'   cells = colnames(visium_human_pancreas_sub)[1:120],
+#'   features = rownames(visium_human_pancreas_sub)[1:400]
 #' )
 #' spatial$region <- ifelse(
-#'   spatial$col > stats::median(spatial$col),
+#'   spatial$x > stats::median(spatial$x),
 #'   "right",
 #'   "left"
 #' )
+#' proximity <- list(
+#'   enrichment = data.frame(
+#'     group_1 = c("left", "left", "right", "right"),
+#'     group_2 = c("left", "right", "left", "right"),
+#'     enrichment = c(1.1, -0.7, -0.5, 1.3),
+#'     type_int = c("enriched", "depleted", "depleted", "enriched")
+#'   ),
+#'   parameters = list(network_method = "Delaunay", number_of_simulations = 100)
+#' )
+#' class(proximity) <- c("giotto2_cell_proximity", "giotto2_result", "list")
 #'
+#' head(proximity$enrichment)
+#' GiottoPlot(proximity)
+#'
+#' if (
+#'   requireNamespace("Giotto", quietly = TRUE) &&
+#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#' ) {
+#' spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 #' proximity <- RunGiottoCellProximity(
 #'   spatial,
 #'   group.by = "region",
 #'   assay = "Spatial",
 #'   layer = "data",
-#'   coord.cols = c("col", "row"),
+#'   coord.cols = c("x", "y"),
 #'   network_method = "Delaunay",
 #'   number_of_simulations = 100
 #' )
-#'
-#' head(proximity$enrichment)
-#' GiottoPlot(proximity)
 #' }
 #'
 #' @export
@@ -198,37 +212,50 @@ RunGiottoCellProximity <- function(
 #' and cells.
 #'
 #' @examples
-#' \dontrun{
 #' data(visium_human_pancreas_sub)
-#' spatial <- Seurat::NormalizeData(
+#' spatial <- subset(
 #'   visium_human_pancreas_sub,
-#'   assay = "Spatial",
-#'   verbose = FALSE
+#'   cells = colnames(visium_human_pancreas_sub)[1:120],
+#'   features = rownames(visium_human_pancreas_sub)[1:400]
 #' )
-#' spatial <- Seurat::FindVariableFeatures(
-#'   spatial,
-#'   assay = "Spatial",
-#'   nfeatures = 500,
-#'   verbose = FALSE
+#' spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
+#' giotto_genes <- list(
+#'   results = data.frame(
+#'     feat_ID = rownames(spatial)[1:6],
+#'     spatGeneRank = c(40, 35, 28, 20, 16, 10)
+#'   ),
+#'   top_features = rownames(spatial)[1:4],
+#'   parameters = list(assay = "Spatial", layer = "data", coord.cols = c("x", "y"))
 #' )
-#'
-#' giotto_genes <- RunGiottoSpatialGenes(
-#'   spatial,
-#'   assay = "Spatial",
-#'   layer = "data",
-#'   features = Seurat::VariableFeatures(spatial, assay = "Spatial"),
-#'   coord.cols = c("col", "row"),
-#'   top_n = 50
-#' )
+#' class(giotto_genes) <- c("giotto2_spatial_genes", "giotto2_result", "list")
 #'
 #' head(giotto_genes$results)
-#' GiottoPlot(giotto_genes, plot_type = "ranking", top_n = 10)
+#' GiottoPlot(giotto_genes, plot_type = "ranking", top_n = 6)
 #' GiottoPlot(
 #'   giotto_genes,
 #'   srt = spatial,
 #'   plot_type = "feature",
 #'   overlay_image = FALSE,
-#'   coord.cols = c("col", "row")
+#'   coord.cols = c("x", "y")
+#' )
+#'
+#' if (
+#'   requireNamespace("Giotto", quietly = TRUE) &&
+#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#' ) {
+#' spatial <- Seurat::FindVariableFeatures(
+#'   spatial,
+#'   assay = "Spatial",
+#'   nfeatures = 300,
+#'   verbose = FALSE
+#' )
+#' giotto_genes <- RunGiottoSpatialGenes(
+#'   spatial,
+#'   assay = "Spatial",
+#'   layer = "data",
+#'   features = Seurat::VariableFeatures(spatial, assay = "Spatial"),
+#'   coord.cols = c("x", "y"),
+#'   top_n = 50
 #' )
 #' }
 #'
@@ -390,32 +417,53 @@ RunGiottoSpatialGenes <- function(
 #' parameters, features, and cells.
 #'
 #' @examples
-#' \dontrun{
 #' data(visium_human_pancreas_sub)
-#' spatial <- Seurat::NormalizeData(
+#' spatial <- subset(
 #'   visium_human_pancreas_sub,
-#'   assay = "Spatial",
-#'   verbose = FALSE
+#'   cells = colnames(visium_human_pancreas_sub)[1:120],
+#'   features = rownames(visium_human_pancreas_sub)[1:400]
 #' )
+#' module_features <- rownames(spatial)[1:4]
+#' module_cor <- expand.grid(
+#'   feat_ID = module_features,
+#'   variable = module_features
+#' )
+#' module_cor$spat_cor <- c(
+#'   1, 0.4, 0.1, -0.2,
+#'   0.4, 1, 0.3, 0.0,
+#'   0.1, 0.3, 1, 0.5,
+#'   -0.2, 0.0, 0.5, 1
+#' )
+#' giotto_modules <- list(
+#'   module_tables = list(result.cor_DT = module_cor),
+#'   features = module_features,
+#'   parameters = list(assay = "Spatial", layer = "data")
+#' )
+#' class(giotto_modules) <- c("giotto2_spatial_modules", "giotto2_result", "list")
+#'
+#' names(giotto_modules$module_tables)
+#' GiottoPlot(giotto_modules, top_n = 4)
+#'
+#' if (
+#'   requireNamespace("Giotto", quietly = TRUE) &&
+#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#' ) {
+#' spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 #' spatial <- Seurat::FindVariableFeatures(
 #'   spatial,
 #'   assay = "Spatial",
-#'   nfeatures = 500,
+#'   nfeatures = 300,
 #'   verbose = FALSE
 #' )
-#'
 #' giotto_modules <- RunGiottoSpatialModules(
 #'   spatial,
 #'   assay = "Spatial",
 #'   layer = "data",
 #'   features = Seurat::VariableFeatures(spatial, assay = "Spatial")[1:50],
-#'   coord.cols = c("col", "row"),
+#'   coord.cols = c("x", "y"),
 #'   cor_method = "pearson",
 #'   k = 6
 #' )
-#'
-#' names(giotto_modules$module_tables)
-#' GiottoPlot(giotto_modules, top_n = 12)
 #' }
 #'
 #' @export
