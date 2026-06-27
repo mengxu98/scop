@@ -100,26 +100,26 @@ panc8_sub <- integration_scop(
   batch = "tech",
   integration_method = "Harmony5"
 )
-#> ◌ [2026-06-27 18:08:48] Run integration workflow...
+#> ◌ [2026-06-27 20:19:44] Run integration workflow...
 #> Warning: No layers found matching search pattern provided
-#> ℹ [2026-06-27 18:08:49] Perform `Seurat::NormalizeData()` on split layers for Seurat v5 integration
-#> ℹ [2026-06-27 18:08:49] Perform `Seurat::FindVariableFeatures()` per batch (`HVF_source = 'separate'`)
-#> ℹ [2026-06-27 18:08:49] Number of available HVF: 2000
+#> ℹ [2026-06-27 20:19:45] Perform `Seurat::NormalizeData()` on split layers for Seurat v5 integration
+#> ℹ [2026-06-27 20:19:45] Perform `Seurat::FindVariableFeatures()` per batch (`HVF_source = 'separate'`)
+#> ℹ [2026-06-27 20:19:45] Number of available HVF: 2000
 #> Warning: Layer ‘scale.data’ is empty
-#> ℹ [2026-06-27 18:08:51] Perform `Seurat::ScaleData()` on split layers for Seurat v5 integration
-#> ℹ [2026-06-27 18:08:51] Perform PCA on split layers before `Seurat::IntegrateLayers()`
-#> ℹ [2026-06-27 18:08:52] Perform Seurat v5 integration with `HarmonyIntegration()`
+#> ℹ [2026-06-27 20:19:46] Perform `Seurat::ScaleData()` on split layers for Seurat v5 integration
+#> ℹ [2026-06-27 20:19:46] Perform PCA on split layers before `Seurat::IntegrateLayers()`
+#> ℹ [2026-06-27 20:19:47] Perform Seurat v5 integration with `HarmonyIntegration()`
 #> The `features` argument is ignored by `HarmonyIntegration`.
 #> This message is displayed once per session.
-#> ! [2026-06-27 18:08:52] No valid estimated dimensions found for Harmony5. Use fallback dimensions 1:50
-#> ℹ [2026-06-27 18:08:52] Adjust neighbor k from 20 to 20 for small-sample clustering
-#> ℹ [2026-06-27 18:08:53] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-06-27 18:08:53] Reorder clusters...
-#> ℹ [2026-06-27 18:08:53] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-27 18:08:53] Perform umap nonlinear dimension reduction using Harmony5 (1:50)
-#> ℹ [2026-06-27 18:08:58] Perform umap nonlinear dimension reduction using Harmony5 (1:50)
-#> ℹ [2026-06-27 18:09:04] Perform umap nonlinear dimension reduction using pca (1:27)
-#> ✔ [2026-06-27 18:09:10] Harmony5 integration completed
+#> ! [2026-06-27 20:19:48] No valid estimated dimensions found for Harmony5. Use fallback dimensions 1:50
+#> ℹ [2026-06-27 20:19:48] Adjust neighbor k from 20 to 20 for small-sample clustering
+#> ℹ [2026-06-27 20:19:48] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-06-27 20:19:49] Reorder clusters...
+#> ℹ [2026-06-27 20:19:49] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-27 20:19:49] Perform umap nonlinear dimension reduction using Harmony5 (1:50)
+#> ℹ [2026-06-27 20:19:54] Perform umap nonlinear dimension reduction using Harmony5 (1:50)
+#> ℹ [2026-06-27 20:20:00] Perform umap nonlinear dimension reduction using pca (1:27)
+#> ✔ [2026-06-27 20:20:06] Harmony5 integration completed
 names(panc8_sub@reductions)
 #> [1] "pca"            "Harmony5"       "Harmony5UMAP2D" "Harmony5UMAP3D"
 #> [5] "pcaUMAP2D"     
@@ -128,9 +128,9 @@ panc8_sub <- RunLISI(
   panc8_sub,
   reductions = c("pcaUMAP2D", "Harmony5UMAP2D")
 )
-#> ℹ [2026-06-27 18:09:10] Compute LISI scores from reduction "pcaUMAP2D"
-#> ℹ [2026-06-27 18:09:10] Compute LISI scores from reduction "Harmony5UMAP2D"
-#> ✔ [2026-06-27 18:09:10] Stored LISI scores in metadata: "pcaUMAP2D_tech_LISI" and "Harmony5UMAP2D_tech_LISI"
+#> ℹ [2026-06-27 20:20:06] Compute LISI scores from reduction "pcaUMAP2D"
+#> ℹ [2026-06-27 20:20:06] Compute LISI scores from reduction "Harmony5UMAP2D"
+#> ✔ [2026-06-27 20:20:06] Stored LISI scores in metadata: "pcaUMAP2D_tech_LISI" and "Harmony5UMAP2D_tech_LISI"
 LISIPlot(
   panc8_sub,
   combine = TRUE
