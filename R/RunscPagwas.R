@@ -36,7 +36,7 @@ RunscPagwas <- function(
   verbose = TRUE,
   ...
 ) {
-  block_annotation <- scpagwas_resolve_block_annotation(block_annotation)
+  block_annotation <- scpagwas_validate_block_annotation_selector(block_annotation)
   if (missing(gwas_data) || is.null(gwas_data)) {
     log_message("{.arg gwas_data} is required", message_type = "error")
   }
@@ -45,10 +45,12 @@ RunscPagwas <- function(
   output.dirs <- scpagwas_abs_path(output.dirs)
   single_data <- scpagwas_prepare_seurat(single_data, celltype_meta)
   scpagwas_check_r(verbose = verbose)
+  block_annotation <- scpagwas_resolve_block_annotation(block_annotation)
 
   fun <- scpagwas_find_runner()
   args <- c(
     list(
+      Single_data = single_data,
       single_data = single_data,
       gwas_data = gwas_data,
       block_annotation = block_annotation,
@@ -156,20 +158,81 @@ scpagwas_check_gwas <- function(gwas_data) {
   invisible(TRUE)
 }
 
-scpagwas_resolve_block_annotation <- function(block_annotation) {
+scpagwas_validate_block_annotation_selector <- function(block_annotation) {
   if (length(block_annotation) > 1L) {
     block_annotation <- block_annotation[[1]]
   }
   if (length(block_annotation) != 1L || is.na(block_annotation) || !nzchar(block_annotation)) {
     log_message("{.arg block_annotation} must be {.val hg38}, {.val hg37}, or a custom path", message_type = "error")
   }
-  if (block_annotation %in% c("hg38", "hg37")) {
-    return(block_annotation)
-  }
   if (identical(block_annotation, "custom")) {
     log_message("{.arg block_annotation = 'custom'} requires a custom annotation path", message_type = "error")
   }
-  normalizePath(path.expand(block_annotation), mustWork = FALSE)
+  block_annotation
+}
+
+scpagwas_resolve_block_annotation <- function(block_annotation) {
+  if (identical(block_annotation, "hg38")) {
+    return(scpagwas_package_data("block_annotation"))
+  }
+  if (identical(block_annotation, "hg37")) {
+    return(scpagwas_package_data("block_annotation_hg37"))
+  }
+  scpagwas_read_block_annotation(block_annotation)
+}
+
+scpagwas_package_data <- function(name) {
+  env <- new.env(parent = emptyenv())
+  utils::data(list = name, package = "scPagwas", envir = env)
+  if (!exists(name, envir = env, inherits = FALSE)) {
+    log_message("Could not load {.pkg scPagwas} data object {.val {name}}", message_type = "error")
+  }
+  scpagwas_check_block_annotation(get(name, envir = env, inherits = FALSE))
+}
+
+scpagwas_read_block_annotation <- function(path) {
+  path <- scpagwas_abs_path(path)
+  if (!file.exists(path)) {
+    log_message("{.arg block_annotation} file does not exist: {.file {path}}", message_type = "error")
+  }
+  ext <- tolower(tools::file_ext(path))
+  block_annotation <- switch(ext,
+    rds = readRDS(path),
+    rda = scpagwas_load_first_object(path),
+    rdata = scpagwas_load_first_object(path),
+    csv = utils::read.csv(path, stringsAsFactors = FALSE),
+    tsv = utils::read.delim(path, stringsAsFactors = FALSE),
+    txt = utils::read.delim(path, stringsAsFactors = FALSE),
+    log_message(
+      "{.arg block_annotation} custom files must be {.file .rds}, {.file .RData}, {.file .csv}, or tab-delimited text",
+      message_type = "error"
+    )
+  )
+  scpagwas_check_block_annotation(block_annotation)
+}
+
+scpagwas_load_first_object <- function(path) {
+  env <- new.env(parent = emptyenv())
+  loaded <- load(path, envir = env)
+  if (length(loaded) < 1L) {
+    log_message("{.arg block_annotation} file did not contain an R object", message_type = "error")
+  }
+  get(loaded[[1]], envir = env, inherits = FALSE)
+}
+
+scpagwas_check_block_annotation <- function(block_annotation) {
+  if (!inherits(block_annotation, "data.frame")) {
+    log_message("{.arg block_annotation} must resolve to a data frame", message_type = "error")
+  }
+  required <- c("chrom", "start", "end", "label")
+  missing_cols <- setdiff(required, colnames(block_annotation))
+  if (length(missing_cols) > 0L) {
+    log_message(
+      "{.arg block_annotation} is missing required column{?s}: {.val {missing_cols}}",
+      message_type = "error"
+    )
+  }
+  block_annotation
 }
 
 scpagwas_abs_path <- function(path) {

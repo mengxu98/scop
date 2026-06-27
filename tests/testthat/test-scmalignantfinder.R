@@ -29,6 +29,9 @@ with_mock_scmalignantfinder <- function(funs, code) {
       expect_true(packages %in% c("scMalignantFinder", "xgboost"))
       invisible(TRUE)
     },
+    scmf_python_classifier_available = function() {
+      TRUE
+    },
     srt_to_adata = function(srt, layer_x, ...) {
       expect_identical(layer_x, "counts")
       list(cells = colnames(srt))
@@ -105,6 +108,9 @@ test_that("RunscMalignantFinder checks xgboost for scratch XGBoost training", {
   checks <- character()
   testthat::local_mocked_bindings(
     PrepareEnv = function(...) invisible(TRUE),
+    scmf_python_classifier_available = function() {
+      TRUE
+    },
     check_python = function(packages, ...) {
       checks <<- c(checks, packages)
       invisible(TRUE)
@@ -132,6 +138,44 @@ test_that("RunscMalignantFinder checks xgboost for scratch XGBoost training", {
   )
 
   expect_true("xgboost" %in% checks)
+})
+
+test_that("RunscMalignantFinder respects an already usable explicit Python", {
+  calls <- character()
+  obs <- data.frame(
+    scMalignantFinder_prediction = "Normal",
+    malignancy_probability = 0.1,
+    row.names = "Cell1"
+  )
+  withr::local_envvar(RETICULATE_PYTHON = "python")
+  testthat::local_mocked_bindings(
+    scmf_python_classifier_available = function() {
+      TRUE
+    },
+    PrepareEnv = function(...) {
+      calls <<- c(calls, "PrepareEnv")
+      invisible(TRUE)
+    },
+    check_python = function(...) {
+      calls <<- c(calls, "check_python")
+      invisible(TRUE)
+    },
+    import_scmalignantfinder = function(convert = TRUE) {
+      list(
+        run_scmalignantfinder = function(...) obs
+      )
+    }
+  )
+
+  out <- RunscMalignantFinder(
+    h5ad = "input.h5ad",
+    pretrain_dir = "model_dir",
+    return_seurat = FALSE,
+    verbose = FALSE
+  )
+
+  expect_equal(out$malignancy_probability, 0.1)
+  expect_length(calls, 0)
 })
 
 test_that("RunscMalignantRegion appends spatial region outputs", {

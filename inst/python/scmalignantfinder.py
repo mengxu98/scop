@@ -37,8 +37,30 @@ def _read_anndata(test_input):
     return test_input
 
 
+def _load_smf_module(module_name):
+    import importlib.util
+    import sys
+
+    spec = importlib.util.find_spec("scMalignantFinder")
+    if spec is None or not spec.submodule_search_locations:
+        raise ModuleNotFoundError("No module named 'scMalignantFinder'")
+    package_dir = Path(list(spec.submodule_search_locations)[0])
+    module_path = package_dir / f"{module_name}.py"
+    if not module_path.exists():
+        raise ModuleNotFoundError(f"No scMalignantFinder module named '{module_name}'")
+
+    scoped_name = f"_scop_scmalignantfinder_{module_name}"
+    if scoped_name in sys.modules:
+        return sys.modules[scoped_name]
+    module_spec = importlib.util.spec_from_file_location(scoped_name, module_path)
+    module = importlib.util.module_from_spec(module_spec)
+    sys.modules[scoped_name] = module
+    module_spec.loader.exec_module(module)
+    return module
+
+
 def _run_aucell(adata, gmt_file, norm_type=False):
-    from scMalignantFinder import utils
+    utils = _load_smf_module("utils")
 
     gmt_file = _expand_path(gmt_file)
     try:
@@ -70,7 +92,7 @@ def run_scmalignantfinder(
     return_obs=True,
     verbose=True,
 ):
-    from scMalignantFinder import classifier
+    classifier = _load_smf_module("classifier")
 
     kwargs = {
         "test_input": _expand_pathlike(test_input),
