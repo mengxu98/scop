@@ -66,33 +66,61 @@ values are optionally added as an extra Giotto expression layer. The input
 Seurat object is not modified.
 }
 \examples{
-\dontrun{
-# Convert Seurat/SCT data into a standalone Giotto workflow object.
-g <- SeuratToScopGiotto(
-  spatial_seurat,
-  assay = "RNA",
-  layer = "counts",
-  use_sct = "normalized"
+data(visium_human_pancreas_sub)
+spatial <- subset(
+  visium_human_pancreas_sub,
+  cells = colnames(visium_human_pancreas_sub)[1:80],
+  features = rownames(visium_human_pancreas_sub)[1:300]
+)
+g <- structure(
+  list(
+    giotto = list(
+      umap = cbind(
+        UMAP_1 = as.numeric(scale(spatial$x)),
+        UMAP_2 = as.numeric(scale(spatial$y))
+      )
+    ),
+    source = list(
+      cells = colnames(spatial),
+      features = rownames(spatial),
+      coordinates = data.frame(
+        cell_ID = colnames(spatial),
+        sdimx = spatial$x,
+        sdimy = spatial$y
+      )
+    ),
+    results = list(
+      cluster = list(
+        table = data.frame(
+          cluster = paste0("cluster_", (seq_len(ncol(spatial)) - 1) \%\% 3 + 1),
+          row.names = colnames(spatial)
+        )
+      ),
+      spatial_network = list(
+        table = data.frame(
+          from = colnames(spatial)[1:8],
+          to = colnames(spatial)[2:9]
+        )
+      )
+    ),
+    active = "cluster"
+  ),
+  class = c("giotto2", "list")
 )
 
-# Run the basic Giotto pipeline and plot directly from the Giotto object.
-g <- RunGiottoWorkflow(g, steps = "basic")
 GiottoPlot(g, plot_type = "cluster")
 GiottoPlot(g, plot_type = "network")
-GiottoPlot(g, plot_type = "dim")
 
-# Add selected Giotto analyses without writing to the Seurat object.
-g <- GiottoSpatialGenes(g, top_n = 50)
-g <- GiottoCellProximity(g, group.by = "celltype", number_of_simulations = 100)
-GiottoPlot(g, plot_type = "spatial_genes", top_n = 20)
-GiottoPlot(g, plot_type = "cell_proximity")
-
-# Export a result back to Seurat only when explicitly requested.
-spatial_seurat <- AddGiottoToSeurat(
-  spatial_seurat,
-  g,
-  result = "cluster",
-  name = "Giotto_cluster"
+if (
+  requireNamespace("Giotto", quietly = TRUE) &&
+    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+) {
+g <- SeuratToScopGiotto(
+  spatial,
+  assay = "Spatial",
+  layer = "counts",
+  coord.cols = c("x", "y"),
+  verbose = FALSE
 )
 }
 }

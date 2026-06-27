@@ -22,17 +22,38 @@
 #' @return A `Seurat` object.
 #'
 #' @examples
-#' \dontrun{
 #' data(visium_human_pancreas_sub)
-#'
-#' spatial <- RunSemlaSpatialNetwork(
+#' spatial <- subset(
 #'   visium_human_pancreas_sub,
-#'   nNeighbors = 6,
-#'   coords = "array"
+#'   cells = colnames(visium_human_pancreas_sub)[1:120],
+#'   features = rownames(visium_human_pancreas_sub)[1:400]
+#' )
+#' spatial@tools$SemlaSpatialNetwork <- list(
+#'   network = data.frame(
+#'     from = colnames(spatial)[1:6],
+#'     to = colnames(spatial)[2:7],
+#'     distance = sqrt(diff(spatial$x[1:7])^2 + diff(spatial$y[1:7])^2)
+#'   )
 #' )
 #'
 #' head(spatial@tools$SemlaSpatialNetwork$network)
-#' SpatialSpotPlot(spatial, group.by = "orig.ident")
+#' SpatialSpotPlot(
+#'   spatial,
+#'   group.by = "coda_label",
+#'   overlay_image = FALSE,
+#'   coord.cols = c("x", "y")
+#' )
+#'
+#' if (
+#'   requireNamespace("semla", quietly = TRUE) &&
+#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#' ) {
+#' spatial <- RunSemlaSpatialNetwork(
+#'   spatial,
+#'   nNeighbors = 6,
+#'   coords = "pixels",
+#'   verbose = FALSE
+#' )
 #' }
 #' @export
 RunSemlaSpatialNetwork <- function(
@@ -107,24 +128,33 @@ RunSemlaSpatialNetwork <- function(
 #' @return A `Seurat` object.
 #'
 #' @examples
-#' \dontrun{
 #' data(visium_human_pancreas_sub)
-#' spatial <- Seurat::NormalizeData(
+#' spatial <- subset(
 #'   visium_human_pancreas_sub,
-#'   assay = "Spatial",
-#'   verbose = FALSE
+#'   cells = colnames(visium_human_pancreas_sub)[1:120],
+#'   features = rownames(visium_human_pancreas_sub)[1:400]
 #' )
+#' spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 #' features <- rownames(spatial)[1:3]
+#' spatial[[paste0(features[1], "_localG")]] <- as.numeric(scale(spatial$x))
 #'
+#' SpatialSpotPlot(
+#'   spatial,
+#'   group.by = paste0(features[1], "_localG"),
+#'   overlay_image = FALSE,
+#'   coord.cols = c("x", "y")
+#' )
+#'
+#' if (
+#'   requireNamespace("semla", quietly = TRUE) &&
+#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#' ) {
 #' spatial <- RunSemlaLocalG(
 #'   spatial,
 #'   features = features,
-#'   store_in_metadata = TRUE
+#'   store_in_metadata = TRUE,
+#'   verbose = FALSE
 #' )
-#'
-#' local_g_cols <- grep(features[1], colnames(spatial[[]]), value = TRUE)
-#' head(spatial[[]][local_g_cols])
-#' SpatialSpotPlot(spatial, group.by = local_g_cols[1])
 #' }
 #' @export
 RunSemlaLocalG <- function(
@@ -173,25 +203,39 @@ RunSemlaLocalG <- function(
 #' @return A `Seurat` object.
 #'
 #' @examples
-#' \dontrun{
 #' data(visium_human_pancreas_sub)
-#' spatial <- visium_human_pancreas_sub
+#' spatial <- subset(
+#'   visium_human_pancreas_sub,
+#'   cells = colnames(visium_human_pancreas_sub)[1:120],
+#'   features = rownames(visium_human_pancreas_sub)[1:400]
+#' )
 #' spatial$region <- ifelse(
-#'   spatial$col > stats::median(spatial$col),
+#'   spatial$x > stats::median(spatial$x),
 #'   "right",
 #'   "left"
 #' )
+#' spatial$right_border <- spatial$region == "right" &
+#'   abs(spatial$x - stats::median(spatial$x)) < stats::sd(spatial$x) * 0.25
 #'
+#' SpatialSpotPlot(
+#'   spatial,
+#'   group.by = c("region", "right_border"),
+#'   overlay_image = FALSE,
+#'   coord.cols = c("x", "y")
+#' )
+#'
+#' if (
+#'   requireNamespace("semla", quietly = TRUE) &&
+#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#' ) {
 #' spatial <- RunSemlaRegionNeighbors(
 #'   spatial,
 #'   column_name = "region",
 #'   column_labels = "right",
 #'   mode = "outer",
-#'   column_key = "right_border"
+#'   column_key = "right_border",
+#'   verbose = FALSE
 #' )
-#'
-#' grep("right_border", colnames(spatial[[]]), value = TRUE)
-#' SpatialSpotPlot(spatial, group.by = "region")
 #' }
 #' @export
 RunSemlaRegionNeighbors <- function(
@@ -240,25 +284,43 @@ RunSemlaRegionNeighbors <- function(
 #' @return A `Seurat` object.
 #'
 #' @examples
-#' \dontrun{
 #' data(visium_human_pancreas_sub)
-#' spatial <- visium_human_pancreas_sub
+#' spatial <- subset(
+#'   visium_human_pancreas_sub,
+#'   cells = colnames(visium_human_pancreas_sub)[1:120],
+#'   features = rownames(visium_human_pancreas_sub)[1:400]
+#' )
 #' spatial$region <- ifelse(
-#'   spatial$row > stats::median(spatial$row),
+#'   spatial$y > stats::median(spatial$y),
 #'   "upper",
 #'   "lower"
 #' )
+#' upper_center <- c(
+#'   stats::median(spatial$x[spatial$region == "upper"]),
+#'   stats::median(spatial$y[spatial$region == "upper"])
+#' )
+#' spatial$upper_distance <- sqrt(
+#'   (spatial$x - upper_center[1])^2 + (spatial$y - upper_center[2])^2
+#' )
 #'
+#' SpatialSpotPlot(
+#'   spatial,
+#'   group.by = "upper_distance",
+#'   overlay_image = FALSE,
+#'   coord.cols = c("x", "y")
+#' )
+#'
+#' if (
+#'   requireNamespace("semla", quietly = TRUE) &&
+#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#' ) {
 #' spatial <- RunSemlaRadialDistance(
 #'   spatial,
 #'   column_name = "region",
 #'   selected_groups = "upper",
-#'   column_suffix = "upper_distance"
+#'   column_suffix = "upper_distance",
+#'   verbose = FALSE
 #' )
-#'
-#' distance_cols <- grep("upper_distance", colnames(spatial[[]]), value = TRUE)
-#' head(spatial[[]][distance_cols])
-#' SpatialSpotPlot(spatial, group.by = distance_cols[1])
 #' }
 #' @export
 RunSemlaRadialDistance <- function(

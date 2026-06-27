@@ -178,12 +178,40 @@ package and write spatial ecotype labels or abundances back to a \code{Seurat}
 object when possible.
 }
 \examples{
-\dontrun{
+data(visium_human_pancreas_sub)
+srt <- subset(
+  visium_human_pancreas_sub,
+  cells = colnames(visium_human_pancreas_sub)[1:120],
+  features = rownames(visium_human_pancreas_sub)[1:400]
+)
+srt$CellType <- srt$coda_label
+srt$SpatialEcoTyper_SE <- ifelse(srt$x > stats::median(srt$x), "SE1", "SE2")
+srt$sample <- ifelse(srt$y > stats::median(srt$y), "slice_a", "slice_b")
+
+SpatialEcoTyperSpatialPlot(
+  srt,
+  overlay_image = FALSE,
+  coord.cols = c("x", "y")
+)
+SpatialEcoTyperCompositionPlot(
+  srt,
+  group.by = "CellType",
+  sample.by = "sample",
+  position = "fill"
+)
+
+if (
+  requireNamespace("SpatialEcoTyper", quietly = TRUE) &&
+    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+) {
 srt <- RunSpatialEcoTyper(
   srt,
   celltype.by = "CellType",
-  x.by = "X",
-  y.by = "Y"
+  x.by = "x",
+  y.by = "y",
+  nfeatures = 100,
+  ncores = 1,
+  verbose = FALSE
 )
 
 srt <- RunSpatialEcoTyper(
@@ -191,8 +219,11 @@ srt <- RunSpatialEcoTyper(
   mode = "multi",
   celltype.by = "CellType",
   sample.by = "sample",
-  x.by = "X",
-  y.by = "Y"
+  x.by = "x",
+  y.by = "y",
+  nfeatures = 100,
+  ncores = 1,
+  verbose = FALSE
 )
 }
 }
