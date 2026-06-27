@@ -1,3 +1,31 @@
+marker_get_data <- function(object, assay_obj, layer) {
+  if (inherits(assay_obj, "Assay") && !inherits(assay_obj, "StdAssay")) {
+    if (!layer %in% methods::slotNames(assay_obj)) {
+      return(NULL)
+    }
+    data_use <- methods::slot(assay_obj, layer)
+  } else {
+    layer_names <- SeuratObject::Layers(assay_obj, search = layer)
+    if (length(layer_names) != 1L) {
+      return(NULL)
+    }
+    data_use <- methods::slot(assay_obj, "layers")[[layer_names]]
+  }
+  if (is.null(data_use)) {
+    return(NULL)
+  }
+  if (!inherits(data_use, "dgCMatrix")) {
+    data_use <- tryCatch(
+      methods::as(data_use, "dgCMatrix"),
+      error = function(e) NULL
+    )
+  }
+  if (!is.null(data_use)) {
+    dimnames(data_use) <- list(rownames(assay_obj), colnames(assay_obj))
+  }
+  data_use
+}
+
 marker_all_supported <- function(
   extra_args,
   features,
@@ -31,10 +59,7 @@ marker_all_supported <- function(
 marker_context <- function(object, assay, slot, base, fc.name) {
   assay <- assay %||% SeuratObject::DefaultAssay(object)
   assay_obj <- object[[assay]]
-  if (length(SeuratObject::Layers(assay_obj, search = slot)) > 1L) {
-    stop(slot, " layers are not joined. Please run JoinLayers")
-  }
-  data_use <- assay_obj@layers[[slot]]
+  data_use <- marker_get_data(object, assay_obj, slot)
   if (is.null(data_use) || !inherits(data_use, "dgCMatrix")) {
     return(NULL)
   }
