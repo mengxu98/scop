@@ -38,6 +38,35 @@ test_that("legacy integration scaling handles split Assay5 data layers", {
   )
 })
 
+test_that("CheckDataMerge reuses log-normalized RNA merge without changing HVF output", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("SeuratObject")
+  skip_if_not_installed("Matrix")
+
+  set.seed(2)
+  counts <- Matrix::rsparsematrix(60, 40, density = 0.25)
+  counts@x <- abs(round(counts@x * 10)) + 1
+  rownames(counts) <- paste0("g", seq_len(nrow(counts)))
+  colnames(counts) <- paste0("c", seq_len(ncol(counts)))
+
+  srt <- Seurat::CreateSeuratObject(counts)
+  srt$batch <- rep(c("a", "b"), each = 20)
+  srt <- NormalizeData(srt, verbose = FALSE)
+
+  checked <- CheckDataMerge(
+    srt_merge = srt,
+    batch = "batch",
+    nHVF = 15,
+    verbose = FALSE
+  )
+
+  expect_s4_class(checked$srt_merge, "Seurat")
+  expect_equal(dim(checked$srt_merge), dim(srt))
+  expect_equal(colnames(checked$srt_merge), colnames(srt))
+  expect_length(checked$HVF, 15)
+  expect_equal(SeuratObject::VariableFeatures(checked$srt_merge), checked$HVF)
+})
+
 test_that("NormalizeData handles split Assay5 counts layers", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("SeuratObject")

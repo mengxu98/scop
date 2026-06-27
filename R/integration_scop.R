@@ -450,6 +450,27 @@ integration_scop <- function(
   integrate_fun <- method_map[[integration_method]]
   append_requested <- isTRUE(args[["append"]])
   srt_merge_raw <- args[["srt_merge"]] %||% NULL
+  if (
+    append_requested &&
+      !is.null(srt_merge_raw) &&
+      inherits(srt_merge_raw, "Seurat") &&
+      !integration_method %in% c("WNN", "MultiMAP", "GLUE")
+  ) {
+    canonical_linear_reductions <- c("pca", "svd", "ica", "nmf", "mds", "glmpca")
+    linear_reduction_arg <- args[["linear_reduction"]] %||% "pca"
+    can_drop_reductions <- all(linear_reduction_arg %in% canonical_linear_reductions)
+    assay_keep <- args[["assay"]] %||% SeuratObject::DefaultAssay(srt_merge_raw)
+    if (length(assay_keep) == 1L && assay_keep %in% SeuratObject::Assays(srt_merge_raw)) {
+      args[["srt_merge"]] <- Seurat::DietSeurat(
+        object = srt_merge_raw,
+        assays = assay_keep,
+        dimreducs = if (isTRUE(can_drop_reductions)) NULL else SeuratObject::Reductions(srt_merge_raw),
+        graphs = NULL,
+        misc = FALSE
+      )
+      SeuratObject::DefaultAssay(args[["srt_merge"]]) <- assay_keep
+    }
+  }
   if (identical(integration_method, "PeakVI")) {
     args[["model"]] <- "PEAKVI"
   }

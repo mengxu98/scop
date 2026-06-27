@@ -307,7 +307,7 @@ prep_ref <- function(
   ref_meta <- ref_meta[keep, , drop = FALSE]
   ref_meta <- ref_meta[colnames(ref_counts), , drop = FALSE]
   if (isTRUE(dense)) {
-    ref_counts <- as.matrix(ref_counts)
+    ref_counts <- as_matrix(ref_counts)
   }
 
   list(
@@ -324,7 +324,7 @@ prep_ref <- function(
 }
 
 as_bulk_eset <- function(count_matrix) {
-  count_matrix <- as.matrix(count_matrix)
+  count_matrix <- as_matrix(count_matrix)
   sample_meta <- data.frame(row.names = colnames(count_matrix))
   Biobase::ExpressionSet(
     assayData = count_matrix,
@@ -334,7 +334,7 @@ as_bulk_eset <- function(count_matrix) {
 
 as_ref_eset <- function(reference_info) {
   Biobase::ExpressionSet(
-    assayData = as.matrix(reference_info$counts),
+    assayData = as_matrix(reference_info$counts),
     phenoData = Biobase::AnnotatedDataFrame(reference_info$meta)
   )
 }
@@ -389,7 +389,7 @@ RunMuSiC <- function(
   music_prop <- get_namespace_fun("MuSiC", "music_prop")
   prop_fit <- tryCatch(
     music_prop(
-      bulk.mtx = as.matrix(count_matrix),
+      bulk.mtx = as_matrix(count_matrix),
       sc.sce = sc_sce,
       clusters = ref_info$celltype_col,
       samples = ref_info$sample_col,
@@ -478,7 +478,7 @@ RunBisqueRNA <- function(
       parameters = list()
     ))
   }
-  prop_matrix <- t(as.matrix(prop_fit$bulk.props))
+  prop_matrix <- t(as_matrix(prop_fit$bulk.props))
 
   list(
     status = "success",
@@ -545,12 +545,12 @@ RunBayesPrism <- function(
   get_fraction <- get_namespace_fun("BayesPrism", "get.fraction")
   prism_obj <- tryCatch(
     new_prism(
-      reference = t(as.matrix(ref_info$counts)),
+      reference = t(as_matrix(ref_info$counts)),
       input.type = "count.matrix",
       cell.type.labels = ref_info$meta[[ref_info$celltype_col]],
       cell.state.labels = ref_info$meta[[ref_info$cellstate_col]],
       key = key,
-      mixture = t(as.matrix(count_matrix)),
+      mixture = t(as_matrix(count_matrix)),
       outlier.cut = outlier.cut,
       outlier.fraction = outlier.fraction,
       pseudo.min = pseudo.min
@@ -666,8 +666,8 @@ RunBayesPrism <- function(
       colnames(prism_obj@mixture),
       rownames(prism_obj@phi_cellState@phi)
     )
-    initial_theta <- as.matrix(initial_cpp$theta)
-    initial_theta_cv <- as.matrix(initial_cpp$theta_cv)
+    initial_theta <- as_matrix(initial_cpp$theta)
+    initial_theta_cv <- as_matrix(initial_cpp$theta_cv)
     rownames(initial_theta) <- rownames(prism_obj@mixture)
     colnames(initial_theta) <- rownames(prism_obj@phi_cellState@phi)
     rownames(initial_theta_cv) <- rownames(prism_obj@mixture)
@@ -733,7 +733,7 @@ RunBayesPrism <- function(
           parameters = list()
         ))
       }
-      prop_matrix <- as.matrix(final_cpp$theta)
+      prop_matrix <- as_matrix(final_cpp$theta)
       rownames(prop_matrix) <- rownames(prism_obj@mixture)
       colnames(prop_matrix) <- rownames(psi@phi)
       details <- list(
@@ -971,8 +971,8 @@ run_cibersort_bundle <- function(
   if (identical(backend, "cpp")) {
     fit <- tryCatch(
       cibersort_cpp(
-        signature = as.matrix(sig_matrix_use),
-        mixture = as.matrix(count_matrix),
+        signature = as_matrix(sig_matrix_use),
+        mixture = as_matrix(count_matrix),
         perm = perm,
         QN = isTRUE(QN),
         absolute = isTRUE(absolute),
@@ -1049,7 +1049,7 @@ run_cibersort_bundle <- function(
   call_args <- utils::modifyList(
     list(
       sig_matrix = sig_matrix_use,
-      mixture_file = as.matrix(count_matrix),
+      mixture_file = as_matrix(count_matrix),
       perm = perm,
       QN = QN,
       absolute = absolute
@@ -1117,8 +1117,8 @@ cibersort_check_matrix <- function(x, arg_name) {
       message_type = "error"
     )
   }
-  dim_names <- dimnames(as.matrix(x))
-  x <- as.matrix(x)
+  x <- as_matrix(x)
+  dim_names <- dimnames(x)
   x <- suppressWarnings(matrix(
     as.numeric(x),
     nrow = nrow(x),
@@ -1230,7 +1230,7 @@ parse_cibersort_result <- function(fit) {
   prop_cols <- setdiff(colnames(df), stat_cols)
   numeric_prop <- vapply(df[, prop_cols, drop = FALSE], is.numeric, logical(1))
   prop_cols <- prop_cols[numeric_prop]
-  prop_matrix <- as.matrix(df[, prop_cols, drop = FALSE])
+  prop_matrix <- as_matrix(df[, prop_cols, drop = FALSE])
   prop_matrix[!is.finite(prop_matrix)] <- 0
   list(
     proportion_matrix = prop_matrix,
@@ -1298,7 +1298,7 @@ RunTOAST <- function(
     ))
   }
 
-  count_use <- as.matrix(count_matrix[, sample_keep, drop = FALSE])
+  count_use <- as_matrix(count_matrix[, sample_keep, drop = FALSE])
   cond_use <- factor(
     cond[sample_keep],
     levels = c(pair$condition1, pair$condition2)
@@ -1312,7 +1312,7 @@ RunTOAST <- function(
       parameters = list()
     ))
   }
-  prop_use <- as.matrix(proportions[sample_keep, , drop = FALSE])
+  prop_use <- as_matrix(proportions[sample_keep, , drop = FALSE])
   prop_use <- prop_use[,
     order(colMeans(prop_use, na.rm = TRUE), decreasing = TRUE),
     drop = FALSE
@@ -1639,7 +1639,7 @@ deconv_mat <- function(deconv_results) {
     return(NULL)
   }
   df <- deconv_results[, c("sample", "cell_type", "proportion"), drop = FALSE]
-  as.matrix(stats::xtabs(
+  as_matrix(stats::xtabs(
     proportion ~ sample + cell_type,
     data = df
   ))
