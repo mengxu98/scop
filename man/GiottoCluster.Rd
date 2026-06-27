@@ -44,3 +44,44 @@ A `giotto2` workflow object.
 \description{
 Run Giotto nearest-network clustering
 }
+\examples{
+data(visium_human_pancreas_sub)
+spatial <- subset(
+  visium_human_pancreas_sub,
+  cells = colnames(visium_human_pancreas_sub)[1:80],
+  features = rownames(visium_human_pancreas_sub)[1:200]
+)
+coords <- data.frame(
+  cell_ID = colnames(spatial),
+  sdimx = spatial$x,
+  sdimy = spatial$y,
+  row.names = colnames(spatial)
+)
+g <- structure(
+  list(
+    source = list(cells = colnames(spatial), coordinates = coords),
+    results = list(
+      cluster = list(
+        table = data.frame(
+          cell = colnames(spatial),
+          cluster = spatial$coda_label,
+          row.names = colnames(spatial)
+        )
+      )
+    ),
+    parameters = list(k = 8, resolution = 0.4)
+  ),
+  class = c("giotto2", "list")
+)
+GiottoPlot(g, plot_type = "cluster")
+
+if (
+  requireNamespace("Giotto", quietly = TRUE) &&
+    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+) {
+  g <- SeuratToScopGiotto(spatial, coord.cols = c("x", "y"))
+  g <- GiottoPreprocess(g)
+  g <- GiottoReduce(g, reduction = "pca", dims = 1:10)
+  g <- GiottoCluster(g, dims = 1:10, k = 8, resolution = 0.4)
+}
+}

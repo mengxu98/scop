@@ -40,24 +40,42 @@ Use \code{semla::RadialDistance()} to calculate distances from selected spatial
 regions and write the returned columns to Seurat metadata.
 }
 \examples{
-\dontrun{
 data(visium_human_pancreas_sub)
-spatial <- visium_human_pancreas_sub
+spatial <- subset(
+  visium_human_pancreas_sub,
+  cells = colnames(visium_human_pancreas_sub)[1:120],
+  features = rownames(visium_human_pancreas_sub)[1:400]
+)
 spatial$region <- ifelse(
-  spatial$row > stats::median(spatial$row),
+  spatial$y > stats::median(spatial$y),
   "upper",
   "lower"
 )
+upper_center <- c(
+  stats::median(spatial$x[spatial$region == "upper"]),
+  stats::median(spatial$y[spatial$region == "upper"])
+)
+spatial$upper_distance <- sqrt(
+  (spatial$x - upper_center[1])^2 + (spatial$y - upper_center[2])^2
+)
 
+SpatialSpotPlot(
+  spatial,
+  group.by = "upper_distance",
+  overlay_image = FALSE,
+  coord.cols = c("x", "y")
+)
+
+if (
+  requireNamespace("semla", quietly = TRUE) &&
+    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+) {
 spatial <- RunSemlaRadialDistance(
   spatial,
   column_name = "region",
   selected_groups = "upper",
-  column_suffix = "upper_distance"
+  column_suffix = "upper_distance",
+  verbose = FALSE
 )
-
-distance_cols <- grep("upper_distance", colnames(spatial[[]]), value = TRUE)
-head(spatial[[]][distance_cols])
-SpatialSpotPlot(spatial, group.by = distance_cols[1])
 }
 }
