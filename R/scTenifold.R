@@ -194,7 +194,10 @@ RunscTenifoldKnk <- function(
   }
 
   if (!inherits(count_matrix, "Matrix")) {
-    count_matrix <- Matrix::Matrix(as.matrix(count_matrix), sparse = TRUE)
+    count_matrix <- Matrix::Matrix(
+      if (is.data.frame(count_matrix)) as.matrix(count_matrix) else count_matrix,
+      sparse = TRUE
+    )
   }
   count_matrix <- methods::as(count_matrix, "dgCMatrix")
   qc_summary <- list(
@@ -789,10 +792,16 @@ RunscTenifoldNet <- function(
   }
 
   if (!inherits(x, "Matrix")) {
-    x <- Matrix::Matrix(as.matrix(x), sparse = TRUE)
+    x <- Matrix::Matrix(
+      if (is.data.frame(x)) as.matrix(x) else x,
+      sparse = TRUE
+    )
   }
   if (!inherits(y, "Matrix")) {
-    y <- Matrix::Matrix(as.matrix(y), sparse = TRUE)
+    y <- Matrix::Matrix(
+      if (is.data.frame(y)) as.matrix(y) else y,
+      sparse = TRUE
+    )
   }
   x <- methods::as(x, "dgCMatrix")
   y <- methods::as(y, "dgCMatrix")

@@ -97,6 +97,10 @@ test_that("RunCIBERSORT cpp backend stores SummarizedExperiment metadata", {
   expect_true(nrow(store$results) > 0)
 })
 
+test_that("RunBayesPrism accepts sample.by from RunDeconvolution dispatch", {
+  expect_true("sample.by" %in% names(formals(scop:::RunBayesPrism)))
+})
+
 test_that("RunCIBERSORT cpp backend matches the R backend on small deterministic data", {
   skip_if_not_installed("CIBERSORT")
   dat <- make_cibersort_mock(seed = 4)

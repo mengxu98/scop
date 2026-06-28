@@ -355,21 +355,24 @@ CellScoring <- function(
   )
 
   if (!is.null(split.by)) {
-    split_list <- Seurat::SplitObject(srt, split.by = split.by)
+    split_groups <- srt@meta.data[[split.by]]
+    names(split_groups) <- colnames(srt)
+    split_cells <- split(
+      colnames(srt),
+      split_groups,
+      drop = TRUE
+    )
+    split_cells <- split_cells[lengths(split_cells) > 0L]
   } else {
-    split_list <- list(srt)
+    split_cells <- list(All = colnames(srt))
   }
   scores_list <- list()
   features_nm_list <- list()
-  for (i in seq_along(split_list)) {
-    srt_sp <- split_list[[i]]
+  for (i in seq_along(split_cells)) {
+    cells_sp <- split_cells[[i]]
     if (method == "Seurat") {
       if (identical(backend, "cpp")) {
-        expr_sp <- GetAssayData5(
-          srt_sp,
-          layer = layer,
-          assay = assay
-        )
+        expr_sp <- expr_data[, cells_sp, drop = FALSE]
         module_scores <- run_seurat_module_scores(
           expr_data = expr_sp,
           features = features,
@@ -394,6 +397,7 @@ CellScoring <- function(
           as_matrix(module_scores)
         )[, names(features_keep), drop = FALSE]
       } else {
+        srt_sp <- srt[, cells_sp, drop = FALSE]
         srt_tmp <- AddModuleScore2(
           srt_sp,
           features = features,
@@ -413,6 +417,7 @@ CellScoring <- function(
       }
     } else if (method == "UCell") {
       check_r("UCell", verbose = FALSE)
+      srt_sp <- srt[, cells_sp, drop = FALSE]
       srt_tmp <- UCell::AddModuleScore_UCell(
         srt_sp,
         features = features,
@@ -435,11 +440,7 @@ CellScoring <- function(
       features_nm <- features_raw[!names(features) %in% filtered]
       scores <- srt_tmp[[paste0(names(features_keep), name)]]
     } else if (method == "AUCell") {
-      expr_sp <- GetAssayData5(
-        srt_sp,
-        layer = layer,
-        assay = assay
-      )
+      expr_sp <- expr_data[, cells_sp, drop = FALSE]
       if (identical(backend, "cpp")) {
         auc_scores <- if (identical(cpp_strategy, "aucell")) {
           run_aucell_official_scores(
@@ -480,11 +481,7 @@ CellScoring <- function(
         as_matrix(auc_scores)
       )[, names(features_keep), drop = FALSE]
     } else if (method %in% c("GSVA", "ssGSEA", "zscore", "PLAGE")) {
-      expr_sp <- GetAssayData5(
-        srt_sp,
-        layer = layer,
-        assay = assay
-      )
+      expr_sp <- expr_data[, cells_sp, drop = FALSE]
       min_size <- max(minGSSize, min.sz)
       max_size <- min(maxGSSize, max.sz)
       if (identical(backend, "cpp")) {
@@ -619,11 +616,7 @@ CellScoring <- function(
         as_matrix(gs_scores)
       )[, names(features_keep), drop = FALSE]
     } else if (method == "VISION") {
-      expr_sp <- GetAssayData5(
-        srt_sp,
-        layer = layer,
-        assay = assay
-      )
+      expr_sp <- expr_data[, cells_sp, drop = FALSE]
       vision_scores <- run_vision_scores(
         expr_counts = expr_sp,
         gene_sets = features,

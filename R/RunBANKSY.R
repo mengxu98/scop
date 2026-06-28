@@ -311,7 +311,10 @@ banksy_get_matrix <- function(srt, assay, layer, features) {
   mat <- GetAssayData5(srt, assay = assay, layer = layer)
   mat <- mat[features, , drop = FALSE]
   if (!inherits(mat, "Matrix")) {
-    mat <- Matrix::Matrix(as.matrix(mat), sparse = TRUE)
+    mat <- Matrix::Matrix(
+      if (is.data.frame(mat)) as.matrix(mat) else mat,
+      sparse = TRUE
+    )
   }
   if (!inherits(mat, "dgCMatrix")) {
     mat <- methods::as(mat, "dgCMatrix")

@@ -290,7 +290,7 @@ pbmcmultiome_sub <- integration_scop(
 )
 
 integration_methods <- c(
-  "Uncorrected", "Seurat", "CCA", "RPCA", "scVI", "scVI5",
+  "Uncorrected", "Seurat", "CCA", "RPCA",
   "MNN", "fastMNN", "fastMNN5", "Harmony", "Harmony5",
   "Scanorama", "BBKNN", "CSS", "Coralysis", "LIGER", "Conos", "ComBat"
 )
@@ -312,6 +312,25 @@ for (method in integration_methods) {
     legend.position = "none",
     theme_use = "theme_blank"
   )
+}
+
+\dontrun{
+# Python-backed methods prepare a scVI/scvi-tools environment and run model
+# training, so keep them separate from ordinary example checks.
+panc8_sub <- integration_scop(
+  panc8_sub,
+  batch = "tech",
+  integration_method = "scVI",
+  train_params = list(max_epochs = 2L),
+  nonlinear_reduction = "umap"
+)
+panc8_sub <- integration_scop(
+  panc8_sub,
+  batch = "tech",
+  integration_method = "scVI5",
+  IntegrateLayers_params = list(max_epochs = 2L),
+  nonlinear_reduction = "umap"
+)
 }
 
 nonlinear_reductions <- c(

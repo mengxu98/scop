@@ -1213,7 +1213,10 @@ cnv_get_counts <- function(srt, assay, layer) {
     )
   }
   if (!inherits(mat, "Matrix")) {
-    mat <- Matrix::Matrix(as.matrix(mat), sparse = TRUE)
+    mat <- Matrix::Matrix(
+      if (is.data.frame(mat)) as.matrix(mat) else mat,
+      sparse = TRUE
+    )
   }
   mat <- methods::as(mat, "dgCMatrix")
   mat@x[!is.finite(mat@x) | mat@x < 0] <- 0

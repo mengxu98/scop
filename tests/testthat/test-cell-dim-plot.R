@@ -202,3 +202,34 @@ test_that("CellDimPlot validates atlas grid density", {
     "grid_n"
   )
 })
+
+test_that("FeatureDimPlot subsets graph before dense conversion without changing values", {
+  srt <- make_cell_dim_plot_srt()
+  srt <- Seurat::NormalizeData(srt, verbose = FALSE)
+  graph <- Matrix::Matrix(0, ncol(srt), ncol(srt), sparse = TRUE)
+  dimnames(graph) <- list(colnames(srt), colnames(srt))
+  graph["cell1", "cell2"] <- 1
+  graph["cell2", "cell1"] <- 1
+  graph["cell1", "cell6"] <- 2
+  graph["cell6", "cell1"] <- 2
+  srt@graphs[["test_graph"]] <- methods::as(graph, "Graph")
+  cells_use <- paste0("cell", 1:5)
+
+  expect_equal(
+    as_matrix(graph[cells_use, cells_use, drop = FALSE]),
+    as_matrix(graph)[cells_use, cells_use]
+  )
+
+  plot <- FeatureDimPlot(
+    srt,
+    features = c("gene1", "gene2"),
+    reduction = "umap",
+    cells = cells_use,
+    compare_features = TRUE,
+    graph = "test_graph",
+    force = TRUE,
+    theme_use = theme_blank
+  )
+
+  expect_true(inherits(plot, "patchwork") || inherits(plot, "ggplot"))
+})

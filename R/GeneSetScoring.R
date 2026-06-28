@@ -4,7 +4,8 @@ gene_set_scoring_to_dgC <- function(expr) {
   } else if (is.matrix(expr)) {
     methods::as(Matrix::Matrix(expr, sparse = TRUE), "dgCMatrix")
   } else if (!inherits(expr, "dgCMatrix")) {
-    methods::as(Matrix::Matrix(as_matrix(expr), sparse = TRUE), "dgCMatrix")
+    expr_mat <- as_matrix(expr)
+    methods::as(Matrix::Matrix(expr_mat, sparse = TRUE), "dgCMatrix")
   } else {
     expr
   }
