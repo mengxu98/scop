@@ -286,22 +286,22 @@ A ggplot / patchwork object wrapping the ComplexHeatmap grob.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-27 18:51:16] Start standard processing workflow...
-#> ℹ [2026-06-27 18:51:17] Checking a list of <Seurat>...
-#> ! [2026-06-27 18:51:17] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-27 18:51:17] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-27 18:51:17] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-27 18:51:17] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-27 18:51:18] Number of available HVF: 2000
-#> ℹ [2026-06-27 18:51:18] Finished check
-#> ℹ [2026-06-27 18:51:18] Perform `ScaleData()`
-#> ℹ [2026-06-27 18:51:18] Perform pca linear dimension reduction
-#> ℹ [2026-06-27 18:51:19] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-27 18:51:19] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-27 18:51:19] Reorder clusters...
-#> ℹ [2026-06-27 18:51:19] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-27 18:51:19] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-27 18:51:22] Standard processing workflow completed
+#> ℹ [2026-06-28 03:34:14] Start standard processing workflow...
+#> ℹ [2026-06-28 03:34:14] Checking a list of <Seurat>...
+#> ! [2026-06-28 03:34:15] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-28 03:34:15] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-28 03:34:15] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-28 03:34:15] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-28 03:34:15] Number of available HVF: 2000
+#> ℹ [2026-06-28 03:34:15] Finished check
+#> ℹ [2026-06-28 03:34:15] Perform `ScaleData()`
+#> ℹ [2026-06-28 03:34:15] Perform pca linear dimension reduction
+#> ℹ [2026-06-28 03:34:16] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-28 03:34:16] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-28 03:34:16] Reorder clusters...
+#> ℹ [2026-06-28 03:34:16] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-28 03:34:16] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-28 03:34:20] Standard processing workflow completed
 
 pc1 <- Seurat::Embeddings(pancreas_sub, "Standardpca")[, 1]
 ct <- as.character(pancreas_sub$CellType)
@@ -319,7 +319,7 @@ pancreas_sub <- RunCellChat(
   group_cmp = list(c("ConditionA", "ConditionB")),
   species = "Mus_musculus"
 )
-#> ℹ [2026-06-27 18:51:22] Start CellChat analysis
+#> ℹ [2026-06-28 03:34:20] Start CellChat analysis
 #> Error in loadNamespace(name): there is no package called ‘CellChat’
 
 CCCHeatmap(

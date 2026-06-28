@@ -199,22 +199,22 @@ CellDensityPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-27 18:53:49] Start standard processing workflow...
-#> ℹ [2026-06-27 18:53:50] Checking a list of <Seurat>...
-#> ! [2026-06-27 18:53:50] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-27 18:53:50] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-27 18:53:50] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-27 18:53:50] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-27 18:53:50] Number of available HVF: 2000
-#> ℹ [2026-06-27 18:53:50] Finished check
-#> ℹ [2026-06-27 18:53:50] Perform `ScaleData()`
-#> ℹ [2026-06-27 18:53:50] Perform pca linear dimension reduction
-#> ℹ [2026-06-27 18:53:51] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-27 18:53:51] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-27 18:53:51] Reorder clusters...
-#> ℹ [2026-06-27 18:53:51] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-27 18:53:51] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-27 18:53:55] Standard processing workflow completed
+#> ℹ [2026-06-28 03:36:43] Start standard processing workflow...
+#> ℹ [2026-06-28 03:36:44] Checking a list of <Seurat>...
+#> ! [2026-06-28 03:36:44] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-28 03:36:44] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-28 03:36:44] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-28 03:36:44] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-28 03:36:44] Number of available HVF: 2000
+#> ℹ [2026-06-28 03:36:44] Finished check
+#> ℹ [2026-06-28 03:36:44] Perform `ScaleData()`
+#> ℹ [2026-06-28 03:36:44] Perform pca linear dimension reduction
+#> ℹ [2026-06-28 03:36:45] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-28 03:36:45] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-28 03:36:45] Reorder clusters...
+#> ℹ [2026-06-28 03:36:45] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-28 03:36:45] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-28 03:36:49] Standard processing workflow completed
 CellDensityPlot(
   pancreas_sub,
   features = "Sox9",

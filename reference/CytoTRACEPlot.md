@@ -129,47 +129,47 @@ If `combine = FALSE`, returns a named list of ggplot objects:
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-27 19:06:09] Start standard processing workflow...
-#> ℹ [2026-06-27 19:06:10] Checking a list of <Seurat>...
-#> ! [2026-06-27 19:06:10] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-27 19:06:10] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-27 19:06:10] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-27 19:06:10] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-27 19:06:10] Number of available HVF: 2000
-#> ℹ [2026-06-27 19:06:11] Finished check
-#> ℹ [2026-06-27 19:06:11] Perform `ScaleData()`
-#> ℹ [2026-06-27 19:06:11] Perform pca linear dimension reduction
-#> ℹ [2026-06-27 19:06:11] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-27 19:06:11] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-27 19:06:11] Reorder clusters...
-#> ℹ [2026-06-27 19:06:12] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-27 19:06:12] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-27 19:06:17] Standard processing workflow completed
+#> ℹ [2026-06-28 03:49:47] Start standard processing workflow...
+#> ℹ [2026-06-28 03:49:48] Checking a list of <Seurat>...
+#> ! [2026-06-28 03:49:48] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-28 03:49:48] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-28 03:49:48] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-28 03:49:48] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-28 03:49:48] Number of available HVF: 2000
+#> ℹ [2026-06-28 03:49:48] Finished check
+#> ℹ [2026-06-28 03:49:48] Perform `ScaleData()`
+#> ℹ [2026-06-28 03:49:48] Perform pca linear dimension reduction
+#> ℹ [2026-06-28 03:49:49] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-28 03:49:49] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-28 03:49:49] Reorder clusters...
+#> ℹ [2026-06-28 03:49:49] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-28 03:49:49] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-28 03:49:55] Standard processing workflow completed
 pancreas_sub <- RunCytoTRACE(
   pancreas_sub,
   species = "Mus_musculus"
 )
-#> ◌ [2026-06-27 19:06:17] Running CytoTRACE2
-#> ℹ [2026-06-27 19:06:17] Extracting expression matrix from `assay = RNA, layer = counts`
-#> ◌ [2026-06-27 19:06:17] Running CytoTRACE2 with `backend = cpp`
-#> ℹ [2026-06-27 19:06:17] Preparing CytoTRACE2 database
-#> ℹ [2026-06-27 19:06:17] Downloading CytoTRACE2 model data from datasets GitHub repository...
-#> ℹ [2026-06-27 19:06:17]   Downloading model_parameters.rds ...
-#> ℹ [2026-06-27 19:06:17]   Downloading features_model_training_17.csv ...
-#> ℹ [2026-06-27 19:06:17]   Downloading mt_dict_human_to_mouse.csv ...
-#> ℹ [2026-06-27 19:06:17]   Downloading mt_human_alias.csv ...
-#> ℹ [2026-06-27 19:06:17]   Downloading mt_mouse_alias.csv ...
-#> ✔ [2026-06-27 19:06:18] CytoTRACE2 data cached at /home/runner/.local/share/R/scop/CytoTRACE2
-#> ℹ [2026-06-27 19:06:18] Species: "Homo_sapiens"
-#> ℹ [2026-06-27 19:06:18] Species: "Mus_musculus"
-#> ℹ [2026-06-27 19:06:18] Loading model from /home/runner/.local/share/R/scop/CytoTRACE2
-#> ℹ [2026-06-27 19:06:21] Dataset contains 15998 genes and 1000 cells.
-#> ℹ [2026-06-27 19:06:21] Running on 1 subsample(s)
-#> ℹ [2026-06-27 19:06:21] Using 1 core
-#> ℹ [2026-06-27 19:06:21] 12486 input genes mapped to model genes.
-#> ℹ [2026-06-27 19:06:21] Building results
-#> ✔ [2026-06-27 19:06:45] CytoTRACE2 computed successfully
-#> ✔ [2026-06-27 19:06:45] CytoTRACE2 computed successfully
+#> ◌ [2026-06-28 03:49:55] Running CytoTRACE2
+#> ℹ [2026-06-28 03:49:55] Extracting expression matrix from `assay = RNA, layer = counts`
+#> ◌ [2026-06-28 03:49:55] Running CytoTRACE2 with `backend = cpp`
+#> ℹ [2026-06-28 03:49:55] Preparing CytoTRACE2 database
+#> ℹ [2026-06-28 03:49:55] Downloading CytoTRACE2 model data from datasets GitHub repository...
+#> ℹ [2026-06-28 03:49:55]   Downloading model_parameters.rds ...
+#> ℹ [2026-06-28 03:49:56]   Downloading features_model_training_17.csv ...
+#> ℹ [2026-06-28 03:49:56]   Downloading mt_dict_human_to_mouse.csv ...
+#> ℹ [2026-06-28 03:49:56]   Downloading mt_human_alias.csv ...
+#> ℹ [2026-06-28 03:49:56]   Downloading mt_mouse_alias.csv ...
+#> ✔ [2026-06-28 03:49:56] CytoTRACE2 data cached at /home/runner/.local/share/R/scop/CytoTRACE2
+#> ℹ [2026-06-28 03:49:56] Species: "Homo_sapiens"
+#> ℹ [2026-06-28 03:49:56] Species: "Mus_musculus"
+#> ℹ [2026-06-28 03:49:56] Loading model from /home/runner/.local/share/R/scop/CytoTRACE2
+#> ℹ [2026-06-28 03:50:00] Dataset contains 15998 genes and 1000 cells.
+#> ℹ [2026-06-28 03:50:00] Running on 1 subsample(s)
+#> ℹ [2026-06-28 03:50:00] Using 1 core
+#> ℹ [2026-06-28 03:50:00] 12486 input genes mapped to model genes.
+#> ℹ [2026-06-28 03:50:00] Building results
+#> ✔ [2026-06-28 03:50:22] CytoTRACE2 computed successfully
+#> ✔ [2026-06-28 03:50:22] CytoTRACE2 computed successfully
 
 CytoTRACEPlot(
   pancreas_sub,
