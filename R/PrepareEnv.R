@@ -1420,11 +1420,13 @@ glue_python_requirements <- function() {
   list(
     packages = c(
       "scglue" = "scglue==0.4.0",
-      "bedtools" = "bedtools"
+      "bedtools" = "bedtools",
+      "zlib" = "zlib"
     ),
     install_methods = c(
       "scglue" = "pip",
-      "bedtools" = "conda"
+      "bedtools" = "conda",
+      "zlib" = "conda"
     ),
     package_aliases = list()
   )
@@ -2827,14 +2829,11 @@ ensure_windows_scvi_support <- function(
 
   jax_requirement <- c("jax" = "jax[cpu]==0.4.38")
 
-  if (
-    !isTRUE(force) &&
-      isTRUE(exist_python_pkgs(
-        jax_requirement,
-        envname = envname,
-        conda = conda
-      ))
-  ) {
+  if (isTRUE(exist_python_pkgs(
+    jax_requirement,
+    envname = envname,
+    conda = conda
+  ))) {
     return(invisible(TRUE))
   }
   pip_options <- normalize_cli_args(pip_options)
@@ -2842,7 +2841,7 @@ ensure_windows_scvi_support <- function(
     packages = jax_requirement,
     envname = envname,
     conda = conda,
-    force = force,
+    force = FALSE,
     pip = TRUE,
     pip_options = pip_options,
     verbose = FALSE
