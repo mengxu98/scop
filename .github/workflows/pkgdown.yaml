@@ -7,6 +7,9 @@ on:
     branches: [main, master, dev]
   release:
     types: [published]
+  schedule:
+    # 02:00 Monday Asia/Shanghai, expressed in UTC for GitHub Actions.
+    - cron: '0 18 * * 0'
   workflow_dispatch:
 
 name: pkgdown
@@ -53,6 +56,8 @@ jobs:
     needs: changes
     if: needs.changes.outputs.package_changed == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     # Only restrict concurrency for non-PR jobs
     concurrency:
       group: pkgdown-${{ github.event_name != 'pull_request' || github.run_id }}
@@ -73,20 +78,32 @@ jobs:
           extra-packages: any::pkgdown, local::.
           needs: website
 
-      - name: Build site
+      - name: Check reference index
+        if: github.event_name == 'pull_request'
         run: |
           if (!requireNamespace("future", quietly = TRUE) ||
                 !requireNamespace("future.apply", quietly = TRUE)) {
             install.packages(c("future", "future.apply"), quiet = TRUE)
           }
           future::plan("sequential", gc = TRUE)
-          pkgdown::build_site()
+          pkgdown::build_reference_index()
+        shell: Rscript {0}
+
+      - name: Build site
+        if: github.event_name != 'pull_request'
+        run: |
+          if (!requireNamespace("future", quietly = TRUE) ||
+                !requireNamespace("future.apply", quietly = TRUE)) {
+            install.packages(c("future", "future.apply"), quiet = TRUE)
+          }
+          future::plan("sequential", gc = TRUE)
+          pkgdown::build_site(lazy = Sys.getenv("GITHUB_EVENT_NAME") != "schedule")
         shell: Rscript {0}
 
       - name: Deploy to GitHub pages 🚀
         if: github.event_name != 'pull_request'
         uses: JamesIves/github-pages-deploy-action@v4.4.1
         with:
-          clean: false
+          clean: ${{ github.event_name == 'schedule' }}
           branch: gh-pages
           folder: docs
