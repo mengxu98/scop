@@ -503,6 +503,7 @@ RunBayesPrism <- function(
   count_matrix,
   reference_srt = NULL,
   group.by = NULL,
+  sample.by = NULL,
   cellstate.by = NULL,
   ref_assay = NULL,
   ref_layer = "counts",
@@ -531,6 +532,7 @@ RunBayesPrism <- function(
   ref_info <- prep_ref(
     reference_srt = reference_srt,
     group.by = group.by,
+    sample.by = sample.by,
     cellstate.by = cellstate.by,
     assay = ref_assay,
     layer = ref_layer
@@ -763,6 +765,7 @@ RunBayesPrism <- function(
     parameters = list(
       method = "BayesPrism",
       backend = backend,
+      sample.by = sample.by %||% ref_info$sample_col_source,
       cellstate.by = cellstate.by %||% ref_info$cellstate_col_source,
       key = key,
       outlier.cut = outlier.cut,

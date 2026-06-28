@@ -199,7 +199,10 @@ spanorm_prepare_input <- function(
   counts <- GetAssayData5(srt, assay = assay, layer = layer)
   counts <- counts[, cells, drop = FALSE]
   if (!inherits(counts, "Matrix")) {
-    counts <- Matrix::Matrix(as.matrix(counts), sparse = TRUE)
+    counts <- Matrix::Matrix(
+      if (is.data.frame(counts)) as.matrix(counts) else counts,
+      sparse = TRUE
+    )
   }
   if (!inherits(counts, "dgCMatrix")) {
     counts <- methods::as(counts, "CsparseMatrix")
@@ -248,7 +251,10 @@ spanorm_extract_logcounts <- function(result, features, cells) {
   }
   mat <- SummarizedExperiment::assay(result, "logcounts")
   if (!inherits(mat, "Matrix")) {
-    mat <- Matrix::Matrix(as.matrix(mat), sparse = TRUE)
+    mat <- Matrix::Matrix(
+      if (is.data.frame(mat)) as.matrix(mat) else mat,
+      sparse = TRUE
+    )
   }
   if (!inherits(mat, "dgCMatrix")) {
     mat <- methods::as(mat, "CsparseMatrix")

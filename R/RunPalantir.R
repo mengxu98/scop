@@ -532,11 +532,15 @@ run_palantir_cpp <- function(
     apply(ms_data, 2, which.max),
     apply(ms_data, 2, which.min)
   ))
-  dists_to_ec <- as.matrix(stats::dist(rbind(
-    ms_data[early_cell, , drop = FALSE],
-    ms_data[dm_boundaries, , drop = FALSE]
-  )))
-  start_cell <- dm_boundaries[which.min(dists_to_ec[1, -1])]
+  dists_to_ec <- rowSums(
+    sweep(
+      ms_data[dm_boundaries, , drop = FALSE],
+      2,
+      ms_data[early_cell, ],
+      "-"
+    )^2
+  )
+  start_cell <- dm_boundaries[which.min(dists_to_ec)]
   if (isTRUE(use_early_cell_as_start)) {
     start_cell <- early_cell
   }
@@ -620,18 +624,18 @@ run_palantir_cpp <- function(
     if (length(wp_boundaries) > 0L) {
       high_rank_idx <- match(high_rank, wp)
       wp_boundary_idx <- match(wp_boundaries, wp)
-      dist_to_boundary <- as.matrix(stats::dist(rbind(
-        wp_ms[high_rank_idx, , drop = FALSE],
-        wp_ms[wp_boundary_idx, , drop = FALSE]
-      )))
       n_hr <- length(high_rank)
       n_bnd <- length(wp_boundaries)
       if (n_hr > 0L && n_bnd > 0L) {
-        dist_part <- dist_to_boundary[
-          seq_len(n_hr),
-          (n_hr + 1L):(n_hr + n_bnd),
-          drop = FALSE
-        ]
+        high_rank_ms <- wp_ms[high_rank_idx, , drop = FALSE]
+        boundary_ms <- wp_ms[wp_boundary_idx, , drop = FALSE]
+        dist_part <- vapply(
+          seq_len(n_bnd),
+          function(j) {
+            rowSums(sweep(high_rank_ms, 2, boundary_ms[j, ], "-")^2)
+          },
+          numeric(n_hr)
+        )
         nearest <- apply(dist_part, 1, which.min)
         terminal_states <- unique(wp_boundaries[nearest])
       } else {

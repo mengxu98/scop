@@ -132,7 +132,7 @@
 #' )
 #'
 #' integration_methods <- c(
-#'   "Uncorrected", "Seurat", "CCA", "RPCA", "scVI", "scVI5",
+#'   "Uncorrected", "Seurat", "CCA", "RPCA",
 #'   "MNN", "fastMNN", "fastMNN5", "Harmony", "Harmony5",
 #'   "Scanorama", "BBKNN", "CSS", "Coralysis", "LIGER", "Conos", "ComBat"
 #' )
@@ -154,6 +154,25 @@
 #'     legend.position = "none",
 #'     theme_use = "theme_blank"
 #'   )
+#' }
+#'
+#' \dontrun{
+#' # Python-backed methods prepare a scVI/scvi-tools environment and run model
+#' # training, so keep them separate from ordinary example checks.
+#' panc8_sub <- integration_scop(
+#'   panc8_sub,
+#'   batch = "tech",
+#'   integration_method = "scVI",
+#'   train_params = list(max_epochs = 2L),
+#'   nonlinear_reduction = "umap"
+#' )
+#' panc8_sub <- integration_scop(
+#'   panc8_sub,
+#'   batch = "tech",
+#'   integration_method = "scVI5",
+#'   IntegrateLayers_params = list(max_epochs = 2L),
+#'   nonlinear_reduction = "umap"
+#' )
 #' }
 #'
 #' nonlinear_reductions <- c(
@@ -461,6 +480,7 @@ integration_scop <- function(
     can_drop_reductions <- all(linear_reduction_arg %in% canonical_linear_reductions)
     assay_keep <- args[["assay"]] %||% SeuratObject::DefaultAssay(srt_merge_raw)
     if (length(assay_keep) == 1L && assay_keep %in% SeuratObject::Assays(srt_merge_raw)) {
+      SeuratObject::DefaultAssay(srt_merge_raw) <- assay_keep
       args[["srt_merge"]] <- Seurat::DietSeurat(
         object = srt_merge_raw,
         assays = assay_keep,

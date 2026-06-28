@@ -590,7 +590,10 @@ RunSCENIC <- function(
   } else {
     NULL
   }
-  score_mat <- Matrix::t(Matrix::Matrix(as.matrix(ras_mat), sparse = TRUE))
+  score_mat <- Matrix::t(Matrix::Matrix(
+    if (is.data.frame(ras_mat)) as.matrix(ras_mat) else ras_mat,
+    sparse = TRUE
+  ))
   dimnames(score_mat) <- list(colnames(ras_mat), rownames(ras_mat))
   result <- list(
     scores = score_mat,
@@ -975,7 +978,10 @@ scenic_cpp <- function(
   ras_mat <- ras_mat[colnames(srt), , drop = FALSE]
 
   regulon_tbl <- scenic_regulon_table(regulon_list)
-  score_mat <- Matrix::t(Matrix::Matrix(as.matrix(ras_mat), sparse = TRUE))
+  score_mat <- Matrix::t(Matrix::Matrix(
+    if (is.data.frame(ras_mat)) as.matrix(ras_mat) else ras_mat,
+    sparse = TRUE
+  ))
   dimnames(score_mat) <- list(colnames(ras_mat), rownames(ras_mat))
 
   result <- list(

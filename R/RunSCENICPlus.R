@@ -417,7 +417,8 @@ RunSCENICPlus <- function(
     colnames(auc_counts), ,
     drop = FALSE
   ]
-  scores <- Matrix::t(methods::as(Matrix::Matrix(as_matrix(auc), sparse = TRUE), "dgCMatrix"))
+  auc_mat <- as_matrix(auc)
+  scores <- Matrix::t(methods::as(Matrix::Matrix(auc_mat, sparse = TRUE), "dgCMatrix"))
   rss <- scenicplus_calc_rss(
     auc = auc,
     srt = srt,
@@ -564,7 +565,8 @@ scenicplus_store_result <- function(srt, result, assay_name, tool_name) {
   scores <- result[["scores"]]
   if (is.null(scores)) {
     auc <- result[["auc"]]
-    scores <- Matrix::t(methods::as(Matrix::Matrix(as_matrix(auc), sparse = TRUE), "dgCMatrix"))
+    auc_mat <- as_matrix(auc)
+    scores <- Matrix::t(methods::as(Matrix::Matrix(auc_mat, sparse = TRUE), "dgCMatrix"))
     result[["scores"]] <- scores
   }
   regulon_list <- result[["regulon_list"]]
@@ -655,7 +657,8 @@ scenicplus_read_python_result <- function(
     cells = rownames(auc),
     group.by = group.by
   )
-  scores <- Matrix::t(methods::as(Matrix::Matrix(as_matrix(auc), sparse = TRUE), "dgCMatrix"))
+  auc_mat <- as_matrix(auc)
+  scores <- Matrix::t(methods::as(Matrix::Matrix(auc_mat, sparse = TRUE), "dgCMatrix"))
   list(
     tf_gene = tf_gene,
     region_gene = region_gene,

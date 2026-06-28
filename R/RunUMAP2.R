@@ -151,6 +151,13 @@ RunUMAP2.Seurat <- function(
         pattern = reduction
       )
     }
+    dims <- intersect(dims, seq_len(ncol(Embeddings(object[[reduction]]))))
+    if (length(dims) == 0L) {
+      log_message(
+        "No valid dimensions remain for {.arg reduction = '{reduction}'}",
+        message_type = "error"
+      )
+    }
     data.use <- as_matrix(Embeddings(object[[reduction]])[, dims])
     assay <- DefaultAssay(object = object[[reduction]])
     if (length(dims) < n.components) {

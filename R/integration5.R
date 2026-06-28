@@ -1118,6 +1118,17 @@ run_integration5 <- function(
     "Perform {.pkg Seurat v5} integration with {.fn {method_label}}",
     verbose = verbose
   )
+  if (
+    method_label %in% c("CCAIntegration", "RPCAIntegration") &&
+      requireNamespace("future", quietly = TRUE)
+  ) {
+    old_future_plan <- future::plan()
+    old_future_max_size <- getOption("future.globals.maxSize")
+    on.exit(future::plan(old_future_plan), add = TRUE)
+    on.exit(options(future.globals.maxSize = old_future_max_size), add = TRUE)
+    future::plan(future::sequential)
+    options(future.globals.maxSize = Inf)
+  }
   srt_integrated <- invoke_fun(Seurat::IntegrateLayers, params)
 
   if (identical(normalization_method, "LogNormalize")) {
