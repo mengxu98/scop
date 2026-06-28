@@ -366,36 +366,36 @@ DEtestPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-28 11:36:58] Start standard processing workflow...
-#> ℹ [2026-06-28 11:36:59] Checking a list of <Seurat>...
-#> ! [2026-06-28 11:36:59] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-28 11:36:59] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-28 11:36:59] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-28 11:36:59] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-28 11:37:00] Number of available HVF: 2000
-#> ℹ [2026-06-28 11:37:00] Finished check
-#> ℹ [2026-06-28 11:37:00] Perform `ScaleData()`
-#> ℹ [2026-06-28 11:37:00] Perform pca linear dimension reduction
-#> ℹ [2026-06-28 11:37:00] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-28 11:37:00] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-28 11:37:01] Reorder clusters...
-#> ℹ [2026-06-28 11:37:01] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-28 11:37:01] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-28 11:37:07] Standard processing workflow completed
+#> ℹ [2026-06-28 14:00:04] Start standard processing workflow...
+#> ℹ [2026-06-28 14:00:05] Checking a list of <Seurat>...
+#> ! [2026-06-28 14:00:05] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-28 14:00:05] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-28 14:00:05] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-28 14:00:05] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-28 14:00:05] Number of available HVF: 2000
+#> ℹ [2026-06-28 14:00:05] Finished check
+#> ℹ [2026-06-28 14:00:05] Perform `ScaleData()`
+#> ℹ [2026-06-28 14:00:05] Perform pca linear dimension reduction
+#> ℹ [2026-06-28 14:00:06] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-28 14:00:06] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-28 14:00:06] Reorder clusters...
+#> ℹ [2026-06-28 14:00:06] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-28 14:00:06] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-28 14:00:13] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
   only.pos = FALSE
 )
-#> ℹ [2026-06-28 11:37:07] Data type is log-normalized
-#> ℹ [2026-06-28 11:37:07] Start differential expression test
-#> ℹ [2026-06-28 11:37:07] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-06-28 11:37:07] Using 1 core
-#> ⠙ [2026-06-28 11:37:07] Running for Ductal [1/5] ■■          20% | ETA:  0s
-#> ✔ [2026-06-28 11:37:07] Completed 5 tasks in 522ms
+#> ℹ [2026-06-28 14:00:13] Data type is log-normalized
+#> ℹ [2026-06-28 14:00:13] Start differential expression test
+#> ℹ [2026-06-28 14:00:13] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-06-28 14:00:13] Using 1 core
+#> ⠙ [2026-06-28 14:00:13] Running for Ductal [1/5] ■■          20% | ETA:  0s
+#> ✔ [2026-06-28 14:00:13] Completed 5 tasks in 526ms
 #> 
-#> ℹ [2026-06-28 11:37:07] Building results
-#> ✔ [2026-06-28 11:37:08] Differential expression test completed
+#> ℹ [2026-06-28 14:00:13] Building results
+#> ✔ [2026-06-28 14:00:14] Differential expression test completed
 
 DEtestPlot(
   pancreas_sub,
@@ -442,20 +442,20 @@ pancreas_sub <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-06-28 11:37:13] Start Enrichment analysis
-#> ℹ [2026-06-28 11:37:13] Species: "Mus_musculus"
+#> ℹ [2026-06-28 14:00:19] Start Enrichment analysis
+#> ℹ [2026-06-28 14:00:20] Species: "Mus_musculus"
 #> 
 #> 
-#> ℹ [2026-06-28 11:47:26] Preparing database: GO_BP
-#> ℹ [2026-06-28 11:47:56] Convert ID types for the GO_BP database
-#> ℹ [2026-06-28 11:47:57] Converted ID types using local annotation package org.Mm.eg.db
-#> ℹ [2026-06-28 11:47:58] Permform enrichment...
-#> ℹ [2026-06-28 11:47:59] Using 1 core
-#> ⠙ [2026-06-28 11:47:59] Running for 1 [1/5] ■■          20% | ETA:  2s
-#> ✔ [2026-06-28 11:47:59] Completed 5 tasks in 2.5s
+#> ℹ [2026-06-28 14:10:37] Preparing database: GO_BP
+#> ℹ [2026-06-28 14:11:11] Convert ID types for the GO_BP database
+#> ℹ [2026-06-28 14:11:11] Converted ID types using local annotation package org.Mm.eg.db
+#> ℹ [2026-06-28 14:11:13] Permform enrichment...
+#> ℹ [2026-06-28 14:11:14] Using 1 core
+#> ⠙ [2026-06-28 14:11:14] Running for 1 [1/5] ■■          20% | ETA:  4s
+#> ✔ [2026-06-28 14:11:14] Completed 5 tasks in 4.4s
 #> 
-#> ℹ [2026-06-28 11:47:59] Building results
-#> ✔ [2026-06-28 11:48:02] Enrichment analysis done
+#> ℹ [2026-06-28 14:11:14] Building results
+#> ✔ [2026-06-28 14:11:19] Enrichment analysis done
 DEtestPlot(
   pancreas_sub,
   group.by = "CellType",

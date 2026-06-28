@@ -160,7 +160,7 @@ integrating bulk and single-cell sequencing data. *Nature Biotechnology*
 data(panc8_sub)
 data(islet_bulk)
 panc8_sub <- standard_scop(panc8_sub, verbose = FALSE)
-#> ℹ [2026-06-28 12:59:19] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-28 15:25:17] Skip `log1p()` because `layer = data` is not "counts"
 panc8_sub <- RunScissor(
   panc8_sub,
   bulk_dataset = islet_bulk,
@@ -176,8 +176,8 @@ panc8_sub <- RunScissor(
   alpha = 0.2,
   cutoff = 0.5
 )
-#> ℹ [2026-06-28 12:59:30] Scissor alpha 0.2 selected 4 positive and 441 negative cells (27.812%)
-#> ✔ [2026-06-28 12:59:30] Scissor stored 4 Scissor+ and 441 Scissor- cells
+#> ℹ [2026-06-28 15:25:29] Scissor alpha 0.2 selected 4 positive and 441 negative cells (27.812%)
+#> ✔ [2026-06-28 15:25:29] Scissor stored 4 Scissor+ and 441 Scissor- cells
 
 ScissorPlot(
   panc8_sub,
