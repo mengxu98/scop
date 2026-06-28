@@ -7,6 +7,7 @@
 CellDimPlot3D(
   srt,
   group.by,
+  plot_type = c("scatter", "density_surface"),
   reduction = NULL,
   dims = c(1, 2, 3),
   axis_labs = NULL,
@@ -20,6 +21,21 @@ CellDimPlot3D(
   sizes.highlight = 2,
   lineages = NULL,
   lineages_palette = "Dark2",
+  density_n = 200,
+  density_bandwidth = 1,
+  density_threshold = 0.018,
+  density_power = 0.52,
+  density_colors = c("#ffffff", "#edf9fa", "#c7e6ed", "#7faac2", "#294a74", "#11162f",
+    "#7f1025", "#ef3b2c"),
+  density_color_stops = c(0, 0.02, 0.12, 0.35, 0.62, 0.82, 0.93, 1),
+  density_surface_opacity = 0.78,
+  density_label = FALSE,
+  density_label_color = TRUE,
+  density_label_top_n = Inf,
+  density_label_min_distance = 0.08,
+  density_show_axes = TRUE,
+  density_show_colorbar = TRUE,
+  density_show_title = TRUE,
   span = 0.75,
   width = NULL,
   height = NULL,
@@ -33,10 +49,17 @@ CellDimPlot3D(
 
 \item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
 
+\item{plot_type}{Plot type. \code{"scatter"} keeps the original 3D cell scatter,
+while \code{"density_surface"} draws an interactive 3D kernel-density surface
+from the first two requested dimensions.}
+
 \item{reduction}{Which dimensionality reduction to use.
 If not specified, will use the reduction returned by \link{DefaultReduction}.}
 
-\item{dims}{Dimensions to plot, must be a three-length numeric vector specifying x-, y- and z-dimensions}
+\item{dims}{Dimensions to plot. For \code{plot_type = "scatter"}, this must be a
+three-length numeric vector specifying x-, y- and z-dimensions. For
+\code{plot_type = "density_surface"}, the first two dimensions are used as x
+and y, and density is drawn on the z-axis.}
 
 \item{axis_labs}{A character vector of length 3 indicating the labels for the axes.}
 
@@ -66,6 +89,41 @@ See \href{https://plotly.com/r/reference/scattergl/#scattergl-marker-symbol}{sca
 If specified, curves will be fitted using \link[stats:loess]{stats::loess} method.}
 
 \item{lineages_palette}{Color palette used for lineages.}
+
+\item{density_n}{Grid size used by \code{MASS::kde2d()} for
+\code{plot_type = "density_surface"}.}
+
+\item{density_bandwidth}{Bandwidth passed to \code{MASS::kde2d()}. A single value
+scales the default x and y bandwidth; a two-length vector supplies absolute
+x and y bandwidths.}
+
+\item{density_threshold}{Relative density values below this cutoff are
+removed from the surface.}
+
+\item{density_power}{Power transform applied to relative density before
+plotting. Values below 1 broaden peaks.}
+
+\item{density_colors}{Colors used for the density surface. The last colors
+are reserved for the highest density peaks.}
+
+\item{density_color_stops}{Numeric stops between 0 and 1 for
+\code{density_colors}. By default, red is reserved for the highest density
+peaks.}
+
+\item{density_surface_opacity}{Opacity for density surfaces.}
+
+\item{density_label}{Whether to add group labels to the density surface.}
+
+\item{density_label_color}{Whether group labels use the same palette as
+\code{CellDimPlot()}.}
+
+\item{density_label_top_n}{Maximum number of group labels to draw.}
+
+\item{density_label_min_distance}{Minimum distance between labels in the
+x-y embedding space, expressed as a fraction of the larger embedding range.}
+
+\item{density_show_axes, density_show_colorbar, density_show_title}{Whether to
+show axes, colorbar, and title for \code{plot_type = "density_surface"}.}
 
 \item{span}{The span of the loess smoother for lineages line.}
 
