@@ -202,22 +202,22 @@ CellScoring(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-28 06:55:49] Start standard processing workflow...
-#> ℹ [2026-06-28 06:55:50] Checking a list of <Seurat>...
-#> ! [2026-06-28 06:55:50] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-28 06:55:50] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-28 06:55:50] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-28 06:55:50] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-28 06:55:50] Number of available HVF: 2000
-#> ℹ [2026-06-28 06:55:50] Finished check
-#> ℹ [2026-06-28 06:55:50] Perform `ScaleData()`
-#> ℹ [2026-06-28 06:55:50] Perform pca linear dimension reduction
-#> ℹ [2026-06-28 06:55:51] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-28 06:55:51] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-28 06:55:51] Reorder clusters...
-#> ℹ [2026-06-28 06:55:51] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-28 06:55:51] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-28 06:55:55] Standard processing workflow completed
+#> ℹ [2026-06-28 09:13:13] Start standard processing workflow...
+#> ℹ [2026-06-28 09:13:14] Checking a list of <Seurat>...
+#> ! [2026-06-28 09:13:14] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-28 09:13:14] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-28 09:13:14] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-28 09:13:14] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-28 09:13:14] Number of available HVF: 2000
+#> ℹ [2026-06-28 09:13:14] Finished check
+#> ℹ [2026-06-28 09:13:14] Perform `ScaleData()`
+#> ℹ [2026-06-28 09:13:14] Perform pca linear dimension reduction
+#> ℹ [2026-06-28 09:13:15] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-28 09:13:15] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-28 09:13:15] Reorder clusters...
+#> ℹ [2026-06-28 09:13:15] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-28 09:13:15] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-28 09:13:20] Standard processing workflow completed
 features_all <- rownames(pancreas_sub)
 pancreas_sub <- CellScoring(
   pancreas_sub,
@@ -228,10 +228,10 @@ pancreas_sub <- CellScoring(
   method = "AUCell",
   name = "test"
 )
-#> ℹ [2026-06-28 06:55:55] Start cell scoring
-#> ℹ [2026-06-28 06:55:56] Data type is log-normalized
-#> ℹ [2026-06-28 06:55:56] Number of feature lists to be scored: 2
-#> ✔ [2026-06-28 06:55:56] Cell scoring completed
+#> ℹ [2026-06-28 09:13:20] Start cell scoring
+#> ℹ [2026-06-28 09:13:20] Data type is log-normalized
+#> ℹ [2026-06-28 09:13:20] Number of feature lists to be scored: 2
+#> ✔ [2026-06-28 09:13:20] Cell scoring completed
 CellDimPlot(pancreas_sub, "test_classification")
 
 
@@ -246,16 +246,16 @@ pancreas_sub <- CellScoring(
   features = list(A = features_all[1:100]),
   method = c("AUCell", "GSVA")
 )
-#> ℹ [2026-06-28 06:55:56] Start cell scoring
-#> ℹ [2026-06-28 06:55:56] Start cell scoring
-#> ℹ [2026-06-28 06:55:57] Data type is log-normalized
-#> ℹ [2026-06-28 06:55:57] Number of feature lists to be scored: 1
-#> ✔ [2026-06-28 06:55:57] Cell scoring completed
-#> ℹ [2026-06-28 06:55:57] Start cell scoring
-#> ℹ [2026-06-28 06:55:58] Data type is log-normalized
-#> ℹ [2026-06-28 06:55:58] Number of feature lists to be scored: 1
+#> ℹ [2026-06-28 09:13:21] Start cell scoring
+#> ℹ [2026-06-28 09:13:21] Start cell scoring
+#> ℹ [2026-06-28 09:13:21] Data type is log-normalized
+#> ℹ [2026-06-28 09:13:21] Number of feature lists to be scored: 1
+#> ✔ [2026-06-28 09:13:22] Cell scoring completed
+#> ℹ [2026-06-28 09:13:22] Start cell scoring
+#> ℹ [2026-06-28 09:13:22] Data type is log-normalized
+#> ℹ [2026-06-28 09:13:22] Number of feature lists to be scored: 1
 #> ℹ 2516278 nonzeros (less than 2^31) and 84.27% sparsity
-#> ✔ [2026-06-28 06:57:23] Cell scoring completed
+#> ✔ [2026-06-28 09:14:48] Cell scoring completed
 FeatureStatPlot(
   pancreas_sub,
   stat.by = c("AUCell_A", "GSVA_A"),
@@ -264,7 +264,7 @@ FeatureStatPlot(
   plot_type = "violin",
   stack = TRUE
 )
-#> ℹ [2026-06-28 06:57:23] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ℹ [2026-06-28 09:14:49] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 
 
 FeatureDimPlot(

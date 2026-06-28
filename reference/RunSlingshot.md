@@ -102,22 +102,22 @@ RunSlingshot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-28 08:24:52] Start standard processing workflow...
-#> ℹ [2026-06-28 08:24:53] Checking a list of <Seurat>...
-#> ! [2026-06-28 08:24:53] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-28 08:24:53] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-28 08:24:53] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-28 08:24:53] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-28 08:24:53] Number of available HVF: 2000
-#> ℹ [2026-06-28 08:24:54] Finished check
-#> ℹ [2026-06-28 08:24:54] Perform `ScaleData()`
-#> ℹ [2026-06-28 08:24:54] Perform pca linear dimension reduction
-#> ℹ [2026-06-28 08:24:55] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-28 08:24:55] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-28 08:24:55] Reorder clusters...
-#> ℹ [2026-06-28 08:24:55] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-28 08:24:55] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-28 08:25:02] Standard processing workflow completed
+#> ℹ [2026-06-28 10:40:21] Start standard processing workflow...
+#> ℹ [2026-06-28 10:40:22] Checking a list of <Seurat>...
+#> ! [2026-06-28 10:40:22] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-28 10:40:22] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-28 10:40:22] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-28 10:40:22] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-28 10:40:23] Number of available HVF: 2000
+#> ℹ [2026-06-28 10:40:23] Finished check
+#> ℹ [2026-06-28 10:40:23] Perform `ScaleData()`
+#> ℹ [2026-06-28 10:40:23] Perform pca linear dimension reduction
+#> ℹ [2026-06-28 10:40:24] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-28 10:40:24] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-28 10:40:24] Reorder clusters...
+#> ℹ [2026-06-28 10:40:24] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-28 10:40:24] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-28 10:40:31] Standard processing workflow completed
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",

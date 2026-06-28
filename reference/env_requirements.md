@@ -103,6 +103,8 @@ env_requirements("3.10-1")
 #>                                "scglue==0.4.0" 
 #>                                       bedtools 
 #>                                     "bedtools" 
+#>                                           zlib 
+#>                                         "zlib" 
 #>                                      scanorama 
 #>                             "scanorama==1.7.4" 
 #>                                          bbknn 
@@ -153,18 +155,18 @@ env_requirements("3.10-1")
 #>            "pip"            "pip"            "pip"            "pip" 
 #>           scanpy           loompy       scvi-tools              jax 
 #>            "pip"            "pip"          "conda"            "pip" 
-#>           scglue         bedtools        scanorama            bbknn 
-#>            "pip"          "conda"            "pip"            "pip" 
-#>       celltypist      cellphonedb     magic-impute         scrublet 
+#>           scglue         bedtools             zlib        scanorama 
+#>            "pip"          "conda"          "conda"            "pip" 
+#>            bbknn       celltypist      cellphonedb     magic-impute 
 #>            "pip"            "pip"            "pip"            "pip" 
-#> doubletdetection          louvain         palantir           scvelo 
+#>         scrublet doubletdetection          louvain         palantir 
 #>            "pip"            "pip"            "pip"            "pip" 
-#>         cellrank              wot            phate           pacmap 
+#>           scvelo         cellrank              wot            phate 
 #>            "pip"            "pip"            "pip"            "pip" 
-#>           trimap         multimap         SEACells           joblib 
+#>           pacmap           trimap         multimap         SEACells 
 #>            "pip"            "pip"            "pip"            "pip" 
-#>           pandas     scikit-learn 
-#>            "pip"            "pip" 
+#>           joblib           pandas     scikit-learn 
+#>            "pip"            "pip"            "pip" 
 #> 
 #> $package_aliases
 #> $package_aliases$`python-igraph`
