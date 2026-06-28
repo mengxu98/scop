@@ -1301,6 +1301,7 @@ CellDimPlot <- function(
             ),
             shape = "circle",
             size = pt.size,
+            stroke = 0,
             alpha = pt.alpha
           )
       }

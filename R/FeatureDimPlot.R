@@ -965,6 +965,7 @@ FeatureDimPlot <- function(
               ),
               shape = "circle",
               size = pt.size,
+              stroke = 0,
               alpha = pt.alpha
             ) +
             scale_color_identity() +
@@ -1539,6 +1540,7 @@ FeatureDimPlot <- function(
               ),
               shape = "circle",
               size = pt.size,
+              stroke = 0,
               alpha = pt.alpha
             )
         }
