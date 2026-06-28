@@ -172,25 +172,25 @@ pbmcmultiome_sub <- standard_scop(
   assay = "RNA",
   linear_reduction_dims = 20
 )
-#> ℹ [2026-06-28 08:20:26] Start standard processing workflow...
-#> ℹ [2026-06-28 08:20:27] Checking a list of <Seurat>...
-#> ! [2026-06-28 08:20:27] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-28 08:20:27] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-28 08:20:27] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-28 10:35:45] Start standard processing workflow...
+#> ℹ [2026-06-28 10:35:46] Checking a list of <Seurat>...
+#> ! [2026-06-28 10:35:46] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-28 10:35:46] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-28 10:35:46] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
 #> Warning: pseudoinverse used at -2.3979
 #> Warning: neighborhood radius 0.30103
 #> Warning: reciprocal condition number  1.2589e-15
-#> ℹ [2026-06-28 08:20:27] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-28 08:20:27] Number of available HVF: 2000
-#> ℹ [2026-06-28 08:20:27] Finished check
-#> ℹ [2026-06-28 08:20:27] Perform `ScaleData()`
-#> ℹ [2026-06-28 08:20:27] Perform pca linear dimension reduction
-#> ℹ [2026-06-28 08:20:28] Use stored estimated dimensions 1:9 for Standardpca
-#> ℹ [2026-06-28 08:20:28] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-28 08:20:28] Reorder clusters...
-#> ℹ [2026-06-28 08:20:28] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-28 08:20:28] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-28 08:20:34] Standard processing workflow completed
+#> ℹ [2026-06-28 10:35:46] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-28 10:35:46] Number of available HVF: 2000
+#> ℹ [2026-06-28 10:35:46] Finished check
+#> ℹ [2026-06-28 10:35:46] Perform `ScaleData()`
+#> ℹ [2026-06-28 10:35:46] Perform pca linear dimension reduction
+#> ℹ [2026-06-28 10:35:47] Use stored estimated dimensions 1:9 for Standardpca
+#> ℹ [2026-06-28 10:35:47] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-28 10:35:47] Reorder clusters...
+#> ℹ [2026-06-28 10:35:47] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-28 10:35:47] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-28 10:35:54] Standard processing workflow completed
 reference <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[1:250])
 query <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[251:350])
 query <- standard_scop(
@@ -199,23 +199,23 @@ query <- standard_scop(
   normalization_method = "TFIDF",
   linear_reduction_dims = 20
 )
-#> ℹ [2026-06-28 08:20:35] Start standard processing workflow...
-#> ℹ [2026-06-28 08:20:35] Checking a list of <Seurat>...
-#> ! [2026-06-28 08:20:35] Data 1/1 of the `srt_list` is "raw_counts"
-#> ℹ [2026-06-28 08:20:35] Perform `RunTFIDF()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-28 08:20:35] Perform `FindTopFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-28 08:20:35] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-28 08:20:35] Number of available HVF: 11426
-#> ℹ [2026-06-28 08:20:35] Finished check
-#> ℹ [2026-06-28 08:20:35] `normalization_method` is TFIDF. Use lsi workflow
-#> ℹ [2026-06-28 08:20:35] Perform svd linear dimension reduction
+#> ℹ [2026-06-28 10:35:54] Start standard processing workflow...
+#> ℹ [2026-06-28 10:35:54] Checking a list of <Seurat>...
+#> ! [2026-06-28 10:35:54] Data 1/1 of the `srt_list` is "raw_counts"
+#> ℹ [2026-06-28 10:35:54] Perform `RunTFIDF()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-28 10:35:55] Perform `FindTopFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-28 10:35:55] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-28 10:35:55] Number of available HVF: 11426
+#> ℹ [2026-06-28 10:35:55] Finished check
+#> ℹ [2026-06-28 10:35:55] `normalization_method` is TFIDF. Use lsi workflow
+#> ℹ [2026-06-28 10:35:55] Perform svd linear dimension reduction
 #> Running SVD
 #> Scaling cell embeddings
-#> ℹ [2026-06-28 08:20:36] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-28 08:20:36] Reorder clusters...
-#> ℹ [2026-06-28 08:20:36] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-28 08:20:36] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-28 08:20:42] Standard processing workflow completed
+#> ℹ [2026-06-28 10:35:55] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-28 10:35:55] Reorder clusters...
+#> ℹ [2026-06-28 10:35:55] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-28 10:35:55] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-28 10:36:01] Standard processing workflow completed
 query <- RunReferenceMapping(
   srt = query,
   reference = reference,
@@ -227,10 +227,10 @@ query <- RunReferenceMapping(
   reference_dims = 1:10,
   dims = 2:10
 )
-#> ℹ [2026-06-28 08:20:42] Use existing query assay "RNA" as `gene_activity_assay`
-#> ℹ [2026-06-28 08:20:42] Adjust `k.filter` from 200 to 99 for small-sample ATAC mapping
-#> ℹ [2026-06-28 08:20:42] Finding RNA-to-ATAC anchors for query mapping...
-#> ℹ [2026-06-28 08:20:45] Adjust `k.weight` from 100 to 95 for small-sample ATAC mapping
+#> ℹ [2026-06-28 10:36:01] Use existing query assay "RNA" as `gene_activity_assay`
+#> ℹ [2026-06-28 10:36:01] Adjust `k.filter` from 200 to 99 for small-sample ATAC mapping
+#> ℹ [2026-06-28 10:36:01] Finding RNA-to-ATAC anchors for query mapping...
+#> ℹ [2026-06-28 10:36:04] Adjust `k.weight` from 100 to 95 for small-sample ATAC mapping
 #> Warning: Max dims.to.integrate is larger than the max dims for at least one of the reductions specified. Setting dims.to.integrate to 2,3,4,5,6,7,8,9 and continuing.
 #> Requested to reuse weights matrix, but no weights found. Computing new weights.
 #> Warning: Layer counts isn't present in the assay object; returning NULL
@@ -240,11 +240,11 @@ query <- RunReferenceMapping(
 #> Finding integration vectors
 #> Finding integration vector weights
 #> Integrating data
-#> ℹ [2026-06-28 08:20:45] Adjust `k.filter` from 200 to 99 for small-sample ATAC mapping
-#> ℹ [2026-06-28 08:20:45] Running RNA reference label transfer for ATAC cells...
-#> ℹ [2026-06-28 08:20:48] Adjust `k.weight` from 95 to 94 for small-sample ATAC mapping
-#> ℹ [2026-06-28 08:20:49] No UMAP model detected. Set the `projection_method` to "knn"
-#> ℹ [2026-06-28 08:20:49] Use the reduction to calculate distance metric
-#> ℹ [2026-06-28 08:20:49] Use raw method to find neighbors
-#> ℹ [2026-06-28 08:20:49] Predicting cell types based on ref_group
+#> ℹ [2026-06-28 10:36:05] Adjust `k.filter` from 200 to 99 for small-sample ATAC mapping
+#> ℹ [2026-06-28 10:36:05] Running RNA reference label transfer for ATAC cells...
+#> ℹ [2026-06-28 10:36:08] Adjust `k.weight` from 95 to 94 for small-sample ATAC mapping
+#> ℹ [2026-06-28 10:36:09] No UMAP model detected. Set the `projection_method` to "knn"
+#> ℹ [2026-06-28 10:36:09] Use the reduction to calculate distance metric
+#> ℹ [2026-06-28 10:36:09] Use raw method to find neighbors
+#> ℹ [2026-06-28 10:36:09] Predicting cell types based on ref_group
 ```
