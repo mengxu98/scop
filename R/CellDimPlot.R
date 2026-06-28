@@ -1918,8 +1918,37 @@ cell_dim_nested_legend_data <- function(
 #'
 #' @md
 #' @inheritParams CellDimPlot
-#' @param dims Dimensions to plot, must be a three-length numeric vector specifying x-, y- and z-dimensions
+#' @param plot_type Plot type. `"scatter"` keeps the original 3D cell scatter,
+#'   while `"density_surface"` draws an interactive 3D kernel-density surface
+#'   from the first two requested dimensions.
+#' @param dims Dimensions to plot. For `plot_type = "scatter"`, this must be a
+#'   three-length numeric vector specifying x-, y- and z-dimensions. For
+#'   `plot_type = "density_surface"`, the first two dimensions are used as x
+#'   and y, and density is drawn on the z-axis.
 #' @param axis_labs A character vector of length 3 indicating the labels for the axes.
+#' @param density_n Grid size used by `MASS::kde2d()` for
+#'   `plot_type = "density_surface"`.
+#' @param density_bandwidth Bandwidth passed to `MASS::kde2d()`. A single value
+#'   scales the default x and y bandwidth; a two-length vector supplies absolute
+#'   x and y bandwidths.
+#' @param density_threshold Relative density values below this cutoff are
+#'   removed from the surface.
+#' @param density_power Power transform applied to relative density before
+#'   plotting. Values below 1 broaden peaks.
+#' @param density_colors Colors used for the density surface. The last colors
+#'   are reserved for the highest density peaks.
+#' @param density_color_stops Numeric stops between 0 and 1 for
+#'   `density_colors`. By default, red is reserved for the highest density
+#'   peaks.
+#' @param density_surface_opacity Opacity for density surfaces.
+#' @param density_label Whether to add group labels to the density surface.
+#' @param density_label_color Whether group labels use the same palette as
+#'   `CellDimPlot()`.
+#' @param density_label_top_n Maximum number of group labels to draw.
+#' @param density_label_min_distance Minimum distance between labels in the
+#'   x-y embedding space, expressed as a fraction of the larger embedding range.
+#' @param density_show_axes,density_show_colorbar,density_show_title Whether to
+#'   show axes, colorbar, and title for `plot_type = "density_surface"`.
 #' @param span The span of the loess smoother for lineages line.
 #' @param shape.highlight Shape of the cell to highlight.
 #' See \href{https://plotly.com/r/reference/scattergl/#scattergl-marker-symbol}{scattergl-marker-symbol}
@@ -1959,6 +1988,7 @@ cell_dim_nested_legend_data <- function(
 CellDimPlot3D <- function(
   srt,
   group.by,
+  plot_type = c("scatter", "density_surface"),
   reduction = NULL,
   dims = c(1, 2, 3),
   axis_labs = NULL,
@@ -1972,6 +2002,29 @@ CellDimPlot3D <- function(
   sizes.highlight = 2,
   lineages = NULL,
   lineages_palette = "Dark2",
+  density_n = 200,
+  density_bandwidth = 1,
+  density_threshold = 0.018,
+  density_power = 0.52,
+  density_colors = c(
+    "#ffffff",
+    "#edf9fa",
+    "#c7e6ed",
+    "#7faac2",
+    "#294a74",
+    "#11162f",
+    "#7f1025",
+    "#ef3b2c"
+  ),
+  density_color_stops = c(0, 0.02, 0.12, 0.35, 0.62, 0.82, 0.93, 1),
+  density_surface_opacity = 0.78,
+  density_label = FALSE,
+  density_label_color = TRUE,
+  density_label_top_n = Inf,
+  density_label_min_distance = 0.08,
+  density_show_axes = TRUE,
+  density_show_colorbar = TRUE,
+  density_show_title = TRUE,
   span = 0.75,
   width = NULL,
   height = NULL,
@@ -1979,6 +2032,13 @@ CellDimPlot3D <- function(
   force = FALSE,
   verbose = TRUE
 ) {
+  plot_type <- match.arg(plot_type)
+  if (identical(plot_type, "density_surface") && length(dims) < 2L) {
+    log_message(
+      "{.arg dims} must contain at least two dimensions for {.val plot_type = 'density_surface'}",
+      message_type = "error"
+    )
+  }
   bg_color <- col2hex(bg_color)
   cols.highlight <- col2hex(cols.highlight)
 
@@ -2005,9 +2065,16 @@ CellDimPlot3D <- function(
     }
   }
   if (is.null(reduction)) {
-    reduction <- DefaultReduction(srt, min_dim = 3)
+    reduction <- DefaultReduction(
+      srt,
+      min_dim = if (identical(plot_type, "density_surface")) 2 else 3
+    )
   } else {
-    reduction <- DefaultReduction(srt, pattern = reduction, min_dim = 3)
+    reduction <- DefaultReduction(
+      srt,
+      pattern = reduction,
+      min_dim = if (identical(plot_type, "density_surface")) 2 else 3
+    )
   }
   if (!reduction %in% names(srt@reductions)) {
     log_message(
@@ -2015,9 +2082,14 @@ CellDimPlot3D <- function(
       message_type = "error"
     )
   }
-  if (ncol(srt@reductions[[reduction]]@cell.embeddings) < 3) {
+  min_dim <- if (identical(plot_type, "density_surface")) 2 else 3
+  if (ncol(srt@reductions[[reduction]]@cell.embeddings) < min_dim) {
     log_message(
-      "Reduction must be in three dimensions or higher.",
+      paste0(
+        "Reduction must be in ",
+        if (identical(plot_type, "density_surface")) "two" else "three",
+        " dimensions or higher."
+      ),
       message_type = "error"
     )
   }
@@ -2038,7 +2110,17 @@ CellDimPlot3D <- function(
     cells.highlight <- intersect(cells.highlight, colnames(srt@assays[[1]]))
   }
   reduction_key <- srt@reductions[[reduction]]@key
-  if (is.null(axis_labs) || length(axis_labs) != 3) {
+  if (identical(plot_type, "density_surface")) {
+    if (is.null(axis_labs) || length(axis_labs) < 2) {
+      xlab <- paste0(reduction_key, dims[1])
+      ylab <- paste0(reduction_key, dims[2])
+      zlab <- "Density"
+    } else {
+      xlab <- axis_labs[1]
+      ylab <- axis_labs[2]
+      zlab <- axis_labs[3] %||% "Density"
+    }
+  } else if (is.null(axis_labs) || length(axis_labs) != 3) {
     xlab <- paste0(reduction_key, dims[1])
     ylab <- paste0(reduction_key, dims[2])
     zlab <- paste0(reduction_key, dims[3])
@@ -2102,6 +2184,302 @@ CellDimPlot3D <- function(
     NA_color = bg_color,
     NA_keep = TRUE
   )
+
+  if (identical(plot_type, "density_surface")) {
+    check_r("MASS", verbose = FALSE)
+    if (!is.numeric(density_n) || length(density_n) != 1L || density_n < 10) {
+      log_message(
+        "{.arg density_n} must be a single numeric value greater than or equal to 10",
+        message_type = "error"
+      )
+    }
+    if (
+      !is.numeric(density_bandwidth) ||
+        !length(density_bandwidth) %in% c(1L, 2L) ||
+        any(!is.finite(density_bandwidth)) ||
+        any(density_bandwidth <= 0)
+    ) {
+      log_message(
+        "{.arg density_bandwidth} must be a positive numeric vector of length one or two",
+        message_type = "error"
+      )
+    }
+    if (
+      !is.numeric(density_threshold) ||
+        length(density_threshold) != 1L ||
+        !is.finite(density_threshold) ||
+        density_threshold < 0
+    ) {
+      log_message(
+        "{.arg density_threshold} must be a finite non-negative number",
+        message_type = "error"
+      )
+    }
+    if (
+      !is.numeric(density_power) ||
+        length(density_power) != 1L ||
+        !is.finite(density_power) ||
+        density_power <= 0
+    ) {
+      log_message(
+        "{.arg density_power} must be a finite positive number",
+        message_type = "error"
+      )
+    }
+    if (
+      !is.numeric(density_color_stops) ||
+        length(density_color_stops) != length(density_colors) ||
+        any(!is.finite(density_color_stops)) ||
+        any(density_color_stops < 0 | density_color_stops > 1) ||
+        is.unsorted(density_color_stops, strictly = TRUE)
+    ) {
+      log_message(
+        "{.arg density_color_stops} must be a strictly increasing numeric vector between 0 and 1 with the same length as {.arg density_colors}",
+        message_type = "error"
+      )
+    }
+    if (
+      !is.numeric(density_label_top_n) ||
+        length(density_label_top_n) != 1L ||
+        is.na(density_label_top_n) ||
+        density_label_top_n < 0
+    ) {
+      log_message(
+        "{.arg density_label_top_n} must be a single non-negative number",
+        message_type = "error"
+      )
+    }
+    if (
+      !is.numeric(density_label_min_distance) ||
+        length(density_label_min_distance) != 1L ||
+        !is.finite(density_label_min_distance) ||
+        density_label_min_distance < 0
+    ) {
+      log_message(
+        "{.arg density_label_min_distance} must be a finite non-negative number",
+        message_type = "error"
+      )
+    }
+    x <- dat_use[[paste0(reduction_key, dims[1])]]
+    y <- dat_use[[paste0(reduction_key, dims[2])]]
+    keep <- is.finite(x) & is.finite(y)
+    if (sum(keep) < 3L) {
+      log_message(
+        "At least three finite cells are required for density surface plotting",
+        message_type = "error"
+      )
+    }
+    x <- x[keep]
+    y <- y[keep]
+    xrange <- range(x, na.rm = TRUE)
+    yrange <- range(y, na.rm = TRUE)
+    if (diff(xrange) <= 0 || diff(yrange) <= 0) {
+      log_message(
+        "Density surface plotting requires non-zero x and y ranges",
+        message_type = "error"
+      )
+    }
+    xpad <- diff(xrange) * 0.04
+    ypad <- diff(yrange) * 0.04
+    default_h <- c(MASS::bandwidth.nrd(x), MASS::bandwidth.nrd(y))
+    density_h <- if (length(density_bandwidth) == 1L) {
+      default_h * density_bandwidth
+    } else {
+      density_bandwidth
+    }
+    p <- plotly::plot_ly(width = width, height = height)
+    dens_lims <- c(xrange + c(-xpad, xpad), yrange + c(-ypad, ypad))
+    dens <- MASS::kde2d(
+      x = x,
+      y = y,
+      n = as.integer(density_n),
+      lims = dens_lims,
+      h = density_h
+    )
+    z <- dens$z / max(dens$z, na.rm = TRUE)
+    z[z < density_threshold] <- NA_real_
+    z <- z^density_power
+    z_plot <- z
+    z_plot[is.na(z_plot)] <- NA_real_
+
+    p <- plotly::add_surface(
+      p = p,
+      x = dens$x,
+      y = dens$y,
+      z = z_plot,
+      colorscale = lapply(
+        seq_along(density_colors) - 1,
+        function(i) {
+          list(density_color_stops[[i + 1]], density_colors[[i + 1]])
+        }
+      ),
+      cmin = 0,
+      cmax = 1,
+      opacity = density_surface_opacity,
+      showscale = isTRUE(density_show_colorbar),
+      colorbar = list(title = list(text = zlab)),
+      hovertemplate = paste0(
+        xlab,
+        ": %{x}<br>",
+        ylab,
+        ": %{y}<br>",
+        zlab,
+        ": %{z}<extra></extra>"
+      ),
+      name = "density",
+      showlegend = FALSE
+    )
+    label_centers <- data.frame()
+    if (isTRUE(density_label)) {
+      label_df <- dat_use[keep, , drop = FALSE]
+      group_vec <- label_df[["group.by"]]
+      group_levels <- levels(group_vec) %||% unique(as.character(group_vec))
+      group_levels <- group_levels[!is.na(group_levels) & nzchar(group_levels)]
+      label_rows <- lapply(group_levels, function(group_i) {
+        idx <- as.character(group_vec) == group_i
+        if (sum(idx, na.rm = TRUE) < 3L) {
+          return(NULL)
+        }
+        group_x <- label_df[[paste0(reduction_key, dims[1])]][idx]
+        group_y <- label_df[[paste0(reduction_key, dims[2])]][idx]
+        xi <- which.min(abs(dens$x - stats::median(group_x, na.rm = TRUE)))
+        yi <- which.min(abs(dens$y - stats::median(group_y, na.rm = TRUE)))
+        z_i <- z_plot[xi, yi]
+        data.frame(
+          group = group_i,
+          x = dens$x[[xi]],
+          y = dens$y[[yi]],
+          z = if (is.finite(z_i)) z_i + 0.05 else 0.05,
+          color = colors[[group_i]] %||% "black",
+          density = if (is.finite(z_i)) z_i else 0,
+          stringsAsFactors = FALSE
+        )
+      })
+      label_rows <- Filter(Negate(is.null), label_rows)
+      if (length(label_rows) > 0L) {
+        label_centers <- do.call(rbind, label_rows)
+        label_centers <- label_centers[
+          order(label_centers$density, decreasing = TRUE, na.last = TRUE), ,
+          drop = FALSE
+        ]
+        if (is.finite(density_label_top_n)) {
+          label_centers <- utils::head(
+            label_centers,
+            as.integer(density_label_top_n)
+          )
+        }
+        if (nrow(label_centers) > 1L && density_label_min_distance > 0) {
+          label_range <- max(diff(dens_lims[1:2]), diff(dens_lims[3:4]))
+          min_dist <- density_label_min_distance * label_range
+          keep_label <- rep(FALSE, nrow(label_centers))
+          kept_xy <- matrix(numeric(0), ncol = 2)
+          for (i in seq_len(nrow(label_centers))) {
+            xy <- c(label_centers$x[[i]], label_centers$y[[i]])
+            if (
+              nrow(kept_xy) == 0L ||
+                min(sqrt(rowSums((t(t(kept_xy) - xy))^2))) >= min_dist
+            ) {
+              keep_label[[i]] <- TRUE
+              kept_xy <- rbind(kept_xy, xy)
+            }
+          }
+          label_centers <- label_centers[keep_label, , drop = FALSE]
+        }
+      }
+    }
+    if (isTRUE(density_label) && nrow(label_centers) > 0L) {
+      if (isTRUE(density_label_color)) {
+        for (group_i in unique(label_centers$group)) {
+          label_i <- label_centers[label_centers$group == group_i, , drop = FALSE]
+          p <- plotly::add_trace(
+            p = p,
+            data = label_i,
+            x = ~x,
+            y = ~y,
+            z = ~z,
+            text = ~as.character(group),
+            type = "scatter3d",
+            mode = "text",
+            textfont = list(size = 14, color = label_i$color[[1]]),
+            showlegend = FALSE,
+            hoverinfo = "skip",
+            name = group_i
+          )
+        }
+      } else {
+        p <- plotly::add_trace(
+          p = p,
+          data = label_centers,
+          x = ~x,
+          y = ~y,
+          z = ~z,
+          text = ~as.character(group),
+          type = "scatter3d",
+          mode = "text",
+          textfont = list(size = 14, color = "black"),
+          showlegend = FALSE,
+          hoverinfo = "skip",
+          name = "labels"
+        )
+      }
+    }
+    p <- plotly::layout(
+      p = p,
+      title = if (isTRUE(density_show_title)) {
+        list(
+          text = paste0("Density surface", " (nCells:", length(x), ")"),
+          font = list(size = 16, color = "black"),
+          y = 0.95
+        )
+      } else {
+        list(text = "")
+      },
+      font = list(size = 12, color = "black"),
+      showlegend = FALSE,
+      margin = if (isTRUE(density_show_axes) || isTRUE(density_show_title)) {
+        NULL
+      } else {
+        list(l = 0, r = 0, b = 0, t = 0, pad = 0)
+      },
+      scene = list(
+        xaxis = list(
+          title = if (isTRUE(density_show_axes)) xlab else "",
+          range = dens_lims[1:2],
+          visible = isTRUE(density_show_axes),
+          showgrid = isTRUE(density_show_axes),
+          zeroline = isTRUE(density_show_axes),
+          showticklabels = isTRUE(density_show_axes)
+        ),
+        yaxis = list(
+          title = if (isTRUE(density_show_axes)) ylab else "",
+          range = dens_lims[3:4],
+          visible = isTRUE(density_show_axes),
+          showgrid = isTRUE(density_show_axes),
+          zeroline = isTRUE(density_show_axes),
+          showticklabels = isTRUE(density_show_axes)
+        ),
+        zaxis = list(
+          title = if (isTRUE(density_show_axes)) zlab else "",
+          range = c(0, 1.05),
+          visible = isTRUE(density_show_axes),
+          showgrid = isTRUE(density_show_axes),
+          zeroline = isTRUE(density_show_axes),
+          showticklabels = isTRUE(density_show_axes)
+        ),
+        camera = list(eye = list(x = 1.35, y = -1.55, z = 1.25)),
+        aspectratio = list(x = 1, y = 1, z = 0.55)
+      ),
+      autosize = FALSE
+    )
+    if ((!is.null(save) && is.character(save) && nchar(save) > 0)) {
+      htmlwidgets::saveWidget(
+        widget = plotly::as_widget(p),
+        file = save
+      )
+      unlink(gsub("\\.html", "_files", save), recursive = TRUE)
+    }
+    return(p)
+  }
 
   dat_use[[paste0(reduction_key, dims[1], "All_cells")]] <- dat_use[[paste0(
     reduction_key,
