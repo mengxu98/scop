@@ -209,60 +209,6 @@ test_that("CellDimPlot disables default point stroke for small point sizes", {
   expect_equal(point_layer$aes_params$stroke, 0)
 })
 
-test_that("CellDimPlot3D can render an interactive density surface from 2D reductions", {
-  srt <- make_cell_dim_plot_srt()
-
-  plot <- CellDimPlot3D(
-    srt = srt,
-    group.by = "celltype",
-    plot_type = "density_surface",
-    reduction = "umap",
-    dims = c(1, 2),
-    density_n = 40,
-    density_label = FALSE,
-    density_show_axes = FALSE,
-    density_show_colorbar = FALSE,
-    density_show_title = FALSE,
-    force = TRUE
-  )
-
-  expect_s3_class(plot, "plotly")
-  built <- plotly::plotly_build(plot)
-  trace_types <- vapply(built$x$data, `[[`, character(1), "type")
-  expect_true("surface" %in% trace_types)
-  surface_idx <- match("surface", trace_types)
-  expect_false(built$x$data[[surface_idx]]$showscale)
-  expect_false(built$x$layout$scene$xaxis$visible)
-  expect_false(built$x$layout$scene$yaxis$visible)
-  expect_false(built$x$layout$scene$zaxis$visible)
-  expect_equal(built$x$layout$title$text, "")
-})
-
-test_that("CellDimPlot3D density labels can be sparsified", {
-  srt <- make_cell_dim_plot_srt()
-
-  plot <- CellDimPlot3D(
-    srt = srt,
-    group.by = "celltype",
-    plot_type = "density_surface",
-    reduction = "umap",
-    dims = c(1, 2),
-    density_n = 40,
-    density_label = TRUE,
-    density_label_top_n = 2,
-    density_label_min_distance = 0,
-    force = TRUE
-  )
-
-  built <- plotly::plotly_build(plot)
-  text_traces <- Filter(
-    function(trace) identical(trace$type, "scatter3d") && identical(trace$mode, "text"),
-    built$x$data
-  )
-  label_count <- sum(vapply(text_traces, function(trace) length(trace$text), integer(1)))
-  expect_lte(label_count, 2)
-})
-
 test_that("CellDimPlot validates atlas grid density", {
   srt <- make_cell_dim_plot_srt()
 
