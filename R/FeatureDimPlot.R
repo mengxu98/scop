@@ -836,7 +836,8 @@ FeatureDimPlot <- function(
           cells.highlight_use <- rownames(dat)[dat[["color_blend"]] != bg_color]
         }
         if (!is.null(graph)) {
-          net_mat <- as_matrix(graph)[rownames(dat), rownames(dat)]
+          net_cells <- rownames(dat)
+          net_mat <- as_matrix(graph[net_cells, net_cells, drop = FALSE])
           net_mat[net_mat == 0] <- NA
           net_mat[upper.tri(net_mat)] <- NA
           net_df <- reshape2::melt(net_mat, na.rm = TRUE, stringsAsFactors = FALSE)
@@ -1371,7 +1372,8 @@ FeatureDimPlot <- function(
           "value"
         ] <- min(colors_value, na.rm = TRUE)
         if (!is.null(graph)) {
-          net_mat <- as_matrix(graph)[rownames(dat), rownames(dat)]
+          net_cells <- rownames(dat)
+          net_mat <- as_matrix(graph[net_cells, net_cells, drop = FALSE])
           net_mat[net_mat == 0] <- NA
           net_mat[upper.tri(net_mat)] <- NA
           net_df <- reshape2::melt(net_mat, na.rm = TRUE, stringsAsFactors = FALSE)

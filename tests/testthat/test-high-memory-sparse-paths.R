@@ -85,6 +85,49 @@ test_that("spatial integration prepares merged objects without SplitObject", {
   expect_equal(names(input$expr_list), c("s1", "s2"))
 })
 
+test_that("RunUMAP2 crops requested dims to available embeddings", {
+  counts <- Matrix::Matrix(
+    c(
+      1, 0, 2, 0, 3, 0,
+      0, 2, 0, 3, 0, 4,
+      5, 0, 4, 0, 3, 0,
+      0, 1, 0, 2, 0, 3,
+      4, 0, 3, 0, 2, 0
+    ),
+    nrow = 5,
+    byrow = TRUE,
+    sparse = TRUE
+  )
+  rownames(counts) <- paste0("g", seq_len(nrow(counts)))
+  colnames(counts) <- paste0("c", seq_len(ncol(counts)))
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  emb <- matrix(
+    stats::rnorm(ncol(srt) * 3),
+    nrow = ncol(srt),
+    dimnames = list(colnames(srt), paste0("PC_", 1:3))
+  )
+  srt[["pca"]] <- Seurat::CreateDimReducObject(
+    embeddings = emb,
+    key = "PC_",
+    assay = "RNA"
+  )
+
+  out <- RunUMAP2(
+    srt,
+    reduction = "pca",
+    dims = 1:10,
+    n.components = 2,
+    n.neighbors = 3,
+    n.epochs = 10,
+    reduction.name = "crop_umap",
+    reduction.key = "cropUMAP_",
+    verbose = FALSE
+  )
+
+  expect_true("crop_umap" %in% SeuratObject::Reductions(out))
+  expect_equal(ncol(Seurat::Embeddings(out, "crop_umap")), 2)
+})
+
 test_that("CIBERSORT matrix validation handles sparse matrices once", {
   mat <- Matrix::Matrix(
     c(1, 0, 3, 4, 5, 6),
@@ -187,4 +230,51 @@ test_that("heatmaps skip temporary row-order heatmap when labels are disabled", 
 
   expect_s3_class(fh$plot, "ggplot")
   expect_s3_class(gh$plot, "ggplot")
+})
+
+test_that("Palantir boundary distance shortcuts match full distance matrices", {
+  ms_data <- matrix(
+    c(
+      0, 0,
+      1, 0,
+      0, 2,
+      2, 2,
+      3, 1
+    ),
+    ncol = 2,
+    byrow = TRUE
+  )
+  early_cell <- 1L
+  dm_boundaries <- c(2L, 3L, 5L)
+
+  full_ec <- as.matrix(stats::dist(rbind(
+    ms_data[early_cell, , drop = FALSE],
+    ms_data[dm_boundaries, , drop = FALSE]
+  )))
+  shortcut_ec <- sqrt(rowSums(
+    sweep(ms_data[dm_boundaries, , drop = FALSE], 2, ms_data[early_cell, ], "-")^2
+  ))
+
+  expect_equal(unname(shortcut_ec), unname(full_ec[1, -1]))
+  expect_identical(dm_boundaries[which.min(shortcut_ec)], dm_boundaries[which.min(full_ec[1, -1])])
+
+  high_rank_ms <- ms_data[c(1L, 4L), , drop = FALSE]
+  boundary_ms <- ms_data[c(2L, 3L, 5L), , drop = FALSE]
+  full_boundary <- as.matrix(stats::dist(rbind(high_rank_ms, boundary_ms)))
+  dist_part_full <- full_boundary[
+    seq_len(nrow(high_rank_ms)),
+    nrow(high_rank_ms) + seq_len(nrow(boundary_ms)),
+    drop = FALSE
+  ]
+  dist_part_shortcut <- vapply(
+    seq_len(nrow(boundary_ms)),
+    function(j) sqrt(rowSums(sweep(high_rank_ms, 2, boundary_ms[j, ], "-")^2)),
+    numeric(nrow(high_rank_ms))
+  )
+
+  expect_equal(unname(dist_part_shortcut), unname(dist_part_full))
+  expect_equal(
+    unname(apply(dist_part_shortcut, 1, which.min)),
+    unname(apply(dist_part_full, 1, which.min))
+  )
 })
