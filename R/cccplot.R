@@ -2275,6 +2275,28 @@ ccc_palettes <- function(
   )
 }
 
+ccc_group_levels <- function(x) {
+  if (is.factor(x)) {
+    lvls <- levels(x)
+  } else {
+    lvls <- unique(as.character(x))
+  }
+  lvls[!is.na(lvls) & nzchar(lvls)]
+}
+
+ccc_align_named_palcolor <- function(palcolor, levels) {
+  if (is.null(palcolor) || is.null(names(palcolor))) {
+    return(palcolor)
+  }
+  levels <- as.character(levels)
+  levels <- levels[!is.na(levels) & nzchar(levels)]
+  pal_names <- names(palcolor)
+  if (!all(levels %in% pal_names)) {
+    return(palcolor)
+  }
+  unname(palcolor[levels])
+}
+
 ccc_scatter_df <- function(pair_df) {
   if (is.null(pair_df) || nrow(pair_df) == 0L) {
     return(data.frame())
@@ -2888,6 +2910,8 @@ ccc_circle_plot <- function(
     net[cbind(snd_idx[keep], rcv_idx[keep])] <- val[keep]
   }
 
+  cell_palcolor <- ccc_align_named_palcolor(cell_palcolor, node_levels)
+  link_palcolor <- ccc_align_named_palcolor(link_palcolor, node_levels)
   cell_cols <- palette_colors(
     node_levels,
     palette = cell_palette,
@@ -2895,7 +2919,7 @@ ccc_circle_plot <- function(
     NA_keep = TRUE
   )
   link_cols <- palette_colors(
-    unique(as.character(plot_df$sender)),
+    node_levels,
     palette = link_palette,
     palcolor = link_palcolor,
     NA_keep = TRUE
@@ -2936,7 +2960,7 @@ ccc_circle_plot <- function(
   edge_width_max <- max(edge_size) * 4
   igraph::E(g)$width <- 0.3 + igraph::E(g)$weight / edge_weight_max * edge_width_max
   igraph::E(g)$color <- grDevices::adjustcolor(
-    cell_cols[igraph::V(g)$name[edge_start[, 1]]],
+    link_cols[igraph::V(g)$name[edge_start[, 1]]],
     alpha.f = link_alpha
   )
   igraph::E(g)$loop.angle <- rep(0, length(igraph::E(g)))
@@ -5154,6 +5178,9 @@ ccc_dim_network_plot <- function(
   )
   dots <- dots[!names(dots) %in% protected_args]
 
+  group_levels <- ccc_group_levels(srt@meta.data[[group.by]])
+  cell_palcolor <- ccc_align_named_palcolor(cell_palcolor, group_levels)
+  link_palcolor <- ccc_align_named_palcolor(link_palcolor, group_levels)
   base_plot <- do.call(
     CellDimPlot,
     c(
@@ -5189,7 +5216,7 @@ ccc_dim_network_plot <- function(
   overlay <- ccc_dim_network_layers(
     plot_data = plot_data,
     pair_df = pair_df,
-    levels = levels(srt@meta.data[[group.by]]),
+    levels = group_levels,
     cell_palette = cell_palette,
     cell_palcolor = cell_palcolor,
     link_palette = link_palette,
@@ -5576,6 +5603,8 @@ ccc_dim_network_layers <- function(
 
   group_levels <- levels %||% unique(as.character(node_df$group))
   group_levels <- unique(c(group_levels, as.character(node_df$group)))
+  cell_palcolor <- ccc_align_named_palcolor(cell_palcolor, group_levels)
+  link_palcolor <- ccc_align_named_palcolor(link_palcolor, group_levels)
   colors <- palette_colors(
     group_levels,
     palette = cell_palette,
@@ -5583,7 +5612,7 @@ ccc_dim_network_layers <- function(
     NA_keep = TRUE
   )
   edge_cols <- palette_colors(
-    unique(edge_df$sender_display),
+    group_levels,
     palette = link_palette,
     palcolor = link_palcolor,
     NA_keep = TRUE
