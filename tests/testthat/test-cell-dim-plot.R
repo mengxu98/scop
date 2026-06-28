@@ -187,6 +187,28 @@ test_that("CellDimPlot aligns named colors to group levels", {
   expect_equal(unname(colors), c("#BBBBBB", "#AAAAAA"))
 })
 
+test_that("CellDimPlot disables default point stroke for small point sizes", {
+  srt <- make_cell_dim_plot_srt()
+
+  plot <- CellDimPlot(
+    srt = srt,
+    group.by = "celltype",
+    reduction = "umap",
+    pt.size = 0.0001,
+    raster = FALSE,
+    force = TRUE
+  )
+
+  point_layers <- Filter(
+    function(layer) inherits(layer$geom, "GeomPoint"),
+    plot$layers
+  )
+  expect_true(length(point_layers) > 0L)
+  point_layer <- point_layers[[length(point_layers)]]
+  expect_equal(point_layer$aes_params$size, 0.0001)
+  expect_equal(point_layer$aes_params$stroke, 0)
+})
+
 test_that("CellDimPlot validates atlas grid density", {
   srt <- make_cell_dim_plot_srt()
 
@@ -232,4 +254,28 @@ test_that("FeatureDimPlot subsets graph before dense conversion without changing
   )
 
   expect_true(inherits(plot, "patchwork") || inherits(plot, "ggplot"))
+})
+
+test_that("FeatureDimPlot disables default point stroke for small point sizes", {
+  srt <- make_cell_dim_plot_srt()
+  srt <- Seurat::NormalizeData(srt, verbose = FALSE)
+
+  plot <- FeatureDimPlot(
+    srt,
+    features = "gene1",
+    reduction = "umap",
+    pt.size = 0.0001,
+    raster = FALSE,
+    force = TRUE,
+    theme_use = theme_blank
+  )
+
+  point_layers <- Filter(
+    function(layer) inherits(layer$geom, "GeomPoint"),
+    plot$layers
+  )
+  expect_true(length(point_layers) > 0L)
+  point_layer <- point_layers[[length(point_layers)]]
+  expect_equal(point_layer$aes_params$size, 0.0001)
+  expect_equal(point_layer$aes_params$stroke, 0)
 })
