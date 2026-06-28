@@ -148,13 +148,13 @@ pancreas_sub <- standard_scop(
   nonlinear_reduction_dims = 2,
   verbose = FALSE
 )
-#> ℹ [2026-06-28 13:05:08] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-28 15:31:20] Skip `log1p()` because `layer = data` is not "counts"
 mc <- RunMetaCell(
   pancreas_sub,
   method = "supercell",
   gamma = 25
 )
-#> ℹ [2026-06-28 13:05:23] Running SuperCell with gamma = 25, k.knn = 5 on 1000 cells
+#> ℹ [2026-06-28 15:31:36] Running SuperCell with gamma = 25, k.knn = 5 on 1000 cells
 #> Error in loadNamespace(name): there is no package called ‘SuperCell’
 
 membership <- data.frame(

@@ -306,22 +306,22 @@ PseudotimeProjectionPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-28 12:23:56] Start standard processing workflow...
-#> ℹ [2026-06-28 12:23:57] Checking a list of <Seurat>...
-#> ! [2026-06-28 12:23:57] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-28 12:23:57] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-28 12:23:57] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-28 12:23:57] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-28 12:23:57] Number of available HVF: 2000
-#> ℹ [2026-06-28 12:23:58] Finished check
-#> ℹ [2026-06-28 12:23:58] Perform `ScaleData()`
-#> ℹ [2026-06-28 12:23:58] Perform pca linear dimension reduction
-#> ℹ [2026-06-28 12:23:58] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-28 12:23:59] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-28 12:23:59] Reorder clusters...
-#> ℹ [2026-06-28 12:23:59] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-28 12:23:59] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-28 12:24:06] Standard processing workflow completed
+#> ℹ [2026-06-28 14:49:04] Start standard processing workflow...
+#> ℹ [2026-06-28 14:49:05] Checking a list of <Seurat>...
+#> ! [2026-06-28 14:49:05] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-28 14:49:05] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-28 14:49:05] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-28 14:49:05] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-28 14:49:05] Number of available HVF: 2000
+#> ℹ [2026-06-28 14:49:05] Finished check
+#> ℹ [2026-06-28 14:49:05] Perform `ScaleData()`
+#> ℹ [2026-06-28 14:49:05] Perform pca linear dimension reduction
+#> ℹ [2026-06-28 14:49:06] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-28 14:49:06] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-28 14:49:06] Reorder clusters...
+#> ℹ [2026-06-28 14:49:06] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-28 14:49:06] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-28 14:49:14] Standard processing workflow completed
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   reduction = "UMAP",
@@ -341,7 +341,7 @@ PseudotimeProjectionPlot(
   method = "gradient",
   plot_type = "raw"
 )
-#> ! [2026-06-28 12:24:07] Removed 328 cells with NA pseudotime values
+#> ! [2026-06-28 14:49:16] Removed 328 cells with NA pseudotime values
 
 
 PseudotimeProjectionPlot(
@@ -353,8 +353,8 @@ PseudotimeProjectionPlot(
   show_cells = TRUE,
   label = TRUE
 )
-#> ! [2026-06-28 12:24:08] Removed 328 cells with NA pseudotime values
-#> ℹ [2026-06-28 12:24:08] Computing KNN graph from embedding...
+#> ! [2026-06-28 14:49:16] Removed 328 cells with NA pseudotime values
+#> ℹ [2026-06-28 14:49:16] Computing KNN graph from embedding...
 
 
 PseudotimeProjectionPlot(
@@ -363,8 +363,8 @@ PseudotimeProjectionPlot(
   time_key = "Lineage2",
   plot_type = "grid"
 )
-#> ! [2026-06-28 12:24:10] Removed 244 cells with NA pseudotime values
-#> ℹ [2026-06-28 12:24:10] Computing KNN graph from embedding...
+#> ! [2026-06-28 14:49:19] Removed 244 cells with NA pseudotime values
+#> ℹ [2026-06-28 14:49:19] Computing KNN graph from embedding...
 
 
 PseudotimeProjectionPlot(
@@ -374,5 +374,5 @@ PseudotimeProjectionPlot(
   method = "gradient",
   plot_type = "raw"
 )
-#> ! [2026-06-28 12:24:12] Removed 328 cells with NA pseudotime values
+#> ! [2026-06-28 14:49:20] Removed 328 cells with NA pseudotime values
 ```

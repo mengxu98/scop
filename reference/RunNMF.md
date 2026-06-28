@@ -182,24 +182,24 @@ RunNMF(
 library(Matrix)
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-28 12:55:51] Start standard processing workflow...
-#> ℹ [2026-06-28 12:55:51] Checking a list of <Seurat>...
-#> ! [2026-06-28 12:55:52] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-28 12:55:52] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-28 12:55:52] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-28 12:55:52] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-28 12:55:52] Number of available HVF: 2000
-#> ℹ [2026-06-28 12:55:52] Finished check
-#> ℹ [2026-06-28 12:55:52] Perform `ScaleData()`
-#> ℹ [2026-06-28 12:55:52] Perform pca linear dimension reduction
-#> ℹ [2026-06-28 12:55:53] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-28 12:55:53] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-28 12:55:53] Reorder clusters...
-#> ℹ [2026-06-28 12:55:53] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-28 12:55:53] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-28 12:56:01] Standard processing workflow completed
+#> ℹ [2026-06-28 15:21:43] Start standard processing workflow...
+#> ℹ [2026-06-28 15:21:44] Checking a list of <Seurat>...
+#> ! [2026-06-28 15:21:44] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-28 15:21:44] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-28 15:21:44] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-28 15:21:44] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-28 15:21:44] Number of available HVF: 2000
+#> ℹ [2026-06-28 15:21:44] Finished check
+#> ℹ [2026-06-28 15:21:44] Perform `ScaleData()`
+#> ℹ [2026-06-28 15:21:44] Perform pca linear dimension reduction
+#> ℹ [2026-06-28 15:21:45] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-28 15:21:45] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-28 15:21:45] Reorder clusters...
+#> ℹ [2026-06-28 15:21:45] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-28 15:21:45] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-28 15:21:54] Standard processing workflow completed
 pancreas_sub <- RunNMF(pancreas_sub)
-#> ℹ [2026-06-28 12:56:01] Running NMF...
+#> ℹ [2026-06-28 15:21:54] Running NMF...
 #> ℹ BE_ 1 
 #> ℹ Positive:  Ccnd1, Spp1, Mdk, Rps2, Ldha, Cd24a, Pebp1, Dlk1, Krt8, Mgst1 
 #> ℹ      Clu, Gapdh, Eno1, Prdx1, Cldn10, Cldn7, Mif, Npm1, Dbi, Vim 
@@ -235,7 +235,7 @@ pancreas_sub <- RunNMF(pancreas_sub)
 #> ℹ Negative:  Cdhr1, Aacs, Wipi1, B830012L14Rik, Tmcc3, Trib1, Fgf12, Lama1, Plekho1, Ppp2r2b 
 #> ℹ      Tenm4, Trf, Gm5420, Man1c1, Jam3, Mgst2, Kcnip3, Tnr, Gm15915, Cbfa2t2 
 #> ℹ      Sh2d4a, Bbc3, Fkbp9, Ano6, Prkcb, Fam46d, Slc52a3, Ankrd2, Tox2, Tle1 
-#> ✔ [2026-06-28 12:56:05] NMF compute completed
+#> ✔ [2026-06-28 15:21:58] NMF compute completed
 CellDimPlot(
   pancreas_sub,
   group.by = "CellType",

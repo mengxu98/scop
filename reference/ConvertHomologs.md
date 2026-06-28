@@ -197,87 +197,21 @@ pancreas_human <- ConvertHomologs(
   species_from = "Mus_musculus",
   species_to = "Homo_sapiens"
 )
-#> ℹ [2026-06-28 11:31:26] Connect to the Ensembl archives...
-#> ℹ [2026-06-28 11:31:28] Using the 116 version of ensembl database...
-#> ℹ [2026-06-28 11:31:28] Downloading the ensembl database from https://jun2026.archive.ensembl.org...
+#> ℹ [2026-06-28 13:56:27] Connect to the Ensembl archives...
+#> ℹ [2026-06-28 13:56:29] Using the 116 version of ensembl database...
+#> ℹ [2026-06-28 13:56:29] Downloading the ensembl database from https://jun2026.archive.ensembl.org...
 #> Ensembl site unresponsive, trying www mirror
-#> ℹ [2026-06-28 11:31:38] Searching the dataset mmusculus ...
-#> ℹ [2026-06-28 11:31:39] Connecting to the dataset mmusculus_gene_ensembl ...
-#> ℹ [2026-06-28 11:31:41] Converting the geneIDs...
-#> ! [2026-06-28 11:34:25] <error/httr2_http_500>
-#> !                       Error in `httr2::req_perform()`:
-#> !                       ! HTTP 500 Internal Server Error.
-#> !                       ---
-#> !                       Backtrace:
-#> !                            ▆
-#> !                         1. ├─base::tryCatch(...)
-#> !                         2. │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
-#> !                         3. │   ├─base (local) tryCatchOne(...)
-#> !                         4. │   │ └─base (local) doTryCatch(return(expr), name, parentenv, handler)
-#> !                         5. │   └─base (local) tryCatchList(expr, names[-nh], parentenv, handlers[-nh])
-#> !                         6. │     └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
-#> !                         7. │       └─base (local) doTryCatch(return(expr), name, parentenv, handler)
-#> !                         8. ├─base::withCallingHandlers(...)
-#> !                         9. ├─base::saveRDS(...)
-#> !                        10. ├─base::do.call(...)
-#> !                        11. ├─base (local) `<fn>`(...)
-#> !                        12. └─global `<fn>`(...)
-#> !                        13.   └─pkgdown::build_site(...)
-#> !                        14.     └─pkgdown:::build_site_local(...)
-#> !                        15.       └─pkgdown::build_reference(...)
-#> !                        16.         ├─pkgdown:::unwrap_purrr_error(...)
-#> !                        17.         │ └─base::withCallingHandlers(...)
-#> !                        18.         └─purrr::map(...)
-#> !                        19.           └─purrr:::map_("list", .x, .f, ..., .progress = .progress)
-#> !                        20.             ├─purrr:::with_indexed_errors(...)
-#> !                        21.             │ └─base::withCallingHandlers(...)
-#> !                        22.             ├─purrr:::call_with_cleanup(...)
-#> !                        23.             └─pkgdown (local) .f(.x[[i]], ...)
-#> !                        24.               ├─base::withCallingHandlers(...)
-#> !                        25.               └─pkgdown:::data_reference_topic(...)
-#> !                        26.                 └─pkgdown:::run_examples(...)
-#> !                        27.                   └─pkgdown:::highlight_examples(code, topic, env = env)
-#> !                        28.                     └─downlit::evaluate_and_highlight(...)
-#> !                        29.                       └─evaluate::evaluate(code, child_env(env), new_device = TRUE, output_handler = output_handler)
-#> !                        30.                         ├─base::withRestarts(...)
-#> !                        31.                         │ └─base (local) withRestartList(expr, restarts)
-#> !                        32.                         │   ├─base (local) withOneRestart(withRestartList(expr, restarts[-nr]), restarts[[nr]])
-#> !                        33.                         │   │ └─base (local) doWithOneRestart(return(expr), restart)
-#> !                        34.                         │   └─base (local) withRestartList(expr, restarts[-nr])
-#> !                        35.                         │     └─base (local) withOneRestart(expr, restarts[[1L]])
-#> !                        36.                         │       └─base (local) doWithOneRestart(return(expr), restart)
-#> !                        37.                         ├─evaluate:::with_handlers(...)
-#> !                        38.                         │ ├─base::eval(call)
-#> !                        39.                         │ │ └─base::eval(call)
-#> !                        40.                         │ └─base::withCallingHandlers(...)
-#> !                        41.                         ├─base::withVisible(eval(expr, envir))
-#> !                        42.                         └─base::eval(expr, envir)
-#> !                        43.                           └─base::eval(expr, envir)
-#> !                        44.                             └─scop::ConvertHomologs(...)
-#> !                        45.                               └─scop:::ConvertHomologs.Seurat(...)
-#> !                        46.                                 └─scop:::ConvertHomologs.default(...)
-#> !                        47.                                   └─scop::GeneConvert(...)
-#> !                        48.                                     ├─thisutils::try_get(...)
-#> !                        49.                                     │ ├─base::tryCatch(...)
-#> !                        50.                                     │ │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
-#> !                        51.                                     │ │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
-#> !                        52.                                     │ │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
-#> !                        53.                                     │ └─base::eval.parent(substitute(expr))
-#> !                        54.                                     │   └─base::eval(expr, p)
-#> !                        55.                                     │     └─base::eval(expr, p)
-#> !                        56.                                     └─biomaRt::getBM(...)
-#> !                        57.                                       └─biomaRt:::.submitQueryXML(...)
-#> !                        58.                                         └─httr2::req_perform(req)
-#> ! [2026-06-28 11:34:25] Get errors when retrieving information from the BioMart database
-#> ! [2026-06-28 11:34:26] Retrying...
-#> ℹ [2026-06-28 11:35:06] 14803 genes mapped with "ensembl_symbol"
-#> ℹ [2026-06-28 11:35:31] 13 genes mapped with "entrez_symbol"
-#> ℹ [2026-06-28 11:35:53] 14 genes mapped with "uniprot_symbol"
-#> ℹ [2026-06-28 11:35:54] ==============================
+#> ℹ [2026-06-28 13:56:39] Searching the dataset mmusculus ...
+#> ℹ [2026-06-28 13:56:47] Connecting to the dataset mmusculus_gene_ensembl ...
+#> ℹ [2026-06-28 13:57:01] Converting the geneIDs...
+#> ℹ [2026-06-28 13:58:03] 14803 genes mapped with "ensembl_symbol"
+#> ℹ [2026-06-28 13:58:28] 13 genes mapped with "entrez_symbol"
+#> ℹ [2026-06-28 13:58:46] 14 genes mapped with "uniprot_symbol"
+#> ℹ [2026-06-28 13:58:51] ==============================
 #> ℹ                       14830 genes mapped
 #> ℹ                       1168 genes unmapped
 #> ℹ                       ==============================
-#> ℹ [2026-06-28 11:36:00] Converted 13013 source genes to 12873 target homologs
+#> ℹ [2026-06-28 13:58:57] Converted 13013 source genes to 12873 target homologs
 rownames(pancreas_human)[1:5]
 #> [1] "C2orf68"  "C11orf58" "C3orf80"  "C8orf33"  "C9orf85" 
 ```

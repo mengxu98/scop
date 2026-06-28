@@ -279,22 +279,22 @@ CellStatPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-28 11:30:21] Start standard processing workflow...
-#> ℹ [2026-06-28 11:30:22] Checking a list of <Seurat>...
-#> ! [2026-06-28 11:30:22] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-28 11:30:22] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-28 11:30:22] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-28 11:30:22] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-28 11:30:22] Number of available HVF: 2000
-#> ℹ [2026-06-28 11:30:23] Finished check
-#> ℹ [2026-06-28 11:30:23] Perform `ScaleData()`
-#> ℹ [2026-06-28 11:30:23] Perform pca linear dimension reduction
-#> ℹ [2026-06-28 11:30:23] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-28 11:30:23] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-28 11:30:24] Reorder clusters...
-#> ℹ [2026-06-28 11:30:24] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-28 11:30:24] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-28 11:30:29] Standard processing workflow completed
+#> ℹ [2026-06-28 13:55:18] Start standard processing workflow...
+#> ℹ [2026-06-28 13:55:18] Checking a list of <Seurat>...
+#> ! [2026-06-28 13:55:18] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-28 13:55:18] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-28 13:55:19] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-28 13:55:19] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-28 13:55:19] Number of available HVF: 2000
+#> ℹ [2026-06-28 13:55:19] Finished check
+#> ℹ [2026-06-28 13:55:19] Perform `ScaleData()`
+#> ℹ [2026-06-28 13:55:19] Perform pca linear dimension reduction
+#> ℹ [2026-06-28 13:55:20] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-28 13:55:20] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-28 13:55:20] Reorder clusters...
+#> ℹ [2026-06-28 13:55:20] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-28 13:55:20] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-28 13:55:26] Standard processing workflow completed
 p1 <- CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
@@ -533,7 +533,7 @@ CellStatPlot(
   stat.by = c("CellType", "Phase"),
   plot_type = "sankey"
 )
-#> ! [2026-06-28 11:30:47] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-06-28 13:55:47] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 
 
 CellStatPlot(
@@ -541,7 +541,7 @@ CellStatPlot(
   stat.by = c("CellType", "Phase"),
   plot_type = "chord"
 )
-#> ! [2026-06-28 11:30:48] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-06-28 13:55:47] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 
 
 CellStatPlot(
@@ -553,7 +553,7 @@ CellStatPlot(
     Phase = "S"
   )
 )
-#> ! [2026-06-28 11:30:55] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-06-28 13:55:54] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 
 
 pancreas_sub$Progenitor <- pancreas_sub$CellType %in% c("Ngn3-low-EP", "Ngn3-high-EP")
@@ -577,7 +577,7 @@ CellStatPlot(
   plot_type = "venn",
   stat_level = "TRUE"
 )
-#> ! [2026-06-28 11:30:56] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-06-28 13:55:55] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 
 
 CellStatPlot(
@@ -588,7 +588,7 @@ CellStatPlot(
   plot_type = "upset",
   stat_level = "TRUE"
 )
-#> ! [2026-06-28 11:31:01] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-06-28 13:56:00] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 #> Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
 #> ℹ Please use `linewidth` instead.
 #> ℹ The deprecated feature was likely used in the ggupset package.
