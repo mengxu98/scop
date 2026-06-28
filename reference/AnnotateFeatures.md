@@ -131,8 +131,8 @@ if (requireNamespace("R.cache", quietly = TRUE)) {
     )
   )
 }
-#> ℹ [2026-06-28 16:07:08] Species: "Mus_musculus"
-#> ℹ [2026-06-28 16:07:08] Preparing database: TF
+#> ℹ [2026-06-28 19:37:29] Species: "Mus_musculus"
+#> ℹ [2026-06-28 19:37:29] Preparing database: TF
 #>               highly_variable_genes   TF
 #> Xkr4                          False <NA>
 #> Mrpl15                        False <NA>
