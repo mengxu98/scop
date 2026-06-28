@@ -173,39 +173,39 @@ Model data: <https://github.com/mengxu98/datasets/tree/main/CytoTRACE2>
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-28 15:06:57] Start standard processing workflow...
-#> ℹ [2026-06-28 15:06:58] Checking a list of <Seurat>...
-#> ! [2026-06-28 15:06:58] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-28 15:06:58] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-28 15:06:58] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-28 15:06:58] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-28 15:06:58] Number of available HVF: 2000
-#> ℹ [2026-06-28 15:06:58] Finished check
-#> ℹ [2026-06-28 15:06:58] Perform `ScaleData()`
-#> ℹ [2026-06-28 15:06:58] Perform pca linear dimension reduction
-#> ℹ [2026-06-28 15:06:59] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-28 15:06:59] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-28 15:06:59] Reorder clusters...
-#> ℹ [2026-06-28 15:06:59] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-28 15:06:59] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-28 15:07:07] Standard processing workflow completed
+#> ℹ [2026-06-28 17:26:56] Start standard processing workflow...
+#> ℹ [2026-06-28 17:26:56] Checking a list of <Seurat>...
+#> ! [2026-06-28 17:26:56] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-28 17:26:56] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-28 17:26:57] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-28 17:26:57] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-28 17:26:57] Number of available HVF: 2000
+#> ℹ [2026-06-28 17:26:57] Finished check
+#> ℹ [2026-06-28 17:26:57] Perform `ScaleData()`
+#> ℹ [2026-06-28 17:26:57] Perform pca linear dimension reduction
+#> ℹ [2026-06-28 17:26:58] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-28 17:26:58] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-28 17:26:58] Reorder clusters...
+#> ℹ [2026-06-28 17:26:58] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-28 17:26:58] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-28 17:27:04] Standard processing workflow completed
 pancreas_sub <- RunCytoTRACE(
   pancreas_sub,
   species = "Mus_musculus"
 )
-#> ◌ [2026-06-28 15:07:07] Running CytoTRACE2
-#> ℹ [2026-06-28 15:07:07] Extracting expression matrix from `assay = RNA, layer = counts`
-#> ◌ [2026-06-28 15:07:07] Running CytoTRACE2 with `backend = cpp`
-#> ℹ [2026-06-28 15:07:07] Loading cached: CytoTRACE2 version: 1.1.0
-#> ℹ [2026-06-28 15:07:07] Species: "Homo_sapiens"
-#> ℹ [2026-06-28 15:07:07] Species: "Mus_musculus"
-#> ℹ [2026-06-28 15:07:07] Dataset contains 15998 genes and 1000 cells.
-#> ℹ [2026-06-28 15:07:07] Running on 1 subsample(s)
-#> ℹ [2026-06-28 15:07:07] Using 1 core
-#> ℹ [2026-06-28 15:07:08] 12486 input genes mapped to model genes.
-#> ℹ [2026-06-28 15:07:07] Building results
-#> ✔ [2026-06-28 15:07:26] CytoTRACE2 computed successfully
-#> ✔ [2026-06-28 15:07:26] CytoTRACE2 computed successfully
+#> ◌ [2026-06-28 17:27:04] Running CytoTRACE2
+#> ℹ [2026-06-28 17:27:04] Extracting expression matrix from `assay = RNA, layer = counts`
+#> ◌ [2026-06-28 17:27:04] Running CytoTRACE2 with `backend = cpp`
+#> ℹ [2026-06-28 17:27:04] Loading cached: CytoTRACE2 version: 1.1.0
+#> ℹ [2026-06-28 17:27:04] Species: "Homo_sapiens"
+#> ℹ [2026-06-28 17:27:04] Species: "Mus_musculus"
+#> ℹ [2026-06-28 17:27:04] Dataset contains 15998 genes and 1000 cells.
+#> ℹ [2026-06-28 17:27:04] Running on 1 subsample(s)
+#> ℹ [2026-06-28 17:27:04] Using 1 core
+#> ℹ [2026-06-28 17:27:04] 12486 input genes mapped to model genes.
+#> ℹ [2026-06-28 17:27:04] Building results
+#> ✔ [2026-06-28 17:27:21] CytoTRACE2 computed successfully
+#> ✔ [2026-06-28 17:27:21] CytoTRACE2 computed successfully
 
 CytoTRACEPlot(
   pancreas_sub,
