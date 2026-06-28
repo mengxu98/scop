@@ -171,13 +171,13 @@ A `ggplot` object, or a named list of ggplot2 layers when
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub, verbose = FALSE)
-#> ℹ [2026-06-28 17:06:33] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-28 20:37:37] Skip `log1p()` because `layer = data` is not "counts"
 mc <- RunMetaCell(
   pancreas_sub,
   method = "supercell",
   gamma = 20
 )
-#> ℹ [2026-06-28 17:06:45] Running SuperCell with gamma = 20, k.knn = 5 on 1000 cells
+#> ℹ [2026-06-28 20:37:50] Running SuperCell with gamma = 20, k.knn = 5 on 1000 cells
 #> Error in loadNamespace(name): there is no package called ‘SuperCell’
 
 MetaCellPlot(
