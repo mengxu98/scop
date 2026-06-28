@@ -30,7 +30,7 @@ Options are \code{"hybrid"}, \code{"cxds"}, or \code{"bcds"}.}
 input assay. Primarily used internally to avoid repeated scans of the same
 count matrix across nested QC calls.}
 
-\item{...}{Additional arguments to be passed to \code{\link[scds:cxds_bcds_hybrid]{scds::cxds_bcds_hybrid()}}.}
+\item{...}{Additional arguments passed to the selected \code{scds} method.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

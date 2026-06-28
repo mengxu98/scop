@@ -150,7 +150,7 @@ db_scDblFinder <- function(
 #' @inheritParams RunDoubletCalling
 #' @param method The method to be used for doublet-calling.
 #' Options are `"hybrid"`, `"cxds"`, or `"bcds"`.
-#' @param ... Additional arguments to be passed to [scds::cxds_bcds_hybrid()].
+#' @param ... Additional arguments passed to the selected `scds` method.
 #'
 #' @export
 #' @examples
@@ -194,10 +194,14 @@ db_scds <- function(
   check_r("scds", verbose = FALSE)
   method <- match.arg(method)
   sce <- Seurat::as.SingleCellExperiment(srt, assay = assay)
-  sce <- scds::cxds_bcds_hybrid(sce, ...)
-  srt[["db.scds_cxds_score"]] <- sce[["cxds_score"]]
-  srt[["db.scds_bcds_score"]] <- sce[["bcds_score"]]
-  srt[["db.scds_hybrid_score"]] <- sce[["hybrid_score"]]
+  sce <- switch(
+    method,
+    cxds = scds::cxds(sce, ...),
+    bcds = scds::bcds(sce, ...),
+    hybrid = scds::cxds_bcds_hybrid(sce, ...)
+  )
+  score_col <- paste0(method, "_score")
+  srt[[paste0("db.scds_", method, "_score")]] <- sce[[score_col]]
   ntop <- ceiling(db_rate * ncol(sce))
   db_qc <- names(sort(
     srt[[paste0("db.scds_", method, "_score"), drop = TRUE]],
