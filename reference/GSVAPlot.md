@@ -526,16 +526,16 @@ pancreas_sub <- RunGSVA(
   minGSSize = 2,
   min.sz = 2
 )
-#> ℹ [2026-06-28 09:49:11] Start GSVA analysis
-#> ℹ [2026-06-28 09:49:11] Single-cell GSVA mode: using expression matrix directly ...
-#> ℹ [2026-06-28 09:49:12] Expression matrix: 12238 genes x 80 cells
-#> ℹ [2026-06-28 09:49:12] Processing database: "custom" ...
-#> ℹ [2026-06-28 09:49:12] Initial overlap: 6 genes out of 12238 expression genes and 10 genes in gene sets
-#> ℹ [2026-06-28 09:49:12] Running GSVA for 2 gene sets ...
+#> ℹ [2026-06-28 12:09:21] Start GSVA analysis
+#> ℹ [2026-06-28 12:09:21] Single-cell GSVA mode: using expression matrix directly ...
+#> ℹ [2026-06-28 12:09:21] Expression matrix: 12238 genes x 80 cells
+#> ℹ [2026-06-28 12:09:21] Processing database: "custom" ...
+#> ℹ [2026-06-28 12:09:21] Initial overlap: 6 genes out of 12238 expression genes and 10 genes in gene sets
+#> ℹ [2026-06-28 12:09:21] Running GSVA for 2 gene sets ...
 #> Warning: Feature names cannot have underscores ('_'), replacing with dashes ('-')
 #> Warning: Layer counts isn't present in the assay object; returning NULL
-#> ℹ [2026-06-28 09:49:12] GSVA results stored in assay "GSVA", meta.data, and tools slot "GSVA_cell_zscore"
-#> ✔ [2026-06-28 09:49:12] GSVA analysis done
+#> ℹ [2026-06-28 12:09:21] GSVA results stored in assay "GSVA", meta.data, and tools slot "GSVA_cell_zscore"
+#> ✔ [2026-06-28 12:09:21] GSVA analysis done
 
 ht <- GSVAPlot(
   pancreas_sub,

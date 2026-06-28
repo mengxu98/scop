@@ -287,11 +287,11 @@ panc8_sub <- RunScissor(
   alpha = 0.2,
   cutoff = 0.5
 )
-#> ℹ [2026-06-28 10:42:58] Build a temporary Scissor-style SNN graph
-#> ℹ [2026-06-28 10:43:01] Scissor alpha 0.2 selected 4 positive and 444 negative cells (28%)
-#> ✔ [2026-06-28 10:43:01] Scissor stored 4 Scissor+ and 444 Scissor- cells
+#> ℹ [2026-06-28 13:05:35] Build a temporary Scissor-style SNN graph
+#> ℹ [2026-06-28 13:05:37] Scissor alpha 0.2 selected 4 positive and 444 negative cells (28%)
+#> ✔ [2026-06-28 13:05:37] Scissor stored 4 Scissor+ and 444 Scissor- cells
 panc8_sub <- standard_scop(panc8_sub, verbose = FALSE)
-#> ℹ [2026-06-28 10:43:03] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-28 13:05:40] Skip `log1p()` because `layer = data` is not "counts"
 
 ScissorPlot(
   panc8_sub,
