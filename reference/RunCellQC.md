@@ -261,44 +261,44 @@ Returns Seurat object with the QC results stored in the meta.data layer.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-28 04:49:47] Start standard processing workflow...
-#> ℹ [2026-06-28 04:49:48] Checking a list of <Seurat>...
-#> ! [2026-06-28 04:49:48] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-28 04:49:48] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-28 04:49:48] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-28 04:49:48] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-28 04:49:48] Number of available HVF: 2000
-#> ℹ [2026-06-28 04:49:48] Finished check
-#> ℹ [2026-06-28 04:49:48] Perform `ScaleData()`
-#> ℹ [2026-06-28 04:49:48] Perform pca linear dimension reduction
-#> ℹ [2026-06-28 04:49:49] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-28 04:49:49] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-28 04:49:49] Reorder clusters...
-#> ℹ [2026-06-28 04:49:49] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-28 04:49:49] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-28 04:49:57] Standard processing workflow completed
+#> ℹ [2026-06-28 08:00:59] Start standard processing workflow...
+#> ℹ [2026-06-28 08:00:59] Checking a list of <Seurat>...
+#> ! [2026-06-28 08:00:59] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-28 08:00:59] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-28 08:01:00] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-28 08:01:00] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-28 08:01:00] Number of available HVF: 2000
+#> ℹ [2026-06-28 08:01:00] Finished check
+#> ℹ [2026-06-28 08:01:00] Perform `ScaleData()`
+#> ℹ [2026-06-28 08:01:00] Perform pca linear dimension reduction
+#> ℹ [2026-06-28 08:01:01] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-28 08:01:01] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-28 08:01:01] Reorder clusters...
+#> ℹ [2026-06-28 08:01:01] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-28 08:01:01] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-28 08:01:07] Standard processing workflow completed
 pancreas_sub <- RunCellQC(
   pancreas_sub,
   db_method = "scds_cxds"
 )
-#> ◌ [2026-06-28 04:49:57] Running cell-level quality control
-#> ℹ [2026-06-28 04:49:57] Data type is raw counts
-#> ℹ [2026-06-28 04:49:57] Running scds with method "cxds"
+#> ◌ [2026-06-28 08:01:07] Running cell-level quality control
+#> ℹ [2026-06-28 08:01:08] Data type is raw counts
+#> ℹ [2026-06-28 08:01:08] Running scds with method "cxds"
 #> Registered S3 method overwritten by 'pROC':
 #>   method   from            
 #>   plot.roc spatstat.explore
-#> ! [2026-06-28 04:50:18] Skip "atac" QC because `assay = 'RNA'` is not a <ChromatinAssay>
-#> ℹ [2026-06-28 04:50:18] Running decontX
+#> ! [2026-06-28 08:01:26] Skip "atac" QC because `assay = 'RNA'` is not a <ChromatinAssay>
+#> ℹ [2026-06-28 08:01:26] Running decontX
 #> Warning: 'librarySizeFactors' is deprecated.
 #> Use 'scrapper::centerSizeFactors' instead.
 #> See help("Deprecated")
 #> Warning: 'normalizeCounts' is deprecated.
 #> Use 'scrapper::normalizeCounts' instead.
 #> See help("Deprecated")
-#> ℹ [2026-06-28 04:53:24] decontX contamination (median/mean/max): 0.0136 / 0.1628 / 0.7465
-#> ℹ [2026-06-28 04:53:24] decontX assay stored as decontXcounts
-#> ✔ [2026-06-28 04:53:24] decontX decontamination completed
-#> ✔ [2026-06-28 04:53:24] ● Total cells: 1000
+#> ℹ [2026-06-28 08:04:29] decontX contamination (median/mean/max): 0.0136 / 0.1628 / 0.7465
+#> ℹ [2026-06-28 08:04:29] decontX assay stored as decontXcounts
+#> ✔ [2026-06-28 08:04:29] decontX decontamination completed
+#> ✔ [2026-06-28 08:04:29] ● Total cells: 1000
 #> ✔                       ◉ 967 cells remained
 #> ✔                       ◯ 33 cells filtered out:
 #> ✔                       ◯   10 potential doublets
@@ -320,7 +320,7 @@ CellStatPlot(
   plot_type = "upset",
   stat_level = "Fail"
 )
-#> ! [2026-06-28 04:53:25] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-06-28 08:04:29] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 #> `geom_line()`: Each group consists of only one observation.
 #> ℹ Do you need to adjust the group aesthetic?
 #> `geom_line()`: Each group consists of only one observation.

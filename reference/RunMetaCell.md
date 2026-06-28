@@ -112,14 +112,14 @@ pancreas_sub <- standard_scop(
   nonlinear_reduction_dims = 2,
   verbose = FALSE
 )
-#> ℹ [2026-06-28 05:07:31] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-28 08:17:53] Skip `log1p()` because `layer = data` is not "counts"
 
 mc1 <- RunMetaCell(
   pancreas_sub,
   method = "supercell",
   gamma = 20
 )
-#> ℹ [2026-06-28 05:07:45] Running SuperCell with gamma = 20, k.knn = 5 on 1000 cells
+#> ℹ [2026-06-28 08:18:05] Running SuperCell with gamma = 20, k.knn = 5 on 1000 cells
 #> Error in loadNamespace(name): there is no package called ‘SuperCell’
 
 MetaCellPlot(mc1, group.by = "CellType")
@@ -130,7 +130,7 @@ mc2 <- RunMetaCell(
   method = "metacell",
   gamma = 20
 )
-#> ℹ [2026-06-28 05:07:47] Running MetaCell-style KNN partitioning with k = 20 on 1000 cells
+#> ℹ [2026-06-28 08:18:08] Running MetaCell-style KNN partitioning with k = 20 on 1000 cells
 #> Warning: x[] <- val: val is coerced to logical for "ngCMatrix" x
 #> Warning: x[] <- val: val is coerced to logical for "ngCMatrix" x
 #> Warning: x[] <- val: val is coerced to logical for "ngCMatrix" x
@@ -1139,10 +1139,10 @@ mc2 <- RunMetaCell(
 #> Warning: x[] <- val: val is coerced to logical for "ngCMatrix" x
 #> Warning: x[] <- val: val is coerced to logical for "ngCMatrix" x
 #> Warning: x[] <- val: val is coerced to logical for "ngCMatrix" x
-#> ℹ [2026-06-28 05:07:48] `RunMetaCell()` ("metacell") built 8 metacells from 1000 cells
-#> ℹ [2026-06-28 05:07:48] Metacell size summary: min 17, median 126, mean 125, max 251 cells
+#> ℹ [2026-06-28 08:18:09] `RunMetaCell()` ("metacell") built 8 metacells from 1000 cells
+#> ℹ [2026-06-28 08:18:09] Metacell size summary: min 17, median 126, mean 125, max 251 cells
 #> Warning: Data is of class ngCMatrix. Coercing to dgCMatrix.
-#> ✔ [2026-06-28 05:07:48] `RunMetaCell()` returned metacell Seurat with 8 metacells. Original cells in `@misc[["original_srt"]]`
+#> ✔ [2026-06-28 08:18:09] `RunMetaCell()` returned metacell Seurat with 8 metacells. Original cells in `@misc[["original_srt"]]`
 
 MetaCellPlot(mc2, group.by = "CellType")
 ```

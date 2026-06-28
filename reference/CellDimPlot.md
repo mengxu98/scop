@@ -726,22 +726,22 @@ CellDimPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-28 03:43:20] Start standard processing workflow...
-#> ℹ [2026-06-28 03:43:21] Checking a list of <Seurat>...
-#> ! [2026-06-28 03:43:21] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-28 03:43:21] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-28 03:43:21] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-28 03:43:21] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-28 03:43:21] Number of available HVF: 2000
-#> ℹ [2026-06-28 03:43:21] Finished check
-#> ℹ [2026-06-28 03:43:21] Perform `ScaleData()`
-#> ℹ [2026-06-28 03:43:21] Perform pca linear dimension reduction
-#> ℹ [2026-06-28 03:43:22] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-28 03:43:22] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-28 03:43:22] Reorder clusters...
-#> ℹ [2026-06-28 03:43:22] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-28 03:43:22] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-28 03:43:27] Standard processing workflow completed
+#> ℹ [2026-06-28 06:53:47] Start standard processing workflow...
+#> ℹ [2026-06-28 06:53:48] Checking a list of <Seurat>...
+#> ! [2026-06-28 06:53:48] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-28 06:53:48] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-28 06:53:48] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-28 06:53:48] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-28 06:53:48] Number of available HVF: 2000
+#> ℹ [2026-06-28 06:53:49] Finished check
+#> ℹ [2026-06-28 06:53:49] Perform `ScaleData()`
+#> ℹ [2026-06-28 06:53:49] Perform pca linear dimension reduction
+#> ℹ [2026-06-28 06:53:49] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-28 06:53:49] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-28 06:53:49] Reorder clusters...
+#> ℹ [2026-06-28 06:53:50] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-28 06:53:50] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-28 06:53:53] Standard processing workflow completed
 p1 <- CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -1099,8 +1099,8 @@ pancreas_sub <- RunPAGA(
   backend = "cpp",
   return_seurat = TRUE
 )
-#> ℹ [2026-06-28 03:43:58] Running PAGA with BiocNeighbors using 29 neighbors
-#> ✔ [2026-06-28 03:44:46] PAGA cpp backend completed
+#> ℹ [2026-06-28 06:54:28] Running PAGA with BiocNeighbors using 29 neighbors
+#> ✔ [2026-06-28 06:55:14] PAGA cpp backend completed
 
 CellDimPlot(
   pancreas_sub,
@@ -1148,10 +1148,10 @@ pancreas_sub <- RunSCVELO(
   backend = "cpp",
   return_seurat = TRUE
 )
-#> ℹ [2026-06-28 03:44:47] Running scanpy-compatible preprocessing (15998 features -> filter + normalize)...
-#> ℹ [2026-06-28 03:44:49] Running scVelo "stochastic" mode with `backend = 'cpp'` (10590 features)
-#> ✔ [2026-06-28 03:44:52] scVelo "stochastic" mode completed
-#> ✔ [2026-06-28 03:44:52] scVelo cpp backend completed
+#> ℹ [2026-06-28 06:55:16] Running scanpy-compatible preprocessing (15998 features -> filter + normalize)...
+#> ℹ [2026-06-28 06:55:17] Running scVelo "stochastic" mode with `backend = 'cpp'` (10590 features)
+#> ✔ [2026-06-28 06:55:20] scVelo "stochastic" mode completed
+#> ✔ [2026-06-28 06:55:20] scVelo cpp backend completed
 
 CellDimPlot(
   pancreas_sub,
