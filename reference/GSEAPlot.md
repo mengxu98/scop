@@ -350,16 +350,16 @@ gsea_out <- RunGSEA(
   TERM2GENE = term2gene,
   minGSSize = 2
 )
-#> ℹ [2026-06-28 14:33:58] Start GSEA analysis
-#> ! [2026-06-28 14:33:58] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
-#> ℹ [2026-06-28 14:33:58] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...
-#> ℹ [2026-06-28 14:33:58] Prepared 10 ranked gene rows after ID mapping.
-#> ℹ [2026-06-28 14:33:58] Running GSEA for 1 group/database combination(s) using 1 core(s) ...
-#> ℹ [2026-06-28 14:33:58] Using 1 core
-#> ℹ [2026-06-28 14:33:58] Running GSEA: group "Cluster1", database "custom", genes 10 ...
-#> ℹ [2026-06-28 14:33:58] Finished GSEA: group "Cluster1", database "custom".
-#> ℹ [2026-06-28 14:33:58] Building results
-#> ✔ [2026-06-28 14:33:59] GSEA analysis done
+#> ℹ [2026-06-28 16:55:33] Start GSEA analysis
+#> ! [2026-06-28 16:55:33] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
+#> ℹ [2026-06-28 16:55:33] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...
+#> ℹ [2026-06-28 16:55:33] Prepared 10 ranked gene rows after ID mapping.
+#> ℹ [2026-06-28 16:55:33] Running GSEA for 1 group/database combination(s) using 1 core(s) ...
+#> ℹ [2026-06-28 16:55:33] Using 1 core
+#> ℹ [2026-06-28 16:55:33] Running GSEA: group "Cluster1", database "custom", genes 10 ...
+#> ℹ [2026-06-28 16:55:33] Finished GSEA: group "Cluster1", database "custom".
+#> ℹ [2026-06-28 16:55:33] Building results
+#> ✔ [2026-06-28 16:55:33] GSEA analysis done
 GSEAPlot(res = gsea_out, db = "custom", plot_type = "comparison")
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's alpha values.

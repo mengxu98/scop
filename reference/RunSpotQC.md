@@ -99,7 +99,7 @@ spatial <- RunSpotQC(
   visium_human_pancreas_sub,
   assay = "Spatial"
 )
-#> ◌ [2026-06-28 15:29:36] Running spot-level quality control
-#> ✔ [2026-06-28 15:29:37] 1907 spots passed QC and 79 spots failed QC
+#> ◌ [2026-06-28 17:47:55] Running spot-level quality control
+#> ✔ [2026-06-28 17:47:55] 1907 spots passed QC and 79 spots failed QC
 SpatialSpotPlot(spatial, group.by = "SpotQC")
 ```
