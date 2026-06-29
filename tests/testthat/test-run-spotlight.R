@@ -199,6 +199,10 @@ test_that("SPOTlight results reuse SCOP SpatialSpotPlot", {
 })
 
 test_that("standard spatial workflow dispatches to RunSPOTlight", {
+  skip_if(
+    requireNamespace("SPOTlight", quietly = TRUE),
+    "SPOTlight backend is installed; avoid running real deconvolution in dispatch test"
+  )
   pair <- make_spotlight_seurat_pair()
   original_standard_scop <- standard_scop
   testthat::local_mocked_bindings(
