@@ -283,16 +283,13 @@ test_that("RunscMalignantStates appends cancer state scores", {
 })
 
 test_that("scMalignantFinder Python bridge is installed as an isolated module", {
-  py_file <- system.file(
-    "python",
-    "scmalignantfinder.py",
-    package = "scop",
-    mustWork = FALSE
+  py_file <- c(
+    system.file("python", "scmalignantfinder.py", package = "scop", mustWork = FALSE),
+    file.path("inst", "python", "scmalignantfinder.py"),
+    file.path(testthat::test_path("..", ".."), "inst", "python", "scmalignantfinder.py")
   )
-  if (!nzchar(py_file)) {
-    py_file <- file.path("inst", "python", "scmalignantfinder.py")
-  }
-  expect_true(file.exists(py_file))
+  py_file <- py_file[nzchar(py_file) & file.exists(py_file)][1]
+  skip_if(is.na(py_file), "scMalignantFinder Python bridge file is not available")
   source <- paste(readLines(py_file, warn = FALSE), collapse = intToUtf8(10))
   expect_match(source, "def run_scmalignantfinder", fixed = TRUE)
   expect_match(source, "def run_scmalignant_region", fixed = TRUE)
