@@ -272,7 +272,42 @@ test_that("RunCNV supports gene-order files and store_matrix = FALSE", {
   expect_error(CNVPlot(out, plot_type = "heatmap"), "store_matrix")
 })
 
-test_that("fastCNV extraction reads Seurat CNV assays and plural score metadata", {
+test_that("CNV standardization derives fallback predictions for every backend", {
+  cells <- paste0("Cell", 1:3)
+  mat <- matrix(
+    c(
+      0.3, 0.2, 0.0,
+      0.4, 0.1, 0.0
+    ),
+    nrow = 2,
+    dimnames = list(c("seg1", "seg2"), cells)
+  )
+
+  for (method in c("copykat", "fastCNV", "scevan", "infercnv", "numbat", "casper")) {
+    bundle <- cnv_standardize_result(
+      result = list(
+        cnv_matrix = mat,
+        cell_info = data.frame(
+          cell = cells,
+          prediction = NA_character_,
+          stringsAsFactors = FALSE
+        )
+      ),
+      method = method,
+      cells = cells,
+      features = rownames(mat),
+      reference_cells = "Cell2"
+    )
+
+    expect_equal(
+      unname(bundle$cell_info$prediction),
+      c("aneuploid", "diploid", "diploid"),
+      info = method
+    )
+  }
+})
+
+test_that("fastCNV extraction reads Seurat assays and derives cell predictions", {
   srt <- make_cnv_seurat()
   mat <- matrix(
     c(-0.2, 0.1, 0.3, 0.5, -0.4, 0.2),
@@ -283,14 +318,77 @@ test_that("fastCNV extraction reads Seurat CNV assays and plural score metadata"
   suppressWarnings({
     fast_obj[["genomicScores"]] <- SeuratObject::CreateAssayObject(data = mat)
   })
-  fast_obj$cnv_fractions <- c(0.2, 0.4, 0.6)
+  fast_obj$CNV_fastCNV_score <- c(0.2, 0.1, 0.6)
+  fast_obj$CNV_fastCNV_prediction <- NA_character_
   fast_obj$cnv_clusters <- c("A", "A", "B")
 
-  extracted <- cnv_extract_fastcnv(fast_obj, cells = colnames(srt))
+  extracted <- cnv_extract_fastcnv(
+    fast_obj,
+    cells = colnames(srt),
+    reference.by = "celltype",
+    reference = "Normal"
+  )
 
   expect_equal(dim(extracted$cnv_matrix), c(2, 3))
-  expect_equal(extracted$cell_info$score, c(0.2, 0.4, 0.6))
+  expect_equal(extracted$cell_info$score, c(0.2, 0.1, 0.6))
+  expect_equal(extracted$cell_info$prediction, c("aneuploid", "diploid", "aneuploid"))
   expect_equal(extracted$cell_info$cluster, c("A", "A", "B"))
+})
+
+test_that("fastCNV runner skips expensive upstream preparation by default", {
+  srt <- make_cnv_seurat()
+  mat <- matrix(
+    c(-0.2, 0.1, 0.3, 0.5, -0.4, 0.2),
+    nrow = 2,
+    dimnames = list(c("seg1", "seg2"), colnames(srt))
+  )
+  fast_obj <- srt
+  suppressWarnings({
+    fast_obj[["genomicScores"]] <- SeuratObject::CreateAssayObject(data = mat)
+  })
+  fast_obj$cnv_fraction <- c(0.2, 0.1, 0.6)
+  out_dir <- tempfile("fastcnv_")
+
+  testthat::local_mocked_bindings(
+    check_r = function(...) TRUE,
+    get_namespace_fun = function(package, name) {
+      expect_identical(package, "fastCNV")
+      expect_identical(name, "fastCNV")
+      function(
+        seuratObj,
+        sampleName,
+        referenceVar,
+        referenceLabel,
+        assay,
+        prepareCounts,
+        doPlot,
+        savePath
+      ) {
+        expect_s4_class(seuratObj, "Seurat")
+        expect_identical(sampleName, "scop_cnv")
+        expect_identical(referenceVar, "celltype")
+        expect_identical(referenceLabel, "Normal")
+        expect_identical(assay, "RNA")
+        expect_false(prepareCounts)
+        expect_false(doPlot)
+        expect_identical(savePath, out_dir)
+        fast_obj
+      }
+    }
+  )
+
+  extracted <- cnv_run_fastcnv(
+    srt = srt,
+    assay = "RNA",
+    layer = "counts",
+    reference.by = "celltype",
+    reference = "Normal",
+    genome = "hg38",
+    output_dir = out_dir,
+    verbose = FALSE
+  )
+
+  expect_equal(extracted$cell_info$prediction, c("aneuploid", "diploid", "aneuploid"))
 })
 
 test_that("SCEVAN extraction reads CNA RData output and cell assignments", {
