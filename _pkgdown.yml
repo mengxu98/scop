@@ -351,6 +351,11 @@ reference:
 - subtitle: "Cell-Cell Communication Analysis"
 - contents:
   - RunCCC
+  - RunSecAct
+  - RunSecActCCC
+  - RunSecActSignalingPattern
+  - RunSecActPatternGenes
+  - RunSecActVelocity
   - RunCellChat
   - RunCellphoneDB
   - RunLIANA
@@ -359,6 +364,11 @@ reference:
   - RunscOMM
   - ccc_to_adata
   - ccc_to_liana
+
+- subtitle: "GWAS Integration"
+- contents:
+  - RunscPagwas
+  - RunscPaGWAS
 
 - subtitle: "Cell-Cell Communication Plots"
 - contents:
