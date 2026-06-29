@@ -43,7 +43,9 @@ Supported values are \code{"scanpy"}, \code{"scvi"}, \code{"glue"}, \code{"scano
 \code{"celltypist"}, \code{"cellphonedb"}, \code{"magic"}, \code{"scrublet"},
 \code{"sccoda"}, \code{"doubletdetection"}, \code{"doublet"}, \code{"palantir"}, \code{"scvelo"},
 \code{"cellrank"}, \code{"wot"}, \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"multimap"},
-\code{"scomm"}, \code{"scenic"}, \code{"seacells"}, and \code{"tage"}.
+\code{"scomm"}, \code{"scenic"}, \code{"seacells"}, \code{"tage"},
+\code{"scmalignantfinder"}, \code{"secact"}, \code{"scpagwas"}, and
+\code{"external_wrappers"}.
 If \code{NULL} or omitted in \code{\link[=PrepareEnv]{PrepareEnv()}}, the default environment is installed.
 The default excludes \code{"sccoda"} and \code{"scomm"} because their TensorFlow stacks
 are not compatible with the default JAX/scVI stack in the same environment;
