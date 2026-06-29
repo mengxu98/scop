@@ -551,49 +551,78 @@ otherwise <code>NULL</code>.</p></li>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://Matrix.R-forge.R-project.org" class="external-link">Matrix</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/FindVariableFeatures.html" class="external-link">FindVariableFeatures</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="NormalizeData.html">NormalizeData</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="FindVariableFeatures.html">FindVariableFeatures</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  nfeatures <span class="op">=</span> <span class="fl">1000</span>,</span></span>
-<span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span>  nfeatures <span class="op">=</span> <span class="fl">1000</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunNMF.html">RunNMF</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  features <span class="op">=</span> <span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/VariableFeatures.html" class="external-link">VariableFeatures</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  nbes <span class="op">=</span> <span class="fl">5</span>,</span></span>
-<span class="r-in"><span>  maxit <span class="op">=</span> <span class="fl">50</span>,</span></span>
-<span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span>  maxit <span class="op">=</span> <span class="fl">50</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-29 03:57:53] Running <span style="color: #0000BB;">NMF</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> BE_ 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Positive:  Spp1, Clu, Krt18, Ttr, Ptma, Rpl12, Sparc, Dbi, Gapdh, Mt1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Cd24a, Mgst1, H19, Pebp1, Myl12a, Gnas, Cldn3, Clps, Sox4, Atp1b1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Vim, Jun, Ambp, Cdkn1c, Mdk, Serpinh1, Eno1, Anxa2, Acot1, Tmsb4x </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Negative:  Fgf8, Mapk12, Lrrc6, Spock1, Lrrc9, Fam71b, Il1r2, Serpini1, Gng4, Cdca2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Sulf2, Pgf, Dusp26, Ucn3, Entpd3, Gm13373, Megf11, Kctd8, Krtap16-1, Mdm1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Nrp2, Mmel1, Pax6os1, Pabpn1l, Sept3, Hepacam2, Rnf138rt1, Scn9a, Tex36, Syt13 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> BE_ 2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Positive:  Gnas, Pyy, Rbp4, Chgb, Slc25a5, Ttr, Chga, Cpe, Hmgn3, Pcsk1n </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Bex2, Isl1, Aplp1, Rap1b, Fam183b, Glud1, Lrpprc, Fev, Slc38a5, Mid1ip1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Ptma, Akr1c19, Clps, Gch1, Sec61b, Tm4sf4, Cck, Map1b, Meis2, 1700086L19Rik </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Negative:  1810034E14Rik, 5730507C01Rik, Tmem100, Fam71b, Sycp3, Fscn1, Cdca2, Traip, Gm8113, C2cd4c </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Sulf2, Ucn3, Col1a1, Megf11, Bcl2, Gm28875, Ugt2b35, Ugt2b36, A730098A19Rik, Serpinb6b </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Eya2, AA986860, Palmd, Vps8, Crybb1, Pabpn1l, Il18, Gjb1, Pdlim1, Hist1h2ae </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> BE_ 3 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Positive:  Tmsb4x, Neurog3, Mdk, Cck, Sox4, Ptma, Btg2, Btbd17, Gadd45a, Gnas </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Selm, Krt7, Hn1, Cd24a, Rpl12, Cdkn1a, Hes6, Clps, Camk2n1, Slc25a5 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Smarcd2, Cldn6, Map1b, Cotl1, Aplp1, Tubb5, Tubb3, Nkx6-1, Pax4, Jun </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Negative:  Mapk12, Lrrc6, Ccl28, Spock1, Hoxb2, Tmem100, Il1r2, Angptl4, Cdca2, Traip </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Slc16a10, Dusp26, Entpd3, Gmfg, Acvr1c, Col27a1, Kctd8, Mdm1, Adora2b, C530044C16Rik </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Gm28875, Ugt2b35, Ugt2b36, Fosb, A730098A19Rik, Serpinb6b, Pax6os1, Myo5a, AA986860, Palmd </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> BE_ 4 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Positive:  Iapp, Pyy, Nnat, Rbp4, Gnas, Ins2, Ins1, Ttr, Dlk1, Sec61b </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Pcsk2, Calr, Hspa5, Pdia6, Ppp1r1a, Tuba1a, Pcsk1n, Sdf2l1, Hsp90b1, Gng12 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Chgb, Cpe, Hadh, Ptma, Clps, Mafb, Chga, Scg2, Gapdh, 1700086L19Rik </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Negative:  Fgf8, Mapk12, Ccl28, Lrrc9, Hoxb2, Tmem100, Sycp3, Serpini1, Lrrn1, Angptl4 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Traip, Gm8113, Cmtm3, Pgf, Col1a1, Gm13373, Gmfg, Megf11, Nrp2, Mmel1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Ugt2b35, Ugt2b36, A730098A19Rik, Serpinb6b, Eya2, AA986860, Palmd, Lmo4, Crybb1, Il18 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> BE_ 5 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Positive:  Tuba1b, Hmgb2, Tubb5, Ptma, 2810417H13Rik, Ran, H2afz, Ranbp1, H2afx, Tubb4b </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Spp1, Birc5, Mif, Cks1b, Gapdh, Slc25a5, H1f0, Rpl12, Mdk, Hn1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Spc24, Cks2, Dut, Hmgb1, Cdk1, Ldha, Anp32b, Snrpd1, Hspe1, Tpi1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Negative:  Lrrc6, Ccl28, 1810034E14Rik, Spock1, Tmem100, Fam71b, Sycp3, Kiss1r, Il1r2, Gng4 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Prodh2, Lingo1, Angptl4, Gm8113, C2cd4c, Dpysl3, Ucn3, Entpd3, Col1a1, Rem2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Acvr1c, Kctd8, Nrp2, Mmel1, Gm28875, Serpinb6b, Camk2n1, Pax6os1, Nrsn1, Tyrobp </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-06-29 03:57:58] <span style="color: #0000BB;">NMF</span> compute completed</span>
 <span class="r-in"><span><span class="va">ht_cells</span> <span class="op">&lt;-</span> <span class="fu">NMFHeatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"cells"</span>,</span></span>
-<span class="r-in"><span>  cell_annotation <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  width <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>  height <span class="op">=</span> <span class="fl">0.5</span></span></span>
+<span class="r-in"><span>  cell_annotation <span class="op">=</span> <span class="st">"CellType"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-28 20:38:24] `NMFHeatmap()` input: <span style="color: #0000BB;">1000</span> cells x <span style="color: #0000BB;">5</span> NMF dimensions. Computing a <span style="color: #0000BB;">1000</span> x <span style="color: #0000BB;">1000</span> similarity matrix (~0.01 GiB dense numeric matrix).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-28 20:38:24] Ordering `NMFHeatmap()` rows and columns ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-28 20:38:24] Building <span style="color: #0000BB;">ComplexHeatmap</span> object for `NMFHeatmap()` ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-28 20:38:24] Calculating `NMFHeatmap()` render size ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-28 20:38:24] Fixing `NMFHeatmap()` panel size ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-28 20:38:26] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-28 20:38:27] Assembling `NMFHeatmap()` plot object ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-29 03:57:58] `NMFHeatmap()` input: <span style="color: #0000BB;">1000</span> cells x <span style="color: #0000BB;">5</span> NMF dimensions. Computing a <span style="color: #0000BB;">1000</span> x <span style="color: #0000BB;">1000</span> similarity matrix (~0.01 GiB dense numeric matrix).</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-29 03:57:58] Ordering `NMFHeatmap()` rows and columns ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-29 03:57:58] Building <span style="color: #0000BB;">ComplexHeatmap</span> object for `NMFHeatmap()` ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-29 03:57:58] Calculating `NMFHeatmap()` render size ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-29 03:57:58] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-29 03:57:59] Assembling `NMFHeatmap()` plot object ...</span>
 <span class="r-in"><span><span class="va">ht_cells</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-plt img"><img src="NMFHeatmap-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">ht_features</span> <span class="op">&lt;-</span> <span class="fu">NMFHeatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"features"</span>,</span></span>
-<span class="r-in"><span>  width <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>  height <span class="op">=</span> <span class="fl">0.5</span></span></span>
+<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"features"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-28 20:38:27] `NMFHeatmap()` input: <span style="color: #0000BB;">1000</span> features x <span style="color: #0000BB;">5</span> NMF dimensions. Computing a <span style="color: #0000BB;">1000</span> x <span style="color: #0000BB;">1000</span> similarity matrix (~0.01 GiB dense numeric matrix).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-28 20:38:28] Ordering `NMFHeatmap()` rows and columns ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-28 20:38:28] Building <span style="color: #0000BB;">ComplexHeatmap</span> object for `NMFHeatmap()` ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-28 20:38:28] Calculating `NMFHeatmap()` render size ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-28 20:38:28] Fixing `NMFHeatmap()` panel size ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-28 20:38:29] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-28 20:38:31] Assembling `NMFHeatmap()` plot object ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-29 03:57:59] `NMFHeatmap()` input: <span style="color: #0000BB;">1000</span> features x <span style="color: #0000BB;">5</span> NMF dimensions. Computing a <span style="color: #0000BB;">1000</span> x <span style="color: #0000BB;">1000</span> similarity matrix (~0.01 GiB dense numeric matrix).</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-29 03:58:00] Ordering `NMFHeatmap()` rows and columns ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-29 03:58:00] Building <span style="color: #0000BB;">ComplexHeatmap</span> object for `NMFHeatmap()` ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-29 03:58:00] Calculating `NMFHeatmap()` render size ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-29 03:58:00] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-29 03:58:01] Assembling `NMFHeatmap()` plot object ...</span>
 <span class="r-in"><span><span class="va">ht_features</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-plt img"><img src="NMFHeatmap-2.png" alt="" width="700" height="433"></span>
 </code></pre></div>

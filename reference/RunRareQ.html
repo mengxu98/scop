@@ -180,16 +180,16 @@ identification. <em>Nature Communications</em> (2026).
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-28 21:14:05] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-29 04:33:52] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunRareQ</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">20</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-28 21:14:45] Build <span style="color: #0000BB;">Seurat</span> nearest neighbors for <span style="color: #0000BB;">RareQ</span> using reduction <span style="color: #0000BB;">"Standardpca"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-29 04:34:28] Build <span style="color: #0000BB;">Seurat</span> nearest neighbors for <span style="color: #0000BB;">RareQ</span> using reduction <span style="color: #0000BB;">"Standardpca"</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing nearest neighbors</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Only one graph name supplied, storing nearest-neighbor graph only</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-28 21:14:45] Run <span style="color: #0000BB;">RareQ</span> with `k = 6`, `Q_cut = 0.6`, and `ratio = 0.2`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-28 21:14:45] <span style="color: #0000BB;">RareQ</span> clusters stored in metadata column <span style="color: #0000BB;">"RareQ_cluster"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-29 04:34:28] Run <span style="color: #0000BB;">RareQ</span> with `k = 6`, `Q_cut = 0.6`, and `ratio = 0.2`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-29 04:34:29] <span style="color: #0000BB;">RareQ</span> clusters stored in metadata column <span style="color: #0000BB;">"RareQ_cluster"</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>

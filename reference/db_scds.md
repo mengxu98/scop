@@ -57,25 +57,25 @@ db_scds(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-28 21:25:09] Start standard processing workflow...
-#> ℹ [2026-06-28 21:25:10] Checking a list of <Seurat>...
-#> ! [2026-06-28 21:25:10] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-28 21:25:10] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-28 21:25:10] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-28 21:25:10] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-28 21:25:10] Number of available HVF: 2000
-#> ℹ [2026-06-28 21:25:10] Finished check
-#> ℹ [2026-06-28 21:25:10] Perform `ScaleData()`
-#> ℹ [2026-06-28 21:25:10] Perform pca linear dimension reduction
-#> ℹ [2026-06-28 21:25:11] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-28 21:25:11] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-28 21:25:12] Reorder clusters...
-#> ℹ [2026-06-28 21:25:12] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-28 21:25:12] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-28 21:25:19] Standard processing workflow completed
+#> ℹ [2026-06-29 04:44:44] Start standard processing workflow...
+#> ℹ [2026-06-29 04:44:45] Checking a list of <Seurat>...
+#> ! [2026-06-29 04:44:45] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-06-29 04:44:45] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-06-29 04:44:45] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-06-29 04:44:45] Use the separate HVF from `srt_list`
+#> ℹ [2026-06-29 04:44:46] Number of available HVF: 2000
+#> ℹ [2026-06-29 04:44:46] Finished check
+#> ℹ [2026-06-29 04:44:46] Perform `ScaleData()`
+#> ℹ [2026-06-29 04:44:46] Perform pca linear dimension reduction
+#> ℹ [2026-06-29 04:44:47] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-06-29 04:44:47] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-06-29 04:44:47] Reorder clusters...
+#> ℹ [2026-06-29 04:44:47] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-29 04:44:47] Perform umap nonlinear dimension reduction
+#> ✔ [2026-06-29 04:44:55] Standard processing workflow completed
 pancreas_sub <- db_scds(pancreas_sub, method = "hybrid")
-#> ℹ [2026-06-28 21:25:19] Running scds with method "hybrid"
-#> ℹ [2026-06-28 21:25:20] Data type is raw counts
+#> ℹ [2026-06-29 04:44:55] Running scds with method "hybrid"
+#> ℹ [2026-06-29 04:44:55] Data type is raw counts
 CellDimPlot(
   pancreas_sub,
   reduction = "umap",
