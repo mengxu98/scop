@@ -203,6 +203,7 @@ RunCNV <- function(
     method = method,
     cells = colnames(srt),
     features = rownames(counts),
+    reference_cells = reference_cells,
     store_matrix = store_matrix,
     parameters = list(
       method = method,
@@ -410,13 +411,19 @@ cnv_run_fastcnv <- function(
       referenceVar = reference.by,
       referenceLabel = reference,
       assay = assay,
+      prepareCounts = FALSE,
       doPlot = FALSE,
       savePath = output_dir
     ),
     list(...)
   )
   result <- do.call(fastcnv_fun, args[names(args) %in% names(formals(fastcnv_fun))])
-  cnv_extract_fastcnv(result, cells = colnames(srt))
+  cnv_extract_fastcnv(
+    result,
+    cells = colnames(srt),
+    reference.by = reference.by,
+    reference = reference
+  )
 }
 
 cnv_run_scevan <- function(
@@ -772,12 +779,25 @@ cnv_extract_casper <- function(result, cells) {
   )
 }
 
-cnv_extract_fastcnv <- function(result, cells) {
+cnv_extract_fastcnv <- function(result, cells, reference.by = NULL, reference = NULL) {
   if (inherits(result, "Seurat")) {
-    return(cnv_extract_from_seurat_result(result, method = "fastCNV", cells = cells))
+    return(cnv_extract_from_seurat_result(
+      result,
+      method = "fastCNV",
+      cells = cells,
+      reference.by = reference.by,
+      reference = reference
+    ))
   }
   if (is.list(result) && length(result) > 0L && all(vapply(result, inherits, logical(1), what = "Seurat"))) {
-    parts <- lapply(result, cnv_extract_from_seurat_result, method = "fastCNV", cells = cells)
+    parts <- lapply(
+      result,
+      cnv_extract_from_seurat_result,
+      method = "fastCNV",
+      cells = cells,
+      reference.by = reference.by,
+      reference = reference
+    )
     return(cnv_combine_extracted_results(parts, cells = cells, method = "fastCNV"))
   }
   cnv_extract_generic_result(result, method = "fastCNV", cells = cells)
@@ -816,17 +836,75 @@ cnv_extract_scevan <- function(result, cells, sample = "scop_cnv", output_dir = 
   )
 }
 
-cnv_extract_from_seurat_result <- function(result, method, cells) {
+cnv_extract_from_seurat_result <- function(
+  result,
+  method,
+  cells,
+  reference.by = NULL,
+  reference = NULL
+) {
   meta <- result@meta.data
-  score_col <- cnv_first_col(meta, c("cnv_fraction", "cnv_fractions", "CNV_fraction", "CNV_fractions", "cnv_score", "CNV_score"))
-  pred_col <- cnv_first_col(meta, c("cnv_prediction", "CNV_prediction", "prediction", "malignant", "cell.assignment", "cell_assignment"))
-  cluster_col <- cnv_first_col(meta, c("cnv_clusters", "cnv_cluster", "CNV_cluster", "subclone", "subclones", "Subclone", "Clone"))
+  method_key <- gsub("[^A-Za-z0-9]+", "_", method)
+  score_col <- cnv_first_col(meta, c(
+    paste0("CNV_", method_key, "_score"),
+    paste0("CNV_", method_key, "_scores"),
+    paste0("CNV_", method_key, "_fraction"),
+    paste0("CNV_", method_key, "_fractions"),
+    paste0(method_key, "_score"),
+    paste0(method_key, "_scores"),
+    paste0(method_key, "_fraction"),
+    paste0(method_key, "_fractions"),
+    "cnv_fraction",
+    "cnv_fractions",
+    "CNV_fraction",
+    "CNV_fractions",
+    "cnv_score",
+    "CNV_score"
+  ))
+  pred_col <- cnv_first_col(meta, c(
+    paste0("CNV_", method_key, "_prediction"),
+    paste0("CNV_", method_key, "_predictions"),
+    paste0(method_key, "_prediction"),
+    paste0(method_key, "_predictions"),
+    "cnv_prediction",
+    "CNV_prediction",
+    "prediction",
+    "pred",
+    "malignant",
+    "cell.assignment",
+    "cell_assignment"
+  ))
+  cluster_col <- cnv_first_col(meta, c(
+    paste0("CNV_", method_key, "_cluster"),
+    paste0("CNV_", method_key, "_clusters"),
+    paste0(method_key, "_cluster"),
+    paste0(method_key, "_clusters"),
+    "cnv_clusters",
+    "cnv_cluster",
+    "CNV_cluster",
+    "subclone",
+    "subclones",
+    "Subclone",
+    "Clone"
+  ))
   cell_info <- data.frame(cell = rownames(meta), stringsAsFactors = FALSE)
   if (!is.null(score_col)) {
     cell_info$score <- suppressWarnings(as.numeric(meta[[score_col]]))
   }
   if (!is.null(pred_col)) {
     cell_info$prediction <- as.character(meta[[pred_col]])
+  }
+  if (
+    identical(method, "fastCNV") &&
+      "score" %in% colnames(cell_info) &&
+      (!"prediction" %in% colnames(cell_info) || all(is.na(cell_info$prediction) | !nzchar(cell_info$prediction)))
+  ) {
+    cell_info$prediction <- cnv_fastcnv_prediction_from_score(
+      score = cell_info$score,
+      meta = meta,
+      reference.by = reference.by,
+      reference = reference
+    )
   }
   if (!is.null(cluster_col)) {
     cell_info$cluster <- as.character(meta[[cluster_col]])
@@ -1093,6 +1171,7 @@ cnv_standardize_result <- function(
   method,
   cells,
   features,
+  reference_cells = NULL,
   store_matrix = TRUE,
   parameters = list()
 ) {
@@ -1105,7 +1184,13 @@ cnv_standardize_result <- function(
     )
   }
   mat <- cnv_orient_matrix(mat, cells = cells)
-  cell_info <- cnv_standardize_cell_info(result$cell_info, mat = mat, cells = cells)
+  cell_info <- cnv_standardize_cell_info(
+    result$cell_info,
+    mat = mat,
+    cells = cells,
+    method = method,
+    reference_cells = reference_cells
+  )
   bin_info <- cnv_standardize_bin_info(result$bin_info, mat = mat)
   if (!isTRUE(store_matrix)) {
     mat_store <- NULL
@@ -1308,6 +1393,18 @@ cnv_fastcnv_sample_input <- function(srt, sample.by = NULL) {
   )
 }
 
+cnv_fastcnv_prediction_from_score <- function(score, meta, reference.by = NULL, reference = NULL) {
+  reference_cells <- NULL
+  if (!is.null(reference.by) && reference.by %in% colnames(meta) && !is.null(reference)) {
+    reference_cells <- rownames(meta)[as.character(meta[[reference.by]]) %in% as.character(reference)]
+  }
+  cnv_prediction_from_score(
+    score = score,
+    cells = rownames(meta),
+    reference_cells = reference_cells
+  )
+}
+
 cnv_resolve_gene_order <- function(
   gene_order,
   srt,
@@ -1442,7 +1539,13 @@ cnv_orient_matrix <- function(mat, cells) {
   out
 }
 
-cnv_standardize_cell_info <- function(cell_info, mat, cells) {
+cnv_standardize_cell_info <- function(
+  cell_info,
+  mat,
+  cells,
+  method = NULL,
+  reference_cells = NULL
+) {
   if (is.null(cell_info)) {
     cell_info <- data.frame(cell = cells, stringsAsFactors = FALSE)
   } else {
@@ -1477,8 +1580,44 @@ cnv_standardize_cell_info <- function(cell_info, mat, cells) {
     out$cluster <- NA_character_
   }
   out$prediction <- as.character(out$prediction)
+  missing_prediction <- is.na(out$prediction) | !nzchar(out$prediction)
+  if (all(missing_prediction) && any(is.finite(out$score))) {
+    out$prediction <- cnv_prediction_from_score(
+      score = out$score,
+      cells = out$cell,
+      reference_cells = reference_cells
+    )
+  }
   out$cluster <- as.character(out$cluster)
   out[, c("cell", "score", "prediction", "cluster"), drop = FALSE]
+}
+
+cnv_prediction_from_score <- function(score, cells = NULL, reference_cells = NULL) {
+  score <- suppressWarnings(as.numeric(score))
+  out <- rep(NA_character_, length(score))
+  finite <- is.finite(score)
+  if (!any(finite)) {
+    return(out)
+  }
+
+  reference_idx <- rep(FALSE, length(score))
+  if (!is.null(cells) && !is.null(reference_cells) && length(reference_cells) > 0L) {
+    reference_idx <- as.character(cells) %in% as.character(reference_cells)
+  }
+
+  cutoff <- 0
+  reference_score <- score[reference_idx & finite]
+  if (length(reference_score) > 0L) {
+    cutoff <- stats::quantile(reference_score, probs = 0.99, na.rm = TRUE, names = FALSE)
+    if (!is.finite(cutoff)) {
+      cutoff <- 0
+    }
+    cutoff <- max(cutoff, 0)
+  }
+
+  out[finite] <- ifelse(score[finite] > cutoff, "aneuploid", "diploid")
+  out[reference_idx & finite] <- "diploid"
+  out
 }
 
 cnv_standardize_bin_info <- function(bin_info, mat) {
@@ -1712,7 +1851,7 @@ cnv_find_seurat_assay_matrix <- function(result, cells) {
         GetAssayData5(result, assay = assay, layer = layer),
         error = function(e) NULL
       )
-      if (!is.null(mat) && cnv_matrix_has_cells(as.matrix(mat), cells)) {
+      if (!is.null(mat) && cnv_matrix_has_cells(mat, cells)) {
         return(list(matrix = mat))
       }
     }
