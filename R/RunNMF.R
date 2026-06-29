@@ -51,6 +51,19 @@
 #'   ylab = "UMAP_2",
 #'   theme_use = "theme_blank"
 #' )
+#'
+#' ht_cells <- NMFHeatmap(
+#'   pancreas_sub,
+#'   plot_type = "cells",
+#'   cell_annotation = "CellType"
+#' )
+#' ht_cells$plot
+#'
+#' ht_features <- NMFHeatmap(
+#'   pancreas_sub,
+#'   plot_type = "features"
+#' )
+#' ht_features$plot
 RunNMF <- function(object, ...) {
   UseMethod(generic = "RunNMF", object = object)
 }
