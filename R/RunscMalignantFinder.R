@@ -489,10 +489,51 @@ ensure_scmalignantfinder_python <- function(verbose = TRUE) {
   }
   ok <- check_python("scMalignantFinder", pip = TRUE, verbose = verbose)
   if (isFALSE(ok) || !isTRUE(scmf_python_classifier_available())) {
+    scmf_install_python_github(verbose = verbose)
+  }
+  if (!isTRUE(scmf_python_classifier_available())) {
     log_message(
       "Failed to install or locate a usable {.pkg scMalignantFinder} classifier module. Install it manually in the active {.pkg scop} Python environment.",
       message_type = "error"
     )
+  }
+  invisible(TRUE)
+}
+
+scmf_install_python_github <- function(verbose = TRUE) {
+  python <- tryCatch(reticulate::py_config()$python, error = function(e) "")
+  if (!nzchar(python)) {
+    python <- Sys.which("python3")
+  }
+  if (!nzchar(python)) {
+    return(invisible(FALSE))
+  }
+  log_message(
+    "Installing {.pkg scMalignantFinder} from GitHub with active Python...",
+    message_type = "running",
+    verbose = verbose
+  )
+  out <- tryCatch(
+    system2(
+      python,
+      c(
+        "-m", "pip", "install",
+        "--no-cache-dir",
+        "git+https://github.com/Jonyyqn/scMalignantFinder.git"
+      ),
+      stdout = TRUE,
+      stderr = TRUE
+    ),
+    error = function(e) structure(conditionMessage(e), status = 1L)
+  )
+  status <- attr(out, "status") %||% 0L
+  if (!identical(status, 0L)) {
+    log_message(
+      "GitHub installation of {.pkg scMalignantFinder} failed: {.val {paste(out, collapse = '; ')}}",
+      message_type = "warning",
+      verbose = verbose
+    )
+    return(invisible(FALSE))
   }
   invisible(TRUE)
 }

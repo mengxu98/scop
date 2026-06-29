@@ -43,11 +43,14 @@ RunscPagwas <- function(
   scpagwas_check_gwas(gwas_data)
   single_data <- scpagwas_resolve_single_data(srt = srt, single_data = single_data)
   output.dirs <- scpagwas_abs_path(output.dirs)
+  dir.create(output.dirs, recursive = TRUE, showWarnings = FALSE)
   single_data <- scpagwas_prepare_seurat(single_data, celltype_meta)
   scpagwas_check_r(verbose = verbose)
   block_annotation <- scpagwas_resolve_block_annotation(block_annotation)
 
   fun <- scpagwas_find_runner()
+  extra_args <- list(...)
+  extra_args <- scpagwas_add_default_data_args(fun, extra_args)
   args <- c(
     list(
       Single_data = single_data,
@@ -56,8 +59,12 @@ RunscPagwas <- function(
       block_annotation = block_annotation,
       output.dirs = output.dirs
     ),
-    list(...)
+    extra_args
   )
+  restore_get_assay_data <- scpagwas_patch_get_assay_data()
+  on.exit(restore_get_assay_data(), add = TRUE)
+  restore_wd <- scpagwas_set_absolute_output_wd(output.dirs)
+  on.exit(restore_wd(), add = TRUE)
   res <- do.call(fun, scpagwas_filter_args(fun, args))
   if (isTRUE(cleanup_soar)) {
     scpagwas_cleanup_soar()
@@ -89,8 +96,18 @@ RunscPagwas <- function(
 RunscPaGWAS <- RunscPagwas
 
 scpagwas_check_r <- function(verbose = TRUE) {
-  check_r("scPagwas", verbose = verbose)
+  check_r("sulab-wmu/scPagwas", dependencies = NA, verbose = verbose)
+  if (!scpagwas_namespace_available()) {
+    log_message(
+      "Failed to install or load {.pkg scPagwas}. Install it manually with {.code pak::pkg_install('sulab-wmu/scPagwas')}",
+      message_type = "error"
+    )
+  }
   invisible(TRUE)
+}
+
+scpagwas_namespace_available <- function() {
+  requireNamespace("scPagwas", quietly = TRUE)
 }
 
 scpagwas_find_runner <- function() {
@@ -110,6 +127,65 @@ scpagwas_filter_args <- function(fun, args) {
     return(args)
   }
   args[intersect(names(args), fun_formals)]
+}
+
+scpagwas_add_default_data_args <- function(fun, args) {
+  fun_formals <- names(formals(fun))
+  if ("Pathway_list" %in% fun_formals && is.null(args$Pathway_list)) {
+    args$Pathway_list <- scpagwas_package_data_raw("Genes_by_pathway_kegg")
+  }
+  if ("chrom_ld" %in% fun_formals && is.null(args$chrom_ld)) {
+    args$chrom_ld <- scpagwas_package_data_raw("chrom_ld")
+  }
+  args
+}
+
+scpagwas_patch_get_assay_data <- function() {
+  ns <- asNamespace("scPagwas")
+  imports_env <- parent.env(ns)
+  if (!exists("GetAssayData", envir = imports_env, inherits = FALSE)) {
+    return(function() invisible(FALSE))
+  }
+  original <- get("GetAssayData", envir = imports_env, inherits = FALSE)
+  was_locked <- bindingIsLocked("GetAssayData", imports_env)
+  if (was_locked) {
+    unlockBinding("GetAssayData", imports_env)
+  }
+  assign(
+    "GetAssayData",
+    function(object, ..., slot = NULL, layer = NULL) {
+      if (!is.null(slot) && is.null(layer)) {
+        layer <- slot
+      }
+      SeuratObject::GetAssayData(object = object, ..., layer = layer)
+    },
+    envir = imports_env
+  )
+  if (was_locked) {
+    lockBinding("GetAssayData", imports_env)
+  }
+  function() {
+    if (bindingIsLocked("GetAssayData", imports_env)) {
+      unlockBinding("GetAssayData", imports_env)
+    }
+    assign("GetAssayData", original, envir = imports_env)
+    if (was_locked) {
+      lockBinding("GetAssayData", imports_env)
+    }
+    invisible(TRUE)
+  }
+}
+
+scpagwas_set_absolute_output_wd <- function(output.dirs) {
+  if (!grepl("^/", output.dirs)) {
+    return(function() invisible(FALSE))
+  }
+  old_wd <- getwd()
+  setwd("/")
+  function() {
+    setwd(old_wd)
+    invisible(TRUE)
+  }
 }
 
 scpagwas_resolve_single_data <- function(srt = NULL, single_data = NULL) {
@@ -133,7 +209,20 @@ scpagwas_resolve_single_data <- function(srt = NULL, single_data = NULL) {
 }
 
 scpagwas_prepare_seurat <- function(single_data, celltype_meta = NULL) {
-  if (is.null(celltype_meta) || !inherits(single_data, "Seurat")) {
+  if (!inherits(single_data, "Seurat")) {
+    return(single_data)
+  }
+  assay <- SeuratObject::DefaultAssay(single_data)
+  data_layer <- suppressWarnings(
+    tryCatch(
+      GetAssayData5(single_data, assay = assay, layer = "data"),
+      error = function(e) NULL
+    )
+  )
+  if (is.null(data_layer) || any(dim(data_layer) == 0L)) {
+    single_data <- Seurat::NormalizeData(single_data, assay = assay, verbose = FALSE)
+  }
+  if (is.null(celltype_meta)) {
     return(single_data)
   }
   if (!celltype_meta %in% colnames(single_data[[]])) {
@@ -182,12 +271,16 @@ scpagwas_resolve_block_annotation <- function(block_annotation) {
 }
 
 scpagwas_package_data <- function(name) {
+  scpagwas_check_block_annotation(scpagwas_package_data_raw(name))
+}
+
+scpagwas_package_data_raw <- function(name) {
   env <- new.env(parent = emptyenv())
   utils::data(list = name, package = "scPagwas", envir = env)
   if (!exists(name, envir = env, inherits = FALSE)) {
     log_message("Could not load {.pkg scPagwas} data object {.val {name}}", message_type = "error")
   }
-  scpagwas_check_block_annotation(get(name, envir = env, inherits = FALSE))
+  get(name, envir = env, inherits = FALSE)
 }
 
 scpagwas_read_block_annotation <- function(path) {
@@ -249,14 +342,26 @@ scpagwas_cleanup_soar <- function() {
   }
   ns <- asNamespace("SOAR")
 
-  rm_fun <- get("RemoveAllObjects", envir = ns, inherits = FALSE)
+  rm_fun <- if (exists("RemoveAllObjects", envir = ns, inherits = FALSE)) {
+    get("RemoveAllObjects", envir = ns, inherits = FALSE)
+  } else {
+    NULL
+  }
   if (is.function(rm_fun)) {
     rm_fun()
     return(invisible(TRUE))
   }
 
-  objects_fun <- get("Objects", envir = ns, inherits = FALSE)
-  remove_fun <- get("Remove", envir = ns, inherits = FALSE)
+  objects_fun <- if (exists("Objects", envir = ns, inherits = FALSE)) {
+    get("Objects", envir = ns, inherits = FALSE)
+  } else {
+    NULL
+  }
+  remove_fun <- if (exists("Remove", envir = ns, inherits = FALSE)) {
+    get("Remove", envir = ns, inherits = FALSE)
+  } else {
+    NULL
+  }
   if (!is.function(objects_fun) || !is.function(remove_fun)) {
     return(invisible(TRUE))
   }

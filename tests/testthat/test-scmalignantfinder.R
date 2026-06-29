@@ -178,6 +178,44 @@ test_that("RunscMalignantFinder respects an already usable explicit Python", {
   expect_length(calls, 0)
 })
 
+test_that("RunscMalignantFinder falls back to GitHub install when package check is insufficient", {
+  checks <- character()
+  installed <- FALSE
+  obs <- data.frame(
+    scMalignantFinder_prediction = "Normal",
+    malignancy_probability = 0.1,
+    row.names = "Cell1"
+  )
+  testthat::local_mocked_bindings(
+    PrepareEnv = function(...) invisible(TRUE),
+    check_python = function(packages, ...) {
+      checks <<- c(checks, packages)
+      invisible(FALSE)
+    },
+    scmf_python_classifier_available = function() {
+      installed
+    },
+    scmf_install_python_github = function(...) {
+      installed <<- TRUE
+      invisible(TRUE)
+    },
+    import_scmalignantfinder = function(convert = TRUE) {
+      list(run_scmalignantfinder = function(...) obs)
+    }
+  )
+
+  out <- RunscMalignantFinder(
+    h5ad = "input.h5ad",
+    pretrain_dir = "model_dir",
+    return_seurat = FALSE,
+    verbose = FALSE
+  )
+
+  expect_true(installed)
+  expect_true("scMalignantFinder" %in% checks)
+  expect_equal(out$malignancy_probability, 0.1)
+})
+
 test_that("RunscMalignantRegion appends spatial region outputs", {
   srt <- make_scmf_seurat()
   gmt <- tempfile(fileext = ".gmt")

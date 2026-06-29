@@ -24,6 +24,9 @@ with_mock_secact <- function(funs, code) {
       expect_identical(packages, "data2intelligence/SecAct")
       invisible(TRUE)
     },
+    secact_namespace_available = function() {
+      TRUE
+    },
     get_namespace_fun = function(pkg, fun) {
       expect_identical(pkg, "SecAct")
       funs[[fun]]

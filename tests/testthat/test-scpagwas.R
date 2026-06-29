@@ -31,8 +31,11 @@ make_scpagwas_gwas <- function() {
 with_mock_scpagwas <- function(fun, code) {
   testthat::local_mocked_bindings(
     check_r = function(packages, ...) {
-      expect_identical(packages, "scPagwas")
+      expect_identical(packages, "sulab-wmu/scPagwas")
       invisible(TRUE)
+    },
+    scpagwas_namespace_available = function() {
+      TRUE
     },
     get_namespace_fun = function(pkg, name) {
       expect_identical(pkg, "scPagwas")
@@ -119,6 +122,46 @@ test_that("RunscPagwas supports RDS paths, custom block annotation, and list att
 
   expect_equal(out$score, 1)
   expect_type(attr(out, "scPagwas"), "list")
+})
+
+test_that("RunscPagwas supplies upstream default package data explicitly", {
+  srt <- make_scpagwas_seurat()
+  gwas <- make_scpagwas_gwas()
+  block <- tempfile(fileext = ".tsv")
+  write.table(
+    data.frame(chrom = "chr1", start = 1, end = 2, label = "Gene1"),
+    block,
+    sep = "\t",
+    quote = FALSE,
+    row.names = FALSE
+  )
+  runner <- function(Single_data, gwas_data, block_annotation, output.dirs, Pathway_list, chrom_ld) {
+    expect_identical(Pathway_list, list(pathway = "genes"))
+    expect_identical(chrom_ld, list(ld = "blocks"))
+    list(ok = TRUE)
+  }
+
+  testthat::local_mocked_bindings(
+    scpagwas_package_data_raw = function(name) {
+      switch(name,
+        Genes_by_pathway_kegg = list(pathway = "genes"),
+        chrom_ld = list(ld = "blocks"),
+        stop("unexpected data object")
+      )
+    }
+  )
+  with_mock_scpagwas(runner, {
+    res <- RunscPagwas(
+      srt = srt,
+      gwas_data = gwas,
+      block_annotation = block,
+      output.dirs = "relative-output",
+      return_seurat = FALSE,
+      verbose = FALSE
+    )
+  })
+
+  expect_true(isTRUE(res$ok))
 })
 
 test_that("RunscPagwas does not accept bare custom block selector", {
