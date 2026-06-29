@@ -452,8 +452,18 @@ RunSecActVelocity <- function(
 }
 
 secact_check_r <- function(verbose = TRUE) {
-  check_r("data2intelligence/SecAct", verbose = verbose)
+  check_r("data2intelligence/SecAct", dependencies = NA, verbose = verbose)
+  if (!secact_namespace_available()) {
+    log_message(
+      "Failed to install or load {.pkg SecAct}. Install it manually with {.code pak::pkg_install('data2intelligence/SecAct')}",
+      message_type = "error"
+    )
+  }
   invisible(TRUE)
+}
+
+secact_namespace_available <- function() {
+  requireNamespace("SecAct", quietly = TRUE)
 }
 
 secact_resolve_mode <- function(srt = NULL, inputProfile = NULL) {
