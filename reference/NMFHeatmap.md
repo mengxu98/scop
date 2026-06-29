@@ -503,48 +503,77 @@ A list with the following elements:
 ``` r
 library(Matrix)
 data(pancreas_sub)
-pancreas_sub <- Seurat::NormalizeData(pancreas_sub, verbose = FALSE)
-pancreas_sub <- Seurat::FindVariableFeatures(
+pancreas_sub <- NormalizeData(pancreas_sub)
+pancreas_sub <- FindVariableFeatures(
   pancreas_sub,
-  nfeatures = 1000,
-  verbose = FALSE
+  nfeatures = 1000
 )
 pancreas_sub <- RunNMF(
   pancreas_sub,
   features = SeuratObject::VariableFeatures(pancreas_sub),
   nbes = 5,
-  maxit = 50,
-  verbose = FALSE
+  maxit = 50
 )
+#> ℹ [2026-06-29 03:57:53] Running NMF...
+#> ℹ BE_ 1 
+#> ℹ Positive:  Spp1, Clu, Krt18, Ttr, Ptma, Rpl12, Sparc, Dbi, Gapdh, Mt1 
+#> ℹ      Cd24a, Mgst1, H19, Pebp1, Myl12a, Gnas, Cldn3, Clps, Sox4, Atp1b1 
+#> ℹ      Vim, Jun, Ambp, Cdkn1c, Mdk, Serpinh1, Eno1, Anxa2, Acot1, Tmsb4x 
+#> ℹ Negative:  Fgf8, Mapk12, Lrrc6, Spock1, Lrrc9, Fam71b, Il1r2, Serpini1, Gng4, Cdca2 
+#> ℹ      Sulf2, Pgf, Dusp26, Ucn3, Entpd3, Gm13373, Megf11, Kctd8, Krtap16-1, Mdm1 
+#> ℹ      Nrp2, Mmel1, Pax6os1, Pabpn1l, Sept3, Hepacam2, Rnf138rt1, Scn9a, Tex36, Syt13 
+#> ℹ BE_ 2 
+#> ℹ Positive:  Gnas, Pyy, Rbp4, Chgb, Slc25a5, Ttr, Chga, Cpe, Hmgn3, Pcsk1n 
+#> ℹ      Bex2, Isl1, Aplp1, Rap1b, Fam183b, Glud1, Lrpprc, Fev, Slc38a5, Mid1ip1 
+#> ℹ      Ptma, Akr1c19, Clps, Gch1, Sec61b, Tm4sf4, Cck, Map1b, Meis2, 1700086L19Rik 
+#> ℹ Negative:  1810034E14Rik, 5730507C01Rik, Tmem100, Fam71b, Sycp3, Fscn1, Cdca2, Traip, Gm8113, C2cd4c 
+#> ℹ      Sulf2, Ucn3, Col1a1, Megf11, Bcl2, Gm28875, Ugt2b35, Ugt2b36, A730098A19Rik, Serpinb6b 
+#> ℹ      Eya2, AA986860, Palmd, Vps8, Crybb1, Pabpn1l, Il18, Gjb1, Pdlim1, Hist1h2ae 
+#> ℹ BE_ 3 
+#> ℹ Positive:  Tmsb4x, Neurog3, Mdk, Cck, Sox4, Ptma, Btg2, Btbd17, Gadd45a, Gnas 
+#> ℹ      Selm, Krt7, Hn1, Cd24a, Rpl12, Cdkn1a, Hes6, Clps, Camk2n1, Slc25a5 
+#> ℹ      Smarcd2, Cldn6, Map1b, Cotl1, Aplp1, Tubb5, Tubb3, Nkx6-1, Pax4, Jun 
+#> ℹ Negative:  Mapk12, Lrrc6, Ccl28, Spock1, Hoxb2, Tmem100, Il1r2, Angptl4, Cdca2, Traip 
+#> ℹ      Slc16a10, Dusp26, Entpd3, Gmfg, Acvr1c, Col27a1, Kctd8, Mdm1, Adora2b, C530044C16Rik 
+#> ℹ      Gm28875, Ugt2b35, Ugt2b36, Fosb, A730098A19Rik, Serpinb6b, Pax6os1, Myo5a, AA986860, Palmd 
+#> ℹ BE_ 4 
+#> ℹ Positive:  Iapp, Pyy, Nnat, Rbp4, Gnas, Ins2, Ins1, Ttr, Dlk1, Sec61b 
+#> ℹ      Pcsk2, Calr, Hspa5, Pdia6, Ppp1r1a, Tuba1a, Pcsk1n, Sdf2l1, Hsp90b1, Gng12 
+#> ℹ      Chgb, Cpe, Hadh, Ptma, Clps, Mafb, Chga, Scg2, Gapdh, 1700086L19Rik 
+#> ℹ Negative:  Fgf8, Mapk12, Ccl28, Lrrc9, Hoxb2, Tmem100, Sycp3, Serpini1, Lrrn1, Angptl4 
+#> ℹ      Traip, Gm8113, Cmtm3, Pgf, Col1a1, Gm13373, Gmfg, Megf11, Nrp2, Mmel1 
+#> ℹ      Ugt2b35, Ugt2b36, A730098A19Rik, Serpinb6b, Eya2, AA986860, Palmd, Lmo4, Crybb1, Il18 
+#> ℹ BE_ 5 
+#> ℹ Positive:  Tuba1b, Hmgb2, Tubb5, Ptma, 2810417H13Rik, Ran, H2afz, Ranbp1, H2afx, Tubb4b 
+#> ℹ      Spp1, Birc5, Mif, Cks1b, Gapdh, Slc25a5, H1f0, Rpl12, Mdk, Hn1 
+#> ℹ      Spc24, Cks2, Dut, Hmgb1, Cdk1, Ldha, Anp32b, Snrpd1, Hspe1, Tpi1 
+#> ℹ Negative:  Lrrc6, Ccl28, 1810034E14Rik, Spock1, Tmem100, Fam71b, Sycp3, Kiss1r, Il1r2, Gng4 
+#> ℹ      Prodh2, Lingo1, Angptl4, Gm8113, C2cd4c, Dpysl3, Ucn3, Entpd3, Col1a1, Rem2 
+#> ℹ      Acvr1c, Kctd8, Nrp2, Mmel1, Gm28875, Serpinb6b, Camk2n1, Pax6os1, Nrsn1, Tyrobp 
+#> ✔ [2026-06-29 03:57:58] NMF compute completed
 ht_cells <- NMFHeatmap(
   pancreas_sub,
   plot_type = "cells",
-  cell_annotation = "CellType",
-  width = 3,
-  height = 0.5
+  cell_annotation = "CellType"
 )
-#> ℹ [2026-06-28 20:38:24] `NMFHeatmap()` input: 1000 cells x 5 NMF dimensions. Computing a 1000 x 1000 similarity matrix (~0.01 GiB dense numeric matrix).
-#> ℹ [2026-06-28 20:38:24] Ordering `NMFHeatmap()` rows and columns ...
-#> ℹ [2026-06-28 20:38:24] Building ComplexHeatmap object for `NMFHeatmap()` ...
-#> ℹ [2026-06-28 20:38:24] Calculating `NMFHeatmap()` render size ...
-#> ℹ [2026-06-28 20:38:24] Fixing `NMFHeatmap()` panel size ...
-#> ℹ [2026-06-28 20:38:26] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...
-#> ℹ [2026-06-28 20:38:27] Assembling `NMFHeatmap()` plot object ...
+#> ℹ [2026-06-29 03:57:58] `NMFHeatmap()` input: 1000 cells x 5 NMF dimensions. Computing a 1000 x 1000 similarity matrix (~0.01 GiB dense numeric matrix).
+#> ℹ [2026-06-29 03:57:58] Ordering `NMFHeatmap()` rows and columns ...
+#> ℹ [2026-06-29 03:57:58] Building ComplexHeatmap object for `NMFHeatmap()` ...
+#> ℹ [2026-06-29 03:57:58] Calculating `NMFHeatmap()` render size ...
+#> ℹ [2026-06-29 03:57:58] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...
+#> ℹ [2026-06-29 03:57:59] Assembling `NMFHeatmap()` plot object ...
 ht_cells$plot
 
 
 ht_features <- NMFHeatmap(
   pancreas_sub,
-  plot_type = "features",
-  width = 3,
-  height = 0.5
+  plot_type = "features"
 )
-#> ℹ [2026-06-28 20:38:27] `NMFHeatmap()` input: 1000 features x 5 NMF dimensions. Computing a 1000 x 1000 similarity matrix (~0.01 GiB dense numeric matrix).
-#> ℹ [2026-06-28 20:38:28] Ordering `NMFHeatmap()` rows and columns ...
-#> ℹ [2026-06-28 20:38:28] Building ComplexHeatmap object for `NMFHeatmap()` ...
-#> ℹ [2026-06-28 20:38:28] Calculating `NMFHeatmap()` render size ...
-#> ℹ [2026-06-28 20:38:28] Fixing `NMFHeatmap()` panel size ...
-#> ℹ [2026-06-28 20:38:29] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...
-#> ℹ [2026-06-28 20:38:31] Assembling `NMFHeatmap()` plot object ...
+#> ℹ [2026-06-29 03:57:59] `NMFHeatmap()` input: 1000 features x 5 NMF dimensions. Computing a 1000 x 1000 similarity matrix (~0.01 GiB dense numeric matrix).
+#> ℹ [2026-06-29 03:58:00] Ordering `NMFHeatmap()` rows and columns ...
+#> ℹ [2026-06-29 03:58:00] Building ComplexHeatmap object for `NMFHeatmap()` ...
+#> ℹ [2026-06-29 03:58:00] Calculating `NMFHeatmap()` render size ...
+#> ℹ [2026-06-29 03:58:00] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...
+#> ℹ [2026-06-29 03:58:01] Assembling `NMFHeatmap()` plot object ...
 ht_features$plot
 ```

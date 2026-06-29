@@ -21,6 +21,7 @@ RunDorothea(
   options = list(),
   assay_name = "dorothea",
   new_assay = TRUE,
+  add_meta = TRUE,
   verbose = TRUE
 )
 ```
@@ -102,6 +103,12 @@ RunDorothea(
 
   Whether to store TF activity scores as a new assay.
 
+- add_meta:
+
+  Whether to also write TF activity scores to `srt@meta.data` with the
+  `assay_name` prefix for direct plotting with
+  [`FeatureDimPlot()`](https://mengxu98.github.io/scop/reference/FeatureDimPlot.md).
+
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
@@ -109,9 +116,10 @@ RunDorothea(
 ## Value
 
 A `Seurat` object with DoRothEA results stored in
-`srt@tools[["Dorothea"]]`. For cross-species runs, the homolog
-projection summary is stored in
-`srt@tools[["Dorothea"]]$homolog_conversion`.
+`srt@tools[["Dorothea"]]`, optionally TF activity scores stored in
+`srt@meta.data`, and optionally a TF activity assay when
+`new_assay = TRUE`. For cross-species runs, the homolog projection
+summary is stored in `srt@tools[["Dorothea"]]$homolog_conversion`.
 
 ## References
 
@@ -136,7 +144,7 @@ pancreas_sub <- standard_scop(
   pancreas_sub,
   verbose = FALSE
 )
-#> ℹ [2026-06-28 21:03:50] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-06-29 04:23:31] Skip `log1p()` because `layer = data` is not "counts"
 
 pancreas_sub <- RunDorothea(
   pancreas_sub,
@@ -147,8 +155,8 @@ pancreas_sub <- RunDorothea(
   minsize = 5,
   new_assay = FALSE
 )
-#> ℹ [2026-06-28 21:03:58] Run DoRothEA/decoupleR with 12895 regulon edges
-#> ℹ [2026-06-28 21:04:09] DoRothEA TF activity scores stored in <Seurat> metadata
+#> ℹ [2026-06-29 04:23:38] Run DoRothEA/decoupleR with 12895 regulon edges
+#> ℹ [2026-06-29 04:23:49] DoRothEA TF activity scores stored in <Seurat> metadata
 
 pancreas_sub@tools$Dorothea$regulon_summary
 #>   n_tfs n_targets n_edges confidence
