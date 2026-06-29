@@ -42,33 +42,27 @@
 #' @examples
 #' library(Matrix)
 #' data(pancreas_sub)
-#' pancreas_sub <- Seurat::NormalizeData(pancreas_sub, verbose = FALSE)
-#' pancreas_sub <- Seurat::FindVariableFeatures(
+#' pancreas_sub <- NormalizeData(pancreas_sub)
+#' pancreas_sub <- FindVariableFeatures(
 #'   pancreas_sub,
-#'   nfeatures = 1000,
-#'   verbose = FALSE
+#'   nfeatures = 1000
 #' )
 #' pancreas_sub <- RunNMF(
 #'   pancreas_sub,
 #'   features = SeuratObject::VariableFeatures(pancreas_sub),
 #'   nbes = 5,
-#'   maxit = 50,
-#'   verbose = FALSE
+#'   maxit = 50
 #' )
 #' ht_cells <- NMFHeatmap(
 #'   pancreas_sub,
 #'   plot_type = "cells",
-#'   cell_annotation = "CellType",
-#'   width = 3,
-#'   height = 0.5
+#'   cell_annotation = "CellType"
 #' )
 #' ht_cells$plot
 #'
 #' ht_features <- NMFHeatmap(
 #'   pancreas_sub,
-#'   plot_type = "features",
-#'   width = 3,
-#'   height = 0.5
+#'   plot_type = "features"
 #' )
 #' ht_features$plot
 NMFHeatmap <- function(

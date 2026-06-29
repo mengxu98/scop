@@ -1973,6 +1973,15 @@ cell_dim_nested_legend_data <- function(
 #'   reduction = "StandardpcaUMAP3D"
 #' )
 #'
+#' CellDimPlot3D(
+#'  pancreas_sub,
+#'  group.by = "SubCellType",
+#'  plot_type = "density_surface",
+#'  reduction = "umap",
+#'  dims = c(1, 2),
+#'  density_label = TRUE
+#' )
+#'
 #' pancreas_sub <- RunSlingshot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
