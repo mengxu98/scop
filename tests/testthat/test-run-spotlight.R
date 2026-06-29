@@ -1,3 +1,5 @@
+pkgload::load_all(".", export_all = FALSE, helpers = FALSE, quiet = TRUE)
+
 make_spotlight_seurat_pair <- function() {
   spatial_counts <- matrix(
     c(
@@ -201,7 +203,6 @@ test_that("standard spatial workflow dispatches to RunSPOTlight", {
   original_standard_scop <- standard_scop
   testthat::local_mocked_bindings(
     RunSpotQC = function(srt, ...) srt,
-    standard_scop = function(srt, ...) srt,
     RunSPOTlight = function(srt, reference, reference_label, assay, reference_assay, ...) {
       expect_identical(reference, pair$reference)
       expect_identical(reference_label, "celltype")
@@ -209,7 +210,8 @@ test_that("standard spatial workflow dispatches to RunSPOTlight", {
       expect_identical(reference_assay, "RNA")
       srt$SPOTlight_dominant_type <- "Alpha"
       srt
-    }
+    },
+    .package = "scop"
   )
 
   out <- original_standard_scop(
