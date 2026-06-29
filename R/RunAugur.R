@@ -292,8 +292,8 @@ RunAugur <- function(
     rank_meta <- rep(NA_real_, ncol(srt))
     names(auc_meta) <- colnames(srt)
     names(rank_meta) <- colnames(srt)
-    matched_auc <- auc_values[cell_types]
-    matched_rank <- rank_values[cell_types]
+    matched_auc <- auc_values[as.character(cell_types)]
+    matched_rank <- rank_values[as.character(cell_types)]
     auc_meta[] <- unname(matched_auc)
     rank_meta[] <- unname(matched_rank)
 
