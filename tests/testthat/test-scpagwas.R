@@ -67,7 +67,7 @@ test_that("RunscPagwas passes Seurat input and stores tools metadata", {
     expect_s4_class(Single_data, "Seurat")
     expect_identical(gwas_data, gwas)
     expect_s3_class(block_annotation, "data.frame")
-    expect_true(grepl("^/", output.dirs))
+    expect_true(grepl("^(/|[A-Za-z]:/)", output.dirs))
     Single_data
   }
 
@@ -100,7 +100,7 @@ test_that("RunscPagwas supports RDS paths, custom block annotation, and list att
     row.names = FALSE
   )
   runner <- function(Single_data, block_annotation, unused = NULL) {
-    expect_identical(Single_data, normalizePath(single_data, mustWork = FALSE))
+    expect_identical(Single_data, normalizePath(single_data, mustWork = FALSE, winslash = "/"))
     expect_s3_class(block_annotation, "data.frame")
     list(score = 1)
   }

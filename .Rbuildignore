@@ -32,6 +32,8 @@
 ^.*\.Rcheck$
 ^.*\.tar\.gz$
 ^.*\.dll$
+^.*\.pyc$
+(^|/)__pycache__($|/)
 ^\.git$
 ^\.gitignore$
 ^\.reasonix$
