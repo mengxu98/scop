@@ -20,6 +20,7 @@ RunDorothea(
   options = list(),
   assay_name = "dorothea",
   new_assay = TRUE,
+  add_meta = TRUE,
   verbose = TRUE
 )
 }
@@ -68,13 +69,18 @@ function.}
 
 \item{new_assay}{Whether to store TF activity scores as a new assay.}
 
+\item{add_meta}{Whether to also write TF activity scores to \code{srt@meta.data}
+with the \code{assay_name} prefix for direct plotting with \code{\link[=FeatureDimPlot]{FeatureDimPlot()}}.}
+
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 }
 \value{
 A \code{Seurat} object with DoRothEA results stored in
-\code{srt@tools[["Dorothea"]]}. For cross-species runs, the homolog projection
-summary is stored in \code{srt@tools[["Dorothea"]]$homolog_conversion}.
+\code{srt@tools[["Dorothea"]]}, optionally TF activity scores stored in
+\code{srt@meta.data}, and optionally a TF activity assay when
+\code{new_assay = TRUE}. For cross-species runs, the homolog projection summary
+is stored in \code{srt@tools[["Dorothea"]]$homolog_conversion}.
 }
 \description{
 Run DoRothEA transcription factor activity inference

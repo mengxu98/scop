@@ -28,10 +28,14 @@
 #' function.
 #' @param assay_name Name of the assay used to store TF activity scores.
 #' @param new_assay Whether to store TF activity scores as a new assay.
+#' @param add_meta Whether to also write TF activity scores to `srt@meta.data`
+#' with the `assay_name` prefix for direct plotting with [FeatureDimPlot()].
 #'
 #' @return A `Seurat` object with DoRothEA results stored in
-#' `srt@tools[["Dorothea"]]`. For cross-species runs, the homolog projection
-#' summary is stored in `srt@tools[["Dorothea"]]$homolog_conversion`.
+#' `srt@tools[["Dorothea"]]`, optionally TF activity scores stored in
+#' `srt@meta.data`, and optionally a TF activity assay when
+#' `new_assay = TRUE`. For cross-species runs, the homolog projection summary
+#' is stored in `srt@tools[["Dorothea"]]$homolog_conversion`.
 #' @export
 #'
 #' @references
@@ -95,6 +99,7 @@ RunDorothea <- function(
   options = list(),
   assay_name = "dorothea",
   new_assay = TRUE,
+  add_meta = TRUE,
   verbose = TRUE
 ) {
   if (!inherits(srt, "Seurat")) {
@@ -234,11 +239,7 @@ RunDorothea <- function(
     verbose = verbose
   )
 
-  run_fun <- switch(method,
-    ulm = getExportedValue("decoupleR", "run_ulm"),
-    viper = getExportedValue("decoupleR", "run_viper"),
-    wmean = getExportedValue("decoupleR", "run_wmean")
-  )
+  run_fun <- dorothea_get_run_fun(method)
   params <- c(
     list(
       mat = expr,
@@ -300,7 +301,8 @@ RunDorothea <- function(
       "{.pkg DoRothEA} TF activity scores stored in assay {.val {assay_name}}",
       verbose = verbose
     )
-  } else {
+  }
+  if (isTRUE(add_meta)) {
     meta_scores <- as.data.frame(t(scores), check.names = FALSE)
     colnames(meta_scores) <- make.names(
       paste(assay_name, colnames(meta_scores), sep = "_")
@@ -338,12 +340,21 @@ RunDorothea <- function(
       minsize = minsize,
       assay_name = assay_name,
       new_assay = new_assay,
+      add_meta = add_meta,
       homolog_params = homolog_params,
       options = options
     ),
     homolog_conversion = homolog_conversion
   )
   srt
+}
+
+dorothea_get_run_fun <- function(method) {
+  switch(method,
+    ulm = getExportedValue("decoupleR", "run_ulm"),
+    viper = getExportedValue("decoupleR", "run_viper"),
+    wmean = getExportedValue("decoupleR", "run_wmean")
+  )
 }
 
 #' @title Plot differential DoRothEA TF activity
