@@ -45,7 +45,7 @@ jobs:
           files="$(git diff --name-only "$base" "$head")"
           echo "$files"
           if printf '%s\n' "$files" |
-            grep -Ev '^(scripts/.*|\.github/workflows/(pkgdown|test-coverage)\.yaml)$' |
+            grep -Ev '^(scripts/.*|tests/.*|\.github/workflows/(pkgdown|test-coverage)\.yaml)$' |
             grep -q .; then
             echo "package_changed=true" >> "$GITHUB_OUTPUT"
           else
@@ -78,6 +78,62 @@ jobs:
           extra-packages: any::pkgdown, local::.
           needs: website
 
+      - name: Determine pkgdown scope
+        id: scope
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" != "push" ]]; then
+            echo "full_build=true" >> "$GITHUB_OUTPUT"
+            echo "topics=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          base="${{ github.event.before }}"
+          head="${{ github.sha }}"
+          if [[ "$base" =~ ^0+$ ]]; then
+            echo "full_build=true" >> "$GITHUB_OUTPUT"
+            echo "topics=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git diff --name-status "$base" "$head" > changed-files.txt
+          cat changed-files.txt
+
+          awk '$2 !~ /^(scripts\/|tests\/|[.]github\/workflows\/(pkgdown|test-coverage)[.]yaml$)/ { print }' changed-files.txt > pkgdown-files.txt
+          if [[ ! -s pkgdown-files.txt ]]; then
+            echo "full_build=false" >> "$GITHUB_OUTPUT"
+            echo "topics=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if awk '$1 ~ /D/ { found = 1 } END { exit found ? 0 : 1 }' pkgdown-files.txt; then
+            echo "full_build=true" >> "$GITHUB_OUTPUT"
+            echo "topics=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if awk '$2 !~ /^(R\/.*[.]R|man\/.*[.]Rd)$/ { found = 1 } END { exit found ? 0 : 1 }' pkgdown-files.txt; then
+            echo "full_build=true" >> "$GITHUB_OUTPUT"
+            echo "topics=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          topics="$(
+            awk '$2 ~ /^man\/.*[.]Rd$/ { path = $2; sub(/^man\//, "", path); sub(/[.]Rd$/, "", path); print path }' pkgdown-files.txt |
+            sort -u |
+            paste -sd, -
+          )"
+
+          if [[ -z "$topics" ]]; then
+            echo "full_build=true" >> "$GITHUB_OUTPUT"
+            echo "topics=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "full_build=false" >> "$GITHUB_OUTPUT"
+          echo "topics=$topics" >> "$GITHUB_OUTPUT"
+
       - name: Check reference index
         if: github.event_name == 'pull_request'
         run: |
@@ -89,8 +145,22 @@ jobs:
           pkgdown::build_reference_index()
         shell: Rscript {0}
 
+      - name: Build changed reference topics
+        if: github.event_name != 'pull_request' && steps.scope.outputs.full_build == 'false' && steps.scope.outputs.topics != ''
+        run: |
+          if (!requireNamespace("future", quietly = TRUE) ||
+                !requireNamespace("future.apply", quietly = TRUE)) {
+            install.packages(c("future", "future.apply"), quiet = TRUE)
+          }
+          future::plan("sequential", gc = TRUE)
+          topics <- strsplit(Sys.getenv("PKGDOWN_TOPICS"), ",", fixed = TRUE)[[1]]
+          pkgdown::build_reference(topics = topics, lazy = FALSE)
+        shell: Rscript {0}
+        env:
+          PKGDOWN_TOPICS: ${{ steps.scope.outputs.topics }}
+
       - name: Build site
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && steps.scope.outputs.full_build == 'true'
         run: |
           if (!requireNamespace("future", quietly = TRUE) ||
                 !requireNamespace("future.apply", quietly = TRUE)) {
