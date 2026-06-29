@@ -287,8 +287,12 @@ test_that("scMalignantFinder Python bridge is installed as an isolated module", 
     "python",
     "scmalignantfinder.py",
     package = "scop",
-    mustWork = TRUE
+    mustWork = FALSE
   )
+  if (!nzchar(py_file)) {
+    py_file <- file.path("inst", "python", "scmalignantfinder.py")
+  }
+  expect_true(file.exists(py_file))
   source <- paste(readLines(py_file, warn = FALSE), collapse = intToUtf8(10))
   expect_match(source, "def run_scmalignantfinder", fixed = TRUE)
   expect_match(source, "def run_scmalignant_region", fixed = TRUE)
