@@ -141,6 +141,9 @@ scpagwas_add_default_data_args <- function(fun, args) {
 }
 
 scpagwas_patch_get_assay_data <- function() {
+  if (!requireNamespace("scPagwas", quietly = TRUE)) {
+    return(function() invisible(FALSE))
+  }
   ns <- asNamespace("scPagwas")
   imports_env <- parent.env(ns)
   if (!exists("GetAssayData", envir = imports_env, inherits = FALSE)) {
