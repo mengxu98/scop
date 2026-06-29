@@ -237,17 +237,35 @@ scpagwas_check_block_annotation <- function(block_annotation) {
 
 scpagwas_abs_path <- function(path) {
   path <- path.expand(path)
-  if (!grepl("^/", path)) {
+  if (!grepl("^(/|[A-Za-z]:[\\/])", path)) {
     path <- file.path(getwd(), path)
   }
-  normalizePath(path, mustWork = FALSE)
+  normalizePath(path, mustWork = FALSE, winslash = "/")
 }
 
 scpagwas_cleanup_soar <- function() {
   if (!requireNamespace("SOAR", quietly = TRUE)) {
     return(invisible(FALSE))
   }
-  rm_fun <- get("RemoveAllObjects", envir = asNamespace("SOAR"), inherits = FALSE)
-  rm_fun()
+  ns <- asNamespace("SOAR")
+
+  rm_fun <- get("RemoveAllObjects", envir = ns, inherits = FALSE)
+  if (is.function(rm_fun)) {
+    rm_fun()
+    return(invisible(TRUE))
+  }
+
+  objects_fun <- get("Objects", envir = ns, inherits = FALSE)
+  remove_fun <- get("Remove", envir = ns, inherits = FALSE)
+  if (!is.function(objects_fun) || !is.function(remove_fun)) {
+    return(invisible(TRUE))
+  }
+
+  object_ids <- tryCatch(objects_fun(), error = function(e) NULL)
+  if (!is.character(object_ids) || length(object_ids) < 1L) {
+    return(invisible(TRUE))
+  }
+
+  tryCatch(remove_fun(object_ids), error = function(e) NULL)
   invisible(TRUE)
 }
