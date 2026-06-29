@@ -57,6 +57,9 @@ CCC.}
 
 \item{sigMatrix}{SecAct signature matrix name.}
 
+\item{is.group.sig, is.group.cor, lambda, nrand}{Parameters passed to SecAct
+signature grouping and randomization routines.}
+
 \item{radius, ratio_cutoff, coreNo}{Parameters passed to \code{SecAct.CCC.scST}.}
 
 \item{tool_name}{Name used in \code{srt@tools}.}

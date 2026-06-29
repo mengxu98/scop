@@ -190,6 +190,8 @@ RunSecAct <- function(
 #' CCC.
 #' @param act_diff_cutoff,exp_logFC_cutoff,exp_mean_all_cutoff,exp_fraction_case_cutoff,padj_cutoff
 #' Cutoffs passed to `SecAct.CCC.scRNAseq`.
+#' @param is.group.sig,is.group.cor,lambda,nrand Parameters passed to SecAct
+#' signature grouping and randomization routines.
 #' @param radius,ratio_cutoff,coreNo Parameters passed to `SecAct.CCC.scST`.
 #'
 #' @return A Seurat or SpaCET object with SecAct CCC results.
@@ -364,6 +366,8 @@ RunSecActPatternGenes <- function(
 #' `SecAct.signaling.velocity.scST`.
 #' @param gene Secreted protein gene used by spot-level ST velocity.
 #' @param signalMode `receiving` or `sending` for spot-level ST.
+#' @param radius Spatial radius. Defaults to `200` for `spotST` and `20` for
+#' `scST` when `NULL`.
 #' @param contourMap,contourBins,animated Plot options for spot-level ST.
 #' @param sender,secretedProtein,receiver,cellType_meta Parameters for scST
 #' velocity.
