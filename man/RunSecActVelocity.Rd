@@ -44,6 +44,9 @@ RunSecActVelocity(
 
 \item{signalMode}{\code{receiving} or \code{sending} for spot-level ST.}
 
+\item{radius}{Spatial radius. Defaults to \code{200} for \code{spotST} and \code{20} for
+\code{scST} when \code{NULL}.}
+
 \item{contourMap, contourBins, animated}{Plot options for spot-level ST.}
 
 \item{sender, secretedProtein, receiver, cellType_meta}{Parameters for scST
