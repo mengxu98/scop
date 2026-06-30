@@ -391,6 +391,113 @@ test_that("fastCNV runner skips expensive upstream preparation by default", {
   expect_equal(extracted$cell_info$prediction, c("aneuploid", "diploid", "aneuploid"))
 })
 
+test_that("infercnv runner avoids subclusters by default and filters passthrough arguments", {
+  srt <- make_cnv_seurat()
+  counts <- cnv_get_counts(srt, assay = "RNA", layer = "counts")
+  gene_order <- data.frame(
+    gene = rownames(srt),
+    chr = "chr1",
+    start = seq_len(nrow(srt)) * 100,
+    end = seq_len(nrow(srt)) * 100 + 99
+  )
+  out_dir <- tempfile("infercnv_")
+
+  testthat::local_mocked_bindings(
+    check_r = function(package, ...) {
+      expect_identical(package, "infercnv")
+      TRUE
+    },
+    get_namespace_fun = function(package, name) {
+      expect_identical(package, "infercnv")
+      if (identical(name, "CreateInfercnvObject")) {
+        return(function(
+          raw_counts_matrix,
+          annotations_file,
+          delim,
+          gene_order_file,
+          ref_group_names
+        ) {
+          expect_true(is.matrix(raw_counts_matrix))
+          expect_equal(delim, "\t")
+          expect_equal(ref_group_names, "reference")
+          annotations <- utils::read.delim(annotations_file, header = FALSE)
+          expect_equal(annotations[[2]], c("observation", "reference", "observation"))
+          genes <- utils::read.delim(gene_order_file, header = FALSE)
+          expect_equal(nrow(genes), nrow(gene_order))
+          list(cells = colnames(raw_counts_matrix))
+        })
+      }
+      if (identical(name, "run")) {
+        return(function(
+          infercnv_obj,
+          cutoff,
+          out_dir,
+          cluster_by_groups,
+          denoise,
+          HMM,
+          analysis_mode,
+          tumor_subcluster_partition_method,
+          plot_steps,
+          no_plot,
+          save_rds,
+          save_final_rds,
+          inspect_subclusters,
+          num_threads
+        ) {
+          expect_equal(cutoff, 0.1)
+          expect_true(dir.exists(out_dir))
+          expect_false(cluster_by_groups)
+          expect_false(denoise)
+          expect_false(HMM)
+          expect_identical(analysis_mode, "samples")
+          expect_identical(tumor_subcluster_partition_method, "qnorm")
+          expect_false(plot_steps)
+          expect_true(no_plot)
+          expect_false(save_rds)
+          expect_false(save_final_rds)
+          expect_false(inspect_subclusters)
+          expect_true(is.numeric(num_threads))
+          expect_true(num_threads >= 1)
+          matrix(
+            c(0.2, 0.1, 0, 0, 0.4, 0.3),
+            nrow = 2,
+            dimnames = list(c("seg1", "seg2"), infercnv_obj$cells)
+          )
+        })
+      }
+      stop(name)
+    }
+  )
+
+  extracted <- cnv_run_infercnv(
+    counts = counts,
+    reference.by = "celltype",
+    reference = "Normal",
+    reference_cells = "Cell2",
+    gene_order = gene_order,
+    output_dir = out_dir,
+    verbose = FALSE,
+    layer = "data",
+    assay = "RNA"
+  )
+
+  expect_equal(dim(extracted$cnv_matrix), c(2, 3))
+  expect_identical(colnames(extracted$cnv_matrix), colnames(srt))
+})
+
+test_that("backend argument filtering drops unsupported named arguments", {
+  out <- cnv_call_backend_fun(
+    function(a, b, ...) {
+      list(a = a, b = b, passthrough = list(...))
+    },
+    list(a = 1, b = 2, layer = "counts", assay = "RNA")
+  )
+
+  expect_equal(out$a, 1)
+  expect_equal(out$b, 2)
+  expect_equal(out$passthrough, list())
+})
+
 test_that("SCEVAN extraction reads CNA RData output and cell assignments", {
   srt <- make_cnv_seurat()
   out_dir <- tempfile("scevan_")
