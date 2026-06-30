@@ -33,6 +33,8 @@
 #' before GRNBoost2. To run SCENIC on metacells, first create a metacell-level
 #' object with [RunMetaCell()] and pass that object to `RunSCENIC()`.
 #' @param min_regulon_size Minimum regulon size kept after `scenic ctx`.
+#' @param max_regulon_targets Maximum target genes retained per C++ regulon.
+#' The default preserves the native fast path's bounded regulon size.
 #' @param include_negative_regulons Whether the C++ backend should also build
 #' negatively correlated regulons and label them as `TF(-)`. The default
 #' matches pySCENIC's positive-regulon workflow and labels C++ regulons as
@@ -89,6 +91,7 @@ RunSCENIC <- function(
   prefix = "scenic",
   min_expr_cells = 3,
   min_regulon_size = 10,
+  max_regulon_targets = 50,
   include_negative_regulons = FALSE,
   backend = c("cpp", "python"),
   n_rounds = 5000,
@@ -131,6 +134,7 @@ RunSCENIC <- function(
       prefix = prefix,
       min_expr_cells = min_expr_cells,
       min_regulon_size = min_regulon_size,
+      max_regulon_targets = max_regulon_targets,
       include_negative_regulons = include_negative_regulons,
       ranking_dbs = ranking_dbs,
       motif_annotations = motif_annotations,
@@ -419,6 +423,13 @@ RunSCENIC <- function(
     }
     targets <- targets_detected
   }
+  grn_gene_order <- if (is.null(targets)) {
+    union(regulators, colnames(grn_matrix))
+  } else {
+    union(regulators, targets)
+  }
+  grn_gene_order <- intersect(grn_gene_order, colnames(grn_matrix))
+  grn_matrix <- grn_matrix[, grn_gene_order, drop = FALSE]
 
   scenic_progress_step(
     progress_state,
@@ -693,6 +704,7 @@ scenic_cpp <- function(
   prefix,
   min_expr_cells,
   min_regulon_size,
+  max_regulon_targets,
   include_negative_regulons,
   ranking_dbs,
   motif_annotations,
@@ -711,7 +723,7 @@ scenic_cpp <- function(
   verbose
 ) {
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
-  max_regulon_targets <- 50L
+  max_regulon_targets <- scenic_normalize_max_regulon_targets(max_regulon_targets)
   dir.create(work_dir, recursive = TRUE, showWarnings = FALSE)
 
   work_dir <- normalizePath(work_dir, mustWork = FALSE)
@@ -903,7 +915,7 @@ scenic_cpp <- function(
   regulon_params <- list(
     include_negative_regulons = isTRUE(include_negative_regulons),
     min_regulon_size = as.integer(min_regulon_size),
-    max_regulon_targets = as.integer(max_regulon_targets),
+    max_regulon_targets = max_regulon_targets,
     signed_regulon_names = TRUE
   )
   regulon_force <- grn_force ||
@@ -1053,7 +1065,7 @@ scenic_cpp <- function(
 
 build_regulons <- function(
   adjacency,
-  max_targets = 50,
+  max_targets = Inf,
   min_regulon_size = 10,
   suffix = "(+)"
 ) {
@@ -1074,7 +1086,10 @@ build_regulons <- function(
   adj_split <- split(adj_sorted, adj_sorted[["TF"]])
   regulons <- lapply(adj_split, function(df) {
     targets <- unique(df[["target"]])
-    utils::head(targets, max_targets)
+    if (is.finite(max_targets)) {
+      targets <- utils::head(targets, max_targets)
+    }
+    targets
   })
 
   regulons <- regulons[lengths(regulons) >= min_regulon_size]
@@ -1103,7 +1118,7 @@ cistarget2 <- function(
   expr_mtx = NULL,
   ranking_dbs,
   motif_annotations,
-  max_targets = 50,
+  max_targets = Inf,
   min_regulon_size = 10,
   rank_threshold = 5000,
   nes_threshold = 3.0,
@@ -1526,6 +1541,17 @@ cistarget2 <- function(
   regulons[order(names(regulons))]
 }
 
+scenic_normalize_max_regulon_targets <- function(max_regulon_targets) {
+  if (is.null(max_regulon_targets) || length(max_regulon_targets) != 1L) {
+    return(Inf)
+  }
+  max_regulon_targets <- suppressWarnings(as.numeric(max_regulon_targets))
+  if (!is.finite(max_regulon_targets)) {
+    return(Inf)
+  }
+  max(1L, as.integer(max_regulon_targets))
+}
+
 scenic_cistarget_auc <- function(
   rankings,
   total_genes,
@@ -1681,11 +1707,13 @@ scenic_modules_from_adjacencies <- function(
     for (tf in unique(adjacency_sign[["TF"]])) {
       tf_adj <- adjacency_sign[adjacency_sign[["TF"]] == tf, , drop = FALSE]
       tf_adj <- tf_adj[order(-tf_adj[["importance"]]), , drop = FALSE]
-      for (n_targets in as.integer(top_n_targets)) {
+      for (n_targets in top_n_targets) {
+        n_targets_label <- if (is.finite(n_targets)) as.character(as.integer(n_targets)) else "all"
+        n_targets_use <- if (is.finite(n_targets)) as.integer(n_targets) else nrow(tf_adj)
         add_module(
           tf,
-          utils::head(tf_adj[["target"]], n_targets),
-          paste0("top", n_targets),
+          utils::head(tf_adj[["target"]], n_targets_use),
+          paste0("top", n_targets_label),
           regulation = regulation
         )
       }

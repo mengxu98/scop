@@ -41,3 +41,39 @@ test_that("dynamic_features_gam preserves failed feature slots", {
   expect_true(all(is.na(out$fitted_matrix[, "bad"])))
   expect_true(is.na(out$DynamicFeatures["bad", "pvalue"]))
 })
+
+test_that("dynamic feature sparse row unique counts match dense apply", {
+  sparse <- Matrix::Matrix(
+    c(
+      0, 1, 1, 2,
+      0, 0, 0, 0,
+      3, 0, 3, 4
+    ),
+    nrow = 3,
+    byrow = TRUE,
+    sparse = TRUE
+  )
+  rownames(sparse) <- paste0("gene", seq_len(nrow(sparse)))
+  dense_counts <- apply(as.matrix(sparse), 1, function(row) length(unique(row)))
+
+  expect_equal(dynamic_row_unique_counts(sparse), dense_counts)
+  expect_equal(dynamic_row_unique_counts(as.matrix(sparse)), dense_counts)
+})
+
+test_that("dynamic raw matrix matches legacy construction", {
+  t_ordered <- stats::setNames(c(0.2, 0.5, 0.9), paste0("cell", 1:3))
+  y_ordered <- matrix(
+    c(1, 2, 3, 4, 5, 6),
+    nrow = 2,
+    byrow = TRUE,
+    dimnames = list(c("geneA", "geneB"), names(t_ordered))
+  )
+  legacy <- as.matrix(
+    cbind(
+      data.frame(pseudotime = t_ordered),
+      Matrix::t(y_ordered)
+    )
+  )
+
+  expect_equal(dynamic_raw_matrix(y_ordered, t_ordered), legacy)
+})
