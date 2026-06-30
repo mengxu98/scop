@@ -378,7 +378,7 @@ cnv_run_copykat <- function(
     setwd(output_dir)
     on.exit(setwd(oldwd), add = TRUE)
   }
-  result <- do.call(copykat_fun, args[names(args) %in% names(formals(copykat_fun))])
+  result <- cnv_call_backend_fun(copykat_fun, args)
   cnv_extract_copykat(result)
 }
 
@@ -417,7 +417,7 @@ cnv_run_fastcnv <- function(
     ),
     list(...)
   )
-  result <- do.call(fastcnv_fun, args[names(args) %in% names(formals(fastcnv_fun))])
+  result <- cnv_call_backend_fun(fastcnv_fun, args)
   cnv_extract_fastcnv(
     result,
     cells = colnames(srt),
@@ -458,7 +458,7 @@ cnv_run_scevan <- function(
     setwd(output_dir)
     on.exit(setwd(oldwd), add = TRUE)
   }
-  result <- do.call(scevan_fun, args[names(args) %in% names(formals(scevan_fun))])
+  result <- cnv_call_backend_fun(scevan_fun, args)
   cnv_extract_scevan(
     result = result,
     cells = colnames(counts),
@@ -530,13 +530,21 @@ cnv_run_infercnv <- function(
       infercnv_obj = infer_obj,
       cutoff = 0.1,
       out_dir = out_dir,
-      cluster_by_groups = TRUE,
-      denoise = TRUE,
-      HMM = FALSE
+      cluster_by_groups = FALSE,
+      denoise = FALSE,
+      HMM = FALSE,
+      analysis_mode = "samples",
+      tumor_subcluster_partition_method = "qnorm",
+      plot_steps = FALSE,
+      no_plot = TRUE,
+      save_rds = FALSE,
+      save_final_rds = FALSE,
+      inspect_subclusters = FALSE,
+      num_threads = cnv_default_threads()
     ),
     list(...)
   )
-  result <- do.call(run_fun, args[names(args) %in% names(formals(run_fun))])
+  result <- cnv_call_backend_fun(run_fun, args)
   cnv_extract_generic_result(result, method = "infercnv", cells = colnames(counts))
 }
 
@@ -568,7 +576,7 @@ cnv_run_numbat <- function(
     ),
     list(...)
   )
-  result <- do.call(run_fun, args[names(args) %in% names(formals(run_fun))])
+  result <- cnv_call_backend_fun(run_fun, args)
   cnv_extract_numbat(result = result, cells = colnames(counts), output_dir = out_dir)
 }
 
@@ -608,7 +616,7 @@ cnv_run_casper <- function(
     ),
     list(...)
   )
-  object <- do.call(create_fun, casper_args[names(casper_args) %in% names(formals(create_fun))])
+  object <- cnv_call_backend_fun(create_fun, casper_args)
   run_args <- utils::modifyList(
     list(
       object = object,
@@ -618,10 +626,10 @@ cnv_run_casper <- function(
     ),
     list(...)
   )
-  final_objects <- do.call(run_fun, run_args[names(run_args) %in% names(formals(run_fun))])
+  final_objects <- cnv_call_backend_fun(run_fun, run_args)
   event_args <- list(final.objects = final_objects)
   final_mat <- tryCatch(
-    do.call(event_fun, event_args[names(event_args) %in% names(formals(event_fun))]),
+    cnv_call_backend_fun(event_fun, event_args),
     error = function(e) NULL
   )
   cnv_extract_casper(
@@ -1838,6 +1846,23 @@ cnv_get_first_namespace_fun <- function(package, names) {
     "{.pkg {package}} does not expose one of {.val {names}}",
     message_type = "error"
   )
+}
+
+cnv_call_backend_fun <- function(fun, args) {
+  formal_names <- names(formals(fun))
+  if (is.null(formal_names)) {
+    return(do.call(fun, args))
+  }
+  allowed <- setdiff(formal_names, "...")
+  do.call(fun, args[names(args) %in% allowed])
+}
+
+cnv_default_threads <- function(max_threads = 4L) {
+  cores <- suppressWarnings(parallel::detectCores(logical = TRUE))
+  if (length(cores) == 0L || !is.finite(cores) || cores < 1L) {
+    return(1L)
+  }
+  max(1L, min(as.integer(max_threads), as.integer(cores)))
 }
 
 cnv_find_seurat_assay_matrix <- function(result, cells) {
