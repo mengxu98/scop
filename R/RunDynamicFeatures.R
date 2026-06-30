@@ -243,12 +243,7 @@ RunDynamicFeatures <- function(
         assay = assay,
         layer = "counts"
       )[HVF, , drop = FALSE]
-      HVF <- HVF[
-        apply(HVF_counts, 1, function(x) {
-          length(unique(x))
-        }) >=
-          minfreq
-      ]
+      HVF <- HVF[dynamic_row_unique_counts(HVF_counts) >= minfreq]
       features_list[[l]] <- HVF
     } else {
       features_list[[l]] <- features
@@ -300,12 +295,7 @@ RunDynamicFeatures <- function(
       y_mat[features, names(t_ordered), drop = FALSE]
     )
     l_libsize <- y_libsize[names(t_ordered)]
-    raw_matrix <- as_matrix(
-      cbind(
-        data.frame(pseudotime = t_ordered),
-        Matrix::t(y_ordered)
-      )
-    )
+    raw_matrix <- dynamic_raw_matrix(y_ordered, t_ordered)
 
     log_message(
       "Calculating dynamic features for {.val {l}}...",
@@ -362,6 +352,44 @@ RunDynamicFeatures <- function(
   )
 
   return(srt)
+}
+
+dynamic_row_unique_counts <- function(x) {
+  if (!inherits(x, "sparseMatrix")) {
+    return(apply(x, 1, function(row) length(unique(row))))
+  }
+  x <- methods::as(x, "TsparseMatrix")
+  n_rows <- nrow(x)
+  n_cols <- ncol(x)
+  out <- integer(n_rows)
+  if (length(x@x) > 0) {
+    nonzero_values <- split(x@x, x@i + 1L)
+    idx <- as.integer(names(nonzero_values))
+    out[idx] <- vapply(nonzero_values, function(v) {
+      length(unique(v))
+    }, integer(1))
+  }
+  row_nnz <- tabulate(x@i + 1L, nbins = n_rows)
+  out <- out + as.integer(row_nnz < n_cols)
+  names(out) <- rownames(x)
+  out
+}
+
+dynamic_raw_matrix <- function(y_ordered, t_ordered) {
+  raw_matrix <- matrix(
+    NA_real_,
+    nrow = length(t_ordered),
+    ncol = nrow(y_ordered) + 1L,
+    dimnames = list(
+      names(t_ordered),
+      c("pseudotime", rownames(y_ordered))
+    )
+  )
+  raw_matrix[, "pseudotime"] <- t_ordered
+  if (nrow(y_ordered) > 0) {
+    raw_matrix[, rownames(y_ordered)] <- t(y_ordered)
+  }
+  raw_matrix
 }
 
 dynamic_features_gam <- function(

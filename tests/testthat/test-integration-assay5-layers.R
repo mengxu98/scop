@@ -117,6 +117,34 @@ test_that("FindVariableFeatures handles split Assay5 counts layers", {
   expect_length(SeuratObject::VariableFeatures(srt), 20)
 })
 
+test_that("split-layer variable feature statistics match joined sparse statistics", {
+  skip_if_not_installed("Matrix")
+
+  set.seed(10)
+  counts <- Matrix::rsparsematrix(100, 48, density = 0.18)
+  counts@x <- abs(round(counts@x * 10)) + 1
+  rownames(counts) <- paste0("g", seq_len(nrow(counts)))
+  colnames(counts) <- paste0("c", seq_len(ncol(counts)))
+
+  layers <- list(
+    counts[, 1:13, drop = FALSE],
+    counts[, 14:31, drop = FALSE],
+    counts[, 32:48, drop = FALSE]
+  )
+  joined <- do.call(cbind, layers)
+  split_vst <- get("variable_features_vst_sparse_layers", asNamespace("scop"))
+  joined_vst <- get("variable_features_vst_sparse", asNamespace("scop"))
+
+  split_info <- split_vst(layers, nselect = 25, verbose = FALSE)
+  joined_info <- joined_vst(joined, nselect = 25, verbose = FALSE)
+
+  expect_equal(split_info$mean, joined_info$mean, tolerance = 1e-12)
+  expect_equal(split_info$variance, joined_info$variance, tolerance = 1e-12)
+  expect_equal(split_info$variance.expected, joined_info$variance.expected, tolerance = 1e-12)
+  expect_equal(split_info$variance.standardized, joined_info$variance.standardized, tolerance = 1e-12)
+  expect_equal(split_info$rank, joined_info$rank)
+})
+
 test_that("ScaleData handles split Assay5 data layers", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("SeuratObject")

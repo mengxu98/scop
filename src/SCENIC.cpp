@@ -893,6 +893,7 @@ static void scenic_grnboost_run_targets(
         scenic_numpy_randint(rng, 0, SCENIC_RAND_R_MAX)
       );
       feature_pool.assign(features.begin(), features.end());
+      std::fill(constant_features.begin(), constant_features.end(), 0);
       {
         ScenicScopeTimer build_timer(
           profile == nullptr ? nullptr : &profile->build_tree_seconds

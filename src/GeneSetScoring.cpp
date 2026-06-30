@@ -856,9 +856,13 @@ NumericMatrix ssgsea_rank_dense(
       n_negative + static_cast<int>((1.0 + static_cast<double>(n_zero)) / 2.0) : 0;
     const double zero_rank_weight = std::pow(std::fabs(static_cast<double>(zero_rank_int)), alpha);
 
-    // Step 1: initialize all genes as zero (fast O(n_genes) fill)
-    std::fill(rank_by_gene.begin(), rank_by_gene.end(), zero_rank_int);
-    std::fill(rank_weight_by_gene.begin(), rank_weight_by_gene.end(), zero_rank_weight);
+    // Step 1: initialize only genes that can be queried by gene sets. The
+    // original dense view assigns the same zero rank to all structural zeros,
+    // but downstream scoring only reads genes present in at least one set.
+    for (std::vector<int>::const_iterator it = set_gene_union.begin(); it != set_gene_union.end(); ++it) {
+      rank_by_gene[*it] = zero_rank_int;
+      rank_weight_by_gene[*it] = zero_rank_weight;
+    }
 
     // Step 2: compute non-zero gene ranks (overwrites the zero defaults)
     if (n_nonzero > 0) {
@@ -943,10 +947,8 @@ NumericMatrix ssgsea_rank_dense(
         ++nz_pos;
       }
     } else {
-      for (int g = 0; g < n_genes; ++g) {
-        if (is_nonzero[g] == 0) {
-          position_by_gene[g] = g + 1;
-        }
+      for (std::vector<int>::const_iterator it = set_gene_union.begin(); it != set_gene_union.end(); ++it) {
+        position_by_gene[*it] = *it + 1;
       }
     }
 
@@ -1025,45 +1027,10 @@ NumericMatrix zscore_dense(
   IntegerVector col_ptr = expr.slot("p");
   NumericVector values = expr.slot("x");
 
-  std::vector<double> gene_sums(n_genes, 0.0);
-  std::vector<double> gene_sq_sums(n_genes, 0.0);
-
-  for (int cell = 0; cell < n_cells; ++cell) {
-    for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
-      const int gene = row_idx[ptr];
-      const double value = values[ptr];
-      if (R_finite(value)) {
-        gene_sums[gene] += value;
-        gene_sq_sums[gene] += value * value;
-      }
-    }
-  }
-
-  std::vector<double> gene_means(n_genes, 0.0);
-  std::vector<double> gene_sds(n_genes, 1.0);
-  if (n_cells > 1) {
-    for (int gene = 0; gene < n_genes; ++gene) {
-      gene_means[gene] = gene_sums[gene] / static_cast<double>(n_cells);
-      double var_val = (gene_sq_sums[gene] -
-        static_cast<double>(n_cells) * gene_means[gene] * gene_means[gene]) /
-        static_cast<double>(n_cells - 1);
-      if (var_val < 0.0 && var_val > -1e-12) {
-        var_val = 0.0;
-      }
-      if (R_finite(var_val) && var_val > 0.0) {
-        gene_sds[gene] = std::sqrt(var_val);
-      } else {
-        gene_means[gene] = R_NaN;
-        gene_sds[gene] = R_NaN;
-      }
-    }
-  }
-  std::vector<double>().swap(gene_sums);
-  std::vector<double>().swap(gene_sq_sums);
-
-  // Build gene -> set adjacency. Only sets containing the current gene need
-  // updating during sparse traversal.
+  // Build gene -> set adjacency first so sparse passes can ignore genes that
+  // are never queried by any retained gene set.
   std::vector<std::vector<int> > gene_to_sets(n_genes);
+  std::vector<unsigned char> gene_needed(n_genes, 0);
   std::vector<int> set_sizes(n_sets, 0);
   std::vector<double> inv_sqrt_size(n_sets, 1.0);
   for (int set_i = 0; set_i < n_sets; ++set_i) {
@@ -1081,12 +1048,54 @@ NumericMatrix zscore_dense(
     for (std::vector<int>::const_iterator it = seen.begin(); it != seen.end(); ++it) {
       const int gene = *it;
       gene_to_sets[gene].push_back(set_i);
+      gene_needed[gene] = 1;
       ++set_sizes[set_i];
     }
     if (set_sizes[set_i] > 0) {
       inv_sqrt_size[set_i] = 1.0 / std::sqrt(static_cast<double>(set_sizes[set_i]));
     }
   }
+
+  std::vector<double> gene_sums(n_genes, 0.0);
+  std::vector<double> gene_sq_sums(n_genes, 0.0);
+
+  for (int cell = 0; cell < n_cells; ++cell) {
+    for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
+      const int gene = row_idx[ptr];
+      const double value = values[ptr];
+      if (gene_needed[gene] && R_finite(value)) {
+        gene_sums[gene] += value;
+        gene_sq_sums[gene] += value * value;
+      }
+    }
+  }
+
+  std::vector<double> gene_means(n_genes, 0.0);
+  std::vector<double> gene_sds(n_genes, 1.0);
+  if (n_cells > 1) {
+    for (int gene = 0; gene < n_genes; ++gene) {
+      if (!gene_needed[gene]) {
+        gene_means[gene] = R_NaN;
+        gene_sds[gene] = R_NaN;
+        continue;
+      }
+      gene_means[gene] = gene_sums[gene] / static_cast<double>(n_cells);
+      double var_val = (gene_sq_sums[gene] -
+        static_cast<double>(n_cells) * gene_means[gene] * gene_means[gene]) /
+        static_cast<double>(n_cells - 1);
+      if (var_val < 0.0 && var_val > -1e-12) {
+        var_val = 0.0;
+      }
+      if (R_finite(var_val) && var_val > 0.0) {
+        gene_sds[gene] = std::sqrt(var_val);
+      } else {
+        gene_means[gene] = R_NaN;
+        gene_sds[gene] = R_NaN;
+      }
+    }
+  }
+  std::vector<double>().swap(gene_sums);
+  std::vector<double>().swap(gene_sq_sums);
 
   // Compute z-score per gene set over the dense expression view used by
   // GSVA::zscoreParam in the R benchmark. Structural zeros contribute
@@ -1155,6 +1164,24 @@ NumericMatrix plage_dense(
   IntegerVector col_ptr = expr.slot("p");
   NumericVector values = expr.slot("x");
 
+  std::vector<std::vector<int> > sets(n_sets);
+  std::vector<unsigned char> row_needed(n_genes, 0);
+  for (int set_i = 0; set_i < n_sets; ++set_i) {
+    IntegerVector genes = gene_sets[set_i];
+    sets[set_i].reserve(genes.size());
+    for (int gene_i = 0; gene_i < genes.size(); ++gene_i) {
+      const int gene = genes[gene_i] - 1;
+      if (gene >= 0 && gene < n_genes) {
+        sets[set_i].push_back(gene);
+      }
+    }
+    std::sort(sets[set_i].begin(), sets[set_i].end());
+    sets[set_i].erase(std::unique(sets[set_i].begin(), sets[set_i].end()), sets[set_i].end());
+    for (std::vector<int>::const_iterator it = sets[set_i].begin(); it != sets[set_i].end(); ++it) {
+      row_needed[*it] = 1;
+    }
+  }
+
   std::vector<double> row_sums(n_genes, 0.0);
   std::vector<double> row_sq_sums(n_genes, 0.0);
 
@@ -1162,7 +1189,7 @@ NumericMatrix plage_dense(
     for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
       const int gene = row_idx[ptr];
       const double value = values[ptr];
-      if (R_finite(value) && value != 0.0) {
+      if (row_needed[gene] && R_finite(value) && value != 0.0) {
         row_sums[gene] += value;
         row_sq_sums[gene] += value * value;
       }
@@ -1175,7 +1202,7 @@ NumericMatrix plage_dense(
     for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
       const int gene = row_idx[ptr];
       const double value = values[ptr];
-      if (R_finite(value) && value != 0.0) {
+      if (row_needed[gene] && R_finite(value) && value != 0.0) {
         ++row_counts[gene];
       }
     }
@@ -1192,7 +1219,7 @@ NumericMatrix plage_dense(
     for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
       const int gene = row_idx[ptr];
       const double value = values[ptr];
-      if (R_finite(value) && value != 0.0) {
+      if (row_needed[gene] && R_finite(value) && value != 0.0) {
         const int out = row_cursor[gene]++;
         row_cells[out] = cell;
         row_values[out] = value;
@@ -1209,6 +1236,9 @@ NumericMatrix plage_dense(
   std::vector<unsigned char> orient_row_valid(n_genes, 0);
   if (n_cells > 1) {
     for (int gene = 0; gene < n_genes; ++gene) {
+      if (!row_needed[gene]) {
+        continue;
+      }
       const double mean = row_sums[gene] / static_cast<double>(n_cells);
       double var = (row_sq_sums[gene] - static_cast<double>(n_cells) * mean * mean) /
         static_cast<double>(n_cells - 1);
@@ -1226,20 +1256,6 @@ NumericMatrix plage_dense(
     }
   }
   std::vector<int>().swap(row_counts);
-
-  std::vector<std::vector<int> > sets(n_sets);
-  for (int set_i = 0; set_i < n_sets; ++set_i) {
-    IntegerVector genes = gene_sets[set_i];
-    sets[set_i].reserve(genes.size());
-    for (int gene_i = 0; gene_i < genes.size(); ++gene_i) {
-      const int gene = genes[gene_i] - 1;
-      if (gene >= 0 && gene < n_genes) {
-        sets[set_i].push_back(gene);
-      }
-    }
-    std::sort(sets[set_i].begin(), sets[set_i].end());
-    sets[set_i].erase(std::unique(sets[set_i].begin(), sets[set_i].end()), sets[set_i].end());
-  }
 
   NumericMatrix scores(n_cells, n_sets);
   for (int set_i = 0; set_i < n_sets; ++set_i) {
