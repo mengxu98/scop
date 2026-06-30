@@ -433,28 +433,40 @@ test_that("infercnv runner avoids subclusters by default and filters passthrough
           cutoff,
           out_dir,
           cluster_by_groups,
+          cluster_references,
           denoise,
           HMM,
           analysis_mode,
           tumor_subcluster_partition_method,
           plot_steps,
+          resume_mode,
           no_plot,
+          no_prelim_plot,
           save_rds,
           save_final_rds,
+          plot_probabilities,
+          write_expr_matrix,
+          write_phylo,
           inspect_subclusters,
           num_threads
         ) {
           expect_equal(cutoff, 0.1)
           expect_true(dir.exists(out_dir))
           expect_false(cluster_by_groups)
+          expect_false(cluster_references)
           expect_false(denoise)
           expect_false(HMM)
           expect_identical(analysis_mode, "samples")
           expect_identical(tumor_subcluster_partition_method, "qnorm")
           expect_false(plot_steps)
+          expect_false(resume_mode)
           expect_true(no_plot)
+          expect_true(no_prelim_plot)
           expect_false(save_rds)
           expect_false(save_final_rds)
+          expect_false(plot_probabilities)
+          expect_false(write_expr_matrix)
+          expect_false(write_phylo)
           expect_false(inspect_subclusters)
           expect_true(is.numeric(num_threads))
           expect_true(num_threads >= 1)
