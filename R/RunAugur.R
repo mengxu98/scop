@@ -609,7 +609,7 @@ augur_cpp <- function(
                 y = y_var,
                 x = x_var,
                 importance = TRUE,
-                localImp = TRUE,
+                localImp = FALSE,
                 ntree = rf_params$trees,
                 mtry = rf_params$mtry,
                 min_n = rf_params$min_n,

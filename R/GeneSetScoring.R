@@ -87,6 +87,24 @@ gene_set_scoring_indices <- function(gene_sets, feature_names) {
   )
 }
 
+gene_set_scoring_subset_to_index_union <- function(expr, gene_set_idx) {
+  union_idx <- sort(unique(unlist(gene_set_idx, use.names = FALSE)))
+  if (!length(union_idx)) {
+    return(list(expr = expr, gene_sets = gene_set_idx))
+  }
+  index_map <- integer(nrow(expr))
+  index_map[union_idx] <- seq_along(union_idx)
+  list(
+    expr = expr[union_idx, , drop = FALSE],
+    gene_sets = stats::setNames(
+      lapply(gene_set_idx, function(idx) {
+        as.integer(index_map[idx])
+      }),
+      names(gene_set_idx)
+    )
+  )
+}
+
 gene_set_scoring_require_namespace <- function(pkg, install_hint = pkg) {
   if (!requireNamespace(pkg, quietly = TRUE)) {
     log_message(
@@ -481,6 +499,9 @@ run_zscore_scores <- function(
       message_type = "error"
     )
   }
+  subset <- gene_set_scoring_subset_to_index_union(expr_counts, gene_set_idx)
+  expr_counts <- subset$expr
+  gene_set_idx <- subset$gene_sets
 
   max_size <- if (is.finite(max_gs_size)) {
     as.integer(max_gs_size)
@@ -520,6 +541,9 @@ run_plage_scores <- function(
       message_type = "error"
     )
   }
+  subset <- gene_set_scoring_subset_to_index_union(expr_counts, gene_set_idx)
+  expr_counts <- subset$expr
+  gene_set_idx <- subset$gene_sets
 
   max_size <- if (is.finite(max_gs_size)) {
     as.integer(max_gs_size)

@@ -252,10 +252,11 @@ RuntAge <- function(
       verbose = verbose
     )
   } else {
-    processed <- get_namespace_fun("tAge", "tAge_preprocessing")(
+    processed <- tage_preprocessing_selected(
       eset = eset,
       species = species,
       gene_mapping_type = gene_mapping_type,
+      model_names = names(model_paths),
       verbose = verbose,
       control_group_column = control_group_column,
       control_group_label = control_group_label,
@@ -600,6 +601,82 @@ normalize_tage_model_preprocessing <- function(model_preprocessing) {
     )
   }
   model_preprocessing
+}
+
+tage_preprocessing_selected <- function(
+  eset,
+  species,
+  gene_mapping_type,
+  model_names,
+  verbose = TRUE,
+  control_group_column = NULL,
+  control_group_label = NULL,
+  count_threshold = 10,
+  percent_threshold = 20
+) {
+  model_names <- intersect(model_names, c("scaled", "scaled_diff", "yugene", "yugene_diff"))
+  if (!length(model_names)) {
+    log_message(
+      "No valid tAge model preprocessing names were provided",
+      message_type = "error"
+    )
+  }
+  gene_list <- get_namespace_fun("tAge", "load_gene_list")()
+  eset_filtered <- get_namespace_fun("tAge", "filter_genes")(
+    eset,
+    count_threshold = count_threshold,
+    percent_threshold = percent_threshold,
+    verbose = verbose
+  )
+  eset_genes_converted <- get_namespace_fun("tAge", "map_genes")(
+    eset_filtered,
+    species,
+    gene_mapping_type,
+    verbose
+  )
+  eset_rle <- get_namespace_fun("tAge", "RLE_normalization")(
+    eset_genes_converted,
+    verbose
+  )
+  eset_log <- get_namespace_fun("tAge", "log_transform")(
+    eset_rle,
+    verbose = verbose
+  )
+  eset_scaled <- get_namespace_fun("tAge", "scale_eset")(
+    eset_log,
+    verbose = verbose
+  )
+
+  processed <- list()
+  if ("scaled" %in% model_names) {
+    processed$scaled <- eset_scaled
+  }
+  if ("scaled_diff" %in% model_names) {
+    processed$scaled_diff <- get_namespace_fun("tAge", "control_subtraction")(
+      get_namespace_fun("tAge", ".align_to_gene_list")(eset_scaled, gene_list),
+      column_name = control_group_column,
+      control_label = control_group_label,
+      verbose = verbose
+    )
+  }
+  if (any(c("yugene", "yugene_diff") %in% model_names)) {
+    eset_yugene <- get_namespace_fun("tAge", "YuGene")(
+      eset_scaled,
+      verbose = verbose
+    )
+    if ("yugene" %in% model_names) {
+      processed$yugene <- eset_yugene
+    }
+    if ("yugene_diff" %in% model_names) {
+      processed$yugene_diff <- get_namespace_fun("tAge", "control_subtraction")(
+        get_namespace_fun("tAge", ".align_to_gene_list")(eset_yugene, gene_list),
+        column_name = control_group_column,
+        control_label = control_group_label,
+        verbose = verbose
+      )
+    }
+  }
+  processed
 }
 
 fetch_tage_zenodo_metadata <- function(zenodo_record = "18763485") {
@@ -998,10 +1075,11 @@ run_tage_by_group_scop <- function(
     )
     result <- tryCatch(
       {
-        processed <- get_namespace_fun("tAge", "tAge_preprocessing")(
+        processed <- tage_preprocessing_selected(
           eset = eset_sub,
           species = species,
           gene_mapping_type = gene_mapping_type,
+          model_names = names(model_paths),
           verbose = verbose,
           control_group_column = control_group_column,
           control_group_label = control_group_label,

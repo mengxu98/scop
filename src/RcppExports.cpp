@@ -2413,6 +2413,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// sparse_row_mean_var_dgc_list
+List sparse_row_mean_var_dgc_list(List mats, int nrow);
+RcppExport SEXP _scop_sparse_row_mean_var_dgc_list(SEXP matsSEXP, SEXP nrowSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type mats(matsSEXP);
+    Rcpp::traits::input_parameter< int >::type nrow(nrowSEXP);
+    rcpp_result_gen = Rcpp::wrap(sparse_row_mean_var_dgc_list(mats, nrow));
+    return rcpp_result_gen;
+END_RCPP
+}
 // sparse_row_var_std
 NumericVector sparse_row_var_std(IntegerVector p, IntegerVector i, NumericVector x, int nrow, int ncol, NumericVector mu, NumericVector sd, double vmax, IntegerVector nnzPerRow);
 RcppExport SEXP _scop_sparse_row_var_std(SEXP pSEXP, SEXP iSEXP, SEXP xSEXP, SEXP nrowSEXP, SEXP ncolSEXP, SEXP muSEXP, SEXP sdSEXP, SEXP vmaxSEXP, SEXP nnzPerRowSEXP) {
@@ -2429,6 +2441,21 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type vmax(vmaxSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type nnzPerRow(nnzPerRowSEXP);
     rcpp_result_gen = Rcpp::wrap(sparse_row_var_std(p, i, x, nrow, ncol, mu, sd, vmax, nnzPerRow));
+    return rcpp_result_gen;
+END_RCPP
+}
+// sparse_row_var_std_dgc_list
+NumericVector sparse_row_var_std_dgc_list(List mats, int nrow, NumericVector mu, NumericVector sd, double vmax);
+RcppExport SEXP _scop_sparse_row_var_std_dgc_list(SEXP matsSEXP, SEXP nrowSEXP, SEXP muSEXP, SEXP sdSEXP, SEXP vmaxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type mats(matsSEXP);
+    Rcpp::traits::input_parameter< int >::type nrow(nrowSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type sd(sdSEXP);
+    Rcpp::traits::input_parameter< double >::type vmax(vmaxSEXP);
+    rcpp_result_gen = Rcpp::wrap(sparse_row_var_std_dgc_list(mats, nrow, mu, sd, vmax));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -2582,7 +2609,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_sct_fused_resid_center_sparse", (DL_FUNC) &_scop_sct_fused_resid_center_sparse, 12},
     {"_scop_tage_elastic_net_predict_cpp", (DL_FUNC) &_scop_tage_elastic_net_predict_cpp, 7},
     {"_scop_sparse_row_mean_var", (DL_FUNC) &_scop_sparse_row_mean_var, 5},
+    {"_scop_sparse_row_mean_var_dgc_list", (DL_FUNC) &_scop_sparse_row_mean_var_dgc_list, 2},
     {"_scop_sparse_row_var_std", (DL_FUNC) &_scop_sparse_row_var_std, 9},
+    {"_scop_sparse_row_var_std_dgc_list", (DL_FUNC) &_scop_sparse_row_var_std_dgc_list, 5},
     {NULL, NULL, 0}
 };
 

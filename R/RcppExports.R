@@ -593,7 +593,15 @@ sparse_row_mean_var <- function(p, i, x, nrow, ncol) {
     .Call(`_scop_sparse_row_mean_var`, p, i, x, nrow, ncol)
 }
 
+sparse_row_mean_var_dgc_list <- function(mats, nrow) {
+    .Call(`_scop_sparse_row_mean_var_dgc_list`, mats, nrow)
+}
+
 sparse_row_var_std <- function(p, i, x, nrow, ncol, mu, sd, vmax, nnzPerRow) {
     .Call(`_scop_sparse_row_var_std`, p, i, x, nrow, ncol, mu, sd, vmax, nnzPerRow)
+}
+
+sparse_row_var_std_dgc_list <- function(mats, nrow, mu, sd, vmax) {
+    .Call(`_scop_sparse_row_var_std_dgc_list`, mats, nrow, mu, sd, vmax)
 }
 

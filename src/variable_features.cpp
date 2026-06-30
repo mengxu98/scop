@@ -88,6 +88,61 @@ List sparse_row_mean_var(IntegerVector p, IntegerVector i, NumericVector x,
                       Named("nnz") = nnz);
 }
 
+// [[Rcpp::export]]
+List sparse_row_mean_var_dgc_list(List mats, int nrow) {
+  const int n_layers = mats.size();
+  if (n_layers < 1) {
+    stop("mats must contain at least one dgCMatrix");
+  }
+
+  std::vector<double> sum(nrow, 0.0);
+  std::vector<double> sumsq(nrow, 0.0);
+  std::vector<int> nnz(nrow, 0);
+  int ncol_total = 0;
+
+  for (int layer = 0; layer < n_layers; ++layer) {
+    S4 mat = mats[layer];
+    IntegerVector p = mat.slot("p");
+    IntegerVector i = mat.slot("i");
+    NumericVector x = mat.slot("x");
+    IntegerVector dim = mat.slot("Dim");
+    if (dim.size() != 2 || dim[0] != nrow) {
+      stop("All matrices must have the requested row count");
+    }
+    const int ncol = dim[1];
+    ncol_total += ncol;
+    const int* pp = INTEGER(p);
+    const int* ip = INTEGER(i);
+    const double* xp = REAL(x);
+    for (int col = 0; col < ncol; ++col) {
+      for (int pos = pp[col]; pos < pp[col + 1]; ++pos) {
+        const int row = ip[pos];
+        const double value = xp[pos];
+        sum[row] += value;
+        sumsq[row] += value * value;
+        nnz[row] += 1;
+      }
+    }
+  }
+
+  NumericVector mu(nrow);
+  NumericVector variance(nrow);
+  IntegerVector nnz_out(nrow);
+  const double n = static_cast<double>(ncol_total);
+  const double denom = n - 1.0;
+  for (int row = 0; row < nrow; ++row) {
+    mu[row] = sum[row] / n;
+    variance[row] = (sumsq[row] - n * mu[row] * mu[row]) / denom;
+    if (variance[row] < 0.0) variance[row] = 0.0;
+    nnz_out[row] = nnz[row];
+  }
+
+  return List::create(Named("mean") = mu,
+                      Named("variance") = variance,
+                      Named("nnz") = nnz_out,
+                      Named("ncol") = ncol_total);
+}
+
 static void prepare_standardization(NumericVector mu, NumericVector sd,
                                     std::vector<double>& inv_sd,
                                     std::vector<double>& zero_offset) {
@@ -166,6 +221,61 @@ NumericVector sparse_row_var_std(IntegerVector p, IntegerVector i, NumericVector
       continue;
     }
     const int nZero = ncol - nnzPerRow[row];
+    const double zeroVal = mu_isd_vec[row];
+    const double total = sumSq[row] + zeroVal * zeroVal * nZero;
+    result[row] = total / denom;
+  }
+  return result;
+}
+
+// [[Rcpp::export]]
+NumericVector sparse_row_var_std_dgc_list(List mats, int nrow,
+                                          NumericVector mu, NumericVector sd,
+                                          double vmax) {
+  std::vector<double> inv_sd_vec(nrow);
+  std::vector<double> mu_isd_vec(nrow);
+  prepare_standardization(mu, sd, inv_sd_vec, mu_isd_vec);
+
+  std::vector<double> sumSq(nrow, 0.0);
+  std::vector<int> nnz(nrow, 0);
+  int ncol_total = 0;
+  const int n_layers = mats.size();
+
+  for (int layer = 0; layer < n_layers; ++layer) {
+    S4 mat = mats[layer];
+    IntegerVector p = mat.slot("p");
+    IntegerVector i = mat.slot("i");
+    NumericVector x = mat.slot("x");
+    IntegerVector dim = mat.slot("Dim");
+    if (dim.size() != 2 || dim[0] != nrow) {
+      stop("All matrices must have the requested row count");
+    }
+    const int ncol = dim[1];
+    ncol_total += ncol;
+    const int* pp = INTEGER(p);
+    const int* ip = INTEGER(i);
+    const double* xp = REAL(x);
+    for (int col = 0; col < ncol; ++col) {
+      for (int pos = pp[col]; pos < pp[col + 1]; ++pos) {
+        const int row = ip[pos];
+        const double isd = inv_sd_vec[row];
+        nnz[row] += 1;
+        if (isd == 0.0) continue;
+        double z = xp[pos] * isd - mu_isd_vec[row];
+        if (z > vmax) z = vmax;
+        sumSq[row] += z * z;
+      }
+    }
+  }
+
+  NumericVector result(nrow);
+  const double denom = ncol_total - 1.0;
+  for (int row = 0; row < nrow; ++row) {
+    if (inv_sd_vec[row] == 0.0) {
+      result[row] = 0.0;
+      continue;
+    }
+    const int nZero = ncol_total - nnz[row];
     const double zeroVal = mu_isd_vec[row];
     const double total = sumSq[row] + zeroVal * zeroVal * nZero;
     result[row] = total / denom;

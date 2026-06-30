@@ -73,6 +73,20 @@ ScaleData.Seurat <- function(
   if (length(data_layers) == 0L) {
     stop("ScaleData.Seurat requires an Assay5 object with a data layer.", call. = FALSE)
   }
+  features <- if (is.null(features)) {
+    SeuratObject::VariableFeatures(object)
+  } else {
+    features
+  }
+  if (length(features) == 0) {
+    features <- rownames(assay_obj)
+  }
+
+  all_genes <- rownames(assay_obj)
+  features <- intersect(features, all_genes)
+  features <- features[order(match(features, all_genes))]
+  idx <- match(features, all_genes) - 1L
+
   layers <- methods::slot(assay_obj, "layers")
   data_mat <- if (length(data_layers) == 1L) {
     layers[[data_layers]]
@@ -83,7 +97,11 @@ ScaleData.Seurat <- function(
       if (is.null(colnames(mat))) {
         colnames(mat) <- rownames(cells_map)[cells_map[, data_layer, drop = TRUE]]
       }
-      mat
+      if (nrow(mat) == length(all_genes)) {
+        mat[idx + 1L, , drop = FALSE]
+      } else {
+        mat
+      }
     })
     do.call(cbind, unname(data_mats))
   }
@@ -98,20 +116,8 @@ ScaleData.Seurat <- function(
   }
   if (length(data_layers) > 1L) {
     data_mat <- data_mat[, colnames(object), drop = FALSE]
+    idx <- seq_along(features) - 1L
   }
-  features <- if (is.null(features)) {
-    SeuratObject::VariableFeatures(object)
-  } else {
-    features
-  }
-  if (length(features) == 0) {
-    features <- rownames(assay_obj)
-  }
-
-  all_genes <- rownames(assay_obj)
-  features <- intersect(features, all_genes)
-  features <- features[order(match(features, all_genes))]
-  idx <- match(features, all_genes) - 1L
 
   result <- scale_sparse_full(data_mat, idx, scale.max)
   dimnames(result) <- list(features, colnames(object))
