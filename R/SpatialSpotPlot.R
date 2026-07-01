@@ -27,6 +27,9 @@
 #' @param crop Whether to crop the panel to plotted spots.
 #' @param coord.cols Metadata coordinate columns used when no image is available.
 #' @param flip.y Whether to reverse the y axis for metadata coordinates.
+#' @param show_axes Whether to keep axis text, ticks, and grid lines. The
+#' default `FALSE` is intended for polished spatial maps; set `TRUE` for
+#' coordinate debugging.
 #' @param pt.size Point size.
 #' @param pie.radius,pie.radius.scale Radius controls for `plot_type = "pie"`.
 #' If `pie.radius` is `NULL`, the radius is estimated from spot spacing and
@@ -69,6 +72,7 @@ SpatialSpotPlot <- function(
   crop = TRUE,
   coord.cols = c("col", "row"),
   flip.y = TRUE,
+  show_axes = FALSE,
   split.by = NULL,
   cells = NULL,
   show_na = FALSE,
@@ -120,6 +124,7 @@ SpatialSpotPlot <- function(
       crop = crop,
       coord.cols = coord.cols,
       flip.y = flip.y,
+      show_axes = show_axes,
       split.by = split.by,
       cells = cells,
       pt.size = pt.size,
@@ -152,6 +157,7 @@ SpatialSpotPlot <- function(
       crop = crop,
       coord.cols = coord.cols,
       flip.y = flip.y,
+      show_axes = show_axes,
       split.by = split.by,
       cells = cells,
       pie.radius = pie.radius,
@@ -237,6 +243,7 @@ SpatialSpotPlot <- function(
       image.alpha = image.alpha,
       crop = crop,
       flip.y = flip.y && isFALSE(coords$uses_image),
+      show_axes = show_axes,
       pt.size = pt.size,
       pt.alpha = pt.alpha,
       stroke = stroke,
@@ -273,6 +280,7 @@ spatial_dim_long_plot <- function(
   crop = TRUE,
   coord.cols = c("col", "row"),
   flip.y = TRUE,
+  show_axes = FALSE,
   split.by = NULL,
   cells = NULL,
   pt.size = NULL,
@@ -339,7 +347,11 @@ spatial_dim_long_plot <- function(
     pt.size <- min(3000 / nrow(df), 2)
   }
 
-  theme_obj <- spatial_dim_drop_coord(do.call(theme_use, theme_args))
+  theme_obj <- scop_spatial_theme(
+    theme_use = theme_use,
+    theme_args = theme_args,
+    show_axes = show_axes
+  )
   values <- df[[color.by]]
   p <- ggplot2::ggplot(df, ggplot2::aes(x = .data$x, y = .data$y))
   if (isTRUE(overlay_image) && !is.null(coords$image)) {
@@ -376,7 +388,7 @@ spatial_dim_long_plot <- function(
     }
     p <- p +
       point_layer +
-      ggplot2::scale_color_gradientn(colors = cols, na.value = "grey80") +
+      spatial_dim_continuous_scale(values, aesthetic = "color", colors = cols) +
       ggplot2::labs(x = NULL, y = NULL, color = legend.title %||% color.by)
   } else {
     values <- as.character(values)
@@ -427,12 +439,11 @@ spatial_dim_long_plot <- function(
     p <- p + ggplot2::facet_wrap(stats::as.formula(paste("~", split.by)))
   }
   if (isTRUE(crop)) {
-    xpad <- diff(range(df$x, na.rm = TRUE)) * 0.04
-    ypad <- diff(range(df$y, na.rm = TRUE)) * 0.04
+    limits <- scop_spatial_crop_limits(df$x, df$y)
     p <- p +
       ggplot2::coord_equal(
-        xlim = range(df$x, na.rm = TRUE) + c(-xpad, xpad),
-        ylim = range(df$y, na.rm = TRUE) + c(-ypad, ypad)
+        xlim = limits$xlim,
+        ylim = limits$ylim
       )
   } else {
     p <- p + ggplot2::coord_equal()
@@ -450,6 +461,7 @@ spatial_dim_pie_plot <- function(
   crop = TRUE,
   coord.cols = c("col", "row"),
   flip.y = TRUE,
+  show_axes = FALSE,
   split.by = NULL,
   cells = NULL,
   pie.radius = NULL,
@@ -490,9 +502,13 @@ spatial_dim_pie_plot <- function(
   dat <- dat[keep, , drop = FALSE]
   mat <- mat[keep, , drop = FALSE]
   if (nrow(dat) == 0L) {
-    log_message(
-      "No spots with positive pie values are available for plotting",
-      message_type = "error"
+    return(
+      scop_spatial_empty_plot(
+        "No spots with positive pie values",
+        title = legend.title %||% "Proportion",
+        theme_use = theme_use,
+        theme_args = theme_args
+      )
     )
   }
   mat <- sweep(mat, 1, rowSums(mat), "/")
@@ -518,7 +534,11 @@ spatial_dim_pie_plot <- function(
     palette = palette,
     palcolor = palcolor
   )
-  theme_obj <- spatial_dim_drop_coord(do.call(theme_use, theme_args))
+  theme_obj <- scop_spatial_theme(
+    theme_use = theme_use,
+    theme_args = theme_args,
+    show_axes = show_axes
+  )
   p <- ggplot2::ggplot(plot_dat, ggplot2::aes(x = x, y = y))
   if (isTRUE(overlay_image) && !is.null(coords$image)) {
     p <- p +
@@ -553,12 +573,11 @@ spatial_dim_pie_plot <- function(
   }
   if (isTRUE(crop)) {
     radius_max <- max(plot_dat[[".radius"]], na.rm = TRUE)
-    xpad <- max(diff(range(plot_dat$x, na.rm = TRUE)) * 0.04, radius_max)
-    ypad <- max(diff(range(plot_dat$y, na.rm = TRUE)) * 0.04, radius_max)
+    limits <- scop_spatial_crop_limits(plot_dat$x, plot_dat$y, min_pad = radius_max)
     p <- p +
       ggplot2::coord_equal(
-        xlim = range(plot_dat$x, na.rm = TRUE) + c(-xpad, xpad),
-        ylim = range(plot_dat$y, na.rm = TRUE) + c(-ypad, ypad)
+        xlim = limits$xlim,
+        ylim = limits$ylim
       )
   } else {
     p <- p + ggplot2::coord_equal()
@@ -766,18 +785,7 @@ spatial_dim_coords <- function(
     return(list(data = out, image = image_info, uses_image = TRUE))
   }
 
-  if (!all(coord.cols %in% colnames(srt@meta.data))) {
-    log_message(
-      "Spatial coordinates were not found. Provide a Seurat image or metadata columns {.val {coord.cols}}.",
-      message_type = "error"
-    )
-  }
-  out <- data.frame(
-    x = srt@meta.data[[coord.cols[1L]]],
-    y = srt@meta.data[[coord.cols[2L]]],
-    row.names = rownames(srt@meta.data),
-    stringsAsFactors = FALSE
-  )
+  out <- scop_spatial_metadata_coords(srt, coord.cols = coord.cols)
   list(data = out, image = image_info, uses_image = FALSE)
 }
 
@@ -903,9 +911,14 @@ spatial_dim_single_plot <- function(
   legend.direction = "vertical",
   legend.title = value_name,
   theme_use = "theme_blank",
-  theme_args = list()
+  theme_args = list(),
+  show_axes = FALSE
 ) {
-  theme_obj <- spatial_dim_drop_coord(do.call(theme_use, theme_args))
+  theme_obj <- scop_spatial_theme(
+    theme_use = theme_use,
+    theme_args = theme_args,
+    show_axes = show_axes
+  )
   p <- ggplot2::ggplot(plot_dat, ggplot2::aes(x = .data$x, y = .data$y))
   if (isTRUE(overlay_image) && !is.null(image_info)) {
     p <- p +
@@ -919,6 +932,14 @@ spatial_dim_single_plot <- function(
   }
 
   values <- plot_dat[[value_col]]
+  if (nrow(plot_dat) == 0L || all(is.na(values))) {
+    return(scop_spatial_empty_plot(
+      "No values available for plotting",
+      title = value_name,
+      theme_use = theme_use,
+      theme_args = theme_args
+    ))
+  }
   if (is.numeric(values)) {
     cols <- palette_colors(
       type = "continuous",
@@ -931,7 +952,7 @@ spatial_dim_single_plot <- function(
         size = pt.size,
         alpha = pt.alpha
       ) +
-      ggplot2::scale_color_gradientn(colors = cols, na.value = "grey80")
+      spatial_dim_continuous_scale(values, aesthetic = "color", colors = cols)
   } else {
     lvls <- levels(factor(values))
     cols <- palette_colors(lvls, palette = palette, palcolor = palcolor)
@@ -964,12 +985,11 @@ spatial_dim_single_plot <- function(
     p <- p + ggplot2::scale_y_reverse()
   }
   if (isTRUE(crop)) {
-    xpad <- diff(range(plot_dat$x, na.rm = TRUE)) * 0.04
-    ypad <- diff(range(plot_dat$y, na.rm = TRUE)) * 0.04
+    limits <- scop_spatial_crop_limits(plot_dat$x, plot_dat$y)
     p <- p +
       ggplot2::coord_equal(
-        xlim = range(plot_dat$x, na.rm = TRUE) + c(-xpad, xpad),
-        ylim = range(plot_dat$y, na.rm = TRUE) + c(-ypad, ypad)
+        xlim = limits$xlim,
+        ylim = limits$ylim
       )
   } else {
     p <- p + ggplot2::coord_equal()
@@ -978,6 +998,33 @@ spatial_dim_single_plot <- function(
     p <- p + ggplot2::facet_wrap(stats::as.formula(paste("~", split.by)))
   }
   p
+}
+
+spatial_dim_continuous_scale <- function(values, aesthetic = c("color", "fill"), colors) {
+  aesthetic <- match.arg(aesthetic)
+  finite <- values[is.finite(values)]
+  limits <- NULL
+  breaks <- ggplot2::waiver()
+  if (length(unique(finite)) == 1L) {
+    center <- unique(finite)
+    span <- max(abs(center) * 0.1, 0.5)
+    limits <- center + c(-span, span)
+    breaks <- center
+  }
+  if (identical(aesthetic, "color")) {
+    return(ggplot2::scale_color_gradientn(
+      colors = colors,
+      na.value = "grey80",
+      limits = limits,
+      breaks = breaks
+    ))
+  }
+  ggplot2::scale_fill_gradientn(
+    colors = colors,
+    na.value = "grey80",
+    limits = limits,
+    breaks = breaks
+  )
 }
 
 spatial_dim_image_scale <- function(image) {

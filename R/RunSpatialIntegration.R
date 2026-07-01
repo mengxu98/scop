@@ -881,11 +881,18 @@ spatial_integration_apply_result <- function(
     aligned_coord_cols = aligned_coord_cols,
     tool_name = tool_name
   )
+  sample_summary <- as.data.frame(table(srt@meta.data[[sample.by]]), stringsAsFactors = FALSE)
+  colnames(sample_summary) <- c("sample", "count")
   method_bundle <- list(
     embedding = result$embedding,
     domains = result$domains,
     aligned_coords = result$aligned_coords,
     raw_result = result$raw_result,
+    summary = list(
+      n_cells = length(all_cells),
+      domains = scop_spatial_domain_summary(result$domains),
+      samples = sample_summary
+    ),
     parameters = parameters
   )
   if (isTRUE(store_results)) {
@@ -896,7 +903,8 @@ spatial_integration_apply_result <- function(
       active_method = method,
       methods = methods_store,
       parameters = parameters,
-    features = result$features,
+      summary = method_bundle$summary,
+      features = result$features,
       samples = unique(as.character(srt@meta.data[[sample.by]])),
       cells = all_cells
     )

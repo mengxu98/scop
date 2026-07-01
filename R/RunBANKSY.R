@@ -197,6 +197,10 @@ RunBANKSY <- function(
       coords = coords,
       features = rownames(expr),
       se = backend$se,
+      summary = list(
+        n_spots = nrow(cluster_df),
+        domains = scop_spatial_domain_summary(cluster_df[[cluster_colname]])
+      ),
       parameters = list(
         assay = assay,
         layer = layer,

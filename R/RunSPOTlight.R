@@ -230,12 +230,12 @@ RunSPOTlight <- function(
   )
 
   weights <- spotlight_extract_weights(result, spot_ids = colnames(st_counts))
-  weight_summary <- rctd_finalize_weights_cpp(
+  weight_summary <- scop_spatial_finalize_weights(
     weights = weights,
     all_spots = colnames(srt)
   )
   weights <- weight_summary$weights
-  srt <- rctd_add_metadata(
+  srt <- scop_spatial_add_deconv_metadata(
     srt,
     weights = weights,
     prefix = prefix,
@@ -249,6 +249,7 @@ RunSPOTlight <- function(
       marker_genes = mgs,
       features = features_use,
       result = result,
+      summary = scop_spatial_weight_summary(weights),
       parameters = list(
         assay = assay,
         reference_assay = reference_assay,

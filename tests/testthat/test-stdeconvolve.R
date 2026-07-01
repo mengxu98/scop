@@ -84,6 +84,7 @@ test_that("RunSTdeconvolve writes topic proportions and tool results", {
   expect_true("STdeconvolve" %in% names(out@tools))
   expect_equal(out@tools$STdeconvolve$selected_k, 2L)
   expect_equal(colnames(out@tools$STdeconvolve$theta), c("topic_1", "topic_2"))
+  expect_named(out@tools$STdeconvolve$summary, c("n_spots", "n_types", "dominant_counts", "max_prop"))
 })
 
 test_that("RunSTdeconvolve validates inputs before backend work", {

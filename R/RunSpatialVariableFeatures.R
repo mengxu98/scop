@@ -213,10 +213,15 @@ RunSpatialVariableFeatures <- function(
     SeuratObject::VariableFeatures(srt, assay = assay) <- top_features
   }
   if (isTRUE(store_results)) {
+    score_lookup <- stats::setNames(result$score, result$feature)
     srt@tools[["SpatialVariableFeatures"]] <- list(
       result = result,
       coords = coords,
       edges = edges,
+      summary = list(
+        n_features = nrow(result),
+        top_features = scop_spatial_feature_summary(top_features, scores = score_lookup)
+      ),
       parameters = list(
         assay = assay,
         layer = layer,

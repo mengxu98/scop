@@ -72,6 +72,8 @@ test_that("RunSpatialNeighborhood stores standardized spicyR results", {
   expect_equal(bundle$pair_table$from, c("T", "B", "T"))
   expect_equal(bundle$pair_table$direction[1:2], c("enriched", "depleted"))
   expect_true(all(c("cell", "neighbor", "from", "to", "distance") %in% colnames(bundle$edge_table)))
+  expect_named(bundle$summary, c("n_pairs", "n_edges", "top_pairs"))
+  expect_equal(out@tools$SpatialNeighborhood$summary$n_pairs, nrow(bundle$pair_table))
 })
 
 test_that("RunSpatialNeighborhood falls back to observed summaries without split.by", {
@@ -131,5 +133,9 @@ test_that("RunSpatialNeighborhood validates spatial inputs clearly", {
   expect_error(
     RunSpatialNeighborhood(srt, group.by = "CellType", coord.cols = c("missing_x", "y"), verbose = FALSE),
     "Spatial coordinates"
+  )
+  expect_error(
+    RunSpatialNeighborhood(srt, group.by = "CellType", method = "mistyR", coord.cols = c("x", "y"), verbose = FALSE),
+    "supports only"
   )
 })

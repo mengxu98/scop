@@ -169,12 +169,12 @@ RunSTdeconvolve <- function(
 
   theta <- stdeconvolve_orient_theta(backend$theta, spot_ids = colnames(counts))
   colnames(theta) <- make.unique(make.names(colnames(theta)), sep = "_")
-  weight_summary <- rctd_finalize_weights_cpp(
+  weight_summary <- scop_spatial_finalize_weights(
     weights = theta,
     all_spots = colnames(srt)
   )
   theta <- weight_summary$weights
-  srt <- rctd_add_metadata(
+  srt <- scop_spatial_add_deconv_metadata(
     srt,
     weights = theta,
     prefix = prefix,
@@ -190,6 +190,7 @@ RunSTdeconvolve <- function(
       models = backend$models,
       selected_k = backend$selected_k,
       features = rownames(counts),
+      summary = scop_spatial_weight_summary(theta),
       parameters = list(
         assay = assay,
         layer = layer,
