@@ -83,11 +83,7 @@ using a single-cell \code{Seurat} reference and the optional \code{SPOTlight} pa
 }
 \examples{
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
+spatial <- visium_human_pancreas_sub
 spotlight_weights <- data.frame(
   SPOTlight_prop_Ductal = seq(0.70, 0.20, length.out = ncol(spatial)),
   SPOTlight_prop_Endocrine = seq(0.20, 0.70, length.out = ncol(spatial)),

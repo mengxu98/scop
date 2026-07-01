@@ -61,11 +61,7 @@ if (
   isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
 ) {
   data(visium_human_pancreas_sub)
-  spatial <- subset(
-    visium_human_pancreas_sub,
-    cells = colnames(visium_human_pancreas_sub)[1:80],
-    features = rownames(visium_human_pancreas_sub)[1:200]
-  )
+  spatial <- visium_human_pancreas_sub
   g <- SeuratToScopGiotto(spatial, coord.cols = c("x", "y"))
   g <- GiottoSpatialNetwork(g)
   g <- GiottoCellProximity(g, group.by = "coda_label", number_of_simulations = 100)
