@@ -337,12 +337,12 @@ RunRCTD <- function(
     spot_ids = colnames(st_counts),
     label_map = label_map
   )
-  weight_summary <- rctd_finalize_weights_cpp(
+  weight_summary <- scop_spatial_finalize_weights(
     weights = weights,
     all_spots = colnames(srt)
   )
   weights <- weight_summary$weights
-  srt <- rctd_add_metadata(
+  srt <- scop_spatial_add_deconv_metadata(
     srt,
     weights = weights,
     prefix = prefix,
@@ -358,6 +358,7 @@ RunRCTD <- function(
       cell_types = label_map$cell_types,
       cell_type_map = label_map$map,
       dropped_cell_types = dropped_cell_types,
+      summary = scop_spatial_weight_summary(weights),
       backend_api = backend$api,
       parameters = list(
         assay = assay,
