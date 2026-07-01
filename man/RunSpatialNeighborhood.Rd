@@ -7,7 +7,7 @@
 RunSpatialNeighborhood(
   srt,
   group.by,
-  method = c("spicyR", "mistyR", "Statial", "HoodscanR"),
+  method = "spicyR",
   assay = NULL,
   layer = "data",
   coord.cols = c("col", "row"),
@@ -31,7 +31,7 @@ RunSpatialNeighborhood(
 
 \item{group.by}{Metadata column containing spatial cell or spot labels.}
 
-\item{method}{Neighborhood backend. Currently \code{"spicyR"} is supported.}
+\item{method}{Neighborhood backend. Currently only \code{"spicyR"} is supported.}
 
 \item{assay}{Assay used when \code{features} are requested.}
 
