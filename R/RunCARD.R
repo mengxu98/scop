@@ -62,8 +62,8 @@
 #' }
 #'
 #' if (
-#'   (requireNamespace("CARD", quietly = TRUE) ||
-#'     requireNamespace("CARDspa", quietly = TRUE)) &&
+#'   (isTRUE(check_r("CARD", verbose = FALSE)) ||
+#'     isTRUE(check_r("CARDspa", verbose = FALSE))) &&
 #'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
 #' ) {
 #' data(pancreas_sub)
@@ -336,7 +336,19 @@ card_run_backend <- function(
 
 card_resolve_backend_package <- function() {
   packages <- c("CARD", "CARDspa")
-  available <- vapply(packages, requireNamespace, logical(1), quietly = TRUE)
+  available <- vapply(
+    packages,
+    function(pkg) !is.null(tryCatch(asNamespace(pkg), error = function(e) NULL)),
+    logical(1)
+  )
+  if (!any(available)) {
+    invisible(lapply(packages, function(pkg) check_r(pkg, verbose = FALSE)))
+    available <- vapply(
+      packages,
+      function(pkg) !is.null(tryCatch(asNamespace(pkg), error = function(e) NULL)),
+      logical(1)
+    )
+  }
   if (!any(available)) {
     log_message(
       "Please install {.pkg CARD} or {.pkg CARDspa} before running {.fn RunCARD}",

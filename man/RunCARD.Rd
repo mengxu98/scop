@@ -130,8 +130,8 @@ if (requireNamespace("scatterpie", quietly = TRUE)) {
 }
 
 if (
-  (requireNamespace("CARD", quietly = TRUE) ||
-    requireNamespace("CARDspa", quietly = TRUE)) &&
+  (isTRUE(check_r("CARD", verbose = FALSE)) ||
+    isTRUE(check_r("CARDspa", verbose = FALSE))) &&
     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
 ) {
 data(pancreas_sub)

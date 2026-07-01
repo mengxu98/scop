@@ -118,7 +118,7 @@ names(giotto_modules$module_tables)
 GiottoPlot(giotto_modules, top_n = 4)
 
 if (
-  requireNamespace("Giotto", quietly = TRUE) &&
+  isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE)) &&
     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
 ) {
 spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)

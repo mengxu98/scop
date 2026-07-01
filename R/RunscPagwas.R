@@ -107,7 +107,7 @@ scpagwas_check_r <- function(verbose = TRUE) {
 }
 
 scpagwas_namespace_available <- function() {
-  requireNamespace("scPagwas", quietly = TRUE)
+  !is.null(tryCatch(asNamespace("scPagwas"), error = function(e) NULL))
 }
 
 scpagwas_find_runner <- function() {
@@ -141,10 +141,10 @@ scpagwas_add_default_data_args <- function(fun, args) {
 }
 
 scpagwas_patch_get_assay_data <- function() {
-  if (!requireNamespace("scPagwas", quietly = TRUE)) {
+  ns <- tryCatch(asNamespace("scPagwas"), error = function(e) NULL)
+  if (is.null(ns)) {
     return(function() invisible(FALSE))
   }
-  ns <- asNamespace("scPagwas")
   imports_env <- parent.env(ns)
   if (!exists("GetAssayData", envir = imports_env, inherits = FALSE)) {
     return(function() invisible(FALSE))
@@ -340,10 +340,10 @@ scpagwas_abs_path <- function(path) {
 }
 
 scpagwas_cleanup_soar <- function() {
-  if (!requireNamespace("SOAR", quietly = TRUE)) {
+  ns <- tryCatch(asNamespace("SOAR"), error = function(e) NULL)
+  if (is.null(ns)) {
     return(invisible(FALSE))
   }
-  ns <- asNamespace("SOAR")
 
   rm_fun <- if (exists("RemoveAllObjects", envir = ns, inherits = FALSE)) {
     get("RemoveAllObjects", envir = ns, inherits = FALSE)

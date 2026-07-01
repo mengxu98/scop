@@ -58,7 +58,7 @@ g <- structure(
 GiottoPlot(g, plot_type = "cell_proximity")
 
 if (
-  requireNamespace("Giotto", quietly = TRUE) &&
+  isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE)) &&
     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
 ) {
   data(visium_human_pancreas_sub)

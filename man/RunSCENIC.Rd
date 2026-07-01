@@ -19,6 +19,7 @@ RunSCENIC(
   prefix = "scenic",
   min_expr_cells = 3,
   min_regulon_size = 10,
+  max_regulon_targets = 50,
   include_negative_regulons = FALSE,
   backend = c("cpp", "python"),
   n_rounds = 5000,
@@ -87,6 +88,8 @@ before GRNBoost2. To run SCENIC on metacells, first create a metacell-level
 object with \code{\link[=RunMetaCell]{RunMetaCell()}} and pass that object to \code{RunSCENIC()}.}
 
 \item{min_regulon_size}{Minimum regulon size kept after \verb{scenic ctx}.}
+
+\item{max_regulon_targets}{Maximum target genes retained per C++ regulon.}
 
 \item{include_negative_regulons}{Whether the C++ backend should also build
 negatively correlated regulons and label them as \verb{TF(-)}. The default

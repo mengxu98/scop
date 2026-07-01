@@ -81,6 +81,10 @@ cytotrace2_preprocess_numeric <- function(expression_mapped) {
     .Call(`_scop_cytotrace2_preprocess_numeric`, expression_mapped)
 }
 
+cytotrace2_preprocess_sparse_numeric <- function(expression_mapped) {
+    .Call(`_scop_cytotrace2_preprocess_sparse_numeric`, expression_mapped)
+}
+
 cytotrace2_main <- function(rank_data, log2_data, parameter_dict, smooth_groups, cores, seed, pca_coords) {
     .Call(`_scop_cytotrace2_main`, rank_data, log2_data, parameter_dict, smooth_groups, cores, seed, pca_coords)
 }

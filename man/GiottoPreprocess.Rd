@@ -53,7 +53,7 @@ g <- structure(
 GiottoPlot(g, plot_type = "spatial")
 
 if (
-  requireNamespace("Giotto", quietly = TRUE) &&
+  isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE)) &&
     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
 ) {
 g <- SeuratToScopGiotto(spatial, assay = "Spatial", coord.cols = c("x", "y"), verbose = FALSE)

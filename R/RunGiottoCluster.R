@@ -60,7 +60,7 @@
 #' )
 #'
 #' if (
-#'   requireNamespace("Giotto", quietly = TRUE) &&
+#'   isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE)) &&
 #'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
 #' ) {
 #' spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
@@ -667,7 +667,7 @@ giotto_validate_named_list <- function(x, arg_name) {
 }
 
 giotto_namespace_available <- function() {
-  do.call("requireNamespace", list(package = "Giotto", quietly = TRUE))
+  !is.null(tryCatch(asNamespace("Giotto"), error = function(e) NULL))
 }
 
 giotto_result <- function(result_type, giotto, ...) {

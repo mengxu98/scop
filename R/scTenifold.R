@@ -318,16 +318,29 @@ RunscTenifoldKnk <- function(
         "Construct scTenifoldNet network ensemble",
         verbose = verbose
       )
-      wt <- get_namespace_fun("scTenifoldNet", "makeNetworks")(
-        X = count_matrix,
-        q = nc_q,
-        nNet = as.integer(nc_nNet),
-        nCells = as.integer(nc_nCells),
-        scaleScores = isTRUE(nc_scaleScores),
-        symmetric = isTRUE(nc_symmetric),
-        nComp = as.integer(nc_nComp),
-        nCores = as.integer(cores)
-      )
+      wt <- if (isTRUE(store_networks)) {
+        get_namespace_fun("scTenifoldNet", "makeNetworks")(
+          X = count_matrix,
+          q = nc_q,
+          nNet = as.integer(nc_nNet),
+          nCells = as.integer(nc_nCells),
+          scaleScores = isTRUE(nc_scaleScores),
+          symmetric = isTRUE(nc_symmetric),
+          nComp = as.integer(nc_nComp),
+          nCores = as.integer(cores)
+        )
+      } else {
+        sctenifold_make_networks_cpp(
+          X = count_matrix,
+          q = nc_q,
+          nNet = as.integer(nc_nNet),
+          nCells = as.integer(nc_nCells),
+          scaleScores = isTRUE(nc_scaleScores),
+          symmetric = isTRUE(nc_symmetric),
+          nComp = as.integer(nc_nComp),
+          nCores = as.integer(cores)
+        )
+      }
       wt <- sctenifold_tensor_cpp(
         wt,
         k = as.integer(td_K),
@@ -500,6 +513,56 @@ sctenifold_tensor_cpp <- function(
   tensor <- round(tensor, as.integer(n_decimal))
   rownames(tensor) <- colnames(tensor) <- gene_names
   methods::as(tensor, "dgCMatrix")
+}
+
+sctenifold_make_networks_cpp <- function(
+  X,
+  nNet,
+  nCells,
+  nComp,
+  scaleScores,
+  symmetric,
+  q,
+  nCores
+) {
+  gene_names <- rownames(X)
+  n_genes <- length(gene_names)
+  n_col <- ncol(X)
+  if (!n_genes || is.null(gene_names)) {
+    stop("Gene names are required", call. = FALSE)
+  }
+  lapply(seq_len(nNet), function(i) {
+    z <- sample(x = seq_len(n_col), size = nCells, replace = TRUE)
+    sampled <- as.matrix(X[, z, drop = FALSE])
+    keep <- rowSums(sampled) > 0
+    sampled <- sampled[keep, , drop = FALSE]
+    if (nComp <= 1 || nComp >= nrow(sampled)) {
+      stop(
+        "nComp should be greater or equal than 2 and lower than the total number of genes",
+        call. = FALSE
+      )
+    }
+    net <- sctenifold_pcnet_covariance_sparse(
+      sampled,
+      n_comp = as.integer(nComp),
+      scale_scores = isTRUE(scaleScores),
+      symmetric = isTRUE(symmetric),
+      q = q,
+      cores = as.integer(nCores)
+    )
+    rownames(net) <- colnames(net) <- rownames(sampled)
+    if (nrow(net) == n_genes && identical(rownames(net), gene_names)) {
+      return(net)
+    }
+    out <- Matrix::sparseMatrix(
+      i = integer(0),
+      j = integer(0),
+      dims = c(n_genes, n_genes),
+      dimnames = list(gene_names, gene_names)
+    )
+    out[rownames(net), colnames(net)] <- net
+    out
+  })
 }
 
 sctenifold_manifold_cpp <- function(x, y, d, cores) {

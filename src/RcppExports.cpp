@@ -304,6 +304,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cytotrace2_preprocess_sparse_numeric
+List cytotrace2_preprocess_sparse_numeric(const S4& expression_mapped);
+RcppExport SEXP _scop_cytotrace2_preprocess_sparse_numeric(SEXP expression_mappedSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const S4& >::type expression_mapped(expression_mappedSEXP);
+    rcpp_result_gen = Rcpp::wrap(cytotrace2_preprocess_sparse_numeric(expression_mapped));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cytotrace2_main
 List cytotrace2_main(const arma::mat& rank_data, const arma::mat& log2_data, const List& parameter_dict, const IntegerVector& smooth_groups, int cores, int seed, const arma::mat& pca_coords);
 RcppExport SEXP _scop_cytotrace2_main(SEXP rank_dataSEXP, SEXP log2_dataSEXP, SEXP parameter_dictSEXP, SEXP smooth_groupsSEXP, SEXP coresSEXP, SEXP seedSEXP, SEXP pca_coordsSEXP) {
@@ -2481,6 +2492,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_classification_metrics", (DL_FUNC) &_scop_classification_metrics, 4},
     {"_scop_cytospace_assign", (DL_FUNC) &_scop_cytospace_assign, 6},
     {"_scop_cytotrace2_preprocess_numeric", (DL_FUNC) &_scop_cytotrace2_preprocess_numeric, 1},
+    {"_scop_cytotrace2_preprocess_sparse_numeric", (DL_FUNC) &_scop_cytotrace2_preprocess_sparse_numeric, 1},
     {"_scop_cytotrace2_main", (DL_FUNC) &_scop_cytotrace2_main, 7},
     {"_scop_scvelo_dynamical_nm_cpp", (DL_FUNC) &_scop_scvelo_dynamical_nm_cpp, 7},
     {"_scop_scvelo_dynamical_velocity_cpp", (DL_FUNC) &_scop_scvelo_dynamical_velocity_cpp, 8},

@@ -590,63 +590,54 @@ augur_cpp <- function(
         }
 
         cv <- rsample::vfold_cv(X0, v = folds, strata = "label")
-        folded <- dplyr::mutate(
-          cv,
-          fits = purrr::map(
-            splits,
-            function(split) {
-              train <- rsample::analysis(split)
-              target_indexes <- which(colnames(train) == "label")
-              if (identical(mode, "classification")) {
-                y_var <- as.factor(t(train[, target_indexes]))
-              } else {
-                y_var <- t(train[, target_indexes])
-              }
-              x_var <- train[, -target_indexes]
-              original_seed <- .Random.seed
-              set.seed(1)
-              forest <- randomForest::randomForest(
-                y = y_var,
-                x = x_var,
-                importance = TRUE,
-                localImp = FALSE,
-                ntree = rf_params$trees,
-                mtry = rf_params$mtry,
-                min_n = rf_params$min_n,
-                type = mode
-              )
-              .Random.seed <<- original_seed
-              forest
-            }
-          ),
-          pred = purrr::map2(
-            splits,
-            fits,
-            function(split, model) {
-              test <- rsample::assessment(split)
-              tbl <- tibble::tibble(
-                true = test$label,
-                pred = stats::predict(model, test),
-                prob = stats::predict(model, test, type = "prob")
-              )
-              tbl <- cbind(tbl, tbl$prob)
-              tbl[["prob"]] <- NULL
-              prob_cols <- match(levels(test$label), colnames(tbl), nomatch = 0L)
-              prob_cols <- prob_cols[prob_cols > 0L]
-              colnames(tbl)[prob_cols] <- paste0(".pred_", colnames(tbl)[prob_cols])
-              tbl
-            }
+        fold_ids <- row.names(cv)
+        splits <- cv[["splits"]]
+        fits <- vector("list", length(splits))
+        eval <- vector("list", length(splits))
+        for (fold_idx in seq_along(splits)) {
+          split <- splits[[fold_idx]]
+          train <- rsample::analysis(split)
+          target_indexes <- which(colnames(train) == "label")
+          if (identical(mode, "classification")) {
+            y_var <- as.factor(t(train[, target_indexes]))
+          } else {
+            y_var <- t(train[, target_indexes])
+          }
+          x_var <- train[, -target_indexes]
+          original_seed <- .Random.seed
+          set.seed(1)
+          model <- randomForest::randomForest(
+            y = y_var,
+            x = x_var,
+            importance = TRUE,
+            localImp = FALSE,
+            ntree = rf_params$trees,
+            mtry = rf_params$mtry,
+            min_n = rf_params$min_n,
+            type = mode
           )
-        )
-
-        eval <- dplyr::mutate(
-          folded,
-          metrics = purrr::map(pred, metric_fun)
-        )
-        eval <- eval[["metrics"]]
+          .Random.seed <<- original_seed
+          fits[[fold_idx]] <- model
+        }
+        for (fold_idx in seq_along(splits)) {
+          split <- splits[[fold_idx]]
+          model <- fits[[fold_idx]]
+          test <- rsample::assessment(split)
+          tbl <- tibble::tibble(
+            true = test$label,
+            pred = stats::predict(model, test),
+            prob = stats::predict(model, test, type = "prob")
+          )
+          tbl <- cbind(tbl, tbl$prob)
+          tbl[["prob"]] <- NULL
+          prob_cols <- match(levels(test$label), colnames(tbl), nomatch = 0L)
+          prob_cols <- prob_cols[prob_cols > 0L]
+          colnames(tbl)[prob_cols] <- paste0(".pred_", colnames(tbl)[prob_cols])
+          eval[[fold_idx]] <- metric_fun(tbl)
+        }
         result <- purrr::map2_df(
           eval,
-          row.names(folded),
+          fold_ids,
           function(.x, .y) dplyr::mutate(.x, fold = .y)
         )
         names(result) <- gsub("\\.", "", names(result))
@@ -666,7 +657,7 @@ augur_cpp <- function(
         )
 
         importance <- purrr::map(
-          dplyr::pull(folded, fits),
+          fits,
           function(model) {
             importance <- as.data.frame(model$importance)
             importance <- tibble::rownames_to_column(importance, "gene")
