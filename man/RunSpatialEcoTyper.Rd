@@ -179,11 +179,7 @@ object when possible.
 }
 \examples{
 data(visium_human_pancreas_sub)
-srt <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
+srt <- visium_human_pancreas_sub
 srt$CellType <- srt$coda_label
 srt$SpatialEcoTyper_SE <- ifelse(srt$x > stats::median(srt$x), "SE1", "SE2")
 srt$sample <- ifelse(srt$y > stats::median(srt$y), "slice_a", "slice_b")

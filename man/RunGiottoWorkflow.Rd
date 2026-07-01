@@ -49,11 +49,7 @@ converted first with [SeuratToScopGiotto()].
 }
 \examples{
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:80],
-  features = rownames(visium_human_pancreas_sub)[1:300]
-)
+spatial <- visium_human_pancreas_sub
 g <- structure(
   list(
     source = list(
