@@ -64,6 +64,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: r-lib/actions/setup-pandoc@v2
 
