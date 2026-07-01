@@ -45,11 +45,7 @@ written by semla to metadata or to an assay, depending on
 }
 \examples{
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
+spatial <- visium_human_pancreas_sub
 spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 features <- rownames(spatial)[1:3]
 spatial[[paste0(features[1], "_localG")]] <- as.numeric(scale(spatial$x))

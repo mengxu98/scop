@@ -67,11 +67,7 @@ installable with \code{remotes::install_github("Center-for-Spatial-OMICs/Spatial
 }
 \examples{
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:80],
-  features = rownames(visium_human_pancreas_sub)[1:300]
-)
+spatial <- visium_human_pancreas_sub
 
 if (
   isTRUE(check_r("SpatialQM", verbose = FALSE))

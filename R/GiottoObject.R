@@ -121,11 +121,7 @@ giotto_do_call <- function(name, args) {
 #'
 #' @examples
 #' data(visium_human_pancreas_sub)
-#' spatial <- subset(
-#'   visium_human_pancreas_sub,
-#'   cells = colnames(visium_human_pancreas_sub)[1:80],
-#'   features = rownames(visium_human_pancreas_sub)[1:300]
-#' )
+#' spatial <- visium_human_pancreas_sub
 #' g <- structure(
 #'   list(
 #'     giotto = list(
@@ -424,11 +420,7 @@ giotto_validate_runtime_object <- function(x, verbose = TRUE) {
 #'
 #' @examples
 #' data(visium_human_pancreas_sub)
-#' spatial <- subset(
-#'   visium_human_pancreas_sub,
-#'   cells = colnames(visium_human_pancreas_sub)[1:80],
-#'   features = rownames(visium_human_pancreas_sub)[1:300]
-#' )
+#' spatial <- visium_human_pancreas_sub
 #' g <- structure(
 #'   list(
 #'     source = list(
@@ -689,7 +681,7 @@ RunGiottoWorkflow <- function(
 #'
 #' @examples
 #' data(visium_human_pancreas_sub)
-#' spatial <- subset(visium_human_pancreas_sub, cells = colnames(visium_human_pancreas_sub)[1:60])
+#' spatial <- visium_human_pancreas_sub
 #' g <- structure(
 #'   list(
 #'     source = list(
@@ -843,11 +835,7 @@ GiottoPreprocess <- function(
 #' @return A `giotto2` workflow object.
 #' @examples
 #' data(visium_human_pancreas_sub)
-#' spatial <- subset(
-#'   visium_human_pancreas_sub,
-#'   cells = colnames(visium_human_pancreas_sub)[1:80],
-#'   features = rownames(visium_human_pancreas_sub)[1:200]
-#' )
+#' spatial <- visium_human_pancreas_sub
 #' embedding <- cbind(
 #'   UMAP_1 = as.numeric(scale(spatial$x)),
 #'   UMAP_2 = as.numeric(scale(spatial$y))
@@ -976,11 +964,7 @@ GiottoReduce <- function(
 #' @return A `giotto2` workflow object.
 #' @examples
 #' data(visium_human_pancreas_sub)
-#' spatial <- subset(
-#'   visium_human_pancreas_sub,
-#'   cells = colnames(visium_human_pancreas_sub)[1:80],
-#'   features = rownames(visium_human_pancreas_sub)[1:200]
-#' )
+#' spatial <- visium_human_pancreas_sub
 #' coords <- data.frame(
 #'   cell_ID = colnames(spatial),
 #'   sdimx = spatial$x,
@@ -1116,11 +1100,7 @@ GiottoCluster <- function(
 #' @return A `giotto2` workflow object.
 #' @examples
 #' data(visium_human_pancreas_sub)
-#' spatial <- subset(
-#'   visium_human_pancreas_sub,
-#'   cells = colnames(visium_human_pancreas_sub)[1:80],
-#'   features = rownames(visium_human_pancreas_sub)[1:200]
-#' )
+#' spatial <- visium_human_pancreas_sub
 #' coords <- data.frame(
 #'   cell_ID = colnames(spatial),
 #'   sdimx = spatial$x,
@@ -1225,11 +1205,7 @@ giotto_get_spatial_network_table <- function(gobject, network_name, spat_unit = 
 #' @return A `giotto2` workflow object.
 #' @examples
 #' data(visium_human_pancreas_sub)
-#' spatial <- subset(
-#'   visium_human_pancreas_sub,
-#'   cells = colnames(visium_human_pancreas_sub)[1:80],
-#'   features = rownames(visium_human_pancreas_sub)[1:200]
-#' )
+#' spatial <- visium_human_pancreas_sub
 #' coords <- data.frame(
 #'   cell_ID = colnames(spatial),
 #'   sdimx = spatial$x,
@@ -1344,11 +1320,7 @@ GiottoSpatialGenes <- function(
 #' @return A `giotto2` workflow object.
 #' @examples
 #' data(visium_human_pancreas_sub)
-#' spatial <- subset(
-#'   visium_human_pancreas_sub,
-#'   cells = colnames(visium_human_pancreas_sub)[1:80],
-#'   features = rownames(visium_human_pancreas_sub)[1:200]
-#' )
+#' spatial <- visium_human_pancreas_sub
 #' features <- rownames(spatial)[1:6]
 #' module_table <- expand.grid(
 #'   feat_ID = features,
@@ -1487,11 +1459,7 @@ GiottoSpatialModules <- function(
 #'   isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
 #' ) {
 #'   data(visium_human_pancreas_sub)
-#'   spatial <- subset(
-#'     visium_human_pancreas_sub,
-#'     cells = colnames(visium_human_pancreas_sub)[1:80],
-#'     features = rownames(visium_human_pancreas_sub)[1:200]
-#'   )
+#'   spatial <- visium_human_pancreas_sub
 #'   g <- SeuratToScopGiotto(spatial, coord.cols = c("x", "y"))
 #'   g <- GiottoSpatialNetwork(g)
 #'   g <- GiottoCellProximity(g, group.by = "coda_label", number_of_simulations = 100)
@@ -1570,11 +1538,7 @@ GiottoCellProximity <- function(
 #' @return A `giotto2` workflow object.
 #' @examples
 #' data(visium_human_pancreas_sub)
-#' spatial <- subset(
-#'   visium_human_pancreas_sub,
-#'   cells = colnames(visium_human_pancreas_sub)[1:80],
-#'   features = rownames(visium_human_pancreas_sub)[1:200]
-#' )
+#' spatial <- visium_human_pancreas_sub
 #' coords <- data.frame(
 #'   cell_ID = colnames(spatial),
 #'   sdimx = spatial$x,
@@ -1715,11 +1679,7 @@ giotto_ensure_spatial_network <- function(x, network_method = "Delaunay", networ
 #' @return A Seurat object.
 #' @examples
 #' data(visium_human_pancreas_sub)
-#' spatial <- subset(
-#'   visium_human_pancreas_sub,
-#'   cells = colnames(visium_human_pancreas_sub)[1:80],
-#'   features = rownames(visium_human_pancreas_sub)[1:200]
-#' )
+#' spatial <- visium_human_pancreas_sub
 #' g <- structure(
 #'   list(
 #'     source = list(cells = colnames(spatial)),
