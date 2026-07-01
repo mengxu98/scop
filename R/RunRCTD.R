@@ -42,11 +42,7 @@
 #'
 #' @examples
 #' data(visium_human_pancreas_sub)
-#' spatial <- subset(
-#'   visium_human_pancreas_sub,
-#'   cells = colnames(visium_human_pancreas_sub)[1:120],
-#'   features = rownames(visium_human_pancreas_sub)[1:400]
-#' )
+#' spatial <- visium_human_pancreas_sub
 #' rctd_weights <- data.frame(
 #'   RCTD_prop_Ductal = seq(0.75, 0.15, length.out = ncol(spatial)),
 #'   RCTD_prop_Endocrine = seq(0.15, 0.65, length.out = ncol(spatial)),

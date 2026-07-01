@@ -51,11 +51,7 @@ in \code{srt@tools[[tool_name]]} when \code{store_results = TRUE}.
 }
 \examples{
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
+spatial <- visium_human_pancreas_sub
 spatial@tools$SemlaSpatialNetwork <- list(
   network = data.frame(
     from = colnames(spatial)[1:6],

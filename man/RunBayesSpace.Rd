@@ -76,11 +76,7 @@ Run BayesSpace spatial clustering
 }
 \examples{
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
+spatial <- visium_human_pancreas_sub
 spatial$BayesSpace_cluster <- factor(
   paste0("domain_", (seq_len(ncol(spatial)) - 1) \%\% 3 + 1)
 )
