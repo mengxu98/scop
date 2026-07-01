@@ -60,8 +60,7 @@
 #' )
 #'
 #' if (
-#'   isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE)) &&
-#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#'   isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
 #' ) {
 #' spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 #' spatial <- Seurat::FindVariableFeatures(

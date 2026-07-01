@@ -61,8 +61,6 @@ RunscPagwas <- function(
     ),
     extra_args
   )
-  restore_get_assay_data <- scpagwas_patch_get_assay_data()
-  on.exit(restore_get_assay_data(), add = TRUE)
   restore_wd <- scpagwas_set_absolute_output_wd(output.dirs)
   on.exit(restore_wd(), add = TRUE)
   res <- do.call(fun, scpagwas_filter_args(fun, args))
@@ -138,45 +136,6 @@ scpagwas_add_default_data_args <- function(fun, args) {
     args$chrom_ld <- scpagwas_package_data_raw("chrom_ld")
   }
   args
-}
-
-scpagwas_patch_get_assay_data <- function() {
-  ns <- tryCatch(asNamespace("scPagwas"), error = function(e) NULL)
-  if (is.null(ns)) {
-    return(function() invisible(FALSE))
-  }
-  imports_env <- parent.env(ns)
-  if (!exists("GetAssayData", envir = imports_env, inherits = FALSE)) {
-    return(function() invisible(FALSE))
-  }
-  original <- get("GetAssayData", envir = imports_env, inherits = FALSE)
-  was_locked <- bindingIsLocked("GetAssayData", imports_env)
-  if (was_locked) {
-    unlockBinding("GetAssayData", imports_env)
-  }
-  assign(
-    "GetAssayData",
-    function(object, ..., slot = NULL, layer = NULL) {
-      if (!is.null(slot) && is.null(layer)) {
-        layer <- slot
-      }
-      SeuratObject::GetAssayData(object = object, ..., layer = layer)
-    },
-    envir = imports_env
-  )
-  if (was_locked) {
-    lockBinding("GetAssayData", imports_env)
-  }
-  function() {
-    if (bindingIsLocked("GetAssayData", imports_env)) {
-      unlockBinding("GetAssayData", imports_env)
-    }
-    assign("GetAssayData", original, envir = imports_env)
-    if (was_locked) {
-      lockBinding("GetAssayData", imports_env)
-    }
-    invisible(TRUE)
-  }
 }
 
 scpagwas_set_absolute_output_wd <- function(output.dirs) {

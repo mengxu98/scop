@@ -89,7 +89,8 @@ object with \code{\link[=RunMetaCell]{RunMetaCell()}} and pass that object to \c
 
 \item{min_regulon_size}{Minimum regulon size kept after \verb{scenic ctx}.}
 
-\item{max_regulon_targets}{Maximum target genes retained per C++ regulon.}
+\item{max_regulon_targets}{Maximum target genes retained per C++ regulon.
+The default preserves the native fast path's bounded regulon size.}
 
 \item{include_negative_regulons}{Whether the C++ backend should also build
 negatively correlated regulons and label them as \verb{TF(-)}. The default

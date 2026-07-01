@@ -42,8 +42,9 @@ with_mock_smoothclust <- function(code) {
     )
   }
   testthat::local_mocked_bindings(
+    .package = "scop",
     check_r = function(packages, ...) {
-      expect_identical(packages, "smoothclust")
+      expect_identical(packages, "lmweber/smoothclust")
       invisible(TRUE)
     },
     smoothclust_get_fun = function(fun) {

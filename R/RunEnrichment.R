@@ -78,7 +78,10 @@
 #' )
 #' gene_groups <- rep(c("Cluster1", "Cluster2"), each = 6)
 #' enrich_out <- RunEnrichment(
-#'   geneID = c("INS", "GCG", "SST", "IAPP", "PRSS1", "CPA1", "KRT19", "SOX9", "MUC1", "CFTR", "KRT7", "REG1A"),
+#'   geneID = c(
+#'     "INS", "GCG", "SST", "IAPP", "PRSS1", "CPA1",
+#'     "KRT19", "SOX9", "MUC1", "CFTR", "KRT7", "REG1A"
+#'   ),
 #'   geneID_groups = gene_groups,
 #'   TERM2GENE = term2gene,
 #'   minGSSize = 2

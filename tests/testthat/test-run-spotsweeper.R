@@ -79,9 +79,10 @@ with_mock_spotsweeper <- function(code) {
     spe
   }
   testthat::local_mocked_bindings(
+    .package = "scop",
     check_r = function(packages, ...) {
       expect_true(all(c(
-        "SpotSweeper", "SpatialExperiment",
+        "MicTott/SpotSweeper", "SpatialExperiment",
         "SummarizedExperiment", "S4Vectors"
       ) %in% packages))
       invisible(TRUE)

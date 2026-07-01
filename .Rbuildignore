@@ -3,6 +3,9 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^_pkgdown\.yml$
+^reasonix\.toml$
+^scopWorkbench$
+^vignettes$
 ^docs$
 ^pkgdown$
 ^\.github$

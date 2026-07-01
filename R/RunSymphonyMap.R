@@ -261,7 +261,8 @@ mapQuery <- function(
     "Found {.val {length(shared_genes)}} reference variable genes in query object",
     verbose = verbose
   )
-  exp_query_scaled <- symphony::scaleDataWithStats(
+  scale_data_with_stats <- get_namespace_fun("symphony", "scaleDataWithStats")
+  exp_query_scaled <- scale_data_with_stats(
     exp_query[shared_genes, ],
     ref_obj$vargenes$mean[idx_shared_genes],
     ref_obj$vargenes$stddev[idx_shared_genes],
@@ -388,7 +389,8 @@ buildReferenceFromSeurat <- function(
       )
     )
 
-    vargenes_means_sds$stddev <- symphony::rowSDs(
+    row_sds <- get_namespace_fun("symphony", "rowSDs")
+    vargenes_means_sds$stddev <- row_sds(
       A = GetAssayData5(
         obj,
         assay = assay,
@@ -417,7 +419,8 @@ buildReferenceFromSeurat <- function(
       )[var_features, ],
       sparse = TRUE
     )
-    vargenes_means_sds$stddev <- symphony::rowSDs(
+    row_sds <- get_namespace_fun("symphony", "rowSDs")
+    vargenes_means_sds$stddev <- row_sds(
       asdgc,
       vargenes_means_sds$mean
     )

@@ -44,8 +44,7 @@
 #' )
 #'
 #' if (
-#'   isTRUE(check_r("SpatialQM", verbose = FALSE)) &&
-#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#'   isTRUE(check_r("SpatialQM", verbose = FALSE))
 #' ) {
 #'   spatial <- RunSpatialQM(
 #'     spatial,
