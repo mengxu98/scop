@@ -24,11 +24,7 @@
 #'
 #' @examples
 #' data(visium_human_pancreas_sub)
-#' spatial <- subset(
-#'   visium_human_pancreas_sub,
-#'   cells = colnames(visium_human_pancreas_sub)[1:120],
-#'   features = rownames(visium_human_pancreas_sub)[1:400]
-#' )
+#' spatial <- visium_human_pancreas_sub
 #' spatial$region <- ifelse(
 #'   spatial$x > stats::median(spatial$x),
 #'   "right",
@@ -213,11 +209,7 @@ RunGiottoCellProximity <- function(
 #'
 #' @examples
 #' data(visium_human_pancreas_sub)
-#' spatial <- subset(
-#'   visium_human_pancreas_sub,
-#'   cells = colnames(visium_human_pancreas_sub)[1:120],
-#'   features = rownames(visium_human_pancreas_sub)[1:400]
-#' )
+#' spatial <- visium_human_pancreas_sub
 #' spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 #' giotto_genes <- list(
 #'   results = data.frame(
@@ -418,11 +410,7 @@ RunGiottoSpatialGenes <- function(
 #'
 #' @examples
 #' data(visium_human_pancreas_sub)
-#' spatial <- subset(
-#'   visium_human_pancreas_sub,
-#'   cells = colnames(visium_human_pancreas_sub)[1:120],
-#'   features = rownames(visium_human_pancreas_sub)[1:400]
-#' )
+#' spatial <- visium_human_pancreas_sub
 #' module_features <- rownames(spatial)[1:4]
 #' module_cor <- expand.grid(
 #'   feat_ID = module_features,

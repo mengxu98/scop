@@ -48,11 +48,7 @@ Run Giotto spatial co-expression modules
 }
 \examples{
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:80],
-  features = rownames(visium_human_pancreas_sub)[1:200]
-)
+spatial <- visium_human_pancreas_sub
 features <- rownames(spatial)[1:6]
 module_table <- expand.grid(
   feat_ID = features,
