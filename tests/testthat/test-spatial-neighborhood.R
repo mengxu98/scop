@@ -109,6 +109,12 @@ test_that("SpatialNeighborhoodPlot returns scop-style ggplot objects", {
   p_heatmap <- SpatialNeighborhoodPlot(srt, plot_type = "heatmap", theme_use = NULL)
   p_stat <- SpatialNeighborhoodPlot(srt, plot_type = "stat", theme_use = NULL)
   p_network <- SpatialNeighborhoodPlot(srt, plot_type = "network", theme_use = NULL)
+  p_empty <- SpatialNeighborhoodPlot(
+    srt,
+    plot_type = "heatmap",
+    comparison = "missing",
+    theme_use = NULL
+  )
   p_spatial <- SpatialNeighborhoodPlot(
     srt,
     plot_type = "spatial",
@@ -121,6 +127,7 @@ test_that("SpatialNeighborhoodPlot returns scop-style ggplot objects", {
   expect_s3_class(p_heatmap, "ggplot")
   expect_s3_class(p_stat, "ggplot")
   expect_s3_class(p_network, "ggplot")
+  expect_s3_class(p_empty, "ggplot")
   expect_s3_class(p_spatial, "ggplot")
 })
 
