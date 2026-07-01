@@ -58,11 +58,7 @@
 #'
 #' @examples
 #' data(visium_human_pancreas_sub)
-#' spatial <- subset(
-#'   visium_human_pancreas_sub,
-#'   cells = colnames(visium_human_pancreas_sub)[1:120],
-#'   features = rownames(visium_human_pancreas_sub)[1:400]
-#' )
+#' spatial <- visium_human_pancreas_sub
 #' spatial <- RunSpatialGradientFeatures(
 #'   spatial,
 #'   reference = "trajectory",
@@ -103,7 +99,7 @@ RunSpatialGradientFeatures <- function(
   sample_name = NULL,
   platform = "Undefined",
   image = NULL,
-  coord.cols = c("x", "y"),
+  coord.cols = NULL,
   img_scale_fct = "lowres",
   assay_modality = "gene",
   trajectory_id = "scop_gradient",
@@ -456,12 +452,12 @@ SpatialGradientPlot <- function(
   image = NULL,
   overlay_image = TRUE,
   image.alpha = 1,
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   flip.y = TRUE,
   pt.size = NULL,
   pt.alpha = 0.9,
   stroke = 0.1,
-  palette = "Spectral",
+  palette = NULL,
   palcolor = NULL,
   legend.position = "right",
   theme_use = "theme_scop",
@@ -802,18 +798,6 @@ sgf_run_cpp_gradient <- function(
 }
 
 sgf_cpp_coords <- function(srt, image, coord.cols) {
-  if (length(coord.cols) < 2L) {
-    log_message("{.arg coord.cols} must contain at least two coordinate columns", message_type = "error")
-  }
-  coord.cols <- coord.cols[seq_len(2L)]
-  if (is.null(image) && all(coord.cols %in% colnames(srt@meta.data))) {
-    return(data.frame(
-      x = srt@meta.data[[coord.cols[1L]]],
-      y = srt@meta.data[[coord.cols[2L]]],
-      row.names = rownames(srt@meta.data),
-      stringsAsFactors = FALSE
-    ))
-  }
   spatial_dim_coords(
     srt = srt,
     image = image,
@@ -1652,14 +1636,22 @@ sgf_plot_theme <- function(theme_use = "theme_scop", theme_args = list()) {
   do.call(theme_fun, theme_args)
 }
 
-sgf_feature_colors <- function(features, palette = "Spectral", palcolor = NULL) {
+sgf_feature_colors <- function(features, palette = NULL, palcolor = NULL) {
   features <- unique(as.character(features))
-  cols <- palette_colors(features, palette = palette, palcolor = palcolor)
+  cols <- palette_colors(
+    features,
+    palette = scop_spatial_palette(palette, features, type = "discrete"),
+    palcolor = palcolor
+  )
   stats::setNames(cols[seq_along(features)], features)
 }
 
-sgf_gradient_colors <- function(palette = "Spectral", palcolor = NULL) {
-  palette_colors(palette = palette, palcolor = palcolor, n = 9)
+sgf_gradient_colors <- function(palette = NULL, palcolor = NULL) {
+  palette_colors(
+    palette = scop_spatial_palette(palette, type = "continuous"),
+    palcolor = palcolor,
+    n = 9
+  )
 }
 
 sgf_parameters_df <- function(parameters) {

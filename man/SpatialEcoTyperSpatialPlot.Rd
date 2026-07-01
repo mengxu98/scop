@@ -12,7 +12,7 @@ SpatialEcoTyperSpatialPlot(
   image = NULL,
   overlay_image = TRUE,
   coord.cols = c(x.by, y.by),
-  palette = "Spectral",
+  palette = NULL,
   palcolor = NULL,
   theme_use = "theme_scop",
   ...
@@ -31,7 +31,9 @@ used when present.}
 
 \item{overlay_image}{Whether to draw the spatial image beneath spots.}
 
-\item{coord.cols}{Metadata coordinate columns used when no image is available.}
+\item{coord.cols}{Metadata coordinate columns to use explicitly. If \code{NULL},
+Seurat image coordinates are used first when available, then metadata \code{x/y}
+or \code{col/row}.}
 
 \item{palette, palcolor}{Palette passed to \code{palette_colors()}.}
 

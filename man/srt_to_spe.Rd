@@ -8,21 +8,30 @@ srt_to_spe(
   srt,
   assay = NULL,
   layer = "counts",
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   image = NULL,
   include_meta = TRUE
 )
 }
 \arguments{
 \item{srt}{A \code{Seurat} object.}
+
 \item{assay}{Assay to export. If \code{NULL}, the default assay is used.}
+
 \item{layer}{Assay layer to export.}
-\item{coord.cols}{Metadata coordinate columns. By default, SCOP resolves
-\code{x/y} first and then \code{col/row}.}
-\item{image}{Optional Seurat image name.}
+
+\item{coord.cols}{Metadata coordinate columns to use explicitly. If \code{NULL},
+Seurat image coordinates are used first when available, then metadata \code{x/y}
+or \code{col/row}.}
+
+\item{image}{Optional Seurat image name. If \code{NULL}, the first Seurat image is
+used when \code{coord.cols} is \code{NULL} and an image is present.}
+
 \item{include_meta}{Whether to include Seurat metadata as \code{colData}.}
 }
-\value{A \code{SpatialExperiment}.}
+\value{
+A \code{SpatialExperiment}.
+}
 \description{
 Create a lightweight \code{SpatialExperiment} from a spatial Seurat object using
 one assay layer, metadata, and resolved spatial coordinates.

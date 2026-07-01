@@ -30,7 +30,7 @@
   - Trajectory inference: [Slingshot](https://bioconductor.org/packages/release/bioc/html/slingshot.html), [Monocle2](https://github.com/mengxu98/monocle), [Monocle3](https://github.com/cole-trapnell-lab/monocle3), identification of dynamic features.
   - Cell-cell communication: [CellChat](https://github.com/jinworks/CellChat), [CellphoneDB](https://github.com/ventolab/CellphoneDB), [NicheNet](https://github.com/saeyslab/nichenetr), [MultiNicheNet](https://github.com/saeyslab/multinichenetr), and [LIANA](https://github.com/saezlab/liana).
   - Cellular composition analysis: differential abundance and proportion testing across conditions.
-  - Spatial analysis: [BayesSpace](https://github.com/edward130603/BayesSpace) and [CytoSPACE](https://github.com/digitalcytometry/cytospace).
+  - Spatial analysis: spatial QC and visualization, spatially variable and gradient features, domain detection with [BayesSpace](https://github.com/edward130603/BayesSpace), [BANKSY](https://github.com/prabhakarlab/Banksy), SmoothClust, PRECAST/BASS/SpatialMNN integration, spot deconvolution with RCTD, SPOTlight, CARD, STdeconvolve, SpatialDWLS and [CytoSPACE](https://github.com/digitalcytometry/cytospace), plus neighborhood/context wrappers for spicyR, mistyR, Statial, Giotto, semla, SpatialQM, and SpatialEcoTyper.
 - High-quality data visualization methods.
 - Fast deployment of single-cell data into SCExplorer, a [shiny](https://shiny.rstudio.com/) app that provides an interactive visualization interface.
 

@@ -20,7 +20,7 @@ SpatialSpotPlot(
   overlay_image = TRUE,
   image.alpha = 1,
   crop = TRUE,
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   flip.y = TRUE,
   show_axes = FALSE,
   split.by = NULL,
@@ -33,7 +33,7 @@ SpatialSpotPlot(
   stroke = 0.1,
   jitter_width = 0.25,
   jitter_height = 0.25,
-  palette = "Spectral",
+  palette = NULL,
   palcolor = NULL,
   bg_color = "grey20",
   legend.position = "right",
@@ -88,7 +88,9 @@ used when present.}
 
 \item{crop}{Whether to crop the panel to plotted spots.}
 
-\item{coord.cols}{Metadata coordinate columns used when no image is available.}
+\item{coord.cols}{Metadata coordinate columns to use explicitly. If \code{NULL},
+Seurat image coordinates are used first when available, then metadata \code{x/y}
+or \code{col/row}.}
 
 \item{flip.y}{Whether to reverse the y axis for metadata coordinates.}
 

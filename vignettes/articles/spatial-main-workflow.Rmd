@@ -105,7 +105,7 @@ SpatialVariableFeaturePlot(
 
 SpatialVariableFeaturePlot(
   spatial,
-  plot_type = "spatial",
+  plot_type = "surface",
   nfeatures = 4
 )
 ```

@@ -10,7 +10,7 @@ RunGiottoSpatialGenes(
   layer = "data",
   features = NULL,
   image = NULL,
-  coord.cols = c("x", "y"),
+  coord.cols = NULL,
   network_method = c("Delaunay", "kNN"),
   network_name = NULL,
   bin_method = c("kmeans", "rank"),
@@ -88,11 +88,7 @@ standalone result; the input \code{Seurat} object is not modified.
 }
 \examples{
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
+spatial <- visium_human_pancreas_sub
 spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 giotto_genes <- list(
   results = data.frame(

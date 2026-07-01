@@ -10,7 +10,7 @@ RunBANKSY(
   layer = "data",
   features = NULL,
   image = NULL,
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   lambda = 0.2,
   k_geom = 15,
   M = 1,
@@ -49,8 +49,9 @@ coordinates when they are not already present in metadata. For regular
 Visium data with only pixel \code{x}/\code{y} coordinates, BayesSpace array
 coordinates are inferred from the spatial grid.}
 
-\item{coord.cols}{Metadata coordinate columns used when no image coordinate
-source is available.}
+\item{coord.cols}{Metadata coordinate columns to use explicitly. If \code{NULL},
+Seurat image coordinates are used first when available, then metadata \code{x/y}
+or \code{col/row}.}
 
 \item{lambda}{BANKSY spatial weighting parameter.}
 
@@ -107,11 +108,7 @@ and store spatial domain or microenvironment clusters in metadata.
 }
 \examples{
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
+spatial <- visium_human_pancreas_sub
 spatial$BANKSY_cluster <- factor(
   paste0("BANKSY", (seq_len(ncol(spatial)) - 1) \%\% 3 + 1)
 )

@@ -9,7 +9,7 @@ RunMERINGUE(
   assay = NULL,
   layer = "data",
   image = NULL,
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   features = NULL,
   mode = c("autocorrelation", "cross_correlation", "modules"),
   nfeatures = 2000,
@@ -98,11 +98,7 @@ spatial module analysis for a spatial \code{Seurat} object.
 }
 \examples{
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
+spatial <- visium_human_pancreas_sub
 spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 spatial@misc[["MERINGUEFeatures"]] <- rownames(spatial)[1:4]
 spatial@tools[["MERINGUE"]] <- list(

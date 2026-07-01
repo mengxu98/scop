@@ -14,7 +14,7 @@ RunSpatialDWLS(
   reference_layer = "counts",
   features = NULL,
   image = NULL,
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   min_cells = 2,
   prefix = "SpatialDWLS",
   tool_name = "SpatialDWLS",
@@ -24,30 +24,33 @@ RunSpatialDWLS(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{Spatial \code{Seurat} object used as the query.}
 
-\item{reference}{A reference Seurat object.}
+\item{reference}{Reference \code{Seurat} object containing annotated single cells.}
 
-\item{reference_label}{Reference metadata column containing cell type labels.}
+\item{reference_label}{Metadata column in \code{reference} with cell type labels.}
 
-\item{assay}{Spatial assay. If \code{NULL}, the default assay is used.}
+\item{assay}{Assay used in \code{srt}. If \code{NULL}, the default assay is used.}
 
-\item{reference_assay}{Reference assay. If \code{NULL}, the reference default assay is used.}
+\item{reference_assay}{Assay used in \code{reference}. If \code{NULL}, the reference
+default assay is used.}
 
-\item{layer}{Spatial assay layer.}
+\item{layer, reference_layer}{Assay layers used for spatial and reference
+raw counts.}
 
-\item{reference_layer}{Reference assay layer.}
+\item{features}{Features used for fitting. If \code{NULL}, shared features are
+used.}
 
-\item{features}{Optional shared features to use.}
+\item{image}{Name of the Seurat spatial image used to recover coordinates
+when \code{coord.cols} is \code{NULL}.}
 
-\item{image}{Optional Seurat image name.}
-
-\item{coord.cols}{Metadata coordinate columns. By default, SCOP resolves
-\code{x/y} first and then \code{col/row}.}
+\item{coord.cols}{Metadata coordinate columns to use explicitly. If \code{NULL},
+Seurat image coordinates are used first when available, then metadata \code{x/y}
+or \code{col/row}.}
 
 \item{min_cells}{Minimum reference cells required per cell type.}
 
-\item{prefix}{Metadata prefix for deconvolution outputs.}
+\item{prefix}{Prefix for metadata columns.}
 
 \item{tool_name}{Name used to store detailed results in \code{srt@tools}.}
 
@@ -56,17 +59,19 @@ spatial and reference matrices before fitting.}
 
 \item{store_results}{Whether to store detailed results in \code{srt@tools}.}
 
-\item{verbose}{Whether to print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 A \code{Seurat} object with \code{"<prefix>_prop_*"},
 \code{"<prefix>_dominant_type"}, and \code{"<prefix>_max_prop"} metadata columns.
+Detailed results are stored in \code{srt@tools[[tool_name]]}.
 }
 \description{
 Estimate spot-level cell-type proportions by fitting spatial expression to
 reference cell-type signatures with non-negative least squares-style
-coefficients. The output follows SCOP's deconvolution metadata convention so it
-can be plotted directly with \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}}.
+coefficients. The output follows SCOP's deconvolution metadata convention so
+it can be plotted directly with \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}}.
 }
 \examples{
 \dontrun{

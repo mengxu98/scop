@@ -20,8 +20,9 @@
 #' @param sample.by Optional metadata column used as Statial `imageID`. If
 #' `NULL`, all cells or spots are treated as one image.
 #' @param images Optional Statial image filter passed to `Kontextual(image = )`.
-#' @param coord.cols Metadata coordinate columns used when no Seurat image
-#' coordinates are available.
+#' @param coord.cols Metadata coordinate columns to use explicitly. If `NULL`,
+#' Seurat image coordinates are used first when available, then metadata `x/y`
+#' or `col/row`.
 #' @param inhom Whether Statial should account for inhomogeneity.
 #' @param edge_correct Whether Statial should perform edge correction.
 #' @param window,window.length Window arguments passed to
@@ -40,11 +41,7 @@
 #'
 #' @examples
 #' data(visium_human_pancreas_sub)
-#' spatial <- subset(
-#'   visium_human_pancreas_sub,
-#'   cells = colnames(visium_human_pancreas_sub)[1:120],
-#'   features = rownames(visium_human_pancreas_sub)[1:400]
-#' )
+#' spatial <- visium_human_pancreas_sub
 #'
 #' if (
 #'   requireNamespace("Statial", quietly = TRUE) &&
@@ -76,7 +73,7 @@ RunStatialKontextual <- function(
   image = NULL,
   sample.by = NULL,
   images = NULL,
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   inhom = FALSE,
   edge_correct = TRUE,
   window = c("convex", "square", "concave"),
@@ -196,7 +193,7 @@ statial_prepare_cells <- function(
   group.by,
   image = NULL,
   sample.by = NULL,
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   images = NULL,
   verbose = TRUE
 ) {

@@ -11,8 +11,9 @@
 #' @param method Neighborhood backend. Currently only `"spicyR"` is supported.
 #' @param assay Assay used when `features` are requested.
 #' @param layer Assay layer used when `features` are requested.
-#' @param coord.cols Metadata coordinate columns used when no Seurat image
-#' coordinates are available.
+#' @param coord.cols Metadata coordinate columns to use explicitly. If `NULL`,
+#' Seurat image coordinates are used first when available, then metadata `x/y`
+#' or `col/row`.
 #' @param image Name of the Seurat spatial image. If `NULL`, the first image is
 #' used when present.
 #' @param sample.by Metadata column identifying images or samples. If `NULL`,
@@ -37,11 +38,7 @@
 #'
 #' @examples
 #' data(visium_human_pancreas_sub)
-#' spatial <- subset(
-#'   visium_human_pancreas_sub,
-#'   cells = colnames(visium_human_pancreas_sub)[1:120],
-#'   features = rownames(visium_human_pancreas_sub)[1:400]
-#' )
+#' spatial <- visium_human_pancreas_sub
 #' spatial <- RunSpatialNeighborhood(
 #'   spatial,
 #'   group.by = "coda_label",
@@ -65,7 +62,7 @@ RunSpatialNeighborhood <- function(
   method = "spicyR",
   assay = NULL,
   layer = "data",
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   image = NULL,
   sample.by = NULL,
   split.by = NULL,
@@ -229,11 +226,7 @@ RunSpatialNeighborhood <- function(
 #'
 #' @examples
 #' data(visium_human_pancreas_sub)
-#' spatial <- subset(
-#'   visium_human_pancreas_sub,
-#'   cells = colnames(visium_human_pancreas_sub)[1:120],
-#'   features = rownames(visium_human_pancreas_sub)[1:400]
-#' )
+#' spatial <- visium_human_pancreas_sub
 #' spatial <- RunSpatialNeighborhood(
 #'   spatial,
 #'   group.by = "coda_label",
@@ -268,7 +261,7 @@ SpatialNeighborhoodPlot <- function(
   pair = NULL,
   image = NULL,
   overlay_image = TRUE,
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   split.by = NULL,
   palette = "RdBu",
   palcolor = NULL,
@@ -327,10 +320,12 @@ SpatialNeighborhoodPlot <- function(
     condition = condition
   )
   if (nrow(df) == 0L) {
-    log_message(
+    return(scop_spatial_empty_plot(
       "No spatial neighborhood records remain after filtering",
-      message_type = "error"
-    )
+      title = legend.title %||% value,
+      theme_use = theme_use,
+      theme_args = theme_args
+    ))
   }
   df <- spatial_neighborhood_prepare_plot_table(
     df = df,
@@ -388,7 +383,7 @@ spatial_neighborhood_input <- function(
   group.by,
   assay = NULL,
   layer = "data",
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   image = NULL,
   sample.by = NULL,
   split.by = NULL,
@@ -921,7 +916,7 @@ spatial_neighborhood_spatial_plot <- function(
   pair = NULL,
   image = NULL,
   overlay_image = TRUE,
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   split.by = NULL,
   palette = "RdBu",
   palcolor = NULL,

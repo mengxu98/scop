@@ -62,7 +62,7 @@ RunSpatialVariableFeatures <- function(
   features = NULL,
   method = c("moran", "geary", "SPARKX", "nnSVG"),
   image = NULL,
-  coord.cols = c("x", "y"),
+  coord.cols = NULL,
   k = 6,
   nfeatures = 2000,
   min_spots = 5,
@@ -499,12 +499,12 @@ SpatialVariableFeaturePlot <- function(
   image = NULL,
   overlay_image = TRUE,
   image.alpha = 1,
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   flip.y = TRUE,
   pt.size = NULL,
   pt.alpha = 0.9,
   stroke = 0.1,
-  palette = "Spectral",
+  palette = NULL,
   palcolor = NULL,
   legend.position = "right",
   theme_use = "theme_scop",
@@ -660,7 +660,11 @@ spatial_variable_summary_plot <- function(
   } else {
     rep(1, nrow(df))
   }
-  cols <- palette_colors(as.character(features), palette = palette, palcolor = palcolor)
+  cols <- palette_colors(
+    as.character(features),
+    palette = scop_spatial_palette(palette, features, type = "discrete"),
+    palcolor = palcolor
+  )
   ggplot2::ggplot(df, ggplot2::aes(x = .data[[".score"]], y = .data[["feature"]], color = .data[["feature"]])) +
     ggplot2::geom_segment(
       ggplot2::aes(x = 0, xend = .data[[".score"]], yend = .data[["feature"]]),

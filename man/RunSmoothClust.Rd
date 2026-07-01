@@ -9,7 +9,7 @@ RunSmoothClust(
   assay = NULL,
   layer = "data",
   image = NULL,
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   features = NULL,
   nfeatures = 2000,
   min_spots = 5,
@@ -44,8 +44,9 @@ RunSmoothClust(
 \item{image}{Name of the Seurat spatial image. If \code{NULL}, the first image is
 used when present.}
 
-\item{coord.cols}{Metadata coordinate columns used when no Seurat image is
-available.}
+\item{coord.cols}{Metadata coordinate columns to use explicitly. If \code{NULL},
+Seurat image coordinates are used first when available, then metadata \code{x/y}
+or \code{col/row}.}
 
 \item{features}{Features to use. If \code{NULL}, current variable features are
 used; if no variable features are present, the top \code{nfeatures} by variance
@@ -98,11 +99,7 @@ domains with PCA and k-means.
 }
 \examples{
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
+spatial <- visium_human_pancreas_sub
 spatial$SmoothClust_cluster <- factor(
   paste0("SmoothClust", (seq_len(ncol(spatial)) - 1) \%\% 3 + 1)
 )

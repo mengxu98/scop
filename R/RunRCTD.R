@@ -15,9 +15,10 @@
 #' raw counts.
 #' @param features Features used for RCTD. If `NULL`, shared features are used.
 #' @param image Name of the Seurat spatial image used to recover coordinates
-#' when `coord.cols` are not available.
-#' @param coord.cols Metadata coordinate columns used when no image coordinate
-#' source is requested or available.
+#' when `coord.cols` is `NULL`.
+#' @param coord.cols Metadata coordinate columns to use explicitly. If `NULL`,
+#' Seurat image coordinates are used first when available, then metadata `x/y`
+#' or `col/row`.
 #' @param rctd_mode RCTD mode passed to `spacexr`. `"full"` is the default for
 #' Visium spot deconvolution.
 #' @param max_cores Number of cores passed to `spacexr`.
@@ -42,11 +43,7 @@
 #'
 #' @examples
 #' data(visium_human_pancreas_sub)
-#' spatial <- subset(
-#'   visium_human_pancreas_sub,
-#'   cells = colnames(visium_human_pancreas_sub)[1:120],
-#'   features = rownames(visium_human_pancreas_sub)[1:400]
-#' )
+#' spatial <- visium_human_pancreas_sub
 #' rctd_weights <- data.frame(
 #'   RCTD_prop_Ductal = seq(0.75, 0.15, length.out = ncol(spatial)),
 #'   RCTD_prop_Endocrine = seq(0.15, 0.65, length.out = ncol(spatial)),
@@ -127,7 +124,7 @@ RunRCTD <- function(
   reference_layer = "counts",
   features = NULL,
   image = NULL,
-  coord.cols = c("x", "y"),
+  coord.cols = NULL,
   rctd_mode = c("full", "multi", "doublet"),
   max_cores = 1,
   min_cells = 25,
@@ -570,35 +567,15 @@ rctd_get_spatial_coords <- function(
   srt,
   spot_ids,
   image = NULL,
-  coord.cols = c("x", "y")
+  coord.cols = NULL
 ) {
-  meta <- srt[[]]
-  if (is.null(image) && all(coord.cols %in% colnames(meta))) {
-    coords <- meta[spot_ids, coord.cols, drop = FALSE]
-    coords <- rctd_validate_coords(coords, spot_ids)
-    return(coords)
-  }
-
-  image_coords <- rctd_get_image_coords(srt, image = image)
-  if (!is.null(image_coords)) {
-    common <- intersect(spot_ids, rownames(image_coords))
-    if (length(common) == length(spot_ids)) {
-      coords <- image_coords[spot_ids, , drop = FALSE]
-      coords <- rctd_validate_coords(coords, spot_ids)
-      return(coords)
-    }
-  }
-
-  if (all(coord.cols %in% colnames(meta))) {
-    coords <- meta[spot_ids, coord.cols, drop = FALSE]
-    coords <- rctd_validate_coords(coords, spot_ids)
-    return(coords)
-  }
-
-  log_message(
-    "Spatial coordinates were not found. Provide a Seurat image or metadata columns {.val {coord.cols}}.",
-    message_type = "error"
-  )
+  coords <- spatial_dim_coords(
+    srt = srt,
+    image = image,
+    coord.cols = coord.cols,
+    overlay_image = FALSE
+  )$data
+  rctd_validate_coords(coords[spot_ids, , drop = FALSE], spot_ids)
 }
 
 rctd_get_image_coords <- function(srt, image = NULL) {

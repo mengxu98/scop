@@ -11,8 +11,9 @@
 #' @param layer Assay layer used for expression values.
 #' @param image Name of the Seurat spatial image. If `NULL`, the first image is
 #' used when present.
-#' @param coord.cols Metadata coordinate columns used when no Seurat image is
-#' available.
+#' @param coord.cols Metadata coordinate columns to use explicitly. If `NULL`,
+#' Seurat image coordinates are used first when available, then metadata `x/y`
+#' or `col/row`.
 #' @param features Features to use. If `NULL`, current variable features are
 #' used; if no variable features are present, the top `nfeatures` by variance
 #' are used.
@@ -44,11 +45,7 @@
 #'
 #' @examples
 #' data(visium_human_pancreas_sub)
-#' spatial <- subset(
-#'   visium_human_pancreas_sub,
-#'   cells = colnames(visium_human_pancreas_sub)[1:120],
-#'   features = rownames(visium_human_pancreas_sub)[1:400]
-#' )
+#' spatial <- visium_human_pancreas_sub
 #' spatial$SmoothClust_cluster <- factor(
 #'   paste0("SmoothClust", (seq_len(ncol(spatial)) - 1) %% 3 + 1)
 #' )
@@ -89,7 +86,7 @@ RunSmoothClust <- function(
   assay = NULL,
   layer = "data",
   image = NULL,
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   features = NULL,
   nfeatures = 2000,
   min_spots = 5,

@@ -56,6 +56,7 @@
   * Added lightweight `semla` spatial wrappers: `RunSemlaSpatialNetwork()`, `RunSemlaLocalG()`, `RunSemlaRegionNeighbors()`, and `RunSemlaRadialDistance()`.
   * Added Giotto integration helpers for spatial workflows, including standalone result wrappers (`RunGiottoCluster()`, `RunGiottoSpatialGenes()`, `RunGiottoSpatialModules()`, `RunGiottoCellProximity()`), `GiottoPlot()` result visualizations, and the `SeuratToScopGiotto()` / `RunGiottoWorkflow()` object workflow for keeping Giotto results separate from Seurat until explicitly written back.
   * Added `SpatialSpotPlot()` for spatial visualization, including examples that show both tissue annotations and downstream CytoSPACE assignment results.
+  * Added spatial module polish for automatic coordinate resolution, shared spatial palette defaults, empty/single-value plot handling, and lighter method examples that use the bundled spatial object directly.
   * Added a shared C++ progress helper in `src/log_message.h` for long-running C++ loops. CytoSPACE assignment, scTenifold tensor decomposition, proportion permutation/bootstrap, and sample-level proportion bootstrap now report progress with the same timestamped format as `thisutils::log_message()`.
 
 * **fix**:

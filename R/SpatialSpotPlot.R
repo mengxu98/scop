@@ -25,7 +25,9 @@
 #' @param overlay_image Whether to draw the spatial image beneath spots.
 #' @param image.alpha Transparency of the spatial image.
 #' @param crop Whether to crop the panel to plotted spots.
-#' @param coord.cols Metadata coordinate columns used when no image is available.
+#' @param coord.cols Metadata coordinate columns to use explicitly. If `NULL`,
+#' Seurat image coordinates are used first when available, then metadata `x/y`
+#' or `col/row`.
 #' @param flip.y Whether to reverse the y axis for metadata coordinates.
 #' @param show_axes Whether to keep axis text, ticks, and grid lines. The
 #' default `FALSE` is intended for polished spatial maps; set `TRUE` for
@@ -70,7 +72,7 @@ SpatialSpotPlot <- function(
   overlay_image = TRUE,
   image.alpha = 1,
   crop = TRUE,
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   flip.y = TRUE,
   show_axes = FALSE,
   split.by = NULL,
@@ -83,7 +85,7 @@ SpatialSpotPlot <- function(
   stroke = 0.1,
   jitter_width = 0.25,
   jitter_height = 0.25,
-  palette = "Spectral",
+  palette = NULL,
   palcolor = NULL,
   bg_color = "grey20",
   legend.position = "right",
@@ -278,7 +280,7 @@ spatial_dim_long_plot <- function(
   overlay_image = TRUE,
   image.alpha = 1,
   crop = TRUE,
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   flip.y = TRUE,
   show_axes = FALSE,
   split.by = NULL,
@@ -288,7 +290,7 @@ spatial_dim_long_plot <- function(
   stroke = 0.1,
   jitter_width = 0.25,
   jitter_height = 0.25,
-  palette = "Chinese",
+  palette = NULL,
   palcolor = NULL,
   bg_color = "grey20",
   legend.position = "right",
@@ -368,7 +370,7 @@ spatial_dim_long_plot <- function(
   if (is.numeric(values)) {
     cols <- palette_colors(
       type = "continuous",
-      palette = palette,
+      palette = scop_spatial_palette(palette, values, type = "continuous"),
       palcolor = palcolor
     )
     point_layer <- if (geom == "jitter") {
@@ -395,7 +397,7 @@ spatial_dim_long_plot <- function(
     df[[color.by]] <- factor(values, levels = unique(values))
     cols <- palette_colors(
       levels(df[[color.by]]),
-      palette = palette,
+      palette = scop_spatial_palette(palette, values, type = "discrete"),
       palcolor = palcolor
     )
     point_layer <- if (geom == "jitter") {
@@ -459,7 +461,7 @@ spatial_dim_pie_plot <- function(
   overlay_image = TRUE,
   image.alpha = 1,
   crop = TRUE,
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   flip.y = TRUE,
   show_axes = FALSE,
   split.by = NULL,
@@ -467,7 +469,7 @@ spatial_dim_pie_plot <- function(
   pie.radius = NULL,
   pie.radius.scale = 0.45,
   pt.alpha = 0.9,
-  palette = "Chinese",
+  palette = NULL,
   palcolor = NULL,
   bg_color = "grey20",
   legend.position = "right",
@@ -531,7 +533,7 @@ spatial_dim_pie_plot <- function(
   )
   cols <- palette_colors(
     colnames(mat),
-    palette = palette,
+    palette = scop_spatial_palette(palette, type = "discrete"),
     palcolor = palcolor
   )
   theme_obj <- scop_spatial_theme(
@@ -742,9 +744,14 @@ spatial_dim_validate_pie_radius <- function(radius) {
 spatial_dim_coords <- function(
   srt,
   image = NULL,
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   overlay_image = TRUE
 ) {
+  if (!is.null(coord.cols)) {
+    out <- scop_spatial_metadata_coords(srt, coord.cols = coord.cols)
+    return(list(data = out, image = NULL, uses_image = FALSE))
+  }
+
   images <- tryCatch(SeuratObject::Images(srt), error = function(e) character())
   image_info <- NULL
   if (length(images) > 0L) {
@@ -904,7 +911,7 @@ spatial_dim_single_plot <- function(
   pt.size = 1,
   pt.alpha = 0.9,
   stroke = 0.1,
-  palette = "Chinese",
+  palette = NULL,
   palcolor = NULL,
   bg_color = "grey20",
   legend.position = "right",
@@ -943,7 +950,7 @@ spatial_dim_single_plot <- function(
   if (is.numeric(values)) {
     cols <- palette_colors(
       type = "continuous",
-      palette = palette,
+      palette = scop_spatial_palette(palette, values, type = "continuous"),
       palcolor = palcolor
     )
     p <- p +
@@ -955,7 +962,11 @@ spatial_dim_single_plot <- function(
       spatial_dim_continuous_scale(values, aesthetic = "color", colors = cols)
   } else {
     lvls <- levels(factor(values))
-    cols <- palette_colors(lvls, palette = palette, palcolor = palcolor)
+    cols <- palette_colors(
+      lvls,
+      palette = scop_spatial_palette(palette, values, type = "discrete"),
+      palcolor = palcolor
+    )
     p <- p +
       ggplot2::geom_point(
         ggplot2::aes(fill = .data[[value_col]]),

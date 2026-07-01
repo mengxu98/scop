@@ -26,11 +26,7 @@
 #'
 #' @examples
 #' data(visium_human_pancreas_sub)
-#' spatial <- subset(
-#'   visium_human_pancreas_sub,
-#'   cells = colnames(visium_human_pancreas_sub)[1:120],
-#'   features = rownames(visium_human_pancreas_sub)[1:400]
-#' )
+#' spatial <- visium_human_pancreas_sub
 #' spatial$sample <- ifelse(spatial$y > stats::median(spatial$y), "slice_a", "slice_b")
 #' spatial$SpatialIntegration_PRECAST_domain <- factor(
 #'   paste0("domain_", (seq_len(ncol(spatial)) - 1) %% 3 + 1)
@@ -99,7 +95,7 @@ RunSpatialIntegration <- function(
   sample.by = NULL,
   assay = NULL,
   layer = "counts",
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   features = NULL,
   image = NULL,
   reduction.name = NULL,
@@ -197,11 +193,7 @@ RunSpatialIntegration <- function(
 #'
 #' @examples
 #' data(visium_human_pancreas_sub)
-#' spatial <- subset(
-#'   visium_human_pancreas_sub,
-#'   cells = colnames(visium_human_pancreas_sub)[1:120],
-#'   features = rownames(visium_human_pancreas_sub)[1:400]
-#' )
+#' spatial <- visium_human_pancreas_sub
 #' spatial$sample <- ifelse(spatial$y > stats::median(spatial$y), "slice_a", "slice_b")
 #' spatial$SpatialIntegration_PRECAST_domain <- factor(
 #'   paste0("domain_", (seq_len(ncol(spatial)) - 1) %% 3 + 1)
@@ -257,7 +249,7 @@ SpatialIntegrationPlot <- function(
   sample.by = NULL,
   reduction = NULL,
   cluster_colname = NULL,
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   use_aligned = FALSE,
   tool_name = "SpatialIntegration",
   combine = TRUE,

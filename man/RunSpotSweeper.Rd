@@ -8,7 +8,7 @@ RunSpotSweeper(
   srt,
   assay = NULL,
   layer = "counts",
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   image = NULL,
   sample.by = NULL,
   metrics = NULL,
@@ -39,8 +39,9 @@ RunSpotSweeper(
 
 \item{layer}{Assay layer used for expression values.}
 
-\item{coord.cols}{Metadata coordinate columns used when no Seurat image is
-available.}
+\item{coord.cols}{Metadata coordinate columns to use explicitly. If \code{NULL},
+Seurat image coordinates are used first when available, then metadata \code{x/y}
+or \code{col/row}.}
 
 \item{image}{Name of the Seurat spatial image. If \code{NULL}, the first image is
 used when present.}
@@ -106,11 +107,7 @@ visualized with \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}}.
 }
 \examples{
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
+spatial <- visium_human_pancreas_sub
 spatial$SpotSweeper_QC <- factor(
   ifelse(seq_len(ncol(spatial)) \%\% 9 == 0, "Fail", "Pass"),
   levels = c("Pass", "Fail")

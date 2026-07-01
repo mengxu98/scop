@@ -7,10 +7,28 @@
 #' it can be plotted directly with [SpatialSpotPlot()].
 #'
 #' @md
-#' @inheritParams RunCARD
+#' @inheritParams thisutils::log_message
+#' @param srt Spatial `Seurat` object used as the query.
+#' @param reference Reference `Seurat` object containing annotated single cells.
+#' @param reference_label Metadata column in `reference` with cell type labels.
+#' @param assay Assay used in `srt`. If `NULL`, the default assay is used.
+#' @param reference_assay Assay used in `reference`. If `NULL`, the reference
+#' default assay is used.
+#' @param layer,reference_layer Assay layers used for spatial and reference
+#' raw counts.
+#' @param features Features used for fitting. If `NULL`, shared features are
+#' used.
+#' @param image Name of the Seurat spatial image used to recover coordinates
+#' when `coord.cols` is `NULL`.
+#' @param coord.cols Metadata coordinate columns to use explicitly. If `NULL`,
+#' Seurat image coordinates are used first when available, then metadata `x/y`
+#' or `col/row`.
 #' @param min_cells Minimum reference cells required per cell type.
+#' @param prefix Prefix for metadata columns.
+#' @param tool_name Name used to store detailed results in `srt@tools`.
 #' @param normalize Whether to library-size normalize and `log1p` transform
 #' spatial and reference matrices before fitting.
+#' @param store_results Whether to store detailed results in `srt@tools`.
 #'
 #' @return A `Seurat` object with `"<prefix>_prop_*"`,
 #' `"<prefix>_dominant_type"`, and `"<prefix>_max_prop"` metadata columns.
@@ -38,7 +56,7 @@ RunSpatialDWLS <- function(
   reference_layer = "counts",
   features = NULL,
   image = NULL,
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   min_cells = 2,
   prefix = "SpatialDWLS",
   tool_name = "SpatialDWLS",

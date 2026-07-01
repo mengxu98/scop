@@ -11,7 +11,7 @@ RunSpatialVariableFeatures(
   features = NULL,
   method = c("moran", "geary", "SPARKX", "nnSVG"),
   image = NULL,
-  coord.cols = c("x", "y"),
+  coord.cols = NULL,
   k = 6,
   nfeatures = 2000,
   min_spots = 5,
@@ -41,8 +41,7 @@ used; if no variable features are present, all assay features are used.}
 \item{image}{Name of the Seurat spatial image used by the spatial workflow.
 If \code{NULL}, the first image is used when present.}
 
-\item{coord.cols}{Metadata coordinate columns used by the spatial workflow
-when no image is available.}
+\item{coord.cols}{Metadata coordinate columns used by the spatial workflow.}
 
 \item{k}{Number of nearest spatial neighbors per spot.}
 

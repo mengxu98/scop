@@ -92,7 +92,9 @@ for spatial spot plots.}
 \item{image}{Name of the Seurat spatial image. If `NULL`, the first image is
 used when available.}
 
-\item{coord.cols}{Metadata coordinate columns used when no image is available.}
+\item{coord.cols}{Metadata coordinate columns to use explicitly. If `NULL`,
+Seurat image coordinates are used first when available, then metadata `x/y`
+or `col/row`.}
 
 \item{overlay_image}{Whether to draw the spatial image beneath spots.}
 
@@ -150,11 +152,7 @@ is not modified.
 }
 \examples{
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:80],
-  features = rownames(visium_human_pancreas_sub)[1:300]
-)
+spatial <- visium_human_pancreas_sub
 cluster_result <- list(
   clusters = data.frame(
     cluster = paste0("cluster_", (seq_len(ncol(spatial)) - 1) \%\% 3 + 1),

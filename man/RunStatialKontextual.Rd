@@ -15,7 +15,7 @@ RunStatialKontextual(
   image = NULL,
   sample.by = NULL,
   images = NULL,
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   inhom = FALSE,
   edge_correct = TRUE,
   window = c("convex", "square", "concave"),
@@ -49,8 +49,9 @@ used when present.}
 
 \item{images}{Optional Statial image filter passed to \code{Kontextual(image = )}.}
 
-\item{coord.cols}{Metadata coordinate columns used when no Seurat image
-coordinates are available.}
+\item{coord.cols}{Metadata coordinate columns to use explicitly. If \code{NULL},
+Seurat image coordinates are used first when available, then metadata \code{x/y}
+or \code{col/row}.}
 
 \item{inhom}{Whether Statial should account for inhomogeneity.}
 
@@ -70,7 +71,8 @@ coordinates are available.}
 \item{store_input}{Whether to store the backend input cell table in
 \code{srt@tools}.}
 
-\item{verbose}{Whether to print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{...}{Additional named arguments passed to \code{Statial::Kontextual()}.}
 }
@@ -87,11 +89,7 @@ dependency installable with \code{BiocManager::install("Statial")}.
 }
 \examples{
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
+spatial <- visium_human_pancreas_sub
 
 if (
   requireNamespace("Statial", quietly = TRUE) &&

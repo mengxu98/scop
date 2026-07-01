@@ -33,11 +33,7 @@
 #'
 #' @examples
 #' data(visium_human_pancreas_sub)
-#' spatial <- subset(
-#'   visium_human_pancreas_sub,
-#'   cells = colnames(visium_human_pancreas_sub)[1:120],
-#'   features = rownames(visium_human_pancreas_sub)[1:400]
-#' )
+#' spatial <- visium_human_pancreas_sub
 #' giotto_clusters <- list(
 #'   clusters = data.frame(
 #'     cluster = paste0("cluster_", (seq_len(ncol(spatial)) - 1) %% 3 + 1),
@@ -90,7 +86,7 @@ RunGiottoCluster <- function(
   layer = "data",
   features = NULL,
   image = NULL,
-  coord.cols = c("x", "y"),
+  coord.cols = NULL,
   method = c("leiden", "louvain"),
   dims = 1:20,
   k = 20,
@@ -329,7 +325,7 @@ giotto_prepare_input <- function(
   layer,
   features = NULL,
   image = NULL,
-  coord.cols = c("x", "y")
+  coord.cols = NULL
 ) {
   expr <- GetAssayData5(srt, assay = assay, layer = layer)
   coords <- giotto_spatial_coords(
@@ -409,7 +405,7 @@ giotto_prepare_input <- function(
   )
 }
 
-giotto_spatial_coords <- function(srt, image = NULL, coord.cols = c("x", "y")) {
+giotto_spatial_coords <- function(srt, image = NULL, coord.cols = NULL) {
   images <- tryCatch(SeuratObject::Images(srt), error = function(e) character())
   if (length(images) > 0L) {
     image <- image %||% images[1L]
@@ -439,12 +435,7 @@ giotto_spatial_coords <- function(srt, image = NULL, coord.cols = c("x", "y")) {
     ))
   }
 
-  if (!all(coord.cols %in% colnames(srt@meta.data))) {
-    log_message(
-      "Spatial coordinates were not found. Provide a Seurat image or metadata columns {.val {coord.cols}}.",
-      message_type = "error"
-    )
-  }
+  coord.cols <- scop_spatial_resolve_coord_cols(srt, coord.cols = coord.cols)
   data.frame(
     x = srt@meta.data[[coord.cols[1L]]],
     y = srt@meta.data[[coord.cols[2L]]],

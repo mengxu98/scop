@@ -15,12 +15,12 @@ SpatialVariableFeaturePlot(
   image = NULL,
   overlay_image = TRUE,
   image.alpha = 1,
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   flip.y = TRUE,
   pt.size = NULL,
   pt.alpha = 0.9,
   stroke = 0.1,
-  palette = "Spectral",
+  palette = NULL,
   palcolor = NULL,
   legend.position = "right",
   theme_use = "theme_scop",
@@ -54,7 +54,9 @@ used when present.}
 
 \item{image.alpha}{Transparency of the spatial image.}
 
-\item{coord.cols}{Metadata coordinate columns used when no image is available.}
+\item{coord.cols}{Metadata coordinate columns to use explicitly. If \code{NULL},
+Seurat image coordinates are used first when available, then metadata \code{x/y}
+or \code{col/row}.}
 
 \item{flip.y}{Whether to reverse the y axis for metadata coordinates.}
 

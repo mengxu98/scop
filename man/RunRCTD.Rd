@@ -14,7 +14,7 @@ RunRCTD(
   reference_layer = "counts",
   features = NULL,
   image = NULL,
-  coord.cols = c("x", "y"),
+  coord.cols = NULL,
   rctd_mode = c("full", "multi", "doublet"),
   max_cores = 1,
   min_cells = 25,
@@ -44,10 +44,11 @@ raw counts.}
 \item{features}{Features used for RCTD. If \code{NULL}, shared features are used.}
 
 \item{image}{Name of the Seurat spatial image used to recover coordinates
-when \code{coord.cols} are not available.}
+when \code{coord.cols} is \code{NULL}.}
 
-\item{coord.cols}{Metadata coordinate columns used when no image coordinate
-source is requested or available.}
+\item{coord.cols}{Metadata coordinate columns to use explicitly. If \code{NULL},
+Seurat image coordinates are used first when available, then metadata \code{x/y}
+or \code{col/row}.}
 
 \item{rctd_mode}{RCTD mode passed to \code{spacexr}. \code{"full"} is the default for
 Visium spot deconvolution.}
@@ -88,11 +89,7 @@ using a single-cell \code{Seurat} reference and \code{spacexr} RCTD.
 }
 \examples{
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
+spatial <- visium_human_pancreas_sub
 rctd_weights <- data.frame(
   RCTD_prop_Ductal = seq(0.75, 0.15, length.out = ncol(spatial)),
   RCTD_prop_Endocrine = seq(0.15, 0.65, length.out = ncol(spatial)),

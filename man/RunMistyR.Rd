@@ -10,7 +10,7 @@ RunMistyR(
   layer = "data",
   features = NULL,
   image = NULL,
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   views = "para",
   para_l = 10,
   para_zoi = 0,
@@ -46,8 +46,9 @@ when available; otherwise all assay features are used.}
 \item{image}{Name of the Seurat spatial image. If \code{NULL}, the first image is
 used when present.}
 
-\item{coord.cols}{Metadata coordinate columns used when no Seurat image
-coordinates are available.}
+\item{coord.cols}{Metadata coordinate columns to use explicitly. If \code{NULL},
+Seurat image coordinates are used first when available, then metadata \code{x/y}
+or \code{col/row}.}
 
 \item{views}{Spatial views to add besides the required intraview. One or both
 of \code{"para"} and \code{"juxta"}.}
@@ -63,8 +64,7 @@ of \code{"para"} and \code{"juxta"}.}
 \item{results_folder}{Folder passed to \code{mistyR::run_misty()}. If \code{NULL}, a
 temporary folder is used.}
 
-\item{seed, target_subset, bypass_intra, cv_folds, model_cached, append}{Parameters
-passed to \code{mistyR::run_misty()}.}
+\item{seed, target_subset, bypass_intra, cv_folds, model_cached, append}{Parameters passed to \code{mistyR::run_misty()}.}
 
 \item{tool_name}{Name used to store results in \code{srt@tools}.}
 
@@ -73,7 +73,8 @@ passed to \code{mistyR::run_misty()}.}
 \item{store_views}{Whether to store the mistyR view composition in
 \code{srt@tools}. This can be large.}
 
-\item{verbose}{Whether to print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{...}{Additional named arguments passed to \code{mistyR::run_misty()}.}
 }
@@ -91,11 +92,7 @@ context. \code{mistyR} is an optional Bioconductor dependency installable with
 }
 \examples{
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:80],
-  features = rownames(visium_human_pancreas_sub)[1:40]
-)
+spatial <- visium_human_pancreas_sub
 spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 
 if (

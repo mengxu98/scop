@@ -21,7 +21,7 @@ SpatialNeighborhoodPlot(
   pair = NULL,
   image = NULL,
   overlay_image = TRUE,
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   split.by = NULL,
   palette = "RdBu",
   palcolor = NULL,
@@ -70,8 +70,9 @@ used when present.}
 
 \item{overlay_image}{Whether to draw the spatial image beneath spots.}
 
-\item{coord.cols}{Metadata coordinate columns used when no Seurat image
-coordinates are available.}
+\item{coord.cols}{Metadata coordinate columns to use explicitly. If \code{NULL},
+Seurat image coordinates are used first when available, then metadata \code{x/y}
+or \code{col/row}.}
 
 \item{split.by}{Optional metadata column identifying conditions for
 differential neighborhood statistics.}
@@ -126,11 +127,7 @@ statistical, and network plotting conventions.
 }
 \examples{
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
+spatial <- visium_human_pancreas_sub
 spatial <- RunSpatialNeighborhood(
   spatial,
   group.by = "coda_label",

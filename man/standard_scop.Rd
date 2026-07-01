@@ -10,7 +10,7 @@ standard_scop(
   workflow = c("single_cell", "spatial"),
   assay = NULL,
   image = NULL,
-  coord.cols = c("x", "y"),
+  coord.cols = NULL,
   do_spot_qc = TRUE,
   spot_qc_params = list(),
   do_spatial_variable_features = TRUE,

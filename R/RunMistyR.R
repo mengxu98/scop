@@ -17,8 +17,9 @@
 #' when available; otherwise all assay features are used.
 #' @param image Name of the Seurat spatial image. If `NULL`, the first image is
 #' used when present.
-#' @param coord.cols Metadata coordinate columns used when no Seurat image
-#' coordinates are available.
+#' @param coord.cols Metadata coordinate columns to use explicitly. If `NULL`,
+#' Seurat image coordinates are used first when available, then metadata `x/y`
+#' or `col/row`.
 #' @param views Spatial views to add besides the required intraview. One or both
 #' of `"para"` and `"juxta"`.
 #' @param para_l,para_zoi,para_family,para_approx,para_nn Parameters passed to
@@ -42,11 +43,7 @@
 #'
 #' @examples
 #' data(visium_human_pancreas_sub)
-#' spatial <- subset(
-#'   visium_human_pancreas_sub,
-#'   cells = colnames(visium_human_pancreas_sub)[1:80],
-#'   features = rownames(visium_human_pancreas_sub)[1:40]
-#' )
+#' spatial <- visium_human_pancreas_sub
 #' spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 #'
 #' if (
@@ -72,7 +69,7 @@ RunMistyR <- function(
   layer = "data",
   features = NULL,
   image = NULL,
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   views = "para",
   para_l = 10,
   para_zoi = 0,
@@ -236,7 +233,7 @@ mistyr_prepare_input <- function(
   layer,
   features = NULL,
   image = NULL,
-  coord.cols = c("col", "row")
+  coord.cols = NULL
 ) {
   expr <- GetAssayData5(srt, assay = assay, layer = layer)
   coords <- spatial_dim_coords(

@@ -16,7 +16,7 @@ RunSpatialGradientFeatures(
   sample_name = NULL,
   platform = "Undefined",
   image = NULL,
-  coord.cols = c("x", "y"),
+  coord.cols = NULL,
   img_scale_fct = "lowres",
   assay_modality = "gene",
   trajectory_id = "scop_gradient",
@@ -141,11 +141,7 @@ is never stored.
 }
 \examples{
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
+spatial <- visium_human_pancreas_sub
 spatial <- RunSpatialGradientFeatures(
   spatial,
   reference = "trajectory",

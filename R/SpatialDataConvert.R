@@ -8,10 +8,11 @@
 #' @param srt A `Seurat` object.
 #' @param assay Assay to export. If `NULL`, the default assay is used.
 #' @param layer Assay layer to export.
-#' @param coord.cols Metadata coordinate columns. By default, SCOP resolves
-#' `x/y` first and then `col/row`.
-#' @param image Optional Seurat image name. When present, image-derived
-#' coordinates are used.
+#' @param coord.cols Metadata coordinate columns to use explicitly. If `NULL`,
+#' Seurat image coordinates are used first when available, then metadata `x/y`
+#' or `col/row`.
+#' @param image Optional Seurat image name. If `NULL`, the first Seurat image is
+#' used when `coord.cols` is `NULL` and an image is present.
 #' @param include_meta Whether to include Seurat metadata as `colData`.
 #'
 #' @return A `SpatialExperiment`.
@@ -20,7 +21,7 @@ srt_to_spe <- function(
   srt,
   assay = NULL,
   layer = "counts",
-  coord.cols = c("col", "row"),
+  coord.cols = NULL,
   image = NULL,
   include_meta = TRUE
 ) {

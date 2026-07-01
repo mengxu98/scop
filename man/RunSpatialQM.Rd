@@ -30,8 +30,8 @@ used.}
 \item{metrics}{SpatialQM metrics to run. Supported aliases include
 \code{"n_cells"}, \code{"tx_per_cell"}, \code{"tx_per_area"}, \code{"tx_per_nuc"},
 \code{"mean_expression"}, \code{"mean_signal_ratio"}, \code{"cell_tx_fraction"},
-\code{"max_ratio"}, \code{"max_detection"}, \code{"mecr"}, \code{"morans"},
-\code{"silhouette"}, \code{"sparsity"}, and \code{"entropy"}.}
+\code{"max_ratio"}, \code{"max_detection"}, \code{"mecr"}, \code{"morans"}, \code{"silhouette"},
+\code{"sparsity"}, and \code{"entropy"}.}
 
 \item{features}{Optional feature vector passed to metrics that support a
 \code{features} argument.}
@@ -47,7 +47,8 @@ metrics.}
 \item{on_error}{Whether a failed metric should stop the wrapper (\code{"error"})
 or be recorded in the result bundle with a warning (\code{"warning"}).}
 
-\item{verbose}{Whether to print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{...}{Additional named arguments passed to SpatialQM metric functions
 when the installed function exposes matching formal arguments.}
@@ -66,11 +67,7 @@ installable with \code{remotes::install_github("Center-for-Spatial-OMICs/Spatial
 }
 \examples{
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:80],
-  features = rownames(visium_human_pancreas_sub)[1:300]
-)
+spatial <- visium_human_pancreas_sub
 
 if (
   requireNamespace("SpatialQM", quietly = TRUE) &&

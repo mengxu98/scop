@@ -1,20 +1,16 @@
 # Internal spatial helpers shared by SCOP spatial wrappers.
 
-scop_spatial_resolve_coord_cols <- function(srt, coord.cols = c("col", "row")) {
+scop_spatial_resolve_coord_cols <- function(srt, coord.cols = NULL) {
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }
   meta_cols <- colnames(srt@meta.data)
   requested <- coord.cols
   if (!is.null(requested)) {
-    requested <- requested[seq_len(min(2L, length(requested)))]
-  }
-
-  default_requested <- is.null(requested) ||
-    length(requested) < 2L ||
-    identical(requested, c("col", "row"))
-
-  if (!default_requested) {
+    if (length(requested) < 2L) {
+      log_message("{.arg coord.cols} must contain at least two metadata columns", message_type = "error")
+    }
+    requested <- requested[seq_len(2L)]
     missing <- setdiff(requested, meta_cols)
     if (length(missing) > 0L) {
       log_message(
@@ -43,7 +39,7 @@ scop_spatial_resolve_coord_cols <- function(srt, coord.cols = c("col", "row")) {
   )
 }
 
-scop_spatial_metadata_coords <- function(srt, coord.cols = c("col", "row")) {
+scop_spatial_metadata_coords <- function(srt, coord.cols = NULL) {
   coord.cols <- scop_spatial_resolve_coord_cols(srt, coord.cols = coord.cols)
   data.frame(
     x = suppressWarnings(as.numeric(srt@meta.data[[coord.cols[1L]]])),
@@ -89,6 +85,25 @@ scop_spatial_theme <- function(
       )
   }
   theme_obj
+}
+
+scop_spatial_palette <- function(
+  palette = NULL,
+  values = NULL,
+  type = c("auto", "discrete", "continuous", "diverging")
+) {
+  if (!is.null(palette)) {
+    return(palette)
+  }
+  type <- match.arg(type)
+  if (identical(type, "auto")) {
+    type <- if (!is.null(values) && is.numeric(values)) "continuous" else "discrete"
+  }
+  switch(type,
+    discrete = "Chinese",
+    continuous = "Spectral",
+    diverging = "RdBu"
+  )
 }
 
 scop_spatial_crop_limits <- function(x, y, pad_fraction = 0.04, min_pad = 0) {
