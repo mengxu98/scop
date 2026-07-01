@@ -319,10 +319,12 @@ SpatialNeighborhoodPlot <- function(
     condition = condition
   )
   if (nrow(df) == 0L) {
-    log_message(
+    return(scop_spatial_empty_plot(
       "No spatial neighborhood records remain after filtering",
-      message_type = "error"
-    )
+      title = legend.title %||% value,
+      theme_use = theme_use,
+      theme_args = theme_args
+    ))
   }
   df <- spatial_neighborhood_prepare_plot_table(
     df = df,
