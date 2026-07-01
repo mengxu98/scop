@@ -402,6 +402,11 @@ reference:
   - srt_to_adata
   - srt_to_h5ad
 
+- subtitle: "External Datasets"
+- contents:
+  - ListScopDatasets
+  - LoadScopDataset
+
 - subtitle: "Data Processing"
 - contents:
   - CheckDataType
