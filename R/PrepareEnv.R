@@ -26,7 +26,9 @@
 #' `"celltypist"`, `"cellphonedb"`, `"magic"`, `"scrublet"`,
 #' `"sccoda"`, `"doubletdetection"`, `"doublet"`, `"palantir"`, `"scvelo"`,
 #' `"cellrank"`, `"wot"`, `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`,
-#' `"scomm"`, `"scenic"`, `"seacells"`, and `"tage"`.
+#' `"scomm"`, `"scenic"`, `"seacells"`, `"tage"`,
+#' `"scmalignantfinder"`, `"secact"`, `"scpagwas"`, and
+#' `"external_wrappers"`.
 #' If `NULL` or omitted in [PrepareEnv()], the default environment is installed.
 #' The default excludes `"sccoda"` and `"scomm"` because their TensorFlow stacks
 #' are not compatible with the default JAX/scVI stack in the same environment;
@@ -118,6 +120,10 @@ PrepareEnv <- function(
         keep_jax = "scvi" %in% modules
       )
     }
+    ensure_external_wrapper_r_packages(
+      modules = modules,
+      verbose = verbose
+    )
     log_message(
       "{cli::col_green('Python environment completed')}\n",
       "{cli::col_grey('Until next loading, the environment will be cached')}",
@@ -325,6 +331,10 @@ PrepareEnv <- function(
       keep_jax = "scvi" %in% modules
     )
   }
+  ensure_external_wrapper_r_packages(
+    modules = modules,
+    verbose = verbose
+  )
 
   assert_python_runtime_switchable(
     python,
@@ -396,12 +406,27 @@ supported_env_modules <- function() {
     "regdiffusion",
     "scenicplus",
     "seacells",
-    "tage"
+    "tage",
+    "scmalignantfinder",
+    "secact",
+    "scpagwas",
+    "external_wrappers"
   )
 }
 
 default_env_modules <- function() {
-  excluded <- c("scfea", "sccoda", "scomm", "scenic", "regdiffusion", "scenicplus")
+  excluded <- c(
+    "scfea",
+    "sccoda",
+    "scomm",
+    "scenic",
+    "regdiffusion",
+    "scenicplus",
+    "scmalignantfinder",
+    "secact",
+    "scpagwas",
+    "external_wrappers"
+  )
   if (is_windows()) {
     excluded <- c(excluded, "scvi", "glue", "multimap")
   }
@@ -431,7 +456,8 @@ env_module_dependencies <- function() {
     glue = "scanpy",
     scanorama = "scanpy",
     bbknn = "scanpy",
-    multimap = "scanpy"
+    multimap = "scanpy",
+    scmalignantfinder = "scanpy"
   )
 }
 
@@ -462,7 +488,8 @@ env_module_requirements <- function() {
     regdiffusion = regdiffusion_python_requirements(),
     scenicplus = scenicplus_python_requirements(),
     seacells = seacells_python_requirements(),
-    tage = tage_python_requirements()
+    tage = tage_python_requirements(),
+    scmalignantfinder = scmalignantfinder_python_requirements()
   )
 }
 
@@ -492,6 +519,15 @@ normalize_env_modules <- function(modules = NULL, include_optional = FALSE) {
     )
   }
 
+  if ("external_wrappers" %in% modules) {
+    modules <- c(
+      setdiff(modules, "external_wrappers"),
+      "scmalignantfinder",
+      "secact",
+      "scpagwas"
+    )
+  }
+
   module_dependencies <- env_module_dependencies()
   for (module in modules) {
     deps <- module_dependencies[[module]]
@@ -509,6 +545,26 @@ normalize_env_modules <- function(modules = NULL, include_optional = FALSE) {
     )
   }
   modules
+}
+
+ensure_external_wrapper_r_packages <- function(modules, verbose = TRUE) {
+  repos <- c(
+    secact = "data2intelligence/SecAct",
+    scpagwas = "sulab-wmu/scPagwas"
+  )
+  modules <- intersect(names(repos), modules)
+  if (length(modules) == 0) {
+    return(invisible(TRUE))
+  }
+
+  ok <- TRUE
+  for (module in modules) {
+    repo <- unname(repos[[module]])
+    installed <- isTRUE(check_r(repo, dependencies = NA, verbose = verbose))
+    ok <- installed && ok
+  }
+
+  invisible(ok)
 }
 
 build_env_cache_spec <- function(
@@ -1224,7 +1280,9 @@ env_info <- function(conda, envname, verbose = TRUE) {
 #' `"cellphonedb"`, `"magic"`, `"scrublet"`, `"doubletdetection"`,
 #' `"sccoda"`, `"doublet"`, `"palantir"`, `"scvelo"`, `"cellrank"`, `"wot"`,
 #' `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`,
-#' `"scomm"`, `"scenic"`, `"seacells"`, and `"tage"`. If `NULL`, the default environment is returned. The default
+#' `"scomm"`, `"scenic"`, `"seacells"`, `"tage"`,
+#' `"scmalignantfinder"`, `"secact"`, `"scpagwas"`, and
+#' `"external_wrappers"`. If `NULL`, the default environment is returned. The default
 #' excludes `"sccoda"`, `"scomm"`, and `"scenic"` because these workflows
 #' require dependency stacks that should be prepared explicitly. The
 #' `"scenic"` module is standalone and always uses Python `"3.10-1"`.
@@ -1605,6 +1663,27 @@ seacells_python_requirements <- function() {
     install_methods = c(
       "SEACells" = "pip"
     ),
+    package_aliases = list()
+  )
+}
+
+scmalignantfinder_python_requirements <- function() {
+  packages <- c(
+    "scMalignantFinder" = "git+https://github.com/Jonyyqn/scMalignantFinder.git",
+    "xgboost" = "xgboost"
+  )
+  install_methods <- c(
+    "scMalignantFinder" = "pip",
+    "xgboost" = "pip"
+  )
+  if (is_osx()) {
+    packages <- c(packages, "libcxx" = "libcxx")
+    install_methods <- c(install_methods, "libcxx" = "conda")
+  }
+
+  list(
+    packages = packages,
+    install_methods = install_methods,
     package_aliases = list()
   )
 }

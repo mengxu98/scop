@@ -9,13 +9,13 @@ RunscMalignantFinder(
   adata = NULL,
   h5ad = NULL,
   assay = "RNA",
-  layer = "data",
+  layer = "counts",
   cells = NULL,
   pretrain_dir = NULL,
   train_h5ad_path = NULL,
   feature_path = NULL,
   model_method = c("LogisticRegression", "RandomForest", "XGBoost"),
-  norm_type = FALSE,
+  norm_type = NULL,
   use_raw = FALSE,
   n_thread = 1,
   prefix = "",
@@ -32,7 +32,7 @@ RunscMalignantFinder(
 
 \item{assay}{Assay used when \code{srt} is supplied. Default is \code{"RNA"}.}
 
-\item{layer}{Layer used when \code{srt} is supplied. Default is \code{"data"}.}
+\item{layer}{Layer used when \code{srt} is supplied. Default is \code{"counts"}.}
 
 \item{cells}{Optional cells to run. If supplied with \code{srt}, results are
 appended to these cells and other cells receive \code{NA}.}
@@ -51,7 +51,7 @@ scratch.}
 
 \item{norm_type}{Passed to \code{scMalignantFinder}. Use \code{TRUE} for raw counts
 that should be library-size normalized; use \code{FALSE} for already normalized
-input. Default is \code{FALSE}.}
+input. If \code{NULL}, defaults to \code{TRUE} only for Seurat counts input.}
 
 \item{use_raw}{Whether to use \code{adata.raw.X} when available.}
 
@@ -82,9 +82,8 @@ data(pancreas_sub)
 pancreas_sub <- RunscMalignantFinder(
   pancreas_sub,
   assay = "RNA",
-  layer = "data",
-  pretrain_dir = "path/to/pretrained_model",
-  norm_type = FALSE
+  layer = "counts",
+  pretrain_dir = "path/to/pretrained_model"
 )
 CellDimPlot(pancreas_sub, group.by = "malignancy_probability")
 \dontshow{\}) # examplesIf}

@@ -50,7 +50,13 @@ test_that("Python SCENIC GRNBoost2 runs through local Dask cluster", {
 })
 
 test_that("Python SCENIC GRNBoost2 configures process workers for multicore runs", {
-  functions_file <- system.file("python", "functions.py", package = "scop", mustWork = TRUE)
+  functions_file <- c(
+    system.file("python", "functions.py", package = "scop", mustWork = FALSE),
+    file.path("inst", "python", "functions.py"),
+    file.path(testthat::test_path("..", ".."), "inst", "python", "functions.py")
+  )
+  functions_file <- functions_file[nzchar(functions_file) & file.exists(functions_file)][1]
+  skip_if(is.na(functions_file), "SCENIC Python helper file is not available")
   source <- paste(readLines(functions_file, warn = FALSE), collapse = "\n")
 
   expect_match(source, "\"n_workers\": cores", fixed = TRUE)
