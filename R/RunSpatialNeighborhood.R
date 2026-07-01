@@ -8,7 +8,7 @@
 #' @inheritParams thisutils::log_message
 #' @param srt A `Seurat` object.
 #' @param group.by Metadata column containing spatial cell or spot labels.
-#' @param method Neighborhood backend. Currently `"spicyR"` is supported.
+#' @param method Neighborhood backend. Currently only `"spicyR"` is supported.
 #' @param assay Assay used when `features` are requested.
 #' @param layer Assay layer used when `features` are requested.
 #' @param coord.cols Metadata coordinate columns used when no Seurat image
@@ -62,7 +62,7 @@
 RunSpatialNeighborhood <- function(
   srt,
   group.by,
-  method = c("spicyR", "mistyR", "Statial", "HoodscanR"),
+  method = "spicyR",
   assay = NULL,
   layer = "data",
   coord.cols = c("col", "row"),
@@ -86,10 +86,9 @@ RunSpatialNeighborhood <- function(
       message_type = "error"
     )
   }
-  method <- match.arg(method)
   if (!identical(method, "spicyR")) {
     log_message(
-      "{.arg method} {.val {method}} is planned but not implemented yet; use {.val spicyR} in this version.",
+      "{.arg method} currently supports only {.val spicyR}. mistyR, Statial, and HoodscanR are roadmap backends.",
       message_type = "error"
     )
   }
@@ -160,6 +159,7 @@ RunSpatialNeighborhood <- function(
     edge_table = observed$edge_table,
     raw = backend$raw,
     input = input$cells,
+    summary = scop_spatial_neighborhood_summary(pair_table, observed$edge_table),
     parameters = list(
       group.by = group.by,
       assay = input$assay,
@@ -187,6 +187,7 @@ RunSpatialNeighborhood <- function(
       methods = methods_store,
       pair_table = pair_table,
       long_table = long_table,
+      summary = method_bundle$summary,
       parameters = method_bundle$parameters
     )
   }
