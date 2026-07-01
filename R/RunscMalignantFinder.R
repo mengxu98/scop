@@ -12,7 +12,7 @@
 #' @param adata Optional Python AnnData object.
 #' @param h5ad Optional path to an `.h5ad` file.
 #' @param assay Assay used when `srt` is supplied. Default is `"RNA"`.
-#' @param layer Layer used when `srt` is supplied. Default is `"data"`.
+#' @param layer Layer used when `srt` is supplied. Default is `"counts"`.
 #' @param cells Optional cells to run. If supplied with `srt`, results are
 #' appended to these cells and other cells receive `NA`.
 #' @param pretrain_dir Directory containing pretrained `scMalignantFinder`
@@ -25,7 +25,7 @@
 #' `"LogisticRegression"`, `"RandomForest"`, or `"XGBoost"`.
 #' @param norm_type Passed to `scMalignantFinder`. Use `TRUE` for raw counts
 #' that should be library-size normalized; use `FALSE` for already normalized
-#' input. Default is `FALSE`.
+#' input. If `NULL`, defaults to `TRUE` only for Seurat counts input.
 #' @param use_raw Whether to use `adata.raw.X` when available.
 #' @param n_thread Number of threads used by `scMalignantFinder`.
 #' @param prefix Optional prefix for output metadata columns. Default preserves
@@ -50,9 +50,8 @@
 #' pancreas_sub <- RunscMalignantFinder(
 #'   pancreas_sub,
 #'   assay = "RNA",
-#'   layer = "data",
-#'   pretrain_dir = "path/to/pretrained_model",
-#'   norm_type = FALSE
+#'   layer = "counts",
+#'   pretrain_dir = "path/to/pretrained_model"
 #' )
 #' CellDimPlot(pancreas_sub, group.by = "malignancy_probability")
 RunscMalignantFinder <- function(
@@ -60,13 +59,13 @@ RunscMalignantFinder <- function(
   adata = NULL,
   h5ad = NULL,
   assay = "RNA",
-  layer = "data",
+  layer = "counts",
   cells = NULL,
   pretrain_dir = NULL,
   train_h5ad_path = NULL,
   feature_path = NULL,
   model_method = c("LogisticRegression", "RandomForest", "XGBoost"),
-  norm_type = FALSE,
+  norm_type = NULL,
   use_raw = FALSE,
   n_thread = 1,
   prefix = "",
@@ -75,6 +74,11 @@ RunscMalignantFinder <- function(
 ) {
   model_method <- match.arg(model_method)
   scmf_check_one_input(srt = srt, adata = adata, h5ad = h5ad)
+  norm_type <- scmf_resolve_norm_type(norm_type, srt = srt, layer = layer)
+  h5ad <- scmf_expand_path(h5ad)
+  pretrain_dir <- scmf_expand_path(pretrain_dir)
+  train_h5ad_path <- scmf_expand_path(train_h5ad_path)
+  feature_path <- scmf_expand_path(feature_path)
   if (!is.null(cells) && is.null(srt)) {
     log_message(
       "{.arg cells} is only supported when {.arg srt} is supplied",
@@ -94,6 +98,9 @@ RunscMalignantFinder <- function(
     verbose = verbose
   )
   ensure_scmalignantfinder_python(verbose = verbose)
+  if (is.null(pretrain_dir) && identical(model_method, "XGBoost")) {
+    scmf_check_xgboost_python(verbose = verbose)
+  }
 
   if (!is.null(srt)) {
     scmf_assert_seurat(srt)
@@ -208,7 +215,7 @@ RunscMalignantRegion <- function(
   adata = NULL,
   h5ad = NULL,
   assay = "RNA",
-  layer = "data",
+  layer = "counts",
   cells = NULL,
   signature_gmt,
   features = NULL,
@@ -218,12 +225,15 @@ RunscMalignantRegion <- function(
   spatial.cols = NULL,
   spatial_key = "spatial",
   image = FALSE,
-  norm_type = FALSE,
+  norm_type = NULL,
   prefix = "scMalignantFinder_",
   return_seurat = !is.null(srt),
   verbose = TRUE
 ) {
   scmf_check_one_input(srt = srt, adata = adata, h5ad = h5ad)
+  norm_type <- scmf_resolve_norm_type(norm_type, srt = srt, layer = layer)
+  h5ad <- scmf_expand_path(h5ad)
+  signature_gmt <- scmf_expand_path(signature_gmt)
   if (missing(signature_gmt) || is.null(signature_gmt) || !nzchar(signature_gmt)) {
     log_message("{.arg signature_gmt} is required", message_type = "error")
   }
@@ -245,6 +255,16 @@ RunscMalignantRegion <- function(
       features <- c(features, "image_score")
     }
   }
+  if (!is.null(srt) && !is.null(spatial.cols)) {
+    scmf_assert_seurat(srt)
+    precheck_cells <- scmf_cells(srt, cells)
+    precheck_srt <- if (length(precheck_cells) == ncol(srt)) {
+      srt
+    } else {
+      subset(srt, cells = precheck_cells)
+    }
+    scmf_get_spatial_coordinates(precheck_srt, spatial.cols)
+  }
 
   log_message(
     "Running {.pkg scMalignantFinder} malignant region identification...",
@@ -262,17 +282,7 @@ RunscMalignantRegion <- function(
     } else {
       subset(srt, cells = cells)
     }
-    if (!is.null(spatial.cols)) {
-      missing_spatial <- setdiff(spatial.cols, colnames(srt_input[[]]))
-      if (length(missing_spatial) > 0) {
-        log_message(
-          "{.arg spatial.cols} not found in metadata: {.val {missing_spatial}}",
-          message_type = "error"
-        )
-      }
-      spatial_coordinates <- as.matrix(srt_input[[]][, spatial.cols, drop = FALSE])
-      storage.mode(spatial_coordinates) <- "double"
-    }
+    spatial_coordinates <- scmf_get_spatial_coordinates(srt_input, spatial.cols)
     adata <- srt_to_adata(
       srt = srt_input,
       assay_x = assay,
@@ -371,15 +381,18 @@ RunscMalignantStates <- function(
   adata = NULL,
   h5ad = NULL,
   assay = "RNA",
-  layer = "data",
+  layer = "counts",
   cells = NULL,
   gene_sets,
-  norm_type = FALSE,
+  norm_type = NULL,
   prefix = "scMalignantState_",
   return_seurat = !is.null(srt),
   verbose = TRUE
 ) {
   scmf_check_one_input(srt = srt, adata = adata, h5ad = h5ad)
+  norm_type <- scmf_resolve_norm_type(norm_type, srt = srt, layer = layer)
+  h5ad <- scmf_expand_path(h5ad)
+  gene_sets <- scmf_expand_path(gene_sets)
   if (missing(gene_sets) || is.null(gene_sets) || !nzchar(gene_sets)) {
     log_message("{.arg gene_sets} is required", message_type = "error")
   }
@@ -440,7 +453,7 @@ RunscMalignantStates <- function(
 
   source_cols <- colnames(obs)
   output_cols <- stats::setNames(
-    paste0(prefix, make.names(source_cols)),
+    paste0(prefix, make.unique(make.names(source_cols))),
     source_cols
   )
   srt <- scmf_append_obs_to_srt(
@@ -466,11 +479,91 @@ RunscMalignantStates <- function(
 }
 
 ensure_scmalignantfinder_python <- function(verbose = TRUE) {
+  if ((nzchar(Sys.getenv("RETICULATE_PYTHON")) || reticulate::py_available(initialize = FALSE)) &&
+    isTRUE(scmf_python_classifier_available())) {
+    return(invisible(TRUE))
+  }
   PrepareEnv(modules = "scanpy", verbose = verbose)
+  if (isTRUE(scmf_python_classifier_available())) {
+    return(invisible(TRUE))
+  }
   ok <- check_python("scMalignantFinder", pip = TRUE, verbose = verbose)
+  if (isFALSE(ok) || !isTRUE(scmf_python_classifier_available())) {
+    scmf_install_python_github(verbose = verbose)
+  }
+  if (!isTRUE(scmf_python_classifier_available())) {
+    log_message(
+      "Failed to install or locate a usable {.pkg scMalignantFinder} classifier module. Install it manually in the active {.pkg scop} Python environment.",
+      message_type = "error"
+    )
+  }
+  invisible(TRUE)
+}
+
+scmf_install_python_github <- function(verbose = TRUE) {
+  python <- tryCatch(reticulate::py_config()$python, error = function(e) "")
+  if (!nzchar(python)) {
+    python <- Sys.which("python3")
+  }
+  if (!nzchar(python)) {
+    return(invisible(FALSE))
+  }
+  log_message(
+    "Installing {.pkg scMalignantFinder} from GitHub with active Python...",
+    message_type = "running",
+    verbose = verbose
+  )
+  out <- tryCatch(
+    system2(
+      python,
+      c(
+        "-m", "pip", "install",
+        "--no-cache-dir",
+        "git+https://github.com/Jonyyqn/scMalignantFinder.git"
+      ),
+      stdout = TRUE,
+      stderr = TRUE
+    ),
+    error = function(e) structure(conditionMessage(e), status = 1L)
+  )
+  status <- attr(out, "status") %||% 0L
+  if (!identical(status, 0L)) {
+    log_message(
+      "GitHub installation of {.pkg scMalignantFinder} failed: {.val {paste(out, collapse = '; ')}}",
+      message_type = "warning",
+      verbose = verbose
+    )
+    return(invisible(FALSE))
+  }
+  invisible(TRUE)
+}
+
+scmf_python_classifier_available <- function() {
+  code <- paste(
+    "import importlib.util, pathlib, sys",
+    "spec = importlib.util.find_spec('scMalignantFinder')",
+    "assert spec is not None and spec.submodule_search_locations",
+    "pkg_dir = pathlib.Path(list(spec.submodule_search_locations)[0])",
+    "module_path = pkg_dir / 'classifier.py'",
+    "assert module_path.exists()",
+    "module_spec = importlib.util.spec_from_file_location('_scop_scmf_classifier_check', module_path)",
+    "module = importlib.util.module_from_spec(module_spec)",
+    "sys.modules['_scop_scmf_classifier_check'] = module",
+    "module_spec.loader.exec_module(module)",
+    "assert hasattr(module, 'scMalignantFinder')",
+    sep = "\n"
+  )
+  isTRUE(tryCatch({
+    reticulate::py_run_string(code, local = TRUE)
+    TRUE
+  }, error = function(e) FALSE))
+}
+
+scmf_check_xgboost_python <- function(verbose = TRUE) {
+  ok <- check_python("xgboost", pip = TRUE, verbose = verbose)
   if (isFALSE(ok)) {
     log_message(
-      "Failed to install or locate {.pkg scMalignantFinder}. Install it manually in the active {.pkg scop} Python environment.",
+      "{.pkg xgboost} is required when training {.pkg scMalignantFinder} with {.val XGBoost}",
       message_type = "error"
     )
   }
@@ -494,6 +587,48 @@ scmf_check_one_input <- function(srt = NULL, adata = NULL, h5ad = NULL) {
     )
   }
   invisible(TRUE)
+}
+
+scmf_resolve_norm_type <- function(norm_type, srt = NULL, layer = NULL) {
+  if (!is.null(norm_type)) {
+    return(isTRUE(norm_type))
+  }
+  !is.null(srt) && identical(layer, "counts")
+}
+
+scmf_expand_path <- function(path) {
+  if (is.null(path)) {
+    return(NULL)
+  }
+  path.expand(path)
+}
+
+scmf_get_spatial_coordinates <- function(srt, spatial.cols = NULL) {
+  if (is.null(spatial.cols)) {
+    return(NULL)
+  }
+  if (length(spatial.cols) != 2L || anyNA(spatial.cols) || any(!nzchar(spatial.cols))) {
+    log_message("{.arg spatial.cols} must contain exactly two metadata column names", message_type = "error")
+  }
+  meta <- srt[[]]
+  missing_spatial <- setdiff(spatial.cols, colnames(meta))
+  if (length(missing_spatial) > 0) {
+    log_message(
+      "{.arg spatial.cols} not found in metadata: {.val {missing_spatial}}",
+      message_type = "error"
+    )
+  }
+  spatial_df <- meta[, spatial.cols, drop = FALSE]
+  is_numeric <- vapply(spatial_df, is.numeric, logical(1))
+  if (!all(is_numeric)) {
+    log_message("{.arg spatial.cols} must be finite numeric metadata columns", message_type = "error")
+  }
+  spatial_coordinates <- as.matrix(spatial_df)
+  if (any(!is.finite(spatial_coordinates))) {
+    log_message("{.arg spatial.cols} must be finite numeric metadata columns", message_type = "error")
+  }
+  storage.mode(spatial_coordinates) <- "double"
+  spatial_coordinates
 }
 
 scmf_assert_seurat <- function(srt) {
