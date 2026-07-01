@@ -213,8 +213,8 @@ reference:
 - subtitle: "Spatial Neighborhoods and Multi-Sample Integration"
 - contents:
   - RunSpatialNeighborhood
-  - RunMistyR
   - RunSpatialIntegration
+  - RunMistyR
   - RunSemlaSpatialNetwork
   - RunSemlaLocalG
   - RunSemlaRadialDistance
