@@ -125,8 +125,7 @@ if (requireNamespace("scatterpie", quietly = TRUE)) {
 }
 
 if (
-  requireNamespace("spacexr", quietly = TRUE) &&
-    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+  isTRUE(check_r("dmcable/spacexr", verbose = FALSE))
 ) {
 data(pancreas_sub)
 features_use <- head(intersect(rownames(spatial), rownames(pancreas_sub)), 300)

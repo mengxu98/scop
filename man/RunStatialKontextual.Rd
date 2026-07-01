@@ -70,7 +70,8 @@ coordinates are available.}
 \item{store_input}{Whether to store the backend input cell table in
 \code{srt@tools}.}
 
-\item{verbose}{Whether to print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{...}{Additional named arguments passed to \code{Statial::Kontextual()}.}
 }
@@ -94,8 +95,7 @@ spatial <- subset(
 )
 
 if (
-  isTRUE(check_r("Statial", verbose = FALSE)) &&
-    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+  isTRUE(check_r("Statial", verbose = FALSE))
 ) {
   labels <- unique(as.character(spatial$coda_label))
   if (length(labels) >= 2) {

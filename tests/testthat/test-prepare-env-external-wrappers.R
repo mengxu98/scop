@@ -1,5 +1,3 @@
-pkgload::load_all(".", export_all = FALSE, helpers = FALSE, quiet = TRUE)
-
 test_that("external_wrappers expands to external wrapper modules", {
   modules <- getFromNamespace("normalize_env_modules", "scop")("external_wrappers")
 
@@ -10,7 +8,7 @@ test_that("external_wrappers expands to external wrapper modules", {
 })
 
 test_that("scMalignantFinder module declares Python runtime requirements", {
-  req <- env_requirements(modules = "scmalignantfinder")
+  req <- scop::env_requirements(modules = "scmalignantfinder")
 
   expect_identical(
     unname(req$packages[["scMalignantFinder"]]),
@@ -25,6 +23,7 @@ test_that("scMalignantFinder module declares Python runtime requirements", {
 test_that("external wrapper R packages remain optional explicit installs", {
   calls <- list()
   testthat::local_mocked_bindings(
+    .package = "scop",
     check_r = function(packages, dependencies, verbose, ...) {
       calls[[length(calls) + 1]] <<- list(
         packages = packages,

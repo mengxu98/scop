@@ -14,13 +14,20 @@ spe_to_srt(
 }
 \arguments{
 \item{spe}{A \code{SpatialExperiment} or \code{SummarizedExperiment}.}
+
 \item{assay}{Assay name for the created Seurat assay.}
-\item{layer}{Assay from \code{spe} to use as counts. If \code{NULL}, the first assay is used.}
+
+\item{layer}{Assay from \code{spe} to use as counts. If \code{NULL}, the first assay is
+used.}
+
 \item{coord.cols}{Metadata names used for spatial coordinates in Seurat.}
+
 \item{project}{Project name passed to \code{Seurat::CreateSeuratObject()}.}
 }
-\value{A \code{Seurat} object.}
+\value{
+A \code{Seurat} object.
+}
 \description{
-Create a Seurat object from a \code{SpatialExperiment}, preserving \code{colData}
-and spatial coordinates as metadata columns.
+Create a Seurat object from a \code{SpatialExperiment}, preserving \code{colData} and
+spatial coordinates as metadata columns.
 }

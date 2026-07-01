@@ -126,8 +126,7 @@ SpatialIntegrationPlot(spatial, plot_type = "alignment")
 SpatialIntegrationPlot(spatial, plot_type = "composition")
 
 if (
-  requireNamespace("PRECAST", quietly = TRUE) &&
-    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+  isTRUE(check_r("feiyoung/PRECAST", verbose = FALSE))
 ) {
 srt <- RunSpatialIntegration(
   object = spatial,

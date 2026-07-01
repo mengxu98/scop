@@ -123,8 +123,7 @@ if (requireNamespace("scatterpie", quietly = TRUE)) {
 }
 
 if (
-  requireNamespace("STdeconvolve", quietly = TRUE) &&
-    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+  isTRUE(check_r("JEFworks-Lab/STdeconvolve", verbose = FALSE))
 ) {
 spatial <- RunSTdeconvolve(
   spatial,

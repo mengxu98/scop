@@ -1,5 +1,3 @@
-pkgload::load_all(".", export_all = FALSE, helpers = FALSE, quiet = TRUE)
-
 make_secact_seurat <- function() {
   counts <- matrix(
     c(
@@ -20,6 +18,7 @@ make_secact_seurat <- function() {
 
 with_mock_secact <- function(funs, code) {
   testthat::local_mocked_bindings(
+    .package = "scop",
     check_r = function(packages, ...) {
       expect_identical(packages, "data2intelligence/SecAct")
       invisible(TRUE)

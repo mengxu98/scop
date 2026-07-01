@@ -1,5 +1,3 @@
-pkgload::load_all(".", export_all = FALSE, helpers = FALSE, quiet = TRUE)
-
 make_spotlight_seurat_pair <- function() {
   spatial_counts <- matrix(
     c(
@@ -37,6 +35,7 @@ make_spotlight_seurat_pair <- function() {
 
 with_mock_spotlight <- function(fake_fun, code) {
   testthat::local_mocked_bindings(
+    .package = "scop",
     check_r = function(packages, ...) {
       expect_identical(packages, "SPOTlight")
       invisible(TRUE)
@@ -176,6 +175,7 @@ test_that("SPOTlight results reuse SCOP SpatialSpotPlot", {
   pair$spatial$SPOTlight_prop_Beta <- c(0.2, 0.6, 0.9)
   pair$spatial$SPOTlight_dominant_type <- c("Alpha", "Beta", "Beta")
   testthat::local_mocked_bindings(
+    .package = "scop",
     check_r = function(packages, ...) {
       if (identical(packages, "scatterpie")) {
         skip_if_not_installed("scatterpie")
@@ -204,8 +204,9 @@ test_that("standard spatial workflow dispatches to RunSPOTlight", {
     "SPOTlight backend is installed; avoid running real deconvolution in dispatch test"
   )
   pair <- make_spotlight_seurat_pair()
-  original_standard_scop <- standard_scop
+  original_standard_scop <- getFromNamespace("standard_scop", "scop")
   testthat::local_mocked_bindings(
+    .package = "scop",
     RunSpotQC = function(srt, ...) srt,
     RunSPOTlight = function(srt, reference, reference_label, assay, reference_assay, ...) {
       expect_identical(reference, pair$reference)
@@ -214,23 +215,24 @@ test_that("standard spatial workflow dispatches to RunSPOTlight", {
       expect_identical(reference_assay, "RNA")
       srt$SPOTlight_dominant_type <- "Alpha"
       srt
-    },
-    .package = "scop"
+    }
   )
 
-  out <- original_standard_scop(
-    pair$spatial,
-    workflow = "spatial",
-    assay = "RNA",
-    reference = pair$reference,
-    reference_label = "celltype",
-    reference_assay = "RNA",
-    do_spot_qc = TRUE,
-    do_spatial_variable_features = FALSE,
-    do_spatial_cluster = FALSE,
-    do_deconvolution = TRUE,
-    deconvolution_method = "SPOTlight",
-    verbose = FALSE
+  out <- suppressWarnings(
+    original_standard_scop(
+      pair$spatial,
+      workflow = "spatial",
+      assay = "RNA",
+      reference = pair$reference,
+      reference_label = "celltype",
+      reference_assay = "RNA",
+      do_spot_qc = FALSE,
+      do_spatial_variable_features = FALSE,
+      do_spatial_cluster = FALSE,
+      do_deconvolution = TRUE,
+      deconvolution_method = "SPOTlight",
+      verbose = FALSE
+    )
   )
 
   expect_equal(unique(out$SPOTlight_dominant_type), "Alpha")

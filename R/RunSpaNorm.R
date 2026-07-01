@@ -39,8 +39,7 @@
 #'
 #' if (
 #'   requireNamespace("SpaNorm", quietly = TRUE) &&
-#'     requireNamespace("SpatialExperiment", quietly = TRUE) &&
-#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#'     requireNamespace("SpatialExperiment", quietly = TRUE)
 #' ) {
 #'   spatial <- RunSpaNorm(
 #'     spatial,

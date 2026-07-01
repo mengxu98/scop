@@ -62,15 +62,19 @@ GeneImmuneCorPlot <- function(
   theme_args = list(),
   verbose = TRUE
 ) {
-  if (!requireNamespace("linkET", quietly = TRUE)) {
+  if (!isTRUE(check_r("Hy4m/linkET", verbose = FALSE))) {
     log_message(
       paste(
         "{.pkg linkET} is required for {.fn GeneImmuneCorPlot}.",
-        "Install it before drawing the butterfly plot."
+        "Install it with {.code check_r('Hy4m/linkET')} before drawing the butterfly plot."
       ),
       message_type = "error"
     )
   }
+  qcorrplot <- get_namespace_fun("linkET", "qcorrplot")
+  correlate <- get_namespace_fun("linkET", "correlate")
+  geom_couple <- get_namespace_fun("linkET", "geom_couple")
+  nice_curvature <- get_namespace_fun("linkET", "nice_curvature")
   cor_method <- match.arg(cor_method)
   if (missing(features) || length(features) == 0L) {
     log_message(
@@ -145,16 +149,16 @@ GeneImmuneCorPlot <- function(
   }
   theme_obj <- immune_plot_theme(theme_use = theme_use, theme_args = theme_args)
 
-  linkET::qcorrplot(
-    linkET::correlate(immune_mat, method = cor_method),
+  qcorrplot(
+    correlate(immune_mat, method = cor_method),
     type = "lower",
     diag = FALSE
   ) +
     ggplot2::geom_tile(color = "white", linewidth = 0.5) +
-    linkET::geom_couple(
+    geom_couple(
       ggplot2::aes(colour = pvalue, size = abs_Cor),
       data = edge_df,
-      curvature = linkET::nice_curvature()
+      curvature = nice_curvature()
     ) +
     ggplot2::scale_fill_gradientn(
       colours = heatmap_colors,

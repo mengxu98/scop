@@ -1,5 +1,3 @@
-pkgload::load_all(".", export_all = FALSE, helpers = FALSE, quiet = TRUE)
-
 make_scmf_seurat <- function() {
   counts <- matrix(
     c(
@@ -21,6 +19,7 @@ make_scmf_seurat <- function() {
 
 with_mock_scmalignantfinder <- function(funs, code) {
   testthat::local_mocked_bindings(
+    .package = "scop",
     PrepareEnv = function(modules, ...) {
       expect_identical(modules, "scanpy")
       invisible(TRUE)
@@ -107,6 +106,7 @@ test_that("RunscMalignantFinder respects explicit norm_type and expands h5ad pat
 test_that("RunscMalignantFinder checks xgboost for scratch XGBoost training", {
   checks <- character()
   testthat::local_mocked_bindings(
+    .package = "scop",
     PrepareEnv = function(...) invisible(TRUE),
     scmf_python_classifier_available = function() {
       TRUE
@@ -149,6 +149,7 @@ test_that("RunscMalignantFinder respects an already usable explicit Python", {
   )
   withr::local_envvar(RETICULATE_PYTHON = "python")
   testthat::local_mocked_bindings(
+    .package = "scop",
     scmf_python_classifier_available = function() {
       TRUE
     },
@@ -187,6 +188,7 @@ test_that("RunscMalignantFinder falls back to GitHub install when package check 
     row.names = "Cell1"
   )
   testthat::local_mocked_bindings(
+    .package = "scop",
     PrepareEnv = function(...) invisible(TRUE),
     check_python = function(packages, ...) {
       checks <<- c(checks, packages)

@@ -82,7 +82,7 @@ RunHarmony2.Seurat <- function(
   seed.use = 11,
   ...
 ) {
-  check_r("harmony", verbose = FALSE)
+  check_r("immunogenomics/harmony", verbose = FALSE)
   if (!is.null(seed.use)) {
     set.seed(seed = seed.use)
   }
@@ -117,7 +117,8 @@ RunHarmony2.Seurat <- function(
     cells = rownames(data_use)
   )
 
-  harmonyObject <- harmony::RunHarmony(
+  run_harmony <- get_namespace_fun("harmony", "RunHarmony")
+  harmonyObject <- run_harmony(
     data_mat = data_use[, dims.use, drop = FALSE],
     meta_data = metavars_df,
     vars_use = group.by.vars,

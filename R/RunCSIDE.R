@@ -81,10 +81,9 @@
 #' )
 #'
 #' if (
-#'   requireNamespace("spacexr", quietly = TRUE) &&
+#'   isTRUE(check_r("dmcable/spacexr", verbose = FALSE)) &&
 #'     !is.null(spatial@tools$RCTD) &&
-#'     inherits(spatial@tools$RCTD$object, "RCTD") &&
-#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#'     inherits(spatial@tools$RCTD$object, "RCTD")
 #' ) {
 #'   spatial <- RunCSIDE(
 #'     spatial,
@@ -536,7 +535,7 @@ cside_run_backend <- function(
 }
 
 cside_get_backend_fun <- function(mode) {
-  check_r("spacexr", verbose = FALSE)
+  check_r("dmcable/spacexr", verbose = FALSE)
   fun <- switch(
     mode,
     single = "run.CSIDE.single",
@@ -786,10 +785,10 @@ cside_align_named_vector <- function(x, cells, arg) {
 
 cside_normalize_region_list <- function(region_list, cells) {
   if (!is.list(region_list) || length(region_list) < 3L) {
-    log_message(
-      "{.arg region_list} must contain at least three regions for {.fn spacexr::run.CSIDE.regions}. Use {.arg condition.by} for binary comparisons.",
-      message_type = "error"
-    )
+      log_message(
+        "{.arg region_list} must contain at least three regions for spacexr run.CSIDE.regions. Use {.arg condition.by} for binary comparisons.",
+        message_type = "error"
+      )
   }
   if (is.null(names(region_list)) || any(!nzchar(names(region_list)))) {
     names(region_list) <- paste0("region", seq_along(region_list))
@@ -801,10 +800,10 @@ cside_normalize_region_list <- function(region_list, cells) {
   keep <- lengths(region_list) > 0L
   region_list <- region_list[keep]
   if (length(region_list) < 3L) {
-    log_message(
-      "{.arg region_list} must contain at least three non-empty regions matching spatial spots for {.fn spacexr::run.CSIDE.regions}.",
-      message_type = "error"
-    )
+      log_message(
+        "{.arg region_list} must contain at least three non-empty regions matching spatial spots for spacexr run.CSIDE.regions.",
+        message_type = "error"
+      )
   }
   region_list
 }

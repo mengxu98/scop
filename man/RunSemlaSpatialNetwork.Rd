@@ -73,8 +73,7 @@ SpatialSpotPlot(
 )
 
 if (
-  requireNamespace("semla", quietly = TRUE) &&
-    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+  isTRUE(check_r("spatial-research/semla", verbose = FALSE))
 ) {
 spatial <- RunSemlaSpatialNetwork(
   spatial,

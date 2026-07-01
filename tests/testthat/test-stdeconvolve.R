@@ -52,8 +52,9 @@ with_mock_stdeconvolve <- function(code) {
     )
   }
   testthat::local_mocked_bindings(
+    .package = "scop",
     check_r = function(packages, ...) {
-      expect_identical(packages, "STdeconvolve")
+      expect_identical(packages, "JEFworks-Lab/STdeconvolve")
       invisible(TRUE)
     },
     get_namespace_fun = function(package, name) {
@@ -115,6 +116,7 @@ test_that("STdeconvolvePlot uses SCOP spatial plotting", {
   srt$STdeconvolve_prop_topic_2 <- c(0.2, 0.6, 0.9, 0.4)
   srt$STdeconvolve_dominant_type <- c("topic_1", "topic_2", "topic_2", "topic_1")
   testthat::local_mocked_bindings(
+    .package = "scop",
     check_r = function(packages, ...) {
       if (identical(packages, "scatterpie")) {
         testthat::skip_if_not_installed("scatterpie")

@@ -20,7 +20,7 @@ LoadScopDataset(
 \item{collection}{Dataset collection directory, for example \code{"Xenium"}.}
 
 \item{cache_dir}{Directory used to cache downloaded files. If \code{NULL}, uses
-\code{tools::R_user_dir("scop", "data")/datasets/<collection>}.}
+\verb{tools::R_user_dir("scop", "data")/datasets/<collection>}.}
 
 \item{datasets_base_url}{Base URL or local directory containing SCOP dataset
 collections.}

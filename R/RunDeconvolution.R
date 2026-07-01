@@ -1037,11 +1037,11 @@ run_cibersort_bundle <- function(
     ))
   }
 
-  if (!requireNamespace("CIBERSORT", quietly = TRUE)) {
+  if (!isTRUE(check_r("Moonerss/CIBERSORT", verbose = FALSE))) {
     log_message(
       paste(
         "{.pkg CIBERSORT} is required for {.fn RunCIBERSORT} with {.arg backend = 'r'}.",
-        "Install it with {.code devtools::install_github('Moonerss/CIBERSORT')}",
+        "Install it with {.code check_r('Moonerss/CIBERSORT')}",
         "or use {.arg backend = 'cpp'}."
       ),
       message_type = "error"
@@ -1070,7 +1070,7 @@ run_cibersort_bundle <- function(
       reason = fit$message,
       results = data.frame(),
       details = list(
-        engine = "CIBERSORT::cibersort",
+        engine = "CIBERSORT cibersort",
         package_backend = TRUE,
         signature_source = signature$source
       ),
@@ -1093,7 +1093,7 @@ run_cibersort_bundle <- function(
     reason = NULL,
     results = prop_long(parsed$proportion_matrix, method_name = "CIBERSORT"),
     details = list(
-      engine = "CIBERSORT::cibersort",
+      engine = "CIBERSORT cibersort",
       package_backend = TRUE,
       signature_source = signature$source,
       proportion_matrix = parsed$proportion_matrix,

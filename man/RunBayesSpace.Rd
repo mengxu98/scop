@@ -93,8 +93,7 @@ SpatialSpotPlot(
 )
 
 if (
-  requireNamespace("BayesSpace", quietly = TRUE) &&
-    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+  requireNamespace("BayesSpace", quietly = TRUE)
 ) {
 spatial <- RunBayesSpace(
   spatial,

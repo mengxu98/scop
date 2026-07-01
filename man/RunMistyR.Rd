@@ -63,8 +63,7 @@ of \code{"para"} and \code{"juxta"}.}
 \item{results_folder}{Folder passed to \code{mistyR::run_misty()}. If \code{NULL}, a
 temporary folder is used.}
 
-\item{seed, target_subset, bypass_intra, cv_folds, model_cached, append}{Parameters
-passed to \code{mistyR::run_misty()}.}
+\item{seed, target_subset, bypass_intra, cv_folds, model_cached, append}{Parameters passed to \code{mistyR::run_misty()}.}
 
 \item{tool_name}{Name used to store results in \code{srt@tools}.}
 
@@ -73,7 +72,8 @@ passed to \code{mistyR::run_misty()}.}
 \item{store_views}{Whether to store the mistyR view composition in
 \code{srt@tools}. This can be large.}
 
-\item{verbose}{Whether to print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{...}{Additional named arguments passed to \code{mistyR::run_misty()}.}
 }
@@ -99,8 +99,7 @@ spatial <- subset(
 spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 
 if (
-  isTRUE(check_r("mistyR", verbose = FALSE)) &&
-    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+  isTRUE(check_r("mistyR", verbose = FALSE))
 ) {
   spatial <- RunMistyR(
     spatial,

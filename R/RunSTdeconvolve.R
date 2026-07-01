@@ -72,8 +72,7 @@
 #' }
 #'
 #' if (
-#'   requireNamespace("STdeconvolve", quietly = TRUE) &&
-#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#'   isTRUE(check_r("JEFworks-Lab/STdeconvolve", verbose = FALSE))
 #' ) {
 #' spatial <- RunSTdeconvolve(
 #'   spatial,
@@ -311,7 +310,7 @@ stdeconvolve_run_backend <- function(
   fit_lda_params,
   get_beta_theta_params
 ) {
-  check_r("STdeconvolve", verbose = FALSE)
+  check_r("JEFworks-Lab/STdeconvolve", verbose = FALSE)
   clean_counts_fun <- get_namespace_fun("STdeconvolve", "cleanCounts")
   restrict_fun <- get_namespace_fun("STdeconvolve", "restrictCorpus")
   fit_lda <- get_namespace_fun("STdeconvolve", "fitLDA")

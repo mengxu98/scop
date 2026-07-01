@@ -45,8 +45,7 @@
 #' )
 #'
 #' if (
-#'   requireNamespace("semla", quietly = TRUE) &&
-#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#'   isTRUE(check_r("spatial-research/semla", verbose = FALSE))
 #' ) {
 #' spatial <- RunSemlaSpatialNetwork(
 #'   spatial,
@@ -146,8 +145,7 @@ RunSemlaSpatialNetwork <- function(
 #' )
 #'
 #' if (
-#'   requireNamespace("semla", quietly = TRUE) &&
-#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#'   isTRUE(check_r("spatial-research/semla", verbose = FALSE))
 #' ) {
 #' spatial <- RunSemlaLocalG(
 #'   spatial,
@@ -225,8 +223,7 @@ RunSemlaLocalG <- function(
 #' )
 #'
 #' if (
-#'   requireNamespace("semla", quietly = TRUE) &&
-#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#'   isTRUE(check_r("spatial-research/semla", verbose = FALSE))
 #' ) {
 #' spatial <- RunSemlaRegionNeighbors(
 #'   spatial,
@@ -311,8 +308,7 @@ RunSemlaRegionNeighbors <- function(
 #' )
 #'
 #' if (
-#'   requireNamespace("semla", quietly = TRUE) &&
-#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#'   isTRUE(check_r("spatial-research/semla", verbose = FALSE))
 #' ) {
 #' spatial <- RunSemlaRadialDistance(
 #'   spatial,
@@ -388,13 +384,13 @@ semla_require <- function(verbose = TRUE) {
 }
 
 semla_pkg_available <- function() {
-  requireNamespace("semla", quietly = TRUE)
+  !is.null(tryCatch(asNamespace("semla"), error = function(e) NULL))
 }
 
 semla_get_fun <- function(fun) {
   semla_require(verbose = FALSE)
   tryCatch(
-    getExportedValue("semla", fun),
+    get_namespace_fun("semla", fun),
     error = function(e) {
       log_message(
         "{.pkg semla} does not export {.fn {fun}} in the installed version",

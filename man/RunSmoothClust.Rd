@@ -115,8 +115,7 @@ SpatialSpotPlot(
 )
 
 if (
-  requireNamespace("smoothclust", quietly = TRUE) &&
-    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+  isTRUE(check_r("lmweber/smoothclust", verbose = FALSE))
 ) {
 spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 spatial <- Seurat::FindVariableFeatures(

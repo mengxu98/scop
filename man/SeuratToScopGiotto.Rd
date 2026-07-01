@@ -112,8 +112,7 @@ GiottoPlot(g, plot_type = "cluster")
 GiottoPlot(g, plot_type = "network")
 
 if (
-  isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE)) &&
-    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+  isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
 ) {
 g <- SeuratToScopGiotto(
   spatial,

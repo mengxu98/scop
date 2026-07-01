@@ -51,8 +51,7 @@
 #' )
 #'
 #' if (
-#'   requireNamespace("MERINGUE", quietly = TRUE) &&
-#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#'   isTRUE(check_r("JEFworks-Lab/MERINGUE", verbose = FALSE))
 #' ) {
 #' spatial <- RunMERINGUE(
 #'   spatial,
@@ -725,7 +724,8 @@ meringue_empty_modules <- function() {
 }
 
 meringue_require_package <- function(pkg) {
-  if (!requireNamespace(pkg, quietly = TRUE)) {
+  install_spec <- if (identical(pkg, "MERINGUE")) "JEFworks-Lab/MERINGUE" else pkg
+  if (!isTRUE(check_r(install_spec, verbose = FALSE))) {
     log_message(
       "Please install required package before running {.fn RunMERINGUE}: {.val {pkg}}",
       message_type = "error"
@@ -737,7 +737,7 @@ meringue_require_package <- function(pkg) {
 meringue_get_fun <- function(fun) {
   meringue_require_package("MERINGUE")
   tryCatch(
-    getExportedValue("MERINGUE", fun),
+    get_namespace_fun("MERINGUE", fun),
     error = function(e) {
       log_message(
         "{.pkg MERINGUE} does not export required function {.fn {fun}}",
