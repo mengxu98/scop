@@ -40,11 +40,7 @@ Run Giotto dimensional reduction
 }
 \examples{
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:80],
-  features = rownames(visium_human_pancreas_sub)[1:200]
-)
+spatial <- visium_human_pancreas_sub
 embedding <- cbind(
   UMAP_1 = as.numeric(scale(spatial$x)),
   UMAP_2 = as.numeric(scale(spatial$y))
