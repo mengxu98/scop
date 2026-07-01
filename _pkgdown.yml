@@ -215,6 +215,7 @@ reference:
 - subtitle: "Spatial Neighborhoods and Multi-Sample Integration"
 - contents:
   - RunSpatialNeighborhood
+  - RunStatialKontextual
   - RunSpatialIntegration
   - RunSemlaSpatialNetwork
   - RunSemlaLocalG
