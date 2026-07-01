@@ -22,6 +22,7 @@ SpatialSpotPlot(
   crop = TRUE,
   coord.cols = c("col", "row"),
   flip.y = TRUE,
+  show_axes = FALSE,
   split.by = NULL,
   cells = NULL,
   show_na = FALSE,
@@ -90,6 +91,10 @@ used when present.}
 \item{coord.cols}{Metadata coordinate columns used when no image is available.}
 
 \item{flip.y}{Whether to reverse the y axis for metadata coordinates.}
+
+\item{show_axes}{Whether to keep axis text, ticks, and grid lines. The
+default \code{FALSE} is intended for polished spatial maps; set \code{TRUE} for
+coordinate debugging.}
 
 \item{split.by}{Name of a column in meta.data column to split plot by.
 Default is \code{NULL}.}

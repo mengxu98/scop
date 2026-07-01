@@ -102,6 +102,7 @@ test_that("RunCARD writes proportions and tool results", {
   expect_true("CARD" %in% names(out@tools))
   expect_equal(colnames(out@tools$CARD$weights), c("Alpha", "Beta"))
   expect_equal(out@tools$CARD$backend_package, "CARD")
+  expect_named(out@tools$CARD$summary, c("n_spots", "n_types", "dominant_counts", "max_prop"))
 })
 
 test_that("RunCARD validates inputs before backend work", {

@@ -241,12 +241,12 @@ RunCARD <- function(
     weights = backend$weights,
     spot_ids = colnames(st_counts)
   )
-  weight_summary <- rctd_finalize_weights_cpp(
+  weight_summary <- scop_spatial_finalize_weights(
     weights = weights,
     all_spots = colnames(srt)
   )
   weights <- weight_summary$weights
-  srt <- rctd_add_metadata(
+  srt <- scop_spatial_add_deconv_metadata(
     srt,
     weights = weights,
     prefix = prefix,
@@ -261,6 +261,7 @@ RunCARD <- function(
       reference_metadata = ref_meta,
       backend_package = backend$package,
       object = backend$object,
+      summary = scop_spatial_weight_summary(weights),
       parameters = list(
         assay = assay,
         reference_assay = reference_assay,

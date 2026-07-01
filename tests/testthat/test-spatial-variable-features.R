@@ -36,6 +36,7 @@ test_that("native spatial variable feature results keep normalized columns", {
   expect_equal(unique(result$method), "moran")
   expect_equal(result$rank, seq_len(nrow(result)))
   expect_equal(length(srt@misc[["SpatialVariableFeatures"]]), 3)
+  expect_named(srt@tools[["SpatialVariableFeatures"]]$summary, c("n_features", "top_features"))
 })
 
 test_that("SPARKX backend output is normalized without storing backend objects", {
