@@ -217,6 +217,7 @@ reference:
   - RunSpatialNeighborhood
   - RunStatialKontextual
   - RunSpatialIntegration
+  - RunMistyR
   - RunSemlaSpatialNetwork
   - RunSemlaLocalG
   - RunSemlaRadialDistance
