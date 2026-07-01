@@ -150,11 +150,7 @@ is not modified.
 }
 \examples{
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:80],
-  features = rownames(visium_human_pancreas_sub)[1:300]
-)
+spatial <- visium_human_pancreas_sub
 cluster_result <- list(
   clusters = data.frame(
     cluster = paste0("cluster_", (seq_len(ncol(spatial)) - 1) \%\% 3 + 1),
