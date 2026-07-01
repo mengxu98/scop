@@ -21,11 +21,7 @@
 #'
 #' @examples
 #' data(visium_human_pancreas_sub)
-#' spatial <- subset(
-#'   visium_human_pancreas_sub,
-#'   cells = colnames(visium_human_pancreas_sub)[1:80],
-#'   features = rownames(visium_human_pancreas_sub)[1:300]
-#' )
+#' spatial <- visium_human_pancreas_sub
 #' spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 #'
 #' SpatialSpotPlot(
