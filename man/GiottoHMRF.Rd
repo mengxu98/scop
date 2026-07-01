@@ -74,7 +74,7 @@ g <- structure(
 GiottoPlot(g, plot_type = "hmrf")
 
 if (
-  requireNamespace("Giotto", quietly = TRUE) &&
+  isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE)) &&
     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
 ) {
   g <- SeuratToScopGiotto(spatial, coord.cols = c("x", "y"))

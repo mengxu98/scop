@@ -463,7 +463,7 @@ secact_check_r <- function(verbose = TRUE) {
 }
 
 secact_namespace_available <- function() {
-  requireNamespace("SecAct", quietly = TRUE)
+  !is.null(tryCatch(asNamespace("SecAct"), error = function(e) NULL))
 }
 
 secact_resolve_mode <- function(srt = NULL, inputProfile = NULL) {

@@ -149,6 +149,7 @@ NumericMatrix aucell_auc_sparse(
   std::vector<double> max_auc(n_sets);
   std::vector<int> set_gene_union;
   set_gene_union.reserve(n_sets * 64);
+  std::vector<int> zero_order;
 
   for (int set_i = 0; set_i < n_sets; ++set_i) {
     IntegerVector genes = gene_sets[set_i];
@@ -175,6 +176,13 @@ NumericMatrix aucell_auc_sparse(
   std::vector<AucEntry> entries;
   entries.reserve(n_genes);
   const int top_n = std::max(0, std::min(n_genes, auc_threshold - 1));
+  if (strategy == 1 && top_n > 0) {
+    zero_order.resize(n_genes);
+    std::iota(zero_order.begin(), zero_order.end(), 0);
+    std::sort(zero_order.begin(), zero_order.end(), [](int a, int b) {
+      return gene_hash_tiebreak(a) < gene_hash_tiebreak(b);
+    });
+  }
 
   for (int cell = 0; cell < n_cells; ++cell) {
     touched_values.clear();
@@ -217,19 +225,30 @@ NumericMatrix aucell_auc_sparse(
         }
       }
     } else {
-      for (int gene = 0; gene < n_genes; ++gene) {
-        entries.push_back(AucEntry{gene, value_by_gene[gene], gene_hash_tiebreak(gene)});
-      }
-
-      if (strategy == 1 && top_n < static_cast<int>(entries.size())) {
+      if (strategy == 1) {
         if (top_n > 0) {
-          std::nth_element(entries.begin(), entries.begin() + top_n, entries.end(), aucell_entry_before);
-          entries.resize(top_n);
+          entries.reserve(touched_values.size() + top_n);
+          for (std::vector<int>::const_iterator it = touched_values.begin(); it != touched_values.end(); ++it) {
+            const int gene = *it;
+            entries.push_back(AucEntry{gene, value_by_gene[gene], gene_hash_tiebreak(gene)});
+          }
+          if (top_n < static_cast<int>(entries.size())) {
+            std::nth_element(entries.begin(), entries.begin() + top_n, entries.end(), aucell_entry_before);
+            entries.resize(top_n);
+          } else if (static_cast<int>(entries.size()) < top_n) {
+            for (std::vector<int>::const_iterator it = zero_order.begin(); it != zero_order.end() && static_cast<int>(entries.size()) < top_n; ++it) {
+              const int gene = *it;
+              if (value_by_gene[gene] == 0.0) {
+                entries.push_back(AucEntry{gene, 0.0, gene_hash_tiebreak(gene)});
+              }
+            }
+          }
           std::sort(entries.begin(), entries.end(), aucell_entry_before);
-        } else {
-          entries.clear();
         }
       } else {
+        for (int gene = 0; gene < n_genes; ++gene) {
+          entries.push_back(AucEntry{gene, value_by_gene[gene], gene_hash_tiebreak(gene)});
+        }
         std::sort(entries.begin(), entries.end(), aucell_entry_before);
       }
 

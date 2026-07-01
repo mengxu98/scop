@@ -56,12 +56,10 @@ marker_pair_supported <- function(
 marker_pair_cells <- function(object, assay, layer, ident.1, ident.2, cells.1, cells.2) {
   assay <- assay %||% SeuratObject::DefaultAssay(object)
   assay.obj <- object[[assay]]
-  data.use <- marker_get_data(object, assay.obj, layer)
-  if (is.null(data.use) || !inherits(data.use, "dgCMatrix")) {
+  cellnames <- colnames(assay.obj)
+  if (is.null(cellnames)) {
     return(NULL)
   }
-
-  cellnames <- colnames(data.use)
   if (!is.null(cells.1)) {
     if (!all(cells.1 %in% cellnames)) {
       return(NULL)
@@ -185,7 +183,7 @@ marker_pair_parallel <- function(
     out <- out[out$avg_log2FC > 0, , drop = FALSE]
   }
   out <- out[order(out$p_val, -abs(out$pct.1 - out$pct.2)), , drop = FALSE]
-  out$p_val_adj <- stats::p.adjust(out$p_val, method = "bonferroni", n = nrow(data.use))
+  out$p_val_adj <- pmin(out$p_val * nrow(data.use), 1)
   out
 }
 

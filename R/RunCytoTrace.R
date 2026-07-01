@@ -658,7 +658,7 @@ cytotrace2_preprocess <- function(
   verbose
 ) {
   gene_names <- rownames(data)
-  expression <- as.matrix(data)
+  expression <- data
   cell_names <- colnames(expression)
 
   if (species == "human") {
@@ -748,11 +748,20 @@ cytotrace2_preprocess <- function(
 
   missing_features <- setdiff(features, common_genes)
   if (length(missing_features) > 0) {
-    zero_mat <- matrix(
-      0,
-      nrow = length(missing_features),
-      ncol = ncol(expression_mapped)
-    )
+    zero_mat <- if (inherits(expression_mapped, "sparseMatrix")) {
+      Matrix::Matrix(
+        0,
+        nrow = length(missing_features),
+        ncol = ncol(expression_mapped),
+        sparse = TRUE
+      )
+    } else {
+      matrix(
+        0,
+        nrow = length(missing_features),
+        ncol = ncol(expression_mapped)
+      )
+    }
     rownames(zero_mat) <- missing_features
     colnames(zero_mat) <- colnames(expression_mapped)
     expression_mapped <- rbind(expression_mapped, zero_mat)
@@ -760,7 +769,11 @@ cytotrace2_preprocess <- function(
 
   expression_mapped <- expression_mapped[features, , drop = FALSE]
 
-  preprocessed_numeric <- cytotrace2_preprocess_numeric(expression_mapped)
+  preprocessed_numeric <- if (inherits(expression_mapped, "sparseMatrix")) {
+    cytotrace2_preprocess_sparse_numeric(expression_mapped)
+  } else {
+    cytotrace2_preprocess_numeric(as.matrix(expression_mapped))
+  }
   ranked_data <- preprocessed_numeric$ranked_data
   log2_data <- preprocessed_numeric$log2_data
   colnames(ranked_data) <- features

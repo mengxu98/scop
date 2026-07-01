@@ -628,7 +628,12 @@ tage_preprocessing_selected <- function(
     percent_threshold = percent_threshold,
     verbose = verbose
   )
-  eset_genes_converted <- get_namespace_fun("tAge", "map_genes")(
+  eset_genes_converted <- tage_map_genes_fast(
+    eset = eset_filtered,
+    species = species,
+    gene_mapping_type = gene_mapping_type,
+    verbose = verbose
+  ) %||% get_namespace_fun("tAge", "map_genes")(
     eset_filtered,
     species,
     gene_mapping_type,
@@ -677,6 +682,75 @@ tage_preprocessing_selected <- function(
     }
   }
   processed
+}
+
+tage_map_genes_fast <- function(eset, species, gene_mapping_type, verbose = TRUE) {
+  valid_gene_types <- c("Ensembl", "Gene.Symbol")
+  if (!species %in% c("human", "rat") || !gene_mapping_type %in% valid_gene_types) {
+    return(NULL)
+  }
+  metadata_dir <- get_namespace_fun("tAge", "get_metadata_dir")()
+  gene_table_path <- file.path(metadata_dir, sprintf("Gene_table_%s.csv", species))
+  orthologs_path <- file.path(metadata_dir, "Table_of_orthologs.csv")
+  if (!file.exists(gene_table_path) || !file.exists(orthologs_path)) {
+    return(NULL)
+  }
+  gene_table <- utils::read.csv(gene_table_path, stringsAsFactors = FALSE, check.names = FALSE)
+  if (!gene_mapping_type %in% colnames(gene_table) || !"Entrez" %in% colnames(gene_table)) {
+    return(NULL)
+  }
+  gene_table <- gene_table[!is.na(gene_table[["Entrez"]]), , drop = FALSE]
+  gene_table <- gene_table[!duplicated(gene_table[[gene_mapping_type]]), , drop = FALSE]
+  gene_map <- stats::setNames(gene_table[["Entrez"]], gene_table[[gene_mapping_type]])
+
+  genes <- rownames(eset)
+  mapped <- gene_map[genes]
+  valid <- !is.na(mapped)
+  if (!any(valid)) {
+    return(NULL)
+  }
+  expr_valid <- Biobase::exprs(eset)[valid, , drop = FALSE]
+  mapped_ids <- unname(mapped[valid])
+  expr_agg <- rowsum(expr_valid, group = mapped_ids, reorder = TRUE, na.rm = FALSE)
+  original_genes_map <- tapply(names(mapped[valid]), mapped_ids, paste, collapse = ";")
+  agg_ids <- rownames(expr_agg)
+
+  ortholog_key <- paste0("Entrez.", paste0(toupper(substr(species, 1, 1)), substr(species, 2, nchar(species))))
+  orthologs <- utils::read.csv(orthologs_path, stringsAsFactors = FALSE, check.names = FALSE)
+  if (!all(c(ortholog_key, "Entrez.Mouse") %in% colnames(orthologs))) {
+    return(NULL)
+  }
+  orthologs <- orthologs[!is.na(orthologs[["Entrez.Mouse"]]), c(ortholog_key, "Entrez.Mouse"), drop = FALSE]
+  orthologs <- orthologs[!duplicated(orthologs[[ortholog_key]]), , drop = FALSE]
+  ortholog_map <- stats::setNames(orthologs[["Entrez.Mouse"]], orthologs[[ortholog_key]])
+  mouse_ids <- unname(ortholog_map[agg_ids])
+  ortho_valid <- !is.na(mouse_ids)
+  if (isTRUE(verbose)) {
+    ortholog_unmapped <- sum(!ortho_valid)
+    if (ortholog_unmapped > 0) {
+      message(sprintf("Warning: %d orthologs could not be mapped and will be dropped", ortholog_unmapped))
+    }
+    message(sprintf("Mapped %d genes to mouse orthologs", sum(ortho_valid)))
+  }
+  expr_valid <- expr_agg[ortho_valid, , drop = FALSE]
+  mouse_valid <- mouse_ids[ortho_valid]
+  dup_mouse <- duplicated(mouse_valid)
+  expr_valid <- expr_valid[!dup_mouse, , drop = FALSE]
+  mouse_valid <- mouse_valid[!dup_mouse]
+  rownames(expr_valid) <- as.character(mouse_valid)
+  fdata <- data.frame(
+    mapped_genes = as.character(mouse_valid),
+    ortholog_genes = as.character(mouse_valid),
+    row.names = as.character(mouse_valid),
+    stringsAsFactors = FALSE
+  )
+  out <- Biobase::ExpressionSet(
+    assayData = as.matrix(expr_valid),
+    phenoData = Biobase::AnnotatedDataFrame(Biobase::pData(eset)),
+    featureData = Biobase::AnnotatedDataFrame(fdata)
+  )
+  rownames(out) <- as.character(as.integer(Biobase::fData(out)[["ortholog_genes"]]))
+  out
 }
 
 fetch_tage_zenodo_metadata <- function(zenodo_record = "18763485") {

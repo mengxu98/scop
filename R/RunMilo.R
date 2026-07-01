@@ -388,16 +388,6 @@ run_milo_da_cpp <- function(
       set.seed(seed)
       n_seeds <- max(1L, floor(0.1 * n_cells))
       random_vertices <- sample.int(n_cells, n_seeds)
-      seed_knn_raw <- BiocNeighbors::findKNN(
-        coords,
-        k = knn_k,
-        get.index = TRUE,
-        get.distance = FALSE,
-        subset = random_vertices,
-        BNPARAM = BiocNeighbors::KmknnParam()
-      )
-      seed_knn <- list(idx = seed_knn_raw[["index"]])
-      medians <- milo_neighborhood_medians_cpp(coords, seed_knn[["idx"]])
       refined <- milo_refined_vertices(
         random_vertices = random_vertices,
         coords = coords,

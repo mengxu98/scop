@@ -73,7 +73,7 @@ spatial <- subset(
 )
 
 if (
-  requireNamespace("SpatialQM", quietly = TRUE) &&
+  isTRUE(check_r("SpatialQM", verbose = FALSE)) &&
     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
 ) {
   spatial <- RunSpatialQM(
