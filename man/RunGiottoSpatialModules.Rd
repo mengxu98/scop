@@ -91,11 +91,7 @@ result; the input \code{Seurat} object is not modified.
 }
 \examples{
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
+spatial <- visium_human_pancreas_sub
 module_features <- rownames(spatial)[1:4]
 module_cor <- expand.grid(
   feat_ID = module_features,
