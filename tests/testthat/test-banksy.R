@@ -80,6 +80,7 @@ test_that("RunBANKSY writes cluster metadata and tool results", {
   expect_true("BANKSY" %in% names(out@tools))
   expect_equal(out@tools$BANKSY$cluster_source, "BANKSY_leiden")
   expect_equal(out@tools$BANKSY$parameters$group, "sample")
+  expect_named(out@tools$BANKSY$summary, c("n_spots", "domains"))
 })
 
 test_that("RunBANKSY validates inputs before backend work", {

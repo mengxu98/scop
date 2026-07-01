@@ -198,6 +198,7 @@ reference:
   - RunCARD
   - RunSTdeconvolve
   - RunSPOTlight
+  - RunSpatialDWLS
   - RunSpatialEcoTyper
 
 - subtitle: "Spatial Domains and Feature Patterns"
@@ -401,6 +402,8 @@ reference:
   - loom_to_srt
   - srt_to_adata
   - srt_to_h5ad
+  - srt_to_spe
+  - spe_to_srt
 
 - subtitle: "Data Processing"
 - contents:
