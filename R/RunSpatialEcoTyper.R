@@ -106,7 +106,7 @@
 #' )
 #'
 #' if (
-#'   requireNamespace("SpatialEcoTyper", quietly = TRUE) &&
+#'   isTRUE(check_r("digitalcytometry/SpatialEcoTyper", verbose = FALSE)) &&
 #'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
 #' ) {
 #' srt <- RunSpatialEcoTyper(

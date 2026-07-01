@@ -50,7 +50,7 @@
 #' spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 #'
 #' if (
-#'   requireNamespace("mistyR", quietly = TRUE) &&
+#'   isTRUE(check_r("mistyR", verbose = FALSE)) &&
 #'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
 #' ) {
 #'   spatial <- RunMistyR(

@@ -92,6 +92,87 @@ List cytotrace2_preprocess_numeric(const arma::mat& expression_mapped) {
   );
 }
 
+// [[Rcpp::export]]
+List cytotrace2_preprocess_sparse_numeric(const S4& expression_mapped) {
+  IntegerVector dims = expression_mapped.slot("Dim");
+  IntegerVector row_idx = expression_mapped.slot("i");
+  IntegerVector col_ptr = expression_mapped.slot("p");
+  NumericVector values_x = expression_mapped.slot("x");
+
+  int n_genes = dims[0];
+  int n_cells = dims[1];
+
+  arma::mat ranked_data(n_cells, n_genes);
+  arma::mat log2_data(n_cells, n_genes);
+  int count_cells_few_genes = 0;
+
+  std::vector<double> cell_values(n_genes, 0.0);
+  std::vector<std::pair<double, int>> values;
+  values.reserve(n_genes);
+
+  for (int cell = 0; cell < n_cells; cell++) {
+    std::fill(cell_values.begin(), cell_values.end(), 0.0);
+    values.clear();
+
+    double col_sum = 0.0;
+    int expressed = 0;
+    for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ptr++) {
+      int gene = row_idx[ptr];
+      double value = values_x[ptr];
+      cell_values[gene] = value;
+      col_sum += value;
+      if (value > 0.0) {
+        expressed++;
+      }
+    }
+    if (expressed < 500) {
+      count_cells_few_genes++;
+    }
+
+    for (int gene = 0; gene < n_genes; gene++) {
+      values.push_back(std::make_pair(cell_values[gene], gene));
+    }
+
+    std::sort(
+      values.begin(),
+      values.end(),
+      [](const std::pair<double, int>& a, const std::pair<double, int>& b) {
+        if (a.first > b.first) return true;
+        if (a.first < b.first) return false;
+        return a.second < b.second;
+      }
+    );
+
+    int start = 0;
+    while (start < n_genes) {
+      int end = start + 1;
+      while (end < n_genes && values[end].first == values[start].first) {
+        end++;
+      }
+      double avg_rank = (static_cast<double>(start + 1) + static_cast<double>(end)) / 2.0;
+      for (int pos = start; pos < end; pos++) {
+        ranked_data(cell, values[pos].second) = avg_rank;
+      }
+      start = end;
+    }
+
+    if (col_sum > 0.0) {
+      double scale = 1000000.0 / col_sum;
+      for (int gene = 0; gene < n_genes; gene++) {
+        log2_data(cell, gene) = std::log2(cell_values[gene] * scale + 1.0);
+      }
+    } else {
+      log2_data.row(cell).zeros();
+    }
+  }
+
+  return List::create(
+    Named("ranked_data") = ranked_data,
+    Named("log2_data") = log2_data,
+    Named("count_cells_few_genes") = count_cells_few_genes
+  );
+}
+
 // Softmax over columns (each row independently)
 inline arma::mat softmax_rows(const arma::mat& X) {
   arma::mat Y = arma::exp(X);
@@ -150,9 +231,12 @@ arma::vec binary_module_forward(
          ++it) {
       arma::uword gene = it.row();
       double weight = *it;
+      double* out_col = R_UCell.colptr(j);
+      const double* rank_col = rank_data.colptr(gene);
+      const double maxrank = p.maxrank_norm;
       for (int cell = 0; cell < n_cells; cell++) {
-        double rank_value = rank_data(cell, gene);
-        R_UCell(cell, j) += (rank_value > p.maxrank_norm ? p.maxrank_norm : rank_value) * weight;
+        double rank_value = rank_col[cell];
+        out_col[cell] += (rank_value > maxrank ? maxrank : rank_value) * weight;
       }
     }
   }
@@ -178,13 +262,20 @@ arma::vec binary_module_forward(
   arma::mat R_AMS = raw_score - bg_score;
 
   // --- Batch Normalization + Linear output ---
-  arma::mat R_all = arma::join_rows(R_UCell, R_AMS);
-  for (int j = 0; j < 2 * hidden_size; j++) {
-    double inv_std = 1.0 / std::sqrt(p.running_var(j) + eps);
-    R_all.col(j) = (R_all.col(j) - p.running_mean(j)) * inv_std;
+  arma::vec out(n_cells, arma::fill::value(p.out_bias));
+  for (int j = 0; j < hidden_size; j++) {
+    const double inv_std = 1.0 / std::sqrt(p.running_var(j) + eps);
+    const double weight = p.out_weight(j);
+    out += ((R_UCell.col(j) - p.running_mean(j)) * inv_std) * weight;
+  }
+  for (int j = 0; j < hidden_size; j++) {
+    const int all_j = hidden_size + j;
+    const double inv_std = 1.0 / std::sqrt(p.running_var(all_j) + eps);
+    const double weight = p.out_weight(all_j);
+    out += ((R_AMS.col(j) - p.running_mean(all_j)) * inv_std) * weight;
   }
 
-  return R_all * p.out_weight.t() + p.out_bias;
+  return out;
 }
 
 // ============================================================================

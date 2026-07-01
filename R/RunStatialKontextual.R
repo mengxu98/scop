@@ -47,7 +47,7 @@
 #' )
 #'
 #' if (
-#'   requireNamespace("Statial", quietly = TRUE) &&
+#'   isTRUE(check_r("Statial", verbose = FALSE)) &&
 #'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
 #' ) {
 #'   labels <- unique(as.character(spatial$coda_label))
