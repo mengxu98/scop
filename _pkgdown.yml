@@ -32,6 +32,12 @@ navbar:
       text: Reference
       href: reference/index.html
 
+articles:
+- title: Spatial transcriptomics
+  navbar: Spatial transcriptomics
+  contents:
+  - articles/spatial-main-workflow
+
 reference:
 - subtitle: "Spatial and Cellular Omics Analysis Pipeline"
 - contents:
