@@ -1,5 +1,3 @@
-pkgload::load_all(".", export_all = FALSE, helpers = FALSE, quiet = TRUE)
-
 make_scpagwas_seurat <- function() {
   counts <- matrix(
     c(
@@ -30,6 +28,7 @@ make_scpagwas_gwas <- function() {
 
 with_mock_scpagwas <- function(fun, code) {
   testthat::local_mocked_bindings(
+    .package = "scop",
     check_r = function(packages, ...) {
       expect_identical(packages, "sulab-wmu/scPagwas")
       invisible(TRUE)
@@ -142,6 +141,7 @@ test_that("RunscPagwas supplies upstream default package data explicitly", {
   }
 
   testthat::local_mocked_bindings(
+    .package = "scop",
     scpagwas_package_data_raw = function(name) {
       switch(name,
         Genes_by_pathway_kegg = list(pathway = "genes"),

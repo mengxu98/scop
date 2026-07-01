@@ -131,8 +131,7 @@ if (requireNamespace("scatterpie", quietly = TRUE)) {
 
 if (
   (isTRUE(check_r("CARD", verbose = FALSE)) ||
-    isTRUE(check_r("CARDspa", verbose = FALSE))) &&
-    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+    isTRUE(check_r("CARDspa", verbose = FALSE)))
 ) {
 data(pancreas_sub)
 features_use <- head(intersect(rownames(spatial), rownames(pancreas_sub)), 300)

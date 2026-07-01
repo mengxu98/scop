@@ -80,8 +80,7 @@
 #' SpatialIntegrationPlot(spatial, plot_type = "composition")
 #'
 #' if (
-#'   requireNamespace("PRECAST", quietly = TRUE) &&
-#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#'   isTRUE(check_r("feiyoung/PRECAST", verbose = FALSE))
 #' ) {
 #' srt <- RunSpatialIntegration(
 #'   object = spatial,
@@ -577,7 +576,7 @@ spatial_integration_run_backend <- function(method, input, verbose = TRUE, ...) 
 }
 
 spatial_integration_run_precast <- function(input, params, verbose = TRUE) {
-  check_r("PRECAST", verbose = FALSE)
+  check_r("feiyoung/PRECAST", verbose = FALSE)
   create_fun <- get_namespace_fun("PRECAST", "CreatePRECASTObject")
   adj_fun <- get_namespace_fun("PRECAST", "AddAdjList")
   par_fun <- get_namespace_fun("PRECAST", "AddParSetting")
@@ -648,7 +647,7 @@ spatial_integration_run_bass <- function(input, params, verbose = TRUE) {
 
 spatial_integration_run_spatialmnn <- function(input, params, verbose = TRUE) {
   pkg <- "spatialMNN"
-  check_r(pkg, verbose = FALSE)
+  check_r("Pixel-Dream/spatialMNN", verbose = FALSE)
   run_fun <- get_namespace_fun(pkg, "spatialMNN")
   res <- spatial_integration_call(
     run_fun,

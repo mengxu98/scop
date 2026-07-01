@@ -33,7 +33,12 @@ test_that("semla optional dependency error is clear", {
     semla_installed_without_loading(),
     "semla is installed"
   )
-  counts <- methods::as(Matrix::Matrix(1, nrow = 2, ncol = 2, sparse = TRUE), "dgCMatrix")
+  counts <- Matrix::sparseMatrix(
+    i = c(1L, 2L),
+    j = c(1L, 2L),
+    x = c(1, 1),
+    dims = c(2L, 2L)
+  )
   srt <- Seurat::CreateSeuratObject(counts)
   expect_error(
     RunSemlaSpatialNetwork(srt, verbose = FALSE),

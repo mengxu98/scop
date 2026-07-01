@@ -60,8 +60,7 @@
 #' )
 #'
 #' if (
-#'   requireNamespace("Banksy", quietly = TRUE) &&
-#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#'   requireNamespace("Banksy", quietly = TRUE)
 #' ) {
 #' spatial <- RunBANKSY(
 #'   spatial,

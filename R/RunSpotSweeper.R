@@ -76,9 +76,8 @@
 #' )
 #'
 #' if (
-#'   requireNamespace("SpotSweeper", quietly = TRUE) &&
-#'     requireNamespace("SpatialExperiment", quietly = TRUE) &&
-#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#'   isTRUE(check_r("MicTott/SpotSweeper", verbose = FALSE)) &&
+#'     requireNamespace("SpatialExperiment", quietly = TRUE)
 #' ) {
 #'   spatial <- RunSpotSweeper(
 #'     spatial,
@@ -151,7 +150,7 @@ RunSpotSweeper <- function(
   spot_sweeper_validate_named_list(extra_args, "...")
 
   check_r(
-    c("SpotSweeper", "SpatialExperiment", "SummarizedExperiment", "S4Vectors"),
+    c("MicTott/SpotSweeper", "SpatialExperiment", "SummarizedExperiment", "S4Vectors"),
     verbose = FALSE
   )
 

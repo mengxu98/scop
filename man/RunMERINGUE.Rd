@@ -123,8 +123,7 @@ SpatialSpotPlot(
 )
 
 if (
-  requireNamespace("MERINGUE", quietly = TRUE) &&
-    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+  isTRUE(check_r("JEFworks-Lab/MERINGUE", verbose = FALSE))
 ) {
 spatial <- RunMERINGUE(
   spatial,

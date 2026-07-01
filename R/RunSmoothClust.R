@@ -61,8 +61,7 @@
 #' )
 #'
 #' if (
-#'   requireNamespace("smoothclust", quietly = TRUE) &&
-#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#'   isTRUE(check_r("lmweber/smoothclust", verbose = FALSE))
 #' ) {
 #' spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 #' spatial <- Seurat::FindVariableFeatures(
@@ -216,7 +215,7 @@ RunSmoothClust <- function(
   expr_use <- as.matrix(expr[selected$features, spots, drop = FALSE])
   expr_use[!is.finite(expr_use)] <- 0
 
-  check_r("smoothclust", verbose = FALSE)
+  check_r("lmweber/smoothclust", verbose = FALSE)
   smooth_fun <- smoothclust_get_fun("smoothclust")
   smooth_args <- c(
     list(

@@ -120,8 +120,7 @@ if (requireNamespace("scatterpie", quietly = TRUE)) {
 }
 
 if (
-  requireNamespace("SPOTlight", quietly = TRUE) &&
-    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+  requireNamespace("SPOTlight", quietly = TRUE)
 ) {
 data(pancreas_sub)
 features_use <- head(intersect(rownames(spatial), rownames(pancreas_sub)), 300)

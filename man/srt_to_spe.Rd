@@ -15,14 +15,22 @@ srt_to_spe(
 }
 \arguments{
 \item{srt}{A \code{Seurat} object.}
+
 \item{assay}{Assay to export. If \code{NULL}, the default assay is used.}
+
 \item{layer}{Assay layer to export.}
+
 \item{coord.cols}{Metadata coordinate columns. By default, SCOP resolves
 \code{x/y} first and then \code{col/row}.}
-\item{image}{Optional Seurat image name.}
+
+\item{image}{Optional Seurat image name. When present, image-derived
+coordinates are used.}
+
 \item{include_meta}{Whether to include Seurat metadata as \code{colData}.}
 }
-\value{A \code{SpatialExperiment}.}
+\value{
+A \code{SpatialExperiment}.
+}
 \description{
 Create a lightweight \code{SpatialExperiment} from a spatial Seurat object using
 one assay layer, metadata, and resolved spatial coordinates.

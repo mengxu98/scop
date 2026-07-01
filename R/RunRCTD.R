@@ -79,8 +79,7 @@
 #' }
 #'
 #' if (
-#'   requireNamespace("spacexr", quietly = TRUE) &&
-#'     identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+#'   isTRUE(check_r("dmcable/spacexr", verbose = FALSE))
 #' ) {
 #' data(pancreas_sub)
 #' features_use <- head(intersect(rownames(spatial), rownames(pancreas_sub)), 300)
@@ -684,7 +683,7 @@ rctd_run_spacexr <- function(
   run_rctd_params
 ) {
   rctd_require_namespaces("spacexr")
-  ns <- getNamespace("spacexr")
+  ns <- asNamespace("spacexr")
   has_new_api <- exists("createRctd", envir = ns, inherits = FALSE) &&
     exists("runRctd", envir = ns, inherits = FALSE)
   has_old_api <- all(vapply(
@@ -783,7 +782,9 @@ rctd_run_spacexr_new <- function(
 }
 
 rctd_require_namespaces <- function(pkgs) {
-  available <- vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)
+  install_specs <- pkgs
+  install_specs[install_specs == "spacexr"] <- "dmcable/spacexr"
+  available <- vapply(install_specs, check_r, logical(1), verbose = FALSE)
   if (!all(available)) {
     log_message(
       "Please install required package(s) before running {.fn RunRCTD}: {.val {paste(pkgs[!available], collapse = ', ')}}",

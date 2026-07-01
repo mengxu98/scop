@@ -128,10 +128,9 @@ SpatialSpotPlot(
 )
 
 if (
-  requireNamespace("spacexr", quietly = TRUE) &&
+  isTRUE(check_r("dmcable/spacexr", verbose = FALSE)) &&
     !is.null(spatial@tools$RCTD) &&
-    inherits(spatial@tools$RCTD$object, "RCTD") &&
-    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+    inherits(spatial@tools$RCTD$object, "RCTD")
 ) {
   spatial <- RunCSIDE(
     spatial,

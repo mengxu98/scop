@@ -56,8 +56,9 @@ mock_cside_result <- function() {
 
 with_mock_cside <- function(funs, code) {
   testthat::local_mocked_bindings(
+    .package = "scop",
     check_r = function(packages, ...) {
-      expect_identical(packages, "spacexr")
+      expect_identical(packages, "dmcable/spacexr")
       invisible(TRUE)
     },
     get_namespace_fun = function(package, name) {
