@@ -171,6 +171,7 @@ reference:
 - subtitle: "Spatial QC and Normalization"
 - contents:
   - RunSpaNorm
+  - RunSpatialQM
   - RunSpotSweeper
 
 - subtitle: "Spatial Workflow and Giotto Backends"
