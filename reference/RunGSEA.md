@@ -271,16 +271,16 @@ gsea_out <- RunGSEA(
   TERM2GENE = term2gene,
   minGSSize = 2
 )
-#> ℹ [2026-06-29 04:27:38] Start GSEA analysis
-#> ! [2026-06-29 04:27:38] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
-#> ℹ [2026-06-29 04:27:38] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...
-#> ℹ [2026-06-29 04:27:38] Prepared 15 ranked gene rows after ID mapping.
-#> ℹ [2026-06-29 04:27:38] Running GSEA for 1 group/database combination(s) using 1 core(s) ...
-#> ℹ [2026-06-29 04:27:38] Using 1 core
-#> ℹ [2026-06-29 04:27:38] Running GSEA: group "Cluster1", database "custom", genes 15 ...
-#> ℹ [2026-06-29 04:27:38] Finished GSEA: group "Cluster1", database "custom".
-#> ℹ [2026-06-29 04:27:38] Building results
-#> ✔ [2026-06-29 04:27:38] GSEA analysis done
+#> ℹ [2026-07-02 09:42:17] Start GSEA analysis
+#> ! [2026-07-02 09:42:17] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
+#> ℹ [2026-07-02 09:42:17] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...
+#> ℹ [2026-07-02 09:42:17] Prepared 15 ranked gene rows after ID mapping.
+#> ℹ [2026-07-02 09:42:17] Running GSEA for 1 group/database combination(s) using 1 core(s) ...
+#> ℹ [2026-07-02 09:42:17] Using 1 core
+#> ℹ [2026-07-02 09:42:17] Running GSEA: group "Cluster1", database "custom", genes 15 ...
+#> ℹ [2026-07-02 09:42:17] Finished GSEA: group "Cluster1", database "custom".
+#> ℹ [2026-07-02 09:42:17] Building results
+#> ✔ [2026-07-02 09:42:17] GSEA analysis done
 GSEAPlot(
   res = gsea_out,
   db = "custom",

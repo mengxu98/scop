@@ -102,20 +102,7 @@ reductions, and `srt@tools[[tool_name]]`.
 
 ``` r
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating Seurat objects
+spatial <- visium_human_pancreas_sub
 spatial$sample <- ifelse(spatial$y > stats::median(spatial$y), "slice_a", "slice_b")
 spatial$SpatialIntegration_PRECAST_domain <- factor(
   paste0("domain_", (seq_len(ncol(spatial)) - 1) %% 3 + 1)
@@ -169,8 +156,7 @@ SpatialIntegrationPlot(spatial, plot_type = "composition")
 
 
 if (
-  requireNamespace("PRECAST", quietly = TRUE) &&
-    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+  isTRUE(check_r("feiyoung/PRECAST", verbose = FALSE))
 ) {
 srt <- RunSpatialIntegration(
   object = spatial,
@@ -182,4 +168,5 @@ srt <- RunSpatialIntegration(
   verbose = FALSE
 )
 }
+#> Error in check_r("feiyoung/PRECAST", verbose = FALSE): could not find function "check_r"
 ```

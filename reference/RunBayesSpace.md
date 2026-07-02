@@ -110,20 +110,7 @@ in `srt@tools[["BayesSpace"]]`.
 
 ``` r
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating Seurat objects
+spatial <- visium_human_pancreas_sub
 spatial$BayesSpace_cluster <- factor(
   paste0("domain_", (seq_len(ncol(spatial)) - 1) %% 3 + 1)
 )
@@ -137,8 +124,7 @@ SpatialSpotPlot(
 
 
 if (
-  requireNamespace("BayesSpace", quietly = TRUE) &&
-    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+  requireNamespace("BayesSpace", quietly = TRUE)
 ) {
 spatial <- RunBayesSpace(
   spatial,
@@ -155,4 +141,29 @@ spatial <- RunBayesSpace(
 )
 table(spatial$BayesSpace_cluster)
 }
+#> ℹ [2026-07-02 09:25:22] Convert <Seurat> to <SingleCellExperiment> for BayesSpace
+#> Warning: Layer ‘data’ is empty
+#> Warning: Layer ‘scale.data’ is empty
+#> Warning: 'librarySizeFactors' is deprecated.
+#> Use 'scrapper::centerSizeFactors' instead.
+#> See help("Deprecated")
+#> Warning: 'normalizeCounts' is deprecated.
+#> Use 'scrapper::normalizeCounts' instead.
+#> See help("Deprecated")
+#> Warning: 'fitTrendVar' is deprecated.
+#> Use 'scrapper::fitVarianceTrend' instead.
+#> See help("Deprecated")
+#> Warning: 'combineBlocks' is deprecated.
+#> See help("Deprecated")
+#> Warning: 'getTopHVGs' is deprecated.
+#> Use 'scrapper::chooseHighlyVariableGenes' instead.
+#> See help("Deprecated")
+#> ℹ [2026-07-02 09:25:23] Run BayesSpace spatial clustering with `q = 3`
+#> Neighbors were identified for 1974 out of 1986 spots.
+#> Fitting model...
+#> Calculating labels using iterations 51 through 200.
+#> ℹ [2026-07-02 09:25:27] BayesSpace clusters stored in metadata column "BayesSpace_cluster"
+#> 
+#>    1    2    3 
+#> 1238  547  201 
 ```

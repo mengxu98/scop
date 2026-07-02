@@ -171,24 +171,8 @@ srt <- RunCNV(
   gene_order = gene_order
 )
 
-# Numbat and CaSpER require allele-aware inputs from matched DNA/allele
-# preprocessing workflows.
-srt <- RunCNV(
-  srt,
-  method = "numbat",
-  allele_counts = df_allele,
-  reference_counts = lambdas_ref,
-  genome = "hg38"
-)
-srt <- RunCNV(
-  srt,
-  method = "casper",
-  reference.by = "celltype",
-  reference = "Normal",
-  gene_order = gene_order,
-  loh = baf_signal,
-  cytoband = cytoband_hg38
-)
+# Numbat and CaSpER can also be run when allele-aware preprocessing
+# outputs are available.
 
 CNVPlot(srt, plot_type = "heatmap", group.by = "CNV_prediction")
 CNVPlot(srt, plot_type = "dim", value = "CNV_prediction")

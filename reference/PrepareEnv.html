@@ -15,7 +15,13 @@
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Spatial transcriptomics</h6></li>
+    <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+  </ul></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98/scop" title="GitHub" aria-label="GitHub repository"><span class="fa fab fa-github fa-lg"></span></a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98" title="MengXu" aria-label="MengXu's GitHub profile"><span class="fa fas fa-home fa-lg"></span></a></li>
@@ -98,7 +104,9 @@ Supported values are <code>"scanpy"</code>, <code>"scvi"</code>, <code>"glue"</c
 <code>"celltypist"</code>, <code>"cellphonedb"</code>, <code>"magic"</code>, <code>"scrublet"</code>,
 <code>"sccoda"</code>, <code>"doubletdetection"</code>, <code>"doublet"</code>, <code>"palantir"</code>, <code>"scvelo"</code>,
 <code>"cellrank"</code>, <code>"wot"</code>, <code>"phate"</code>, <code>"pacmap"</code>, <code>"trimap"</code>, <code>"multimap"</code>,
-<code>"scomm"</code>, <code>"scenic"</code>, <code>"seacells"</code>, and <code>"tage"</code>.
+<code>"scomm"</code>, <code>"scenic"</code>, <code>"seacells"</code>, <code>"tage"</code>,
+<code>"scmalignantfinder"</code>, <code>"secact"</code>, <code>"scpagwas"</code>, and
+<code>"external_wrappers"</code>.
 If <code>NULL</code> or omitted in <code>PrepareEnv()</code>, the default environment is installed.
 The default excludes <code>"sccoda"</code> and <code>"scomm"</code> because their TensorFlow stacks
 are not compatible with the default JAX/scVI stack in the same environment;

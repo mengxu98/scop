@@ -126,20 +126,7 @@ assignments, Giotto metadata, parameters, features, and cells.
 
 ``` r
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating Seurat objects
+spatial <- visium_human_pancreas_sub
 giotto_clusters <- list(
   clusters = data.frame(
     cluster = paste0("cluster_", (seq_len(ncol(spatial)) - 1) %% 3 + 1),
@@ -170,8 +157,7 @@ GiottoPlot(
 
 
 if (
-  requireNamespace("Giotto", quietly = TRUE) &&
-    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+  isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
 ) {
 spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 spatial <- Seurat::FindVariableFeatures(
@@ -192,4 +178,5 @@ giotto_clusters <- RunGiottoCluster(
 
 head(giotto_clusters$clusters)
 }
+#> Error in check_r("giotto-suite/Giotto", verbose = FALSE): could not find function "check_r"
 ```

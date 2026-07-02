@@ -123,20 +123,7 @@ results are stored in `srt@tools[[tool_name]]`.
 
 ``` r
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating Seurat objects
+spatial <- visium_human_pancreas_sub
 spotlight_weights <- data.frame(
   SPOTlight_prop_Ductal = seq(0.70, 0.20, length.out = ncol(spatial)),
   SPOTlight_prop_Endocrine = seq(0.20, 0.70, length.out = ncol(spatial)),
@@ -171,8 +158,7 @@ if (requireNamespace("scatterpie", quietly = TRUE)) {
 
 
 if (
-  requireNamespace("SPOTlight", quietly = TRUE) &&
-    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+  requireNamespace("SPOTlight", quietly = TRUE)
 ) {
 data(pancreas_sub)
 features_use <- head(intersect(rownames(spatial), rownames(pancreas_sub)), 300)
@@ -199,4 +185,5 @@ SpatialSpotPlot(
   coord.cols = c("x", "y")
 )
 }
+#> Error in .filter(x[mod_genes, ], y): Insufficient number of features shared between single-cell and mixture dataset.
 ```

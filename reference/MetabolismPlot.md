@@ -55,22 +55,22 @@ MetabolismPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-29 03:57:27] Start standard processing workflow...
-#> ℹ [2026-06-29 03:57:28] Checking a list of <Seurat>...
-#> ! [2026-06-29 03:57:28] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-29 03:57:28] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-29 03:57:28] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-29 03:57:28] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-29 03:57:29] Number of available HVF: 2000
-#> ℹ [2026-06-29 03:57:29] Finished check
-#> ℹ [2026-06-29 03:57:29] Perform `ScaleData()`
-#> ℹ [2026-06-29 03:57:29] Perform pca linear dimension reduction
-#> ℹ [2026-06-29 03:57:29] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-29 03:57:30] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-29 03:57:30] Reorder clusters...
-#> ℹ [2026-06-29 03:57:30] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-29 03:57:30] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-29 03:57:36] Standard processing workflow completed
+#> ℹ [2026-07-02 09:17:07] Start standard processing workflow...
+#> ℹ [2026-07-02 09:17:08] Checking a list of <Seurat>...
+#> ! [2026-07-02 09:17:08] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-07-02 09:17:08] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-07-02 09:17:08] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-07-02 09:17:08] Use the separate HVF from `srt_list`
+#> ℹ [2026-07-02 09:17:08] Number of available HVF: 2000
+#> ℹ [2026-07-02 09:17:08] Finished check
+#> ℹ [2026-07-02 09:17:08] Perform `ScaleData()`
+#> ℹ [2026-07-02 09:17:08] Perform pca linear dimension reduction
+#> ℹ [2026-07-02 09:17:09] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-07-02 09:17:09] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-07-02 09:17:09] Reorder clusters...
+#> ℹ [2026-07-02 09:17:09] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-07-02 09:17:09] Perform umap nonlinear dimension reduction
+#> ✔ [2026-07-02 09:17:15] Standard processing workflow completed
 pancreas_sub <- RunMetabolism(
   pancreas_sub,
   db = c("KEGG", "REACTOME"),
@@ -78,20 +78,20 @@ pancreas_sub <- RunMetabolism(
   species = "Mus_musculus",
   method = "AUCell"
 )
-#> ℹ [2026-06-29 03:57:36] Start metabolism pathway scoring
-#> ℹ [2026-06-29 03:57:36] Data type is raw counts
-#> ℹ [2026-06-29 03:57:36] Averaging expression by "CellType" ...
-#> ℹ [2026-06-29 03:57:36] Aggregated expression: 15998 genes x 5 groups
-#> ℹ [2026-06-29 03:57:36] Using `PrepareDB()` for species-aware gene set construction
-#> ℹ [2026-06-29 03:57:36]   KEGG pathway refs: 85, Reactome pathway names: 82
-#> ℹ [2026-06-29 03:57:36] Species: "Mus_musculus"
-#> ℹ [2026-06-29 03:57:36] Preparing KEGG database
-#> ℹ [2026-06-29 03:57:38] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): cannot open URL 'https://rest.kegg.jp/list/organism'>
-#> ! [2026-06-29 03:57:38] Failed to download using auto, from <https://rest.kegg.jp/list/organism>
-#> ℹ [2026-06-29 03:57:39] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): 'wget' call had nonzero exit status>
-#> ! [2026-06-29 03:57:39] Failed to download using wget, from <https://rest.kegg.jp/list/organism>
-#> ℹ [2026-06-29 03:57:42] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): cannot open URL 'https://rest.kegg.jp/list/organism'>
-#> ! [2026-06-29 03:57:42] Failed to download using libcurl, from <https://rest.kegg.jp/list/organism>
+#> ℹ [2026-07-02 09:17:15] Start metabolism pathway scoring
+#> ℹ [2026-07-02 09:17:15] Data type is raw counts
+#> ℹ [2026-07-02 09:17:15] Averaging expression by "CellType" ...
+#> ℹ [2026-07-02 09:17:15] Aggregated expression: 15998 genes x 5 groups
+#> ℹ [2026-07-02 09:17:15] Using `PrepareDB()` for species-aware gene set construction
+#> ℹ [2026-07-02 09:17:16]   KEGG pathway refs: 85, Reactome pathway names: 82
+#> ℹ [2026-07-02 09:17:16] Species: "Mus_musculus"
+#> ℹ [2026-07-02 09:17:16] Preparing KEGG database
+#> ℹ [2026-07-02 09:17:17] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): cannot open URL 'https://rest.kegg.jp/list/organism'>
+#> ! [2026-07-02 09:17:17] Failed to download using auto, from <https://rest.kegg.jp/list/organism>
+#> ℹ [2026-07-02 09:17:19] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): 'wget' call had nonzero exit status>
+#> ! [2026-07-02 09:17:19] Failed to download using wget, from <https://rest.kegg.jp/list/organism>
+#> ℹ [2026-07-02 09:17:22] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): cannot open URL 'https://rest.kegg.jp/list/organism'>
+#> ! [2026-07-02 09:17:22] Failed to download using libcurl, from <https://rest.kegg.jp/list/organism>
 #> Error in `[.data.frame`(orgs, , 3): undefined columns selected
 
 ht1 <- MetabolismPlot(
@@ -174,18 +174,18 @@ pancreas_sub <- RunMetabolism(
   db = c("KEGG", "REACTOME"),
   species = "Mus_musculus"
 )
-#> ℹ [2026-06-29 03:57:44] Start metabolism pathway scoring
-#> ℹ [2026-06-29 03:57:44] Data type is raw counts
-#> ℹ [2026-06-29 03:57:44] Using `PrepareDB()` for species-aware gene set construction
-#> ℹ [2026-06-29 03:57:44]   KEGG pathway refs: 85, Reactome pathway names: 82
-#> ℹ [2026-06-29 03:57:44] Species: "Mus_musculus"
-#> ℹ [2026-06-29 03:57:44] Preparing KEGG database
-#> ℹ [2026-06-29 03:57:45] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): cannot open URL 'https://rest.kegg.jp/list/organism'>
-#> ! [2026-06-29 03:57:45] Failed to download using auto, from <https://rest.kegg.jp/list/organism>
-#> ℹ [2026-06-29 03:57:47] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): 'wget' call had nonzero exit status>
-#> ! [2026-06-29 03:57:47] Failed to download using wget, from <https://rest.kegg.jp/list/organism>
-#> ℹ [2026-06-29 03:57:49] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): cannot open URL 'https://rest.kegg.jp/list/organism'>
-#> ! [2026-06-29 03:57:49] Failed to download using libcurl, from <https://rest.kegg.jp/list/organism>
+#> ℹ [2026-07-02 09:17:24] Start metabolism pathway scoring
+#> ℹ [2026-07-02 09:17:24] Data type is raw counts
+#> ℹ [2026-07-02 09:17:24] Using `PrepareDB()` for species-aware gene set construction
+#> ℹ [2026-07-02 09:17:24]   KEGG pathway refs: 85, Reactome pathway names: 82
+#> ℹ [2026-07-02 09:17:24] Species: "Mus_musculus"
+#> ℹ [2026-07-02 09:17:24] Preparing KEGG database
+#> ℹ [2026-07-02 09:17:25] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): cannot open URL 'https://rest.kegg.jp/list/organism'>
+#> ! [2026-07-02 09:17:25] Failed to download using auto, from <https://rest.kegg.jp/list/organism>
+#> ℹ [2026-07-02 09:17:27] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): 'wget' call had nonzero exit status>
+#> ! [2026-07-02 09:17:27] Failed to download using wget, from <https://rest.kegg.jp/list/organism>
+#> ℹ [2026-07-02 09:17:30] <simpleError in utils::download.file(url = url, destfile = destfile, method = method,     quiet = quiet, ...): cannot open URL 'https://rest.kegg.jp/list/organism'>
+#> ! [2026-07-02 09:17:30] Failed to download using libcurl, from <https://rest.kegg.jp/list/organism>
 #> Error in `[.data.frame`(orgs, , 3): undefined columns selected
 
 FeatureDimPlot(

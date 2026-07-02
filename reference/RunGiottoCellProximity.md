@@ -115,20 +115,7 @@ table, raw Giotto result, parameters, features, and cells.
 
 ``` r
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating Seurat objects
+spatial <- visium_human_pancreas_sub
 spatial$region <- ifelse(
   spatial$x > stats::median(spatial$x),
   "right",
@@ -155,8 +142,7 @@ GiottoPlot(proximity)
 
 
 if (
-  requireNamespace("Giotto", quietly = TRUE) &&
-    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+  isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
 ) {
 spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 proximity <- RunGiottoCellProximity(
@@ -169,4 +155,5 @@ proximity <- RunGiottoCellProximity(
   number_of_simulations = 100
 )
 }
+#> Error in check_r("giotto-suite/Giotto", verbose = FALSE): could not find function "check_r"
 ```

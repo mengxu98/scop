@@ -13,13 +13,13 @@ RunscMalignantFinder(
   adata = NULL,
   h5ad = NULL,
   assay = "RNA",
-  layer = "data",
+  layer = "counts",
   cells = NULL,
   pretrain_dir = NULL,
   train_h5ad_path = NULL,
   feature_path = NULL,
   model_method = c("LogisticRegression", "RandomForest", "XGBoost"),
-  norm_type = FALSE,
+  norm_type = NULL,
   use_raw = FALSE,
   n_thread = 1,
   prefix = "",
@@ -48,7 +48,7 @@ RunscMalignantFinder(
 
 - layer:
 
-  Layer used when `srt` is supplied. Default is `"data"`.
+  Layer used when `srt` is supplied. Default is `"counts"`.
 
 - cells:
 
@@ -78,7 +78,7 @@ RunscMalignantFinder(
 
   Passed to `scMalignantFinder`. Use `TRUE` for raw counts that should
   be library-size normalized; use `FALSE` for already normalized input.
-  Default is `FALSE`.
+  If `NULL`, defaults to `TRUE` only for Seurat counts input.
 
 - use_raw:
 
@@ -128,9 +128,8 @@ data(pancreas_sub)
 pancreas_sub <- RunscMalignantFinder(
   pancreas_sub,
   assay = "RNA",
-  layer = "data",
-  pretrain_dir = "path/to/pretrained_model",
-  norm_type = FALSE
+  layer = "counts",
+  pretrain_dir = "path/to/pretrained_model"
 )
 CellDimPlot(pancreas_sub, group.by = "malignancy_probability")
 }

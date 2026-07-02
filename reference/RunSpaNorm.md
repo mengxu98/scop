@@ -87,20 +87,7 @@ features, cells, and optional backend output are stored in
 
 ``` r
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:80],
-  features = rownames(visium_human_pancreas_sub)[1:300]
-)
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating Seurat objects
+spatial <- visium_human_pancreas_sub
 spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 
 SpatialSpotPlot(
@@ -115,8 +102,7 @@ SpatialSpotPlot(
 
 if (
   requireNamespace("SpaNorm", quietly = TRUE) &&
-    requireNamespace("SpatialExperiment", quietly = TRUE) &&
-    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+    requireNamespace("SpatialExperiment", quietly = TRUE)
 ) {
   spatial <- RunSpaNorm(
     spatial,
@@ -138,4 +124,682 @@ if (
     coord.cols = c("x", "y")
   )
 }
+#> (1/2) Fitting SpaNorm model
+#> 496 cells/spots sampled to fit model
+#> Downloading uv...
+#> Done!
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  1, estimating gene-wise dispersion
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  1, log-likelihood: -2958360.662778
+#> iter:  1, fitting NB model
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  1, iter:  1, log-likelihood: -2958360.662778
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  1, iter:  2, log-likelihood: -2495300.394335
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  1, iter:  3, log-likelihood: -2405264.343231
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  1, iter:  4, log-likelihood: -2372696.784295
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  1, iter:  5, log-likelihood: -2355309.660312
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  1, iter:  6, log-likelihood: -2347317.178076
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  1, iter:  7, log-likelihood: -2343650.575070
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  1, iter:  8, log-likelihood: -2341824.206008
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  1, iter:  9, log-likelihood: -2340907.816825
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  1, iter: 10, log-likelihood: -2340375.215169
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  1, iter: 11, log-likelihood: -2340088.154363
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  1, iter: 12, log-likelihood: -2339892.368043 (converged)
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  2, estimating gene-wise dispersion
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  2, log-likelihood: -2326881.317180
+#> iter:  2, fitting NB model
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  2, iter:  1, log-likelihood: -2326881.317180
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  2, iter:  2, log-likelihood: -2324189.878018
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  2, iter:  3, log-likelihood: -2324065.063435 (converged)
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  3, estimating gene-wise dispersion
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  3, log-likelihood: -2323987.090719
+#> iter:  3, fitting NB model
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  3, iter:  1, log-likelihood: -2323987.090719
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  3, iter:  2, log-likelihood: -2323791.451205
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  3, iter:  3, log-likelihood: -2323752.772324 (converged)
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  4, estimating gene-wise dispersion
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  4, log-likelihood: -2323673.478839
+#> iter:  4, fitting NB model
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  4, iter:  1, log-likelihood: -2323673.478839
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  4, iter:  2, log-likelihood: -2323636.663335
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  4, iter:  3, log-likelihood: -2323612.205743 (converged)
+#> Hint: To use tensorflow with `py_require()`, call `py_require("tensorflow")` at the start of the R session
+#> iter:  5, log-likelihood: -2323612.205743 (converged)
+#> (2/2) Normalising data
 ```

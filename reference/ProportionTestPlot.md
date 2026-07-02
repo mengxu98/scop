@@ -263,36 +263,36 @@ ProportionTestPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-29 03:59:38] Start standard processing workflow...
-#> ℹ [2026-06-29 03:59:39] Checking a list of <Seurat>...
-#> ! [2026-06-29 03:59:39] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-29 03:59:39] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-29 03:59:39] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-29 03:59:39] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-29 03:59:39] Number of available HVF: 2000
-#> ℹ [2026-06-29 03:59:39] Finished check
-#> ℹ [2026-06-29 03:59:39] Perform `ScaleData()`
-#> ℹ [2026-06-29 03:59:39] Perform pca linear dimension reduction
-#> ℹ [2026-06-29 03:59:40] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-29 03:59:40] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-29 03:59:40] Reorder clusters...
-#> ℹ [2026-06-29 03:59:40] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-29 03:59:40] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-29 03:59:46] Standard processing workflow completed
+#> ℹ [2026-07-02 09:19:22] Start standard processing workflow...
+#> ℹ [2026-07-02 09:19:23] Checking a list of <Seurat>...
+#> ! [2026-07-02 09:19:23] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-07-02 09:19:23] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-07-02 09:19:23] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-07-02 09:19:23] Use the separate HVF from `srt_list`
+#> ℹ [2026-07-02 09:19:23] Number of available HVF: 2000
+#> ℹ [2026-07-02 09:19:23] Finished check
+#> ℹ [2026-07-02 09:19:23] Perform `ScaleData()`
+#> ℹ [2026-07-02 09:19:23] Perform pca linear dimension reduction
+#> ℹ [2026-07-02 09:19:24] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-07-02 09:19:24] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-07-02 09:19:24] Reorder clusters...
+#> ℹ [2026-07-02 09:19:25] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-07-02 09:19:25] Perform umap nonlinear dimension reduction
+#> ✔ [2026-07-02 09:19:30] Standard processing workflow completed
 pancreas_sub <- RunProportionTest(
   pancreas_sub,
   group.by = "CellType",
   split.by = "Phase",
   proportion_method = "permutation"
 )
-#> ℹ [2026-06-29 03:59:46] Start proportion test ("permutation")
-#> ℹ [2026-06-29 03:59:46] Running comparison: "S" vs "G1"
-#> ℹ [2026-06-29 03:59:48] Running comparison: "G2M" vs "G1"
-#> ℹ [2026-06-29 03:59:50] Running comparison: "G2M" vs "S"
-#> ℹ [2026-06-29 03:59:50] Running comparison: "G1" vs "S"
-#> ℹ [2026-06-29 03:59:50] Running comparison: "G1" vs "G2M"
-#> ℹ [2026-06-29 03:59:50] Running comparison: "S" vs "G2M"
-#> ✔ [2026-06-29 03:59:50] Proportion test completed ("permutation")
+#> ℹ [2026-07-02 09:19:30] Start proportion test ("permutation")
+#> ℹ [2026-07-02 09:19:30] Running comparison: "S" vs "G1"
+#> ℹ [2026-07-02 09:19:32] Running comparison: "G2M" vs "G1"
+#> ℹ [2026-07-02 09:19:34] Running comparison: "G2M" vs "S"
+#> ℹ [2026-07-02 09:19:34] Running comparison: "G1" vs "S"
+#> ℹ [2026-07-02 09:19:34] Running comparison: "G1" vs "G2M"
+#> ℹ [2026-07-02 09:19:34] Running comparison: "S" vs "G2M"
+#> ✔ [2026-07-02 09:19:34] Proportion test completed ("permutation")
 
 ProportionTestPlot(pancreas_sub)
 

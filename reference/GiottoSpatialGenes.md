@@ -64,20 +64,7 @@ A \`giotto2\` workflow object.
 
 ``` r
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:80],
-  features = rownames(visium_human_pancreas_sub)[1:200]
-)
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating Seurat objects
+spatial <- visium_human_pancreas_sub
 coords <- data.frame(
   cell_ID = colnames(spatial),
   sdimx = spatial$x,
@@ -105,12 +92,12 @@ GiottoPlot(g, plot_type = "spatial_genes", top_n = 6)
 
 
 if (
-  requireNamespace("Giotto", quietly = TRUE) &&
-    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+  isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
 ) {
   g <- SeuratToScopGiotto(spatial, coord.cols = c("x", "y"))
   g <- GiottoPreprocess(g)
   g <- GiottoSpatialNetwork(g)
   g <- GiottoSpatialGenes(g, features = rownames(spatial)[1:50], top_n = 10)
 }
+#> Error in check_r("giotto-suite/Giotto", verbose = FALSE): could not find function "check_r"
 ```

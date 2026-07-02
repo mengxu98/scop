@@ -89,10 +89,10 @@ if (requireNamespace("scran", quietly = TRUE)) {
     name = "Cyclone"
   )
 }
-#> ℹ [2026-06-29 04:02:31] Start cell cycle scoring
+#> ℹ [2026-07-02 09:26:48] Start cell cycle scoring
 #> 'select()' returned 1:many mapping between keys and columns
-#> ℹ [2026-06-29 04:12:53] Map input feature names to ENSEMBL IDs with org.Mm.eg.db for scran::cyclone
-#> ✔ [2026-06-29 04:13:02] Cell cycle scoring completed
+#> ℹ [2026-07-02 09:26:48] Map input feature names to ENSEMBL IDs with org.Mm.eg.db for scran::cyclone
+#> ✔ [2026-07-02 09:26:57] Cell cycle scoring completed
 
 if (requireNamespace("tricycle", quietly = TRUE)) {
   srt <- RunCellCycle(
@@ -114,7 +114,7 @@ if (requireNamespace("tricycle", quietly = TRUE)) {
     features = "Tricycle_tricyclePosition"
   )
 }
-#> ℹ [2026-06-29 04:13:02] Start cell cycle scoring
+#> ℹ [2026-07-02 09:26:57] Start cell cycle scoring
 #> Warning: Layer ‘data’ is empty
 #> Warning: Layer ‘scale.data’ is empty
 #> Warning: 'librarySizeFactors' is deprecated.
@@ -125,5 +125,5 @@ if (requireNamespace("tricycle", quietly = TRUE)) {
 #> See help("Deprecated")
 #> No custom reference projection matrix provided. The ref learned from mouse Neuroshpere data will be used.
 #> The number of projection genes found in the new data is 485.
-#> ✔ [2026-06-29 04:13:29] Cell cycle scoring completed
+#> ✔ [2026-07-02 09:27:22] Cell cycle scoring completed
 ```

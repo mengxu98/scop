@@ -21,7 +21,13 @@ object does not already contain spatial coordinates."></head><body>
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Spatial transcriptomics</h6></li>
+    <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+  </ul></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98/scop" title="GitHub" aria-label="GitHub repository"><span class="fa fab fa-github fa-lg"></span></a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98" title="MengXu" aria-label="MengXu's GitHub profile"><span class="fa fas fa-home fa-lg"></span></a></li>
@@ -58,7 +64,7 @@ object does not already contain spatial coordinates.</p>
 <span>  adata <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  h5ad <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  assay <span class="op">=</span> <span class="st">"RNA"</span>,</span>
-<span>  layer <span class="op">=</span> <span class="st">"data"</span>,</span>
+<span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span>
 <span>  cells <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">signature_gmt</span>,</span>
 <span>  features <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -68,7 +74,7 @@ object does not already contain spatial coordinates.</p>
 <span>  spatial.cols <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  spatial_key <span class="op">=</span> <span class="st">"spatial"</span>,</span>
 <span>  image <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  norm_type <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  norm_type <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  prefix <span class="op">=</span> <span class="st">"scMalignantFinder_"</span>,</span>
 <span>  return_seurat <span class="op">=</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">srt</span><span class="op">)</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
@@ -96,7 +102,7 @@ object does not already contain spatial coordinates.</p>
 
 
 <dt id="arg-layer">layer<a class="anchor" aria-label="anchor" href="#arg-layer"></a></dt>
-<dd><p>Layer used when <code>srt</code> is supplied. Default is <code>"data"</code>.</p></dd>
+<dd><p>Layer used when <code>srt</code> is supplied. Default is <code>"counts"</code>.</p></dd>
 
 
 <dt id="arg-cells">cells<a class="anchor" aria-label="anchor" href="#arg-cells"></a></dt>
@@ -145,7 +151,7 @@ carry histology images.</p></dd>
 <dt id="arg-norm-type">norm_type<a class="anchor" aria-label="anchor" href="#arg-norm-type"></a></dt>
 <dd><p>Passed to <code>scMalignantFinder</code>. Use <code>TRUE</code> for raw counts
 that should be library-size normalized; use <code>FALSE</code> for already normalized
-input. Default is <code>FALSE</code>.</p></dd>
+input. If <code>NULL</code>, defaults to <code>TRUE</code> only for Seurat counts input.</p></dd>
 
 
 <dt id="arg-prefix">prefix<a class="anchor" aria-label="anchor" href="#arg-prefix"></a></dt>

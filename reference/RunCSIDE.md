@@ -43,9 +43,8 @@ RunCSIDE(
 
 - explanatory.variable:
 
-  Named numeric vector used by
-  [`spacexr::run.CSIDE.single()`](https://rdrr.io/pkg/spacexr/man/run.CSIDE.single.html).
-  Names must match spatial spot names.
+  Named numeric vector used by `spacexr::run.CSIDE.single()`. Names must
+  match spatial spot names.
 
 - group.by:
 
@@ -55,25 +54,22 @@ RunCSIDE(
 - condition.by:
 
   Binary metadata column converted to a 0/1 explanatory variable for
-  [`spacexr::run.CSIDE.single()`](https://rdrr.io/pkg/spacexr/man/run.CSIDE.single.html).
+  `spacexr::run.CSIDE.single()`.
 
 - design:
 
-  Numeric design matrix used by
-  [`spacexr::run.CSIDE()`](https://rdrr.io/pkg/spacexr/man/run.CSIDE.html).
-  Row names must match `barcodes` or spatial spot names.
+  Numeric design matrix used by `spacexr::run.CSIDE()`. Row names must
+  match `barcodes` or spatial spot names.
 
 - region_list:
 
-  Named list of barcode vectors used by
-  [`spacexr::run.CSIDE.regions()`](https://rdrr.io/pkg/spacexr/man/run.CSIDE.regions.html).
+  Named list of barcode vectors used by `spacexr::run.CSIDE.regions()`.
 
 - barcodes:
 
-  Barcodes used by
-  [`spacexr::run.CSIDE()`](https://rdrr.io/pkg/spacexr/man/run.CSIDE.html)
-  or `spacexr::run.CSIDE.intercept()`. If `NULL`, row names of `design`
-  or all spatial spots are used where applicable.
+  Barcodes used by `spacexr::run.CSIDE()` or
+  `spacexr::run.CSIDE.intercept()`. If `NULL`, row names of `design` or
+  all spatial spots are used where applicable.
 
 - mode:
 
@@ -133,20 +129,7 @@ stored in `srt@tools[[tool_name]]` when `store_results = TRUE`.
 
 ``` r
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating Seurat objects
+spatial <- visium_human_pancreas_sub
 spatial$region <- ifelse(spatial$x > stats::median(spatial$x), "right", "left")
 spatial$CSIDE_n_sig <- ifelse(spatial$region == "right", 12, 4)
 spatial$CSIDE_mode <- "regions"
@@ -184,10 +167,9 @@ SpatialSpotPlot(
 
 
 if (
-  requireNamespace("spacexr", quietly = TRUE) &&
+  isTRUE(check_r("dmcable/spacexr", verbose = FALSE)) &&
     !is.null(spatial@tools$RCTD) &&
-    inherits(spatial@tools$RCTD$object, "RCTD") &&
-    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+    inherits(spatial@tools$RCTD$object, "RCTD")
 ) {
   spatial <- RunCSIDE(
     spatial,
@@ -197,4 +179,5 @@ if (
     cell_type_threshold = 125
   )
 }
+#> Error in check_r("dmcable/spacexr", verbose = FALSE): could not find function "check_r"
 ```

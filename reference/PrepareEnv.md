@@ -58,7 +58,8 @@ PrepareEnv(
   `"magic"`, `"scrublet"`, `"sccoda"`, `"doubletdetection"`,
   `"doublet"`, `"palantir"`, `"scvelo"`, `"cellrank"`, `"wot"`,
   `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`, `"scomm"`,
-  `"scenic"`, `"seacells"`, and `"tage"`. If `NULL` or omitted in
+  `"scenic"`, `"seacells"`, `"tage"`, `"scmalignantfinder"`, `"secact"`,
+  `"scpagwas"`, and `"external_wrappers"`. If `NULL` or omitted in
   `PrepareEnv()`, the default environment is installed. The default
   excludes `"sccoda"` and `"scomm"` because their TensorFlow stacks are
   not compatible with the default JAX/scVI stack in the same

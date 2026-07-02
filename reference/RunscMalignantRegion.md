@@ -13,7 +13,7 @@ RunscMalignantRegion(
   adata = NULL,
   h5ad = NULL,
   assay = "RNA",
-  layer = "data",
+  layer = "counts",
   cells = NULL,
   signature_gmt,
   features = NULL,
@@ -23,7 +23,7 @@ RunscMalignantRegion(
   spatial.cols = NULL,
   spatial_key = "spatial",
   image = FALSE,
-  norm_type = FALSE,
+  norm_type = NULL,
   prefix = "scMalignantFinder_",
   return_seurat = !is.null(srt),
   verbose = TRUE
@@ -50,7 +50,7 @@ RunscMalignantRegion(
 
 - layer:
 
-  Layer used when `srt` is supplied. Default is `"data"`.
+  Layer used when `srt` is supplied. Default is `"counts"`.
 
 - cells:
 
@@ -99,7 +99,7 @@ RunscMalignantRegion(
 
   Passed to `scMalignantFinder`. Use `TRUE` for raw counts that should
   be library-size normalized; use `FALSE` for already normalized input.
-  Default is `FALSE`.
+  If `NULL`, defaults to `TRUE` only for Seurat counts input.
 
 - prefix:
 
