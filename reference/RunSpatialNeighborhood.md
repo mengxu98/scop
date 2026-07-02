@@ -10,7 +10,7 @@ statistics.
 RunSpatialNeighborhood(
   srt,
   group.by,
-  method = c("spicyR", "mistyR", "Statial", "HoodscanR"),
+  method = "spicyR",
   assay = NULL,
   layer = "data",
   coord.cols = c("col", "row"),
@@ -42,7 +42,7 @@ RunSpatialNeighborhood(
 
 - method:
 
-  Neighborhood backend. Currently `"spicyR"` is supported.
+  Neighborhood backend. Currently only `"spicyR"` is supported.
 
 - assay:
 
@@ -118,20 +118,7 @@ A `Seurat` object with results stored in `srt@tools[[tool_name]]`.
 
 ``` r
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating Seurat objects
+spatial <- visium_human_pancreas_sub
 spatial <- RunSpatialNeighborhood(
   spatial,
   group.by = "coda_label",

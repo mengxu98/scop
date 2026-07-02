@@ -33,7 +33,8 @@ env_requirements(
   `"cellphonedb"`, `"magic"`, `"scrublet"`, `"doubletdetection"`,
   `"sccoda"`, `"doublet"`, `"palantir"`, `"scvelo"`, `"cellrank"`,
   `"wot"`, `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`, `"scomm"`,
-  `"scenic"`, `"seacells"`, and `"tage"`. If `NULL`, the default
+  `"scenic"`, `"seacells"`, `"tage"`, `"scmalignantfinder"`, `"secact"`,
+  `"scpagwas"`, and `"external_wrappers"`. If `NULL`, the default
   environment is returned. The default excludes `"sccoda"`, `"scomm"`,
   and `"scenic"` because these workflows require dependency stacks that
   should be prepared explicitly. The `"scenic"` module is standalone and

@@ -11,10 +11,10 @@ RunscMalignantStates(
   adata = NULL,
   h5ad = NULL,
   assay = "RNA",
-  layer = "data",
+  layer = "counts",
   cells = NULL,
   gene_sets,
-  norm_type = FALSE,
+  norm_type = NULL,
   prefix = "scMalignantState_",
   return_seurat = !is.null(srt),
   verbose = TRUE
@@ -41,7 +41,7 @@ RunscMalignantStates(
 
 - layer:
 
-  Layer used when `srt` is supplied. Default is `"data"`.
+  Layer used when `srt` is supplied. Default is `"counts"`.
 
 - cells:
 
@@ -57,7 +57,7 @@ RunscMalignantStates(
 
   Passed to `scMalignantFinder`. Use `TRUE` for raw counts that should
   be library-size normalized; use `FALSE` for already normalized input.
-  Default is `FALSE`.
+  If `NULL`, defaults to `TRUE` only for Seurat counts input.
 
 - prefix:
 

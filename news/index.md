@@ -276,6 +276,12 @@
     raw, grid, and stream visualizations were validated with the
     `RunSCVELO(backend = "cpp")` velocity embeddings.
   - [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md)
+    now supports explicit external wrapper modules
+    (`"scmalignantfinder"`, `"secact"`, `"scpagwas"`, and
+    `"external_wrappers"`) to preflight optional GitHub/Python
+    dependencies without making those upstream tools hard package
+    dependencies.
+  - [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md)
     now supports `modules = "scenic"` as a standalone Python 3.10
     environment (`scenic_env` by default) with SCENIC 0.12.1 and numpy
     1.23.5, avoiding conflicts with the default `scop_env`.

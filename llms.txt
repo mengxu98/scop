@@ -1331,6 +1331,8 @@ etc.
 
 - [`RunSpaNorm()`](https://mengxu98.github.io/scop/reference/RunSpaNorm.md)
   : Run SpaNorm spatial normalization
+- [`RunSpatialQM()`](https://mengxu98.github.io/scop/reference/RunSpatialQM.md)
+  : Run SpatialQM quality metrics
 - [`RunSpotSweeper()`](https://mengxu98.github.io/scop/reference/RunSpotSweeper.md)
   : Run SpotSweeper spatial quality control
 
@@ -1379,6 +1381,8 @@ etc.
   : Run STdeconvolve reference-free spatial deconvolution
 - [`RunSPOTlight()`](https://mengxu98.github.io/scop/reference/RunSPOTlight.md)
   : Run SPOTlight spatial deconvolution
+- [`RunSpatialDWLS()`](https://mengxu98.github.io/scop/reference/RunSpatialDWLS.md)
+  : Run lightweight SpatialDWLS-style deconvolution
 - [`RunSpatialEcoTyper()`](https://mengxu98.github.io/scop/reference/RunSpatialEcoTyper.md)
   : Run SpatialEcoTyper spatial ecotype analysis
 
@@ -1403,8 +1407,12 @@ etc.
 
 - [`RunSpatialNeighborhood()`](https://mengxu98.github.io/scop/reference/RunSpatialNeighborhood.md)
   : Run spatial neighborhood statistics
+- [`RunStatialKontextual()`](https://mengxu98.github.io/scop/reference/RunStatialKontextual.md)
+  : Run Statial Kontextual spatial relationships
 - [`RunSpatialIntegration()`](https://mengxu98.github.io/scop/reference/RunSpatialIntegration.md)
   : Run multi-sample spatial integration
+- [`RunMistyR()`](https://mengxu98.github.io/scop/reference/RunMistyR.md)
+  : Run mistyR multiview spatial modeling
 - [`RunSemlaSpatialNetwork()`](https://mengxu98.github.io/scop/reference/RunSemlaSpatialNetwork.md)
   : Run semla spatial network construction
 - [`RunSemlaLocalG()`](https://mengxu98.github.io/scop/reference/RunSemlaLocalG.md)
@@ -1640,6 +1648,16 @@ etc.
 
 - [`RunCCC()`](https://mengxu98.github.io/scop/reference/RunCCC.md) :
   Run common cell-cell communication analyses
+- [`RunSecAct()`](https://mengxu98.github.io/scop/reference/RunSecAct.md)
+  : Run SecAct secreted protein activity inference
+- [`RunSecActCCC()`](https://mengxu98.github.io/scop/reference/RunSecActCCC.md)
+  : Run SecAct cell-cell communication analysis
+- [`RunSecActSignalingPattern()`](https://mengxu98.github.io/scop/reference/RunSecActSignalingPattern.md)
+  : Run SecAct spatial signaling pattern analysis
+- [`RunSecActPatternGenes()`](https://mengxu98.github.io/scop/reference/RunSecActPatternGenes.md)
+  : Extract SecAct pattern-associated secreted proteins
+- [`RunSecActVelocity()`](https://mengxu98.github.io/scop/reference/RunSecActVelocity.md)
+  : Run SecAct spatial signaling velocity
 - [`RunCellChat()`](https://mengxu98.github.io/scop/reference/RunCellChat.md)
   : Run CellChat analysis
 - [`RunCellphoneDB()`](https://mengxu98.github.io/scop/reference/RunCellphoneDB.md)
@@ -1656,6 +1674,12 @@ etc.
   : Convert CCC results to OmicVerse communication AnnData
 - [`ccc_to_liana()`](https://mengxu98.github.io/scop/reference/ccc_to_liana.md)
   : Convert CCC results to a LIANA-like table
+
+### GWAS Integration
+
+- [`RunscPagwas()`](https://mengxu98.github.io/scop/reference/RunscPagwas.md)
+  [`RunscPaGWAS()`](https://mengxu98.github.io/scop/reference/RunscPagwas.md)
+  : Run scPagwas/scPaGWAS
 
 ### Cell-Cell Communication Plots
 
@@ -1736,6 +1760,19 @@ etc.
 
   Convert a Seurat object to an `.h5ad` file
 
+- [`srt_to_spe()`](https://mengxu98.github.io/scop/reference/srt_to_spe.md)
+  : Convert Seurat to SpatialExperiment
+
+- [`spe_to_srt()`](https://mengxu98.github.io/scop/reference/spe_to_srt.md)
+  : Convert SpatialExperiment to Seurat
+
+### External Datasets
+
+- [`ListScopDatasets()`](https://mengxu98.github.io/scop/reference/ListScopDatasets.md)
+  : List SCOP external datasets
+- [`LoadScopDataset()`](https://mengxu98.github.io/scop/reference/LoadScopDataset.md)
+  : Load a SCOP external dataset
+
 ### Data Processing
 
 - [`CheckDataType()`](https://mengxu98.github.io/scop/reference/CheckDataType.md)
@@ -1806,3 +1843,9 @@ etc.
 - [`words_excluded`](https://mengxu98.github.io/scop/reference/words_excluded.md)
   : Excluded words in keyword enrichment analysis and extraction
 
+# Articles
+
+### Spatial transcriptomics
+
+- [Spatial transcriptomics main
+  workflow](https://mengxu98.github.io/scop/articles/spatial-main-workflow.md):

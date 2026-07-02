@@ -234,22 +234,22 @@ VelocityPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-29 04:42:57] Start standard processing workflow...
-#> ℹ [2026-06-29 04:42:58] Checking a list of <Seurat>...
-#> ! [2026-06-29 04:42:58] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-29 04:42:58] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-29 04:42:58] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-29 04:42:58] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-29 04:42:59] Number of available HVF: 2000
-#> ℹ [2026-06-29 04:42:59] Finished check
-#> ℹ [2026-06-29 04:42:59] Perform `ScaleData()`
-#> ℹ [2026-06-29 04:42:59] Perform pca linear dimension reduction
-#> ℹ [2026-06-29 04:43:00] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-29 04:43:00] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-29 04:43:00] Reorder clusters...
-#> ℹ [2026-06-29 04:43:00] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-29 04:43:00] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-29 04:43:08] Standard processing workflow completed
+#> ℹ [2026-07-02 10:12:07] Start standard processing workflow...
+#> ℹ [2026-07-02 10:12:08] Checking a list of <Seurat>...
+#> ! [2026-07-02 10:12:08] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-07-02 10:12:08] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-07-02 10:12:08] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-07-02 10:12:08] Use the separate HVF from `srt_list`
+#> ℹ [2026-07-02 10:12:08] Number of available HVF: 2000
+#> ℹ [2026-07-02 10:12:08] Finished check
+#> ℹ [2026-07-02 10:12:08] Perform `ScaleData()`
+#> ℹ [2026-07-02 10:12:08] Perform pca linear dimension reduction
+#> ℹ [2026-07-02 10:12:09] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-07-02 10:12:10] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-07-02 10:12:10] Reorder clusters...
+#> ℹ [2026-07-02 10:12:10] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-07-02 10:12:10] Perform umap nonlinear dimension reduction
+#> ✔ [2026-07-02 10:12:17] Standard processing workflow completed
 pancreas_sub <- RunSCVELO(
   pancreas_sub,
   group.by = "SubCellType",
@@ -258,10 +258,10 @@ pancreas_sub <- RunSCVELO(
   backend = "cpp",
   return_seurat = TRUE
 )
-#> ℹ [2026-06-29 04:43:08] Running scanpy-compatible preprocessing (15998 features -> filter + normalize)...
-#> ℹ [2026-06-29 04:43:09] Running scVelo "stochastic" mode with `backend = 'cpp'` (10590 features)
-#> ✔ [2026-06-29 04:43:11] scVelo "stochastic" mode completed
-#> ✔ [2026-06-29 04:43:11] scVelo cpp backend completed
+#> ℹ [2026-07-02 10:12:17] Running scanpy-compatible preprocessing (15998 features -> filter + normalize)...
+#> ℹ [2026-07-02 10:12:18] Running scVelo "stochastic" mode with `backend = 'cpp'` (10590 features)
+#> ✔ [2026-07-02 10:12:20] scVelo "stochastic" mode completed
+#> ✔ [2026-07-02 10:12:20] scVelo cpp backend completed
 VelocityPlot(
   pancreas_sub,
   reduction = "umap"

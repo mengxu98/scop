@@ -782,22 +782,22 @@ A list with the following elements:
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-29 03:46:59] Start standard processing workflow...
-#> ℹ [2026-06-29 03:47:00] Checking a list of <Seurat>...
-#> ! [2026-06-29 03:47:00] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-29 03:47:00] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-29 03:47:00] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-29 03:47:01] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-29 03:47:01] Number of available HVF: 2000
-#> ℹ [2026-06-29 03:47:01] Finished check
-#> ℹ [2026-06-29 03:47:01] Perform `ScaleData()`
-#> ℹ [2026-06-29 03:47:01] Perform pca linear dimension reduction
-#> ℹ [2026-06-29 03:47:02] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-29 03:47:02] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-29 03:47:02] Reorder clusters...
-#> ℹ [2026-06-29 03:47:02] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-29 03:47:02] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-29 03:47:08] Standard processing workflow completed
+#> ℹ [2026-07-02 09:06:58] Start standard processing workflow...
+#> ℹ [2026-07-02 09:06:59] Checking a list of <Seurat>...
+#> ! [2026-07-02 09:06:59] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-07-02 09:06:59] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-07-02 09:06:59] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-07-02 09:06:59] Use the separate HVF from `srt_list`
+#> ℹ [2026-07-02 09:06:59] Number of available HVF: 2000
+#> ℹ [2026-07-02 09:06:59] Finished check
+#> ℹ [2026-07-02 09:06:59] Perform `ScaleData()`
+#> ℹ [2026-07-02 09:06:59] Perform pca linear dimension reduction
+#> ℹ [2026-07-02 09:07:00] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-07-02 09:07:00] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-07-02 09:07:00] Reorder clusters...
+#> ℹ [2026-07-02 09:07:00] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-07-02 09:07:00] Perform umap nonlinear dimension reduction
+#> ✔ [2026-07-02 09:07:06] Standard processing workflow completed
 ht1 <- GroupHeatmap(
   pancreas_sub,
   features = c(
@@ -827,22 +827,22 @@ pancreas_sub <- AnnotateFeatures(
   species = "Mus_musculus",
   db = c("CSPA", "TF")
 )
-#> ℹ [2026-06-29 03:47:10] Species: "Mus_musculus"
-#> ℹ [2026-06-29 03:47:10] Loading cached: CSPA version: CSPA nterm:1 created: 2026-06-29 03:37:07
-#> ℹ [2026-06-29 03:47:10] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-06-29 02:56:44
+#> ℹ [2026-07-02 09:07:07] Species: "Mus_musculus"
+#> ℹ [2026-07-02 09:07:07] Loading cached: CSPA version: CSPA nterm:1 created: 2026-07-02 08:57:56
+#> ℹ [2026-07-02 09:07:08] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-07-02 08:17:13
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-06-29 03:47:12] Data type is log-normalized
-#> ℹ [2026-06-29 03:47:12] Start differential expression test
-#> ℹ [2026-06-29 03:47:12] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-06-29 03:47:12] Using 1 core
-#> ⠙ [2026-06-29 03:47:12] Running for Ductal [1/5] ■■          20% | ETA:  0s
-#> ✔ [2026-06-29 03:47:12] Completed 5 tasks in 524ms
+#> ℹ [2026-07-02 09:07:09] Data type is log-normalized
+#> ℹ [2026-07-02 09:07:09] Start differential expression test
+#> ℹ [2026-07-02 09:07:09] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-07-02 09:07:09] Using 1 core
+#> ⠙ [2026-07-02 09:07:09] Running for Ductal [1/5] ■■          20% | ETA:  0s
+#> ✔ [2026-07-02 09:07:09] Completed 5 tasks in 511ms
 #> 
-#> ℹ [2026-06-29 03:47:12] Building results
-#> ✔ [2026-06-29 03:47:12] Differential expression test completed
+#> ℹ [2026-07-02 09:07:09] Building results
+#> ✔ [2026-07-02 09:07:10] Differential expression test completed
 de_filter <- dplyr::filter(
   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
@@ -876,19 +876,19 @@ ht3 <- GroupHeatmap(
   anno_keys = TRUE,
   anno_features = TRUE
 )
-#> ℹ [2026-06-29 03:47:23] Start Enrichment analysis
-#> ℹ [2026-06-29 03:47:23] Species: "Mus_musculus"
-#> ℹ [2026-06-29 03:47:23] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-06-29 03:39:02
-#> ℹ [2026-06-29 03:47:25] Permform enrichment...
-#> ℹ [2026-06-29 03:47:26] Using 1 core
-#> ⠙ [2026-06-29 03:47:26] Running for 1 [1/5] ■■          20% | ETA:  4s
-#> ✔ [2026-06-29 03:47:26] Completed 5 tasks in 4.3s
+#> ℹ [2026-07-02 09:07:20] Start Enrichment analysis
+#> ℹ [2026-07-02 09:07:20] Species: "Mus_musculus"
+#> ℹ [2026-07-02 09:07:20] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-07-02 08:59:44
+#> ℹ [2026-07-02 09:07:21] Permform enrichment...
+#> ℹ [2026-07-02 09:07:23] Using 1 core
+#> ⠙ [2026-07-02 09:07:23] Running for 1 [1/5] ■■          20% | ETA:  3s
+#> ✔ [2026-07-02 09:07:23] Completed 5 tasks in 3s
 #> 
-#> ℹ [2026-06-29 03:47:26] Building results
-#> ✔ [2026-06-29 03:47:30] Enrichment analysis done
-#> ℹ [2026-06-29 03:48:23] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-06-29 03:48:23] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-06-29 03:48:23] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
+#> ℹ [2026-07-02 09:07:23] Building results
+#> ✔ [2026-07-02 09:07:26] Enrichment analysis done
+#> ℹ [2026-07-02 09:08:06] The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ [2026-07-02 09:08:07] The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ [2026-07-02 09:08:07] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 ht3$plot
 
 

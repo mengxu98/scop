@@ -101,13 +101,15 @@ RunRCTD(
 
 - create_rctd_params:
 
-  Additional parameters passed to `spacexr::createRctd()` or
-  [`spacexr::create.RCTD()`](https://rdrr.io/pkg/spacexr/man/create.RCTD.html).
+  Additional parameters passed to
+  [`spacexr::createRctd()`](https://rdrr.io/pkg/spacexr/man/createRCTD.html)
+  or `spacexr::create.RCTD()`.
 
 - run_rctd_params:
 
-  Additional parameters passed to `spacexr::runRctd()` or
-  [`spacexr::run.RCTD()`](https://rdrr.io/pkg/spacexr/man/run.RCTD.html).
+  Additional parameters passed to
+  [`spacexr::runRctd()`](https://rdrr.io/pkg/spacexr/man/runRCTD.html)
+  or `spacexr::run.RCTD()`.
 
 - verbose:
 
@@ -127,20 +129,7 @@ also stored in `srt@tools[["RCTD"]]`.
 
 ``` r
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating Seurat objects
+spatial <- visium_human_pancreas_sub
 rctd_weights <- data.frame(
   RCTD_prop_Ductal = seq(0.75, 0.15, length.out = ncol(spatial)),
   RCTD_prop_Endocrine = seq(0.15, 0.65, length.out = ncol(spatial)),
@@ -175,8 +164,7 @@ if (requireNamespace("scatterpie", quietly = TRUE)) {
 
 
 if (
-  requireNamespace("spacexr", quietly = TRUE) &&
-    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+  isTRUE(check_r("dmcable/spacexr", verbose = FALSE))
 ) {
 data(pancreas_sub)
 features_use <- head(intersect(rownames(spatial), rownames(pancreas_sub)), 300)
@@ -213,4 +201,5 @@ SpatialSpotPlot(
   theme_use = "theme_scop"
 )
 }
+#> Error in check_r("dmcable/spacexr", verbose = FALSE): could not find function "check_r"
 ```

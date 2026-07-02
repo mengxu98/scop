@@ -20,6 +20,7 @@ RunSCENIC(
   prefix = "scenic",
   min_expr_cells = 3,
   min_regulon_size = 10,
+  max_regulon_targets = 50,
   include_negative_regulons = FALSE,
   backend = c("cpp", "python"),
   n_rounds = 5000,
@@ -120,6 +121,11 @@ RunSCENIC(
 - min_regulon_size:
 
   Minimum regulon size kept after `scenic ctx`.
+
+- max_regulon_targets:
+
+  Maximum target genes retained per C++ regulon. The default preserves
+  the native fast path's bounded regulon size.
 
 - include_negative_regulons:
 

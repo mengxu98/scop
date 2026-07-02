@@ -17,7 +17,13 @@ condition-aware differential expression."></head><body>
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Spatial transcriptomics</h6></li>
+    <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+  </ul></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98/scop" title="GitHub" aria-label="GitHub repository"><span class="fa fab fa-github fa-lg"></span></a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98" title="MengXu" aria-label="MengXu's GitHub profile"><span class="fa fas fa-home fa-lg"></span></a></li>
@@ -84,7 +90,7 @@ condition-aware differential expression.</p>
 
 <dt id="arg-explanatory-variable">explanatory.variable<a class="anchor" aria-label="anchor" href="#arg-explanatory-variable"></a></dt>
 <dd><p>Named numeric vector used by
-<code><a href="https://rdrr.io/pkg/spacexr/man/run.CSIDE.single.html" class="external-link">spacexr::run.CSIDE.single()</a></code>. Names must match spatial spot names.</p></dd>
+<code>spacexr::run.CSIDE.single()</code>. Names must match spatial spot names.</p></dd>
 
 
 <dt id="arg-group-by">group.by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
@@ -94,21 +100,21 @@ condition-aware differential expression.</p>
 
 <dt id="arg-condition-by">condition.by<a class="anchor" aria-label="anchor" href="#arg-condition-by"></a></dt>
 <dd><p>Binary metadata column converted to a 0/1 explanatory
-variable for <code><a href="https://rdrr.io/pkg/spacexr/man/run.CSIDE.single.html" class="external-link">spacexr::run.CSIDE.single()</a></code>.</p></dd>
+variable for <code>spacexr::run.CSIDE.single()</code>.</p></dd>
 
 
 <dt id="arg-design">design<a class="anchor" aria-label="anchor" href="#arg-design"></a></dt>
-<dd><p>Numeric design matrix used by <code><a href="https://rdrr.io/pkg/spacexr/man/run.CSIDE.html" class="external-link">spacexr::run.CSIDE()</a></code>.
+<dd><p>Numeric design matrix used by <code>spacexr::run.CSIDE()</code>.
 Row names must match <code>barcodes</code> or spatial spot names.</p></dd>
 
 
 <dt id="arg-region-list">region_list<a class="anchor" aria-label="anchor" href="#arg-region-list"></a></dt>
 <dd><p>Named list of barcode vectors used by
-<code><a href="https://rdrr.io/pkg/spacexr/man/run.CSIDE.regions.html" class="external-link">spacexr::run.CSIDE.regions()</a></code>.</p></dd>
+<code>spacexr::run.CSIDE.regions()</code>.</p></dd>
 
 
 <dt id="arg-barcodes">barcodes<a class="anchor" aria-label="anchor" href="#arg-barcodes"></a></dt>
-<dd><p>Barcodes used by <code><a href="https://rdrr.io/pkg/spacexr/man/run.CSIDE.html" class="external-link">spacexr::run.CSIDE()</a></code> or
+<dd><p>Barcodes used by <code>spacexr::run.CSIDE()</code> or
 <code>spacexr::run.CSIDE.intercept()</code>. If <code>NULL</code>, row names of <code>design</code> or all
 spatial spots are used where applicable.</p></dd>
 
@@ -170,20 +176,7 @@ stored in <code>srt@tools[[tool_name]]</code> when <code>store_results = TRUE</c
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">visium_human_pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  cells <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">120</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">400</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Centroids objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Centroids objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Seurat objects</span>
+<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="va">visium_human_pancreas_sub</span></span></span>
 <span class="r-in"><span><span class="va">spatial</span><span class="op">$</span><span class="va">region</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">$</span><span class="va">x</span> <span class="op">&gt;</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">$</span><span class="va">x</span><span class="op">)</span>, <span class="st">"right"</span>, <span class="st">"left"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">spatial</span><span class="op">$</span><span class="va">CSIDE_n_sig</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">$</span><span class="va">region</span> <span class="op">==</span> <span class="st">"right"</span>, <span class="fl">12</span>, <span class="fl">4</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">spatial</span><span class="op">$</span><span class="va">CSIDE_mode</span> <span class="op">&lt;-</span> <span class="st">"regions"</span></span></span>
@@ -221,10 +214,9 @@ stored in <code>srt@tools[[tool_name]]</code> when <code>store_results = TRUE</c
 <span class="r-plt img"><img src="RunCSIDE-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"spacexr"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/Logic.html" class="external-link">isTRUE</a></span><span class="op">(</span><span class="fu">check_r</span><span class="op">(</span><span class="st">"dmcable/spacexr"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span> <span class="op">&amp;&amp;</span></span></span>
 <span class="r-in"><span>    <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">RCTD</span><span class="op">)</span> <span class="op">&amp;&amp;</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">inherits</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">RCTD</span><span class="op">$</span><span class="va">object</span>, <span class="st">"RCTD"</span><span class="op">)</span> <span class="op">&amp;&amp;</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"</span><span class="op">)</span>, <span class="st">"true"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">inherits</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">RCTD</span><span class="op">$</span><span class="va">object</span>, <span class="st">"RCTD"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">RunCSIDE</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="va">spatial</span>,</span></span>
@@ -234,6 +226,7 @@ stored in <code>srt@tools[[tool_name]]</code> when <code>store_results = TRUE</c
 <span class="r-in"><span>    cell_type_threshold <span class="op">=</span> <span class="fl">125</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in check_r("dmcable/spacexr", verbose = FALSE):</span> could not find function "check_r"</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

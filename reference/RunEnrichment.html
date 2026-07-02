@@ -15,7 +15,13 @@
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Spatial transcriptomics</h6></li>
+    <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+  </ul></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98/scop" title="GitHub" aria-label="GitHub repository"><span class="fa fab fa-github fa-lg"></span></a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98" title="MengXu" aria-label="MengXu's GitHub profile"><span class="fa fas fa-home fa-lg"></span></a></li>
@@ -269,12 +275,15 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">gene_groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Cluster1"</span>, <span class="st">"Cluster2"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">enrich_out</span> <span class="op">&lt;-</span> <span class="fu">RunEnrichment</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  geneID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"INS"</span>, <span class="st">"GCG"</span>, <span class="st">"SST"</span>, <span class="st">"IAPP"</span>, <span class="st">"PRSS1"</span>, <span class="st">"CPA1"</span>, <span class="st">"KRT19"</span>, <span class="st">"SOX9"</span>, <span class="st">"MUC1"</span>, <span class="st">"CFTR"</span>, <span class="st">"KRT7"</span>, <span class="st">"REG1A"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  geneID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="st">"INS"</span>, <span class="st">"GCG"</span>, <span class="st">"SST"</span>, <span class="st">"IAPP"</span>, <span class="st">"PRSS1"</span>, <span class="st">"CPA1"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"KRT19"</span>, <span class="st">"SOX9"</span>, <span class="st">"MUC1"</span>, <span class="st">"CFTR"</span>, <span class="st">"KRT7"</span>, <span class="st">"REG1A"</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span>,</span></span>
 <span class="r-in"><span>  geneID_groups <span class="op">=</span> <span class="va">gene_groups</span>,</span></span>
 <span class="r-in"><span>  TERM2GENE <span class="op">=</span> <span class="va">term2gene</span>,</span></span>
 <span class="r-in"><span>  minGSSize <span class="op">=</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-06-29 04:27:01] Start <span style="color: #0000BB;">Enrichment</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:41:43] Start <span style="color: #0000BB;">Enrichment</span> analysis</span>
 <span class="r-in"><span><span class="fu"><a href="EnrichmentPlot.html">EnrichmentPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  res <span class="op">=</span> <span class="va">enrich_out</span>,</span></span>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"custom"</span>,</span></span>

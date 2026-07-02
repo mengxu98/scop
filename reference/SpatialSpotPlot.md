@@ -23,6 +23,7 @@ SpatialSpotPlot(
   crop = TRUE,
   coord.cols = c("col", "row"),
   flip.y = TRUE,
+  show_axes = FALSE,
   split.by = NULL,
   cells = NULL,
   show_na = FALSE,
@@ -127,6 +128,12 @@ SpatialSpotPlot(
 - flip.y:
 
   Whether to reverse the y axis for metadata coordinates.
+
+- show_axes:
+
+  Whether to keep axis text, ticks, and grid lines. The default `FALSE`
+  is intended for polished spatial maps; set `TRUE` for coordinate
+  debugging.
 
 - split.by:
 

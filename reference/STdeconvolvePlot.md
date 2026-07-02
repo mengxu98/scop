@@ -52,20 +52,7 @@ A `ggplot`, `patchwork`, or list of `ggplot` objects.
 
 ``` r
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating Seurat objects
+spatial <- visium_human_pancreas_sub
 topic_weights <- data.frame(
   STdeconvolve_prop_topic_1 = seq(0.75, 0.20, length.out = ncol(spatial)),
   STdeconvolve_prop_topic_2 = seq(0.20, 0.70, length.out = ncol(spatial)),

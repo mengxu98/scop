@@ -15,7 +15,13 @@
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Spatial transcriptomics</h6></li>
+    <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+  </ul></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98/scop" title="GitHub" aria-label="GitHub repository"><span class="fa fab fa-github fa-lg"></span></a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98" title="MengXu" aria-label="MengXu's GitHub profile"><span class="fa fas fa-home fa-lg"></span></a></li>
@@ -835,6 +841,13 @@
 
         <dt>
 
+          <code><a href="RunSpatialQM.html">RunSpatialQM()</a></code>
+
+        </dt>
+        <dd>Run SpatialQM quality metrics</dd>
+
+        <dt>
+
           <code><a href="RunSpotSweeper.html">RunSpotSweeper()</a></code>
 
         </dt>
@@ -1000,6 +1013,13 @@
 
         <dt>
 
+          <code><a href="RunSpatialDWLS.html">RunSpatialDWLS()</a></code>
+
+        </dt>
+        <dd>Run lightweight SpatialDWLS-style deconvolution</dd>
+
+        <dt>
+
           <code><a href="RunSpatialEcoTyper.html">RunSpatialEcoTyper()</a></code>
 
         </dt>
@@ -1081,10 +1101,24 @@
 
         <dt>
 
+          <code><a href="RunStatialKontextual.html">RunStatialKontextual()</a></code>
+
+        </dt>
+        <dd>Run Statial Kontextual spatial relationships</dd>
+
+        <dt>
+
           <code><a href="RunSpatialIntegration.html">RunSpatialIntegration()</a></code>
 
         </dt>
         <dd>Run multi-sample spatial integration</dd>
+
+        <dt>
+
+          <code><a href="RunMistyR.html">RunMistyR()</a></code>
+
+        </dt>
+        <dd>Run mistyR multiview spatial modeling</dd>
 
         <dt>
 
@@ -1891,6 +1925,41 @@
 
         <dt>
 
+          <code><a href="RunSecAct.html">RunSecAct()</a></code>
+
+        </dt>
+        <dd>Run SecAct secreted protein activity inference</dd>
+
+        <dt>
+
+          <code><a href="RunSecActCCC.html">RunSecActCCC()</a></code>
+
+        </dt>
+        <dd>Run SecAct cell-cell communication analysis</dd>
+
+        <dt>
+
+          <code><a href="RunSecActSignalingPattern.html">RunSecActSignalingPattern()</a></code>
+
+        </dt>
+        <dd>Run SecAct spatial signaling pattern analysis</dd>
+
+        <dt>
+
+          <code><a href="RunSecActPatternGenes.html">RunSecActPatternGenes()</a></code>
+
+        </dt>
+        <dd>Extract SecAct pattern-associated secreted proteins</dd>
+
+        <dt>
+
+          <code><a href="RunSecActVelocity.html">RunSecActVelocity()</a></code>
+
+        </dt>
+        <dd>Run SecAct spatial signaling velocity</dd>
+
+        <dt>
+
           <code><a href="RunCellChat.html">RunCellChat()</a></code>
 
         </dt>
@@ -1944,6 +2013,22 @@
 
         </dt>
         <dd>Convert CCC results to a LIANA-like table</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="gwas-integration">GWAS Integration<a class="anchor" aria-label="anchor" href="#gwas-integration"></a></h3>
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="RunscPagwas.html">RunscPagwas()</a></code> <code><a href="RunscPagwas.html">RunscPaGWAS()</a></code>
+
+        </dt>
+        <dd>Run scPagwas/scPaGWAS</dd>
       </dl></div><div class="section level2">
 
       <h3 id="cell-cell-communication-plots">Cell-Cell Communication Plots<a class="anchor" aria-label="anchor" href="#cell-cell-communication-plots"></a></h3>
@@ -2166,6 +2251,43 @@
 
         </dt>
         <dd>Convert a Seurat object to an <code>.h5ad</code> file</dd>
+
+        <dt>
+
+          <code><a href="srt_to_spe.html">srt_to_spe()</a></code>
+
+        </dt>
+        <dd>Convert Seurat to SpatialExperiment</dd>
+
+        <dt>
+
+          <code><a href="spe_to_srt.html">spe_to_srt()</a></code>
+
+        </dt>
+        <dd>Convert SpatialExperiment to Seurat</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="external-datasets">External Datasets<a class="anchor" aria-label="anchor" href="#external-datasets"></a></h3>
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="ListScopDatasets.html">ListScopDatasets()</a></code>
+
+        </dt>
+        <dd>List SCOP external datasets</dd>
+
+        <dt>
+
+          <code><a href="LoadScopDataset.html">LoadScopDataset()</a></code>
+
+        </dt>
+        <dd>Load a SCOP external dataset</dd>
       </dl></div><div class="section level2">
 
       <h3 id="data-processing">Data Processing<a class="anchor" aria-label="anchor" href="#data-processing"></a></h3>

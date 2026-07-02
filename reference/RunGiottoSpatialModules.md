@@ -122,20 +122,7 @@ features, and cells.
 
 ``` r
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating Seurat objects
+spatial <- visium_human_pancreas_sub
 module_features <- rownames(spatial)[1:4]
 module_cor <- expand.grid(
   feat_ID = module_features,
@@ -160,8 +147,7 @@ GiottoPlot(giotto_modules, top_n = 4)
 
 
 if (
-  requireNamespace("Giotto", quietly = TRUE) &&
-    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+  isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
 ) {
 spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 spatial <- Seurat::FindVariableFeatures(
@@ -180,4 +166,5 @@ giotto_modules <- RunGiottoSpatialModules(
   k = 6
 )
 }
+#> Error in check_r("giotto-suite/Giotto", verbose = FALSE): could not find function "check_r"
 ```

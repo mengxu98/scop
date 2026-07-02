@@ -1,0 +1,251 @@
+# Spatial transcriptomics main workflow
+
+This article shows the recommended first-pass SCOP workflow for a
+spatial transcriptomics object. It uses the bundled Visium pancreas
+subset and keeps the main path short: inspect the object, run the
+spatial workflow, check summaries, plot spatial features, and branch
+into optional backends only when the question requires them.
+
+It is not a catalogue of every spatial backend. Use method pages for
+backend specific parameters and dependency notes.
+
+## Load a Spatial Object
+
+Start with a Seurat object that has expression, metadata, and spatial
+coordinates. The bundled `visium_human_pancreas_sub` object has a
+`Spatial` assay, a `slice1` image, and metadata coordinates.
+
+``` r
+
+library(scop)
+
+data(visium_human_pancreas_sub)
+spatial <- visium_human_pancreas_sub
+
+SeuratObject::DefaultAssay(spatial) <- "Spatial"
+SeuratObject::Images(spatial)
+head(spatial@meta.data[, c("x", "y", "coda_label")])
+```
+
+Before running methods, make one direct map. This checks whether
+coordinates, image orientation, labels, and the default spatial theme
+are sensible.
+
+``` r
+
+SpatialSpotPlot(
+  spatial,
+  group.by = "coda_label"
+)
+
+SpatialSpotPlot(
+  spatial,
+  features = rownames(spatial)[1:2],
+  assay = "Spatial",
+  layer = "counts"
+)
+```
+
+## Run the Basic Spatial Workflow
+
+`standard_scop(workflow = "spatial")` is the shortest entry point for a
+first-pass spatial analysis. Keep optional domain clustering and
+deconvolution off at first. This makes the first run fast and gives you
+QC and spatial variable features before choosing heavier backends.
+
+``` r
+
+spatial <- standard_scop(
+  spatial,
+  workflow = "spatial",
+  assay = "Spatial",
+  image = "slice1",
+  coord.cols = c("x", "y"),
+  do_spot_qc = TRUE,
+  do_spatial_variable_features = TRUE,
+  spatial_variable_features_params = list(
+    method = "moran",
+    nfeatures = 50
+  ),
+  do_spatial_cluster = FALSE,
+  do_deconvolution = FALSE
+)
+```
+
+After the run, look at the stable result locations before making more
+plots. Most spatial wrappers write method parameters and summaries under
+`srt@tools`.
+
+``` r
+
+names(spatial@tools)
+spatial@tools$SpatialVariableFeatures$summary
+head(spatial@misc$SpatialVariableFeatures)
+```
+
+## Plot the First Results
+
+The default spatial maps hide axes and crop to the observed spots. Use
+`show_axes = TRUE` only when debugging coordinates.
+
+``` r
+
+SpatialSpotPlot(
+  spatial,
+  group.by = "SpotQC"
+)
+
+SpatialVariableFeaturePlot(
+  spatial,
+  plot_type = "summary"
+)
+
+SpatialVariableFeaturePlot(
+  spatial,
+  plot_type = "spatial",
+  nfeatures = 4
+)
+```
+
+## Add Spatial Domains When Needed
+
+Run a domain method only after the baseline object looks correct.
+BayesSpace is a common Visium choice. BANKSY and SmoothClust are useful
+alternatives when their assumptions match the data and optional
+dependencies are available.
+
+``` r
+
+spatial_bayes <- standard_scop(
+  spatial,
+  workflow = "spatial",
+  assay = "Spatial",
+  image = "slice1",
+  coord.cols = c("x", "y"),
+  do_spot_qc = FALSE,
+  do_spatial_variable_features = FALSE,
+  do_spatial_cluster = TRUE,
+  spatial_cluster_method = "BayesSpace",
+  spatial_q = 3
+)
+
+SpatialSpotPlot(
+  spatial_bayes,
+  group.by = "BayesSpace_cluster"
+)
+```
+
+For other domain backends, keep the output contract in mind: cluster
+labels should land in metadata and method details should stay under
+`srt@tools`.
+
+``` r
+
+if (requireNamespace("Banksy", quietly = TRUE)) {
+  spatial <- RunBANKSY(
+    spatial,
+    assay = "Spatial",
+    layer = "counts",
+    coord.cols = c("x", "y"),
+    cluster_colname = "BANKSY_cluster"
+  )
+  SpatialSpotPlot(spatial, group.by = "BANKSY_cluster")
+}
+```
+
+## Add Cell Composition Only With a Reference
+
+For spot-level data, deconvolution depends more on reference quality
+than on the wrapper choice. Use a matched single-cell reference, then
+inspect dominant cell types and maximum proportions before interpreting
+spatial biology.
+
+``` r
+
+spatial <- RunSpatialDWLS(
+  spatial,
+  reference = reference,
+  reference_label = "celltype",
+  assay = "Spatial",
+  reference_assay = "RNA",
+  coord.cols = c("x", "y"),
+  prefix = "SpatialDWLS"
+)
+
+spatial@tools$SpatialDWLS$summary
+
+SpatialSpotPlot(
+  spatial,
+  group.by = "SpatialDWLS_dominant_type"
+)
+
+SpatialSpotPlot(
+  spatial,
+  group.by = "SpatialDWLS_dominant_type",
+  plot_type = "pie"
+)
+```
+
+`RCTD`, `SPOTlight`, `CARD`, and `STdeconvolve` follow the same
+practical rule: first check the result summary, then visualize dominant
+labels, maximum proportions, and selected proportions.
+
+## Add Neighborhood or Context Models Last
+
+Neighborhood methods answer a different question from domain clustering.
+Use them after labels are stable, either from metadata, clustering, or
+deconvolution.
+
+``` r
+
+spatial <- RunSpatialNeighborhood(
+  spatial,
+  group.by = "coda_label",
+  coord.cols = c("x", "y"),
+  k = 6
+)
+
+spatial@tools$SpatialNeighborhood$summary
+
+SpatialNeighborhoodPlot(spatial, plot_type = "heatmap")
+SpatialNeighborhoodPlot(spatial, plot_type = "network", top_n = 12)
+SpatialNeighborhoodPlot(spatial, plot_type = "stat", top_n = 12)
+```
+
+Use
+[`RunStatialKontextual()`](https://mengxu98.github.io/scop/reference/RunStatialKontextual.md)
+when you have explicit `from`, `to`, and `parent` cell populations. Use
+[`RunMistyR()`](https://mengxu98.github.io/scop/reference/RunMistyR.md)
+when the question is feature-level local or broader spatial context
+rather than pairwise label enrichment.
+
+``` r
+
+if (requireNamespace("mistyR", quietly = TRUE)) {
+  spatial <- RunMistyR(
+    spatial,
+    assay = "Spatial",
+    layer = "data",
+    features = head(spatial@misc$SpatialVariableFeatures, 20),
+    coord.cols = c("x", "y"),
+    views = "para"
+  )
+  spatial@tools$MistyR$summary
+}
+```
+
+## What to Report
+
+A compact first-pass spatial report should include:
+
+- the source object, assay, image, and coordinate columns;
+- spot or cell counts after filtering;
+- top spatial variable features and the method used;
+- the domain method, cluster count, and domain sizes if clustering was
+  run;
+- deconvolution dominant labels and maximum proportions if composition
+  was run;
+- neighborhood or context summaries only after labels are stable.
+
+Keep the main workflow short. Add backend-specific sections only when
+they answer a concrete biological question for the current dataset.

@@ -160,20 +160,7 @@ A `Seurat` object with SpotSweeper QC metadata. When
 
 ``` r
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating Seurat objects
+spatial <- visium_human_pancreas_sub
 spatial$SpotSweeper_QC <- factor(
   ifelse(seq_len(ncol(spatial)) %% 9 == 0, "Fail", "Pass"),
   levels = c("Pass", "Fail")
@@ -196,9 +183,8 @@ SpatialSpotPlot(
 
 
 if (
-  requireNamespace("SpotSweeper", quietly = TRUE) &&
-    requireNamespace("SpatialExperiment", quietly = TRUE) &&
-    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+  isTRUE(check_r("MicTott/SpotSweeper", verbose = FALSE)) &&
+    requireNamespace("SpatialExperiment", quietly = TRUE)
 ) {
   spatial <- RunSpotSweeper(
     spatial,
@@ -216,4 +202,5 @@ if (
     coord.cols = c("x", "y")
   )
 }
+#> Error in check_r("MicTott/SpotSweeper", verbose = FALSE): could not find function "check_r"
 ```

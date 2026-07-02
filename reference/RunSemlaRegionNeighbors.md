@@ -65,20 +65,7 @@ A `Seurat` object.
 
 ``` r
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating Seurat objects
+spatial <- visium_human_pancreas_sub
 spatial$region <- ifelse(
   spatial$x > stats::median(spatial$x),
   "right",
@@ -96,8 +83,7 @@ SpatialSpotPlot(
 
 
 if (
-  requireNamespace("semla", quietly = TRUE) &&
-    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+  isTRUE(check_r("spatial-research/semla", verbose = FALSE))
 ) {
 spatial <- RunSemlaRegionNeighbors(
   spatial,
@@ -108,4 +94,5 @@ spatial <- RunSemlaRegionNeighbors(
   verbose = FALSE
 )
 }
+#> Error in check_r("spatial-research/semla", verbose = FALSE): could not find function "check_r"
 ```

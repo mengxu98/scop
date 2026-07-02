@@ -159,20 +159,7 @@ A `Seurat` object with BANKSY clusters in metadata. When
 
 ``` r
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating Seurat objects
+spatial <- visium_human_pancreas_sub
 spatial$BANKSY_cluster <- factor(
   paste0("BANKSY", (seq_len(ncol(spatial)) - 1) %% 3 + 1)
 )
@@ -186,8 +173,7 @@ SpatialSpotPlot(
 
 
 if (
-  requireNamespace("Banksy", quietly = TRUE) &&
-    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+  requireNamespace("Banksy", quietly = TRUE)
 ) {
 spatial <- RunBANKSY(
   spatial,
@@ -201,4 +187,17 @@ spatial <- RunBANKSY(
   verbose = FALSE
 )
 }
+#> Computing neighbors...
+#> Spatial mode is kNN_median
+#> Parameters: k_geom=8
+#> Done
+#> Computing neighbors...
+#> Spatial mode is kNN_median
+#> Parameters: k_geom=8
+#> Done
+#> Done
+#> Centering
+#> Done
+#> Using seed=1
+#> Using seed=1
 ```

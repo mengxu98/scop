@@ -125,20 +125,7 @@ results stored in `srt@tools[[tool_name]]` when `store_results = TRUE`.
 
 ``` r
 data(visium_human_pancreas_sub)
-spatial <- subset(
-  visium_human_pancreas_sub,
-  cells = colnames(visium_human_pancreas_sub)[1:120],
-  features = rownames(visium_human_pancreas_sub)[1:400]
-)
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating Centroids objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating FOV objects
-#> Warning: Not validating Seurat objects
+spatial <- visium_human_pancreas_sub
 topic_weights <- data.frame(
   STdeconvolve_prop_topic_1 = seq(0.75, 0.20, length.out = ncol(spatial)),
   STdeconvolve_prop_topic_2 = seq(0.20, 0.70, length.out = ncol(spatial)),
@@ -179,8 +166,7 @@ if (requireNamespace("scatterpie", quietly = TRUE)) {
 
 
 if (
-  requireNamespace("STdeconvolve", quietly = TRUE) &&
-    identical(Sys.getenv("SCOP_RUN_SPATIAL_BACKEND_EXAMPLES"), "true")
+  isTRUE(check_r("JEFworks-Lab/STdeconvolve", verbose = FALSE))
 ) {
 spatial <- RunSTdeconvolve(
   spatial,
@@ -190,4 +176,5 @@ spatial <- RunSTdeconvolve(
   verbose = FALSE
 )
 }
+#> Error in check_r("JEFworks-Lab/STdeconvolve", verbose = FALSE): could not find function "check_r"
 ```

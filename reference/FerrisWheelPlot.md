@@ -214,36 +214,36 @@ A `ggplot` object.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-06-29 03:45:27] Start standard processing workflow...
-#> ℹ [2026-06-29 03:45:27] Checking a list of <Seurat>...
-#> ! [2026-06-29 03:45:28] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-06-29 03:45:28] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-06-29 03:45:28] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-06-29 03:45:28] Use the separate HVF from `srt_list`
-#> ℹ [2026-06-29 03:45:28] Number of available HVF: 2000
-#> ℹ [2026-06-29 03:45:28] Finished check
-#> ℹ [2026-06-29 03:45:28] Perform `ScaleData()`
-#> ℹ [2026-06-29 03:45:28] Perform pca linear dimension reduction
-#> ℹ [2026-06-29 03:45:29] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-06-29 03:45:29] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-06-29 03:45:29] Reorder clusters...
-#> ℹ [2026-06-29 03:45:29] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-06-29 03:45:29] Perform umap nonlinear dimension reduction
-#> ✔ [2026-06-29 03:45:35] Standard processing workflow completed
+#> ℹ [2026-07-02 09:05:37] Start standard processing workflow...
+#> ℹ [2026-07-02 09:05:37] Checking a list of <Seurat>...
+#> ! [2026-07-02 09:05:37] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-07-02 09:05:37] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-07-02 09:05:37] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-07-02 09:05:38] Use the separate HVF from `srt_list`
+#> ℹ [2026-07-02 09:05:38] Number of available HVF: 2000
+#> ℹ [2026-07-02 09:05:38] Finished check
+#> ℹ [2026-07-02 09:05:38] Perform `ScaleData()`
+#> ℹ [2026-07-02 09:05:38] Perform pca linear dimension reduction
+#> ℹ [2026-07-02 09:05:39] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-07-02 09:05:39] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-07-02 09:05:39] Reorder clusters...
+#> ℹ [2026-07-02 09:05:39] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-07-02 09:05:39] Perform umap nonlinear dimension reduction
+#> ✔ [2026-07-02 09:05:45] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
   only.pos = FALSE
 )
-#> ℹ [2026-06-29 03:45:36] Data type is log-normalized
-#> ℹ [2026-06-29 03:45:36] Start differential expression test
-#> ℹ [2026-06-29 03:45:36] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-06-29 03:45:36] Using 1 core
-#> ⠙ [2026-06-29 03:45:36] Running for Ductal [1/5] ■■          20% | ETA:  0s
-#> ✔ [2026-06-29 03:45:36] Completed 5 tasks in 526ms
+#> ℹ [2026-07-02 09:05:45] Data type is log-normalized
+#> ℹ [2026-07-02 09:05:45] Start differential expression test
+#> ℹ [2026-07-02 09:05:45] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-07-02 09:05:45] Using 1 core
+#> ⠙ [2026-07-02 09:05:45] Running for Ductal [1/5] ■■          20% | ETA:  0s
+#> ✔ [2026-07-02 09:05:45] Completed 5 tasks in 515ms
 #> 
-#> ℹ [2026-06-29 03:45:36] Building results
-#> ✔ [2026-06-29 03:45:36] Differential expression test completed
+#> ℹ [2026-07-02 09:05:45] Building results
+#> ✔ [2026-07-02 09:05:46] Differential expression test completed
 
 de_df <- pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox
 de_df <- de_df[
@@ -259,16 +259,16 @@ enrich_out <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-06-29 03:45:36] Start Enrichment analysis
-#> ℹ [2026-06-29 03:45:36] Species: "Mus_musculus"
-#> ℹ [2026-06-29 03:45:37] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-06-29 03:39:02
-#> ℹ [2026-06-29 03:45:38] Permform enrichment...
-#> ℹ [2026-06-29 03:45:39] Using 1 core
-#> ⠙ [2026-06-29 03:45:39] Running for 1 [1/2] ■■■■■       50% | ETA:  1s
-#> ✔ [2026-06-29 03:45:39] Completed 2 tasks in 1.7s
+#> ℹ [2026-07-02 09:05:46] Start Enrichment analysis
+#> ℹ [2026-07-02 09:05:46] Species: "Mus_musculus"
+#> ℹ [2026-07-02 09:05:46] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-07-02 08:59:44
+#> ℹ [2026-07-02 09:05:47] Permform enrichment...
+#> ℹ [2026-07-02 09:05:48] Using 1 core
+#> ⠙ [2026-07-02 09:05:48] Running for 1 [1/2] ■■■■■       50% | ETA:  1s
+#> ✔ [2026-07-02 09:05:48] Completed 2 tasks in 1.2s
 #> 
-#> ℹ [2026-06-29 03:45:39] Building results
-#> ✔ [2026-06-29 03:45:41] Enrichment analysis done
+#> ℹ [2026-07-02 09:05:48] Building results
+#> ✔ [2026-07-02 09:05:50] Enrichment analysis done
 FerrisWheelPlot(
   res = enrich_out,
   de_results = de_df

@@ -1,6 +1,8 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://mengxu98.github.io/scop/404.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/LICENSE.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/articles/index.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/articles/spatial-main-workflow.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/authors.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/index.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/news/index.html</loc></url>
@@ -88,6 +90,8 @@
 <url><loc>https://mengxu98.github.io/scop/reference/LineagePlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/ListDB.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/ListEnv.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/ListScopDatasets.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/LoadScopDataset.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/MNN_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/MetaCellPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/MetabolismPlot.html</loc></url>
@@ -163,6 +167,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunMetaCell.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunMetabolism.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunMilo.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunMistyR.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunMonocle2.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunMonocle3.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunMultiNichenetr.html</loc></url>
@@ -190,6 +195,11 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunSciBet.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunScissor.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunScmap.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunSecAct.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunSecActCCC.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunSecActPatternGenes.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunSecActSignalingPattern.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunSecActVelocity.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunSemlaLocalG.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunSemlaRadialDistance.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunSemlaRegionNeighbors.html</loc></url>
@@ -199,13 +209,16 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunSlingshot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunSmoothClust.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunSpaNorm.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunSpatialDWLS.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunSpatialEcoTyper.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunSpatialGradientFeatures.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunSpatialIntegration.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunSpatialNeighborhood.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunSpatialQM.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunSpatialVariableFeatures.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunSpotQC.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunSpotSweeper.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunStatialKontextual.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunSymphonyMap.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunTriMap.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunUMAP.html</loc></url>
@@ -218,6 +231,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunscMalignantRegion.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunscMalignantStates.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunscOMM.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunscPagwas.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunscTenifoldNet.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RuntAge.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/SCENICPlot.html</loc></url>
@@ -276,10 +290,12 @@
 <url><loc>https://mengxu98.github.io/scop/reference/scVI_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/scop-package.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/scop_logo.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/spe_to_srt.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/srt_append.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/srt_reorder.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/srt_to_adata.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/srt_to_h5ad.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/srt_to_spe.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/standard_scop.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/tAgePlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/visium_human_pancreas_sub.html</loc></url>
