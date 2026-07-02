@@ -633,7 +633,7 @@ FeatureDimPlot <- function(
   }
 
   if (is.null(pt.size)) {
-    pt.size <- min(3000 / nrow(dat_use), 0.5)
+    pt.size <- dim_plot_default_pt_size(nrow(dat_use))
   }
   raster <- raster %||% (nrow(dat_use) > 1e5)
   if (isTRUE(raster)) {
