@@ -140,7 +140,6 @@ RunCytoTRACE.Seurat <- function(
 
   log_message(
     "Extracting expression matrix from {.code assay = {assay}, layer = {layer}}",
-    message_type = "info",
     verbose = verbose
   )
 
@@ -217,12 +216,6 @@ RunCytoTRACE.Seurat <- function(
   }
 
   object <- Seurat::LogSeuratCommand(object = object)
-
-  log_message(
-    "{.pkg CytoTRACE2} computed successfully",
-    message_type = "success",
-    verbose = verbose
-  )
 
   return(object)
 }
@@ -325,7 +318,6 @@ RunCytoTRACE.default <- function(
 
     log_message(
       "Dataset contains {.val {nrow(expression)}} genes and {.val {ncol(expression)}} cells.",
-      message_type = "info",
       verbose = verbose
     )
 
@@ -355,8 +347,7 @@ RunCytoTRACE.default <- function(
     )
 
     log_message(
-      "Running on {.val {chunk}} subsample(s)",
-      message_type = "info",
+      "Running on {.val {chunk}} subsample{?s}",
       verbose = verbose
     )
 
@@ -515,7 +506,6 @@ load_cytotrace2_data <- function(data_dir, verbose) {
 
   log_message(
     "Loading model from {.path {data_dir}}",
-    message_type = "info",
     verbose = verbose
   )
 
@@ -729,7 +719,6 @@ cytotrace2_preprocess <- function(
   n_mapped <- length(base::intersect(mapping, features))
   log_message(
     "{.val {n_mapped}} input genes mapped to model genes.",
-    message_type = "info",
     verbose = verbose
   )
 

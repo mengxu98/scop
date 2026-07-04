@@ -1,0 +1,245 @@
+---
+title: "Differential expression and enrichment workflow"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = TRUE,
+  fig.align = "center",
+  dpi = 144,
+  out.width = "92%"
+)
+```
+
+This article shows how to organize differential expression, marker visualization,
+and pathway enrichment in `scop`. The main distinction is between testing genes,
+summarizing gene sets, and interpreting enriched biological terms.
+
+Use this workflow after cell identities and major covariates are stable.
+Differential expression is gene-level evidence. Enrichment is a summary of a
+gene list or ranked statistic against a named database. Keep those two evidence
+layers separate in the text of a report.
+
+## Prepare the Object
+
+```{r prepare-object}
+library(scop)
+
+data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub, verbose = FALSE)
+
+table(pancreas_sub$CellType)
+```
+
+## Run Differential Expression
+
+`RunDEtest()` writes differential-expression tables under `srt@tools`. The
+default single-cell marker workflow is appropriate for exploratory marker
+finding. Use sample-aware or pseudobulk methods when biological replicates are
+part of the question.
+
+```{r run-detest}
+pancreas_sub <- RunDEtest(
+  pancreas_sub,
+  group.by = "CellType",
+  fc.threshold = 1,
+  only.pos = FALSE
+)
+
+names(pancreas_sub@tools)
+head(pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox)
+```
+
+Keep the contrast, grouping column, test method, and threshold in the report.
+Those choices define the meaning of each marker table.
+For `FindAllMarkers`-style results, `group1` names the group being compared
+against the remaining cells unless a specific contrast is stated.
+
+## Plot Differential Results
+
+Use volcano, Manhattan, and ring views for different levels of detail. Volcano
+plots are useful for one group or contrast; Manhattan and ring plots are useful
+when scanning many groups.
+
+```{r detest-plots}
+DEtestPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "volcano",
+  label.size = 2
+)
+
+DEtestPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "manhattan",
+  label.size = 2
+)
+
+DEtestPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "ring",
+  label.size = 2
+)
+```
+
+When enrichment results are available, volcano plots can annotate enriched
+terms to connect marker genes with pathway-level interpretation.
+The enrichment overlay circles genes that belong to selected enriched terms.
+The legend title is the analysis layer (`Enrichment`), and the legend item is
+the database, for example `GO_BP`.
+
+```{r annotated-volcano, fig.width=10, fig.height=8}
+pancreas_sub <- RunEnrichment(
+  pancreas_sub,
+  group.by = "CellType",
+  db = "GO_BP",
+  species = "Mus_musculus"
+)
+
+DEtestPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "volcano",
+  threshold_method = "hyperbolic",
+  hyperbola_c = 6,
+  annotate_enrichment = TRUE,
+  enrich_from = "Enrichment",
+  enrich_db = "GO_BP",
+  enrich_top_terms = 3,
+  enrich_nlabel = 15,
+  label.size = 2
+)
+```
+
+## Summarize Markers in Heatmaps
+
+Feature heatmaps are useful after markers have been filtered. Keep the filter
+explicit and avoid showing very large marker sets without grouping or splitting.
+`TF` marks transcription-factor annotations and `CSPA` marks cell-surface
+protein annotations. They help prioritize marker genes for follow-up, but they
+do not change the DE statistics.
+
+```{r feature-heatmap}
+DEGs <- pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox
+DEGs <- DEGs[with(DEGs, avg_log2FC > 1 & p_val_adj < 0.05), ]
+
+pancreas_sub <- AnnotateFeatures(
+  pancreas_sub,
+  species = "Mus_musculus",
+  db = c("TF", "CSPA")
+)
+
+ht <- FeatureHeatmap(
+  pancreas_sub,
+  group.by = "CellType",
+  features = DEGs$gene,
+  feature_split = DEGs$group1,
+  exp_legend_title = "Z-score",
+  species = "Mus_musculus",
+  db = c("GO_BP", "KEGG", "WikiPathway"),
+  anno_terms = TRUE,
+  feature_annotation = c("TF", "CSPA")
+)
+print(ht$plot)
+```
+
+## Run Over-Representation Analysis
+
+`RunEnrichment()` tests whether filtered marker sets are enriched for terms from
+the selected database.
+`GO_BP` is Gene Ontology Biological Process, `KEGG` is a curated pathway
+database, and `WikiPathway` contains community-curated pathway sets. These are
+database labels; the specific enriched terms are the rows shown by
+`EnrichmentPlot()`.
+
+```{r ora}
+pancreas_sub <- RunEnrichment(
+  pancreas_sub,
+  group.by = "CellType",
+  db = "GO_BP",
+  species = "Mus_musculus",
+  DE_threshold = "avg_log2FC > log2(1.5) & p_val_adj < 0.05",
+  cores = 5
+)
+
+EnrichmentPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  group_use = c("Ductal", "Endocrine"),
+  plot_type = "bar"
+)
+```
+
+Use different plot types for different questions: bar or lollipop plots for
+ranked terms, word clouds for broad themes, and networks or enrichmaps for term
+relationships.
+
+```{r enrichment-plots}
+EnrichmentPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  group_use = "Ngn3-low-EP",
+  plot_type = "network"
+)
+
+EnrichmentPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "comparison",
+  topTerm = 3
+)
+```
+
+## Run GSEA
+
+Use GSEA when ranked gene statistics are more appropriate than a hard marker
+cutoff.
+ORA depends on a marker cutoff, while GSEA uses a ranked gene list. Use GSEA
+when many genes shift modestly and a binary marker threshold would discard
+useful signal.
+
+```{r gsea}
+pancreas_sub <- RunGSEA(
+  pancreas_sub,
+  group.by = "CellType",
+  db = "GO_BP",
+  species = "Mus_musculus",
+  DE_threshold = "p_val_adj < 0.05",
+  cores = 5
+)
+
+GSEAPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  group_use = "Endocrine",
+  id_use = "GO:0007186"
+)
+
+GSEAPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  group_use = "Endocrine",
+  plot_type = "bar",
+  direction = "both",
+  topTerm = 10
+)
+```
+
+## What to Report
+
+A compact differential and enrichment report should include:
+
+- the grouping column, contrast, and DE method;
+- whether the test is single-cell marker detection, sample-level pseudobulk, or
+  bulk-style differential testing;
+- thresholds for log fold change, adjusted p value, and marker filtering;
+- the gene-set database, species, and enrichment method;
+- the exact `srt@tools` result names used for downstream plots;
+- pathway interpretations separated from the gene-level DE evidence.
+
+Use enrichment to summarize marker lists or ranked statistics. Do not treat an
+enriched term as proof that every gene in the pathway changes coherently.

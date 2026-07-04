@@ -33,10 +33,24 @@ navbar:
       href: reference/index.html
 
 articles:
+- title: Basic workflows
+  navbar: Basic workflows
+  contents:
+  - articles/single-cell-main-workflow
+  - articles/reproduce-pancreatic-endocrinogenesis
+  - articles/integration-workflow
+  - articles/cell-annotation-workflow
+  - articles/trajectory-dynamic-workflow
+  - articles/differential-enrichment-workflow
+  - articles/interactive-scexplorer-workflow
 - title: Spatial transcriptomics
   navbar: Spatial transcriptomics
   contents:
   - articles/spatial-main-workflow
+- title: Cell-cell communication
+  navbar: Cell-cell communication
+  contents:
+  - articles/cell-cell-communication-workflow
 
 reference:
 - subtitle: "Spatial and Cellular Omics Analysis Pipeline"
@@ -263,6 +277,7 @@ reference:
   - FindExpressedMarkers
   - RunAugur
   - RunDEtest
+  - RunFWP
   - RunRareQ
   - RunScissor
   - RunscMalignantFinder
@@ -333,29 +348,36 @@ reference:
   - scFEAVolcanoPlot
   - scFEABalanceBarPlot
 
+- subtitle: "Cellular Potency"
+- contents:
+  - RunCytoTRACE
+  - CytoTRACEPlot
+  - RunFitDevo
+  - FitDevoPlot
+
 - subtitle: "Dynamic Trajectory Analysis"
 - contents:
   - RunCellRank
-  - RunCytoTRACE
   - RunMonocle2
   - RunMonocle3
   - RunPAGA
   - RunPalantir
   - RunSlingshot
   - RunSCVELO
+  - RunVECTOR
   - RunWOT
   - RunDynamicFeatures
 
 - subtitle: "Dynamic Trajectory Plots"
 - contents:
   - BranchStreamPlot
-  - CytoTRACEPlot
   - DynamicPlot
   - DynamicHeatmap
   - LineagePlot
   - PAGAPlot
   - PalantirTrajectoryPlot
   - PseudotimeProjectionPlot
+  - VECTORPlot
   - VelocityPlot
 
 - subtitle: "Cell-Cell Communication Analysis"

@@ -87,6 +87,7 @@ jobs:
         run: |
           if [[ "${{ github.event_name }}" != "push" ]]; then
             echo "full_build=true" >> "$GITHUB_OUTPUT"
+            echo "article_build=false" >> "$GITHUB_OUTPUT"
             echo "topics=" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -95,6 +96,7 @@ jobs:
           head="${{ github.sha }}"
           if [[ "$base" =~ ^0+$ ]]; then
             echo "full_build=true" >> "$GITHUB_OUTPUT"
+            echo "article_build=false" >> "$GITHUB_OUTPUT"
             echo "topics=" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -105,18 +107,34 @@ jobs:
           awk '$2 !~ /^(scripts\/|tests\/|[.]github\/workflows\/(pkgdown|test-coverage)[.]yaml$)/ { print }' changed-files.txt > pkgdown-files.txt
           if [[ ! -s pkgdown-files.txt ]]; then
             echo "full_build=false" >> "$GITHUB_OUTPUT"
+            echo "article_build=false" >> "$GITHUB_OUTPUT"
             echo "topics=" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
           if awk '$1 ~ /D/ { found = 1 } END { exit found ? 0 : 1 }' pkgdown-files.txt; then
             echo "full_build=true" >> "$GITHUB_OUTPUT"
+            echo "article_build=false" >> "$GITHUB_OUTPUT"
+            echo "topics=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if awk '$2 !~ /^vignettes\/.*[.](Rmd|qmd)$/ { found = 1 } END { exit found ? 0 : 1 }' pkgdown-files.txt; then
+            article_only=false
+          else
+            article_only=true
+          fi
+
+          if [[ "$article_only" == "true" ]]; then
+            echo "full_build=false" >> "$GITHUB_OUTPUT"
+            echo "article_build=true" >> "$GITHUB_OUTPUT"
             echo "topics=" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
           if awk '$2 !~ /^(R\/.*[.]R|man\/.*[.]Rd)$/ { found = 1 } END { exit found ? 0 : 1 }' pkgdown-files.txt; then
             echo "full_build=true" >> "$GITHUB_OUTPUT"
+            echo "article_build=false" >> "$GITHUB_OUTPUT"
             echo "topics=" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -129,11 +147,13 @@ jobs:
 
           if [[ -z "$topics" ]]; then
             echo "full_build=true" >> "$GITHUB_OUTPUT"
+            echo "article_build=false" >> "$GITHUB_OUTPUT"
             echo "topics=" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
           echo "full_build=false" >> "$GITHUB_OUTPUT"
+          echo "article_build=false" >> "$GITHUB_OUTPUT"
           echo "topics=$topics" >> "$GITHUB_OUTPUT"
 
       - name: Check reference index
@@ -148,7 +168,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Build changed reference topics
-        if: github.event_name != 'pull_request' && steps.scope.outputs.full_build == 'false' && steps.scope.outputs.topics != ''
+        if: github.event_name != 'pull_request' && steps.scope.outputs.full_build == 'false' && steps.scope.outputs.article_build == 'false' && steps.scope.outputs.topics != ''
         run: |
           if (!requireNamespace("future", quietly = TRUE) ||
                 !requireNamespace("future.apply", quietly = TRUE)) {
@@ -160,6 +180,17 @@ jobs:
         shell: Rscript {0}
         env:
           PKGDOWN_TOPICS: ${{ steps.scope.outputs.topics }}
+
+      - name: Build articles
+        if: github.event_name != 'pull_request' && steps.scope.outputs.full_build == 'false' && steps.scope.outputs.article_build == 'true'
+        run: |
+          if (!requireNamespace("future", quietly = TRUE) ||
+                !requireNamespace("future.apply", quietly = TRUE)) {
+            install.packages(c("future", "future.apply"), quiet = TRUE)
+          }
+          future::plan("sequential", gc = TRUE)
+          pkgdown::build_articles(lazy = FALSE)
+        shell: Rscript {0}
 
       - name: Build site
         if: github.event_name != 'pull_request' && steps.scope.outputs.full_build == 'true'

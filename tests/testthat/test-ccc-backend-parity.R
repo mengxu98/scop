@@ -669,6 +669,50 @@ test_that("CellChat uses unified table when no special parameters are given", {
   expect_true("Unified" %in% long_df$sender)
 })
 
+test_that("ccc_result_long_table is the internal standardized CCC result contract", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("Matrix")
+
+  counts <- Matrix::sparseMatrix(
+    i = c(1, 2, 1, 2),
+    j = c(1, 1, 2, 2),
+    x = c(1, 2, 3, 4),
+    dims = c(2, 2)
+  )
+  rownames(counts) <- c("L1", "R1")
+  colnames(counts) <- c("Cell1", "Cell2")
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  srt@tools[["CCC"]] <- list(
+    method = "CCC",
+    methods = "CellChat",
+    long_table = data.frame(
+      source = c("A", "A", "B"),
+      target = c("B", "B", "A"),
+      ligand_complex = c("L1", "L2", "L3"),
+      receptor_complex = c("R1", "R2", "R3"),
+      interacting_pair = c("L1_R1", "L2_R2", "L3_R3"),
+      score = c(0.8, 0.4, 0.2),
+      pvalue = c(0.01, 0.02, 0.2),
+      method = "CellChat",
+      stringsAsFactors = FALSE
+    )
+  )
+
+  long <- getFromNamespace("ccc_result_long_table", "scop")(
+    srt = srt,
+    method = "CCC",
+    sender.use = "A"
+  )
+  expect_true(all(c("sender", "receiver", "ligand", "receptor", "score", "pvalue") %in% colnames(long)))
+  expect_equal(unique(long$sender), "A")
+
+  pair <- getFromNamespace("aggregate_ccc_long", "scop")(long, backend = "r")
+  expect_equal(pair[pair$sender == "A" & pair$receiver == "B", "count"], 2)
+
+  liana <- getFromNamespace("ccc_long_to_liana", "scop")(long)
+  expect_true(all(c("source", "target", "ligand_complex", "receptor_complex") %in% colnames(liana)))
+})
+
 test_that("ccc_pair_table accepts backend parameter", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("Matrix")

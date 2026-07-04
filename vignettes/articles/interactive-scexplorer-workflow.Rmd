@@ -1,0 +1,124 @@
+---
+title: "Interactive SCExplorer workflow"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = TRUE,
+  fig.align = "center",
+  dpi = 144,
+  out.width = "92%"
+)
+```
+
+This article shows how to prepare one or more processed Seurat objects for
+interactive exploration with SCExplorer. Use this workflow when static figures
+are not enough and users need to inspect cell groups, embeddings, marker genes,
+or multiple datasets through a Shiny interface.
+
+SCExplorer is best treated as a deployment layer for already processed objects.
+Run preprocessing, quality control, integration, annotation, and key result
+checks before exporting the app directory.
+
+The app does not replace the analysis report. It exposes the processed objects
+so collaborators can inspect embeddings, metadata, and marker expression behind
+the static figures.
+
+## Prepare Objects
+
+Start with named Seurat objects. The names become dataset identifiers in the
+exported SCExplorer directory.
+
+```{r prepare-objects}
+library(scop)
+
+data(pancreas_sub)
+data(panc8_sub)
+
+pancreas_sub <- standard_scop(pancreas_sub, verbose = FALSE)
+panc8_sub <- integration_scop(
+  srt_merge = panc8_sub,
+  batch = "tech",
+  integration_method = "Harmony"
+)
+```
+
+Before export, verify that each object has the reductions, metadata labels, and
+feature layers expected by the app.
+Anything left in metadata can become visible to users, so remove temporary
+columns or rename them before export if they would be confusing.
+
+```{r inspect-objects}
+SeuratObject::Reductions(pancreas_sub)
+SeuratObject::Reductions(panc8_sub)
+
+colnames(pancreas_sub@meta.data)
+colnames(panc8_sub@meta.data)
+```
+
+## Export the App Directory
+
+`PrepareSCExplorer()` writes the app data bundle. Keep `base_dir` explicit so
+that the exported directory can be archived, copied, or served later.
+
+```{r prepare-scexplorer}
+PrepareSCExplorer(
+  list(
+    mouse_pancreas = pancreas_sub,
+    human_pancreas = panc8_sub
+  ),
+  base_dir = "./SCExplorer"
+)
+
+list.files("./SCExplorer")
+```
+
+The exported directory is the portable artifact. It can be used locally or as a
+site directory for a Shiny Server deployment.
+The directory contains serialized data and app configuration, not a new
+analysis. Recreate it whenever upstream preprocessing or annotations change.
+
+## Run the App Locally
+
+`RunSCExplorer()` returns a Shiny app object. Run it interactively during local
+inspection.
+
+```{r run-scexplorer}
+app <- RunSCExplorer(base_dir = "./SCExplorer")
+
+if (interactive()) {
+  shiny::runApp(app)
+}
+```
+
+## Decide What to Include
+
+SCExplorer is more useful when the exported objects are curated. Before export,
+consider keeping:
+
+- stable embeddings used in the manuscript or report;
+- annotation columns that users should compare;
+- QC columns that explain filtering decisions;
+- feature layers needed for marker inspection;
+- integrated reductions for multi-dataset objects.
+
+Avoid exporting many redundant intermediate reductions or temporary metadata
+columns. They make the app harder to navigate and increase deployment size.
+For multi-object exports, use dataset names that are meaningful to readers,
+because those names become the first navigation layer in the app.
+
+## What to Report
+
+A compact SCExplorer deployment note should include:
+
+- the objects included and their dataset names;
+- the preprocessing state of each object;
+- the exported `base_dir`;
+- the reductions and metadata columns intended for user inspection;
+- whether the directory is meant for local use or Shiny Server deployment.
+
+Treat SCExplorer as a companion to static reports. Static figures should still
+carry the key conclusions; the app should make the underlying object easier to
+inspect.

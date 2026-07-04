@@ -1815,11 +1815,10 @@ VolcanoPlot <- function(
   enrich_key_levels <- character(0)
   enrich_colors <- NULL
   if (nrow(enrichment_map) > 0) {
-    enrichment_map[["enrich_key"]] <- paste0(
-      enrichment_map[["source"]],
-      " | ",
-      enrichment_map[["Database"]]
-    )
+    enrichment_map[["enrich_key"]] <- as.character(enrichment_map[["Database"]])
+    missing_key <- is.na(enrichment_map[["enrich_key"]]) |
+      !nzchar(enrichment_map[["enrich_key"]])
+    enrichment_map[missing_key, "enrich_key"] <- enrichment_map[missing_key, "source"]
     enrich_key_levels <- unique(enrichment_map[["enrich_key"]])
     enrich_colors <- get_enrichment_overlay_colors(enrich_key_levels)
   }
