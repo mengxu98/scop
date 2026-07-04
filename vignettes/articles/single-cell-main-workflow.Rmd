@@ -1,0 +1,204 @@
+---
+title: "Single-cell main workflow"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = TRUE,
+  fig.align = "center",
+  dpi = 144,
+  out.width = "92%"
+)
+```
+
+This article shows the recommended first-pass workflow for a single-cell Seurat
+object in `scop`. It starts from a count matrix stored in a Seurat object, runs
+the standard preprocessing workflow, checks cell-level quality, and creates the
+basic embedding, feature, and group-level plots used before choosing more
+specialized downstream methods.
+
+Use this workflow as the default entry point when the goal is to inspect a new
+single-cell dataset. After this pass, branch into integration, annotation,
+trajectory, differential expression, enrichment, or interactive exploration.
+
+This article deliberately stays at the first-pass level. It explains the object
+state that downstream articles assume: which assay is active, which reductions
+exist, which metadata columns can be used for grouping, and where `scop` stores
+method-specific outputs.
+
+## Load and Inspect the Object
+
+The examples use the bundled mouse pancreas subset. It contains RNA, spliced,
+and unspliced assays, so the same object can later be used for trajectory and
+RNA-velocity examples.
+
+```{r load-object}
+library(scop)
+
+data(pancreas_sub)
+pancreas_sub
+```
+
+Before running a full workflow, check the active assay, available assays,
+metadata columns, and whether a previous dimensional reduction already exists.
+These checks prevent a common documentation mistake: plotting a reduction or
+metadata column left over from a previous run without stating where it came
+from.
+
+```{r inspect-object}
+SeuratObject::DefaultAssay(pancreas_sub)
+SeuratObject::Assays(pancreas_sub)
+head(pancreas_sub@meta.data)
+SeuratObject::Reductions(pancreas_sub)
+```
+
+## Run the Standard Workflow
+
+`standard_scop()` runs the common preprocessing path: normalization, variable
+feature selection, scaling, dimensional reduction, neighbor graph construction,
+clustering, and UMAP. The result stays in the same Seurat object.
+
+```{r standard-workflow}
+pancreas_sub <- standard_scop(
+  pancreas_sub,
+  assay = "RNA",
+  nHVF = 2000,
+  linear_reduction_dims = 50,
+  cluster_resolution = 0.8,
+  verbose = FALSE
+)
+
+pancreas_sub
+SeuratObject::Reductions(pancreas_sub)
+```
+
+The stable contract is the Seurat object itself: normalized expression layers
+are stored in the assay, reductions are stored in `@reductions`, metadata
+columns are added to `@meta.data`, and method-specific summaries are stored
+under `@tools` when a wrapper has additional results.
+
+For this object, `CellType` is a coarse biological label and `SubCellType`
+contains finer developmental states. Those labels are useful for examples, but
+they should still be checked with marker genes before being used for biological
+claims.
+
+## Check Cell Quality
+
+Run quality control before interpreting clusters. `RunCellQC()` combines common
+cell-level flags, writes summary columns to metadata, and keeps details under
+the object tools slot.
+
+```{r cell-qc}
+pancreas_sub <- RunCellQC(pancreas_sub)
+
+table(pancreas_sub$CellQC)
+names(pancreas_sub@tools)
+```
+
+Plot the final QC label first, then inspect the individual failure categories
+when too many cells fail.
+
+```{r qc-plots}
+CellDimPlot(
+  pancreas_sub,
+  group.by = "CellQC",
+  reduction = "UMAP"
+)
+
+CellStatPlot(
+  pancreas_sub,
+  stat.by = c(
+    "db_qc", "decontX_qc", "outlier_qc",
+    "umi_qc", "gene_qc", "mito_qc",
+    "ribo_qc", "ribo_mito_ratio_qc", "species_qc"
+  ),
+  plot_type = "upset",
+  stat_level = "Fail"
+)
+```
+
+## Plot Cell Groups and Features
+
+Use `CellDimPlot()` to inspect discrete annotations and cluster structure.
+`FeatureDimPlot()` is the companion for gene expression or metadata-derived
+numeric features.
+
+```{r embedding-plots}
+CellDimPlot(
+  pancreas_sub,
+  group.by = c("CellType", "SubCellType"),
+  reduction = "UMAP",
+  label = TRUE
+)
+
+FeatureDimPlot(
+  pancreas_sub,
+  features = c("Sox9", "Neurog3", "Fev", "Rbp4"),
+  reduction = "UMAP"
+)
+```
+
+When several marker genes define related states, `compare_features = TRUE`
+helps identify the dominant feature per cell.
+In the pancreas example, `Ins1`, `Gcg`, `Sst`, and `Ghrl` are hormone genes
+used to distinguish beta, alpha, delta, and epsilon endocrine states.
+
+```{r compare-features}
+FeatureDimPlot(
+  pancreas_sub,
+  features = c("Ins1", "Gcg", "Sst", "Ghrl"),
+  compare_features = TRUE,
+  label = TRUE,
+  label_insitu = TRUE,
+  reduction = "UMAP"
+)
+```
+
+## Summarize Marker Patterns by Group
+
+Use grouped heatmaps after the embedding looks coherent. This is usually more
+readable than inspecting many feature plots one by one.
+Here the dot layer summarizes the fraction of cells expressing each marker, and
+the heatmap color summarizes average expression by group. A marker should be
+interpreted from both signals: strong average expression in very few cells is
+different from broad expression across a group.
+
+```{r group-heatmap}
+ht <- GroupHeatmap(
+  pancreas_sub,
+  features = c(
+    "Sox9", "Anxa2",
+    "Neurog3", "Hes6",
+    "Fev", "Neurod1",
+    "Rbp4", "Pyy",
+    "Ins1", "Gcg", "Sst", "Ghrl"
+  ),
+  group.by = c("CellType", "SubCellType"),
+  heatmap_palette = "Spectral",
+  cell_annotation = c("Phase", "G2M_score", "Cdh2"),
+  show_row_names = TRUE,
+  row_names_side = "left",
+  add_dot = TRUE,
+  add_reticle = TRUE
+)
+print(ht$plot)
+```
+
+## What to Report
+
+A compact first-pass report should include:
+
+- the object source, assay, and expression layer used;
+- the cell and feature counts before and after filtering;
+- the preprocessing parameters that affect interpretation, especially variable
+  features, PCs, clustering resolution, and UMAP reduction name;
+- QC pass or fail summaries and the dominant failure categories;
+- the annotation column used for plots and any marker genes used to validate it;
+- the output locations used downstream: assay layers, reductions, metadata, and
+  `srt@tools`.
+
+Keep this article as the short entry point. Use the specialized articles for
+batch integration, annotation transfer, trajectories, differential expression,
+pathway analysis, and deployment.

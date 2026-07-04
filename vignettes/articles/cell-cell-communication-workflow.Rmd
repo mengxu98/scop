@@ -1,0 +1,610 @@
+---
+title: "Cell-cell communication workflow"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = TRUE,
+  fig.align = "center",
+  dpi = 144,
+  out.width = "92%"
+)
+```
+
+This article shows a practical first-pass workflow for cell-cell communication
+analysis in `scop`: prepare a cell-type annotation, run ligand-receptor
+inference, inspect sender-receiver summaries, then focus on specific ligands,
+receptors, pathways, or downstream targets only after the global result looks
+stable.
+
+The executable examples below use the bundled `pancreas_sub` data and run the
+R-side CellChat and LIANA wrappers directly. CellphoneDB is intentionally not
+used here because it requires a Python environment and a CellPhoneDB database.
+
+`scop` keeps the workflow unified in three layers:
+
+| Layer | Entry point | Purpose |
+| --- | --- | --- |
+| Result tables | `RunCCC()` output | Store standardized `long_table`, `pair_table`, and method status in `srt@tools$CCC`. |
+| Heatmap layer | `CCCHeatmap()` | Matrix, dot, tile, sample, pathway, and differential heatmap views. |
+| Statistical layer | `CCCStatPlot()` | Ranked interactions, distributions, pathway summaries, and comparison statistics. |
+| Network layer | `CCCNetworkPlot()` | Sender-receiver networks, pathway networks, embedding networks, and focused ligand-receptor flow. |
+
+The plots in this article summarize inferred ligand-receptor evidence. A high
+score means the selected method found strong expression-based support for a
+sender ligand, receiver receptor, and sender-receiver context. It should not be
+read as a direct measurement of secreted protein amount, physical distance, or
+causal signaling.
+
+## Prepare the Object
+
+Start with a normalized Seurat object and a metadata column that represents the
+cell identities used as sender and receiver groups. For the bundled pancreas
+example, `CellType` is the coarse annotation and `SubCellType` is the finer
+annotation.
+
+```{r load-object}
+library(scop)
+library(ggplot2)
+
+data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub, verbose = FALSE)
+
+table(pancreas_sub$CellType)
+table(pancreas_sub$SubCellType)
+```
+
+Use the same visual settings across the article so that heatmaps, statistical
+summaries, and network plots can be compared without changing palettes or text
+scale.
+
+```{r visual-style}
+ccc_cell_pal <- c(
+  "Ductal" = "#4E79A7",
+  "Endocrine" = "#E15759",
+  "Ngn3-high-EP" = "#59A14F",
+  "Ngn3-low-EP" = "#76B7B2",
+  "Pre-endocrine" = "#F28E2B"
+)
+
+ccc_value_pal <- c("#2C5C85", "#8FBBD9", "#F7F7F7", "#F2B38F", "#B9473D")
+
+ccc_theme_args <- list(base_size = 11)
+```
+
+Before communication analysis, check whether groups have enough cells or whether
+some labels should be merged. CCC methods compare group-level expression, so
+unstable labels usually become noisy sender-receiver edges. The bundled
+`pancreas_sub` object is used as-is in this article.
+
+```{r prepare-groups}
+cell_counts <- sort(table(pancreas_sub$CellType), decreasing = TRUE)
+cell_counts
+
+pancreas_ccc <- pancreas_sub
+pancreas_ccc$CellType <- droplevels(factor(pancreas_ccc$CellType))
+
+table(pancreas_ccc$CellType)
+```
+
+## Run a CCC Screen
+
+`RunCCC()` is the shortest path when the goal is to compare the same object with
+several ligand-receptor scoring methods. In this article, it runs CellChat and
+LIANA, then rebuilds the unified `srt@tools$CCC` tables for common downstream
+plots.
+
+```{r run-ccc}
+pancreas_ccc <- RunCCC(
+  pancreas_ccc,
+  group.by = "CellType",
+  methods = c("CellChat", "LIANA"),
+  method_params = list(
+    CellChat = list(species = "Mus_musculus", min.cells = 5),
+    LIANA = list(
+      method = c("natmi", "connectome"),
+      resource = "Consensus",
+      min_cells = 5
+    )
+  ),
+  skip_failed = FALSE,
+  thresh = 0.05,
+  verbose = FALSE
+)
+```
+
+Check the run status and standardized result tables before plotting. Use
+`pancreas_ccc@tools$CCC$long_table` for ligand-receptor questions and
+`pancreas_ccc@tools$CCC$pair_table` for sender-receiver summaries.
+The long table is the most detailed layer: one row per method-specific
+ligand-receptor sender-receiver event. The pair table aggregates those rows to
+cell-type pairs, so it is useful for overview plots but less useful for naming
+specific biology.
+
+```{r inspect-run-status}
+pancreas_ccc@tools$RunCCC$status
+pancreas_ccc@tools$RunCCC$completed_methods
+
+ccc_long <- pancreas_ccc@tools$CCC$long_table
+ccc_pair <- pancreas_ccc@tools$CCC$pair_table
+
+head(ccc_long)
+head(ccc_pair)
+```
+
+```{r summarize-ccc-tables}
+long_df <- pancreas_ccc@tools$CCC$long_table
+pair_df <- pancreas_ccc@tools$CCC$pair_table
+
+pair_df[order(pair_df$sum, decreasing = TRUE), ][1:6, ]
+
+top_lr <- long_df[order(long_df$score, decreasing = TRUE), ]
+top_lr[1:6, c("method", "sender", "receiver", "ligand", "receptor", "score", "pvalue")]
+```
+
+## Global Communication Maps
+
+Start with the heatmap layer. A sender-receiver heatmap shows which cell-type
+pairs have many or strong inferred interactions.
+In aggregation views, `sum` summarizes the selected interaction score across
+retained ligand-receptor events for a sender-receiver pair. Use it to rank cell
+pairs, then return to the long table to inspect the individual ligands and
+receptors behind the aggregate signal.
+
+```{r ccc-heatmap, fig.width=6.8, fig.height=5.4}
+CCCHeatmap(
+  pancreas_ccc,
+  method = "CCC",
+  plot_type = "heatmap",
+  display_by = "aggregation",
+  value = "sum",
+  top_n = 30,
+  add_text = TRUE,
+  cluster_rows = TRUE,
+  cluster_columns = TRUE,
+  value_palette = "RdBu",
+  value_palcolor = ccc_value_pal,
+  cell_palcolor = ccc_cell_pal,
+  font.size = 10,
+  theme_args = ccc_theme_args
+)
+```
+
+A focused matrix keeps a single sender or receiver readable while preserving
+interaction names. In static documentation, use small multiples or filters
+instead of drawing every significant pair at once.
+
+```{r ccc-ductal-dotplot, fig.width=7.6, fig.height=5.2}
+CCCHeatmap(
+  pancreas_ccc,
+  method = "CCC",
+  plot_type = "dot",
+  display_by = "interaction",
+  sender.use = "Ductal",
+  top_n = 12,
+  value_palette = "RdBu",
+  value_palcolor = ccc_value_pal,
+  cell_palcolor = ccc_cell_pal,
+  font.size = 9,
+  legend.position = "bottom",
+  legend.direction = "horizontal",
+  theme_args = ccc_theme_args
+)
+```
+
+Compare the same interaction-level view from the receiver side. This is useful
+when a sender-dominant dot plot hides receiver-specific specificity.
+
+```{r ccc-endocrine-dotplot, fig.width=7.6, fig.height=5.2}
+CCCHeatmap(
+  pancreas_ccc,
+  method = "CCC",
+  plot_type = "dot",
+  display_by = "interaction",
+  receiver.use = "Endocrine",
+  top_n = 12,
+  value_palette = "RdBu",
+  value_palcolor = ccc_value_pal,
+  cell_palcolor = ccc_cell_pal,
+  font.size = 9,
+  legend.position = "bottom",
+  legend.direction = "horizontal",
+  theme_args = ccc_theme_args
+)
+```
+
+For pathway-level questions, use pathway bubbles before drawing a network.
+Keep this panel compact in the article because the pathway-specific interaction
+labels are long.
+Here a pathway such as `COLLAGEN` is a ligand-receptor signaling family from
+the CCC method/resource, not a GO or KEGG enrichment term.
+
+```{r ccc-pathway-bubble, fig.width=6.4, fig.height=3.8, out.width="78%"}
+CCCHeatmap(
+  pancreas_ccc,
+  method = "CCC",
+  plot_type = "pathway_bubble",
+  display_by = "interaction",
+  signaling = "COLLAGEN",
+  top_n = 6,
+  value_palette = "RdBu",
+  value_palcolor = ccc_value_pal,
+  cell_palcolor = ccc_cell_pal,
+  font.size = 8,
+  legend.position = "bottom",
+  legend.direction = "horizontal",
+  theme_args = ccc_theme_args
+)
+```
+
+## Statistical Views
+
+Use the statistical layer to decide whether a signal is dominated by a few
+ligand-receptor pairs or spread across many pairs.
+`pvalue` is method-specific and should be interpreted with the method and
+resource used to generate it. When several CCC methods are combined, use the
+standardized table for ranking and visualization, but keep method provenance in
+the report.
+
+```{r ccc-summary-plots, warning=FALSE, fig.width=8, fig.height=5.2}
+CCCStatPlot(
+  pancreas_ccc,
+  method = "CCC",
+  plot_type = "bar",
+  display_by = "interaction",
+  top_n = 14,
+  cell_palcolor = ccc_cell_pal,
+  link_palcolor = ccc_cell_pal,
+  font.size = 10,
+  legend.position = "bottom",
+  legend.direction = "horizontal",
+  theme_args = ccc_theme_args
+)
+```
+
+A flow plot is a compact companion to the bar plot: it shows which senders,
+ligand-receptor interactions, and receivers explain the top-ranked signal.
+For the article, use a small interaction-level flow with direct labels instead
+of a dense alluvial panel.
+
+```{r ccc-sankey, warning=FALSE, fig.width=8, fig.height=4.8}
+CCCNetworkPlot(
+  pancreas_ccc,
+  method = "CCC",
+  plot_type = "sigmoid",
+  display_by = "interaction",
+  top_n = 5,
+  edge_alpha = 0.5,
+  edge_size = c(0.25, 1),
+  node_size = 3.8,
+  cell_palcolor = ccc_cell_pal,
+  link_palcolor = ccc_cell_pal,
+  label = TRUE,
+  label.size = 3.2,
+  label.fg = "black",
+  label.bg = "white",
+  label.bg.r = 0.12,
+  font.size = 9,
+  legend.position = "none",
+  theme_args = ccc_theme_args
+)
+```
+
+Distribution plots show whether each sender has consistent receiver-side scores
+or only a few high-scoring outliers. The legend glyphs are simplified so the
+legend reads as colored categories rather than mini violins.
+
+```{r ccc-violin, warning=FALSE, fig.width=8.4, fig.height=5.4}
+p_violin <- CCCStatPlot(
+  pancreas_ccc,
+  method = "CCC",
+  plot_type = "violin",
+  facet_by = "sender",
+  top_n = 12,
+  cell_palcolor = ccc_cell_pal,
+  font.size = 9,
+  legend.position = "right",
+  theme_args = ccc_theme_args
+)
+
+p_violin +
+  ggplot2::guides(
+    color = ggplot2::guide_legend(
+      override.aes = list(shape = 16, size = 4, linetype = 0, alpha = 1)
+    ),
+    fill = ggplot2::guide_legend(
+      override.aes = list(shape = 22, size = 4, linetype = 0, alpha = 1)
+    )
+  ) +
+  ggplot2::theme(
+    legend.key.height = grid::unit(0.35, "cm"),
+    legend.key.width = grid::unit(0.35, "cm")
+  )
+```
+
+For a global sender-receiver distribution, the box plot is often more compact
+than faceted violins.
+
+```{r ccc-boxplot, warning=FALSE, fig.width=7.6, fig.height=4.8}
+CCCStatPlot(
+  pancreas_ccc,
+  method = "CCC",
+  plot_type = "box",
+  top_n = 12,
+  cell_palcolor = ccc_cell_pal,
+  font.size = 9,
+  legend.position = "bottom",
+  legend.direction = "horizontal",
+  theme_args = ccc_theme_args
+)
+```
+
+## Network Views
+
+Use the network layer after the global heatmap identifies the cell groups of
+interest. Aggregate views summarize sender-receiver communication; interaction
+views show ligand-receptor flow. The compact arrow view is usually easier to
+read than a dense circle network in an article.
+Network edge width encodes the selected summary score, and arrows encode sender
+to receiver direction. The direction is inferred from ligand and receptor group
+assignment, not from time-course causality.
+
+```{r ccc-network-arrow, fig.width=7.5, fig.height=5.8}
+CCCNetworkPlot(
+  pancreas_ccc,
+  method = "CCC",
+  plot_type = "arrow",
+  display_by = "aggregation",
+  value = "sum",
+  top_n = 12,
+  directed = TRUE,
+  edge_line = "curved",
+  edge_curvature = 0.18,
+  edge_alpha = 0.55,
+  edge_size = c(0.25, 1.4),
+  node_size = 8,
+  cell_palcolor = ccc_cell_pal,
+  link_palcolor = ccc_cell_pal,
+  font.size = 10,
+  theme_args = ccc_theme_args
+)
+```
+
+The sigmoid flow view uses the same sender-receiver table but lays it out as
+columns. It is usually cleaner than a circle when labels are long.
+
+```{r ccc-network-sigmoid, fig.width=8.2, fig.height=5.2}
+CCCNetworkPlot(
+  pancreas_ccc,
+  method = "CCC",
+  plot_type = "sigmoid",
+  display_by = "aggregation",
+  value = "sum",
+  top_n = 10,
+  edge_alpha = 0.55,
+  edge_size = c(0.25, 1.2),
+  node_size = 4,
+  cell_palcolor = ccc_cell_pal,
+  link_palcolor = ccc_cell_pal,
+  font.size = 10,
+  legend.position = "bottom",
+  legend.direction = "horizontal",
+  theme_args = ccc_theme_args
+)
+```
+
+The embedding network overlays sender-receiver links on the cell embedding.
+This helps distinguish strong communication between nearby cell states from
+long-range links across transcriptionally distant groups.
+
+```{r ccc-embedding-network, fig.width=7.5, fig.height=5.8}
+CCCNetworkPlot(
+  pancreas_ccc,
+  method = "CCC",
+  plot_type = "embedding_network",
+  group.by = "CellType",
+  reduction = "Standardumap",
+  display_by = "aggregation",
+  value = "sum",
+  top_n = 12,
+  edge_alpha = 0.45,
+  edge_size = c(0.15, 0.9),
+  node_size = 6,
+  cell_palcolor = ccc_cell_pal,
+  link_palcolor = ccc_cell_pal,
+  font.size = 10,
+  label = TRUE,
+  label_repel = TRUE,
+  label.size = 3,
+  theme_args = ccc_theme_args
+)
+```
+
+For pathway-aware results, focus on one pathway at a time. This avoids the
+label overlap that appears when all significant sender-receiver links are drawn
+in one circle.
+
+```{r ccc-pathway-network, fig.width=7.5, fig.height=5.8, fig.keep='first'}
+CCCNetworkPlot(
+  pancreas_ccc,
+  method = "CCC",
+  plot_type = "pathway",
+  signaling = "COLLAGEN",
+  display_by = "aggregation",
+  value = "sum",
+  top_n = 8,
+  node_size = 7,
+  cell_palcolor = ccc_cell_pal,
+  link_palcolor = ccc_cell_pal,
+  font.size = 9,
+  label.size = 3,
+  theme_args = ccc_theme_args
+)
+```
+
+For a focused ligand, the bipartite plot shows the flow from sender groups to
+the ligand, then to receptors and receiver groups. Keep `top_n` small when the
+same ligand has many receiver contexts.
+
+```{r ccc-bipartite, fig.width=8, fig.height=5.2}
+CCCNetworkPlot(
+  pancreas_ccc,
+  method = "CCC",
+  plot_type = "bipartite",
+  ligand = "Igf2",
+  top_n = 6,
+  node_size = 4,
+  cell_palcolor = ccc_cell_pal,
+  link_palcolor = ccc_cell_pal,
+  font.size = 8,
+  legend.position = "bottom",
+  legend.direction = "horizontal",
+  theme_args = ccc_theme_args
+)
+```
+
+Use a single ligand-receptor pair when the biological question is already
+specific. The pair name should match `interaction_name`, `pair_lr`, or
+`interaction_label` in `pancreas_ccc@tools$CCC$long_table`.
+
+```{r ccc-individual-lr, fig.width=7.5, fig.height=5.8, fig.keep='first'}
+CCCNetworkPlot(
+  pancreas_ccc,
+  method = "CCC",
+  plot_type = "individual_lr",
+  signaling = "IGF",
+  pairLR.use = "Igf2 - Igf1r",
+  display_by = "interaction",
+  top_n = 8,
+  node_size = 7,
+  cell_palcolor = ccc_cell_pal,
+  link_palcolor = ccc_cell_pal,
+  font.size = 9,
+  label.size = 3,
+  theme_args = ccc_theme_args
+)
+```
+
+The dense circle or chord variants are still useful for interactive inspection,
+but they are intentionally not drawn here because the full `pancreas_sub`
+network is too dense for a static article figure:
+
+```r
+CCCNetworkPlot(
+  pancreas_ccc,
+  method = "CCC",
+  plot_type = "circle",
+  display_by = "aggregation",
+  value = "sum",
+  top_n = 8
+)
+
+CCCNetworkPlot(
+  pancreas_ccc,
+  method = "CCC",
+  plot_type = "chord",
+  display_by = "aggregation",
+  top_n = 8
+)
+```
+
+## Method-Specific R Workflows
+
+Use method-specific wrappers when you need parameters or outputs that are not
+part of the unified scheduler. CellChat is useful for pathway-level
+communication and pathway role plots:
+
+```r
+pancreas_cellchat <- RunCellChat(
+  pancreas_ccc,
+  group.by = "CellType",
+  species = "Mus_musculus",
+  min.cells = 10
+)
+```
+
+LIANA is useful when you want several ligand-receptor scoring methods and a
+consensus-style table:
+
+```r
+pancreas_liana <- RunLIANA(
+  pancreas_ccc,
+  group.by = "CellType",
+  method = c("natmi", "connectome", "logfc", "cellphonedb"),
+  resource = "Consensus",
+  min_cells = 5
+)
+
+liana_tbl <- ccc_to_liana(pancreas_liana, method = "LIANA")
+```
+
+For condition comparisons, store the condition in metadata and run CellChat per
+condition. The comparison output can then be used by differential heatmaps,
+differential networks, and pathway ranking plots.
+
+```r
+pancreas_cmp <- RunCellChat(
+  pancreas_ccc,
+  group.by = "CellType",
+  group_column = "Condition",
+  group_cmp = list(c("ConditionA", "ConditionB")),
+  species = "Mus_musculus"
+)
+```
+
+## Link Ligands to Downstream Targets
+
+Use NicheNet when the question is no longer "which cell types communicate?" but
+"which sender ligands may explain receiver target-gene changes?". This requires
+a receiver, sender groups, and either a condition comparison or a custom target
+gene set.
+
+```r
+pancreas_nn <- RunNichenetr(
+  pancreas_ccc,
+  group.by = "CellType",
+  receiver = "Ductal",
+  sender = "all",
+  condition.by = "Condition",
+  condition_oi = "ConditionA",
+  condition_reference = "ConditionB",
+  mode = "aggregate_cluster_de",
+  species = "Mus_musculus"
+)
+```
+
+## Export R Results
+
+Export a LIANA-style table from the unified CCC result when you want a portable
+result table for downstream workflows without rebuilding method-specific
+objects by hand.
+
+```{r export-results}
+liana_res <- ccc_to_liana(
+  pancreas_ccc,
+  method = "CCC",
+  score_col = "score",
+  pvalue_col = "pvalue"
+)
+
+head(liana_res)
+```
+
+## What to Report
+
+A compact CCC report should include:
+
+- the object, assay, expression layer, and sender-receiver annotation;
+- the method or methods used, including species and ligand-receptor resource;
+- the significance threshold and expression fraction cutoff;
+- the top sender-receiver pairs by interaction count or score;
+- the top ligand-receptor pairs, separated from aggregate cell-pair summaries;
+- whether the result is steady-state communication or a condition comparison;
+- downstream target interpretation only when using a method designed for that
+  question, such as NicheNet.
+
+Keep the first pass broad and conservative. Use focused ligand, receptor,
+pathway, and downstream target analyses only after the global sender-receiver
+structure is stable.

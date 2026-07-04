@@ -1,0 +1,242 @@
+---
+title: "Trajectory and dynamic feature workflow"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = TRUE,
+  fig.align = "center",
+  dpi = 144,
+  out.width = "92%"
+)
+```
+
+This article shows how to organize trajectory, RNA-velocity, and dynamic-feature
+analyses in `scop`. These methods answer related but distinct questions:
+connectivity between cell states, pseudotime ordering, directional flow, and
+features that vary along inferred lineages.
+
+Use trajectory methods only after the basic embedding and annotation are stable.
+Most trajectory errors are interpretation errors caused by unstable labels,
+missing root states, or incompatible input assays.
+
+The methods below should be read as complementary evidence layers, not as
+interchangeable trajectory labels. PAGA describes group-level connectivity,
+Slingshot and Monocle3 assign pseudotime, RNA velocity estimates local
+direction, and dynamic-feature models test genes against the chosen ordering.
+
+## Prepare the Object
+
+The bundled pancreas object contains spliced and unspliced assays, making it a
+convenient example for both ordinary trajectory inference and RNA velocity.
+
+```{r prepare-object}
+library(scop)
+
+data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub, verbose = FALSE)
+
+SeuratObject::Assays(pancreas_sub)
+table(pancreas_sub$SubCellType)
+```
+
+## RNA Velocity
+
+RNA velocity requires spliced and unspliced matrices. Generate those matrices
+outside `scop` with tools such as velocyto, bustools, or alevin-fry, then store
+them as assays in the Seurat object.
+
+```{r scvelo}
+pancreas_sub <- RunSCVELO(
+  pancreas_sub,
+  group.by = "SubCellType",
+  linear_reduction = "PCA",
+  nonlinear_reduction = "UMAP"
+)
+
+VelocityPlot(
+  pancreas_sub,
+  reduction = "UMAP",
+  group.by = "SubCellType"
+)
+
+VelocityPlot(
+  pancreas_sub,
+  reduction = "UMAP",
+  plot_type = "stream"
+)
+```
+
+Interpret velocity as a local directional estimate. It should agree with marker
+genes, developmental knowledge, and trajectory structure before being used as
+evidence for cell-state transitions.
+Velocity arrows or streams do not define cell types by themselves. They are most
+useful when their direction agrees with known early and terminal marker genes.
+
+## PAGA Connectivity
+
+PAGA summarizes coarse connectivity between annotated groups. It is useful for
+checking whether a graph-based topology matches known or expected transitions.
+
+```{r paga}
+pancreas_sub <- RunPAGA(
+  pancreas_sub,
+  group.by = "SubCellType",
+  linear_reduction = "PCA",
+  nonlinear_reduction = "UMAP"
+)
+
+PAGAPlot(
+  pancreas_sub,
+  reduction = "UMAP",
+  label = TRUE,
+  label_insitu = TRUE,
+  label_repel = TRUE,
+  edge_size = c(0.5, 1),
+  edge_color = "black"
+)
+```
+
+Use PAGA to reason about group-level graph structure. Use pseudotime methods
+when the question requires an ordering of individual cells.
+
+## Slingshot Lineages
+
+Slingshot is a practical choice when the embedding has clear branching and root
+or terminal groups can be specified.
+
+```{r slingshot}
+pancreas_sub <- RunSlingshot(
+  pancreas_sub,
+  group.by = "SubCellType",
+  reduction = "UMAP",
+  start = "Ductal",
+  end = c("Alpha", "Beta")
+)
+
+CellDimPlot(
+  pancreas_sub,
+  group.by = "SubCellType",
+  lineages = paste0("Lineage", 1:2),
+  reduction = "UMAP"
+)
+
+FeatureDimPlot(
+  pancreas_sub,
+  features = paste0("Lineage", 1:2),
+  reduction = "UMAP",
+  theme_use = "theme_blank"
+)
+```
+
+The lineage pseudotime columns can be used directly by dynamic-feature methods
+and plotting functions.
+`Lineage1` and `Lineage2` are numeric pseudotime columns written to metadata by
+the Slingshot wrapper. They are method-specific coordinates, not absolute time.
+
+## Monocle3 Trajectories
+
+Monocle3 learns a trajectory graph and stores trajectory layers that can be
+added to ordinary `scop` plots.
+
+```{r monocle3}
+pancreas_sub <- RunMonocle3(
+  pancreas_sub,
+  group.by = "SubCellType",
+  use_partition = FALSE,
+  root_cells = colnames(pancreas_sub)[pancreas_sub$SubCellType == "Ductal"][1]
+)
+
+trajectory <- pancreas_sub@tools$Monocle3$trajectory
+milestones <- pancreas_sub@tools$Monocle3$milestones
+
+CellDimPlot(
+  pancreas_sub,
+  group.by = "SubCellType",
+  reduction = "UMAP",
+  label = TRUE
+) +
+  trajectory +
+  milestones
+
+FeatureDimPlot(
+  pancreas_sub,
+  features = "Monocle3_Pseudotime",
+  reduction = "UMAP"
+) +
+  trajectory
+```
+
+Check partitions, clusters, roots, and pseudotime direction before interpreting
+branch-specific changes.
+`Monocle3_Pseudotime` is another numeric ordering derived from the Monocle3
+principal graph. It can agree with Slingshot but does not have to use the same
+scale or branch assignment.
+
+## Dynamic Features
+
+After a lineage has been selected, use dynamic-feature analysis to find genes
+that vary along one or more lineages.
+
+```{r dynamic-features}
+pancreas_sub <- RunDynamicFeatures(
+  pancreas_sub,
+  lineages = c("Lineage1", "Lineage2"),
+  n_candidates = 200
+)
+
+pancreas_sub <- AnnotateFeatures(
+  pancreas_sub,
+  species = "Mus_musculus",
+  db = c("TF", "CSPA")
+)
+```
+
+Use `DynamicHeatmap()` for module-like changes and `DynamicPlot()` for a small
+set of known features.
+In this heatmap, `GO_BP` means the Gene Ontology Biological Process database
+used to annotate dynamic gene modules. The term annotation summarizes module
+themes; it is not a claim that every gene in the module belongs to one pathway.
+
+```{r dynamic-plots}
+ht <- DynamicHeatmap(
+  pancreas_sub,
+  lineages = c("Lineage1", "Lineage2"),
+  use_fitted = TRUE,
+  n_split = 6,
+  reverse_ht = "Lineage1",
+  species = "Mus_musculus",
+  db = "GO_BP",
+  anno_terms = TRUE,
+  anno_keys = FALSE,
+  anno_features = FALSE,
+  heatmap_palette = "viridis",
+  cell_annotation = "SubCellType",
+  feature_annotation = c("TF", "CSPA")
+)
+print(ht$plot)
+
+DynamicPlot(
+  pancreas_sub,
+  lineages = c("Lineage1", "Lineage2"),
+  group.by = "SubCellType",
+  features = c("Plk1", "Hes1", "Neurod2", "Ghrl", "Gcg", "Ins2")
+)
+```
+
+## What to Report
+
+A compact trajectory report should include:
+
+- the object, embedding, and annotation used to define cell states;
+- whether spliced and unspliced assays were available for velocity;
+- the selected method and root or terminal groups;
+- pseudotime or lineage columns written to metadata;
+- graph, velocity, and pseudotime plots with the same annotation labels;
+- dynamic genes and any functional annotations used to interpret them.
+
+Do not mix method outputs as if they measure the same quantity. Report
+connectivity, directionality, pseudotime, and dynamic expression as separate
+evidence layers.

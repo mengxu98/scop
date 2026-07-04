@@ -1418,6 +1418,26 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// scvelo_project_velocity_embedding_cpp
+NumericMatrix scvelo_project_velocity_embedding_cpp(IntegerVector graph_rows, IntegerVector graph_cols, NumericVector graph_vals, IntegerVector graph_neg_rows, IntegerVector graph_neg_cols, NumericVector graph_neg_vals, NumericMatrix embedding, double scale, bool self_transitions, bool use_negative_cosines);
+RcppExport SEXP _scop_scvelo_project_velocity_embedding_cpp(SEXP graph_rowsSEXP, SEXP graph_colsSEXP, SEXP graph_valsSEXP, SEXP graph_neg_rowsSEXP, SEXP graph_neg_colsSEXP, SEXP graph_neg_valsSEXP, SEXP embeddingSEXP, SEXP scaleSEXP, SEXP self_transitionsSEXP, SEXP use_negative_cosinesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type graph_rows(graph_rowsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type graph_cols(graph_colsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type graph_vals(graph_valsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type graph_neg_rows(graph_neg_rowsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type graph_neg_cols(graph_neg_colsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type graph_neg_vals(graph_neg_valsSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type embedding(embeddingSEXP);
+    Rcpp::traits::input_parameter< double >::type scale(scaleSEXP);
+    Rcpp::traits::input_parameter< bool >::type self_transitions(self_transitionsSEXP);
+    Rcpp::traits::input_parameter< bool >::type use_negative_cosines(use_negative_cosinesSEXP);
+    rcpp_result_gen = Rcpp::wrap(scvelo_project_velocity_embedding_cpp(graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, embedding, scale, self_transitions, use_negative_cosines));
+    return rcpp_result_gen;
+END_RCPP
+}
 // scvelo_velocity_confidence_cpp
 List scvelo_velocity_confidence_cpp(NumericMatrix Ms, NumericMatrix residual, IntegerMatrix knn_idx);
 RcppExport SEXP _scop_scvelo_velocity_confidence_cpp(SEXP MsSEXP, SEXP residualSEXP, SEXP knn_idxSEXP) {
@@ -2566,6 +2586,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_scvelo_deterministic_cpp", (DL_FUNC) &_scop_scvelo_deterministic_cpp, 6},
     {"_scop_scvelo_stochastic_cpp", (DL_FUNC) &_scop_scvelo_stochastic_cpp, 6},
     {"_scop_scvelo_velocity_graph_cpp", (DL_FUNC) &_scop_scvelo_velocity_graph_cpp, 8},
+    {"_scop_scvelo_project_velocity_embedding_cpp", (DL_FUNC) &_scop_scvelo_project_velocity_embedding_cpp, 10},
     {"_scop_scvelo_velocity_confidence_cpp", (DL_FUNC) &_scop_scvelo_velocity_confidence_cpp, 3},
     {"_scop_scvelo_velocity_transition_cpp", (DL_FUNC) &_scop_scvelo_velocity_transition_cpp, 5},
     {"_scop_scvelo_terminal_states_transition_cpp", (DL_FUNC) &_scop_scvelo_terminal_states_transition_cpp, 2},

@@ -174,21 +174,11 @@ CytoTRACEPlot <- function(
       ...
     )[[1]]
 
-    boxplot_theme_args <- utils::modifyList(
-      list(
-        axis.text.x = ggplot2::element_text(
-          angle = 45, hjust = 1, vjust = 1
-        ),
-        aspect.ratio = 1
-      ),
-      theme_args
-    )
-
     plist[["Boxplot"]] <- potency_boxplot(
       srt = srt,
       group.by = group.by,
       pt.alpha = pt.alpha,
-      theme_args = boxplot_theme_args,
+      theme_args = theme_args,
       verbose = verbose
     )
   }
@@ -213,21 +203,20 @@ CytoTRACEPlot <- function(
 potency_boxplot <- function(
   srt,
   group.by,
+  score.name = "CytoTRACE2_Score",
+  ylab = "Potency score",
+  show_potency_axis = TRUE,
   pt.alpha = 1,
   theme_use = "theme_scop",
-  theme_args = list(
-    axis.text.x = ggplot2::element_text(
-      angle = 45, hjust = 1, vjust = 1
-    ),
-    aspect.ratio = 1
-  ),
+  theme_args = list(),
   verbose = TRUE
 ) {
-  mtd <- srt@meta.data[, c(group.by, "CytoTRACE2_Score"), drop = FALSE]
+  mtd <- srt@meta.data[, c(group.by, score.name), drop = FALSE]
   colnames(mtd)[1] <- "Phenotype_CT"
+  colnames(mtd)[2] <- "Score_CT"
 
   mtd <- mtd[!is.na(mtd[["Phenotype_CT"]]), , drop = FALSE]
-  mtd <- mtd[!is.na(mtd[["CytoTRACE2_Score"]]), , drop = FALSE]
+  mtd <- mtd[!is.na(mtd[["Score_CT"]]), , drop = FALSE]
 
   if (nrow(mtd) == 0) {
     log_message(
@@ -245,7 +234,7 @@ potency_boxplot <- function(
     dplyr::group_by(.data[["Phenotype_CT"]]) |>
     dplyr::summarise(
       Potency = stats::median(
-        .data[["CytoTRACE2_Score"]],
+        .data[["Score_CT"]],
         na.rm = TRUE
       ),
       .groups = "drop"
@@ -270,11 +259,29 @@ potency_boxplot <- function(
     "#D70440", "#ED5736", "#F9BD10",
     "#FFF799", "#519673", "#806D9E"
   )
+  x_labels <- function(x) {
+    ifelse(
+      nchar(x) > 12,
+      paste0(substr(x, 1, 9), "..."),
+      x
+    )
+  }
+  boxplot_theme_args <- utils::modifyList(
+    list(
+      axis.text.x = ggplot2::element_text(
+        angle = 45,
+        hjust = 1,
+        vjust = 1
+      ),
+      plot.margin = ggplot2::margin(5.5, 12, 12, 12)
+    ),
+    theme_args
+  )
   p <- ggplot2::ggplot(
     mtd,
     ggplot2::aes(
       x = .data[["Phenotype_CT"]],
-      y = .data[["CytoTRACE2_Score"]]
+      y = .data[["Score_CT"]]
     )
   ) +
     ggplot2::geom_boxplot(
@@ -295,16 +302,21 @@ potency_boxplot <- function(
     ggplot2::scale_y_continuous(
       breaks = seq(0, 1, by = 0.2),
       limits = c(0, 1),
-      sec.axis = ggplot2::sec_axis(
-        transform = ~.,
-        breaks = seq(0, 1, by = 1 / 12),
-        labels = c(
-          "", "Differentiated", "", "Unipotent", "",
-          "Oligopotent", "", "Multipotent", "",
-          "Pluripotent", "", "Totipotent", ""
+      sec.axis = if (isTRUE(show_potency_axis)) {
+        ggplot2::sec_axis(
+          transform = ~.,
+          breaks = seq(0, 1, by = 1 / 12),
+          labels = c(
+            "", "Differentiated", "", "Unipotent", "",
+            "Oligopotent", "", "Multipotent", "",
+            "Pluripotent", "", "Totipotent", ""
+          )
         )
-      )
+      } else {
+        ggplot2::waiver()
+      }
     ) +
+    ggplot2::scale_x_discrete(labels = x_labels) +
     ggplot2::scale_fill_gradientn(
       colors = rev(colors),
       breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1),
@@ -319,9 +331,9 @@ potency_boxplot <- function(
     ) +
     ggplot2::labs(
       x = "Phenotype",
-      y = "Potency score"
+      y = ylab
     ) +
-    do.call(theme_use, theme_args)
+    do.call(theme_use, boxplot_theme_args)
 
   return(p)
 }
