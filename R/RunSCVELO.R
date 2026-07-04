@@ -128,6 +128,7 @@ RunSCVELO <- function(
   if (identical(backend, "cpp")) {
     return(run_scvelo_cpp(
       srt = srt,
+      assay_x = assay_x,
       assay_y = assay_y,
       layer_y = layer_y,
       group.by = group.by,
@@ -151,10 +152,12 @@ RunSCVELO <- function(
     ))
   }
 
-  PrepareEnv(modules = c(
-    "scvelo",
-    if (isTRUE(magic_impute)) "magic"
-  ))
+  PrepareEnv(
+    modules = c(
+      "scvelo",
+      if (isTRUE(magic_impute)) "magic"
+    )
+  )
 
   if (all(is.null(srt), is.null(adata))) {
     log_message(
@@ -185,7 +188,10 @@ RunSCVELO <- function(
     if (is.null(nonlinear_reduction)) {
       nonlinear_reduction <- DefaultReduction(srt)
     } else {
-      nonlinear_reduction <- DefaultReduction(srt, pattern = nonlinear_reduction)
+      nonlinear_reduction <- DefaultReduction(
+        srt,
+        pattern = nonlinear_reduction
+      )
     }
     if (!nonlinear_reduction %in% names(srt@reductions)) {
       log_message(
@@ -307,6 +313,7 @@ RunSCVELO <- function(
 
 run_scvelo_cpp <- function(
   srt,
+  assay_x,
   assay_y,
   layer_y,
   group.by,
@@ -364,7 +371,10 @@ run_scvelo_cpp <- function(
   }
   spliced_assay <- assay_y[[1L]]
   unspliced_assay <- assay_y[[2L]]
-  missing_assays <- setdiff(c(spliced_assay, unspliced_assay), names(srt@assays))
+  missing_assays <- setdiff(
+    c(spliced_assay, unspliced_assay),
+    names(srt@assays)
+  )
   if (length(missing_assays) > 0L) {
     log_message(
       "Missing velocity assays: {.val {missing_assays}}",
@@ -422,7 +432,8 @@ run_scvelo_cpp <- function(
     unspliced = unspliced,
     min_counts = as.integer(min_counts),
     min_counts_u = as.integer(min_counts_u)
-  ) > 0L
+  ) >
+    0L
   if (sum(keep) < 2L) {
     log_message(
       "Too few genes pass filtering for {.fn RunSCVELO} cpp backend",
@@ -430,6 +441,38 @@ run_scvelo_cpp <- function(
     )
   }
   features_out <- features[keep]
+  feature_meta <- tryCatch(srt[[assay_x]]@meta.data, error = function(e) NULL)
+  highly_variable_keep <- rep(TRUE, length(features_out))
+  variable_features <- tryCatch(
+    SeuratObject::VariableFeatures(srt[[assay_x]]),
+    error = function(e) character(0)
+  )
+  if (length(variable_features) > 0L) {
+    highly_variable_keep <- features_out %in% variable_features
+    if (sum(highly_variable_keep) < 2L) {
+      highly_variable_keep <- rep(TRUE, length(features_out))
+    }
+  } else if (!is.null(feature_meta)) {
+    hvg_col <- intersect(
+      c("highly_variable", "highly_variable_genes"),
+      colnames(feature_meta)
+    )
+    if (length(hvg_col) > 0L) {
+      if ("features" %in% colnames(feature_meta)) {
+        feature_key <- as.character(feature_meta[["features"]])
+        feature_idx <- match(features_out, feature_key)
+        hvg_raw <- feature_meta[feature_idx, hvg_col[[1L]], drop = TRUE]
+      } else {
+        hvg_raw <- feature_meta[features_out, hvg_col[[1L]], drop = TRUE]
+      }
+      hvg_chr <- tolower(as.character(hvg_raw))
+      highly_variable_keep <- hvg_chr %in% c("true", "1", "yes")
+      highly_variable_keep[is.na(highly_variable_keep)] <- FALSE
+      if (sum(highly_variable_keep) < 2L) {
+        highly_variable_keep <- rep(TRUE, length(features_out))
+      }
+    }
+  }
   normed <- scvelo_normalize_scanpy_cpp(
     spliced = spliced[keep, , drop = FALSE],
     unspliced = unspliced[keep, , drop = FALSE],
@@ -444,7 +487,10 @@ run_scvelo_cpp <- function(
   dims_use <- seq_len(min(as.integer(n_pcs), ncol(linear_embedding_all)))
   linear_embedding <- linear_embedding_all[, dims_use, drop = FALSE]
   storage.mode(linear_embedding) <- "double"
-  knn_nonself <- max(1L, min(as.integer(n_neighbors) - 1L, nrow(linear_embedding) - 1L))
+  knn_nonself <- max(
+    1L,
+    min(as.integer(n_neighbors) - 1L, nrow(linear_embedding) - 1L)
+  )
   knn <- scvelo_knn_scanpy_cpp(linear_embedding, knn_nonself, TRUE)
   knn_k <- ncol(knn[["idx"]])
   moments <- scvelo_moments_connectivities_cpp(
@@ -493,7 +539,8 @@ run_scvelo_cpp <- function(
     # Velocity estimation
     if (identical(m, "stochastic")) {
       velocity <- scvelo_stochastic_cpp(
-        Ms = Ms, Mu = Mu,
+        Ms = Ms,
+        Mu = Mu,
         Mss = moments[["Mss"]],
         Mus = moments[["Mus"]],
         knn_idx = knn[["idx"]],
@@ -501,7 +548,8 @@ run_scvelo_cpp <- function(
       )
     } else if (identical(m, "deterministic")) {
       velocity <- scvelo_deterministic_cpp(
-        Ms = Ms, Mu = Mu,
+        Ms = Ms,
+        Mu = Mu,
         knn_idx = knn[["idx"]],
         embedding = nonlinear_embedding,
         fit_offset = FALSE,
@@ -510,34 +558,42 @@ run_scvelo_cpp <- function(
     } else if (identical(m, "dynamical")) {
       # First fit the dynamical model per gene
       n_genes <- nrow(Ms)
-      dyn_genes <- if (n_genes > 200) sample.int(n_genes, min(n_genes, 200)) else seq_len(n_genes)
+      dyn_genes <- if (n_genes > 200) {
+        sample.int(n_genes, min(n_genes, 200))
+      } else {
+        seq_len(n_genes)
+      }
       fitting_by <- match.arg(fitting_by)
-      fitting_by <- switch(fitting_by,
+      fitting_by <- switch(
+        fitting_by,
         stochastic = "em",
         deterministic = "nm",
         fitting_by
       )
       if (identical(fitting_by, "em")) {
         dyn_fit <- scvelo_dynamical_em_cpp(
-          Ms = Ms, Mu = Mu,
+          Ms = Ms,
+          Mu = Mu,
           use_genes = as.integer(dyn_genes),
           max_iter_em = 10L,
           conv_tol = 1e-6
         )
       } else {
         dyn_fit <- scvelo_dynamical_nm_cpp(
-          Ms = Ms, Mu = Mu,
+          Ms = Ms,
+          Mu = Mu,
           use_genes = as.integer(dyn_genes),
           max_iter = 20L
         )
       }
       # Compute velocity from fitted dynamical parameters
       velocity <- scvelo_dynamical_velocity_cpp(
-        Ms = Ms, Mu = Mu,
+        Ms = Ms,
+        Mu = Mu,
         alpha = dyn_fit[["alpha"]],
-        beta  = dyn_fit[["beta"]],
+        beta = dyn_fit[["beta"]],
         gamma = dyn_fit[["gamma"]],
-        t_    = dyn_fit[["t_"]],
+        t_ = dyn_fit[["t_"]],
         knn_idx = knn[["idx"]],
         embedding = nonlinear_embedding
       )
@@ -555,9 +611,9 @@ run_scvelo_cpp <- function(
       key = paste0(gsub("_", "", velocity_reduction), "_")
     )
     conf_key <- paste0(m, "_confidence")
-    len_key  <- paste0(m, "_length")
+    len_key <- paste0(m, "_length")
     srt[[conf_key]] <- as.numeric(velocity[["confidence"]])
-    srt[[len_key]]  <- as.numeric(velocity[["velocity_length"]])
+    srt[[len_key]] <- as.numeric(velocity[["velocity_length"]])
 
     srt@tools[["SCVELO"]][[m]] <- list(
       velocity_reduction = velocity_reduction,
@@ -566,10 +622,10 @@ run_scvelo_cpp <- function(
     )
     if (identical(m, "dynamical")) {
       srt@tools[["SCVELO"]][[m]]$alpha <- dyn_fit[["alpha"]]
-      srt@tools[["SCVELO"]][[m]]$beta  <- dyn_fit[["beta"]]
+      srt@tools[["SCVELO"]][[m]]$beta <- dyn_fit[["beta"]]
       srt@tools[["SCVELO"]][[m]]$gamma <- dyn_fit[["gamma"]]
-      srt@tools[["SCVELO"]][[m]]$t_    <- dyn_fit[["t_"]]
-      srt@tools[["SCVELO"]][[m]]$loss  <- dyn_fit[["loss"]]
+      srt@tools[["SCVELO"]][[m]]$t_ <- dyn_fit[["t_"]]
+      srt@tools[["SCVELO"]][[m]]$loss <- dyn_fit[["loss"]]
       srt@tools[["SCVELO"]][[m]]$n_fitted <- dyn_fit[["n_fitted"]]
     } else {
       srt@tools[["SCVELO"]][[m]]$gamma <- velocity[["gamma"]]
@@ -581,10 +637,18 @@ run_scvelo_cpp <- function(
     if ("residual" %in% names(velocity)) {
       srt@tools[["SCVELO"]][[m]]$residual <- velocity[["residual"]]
     }
-    vg_residual <- if (!is.null(velocity[["residual"]])) velocity[["residual"]] else velocity[["velocity"]]
+    vg_residual <- if (!is.null(velocity[["residual"]])) {
+      velocity[["residual"]]
+    } else {
+      velocity[["velocity"]]
+    }
     graph_gene_idx <- rep(TRUE, nrow(Ms))
     if ("velocity_genes" %in% names(velocity)) {
-      graph_gene_idx <- as.logical(velocity[["velocity_genes"]])
+      graph_gene_idx <- as.logical(velocity[["velocity_genes"]]) &
+        highly_variable_keep
+      if ("r2" %in% names(velocity)) {
+        graph_gene_idx <- graph_gene_idx & as.numeric(velocity[["r2"]]) > 0.3
+      }
       graph_gene_idx[is.na(graph_gene_idx)] <- FALSE
       if (sum(graph_gene_idx) < 2L) {
         graph_gene_idx <- rep(TRUE, nrow(Ms))
@@ -617,6 +681,29 @@ run_scvelo_cpp <- function(
         neg_rows = vg[["velocity_graph_neg_rows"]],
         neg_cols = vg[["velocity_graph_neg_cols"]],
         neg_vals = vg[["velocity_graph_neg_vals"]]
+      )
+      velocity_embedding_graph <- scvelo_project_velocity_embedding_cpp(
+        graph_rows = vg[["velocity_graph_rows"]],
+        graph_cols = vg[["velocity_graph_cols"]],
+        graph_vals = vg[["velocity_graph_vals"]],
+        graph_neg_rows = vg[["velocity_graph_neg_rows"]],
+        graph_neg_cols = vg[["velocity_graph_neg_cols"]],
+        graph_neg_vals = vg[["velocity_graph_neg_vals"]],
+        embedding = nonlinear_embedding,
+        scale = 7.25,
+        self_transitions = TRUE,
+        use_negative_cosines = TRUE
+      )
+      # scvelo rescales projected velocities with matplotlib quiver autoscaling.
+      # This backend uses a deterministic approximation to keep plotted arrow
+      # magnitudes on the same order as scv.tl.velocity_embedding output.
+      velocity_embedding_graph <- velocity_embedding_graph / 5.6
+      rownames(velocity_embedding_graph) <- cells
+      colnames(velocity_embedding_graph) <- colnames(nonlinear_embedding)
+      srt[[velocity_reduction]] <- SeuratObject::CreateDimReducObject(
+        embeddings = velocity_embedding_graph,
+        assay = spliced_assay,
+        key = paste0(gsub("_", "", velocity_reduction), "_")
       )
     }
 
@@ -664,11 +751,19 @@ run_scvelo_cpp <- function(
       pt_key <- paste0(m, "_pseudotime")
       srt[[pt_key]] <- as.numeric(vpt)
       srt@tools[["SCVELO"]][[m]]$pseudotime <- vpt
-      srt@tools[["SCVELO"]][[m]]$pseudotime_raw <- as.numeric(vpt_result[["pseudotime_root"]])
-      srt@tools[["SCVELO"]][[m]]$pseudotime_end_inverse <- as.numeric(vpt_result[["pseudotime_end_inverse"]])
+      srt@tools[["SCVELO"]][[m]]$pseudotime_raw <- as.numeric(vpt_result[[
+        "pseudotime_root"
+      ]])
+      srt@tools[["SCVELO"]][[
+        m
+      ]]$pseudotime_end_inverse <- as.numeric(vpt_result[[
+        "pseudotime_end_inverse"
+      ]])
       srt@tools[["SCVELO"]][[m]]$root_cell <- vpt_result[["root_cell"]]
       srt@tools[["SCVELO"]][[m]]$end_cell <- vpt_result[["end_cell"]]
-      srt@tools[["SCVELO"]][[m]]$diffusion_components <- vpt_result[["diffusion_components"]]
+      srt@tools[["SCVELO"]][[m]]$diffusion_components <- vpt_result[[
+        "diffusion_components"
+      ]]
     }
 
     # Velocity confidence metrics

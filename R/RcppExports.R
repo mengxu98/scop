@@ -377,6 +377,10 @@ scvelo_velocity_graph_cpp <- function(Ms, Mu, residual, knn_idx, n_neighbors_vel
     .Call(`_scop_scvelo_velocity_graph_cpp`, Ms, Mu, residual, knn_idx, n_neighbors_velo, softmax_scale, sqrt_transform, n_recurse_neighbors)
 }
 
+scvelo_project_velocity_embedding_cpp <- function(graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, embedding, scale = 10.0, self_transitions = TRUE, use_negative_cosines = TRUE) {
+    .Call(`_scop_scvelo_project_velocity_embedding_cpp`, graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, embedding, scale, self_transitions, use_negative_cosines)
+}
+
 scvelo_velocity_confidence_cpp <- function(Ms, residual, knn_idx) {
     .Call(`_scop_scvelo_velocity_confidence_cpp`, Ms, residual, knn_idx)
 }

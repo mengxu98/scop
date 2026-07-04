@@ -1,0 +1,186 @@
+---
+title: "Cell annotation workflow"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = TRUE,
+  fig.align = "center",
+  dpi = 144,
+  out.width = "92%"
+)
+```
+
+This article shows how to annotate query cells in `scop` using reference
+single-cell data, bulk-like reference profiles, and correlation-based summaries.
+The goal is to make annotation evidence explicit instead of treating transferred
+labels as final truth.
+
+Use this workflow after the query object has passed basic preprocessing and
+quality control.
+
+Annotation in this article means evidence-backed label assignment. Projection,
+nearest-neighbor prediction, and correlation heatmaps answer related but
+different questions, so the transferred label should not be treated as final
+until it agrees with marker expression and expected biology.
+
+## Prepare Query and Reference Objects
+
+The query is the bundled mouse pancreas subset. The reference is the bundled
+human pancreas integration subset, which has a `celltype` annotation and an
+integrated embedding.
+
+```{r prepare-query-reference}
+library(scop)
+
+data(pancreas_sub)
+data(panc8_sub)
+
+pancreas_sub <- standard_scop(pancreas_sub, verbose = FALSE)
+panc8_sub <- integration_scop(
+  srt_merge = panc8_sub,
+  batch = "tech",
+  integration_method = "Harmony"
+)
+```
+
+When query and reference use different gene-name conventions, standardize names
+before mapping. Keep the name conversion explicit so that annotation results can
+be traced later.
+The example converts human reference symbols into a mouse-like capitalization
+style because the query object is mouse. In real analyses, use the species and
+ortholog mapping appropriate for the experiment rather than relying on simple
+capitalization.
+
+```{r rename-features}
+genenames <- make.unique(
+  thisutils::capitalize(
+    rownames(panc8_sub[["RNA"]]),
+    force_tolower = TRUE
+  )
+)
+names(genenames) <- rownames(panc8_sub)
+
+panc8_rename <- RenameFeatures(
+  panc8_sub,
+  newnames = genenames,
+  assays = "RNA"
+)
+```
+
+## Project Query Cells Onto a Reference
+
+Use projection when the reference has a trusted embedding and you want to see
+where query cells land in that reference coordinate system.
+
+```{r projection}
+srt_query <- RunKNNMap(
+  srt_query = pancreas_sub,
+  srt_ref = panc8_rename,
+  ref_umap = "HarmonyUMAP2D"
+)
+
+ProjectionPlot(
+  srt_query = srt_query,
+  srt_ref = panc8_rename,
+  query_group = "SubCellType",
+  ref_group = "celltype",
+  ref_param = list(
+    xlab = "UMAP_1",
+    ylab = "UMAP_2"
+  )
+)
+```
+
+Projection is evidence for similarity, not a replacement for marker validation.
+Use it together with marker plots and group-level summaries.
+Cells landing near a reference group indicate transcriptional similarity in the
+reference embedding. They do not prove identity when the reference lacks the
+state, contains batch effects, or uses a broader label vocabulary than the
+query.
+
+## Predict Labels From a Bulk-Like Reference
+
+Use `RunKNNPredict()` with a bulk-like reference when reference profiles are
+available but not individual reference cells.
+
+```{r bulk-reference}
+data(ref_scMCA)
+
+pancreas_sub <- RunKNNPredict(
+  srt_query = pancreas_sub,
+  bulk_ref = ref_scMCA,
+  filter_lowfreq = 20
+)
+
+CellDimPlot(
+  pancreas_sub,
+  group.by = "KNNPredict_classification",
+  reduction = "UMAP",
+  label = TRUE
+)
+```
+
+Bulk-like references are useful for broad labels. They are less reliable for
+substates that depend on local single-cell neighborhoods.
+The `KNNPredict_classification` column is therefore best read as a suggested
+label source. Keep it separate from curated annotations until discordant groups
+have been reviewed.
+
+## Predict Labels From a Single-Cell Reference
+
+Use a single-cell reference when the reference annotation and query biology are
+close enough for nearest-neighbor transfer.
+
+```{r single-cell-reference}
+pancreas_sub <- RunKNNPredict(
+  srt_query = pancreas_sub,
+  srt_ref = panc8_rename,
+  ref_group = "celltype",
+  filter_lowfreq = 20
+)
+
+CellDimPlot(
+  pancreas_sub,
+  group.by = "KNNPredict_classification",
+  reduction = "UMAP",
+  label = TRUE
+)
+```
+
+Check group-level similarity before accepting labels. A correlation heatmap can
+show whether query labels map cleanly to expected reference labels or split
+across several alternatives.
+Rows in this heatmap are query groups and columns are reference groups. High
+correlation to one reference label supports a clear annotation; similar
+correlation to multiple labels flags ambiguity.
+
+```{r correlation-heatmap}
+ht <- CellCorHeatmap(
+  srt_query = pancreas_sub,
+  srt_ref = panc8_rename,
+  query_group = "SubCellType",
+  ref_group = "celltype",
+  nlabel = 3,
+  label_by = "row",
+  show_row_names = TRUE,
+  show_column_names = TRUE
+)
+print(ht$plot)
+```
+
+## What to Report
+
+A compact annotation report should include:
+
+- the query object, reference object, and gene-name conversion strategy;
+- the reference label column and embedding used for projection;
+- whether labels came from bulk-like profiles or single-cell neighbors;
+- filtering thresholds such as `filter_lowfreq`;
+- projection plots, predicted label plots, and marker-gene checks;
+- ambiguous groups where several labels have similar support.
+
+Treat annotation as an evidence layer. Keep transferred labels separate from
+manual labels until marker genes and biological context support the assignment.

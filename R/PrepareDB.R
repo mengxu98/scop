@@ -211,7 +211,6 @@ PrepareDB <- function(
       } else if (!is.null(cyto_cached_dir) && dir.exists(cyto_cached_dir)) {
         log_message(
           "Ignoring legacy CytoTRACE2 cache outside the datasets cache: {.path {cyto_cached_dir}}",
-          message_type = "info",
           verbose = verbose
         )
       }
@@ -228,7 +227,6 @@ PrepareDB <- function(
         isTRUE(db_update)) {
         log_message(
           "Downloading CytoTRACE2 model data from datasets GitHub repository...",
-          message_type = "info",
           verbose = verbose
         )
         dir.create(cyto_data_dir, showWarnings = FALSE, recursive = TRUE)
@@ -240,7 +238,6 @@ PrepareDB <- function(
           dest <- file.path(cyto_data_dir, fname)
           log_message(
             "  Downloading {.path {fname}} ...",
-            message_type = "info",
             verbose = verbose
           )
           utils::download.file(
@@ -258,7 +255,6 @@ PrepareDB <- function(
       } else {
         log_message(
           "Using cached CytoTRACE2 data from {.path {cyto_data_dir}}",
-          message_type = "info",
           verbose = verbose
         )
       }

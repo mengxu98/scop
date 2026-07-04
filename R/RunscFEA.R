@@ -1449,7 +1449,6 @@ resolve_scfea_dir <- function(data_dir = NULL, verbose = TRUE) {
     ) {
       log_message(
         "Using scFEA data from datasets cache: {.path {cached_dir}}",
-        message_type = "info",
         verbose = verbose
       )
       return(cached_dir)
@@ -1458,7 +1457,6 @@ resolve_scfea_dir <- function(data_dir = NULL, verbose = TRUE) {
 
   log_message(
     "Downloading scFEA model data from datasets GitHub repository...",
-    message_type = "info",
     verbose = verbose
   )
   dir.create(cache_dir, showWarnings = FALSE, recursive = TRUE)
@@ -1476,7 +1474,6 @@ resolve_scfea_dir <- function(data_dir = NULL, verbose = TRUE) {
     if (!file.exists(dest)) {
       log_message(
         "  Downloading {.path {fname}} ...",
-        message_type = "info",
         verbose = verbose
       )
       utils::download.file(

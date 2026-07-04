@@ -1,0 +1,178 @@
+---
+title: "Data integration workflow"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = TRUE,
+  fig.align = "center",
+  dpi = 144,
+  out.width = "92%"
+)
+```
+
+This article shows how to run and inspect dataset integration in `scop`.
+Integration should be used when technical batches, platforms, donors, or
+experiments obscure the biological structure that should be compared across
+datasets.
+
+`integration_scop()` provides a common entry point for several integration
+methods. The key practical decisions are the batch column, the integration
+method, the reduction names to inspect, and whether the integrated structure
+preserves known biology.
+
+Integration is not a required step for every dataset. Use it when technical
+structure prevents comparison across samples or platforms. Keep an unintegrated
+baseline so the report can show what changed after correction.
+
+## Prepare a Merged Object
+
+The example uses the bundled `panc8_sub` object, a subset of human pancreas
+datasets. The `tech` column records the batch or technology label.
+The `celltype` column is used as known biology for diagnostics, not as a target
+to force during integration.
+
+```{r load-object}
+library(scop)
+
+data(panc8_sub)
+table(panc8_sub$tech)
+table(panc8_sub$celltype)
+```
+
+Always inspect the unintegrated embedding or PCA first. This gives you a
+baseline for deciding whether integration removes technical structure without
+erasing cell-type structure.
+
+```{r unintegrated-check}
+panc8_sub <- standard_scop(panc8_sub, verbose = FALSE)
+
+CellDimPlot(
+  panc8_sub,
+  group.by = c("tech", "celltype"),
+  reduction = "UMAP",
+  theme_use = "theme_blank"
+)
+```
+
+## Run an Integration Method
+
+Harmony is a common first pass when the object is already a merged Seurat
+object with a batch column.
+
+```{r run-harmony}
+panc8_harmony <- integration_scop(
+  srt_merge = panc8_sub,
+  batch = "tech",
+  integration_method = "Harmony"
+)
+
+SeuratObject::Reductions(panc8_harmony)
+```
+
+Use the method-specific integrated UMAP for plotting. The exact reduction name
+depends on the selected method; for Harmony, the examples use `HarmonyUMAP`.
+When comparing methods, report the reduction name explicitly. A plot labeled
+only as UMAP is ambiguous once an object contains uncorrected and integrated
+embeddings.
+
+```{r plot-harmony}
+CellDimPlot(
+  panc8_harmony,
+  group.by = c("tech", "celltype"),
+  reduction = "HarmonyUMAP",
+  theme_use = "theme_blank"
+)
+```
+
+## Choose a Method
+
+Use method choice to match the data and dependency budget:
+
+- `Harmony`, `fastMNN`, `MNN`, `ComBat`, and `Seurat` methods are practical
+  R-side choices for many scRNA-seq batch problems.
+- `scVI`, `BBKNN`, `Scanorama`, `GLUE`, and `MultiMAP` require Python-side
+  dependencies but can be useful for large datasets or multimodal settings.
+- `WNN` and cross-modality methods are better suited to multimodal RNA + ATAC
+  or paired-modality objects than to ordinary batch correction.
+- `Uncorrected` is useful as a baseline and should be kept in reports when
+  showing that integration changed the object.
+
+```{r method-examples}
+panc8_uncorrected <- integration_scop(
+  srt_merge = panc8_harmony,
+  batch = "tech",
+  integration_method = "Uncorrected",
+  verbose = FALSE
+)
+```
+
+Other methods follow the same entry-point pattern, but may require additional
+runtime dependencies or matrix backends:
+
+```r
+panc8_rpca <- integration_scop(
+  srt_merge = panc8_sub,
+  batch = "tech",
+  integration_method = "RPCA"
+)
+
+panc8_fastmnn <- integration_scop(
+  srt_merge = panc8_sub,
+  batch = "tech",
+  integration_method = "fastMNN"
+)
+```
+
+## Inspect Integration Quality
+
+Do not judge integration from batch mixing alone. Also check known labels,
+marker genes, and whether rare cell types remain separated.
+
+```{r inspect-quality}
+CellDimPlot(
+  panc8_harmony,
+  group.by = "tech",
+  reduction = "HarmonyUMAP",
+  theme_use = "theme_blank"
+)
+
+CellDimPlot(
+  panc8_harmony,
+  group.by = "celltype",
+  reduction = "HarmonyUMAP",
+  label = TRUE,
+  theme_use = "theme_blank"
+)
+
+FeatureDimPlot(
+  panc8_harmony,
+  features = c("INS", "GCG", "SST", "KRT19"),
+  reduction = "HarmonyUMAP"
+)
+```
+
+When comparing methods, keep the input object fixed and compare the same
+metadata labels, marker genes, and diagnostic plots across methods. The
+unintegrated baseline is useful because it shows what the integration changed.
+Good integration mixes batches within the same biological state while keeping
+distinct cell types and marker programs separated. Overcorrection is visible
+when expected marker-defined groups collapse together.
+
+## What to Report
+
+A compact integration report should include:
+
+- the batch column and biological annotation columns used for evaluation;
+- the integration method and major parameters;
+- the integrated reduction names used for plots;
+- before and after plots colored by batch and biological labels;
+- marker-gene checks for expected cell types;
+- any method-specific dependencies or environment setup needed to reproduce the
+  run.
+
+Integration is a preprocessing decision, not a biological result by itself. Use
+it only when the integrated representation improves downstream interpretation
+without hiding real biological differences.

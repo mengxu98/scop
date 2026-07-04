@@ -2033,7 +2033,6 @@ server <- function(input, output, session) {
 
     log_message(
       paste("width:", width, "height:", height, "units:", units, "dpi:", dpi),
-      message_type = "info",
       verbose = verbose
     )
 

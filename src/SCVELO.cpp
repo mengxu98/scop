@@ -1,5 +1,8 @@
 #include <Rcpp.h>
 #include "velocity_utils.h"
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 using namespace Rcpp;
 
@@ -19,6 +22,9 @@ IntegerVector scvelo_filter_genes_cpp(
     stop("spliced and unspliced must have identical dimensions");
 
   IntegerVector keep(n_genes, 1);
+  #ifdef _OPENMP
+  #pragma omp parallel for schedule(dynamic, 16)
+  #endif
   for (int g = 0; g < n_genes; ++g) {
     double sum_s = 0.0, sum_u = 0.0;
     for (int c = 0; c < n_cells; ++c) {
@@ -260,6 +266,9 @@ List scvelo_deterministic_cpp(
   NumericVector gamma_r2(n_genes);
   IntegerVector velocity_genes(n_genes, 1);
 
+  #ifdef _OPENMP
+  #pragma omp parallel for schedule(dynamic, 16)
+  #endif
   for (int g = 0; g < n_genes; ++g) {
     // Collect valid (s, u) pairs
     std::vector<double> s_vals, u_vals;
@@ -409,6 +418,8 @@ List scvelo_stochastic_cpp(
   NumericVector gamma(n_genes);
   NumericVector gamma_r2(n_genes);
   IntegerVector velocity_genes(n_genes, 1);
+  std::vector<double> deterministic_res_std(n_genes, 1.0);
+  std::vector<char> stochastic_update_gene(n_genes, 1);
   for (int g = 0; g < n_genes; ++g) {
     double num_det = 0.0, den_det = 0.0;
     for (int c = 0; c < n_cells; ++c) {
@@ -420,6 +431,7 @@ List scvelo_stochastic_cpp(
       den_det += s * s;
     }
     const double gamma_det = den_det > 1e-12 ? num_det / den_det : 0.0;
+    gamma[g] = std::isfinite(gamma_det) && gamma_det > 0.0 ? gamma_det : 0.0;
 
     double res_mean = 0.0;
     int n_res = 0;
@@ -439,14 +451,65 @@ List scvelo_stochastic_cpp(
       res_var += (r - res_mean) * (r - res_mean);
     }
     double res_std = n_res > 0 ? std::sqrt(res_var / static_cast<double>(n_res)) : 1.0;
-    const bool deterministic_fit_exact = std::isfinite(res_std) && res_std < 1e-8;
-    if (deterministic_fit_exact) {
-      gamma[g] = std::isfinite(gamma_det) && gamma_det > 0.0 ? gamma_det : 0.0;
+    if (std::isfinite(res_std) && res_std < 1e-8) {
+      stochastic_update_gene[g] = 0;
       gamma_r2[g] = 1.0;
       velocity_genes[g] = 1;
+      deterministic_res_std[g] = 1.0;
       continue;
     }
     if (!std::isfinite(res_std) || res_std < 1e-8) res_std = 1.0;
+    deterministic_res_std[g] = res_std;
+
+    double mean_u = 0.0;
+    int n_u = 0;
+    for (int c = 0; c < n_cells; ++c) {
+      const int idx = c * n_genes + g;
+      double u = Mu_ptr[idx];
+      if (!std::isfinite(u)) continue;
+      mean_u += u;
+      ++n_u;
+    }
+    mean_u = n_u > 0 ? mean_u / static_cast<double>(n_u) : 0.0;
+    double ss_res = 0.0, ss_tot = 0.0;
+    bool has_ms = false, has_mu = false;
+    for (int c = 0; c < n_cells; ++c) {
+      const int idx = c * n_genes + g;
+      double s = Ms_ptr[idx];
+      double u = Mu_ptr[idx];
+      if (std::isfinite(s) && s > 0.0) has_ms = true;
+      if (std::isfinite(u) && u > 0.0) has_mu = true;
+      if (!std::isfinite(s) || !std::isfinite(u)) continue;
+      double r = u - gamma[g] * s;
+      ss_res += r * r;
+      ss_tot += (u - mean_u) * (u - mean_u);
+    }
+    gamma_r2[g] = ss_tot > 1e-12 ? 1.0 - ss_res / ss_tot : 0.0;
+    if (!std::isfinite(gamma_r2[g])) gamma_r2[g] = 0.0;
+    velocity_genes[g] = (gamma_r2[g] > 0.01 && gamma[g] > 0.01 && has_ms && has_mu) ? 1 : 0;
+  }
+
+  int n_velocity_genes = 0;
+  for (int g = 0; g < n_genes; ++g) n_velocity_genes += velocity_genes[g] > 0 ? 1 : 0;
+  if (n_velocity_genes < 2 && n_genes > 0) {
+    std::vector<double> r2_sorted(n_genes);
+    for (int g = 0; g < n_genes; ++g) r2_sorted[g] = gamma_r2[g];
+    std::sort(r2_sorted.begin(), r2_sorted.end());
+    int idx80 = static_cast<int>(std::floor(0.80 * static_cast<double>(n_genes - 1)));
+    if (idx80 < 0) idx80 = 0;
+    if (idx80 >= n_genes) idx80 = n_genes - 1;
+    const double min_r2 = r2_sorted[idx80];
+    n_velocity_genes = 0;
+    for (int g = 0; g < n_genes; ++g) {
+      velocity_genes[g] = gamma_r2[g] > min_r2 ? 1 : 0;
+      n_velocity_genes += velocity_genes[g] > 0 ? 1 : 0;
+    }
+  }
+
+  // Match scvelo: stochastic generalized fit updates gamma only for
+  // deterministic velocity genes; non-selected genes keep deterministic gamma.
+  for (int g = 0; g < n_genes; ++g) {
+    if (velocity_genes[g] == 0 || !stochastic_update_gene[g]) continue;
 
     double num_g2 = 0.0, den_g2 = 0.0;
     for (int c = 0; c < n_cells; ++c) {
@@ -482,6 +545,7 @@ List scvelo_stochastic_cpp(
     }
     double res2_std = n_res2 > 0 ? std::sqrt(res2_var / static_cast<double>(n_res2)) : 1.0;
     if (!std::isfinite(res2_std) || res2_std < 1e-8) res2_std = 1.0;
+    const double res_std = deterministic_res_std[g];
 
     double num = 0.0, den = 0.0;
     for (int c = 0; c < n_cells; ++c) {
@@ -501,47 +565,27 @@ List scvelo_stochastic_cpp(
         den += x2 * x2;
       }
     }
-    gamma[g] = den > 1e-12 ? num / den : gamma_det;
+    gamma[g] = den > 1e-12 ? num / den : gamma[g];
     if (!std::isfinite(gamma[g]) || gamma[g] < 0.0) gamma[g] = 0.0;
-
-    double mean_u = 0.0;
-    int n_u = 0;
-    for (int c = 0; c < n_cells; ++c) {
-      const int idx = c * n_genes + g;
-      double u = Mu_ptr[idx];
-      if (!std::isfinite(u)) continue;
-      mean_u += u;
-      ++n_u;
-    }
-    mean_u = n_u > 0 ? mean_u / static_cast<double>(n_u) : 0.0;
-    double ss_res = 0.0, ss_tot = 0.0;
-    for (int c = 0; c < n_cells; ++c) {
-      const int idx = c * n_genes + g;
-      double u = Mu_ptr[idx];
-      if (!std::isfinite(u)) continue;
-      double pred = gamma[g] * Ms_ptr[idx];
-      ss_res += (u - pred) * (u - pred);
-      ss_tot += (u - mean_u) * (u - mean_u);
-    }
-    gamma_r2[g] = ss_tot > 1e-12 ? 1.0 - ss_res / ss_tot : 0.0;
-    velocity_genes[g] = gamma_r2[g] > 0.01 ? 1 : 0;
   }
 
   NumericMatrix residual(n_genes, n_cells);
   NumericMatrix residual2(n_genes, n_cells);
   double* residual_ptr = REAL(residual);
   double* residual2_ptr = REAL(residual2);
-  for (int c = 0; c < n_cells; ++c) {
-    const int base = c * n_genes;
-    for (int g = 0; g < n_genes; ++g) {
-      const int idx = base + g;
+  #ifdef _OPENMP
+  #pragma omp parallel for schedule(static)
+  #endif
+  for (int g = 0; g < n_genes; ++g) {
+    for (int c = 0; c < n_cells; ++c) {
+      const int idx = c * n_genes + g;
       const double s = Ms_ptr[idx];
       const double u = Mu_ptr[idx];
       const double var_ss = 2.0 * Mss_ptr[idx] - s;
       const double cov_us = 2.0 * Mus_ptr[idx] + u;
       residual_ptr[idx] = u - gamma[g] * s;
-      residual2_ptr[idx] = (cov_us - 2.0 * s * u) -
-        gamma[g] * (var_ss - 2.0 * s * s);
+      residual2_ptr[idx] = velocity_genes[g] == 0 ? 0.0 :
+        (cov_us - 2.0 * s * u) - gamma[g] * (var_ss - 2.0 * s * s);
     }
   }
 
@@ -695,6 +739,100 @@ List scvelo_velocity_graph_cpp(
     _["velocity_graph_neg_cols"] = IntegerVector(cols_neg.begin(), cols_neg.end()),
     _["velocity_graph_neg_vals"] = NumericVector(vals_neg.begin(), vals_neg.end())
   );
+}
+
+// [[Rcpp::export]]
+NumericMatrix scvelo_project_velocity_embedding_cpp(
+    IntegerVector graph_rows,
+    IntegerVector graph_cols,
+    NumericVector graph_vals,
+    IntegerVector graph_neg_rows,
+    IntegerVector graph_neg_cols,
+    NumericVector graph_neg_vals,
+    NumericMatrix embedding,
+    double scale = 10.0,
+    bool self_transitions = true,
+    bool use_negative_cosines = true)
+{
+  const int n_cells = embedding.nrow();
+  const int n_dims = embedding.ncol();
+  std::vector<std::vector<std::pair<int, double> > > rows(n_cells);
+  std::vector<double> max_conf(n_cells, 0.0);
+
+  for (int k = 0; k < graph_rows.size(); ++k) {
+    int i = graph_rows[k];
+    int j = graph_cols[k];
+    if (i < 0 || i >= n_cells || j < 0 || j >= n_cells) continue;
+    double v = graph_vals[k];
+    if (!std::isfinite(v)) continue;
+    max_conf[i] = std::max(max_conf[i], v);
+    rows[i].push_back(std::make_pair(j, std::expm1(v * scale)));
+  }
+  for (int k = 0; k < graph_neg_rows.size(); ++k) {
+    int i = graph_neg_rows[k];
+    int j = graph_neg_cols[k];
+    if (i < 0 || i >= n_cells || j < 0 || j >= n_cells) continue;
+    double v = graph_neg_vals[k];
+    if (!std::isfinite(v)) continue;
+    double tv = use_negative_cosines ? -std::expm1(-v * scale) : std::expm1(v * scale) + 1.0;
+    rows[i].push_back(std::make_pair(j, tv));
+  }
+
+  if (self_transitions && n_cells > 0) {
+    std::vector<double> conf_sorted = max_conf;
+    std::sort(conf_sorted.begin(), conf_sorted.end());
+    double pos = 0.98 * static_cast<double>(n_cells - 1);
+    int lo = static_cast<int>(std::floor(pos));
+    int hi = static_cast<int>(std::ceil(pos));
+    double frac = pos - static_cast<double>(lo);
+    double ub = conf_sorted[lo] * (1.0 - frac) + conf_sorted[hi] * frac;
+    for (int i = 0; i < n_cells; ++i) {
+      double self_prob = std::min(1.0, std::max(0.0, ub - max_conf[i]));
+      if (self_prob != 0.0) rows[i].push_back(std::make_pair(i, self_prob));
+    }
+  }
+
+  for (int i = 0; i < n_cells; ++i) {
+    double row_sum = 0.0;
+    for (const auto& entry : rows[i]) row_sum += std::abs(entry.second);
+    if (std::abs(row_sum) > 1e-15) {
+      for (auto& entry : rows[i]) entry.second /= row_sum;
+    }
+  }
+
+  NumericMatrix velocity_embedding(n_cells, n_dims);
+  for (int i = 0; i < n_cells; ++i) {
+    double prob_sum = 0.0;
+    int used = 0;
+    std::vector<double> dx_sum(n_dims, 0.0);
+    for (const auto& entry : rows[i]) {
+      int j = entry.first;
+      double p = entry.second;
+      if (j == i || !std::isfinite(p) || p == 0.0) continue;
+      double norm = 0.0;
+      for (int d = 0; d < n_dims; ++d) {
+        double delta = embedding(j, d) - embedding(i, d);
+        norm += delta * delta;
+      }
+      norm = std::sqrt(norm);
+      if (norm <= 1e-15 || !std::isfinite(norm)) continue;
+      for (int d = 0; d < n_dims; ++d) {
+        double ndx = (embedding(j, d) - embedding(i, d)) / norm;
+        velocity_embedding(i, d) += p * ndx;
+        dx_sum[d] += ndx;
+      }
+      prob_sum += p;
+      ++used;
+    }
+    if (used > 0) {
+      double mean_prob = prob_sum / static_cast<double>(used);
+      for (int d = 0; d < n_dims; ++d) {
+        velocity_embedding(i, d) -= mean_prob * dx_sum[d];
+      }
+    }
+  }
+
+  return velocity_embedding;
 }
 
 // ── 7. Velocity confidence metrics ─────────────────────────────────────────────

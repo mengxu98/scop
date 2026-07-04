@@ -1512,7 +1512,6 @@ cistarget2 <- function(
   if (length(missing_tfs) > 0 && isTRUE(fallback)) {
     log_message(
       "  {.val {length(missing_tfs)}} TFs had no enriched motifs; using top-N importance as fallback",
-      message_type = "info",
       verbose = verbose
     )
     fallback_regulons <- build_regulons(
