@@ -1135,6 +1135,53 @@ def CellRank(
     import pandas as pd
     import numpy as np
     import scanpy as sc
+    import random
+
+    random.seed(0)
+    np.random.seed(0)
+
+    def _scop_cellrank_cluster_X(
+        X,
+        method="leiden",
+        n_neighbors=20,
+        resolution=0.1,
+        n_clusters=None,
+    ):
+        from anndata import AnnData
+        from sklearn.cluster import KMeans
+
+        if method == "kmeans":
+            if n_clusters is None:
+                raise ValueError("Expected `n_clusters != None` when `method = 'kmeans'`.")
+            return KMeans(n_clusters=n_clusters, random_state=0, n_init=10).fit(X).labels_
+        if method == "leiden":
+            adata_dummy = AnnData(X)
+            sc.pp.neighbors(adata_dummy, use_rep="X", n_neighbors=n_neighbors, random_state=0)
+            sc.tl.leiden(
+                adata_dummy,
+                flavor="igraph",
+                n_iterations=2,
+                directed=False,
+                resolution=resolution,
+                random_state=0,
+            )
+            return adata_dummy.obs["leiden"].cat.codes.values
+        raise NotImplementedError(
+            f"Invalid method `{method}`. Valid options are `kmeans` or `leiden`."
+        )
+
+    try:
+        import cellrank._utils._utils as cr_utils
+        import cellrank.estimators.terminal_states._cflare as cr_cflare
+
+        cr_utils._cluster_X = _scop_cellrank_cluster_X
+        cr_cflare._cluster_X = _scop_cellrank_cluster_X
+    except Exception as e:
+        log_message(
+            "Unable to patch {.pkg CellRank} CFLARE clustering random_state: {.val {e}}",
+            message_type="warning",
+            verbose=verbose,
+        )
 
     import warnings
 

@@ -97,7 +97,22 @@ RunscMalignantFinder <- function(
     message_type = "running",
     verbose = verbose
   )
-  ensure_scmalignantfinder_python(verbose = verbose)
+  if (!((nzchar(Sys.getenv("RETICULATE_PYTHON")) || reticulate::py_available(initialize = FALSE)) &&
+    isTRUE(scmf_python_classifier_available()))) {
+    PrepareEnv(modules = "scanpy", verbose = verbose)
+    if (!isTRUE(scmf_python_classifier_available())) {
+      ok <- check_python("scMalignantFinder", pip = TRUE, verbose = verbose)
+      if (isFALSE(ok) || !isTRUE(scmf_python_classifier_available())) {
+        scmf_install_python_github(verbose = verbose)
+      }
+    }
+    if (!isTRUE(scmf_python_classifier_available())) {
+      log_message(
+        "Failed to install or locate a usable {.pkg scMalignantFinder} classifier module. Install it manually in the active {.pkg scop} Python environment.",
+        message_type = "error"
+      )
+    }
+  }
   if (is.null(pretrain_dir) && identical(model_method, "XGBoost")) {
     scmf_check_xgboost_python(verbose = verbose)
   }
@@ -271,7 +286,22 @@ RunscMalignantRegion <- function(
     message_type = "running",
     verbose = verbose
   )
-  ensure_scmalignantfinder_python(verbose = verbose)
+  if (!((nzchar(Sys.getenv("RETICULATE_PYTHON")) || reticulate::py_available(initialize = FALSE)) &&
+    isTRUE(scmf_python_classifier_available()))) {
+    PrepareEnv(modules = "scanpy", verbose = verbose)
+    if (!isTRUE(scmf_python_classifier_available())) {
+      ok <- check_python("scMalignantFinder", pip = TRUE, verbose = verbose)
+      if (isFALSE(ok) || !isTRUE(scmf_python_classifier_available())) {
+        scmf_install_python_github(verbose = verbose)
+      }
+    }
+    if (!isTRUE(scmf_python_classifier_available())) {
+      log_message(
+        "Failed to install or locate a usable {.pkg scMalignantFinder} classifier module. Install it manually in the active {.pkg scop} Python environment.",
+        message_type = "error"
+      )
+    }
+  }
 
   spatial_coordinates <- NULL
   if (!is.null(srt)) {
@@ -411,7 +441,22 @@ RunscMalignantStates <- function(
     message_type = "running",
     verbose = verbose
   )
-  ensure_scmalignantfinder_python(verbose = verbose)
+  if (!((nzchar(Sys.getenv("RETICULATE_PYTHON")) || reticulate::py_available(initialize = FALSE)) &&
+    isTRUE(scmf_python_classifier_available()))) {
+    PrepareEnv(modules = "scanpy", verbose = verbose)
+    if (!isTRUE(scmf_python_classifier_available())) {
+      ok <- check_python("scMalignantFinder", pip = TRUE, verbose = verbose)
+      if (isFALSE(ok) || !isTRUE(scmf_python_classifier_available())) {
+        scmf_install_python_github(verbose = verbose)
+      }
+    }
+    if (!isTRUE(scmf_python_classifier_available())) {
+      log_message(
+        "Failed to install or locate a usable {.pkg scMalignantFinder} classifier module. Install it manually in the active {.pkg scop} Python environment.",
+        message_type = "error"
+      )
+    }
+  }
 
   if (!is.null(srt)) {
     scmf_assert_seurat(srt)
@@ -476,28 +521,6 @@ RunscMalignantStates <- function(
     )
   )
   srt
-}
-
-ensure_scmalignantfinder_python <- function(verbose = TRUE) {
-  if ((nzchar(Sys.getenv("RETICULATE_PYTHON")) || reticulate::py_available(initialize = FALSE)) &&
-    isTRUE(scmf_python_classifier_available())) {
-    return(invisible(TRUE))
-  }
-  PrepareEnv(modules = "scanpy", verbose = verbose)
-  if (isTRUE(scmf_python_classifier_available())) {
-    return(invisible(TRUE))
-  }
-  ok <- check_python("scMalignantFinder", pip = TRUE, verbose = verbose)
-  if (isFALSE(ok) || !isTRUE(scmf_python_classifier_available())) {
-    scmf_install_python_github(verbose = verbose)
-  }
-  if (!isTRUE(scmf_python_classifier_available())) {
-    log_message(
-      "Failed to install or locate a usable {.pkg scMalignantFinder} classifier module. Install it manually in the active {.pkg scop} Python environment.",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
 }
 
 scmf_install_python_github <- function(verbose = TRUE) {

@@ -284,6 +284,15 @@ db_Scrublet <- function(
     "svd_solver"
   )
   score_args <- user_args[intersect(names(user_args), scrub_doublets_args)]
+  integer_score_args <- c(
+    "min_counts",
+    "min_cells",
+    "min_gene_variability_pctl",
+    "n_prin_comps"
+  )
+  for (arg in intersect(names(score_args), integer_score_args)) {
+    score_args[[arg]] <- as.integer(score_args[[arg]])
+  }
   constructor_args <- user_args[setdiff(names(user_args), names(score_args))]
   scrub <- do.call(
     scr$Scrublet,

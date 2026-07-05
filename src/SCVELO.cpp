@@ -570,22 +570,14 @@ List scvelo_stochastic_cpp(
   }
 
   NumericMatrix residual(n_genes, n_cells);
-  NumericMatrix residual2(n_genes, n_cells);
   double* residual_ptr = REAL(residual);
-  double* residual2_ptr = REAL(residual2);
   #ifdef _OPENMP
   #pragma omp parallel for schedule(static)
   #endif
   for (int g = 0; g < n_genes; ++g) {
     for (int c = 0; c < n_cells; ++c) {
       const int idx = c * n_genes + g;
-      const double s = Ms_ptr[idx];
-      const double u = Mu_ptr[idx];
-      const double var_ss = 2.0 * Mss_ptr[idx] - s;
-      const double cov_us = 2.0 * Mus_ptr[idx] + u;
-      residual_ptr[idx] = u - gamma[g] * s;
-      residual2_ptr[idx] = velocity_genes[g] == 0 ? 0.0 :
-        (cov_us - 2.0 * s * u) - gamma[g] * (var_ss - 2.0 * s * s);
+      residual_ptr[idx] = Mu_ptr[idx] - gamma[g] * Ms_ptr[idx];
     }
   }
 
@@ -603,8 +595,7 @@ List scvelo_stochastic_cpp(
     _["gamma"] = gamma,
     _["r2"] = gamma_r2,
     _["velocity_genes"] = velocity_genes,
-    _["residual"] = residual,
-    _["variance_velocity"] = residual2
+    _["residual"] = residual
   );
 }
 
@@ -632,8 +623,6 @@ List scvelo_velocity_graph_cpp(
 
   std::vector<int> rows, cols, rows_neg, cols_neg;
   std::vector<double> vals, vals_neg;
-  NumericMatrix graph(n_cells, n_cells);
-  NumericMatrix graph_neg(n_cells, n_cells);
   NumericMatrix velocity(n_genes, n_cells);
   std::vector<double> velocity_norm(n_cells, 0.0);
 
@@ -662,37 +651,44 @@ List scvelo_velocity_graph_cpp(
     out.push_back(nb);
   };
 
-  auto collect_neighbors = [&](int cell) {
-    std::vector<int> current;
-    std::vector<int> all;
-    std::vector<char> seen(n_cells, 0);
-    seen[cell] = 1;
+  // Reusable buffers for neighbor collection to avoid per-cell allocations
+  std::vector<char> seen_buf(n_cells, 0);
+  std::vector<int> current_buf, all_buf;
+  current_buf.reserve(n_cells);
+  all_buf.reserve(n_cells);
+
+  auto collect_neighbors = [&](int cell) -> const std::vector<int>& {
+    current_buf.clear();
+    all_buf.clear();
+    std::fill(seen_buf.begin(), seen_buf.end(), 0);
+    seen_buf[cell] = 1;
     for (int col = 0; col < n_neighbors_velo && col < n_neighbors; ++col) {
-      int before = static_cast<int>(all.size());
-      add_neighbor(all, seen, knn_idx(cell, col));
-      if (static_cast<int>(all.size()) > before) current.push_back(all.back());
+      int before = static_cast<int>(all_buf.size());
+      add_neighbor(all_buf, seen_buf, knn_idx(cell, col));
+      if (static_cast<int>(all_buf.size()) > before) current_buf.push_back(all_buf.back());
     }
     for (int depth = 1; depth < n_recurse_neighbors; ++depth) {
       std::vector<int> next;
-      for (int parent : current) {
+      for (int parent : current_buf) {
         for (int col = 0; col < n_neighbors_velo && col < n_neighbors; ++col) {
-          int before = static_cast<int>(all.size());
-          add_neighbor(all, seen, knn_idx(parent, col));
-          if (static_cast<int>(all.size()) > before) next.push_back(all.back());
+          int before = static_cast<int>(all_buf.size());
+          add_neighbor(all_buf, seen_buf, knn_idx(parent, col));
+          if (static_cast<int>(all_buf.size()) > before) next.push_back(all_buf.back());
         }
       }
-      current.swap(next);
-      if (current.empty()) break;
+      current_buf.swap(next);
+      if (current_buf.empty()) break;
     }
-    return all;
+    return all_buf;
   };
 
   for (int cell = 0; cell < n_cells; ++cell) {
     double vn = velocity_norm[cell];
     if (vn < 1e-10) continue;
 
-    std::vector<int> neighs = collect_neighbors(cell);
-    std::vector<double> delta(n_genes);
+    const std::vector<int>& neighs = collect_neighbors(cell);
+    static thread_local std::vector<double> delta;
+    if (delta.size() != static_cast<size_t>(n_genes)) delta.resize(n_genes);
     for (int nb : neighs) {
       double mean_delta = 0.0;
       for (int g = 0; g < n_genes; ++g) {
@@ -718,20 +714,16 @@ List scvelo_velocity_graph_cpp(
         rows.push_back(cell);
         cols.push_back(nb);
         vals.push_back(value);
-        graph(cell, nb) = value;
       } else if (cosine < 0 && std::isfinite(cosine)) {
         double value = std::max(-1.0, cosine);
         rows_neg.push_back(cell);
         cols_neg.push_back(nb);
         vals_neg.push_back(value);
-        graph_neg(cell, nb) = value;
       }
     }
   }
 
   return List::create(
-    _["velocity_graph"] = graph,
-    _["velocity_graph_neg"] = graph_neg,
     _["velocity_graph_rows"] = IntegerVector(rows.begin(), rows.end()),
     _["velocity_graph_cols"] = IntegerVector(cols.begin(), cols.end()),
     _["velocity_graph_vals"] = NumericVector(vals.begin(), vals.end()),

@@ -81,11 +81,14 @@ List cellrank_schur_cpp(NumericMatrix T_, int n_components = 10)
       schur_vecs(i, j) = evecs_c(i, orig_j).r;
   }
 
-  // Macrostate assignment: largest absolute component per row
+  // Macrostate assignment: largest non-trivial component per row. The leading
+  // Perron vector is close to constant and can otherwise collapse all cells into
+  // a single macrostate on connectivity kernels.
   IntegerVector macro(n);
+  int start_component = (nc > 1 && std::abs(eigenvalues[0] - 1.0) < 1e-6) ? 1 : 0;
   for (int i = 0; i < n; ++i) {
-    int best = 0; double best_val = -1;
-    for (int c = 0; c < nc; ++c) {
+    int best = start_component; double best_val = -1;
+    for (int c = start_component; c < nc; ++c) {
       double v = std::abs(schur_vecs(i, c));
       if (v > best_val) { best_val = v; best = c; }
     }
@@ -390,6 +393,11 @@ List cellrank_cflare_cpp(
   IntegerVector term_state(n, NA_INTEGER);
   NumericVector fate_conf(n, 0.0);
   scop_util::compute_absorption_probabilities(P_coarse, macro, n, M, is_terminal, term_idx, trans_idx, nT, nQ, abs_prob, term_state, fate_conf);
+  IntegerVector terminal_obs(n);
+  for (int i = 0; i < n; ++i) {
+    int m = macro[i] - 1;
+    terminal_obs[i] = (m >= 0 && m < M && is_terminal[m]) ? (m + 1) : 0;
+  }
 
   return List::create(
     _["transition_matrix"] = T,
@@ -398,7 +406,8 @@ List cellrank_cflare_cpp(
     _["schur_vectors"] = schur_vecs,
     _["macrostate_assignment"] = macro,
     _["n_macrostates"] = M,
-    _["terminal_states"] = term_state,
+    _["terminal_states"] = terminal_obs,
+    _["lineage_assignment"] = term_state,
     _["fate_confidence"] = fate_conf,
     _["absorption_probabilities"] = abs_prob,
     _["n_terminal_states"] = nT,
@@ -422,7 +431,7 @@ List cellrank_gpcca_cpp(
 
   NumericVector pi = cellrank_stationary_distribution_cpp(T, 200, 1e-8);
 
-  int schur_components = skip_perron ? (n_states + 1) : n_states;
+  int schur_components = skip_perron ? (n_states + 2) : n_states;
   List schur_result = cellrank_schur_cpp(T, schur_components);
   NumericVector eigenvalues_all = schur_result["eigenvalues"];
   NumericMatrix schur_vecs_all = schur_result["schur_vectors"];
@@ -518,6 +527,11 @@ List cellrank_gpcca_cpp(
   IntegerVector term_state(n, NA_INTEGER);
   NumericVector fate_conf(n, 0.0);
   scop_util::compute_absorption_probabilities(P_coarse, macro, n, M, is_terminal, term_idx, trans_idx, nT, nQ, abs_prob, term_state, fate_conf);
+  IntegerVector terminal_obs(n);
+  for (int i = 0; i < n; ++i) {
+    int m = macro[i] - 1;
+    terminal_obs[i] = (m >= 0 && m < M && is_terminal[m]) ? (m + 1) : 0;
+  }
   // CellRank fate_confidence = max absorption probability per cell.
   // Fate confidence is already set by compute_absorption_probabilities:
   // 1.0 for terminal cells, best_p/total for non-terminal cells.
@@ -531,7 +545,8 @@ List cellrank_gpcca_cpp(
     _["coarse_transition"] = wrap(P_coarse),
     _["macrostate_assignment"] = macro,
     _["n_macrostates"] = M,
-    _["terminal_states"] = term_state,
+    _["terminal_states"] = terminal_obs,
+    _["lineage_assignment"] = term_state,
     _["fate_confidence"] = fate_conf,
     _["absorption_probabilities"] = abs_prob,
     _["n_terminal_states"] = nT,
