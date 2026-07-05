@@ -34,8 +34,9 @@ List paga_connectivities_cpp(IntegerMatrix knn_idx, IntegerVector groups, int n_
 
   NumericMatrix connectivities(n_groups, n_groups);
 
-  const double total_edges = std::accumulate(edge_totals.begin(), edge_totals.end(), 0.0);
-  const double denom = std::max(total_edges, 1.0);
+  // Scanpy PAGA v1.2 uses (n_cells - 1) as the random-null denominator:
+  // expected = (es[i] * ns[j] + es[j] * ns[i]) / (n - 1)
+  const double denom = std::max(static_cast<double>(n_cells - 1), 1.0);
   for (int i = 0; i < n_groups; ++i) {
     for (int j = i + 1; j < n_groups; ++j) {
       const double observed = directed_edges(i, j) + directed_edges(j, i);

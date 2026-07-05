@@ -201,6 +201,26 @@ paga_root_cell_cpp <- function(embedding, groups, root_group) {
     .Call(`_scop_paga_root_cell_cpp`, embedding, groups, root_group)
 }
 
+phate_affinity_cpp <- function(knn_dist, knn_idx, alpha_decay = 1.0, bandwidth_k = -1L) {
+    .Call(`_scop_phate_affinity_cpp`, knn_dist, knn_idx, alpha_decay, bandwidth_k)
+}
+
+phate_diffusion_operator_cpp <- function(rows, cols, vals, n_cells, t_max = 10L) {
+    .Call(`_scop_phate_diffusion_operator_cpp`, rows, cols, vals, n_cells, t_max)
+}
+
+phate_potential_distance_cpp <- function(log_transition, n_landmarks = -1L) {
+    .Call(`_scop_phate_potential_distance_cpp`, log_transition, n_landmarks)
+}
+
+phate_metric_mds_cpp <- function(D, n_components = 2L) {
+    .Call(`_scop_phate_metric_mds_cpp`, D, n_components)
+}
+
+phate_find_optimal_t_cpp <- function(rows, cols, vals, n_cells, t_max = 20L) {
+    .Call(`_scop_phate_find_optimal_t_cpp`, rows, cols, vals, n_cells, t_max)
+}
+
 palantir_compute_kernel_cpp <- function(data, knn_idx, knn_dist, knn, alpha = 0.0) {
     .Call(`_scop_palantir_compute_kernel_cpp`, data, knn_idx, knn_dist, knn, alpha)
 }

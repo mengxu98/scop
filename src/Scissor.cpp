@@ -530,7 +530,7 @@ List NetLmC(Eigen::MatrixXd & X, Eigen::VectorXd & y, double alpha,
       if(iactive(i)==0){
         zi2=0.0;
         for(ij=0;ij<nadj(i);++ij){
-          m=loc(ij, i);
+          m=loc(ij, i)-1;
           if(iactive(m)==1){zi2+=beta0(m)*Omega.coeffRef(m, i);}
         }
         di(i)=std::abs(y.dot(X.col(i))/N0+lambda2*zi2);
@@ -671,7 +671,7 @@ List cvNetLmC(Eigen::MatrixXd & X, Eigen::VectorXd & y,double alpha,
       if(iactive(i)==0){
         zi2=0.0;
         for(ij=0;ij<nadj(i);++ij){
-          m=loc(ij, i);
+          m=loc(ij, i)-1;
           if(iactive(m)==1){zi2+=beta0(m)*Omega.coeffRef(m, i);}
         }
         di(i)=std::abs(y.dot(X.col(i))/N+lambda2*zi2);
@@ -2600,9 +2600,8 @@ List scissor_gaussian_net_fit_cpp(Eigen::MatrixXd x,
     lambda_vec = scissor_lambda_grid_cpp(nlambda, rlambda);
   }
 
-  Eigen::SparseMatrix<double> omega1 = scissor_pad_omega_cpp(omega);
-  Eigen::VectorXi sgn1 = Eigen::VectorXi::Ones(p + 1);
-  List W = OmegaSC(omega1, sgn1);
+  Eigen::VectorXi sgn1 = Eigen::VectorXi::Ones(p);
+  List W = OmegaSC(omega, sgn1);
   Eigen::SparseMatrix<double> Womega = as<Eigen::SparseMatrix<double> >(W["Omega"]);
   Eigen::MatrixXd Wloc = as<Eigen::MatrixXd>(W["loc"]);
   Wloc.array() += 1.0;

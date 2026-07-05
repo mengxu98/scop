@@ -209,7 +209,6 @@ utils::globalVariables(
     "canonical_method",
     "compose_comparison_label",
     "resolve_condition_pair",
-    "scenic_prepare_python_env",
     "scenic_py_pkgs",
     "cca_crossprod_matrix"
   )
