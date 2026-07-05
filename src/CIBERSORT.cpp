@@ -448,10 +448,6 @@ List cibersort_cpp(
   y.replace(arma::datum::nan, 0.0);
   y.replace(arma::datum::inf, 0.0);
 
-  const double y_max = y.max();
-  if (std::isfinite(y_max) && y_max < 50.0) {
-    y = arma::exp2(y);
-  }
   if (QN) {
     y = quantile_normalize(y);
   }

@@ -249,57 +249,15 @@ RunSCENIC <- function(
     scenic_progress_step(
       progress_state,
       value = 10,
-      label = "Checking SCENIC Python environment",
+      label = "Preparing SCENIC Python environment",
       verbose = verbose
     )
-    env_ready <- FALSE
-    env_exists <- isTRUE(tryCatch(
-      env_exist(conda = conda, envname = envname),
-      error = function(...) FALSE
-    ))
-    if (env_exists) {
-      pkg_installed <- tryCatch(
-        exist_python_pkgs(
-          packages = scenic_python_packages,
-          envname = envname,
-          conda = conda,
-          verbose = FALSE
-        ),
-        error = function(...) {
-          stats::setNames(
-            rep(FALSE, length(scenic_python_packages)),
-            scenic_python_packages
-          )
-        }
-      )
-      env_ready <- all(pkg_installed)
-    }
-    if (isTRUE(env_ready)) {
-      log_message(
-        "{.pkg SCENIC} Python environment already has the required packages; skipping {.fn PrepareEnv}",
-        verbose = verbose
-      )
-    } else {
-      if (isTRUE(env_exists)) {
-        missing_packages <- names(pkg_installed)[!pkg_installed]
-        log_message(
-          "{.pkg SCENIC} Python environment is missing {.val {length(missing_packages)}} package{?s}; preparing environment",
-          verbose = verbose
-        )
-      }
-      scenic_progress_step(
-        progress_state,
-        value = 10,
-        label = "Preparing SCENIC Python environment",
-        verbose = verbose
-      )
-      PrepareEnv(
-        envname = envname,
-        conda = conda,
-        version = "3.10-1",
-        modules = "scenic"
-      )
-    }
+    PrepareEnv(
+      envname = envname,
+      conda = conda,
+      version = "3.10-1",
+      modules = "scenic"
+    )
   }
   scenic_progress_step(
     progress_state,
@@ -975,7 +933,7 @@ scenic_cpp <- function(
     ras_mat <- readRDS(ras_file)
   } else {
     ras_mat <- scenic_compute_aucell_score(
-      counts = counts,
+      counts = grn_matrix,
       regulon_list = regulon_list,
       min_regulon_size = min_regulon_size,
       cores = cores,
@@ -1033,7 +991,7 @@ scenic_cpp <- function(
       early_stop_window_length = early_stop_window_length,
       max_regulon_targets = max_regulon_targets,
       cores = cores,
-      aucell_method = "cpp_full",
+      aucell_method = "cpp_ctxcore_grn_space",
       seed = seed,
       assay_name = assay_name,
       tool_name = tool_name
@@ -1346,6 +1304,16 @@ cistarget2 <- function(
   modules <- profiled[["value"]]
   profile[["module_build"]] <- profile[["module_build"]] + profiled[["elapsed"]]
 
+  # ── Build TF → target → GRN importance lookup for ctxcore-compatible merge ──
+  # ctxcore's Regulon.union() uses max GRN importance weight per gene when
+  # merging leading-edge genes across enriched motifs.
+  tf_importance_map <- split(adjacency[, c("target", "importance")], adjacency[["TF"]])
+  tf_importance_map <- lapply(tf_importance_map, function(tf_df) {
+    imp_vec <- setNames(tf_df[["importance"]], tf_df[["target"]])
+    imp_list <- split(imp_vec, names(imp_vec))
+    lapply(imp_list, max)
+  })
+
   process_module <- function(module) {
     local_profile <- profile * 0
     tf <- module[["tf"]]
@@ -1465,7 +1433,29 @@ cistarget2 <- function(
       ,
       drop = FALSE
     ]
-    regulon_genes <- unique(unlist(cluster_scores[["leading_edge_genes"]]))
+
+    # ── Merge leading-edge genes across enriched motifs (ctxcore-compatible) ──
+    # ctxcore groups motifs by shared TF annotation (already done: all motifs
+    # here are annotated to this TF).  It merges via Regulon.union() which takes
+    # the *maximum GRN importance weight* per gene across all enriched motifs.
+    # Reference: ctxcore/genesig.py:206-220 (Regulon.union),
+    #            ctxcore/transform.py:262-307 (_regulon4group).
+    n_motifs <- nrow(cluster_scores)
+    tf_adj <- tf_importance_map[[tf]]
+    if (!is.null(tf_adj) && length(tf_adj) > 0L) {
+      gene_scores <- list()
+      for (ri in seq_len(n_motifs)) {
+        genes_i <- cluster_scores[["leading_edge_genes"]][[ri]]
+        for (g in genes_i) {
+          imp <- tf_adj[[g]]
+          if (is.null(imp)) imp <- 0.0
+          gene_scores[[g]] <- max(gene_scores[[g]] %||% 0.0, imp)
+        }
+      }
+      regulon_genes <- names(sort(unlist(gene_scores), decreasing = TRUE))
+    } else {
+      regulon_genes <- unique(unlist(cluster_scores[["leading_edge_genes"]]))
+    }
     regulon_genes <- intersect(regulon_genes, target_set)
 
     if (length(regulon_genes) > 0) {

@@ -405,9 +405,9 @@ run_scvelo_cpp <- function(
     )
   }
 
-  spliced <- GetAssayData5(srt, assay = spliced_assay, layer = layer_y)
-  unspliced <- GetAssayData5(srt, assay = unspliced_assay, layer = layer_y)
-  features <- intersect(rownames(spliced), rownames(unspliced))
+  spliced_raw <- GetAssayData5(srt, assay = spliced_assay, layer = layer_y)
+  unspliced_raw <- GetAssayData5(srt, assay = unspliced_assay, layer = layer_y)
+  features <- intersect(rownames(spliced_raw), rownames(unspliced_raw))
   if (length(features) == 0L) {
     log_message(
       "No shared features are available for {.fn RunSCVELO} cpp backend",
@@ -415,25 +415,22 @@ run_scvelo_cpp <- function(
     )
   }
   cells <- colnames(srt)
-  spliced <- as.matrix(spliced[features, cells, drop = FALSE])
-  unspliced <- as.matrix(unspliced[features, cells, drop = FALSE])
-  storage.mode(spliced) <- "double"
-  storage.mode(unspliced) <- "double"
+  spliced_raw <- spliced_raw[features, cells, drop = FALSE]
+  unspliced_raw <- unspliced_raw[features, cells, drop = FALSE]
 
   # ── scanpy-compatible filtering and normalization ──
   log_message(
     "Running scanpy-compatible preprocessing ({.val {length(features)}} features -> filter + normalize)...",
     verbose = verbose
   )
-  initial_spliced_totals <- colSums(spliced)
-  initial_unspliced_totals <- colSums(unspliced)
-  keep <- scvelo_filter_genes_scanpy_cpp(
-    spliced = spliced,
-    unspliced = unspliced,
-    min_counts = as.integer(min_counts),
-    min_counts_u = as.integer(min_counts_u)
-  ) >
-    0L
+  initial_spliced_totals <- Matrix::colSums(spliced_raw)
+  initial_unspliced_totals <- Matrix::colSums(unspliced_raw)
+  keep <- if (isTRUE(filter_genes)) {
+    Matrix::rowSums(spliced_raw) >= as.integer(min_counts) &
+      Matrix::rowSums(unspliced_raw) >= as.integer(min_counts_u)
+  } else {
+    rep(TRUE, length(features))
+  }
   if (sum(keep) < 2L) {
     log_message(
       "Too few genes pass filtering for {.fn RunSCVELO} cpp backend",
@@ -441,6 +438,10 @@ run_scvelo_cpp <- function(
     )
   }
   features_out <- features[keep]
+  spliced <- as.matrix(spliced_raw[keep, , drop = FALSE])
+  unspliced <- as.matrix(unspliced_raw[keep, , drop = FALSE])
+  storage.mode(spliced) <- "double"
+  storage.mode(unspliced) <- "double"
   feature_meta <- tryCatch(srt[[assay_x]]@meta.data, error = function(e) NULL)
   highly_variable_keep <- rep(TRUE, length(features_out))
   variable_features <- tryCatch(
@@ -474,8 +475,8 @@ run_scvelo_cpp <- function(
     }
   }
   normed <- scvelo_normalize_scanpy_cpp(
-    spliced = spliced[keep, , drop = FALSE],
-    unspliced = unspliced[keep, , drop = FALSE],
+    spliced = spliced,
+    unspliced = unspliced,
     initial_spliced_totals = initial_spliced_totals,
     initial_unspliced_totals = initial_unspliced_totals
   )

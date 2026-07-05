@@ -738,6 +738,74 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// phate_affinity_cpp
+List phate_affinity_cpp(NumericMatrix knn_dist, IntegerMatrix knn_idx, double alpha_decay, int bandwidth_k);
+RcppExport SEXP _scop_phate_affinity_cpp(SEXP knn_distSEXP, SEXP knn_idxSEXP, SEXP alpha_decaySEXP, SEXP bandwidth_kSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type knn_dist(knn_distSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type knn_idx(knn_idxSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha_decay(alpha_decaySEXP);
+    Rcpp::traits::input_parameter< int >::type bandwidth_k(bandwidth_kSEXP);
+    rcpp_result_gen = Rcpp::wrap(phate_affinity_cpp(knn_dist, knn_idx, alpha_decay, bandwidth_k));
+    return rcpp_result_gen;
+END_RCPP
+}
+// phate_diffusion_operator_cpp
+NumericMatrix phate_diffusion_operator_cpp(IntegerVector rows, IntegerVector cols, NumericVector vals, int n_cells, int t_max);
+RcppExport SEXP _scop_phate_diffusion_operator_cpp(SEXP rowsSEXP, SEXP colsSEXP, SEXP valsSEXP, SEXP n_cellsSEXP, SEXP t_maxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type rows(rowsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type cols(colsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type vals(valsSEXP);
+    Rcpp::traits::input_parameter< int >::type n_cells(n_cellsSEXP);
+    Rcpp::traits::input_parameter< int >::type t_max(t_maxSEXP);
+    rcpp_result_gen = Rcpp::wrap(phate_diffusion_operator_cpp(rows, cols, vals, n_cells, t_max));
+    return rcpp_result_gen;
+END_RCPP
+}
+// phate_potential_distance_cpp
+NumericMatrix phate_potential_distance_cpp(NumericMatrix log_transition, int n_landmarks);
+RcppExport SEXP _scop_phate_potential_distance_cpp(SEXP log_transitionSEXP, SEXP n_landmarksSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type log_transition(log_transitionSEXP);
+    Rcpp::traits::input_parameter< int >::type n_landmarks(n_landmarksSEXP);
+    rcpp_result_gen = Rcpp::wrap(phate_potential_distance_cpp(log_transition, n_landmarks));
+    return rcpp_result_gen;
+END_RCPP
+}
+// phate_metric_mds_cpp
+NumericMatrix phate_metric_mds_cpp(NumericMatrix D, int n_components);
+RcppExport SEXP _scop_phate_metric_mds_cpp(SEXP DSEXP, SEXP n_componentsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type D(DSEXP);
+    Rcpp::traits::input_parameter< int >::type n_components(n_componentsSEXP);
+    rcpp_result_gen = Rcpp::wrap(phate_metric_mds_cpp(D, n_components));
+    return rcpp_result_gen;
+END_RCPP
+}
+// phate_find_optimal_t_cpp
+int phate_find_optimal_t_cpp(IntegerVector rows, IntegerVector cols, NumericVector vals, int n_cells, int t_max);
+RcppExport SEXP _scop_phate_find_optimal_t_cpp(SEXP rowsSEXP, SEXP colsSEXP, SEXP valsSEXP, SEXP n_cellsSEXP, SEXP t_maxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type rows(rowsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type cols(colsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type vals(valsSEXP);
+    Rcpp::traits::input_parameter< int >::type n_cells(n_cellsSEXP);
+    Rcpp::traits::input_parameter< int >::type t_max(t_maxSEXP);
+    rcpp_result_gen = Rcpp::wrap(phate_find_optimal_t_cpp(rows, cols, vals, n_cells, t_max));
+    return rcpp_result_gen;
+END_RCPP
+}
 // palantir_compute_kernel_cpp
 List palantir_compute_kernel_cpp(NumericMatrix data, IntegerMatrix knn_idx, NumericMatrix knn_dist, int knn, double alpha);
 RcppExport SEXP _scop_palantir_compute_kernel_cpp(SEXP dataSEXP, SEXP knn_idxSEXP, SEXP knn_distSEXP, SEXP knnSEXP, SEXP alphaSEXP) {
@@ -2542,6 +2610,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_paga_diffusion_pseudotime_cpp", (DL_FUNC) &_scop_paga_diffusion_pseudotime_cpp, 6},
     {"_scop_paga_velocity_transitions_cpp", (DL_FUNC) &_scop_paga_velocity_transitions_cpp, 5},
     {"_scop_paga_root_cell_cpp", (DL_FUNC) &_scop_paga_root_cell_cpp, 3},
+    {"_scop_phate_affinity_cpp", (DL_FUNC) &_scop_phate_affinity_cpp, 4},
+    {"_scop_phate_diffusion_operator_cpp", (DL_FUNC) &_scop_phate_diffusion_operator_cpp, 5},
+    {"_scop_phate_potential_distance_cpp", (DL_FUNC) &_scop_phate_potential_distance_cpp, 2},
+    {"_scop_phate_metric_mds_cpp", (DL_FUNC) &_scop_phate_metric_mds_cpp, 2},
+    {"_scop_phate_find_optimal_t_cpp", (DL_FUNC) &_scop_phate_find_optimal_t_cpp, 5},
     {"_scop_palantir_compute_kernel_cpp", (DL_FUNC) &_scop_palantir_compute_kernel_cpp, 5},
     {"_scop_palantir_normalize_kernel_cpp", (DL_FUNC) &_scop_palantir_normalize_kernel_cpp, 4},
     {"_scop_palantir_multiscale_space_cpp", (DL_FUNC) &_scop_palantir_multiscale_space_cpp, 2},

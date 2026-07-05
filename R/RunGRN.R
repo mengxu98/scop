@@ -309,43 +309,96 @@ grnboost <- function(
       message_type = "error"
     )
   }
-  expr <- as.matrix(grn_matrix)
+  expr <- if (inherits(grn_matrix, "dgCMatrix")) {
+    density <- Matrix::nnzero(grn_matrix) / (nrow(grn_matrix) * ncol(grn_matrix))
+    if (max_edges_per_target_cpp == 0L || (is.finite(density) && density < 0.05)) {
+      log_message(
+        "Detected sparse input, using sparse-native GRNBoost2 backend",
+        verbose = verbose
+      )
+      grn_matrix
+    } else {
+      log_message(
+        "Detected medium-density input, using dense GRNBoost2 backend",
+        verbose = verbose
+      )
+      as.matrix(grn_matrix)
+    }
+  } else {
+    as.matrix(grn_matrix)
+  }
+  is_sparse <- inherits(expr, "dgCMatrix")
   run_chunk <- function(target_idx_chunk) {
-    grnboost_tree(
-      expr = expr,
-      regulator_idx = regulator_idx,
-      target_idx = as.integer(target_idx_chunk),
-      n_rounds = as.integer(max(1L, n_rounds)),
-      learning_rate = learning_rate,
-      max_edges_per_target = max_edges_per_target_cpp,
-      max_depth = as.integer(max(1L, max_depth)),
-      max_features = max_features,
-      subsample = subsample,
-      early_stop_window_length = as.integer(max(0L, early_stop_window_length)),
-      random_seed = as.integer(seed %||% 1234L),
-      exclude_self = isTRUE(exclude_self)
-    )
+    if (is_sparse) {
+      grnboost_tree_sparse(
+        expr = expr,
+        regulator_idx = regulator_idx,
+        target_idx = as.integer(target_idx_chunk),
+        n_rounds = as.integer(max(1L, n_rounds)),
+        learning_rate = learning_rate,
+        max_edges_per_target = max_edges_per_target_cpp,
+        max_depth = as.integer(max(1L, max_depth)),
+        max_features = max_features,
+        subsample = subsample,
+        early_stop_window_length = as.integer(max(0L, early_stop_window_length)),
+        random_seed = as.integer(seed %||% 1234L),
+        exclude_self = isTRUE(exclude_self)
+      )
+    } else {
+      grnboost_tree(
+        expr = expr,
+        regulator_idx = regulator_idx,
+        target_idx = as.integer(target_idx_chunk),
+        n_rounds = as.integer(max(1L, n_rounds)),
+        learning_rate = learning_rate,
+        max_edges_per_target = max_edges_per_target_cpp,
+        max_depth = as.integer(max(1L, max_depth)),
+        max_features = max_features,
+        subsample = subsample,
+        early_stop_window_length = as.integer(max(0L, early_stop_window_length)),
+        random_seed = as.integer(seed %||% 1234L),
+        exclude_self = isTRUE(exclude_self)
+      )
+    }
   }
   edge_idx <- if (cores > 1L) {
     log_message(
       "Running C++ GRNBoost2 for {.val {n_targets}} target genes",
       verbose = verbose
     )
-    grnboost_tree_parallel(
-      expr = expr,
-      regulator_idx = regulator_idx,
-      target_idx = target_idx,
-      n_rounds = as.integer(max(1L, n_rounds)),
-      learning_rate = learning_rate,
-      max_edges_per_target = max_edges_per_target_cpp,
-      max_depth = as.integer(max(1L, max_depth)),
-      max_features = max_features,
-      subsample = subsample,
-      early_stop_window_length = as.integer(max(0L, early_stop_window_length)),
-      random_seed = as.integer(seed %||% 1234L),
-      exclude_self = isTRUE(exclude_self),
-      cores = as.integer(cores)
-    )
+    if (is_sparse) {
+      grnboost_tree_sparse_parallel(
+        expr = expr,
+        regulator_idx = regulator_idx,
+        target_idx = target_idx,
+        n_rounds = as.integer(max(1L, n_rounds)),
+        learning_rate = learning_rate,
+        max_edges_per_target = max_edges_per_target_cpp,
+        max_depth = as.integer(max(1L, max_depth)),
+        max_features = max_features,
+        subsample = subsample,
+        early_stop_window_length = as.integer(max(0L, early_stop_window_length)),
+        random_seed = as.integer(seed %||% 1234L),
+        exclude_self = isTRUE(exclude_self),
+        cores = as.integer(cores)
+      )
+    } else {
+      grnboost_tree_parallel(
+        expr = expr,
+        regulator_idx = regulator_idx,
+        target_idx = target_idx,
+        n_rounds = as.integer(max(1L, n_rounds)),
+        learning_rate = learning_rate,
+        max_edges_per_target = max_edges_per_target_cpp,
+        max_depth = as.integer(max(1L, max_depth)),
+        max_features = max_features,
+        subsample = subsample,
+        early_stop_window_length = as.integer(max(0L, early_stop_window_length)),
+        random_seed = as.integer(seed %||% 1234L),
+        exclude_self = isTRUE(exclude_self),
+        cores = as.integer(cores)
+      )
+    }
   } else {
     run_chunk(target_idx)
   }
@@ -439,13 +492,31 @@ grnboost_python <- function(
   grn_sub <- grn_matrix[, genes_keep, drop = FALSE]
   utils::write.csv(as.matrix(grn_sub), file = expr_csv, row.names = TRUE)
   writeLines(inputs[["regulators"]], regulators_file, useBytes = TRUE)
-  functions <- scenic_python_functions(
+  if (isTRUE(prepare_env)) {
+    PrepareEnv(
+      envname = envname,
+      conda = conda,
+      version = "3.10-1",
+      modules = "scenic"
+    )
+  }
+  check_python(
+    packages = scenic_py_pkgs("grnboost2"),
     envname = envname,
     conda = conda,
-    prepare_env = prepare_env,
-    modules = "scenic",
-    packages = scenic_py_pkgs("grnboost2"),
     verbose = verbose
+  )
+  conda_resolved <- resolve_conda(conda)
+  python_path <- conda_python(conda = conda_resolved, envname = envname)
+  assert_python_runtime_switchable(
+    python_path,
+    restart_hint = scenic_runtime_restart_hint(envname = envname)
+  )
+  configure_python_runtime(python_path)
+  functions <- reticulate::import_from_path(
+    "functions",
+    path = system.file("python", package = "scop", mustWork = TRUE),
+    convert = TRUE
   )
   functions$RunSCENICGrn(
     expression_mtx = expr_csv,
@@ -525,13 +596,31 @@ regdiffusion_python <- function(
   grn_sub <- grn_matrix[, genes_keep, drop = FALSE]
   utils::write.csv(as.matrix(grn_sub), file = expr_csv, row.names = TRUE)
   writeLines(inputs[["regulators"]], regulators_file, useBytes = TRUE)
-  functions <- scenic_python_functions(
+  if (isTRUE(prepare_env)) {
+    PrepareEnv(
+      envname = envname,
+      conda = conda,
+      version = "3.10-1",
+      modules = c("scenic", "regdiffusion")
+    )
+  }
+  check_python(
+    packages = scenic_py_pkgs("regdiffusion"),
     envname = envname,
     conda = conda,
-    prepare_env = prepare_env,
-    modules = c("scenic", "regdiffusion"),
-    packages = scenic_py_pkgs("regdiffusion"),
     verbose = verbose
+  )
+  conda_resolved <- resolve_conda(conda)
+  python_path <- conda_python(conda = conda_resolved, envname = envname)
+  assert_python_runtime_switchable(
+    python_path,
+    restart_hint = scenic_runtime_restart_hint(envname = envname)
+  )
+  configure_python_runtime(python_path)
+  functions <- reticulate::import_from_path(
+    "functions",
+    path = system.file("python", package = "scop", mustWork = TRUE),
+    convert = TRUE
   )
   functions$RunSCENICRegDiffusion(
     expression_mtx = expr_csv,
@@ -599,43 +688,6 @@ genie3 <- function(
     adjacency,
     output_file = output_file,
     force = force
-  )
-}
-
-scenic_python_functions <- function(
-  envname,
-  conda,
-  prepare_env = FALSE,
-  modules = "scenic",
-  packages = scenic_py_pkgs("grnboost2"),
-  verbose = TRUE
-) {
-  if (isTRUE(prepare_env)) {
-    scenic_prepare_python_env(
-      envname = envname,
-      conda = conda,
-      packages = packages,
-      modules = modules,
-      verbose = verbose
-    )
-  }
-  check_python(
-    packages = packages,
-    envname = envname,
-    conda = conda,
-    verbose = verbose
-  )
-  conda_resolved <- resolve_conda(conda)
-  python_path <- conda_python(conda = conda_resolved, envname = envname)
-  assert_python_runtime_switchable(
-    python_path,
-    restart_hint = scenic_runtime_restart_hint(envname = envname)
-  )
-  configure_python_runtime(python_path)
-  reticulate::import_from_path(
-    "functions",
-    path = system.file("python", package = "scop", mustWork = TRUE),
-    convert = TRUE
   )
 }
 

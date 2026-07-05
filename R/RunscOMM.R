@@ -288,7 +288,29 @@ run_scomm <- function(
       features = features
     ))
   }
-  ensure_scomm_tensorflow(python)
+  if (is.null(python) || !nzchar(python)) {
+    log_message(
+      "A Python environment with {.pkg tensorflow} is required for {.val method = 'scOMM'}.",
+      message_type = "error"
+    )
+  }
+  tensorflow_ok <- tryCatch(
+    {
+      reticulate::use_python(python, required = TRUE)
+      reticulate::import("tensorflow", delay_load = FALSE)
+      TRUE
+    },
+    error = function(...) FALSE
+  )
+  if (!isTRUE(tensorflow_ok)) {
+    log_message(
+      c(
+        "Python {.pkg tensorflow} is required for {.val method = 'scOMM'}.",
+        "Run {.code PrepareEnv(modules = 'scomm')} or provide {.arg scomm_python} pointing to a Python with tensorflow installed."
+      ),
+      message_type = "error"
+    )
+  }
   patch_keras_categorical()
   if (
     requireNamespace("keras", quietly = TRUE) &&
@@ -599,33 +621,6 @@ scomm_subprocess_env <- function(python) {
     )
   }
   unname(paste(names(env), env, sep = "="))
-}
-
-ensure_scomm_tensorflow <- function(python) {
-  if (is.null(python) || !nzchar(python)) {
-    log_message(
-      "A Python environment with {.pkg tensorflow} is required for {.val method = 'scOMM'}.",
-      message_type = "error"
-    )
-  }
-  ok <- tryCatch(
-    {
-      reticulate::use_python(python, required = TRUE)
-      reticulate::import("tensorflow", delay_load = FALSE)
-      TRUE
-    },
-    error = function(...) FALSE
-  )
-  if (!isTRUE(ok)) {
-    log_message(
-      c(
-        "Python {.pkg tensorflow} is required for {.val method = 'scOMM'}.",
-        "Run {.code PrepareEnv(modules = 'scomm')} or provide {.arg scomm_python} pointing to a Python with tensorflow installed."
-      ),
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
 }
 
 patch_keras_categorical <- function() {

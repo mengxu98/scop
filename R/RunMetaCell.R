@@ -401,7 +401,11 @@ metacell_seacells <- function(
   )
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
 
-  PrepareEnv(modules = c("scanpy", "seacells"))
+  PrepareEnv(
+    envname = envname,
+    conda = conda,
+    modules = c("scanpy", "seacells")
+  )
 
   functions <- reticulate::import_from_path(
     "functions",

@@ -559,8 +559,9 @@ List palantir_markov_chain_cpp(
     std::vector<int> local_j;
 
     for (int k_idx = 0; k_idx < knn; ++k_idx) {
+      if (knn_idx(i, k_idx) == NA_INTEGER) continue;
       int j = knn_idx(i, k_idx) - 1;
-      if (j == NA_INTEGER || j < 0) continue;
+      if (j < 0) continue;
       double dist_ij = knn_dist(i, k_idx);
 
       // Only keep edges forward in pseudotime (not too far back)
