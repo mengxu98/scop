@@ -140,7 +140,7 @@ ht <- FeatureHeatmap(
   feature_split = DEGs$group1,
   exp_legend_title = "Z-score",
   species = "Mus_musculus",
-  db = c("GO_BP", "KEGG", "WikiPathway"),
+  db = "GO_BP",
   anno_terms = TRUE,
   feature_annotation = c("TF", "CSPA")
 )
@@ -151,10 +151,8 @@ print(ht$plot)
 
 `RunEnrichment()` tests whether filtered marker sets are enriched for terms from
 the selected database.
-`GO_BP` is Gene Ontology Biological Process, `KEGG` is a curated pathway
-database, and `WikiPathway` contains community-curated pathway sets. These are
-database labels; the specific enriched terms are the rows shown by
-`EnrichmentPlot()`.
+`GO_BP` is Gene Ontology Biological Process. The specific enriched terms are the
+rows shown by `EnrichmentPlot()`.
 
 ```{r ora}
 pancreas_sub <- RunEnrichment(
