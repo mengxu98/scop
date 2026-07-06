@@ -18,7 +18,8 @@ test_that("Scissor network wrappers run on real-data-derived inputs", {
     1e-3
   )
   omega <- (omega + t(omega)) / 2
-  omega <- methods::as(Matrix::Matrix(omega, sparse = TRUE), "dgCMatrix")
+  omega <- methods::as(Matrix::Matrix(omega, sparse = TRUE), "generalMatrix")
+  omega <- methods::as(omega, "dgCMatrix")
   lambda <- c(0.2, 0.1, 0.05)
 
   gauss <- scissor_gaussian_net_fit_cpp(

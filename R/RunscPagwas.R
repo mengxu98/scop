@@ -16,8 +16,8 @@
 #' @param block_annotation Genome build for bundled upstream annotations
 #' (`"hg38"` or `"hg37"`) or a custom annotation path.
 #' @param output.dirs Output directory passed to `scPagwas`.
-#' @param cleanup_soar Whether to remove SOAR objects after the run when the
-#' optional SOAR package is available.
+#' @param cleanup_soar Deprecated compatibility argument. SOAR cleanup is
+#' managed by the upstream `scPagwas` backend and is ignored by `scop`.
 #' @param return_seurat Whether to return a Seurat object when one is available.
 #' @param ... Additional arguments passed to the upstream `scPagwas` function
 #' after filtering by its formal arguments.
@@ -65,7 +65,10 @@ RunscPagwas <- function(
   on.exit(restore_wd(), add = TRUE)
   res <- do.call(fun, scpagwas_filter_args(fun, args))
   if (isTRUE(cleanup_soar)) {
-    scpagwas_cleanup_soar()
+    log_message(
+      "{.arg cleanup_soar} is ignored because SOAR cleanup is managed by the upstream backend.",
+      verbose = verbose
+    )
   }
 
   meta <- list(
@@ -95,7 +98,7 @@ RunscPaGWAS <- RunscPagwas
 
 scpagwas_check_r <- function(verbose = TRUE) {
   check_r("sulab-wmu/scPagwas", dependencies = NA, verbose = verbose)
-  if (!scpagwas_namespace_available()) {
+  if (!is.function(scpagwas_find_runner(error = FALSE))) {
     log_message(
       "Failed to install or load {.pkg scPagwas}. Install it manually with {.code pak::pkg_install('sulab-wmu/scPagwas')}",
       message_type = "error"
@@ -104,19 +107,32 @@ scpagwas_check_r <- function(verbose = TRUE) {
   invisible(TRUE)
 }
 
-scpagwas_namespace_available <- function() {
-  !is.null(tryCatch(asNamespace("scPagwas"), error = function(e) NULL))
+scpagwas_get_fun <- function(fun, error = TRUE) {
+  out <- tryCatch(
+    suppressWarnings(get_namespace_fun("scPagwas", fun)),
+    error = function(e) NULL
+  )
+  if (!is.function(out) && isTRUE(error)) {
+    log_message(
+      "Could not find {.pkg scPagwas} function {.val {fun}}",
+      message_type = "error"
+    )
+  }
+  out
 }
 
-scpagwas_find_runner <- function() {
+scpagwas_find_runner <- function(error = TRUE) {
   candidates <- c("scPagwas_main", "scPagwas")
   for (fun in candidates) {
-    runner <- tryCatch(get_namespace_fun("scPagwas", fun), error = function(e) NULL)
+    runner <- scpagwas_get_fun(fun, error = FALSE)
     if (is.function(runner)) {
       return(runner)
     }
   }
-  log_message("Could not find an upstream {.pkg scPagwas} runner", message_type = "error")
+  if (isTRUE(error)) {
+    log_message("Could not find an upstream {.pkg scPagwas} runner", message_type = "error")
+  }
+  NULL
 }
 
 scpagwas_filter_args <- function(fun, args) {
@@ -296,43 +312,4 @@ scpagwas_abs_path <- function(path) {
     path <- file.path(getwd(), path)
   }
   normalizePath(path, mustWork = FALSE, winslash = "/")
-}
-
-scpagwas_cleanup_soar <- function() {
-  ns <- tryCatch(asNamespace("SOAR"), error = function(e) NULL)
-  if (is.null(ns)) {
-    return(invisible(FALSE))
-  }
-
-  rm_fun <- if (exists("RemoveAllObjects", envir = ns, inherits = FALSE)) {
-    get("RemoveAllObjects", envir = ns, inherits = FALSE)
-  } else {
-    NULL
-  }
-  if (is.function(rm_fun)) {
-    rm_fun()
-    return(invisible(TRUE))
-  }
-
-  objects_fun <- if (exists("Objects", envir = ns, inherits = FALSE)) {
-    get("Objects", envir = ns, inherits = FALSE)
-  } else {
-    NULL
-  }
-  remove_fun <- if (exists("Remove", envir = ns, inherits = FALSE)) {
-    get("Remove", envir = ns, inherits = FALSE)
-  } else {
-    NULL
-  }
-  if (!is.function(objects_fun) || !is.function(remove_fun)) {
-    return(invisible(TRUE))
-  }
-
-  object_ids <- tryCatch(objects_fun(), error = function(e) NULL)
-  if (!is.character(object_ids) || length(object_ids) < 1L) {
-    return(invisible(TRUE))
-  }
-
-  tryCatch(remove_fun(object_ids), error = function(e) NULL)
-  invisible(TRUE)
 }

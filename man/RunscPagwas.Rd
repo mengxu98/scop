@@ -46,8 +46,8 @@ RunscPaGWAS(
 
 \item{output.dirs}{Output directory passed to \code{scPagwas}.}
 
-\item{cleanup_soar}{Whether to remove SOAR objects after the run when the
-optional SOAR package is available.}
+\item{cleanup_soar}{Deprecated compatibility argument. SOAR cleanup is
+managed by the upstream \code{scPagwas} backend and is ignored by \code{scop}.}
 
 \item{return_seurat}{Whether to return a Seurat object when one is available.}
 
