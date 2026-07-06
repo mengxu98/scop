@@ -33,9 +33,6 @@ with_mock_scpagwas <- function(fun, code) {
       expect_identical(packages, "sulab-wmu/scPagwas")
       invisible(TRUE)
     },
-    scpagwas_namespace_available = function() {
-      TRUE
-    },
     get_namespace_fun = function(pkg, name) {
       expect_identical(pkg, "scPagwas")
       if (identical(name, "scPagwas_main")) {
