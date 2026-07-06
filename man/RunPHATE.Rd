@@ -26,6 +26,9 @@ RunPHATE(object, ...)
   knn_max = NULL,
   t_max = 100,
   do_cluster = FALSE,
+  backend = c("python", "cpp"),
+  mds = "metric",
+  mds_solver = "sgd",
   n_clusters = "auto",
   max_clusters = 100,
   reduction.name = "phate",
@@ -49,6 +52,9 @@ RunPHATE(object, ...)
   knn_max = NULL,
   t_max = 100,
   do_cluster = FALSE,
+  backend = c("python", "cpp"),
+  mds = "metric",
+  mds_solver = "sgd",
   n_clusters = "auto",
   max_clusters = 100,
   reduction.key = "PHATE_",
@@ -115,6 +121,14 @@ Default is \code{100}.}
 
 \item{do_cluster}{Whether to perform clustering on the PHATE embeddings.
 Default is \code{FALSE}.}
+
+\item{backend}{PHATE backend. \code{"python"} calls the upstream \code{phate} Python
+package and \code{"cpp"} uses the native C++ helper path.}
+
+\item{mds}{MDS algorithm passed to PHATE. The native C++ backend currently
+implements the \code{"classic"} path.}
+
+\item{mds_solver}{Metric MDS solver passed to the Python backend.}
 
 \item{n_clusters}{A number of clusters to be identified.
 Default is \code{"auto"}.}
