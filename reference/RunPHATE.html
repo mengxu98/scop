@@ -18,8 +18,20 @@
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Basic workflows</h6></li>
+    <li><a class="dropdown-item" href="../articles/single-cell-main-workflow.html">Single-cell main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/reproduce-pancreatic-endocrinogenesis.html">Reproducing pancreatic endocrinogenesis</a></li>
+    <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/interactive-scexplorer-workflow.html">Interactive SCExplorer workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Spatial transcriptomics</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Cell-cell communication</h6></li>
+    <li><a class="dropdown-item" href="../articles/cell-cell-communication-workflow.html">Cell-cell communication workflow</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -71,6 +83,9 @@
 <span>  knn_max <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  t_max <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  do_cluster <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"python"</span>, <span class="st">"cpp"</span><span class="op">)</span>,</span>
+<span>  mds <span class="op">=</span> <span class="st">"metric"</span>,</span>
+<span>  mds_solver <span class="op">=</span> <span class="st">"sgd"</span>,</span>
 <span>  n_clusters <span class="op">=</span> <span class="st">"auto"</span>,</span>
 <span>  max_clusters <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  reduction.name <span class="op">=</span> <span class="st">"phate"</span>,</span>
@@ -95,6 +110,9 @@
 <span>  knn_max <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  t_max <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  do_cluster <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"python"</span>, <span class="st">"cpp"</span><span class="op">)</span>,</span>
+<span>  mds <span class="op">=</span> <span class="st">"metric"</span>,</span>
+<span>  mds_solver <span class="op">=</span> <span class="st">"sgd"</span>,</span>
 <span>  n_clusters <span class="op">=</span> <span class="st">"auto"</span>,</span>
 <span>  max_clusters <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  reduction.key <span class="op">=</span> <span class="st">"PHATE_"</span>,</span>
@@ -200,6 +218,20 @@ Default is <code>100</code>.</p></dd>
 <dt id="arg-do-cluster">do_cluster<a class="anchor" aria-label="anchor" href="#arg-do-cluster"></a></dt>
 <dd><p>Whether to perform clustering on the PHATE embeddings.
 Default is <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
+<dd><p>PHATE backend. <code>"python"</code> calls the upstream <code>phate</code> Python
+package and <code>"cpp"</code> uses the native C++ helper path.</p></dd>
+
+
+<dt id="arg-mds">mds<a class="anchor" aria-label="anchor" href="#arg-mds"></a></dt>
+<dd><p>MDS algorithm passed to PHATE. The native C++ backend currently
+implements the <code>"classic"</code> path.</p></dd>
+
+
+<dt id="arg-mds-solver">mds_solver<a class="anchor" aria-label="anchor" href="#arg-mds-solver"></a></dt>
+<dd><p>Metric MDS solver passed to the Python backend.</p></dd>
 
 
 <dt id="arg-n-clusters">n_clusters<a class="anchor" aria-label="anchor" href="#arg-n-clusters"></a></dt>
