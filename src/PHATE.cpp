@@ -2,12 +2,136 @@
 #include <RcppArmadillo.h>
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <vector>
 #include <limits>
 #include <random>
+#include <unordered_map>
 
 using namespace Rcpp;
 using namespace arma;
+
+static std::uint64_t phate_edge_key(int row, int col) {
+  return (static_cast<std::uint64_t>(static_cast<std::uint32_t>(row)) << 32) |
+    static_cast<std::uint32_t>(col);
+}
+
+// [[Rcpp::export]]
+List phate_graphtools_affinity_data_cpp(
+    NumericMatrix data,
+    int knn,
+    double decay,
+    double thresh = 1e-4,
+    int knn_max = -1)
+{
+  const int n_cells = data.nrow();
+  const int n_features = data.ncol();
+  if (n_cells < 1) stop("data must contain at least one row");
+  if (n_features < 1) stop("data must contain at least one column");
+  knn = std::max(1, std::min(knn, std::max(1, n_cells - 1)));
+  const int max_neighbors = (knn_max > 0) ?
+    std::min(knn_max, std::max(1, n_cells - 1)) :
+    std::max(1, n_cells - 1);
+
+  std::vector<int> rows;
+  std::vector<int> cols;
+  std::vector<double> vals;
+  rows.reserve(static_cast<std::size_t>(n_cells) * static_cast<std::size_t>(max_neighbors + 1));
+  cols.reserve(rows.capacity());
+  vals.reserve(rows.capacity());
+
+  std::vector<std::pair<double, int> > distances;
+  distances.reserve(std::max(0, n_cells - 1));
+  for (int i = 0; i < n_cells; ++i) {
+    distances.clear();
+    for (int j = 0; j < n_cells; ++j) {
+      if (i == j) continue;
+      double dist_sq = 0.0;
+      for (int f = 0; f < n_features; ++f) {
+        const double diff = data(i, f) - data(j, f);
+        dist_sq += diff * diff;
+      }
+      distances.push_back(std::make_pair(std::sqrt(std::max(0.0, dist_sq)), j));
+    }
+    const int take = std::min(max_neighbors, static_cast<int>(distances.size()));
+    if (take <= 0) continue;
+    std::partial_sort(
+      distances.begin(),
+      distances.begin() + take,
+      distances.end(),
+      [](const std::pair<double, int>& a, const std::pair<double, int>& b) {
+        if (a.first == b.first) return a.second < b.second;
+        return a.first < b.first;
+      }
+    );
+    const int bw_pos = std::min(knn, take) - 1;
+    double bandwidth = distances[static_cast<std::size_t>(bw_pos)].first;
+    if (!std::isfinite(bandwidth) || bandwidth <= 0.0) {
+      bandwidth = std::numeric_limits<double>::epsilon();
+    }
+    for (int p = 0; p < take; ++p) {
+      const double d = distances[static_cast<std::size_t>(p)].first;
+      const int j = distances[static_cast<std::size_t>(p)].second;
+      const double weight = std::exp(-std::pow(d / bandwidth, decay));
+      if (std::isfinite(weight) && weight >= thresh) {
+        rows.push_back(i);
+        cols.push_back(j);
+        vals.push_back(weight);
+      }
+    }
+  }
+  for (int i = 0; i < n_cells; ++i) {
+    rows.push_back(i);
+    cols.push_back(i);
+    vals.push_back(1.0);
+  }
+
+  std::unordered_map<std::uint64_t, double> directed;
+  directed.reserve(vals.size() * 2);
+  for (std::size_t e = 0; e < vals.size(); ++e) {
+    const std::uint64_t key = phate_edge_key(rows[e], cols[e]);
+    directed[key] += vals[e];
+  }
+  std::unordered_map<std::uint64_t, double> sym;
+  sym.reserve(directed.size() * 2);
+  for (std::unordered_map<std::uint64_t, double>::const_iterator it = directed.begin();
+       it != directed.end();
+       ++it) {
+    const int row = static_cast<int>(it->first >> 32);
+    const int col = static_cast<int>(it->first & 0xffffffffU);
+    const std::uint64_t reverse_key = phate_edge_key(col, row);
+    double reverse_value = 0.0;
+    std::unordered_map<std::uint64_t, double>::const_iterator rit = directed.find(reverse_key);
+    if (rit != directed.end()) reverse_value = rit->second;
+    sym[it->first] = 0.5 * (it->second + reverse_value);
+    if (sym.find(reverse_key) == sym.end()) {
+      sym[reverse_key] = 0.5 * (reverse_value + it->second);
+    }
+  }
+
+  std::vector<int> sym_rows;
+  std::vector<int> sym_cols;
+  std::vector<double> sym_vals;
+  sym_rows.reserve(sym.size());
+  sym_cols.reserve(sym.size());
+  sym_vals.reserve(sym.size());
+  for (std::unordered_map<std::uint64_t, double>::const_iterator it = sym.begin();
+       it != sym.end();
+       ++it) {
+    const double v = it->second;
+    if (!std::isfinite(v) || v <= 0.0) continue;
+    sym_rows.push_back(static_cast<int>(it->first >> 32));
+    sym_cols.push_back(static_cast<int>(it->first & 0xffffffffU));
+    sym_vals.push_back(v);
+  }
+
+  return List::create(
+    _["affinity_rows"] = IntegerVector(sym_rows.begin(), sym_rows.end()),
+    _["affinity_cols"] = IntegerVector(sym_cols.begin(), sym_cols.end()),
+    _["affinity_vals"] = NumericVector(sym_vals.begin(), sym_vals.end()),
+    _["n_cells"] = n_cells
+  );
+}
 
 // ── 1. α-Decaying kernel affinity ─────────────────────────────────────────
 // Builds a sparse affinity matrix from k-NN distances using the α-decaying

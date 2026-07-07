@@ -352,14 +352,12 @@ run_phate_cpp_reduction <- function(
   }
   t_max <- as.integer(t_max)
 
-  dist_mat <- as.matrix(stats::dist(data_use, method = "euclidean"))
-  diag(dist_mat) <- Inf
-  affinity <- phate_graphtools_affinity_r(
-    dist_mat = dist_mat,
+  affinity <- phate_graphtools_affinity_data_cpp(
+    data = data_use,
     knn = knn,
     decay = as.numeric(decay),
     thresh = 1e-4,
-    knn_max = knn_max
+    knn_max = if (is.null(knn_max)) -1L else as.integer(knn_max)
   )
   diffusion_t <- if (identical(t, "auto")) {
     phate_find_optimal_t_cpp(
