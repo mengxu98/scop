@@ -19,9 +19,10 @@ inference, inspect sender-receiver summaries, then focus on specific ligands,
 receptors, pathways, or downstream targets only after the global result looks
 stable.
 
-The executable examples below use the bundled `pancreas_sub` data and run the
-R-side CellChat and LIANA wrappers directly. CellphoneDB is intentionally not
-used here because it requires a Python environment and a CellPhoneDB database.
+The examples below use the bundled `pancreas_sub` data and run the R-side
+CellChat and LIANA wrappers directly when those optional packages are available.
+CellphoneDB is intentionally not used here because it requires a Python
+environment and a CellPhoneDB database.
 
 `scop` keeps the workflow unified in three layers:
 
@@ -89,12 +90,27 @@ pancreas_ccc$CellType <- droplevels(factor(pancreas_ccc$CellType))
 table(pancreas_ccc$CellType)
 ```
 
+```{r ccc-backend-check, echo=FALSE, results='asis'}
+ccc_examples_available <- requireNamespace("CellChat", quietly = TRUE) &&
+  requireNamespace("liana", quietly = TRUE)
+
+if (!ccc_examples_available) {
+  cat(
+    "> Executable CCC examples require optional CellChat and liana packages. ",
+    "The code is shown, but result tables and plots are skipped in this build.\n\n",
+    sep = ""
+  )
+}
+
+knitr::opts_chunk$set(eval = ccc_examples_available)
+```
+
 ## Run a CCC Screen
 
 `RunCCC()` is the shortest path when the goal is to compare the same object with
 several ligand-receptor scoring methods. In this article, it runs CellChat and
-LIANA, then rebuilds the unified `srt@tools$CCC` tables for common downstream
-plots.
+LIANA when both optional R backends are installed, then rebuilds the unified
+`srt@tools$CCC` tables for common downstream plots.
 
 ```{r run-ccc}
 pancreas_ccc <- RunCCC(
@@ -109,7 +125,7 @@ pancreas_ccc <- RunCCC(
       min_cells = 5
     )
   ),
-  skip_failed = FALSE,
+  skip_failed = TRUE,
   thresh = 0.05,
   verbose = FALSE
 )
