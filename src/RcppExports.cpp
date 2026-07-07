@@ -387,8 +387,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // aucell_auc_sparse
-NumericMatrix aucell_auc_sparse(S4 expr, List gene_sets, int auc_max_rank, bool norm_auc, int strategy, int algorithm);
-RcppExport SEXP _scop_aucell_auc_sparse(SEXP exprSEXP, SEXP gene_setsSEXP, SEXP auc_max_rankSEXP, SEXP norm_aucSEXP, SEXP strategySEXP, SEXP algorithmSEXP) {
+NumericMatrix aucell_auc_sparse(S4 expr, List gene_sets, int auc_max_rank, bool norm_auc, int strategy, int algorithm, int seed);
+RcppExport SEXP _scop_aucell_auc_sparse(SEXP exprSEXP, SEXP gene_setsSEXP, SEXP auc_max_rankSEXP, SEXP norm_aucSEXP, SEXP strategySEXP, SEXP algorithmSEXP, SEXP seedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -398,7 +398,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type norm_auc(norm_aucSEXP);
     Rcpp::traits::input_parameter< int >::type strategy(strategySEXP);
     Rcpp::traits::input_parameter< int >::type algorithm(algorithmSEXP);
-    rcpp_result_gen = Rcpp::wrap(aucell_auc_sparse(expr, gene_sets, auc_max_rank, norm_auc, strategy, algorithm));
+    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
+    rcpp_result_gen = Rcpp::wrap(aucell_auc_sparse(expr, gene_sets, auc_max_rank, norm_auc, strategy, algorithm, seed));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -2585,7 +2586,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_scvelo_dynamical_nm_cpp", (DL_FUNC) &_scop_scvelo_dynamical_nm_cpp, 7},
     {"_scop_scvelo_dynamical_velocity_cpp", (DL_FUNC) &_scop_scvelo_dynamical_velocity_cpp, 8},
     {"_scop_scvelo_dynamical_em_cpp", (DL_FUNC) &_scop_scvelo_dynamical_em_cpp, 9},
-    {"_scop_aucell_auc_sparse", (DL_FUNC) &_scop_aucell_auc_sparse, 6},
+    {"_scop_aucell_auc_sparse", (DL_FUNC) &_scop_aucell_auc_sparse, 7},
     {"_scop_aucell_auc_ranked", (DL_FUNC) &_scop_aucell_auc_ranked, 3},
     {"_scop_ora_hypergeom", (DL_FUNC) &_scop_ora_hypergeom, 7},
     {"_scop_module_score_sparse", (DL_FUNC) &_scop_module_score_sparse, 3},
