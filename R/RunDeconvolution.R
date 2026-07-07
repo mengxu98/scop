@@ -803,7 +803,9 @@ RunBayesPrism <- function(
 #' The native C++ backend currently returns relative fractions.
 #' @param backend CIBERSORT backend. `"r"` calls the external `CIBERSORT`
 #' package and `"cpp"` uses the native `scop` LIBSVM implementation.
-#' @param cores Number of CPU cores used by the C++ backend.
+#' @param cores Number of CPU cores used by the C++ backend. `NULL` uses up to
+#' 4 local cores. `n_threads` passed through `...` is accepted as a
+#' backward-compatible alias when `cores = NULL`.
 #' @param seed Random seed used by the C++ permutation backend.
 #'
 #' @return A deconvolution result bundle for matrix input, or the modified
@@ -855,7 +857,7 @@ RunCIBERSORT <- function(
   QN = TRUE,
   absolute = FALSE,
   backend = c("r", "cpp"),
-  cores = 1L,
+  cores = NULL,
   seed = 123L,
   verbose = TRUE,
   ...
@@ -913,6 +915,17 @@ RunCIBERSORT <- function(
   bundle
 }
 
+resolve_cibersort_cores <- function(cores = NULL) {
+  if (is.null(cores)) {
+    detected <- parallel::detectCores(logical = FALSE)
+    if (is.na(detected) || !is.finite(detected) || detected < 1L) {
+      detected <- 1L
+    }
+    return(as.integer(max(1L, min(4L, detected))))
+  }
+  as.integer(cores)
+}
+
 run_cibersort_bundle <- function(
   count_matrix,
   sig_matrix = "LM22",
@@ -920,14 +933,19 @@ run_cibersort_bundle <- function(
   QN = TRUE,
   absolute = FALSE,
   backend = c("r", "cpp"),
-  cores = 1L,
+  cores = NULL,
   seed = 123L,
   verbose = TRUE,
   ...
 ) {
   backend <- match.arg(backend)
+  dots <- list(...)
+  if (is.null(cores) && "n_threads" %in% names(dots)) {
+    cores <- dots$n_threads
+    dots$n_threads <- NULL
+  }
   perm <- as.integer(perm)
-  cores <- as.integer(cores)
+  cores <- resolve_cibersort_cores(cores)
   seed <- as.integer(seed)
   if (length(perm) != 1L || is.na(perm) || !is.finite(perm) || perm < 0L) {
     log_message(
@@ -1037,7 +1055,7 @@ run_cibersort_bundle <- function(
     ))
   }
 
-  if (!isTRUE(check_r("Moonerss/CIBERSORT", verbose = FALSE))) {
+  if (!requireNamespace("CIBERSORT", quietly = TRUE)) {
     log_message(
       paste(
         "{.pkg CIBERSORT} is required for {.fn RunCIBERSORT} with {.arg backend = 'r'}.",
@@ -1057,7 +1075,7 @@ run_cibersort_bundle <- function(
       QN = QN,
       absolute = absolute
     ),
-    list(...)
+    dots
   )
   call_args <- call_args[names(call_args) %in% names(formals(cibersort_fun))]
   fit <- tryCatch(

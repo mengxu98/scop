@@ -28,7 +28,6 @@ RunDynamicEnrichment(
   minGSSize = 10,
   maxGSSize = 500,
   backend = c("cpp", "r"),
-  cpp_strategy = c("sparse", "topk", "full"),
   cores = 1,
   verbose = TRUE,
   seed = 11,
@@ -110,13 +109,6 @@ The first column should contain the term IDs, and the second column should conta
 hypergeometric ORA implementation and returns the enrichment table without
 \code{enrichResult} objects. \code{"r"} uses \code{\link[clusterProfiler:enricher]{clusterProfiler::enricher()}} and returns
 \code{enrichResult} objects in \code{results}. \code{GO_simplify = TRUE} currently uses the R backend.}
-
-\item{cpp_strategy}{AUCell scoring strategy used when \code{backend = "cpp"}.
-\code{"sparse"} ranks non-zero genes and approximates zero ties without
-densifying the expression matrix. \code{"aucell"} calls the official
-\code{\link[AUCell:AUCell_buildRankings]{AUCell::AUCell_buildRankings()}} and \code{\link[AUCell:AUCell_calcAUC]{AUCell::AUCell_calcAUC()}} path for
-exact consistency with the R backend, \code{"topk"} ranks only genes that can
-contribute to AUCell AUC, and \code{"full"} ranks all genes.}
 
 \item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
 Default is \code{1}.}

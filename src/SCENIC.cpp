@@ -732,7 +732,11 @@ static int scenic_build_tree(
   if (profile != nullptr) ++profile->nodes;
 
   if (depth >= max_depth || end - start < 2 || feature_pool.empty()) return node_index;
-
+  const bool near_zero_leaf =
+    node.sse / static_cast<double>(end - start) <= std::numeric_limits<double>::epsilon();
+  if (near_zero_leaf && end - start > 20) {
+    return node_index;
+  }
   int n_total_constants = n_known_constants;
   const bool old_collect = candidate_trace != nullptr && candidate_trace->collect;
   if (candidate_trace != nullptr) {
@@ -751,7 +755,9 @@ static int scenic_build_tree(
   const int split_pos = scenic_partition_samples_final(expr, samples, start, end, split.feature, split.threshold);
   if (split_pos <= start || split_pos >= end) return node_index;
 
-  importance[split.feature] += split.importance_gain;
+  if (!near_zero_leaf) {
+    importance[split.feature] += split.importance_gain;
+  }
   const int left = scenic_build_tree(
     expr, residual, samples, feature_values, start, split_pos, feature_pool, constant_features,
     n_total_constants, depth + 1, max_depth, mtry, split_seed, feature_orders,
@@ -1852,9 +1858,11 @@ DataFrame grnboost_tree_node_candidates(
   for (std::size_t i = 0; i < candidate_trace.feature.size(); ++i) {
     feature_out[i] = candidate_trace.feature[i];
   }
+  IntegerVector round_out(candidate_trace.feature.size(), trace_round);
+  IntegerVector node_out(candidate_trace.feature.size(), trace_node);
   return DataFrame::create(
-    _["round"] = trace_round,
-    _["node"] = trace_node,
+    _["round"] = round_out,
+    _["node"] = node_out,
     _["visit_order"] = candidate_trace.visit_order,
     _["feature"] = feature_out,
     _["proxy_gain"] = candidate_trace.proxy_gain,
@@ -1925,7 +1933,7 @@ List scenic_ctx_auc_avg2sd(
     if (!selected.empty()) {
       std::sort(selected.begin(), selected.end());
       std::size_t auc_n = 0;
-      while (auc_n < selected.size() && selected[auc_n] < rank_cutoff) ++auc_n;
+      while (auc_n < selected.size() && selected[auc_n] <= rank_cutoff) ++auc_n;
       double auc = 0.0;
       if (auc_n > 0) {
         int previous = selected[0];

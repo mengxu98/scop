@@ -289,6 +289,8 @@ grnboost <- function(
     regulators = regulators,
     targets = targets
   )
+  genes_keep <- union(inputs[["regulators"]], inputs[["targets"]])
+  grn_matrix <- grn_matrix[, genes_keep, drop = FALSE]
   gene_names <- colnames(grn_matrix)
   max_edges_per_target_cpp <- suppressWarnings(as.numeric(max_edges_per_target))
   max_edges_per_target_cpp <- if (

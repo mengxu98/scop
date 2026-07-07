@@ -14,11 +14,6 @@
 #' `"r"` uses the original R package implementation. `"cpp"` currently supports
 #' `method = "AUCell"`, `method = "GSVA"`, and `method = "ssGSEA"`.
 #' `method = "VISION"` falls back to `"r"` when `backend` is not explicitly set.
-#' @param cpp_strategy AUCell scoring strategy used when `backend = "cpp"`.
-#' `"topk"` is the speed-first default and ranks only genes that can contribute
-#' to AUCell AUC. `"aucell"` uses [AUCell::AUCell_buildRankings()] and
-#' [AUCell::AUCell_calcAUC()] for scMetabolism-compatible scores, `"sparse"`
-#' ranks non-zero genes and approximates zero ties, and `"full"` ranks all genes.
 #' @param use_preparedb When `TRUE`, gene sets are built via [PrepareDB] which
 #' provides species-aware gene mapping via BioMart and KEGG/Reactome databases.
 #' This automatically handles gene symbol conversion for non-human species
@@ -91,7 +86,6 @@ RunMetabolism <- function(
   use_preparedb = TRUE,
   method = c("AUCell", "GSVA", "ssGSEA", "VISION"),
   backend = c("cpp", "r"),
-  cpp_strategy = c("topk", "aucell", "sparse", "full"),
   cpp_chunk_size = NULL,
   minGSSize = 10,
   maxGSSize = 500,
@@ -128,7 +122,6 @@ RunMetabolism <- function(
   backend_missing <- missing(backend)
   method <- match.arg(method)
   backend <- match.arg(backend)
-  cpp_strategy <- match.arg(cpp_strategy)
   if (!identical(backend, "r") && !method %in% c("AUCell", "GSVA", "ssGSEA")) {
     if (isTRUE(backend_missing)) {
       log_message(
@@ -413,18 +406,11 @@ RunMetabolism <- function(
 
   if (method == "AUCell") {
     if (identical(backend, "cpp")) {
-      if (identical(cpp_strategy, "aucell")) {
-        scores_mat <- run_aucell_official_scores(
-          expr_counts = expr_counts,
-          gene_sets = gene_sets
-        )
-      } else {
-        scores_mat <- run_aucell_scores(
-          expr_counts = expr_counts,
-          gene_sets = gene_sets,
-          strategy = cpp_strategy
-        )
-      }
+      scores_mat <- run_aucell_scores(
+        expr_counts = expr_counts,
+        gene_sets = gene_sets,
+        strategy = "full"
+      )
     } else {
       scores_mat <- run_aucell_official_scores(
         expr_counts = expr_counts,
@@ -606,7 +592,6 @@ RunMetabolism <- function(
     assay = assay,
     layer = layer,
     backend = backend,
-    cpp_strategy = if (identical(backend, "cpp") && identical(method, "AUCell")) cpp_strategy else NA_character_,
     db_version = db_version,
     db_update = db_update,
     convert_species = convert_species,

@@ -23,9 +23,14 @@ struct AucEntry {
 // Replaces unif_rand() so that the same gene always gets the same tiebreaker
 // regardless of strategy (sparse / topk / full), making them produce identical
 // rankings for the same input.  Also eliminates RNG-call-order sensitivity.
-static inline double gene_hash_tiebreak(int gene) {
+static inline double gene_hash_tiebreak(int gene, int seed = 0) {
+  if (seed < 0) {
+    return static_cast<double>(gene);
+  }
   // SplitMix64-style hash, returns a deterministic value in [0, 1)
-  unsigned long long x = static_cast<unsigned long long>(gene) + 0x9e3779b97f4a7c15ULL;
+  unsigned long long x = static_cast<unsigned long long>(gene) +
+    (static_cast<unsigned long long>(seed) << 32) +
+    0x9e3779b97f4a7c15ULL;
   x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9ULL;
   x = (x ^ (x >> 27)) * 0x94d049bb133111ebULL;
   x = x ^ (x >> 31);
@@ -133,7 +138,8 @@ NumericMatrix aucell_auc_sparse(
   int auc_max_rank,
   bool norm_auc = true,
   int strategy = 1,
-  int algorithm = 1
+  int algorithm = 1,
+  int seed = 0
 ) {
   IntegerVector dims = expr.slot("Dim");
   const int n_genes = dims[0];
@@ -179,8 +185,8 @@ NumericMatrix aucell_auc_sparse(
   if (strategy == 1 && top_n > 0) {
     zero_order.resize(n_genes);
     std::iota(zero_order.begin(), zero_order.end(), 0);
-    std::sort(zero_order.begin(), zero_order.end(), [](int a, int b) {
-      return gene_hash_tiebreak(a) < gene_hash_tiebreak(b);
+    std::sort(zero_order.begin(), zero_order.end(), [seed](int a, int b) {
+      return gene_hash_tiebreak(a, seed) < gene_hash_tiebreak(b, seed);
     });
   }
 
@@ -196,7 +202,7 @@ NumericMatrix aucell_auc_sparse(
         continue;
       }
       if (strategy == 2) {
-        entries.push_back(AucEntry{gene, value, gene_hash_tiebreak(gene)});
+        entries.push_back(AucEntry{gene, value, gene_hash_tiebreak(gene, seed)});
       } else {
         value_by_gene[gene] = value;
         touched_values.push_back(gene);
@@ -218,7 +224,7 @@ NumericMatrix aucell_auc_sparse(
           const int gene = *it;
           if (rank_by_gene[gene] == 0 && n_zero > 0) {
             // Deterministic zero-gene rank: hash-based offset into [K+1, n_genes]
-            const int offset = static_cast<int>(gene_hash_tiebreak(gene + 7777777) * static_cast<double>(n_zero));
+            const int offset = static_cast<int>(gene_hash_tiebreak(gene + 7777777, seed) * static_cast<double>(n_zero));
             rank_by_gene[gene] = static_cast<int>(entries.size()) + 1 + offset;
             touched_ranks.push_back(gene);
           }
@@ -230,7 +236,7 @@ NumericMatrix aucell_auc_sparse(
           entries.reserve(touched_values.size() + top_n);
           for (std::vector<int>::const_iterator it = touched_values.begin(); it != touched_values.end(); ++it) {
             const int gene = *it;
-            entries.push_back(AucEntry{gene, value_by_gene[gene], gene_hash_tiebreak(gene)});
+            entries.push_back(AucEntry{gene, value_by_gene[gene], gene_hash_tiebreak(gene, seed)});
           }
           if (top_n < static_cast<int>(entries.size())) {
             std::nth_element(entries.begin(), entries.begin() + top_n, entries.end(), aucell_entry_before);
@@ -239,7 +245,7 @@ NumericMatrix aucell_auc_sparse(
             for (std::vector<int>::const_iterator it = zero_order.begin(); it != zero_order.end() && static_cast<int>(entries.size()) < top_n; ++it) {
               const int gene = *it;
               if (value_by_gene[gene] == 0.0) {
-                entries.push_back(AucEntry{gene, 0.0, gene_hash_tiebreak(gene)});
+                entries.push_back(AucEntry{gene, 0.0, gene_hash_tiebreak(gene, seed)});
               }
             }
           }
@@ -247,7 +253,7 @@ NumericMatrix aucell_auc_sparse(
         }
       } else {
         for (int gene = 0; gene < n_genes; ++gene) {
-          entries.push_back(AucEntry{gene, value_by_gene[gene], gene_hash_tiebreak(gene)});
+          entries.push_back(AucEntry{gene, value_by_gene[gene], gene_hash_tiebreak(gene, seed)});
         }
         std::sort(entries.begin(), entries.end(), aucell_entry_before);
       }

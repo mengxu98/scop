@@ -26,12 +26,6 @@
 #' `method = "ssGSEA"`, `method = "zscore"`, and `method = "PLAGE"`.
 #' `method = "UCell"` and `method = "VISION"` fall back to `"r"` when
 #' `backend` is not explicitly set.
-#' @param cpp_strategy AUCell scoring strategy used when `backend = "cpp"`.
-#' `"sparse"` ranks non-zero genes and approximates zero ties without
-#' densifying the expression matrix. `"aucell"` calls the official
-#' [AUCell::AUCell_buildRankings()] and [AUCell::AUCell_calcAUC()] path for
-#' exact consistency with the R backend, `"topk"` ranks only genes that can
-#' contribute to AUCell AUC, and `"full"` ranks all genes.
 #' @param classification Whether to perform classification based on the scores. Default is `TRUE`.
 #' @param name The name of the assay to store the scores in. Only used if new_assay is TRUE. Default is `""`.
 #' @param new_assay Whether to create a new assay for storing the scores. Default is `FALSE`.
@@ -108,7 +102,6 @@ CellScoring <- function(
   maxGSSize = 500,
   method = "Seurat",
   backend = c("cpp", "r"),
-  cpp_strategy = c("sparse", "aucell", "topk", "full"),
   classification = TRUE,
   name = "",
   new_assay = FALSE,
@@ -123,6 +116,7 @@ CellScoring <- function(
     verbose = verbose
   )
   set.seed(seed)
+  dots <- list(...)
 
   method <- unique(vapply(
     as.character(method),
@@ -137,7 +131,7 @@ CellScoring <- function(
       } else {
         method_i
       }
-      srt <- CellScoring(
+      srt <- do.call(CellScoring, c(list(
         srt = srt,
         features = features,
         layer = layer,
@@ -156,23 +150,20 @@ CellScoring <- function(
         maxGSSize = maxGSSize,
         method = method_i,
         backend = backend,
-        cpp_strategy = cpp_strategy,
         classification = classification,
         name = name_i,
         new_assay = new_assay,
         store_metadata = store_metadata,
         seed = seed,
         cores = cores,
-        verbose = verbose,
-        ...
-      )
+        verbose = verbose
+      ), dots))
     }
     return(srt)
   }
   method <- method[[1]]
   backend_missing <- missing(backend)
   backend <- match.arg(backend)
-  cpp_strategy <- match.arg(cpp_strategy)
   cpp_supported_methods <- c(
     "Seurat",
     "AUCell",
@@ -442,27 +433,18 @@ CellScoring <- function(
     } else if (method == "AUCell") {
       expr_sp <- expr_data[, cells_sp, drop = FALSE]
       if (identical(backend, "cpp")) {
-        auc_scores <- if (identical(cpp_strategy, "aucell")) {
-          run_aucell_official_scores(
-            expr_counts = expr_sp,
-            gene_sets = features,
-            ...
-          )
-        } else {
-          run_aucell_scores(
-            expr_counts = expr_sp,
-            gene_sets = features,
-            strategy = cpp_strategy
-          )
-        }
+        auc_scores <- run_aucell_scores(
+          expr_counts = expr_sp,
+          gene_sets = features,
+          strategy = "full"
+        )
         filtered <- names(features)[
           !names(features) %in% colnames(auc_scores)
         ]
       } else {
-        auc_scores <- run_aucell_official_scores(
-          expr_counts = expr_sp,
-          gene_sets = features,
-          ...
+        auc_scores <- do.call(
+          run_aucell_official_scores,
+          c(list(expr_counts = expr_sp, gene_sets = features), dots)
         )
         filtered <- names(features)[
           !names(features) %in% colnames(auc_scores)

@@ -180,8 +180,21 @@ arma::mat quantile_normalize(const arma::mat& y) {
 
   arma::mat out(n_rows, n_cols);
   for (int c = 0; c < n_cols; ++c) {
-    for (int r = 0; r < n_rows; ++r) {
-      out(sorted[c][r].second, c) = rank_means[r];
+    int r = 0;
+    while (r < n_rows) {
+      int end = r + 1;
+      while (end < n_rows && sorted[c][end].first == sorted[c][r].first) {
+        ++end;
+      }
+      double tied_mean = 0.0;
+      for (int k = r; k < end; ++k) {
+        tied_mean += rank_means[k];
+      }
+      tied_mean /= static_cast<double>(end - r);
+      for (int k = r; k < end; ++k) {
+        out(sorted[c][k].second, c) = tied_mean;
+      }
+      r = end;
     }
   }
   return out;

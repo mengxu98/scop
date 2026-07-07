@@ -219,7 +219,6 @@ test_that("C++ SCENIC AUCell scores are invariant to positive regulon naming", {
     regulon_list = list(TF1 = genes),
     min_regulon_size = 1,
     backend = "cpp",
-    cpp_strategy = "sparse",
     seed = 42,
     verbose = FALSE
   )
@@ -228,7 +227,6 @@ test_that("C++ SCENIC AUCell scores are invariant to positive regulon naming", {
     regulon_list = list("TF1(+)" = genes),
     min_regulon_size = 1,
     backend = "cpp",
-    cpp_strategy = "sparse",
     seed = 42,
     verbose = FALSE
   )
@@ -250,7 +248,6 @@ test_that("C++ SCENIC AUCell scores are reproducible with seed", {
     regulon_list = list("TF1(+)" = genes),
     min_regulon_size = 1,
     backend = "cpp",
-    cpp_strategy = "sparse",
     seed = 42,
     verbose = FALSE
   )
@@ -259,7 +256,6 @@ test_that("C++ SCENIC AUCell scores are reproducible with seed", {
     regulon_list = list("TF1(+)" = genes),
     min_regulon_size = 1,
     backend = "cpp",
-    cpp_strategy = "sparse",
     seed = 42,
     verbose = FALSE
   )

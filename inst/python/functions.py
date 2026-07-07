@@ -5452,6 +5452,7 @@ def RunSCENICAUCell(
     regulons_gmt,
     auc_output,
     cores=1,
+    seed=None,
     force=False,
     verbose=True,
 ):
@@ -5463,17 +5464,20 @@ def RunSCENICAUCell(
 
     if force or not Path(auc_output).exists():
         scenic = _scenic_find_executable([_scenic_backend_name()])
+        command = [
+            scenic,
+            "aucell",
+            expression_mtx,
+            regulons_gmt,
+            "--output",
+            auc_output,
+            "--num_workers",
+            max(1, int(cores)),
+        ]
+        if seed is not None:
+            command.extend(["--seed", str(int(seed))])
         _scenic_run_command(
-            [
-                scenic,
-                "aucell",
-                expression_mtx,
-                regulons_gmt,
-                "--output",
-                auc_output,
-                "--num_workers",
-                max(1, int(cores)),
-            ],
+            command,
             verbose=verbose,
             label="SCENIC AUCell scoring",
         )

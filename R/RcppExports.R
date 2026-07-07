@@ -101,8 +101,8 @@ scvelo_dynamical_em_cpp <- function(Ms, Mu, use_genes, max_iter_em = 10L, conv_t
     .Call(`_scop_scvelo_dynamical_em_cpp`, Ms, Mu, use_genes, max_iter_em, conv_tol, em_oversampling, init_alpha, init_beta, init_gamma)
 }
 
-aucell_auc_sparse <- function(expr, gene_sets, auc_max_rank, norm_auc = TRUE, strategy = 1L, algorithm = 1L) {
-    .Call(`_scop_aucell_auc_sparse`, expr, gene_sets, auc_max_rank, norm_auc, strategy, algorithm)
+aucell_auc_sparse <- function(expr, gene_sets, auc_max_rank, norm_auc = TRUE, strategy = 1L, algorithm = 1L, seed = 0L) {
+    .Call(`_scop_aucell_auc_sparse`, expr, gene_sets, auc_max_rank, norm_auc, strategy, algorithm, seed)
 }
 
 aucell_auc_ranked <- function(rankings, gene_sets, auc_max_rank) {

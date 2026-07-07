@@ -78,13 +78,13 @@ RunDynamicEnrichment <- function(
   minGSSize = 10,
   maxGSSize = 500,
   backend = c("cpp", "r"),
-  cpp_strategy = c("sparse", "topk", "full"),
   cores = 1,
   verbose = TRUE,
   seed = 11,
   ...
 ) {
   set.seed(seed)
+  dots <- list(...)
   backend_missing <- missing(backend)
   score_method <- unique(vapply(
     as.character(score_method),
@@ -93,7 +93,6 @@ RunDynamicEnrichment <- function(
     arg_name = "score_method"
   ))
   backend <- match.arg(backend)
-  cpp_strategy <- match.arg(cpp_strategy)
   cpp_supported_methods <- c("AUCell", "Seurat", "GSVA", "ssGSEA", "zscore", "PLAGE")
   score_method_cpp_unsupported <- setdiff(score_method, cpp_supported_methods)
   if (!identical(backend, "r") && length(score_method_cpp_unsupported) > 0L && !isTRUE(backend_missing)) {
@@ -231,7 +230,7 @@ RunDynamicEnrichment <- function(
       } else {
         term
       }
-      srt <- CellScoring(
+      srt <- do.call(CellScoring, c(list(
         srt = srt,
         features = feature_list,
         method = method_i,
@@ -241,11 +240,9 @@ RunDynamicEnrichment <- function(
         name = assay_name_i,
         new_assay = TRUE,
         backend = backend_i,
-        cpp_strategy = cpp_strategy,
         cores = cores,
-        verbose = verbose,
-        ...
-      )
+        verbose = verbose
+      ), dots))
       srt <- RunDynamicFeatures(
         srt = srt,
         lineages = lineages,
