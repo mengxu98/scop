@@ -540,15 +540,14 @@ static ScenicSplit scenic_best_split(
     const std::vector<std::vector<int> >& feature_order_ranks,
     std::vector<int>& row_marks,
     int& row_mark,
+    double parent_sse,
+    double parent_sum,
     ScenicGrnProfile* profile,
     ScenicCandidateTrace* candidate_trace = nullptr) {
   if (profile != nullptr) ++profile->best_split_calls;
   ScenicSplit best{-1, 0.0, 0.0, 0.0};
   if (end - start < 2 || feature_pool.empty()) return best;
 
-  double parent_sum = 0.0;
-  double parent_sum_sq = 0.0;
-  const double parent_sse = scenic_node_sse(samples, start, end, residual, &parent_sum, &parent_sum_sq);
   if (parent_sse <= 0.0) return best;
   ++row_mark;
   if (row_mark == std::numeric_limits<int>::max()) {
@@ -583,21 +582,6 @@ static ScenicSplit scenic_best_split(
     ++n_visited;
     if (profile != nullptr) ++profile->split_feature_visits;
 
-    scenic_order_samples_by_feature(
-      expr, feature_orders, feature_order_values, feature_order_ranks,
-      samples, feature_values, start, end, feature,
-      row_marks, row_mark);
-    const double min_x = feature_values[start];
-    const double max_x = feature_values[end - 1];
-    if (max_x <= min_x + SCENIC_FEATURE_THRESHOLD) {
-      std::swap(feature_pool[f_j], feature_pool[n_total_constants]);
-      ++n_found_constants;
-      ++n_total_constants;
-      continue;
-    }
-    --f_i;
-    std::swap(feature_pool[f_i], feature_pool[f_j]);
-
     double feature_best_proxy = -std::numeric_limits<double>::infinity();
     double feature_best_importance = 0.0;
     double feature_best_threshold = 0.0;
@@ -606,72 +590,157 @@ static ScenicSplit scenic_best_split(
     bool have_group = false;
     double current_x = 0.0;
     double group_sum = 0.0;
-    double group_sum_sq = 0.0;
     int group_n = 0;
     double left_sum = 0.0;
-    double left_sum_sq = 0.0;
     int n_left = 0;
+    int selected_n = 0;
+    double min_x = 0.0;
+    double max_x = 0.0;
 
-    for (int pos = start; pos < end; ++pos) {
-      const int row = samples[pos];
-      const double x = feature_values[pos];
-      const double y = residual[row];
-      if (!have_group) {
-        have_group = true;
+    const bool use_order_stream =
+      feature >= 0 &&
+      feature < static_cast<int>(feature_orders.size()) &&
+      feature < static_cast<int>(feature_order_values.size()) &&
+      static_cast<int>(feature_orders[feature].size()) == expr.nrow() &&
+      feature_order_values[feature].size() == feature_orders[feature].size();
+    if (use_order_stream) {
+      const std::vector<int>& order = feature_orders[feature];
+      const std::vector<double>& values = feature_order_values[feature];
+      for (std::size_t oi = 0; oi < order.size(); ++oi) {
+        const int row = order[oi];
+        if (row_marks[row] != row_mark) continue;
+        const double x = values[oi];
+        if (selected_n == 0) min_x = x;
+        max_x = x;
+        ++selected_n;
+        const double y = residual[row];
+        if (!have_group) {
+          have_group = true;
+          current_x = x;
+          group_sum = y;
+          group_n = 1;
+          continue;
+        }
+        if (x <= current_x + SCENIC_FEATURE_THRESHOLD) {
+          group_sum += y;
+          ++group_n;
+          continue;
+        }
+
+        left_sum += group_sum;
+        n_left += group_n;
+        const int n_right = end - start - n_left;
+        if (n_left < 1 || n_right < 1) continue;
+        if (profile != nullptr) ++profile->split_threshold_visits;
+
+        const double right_sum = parent_sum - left_sum;
+        const double diff =
+          static_cast<double>(n_right) * left_sum - static_cast<double>(n_left) * right_sum;
+        const double proxy_gain =
+          2.0 * diff * diff /
+          (static_cast<double>(n_left + n_right) *
+           static_cast<double>(n_left) * static_cast<double>(n_right));
+        const bool feature_improves = scenic_proxy_improves(proxy_gain, feature_best_proxy);
+        const bool global_improves = scenic_proxy_improves(proxy_gain, best.proxy_gain);
+        if (feature_improves || global_improves) {
+          const double importance_gain = 0.5 * proxy_gain;
+          const double threshold = (current_x + x) / 2.0;
+          double split_threshold = threshold;
+          if (split_threshold == static_cast<double>(x) || !R_finite(split_threshold)) {
+            split_threshold = current_x;
+          }
+          if (feature_improves) {
+            feature_best_proxy = proxy_gain;
+            feature_best_importance = importance_gain;
+            feature_best_threshold = split_threshold;
+            feature_best_left = n_left;
+            feature_best_right = n_right;
+          }
+          if (global_improves) {
+            best.feature = feature;
+            best.threshold = split_threshold;
+            best.proxy_gain = proxy_gain;
+            best.importance_gain = importance_gain;
+          }
+        }
         current_x = x;
         group_sum = y;
-        group_sum_sq = y * y;
         group_n = 1;
-        continue;
       }
-      if (x <= current_x + SCENIC_FEATURE_THRESHOLD) {
-        group_sum += y;
-        group_sum_sq += y * y;
-        ++group_n;
-        continue;
-      }
+    } else {
+      scenic_order_samples_by_feature(
+        expr, feature_orders, feature_order_values, feature_order_ranks,
+        samples, feature_values, start, end, feature,
+        row_marks, row_mark);
+      selected_n = end - start;
+      min_x = feature_values[start];
+      max_x = feature_values[end - 1];
+      for (int pos = start; pos < end; ++pos) {
+        const int row = samples[pos];
+        const double x = feature_values[pos];
+        const double y = residual[row];
+        if (!have_group) {
+          have_group = true;
+          current_x = x;
+          group_sum = y;
+          group_n = 1;
+          continue;
+        }
+        if (x <= current_x + SCENIC_FEATURE_THRESHOLD) {
+          group_sum += y;
+          ++group_n;
+          continue;
+        }
 
-      left_sum += group_sum;
-      left_sum_sq += group_sum_sq;
-      n_left += group_n;
-      const int n_right = end - start - n_left;
-      if (n_left < 1 || n_right < 1) continue;
-      if (profile != nullptr) ++profile->split_threshold_visits;
+        left_sum += group_sum;
+        n_left += group_n;
+        const int n_right = end - start - n_left;
+        if (n_left < 1 || n_right < 1) continue;
+        if (profile != nullptr) ++profile->split_threshold_visits;
 
-      const double right_sum = parent_sum - left_sum;
-      const double right_sum_sq = parent_sum_sq - left_sum_sq;
-      const double left_sse = scenic_sse_from_sums(left_sum, left_sum_sq, n_left);
-      const double right_sse = scenic_sse_from_sums(right_sum, right_sum_sq, n_right);
-      const double importance_gain = parent_sse - left_sse - right_sse;
-      const double diff =
-        static_cast<double>(n_right) * left_sum - static_cast<double>(n_left) * right_sum;
-      const double proxy_gain =
-        2.0 * diff * diff /
-        (static_cast<double>(n_left + n_right) *
-         static_cast<double>(n_left) * static_cast<double>(n_right));
-      const double threshold = (current_x + x) / 2.0;
-      double split_threshold = threshold;
-      if (split_threshold == static_cast<double>(x) || !R_finite(split_threshold)) {
-        split_threshold = current_x;
+        const double right_sum = parent_sum - left_sum;
+        const double diff =
+          static_cast<double>(n_right) * left_sum - static_cast<double>(n_left) * right_sum;
+        const double proxy_gain =
+          2.0 * diff * diff /
+          (static_cast<double>(n_left + n_right) *
+           static_cast<double>(n_left) * static_cast<double>(n_right));
+        const bool feature_improves = scenic_proxy_improves(proxy_gain, feature_best_proxy);
+        const bool global_improves = scenic_proxy_improves(proxy_gain, best.proxy_gain);
+        if (feature_improves || global_improves) {
+          const double importance_gain = 0.5 * proxy_gain;
+          const double threshold = (current_x + x) / 2.0;
+          double split_threshold = threshold;
+          if (split_threshold == static_cast<double>(x) || !R_finite(split_threshold)) {
+            split_threshold = current_x;
+          }
+          if (feature_improves) {
+            feature_best_proxy = proxy_gain;
+            feature_best_importance = importance_gain;
+            feature_best_threshold = split_threshold;
+            feature_best_left = n_left;
+            feature_best_right = n_right;
+          }
+          if (global_improves) {
+            best.feature = feature;
+            best.threshold = split_threshold;
+            best.proxy_gain = proxy_gain;
+            best.importance_gain = importance_gain;
+          }
+        }
+        current_x = x;
+        group_sum = y;
+        group_n = 1;
       }
-      if (scenic_proxy_improves(proxy_gain, feature_best_proxy)) {
-        feature_best_proxy = proxy_gain;
-        feature_best_importance = importance_gain;
-        feature_best_threshold = split_threshold;
-        feature_best_left = n_left;
-        feature_best_right = n_right;
-      }
-      if (scenic_proxy_improves(proxy_gain, best.proxy_gain)) {
-        best.feature = feature;
-        best.threshold = split_threshold;
-        best.proxy_gain = proxy_gain;
-        best.importance_gain = importance_gain;
-      }
-      current_x = x;
-      group_sum = y;
-      group_sum_sq = y * y;
-      group_n = 1;
     }
+    if (selected_n < 2 || max_x <= min_x + SCENIC_FEATURE_THRESHOLD) {
+      std::swap(feature_pool[f_j], feature_pool[n_total_constants]);
+      ++n_found_constants;
+      ++n_total_constants;
+      continue;
+    }
+    --f_i;
+    std::swap(feature_pool[f_i], feature_pool[f_j]);
     if (candidate_trace != nullptr && candidate_trace->collect &&
         feature_best_proxy > -std::numeric_limits<double>::infinity()) {
       candidate_trace->visit_order.push_back(n_visited);
@@ -734,7 +803,7 @@ static int scenic_build_tree(
   if (depth >= max_depth || end - start < 2 || feature_pool.empty()) return node_index;
   const bool near_zero_leaf =
     node.sse / static_cast<double>(end - start) <= std::numeric_limits<double>::epsilon();
-  if (near_zero_leaf && end - start > 20) {
+  if (near_zero_leaf) {
     return node_index;
   }
   int n_total_constants = n_known_constants;
@@ -746,7 +815,7 @@ static int scenic_build_tree(
     expr, residual, samples, feature_values, start, end, feature_pool, constant_features,
     n_known_constants, n_total_constants, mtry, split_seed, feature_orders,
     feature_order_values, feature_order_ranks,
-    row_marks, row_mark, profile, candidate_trace);
+    row_marks, row_mark, node.sse, node_sum, profile, candidate_trace);
   if (candidate_trace != nullptr) {
     candidate_trace->collect = old_collect;
   }
@@ -923,26 +992,20 @@ static void scenic_grnboost_run_targets(
       double initial_oob_loss = 0.0;
       double new_oob_loss = 0.0;
       int n_oob = 0;
-      if (sample_size < n_samples) {
-        ScenicScopeTimer oob_timer(
-          profile == nullptr ? nullptr : &profile->oob_predict_seconds
-        );
-        for (int i = 0; i < n_samples; ++i) {
-          if (is_train[i]) continue;
-          const double old_resid = residual[i];
-          const double pred = scenic_predict_tree(expr, nodes, i);
-          const double new_resid = old_resid - learning_rate * pred;
-          initial_oob_loss += old_resid * old_resid;
-          new_oob_loss += new_resid * new_resid;
-          ++n_oob;
-        }
-      }
       {
         ScenicScopeTimer update_timer(
           profile == nullptr ? nullptr : &profile->update_predict_seconds
         );
         for (int i = 0; i < n_samples; ++i) {
-          residual[i] -= learning_rate * scenic_predict_tree(expr, nodes, i);
+          const double old_resid = residual[i];
+          const double pred = scenic_predict_tree(expr, nodes, i);
+          const double new_resid = old_resid - learning_rate * pred;
+          if (sample_size < n_samples && !is_train[i]) {
+            initial_oob_loss += old_resid * old_resid;
+            new_oob_loss += new_resid * new_resid;
+            ++n_oob;
+          }
+          residual[i] = new_resid;
         }
       }
       ++actual_rounds;
