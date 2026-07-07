@@ -210,11 +210,17 @@ pancreas_sub <- RunGSEA(
   cores = 5
 )
 
+gsea_endocrine <- subset(
+  pancreas_sub@tools$GSEA_CellType_wilcox$enrichment,
+  Groups == "Endocrine" & Database == "GO_BP"
+)
+gsea_id <- gsea_endocrine$ID[which.min(gsea_endocrine$p.adjust)]
+
 GSEAPlot(
   pancreas_sub,
   group.by = "CellType",
   group_use = "Endocrine",
-  id_use = "GO:0007186"
+  id_use = gsea_id
 )
 
 GSEAPlot(
