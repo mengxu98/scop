@@ -739,6 +739,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// phate_graphtools_affinity_data_cpp
+List phate_graphtools_affinity_data_cpp(NumericMatrix data, int knn, double decay, double thresh, int knn_max);
+RcppExport SEXP _scop_phate_graphtools_affinity_data_cpp(SEXP dataSEXP, SEXP knnSEXP, SEXP decaySEXP, SEXP threshSEXP, SEXP knn_maxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< int >::type knn(knnSEXP);
+    Rcpp::traits::input_parameter< double >::type decay(decaySEXP);
+    Rcpp::traits::input_parameter< double >::type thresh(threshSEXP);
+    Rcpp::traits::input_parameter< int >::type knn_max(knn_maxSEXP);
+    rcpp_result_gen = Rcpp::wrap(phate_graphtools_affinity_data_cpp(data, knn, decay, thresh, knn_max));
+    return rcpp_result_gen;
+END_RCPP
+}
 // phate_affinity_cpp
 List phate_affinity_cpp(NumericMatrix knn_dist, IntegerMatrix knn_idx, double alpha_decay, int bandwidth_k);
 RcppExport SEXP _scop_phate_affinity_cpp(SEXP knn_distSEXP, SEXP knn_idxSEXP, SEXP alpha_decaySEXP, SEXP bandwidth_kSEXP) {
@@ -2611,6 +2626,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_paga_diffusion_pseudotime_cpp", (DL_FUNC) &_scop_paga_diffusion_pseudotime_cpp, 6},
     {"_scop_paga_velocity_transitions_cpp", (DL_FUNC) &_scop_paga_velocity_transitions_cpp, 5},
     {"_scop_paga_root_cell_cpp", (DL_FUNC) &_scop_paga_root_cell_cpp, 3},
+    {"_scop_phate_graphtools_affinity_data_cpp", (DL_FUNC) &_scop_phate_graphtools_affinity_data_cpp, 5},
     {"_scop_phate_affinity_cpp", (DL_FUNC) &_scop_phate_affinity_cpp, 4},
     {"_scop_phate_diffusion_operator_cpp", (DL_FUNC) &_scop_phate_diffusion_operator_cpp, 5},
     {"_scop_phate_potential_distance_cpp", (DL_FUNC) &_scop_phate_potential_distance_cpp, 2},

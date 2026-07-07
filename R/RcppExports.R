@@ -201,6 +201,10 @@ paga_root_cell_cpp <- function(embedding, groups, root_group) {
     .Call(`_scop_paga_root_cell_cpp`, embedding, groups, root_group)
 }
 
+phate_graphtools_affinity_data_cpp <- function(data, knn, decay, thresh = 1e-4, knn_max = -1L) {
+    .Call(`_scop_phate_graphtools_affinity_data_cpp`, data, knn, decay, thresh, knn_max)
+}
+
 phate_affinity_cpp <- function(knn_dist, knn_idx, alpha_decay = 1.0, bandwidth_k = -1L) {
     .Call(`_scop_phate_affinity_cpp`, knn_dist, knn_idx, alpha_decay, bandwidth_k)
 }
