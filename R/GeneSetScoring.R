@@ -197,7 +197,8 @@ run_aucell_scores <- function(
   expr_counts,
   gene_sets,
   strategy = c("sparse", "topk", "full"),
-  algorithm = c("aucell", "ctxcore")
+  algorithm = c("aucell", "ctxcore"),
+  seed = 0L
 ) {
   strategy <- match.arg(strategy)
   algorithm <- match.arg(algorithm)
@@ -224,7 +225,8 @@ run_aucell_scores <- function(
     auc_max_rank = as.integer(auc_max_rank),
     norm_auc = TRUE,
     strategy = strategy_id,
-    algorithm = algorithm_id
+    algorithm = algorithm_id,
+    seed = as.integer(seed %||% 0L)
   )
   dimnames(scores) <- list(colnames(expr_counts), names(gene_set_idx))
   scores

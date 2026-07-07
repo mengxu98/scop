@@ -442,6 +442,20 @@ RunSCENIC <- function(
   auc_file <- file.path(work_dir, paste0(prefix, "_regulon_activity_score.csv"))
   ras_file <- file.path(work_dir, paste0(prefix, "_regulon_activity_score.rds"))
   regulon_list_file <- file.path(work_dir, paste0(prefix, "_regulon_list.rds"))
+  stage_timing_sec <- c(
+    grn = NA_real_,
+    cistarget = NA_real_,
+    regulon_conversion = NA_real_,
+    aucell = NA_real_
+  )
+  stage_time <- function(expr) {
+    start <- proc.time()[["elapsed"]]
+    value <- force(expr)
+    list(
+      value = value,
+      elapsed = proc.time()[["elapsed"]] - start
+    )
+  }
 
   scenic_progress_step(
     progress_state,
@@ -449,21 +463,24 @@ RunSCENIC <- function(
     label = "Running GRNBoost2",
     verbose = verbose
   )
-  functions$RunSCENICGrn(
-    expression_mtx = expr_csv,
-    regulators = regulators_file,
-    adj_output = grn_adj_file,
-    n_rounds = as.integer(n_rounds),
-    learning_rate = as.numeric(learning_rate),
-    max_depth = as.integer(max_depth),
-    max_features = as.numeric(max_features),
-    subsample = as.numeric(subsample),
-    early_stop_window_length = as.integer(early_stop_window_length),
-    cores = as.integer(cores),
-    seed = as.integer(seed),
-    force = isTRUE(grn_force),
-    verbose = isTRUE(verbose)
-  )
+  timed <- stage_time({
+    functions$RunSCENICGrn(
+      expression_mtx = expr_csv,
+      regulators = regulators_file,
+      adj_output = grn_adj_file,
+      n_rounds = as.integer(n_rounds),
+      learning_rate = as.numeric(learning_rate),
+      max_depth = as.integer(max_depth),
+      max_features = as.numeric(max_features),
+      subsample = as.numeric(subsample),
+      early_stop_window_length = as.integer(early_stop_window_length),
+      cores = as.integer(cores),
+      seed = as.integer(seed),
+      force = isTRUE(grn_force),
+      verbose = isTRUE(verbose)
+    )
+  })
+  stage_timing_sec[["grn"]] <- timed[["elapsed"]]
   if (!is.null(targets)) {
     scenic_flt_adj(
       input_file = grn_adj_file,
@@ -479,16 +496,19 @@ RunSCENIC <- function(
     label = "Running SCENIC cisTarget pruning",
     verbose = verbose
   )
-  functions$RunSCENICCtx(
-    expression_mtx = expr_csv,
-    ranking_dbs = as.list(ranking_dbs),
-    motif_annotations = motif_annotations,
-    adj_output = adj_file,
-    ctx_output = ctx_file,
-    cores = as.integer(cores),
-    force = isTRUE(grn_force),
-    verbose = isTRUE(verbose)
-  )
+  timed <- stage_time({
+    functions$RunSCENICCtx(
+      expression_mtx = expr_csv,
+      ranking_dbs = as.list(ranking_dbs),
+      motif_annotations = motif_annotations,
+      adj_output = adj_file,
+      ctx_output = ctx_file,
+      cores = as.integer(cores),
+      force = isTRUE(grn_force),
+      verbose = isTRUE(verbose)
+    )
+  })
+  stage_timing_sec[["cistarget"]] <- timed[["elapsed"]]
 
   scenic_progress_step(
     progress_state,
@@ -497,12 +517,15 @@ RunSCENIC <- function(
     verbose = verbose
   )
   if (isTRUE(grn_force) || !file.exists(gmt_file) || !file.exists(txt_file)) {
-    functions$SCENICRegulonsToFiles(
-      regulon_file = ctx_file,
-      gmt_file = gmt_file,
-      txt_file = txt_file,
-      min_regulon_size = as.integer(min_regulon_size)
-    )
+    timed <- stage_time({
+      functions$SCENICRegulonsToFiles(
+        regulon_file = ctx_file,
+        gmt_file = gmt_file,
+        txt_file = txt_file,
+        min_regulon_size = as.integer(min_regulon_size)
+      )
+    })
+    stage_timing_sec[["regulon_conversion"]] <- timed[["elapsed"]]
   } else {
     log_message(
       "Reusing existing SCENIC regulon files",
@@ -535,14 +558,18 @@ RunSCENIC <- function(
       label = "Calculating AUCell regulon activity scores",
       verbose = verbose
     )
-    functions$RunSCENICAUCell(
-      expression_mtx = expr_csv,
-      regulons_gmt = gmt_file,
-      auc_output = auc_file,
-      cores = as.integer(cores),
-      force = isTRUE(grn_force),
-      verbose = isTRUE(verbose)
-    )
+    timed <- stage_time({
+      functions$RunSCENICAUCell(
+        expression_mtx = expr_csv,
+        regulons_gmt = gmt_file,
+        auc_output = auc_file,
+        cores = as.integer(cores),
+        seed = as.integer(seed),
+        force = isTRUE(grn_force),
+        verbose = isTRUE(verbose)
+      )
+    })
+    stage_timing_sec[["aucell"]] <- timed[["elapsed"]]
     ras_mat <- scenic_read_python_aucell(auc_file)
     saveRDS(ras_mat, ras_file)
   }
@@ -612,6 +639,9 @@ RunSCENIC <- function(
       tool_name = tool_name,
       envname = envname,
       progress = verbose
+    ),
+    details = list(
+      stage_timing_sec = stage_timing_sec
     )
   )
 
@@ -719,16 +749,11 @@ scenic_cpp <- function(
       message_type = "error"
     )
   }
-  if (
-    is.character(regulators_raw) &&
-      length(regulators_raw) == 1 &&
-      file.exists(regulators_raw)
-  ) {
-    regulators <- unique(readLines(regulators_raw, warn = FALSE))
-    regulators <- regulators[nzchar(regulators) & !grepl("^#", regulators)]
-  } else {
-    regulators <- regulators_raw
-  }
+  regulators <- scenic_read_gene_list_argument(
+    regulators_raw,
+    arg = "regulators",
+    required = TRUE
+  )
   if (length(regulators) == 0) {
     log_message(
       "No regulators found in reference data",
@@ -824,6 +849,19 @@ scenic_cpp <- function(
   grn_force <- isTRUE(force) ||
     !file.exists(adj_file) ||
     isTRUE(grn_inputs_changed)
+  stage_timing_sec <- c(
+    grn = NA_real_,
+    cistarget = NA_real_,
+    aucell = NA_real_
+  )
+  stage_time <- function(expr) {
+    start <- proc.time()[["elapsed"]]
+    value <- force(expr)
+    list(
+      value = value,
+      elapsed = proc.time()[["elapsed"]] - start
+    )
+  }
   if (isTRUE(grn_inputs_changed) && file.exists(adj_file) && isFALSE(force)) {
     log_message(
       "Rebuilding C++ {.pkg SCENIC} GRNBoost2 adjacency because input genes or GRN parameters changed",
@@ -831,25 +869,29 @@ scenic_cpp <- function(
     )
   }
   if (grn_force) {
-    adjacency <- scenic_run_grn_method(
-      grn_matrix = Matrix::t(grn_matrix),
-      regulators = regulators,
-      targets = targets,
-      grn_method = "grnboost2",
-      backend = "cpp",
-      output_file = adj_file,
-      max_edges_per_target = Inf,
-      n_rounds = n_rounds,
-      learning_rate = learning_rate,
-      max_depth = max_depth,
-      max_features = max_features,
-      subsample = subsample,
-      early_stop_window_length = early_stop_window_length,
-      seed = seed,
-      cores = cores,
-      force = TRUE,
-      verbose = verbose
-    )
+    timed <- stage_time({
+      scenic_run_grn_method(
+        grn_matrix = Matrix::t(grn_matrix),
+        regulators = regulators,
+        targets = targets,
+        grn_method = "grnboost2",
+        backend = "cpp",
+        output_file = adj_file,
+        max_edges_per_target = Inf,
+        n_rounds = n_rounds,
+        learning_rate = learning_rate,
+        max_depth = max_depth,
+        max_features = max_features,
+        subsample = subsample,
+        early_stop_window_length = early_stop_window_length,
+        seed = seed,
+        cores = cores,
+        force = TRUE,
+        verbose = verbose
+      )
+    })
+    adjacency <- timed[["value"]]
+    stage_timing_sec[["grn"]] <- timed[["elapsed"]]
     saveRDS(grn_input_params, grn_input_params_file)
   } else {
     log_message(
@@ -885,18 +927,22 @@ scenic_cpp <- function(
         length(ref_data[["ranking_dbs"]]) > 0 &&
         !is.null(ref_data[["motif_annotations"]])
     ) {
-      regulon_list <- cistarget2(
-        adjacency = adjacency,
-        expr_mtx = Matrix::t(grn_matrix),
-        ranking_dbs = ref_data[["ranking_dbs"]],
-        motif_annotations = ref_data[["motif_annotations"]],
-        max_targets = max_regulon_targets,
-        min_regulon_size = min_regulon_size,
-        include_negative_regulons = include_negative_regulons,
-        fallback = FALSE,
-        cores = cores,
-        verbose = verbose
-      )
+      timed <- stage_time({
+        cistarget2(
+          adjacency = adjacency,
+          expr_mtx = Matrix::t(grn_matrix),
+          ranking_dbs = ref_data[["ranking_dbs"]],
+          motif_annotations = ref_data[["motif_annotations"]],
+          max_targets = max_regulon_targets,
+          min_regulon_size = min_regulon_size,
+          include_negative_regulons = include_negative_regulons,
+          fallback = FALSE,
+          cores = cores,
+          verbose = verbose
+        )
+      })
+      regulon_list <- timed[["value"]]
+      stage_timing_sec[["cistarget"]] <- timed[["elapsed"]]
     } else {
       log_message(
         "C++ cisTarget reference data are required for {.arg backend = 'cpp'}",
@@ -932,17 +978,20 @@ scenic_cpp <- function(
     )
     ras_mat <- readRDS(ras_file)
   } else {
-    ras_mat <- scenic_compute_aucell_score(
-      counts = grn_matrix,
-      regulon_list = regulon_list,
-      min_regulon_size = min_regulon_size,
-      cores = cores,
-      backend = "cpp",
-      cpp_strategy = "topk",
-      cpp_algorithm = "ctxcore",
-      seed = seed,
-      verbose = verbose
-    )
+    timed <- stage_time({
+      scenic_compute_aucell_score(
+        counts = grn_matrix,
+        regulon_list = regulon_list,
+        min_regulon_size = min_regulon_size,
+        cores = cores,
+        backend = "cpp",
+        cpp_algorithm = "ctxcore",
+        seed = seed,
+        verbose = verbose
+      )
+    })
+    ras_mat <- timed[["value"]]
+    stage_timing_sec[["aucell"]] <- timed[["elapsed"]]
     saveRDS(ras_mat, ras_file)
   }
   ras_mat <- ras_mat[colnames(srt), , drop = FALSE]
@@ -995,6 +1044,10 @@ scenic_cpp <- function(
       seed = seed,
       assay_name = assay_name,
       tool_name = tool_name
+    ),
+    details = list(
+      stage_timing_sec = stage_timing_sec,
+      cistarget_profile_sec = attr(regulon_list, "profile_sec", exact = TRUE)
     )
   )
 
@@ -1304,12 +1357,9 @@ cistarget2 <- function(
   modules <- profiled[["value"]]
   profile[["module_build"]] <- profile[["module_build"]] + profiled[["elapsed"]]
 
-  # ── Build TF → target → GRN importance lookup for ctxcore-compatible merge ──
-  # ctxcore's Regulon.union() uses max GRN importance weight per gene when
-  # merging leading-edge genes across enriched motifs.
   tf_importance_map <- split(adjacency[, c("target", "importance")], adjacency[["TF"]])
   tf_importance_map <- lapply(tf_importance_map, function(tf_df) {
-    imp_vec <- setNames(tf_df[["importance"]], tf_df[["target"]])
+    imp_vec <- stats::setNames(tf_df[["importance"]], tf_df[["target"]])
     imp_list <- split(imp_vec, names(imp_vec))
     lapply(imp_list, max)
   })
@@ -1525,9 +1575,12 @@ cistarget2 <- function(
   )
 
   if (length(regulons) == 0L) {
+    attr(regulons, "profile_sec") <- profile
     return(regulons)
   }
-  regulons[order(names(regulons))]
+  regulons <- regulons[order(names(regulons))]
+  attr(regulons, "profile_sec") <- profile
+  regulons
 }
 
 scenic_normalize_max_regulon_targets <- function(max_regulon_targets) {
@@ -1558,7 +1611,7 @@ scenic_cistarget_auc <- function(
   n_genes <- ncol(rankings)
   max_auc <- (rank_cutoff + 1L) * n_genes
   apply(rankings, 1, function(ranks) {
-    ranks <- ranks[is.finite(ranks) & ranks < rank_cutoff]
+    ranks <- ranks[is.finite(ranks) & ranks <= rank_cutoff]
     if (length(ranks) == 0) {
       return(0)
     }
@@ -2436,13 +2489,11 @@ scenic_compute_aucell_score <- function(
   batch_size = 500,
   cores = 1,
   backend = c("r", "cpp"),
-  cpp_strategy = c("full", "sparse", "topk"),
   cpp_algorithm = c("aucell", "ctxcore"),
   seed = NULL,
   verbose = TRUE
 ) {
   backend <- match.arg(backend)
-  cpp_strategy <- match.arg(cpp_strategy)
   cpp_algorithm <- match.arg(cpp_algorithm)
   regulon_list <- lapply(regulon_list, intersect, rownames(counts))
   regulon_list <- regulon_list[lengths(regulon_list) >= min_regulon_size]
@@ -2455,17 +2506,20 @@ scenic_compute_aucell_score <- function(
 
   if (identical(backend, "cpp")) {
     log_message(
-      "Calculating AUCell regulon activity scores with {.arg backend = 'cpp'} and {.arg cpp_strategy} = {.val {cpp_strategy}}",
+      "Calculating AUCell regulon activity scores with {.arg backend = 'cpp'}",
       verbose = verbose
     )
     if (!is.null(seed)) {
       set.seed(as.integer(seed))
+      counts <- counts[sample(rownames(counts)), , drop = FALSE]
+      regulon_list <- lapply(regulon_list, intersect, rownames(counts))
     }
     scores <- run_aucell_scores(
       expr_counts = counts,
       gene_sets = regulon_list,
-      strategy = cpp_strategy,
-      algorithm = cpp_algorithm
+      strategy = "full",
+      algorithm = cpp_algorithm,
+      seed = if (!is.null(seed)) -1L else 0L
     )
     return(as.data.frame(scores, check.names = FALSE)[
       colnames(counts),

@@ -66,11 +66,31 @@ test_that("RunCIBERSORT cpp backend supports permutations and quantile normaliza
   )
 
   expect_equal(out$status, "success")
+  expect_equal(out$parameters$cores, 2L)
   stats <- out$details$statistics
   expect_true(all(is.finite(stats[["P-value"]])))
   expect_true(all(stats[["P-value"]] >= 0 & stats[["P-value"]] <= 1))
   expect_true(all(is.finite(stats[["Correlation"]])))
   expect_true(all(is.finite(stats[["RMSE"]])))
+})
+
+test_that("RunCIBERSORT records backend and cores through the public API", {
+  dat <- make_cibersort_mock(seed = 22)
+  out <- RunCIBERSORT(
+    count_matrix = dat$mixture,
+    sig_matrix = dat$signature,
+    backend = "cpp",
+    perm = 0,
+    QN = FALSE,
+    cores = 2,
+    seed = 99,
+    verbose = FALSE
+  )
+
+  expect_equal(out$status, "success")
+  expect_equal(out$parameters$backend, "cpp")
+  expect_equal(out$parameters$cores, 2L)
+  expect_equal(out$parameters$seed, 99L)
 })
 
 test_that("RunCIBERSORT cpp backend stores SummarizedExperiment metadata", {
