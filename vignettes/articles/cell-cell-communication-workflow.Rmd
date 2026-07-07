@@ -11,6 +11,25 @@ knitr::opts_chunk$set(
   dpi = 144,
   out.width = "92%"
 )
+
+install_article_packages <- function(pkg_specs) {
+  missing <- names(pkg_specs)[
+    !vapply(names(pkg_specs), requireNamespace, logical(1), quietly = TRUE)
+  ]
+  if (length(missing) == 0) {
+    return(invisible(TRUE))
+  }
+  if (!requireNamespace("pak", quietly = TRUE)) {
+    install.packages("pak", repos = "https://cloud.r-project.org")
+  }
+  pak::pak(unname(pkg_specs[missing]), ask = FALSE, upgrade = FALSE)
+  invisible(TRUE)
+}
+
+install_article_packages(c(
+  CellChat = "jinworks/CellChat",
+  liana = "saezlab/liana"
+))
 ```
 
 This article shows a practical first-pass workflow for cell-cell communication
