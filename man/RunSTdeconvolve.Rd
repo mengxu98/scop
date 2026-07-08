@@ -109,18 +109,13 @@ STdeconvolvePlot(
   overlay_image = FALSE,
   coord.cols = c("x", "y")
 )
-if (requireNamespace("scatterpie", quietly = TRUE)) {
   STdeconvolvePlot(
     spatial,
     plot_type = "pie",
     overlay_image = FALSE,
     coord.cols = c("x", "y")
   )
-}
 
-if (
-  isTRUE(check_r("JEFworks-Lab/STdeconvolve", verbose = FALSE))
-) {
 spatial <- RunSTdeconvolve(
   spatial,
   assay = "Spatial",
@@ -128,5 +123,4 @@ spatial <- RunSTdeconvolve(
   k = 3,
   verbose = FALSE
 )
-}
 }

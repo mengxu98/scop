@@ -60,9 +60,6 @@ SpatialSpotPlot(
   coord.cols = c("x", "y")
 )
 
-if (
-  isTRUE(check_r("spatial-research/semla", verbose = FALSE))
-) {
 spatial <- RunSemlaRegionNeighbors(
   spatial,
   column_name = "region",
@@ -71,5 +68,4 @@ spatial <- RunSemlaRegionNeighbors(
   column_key = "right_border",
   verbose = FALSE
 )
-}
 }
