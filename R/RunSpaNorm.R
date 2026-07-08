@@ -33,10 +33,6 @@
 #'   coord.cols = c("x", "y")
 #' )
 #'
-#' if (
-#'   requireNamespace("SpaNorm", quietly = TRUE) &&
-#'     requireNamespace("SpatialExperiment", quietly = TRUE)
-#' ) {
 #'   spatial <- RunSpaNorm(
 #'     spatial,
 #'     assay = "Spatial",
@@ -56,7 +52,6 @@
 #'     overlay_image = FALSE,
 #'     coord.cols = c("x", "y")
 #'   )
-#' }
 RunSpaNorm <- function(
   srt,
   assay = NULL,

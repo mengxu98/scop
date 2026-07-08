@@ -118,9 +118,6 @@ SpatialSpotPlot(
   coord.cols = c("x", "y")
 )
 
-if (
-  isTRUE(check_r("JEFworks-Lab/MERINGUE", verbose = FALSE))
-) {
 spatial <- RunMERINGUE(
   spatial,
   assay = "Spatial",
@@ -129,5 +126,4 @@ spatial <- RunMERINGUE(
   nfeatures = 50,
   verbose = FALSE
 )
-}
 }

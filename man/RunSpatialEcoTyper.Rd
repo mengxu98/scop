@@ -196,9 +196,6 @@ SpatialEcoTyperCompositionPlot(
   position = "fill"
 )
 
-if (
-  isTRUE(check_r("digitalcytometry/SpatialEcoTyper", verbose = FALSE))
-) {
 srt <- RunSpatialEcoTyper(
   srt,
   celltype.by = "CellType",
@@ -220,5 +217,4 @@ srt <- RunSpatialEcoTyper(
   ncores = 1,
   verbose = FALSE
 )
-}
 }

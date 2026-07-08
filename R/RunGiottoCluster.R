@@ -55,9 +55,6 @@
 #'   coord.cols = c("x", "y")
 #' )
 #'
-#' if (
-#'   isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
-#' ) {
 #' spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 #' spatial <- Seurat::FindVariableFeatures(
 #'   spatial,
@@ -76,7 +73,6 @@
 #' )
 #'
 #' head(giotto_clusters$clusters)
-#' }
 #'
 #' @export
 RunGiottoCluster <- function(

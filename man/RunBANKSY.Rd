@@ -119,9 +119,6 @@ SpatialSpotPlot(
   coord.cols = c("x", "y")
 )
 
-if (
-  requireNamespace("Banksy", quietly = TRUE)
-) {
 spatial <- RunBANKSY(
   spatial,
   assay = "Spatial",
@@ -133,5 +130,4 @@ spatial <- RunBANKSY(
   resolution = 0.6,
   verbose = FALSE
 )
-}
 }

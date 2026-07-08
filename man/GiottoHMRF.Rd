@@ -69,12 +69,8 @@ g <- structure(
 )
 GiottoPlot(g, plot_type = "hmrf")
 
-if (
-  isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
-) {
   g <- SeuratToScopGiotto(spatial, coord.cols = c("x", "y"))
   g <- GiottoPreprocess(g)
   g <- GiottoSpatialNetwork(g)
   g <- GiottoHMRF(g, spatial_genes = rownames(spatial)[1:30], k = 4)
-}
 }

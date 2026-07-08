@@ -58,12 +58,10 @@ STdeconvolvePlot(
   overlay_image = FALSE,
   coord.cols = c("x", "y")
 )
-if (requireNamespace("scatterpie", quietly = TRUE)) {
   STdeconvolvePlot(
     spatial,
     plot_type = "pie",
     overlay_image = FALSE,
     coord.cols = c("x", "y")
   )
-}
 }

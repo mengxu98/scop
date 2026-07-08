@@ -123,11 +123,6 @@ SpatialSpotPlot(
   coord.cols = c("x", "y")
 )
 
-if (
-  isTRUE(check_r("dmcable/spacexr", verbose = FALSE)) &&
-    !is.null(spatial@tools$RCTD) &&
-    inherits(spatial@tools$RCTD$object, "RCTD")
-) {
   spatial <- RunCSIDE(
     spatial,
     group.by = "region",
@@ -135,5 +130,4 @@ if (
     gene_threshold = 0.00005,
     cell_type_threshold = 125
   )
-}
 }
