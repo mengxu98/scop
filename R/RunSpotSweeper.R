@@ -71,10 +71,6 @@
 #'   coord.cols = c("x", "y")
 #' )
 #'
-#' if (
-#'   isTRUE(check_r("MicTott/SpotSweeper", verbose = FALSE)) &&
-#'     requireNamespace("SpatialExperiment", quietly = TRUE)
-#' ) {
 #'   spatial <- RunSpotSweeper(
 #'     spatial,
 #'     assay = "Spatial",
@@ -90,7 +86,6 @@
 #'     overlay_image = FALSE,
 #'     coord.cols = c("x", "y")
 #'   )
-#' }
 RunSpotSweeper <- function(
   srt,
   assay = NULL,

@@ -68,14 +68,10 @@ SpatialSpotPlot(
   coord.cols = c("x", "y")
 )
 
-if (
-  isTRUE(check_r("spatial-research/semla", verbose = FALSE))
-) {
 spatial <- RunSemlaSpatialNetwork(
   spatial,
   nNeighbors = 6,
   coords = "pixels",
   verbose = FALSE
 )
-}
 }

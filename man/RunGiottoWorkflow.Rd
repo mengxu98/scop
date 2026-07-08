@@ -75,9 +75,6 @@ g <- structure(
 )
 GiottoPlot(g, plot_type = "cluster")
 
-if (
-  isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
-) {
 g <- RunGiottoWorkflow(
   spatial,
   steps = "basic",
@@ -87,5 +84,4 @@ g <- RunGiottoWorkflow(
   return_seurat = FALSE,
   verbose = FALSE
 )
-}
 }

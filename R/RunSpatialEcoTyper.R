@@ -101,9 +101,6 @@
 #'   position = "fill"
 #' )
 #'
-#' if (
-#'   isTRUE(check_r("digitalcytometry/SpatialEcoTyper", verbose = FALSE))
-#' ) {
 #' srt <- RunSpatialEcoTyper(
 #'   srt,
 #'   celltype.by = "CellType",
@@ -125,7 +122,6 @@
 #'   ncores = 1,
 #'   verbose = FALSE
 #' )
-#' }
 RunSpatialEcoTyper <- function(
   srt,
   mode = c("single", "multi", "recover", "deconvolute"),

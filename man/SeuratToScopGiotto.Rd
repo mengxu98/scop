@@ -107,9 +107,6 @@ g <- structure(
 GiottoPlot(g, plot_type = "cluster")
 GiottoPlot(g, plot_type = "network")
 
-if (
-  isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
-) {
 g <- SeuratToScopGiotto(
   spatial,
   assay = "Spatial",
@@ -117,5 +114,4 @@ g <- SeuratToScopGiotto(
   coord.cols = c("x", "y"),
   verbose = FALSE
 )
-}
 }

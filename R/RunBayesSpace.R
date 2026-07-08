@@ -41,9 +41,6 @@
 #'   coord.cols = c("x", "y")
 #' )
 #'
-#' if (
-#'   requireNamespace("BayesSpace", quietly = TRUE)
-#' ) {
 #' spatial <- RunBayesSpace(
 #'   spatial,
 #'   q = 3,
@@ -58,7 +55,6 @@
 #'   )
 #' )
 #' table(spatial$BayesSpace_cluster)
-#' }
 RunBayesSpace <- function(
   srt,
   q,

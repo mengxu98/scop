@@ -69,12 +69,8 @@ g <- structure(
 )
 GiottoPlot(g, plot_type = "spatial_genes", top_n = 6)
 
-if (
-  isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
-) {
   g <- SeuratToScopGiotto(spatial, coord.cols = c("x", "y"))
   g <- GiottoPreprocess(g)
   g <- GiottoSpatialNetwork(g)
   g <- GiottoSpatialGenes(g, features = rownames(spatial)[1:50], top_n = 10)
-}
 }
