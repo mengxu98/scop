@@ -194,6 +194,46 @@ NULL
 #' @name visium_human_pancreas_sub
 NULL
 
+#' @title A mouse brain Visium two-slice spatial example dataset
+#'
+#' @description
+#' A compact two-slice subset of the 10x Genomics mouse brain serial sagittal
+#' Visium dataset distributed as `stxBrain.SeuratData`. The object contains
+#' 1000 tissue spots from each of the anterior serial sections `anterior1` and
+#' `anterior2`, with a `Spatial` assay, two Visium images, and tissue
+#' coordinates in metadata columns `x` and `y`. Metadata column `sample` stores
+#' the original slice label and is intended for multi-slice spatial integration
+#' examples that require a real `sample.by` column. To keep the package data
+#' small, the object retains the top 4000 genes ranked by total counts across
+#' the two selected slices.
+#'
+#' @md
+#' @format A `Seurat` object with 4000 genes, 2000 spots, and two Visium images
+#' named `anterior1` and `anterior2`.
+#' @concept data
+#' @source
+#' Derived from the 10x Genomics mouse brain serial section 1 sagittal anterior
+#' Visium dataset distributed through
+#' \href{https://github.com/satijalab/seurat-data}{SeuratData} as
+#' `stxBrain.SeuratData` version 0.1.2 under the CC BY 4.0 license. The Seurat
+#' spatial vignette describes loading these slices with
+#' `SeuratData::LoadData("stxBrain", type = "anterior1")`.
+#'
+#' @examples
+#' data(visium_mouse_brain_slices_sub)
+#' table(visium_mouse_brain_slices_sub$sample)
+#' SeuratObject::Images(visium_mouse_brain_slices_sub)
+#' head(visium_mouse_brain_slices_sub@meta.data[, c("sample", "x", "y")])
+#' SpatialSpotPlot(
+#'   visium_mouse_brain_slices_sub,
+#'   group.by = "sample",
+#'   split.by = "sample",
+#'   overlay_image = FALSE
+#' )
+#'
+#' @name visium_mouse_brain_slices_sub
+NULL
+
 #' @title Human pancreatic islet bulk RNA-seq example dataset
 #'
 #' @description
