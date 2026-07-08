@@ -650,7 +650,7 @@ is_cached_env_valid <- function(spec) {
       error = function(e) NULL
     )
 
-  !is.null(python) && file.exists(python)
+  !is.null(python) && file.exists(python) && python_executable_works(python)
 }
 
 prepend_path_var <- function(var, values) {
@@ -844,8 +844,11 @@ configure_python_runtime <- function(python_path) {
     "PATH",
     c(
       python_dir,
+      env_path,
+      file.path(env_path, "DLLs"),
       file.path(env_path, "bin"),
       file.path(env_path, "Library", "bin"),
+      file.path(env_path, "Library", "usr", "bin"),
       file.path(env_path, "Scripts")
     )
   )
@@ -1938,15 +1941,45 @@ conda_env_python_path <- function(env_path) {
   file.path(env_path, conda_env_python_suffix())
 }
 
+python_executable_works <- function(python) {
+  python <- as.character(python)
+  if (length(python) != 1L || is.na(python) || !nzchar(python) || !file.exists(python)) {
+    return(FALSE)
+  }
+
+  output <- tryCatch(
+    suppressWarnings(system2(
+      python,
+      c("-c", shQuote("import sys; print(sys.executable)")),
+      stdout = TRUE,
+      stderr = TRUE
+    )),
+    error = function(...) structure(character(), status = 1L)
+  )
+  status <- attr(output, "status", exact = TRUE)
+  is.null(status) || identical(status, 0L)
+}
+
 valid_conda_env_paths <- function(env_paths) {
   env_paths <- normalize_conda_paths_vector(env_paths)
   if (length(env_paths) == 0) {
     return(logical())
   }
 
-  !is.na(env_paths) &
+  python_paths <- conda_env_python_path(env_paths)
+  keep <- !is.na(env_paths) &
     dir.exists(file.path(env_paths, "conda-meta")) &
-    file.exists(conda_env_python_path(env_paths))
+    file.exists(python_paths)
+
+  if (any(keep)) {
+    keep[keep] <- vapply(
+      python_paths[keep],
+      python_executable_works,
+      logical(1)
+    )
+  }
+
+  keep
 }
 
 conda_env_path_in_dirs <- function(env_paths, envs_dirs, root_prefix = NULL) {
@@ -1978,7 +2011,9 @@ filter_conda_env_table <- function(conda_envs, envs_dirs = NULL, root_prefix = N
   }
 
   env_paths <- normalize_conda_paths_vector(dirname(dirname(conda_envs$python)))
-  keep <- file.exists(conda_envs$python) & valid_conda_env_paths(env_paths)
+  keep <- file.exists(conda_envs$python) &
+    valid_conda_env_paths(env_paths) &
+    vapply(conda_envs$python, python_executable_works, logical(1))
 
   scoped <- conda_env_path_in_dirs(
     env_paths = env_paths,
