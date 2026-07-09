@@ -36,7 +36,6 @@ RunSCENIC(
   return_seurat = TRUE,
   envname = NULL,
   conda = "auto",
-  prepare_env = TRUE,
   verbose = TRUE
 )
 }
@@ -132,9 +131,6 @@ automatically reduced to one core.}
 \code{"scenic_env"} environment is used.}
 
 \item{conda}{The path or command name of a conda-compatible executable.}
-
-\item{prepare_env}{Whether to prepare and configure the SCENIC Python
-environment before running.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
