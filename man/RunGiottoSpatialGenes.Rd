@@ -110,9 +110,6 @@ GiottoPlot(
   coord.cols = c("x", "y")
 )
 
-if (
-  isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
-) {
 spatial <- Seurat::FindVariableFeatures(
   spatial,
   assay = "Spatial",
@@ -127,6 +124,5 @@ giotto_genes <- RunGiottoSpatialGenes(
   coord.cols = c("x", "y"),
   top_n = 50
 )
-}
 
 }

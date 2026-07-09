@@ -45,22 +45,18 @@
 #' spatial <- visium_human_pancreas_sub
 #' spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 #'
-#' if (
-#'   isTRUE(check_r("mistyR", verbose = FALSE))
-#' ) {
-#'   spatial <- RunMistyR(
-#'     spatial,
-#'     assay = "Spatial",
-#'     layer = "data",
-#'     features = rownames(spatial)[1:10],
-#'     coord.cols = c("x", "y"),
-#'     views = "para",
-#'     para_l = 5,
-#'     cv_folds = 3,
-#'     verbose = FALSE
-#'   )
-#'   spatial@tools$MistyR$summary
-#' }
+#' spatial <- RunMistyR(
+#'   spatial,
+#'   assay = "Spatial",
+#'   layer = "data",
+#'   features = rownames(spatial)[1:10],
+#'   coord.cols = c("x", "y"),
+#'   views = "para",
+#'   para_l = 5,
+#'   cv_folds = 3,
+#'   verbose = FALSE
+#' )
+#' spatial@tools$MistyR$summary
 RunMistyR <- function(
   srt,
   assay = NULL,

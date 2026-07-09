@@ -104,9 +104,6 @@ class(proximity) <- c("giotto2_cell_proximity", "giotto2_result", "list")
 head(proximity$enrichment)
 GiottoPlot(proximity)
 
-if (
-  isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
-) {
 spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 proximity <- RunGiottoCellProximity(
   spatial,
@@ -117,6 +114,5 @@ proximity <- RunGiottoCellProximity(
   network_method = "Delaunay",
   number_of_simulations = 100
 )
-}
 
 }
