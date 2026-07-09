@@ -60,8 +60,6 @@
 #' @param envname Python environment used for SCENIC. If `NULL`, the isolated
 #' `"scenic_env"` environment is used.
 #' @param conda The path or command name of a conda-compatible executable.
-#' @param prepare_env Whether to prepare and configure the SCENIC Python
-#' environment before running.
 #'
 #' @return A Seurat object with SCENIC results, or a result list when
 #' `return_seurat = FALSE`.
@@ -108,7 +106,6 @@ RunSCENIC <- function(
   return_seurat = TRUE,
   envname = NULL,
   conda = "auto",
-  prepare_env = TRUE,
   verbose = TRUE
 ) {
   if (!inherits(srt, "Seurat")) {
@@ -245,20 +242,6 @@ RunSCENIC <- function(
     "distributed==2024.2.1",
     "pyarrow"
   )
-  if (isTRUE(prepare_env)) {
-    scenic_progress_step(
-      progress_state,
-      value = 10,
-      label = "Preparing SCENIC Python environment",
-      verbose = verbose
-    )
-    PrepareEnv(
-      envname = envname,
-      conda = conda,
-      version = "3.10-1",
-      modules = "scenic"
-    )
-  }
   scenic_progress_step(
     progress_state,
     value = 15,
@@ -870,10 +853,11 @@ scenic_cpp <- function(
   }
   if (grn_force) {
     timed <- stage_time({
-      scenic_run_grn_method(
-        grn_matrix = Matrix::t(grn_matrix),
+      RunGRN(
+        object = Matrix::t(grn_matrix),
         regulators = regulators,
         targets = targets,
+        genes_in = "columns",
         grn_method = "grnboost2",
         backend = "cpp",
         output_file = adj_file,

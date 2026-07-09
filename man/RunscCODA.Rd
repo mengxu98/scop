@@ -13,7 +13,7 @@ RunscCODA(
   reference_cell_type = NULL,
   credible_effect_threshold = 0.95,
   n_mcmc_samples = 20000L,
-  envname = "scop_sccoda_env",
+  envname = "sccoda_env",
   conda = "auto",
   seed = 11,
   verbose = TRUE
@@ -44,7 +44,7 @@ credible effects.}
 \item{n_mcmc_samples}{Number of MCMC samples requested in scCODA.}
 
 \item{envname}{Name of the conda-compatible environment used by scCODA.
-Defaults to \code{"scop_sccoda_env"} to keep the TensorFlow/scCODA stack isolated
+Defaults to \code{"sccoda_env"} to keep the TensorFlow/scCODA stack isolated
 from the default Python environment.}
 
 \item{conda}{The path or command name of a conda-compatible executable.}

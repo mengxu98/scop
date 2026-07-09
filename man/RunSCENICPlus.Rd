@@ -11,7 +11,7 @@ RunSCENICPlus(
   rna_layer = "counts",
   atac_layer = "counts",
   backend = c("cpp", "python"),
-  grn_method = c("grnboost2", "regdiffusion", "genie3"),
+  grn_method = c("grnboost2", "regdiffusion", "genie3", "gniplr"),
   regulators = NULL,
   rna_expr = NULL,
   atac_expr = NULL,
@@ -51,7 +51,6 @@ RunSCENICPlus(
   scplus_object = NULL,
   envname = "scenicplus_env",
   conda = "auto",
-  prepare_env = TRUE,
   verbose = TRUE
 )
 }
@@ -71,8 +70,8 @@ RunSCENICPlus(
 substitute the native result.}
 
 \item{grn_method}{GRN method used for TF-gene inference. The native backend
-can call \code{RunGRNBoost2()} or \code{RunGENIE3()}; RegDiffusion is supported only
-through the Python backend.}
+can call \code{RunGRNBoost2()}, \code{RunGENIE3()}, or \code{RunGNIPLR()};
+RegDiffusion and GNIPLR are supported through the Python backend.}
 
 \item{regulators}{Candidate transcription factors. If \code{NULL}, motif TF names
 are used when available; otherwise all RNA genes are considered.}
@@ -202,9 +201,6 @@ standardization. Used only for \code{backend = "python"}.}
 \item{envname}{Python environment used when \code{backend = "python"}.}
 
 \item{conda}{Conda-compatible executable used when \code{backend = "python"}.}
-
-\item{prepare_env}{Whether to prepare the Python environment for
-\code{backend = "python"}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

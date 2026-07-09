@@ -16,8 +16,8 @@
 #' `"python"` checks the official Python environment but does not silently
 #' substitute the native result.
 #' @param grn_method GRN method used for TF-gene inference. The native backend
-#' can call `RunGRNBoost2()` or `RunGENIE3()`; RegDiffusion is supported only
-#' through the Python backend.
+#' can call `RunGRNBoost2()`, `RunGENIE3()`, or `RunGNIPLR()`;
+#' RegDiffusion and GNIPLR are supported through the Python backend.
 #' @param regulators Candidate transcription factors. If `NULL`, motif TF names
 #' are used when available; otherwise all RNA genes are considered.
 #' @param rna_expr Optional expression matrix used for native TF-gene and
@@ -108,8 +108,6 @@
 #' standardization. Used only for `backend = "python"`.
 #' @param envname Python environment used when `backend = "python"`.
 #' @param conda Conda-compatible executable used when `backend = "python"`.
-#' @param prepare_env Whether to prepare the Python environment for
-#' `backend = "python"`.
 #'
 #' @return A Seurat object with SCENICPlus-style results.
 #' @export
@@ -120,7 +118,7 @@ RunSCENICPlus <- function(
   rna_layer = "counts",
   atac_layer = "counts",
   backend = c("cpp", "python"),
-  grn_method = c("grnboost2", "regdiffusion", "genie3"),
+  grn_method = c("grnboost2", "regdiffusion", "genie3", "gniplr"),
   regulators = NULL,
   rna_expr = NULL,
   atac_expr = NULL,
@@ -160,7 +158,6 @@ RunSCENICPlus <- function(
   scplus_object = NULL,
   envname = "scenicplus_env",
   conda = "auto",
-  prepare_env = TRUE,
   verbose = TRUE
 ) {
   if (!inherits(srt, "Seurat")) {
@@ -178,7 +175,6 @@ RunSCENICPlus <- function(
       srt = srt,
       envname = envname,
       conda = conda,
-      prepare_env = prepare_env,
       python_result_dir = python_result_dir,
       scplus_object = scplus_object,
       rna_assay = rna_assay,
@@ -347,6 +343,8 @@ RunSCENICPlus <- function(
       early_stop_window_length = grn_early_stop_window_length,
       seed = seed,
       cores = cores,
+      envname = envname,
+      conda = conda,
       verbose = verbose
     )
   }
@@ -486,7 +484,6 @@ run_scenicplus_python <- function(
   srt,
   envname,
   conda,
-  prepare_env,
   python_result_dir = NULL,
   scplus_object = NULL,
   rna_assay = "RNA",
@@ -497,14 +494,6 @@ run_scenicplus_python <- function(
   verbose = TRUE
 ) {
   needs_python_runtime <- !is.null(scplus_object)
-  if (isTRUE(needs_python_runtime) && isTRUE(prepare_env)) {
-    PrepareEnv(
-      envname = envname,
-      conda = conda,
-      version = "3.11-1",
-      modules = "scenicplus"
-    )
-  }
   if (isTRUE(needs_python_runtime)) {
     check_python(
       packages = "scenicplus",
@@ -1183,7 +1172,7 @@ scenicplus_tf_gene_native <- function(
   rna_counts,
   regulators,
   targets = NULL,
-  grn_method = c("grnboost2", "regdiffusion", "genie3"),
+  grn_method = c("grnboost2", "regdiffusion", "genie3", "gniplr"),
   max_edges_per_target = Inf,
   n_rounds = 5000,
   learning_rate = 0.01,
@@ -1193,13 +1182,16 @@ scenicplus_tf_gene_native <- function(
   early_stop_window_length = 25,
   seed = 666,
   cores = 1,
+  envname = "scenic_env",
+  conda = "auto",
   verbose = TRUE
 ) {
   grn_method <- match.arg(grn_method)
-  adjacency <- scenic_run_grn_method(
-    grn_matrix = Matrix::t(rna_counts),
+  adjacency <- RunGRN(
+    object = Matrix::t(rna_counts),
     regulators = regulators,
     targets = targets,
+    genes_in = "columns",
     grn_method = grn_method,
     backend = "cpp",
     output_file = tempfile(pattern = "scenicplus_tf_gene_", fileext = ".tsv"),
@@ -1213,6 +1205,8 @@ scenicplus_tf_gene_native <- function(
     seed = seed,
     exclude_self = FALSE,
     cores = cores,
+    envname = envname,
+    conda = conda,
     force = TRUE,
     verbose = verbose
   )

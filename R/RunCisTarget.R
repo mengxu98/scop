@@ -33,7 +33,6 @@
 #' @param prefix Prefix for output files.
 #' @param envname Python environment name (Python backend only).
 #' @param conda Conda-compatible executable (Python backend only).
-#' @param prepare_env Whether to prepare the Python environment.
 #' @param cores Number of workers.
 #' @param force Whether to rebuild existing outputs.
 #' @param verbose Whether to print progress messages.
@@ -78,7 +77,6 @@ RunCisTarget <- function(
   data_dir = NULL,
   envname = NULL,
   conda = "auto",
-  prepare_env = TRUE,
   cores = 1,
   force = FALSE,
   verbose = TRUE,
@@ -157,7 +155,6 @@ RunCisTarget <- function(
       prefix = prefix,
       envname = envname,
       conda = conda,
-      prepare_env = prepare_env,
       cores = cores,
       force = force,
       verbose = verbose,
@@ -194,17 +191,12 @@ cisTarget_python <- function(
   prefix,
   envname,
   conda,
-  prepare_env,
   cores,
   force,
   verbose,
   ...
 ) {
   check_r("reticulate", verbose = FALSE)
-
-  if (isTRUE(prepare_env)) {
-    PrepareEnv(envname = envname, modules = "scenic")
-  }
 
   functions <- reticulate::import_from_path(
     "functions",
