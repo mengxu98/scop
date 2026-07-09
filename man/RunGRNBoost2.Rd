@@ -33,9 +33,8 @@ RunGRNBoost2(object, ...)
   output_file = NULL,
   work_dir = tempdir(),
   prefix = "grnboost2",
-  envname = "scenic_env",
+  envname = NULL,
   conda = "auto",
-  prepare_env = FALSE,
   cores = 1,
   seed = 1234,
   force = FALSE,
@@ -69,9 +68,8 @@ RunGRNBoost2(object, ...)
   output_file = NULL,
   work_dir = tempdir(),
   prefix = "grnboost2",
-  envname = "scenic_env",
+  envname = NULL,
   conda = "auto",
-  prepare_env = FALSE,
   cores = 1,
   force = FALSE,
   verbose = TRUE,
@@ -142,12 +140,10 @@ candidate filling.}
 
 \item{prefix}{Prefix for temporary Python backend files.}
 
-\item{envname}{Python environment used by Python backends.}
+\item{envname}{Python environment used by Python backends. If `NULL`,
+`backend = "python"` uses the isolated `"scenic_env"` environment.}
 
 \item{conda}{Conda-compatible executable used by Python backends.}
-
-\item{prepare_env}{Whether to prepare the Python environment before running
-Python backends.}
 
 \item{cores}{Number of workers used by native/Python GRNBoost2.}
 

@@ -410,8 +410,10 @@ reference:
 
 - subtitle: "Gene Regulatory Network Inference"
 - contents:
+  - RunGRN
   - RunGRNBoost2
   - RunGENIE3
+  - RunGNIPLR
   - RunSCENIC
   - RunSCENICPlus
 

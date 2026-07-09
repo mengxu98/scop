@@ -101,6 +101,10 @@ scvelo_dynamical_em_cpp <- function(Ms, Mu, use_genes, max_iter_em = 10L, conv_t
     .Call(`_scop_scvelo_dynamical_em_cpp`, Ms, Mu, use_genes, max_iter_em, conv_tol, em_oversampling, init_alpha, init_beta, init_gamma)
 }
 
+gniplr_cpp <- function(expression, target_idx, correlation_threshold = 0.3, lasso_degree = 30L, lasso_alpha = 0.1, max_lag = 3L) {
+    .Call(`_scop_gniplr_cpp`, expression, target_idx, correlation_threshold, lasso_degree, lasso_alpha, max_lag)
+}
+
 aucell_auc_sparse <- function(expr, gene_sets, auc_max_rank, norm_auc = TRUE, strategy = 1L, algorithm = 1L, seed = 0L) {
     .Call(`_scop_aucell_auc_sparse`, expr, gene_sets, auc_max_rank, norm_auc, strategy, algorithm, seed)
 }
@@ -139,6 +143,10 @@ gsva_gaussian_dense <- function(expr, gene_sets, max_diff = TRUE, abs_ranking = 
 
 gsva_poisson_dense <- function(expr, gene_sets, max_diff = TRUE, abs_ranking = FALSE, tau = 1.0, chunk_size = 0L) {
     .Call(`_scop_gsva_poisson_dense`, expr, gene_sets, max_diff, abs_ranking, tau, chunk_size)
+}
+
+mdic3_score_cpp <- function(expression, grn, group) {
+    .Call(`_scop_mdic3_score_cpp`, expression, grn, group)
 }
 
 wilcox_rank_sum_sparse <- function(mat, n_group1, min_expression = 0.0) {

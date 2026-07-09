@@ -15,6 +15,164 @@ _LOG_MESSAGE_SPEC.loader.exec_module(_LOG_MESSAGE_MODULE)
 log_message = _LOG_MESSAGE_MODULE.log_message
 
 
+def RunGNIPLR(
+    expression,
+    genes,
+    targets=None,
+    correlation_threshold=0.3,
+    lasso_degree=30,
+    lasso_alpha=0.1,
+    max_lag=3,
+    verbose=True,
+):
+    import numpy as np
+    import pandas as pd
+    import scipy.stats as stat
+    import statsmodels.api as sm
+    from sklearn.linear_model import Lasso, LinearRegression
+    from sklearn.pipeline import Pipeline
+    from sklearn.preprocessing import PolynomialFeatures, StandardScaler
+
+    aa = np.asarray(expression, dtype="float64")
+    genes = list(genes)
+    if aa.shape[0] != len(genes):
+        raise ValueError("expression rows must match genes")
+    target_set = set(targets) if targets is not None else set(genes)
+    cellnum = aa.shape[1]
+    gene_num = aa.shape[0]
+    max_lag = max(1, min(3, int(max_lag)))
+    min_cells = {1: 4, 2: 6, 3: 8}[max_lag]
+    if cellnum < min_cells:
+        raise ValueError(
+            f"GNIPLR requires at least {min_cells} cells for max_lag={max_lag} Granger tests"
+        )
+
+    with np.errstate(invalid="ignore", divide="ignore"):
+        pear = np.corrcoef(aa)
+    pear = np.nan_to_num(pear, nan=0.0, posinf=0.0, neginf=0.0)
+    grn = np.zeros((gene_num, gene_num), dtype="float64")
+
+    def lasso_regress(gene_1, gene_2):
+        le_g1 = len(gene_1)
+        t = np.linspace(min(gene_1), max(gene_1), num=le_g1)
+        paired = sorted(zip(gene_1, gene_2), key=lambda x: x[0])
+        a1, b1 = (np.array(x).reshape(-1, 1) for x in zip(*paired))
+        model = Pipeline([
+            ("poly", PolynomialFeatures(degree=int(lasso_degree))),
+            ("std_scaler", StandardScaler()),
+            ("lasso_reg", Lasso(alpha=float(lasso_alpha))),
+        ])
+        model.fit(a1, t)
+        return model.predict(a1), model.predict(b1)
+
+    def rss_calculate(model, right_v, left1_v, left2_v):
+        model.fit(left1_v, right_v)
+        rssu = np.sum((model.predict(left1_v) - right_v) ** 2)
+        model.fit(left2_v, right_v)
+        rssr = np.sum((model.predict(left2_v) - right_v) ** 2)
+        return rssu, rssr
+
+    def granger(gene1, gene2):
+        sort_1 = sorted(zip(gene1, gene2), key=lambda x: x[0])
+        a1, b1 = (list(x) for x in zip(*sort_1))
+        a1_cha = ((300 * pd.Series(a1)) / 90001).tolist()
+        b1_cha = ((300 * pd.Series(b1)) / 90001).tolist()
+        model = LinearRegression()
+        pvals = []
+
+        if max_lag >= 1 and cellnum > 3:
+            b1_t = np.array(b1_cha[0:cellnum - 1])
+            full = sm.add_constant(np.array(pd.concat([
+                pd.Series(a1_cha),
+                pd.Series(b1_cha),
+            ], axis=1)[1:]))
+            restricted = sm.add_constant(np.array(b1_cha[1:cellnum]))
+            rssu, rssr = rss_calculate(model, b1_t, full, restricted)
+            denom = rssu / (cellnum - 3)
+            fval = ((rssr - rssu) / 1) / denom if denom > 0 else np.nan
+            if np.isfinite(fval) and fval >= 0:
+                pvals.append(stat.f.sf(fval, 1, cellnum - 3))
+
+        if max_lag >= 2 and cellnum > 5:
+            b1_t = np.array(b1_cha[0:cellnum - 2])
+            full = sm.add_constant(np.array(pd.concat([
+                pd.Series(a1_cha)[1:cellnum - 1].reset_index(drop=True),
+                pd.Series(a1_cha)[2:cellnum].reset_index(drop=True),
+                pd.Series(b1_cha)[1:cellnum - 1].reset_index(drop=True),
+                pd.Series(b1_cha)[2:cellnum].reset_index(drop=True),
+            ], axis=1)))
+            restricted = sm.add_constant(np.array(pd.concat([
+                pd.Series(b1_cha)[1:cellnum - 1].reset_index(drop=True),
+                pd.Series(b1_cha)[2:cellnum].reset_index(drop=True),
+            ], axis=1)))
+            rssu, rssr = rss_calculate(model, b1_t, full, restricted)
+            denom = rssu / (cellnum - 5)
+            fval = ((rssr - rssu) / 2) / denom if denom > 0 else np.nan
+            if np.isfinite(fval) and fval >= 0:
+                pvals.append(stat.f.sf(fval, 2, cellnum - 5))
+
+        if max_lag >= 3 and cellnum > 7:
+            b1_t = np.array(b1_cha[0:cellnum - 3])
+            full = sm.add_constant(np.array(pd.concat([
+                pd.Series(a1_cha)[1:cellnum - 2].reset_index(drop=True),
+                pd.Series(a1_cha)[3:cellnum].reset_index(drop=True),
+                pd.Series(a1_cha)[2:cellnum - 1].reset_index(drop=True),
+                pd.Series(b1_cha)[1:cellnum - 2].reset_index(drop=True),
+                pd.Series(b1_cha)[3:cellnum].reset_index(drop=True),
+                pd.Series(b1_cha)[2:cellnum - 1].reset_index(drop=True),
+            ], axis=1)))
+            restricted = sm.add_constant(np.array(pd.concat([
+                pd.Series(b1_cha)[1:cellnum - 2].reset_index(drop=True),
+                pd.Series(b1_cha)[3:cellnum].reset_index(drop=True),
+                pd.Series(b1_cha)[2:cellnum - 1].reset_index(drop=True),
+            ], axis=1)))
+            rssu, rssr = rss_calculate(model, b1_t, full, restricted)
+            denom = rssu / (cellnum - 7)
+            fval = ((rssr - rssu) / 3) / denom if denom > 0 else np.nan
+            if np.isfinite(fval) and fval >= 0:
+                pvals.append(stat.f.sf(fval, 3, cellnum - 7))
+
+        pvals = [p for p in pvals if np.isfinite(p)]
+        return min(pvals) if pvals else 1.0
+
+    for i in range(gene_num):
+        row = pear[i].copy()
+        row = np.delete(row, i)
+        mpmax = np.max(np.abs(row)) if row.size else 0.0
+        if mpmax <= 0:
+            continue
+        for j in range(gene_num):
+            if i == j or genes[j] not in target_set:
+                continue
+            corr = pear[i, j]
+            if abs(corr) < mpmax * float(correlation_threshold):
+                continue
+            gene1, gene2 = lasso_regress(aa[i, :], aa[j, :])
+            if np.array_equal(gene1, gene2):
+                continue
+            p = granger(gene1, gene2)
+            if np.isfinite(p):
+                grn[i, j] = p
+
+    rows = []
+    nz = np.argwhere(grn > 0)
+    for i, j in nz:
+        p = float(grn[i, j])
+        rows.append({
+            "TF": genes[i],
+            "target": genes[j],
+            "pvalue": p,
+            "importance": -np.log10(max(p, np.finfo(float).tiny)),
+        })
+    adjacency = pd.DataFrame(rows, columns=["TF", "target", "importance", "pvalue"])
+    if not adjacency.empty:
+        adjacency = adjacency.sort_values(
+            ["importance", "TF", "target"],
+            ascending=[False, True, True],
+        ).reset_index(drop=True)
+    return {"adjacency": adjacency, "grn_matrix": grn}
+
+
 def configure_apple_silicon_env(
     scanpy_settings=False,
     scanpy_verbosity=False,

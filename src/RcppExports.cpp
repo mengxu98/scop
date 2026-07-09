@@ -386,6 +386,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// gniplr_cpp
+List gniplr_cpp(arma::mat expression, IntegerVector target_idx, double correlation_threshold, int lasso_degree, double lasso_alpha, int max_lag);
+RcppExport SEXP _scop_gniplr_cpp(SEXP expressionSEXP, SEXP target_idxSEXP, SEXP correlation_thresholdSEXP, SEXP lasso_degreeSEXP, SEXP lasso_alphaSEXP, SEXP max_lagSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type expression(expressionSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type target_idx(target_idxSEXP);
+    Rcpp::traits::input_parameter< double >::type correlation_threshold(correlation_thresholdSEXP);
+    Rcpp::traits::input_parameter< int >::type lasso_degree(lasso_degreeSEXP);
+    Rcpp::traits::input_parameter< double >::type lasso_alpha(lasso_alphaSEXP);
+    Rcpp::traits::input_parameter< int >::type max_lag(max_lagSEXP);
+    rcpp_result_gen = Rcpp::wrap(gniplr_cpp(expression, target_idx, correlation_threshold, lasso_degree, lasso_alpha, max_lag));
+    return rcpp_result_gen;
+END_RCPP
+}
 // aucell_auc_sparse
 NumericMatrix aucell_auc_sparse(S4 expr, List gene_sets, int auc_max_rank, bool norm_auc, int strategy, int algorithm, int seed);
 RcppExport SEXP _scop_aucell_auc_sparse(SEXP exprSEXP, SEXP gene_setsSEXP, SEXP auc_max_rankSEXP, SEXP norm_aucSEXP, SEXP strategySEXP, SEXP algorithmSEXP, SEXP seedSEXP) {
@@ -533,6 +549,19 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type tau(tauSEXP);
     Rcpp::traits::input_parameter< int >::type chunk_size(chunk_sizeSEXP);
     rcpp_result_gen = Rcpp::wrap(gsva_poisson_dense(expr, gene_sets, max_diff, abs_ranking, tau, chunk_size));
+    return rcpp_result_gen;
+END_RCPP
+}
+// mdic3_score_cpp
+List mdic3_score_cpp(NumericMatrix expression, NumericMatrix grn, IntegerVector group);
+RcppExport SEXP _scop_mdic3_score_cpp(SEXP expressionSEXP, SEXP grnSEXP, SEXP groupSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type expression(expressionSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type grn(grnSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type group(groupSEXP);
+    rcpp_result_gen = Rcpp::wrap(mdic3_score_cpp(expression, grn, group));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -2601,6 +2630,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_scvelo_dynamical_nm_cpp", (DL_FUNC) &_scop_scvelo_dynamical_nm_cpp, 7},
     {"_scop_scvelo_dynamical_velocity_cpp", (DL_FUNC) &_scop_scvelo_dynamical_velocity_cpp, 8},
     {"_scop_scvelo_dynamical_em_cpp", (DL_FUNC) &_scop_scvelo_dynamical_em_cpp, 9},
+    {"_scop_gniplr_cpp", (DL_FUNC) &_scop_gniplr_cpp, 6},
     {"_scop_aucell_auc_sparse", (DL_FUNC) &_scop_aucell_auc_sparse, 7},
     {"_scop_aucell_auc_ranked", (DL_FUNC) &_scop_aucell_auc_ranked, 3},
     {"_scop_ora_hypergeom", (DL_FUNC) &_scop_ora_hypergeom, 7},
@@ -2611,6 +2641,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_plage_dense", (DL_FUNC) &_scop_plage_dense, 4},
     {"_scop_gsva_gaussian_dense", (DL_FUNC) &_scop_gsva_gaussian_dense, 6},
     {"_scop_gsva_poisson_dense", (DL_FUNC) &_scop_gsva_poisson_dense, 6},
+    {"_scop_mdic3_score_cpp", (DL_FUNC) &_scop_mdic3_score_cpp, 3},
     {"_scop_wilcox_rank_sum_sparse", (DL_FUNC) &_scop_wilcox_rank_sum_sparse, 3},
     {"_scop_wilcox_rank_sum_sparse_all_cells", (DL_FUNC) &_scop_wilcox_rank_sum_sparse_all_cells, 2},
     {"_scop_sparse_topk_by_column", (DL_FUNC) &_scop_sparse_topk_by_column, 3},
