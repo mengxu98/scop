@@ -44,10 +44,9 @@
 #' @param output_file Optional path where the adjacency table is written.
 #' @param work_dir Working directory used by Python backends.
 #' @param prefix Prefix for temporary Python backend files.
-#' @param envname Python environment used by Python backends.
+#' @param envname Python environment used by Python backends. If `NULL`,
+#' `backend = "python"` uses the isolated `"scenic_env"` environment.
 #' @param conda Conda-compatible executable used by Python backends.
-#' @param prepare_env Whether to prepare the Python environment before running
-#' Python backends.
 #' @param cores Number of workers used by native/Python GRNBoost2.
 #' @param seed Random seed passed to supported backends.
 #' @param force Whether to rebuild existing `output_file`.
@@ -86,9 +85,8 @@ RunGRNBoost2.Seurat <- function(
   output_file = NULL,
   work_dir = tempdir(),
   prefix = "grnboost2",
-  envname = "scenic_env",
+  envname = NULL,
   conda = "auto",
-  prepare_env = FALSE,
   cores = 1,
   seed = 1234,
   force = FALSE,
@@ -122,7 +120,6 @@ RunGRNBoost2.Seurat <- function(
     prefix = prefix,
     envname = envname,
     conda = conda,
-    prepare_env = prepare_env,
     cores = cores,
     seed = seed,
     force = force,
@@ -163,19 +160,19 @@ RunGRNBoost2.default <- function(
   output_file = NULL,
   work_dir = tempdir(),
   prefix = "grnboost2",
-  envname = "scenic_env",
+  envname = NULL,
   conda = "auto",
-  prepare_env = FALSE,
   cores = 1,
   force = FALSE,
   verbose = TRUE,
   ...
 ) {
   backend <- match.arg(backend)
-  grn_matrix <- scenic_grn_matrix_from_object(object, genes_in = genes_in)
+  grn_matrix <- grn_matrix_from_object(object, genes_in = genes_in)
   regulators <- regulators %||% colnames(grn_matrix)
   targets <- targets %||% colnames(grn_matrix)
   if (identical(backend, "python")) {
+    envname <- envname %||% "scenic_env"
     return(grnboost_python(
       grn_matrix = grn_matrix,
       regulators = regulators,
@@ -192,7 +189,6 @@ RunGRNBoost2.default <- function(
       prefix = prefix,
       envname = envname,
       conda = conda,
-      prepare_env = prepare_env,
       cores = cores,
       seed = seed,
       force = force,
