@@ -82,7 +82,7 @@ RunGENIE3.default <- function(
   }
   check_r("GENIE3", verbose = FALSE)
   grn_matrix <- object
-  inputs <- scenic_normalize_grn_inputs(
+  inputs <- normalize_grn_inputs(
     grn_matrix,
     regulators = regulators,
     targets = targets
@@ -98,14 +98,14 @@ RunGENIE3.default <- function(
   adjacency <- GENIE3::getLinkList(weightMatrix = weight_matrix)
   colnames(adjacency)[1:3] <- c("TF", "target", "importance")
   adjacency <- adjacency[, c("TF", "target", "importance"), drop = FALSE]
-  adjacency <- scenic_cap_edges_per_target(
+  adjacency <- cap_grn_edges_per_target(
     adjacency,
     max_edges_per_target = max_edges_per_target
   )
   if (nrow(adjacency) == 0L) {
     log_message("GENIE3 returned no edges", message_type = "error")
   }
-  scenic_write_grn_adjacency(
+  write_grn_adjacency(
     adjacency,
     output_file = output_file,
     force = force

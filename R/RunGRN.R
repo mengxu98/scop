@@ -1,4 +1,4 @@
-scenic_grn_matrix_from_object <- function(
+grn_matrix_from_object <- function(
   object,
   genes_in = c("rows", "columns")
 ) {
@@ -33,7 +33,7 @@ scenic_grn_matrix_from_object <- function(
   mat
 }
 
-scenic_normalize_grn_inputs <- function(
+normalize_grn_inputs <- function(
   grn_matrix,
   regulators = NULL,
   targets = NULL
@@ -58,7 +58,7 @@ scenic_normalize_grn_inputs <- function(
   list(regulators = regulators, targets = targets)
 }
 
-scenic_write_grn_adjacency <- function(
+write_grn_adjacency <- function(
   adjacency,
   output_file = NULL,
   force = FALSE
@@ -84,13 +84,50 @@ scenic_write_grn_adjacency <- function(
   adjacency
 }
 
-scenic_py_pkgs <- function(module = c("grnboost2", "regdiffusion")) {
+filter_grn_adjacency_file <- function(
+  input_file,
+  output_file,
+  targets,
+  verbose = TRUE
+) {
+  adjacency <- utils::read.delim(
+    input_file,
+    stringsAsFactors = FALSE,
+    check.names = FALSE
+  )
+  if (!"target" %in% colnames(adjacency)) {
+    log_message(
+      "GRN adjacency file must contain a {.field target} column",
+      message_type = "error"
+    )
+  }
+  adjacency <- adjacency[
+    adjacency[["target"]] %in% targets,
+    ,
+    drop = FALSE
+  ]
+  dir.create(dirname(output_file), recursive = TRUE, showWarnings = FALSE)
+  utils::write.table(
+    adjacency,
+    file = output_file,
+    sep = "\t",
+    quote = FALSE,
+    row.names = FALSE
+  )
+  log_message(
+    "Filtered GRN adjacency to {.val {nrow(adjacency)}} edges",
+    verbose = verbose
+  )
+  invisible(output_file)
+}
+
+grn_python_packages <- function(module = c("grnboost2", "regdiffusion")) {
   module <- match.arg(module)
   if (identical(module, "regdiffusion")) {
     return(c("regdiffusion"))
   }
   c(
-    scenic_backend_requirement(),
+    "pyscenic==0.12.1",
     "arboreto==0.1.6",
     "ctxcore==0.2.0",
     "numpy==1.23.5",
@@ -100,7 +137,7 @@ scenic_py_pkgs <- function(module = c("grnboost2", "regdiffusion")) {
   )
 }
 
-scenic_cap_edges_per_target <- function(adjacency, max_edges_per_target = Inf) {
+cap_grn_edges_per_target <- function(adjacency, max_edges_per_target = Inf) {
   max_edges_per_target <- suppressWarnings(as.numeric(max_edges_per_target))
   adjacency <- adjacency[
     is.finite(adjacency[["importance"]]) & adjacency[["importance"]] > 0,
@@ -137,22 +174,7 @@ scenic_cap_edges_per_target <- function(adjacency, max_edges_per_target = Inf) {
   ]
 }
 
-scenic_normalize_target_importance <- function(adjacency, power = 0.25) {
-  power <- suppressWarnings(as.numeric(power))
-  if (length(power) != 1L || is.na(power) || power <= 0) {
-    return(adjacency)
-  }
-  target_total <- stats::ave(
-    abs(adjacency[["importance"]]),
-    adjacency[["target"]],
-    FUN = sum
-  )
-  target_total[!is.finite(target_total) | target_total <= 0] <- 1
-  adjacency[["importance"]] <- adjacency[["importance"]] / (target_total^power)
-  adjacency
-}
-
-scenic_fill_grnboost_edges <- function(
+fill_grnboost_edges <- function(
   adjacency,
   grn_matrix,
   regulators,
@@ -241,7 +263,7 @@ scenic_fill_grnboost_edges <- function(
     correlation_weight * cor_score +
     covariance_weight * cov_score
   filled <- filled[, c("TF", "target", "importance"), drop = FALSE]
-  scenic_cap_edges_per_target(
+  cap_grn_edges_per_target(
     filled,
     max_edges_per_target = max_edges_per_target
   )
@@ -284,7 +306,7 @@ grnboost <- function(
   if (length(cores) != 1L || is.na(cores) || cores < 1L) {
     cores <- 1L
   }
-  inputs <- scenic_normalize_grn_inputs(
+  inputs <- normalize_grn_inputs(
     grn_matrix,
     regulators = regulators,
     targets = targets
@@ -312,8 +334,11 @@ grnboost <- function(
     )
   }
   expr <- if (inherits(grn_matrix, "dgCMatrix")) {
-    density <- Matrix::nnzero(grn_matrix) / (nrow(grn_matrix) * ncol(grn_matrix))
-    if (max_edges_per_target_cpp == 0L || (is.finite(density) && density < 0.05)) {
+    density <- Matrix::nnzero(grn_matrix) /
+      (nrow(grn_matrix) * ncol(grn_matrix))
+    if (
+      max_edges_per_target_cpp == 0L || (is.finite(density) && density < 0.05)
+    ) {
       log_message(
         "Detected sparse input, using sparse-native GRNBoost2 backend",
         verbose = verbose
@@ -342,7 +367,10 @@ grnboost <- function(
         max_depth = as.integer(max(1L, max_depth)),
         max_features = max_features,
         subsample = subsample,
-        early_stop_window_length = as.integer(max(0L, early_stop_window_length)),
+        early_stop_window_length = as.integer(max(
+          0L,
+          early_stop_window_length
+        )),
         random_seed = as.integer(seed %||% 1234L),
         exclude_self = isTRUE(exclude_self)
       )
@@ -357,7 +385,10 @@ grnboost <- function(
         max_depth = as.integer(max(1L, max_depth)),
         max_features = max_features,
         subsample = subsample,
-        early_stop_window_length = as.integer(max(0L, early_stop_window_length)),
+        early_stop_window_length = as.integer(max(
+          0L,
+          early_stop_window_length
+        )),
         random_seed = as.integer(seed %||% 1234L),
         exclude_self = isTRUE(exclude_self)
       )
@@ -379,7 +410,10 @@ grnboost <- function(
         max_depth = as.integer(max(1L, max_depth)),
         max_features = max_features,
         subsample = subsample,
-        early_stop_window_length = as.integer(max(0L, early_stop_window_length)),
+        early_stop_window_length = as.integer(max(
+          0L,
+          early_stop_window_length
+        )),
         random_seed = as.integer(seed %||% 1234L),
         exclude_self = isTRUE(exclude_self),
         cores = as.integer(cores)
@@ -395,7 +429,10 @@ grnboost <- function(
         max_depth = as.integer(max(1L, max_depth)),
         max_features = max_features,
         subsample = subsample,
-        early_stop_window_length = as.integer(max(0L, early_stop_window_length)),
+        early_stop_window_length = as.integer(max(
+          0L,
+          early_stop_window_length
+        )),
         random_seed = as.integer(seed %||% 1234L),
         exclude_self = isTRUE(exclude_self),
         cores = as.integer(cores)
@@ -416,12 +453,23 @@ grnboost <- function(
     importance = edge_idx[["importance"]],
     stringsAsFactors = FALSE
   )
-  adjacency <- scenic_normalize_target_importance(
-    adjacency,
-    power = importance_norm_power
-  )
+  importance_norm_power <- suppressWarnings(as.numeric(importance_norm_power))
+  if (
+    length(importance_norm_power) == 1L &&
+      !is.na(importance_norm_power) &&
+      importance_norm_power > 0
+  ) {
+    target_total <- stats::ave(
+      abs(adjacency[["importance"]]),
+      adjacency[["target"]],
+      FUN = sum
+    )
+    target_total[!is.finite(target_total) | target_total <= 0] <- 1
+    adjacency[["importance"]] <- adjacency[["importance"]] /
+      (target_total^importance_norm_power)
+  }
   if (isTRUE(correlation_fill)) {
-    adjacency <- scenic_fill_grnboost_edges(
+    adjacency <- fill_grnboost_edges(
       adjacency = adjacency,
       grn_matrix = grn_matrix,
       regulators = inputs[["regulators"]],
@@ -438,7 +486,7 @@ grnboost <- function(
     ,
     drop = FALSE
   ]
-  scenic_write_grn_adjacency(
+  write_grn_adjacency(
     adjacency,
     output_file = output_file,
     force = force
@@ -459,14 +507,14 @@ grnboost_python <- function(
   output_file = NULL,
   work_dir = tempdir(),
   prefix = "grnboost2",
-  envname = "scenic_env",
+  envname = NULL,
   conda = "auto",
-  prepare_env = FALSE,
   cores = 1,
   seed = 1234,
   force = FALSE,
   verbose = TRUE
 ) {
+  envname <- envname %||% "scenic_env"
   output_file <- output_file %||%
     file.path(work_dir, paste0(prefix, "_adj.tsv"))
   if (file.exists(output_file) && isFALSE(force)) {
@@ -477,7 +525,7 @@ grnboost_python <- function(
       check.names = FALSE
     ))
   }
-  inputs <- scenic_normalize_grn_inputs(
+  inputs <- normalize_grn_inputs(
     grn_matrix,
     regulators = regulators,
     targets = targets
@@ -494,16 +542,8 @@ grnboost_python <- function(
   grn_sub <- grn_matrix[, genes_keep, drop = FALSE]
   utils::write.csv(as.matrix(grn_sub), file = expr_csv, row.names = TRUE)
   writeLines(inputs[["regulators"]], regulators_file, useBytes = TRUE)
-  if (isTRUE(prepare_env)) {
-    PrepareEnv(
-      envname = envname,
-      conda = conda,
-      version = "3.10-1",
-      modules = "scenic"
-    )
-  }
   check_python(
-    packages = scenic_py_pkgs("grnboost2"),
+    packages = grn_python_packages("grnboost2"),
     envname = envname,
     conda = conda,
     verbose = verbose
@@ -512,7 +552,10 @@ grnboost_python <- function(
   python_path <- conda_python(conda = conda_resolved, envname = envname)
   assert_python_runtime_switchable(
     python_path,
-    restart_hint = scenic_runtime_restart_hint(envname = envname)
+    restart_hint = python_runtime_restart_hint(
+      envname = envname,
+      modules = "scenic"
+    )
   )
   configure_python_runtime(python_path)
   functions <- reticulate::import_from_path(
@@ -536,7 +579,7 @@ grnboost_python <- function(
     verbose = isTRUE(verbose)
   )
   if (!identical(raw_file, output_file)) {
-    scenic_flt_adj(
+    filter_grn_adjacency_file(
       raw_file,
       output_file,
       inputs[["targets"]],
@@ -549,7 +592,7 @@ grnboost_python <- function(
     check.names = FALSE
   )
   if (is.finite(max_edges_per_target) && max_edges_per_target > 0) {
-    adjacency <- scenic_cap_edges_per_target(adjacency, max_edges_per_target)
+    adjacency <- cap_grn_edges_per_target(adjacency, max_edges_per_target)
   }
   adjacency
 }
@@ -561,13 +604,13 @@ regdiffusion_python <- function(
   output_file = NULL,
   work_dir = tempdir(),
   prefix = "regdiffusion",
-  envname = "scenic_env",
+  envname = NULL,
   conda = "auto",
-  prepare_env = FALSE,
   force = FALSE,
   verbose = TRUE,
   ...
 ) {
+  envname <- envname %||% "scenic_env"
   output_file <- output_file %||%
     file.path(work_dir, paste0(prefix, "_adj.tsv"))
   if (file.exists(output_file) && isFALSE(force)) {
@@ -581,7 +624,7 @@ regdiffusion_python <- function(
       check.names = FALSE
     ))
   }
-  inputs <- scenic_normalize_grn_inputs(
+  inputs <- normalize_grn_inputs(
     grn_matrix,
     regulators = regulators,
     targets = targets
@@ -598,16 +641,8 @@ regdiffusion_python <- function(
   grn_sub <- grn_matrix[, genes_keep, drop = FALSE]
   utils::write.csv(as.matrix(grn_sub), file = expr_csv, row.names = TRUE)
   writeLines(inputs[["regulators"]], regulators_file, useBytes = TRUE)
-  if (isTRUE(prepare_env)) {
-    PrepareEnv(
-      envname = envname,
-      conda = conda,
-      version = "3.10-1",
-      modules = c("scenic", "regdiffusion")
-    )
-  }
   check_python(
-    packages = scenic_py_pkgs("regdiffusion"),
+    packages = grn_python_packages("regdiffusion"),
     envname = envname,
     conda = conda,
     verbose = verbose
@@ -616,7 +651,10 @@ regdiffusion_python <- function(
   python_path <- conda_python(conda = conda_resolved, envname = envname)
   assert_python_runtime_switchable(
     python_path,
-    restart_hint = scenic_runtime_restart_hint(envname = envname)
+    restart_hint = python_runtime_restart_hint(
+      envname = envname,
+      modules = "regdiffusion"
+    )
   )
   configure_python_runtime(python_path)
   functions <- reticulate::import_from_path(
@@ -633,7 +671,7 @@ regdiffusion_python <- function(
     ...
   )
   if (!identical(raw_file, output_file)) {
-    scenic_flt_adj(
+    filter_grn_adjacency_file(
       raw_file,
       output_file,
       inputs[["targets"]],
@@ -663,7 +701,7 @@ genie3 <- function(
     ))
   }
   check_r("GENIE3", verbose = FALSE)
-  inputs <- scenic_normalize_grn_inputs(
+  inputs <- normalize_grn_inputs(
     grn_matrix,
     regulators = regulators,
     targets = targets
@@ -679,27 +717,136 @@ genie3 <- function(
   adjacency <- GENIE3::getLinkList(weightMatrix = weight_matrix)
   colnames(adjacency)[1:3] <- c("TF", "target", "importance")
   adjacency <- adjacency[, c("TF", "target", "importance"), drop = FALSE]
-  adjacency <- scenic_cap_edges_per_target(
+  adjacency <- cap_grn_edges_per_target(
     adjacency,
     max_edges_per_target = max_edges_per_target
   )
   if (nrow(adjacency) == 0L) {
     log_message("GENIE3 returned no edges", message_type = "error")
   }
-  scenic_write_grn_adjacency(
+  write_grn_adjacency(
     adjacency,
     output_file = output_file,
     force = force
   )
 }
 
-scenic_run_grn_method <- function(
-  grn_matrix,
-  regulators,
+#' @title Infer gene regulatory networks with a selected backend method
+#'
+#' @description
+#' Unified GRN inference entry point for GRNBoost2, GENIE3, RegDiffusion, and
+#' GNIPLR. It returns a standardized adjacency table with at least `TF`,
+#' `target`, and `importance` columns.
+#'
+#' @param object A Seurat object or expression matrix.
+#' @param assay Assay used when `object` is a Seurat object.
+#' @param layer Assay layer used when `object` is a Seurat object.
+#' @param regulators Candidate transcription factor genes.
+#' @param targets Optional target genes. If `NULL`, all genes are considered.
+#' @param genes_in Matrix orientation for matrix inputs. `"rows"` means genes x
+#' cells; `"columns"` means cells x genes.
+#' @param grn_method GRN inference method.
+#' @param backend Runtime backend. `"cpp"` is available for GRNBoost2 and
+#' GNIPLR; `"python"` is required for RegDiffusion.
+#' @param output_file Optional path where the adjacency table is written.
+#' @param work_dir Working directory used by Python backends.
+#' @param prefix Prefix for temporary backend files.
+#' @param max_edges_per_target Maximum incoming regulator edges retained per
+#' target.
+#' @param n_rounds Number of boosting rounds for GRNBoost2-like inference.
+#' @param learning_rate GRNBoost2-like tree ensemble learning rate.
+#' @param max_depth Maximum depth of each regression tree.
+#' @param max_features Fraction of candidate regulators sampled at each split.
+#' @param subsample Fraction of cells sampled for each boosting round.
+#' @param early_stop_window_length Out-of-bag improvement window used for
+#' GRNBoost2 early stopping.
+#' @param exclude_self Whether GRNBoost2-like inference excludes a target gene
+#' from its own regulator feature set.
+#' @param correlation_threshold Relative correlation filter used by GNIPLR.
+#' @param lasso_degree Polynomial degree used by GNIPLR.
+#' @param lasso_alpha LASSO regularization strength used by GNIPLR.
+#' @param max_lag Maximum lag used by GNIPLR.
+#' @param envname Python environment used by Python backends. If `NULL`,
+#' GNIPLR uses the default `"scop_env"` through [RunGNIPLR()], while pySCENIC
+#' GRNBoost2 and RegDiffusion use the isolated `"scenic_env"` environment.
+#' @param conda Conda-compatible executable used by Python backends.
+#' @param cores Number of workers used by supported methods.
+#' @param seed Random seed passed to supported backends.
+#' @param force Whether to rebuild existing `output_file`.
+#' @param verbose Whether to print progress messages.
+#' @param ... Additional backend-specific arguments.
+#'
+#' @return A data frame with standardized GRN edges.
+#'
+#' @examples
+#' data(pancreas_sub)
+#' expr <- GetAssayData5(
+#'   pancreas_sub,
+#'   assay = SeuratObject::DefaultAssay(pancreas_sub),
+#'   layer = "counts"
+#' )
+#' expr <- as.matrix(expr[, seq_len(8)])
+#' expr <- expr[
+#'   names(sort(apply(expr, 1, stats::var), decreasing = TRUE))[seq_len(5)],
+#' ]
+#'
+#' gniplr_grn <- RunGRN(
+#'   expr,
+#'   genes_in = "rows",
+#'   grn_method = "gniplr",
+#'   backend = "cpp",
+#'   correlation_threshold = 0,
+#'   lasso_degree = 1,
+#'   max_lag = 1,
+#'   max_edges_per_target = 2,
+#'   verbose = FALSE
+#' )
+#' @export
+RunGRN <- function(object, ...) {
+  UseMethod("RunGRN", object)
+}
+
+#' @rdname RunGRN
+#' @export
+RunGRN.Seurat <- function(
+  object,
+  assay = NULL,
+  layer = "counts",
+  regulators = NULL,
   targets = NULL,
-  grn_method = c("grnboost2", "regdiffusion", "genie3"),
+  grn_method = c("grnboost2", "regdiffusion", "genie3", "gniplr"),
   backend = c("cpp", "python"),
-  output_file,
+  ...
+) {
+  assay <- assay %||% SeuratObject::DefaultAssay(object)
+  expr <- GetAssayData5(object, assay = assay, layer = layer)
+  RunGRN.default(
+    expr,
+    regulators = regulators,
+    targets = targets,
+    genes_in = "rows",
+    grn_method = grn_method,
+    backend = backend,
+    ...
+  )
+}
+
+#' @rdname RunGRN
+#' @export
+RunGRN.matrix <- function(object, ...) {
+  RunGRN.default(object, ...)
+}
+
+#' @rdname RunGRN
+#' @export
+RunGRN.default <- function(
+  object,
+  regulators = NULL,
+  targets = NULL,
+  genes_in = c("rows", "columns"),
+  grn_method = c("grnboost2", "regdiffusion", "genie3", "gniplr"),
+  backend = c("cpp", "python"),
+  output_file = NULL,
   work_dir = tempdir(),
   prefix = "grn",
   max_edges_per_target = Inf,
@@ -710,17 +857,29 @@ scenic_run_grn_method <- function(
   subsample = 0.9,
   early_stop_window_length = 25,
   exclude_self = TRUE,
-  envname = "scenic_env",
+  correlation_threshold = 0.3,
+  lasso_degree = 30,
+  lasso_alpha = 0.1,
+  max_lag = 3,
+  envname = NULL,
   conda = "auto",
-  prepare_env = FALSE,
   cores = 1,
   seed = 1234,
   force = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  ...
 ) {
   grn_method <- match.arg(grn_method)
   backend <- match.arg(backend)
+  grn_matrix <- grn_matrix_from_object(object, genes_in = genes_in)
+  regulators <- regulators %||% colnames(grn_matrix)
+  targets <- targets %||% colnames(grn_matrix)
   if (identical(grn_method, "grnboost2")) {
+    grnboost_envname <- if (identical(backend, "python")) {
+      envname %||% "scenic_env"
+    } else {
+      envname
+    }
     return(RunGRNBoost2(
       grn_matrix,
       regulators = regulators,
@@ -738,13 +897,13 @@ scenic_run_grn_method <- function(
       output_file = output_file,
       work_dir = work_dir,
       prefix = prefix,
-      envname = envname,
+      envname = grnboost_envname,
       conda = conda,
-      prepare_env = prepare_env,
       cores = cores,
       seed = seed,
       force = force,
-      verbose = verbose
+      verbose = verbose,
+      ...
     ))
   }
   if (identical(grn_method, "regdiffusion")) {
@@ -754,6 +913,7 @@ scenic_run_grn_method <- function(
         message_type = "error"
       )
     }
+    regdiffusion_envname <- envname %||% "scenic_env"
     return(regdiffusion_python(
       grn_matrix = grn_matrix,
       regulators = regulators,
@@ -761,11 +921,32 @@ scenic_run_grn_method <- function(
       output_file = output_file,
       work_dir = work_dir,
       prefix = prefix,
+      envname = regdiffusion_envname,
+      conda = conda,
+      force = force,
+      verbose = verbose,
+      ...
+    ))
+  }
+  if (identical(grn_method, "gniplr")) {
+    return(RunGNIPLR(
+      grn_matrix,
+      targets = targets,
+      genes_in = "columns",
+      correlation_threshold = correlation_threshold,
+      lasso_degree = lasso_degree,
+      lasso_alpha = lasso_alpha,
+      max_lag = max_lag,
+      backend = backend,
+      max_edges_per_target = max_edges_per_target,
+      output_file = output_file,
+      work_dir = work_dir,
+      prefix = prefix,
       envname = envname,
       conda = conda,
-      prepare_env = prepare_env,
       force = force,
-      verbose = verbose
+      verbose = verbose,
+      ...
     ))
   }
   RunGENIE3(
@@ -777,6 +958,7 @@ scenic_run_grn_method <- function(
     output_file = output_file,
     cores = cores,
     force = force,
-    verbose = verbose
+    verbose = verbose,
+    ...
   )
 }
