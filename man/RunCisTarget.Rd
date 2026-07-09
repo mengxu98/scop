@@ -20,7 +20,6 @@ RunCisTarget(
   data_dir = NULL,
   envname = NULL,
   conda = "auto",
-  prepare_env = TRUE,
   cores = 1,
   force = FALSE,
   verbose = TRUE,
@@ -74,8 +73,6 @@ reference files. If \code{NULL}, files are stored under
 \item{envname}{Python environment name (Python backend only).}
 
 \item{conda}{Conda-compatible executable (Python backend only).}
-
-\item{prepare_env}{Whether to prepare the Python environment.}
 
 \item{cores}{Number of workers.}
 
