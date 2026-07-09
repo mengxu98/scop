@@ -113,9 +113,6 @@ class(giotto_modules) <- c("giotto2_spatial_modules", "giotto2_result", "list")
 names(giotto_modules$module_tables)
 GiottoPlot(giotto_modules, top_n = 4)
 
-if (
-  isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
-) {
 spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 spatial <- Seurat::FindVariableFeatures(
   spatial,
@@ -132,6 +129,5 @@ giotto_modules <- RunGiottoSpatialModules(
   cor_method = "pearson",
   k = 6
 )
-}
 
 }

@@ -110,7 +110,6 @@ SpatialSpotPlot(
   overlay_image = FALSE,
   coord.cols = c("x", "y")
 )
-if (requireNamespace("scatterpie", quietly = TRUE)) {
   SpatialSpotPlot(
     spatial,
     group.by = "RCTD_dominant_type",
@@ -118,11 +117,7 @@ if (requireNamespace("scatterpie", quietly = TRUE)) {
     overlay_image = FALSE,
     coord.cols = c("x", "y")
   )
-}
 
-if (
-  isTRUE(check_r("dmcable/spacexr", verbose = FALSE))
-) {
 data(pancreas_sub)
 features_use <- head(intersect(rownames(spatial), rownames(pancreas_sub)), 300)
 
@@ -157,5 +152,4 @@ SpatialSpotPlot(
   coord.cols = c("x", "y"),
   theme_use = "theme_scop"
 )
-}
 }

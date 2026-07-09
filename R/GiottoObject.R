@@ -161,9 +161,6 @@ giotto_do_call <- function(name, args) {
 #' GiottoPlot(g, plot_type = "cluster")
 #' GiottoPlot(g, plot_type = "network")
 #'
-#' if (
-#'   isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
-#' ) {
 #' g <- SeuratToScopGiotto(
 #'   spatial,
 #'   assay = "Spatial",
@@ -171,7 +168,6 @@ giotto_do_call <- function(name, args) {
 #'   coord.cols = c("x", "y"),
 #'   verbose = FALSE
 #' )
-#' }
 #' @export
 SeuratToScopGiotto <- function(
   srt,
@@ -446,9 +442,6 @@ giotto_validate_runtime_object <- function(x, verbose = TRUE) {
 #' )
 #' GiottoPlot(g, plot_type = "cluster")
 #'
-#' if (
-#'   isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
-#' ) {
 #' g <- RunGiottoWorkflow(
 #'   spatial,
 #'   steps = "basic",
@@ -458,7 +451,6 @@ giotto_validate_runtime_object <- function(x, verbose = TRUE) {
 #'   return_seurat = FALSE,
 #'   verbose = FALSE
 #' )
-#' }
 #' @export
 RunGiottoWorkflow <- function(
   x,
@@ -696,12 +688,8 @@ RunGiottoWorkflow <- function(
 #' )
 #' GiottoPlot(g, plot_type = "spatial")
 #'
-#' if (
-#'   isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
-#' ) {
 #' g <- SeuratToScopGiotto(spatial, assay = "Spatial", coord.cols = c("x", "y"), verbose = FALSE)
 #' g <- GiottoPreprocess(g, verbose = FALSE)
-#' }
 #' @export
 GiottoPreprocess <- function(
   x,
@@ -860,14 +848,10 @@ GiottoPreprocess <- function(
 #' )
 #' GiottoPlot(g, plot_type = "dim")
 #'
-#' if (
-#'   isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
-#' ) {
 #'   g <- SeuratToScopGiotto(spatial, coord.cols = c("x", "y"))
 #'   g <- GiottoPreprocess(g)
 #'   g <- GiottoReduce(g, reduction = "pca", dims = 1:10)
 #'   g <- GiottoReduce(g, reduction = "umap", dims = 1:10)
-#' }
 #' @export
 GiottoReduce <- function(
   x,
@@ -989,14 +973,10 @@ GiottoReduce <- function(
 #' )
 #' GiottoPlot(g, plot_type = "cluster")
 #'
-#' if (
-#'   isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
-#' ) {
 #'   g <- SeuratToScopGiotto(spatial, coord.cols = c("x", "y"))
 #'   g <- GiottoPreprocess(g)
 #'   g <- GiottoReduce(g, reduction = "pca", dims = 1:10)
 #'   g <- GiottoCluster(g, dims = 1:10, k = 8, resolution = 0.4)
-#' }
 #' @export
 GiottoCluster <- function(
   x,
@@ -1120,12 +1100,8 @@ GiottoCluster <- function(
 #' )
 #' GiottoPlot(g, plot_type = "network")
 #'
-#' if (
-#'   isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
-#' ) {
 #'   g <- SeuratToScopGiotto(spatial, coord.cols = c("x", "y"))
 #'   g <- GiottoSpatialNetwork(g, network_method = "Delaunay")
-#' }
 #' @export
 GiottoSpatialNetwork <- function(
   x,
@@ -1231,14 +1207,10 @@ giotto_get_spatial_network_table <- function(gobject, network_name, spat_unit = 
 #' )
 #' GiottoPlot(g, plot_type = "spatial_genes", top_n = 6)
 #'
-#' if (
-#'   isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
-#' ) {
 #'   g <- SeuratToScopGiotto(spatial, coord.cols = c("x", "y"))
 #'   g <- GiottoPreprocess(g)
 #'   g <- GiottoSpatialNetwork(g)
 #'   g <- GiottoSpatialGenes(g, features = rownames(spatial)[1:50], top_n = 10)
-#' }
 #' @export
 GiottoSpatialGenes <- function(
   x,
@@ -1342,14 +1314,10 @@ GiottoSpatialGenes <- function(
 #' )
 #' GiottoPlot(g, plot_type = "spatial_modules", top_n = 6)
 #'
-#' if (
-#'   isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
-#' ) {
 #'   g <- SeuratToScopGiotto(spatial, coord.cols = c("x", "y"))
 #'   g <- GiottoPreprocess(g)
 #'   g <- GiottoSpatialNetwork(g)
 #'   g <- GiottoSpatialModules(g, features = rownames(spatial)[1:50], k = 3)
-#' }
 #' @export
 GiottoSpatialModules <- function(
   x,
@@ -1455,15 +1423,11 @@ GiottoSpatialModules <- function(
 #' )
 #' GiottoPlot(g, plot_type = "cell_proximity")
 #'
-#' if (
-#'   isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
-#' ) {
 #'   data(visium_human_pancreas_sub)
 #'   spatial <- visium_human_pancreas_sub
 #'   g <- SeuratToScopGiotto(spatial, coord.cols = c("x", "y"))
 #'   g <- GiottoSpatialNetwork(g)
 #'   g <- GiottoCellProximity(g, group.by = "coda_label", number_of_simulations = 100)
-#' }
 #' @export
 GiottoCellProximity <- function(
   x,
@@ -1564,14 +1528,10 @@ GiottoCellProximity <- function(
 #' )
 #' GiottoPlot(g, plot_type = "hmrf")
 #'
-#' if (
-#'   isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
-#' ) {
 #'   g <- SeuratToScopGiotto(spatial, coord.cols = c("x", "y"))
 #'   g <- GiottoPreprocess(g)
 #'   g <- GiottoSpatialNetwork(g)
 #'   g <- GiottoHMRF(g, spatial_genes = rownames(spatial)[1:30], k = 4)
-#' }
 #' @export
 GiottoHMRF <- function(
   x,

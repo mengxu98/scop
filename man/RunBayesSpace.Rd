@@ -88,9 +88,6 @@ SpatialSpotPlot(
   coord.cols = c("x", "y")
 )
 
-if (
-  requireNamespace("BayesSpace", quietly = TRUE)
-) {
 spatial <- RunBayesSpace(
   spatial,
   q = 3,
@@ -105,5 +102,4 @@ spatial <- RunBayesSpace(
   )
 )
 table(spatial$BayesSpace_cluster)
-}
 }

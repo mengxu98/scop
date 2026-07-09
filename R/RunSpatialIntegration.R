@@ -75,9 +75,6 @@
 #' SpatialIntegrationPlot(spatial, plot_type = "alignment")
 #' SpatialIntegrationPlot(spatial, plot_type = "composition")
 #'
-#' if (
-#'   isTRUE(check_r("feiyoung/PRECAST", verbose = FALSE))
-#' ) {
 #' srt <- RunSpatialIntegration(
 #'   object = spatial,
 #'   method = "PRECAST",
@@ -87,7 +84,6 @@
 #'   features = rownames(spatial)[1:300],
 #'   verbose = FALSE
 #' )
-#' }
 RunSpatialIntegration <- function(
   object,
   method = c("PRECAST", "BASS", "SpatialMNN"),

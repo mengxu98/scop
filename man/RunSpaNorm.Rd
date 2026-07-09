@@ -72,10 +72,6 @@ SpatialSpotPlot(
   coord.cols = c("x", "y")
 )
 
-if (
-  requireNamespace("SpaNorm", quietly = TRUE) &&
-    requireNamespace("SpatialExperiment", quietly = TRUE)
-) {
   spatial <- RunSpaNorm(
     spatial,
     assay = "Spatial",
@@ -95,5 +91,4 @@ if (
     overlay_image = FALSE,
     coord.cols = c("x", "y")
   )
-}
 }

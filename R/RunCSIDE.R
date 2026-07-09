@@ -76,11 +76,6 @@
 #'   coord.cols = c("x", "y")
 #' )
 #'
-#' if (
-#'   isTRUE(check_r("dmcable/spacexr", verbose = FALSE)) &&
-#'     !is.null(spatial@tools$RCTD) &&
-#'     inherits(spatial@tools$RCTD$object, "RCTD")
-#' ) {
 #'   spatial <- RunCSIDE(
 #'     spatial,
 #'     group.by = "region",
@@ -88,7 +83,6 @@
 #'     gene_threshold = 0.00005,
 #'     cell_type_threshold = 125
 #'   )
-#' }
 RunCSIDE <- function(
   srt,
   rctd_result = NULL,

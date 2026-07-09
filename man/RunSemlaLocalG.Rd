@@ -57,14 +57,10 @@ SpatialSpotPlot(
   coord.cols = c("x", "y")
 )
 
-if (
-  isTRUE(check_r("spatial-research/semla", verbose = FALSE))
-) {
 spatial <- RunSemlaLocalG(
   spatial,
   features = features,
   store_in_metadata = TRUE,
   verbose = FALSE
 )
-}
 }

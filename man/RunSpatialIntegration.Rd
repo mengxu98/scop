@@ -121,9 +121,6 @@ SpatialIntegrationPlot(spatial, plot_type = "embedding")
 SpatialIntegrationPlot(spatial, plot_type = "alignment")
 SpatialIntegrationPlot(spatial, plot_type = "composition")
 
-if (
-  isTRUE(check_r("feiyoung/PRECAST", verbose = FALSE))
-) {
 srt <- RunSpatialIntegration(
   object = spatial,
   method = "PRECAST",
@@ -133,5 +130,4 @@ srt <- RunSpatialIntegration(
   features = rownames(spatial)[1:300],
   verbose = FALSE
 )
-}
 }

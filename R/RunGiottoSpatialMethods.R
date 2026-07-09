@@ -44,9 +44,6 @@
 #' head(proximity$enrichment)
 #' GiottoPlot(proximity)
 #'
-#' if (
-#'   isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
-#' ) {
 #' spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 #' proximity <- RunGiottoCellProximity(
 #'   spatial,
@@ -57,7 +54,6 @@
 #'   network_method = "Delaunay",
 #'   number_of_simulations = 100
 #' )
-#' }
 #'
 #' @export
 RunGiottoCellProximity <- function(
@@ -230,9 +226,6 @@ RunGiottoCellProximity <- function(
 #'   coord.cols = c("x", "y")
 #' )
 #'
-#' if (
-#'   isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
-#' ) {
 #' spatial <- Seurat::FindVariableFeatures(
 #'   spatial,
 #'   assay = "Spatial",
@@ -247,7 +240,6 @@ RunGiottoCellProximity <- function(
 #'   coord.cols = c("x", "y"),
 #'   top_n = 50
 #' )
-#' }
 #'
 #' @export
 RunGiottoSpatialGenes <- function(
@@ -430,9 +422,6 @@ RunGiottoSpatialGenes <- function(
 #' names(giotto_modules$module_tables)
 #' GiottoPlot(giotto_modules, top_n = 4)
 #'
-#' if (
-#'   isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
-#' ) {
 #' spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 #' spatial <- Seurat::FindVariableFeatures(
 #'   spatial,
@@ -449,7 +438,6 @@ RunGiottoSpatialGenes <- function(
 #'   cor_method = "pearson",
 #'   k = 6
 #' )
-#' }
 #'
 #' @export
 RunGiottoSpatialModules <- function(
