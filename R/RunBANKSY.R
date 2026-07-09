@@ -55,9 +55,6 @@
 #'   coord.cols = c("x", "y")
 #' )
 #'
-#' if (
-#'   requireNamespace("Banksy", quietly = TRUE)
-#' ) {
 #' spatial <- RunBANKSY(
 #'   spatial,
 #'   assay = "Spatial",
@@ -69,7 +66,6 @@
 #'   resolution = 0.6,
 #'   verbose = FALSE
 #' )
-#' }
 RunBANKSY <- function(
   srt,
   assay = NULL,

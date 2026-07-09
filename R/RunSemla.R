@@ -40,16 +40,12 @@
 #'   coord.cols = c("x", "y")
 #' )
 #'
-#' if (
-#'   isTRUE(check_r("spatial-research/semla", verbose = FALSE))
-#' ) {
 #' spatial <- RunSemlaSpatialNetwork(
 #'   spatial,
 #'   nNeighbors = 6,
 #'   coords = "pixels",
 #'   verbose = FALSE
 #' )
-#' }
 #' @export
 RunSemlaSpatialNetwork <- function(
   srt,
@@ -136,16 +132,12 @@ RunSemlaSpatialNetwork <- function(
 #'   coord.cols = c("x", "y")
 #' )
 #'
-#' if (
-#'   isTRUE(check_r("spatial-research/semla", verbose = FALSE))
-#' ) {
 #' spatial <- RunSemlaLocalG(
 #'   spatial,
 #'   features = features,
 #'   store_in_metadata = TRUE,
 #'   verbose = FALSE
 #' )
-#' }
 #' @export
 RunSemlaLocalG <- function(
   srt,
@@ -210,9 +202,6 @@ RunSemlaLocalG <- function(
 #'   coord.cols = c("x", "y")
 #' )
 #'
-#' if (
-#'   isTRUE(check_r("spatial-research/semla", verbose = FALSE))
-#' ) {
 #' spatial <- RunSemlaRegionNeighbors(
 #'   spatial,
 #'   column_name = "region",
@@ -221,7 +210,6 @@ RunSemlaLocalG <- function(
 #'   column_key = "right_border",
 #'   verbose = FALSE
 #' )
-#' }
 #' @export
 RunSemlaRegionNeighbors <- function(
   srt,
@@ -291,9 +279,6 @@ RunSemlaRegionNeighbors <- function(
 #'   coord.cols = c("x", "y")
 #' )
 #'
-#' if (
-#'   isTRUE(check_r("spatial-research/semla", verbose = FALSE))
-#' ) {
 #' spatial <- RunSemlaRadialDistance(
 #'   spatial,
 #'   column_name = "region",
@@ -301,7 +286,6 @@ RunSemlaRegionNeighbors <- function(
 #'   column_suffix = "upper_distance",
 #'   verbose = FALSE
 #' )
-#' }
 #' @export
 RunSemlaRadialDistance <- function(
   srt,

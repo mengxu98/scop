@@ -39,19 +39,15 @@
 #' data(visium_human_pancreas_sub)
 #' spatial <- visium_human_pancreas_sub
 #'
-#' if (
-#'   isTRUE(check_r("SpatialQM", verbose = FALSE))
-#' ) {
-#'   spatial <- RunSpatialQM(
-#'     spatial,
-#'     assay = "Spatial",
-#'     layer = "counts",
-#'     metrics = c("n_cells", "tx_per_cell", "sparsity", "entropy"),
-#'     platform = "Visium",
-#'     verbose = FALSE
-#'   )
-#'   spatial@tools$SpatialQM$summary
-#' }
+#' spatial <- RunSpatialQM(
+#'   spatial,
+#'   assay = "Spatial",
+#'   layer = "counts",
+#'   metrics = c("n_cells", "tx_per_cell", "sparsity", "entropy"),
+#'   platform = "Visium",
+#'   verbose = FALSE
+#' )
+#' spatial@tools$SpatialQM$summary
 RunSpatialQM <- function(
   srt,
   assay = NULL,

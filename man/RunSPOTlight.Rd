@@ -105,7 +105,6 @@ SpatialSpotPlot(
   overlay_image = FALSE,
   coord.cols = c("x", "y")
 )
-if (requireNamespace("scatterpie", quietly = TRUE)) {
   SpatialSpotPlot(
     spatial,
     group.by = "SPOTlight_dominant_type",
@@ -113,11 +112,7 @@ if (requireNamespace("scatterpie", quietly = TRUE)) {
     overlay_image = FALSE,
     coord.cols = c("x", "y")
   )
-}
 
-if (
-  requireNamespace("SPOTlight", quietly = TRUE)
-) {
 data(pancreas_sub)
 features_use <- head(intersect(rownames(spatial), rownames(pancreas_sub)), 300)
 spatial <- RunSPOTlight(
@@ -142,5 +137,4 @@ SpatialSpotPlot(
   overlay_image = FALSE,
   coord.cols = c("x", "y")
 )
-}
 }

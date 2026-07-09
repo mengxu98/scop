@@ -62,9 +62,6 @@ SpatialSpotPlot(
   coord.cols = c("x", "y")
 )
 
-if (
-  isTRUE(check_r("spatial-research/semla", verbose = FALSE))
-) {
 spatial <- RunSemlaRadialDistance(
   spatial,
   column_name = "region",
@@ -72,5 +69,4 @@ spatial <- RunSemlaRadialDistance(
   column_suffix = "upper_distance",
   verbose = FALSE
 )
-}
 }

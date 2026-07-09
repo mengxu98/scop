@@ -90,22 +90,18 @@ dependency installable with \code{BiocManager::install("Statial")}.
 data(visium_human_pancreas_sub)
 spatial <- visium_human_pancreas_sub
 
-if (
-  isTRUE(check_r("Statial", verbose = FALSE))
-) {
-  labels <- unique(as.character(spatial$coda_label))
-  if (length(labels) >= 2) {
-    spatial <- RunStatialKontextual(
-      spatial,
-      group.by = "coda_label",
-      r = 50,
-      from = labels[1],
-      to = labels[2],
-      parent = labels[1:2],
-      coord.cols = c("x", "y"),
-      verbose = FALSE
-    )
-    spatial@tools$StatialKontextual$summary
-  }
+labels <- unique(as.character(spatial$coda_label))
+if (length(labels) >= 2) {
+  spatial <- RunStatialKontextual(
+    spatial,
+    group.by = "coda_label",
+    r = 50,
+    from = labels[1],
+    to = labels[2],
+    parent = labels[1:2],
+    coord.cols = c("x", "y"),
+    verbose = FALSE
+  )
+  spatial@tools$StatialKontextual$summary
 }
 }

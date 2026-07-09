@@ -46,9 +46,6 @@
 #'   coord.cols = c("x", "y")
 #' )
 #'
-#' if (
-#'   isTRUE(check_r("JEFworks-Lab/MERINGUE", verbose = FALSE))
-#' ) {
 #' spatial <- RunMERINGUE(
 #'   spatial,
 #'   assay = "Spatial",
@@ -57,7 +54,6 @@
 #'   nfeatures = 50,
 #'   verbose = FALSE
 #' )
-#' }
 RunMERINGUE <- function(
   srt,
   assay = NULL,

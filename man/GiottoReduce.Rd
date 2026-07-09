@@ -65,12 +65,8 @@ g <- structure(
 )
 GiottoPlot(g, plot_type = "dim")
 
-if (
-  isTRUE(check_r("giotto-suite/Giotto", verbose = FALSE))
-) {
   g <- SeuratToScopGiotto(spatial, coord.cols = c("x", "y"))
   g <- GiottoPreprocess(g)
   g <- GiottoReduce(g, reduction = "pca", dims = 1:10)
   g <- GiottoReduce(g, reduction = "umap", dims = 1:10)
-}
 }

@@ -115,7 +115,6 @@ SpatialSpotPlot(
   overlay_image = FALSE,
   coord.cols = c("x", "y")
 )
-if (requireNamespace("scatterpie", quietly = TRUE)) {
   SpatialSpotPlot(
     spatial,
     group.by = "CARD_dominant_type",
@@ -123,12 +122,7 @@ if (requireNamespace("scatterpie", quietly = TRUE)) {
     overlay_image = FALSE,
     coord.cols = c("x", "y")
   )
-}
 
-if (
-  (isTRUE(check_r("CARD", verbose = FALSE)) ||
-    isTRUE(check_r("CARDspa", verbose = FALSE)))
-) {
 data(pancreas_sub)
 features_use <- head(intersect(rownames(spatial), rownames(pancreas_sub)), 300)
 spatial <- RunCARD(
@@ -140,5 +134,4 @@ spatial <- RunCARD(
   features = features_use,
   verbose = FALSE
 )
-}
 }
