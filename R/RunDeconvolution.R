@@ -1055,7 +1055,7 @@ run_cibersort_bundle <- function(
     ))
   }
 
-  if (!requireNamespace("CIBERSORT", quietly = TRUE)) {
+  if (!isTRUE(check_r("Moonerss/CIBERSORT", verbose = FALSE))) {
     log_message(
       paste(
         "{.pkg CIBERSORT} is required for {.fn RunCIBERSORT} with {.arg backend = 'r'}.",

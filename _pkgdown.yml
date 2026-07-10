@@ -483,4 +483,5 @@ reference:
   - pbmcmultiome_sub
   - ref_scMCA
   - visium_human_pancreas_sub
+  - visium_mouse_brain_slices_sub
   - words_excluded
