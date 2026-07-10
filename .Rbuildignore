@@ -17,6 +17,7 @@
 ^README.md$
 ^tmaps$
 ^scripts$
+^data-raw$
 ^outputs$
 ^\.codex$
 ^\.cc-connect$
