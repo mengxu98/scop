@@ -1555,7 +1555,7 @@ DynamicHeatmap <- function(
         row_split <- length(unique(row_split_raw))
       }
     }
-    block_graphics <- heatmap_bordered_block_fill_graphics(
+    block_graphics <- thisplot::annotation_block_fill_graphics(
       levels = levels(row_split_raw),
       palette = feature_split_palette,
       palcolor = unlist(feature_split_palcolor),
