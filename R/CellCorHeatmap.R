@@ -788,7 +788,7 @@ CellCorHeatmap <- function(
         query_annotation_palcolor %||% list(NULL)
       )
     } else {
-      block_graphics <- heatmap_bordered_block_fill_graphics(
+      block_graphics <- thisplot::annotation_block_fill_graphics(
         levels = levels(srt_query[[query_group, drop = TRUE]]),
         palette = query_group_palette,
         palcolor = query_group_palcolor,
@@ -863,7 +863,7 @@ CellCorHeatmap <- function(
         ref_annotation_palcolor %||% list(NULL)
       )
     } else {
-      block_graphics <- heatmap_bordered_block_fill_graphics(
+      block_graphics <- thisplot::annotation_block_fill_graphics(
         levels = levels(srt_ref[[ref_group, drop = TRUE]]),
         palette = ref_group_palette,
         palcolor = ref_group_palcolor,
