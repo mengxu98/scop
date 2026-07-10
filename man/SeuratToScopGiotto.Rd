@@ -47,8 +47,8 @@ variable features are used, falling back to all assay features.}
 \item{conversion_params}{Additional parameters passed to
 \code{Giotto::createGiottoObject()}.}
 
-\item{use_official}{Whether to try `Giotto::seuratToGiottoV5()` before
-falling back to the scop-controlled converter.}
+\item{use_official}{Whether to try the official GiottoClass Seurat converter
+before falling back to the scop-controlled converter.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

@@ -1,0 +1,85 @@
+---
+title: "Spatial framework bridges and Giotto compatibility"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+scop supports Giotto in two deliberately separate ways. The older workflow is
+kept for compatibility, while the newer bridge functions exchange native
+framework objects without wrapping every Giotto or SPATA2 analysis step.
+
+## Choose the interface before starting
+
+| Goal | Interface | Returned object | Plotting |
+|---|---|---|---|
+| Keep an existing scop Giotto pipeline | `SeuratToScopGiotto()`, `RunGiottoWorkflow()`, `GiottoPlot()`, `AddGiottoToSeurat()` | scop's legacy `giotto2` workflow wrapper | `GiottoPlot()` |
+| Move one Seurat image into Giotto | `srt_to_giotto()` | Native Giotto object | Giotto's native plotting API |
+| Move a native Giotto object into Seurat | `giotto_to_srt()` | New Seurat object | scop or Seurat plotting |
+| Move between Seurat and SPATA2 | `srt_to_spata2()`, `spata2_to_srt()` | Native SPATA2 or Seurat object | Framework-native plotting |
+
+Do not mix the two Giotto styles in one pipeline. In particular,
+`RunGiottoWorkflow()` expects the legacy scop wrapper, whereas
+`srt_to_giotto()` intentionally returns the native Giotto object inside that
+wrapper.
+
+## Giotto version boundary
+
+Current Giotto Suite releases split analysis functions and object/conversion
+helpers across the `Giotto` and `GiottoClass` namespaces. scop resolves these
+optional functions at runtime and does not add Giotto to Imports, Depends, or
+Suggests.
+
+The new reverse bridge selects `giottoToSeuratV5()` for Seurat 5 and
+`giottoToSeuratV4()` for Seurat 4. These converters are expected from a current
+GiottoClass installation. If an older Giotto installation does not provide
+them, update Giotto before using `giotto_to_srt()`.
+
+The legacy workflow remains available for older scripts and is not migrated to
+the new bridge result container. This compatibility promise applies to its
+public arguments, `giotto2` return structure, stored result names, and
+`GiottoPlot()` behavior.
+
+## Single-image conversion
+
+The new bridges process exactly one image at a time:
+
+- a single image is selected automatically;
+- a multi-image object requires an explicit `image`;
+- an unknown image name is rejected;
+- slices are never merged implicitly.
+
+```{r}
+gobject <- srt_to_giotto(spatial, image = "slice1")
+spatial_roundtrip <- giotto_to_srt(gobject)
+```
+
+For exact image selection, `srt_to_giotto()` uses scop's controlled converter
+by default and returns only its native Giotto object. Advanced users may pass
+`use_official = TRUE`, but the controlled default is more stable across Giotto
+versions and multi-image Seurat objects.
+
+## SPATA2 bridge
+
+SPATA2 receives the selected image explicitly through its `img_name`
+interface. The bridge does not run trajectories, spatial screening, or SPATA2
+plotting.
+
+SPATA2 3.1.4 exports `asSeurat()` as a development stub rather than a complete
+converter. scop still calls the official function first; when it does not
+return a Seurat object, the compatibility fallback transfers counts, metadata,
+and raw coordinates into a new Seurat object. It does not attempt to reproduce
+SPATA2 analysis slots or framework plots.
+
+```{r}
+spata_object <- srt_to_spata2(spatial, image = "slice1")
+spatial_roundtrip <- spata2_to_srt(spata_object)
+```
+
+Use SPATA2's native API after conversion. scop only owns image validation,
+single-image isolation, dependency checks, and object exchange.

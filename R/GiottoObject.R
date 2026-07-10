@@ -114,8 +114,8 @@ giotto_do_call <- function(name, args) {
 #' @param use_sct How to handle SCT data. `"auto"` keeps counts as the main
 #' Giotto expression and records SCT availability. `"none"` ignores SCT.
 #' `"normalized"` adds SCT normalized values as an additional expression layer.
-#' @param use_official Whether to try `Giotto::seuratToGiottoV5()` before
-#' falling back to the scop-controlled converter.
+#' @param use_official Whether to try the official GiottoClass Seurat converter
+#'   before falling back to the scop-controlled converter.
 #'
 #' @return A `giotto2` object.
 #'
@@ -300,13 +300,27 @@ giotto_pick_seurat_assay <- function(srt, assay = NULL, sct.assay = "SCT") {
 }
 
 giotto_try_seurat_to_giotto_v5 <- function(srt, image = NULL, verbose = TRUE) {
-  fun <- tryCatch(giotto_get_fun("seuratToGiottoV5"), error = function(e) NULL)
+  seurat_major <- suppressWarnings(as.integer(
+    strsplit(as.character(utils::packageVersion("Seurat")), "\\.")[[1L]][1L]
+  ))
+  converter_name <- if (!is.na(seurat_major) && seurat_major >= 5L) {
+    "seuratToGiottoV5"
+  } else {
+    "seuratToGiottoV4"
+  }
+  fun <- tryCatch(
+    get_namespace_fun("GiottoClass", converter_name),
+    error = function(e) NULL
+  )
   if (!is.function(fun)) {
     return(NULL)
   }
   args <- list(sobject = srt, verbose = FALSE)
   if (!is.null(image)) {
-    args$spatial_assay <- image
+    args$spatial_assay <- tryCatch(
+      SeuratObject::DefaultAssay(srt[[image]]),
+      error = function(e) SeuratObject::DefaultAssay(srt)
+    )
   }
   tryCatch(
     giotto_suppress_known_warnings(giotto_call(fun, args)),
