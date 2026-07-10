@@ -25,7 +25,7 @@ framework objects without wrapping every Giotto or SPATA2 analysis step.
 
 Do not mix the two Giotto styles in one pipeline. In particular,
 `RunGiottoWorkflow()` expects the legacy scop wrapper, whereas
-`srt_to_giotto()` intentionally returns the native Giotto object inside that
+`srt_to_giotto()` intentionally returns a native Giotto object instead of that
 wrapper.
 
 ## Giotto version boundary
@@ -44,6 +44,27 @@ The legacy workflow remains available for older scripts and is not migrated to
 the new bridge result container. This compatibility promise applies to its
 public arguments, `giotto2` return structure, stored result names, and
 `GiottoPlot()` behavior.
+
+## GitHub documentation build contract
+
+The pkgdown site documents both generations of the Giotto interface. Legacy
+topics remain under **Spatial Framework Bridges and Giotto Workflows**, next to
+the native bridge topics; they are not aliases for one another and neither set
+is removed when the other is updated.
+
+Giotto, GiottoClass, and SPATA2 remain runtime-optional backends. The examples
+in this article are deliberately shown but not evaluated during the GitHub
+pkgdown build, so publishing the documentation does not select or install a
+particular Giotto generation. Reference pages are still parsed and indexed,
+and backend/version checks run when a user calls a legacy workflow or a new
+bridge. This keeps the site build independent from optional framework releases
+while preserving visible documentation for both interfaces.
+
+On pull requests, the GitHub workflow validates the complete reference index.
+After a merge to `main`, changes that include source, reference, or pkgdown
+configuration files trigger a full site build; an article-only change can use
+the narrower article build. The scheduled full build remains the compatibility
+check against the then-current dependency ecosystem.
 
 ## Single-image conversion
 
