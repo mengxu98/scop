@@ -845,7 +845,7 @@ collect_integration_metrics <- function(
       !is.null(celltype_col) &&
       celltype_col %in% colnames(srt@meta.data)
   ) {
-    metrics <- classification_metrics_compute(
+    metrics <- thisutils::classification_metrics_compute(
       predicted = srt[[cluster_col, drop = TRUE]],
       truth = srt[[celltype_col, drop = TRUE]]
     )

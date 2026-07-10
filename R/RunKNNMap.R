@@ -369,7 +369,7 @@ RunKNNMap <- function(
         use_nan = TRUE
       )
     }
-    knn_topk <- run_dense_topk_by_column(
+    knn_topk <- thisutils::run_dense_topk_by_column(
       x = d,
       k = k,
       decreasing = FALSE

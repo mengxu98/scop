@@ -14,7 +14,7 @@ collect_mapping_metrics <- function(
   if (!is.null(probability_col) && probability_col %in% colnames(srt@meta.data)) {
     probability <- srt[[probability_col, drop = TRUE]][keep]
   }
-  metrics <- classification_metrics_compute(
+  metrics <- thisutils::classification_metrics_compute(
     predicted = predicted,
     truth = truth,
     rare_threshold = rare_threshold

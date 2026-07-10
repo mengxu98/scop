@@ -263,20 +263,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// classification_metrics
-List classification_metrics(CharacterVector predicted, CharacterVector truth, CharacterVector classes, double rare_threshold);
-RcppExport SEXP _scop_classification_metrics(SEXP predictedSEXP, SEXP truthSEXP, SEXP classesSEXP, SEXP rare_thresholdSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< CharacterVector >::type predicted(predictedSEXP);
-    Rcpp::traits::input_parameter< CharacterVector >::type truth(truthSEXP);
-    Rcpp::traits::input_parameter< CharacterVector >::type classes(classesSEXP);
-    Rcpp::traits::input_parameter< double >::type rare_threshold(rare_thresholdSEXP);
-    rcpp_result_gen = Rcpp::wrap(classification_metrics(predicted, truth, classes, rare_threshold));
-    return rcpp_result_gen;
-END_RCPP
-}
 // cytospace_assign
 List cytospace_assign(NumericMatrix sc_expr, NumericMatrix st_expr, IntegerVector spot_capacities, int seed, bool upstream_tie_break, bool verbose);
 RcppExport SEXP _scop_cytospace_assign(SEXP sc_exprSEXP, SEXP st_exprSEXP, SEXP spot_capacitiesSEXP, SEXP seedSEXP, SEXP upstream_tie_breakSEXP, SEXP verboseSEXP) {
@@ -587,32 +573,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< S4 >::type mat(matSEXP);
     Rcpp::traits::input_parameter< int >::type n_group1(n_group1SEXP);
     rcpp_result_gen = Rcpp::wrap(wilcox_rank_sum_sparse_all_cells(mat, n_group1));
-    return rcpp_result_gen;
-END_RCPP
-}
-// sparse_topk_by_column
-List sparse_topk_by_column(S4 mat, int k, bool decreasing);
-RcppExport SEXP _scop_sparse_topk_by_column(SEXP matSEXP, SEXP kSEXP, SEXP decreasingSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< S4 >::type mat(matSEXP);
-    Rcpp::traits::input_parameter< int >::type k(kSEXP);
-    Rcpp::traits::input_parameter< bool >::type decreasing(decreasingSEXP);
-    rcpp_result_gen = Rcpp::wrap(sparse_topk_by_column(mat, k, decreasing));
-    return rcpp_result_gen;
-END_RCPP
-}
-// dense_topk_by_column
-List dense_topk_by_column(NumericMatrix mat, int k, bool decreasing);
-RcppExport SEXP _scop_dense_topk_by_column(SEXP matSEXP, SEXP kSEXP, SEXP decreasingSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type mat(matSEXP);
-    Rcpp::traits::input_parameter< int >::type k(kSEXP);
-    Rcpp::traits::input_parameter< bool >::type decreasing(decreasingSEXP);
-    rcpp_result_gen = Rcpp::wrap(dense_topk_by_column(mat, k, decreasing));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -2622,7 +2582,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_cellrank_cflare_cpp", (DL_FUNC) &_scop_cellrank_cflare_cpp, 4},
     {"_scop_cellrank_gpcca_cpp", (DL_FUNC) &_scop_cellrank_gpcca_cpp, 4},
     {"_scop_cellrank_lineage_drivers_cpp", (DL_FUNC) &_scop_cellrank_lineage_drivers_cpp, 3},
-    {"_scop_classification_metrics", (DL_FUNC) &_scop_classification_metrics, 4},
     {"_scop_cytospace_assign", (DL_FUNC) &_scop_cytospace_assign, 6},
     {"_scop_cytotrace2_preprocess_numeric", (DL_FUNC) &_scop_cytotrace2_preprocess_numeric, 1},
     {"_scop_cytotrace2_preprocess_sparse_numeric", (DL_FUNC) &_scop_cytotrace2_preprocess_sparse_numeric, 1},
@@ -2644,8 +2603,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_mdic3_score_cpp", (DL_FUNC) &_scop_mdic3_score_cpp, 3},
     {"_scop_wilcox_rank_sum_sparse", (DL_FUNC) &_scop_wilcox_rank_sum_sparse, 3},
     {"_scop_wilcox_rank_sum_sparse_all_cells", (DL_FUNC) &_scop_wilcox_rank_sum_sparse_all_cells, 2},
-    {"_scop_sparse_topk_by_column", (DL_FUNC) &_scop_sparse_topk_by_column, 3},
-    {"_scop_dense_topk_by_column", (DL_FUNC) &_scop_dense_topk_by_column, 3},
     {"_scop_milo_neighborhood_medians_cpp", (DL_FUNC) &_scop_milo_neighborhood_medians_cpp, 2},
     {"_scop_milo_nhood_counts_cpp", (DL_FUNC) &_scop_milo_nhood_counts_cpp, 5},
     {"_scop_milo_weighted_fdr_cpp", (DL_FUNC) &_scop_milo_weighted_fdr_cpp, 2},
