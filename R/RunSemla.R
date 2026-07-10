@@ -337,7 +337,11 @@ semla_prepare_srt <- function(
 }
 
 semla_require <- function(verbose = TRUE) {
-  if (semla_pkg_available()) {
+  status <- tryCatch(
+    check_r("spatial-research/semla", verbose = FALSE),
+    error = function(e) FALSE
+  )
+  if (isTRUE(unname(unlist(status))[1])) {
     return(invisible(TRUE))
   }
   log_message(
@@ -349,10 +353,6 @@ semla_require <- function(verbose = TRUE) {
     message_type = "error",
     verbose = verbose
   )
-}
-
-semla_pkg_available <- function() {
-  !is.null(tryCatch(asNamespace("semla"), error = function(e) NULL))
 }
 
 semla_get_fun <- function(fun) {
