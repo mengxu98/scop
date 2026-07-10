@@ -143,6 +143,7 @@ Suggests:
     SpaNorm,
     withr
 Remotes:
+    mengxu98/thisutils,
     mengxu98/thisplot
 LinkingTo:
     cli,
