@@ -69,10 +69,6 @@ cellrank_lineage_drivers_cpp <- function(expression, abs_probs, lineage_idx = in
     .Call(`_scop_cellrank_lineage_drivers_cpp`, expression, abs_probs, lineage_idx)
 }
 
-classification_metrics <- function(predicted, truth, classes, rare_threshold = 0.05) {
-    .Call(`_scop_classification_metrics`, predicted, truth, classes, rare_threshold)
-}
-
 cytospace_assign <- function(sc_expr, st_expr, spot_capacities, seed = 1L, upstream_tie_break = TRUE, verbose = FALSE) {
     .Call(`_scop_cytospace_assign`, sc_expr, st_expr, spot_capacities, seed, upstream_tie_break, verbose)
 }
@@ -155,14 +151,6 @@ wilcox_rank_sum_sparse <- function(mat, n_group1, min_expression = 0.0) {
 
 wilcox_rank_sum_sparse_all_cells <- function(mat, n_group1) {
     .Call(`_scop_wilcox_rank_sum_sparse_all_cells`, mat, n_group1)
-}
-
-sparse_topk_by_column <- function(mat, k, decreasing = TRUE) {
-    .Call(`_scop_sparse_topk_by_column`, mat, k, decreasing)
-}
-
-dense_topk_by_column <- function(mat, k, decreasing = FALSE) {
-    .Call(`_scop_dense_topk_by_column`, mat, k, decreasing)
 }
 
 milo_neighborhood_medians_cpp <- function(coords, knn_idx) {
