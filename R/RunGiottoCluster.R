@@ -570,7 +570,8 @@ giotto_expression_values <- function(layer) {
 giotto_get_fun <- function(name) {
   class_functions <- c(
     "createExprObj", "createGiottoObject", "createNearestNetwork",
-    "fDataDT", "pDataDT", "setExpression"
+    "createSpatialNetwork", "fDataDT", "getDimReduction",
+    "getSpatialNetwork", "pDataDT", "setExpression"
   )
   pkg <- if (name %in% class_functions) "GiottoClass" else "Giotto"
   tryCatch(
