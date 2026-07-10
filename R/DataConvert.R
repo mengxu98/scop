@@ -199,7 +199,9 @@ srt_to_adata <- function(
     }
   }
   if (length(layer_list) > 0) {
-    adata$layers <- layer_list
+    for (nm in names(layer_list)) {
+      reticulate::py_set_item(adata$layers, nm, layer_list[[nm]])
+    }
   }
 
   reduction_names <- reductions %||% names(srt@reductions)
@@ -456,7 +458,7 @@ adata_to_srt <- function(
     verbose = verbose
   )
 
-  x <- Matrix::t(py_to_r2(adata$X))
+  x <- Matrix::t(adata_matrix_to_r(adata$X))
   if (!inherits(x, "dgCMatrix")) {
     x <- SeuratObject::as.sparse(x)
   }
@@ -476,22 +478,18 @@ adata_to_srt <- function(
     meta.data = metadata
   )
 
-  if (inherits(adata$layers, "python.builtin.object")) {
-    keys <- reticulate::iterate(adata$layers$keys())
-  } else {
-    keys <- names(adata$layers)
-  }
+  keys <- get_adata_keys(adata$layers)
   skipped_layers <- list()
   if (length(keys) > 0) {
     for (k in keys) {
-      k_clean <- py_to_r2(k)
+      k_clean <- as.character(py_to_r2(k))
       err <- tryCatch(
         {
           raw <- get_adata_element(adata$layers, k, missing = "null")
           if (is.null(raw)) {
             stop("cannot access layer", call. = FALSE)
           }
-          layer <- py_to_r2(raw)
+          layer <- adata_matrix_to_r(raw)
           if (!inherits(layer, c("Matrix", "matrix"))) {
             stop(
               "not a matrix: ",
@@ -516,15 +514,11 @@ adata_to_srt <- function(
     }
   }
 
-  if (inherits(adata$obsm, "python.builtin.object")) {
-    keys <- reticulate::iterate(adata$obsm$keys())
-  } else {
-    keys <- names(adata$obsm)
-  }
+  keys <- get_adata_keys(adata$obsm)
   if (length(keys) > 0) {
     processed_reductions <- character(0)
     for (k in keys) {
-      k_clean <- py_to_r2(k)
+      k_clean <- as.character(py_to_r2(k))
 
       if (k_clean %in% processed_reductions) {
         next
@@ -556,15 +550,11 @@ adata_to_srt <- function(
     }
   }
 
-  if (inherits(adata$obsp, "python.builtin.object")) {
-    keys <- reticulate::iterate(adata$obsp$keys())
-  } else {
-    keys <- names(adata$obsp)
-  }
+  keys <- get_adata_keys(adata$obsp)
   if (length(keys) > 0) {
     for (k in keys) {
       obsp <- tryCatch(
-        py_to_r2(get_adata_element(adata$obsp, k)),
+        adata_matrix_to_r(get_adata_element(adata$obsp, k)),
         error = identity
       )
       if (inherits(obsp, "error")) {
@@ -593,11 +583,7 @@ adata_to_srt <- function(
     )
   }
 
-  if (inherits(adata$varm, "python.builtin.object")) {
-    keys <- reticulate::iterate(adata$varm$keys())
-  } else {
-    keys <- names(adata$varm)
-  }
+  keys <- get_adata_keys(adata$varm)
   if (length(keys) > 0) {
     for (k in keys) {
       varm <- tryCatch(
@@ -621,11 +607,7 @@ adata_to_srt <- function(
     }
   }
 
-  if (inherits(adata$varp, "python.builtin.object")) {
-    keys <- reticulate::iterate(adata$varp$keys())
-  } else {
-    keys <- names(adata$varp)
-  }
+  keys <- get_adata_keys(adata$varp)
   if (length(keys) > 0) {
     for (k in keys) {
       varp <- tryCatch(
@@ -649,11 +631,7 @@ adata_to_srt <- function(
     }
   }
 
-  if (inherits(adata$uns, "python.builtin.object")) {
-    keys <- reticulate::iterate(adata$uns$keys())
-  } else {
-    keys <- names(adata$uns)
-  }
+  keys <- get_adata_keys(adata$uns)
   if (length(keys) > 0) {
     for (k in keys) {
       uns <- tryCatch(
@@ -1059,6 +1037,29 @@ loom_to_srt <- function(
   srt
 }
 
+adata_matrix_to_r <- function(x) {
+  if (!inherits(x, "python.builtin.object")) {
+    return(x)
+  }
+
+  scipy_sparse <- tryCatch(
+    reticulate::import("scipy.sparse", convert = FALSE),
+    error = function(e) NULL
+  )
+  if (!is.null(scipy_sparse) && isTRUE(reticulate::py_to_r(scipy_sparse$issparse(x)))) {
+    x_coo <- x$tocoo()
+    dims <- as.integer(reticulate::py_to_r(x_coo$shape))
+    return(Matrix::sparseMatrix(
+      i = as.integer(reticulate::py_to_r(x_coo$row)) + 1L,
+      j = as.integer(reticulate::py_to_r(x_coo$col)) + 1L,
+      x = as.numeric(reticulate::py_to_r(x_coo$data)),
+      dims = dims
+    ))
+  }
+
+  py_to_r2(x)
+}
+
 py_to_r2 <- function(x) {
   if (inherits(x, "python.builtin.object")) {
     reticulate::py_to_r(x)
@@ -1067,12 +1068,35 @@ py_to_r2 <- function(x) {
   }
 }
 
+get_adata_keys <- function(container) {
+  if (inherits(container, "python.builtin.object")) {
+    keys <- reticulate::iterate(container$keys())
+  } else if (is.function(container$keys)) {
+    keys <- container$keys()
+  } else {
+    keys <- names(container)
+  }
+
+  keys <- unlist(lapply(keys, py_to_r2), use.names = FALSE)
+  keys <- as.character(keys)
+  keys[!is.na(keys) & nzchar(keys)]
+}
+
 get_adata_element <- function(
   container,
   key,
   missing = c("error", "null")
 ) {
   missing <- match.arg(missing)
+  if (inherits(container, "python.builtin.object")) {
+    result <- tryCatch(
+      reticulate::py_get_item(container, key),
+      error = function(e) NULL
+    )
+    if (!is.null(result)) {
+      return(result)
+    }
+  }
   if (is.function(container$get)) {
     result <- tryCatch(
       {
