@@ -39,8 +39,8 @@ Imports:
     Seurat,
     SeuratObject,
     SummarizedExperiment,
-    thisplot (>= 0.4.1),
-    thisutils (>= 0.4.5),
+    thisplot (>= 0.4.2),
+    thisutils (>= 0.4.8),
     uwot
 Suggests:
     AnnotationDbi,

@@ -174,7 +174,7 @@ tAgePlot <- function(
     plot <- plot + ggplot2::facet_wrap(stats::as.formula(paste("~", split.by)))
   }
 
-  add_major_grid_theme(
+  major_grid(
     plot = plot,
     grid_major = grid_major,
     grid_major_colour = grid_major_colour,

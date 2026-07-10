@@ -1286,7 +1286,7 @@ DynamicHeatmap <- function(
           ) +
             theme_void()
           nm <- paste0(cellan, ":", l)
-          block_graphics <- heatmap_bordered_block_subplot_graphics(
+          block_graphics <- thisplot::annotation_block_graphics(
             subplot = subplots,
             name = nm,
             border = cell_annotation_border,
@@ -1361,7 +1361,7 @@ DynamicHeatmap <- function(
           ) +
             theme_void()
           nm <- paste0(paste0(cellan, collapse = ","), ":", l)
-          block_graphics <- heatmap_bordered_block_subplot_graphics(
+          block_graphics <- thisplot::annotation_block_graphics(
             subplot = subplots,
             name = nm,
             border = cell_annotation_border,

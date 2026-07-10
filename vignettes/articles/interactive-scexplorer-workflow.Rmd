@@ -11,6 +11,10 @@ knitr::opts_chunk$set(
   dpi = 144,
   out.width = "92%"
 )
+
+# SCExplorer preparation writes a deployment artifact and must be run in a
+# local interactive session, not while pkgdown renders the documentation site.
+knitr::opts_chunk$set(eval = FALSE)
 ```
 
 This article shows how to prepare one or more processed Seurat objects for
@@ -21,6 +25,9 @@ or multiple datasets through a Shiny interface.
 SCExplorer is best treated as a deployment layer for already processed objects.
 Run preprocessing, quality control, integration, annotation, and key result
 checks before exporting the app directory.
+
+The code below is intentionally shown without execution during pkgdown builds.
+Run it in a local interactive R session when preparing a deployment artifact.
 
 The app does not replace the analysis report. It exposes the processed objects
 so collaborators can inspect embeddings, metadata, and marker expression behind

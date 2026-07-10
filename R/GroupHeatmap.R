@@ -1353,7 +1353,7 @@ GroupHeatmap <- function(
     }
 
     if (cell_group != "All.groups") {
-      block_graphics <- heatmap_bordered_block_fill_graphics(
+      block_graphics <- thisplot::annotation_block_fill_graphics(
         levels = levels(srt@meta.data[[cell_group]]),
         palette = group_palette[i],
         palcolor = group_palcolor[[i]],
@@ -1390,7 +1390,7 @@ GroupHeatmap <- function(
     }
 
     if (!is.null(split.by)) {
-      block_graphics <- heatmap_bordered_block_fill_graphics(
+      block_graphics <- thisplot::annotation_block_fill_graphics(
         levels = levels(srt@meta.data[[split.by]]),
         palette = cell_split_palette,
         palcolor = unlist(cell_split_palcolor),
@@ -1785,7 +1785,7 @@ GroupHeatmap <- function(
         row_split <- length(unique(row_split_raw))
       }
     }
-    block_graphics <- heatmap_bordered_block_fill_graphics(
+    block_graphics <- thisplot::annotation_block_fill_graphics(
       levels = levels(row_split_raw),
       palette = feature_split_palette,
       palcolor = unlist(feature_split_palcolor),
@@ -2523,66 +2523,5 @@ heatmap_legend_border <- function(border, color) {
     color
   } else {
     FALSE
-  }
-}
-
-heatmap_bordered_block_fill_graphics <- function(
-  levels,
-  palette = NULL,
-  palcolor = NULL,
-  fill_values = NULL,
-  border = TRUE,
-  border_color = "black",
-  border_size = 1
-) {
-  if (is.null(fill_values)) {
-    fill_values <- palette_colors(
-      levels,
-      type = "discrete",
-      palette = palette,
-      palcolor = palcolor,
-      matched = TRUE
-    )
-  }
-  names(fill_values) <- as.character(levels)
-  function(index, levels) {
-    level_key <- as.character(levels[1])
-    fill <- unname(fill_values[[level_key]])
-    if (is.null(fill) || length(fill) == 0 || is.na(fill)) {
-      fill <- "transparent"
-    }
-    grid::grid.rect(
-      gp = grid::gpar(
-        fill = fill,
-        col = if (isTRUE(border)) border_color else NA,
-        lwd = border_size
-      )
-    )
-  }
-}
-
-heatmap_bordered_block_subplot_graphics <- function(
-  subplot,
-  name,
-  border = TRUE,
-  border_color = "black",
-  border_size = 1
-) {
-  base_graphics <- annotation_block_graphics(
-    subplot = subplot,
-    name = name,
-    border = FALSE
-  )
-  function(index, levels) {
-    base_graphics(index, levels)
-    if (isTRUE(border)) {
-      grid::grid.rect(
-        gp = grid::gpar(
-          fill = "transparent",
-          col = border_color,
-          lwd = border_size
-        )
-      )
-    }
   }
 }

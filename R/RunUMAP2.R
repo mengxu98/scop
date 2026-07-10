@@ -566,7 +566,7 @@ RunUMAP2.default <- function(
           message_type = "error"
         )
       }
-      graph_topk <- run_sparse_topk_by_column(
+      graph_topk <- thisutils::run_sparse_topk_by_column(
         x = object,
         k = n.neighbors,
         decreasing = TRUE
@@ -730,7 +730,7 @@ RunUMAP2.default <- function(
       return(reduction)
     }
     if (inherits(x = object, what = "Graph")) {
-      graph_topk <- run_sparse_topk_by_column(
+      graph_topk <- thisutils::run_sparse_topk_by_column(
         x = object,
         k = n.neighbors,
         decreasing = TRUE
