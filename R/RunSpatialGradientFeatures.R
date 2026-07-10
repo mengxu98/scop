@@ -602,8 +602,7 @@ sgf_spata2_pkg <- function() {
 }
 
 sgf_require_spata2 <- function() {
-  status <- tryCatch(check_r("theMILOlab/SPATA2", verbose = FALSE), error = function(e) FALSE)
-  if (!isTRUE(unname(unlist(status))[1])) {
+  if (!sgf_spata2_available()) {
     log_message(
       paste(
         "Please install SPATA2 before running spatial gradient screening.",
@@ -615,9 +614,22 @@ sgf_require_spata2 <- function() {
   invisible(TRUE)
 }
 
+sgf_spata2_available <- function() {
+  status <- tryCatch(
+    check_r("theMILOlab/SPATA2", verbose = FALSE),
+    error = function(e) FALSE
+  )
+  isTRUE(unname(unlist(status))[1])
+}
+
 sgf_spata_fun <- function(fun, required = TRUE) {
   pkg <- sgf_spata2_pkg()
-  sgf_require_spata2()
+  if (!sgf_spata2_available()) {
+    if (isTRUE(required)) {
+      sgf_require_spata2()
+    }
+    return(NULL)
+  }
   out <- tryCatch(get_namespace_fun(pkg, fun), error = function(e) NULL)
   if (is.null(out) && isTRUE(required)) {
     log_message(
