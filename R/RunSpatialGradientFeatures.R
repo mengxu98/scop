@@ -580,11 +580,15 @@ SpatialGradientPlot <- function(
     nrow = nrow,
     ncol = ncol
   )
-  patchwork::wrap_plots(surface, line, ncol = 1)
+  sgf_require_package("patchwork")
+  wrap_plots <- get_namespace_fun("patchwork", "wrap_plots")
+  wrap_plots(surface, line, ncol = 1)
 }
 
 sgf_require_package <- function(pkg) {
-  if (!requireNamespace(pkg, quietly = TRUE)) {
+  repo <- if (identical(pkg, "SPATA2")) "theMILOlab/SPATA2" else pkg
+  status <- tryCatch(check_r(repo, verbose = FALSE), error = function(e) FALSE)
+  if (!isTRUE(unname(unlist(status))[1])) {
     log_message(
       "Please install required package before running this function: {.val {pkg}}",
       message_type = "error"
@@ -598,8 +602,8 @@ sgf_spata2_pkg <- function() {
 }
 
 sgf_require_spata2 <- function() {
-  pkg <- sgf_spata2_pkg()
-  if (!requireNamespace(pkg, quietly = TRUE)) {
+  status <- tryCatch(check_r("theMILOlab/SPATA2", verbose = FALSE), error = function(e) FALSE)
+  if (!isTRUE(unname(unlist(status))[1])) {
     log_message(
       paste(
         "Please install SPATA2 before running spatial gradient screening.",
@@ -613,17 +617,8 @@ sgf_require_spata2 <- function() {
 
 sgf_spata_fun <- function(fun, required = TRUE) {
   pkg <- sgf_spata2_pkg()
-  if (!requireNamespace(pkg, quietly = TRUE)) {
-    if (isTRUE(required)) {
-      sgf_require_spata2()
-    }
-    return(NULL)
-  }
-  ns <- asNamespace(pkg)
-  out <- tryCatch(getExportedValue(pkg, fun), error = function(e) NULL)
-  if (is.null(out) && exists(fun, envir = ns, mode = "function", inherits = TRUE)) {
-    out <- get(fun, envir = ns, mode = "function", inherits = TRUE)
-  }
+  sgf_require_spata2()
+  out <- tryCatch(get_namespace_fun(pkg, fun), error = function(e) NULL)
   if (is.null(out) && isTRUE(required)) {
     log_message(
       "Installed SPATA2 does not provide required function {.fn {fun}}",

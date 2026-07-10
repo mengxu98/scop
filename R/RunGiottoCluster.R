@@ -301,15 +301,16 @@ RunGiottoCluster <- function(
 }
 
 giotto_require <- function(verbose = TRUE) {
-  if (!giotto_namespace_available()) {
-    status <- check_r("giotto-suite/Giotto", verbose = FALSE)
-    if (!isTRUE(unname(unlist(status))[1]) || !giotto_namespace_available()) {
-      log_message(
-        "Please install {.pkg Giotto} before running {.fn RunGiottoCluster}: {.code check_r('giotto-suite/Giotto')}",
-        message_type = "error",
-        verbose = verbose
-      )
-    }
+  status <- tryCatch(
+    check_r("giotto-suite/Giotto", verbose = FALSE),
+    error = function(e) FALSE
+  )
+  if (!isTRUE(unname(unlist(status))[1])) {
+    log_message(
+      "Please install {.pkg Giotto} before running this function: {.code check_r('giotto-suite/Giotto')}",
+      message_type = "error",
+      verbose = verbose
+    )
   }
   invisible(TRUE)
 }
@@ -567,28 +568,19 @@ giotto_expression_values <- function(layer) {
 }
 
 giotto_get_fun <- function(name) {
-  pkg <- "Giotto"
-  if (!giotto_namespace_available()) {
-    log_message(
-      "Please install {.pkg Giotto} before running {.fn RunGiottoCluster}",
-      message_type = "error"
-    )
-  }
-  exported <- tryCatch(getExportedValue(pkg, name), error = function(e) NULL)
-  if (is.function(exported)) {
-    return(exported)
-  }
-  ns <- asNamespace(pkg)
-  if (exists(name, envir = ns, inherits = FALSE)) {
-    return(get(name, envir = ns, inherits = FALSE))
-  }
-  pkg_env <- tryCatch(as.environment(paste0("package:", pkg)), error = function(e) NULL)
-  if (!is.null(pkg_env) && exists(name, envir = pkg_env, inherits = FALSE)) {
-    return(get(name, envir = pkg_env, inherits = FALSE))
-  }
-  log_message(
-    "Function {.val {name}} not found in {.pkg Giotto} namespace",
-    message_type = "error"
+  class_functions <- c(
+    "createExprObj", "createGiottoObject", "createNearestNetwork",
+    "fDataDT", "pDataDT", "setExpression"
+  )
+  pkg <- if (name %in% class_functions) "GiottoClass" else "Giotto"
+  tryCatch(
+    get_namespace_fun(pkg, name),
+    error = function(e) {
+      log_message(
+        "Function {.val {name}} was not found in the installed {.pkg {pkg}} namespace",
+        message_type = "error"
+      )
+    }
   )
 }
 
@@ -655,10 +647,6 @@ giotto_validate_named_list <- function(x, arg_name) {
     )
   }
   invisible(TRUE)
-}
-
-giotto_namespace_available <- function() {
-  !is.null(tryCatch(asNamespace("Giotto"), error = function(e) NULL))
 }
 
 giotto_result <- function(result_type, giotto, ...) {
