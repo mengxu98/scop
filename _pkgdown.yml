@@ -391,6 +391,7 @@ reference:
   - RunCellChat
   - RunCellphoneDB
   - RunLIANA
+  - RunMDIC3
   - RunNichenetr
   - RunMultiNichenetr
   - RunscOMM
