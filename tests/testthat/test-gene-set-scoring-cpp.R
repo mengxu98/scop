@@ -70,9 +70,22 @@ reference_plage_scores <- function(expr, gene_sets, min_size = 1L, max_size = .M
   n_genes <- nrow(expr)
   n_cells <- ncol(expr)
   scores <- matrix(NA_real_, n_cells, length(gene_sets))
-  row_means <- rowMeans(expr)
-  row_sds <- apply(expr, 1L, stats::sd)
-  row_valid <- is.finite(row_sds) & row_sds > 0
+  z <- matrix(0, nrow = n_genes, ncol = n_cells)
+  row_valid <- logical(n_genes)
+  for (gene in seq_len(n_genes)) {
+    nonzero <- which(expr[gene, ] != 0 & is.finite(expr[gene, ]))
+    if (length(nonzero) <= 1L) {
+      next
+    }
+    scaled <- scale(expr[gene, nonzero])
+    if (all(is.finite(scaled))) {
+      z[gene, nonzero] <- scaled
+      row_valid[gene] <- TRUE
+    }
+  }
+  orient_mean <- rowMeans(expr)
+  orient_sd <- apply(expr, 1L, stats::sd)
+  orient_valid <- is.finite(orient_sd) & orient_sd > 0
 
   for (set_i in seq_along(gene_sets)) {
     set <- sort(unique(gene_sets[[set_i]]))
@@ -83,14 +96,10 @@ reference_plage_scores <- function(expr, gene_sets, min_size = 1L, max_size = .M
       next
     }
 
-    z <- matrix(NA_real_, nrow = length(valid), ncol = n_cells)
-    for (row in seq_along(valid)) {
-      gene <- valid[[row]]
-      z[row, ] <- (expr[gene, ] - row_means[gene]) / row_sds[gene]
-    }
-    first_v <- svd(z, nu = 0, nv = 1)$v[, 1]
-    mean_z_by_cell <- colMeans(z)
-    direction <- if (sum(first_v * mean_z_by_cell) < 0) -1 else 1
+    first_v <- svd(z[valid, , drop = FALSE], nu = 0, nv = 1)$v[, 1]
+    orient <- set[orient_valid[set]]
+    ref <- colMeans((expr[orient, , drop = FALSE] - orient_mean[orient]) / orient_sd[orient])
+    direction <- if (sum(first_v * ref) < 0) -1 else 1
     scores[, set_i] <- direction * first_v
   }
 
@@ -112,7 +121,7 @@ test_that("ssGSEA sparse ranking matches full ranking with negative values", {
   )
   gene_sets <- list(c(1L, 3L, 5L), c(2L, 4L, 6L), c(1L, 2L, 6L))
 
-  cpp <- ssgsea_rank_dense(
+  cpp <- scop:::ssgsea_rank_dense(
     methods::as(Matrix::Matrix(expr, sparse = TRUE), "dgCMatrix"),
     gene_sets,
     alpha = 0.25,
@@ -129,7 +138,7 @@ test_that("PLAGE gene-gene covariance path matches right singular vector scores"
   expr[expr < 2] <- 0
   gene_sets <- list(1:8, 5:20, 1:35)
 
-  cpp <- plage_dense(
+  cpp <- scop:::plage_dense(
     methods::as(Matrix::Matrix(expr, sparse = TRUE), "dgCMatrix"),
     gene_sets,
     min_size = 1L,
@@ -138,4 +147,30 @@ test_that("PLAGE gene-gene covariance path matches right singular vector scores"
   ref <- reference_plage_scores(expr, gene_sets, min_size = 1L, max_size = 500L)
 
   expect_equal(cpp, ref, tolerance = 1e-12, ignore_attr = TRUE)
+})
+
+test_that("PLAGE sparse standardization matches GSVA", {
+  skip_if_not_installed("GSVA")
+  set.seed(20260711)
+  expr <- matrix(stats::rpois(18 * 41, lambda = 0.9), nrow = 18)
+  expr[expr < 2] <- 0
+  rownames(expr) <- paste0("g", seq_len(nrow(expr)))
+  colnames(expr) <- paste0("c", seq_len(ncol(expr)))
+  expr <- methods::as(Matrix::Matrix(expr, sparse = TRUE), "dgCMatrix")
+  gene_sets <- list(a = rownames(expr)[1:7], b = rownames(expr)[5:15])
+
+  cpp <- t(scop:::run_plage_scores(
+    expr, gene_sets, min_gs_size = 1L, max_gs_size = 50L
+  ))
+  reference <- GSVA::gsva(
+    GSVA::plageParam(
+      exprData = expr, geneSets = gene_sets, minSize = 1L, maxSize = 50L
+    ),
+    verbose = FALSE
+  )
+  correlations <- vapply(rownames(reference), function(term) {
+    stats::cor(cpp[term, ], reference[term, ])
+  }, numeric(1L))
+
+  expect_equal(unname(abs(correlations)), rep(1, length(correlations)), tolerance = 1e-12)
 })

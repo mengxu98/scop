@@ -797,8 +797,9 @@ build_metabolism_gene_sets_from_preparedb <- function(
     # Build gene sets: Term → genes present in expression matrix
     term_vec <- as.character(tg[["Term"]])
     gene_vec <- as.character(tg[[gene_col]])
-    gene_vec <- gene_vec[!is.na(gene_vec) & nzchar(trimws(gene_vec))]
-    term_vec <- term_vec[!is.na(gene_vec) & nzchar(trimws(gene_vec))]
+    valid_gene <- !is.na(gene_vec) & nzchar(trimws(gene_vec))
+    term_vec <- term_vec[valid_gene]
+    gene_vec <- gene_vec[valid_gene]
 
     gene_in_expr <- gene_vec %in% expr_gene_names
     term_vec <- term_vec[gene_in_expr]

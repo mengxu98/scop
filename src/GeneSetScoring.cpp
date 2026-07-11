@@ -84,15 +84,16 @@ static double aucell_auc_from_ranks(
   if (x.empty()) {
     return 0.0;
   }
-  std::sort(x.begin(), x.end());
-
-  double auc = 0.0;
-  int prev = x[0];
-  for (std::size_t i = 1; i < x.size(); ++i) {
-    auc += static_cast<double>(x[i] - prev) * static_cast<double>(i);
-    prev = x[i];
+  // For sorted ranks r_1, ..., r_m, the step-function area is
+  // sum_{i < m} i * (r_{i + 1} - r_i) + m * (T - r_m), which telescopes to
+  // m * T - sum(r_i).  Ranking is therefore unnecessary here; sets contain
+  // unique genes and the identity also holds when ranking inputs contain ties.
+  double rank_sum = 0.0;
+  for (std::vector<int>::const_iterator it = x.begin(); it != x.end(); ++it) {
+    rank_sum += static_cast<double>(*it);
   }
-  auc += static_cast<double>(auc_threshold - prev) * static_cast<double>(x.size());
+  const double auc = static_cast<double>(x.size()) *
+    static_cast<double>(auc_threshold) - rank_sum;
   return auc / max_auc;
 }
 
@@ -116,17 +117,12 @@ static double ctxcore_auc_from_ranks(
   if (x.empty()) {
     return 0.0;
   }
-  std::sort(x.begin(), x.end());
-
-  double auc = 0.0;
-  int prev = x[0];
-  double cumulative = 1.0;
-  for (std::size_t i = 1; i < x.size(); ++i) {
-    auc += static_cast<double>(x[i] - prev) * cumulative;
-    prev = x[i];
-    cumulative += 1.0;
+  double rank_sum = 0.0;
+  for (std::vector<int>::const_iterator it = x.begin(); it != x.end(); ++it) {
+    rank_sum += static_cast<double>(*it);
   }
-  auc += static_cast<double>(rank_cutoff - prev) * cumulative;
+  const double auc = static_cast<double>(x.size()) *
+    static_cast<double>(rank_cutoff) - rank_sum;
   const double max_auc = static_cast<double>(rank_cutoff + 1) * static_cast<double>(n_genes);
   return max_auc > 0.0 ? auc / max_auc : R_NaN;
 }
@@ -1264,18 +1260,36 @@ NumericMatrix plage_dense(
       if (!row_needed[gene]) {
         continue;
       }
-      const double mean = row_sums[gene] / static_cast<double>(n_cells);
-      double var = (row_sq_sums[gene] - static_cast<double>(n_cells) * mean * mean) /
-        static_cast<double>(n_cells - 1);
-      if (var < 0.0 && var > -1e-12) {
-        var = 0.0;
+      // GSVA::plage() preserves a sparse matrix and calls scale() only on
+      // stored values.  Structural zeros remain zero, so the PLAGE SVD must
+      // use non-zero-only means and standard deviations here.
+      const int nonzero_count = row_counts[gene];
+      if (nonzero_count > 1) {
+        const double mean = row_sums[gene] / static_cast<double>(nonzero_count);
+        double var = (row_sq_sums[gene] - static_cast<double>(nonzero_count) * mean * mean) /
+          static_cast<double>(nonzero_count - 1);
+        if (var < 0.0 && var > -1e-12) {
+          var = 0.0;
+        }
+        if (R_finite(var) && var > 0.0) {
+          row_means[gene] = mean;
+          row_sds[gene] = std::sqrt(var);
+          row_valid[gene] = 1;
+        }
       }
-      if (R_finite(var) && var > 0.0) {
-        row_means[gene] = mean;
-        row_sds[gene] = std::sqrt(var);
-        row_valid[gene] = 1;
-        orient_row_means[gene] = mean;
-        orient_row_sds[gene] = row_sds[gene];
+
+      // Keep the original dense-expression standardization separately for
+      // deterministic score orientation. This mirrors orient_plage_scores().
+      const double orient_mean = row_sums[gene] / static_cast<double>(n_cells);
+      double orient_var = (row_sq_sums[gene] -
+        static_cast<double>(n_cells) * orient_mean * orient_mean) /
+        static_cast<double>(n_cells - 1);
+      if (orient_var < 0.0 && orient_var > -1e-12) {
+        orient_var = 0.0;
+      }
+      if (R_finite(orient_var) && orient_var > 0.0) {
+        orient_row_means[gene] = orient_mean;
+        orient_row_sds[gene] = std::sqrt(orient_var);
         orient_row_valid[gene] = 1;
       }
     }
@@ -1306,17 +1320,16 @@ NumericMatrix plage_dense(
       static_cast<arma::uword>(n_cells),
       arma::fill::zeros
     );
-    // Match the dense expression view used by GSVA::plageParam in the R
-    // benchmark. Structural zeros contribute (0 - mean) / sd.
+    // Match GSVA::plage() sparse semantics: only stored values are centered
+    // and scaled; structural zeros remain zero.
     for (int row = 0; row < effective_size; ++row) {
       const int gene = valid_genes[row];
-      z.row(static_cast<arma::uword>(row)).fill(-row_means[gene] / row_sds[gene]);
       const int row_start = row_ptr[gene];
       const int row_end = row_ptr[gene + 1];
       for (int ptr = row_start; ptr < row_end; ++ptr) {
         const int cell = row_cells[ptr];
-        z(static_cast<arma::uword>(row), static_cast<arma::uword>(cell)) +=
-          row_values[ptr] / row_sds[gene];
+        z(static_cast<arma::uword>(row), static_cast<arma::uword>(cell)) =
+          (row_values[ptr] - row_means[gene]) / row_sds[gene];
       }
     }
 
@@ -1378,15 +1391,19 @@ NumericMatrix plage_dense(
     int orient_size = 0;
     for (std::vector<int>::const_iterator it = set.begin(); it != set.end(); ++it) {
       const int gene = *it;
-      if (!row_valid[gene]) {
+      if (!orient_row_valid[gene]) {
         continue;
       }
       ++orient_size;
+      const double zero_contrib = -orient_row_means[gene] / orient_row_sds[gene];
+      for (int cell = 0; cell < n_cells; ++cell) {
+        mean_z_by_cell[cell] += zero_contrib;
+      }
       const int row_start = row_ptr[gene];
       const int row_end = row_ptr[gene + 1];
       for (int ptr = row_start; ptr < row_end; ++ptr) {
         mean_z_by_cell[row_cells[ptr]] +=
-          (row_values[ptr] - row_means[gene]) / row_sds[gene];
+          row_values[ptr] / orient_row_sds[gene];
       }
     }
     if (orient_size > 0) {
