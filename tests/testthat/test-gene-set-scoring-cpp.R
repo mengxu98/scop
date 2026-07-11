@@ -71,7 +71,11 @@ reference_plage_scores <- function(expr, gene_sets, min_size = 1L, max_size = .M
   n_cells <- ncol(expr)
   scores <- matrix(NA_real_, n_cells, length(gene_sets))
   z <- t(scale(t(expr)))
-  row_valid <- apply(z, 1L, function(x) all(is.finite(x)))
+  row_valid <- vapply(seq_len(n_genes), function(gene) {
+    nonzero <- expr[gene, expr[gene, ] != 0 & is.finite(expr[gene, ])]
+    length(nonzero) > 1L && is.finite(stats::sd(nonzero)) &&
+      stats::sd(nonzero) > 0 && all(is.finite(z[gene, ]))
+  }, logical(1L))
   orient_mean <- rowMeans(expr)
   orient_sd <- apply(expr, 1L, stats::sd)
   orient_valid <- is.finite(orient_sd) & orient_sd > 0
