@@ -1312,6 +1312,19 @@ NumericMatrix plage_dense(
       if (!row_needed[gene]) {
         continue;
       }
+      // GSVA filters rows whose non-zero values are constant before PLAGE.
+      const int nonzero_count = row_counts[gene];
+      bool nonzero_variable = false;
+      if (nonzero_count > 1) {
+        const double nonzero_mean = row_sums[gene] / static_cast<double>(nonzero_count);
+        double nonzero_var = (row_sq_sums[gene] -
+          static_cast<double>(nonzero_count) * nonzero_mean * nonzero_mean) /
+          static_cast<double>(nonzero_count - 1);
+        if (nonzero_var < 0.0 && nonzero_var > -1e-12) {
+          nonzero_var = 0.0;
+        }
+        nonzero_variable = R_finite(nonzero_var) && nonzero_var > 0.0;
+      }
       // GSVA >= 2.6 scales complete expression rows. Structural zeros
       // therefore contribute the centered zero value instead of remaining
       // zero in the standardized matrix.
@@ -1322,7 +1335,7 @@ NumericMatrix plage_dense(
       if (var < 0.0 && var > -1e-12) {
         var = 0.0;
       }
-      if (R_finite(var) && var > 0.0) {
+      if (nonzero_variable && R_finite(var) && var > 0.0) {
         row_means[gene] = mean;
         row_sds[gene] = std::sqrt(var);
         row_valid[gene] = 1;
