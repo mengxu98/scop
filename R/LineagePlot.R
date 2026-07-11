@@ -107,11 +107,11 @@ LineagePlot <- function(
   colors <- palette_colors(lineages, palette = palette, palcolor = palcolor)
   axes <- paste0(reduction_key, dims)
   fitted_list <- lapply(lineages, function(l) {
-    trim_pass <- dat[[l]] > stats::quantile(dat[[l]], trim[1], na.rm = TRUE) &
-      dat[[l]] < stats::quantile(dat[[l]], trim[2], na.rm = TRUE)
-    na_pass <- !is.na(dat[[l]])
-    index <- which(trim_pass & na_pass)
-    index <- index[order(dat[index, l])]
+    index <- lineage_plot_fit_index(
+      pseudotime = dat[[l]],
+      trim = trim,
+      span = span
+    )
     dat_sub <- dat[index, , drop = FALSE]
     weights_used <- rep(1, nrow(dat_sub))
 
@@ -216,4 +216,32 @@ LineagePlot <- function(
         theme_layer
     )
   }
+}
+
+lineage_plot_fit_index <- function(pseudotime, trim, span) {
+  trim_pass <- pseudotime > stats::quantile(
+    pseudotime,
+    trim[1],
+    na.rm = TRUE
+  ) & pseudotime < stats::quantile(
+    pseudotime,
+    trim[2],
+    na.rm = TRUE
+  )
+  index <- which(trim_pass & !is.na(pseudotime))
+  index <- index[order(pseudotime[index])]
+
+  target_fit_cells <- min(
+    length(index),
+    ceiling(10 * sqrt(length(index)) / sqrt(span))
+  )
+  if (length(index) > target_fit_cells) {
+    positions <- unique(round(seq(
+      from = 1L,
+      to = length(index),
+      length.out = target_fit_cells
+    )))
+    index <- index[positions]
+  }
+  index
 }
