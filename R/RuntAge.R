@@ -152,9 +152,9 @@ RuntAge <- function(
 
   check_r(c("Gladyshev-Lab/tAge", "Biobase", "edgeR"), verbose = FALSE)
   if (identical(backend, "python")) {
-    PrepareEnv(modules = "tage")
     configure_python_thread_env()
     if (isTRUE(check_python)) {
+      PrepareEnv(modules = "tage")
       check_tage_python(verbose = verbose)
     }
   }
