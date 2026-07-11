@@ -45,6 +45,19 @@ the new bridge result container. This compatibility promise applies to its
 public arguments, `giotto2` return structure, stored result names, and
 `GiottoPlot()` behavior.
 
+Use `SpatialBackendStatus()` to distinguish installation from API
+compatibility. `Giotto` and `GiottoClass` are reported separately because the
+runtime dispatcher resolves their symbols separately from the same registry.
+
+```r
+SpatialBackendStatus(backend = c("giotto", "giotto_class"), api_check = TRUE)
+```
+
+An `available` row means the package and required symbols for that route were
+found. `api_incompatible` means the package exists but a required current or
+legacy symbol is absent; install the matching Giotto generation rather than
+adding it to scop's DESCRIPTION dependencies.
+
 ## GitHub documentation build contract
 
 The pkgdown site documents both generations of the Giotto interface. Legacy
@@ -65,6 +78,14 @@ After a merge to `main`, changes that include source, reference, or pkgdown
 configuration files trigger a full site build; an article-only change can use
 the narrower article build. The scheduled full build remains the compatibility
 check against the then-current dependency ecosystem.
+
+Ordinary package and pkgdown checks remain independent of a user's Giotto
+installation. A Giotto compatibility failure must be classified as a scop
+regression, an upstream Giotto API regression, or a runner failure. Current API
+failures block a spatial release. Legacy API failures do not block unrelated
+pull requests, but must be resolved or documented before the spatial feature
+freeze is lifted. This keeps old Giotto support visible without making every
+documentation build permanently red.
 
 ## Single-image conversion
 

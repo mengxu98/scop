@@ -37,6 +37,9 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
+      - name: Check spatial source contracts
+        run: Rscript .github/scripts/check-spatial-contracts.R
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         env:
           GITHUB_PAT: ${{ github.token }}

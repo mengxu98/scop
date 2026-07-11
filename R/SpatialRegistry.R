@@ -84,9 +84,9 @@ spatial_method_registry <- function() {
 
     entry("RunSpatialNetwork", "analysis", "network", "RunSpatialNetwork.R", "SpatialNetwork", "biocneighbors", coordinate_space_current = "raw", coordinate_requirement = "distance_sensitive", scalability = "sparse", plot_function = "SpatialNetworkPlot"),
     entry("RunSpatialNeighborhood", "analysis", "neighborhood", "RunSpatialNeighborhood.R", "SpatialNeighborhood", "spicyr", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", scalability = "sparse_required", plot_function = "SpatialNeighborhoodPlot"),
-    entry("RunStatialKontextual", "analysis", "neighborhood", "RunStatialKontextual.R", "StatialKontextual", "statial", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive"),
+    entry("RunStatialKontextual", "analysis", "neighborhood", "RunStatialKontextual.R", "StatialKontextual", "statial", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "StatialKontextualPlot"),
     entry("RunSpatialIntegration", "analysis", "integration", "RunSpatialIntegration.R", "SpatialIntegration", "precast;bass;spatialmnn", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "SpatialIntegrationPlot", backend_requirement = "any"),
-    entry("RunMistyR", "analysis", "neighborhood", "RunMistyR.R", "MistyR", "mistyr", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive"),
+    entry("RunMistyR", "analysis", "neighborhood", "RunMistyR.R", "MistyR", "mistyr", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "MistyRPlot"),
     entry("RunSemlaSpatialNetwork", "analysis", "neighborhood", "RunSemla.R", "SemlaSpatialNetwork", "semla", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive"),
     entry("RunSemlaLocalG", "analysis", "neighborhood", "RunSemla.R", "SemlaLocalG", "semla", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive"),
     entry("RunSemlaRadialDistance", "analysis", "neighborhood", "RunSemla.R", "SemlaRadialDistance", "semla", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive"),
@@ -103,6 +103,8 @@ spatial_method_registry <- function() {
     entry("SpatialCellPlot", "plot", "visualization", "SpatialCellPlot.R", coordinate_space_current = "display", coordinate_requirement = "display_only"),
     entry("SpatialSpotPlot", "plot", "visualization", "SpatialSpotPlot.R", coordinate_space_current = "display", coordinate_requirement = "display_only"),
     entry("SpatialVariableFeaturePlot", "plot", "visualization", "RunSpatialVariableFeatures.R", coordinate_space_current = "display", coordinate_requirement = "display_only"),
+    entry("MistyRPlot", "plot", "visualization", "RunMistyR.R", coordinate_space_current = "none"),
+    entry("StatialKontextualPlot", "plot", "visualization", "RunStatialKontextual.R", coordinate_space_current = "none"),
     entry("STdeconvolvePlot", "plot", "visualization", "RunSTdeconvolve.R", backend_id = "stdeconvolve", coordinate_space_current = "none"),
     entry("standard_scop", "workflow", "recommended_workflow", "standard_scop.R", backend_id = "core", coordinate_space_current = "mixed", coordinate_space_target = "mixed", coordinate_requirement = "backend_managed")
   )
@@ -477,14 +479,19 @@ SpatialResultInfo <- function(
     state <- spatial_result_state(bundle, object_cells = cells)
     if (!include_empty && identical(state$state, "empty")) return(NULL)
     source <- if (is.list(bundle)) bundle$source else NULL
+    parameters <- if (is.list(bundle)) bundle$parameters else NULL
+    coordinate_space <- source$coordinate_space %||%
+      parameters$coordinate_space %||%
+      registry$coordinate_space_current[[i]]
+    image <- source$image %||% parameters$image %||% NA_character_
     data.frame(
       method = if (is.list(bundle) && !is.null(bundle$method)) as.character(bundle$method[[1L]]) else registry$method[[i]],
       tool_name = key,
       schema_version = if (is.list(bundle) && !is.null(bundle$schema_version)) as.integer(bundle$schema_version[[1L]]) else NA_integer_,
       result_state = state$state,
       n_items = state$n_items,
-      coordinate_space = if (!is.null(source$coordinate_space)) as.character(source$coordinate_space[[1L]]) else registry$coordinate_space_current[[i]],
-      image = if (!is.null(source$image)) as.character(source$image[[1L]]) else NA_character_,
+      coordinate_space = as.character(coordinate_space[[1L]]),
+      image = as.character(image[[1L]]),
       parameters_available = is.list(bundle) && !is.null(bundle$parameters),
       summary_available = is.list(bundle) && !is.null(bundle$summary),
       plot_function = registry$plot_function[[i]],

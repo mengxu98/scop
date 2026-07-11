@@ -26,6 +26,7 @@ RunStatialKontextual(
   store_results = TRUE,
   store_input = FALSE,
   verbose = TRUE,
+  coordinate_space = c("legacy_display", "raw"),
   ...
 )
 }
@@ -72,6 +73,8 @@ coordinates are available.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{coordinate_space}{Coordinate system used for spatial relationships.}
 
 \item{...}{Additional named arguments passed to \code{Statial::Kontextual()}.}
 }

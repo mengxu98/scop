@@ -10,7 +10,8 @@ srt_to_spe(
   layer = "counts",
   coord.cols = c("col", "row"),
   image = NULL,
-  include_meta = TRUE
+  include_meta = TRUE,
+  coordinate_space = c("legacy_display", "raw")
 )
 }
 \arguments{
@@ -27,6 +28,10 @@ srt_to_spe(
 coordinates are used.}
 
 \item{include_meta}{Whether to include Seurat metadata as \code{colData}.}
+
+\item{coordinate_space}{Coordinate space exported to \code{spatialCoords}.
+\code{"legacy_display"} preserves the historical scaled/y-flipped behavior;
+\code{"raw"} preserves analysis distances.}
 }
 \value{
 A \code{SpatialExperiment}.

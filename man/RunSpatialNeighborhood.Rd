@@ -23,6 +23,7 @@ RunSpatialNeighborhood(
   tool_name = "SpatialNeighborhood",
   store_results = TRUE,
   verbose = TRUE,
+  coordinate_space = c("legacy_display", "raw"),
   ...
 )
 }
@@ -69,6 +70,8 @@ used.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{coordinate_space}{Coordinate system used to build neighbor distances.}
 
 \item{...}{Additional arguments passed to the selected backend.}
 }

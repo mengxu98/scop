@@ -12,6 +12,9 @@
 #' @param features Features to score. If `NULL`, current variable features are
 #' used; if no variable features are present, all assay features are used.
 #' @param method Spatial variable feature detection method.
+#' @param coordinate_space Coordinate system used for distance-sensitive
+#'   analysis. `"legacy_display"` preserves the current behavior; `"raw"`
+#'   uses unscaled, unflipped source coordinates.
 #' @param k Number of nearest spatial neighbors per spot.
 #' @param nfeatures Number of top spatial features stored in
 #' `srt@misc[["SpatialVariableFeatures"]]`.
@@ -71,8 +74,10 @@ RunSpatialVariableFeatures <- function(
   store_results = TRUE,
   verbose = TRUE,
   seed = 11,
+  coordinate_space = c("legacy_display", "raw"),
   ...
 ) {
+  coordinate_space <- match.arg(coordinate_space)
   log_message(
     "Running spatial variable feature detection",
     message_type = "running",
@@ -122,11 +127,11 @@ RunSpatialVariableFeatures <- function(
   nperm <- as.integer(nperm)
   set.seed(seed)
 
-  coords <- spatial_dim_coords(
+  coords <- spatial_analysis_coords(
     srt = srt,
     image = image,
     coord.cols = coord.cols,
-    overlay_image = FALSE
+    coordinate_space = coordinate_space
   )$data
   spots <- intersect(colnames(srt), rownames(coords))
   if (length(spots) == 0L) {
@@ -228,6 +233,7 @@ RunSpatialVariableFeatures <- function(
         method = method,
         image = image,
         coord.cols = coord.cols,
+        coordinate_space = coordinate_space,
         k = k,
         nfeatures = nfeatures,
         min_spots = min_spots,
@@ -755,18 +761,15 @@ spatial_variable_plot_theme <- function(theme_use = "theme_scop", theme_args = l
 }
 
 spatial_variable_knn_edges <- function(coords, k = 6) {
-  coord_mat <- as.matrix(coords[, c("x", "y"), drop = FALSE])
-  dmat <- as.matrix(stats::dist(coord_mat))
-  diag(dmat) <- Inf
-  nn <- t(apply(dmat, 1L, function(x) utils::head(order(x), k)))
-  if (k == 1L) {
-    nn <- matrix(nn, ncol = 1L)
-  }
-  data.frame(
-    from = rep(seq_len(nrow(coords)), each = k),
-    to = as.vector(t(nn)),
-    stringsAsFactors = FALSE
+  k <- min(as.integer(k), nrow(coords) - 1L)
+  graph <- spatial_graph_compute(
+    coords = coords,
+    method = "knn",
+    k = k,
+    directed = TRUE,
+    weight = "binary"
   )
+  graph$edges[, c("from", "to"), drop = FALSE]
 }
 
 spatial_variable_score_matrix <- function(

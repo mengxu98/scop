@@ -246,6 +246,8 @@ reference:
 - subtitle: "Spatial Neighborhoods and Multi-Sample Integration"
 - contents:
   - RunSpatialNetwork
+  - MistyRPlot
+  - StatialKontextualPlot
   - RunSpatialNeighborhood
   - RunStatialKontextual
   - RunSpatialIntegration
