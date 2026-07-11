@@ -198,10 +198,12 @@ run_aucell_scores <- function(
   gene_sets,
   strategy = c("sparse", "topk", "full"),
   algorithm = c("aucell", "ctxcore"),
-  seed = 0L
+  seed = 0L,
+  tie_method = c("first", "hash")
 ) {
   strategy <- match.arg(strategy)
   algorithm <- match.arg(algorithm)
+  tie_method <- match.arg(tie_method)
   strategy_id <- c("topk" = 1L, "sparse" = 2L, "full" = 3L)[[strategy]]
   algorithm_id <- c("aucell" = 1L, "ctxcore" = 2L)[[algorithm]]
 
@@ -219,6 +221,7 @@ run_aucell_scores <- function(
 
   expr_counts <- gene_set_scoring_to_dgC(expr_counts)
   auc_max_rank <- ceiling(0.05 * nrow(expr_counts))
+  rank_seed <- if (identical(tie_method, "first")) -1L else as.integer(seed %||% 0L)
   scores <- aucell_auc_sparse(
     expr = expr_counts,
     gene_sets = gene_set_idx,
@@ -226,22 +229,39 @@ run_aucell_scores <- function(
     norm_auc = TRUE,
     strategy = strategy_id,
     algorithm = algorithm_id,
-    seed = as.integer(seed %||% 0L)
+    seed = rank_seed
   )
   dimnames(scores) <- list(colnames(expr_counts), names(gene_set_idx))
+  names(dimnames(scores)) <- c("cells", "gene sets")
   scores
 }
 
 run_aucell_official_scores <- function(
   expr_counts,
   gene_sets,
+  tie_method = c("first", "random"),
   ...
 ) {
   gene_set_scoring_require_namespace("AUCell")
-  expr_rank <- AUCell::AUCell_buildRankings(
-    as_matrix(expr_counts),
-    plotStats = FALSE
-  )
+  tie_method <- match.arg(tie_method)
+  expr_rank <- if (identical(tie_method, "first")) {
+    expr_mat <- as_matrix(expr_counts)
+    rankings <- vapply(
+      seq_len(ncol(expr_mat)),
+      function(cell) as.integer(rank(-expr_mat[, cell], ties.method = "first")),
+      integer(nrow(expr_mat))
+    )
+    dimnames(rankings) <- dimnames(expr_mat)
+    new(
+      "aucellResults",
+      SummarizedExperiment::SummarizedExperiment(assays = list(ranking = rankings))
+    )
+  } else {
+    AUCell::AUCell_buildRankings(
+      as_matrix(expr_counts),
+      plotStats = FALSE
+    )
+  }
   cells_auc <- AUCell::AUCell_calcAUC(
     geneSets = gene_sets,
     rankings = expr_rank,
@@ -249,6 +269,60 @@ run_aucell_official_scores <- function(
   )
   scores <- Matrix::t(AUCell::getAUC(cells_auc))
   as_matrix(scores)
+}
+
+# Calculate AUCell scores from an official aucellResults ranking object while
+# retaining AUCell's gene-set filtering rules. This is used for compatibility
+# routes that require AUCell_buildRankings() semantics (random ties, blocks,
+# or keepZeroesAsNA) but can still use the native AUC kernel.
+run_aucell_scores_from_official_rankings <- function(
+  rankings,
+  gene_sets,
+  auc_max_rank = ceiling(0.05 * nrow(rankings)),
+  norm_auc = TRUE
+) {
+  gene_set_scoring_require_namespace("AUCell")
+  if (!methods::is(rankings, "aucellResults")) {
+    stop("rankings must be an aucellResults object from AUCell_buildRankings()", call. = FALSE)
+  }
+  if (!is.list(gene_sets) || is.null(names(gene_sets))) {
+    stop("gene_sets must be a named list", call. = FALSE)
+  }
+  auc_max_rank <- suppressWarnings(as.integer(round(auc_max_rank[[1L]])))
+  if (is.na(auc_max_rank) || auc_max_rank <= 0L) {
+    stop("auc_max_rank must be a positive value", call. = FALSE)
+  }
+
+  rank_mat <- AUCell::getRanking(rankings)
+  gene_sets <- lapply(gene_sets, unique)
+  gene_sets <- gene_sets[lengths(gene_sets) > 0L]
+  if (length(gene_sets) == 0L) {
+    stop("No gene sets provided or remaining.", call. = FALSE)
+  }
+  gene_set_idx <- gene_set_scoring_indices(gene_sets, rownames(rank_mat))
+  n_genes <- lengths(gene_sets)
+  missing_percent <- (n_genes - lengths(gene_set_idx)) / n_genes
+  if (all(missing_percent >= 0.8)) {
+    stop(
+      "Fewer than 20% of the genes in the gene sets are included in the rankings.",
+      " Check whether the gene IDs in the rankings and gene sets match.",
+      call. = FALSE
+    )
+  }
+  keep <- missing_percent < 0.8
+  gene_set_idx <- gene_set_idx[keep]
+  if (length(gene_set_idx) == 0L) {
+    stop("No gene sets remain after AUCell gene-ID filtering.", call. = FALSE)
+  }
+
+  scores <- aucell_auc_ranked_full(
+    rankings = as.matrix(rank_mat),
+    gene_sets = gene_set_idx,
+    auc_max_rank = auc_max_rank,
+    norm_auc = isTRUE(norm_auc)
+  )
+  dimnames(scores) <- list(colnames(rank_mat), names(gene_set_idx))
+  scores
 }
 
 run_aucell_scores_from_rankings <- function(rankings, gene_sets) {

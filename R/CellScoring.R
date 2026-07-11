@@ -432,11 +432,43 @@ CellScoring <- function(
       scores <- srt_tmp[[paste0(names(features_keep), name)]]
     } else if (method == "AUCell") {
       expr_sp <- expr_data[, cells_sp, drop = FALSE]
-      if (identical(backend, "cpp")) {
+      aucell_option_names <- c(
+        "featureType", "plotStats", "splitByBlocks", "BPPARAM",
+        "keepZeroesAsNA", "nCores", "mctype", "normAUC", "aucMaxRank"
+      )
+      use_official_rankings <- any(names(dots) %in% aucell_option_names)
+      if (isTRUE(use_official_rankings)) {
+        gene_set_scoring_require_namespace("AUCell")
+        build_names <- c(
+          "featureType", "plotStats", "splitByBlocks", "BPPARAM",
+          "keepZeroesAsNA", "nCores", "mctype"
+        )
+        build_args <- dots[intersect(names(dots), build_names)]
+        build_args <- utils::modifyList(
+          list(exprMat = as_matrix(expr_sp), plotStats = FALSE, verbose = verbose),
+          build_args
+        )
+        rankings <- do.call(AUCell::AUCell_buildRankings, build_args)
+        auc_max_rank <- dots[["aucMaxRank"]] %||% ceiling(0.05 * nrow(expr_sp))
+        norm_auc <- dots[["normAUC"]] %||% TRUE
+        if (identical(backend, "cpp")) {
+          auc_scores <- run_aucell_scores_from_official_rankings(
+            rankings, features, auc_max_rank = auc_max_rank, norm_auc = norm_auc
+          )
+        } else {
+          calc_args <- dots[intersect(names(dots), c("nCores", "normAUC", "aucMaxRank"))]
+          calc_args <- utils::modifyList(
+            list(geneSets = features, rankings = rankings, verbose = verbose), calc_args
+          )
+          auc_scores <- as_matrix(Matrix::t(AUCell::getAUC(do.call(AUCell::AUCell_calcAUC, calc_args))))
+        }
+        filtered <- names(features)[!names(features) %in% colnames(auc_scores)]
+      } else if (identical(backend, "cpp")) {
         auc_scores <- run_aucell_scores(
           expr_counts = expr_sp,
           gene_sets = features,
-          strategy = "full"
+          strategy = "full",
+          tie_method = "first"
         )
         filtered <- names(features)[
           !names(features) %in% colnames(auc_scores)
@@ -444,7 +476,14 @@ CellScoring <- function(
       } else {
         auc_scores <- do.call(
           run_aucell_official_scores,
-          c(list(expr_counts = expr_sp, gene_sets = features), dots)
+          c(
+            list(
+              expr_counts = expr_sp,
+              gene_sets = features,
+              tie_method = "first"
+            ),
+            dots
+          )
         )
         filtered <- names(features)[
           !names(features) %in% colnames(auc_scores)

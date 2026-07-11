@@ -446,27 +446,34 @@ static std::vector<std::vector<int> > scenic_feature_orders(
   for (std::size_t fi = 0; fi < features.size(); ++fi) {
     const int g = features[fi];
     if (g < 0 || g >= n_genes || !orders[g].empty()) continue;
-    std::vector<int> order(n_samples);
-    std::iota(order.begin(), order.end(), 0);
-    std::sort(order.begin(), order.end(), [&](int a, int b) {
-      double xa = scenic_tree_feature_value(expr, a, g);
-      double xb = scenic_tree_feature_value(expr, b, g);
-      if (xa != xb) return xa < xb;
-      return a < b;
-    });
-    if (order_values != nullptr) {
-      std::vector<double> values(n_samples);
-      for (int i = 0; i < n_samples; ++i) {
-        values[i] = scenic_tree_feature_value(expr, order[i], g);
+    // Keep the dense ordering identical to the sparse path. In particular,
+    // structural zeros are emitted later in their current bootstrap order,
+    // rather than being pre-sorted by row index. This preserves split sums and
+    // therefore makes dense acceleration a representation-only change.
+    std::vector<std::pair<double, int> > nonzero;
+    nonzero.reserve(n_samples);
+    for (int i = 0; i < n_samples; ++i) {
+      const double value = scenic_tree_feature_value(expr, i, g);
+      if (!R_finite(value) || std::fabs(value) <= SCENIC_FEATURE_THRESHOLD) {
+        continue;
       }
-      (*order_values)[g] = values;
+      nonzero.push_back(std::make_pair(
+        static_cast<double>(static_cast<float>(value)),
+        i
+      ));
     }
-    if (order_ranks != nullptr) {
-      std::vector<int> ranks(n_samples);
-      for (int i = 0; i < n_samples; ++i) {
-        ranks[order[i]] = i;
-      }
-      (*order_ranks)[g] = ranks;
+    std::sort(nonzero.begin(), nonzero.end(), [](const std::pair<double, int>& a, const std::pair<double, int>& b) {
+      if (a.first != b.first) return a.first < b.first;
+      return a.second < b.second;
+    });
+    std::vector<int> order(nonzero.size());
+    std::vector<double> values(nonzero.size());
+    for (std::size_t i = 0; i < nonzero.size(); ++i) {
+      order[i] = nonzero[i].second;
+      values[i] = nonzero[i].first;
+    }
+    if (order_values != nullptr) {
+      (*order_values)[g] = values;
     }
     orders[g] = order;
   }
