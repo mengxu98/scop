@@ -358,7 +358,7 @@ spatial_integration_prepare_input <- function(
   features,
   image,
   coord.cols,
-  coordinate_space
+  coordinate_space = "legacy_display"
 ) {
   if (inherits(object, "Seurat")) {
     if (!sample.by %in% colnames(object@meta.data)) {
