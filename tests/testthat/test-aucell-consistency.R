@@ -125,3 +125,41 @@ test_that("RunMetabolism exposes backend without AUCell strategy parameter", {
   expect_true("backend" %in% names(formals(RunMetabolism)))
   expect_false(any(grepl("strategy", names(formals(RunMetabolism)), fixed = TRUE)))
 })
+
+test_that("prepared metabolism gene sets retain Term alignment after missing genes", {
+  local_mocked_bindings(
+    PrepareDB = function(...) {
+      list(Homo_sapiens = list(KEGG = list(
+        TERM2GENE = data.frame(
+          Term = c("hsa00010", "hsa00020", "hsa00020"),
+          symbol = c("G1", NA_character_, "G2"),
+          stringsAsFactors = FALSE
+        ),
+        TERM2NAME = data.frame(
+          Term = c("hsa00010", "hsa00020"),
+          Name = c("Pathway one", "Pathway two"),
+          stringsAsFactors = FALSE
+        )
+      )))
+    },
+    .package = "scop"
+  )
+
+  out <- scop:::build_metabolism_gene_sets_from_preparedb(
+    species = "Homo_sapiens",
+    db_prepare = "KEGG",
+    IDtype = "symbol",
+    curated = list(kegg_refs = c("00010", "00020"), reactome_names = character()),
+    expr_gene_names = c("G1", "G2"),
+    db_update = FALSE,
+    db_version = NULL,
+    convert_species = FALSE,
+    Ensembl_version = NULL,
+    mirror = NULL,
+    minGSSize = 1L,
+    maxGSSize = 10L,
+    verbose = FALSE
+  )
+
+  expect_equal(out$gene_sets, list(hsa00010 = "G1", hsa00020 = "G2"))
+})
