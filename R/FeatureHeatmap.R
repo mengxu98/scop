@@ -861,7 +861,7 @@ FeatureHeatmap <- function(
       }
     }
     if (cell_group != "All.groups") {
-      block_graphics <- heatmap_bordered_block_fill_graphics(
+      block_graphics <- thisplot::annotation_block_fill_graphics(
         levels = levels(srt@meta.data[[cell_group]]),
         palette = group_palette[i],
         palcolor = group_palcolor[[i]],
@@ -898,7 +898,7 @@ FeatureHeatmap <- function(
     }
 
     if (!is.null(split.by)) {
-      block_graphics <- heatmap_bordered_block_fill_graphics(
+      block_graphics <- thisplot::annotation_block_fill_graphics(
         levels = levels(srt@meta.data[[split.by]]),
         palette = cell_split_palette,
         palcolor = unlist(cell_split_palcolor),
@@ -1206,7 +1206,7 @@ FeatureHeatmap <- function(
         row_split <- length(unique(row_split_raw))
       }
     }
-    block_graphics <- heatmap_bordered_block_fill_graphics(
+    block_graphics <- thisplot::annotation_block_fill_graphics(
       levels = levels(row_split_raw),
       palette = feature_split_palette,
       palcolor = unlist(feature_split_palcolor),
