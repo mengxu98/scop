@@ -1,6 +1,7 @@
 # scop 0.9.0
 
 * **feat**:
+  * Added a shared spatial method registry with `ListSpatialMethods()`, read-only `SpatialBackendStatus()`, and `SpatialResultInfo()` so users can discover the complete spatial API, inspect optional backend compatibility without installation side effects, and summarize legacy or current results stored in `@tools`.
   * `FeatureStatPlot()` and `ExpressionStatPlot()`: Added `auto_comparison` to automatically compare the group with the highest median statistic against all other groups, with explicit `ref_group` and `comparisons` still taking precedence.
   * `GSVAPlot()` now supports `mode = "diff"` for true two-group pathway activity tests on sample-aggregated GSVA scores, while keeping the original score plotting behavior as the default. Non-heatmap score-mode p-value columns are documented as score-derived plotting placeholders, not statistical significance.
   * Added `ClusterTreePlot()` for SCOP-styled visualization of Seurat multi-resolution clustering trees, including automatic `*_snn_res.*` metadata detection, prefix/resolution filtering, edge contribution statistics, and marker-expression overlays.
