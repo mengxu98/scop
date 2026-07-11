@@ -47,6 +47,7 @@ articles:
   navbar: Spatial transcriptomics
   contents:
   - articles/spatial-main-workflow
+  - articles/spatial-framework-bridges
 - title: Cell-cell communication
   navbar: Cell-cell communication
   contents:
@@ -194,8 +195,12 @@ reference:
   - RunSpatialQM
   - RunSpotSweeper
 
-- subtitle: "Spatial Workflow and Giotto Backends"
+- subtitle: "Spatial Framework Bridges and Giotto Workflows"
 - contents:
+  - srt_to_giotto
+  - giotto_to_srt
+  - srt_to_spata2
+  - spata2_to_srt
   - SeuratToScopGiotto
   - RunGiottoWorkflow
   - GiottoPreprocess
@@ -234,6 +239,7 @@ reference:
 
 - subtitle: "Spatial Neighborhoods and Multi-Sample Integration"
 - contents:
+  - RunSpatialNetwork
   - RunSpatialNeighborhood
   - RunStatialKontextual
   - RunSpatialIntegration
@@ -251,6 +257,8 @@ reference:
   - SpatialGradientPlot
   - SpatialIntegrationPlot
   - SpatialNeighborhoodPlot
+  - SpatialNetworkPlot
+  - SpatialCellPlot
   - SpatialSpotPlot
   - SpatialVariableFeaturePlot
   - STdeconvolvePlot

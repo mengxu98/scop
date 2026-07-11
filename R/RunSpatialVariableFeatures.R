@@ -328,7 +328,9 @@ spatial_variable_run_nnsvg <- function(expr, coords, assay, ...) {
 }
 
 spatial_variable_make_spe <- function(expr, coords, assay = NULL) {
-  spe <- SpatialExperiment::SpatialExperiment(
+  spatial_variable_require_package("SpatialExperiment")
+  SpatialExperiment <- get_namespace_fun("SpatialExperiment", "SpatialExperiment")
+  spe <- SpatialExperiment(
     assays = list(counts = expr),
     spatialCoords = as.matrix(coords[, c("x", "y"), drop = FALSE])
   )
@@ -434,7 +436,9 @@ spatial_variable_reorder_cols <- function(df, first_cols) {
 }
 
 spatial_variable_require_package <- function(pkg) {
-  if (!requireNamespace(pkg, quietly = TRUE)) {
+  repo <- if (identical(pkg, "SPARK")) "xzhoulab/SPARK" else pkg
+  status <- tryCatch(check_r(repo, verbose = FALSE), error = function(e) FALSE)
+  if (!isTRUE(unname(unlist(status))[1])) {
     log_message(
       "Please install required package before running this function: {.val {pkg}}",
       message_type = "error"
@@ -446,7 +450,7 @@ spatial_variable_require_package <- function(pkg) {
 spatial_variable_get_fun <- function(pkg, fun) {
   spatial_variable_require_package(pkg)
   tryCatch(
-    getExportedValue(pkg, fun),
+    get_namespace_fun(pkg, fun),
     error = function(e) {
       log_message(
         "{.pkg {pkg}} does not export required function {.fn {fun}}",
@@ -595,7 +599,8 @@ SpatialVariableFeaturePlot <- function(
     ncol = ncol,
     byrow = byrow
   )
-  patchwork::wrap_plots(summary_plot, surface_plot, ncol = 1)
+  wrap_plots <- spatial_variable_get_fun("patchwork", "wrap_plots")
+  wrap_plots(summary_plot, surface_plot, ncol = 1)
 }
 
 spatial_variable_get_stored_result <- function(srt) {

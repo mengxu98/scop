@@ -59,6 +59,7 @@ Suggests:
     data.table,
     e1071,
     ggpubr,
+    ggrastr,
     ggupset,
     ggVennDiagram,
     ggridges,

@@ -717,7 +717,8 @@ meringue_empty_modules <- function() {
 
 meringue_require_package <- function(pkg) {
   install_spec <- if (identical(pkg, "MERINGUE")) "JEFworks-Lab/MERINGUE" else pkg
-  if (!isTRUE(check_r(install_spec, verbose = FALSE))) {
+  status <- tryCatch(check_r(install_spec, verbose = FALSE), error = function(e) FALSE)
+  if (!isTRUE(unname(unlist(status))[1])) {
     log_message(
       "Please install required package before running {.fn RunMERINGUE}: {.val {pkg}}",
       message_type = "error"
