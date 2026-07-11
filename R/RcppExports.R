@@ -109,6 +109,10 @@ aucell_auc_ranked <- function(rankings, gene_sets, auc_max_rank) {
     .Call(`_scop_aucell_auc_ranked`, rankings, gene_sets, auc_max_rank)
 }
 
+aucell_auc_ranked_full <- function(rankings, gene_sets, auc_max_rank, norm_auc = TRUE) {
+    .Call(`_scop_aucell_auc_ranked_full`, rankings, gene_sets, auc_max_rank, norm_auc)
+}
+
 ora_hypergeom <- function(genes, term_ids, term_genes, term_name_ids, term_names, min_size = 10L, max_size = 2147483647L) {
     .Call(`_scop_ora_hypergeom`, genes, term_ids, term_genes, term_name_ids, term_names, min_size, max_size)
 }

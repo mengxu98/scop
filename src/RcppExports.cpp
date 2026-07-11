@@ -418,6 +418,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// aucell_auc_ranked_full
+NumericMatrix aucell_auc_ranked_full(NumericMatrix rankings, List gene_sets, int auc_max_rank, bool norm_auc);
+RcppExport SEXP _scop_aucell_auc_ranked_full(SEXP rankingsSEXP, SEXP gene_setsSEXP, SEXP auc_max_rankSEXP, SEXP norm_aucSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type rankings(rankingsSEXP);
+    Rcpp::traits::input_parameter< List >::type gene_sets(gene_setsSEXP);
+    Rcpp::traits::input_parameter< int >::type auc_max_rank(auc_max_rankSEXP);
+    Rcpp::traits::input_parameter< bool >::type norm_auc(norm_aucSEXP);
+    rcpp_result_gen = Rcpp::wrap(aucell_auc_ranked_full(rankings, gene_sets, auc_max_rank, norm_auc));
+    return rcpp_result_gen;
+END_RCPP
+}
 // ora_hypergeom
 DataFrame ora_hypergeom(CharacterVector genes, CharacterVector term_ids, CharacterVector term_genes, CharacterVector term_name_ids, CharacterVector term_names, int min_size, int max_size);
 RcppExport SEXP _scop_ora_hypergeom(SEXP genesSEXP, SEXP term_idsSEXP, SEXP term_genesSEXP, SEXP term_name_idsSEXP, SEXP term_namesSEXP, SEXP min_sizeSEXP, SEXP max_sizeSEXP) {
@@ -2592,6 +2606,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_gniplr_cpp", (DL_FUNC) &_scop_gniplr_cpp, 6},
     {"_scop_aucell_auc_sparse", (DL_FUNC) &_scop_aucell_auc_sparse, 7},
     {"_scop_aucell_auc_ranked", (DL_FUNC) &_scop_aucell_auc_ranked, 3},
+    {"_scop_aucell_auc_ranked_full", (DL_FUNC) &_scop_aucell_auc_ranked_full, 4},
     {"_scop_ora_hypergeom", (DL_FUNC) &_scop_ora_hypergeom, 7},
     {"_scop_module_score_sparse", (DL_FUNC) &_scop_module_score_sparse, 3},
     {"_scop_proportion_permutation", (DL_FUNC) &_scop_proportion_permutation, 6},

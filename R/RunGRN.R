@@ -334,11 +334,17 @@ grnboost <- function(
     )
   }
   expr <- if (inherits(grn_matrix, "dgCMatrix")) {
-    density <- Matrix::nnzero(grn_matrix) /
-      (nrow(grn_matrix) * ncol(grn_matrix))
-    if (
-      max_edges_per_target_cpp == 0L || (is.finite(density) && density < 0.05)
-    ) {
+    dense_max_entries <- getOption(
+      "scop.grnboost_dense_max_entries",
+      1e7
+    )
+    dense_max_entries <- suppressWarnings(as.numeric(dense_max_entries[[1L]]))
+    if (!is.finite(dense_max_entries) || dense_max_entries < 0) {
+      dense_max_entries <- 1e7
+    }
+    use_dense <- as.double(nrow(grn_matrix)) * as.double(ncol(grn_matrix)) <=
+      dense_max_entries
+    if (!isTRUE(use_dense)) {
       log_message(
         "Detected sparse input, using sparse-native GRNBoost2 backend",
         verbose = verbose
@@ -346,7 +352,7 @@ grnboost <- function(
       grn_matrix
     } else {
       log_message(
-        "Detected medium-density input, using dense GRNBoost2 backend",
+        "Using dense GRNBoost2 backend within the configured matrix-size limit",
         verbose = verbose
       )
       as.matrix(grn_matrix)

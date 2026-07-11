@@ -338,6 +338,58 @@ NumericMatrix aucell_auc_ranked(
   return scores;
 }
 
+// AUCell-compatible AUC calculation for a rank matrix returned by
+// AUCell_buildRankings()/AUCell::getRanking(): genes x cells, 1-based ranks,
+// with NA values allowed for keepZeroesAsNA.
+// [[Rcpp::export]]
+NumericMatrix aucell_auc_ranked_full(
+  NumericMatrix rankings,
+  List gene_sets,
+  int auc_max_rank,
+  bool norm_auc = true
+) {
+  const int n_genes = rankings.nrow();
+  const int n_cells = rankings.ncol();
+  const int n_sets = gene_sets.size();
+  const int auc_threshold = std::max(1, auc_max_rank);
+
+  std::vector<std::vector<int> > sets(n_sets);
+  std::vector<double> max_auc(n_sets);
+  for (int set_i = 0; set_i < n_sets; ++set_i) {
+    IntegerVector genes = gene_sets[set_i];
+    sets[set_i].reserve(genes.size());
+    for (int gene_i = 0; gene_i < genes.size(); ++gene_i) {
+      const int gene = genes[gene_i] - 1;
+      if (gene >= 0 && gene < n_genes) {
+        sets[set_i].push_back(gene);
+      }
+    }
+    std::sort(sets[set_i].begin(), sets[set_i].end());
+    sets[set_i].erase(std::unique(sets[set_i].begin(), sets[set_i].end()), sets[set_i].end());
+    max_auc[set_i] = aucell_max_auc(
+      static_cast<int>(sets[set_i].size()), auc_threshold, norm_auc
+    );
+  }
+
+  NumericMatrix scores(n_cells, n_sets);
+  for (int cell = 0; cell < n_cells; ++cell) {
+    for (int set_i = 0; set_i < n_sets; ++set_i) {
+      std::vector<int> ranks;
+      ranks.reserve(sets[set_i].size());
+      for (std::vector<int>::const_iterator it = sets[set_i].begin(); it != sets[set_i].end(); ++it) {
+        const double rank = rankings(*it, cell);
+        if (R_finite(rank)) {
+          ranks.push_back(static_cast<int>(std::round(rank)));
+        }
+      }
+      scores(cell, set_i) = aucell_auc_from_ranks(
+        ranks, auc_threshold, max_auc[set_i]
+      );
+    }
+  }
+  return scores;
+}
+
 // [[Rcpp::export]]
 DataFrame ora_hypergeom(
   CharacterVector genes,
