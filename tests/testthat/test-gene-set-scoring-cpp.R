@@ -70,19 +70,8 @@ reference_plage_scores <- function(expr, gene_sets, min_size = 1L, max_size = .M
   n_genes <- nrow(expr)
   n_cells <- ncol(expr)
   scores <- matrix(NA_real_, n_cells, length(gene_sets))
-  z <- matrix(0, nrow = n_genes, ncol = n_cells)
-  row_valid <- logical(n_genes)
-  for (gene in seq_len(n_genes)) {
-    nonzero <- which(expr[gene, ] != 0 & is.finite(expr[gene, ]))
-    if (length(nonzero) <= 1L) {
-      next
-    }
-    scaled <- scale(expr[gene, nonzero])
-    if (all(is.finite(scaled))) {
-      z[gene, nonzero] <- scaled
-      row_valid[gene] <- TRUE
-    }
-  }
+  z <- t(scale(t(expr)))
+  row_valid <- apply(z, 1L, function(x) all(is.finite(x)))
   orient_mean <- rowMeans(expr)
   orient_sd <- apply(expr, 1L, stats::sd)
   orient_valid <- is.finite(orient_sd) & orient_sd > 0
@@ -149,8 +138,9 @@ test_that("PLAGE gene-gene covariance path matches right singular vector scores"
   expect_equal(cpp, ref, tolerance = 1e-12, ignore_attr = TRUE)
 })
 
-test_that("PLAGE sparse standardization matches GSVA", {
+test_that("PLAGE complete-row standardization matches current GSVA", {
   skip_if_not_installed("GSVA")
+  skip_if(packageVersion("GSVA") < "2.6.0", "GSVA before 2.6 used legacy sparse scaling")
   set.seed(20260711)
   expr <- matrix(stats::rpois(18 * 41, lambda = 0.9), nrow = 18)
   expr[expr < 2] <- 0
