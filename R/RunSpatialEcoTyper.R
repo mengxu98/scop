@@ -1300,6 +1300,12 @@ spatialecotyper_store_tool <- function(
       metadata = metadata,
       parameters = parameters
     )
+    srt@tools[[tool_name]] <- spatial_result_build(
+      bundle = srt@tools[[tool_name]],
+      method = "SpatialEcoTyper",
+      result_type = "ecotype",
+      provenance = list(producer = "RunSpatialEcoTyper", backend_id = "spatialecotyper")
+    )
   }
   srt
 }
