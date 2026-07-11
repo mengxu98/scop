@@ -215,6 +215,12 @@ RunMistyR <- function(
     if (isTRUE(store_views)) {
       bundle$views <- misty_views
     }
+    bundle <- spatial_result_build(
+      bundle = bundle,
+      method = "MistyR",
+      result_type = "neighborhood",
+      provenance = list(producer = "RunMistyR", backend_id = "mistyr")
+    )
     srt@tools[[tool_name]] <- bundle
   }
 

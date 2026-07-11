@@ -70,3 +70,123 @@ test_that("dedicated spatial result plots accept result-only input", {
   ))
   expect_s3_class(StatialKontextualPlot(res = statial), "ggplot")
 })
+
+test_that("SpatialCoordinates returns ordered raw and display contracts", {
+  counts <- matrix(
+    seq_len(12), nrow = 3,
+    dimnames = list(paste0("gene", 1:3), paste0("spot", 1:4))
+  )
+  srt <- suppressWarnings(SeuratObject::CreateSeuratObject(counts))
+  srt$col <- c(2, 0, 3, 1)
+  srt$row <- c(0, 1, 1, 0)
+  raw <- SpatialCoordinates(srt)
+  expect_identical(raw$data$cell_id, colnames(srt))
+  expect_identical(raw$source$coordinate_space, "raw")
+  expect_equal(raw$data$x, unname(srt$col))
+  display <- SpatialCoordinates(srt, space = "display")
+  expect_identical(display$source$coordinate_space, "display")
+  expect_equal(display$data[, c("x", "y")], raw$data[, c("x", "y")])
+
+  subsetted <- subset(srt, cells = c("spot4", "spot2"))
+  expect_identical(SpatialCoordinates(subsetted)$data$cell_id, colnames(subsetted))
+  renamed <- SeuratObject::RenameCells(srt, new.names = paste0("renamed", seq_len(ncol(srt))))
+  expect_identical(SpatialCoordinates(renamed)$data$cell_id, colnames(renamed))
+
+  srt$col[[2L]] <- NA_real_
+  filtered <- suppressMessages(SpatialCoordinates(srt))
+  expect_false("spot2" %in% filtered$data$cell_id)
+})
+
+test_that("SpatialCoordinates makes multi-image selection explicit", {
+  counts <- matrix(
+    seq_len(12), nrow = 3,
+    dimnames = list(paste0("gene", 1:3), paste0("spot", 1:4))
+  )
+  srt <- suppressWarnings(SeuratObject::CreateSeuratObject(counts))
+  assay <- SeuratObject::DefaultAssay(srt)
+  srt[["slice1"]] <- SeuratObject::CreateFOV(
+    data.frame(x = c(0, 1), y = c(0, 1), row.names = c("spot1", "spot2")),
+    type = "centroids", assay = assay, key = "s1_"
+  )
+  srt[["slice2"]] <- SeuratObject::CreateFOV(
+    data.frame(x = c(2, 3), y = c(2, 3), row.names = c("spot3", "spot4")),
+    type = "centroids", assay = assay, key = "s2_"
+  )
+  expect_error(SpatialCoordinates(srt), "Multiple spatial images")
+  selected <- SpatialCoordinates(srt, image = "slice2")
+  expect_identical(selected$data$cell_id, c("spot3", "spot4"))
+  expect_identical(selected$source$image, "slice2")
+  legacy <- SpatialCoordinates(srt, image_policy = "legacy_first")
+  expect_identical(legacy$source$image, "slice1")
+})
+
+test_that("schema-v1 results support custom keys and legacy read-only views", {
+  counts <- matrix(
+    seq_len(12), nrow = 3,
+    dimnames = list(paste0("gene", 1:3), paste0("spot", 1:4))
+  )
+  srt <- suppressWarnings(SeuratObject::CreateSeuratObject(counts))
+  srt@tools$custom_misty <- scop:::spatial_result_build(
+    bundle = list(results = list(table = data.frame(value = 1))),
+    method = "MistyR",
+    result_type = "neighborhood",
+    provenance = list(producer = "RunMistyR", backend_id = "mistyr")
+  )
+  info <- SpatialResultInfo(srt)
+  expect_identical(info$tool_name, "custom_misty")
+  expect_identical(info$schema_version, 1L)
+  expect_identical(GetSpatialResult(srt, method = "RunMistyR")$method, "MistyR")
+  expect_identical(GetSpatialResult(srt, tool_name = "custom_misty", raw = TRUE), srt@tools$custom_misty)
+  srt@tools$custom_misty_2 <- srt@tools$custom_misty
+  expect_error(GetSpatialResult(srt, method = "RunMistyR"), "Multiple spatial results")
+  expect_identical(GetSpatialResult(srt, tool_name = "custom_misty_2")$method, "MistyR")
+  srt@tools$custom_misty_2 <- NULL
+
+  srt@tools$StatialKontextual <- list(
+    table = data.frame(value = 1),
+    parameters = list(coordinate_space = "raw", image = "slice1")
+  )
+  before <- srt@tools$StatialKontextual
+  normalized <- GetSpatialResult(srt, tool_name = "StatialKontextual")
+  expect_identical(normalized$schema_version, 1L)
+  expect_identical(normalized$method, "StatialKontextual")
+  expect_identical(srt@tools$StatialKontextual, before)
+})
+
+test_that("GetSpatialGraph converts without synchronizing Seurat graphs", {
+  skip_if_not_installed("BiocNeighbors")
+  counts <- matrix(
+    seq_len(12), nrow = 3,
+    dimnames = list(paste0("gene", 1:3), paste0("spot", 1:4))
+  )
+  srt <- suppressWarnings(SeuratObject::CreateSeuratObject(counts))
+  srt$col <- c(0, 0, 1, 2)
+  srt$row <- 0
+  out <- RunSpatialNetwork(srt, k = 1, verbose = FALSE)
+  graph <- GetSpatialGraph(out)
+  expect_true(all(c("nodes", "edges", "parameters", "source") %in% names(graph)))
+  adjacency <- GetSpatialGraph(out, format = "sparse")
+  expect_s4_class(adjacency, "dgCMatrix")
+  expect_equal(adjacency, Matrix::t(adjacency))
+  expect_length(SeuratObject::Graphs(out), 0L)
+  expect_s4_class(GetSpatialGraph(out, format = "seurat"), "Graph")
+  expect_error(GetSpatialGraph(out, format = "sparse", value = "distance"), "Zero-distance")
+  graph_info <- SpatialResultInfo(out, detail = "graphs")
+  expect_identical(graph_info$graph_name, "knn_k1")
+  expect_true(graph_info$active)
+})
+
+test_that("boundary validator preserves polygon and ring order", {
+  boundaries <- data.frame(
+    cell_id = rep("cell1", 8),
+    polygon_id = "p1",
+    ring_id = rep(c("outer", "hole"), each = 4),
+    vertex_order = rep(c(3, 1, 4, 2), 2),
+    x = c(1, 0, 0, 1, 0.8, 0.2, 0.2, 0.8),
+    y = c(1, 0, 1, 0, 0.8, 0.2, 0.8, 0.2)
+  )
+  valid <- scop:::spatial_boundary_validate(boundaries, image = "slice1")
+  expect_identical(unique(valid$image), "slice1")
+  expect_true(all(diff(valid$vertex_order[valid$ring_id == "outer"]) >= 0))
+  expect_error(scop:::spatial_boundary_validate(boundaries[, setdiff(names(boundaries), "x")]), "required column")
+})

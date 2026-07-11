@@ -36,13 +36,16 @@ with_mock_spicyr <- function(code) {
   }
   testthat::local_mocked_bindings(
     check_r = function(packages, ...) {
-      expect_identical(packages, "spicyR")
+      expect_true(packages %in% c("spicyR", "BiocNeighbors"))
       invisible(TRUE)
     },
     get_namespace_fun = function(package, name) {
-      expect_identical(package, "spicyR")
-      expect_identical(name, "spicy")
-      fake_spicy
+      if (identical(package, "spicyR")) {
+        expect_identical(name, "spicy")
+        return(fake_spicy)
+      }
+      expect_identical(package, "BiocNeighbors")
+      getExportedValue(package, name)
     }
   )
   force(code)

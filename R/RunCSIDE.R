@@ -202,6 +202,12 @@ RunCSIDE <- function(
         condition_levels = inputs$condition_levels
       )
     )
+    srt@tools[[tool_name]] <- spatial_result_build(
+      bundle = srt@tools[[tool_name]],
+      method = "CSIDE",
+      result_type = "deconvolution",
+      provenance = list(producer = "RunCSIDE", backend_id = "spacexr")
+    )
   }
 
   log_message(

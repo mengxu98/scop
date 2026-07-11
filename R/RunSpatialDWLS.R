@@ -162,6 +162,12 @@ RunSpatialDWLS <- function(
         normalize = normalize
       )
     )
+    srt@tools[[tool_name]] <- spatial_result_build(
+      bundle = srt@tools[[tool_name]],
+      method = "SpatialDWLS",
+      result_type = "deconvolution",
+      provenance = list(producer = "RunSpatialDWLS", backend_id = "core")
+    )
   }
 
   log_message(

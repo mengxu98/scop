@@ -105,7 +105,7 @@ RunSpatialNetwork <- function(
   edges <- graph$edges
   edges$from <- graph$nodes$cell_id[edges$from]
   edges$to <- graph$nodes$cell_id[edges$to]
-  parameters <- graph$parameters[c("method", "k", "radius")]
+  parameters <- graph$parameters
 
   sanitize_name <- function(x) {
     x <- gsub("[^A-Za-z0-9]+", "_", x)
@@ -140,11 +140,24 @@ RunSpatialNetwork <- function(
   store$graphs[[graph.name]] <- list(
     nodes = nodes,
     edges = edges,
-    parameters = c(parameters, list(weight = "binary")),
+    parameters = parameters,
     source = c(coord_result$source, list(transform = coord_result$transform))
   )
-  store$method <- "SpatialNetwork"
   store$active_graph <- graph.name
+  store <- spatial_result_build(
+    bundle = store,
+    method = "SpatialNetwork",
+    result_type = "network",
+    source = c(coord_result$source, list(transform = coord_result$transform)),
+    provenance = list(producer = "RunSpatialNetwork", backend_id = "biocneighbors"),
+    parameters = parameters,
+    summary = list(
+      active_graph = graph.name,
+      n_graphs = length(store$graphs),
+      n_nodes = nrow(nodes),
+      n_edges = nrow(edges)
+    )
+  )
   srt@tools[["SpatialNetwork"]] <- store
   log_message(
     "Stored spatial graph {.val {graph.name}} with {.val {nrow(nodes)}} nodes and {.val {nrow(edges)}} edges",
@@ -152,6 +165,99 @@ RunSpatialNetwork <- function(
     verbose = verbose
   )
   srt
+}
+
+spatial_graph_validate <- function(graph) {
+  if (!is.list(graph) || !all(c("nodes", "edges", "parameters", "source") %in% names(graph))) {
+    log_message("Stored spatial graph is missing nodes, edges, parameters, or source", message_type = "error")
+  }
+  if (!is.data.frame(graph$nodes) || !all(c("cell_id", "x", "y", "image") %in% colnames(graph$nodes))) {
+    log_message("Spatial graph nodes must contain cell_id, x, y, and image", message_type = "error")
+  }
+  if (!is.data.frame(graph$edges) || !all(c("from", "to", "distance", "weight") %in% colnames(graph$edges))) {
+    log_message("Spatial graph edges must contain from, to, distance, and weight", message_type = "error")
+  }
+  ids <- as.character(graph$nodes$cell_id)
+  if (anyNA(ids) || any(!nzchar(ids)) || anyDuplicated(ids)) {
+    log_message("Spatial graph node identifiers must be unique and non-missing", message_type = "error")
+  }
+  if (nrow(graph$edges) > 0L && any(!graph$edges$from %in% ids | !graph$edges$to %in% ids)) {
+    log_message("Spatial graph edges reference unknown nodes", message_type = "error")
+  }
+  invisible(TRUE)
+}
+
+#' @title Read or convert a stored spatial graph
+#'
+#' @description
+#' Read a graph from a `SpatialNetwork` result without modifying the Seurat
+#' object. Graphs can be returned as their complete list representation, a
+#' sparse matrix, or a Seurat `Graph` object.
+#'
+#' @param object Optional `Seurat` object containing `SpatialNetwork` results.
+#' @param res Optional `SpatialNetwork` result list.
+#' @param graph.name Stored graph name. The active graph is used when `NULL`.
+#' @param format Output representation.
+#' @param value Edge value used for matrix conversions.
+#'
+#' @return A graph list, `dgCMatrix`, or Seurat `Graph` object.
+#' @export
+GetSpatialGraph <- function(
+  object = NULL,
+  res = NULL,
+  graph.name = NULL,
+  format = c("list", "sparse", "seurat"),
+  value = c("weight", "distance")
+) {
+  format <- match.arg(format)
+  value <- match.arg(value)
+  if (!is.null(object) && !inherits(object, "Seurat")) {
+    log_message("{.arg object} must be a {.cls Seurat} object", message_type = "error")
+  }
+  if (is.null(res)) {
+    if (is.null(object)) {
+      log_message("Provide {.arg object} or {.arg res}", message_type = "error")
+    }
+    res <- object@tools[["SpatialNetwork"]]
+  }
+  if (!is.list(res) || is.null(res$graphs)) {
+    log_message("{.arg res} must contain SpatialNetwork graphs", message_type = "error")
+  }
+  graph.name <- graph.name %||% res$active_graph
+  if (is.null(graph.name) || is.null(res$graphs[[graph.name]])) {
+    log_message("Spatial graph {.val {graph.name}} was not found", message_type = "error")
+  }
+  graph <- res$graphs[[graph.name]]
+  spatial_graph_validate(graph)
+  if (identical(format, "list")) return(graph)
+  edges <- graph$edges
+  if (identical(value, "distance") && nrow(edges) > 0L && any(edges$distance == 0)) {
+    log_message(
+      "Zero-distance edges cannot be represented distinctly from absent edges in a sparse distance matrix; use {.code format = 'list'}",
+      message_type = "error"
+    )
+  }
+  ids <- as.character(graph$nodes$cell_id)
+  i <- match(edges$from, ids)
+  j <- match(edges$to, ids)
+  x <- as.numeric(edges[[value]])
+  directed <- isTRUE(graph$parameters$directed)
+  if (!directed && length(i) > 0L) {
+    i0 <- i
+    i <- c(i0, j)
+    j <- c(j, i0)
+    x <- c(x, x)
+  }
+  matrix <- Matrix::sparseMatrix(
+    i = i,
+    j = j,
+    x = x,
+    dims = c(length(ids), length(ids)),
+    dimnames = list(ids, ids),
+    giveCsparse = TRUE
+  )
+  if (identical(format, "sparse")) return(matrix)
+  methods::as(matrix, "Graph")
 }
 
 #' @title Plot a native spatial network

@@ -88,7 +88,8 @@ RunCARD <- function(
   create_card_params = list(),
   card_deconvolution_params = list(),
   verbose = TRUE,
-  ...
+  ...,
+  coordinate_space = c("legacy_display", "raw")
 ) {
   if (!inherits(srt, "Seurat")) {
     log_message(
@@ -106,6 +107,7 @@ RunCARD <- function(
   card_assert_scalar_string(tool_name, "tool_name")
   card_validate_param_list(create_card_params, "create_card_params")
   card_validate_param_list(card_deconvolution_params, "card_deconvolution_params")
+  coordinate_space <- match.arg(coordinate_space)
 
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   reference_assay <- reference_assay %||% SeuratObject::DefaultAssay(reference)
@@ -194,7 +196,8 @@ RunCARD <- function(
     srt = srt,
     spot_ids = colnames(st_counts),
     image = image,
-    coord.cols = coord.cols
+    coord.cols = coord.cols,
+    coordinate_space = coordinate_space
   )
   ref_meta <- card_reference_metadata(
     reference = reference,
@@ -258,6 +261,7 @@ RunCARD <- function(
         reference_label = reference_label,
         image = image,
         coord.cols = coord.cols,
+        coordinate_space = coordinate_space,
         sample_varname = sample_varname,
         minCountGene = minCountGene,
         minCountSpot = minCountSpot,
@@ -268,6 +272,16 @@ RunCARD <- function(
         create_card_params = create_card_params,
         card_deconvolution_params = card_deconvolution_params
       )
+    )
+    srt@tools[[tool_name]] <- spatial_result_build(
+      bundle = srt@tools[[tool_name]],
+      method = "CARD",
+      result_type = "deconvolution",
+      source = c(
+        attr(coords, "spatial_source") %||% list(),
+        list(transform = attr(coords, "spatial_transform"))
+      ),
+      provenance = list(producer = "RunCARD", backend_id = "card")
     )
   }
 
