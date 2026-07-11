@@ -31,6 +31,7 @@ RunSmoothClust(
   store_smoothed = FALSE,
   seed = 11,
   verbose = TRUE,
+  coordinate_space = c("legacy_display", "raw"),
   ...
 )
 }
@@ -83,6 +84,10 @@ must be supplied explicitly.}
 \item{seed}{Random seed used for k-means.}
 
 \item{verbose}{Whether to print progress messages.}
+
+\item{coordinate_space}{Coordinate system used for distance-sensitive
+smoothing and smoothness calculations. \code{"legacy_display"} preserves the
+current behavior; \code{"raw"} uses source coordinates.}
 
 \item{...}{Additional arguments passed to \code{smoothclust::smoothclust()}.}
 }

@@ -30,6 +30,7 @@ RunMistyR(
   store_results = TRUE,
   store_views = FALSE,
   verbose = TRUE,
+  coordinate_space = c("legacy_display", "raw"),
   ...
 )
 }
@@ -74,6 +75,8 @@ temporary folder is used.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{coordinate_space}{Coordinate system used to build MISTy views.}
 
 \item{...}{Additional named arguments passed to \code{mistyR::run_misty()}.}
 }

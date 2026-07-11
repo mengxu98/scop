@@ -49,6 +49,7 @@ RunSpatialGradientFeatures(
   set_variable_features = FALSE,
   store_results = TRUE,
   verbose = TRUE,
+  coordinate_space = c("legacy_display", "raw"),
   ...
 )
 }
@@ -124,6 +125,9 @@ variable features.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{coordinate_space}{Coordinate system used by the native distance
+calculations.}
 
 \item{...}{Additional arguments forwarded to the SPATA2 screening function.}
 }

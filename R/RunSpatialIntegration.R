@@ -17,6 +17,7 @@
 #' a method-specific name is used.
 #' @param cluster_colname Metadata column used for spatial domain labels. If
 #' `NULL`, a method-specific name is used.
+#' @param coordinate_space Coordinate system used for integration distances.
 #' @param tool_name Name used to store detailed results in `srt@tools`.
 #' @param ... Additional backend-specific arguments.
 #'
@@ -98,9 +99,11 @@ RunSpatialIntegration <- function(
   tool_name = "SpatialIntegration",
   store_results = TRUE,
   verbose = TRUE,
+  coordinate_space = c("legacy_display", "raw"),
   ...
 ) {
   method <- match.arg(method)
+  coordinate_space <- match.arg(coordinate_space)
   spatial_integration_assert_scalar_string(tool_name, "tool_name")
   sample.by <- spatial_integration_resolve_sample_by(object, sample.by)
   reduction.name <- reduction.name %||% paste0("SpatialIntegration_", method)
@@ -115,7 +118,8 @@ RunSpatialIntegration <- function(
     layer = layer,
     features = features,
     image = image,
-    coord.cols = coord.cols
+    coord.cols = coord.cols,
+    coordinate_space = coordinate_space
   )
 
   log_message(
@@ -142,6 +146,7 @@ RunSpatialIntegration <- function(
     layer = layer,
     image = image,
     coord.cols = coord.cols,
+    coordinate_space = coordinate_space,
     reduction.name = reduction.name,
     cluster_colname = cluster_colname,
     tool_name = tool_name,
@@ -352,7 +357,8 @@ spatial_integration_prepare_input <- function(
   layer,
   features,
   image,
-  coord.cols
+  coord.cols,
+  coordinate_space
 ) {
   if (inherits(object, "Seurat")) {
     if (!sample.by %in% colnames(object@meta.data)) {
@@ -397,11 +403,11 @@ spatial_integration_prepare_input <- function(
       assay = assay
     )
   }
-  coords <- spatial_dim_coords(
+  coords <- spatial_analysis_coords(
     srt = srt,
     image = image,
     coord.cols = coord.cols,
-    overlay_image = FALSE
+    coordinate_space = coordinate_space
   )$data
   cells <- intersect(colnames(srt), colnames(expr))
   cells <- intersect(cells, rownames(coords))
@@ -815,6 +821,7 @@ spatial_integration_apply_result <- function(
   layer,
   image,
   coord.cols,
+  coordinate_space,
   reduction.name,
   cluster_colname,
   tool_name,
@@ -863,6 +870,7 @@ spatial_integration_apply_result <- function(
     layer = layer,
     image = image,
     coord.cols = coord.cols,
+    coordinate_space = coordinate_space,
     reduction.name = reduction.name,
     cluster_colname = cluster_colname,
     aligned_coord_cols = aligned_coord_cols,

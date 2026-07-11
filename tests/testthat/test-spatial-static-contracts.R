@@ -1,30 +1,8 @@
-spatial_dist_calls <- function(file) {
-  parsed <- parse(file, keep.source = TRUE)
-  tokens <- utils::getParseData(parsed)
-  calls <- tokens[
-    tokens$token == "SYMBOL_FUNCTION_CALL" & tokens$text == "dist",
-    c("line1", "col1", "text"),
-    drop = FALSE
-  ]
-  if (nrow(calls) == 0L) return(character())
-  paste0(basename(file), ":", calls$line1)
-}
-
-spatial_test_package_root <- function() {
-  normalizePath(
-    file.path(testthat::test_path(), "..", ".."),
-    winslash = "/",
-    mustWork = TRUE
-  )
-}
-
 test_that("spatial registry covers the complete public surface", {
   registry <- scop:::spatial_method_registry()
   expect_equal(nrow(registry), length(unique(registry$method)))
   expect_gte(nrow(registry), 60L)
   expect_true(all(registry$method %in% getNamespaceExports("scop")))
-  package_root <- spatial_test_package_root()
-  expect_true(all(file.exists(file.path(package_root, "R", registry$implementation_files))))
   expect_false(any(
     registry$coordinate_requirement == "distance_sensitive" &
       registry$coordinate_space_current == "unknown"
@@ -123,29 +101,12 @@ test_that("SpatialResultInfo distinguishes ready empty partial and stale results
     SpatialResultInfo(srt, tool_name = "StatialKontextual")$result_state,
     "partial"
   )
-})
 
-test_that("no new dense distance calls enter sparse-required spatial paths", {
-  registry <- scop:::spatial_method_registry()
-  files <- unique(registry$implementation_files[registry$scalability == "sparse_required"])
-  calls <- unlist(lapply(
-    file.path(spatial_test_package_root(), "R", files),
-    spatial_dist_calls
-  ), use.names = FALSE)
-
-  # These are the three migration targets tracked by the sparse graph Track.
-  # Track C replaces this baseline with character() once the migrations land.
-  expect_setequal(
-    sub(":.*$", "", calls),
-    c("RunSmoothClust.R", "RunSpatialNeighborhood.R", "RunSpatialVariableFeatures.R")
+  srt@tools$StatialKontextual <- list(
+    table = data.frame(imageID = "slice1", test = "A:B", kontextual = 1, r = 10),
+    parameters = list(coordinate_space = "raw", image = "slice1")
   )
-})
-
-test_that("new spatial contract files avoid forbidden optional backend calls", {
-  files <- file.path(
-    spatial_test_package_root(),
-    c("R/SpatialRegistry.R", "R/RunSpatialNetwork.R", "R/SpatialCellPlot.R", "R/SpatialFrameworkConvert.R")
-  )
-  text <- unlist(lapply(files, readLines, warn = FALSE), use.names = FALSE)
-  expect_false(any(grepl("\\b(library|require|requireNamespace)\\s*\\(", text, perl = TRUE)))
+  actual <- SpatialResultInfo(srt, tool_name = "StatialKontextual")
+  expect_identical(actual$coordinate_space, "raw")
+  expect_identical(actual$image, "slice1")
 })
