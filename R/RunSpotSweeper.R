@@ -255,6 +255,12 @@ RunSpotSweeper <- function(
         artifacts = if (is.null(artifact_out)) NULL else artifact_out$result
       )
     )
+    srt@tools[[tool_name]] <- spatial_result_build(
+      bundle = srt@tools[[tool_name]],
+      method = "SpotSweeper",
+      result_type = "quality_control",
+      provenance = list(producer = "RunSpotSweeper", backend_id = "spotsweeper")
+    )
   }
 
   failed <- sum(srt[[paste0(prefix, "_QC"), drop = TRUE]] == "Fail", na.rm = TRUE)
@@ -430,7 +436,9 @@ spot_sweeper_metric_data <- function(
 }
 
 spot_sweeper_make_spe <- function(expr, coldata, coords) {
-  SpatialExperiment::SpatialExperiment(
+  check_r("SpatialExperiment", verbose = FALSE)
+  spatial_experiment <- get_namespace_fun("SpatialExperiment", "SpatialExperiment")
+  spatial_experiment(
     assays = list(counts = expr),
     colData = S4Vectors::DataFrame(coldata),
     spatialCoords = as.matrix(coords[, c("x", "y"), drop = FALSE])

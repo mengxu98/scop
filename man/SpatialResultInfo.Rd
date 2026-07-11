@@ -8,21 +8,24 @@ SpatialResultInfo(
   object,
   method = NULL,
   tool_name = NULL,
-  include_empty = FALSE
+  include_empty = FALSE,
+  detail = c("results", "graphs")
 )
 }
 \arguments{
 \item{object}{A `Seurat` object.}
 
-\item{method}{Optional registered method filter.}
+\item{method}{Optional registered producer or result-family filter.}
 
 \item{tool_name}{Optional stored tool key filter.}
 
 \item{include_empty}{Whether to include recognized keys without a logical
 result payload.}
+
+\item{detail}{Return one row per result or one row per stored spatial graph.}
 }
 \value{
-A data frame describing recognized stored spatial results.
+A data frame describing recognized stored spatial results or graphs.
 }
 \description{
 Read spatial result bundles from a Seurat object's `tools` slot without

@@ -113,7 +113,10 @@ test_that("RunMistyR builds views, collects results, and stores schema", {
   expect_s4_class(out, "Seurat")
   expect_true("MistyR" %in% names(out@tools))
   bundle <- out@tools$MistyR
-  expect_named(bundle, c("results", "summary", "results_folder", "features", "cells", "parameters", "views"))
+  expect_named(bundle, c(
+    "results", "summary", "results_folder", "features", "cells", "parameters",
+    "views", "method", "schema_version", "result_type", "source", "provenance"
+  ))
   expect_equal(bundle$features, paste0("Gene", 1:3))
   expect_equal(bundle$summary$n_targets, 2)
   expect_equal(bundle$summary$n_improvement_records, 2)

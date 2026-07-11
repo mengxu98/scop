@@ -15,6 +15,44 @@ test_that("spatial registry covers the complete public surface", {
   expect_true(all(backend_ids %in% names(scop:::spatial_backend_registry())))
 })
 
+test_that("registered small analyses emit schema-v1 result families", {
+  registry <- scop:::spatial_method_registry()
+  target <- registry[
+    registry$kind == "analysis" &
+      registry$status == "stable" &
+      !is.na(registry$tool_key) & nzchar(registry$tool_key) &
+      !grepl("^RunSemla", registry$method),
+    c("method", "task"),
+    drop = FALSE
+  ]
+  collect_build_calls <- function(expr) {
+    if (!is.call(expr)) return(list())
+    found <- if (identical(expr[[1L]], as.name("spatial_result_build"))) list(expr) else list()
+    for (i in seq_along(expr)[-1L]) {
+      found <- c(found, collect_build_calls(expr[[i]]))
+    }
+    found
+  }
+  namespace <- asNamespace("scop")
+  functions <- mget(ls(namespace, all.names = TRUE), namespace, inherits = FALSE)
+  functions <- Filter(is.function, functions)
+  calls <- unlist(lapply(functions, function(fun) collect_build_calls(body(fun))), recursive = FALSE)
+  emitted <- do.call(rbind, lapply(calls, function(call) {
+    args <- as.list(call)[-1L]
+    result_type <- args[["result_type"]]
+    provenance <- args[["provenance"]]
+    if (!is.character(result_type) || !is.call(provenance) ||
+      !identical(provenance[[1L]], as.name("list"))) return(NULL)
+    provenance <- as.list(provenance)[-1L]
+    producer <- provenance[["producer"]]
+    if (!is.character(producer)) return(NULL)
+    data.frame(producer = producer, result_type = result_type, stringsAsFactors = FALSE)
+  }))
+  expect_true(all(target$method %in% emitted$producer))
+  actual <- emitted$result_type[match(target$method, emitted$producer)]
+  expect_identical(unname(actual), unname(target$task))
+})
+
 test_that("spatial discovery APIs share the registry contract", {
   methods <- ListSpatialMethods()
   expect_equal(methods$method, scop:::spatial_method_registry()$method)
@@ -109,4 +147,9 @@ test_that("SpatialResultInfo distinguishes ready empty partial and stale results
   actual <- SpatialResultInfo(srt, tool_name = "StatialKontextual")
   expect_identical(actual$coordinate_space, "raw")
   expect_identical(actual$image, "slice1")
+
+  srt@tools$StatialKontextual$cells <- c(colnames(srt), "missing_cell")
+  stale <- SpatialResultInfo(srt, tool_name = "StatialKontextual")
+  expect_identical(stale$result_state, "stale")
+  expect_match(stale$empty_reason, "cells or nodes")
 })

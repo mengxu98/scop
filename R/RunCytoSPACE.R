@@ -28,6 +28,10 @@
 #' @param prefix Prefix for metadata columns.
 #' @param store_results Whether to store detailed assignment results in
 #' `srt@tools`.
+#' @param image Optional Seurat image used for spatial coordinates.
+#' @param coord.cols Metadata coordinate columns used when no image is selected.
+#' @param coordinate_space Coordinate space used for assignment locations. The
+#'   default preserves the historical coordinate behavior.
 #'
 #' @return A `Seurat` object with CytoSPACE metadata columns and detailed
 #' results stored in `srt@tools[["CytoSPACE"]]`.
@@ -76,7 +80,10 @@ RunCytoSPACE <- function(
   seed = 1,
   prefix = "CytoSPACE",
   store_results = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  image = NULL,
+  coord.cols = c("col", "row"),
+  coordinate_space = c("legacy_display", "raw")
 ) {
   if (!inherits(srt, "Seurat")) {
     log_message(
@@ -97,6 +104,7 @@ RunCytoSPACE <- function(
       message_type = "error"
     )
   }
+  coordinate_space <- match.arg(coordinate_space)
 
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   reference_assay <- reference_assay %||% SeuratObject::DefaultAssay(reference)
@@ -193,7 +201,13 @@ RunCytoSPACE <- function(
     verbose = verbose
   )
 
-  coords <- cytospace_get_spatial_coords(srt, spot_ids)
+  coords <- cytospace_get_spatial_coords(
+    srt,
+    spot_ids,
+    image = image,
+    coord.cols = coord.cols,
+    coordinate_space = coordinate_space
+  )
   assignments <- cytospace_build_assignment_table(
     result = result,
     sampled_cells = ref_sample$cell_ids,
@@ -229,7 +243,10 @@ RunCytoSPACE <- function(
         reference_assay = reference_assay,
         layer = layer,
         reference_layer = reference_layer,
-        reference_label = reference_label,
+          reference_label = reference_label,
+          image = image,
+          coord.cols = coord.cols,
+          coordinate_space = coordinate_space,
         mean_cell_numbers = mean_cell_numbers,
         scRNA_max_transcripts_per_cell = scRNA_max_transcripts_per_cell,
         sampling_method = sampling_method,
@@ -237,6 +254,16 @@ RunCytoSPACE <- function(
         seed = seed,
         prefix = prefix
       )
+    )
+    srt@tools[["CytoSPACE"]] <- spatial_result_build(
+      bundle = srt@tools[["CytoSPACE"]],
+      method = "CytoSPACE",
+      result_type = "mapping",
+      source = c(
+        attr(coords, "spatial_source") %||% list(),
+        list(transform = attr(coords, "spatial_transform"))
+      ),
+      provenance = list(producer = "RunCytoSPACE", backend_id = "core")
     )
   }
 
@@ -599,7 +626,31 @@ cytospace_sample_reference_cells <- function(
   )
 }
 
-cytospace_get_spatial_coords <- function(srt, spot_ids) {
+cytospace_get_spatial_coords <- function(
+  srt,
+  spot_ids,
+  image = NULL,
+  coord.cols = c("col", "row"),
+  coordinate_space = c("legacy_display", "raw")
+) {
+  coordinate_space <- match.arg(coordinate_space)
+  if (identical(coordinate_space, "raw")) {
+    resolved <- spatial_coords_raw(
+      srt = srt,
+      image = image,
+      coord.cols = coord.cols,
+      image_policy = "strict"
+    )
+    matched <- match(spot_ids, resolved$data$cell_id)
+    if (anyNA(matched)) {
+      log_message("Spatial coordinates are missing for one or more requested spots", message_type = "error")
+    }
+    coords <- resolved$data[matched, c("x", "y"), drop = FALSE]
+    rownames(coords) <- spot_ids
+    attr(coords, "spatial_source") <- resolved$source
+    attr(coords, "spatial_transform") <- resolved$transform
+    return(coords)
+  }
   meta <- srt[[]]
   coord_cols <- intersect(
     c(
