@@ -15,6 +15,7 @@ RunSpaNorm(
   store_results = TRUE,
   store_spe = FALSE,
   verbose = TRUE,
+  coordinate_space = c("legacy_display", "raw"),
   ...
 )
 }
@@ -45,6 +46,10 @@ by \code{SpaNorm}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{coordinate_space}{Coordinate system used for distance-sensitive
+analysis. \code{"legacy_display"} preserves the current behavior; \code{"raw"}
+uses unscaled, unflipped source coordinates.}
 
 \item{...}{Additional arguments passed to \code{SpaNorm::SpaNorm()}, such as
 \code{sample.p}.}

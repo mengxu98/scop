@@ -2,6 +2,9 @@
 
 * **feat**:
   * Added a shared spatial method registry with `ListSpatialMethods()`, read-only `SpatialBackendStatus()`, and `SpatialResultInfo()` so users can discover the complete spatial API, inspect optional backend compatibility without installation side effects, and summarize legacy or current results stored in `@tools`.
+  * Added a strict raw-coordinate contract and sparse spatial graph core. `RunSpatialNetwork()` now preserves raw distances and deterministic graph slots, while existing distance-sensitive methods retain `coordinate_space = "legacy_display"` by default and offer an explicit `"raw"` path without changing legacy behavior.
+  * Replaced dense full-distance matrices in SmoothClust, spatial-variable-feature, and spatial-neighborhood paths with `BiocNeighbors` queries, including deterministic handling for duplicate coordinates and valid zero-edge radius graphs.
+  * Added `MistyRPlot()` and `StatialKontextualPlot()` to close the visualization loop for stored high-level spatial context results without wrapping or rerunning their native frameworks.
   * `FeatureStatPlot()` and `ExpressionStatPlot()`: Added `auto_comparison` to automatically compare the group with the highest median statistic against all other groups, with explicit `ref_group` and `comparisons` still taking precedence.
   * `GSVAPlot()` now supports `mode = "diff"` for true two-group pathway activity tests on sample-aggregated GSVA scores, while keeping the original score plotting behavior as the default. Non-heatmap score-mode p-value columns are documented as score-derived plotting placeholders, not statistical significance.
   * Added `ClusterTreePlot()` for SCOP-styled visualization of Seurat multi-resolution clustering trees, including automatic `*_snn_res.*` metadata detection, prefix/resolution filtering, edge contribution statistics, and marker-expression overlays.

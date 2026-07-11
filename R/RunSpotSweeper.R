@@ -15,6 +15,7 @@
 #' available.
 #' @param image Name of the Seurat spatial image. If `NULL`, the first image is
 #' used when present.
+#' @param coordinate_space Coordinate system used for spatial neighborhoods.
 #' @param sample.by Optional metadata column identifying samples or images.
 #' If `NULL`, all spots are treated as one sample.
 #' @param metrics QC metrics used by `SpotSweeper::localOutliers()`. If `NULL`,
@@ -111,8 +112,10 @@ RunSpotSweeper <- function(
   store_results = TRUE,
   workers = 1,
   verbose = TRUE,
+  coordinate_space = c("legacy_display", "raw"),
   ...
 ) {
+  coordinate_space <- match.arg(coordinate_space)
   log_message(
     "Running SpotSweeper spatial quality control",
     message_type = "running",
@@ -146,11 +149,11 @@ RunSpotSweeper <- function(
   )
 
   expr <- GetAssayData5(srt, assay = assay, layer = layer)
-  coords <- spatial_dim_coords(
+  coords <- spatial_analysis_coords(
     srt = srt,
     image = image,
     coord.cols = coord.cols,
-    overlay_image = FALSE
+    coordinate_space = coordinate_space
   )$data
   inputs <- spot_sweeper_prepare_inputs(
     srt = srt,
@@ -229,6 +232,7 @@ RunSpotSweeper <- function(
         layer = layer,
         coord.cols = coord.cols,
         image = image,
+        coordinate_space = coordinate_space,
         sample.by = sample.by,
         n_neighbors = n_neighbors,
         cutoff = cutoff,
