@@ -42,11 +42,12 @@
 #' labels.
 #' @param reference_assay Assay used in `reference` for deconvolution.
 #' @param do_deconvolution Whether to run deconvolution in the spatial workflow.
-#' If `NULL`, deconvolution is run only when `reference` is provided.
-#' @param deconvolution_method Deconvolution method. One of `"RCTD"` or
-#' `"SPOTlight"`.
+#' If `NULL`, deconvolution is run when `reference` or cell2location
+#' `reference_signatures` are provided.
+#' @param deconvolution_method Deconvolution method. One of `"RCTD"`,
+#' `"SPOTlight"`, or `"Cell2location"`.
 #' @param deconvolution_params Named list of additional arguments passed to
-#' [RunRCTD()] or [RunSPOTlight()].
+#' [RunRCTD()], [RunSPOTlight()], or [RunCell2location()].
 #' @param do_normalization Whether to perform normalization.
 #' If `NULL`, normalization will be performed if the specified assay does not have scaled data.
 #' @param normalization_method The method to use for normalization.
@@ -820,9 +821,16 @@ standard_spatial_scop <- function(
   )
 
   spatial_cluster_method <- match.arg(spatial_cluster_method, "BayesSpace")
-  deconvolution_method <- match.arg(deconvolution_method, c("RCTD", "SPOTlight"))
+  deconvolution_method <- match.arg(
+    deconvolution_method,
+    c("RCTD", "SPOTlight", "Cell2location")
+  )
   if (is.null(do_deconvolution)) {
-    do_deconvolution <- !is.null(reference)
+    do_deconvolution <- !is.null(reference) ||
+      (
+        identical(deconvolution_method, "Cell2location") &&
+          !is.null(deconvolution_params[["reference_signatures"]])
+      )
   }
 
   if (isTRUE(do_spot_qc)) {
@@ -928,14 +936,18 @@ standard_spatial_scop <- function(
   }
 
   if (isTRUE(do_deconvolution)) {
-    if (is.null(reference)) {
+    has_cell2location_signatures <- identical(
+      deconvolution_method,
+      "Cell2location"
+    ) && !is.null(deconvolution_params[["reference_signatures"]])
+    if (is.null(reference) && !has_cell2location_signatures) {
       log_message(
         "Skip deconvolution because {.arg reference} is {.val NULL}",
         message_type = "warning",
         verbose = verbose
       )
     } else {
-      if (is.null(reference_label)) {
+      if (is.null(reference_label) && !has_cell2location_signatures) {
         log_message(
           "{.arg reference_label} must be provided when running deconvolution",
           message_type = "error"
@@ -961,12 +973,18 @@ standard_spatial_scop <- function(
           deconvolution_params
         )
         srt <- do.call(RunRCTD, deconv_args)
-      } else {
+      } else if (identical(deconvolution_method, "SPOTlight")) {
         deconv_args <- standard_scop_merge_args(
           deconv_defaults,
           deconvolution_params
         )
         srt <- do.call(RunSPOTlight, deconv_args)
+      } else {
+        deconv_args <- standard_scop_merge_args(
+          deconv_defaults,
+          deconvolution_params
+        )
+        srt <- do.call(RunCell2location, deconv_args)
       }
     }
   }
