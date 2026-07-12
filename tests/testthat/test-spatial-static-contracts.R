@@ -60,6 +60,7 @@ test_that("spatial code does not bypass strict image resolution", {
     if (length(hits) == 0L) return(character())
     paste0(basename(path), ":", hits)
   }), use.names = FALSE)
+  if (is.null(violations)) violations <- character()
   expect_identical(violations, character())
 })
 
