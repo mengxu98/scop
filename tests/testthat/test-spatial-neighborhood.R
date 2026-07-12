@@ -57,6 +57,7 @@ test_that("RunSpatialNeighborhood stores standardized spicyR results", {
     out <- RunSpatialNeighborhood(
       srt,
       group.by = "CellType",
+      method = "spicyR",
       split.by = "condition",
       sample.by = "sample",
       coord.cols = c("x", "y"),
@@ -77,9 +78,10 @@ test_that("RunSpatialNeighborhood stores standardized spicyR results", {
   expect_true(all(c("cell", "neighbor", "from", "to", "distance") %in% colnames(bundle$edge_table)))
   expect_named(bundle$summary, c("n_pairs", "n_edges", "top_pairs"))
   expect_equal(out@tools$SpatialNeighborhood$summary$n_pairs, nrow(bundle$pair_table))
+  expect_identical(out@tools$SpatialNeighborhood$provenance$backend_id, "spicyr")
 })
 
-test_that("RunSpatialNeighborhood falls back to observed summaries without split.by", {
+test_that("RunSpatialNeighborhood defaults to native observed summaries", {
   srt <- make_spatial_neighborhood_seurat()
   out <- RunSpatialNeighborhood(
     srt,
@@ -89,10 +91,27 @@ test_that("RunSpatialNeighborhood falls back to observed summaries without split
     k = 2,
     verbose = FALSE
   )
-  bundle <- out@tools$SpatialNeighborhood$methods$spicyR
+  bundle <- out@tools$SpatialNeighborhood$methods$observed
   expect_true(nrow(bundle$pair_table) > 0)
   expect_true(all(!is.na(bundle$pair_table$subject)))
-  expect_equal(unique(bundle$pair_table$method), "spicyR")
+  expect_equal(unique(bundle$pair_table$method), "observed")
+  expect_identical(out@tools$SpatialNeighborhood$provenance$backend_id, "core")
+  expect_null(bundle$raw)
+})
+
+test_that("RunSpatialNeighborhood refuses to impersonate an unrun spicyR backend", {
+  srt <- make_spatial_neighborhood_seurat()
+  expect_error(
+    RunSpatialNeighborhood(
+      srt,
+      group.by = "CellType",
+      method = "spicyR",
+      coord.cols = c("x", "y"),
+      verbose = FALSE
+    ),
+    "split.by.*required"
+  )
+  expect_false("SpatialNeighborhood" %in% names(srt@tools))
 })
 
 test_that("SpatialNeighborhoodPlot returns scop-style ggplot objects", {
@@ -101,6 +120,7 @@ test_that("SpatialNeighborhoodPlot returns scop-style ggplot objects", {
     srt <- RunSpatialNeighborhood(
       srt,
       group.by = "CellType",
+      method = "spicyR",
       split.by = "condition",
       sample.by = "sample",
       coord.cols = c("x", "y"),
@@ -146,6 +166,6 @@ test_that("RunSpatialNeighborhood validates spatial inputs clearly", {
   )
   expect_error(
     RunSpatialNeighborhood(srt, group.by = "CellType", method = "mistyR", coord.cols = c("x", "y"), verbose = FALSE),
-    "supports only"
+    "should be one of"
   )
 })

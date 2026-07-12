@@ -10,9 +10,10 @@
 #' @param prefix A prefix to add to the names of intermediate objects created by the function.
 #' Default is `"Standard"`.
 #' @param workflow Workflow to run. `"single_cell"` keeps the original standard
-#' workflow. `"spatial"` runs a spot-level spatial workflow that wraps the
-#' original workflow with spot QC, spatial variable features, optional spatial
-#' clustering, and optional RCTD deconvolution.
+#' workflow. `"spatial"` is a basic, single-image Visium-style spot workflow
+#' that wraps the original workflow with spot QC, spatial variable features,
+#' optional spatial clustering, and optional deconvolution. It is not a
+#' multi-slice integration orchestrator.
 #' @param assay Which assay to use.
 #' If `NULL`, the default assay of the Seurat object will be used.
 #' When the object also contains `ChromatinAssay`, the default assay and
@@ -111,7 +112,10 @@
 #' Default is `11`.
 #' @param ... Additional parameters to pass to the dimensionality reduction methods.
 #'
-#' @return A `Seurat` object.
+#' @return A `Seurat` object. Completed or partial spatial workflows store the
+#' per-stage state in `srt@tools[["standard_spatial_scop"]]`. If a stage fails,
+#' the signaled error carries the same table in its `standard_spatial_stages`
+#' attribute with that stage marked `"failed"`.
 #'
 #' @concept spatial-producer
 #' @export
@@ -835,6 +839,87 @@ standard_spatial_scop <- function(
       )
   }
 
+  stages <- data.frame(
+    stage = c("quality_control", "spatial_variable_features", "spatial_clustering", "deconvolution"),
+    requested = c(
+      isTRUE(do_spot_qc), isTRUE(do_spatial_variable_features),
+      isTRUE(do_spatial_cluster), isTRUE(do_deconvolution)
+    ),
+    status = ifelse(
+      c(
+        isTRUE(do_spot_qc), isTRUE(do_spatial_variable_features),
+        isTRUE(do_spatial_cluster), isTRUE(do_deconvolution)
+      ),
+      "requested",
+      "skipped"
+    ),
+    requested_method = c(
+      "RunSpotQC", "RunSpatialVariableFeatures",
+      spatial_cluster_method, deconvolution_method
+    ),
+    actual_method = NA_character_,
+    result_tool_key = NA_character_,
+    result_metadata_key = NA_character_,
+    reason = ifelse(
+      c(
+        isTRUE(do_spot_qc), isTRUE(do_spatial_variable_features),
+        isTRUE(do_spatial_cluster), isTRUE(do_deconvolution)
+      ),
+      NA_character_,
+      "not requested"
+    ),
+    stringsAsFactors = FALSE
+  )
+  update_stage <- function(
+    stage,
+    status,
+    actual_method = NA_character_,
+    result_tool_key = NA_character_,
+    result_metadata_key = NA_character_,
+    reason = NA_character_
+  ) {
+    i <- match(stage, stages$stage)
+    stages$status[[i]] <<- status
+    stages$actual_method[[i]] <<- actual_method
+    stages$result_tool_key[[i]] <<- result_tool_key
+    stages$result_metadata_key[[i]] <<- result_metadata_key
+    stages$reason[[i]] <<- reason
+    invisible(NULL)
+  }
+  run_stage <- function(
+    stage,
+    expr,
+    actual_method,
+    result_tool_key = NA_character_,
+    result_metadata_key = NA_character_
+  ) {
+    tryCatch(
+      {
+        value <- force(expr)
+        update_stage(
+          stage = stage,
+          status = "completed",
+          actual_method = actual_method,
+          result_tool_key = result_tool_key,
+          result_metadata_key = result_metadata_key
+        )
+        value
+      },
+      error = function(e) {
+        update_stage(
+          stage = stage,
+          status = "failed",
+          actual_method = actual_method,
+          result_tool_key = result_tool_key,
+          result_metadata_key = result_metadata_key,
+          reason = conditionMessage(e)
+        )
+        attr(e, "standard_spatial_stages") <- stages
+        stop(e)
+      }
+    )
+  }
+
   if (isTRUE(do_spot_qc)) {
     spot_qc_args <- standard_scop_merge_args(
       list(
@@ -844,7 +929,12 @@ standard_spatial_scop <- function(
       ),
       spot_qc_params
     )
-    srt <- do.call(RunSpotQC, spot_qc_args)
+    srt <- run_stage(
+      stage = "quality_control",
+      expr = do.call(RunSpotQC, spot_qc_args),
+      actual_method = "RunSpotQC",
+      result_metadata_key = "SpotQC"
+    )
   }
 
   srt <- standard_scop(
@@ -892,7 +982,12 @@ standard_spatial_scop <- function(
       ),
       spatial_variable_features_params
     )
-    srt <- do.call(RunSpatialVariableFeatures, svf_args)
+    srt <- run_stage(
+      stage = "spatial_variable_features",
+      expr = do.call(RunSpatialVariableFeatures, svf_args),
+      actual_method = "RunSpatialVariableFeatures",
+      result_tool_key = "SpatialVariableFeatures"
+    )
   }
 
   if (isTRUE(do_spatial_cluster)) {
@@ -934,7 +1029,12 @@ standard_spatial_scop <- function(
       bayesspace_args,
       bayesspace_params
     )
-    srt <- do.call(RunBayesSpace, bayesspace_args)
+    srt <- run_stage(
+      stage = "spatial_clustering",
+      expr = do.call(RunBayesSpace, bayesspace_args),
+      actual_method = "RunBayesSpace",
+      result_tool_key = "BayesSpace"
+    )
   }
 
   if (isTRUE(do_deconvolution)) {
@@ -943,55 +1043,75 @@ standard_spatial_scop <- function(
       "Cell2location"
     ) && !is.null(deconvolution_params[["reference_signatures"]])
     if (is.null(reference) && !has_cell2location_signatures) {
+      update_stage(
+        stage = "deconvolution",
+        status = "skipped",
+        reason = "reference and reference_signatures are unavailable"
+      )
       log_message(
         "Skip deconvolution because {.arg reference} is {.val NULL}",
         message_type = "warning",
         verbose = verbose
       )
     } else {
-      if (is.null(reference_label) && !has_cell2location_signatures) {
-        log_message(
-          "{.arg reference_label} must be provided when running deconvolution",
-          message_type = "error"
-        )
-      }
-      deconv_defaults <- list(
-        srt = srt,
-        reference = reference,
-        reference_label = reference_label,
-        assay = assay,
-        reference_assay = reference_assay,
-        verbose = verbose
+      deconv_producer <- switch(deconvolution_method,
+        RCTD = "RunRCTD",
+        SPOTlight = "RunSPOTlight",
+        Cell2location = "RunCell2location"
       )
-      if (identical(deconvolution_method, "RCTD")) {
-        deconvolution_params <- standard_spatial_prepare_rctd_params(
-          deconvolution_params = deconvolution_params,
-          verbose = verbose
-        )
-        deconv_defaults$image <- image
-        deconv_defaults$coord.cols <- coord.cols
-        deconv_args <- standard_scop_merge_args(
-          deconv_defaults,
-          deconvolution_params
-        )
-        srt <- do.call(RunRCTD, deconv_args)
-      } else if (identical(deconvolution_method, "SPOTlight")) {
-        deconv_args <- standard_scop_merge_args(
-          deconv_defaults,
-          deconvolution_params
-        )
-        srt <- do.call(RunSPOTlight, deconv_args)
-      } else {
-        deconv_args <- standard_scop_merge_args(
-          deconv_defaults,
-          deconvolution_params
-        )
-        srt <- do.call(RunCell2location, deconv_args)
-      }
+      srt <- run_stage(
+        stage = "deconvolution",
+        actual_method = deconv_producer,
+        result_tool_key = deconvolution_method,
+        expr = {
+          if (is.null(reference_label) && !has_cell2location_signatures) {
+            log_message(
+              "{.arg reference_label} must be provided when running deconvolution",
+              message_type = "error"
+            )
+          }
+          deconv_defaults <- list(
+            srt = srt,
+            reference = reference,
+            reference_label = reference_label,
+            assay = assay,
+            reference_assay = reference_assay,
+            verbose = verbose
+          )
+          if (identical(deconvolution_method, "RCTD")) {
+            deconvolution_params <- standard_spatial_prepare_rctd_params(
+              deconvolution_params = deconvolution_params,
+              verbose = verbose
+            )
+            deconv_defaults$image <- image
+            deconv_defaults$coord.cols <- coord.cols
+          }
+          deconv_args <- standard_scop_merge_args(
+            deconv_defaults,
+            deconvolution_params
+          )
+          deconv_fun <- switch(deconvolution_method,
+            RCTD = RunRCTD,
+            SPOTlight = RunSPOTlight,
+            Cell2location = RunCell2location
+          )
+          do.call(deconv_fun, deconv_args)
+        }
+      )
     }
   }
 
+  incomplete_requested <- stages$requested & stages$status != "completed"
+  workflow_status <- if (any(stages$status == "failed")) {
+    "failed"
+  } else if (any(incomplete_requested)) {
+    "partial"
+  } else {
+    "completed"
+  }
   srt@tools[["standard_spatial_scop"]] <- list(
+    status = workflow_status,
+    stages = stages,
     parameters = list(
       prefix = prefix,
       assay = assay,
@@ -1012,12 +1132,20 @@ standard_spatial_scop <- function(
     }
   )
 
-  log_message(
-    "Standard spot-level spatial workflow completed",
-    message_type = "success",
-    text_color = "green",
-    verbose = verbose
-  )
+  if (identical(workflow_status, "completed")) {
+    log_message(
+      "Standard spot-level spatial workflow completed",
+      message_type = "success",
+      text_color = "green",
+      verbose = verbose
+    )
+  } else {
+    log_message(
+      "Standard spot-level spatial workflow finished with skipped requested stages",
+      message_type = "warning",
+      verbose = verbose
+    )
+  }
   srt
 }
 

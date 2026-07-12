@@ -7,7 +7,7 @@
 RunSpatialNeighborhood(
   srt,
   group.by,
-  method = "spicyR",
+  method = c("observed", "spicyR"),
   assay = NULL,
   layer = "data",
   coord.cols = c("col", "row"),
@@ -32,7 +32,9 @@ RunSpatialNeighborhood(
 
 \item{group.by}{Metadata column containing spatial cell or spot labels.}
 
-\item{method}{Neighborhood backend. Currently only \code{"spicyR"} is supported.}
+\item{method}{Neighborhood calculation. \code{"observed"} returns native KNN or
+radius summaries. \code{"spicyR"} runs differential neighborhood statistics and
+requires \code{split.by}.}
 
 \item{assay}{Assay used when \code{features} are requested.}
 

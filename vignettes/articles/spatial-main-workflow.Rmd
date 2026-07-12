@@ -227,6 +227,20 @@ SpatialNeighborhoodPlot(spatial, plot_type = "heatmap")
 SpatialNeighborhoodPlot(spatial, plot_type = "stat", top_n = 12)
 ```
 
+The default `method = "observed"` computes native KNN or radius summaries. For
+differential neighborhood testing, request spicyR explicitly and provide the
+condition column; SCOP errors before execution if that design is incomplete.
+
+```r
+spatial <- RunSpatialNeighborhood(
+  spatial,
+  group.by = "coda_label",
+  method = "spicyR",
+  split.by = "condition",
+  sample.by = "sample"
+)
+```
+
 ```r
 SpatialNeighborhoodPlot(spatial, plot_type = "network", top_n = 12)
 ```
@@ -234,6 +248,8 @@ SpatialNeighborhoodPlot(spatial, plot_type = "network", top_n = 12)
 Use `RunStatialKontextual()` when you have explicit `from`, `to`, and `parent`
 cell populations. Use `RunMistyR()` when the question is feature-level local or
 broader spatial context rather than pairwise label enrichment.
+Both are independent producers rather than `RunSpatialNeighborhood()` method
+choices. HoodscanR remains unimplemented.
 Neighborhood enrichment is label-level spatial association. Context models are
 feature-level spatial association. Keep those interpretations separate in
 reports.

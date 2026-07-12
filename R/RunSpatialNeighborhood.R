@@ -8,7 +8,9 @@
 #' @inheritParams thisutils::log_message
 #' @param srt A `Seurat` object.
 #' @param group.by Metadata column containing spatial cell or spot labels.
-#' @param method Neighborhood backend. Currently only `"spicyR"` is supported.
+#' @param method Neighborhood calculation. `"observed"` returns native KNN or
+#' radius summaries. `"spicyR"` runs differential neighborhood statistics and
+#' requires `split.by`.
 #' @param assay Assay used when `features` are requested.
 #' @param layer Assay layer used when `features` are requested.
 #' @param coord.cols Metadata coordinate columns used when no Seurat image
@@ -60,7 +62,7 @@
 RunSpatialNeighborhood <- function(
   srt,
   group.by,
-  method = "spicyR",
+  method = c("observed", "spicyR"),
   assay = NULL,
   layer = "data",
   coord.cols = c("col", "row"),
@@ -79,6 +81,7 @@ RunSpatialNeighborhood <- function(
   coordinate_space = c("legacy_display", "raw"),
   ...
 ) {
+  method <- match.arg(method)
   coordinate_space <- match.arg(coordinate_space)
   if (!inherits(srt, "Seurat")) {
     log_message(
@@ -86,9 +89,9 @@ RunSpatialNeighborhood <- function(
       message_type = "error"
     )
   }
-  if (!identical(method, "spicyR")) {
+  if (identical(method, "spicyR") && is.null(split.by)) {
     log_message(
-      "{.arg method} currently supports only {.val spicyR}. mistyR, Statial, and HoodscanR are roadmap backends.",
+      "{.arg split.by} is required when {.arg method = 'spicyR'}; the backend was not run",
       message_type = "error"
     )
   }
@@ -115,6 +118,7 @@ RunSpatialNeighborhood <- function(
   )
 
   backend <- switch(method,
+    observed = list(raw = NULL, table = NULL),
     spicyR = spatial_neighborhood_run_spicyr(
       cells = input$cells,
       group.by = group.by,
@@ -162,6 +166,7 @@ RunSpatialNeighborhood <- function(
     input = input$cells,
     summary = scop_spatial_neighborhood_summary(pair_table, observed$edge_table),
     parameters = list(
+      method = method,
       group.by = group.by,
       assay = input$assay,
       layer = layer,
@@ -196,7 +201,10 @@ RunSpatialNeighborhood <- function(
       bundle = srt@tools[[tool_name]],
       method = "SpatialNeighborhood",
       result_type = "neighborhood",
-      provenance = list(producer = "RunSpatialNeighborhood", backend_id = "spicyr")
+      provenance = list(
+        producer = "RunSpatialNeighborhood",
+        backend_id = if (identical(method, "observed")) "core" else "spicyr"
+      )
     )
   }
 
@@ -605,14 +613,6 @@ spatial_neighborhood_run_spicyr <- function(
   verbose = TRUE,
   ...
 ) {
-  if (is.null(split.by)) {
-    log_message(
-      "{.pkg spicyR} backend was skipped because {.arg split.by} is NULL; returning scop-native observed neighborhood summaries.",
-      message_type = "warning",
-      verbose = verbose
-    )
-    return(list(raw = NULL, table = NULL))
-  }
   check_r("spicyR", verbose = FALSE)
   spicy <- get_namespace_fun("spicyR", "spicy")
   backend_cells <- cells
