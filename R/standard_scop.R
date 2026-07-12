@@ -18,7 +18,8 @@
 #' When the object also contains `ChromatinAssay`, the default assay and
 #' additional `ChromatinAssay` will be preprocessed sequentially.
 #' @param image Name of the Seurat spatial image used by the spatial workflow.
-#' If `NULL`, the first image is used when present.
+#' Required when multiple images are present; a single image is selected
+#' automatically when `NULL`.
 #' @param coord.cols Metadata coordinate columns used by the spatial workflow
 #' when no image is available.
 #' @param do_spot_qc Whether to run [RunSpotQC()] in the spatial workflow.
