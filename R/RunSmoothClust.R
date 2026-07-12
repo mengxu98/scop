@@ -320,6 +320,12 @@ RunSmoothClust <- function(
     if (isTRUE(store_smoothed)) {
       srt@tools[[tool_name]][["smoothed"]] <- smoothed
     }
+    srt@tools[[tool_name]] <- spatial_result_build(
+      bundle = srt@tools[[tool_name]],
+      method = "SmoothClust",
+      result_type = "domain",
+      provenance = list(producer = "RunSmoothClust", backend_id = "smoothclust")
+    )
   }
 
   log_message(
