@@ -781,7 +781,7 @@ custom_cc_bubble_plot <- function(
 }
 
 ccc_method_candidates <- function() {
-  c("CellphoneDB", "Nichenetr", "MultiNichenetr", "LIANA", "CellChat")
+  c("CellphoneDB", "Nichenetr", "MultiNichenetr", "LIANA", "CellChat", "SpatialCellChat")
 }
 
 normalize_ccc_method <- function(method) {
@@ -792,12 +792,16 @@ normalize_ccc_method <- function(method) {
     "Liana" = "LIANA",
     "liana" = "LIANA",
     "NicheNet" = "Nichenetr",
-    "MultiNicheNet" = "MultiNichenetr"
+    "MultiNicheNet" = "MultiNichenetr",
+    "SpatialCellChat" = "SpatialCellChat"
   )
   alias_map_lower <- c(
     "ccc" = "CCC",
     "unified" = "CCC",
     "cellchat" = "CellChat",
+    "spatialcellchat" = "SpatialCellChat",
+    "spatial_cellchat" = "SpatialCellChat",
+    "spatial cellchat" = "SpatialCellChat",
     "cellphonedb" = "CellphoneDB",
     "cellphone_db" = "CellphoneDB",
     "cellphone db" = "CellphoneDB",
@@ -1848,6 +1852,10 @@ ccc_mark_significance <- function(df, thresh = 0.05) {
     is.finite(score) & score > 0
   )
   df$significant[is.na(df$significant)] <- FALSE
+  if ("significance_basis" %in% colnames(df)) {
+    not_tested <- as.character(df$significance_basis) %in% c("not_tested", "none")
+    df$significant[not_tested] <- NA
+  }
   df$neglog10_pvalue <- ifelse(
     is.finite(pvalue) & pvalue > 0,
     -log10(pmax(pvalue, 1e-300)),
