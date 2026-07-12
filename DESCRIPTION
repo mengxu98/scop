@@ -145,7 +145,8 @@ Suggests:
     withr
 Remotes:
     mengxu98/thisutils,
-    mengxu98/thisplot
+    mengxu98/thisplot,
+    jinworks/SpatialCellChat
 LinkingTo:
     cli,
     Rcpp,
