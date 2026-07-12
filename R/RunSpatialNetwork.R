@@ -56,83 +56,20 @@ RunSpatialNetwork <- function(
     log_message("{.arg overwrite} must be TRUE or FALSE", message_type = "error")
   }
   method <- match.arg(method)
-  images <- tryCatch(SeuratObject::Images(srt), error = function(e) character())
-  selected_image <- image
-  if (length(images) == 0L) {
-    if (!is.null(selected_image)) {
-      log_message("{.arg image} was supplied but {.arg srt} has no spatial images", message_type = "error")
-    }
-  } else if (is.null(selected_image)) {
-    if (length(images) > 1L) {
-      log_message(
-        "Multiple spatial images are available; select one with {.arg image}: {.val {images}}",
-        message_type = "error"
-      )
-    }
-    selected_image <- images[[1L]]
-  } else if (!selected_image %in% images) {
-    log_message(
-      "{.arg image} {.val {selected_image}} is not present in {.cls Seurat}; available images: {.val {images}}",
-      message_type = "error"
-    )
-  }
-
-  if (!is.null(selected_image)) {
-    coords <- as.data.frame(SeuratObject::GetTissueCoordinates(srt[[selected_image]]))
-    cell_col <- if ("cell" %in% colnames(coords)) "cell" else NULL
-    cells <- if (is.null(cell_col)) rownames(coords) else as.character(coords[[cell_col]])
-    if (is.null(cells) || anyNA(cells) || any(!nzchar(cells)) || anyDuplicated(cells)) {
-      log_message("Spatial image coordinates must contain unique, non-missing cell or spot identifiers", message_type = "error")
-    }
-    rownames(coords) <- cells
-    x_col <- spatial_dim_pick_col(coords, c("x", "pxl_col_in_fullres", "imagecol"))
-    y_col <- spatial_dim_pick_col(coords, c("y", "pxl_row_in_fullres", "imagerow"))
-    coords <- data.frame(
-      x = suppressWarnings(as.numeric(coords[[x_col]])),
-      y = suppressWarnings(as.numeric(coords[[y_col]])),
-      row.names = cells,
-      stringsAsFactors = FALSE
-    )
-  } else {
-    if (length(coord.cols) < 2L || !all(coord.cols[1:2] %in% colnames(srt@meta.data))) {
-      log_message(
-        "Spatial coordinates were not found. Provide metadata columns {.val {coord.cols}}.",
-        message_type = "error"
-      )
-    }
-    coords <- data.frame(
-      x = suppressWarnings(as.numeric(srt@meta.data[[coord.cols[[1L]]]])),
-      y = suppressWarnings(as.numeric(srt@meta.data[[coord.cols[[2L]]]])),
-      row.names = rownames(srt@meta.data),
-      stringsAsFactors = FALSE
-    )
-  }
-
-  cells <- intersect(colnames(srt), rownames(coords))
-  coords <- coords[cells, , drop = FALSE]
-  finite <- is.finite(coords$x) & is.finite(coords$y)
-  if (any(!finite)) {
-    log_message(
-      "Drop {.val {sum(!finite)}} cells or spots with missing or non-finite spatial coordinates",
-      message_type = "warning",
-      verbose = verbose
-    )
-  }
-  coords <- coords[finite, , drop = FALSE]
-  cells <- rownames(coords)
+  coord_result <- spatial_coords_raw(
+    srt = srt,
+    image = image,
+    coord.cols = coord.cols,
+    image_policy = "strict"
+  )
+  selected_image <- coord_result$source$image
+  coords <- coord_result$data
+  cells <- intersect(colnames(srt), coords$cell_id)
+  coords <- coords[match(cells, coords$cell_id), , drop = FALSE]
+  rownames(coords) <- coords$cell_id
   if (length(cells) < 2L) {
     log_message("At least two cells or spots with finite spatial coordinates are required", message_type = "error")
   }
-
-  nodes <- data.frame(
-    cell_id = cells,
-    x = coords$x,
-    y = coords$y,
-    image = if (is.null(selected_image)) NA_character_ else selected_image,
-    stringsAsFactors = FALSE
-  )
-  xy <- as.matrix(coords[, c("x", "y"), drop = FALSE])
-  check_r("BiocNeighbors", verbose = FALSE)
 
   if (identical(method, "knn")) {
     k_numeric <- suppressWarnings(as.numeric(k))
@@ -143,15 +80,9 @@ RunSpatialNetwork <- function(
       log_message("{.arg k} must be one positive integer", message_type = "error")
     }
     k <- as.integer(k_numeric)
-    if (is.na(k) || k < 1L || k >= nrow(nodes)) {
+    if (is.na(k) || k < 1L || k >= nrow(coords)) {
       log_message("{.arg k} must be between 1 and the number of nodes minus one", message_type = "error")
     }
-    findKNN <- get_namespace_fun("BiocNeighbors", "findKNN")
-    nearest <- findKNN(xy, k = k, get.index = TRUE, get.distance = TRUE)
-    from_idx <- rep(seq_len(nrow(nodes)), each = k)
-    to_idx <- as.vector(t(nearest$index))
-    distances <- as.vector(t(nearest$distance))
-    parameters <- list(method = method, k = k, radius = NULL)
   } else {
     if (is.null(radius) || length(radius) != 1L) {
       log_message("{.arg radius} must be one positive finite number", message_type = "error")
@@ -160,49 +91,21 @@ RunSpatialNetwork <- function(
     if (is.na(radius) || !is.finite(radius) || radius <= 0) {
       log_message("{.arg radius} must be one positive finite number", message_type = "error")
     }
-    findNeighbors <- get_namespace_fun("BiocNeighbors", "findNeighbors")
-    nearest <- findNeighbors(xy, threshold = radius, get.index = TRUE, get.distance = TRUE)
-    from_idx <- rep(seq_len(nrow(nodes)), lengths(nearest$index))
-    to_idx <- unlist(nearest$index, use.names = FALSE)
-    distances <- unlist(nearest$distance, use.names = FALSE)
-    parameters <- list(method = method, k = NULL, radius = radius)
   }
-
-  keep <- length(from_idx) > 0L && length(to_idx) > 0L
-  if (isTRUE(keep)) {
-    edges <- data.frame(
-      from = nodes$cell_id[from_idx],
-      to = nodes$cell_id[to_idx],
-      distance = suppressWarnings(as.numeric(distances)),
-      stringsAsFactors = FALSE
-    )
-    edges <- edges[
-      edges$from != edges$to & is.finite(edges$distance),
-      ,
-      drop = FALSE
-    ]
-    left <- pmin(edges$from, edges$to)
-    right <- pmax(edges$from, edges$to)
-    edge_key <- paste(left, right, sep = "\r")
-    ord <- order(edge_key, edges$distance)
-    edges <- edges[ord, , drop = FALSE]
-    edge_key <- edge_key[ord]
-    edges <- edges[!duplicated(edge_key), , drop = FALSE]
-    edge_from <- pmin(edges$from, edges$to)
-    edge_to <- pmax(edges$from, edges$to)
-    edges$from <- edge_from
-    edges$to <- edge_to
-    edges$weight <- 1
-    rownames(edges) <- NULL
-  } else {
-    edges <- data.frame(
-      from = character(),
-      to = character(),
-      distance = numeric(),
-      weight = numeric(),
-      stringsAsFactors = FALSE
-    )
-  }
+  graph <- spatial_graph_compute(
+    coords = coords,
+    method = method,
+    k = k,
+    radius = radius,
+    directed = FALSE,
+    weight = "binary"
+  )
+  nodes <- graph$nodes[, c("cell_id", "x", "y"), drop = FALSE]
+  nodes$image <- if (is.null(selected_image)) NA_character_ else selected_image
+  edges <- graph$edges
+  edges$from <- graph$nodes$cell_id[edges$from]
+  edges$to <- graph$nodes$cell_id[edges$to]
+  parameters <- graph$parameters[c("method", "k", "radius")]
 
   sanitize_name <- function(x) {
     x <- gsub("[^A-Za-z0-9]+", "_", x)
@@ -238,11 +141,7 @@ RunSpatialNetwork <- function(
     nodes = nodes,
     edges = edges,
     parameters = c(parameters, list(weight = "binary")),
-    source = list(
-      image = selected_image,
-      coord.cols = coord.cols[1:2],
-      coordinate_space = "raw"
-    )
+    source = c(coord_result$source, list(transform = coord_result$transform))
   )
   store$method <- "SpatialNetwork"
   store$active_graph <- graph.name
@@ -321,6 +220,11 @@ SpatialNetworkPlot <- function(
   }
 
   image_info <- NULL
+  plot_space <- "raw"
+  if (is.null(object) && !is.null(graph$source$transform)) {
+    nodes <- spatial_coords_to_display(nodes, graph$source$transform)
+    plot_space <- "display"
+  }
   if (!is.null(object)) {
     keep <- nodes$cell_id %in% colnames(object)
     if (any(!keep)) {
@@ -341,6 +245,7 @@ SpatialNetworkPlot <- function(
       nodes$x <- display$data$x[matched]
       nodes$y <- display$data$y[matched]
       image_info <- display$image
+      plot_space <- "display"
     }
   }
   if (nrow(nodes) == 0L) {
@@ -443,6 +348,10 @@ SpatialNetworkPlot <- function(
       xlim = x_range + c(-x_pad, x_pad),
       ylim = y_range + c(-y_pad, y_pad)
     ) +
-    ggplot2::labs(x = NULL, y = NULL) +
+    ggplot2::labs(
+      x = NULL,
+      y = NULL,
+      subtitle = if (identical(plot_space, "raw")) "coordinate space: raw" else NULL
+    ) +
     spatial_dim_drop_coord(do.call(theme_use, theme_args))
 }

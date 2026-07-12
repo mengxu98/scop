@@ -12,6 +12,9 @@
 #' `x/y` first and then `col/row`.
 #' @param image Optional Seurat image name. When present, image-derived
 #' coordinates are used.
+#' @param coordinate_space Coordinate space exported to `spatialCoords`.
+#'   `"legacy_display"` preserves the historical scaled/y-flipped behavior;
+#'   `"raw"` preserves analysis distances.
 #' @param include_meta Whether to include Seurat metadata as `colData`.
 #'
 #' @return A `SpatialExperiment`.
@@ -22,7 +25,8 @@ srt_to_spe <- function(
   layer = "counts",
   coord.cols = c("col", "row"),
   image = NULL,
-  include_meta = TRUE
+  include_meta = TRUE,
+  coordinate_space = c("legacy_display", "raw")
 ) {
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
@@ -33,11 +37,12 @@ srt_to_spe <- function(
     log_message("{.arg assay} {.val {assay}} is not present in {.cls Seurat}", message_type = "error")
   }
   expr <- GetAssayData5(srt, assay = assay, layer = layer)
-  coords <- spatial_dim_coords(
+  coordinate_space <- match.arg(coordinate_space)
+  coords <- spatial_analysis_coords(
     srt = srt,
     image = image,
     coord.cols = coord.cols,
-    overlay_image = !is.null(image)
+    coordinate_space = coordinate_space
   )$data
   cells <- intersect(colnames(expr), rownames(coords))
   if (length(cells) == 0L) {

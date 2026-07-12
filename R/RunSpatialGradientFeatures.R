@@ -27,6 +27,8 @@
 #' to `SPATA2::asSPATA2()` when `spata_object` is `NULL`.
 #' @param coord.cols Metadata coordinate columns used by the native `"cpp"`
 #' backend when no image coordinates are available.
+#' @param coordinate_space Coordinate system used by the native distance
+#'   calculations.
 #' @param trajectory_id,start,end,traj_df,width Trajectory setup passed to
 #' `SPATA2::addSpatialTrajectory()` and `SPATA2::spatialTrajectoryScreening()`.
 #' @param annotation_ids Existing SPATA2 spatial annotation ids. If `NULL`,
@@ -132,6 +134,7 @@ RunSpatialGradientFeatures <- function(
   set_variable_features = FALSE,
   store_results = TRUE,
   verbose = TRUE,
+  coordinate_space = c("legacy_display", "raw"),
   ...
 ) {
   if (!inherits(srt, "Seurat")) {
@@ -139,6 +142,7 @@ RunSpatialGradientFeatures <- function(
   }
   reference <- match.arg(reference)
   backend <- match.arg(backend)
+  coordinate_space <- match.arg(coordinate_space)
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   if (!assay %in% SeuratObject::Assays(srt)) {
     log_message(
@@ -190,6 +194,7 @@ RunSpatialGradientFeatures <- function(
       variables = variables,
       image = image,
       coord.cols = coord.cols,
+      coordinate_space = coordinate_space,
       start = start,
       end = end,
       traj_df = traj_df,
@@ -213,6 +218,7 @@ RunSpatialGradientFeatures <- function(
         layer = layer,
         image = image,
         coord.cols = paste(coord.cols, collapse = ","),
+        coordinate_space = coordinate_space,
         trajectory_id = trajectory_id,
         annotation.by = annotation.by,
         annotation.groups = paste(annotation.groups %||% character(0), collapse = ","),
@@ -703,6 +709,7 @@ sgf_run_cpp_gradient <- function(
   variables,
   image,
   coord.cols,
+  coordinate_space,
   start,
   end,
   traj_df,
@@ -730,7 +737,8 @@ sgf_run_cpp_gradient <- function(
   coords <- sgf_cpp_coords(
     srt = srt,
     image = image,
-    coord.cols = coord.cols
+    coord.cols = coord.cols,
+    coordinate_space = coordinate_space
   )
   spots <- intersect(colnames(srt), rownames(coords))
   if (length(spots) == 0L) {
@@ -804,12 +812,16 @@ sgf_run_cpp_gradient <- function(
   )
 }
 
-sgf_cpp_coords <- function(srt, image, coord.cols) {
+sgf_cpp_coords <- function(srt, image, coord.cols, coordinate_space = "legacy_display") {
   if (length(coord.cols) < 2L) {
     log_message("{.arg coord.cols} must contain at least two coordinate columns", message_type = "error")
   }
   coord.cols <- coord.cols[seq_len(2L)]
-  if (is.null(image) && all(coord.cols %in% colnames(srt@meta.data))) {
+  if (
+    identical(coordinate_space, "legacy_display") &&
+      is.null(image) &&
+      all(coord.cols %in% colnames(srt@meta.data))
+  ) {
     return(data.frame(
       x = srt@meta.data[[coord.cols[1L]]],
       y = srt@meta.data[[coord.cols[2L]]],
@@ -817,11 +829,11 @@ sgf_cpp_coords <- function(srt, image, coord.cols) {
       stringsAsFactors = FALSE
     ))
   }
-  spatial_dim_coords(
+  spatial_analysis_coords(
     srt = srt,
     image = image,
     coord.cols = coord.cols,
-    overlay_image = FALSE
+    coordinate_space = coordinate_space
   )$data
 }
 
