@@ -89,8 +89,8 @@ GiottoPlot(x, ...)
 \item{srt}{Original `Seurat` object used to create the Giotto result. Required
 for spatial spot plots.}
 
-\item{image}{Name of the Seurat spatial image. If `NULL`, the first image is
-used when available.}
+\item{image}{Name of the Seurat spatial image. Required when multiple images
+are present; a single image is selected automatically when `NULL`.}
 
 \item{coord.cols}{Metadata coordinate columns used when no image is available.}
 

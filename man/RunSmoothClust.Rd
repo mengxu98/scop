@@ -42,8 +42,8 @@ RunSmoothClust(
 
 \item{layer}{Assay layer used for expression values.}
 
-\item{image}{Name of the Seurat spatial image. If \code{NULL}, the first image is
-used when present.}
+\item{image}{Name of the Seurat spatial image. Required when multiple images
+are present; a single image is selected automatically when \code{NULL}.}
 
 \item{coord.cols}{Metadata coordinate columns used when no Seurat image is
 available.}

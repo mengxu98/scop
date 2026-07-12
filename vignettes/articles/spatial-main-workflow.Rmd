@@ -269,6 +269,10 @@ Distance-sensitive methods retain `coordinate_space = "legacy_display"` as
 the compatibility default in this release. Set `coordinate_space = "raw"`
 when radius or distance values must stay in original acquisition units. Plot
 functions continue to map results to display coordinates by cell or spot ID.
+Objects with multiple spatial images must always select one explicitly with
+`image`; analysis, plotting, and framework conversion never silently use the
+first image. A future release will make raw coordinates the default for all
+distance-sensitive producers.
 
 ```r
 spatial <- RunMistyR(
