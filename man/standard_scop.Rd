@@ -107,13 +107,14 @@ labels.}
 \item{reference_assay}{Assay used in \code{reference} for deconvolution.}
 
 \item{do_deconvolution}{Whether to run deconvolution in the spatial workflow.
-If \code{NULL}, deconvolution is run only when \code{reference} is provided.}
+If \code{NULL}, deconvolution is run when \code{reference} or cell2location
+\code{reference_signatures} are provided.}
 
-\item{deconvolution_method}{Deconvolution method. One of \code{"RCTD"} or
-\code{"SPOTlight"}.}
+\item{deconvolution_method}{Deconvolution method. One of \code{"RCTD"},
+\code{"SPOTlight"}, or \code{"Cell2location"}.}
 
 \item{deconvolution_params}{Named list of additional arguments passed to
-\code{\link[=RunRCTD]{RunRCTD()}} or \code{\link[=RunSPOTlight]{RunSPOTlight()}}.}
+\code{\link[=RunRCTD]{RunRCTD()}}, \code{\link[=RunSPOTlight]{RunSPOTlight()}}, or \code{\link[=RunCell2location]{RunCell2location()}}.}
 
 \item{do_normalization}{Whether to perform normalization.
 If \code{NULL}, normalization will be performed if the specified assay does not have scaled data.}

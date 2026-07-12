@@ -19,13 +19,13 @@ Default is \code{"3.10-1"}.}
 
 \item{modules}{Optional requirement modules to include. Supported values are
 \code{"scanpy"}, \code{"scvi"}, \code{"scanorama"}, \code{"bbknn"}, \code{"celltypist"},
-\code{"cellphonedb"}, \code{"magic"}, \code{"scrublet"}, \code{"doubletdetection"},
+\code{"cellphonedb"}, \code{"cell2location"}, \code{"magic"}, \code{"scrublet"}, \code{"doubletdetection"},
 \code{"sccoda"}, \code{"doublet"}, \code{"palantir"}, \code{"scvelo"}, \code{"cellrank"}, \code{"wot"},
 \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"multimap"},
 \code{"scomm"}, \code{"scenic"}, \code{"seacells"}, \code{"tage"},
 \code{"scmalignantfinder"}, \code{"secact"}, \code{"scpagwas"}, and
 \code{"external_wrappers"}. If \code{NULL}, the default environment is returned. The default
-excludes \code{"sccoda"}, \code{"scomm"}, and \code{"scenic"} because these workflows
+excludes \code{"cell2location"}, \code{"sccoda"}, \code{"scomm"}, and \code{"scenic"} because these workflows
 require dependency stacks that should be prepared explicitly. The
 \code{"scenic"} module is standalone and always uses Python \code{"3.10-1"}.}
 

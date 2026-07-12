@@ -23,14 +23,15 @@
 #' @param modules Optional Python dependency modules to install in addition to
 #' the default scientific stack.
 #' Supported values are `"scanpy"`, `"scvi"`, `"glue"`, `"scanorama"`, `"bbknn"`,
-#' `"celltypist"`, `"cellphonedb"`, `"magic"`, `"scrublet"`,
+#' `"celltypist"`, `"cellphonedb"`, `"cell2location"`, `"magic"`, `"scrublet"`,
 #' `"sccoda"`, `"doubletdetection"`, `"doublet"`, `"palantir"`, `"scvelo"`,
 #' `"cellrank"`, `"wot"`, `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`,
 #' `"scomm"`, `"scenic"`, `"seacells"`, `"tage"`,
 #' `"scmalignantfinder"`, `"secact"`, `"scpagwas"`, and
 #' `"external_wrappers"`.
 #' If `NULL` or omitted in [PrepareEnv()], the default environment is installed.
-#' The default excludes `"sccoda"` and `"scomm"` because their TensorFlow stacks
+#' The default excludes `"cell2location"`, `"sccoda"`, and `"scomm"` because
+#' cell2location is a long-running explicit workflow and the TensorFlow stacks
 #' are not compatible with the default JAX/scVI stack in the same environment;
 #' request them explicitly for scCODA/scOMM workflows. `"scenic"` is also
 #' excluded from the default environment and is prepared in `"scenic_env"` by
@@ -388,6 +389,7 @@ supported_env_modules <- function() {
     "bbknn",
     "celltypist",
     "cellphonedb",
+    "cell2location",
     "magic",
     "scfea",
     "scrublet",
@@ -417,6 +419,7 @@ supported_env_modules <- function() {
 default_env_modules <- function() {
   excluded <- c(
     "scfea",
+    "cell2location",
     "sccoda",
     "scomm",
     "scenic",
@@ -447,6 +450,7 @@ env_module_dependencies <- function() {
   list(
     celltypist = "scanpy",
     cellphonedb = "scanpy",
+    cell2location = c("scanpy", "scvi"),
     sccoda = "scanpy",
     palantir = "scanpy",
     scvelo = "scanpy",
@@ -470,6 +474,7 @@ env_module_requirements <- function() {
     bbknn = bbknn_python_requirements(),
     celltypist = celltypist_python_requirements(),
     cellphonedb = cellphonedb_python_requirements(),
+    cell2location = cell2location_python_requirements(),
     magic = magic_python_requirements(),
     scfea = scfea_python_requirements(),
     scrublet = scrublet_python_requirements(),
@@ -1280,13 +1285,13 @@ env_info <- function(conda, envname, verbose = TRUE) {
 #' @param include_optional Whether to include optional Python dependencies.
 #' @param modules Optional requirement modules to include. Supported values are
 #' `"scanpy"`, `"scvi"`, `"scanorama"`, `"bbknn"`, `"celltypist"`,
-#' `"cellphonedb"`, `"magic"`, `"scrublet"`, `"doubletdetection"`,
+#' `"cellphonedb"`, `"cell2location"`, `"magic"`, `"scrublet"`, `"doubletdetection"`,
 #' `"sccoda"`, `"doublet"`, `"palantir"`, `"scvelo"`, `"cellrank"`, `"wot"`,
 #' `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`,
 #' `"scomm"`, `"scenic"`, `"seacells"`, `"tage"`,
 #' `"scmalignantfinder"`, `"secact"`, `"scpagwas"`, and
 #' `"external_wrappers"`. If `NULL`, the default environment is returned. The default
-#' excludes `"sccoda"`, `"scomm"`, and `"scenic"` because these workflows
+#' excludes `"cell2location"`, `"sccoda"`, `"scomm"`, and `"scenic"` because these workflows
 #' require dependency stacks that should be prepared explicitly. The
 #' `"scenic"` module is standalone and always uses Python `"3.10-1"`.
 #'
@@ -1381,8 +1386,8 @@ core_python_requirements <- function() {
       },
       "python-igraph" = "python-igraph==0.11.9",
       "matplotlib" = "matplotlib==3.10.8",
-      "numba" = "numba==0.59.1",
-      "llvmlite" = "llvmlite==0.42.0",
+      "numba" = "numba==0.66.0",
+      "llvmlite" = "llvmlite==0.48.0",
       "numpy" = "numpy==1.26.4",
       "packaging" = "packaging>=24.0",
       "pandas" = "pandas==2.2.0",
@@ -1466,12 +1471,24 @@ scvi_python_requirements <- function() {
   scvi_install_method <- if (is_windows()) "pip" else "conda"
   list(
     packages = c(
-      "scvi-tools" = "scvi-tools==1.2.1",
+      "scvi-tools" = "scvi-tools==1.3.3",
       "jax" = "jax[cpu]==0.4.38"
     ),
     install_methods = c(
       "scvi-tools" = scvi_install_method,
       "jax" = "pip"
+    ),
+    package_aliases = list()
+  )
+}
+
+cell2location_python_requirements <- function() {
+  list(
+    packages = c(
+      "cell2location" = "cell2location==0.1.5"
+    ),
+    install_methods = c(
+      "cell2location" = "pip"
     ),
     package_aliases = list()
   )
