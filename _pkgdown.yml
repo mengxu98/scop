@@ -226,6 +226,7 @@ reference:
 - subtitle: "Spatial Deconvolution and Ecotypes"
 - contents:
   - RunRCTD
+  - RunCell2location
   - RunCSIDE
   - RunCARD
   - RunSTdeconvolve
@@ -267,6 +268,7 @@ reference:
   - SpatialNeighborhoodPlot
   - SpatialNetworkPlot
   - SpatialCellPlot
+  - Cell2locationPlot
   - SpatialSpotPlot
   - SpatialVariableFeaturePlot
   - STdeconvolvePlot
