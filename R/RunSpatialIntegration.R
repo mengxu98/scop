@@ -23,6 +23,7 @@
 #'
 #' @return A `Seurat` object with spatial integration results stored in
 #' metadata, reductions, and `srt@tools[[tool_name]]`.
+#' @concept spatial-producer
 #' @export
 #'
 #' @examples

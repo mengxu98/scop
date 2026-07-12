@@ -402,15 +402,9 @@ giotto_prepare_input <- function(
 }
 
 giotto_spatial_coords <- function(srt, image = NULL, coord.cols = c("x", "y")) {
-  images <- tryCatch(SeuratObject::Images(srt), error = function(e) character())
-  if (length(images) > 0L) {
-    image <- image %||% images[1L]
-    if (!image %in% images) {
-      log_message(
-        "{.arg image} {.val {image}} is not present in {.cls Seurat}",
-        message_type = "error"
-      )
-    }
+  resolved <- spatial_image_resolve(srt = srt, image = image, image_policy = "strict")
+  image <- resolved$image
+  if (!is.null(image)) {
     coords <- as.data.frame(SeuratObject::GetTissueCoordinates(srt[[image]]))
     cell_col <- if ("cell" %in% colnames(coords)) "cell" else NULL
     cells <- if (is.null(cell_col)) rownames(coords) else coords[[cell_col]]

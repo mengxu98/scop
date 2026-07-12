@@ -84,7 +84,8 @@ features, then all assay features.}
 to \code{SPATA2::asSPATA2()} when \code{spata_object} is \code{NULL}.}
 
 \item{image}{Name of the Seurat spatial image used by the spatial workflow.
-If \code{NULL}, the first image is used when present.}
+Required when multiple images are present; a single image is selected
+automatically when \code{NULL}.}
 
 \item{coord.cols}{Metadata coordinate columns used by the native \code{"cpp"}
 backend when no image coordinates are available.}
@@ -175,3 +176,4 @@ SpatialGradientPlot(
   coord.cols = c("x", "y")
 )
 }
+\concept{spatial-producer}

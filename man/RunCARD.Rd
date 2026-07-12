@@ -139,3 +139,4 @@ spatial <- RunCARD(
   verbose = FALSE
 )
 }
+\concept{spatial-producer}

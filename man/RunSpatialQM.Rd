@@ -79,3 +79,4 @@ spatial <- RunSpatialQM(
 )
 spatial@tools$SpatialQM$summary
 }
+\concept{spatial-producer}

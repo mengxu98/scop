@@ -37,7 +37,8 @@ additional \code{ChromatinAssay} will be preprocessed sequentially.}
 \item{layer}{Assay layer used as the expression matrix.}
 
 \item{image}{Name of the Seurat spatial image used by the spatial workflow.
-If \code{NULL}, the first image is used when present.}
+Required when multiple images are present; a single image is selected
+automatically when \code{NULL}.}
 
 \item{coord.cols}{Metadata coordinate columns used by the spatial workflow
 when no image is available.}
