@@ -65,8 +65,8 @@ method is used.}
 \item{pair}{Pair to visualize for \code{plot_type = "spatial"}, either
 \code{"from|to"} or a length-2 character vector.}
 
-\item{image}{Name of the Seurat spatial image. If \code{NULL}, the first image is
-used when present.}
+\item{image}{Name of the Seurat spatial image. Required when multiple images
+are present; a single image is selected automatically when \code{NULL}.}
 
 \item{overlay_image}{Whether to draw the spatial image beneath spots.}
 

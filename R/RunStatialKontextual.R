@@ -15,8 +15,8 @@
 #' @param from,to,parent Cell or spot labels passed to `Statial::Kontextual()`.
 #' Ignored when `parent_df` is supplied.
 #' @param parent_df Optional data frame from `Statial::parentCombinations()`.
-#' @param image Name of the Seurat spatial image. If `NULL`, the first image is
-#' used when present.
+#' @param image Name of the Seurat spatial image. Required when multiple images
+#' are present; a single image is selected automatically when `NULL`.
 #' @param sample.by Optional metadata column used as Statial `imageID`. If
 #' `NULL`, all cells or spots are treated as one image.
 #' @param images Optional Statial image filter passed to `Kontextual(image = )`.
@@ -37,6 +37,7 @@
 #'
 #' @return A `Seurat` object with Statial results stored in
 #' `srt@tools[[tool_name]]` when `store_results = TRUE`.
+#' @concept spatial-producer
 #' @export
 #'
 #' @examples

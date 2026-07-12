@@ -41,6 +41,7 @@
 #' @return A `Seurat` object with BANKSY clusters in metadata. When
 #' `store_results = TRUE`, detailed results are stored in
 #' `srt@tools[[tool_name]]`.
+#' @concept spatial-producer
 #' @export
 #'
 #' @examples

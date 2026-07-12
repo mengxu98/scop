@@ -60,9 +60,10 @@ standard_scop(
 Default is \code{"Standard"}.}
 
 \item{workflow}{Workflow to run. \code{"single_cell"} keeps the original standard
-workflow. \code{"spatial"} runs a spot-level spatial workflow that wraps the
-original workflow with spot QC, spatial variable features, optional spatial
-clustering, and optional RCTD deconvolution.}
+workflow. \code{"spatial"} is a basic, single-image Visium-style spot workflow
+that wraps the original workflow with spot QC, spatial variable features,
+optional spatial clustering, and optional deconvolution. It is not a
+multi-slice integration orchestrator.}
 
 \item{assay}{Which assay to use.
 If \code{NULL}, the default assay of the Seurat object will be used.
@@ -70,7 +71,8 @@ When the object also contains \code{ChromatinAssay}, the default assay and
 additional \code{ChromatinAssay} will be preprocessed sequentially.}
 
 \item{image}{Name of the Seurat spatial image used by the spatial workflow.
-If \code{NULL}, the first image is used when present.}
+Required when multiple images are present; a single image is selected
+automatically when \code{NULL}.}
 
 \item{coord.cols}{Metadata coordinate columns used by the spatial workflow
 when no image is available.}
@@ -205,7 +207,10 @@ Default is \code{11}.}
 \item{...}{Additional parameters to pass to the dimensionality reduction methods.}
 }
 \value{
-A \code{Seurat} object.
+A \code{Seurat} object. Completed or partial spatial workflows store the
+per-stage state in \code{srt@tools[["standard_spatial_scop"]]}. If a stage fails,
+the signaled error carries the same table in its \code{standard_spatial_stages}
+attribute with that stage marked \code{"failed"}.
 }
 \description{
 This function performs a standard single-cell or spot-level spatial analysis
@@ -315,3 +320,4 @@ spatial_bayes <- standard_scop(
 )
 SpatialSpotPlot(spatial_bayes, group.by = "BayesSpace_cluster")
 }
+\concept{spatial-producer}

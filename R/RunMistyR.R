@@ -15,8 +15,8 @@
 #' @param layer Assay layer used for expression values.
 #' @param features Features used by MISTy. If `NULL`, variable features are used
 #' when available; otherwise all assay features are used.
-#' @param image Name of the Seurat spatial image. If `NULL`, the first image is
-#' used when present.
+#' @param image Name of the Seurat spatial image. Required when multiple images
+#' are present; a single image is selected automatically when `NULL`.
 #' @param coord.cols Metadata coordinate columns used when no Seurat image
 #' coordinates are available.
 #' @param coordinate_space Coordinate system used to build MISTy views.
@@ -39,6 +39,7 @@
 #'
 #' @return A `Seurat` object with results stored in `srt@tools[[tool_name]]`
 #' when `store_results = TRUE`.
+#' @concept spatial-producer
 #' @export
 #'
 #' @examples

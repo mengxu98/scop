@@ -32,6 +32,7 @@
 #'
 #' @seealso [DeconvolutionPlot]
 #'
+#' @concept spatial-producer
 #' @export
 #'
 #' @examples

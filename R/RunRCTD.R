@@ -40,6 +40,7 @@
 #' @return A `Seurat` object with RCTD proportion columns in metadata and
 #' dominant cell type summaries. When `store_results = TRUE`, detailed results
 #' are also stored in `srt@tools[["RCTD"]]`.
+#' @concept spatial-producer
 #' @export
 #'
 #' @examples
@@ -626,16 +627,10 @@ rctd_get_spatial_coords <- function(
 }
 
 rctd_get_image_coords <- function(srt, image = NULL) {
-  images <- tryCatch(SeuratObject::Images(srt), error = function(e) character())
-  if (length(images) == 0L) {
+  resolved <- spatial_image_resolve(srt = srt, image = image, image_policy = "strict")
+  image <- resolved$image
+  if (is.null(image)) {
     return(NULL)
-  }
-  image <- image %||% images[1L]
-  if (!image %in% images) {
-    log_message(
-      "{.arg image} {.val {image}} is not present in {.cls Seurat}",
-      message_type = "error"
-    )
   }
   coords <- tryCatch(
     as.data.frame(SeuratObject::GetTissueCoordinates(srt[[image]])),

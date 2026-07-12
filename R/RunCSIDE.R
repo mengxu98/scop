@@ -37,6 +37,7 @@
 #'
 #' @return A `Seurat` object with C-SIDE summary metadata and detailed results
 #' stored in `srt@tools[[tool_name]]` when `store_results = TRUE`.
+#' @concept spatial-producer
 #' @export
 #'
 #' @examples

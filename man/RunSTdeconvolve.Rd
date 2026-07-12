@@ -124,3 +124,4 @@ spatial <- RunSTdeconvolve(
   verbose = FALSE
 )
 }
+\concept{spatial-producer}

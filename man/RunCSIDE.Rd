@@ -131,3 +131,4 @@ SpatialSpotPlot(
     cell_type_threshold = 125
   )
 }
+\concept{spatial-producer}

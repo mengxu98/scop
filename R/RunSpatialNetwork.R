@@ -34,6 +34,7 @@
 #' srt <- RunSpatialNetwork(srt, k = 2, verbose = FALSE)
 #' SpatialNetworkPlot(srt)
 #'
+#' @concept spatial-producer
 #' @export
 RunSpatialNetwork <- function(
   srt,

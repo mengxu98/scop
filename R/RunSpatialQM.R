@@ -33,6 +33,7 @@
 #'
 #' @return A `Seurat` object. When `store_results = TRUE`, results are stored in
 #' `srt@tools[[tool_name]]`.
+#' @concept spatial-producer
 #' @export
 #'
 #' @examples

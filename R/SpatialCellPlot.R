@@ -65,20 +65,13 @@ SpatialCellPlot <- function(
     boundaries <- if (is.data.frame(res)) res else res$boundaries
   }
   if (is.null(boundaries) && !is.null(object)) {
-    images <- tryCatch(SeuratObject::Images(object), error = function(e) character())
-    if (length(images) == 0L) {
-      log_message("No Seurat spatial image is available for boundary extraction", message_type = "error")
-    }
+    image <- spatial_image_resolve(
+      srt = object,
+      image = image,
+      image_policy = "strict"
+    )$image
     if (is.null(image)) {
-      if (length(images) > 1L) {
-        log_message(
-          "Multiple spatial images are available; select one with {.arg image}: {.val {images}}",
-          message_type = "error"
-        )
-      }
-      image <- images[[1L]]
-    } else if (!image %in% images) {
-      log_message("{.arg image} {.val {image}} is not present in {.cls Seurat}", message_type = "error")
+      log_message("No Seurat spatial image is available for boundary extraction", message_type = "error")
     }
     boundary_names <- tryCatch(SeuratObject::Boundaries(object[[image]]), error = function(e) character())
     if (!"segmentation" %in% boundary_names) {

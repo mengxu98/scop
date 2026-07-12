@@ -27,6 +27,7 @@
 #' @param seed Random seed for reproducibility.
 #'
 #' @return A `Seurat` object with spot QC metadata columns.
+#' @concept spatial-producer
 #' @export
 #'
 #' @examples

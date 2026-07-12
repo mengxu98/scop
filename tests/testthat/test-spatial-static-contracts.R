@@ -12,7 +12,70 @@ test_that("spatial registry covers the complete public surface", {
   )))
   expect_true(all(registry$backend_requirement %in% c("all", "any")))
   backend_ids <- unique(unlist(strsplit(registry$backend_id, ";", fixed = TRUE)))
-  expect_true(all(backend_ids %in% names(scop:::spatial_backend_registry())))
+  backend_registry <- scop:::spatial_backend_registry()
+  expect_true(all(backend_ids %in% names(backend_registry)))
+  expect_true(all(vapply(
+    backend_registry,
+    function(spec) spec$runtime %in% c("r", "python", "core"),
+    logical(1)
+  )))
+})
+
+test_that("documented stable spatial producers and registry agree both ways", {
+  registry <- scop:::spatial_method_registry()
+  registered <- registry$method[
+    registry$kind %in% c("analysis", "workflow") & registry$status == "stable"
+  ]
+  package_root <- normalizePath(
+    testthat::test_path("..", ".."),
+    winslash = "/",
+    mustWork = FALSE
+  )
+  rd_db <- if (file.exists(file.path(package_root, "DESCRIPTION"))) {
+    tools::Rd_db(dir = package_root)
+  } else {
+    tools::Rd_db(package = "scop")
+  }
+  rd_values <- function(rd, tag) {
+    nodes <- rd[vapply(
+      rd,
+      function(node) identical(attr(node, "Rd_tag"), tag),
+      logical(1)
+    )]
+    trimws(vapply(
+      nodes,
+      function(node) paste(as.character(node), collapse = ""),
+      character(1)
+    ))
+  }
+  documented <- unique(unlist(lapply(rd_db, function(rd) {
+    concepts <- rd_values(rd, "\\concept")
+    if (!"spatial-producer" %in% concepts) return(character())
+    rd_values(rd, "\\name")
+  }), use.names = FALSE))
+  expect_setequal(documented, registered)
+  expect_true(all(documented %in% getNamespaceExports("scop")))
+})
+
+test_that("spatial code does not bypass strict image resolution", {
+  r_dir <- testthat::test_path("..", "..", "R")
+  files <- list.files(r_dir, pattern = "\\.R$", full.names = TRUE)
+  forbidden <- c(
+    "image\\s*<-\\s*image\\s*%\\|\\|%\\s*images\\s*\\[",
+    "GetTissueCoordinates\\([^)]*images\\s*\\[",
+    "images\\s*\\[\\s*\\[?\\s*1L?\\s*\\]?\\s*\\]"
+  )
+  violations <- unlist(lapply(files, function(path) {
+    lines <- readLines(path, warn = FALSE)
+    hits <- unique(unlist(lapply(forbidden, grep, x = lines, perl = TRUE)))
+    approved <- identical(basename(path), "SpatialCore.R") &
+      trimws(lines[hits]) == "image <- images[[1L]]"
+    hits <- hits[!approved]
+    if (length(hits) == 0L) return(character())
+    paste0(basename(path), ":", hits)
+  }), use.names = FALSE)
+  if (is.null(violations)) violations <- character()
+  expect_identical(violations, character())
 })
 
 test_that("registered small analyses emit schema-v1 result families", {

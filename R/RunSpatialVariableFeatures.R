@@ -31,6 +31,7 @@
 #' @return A `Seurat` object with spatial variable feature results stored in
 #' `srt@tools[["SpatialVariableFeatures"]]` and top feature names stored in
 #' `srt@misc[["SpatialVariableFeatures"]]`.
+#' @concept spatial-producer
 #' @export
 #'
 #' @examples

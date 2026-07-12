@@ -44,8 +44,8 @@ RunMistyR(
 \item{features}{Features used by MISTy. If \code{NULL}, variable features are used
 when available; otherwise all assay features are used.}
 
-\item{image}{Name of the Seurat spatial image. If \code{NULL}, the first image is
-used when present.}
+\item{image}{Name of the Seurat spatial image. Required when multiple images
+are present; a single image is selected automatically when \code{NULL}.}
 
 \item{coord.cols}{Metadata coordinate columns used when no Seurat image
 coordinates are available.}
@@ -110,3 +110,4 @@ spatial <- RunMistyR(
 )
 spatial@tools$MistyR$summary
 }
+\concept{spatial-producer}

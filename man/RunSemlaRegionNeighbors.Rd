@@ -69,3 +69,4 @@ spatial <- RunSemlaRegionNeighbors(
   verbose = FALSE
 )
 }
+\concept{spatial-producer}

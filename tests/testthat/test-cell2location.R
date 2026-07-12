@@ -138,6 +138,50 @@ test_that("RunCell2location writes abundance, proportions, and reproducible tool
   expect_true("Cell2location" %in% names(out@tools))
   expect_equal(out@tools$Cell2location$manifest$status, "complete")
   expect_identical(colnames(out@tools$Cell2location$reference_signatures), c("Alpha", "Beta"))
+  expect_identical(out@tools$Cell2location$schema_version, 1L)
+  expect_identical(out@tools$Cell2location$method, "Cell2location")
+  expect_identical(out@tools$Cell2location$result_type, "deconvolution")
+  expect_identical(out@tools$Cell2location$source$coordinate_space, "none")
+  expect_identical(out@tools$Cell2location$provenance$producer, "RunCell2location")
+  expect_identical(out@tools$Cell2location$provenance$backend_id, "cell2location")
+  expect_identical(out@tools$Cell2location$cells, colnames(pair$spatial))
+  expect_identical(GetSpatialResult(out, method = "RunCell2location")$abundance, out@tools$Cell2location$abundance)
+  info <- SpatialResultInfo(out, method = "RunCell2location")
+  expect_identical(info$schema_version, 1L)
+  expect_identical(info$plot_function, "Cell2locationPlot")
+})
+
+test_that("Cell2location backend diagnostics are read-only and environment-aware", {
+  registry_row <- ListSpatialMethods(pattern = "Cell2location")
+  producer_row <- registry_row[registry_row$method == "RunCell2location", , drop = FALSE]
+  expect_identical(producer_row$task, "deconvolution")
+  expect_identical(producer_row$tool_key, "Cell2location")
+  expect_identical(producer_row$plot_function, "Cell2locationPlot")
+  backend_spec <- getFromNamespace("spatial_backend_registry", "scop")()$cell2location
+  expect_identical(backend_spec$runtime, "python")
+  expect_setequal(backend_spec$environment_modules, c("cell2location", "scanpy", "scvi"))
+
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    spatial_backend_readonly_conda = function(conda = "auto") "existing-conda",
+    env_exist = function(conda, envname, ...) TRUE,
+    exist_python_pkgs = function(packages, envname, conda, verbose) {
+      stats::setNames(rep(TRUE, length(packages)), packages)
+    },
+    PrepareEnv = function(...) stop("PrepareEnv must not be called"),
+    check_python = function(...) stop("check_python must not be called")
+  )
+  status <- SpatialBackendStatus(
+    method = "RunCell2location",
+    envname = "existing-c2l",
+    conda = "auto",
+    refresh = TRUE
+  )
+  expect_identical(status$runtime, "python")
+  expect_identical(status$environment, "existing-c2l")
+  expect_identical(status$availability, "available")
+  expect_true(status$installed)
+  expect_match(status$required_symbols, "cell2location==0.1.5")
 })
 
 test_that("RunCell2location does not mutate Seurat when Python fails", {
@@ -199,6 +243,20 @@ test_that("Cell2locationPlot exposes all result views", {
   if (requireNamespace("scatterpie", quietly = TRUE)) {
     expect_s3_class(Cell2locationPlot(pair$spatial, "pie", overlay_image = FALSE), "ggplot")
   }
+})
+
+test_that("Cell2locationPlot requires explicit selection for multi-image objects", {
+  data("visium_mouse_brain_slices_sub", package = "scop")
+  srt <- visium_mouse_brain_slices_sub
+  srt$Cell2location_dominant_type <- rep(c("Alpha", "Beta"), length.out = ncol(srt))
+
+  expect_error(
+    Cell2locationPlot(srt, "dominant"),
+    "Multiple spatial images"
+  )
+  plotted <- Cell2locationPlot(srt, "dominant", image = "anterior1")
+  expect_s3_class(plotted, "ggplot")
+  expect_identical(nrow(plotted$data), 1000L)
 })
 
 test_that("standard spatial workflow dispatches cell2location signatures", {

@@ -90,8 +90,8 @@ GiottoPlot.default <- function(x, ...) {
 #' @rdname GiottoPlot
 #' @param srt Original `Seurat` object used to create the Giotto result. Required
 #' for spatial spot plots.
-#' @param image Name of the Seurat spatial image. If `NULL`, the first image is
-#' used when available.
+#' @param image Name of the Seurat spatial image. Required when multiple images
+#' are present; a single image is selected automatically when `NULL`.
 #' @param coord.cols Metadata coordinate columns used when no image is available.
 #' @param overlay_image Whether to draw the spatial image beneath spots.
 #' @param crop Whether to crop spatial panels to plotted spots.

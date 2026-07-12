@@ -26,6 +26,7 @@
 #' @return A `Seurat` object with BayesSpace clusters in metadata and raw
 #' results in `srt@tools[["BayesSpace"]]`.
 #'
+#' @concept spatial-producer
 #' @export
 #' @examples
 #' data(visium_human_pancreas_sub)
@@ -251,16 +252,10 @@ bayesspace_add_spatial_coords <- function(
 }
 
 bayesspace_get_seurat_coords <- function(srt, image = NULL) {
-  images <- tryCatch(SeuratObject::Images(srt), error = function(e) character())
-  if (length(images) == 0L) {
+  resolved <- spatial_image_resolve(srt = srt, image = image, image_policy = "strict")
+  image <- resolved$image
+  if (is.null(image)) {
     return(NULL)
-  }
-  image <- image %||% images[1]
-  if (!image %in% images) {
-    log_message(
-      "{.arg image} {.val {image}} is not present in {.cls Seurat}",
-      message_type = "error"
-    )
   }
   coords <- tryCatch(
     {

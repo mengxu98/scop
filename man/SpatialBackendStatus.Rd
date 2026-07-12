@@ -8,7 +8,9 @@ SpatialBackendStatus(
   backend = NULL,
   method = NULL,
   api_check = TRUE,
-  refresh = FALSE
+  refresh = FALSE,
+  envname = NULL,
+  conda = "auto"
 )
 }
 \arguments{
@@ -19,6 +21,12 @@ SpatialBackendStatus(
 \item{api_check}{Whether to inspect required namespace exports.}
 
 \item{refresh}{Whether to refresh the session-local diagnostic cache.}
+
+\item{envname}{Existing SCOP Python environment to inspect for Python
+backends. The diagnostic never creates or modifies the environment.}
+
+\item{conda}{Existing conda-compatible executable, or `"auto"` to discover
+one without installing it.}
 }
 \value{
 A data frame with one row per backend.

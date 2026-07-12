@@ -9,7 +9,7 @@ SpatialCoordinates(
   image = NULL,
   coord.cols = c("col", "row"),
   space = c("raw", "display"),
-  image_policy = c("strict", "legacy_first")
+  image_policy = "strict"
 )
 }
 \arguments{

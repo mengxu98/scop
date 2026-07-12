@@ -70,3 +70,4 @@ spatial <- RunSemlaRadialDistance(
   verbose = FALSE
 )
 }
+\concept{spatial-producer}

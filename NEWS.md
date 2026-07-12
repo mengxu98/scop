@@ -1,6 +1,9 @@
 # scop 0.9.0
 
 * **feat**:
+  * `RunSpatialNeighborhood()` now defaults to truthful native observed summaries; `method = "spicyR"` requires `split.by` and records spicyR provenance only after the backend runs. The standard spatial workflow now records per-stage requested/completed/skipped/failed state and reports partial completion when a requested stage is skipped.
+  * Registered `RunCell2location()` as a stable Python spatial deconvolution producer with schema-v1 results, read-only environment diagnostics in `SpatialBackendStatus()`, and bidirectional producer registry contracts.
+  * Spatial analysis, plotting, and framework conversion now share strict image selection: objects with multiple spatial images must provide `image`, preventing silent first-slice truncation. The compatibility default remains `coordinate_space = "legacy_display"` in this release; raw-coordinate defaults are planned for the next migration step.
   * Added spatial contract schema v1 with `SpatialCoordinates()`, `GetSpatialResult()`, and `GetSpatialGraph()`. Small-method results now retain their existing top-level payload fields while adding shared source, provenance, parameter, summary, and schema metadata; legacy framework results are normalized only in read-only views.
   * Added a shared spatial method registry with `ListSpatialMethods()`, read-only `SpatialBackendStatus()`, and `SpatialResultInfo()` so users can discover the complete spatial API, inspect optional backend compatibility without installation side effects, and summarize legacy or current results stored in `@tools`.
   * Added a strict raw-coordinate contract and sparse spatial graph core. `RunSpatialNetwork()` now preserves raw distances and deterministic graph slots, while existing distance-sensitive methods retain `coordinate_space = "legacy_display"` by default and offer an explicit `"raw"` path without changing legacy behavior.
