@@ -227,9 +227,11 @@ SpatialNeighborhoodPlot(spatial, plot_type = "heatmap")
 SpatialNeighborhoodPlot(spatial, plot_type = "stat", top_n = 12)
 ```
 
-The default `method = "observed"` computes native KNN or radius summaries. For
-differential neighborhood testing, request spicyR explicitly and provide the
-condition column; SCOP errors before execution if that design is incomplete.
+With `method = NULL`, SCOP computes native observed KNN or radius summaries when
+`split.by` is absent and preserves the historical spicyR route when `split.by`
+is supplied. For new differential neighborhood analyses, request spicyR
+explicitly and provide the condition column; SCOP errors before execution if
+that design is incomplete.
 
 ```r
 spatial <- RunSpatialNeighborhood(

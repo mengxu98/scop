@@ -57,7 +57,6 @@ test_that("RunSpatialNeighborhood stores standardized spicyR results", {
     out <- RunSpatialNeighborhood(
       srt,
       group.by = "CellType",
-      method = "spicyR",
       split.by = "condition",
       sample.by = "sample",
       coord.cols = c("x", "y"),
@@ -79,6 +78,7 @@ test_that("RunSpatialNeighborhood stores standardized spicyR results", {
   expect_named(bundle$summary, c("n_pairs", "n_edges", "top_pairs"))
   expect_equal(out@tools$SpatialNeighborhood$summary$n_pairs, nrow(bundle$pair_table))
   expect_identical(out@tools$SpatialNeighborhood$provenance$backend_id, "spicyr")
+  expect_identical(bundle$provenance$backend_id, "spicyr")
 })
 
 test_that("RunSpatialNeighborhood defaults to native observed summaries", {
@@ -96,6 +96,7 @@ test_that("RunSpatialNeighborhood defaults to native observed summaries", {
   expect_true(all(!is.na(bundle$pair_table$subject)))
   expect_equal(unique(bundle$pair_table$method), "observed")
   expect_identical(out@tools$SpatialNeighborhood$provenance$backend_id, "core")
+  expect_identical(bundle$provenance$backend_id, "core")
   expect_null(bundle$raw)
 })
 

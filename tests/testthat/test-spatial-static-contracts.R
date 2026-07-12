@@ -26,19 +26,33 @@ test_that("documented stable spatial producers and registry agree both ways", {
   registered <- registry$method[
     registry$kind %in% c("analysis", "workflow") & registry$status == "stable"
   ]
-  r_dir <- testthat::test_path("..", "..", "R")
-  files <- list.files(r_dir, pattern = "\\.R$", full.names = TRUE)
-  documented <- unlist(lapply(files, function(path) {
-    lines <- readLines(path, warn = FALSE)
-    tags <- which(trimws(lines) == "#' @concept spatial-producer")
-    if (length(tags) == 0L) return(character())
-    vapply(tags, function(tag) {
-      end <- tag
-      while (end < length(lines) && grepl("^#'", lines[[end + 1L]])) end <- end + 1L
-      definition <- lines[[end + 1L]]
-      sub("^([A-Za-z][A-Za-z0-9._]*)\\s*<-\\s*function.*$", "\\1", definition)
-    }, character(1))
-  }), use.names = FALSE)
+  package_root <- normalizePath(
+    testthat::test_path("..", ".."),
+    winslash = "/",
+    mustWork = FALSE
+  )
+  rd_db <- if (file.exists(file.path(package_root, "DESCRIPTION"))) {
+    tools::Rd_db(dir = package_root)
+  } else {
+    tools::Rd_db(package = "scop")
+  }
+  rd_values <- function(rd, tag) {
+    nodes <- rd[vapply(
+      rd,
+      function(node) identical(attr(node, "Rd_tag"), tag),
+      logical(1)
+    )]
+    trimws(vapply(
+      nodes,
+      function(node) paste(as.character(node), collapse = ""),
+      character(1)
+    ))
+  }
+  documented <- unique(unlist(lapply(rd_db, function(rd) {
+    concepts <- rd_values(rd, "\\concept")
+    if (!"spatial-producer" %in% concepts) return(character())
+    rd_values(rd, "\\name")
+  }), use.names = FALSE))
   expect_setequal(documented, registered)
   expect_true(all(documented %in% getNamespaceExports("scop")))
 })

@@ -8,9 +8,10 @@
 #' @inheritParams thisutils::log_message
 #' @param srt A `Seurat` object.
 #' @param group.by Metadata column containing spatial cell or spot labels.
-#' @param method Neighborhood calculation. `"observed"` returns native KNN or
-#' radius summaries. `"spicyR"` runs differential neighborhood statistics and
-#' requires `split.by`.
+#' @param method Neighborhood calculation. `NULL` preserves compatibility by
+#' choosing `"observed"` when `split.by` is absent and `"spicyR"` when it is
+#' supplied. `"observed"` returns native KNN or radius summaries. `"spicyR"`
+#' runs differential neighborhood statistics and requires `split.by`.
 #' @param assay Assay used when `features` are requested.
 #' @param layer Assay layer used when `features` are requested.
 #' @param coord.cols Metadata coordinate columns used when no Seurat image
@@ -62,7 +63,7 @@
 RunSpatialNeighborhood <- function(
   srt,
   group.by,
-  method = c("observed", "spicyR"),
+  method = NULL,
   assay = NULL,
   layer = "data",
   coord.cols = c("col", "row"),
@@ -81,7 +82,11 @@ RunSpatialNeighborhood <- function(
   coordinate_space = c("legacy_display", "raw"),
   ...
 ) {
-  method <- match.arg(method)
+  method <- if (is.null(method)) {
+    if (is.null(split.by)) "observed" else "spicyR"
+  } else {
+    match.arg(method, c("observed", "spicyR"))
+  }
   coordinate_space <- match.arg(coordinate_space)
   if (!inherits(srt, "Seurat")) {
     log_message(
@@ -156,8 +161,13 @@ RunSpatialNeighborhood <- function(
     method = method
   )
 
+  method_provenance <- list(
+    producer = "RunSpatialNeighborhood",
+    backend_id = if (identical(method, "observed")) "core" else "spicyr"
+  )
   method_bundle <- list(
     method = method,
+    provenance = method_provenance,
     pair_table = pair_table,
     long_table = long_table,
     observed_table = observed$pair_table,
@@ -203,7 +213,7 @@ RunSpatialNeighborhood <- function(
       result_type = "neighborhood",
       provenance = list(
         producer = "RunSpatialNeighborhood",
-        backend_id = if (identical(method, "observed")) "core" else "spicyr"
+        backend_id = method_provenance$backend_id
       )
     )
   }
