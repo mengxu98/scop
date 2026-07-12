@@ -77,8 +77,10 @@ RunMERINGUE <- function(
   neighbor_params = list(),
   moran_params = list(),
   cross_cor_params = list(),
-  module_params = list()
+  module_params = list(),
+  coordinate_space = c("legacy_display", "raw")
 ) {
+  coordinate_space <- match.arg(coordinate_space)
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",
@@ -127,6 +129,7 @@ RunMERINGUE <- function(
     layer = layer,
     image = image,
     coord.cols = coord.cols,
+    coordinate_space = coordinate_space,
     features = features,
     min_spots = min_spots
   )
@@ -260,14 +263,15 @@ meringue_prepare_inputs <- function(
   layer,
   image,
   coord.cols,
+  coordinate_space,
   features = NULL,
   min_spots = 5
 ) {
-  coords <- spatial_dim_coords(
+  coords <- spatial_analysis_coords(
     srt = srt,
     image = image,
     coord.cols = coord.cols,
-    overlay_image = FALSE
+    coordinate_space = coordinate_space
   )$data
   spots <- intersect(colnames(srt), rownames(coords))
   if (length(spots) == 0L) {

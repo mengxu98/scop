@@ -11,6 +11,7 @@
 #' @param min_cells Minimum reference cells required per cell type.
 #' @param normalize Whether to library-size normalize and `log1p` transform
 #' spatial and reference matrices before fitting.
+#' @param coordinate_space Coordinate system used for spatial positions.
 #'
 #' @return A `Seurat` object with `"<prefix>_prop_*"`,
 #' `"<prefix>_dominant_type"`, and `"<prefix>_max_prop"` metadata columns.
@@ -44,8 +45,10 @@ RunSpatialDWLS <- function(
   tool_name = "SpatialDWLS",
   normalize = TRUE,
   store_results = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  coordinate_space = c("legacy_display", "raw")
 ) {
+  coordinate_space <- match.arg(coordinate_space)
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }
@@ -95,11 +98,11 @@ RunSpatialDWLS <- function(
   labels <- labels[keep_ref]
   st_expr <- st_expr[shared, , drop = FALSE]
 
-  coords <- spatial_dim_coords(
+  coords <- spatial_analysis_coords(
     srt = srt,
     image = image,
     coord.cols = coord.cols,
-    overlay_image = FALSE
+    coordinate_space = coordinate_space
   )$data
   spots <- intersect(colnames(st_expr), rownames(coords))
   if (length(spots) == 0L) {
@@ -152,6 +155,7 @@ RunSpatialDWLS <- function(
         reference_label = reference_label,
         image = image,
         coord.cols = coord.cols,
+        coordinate_space = coordinate_space,
         min_cells = min_cells,
         prefix = prefix,
         tool_name = tool_name,

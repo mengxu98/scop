@@ -19,6 +19,7 @@
 #' used when present.
 #' @param coord.cols Metadata coordinate columns used when no Seurat image
 #' coordinates are available.
+#' @param coordinate_space Coordinate system used to build MISTy views.
 #' @param views Spatial views to add besides the required intraview. One or both
 #' of `"para"` and `"juxta"`.
 #' @param para_l,para_zoi,para_family,para_approx,para_nn Parameters passed to
@@ -83,8 +84,10 @@ RunMistyR <- function(
   store_results = TRUE,
   store_views = FALSE,
   verbose = TRUE,
+  coordinate_space = c("legacy_display", "raw"),
   ...
 ) {
+  coordinate_space <- match.arg(coordinate_space)
   log_message(
     "Running mistyR multiview spatial modeling",
     message_type = "running",
@@ -124,7 +127,8 @@ RunMistyR <- function(
     layer = layer,
     features = features,
     image = image,
-    coord.cols = coord.cols
+    coord.cols = coord.cols,
+    coordinate_space = coordinate_space
   )
 
   check_r("mistyR", verbose = FALSE)
@@ -186,6 +190,7 @@ RunMistyR <- function(
         layer = layer,
         image = image,
         coord.cols = coord.cols,
+        coordinate_space = coordinate_space,
         views = views,
         para_l = para_l,
         para_zoi = para_zoi,
@@ -227,14 +232,15 @@ mistyr_prepare_input <- function(
   layer,
   features = NULL,
   image = NULL,
-  coord.cols = c("col", "row")
+  coord.cols = c("col", "row"),
+  coordinate_space = c("legacy_display", "raw")
 ) {
   expr <- GetAssayData5(srt, assay = assay, layer = layer)
-  coords <- spatial_dim_coords(
+  coords <- spatial_analysis_coords(
     srt = srt,
     image = image,
     coord.cols = coord.cols,
-    overlay_image = FALSE
+    coordinate_space = coordinate_space
   )$data
   cells <- colnames(srt)[colnames(srt) %in% rownames(coords)]
   if (length(cells) == 0L) {
@@ -303,6 +309,59 @@ mistyr_summary <- function(results, views = character()) {
     n_contribution_records = if (is.data.frame(contributions)) nrow(contributions) else NA_integer_,
     importance_views = names(importances)
   )
+}
+
+#' @title Plot stored MISTy results
+#'
+#' @description Plot model improvements or view contributions from a result
+#' produced by [RunMistyR()] without rerunning the backend.
+#'
+#' @param object Optional `Seurat` object containing `MistyR` results.
+#' @param res Optional result list, usually `object@tools$MistyR`.
+#' @param type Result table to plot.
+#' @param top_n Maximum number of records shown after ranking by absolute value.
+#' @param target Optional target feature filter.
+#' @return A `ggplot` object.
+#' @export
+MistyRPlot <- function(
+  object = NULL,
+  res = NULL,
+  type = c("improvements", "contributions"),
+  top_n = 20,
+  target = NULL
+) {
+  type <- match.arg(type)
+  if (is.null(res)) {
+    if (is.null(object) || !inherits(object, "Seurat")) {
+      log_message("Provide a {.cls Seurat} {.arg object} or a MistyR {.arg res}", message_type = "error")
+    }
+    res <- object@tools[["MistyR"]]
+  }
+  tab <- res$results[[type]] %||% NULL
+  if (!is.data.frame(tab) || nrow(tab) == 0L) {
+    log_message("MistyR result {.val {type}} is empty", message_type = "error")
+  }
+  if (!is.null(target) && "target" %in% colnames(tab)) {
+    tab <- tab[as.character(tab$target) %in% as.character(target), , drop = FALSE]
+  }
+  value_col <- intersect(c("value", "gain.R2", "contribution", "importance"), colnames(tab))[1L]
+  if (is.na(value_col)) {
+    numeric_cols <- colnames(tab)[vapply(tab, is.numeric, logical(1))]
+    value_col <- if (length(numeric_cols)) numeric_cols[[1L]] else NA_character_
+  }
+  if (is.na(value_col) || nrow(tab) == 0L) {
+    log_message("MistyR {.val {type}} has no plottable numeric records", message_type = "error")
+  }
+  tab$.value <- as.numeric(tab[[value_col]])
+  tab <- tab[is.finite(tab$.value), , drop = FALSE]
+  tab <- utils::head(tab[order(abs(tab$.value), decreasing = TRUE), , drop = FALSE], as.integer(top_n))
+  label_cols <- intersect(c("target", "view", "measure"), colnames(tab))
+  tab$.label <- if (length(label_cols)) do.call(paste, c(tab[label_cols], sep = " / ")) else rownames(tab)
+  tab$.label <- factor(tab$.label, levels = rev(unique(tab$.label)))
+  ggplot2::ggplot(tab, ggplot2::aes(x = .data$.value, y = .data$.label)) +
+    ggplot2::geom_col(fill = "#3C8DBC", width = 0.75) +
+    ggplot2::labs(x = value_col, y = NULL, title = paste("MISTy", type)) +
+    theme_scop()
 }
 
 mistyr_validate_views <- function(views) {

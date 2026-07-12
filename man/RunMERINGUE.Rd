@@ -27,7 +27,8 @@ RunMERINGUE(
   neighbor_params = list(),
   moran_params = list(),
   cross_cor_params = list(),
-  module_params = list()
+  module_params = list(),
+  coordinate_space = c("legacy_display", "raw")
 )
 }
 \arguments{
@@ -86,6 +87,10 @@ Default is \code{TRUE}.}
 
 \item{neighbor_params, moran_params, cross_cor_params, module_params}{Named
 lists of additional arguments passed to the corresponding MERINGUE steps.}
+
+\item{coordinate_space}{Coordinate system used for distance-sensitive
+analysis. \code{"legacy_display"} preserves the current behavior; \code{"raw"}
+uses unscaled, unflipped source coordinates.}
 }
 \value{
 A \code{Seurat} object with MERINGUE results stored in

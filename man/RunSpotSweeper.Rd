@@ -29,6 +29,7 @@ RunSpotSweeper(
   store_results = TRUE,
   workers = 1,
   verbose = TRUE,
+  coordinate_space = c("legacy_display", "raw"),
   ...
 )
 }
@@ -88,6 +89,8 @@ detection. If \code{NULL}, mitochondrial counts are computed.}
 detection.}
 
 \item{verbose}{Whether to print progress messages.}
+
+\item{coordinate_space}{Coordinate system used for spatial neighborhoods.}
 
 \item{...}{Additional named arguments passed to matching SpotSweeper backend
 functions when those arguments are supported by the installed version.}

@@ -568,12 +568,9 @@ giotto_expression_values <- function(layer) {
 }
 
 giotto_get_fun <- function(name) {
-  class_functions <- c(
-    "createExprObj", "createGiottoObject", "createNearestNetwork",
-    "createSpatialNetwork", "fDataDT", "getDimReduction",
-    "getSpatialNetwork", "pDataDT", "setExpression"
-  )
-  pkg <- if (name %in% class_functions) "GiottoClass" else "Giotto"
+  routing <- spatial_giotto_symbol_registry()
+  matched <- match(name, routing$symbol)
+  pkg <- if (is.na(matched)) "Giotto" else routing$package[[matched]]
   tryCatch(
     get_namespace_fun(pkg, name),
     error = function(e) {

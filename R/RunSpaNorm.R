@@ -63,8 +63,10 @@ RunSpaNorm <- function(
   store_results = TRUE,
   store_spe = FALSE,
   verbose = TRUE,
+  coordinate_space = c("legacy_display", "raw"),
   ...
 ) {
+  coordinate_space <- match.arg(coordinate_space)
   log_message(
     "Running SpaNorm spatial normalization",
     message_type = "running",
@@ -89,7 +91,8 @@ RunSpaNorm <- function(
     assay = assay,
     layer = layer,
     image = image,
-    coord.cols = coord.cols
+    coord.cols = coord.cols,
+    coordinate_space = coordinate_space
   )
   backend_args <- list(...)
   spanorm_validate_named_args(backend_args)
@@ -119,6 +122,7 @@ RunSpaNorm <- function(
         layer = layer,
         image = image,
         coord.cols = coord.cols,
+        coordinate_space = coordinate_space,
         new_assay = new_assay,
         tool_name = tool_name,
         store_results = store_results,
@@ -158,13 +162,14 @@ spanorm_prepare_input <- function(
   assay,
   layer,
   image = NULL,
-  coord.cols = c("col", "row")
+  coord.cols = c("col", "row"),
+  coordinate_space = c("legacy_display", "raw")
 ) {
-  coords <- spatial_dim_coords(
+  coords <- spatial_analysis_coords(
     srt = srt,
     image = image,
     coord.cols = coord.cols,
-    overlay_image = FALSE
+    coordinate_space = coordinate_space
   )$data
   cells <- colnames(srt)[colnames(srt) %in% rownames(coords)]
   if (length(cells) == 0L) {

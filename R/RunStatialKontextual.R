@@ -22,6 +22,7 @@
 #' @param images Optional Statial image filter passed to `Kontextual(image = )`.
 #' @param coord.cols Metadata coordinate columns used when no Seurat image
 #' coordinates are available.
+#' @param coordinate_space Coordinate system used for spatial relationships.
 #' @param inhom Whether Statial should account for inhomogeneity.
 #' @param edge_correct Whether Statial should perform edge correction.
 #' @param window,window.length Window arguments passed to
@@ -78,8 +79,10 @@ RunStatialKontextual <- function(
   store_results = TRUE,
   store_input = FALSE,
   verbose = TRUE,
+  coordinate_space = c("legacy_display", "raw"),
   ...
 ) {
+  coordinate_space <- match.arg(coordinate_space)
   log_message(
     "Running Statial Kontextual spatial relationships",
     message_type = "running",
@@ -111,6 +114,7 @@ RunStatialKontextual <- function(
     image = image,
     sample.by = sample.by,
     coord.cols = coord.cols,
+    coordinate_space = coordinate_space,
     images = images,
     verbose = verbose
   )
@@ -154,6 +158,7 @@ RunStatialKontextual <- function(
         parent_df = parent_df,
         image = image,
         sample.by = sample.by,
+        coordinate_space = coordinate_space,
         images = images,
         coord.cols = coord.cols,
         inhom = inhom,
@@ -188,6 +193,7 @@ statial_prepare_cells <- function(
   image = NULL,
   sample.by = NULL,
   coord.cols = c("col", "row"),
+  coordinate_space = c("legacy_display", "raw"),
   images = NULL,
   verbose = TRUE
 ) {
@@ -206,11 +212,11 @@ statial_prepare_cells <- function(
       )
     }
   }
-  coords <- spatial_dim_coords(
+  coords <- spatial_analysis_coords(
     srt = srt,
     image = image,
     coord.cols = coord.cols,
-    overlay_image = FALSE
+    coordinate_space = coordinate_space
   )$data
   common <- colnames(srt)[colnames(srt) %in% rownames(coords)]
   if (length(common) == 0L) {
@@ -302,6 +308,45 @@ statial_kontextual_summary <- function(table, top_n = 10L) {
     n_dispersed = sum(valid$kontextual < 0, na.rm = TRUE),
     top_relationships = top
   )
+}
+
+#' @title Plot stored Statial Kontextual results
+#'
+#' @description Plot contextual relationship scores across radii from a result
+#' produced by [RunStatialKontextual()] without rerunning Statial.
+#'
+#' @param object Optional `Seurat` object containing the result.
+#' @param res Optional result list, usually
+#'   `object@tools$StatialKontextual`.
+#' @param tests Optional relationship names to retain.
+#' @param images Optional image identifiers to retain.
+#' @return A `ggplot` object.
+#' @export
+StatialKontextualPlot <- function(object = NULL, res = NULL, tests = NULL, images = NULL) {
+  if (is.null(res)) {
+    if (is.null(object) || !inherits(object, "Seurat")) {
+      log_message("Provide a {.cls Seurat} {.arg object} or a Statial {.arg res}", message_type = "error")
+    }
+    res <- object@tools[["StatialKontextual"]]
+  }
+  tab <- res$table %||% NULL
+  if (!is.data.frame(tab) || !all(c("imageID", "test", "r", "kontextual") %in% colnames(tab))) {
+    log_message("{.arg res} is not a plottable StatialKontextual result", message_type = "error")
+  }
+  if (!is.null(tests)) tab <- tab[tab$test %in% tests, , drop = FALSE]
+  if (!is.null(images)) tab <- tab[tab$imageID %in% images, , drop = FALSE]
+  if (nrow(tab) == 0L) log_message("No Statial records remain after filtering", message_type = "error")
+  p <- ggplot2::ggplot(
+    tab,
+    ggplot2::aes(x = .data$r, y = .data$kontextual, color = .data$test, group = interaction(.data$imageID, .data$test))
+  ) +
+    ggplot2::geom_hline(yintercept = 0, color = "grey75", linewidth = 0.3) +
+    ggplot2::geom_line() +
+    ggplot2::geom_point() +
+    ggplot2::labs(x = "Radius", y = "Kontextual score", color = "Relationship") +
+    theme_scop()
+  if (length(unique(tab$imageID)) > 1L) p <- p + ggplot2::facet_wrap(~imageID)
+  p
 }
 
 statial_validate_kontextual_relationship <- function(parent_df = NULL, from = NULL, to = NULL, parent = NULL) {

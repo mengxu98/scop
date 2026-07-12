@@ -50,12 +50,7 @@ srt_to_giotto <- function(srt, image = NULL, ...) {
 #' @export
 giotto_to_srt <- function(giotto, ...) {
   giotto_require(verbose = FALSE)
-  seurat_major <- suppressWarnings(as.integer(strsplit(as.character(utils::packageVersion("Seurat")), "\\.")[[1L]][1L]))
-  converter_name <- if (!is.na(seurat_major) && seurat_major >= 5L) {
-    "giottoToSeuratV5"
-  } else {
-    "giottoToSeuratV4"
-  }
+  converter_name <- spatial_giotto_converter_name()
   converter <- tryCatch(
     get_namespace_fun("GiottoClass", converter_name),
     error = function(e) {

@@ -20,6 +20,7 @@ RunSpatialVariableFeatures(
   store_results = TRUE,
   verbose = TRUE,
   seed = 11,
+  coordinate_space = c("legacy_display", "raw"),
   ...
 )
 }
@@ -64,6 +65,10 @@ variable features for \code{assay}.}
 Default is \code{TRUE}.}
 
 \item{seed}{Random seed used for permutation tests.}
+
+\item{coordinate_space}{Coordinate system used for distance-sensitive
+analysis. \code{"legacy_display"} preserves the current behavior; \code{"raw"}
+uses unscaled, unflipped source coordinates.}
 
 \item{...}{Additional arguments passed to external backends.}
 }
