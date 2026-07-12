@@ -1,6 +1,7 @@
 # scop 0.9.0
 
 * **feat**:
+  * Registered `RunCell2location()` as a stable Python spatial deconvolution producer with schema-v1 results, read-only environment diagnostics in `SpatialBackendStatus()`, and bidirectional producer registry contracts.
   * Spatial analysis, plotting, and framework conversion now share strict image selection: objects with multiple spatial images must provide `image`, preventing silent first-slice truncation. The compatibility default remains `coordinate_space = "legacy_display"` in this release; raw-coordinate defaults are planned for the next migration step.
   * Added spatial contract schema v1 with `SpatialCoordinates()`, `GetSpatialResult()`, and `GetSpatialGraph()`. Small-method results now retain their existing top-level payload fields while adding shared source, provenance, parameter, summary, and schema metadata; legacy framework results are normalized only in read-only views.
   * Added a shared spatial method registry with `ListSpatialMethods()`, read-only `SpatialBackendStatus()`, and `SpatialResultInfo()` so users can discover the complete spatial API, inspect optional backend compatibility without installation side effects, and summarize legacy or current results stored in `@tools`.

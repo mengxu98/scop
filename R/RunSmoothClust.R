@@ -43,6 +43,7 @@
 #' @return A `Seurat` object with smoothclust clusters in metadata. When
 #' `store_results = TRUE`, detailed outputs are stored in
 #' `srt@tools[[tool_name]]`.
+#' @concept spatial-producer
 #' @export
 #'
 #' @examples

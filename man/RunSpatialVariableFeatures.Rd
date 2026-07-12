@@ -109,3 +109,4 @@ spatial <- RunSpatialVariableFeatures(
 )
 SpatialVariableFeaturePlot(spatial, plot_type = "combined", nfeatures = 2)
 }
+\concept{spatial-producer}

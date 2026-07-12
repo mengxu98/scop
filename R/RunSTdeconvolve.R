@@ -26,6 +26,7 @@
 #'
 #' @return A `Seurat` object with topic proportions in metadata and detailed
 #' results stored in `srt@tools[[tool_name]]` when `store_results = TRUE`.
+#' @concept spatial-producer
 #' @export
 #'
 #' @examples

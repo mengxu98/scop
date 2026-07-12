@@ -108,3 +108,4 @@ if (length(labels) >= 2) {
   spatial@tools$StatialKontextual$summary
 }
 }
+\concept{spatial-producer}

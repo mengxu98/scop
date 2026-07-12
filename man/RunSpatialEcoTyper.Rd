@@ -218,3 +218,4 @@ srt <- RunSpatialEcoTyper(
   verbose = FALSE
 )
 }
+\concept{spatial-producer}

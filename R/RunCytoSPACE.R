@@ -35,6 +35,7 @@
 #'
 #' @return A `Seurat` object with CytoSPACE metadata columns and detailed
 #' results stored in `srt@tools[["CytoSPACE"]]`.
+#' @concept spatial-producer
 #' @export
 #'
 #' @examples

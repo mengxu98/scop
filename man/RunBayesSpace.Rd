@@ -103,3 +103,4 @@ spatial <- RunBayesSpace(
 )
 table(spatial$BayesSpace_cluster)
 }
+\concept{spatial-producer}

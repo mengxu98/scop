@@ -113,6 +113,7 @@
 #'
 #' @return A `Seurat` object.
 #'
+#' @concept spatial-producer
 #' @export
 #'
 #' @examples

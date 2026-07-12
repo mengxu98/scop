@@ -40,6 +40,7 @@
 #' @return A `Seurat` object with RCTD proportion columns in metadata and
 #' dominant cell type summaries. When `store_results = TRUE`, detailed results
 #' are also stored in `srt@tools[["RCTD"]]`.
+#' @concept spatial-producer
 #' @export
 #'
 #' @examples

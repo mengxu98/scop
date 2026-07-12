@@ -64,3 +64,4 @@ spatial <- RunSemlaLocalG(
   verbose = FALSE
 )
 }
+\concept{spatial-producer}

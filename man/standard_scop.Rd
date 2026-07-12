@@ -316,3 +316,4 @@ spatial_bayes <- standard_scop(
 )
 SpatialSpotPlot(spatial_bayes, group.by = "BayesSpace_cluster")
 }
+\concept{spatial-producer}

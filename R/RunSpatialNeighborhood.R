@@ -34,6 +34,7 @@
 #' @param ... Additional arguments passed to the selected backend.
 #'
 #' @return A `Seurat` object with results stored in `srt@tools[[tool_name]]`.
+#' @concept spatial-producer
 #' @export
 #'
 #' @examples

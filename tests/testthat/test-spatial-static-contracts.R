@@ -12,7 +12,35 @@ test_that("spatial registry covers the complete public surface", {
   )))
   expect_true(all(registry$backend_requirement %in% c("all", "any")))
   backend_ids <- unique(unlist(strsplit(registry$backend_id, ";", fixed = TRUE)))
-  expect_true(all(backend_ids %in% names(scop:::spatial_backend_registry())))
+  backend_registry <- scop:::spatial_backend_registry()
+  expect_true(all(backend_ids %in% names(backend_registry)))
+  expect_true(all(vapply(
+    backend_registry,
+    function(spec) spec$runtime %in% c("r", "python", "core"),
+    logical(1)
+  )))
+})
+
+test_that("documented stable spatial producers and registry agree both ways", {
+  registry <- scop:::spatial_method_registry()
+  registered <- registry$method[
+    registry$kind %in% c("analysis", "workflow") & registry$status == "stable"
+  ]
+  r_dir <- testthat::test_path("..", "..", "R")
+  files <- list.files(r_dir, pattern = "\\.R$", full.names = TRUE)
+  documented <- unlist(lapply(files, function(path) {
+    lines <- readLines(path, warn = FALSE)
+    tags <- which(trimws(lines) == "#' @concept spatial-producer")
+    if (length(tags) == 0L) return(character())
+    vapply(tags, function(tag) {
+      end <- tag
+      while (end < length(lines) && grepl("^#'", lines[[end + 1L]])) end <- end + 1L
+      definition <- lines[[end + 1L]]
+      sub("^([A-Za-z][A-Za-z0-9._]*)\\s*<-\\s*function.*$", "\\1", definition)
+    }, character(1))
+  }), use.names = FALSE)
+  expect_setequal(documented, registered)
+  expect_true(all(documented %in% getNamespaceExports("scop")))
 })
 
 test_that("spatial code does not bypass strict image resolution", {

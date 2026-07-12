@@ -135,3 +135,4 @@ spatial <- RunSmoothClust(
 
 table(spatial$SmoothClust_cluster)
 }
+\concept{spatial-producer}

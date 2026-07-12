@@ -110,3 +110,4 @@ spatial <- RunMistyR(
 )
 spatial@tools$MistyR$summary
 }
+\concept{spatial-producer}

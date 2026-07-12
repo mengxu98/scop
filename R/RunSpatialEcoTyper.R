@@ -80,6 +80,7 @@
 #' results stored in `srt@tools[[tool_name]]` when `store_results = TRUE`.
 #' For matrix input with `mode = "deconvolute"`, the abundance matrix is
 #' returned.
+#' @concept spatial-producer
 #' @export
 #'
 #' @examples

@@ -74,6 +74,7 @@ spatial_method_registry <- function() {
     entry("RunCARD", "analysis", "deconvolution", "RunCARD.R", "CARD", "card", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "DeconvolutionPlot"),
     entry("RunSTdeconvolve", "analysis", "deconvolution", "RunSTdeconvolve.R", "STdeconvolve", "stdeconvolve", coordinate_space_current = "none", coordinate_space_target = "none", coordinate_requirement = "identity_only", plot_function = "STdeconvolvePlot"),
     entry("RunSPOTlight", "analysis", "deconvolution", "RunSPOTlight.R", "SPOTlight", "spotlight", coordinate_space_current = "none", coordinate_space_target = "none", coordinate_requirement = "identity_only", plot_function = "DeconvolutionPlot"),
+    entry("RunCell2location", "analysis", "deconvolution", "RunCell2location.R", "Cell2location", "cell2location", coordinate_space_current = "none", coordinate_space_target = "none", coordinate_requirement = "identity_only", plot_function = "Cell2locationPlot"),
     entry("RunSpatialDWLS", "analysis", "deconvolution", "RunSpatialDWLS.R", "SpatialDWLS", "core", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "DeconvolutionPlot"),
     entry("RunSpatialEcoTyper", "analysis", "ecotype", "RunSpatialEcoTyper.R", "SpatialEcoTyper", "spatialecotyper", coordinate_space_current = "none", coordinate_space_target = "none", coordinate_requirement = "identity_only", plot_function = "SpatialEcoTyperSpatialPlot"),
 
@@ -109,6 +110,7 @@ spatial_method_registry <- function() {
     entry("MistyRPlot", "plot", "visualization", "RunMistyR.R", coordinate_space_current = "none"),
     entry("StatialKontextualPlot", "plot", "visualization", "RunStatialKontextual.R", coordinate_space_current = "none"),
     entry("STdeconvolvePlot", "plot", "visualization", "RunSTdeconvolve.R", backend_id = "stdeconvolve", coordinate_space_current = "none"),
+    entry("Cell2locationPlot", "plot", "visualization", "RunCell2location.R", backend_id = "cell2location", coordinate_space_current = "display", coordinate_requirement = "display_only"),
     entry("standard_scop", "workflow", "recommended_workflow", "standard_scop.R", backend_id = "core", coordinate_space_current = "mixed", coordinate_space_target = "mixed", coordinate_requirement = "backend_managed")
   )
   registry <- do.call(rbind, rows)
@@ -154,12 +156,28 @@ spatial_giotto_converter_name <- function() {
 }
 
 spatial_backend_registry <- function() {
-  backend <- function(id, package, repository = package, symbols = character()) {
-    list(id = id, package = package, repository = repository, symbols = symbols)
+  backend <- function(
+    id,
+    package,
+    repository = package,
+    symbols = character(),
+    runtime = "r",
+    environment_modules = character(),
+    requirements = character()
+  ) {
+    list(
+      id = id,
+      package = package,
+      repository = repository,
+      symbols = symbols,
+      runtime = runtime,
+      environment_modules = environment_modules,
+      requirements = requirements
+    )
   }
   giotto_symbols <- spatial_giotto_symbol_registry()
   list(
-    core = backend("core", "scop"),
+    core = backend("core", "scop", runtime = "core"),
     biocneighbors = backend("biocneighbors", "BiocNeighbors", symbols = c("findKNN", "findNeighbors")),
     spanorm = backend("spanorm", "SpaNorm", symbols = "SpaNorm"),
     spatialqm = backend("spatialqm", "SpatialQM"),
@@ -181,6 +199,17 @@ spatial_backend_registry <- function() {
     card = backend("card", "CARD", "YingMa0107/CARD"),
     stdeconvolve = backend("stdeconvolve", "STdeconvolve", "JEFworks-Lab/STdeconvolve", c("cleanCounts", "fitLDA")),
     spotlight = backend("spotlight", "SPOTlight", symbols = "SPOTlight"),
+    cell2location = backend(
+      "cell2location",
+      "cell2location",
+      "BayraktarLab/cell2location",
+      runtime = "python",
+      environment_modules = c("cell2location", "scanpy", "scvi"),
+      requirements = c(
+        "cell2location==0.1.5", "scvi-tools==1.3.3", "scanpy",
+        "anndata", "numpy", "pandas", "scipy", "torch"
+      )
+    ),
     spatialecotyper = backend("spatialecotyper", "SpatialEcoTyper", "digitalcytometry/SpatialEcoTyper"),
     bayesspace = backend("bayesspace", "BayesSpace"),
     banksy = backend("banksy", "Banksy", symbols = "computeBanksy"),
@@ -276,14 +305,89 @@ ListSpatialMethods <- function(
   registry
 }
 
-spatial_backend_cache_key <- function(api_check, backend_ids, method) {
+spatial_backend_cache_key <- function(api_check, backend_ids, method, envname, conda) {
   paste(
     "v1",
     paste(normalizePath(.libPaths(), winslash = "/", mustWork = FALSE), collapse = "|"),
     isTRUE(api_check),
     paste(sort(backend_ids), collapse = "|"),
     paste(sort(method %||% character()), collapse = "|"),
+    envname,
+    conda,
     sep = "::"
+  )
+}
+
+spatial_backend_readonly_conda <- function(conda = "auto") {
+  if (!is.character(conda) || length(conda) != 1L || is.na(conda) || !nzchar(conda)) {
+    log_message("{.arg conda} must be one non-empty string", message_type = "error")
+  }
+  if (identical(conda, "auto")) {
+    return(tryCatch(find_conda(), error = function(e) NULL))
+  }
+  tryCatch(
+    resolve_conda_executable(
+      conda,
+      error_if_missing = FALSE,
+      install_if_missing = FALSE
+    ),
+    error = function(e) NULL
+  )
+}
+
+spatial_python_backend_status <- function(spec, envname, conda, api_check) {
+  requirements <- spec$requirements %||% character()
+  conda_path <- spatial_backend_readonly_conda(conda)
+  namespace_error <- NA_character_
+  environment_exists <- FALSE
+  if (!is.null(conda_path)) {
+    environment_exists <- tryCatch(
+      isTRUE(env_exist(conda = conda_path, envname = envname)),
+      error = function(e) {
+        namespace_error <<- conditionMessage(e)
+        FALSE
+      }
+    )
+  }
+  package_status <- stats::setNames(rep(FALSE, length(requirements)), requirements)
+  if (environment_exists && isTRUE(api_check) && length(requirements) > 0L) {
+    package_status <- tryCatch(
+      exist_python_pkgs(
+        packages = requirements,
+        envname = envname,
+        conda = conda_path,
+        verbose = FALSE
+      ),
+      error = function(e) {
+        namespace_error <<- conditionMessage(e)
+        stats::setNames(rep(FALSE, length(requirements)), requirements)
+      }
+    )
+  }
+  missing <- if (isTRUE(api_check)) names(package_status)[!package_status] else character()
+  installed <- environment_exists && (!isTRUE(api_check) || length(missing) == 0L)
+  availability <- if (!environment_exists) {
+    "missing"
+  } else if (!is.na(namespace_error)) {
+    "namespace_error"
+  } else if (length(missing) > 0L) {
+    "api_incompatible"
+  } else {
+    "available"
+  }
+  data.frame(
+    backend_id = spec$id,
+    runtime = spec$runtime,
+    environment = envname,
+    package = spec$package,
+    repository = spec$repository,
+    installed = installed,
+    api_checked = isTRUE(api_check) && length(requirements) > 0L,
+    required_symbols = paste(requirements, collapse = ","),
+    missing_symbols = paste(missing, collapse = ","),
+    availability = availability,
+    namespace_error = namespace_error,
+    stringsAsFactors = FALSE
   )
 }
 
@@ -311,6 +415,10 @@ spatial_backend_required_symbols <- function(spec, method = NULL) {
 #' @param method Optional registered spatial method filter.
 #' @param api_check Whether to inspect required namespace exports.
 #' @param refresh Whether to refresh the session-local diagnostic cache.
+#' @param envname Existing SCOP Python environment to inspect for Python
+#'   backends. The diagnostic never creates or modifies the environment.
+#' @param conda Existing conda-compatible executable, or `"auto"` to discover
+#'   one without installing it.
 #'
 #' @return A data frame with one row per backend.
 #'
@@ -319,7 +427,9 @@ SpatialBackendStatus <- function(
   backend = NULL,
   method = NULL,
   api_check = TRUE,
-  refresh = FALSE
+  refresh = FALSE,
+  envname = NULL,
+  conda = "auto"
 ) {
   if (!is.logical(api_check) || length(api_check) != 1L || is.na(api_check)) {
     log_message("{.arg api_check} must be TRUE or FALSE", message_type = "error")
@@ -328,6 +438,7 @@ SpatialBackendStatus <- function(
     log_message("{.arg refresh} must be TRUE or FALSE", message_type = "error")
   }
   backends <- spatial_backend_registry()
+  envname <- get_envname(envname)
   backend_ids <- names(backends)
   if (!is.null(method)) {
     registry <- spatial_method_registry()
@@ -343,22 +454,31 @@ SpatialBackendStatus <- function(
   backends <- backends[backend_ids]
   if (length(backends) == 0L) {
     return(data.frame(
-      backend_id = character(), package = character(), repository = character(),
+      backend_id = character(), runtime = character(), environment = character(),
+      package = character(), repository = character(),
       installed = logical(), api_checked = logical(), required_symbols = character(),
       missing_symbols = character(), availability = character(), namespace_error = character(),
       stringsAsFactors = FALSE
     ))
   }
-  cache_key <- spatial_backend_cache_key(api_check, backend_ids, method)
+  cache_key <- spatial_backend_cache_key(api_check, backend_ids, method, envname, conda)
   if (isTRUE(refresh) && exists(cache_key, envir = .spatial_backend_cache, inherits = FALSE)) {
     rm(list = cache_key, envir = .spatial_backend_cache)
   }
   if (!exists(cache_key, envir = .spatial_backend_cache, inherits = FALSE)) {
     installed <- rownames(utils::installed.packages())
     rows <- lapply(backends, function(spec) {
+      if (identical(spec$runtime, "python")) {
+        return(spatial_python_backend_status(
+          spec = spec,
+          envname = envname,
+          conda = conda,
+          api_check = api_check
+        ))
+      }
       package <- spec$package
       symbols <- spatial_backend_required_symbols(spec, method = method)
-      is_core <- identical(package, "scop")
+      is_core <- identical(spec$runtime, "core")
       is_installed <- is_core || package %in% installed
       namespace_error <- NA_character_
       missing_symbols <- character()
@@ -383,6 +503,8 @@ SpatialBackendStatus <- function(
       }
       data.frame(
         backend_id = spec$id,
+        runtime = spec$runtime,
+        environment = NA_character_,
         package = package,
         repository = spec$repository,
         installed = is_installed,
@@ -404,7 +526,9 @@ SpatialBackendStatus <- function(
 spatial_result_backend_versions <- function(backend_id) {
   ids <- spatial_registry_split_backends(backend_id %||% character())
   registry <- spatial_backend_registry()
-  packages <- vapply(registry[intersect(ids, names(registry))], `[[`, character(1), "package")
+  selected <- registry[intersect(ids, names(registry))]
+  selected <- selected[vapply(selected, function(spec) identical(spec$runtime, "r"), logical(1))]
+  packages <- vapply(selected, `[[`, character(1), "package")
   versions <- vapply(packages, function(package) {
     if (identical(package, "scop")) return(NA_character_)
     tryCatch(as.character(utils::packageVersion(package)), error = function(e) NA_character_)
