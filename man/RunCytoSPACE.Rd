@@ -117,3 +117,4 @@ SpatialSpotPlot(
   theme_use = "theme_scop"
 )
 }
+\concept{spatial-producer}

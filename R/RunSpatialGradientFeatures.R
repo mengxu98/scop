@@ -56,6 +56,7 @@
 #'
 #' @return A `Seurat` object with spatial gradient screening results stored in
 #' `srt@tools[["SpatialGradientFeatures"]]`.
+#' @concept spatial-producer
 #' @export
 #'
 #' @examples

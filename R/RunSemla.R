@@ -46,6 +46,7 @@
 #'   coords = "pixels",
 #'   verbose = FALSE
 #' )
+#' @concept spatial-producer
 #' @export
 RunSemlaSpatialNetwork <- function(
   srt,
@@ -138,6 +139,7 @@ RunSemlaSpatialNetwork <- function(
 #'   store_in_metadata = TRUE,
 #'   verbose = FALSE
 #' )
+#' @concept spatial-producer
 #' @export
 RunSemlaLocalG <- function(
   srt,
@@ -210,6 +212,7 @@ RunSemlaLocalG <- function(
 #'   column_key = "right_border",
 #'   verbose = FALSE
 #' )
+#' @concept spatial-producer
 #' @export
 RunSemlaRegionNeighbors <- function(
   srt,
@@ -286,6 +289,7 @@ RunSemlaRegionNeighbors <- function(
 #'   column_suffix = "upper_distance",
 #'   verbose = FALSE
 #' )
+#' @concept spatial-producer
 #' @export
 RunSemlaRadialDistance <- function(
   srt,

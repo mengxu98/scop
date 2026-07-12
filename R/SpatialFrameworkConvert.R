@@ -120,35 +120,11 @@ spata2_to_srt <- function(spata2, ...) {
 }
 
 spatial_framework_image <- function(srt, image = NULL) {
-  if (!inherits(srt, "Seurat")) {
-    log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
-  }
-  if (!is.null(image) && (!is.character(image) || length(image) != 1L || is.na(image) || !nzchar(image))) {
-    log_message("{.arg image} must be one non-empty image name", message_type = "error")
-  }
-  images <- tryCatch(SeuratObject::Images(srt), error = function(e) character())
-  if (length(images) == 0L) {
-    if (!is.null(image)) {
-      log_message("{.arg image} was supplied but {.arg srt} has no spatial images", message_type = "error")
-    }
-    return(NULL)
-  }
-  if (is.null(image)) {
-    if (length(images) > 1L) {
-      log_message(
-        "Multiple spatial images are available; select one with {.arg image}: {.val {images}}",
-        message_type = "error"
-      )
-    }
-    return(images[[1L]])
-  }
-  if (!image %in% images) {
-    log_message(
-      "{.arg image} {.val {image}} is not present in {.cls Seurat}; available images: {.val {images}}",
-      message_type = "error"
-    )
-  }
-  image
+  spatial_image_resolve(
+    srt = srt,
+    image = image,
+    image_policy = "strict"
+  )$image
 }
 
 spatial_framework_subset_image <- function(srt, image = NULL) {

@@ -9,8 +9,8 @@
 #' @param srt A `Seurat` object.
 #' @param assay Assay used for expression. If `NULL`, the default assay is used.
 #' @param layer Assay layer used for expression values.
-#' @param image Name of the Seurat spatial image. If `NULL`, the first image is
-#' used when present.
+#' @param image Name of the Seurat spatial image. Required when multiple images
+#' are present; a single image is selected automatically when `NULL`.
 #' @param coord.cols Metadata coordinate columns used when no Seurat image is
 #' available.
 #' @param features Features to use. If `NULL`, current variable features are
@@ -43,6 +43,7 @@
 #' @return A `Seurat` object with smoothclust clusters in metadata. When
 #' `store_results = TRUE`, detailed outputs are stored in
 #' `srt@tools[[tool_name]]`.
+#' @concept spatial-producer
 #' @export
 #'
 #' @examples

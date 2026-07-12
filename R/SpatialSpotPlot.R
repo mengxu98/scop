@@ -20,8 +20,8 @@
 #' @param spot.by Column in `plot.data` containing spot names.
 #' @param color.by Column in `plot.data` used to color repeated spatial points.
 #' @param geom Geometry used for `plot.data`: `"point"` or `"jitter"`.
-#' @param image Name of the Seurat spatial image. If `NULL`, the first image is
-#' used when present.
+#' @param image Name of the Seurat spatial image. Required when multiple images
+#' are present; a single image is selected automatically when `NULL`.
 #' @param overlay_image Whether to draw the spatial image beneath spots.
 #' @param image.alpha Transparency of the spatial image.
 #' @param crop Whether to crop the panel to plotted spots.
@@ -743,50 +743,50 @@ spatial_dim_coords <- function(
   srt,
   image = NULL,
   coord.cols = c("col", "row"),
-  overlay_image = TRUE
+  overlay_image = TRUE,
+  image_policy = "strict"
 ) {
-  images <- tryCatch(SeuratObject::Images(srt), error = function(e) character())
+  raw <- spatial_coords_raw(
+    srt = srt,
+    image = image,
+    coord.cols = coord.cols,
+    image_policy = image_policy
+  )
+  selected_image <- raw$source$image
+  out <- spatial_coords_to_display(raw$data, raw$transform)
+  out <- out[, c("x", "y"), drop = FALSE]
+  attr(out, "spatial_source") <- utils::modifyList(
+    raw$source,
+    list(coordinate_space = "legacy_display")
+  )
+  attr(out, "spatial_transform") <- raw$transform
   image_info <- NULL
-  if (length(images) > 0L) {
-    image <- image %||% images[1L]
-    if (!image %in% images) {
-      log_message(
-        "{.arg image} {.val {image}} is not present in {.cls Seurat}",
-        message_type = "error"
+  if (!is.null(selected_image)) {
+    image_array <- tryCatch(srt[[selected_image]]@image, error = function(e) NULL)
+    if (!is.null(image_array)) {
+      image_height <- dim(image_array)[1L]
+      image_width <- dim(image_array)[2L]
+      image_info <- list(
+        image = image_array,
+        width = image_width,
+        height = image_height
       )
+      return(list(
+        data = out,
+        image = image_info,
+        uses_image = TRUE,
+        source = attr(out, "spatial_source"),
+        transform = raw$transform
+      ))
     }
-    coords <- as.data.frame(SeuratObject::GetTissueCoordinates(srt[[image]]))
-    cell_col <- if ("cell" %in% colnames(coords)) "cell" else NULL
-    cells <- if (is.null(cell_col)) rownames(coords) else coords[[cell_col]]
-    rownames(coords) <- cells
-    x_col <- spatial_dim_pick_col(
-      coords,
-      c("x", "pxl_col_in_fullres", "imagecol")
-    )
-    y_col <- spatial_dim_pick_col(
-      coords,
-      c("y", "pxl_row_in_fullres", "imagerow")
-    )
-    scale <- spatial_dim_image_scale(srt[[image]])
-    image_array <- srt[[image]]@image
-    image_height <- dim(image_array)[1L]
-    image_width <- dim(image_array)[2L]
-    out <- data.frame(
-      x = coords[[x_col]] * scale,
-      y = image_height - coords[[y_col]] * scale,
-      row.names = cells,
-      stringsAsFactors = FALSE
-    )
-    image_info <- list(
-      image = image_array,
-      width = image_width,
-      height = image_height
-    )
-    return(list(data = out, image = image_info, uses_image = TRUE))
   }
-
-  out <- scop_spatial_metadata_coords(srt, coord.cols = coord.cols)
-  list(data = out, image = image_info, uses_image = FALSE)
+  list(
+    data = out,
+    image = image_info,
+    uses_image = FALSE,
+    source = attr(out, "spatial_source"),
+    transform = raw$transform
+  )
 }
 
 spatial_dim_value_items <- function(values) {

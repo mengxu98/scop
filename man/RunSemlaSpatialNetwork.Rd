@@ -75,3 +75,4 @@ spatial <- RunSemlaSpatialNetwork(
   verbose = FALSE
 )
 }
+\concept{spatial-producer}

@@ -7,7 +7,7 @@
 RunSpatialNeighborhood(
   srt,
   group.by,
-  method = "spicyR",
+  method = NULL,
   assay = NULL,
   layer = "data",
   coord.cols = c("col", "row"),
@@ -32,7 +32,10 @@ RunSpatialNeighborhood(
 
 \item{group.by}{Metadata column containing spatial cell or spot labels.}
 
-\item{method}{Neighborhood backend. Currently only \code{"spicyR"} is supported.}
+\item{method}{Neighborhood calculation. \code{NULL} preserves compatibility by
+choosing \code{"observed"} when \code{split.by} is absent and \code{"spicyR"} when it is
+supplied. \code{"observed"} returns native KNN or radius summaries. \code{"spicyR"}
+runs differential neighborhood statistics and requires \code{split.by}.}
 
 \item{assay}{Assay used when \code{features} are requested.}
 
@@ -41,8 +44,8 @@ RunSpatialNeighborhood(
 \item{coord.cols}{Metadata coordinate columns used when no Seurat image
 coordinates are available.}
 
-\item{image}{Name of the Seurat spatial image. If \code{NULL}, the first image is
-used when present.}
+\item{image}{Name of the Seurat spatial image. Required when multiple images
+are present; a single image is selected automatically when \code{NULL}.}
 
 \item{sample.by}{Metadata column identifying images or samples. If \code{NULL},
 all spots are treated as one sample.}
@@ -103,3 +106,4 @@ SpatialNeighborhoodPlot(
   coord.cols = c("x", "y")
 )
 }
+\concept{spatial-producer}

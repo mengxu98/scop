@@ -56,6 +56,7 @@
 #' model implemented by this function.
 #'
 #' \if{html}{\figure{cell2location_human_lymph_node.png}{options: width=100\% alt="cell2location cell-type proportions in the official Human Lymph Node Visium dataset"}}
+#' @concept spatial-producer
 #' @export
 #'
 #' @examples
@@ -334,36 +335,56 @@ RunCell2location <- function(
 
   if (isTRUE(store_results)) {
     manifest <- cell2location_read_json(files$manifest)
-    srt_out@tools[[tool_name]] <- list(
-      abundance = abundance,
-      proportions = proportions,
-      reference_signatures = signatures,
-      summary = scop_spatial_weight_summary(proportions),
-      input_summary = prepared$summary,
-      parameters = list(
-        assay = prepared$assay,
-        reference_assay = prepared$reference_assay,
-        layer = layer,
-        reference_layer = reference_layer,
-        reference_label = reference_label,
-        spatial_batch = spatial_batch,
-        reference_batch = reference_batch,
-        reference_covariates = reference_covariates,
-        min_cells = min_cells,
-        N_cells_per_location = N_cells_per_location,
-        detection_alpha = detection_alpha,
-        gene_filter_params = gene_filter_params,
-        reference_train_params = reference_train_params,
-        spatial_train_params = spatial_train_params,
-        reference_posterior_params = reference_posterior_params,
-        spatial_posterior_params = spatial_posterior_params,
-        envname = get_envname(envname),
-        resume = resume,
-        overwrite = overwrite,
-        prefix = prefix
+    result_parameters <- list(
+      assay = prepared$assay,
+      reference_assay = prepared$reference_assay,
+      layer = layer,
+      reference_layer = reference_layer,
+      reference_label = reference_label,
+      spatial_batch = spatial_batch,
+      reference_batch = reference_batch,
+      reference_covariates = reference_covariates,
+      min_cells = min_cells,
+      N_cells_per_location = N_cells_per_location,
+      detection_alpha = detection_alpha,
+      gene_filter_params = gene_filter_params,
+      reference_train_params = reference_train_params,
+      spatial_train_params = spatial_train_params,
+      reference_posterior_params = reference_posterior_params,
+      spatial_posterior_params = spatial_posterior_params,
+      envname = get_envname(envname),
+      resume = resume,
+      overwrite = overwrite,
+      prefix = prefix
+    )
+    backend_versions <- unlist(manifest$versions %||% character(), use.names = TRUE)
+    backend_versions <- as.character(backend_versions[!is.na(backend_versions)])
+    srt_out@tools[[tool_name]] <- spatial_result_build(
+      bundle = list(
+        abundance = abundance,
+        proportions = proportions,
+        reference_signatures = signatures,
+        input_summary = prepared$summary,
+        manifest = manifest,
+        files = files,
+        cells = rownames(proportions)
       ),
-      manifest = manifest,
-      files = files
+      method = "Cell2location",
+      result_type = "deconvolution",
+      source = list(
+        image = character(),
+        coordinate_space = "none",
+        transform = NULL,
+        assay = prepared$assay,
+        layer = layer
+      ),
+      provenance = list(
+        producer = "RunCell2location",
+        backend_id = "cell2location",
+        backend_versions = backend_versions
+      ),
+      parameters = result_parameters,
+      summary = scop_spatial_weight_summary(proportions)
     )
   }
 

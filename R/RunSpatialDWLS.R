@@ -16,6 +16,7 @@
 #' @return A `Seurat` object with `"<prefix>_prop_*"`,
 #' `"<prefix>_dominant_type"`, and `"<prefix>_max_prop"` metadata columns.
 #' Detailed results are stored in `srt@tools[[tool_name]]`.
+#' @concept spatial-producer
 #' @export
 #'
 #' @examples

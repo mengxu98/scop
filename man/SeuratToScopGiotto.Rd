@@ -36,7 +36,8 @@ Giotto expression and records SCT availability. `"none"` ignores SCT.
 `"normalized"` adds SCT normalized values as an additional expression layer.}
 
 \item{image}{Name of the Seurat spatial image used by the spatial workflow.
-If \code{NULL}, the first image is used when present.}
+Required when multiple images are present; a single image is selected
+automatically when \code{NULL}.}
 
 \item{coord.cols}{Metadata coordinate columns used by the spatial workflow
 when no image is available.}
