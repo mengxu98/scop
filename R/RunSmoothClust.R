@@ -35,6 +35,9 @@
 #' `srt@tools[[tool_name]]`. This can be large.
 #' @param seed Random seed used for k-means.
 #' @param verbose Whether to print progress messages.
+#' @param coordinate_space Coordinate system used for distance-sensitive
+#' smoothing and smoothness calculations. `"legacy_display"` preserves the
+#' current behavior; `"raw"` uses source coordinates.
 #' @param ... Additional arguments passed to `smoothclust::smoothclust()`.
 #'
 #' @return A `Seurat` object with smoothclust clusters in metadata. When
@@ -102,8 +105,10 @@ RunSmoothClust <- function(
   store_smoothed = FALSE,
   seed = 11,
   verbose = TRUE,
+  coordinate_space = c("legacy_display", "raw"),
   ...
 ) {
+  coordinate_space <- match.arg(coordinate_space)
   log_message(
     "Running smoothclust spatial domain clustering",
     message_type = "running",
@@ -152,11 +157,11 @@ RunSmoothClust <- function(
     )
   }
 
-  coords <- spatial_dim_coords(
+  coords <- spatial_analysis_coords(
     srt = srt,
     image = image,
     coord.cols = coord.cols,
-    overlay_image = FALSE
+    coordinate_space = coordinate_space
   )$data
   spots <- intersect(colnames(srt), rownames(coords))
   if (length(spots) == 0L) {
@@ -291,6 +296,7 @@ RunSmoothClust <- function(
         layer = layer,
         image = image,
         coord.cols = coord.cols,
+        coordinate_space = coordinate_space,
         nfeatures = nfeatures,
         min_spots = min_spots,
         smooth_method = smooth_method,
@@ -479,14 +485,18 @@ smoothclust_smoothness_metric <- function(coords, labels, k = 6L) {
 }
 
 smoothclust_native_smoothness <- function(coords, labels, k = 6L) {
-  coord_mat <- as.matrix(coords[, c("x", "y"), drop = FALSE])
-  dmat <- as.matrix(stats::dist(coord_mat))
-  diag(dmat) <- Inf
-  nn <- t(apply(dmat, 1L, function(x) utils::head(order(x), k)))
-  if (k == 1L) {
-    nn <- matrix(nn, ncol = 1L)
-  }
-  n_discordant <- rowSums(matrix(labels[nn], nrow = nrow(nn)) != labels)
+  k <- min(as.integer(k), nrow(coords) - 1L)
+  graph <- spatial_graph_compute(
+    coords = coords,
+    method = "knn",
+    k = k,
+    directed = TRUE,
+    weight = "binary"
+  )
+  discordant <- as.integer(labels[graph$edges$to] != labels[graph$edges$from])
+  totals <- rowsum(discordant, graph$edges$from, reorder = FALSE)
+  n_discordant <- integer(nrow(coords))
+  n_discordant[as.integer(rownames(totals))] <- totals[, 1L]
   list(
     n_discordant = as.integer(n_discordant),
     mean_discordant = mean(n_discordant)

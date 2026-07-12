@@ -189,6 +189,12 @@ reference:
 
 - title: "Spatial Analysis"
 
+- subtitle: "Spatial Method Discovery and Diagnostics"
+- contents:
+  - ListSpatialMethods
+  - SpatialBackendStatus
+  - SpatialResultInfo
+
 - subtitle: "Spatial QC and Normalization"
 - contents:
   - RunSpaNorm
@@ -240,6 +246,8 @@ reference:
 - subtitle: "Spatial Neighborhoods and Multi-Sample Integration"
 - contents:
   - RunSpatialNetwork
+  - MistyRPlot
+  - StatialKontextualPlot
   - RunSpatialNeighborhood
   - RunStatialKontextual
   - RunSpatialIntegration

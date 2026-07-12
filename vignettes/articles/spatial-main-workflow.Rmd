@@ -238,6 +238,21 @@ Neighborhood enrichment is label-level spatial association. Context models are
 feature-level spatial association. Keep those interpretations separate in
 reports.
 
+Use the shared discovery APIs before choosing an optional method. They read one
+registry, so the method list, backend diagnosis, result keys, coordinate
+contract, and recommended plot cannot drift into separate hard-coded lists.
+
+```r
+ListSpatialMethods(task = "neighborhood")
+SpatialBackendStatus(method = c("RunSpatialNeighborhood", "RunMistyR"))
+SpatialResultInfo(spatial)
+```
+
+Distance-sensitive methods retain `coordinate_space = "legacy_display"` as
+the compatibility default in this release. Set `coordinate_space = "raw"`
+when radius or distance values must stay in original acquisition units. Plot
+functions continue to map results to display coordinates by cell or spot ID.
+
 ```r
 spatial <- RunMistyR(
   spatial,
@@ -248,7 +263,12 @@ spatial <- RunMistyR(
   views = "para"
 )
 spatial@tools$MistyR$summary
+MistyRPlot(spatial, type = "improvements")
 ```
+
+For label-level contextual scores, use
+`StatialKontextualPlot(spatial)` after `RunStatialKontextual()`. These dedicated
+plots summarize stored backend output and never rerun the analysis.
 
 ## What to Report
 

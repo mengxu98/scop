@@ -15,6 +15,7 @@
 #' coordinates are available.
 #' @param image Name of the Seurat spatial image. If `NULL`, the first image is
 #' used when present.
+#' @param coordinate_space Coordinate system used to build neighbor distances.
 #' @param sample.by Metadata column identifying images or samples. If `NULL`,
 #' all spots are treated as one sample.
 #' @param split.by Optional metadata column identifying conditions for
@@ -74,8 +75,10 @@ RunSpatialNeighborhood <- function(
   tool_name = "SpatialNeighborhood",
   store_results = TRUE,
   verbose = TRUE,
+  coordinate_space = c("legacy_display", "raw"),
   ...
 ) {
+  coordinate_space <- match.arg(coordinate_space)
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",
@@ -98,6 +101,7 @@ RunSpatialNeighborhood <- function(
     layer = layer,
     coord.cols = coord.cols,
     image = image,
+    coordinate_space = coordinate_space,
     sample.by = sample.by,
     split.by = split.by,
     subject.by = subject.by,
@@ -162,6 +166,7 @@ RunSpatialNeighborhood <- function(
       layer = layer,
       coord.cols = coord.cols,
       image = image,
+      coordinate_space = coordinate_space,
       sample.by = sample.by,
       split.by = split.by,
       subject.by = subject.by,
@@ -384,6 +389,7 @@ spatial_neighborhood_input <- function(
   layer = "data",
   coord.cols = c("col", "row"),
   image = NULL,
+  coordinate_space = c("legacy_display", "raw"),
   sample.by = NULL,
   split.by = NULL,
   subject.by = NULL,
@@ -399,11 +405,11 @@ spatial_neighborhood_input <- function(
     )
   }
 
-  coords <- spatial_dim_coords(
+  coords <- spatial_analysis_coords(
     srt = srt,
     image = image,
     coord.cols = coord.cols,
-    overlay_image = !is.null(image)
+    coordinate_space = coordinate_space
   )$data
   cells <- intersect(rownames(coords), rownames(meta))
   if (length(cells) == 0L) {
@@ -503,35 +509,46 @@ spatial_neighborhood_observed_pairs <- function(cells, radius = NULL, k = NULL) 
     if (nrow(sample_cells) < 2L) {
       return(NULL)
     }
-    coords <- as.matrix(sample_cells[, c("x", "y"), drop = FALSE])
-    dmat <- as.matrix(stats::dist(coords, upper = TRUE, diag = TRUE))
-    rows <- vector("list", nrow(sample_cells))
-    for (i in seq_len(nrow(sample_cells))) {
-      dist_i <- dmat[i, ]
-      dist_i[i] <- Inf
-      idx <- which(is.finite(dist_i))
-      if (!is.null(radius)) {
-        idx <- idx[dist_i[idx] <= radius]
+    coords <- sample_cells[, c("x", "y"), drop = FALSE]
+    coords$cell_id <- sample_cells$cell
+    if (!is.null(radius)) {
+      graph <- spatial_graph_compute(
+        coords = coords,
+        method = "radius",
+        radius = radius,
+        directed = TRUE,
+        weight = "binary"
+      )
+      if (!is.null(k) && nrow(graph$edges) > 0L) {
+        keep <- unlist(lapply(
+          split(seq_len(nrow(graph$edges)), graph$edges$from),
+          function(i) utils::head(i, k)
+        ), use.names = FALSE)
+        graph$edges <- graph$edges[keep, , drop = FALSE]
       }
-      if (!is.null(k) && length(idx) > k) {
-        idx <- idx[order(dist_i[idx], decreasing = FALSE)[seq_len(k)]]
-      }
-      if (length(idx) == 0L) {
-        next
-      }
-      rows[[i]] <- data.frame(
-        cell = sample_cells$cell[i],
-        neighbor = sample_cells$cell[idx],
-        from = sample_cells$group[i],
-        to = sample_cells$group[idx],
-        sample = sample_cells$sample[i],
-        condition = sample_cells$condition[i],
-        subject = sample_cells$subject[i],
-        distance = as.numeric(dist_i[idx]),
-        stringsAsFactors = FALSE
+    } else {
+      graph <- spatial_graph_compute(
+        coords = coords,
+        method = "knn",
+        k = min(k, nrow(coords) - 1L),
+        directed = TRUE,
+        weight = "binary"
       )
     }
-    do.call(rbind, rows)
+    if (nrow(graph$edges) == 0L) return(NULL)
+    from_idx <- graph$edges$from
+    to_idx <- graph$edges$to
+    data.frame(
+      cell = sample_cells$cell[from_idx],
+      neighbor = sample_cells$cell[to_idx],
+      from = sample_cells$group[from_idx],
+      to = sample_cells$group[to_idx],
+      sample = sample_cells$sample[from_idx],
+      condition = sample_cells$condition[from_idx],
+      subject = sample_cells$subject[from_idx],
+      distance = graph$edges$distance,
+      stringsAsFactors = FALSE
+    )
   })
   edge_table <- do.call(rbind, edge_list)
   if (is.null(edge_table) || nrow(edge_table) == 0L) {
