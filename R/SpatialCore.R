@@ -1,23 +1,59 @@
 # Pure coordinate and graph primitives for spatial analyses.
 
+spatial_image_resolve <- function(
+  srt,
+  image = NULL,
+  image_policy = "strict"
+) {
+  if (!inherits(srt, "Seurat")) {
+    log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
+  }
+  image_policy <- match.arg(image_policy, "strict")
+  if (!is.null(image) && (!is.character(image) || length(image) != 1L || is.na(image) || !nzchar(image))) {
+    log_message("{.arg image} must be one non-empty image name", message_type = "error")
+  }
+  images <- tryCatch(SeuratObject::Images(srt), error = function(e) character())
+  if (length(images) == 0L) {
+    if (!is.null(image)) {
+      log_message("{.arg image} was supplied but {.arg srt} has no spatial images", message_type = "error")
+    }
+    return(list(image = NULL, images = images, image_policy = image_policy))
+  }
+  if (is.null(image)) {
+    if (length(images) > 1L) {
+      log_message(
+        "Multiple spatial images are available; select one with {.arg image}: {.val {images}}",
+        message_type = "error"
+      )
+    }
+    image <- images[[1L]]
+  }
+  if (!image %in% images) {
+    log_message(
+      "{.arg image} {.val {image}} is not present in {.cls Seurat}; available images: {.val {images}}",
+      message_type = "error"
+    )
+  }
+  list(image = image, images = images, image_policy = image_policy)
+}
+
 spatial_coords_raw <- function(
   srt,
   image = NULL,
   coord.cols = c("col", "row"),
   image_policy = "strict"
 ) {
-  if (!inherits(srt, "Seurat")) {
-    log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
-  }
-  image_policy <- match.arg(image_policy, c("strict", "legacy_first"))
-  images <- tryCatch(SeuratObject::Images(srt), error = function(e) character())
-  selected_image <- image
-  if (length(images) == 0L) {
-    if (!is.null(selected_image)) {
-      log_message("{.arg image} was supplied but {.arg srt} has no spatial images", message_type = "error")
-    }
+  resolved_image <- spatial_image_resolve(
+    srt = srt,
+    image = image,
+    image_policy = image_policy
+  )
+  image_policy <- resolved_image$image_policy
+  selected_image <- resolved_image$image
+  if (is.null(selected_image)) {
     coords <- scop_spatial_metadata_coords(srt, coord.cols = coord.cols)
     cells <- rownames(coords)
+    source_coord_cols <- coord.cols[1:2]
     transform <- list(
       scale = 1,
       y_flip = FALSE,
@@ -27,21 +63,6 @@ spatial_coords_raw <- function(
       raw_y_col = coord.cols[[2L]]
     )
   } else {
-    if (is.null(selected_image)) {
-      if (length(images) > 1L && identical(image_policy, "strict")) {
-        log_message(
-          "Multiple spatial images are available; select one with {.arg image}: {.val {images}}",
-          message_type = "error"
-        )
-      }
-      selected_image <- images[[1L]]
-    }
-    if (!selected_image %in% images) {
-      log_message(
-        "{.arg image} {.val {selected_image}} is not present in {.cls Seurat}; available images: {.val {images}}",
-        message_type = "error"
-      )
-    }
     raw <- as.data.frame(SeuratObject::GetTissueCoordinates(srt[[selected_image]]))
     cell_col <- if ("cell" %in% colnames(raw)) "cell" else NULL
     cells <- if (is.null(cell_col)) rownames(raw) else as.character(raw[[cell_col]])
@@ -50,6 +71,7 @@ spatial_coords_raw <- function(
     }
     x_col <- spatial_dim_pick_col(raw, c("x", "pxl_col_in_fullres", "imagecol"))
     y_col <- spatial_dim_pick_col(raw, c("y", "pxl_row_in_fullres", "imagerow"))
+    source_coord_cols <- c(x_col, y_col)
     coords <- data.frame(
       x = suppressWarnings(as.numeric(raw[[x_col]])),
       y = suppressWarnings(as.numeric(raw[[y_col]])),
@@ -91,7 +113,7 @@ spatial_coords_raw <- function(
     transform = transform,
     source = list(
       image = selected_image,
-      coord.cols = if (is.null(selected_image)) coord.cols[1:2] else NULL,
+      coord.cols = source_coord_cols,
       image_policy = image_policy,
       coordinate_space = "raw"
     )
@@ -149,15 +171,17 @@ spatial_analysis_coords <- function(
 ) {
   coordinate_space <- match.arg(coordinate_space)
   if (identical(coordinate_space, "legacy_display")) {
+    display <- spatial_dim_coords(
+      srt = srt,
+      image = image,
+      coord.cols = coord.cols,
+      overlay_image = FALSE,
+      image_policy = image_policy
+    )
     result <- list(
-      data = spatial_dim_coords(
-        srt = srt,
-        image = image,
-        coord.cols = coord.cols,
-        overlay_image = FALSE
-      )$data,
-      transform = NULL,
-      source = list(image = image, coord.cols = coord.cols[1:2], coordinate_space = coordinate_space)
+      data = display$data,
+      transform = display$transform,
+      source = utils::modifyList(display$source, list(coordinate_space = coordinate_space))
     )
     attr(result$data, "spatial_source") <- result$source
     attr(result$data, "spatial_transform") <- result$transform
@@ -191,10 +215,10 @@ SpatialCoordinates <- function(
   image = NULL,
   coord.cols = c("col", "row"),
   space = c("raw", "display"),
-  image_policy = c("strict", "legacy_first")
+  image_policy = "strict"
 ) {
   space <- match.arg(space)
-  image_policy <- match.arg(image_policy)
+  image_policy <- match.arg(image_policy, "strict")
   result <- spatial_coords_raw(
     srt = object,
     image = image,

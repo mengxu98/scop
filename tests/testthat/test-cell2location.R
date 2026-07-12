@@ -201,6 +201,20 @@ test_that("Cell2locationPlot exposes all result views", {
   }
 })
 
+test_that("Cell2locationPlot requires explicit selection for multi-image objects", {
+  data("visium_mouse_brain_slices_sub", package = "scop")
+  srt <- visium_mouse_brain_slices_sub
+  srt$Cell2location_dominant_type <- rep(c("Alpha", "Beta"), length.out = ncol(srt))
+
+  expect_error(
+    Cell2locationPlot(srt, "dominant"),
+    "Multiple spatial images"
+  )
+  plotted <- Cell2locationPlot(srt, "dominant", image = "anterior1")
+  expect_s3_class(plotted, "ggplot")
+  expect_identical(nrow(plotted$data), 1000L)
+})
+
 test_that("standard spatial workflow dispatches cell2location signatures", {
   pair <- make_cell2location_pair()
   signatures <- matrix(

@@ -41,8 +41,8 @@ RunSpatialNeighborhood(
 \item{coord.cols}{Metadata coordinate columns used when no Seurat image
 coordinates are available.}
 
-\item{image}{Name of the Seurat spatial image. If \code{NULL}, the first image is
-used when present.}
+\item{image}{Name of the Seurat spatial image. Required when multiple images
+are present; a single image is selected automatically when \code{NULL}.}
 
 \item{sample.by}{Metadata column identifying images or samples. If \code{NULL},
 all spots are treated as one sample.}

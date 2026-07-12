@@ -116,8 +116,39 @@ test_that("SpatialCoordinates makes multi-image selection explicit", {
   selected <- SpatialCoordinates(srt, image = "slice2")
   expect_identical(selected$data$cell_id, c("spot3", "spot4"))
   expect_identical(selected$source$image, "slice2")
-  legacy <- SpatialCoordinates(srt, image_policy = "legacy_first")
-  expect_identical(legacy$source$image, "slice1")
+  expect_error(
+    SpatialCoordinates(srt, image_policy = "legacy_first"),
+    "should be.*strict"
+  )
+})
+
+test_that("analysis and plotting never silently select the first spatial image", {
+  data("visium_mouse_brain_slices_sub", package = "scop")
+  srt <- visium_mouse_brain_slices_sub
+  expect_identical(length(SeuratObject::Images(srt)), 2L)
+  expect_equal(ncol(srt), 2000L)
+
+  expect_error(scop:::spatial_analysis_coords(srt), "Multiple spatial images")
+  expect_error(
+    SpatialSpotPlot(srt, group.by = "orig.ident"),
+    "Multiple spatial images"
+  )
+
+  selected <- scop:::spatial_analysis_coords(srt, image = "anterior2")
+  expect_identical(nrow(selected$data), 1000L)
+  expect_identical(selected$source$image, "anterior2")
+  expect_identical(selected$source$coordinate_space, "legacy_display")
+  expect_identical(selected$source$coord.cols, c("x", "y"))
+  expect_true(all(c("scale", "y_flip", "raw_x_col", "raw_y_col") %in%
+    names(selected$transform)))
+
+  plotted <- SpatialSpotPlot(
+    srt,
+    group.by = "orig.ident",
+    image = "anterior2"
+  )
+  expect_s3_class(plotted, "ggplot")
+  expect_identical(nrow(plotted$data), 1000L)
 })
 
 test_that("schema-v1 results support custom keys and legacy read-only views", {

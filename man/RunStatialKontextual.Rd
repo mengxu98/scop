@@ -42,8 +42,8 @@ Ignored when \code{parent_df} is supplied.}
 
 \item{parent_df}{Optional data frame from \code{Statial::parentCombinations()}.}
 
-\item{image}{Name of the Seurat spatial image. If \code{NULL}, the first image is
-used when present.}
+\item{image}{Name of the Seurat spatial image. Required when multiple images
+are present; a single image is selected automatically when \code{NULL}.}
 
 \item{sample.by}{Optional metadata column used as Statial \code{imageID}. If
 \code{NULL}, all cells or spots are treated as one image.}

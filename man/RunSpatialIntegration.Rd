@@ -45,7 +45,8 @@ when no image is available.}
 used; if no variable features are present, all assay features are used.}
 
 \item{image}{Name of the Seurat spatial image used by the spatial workflow.
-If \code{NULL}, the first image is used when present.}
+Required when multiple images are present; a single image is selected
+automatically when \code{NULL}.}
 
 \item{reduction.name}{Name of the integrated embedding reduction. If \code{NULL},
 a method-specific name is used.}

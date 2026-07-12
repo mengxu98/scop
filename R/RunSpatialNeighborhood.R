@@ -13,8 +13,8 @@
 #' @param layer Assay layer used when `features` are requested.
 #' @param coord.cols Metadata coordinate columns used when no Seurat image
 #' coordinates are available.
-#' @param image Name of the Seurat spatial image. If `NULL`, the first image is
-#' used when present.
+#' @param image Name of the Seurat spatial image. Required when multiple images
+#' are present; a single image is selected automatically when `NULL`.
 #' @param coordinate_space Coordinate system used to build neighbor distances.
 #' @param sample.by Metadata column identifying images or samples. If `NULL`,
 #' all spots are treated as one sample.

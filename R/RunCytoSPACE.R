@@ -634,62 +634,22 @@ cytospace_get_spatial_coords <- function(
   coordinate_space = c("legacy_display", "raw")
 ) {
   coordinate_space <- match.arg(coordinate_space)
-  if (identical(coordinate_space, "raw")) {
-    resolved <- spatial_coords_raw(
-      srt = srt,
-      image = image,
-      coord.cols = coord.cols,
-      image_policy = "strict"
-    )
-    matched <- match(spot_ids, resolved$data$cell_id)
-    if (anyNA(matched)) {
-      log_message("Spatial coordinates are missing for one or more requested spots", message_type = "error")
-    }
-    coords <- resolved$data[matched, c("x", "y"), drop = FALSE]
-    rownames(coords) <- spot_ids
-    attr(coords, "spatial_source") <- resolved$source
-    attr(coords, "spatial_transform") <- resolved$transform
-    return(coords)
-  }
-  meta <- srt[[]]
-  coord_cols <- intersect(
-    c(
-      "array_row",
-      "array_col",
-      "row",
-      "col",
-      "imagerow",
-      "imagecol",
-      "x",
-      "y",
-      "X",
-      "Y"
-    ),
-    colnames(meta)
+  resolved <- spatial_analysis_coords(
+    srt = srt,
+    image = image,
+    coord.cols = coord.cols,
+    coordinate_space = coordinate_space,
+    image_policy = "strict"
   )
-  if (length(coord_cols) >= 2L) {
-    coords <- meta[spot_ids, coord_cols[seq_len(2)], drop = FALSE]
-    return(coords)
+  matched <- match(spot_ids, resolved$data$cell_id)
+  if (anyNA(matched)) {
+    log_message("Spatial coordinates are missing for one or more requested spots", message_type = "error")
   }
-
-  images <- tryCatch(SeuratObject::Images(srt), error = function(e) character())
-  if (length(images) > 0L) {
-    coords <- tryCatch(
-      as.data.frame(
-        SeuratObject::GetTissueCoordinates(srt[[images[1]]]),
-        stringsAsFactors = FALSE
-      ),
-      error = function(e) NULL
-    )
-    if (!is.null(coords)) {
-      common <- intersect(spot_ids, rownames(coords))
-      if (length(common) > 0L && ncol(coords) >= 2L) {
-        return(coords[spot_ids, seq_len(2), drop = FALSE])
-      }
-    }
-  }
-
-  data.frame(row = seq_along(spot_ids), col = 1L, row.names = spot_ids)
+  coords <- resolved$data[matched, c("x", "y"), drop = FALSE]
+  rownames(coords) <- spot_ids
+  attr(coords, "spatial_source") <- resolved$source
+  attr(coords, "spatial_transform") <- resolved$transform
+  coords
 }
 
 cytospace_build_assignment_table <- function(
