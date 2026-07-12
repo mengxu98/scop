@@ -21,6 +21,9 @@ with_mock_spanorm <- function(code) {
   testthat::local_mocked_bindings(
     check_r = function(packages, ...) invisible(TRUE),
     get_namespace_fun = function(package, name) {
+      if (identical(package, "SpatialExperiment")) {
+        return(getExportedValue(package, name))
+      }
       expect_identical(package, "SpaNorm")
       expect_identical(name, "SpaNorm")
       function(spe, sample.p = NULL, ...) {
@@ -104,6 +107,9 @@ test_that("RunSpaNorm validates coordinates and backend output clearly", {
   testthat::local_mocked_bindings(
     check_r = function(packages, ...) invisible(TRUE),
     get_namespace_fun = function(package, name) {
+      if (identical(package, "SpatialExperiment")) {
+        return(getExportedValue(package, name))
+      }
       function(spe, ...) spe
     }
   )

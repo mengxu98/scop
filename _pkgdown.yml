@@ -194,6 +194,9 @@ reference:
   - ListSpatialMethods
   - SpatialBackendStatus
   - SpatialResultInfo
+  - SpatialCoordinates
+  - GetSpatialResult
+  - GetSpatialGraph
 
 - subtitle: "Spatial QC and Normalization"
 - contents:

@@ -191,6 +191,12 @@ RunSpatialNeighborhood <- function(
       summary = method_bundle$summary,
       parameters = method_bundle$parameters
     )
+    srt@tools[[tool_name]] <- spatial_result_build(
+      bundle = srt@tools[[tool_name]],
+      method = "SpatialNeighborhood",
+      result_type = "neighborhood",
+      provenance = list(producer = "RunSpatialNeighborhood", backend_id = "spicyr")
+    )
   }
 
   log_message(

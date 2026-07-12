@@ -35,6 +35,8 @@
 #' @param tool_name Name used to store detailed results in `srt@tools`.
 #' @param store_results Whether to store detailed BANKSY results in
 #' `srt@tools`.
+#' @param coordinate_space Coordinate space used for BANKSY spatial input.
+#'   The default preserves the historical coordinate behavior.
 #'
 #' @return A `Seurat` object with BANKSY clusters in metadata. When
 #' `store_results = TRUE`, detailed results are stored in
@@ -90,7 +92,8 @@ RunBANKSY <- function(
   cluster_colname = "BANKSY_cluster",
   tool_name = "BANKSY",
   store_results = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  coordinate_space = c("legacy_display", "raw")
 ) {
   if (!inherits(srt, "Seurat")) {
     log_message(
@@ -103,6 +106,7 @@ RunBANKSY <- function(
   banksy_validate_param_list(compute_banksy_params, "compute_banksy_params")
   banksy_validate_param_list(run_pca_params, "run_pca_params")
   banksy_validate_param_list(cluster_banksy_params, "cluster_banksy_params")
+  coordinate_space <- match.arg(coordinate_space)
 
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   features_use <- features %||% rownames(srt[[assay]])
@@ -132,7 +136,8 @@ RunBANKSY <- function(
     srt = srt,
     spot_ids = colnames(expr),
     image = image,
-    coord.cols = coord.cols
+    coord.cols = coord.cols,
+    coordinate_space = coordinate_space
   )
   coldata <- banksy_coldata(
     srt = srt,
@@ -197,6 +202,7 @@ RunBANKSY <- function(
         layer = layer,
         image = image,
         coord.cols = coord.cols,
+        coordinate_space = coordinate_space,
         lambda = lambda,
         k_geom = k_geom,
         M = M,
@@ -214,6 +220,16 @@ RunBANKSY <- function(
         cluster_colname = cluster_colname,
         tool_name = tool_name
       )
+    )
+    srt@tools[[tool_name]] <- spatial_result_build(
+      bundle = srt@tools[[tool_name]],
+      method = "BANKSY",
+      result_type = "domain",
+      source = c(
+        attr(coords, "spatial_source") %||% list(),
+        list(transform = attr(coords, "spatial_transform"))
+      ),
+      provenance = list(producer = "RunBANKSY", backend_id = "banksy")
     )
   }
 
@@ -247,7 +263,8 @@ banksy_run_backend <- function(
     c("Banksy", "SpatialExperiment", "SummarizedExperiment", "S4Vectors"),
     verbose = FALSE
   )
-  se <- SpatialExperiment::SpatialExperiment(
+  spatial_experiment <- get_namespace_fun("SpatialExperiment", "SpatialExperiment")
+  se <- spatial_experiment(
     assays = stats::setNames(list(expr), assay_name),
     colData = S4Vectors::DataFrame(coldata),
     spatialCoords = as.matrix(coords)

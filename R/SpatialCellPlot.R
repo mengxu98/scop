@@ -99,69 +99,13 @@ SpatialCellPlot <- function(
     log_message("Provide real segmentation data through {.arg boundaries}, {.arg res}, or a Seurat image", message_type = "error")
   }
 
-  pick_col <- function(candidates, required = FALSE) {
-    hit <- candidates[tolower(candidates) %in% tolower(colnames(boundaries))]
-    if (length(hit) == 0L) {
-      if (isTRUE(required)) {
-        log_message("Boundary data do not contain a required column among {.val {candidates}}", message_type = "error")
-      }
-      return(NULL)
-    }
-    colnames(boundaries)[match(tolower(hit[[1L]]), tolower(colnames(boundaries)))]
-  }
-  cell_col <- pick_col(c("cell_id", "cell", "barcode", "id"), required = TRUE)
-  x_col <- pick_col(c("x", "imagecol", "pxl_col_in_fullres"), required = TRUE)
-  y_col <- pick_col(c("y", "imagerow", "pxl_row_in_fullres"), required = TRUE)
-  polygon_col <- pick_col(c("polygon_id", "polygon", "poly_id"))
-  ring_col <- pick_col(c("ring_id", "ring", "subgroup"))
-  order_col <- pick_col(c("vertex_order", "order", "index", "vertex"))
-  boundaries$cell_id <- as.character(boundaries[[cell_col]])
-  boundaries$x <- suppressWarnings(as.numeric(boundaries[[x_col]]))
-  boundaries$y <- suppressWarnings(as.numeric(boundaries[[y_col]]))
-  boundaries$polygon_id <- if (is.null(polygon_col)) boundaries$cell_id else as.character(boundaries[[polygon_col]])
-  boundaries$ring_id <- if (is.null(ring_col)) "1" else as.character(boundaries[[ring_col]])
-  boundaries$vertex_order <- if (is.null(order_col)) seq_len(nrow(boundaries)) else suppressWarnings(as.numeric(boundaries[[order_col]]))
-  boundaries <- boundaries[
-    !is.na(boundaries$cell_id) & nzchar(boundaries$cell_id) &
-      is.finite(boundaries$x) & is.finite(boundaries$y),
-    ,
-    drop = FALSE
-  ]
+  boundaries <- spatial_boundary_validate(boundaries, image = image)
   if (!is.null(cells)) {
     boundaries <- boundaries[boundaries$cell_id %in% cells, , drop = FALSE]
   }
   if (nrow(boundaries) == 0L) {
     log_message("No segmentation boundaries remain after filtering", message_type = "error")
   }
-  ring_key <- interaction(
-    boundaries$cell_id,
-    boundaries$polygon_id,
-    boundaries$ring_id,
-    drop = TRUE,
-    lex.order = TRUE
-  )
-  valid_ring <- vapply(
-    split(seq_len(nrow(boundaries)), ring_key),
-    function(i) nrow(unique(boundaries[i, c("x", "y"), drop = FALSE])) >= 3L,
-    logical(1)
-  )
-  if (any(!valid_ring)) {
-    log_message(
-      "Each segmentation ring must contain at least three distinct vertices; cell or spot centers are not polygons",
-      message_type = "error"
-    )
-  }
-  boundaries$.polygon_group <- interaction(
-    boundaries$cell_id,
-    boundaries$polygon_id,
-    drop = TRUE,
-    lex.order = TRUE
-  )
-  boundaries <- boundaries[
-    order(boundaries$.polygon_group, boundaries$ring_id, boundaries$vertex_order),
-    ,
-    drop = FALSE
-  ]
   if (!is.null(group.by) && length(features) > 0L) {
     log_message("Use either {.arg group.by} or {.arg features}, not both", message_type = "error")
   }

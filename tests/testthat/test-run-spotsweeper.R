@@ -81,11 +81,19 @@ with_mock_spotsweeper <- function(code) {
   testthat::local_mocked_bindings(
     .package = "scop",
     check_r = function(packages, ...) {
-      expect_true(all(c(
+      allowed <- c(
         "MicTott/SpotSweeper", "SpatialExperiment",
         "SummarizedExperiment", "S4Vectors"
-      ) %in% packages))
+      )
+      expect_true(length(packages) > 0L)
+      expect_true(all(packages %in% allowed))
       invisible(TRUE)
+    },
+    get_namespace_fun = function(package, name) {
+      if (identical(package, "SpatialExperiment")) {
+        return(getExportedValue(package, name))
+      }
+      stop("unexpected namespace function")
     },
     spot_sweeper_get_fun = function(fun) {
       switch(fun,

@@ -21,7 +21,10 @@ RunCytoSPACE(
   seed = 1,
   prefix = "CytoSPACE",
   store_results = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  image = NULL,
+  coord.cols = c("col", "row"),
+  coordinate_space = c("legacy_display", "raw")
 )
 }
 \arguments{
@@ -72,6 +75,13 @@ duplicate sampling.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{image}{Optional Seurat image used for spatial coordinates.}
+
+\item{coord.cols}{Metadata coordinate columns used when no image is selected.}
+
+\item{coordinate_space}{Coordinate space used for assignment locations. The
+default preserves the historical coordinate behavior.}
 }
 \value{
 A \code{Seurat} object with CytoSPACE metadata columns and detailed
