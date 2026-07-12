@@ -903,6 +903,12 @@ spatial_integration_apply_result <- function(
       samples = unique(as.character(srt@meta.data[[sample.by]])),
       cells = all_cells
     )
+    srt@tools[[tool_name]] <- spatial_result_build(
+      bundle = srt@tools[[tool_name]],
+      method = "SpatialIntegration",
+      result_type = "integration",
+      provenance = list(producer = "RunSpatialIntegration", backend_id = method)
+    )
   }
   srt
 }

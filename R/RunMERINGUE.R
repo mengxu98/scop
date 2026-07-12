@@ -248,6 +248,12 @@ RunMERINGUE <- function(
       pairwise_features = pairwise_features,
       parameters = parameters
     )
+    srt@tools[["MERINGUE"]] <- spatial_result_build(
+      bundle = srt@tools[["MERINGUE"]],
+      method = "MERINGUE",
+      result_type = "feature_pattern",
+      provenance = list(producer = "RunMERINGUE", backend_id = "meringue")
+    )
   }
   log_message(
     "Stored {.val {length(top_features)}} MERINGUE spatial features",

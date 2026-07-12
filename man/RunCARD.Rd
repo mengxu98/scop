@@ -26,7 +26,8 @@ RunCARD(
   create_card_params = list(),
   card_deconvolution_params = list(),
   verbose = TRUE,
-  ...
+  ...,
+  coordinate_space = c("legacy_display", "raw")
 )
 }
 \arguments{
@@ -80,6 +81,9 @@ non-integer reference counts can run directly.}
 Default is \code{TRUE}.}
 
 \item{...}{Additional parameters passed to the RCTD run step.}
+
+\item{coordinate_space}{Coordinate space used for distance-sensitive input.
+The default preserves the historical coordinate behavior.}
 }
 \value{
 A \code{Seurat} object with CARD proportion columns in metadata and

@@ -18,6 +18,8 @@
 #' when `coord.cols` are not available.
 #' @param coord.cols Metadata coordinate columns used when no image coordinate
 #' source is requested or available.
+#' @param coordinate_space Coordinate space used for distance-sensitive input.
+#'   The default preserves the historical coordinate behavior.
 #' @param rctd_mode RCTD mode passed to `spacexr`. `"full"` is the default for
 #' Visium spot deconvolution.
 #' @param max_cores Number of cores passed to `spacexr`.
@@ -126,7 +128,8 @@ RunRCTD <- function(
   create_rctd_params = list(),
   run_rctd_params = list(),
   verbose = TRUE,
-  ...
+  ...,
+  coordinate_space = c("legacy_display", "raw")
 ) {
   if (!inherits(srt, "Seurat")) {
     log_message(
@@ -149,6 +152,7 @@ RunRCTD <- function(
   rctd_validate_named_param_list(create_rctd_params, "create_rctd_params")
   rctd_validate_named_param_list(run_rctd_params, "run_rctd_params")
   rctd_mode <- match.arg(rctd_mode)
+  coordinate_space <- match.arg(coordinate_space)
   max_cores <- rctd_check_max_cores(max_cores)
   min_cells <- rctd_check_min_cells(min_cells)
   if (length(round_counts) != 1L || !is.logical(round_counts) || is.na(round_counts)) {
@@ -295,7 +299,8 @@ RunRCTD <- function(
     srt = srt,
     spot_ids = colnames(st_counts),
     image = image,
-    coord.cols = coord.cols
+    coord.cols = coord.cols,
+    coordinate_space = coordinate_space
   )
 
   extra_run_params <- list(...)
@@ -355,8 +360,9 @@ RunRCTD <- function(
         layer = layer,
         reference_layer = reference_layer,
         reference_label = reference_label,
-        image = image,
-        coord.cols = coord.cols,
+          image = image,
+          coord.cols = coord.cols,
+          coordinate_space = coordinate_space,
         rctd_mode = rctd_mode,
         max_cores = max_cores,
         min_cells = min_cells,
@@ -366,6 +372,16 @@ RunRCTD <- function(
         run_rctd_params = run_rctd_params
       ),
       object = backend$object
+    )
+    srt@tools[["RCTD"]] <- spatial_result_build(
+      bundle = srt@tools[["RCTD"]],
+      method = "RCTD",
+      result_type = "deconvolution",
+      source = c(
+        attr(coords, "spatial_source") %||% list(),
+        list(transform = attr(coords, "spatial_transform"))
+      ),
+      provenance = list(producer = "RunRCTD", backend_id = "spacexr")
     )
   }
 
@@ -559,8 +575,27 @@ rctd_get_spatial_coords <- function(
   srt,
   spot_ids,
   image = NULL,
-  coord.cols = c("x", "y")
+  coord.cols = c("x", "y"),
+  coordinate_space = c("legacy_display", "raw")
 ) {
+  coordinate_space <- match.arg(coordinate_space)
+  if (identical(coordinate_space, "raw")) {
+    resolved <- spatial_coords_raw(
+      srt = srt,
+      image = image,
+      coord.cols = coord.cols,
+      image_policy = "strict"
+    )
+    matched <- match(spot_ids, resolved$data$cell_id)
+    if (anyNA(matched)) {
+      log_message("Spatial coordinates are missing for one or more requested spots", message_type = "error")
+    }
+    coords <- resolved$data[matched, c("x", "y"), drop = FALSE]
+    rownames(coords) <- spot_ids
+    attr(coords, "spatial_source") <- resolved$source
+    attr(coords, "spatial_transform") <- resolved$transform
+    return(coords)
+  }
   meta <- srt[[]]
   if (is.null(image) && all(coord.cols %in% colnames(meta))) {
     coords <- meta[spot_ids, coord.cols, drop = FALSE]
@@ -737,7 +772,8 @@ rctd_run_spacexr_new <- function(
   rownames(spatial_coldata) <- colnames(st_counts)
   reference_coldata <- S4Vectors::DataFrame(cell_type = ref_labels, nUMI = ref_numi)
   rownames(reference_coldata) <- colnames(ref_counts)
-  spatial_spe <- SpatialExperiment::SpatialExperiment(
+  spatial_experiment <- get_namespace_fun("SpatialExperiment", "SpatialExperiment")
+  spatial_spe <- spatial_experiment(
     assays = list(counts = st_counts),
     colData = spatial_coldata,
     spatialCoords = as.matrix(coords)

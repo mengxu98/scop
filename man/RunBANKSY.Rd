@@ -28,7 +28,8 @@ RunBANKSY(
   cluster_colname = "BANKSY_cluster",
   tool_name = "BANKSY",
   store_results = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  coordinate_space = c("legacy_display", "raw")
 )
 }
 \arguments{
@@ -95,6 +96,9 @@ available.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{coordinate_space}{Coordinate space used for BANKSY spatial input.
+The default preserves the historical coordinate behavior.}
 }
 \value{
 A \code{Seurat} object with BANKSY clusters in metadata. When

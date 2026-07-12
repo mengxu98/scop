@@ -40,6 +40,9 @@ spatial_registry_entry <- function(
 spatial_method_registry <- function() {
   entry <- spatial_registry_entry
   rows <- list(
+    entry("SpatialCoordinates", "accessor", "data_access", "SpatialCore.R", backend_id = "core", coordinate_space_current = "mixed", coordinate_space_target = "mixed", coordinate_requirement = "backend_managed"),
+    entry("GetSpatialResult", "accessor", "result_access", "SpatialRegistry.R", backend_id = "core", coordinate_space_current = "none"),
+    entry("GetSpatialGraph", "accessor", "network", "RunSpatialNetwork.R", backend_id = "core", coordinate_space_current = "raw", coordinate_requirement = "backend_managed"),
     entry("RunSpotQC", "analysis", "quality_control", "RunSpotQC.R", backend_id = "core", coordinate_space_current = "none", coordinate_space_target = "none", coordinate_requirement = "identity_only", plot_function = "SpatialSpotPlot"),
     entry("RunSpaNorm", "analysis", "normalization", "RunSpaNorm.R", "SpaNorm", "spanorm", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "SpatialSpotPlot"),
     entry("RunSpatialQM", "analysis", "quality_control", "RunSpatialQM.R", "SpatialQM", "spatialqm", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "SpatialSpotPlot"),
@@ -398,6 +401,179 @@ SpatialBackendStatus <- function(
   out
 }
 
+spatial_result_backend_versions <- function(backend_id) {
+  ids <- spatial_registry_split_backends(backend_id %||% character())
+  registry <- spatial_backend_registry()
+  packages <- vapply(registry[intersect(ids, names(registry))], `[[`, character(1), "package")
+  versions <- vapply(packages, function(package) {
+    if (identical(package, "scop")) return(NA_character_)
+    tryCatch(as.character(utils::packageVersion(package)), error = function(e) NA_character_)
+  }, character(1))
+  versions[!is.na(versions)]
+}
+
+spatial_result_build <- function(
+  bundle = list(),
+  method,
+  result_type,
+  source = list(),
+  provenance = list(),
+  parameters = NULL,
+  summary = NULL
+) {
+  if (!is.list(bundle)) bundle <- list(result = bundle)
+  if (!is.character(method) || length(method) != 1L || is.na(method) || !nzchar(method)) {
+    log_message("{.arg method} must be one non-empty result family", message_type = "error")
+  }
+  if (!is.character(result_type) || length(result_type) != 1L || is.na(result_type) || !nzchar(result_type)) {
+    log_message("{.arg result_type} must be one non-empty registry task", message_type = "error")
+  }
+  if (!is.list(source) || !is.list(provenance)) {
+    log_message("{.arg source} and {.arg provenance} must be lists", message_type = "error")
+  }
+  source_input <- source
+  parameters <- parameters %||% bundle$parameters %||% list()
+  summary <- summary %||% bundle$summary %||% list()
+  if (!is.list(parameters)) {
+    log_message("Spatial result {.arg parameters} must be a list", message_type = "error")
+  }
+  coordinate_payload <- bundle$coords %||% bundle$spatial_coords %||% NULL
+  coordinate_source <- attr(coordinate_payload, "spatial_source") %||% list()
+  coordinate_transform <- attr(coordinate_payload, "spatial_transform")
+  source_defaults <- list(
+    image = parameters$image %||% character(),
+    coordinate_space = parameters$coordinate_space %||% "none",
+    transform = coordinate_transform,
+    assay = parameters$assay %||% NA_character_,
+    layer = parameters$layer %||% NA_character_
+  )
+  source <- utils::modifyList(source_defaults, coordinate_source)
+  source <- utils::modifyList(source, source_input)
+  provenance_defaults <- list(
+    producer = NA_character_, backend_id = "core",
+    backend_versions = character(),
+    scop_version = tryCatch(as.character(utils::packageVersion("scop")), error = function(e) NA_character_)
+  )
+  provenance <- utils::modifyList(provenance_defaults, provenance)
+  if (length(provenance$backend_versions) == 0L) {
+    provenance$backend_versions <- spatial_result_backend_versions(provenance$backend_id)
+  }
+  bundle$method <- method
+  bundle$schema_version <- 1L
+  bundle$result_type <- result_type
+  bundle$source <- source
+  bundle$provenance <- provenance
+  bundle$parameters <- parameters
+  bundle$summary <- summary
+  spatial_result_validate(bundle)
+  bundle
+}
+
+spatial_result_validate <- function(bundle) {
+  required <- c(
+    "method", "schema_version", "result_type", "source",
+    "provenance", "parameters", "summary"
+  )
+  if (!is.list(bundle) || !all(required %in% names(bundle))) {
+    log_message(
+      "Spatial result schema v1 requires fields: {.val {required}}",
+      message_type = "error"
+    )
+  }
+  if (!identical(as.integer(bundle$schema_version), 1L)) {
+    log_message("Unsupported spatial result schema version", message_type = "error")
+  }
+  if (!is.list(bundle$source) || !is.list(bundle$provenance) || !is.list(bundle$parameters)) {
+    log_message("Spatial result source, provenance, and parameters must be lists", message_type = "error")
+  }
+  invisible(TRUE)
+}
+
+spatial_result_registry_row <- function(tool_name = NULL, bundle = NULL) {
+  registry <- spatial_method_registry()
+  registry <- registry[!is.na(registry$tool_key) & nzchar(registry$tool_key), , drop = FALSE]
+  producer <- if (is.list(bundle)) bundle$provenance$producer %||% NA_character_ else NA_character_
+  family <- if (is.list(bundle)) bundle$method %||% NA_character_ else NA_character_
+  match_index <- integer()
+  if (!is.null(tool_name)) match_index <- which(registry$tool_key == tool_name)
+  if (length(match_index) == 0L && length(producer) == 1L && !is.na(producer)) {
+    match_index <- which(registry$method == producer)
+  }
+  if (length(match_index) == 0L && length(family) == 1L && !is.na(family)) {
+    match_index <- which(registry$tool_key == family)
+  }
+  if (length(match_index) == 0L) return(NULL)
+  registry[match_index[[1L]], , drop = FALSE]
+}
+
+spatial_result_normalize <- function(bundle, tool_name = NULL, registry_row = NULL) {
+  if (is.list(bundle) && identical(as.integer(bundle$schema_version %||% NA_integer_), 1L)) {
+    spatial_result_validate(bundle)
+    return(bundle)
+  }
+  registry_row <- registry_row %||% spatial_result_registry_row(tool_name, bundle)
+  if (is.null(registry_row)) {
+    log_message("Stored tool {.val {tool_name}} is not a registered spatial result", message_type = "error")
+  }
+  parameters <- if (is.list(bundle)) bundle$parameters %||% list() else list()
+  source <- if (is.list(bundle)) bundle$source %||% list() else list()
+  source <- utils::modifyList(
+    list(
+      image = parameters$image %||% character(),
+      coordinate_space = parameters$coordinate_space %||% registry_row$coordinate_space_current[[1L]],
+      transform = NULL,
+      assay = parameters$assay %||% NA_character_,
+      layer = parameters$layer %||% NA_character_
+    ),
+    source
+  )
+  spatial_result_build(
+    bundle = bundle,
+    method = registry_row$tool_key[[1L]],
+    result_type = registry_row$task[[1L]],
+    source = source,
+    provenance = list(
+      producer = registry_row$method[[1L]],
+      backend_id = registry_row$backend_id[[1L]]
+    ),
+    parameters = parameters,
+    summary = if (is.list(bundle)) bundle$summary %||% list() else list()
+  )
+}
+
+spatial_result_index <- function(object) {
+  registry <- spatial_method_registry()
+  registry <- registry[!is.na(registry$tool_key) & nzchar(registry$tool_key), , drop = FALSE]
+  keys <- names(object@tools)
+  rows <- lapply(keys, function(key) {
+    bundle <- object@tools[[key]]
+    row <- spatial_result_registry_row(key, bundle)
+    if (is.null(row)) return(NULL)
+    is_schema <- is.list(bundle) && identical(as.integer(bundle$schema_version %||% NA_integer_), 1L)
+    is_default <- key %in% registry$tool_key
+    if (!is_schema && !is_default) return(NULL)
+    data.frame(
+      tool_name = key,
+      registry_method = row$method[[1L]],
+      family = row$tool_key[[1L]],
+      result_type = row$task[[1L]],
+      backend_id = row$backend_id[[1L]],
+      plot_function = row$plot_function[[1L]],
+      coordinate_space_current = row$coordinate_space_current[[1L]],
+      stringsAsFactors = FALSE
+    )
+  })
+  rows <- Filter(Negate(is.null), rows)
+  if (length(rows) == 0L) {
+    return(data.frame(
+      tool_name = character(), registry_method = character(), family = character(),
+      result_type = character(), backend_id = character(), plot_function = character(),
+      coordinate_space_current = character(), stringsAsFactors = FALSE
+    ))
+  }
+  do.call(rbind, rows)
+}
+
 spatial_result_payload_size <- function(x) {
   if (is.null(x)) return(0L)
   if (is.data.frame(x) || is.matrix(x)) return(nrow(x))
@@ -407,7 +583,10 @@ spatial_result_payload_size <- function(x) {
 }
 
 spatial_result_state <- function(bundle, object_cells = NULL) {
-  metadata_names <- c("method", "schema_version", "source", "parameters", "summary", "active_graph")
+  metadata_names <- c(
+    "method", "schema_version", "result_type", "source", "provenance",
+    "parameters", "summary", "active_graph", "active_method"
+  )
   if (!is.list(bundle)) {
     return(list(state = if (length(bundle) > 0L) "ready" else "empty", n_items = length(bundle), reason = NA_character_))
   }
@@ -423,19 +602,86 @@ spatial_result_state <- function(bundle, object_cells = NULL) {
       reason = if (stale) "stored graph nodes are absent from object" else NA_character_
     ))
   }
+  payload_ids <- character()
+  if (is.data.frame(bundle$nodes) && "cell_id" %in% colnames(bundle$nodes)) {
+    payload_ids <- c(payload_ids, as.character(bundle$nodes$cell_id))
+  }
+  if (is.atomic(bundle$cells)) {
+    payload_ids <- c(payload_ids, as.character(bundle$cells))
+  }
+  payload_ids <- unique(payload_ids[!is.na(payload_ids) & nzchar(payload_ids)])
+  if (length(payload_ids) > 0L && !is.null(object_cells) && any(!payload_ids %in% object_cells)) {
+    return(list(
+      state = "stale",
+      n_items = length(payload_ids),
+      reason = "stored cells or nodes are absent from object"
+    ))
+  }
   payload_names <- setdiff(names(bundle), metadata_names)
   payload_sizes <- vapply(bundle[payload_names], spatial_result_payload_size, integer(1))
   n_items <- sum(payload_sizes)
   if (n_items == 0L) {
     return(list(state = "empty", n_items = 0L, reason = "no logical result payload"))
   }
-  source <- bundle$source
-  partial <- is.null(bundle$method) && is.null(source) && is.null(bundle$parameters)
+  partial <- is.null(bundle$method) || is.null(bundle$source) || is.null(bundle$parameters)
   list(
     state = if (partial) "partial" else "ready",
     n_items = n_items,
     reason = if (partial) "result provenance is incomplete" else NA_character_
   )
+}
+
+#' @title Read one stored spatial result
+#'
+#' @description
+#' Return a schema-v1 read-only view of a registered spatial result. Legacy
+#' results are normalized in the returned copy and are never written back.
+#'
+#' @param object A `Seurat` object.
+#' @param method Optional public producer or result family.
+#' @param tool_name Optional exact key in `object@tools`.
+#' @param raw Whether to return the stored value without normalization.
+#' @param validate Whether to validate schema-v1 results before returning.
+#'
+#' @return A plain spatial result list.
+#' @export
+GetSpatialResult <- function(
+  object,
+  method = NULL,
+  tool_name = NULL,
+  raw = FALSE,
+  validate = TRUE
+) {
+  if (!inherits(object, "Seurat")) {
+    log_message("{.arg object} must be a {.cls Seurat} object", message_type = "error")
+  }
+  if (is.null(method) && is.null(tool_name)) {
+    log_message("Provide {.arg method} or {.arg tool_name}", message_type = "error")
+  }
+  index <- spatial_result_index(object)
+  keep <- rep(TRUE, nrow(index))
+  if (!is.null(method)) {
+    keep <- keep & (
+      index$registry_method %in% method | index$family %in% method
+    )
+  }
+  if (!is.null(tool_name)) keep <- keep & index$tool_name %in% tool_name
+  matches <- index[keep, , drop = FALSE]
+  if (nrow(matches) == 0L) {
+    log_message("No stored spatial result matches the requested selector", message_type = "error")
+  }
+  if (nrow(matches) > 1L) {
+    log_message(
+      "Multiple spatial results match; select one with {.arg tool_name}: {.val {matches$tool_name}}",
+      message_type = "error"
+    )
+  }
+  key <- matches$tool_name[[1L]]
+  bundle <- object@tools[[key]]
+  if (isTRUE(raw)) return(bundle)
+  normalized <- spatial_result_normalize(bundle, tool_name = key)
+  if (isTRUE(validate)) spatial_result_validate(normalized)
+  normalized
 }
 
 #' @title Inspect stored spatial results
@@ -445,19 +691,20 @@ spatial_result_state <- function(bundle, object_cells = NULL) {
 #' migrating, renaming, or modifying legacy results.
 #'
 #' @param object A `Seurat` object.
-#' @param method Optional registered method filter.
+#' @param method Optional registered producer or result-family filter.
 #' @param tool_name Optional stored tool key filter.
 #' @param include_empty Whether to include recognized keys without a logical
 #'   result payload.
+#' @param detail Return one row per result or one row per stored spatial graph.
 #'
-#' @return A data frame describing recognized stored spatial results.
-#'
+#' @return A data frame describing recognized stored spatial results or graphs.
 #' @export
 SpatialResultInfo <- function(
   object,
   method = NULL,
   tool_name = NULL,
-  include_empty = FALSE
+  include_empty = FALSE,
+  detail = c("results", "graphs")
 ) {
   if (!inherits(object, "Seurat")) {
     log_message("{.arg object} must be a {.cls Seurat} object", message_type = "error")
@@ -465,36 +712,70 @@ SpatialResultInfo <- function(
   if (!is.logical(include_empty) || length(include_empty) != 1L || is.na(include_empty)) {
     log_message("{.arg include_empty} must be TRUE or FALSE", message_type = "error")
   }
-  registry <- spatial_method_registry()
-  registry <- registry[!is.na(registry$tool_key) & nzchar(registry$tool_key), , drop = FALSE]
-  if (!is.null(method)) registry <- registry[registry$method %in% method, , drop = FALSE]
-  if (!is.null(tool_name)) registry <- registry[registry$tool_key %in% tool_name, , drop = FALSE]
-  registry <- registry[order(is.na(registry$plot_function)), , drop = FALSE]
-  registry <- registry[!duplicated(registry$tool_key), , drop = FALSE]
+  detail <- match.arg(detail)
+  index <- spatial_result_index(object)
+  if (!is.null(method)) {
+    index <- index[index$registry_method %in% method | index$family %in% method, , drop = FALSE]
+  }
+  if (!is.null(tool_name)) index <- index[index$tool_name %in% tool_name, , drop = FALSE]
   cells <- colnames(object)
-  rows <- lapply(seq_len(nrow(registry)), function(i) {
-    key <- registry$tool_key[[i]]
-    if (is.null(object@tools[[key]])) return(NULL)
-    bundle <- object@tools[[key]]
-    state <- spatial_result_state(bundle, object_cells = cells)
+  if (identical(detail, "graphs")) {
+    rows <- lapply(seq_len(nrow(index)), function(i) {
+      key <- index$tool_name[[i]]
+      bundle <- object@tools[[key]]
+      if (!is.list(bundle) || is.null(bundle$graphs)) return(NULL)
+      graph_names <- names(bundle$graphs)
+      if (is.null(graph_names)) graph_names <- as.character(seq_along(bundle$graphs))
+      do.call(rbind, lapply(seq_along(bundle$graphs), function(j) {
+        graph <- bundle$graphs[[j]]
+        source <- graph$source %||% list()
+        parameters <- graph$parameters %||% list()
+        data.frame(
+          tool_name = key,
+          graph_name = graph_names[[j]],
+          active = identical(graph_names[[j]], bundle$active_graph),
+          n_nodes = if (is.data.frame(graph$nodes)) nrow(graph$nodes) else 0L,
+          n_edges = if (is.data.frame(graph$edges)) nrow(graph$edges) else 0L,
+          method = parameters$method %||% NA_character_,
+          weight = parameters$weight %||% NA_character_,
+          image = paste(source$image %||% character(), collapse = ","),
+          coordinate_space = source$coordinate_space %||% NA_character_,
+          stringsAsFactors = FALSE
+        )
+      }))
+    })
+    rows <- Filter(Negate(is.null), rows)
+    if (length(rows) == 0L) {
+      return(data.frame(
+        tool_name = character(), graph_name = character(), active = logical(),
+        n_nodes = integer(), n_edges = integer(), method = character(), weight = character(),
+        image = character(), coordinate_space = character(), stringsAsFactors = FALSE
+      ))
+    }
+    out <- do.call(rbind, rows)
+    rownames(out) <- NULL
+    return(out)
+  }
+  rows <- lapply(seq_len(nrow(index)), function(i) {
+    key <- index$tool_name[[i]]
+    stored <- object@tools[[key]]
+    state <- spatial_result_state(stored, object_cells = cells)
     if (!include_empty && identical(state$state, "empty")) return(NULL)
-    source <- if (is.list(bundle)) bundle$source else NULL
-    parameters <- if (is.list(bundle)) bundle$parameters else NULL
-    coordinate_space <- source$coordinate_space %||%
-      parameters$coordinate_space %||%
-      registry$coordinate_space_current[[i]]
-    image <- source$image %||% parameters$image %||% NA_character_
+    normalized <- spatial_result_normalize(stored, tool_name = key)
+    source <- normalized$source
     data.frame(
-      method = if (is.list(bundle) && !is.null(bundle$method)) as.character(bundle$method[[1L]]) else registry$method[[i]],
+      method = normalized$method,
+      producer = normalized$provenance$producer %||% index$registry_method[[i]],
+      result_type = normalized$result_type,
       tool_name = key,
-      schema_version = if (is.list(bundle) && !is.null(bundle$schema_version)) as.integer(bundle$schema_version[[1L]]) else NA_integer_,
+      schema_version = if (is.list(stored)) as.integer(stored$schema_version %||% NA_integer_) else NA_integer_,
       result_state = state$state,
       n_items = state$n_items,
-      coordinate_space = as.character(coordinate_space[[1L]]),
-      image = as.character(image[[1L]]),
-      parameters_available = is.list(bundle) && !is.null(bundle$parameters),
-      summary_available = is.list(bundle) && !is.null(bundle$summary),
-      plot_function = registry$plot_function[[i]],
+      coordinate_space = as.character(source$coordinate_space %||% index$coordinate_space_current[[i]])[[1L]],
+      image = paste(source$image %||% character(), collapse = ","),
+      parameters_available = is.list(stored) && !is.null(stored$parameters),
+      summary_available = is.list(stored) && !is.null(stored$summary),
+      plot_function = index$plot_function[[i]],
       empty_reason = state$reason,
       stringsAsFactors = FALSE
     )
@@ -502,9 +783,10 @@ SpatialResultInfo <- function(
   rows <- Filter(Negate(is.null), rows)
   if (length(rows) == 0L) {
     return(data.frame(
-      method = character(), tool_name = character(), schema_version = integer(),
-      result_state = character(), n_items = integer(), coordinate_space = character(),
-      image = character(), parameters_available = logical(), summary_available = logical(),
+      method = character(), producer = character(), result_type = character(),
+      tool_name = character(), schema_version = integer(), result_state = character(),
+      n_items = integer(), coordinate_space = character(), image = character(),
+      parameters_available = logical(), summary_available = logical(),
       plot_function = character(), empty_reason = character(), stringsAsFactors = FALSE
     ))
   }

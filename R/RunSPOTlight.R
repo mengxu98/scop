@@ -256,6 +256,12 @@ RunSPOTlight <- function(
         tool_name = tool_name
       )
     )
+    srt@tools[[tool_name]] <- spatial_result_build(
+      bundle = srt@tools[[tool_name]],
+      method = "SPOTlight",
+      result_type = "deconvolution",
+      provenance = list(producer = "RunSPOTlight", backend_id = "spotlight")
+    )
   }
 
   log_message(

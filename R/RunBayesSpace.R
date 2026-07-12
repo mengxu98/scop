@@ -129,6 +129,7 @@ RunBayesSpace <- function(
   }
 
   if (isTRUE(preprocess)) {
+    spatial_preprocess <- get_namespace_fun("BayesSpace", "spatialPreprocess")
     preprocess_args <- c(
       list(
         sce = sce,
@@ -139,7 +140,7 @@ RunBayesSpace <- function(
       ),
       spatial_preprocess_params
     )
-    sce <- do.call(BayesSpace::spatialPreprocess, preprocess_args)
+    sce <- do.call(spatial_preprocess, preprocess_args)
   }
 
   cluster_args <- c(
@@ -156,7 +157,8 @@ RunBayesSpace <- function(
     "Run {.pkg BayesSpace} spatial clustering with {.arg q = {q}}",
     verbose = verbose
   )
-  sce <- do.call(BayesSpace::spatialCluster, cluster_args)
+  spatial_cluster <- get_namespace_fun("BayesSpace", "spatialCluster")
+  sce <- do.call(spatial_cluster, cluster_args)
 
   cdata <- as.data.frame(SummarizedExperiment::colData(sce))
   if (!"spatial.cluster" %in% colnames(cdata)) {
@@ -205,7 +207,12 @@ RunBayesSpace <- function(
   if (isTRUE(store_sce)) {
     tool$sce <- sce
   }
-  srt@tools[["BayesSpace"]] <- tool
+  srt@tools[["BayesSpace"]] <- spatial_result_build(
+    bundle = tool,
+    method = "BayesSpace",
+    result_type = "domain",
+    provenance = list(producer = "RunBayesSpace", backend_id = "bayesspace")
+  )
 
   log_message(
     "{.pkg BayesSpace} clusters stored in metadata column {.val {cluster_colname}}",

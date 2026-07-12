@@ -54,6 +54,9 @@ with_mock_banksy <- function(code) {
       invisible(TRUE)
     },
     get_namespace_fun = function(package, name) {
+      if (identical(package, "SpatialExperiment")) {
+        return(getExportedValue(package, name))
+      }
       expect_identical(package, "Banksy")
       switch(name,
         computeBanksy = compute_fun,

@@ -176,6 +176,12 @@ RunStatialKontextual <- function(
     if (isTRUE(store_input)) {
       bundle$input <- cells
     }
+    bundle <- spatial_result_build(
+      bundle = bundle,
+      method = "StatialKontextual",
+      result_type = "neighborhood",
+      provenance = list(producer = "RunStatialKontextual", backend_id = "statial")
+    )
     srt@tools[[tool_name]] <- bundle
   }
 

@@ -248,6 +248,23 @@ SpatialBackendStatus(method = c("RunSpatialNeighborhood", "RunMistyR"))
 SpatialResultInfo(spatial)
 ```
 
+New small-method results use schema v1 while keeping method-specific fields at
+their historical top-level paths. Read a normalized copy through
+`GetSpatialResult()` instead of depending on the internal `@tools` layout.
+Custom `tool_name` values remain discoverable. Legacy Giotto, SPATA2, and Semla
+results are adapted only in the returned copy and are never migrated in place.
+
+```r
+coords <- SpatialCoordinates(spatial, image = "slice1", space = "raw")
+network_result <- GetSpatialResult(spatial, tool_name = "SpatialNetwork")
+network_graph <- GetSpatialGraph(
+  res = network_result,
+  format = "sparse",
+  value = "weight"
+)
+SpatialResultInfo(spatial, detail = "graphs")
+```
+
 Distance-sensitive methods retain `coordinate_space = "legacy_display"` as
 the compatibility default in this release. Set `coordinate_space = "raw"`
 when radius or distance values must stay in original acquisition units. Plot

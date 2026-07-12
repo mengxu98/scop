@@ -136,6 +136,12 @@ RunSpaNorm <- function(
     if (isTRUE(store_spe)) {
       tool$spe <- result
     }
+    tool <- spatial_result_build(
+      bundle = tool,
+      method = "SpaNorm",
+      result_type = "normalization",
+      provenance = list(producer = "RunSpaNorm", backend_id = "spanorm")
+    )
     srt@tools[[tool_name]] <- tool
   }
 
@@ -218,7 +224,8 @@ spanorm_prepare_input <- function(
 
 spanorm_make_spe <- function(counts, coords) {
   check_r(c("SpatialExperiment", "SummarizedExperiment", "S4Vectors"), verbose = FALSE)
-  SpatialExperiment::SpatialExperiment(
+  spatial_experiment <- get_namespace_fun("SpatialExperiment", "SpatialExperiment")
+  spatial_experiment(
     assays = list(counts = counts),
     spatialCoords = as.matrix(coords[, c("x", "y"), drop = FALSE])
   )

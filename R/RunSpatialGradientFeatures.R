@@ -1388,6 +1388,31 @@ sgf_store_result <- function(srt, result_name, result, assay, set_variable_featu
     srt@tools[["SpatialGradientFeatures"]] <- list()
   }
   srt@tools[["SpatialGradientFeatures"]][[result_name]] <- result[expected]
+  stored_parameters <- result$parameters
+  parameter_value <- function(name, default = NULL) {
+    if (!is.data.frame(stored_parameters) || !all(c("parameter", "value") %in% colnames(stored_parameters))) {
+      return(default)
+    }
+    value <- stored_parameters$value[match(name, stored_parameters$parameter)]
+    if (length(value) == 0L || is.na(value[[1L]])) default else value[[1L]]
+  }
+  srt@tools[["SpatialGradientFeatures"]] <- spatial_result_build(
+    bundle = srt@tools[["SpatialGradientFeatures"]],
+    method = "SpatialGradientFeatures",
+    result_type = "feature_pattern",
+    source = list(
+      image = parameter_value("image", character()),
+      coordinate_space = parameter_value("coordinate_space", "legacy_display"),
+      assay = assay,
+      layer = parameter_value("layer", NA_character_)
+    ),
+    provenance = list(producer = "RunSpatialGradientFeatures", backend_id = "core;spata2"),
+    parameters = list(result_name = result_name, assay = assay),
+    summary = list(active_result = result_name, n_results = length(setdiff(
+      names(srt@tools[["SpatialGradientFeatures"]]),
+      c("method", "schema_version", "result_type", "source", "provenance", "parameters", "summary")
+    )))
+  )
   vars <- result$top_variables$variable
   vars <- vars[!is.na(vars) & nzchar(vars)]
   srt@misc[["SpatialGradientFeatures"]] <- vars
@@ -1406,10 +1431,15 @@ sgf_get_result <- function(srt, result_name = NULL) {
       message_type = "error"
     )
   }
+  metadata_names <- c(
+    "method", "schema_version", "result_type", "source", "provenance",
+    "parameters", "summary"
+  )
+  result_names <- setdiff(names(all_results), metadata_names)
   if (is.null(result_name)) {
-    result_name <- srt@misc[["SpatialGradientFeaturesResult"]] %||% names(all_results)[length(all_results)]
+    result_name <- srt@misc[["SpatialGradientFeaturesResult"]] %||% result_names[length(result_names)]
   }
-  if (!result_name %in% names(all_results)) {
+  if (!result_name %in% result_names) {
     log_message(
       "{.arg result_name} {.val {result_name}} is not present in stored spatial gradient results",
       message_type = "error"

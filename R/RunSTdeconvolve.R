@@ -197,6 +197,12 @@ RunSTdeconvolve <- function(
         round_counts = round_counts
       )
     )
+    srt@tools[[tool_name]] <- spatial_result_build(
+      bundle = srt@tools[[tool_name]],
+      method = "STdeconvolve",
+      result_type = "deconvolution",
+      provenance = list(producer = "RunSTdeconvolve", backend_id = "stdeconvolve")
+    )
   }
 
   log_message(
