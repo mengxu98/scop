@@ -121,6 +121,32 @@ spatialcellchat_validate_input <- function(
   invisible(TRUE)
 }
 
+spatialcellchat_validate_expression <- function(expression, expected_cells) {
+  if (length(dim(expression)) != 2L || nrow(expression) == 0L || ncol(expression) == 0L) {
+    log_message("SpatialCellChat expression input must be a non-empty feature-by-observation matrix", message_type = "error")
+  }
+  if (is.null(rownames(expression)) || anyNA(rownames(expression)) || anyDuplicated(rownames(expression))) {
+    log_message("SpatialCellChat expression features must have unique non-missing names", message_type = "error")
+  }
+  if (is.null(colnames(expression)) || anyNA(colnames(expression)) || anyDuplicated(colnames(expression))) {
+    log_message("SpatialCellChat expression observations must have unique non-missing names", message_type = "error")
+  }
+  if (!identical(as.character(colnames(expression)), as.character(expected_cells))) {
+    log_message("SpatialCellChat expression columns do not align with the Seurat observations", message_type = "error")
+  }
+  values <- if (inherits(expression, "sparseMatrix")) expression@x else as.numeric(expression)
+  if (any(!is.finite(values))) {
+    log_message("SpatialCellChat expression input contains non-finite values", message_type = "error")
+  }
+  if (any(values < 0)) {
+    log_message("SpatialCellChat requires non-negative normalized expression", message_type = "error")
+  }
+  if (length(values) == 0L || all(values == 0)) {
+    log_message("SpatialCellChat expression input must contain at least one positive value", message_type = "error")
+  }
+  invisible(TRUE)
+}
+
 spatialcellchat_detect_technology <- function(srt, technology, image = NULL) {
   technology <- match.arg(
     technology,
@@ -255,10 +281,24 @@ spatialcellchat_metric_coordinates <- function(
     space = "raw",
     image_policy = "strict"
   )
+  display <- SpatialCoordinates(
+    object = srt,
+    image = image,
+    coord.cols = coord.cols,
+    space = "display",
+    image_policy = "strict"
+  )
   coords <- raw$data[raw$data$cell_id %in% cells, , drop = FALSE]
   coords <- coords[match(cells, coords$cell_id), , drop = FALSE]
   if (nrow(coords) != length(cells) || anyNA(coords$cell_id) || !identical(as.character(coords$cell_id), cells)) {
     log_message("Spatial coordinates do not align one-to-one with selected cells or spots", message_type = "error")
+  }
+  display_coords <- display$data[match(cells, display$data$cell_id), , drop = FALSE]
+  if (
+    nrow(display_coords) != length(cells) || anyNA(display_coords$cell_id) ||
+      !identical(as.character(display_coords$cell_id), cells)
+  ) {
+    log_message("Display coordinates do not align one-to-one with selected cells or spots", message_type = "error")
   }
   coordinate.unit <- match.arg(coordinate.unit, c("auto", "pixel", "micron"))
   if (identical(coordinate.unit, "auto")) {
@@ -308,6 +348,8 @@ spatialcellchat_metric_coordinates <- function(
   spatialcellchat_validate_scalar(tol, "tol", positive = TRUE)
   coords$x_raw <- coords$x
   coords$y_raw <- coords$y
+  coords$x_display <- display_coords$x
+  coords$y_display <- display_coords$y
   coords$x <- coords$x * as.numeric(ratio)
   coords$y <- coords$y * as.numeric(ratio)
   if (any(!is.finite(coords$x)) || any(!is.finite(coords$y))) {
@@ -745,6 +787,7 @@ RunSpatialCellChat <- function(
   if (is.null(expression_all)) {
     log_message("Cannot read normalized expression from assay {.val {assay}} layer {.val {layer}}", message_type = "error")
   }
+  spatialcellchat_validate_expression(expression_all, colnames(srt))
 
   log_message(
     "Start SpatialCellChat {.val {analysis.level}} analysis using {.val {technology}} coordinates",
@@ -820,7 +863,9 @@ RunSpatialCellChat <- function(
       seed.use = as.integer(seed.use)
     )
     table <- spatialcellchat_extract_table(chat, sample_name, analysis.level, do.permutation)
-    coords_store <- metric$data[, c("cell_id", "x", "y", "image"), drop = FALSE]
+    coords_store <- metric$data[, c(
+      "cell_id", "x", "y", "x_raw", "y_raw", "x_display", "y_display", "image"
+    ), drop = FALSE]
     coords_store$label <- metadata[coords_store$cell_id, "labels"]
     native_object <- if (identical(store.object, "full")) chat else NULL
     if (!is.null(native_object)) {
@@ -1056,7 +1101,7 @@ SpatialCellChatPlot <- function(
     network <- network[order(network$weight, decreasing = TRUE), , drop = FALSE]
     network <- utils::head(network, top_n)
     centers <- stats::aggregate(
-      coords[, c("x", "y"), drop = FALSE],
+      data.frame(x = coords$x_display, y = coords$y_display),
       by = list(label = coords$label),
       FUN = mean
     )
@@ -1096,7 +1141,11 @@ SpatialCellChatPlot <- function(
   }
   ggplot2::ggplot(
     coords,
-    ggplot2::aes(x = .data$x, y = .data$y, color = .data$communication_score)
+    ggplot2::aes(
+      x = .data$x_display,
+      y = .data$y_display,
+      color = .data$communication_score
+    )
   ) +
     ggplot2::geom_point(size = point.size) +
     ggplot2::scale_color_gradientn(colours = colors, na.value = "grey85") +
