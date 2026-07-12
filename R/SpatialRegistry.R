@@ -105,7 +105,7 @@ spatial_method_registry <- function() {
     entry("SpatialIntegrationPlot", "plot", "visualization", "RunSpatialIntegration.R", coordinate_space_current = "display", coordinate_requirement = "display_only"),
     entry("SpatialNeighborhoodPlot", "plot", "visualization", "RunSpatialNeighborhood.R", coordinate_space_current = "display", coordinate_requirement = "display_only"),
     entry("SpatialNetworkPlot", "plot", "visualization", "RunSpatialNetwork.R", coordinate_space_current = "display", coordinate_requirement = "display_only"),
-    entry("SpatialCellChatPlot", "plot", "visualization", "RunSpatialCellChat.R", backend_id = "core", coordinate_space_current = "raw", coordinate_requirement = "display_only"),
+    entry("SpatialCellChatPlot", "plot", "visualization", "RunSpatialCellChat.R", backend_id = "core", coordinate_space_current = "display", coordinate_requirement = "display_only"),
     entry("SpatialCellPlot", "plot", "visualization", "SpatialCellPlot.R", coordinate_space_current = "display", coordinate_requirement = "display_only"),
     entry("SpatialSpotPlot", "plot", "visualization", "SpatialSpotPlot.R", coordinate_space_current = "display", coordinate_requirement = "display_only"),
     entry("SpatialVariableFeaturePlot", "plot", "visualization", "RunSpatialVariableFeatures.R", coordinate_space_current = "display", coordinate_requirement = "display_only"),

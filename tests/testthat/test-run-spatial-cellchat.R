@@ -76,6 +76,9 @@ test_that("coordinate conversion is explicit and micron based", {
     tol = 5
   )
   expect_equal(unname(metric$data$x), unname(srt$col * 0.5))
+  expect_equal(unname(metric$data$x_raw), unname(srt$col))
+  expect_equal(unname(metric$data$x_display), unname(srt$col))
+  expect_equal(unname(metric$data$y_display), unname(srt$row))
   expect_identical(metric$source$coordinate_unit, "pixel")
   expect_equal(metric$source$scale_to_micron, 0.5)
   expect_equal(metric$spatial.factors, list(ratio = 1, tol = 5))
@@ -137,6 +140,31 @@ test_that("composition validation aligns and normalizes spots", {
   )
 })
 
+test_that("expression validation rejects scientifically invalid backend input", {
+  srt <- make_spatialcellchat_test_object()
+  expression <- GetAssayData5(srt, assay = "RNA", layer = "data")
+  expect_true(scop:::spatialcellchat_validate_expression(expression, colnames(srt)))
+
+  negative <- as.matrix(expression)
+  negative[[1L]] <- -1
+  expect_error(
+    scop:::spatialcellchat_validate_expression(negative, colnames(srt)),
+    "non-negative"
+  )
+
+  non_finite <- as.matrix(expression)
+  non_finite[[1L]] <- Inf
+  expect_error(
+    scop:::spatialcellchat_validate_expression(non_finite, colnames(srt)),
+    "non-finite"
+  )
+
+  expect_error(
+    scop:::spatialcellchat_validate_expression(expression, rev(colnames(srt))),
+    "do not align"
+  )
+})
+
 test_that("RunSpatialCellChat stores truthful schema and unified CCC rows", {
   local_mock_spatialcellchat_backend()
   srt <- make_spatialcellchat_test_object()
@@ -162,6 +190,10 @@ test_that("RunSpatialCellChat stores truthful schema and unified CCC rows", {
   expect_equal(out@tools$SpatialCellChat$source$samples$ALL$interaction_range_um, 250)
   expect_equal(out@tools$SpatialCellChat$source$samples$ALL$scale_distance, 0.2)
   expect_null(out@tools$SpatialCellChat$results$default$ALL$native_object)
+  stored_coords <- out@tools$SpatialCellChat$results$default$ALL$coordinates
+  expect_true(all(c(
+    "x", "y", "x_raw", "y_raw", "x_display", "y_display"
+  ) %in% colnames(stored_coords)))
   expect_identical(out@tools$SpatialCellChat$results$default$ALL$diagnostics$interpretation, "cell-level communication")
   spatial_rows <- out@tools$CCC$long_table$method == "SpatialCellChat"
   expect_true(any(spatial_rows))
@@ -263,6 +295,7 @@ test_that("CellChat and SpatialCellChat rows coexist without method theft", {
     nboot = 2,
     database = "custom",
     custom.db = list(mock = TRUE),
+    backend = "r",
     verbose = FALSE
   )
   expect_setequal(out@tools$CCC$methods, c("CellChat", "SpatialCellChat"))
