@@ -250,6 +250,7 @@ reference:
 - subtitle: "Spatial Neighborhoods and Multi-Sample Integration"
 - contents:
   - RunSpatialNetwork
+  - RunSpatialCellChat
   - MistyRPlot
   - StatialKontextualPlot
   - RunSpatialNeighborhood
@@ -270,6 +271,7 @@ reference:
   - SpatialIntegrationPlot
   - SpatialNeighborhoodPlot
   - SpatialNetworkPlot
+  - SpatialCellChatPlot
   - SpatialCellPlot
   - Cell2locationPlot
   - SpatialSpotPlot
@@ -410,6 +412,7 @@ reference:
   - RunSecActPatternGenes
   - RunSecActVelocity
   - RunCellChat
+  - GetCCCObject
   - RunCellphoneDB
   - RunLIANA
   - RunMDIC3
