@@ -309,6 +309,60 @@ For label-level contextual scores, use
 `StatialKontextualPlot(spatial)` after `RunStatialKontextual()`. These dedicated
 plots summarize stored backend output and never rerun the analysis.
 
+## Add Spatially Constrained Communication Deliberately
+
+`RunCellChat()` and `RunSpatialCellChat()` answer different questions. The
+first estimates expression-supported communication without a physical spatial
+constraint. The second uses micron-scale distances and stores its group-level
+table under the distinct method name `"SpatialCellChat"`, so the two results
+can coexist in `spatial@tools$CCC` without overwriting one another.
+
+Choose the analysis level from the observation represented by each column:
+
+- `"cell"` for segmented cells such as Xenium or CosMx;
+- `"spot"` for spot/domain communication, which must not be described as
+  direct cell-type communication;
+- `"composition"` for Visium spots with a spot-by-cell-type proportion matrix.
+
+Distance parameters are always interpreted in microns. For Visium full-image
+pixel coordinates, provide the conversion ratio from
+`65 / spot_diameter_fullres`; do not substitute low-resolution display scales.
+Multiple samples are run independently and require an explicit `sample.by`
+and image mapping.
+
+```{r spatial-cellchat, eval=FALSE}
+spatial <- RunSpatialCellChat(
+  spatial,
+  group.by = "spatial_domain",
+  image = "slice1",
+  technology = "visium",
+  analysis.level = "spot",
+  coordinate.unit = "pixel",
+  ratio = 65 / spot_diameter_fullres,
+  tol = 32.5,
+  species = "Homo_sapiens",
+  database = "protein",
+  store.object = "minimal"
+)
+
+CCCNetworkPlot(spatial, method = "SpatialCellChat", plot_type = "circle")
+CCCHeatmap(spatial, method = "SpatialCellChat", plot_type = "bubble")
+SpatialCellChatPlot(spatial, plot_type = "incoming")
+GetSpatialResult(spatial, method = "RunSpatialCellChat")
+```
+
+`store.object = "minimal"` stores normalized interaction, pathway, network,
+coordinate, and diagnostic results but not the large native S4 object or a
+materialized cell-by-cell-by-LR edge table. Use `"full"` only when native
+SpatialCellChat downstream analysis is required, then retrieve it with
+`GetCCCObject(method = "SpatialCellChat")`.
+
+Visium spots form a hexagonal acquisition grid, but six-neighbor topology is
+not a replacement for the Euclidean diffusion model. Contact-dependent
+signaling is therefore rejected in spot mode. P-values from spatial
+permutation and non-spatial CellChat analyses also have different null models
+and should not be compared as if they were interchangeable.
+
 ## What to Report
 
 A compact first-pass spatial report should include:

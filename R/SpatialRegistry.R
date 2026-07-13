@@ -88,6 +88,7 @@ spatial_method_registry <- function() {
 
     entry("RunSpatialNetwork", "analysis", "network", "RunSpatialNetwork.R", "SpatialNetwork", "biocneighbors", coordinate_space_current = "raw", coordinate_requirement = "distance_sensitive", scalability = "sparse", plot_function = "SpatialNetworkPlot"),
     entry("RunSpatialNeighborhood", "analysis", "neighborhood", "RunSpatialNeighborhood.R", "SpatialNeighborhood", "core;spicyr", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", scalability = "sparse_required", plot_function = "SpatialNeighborhoodPlot", backend_requirement = "any"),
+    entry("RunSpatialCellChat", "analysis", "communication", "RunSpatialCellChat.R", "SpatialCellChat", "spatialcellchat", coordinate_space_current = "raw", coordinate_requirement = "distance_sensitive", scalability = "sparse_required", plot_function = "SpatialCellChatPlot"),
     entry("RunStatialKontextual", "analysis", "neighborhood", "RunStatialKontextual.R", "StatialKontextual", "statial", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "StatialKontextualPlot"),
     entry("RunSpatialIntegration", "analysis", "integration", "RunSpatialIntegration.R", "SpatialIntegration", "precast;bass;spatialmnn", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "SpatialIntegrationPlot", backend_requirement = "any"),
     entry("RunMistyR", "analysis", "neighborhood", "RunMistyR.R", "MistyR", "mistyr", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "MistyRPlot"),
@@ -104,6 +105,7 @@ spatial_method_registry <- function() {
     entry("SpatialIntegrationPlot", "plot", "visualization", "RunSpatialIntegration.R", coordinate_space_current = "display", coordinate_requirement = "display_only"),
     entry("SpatialNeighborhoodPlot", "plot", "visualization", "RunSpatialNeighborhood.R", coordinate_space_current = "display", coordinate_requirement = "display_only"),
     entry("SpatialNetworkPlot", "plot", "visualization", "RunSpatialNetwork.R", coordinate_space_current = "display", coordinate_requirement = "display_only"),
+    entry("SpatialCellChatPlot", "plot", "visualization", "RunSpatialCellChat.R", backend_id = "core", coordinate_space_current = "display", coordinate_requirement = "display_only"),
     entry("SpatialCellPlot", "plot", "visualization", "SpatialCellPlot.R", coordinate_space_current = "display", coordinate_requirement = "display_only"),
     entry("SpatialSpotPlot", "plot", "visualization", "SpatialSpotPlot.R", coordinate_space_current = "display", coordinate_requirement = "display_only"),
     entry("SpatialVariableFeaturePlot", "plot", "visualization", "RunSpatialVariableFeatures.R", coordinate_space_current = "display", coordinate_requirement = "display_only"),
@@ -179,6 +181,18 @@ spatial_backend_registry <- function() {
   list(
     core = backend("core", "scop", runtime = "core"),
     biocneighbors = backend("biocneighbors", "BiocNeighbors", symbols = c("findKNN", "findNeighbors")),
+    spatialcellchat = backend(
+      "spatialcellchat",
+      "SpatialCellChat",
+      "jinworks/SpatialCellChat",
+      c(
+        "createSpatialCellChat", "subsetDB", "subsetData", "preProcessing",
+        "identifyOverExpressedGenes", "identifyOverExpressedInteractions",
+        "computeCommunProb", "filterProbability", "filterCommunication",
+        "computeAvgCommunProb", "computeAvgCommunProb_Visium",
+        "computeCommunProbPathway", "aggregateNet", "subsetCommunication"
+      )
+    ),
     spanorm = backend("spanorm", "SpaNorm", symbols = "SpaNorm"),
     spatialqm = backend("spatialqm", "SpatialQM"),
     spotsweeper = backend("spotsweeper", "SpotSweeper"),
