@@ -9,17 +9,13 @@ DimsEstimatePlot(
   max_pcs = 50,
   variance_thresholds = c(0.6, 0.7, 0.8, 0.9),
   reduction = NULL,
-  palette = "Chinese",
-  palcolor = NULL,
+  palcolor = c("#D70440", "#0AA344", "#1772B4"),
   aspect.ratio = NULL,
   title = NULL,
   subtitle = NULL,
   xlab = "Principal component",
   theme_use = "theme_scop",
   theme_args = list(),
-  combine = TRUE,
-  nrow = NULL,
-  ncol = NULL,
   seed = 11,
   verbose = TRUE
 )
@@ -36,31 +32,23 @@ Default is \code{c(0.60, 0.70, 0.80, 0.90)}.}
 automatically selects a PCA-like reduction via \code{\link[=DefaultReduction]{DefaultReduction()}} with
 \code{pattern = "pca"}.}
 
-\item{palette}{Palette used for the main curves. Default is \code{"Chinese"}.}
+\item{palcolor}{Colors for the selected-PC line, curves, and bars,
+respectively. Default is \code{c("#D70440", "#0AA344", "#1772B4")}.}
 
-\item{palcolor}{Optional palette colors.}
+\item{aspect.ratio}{Aspect ratio of the plot. Default is \code{NULL}.}
 
-\item{aspect.ratio}{Aspect ratio of each panel. Default is \code{NULL}.}
+\item{title}{Plot title. When \code{NULL} (default),
+reports the selected number of PCs.}
 
-\item{title}{Title for the combined plot. When \code{NULL} (default), an
-auto-generated summary line is used.}
+\item{subtitle}{Plot subtitle. Default is
+\code{NULL}.}
 
-\item{subtitle}{Subtitle for the combined plot. Default is \code{NULL}.}
-
-\item{xlab}{X-axis label shared by all panels. Default is
-\code{"Principal component"}.}
+\item{xlab}{X-axis label. Default is \code{"Principal component"}.}
 
 \item{theme_use}{Theme function used to style the plot.
 Default is \code{"theme_scop"}.}
 
 \item{theme_args}{Other arguments passed to the \code{theme_use}.}
-
-\item{combine}{Whether to combine the four panels into one plot. Default is
-\code{TRUE}. When \code{FALSE}, returns a named list of ggplot objects.}
-
-\item{nrow}{Number of rows in the combined layout. Default is \code{NULL}.}
-
-\item{ncol}{Number of columns in the combined layout. Default is \code{NULL}}
 
 \item{seed}{Random seed. Default is \code{11}.}
 
@@ -68,8 +56,8 @@ Default is \code{"theme_scop"}.}
 Default is \code{TRUE}.}
 }
 \value{
-A patchwork plot object when \code{combine = TRUE},
-or a named list of ggplot objects when \code{combine = FALSE}.
+A \code{ggplot} object showing per-PC explained variance (bars, left
+axis) and cumulative explained variance (line, right axis).
 }
 \description{
 Dimension estimate diagnostic plot
