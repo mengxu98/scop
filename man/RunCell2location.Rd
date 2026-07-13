@@ -118,8 +118,6 @@ The figure below was generated from the official cell2location Human Lymph
 Node tutorial data using 600 genuine Visium locations, 1,600 genuine
 reference cells across 20 annotated cell types, and the complete two-stage
 model implemented by this function.
-
-\if{html}{\figure{cell2location_human_lymph_node.png}{options: width=100\% alt="cell2location cell-type proportions in the official Human Lymph Node Visium dataset"}}
 }
 
 \examples{
