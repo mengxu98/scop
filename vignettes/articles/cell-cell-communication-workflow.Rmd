@@ -38,6 +38,11 @@ inference, inspect sender-receiver summaries, then focus on specific ligands,
 receptors, pathways, or downstream targets only after the global result looks
 stable.
 
+This workflow starts from single-cell expression data. For spatially constrained communication, use
+`RunSpatialCellChat()` and the spatial workflow article. SpatialCellChat is
+stored as a distinct CCC method because its distance constraint and spatial
+permutation basis are not interchangeable with non-spatial CellChat scores.
+
 The examples below use the bundled `pancreas_sub` data and run the R-side
 CellChat and LIANA wrappers directly when those optional packages are available.
 CellphoneDB is intentionally not used here because it requires a Python
