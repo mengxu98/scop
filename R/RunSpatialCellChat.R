@@ -225,7 +225,12 @@ spatialcellchat_image_map <- function(srt, sample_names, image = NULL) {
         message_type = "error"
       )
     }
-    return(stats::setNames(list(images[[1L]]), sample_names))
+    selected_image <- spatial_image_resolve(
+      srt = srt,
+      image = NULL,
+      image_policy = "strict"
+    )$image
+    return(stats::setNames(list(selected_image), sample_names))
   }
   image <- as.character(image)
   if (length(sample_names) == 1L && length(image) == 1L) {
@@ -659,6 +664,8 @@ spatialcellchat_run_one <- function(
 #'
 #' @seealso [GetSpatialResult], [GetCCCObject], [SpatialCellChatPlot],
 #' [CCCNetworkPlot], [CCCHeatmap], [CCCStatPlot]
+#'
+#' @concept spatial-producer
 #'
 #' @export
 RunSpatialCellChat <- function(

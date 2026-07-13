@@ -113,3 +113,4 @@ and composition-level results retain distinct interpretations.
 [GetSpatialResult], [GetCCCObject], [SpatialCellChatPlot],
 [CCCNetworkPlot], [CCCHeatmap], [CCCStatPlot]
 }
+\concept{spatial-producer}
