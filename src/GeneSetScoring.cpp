@@ -1312,22 +1312,19 @@ NumericMatrix plage_dense(
       if (!row_needed[gene]) {
         continue;
       }
-      // GSVA::plage() preserves a sparse matrix and calls scale() only on
-      // stored values.  Structural zeros remain zero, so the PLAGE SVD must
-      // use non-zero-only means and standard deviations here.
-      const int nonzero_count = row_counts[gene];
-      if (nonzero_count > 1) {
-        const double mean = row_sums[gene] / static_cast<double>(nonzero_count);
-        double var = (row_sq_sums[gene] - static_cast<double>(nonzero_count) * mean * mean) /
-          static_cast<double>(nonzero_count - 1);
-        if (var < 0.0 && var > -1e-12) {
-          var = 0.0;
-        }
-        if (R_finite(var) && var > 0.0) {
-          row_means[gene] = mean;
-          row_sds[gene] = std::sqrt(var);
-          row_valid[gene] = 1;
-        }
+      // GSVA >= 2.6 standardizes every value in a row, including structural
+      // zeros in sparse matrices.  Keep the sparse input representation for
+      // storage, but use the full row width for the PLAGE standardization.
+      const double mean = row_sums[gene] / static_cast<double>(n_cells);
+      double var = (row_sq_sums[gene] - static_cast<double>(n_cells) * mean * mean) /
+        static_cast<double>(n_cells - 1);
+      if (var < 0.0 && var > -1e-12) {
+        var = 0.0;
+      }
+      if (R_finite(var) && var > 0.0) {
+        row_means[gene] = mean;
+        row_sds[gene] = std::sqrt(var);
+        row_valid[gene] = 1;
       }
 
       // Keep the original dense-expression standardization separately for
@@ -1372,10 +1369,14 @@ NumericMatrix plage_dense(
       static_cast<arma::uword>(n_cells),
       arma::fill::zeros
     );
-    // Match GSVA::plage() sparse semantics: only stored values are centered
-    // and scaled; structural zeros remain zero.
+    // Match GSVA >= 2.6 sparse semantics: center and scale every value,
+    // including structural zeros.
     for (int row = 0; row < effective_size; ++row) {
       const int gene = valid_genes[row];
+      const double zero_value = -row_means[gene] / row_sds[gene];
+      for (int cell = 0; cell < n_cells; ++cell) {
+        z(static_cast<arma::uword>(row), static_cast<arma::uword>(cell)) = zero_value;
+      }
       const int row_start = row_ptr[gene];
       const int row_end = row_ptr[gene + 1];
       for (int ptr = row_start; ptr < row_end; ++ptr) {

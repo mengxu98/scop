@@ -514,25 +514,21 @@ pc_selection_stats <- function(
 #' @param reduction Reduction name to inspect. Default is `NULL`, which
 #' automatically selects a PCA-like reduction via [DefaultReduction()] with
 #' `pattern = "pca"`.
-#' @param palette Palette used for the main curves. Default is `"Chinese"`.
-#' @param palcolor Optional palette colors.
-#' @param aspect.ratio Aspect ratio of each panel. Default is `NULL`.
-#' @param title Title for the combined plot. When `NULL` (default), an
-#' auto-generated summary line is used.
-#' @param subtitle Subtitle for the combined plot. Default is `NULL`.
-#' @param xlab X-axis label shared by all panels. Default is
-#' `"Principal component"`.
+#' @param palcolor Colors for the selected-PC line, curves, and bars,
+#' respectively. Default is `c("#D70440", "#0AA344", "#1772B4")`.
+#' @param aspect.ratio Aspect ratio of the plot. Default is `NULL`.
+#' @param title Plot title. When `NULL` (default),
+#' reports the selected number of PCs.
+#' @param subtitle Plot subtitle. Default is
+#' `NULL`.
+#' @param xlab X-axis label. Default is `"Principal component"`.
 #' @param theme_use Theme function used to style the plot.
 #' Default is `"theme_scop"`.
 #' @param theme_args Other arguments passed to the `theme_use`.
-#' @param combine Whether to combine the four panels into one plot. Default is
-#' `TRUE`. When `FALSE`, returns a named list of ggplot objects.
-#' @param nrow Number of rows in the combined layout. Default is `NULL`.
-#' @param ncol Number of columns in the combined layout. Default is `NULL`
 #' @param seed Random seed. Default is `11`.
 #'
-#' @return A patchwork plot object when `combine = TRUE`,
-#' or a named list of ggplot objects when `combine = FALSE`.
+#' @return A `ggplot` object showing per-PC explained variance (bars, left
+#' axis) and cumulative explained variance (line, right axis).
 #'
 #' @export
 #'
@@ -547,17 +543,13 @@ DimsEstimatePlot <- function(
   max_pcs = 50,
   variance_thresholds = c(0.60, 0.70, 0.80, 0.90),
   reduction = NULL,
-  palette = "Chinese",
-  palcolor = NULL,
+  palcolor = c("#D70440", "#0AA344", "#1772B4"),
   aspect.ratio = NULL,
   title = NULL,
   subtitle = NULL,
   xlab = "Principal component",
   theme_use = "theme_scop",
   theme_args = list(),
-  combine = TRUE,
-  nrow = NULL,
-  ncol = NULL,
   seed = 11,
   verbose = TRUE
 ) {
@@ -588,9 +580,6 @@ DimsEstimatePlot <- function(
     variance_thresholds = variance_thresholds
   )
   plot_data <- stats_use[["plot_data"]]
-  annotation_data <- stats_use[["annotation_data"]]
-  threshold_point <- stats_use[["threshold_point"]]
-  elbow_point <- stats_use[["elbow_point"]]
 
   recommended_dims <- RunDimsEstimate(
     srt = srt,
@@ -601,16 +590,15 @@ DimsEstimatePlot <- function(
   )
   recommended_pcs <- max(recommended_dims)
 
-  main_colors <- palette_colors(
-    type = "discrete",
-    palette = palette,
-    n = 9,
-    palcolor = palcolor
-  )
-  threshold_colors <- palette_colors(
-    seq_len(max(1L, nrow(annotation_data))),
-    palette = "Chinese"
-  )
+  if (!is.character(palcolor) || length(palcolor) < 3L) {
+    log_message(
+      "{.arg palcolor} must provide three colors: selected-PC line, curves, and bars",
+      message_type = "error"
+    )
+  }
+  selection_color <- palcolor[1]
+  cumulative_color <- palcolor[2]
+  variance_color <- palcolor[3]
   if (identical(theme_use, "theme_scop")) {
     theme_use <- "theme_this"
   }
@@ -624,159 +612,89 @@ DimsEstimatePlot <- function(
       )
   }
 
-  p1 <- ggplot2::ggplot(
-    plot_data,
-    ggplot2::aes(x = .data$PC, y = .data$stdev)
-  ) +
-    ggplot2::geom_line(color = main_colors[1], linewidth = 0.9) +
-    ggplot2::geom_point(color = main_colors[2], size = 1.6) +
-    ggplot2::geom_vline(
-      xintercept = recommended_pcs,
-      color = "#1F1F1F",
-      linetype = "longdash",
-      linewidth = 0.7
-    )
-
-  for (i in seq_len(nrow(annotation_data))) {
-    if (!is.na(annotation_data$pc[i]) && annotation_data$pc[i] <= max_pcs) {
-      p1 <- p1 +
-        ggplot2::geom_vline(
-          xintercept = annotation_data$pc[i],
-          linetype = "dashed",
-          color = threshold_colors[i],
-          alpha = 0.55
-        ) +
-        ggplot2::annotate(
-          "text",
-          x = annotation_data$pc[i],
-          y = max(plot_data$stdev) * (1 - i * 0.11),
-          label = paste0(annotation_data$threshold[i], "%"),
-          color = threshold_colors[i],
-          size = 3.1,
-          hjust = -0.15
-        )
-    }
-  }
+  max_individual_var <- max(plot_data$individual_var, na.rm = TRUE)
+  max_cumulative_var <- max(plot_data$cumulative_var, na.rm = TRUE)
+  scale_factor <- max_individual_var / max_cumulative_var
+  y_upper <- max_individual_var * 1.08
+  plot_data$variance_series <- "Variance explained"
+  plot_data$cumulative_series <- "Cumulative"
+  threshold_data <- data.frame(
+    scaled_threshold = variance_thresholds * 100 * scale_factor
+  )
 
   p1 <- apply_theme(
-    p1 +
-      ggplot2::labs(
-        title = "Elbow",
-        x = xlab,
-        y = "Standard deviation"
-      )
-  )
-
-  p2 <- ggplot2::ggplot(
-    plot_data,
-    ggplot2::aes(x = .data$PC, y = .data$cumulative_var)
-  ) +
-    ggplot2::geom_line(color = main_colors[3], linewidth = 0.9) +
-    ggplot2::geom_point(color = main_colors[4], size = 1.4) +
-    ggplot2::geom_vline(
-      xintercept = recommended_pcs,
-      color = "#1F1F1F",
-      linetype = "longdash",
-      linewidth = 0.7
-    )
-  for (i in seq_along(variance_thresholds)) {
-    p2 <- p2 +
+    ggplot2::ggplot(plot_data, ggplot2::aes(x = .data$PC)) +
+      ggplot2::geom_col(
+        ggplot2::aes(y = .data$individual_var, fill = .data$variance_series),
+        alpha = 0.75,
+        width = 0.82
+      ) +
+      ggplot2::geom_line(
+        ggplot2::aes(
+          y = .data$cumulative_var * scale_factor,
+          color = .data$cumulative_series,
+          group = 1
+        ),
+        linewidth = 0.9
+      ) +
+      ggplot2::geom_point(
+        ggplot2::aes(
+          y = .data$cumulative_var * scale_factor,
+          color = .data$cumulative_series
+        ),
+        size = 1.8
+      ) +
       ggplot2::geom_hline(
-        yintercept = variance_thresholds[i] * 100,
+        data = threshold_data,
+        ggplot2::aes(yintercept = .data$scaled_threshold),
+        color = cumulative_color,
         linetype = "dashed",
-        color = threshold_colors[i],
-        alpha = 0.55
-      )
-  }
-  p2 <- apply_theme(
-    p2 +
-      ggplot2::scale_y_continuous(limits = c(0, 100)) +
-      ggplot2::labs(
-        title = "Cumulative variance",
-        x = xlab,
-        y = "Cumulative variance (%)"
-      )
-  )
-
-  p3 <- apply_theme(
-    ggplot2::ggplot(
-      plot_data,
-      ggplot2::aes(x = .data$PC, y = .data$marginal_gain)
-    ) +
-      ggplot2::geom_col(fill = main_colors[5], alpha = 0.85, width = 0.85) +
-      ggplot2::geom_hline(
-        yintercept = 0.5,
-        linetype = "dashed",
-        color = "#B22222"
+        alpha = 0.4,
+        show.legend = FALSE
       ) +
       ggplot2::geom_vline(
         xintercept = recommended_pcs,
-        color = "#1F1F1F",
-        linetype = "longdash",
-        linewidth = 0.7
+        color = selection_color,
+        linetype = "dashed",
+        linewidth = 0.8,
+        show.legend = FALSE
       ) +
-      ggplot2::labs(
-        title = "Marginal gain",
-        x = xlab,
-        y = "Variance gained (%)"
-      )
-  )
-
-  p4 <- apply_theme(
-    ggplot2::ggplot(
-      plot_data[
-        seq.int(min(3L, nrow(plot_data)), nrow(plot_data)), ,
-        drop = FALSE
-      ],
-      ggplot2::aes(x = .data$PC, y = abs(.data$curvature))
-    ) +
-      ggplot2::geom_line(color = main_colors[6], linewidth = 0.9) +
-      ggplot2::geom_point(color = main_colors[7], size = 1.4) +
-      ggplot2::geom_vline(
-        xintercept = recommended_pcs,
-        color = "#1F1F1F",
-        linetype = "longdash",
-        linewidth = 0.7
-      ) +
-      ggplot2::labs(
-        title = "Curvature",
-        x = xlab,
-        y = "Absolute curvature"
-      )
-  )
-
-  plist <- list(elbow = p1, cumvar = p2, marginal = p3, curvature = p4)
-
-  if (isTRUE(combine)) {
-    plot <- patchwork::wrap_plots(
-      plotlist = plist,
-      nrow = nrow,
-      ncol = ncol %||% 2L
-    )
-    auto_title <- title %||%
-      paste0(
-        "Recommended PCs: ",
-        recommended_pcs,
-        if (!is.na(threshold_point)) {
-          paste0(" | marginal <0.5% at ", threshold_point)
-        } else {
-          ""
-        }
-      )
-    plot <- plot +
-      patchwork::plot_annotation(
-        title = auto_title,
-        subtitle = subtitle,
-        theme = ggplot2::theme(
-          plot.title = ggplot2::element_text(face = "bold"),
-          plot.margin = ggplot2::margin(5.5, 5.5, 5.5, 5.5)
+      ggplot2::scale_y_continuous(
+        name = "Variance explained (%)",
+        limits = c(0, y_upper),
+        sec.axis = ggplot2::sec_axis(
+          transform = ~ . / scale_factor,
+          name = "Cumulative variance (%)"
         )
+      ) +
+      ggplot2::scale_fill_manual(
+        values = c("Variance explained" = variance_color)
+      ) +
+      ggplot2::scale_color_manual(
+        values = c("Cumulative" = cumulative_color)
+      ) +
+      ggplot2::scale_linetype_manual(values = c("Selected PCs" = "dashed")) +
+      ggplot2::labs(
+        title = title %||% paste0("PCA elbow plot | Selected: ", recommended_pcs, " PCs"),
+        subtitle = subtitle,
+        x = xlab,
+        fill = NULL,
+        color = NULL,
+        linetype = NULL
+      ) +
+      ggplot2::theme(
+        legend.position = "none",
+        legend.box = "horizontal",
+        axis.title.y.left = ggplot2::element_text(color = variance_color),
+        axis.text.y.left = ggplot2::element_text(color = variance_color),
+        axis.title.y.right = ggplot2::element_text(color = cumulative_color),
+        axis.text.y.right = ggplot2::element_text(color = cumulative_color)
       )
-    attr(plot, "data") <- plot_data
-    attr(plot, "recommended_dims") <- recommended_dims
-    attr(plot, "recommended_pcs") <- recommended_pcs
-    return(plot)
-  }
+  )
 
-  return(plist)
+  attr(p1, "data") <- plot_data
+  attr(p1, "recommended_dims") <- recommended_dims
+  attr(p1, "recommended_pcs") <- recommended_pcs
+  attr(p1, "scale_factor") <- scale_factor
+  return(p1)
 }

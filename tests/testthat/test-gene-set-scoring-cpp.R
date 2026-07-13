@@ -73,13 +73,13 @@ reference_plage_scores <- function(expr, gene_sets, min_size = 1L, max_size = .M
   z <- matrix(0, nrow = n_genes, ncol = n_cells)
   row_valid <- logical(n_genes)
   for (gene in seq_len(n_genes)) {
-    nonzero <- which(expr[gene, ] != 0 & is.finite(expr[gene, ]))
-    if (length(nonzero) <= 1L) {
+    values <- expr[gene, ]
+    if (sum(is.finite(values)) <= 1L) {
       next
     }
-    scaled <- scale(expr[gene, nonzero])
+    scaled <- scale(values)
     if (all(is.finite(scaled))) {
-      z[gene, nonzero] <- scaled
+      z[gene, ] <- scaled
       row_valid[gene] <- TRUE
     }
   }
@@ -151,6 +151,7 @@ test_that("PLAGE gene-gene covariance path matches right singular vector scores"
 
 test_that("PLAGE sparse standardization matches GSVA", {
   skip_if_not_installed("GSVA")
+  skip_if(utils::packageVersion("GSVA") < "2.6.0")
   set.seed(20260711)
   expr <- matrix(stats::rpois(18 * 41, lambda = 0.9), nrow = 18)
   expr[expr < 2] <- 0
