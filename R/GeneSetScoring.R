@@ -585,7 +585,8 @@ run_zscore_scores <- function(
   gene_sets,
   min_gs_size = 10,
   max_gs_size = 500,
-  sparse_standardize = FALSE
+  sparse_standardize = FALSE,
+  sparse_standardize_full = FALSE
 ) {
   expr_counts <- gene_set_scoring_to_dgC(expr_counts)
   keep_features <- Matrix::rowSums(expr_counts) > 0
@@ -618,7 +619,8 @@ run_zscore_scores <- function(
     gene_sets = gene_set_idx,
     min_size = as.integer(min_gs_size),
     max_size = max_size,
-    sparse_standardize = sparse_standardize
+    sparse_standardize = sparse_standardize,
+    sparse_standardize_full = sparse_standardize_full
   )
   dimnames(scores) <- list(colnames(expr_counts), names(gene_set_idx))
   gene_set_scoring_drop_invalid_score_sets(scores)
@@ -672,6 +674,11 @@ gene_set_scoring_plage_dense_standardize <- function() {
   # GSVA 2.6 began standardizing structural dgCMatrix zeros in PLAGE. When
   # GSVA is not installed, prefer the current full-row definition.
   !requireNamespace("GSVA", quietly = TRUE) ||
+    utils::packageVersion("GSVA") >= "2.6.0"
+}
+
+gene_set_scoring_zscore_sparse_standardize_full <- function() {
+  requireNamespace("GSVA", quietly = TRUE) &&
     utils::packageVersion("GSVA") >= "2.6.0"
 }
 

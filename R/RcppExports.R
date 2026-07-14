@@ -129,8 +129,8 @@ ssgsea_rank_dense <- function(expr, gene_sets, alpha = 0.25, normalize = TRUE) {
     .Call(`_scop_ssgsea_rank_dense`, expr, gene_sets, alpha, normalize)
 }
 
-zscore_dense <- function(expr, gene_sets, min_size = 1L, max_size = 2147483647L, sparse_standardize = FALSE) {
-    .Call(`_scop_zscore_dense`, expr, gene_sets, min_size, max_size, sparse_standardize)
+zscore_dense <- function(expr, gene_sets, min_size = 1L, max_size = 2147483647L, sparse_standardize = FALSE, sparse_standardize_full = FALSE) {
+    .Call(`_scop_zscore_dense`, expr, gene_sets, min_size, max_size, sparse_standardize, sparse_standardize_full)
 }
 
 plage_dense <- function(expr, gene_sets, min_size = 1L, max_size = 2147483647L, dense_standardize = FALSE) {

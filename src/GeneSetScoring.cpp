@@ -1090,7 +1090,8 @@ NumericMatrix zscore_dense(
   List gene_sets,
   int min_size = 1,
   int max_size = 2147483647,
-  bool sparse_standardize = false
+  bool sparse_standardize = false,
+  bool sparse_standardize_full = false
 ) {
   IntegerVector dims = expr.slot("Dim");
   const int n_genes = dims[0];
@@ -1133,6 +1134,8 @@ NumericMatrix zscore_dense(
   std::vector<double> gene_sums(n_genes, 0.0);
   std::vector<double> gene_sq_sums(n_genes, 0.0);
   std::vector<int> gene_nonzero_counts(n_genes, 0);
+  std::vector<double> gene_nonzero_mins(n_genes, R_PosInf);
+  std::vector<double> gene_nonzero_maxs(n_genes, R_NegInf);
 
   for (int cell = 0; cell < n_cells; ++cell) {
     for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
@@ -1143,6 +1146,8 @@ NumericMatrix zscore_dense(
         gene_sq_sums[gene] += value * value;
         if (value != 0.0) {
           ++gene_nonzero_counts[gene];
+          gene_nonzero_mins[gene] = std::min(gene_nonzero_mins[gene], value);
+          gene_nonzero_maxs[gene] = std::max(gene_nonzero_maxs[gene], value);
         }
       }
     }
@@ -1157,8 +1162,13 @@ NumericMatrix zscore_dense(
         gene_sds[gene] = R_NaN;
         continue;
       }
+      // GSVA < 2.6 scales only stored dgCMatrix values. GSVA >= 2.6 uses
+      // complete-row statistics but still omits structural zeros from the
+      // sparse accumulation. Dense callers include those zero contributions.
       const int standardize_count = sparse_standardize ? gene_nonzero_counts[gene] : n_cells;
-      if (standardize_count <= 1) {
+      const bool constant_nonzero = gene_nonzero_counts[gene] > 0 &&
+        gene_nonzero_mins[gene] == gene_nonzero_maxs[gene];
+      if (standardize_count <= 1 || (sparse_standardize_full && constant_nonzero)) {
         gene_means[gene] = R_NaN;
         gene_sds[gene] = R_NaN;
         continue;
@@ -1181,6 +1191,8 @@ NumericMatrix zscore_dense(
   std::vector<double>().swap(gene_sums);
   std::vector<double>().swap(gene_sq_sums);
   std::vector<int>().swap(gene_nonzero_counts);
+  std::vector<double>().swap(gene_nonzero_mins);
+  std::vector<double>().swap(gene_nonzero_maxs);
 
   // CellScoring materializes expression before z-scoring; RunGSVA preserves
   // sparse input and GSVA scales only stored values. Keep both public
@@ -1194,7 +1206,8 @@ NumericMatrix zscore_dense(
     }
     const std::vector<int>& sets_for_gene = gene_to_sets[gene];
     if (sets_for_gene.empty()) continue;
-    const double zero_contrib = sparse_standardize ? 0.0 : -gene_means[gene] / gene_sds[gene];
+    const double zero_contrib = (sparse_standardize || sparse_standardize_full)
+      ? 0.0 : -gene_means[gene] / gene_sds[gene];
     for (std::vector<int>::const_iterator it = sets_for_gene.begin(); it != sets_for_gene.end(); ++it) {
       zero_sum[*it] += zero_contrib;
       ++valid_set_sizes[*it];
@@ -1215,7 +1228,9 @@ NumericMatrix zscore_dense(
       if (sets_for_gene.empty()) continue;
       const double contrib = sparse_standardize
         ? (value - gene_means[gene]) / gene_sds[gene]
-        : value / gene_sds[gene];
+        : (sparse_standardize_full
+          ? (value - gene_means[gene]) / gene_sds[gene]
+          : value / gene_sds[gene]);
       for (std::vector<int>::const_iterator it = sets_for_gene.begin(); it != sets_for_gene.end(); ++it) {
         scores(cell, *it) += contrib;
       }
@@ -1272,6 +1287,8 @@ NumericMatrix plage_dense(
 
   std::vector<double> row_sums(n_genes, 0.0);
   std::vector<double> row_sq_sums(n_genes, 0.0);
+  std::vector<double> row_nonzero_mins(n_genes, R_PosInf);
+  std::vector<double> row_nonzero_maxs(n_genes, R_NegInf);
 
   for (int cell = 0; cell < n_cells; ++cell) {
     for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
@@ -1280,6 +1297,8 @@ NumericMatrix plage_dense(
       if (row_needed[gene] && R_finite(value) && value != 0.0) {
         row_sums[gene] += value;
         row_sq_sums[gene] += value * value;
+        row_nonzero_mins[gene] = std::min(row_nonzero_mins[gene], value);
+        row_nonzero_maxs[gene] = std::max(row_nonzero_maxs[gene], value);
       }
     }
   }
@@ -1362,6 +1381,8 @@ NumericMatrix plage_dense(
     }
   }
   std::vector<int>().swap(row_counts);
+  std::vector<double>().swap(row_nonzero_mins);
+  std::vector<double>().swap(row_nonzero_maxs);
 
   NumericMatrix scores(n_cells, n_sets);
   for (int set_i = 0; set_i < n_sets; ++set_i) {

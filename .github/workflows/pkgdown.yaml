@@ -44,8 +44,11 @@ jobs:
 
           files="$(git diff --name-only "$base" "$head")"
           echo "$files"
+          # Deploy only when rendered website inputs change. Source-only
+          # changes are covered by R-CMD-check; their documentation is
+          # regenerated when the corresponding man pages are committed.
           if printf '%s\n' "$files" |
-            grep -Ev '^(scripts/.*|tests/.*|\.github/workflows/(pkgdown|test-coverage)\.yaml)$' |
+            grep -E '^(README\.md|NEWS\.md|DESCRIPTION|_pkgdown\.yml|man/|vignettes/|articles/|pkgdown/|inst/pkgdown/)' |
             grep -q .; then
             echo "package_changed=true" >> "$GITHUB_OUTPUT"
           else
@@ -79,6 +82,7 @@ jobs:
         with:
           extra-packages: any::pkgdown, local::.
           needs: website
+          cache: true
 
       - name: Determine pkgdown scope
         id: scope
