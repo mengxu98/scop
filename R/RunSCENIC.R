@@ -248,6 +248,12 @@ RunSCENIC <- function(
     label = "Checking SCENIC Python packages",
     verbose = verbose
   )
+  PrepareEnv(
+    envname = envname,
+    conda = conda,
+    modules = "scenic",
+    verbose = verbose
+  )
   check_python(
     packages = scenic_python_packages,
     envname = envname,
