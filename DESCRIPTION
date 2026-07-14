@@ -39,7 +39,7 @@ Imports:
     Seurat,
     SeuratObject,
     SummarizedExperiment,
-    thisplot (>= 0.4.2),
+    thisplot (>= 0.4.3),
     thisutils (>= 0.4.8),
     uwot
 Suggests:

@@ -18,6 +18,9 @@ EnrichmentPlot(
   id_use = NULL,
   pvalueCutoff = NULL,
   padjustCutoff = 0.05,
+  score_col = NULL,
+  scoreCutoff = NULL,
+  score_label = "Score",
   topTerm = ifelse(plot_type == "enrichmap", 100, 6),
   compare_only_sig = FALSE,
   topWord = 100,
@@ -95,6 +98,14 @@ Default is \code{NULL}.}
 
 \item{padjustCutoff}{The p-adjusted cutoff.
 Default is \code{0.05}.}
+
+\item{score_col}{Optional numeric score column. When supplied, terms are
+ranked and weighted by the absolute score and no p-value semantics are used.
+This is intended for activity or importance results such as pathway scores.}
+
+\item{scoreCutoff}{Optional minimum absolute score used with \code{score_col}.}
+
+\item{score_label}{Legend label used with \code{score_col}.}
 
 \item{topTerm}{The number of top terms to display.
 Default is \code{6}, or \code{100} if \code{plot_type} is \code{"enrichmap"}.}

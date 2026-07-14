@@ -48,6 +48,23 @@ test_that("CellDimPlot supports atlas-style grid and marked groups", {
   expect_true(any(vapply(built$data, nrow, integer(1)) == ncol(srt)))
 })
 
+test_that("CellDimPlot keeps synthetic split metadata local", {
+  srt <- make_cell_dim_plot_srt()
+  original_meta <- srt@meta.data
+
+  plot <- CellDimPlot(
+    srt = srt,
+    group.by = "celltype",
+    reduction = "umap",
+    raster = FALSE,
+    force = TRUE
+  )
+
+  expect_s3_class(plot, "ggplot")
+  expect_identical(srt@meta.data, original_meta)
+  expect_false("All.groups" %in% colnames(srt@meta.data))
+})
+
 test_that("CellDimPlot can color subgroups while labeling major groups", {
   srt <- make_cell_dim_plot_srt()
 

@@ -46,11 +46,9 @@
 #' a plot.
 #' @details
 #' GSVA itself returns pathway activity/enrichment scores, not statistical
-#' p-values. In `mode = "score"`, non-heatmap plot types fill `pvalue` and
-#' `p.adjust` internally only to satisfy the shared [EnrichmentPlot()] interface;
-#' these score-derived placeholders should not be interpreted as pathway
-#' significance. Use `mode = "diff"` for real group-level statistical tests on
-#' GSVA scores.
+#' p-values. In `mode = "score"`, plots use signed `GSVA_Score` values directly
+#' and `score_cutoff` is the only score threshold. Use `mode = "diff"` for real
+#' sample-level statistical tests and adjusted p-values on GSVA scores.
 #'
 #' @seealso
 #' [RunGSVA], [EnrichmentPlot]
@@ -224,6 +222,18 @@ GSVAPlot <- function(
   if (identical(mode, "diff") && !plot_type %in% c("volcano", "bar")) {
     log_message(
       "{.arg mode = 'diff'} supports {.arg plot_type} values {.val volcano} and {.val bar}",
+      message_type = "error"
+    )
+  }
+  if (
+    identical(mode, "score") &&
+      (!is.null(pvalueCutoff) || !is.null(padjustCutoff))
+  ) {
+    log_message(
+      paste0(
+        "{.arg pvalueCutoff} and {.arg padjustCutoff} are only available when ",
+        "{.arg mode = 'diff'}. Use {.arg score_cutoff} for score plots."
+      ),
       message_type = "error"
     )
   }
@@ -452,6 +462,62 @@ GSVAPlot <- function(
     ))
   }
 
+  if (plot_type %in% c("bar", "comparison")) {
+    score_df <- gsva_plot_score_table(
+      scores = gsva_scores,
+      enrichment = enrichment,
+      srt = srt,
+      group.by = group.by,
+      group_use = group_use,
+      sort.by = sort.by,
+      topTerm = Inf,
+      score_cutoff = score_cutoff
+    )
+    if (!is.null(features)) {
+      features_flat <- unique(as.character(unlist(features)))
+      score_df <- score_df[
+        score_df[["ID"]] %in% features_flat |
+          score_df[["Description"]] %in% features_flat, ,
+        drop = FALSE
+      ]
+      if (nrow(score_df) == 0L) {
+        log_message(
+          "No matching gene sets found in GSVA results",
+          message_type = "error"
+        )
+      }
+    }
+    theme_fun <- if (is.function(theme_use)) {
+      theme_use
+    } else {
+      get(theme_use, mode = "function", inherits = TRUE)
+    }
+    return(thisplot::StatPlot(
+      meta.data = score_df,
+      stat.by = "Description",
+      value.by = "GSVA_Score",
+      group.by = "Groups",
+      split.by = "Database",
+      stat_type = "value",
+      plot_type = if (identical(plot_type, "bar")) "bar" else "dot",
+      top_n = topTerm,
+      complete_groups = identical(plot_type, "comparison"),
+      rank.by = if (identical(sort.by, "abs")) "absolute" else "value",
+      palette = heatmap_palette,
+      palcolor = heatmap_palcolor,
+      value_limits = limits,
+      value_legend_title = "GSVA score",
+      xlab = if (identical(plot_type, "comparison")) "Group" else NULL,
+      ylab = if (identical(plot_type, "bar")) "GSVA score" else NULL,
+      character_width = character_width,
+      flip = identical(plot_type, "bar"),
+      theme_use = theme_fun,
+      theme_args = theme_args,
+      legend.position = legend.position,
+      legend.direction = legend.direction
+    ))
+  }
+
   if (plot_type != "heatmap") {
     if (is.null(enrichment)) {
       n_terms <- nrow(gsva_scores)
@@ -487,19 +553,6 @@ GSVAPlot <- function(
     }
 
     abs_scores <- abs(enrichment[["GSVA_Score"]])
-    max_score <- max(abs_scores, na.rm = TRUE)
-    if (!is.finite(max_score) || max_score <= 0) {
-      pvalue_scores <- rep(1, length(abs_scores))
-    } else {
-      normalized_scores <- abs_scores / max_score
-      pvalue_scores <- exp(-normalized_scores * 3) * 0.9 + 0.1
-      pvalue_scores <- pmin(pmax(as.numeric(pvalue_scores), 1e-3), 1)
-    }
-
-    enrichment[["pvalue"]] <- as.numeric(enrichment[["pvalue"]] %||% pvalue_scores)
-    enrichment[["p.adjust"]] <- as.numeric(enrichment[["p.adjust"]] %||% pvalue_scores)
-    enrichment[["pvalue"]][!is.finite(enrichment[["pvalue"]])] <- 1
-    enrichment[["p.adjust"]][!is.finite(enrichment[["p.adjust"]])] <- 1
     enrichment[["geneID"]] <- enrichment[["geneID"]] %||% ""
     has_geneid <- any(nzchar(trimws(as.character(enrichment[["geneID"]]))))
 
@@ -515,17 +568,9 @@ GSVAPlot <- function(
         },
         FUN.VALUE = integer(1)
       )
-      denom <- max(gene_counts, na.rm = TRUE)
-      if (!is.finite(denom) || denom <= 0) denom <- 1L
       enrichment[["Count"]] <- as.numeric(enrichment[["Count"]] %||% gene_counts)
-      enrichment[["GeneRatio"]] <- enrichment[["GeneRatio"]] %||% paste0(gene_counts, "/", denom)
-      enrichment[["BgRatio"]] <- enrichment[["BgRatio"]] %||% "1/1"
     } else {
-      denom <- max(abs_scores, na.rm = TRUE)
-      if (!is.finite(denom) || denom <= 0) denom <- 1
       enrichment[["Count"]] <- as.numeric(enrichment[["Count"]] %||% abs_scores)
-      enrichment[["GeneRatio"]] <- enrichment[["GeneRatio"]] %||% paste0(round(abs_scores, 3), "/", round(denom, 3))
-      enrichment[["BgRatio"]] <- enrichment[["BgRatio"]] %||% "1/1"
     }
 
     match_geneset_ids <- function(query) {
@@ -606,8 +651,11 @@ GSVAPlot <- function(
         color_by = color_by,
         group_use = group_use,
         id_use = id_use,
-        pvalueCutoff = pvalueCutoff %||% Inf,
-        padjustCutoff = padjustCutoff %||% Inf,
+        pvalueCutoff = NULL,
+        padjustCutoff = NULL,
+        score_col = "GSVA_Score",
+        scoreCutoff = score_cutoff,
+        score_label = "GSVA score",
         topTerm = topTerm,
         topWord = topWord,
         word_type = word_type,
