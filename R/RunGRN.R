@@ -548,6 +548,12 @@ grnboost_python <- function(
   grn_sub <- grn_matrix[, genes_keep, drop = FALSE]
   utils::write.csv(as.matrix(grn_sub), file = expr_csv, row.names = TRUE)
   writeLines(inputs[["regulators"]], regulators_file, useBytes = TRUE)
+  PrepareEnv(
+    envname = envname,
+    conda = conda,
+    modules = "scenic",
+    verbose = verbose
+  )
   check_python(
     packages = grn_python_packages("grnboost2"),
     envname = envname,
@@ -647,6 +653,12 @@ regdiffusion_python <- function(
   grn_sub <- grn_matrix[, genes_keep, drop = FALSE]
   utils::write.csv(as.matrix(grn_sub), file = expr_csv, row.names = TRUE)
   writeLines(inputs[["regulators"]], regulators_file, useBytes = TRUE)
+  PrepareEnv(
+    envname = envname,
+    conda = conda,
+    modules = c("scenic", "regdiffusion"),
+    verbose = verbose
+  )
   check_python(
     packages = grn_python_packages("regdiffusion"),
     envname = envname,

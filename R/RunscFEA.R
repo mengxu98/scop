@@ -84,6 +84,10 @@ RunscFEA <- function(
   )
 
   configure_python_thread_env()
+  PrepareEnv(
+    modules = if (isTRUE(sc_imputation)) c("scfea", "magic") else "scfea",
+    verbose = verbose
+  )
   if (isTRUE(reticulate::py_available(initialize = FALSE))) {
     tryCatch(
       reticulate::py_run_string(

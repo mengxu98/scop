@@ -190,6 +190,12 @@ RunGNIPLR.default <- function(
       adjacency <- adjacency[, c("TF", "target", "importance", "pvalue"), drop = FALSE]
     }
   } else {
+    PrepareEnv(
+      envname = envname,
+      conda = conda,
+      modules = "scanpy",
+      verbose = verbose
+    )
     check_python(
       packages = c(
         "numpy>=0",

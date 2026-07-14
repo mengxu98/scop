@@ -197,6 +197,26 @@ cisTarget_python <- function(
   ...
 ) {
   check_r("reticulate", verbose = FALSE)
+  envname <- envname %||% "scenic_env"
+  PrepareEnv(
+    envname = envname,
+    conda = conda,
+    modules = "scenic",
+    verbose = verbose
+  )
+  check_python(
+    packages = grn_python_packages("grnboost2"),
+    envname = envname,
+    conda = conda,
+    verbose = verbose
+  )
+  conda_resolved <- resolve_conda(conda)
+  python_path <- conda_python(conda = conda_resolved, envname = envname)
+  assert_python_runtime_switchable(
+    python_path,
+    restart_hint = scenic_runtime_restart_hint(envname = envname)
+  )
+  configure_python_runtime(python_path)
 
   functions <- reticulate::import_from_path(
     "functions",
