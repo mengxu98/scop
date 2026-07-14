@@ -123,3 +123,41 @@ test_that("RCTD finalize helper matches separate normalization and metadata help
   expect_equal(out$dominant, expected_meta$dominant)
   expect_equal(out$max_prop, expected_meta$max_prop)
 })
+
+test_that("RCTD normalizes check_r list results without adding a backend helper", {
+  testthat::local_mocked_bindings(
+    check_r = function(pkgs, verbose = FALSE) {
+      stats::setNames(as.list(rep(TRUE, length(pkgs))), c("spacexr", pkgs[-1L]))
+    },
+    .package = "scop"
+  )
+  expect_invisible(scop:::rctd_require_namespaces(c("spacexr", "S4Vectors")))
+
+  testthat::local_mocked_bindings(
+    check_r = function(pkgs, verbose = FALSE) list(unexpected = TRUE),
+    .package = "scop"
+  )
+  expect_error(
+    scop:::rctd_require_namespaces("spacexr"),
+    "invalid result"
+  )
+})
+
+test_that("spacexr API variants prefer new and accept complete legacy exports", {
+  spec <- scop:::spatial_backend_registry()[["spacexr"]]
+  expect_identical(
+    scop:::spatial_backend_required_symbols(spec, exports = spec$symbol_sets$new),
+    spec$symbol_sets$new
+  )
+  expect_identical(
+    scop:::spatial_backend_required_symbols(spec, exports = spec$symbol_sets$legacy),
+    spec$symbol_sets$legacy
+  )
+  expect_identical(
+    scop:::spatial_backend_required_symbols(
+      spec,
+      exports = c(spec$symbol_sets$new, spec$symbol_sets$legacy)
+    ),
+    spec$symbol_sets$new
+  )
+})

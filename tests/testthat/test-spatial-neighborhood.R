@@ -115,6 +115,40 @@ test_that("RunSpatialNeighborhood refuses to impersonate an unrun spicyR backend
   expect_false("SpatialNeighborhood" %in% names(srt@tools))
 })
 
+test_that("spicyR empty and malformed outputs cannot impersonate observed results", {
+  observed <- data.frame(
+    method = "observed", comparison = "A", condition = "A",
+    from = "T", to = "B", estimate = 0.5, statistic = NA_real_,
+    pval = NA_real_, FDR = NA_real_, direction = "observed",
+    sample = "s1", subject = "s1", count = 1, total = 2,
+    fraction = 0.5, stringsAsFactors = FALSE
+  )
+  expect_error(
+    scop:::spatial_neighborhood_standardize_pair_table(
+      list(raw = list(), table = data.frame()),
+      observed,
+      "spicyR"
+    ),
+    "returned no"
+  )
+  expect_error(
+    scop:::spatial_neighborhood_standardize_pair_table(
+      list(raw = list(), table = data.frame(estimate = 1)),
+      observed,
+      "spicyR"
+    ),
+    "incompatible result"
+  )
+  expect_identical(
+    scop:::spatial_neighborhood_standardize_pair_table(
+      list(raw = NULL, table = NULL),
+      observed,
+      "observed"
+    ),
+    observed
+  )
+})
+
 test_that("SpatialNeighborhoodPlot returns scop-style ggplot objects", {
   srt <- make_spatial_neighborhood_seurat()
   with_mock_spicyr({

@@ -4,6 +4,8 @@
 #' Use the optional `semla` package as a backend to prepare a Staffli-enabled
 #' Seurat object and compute spot-level spatial networks. The network is stored
 #' in `srt@tools[[tool_name]]` when `store_results = TRUE`.
+#' SCOP provides no dedicated plot for this result; retrieve it with
+#' [GetSpatialResult()] and use an existing generic spatial plot when needed.
 #'
 #' @md
 #' @inheritParams thisutils::log_message
@@ -81,8 +83,12 @@ RunSemlaSpatialNetwork <- function(
   )
 
   if (isTRUE(store_results)) {
-    srt@tools[[tool_name]] <- list(
-      network = spatial_network,
+    srt@tools[[tool_name]] <- spatial_result_build(
+      bundle = list(network = spatial_network),
+      method = "SemlaSpatialNetwork",
+      result_type = "neighborhood",
+      source = list(coordinate_space = if (coords == "array") "raw" else "legacy_display"),
+      provenance = list(producer = "RunSemlaSpatialNetwork", backend_id = "semla"),
       parameters = list(
         image_type = image_type,
         nNeighbors = nNeighbors,
@@ -91,7 +97,8 @@ RunSemlaSpatialNetwork <- function(
         coords = coords,
         tool_name = tool_name,
         store_results = store_results
-      )
+      ),
+      summary = list(n_networks = length(spatial_network))
     )
   }
   log_message(
@@ -108,6 +115,8 @@ RunSemlaSpatialNetwork <- function(
 #' Use `semla::RunLocalG()` on a Staffli-enabled Seurat object. Results are
 #' written by semla to metadata or to an assay, depending on
 #' `store_in_metadata`.
+#' SCOP provides no dedicated plot for this result; retrieve its schema record
+#' with [GetSpatialResult()] and inspect the recorded output columns or assay.
 #'
 #' @md
 #' @inheritParams RunSemlaSpatialNetwork
@@ -159,7 +168,8 @@ RunSemlaLocalG <- function(
     image_type = image_type,
     verbose = verbose
   )
-  semla_get_fun("RunLocalG")(
+  before_metadata <- colnames(srt@meta.data)
+  out <- semla_get_fun("RunLocalG")(
     srt,
     features = features,
     alternative = alternative,
@@ -168,6 +178,14 @@ RunSemlaLocalG <- function(
     verbose = verbose,
     ...
   )
+  out@tools[["SemlaLocalG"]] <- spatial_result_build(
+    bundle = list(output_columns = setdiff(colnames(out@meta.data), before_metadata)),
+    method = "SemlaLocalG", result_type = "neighborhood",
+    source = list(coordinate_space = "legacy_display"),
+    provenance = list(producer = "RunSemlaLocalG", backend_id = "semla"),
+    parameters = list(features = features, alternative = alternative, store_in_metadata = store_in_metadata, assay_name = assay_name, image_type = image_type)
+  )
+  out
 }
 
 #' @title Run semla region neighbor detection
@@ -175,6 +193,8 @@ RunSemlaLocalG <- function(
 #' @description
 #' Use `semla::RegionNeighbors()` to identify neighboring spots for selected
 #' metadata labels and write the returned columns to Seurat metadata.
+#' SCOP provides no dedicated plot for this result; retrieve its schema record
+#' with [GetSpatialResult()] and inspect the recorded metadata columns.
 #'
 #' @md
 #' @inheritParams RunSemlaSpatialNetwork
@@ -233,7 +253,8 @@ RunSemlaRegionNeighbors <- function(
     image_type = image_type,
     verbose = verbose
   )
-  semla_get_fun("RegionNeighbors")(
+  before_metadata <- colnames(srt@meta.data)
+  out <- semla_get_fun("RegionNeighbors")(
     srt,
     column_name = column_name,
     column_labels = column_labels,
@@ -242,6 +263,14 @@ RunSemlaRegionNeighbors <- function(
     verbose = verbose,
     ...
   )
+  out@tools[["SemlaRegionNeighbors"]] <- spatial_result_build(
+    bundle = list(output_columns = setdiff(colnames(out@meta.data), before_metadata)),
+    method = "SemlaRegionNeighbors", result_type = "neighborhood",
+    source = list(coordinate_space = "legacy_display"),
+    provenance = list(producer = "RunSemlaRegionNeighbors", backend_id = "semla"),
+    parameters = list(column_name = column_name, column_labels = column_labels, mode = mode, column_key = column_key, image_type = image_type)
+  )
+  out
 }
 
 #' @title Run semla radial distance analysis
@@ -249,6 +278,8 @@ RunSemlaRegionNeighbors <- function(
 #' @description
 #' Use `semla::RadialDistance()` to calculate distances from selected spatial
 #' regions and write the returned columns to Seurat metadata.
+#' SCOP provides no dedicated plot for this result; retrieve its schema record
+#' with [GetSpatialResult()] and inspect the recorded metadata columns.
 #'
 #' @md
 #' @inheritParams RunSemlaSpatialNetwork
@@ -308,7 +339,8 @@ RunSemlaRadialDistance <- function(
     image_type = image_type,
     verbose = verbose
   )
-  semla_get_fun("RadialDistance")(
+  before_metadata <- colnames(srt@meta.data)
+  out <- semla_get_fun("RadialDistance")(
     srt,
     column_name = column_name,
     selected_groups = selected_groups,
@@ -316,6 +348,14 @@ RunSemlaRadialDistance <- function(
     verbose = verbose,
     ...
   )
+  out@tools[["SemlaRadialDistance"]] <- spatial_result_build(
+    bundle = list(output_columns = setdiff(colnames(out@meta.data), before_metadata)),
+    method = "SemlaRadialDistance", result_type = "neighborhood",
+    source = list(coordinate_space = "legacy_display"),
+    provenance = list(producer = "RunSemlaRadialDistance", backend_id = "semla"),
+    parameters = list(column_name = column_name, selected_groups = selected_groups, column_suffix = column_suffix, image_type = image_type)
+  )
+  out
 }
 
 semla_prepare_srt <- function(
