@@ -107,6 +107,34 @@ test_that("CellScoring split cpp path avoids SplitObject and preserves grouped s
   expect_equal(observed, expected)
 })
 
+test_that("CellScoring Seurat backends receive the same public seed", {
+  set.seed(20260714)
+  counts <- Matrix::rsparsematrix(120, 80, density = 0.15)
+  counts@x <- abs(round(counts@x * 4))
+  rownames(counts) <- paste0("gene", seq_len(nrow(counts)))
+  colnames(counts) <- paste0("cell", seq_len(ncol(counts)))
+  srt <- Seurat::NormalizeData(Seurat::CreateSeuratObject(counts), verbose = FALSE)
+  feature_sets <- list(
+    early = rownames(srt)[1:25],
+    late = rownames(srt)[96:120]
+  )
+
+  cpp <- CellScoring(
+    srt, features = feature_sets, method = "Seurat", backend = "cpp",
+    classification = FALSE, name = "audit", seed = 20260714, verbose = FALSE
+  )
+  r <- CellScoring(
+    srt, features = feature_sets, method = "Seurat", backend = "r",
+    classification = FALSE, name = "audit", seed = 20260714, verbose = FALSE
+  )
+  columns <- paste0("audit_", names(feature_sets))
+  expect_equal(
+    cpp@meta.data[, columns, drop = FALSE],
+    r@meta.data[, columns, drop = FALSE],
+    tolerance = 1e-12
+  )
+})
+
 test_that("CytoTRACE2 defaults to cpp backend", {
   expect_identical(eval(formals(RunCytoTRACE.Seurat)$backend)[[1]], "cpp")
   expect_identical(eval(formals(RunCytoTRACE.default)$backend)[[1]], "cpp")

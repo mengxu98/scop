@@ -129,12 +129,12 @@ ssgsea_rank_dense <- function(expr, gene_sets, alpha = 0.25, normalize = TRUE) {
     .Call(`_scop_ssgsea_rank_dense`, expr, gene_sets, alpha, normalize)
 }
 
-zscore_dense <- function(expr, gene_sets, min_size = 1L, max_size = 2147483647L) {
-    .Call(`_scop_zscore_dense`, expr, gene_sets, min_size, max_size)
+zscore_dense <- function(expr, gene_sets, min_size = 1L, max_size = 2147483647L, sparse_standardize = FALSE) {
+    .Call(`_scop_zscore_dense`, expr, gene_sets, min_size, max_size, sparse_standardize)
 }
 
-plage_dense <- function(expr, gene_sets, min_size = 1L, max_size = 2147483647L) {
-    .Call(`_scop_plage_dense`, expr, gene_sets, min_size, max_size)
+plage_dense <- function(expr, gene_sets, min_size = 1L, max_size = 2147483647L, dense_standardize = FALSE) {
+    .Call(`_scop_plage_dense`, expr, gene_sets, min_size, max_size, dense_standardize)
 }
 
 gsva_gaussian_dense <- function(expr, gene_sets, max_diff = TRUE, abs_ranking = FALSE, tau = 1.0, chunk_size = 0L) {
