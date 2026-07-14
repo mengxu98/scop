@@ -95,7 +95,8 @@ separately and stored with a method suffix such as \code{"GO_AUCell"} or
 \code{method = "Seurat"}, \code{method = "AUCell"}, \code{method = "GSVA"},
 \code{method = "ssGSEA"}, \code{method = "zscore"}, and \code{method = "PLAGE"}.
 \code{method = "UCell"} and \code{method = "VISION"} fall back to \code{"r"} when
-\code{backend} is not explicitly set.}
+\code{backend} is not explicitly set. For \code{method = "GSVA"} with
+\code{kcdf = "Gaussian"}, \code{backend = "cpp"} uses the native C++ kernel.}
 
 \item{classification}{Whether to perform classification based on the scores. Default is \code{TRUE}.}
 

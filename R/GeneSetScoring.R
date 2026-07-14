@@ -451,9 +451,15 @@ run_gsva_scores <- function(
   max_diff = TRUE,
   abs_ranking = FALSE,
   tau = 1,
-  chunk_size = NULL
+  chunk_size = NULL,
+  sparse = NULL,
+  kernel = c("auto", "delegated", "native")
 ) {
   kcdf <- match.arg(kcdf)
+  kernel <- match.arg(kernel)
+  if (identical(kernel, "auto")) {
+    kernel <- if (identical(kcdf, "Gaussian")) "native" else "delegated"
+  }
 
   expr_counts <- gene_set_scoring_to_dgC(expr_counts)
   keep_features <- Matrix::rowSums(expr_counts) > 0
@@ -478,11 +484,30 @@ run_gsva_scores <- function(
     n_cells = ncol(expr_counts)
   )
 
+  if (identical(kernel, "native")) {
+    if (!identical(kcdf, "Gaussian")) {
+      log_message(
+        "{.arg kernel = 'native'} currently supports {.arg kcdf = 'Gaussian'} only",
+        message_type = "error"
+      )
+    }
+    scores <- gsva_gaussian_dense(
+      expr = expr_counts,
+      gene_sets = gene_set_idx,
+      max_diff = max_diff,
+      abs_ranking = abs_ranking,
+      tau = tau,
+      chunk_size = chunk_size
+    )
+    dimnames(scores) <- list(colnames(expr_counts), names(gene_set_idx))
+    return(scores)
+  }
+
   gene_set_scoring_require_namespace("GSVA")
   gene_sets_exact <- lapply(gene_set_idx, function(idx) {
     rownames(expr_counts)[idx]
   })
-  param <- GSVA::gsvaParam(
+  param_args <- list(
     exprData = expr_counts,
     geneSets = gene_sets_exact,
     minSize = min_gs_size,
@@ -490,9 +515,12 @@ run_gsva_scores <- function(
     kcdf = kcdf,
     tau = tau,
     maxDiff = max_diff,
-    absRanking = abs_ranking,
-    sparse = identical(kcdf, "none")
+    absRanking = abs_ranking
   )
+  if (!is.null(sparse)) {
+    param_args$sparse <- sparse
+  }
+  param <- do.call(GSVA::gsvaParam, param_args)
   ranks <- GSVA::gsvaRanks(
     param = param,
     verbose = FALSE
@@ -556,7 +584,8 @@ run_zscore_scores <- function(
   expr_counts,
   gene_sets,
   min_gs_size = 10,
-  max_gs_size = 500
+  max_gs_size = 500,
+  sparse_standardize = FALSE
 ) {
   expr_counts <- gene_set_scoring_to_dgC(expr_counts)
   keep_features <- Matrix::rowSums(expr_counts) > 0
@@ -588,7 +617,8 @@ run_zscore_scores <- function(
     expr = expr_counts,
     gene_sets = gene_set_idx,
     min_size = as.integer(min_gs_size),
-    max_size = max_size
+    max_size = max_size,
+    sparse_standardize = sparse_standardize
   )
   dimnames(scores) <- list(colnames(expr_counts), names(gene_set_idx))
   gene_set_scoring_drop_invalid_score_sets(scores)
@@ -598,7 +628,8 @@ run_plage_scores <- function(
   expr_counts,
   gene_sets,
   min_gs_size = 10,
-  max_gs_size = 500
+  max_gs_size = 500,
+  dense_standardize = FALSE
 ) {
   expr_counts <- gene_set_scoring_to_dgC(expr_counts)
   keep_features <- Matrix::rowSums(expr_counts) > 0
@@ -630,10 +661,18 @@ run_plage_scores <- function(
     expr = expr_counts,
     gene_sets = gene_set_idx,
     min_size = as.integer(min_gs_size),
-    max_size = max_size
+    max_size = max_size,
+    dense_standardize = dense_standardize
   )
   dimnames(scores) <- list(colnames(expr_counts), names(gene_set_idx))
   gene_set_scoring_drop_invalid_score_sets(scores)
+}
+
+gene_set_scoring_plage_dense_standardize <- function() {
+  # GSVA 2.6 began standardizing structural dgCMatrix zeros in PLAGE. When
+  # GSVA is not installed, prefer the current full-row definition.
+  !requireNamespace("GSVA", quietly = TRUE) ||
+    utils::packageVersion("GSVA") >= "2.6.0"
 }
 
 orient_plage_scores <- function(scores, expr, gene_sets) {
