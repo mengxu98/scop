@@ -360,11 +360,9 @@ Plots for GSVA (Gene Set Variation Analysis)
 }
 \details{
 GSVA itself returns pathway activity/enrichment scores, not statistical
-p-values. In \code{mode = "score"}, non-heatmap plot types fill \code{pvalue} and
-\code{p.adjust} internally only to satisfy the shared \code{\link[=EnrichmentPlot]{EnrichmentPlot()}} interface;
-these score-derived placeholders should not be interpreted as pathway
-significance. Use \code{mode = "diff"} for real group-level statistical tests on
-GSVA scores.
+p-values. In \code{mode = "score"}, plots use signed \code{GSVA_Score} values directly
+and \code{score_cutoff} is the only score threshold. Use \code{mode = "diff"} for real
+sample-level statistical tests and adjusted p-values on GSVA scores.
 }
 \examples{
 data(pancreas_sub)

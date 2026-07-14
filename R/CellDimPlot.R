@@ -726,28 +726,22 @@ CellDimPlot <- function(
   }
 
   check_r("ggnewscale", verbose = FALSE)
-  if (is.null(split.by)) {
+  synthetic_split <- is.null(split.by)
+  if (isTRUE(synthetic_split)) {
     split.by <- "All.groups"
-    srt@meta.data[[split.by]] <- factor("")
   }
-  for (i in unique(c(group.by, label.by, mark.by, legend.by, split.by))) {
+  meta_cols <- unique(c(group.by, label.by, mark.by, legend.by, split.by))
+  object_meta_cols <- if (isTRUE(synthetic_split)) {
+    setdiff(meta_cols, split.by)
+  } else {
+    meta_cols
+  }
+  for (i in object_meta_cols) {
     if (!i %in% colnames(srt@meta.data)) {
       log_message(
         "{.val {i}} is not in the meta.data of srt object",
         message_type = "error"
       )
-    }
-    if (!is.factor(srt@meta.data[[i]])) {
-      srt@meta.data[[i]] <- factor(
-        srt@meta.data[[i]],
-        levels = unique(srt@meta.data[[i]])
-      )
-    }
-    if (isTRUE(show_na) && any(is.na(srt@meta.data[[i]]))) {
-      raw_levels <- unique(c(levels(srt@meta.data[[i]]), "NA"))
-      srt@meta.data[[i]] <- as.character(srt@meta.data[[i]])
-      srt@meta.data[[i]][is.na(srt@meta.data[[i]])] <- "NA"
-      srt@meta.data[[i]] <- factor(srt@meta.data[[i]], levels = raw_levels)
     }
   }
   for (l in lineages) {
@@ -795,11 +789,25 @@ CellDimPlot <- function(
     cells.highlight <- intersect(cells.highlight, colnames(srt@assays[[1]]))
   }
 
-  dat_meta <- srt@meta.data[
-    ,
-    unique(c(group.by, label.by, mark.by, legend.by, split.by)),
-    drop = FALSE
-  ]
+  dat_meta <- srt@meta.data[, object_meta_cols, drop = FALSE]
+  if (isTRUE(synthetic_split)) {
+    dat_meta[[split.by]] <- factor(rep("", nrow(dat_meta)))
+  }
+  dat_meta <- dat_meta[, meta_cols, drop = FALSE]
+  for (i in meta_cols) {
+    if (!is.factor(dat_meta[[i]])) {
+      dat_meta[[i]] <- factor(
+        dat_meta[[i]],
+        levels = unique(dat_meta[[i]])
+      )
+    }
+    if (isTRUE(show_na) && any(is.na(dat_meta[[i]]))) {
+      raw_levels <- unique(c(levels(dat_meta[[i]]), "NA"))
+      dat_meta[[i]] <- as.character(dat_meta[[i]])
+      dat_meta[[i]][is.na(dat_meta[[i]])] <- "NA"
+      dat_meta[[i]] <- factor(dat_meta[[i]], levels = raw_levels)
+    }
+  }
   nlev <- sapply(dat_meta, nlevels)
   nlev <- nlev[nlev > 100]
   if (length(nlev) > 0 && isFALSE(force)) {
@@ -838,8 +846,12 @@ CellDimPlot <- function(
     }
   }
   if (!is.null(stat.by)) {
+    srt_stat <- srt
+    if (isTRUE(synthetic_split)) {
+      srt_stat@meta.data[[split.by]] <- factor(rep("", ncol(srt_stat)))
+    }
     subplots <- CellStatPlot(
-      srt,
+      srt_stat,
       cells = cells,
       stat.by = stat.by,
       group.by = group.by,

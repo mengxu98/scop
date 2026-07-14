@@ -39,6 +39,84 @@ test_that("GSVAPlot score mode ranks without placeholder p-values", {
   expect_equal(out$Description[[1]], "PathwayA")
 })
 
+test_that("GSVAPlot score bar uses the public score plotting contract", {
+  srt <- make_gsva_stat_srt()
+
+  p <- GSVAPlot(
+    srt = srt,
+    mode = "score",
+    plot_type = "bar",
+    group.by = "condition",
+    topTerm = 2
+  )
+
+  expect_s3_class(p, "ggplot")
+  expect_false(any(c("pvalue", "p.adjust") %in% colnames(p$data)))
+  expect_equal(p$scales$get_scales("fill")$name, "GSVA score")
+  expect_equal(p$labels$y, "GSVA score")
+})
+
+test_that("GSVAPlot score mode rejects significance cutoffs", {
+  srt <- make_gsva_stat_srt()
+
+  expect_error(
+    GSVAPlot(
+      srt = srt,
+      mode = "score",
+      plot_type = "bar",
+      group.by = "condition",
+      padjustCutoff = 0.05
+    ),
+    "only available"
+  )
+})
+
+test_that("GSVAPlot network passes scores without placeholder p-values", {
+  scores <- matrix(
+    c(0.8, -0.4, 0.3, -0.7),
+    nrow = 2,
+    dimnames = list(c("PathwayA", "PathwayB"), c("A", "B"))
+  )
+  enrichment <- data.frame(
+    ID = rep(c("id_a", "id_b"), 2),
+    Description = rep(c("PathwayA", "PathwayB"), 2),
+    geneID = rep(c("G1/G2", "G2/G3"), 2),
+    Groups = rep(c("A", "B"), each = 2),
+    Database = "test_db",
+    GSVA_Score = as.numeric(scores),
+    stringsAsFactors = FALSE
+  )
+  local_mocked_bindings(
+    EnrichmentPlot = function(...) list(...),
+    .package = "scop"
+  )
+
+  captured <- GSVAPlot(
+    res = list(
+      scores = scores,
+      enrichment = enrichment,
+      db = "test_db",
+      group.by = "condition"
+    ),
+    mode = "score",
+    plot_type = "network",
+    topTerm = 2
+  )
+
+  passed <- captured$res$enrichment
+  expect_false(any(c("pvalue", "p.adjust") %in% colnames(passed)))
+  expect_equal(captured$score_col, "GSVA_Score")
+  expect_null(captured$pvalueCutoff)
+  expect_null(captured$padjustCutoff)
+})
+
+test_that("score metric weights are absolute scores, not p-value transforms", {
+  expect_equal(
+    scop:::enrichment_metric_weight(c(-2, 0.5), score_mode = TRUE),
+    c(2, 0.5)
+  )
+})
+
 test_that("GSVAPlot diff mode aggregates by sample and tests pathways", {
   srt <- make_gsva_stat_srt()
 
