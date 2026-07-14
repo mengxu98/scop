@@ -977,6 +977,7 @@ standard_spatial_scop <- function(
         assay = assay,
         image = image,
         coord.cols = coord.cols,
+        coordinate_space = "raw",
         verbose = verbose,
         seed = seed
       ),
@@ -1085,6 +1086,7 @@ standard_spatial_scop <- function(
             )
             deconv_defaults$image <- image
             deconv_defaults$coord.cols <- coord.cols
+            deconv_defaults$coordinate_space <- "raw"
           }
           deconv_args <- standard_scop_merge_args(
             deconv_defaults,
