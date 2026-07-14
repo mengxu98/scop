@@ -104,28 +104,37 @@ test_that("RunSmoothClust stores clusters and normalized schema", {
   expect_equal(store$parameters$n_clusters, 2)
 })
 
-test_that("RunSmoothClust uses variance features and leaves bad-coordinate spots as NA", {
+test_that("RunSmoothClust rejects non-finite coordinates without mutating input", {
   srt <- make_smoothclust_seurat()
   srt$x[5] <- NA
+  before_metadata <- srt@meta.data
+  before_tools <- srt@tools
+  before_assays <- srt@assays
+  before_reductions <- srt@reductions
+  before_graphs <- srt@graphs
   with_mock_smoothclust({
-    out <- RunSmoothClust(
-      srt,
-      layer = "counts",
-      coord.cols = c("x", "y"),
-      nfeatures = 3,
-      min_spots = 1,
-      smooth_method = "knn",
-      k = 2,
-      n_clusters = 2,
-      n_pcs = 2,
-      verbose = FALSE
+    expect_error(
+      RunSmoothClust(
+        srt,
+        layer = "counts",
+        coord.cols = c("x", "y"),
+        nfeatures = 3,
+        min_spots = 1,
+        smooth_method = "knn",
+        k = 2,
+        n_clusters = 2,
+        n_pcs = 2,
+        verbose = FALSE
+      ),
+      "non-finite"
     )
   })
 
-  expect_true(is.na(out$SmoothClust_cluster[5]))
-  expect_equal(length(out@tools$SmoothClust$features), 3)
-  expect_equal(unique(out@tools$SmoothClust$feature_selection$source), "variance")
-  expect_false("smoothed" %in% names(out@tools$SmoothClust))
+  expect_identical(srt@meta.data, before_metadata)
+  expect_identical(srt@tools, before_tools)
+  expect_identical(srt@assays, before_assays)
+  expect_identical(srt@reductions, before_reductions)
+  expect_identical(srt@graphs, before_graphs)
 })
 
 test_that("RunSmoothClust validates feature and coordinate filters clearly", {
