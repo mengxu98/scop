@@ -221,7 +221,8 @@ test_that("z-score sparse standardization matches the RunGSVA GSVA contract", {
     gene_sets,
     min_gs_size = 1L,
     max_gs_size = 50L,
-    sparse_standardize = TRUE
+    sparse_standardize = !scop:::gene_set_scoring_zscore_sparse_standardize_full(),
+    sparse_standardize_full = scop:::gene_set_scoring_zscore_sparse_standardize_full()
   ))
   reference <- GSVA::gsva(
     GSVA::zscoreParam(
