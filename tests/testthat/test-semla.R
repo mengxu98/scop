@@ -68,6 +68,8 @@ test_that("RunSemlaSpatialNetwork stores semla network results", {
   expect_false(is.null(out@tools[["SemlaSpatialNetwork"]]))
   expect_type(out@tools[["SemlaSpatialNetwork"]][["network"]], "list")
   expect_equal(out@tools[["SemlaSpatialNetwork"]][["parameters"]][["nNeighbors"]], 3)
+  expect_equal(out@tools[["SemlaSpatialNetwork"]][["schema_version"]], 1L)
+  expect_equal(out@tools[["SemlaSpatialNetwork"]][["provenance"]][["backend_id"]], "semla")
 })
 
 test_that("RunSemlaLocalG writes local G metadata", {
@@ -82,4 +84,24 @@ test_that("RunSemlaLocalG writes local G metadata", {
   )
   expect_s4_class(out, "Seurat")
   expect_true(all(paste0("Gi[", features, "]") %in% colnames(out@meta.data)))
+  expect_equal(out@tools[["SemlaLocalG"]][["schema_version"]], 1L)
+  expect_equal(out@tools[["SemlaLocalG"]][["provenance"]][["producer"]], "RunSemlaLocalG")
+})
+
+test_that("Semla distance producers store schema-v1 provenance", {
+  skip_if_no_semla_backend()
+  srt <- make_semla_spatial_seurat()
+  neighbors <- RunSemlaRegionNeighbors(
+    srt, column_name = "semla_region", column_labels = "A",
+    mode = "outer", column_key = "A_neighbor", verbose = FALSE
+  )
+  expect_equal(neighbors@tools[["SemlaRegionNeighbors"]][["schema_version"]], 1L)
+  expect_equal(neighbors@tools[["SemlaRegionNeighbors"]][["provenance"]][["backend_id"]], "semla")
+
+  radial <- RunSemlaRadialDistance(
+    srt, column_name = "semla_region", selected_groups = "A",
+    column_suffix = "A_distance", verbose = FALSE
+  )
+  expect_equal(radial@tools[["SemlaRadialDistance"]][["schema_version"]], 1L)
+  expect_equal(radial@tools[["SemlaRadialDistance"]][["provenance"]][["producer"]], "RunSemlaRadialDistance")
 })

@@ -48,6 +48,8 @@ A \code{Seurat} object.
 Use the optional \code{semla} package as a backend to prepare a Staffli-enabled
 Seurat object and compute spot-level spatial networks. The network is stored
 in \code{srt@tools[[tool_name]]} when \code{store_results = TRUE}.
+SCOP provides no dedicated plot for this result; retrieve it with
+\code{\link[=GetSpatialResult]{GetSpatialResult()}} and use an existing generic spatial plot when needed.
 }
 \examples{
 data(visium_human_pancreas_sub)
