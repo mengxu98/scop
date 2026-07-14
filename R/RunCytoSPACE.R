@@ -185,6 +185,14 @@ RunCytoSPACE <- function(
     seed = seed
   )
 
+  coords <- cytospace_get_spatial_coords(
+    srt,
+    spot_ids,
+    image = image,
+    coord.cols = coord.cols,
+    coordinate_space = coordinate_space
+  )
+
   log_message(
     "Run CytoSPACE with {.val {length(features_use)}} features, {.val {ncol(ref_sample$expr)}} sampled reference cells, and {.val {ncol(st_expr)}} spatial spots",
     verbose = verbose
@@ -202,13 +210,6 @@ RunCytoSPACE <- function(
     verbose = verbose
   )
 
-  coords <- cytospace_get_spatial_coords(
-    srt,
-    spot_ids,
-    image = image,
-    coord.cols = coord.cols,
-    coordinate_space = coordinate_space
-  )
   assignments <- cytospace_build_assignment_table(
     result = result,
     sampled_cells = ref_sample$cell_ids,

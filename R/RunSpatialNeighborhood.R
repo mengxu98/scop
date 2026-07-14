@@ -650,11 +650,15 @@ spatial_neighborhood_run_spicyr <- function(
 }
 
 spatial_neighborhood_standardize_pair_table <- function(backend, observed, method) {
+  if (identical(method, "observed")) {
+    return(observed)
+  }
   raw_df <- backend$table
   if (is.null(raw_df) || nrow(raw_df) == 0L) {
-    out <- observed
-    out$method <- method
-    return(out)
+    log_message(
+      "{.pkg spicyR} returned no neighborhood comparison results",
+      message_type = "error"
+    )
   }
 
   df <- as.data.frame(raw_df, stringsAsFactors = FALSE, check.names = FALSE)
@@ -669,22 +673,10 @@ spatial_neighborhood_standardize_pair_table <- function(backend, observed, metho
     to_col <- "to"
   }
   if (is.null(from_col) || is.null(to_col)) {
-    obs_summary <- stats::aggregate(
-      cbind(count, total, fraction) ~ from + to,
-      data = observed,
-      FUN = mean
+    log_message(
+      "{.pkg spicyR} returned an incompatible result without recognizable cell-type pair columns",
+      message_type = "error"
     )
-    obs_summary$method <- method
-    obs_summary$comparison <- "spicyR"
-    obs_summary$condition <- NA_character_
-    obs_summary$estimate <- obs_summary$fraction
-    obs_summary$statistic <- NA_real_
-    obs_summary$pval <- NA_real_
-    obs_summary$FDR <- NA_real_
-    obs_summary$direction <- "observed"
-    obs_summary$sample <- NA_character_
-    obs_summary$subject <- NA_character_
-    return(obs_summary[, colnames(observed), drop = FALSE])
   }
 
   estimate_col <- spatial_neighborhood_first_col(df, c("estimate", "coefficient", "coef", "logFC", "effect"))
