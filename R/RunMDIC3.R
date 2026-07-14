@@ -279,6 +279,28 @@ RunMDIC3.default <- function(
       group = group_ids
     )
   } else {
+    PrepareEnv(
+      envname = envname,
+      conda = conda,
+      modules = "scanpy",
+      verbose = verbose
+    )
+    check_python(
+      packages = "numpy",
+      envname = envname,
+      conda = conda,
+      verbose = verbose
+    )
+    conda_resolved <- resolve_conda(conda)
+    python_path <- conda_python(conda = conda_resolved, envname = envname)
+    assert_python_runtime_switchable(
+      python_path,
+      restart_hint = python_runtime_restart_hint(
+        envname = envname,
+        modules = "scanpy"
+      )
+    )
+    configure_python_runtime(python_path)
     np <- reticulate::import("numpy", convert = TRUE)
     aa <- np$array(as.matrix(expr), dtype = "float64")
     grn_np <- np$array(grn_matrix, dtype = "float64")

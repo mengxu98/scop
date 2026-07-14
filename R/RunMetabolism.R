@@ -409,7 +409,7 @@ RunMetabolism <- function(
       scores_mat <- run_aucell_scores(
         expr_counts = expr_counts,
         gene_sets = gene_sets,
-        strategy = "full",
+        strategy = "topk",
         tie_method = "first"
       )
     } else {

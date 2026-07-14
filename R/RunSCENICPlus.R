@@ -495,6 +495,12 @@ run_scenicplus_python <- function(
 ) {
   needs_python_runtime <- !is.null(scplus_object)
   if (isTRUE(needs_python_runtime)) {
+    PrepareEnv(
+      envname = envname,
+      conda = conda,
+      modules = "scenicplus",
+      verbose = verbose
+    )
     check_python(
       packages = "scenicplus",
       envname = envname,
