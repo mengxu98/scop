@@ -52,6 +52,8 @@ spatial_method_registry <- function() {
     entry("giotto_to_srt", "bridge", "framework_bridge", "SpatialFrameworkConvert.R", backend_id = "giotto_class", coordinate_space_current = "raw", coordinate_requirement = "backend_managed"),
     entry("srt_to_spata2", "bridge", "framework_bridge", "SpatialFrameworkConvert.R", backend_id = "spata2", coordinate_space_current = "raw", coordinate_requirement = "backend_managed"),
     entry("spata2_to_srt", "bridge", "framework_bridge", "SpatialFrameworkConvert.R", backend_id = "spata2", coordinate_space_current = "raw", coordinate_requirement = "backend_managed"),
+    entry("srt_to_spe", "bridge", "framework_bridge", "SpatialDataConvert.R", backend_id = "core", coordinate_space_current = "raw", coordinate_requirement = "backend_managed"),
+    entry("spe_to_srt", "bridge", "framework_bridge", "SpatialDataConvert.R", backend_id = "core", coordinate_space_current = "raw", coordinate_requirement = "backend_managed"),
     entry("SeuratToScopGiotto", "bridge", "framework_bridge", "GiottoObject.R", "Giotto", "giotto;giotto_class", "legacy", "legacy_display", "legacy_display", "backend_managed"),
     entry("RunGiottoWorkflow", "workflow", "framework_workflow", "GiottoObject.R", "Giotto", "giotto;giotto_class", "legacy", "legacy_display", "legacy_display", "backend_managed", plot_function = "GiottoPlot"),
     entry("GiottoPreprocess", "analysis", "framework_workflow", "GiottoObject.R", "Giotto", "giotto", "legacy", "legacy_display", "legacy_display", "backend_managed", plot_function = "GiottoPlot"),
@@ -163,6 +165,7 @@ spatial_backend_registry <- function() {
     package,
     repository = package,
     symbols = character(),
+    symbol_sets = list(),
     runtime = "r",
     environment_modules = character(),
     requirements = character()
@@ -172,6 +175,7 @@ spatial_backend_registry <- function() {
       package = package,
       repository = repository,
       symbols = symbols,
+      symbol_sets = symbol_sets,
       runtime = runtime,
       environment_modules = environment_modules,
       requirements = requirements
@@ -209,7 +213,15 @@ spatial_backend_registry <- function() {
     bisquerna = backend("bisquerna", "BisqueRNA", symbols = "ReferenceBasedDecomposition"),
     bayesprism = backend("bayesprism", "BayesPrism", symbols = c("new.prism", "run.prism")),
     cibersort = backend("cibersort", "CIBERSORT", "Moonerss/CIBERSORT", "cibersort"),
-    spacexr = backend("spacexr", "spacexr", "dmcable/spacexr", c("createRctd", "runRctd")),
+    spacexr = backend(
+      "spacexr",
+      "spacexr",
+      "dmcable/spacexr",
+      symbol_sets = list(
+        new = c("createRctd", "runRctd"),
+        legacy = c("SpatialRNA", "Reference", "create.RCTD", "run.RCTD")
+      )
+    ),
     card = backend("card", "CARD", "YingMa0107/CARD"),
     stdeconvolve = backend("stdeconvolve", "STdeconvolve", "JEFworks-Lab/STdeconvolve", c("cleanCounts", "fitLDA")),
     spotlight = backend("spotlight", "SPOTlight", symbols = "SPOTlight"),
@@ -405,8 +417,30 @@ spatial_python_backend_status <- function(spec, envname, conda, api_check) {
   )
 }
 
-spatial_backend_required_symbols <- function(spec, method = NULL) {
+spatial_backend_required_symbols <- function(spec, method = NULL, exports = NULL) {
   symbols <- spec$symbols
+  symbol_sets <- spec$symbol_sets %||% list()
+  if (length(symbol_sets) > 0L) {
+    if (is.null(exports)) {
+      symbols <- symbol_sets[[1L]]
+    } else {
+      complete <- vapply(
+        symbol_sets,
+        function(candidate) all(candidate %in% exports),
+        logical(1)
+      )
+      if (any(complete)) {
+        symbols <- symbol_sets[[which(complete)[[1L]]]]
+      } else {
+        matched <- vapply(
+          symbol_sets,
+          function(candidate) sum(candidate %in% exports),
+          integer(1)
+        )
+        symbols <- symbol_sets[[which.max(matched)]]
+      }
+    }
+  }
   if (
     identical(spec$id, "giotto_class") &&
       !is.null(method) &&
@@ -509,6 +543,11 @@ SpatialBackendStatus <- function(
         if (is.null(exports)) {
           availability <- "namespace_error"
         } else {
+          symbols <- spatial_backend_required_symbols(
+            spec,
+            method = method,
+            exports = exports
+          )
           missing_symbols <- setdiff(symbols, exports)
           availability <- if (length(missing_symbols) == 0L) "available" else "api_incompatible"
         }
