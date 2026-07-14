@@ -238,19 +238,20 @@ DataFrame ccc_aggregate_liana_table_cpp(
       if (has_sample) {
         agg.sample = as<std::string>(sample[i]);
       }
-      if (has_classification) {
-        std::string cls = as<std::string>(classification[i]);
-        if (!cls.empty()) {
-          agg.classification = cls;
-          agg.classification_set = true;
-        }
-      }
       groups.push_back(agg);
     } else {
       pos = found->second;
     }
 
     LianaAgg& agg = groups[static_cast<std::size_t>(pos)];
+
+    if (has_classification && !agg.classification_set) {
+      std::string cls = as<std::string>(classification[i]);
+      if (!cls.empty() && cls != "NA") {
+        agg.classification = cls;
+        agg.classification_set = true;
+      }
+    }
 
     double s = score[i];
     if (NumericVector::is_na(s) || R_IsNaN(s)) {
@@ -311,6 +312,7 @@ DataFrame ccc_aggregate_liana_table_cpp(
   CharacterVector out_target(n_groups);
   CharacterVector out_ligand(n_groups);
   CharacterVector out_receptor(n_groups);
+  CharacterVector out_sample(n_groups);
   NumericVector out_score(n_groups);
   NumericVector out_pvalue(n_groups);
   CharacterVector out_classification(n_groups);
@@ -324,6 +326,7 @@ DataFrame ccc_aggregate_liana_table_cpp(
     out_target[i] = agg.target;
     out_ligand[i] = agg.ligand_complex;
     out_receptor[i] = agg.receptor_complex;
+    if (has_sample) out_sample[i] = agg.sample;
     out_score[i] = agg.sum_score;
     out_pvalue[i] = agg.has_pvalue ? agg.min_pvalue : 1.0;
     out_classification[i] = agg.classification_set ? agg.classification : "Unclassified";
@@ -332,6 +335,21 @@ out_method[i] = join_vec(agg.methods);
     out_resource[i] = join_vec(agg.resources);
   }
 
+  if (has_sample) {
+    return DataFrame::create(
+      _["source"] = out_source,
+      _["target"] = out_target,
+      _["ligand_complex"] = out_ligand,
+      _["receptor_complex"] = out_receptor,
+      _["sample"] = out_sample,
+      _["score"] = out_score,
+      _["pvalue"] = out_pvalue,
+      _["classification"] = out_classification,
+      _["method"] = out_method,
+      _["liana_method"] = out_liana_method,
+      _["resource"] = out_resource
+    );
+  }
   return DataFrame::create(
     _["source"] = out_source,
     _["target"] = out_target,

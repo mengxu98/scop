@@ -818,6 +818,9 @@ ccc_aggregate_liana_table <- function(out, sample_col = NULL, backend = c("cpp",
       error = function(e) NULL
     )
     if (!is.null(cpp_result) && nrow(cpp_result) > 0L) {
+      if (has_sample && "sample" %in% colnames(cpp_result) && !sample_col %in% colnames(cpp_result)) {
+        colnames(cpp_result)[colnames(cpp_result) == "sample"] <- sample_col
+      }
       remaining_cols <- setdiff(colnames(out), c("source", "target", "ligand_complex", "receptor_complex", "score", "pvalue", "classification", "method", "liana_method", "resource"))
       if (has_sample) {
         remaining_cols <- setdiff(remaining_cols, sample_col)
@@ -836,6 +839,9 @@ ccc_aggregate_liana_table <- function(out, sample_col = NULL, backend = c("cpp",
         cpp_result[[col]] <- out[[col]][key_to_idx]
       }
       cpp_result <- cpp_result[, union(colnames(out), colnames(cpp_result)), drop = FALSE]
+      cpp_order <- do.call(order, c(cpp_result[key_cols], list(na.last = TRUE)))
+      cpp_result <- cpp_result[cpp_order, , drop = FALSE]
+      rownames(cpp_result) <- NULL
       return(cpp_result)
     }
   }

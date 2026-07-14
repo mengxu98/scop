@@ -168,6 +168,27 @@ test_that("aggregate_ccc_long cpp backend is faster than R backend on larger dat
   expect_true(cpp_time <= r_time + 0.5)
 })
 
+test_that("LIANA C++ aggregation preserves a custom sample key and first non-empty classification", {
+  df <- data.frame(
+    source = c("A", "A", "A", "B"),
+    target = c("X", "X", "X", "Y"),
+    ligand_complex = c("L1", "L1", "L1", "L2"),
+    receptor_complex = c("R1", "R1", "R1", "R2"),
+    batch_id = c("batch1", "batch1", "batch2", "batch1"),
+    score = c(1, 2, 3, 4),
+    pvalue = c(0.2, 0.1, 0.3, 0.4),
+    classification = c("", "Signal", "Other", "ClassB"),
+    method = c("m1", "m2", "m1", "m1"),
+    liana_method = c("l1", "l2", "l1", "l1"),
+    resource = c("r1", "r2", "r1", "r1"),
+    stringsAsFactors = FALSE
+  )
+  r_out <- getFromNamespace("ccc_aggregate_liana_table", "scop")(df, sample_col = "batch_id", backend = "r")
+  cpp_out <- getFromNamespace("ccc_aggregate_liana_table", "scop")(df, sample_col = "batch_id", backend = "cpp")
+  expect_identical(names(cpp_out), names(r_out))
+  expect_equal(cpp_out, r_out, tolerance = 1e-12)
+})
+
 test_that("aggregate_ccc_long cpp backend handles mismatched vector lengths with error", {
   df <- data.frame(
     sender = c("A", "B"),
