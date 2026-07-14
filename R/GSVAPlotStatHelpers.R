@@ -406,31 +406,6 @@ gsva_plot_diff_table <- function(
   out
 }
 
-gsva_plot_score_bar <- function(df, theme_use, theme_args) {
-  df[["term"]] <- factor(df[["Description"]], levels = rev(unique(df[["Description"]])))
-  p <- ggplot2::ggplot(
-    df,
-    ggplot2::aes(x = .data[["term"]], y = .data[["GSVA_Score"]], fill = .data[["GSVA_Score"]])
-  ) +
-    ggplot2::geom_col(width = 0.72) +
-    ggplot2::coord_flip() +
-    ggplot2::geom_hline(yintercept = 0, color = "grey75", linewidth = 0.35) +
-    ggplot2::scale_fill_gradient2(
-      low = "#2C7BB6",
-      mid = "grey95",
-      high = "#D7191C",
-      midpoint = 0,
-      name = "GSVA score"
-    ) +
-    ggplot2::labs(x = NULL, y = "GSVA score") +
-    do.call(theme_use, theme_args) +
-    ggplot2::theme(panel.grid.major.y = ggplot2::element_blank())
-  if (length(unique(df[["Groups"]])) > 1L) {
-    p <- p + ggplot2::facet_wrap(stats::as.formula("~Groups"), scales = "free_y")
-  }
-  p
-}
-
 gsva_plot_diff_bar <- function(
   df,
   topTerm = 20,

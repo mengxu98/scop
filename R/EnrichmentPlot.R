@@ -34,6 +34,11 @@
 #' Default is `NULL`.
 #' @param padjustCutoff The p-adjusted cutoff.
 #' Default is `0.05`.
+#' @param score_col Optional numeric score column. When supplied, terms are
+#' ranked and weighted by the absolute score and no p-value semantics are used.
+#' This is intended for activity or importance results such as pathway scores.
+#' @param scoreCutoff Optional minimum absolute score used with `score_col`.
+#' @param score_label Legend label used with `score_col`.
 #' @param topTerm The number of top terms to display.
 #' Default is `6`, or `100` if `plot_type` is `"enrichmap"`.
 #' @param compare_only_sig Whether to compare only significant terms.
@@ -368,6 +373,9 @@ EnrichmentPlot <- function(
   id_use = NULL,
   pvalueCutoff = NULL,
   padjustCutoff = 0.05,
+  score_col = NULL,
+  scoreCutoff = NULL,
+  score_label = "Score",
   topTerm = ifelse(plot_type == "enrichmap", 100, 6),
   compare_only_sig = FALSE,
   topWord = 100,
@@ -410,6 +418,19 @@ EnrichmentPlot <- function(
   enrichmap_label <- match.arg(enrichmap_label)
   enrichmap_mark <- match.arg(enrichmap_mark)
   words_excluded <- words_excluded %||% scop::words_excluded
+  score_mode <- !is.null(score_col)
+  if (
+    score_mode &&
+      !plot_type %in% c("network", "enrichmap", "wordcloud")
+  ) {
+    log_message(
+      paste0(
+        "Score-based {.val bar}, {.val dot}, and {.val comparison} plots are ",
+        "handled by {.fn thisplot::StatPlot} with {.arg stat_type = 'value'}."
+      ),
+      message_type = "error"
+    )
+  }
 
   if (any(!split_by %in% c("Database", "Groups"))) {
     log_message(
@@ -445,7 +466,7 @@ EnrichmentPlot <- function(
     enrichment <- res[["enrichment"]]
   }
 
-  if (is.null(pvalueCutoff) && is.null(padjustCutoff)) {
+  if (!score_mode && is.null(pvalueCutoff) && is.null(padjustCutoff)) {
     log_message(
       "One of 'pvalueCutoff' or 'padjustCutoff' must be specified",
       message_type = "error"
@@ -518,8 +539,20 @@ EnrichmentPlot <- function(
     }
   }
 
-  metric <- ifelse(is.null(padjustCutoff), "pvalue", "p.adjust")
-  metric_value <- ifelse(is.null(padjustCutoff), pvalueCutoff, padjustCutoff)
+  if (score_mode) {
+    if (length(score_col) != 1L || !score_col %in% colnames(enrichment)) {
+      log_message(
+        "{.arg score_col} must name one numeric column in the enrichment table",
+        message_type = "error"
+      )
+    }
+    enrichment[[score_col]] <- suppressWarnings(as.numeric(enrichment[[score_col]]))
+    metric <- score_col
+    metric_value <- abs(scoreCutoff %||% 0)
+  } else {
+    metric <- ifelse(is.null(padjustCutoff), "pvalue", "p.adjust")
+    metric_value <- ifelse(is.null(padjustCutoff), pvalueCutoff, padjustCutoff)
+  }
 
   pvalueCutoff <- ifelse(is.null(pvalueCutoff), Inf, pvalueCutoff)
   padjustCutoff <- ifelse(is.null(padjustCutoff), Inf, padjustCutoff)
@@ -532,21 +565,33 @@ EnrichmentPlot <- function(
   }
   enrichment <- enrichment[enrichment[["Database"]] %in% db, , drop = FALSE]
 
-  enrichment_sig <- enrichment[
-    enrichment[[metric]] < metric_value |
-      enrichment[["ID"]] %in% unlist(id_use), ,
-    drop = FALSE
-  ]
-  enrichment_sig <- enrichment_sig[
-    order(enrichment_sig[[metric]]), ,
-    drop = FALSE
-  ]
+  if (score_mode) {
+    enrichment_sig <- enrichment[
+      (is.finite(enrichment[[metric]]) & abs(enrichment[[metric]]) >= metric_value) |
+        enrichment[["ID"]] %in% unlist(id_use), ,
+      drop = FALSE
+    ]
+    enrichment_sig <- enrichment_sig[
+      order(abs(enrichment_sig[[metric]]), decreasing = TRUE, na.last = NA), ,
+      drop = FALSE
+    ]
+  } else {
+    enrichment_sig <- enrichment[
+      enrichment[[metric]] < metric_value |
+        enrichment[["ID"]] %in% unlist(id_use), ,
+      drop = FALSE
+    ]
+    enrichment_sig <- enrichment_sig[
+      order(enrichment_sig[[metric]]), ,
+      drop = FALSE
+    ]
+  }
   if (nrow(enrichment_sig) == 0) {
     log_message(
-      "No term enriched using the threshold: ",
-      paste0("pvalueCutoff = ", pvalueCutoff),
-      "; ",
-      paste0("padjustCutoff = ", padjustCutoff),
+      if (score_mode) "No term passes the score threshold: " else "No term enriched using the threshold: ",
+      if (score_mode) paste0("scoreCutoff = ", metric_value) else paste0("pvalueCutoff = ", pvalueCutoff),
+      if (score_mode) "" else "; ",
+      if (score_mode) "" else paste0("padjustCutoff = ", padjustCutoff),
       message_type = "error"
     )
   }
@@ -706,7 +751,7 @@ EnrichmentPlot <- function(
       )
       df <- do.call(rbind, df_groups)
 
-      df[["metric"]] <- -log10(df[[metric]])
+      df[["metric"]] <- enrichment_metric_weight(df[[metric]], score_mode)
       df[["Description"]] <- capitalize(df[["Description"]])
       df[["Description"]] <- stringr::str_wrap(
         df[["Description"]],
@@ -784,7 +829,7 @@ EnrichmentPlot <- function(
         }
       )
       df <- df[order(df[["GeneRatio"]], decreasing = TRUE), ]
-      df[["metric"]] <- -log10(df[[metric]])
+      df[["metric"]] <- enrichment_metric_weight(df[[metric]], score_mode)
       df[["Description"]] <- capitalize(df[["Description"]])
       df[["Description"]] <- stringr::str_wrap(
         df[["Description"]],
@@ -877,7 +922,7 @@ EnrichmentPlot <- function(
         }
       )
       df[["FoldEnrichment"]] <- df[["GeneRatio"]] / df[["BgRatio"]]
-      df[["metric"]] <- -log10(df[[metric]])
+      df[["metric"]] <- enrichment_metric_weight(df[[metric]], score_mode)
       df[["Description"]] <- capitalize(df[["Description"]])
       df[["Description"]] <- stringr::str_wrap(
         df[["Description"]],
@@ -977,7 +1022,7 @@ EnrichmentPlot <- function(
       )
       df <- do.call(rbind, df_groups)
 
-      df[["metric"]] <- -log10(df[[metric]])
+      df[["metric"]] <- enrichment_metric_weight(df[[metric]], score_mode)
       df[["Description"]] <- capitalize(df[["Description"]])
       df[["Description"]] <- stringr::str_wrap(
         df[["Description"]],
@@ -1193,7 +1238,7 @@ EnrichmentPlot <- function(
       )
       df <- do.call(rbind, df_groups)
 
-      df[["metric"]] <- -log10(df[[metric]])
+      df[["metric"]] <- enrichment_metric_weight(df[[metric]], score_mode)
       df[["Description"]] <- capitalize(df[["Description"]])
       df[["Description"]] <- factor(
         df[["Description"]],
@@ -1255,7 +1300,7 @@ EnrichmentPlot <- function(
           dplyr::group_by(.data[["keyword"]], Database, Groups, clusters) |>
           dplyr::reframe(
             keyword = capitalize(.data[["keyword"]]),
-            score = sum(-(log10(.data[[metric]]))),
+            score = sum(.data[["metric"]]),
             count = dplyr::n(),
             Database = .data[["Database"]],
             Groups = .data[["Groups"]],
@@ -1310,7 +1355,7 @@ EnrichmentPlot <- function(
         dplyr::group_by(.data[["keyword"]], Database, Groups, clusters) |>
         dplyr::reframe(
           keyword = .data[["keyword"]],
-          score = sum(-(log10(.data[[metric]]))),
+          score = sum(.data[["metric"]]),
           count = dplyr::n(),
           Database = .data[["Database"]],
           Groups = .data[["Groups"]],
@@ -1472,7 +1517,7 @@ EnrichmentPlot <- function(
         df_groups <- df_groups[sapply(df_groups, nrow) > 0]
         for (i in seq_along(df_groups)) {
           df_sub <- df_groups[[i]]
-          if (all(df_sub$Database %in% c("GO", "GO_BP", "GO_CC", "GO_MF"))) {
+          if (!score_mode && all(df_sub$Database %in% c("GO", "GO_BP", "GO_CC", "GO_MF"))) {
             df0 <- simplifyEnrichment::keyword_enrichment_from_GO(
               df_sub[["ID"]]
             )
@@ -1515,7 +1560,7 @@ EnrichmentPlot <- function(
               dplyr::group_by(.data[["keyword"]], Database, Groups) |>
               dplyr::reframe(
                 keyword = .data[["keyword"]],
-                score = sum(-(log10(.data[[metric]]))),
+                score = sum(enrichment_metric_weight(.data[[metric]], score_mode)),
                 count = dplyr::n(),
                 Database = .data[["Database"]],
                 Groups = .data[["Groups"]],
@@ -1549,7 +1594,7 @@ EnrichmentPlot <- function(
           dplyr::group_by(.data[["keyword"]], Database, Groups) |>
           dplyr::reframe(
             keyword = .data[["keyword"]],
-            score = sum(-(log10(.data[[metric]]))),
+            score = sum(enrichment_metric_weight(.data[[metric]], score_mode)),
             count = dplyr::n(),
             Database = .data[["Database"]],
             Groups = .data[["Groups"]],
@@ -1594,7 +1639,7 @@ EnrichmentPlot <- function(
           grid_margin = 3
         ) +
         scale_color_gradientn(
-          name = "Score:",
+          name = paste0(if (score_mode) score_label else "Score", ":"),
           colours = colors,
           values = scales::rescale(colors_value),
           guide = guide_colorbar(
@@ -1645,6 +1690,14 @@ EnrichmentPlot <- function(
   } else {
     return(plist)
   }
+}
+
+enrichment_metric_weight <- function(x, score_mode = FALSE) {
+  x <- suppressWarnings(as.numeric(x))
+  if (isTRUE(score_mode)) {
+    return(abs(x))
+  }
+  -log10(pmax(x, .Machine$double.xmin))
 }
 
 resolve_enrichment_plot_db <- function(

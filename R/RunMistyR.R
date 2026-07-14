@@ -361,14 +361,23 @@ MistyRPlot <- function(
   }
   tab$.value <- as.numeric(tab[[value_col]])
   tab <- tab[is.finite(tab$.value), , drop = FALSE]
-  tab <- utils::head(tab[order(abs(tab$.value), decreasing = TRUE), , drop = FALSE], as.integer(top_n))
   label_cols <- intersect(c("target", "view", "measure"), colnames(tab))
   tab$.label <- if (length(label_cols)) do.call(paste, c(tab[label_cols], sep = " / ")) else rownames(tab)
-  tab$.label <- factor(tab$.label, levels = rev(unique(tab$.label)))
-  ggplot2::ggplot(tab, ggplot2::aes(x = .data$.value, y = .data$.label)) +
-    ggplot2::geom_col(fill = "#3C8DBC", width = 0.75) +
-    ggplot2::labs(x = value_col, y = NULL, title = paste("MISTy", type)) +
-    theme_scop()
+  thisplot::StatPlot(
+    meta.data = tab,
+    stat.by = ".label",
+    value.by = ".value",
+    stat_type = "value",
+    plot_type = "bar",
+    top_n = top_n,
+    rank.by = "absolute",
+    bar_fill = "#3C8DBC",
+    bar_width = 0.75,
+    title = paste("MISTy", type),
+    ylab = value_col,
+    flip = TRUE,
+    theme_use = theme_scop
+  )
 }
 
 mistyr_validate_views <- function(views) {
