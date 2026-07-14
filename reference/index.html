@@ -29,6 +29,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Spatial transcriptomics</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges and Giotto compatibility</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Cell-cell communication</h6></li>
     <li><a class="dropdown-item" href="../articles/cell-cell-communication-workflow.html">Cell-cell communication workflow</a></li>
@@ -836,6 +837,57 @@
 
       <dl></dl></div><div class="section level2">
 
+      <h3 id="spatial-method-discovery-and-diagnostics">Spatial Method Discovery and Diagnostics<a class="anchor" aria-label="anchor" href="#spatial-method-discovery-and-diagnostics"></a></h3>
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="ListSpatialMethods.html">ListSpatialMethods()</a></code>
+
+        </dt>
+        <dd>List spatial methods</dd>
+
+        <dt>
+
+          <code><a href="SpatialBackendStatus.html">SpatialBackendStatus()</a></code>
+
+        </dt>
+        <dd>Inspect spatial backend availability</dd>
+
+        <dt>
+
+          <code><a href="SpatialResultInfo.html">SpatialResultInfo()</a></code>
+
+        </dt>
+        <dd>Inspect stored spatial results</dd>
+
+        <dt>
+
+          <code><a href="SpatialCoordinates.html">SpatialCoordinates()</a></code>
+
+        </dt>
+        <dd>Read spatial coordinates with an explicit coordinate contract</dd>
+
+        <dt>
+
+          <code><a href="GetSpatialResult.html">GetSpatialResult()</a></code>
+
+        </dt>
+        <dd>Read one stored spatial result</dd>
+
+        <dt>
+
+          <code><a href="GetSpatialGraph.html">GetSpatialGraph()</a></code>
+
+        </dt>
+        <dd>Read or convert a stored spatial graph</dd>
+      </dl></div><div class="section level2">
+
       <h3 id="spatial-qc-and-normalization">Spatial QC and Normalization<a class="anchor" aria-label="anchor" href="#spatial-qc-and-normalization"></a></h3>
 
 
@@ -866,7 +918,7 @@
         <dd>Run SpotSweeper spatial quality control</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="spatial-workflow-and-giotto-backends">Spatial Workflow and Giotto Backends<a class="anchor" aria-label="anchor" href="#spatial-workflow-and-giotto-backends"></a></h3>
+      <h3 id="spatial-framework-bridges-and-giotto-workflows">Spatial Framework Bridges and Giotto Workflows<a class="anchor" aria-label="anchor" href="#spatial-framework-bridges-and-giotto-workflows"></a></h3>
 
 
       <dl></dl></div><div class="section level2">
@@ -875,6 +927,34 @@
 
 
       <dl><dt>
+
+          <code><a href="srt_to_giotto.html">srt_to_giotto()</a></code>
+
+        </dt>
+        <dd>Convert Seurat to a native Giotto object</dd>
+
+        <dt>
+
+          <code><a href="giotto_to_srt.html">giotto_to_srt()</a></code>
+
+        </dt>
+        <dd>Convert Giotto to Seurat</dd>
+
+        <dt>
+
+          <code><a href="srt_to_spata2.html">srt_to_spata2()</a></code>
+
+        </dt>
+        <dd>Convert Seurat to a native SPATA2 object</dd>
+
+        <dt>
+
+          <code><a href="spata2_to_srt.html">spata2_to_srt()</a></code>
+
+        </dt>
+        <dd>Convert SPATA2 to Seurat</dd>
+
+        <dt>
 
           <code><a href="SeuratToScopGiotto.html">SeuratToScopGiotto()</a></code>
 
@@ -997,6 +1077,13 @@
 
         <dt>
 
+          <code><a href="RunCell2location.html">RunCell2location()</a></code>
+
+        </dt>
+        <dd>Run cell2location spatial deconvolution</dd>
+
+        <dt>
+
           <code><a href="RunCSIDE.html">RunCSIDE()</a></code>
 
         </dt>
@@ -1106,6 +1193,34 @@
 
       <dl><dt>
 
+          <code><a href="RunSpatialNetwork.html">RunSpatialNetwork()</a></code>
+
+        </dt>
+        <dd>Build a native spatial network</dd>
+
+        <dt>
+
+          <code><a href="RunSpatialCellChat.html">RunSpatialCellChat()</a></code>
+
+        </dt>
+        <dd>Run Spatial CellChat analysis</dd>
+
+        <dt>
+
+          <code><a href="MistyRPlot.html">MistyRPlot()</a></code>
+
+        </dt>
+        <dd>Plot stored MISTy results</dd>
+
+        <dt>
+
+          <code><a href="StatialKontextualPlot.html">StatialKontextualPlot()</a></code>
+
+        </dt>
+        <dd>Plot stored Statial Kontextual results</dd>
+
+        <dt>
+
           <code><a href="RunSpatialNeighborhood.html">RunSpatialNeighborhood()</a></code>
 
         </dt>
@@ -1210,6 +1325,34 @@
 
         </dt>
         <dd>Spatial neighborhood plot</dd>
+
+        <dt>
+
+          <code><a href="SpatialNetworkPlot.html">SpatialNetworkPlot()</a></code>
+
+        </dt>
+        <dd>Plot a native spatial network</dd>
+
+        <dt>
+
+          <code><a href="SpatialCellChatPlot.html">SpatialCellChatPlot()</a></code>
+
+        </dt>
+        <dd>Plot stored SpatialCellChat results</dd>
+
+        <dt>
+
+          <code><a href="SpatialCellPlot.html">SpatialCellPlot()</a></code>
+
+        </dt>
+        <dd>Plot spatial cell boundaries</dd>
+
+        <dt>
+
+          <code><a href="Cell2locationPlot.html">Cell2locationPlot()</a></code>
+
+        </dt>
+        <dd>Plot cell2location spatial results</dd>
 
         <dt>
 
@@ -2023,6 +2166,13 @@
 
         <dt>
 
+          <code><a href="GetCCCObject.html">GetCCCObject()</a></code>
+
+        </dt>
+        <dd>Get a native CellChat-family object</dd>
+
+        <dt>
+
           <code><a href="RunCellphoneDB.html">RunCellphoneDB()</a></code>
 
         </dt>
@@ -2034,6 +2184,13 @@
 
         </dt>
         <dd>Run LIANA cell-cell communication analysis</dd>
+
+        <dt>
+
+          <code><a href="RunMDIC3.html">RunMDIC3()</a></code>
+
+        </dt>
+        <dd>Run MDIC3 cell-cell communication inference</dd>
 
         <dt>
 
@@ -2127,6 +2284,13 @@
 
       <dl><dt>
 
+          <code><a href="RunGRN.html">RunGRN()</a></code>
+
+        </dt>
+        <dd>Infer gene regulatory networks with a selected backend method</dd>
+
+        <dt>
+
           <code><a href="RunGRNBoost2.html">RunGRNBoost2()</a></code>
 
         </dt>
@@ -2138,6 +2302,13 @@
 
         </dt>
         <dd>Infer gene regulatory networks with GENIE3</dd>
+
+        <dt>
+
+          <code><a href="RunGNIPLR.html">RunGNIPLR()</a></code>
+
+        </dt>
+        <dd>Infer gene regulatory networks with GNIPLR</dd>
 
         <dt>
 
@@ -2521,6 +2692,13 @@
 
         <dt>
 
+          <code><a href="visium_mouse_brain_slices_sub.html">visium_mouse_brain_slices_sub</a></code>
+
+        </dt>
+        <dd>A mouse brain Visium two-slice spatial example dataset</dd>
+
+        <dt>
+
           <code><a href="words_excluded.html">words_excluded</a></code>
 
         </dt>
@@ -2535,7 +2713,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>
