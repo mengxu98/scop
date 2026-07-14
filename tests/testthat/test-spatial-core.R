@@ -93,8 +93,56 @@ test_that("SpatialCoordinates returns ordered raw and display contracts", {
   expect_identical(SpatialCoordinates(renamed)$data$cell_id, colnames(renamed))
 
   srt$col[[2L]] <- NA_real_
-  filtered <- suppressMessages(SpatialCoordinates(srt))
-  expect_false("spot2" %in% filtered$data$cell_id)
+  expect_error(SpatialCoordinates(srt), "non-finite")
+})
+
+test_that("analysis coordinates keep one payload contract across spaces", {
+  counts <- matrix(
+    seq_len(12), nrow = 3,
+    dimnames = list(paste0("gene", 1:3), paste0("spot", 1:4))
+  )
+  srt <- suppressWarnings(SeuratObject::CreateSeuratObject(counts))
+  srt$col <- c(2, 0, 3, 1)
+  srt$row <- c(0, 1, 1, 0)
+
+  legacy <- scop:::spatial_analysis_coords(srt, coordinate_space = "legacy_display")
+  raw <- scop:::spatial_analysis_coords(srt, coordinate_space = "raw")
+  required <- c("cell_id", "x", "y", "image")
+  expect_identical(colnames(legacy$data), required)
+  expect_identical(colnames(raw$data), required)
+  expect_identical(legacy$data$cell_id, colnames(srt))
+  expect_identical(raw$data$cell_id, colnames(srt))
+  expect_identical(legacy$data$image, rep(NA_character_, ncol(srt)))
+})
+
+test_that("CytoSPACE resolves coordinates before assignment work", {
+  data("visium_human_pancreas_sub", package = "scop")
+  srt <- visium_human_pancreas_sub
+  spot_ids <- colnames(srt)
+  legacy <- scop:::cytospace_get_spatial_coords(
+    srt,
+    spot_ids,
+    coordinate_space = "legacy_display"
+  )
+  raw <- scop:::cytospace_get_spatial_coords(
+    srt,
+    spot_ids,
+    coordinate_space = "raw"
+  )
+  expect_identical(rownames(legacy), spot_ids)
+  expect_identical(rownames(raw), spot_ids)
+
+  bad_counts <- matrix(
+    seq_len(12), nrow = 3,
+    dimnames = list(paste0("gene", 1:3), paste0("bad", 1:4))
+  )
+  bad <- suppressWarnings(SeuratObject::CreateSeuratObject(bad_counts))
+  bad$col <- c(0, 1, NA_real_, 3)
+  bad$row <- c(0, 1, 2, 3)
+  expect_error(
+    scop:::cytospace_get_spatial_coords(bad, colnames(bad)),
+    "non-finite"
+  )
 })
 
 test_that("SpatialCoordinates makes multi-image selection explicit", {

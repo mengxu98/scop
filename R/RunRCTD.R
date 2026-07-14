@@ -703,18 +703,13 @@ rctd_run_spacexr <- function(
   run_rctd_params
 ) {
   rctd_require_namespaces("spacexr")
-  ns <- asNamespace("spacexr")
-  has_new_api <- exists("createRctd", envir = ns, inherits = FALSE) &&
-    exists("runRctd", envir = ns, inherits = FALSE)
-  has_old_api <- all(vapply(
-    c("SpatialRNA", "Reference", "create.RCTD", "run.RCTD"),
-    exists,
-    logical(1),
-    envir = ns,
-    inherits = FALSE
-  ))
+  exports <- getNamespaceExports("spacexr")
+  spec <- spatial_backend_registry()[["spacexr"]]
+  selected_api <- spatial_backend_required_symbols(spec, exports = exports)
+  new_api <- spec$symbol_sets[["new"]]
+  legacy_api <- spec$symbol_sets[["legacy"]]
 
-  if (isTRUE(has_new_api)) {
+  if (all(new_api %in% exports) && identical(selected_api, new_api)) {
     return(rctd_run_spacexr_new(
       st_counts = st_counts,
       coords = coords,
@@ -728,9 +723,8 @@ rctd_run_spacexr <- function(
       run_rctd_params = run_rctd_params
     ))
   }
-  if (isTRUE(has_old_api)) {
+  if (all(legacy_api %in% exports) && identical(selected_api, legacy_api)) {
     return(rctd_run_spacexr_old(
-      ns = ns,
       st_counts = st_counts,
       coords = coords,
       st_numi = st_numi,
@@ -805,7 +799,21 @@ rctd_run_spacexr_new <- function(
 rctd_require_namespaces <- function(pkgs) {
   install_specs <- pkgs
   install_specs[install_specs == "spacexr"] <- "dmcable/spacexr"
-  available <- vapply(install_specs, check_r, logical(1), verbose = FALSE)
+  available <- unlist(
+    check_r(install_specs, verbose = FALSE),
+    use.names = TRUE
+  )
+  if (
+    !is.logical(available) || length(available) != length(pkgs) ||
+      is.null(names(available)) || anyNA(available) ||
+      !setequal(names(available), pkgs)
+  ) {
+    log_message(
+      "Package availability checks returned an invalid result for {.fn RunRCTD}",
+      message_type = "error"
+    )
+  }
+  available <- available[match(pkgs, names(available))]
   if (!all(available)) {
     log_message(
       "Please install required package(s) before running {.fn RunRCTD}: {.val {paste(pkgs[!available], collapse = ', ')}}",
@@ -816,7 +824,6 @@ rctd_require_namespaces <- function(pkgs) {
 }
 
 rctd_run_spacexr_old <- function(
-  ns,
   st_counts,
   coords,
   st_numi,
@@ -828,10 +835,10 @@ rctd_run_spacexr_old <- function(
   create_rctd_params,
   run_rctd_params
 ) {
-  spatial_rna <- get("SpatialRNA", envir = ns)
-  reference_fun <- get("Reference", envir = ns)
-  create_rctd <- get("create.RCTD", envir = ns)
-  run_rctd <- get("run.RCTD", envir = ns)
+  spatial_rna <- get_namespace_fun("spacexr", "SpatialRNA")
+  reference_fun <- get_namespace_fun("spacexr", "Reference")
+  create_rctd <- get_namespace_fun("spacexr", "create.RCTD")
+  run_rctd <- get_namespace_fun("spacexr", "run.RCTD")
   puck <- spatial_rna(coords, st_counts, st_numi)
   reference_obj <- reference_fun(ref_counts, ref_labels, ref_numi)
   create_args <- c(
@@ -845,8 +852,9 @@ rctd_run_spacexr_old <- function(
   )
   result <- do.call(run_rctd, run_args)
   weights <- result@results$weights
-  if (exists("normalize_weights", envir = ns, inherits = FALSE)) {
-    weights <- get("normalize_weights", envir = ns)(weights)
+  if ("normalize_weights" %in% getNamespaceExports("spacexr")) {
+    normalize_weights <- get_namespace_fun("spacexr", "normalize_weights")
+    weights <- normalize_weights(weights)
   }
   metadata <- tryCatch(
     as.data.frame(result@results$results_df),

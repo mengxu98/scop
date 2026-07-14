@@ -95,11 +95,10 @@ spatial_coords_raw <- function(
   finite <- is.finite(coords$x) & is.finite(coords$y)
   if (any(!finite)) {
     log_message(
-      "Drop {.val {sum(!finite)}} cell or spot coordinate{?s} with non-finite x or y values",
-      message_type = "warning"
+      "Spatial coordinates contain {.val {sum(!finite)}} cell or spot coordinate{?s} with non-finite x or y values",
+      message_type = "error"
     )
   }
-  coords <- coords[finite, , drop = FALSE]
   coords$cell_id <- rownames(coords)
   coords <- coords[, c("cell_id", "x", "y"), drop = FALSE]
   object_cells <- colnames(srt)
@@ -178,8 +177,41 @@ spatial_analysis_coords <- function(
       overlay_image = FALSE,
       image_policy = image_policy
     )
+    coords <- as.data.frame(display$data, stringsAsFactors = FALSE)
+    cells <- rownames(coords)
+    if (
+      is.null(cells) || anyNA(cells) || any(!nzchar(cells)) ||
+        anyDuplicated(cells)
+    ) {
+      log_message(
+        "Spatial display coordinates must have unique, non-missing cell or spot identifiers",
+        message_type = "error"
+      )
+    }
+    if (!all(c("x", "y") %in% colnames(coords))) {
+      log_message(
+        "Spatial display coordinates must contain x and y columns",
+        message_type = "error"
+      )
+    }
+    coords$x <- suppressWarnings(as.numeric(coords$x))
+    coords$y <- suppressWarnings(as.numeric(coords$y))
+    finite <- is.finite(coords$x) & is.finite(coords$y)
+    if (any(!finite)) {
+      log_message(
+        "Spatial display coordinates contain {.val {sum(!finite)}} cell or spot coordinate{?s} with non-finite x or y values",
+        message_type = "error"
+      )
+    }
+    coords$cell_id <- cells
+    object_cells <- colnames(srt)
+    keep <- object_cells[object_cells %in% coords$cell_id]
+    coords <- coords[match(keep, coords$cell_id), , drop = FALSE]
+    rownames(coords) <- coords$cell_id
+    coords$image <- display$source$image %||% NA_character_
+    coords <- coords[, c("cell_id", "x", "y", "image"), drop = FALSE]
     result <- list(
-      data = display$data,
+      data = coords,
       transform = display$transform,
       source = utils::modifyList(display$source, list(coordinate_space = coordinate_space))
     )
