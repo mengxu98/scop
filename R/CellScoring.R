@@ -25,7 +25,8 @@
 #' `method = "Seurat"`, `method = "AUCell"`, `method = "GSVA"`,
 #' `method = "ssGSEA"`, `method = "zscore"`, and `method = "PLAGE"`.
 #' `method = "UCell"` and `method = "VISION"` fall back to `"r"` when
-#' `backend` is not explicitly set.
+#' `backend` is not explicitly set. For `method = "GSVA"` with
+#' `kcdf = "Gaussian"`, `backend = "cpp"` uses the native C++ kernel.
 #' @param classification Whether to perform classification based on the scores. Default is `TRUE`.
 #' @param name The name of the assay to store the scores in. Only used if new_assay is TRUE. Default is `""`.
 #' @param new_assay Whether to create a new assay for storing the scores. Default is `FALSE`.
@@ -395,6 +396,7 @@ CellScoring <- function(
           name = name,
           layer = layer,
           assay = assay,
+          seed = seed,
           cores = cores,
           verbose = verbose,
           ...
@@ -467,7 +469,10 @@ CellScoring <- function(
         auc_scores <- run_aucell_scores(
           expr_counts = expr_sp,
           gene_sets = features,
-          strategy = "full",
+          # AUCell AUC only consumes ranks above aucMaxRank (5% by default).
+          # The native top-k path preserves those ranks exactly while avoiding
+          # a full n_features sort for every cell.
+          strategy = "topk",
           tie_method = "first"
         )
         filtered <- names(features)[
@@ -516,7 +521,8 @@ CellScoring <- function(
             max_diff = mx.diff,
             abs_ranking = abs.ranking,
             tau = tau,
-            chunk_size = cpp_chunk_size
+            chunk_size = cpp_chunk_size,
+            sparse = FALSE
           )
         } else if (method == "ssGSEA") {
           gs_scores <- run_ssgsea_scores(
@@ -539,7 +545,8 @@ CellScoring <- function(
             expr_counts = expr_sp,
             gene_sets = features,
             min_gs_size = min_size,
-            max_gs_size = max_size
+            max_gs_size = max_size,
+            dense_standardize = TRUE
           )
           gs_scores <- Matrix::t(orient_plage_scores(
             scores = Matrix::t(as_matrix(gs_scores)),

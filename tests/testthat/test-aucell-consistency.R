@@ -60,6 +60,28 @@ test_that("C++ AUCell AUC matches official random and blocked rankings", {
   }
 })
 
+test_that("AUCell top-k ranks preserve the full native AUC", {
+  set.seed(20260714)
+  expr <- Matrix::rsparsematrix(300, 40, density = 0.12)
+  expr@x <- abs(round(expr@x * 5))
+  rownames(expr) <- paste0("gene", seq_len(nrow(expr)))
+  colnames(expr) <- paste0("cell", seq_len(ncol(expr)))
+  gene_sets <- list(
+    set_a = rownames(expr)[1:70],
+    set_b = rownames(expr)[55:160],
+    set_c = rownames(expr)[180:280]
+  )
+
+  full <- scop:::run_aucell_scores(
+    expr, gene_sets, strategy = "full", tie_method = "first"
+  )
+  topk <- scop:::run_aucell_scores(
+    expr, gene_sets, strategy = "topk", tie_method = "first"
+  )
+
+  expect_equal(topk, full, tolerance = 1e-12)
+})
+
 test_that("CellScoring AUCell backend switch controls R and C++ paths", {
   skip_if_not_installed("AUCell")
   skip_if_not_installed("Seurat")

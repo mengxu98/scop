@@ -1089,7 +1089,8 @@ NumericMatrix zscore_dense(
   S4 expr,
   List gene_sets,
   int min_size = 1,
-  int max_size = 2147483647
+  int max_size = 2147483647,
+  bool sparse_standardize = false
 ) {
   IntegerVector dims = expr.slot("Dim");
   const int n_genes = dims[0];
@@ -1131,6 +1132,7 @@ NumericMatrix zscore_dense(
 
   std::vector<double> gene_sums(n_genes, 0.0);
   std::vector<double> gene_sq_sums(n_genes, 0.0);
+  std::vector<int> gene_nonzero_counts(n_genes, 0);
 
   for (int cell = 0; cell < n_cells; ++cell) {
     for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
@@ -1139,6 +1141,9 @@ NumericMatrix zscore_dense(
       if (gene_needed[gene] && R_finite(value)) {
         gene_sums[gene] += value;
         gene_sq_sums[gene] += value * value;
+        if (value != 0.0) {
+          ++gene_nonzero_counts[gene];
+        }
       }
     }
   }
@@ -1152,10 +1157,16 @@ NumericMatrix zscore_dense(
         gene_sds[gene] = R_NaN;
         continue;
       }
-      gene_means[gene] = gene_sums[gene] / static_cast<double>(n_cells);
+      const int standardize_count = sparse_standardize ? gene_nonzero_counts[gene] : n_cells;
+      if (standardize_count <= 1) {
+        gene_means[gene] = R_NaN;
+        gene_sds[gene] = R_NaN;
+        continue;
+      }
+      gene_means[gene] = gene_sums[gene] / static_cast<double>(standardize_count);
       double var_val = (gene_sq_sums[gene] -
-        static_cast<double>(n_cells) * gene_means[gene] * gene_means[gene]) /
-        static_cast<double>(n_cells - 1);
+        static_cast<double>(standardize_count) * gene_means[gene] * gene_means[gene]) /
+        static_cast<double>(standardize_count - 1);
       if (var_val < 0.0 && var_val > -1e-12) {
         var_val = 0.0;
       }
@@ -1169,10 +1180,11 @@ NumericMatrix zscore_dense(
   }
   std::vector<double>().swap(gene_sums);
   std::vector<double>().swap(gene_sq_sums);
+  std::vector<int>().swap(gene_nonzero_counts);
 
-  // Compute z-score per gene set over the dense expression view used by
-  // GSVA::zscoreParam in the R benchmark. Structural zeros contribute
-  // (0 - mean) / sd, then stored values add value / sd.
+  // CellScoring materializes expression before z-scoring; RunGSVA preserves
+  // sparse input and GSVA scales only stored values. Keep both public
+  // contracts explicit rather than treating structural zeros identically.
   NumericMatrix scores(n_cells, n_sets);
   std::vector<double> zero_sum(n_sets, 0.0);
   std::vector<int> valid_set_sizes(n_sets, 0);
@@ -1182,7 +1194,7 @@ NumericMatrix zscore_dense(
     }
     const std::vector<int>& sets_for_gene = gene_to_sets[gene];
     if (sets_for_gene.empty()) continue;
-    const double zero_contrib = -gene_means[gene] / gene_sds[gene];
+    const double zero_contrib = sparse_standardize ? 0.0 : -gene_means[gene] / gene_sds[gene];
     for (std::vector<int>::const_iterator it = sets_for_gene.begin(); it != sets_for_gene.end(); ++it) {
       zero_sum[*it] += zero_contrib;
       ++valid_set_sizes[*it];
@@ -1201,7 +1213,9 @@ NumericMatrix zscore_dense(
       if (!R_finite(value) || !R_finite(gene_sds[gene]) || gene_sds[gene] <= 0.0) continue;
       const std::vector<int>& sets_for_gene = gene_to_sets[gene];
       if (sets_for_gene.empty()) continue;
-      const double contrib = value / gene_sds[gene];
+      const double contrib = sparse_standardize
+        ? (value - gene_means[gene]) / gene_sds[gene]
+        : value / gene_sds[gene];
       for (std::vector<int>::const_iterator it = sets_for_gene.begin(); it != sets_for_gene.end(); ++it) {
         scores(cell, *it) += contrib;
       }
@@ -1226,7 +1240,8 @@ NumericMatrix plage_dense(
   S4 expr,
   List gene_sets,
   int min_size = 1,
-  int max_size = 2147483647
+  int max_size = 2147483647,
+  bool dense_standardize = false
 ) {
   IntegerVector dims = expr.slot("Dim");
   const int n_genes = dims[0];
@@ -1312,19 +1327,22 @@ NumericMatrix plage_dense(
       if (!row_needed[gene]) {
         continue;
       }
-      // GSVA >= 2.6 standardizes every value in a row, including structural
-      // zeros in sparse matrices.  Keep the sparse input representation for
-      // storage, but use the full row width for the PLAGE standardization.
-      const double mean = row_sums[gene] / static_cast<double>(n_cells);
-      double var = (row_sq_sums[gene] - static_cast<double>(n_cells) * mean * mean) /
-        static_cast<double>(n_cells - 1);
-      if (var < 0.0 && var > -1e-12) {
-        var = 0.0;
-      }
-      if (R_finite(var) && var > 0.0) {
-        row_means[gene] = mean;
-        row_sds[gene] = std::sqrt(var);
-        row_valid[gene] = 1;
+      // GSVA < 2.6 scales only stored dgCMatrix values; GSVA >= 2.6 and
+      // dense input standardize the complete row. The R caller selects the
+      // matching contract through dense_standardize.
+      const int standardize_count = dense_standardize ? n_cells : row_counts[gene];
+      if (standardize_count > 1) {
+        const double mean = row_sums[gene] / static_cast<double>(standardize_count);
+        double var = (row_sq_sums[gene] - static_cast<double>(standardize_count) * mean * mean) /
+          static_cast<double>(standardize_count - 1);
+        if (var < 0.0 && var > -1e-12) {
+          var = 0.0;
+        }
+        if (R_finite(var) && var > 0.0) {
+          row_means[gene] = mean;
+          row_sds[gene] = std::sqrt(var);
+          row_valid[gene] = 1;
+        }
       }
 
       // Keep the original dense-expression standardization separately for
@@ -1369,14 +1387,19 @@ NumericMatrix plage_dense(
       static_cast<arma::uword>(n_cells),
       arma::fill::zeros
     );
-    // Match GSVA >= 2.6 sparse semantics: center and scale every value,
-    // including structural zeros.
+    // Under the dense contract, initialize structural zeros with their
+    // z-score. The older sparse GSVA contract leaves them as zero.
+    if (dense_standardize) {
+      for (int row = 0; row < effective_size; ++row) {
+        const int gene = valid_genes[row];
+        const double zero_value = -row_means[gene] / row_sds[gene];
+        for (int cell = 0; cell < n_cells; ++cell) {
+          z(static_cast<arma::uword>(row), static_cast<arma::uword>(cell)) = zero_value;
+        }
+      }
+    }
     for (int row = 0; row < effective_size; ++row) {
       const int gene = valid_genes[row];
-      const double zero_value = -row_means[gene] / row_sds[gene];
-      for (int cell = 0; cell < n_cells; ++cell) {
-        z(static_cast<arma::uword>(row), static_cast<arma::uword>(cell)) = zero_value;
-      }
       const int row_start = row_ptr[gene];
       const int row_end = row_ptr[gene + 1];
       for (int ptr = row_start; ptr < row_end; ++ptr) {
@@ -1506,6 +1529,101 @@ static double gsva_sample_sd_from_freq(
   }
 
   return std::sqrt(static_cast<double>(sum / static_cast<long double>(n - 1)));
+}
+
+// Fast normal CDF approximation (absolute error below 7.5e-8).  Gaussian
+// GSVA spends most of its time evaluating kernel CDFs, so calling R::pnorm()
+// for every value pair makes the otherwise native implementation quadratic
+// with a very large constant.
+static inline double gsva_fast_pnorm(double x) {
+  if (x <= -8.0) return 0.0;
+  if (x >= 8.0) return 1.0;
+  const double ax = std::fabs(x);
+  const double t = 1.0 / (1.0 + 0.2316419 * ax);
+  const double poly = t * (
+    0.319381530 + t * (
+      -0.356563782 + t * (
+        1.781477937 + t * (
+          -1.821255978 + t * 1.330274429
+        )
+      )
+    )
+  );
+  const double upper = std::exp(-0.5 * ax * ax) * 0.3989422804014327 * poly;
+  const double cdf = 1.0 - upper;
+  return (x >= 0.0) ? cdf : 1.0 - cdf;
+}
+
+static void gsva_gaussian_kcdf_binned(
+  const std::map<double, int>& freq,
+  int n_cells,
+  double bw,
+  std::map<double, double>& z_by_value
+) {
+  const int n_unique = static_cast<int>(freq.size());
+  if (n_unique == 0) return;
+
+  // Keep the exact route for genuinely discrete rows. Continuous log-normalized
+  // single-cell rows otherwise have one value per cell and make the original
+  // O(unique^2) R::pnorm loop dominate runtime.
+  if (n_unique <= 16) {
+    for (std::map<double, int>::const_iterator y_it = freq.begin(); y_it != freq.end(); ++y_it) {
+      double cdf = 0.0;
+      for (std::map<double, int>::const_iterator x_it = freq.begin(); x_it != freq.end(); ++x_it) {
+        cdf += static_cast<double>(x_it->second) *
+          R::pnorm(y_it->first - x_it->first, 0.0, bw, true, false);
+      }
+      cdf /= static_cast<double>(n_cells);
+      cdf = std::max(1e-15, std::min(1.0 - 1e-15, cdf));
+      z_by_value[y_it->first] = -std::log((1.0 - cdf) / cdf);
+    }
+    return;
+  }
+
+  const double lower = freq.begin()->first;
+  const double upper = freq.rbegin()->first;
+  const double range = upper - lower;
+  if (!R_finite(range) || range <= 0.0) {
+    z_by_value[lower] = 0.0;
+    return;
+  }
+
+  const int n_bins = std::min(64, n_unique);
+  std::vector<int> bin_count(n_bins, 0);
+  std::vector<double> bin_sum(n_bins, 0.0);
+  std::map<double, int> bin_by_value;
+  const double scale = static_cast<double>(n_bins - 1) / range;
+  for (std::map<double, int>::const_iterator it = freq.begin(); it != freq.end(); ++it) {
+    int bin = static_cast<int>(std::floor((it->first - lower) * scale + 0.5));
+    bin = std::max(0, std::min(n_bins - 1, bin));
+    bin_by_value[it->first] = bin;
+    bin_count[bin] += it->second;
+    bin_sum[bin] += it->first * static_cast<double>(it->second);
+  }
+
+  std::vector<double> bin_value(n_bins, 0.0);
+  for (int bin = 0; bin < n_bins; ++bin) {
+    bin_value[bin] = (bin_count[bin] > 0) ?
+      bin_sum[bin] / static_cast<double>(bin_count[bin]) :
+      lower + static_cast<double>(bin) / scale;
+  }
+  std::vector<double> cdf_by_bin(n_bins, 0.5);
+  for (int y_bin = 0; y_bin < n_bins; ++y_bin) {
+    if (bin_count[y_bin] == 0) continue;
+    double cdf = 0.0;
+    for (int x_bin = 0; x_bin < n_bins; ++x_bin) {
+      if (bin_count[x_bin] == 0) continue;
+      cdf += static_cast<double>(bin_count[x_bin]) *
+        gsva_fast_pnorm((bin_value[y_bin] - bin_value[x_bin]) / bw);
+    }
+    cdf /= static_cast<double>(n_cells);
+    cdf = std::max(1e-15, std::min(1.0 - 1e-15, cdf));
+    cdf_by_bin[y_bin] = cdf;
+  }
+  for (std::map<double, int>::const_iterator it = bin_by_value.begin(); it != bin_by_value.end(); ++it) {
+    const double cdf = cdf_by_bin[it->second];
+    z_by_value[it->first] = -std::log((1.0 - cdf) / cdf);
+  }
 }
 
 struct GsvaRankEntry {
@@ -2092,16 +2210,7 @@ NumericMatrix gsva_gaussian_dense(
     }
 
     std::map<double, double> z_by_value;
-    for (std::map<double, int>::const_iterator y_it = freq.begin(); y_it != freq.end(); ++y_it) {
-      const double y = y_it->first;
-      double left_tail = 0.0;
-      for (std::map<double, int>::const_iterator x_it = freq.begin(); x_it != freq.end(); ++x_it) {
-        left_tail += static_cast<double>(x_it->second) *
-          R::pnorm(y - x_it->first, 0.0, bw, true, false);
-      }
-      left_tail /= static_cast<double>(n_cells);
-      z_by_value[y] = -std::log((1.0 - left_tail) / left_tail);
-    }
+    gsva_gaussian_kcdf_binned(freq, n_cells, bw, z_by_value);
 
     row_z_zero[gene] = z_by_value[0.0];
     for (int ptr = row_start; ptr < row_end; ++ptr) {

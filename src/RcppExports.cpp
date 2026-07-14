@@ -493,8 +493,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // zscore_dense
-NumericMatrix zscore_dense(S4 expr, List gene_sets, int min_size, int max_size);
-RcppExport SEXP _scop_zscore_dense(SEXP exprSEXP, SEXP gene_setsSEXP, SEXP min_sizeSEXP, SEXP max_sizeSEXP) {
+NumericMatrix zscore_dense(S4 expr, List gene_sets, int min_size, int max_size, bool sparse_standardize);
+RcppExport SEXP _scop_zscore_dense(SEXP exprSEXP, SEXP gene_setsSEXP, SEXP min_sizeSEXP, SEXP max_sizeSEXP, SEXP sparse_standardizeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -502,13 +502,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< List >::type gene_sets(gene_setsSEXP);
     Rcpp::traits::input_parameter< int >::type min_size(min_sizeSEXP);
     Rcpp::traits::input_parameter< int >::type max_size(max_sizeSEXP);
-    rcpp_result_gen = Rcpp::wrap(zscore_dense(expr, gene_sets, min_size, max_size));
+    Rcpp::traits::input_parameter< bool >::type sparse_standardize(sparse_standardizeSEXP);
+    rcpp_result_gen = Rcpp::wrap(zscore_dense(expr, gene_sets, min_size, max_size, sparse_standardize));
     return rcpp_result_gen;
 END_RCPP
 }
 // plage_dense
-NumericMatrix plage_dense(S4 expr, List gene_sets, int min_size, int max_size);
-RcppExport SEXP _scop_plage_dense(SEXP exprSEXP, SEXP gene_setsSEXP, SEXP min_sizeSEXP, SEXP max_sizeSEXP) {
+NumericMatrix plage_dense(S4 expr, List gene_sets, int min_size, int max_size, bool dense_standardize);
+RcppExport SEXP _scop_plage_dense(SEXP exprSEXP, SEXP gene_setsSEXP, SEXP min_sizeSEXP, SEXP max_sizeSEXP, SEXP dense_standardizeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -516,7 +517,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< List >::type gene_sets(gene_setsSEXP);
     Rcpp::traits::input_parameter< int >::type min_size(min_sizeSEXP);
     Rcpp::traits::input_parameter< int >::type max_size(max_sizeSEXP);
-    rcpp_result_gen = Rcpp::wrap(plage_dense(expr, gene_sets, min_size, max_size));
+    Rcpp::traits::input_parameter< bool >::type dense_standardize(dense_standardizeSEXP);
+    rcpp_result_gen = Rcpp::wrap(plage_dense(expr, gene_sets, min_size, max_size, dense_standardize));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -2611,8 +2613,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_module_score_sparse", (DL_FUNC) &_scop_module_score_sparse, 3},
     {"_scop_proportion_permutation", (DL_FUNC) &_scop_proportion_permutation, 6},
     {"_scop_ssgsea_rank_dense", (DL_FUNC) &_scop_ssgsea_rank_dense, 4},
-    {"_scop_zscore_dense", (DL_FUNC) &_scop_zscore_dense, 4},
-    {"_scop_plage_dense", (DL_FUNC) &_scop_plage_dense, 4},
+    {"_scop_zscore_dense", (DL_FUNC) &_scop_zscore_dense, 5},
+    {"_scop_plage_dense", (DL_FUNC) &_scop_plage_dense, 5},
     {"_scop_gsva_gaussian_dense", (DL_FUNC) &_scop_gsva_gaussian_dense, 6},
     {"_scop_gsva_poisson_dense", (DL_FUNC) &_scop_gsva_poisson_dense, 6},
     {"_scop_mdic3_score_cpp", (DL_FUNC) &_scop_mdic3_score_cpp, 3},

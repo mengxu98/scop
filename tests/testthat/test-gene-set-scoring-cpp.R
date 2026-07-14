@@ -142,7 +142,8 @@ test_that("PLAGE gene-gene covariance path matches right singular vector scores"
     methods::as(Matrix::Matrix(expr, sparse = TRUE), "dgCMatrix"),
     gene_sets,
     min_size = 1L,
-    max_size = 500L
+    max_size = 500L,
+    dense_standardize = TRUE
   )
   ref <- reference_plage_scores(expr, gene_sets, min_size = 1L, max_size = 500L)
 
@@ -151,7 +152,6 @@ test_that("PLAGE gene-gene covariance path matches right singular vector scores"
 
 test_that("PLAGE sparse standardization matches GSVA", {
   skip_if_not_installed("GSVA")
-  skip_if(utils::packageVersion("GSVA") < "2.6.0")
   set.seed(20260711)
   expr <- matrix(stats::rpois(18 * 41, lambda = 0.9), nrow = 18)
   expr[expr < 2] <- 0
@@ -161,7 +161,8 @@ test_that("PLAGE sparse standardization matches GSVA", {
   gene_sets <- list(a = rownames(expr)[1:7], b = rownames(expr)[5:15])
 
   cpp <- t(scop:::run_plage_scores(
-    expr, gene_sets, min_gs_size = 1L, max_gs_size = 50L
+    expr, gene_sets, min_gs_size = 1L, max_gs_size = 50L,
+    dense_standardize = scop:::gene_set_scoring_plage_dense_standardize()
   ))
   reference <- GSVA::gsva(
     GSVA::plageParam(
@@ -174,4 +175,165 @@ test_that("PLAGE sparse standardization matches GSVA", {
   }, numeric(1L))
 
   expect_equal(unname(abs(correlations)), rep(1, length(correlations)), tolerance = 1e-12)
+})
+
+test_that("PLAGE dense standardization matches the CellScoring GSVA contract", {
+  skip_if_not_installed("GSVA")
+  set.seed(20260714)
+  expr <- matrix(stats::rpois(20 * 47, lambda = 0.8), nrow = 20)
+  expr[expr < 2] <- 0
+  rownames(expr) <- paste0("g", seq_len(nrow(expr)))
+  colnames(expr) <- paste0("c", seq_len(ncol(expr)))
+  gene_sets <- list(a = rownames(expr)[1:8], b = rownames(expr)[6:16])
+
+  cpp <- t(scop:::run_plage_scores(
+    methods::as(Matrix::Matrix(expr, sparse = TRUE), "dgCMatrix"),
+    gene_sets,
+    min_gs_size = 1L,
+    max_gs_size = 50L,
+    dense_standardize = TRUE
+  ))
+  cpp <- scop:::orient_plage_scores(cpp, expr, gene_sets)
+  reference <- GSVA::gsva(
+    GSVA::plageParam(
+      exprData = expr, geneSets = gene_sets, minSize = 1L, maxSize = 50L
+    ),
+    verbose = FALSE
+  )
+  reference <- scop:::orient_plage_scores(reference, expr, gene_sets)
+
+  expect_identical(dim(cpp), dim(reference))
+  expect_equal(as.numeric(cpp), as.numeric(reference), tolerance = 1e-10)
+})
+
+test_that("z-score sparse standardization matches the RunGSVA GSVA contract", {
+  skip_if_not_installed("GSVA")
+  set.seed(20260714)
+  expr <- matrix(stats::rpois(20 * 47, lambda = 0.8), nrow = 20)
+  expr[expr < 2] <- 0
+  rownames(expr) <- paste0("g", seq_len(nrow(expr)))
+  colnames(expr) <- paste0("c", seq_len(ncol(expr)))
+  expr_sparse <- methods::as(Matrix::Matrix(expr, sparse = TRUE), "dgCMatrix")
+  gene_sets <- list(a = rownames(expr)[1:8], b = rownames(expr)[6:16])
+
+  cpp <- t(scop:::run_zscore_scores(
+    expr_sparse,
+    gene_sets,
+    min_gs_size = 1L,
+    max_gs_size = 50L,
+    sparse_standardize = TRUE
+  ))
+  reference <- GSVA::gsva(
+    GSVA::zscoreParam(
+      exprData = expr_sparse, geneSets = gene_sets, minSize = 1L, maxSize = 50L
+    ),
+    verbose = FALSE
+  )
+
+  expect_identical(dim(cpp), dim(reference))
+  expect_equal(as.numeric(cpp), as.numeric(reference), tolerance = 1e-10)
+})
+
+test_that("GSVA sparse delegated kernel preserves the GSVA default contract", {
+  skip_if_not_installed("GSVA")
+  set.seed(20260714)
+  expr <- matrix(stats::rpois(20 * 31, lambda = 0.8), nrow = 20)
+  expr[expr < 2] <- 0
+  rownames(expr) <- paste0("g", seq_len(nrow(expr)))
+  colnames(expr) <- paste0("c", seq_len(ncol(expr)))
+  expr_sparse <- methods::as(Matrix::Matrix(expr, sparse = TRUE), "dgCMatrix")
+  gene_sets <- list(a = rownames(expr)[1:8], b = rownames(expr)[6:16])
+
+  delegated <- t(scop:::run_gsva_scores(
+    expr_sparse,
+    gene_sets,
+    kcdf = "Gaussian",
+    min_gs_size = 1L,
+    max_gs_size = 50L,
+    kernel = "delegated"
+  ))
+  reference <- GSVA::gsva(
+    GSVA::gsvaParam(
+      exprData = expr_sparse,
+      geneSets = gene_sets,
+      minSize = 1L,
+      maxSize = 50L,
+      kcdf = "Gaussian"
+    ),
+    verbose = FALSE
+  )
+
+  expect_identical(dim(delegated), dim(reference))
+  expect_equal(as.numeric(delegated), as.numeric(reference), tolerance = 1e-10)
+})
+
+test_that("native Gaussian GSVA is an opt-in result-compatible kernel", {
+  skip_if_not_installed("GSVA")
+  set.seed(20260714)
+  expr <- matrix(stats::rlnorm(48 * 72, meanlog = -1, sdlog = 0.7), nrow = 48)
+  expr[expr < 0.5] <- 0
+  rownames(expr) <- paste0("g", seq_len(nrow(expr)))
+  colnames(expr) <- paste0("c", seq_len(ncol(expr)))
+  expr_sparse <- methods::as(Matrix::Matrix(expr, sparse = TRUE), "dgCMatrix")
+  gene_sets <- list(a = rownames(expr)[1:12], b = rownames(expr)[14:32])
+
+  native <- scop:::run_gsva_scores(
+    expr_sparse,
+    gene_sets,
+    kcdf = "Gaussian",
+    min_gs_size = 1L,
+    max_gs_size = 50L,
+    sparse = FALSE,
+    kernel = "native"
+  )
+  delegated <- scop:::run_gsva_scores(
+    expr_sparse,
+    gene_sets,
+    kcdf = "Gaussian",
+    min_gs_size = 1L,
+    max_gs_size = 50L,
+    sparse = FALSE,
+    kernel = "delegated"
+  )
+
+  expect_identical(dim(native), dim(delegated))
+  correlations <- vapply(seq_len(ncol(native)), function(i) {
+    stats::cor(native[, i], delegated[, i], method = "spearman")
+  }, numeric(1L))
+  expect_gte(min(correlations), 0.95)
+  expect_error(
+    scop:::run_gsva_scores(
+      expr_sparse,
+      gene_sets,
+      kcdf = "Poisson",
+      min_gs_size = 1L,
+      max_gs_size = 50L,
+      kernel = "native"
+    ),
+    "Gaussian"
+  )
+})
+
+test_that("RunGSVA selects the native Gaussian kernel through backend", {
+  set.seed(20260714)
+  counts <- matrix(
+    stats::rpois(50 * 30, lambda = 1),
+    nrow = 50,
+    dimnames = list(paste0("g", seq_len(50)), paste0("c", seq_len(30)))
+  )
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  srt <- Seurat::NormalizeData(srt, verbose = FALSE)
+
+  out <- RunGSVA(
+    srt,
+    features = list(a = rownames(srt)[1:15], b = rownames(srt)[16:30]),
+    method = "gsva",
+    backend = "cpp",
+    kcdf = "Gaussian",
+    new_assay = FALSE,
+    store_metadata = TRUE,
+    verbose = FALSE
+  )
+
+  expect_true(all(c("GSVA_A", "GSVA_B") %in% colnames(out[[]])))
 })

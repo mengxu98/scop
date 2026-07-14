@@ -24,7 +24,9 @@
 #' current `method` values. `"r"` uses the original [GSVA::gsva()]
 #' implementation. `"cpp"` supports `method = "ssgsea"`,
 #' `method = "zscore"`, `method = "plage"`, and `method = "gsva"` with
-#' `kcdf = "Gaussian"`, `kcdf = "Poisson"`, or `kcdf = "none"`. PLAGE scores are oriented to have non-negative
+#' `kcdf = "Gaussian"`, `kcdf = "Poisson"`, or `kcdf = "none"`. Gaussian
+#' GSVA uses the native C++ KDE/ranking kernel; the other GSVA kernels retain
+#' the validated GSVA implementation. PLAGE scores are oriented to have non-negative
 #' dot product with the gene set mean z-score so SVD signs are deterministic.
 #' @param cpp_chunk_size Optional cell chunk size for C++ GSVA kernels. `NULL`
 #' or `"auto"` automatically chunks large matrices to reduce peak dense
@@ -506,14 +508,16 @@ RunGSVA <- function(
           expr_counts = expr_filtered,
           gene_sets = gene_sets_filtered,
           min_gs_size = min_size,
-          max_gs_size = max_size
+          max_gs_size = max_size,
+          sparse_standardize = inherits(expr_filtered, "dgCMatrix")
         ))
       } else {
         gsva_scores <- t(run_plage_scores(
           expr_counts = expr_filtered,
           gene_sets = gene_sets_filtered,
           min_gs_size = min_size,
-          max_gs_size = max_size
+          max_gs_size = max_size,
+          dense_standardize = gene_set_scoring_plage_dense_standardize()
         ))
       }
       if (!is.matrix(gsva_scores)) {
