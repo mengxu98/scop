@@ -194,6 +194,7 @@ test_that("cpp backend stores annotation gradient result tables", {
     annotation.threshold = 0,
     layer = "counts",
     coord.cols = c("x", "y"),
+    coordinate_space = "raw",
     n_random = 0,
     n_bins = 3,
     min_spots = 1,
@@ -212,6 +213,15 @@ test_that("cpp backend stores annotation gradient result tables", {
   expect_true(all(c("norm_var", "rel_var", "linear_r2") %in% colnames(stored$significance)))
   expect_true(all(c("ascending", "descending", "peak", "valley", "linear") %in% stored$model_fits$model))
   expect_true(any(stored$significance$tot_var != stored$significance$linear_r2, na.rm = TRUE))
+  info <- SpatialResultInfo(srt, tool_name = "SpatialGradientFeatures")
+  expect_identical(info$coordinate_space, "raw")
+  expect_identical(srt@tools$SpatialGradientFeatures$source$coord.cols, c("x", "y"))
+  expect_identical(srt@tools$SpatialGradientFeatures$source$image_policy, "strict")
+  expect_identical(srt@tools$SpatialGradientFeatures$provenance$backend_id, "core")
+  expect_identical(
+    srt@tools$SpatialGradientFeatures$source$selection_strategy,
+    "metadata_coord_cols"
+  )
 })
 
 test_that("cpp backend stores trajectory gradient result tables", {

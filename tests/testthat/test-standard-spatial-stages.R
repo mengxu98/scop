@@ -19,14 +19,17 @@ test_that("standard spatial workflow records completed and skipped stages truthf
       srt$SpotQC <- "Pass"
       srt
     },
-    RunSpatialVariableFeatures = function(srt, ...) {
+    RunSpatialVariableFeatures = function(srt, set_variable_features, ...) {
+      expect_false(set_variable_features)
       srt@tools$SpatialVariableFeatures <- list(result = data.frame(feature = rownames(srt)))
       srt
     }
   )
 
+  input <- make_standard_spatial_stage_object()
+  SeuratObject::VariableFeatures(input) <- rownames(input)[1:2]
   out <- suppressWarnings(original(
-    make_standard_spatial_stage_object(),
+    input,
     assay = "RNA",
     do_spot_qc = TRUE,
     do_spatial_variable_features = TRUE,
@@ -50,6 +53,11 @@ test_that("standard spatial workflow records completed and skipped stages truthf
     workflow$stages$result_tool_key[workflow$stages$stage == "spatial_variable_features"],
     "SpatialVariableFeatures"
   )
+  svf <- workflow$stages[workflow$stages$stage == "spatial_variable_features", , drop = FALSE]
+  expect_identical(svf$variable_features_before, 2L)
+  expect_identical(svf$variable_features_after, 2L)
+  expect_false(svf$set_variable_features)
+  expect_identical(SeuratObject::VariableFeatures(out), rownames(input)[1:2])
   deconv <- workflow$stages[workflow$stages$stage == "deconvolution", , drop = FALSE]
   expect_true(deconv$requested)
   expect_identical(deconv$status, "skipped")

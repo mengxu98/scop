@@ -393,6 +393,9 @@ meringue_run_autocorrelation <- function(
     meringue_normalize_moran_result(out, feature = feature)
   })
   result <- do.call(rbind, rows)
+  if (nperm == 0L) {
+    result$p_value <- NA_real_
+  }
   result$q_value <- if (all(is.na(result$p_value))) {
     NA_real_
   } else {

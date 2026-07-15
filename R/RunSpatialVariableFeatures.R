@@ -480,8 +480,10 @@ spatial_variable_get_fun <- function(pkg, fun) {
 #'
 #' @description
 #' Visualize normalized results produced by [RunSpatialVariableFeatures()]. The
-#' summary view shows feature ranks and significance, while the surface view
-#' reuses [SpatialSpotPlot()] to draw spatial expression for selected features.
+#' summary view shows feature ranks and, when finite p- or q-values are stored,
+#' significance. Results without permutation statistics are shown without a
+#' significance size mapping or legend. The surface view reuses
+#' [SpatialSpotPlot()] to draw spatial expression for selected features.
 #'
 #' @md
 #' @inheritParams SpatialSpotPlot
@@ -674,34 +676,42 @@ spatial_variable_summary_plot <- function(
   df <- result[result$feature %in% features, , drop = FALSE]
   df$feature <- factor(df$feature, levels = rev(features))
   df[[".score"]] <- suppressWarnings(as.numeric(df[[score_col]]))
+  has_significance <- ("q_value" %in% colnames(df) && any(is.finite(df$q_value))) ||
+    ("p_value" %in% colnames(df) && any(is.finite(df$p_value)))
   df[[".significance"]] <- if ("q_value" %in% colnames(df) && any(is.finite(df$q_value))) {
     -log10(pmax(df$q_value, .Machine$double.xmin))
   } else if ("p_value" %in% colnames(df) && any(is.finite(df$p_value))) {
     -log10(pmax(df$p_value, .Machine$double.xmin))
   } else {
-    rep(1, nrow(df))
+    NA_real_
   }
   cols <- palette_colors(as.character(features), palette = palette, palcolor = palcolor)
-  ggplot2::ggplot(df, ggplot2::aes(x = .data[[".score"]], y = .data[["feature"]], color = .data[["feature"]])) +
+  p <- ggplot2::ggplot(df, ggplot2::aes(x = .data[[".score"]], y = .data[["feature"]], color = .data[["feature"]])) +
     ggplot2::geom_segment(
       ggplot2::aes(x = 0, xend = .data[[".score"]], yend = .data[["feature"]]),
       linewidth = 0.35,
       alpha = 0.5,
       na.rm = TRUE
     ) +
-    ggplot2::geom_point(
-      ggplot2::aes(size = .data[[".significance"]]),
-      na.rm = TRUE
-    ) +
     ggplot2::scale_color_manual(values = cols, drop = FALSE) +
     ggplot2::labs(
       x = score_col,
       y = NULL,
-      color = "Feature",
-      size = "-log10(q/p)"
+      color = "Feature"
     ) +
     spatial_variable_plot_theme(theme_use = theme_use, theme_args = theme_args) +
     ggplot2::theme(legend.position = legend.position)
+  if (isTRUE(has_significance)) {
+    p <- p +
+      ggplot2::geom_point(
+        ggplot2::aes(size = .data[[".significance"]]),
+        na.rm = TRUE
+      ) +
+      ggplot2::labs(size = "-log10(q/p)")
+  } else {
+    p <- p + ggplot2::geom_point(na.rm = TRUE)
+  }
+  p
 }
 
 spatial_variable_surface_plot <- function(
