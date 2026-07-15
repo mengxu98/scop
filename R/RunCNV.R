@@ -582,7 +582,7 @@ cnv_run_casper <- function(
   verbose = TRUE,
   ...
 ) {
-  check_r("CaSpER", verbose = FALSE)
+  check_r("akdess/CaSpER", verbose = FALSE)
   create_fun <- get_namespace_fun("CaSpER", "CreateCasperObject")
   run_fun <- get_namespace_fun("CaSpER", "runCaSpER")
   event_fun <- get_namespace_fun("CaSpER", "extractLargeScaleEvents")
