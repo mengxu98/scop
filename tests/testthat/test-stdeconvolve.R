@@ -112,9 +112,9 @@ test_that("RunSTdeconvolve validates inputs before backend work", {
 
 test_that("STdeconvolvePlot uses SCOP spatial plotting", {
   srt <- make_stdeconvolve_seurat()
-  srt$STdeconvolve_prop_topic_1 <- c(0.8, 0.4, 0.1, 0.6)
-  srt$STdeconvolve_prop_topic_2 <- c(0.2, 0.6, 0.9, 0.4)
-  srt$STdeconvolve_dominant_type <- c("topic_1", "topic_2", "topic_2", "topic_1")
+  with_mock_stdeconvolve({
+    srt <- RunSTdeconvolve(srt, k = 2, verbose = FALSE)
+  })
   testthat::local_mocked_bindings(
     .package = "scop",
     check_r = function(packages, ...) {
@@ -138,4 +138,108 @@ test_that("STdeconvolvePlot uses SCOP spatial plotting", {
 
   expect_s3_class(p1, "ggplot")
   expect_s3_class(p2, "ggplot")
+})
+
+test_that("STdeconvolvePlot reads custom tool names and stored prefixes", {
+  srt <- make_stdeconvolve_seurat()
+  with_mock_stdeconvolve({
+    out <- RunSTdeconvolve(
+      srt,
+      k = 2,
+      prefix = "STFull",
+      tool_name = "STdeconvolveFull",
+      verbose = FALSE
+    )
+  })
+
+  p <- STdeconvolvePlot(
+    out,
+    tool_name = "STdeconvolveFull",
+    topics = "STFull_prop_topic_2",
+    overlay_image = FALSE
+  )
+  expect_s3_class(p, "ggplot")
+  expect_identical(GetSpatialResult(out, tool_name = "STdeconvolveFull")$parameters$prefix, "STFull")
+})
+
+test_that("STdeconvolvePlot uses readable automatic layouts and supports lists", {
+  srt <- make_stdeconvolve_seurat()
+  theta <- matrix(
+    seq_len(ncol(srt) * 7),
+    nrow = ncol(srt),
+    dimnames = list(colnames(srt), paste0("topic_", 1:7))
+  )
+  theta <- theta / rowSums(theta)
+  srt@tools$STSeven <- spatial_result_build(
+    bundle = list(
+      theta = theta,
+      parameters = list(prefix = "STSeven"),
+      summary = scop_spatial_weight_summary(theta)
+    ),
+    method = "STdeconvolve",
+    result_type = "deconvolution",
+    provenance = list(producer = "RunSTdeconvolve", backend_id = "stdeconvolve")
+  )
+
+  plots <- STdeconvolvePlot(
+    srt,
+    tool_name = "STSeven",
+    combine = FALSE,
+    overlay_image = FALSE
+  )
+  combined <- STdeconvolvePlot(
+    srt,
+    tool_name = "STSeven",
+    overlay_image = FALSE
+  )
+  expect_length(plots, 7L)
+  expect_true(all(vapply(plots, inherits, logical(1), what = "ggplot")))
+  expect_s3_class(combined, "patchwork")
+  combined_plots <- combined$patches$plots
+  expect_length(combined_plots, 6L)
+  limits <- lapply(combined_plots, function(plot) {
+    color_scale <- Filter(
+      function(scale) any(scale$aesthetics %in% c("colour", "color")),
+      plot$scales$scales
+    )
+    color_scale[[1L]]$limits
+  })
+  expect_true(all(vapply(limits, identical, logical(1), limits[[1L]])))
+  expect_identical(combined$patches$annotation$title, "STSeven topic proportions")
+})
+
+test_that("STdeconvolvePlot rejects missing, stale, and malformed stored results", {
+  srt <- make_stdeconvolve_seurat()
+  expect_error(STdeconvolvePlot(srt, tool_name = "missing"), "No stored spatial result")
+
+  theta <- matrix(
+    0.5,
+    nrow = ncol(srt),
+    ncol = 2,
+    dimnames = list(colnames(srt), c("topic_1", "topic_2"))
+  )
+  make_bundle <- function(value) spatial_result_build(
+    bundle = list(theta = value, parameters = list(prefix = "Bad")),
+    method = "STdeconvolve",
+    result_type = "deconvolution",
+    provenance = list(producer = "RunSTdeconvolve", backend_id = "stdeconvolve")
+  )
+
+  srt@tools$StaleST <- make_bundle(theta[-1, , drop = FALSE])
+  expect_error(
+    STdeconvolvePlot(srt, tool_name = "StaleST", overlay_image = FALSE),
+    "stale or incomplete"
+  )
+  duplicated_theta <- theta
+  rownames(duplicated_theta)[2] <- rownames(duplicated_theta)[1]
+  srt@tools$DuplicatedST <- make_bundle(duplicated_theta)
+  expect_error(
+    STdeconvolvePlot(srt, tool_name = "DuplicatedST", overlay_image = FALSE),
+    "unique, non-missing"
+  )
+  srt@tools$EmptyST <- make_bundle(theta[0, , drop = FALSE])
+  expect_error(
+    STdeconvolvePlot(srt, tool_name = "EmptyST", overlay_image = FALSE),
+    "empty"
+  )
 })
