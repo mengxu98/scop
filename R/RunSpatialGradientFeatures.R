@@ -144,6 +144,8 @@ RunSpatialGradientFeatures <- function(
   reference <- match.arg(reference)
   backend <- match.arg(backend)
   coordinate_space <- match.arg(coordinate_space)
+  requested_image <- image
+  spata_object_supplied <- !is.null(spata_object)
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   if (!assay %in% SeuratObject::Assays(srt)) {
     log_message(
@@ -234,6 +236,14 @@ RunSpatialGradientFeatures <- function(
     )
   } else {
     sgf_require_spata2()
+    if (is.null(spata_object)) {
+      resolved_image <- spatial_image_resolve(
+        srt = srt,
+        image = image,
+        image_policy = "strict"
+      )
+      image <- resolved_image$image
+    }
     spata_object <- spata_object %||% sgf_as_spata2(
       srt = srt,
       sample_name = sample_name %||% "scop_sample",
@@ -352,11 +362,33 @@ RunSpatialGradientFeatures <- function(
   }
 
   if (isTRUE(store_results)) {
+    source <- result$source %||% list(
+      image = image,
+      coord.cols = coord.cols[seq_len(min(2L, length(coord.cols)))],
+      image_policy = "strict",
+      coordinate_space = if (identical(backend, "cpp")) coordinate_space else "backend_native"
+    )
+    if (!identical(backend, "cpp")) {
+      source$requested_coordinate_space <- coordinate_space
+    }
+    source$selection_strategy <- source$selection_strategy %||% if (spata_object_supplied) {
+      "provided_spata_object"
+    } else if (is.null(source$image)) {
+      "metadata_coord_cols"
+    } else if (!is.null(requested_image)) {
+      "explicit_image"
+    } else {
+      "single_available_image"
+    }
+    source$units <- unit %||% NA_character_
+    source$layer <- layer
     srt <- sgf_store_result(
       srt = srt,
       result_name = result_name,
       result = result,
       assay = assay,
+      backend = backend,
+      source = source,
       set_variable_features = set_variable_features
     )
   }
@@ -741,6 +773,12 @@ sgf_run_cpp_gradient <- function(
     coord.cols = coord.cols,
     coordinate_space = coordinate_space
   )
+  coordinate_source <- attr(coords, "spatial_source") %||% list(
+    image = image,
+    coord.cols = coord.cols[seq_len(min(2L, length(coord.cols)))],
+    image_policy = "strict",
+    coordinate_space = coordinate_space
+  )
   spots <- intersect(colnames(srt), rownames(coords))
   if (length(spots) == 0L) {
     log_message("No spatial coordinates match spots in {.arg srt}", message_type = "error")
@@ -809,7 +847,8 @@ sgf_run_cpp_gradient <- function(
     significance = significance,
     model_fits = model_fits,
     top_variables = top_variables,
-    parameters = sgf_parameters_df(parameters)
+    parameters = sgf_parameters_df(parameters),
+    source = coordinate_source
   )
 }
 
@@ -823,19 +862,29 @@ sgf_cpp_coords <- function(srt, image, coord.cols, coordinate_space = "legacy_di
       is.null(image) &&
       all(coord.cols %in% colnames(srt@meta.data))
   ) {
-    return(data.frame(
+    out <- data.frame(
       x = srt@meta.data[[coord.cols[1L]]],
       y = srt@meta.data[[coord.cols[2L]]],
       row.names = rownames(srt@meta.data),
       stringsAsFactors = FALSE
-    ))
+    )
+    attr(out, "spatial_source") <- list(
+      image = NULL,
+      coord.cols = coord.cols,
+      image_policy = "strict",
+      coordinate_space = coordinate_space
+    )
+    return(out)
   }
-  spatial_analysis_coords(
+  resolved <- spatial_analysis_coords(
     srt = srt,
     image = image,
     coord.cols = coord.cols,
     coordinate_space = coordinate_space
-  )$data
+  )
+  out <- resolved$data
+  attr(out, "spatial_source") <- resolved$source
+  out
 }
 
 sgf_cpp_reference_spots <- function(
@@ -1368,7 +1417,15 @@ sgf_best_model_fits <- function(model_fits) {
   do.call(rbind, best)
 }
 
-sgf_store_result <- function(srt, result_name, result, assay, set_variable_features) {
+sgf_store_result <- function(
+  srt,
+  result_name,
+  result,
+  assay,
+  backend = "cpp",
+  source = NULL,
+  set_variable_features
+) {
   expected <- c("screening", "significance", "model_fits", "top_variables", "parameters")
   missing <- setdiff(expected, names(result))
   if (length(missing) > 0L) {
@@ -1389,26 +1446,18 @@ sgf_store_result <- function(srt, result_name, result, assay, set_variable_featu
     srt@tools[["SpatialGradientFeatures"]] <- list()
   }
   srt@tools[["SpatialGradientFeatures"]][[result_name]] <- result[expected]
-  stored_parameters <- result$parameters
-  parameter_value <- function(name, default = NULL) {
-    if (!is.data.frame(stored_parameters) || !all(c("parameter", "value") %in% colnames(stored_parameters))) {
-      return(default)
-    }
-    value <- stored_parameters$value[match(name, stored_parameters$parameter)]
-    if (length(value) == 0L || is.na(value[[1L]])) default else value[[1L]]
-  }
+  source <- source %||% result$source %||% list()
+  source$assay <- assay
   srt@tools[["SpatialGradientFeatures"]] <- spatial_result_build(
     bundle = srt@tools[["SpatialGradientFeatures"]],
     method = "SpatialGradientFeatures",
     result_type = "feature_pattern",
-    source = list(
-      image = parameter_value("image", character()),
-      coordinate_space = parameter_value("coordinate_space", "legacy_display"),
-      assay = assay,
-      layer = parameter_value("layer", NA_character_)
+    source = source,
+    provenance = list(
+      producer = "RunSpatialGradientFeatures",
+      backend_id = if (identical(backend, "cpp")) "core" else "spata2"
     ),
-    provenance = list(producer = "RunSpatialGradientFeatures", backend_id = "core;spata2"),
-    parameters = list(result_name = result_name, assay = assay),
+    parameters = list(result_name = result_name, assay = assay, backend = backend),
     summary = list(active_result = result_name, n_results = length(setdiff(
       names(srt@tools[["SpatialGradientFeatures"]]),
       c("method", "schema_version", "result_type", "source", "provenance", "parameters", "summary")

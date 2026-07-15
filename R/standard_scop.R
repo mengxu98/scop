@@ -29,7 +29,9 @@
 #' @param do_spatial_variable_features Whether to run
 #' [RunSpatialVariableFeatures()] in the spatial workflow.
 #' @param spatial_variable_features_params Named list of additional arguments
-#' passed to [RunSpatialVariableFeatures()].
+#' passed to [RunSpatialVariableFeatures()]. The spatial workflow defaults
+#' `set_variable_features` to `FALSE` so expression-based highly variable
+#' features are preserved; pass it explicitly to override this workflow default.
 #' @param do_spatial_cluster Whether to run spatial-aware clustering in the
 #' spatial workflow.
 #' @param spatial_cluster_method Spatial clustering method. Only
@@ -113,7 +115,9 @@
 #' @param ... Additional parameters to pass to the dimensionality reduction methods.
 #'
 #' @return A `Seurat` object. Completed or partial spatial workflows store the
-#' per-stage state in `srt@tools[["standard_spatial_scop"]]`. If a stage fails,
+#' per-stage state in `srt@tools[["standard_spatial_scop"]]`. The spatial
+#' variable-feature stage records its effective `set_variable_features` value
+#' and the before/after feature counts. If a stage fails,
 #' the signaled error carries the same table in its `standard_spatial_stages`
 #' attribute with that stage marked `"failed"`.
 #'
@@ -604,14 +608,25 @@ standard_scop <- function(
           "Perform {.fn Seurat::FindClusters} with {.arg cluster_algorithm = '{cluster_algorithm}'} and {.arg cluster_resolution = {cluster_resolution}}",
           verbose = verbose
         )
-        srt <- Seurat::FindClusters(
+        cluster_args <- list(
           object = srt,
           resolution = cluster_resolution,
           algorithm = cluster_algorithm_index,
-          leiden_method = "igraph",
           graph.name = paste0(prefix, lr, "_SNN"),
           verbose = FALSE
         )
+        find_clusters_method <- utils::getS3method(
+          "FindClusters",
+          "Seurat",
+          envir = asNamespace("Seurat")
+        )
+        if (
+          identical(tolower(cluster_algorithm), "leiden") &&
+            "leiden_method" %in% names(formals(find_clusters_method))
+        ) {
+          cluster_args$leiden_method <- "igraph"
+        }
+        srt <- do.call(Seurat::FindClusters, cluster_args)
         log_message("Reorder clusters...", verbose = verbose)
         srt <- srt_reorder(
           srt,
@@ -860,6 +875,9 @@ standard_spatial_scop <- function(
     actual_method = NA_character_,
     result_tool_key = NA_character_,
     result_metadata_key = NA_character_,
+    variable_features_before = NA_integer_,
+    variable_features_after = NA_integer_,
+    set_variable_features = NA,
     reason = ifelse(
       c(
         isTRUE(do_spot_qc), isTRUE(do_spatial_variable_features),
@@ -876,6 +894,9 @@ standard_spatial_scop <- function(
     actual_method = NA_character_,
     result_tool_key = NA_character_,
     result_metadata_key = NA_character_,
+    variable_features_before = NA_integer_,
+    variable_features_after = NA_integer_,
+    set_variable_features = NA,
     reason = NA_character_
   ) {
     i <- match(stage, stages$stage)
@@ -883,6 +904,9 @@ standard_spatial_scop <- function(
     stages$actual_method[[i]] <<- actual_method
     stages$result_tool_key[[i]] <<- result_tool_key
     stages$result_metadata_key[[i]] <<- result_metadata_key
+    stages$variable_features_before[[i]] <<- variable_features_before
+    stages$variable_features_after[[i]] <<- variable_features_after
+    stages$set_variable_features[[i]] <<- set_variable_features
     stages$reason[[i]] <<- reason
     invisible(NULL)
   }
@@ -971,6 +995,7 @@ standard_spatial_scop <- function(
 
   cluster_col <- paste0(prefix, "clusters")
   if (isTRUE(do_spatial_variable_features)) {
+    variable_features_before <- length(SeuratObject::VariableFeatures(srt, assay = assay))
     svf_args <- standard_scop_merge_args(
       list(
         srt = srt,
@@ -978,6 +1003,7 @@ standard_spatial_scop <- function(
         image = image,
         coord.cols = coord.cols,
         coordinate_space = "raw",
+        set_variable_features = FALSE,
         verbose = verbose,
         seed = seed
       ),
@@ -988,6 +1014,15 @@ standard_spatial_scop <- function(
       expr = do.call(RunSpatialVariableFeatures, svf_args),
       actual_method = "RunSpatialVariableFeatures",
       result_tool_key = "SpatialVariableFeatures"
+    )
+    update_stage(
+      stage = "spatial_variable_features",
+      status = "completed",
+      actual_method = "RunSpatialVariableFeatures",
+      result_tool_key = "SpatialVariableFeatures",
+      variable_features_before = variable_features_before,
+      variable_features_after = length(SeuratObject::VariableFeatures(srt, assay = assay)),
+      set_variable_features = isTRUE(svf_args$set_variable_features)
     )
   }
 
@@ -1121,6 +1156,7 @@ standard_spatial_scop <- function(
       coord.cols = coord.cols,
       do_spot_qc = do_spot_qc,
       do_spatial_variable_features = do_spatial_variable_features,
+      spatial_variable_features_params = spatial_variable_features_params,
       do_spatial_cluster = do_spatial_cluster,
       spatial_cluster_method = spatial_cluster_method,
       spatial_q = spatial_q,

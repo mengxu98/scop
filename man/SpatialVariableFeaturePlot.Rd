@@ -98,8 +98,10 @@ A \code{ggplot} or \code{patchwork} object.
 }
 \description{
 Visualize normalized results produced by \code{\link[=RunSpatialVariableFeatures]{RunSpatialVariableFeatures()}}. The
-summary view shows feature ranks and significance, while the surface view
-reuses \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}} to draw spatial expression for selected features.
+summary view shows feature ranks and, when finite p- or q-values are stored,
+significance. Results without permutation statistics are shown without a
+significance size mapping or legend. The surface view reuses
+\code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}} to draw spatial expression for selected features.
 }
 \examples{
 data(visium_human_pancreas_sub)

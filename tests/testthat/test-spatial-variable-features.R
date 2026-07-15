@@ -135,6 +135,8 @@ test_that("SpatialVariableFeaturePlot uses stored result and SCOP spatial plotti
     theme_use = NULL
   )
   expect_s3_class(p_summary, "ggplot")
+  expect_null(p_summary$labels$size)
+  expect_false("size" %in% names(p_summary$layers[[2]]$mapping))
 
   p_surface <- SpatialVariableFeaturePlot(
     srt,
