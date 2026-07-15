@@ -40,7 +40,7 @@ check_python <- function(
   verbose = TRUE,
   ...
 ) {
-  packages <- resolve_requested_python_packages(packages)
+  packages <- unique(resolve_requested_python_packages(packages))
   envname <- get_envname(envname)
   conda <- resolve_conda(conda)
   pip_options <- normalize_cli_args(pip_options)

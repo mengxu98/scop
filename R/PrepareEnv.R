@@ -22,13 +22,6 @@
 #' Default is `"3.10-1"` on macOS and Unix and `"3.11-1"` on Windows.
 #' @param modules Optional Python dependency modules to install in addition to
 #' the default scientific stack.
-#' Supported values are `"scanpy"`, `"scvi"`, `"glue"`, `"scanorama"`, `"bbknn"`,
-#' `"celltypist"`, `"cellphonedb"`, `"cell2location"`, `"magic"`, `"scrublet"`,
-#' `"sccoda"`, `"doubletdetection"`, `"doublet"`, `"palantir"`, `"scvelo"`,
-#' `"cellrank"`, `"wot"`, `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`,
-#' `"scomm"`, `"scenic"`, `"seacells"`, `"tage"`,
-#' `"scmalignantfinder"`, `"secact"`, `"scpagwas"`, and
-#' `"external_wrappers"`.
 #' If `NULL` or omitted in [PrepareEnv()], the default environment is installed.
 #' The default excludes `"cell2location"`, `"sccoda"`, and `"scomm"` because
 #' cell2location is a long-running explicit workflow and the TensorFlow stacks
@@ -40,6 +33,13 @@
 #' upstream stacks are more reliable when requested explicitly for
 #' method-specific workflows.
 #' @param pip_options Additional command line arguments to be passed to `uv`/`pip` when installing pip packages.
+#' @param components Components to prepare. Supported values are `"python"`,
+#' `"r"`, and `"all"`; `"all"` expands to both Python and R. The default,
+#' `"python"`, preserves the existing Python-only behavior. The R component
+#' collects packages declared through `check_r()` and checks/installs them,
+#' including optional workflow dependencies not listed in `DESCRIPTION`.
+#' @param cores Number of workers for R-package installation. Use `NULL` (the
+#' default) to let pak select its worker count automatically.
 #' @param ... Additional arguments passed to package installation functions.
 #'
 #' @export
@@ -51,10 +51,24 @@ PrepareEnv <- function(
   force = FALSE,
   modules = NULL,
   pip_options = character(),
+  components = "python",
+  cores = NULL,
   verbose = TRUE,
   ...
 ) {
+  components <- norm_env_components(components)
   modules <- normalize_env_modules(modules = modules)
+  r_status <- NULL
+  if ("r" %in% components) {
+    r_status <- ensure_env_r_packages(
+      modules = modules,
+      cores = cores,
+      verbose = verbose
+    )
+  }
+  if (!"python" %in% components) {
+    return(invisible(r_status))
+  }
   if ("scenic" %in% modules) {
     scenic_allowed <- c("scenic", "regdiffusion")
     if (length(setdiff(modules, scenic_allowed)) > 0) {
@@ -572,6 +586,90 @@ ensure_external_wrapper_r_packages <- function(modules, verbose = TRUE) {
   invisible(ok)
 }
 
+norm_env_components <- function(components = "python") {
+  components <- tolower(trimws(as.character(unlist(components, use.names = FALSE))))
+  components <- components[nzchar(components)]
+  if (length(components) == 0L) {
+    components <- "python"
+  }
+  if ("all" %in% components) {
+    components <- c(setdiff(components, "all"), "python", "r")
+  }
+  components <- unique(components)
+  invalid <- setdiff(components, c("python", "r"))
+  if (length(invalid) > 0L) {
+    log_message(
+      "{.arg components} contains unsupported values: {.val {invalid}}. Use {.val 'python'}, {.val 'r'}, or {.val 'all'}.",
+      message_type = "error"
+    )
+  }
+  components
+}
+
+env_r_packages <- function(modules = NULL) {
+  modules <- normalize_env_modules(modules = modules)
+  description_path <- if (file.exists("DESCRIPTION")) {
+    "DESCRIPTION"
+  } else {
+    system.file("DESCRIPTION", package = "scop")
+  }
+  description <- read.dcf(description_path)
+  dependency_fields <- c("Depends", "Imports", "Suggests", "LinkingTo", "Remotes")
+  dependency_fields <- intersect(dependency_fields, colnames(description))
+  description_packages <- trimws(unlist(strsplit(
+    description[1, dependency_fields], ",", fixed = TRUE
+  )))
+  description_packages <- sub("\\s*\\(.*$", "", description_packages)
+  description_packages <- sub("^(github|gitlab)::", "", description_packages)
+  description_packages <- description_packages[
+    nzchar(description_packages) & description_packages != "R"
+  ]
+
+  module_packages <- c(
+    secact = "data2intelligence/SecAct",
+    scpagwas = "sulab-wmu/scPagwas"
+  )
+  unique(c(
+    description_packages,
+    collect_r_packages(),
+    unname(module_packages[names(module_packages) %in% modules])
+  ))
+}
+
+collect_r_packages <- function() {
+  collect_strings <- function(expr) {
+    if (is.character(expr)) return(expr)
+    if (is.call(expr) && identical(as.character(expr[[1]]), "c")) {
+      return(unlist(lapply(as.list(expr)[-1], collect_strings), use.names = FALSE))
+    }
+    character()
+  }
+  walk <- function(expr) {
+    if (!is.call(expr)) return(character())
+    name <- as.character(expr[[1]])
+    packages <- if (identical(name, "check_r") && length(expr) >= 2L) {
+      collect_strings(expr[[2]])
+    } else {
+      character()
+    }
+    unique(c(packages, unlist(lapply(as.list(expr)[-1], walk), use.names = FALSE)))
+  }
+
+  namespace <- asNamespace("scop")
+  functions <- mget(ls(namespace, all.names = TRUE), namespace, inherits = FALSE)
+  functions <- Filter(is.function, functions)
+  unique(unlist(lapply(functions, function(fun) walk(body(fun))), use.names = FALSE))
+}
+
+ensure_env_r_packages <- function(modules = NULL, cores = NULL, verbose = TRUE) {
+  packages <- env_r_packages(modules = modules)
+  args <- list(packages, dependencies = NA, verbose = verbose)
+  if ("cores" %in% names(formals(check_r))) {
+    args$cores <- cores
+  }
+  invisible(do.call(check_r, args))
+}
+
 build_env_cache_spec <- function(
   envname,
   python_version,
@@ -1055,10 +1153,10 @@ install_miniconda2 <- function(
   conda
 }
 
-micromamba_platform <- function() {
-  machine <- tolower(Sys.info()[["machine"]])
+micromamba_platform <- function(machine = Sys.info()[["machine"]]) {
+  machine <- tolower(machine)
   if (is_windows()) {
-    if (machine %in% c("x86_64", "amd64")) {
+    if (machine %in% c("x86_64", "x86-64", "amd64")) {
       return("win-64")
     }
   } else if (is_osx()) {
@@ -1162,7 +1260,8 @@ install_micromamba <- function(timeout = 600) {
   )
 
   dir.create(install_dir, recursive = TRUE, showWarnings = FALSE)
-  options(timeout = timeout)
+  old_options <- options(timeout = timeout)
+  on.exit(options(old_options), add = TRUE)
   status <- tryCatch(
     utils::download.file(url, archive, mode = "wb", quiet = FALSE),
     error = function(e) e

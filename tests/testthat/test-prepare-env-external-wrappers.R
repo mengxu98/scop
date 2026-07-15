@@ -49,3 +49,34 @@ test_that("external wrapper R packages remain optional explicit installs", {
     c(NA, NA)
   )
 })
+
+test_that("PrepareEnv supports explicit R and Python components", {
+  expect_identical(formals(scop::PrepareEnv)$components, "python")
+  normalize <- getFromNamespace("norm_env_components", "scop")
+  expect_setequal(normalize(c("python", "r")), c("python", "r"))
+  expect_setequal(normalize("all"), c("python", "r"))
+
+  packages <- getFromNamespace("env_r_packages", "scop")("secact")
+  expect_true(all(c(
+    "reticulate", "RcppAnnoy", "UCell",
+    "jinworks/SpatialCellChat", "data2intelligence/SecAct"
+  ) %in% packages))
+
+  calls <- character()
+  requested_cores <- NULL
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    check_r = function(packages, dependencies, cores, verbose, ...) {
+      calls <<- c(calls, packages)
+      requested_cores <<- cores
+      stats::setNames(rep(TRUE, length(packages)), packages)
+    }
+  )
+  status <- getFromNamespace("ensure_env_r_packages", "scop")(
+    modules = "secact", cores = 2, verbose = FALSE
+  )
+  expect_named(status, packages)
+  expect_true(is.logical(status))
+  expect_setequal(calls, packages)
+  expect_identical(requested_cores, 2)
+})
