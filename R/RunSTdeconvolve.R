@@ -215,79 +215,224 @@ RunSTdeconvolve <- function(
 
 #' @title Plot STdeconvolve topic proportions
 #'
+#' @description
+#' Plot schema-v1 topic proportions without rerunning the optional backend.
+#' Multi-topic point maps use one shared proportion scale and reserve title
+#' space above the automatic layout.
+#'
 #' @md
 #' @inheritParams SpatialSpotPlot
 #' @param topics Topic names, topic numbers, or metadata columns to plot. If
-#' `NULL`, all `"<prefix>_prop_*"` columns are used for point plots.
-#' @param prefix Metadata prefix used by `RunSTdeconvolve()`.
+#' `NULL`, all topics in the stored result are used.
+#' @param tool_name Exact schema-v1 result key written by
+#' `RunSTdeconvolve()`.
+#' @param prefix Metadata prefix used by `RunSTdeconvolve()`. If `NULL`, the
+#' prefix is read from the stored result.
+#' @param combine Whether to combine point plots. If `FALSE`, a named list of
+#' plots is returned.
+#' @param nrow,ncol,byrow Point-plot layout controls. When both `nrow` and
+#' `ncol` are `NULL`, a near-square layout with at most three columns is used.
 #' @param ... Additional arguments passed to `SpatialSpotPlot()`.
 #'
 #' @return A `ggplot`, `patchwork`, or list of `ggplot` objects.
 #' @export
 #'
 #' @examples
+#' check_r("JEFworks-Lab/STdeconvolve", verbose = FALSE)
 #' data(visium_human_pancreas_sub)
-#' spatial <- visium_human_pancreas_sub
-#' topic_weights <- data.frame(
-#'   STdeconvolve_prop_topic_1 = seq(0.75, 0.20, length.out = ncol(spatial)),
-#'   STdeconvolve_prop_topic_2 = seq(0.20, 0.70, length.out = ncol(spatial)),
-#'   STdeconvolve_prop_topic_3 = 0.10,
-#'   row.names = colnames(spatial)
+#' spatial <- RunSTdeconvolve(
+#'   visium_human_pancreas_sub,
+#'   assay = "Spatial",
+#'   features = rownames(visium_human_pancreas_sub)[1:300],
+#'   k = 3,
+#'   prefix = "STFull",
+#'   tool_name = "STdeconvolveFull",
+#'   verbose = FALSE
 #' )
-#' topic_weights <- topic_weights / rowSums(topic_weights)
-#' spatial <- Seurat::AddMetaData(spatial, topic_weights)
-#' spatial$STdeconvolve_dominant_type <- sub(
-#'   "^STdeconvolve_prop_",
-#'   "",
-#'   colnames(topic_weights)[max.col(topic_weights)]
-#' )
-#'
 #' STdeconvolvePlot(
 #'   spatial,
+#'   tool_name = "STdeconvolveFull",
 #'   topics = 1:2,
 #'   overlay_image = FALSE,
 #'   coord.cols = c("x", "y")
 #' )
-#'   STdeconvolvePlot(
-#'     spatial,
-#'     plot_type = "pie",
-#'     overlay_image = FALSE,
-#'     coord.cols = c("x", "y")
-#'   )
 STdeconvolvePlot <- function(
   srt,
+  tool_name = "STdeconvolve",
   topics = NULL,
-  prefix = "STdeconvolve",
+  prefix = NULL,
   plot_type = c("point", "pie"),
+  combine = TRUE,
+  nrow = NULL,
+  ncol = NULL,
+  byrow = TRUE,
   ...
 ) {
+  if (!inherits(srt, "Seurat")) {
+    log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
+  }
+  stdeconvolve_assert_scalar_string(tool_name, "tool_name")
   plot_type <- match.arg(plot_type)
-  prop_cols <- grep(
-    paste0("^", prefix, "_prop_"),
-    colnames(srt@meta.data),
-    value = TRUE
-  )
-  if (length(prop_cols) == 0L) {
+  stored <- GetSpatialResult(srt, tool_name = tool_name)
+  if (!identical(stored$method, "STdeconvolve")) {
     log_message(
-      "No {.pkg STdeconvolve} topic columns with prefix {.val {prefix}_prop_} were found",
+      "Stored result {.val {tool_name}} was not produced by {.fn RunSTdeconvolve}",
       message_type = "error"
     )
   }
-  dominant_col <- paste0(prefix, "_dominant_type")
-  if (identical(plot_type, "pie")) {
-    group_by <- if (dominant_col %in% colnames(srt@meta.data)) {
-      dominant_col
-    } else {
-      prop_cols
-    }
-    return(SpatialSpotPlot(srt, group.by = group_by, plot_type = "pie", ...))
-  }
-  group_by <- stdeconvolve_resolve_topic_columns(
+  prefix <- prefix %||% stored$parameters$prefix
+  stdeconvolve_assert_scalar_string(prefix, "prefix")
+  theta <- stdeconvolve_plot_theta(
+    theta = stored$theta,
+    spot_ids = colnames(srt),
+    tool_name = tool_name
+  )
+  topic_names <- stdeconvolve_resolve_plot_topics(
     topics = topics,
-    prop_cols = prop_cols,
+    topic_names = colnames(theta),
     prefix = prefix
   )
-  SpatialSpotPlot(srt, group.by = group_by, plot_type = "point", ...)
+  values <- theta[, topic_names, drop = FALSE]
+  colnames(values) <- paste0(prefix, "_prop_", make.names(topic_names))
+  if (identical(plot_type, "pie")) {
+    return(SpatialSpotPlot(srt, values = values, plot_type = "pie", ...))
+  }
+  plots <- SpatialSpotPlot(
+    srt,
+    values = values,
+    plot_type = "point",
+    combine = FALSE,
+    ...
+  )
+  if (isFALSE(combine)) {
+    return(plots)
+  }
+  if (length(plots) == 1L) {
+    return(plots[[1L]])
+  }
+  if (is.null(nrow) && is.null(ncol)) {
+    ncol <- min(3L, ceiling(sqrt(length(plots))))
+  }
+  finite_values <- values[is.finite(values)]
+  common_limit <- if (length(finite_values) == 0L) 1 else max(finite_values)
+  common_limit <- max(common_limit, .Machine$double.eps)
+  legend_title <- list(...)$legend.title %||% "Proportion"
+  plots <- Map(
+    function(plot, topic) {
+      plot <- stdeconvolve_set_point_scale(
+        plot = plot,
+        limits = c(0, common_limit),
+        title = legend_title
+      )
+      plot +
+        ggplot2::labs(title = topic) +
+        ggplot2::theme(plot.title = ggplot2::element_text(margin = ggplot2::margin(b = 4)))
+    },
+    plots,
+    topic_names
+  )
+  patchwork::wrap_plots(
+    plots,
+    nrow = nrow,
+    ncol = ncol,
+    byrow = byrow,
+    guides = "collect"
+  ) +
+    patchwork::plot_annotation(
+      title = paste0(tool_name, " topic proportions"),
+      theme = ggplot2::theme(
+        plot.title = ggplot2::element_text(margin = ggplot2::margin(b = 8))
+      )
+    )
+}
+
+stdeconvolve_set_point_scale <- function(plot, limits, title) {
+  scale_index <- which(vapply(
+    plot$scales$scales,
+    function(scale) any(scale$aesthetics %in% c("colour", "color")),
+    logical(1)
+  ))
+  if (length(scale_index) != 1L) {
+    log_message(
+      "Unable to identify the continuous topic-proportion color scale",
+      message_type = "error"
+    )
+  }
+  plot$scales$scales[[scale_index]]$limits <- limits
+  plot$scales$scales[[scale_index]]$name <- title
+  plot$labels$colour <- title
+  plot
+}
+
+stdeconvolve_plot_theta <- function(theta, spot_ids, tool_name) {
+  if (is.null(theta) || (!is.matrix(theta) && !inherits(theta, "Matrix"))) {
+    log_message(
+      "Stored result {.val {tool_name}} does not contain a matrix-like {.val theta}",
+      message_type = "error"
+    )
+  }
+  theta <- as.matrix(theta)
+  if (nrow(theta) == 0L || ncol(theta) == 0L) {
+    log_message("Stored {.val theta} is empty", message_type = "error")
+  }
+  if (
+    is.null(rownames(theta)) || anyNA(rownames(theta)) ||
+      any(!nzchar(rownames(theta))) || anyDuplicated(rownames(theta))
+  ) {
+    log_message(
+      "Stored {.val theta} must have unique, non-missing spatial spot names",
+      message_type = "error"
+    )
+  }
+  if (
+    is.null(colnames(theta)) || anyNA(colnames(theta)) ||
+      any(!nzchar(colnames(theta))) || anyDuplicated(colnames(theta))
+  ) {
+    log_message(
+      "Stored {.val theta} must have unique, non-missing topic names",
+      message_type = "error"
+    )
+  }
+  missing_spots <- setdiff(spot_ids, rownames(theta))
+  extra_spots <- setdiff(rownames(theta), spot_ids)
+  if (length(missing_spots) > 0L || length(extra_spots) > 0L) {
+    log_message(
+      "Stored {.val theta} spot identities are stale or incomplete: {.val {length(missing_spots)}} missing and {.val {length(extra_spots)}} unknown",
+      message_type = "error"
+    )
+  }
+  theta[spot_ids, , drop = FALSE]
+}
+
+stdeconvolve_resolve_plot_topics <- function(topics, topic_names, prefix) {
+  if (is.null(topics)) {
+    return(topic_names)
+  }
+  topics_chr <- as.character(topics)
+  out <- vapply(topics_chr, function(topic) {
+    if (topic %in% topic_names) {
+      return(topic)
+    }
+    if (grepl("^[0-9]+$", topic)) {
+      idx <- as.integer(topic)
+      if (idx >= 1L && idx <= length(topic_names)) {
+        return(topic_names[[idx]])
+      }
+    }
+    prefix_value <- paste0(prefix, "_prop_", make.names(topic_names))
+    hit <- match(topic, prefix_value)
+    if (!is.na(hit)) {
+      return(topic_names[[hit]])
+    }
+    NA_character_
+  }, character(1))
+  if (anyNA(out)) {
+    log_message(
+      "Requested {.arg topics} were not found: {.val {topics_chr[is.na(out)]}}",
+      message_type = "error"
+    )
+  }
+  unname(out)
 }
 
 stdeconvolve_run_backend <- function(
@@ -419,36 +564,6 @@ stdeconvolve_resolve_k <- function(k = NULL, k_candidates = 2:9) {
     )
   }
   unique(as.integer(k_use))
-}
-
-stdeconvolve_resolve_topic_columns <- function(topics, prop_cols, prefix) {
-  if (is.null(topics)) {
-    return(prop_cols)
-  }
-  topics_chr <- as.character(topics)
-  out <- vapply(topics_chr, function(topic) {
-    if (topic %in% prop_cols) {
-      return(topic)
-    }
-    if (grepl("^[0-9]+$", topic)) {
-      idx <- as.integer(topic)
-      if (idx >= 1L && idx <= length(prop_cols)) {
-        return(prop_cols[idx])
-      }
-    }
-    topic_col <- paste0(prefix, "_prop_", make.names(topic))
-    if (topic_col %in% prop_cols) {
-      return(topic_col)
-    }
-    NA_character_
-  }, character(1))
-  if (anyNA(out)) {
-    log_message(
-      "Requested {.arg topics} were not found: {.val {topics_chr[is.na(out)]}}",
-      message_type = "error"
-    )
-  }
-  unname(out)
 }
 
 stdeconvolve_validate_param_list <- function(x, arg_name) {
