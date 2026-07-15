@@ -1206,7 +1206,7 @@ NumericMatrix zscore_dense(
     }
     const std::vector<int>& sets_for_gene = gene_to_sets[gene];
     if (sets_for_gene.empty()) continue;
-    const double zero_contrib = (sparse_standardize || sparse_standardize_full)
+    const double zero_contrib = sparse_standardize
       ? 0.0 : -gene_means[gene] / gene_sds[gene];
     for (std::vector<int>::const_iterator it = sets_for_gene.begin(); it != sets_for_gene.end(); ++it) {
       zero_sum[*it] += zero_contrib;
@@ -1228,9 +1228,7 @@ NumericMatrix zscore_dense(
       if (sets_for_gene.empty()) continue;
       const double contrib = sparse_standardize
         ? (value - gene_means[gene]) / gene_sds[gene]
-        : (sparse_standardize_full
-          ? (value - gene_means[gene]) / gene_sds[gene]
-          : value / gene_sds[gene]);
+        : value / gene_sds[gene];
       for (std::vector<int>::const_iterator it = sets_for_gene.begin(); it != sets_for_gene.end(); ++it) {
         scores(cell, *it) += contrib;
       }
@@ -1344,6 +1342,11 @@ NumericMatrix plage_dense(
   if (n_cells > 1) {
     for (int gene = 0; gene < n_genes; ++gene) {
       if (!row_needed[gene]) {
+        continue;
+      }
+      // GSVA filters sparse rows whose stored non-zero values are constant
+      // before it scales each remaining row.
+      if (row_counts[gene] > 0 && row_nonzero_mins[gene] == row_nonzero_maxs[gene]) {
         continue;
       }
       // GSVA < 2.6 scales only stored dgCMatrix values; GSVA >= 2.6 and
