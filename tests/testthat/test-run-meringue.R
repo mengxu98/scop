@@ -89,11 +89,34 @@ test_that("RunMERINGUE stores normalized autocorrelation, cross-correlation, and
   ) %in% colnames(stored$autocorrelation)))
   expect_equal(stored$autocorrelation$rank, seq_len(nrow(stored$autocorrelation)))
   expect_equal(stored$autocorrelation$feature[[1]], "Gene2")
+  expect_true(all(is.na(stored$autocorrelation$p_value)))
+  expect_true(all(is.na(stored$autocorrelation$q_value)))
   expect_equal(out@misc[["MERINGUEFeatures"]], c("Gene2", "Gene1", "Gene4"))
   expect_true(all(c("feature1", "feature2", "rank", "correlation", "p_value") %in% colnames(stored$cross_correlation)))
   expect_true(all(c("feature", "module", "module_size", "rank") %in% colnames(stored$modules)))
   expect_true(all(vapply(stored[c("autocorrelation", "cross_correlation", "modules", "parameters")], is.data.frame, logical(1))))
   expect_false(any(vapply(stored, methods::is, logical(1), class2 = "MERINGUE")))
+})
+
+test_that("MERINGUE retains permutation p values when permutations are requested", {
+  testthat::local_mocked_bindings(
+    meringue_require_package = function(pkg) invisible(TRUE),
+    meringue_get_fun = mock_meringue_get_fun,
+    meringue_package_version = function(pkg) "mock"
+  )
+
+  out <- RunMERINGUE(
+    make_meringue_seurat(),
+    layer = "counts",
+    coord.cols = c("x", "y"),
+    mode = "autocorrelation",
+    min_spots = 1,
+    nperm = 10,
+    verbose = FALSE
+  )
+
+  expect_true(all(is.finite(out@tools$MERINGUE$autocorrelation$p_value)))
+  expect_true(all(is.finite(out@tools$MERINGUE$autocorrelation$q_value)))
 })
 
 test_that("MERINGUE module output with groups is normalized", {
