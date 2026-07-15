@@ -86,7 +86,9 @@ when no image is available.}
 \code{\link[=RunSpatialVariableFeatures]{RunSpatialVariableFeatures()}} in the spatial workflow.}
 
 \item{spatial_variable_features_params}{Named list of additional arguments
-passed to \code{\link[=RunSpatialVariableFeatures]{RunSpatialVariableFeatures()}}.}
+passed to \code{\link[=RunSpatialVariableFeatures]{RunSpatialVariableFeatures()}}. The spatial workflow defaults
+\code{set_variable_features} to \code{FALSE} so expression-based highly variable
+features are preserved; pass it explicitly to override this workflow default.}
 
 \item{do_spatial_cluster}{Whether to run spatial-aware clustering in the
 spatial workflow.}
@@ -208,7 +210,9 @@ Default is \code{11}.}
 }
 \value{
 A \code{Seurat} object. Completed or partial spatial workflows store the
-per-stage state in \code{srt@tools[["standard_spatial_scop"]]}. If a stage fails,
+per-stage state in \code{srt@tools[["standard_spatial_scop"]]}. The spatial
+variable-feature stage records its effective \code{set_variable_features} value
+and the before/after feature counts. If a stage fails,
 the signaled error carries the same table in its \code{standard_spatial_stages}
 attribute with that stage marked \code{"failed"}.
 }
