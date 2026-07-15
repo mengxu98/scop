@@ -6,19 +6,28 @@
 \usage{
 STdeconvolvePlot(
   srt,
+  tool_name = "STdeconvolve",
   topics = NULL,
-  prefix = "STdeconvolve",
+  prefix = NULL,
   plot_type = c("point", "pie"),
+  combine = TRUE,
+  nrow = NULL,
+  ncol = NULL,
+  byrow = TRUE,
   ...
 )
 }
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{topics}{Topic names, topic numbers, or metadata columns to plot. If
-\code{NULL}, all \code{"<prefix>_prop_*"} columns are used for point plots.}
+\item{tool_name}{Exact schema-v1 result key written by
+\code{RunSTdeconvolve()}.}
 
-\item{prefix}{Metadata prefix used by \code{RunSTdeconvolve()}.}
+\item{topics}{Topic names, topic numbers, or metadata columns to plot. If
+\code{NULL}, all topics in the stored result are used.}
+
+\item{prefix}{Metadata prefix used by \code{RunSTdeconvolve()}. If \code{NULL}, the
+prefix is read from the stored result.}
 
 \item{plot_type}{Plot type. \code{"point"} keeps the default spot plot behavior.
 \code{"pie"} draws spot-level pies from numeric metadata columns supplied to
@@ -27,41 +36,39 @@ STdeconvolvePlot(
 \code{"<prefix>_prop_*"} or \code{"<prefix>_frac_*"} numeric metadata columns are used
 automatically.}
 
+\item{combine}{Whether to combine point plots. If \code{FALSE}, a named list of
+plots is returned.}
+
+\item{nrow, ncol, byrow}{Point-plot layout controls. When both \code{nrow} and
+\code{ncol} are \code{NULL}, a near-square layout with at most three columns is used.}
+
 \item{...}{Additional arguments passed to \code{SpatialSpotPlot()}.}
 }
 \value{
 A \code{ggplot}, \code{patchwork}, or list of \code{ggplot} objects.
 }
 \description{
-Plot STdeconvolve topic proportions
+Plot schema-v1 topic proportions without rerunning the optional backend.
+Multi-topic point maps use one shared proportion scale and reserve title
+space above the automatic layout.
 }
 \examples{
+check_r("JEFworks-Lab/STdeconvolve", verbose = FALSE)
 data(visium_human_pancreas_sub)
-spatial <- visium_human_pancreas_sub
-topic_weights <- data.frame(
-  STdeconvolve_prop_topic_1 = seq(0.75, 0.20, length.out = ncol(spatial)),
-  STdeconvolve_prop_topic_2 = seq(0.20, 0.70, length.out = ncol(spatial)),
-  STdeconvolve_prop_topic_3 = 0.10,
-  row.names = colnames(spatial)
+spatial <- RunSTdeconvolve(
+  visium_human_pancreas_sub,
+  assay = "Spatial",
+  features = rownames(visium_human_pancreas_sub)[1:300],
+  k = 3,
+  prefix = "STFull",
+  tool_name = "STdeconvolveFull",
+  verbose = FALSE
 )
-topic_weights <- topic_weights / rowSums(topic_weights)
-spatial <- Seurat::AddMetaData(spatial, topic_weights)
-spatial$STdeconvolve_dominant_type <- sub(
-  "^STdeconvolve_prop_",
-  "",
-  colnames(topic_weights)[max.col(topic_weights)]
-)
-
 STdeconvolvePlot(
   spatial,
+  tool_name = "STdeconvolveFull",
   topics = 1:2,
   overlay_image = FALSE,
   coord.cols = c("x", "y")
 )
-  STdeconvolvePlot(
-    spatial,
-    plot_type = "pie",
-    overlay_image = FALSE,
-    coord.cols = c("x", "y")
-  )
 }
