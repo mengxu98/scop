@@ -93,6 +93,7 @@ jobs:
             echo "full_build=true" >> "$GITHUB_OUTPUT"
             echo "article_build=false" >> "$GITHUB_OUTPUT"
             echo "topics=" >> "$GITHUB_OUTPUT"
+            echo "news_build=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
@@ -102,6 +103,7 @@ jobs:
             echo "full_build=true" >> "$GITHUB_OUTPUT"
             echo "article_build=false" >> "$GITHUB_OUTPUT"
             echo "topics=" >> "$GITHUB_OUTPUT"
+            echo "news_build=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
@@ -113,6 +115,7 @@ jobs:
             echo "full_build=false" >> "$GITHUB_OUTPUT"
             echo "article_build=false" >> "$GITHUB_OUTPUT"
             echo "topics=" >> "$GITHUB_OUTPUT"
+            echo "news_build=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
@@ -120,6 +123,7 @@ jobs:
             echo "full_build=true" >> "$GITHUB_OUTPUT"
             echo "article_build=false" >> "$GITHUB_OUTPUT"
             echo "topics=" >> "$GITHUB_OUTPUT"
+            echo "news_build=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
@@ -133,13 +137,15 @@ jobs:
             echo "full_build=false" >> "$GITHUB_OUTPUT"
             echo "article_build=true" >> "$GITHUB_OUTPUT"
             echo "topics=" >> "$GITHUB_OUTPUT"
+            echo "news_build=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          if awk '$2 !~ /^(R\/.*[.]R|man\/.*[.]Rd)$/ { found = 1 } END { exit found ? 0 : 1 }' pkgdown-files.txt; then
+          if awk '$2 !~ /^(R\/.*[.]R|man\/.*[.]Rd|NEWS[.]md)$/ { found = 1 } END { exit found ? 0 : 1 }' pkgdown-files.txt; then
             echo "full_build=true" >> "$GITHUB_OUTPUT"
             echo "article_build=false" >> "$GITHUB_OUTPUT"
             echo "topics=" >> "$GITHUB_OUTPUT"
+            echo "news_build=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
@@ -149,16 +155,24 @@ jobs:
             paste -sd, -
           )"
 
-          if [[ -z "$topics" ]]; then
+          if awk '$2 == "NEWS.md" { found = 1 } END { exit found ? 0 : 1 }' pkgdown-files.txt; then
+            news_build=true
+          else
+            news_build=false
+          fi
+
+          if [[ -z "$topics" && "$news_build" == "false" ]]; then
             echo "full_build=true" >> "$GITHUB_OUTPUT"
             echo "article_build=false" >> "$GITHUB_OUTPUT"
             echo "topics=" >> "$GITHUB_OUTPUT"
+            echo "news_build=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
           echo "full_build=false" >> "$GITHUB_OUTPUT"
           echo "article_build=false" >> "$GITHUB_OUTPUT"
           echo "topics=$topics" >> "$GITHUB_OUTPUT"
+          echo "news_build=$news_build" >> "$GITHUB_OUTPUT"
 
       - name: Check reference index
         if: github.event_name == 'pull_request'
@@ -184,6 +198,12 @@ jobs:
         shell: Rscript {0}
         env:
           PKGDOWN_TOPICS: ${{ steps.scope.outputs.topics }}
+
+      - name: Build news
+        if: github.event_name != 'pull_request' && steps.scope.outputs.full_build == 'false' && steps.scope.outputs.article_build == 'false' && steps.scope.outputs.news_build == 'true'
+        run: |
+          pkgdown::build_news(preview = FALSE)
+        shell: Rscript {0}
 
       - name: Build articles
         if: github.event_name != 'pull_request' && steps.scope.outputs.full_build == 'false' && steps.scope.outputs.article_build == 'true'
