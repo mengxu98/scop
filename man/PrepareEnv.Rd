@@ -12,6 +12,8 @@ PrepareEnv(
   force = FALSE,
   modules = NULL,
   pip_options = character(),
+  components = "python",
+  cores = NULL,
   verbose = TRUE,
   ...
 )
@@ -39,13 +41,6 @@ Default is \code{FALSE}.}
 
 \item{modules}{Optional Python dependency modules to install in addition to
 the default scientific stack.
-Supported values are \code{"scanpy"}, \code{"scvi"}, \code{"glue"}, \code{"scanorama"}, \code{"bbknn"},
-\code{"celltypist"}, \code{"cellphonedb"}, \code{"cell2location"}, \code{"magic"}, \code{"scrublet"},
-\code{"sccoda"}, \code{"doubletdetection"}, \code{"doublet"}, \code{"palantir"}, \code{"scvelo"},
-\code{"cellrank"}, \code{"wot"}, \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"multimap"},
-\code{"scomm"}, \code{"scenic"}, \code{"seacells"}, \code{"tage"},
-\code{"scmalignantfinder"}, \code{"secact"}, \code{"scpagwas"}, and
-\code{"external_wrappers"}.
 If \code{NULL} or omitted in \code{\link[=PrepareEnv]{PrepareEnv()}}, the default environment is installed.
 The default excludes \code{"cell2location"}, \code{"sccoda"}, and \code{"scomm"} because
 cell2location is a long-running explicit workflow and the TensorFlow stacks
@@ -58,6 +53,15 @@ upstream stacks are more reliable when requested explicitly for
 method-specific workflows.}
 
 \item{pip_options}{Additional command line arguments to be passed to \code{uv}/\code{pip} when installing pip packages.}
+
+\item{components}{Components to prepare. Supported values are \code{"python"},
+\code{"r"}, and \code{"all"}; \code{"all"} expands to both Python and R. The default,
+\code{"python"}, preserves the existing Python-only behavior. The R component
+collects packages declared through \code{check_r()} and checks/installs them,
+including optional workflow dependencies not listed in \code{DESCRIPTION}.}
+
+\item{cores}{Number of workers for R-package installation. Use \code{NULL} (the
+default) to let pak select its worker count automatically.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
