@@ -144,6 +144,8 @@ RunSpatialDWLS <- function(
   if (isTRUE(store_results)) {
     srt@tools[[tool_name]] <- list(
       weights = weights,
+      proportions = weight_summary$full_weights,
+      cells = colnames(srt),
       signatures = signatures,
       coords = coords,
       features = rownames(st_expr),
