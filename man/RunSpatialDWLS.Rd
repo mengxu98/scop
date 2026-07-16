@@ -21,7 +21,7 @@ RunSpatialDWLS(
   normalize = TRUE,
   store_results = TRUE,
   verbose = TRUE,
-  coordinate_space = c("legacy_display", "raw")
+  coordinate_space = c("raw", "legacy_display")
 )
 }
 \arguments{
@@ -60,7 +60,9 @@ spatial and reference matrices before fitting.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{coordinate_space}{Coordinate system used for spatial positions.}
+\item{coordinate_space}{Coordinate system used for spatial positions and
+stored provenance. The default is raw acquisition coordinates;
+\code{"legacy_display"} remains an explicit compatibility option.}
 }
 \value{
 A \code{Seurat} object with \code{"<prefix>_prop_*"},
