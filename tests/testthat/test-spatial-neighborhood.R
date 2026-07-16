@@ -96,6 +96,7 @@ test_that("RunSpatialNeighborhood defaults to native observed summaries", {
   expect_true(all(!is.na(bundle$pair_table$subject)))
   expect_equal(unique(bundle$pair_table$method), "observed")
   expect_identical(out@tools$SpatialNeighborhood$provenance$backend_id, "core")
+  expect_identical(out@tools$SpatialNeighborhood$source$coordinate_space, "raw")
   expect_identical(bundle$provenance$backend_id, "core")
   expect_null(bundle$raw)
 })

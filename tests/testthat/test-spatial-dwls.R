@@ -53,6 +53,7 @@ test_that("RunSpatialDWLS writes standard deconvolution metadata and summary", {
   expect_equal(colnames(out@tools$SpatialDWLS$weights), c("Alpha", "Beta"))
   expect_identical(rownames(out@tools$SpatialDWLS$proportions), colnames(out))
   expect_identical(out@tools$SpatialDWLS$cells, colnames(out))
+  expect_identical(out@tools$SpatialDWLS$source$coordinate_space, "raw")
   expect_named(out@tools$SpatialDWLS$summary, c("n_spots", "n_types", "dominant_counts", "max_prop"))
   expect_equal(out@tools$SpatialDWLS$summary$n_spots, 3)
   expect_s3_class(SpatialDeconvolutionPlot(
