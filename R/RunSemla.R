@@ -84,10 +84,10 @@ RunSemlaSpatialNetwork <- function(
 
   if (isTRUE(store_results)) {
     srt@tools[[tool_name]] <- spatial_result_build(
-      bundle = list(network = spatial_network),
+      bundle = list(network = spatial_network, cells = colnames(srt)),
       method = "SemlaSpatialNetwork",
       result_type = "neighborhood",
-      source = list(coordinate_space = if (coords == "array") "raw" else "legacy_display"),
+      source = semla_spatial_source(srt, coords = coords),
       provenance = list(producer = "RunSemlaSpatialNetwork", backend_id = "semla"),
       parameters = list(
         image_type = image_type,
@@ -168,22 +168,41 @@ RunSemlaLocalG <- function(
     image_type = image_type,
     verbose = verbose
   )
+  backend_args <- list(...)
   before_metadata <- colnames(srt@meta.data)
-  out <- semla_get_fun("RunLocalG")(
-    srt,
-    features = features,
-    alternative = alternative,
-    store_in_metadata = store_in_metadata,
-    assay_name = assay_name,
-    verbose = verbose,
-    ...
+  out <- do.call(
+    semla_get_fun("RunLocalG"),
+    c(
+      list(
+        object = srt,
+        features = features,
+        alternative = alternative,
+        store_in_metadata = store_in_metadata,
+        assay_name = assay_name,
+        verbose = verbose
+      ),
+      backend_args
+    )
   )
   out@tools[["SemlaLocalG"]] <- spatial_result_build(
-    bundle = list(output_columns = setdiff(colnames(out@meta.data), before_metadata)),
+    bundle = list(
+      output_columns = setdiff(colnames(out@meta.data), before_metadata),
+      cells = colnames(out)
+    ),
     method = "SemlaLocalG", result_type = "neighborhood",
-    source = list(coordinate_space = "legacy_display"),
+    source = semla_spatial_source(
+      out,
+      coords = semla_backend_coords(backend_args)
+    ),
     provenance = list(producer = "RunSemlaLocalG", backend_id = "semla"),
-    parameters = list(features = features, alternative = alternative, store_in_metadata = store_in_metadata, assay_name = assay_name, image_type = image_type)
+    parameters = list(
+      features = features,
+      alternative = alternative,
+      store_in_metadata = store_in_metadata,
+      assay_name = assay_name,
+      image_type = image_type,
+      backend_args = backend_args
+    )
   )
   out
 }
@@ -253,22 +272,41 @@ RunSemlaRegionNeighbors <- function(
     image_type = image_type,
     verbose = verbose
   )
+  backend_args <- list(...)
   before_metadata <- colnames(srt@meta.data)
-  out <- semla_get_fun("RegionNeighbors")(
-    srt,
-    column_name = column_name,
-    column_labels = column_labels,
-    mode = mode,
-    column_key = column_key,
-    verbose = verbose,
-    ...
+  out <- do.call(
+    semla_get_fun("RegionNeighbors"),
+    c(
+      list(
+        object = srt,
+        column_name = column_name,
+        column_labels = column_labels,
+        mode = mode,
+        column_key = column_key,
+        verbose = verbose
+      ),
+      backend_args
+    )
   )
   out@tools[["SemlaRegionNeighbors"]] <- spatial_result_build(
-    bundle = list(output_columns = setdiff(colnames(out@meta.data), before_metadata)),
+    bundle = list(
+      output_columns = setdiff(colnames(out@meta.data), before_metadata),
+      cells = colnames(out)
+    ),
     method = "SemlaRegionNeighbors", result_type = "neighborhood",
-    source = list(coordinate_space = "legacy_display"),
+    source = semla_spatial_source(
+      out,
+      coords = semla_backend_coords(backend_args)
+    ),
     provenance = list(producer = "RunSemlaRegionNeighbors", backend_id = "semla"),
-    parameters = list(column_name = column_name, column_labels = column_labels, mode = mode, column_key = column_key, image_type = image_type)
+    parameters = list(
+      column_name = column_name,
+      column_labels = column_labels,
+      mode = mode,
+      column_key = column_key,
+      image_type = image_type,
+      backend_args = backend_args
+    )
   )
   out
 }
@@ -339,23 +377,112 @@ RunSemlaRadialDistance <- function(
     image_type = image_type,
     verbose = verbose
   )
+  backend_args <- list(...)
   before_metadata <- colnames(srt@meta.data)
-  out <- semla_get_fun("RadialDistance")(
-    srt,
-    column_name = column_name,
-    selected_groups = selected_groups,
-    column_suffix = column_suffix,
-    verbose = verbose,
-    ...
+  out <- do.call(
+    semla_get_fun("RadialDistance"),
+    c(
+      list(
+        object = srt,
+        column_name = column_name,
+        selected_groups = selected_groups,
+        column_suffix = column_suffix,
+        verbose = verbose
+      ),
+      backend_args
+    )
   )
   out@tools[["SemlaRadialDistance"]] <- spatial_result_build(
-    bundle = list(output_columns = setdiff(colnames(out@meta.data), before_metadata)),
+    bundle = list(
+      output_columns = setdiff(colnames(out@meta.data), before_metadata),
+      cells = colnames(out)
+    ),
     method = "SemlaRadialDistance", result_type = "neighborhood",
-    source = list(coordinate_space = "legacy_display"),
+    source = semla_spatial_source(
+      out,
+      coords = "pixels",
+      output_unit = if (isTRUE(backend_args$convert_to_microns)) {
+        "micrometre"
+      } else {
+        "full_resolution_pixel"
+      }
+    ),
     provenance = list(producer = "RunSemlaRadialDistance", backend_id = "semla"),
-    parameters = list(column_name = column_name, selected_groups = selected_groups, column_suffix = column_suffix, image_type = image_type)
+    parameters = list(
+      column_name = column_name,
+      selected_groups = selected_groups,
+      column_suffix = column_suffix,
+      image_type = image_type,
+      backend_args = backend_args
+    )
   )
   out
+}
+
+semla_backend_coords <- function(backend_args) {
+  coords <- backend_args$coords %||% "pixels"
+  if (
+    !is.character(coords) || length(coords) != 1L || is.na(coords) ||
+      !coords %in% c("pixels", "array")
+  ) {
+    log_message(
+      "{.arg coords} must be one of {.val pixels} or {.val array}",
+      message_type = "error"
+    )
+  }
+  coords
+}
+
+semla_spatial_source <- function(
+  srt,
+  coords = c("pixels", "array"),
+  output_unit = NULL
+) {
+  coords <- match.arg(coords)
+  images <- tryCatch(SeuratObject::Images(srt), error = function(e) character())
+  staffli <- srt@tools[["Staffli"]]
+  staffli_metadata <- tryCatch(
+    if (isS4(staffli)) {
+      methods::slot(staffli, "meta_data")
+    } else {
+      staffli$meta_data
+    },
+    error = function(e) NULL
+  )
+  sample_ids <- tryCatch(
+    unique(as.character(staffli_metadata$sampleID)),
+    error = function(e) character()
+  )
+  sample_ids <- sample_ids[!is.na(sample_ids) & nzchar(sample_ids)]
+  list(
+    image = if (length(images) == 1L) as.character(images) else NA_character_,
+    images = images,
+    image_policy = "native_multi_image",
+    coordinate_space = "raw",
+    coord.cols = if (identical(coords, "array")) {
+      c("x", "y")
+    } else {
+      c("pxl_col_in_fullres", "pxl_row_in_fullres")
+    },
+    unit = if (identical(coords, "array")) {
+      "array_index"
+    } else {
+      "full_resolution_pixel"
+    },
+    output_unit = output_unit %||% if (identical(coords, "array")) {
+      "array_index"
+    } else {
+      "full_resolution_pixel"
+    },
+    selection_strategy = if (length(images) > 1L) {
+      "all_images_partitioned_by_staffli_sampleID"
+    } else if (length(images) == 1L) {
+      "single_image_staffli"
+    } else {
+      "existing_staffli_metadata"
+    },
+    sample_ids = sample_ids
+  )
 }
 
 semla_prepare_srt <- function(
