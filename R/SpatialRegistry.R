@@ -45,7 +45,7 @@ spatial_method_registry <- function() {
     entry("GetSpatialGraph", "accessor", "network", "RunSpatialNetwork.R", backend_id = "core", coordinate_space_current = "raw", coordinate_requirement = "backend_managed"),
     entry("RunSpotQC", "analysis", "quality_control", "RunSpotQC.R", backend_id = "core", coordinate_space_current = "none", coordinate_space_target = "none", coordinate_requirement = "identity_only", plot_function = "SpatialSpotPlot"),
     entry("RunSpaNorm", "analysis", "normalization", "RunSpaNorm.R", "SpaNorm", "spanorm", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "SpatialSpotPlot"),
-    entry("RunSpatialQM", "analysis", "quality_control", "RunSpatialQM.R", "SpatialQM", "spatialqm", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "SpatialSpotPlot"),
+    entry("RunSpatialQM", "analysis", "quality_control", "RunSpatialQM.R", "SpatialQM", "spatialqm", coordinate_space_current = "mixed", coordinate_space_target = "mixed", coordinate_requirement = "backend_managed", plot_function = "SpatialSpotPlot"),
     entry("RunSpotSweeper", "analysis", "quality_control", "RunSpotSweeper.R", "SpotSweeper", "spotsweeper", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "SpatialSpotPlot"),
 
     entry("srt_to_giotto", "bridge", "framework_bridge", "SpatialFrameworkConvert.R", backend_id = "giotto;giotto_class", coordinate_space_current = "raw", coordinate_requirement = "backend_managed"),
@@ -72,7 +72,7 @@ spatial_method_registry <- function() {
 
     entry("RunDeconvolution", "analysis", "deconvolution", "RunDeconvolution.R", backend_id = "music;bisquerna;bayesprism;cibersort", coordinate_space_current = "none", coordinate_space_target = "none", coordinate_requirement = "identity_only", plot_function = "DeconvolutionPlot", backend_requirement = "any"),
     entry("RunRCTD", "analysis", "deconvolution", "RunRCTD.R", "RCTD", "spacexr", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "DeconvolutionPlot"),
-    entry("RunCSIDE", "analysis", "deconvolution", "RunCSIDE.R", "CSIDE", "spacexr", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "DeconvolutionPlot"),
+    entry("RunCSIDE", "analysis", "deconvolution", "RunCSIDE.R", "CSIDE", "spacexr", coordinate_space_current = "mixed", coordinate_space_target = "mixed", coordinate_requirement = "backend_managed", plot_function = "DeconvolutionPlot"),
     entry("RunCARD", "analysis", "deconvolution", "RunCARD.R", "CARD", "card", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "DeconvolutionPlot"),
     entry("RunSTdeconvolve", "analysis", "deconvolution", "RunSTdeconvolve.R", "STdeconvolve", "stdeconvolve", coordinate_space_current = "none", coordinate_space_target = "none", coordinate_requirement = "identity_only", plot_function = "STdeconvolvePlot"),
     entry("RunSPOTlight", "analysis", "deconvolution", "RunSPOTlight.R", "SPOTlight", "spotlight", coordinate_space_current = "none", coordinate_space_target = "none", coordinate_requirement = "identity_only", plot_function = "DeconvolutionPlot"),
@@ -94,10 +94,10 @@ spatial_method_registry <- function() {
     entry("RunStatialKontextual", "analysis", "neighborhood", "RunStatialKontextual.R", "StatialKontextual", "statial", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "StatialKontextualPlot"),
     entry("RunSpatialIntegration", "analysis", "integration", "RunSpatialIntegration.R", "SpatialIntegration", "precast;bass;spatialmnn", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "SpatialIntegrationPlot", backend_requirement = "any"),
     entry("RunMistyR", "analysis", "neighborhood", "RunMistyR.R", "MistyR", "mistyr", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "MistyRPlot"),
-    entry("RunSemlaSpatialNetwork", "analysis", "neighborhood", "RunSemla.R", "SemlaSpatialNetwork", "semla", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive"),
-    entry("RunSemlaLocalG", "analysis", "neighborhood", "RunSemla.R", "SemlaLocalG", "semla", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive"),
-    entry("RunSemlaRadialDistance", "analysis", "neighborhood", "RunSemla.R", "SemlaRadialDistance", "semla", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive"),
-    entry("RunSemlaRegionNeighbors", "analysis", "neighborhood", "RunSemla.R", "SemlaRegionNeighbors", "semla", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive"),
+    entry("RunSemlaSpatialNetwork", "analysis", "neighborhood", "RunSemla.R", "SemlaSpatialNetwork", "semla", coordinate_space_current = "raw", coordinate_requirement = "distance_sensitive"),
+    entry("RunSemlaLocalG", "analysis", "neighborhood", "RunSemla.R", "SemlaLocalG", "semla", coordinate_space_current = "raw", coordinate_requirement = "distance_sensitive"),
+    entry("RunSemlaRadialDistance", "analysis", "neighborhood", "RunSemla.R", "SemlaRadialDistance", "semla", coordinate_space_current = "raw", coordinate_requirement = "distance_sensitive"),
+    entry("RunSemlaRegionNeighbors", "analysis", "neighborhood", "RunSemla.R", "SemlaRegionNeighbors", "semla", coordinate_space_current = "raw", coordinate_requirement = "distance_sensitive"),
 
     entry("GiottoPlot", "plot", "visualization", "GiottoPlot.R", backend_id = "giotto;giotto_class", status = "legacy", coordinate_space_current = "display", coordinate_requirement = "display_only"),
     entry("DeconvolutionPlot", "plot", "visualization", "DeconvolutionPlot.R", coordinate_space_current = "display", coordinate_requirement = "display_only"),
