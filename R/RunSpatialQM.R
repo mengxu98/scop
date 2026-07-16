@@ -157,6 +157,12 @@ RunSpatialQM <- function(
       bundle = srt@tools[[tool_name]],
       method = "SpatialQM",
       result_type = "quality_control",
+      source = list(
+        image = NA_character_,
+        coordinate_space = "mixed",
+        selection_strategy = "backend_managed",
+        lineage_status = "coordinates_resolved_by_spatialqm_metric"
+      ),
       provenance = list(producer = "RunSpatialQM", backend_id = "spatialqm")
     )
   }
