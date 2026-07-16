@@ -9,6 +9,8 @@
 #' coordinates when they are not already present in metadata. For regular
 #' Visium data with only pixel `x`/`y` coordinates, BayesSpace array
 #' coordinates are inferred from the spatial grid.
+#' @param coord.cols Two metadata columns containing raw x/y coordinates when
+#' no spatial image is available.
 #' @param use_reduction Optional Seurat reduction to pass to BayesSpace as PCA.
 #' @param dims Dimensions from `use_reduction` to use.
 #' @param preprocess Whether to run `BayesSpace::spatialPreprocess()`.
@@ -73,7 +75,8 @@ RunBayesSpace <- function(
   cluster_colname = "BayesSpace_cluster",
   init_colname = "BayesSpace_init",
   store_sce = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  coord.cols = c("col", "row")
 ) {
   if (!inherits(srt, "Seurat")) {
     log_message(
@@ -100,12 +103,14 @@ RunBayesSpace <- function(
     verbose = verbose
   )
   sce <- Seurat::as.SingleCellExperiment(srt, assay = assay)
-  sce <- bayesspace_add_spatial_coords(
+  coordinate_input <- bayesspace_add_spatial_coords(
     srt = srt,
     sce = sce,
     image = image,
-    platform = platform
+    platform = platform,
+    coord.cols = coord.cols
   )
+  sce <- coordinate_input$sce
 
   use_dimred <- "PCA"
   d_use <- min(length(dims), n.PCs)
@@ -168,9 +173,16 @@ RunBayesSpace <- function(
       message_type = "error"
     )
   }
+  bayesspace_validate_backend_output(
+    cdata = cdata,
+    cells = colnames(srt),
+    cluster_col = "spatial.cluster",
+    init_col = if (is.null(init_colname)) NULL else "cluster.init"
+  )
+  cdata <- cdata[colnames(srt), , drop = FALSE]
   cluster_df <- data.frame(
     BayesSpace_cluster = as.character(cdata[["spatial.cluster"]]),
-    row.names = colnames(sce),
+    row.names = colnames(srt),
     stringsAsFactors = FALSE
   )
   colnames(cluster_df) <- cluster_colname
@@ -179,7 +191,7 @@ RunBayesSpace <- function(
   if ("cluster.init" %in% colnames(cdata) && !is.null(init_colname)) {
     init_df <- data.frame(
       BayesSpace_init = as.character(cdata[["cluster.init"]]),
-      row.names = colnames(sce),
+      row.names = colnames(srt),
       stringsAsFactors = FALSE
     )
     colnames(init_df) <- init_colname
@@ -192,7 +204,9 @@ RunBayesSpace <- function(
       assay = assay,
       q = q,
       platform = platform,
-      image = image,
+      image = coordinate_input$source$image,
+      coord.cols = coordinate_input$source$coord.cols,
+      coordinate_space = "raw",
       use_reduction = use_reduction,
       dims = dims,
       preprocess = preprocess,
@@ -203,7 +217,9 @@ RunBayesSpace <- function(
       spatial_cluster_params = spatial_cluster_params,
       cluster_colname = cluster_colname,
       init_colname = init_colname
-    )
+    ),
+    coords = coordinate_input$coords,
+    cells = colnames(srt)
   )
   if (isTRUE(store_sce)) {
     tool$sce <- sce
@@ -212,6 +228,7 @@ RunBayesSpace <- function(
     bundle = tool,
     method = "BayesSpace",
     result_type = "domain",
+    source = coordinate_input$source,
     provenance = list(producer = "RunBayesSpace", backend_id = "bayesspace")
   )
 
@@ -226,29 +243,163 @@ bayesspace_add_spatial_coords <- function(
   srt,
   sce,
   image = NULL,
-  platform = "Visium"
+  platform = "Visium",
+  coord.cols = c("col", "row")
 ) {
-  cdata <- as.data.frame(SummarizedExperiment::colData(sce))
-  if (all(c("array_row", "array_col") %in% colnames(cdata))) {
-    return(sce)
-  }
-
-  coords <- bayesspace_get_seurat_coords(srt, image = image)
-  if (is.null(coords)) {
-    coords <- cdata
-  }
-
-  coords <- bayesspace_normalize_coords(coords, platform = platform)
-  common <- intersect(colnames(sce), rownames(coords))
-  if (length(common) == 0L) {
+  if (length(coord.cols) < 2L) {
     log_message(
-      "Unable to match spatial coordinates to {.cls SingleCellExperiment} cells",
+      "{.arg coord.cols} must contain two coordinate columns",
       message_type = "error"
     )
   }
-  cdata[common, colnames(coords)] <- coords[common, , drop = FALSE]
+  coord.cols <- coord.cols[seq_len(2L)]
+  cdata <- as.data.frame(SummarizedExperiment::colData(sce))
+  cells <- colnames(sce)
+  if (
+    is.null(rownames(cdata)) || anyNA(rownames(cdata)) ||
+      any(!nzchar(rownames(cdata))) || anyDuplicated(rownames(cdata)) ||
+      !setequal(rownames(cdata), cells)
+  ) {
+    log_message(
+      "{.cls SingleCellExperiment} colData must have one unique row for every object cell or spot",
+      message_type = "error"
+    )
+  }
+  cdata <- cdata[cells, , drop = FALSE]
+
+  resolved_image <- spatial_image_resolve(
+    srt = srt,
+    image = image,
+    image_policy = "strict"
+  )
+  effective_coord_cols <- coord.cols
+  if (
+    is.null(resolved_image$image) &&
+      !all(effective_coord_cols %in% colnames(srt[[]])) &&
+      all(c("array_col", "array_row") %in% colnames(cdata))
+  ) {
+    effective_coord_cols <- c("array_col", "array_row")
+  }
+  raw <- spatial_coords_raw(
+    srt = srt,
+    image = resolved_image$image,
+    coord.cols = effective_coord_cols,
+    image_policy = "strict"
+  )
+  bayesspace_require_all_spots(raw$data$cell_id, cells)
+
+  coords <- if (all(c("array_row", "array_col") %in% colnames(cdata))) {
+    cdata
+  } else if (!is.null(resolved_image$image)) {
+    bayesspace_get_seurat_coords(srt, image = resolved_image$image)
+  } else {
+    srt[[]]
+  }
+  coords <- bayesspace_normalize_coords(coords, platform = platform)
+  bayesspace_require_all_spots(rownames(coords), cells)
+  coords <- coords[cells, , drop = FALSE]
+  bayesspace_validate_normalized_coords(coords)
+  cdata[, colnames(coords)] <- coords
   SummarizedExperiment::colData(sce) <- S4Vectors::DataFrame(cdata)
-  sce
+  source <- utils::modifyList(
+    raw$source,
+    list(
+      image = resolved_image$image %||% NA_character_,
+      coord.cols = raw$source$coord.cols,
+      coordinate_space = "raw",
+      unit = "native",
+      backend_coordinate_space = "array_index",
+      selection_strategy = if (is.null(resolved_image$image)) {
+        "metadata_columns"
+      } else {
+        "explicit_or_single_image"
+      },
+      transform = raw$transform
+    )
+  )
+  list(sce = sce, coords = raw$data, source = source)
+}
+
+bayesspace_require_all_spots <- function(coordinate_cells, object_cells) {
+  coordinate_cells <- as.character(coordinate_cells)
+  if (
+    anyNA(coordinate_cells) || any(!nzchar(coordinate_cells)) ||
+      anyDuplicated(coordinate_cells) ||
+      !setequal(coordinate_cells, object_cells)
+  ) {
+    missing <- setdiff(object_cells, coordinate_cells)
+    extra <- setdiff(coordinate_cells, object_cells)
+    log_message(
+      paste0(
+        "BayesSpace coordinates must contain exactly one row for every object spot",
+        "; missing: ", length(missing), ", extra: ", length(extra)
+      ),
+      message_type = "error"
+    )
+  }
+  invisible(TRUE)
+}
+
+bayesspace_validate_normalized_coords <- function(coords) {
+  required <- c("array_row", "array_col", "row", "col")
+  if (!all(required %in% colnames(coords))) {
+    log_message(
+      "Normalized BayesSpace coordinates are missing required array columns",
+      message_type = "error"
+    )
+  }
+  finite <- vapply(coords[, required, drop = FALSE], function(x) {
+    all(is.finite(suppressWarnings(as.numeric(x))))
+  }, logical(1))
+  if (!all(finite)) {
+    log_message(
+      "BayesSpace array coordinates contain missing or non-finite values",
+      message_type = "error"
+    )
+  }
+  invisible(TRUE)
+}
+
+bayesspace_validate_backend_output <- function(
+  cdata,
+  cells,
+  cluster_col,
+  init_col = NULL
+) {
+  ids <- rownames(cdata)
+  if (
+    is.null(ids) || anyNA(ids) || any(!nzchar(ids)) || anyDuplicated(ids) ||
+      !setequal(ids, cells)
+  ) {
+    log_message(
+      "BayesSpace output must contain exactly one row for every input spot",
+      message_type = "error"
+    )
+  }
+  validate_column <- function(column, label) {
+    if (!column %in% colnames(cdata)) {
+      if (identical(label, "spatial.cluster")) {
+        log_message(
+          "{.pkg BayesSpace} did not return {.val spatial.cluster}",
+          message_type = "error"
+        )
+      }
+      return(invisible(FALSE))
+    }
+    values <- as.character(cdata[cells, column])
+    if (anyNA(values) || any(!nzchar(values))) {
+      log_message(
+        "BayesSpace output column {.val {label}} contains missing or empty values",
+        message_type = "error"
+      )
+    }
+    invisible(TRUE)
+  }
+  validate_column(cluster_col, cluster_col)
+  if (!is.null(init_col) && init_col %in% colnames(cdata)) {
+    validate_column(init_col, init_col)
+  }
+  invisible(TRUE)
 }
 
 bayesspace_get_seurat_coords <- function(srt, image = NULL) {
