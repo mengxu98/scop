@@ -167,9 +167,11 @@ spatial_backend_registry <- function() {
     repository = package,
     symbols = character(),
     symbol_sets = list(),
+    method_symbols = list(),
     runtime = "r",
     environment_modules = character(),
-    requirements = character()
+    requirements = character(),
+    package_candidates = package
   ) {
     list(
       id = id,
@@ -177,9 +179,11 @@ spatial_backend_registry <- function() {
       repository = repository,
       symbols = symbols,
       symbol_sets = symbol_sets,
+      method_symbols = method_symbols,
       runtime = runtime,
       environment_modules = environment_modules,
-      requirements = requirements
+      requirements = requirements,
+      package_candidates = unique(package_candidates)
     )
   }
   giotto_symbols <- spatial_giotto_symbol_registry()
@@ -199,8 +203,21 @@ spatial_backend_registry <- function() {
       )
     ),
     spanorm = backend("spanorm", "SpaNorm", symbols = "SpaNorm"),
-    spatialqm = backend("spatialqm", "SpatialQM"),
-    spotsweeper = backend("spotsweeper", "SpotSweeper"),
+    spatialqm = backend(
+      "spatialqm",
+      "SpatialQM",
+      symbols = c(
+        "getNcells", "getTxPerCell", "getTxPerArea", "getTxPerNuc",
+        "getMeanExpression", "getMeanSignalRatio", "getCellTxFraction",
+        "getMaxRatio", "getMaxDetection", "getMECR", "getMorans",
+        "getSilhouetteWidth", "getSparsity", "getEntropy"
+      )
+    ),
+    spotsweeper = backend(
+      "spotsweeper",
+      "SpotSweeper",
+      symbols = c("localOutliers", "findArtifacts")
+    ),
     giotto = backend(
       "giotto", "Giotto", "drieslab/Giotto",
       giotto_symbols$symbol[giotto_symbols$package == "Giotto" & giotto_symbols$required]
@@ -223,7 +240,13 @@ spatial_backend_registry <- function() {
         legacy = c("SpatialRNA", "Reference", "create.RCTD", "run.RCTD")
       )
     ),
-    card = backend("card", "CARD", "YingMa0107/CARD"),
+    card = backend(
+      "card",
+      "CARD",
+      "YingMa0107/CARD",
+      c("createCARDObject", "CARD_deconvolution"),
+      package_candidates = c("CARD", "CARDspa")
+    ),
     stdeconvolve = backend("stdeconvolve", "STdeconvolve", "JEFworks-Lab/STdeconvolve", c("cleanCounts", "fitLDA")),
     spotlight = backend("spotlight", "SPOTlight", symbols = "SPOTlight"),
     cell2location = backend(
@@ -237,20 +260,52 @@ spatial_backend_registry <- function() {
         "anndata", "numpy", "pandas", "scipy", "torch"
       )
     ),
-    spatialecotyper = backend("spatialecotyper", "SpatialEcoTyper", "digitalcytometry/SpatialEcoTyper"),
-    bayesspace = backend("bayesspace", "BayesSpace"),
+    spatialecotyper = backend(
+      "spatialecotyper",
+      "SpatialEcoTyper",
+      "digitalcytometry/SpatialEcoTyper",
+      c("SpatialEcoTyper", "MultiSpatialEcoTyper", "RecoverSE", "DeconvoluteSE")
+    ),
+    bayesspace = backend(
+      "bayesspace",
+      "BayesSpace",
+      symbols = c("spatialPreprocess", "spatialCluster")
+    ),
     banksy = backend("banksy", "Banksy", symbols = "computeBanksy"),
-    smoothclust = backend("smoothclust", "smoothclust", "lmweber/smoothclust"),
-    meringue = backend("meringue", "MERINGUE"),
-    sparkx = backend("sparkx", "SPARK"),
-    nnsvg = backend("nnsvg", "nnSVG"),
+    smoothclust = backend(
+      "smoothclust",
+      "smoothclust",
+      "lmweber/smoothclust",
+      "smoothclust"
+    ),
+    meringue = backend(
+      "meringue",
+      "MERINGUE",
+      symbols = c(
+        "getSpatialNeighbors", "moranTest", "moranPermutationTest",
+        "spatialCrossCorMatrix", "spatialCrossCorTest",
+        "groupSigSpatialPatterns"
+      )
+    ),
+    sparkx = backend("sparkx", "SPARK", symbols = "sparkx"),
+    nnsvg = backend("nnsvg", "nnSVG", symbols = "nnSVG"),
     spicyr = backend("spicyr", "spicyR", symbols = "spicy"),
     statial = backend("statial", "Statial", symbols = "Kontextual"),
     precast = backend("precast", "PRECAST", "feiyoung/PRECAST", "CreatePRECASTObject"),
     bass = backend("bass", "BASS", symbols = "createBASSObject"),
     spatialmnn = backend("spatialmnn", "spatialMNN", "Pixel-Dream/spatialMNN", "spatialMNN"),
     mistyr = backend("mistyr", "mistyR", symbols = c("create_initial_view", "run_misty")),
-    semla = backend("semla", "semla")
+    semla = backend(
+      "semla",
+      "semla",
+      symbols = "UpdateSeuratForSemla",
+      method_symbols = list(
+        RunSemlaSpatialNetwork = "GetSpatialNetwork",
+        RunSemlaLocalG = "RunLocalG",
+        RunSemlaRegionNeighbors = "RegionNeighbors",
+        RunSemlaRadialDistance = "RadialDistance"
+      )
+    )
   )
 }
 
@@ -421,6 +476,7 @@ spatial_python_backend_status <- function(spec, envname, conda, api_check) {
 spatial_backend_required_symbols <- function(spec, method = NULL, exports = NULL) {
   symbols <- spec$symbols
   symbol_sets <- spec$symbol_sets %||% list()
+  method_symbols <- spec$method_symbols %||% list()
   if (length(symbol_sets) > 0L) {
     if (is.null(exports)) {
       symbols <- symbol_sets[[1L]]
@@ -442,6 +498,15 @@ spatial_backend_required_symbols <- function(spec, method = NULL, exports = NULL
       }
     }
   }
+  if (length(method_symbols) > 0L) {
+    selected <- if (is.null(method)) {
+      unlist(method_symbols, use.names = FALSE)
+    } else {
+      matched <- intersect(as.character(method), names(method_symbols))
+      unlist(method_symbols[matched], use.names = FALSE)
+    }
+    symbols <- c(symbols, selected)
+  }
   if (
     identical(spec$id, "giotto_class") &&
       !is.null(method) &&
@@ -450,6 +515,15 @@ spatial_backend_required_symbols <- function(spec, method = NULL, exports = NULL
     symbols <- c(symbols, spatial_giotto_converter_name())
   }
   unique(symbols)
+}
+
+spatial_backend_resolve_package <- function(spec, installed = NULL) {
+  candidates <- unique(spec$package_candidates %||% spec$package)
+  if (is.null(installed)) {
+    installed <- rownames(utils::installed.packages())
+  }
+  available <- candidates[candidates %in% installed]
+  if (length(available) > 0L) available[[1L]] else spec$package
 }
 
 #' @title Inspect spatial backend availability
@@ -525,7 +599,7 @@ SpatialBackendStatus <- function(
           api_check = api_check
         ))
       }
-      package <- spec$package
+      package <- spatial_backend_resolve_package(spec, installed = installed)
       symbols <- spatial_backend_required_symbols(spec, method = method)
       is_core <- identical(spec$runtime, "core")
       is_installed <- is_core || package %in% installed
@@ -534,22 +608,22 @@ SpatialBackendStatus <- function(
       if (!is_installed) {
         availability <- "missing"
       } else if (isTRUE(api_check) && length(symbols) > 0L) {
-        exports <- tryCatch(
-          getNamespaceExports(package),
+        namespace_symbols <- tryCatch(
+          ls(asNamespace(package), all.names = TRUE),
           error = function(e) {
             namespace_error <<- conditionMessage(e)
             NULL
           }
         )
-        if (is.null(exports)) {
+        if (is.null(namespace_symbols)) {
           availability <- "namespace_error"
         } else {
           symbols <- spatial_backend_required_symbols(
             spec,
             method = method,
-            exports = exports
+            exports = namespace_symbols
           )
-          missing_symbols <- setdiff(symbols, exports)
+          missing_symbols <- setdiff(symbols, namespace_symbols)
           availability <- if (length(missing_symbols) == 0L) "available" else "api_incompatible"
         }
       } else {
@@ -582,7 +656,13 @@ spatial_result_backend_versions <- function(backend_id) {
   registry <- spatial_backend_registry()
   selected <- registry[intersect(ids, names(registry))]
   selected <- selected[vapply(selected, function(spec) identical(spec$runtime, "r"), logical(1))]
-  packages <- vapply(selected, `[[`, character(1), "package")
+  installed <- rownames(utils::installed.packages())
+  packages <- vapply(
+    selected,
+    spatial_backend_resolve_package,
+    character(1),
+    installed = installed
+  )
   versions <- vapply(packages, function(package) {
     if (identical(package, "scop")) return(NA_character_)
     tryCatch(as.character(utils::packageVersion(package)), error = function(e) NA_character_)
