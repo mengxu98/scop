@@ -580,113 +580,24 @@ rctd_get_spatial_coords <- function(
   coordinate_space = c("legacy_display", "raw")
 ) {
   coordinate_space <- match.arg(coordinate_space)
-  if (identical(coordinate_space, "raw")) {
-    resolved <- spatial_coords_raw(
-      srt = srt,
-      image = image,
-      coord.cols = coord.cols,
-      image_policy = "strict"
-    )
-    matched <- match(spot_ids, resolved$data$cell_id)
-    if (anyNA(matched)) {
-      log_message("Spatial coordinates are missing for one or more requested spots", message_type = "error")
-    }
-    coords <- resolved$data[matched, c("x", "y"), drop = FALSE]
-    rownames(coords) <- spot_ids
-    attr(coords, "spatial_source") <- resolved$source
-    attr(coords, "spatial_transform") <- resolved$transform
-    return(coords)
-  }
-  meta <- srt[[]]
-  if (is.null(image) && all(coord.cols %in% colnames(meta))) {
-    coords <- meta[spot_ids, coord.cols, drop = FALSE]
-    coords <- rctd_validate_coords(coords, spot_ids)
-    return(coords)
-  }
-
-  image_coords <- rctd_get_image_coords(srt, image = image)
-  if (!is.null(image_coords)) {
-    common <- intersect(spot_ids, rownames(image_coords))
-    if (length(common) == length(spot_ids)) {
-      coords <- image_coords[spot_ids, , drop = FALSE]
-      coords <- rctd_validate_coords(coords, spot_ids)
-      return(coords)
-    }
-  }
-
-  if (all(coord.cols %in% colnames(meta))) {
-    coords <- meta[spot_ids, coord.cols, drop = FALSE]
-    coords <- rctd_validate_coords(coords, spot_ids)
-    return(coords)
-  }
-
-  log_message(
-    "Spatial coordinates were not found. Provide a Seurat image or metadata columns {.val {coord.cols}}.",
-    message_type = "error"
+  resolved <- spatial_analysis_coords(
+    srt = srt,
+    image = image,
+    coord.cols = coord.cols,
+    coordinate_space = coordinate_space,
+    image_policy = "strict"
   )
-}
-
-rctd_get_image_coords <- function(srt, image = NULL) {
-  resolved <- spatial_image_resolve(srt = srt, image = image, image_policy = "strict")
-  image <- resolved$image
-  if (is.null(image)) {
-    return(NULL)
-  }
-  coords <- tryCatch(
-    as.data.frame(SeuratObject::GetTissueCoordinates(srt[[image]])),
-    error = function(e) NULL
-  )
-  if (is.null(coords) || nrow(coords) == 0L) {
-    return(NULL)
-  }
-  if ("cell" %in% colnames(coords)) {
-    rownames(coords) <- coords[["cell"]]
-  }
-  x_col <- rctd_pick_col(coords, c("x", "pxl_col_in_fullres", "imagecol", "col"))
-  y_col <- rctd_pick_col(coords, c("y", "pxl_row_in_fullres", "imagerow", "row"))
-  if (is.null(x_col) || is.null(y_col)) {
-    return(NULL)
-  }
-  data.frame(
-    x = coords[[x_col]],
-    y = coords[[y_col]],
-    row.names = rownames(coords),
-    stringsAsFactors = FALSE
-  )
-}
-
-rctd_pick_col <- function(x, candidates) {
-  nm <- colnames(x)
-  hit <- candidates[tolower(candidates) %in% tolower(nm)][1L]
-  if (is.na(hit)) {
-    return(NULL)
-  }
-  nm[match(tolower(hit), tolower(nm))]
-}
-
-rctd_validate_coords <- function(coords, spot_ids) {
-  coords <- as.data.frame(coords, check.names = FALSE)
-  if (ncol(coords) < 2L) {
+  matched <- match(spot_ids, resolved$data$cell_id)
+  if (anyNA(matched)) {
     log_message(
-      "Spatial coordinates must contain at least two columns",
+      "Spatial coordinates are missing for one or more requested spots",
       message_type = "error"
     )
   }
-  coords <- coords[, seq_len(2L), drop = FALSE]
-  colnames(coords) <- c("x", "y")
-  coords[] <- lapply(coords, function(x) suppressWarnings(as.numeric(x)))
-  if (!identical(rownames(coords), spot_ids)) {
-    coords <- coords[spot_ids, , drop = FALSE]
-  }
-  keep <- stats::complete.cases(coords) &
-    is.finite(coords$x) &
-    is.finite(coords$y)
-  if (!all(keep)) {
-    log_message(
-      "Spatial coordinates contain missing or non-finite values for {.val {sum(!keep)}} spots",
-      message_type = "error"
-    )
-  }
+  coords <- resolved$data[matched, c("x", "y"), drop = FALSE]
+  rownames(coords) <- spot_ids
+  attr(coords, "spatial_source") <- resolved$source
+  attr(coords, "spatial_transform") <- resolved$transform
   coords
 }
 
