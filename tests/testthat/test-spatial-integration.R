@@ -153,3 +153,137 @@ test_that("SpatialIntegrationPlot reuses SCOP plot helpers", {
   expect_s3_class(p_composition, "ggplot")
   expect_s3_class(p_alignment, "ggplot")
 })
+
+test_that("SpatialMNN follows the atlasClustering three-stage API", {
+  srt <- make_spatial_integration_seurat()
+  observed <- character()
+  testthat::local_mocked_bindings(
+    spatialmnn_check_r = function() invisible(TRUE),
+    get_namespace_fun = function(package, name) {
+      expect_identical(package, "atlasClustering")
+      switch(name,
+        stage_1 = function(seu_ls, verbose) {
+          observed <<- c(observed, "stage_1")
+          expect_true(all(vapply(seu_ls, function(x) {
+            all(c("coord_x", "coord_y") %in% colnames(x@meta.data)) &&
+              "RNA" %in% SeuratObject::Assays(x) &&
+              identical(SeuratObject::DefaultAssay(x), "RNA")
+          }, logical(1))))
+          for (i in seq_along(seu_ls)) {
+            seu_ls[[i]]$merged_cluster <- rep(1:2, length.out = ncol(seu_ls[[i]]))
+          }
+          seu_ls
+        },
+        stage_2 = function(seu_ls, method, rtn_seurat, verbose) {
+          observed <<- c(observed, "stage_2")
+          expect_identical(method, "MNN")
+          expect_true(rtn_seurat)
+          list(cl_df = do.call(rbind, lapply(names(seu_ls), function(sample) {
+            data.frame(sample = sample, cluster = 1:2, louvain = c("D1", "D2"))
+          })))
+        },
+        stop("unexpected atlasClustering function")
+      )
+    }
+  )
+
+  out <- RunSpatialIntegration(
+    srt,
+    method = "SpatialMNN",
+    sample.by = "sample",
+    assay = "RNA",
+    layer = "counts",
+    coord.cols = c("col", "row"),
+    coordinate_space = "raw",
+    verbose = FALSE
+  )
+  expect_identical(observed, c("stage_1", "stage_2"))
+  expect_true(all(!is.na(out$SpatialIntegration_SpatialMNN_domain)))
+  expect_identical(out@tools$SpatialIntegration$source$coordinate_space, "raw")
+})
+
+test_that("PRECAST receives selected features and its SelectModel object argument", {
+  input <- list(
+    srt_list = list(S1 = "slice-1", S2 = "slice-2"),
+    features = c("Gene1", "Gene2")
+  )
+  observed <- list()
+  testthat::local_mocked_bindings(
+    check_r = function(...) invisible(TRUE),
+    get_namespace_fun = function(package, name) {
+      expect_identical(package, "PRECAST")
+      switch(name,
+        CreatePRECASTObject = function(seuList, project, customGenelist) {
+          observed$features <<- customGenelist
+          list(step = "created")
+        },
+        AddAdjList = function(PRECASTObj, ...) PRECASTObj,
+        AddParSetting = function(PRECASTObj, ...) PRECASTObj,
+        PRECAST = function(PRECASTObj, ...) PRECASTObj,
+        SelectModel = function(obj, ...) {
+          observed$selected <<- obj
+          obj
+        },
+        stop("unexpected PRECAST function")
+      )
+    },
+    spatial_integration_extract_backend = function(raw_result, method, input) raw_result
+  )
+
+  out <- scop:::spatial_integration_run_precast(input, params = list(), verbose = FALSE)
+  expect_identical(observed$features, input$features)
+  expect_identical(observed$selected, list(step = "created"))
+  expect_identical(out, list(step = "created"))
+})
+
+test_that("SpatialMNN installation discovery uses the actual package name", {
+  calls <- character()
+  testthat::local_mocked_bindings(
+    check_r = function(package, install = TRUE, verbose = TRUE) {
+      calls <<- c(calls, package)
+      if (identical(package, "atlasClustering")) {
+        return(list(atlasClustering = FALSE))
+      }
+      list(atlasClustering = TRUE)
+    }
+  )
+
+  expect_invisible(scop:::spatialmnn_check_r())
+  expect_identical(calls, c("atlasClustering", "Pixel-Dream/spatialMNN"))
+})
+
+test_that("BASS discovery rejects the unrelated package-name collision", {
+  checks <- 0L
+  installs <- character()
+  testthat::local_mocked_bindings(
+    bass_namespace_ready = function() {
+      checks <<- checks + 1L
+      checks > 1L
+    },
+    check_r = function(package, force = FALSE, verbose = TRUE) {
+      installs <<- c(installs, package)
+      expect_true(force)
+      invisible(TRUE)
+    }
+  )
+
+  expect_invisible(scop:::bass_check_r())
+  expect_identical(installs, "zhengli09/BASS")
+})
+
+test_that("integration backends declare all producer entry points", {
+  registry <- scop:::spatial_backend_registry()
+  expect_setequal(
+    scop:::spatial_backend_required_symbols(registry$precast),
+    c("CreatePRECASTObject", "AddAdjList", "AddParSetting", "PRECAST", "SelectModel")
+  )
+  expect_setequal(
+    scop:::spatial_backend_required_symbols(registry$bass),
+    c("createBASSObject", "BASS.preprocess", "BASS.run")
+  )
+  expect_identical(registry$spatialmnn$package, "atlasClustering")
+  expect_setequal(
+    scop:::spatial_backend_required_symbols(registry$spatialmnn),
+    c("stage_1", "stage_2")
+  )
+})
