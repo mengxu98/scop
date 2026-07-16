@@ -291,9 +291,24 @@ spatial_backend_registry <- function() {
     nnsvg = backend("nnsvg", "nnSVG", symbols = "nnSVG"),
     spicyr = backend("spicyr", "spicyR", symbols = "spicy"),
     statial = backend("statial", "Statial", symbols = "Kontextual"),
-    precast = backend("precast", "PRECAST", "feiyoung/PRECAST", "CreatePRECASTObject"),
-    bass = backend("bass", "BASS", symbols = "createBASSObject"),
-    spatialmnn = backend("spatialmnn", "spatialMNN", "Pixel-Dream/spatialMNN", "spatialMNN"),
+    precast = backend(
+      "precast",
+      "PRECAST",
+      "feiyoung/PRECAST",
+      c("CreatePRECASTObject", "AddAdjList", "AddParSetting", "PRECAST", "SelectModel")
+    ),
+    bass = backend(
+      "bass",
+      "BASS",
+      "zhengli09/BASS",
+      symbols = c("createBASSObject", "BASS.preprocess", "BASS.run")
+    ),
+    spatialmnn = backend(
+      "spatialmnn",
+      "atlasClustering",
+      "Pixel-Dream/spatialMNN",
+      c("stage_1", "stage_2")
+    ),
     mistyr = backend("mistyr", "mistyR", symbols = c("create_initial_view", "run_misty")),
     semla = backend(
       "semla",
