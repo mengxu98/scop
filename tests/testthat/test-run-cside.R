@@ -19,7 +19,14 @@ make_cside_seurat <- function() {
   srt@tools$RCTD <- list(
     object = structure(list(id = "mock-rctd"), class = "RCTD"),
     backend_api = "SpatialRNA/Reference/create.RCTD/run.RCTD",
-    parameters = list(rctd_mode = "full")
+    parameters = list(rctd_mode = "full"),
+    schema_version = 1L,
+    source = list(
+      image = NA_character_,
+      coord.cols = c("col", "row"),
+      coordinate_space = "raw",
+      unit = "native"
+    )
   )
   srt
 }
@@ -123,6 +130,14 @@ test_that("RunCSIDE condition.by dispatches to single backend", {
   expect_equal(out@tools$CSIDE$result_table$significant, c(TRUE, FALSE))
   expect_equal(unique(out$CSIDE_n_sig), 1)
   expect_equal(unique(out$CSIDE_mode), "single")
+  expect_identical(out@tools$CSIDE$source$coordinate_space, "raw")
+  expect_identical(
+    out@tools$CSIDE$source$lineage_status,
+    "inherited_from_stored_rctd"
+  )
+  expect_identical(out@tools$CSIDE$provenance$parent_tool, "RCTD")
+  expect_identical(out@tools$CSIDE$provenance$parent_schema_version, 1L)
+  expect_identical(out@tools$CSIDE$cells, colnames(out))
 })
 
 test_that("RunCSIDE group.by builds region_list and dispatches to regions backend", {
@@ -215,4 +230,40 @@ test_that("RunCSIDE intercept mode and backend availability errors are clear", {
       "dmcable/spacexr"
     )
   })
+})
+
+test_that("RunCSIDE marks external RCTD lineage as backend managed", {
+  srt <- make_cside_seurat()
+  external <- srt@tools$RCTD$object
+  fake_intercept <- function(myRCTD, barcodes, cell_types, ...) {
+    expect_identical(myRCTD, external)
+    mock_cside_result()
+  }
+
+  with_mock_cside(list("run.CSIDE.intercept" = fake_intercept), {
+    out <- RunCSIDE(
+      srt,
+      rctd_result = external,
+      barcodes = c("Spot1", "Spot3"),
+      verbose = FALSE
+    )
+  })
+
+  result <- out@tools$CSIDE
+  expect_identical(result$source$coordinate_space, "backend_managed")
+  expect_identical(
+    result$source$lineage_status,
+    "external_input_without_scop_source"
+  )
+  expect_identical(result$parameters$rctd_source, "external_rctd_result")
+  expect_true(is.na(result$provenance$parent_tool))
+  expect_identical(result$cells, c("Spot1", "Spot3"))
+})
+
+test_that("CSIDE registry records inherited coordinate semantics", {
+  row <- spatial_method_registry()
+  row <- row[row$method == "RunCSIDE", , drop = FALSE]
+  expect_identical(row$coordinate_space_current, "mixed")
+  expect_identical(row$coordinate_space_target, "mixed")
+  expect_identical(row$coordinate_requirement, "backend_managed")
 })
