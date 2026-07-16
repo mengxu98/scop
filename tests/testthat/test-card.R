@@ -108,6 +108,84 @@ test_that("RunCARD writes proportions and tool results", {
   expect_named(out@tools$CARD$summary, c("n_spots", "n_types", "dominant_counts", "max_prop"))
 })
 
+test_that("CARD argument routing supports Bioconductor underscore formals", {
+  args <- list(
+    ct.varname = ".scop_cell_type",
+    ct_varname = ".scop_cell_type",
+    sample.varname = ".scop_sample",
+    sample_varname = ".scop_sample",
+    ct.select = c("Alpha", "Beta"),
+    ct_select = c("Alpha", "Beta")
+  )
+  fun <- function(ct_varname, sample_varname, ct_select) NULL
+
+  matched <- scop:::card_match_formals(fun, args)
+  expect_named(matched, c("ct_varname", "sample_varname", "ct_select"))
+  expect_identical(matched$ct_varname, ".scop_cell_type")
+  expect_identical(matched$sample_varname, ".scop_sample")
+  expect_identical(matched$ct_select, c("Alpha", "Beta"))
+})
+
+test_that("CARDspa one-step API bypasses the legacy object constructor", {
+  st_counts <- methods::as(Matrix::Matrix(
+    matrix(1:6, nrow = 2, dimnames = list(c("G1", "G2"), c("S1", "S2", "S3"))),
+    sparse = TRUE
+  ), "dgCMatrix")
+  ref_counts <- methods::as(Matrix::Matrix(
+    matrix(1:8, nrow = 2, dimnames = list(c("G1", "G2"), paste0("C", 1:4))),
+    sparse = TRUE
+  ), "dgCMatrix")
+  ref_meta <- data.frame(
+    .scop_cell_type = c("A", "A", "B", "B"),
+    .scop_sample = "sample1",
+    row.names = colnames(ref_counts)
+  )
+  coords <- data.frame(x = 1:3, y = c(1, 2, 1), row.names = colnames(st_counts))
+  one_step <- function(
+    sc_count,
+    sc_meta,
+    spatial_count,
+    spatial_location,
+    ct_varname,
+    ct_select,
+    sample_varname,
+    mincountgene,
+    mincountspot
+  ) {
+    expect_identical(ct_varname, ".scop_cell_type")
+    expect_identical(sample_varname, ".scop_sample")
+    list(Proportion_CARD = matrix(
+      c(0.8, 0.4, 0.1, 0.2, 0.6, 0.9),
+      nrow = 2,
+      byrow = TRUE,
+      dimnames = list(c("A", "B"), colnames(spatial_count))
+    ))
+  }
+  testthat::local_mocked_bindings(
+    card_resolve_backend_package = function() "CARDspa",
+    get_namespace_fun = function(package, name) {
+      if (identical(name, "createCARDObject")) {
+        return(function(...) stop("legacy constructor must not run"))
+      }
+      one_step
+    }
+  )
+
+  result <- scop:::card_run_backend(
+    st_counts = st_counts,
+    ref_counts = ref_counts,
+    ref_meta = ref_meta,
+    coords = coords,
+    ct_select = c("A", "B"),
+    minCountGene = 100,
+    minCountSpot = 5,
+    create_card_params = list(),
+    card_deconvolution_params = list()
+  )
+  expect_identical(result$package, "CARDspa")
+  expect_equal(dim(result$weights), c(2L, 3L))
+})
+
 test_that("RunCARD validates inputs before backend work", {
   pair <- make_card_seurat_pair()
   expect_error(
