@@ -21,7 +21,8 @@ RunBayesSpace(
   cluster_colname = "BayesSpace_cluster",
   init_colname = "BayesSpace_init",
   store_sce = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  coord.cols = c("col", "row")
 )
 }
 \arguments{
@@ -66,6 +67,9 @@ in \code{srt@tools}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{coord.cols}{Two metadata columns containing raw x/y coordinates when
+no spatial image is available.}
 }
 \value{
 A \code{Seurat} object with BayesSpace clusters in metadata and raw
