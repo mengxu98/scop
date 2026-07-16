@@ -83,8 +83,7 @@ test_that("registered small analyses emit schema-v1 result families", {
   target <- registry[
     registry$kind == "analysis" &
       registry$status == "stable" &
-      !is.na(registry$tool_key) & nzchar(registry$tool_key) &
-      !grepl("^RunSemla", registry$method),
+      !is.na(registry$tool_key) & nzchar(registry$tool_key),
     c("method", "task"),
     drop = FALSE
   ]
