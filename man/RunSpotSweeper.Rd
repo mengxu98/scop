@@ -29,7 +29,7 @@ RunSpotSweeper(
   store_results = TRUE,
   workers = 1,
   verbose = TRUE,
-  coordinate_space = c("legacy_display", "raw"),
+  coordinate_space = c("raw", "legacy_display"),
   ...
 )
 }
@@ -55,8 +55,8 @@ If \code{NULL}, all spots are treated as one sample.}
 \item{directions}{Outlier direction for each metric. If \code{NULL}, count and
 feature metrics use \code{"lower"} and mitochondrial metrics use \code{"higher"}.}
 
-\item{n_neighbors}{Number of nearest spatial neighbors for local outlier
-detection.}
+\item{n_neighbors}{Unitless number of nearest spatial neighbors for local
+outlier detection.}
 
 \item{cutoff}{Modified z-score cutoff passed to local outlier detection.}
 
@@ -90,7 +90,10 @@ detection.}
 
 \item{verbose}{Whether to print progress messages.}
 
-\item{coordinate_space}{Coordinate system used for spatial neighborhoods.}
+\item{coordinate_space}{Coordinate system used for spatial neighborhoods.
+The default is raw acquisition coordinates; \code{"legacy_display"} remains an
+explicit compatibility option. Neighbor counts are unitless, while any
+backend distance calculation uses the selected coordinate units.}
 
 \item{...}{Additional named arguments passed to matching SpotSweeper backend
 functions when those arguments are supported by the installed version.}

@@ -19,7 +19,9 @@
 #' @param coord.cols Metadata coordinate columns used when no image coordinate
 #' source is requested or available.
 #' @param coordinate_space Coordinate space used for distance-sensitive input.
-#'   The default preserves the historical coordinate behavior.
+#' The default is raw acquisition coordinates, so backend distances use raw
+#' coordinate units. Use `"legacy_display"` explicitly to reproduce the
+#' display-scaled coordinates used before scop 0.9.0.
 #' @param rctd_mode RCTD mode passed to `spacexr`. `"full"` is the default for
 #' Visium spot deconvolution.
 #' @param max_cores Number of cores passed to `spacexr`.
@@ -131,7 +133,7 @@ RunRCTD <- function(
   run_rctd_params = list(),
   verbose = TRUE,
   ...,
-  coordinate_space = c("legacy_display", "raw"),
+  coordinate_space = c("raw", "legacy_display"),
   tool_name = "RCTD"
 ) {
   if (!inherits(srt, "Seurat")) {
@@ -593,7 +595,7 @@ rctd_get_spatial_coords <- function(
   spot_ids,
   image = NULL,
   coord.cols = c("x", "y"),
-  coordinate_space = c("legacy_display", "raw")
+  coordinate_space = c("raw", "legacy_display")
 ) {
   coordinate_space <- match.arg(coordinate_space)
   resolved <- spatial_analysis_coords(

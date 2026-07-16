@@ -10,7 +10,11 @@
 #' spatial autocorrelation, `"cross_correlation"` computes pairwise spatial
 #' cross-correlation, and `"modules"` detects spatial gene modules.
 #' @param filterDist Euclidean distance cutoff passed to
-#' `MERINGUE::getSpatialNeighbors()`.
+#' `MERINGUE::getSpatialNeighbors()`, expressed in the selected coordinate
+#' units.
+#' @param coordinate_space Coordinate system used for MERINGUE distances. The
+#' default is raw acquisition coordinates; `"legacy_display"` remains an
+#' explicit compatibility option.
 #' @param binary Whether to binarize the MERINGUE spatial neighbor matrix.
 #' @param alternative Alternative hypothesis passed to MERINGUE Moran tests.
 #' @param ncores Number of cores passed to MERINGUE permutation tests.
@@ -79,7 +83,7 @@ RunMERINGUE <- function(
   moran_params = list(),
   cross_cor_params = list(),
   module_params = list(),
-  coordinate_space = c("legacy_display", "raw")
+  coordinate_space = c("raw", "legacy_display")
 ) {
   coordinate_space <- match.arg(coordinate_space)
   if (!inherits(srt, "Seurat")) {

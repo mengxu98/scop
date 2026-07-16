@@ -103,6 +103,7 @@ test_that("RunCARD writes proportions and tool results", {
   expect_equal(colnames(out@tools$CARD$weights), c("Alpha", "Beta"))
   expect_identical(rownames(out@tools$CARD$proportions), colnames(out))
   expect_identical(out@tools$CARD$cells, colnames(out))
+  expect_identical(out@tools$CARD$source$coordinate_space, "raw")
   expect_equal(out@tools$CARD$backend_package, "CARD")
   expect_named(out@tools$CARD$summary, c("n_spots", "n_types", "dominant_counts", "max_prop"))
 })

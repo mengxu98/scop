@@ -64,6 +64,7 @@ test_that("RunSpatialIntegration writes standardized results for merged Seurat",
   expect_true("SpatialIntegration" %in% names(out@tools))
   expect_equal(out@tools$SpatialIntegration$active_method, "PRECAST")
   expect_equal(out@tools$SpatialIntegration$parameters$sample.by, "sample")
+  expect_identical(out@tools$SpatialIntegration$source$coordinate_space, "raw")
   expect_named(out@tools$SpatialIntegration$summary, c("n_cells", "domains", "samples"))
   expect_named(out@tools$SpatialIntegration$summary$domains, c("domain", "count"))
   expect_named(out@tools$SpatialIntegration$summary$samples, c("sample", "count"))

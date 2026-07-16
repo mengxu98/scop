@@ -11,7 +11,9 @@
 #' @param min_cells Minimum reference cells required per cell type.
 #' @param normalize Whether to library-size normalize and `log1p` transform
 #' spatial and reference matrices before fitting.
-#' @param coordinate_space Coordinate system used for spatial positions.
+#' @param coordinate_space Coordinate system used for spatial positions and
+#' stored provenance. The default is raw acquisition coordinates;
+#' `"legacy_display"` remains an explicit compatibility option.
 #'
 #' @return A `Seurat` object with `"<prefix>_prop_*"`,
 #' `"<prefix>_dominant_type"`, and `"<prefix>_max_prop"` metadata columns.
@@ -47,7 +49,7 @@ RunSpatialDWLS <- function(
   normalize = TRUE,
   store_results = TRUE,
   verbose = TRUE,
-  coordinate_space = c("legacy_display", "raw")
+  coordinate_space = c("raw", "legacy_display")
 ) {
   coordinate_space <- match.arg(coordinate_space)
   if (!inherits(srt, "Seurat")) {

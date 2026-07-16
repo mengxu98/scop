@@ -13,8 +13,10 @@
 #' used; if no variable features are present, all assay features are used.
 #' @param method Spatial variable feature detection method.
 #' @param coordinate_space Coordinate system used for distance-sensitive
-#'   analysis. `"legacy_display"` preserves the current behavior; `"raw"`
-#'   uses unscaled, unflipped source coordinates.
+#' analysis. The default is raw, unscaled acquisition coordinates. Use
+#' `"legacy_display"` explicitly to reproduce the display-scaled coordinates
+#' used before scop 0.9.0. Distance thresholds and weights use the selected
+#' coordinate units; `k` is a unitless neighbor count.
 #' @param k Number of nearest spatial neighbors per spot.
 #' @param nfeatures Number of top spatial features stored in
 #' `srt@misc[["SpatialVariableFeatures"]]`.
@@ -75,7 +77,7 @@ RunSpatialVariableFeatures <- function(
   store_results = TRUE,
   verbose = TRUE,
   seed = 11,
-  coordinate_space = c("legacy_display", "raw"),
+  coordinate_space = c("raw", "legacy_display"),
   ...
 ) {
   coordinate_space <- match.arg(coordinate_space)
