@@ -78,7 +78,7 @@ RunDeconvolution.SummarizedExperiment <- function(
 ) {
   method <- match.arg(method)
   if (missing(backend)) {
-    backend <- if (identical(method, "BayesPrism")) "cpp" else "r"
+    backend <- if (method %in% c("BayesPrism", "CIBERSORT")) "cpp" else "r"
   } else {
     backend <- match.arg(backend)
   }
@@ -786,7 +786,9 @@ RunBayesPrism <- function(
 #'
 #' @description
 #' Estimate immune cell proportions from a bulk expression matrix using the
-#' external `CIBERSORT` package or the native `scop` C++ backend.
+#' optional GitHub `Moonerss/CIBERSORT` package or the native `scop` C++
+#' backend. The native backend is the default and has no external R-package
+#' dependency.
 #' `sig_matrix = "LM22"` downloads the LM22 signature matrix from
 #' `mengxu98/datasets` and caches it locally.
 #'
@@ -802,8 +804,9 @@ RunBayesPrism <- function(
 #' @param QN Whether CIBERSORT should use quantile normalization.
 #' @param absolute Passed to CIBERSORT when supported by the installed package.
 #' The native C++ backend currently returns relative fractions.
-#' @param backend CIBERSORT backend. `"r"` calls the external `CIBERSORT`
-#' package and `"cpp"` uses the native `scop` LIBSVM implementation.
+#' @param backend CIBERSORT backend. `"cpp"` uses the native `scop` LIBSVM
+#' implementation. `"r"` is an optional reference backend from
+#' `Moonerss/CIBERSORT`.
 #' @param cores Number of CPU cores used by the C++ backend. `NULL` uses up to
 #' 4 local cores. `n_threads` passed through `...` is accepted as a
 #' backward-compatible alias when `cores = NULL`.
@@ -857,7 +860,7 @@ RunCIBERSORT <- function(
   perm = 100,
   QN = TRUE,
   absolute = FALSE,
-  backend = c("r", "cpp"),
+  backend = c("cpp", "r"),
   cores = NULL,
   seed = 123L,
   verbose = TRUE,
@@ -933,7 +936,7 @@ run_cibersort_bundle <- function(
   perm = 100,
   QN = TRUE,
   absolute = FALSE,
-  backend = c("r", "cpp"),
+  backend = c("cpp", "r"),
   cores = NULL,
   seed = 123L,
   verbose = TRUE,
@@ -1056,16 +1059,7 @@ run_cibersort_bundle <- function(
     ))
   }
 
-  if (!isTRUE(check_r("Moonerss/CIBERSORT", verbose = FALSE))) {
-    log_message(
-      paste(
-        "{.pkg CIBERSORT} is required for {.fn RunCIBERSORT} with {.arg backend = 'r'}.",
-        "Install it with {.code check_r('Moonerss/CIBERSORT')}",
-        "or use {.arg backend = 'cpp'}."
-      ),
-      message_type = "error"
-    )
-  }
+  check_r("Moonerss/CIBERSORT", verbose = FALSE)
 
   cibersort_fun <- get_namespace_fun("CIBERSORT", "cibersort")
   call_args <- utils::modifyList(

@@ -598,21 +598,10 @@ run_cellrank_cpp <- function(
       softmax_scale = softmax_scale
     )
     if (isTRUE(use_connectivity_kernel) && connectivity_weight > 0 && velocity_weight > 0) {
-      C_mat <- matrix(0, n_cells, n_cells)
-      knn_dist <- knn[["dist"]]
-      for (i in seq_len(n_cells)) {
-        wsum <- 0
-        valid_dists <- knn_dist[i, ][!is.na(knn_dist[i, ])]
-        sigma_i <- if (length(valid_dists) > 0) stats::median(valid_dists) + 1e-10 else 1.0
-        for (k in seq_len(knn_k)) {
-          nb <- knn[["idx"]][i, k]; if (is.na(nb)) next; nb <- as.integer(nb)
-          if (nb < 1 || nb > n_cells || nb == i) next
-          d <- knn_dist[i, k]; if (is.na(d)) next
-          w <- exp(-(d * d) / (2.0 * sigma_i * sigma_i))
-          C_mat[i, nb] <- w; wsum <- wsum + w
-        }
-        if (wsum > 0) C_mat[i, ] <- C_mat[i, ] / wsum else C_mat[i, i] <- 1.0
-      }
+      C_mat <- cellrank_connectivity_kernel_cpp(
+        knn_idx = knn[["idx"]],
+        knn_dist = knn[["dist"]]
+      )
       tw <- velocity_weight / (velocity_weight + connectivity_weight)
       cw <- connectivity_weight / (velocity_weight + connectivity_weight)
       T_mat <- tw * T_mat + cw * C_mat

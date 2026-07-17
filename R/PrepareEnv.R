@@ -576,14 +576,12 @@ ensure_external_wrapper_r_packages <- function(modules, verbose = TRUE) {
     return(invisible(TRUE))
   }
 
-  ok <- TRUE
   for (module in modules) {
     repo <- unname(repos[[module]])
-    installed <- isTRUE(check_r(repo, dependencies = NA, verbose = verbose))
-    ok <- installed && ok
+    check_r(repo, dependencies = NA, verbose = verbose)
   }
 
-  invisible(ok)
+  invisible(TRUE)
 }
 
 norm_env_components <- function(components = "python") {

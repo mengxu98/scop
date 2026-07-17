@@ -515,22 +515,15 @@ cytospace_estimate_fractions <- function(
     numeric(nrow(norm_ref))
   )
   rownames(profiles) <- rownames(norm_ref)
-  scores <- matrix(
-    0,
-    nrow = ncol(norm_st),
-    ncol = length(cell_types),
-    dimnames = list(colnames(norm_st), cell_types)
-  )
-  for (spot in seq_len(ncol(norm_st))) {
-    for (ct in seq_along(cell_types)) {
-      score <- suppressWarnings(stats::cor(
-        norm_st[, spot],
-        profiles[, ct],
-        method = "pearson"
-      ))
-      scores[spot, ct] <- ifelse(is.finite(score), max(score, 0), 0)
-    }
-  }
+  scores <- suppressWarnings(stats::cor(
+    x = norm_st,
+    y = profiles,
+    method = "pearson"
+  ))
+  scores <- as.matrix(scores)
+  scores[!is.finite(scores) | scores < 0] <- 0
+  rownames(scores) <- colnames(norm_st)
+  colnames(scores) <- cell_types
   row_sums <- rowSums(scores)
   scores[row_sums <= 0, ] <- 1 / ncol(scores)
   row_sums <- rowSums(scores)

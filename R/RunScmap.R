@@ -101,21 +101,11 @@ RunScmap <- function(
     )
   }
 
-  status_query <- CheckDataType(
-    object = GetAssayData5(
-      srt_query,
-      layer = "data",
-      assay = query_assay
-    )
-  )
+  query_logcounts <- GetAssayData5(srt_query, layer = "data", assay = query_assay)
+  ref_logcounts <- GetAssayData5(srt_ref, layer = "data", assay = ref_assay)
+  status_query <- CheckDataType(object = query_logcounts)
   log_message("Detected {.arg srt_query} data type: {.val {status_query}}", verbose = verbose)
-  status_ref <- CheckDataType(
-    object = GetAssayData5(
-      srt_ref,
-      layer = "data",
-      assay = ref_assay
-    )
-  )
+  status_ref <- CheckDataType(object = ref_logcounts)
   log_message("Detected {.arg srt_ref} data type: {.val {status_ref}}", verbose = verbose)
   if (
     status_ref != status_query ||
@@ -134,11 +124,7 @@ RunScmap <- function(
       assay = query_assay,
       layer = "counts"
     ),
-    logcounts = GetAssayData5(
-      object = srt_query,
-      assay = query_assay,
-      layer = "data"
-    )
+    logcounts = query_logcounts
   )
   sce_query <- SingleCellExperiment::SingleCellExperiment(
     assays = assays_query
@@ -157,11 +143,7 @@ RunScmap <- function(
       assay = ref_assay,
       layer = "counts"
     ),
-    logcounts = GetAssayData5(
-      object = srt_ref,
-      assay = ref_assay,
-      layer = "data"
-    )
+    logcounts = ref_logcounts
   )
   sce_ref <- SingleCellExperiment::SingleCellExperiment(
     assays = assays_ref

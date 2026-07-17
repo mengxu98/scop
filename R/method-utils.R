@@ -38,9 +38,12 @@ scop_scale_features <- function(mat) {
   mu <- Matrix::rowMeans(mat)
   mu2 <- Matrix::rowMeans(mat^2)
   sd <- sqrt(pmax(mu2 - mu^2, 1e-8))
-  x <- sweep(as.matrix(mat), 1, mu, "-")
-  x <- sweep(x, 1, sd, "/")
-  x[!is.finite(x)] <- 0
+  x <- scale_sparse_rows_from_stats(
+    mat,
+    center = as.numeric(mu),
+    scale = as.numeric(sd)
+  )
+  dimnames(x) <- dimnames(mat)
   x
 }
 
@@ -53,6 +56,23 @@ sparse_row_vars <- function(mat) {
   out
 }
 
+fitdevo_spearman_weights <- function(scaled, target) {
+  if (any(!is.finite(target))) {
+    return(stats::setNames(numeric(nrow(scaled)), rownames(scaled)))
+  }
+  check_r("matrixStats", verbose = FALSE)
+  target_rank <- rank(target, ties.method = "average")
+  target_centered <- target_rank - mean(target_rank)
+  ranked <- matrixStats::rowRanks(as.matrix(scaled), ties.method = "average")
+  rank_sum <- rowSums(ranked)
+  rank_sumsq <- rowSums(ranked^2)
+  rank_ss <- rank_sumsq - rank_sum^2 / ncol(ranked)
+  out <- as.vector(ranked %*% target_centered) /
+    sqrt(rank_ss * sum(target_centered^2))
+  out[!is.finite(out)] <- 0
+  stats::setNames(out, rownames(scaled))
+}
+
 fitdevo_score <- function(mat, target = NULL) {
   scaled <- scop_scale_features(mat)
   if (is.null(target)) {
@@ -61,8 +81,7 @@ fitdevo_score <- function(mat, target = NULL) {
     )
     weights <- sqrt(pmax(sparse_row_vars(mat), 0)) * (1 - pmin(detection, 0.99))
   } else {
-    weights <- apply(scaled, 1, stats::cor, y = target, method = "spearman")
-    weights[!is.finite(weights)] <- 0
+    weights <- fitdevo_spearman_weights(scaled, target)
   }
   names(weights) <- rownames(mat)
   weights <- weights / (sqrt(sum(weights^2)) + 1e-8)

@@ -197,20 +197,10 @@ RunKNNMap <- function(
     }
   } else {
     log_message("Use the features to calculate distance metric", verbose = verbose)
-    status_query <- CheckDataType(
-      object = GetAssayData5(
-        srt_query,
-        layer = "data",
-        assay = query_assay
-      )
-    )
-    status_ref <- CheckDataType(
-      object = GetAssayData5(
-        srt_ref,
-        layer = "data",
-        assay = ref_assay
-      )
-    )
+    query_data <- GetAssayData5(srt_query, layer = "data", assay = query_assay)
+    ref_data <- GetAssayData5(srt_ref, layer = "data", assay = ref_assay)
+    status_query <- CheckDataType(object = query_data)
+    status_ref <- CheckDataType(object = ref_data)
     if (status_ref != status_query) {
       log_message(
         "Data type is different between {.arg srt_query} and {.arg srt_ref}",
@@ -274,22 +264,10 @@ RunKNNMap <- function(
       verbose = verbose
     )
     query <- Matrix::t(
-      GetAssayData5(
-        srt_query,
-        layer = "data",
-        assay = query_assay
-      )[
-        features_common,
-      ]
+      query_data[features_common, , drop = FALSE]
     )
     ref <- Matrix::t(
-      GetAssayData5(
-        srt_ref,
-        layer = "data",
-        assay = ref_assay
-      )[
-        features_common,
-      ]
+      ref_data[features_common, , drop = FALSE]
     )
   }
 
@@ -328,7 +306,34 @@ RunKNNMap <- function(
     )
   }
 
-  if (nn_method %in% c("annoy", "rann")) {
+  native_knn <- if (identical(nn_method, "raw")) {
+    knn_cross_topk_native(
+      reference = ref,
+      query = query,
+      k = k,
+      distance_metric = distance_metric
+    )
+  } else {
+    NULL
+  }
+  if (!is.null(native_knn)) {
+    match_k <- native_knn[["idx"]]
+    rownames(match_k) <- rownames(query)
+    match_k_cell <- matrix(
+      rownames(ref)[match_k],
+      nrow = nrow(match_k),
+      ncol = ncol(match_k),
+      dimnames = list(rownames(query), NULL)
+    )
+    knn_cells <- match_k_cell
+    match_k_distance <- native_knn[["distance"]]
+    rownames(match_k_distance) <- rownames(query)
+    refumap_all <- srt_ref[[ref_umap]]@cell.embeddings[
+      knn_cells, ,
+      drop = FALSE
+    ]
+    group <- rep(rownames(query), k)
+  } else if (nn_method %in% c("annoy", "rann")) {
     query_neighbor <- Seurat::FindNeighbors(
       query = query,
       object = ref,
@@ -339,7 +344,7 @@ RunKNNMap <- function(
     )
     match_k <- query_neighbor@nn.idx
     rownames(match_k) <- rownames(query)
-    match_k_cell <- apply(match_k, c(1, 2), function(x) rownames(ref)[x])
+    match_k_cell <- knn_indices_to_names(match_k, rownames(ref))
     knn_cells <- c(match_k_cell)
     match_k_distance <- query_neighbor@nn.dist
     rownames(match_k_distance) <- rownames(query)
@@ -349,8 +354,8 @@ RunKNNMap <- function(
     if (distance_metric %in% c(simil_method, "pearson", "spearman")) {
       if (distance_metric %in% c("pearson", "spearman")) {
         if (distance_metric == "spearman") {
-          ref <- Matrix::t(apply(ref, 1, rank))
-          query <- Matrix::t(apply(query, 1, rank))
+          ref <- knn_rank_rows(ref)
+          query <- knn_rank_rows(query)
         }
         distance_metric <- "correlation"
       }
@@ -414,24 +419,7 @@ RunKNNMap <- function(
       }
 
       if (any(is.na(match_k_distance))) {
-        global_max <- if (any(is.finite(match_k_distance))) {
-          max(match_k_distance, na.rm = TRUE)
-        } else {
-          1.0
-        }
-        for (i in seq_len(nrow(match_k_distance))) {
-          row_na <- is.na(match_k_distance[i, ])
-          if (any(row_na)) {
-            if (all(row_na)) {
-              match_k_distance[i, row_na] <- global_max
-            } else {
-              match_k_distance[i, row_na] <- max(
-                match_k_distance[i, !row_na],
-                na.rm = TRUE
-              )
-            }
-          }
-        }
+        match_k_distance <- knn_fill_missing_distances(match_k_distance)
       }
 
       if (any(!is.finite(match_k_distance))) {
@@ -502,11 +490,7 @@ RunKNNMap <- function(
         dplyr::bind_rows()
       match_prob <- as_matrix(match_prob)
       rownames(match_prob) <- names(match_freq)
-      match_best <- apply(
-        match_prob,
-        1,
-        function(x) names(x)[order(x, decreasing = TRUE)][1]
-      )
+      match_best <- knn_match_best_labels(match_prob)
     }
     srt_query[[paste0("predicted_", ref_group)]] <- match_best[colnames(
       srt_query
@@ -514,4 +498,18 @@ RunKNNMap <- function(
   }
 
   return(srt_query)
+}
+
+knn_fill_missing_distances <- function(x) {
+  if (!anyNA(x)) {
+    return(x)
+  }
+  check_r("matrixStats", verbose = FALSE)
+  global_max <- if (any(is.finite(x))) max(x, na.rm = TRUE) else 1.0
+  all_missing <- rowSums(!is.na(x)) == 0L
+  fill_values <- matrixStats::rowMaxs(x, na.rm = TRUE)
+  fill_values[all_missing] <- global_max
+  missing <- which(is.na(x), arr.ind = TRUE)
+  x[missing] <- fill_values[missing[, 1L]]
+  x
 }

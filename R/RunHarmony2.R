@@ -83,6 +83,7 @@ RunHarmony2.Seurat <- function(
   ...
 ) {
   check_r("immunogenomics/harmony", verbose = FALSE)
+  check_r("matrixStats", verbose = FALSE)
   if (!is.null(seed.use)) {
     set.seed(seed = seed.use)
   }
@@ -153,7 +154,7 @@ RunHarmony2.Seurat <- function(
 
   object[[reduction.name]] <- Seurat::CreateDimReducObject(
     embeddings = harmonyEmbed,
-    stdev = as.numeric(apply(harmonyEmbed, 2, stats::sd)),
+    stdev = as.numeric(matrixStats::colSds(harmonyEmbed)),
     assay = assay,
     key = reduction.key,
     misc = list(

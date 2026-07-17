@@ -122,25 +122,11 @@ gene_set_scoring_drop_invalid_score_sets <- function(scores) {
 
 gene_set_scoring_keep_variable_rows <- function(expr) {
   if (inherits(expr, "dgCMatrix")) {
-    keep <- rep(FALSE, nrow(expr))
-    if (length(expr@x) > 0L) {
-      values_by_row <- split(expr@x, expr@i + 1L)
-      keep[as.integer(names(values_by_row))] <- vapply(
-        values_by_row,
-        function(x) {
-          x <- x[is.finite(x)]
-          length(x) > 1L && diff(range(x)) > 0
-        },
-        logical(1)
-      )
-    }
+    keep <- sparse_row_has_variable_finite(expr)
     return(expr[keep, , drop = FALSE])
   }
   expr_mat <- as_matrix(expr)
-  keep <- apply(expr_mat, 1L, function(x) {
-    x <- x[is.finite(x)]
-    length(x) > 1L && diff(range(x)) > 0
-  })
+  keep <- dense_row_has_variable_finite(expr_mat)
   expr[keep, , drop = FALSE]
 }
 
@@ -252,7 +238,7 @@ run_aucell_official_scores <- function(
       integer(nrow(expr_mat))
     )
     dimnames(rankings) <- dimnames(expr_mat)
-    new(
+    methods::new(
       "aucellResults",
       SummarizedExperiment::SummarizedExperiment(assays = list(ranking = rankings))
     )

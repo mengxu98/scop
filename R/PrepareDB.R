@@ -421,10 +421,7 @@ PrepareDB <- function(
         "Enzyme"
       )
       if (any(orgdb_dependent %in% db)) {
-        tryCatch(
-          check_r(c(org_sp, "GO.db", "GOSemSim"), verbose = FALSE),
-          error = identity
-        )
+        check_r(c(org_sp, "GO.db", "GOSemSim"), verbose = FALSE)
         if (!requireNamespace(org_sp, quietly = TRUE)) {
           log_message(
             "Annotation package {.pkg {org_sp}} does not exist",

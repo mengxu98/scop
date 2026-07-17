@@ -49,6 +49,10 @@
 #' If "annoy" is selected, the function will use the Annoy library for approximate nearest neighbor search.
 #' If "rann" is selected, the function will use the RANN library for approximate nearest neighbor search.
 #' If not provided, the function will choose the search method based on the size of the query and reference datasets.
+#' For finite dense inputs using cosine or Euclidean distance, the raw path
+#' uses scop's bounded-memory native top-k kernel unless the full distance
+#' matrix is requested. Other metrics and sparse inputs retain the existing
+#' proxyC path.
 #' @param distance_metric A character vector specifying the distance metric to be used for calculating similarity between cells.
 #' Must be one of "cosine", "euclidean", "manhattan", or "hamming".
 #' Default is `"cosine"`.
@@ -692,7 +696,31 @@ RunKNNPredict <- function(
     )
   }
 
-  if (nn_method %in% c("annoy", "rann")) {
+  native_knn <- if (
+    identical(nn_method, "raw") &&
+      !isTRUE(return_full_distance_matrix)
+  ) {
+    knn_cross_topk_native(
+      reference = ref,
+      query = query,
+      k = k,
+      distance_metric = distance_metric
+    )
+  } else {
+    NULL
+  }
+  if (!is.null(native_knn)) {
+    match_k <- native_knn[["idx"]]
+    rownames(match_k) <- rownames(query)
+    match_k_cell <- matrix(
+      rownames(ref)[match_k],
+      nrow = nrow(match_k),
+      ncol = ncol(match_k),
+      dimnames = list(rownames(query), NULL)
+    )
+    match_k_distance <- native_knn[["distance"]]
+    rownames(match_k_distance) <- rownames(query)
+  } else if (nn_method %in% c("annoy", "rann")) {
     query.neighbor <- Seurat::FindNeighbors(
       query = query,
       object = ref,
@@ -703,15 +731,15 @@ RunKNNPredict <- function(
     )
     match_k <- query.neighbor@nn.idx
     rownames(match_k) <- rownames(query)
-    match_k_cell <- apply(match_k, c(1, 2), function(x) rownames(ref)[x])
+    match_k_cell <- knn_indices_to_names(match_k, rownames(ref))
     match_k_distance <- query.neighbor@nn.dist
     rownames(match_k_distance) <- rownames(query)
   } else {
     if (distance_metric %in% c(simil_methods, "pearson", "spearman")) {
       if (distance_metric %in% c("pearson", "spearman")) {
         if (distance_metric == "spearman") {
-          ref <- Matrix::t(apply(ref, 1, rank))
-          query <- Matrix::t(apply(query, 1, rank))
+          ref <- knn_rank_rows(ref)
+          query <- knn_rank_rows(query)
         }
         distance_metric <- "correlation"
       }
@@ -785,11 +813,7 @@ RunKNNPredict <- function(
       )
       match_prob <- as_matrix(match_prob)
       rownames(match_prob) <- names(match_freq)
-      match_best <- apply(
-        match_prob,
-        1,
-        function(x) names(x)[order(x, decreasing = TRUE)][1]
-      )
+      match_best <- knn_match_best_labels(match_prob)
     }
   } else {
     match_best <- match_k_cell[, 1]
@@ -847,13 +871,14 @@ RunKNNPredict <- function(
   srt_query[[paste0(prefix, "_classification")]] <- classification
 
   if (!is.null(match_prob)) {
+    match_prob_max <- knn_match_prob_max(match_prob)
     if (isTRUE(query_collapsing)) {
       prob <- unlist(lapply(names(match_best), function(ct) {
-        rep(apply(match_prob, 1, max)[ct], length(cell_type_to_id[[ct]]))
+        rep(match_prob_max[ct], length(cell_type_to_id[[ct]]))
       }))
       names(prob) <- unlist(cell_type_to_id)
     } else {
-      prob <- apply(match_prob, 1, max)[query_index]
+      prob <- match_prob_max[query_index]
       names(prob) <- query_index
     }
     srt_query[[paste0(prefix, "_prob")]] <- prob
@@ -893,4 +918,25 @@ RunKNNPredict <- function(
   }
 
   return(srt_query)
+}
+
+knn_match_prob_max <- function(match_prob) {
+  check_r("matrixStats", verbose = FALSE)
+  out <- matrixStats::rowMaxs(as.matrix(match_prob))
+  names(out) <- rownames(match_prob)
+  out
+}
+
+knn_match_best_labels <- function(match_prob) {
+  match_prob <- as.matrix(match_prob)
+  if (!all(is.finite(match_prob))) {
+    return(apply(
+      match_prob,
+      1L,
+      function(x) names(x)[order(x, decreasing = TRUE)][1L]
+    ))
+  }
+  out <- colnames(match_prob)[max.col(match_prob, ties.method = "first")]
+  names(out) <- rownames(match_prob)
+  out
 }

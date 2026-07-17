@@ -269,45 +269,32 @@ estimate_prepare_matrix <- function(x) {
 }
 
 estimate_ssgsea_scores <- function(expr, gene_sets) {
-  ranked <- apply(expr, 2, function(x) {
-    rank(as.numeric(x), ties.method = "average", na.last = "keep")
-  })
+  check_r("matrixStats", verbose = FALSE)
+  ranked <- t(matrixStats::colRanks(
+    expr,
+    ties.method = "average"
+  ))
   ranked <- as.matrix(ranked)
   ranked[!is.finite(ranked)] <- 0
   ranked <- 10000 * ranked / nrow(ranked)
   rownames(ranked) <- rownames(expr)
   colnames(ranked) <- colnames(expr)
-
-  scores <- matrix(
-    NA_real_,
-    nrow = ncol(ranked),
-    ncol = length(gene_sets),
-    dimnames = list(colnames(ranked), names(gene_sets))
+  sample_order <- vapply(
+    seq_len(ncol(ranked)),
+    function(sample_i) order(ranked[, sample_i], decreasing = TRUE),
+    integer(nrow(ranked))
   )
-  for (set_i in seq_along(gene_sets)) {
-    common_genes <- intersect(gene_sets[[set_i]], rownames(ranked))
-    if (length(common_genes) == 0L) {
-      next
-    }
-    for (sample_i in seq_len(ncol(ranked))) {
-      ord <- order(ranked[, sample_i], decreasing = TRUE)
-      ordered <- ranked[ord, sample_i]
-      names(ordered) <- rownames(ranked)[ord]
-      hit_ind <- names(ordered) %in% common_genes
-      no_hit_ind <- !hit_ind
-      if (!any(hit_ind) || !any(no_hit_ind)) {
-        next
-      }
-      ordered_weight <- ordered^0.25
-      hit_exp <- ordered_weight[hit_ind]
-      if (sum(hit_exp) <= 0) {
-        next
-      }
-      no_hit_penalty <- cumsum(as.numeric(no_hit_ind) / sum(no_hit_ind))
-      hit_reward <- cumsum((as.numeric(hit_ind) * ordered_weight) / sum(hit_exp))
-      scores[sample_i, set_i] <- sum(hit_reward - no_hit_penalty)
-    }
-  }
+  gene_index <- seq_len(nrow(ranked))
+  names(gene_index) <- rownames(ranked)
+  gene_sets_index <- lapply(gene_sets, function(gene_set) {
+    unname(gene_index[intersect(gene_set, names(gene_index))])
+  })
+  scores <- estimate_ssgsea_scores_cpp(
+    ranked = ranked,
+    sample_order = sample_order,
+    gene_sets = gene_sets_index
+  )
+  dimnames(scores) <- list(colnames(ranked), names(gene_sets))
   scores
 }
 

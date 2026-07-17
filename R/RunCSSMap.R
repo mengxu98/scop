@@ -139,13 +139,11 @@ RunCSSMap <- function(
   }
 
   ref_assay <- srt_ref[[ref_css]]@assay.used
-  status_query <- CheckDataType(
-    GetAssayData5(srt_query, layer = "data", assay = query_assay)
-  )
+  query_data <- GetAssayData5(srt_query, layer = "data", assay = query_assay)
+  ref_data <- GetAssayData5(srt_ref, layer = "data", assay = ref_assay)
+  status_query <- CheckDataType(query_data)
   log_message("Detected {.arg srt_query} data type: {.val {status_query}}", verbose = verbose)
-  status_ref <- CheckDataType(
-    GetAssayData5(srt_ref, layer = "data", assay = ref_assay)
-  )
+  status_ref <- CheckDataType(ref_data)
   log_message("Detected {.arg srt_ref} data type: {.val {status_ref}}", verbose = verbose)
   if (
     status_ref != status_query ||
@@ -163,7 +161,7 @@ RunCSSMap <- function(
   css_proj <- invoke_fun(
     .fn = get("css_project", envir = getNamespace("simspec")),
     .args = list(
-      object = GetAssayData5(srt_query, layer = "data", assay = query_assay),
+      object = query_data,
       model = CSSmodel
     )
   )

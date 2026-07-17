@@ -104,8 +104,6 @@ RunDynamicEnrichment <- function(
   assay <- assay %||% DefaultAssay(srt)
 
   feature_union <- c()
-  cell_union <- c()
-  dynamic <- list()
   for (l in lineages) {
     if (!paste0("DynamicFeatures_", l) %in% names(srt@tools)) {
       log_message(
@@ -123,12 +121,7 @@ RunDynamicEnrichment <- function(
         DynamicFeatures$padjust < padjust, ,
       drop = FALSE
     ]
-    dynamic[[l]] <- DynamicFeatures
     feature_union <- c(feature_union, DynamicFeatures[, "features"])
-    cell_union <- c(
-      cell_union,
-      rownames(srt@tools[[paste0("DynamicFeatures_", l)]][["raw_matrix"]])
-    )
   }
   feature_union <- unique(feature_union)
 
@@ -246,13 +239,7 @@ RunDynamicEnrichment <- function(
       srt <- RunDynamicFeatures(
         srt = srt,
         lineages = lineages,
-        features = rownames(
-          GetAssayData5(
-            srt,
-            assay = assay_name_i,
-            layer = "counts"
-          )
-        ),
+        features = rownames(srt[[assay_name_i]]),
         suffix = paste(lineages, assay_name_i, sep = "_"),
         assay = assay_name_i,
         cores = cores,

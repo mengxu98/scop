@@ -9,6 +9,10 @@
 #' @param condition.by Metadata column defining conditions.
 #' @param condition_oi Condition of interest.
 #' @param condition_reference Reference condition.
+#' @param receiver_affected Affected receiver cell type(s) for
+#'   `mode = "aggregate_cluster_de"`. Defaults to `receiver` when `NULL`.
+#' @param receiver_reference Reference receiver cell type(s) for
+#'   `mode = "aggregate_cluster_de"`. Defaults to `receiver` when `NULL`.
 #' @param mode NicheNet wrapper mode. Supported values are `"aggregate"`,
 #' `"aggregate_cluster_de"`, and `"custom"`.
 #' @param assay Assay to use.
@@ -41,6 +45,8 @@ RunNichenetr <- function(
   condition.by = NULL,
   condition_oi = NULL,
   condition_reference = NULL,
+  receiver_affected = NULL,
+  receiver_reference = NULL,
   mode = c("aggregate", "aggregate_cluster_de", "custom"),
   assay = NULL,
   expression_pct = 0.10,
@@ -124,12 +130,13 @@ RunNichenetr <- function(
   )
   Idents(srt) <- srt[[group.by]][, 1]
 
-  ns_fun <- function(name) get_namespace_fun("nichenetr", name)
   ligand_activities <- NULL
   ligand_target_df <- NULL
   ligand_receptor_df <- NULL
   raw_result <- NULL
   de_table <- NULL
+  receiver_affected_use <- NULL
+  receiver_reference_use <- NULL
 
   if (identical(mode, "aggregate")) {
     required <- c("condition.by", "condition_oi", "condition_reference")
@@ -144,7 +151,7 @@ RunNichenetr <- function(
         message_type = "error"
       )
     }
-    raw_result <- ns_fun("nichenet_seuratobj_aggregate")(
+    raw_result <- get_namespace_fun("nichenetr", "nichenet_seuratobj_aggregate")(
       seurat_obj = srt,
       receiver = receiver,
       condition_colname = condition.by,
@@ -175,17 +182,24 @@ RunNichenetr <- function(
         message_type = "error"
       )
     }
-    receiver_use <- unique(as.character(receiver))
-    if (length(receiver_use) == 0L) {
+    receiver_affected_use <- unique(as.character(receiver_affected %||% receiver))
+    receiver_reference_use <- unique(as.character(receiver_reference %||% receiver))
+    if (length(receiver_affected_use) == 0L) {
       log_message(
-        "{.arg receiver} must contain at least one receiver cell type for {.val mode = 'aggregate_cluster_de'}",
+        "{.arg receiver_affected} (or {.arg receiver}) must contain at least one receiver cell type for {.val mode = 'aggregate_cluster_de'}",
         message_type = "error"
       )
     }
-    raw_result <- ns_fun("nichenet_seuratobj_aggregate_cluster_de")(
+    if (length(receiver_reference_use) == 0L) {
+      log_message(
+        "{.arg receiver_reference} (or {.arg receiver}) must contain at least one receiver cell type for {.val mode = 'aggregate_cluster_de'}",
+        message_type = "error"
+      )
+    }
+    raw_result <- get_namespace_fun("nichenetr", "nichenet_seuratobj_aggregate_cluster_de")(
       seurat_obj = srt,
-      receiver_affected = receiver_use,
-      receiver_reference = receiver_use,
+      receiver_affected = receiver_affected_use,
+      receiver_reference = receiver_reference_use,
       condition_colname = condition.by,
       condition_oi = condition_oi,
       condition_reference = condition_reference,
@@ -208,11 +222,9 @@ RunNichenetr <- function(
         message_type = "error"
       )
     }
-    get_expressed_genes <- ns_fun("get_expressed_genes")
-    predict_ligand_activities <- ns_fun("predict_ligand_activities")
-    get_weighted_ligand_target_links <- ns_fun(
-      "get_weighted_ligand_target_links"
-    )
+    get_expressed_genes <- get_namespace_fun("nichenetr", "get_expressed_genes")
+    predict_ligand_activities <- get_namespace_fun("nichenetr", "predict_ligand_activities")
+    get_weighted_ligand_target_links <- get_namespace_fun("nichenetr", "get_weighted_ligand_target_links")
 
     if (is.null(background_expressed_genes)) {
       background_expressed_genes <- get_expressed_genes(
@@ -281,6 +293,8 @@ RunNichenetr <- function(
     ligand_receptor_df = ligand_receptor_df,
     sender_use = sender_use,
     receiver = receiver,
+    receiver_affected = receiver_affected_use,
+    receiver_reference = receiver_reference_use,
     cutoff_visualization = cutoff_visualization,
     top_n_ligands = top_n_ligands,
     top_n_targets = top_n_targets,
@@ -431,11 +445,10 @@ RunMultiNichenetr <- function(
   }
   contrasts_oi <- paste0("'", contrast_tbl$contrast, "'", collapse = ",")
 
-  ns_fun <- function(name) get_namespace_fun("multinichenetr", name)
   raw_result <- tryCatch(
     {
       if (isTRUE(sample_agnostic)) {
-        ns_fun("multi_nichenet_analysis_sampleAgnostic")(
+        get_namespace_fun("multinichenetr", "multi_nichenet_analysis_sampleAgnostic")(
           sce = sce,
           celltype_id = group.by,
           sample_id = sample.by,
@@ -454,7 +467,7 @@ RunMultiNichenetr <- function(
           min_cells = min_cells
         )
       } else {
-        ns_fun("multi_nichenet_analysis")(
+        get_namespace_fun("multinichenetr", "multi_nichenet_analysis")(
           sce = sce,
           celltype_id = group.by,
           sample_id = sample.by,
@@ -806,6 +819,8 @@ standardize_nichenetr_result <- function(
   ligand_receptor_df,
   sender_use,
   receiver,
+  receiver_affected = NULL,
+  receiver_reference = NULL,
   cutoff_visualization = 0.33,
   top_n_ligands = 30,
   top_n_targets = 200,
@@ -918,6 +933,8 @@ standardize_nichenetr_result <- function(
     parameters = list(
       sender_use = sender_use,
       receiver = receiver,
+      receiver_affected = receiver_affected,
+      receiver_reference = receiver_reference,
       mode = mode,
       group.by = group.by,
       condition.by = condition.by,

@@ -246,7 +246,7 @@ RunSecActCCC <- function(
       secact_assert_scalar_string(conditionCase, "conditionCase")
       secact_assert_scalar_string(conditionControl, "conditionControl")
     }
-    fun <- secact_get_fun("SecAct.CCC.scRNAseq")
+    fun <- get_namespace_fun("SecAct", "SecAct.CCC.scRNAseq")
     log_message("Running {.pkg SecAct} scRNA-seq CCC...", verbose = verbose)
     out <- fun(
       Seurat_obj = obj,
@@ -277,7 +277,7 @@ RunSecActCCC <- function(
 
   obj <- inputProfile %||% srt
   secact_assert_spacet(obj)
-  fun <- secact_get_fun("SecAct.CCC.scST")
+  fun <- get_namespace_fun("SecAct", "SecAct.CCC.scST")
   log_message("Running {.pkg SecAct} scST CCC...", verbose = verbose)
   fun(
     SpaCET_obj = obj,
@@ -316,7 +316,7 @@ RunSecActSignalingPattern <- function(
   if (missing(k) || is.null(k)) {
     log_message("{.arg k} is required", message_type = "error")
   }
-  fun <- secact_get_fun("SecAct.signaling.pattern")
+  fun <- get_namespace_fun("SecAct", "SecAct.signaling.pattern")
   log_message("Running {.pkg SecAct} spatial signaling pattern analysis...", verbose = verbose)
   fun(
     SpaCET_obj = SpaCET_obj,
@@ -349,7 +349,7 @@ RunSecActPatternGenes <- function(
   if (missing(n) || length(n) != 1L || is.na(n)) {
     log_message("{.arg n} must be a single pattern index", message_type = "error")
   }
-  fun <- secact_get_fun("SecAct.signaling.pattern.gene")
+  fun <- get_namespace_fun("SecAct", "SecAct.signaling.pattern.gene")
   fun(SpaCET_obj = SpaCET_obj, n = n)
 }
 
@@ -410,7 +410,7 @@ RunSecActVelocity <- function(
     signalMode <- match.arg(signalMode, c("receiving", "sending"))
     radius <- radius %||% 200
     secact_assert_scalar_string(gene, "gene")
-    fun <- secact_get_fun("SecAct.signaling.velocity.spotST")
+    fun <- get_namespace_fun("SecAct", "SecAct.signaling.velocity.spotST")
     return(fun(
       SpaCET_obj = SpaCET_obj,
       scale.factor = scale.factor,
@@ -429,7 +429,7 @@ RunSecActVelocity <- function(
   secact_assert_scalar_string(cellType_meta, "cellType_meta")
   radius <- radius %||% 20
   colors <- colors %||% c("#1f78b4", "#e31a1c", "#33a02c", "#ff7f00")
-  fun <- secact_get_fun("SecAct.signaling.velocity.scST")
+  fun <- get_namespace_fun("SecAct", "SecAct.signaling.velocity.scST")
   fun(
     SpaCET_obj = SpaCET_obj,
     sender = sender,
@@ -453,27 +453,13 @@ RunSecActVelocity <- function(
 
 secact_check_r <- function(verbose = TRUE) {
   check_r("data2intelligence/SecAct", dependencies = NA, verbose = verbose)
-  if (!is.function(secact_get_fun("SecAct.activity.inference", error = FALSE))) {
+  if (!is.function(get_namespace_fun("SecAct", "SecAct.activity.inference"))) {
     log_message(
       "Failed to install or load {.pkg SecAct}. Install it manually with {.code pak::pkg_install('data2intelligence/SecAct')}",
       message_type = "error"
     )
   }
   invisible(TRUE)
-}
-
-secact_get_fun <- function(fun, error = TRUE) {
-  out <- tryCatch(
-    suppressWarnings(get_namespace_fun("SecAct", fun)),
-    error = function(e) NULL
-  )
-  if (!is.function(out) && isTRUE(error)) {
-    log_message(
-      "Could not find {.pkg SecAct} function {.val {fun}}",
-      message_type = "error"
-    )
-  }
-  out
 }
 
 secact_resolve_mode <- function(srt = NULL, inputProfile = NULL) {
@@ -521,7 +507,7 @@ secact_run_scrnaseq <- function(
     secact_check_meta_columns(obj, cellType_meta)
   }
 
-  fun <- secact_get_fun("SecAct.activity.inference.scRNAseq")
+  fun <- get_namespace_fun("SecAct", "SecAct.activity.inference.scRNAseq")
   log_message(
     "Running {.pkg SecAct} scRNA-seq activity inference...",
     verbose = verbose
@@ -594,7 +580,7 @@ secact_run_st <- function(
   verbose
 ) {
   secact_assert_spacet(inputProfile)
-  fun <- secact_get_fun("SecAct.activity.inference.ST")
+  fun <- get_namespace_fun("SecAct", "SecAct.activity.inference.ST")
   log_message("Running {.pkg SecAct} spatial activity inference...", verbose = verbose)
   fun(
     inputProfile = inputProfile,
@@ -652,7 +638,7 @@ secact_run_matrix <- function(
     inputProfile_control <- secact_as_matrix(inputProfile_control, "inputProfile_control")
   }
 
-  fun <- secact_get_fun("SecAct.activity.inference")
+  fun <- get_namespace_fun("SecAct", "SecAct.activity.inference")
   log_message(
     "Running {.pkg SecAct} matrix activity inference on {.val {ncol(expr)}} profile{?s}...",
     verbose = verbose
