@@ -79,6 +79,15 @@ test_that("RunSpatialQM stores metric results and summary", {
   expect_equal(bundle$parameters$features, c("Gene1", "Gene2"))
   expect_equal(bundle$parameters$platform, "Xenium")
   expect_equal(bundle$parameters$backend_args$sample.p, 0.25)
+  expect_identical(bundle$source$coordinate_space, "mixed")
+})
+
+test_that("SpatialQM registry records backend-managed coordinate semantics", {
+  row <- spatial_method_registry()
+  row <- row[row$method == "RunSpatialQM", , drop = FALSE]
+  expect_identical(row$coordinate_space_current, "mixed")
+  expect_identical(row$coordinate_space_target, "mixed")
+  expect_identical(row$coordinate_requirement, "backend_managed")
 })
 
 test_that("RunSpatialQM can record failed metrics without stopping", {
