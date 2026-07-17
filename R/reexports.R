@@ -40,6 +40,7 @@ utils::globalVariables(
     "cell_type",
     "cell_type_1",
     "cell_type_2",
+    "cross_knn_f32",
     "celltype",
     "cluster",
     "clusters",

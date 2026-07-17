@@ -137,7 +137,7 @@ srt_reorder <- function(
   if (distance_metric %in% c(simil_methods, "pearson", "spearman")) {
     if (distance_metric %in% c("pearson", "spearman")) {
       if (distance_metric == "spearman") {
-        mat <- Matrix::t(apply(mat, 1, rank))
+        mat <- knn_rank_rows(mat)
       }
       distance_metric <- "correlation"
     }

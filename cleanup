@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# scop cleanup script
+# Removes generated files from configure.
+
+rm -f src/Makevars
