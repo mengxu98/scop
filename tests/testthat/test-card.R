@@ -101,6 +101,8 @@ test_that("RunCARD writes proportions and tool results", {
   expect_equal(unname(out$CARD_max_prop), c(0.80, 0.65, 0.90))
   expect_true("CARD" %in% names(out@tools))
   expect_equal(colnames(out@tools$CARD$weights), c("Alpha", "Beta"))
+  expect_identical(rownames(out@tools$CARD$proportions), colnames(out))
+  expect_identical(out@tools$CARD$cells, colnames(out))
   expect_equal(out@tools$CARD$backend_package, "CARD")
   expect_named(out@tools$CARD$summary, c("n_spots", "n_types", "dominant_counts", "max_prop"))
 })
@@ -144,7 +146,7 @@ test_that("RunCARD validates inputs before backend work", {
   })
 })
 
-test_that("CARD results reuse SCOP SpatialSpotPlot", {
+test_that("CARD stored results use SpatialDeconvolutionPlot", {
   pair <- make_card_seurat_pair()
   pair$spatial$CARD_prop_Alpha <- c(0.8, 0.4, 0.1)
   pair$spatial$CARD_prop_Beta <- c(0.2, 0.6, 0.9)
@@ -157,14 +159,25 @@ test_that("CARD results reuse SCOP SpatialSpotPlot", {
       invisible(TRUE)
     }
   )
-  p1 <- SpatialSpotPlot(
+  pair$spatial@tools$CARD <- scop:::spatial_result_build(
+    bundle = list(
+      proportions = as.matrix(pair$spatial@meta.data[, c("CARD_prop_Alpha", "CARD_prop_Beta")]),
+      cells = colnames(pair$spatial)
+    ),
+    method = "CARD",
+    result_type = "deconvolution",
+    provenance = list(producer = "RunCARD", backend_id = "card")
+  )
+  colnames(pair$spatial@tools$CARD$proportions) <- c("Alpha", "Beta")
+  p1 <- SpatialDeconvolutionPlot(
     pair$spatial,
-    group.by = "CARD_dominant_type",
+    tool_name = "CARD",
+    plot_type = "dominant",
     overlay_image = FALSE
   )
-  p2 <- SpatialSpotPlot(
+  p2 <- SpatialDeconvolutionPlot(
     pair$spatial,
-    group.by = "CARD_dominant_type",
+    tool_name = "CARD",
     plot_type = "pie",
     overlay_image = FALSE
   )

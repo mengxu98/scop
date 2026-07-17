@@ -25,7 +25,8 @@ RunRCTD(
   run_rctd_params = list(),
   verbose = TRUE,
   ...,
-  coordinate_space = c("legacy_display", "raw")
+  coordinate_space = c("legacy_display", "raw"),
+  tool_name = "RCTD"
 )
 }
 \arguments{
@@ -80,11 +81,13 @@ Default is \code{TRUE}.}
 
 \item{coordinate_space}{Coordinate space used for distance-sensitive input.
 The default preserves the historical coordinate behavior.}
+
+\item{tool_name}{Name used to store the schema-v1 result in \code{srt@tools}.}
 }
 \value{
 A \code{Seurat} object with RCTD proportion columns in metadata and
 dominant cell type summaries. When \code{store_results = TRUE}, detailed results
-are also stored in \code{srt@tools[["RCTD"]]}.
+are also stored in \code{srt@tools[[tool_name]]}.
 }
 \description{
 Estimate spot-level cell type proportions from a spatial \code{Seurat} object
