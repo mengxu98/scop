@@ -228,6 +228,7 @@ NULL
 #'   visium_mouse_brain_slices_sub,
 #'   group.by = "sample",
 #'   split.by = "sample",
+#'   image = "anterior1",
 #'   overlay_image = FALSE
 #' )
 #'
