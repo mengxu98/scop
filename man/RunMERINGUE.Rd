@@ -28,7 +28,7 @@ RunMERINGUE(
   moran_params = list(),
   cross_cor_params = list(),
   module_params = list(),
-  coordinate_space = c("legacy_display", "raw")
+  coordinate_space = c("raw", "legacy_display")
 )
 }
 \arguments{
@@ -62,7 +62,8 @@ cross-correlation, and \code{"modules"} detects spatial gene modules.}
 for a feature to be tested.}
 
 \item{filterDist}{Euclidean distance cutoff passed to
-\code{MERINGUE::getSpatialNeighbors()}.}
+\code{MERINGUE::getSpatialNeighbors()}, expressed in the selected coordinate
+units.}
 
 \item{binary}{Whether to binarize the MERINGUE spatial neighbor matrix.}
 
@@ -89,9 +90,9 @@ Default is \code{TRUE}.}
 \item{neighbor_params, moran_params, cross_cor_params, module_params}{Named
 lists of additional arguments passed to the corresponding MERINGUE steps.}
 
-\item{coordinate_space}{Coordinate system used for distance-sensitive
-analysis. \code{"legacy_display"} preserves the current behavior; \code{"raw"}
-uses unscaled, unflipped source coordinates.}
+\item{coordinate_space}{Coordinate system used for MERINGUE distances. The
+default is raw acquisition coordinates; \code{"legacy_display"} remains an
+explicit compatibility option.}
 }
 \value{
 A \code{Seurat} object with MERINGUE results stored in

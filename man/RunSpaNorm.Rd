@@ -15,7 +15,7 @@ RunSpaNorm(
   store_results = TRUE,
   store_spe = FALSE,
   verbose = TRUE,
-  coordinate_space = c("legacy_display", "raw"),
+  coordinate_space = c("raw", "legacy_display"),
   ...
 )
 }
@@ -48,9 +48,9 @@ by \code{SpaNorm}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{coordinate_space}{Coordinate system used for distance-sensitive
-analysis. \code{"legacy_display"} preserves the current behavior; \code{"raw"}
-uses unscaled, unflipped source coordinates.}
+\item{coordinate_space}{Coordinate system supplied to SpaNorm. The default
+is raw acquisition coordinates; use \code{"legacy_display"} explicitly to
+reproduce the display-scaled coordinates used before scop 0.9.0.}
 
 \item{...}{Additional arguments passed to \code{SpaNorm::SpaNorm()}, such as
 \code{sample.p}.}

@@ -18,7 +18,7 @@ RunSpatialIntegration(
   tool_name = "SpatialIntegration",
   store_results = TRUE,
   verbose = TRUE,
-  coordinate_space = c("legacy_display", "raw"),
+  coordinate_space = c("raw", "legacy_display"),
   ...
 )
 }
@@ -61,7 +61,9 @@ a method-specific name is used.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{coordinate_space}{Coordinate system used for integration distances.}
+\item{coordinate_space}{Coordinate system used for integration distances
+and aligned-coordinate input. The default is raw acquisition coordinates;
+\code{"legacy_display"} remains an explicit compatibility option.}
 
 \item{...}{Additional backend-specific arguments.}
 }
