@@ -29,7 +29,7 @@ RunBANKSY(
   tool_name = "BANKSY",
   store_results = TRUE,
   verbose = TRUE,
-  coordinate_space = c("legacy_display", "raw")
+  coordinate_space = c("raw", "legacy_display")
 )
 }
 \arguments{
@@ -55,7 +55,7 @@ source is available.}
 
 \item{lambda}{BANKSY spatial weighting parameter.}
 
-\item{k_geom}{Number of spatial neighbors used by BANKSY.}
+\item{k_geom}{Unitless number of spatial neighbors used by BANKSY.}
 
 \item{M}{Highest azimuthal Fourier harmonic passed to BANKSY.}
 
@@ -98,7 +98,9 @@ available.}
 Default is \code{TRUE}.}
 
 \item{coordinate_space}{Coordinate space used for BANKSY spatial input.
-The default preserves the historical coordinate behavior.}
+The default is raw acquisition coordinates, so geometry and distance
+weighting use raw coordinate units. Use \code{"legacy_display"} explicitly to
+reproduce the display-scaled coordinates used before scop 0.9.0.}
 }
 \value{
 A \code{Seurat} object with BANKSY clusters in metadata. When

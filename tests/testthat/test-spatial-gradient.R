@@ -250,6 +250,10 @@ test_that("cpp backend stores trajectory gradient result tables", {
   expect_true(nrow(stored$significance) > 0)
   expect_true(nrow(stored$model_fits) > 0)
   expect_equal(unique(stored$screening$mode), "trajectory")
+  expect_identical(
+    srt@tools$SpatialGradientFeatures$source$coordinate_space,
+    "raw"
+  )
 })
 
 test_that("cpp spatial gradient screening reuses the expression layer", {

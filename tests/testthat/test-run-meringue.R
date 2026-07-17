@@ -79,6 +79,7 @@ test_that("RunMERINGUE stores normalized autocorrelation, cross-correlation, and
   )
 
   stored <- out@tools[["MERINGUE"]]
+  expect_identical(stored$source$coordinate_space, "raw")
   expect_true(all(c(
     "autocorrelation", "cross_correlation", "modules",
     "coords", "weight", "features", "pairwise_features", "parameters"

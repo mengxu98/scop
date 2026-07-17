@@ -51,8 +51,18 @@ test_that("RunSpatialDWLS writes standard deconvolution metadata and summary", {
   ) %in% colnames(out@meta.data)))
   expect_true("SpatialDWLS" %in% names(out@tools))
   expect_equal(colnames(out@tools$SpatialDWLS$weights), c("Alpha", "Beta"))
+  expect_identical(rownames(out@tools$SpatialDWLS$proportions), colnames(out))
+  expect_identical(out@tools$SpatialDWLS$cells, colnames(out))
+  expect_identical(out@tools$SpatialDWLS$source$coordinate_space, "raw")
   expect_named(out@tools$SpatialDWLS$summary, c("n_spots", "n_types", "dominant_counts", "max_prop"))
   expect_equal(out@tools$SpatialDWLS$summary$n_spots, 3)
+  expect_s3_class(SpatialDeconvolutionPlot(
+    out,
+    tool_name = "SpatialDWLS",
+    cell_types = "Alpha",
+    overlay_image = FALSE,
+    coord.cols = c("x", "y")
+  ), "ggplot")
 })
 
 test_that("SpatialDWLS batched QR fitting matches per-spot fitting", {

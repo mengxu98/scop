@@ -19,6 +19,8 @@
 #' @param image Name of the Seurat spatial image. Required when multiple images
 #' are present; a single image is selected automatically when `NULL`.
 #' @param coordinate_space Coordinate system used to build neighbor distances.
+#' The default is raw acquisition coordinates; `"legacy_display"` remains an
+#' explicit compatibility option.
 #' @param sample.by Metadata column identifying images or samples. If `NULL`,
 #' all spots are treated as one sample.
 #' @param split.by Optional metadata column identifying conditions for
@@ -26,10 +28,10 @@
 #' @param subject.by Optional metadata column identifying subjects for backends
 #' that support paired or repeated designs.
 #' @param radius Optional spatial radius used for scop-native neighborhood
-#' summaries.
+#' summaries, expressed in the selected coordinate units.
 #' @param k Optional number of nearest neighbors used for scop-native
-#' neighborhood summaries. When both `radius` and `k` are `NULL`, `k = 6` is
-#' used.
+#' neighborhood summaries. This is a unitless count. When both `radius` and
+#' `k` are `NULL`, `k = 6` is used.
 #' @param features Optional features to extract into the backend input table.
 #' @param from,to Optional cell or spot label filters.
 #' @param tool_name Name used to store results in `srt@tools`.
@@ -79,7 +81,7 @@ RunSpatialNeighborhood <- function(
   tool_name = "SpatialNeighborhood",
   store_results = TRUE,
   verbose = TRUE,
-  coordinate_space = c("legacy_display", "raw"),
+  coordinate_space = c("raw", "legacy_display"),
   ...
 ) {
   method <- if (is.null(method)) {
@@ -414,7 +416,7 @@ spatial_neighborhood_input <- function(
   layer = "data",
   coord.cols = c("col", "row"),
   image = NULL,
-  coordinate_space = c("legacy_display", "raw"),
+  coordinate_space = c("raw", "legacy_display"),
   sample.by = NULL,
   split.by = NULL,
   subject.by = NULL,

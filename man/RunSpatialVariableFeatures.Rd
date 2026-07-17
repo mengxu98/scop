@@ -20,7 +20,7 @@ RunSpatialVariableFeatures(
   store_results = TRUE,
   verbose = TRUE,
   seed = 11,
-  coordinate_space = c("legacy_display", "raw"),
+  coordinate_space = c("raw", "legacy_display"),
   ...
 )
 }
@@ -68,8 +68,10 @@ Default is \code{TRUE}.}
 \item{seed}{Random seed used for permutation tests.}
 
 \item{coordinate_space}{Coordinate system used for distance-sensitive
-analysis. \code{"legacy_display"} preserves the current behavior; \code{"raw"}
-uses unscaled, unflipped source coordinates.}
+analysis. The default is raw, unscaled acquisition coordinates. Use
+\code{"legacy_display"} explicitly to reproduce the display-scaled coordinates
+used before scop 0.9.0. Distance thresholds and weights use the selected
+coordinate units; \code{k} is a unitless neighbor count.}
 
 \item{...}{Additional arguments passed to external backends.}
 }

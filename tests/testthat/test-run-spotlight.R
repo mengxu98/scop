@@ -90,6 +90,8 @@ test_that("RunSPOTlight writes proportions and tool results", {
   expect_equal(unname(out$SPOTlight_max_prop), c(0.80, 0.65, 0.90))
   expect_true("SPOTlight" %in% names(out@tools))
   expect_equal(colnames(out@tools$SPOTlight$weights), c("Alpha", "Beta"))
+  expect_identical(rownames(out@tools$SPOTlight$proportions), colnames(out))
+  expect_identical(out@tools$SPOTlight$cells, colnames(out))
   expect_equal(out@tools$SPOTlight$parameters$reference_label, "celltype")
 })
 
@@ -167,9 +169,15 @@ test_that("RunSPOTlight accepts user marker table and transposed backend matrice
   expect_equal(unname(out$SL_prop_Alpha), c(0.7, 0.2, 0.1))
   expect_equal(unname(out$SL_prop_Beta), c(0.3, 0.8, 0.9))
   expect_true("SL_tool" %in% names(out@tools))
+  expect_s3_class(SpatialDeconvolutionPlot(
+    out,
+    tool_name = "SL_tool",
+    cell_types = "Alpha",
+    overlay_image = FALSE
+  ), "ggplot")
 })
 
-test_that("SPOTlight results reuse SCOP SpatialSpotPlot", {
+test_that("SPOTlight stored results use SpatialDeconvolutionPlot", {
   pair <- make_spotlight_seurat_pair()
   pair$spatial$SPOTlight_prop_Alpha <- c(0.8, 0.4, 0.1)
   pair$spatial$SPOTlight_prop_Beta <- c(0.2, 0.6, 0.9)
@@ -183,14 +191,25 @@ test_that("SPOTlight results reuse SCOP SpatialSpotPlot", {
       invisible(TRUE)
     }
   )
-  p1 <- SpatialSpotPlot(
+  pair$spatial@tools$SPOTlight <- scop:::spatial_result_build(
+    bundle = list(
+      proportions = as.matrix(pair$spatial@meta.data[, c("SPOTlight_prop_Alpha", "SPOTlight_prop_Beta")]),
+      cells = colnames(pair$spatial)
+    ),
+    method = "SPOTlight",
+    result_type = "deconvolution",
+    provenance = list(producer = "RunSPOTlight", backend_id = "spotlight")
+  )
+  colnames(pair$spatial@tools$SPOTlight$proportions) <- c("Alpha", "Beta")
+  p1 <- SpatialDeconvolutionPlot(
     pair$spatial,
-    group.by = "SPOTlight_dominant_type",
+    tool_name = "SPOTlight",
+    plot_type = "dominant",
     overlay_image = FALSE
   )
-  p2 <- SpatialSpotPlot(
+  p2 <- SpatialDeconvolutionPlot(
     pair$spatial,
-    group.by = "SPOTlight_dominant_type",
+    tool_name = "SPOTlight",
     plot_type = "pie",
     overlay_image = FALSE
   )

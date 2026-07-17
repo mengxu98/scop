@@ -144,6 +144,7 @@ test_that("RunSpotSweeper stores local outlier and artifact metadata", {
   expect_true(out$SpotSweeper_percent.mito_outlier[2])
   expect_true(out$SpotSweeper_artifact[4])
   expect_true("SpotSweeper" %in% names(out@tools))
+  expect_identical(out@tools$SpotSweeper$source$coordinate_space, "raw")
   expect_equal(out@tools$SpotSweeper$metrics, c("nCount_RNA", "nFeature_RNA", "percent.mito"))
   expect_equal(out@tools$SpotSweeper$directions[["percent.mito"]], "higher")
   expect_true(all(c("local_outliers", "artifacts", "coords", "parameters") %in% names(out@tools$SpotSweeper)))

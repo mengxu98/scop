@@ -19,13 +19,16 @@
 #' are present; a single image is selected automatically when `NULL`.
 #' @param coord.cols Metadata coordinate columns used when no Seurat image
 #' coordinates are available.
-#' @param coordinate_space Coordinate system used to build MISTy views.
+#' @param coordinate_space Coordinate system used to build MISTy views. The
+#' default is raw acquisition coordinates; `"legacy_display"` remains an
+#' explicit compatibility option.
 #' @param views Spatial views to add besides the required intraview. One or both
 #' of `"para"` and `"juxta"`.
 #' @param para_l,para_zoi,para_family,para_approx,para_nn Parameters passed to
-#' `mistyR::add_paraview()`.
+#' `mistyR::add_paraview()`. `para_l` and `para_zoi` use the selected coordinate
+#' units; `para_nn` is a unitless neighbor count.
 #' @param juxta_neighbor_thr Neighbor threshold passed to
-#' `mistyR::add_juxtaview()`.
+#' `mistyR::add_juxtaview()`, expressed in the selected coordinate units.
 #' @param view_cached Whether generated mistyR views should use cache.
 #' @param results_folder Folder passed to `mistyR::run_misty()`. If `NULL`, a
 #' temporary folder is used.
@@ -85,7 +88,7 @@ RunMistyR <- function(
   store_results = TRUE,
   store_views = FALSE,
   verbose = TRUE,
-  coordinate_space = c("legacy_display", "raw"),
+  coordinate_space = c("raw", "legacy_display"),
   ...
 ) {
   coordinate_space <- match.arg(coordinate_space)
@@ -240,7 +243,7 @@ mistyr_prepare_input <- function(
   features = NULL,
   image = NULL,
   coord.cols = c("col", "row"),
-  coordinate_space = c("legacy_display", "raw")
+  coordinate_space = c("raw", "legacy_display")
 ) {
   expr <- GetAssayData5(srt, assay = assay, layer = layer)
   coords <- spatial_analysis_coords(

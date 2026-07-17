@@ -17,7 +17,9 @@
 #' a method-specific name is used.
 #' @param cluster_colname Metadata column used for spatial domain labels. If
 #' `NULL`, a method-specific name is used.
-#' @param coordinate_space Coordinate system used for integration distances.
+#' @param coordinate_space Coordinate system used for integration distances
+#' and aligned-coordinate input. The default is raw acquisition coordinates;
+#' `"legacy_display"` remains an explicit compatibility option.
 #' @param tool_name Name used to store detailed results in `srt@tools`.
 #' @param ... Additional backend-specific arguments.
 #'
@@ -106,7 +108,7 @@ RunSpatialIntegration <- function(
   tool_name = "SpatialIntegration",
   store_results = TRUE,
   verbose = TRUE,
-  coordinate_space = c("legacy_display", "raw"),
+  coordinate_space = c("raw", "legacy_display"),
   ...
 ) {
   method <- match.arg(method)
@@ -365,7 +367,7 @@ spatial_integration_prepare_input <- function(
   features,
   image,
   coord.cols,
-  coordinate_space = "legacy_display"
+  coordinate_space = "raw"
 ) {
   if (inherits(object, "Seurat")) {
     if (!sample.by %in% colnames(object@meta.data)) {
