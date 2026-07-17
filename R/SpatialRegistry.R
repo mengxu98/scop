@@ -71,13 +71,13 @@ spatial_method_registry <- function() {
     entry("RunGiottoSpatialModules", "analysis", "framework_workflow", "RunGiottoSpatialMethods.R", "GiottoSpatialModules", "giotto;giotto_class", "legacy", "legacy_display", "legacy_display", "backend_managed", plot_function = "GiottoPlot"),
 
     entry("RunDeconvolution", "analysis", "deconvolution", "RunDeconvolution.R", backend_id = "music;bisquerna;bayesprism;cibersort", coordinate_space_current = "none", coordinate_space_target = "none", coordinate_requirement = "identity_only", plot_function = "DeconvolutionPlot", backend_requirement = "any"),
-    entry("RunRCTD", "analysis", "deconvolution", "RunRCTD.R", "RCTD", "spacexr", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "DeconvolutionPlot"),
-    entry("RunCSIDE", "analysis", "deconvolution", "RunCSIDE.R", "CSIDE", "spacexr", coordinate_space_current = "mixed", coordinate_space_target = "mixed", coordinate_requirement = "backend_managed", plot_function = "DeconvolutionPlot"),
-    entry("RunCARD", "analysis", "deconvolution", "RunCARD.R", "CARD", "card", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "DeconvolutionPlot"),
+    entry("RunRCTD", "analysis", "deconvolution", "RunRCTD.R", "RCTD", "spacexr", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "SpatialDeconvolutionPlot"),
+    entry("RunCSIDE", "analysis", "deconvolution", "RunCSIDE.R", "CSIDE", "spacexr", coordinate_space_current = "mixed", coordinate_space_target = "mixed", coordinate_requirement = "backend_managed"),
+    entry("RunCARD", "analysis", "deconvolution", "RunCARD.R", "CARD", "card", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "SpatialDeconvolutionPlot"),
     entry("RunSTdeconvolve", "analysis", "deconvolution", "RunSTdeconvolve.R", "STdeconvolve", "stdeconvolve", coordinate_space_current = "none", coordinate_space_target = "none", coordinate_requirement = "identity_only", plot_function = "STdeconvolvePlot"),
-    entry("RunSPOTlight", "analysis", "deconvolution", "RunSPOTlight.R", "SPOTlight", "spotlight", coordinate_space_current = "none", coordinate_space_target = "none", coordinate_requirement = "identity_only", plot_function = "DeconvolutionPlot"),
+    entry("RunSPOTlight", "analysis", "deconvolution", "RunSPOTlight.R", "SPOTlight", "spotlight", coordinate_space_current = "none", coordinate_space_target = "none", coordinate_requirement = "identity_only", plot_function = "SpatialDeconvolutionPlot"),
     entry("RunCell2location", "analysis", "deconvolution", "RunCell2location.R", "Cell2location", "cell2location", coordinate_space_current = "none", coordinate_space_target = "none", coordinate_requirement = "identity_only", plot_function = "Cell2locationPlot"),
-    entry("RunSpatialDWLS", "analysis", "deconvolution", "RunSpatialDWLS.R", "SpatialDWLS", "core", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "DeconvolutionPlot"),
+    entry("RunSpatialDWLS", "analysis", "deconvolution", "RunSpatialDWLS.R", "SpatialDWLS", "core", coordinate_space_current = "legacy_display", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "SpatialDeconvolutionPlot"),
     entry("RunSpatialEcoTyper", "analysis", "ecotype", "RunSpatialEcoTyper.R", "SpatialEcoTyper", "spatialecotyper", coordinate_space_current = "none", coordinate_space_target = "none", coordinate_requirement = "identity_only", plot_function = "SpatialEcoTyperSpatialPlot"),
 
     entry("RunBayesSpace", "analysis", "domain", "RunBayesSpace.R", "BayesSpace", "bayesspace", coordinate_space_current = "raw", coordinate_requirement = "distance_sensitive", plot_function = "SpatialSpotPlot"),
@@ -101,6 +101,7 @@ spatial_method_registry <- function() {
 
     entry("GiottoPlot", "plot", "visualization", "GiottoPlot.R", backend_id = "giotto;giotto_class", status = "legacy", coordinate_space_current = "display", coordinate_requirement = "display_only"),
     entry("DeconvolutionPlot", "plot", "visualization", "DeconvolutionPlot.R", coordinate_space_current = "display", coordinate_requirement = "display_only"),
+    entry("SpatialDeconvolutionPlot", "plot", "visualization", "SpatialDeconvolutionPlot.R", coordinate_space_current = "display", coordinate_requirement = "display_only"),
     entry("SpatialEcoTyperCompositionPlot", "plot", "visualization", "RunSpatialEcoTyper.R", coordinate_space_current = "none"),
     entry("SpatialEcoTyperSpatialPlot", "plot", "visualization", "RunSpatialEcoTyper.R", coordinate_space_current = "display", coordinate_requirement = "display_only"),
     entry("SpatialGradientPlot", "plot", "visualization", "RunSpatialGradientFeatures.R", coordinate_space_current = "display", coordinate_requirement = "display_only"),
