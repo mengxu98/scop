@@ -45,6 +45,10 @@ cellrank_velocity_kernel_cpp <- function(velocity_embedding, embedding, knn_idx,
     .Call(`_scop_cellrank_velocity_kernel_cpp`, velocity_embedding, embedding, knn_idx, backward, softmax_scale, n_neighbors_velo)
 }
 
+cellrank_connectivity_kernel_cpp <- function(knn_idx, knn_dist) {
+    .Call(`_scop_cellrank_connectivity_kernel_cpp`, knn_idx, knn_dist)
+}
+
 cellrank_velocity_kernel_gene_cpp <- function(gene_velocity, expression, knn_idx, backward = FALSE, softmax_scale = 4.0, n_neighbors_velo = -1L) {
     .Call(`_scop_cellrank_velocity_kernel_gene_cpp`, gene_velocity, expression, knn_idx, backward, softmax_scale, n_neighbors_velo)
 }
@@ -85,6 +89,14 @@ cytotrace2_main <- function(rank_data, log2_data, parameter_dict, smooth_groups,
     .Call(`_scop_cytotrace2_main`, rank_data, log2_data, parameter_dict, smooth_groups, cores, seed, pca_coords)
 }
 
+dynamic_row_unique_counts_dense_cpp <- function(x) {
+    .Call(`_scop_dynamic_row_unique_counts_dense_cpp`, x)
+}
+
+dynamic_row_unique_counts_sparse_cpp <- function(x) {
+    .Call(`_scop_dynamic_row_unique_counts_sparse_cpp`, x)
+}
+
 scvelo_dynamical_nm_cpp <- function(Ms, Mu, use_genes, max_iter = 10L, init_alpha = -1.0, init_beta = -1.0, init_gamma = -1.0) {
     .Call(`_scop_scvelo_dynamical_nm_cpp`, Ms, Mu, use_genes, max_iter, init_alpha, init_beta, init_gamma)
 }
@@ -95,6 +107,10 @@ scvelo_dynamical_velocity_cpp <- function(Ms, Mu, alpha, beta, gamma, t_, knn_id
 
 scvelo_dynamical_em_cpp <- function(Ms, Mu, use_genes, max_iter_em = 10L, conv_tol = 1e-6, em_oversampling = 2L, init_alpha = -1.0, init_beta = -1.0, init_gamma = -1.0) {
     .Call(`_scop_scvelo_dynamical_em_cpp`, Ms, Mu, use_genes, max_iter_em, conv_tol, em_oversampling, init_alpha, init_beta, init_gamma)
+}
+
+feature_cor_geometric_mean_sparse_cpp <- function(x, log_normalized) {
+    .Call(`_scop_feature_cor_geometric_mean_sparse_cpp`, x, log_normalized)
 }
 
 gniplr_cpp <- function(expression, target_idx, correlation_threshold = 0.3, lasso_degree = 30L, lasso_alpha = 0.1, max_lag = 3L) {
@@ -143,6 +159,14 @@ gsva_gaussian_dense <- function(expr, gene_sets, max_diff = TRUE, abs_ranking = 
 
 gsva_poisson_dense <- function(expr, gene_sets, max_diff = TRUE, abs_ranking = FALSE, tau = 1.0, chunk_size = 0L) {
     .Call(`_scop_gsva_poisson_dense`, expr, gene_sets, max_diff, abs_ranking, tau, chunk_size)
+}
+
+dense_row_has_variable_finite <- function(expr) {
+    .Call(`_scop_dense_row_has_variable_finite`, expr)
+}
+
+sparse_row_has_variable_finite <- function(expr) {
+    .Call(`_scop_sparse_row_has_variable_finite`, expr)
 }
 
 mdic3_score_cpp <- function(expression, grn, group) {
@@ -261,6 +285,10 @@ palantir_absorption_cpp <- function(T_i, T_j, T_x, n, terminal_state_indices) {
     .Call(`_scop_palantir_absorption_cpp`, T_i, T_j, T_x, n, terminal_state_indices)
 }
 
+palantir_row_entropy_cpp <- function(probabilities) {
+    .Call(`_scop_palantir_row_entropy_cpp`, probabilities)
+}
+
 scvelo_filter_genes_scanpy_cpp <- function(spliced, unspliced, min_counts = 3L, min_counts_u = 3L) {
     .Call(`_scop_scvelo_filter_genes_scanpy_cpp`, spliced, unspliced, min_counts, min_counts_u)
 }
@@ -315,6 +343,14 @@ rctd_metadata_cpp <- function(weights, all_spots) {
 
 rctd_finalize_weights_cpp <- function(weights, all_spots) {
     .Call(`_scop_rctd_finalize_weights_cpp`, weights, all_spots)
+}
+
+estimate_ssgsea_scores_cpp <- function(ranked, sample_order, gene_sets) {
+    .Call(`_scop_estimate_ssgsea_scores_cpp`, ranked, sample_order, gene_sets)
+}
+
+scenic_edge_correlation_cpp <- function(expr, tf_index, target_index) {
+    .Call(`_scop_scenic_edge_correlation_cpp`, expr, tf_index, target_index)
 }
 
 grnboost_tree <- function(expr, regulator_idx, target_idx, n_rounds = 5000L, learning_rate = 0.01, max_edges_per_target = 0L, max_depth = 3L, max_features = 0.1, subsample = 0.9, early_stop_window_length = 25L, random_seed = 1234L, exclude_self = TRUE) {
@@ -581,6 +617,10 @@ spatial_gradient_screening_cpp <- function(expr, coords, reference_spots, trajec
     .Call(`_scop_spatial_gradient_screening_cpp`, expr, coords, reference_spots, trajectory, variables, mode, n_bins, n_random, seed, min_spots)
 }
 
+spatial_variable_score_dense_cpp <- function(expr, from, to, method) {
+    .Call(`_scop_spatial_variable_score_dense_cpp`, expr, from, to, method)
+}
+
 parallel_all_in_one_dgc <- function(x_sexp, groups, group_sizes) {
     .Call(`_scop_parallel_all_in_one_dgc`, x_sexp, groups, group_sizes)
 }
@@ -593,6 +633,10 @@ exact_knn_f32 <- function(data, k, cores) {
     .Call(`_scop_exact_knn_f32`, data, k, cores)
 }
 
+cross_knn_f32 <- function(reference, query, k, metric, cores) {
+    .Call(`_scop_cross_knn_f32`, reference, query, k, metric, cores)
+}
+
 log_normalize_dgc <- function(mat, scale_factor, grain_size = 100L) {
     invisible(.Call(`_scop_log_normalize_dgc`, mat, scale_factor, grain_size))
 }
@@ -603,6 +647,10 @@ pca_backend_run <- function(X, npcs, weight_by_var = TRUE) {
 
 scale_sparse_full <- function(sparse_mat, gene_indices, scale_max) {
     .Call(`_scop_scale_sparse_full`, sparse_mat, gene_indices, scale_max)
+}
+
+scale_sparse_rows_from_stats <- function(sparse_mat, center, scale) {
+    .Call(`_scop_scale_sparse_rows_from_stats`, sparse_mat, center, scale)
 }
 
 csc_to_csr <- function(csc_i, csc_p, csc_x, nrow, ncol) {

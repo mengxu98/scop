@@ -107,3 +107,44 @@ NumericMatrix scale_sparse_full(S4 sparse_mat,
 
   return result;
 }
+
+// Fill a dense row-scaled matrix directly from a dgCMatrix using statistics
+// calculated by the R caller.  Keeping center/scale outside this kernel lets
+// method-specific callers preserve their established variance convention.
+// [[Rcpp::export]]
+NumericMatrix scale_sparse_rows_from_stats(
+    S4 sparse_mat,
+    NumericVector center,
+    NumericVector scale) {
+  IntegerVector i_vec = sparse_mat.slot("i");
+  IntegerVector p_vec = sparse_mat.slot("p");
+  NumericVector x_vec = sparse_mat.slot("x");
+  IntegerVector dim_vec = sparse_mat.slot("Dim");
+  const int n_rows = dim_vec[0];
+  const int n_cols = dim_vec[1];
+  if (center.size() != n_rows || scale.size() != n_rows) {
+    stop("center and scale must have one value per sparse matrix row.");
+  }
+
+  std::vector<double> zero_score(n_rows, 0.0);
+  for (int row = 0; row < n_rows; ++row) {
+    const double value = (0.0 - center[row]) / scale[row];
+    zero_score[row] = R_finite(value) ? value : 0.0;
+  }
+
+  NumericMatrix result = Rcpp::no_init_matrix(n_rows, n_cols);
+  double* out = REAL(result);
+  const int* ip = INTEGER(i_vec);
+  const int* pp = INTEGER(p_vec);
+  const double* xp = REAL(x_vec);
+  for (int col = 0; col < n_cols; ++col) {
+    const size_t offset = static_cast<size_t>(col) * n_rows;
+    std::memcpy(out + offset, zero_score.data(), n_rows * sizeof(double));
+    for (int pos = pp[col]; pos < pp[col + 1]; ++pos) {
+      const int row = ip[pos];
+      const double value = (xp[pos] - center[row]) / scale[row];
+      out[offset + row] = R_finite(value) ? value : 0.0;
+    }
+  }
+  return result;
+}

@@ -17,6 +17,67 @@
 
 using namespace Rcpp;
 
+// [[Rcpp::export]]
+NumericVector scenic_edge_correlation_cpp(
+    NumericMatrix expr,
+    IntegerVector tf_index,
+    IntegerVector target_index) {
+  const int n_cells = expr.nrow();
+  const int n_genes = expr.ncol();
+  if (tf_index.size() != target_index.size()) {
+    stop("SCENIC edge index vectors must have the same length");
+  }
+  NumericVector rho(tf_index.size(), NA_REAL);
+  if (n_cells < 2) return rho;
+
+  std::vector<double> means(n_genes, 0.0);
+  std::vector<double> sumsq(n_genes, 0.0);
+  std::vector<bool> valid(n_genes, true);
+  for (int gene = 0; gene < n_genes; ++gene) {
+    double sum = 0.0;
+    for (int cell = 0; cell < n_cells; ++cell) {
+      const double value = expr(cell, gene);
+      if (!std::isfinite(value)) {
+        valid[gene] = false;
+        break;
+      }
+      sum += value;
+    }
+    if (valid[gene]) {
+      means[gene] = sum / static_cast<double>(n_cells);
+    }
+  }
+  for (int gene = 0; gene < n_genes; ++gene) {
+    if (!valid[gene]) continue;
+    double sumsq_gene = 0.0;
+    for (int cell = 0; cell < n_cells; ++cell) {
+      const double centered = expr(cell, gene) - means[gene];
+      sumsq_gene += centered * centered;
+    }
+    sumsq[gene] = sumsq_gene;
+  }
+
+  for (int edge = 0; edge < tf_index.size(); ++edge) {
+    const int tf = tf_index[edge] - 1;
+    const int target = target_index[edge] - 1;
+    if (tf < 0 || tf >= n_genes || target < 0 || target >= n_genes) {
+      stop("SCENIC edge index is out of bounds");
+    }
+    if (!valid[tf] || !valid[target]) continue;
+    double cross = 0.0;
+    for (int cell = 0; cell < n_cells; ++cell) {
+      const double left = expr(cell, tf) - means[tf];
+      const double right = expr(cell, target) - means[target];
+      cross += left * right;
+    }
+    const double scale = std::sqrt(sumsq[tf] * sumsq[target]);
+    if (std::isfinite(scale) && scale > 0.0) {
+      rho[edge] = cross / scale;
+    }
+  }
+  return rho;
+}
+
 static const double SCENIC_FEATURE_THRESHOLD = 1e-7;
 static const double SCENIC_PROXY_REL_TOL = 64.0 * std::numeric_limits<double>::epsilon();
 static const int SCENIC_RAND_R_MAX = 2147483647;

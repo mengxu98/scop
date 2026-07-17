@@ -218,6 +218,65 @@ static void exact_worker(const std::vector<float>& data,
   }
 }
 
+static void cross_knn_worker(const std::vector<float>& reference,
+                             const std::vector<float>& query,
+                             const std::vector<float>& reference_norms,
+                             const std::vector<float>& query_norms,
+                             int reference_rows,
+                             int query_rows,
+                             int cols,
+                             int neighbors,
+                             bool cosine,
+                             int begin,
+                             int end,
+                             int* idx_output,
+                             double* distance_output) {
+  std::vector<Candidate> heap(static_cast<size_t>(neighbors));
+  for (int query_row = begin; query_row < end; ++query_row) {
+    const float* current = query.data() +
+      static_cast<size_t>(query_row) * cols;
+    for (int reference_row = 0; reference_row < neighbors; ++reference_row) {
+      const float* candidate = reference.data() +
+        static_cast<size_t>(reference_row) * cols;
+      float distance = 0.0f;
+      if (cosine) {
+        for (int col = 0; col < cols; ++col) {
+          distance += current[col] * candidate[col];
+        }
+        distance = 1.0f - distance /
+          (query_norms[query_row] * reference_norms[reference_row]);
+      } else {
+        distance = squared_distance(current, candidate, cols);
+      }
+      heap[reference_row] = Candidate{distance, reference_row};
+    }
+    std::make_heap(heap.begin(), heap.end(), worse_candidate);
+    for (int reference_row = neighbors; reference_row < reference_rows;
+         ++reference_row) {
+      const float* candidate = reference.data() +
+        static_cast<size_t>(reference_row) * cols;
+      float distance = 0.0f;
+      if (cosine) {
+        for (int col = 0; col < cols; ++col) {
+          distance += current[col] * candidate[col];
+        }
+        distance = 1.0f - distance /
+          (query_norms[query_row] * reference_norms[reference_row]);
+      } else {
+        distance = squared_distance(current, candidate, cols);
+      }
+      insert_candidate(heap, Candidate{distance, reference_row});
+    }
+    std::sort_heap(heap.begin(), heap.end(), worse_candidate);
+    for (int rank = 0; rank < neighbors; ++rank) {
+      float distance = heap[rank].distance;
+      if (!cosine) distance = std::sqrt(std::max(0.0f, distance));
+      idx_output[query_row + rank * query_rows] = heap[rank].index + 1;
+      distance_output[query_row + rank * query_rows] = distance;
+    }
+  }
+}
+
 // [[Rcpp::export]]
 Rcpp::IntegerMatrix annoy_build_search(Rcpp::NumericMatrix data,
                                        int k,
@@ -296,4 +355,92 @@ Rcpp::IntegerMatrix exact_knn_f32(Rcpp::NumericMatrix data,
   }
   for (std::thread& worker : pool) worker.join();
   return neighbors;
+}
+
+// [[Rcpp::export]]
+Rcpp::List cross_knn_f32(Rcpp::NumericMatrix reference,
+                         Rcpp::NumericMatrix query,
+                         int k,
+                         std::string metric,
+                         int cores) {
+  const int reference_rows = reference.nrow();
+  const int query_rows = query.nrow();
+  const int dims = reference.ncol();
+  const bool cosine = metric == "cosine";
+  if (reference_rows <= 0 || query_rows <= 0 || dims <= 0 ||
+      query.ncol() != dims || k <= 0 || k > reference_rows ||
+      (!cosine && metric != "euclidean")) {
+    Rcpp::stop("invalid cross kNN dimensions or metric");
+  }
+
+  std::vector<float> reference_packed = matrix_as_row_float(reference);
+  std::vector<float> query_packed = matrix_as_row_float(query);
+  for (size_t i = 0; i < reference_packed.size(); ++i) {
+    if (!std::isfinite(reference_packed[i])) {
+      Rcpp::stop("cross kNN requires finite reference values");
+    }
+  }
+  for (size_t i = 0; i < query_packed.size(); ++i) {
+    if (!std::isfinite(query_packed[i])) {
+      Rcpp::stop("cross kNN requires finite query values");
+    }
+  }
+
+  std::vector<float> reference_norms(static_cast<size_t>(reference_rows), 1.0f);
+  std::vector<float> query_norms(static_cast<size_t>(query_rows), 1.0f);
+  if (cosine) {
+    for (int row = 0; row < reference_rows; ++row) {
+      const float* current = reference_packed.data() +
+        static_cast<size_t>(row) * dims;
+      float norm_sq = 0.0f;
+      for (int col = 0; col < dims; ++col) norm_sq += current[col] * current[col];
+      if (!(norm_sq > 0.0f) || !std::isfinite(norm_sq)) {
+        Rcpp::stop("cross cosine kNN requires non-zero finite reference rows");
+      }
+      reference_norms[row] = std::sqrt(norm_sq);
+    }
+    for (int row = 0; row < query_rows; ++row) {
+      const float* current = query_packed.data() +
+        static_cast<size_t>(row) * dims;
+      float norm_sq = 0.0f;
+      for (int col = 0; col < dims; ++col) norm_sq += current[col] * current[col];
+      if (!(norm_sq > 0.0f) || !std::isfinite(norm_sq)) {
+        Rcpp::stop("cross cosine kNN requires non-zero finite query rows");
+      }
+      query_norms[row] = std::sqrt(norm_sq);
+    }
+  }
+
+  Rcpp::IntegerMatrix idx(query_rows, k);
+  Rcpp::NumericMatrix distance(query_rows, k);
+  const int workers = core_count(cores, query_rows);
+  std::vector<std::thread> pool;
+  pool.reserve(static_cast<size_t>(workers));
+  for (int worker = 0; worker < workers; ++worker) {
+    const int begin = static_cast<int>(
+      static_cast<int64_t>(worker) * query_rows / workers);
+    const int end = static_cast<int>(
+      static_cast<int64_t>(worker + 1) * query_rows / workers);
+    pool.emplace_back(
+      cross_knn_worker,
+      std::cref(reference_packed),
+      std::cref(query_packed),
+      std::cref(reference_norms),
+      std::cref(query_norms),
+      reference_rows,
+      query_rows,
+      dims,
+      k,
+      cosine,
+      begin,
+      end,
+      INTEGER(idx),
+      REAL(distance)
+    );
+  }
+  for (std::thread& worker : pool) worker.join();
+  return Rcpp::List::create(
+    Rcpp::Named("idx") = idx,
+    Rcpp::Named("distance") = distance
+  );
 }

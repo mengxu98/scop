@@ -194,6 +194,57 @@ NumericMatrix cellrank_velocity_kernel_cpp(
   return T;
 }
 
+// [[Rcpp::export]]
+NumericMatrix cellrank_connectivity_kernel_cpp(
+    IntegerMatrix knn_idx,
+    NumericMatrix knn_dist)
+{
+  const int n_cells = knn_idx.nrow();
+  const int n_neighbors = knn_idx.ncol();
+  if (knn_dist.nrow() != n_cells || knn_dist.ncol() != n_neighbors) {
+    stop("knn_idx and knn_dist must have the same dimensions");
+  }
+
+  NumericMatrix T(n_cells, n_cells);
+  std::vector<double> distances;
+  distances.reserve(n_neighbors);
+  for (int cell = 0; cell < n_cells; ++cell) {
+    distances.clear();
+    for (int k = 0; k < n_neighbors; ++k) {
+      const double d = knn_dist(cell, k);
+      if (!NumericVector::is_na(d)) distances.push_back(d);
+    }
+    double sigma = 1.0;
+    if (!distances.empty()) {
+      std::sort(distances.begin(), distances.end());
+      const size_t middle = distances.size() / 2;
+      sigma = distances.size() % 2 == 0 ?
+        (distances[middle - 1] + distances[middle]) / 2.0 :
+        distances[middle];
+      sigma += 1e-10;
+    }
+
+    double row_sum = 0.0;
+    for (int k = 0; k < n_neighbors; ++k) {
+      int neighbor = knn_idx(cell, k);
+      if (neighbor == NA_INTEGER) continue;
+      neighbor -= 1;
+      if (neighbor < 0 || neighbor >= n_cells || neighbor == cell) continue;
+      const double d = knn_dist(cell, k);
+      if (NumericVector::is_na(d)) continue;
+      const double weight = std::exp(-(d * d) / (2.0 * sigma * sigma));
+      T(cell, neighbor) = weight;
+      row_sum += weight;
+    }
+    if (row_sum > 0.0) {
+      for (int j = 0; j < n_cells; ++j) T(cell, j) /= row_sum;
+    } else {
+      T(cell, cell) = 1.0;
+    }
+  }
+  return T;
+}
+
 // ── 5b. Gene-space velocity kernel (matching Python CellRank) ────────────────
 
 // [[Rcpp::export]]
