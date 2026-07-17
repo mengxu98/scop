@@ -31,7 +31,7 @@ RunSmoothClust(
   store_smoothed = FALSE,
   seed = 11,
   verbose = TRUE,
-  coordinate_space = c("legacy_display", "raw"),
+  coordinate_space = c("raw", "legacy_display"),
   ...
 )
 }
@@ -61,7 +61,9 @@ for a feature to be used.}
 \item{smooth_method}{Smoothing method passed to \code{smoothclust::smoothclust()}.}
 
 \item{bandwidth, k, truncate, n_threads}{Smoothing parameters passed to
-\code{smoothclust::smoothclust()}.}
+\code{smoothclust::smoothclust()}. \code{bandwidth} uses the selected coordinate
+units; \code{truncate} is the backend's dimensionless kernel cutoff, and \code{k} and
+\code{n_threads} are unitless counts.}
 
 \item{n_clusters}{Number of spatial domains for k-means clustering. This
 must be supplied explicitly.}
@@ -86,8 +88,9 @@ must be supplied explicitly.}
 \item{verbose}{Whether to print progress messages.}
 
 \item{coordinate_space}{Coordinate system used for distance-sensitive
-smoothing and smoothness calculations. \code{"legacy_display"} preserves the
-current behavior; \code{"raw"} uses source coordinates.}
+smoothing and smoothness calculations. The default is raw acquisition
+coordinates. Use \code{"legacy_display"} explicitly to reproduce the
+display-scaled behavior used before scop 0.9.0.}
 
 \item{...}{Additional arguments passed to \code{smoothclust::smoothclust()}.}
 }

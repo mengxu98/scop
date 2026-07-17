@@ -101,6 +101,7 @@ test_that("RunSmoothClust stores clusters and normalized schema", {
   expect_equal(nrow(store$clusters), ncol(out))
   expect_equal(colnames(store$smoothed), colnames(out))
   expect_equal(store$parameters$smooth_method, "knn")
+  expect_identical(store$source$coordinate_space, "raw")
   expect_equal(store$parameters$n_clusters, 2)
 })
 

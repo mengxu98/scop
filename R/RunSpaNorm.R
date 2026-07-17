@@ -11,6 +11,9 @@
 #' @param tool_name Name used to store detailed SpaNorm results in `srt@tools`.
 #' @param store_spe Whether to store the backend `SpatialExperiment` returned
 #' by `SpaNorm`.
+#' @param coordinate_space Coordinate system supplied to SpaNorm. The default
+#' is raw acquisition coordinates; use `"legacy_display"` explicitly to
+#' reproduce the display-scaled coordinates used before scop 0.9.0.
 #' @param ... Additional arguments passed to `SpaNorm::SpaNorm()`, such as
 #' `sample.p`.
 #'
@@ -64,7 +67,7 @@ RunSpaNorm <- function(
   store_results = TRUE,
   store_spe = FALSE,
   verbose = TRUE,
-  coordinate_space = c("legacy_display", "raw"),
+  coordinate_space = c("raw", "legacy_display"),
   ...
 ) {
   coordinate_space <- match.arg(coordinate_space)
@@ -170,7 +173,7 @@ spanorm_prepare_input <- function(
   layer,
   image = NULL,
   coord.cols = c("col", "row"),
-  coordinate_space = c("legacy_display", "raw")
+  coordinate_space = c("raw", "legacy_display")
 ) {
   coords <- spatial_analysis_coords(
     srt = srt,

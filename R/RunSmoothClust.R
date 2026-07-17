@@ -22,7 +22,9 @@
 #' for a feature to be used.
 #' @param smooth_method Smoothing method passed to `smoothclust::smoothclust()`.
 #' @param bandwidth,k,truncate,n_threads Smoothing parameters passed to
-#' `smoothclust::smoothclust()`.
+#' `smoothclust::smoothclust()`. `bandwidth` uses the selected coordinate
+#' units; `truncate` is the backend's dimensionless kernel cutoff, and `k` and
+#' `n_threads` are unitless counts.
 #' @param n_clusters Number of spatial domains for k-means clustering. This
 #' must be supplied explicitly.
 #' @param n_pcs Number of principal components used for k-means.
@@ -36,8 +38,9 @@
 #' @param seed Random seed used for k-means.
 #' @param verbose Whether to print progress messages.
 #' @param coordinate_space Coordinate system used for distance-sensitive
-#' smoothing and smoothness calculations. `"legacy_display"` preserves the
-#' current behavior; `"raw"` uses source coordinates.
+#' smoothing and smoothness calculations. The default is raw acquisition
+#' coordinates. Use `"legacy_display"` explicitly to reproduce the
+#' display-scaled behavior used before scop 0.9.0.
 #' @param ... Additional arguments passed to `smoothclust::smoothclust()`.
 #'
 #' @return A `Seurat` object with smoothclust clusters in metadata. When
@@ -106,7 +109,7 @@ RunSmoothClust <- function(
   store_smoothed = FALSE,
   seed = 11,
   verbose = TRUE,
-  coordinate_space = c("legacy_display", "raw"),
+  coordinate_space = c("raw", "legacy_display"),
   ...
 ) {
   coordinate_space <- match.arg(coordinate_space)

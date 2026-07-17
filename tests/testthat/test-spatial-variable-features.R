@@ -29,6 +29,10 @@ test_that("native spatial variable feature results keep normalized columns", {
   )
 
   result <- srt@tools[["SpatialVariableFeatures"]][["result"]]
+  expect_identical(
+    srt@tools$SpatialVariableFeatures$source$coordinate_space,
+    "raw"
+  )
   expect_true(all(c(
     "feature", "rank", "method", "statistic", "score",
     "p_value", "q_value", "mean", "variance", "n_spots"

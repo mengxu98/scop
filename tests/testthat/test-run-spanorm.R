@@ -67,6 +67,7 @@ test_that("RunSpaNorm creates a new assay and stores normalized schema", {
   expect_equal(out@tools$SpaNormMock$parameters$layer, "counts")
   expect_null(out@tools$SpaNormMock$parameters$image)
   expect_equal(out@tools$SpaNormMock$parameters$coord.cols, c("col", "row"))
+  expect_identical(out@tools$SpaNormMock$source$coordinate_space, "raw")
   expect_equal(out@tools$SpaNormMock$parameters$new_assay, "SpaNormMock")
   expect_equal(out@tools$SpaNormMock$parameters$backend_args$sample.p, 0.5)
   expect_equal(out@tools$SpaNormMock$features, rownames(original_counts))
