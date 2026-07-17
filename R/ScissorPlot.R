@@ -815,6 +815,14 @@ scissor_feature_variance <- function(mat) {
   Matrix::rowMeans(mat^2) - Matrix::rowMeans(mat)^2
 }
 
+scissor_feature_group_range <- function(means) {
+  check_r("matrixStats", verbose = FALSE)
+  out <- matrixStats::rowMaxs(means, na.rm = TRUE) -
+    matrixStats::rowMins(means, na.rm = TRUE)
+  names(out) <- rownames(means)
+  out
+}
+
 scissor_feature_status_diff <- function(mat, status) {
   status <- droplevels(factor(status))
   levels_use <- levels(status)
@@ -828,7 +836,7 @@ scissor_feature_status_diff <- function(mat, status) {
     numeric(nrow(mat))
   )
   rownames(means) <- rownames(mat)
-  apply(means, 1L, function(x) max(x, na.rm = TRUE) - min(x, na.rm = TRUE))
+  scissor_feature_group_range(means)
 }
 
 scissor_feature_coef_cor <- function(mat, coef) {

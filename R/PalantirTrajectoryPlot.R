@@ -339,7 +339,7 @@ palantir_branch_selection <- function(dat, branch_cols) {
   probs <- as.matrix(dat[, branch_cols, drop = FALSE])
   probs[is.na(probs)] <- -Inf
   selected <- branch_cols[max.col(probs, ties.method = "first")]
-  has_prob <- apply(probs, 1L, function(x) any(is.finite(x)))
+  has_prob <- rowSums(is.finite(probs)) > 0L
   selected[!has_prob] <- NA_character_
   factor(selected, levels = branch_cols)
 }

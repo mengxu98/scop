@@ -197,6 +197,7 @@ FeatureCorPlot <- function(
   }
 
   if (isTRUE(calculate_coexp) && length(features_gene) > 0) {
+    status <- CheckDataType(srt, assay = assay, layer = layer)
     if (length(features_meta) > 0) {
       log_message(
         paste(features_meta, collapse = ","),
@@ -206,26 +207,21 @@ FeatureCorPlot <- function(
       )
     }
     if (status %in% c("raw_counts", "raw_normalized_counts")) {
-      srt@meta.data[["CoExp"]] <- apply(
+      srt@meta.data[["CoExp"]] <- feature_cor_geometric_mean(
+        GetAssayData5(
+          srt,
+          assay = assay,
+          layer = layer
+        )[features_gene, , drop = FALSE]
+      )
+    } else if (status == "log_normalized_counts") {
+      srt@meta.data[["CoExp"]] <- feature_cor_geometric_mean(
         GetAssayData5(
           srt,
           assay = assay,
           layer = layer
         )[features_gene, , drop = FALSE],
-        2,
-        function(x) exp(mean(log(x)))
-      )
-    } else if (status == "log_normalized_counts") {
-      srt@meta.data[["CoExp"]] <- apply(
-        expm1(
-          GetAssayData5(
-            srt,
-            assay = assay,
-            layer = layer
-          )[features_gene, , drop = FALSE]
-        ),
-        2,
-        function(x) log1p(exp(mean(log(x))))
+        log_normalized = TRUE
       )
     } else {
       log_message(
@@ -336,7 +332,7 @@ FeatureCorPlot <- function(
     feature_mat <- Matrix::t(dat_exp[rownames(dat), features])
     if (cor_method %in% c("pearson", "spearman")) {
       if (cor_method == "spearman") {
-        feature_mat <- Matrix::t(apply(feature_mat, 1, rank))
+        feature_mat <- knn_rank_rows(feature_mat)
       }
       cor_method <- "correlation"
     }
@@ -715,4 +711,23 @@ FeatureCorPlot <- function(
   } else {
     return(plist)
   }
+}
+
+feature_cor_geometric_mean <- function(x, log_normalized = FALSE) {
+  if (inherits(x, "sparseMatrix")) {
+    x_sparse <- methods::as(x, "dgCMatrix")
+    if (all(is.finite(x_sparse@x) & x_sparse@x >= 0)) {
+      out <- feature_cor_geometric_mean_sparse_cpp(
+        x_sparse,
+        log_normalized = log_normalized
+      )
+      names(out) <- colnames(x_sparse)
+      return(out)
+    }
+  }
+
+  if (isTRUE(log_normalized)) {
+    return(apply(expm1(x), 2, function(values) log1p(exp(mean(log(values))))))
+  }
+  apply(x, 2, function(values) exp(mean(log(values))))
 }

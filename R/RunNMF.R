@@ -23,8 +23,9 @@
 #' Default is `"nmf"`.
 #' @param reduction.key The prefix for the column names of the basis vectors.
 #' Default is `"BE_"`.
-#' @param cores The number of threads to be used in `RcppML` functions that are parallelized with `OpenMP`.
-#' If `0`, the number of threads will be automatically determined by [RcppML::setRcppMLthreads()].
+#' @param cores The number of threads to be used in older `RcppML` releases
+#' that expose a global OpenMP thread setter. Newer releases manage their
+#' thread count internally.
 #' Default is `0`.
 #' @param ... Additional arguments passed to [RcppML::nmf] or [NMF::nmf].
 #'
@@ -66,6 +67,20 @@
 #' ht_features$plot
 RunNMF <- function(object, ...) {
   UseMethod(generic = "RunNMF", object = object)
+}
+
+nmf_feature_variances <- function(x) {
+  if (inherits(x, "dgCMatrix")) {
+    return(sparse_row_mean_var(
+      p = x@p,
+      i = x@i,
+      x = x@x,
+      nrow = nrow(x),
+      ncol = ncol(x)
+    )[["variance"]])
+  }
+  check_r("matrixStats", verbose = FALSE)
+  matrixStats::rowVars(as.matrix(x))
 }
 
 #' @rdname RunNMF
@@ -151,11 +166,7 @@ RunNMF.Assay <- function(
     object = object,
     layer = layer
   )
-  features_var <- apply(
-    X = data_use[features, ],
-    MARGIN = 1,
-    FUN = stats::var
-  )
+  features_var <- nmf_feature_variances(data_use[features, , drop = FALSE])
   features_keep <- features[features_var > 0]
   data_use <- data_use[features_keep, ]
   reduction_data <- RunNMF(
@@ -203,11 +214,7 @@ RunNMF.Assay5 <- function(
     object = object,
     layer = layer
   )
-  features_var <- apply(
-    X = data_use[features, ],
-    MARGIN = 1,
-    FUN = stats::var
-  )
+  features_var <- nmf_feature_variances(data_use[features, , drop = FALSE])
   features_keep <- features[features_var > 0]
   data_use <- data_use[features_keep, ]
   reduction_data <- RunNMF(
@@ -258,7 +265,14 @@ RunNMF.default <- function(
   if (nmf.method == "RcppML") {
     check_r("zdebruine/RcppML", verbose = FALSE)
     options("RcppML.verbose" = FALSE)
-    RcppML::setRcppMLthreads(cores)
+    set_threads <- get0(
+      "setRcppMLthreads",
+      envir = asNamespace("RcppML"),
+      inherits = FALSE
+    )
+    if (is.function(set_threads)) {
+      set_threads(cores)
+    }
 
     nmf_results <- RcppML::nmf(
       Matrix::t(object),

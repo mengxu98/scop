@@ -498,21 +498,7 @@ metacell_seacells <- function(
   }
 
   aggregate_counts <- function(counts, membership) {
-    unique_mc <- unique(membership)
-    mc_counts <- Matrix::sparseMatrix(
-      i = integer(0),
-      j = integer(0),
-      dims = c(nrow(counts), length(unique_mc))
-    )
-    rownames(mc_counts) <- rownames(counts)
-    colnames(mc_counts) <- unique_mc
-    for (mc_name in unique_mc) {
-      mc_cells <- which(membership == mc_name)
-      mc_counts[, mc_name] <- Matrix::rowSums(
-        counts[, mc_cells, drop = FALSE]
-      )
-    }
-    mc_counts
+    metacell_aggregate_counts(counts, membership)
   }
 
   if (!is.null(group_df)) {
@@ -613,7 +599,19 @@ metacell_metacell <- function(
   n_pcs <- extra_args[["n_pcs"]] %||% min(50L, ncol(counts) - 1L)
   n_var_genes <- extra_args[["n_var_genes"]] %||% min(2000L, nrow(counts))
 
-  gene_vars <- apply(ge, 1, stats::var)
+  gene_vars <- if (inherits(ge, "dgCMatrix")) {
+    sparse_stats <- sparse_row_mean_var(
+      p = ge@p,
+      i = ge@i,
+      x = ge@x,
+      nrow = nrow(ge),
+      ncol = ncol(ge)
+    )
+    sparse_stats[["variance"]]
+  } else {
+    apply(ge, 1, stats::var)
+  }
+  names(gene_vars) <- rownames(ge)
   gene_vars <- sort(gene_vars, decreasing = TRUE)
   top_genes <- names(gene_vars)[seq_len(min(n_var_genes, length(gene_vars)))]
   ge_sub <- ge[top_genes, , drop = FALSE]
@@ -659,12 +657,7 @@ metacell_metacell <- function(
     knn <- RANN::nn2(emb, k = k_use + 1L)
     knn_idx <- knn[["nn.idx"]][, -1L, drop = FALSE]
 
-    adj <- Matrix::sparseMatrix(i = integer(0), j = integer(0), dims = c(n, n))
-    for (i in seq_len(n)) {
-      adj[i, knn_idx[i, ]] <- 1
-    }
-    adj <- adj + Matrix::t(adj)
-    adj@x <- rep(1, length(adj@x))
+    adj <- metacell_knn_adjacency(knn_idx, n)
 
     if (!requireNamespace("igraph", quietly = TRUE)) {
       clusters <- as.integer(stats::cutree(
@@ -737,26 +730,47 @@ metacell_metacell <- function(
     }
   }
 
-  unique_mc <- unique(membership)
-  mc_counts <- Matrix::sparseMatrix(
-    i = integer(0),
-    j = integer(0),
-    dims = c(nrow(counts), length(unique_mc))
-  )
-  rownames(mc_counts) <- rownames(counts)
-  colnames(mc_counts) <- unique_mc
-  for (mc_name in unique_mc) {
-    mc_cells <- which(membership == mc_name)
-    mc_counts[, mc_name] <- Matrix::rowSums(
-      counts[, mc_cells, drop = FALSE]
-    )
-  }
+  mc_counts <- metacell_aggregate_counts(counts, membership)
 
   list(
     membership = membership,
     SC = NULL,
     counts = mc_counts
   )
+}
+
+metacell_knn_adjacency <- function(knn_idx, n_cells = nrow(knn_idx)) {
+  if (!is.matrix(knn_idx) || nrow(knn_idx) != n_cells || ncol(knn_idx) < 1L) {
+    log_message("KNN indices must be a non-empty matrix aligned to cells", message_type = "error")
+  }
+  adjacency <- Matrix::sparseMatrix(
+    i = rep(seq_len(n_cells), each = ncol(knn_idx)),
+    j = as.integer(t(knn_idx)),
+    x = 1,
+    dims = c(n_cells, n_cells)
+  )
+  adjacency <- Matrix::drop0(adjacency + Matrix::t(adjacency))
+  adjacency@x[] <- 1
+  adjacency
+}
+
+metacell_aggregate_counts <- function(counts, membership) {
+  membership <- as.character(membership)
+  if (length(membership) != ncol(counts) || anyNA(membership) || any(!nzchar(membership))) {
+    log_message("Metacell membership must name every count-matrix column", message_type = "error")
+  }
+  metacells <- unique(membership)
+  membership_matrix <- Matrix::sparseMatrix(
+    i = seq_along(membership),
+    j = match(membership, metacells),
+    x = 1,
+    dims = c(length(membership), length(metacells)),
+    dimnames = list(colnames(counts), metacells)
+  )
+  aggregated <- counts %*% membership_matrix
+  rownames(aggregated) <- rownames(counts)
+  colnames(aggregated) <- metacells
+  aggregated
 }
 
 lognorm_counts <- function(counts, scale_factor = 10000) {

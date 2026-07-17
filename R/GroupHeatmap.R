@@ -1105,30 +1105,18 @@ GroupHeatmap <- function(
   mat_raw_list <- list()
   mat_perc_list <- list()
   for (cell_group in names(cell_groups)) {
-    mat_tmp <- Matrix::t(
-      stats::aggregate(
-        Matrix::t(mat_raw[features_unique, , drop = FALSE]),
-        by = list(cell_groups[[cell_group]][colnames(mat_raw)]),
-        FUN = aggregate_fun
-      )
+    mat_tmp <- group_heatmap_aggregate_matrix(
+      mat = mat_raw[features_unique, , drop = FALSE],
+      groups = cell_groups[[cell_group]][colnames(mat_raw)],
+      aggregate_fun = aggregate_fun
     )
-    colnames(mat_tmp) <- mat_tmp[1, , drop = FALSE]
-    mat_tmp <- mat_tmp[-1, , drop = FALSE]
-    class(mat_tmp) <- "numeric"
     mat_raw_list[[cell_group]] <- mat_tmp
 
-    mat_perc <- Matrix::t(
-      stats::aggregate(
-        Matrix::t(mat_raw[features_unique, , drop = FALSE]),
-        by = list(cell_groups[[cell_group]][colnames(mat_raw)]),
-        FUN = function(x) {
-          sum(x > exp_cutoff) / length(x)
-        }
-      )
+    mat_perc <- group_heatmap_expression_fraction(
+      mat = mat_raw[features_unique, , drop = FALSE],
+      groups = cell_groups[[cell_group]][colnames(mat_raw)],
+      exp_cutoff = exp_cutoff
     )
-    colnames(mat_perc) <- mat_perc[1, , drop = FALSE]
-    mat_perc <- mat_perc[-1, , drop = FALSE]
-    class(mat_perc) <- "numeric"
     if (isTRUE(flip)) {
       mat_perc <- Matrix::t(mat_perc)
     }
@@ -1652,50 +1640,38 @@ GroupHeatmap <- function(
         )
       } else {
         if (split_method == "mfuzz") {
-          status <- tryCatch(
-            check_r("e1071", verbose = FALSE),
-            error = identity
-          )
-          if (inherits(status, "error")) {
-            log_message(
-              "The {.pkg e1071} package was not found. Switch {.arg split_method} to {.val kmeans}",
-              message_type = "warning",
-              verbose = verbose
-            )
-            split_method <- "kmeans"
+          check_r("e1071", verbose = FALSE)
+          mat_split_tmp <- mat_split
+          colnames(mat_split_tmp) <- make.unique(colnames(mat_split_tmp))
+          mat_split_tmp <- standardise(mat_split_tmp)
+          min_fuzzification <- mestimate(mat_split_tmp)
+          if (is.null(fuzzification)) {
+            fuzzification <- min_fuzzification + 0.1
           } else {
-            mat_split_tmp <- mat_split
-            colnames(mat_split_tmp) <- make.unique(colnames(mat_split_tmp))
-            mat_split_tmp <- standardise(mat_split_tmp)
-            min_fuzzification <- mestimate(mat_split_tmp)
-            if (is.null(fuzzification)) {
-              fuzzification <- min_fuzzification + 0.1
-            } else {
-              if (fuzzification <= min_fuzzification) {
-                log_message(
-                  "fuzzification value is samller than estimated:",
-                  round(min_fuzzification, 2),
-                  message_type = "warning",
-                  verbose = verbose
-                )
-              }
-            }
-            cl <- e1071::cmeans(
-              mat_split_tmp,
-              centers = n_split,
-              method = "cmeans",
-              m = fuzzification
-            )
-            if (length(cl$cluster) == 0) {
+            if (fuzzification <= min_fuzzification) {
               log_message(
-                "Clustering with mfuzz failed (fuzzification=",
-                round(fuzzification, 2),
-                "). Please set a larger fuzzification parameter manually.",
-                message_type = "error"
+                "fuzzification value is samller than estimated:",
+                round(min_fuzzification, 2),
+                message_type = "warning",
+                verbose = verbose
               )
             }
-            row_split <- feature_split <- cl$cluster
           }
+          cl <- e1071::cmeans(
+            mat_split_tmp,
+            centers = n_split,
+            method = "cmeans",
+            m = fuzzification
+          )
+          if (length(cl$cluster) == 0) {
+            log_message(
+              "Clustering with mfuzz failed (fuzzification=",
+              round(fuzzification, 2),
+              "). Please set a larger fuzzification parameter manually.",
+              message_type = "error"
+            )
+          }
+          row_split <- feature_split <- cl$cluster
         }
         if (split_method == "kmeans") {
           km <- stats::kmeans(
@@ -2492,6 +2468,62 @@ GroupHeatmap <- function(
       feature_metadata = feature_metadata,
       enrichment = res
     )
+  )
+}
+
+group_heatmap_aggregate_matrix <- function(mat, groups, aggregate_fun = base::mean) {
+  groups <- groups[colnames(mat)]
+  group_levels <- levels(groups)
+  group_levels <- group_levels[group_levels %in% groups]
+  if (identical(aggregate_fun, base::mean)) {
+    out <- vapply(
+      group_levels,
+      function(group) rowMeans(mat[, groups == group, drop = FALSE]),
+      numeric(nrow(mat))
+    )
+    return(group_heatmap_legacy_aggregate_layout(
+      out = out,
+      group_levels = group_levels,
+      all_levels = levels(groups)
+    ))
+  }
+  out <- Matrix::t(stats::aggregate(
+    Matrix::t(mat),
+    by = list(groups),
+    FUN = aggregate_fun
+  ))
+  colnames(out) <- out[1, , drop = FALSE]
+  out <- out[-1, , drop = FALSE]
+  class(out) <- "numeric"
+  out
+}
+
+group_heatmap_legacy_aggregate_layout <- function(out, group_levels, all_levels) {
+  aggregate_out <- data.frame(
+    Group.1 = factor(group_levels, levels = all_levels),
+    Matrix::t(out),
+    check.names = FALSE
+  )
+  aggregate_out <- Matrix::t(aggregate_out)
+  colnames(aggregate_out) <- aggregate_out[1, , drop = FALSE]
+  aggregate_out <- aggregate_out[-1, , drop = FALSE]
+  class(aggregate_out) <- "numeric"
+  aggregate_out
+}
+
+group_heatmap_expression_fraction <- function(mat, groups, exp_cutoff = 0) {
+  groups <- groups[colnames(mat)]
+  group_levels <- levels(groups)
+  group_levels <- group_levels[group_levels %in% groups]
+  out <- vapply(
+    group_levels,
+    function(group) rowMeans(mat[, groups == group, drop = FALSE] > exp_cutoff),
+    numeric(nrow(mat))
+  )
+  group_heatmap_legacy_aggregate_layout(
+    out = out,
+    group_levels = group_levels,
+    all_levels = levels(groups)
   )
 }
 

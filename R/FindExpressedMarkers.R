@@ -657,26 +657,19 @@ FindConservedMarkers2 <- function(
   logFC.codes <- colnames(
     x = markers.combined
   )[grepl(pattern = "*avg_log.*FC$", x = colnames(x = markers.combined))]
-  if (isTRUE(only.pos)) {
-    markers.combined <- markers.combined[
-      apply(markers.combined[, logFC.codes] > 0, 1, all), ,
-      drop = FALSE
-    ]
-  } else {
-    markers.combined <- markers.combined[
-      apply(markers.combined[, logFC.codes] < 0, 1, all) |
-        apply(markers.combined[, logFC.codes] > 0, 1, all), ,
-      drop = FALSE
-    ]
-  }
+  markers.combined <- markers.combined[
+    find_conserved_marker_sign_keep(
+      markers.combined[, logFC.codes, drop = FALSE],
+      only.pos = only.pos
+    ), ,
+    drop = FALSE
+  ]
   pval.codes <- colnames(
     x = markers.combined
   )[grepl(pattern = "*_p_val$", x = colnames(x = markers.combined))]
   if (length(pval.codes) > 1) {
-    markers.combined[["max_pval"]] <- apply(
-      X = markers.combined[, pval.codes, drop = FALSE],
-      MARGIN = 1,
-      FUN = max
+    markers.combined[["max_pval"]] <- find_conserved_marker_max_pval(
+      markers.combined[, pval.codes, drop = FALSE]
     )
     combined.pval <- data.frame(
       cp = apply(
@@ -709,6 +702,29 @@ FindConservedMarkers2 <- function(
     )
   }
   return(markers.combined)
+}
+
+find_conserved_marker_sign_keep <- function(logfc, only.pos = FALSE) {
+  n_groups <- ncol(logfc)
+  row_all <- function(x) {
+    has_false <- rowSums(!x, na.rm = TRUE) > 0L
+    out <- !has_false
+    out[!has_false & rowSums(is.na(x)) > 0L] <- NA
+    out
+  }
+  positive_all <- row_all(logfc > 0)
+  if (isTRUE(only.pos)) {
+    return(positive_all)
+  }
+  negative_all <- row_all(logfc < 0)
+  negative_all | positive_all
+}
+
+find_conserved_marker_max_pval <- function(pvalues) {
+  check_r("matrixStats", verbose = FALSE)
+  out <- matrixStats::rowMaxs(as.matrix(pvalues))
+  names(out) <- rownames(pvalues)
+  out
 }
 
 metap <- function(

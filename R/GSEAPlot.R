@@ -1332,14 +1332,7 @@ GSEAPlot <- function(
       rownames(df) <- df[["ID"]]
 
       nodes <- df
-      edges <- as.data.frame(t(combn(nodes$ID, 2)))
-      colnames(edges) <- c("from", "to")
-      edges[["weight"]] <- mapply(
-        function(x, y) length(intersect(df[[x, "geneID"]], df[[y, "geneID"]])),
-        edges$from,
-        edges$to
-      )
-      edges <- edges[edges[["weight"]] > 0, , drop = FALSE]
+      edges <- enrichment_overlap_edges(nodes$ID, df[["geneID"]])
       graph <- igraph::graph_from_data_frame(
         d = edges,
         vertices = nodes,

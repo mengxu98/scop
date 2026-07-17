@@ -662,11 +662,11 @@ DynamicHeatmap <- function(
     cluster_column_slices <- cluster_row_slices_raw
   }
 
-  cell_union <- unique(colnames(srt@assays[[1]])[apply(
-    srt@meta.data[, lineages, drop = FALSE],
-    1,
-    function(x) !all(is.na(x))
-  )])
+  cell_union <- dynamic_heatmap_cell_union(
+    cells = colnames(srt@assays[[1]]),
+    metadata = srt@meta.data,
+    lineages = lineages
+  )
   Pseudotime_assign <- Matrix::rowMeans(
     srt@meta.data[cell_union, lineages, drop = FALSE],
     na.rm = TRUE
@@ -1426,48 +1426,37 @@ DynamicHeatmap <- function(
         )
       } else {
         if (split_method == "mfuzz") {
-          status <- tryCatch(
-            check_r("e1071", verbose = FALSE),
-            error = identity
-          )
-          if (inherits(status, "error")) {
-            log_message(
-              "The e1071 package was not found. Switch split_method to 'kmeans'",
-              message_type = "warning"
-            )
-            split_method <- "kmeans"
+          check_r("e1071", verbose = FALSE)
+          mat_split_tmp <- mat_split
+          colnames(mat_split_tmp) <- make.unique(colnames(mat_split_tmp))
+          mat_split_tmp <- standardise(mat_split_tmp)
+          min_fuzzification <- mestimate(mat_split_tmp)
+          if (is.null(fuzzification)) {
+            fuzzification <- min_fuzzification + 0.1
           } else {
-            mat_split_tmp <- mat_split
-            colnames(mat_split_tmp) <- make.unique(colnames(mat_split_tmp))
-            mat_split_tmp <- standardise(mat_split_tmp)
-            min_fuzzification <- mestimate(mat_split_tmp)
-            if (is.null(fuzzification)) {
-              fuzzification <- min_fuzzification + 0.1
-            } else {
-              if (fuzzification <= min_fuzzification) {
-                log_message(
-                  "fuzzification value is samller than estimated:",
-                  round(min_fuzzification, 2),
-                  message_type = "warning"
-                )
-              }
-            }
-            cl <- e1071::cmeans(
-              mat_split_tmp,
-              centers = n_split,
-              method = "cmeans",
-              m = fuzzification
-            )
-            if (length(cl$cluster) == 0) {
+            if (fuzzification <= min_fuzzification) {
               log_message(
-                "Clustering with mfuzz failed (fuzzification=",
-                round(fuzzification, 2),
-                "). Please set a larger fuzzification parameter manually.",
-                message_type = "error"
+                "fuzzification value is samller than estimated:",
+                round(min_fuzzification, 2),
+                message_type = "warning"
               )
             }
-            row_split <- feature_split <- cl$cluster
           }
+          cl <- e1071::cmeans(
+            mat_split_tmp,
+            centers = n_split,
+            method = "cmeans",
+            m = fuzzification
+          )
+          if (length(cl$cluster) == 0) {
+            log_message(
+              "Clustering with mfuzz failed (fuzzification=",
+              round(fuzzification, 2),
+              "). Please set a larger fuzzification parameter manually.",
+              message_type = "error"
+            )
+          }
+          row_split <- feature_split <- cl$cluster
         }
         if (split_method == "kmeans") {
           km <- stats::kmeans(
@@ -2291,6 +2280,11 @@ dynamic_heatmap_lineage_cells <- function(x, lineage, available = NULL) {
     }
   }
   out
+}
+
+dynamic_heatmap_cell_union <- function(cells, metadata, lineages) {
+  lineage_values <- metadata[, lineages, drop = FALSE]
+  unique(cells[rowSums(!is.na(lineage_values)) > 0L])
 }
 
 dynamic_heatmap_strip_lineage_suffix <- function(x, lineage) {

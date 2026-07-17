@@ -377,17 +377,7 @@ GetSimilarFeatures <- function(
   if (ncol(correlations_all) == 1) {
     correlation <- as.vector(correlations_all)
   } else {
-    correlation <- switch(
-      EXPR = aggregator,
-      "sum" = Matrix::rowSums(correlations_all),
-      "min" = apply(as_matrix(correlations_all), 1, min),
-      "max" = apply(as_matrix(correlations_all), 1, max),
-      "mean" = Matrix::rowMeans(correlations_all),
-      log_message(
-        "{.arg aggregator} must be one of: 'sum', 'min', 'max', 'mean'",
-        message_type = "error"
-      )
-    )
+    correlation <- get_similar_features_aggregate(correlations_all, aggregator)
   }
   correlation <- correlation[setdiff(names(correlation), features)]
   if (anticorr) {
@@ -447,4 +437,28 @@ FetchDataZero <- function(
   to_return <- cbind(to_return, pad)
   to_return <- to_return[, features, drop = FALSE]
   return(to_return)
+}
+
+get_similar_features_aggregate <- function(correlations, aggregator) {
+  switch(
+    EXPR = aggregator,
+    "sum" = Matrix::rowSums(correlations),
+    "min" = {
+      check_r("matrixStats", verbose = FALSE)
+      out <- matrixStats::rowMins(as_matrix(correlations))
+      names(out) <- rownames(correlations)
+      out
+    },
+    "max" = {
+      check_r("matrixStats", verbose = FALSE)
+      out <- matrixStats::rowMaxs(as_matrix(correlations))
+      names(out) <- rownames(correlations)
+      out
+    },
+    "mean" = Matrix::rowMeans(correlations),
+    log_message(
+      "{.arg aggregator} must be one of: 'sum', 'min', 'max', 'mean'",
+      message_type = "error"
+    )
+  )
 }

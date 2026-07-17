@@ -922,6 +922,7 @@ FeatureStatPlot <- function(
           clip = "off"
         )
       }
+      check_r("gtable", verbose = FALSE)
       gtable <- gtable::gtable_add_padding(
         gtable,
         grid::unit(c(1, 1, 1, 1), units = "cm")
