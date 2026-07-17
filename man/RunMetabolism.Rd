@@ -127,7 +127,8 @@ pancreas_sub <- RunMetabolism(
   db = c("KEGG", "REACTOME"),
   group.by = "CellType",
   species = "Mus_musculus",
-  method = "AUCell"
+  method = "AUCell",
+  use_preparedb = FALSE
 )
 ht <- MetabolismPlot(
   pancreas_sub,

@@ -108,6 +108,7 @@ g <- structure(
 GiottoPlot(g, plot_type = "cluster")
 GiottoPlot(g, plot_type = "network")
 
+spatial <- subset(spatial, cells = colnames(spatial)[seq_len(min(200L, ncol(spatial)))])
 g <- SeuratToScopGiotto(
   spatial,
   assay = "Spatial",

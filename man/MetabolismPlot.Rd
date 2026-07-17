@@ -40,7 +40,8 @@ pancreas_sub <- RunMetabolism(
   db = c("KEGG", "REACTOME"),
   group.by = "CellType",
   species = "Mus_musculus",
-  method = "AUCell"
+  method = "AUCell",
+  use_preparedb = FALSE
 )
 
 ht1 <- MetabolismPlot(
@@ -112,7 +113,8 @@ pancreas_sub <- RunMetabolism(
   pancreas_sub,
   assay_name = "METABOLISM",
   db = c("KEGG", "REACTOME"),
-  species = "Mus_musculus"
+  species = "Mus_musculus",
+  use_preparedb = FALSE
 )
 
 FeatureDimPlot(

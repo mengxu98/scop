@@ -49,15 +49,8 @@ pancreas_sub <- RunDoubletCalling(
   pancreas_sub,
   db_method = "scDblFinder"
 )
-CellDimPlot(
-  pancreas_sub,
-  reduction = "umap",
-  group.by = "db.scDblFinder_class"
-)
-
-FeatureDimPlot(
-  pancreas_sub,
-  reduction = "umap",
-  features = "db.scDblFinder_score"
-)
+table(pancreas_sub$db.scDblFinder_class)
+head(pancreas_sub@meta.data[, c(
+  "db.scDblFinder_class", "db.scDblFinder_score"
+)])
 }

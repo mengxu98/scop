@@ -103,6 +103,13 @@ SpatialSpotPlot(
   overlay_image = FALSE,
   coord.cols = c("x", "y")
 )
+spatial <- RunSTdeconvolve(
+  spatial,
+  assay = "Spatial",
+  features = rownames(spatial)[1:300],
+  k = 3,
+  verbose = FALSE
+)
 STdeconvolvePlot(
   spatial,
   topics = 1:2,
@@ -115,13 +122,5 @@ STdeconvolvePlot(
     overlay_image = FALSE,
     coord.cols = c("x", "y")
   )
-
-spatial <- RunSTdeconvolve(
-  spatial,
-  assay = "Spatial",
-  features = rownames(spatial)[1:300],
-  k = 3,
-  verbose = FALSE
-)
 }
 \concept{spatial-producer}

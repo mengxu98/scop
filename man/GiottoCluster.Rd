@@ -71,7 +71,12 @@ g <- structure(
 )
 GiottoPlot(g, plot_type = "cluster")
 
-  g <- SeuratToScopGiotto(spatial, coord.cols = c("x", "y"))
+  spatial <- subset(spatial, cells = colnames(spatial)[seq_len(min(200L, ncol(spatial)))])
+  g <- SeuratToScopGiotto(
+    spatial,
+    coord.cols = c("x", "y"),
+    features = rownames(spatial)[seq_len(min(200L, nrow(spatial)))]
+  )
   g <- GiottoPreprocess(g)
   g <- GiottoReduce(g, reduction = "pca", dims = 1:10)
   g <- GiottoCluster(g, dims = 1:10, k = 8, resolution = 0.4)

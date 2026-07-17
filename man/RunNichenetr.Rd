@@ -12,6 +12,8 @@ RunNichenetr(
   condition.by = NULL,
   condition_oi = NULL,
   condition_reference = NULL,
+  receiver_affected = NULL,
+  receiver_reference = NULL,
   mode = c("aggregate", "aggregate_cluster_de", "custom"),
   assay = NULL,
   expression_pct = 0.1,
@@ -44,6 +46,12 @@ RunNichenetr(
 \item{condition_oi}{Condition of interest.}
 
 \item{condition_reference}{Reference condition.}
+
+\item{receiver_affected}{Affected receiver cell type(s) for
+\code{mode = "aggregate_cluster_de"}. Defaults to \code{receiver} when \code{NULL}.}
+
+\item{receiver_reference}{Reference receiver cell type(s) for
+\code{mode = "aggregate_cluster_de"}. Defaults to \code{receiver} when \code{NULL}.}
 
 \item{mode}{NicheNet wrapper mode. Supported values are \code{"aggregate"},
 \code{"aggregate_cluster_de"}, and \code{"custom"}.}

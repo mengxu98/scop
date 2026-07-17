@@ -75,12 +75,14 @@ g <- structure(
 )
 GiottoPlot(g, plot_type = "cluster")
 
+spatial <- subset(spatial, cells = colnames(spatial)[seq_len(min(200L, ncol(spatial)))])
 g <- RunGiottoWorkflow(
   spatial,
   steps = "basic",
   assay = "Spatial",
   layer = "counts",
   coord.cols = c("x", "y"),
+  features = rownames(spatial)[seq_len(min(200L, nrow(spatial)))],
   return_seurat = FALSE,
   verbose = FALSE
 )

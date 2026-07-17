@@ -28,7 +28,7 @@ RunCSIDE(
 \arguments{
 \item{srt}{Spatial \code{Seurat} object used as the RCTD query.}
 
-\item{rctd_result}{Optional old-api \code{spacexr} RCTD object. If \code{NULL},
+\item{rctd_result}{Optional \code{spacexr} RCTD object. If \code{NULL},
 \code{srt@tools[["RCTD"]]$object} from \code{\link[=RunRCTD]{RunRCTD()}} is used.}
 
 \item{explanatory.variable}{Named numeric vector used by
@@ -123,6 +123,7 @@ SpatialSpotPlot(
   coord.cols = c("x", "y")
 )
 
+if (FALSE) { # requires a spacexr RCTD result from RunRCTD()
   spatial <- RunCSIDE(
     spatial,
     group.by = "region",
@@ -130,5 +131,6 @@ SpatialSpotPlot(
     gene_threshold = 0.00005,
     cell_type_threshold = 125
   )
+}
 }
 \concept{spatial-producer}

@@ -97,7 +97,11 @@ Options are "raw", "annoy", and "rann".
 If "raw" is selected, the function will use the brute-force method to find the nearest neighbors.
 If "annoy" is selected, the function will use the Annoy library for approximate nearest neighbor search.
 If "rann" is selected, the function will use the RANN library for approximate nearest neighbor search.
-If not provided, the function will choose the search method based on the size of the query and reference datasets.}
+If not provided, the function will choose the search method based on the size of the query and reference datasets.
+For finite dense inputs using cosine or Euclidean distance, the raw path
+uses scop's bounded-memory native top-k kernel unless the full distance
+matrix is requested. Other metrics and sparse inputs retain the existing
+proxyC path.}
 
 \item{distance_metric}{A character vector specifying the distance metric to be used for calculating similarity between cells.
 Must be one of "cosine", "euclidean", "manhattan", or "hamming".
