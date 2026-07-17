@@ -28,10 +28,7 @@
 #' @param coord.cols Metadata coordinate columns used by the native `"cpp"`
 #' backend when no image coordinates are available.
 #' @param coordinate_space Coordinate system used by the native distance
-#' calculations. The default is raw acquisition coordinates, so `start`,
-#' `end`, trajectory positions, widths, and native distances share raw
-#' coordinate units. Use `"legacy_display"` explicitly for pre-0.9.0 display
-#' coordinates. SPATA2-backed runs retain backend-native units.
+#'   calculations.
 #' @param trajectory_id,start,end,traj_df,width Trajectory setup passed to
 #' `SPATA2::addSpatialTrajectory()` and `SPATA2::spatialTrajectoryScreening()`.
 #' @param annotation_ids Existing SPATA2 spatial annotation ids. If `NULL`,
@@ -138,7 +135,7 @@ RunSpatialGradientFeatures <- function(
   set_variable_features = FALSE,
   store_results = TRUE,
   verbose = TRUE,
-  coordinate_space = c("raw", "legacy_display"),
+  coordinate_space = c("legacy_display", "raw"),
   ...
 ) {
   if (!inherits(srt, "Seurat")) {
@@ -827,7 +824,7 @@ sgf_run_cpp_gradient <- function(
   )
 }
 
-sgf_cpp_coords <- function(srt, image, coord.cols, coordinate_space = "raw") {
+sgf_cpp_coords <- function(srt, image, coord.cols, coordinate_space = "legacy_display") {
   if (length(coord.cols) < 2L) {
     log_message("{.arg coord.cols} must contain at least two coordinate columns", message_type = "error")
   }
