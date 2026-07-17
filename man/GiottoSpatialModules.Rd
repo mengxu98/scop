@@ -70,7 +70,12 @@ g <- structure(
 )
 GiottoPlot(g, plot_type = "spatial_modules", top_n = 6)
 
-  g <- SeuratToScopGiotto(spatial, coord.cols = c("x", "y"))
+  spatial <- subset(spatial, cells = colnames(spatial)[seq_len(min(200L, ncol(spatial)))])
+  g <- SeuratToScopGiotto(
+    spatial,
+    coord.cols = c("x", "y"),
+    features = rownames(spatial)[seq_len(min(200L, nrow(spatial)))]
+  )
   g <- GiottoPreprocess(g)
   g <- GiottoSpatialNetwork(g)
   g <- GiottoSpatialModules(g, features = rownames(spatial)[1:50], k = 3)

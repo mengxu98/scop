@@ -125,8 +125,14 @@ SpatialIntegrationPlot(spatial, plot_type = "embedding")
 SpatialIntegrationPlot(spatial, plot_type = "alignment")
 SpatialIntegrationPlot(spatial, plot_type = "composition")
 
+# Keep a balanced, executable multi-sample PRECAST example.
+run_cells <- unlist(lapply(
+  split(colnames(spatial), spatial$sample[colnames(spatial)]),
+  head,
+  n = 150L
+), use.names = FALSE)
 srt <- RunSpatialIntegration(
-  object = spatial,
+  object = spatial[, run_cells],
   method = "PRECAST",
   sample.by = "sample",
   assay = "Spatial",

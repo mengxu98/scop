@@ -135,8 +135,9 @@ Default is \code{TRUE}.}
 \item{seed.use}{Random seed for reproducibility.
 Default is \code{11}.}
 
-\item{cores}{The number of threads to be used in \code{RcppML} functions that are parallelized with \code{OpenMP}.
-If \code{0}, the number of threads will be automatically determined by \code{\link[RcppML:setRcppMLthreads]{RcppML::setRcppMLthreads()}}.
+\item{cores}{The number of threads to be used in older \code{RcppML} releases
+that expose a global OpenMP thread setter. Newer releases manage their
+thread count internally.
 Default is \code{0}.}
 }
 \description{

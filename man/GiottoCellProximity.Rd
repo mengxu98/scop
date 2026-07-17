@@ -59,7 +59,12 @@ GiottoPlot(g, plot_type = "cell_proximity")
 
   data(visium_human_pancreas_sub)
   spatial <- visium_human_pancreas_sub
-  g <- SeuratToScopGiotto(spatial, coord.cols = c("x", "y"))
+  spatial <- subset(spatial, cells = colnames(spatial)[seq_len(min(200L, ncol(spatial)))])
+  g <- SeuratToScopGiotto(
+    spatial,
+    coord.cols = c("x", "y"),
+    features = rownames(spatial)[seq_len(min(200L, nrow(spatial)))]
+  )
   g <- GiottoSpatialNetwork(g)
   g <- GiottoCellProximity(g, group.by = "coda_label", number_of_simulations = 100)
 }

@@ -29,12 +29,12 @@ Default is \code{NULL}, which automatically selects a PCA-like reduction via
 \item{reduction_method}{Optional reduction method name.
 When set to \code{"nmf"} or \code{"glmpca"}, all available dimensions will be retained.}
 
-\item{k}{Number of neighbors used by \link[intrinsicDimension:maxLikGlobalDimEst]{intrinsicDimension::maxLikGlobalDimEst}.
+\item{k}{Number of neighbors used by \link[intrinsicDimension:maxLik]{intrinsicDimension::maxLikGlobalDimEst}.
 Default is \code{30}.}
 
 \item{method}{Dimension-selection method. \code{"scree"} uses PCA standard
 deviations with broken-stick, elbow, cumulative-variance, and marginal-gain
-criteria. \code{"intrinsic"} uses \link[intrinsicDimension:maxLikGlobalDimEst]{intrinsicDimension::maxLikGlobalDimEst}.
+criteria. \code{"intrinsic"} uses \link[intrinsicDimension:maxLik]{intrinsicDimension::maxLikGlobalDimEst}.
 \code{"ensemble"} keeps the larger recommendation from both methods when both are
 available. Default is \code{"scree"}.}
 

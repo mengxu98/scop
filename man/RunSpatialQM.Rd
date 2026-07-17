@@ -73,7 +73,7 @@ spatial <- RunSpatialQM(
   spatial,
   assay = "Spatial",
   layer = "counts",
-  metrics = c("n_cells", "tx_per_cell", "sparsity", "entropy"),
+  metrics = "n_cells",
   platform = "Visium",
   verbose = FALSE
 )

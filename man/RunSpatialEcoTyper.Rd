@@ -180,6 +180,7 @@ object when possible.
 \examples{
 data(visium_human_pancreas_sub)
 srt <- visium_human_pancreas_sub
+srt <- Seurat::NormalizeData(srt, assay = "Spatial", verbose = FALSE)
 srt$CellType <- srt$coda_label
 srt$SpatialEcoTyper_SE <- ifelse(srt$x > stats::median(srt$x), "SE1", "SE2")
 srt$sample <- ifelse(srt$y > stats::median(srt$y), "slice_a", "slice_b")
@@ -195,6 +196,7 @@ SpatialEcoTyperCompositionPlot(
   sample.by = "sample",
   position = "fill"
 )
+srt$sample <- NULL
 
 srt <- RunSpatialEcoTyper(
   srt,
@@ -203,19 +205,24 @@ srt <- RunSpatialEcoTyper(
   y.by = "y",
   nfeatures = 100,
   ncores = 1,
+  allow_partial = TRUE,
   verbose = FALSE
 )
 
-srt <- RunSpatialEcoTyper(
-  srt,
-  mode = "multi",
-  celltype.by = "CellType",
-  sample.by = "sample",
-  x.by = "x",
-  y.by = "y",
-  nfeatures = 100,
-  ncores = 1,
-  verbose = FALSE
-)
+# A genuine multi-sample spatial input is required for conserved-SE discovery.
+# The bundled object contains one sample, so this is a parameter template.
+if (FALSE) {
+  srt <- RunSpatialEcoTyper(
+    multi_sample_srt,
+    mode = "multi",
+    celltype.by = "CellType",
+    sample.by = "sample",
+    x.by = "x",
+    y.by = "y",
+    nfeatures = 100,
+    ncores = 1,
+    verbose = FALSE
+  )
+}
 }
 \concept{spatial-producer}

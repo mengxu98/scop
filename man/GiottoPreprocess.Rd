@@ -52,6 +52,12 @@ g <- structure(
 )
 GiottoPlot(g, plot_type = "spatial")
 
-g <- SeuratToScopGiotto(spatial, assay = "Spatial", coord.cols = c("x", "y"), verbose = FALSE)
+g <- SeuratToScopGiotto(
+  spatial,
+  assay = "Spatial",
+  coord.cols = c("x", "y"),
+  features = rownames(spatial)[seq_len(min(200L, nrow(spatial)))],
+  verbose = FALSE
+)
 g <- GiottoPreprocess(g, verbose = FALSE)
 }

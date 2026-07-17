@@ -12,7 +12,7 @@ RunCIBERSORT(
   perm = 100,
   QN = TRUE,
   absolute = FALSE,
-  backend = c("r", "cpp"),
+  backend = c("cpp", "r"),
   cores = NULL,
   seed = 123L,
   verbose = TRUE,
@@ -38,8 +38,9 @@ in columns. Used when \code{object} is not provided as a matrix.}
 \item{absolute}{Passed to CIBERSORT when supported by the installed package.
 The native C++ backend currently returns relative fractions.}
 
-\item{backend}{CIBERSORT backend. \code{"r"} calls the external \code{CIBERSORT}
-package and \code{"cpp"} uses the native \code{scop} LIBSVM implementation.}
+\item{backend}{CIBERSORT backend. \code{"cpp"} uses the native \code{scop} LIBSVM
+implementation. \code{"r"} is an optional reference backend from
+\code{Moonerss/CIBERSORT}.}
 
 \item{cores}{Number of CPU cores used by the C++ backend. \code{NULL} uses up to
 4 local cores. \code{n_threads} passed through \code{...} is accepted as a
@@ -59,7 +60,9 @@ A deconvolution result bundle for matrix input, or the modified
 }
 \description{
 Estimate immune cell proportions from a bulk expression matrix using the
-external \code{CIBERSORT} package or the native \code{scop} C++ backend.
+optional GitHub \code{Moonerss/CIBERSORT} package or the native \code{scop} C++
+backend. The native backend is the default and has no external R-package
+dependency.
 \code{sig_matrix = "LM22"} downloads the LM22 signature matrix from
 \code{mengxu98/datasets} and caches it locally.
 }

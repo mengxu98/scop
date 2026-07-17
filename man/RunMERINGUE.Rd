@@ -128,6 +128,7 @@ spatial <- RunMERINGUE(
   spatial,
   assay = "Spatial",
   coord.cols = c("x", "y"),
+  features = rownames(spatial)[seq_len(min(50L, nrow(spatial)))],
   mode = c("autocorrelation", "cross_correlation"),
   nfeatures = 50,
   verbose = FALSE
