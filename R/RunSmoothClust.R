@@ -515,7 +515,7 @@ smoothclust_native_smoothness <- function(coords, labels, k = 6L) {
 
 smoothclust_get_fun <- function(fun) {
   tryCatch(
-    getExportedValue("smoothclust", fun),
+    get_namespace_fun("smoothclust", fun),
     error = function(e) {
       log_message(
         "{.pkg smoothclust} does not export required function {.fn {fun}}",
