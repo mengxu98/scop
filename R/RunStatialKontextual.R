@@ -11,7 +11,8 @@
 #' @inheritParams thisutils::log_message
 #' @param srt A `Seurat` object.
 #' @param group.by Metadata column containing cell or spot labels.
-#' @param r Numeric radius or radii used by `Statial::Kontextual()`.
+#' @param r Numeric radius or radii used by `Statial::Kontextual()`, expressed
+#' in the selected coordinate units.
 #' @param from,to,parent Cell or spot labels passed to `Statial::Kontextual()`.
 #' Ignored when `parent_df` is supplied.
 #' @param parent_df Optional data frame from `Statial::parentCombinations()`.
@@ -23,10 +24,13 @@
 #' @param coord.cols Metadata coordinate columns used when no Seurat image
 #' coordinates are available.
 #' @param coordinate_space Coordinate system used for spatial relationships.
+#' The default is raw acquisition coordinates; `"legacy_display"` remains an
+#' explicit compatibility option.
 #' @param inhom Whether Statial should account for inhomogeneity.
 #' @param edge_correct Whether Statial should perform edge correction.
 #' @param window,window.length Window arguments passed to
-#' `Statial::Kontextual()`.
+#' `Statial::Kontextual()`. Numeric window lengths use the selected coordinate
+#' units.
 #' @param include_original Whether to include original L-function values.
 #' @param cores Number of cores passed to `Statial::Kontextual()`.
 #' @param tool_name Name used to store results in `srt@tools`.
@@ -80,7 +84,7 @@ RunStatialKontextual <- function(
   store_results = TRUE,
   store_input = FALSE,
   verbose = TRUE,
-  coordinate_space = c("legacy_display", "raw"),
+  coordinate_space = c("raw", "legacy_display"),
   ...
 ) {
   coordinate_space <- match.arg(coordinate_space)
@@ -200,7 +204,7 @@ statial_prepare_cells <- function(
   image = NULL,
   sample.by = NULL,
   coord.cols = c("col", "row"),
-  coordinate_space = c("legacy_display", "raw"),
+  coordinate_space = c("raw", "legacy_display"),
   images = NULL,
   verbose = TRUE
 ) {

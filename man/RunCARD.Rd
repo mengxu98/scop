@@ -27,7 +27,7 @@ RunCARD(
   card_deconvolution_params = list(),
   verbose = TRUE,
   ...,
-  coordinate_space = c("legacy_display", "raw")
+  coordinate_space = c("raw", "legacy_display")
 )
 }
 \arguments{
@@ -83,7 +83,9 @@ Default is \code{TRUE}.}
 \item{...}{Additional parameters passed to the RCTD run step.}
 
 \item{coordinate_space}{Coordinate space used for distance-sensitive input.
-The default preserves the historical coordinate behavior.}
+The default is raw acquisition coordinates, so backend distances use raw
+coordinate units. Use \code{"legacy_display"} explicitly to reproduce the
+display-scaled coordinates used before scop 0.9.0.}
 }
 \value{
 A \code{Seurat} object with CARD proportion columns in metadata and

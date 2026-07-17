@@ -96,6 +96,7 @@ test_that("RunStatialKontextual stores Kontextual results and summary", {
   expect_s4_class(out, "Seurat")
   expect_true("StatialKontextual" %in% names(out@tools))
   bundle <- out@tools$StatialKontextual
+  expect_identical(bundle$source$coordinate_space, "raw")
   expect_named(bundle, c(
     "table", "raw", "summary", "parameters", "input", "method",
     "schema_version", "result_type", "source", "provenance"

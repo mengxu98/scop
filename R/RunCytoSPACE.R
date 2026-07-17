@@ -31,7 +31,8 @@
 #' @param image Optional Seurat image used for spatial coordinates.
 #' @param coord.cols Metadata coordinate columns used when no image is selected.
 #' @param coordinate_space Coordinate space used for assignment locations. The
-#'   default preserves the historical coordinate behavior.
+#' default is raw acquisition coordinates. Use `"legacy_display"` explicitly
+#' to reproduce the display-scaled locations used before scop 0.9.0.
 #'
 #' @return A `Seurat` object with CytoSPACE metadata columns and detailed
 #' results stored in `srt@tools[["CytoSPACE"]]`.
@@ -84,7 +85,7 @@ RunCytoSPACE <- function(
   verbose = TRUE,
   image = NULL,
   coord.cols = c("col", "row"),
-  coordinate_space = c("legacy_display", "raw")
+  coordinate_space = c("raw", "legacy_display")
 ) {
   if (!inherits(srt, "Seurat")) {
     log_message(
@@ -626,7 +627,7 @@ cytospace_get_spatial_coords <- function(
   spot_ids,
   image = NULL,
   coord.cols = c("col", "row"),
-  coordinate_space = c("legacy_display", "raw")
+  coordinate_space = c("raw", "legacy_display")
 ) {
   coordinate_space <- match.arg(coordinate_space)
   resolved <- spatial_analysis_coords(

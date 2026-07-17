@@ -30,7 +30,7 @@ RunMistyR(
   store_results = TRUE,
   store_views = FALSE,
   verbose = TRUE,
-  coordinate_space = c("legacy_display", "raw"),
+  coordinate_space = c("raw", "legacy_display"),
   ...
 )
 }
@@ -54,10 +54,11 @@ coordinates are available.}
 of \code{"para"} and \code{"juxta"}.}
 
 \item{para_l, para_zoi, para_family, para_approx, para_nn}{Parameters passed to
-\code{mistyR::add_paraview()}.}
+\code{mistyR::add_paraview()}. \code{para_l} and \code{para_zoi} use the selected coordinate
+units; \code{para_nn} is a unitless neighbor count.}
 
 \item{juxta_neighbor_thr}{Neighbor threshold passed to
-\code{mistyR::add_juxtaview()}.}
+\code{mistyR::add_juxtaview()}, expressed in the selected coordinate units.}
 
 \item{view_cached}{Whether generated mistyR views should use cache.}
 
@@ -76,7 +77,9 @@ temporary folder is used.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{coordinate_space}{Coordinate system used to build MISTy views.}
+\item{coordinate_space}{Coordinate system used to build MISTy views. The
+default is raw acquisition coordinates; \code{"legacy_display"} remains an
+explicit compatibility option.}
 
 \item{...}{Additional named arguments passed to \code{mistyR::run_misty()}.}
 }

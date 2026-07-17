@@ -19,13 +19,16 @@
 #' @param coord.cols Metadata coordinate columns used when no image coordinate
 #' source is requested or available.
 #' @param coordinate_space Coordinate space used for distance-sensitive input.
-#'   The default preserves the historical coordinate behavior.
+#' The default is raw acquisition coordinates, so backend distances use raw
+#' coordinate units. Use `"legacy_display"` explicitly to reproduce the
+#' display-scaled coordinates used before scop 0.9.0.
 #' @param rctd_mode RCTD mode passed to `spacexr`. `"full"` is the default for
 #' Visium spot deconvolution.
 #' @param max_cores Number of cores passed to `spacexr`.
 #' @param min_cells Minimum number of reference cells required for each cell
 #' type. Old `spacexr` RCTD requires at least 25 cells per type.
 #' @param prefix Prefix for metadata columns.
+#' @param tool_name Name used to store the schema-v1 result in `srt@tools`.
 #' @param store_results Whether to store detailed RCTD results in `srt@tools`.
 #' @param round_counts Whether to round non-integer counts to the nearest
 #' integer before passing data to `spacexr`. RCTD requires integer count
@@ -39,7 +42,7 @@
 #'
 #' @return A `Seurat` object with RCTD proportion columns in metadata and
 #' dominant cell type summaries. When `store_results = TRUE`, detailed results
-#' are also stored in `srt@tools[["RCTD"]]`.
+#' are also stored in `srt@tools[[tool_name]]`.
 #' @concept spatial-producer
 #' @export
 #'
@@ -129,7 +132,8 @@ RunRCTD <- function(
   run_rctd_params = list(),
   verbose = TRUE,
   ...,
-  coordinate_space = c("legacy_display", "raw")
+  coordinate_space = c("raw", "legacy_display"),
+  tool_name = "RCTD"
 ) {
   if (!inherits(srt, "Seurat")) {
     log_message(
@@ -153,6 +157,7 @@ RunRCTD <- function(
   rctd_validate_named_param_list(run_rctd_params, "run_rctd_params")
   rctd_mode <- match.arg(rctd_mode)
   coordinate_space <- match.arg(coordinate_space)
+  rctd_assert_scalar_string(tool_name, "tool_name")
   max_cores <- rctd_check_max_cores(max_cores)
   min_cells <- rctd_check_min_cells(min_cells)
   if (
@@ -351,8 +356,10 @@ RunRCTD <- function(
   )
 
   if (isTRUE(store_results)) {
-    srt@tools[["RCTD"]] <- list(
+    srt@tools[[tool_name]] <- list(
       weights = weights,
+      proportions = weight_summary$full_weights,
+      cells = colnames(srt),
       metadata = backend$metadata,
       coords = coords,
       features = nonzero_features,
@@ -374,14 +381,15 @@ RunRCTD <- function(
         max_cores = max_cores,
         min_cells = min_cells,
         prefix = prefix,
+        tool_name = tool_name,
         round_counts = round_counts,
         create_rctd_params = create_rctd_params,
         run_rctd_params = run_rctd_params
       ),
       object = backend$object
     )
-    srt@tools[["RCTD"]] <- spatial_result_build(
-      bundle = srt@tools[["RCTD"]],
+    srt@tools[[tool_name]] <- spatial_result_build(
+      bundle = srt@tools[[tool_name]],
       method = "RCTD",
       result_type = "deconvolution",
       source = c(
@@ -397,6 +405,16 @@ RunRCTD <- function(
     verbose = verbose
   )
   srt
+}
+
+rctd_assert_scalar_string <- function(x, arg_name) {
+  if (length(x) != 1L || !is.character(x) || is.na(x) || !nzchar(x)) {
+    log_message(
+      "{.arg {arg_name}} must be a single non-empty string",
+      message_type = "error"
+    )
+  }
+  invisible(TRUE)
 }
 
 rctd_check_max_cores <- function(max_cores) {
@@ -588,7 +606,7 @@ rctd_get_spatial_coords <- function(
   spot_ids,
   image = NULL,
   coord.cols = c("x", "y"),
-  coordinate_space = c("legacy_display", "raw")
+  coordinate_space = c("raw", "legacy_display")
 ) {
   coordinate_space <- match.arg(coordinate_space)
   resolved <- spatial_analysis_coords(

@@ -16,14 +16,17 @@
 #' @param image Name of the Seurat spatial image. Required when multiple images
 #' are present; a single image is selected automatically when `NULL`.
 #' @param coordinate_space Coordinate system used for spatial neighborhoods.
+#' The default is raw acquisition coordinates; `"legacy_display"` remains an
+#' explicit compatibility option. Neighbor counts are unitless, while any
+#' backend distance calculation uses the selected coordinate units.
 #' @param sample.by Optional metadata column identifying samples or images.
 #' If `NULL`, all spots are treated as one sample.
 #' @param metrics QC metrics used by `SpotSweeper::localOutliers()`. If `NULL`,
 #' `nCount_<assay>`, `nFeature_<assay>`, and `percent.mito` are used.
 #' @param directions Outlier direction for each metric. If `NULL`, count and
 #' feature metrics use `"lower"` and mitochondrial metrics use `"higher"`.
-#' @param n_neighbors Number of nearest spatial neighbors for local outlier
-#' detection.
+#' @param n_neighbors Unitless number of nearest spatial neighbors for local
+#' outlier detection.
 #' @param cutoff Modified z-score cutoff passed to local outlier detection.
 #' @param log Whether SpotSweeper should log1p-transform local outlier metrics.
 #' @param run_artifact Whether to run `SpotSweeper::findArtifacts()` per sample.
@@ -113,7 +116,7 @@ RunSpotSweeper <- function(
   store_results = TRUE,
   workers = 1,
   verbose = TRUE,
-  coordinate_space = c("legacy_display", "raw"),
+  coordinate_space = c("raw", "legacy_display"),
   ...
 ) {
   coordinate_space <- match.arg(coordinate_space)

@@ -26,7 +26,7 @@ RunStatialKontextual(
   store_results = TRUE,
   store_input = FALSE,
   verbose = TRUE,
-  coordinate_space = c("legacy_display", "raw"),
+  coordinate_space = c("raw", "legacy_display"),
   ...
 )
 }
@@ -35,7 +35,8 @@ RunStatialKontextual(
 
 \item{group.by}{Metadata column containing cell or spot labels.}
 
-\item{r}{Numeric radius or radii used by \code{Statial::Kontextual()}.}
+\item{r}{Numeric radius or radii used by \code{Statial::Kontextual()}, expressed
+in the selected coordinate units.}
 
 \item{from, to, parent}{Cell or spot labels passed to \code{Statial::Kontextual()}.
 Ignored when \code{parent_df} is supplied.}
@@ -58,7 +59,8 @@ coordinates are available.}
 \item{edge_correct}{Whether Statial should perform edge correction.}
 
 \item{window, window.length}{Window arguments passed to
-\code{Statial::Kontextual()}.}
+\code{Statial::Kontextual()}. Numeric window lengths use the selected coordinate
+units.}
 
 \item{include_original}{Whether to include original L-function values.}
 
@@ -74,7 +76,9 @@ coordinates are available.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{coordinate_space}{Coordinate system used for spatial relationships.}
+\item{coordinate_space}{Coordinate system used for spatial relationships.
+The default is raw acquisition coordinates; \code{"legacy_display"} remains an
+explicit compatibility option.}
 
 \item{...}{Additional named arguments passed to \code{Statial::Kontextual()}.}
 }

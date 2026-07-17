@@ -88,7 +88,7 @@ RunCARD <- function(
   card_deconvolution_params = list(),
   verbose = TRUE,
   ...,
-  coordinate_space = c("legacy_display", "raw")
+  coordinate_space = c("raw", "legacy_display")
 ) {
   if (!inherits(srt, "Seurat")) {
     log_message(
@@ -246,6 +246,8 @@ RunCARD <- function(
   if (isTRUE(store_results)) {
     srt@tools[[tool_name]] <- list(
       weights = weights,
+      proportions = weight_summary$full_weights,
+      cells = colnames(srt),
       coords = coords,
       features = rownames(st_counts),
       reference_metadata = ref_meta,
@@ -312,10 +314,10 @@ card_run_backend <- function(
       spatial_count = st_counts,
       spatial_location = coords,
       ct.varname = ".scop_cell_type",
-      sample.varname = ".scop_sample",
-      ct.select = ct_select,
       ct_varname = ".scop_cell_type",
+      sample.varname = ".scop_sample",
       sample_varname = ".scop_sample",
+      ct.select = ct_select,
       ct_select = ct_select,
       minCountGene = minCountGene,
       minCountSpot = minCountSpot,
@@ -324,17 +326,17 @@ card_run_backend <- function(
     ),
     create_card_params
   )
-  if ("CARD_object" %in% names(formals(deconv_fun))) {
+  deconv_formals <- names(formals(deconv_fun))
+  if ("CARD_object" %in% deconv_formals) {
     card_obj <- do.call(create_fun, card_match_formals(create_fun, create_args))
     deconv_args <- c(
       list(CARD_object = card_obj),
       card_deconvolution_params
     )
-    card_obj <- do.call(deconv_fun, card_match_formals(deconv_fun, deconv_args))
   } else {
     deconv_args <- c(create_args, card_deconvolution_params)
-    card_obj <- do.call(deconv_fun, card_match_formals(deconv_fun, deconv_args))
   }
+  card_obj <- do.call(deconv_fun, card_match_formals(deconv_fun, deconv_args))
   weights <- card_extract_weights(card_obj)
   list(
     package = package,

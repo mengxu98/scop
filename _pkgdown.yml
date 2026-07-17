@@ -275,6 +275,7 @@ reference:
   - SpatialCellPlot
   - Cell2locationPlot
   - SpatialSpotPlot
+  - SpatialDeconvolutionPlot
   - SpatialVariableFeaturePlot
   - STdeconvolvePlot
 

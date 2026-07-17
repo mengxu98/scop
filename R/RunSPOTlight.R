@@ -235,6 +235,8 @@ RunSPOTlight <- function(
   if (isTRUE(store_results)) {
     srt@tools[[tool_name]] <- list(
       weights = weights,
+      proportions = weight_summary$full_weights,
+      cells = colnames(srt),
       residual = if (is.list(result)) result$res_ss %||% NULL else NULL,
       marker_genes = mgs,
       features = features_use,

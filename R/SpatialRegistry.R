@@ -81,7 +81,7 @@ spatial_method_registry <- function() {
       "RunSpaNorm.R",
       "SpaNorm",
       "spanorm",
-      coordinate_space_current = "legacy_display",
+      coordinate_space_current = "raw",
       coordinate_space_target = "raw",
       coordinate_requirement = "distance_sensitive",
       plot_function = "SpatialSpotPlot"
@@ -105,7 +105,7 @@ spatial_method_registry <- function() {
       "RunSpotSweeper.R",
       "SpotSweeper",
       "spotsweeper",
-      coordinate_space_current = "legacy_display",
+      coordinate_space_current = "raw",
       coordinate_space_target = "raw",
       coordinate_requirement = "distance_sensitive",
       plot_function = "SpatialSpotPlot"
@@ -378,10 +378,10 @@ spatial_method_registry <- function() {
       "RunRCTD.R",
       "RCTD",
       "spacexr",
-      coordinate_space_current = "legacy_display",
+      coordinate_space_current = "raw",
       coordinate_space_target = "raw",
       coordinate_requirement = "distance_sensitive",
-      plot_function = "DeconvolutionPlot"
+      plot_function = "SpatialDeconvolutionPlot"
     ),
     entry(
       "RunCSIDE",
@@ -402,10 +402,10 @@ spatial_method_registry <- function() {
       "RunCARD.R",
       "CARD",
       "card",
-      coordinate_space_current = "legacy_display",
+      coordinate_space_current = "raw",
       coordinate_space_target = "raw",
       coordinate_requirement = "distance_sensitive",
-      plot_function = "DeconvolutionPlot"
+      plot_function = "SpatialDeconvolutionPlot"
     ),
     entry(
       "RunSTdeconvolve",
@@ -429,7 +429,7 @@ spatial_method_registry <- function() {
       coordinate_space_current = "none",
       coordinate_space_target = "none",
       coordinate_requirement = "identity_only",
-      plot_function = "DeconvolutionPlot"
+      plot_function = "SpatialDeconvolutionPlot"
     ),
     entry(
       "RunCell2location",
@@ -450,10 +450,10 @@ spatial_method_registry <- function() {
       "RunSpatialDWLS.R",
       "SpatialDWLS",
       "core",
-      coordinate_space_current = "legacy_display",
+      coordinate_space_current = "raw",
       coordinate_space_target = "raw",
       coordinate_requirement = "distance_sensitive",
-      plot_function = "DeconvolutionPlot"
+      plot_function = "SpatialDeconvolutionPlot"
     ),
     entry(
       "RunSpatialEcoTyper",
@@ -691,6 +691,14 @@ spatial_method_registry <- function() {
       coordinate_requirement = "display_only"
     ),
     entry(
+      "SpatialDeconvolutionPlot",
+      "plot",
+      "visualization",
+      "SpatialDeconvolutionPlot.R",
+      coordinate_space_current = "display",
+      coordinate_requirement = "display_only"
+    ),
+    entry(
       "SpatialEcoTyperCompositionPlot",
       "plot",
       "visualization",
@@ -811,6 +819,7 @@ spatial_method_registry <- function() {
       coordinate_space_target = "mixed",
       coordinate_requirement = "backend_managed"
     )
+
   )
   registry <- do.call(rbind, rows)
   rownames(registry) <- NULL
@@ -876,9 +885,11 @@ spatial_backend_registry <- function() {
     repository = package,
     symbols = character(),
     symbol_sets = list(),
+    method_symbols = list(),
     runtime = "r",
     environment_modules = character(),
-    requirements = character()
+    requirements = character(),
+    package_candidates = package
   ) {
     list(
       id = id,
@@ -886,9 +897,11 @@ spatial_backend_registry <- function() {
       repository = repository,
       symbols = symbols,
       symbol_sets = symbol_sets,
+      method_symbols = method_symbols,
       runtime = runtime,
       environment_modules = environment_modules,
-      requirements = requirements
+      requirements = requirements,
+      package_candidates = unique(package_candidates)
     )
   }
   giotto_symbols <- spatial_giotto_symbol_registry()
@@ -921,8 +934,21 @@ spatial_backend_registry <- function() {
       )
     ),
     spanorm = backend("spanorm", "SpaNorm", symbols = "SpaNorm"),
-    spatialqm = backend("spatialqm", "SpatialQM"),
-    spotsweeper = backend("spotsweeper", "SpotSweeper"),
+    spatialqm = backend(
+      "spatialqm",
+      "SpatialQM",
+      symbols = c(
+        "getNcells", "getTxPerCell", "getTxPerArea", "getTxPerNuc",
+        "getMeanExpression", "getMeanSignalRatio", "getCellTxFraction",
+        "getMaxRatio", "getMaxDetection", "getMECR", "getMorans",
+        "getSilhouetteWidth", "getSparsity", "getEntropy"
+      )
+    ),
+    spotsweeper = backend(
+      "spotsweeper",
+      "SpotSweeper",
+      symbols = c("localOutliers", "findArtifacts")
+    ),
     giotto = backend(
       "giotto",
       "Giotto",
@@ -968,13 +994,15 @@ spatial_backend_registry <- function() {
       "dmcable/spacexr",
       symbols = c("SpatialRNA", "Reference", "create.RCTD", "run.RCTD")
     ),
-    card = backend("card", "CARD", "YingMa0107/CARD"),
-    stdeconvolve = backend(
-      "stdeconvolve",
-      "STdeconvolve",
-      "JEFworks-Lab/STdeconvolve",
-      c("cleanCounts", "fitLDA")
+
+    card = backend(
+      "card",
+      "CARD",
+      "YingMa0107/CARD",
+      c("createCARDObject", "CARD_deconvolution"),
+      package_candidates = c("CARD", "CARDspa")
     ),
+    stdeconvolve = backend("stdeconvolve", "STdeconvolve", "JEFworks-Lab/STdeconvolve", c("cleanCounts", "fitLDA")),
     spotlight = backend("spotlight", "SPOTlight", symbols = "SPOTlight"),
     cell2location = backend(
       "cell2location",
@@ -996,14 +1024,33 @@ spatial_backend_registry <- function() {
     spatialecotyper = backend(
       "spatialecotyper",
       "SpatialEcoTyper",
-      "digitalcytometry/SpatialEcoTyper"
+
+      "digitalcytometry/SpatialEcoTyper",
+      c("SpatialEcoTyper", "MultiSpatialEcoTyper", "RecoverSE", "DeconvoluteSE")
     ),
-    bayesspace = backend("bayesspace", "BayesSpace"),
+    bayesspace = backend(
+      "bayesspace",
+      "BayesSpace",
+      symbols = c("spatialPreprocess", "spatialCluster")
+    ),
     banksy = backend("banksy", "Banksy", symbols = "computeBanksy"),
-    smoothclust = backend("smoothclust", "smoothclust", "lmweber/smoothclust"),
-    meringue = backend("meringue", "MERINGUE"),
-    sparkx = backend("sparkx", "SPARK"),
-    nnsvg = backend("nnsvg", "nnSVG"),
+    smoothclust = backend(
+      "smoothclust",
+      "smoothclust",
+      "lmweber/smoothclust",
+      "smoothclust"
+    ),
+    meringue = backend(
+      "meringue",
+      "MERINGUE",
+      symbols = c(
+        "getSpatialNeighbors", "moranTest", "moranPermutationTest",
+        "spatialCrossCorMatrix", "spatialCrossCorTest",
+        "groupSigSpatialPatterns"
+      )
+    ),
+    sparkx = backend("sparkx", "SPARK", symbols = "sparkx"),
+    nnsvg = backend("nnsvg", "nnSVG", symbols = "nnSVG"),
     spicyr = backend("spicyr", "spicyR", symbols = "spicy"),
     statial = backend("statial", "Statial", symbols = "Kontextual"),
     precast = backend(
@@ -1013,18 +1060,20 @@ spatial_backend_registry <- function() {
       "CreatePRECASTObject"
     ),
     bass = backend("bass", "BASS", symbols = "createBASSObject"),
-    spatialmnn = backend(
-      "spatialmnn",
-      "spatialMNN",
-      "Pixel-Dream/spatialMNN",
-      "spatialMNN"
-    ),
-    mistyr = backend(
-      "mistyr",
-      "mistyR",
-      symbols = c("create_initial_view", "run_misty")
-    ),
-    semla = backend("semla", "semla")
+
+    spatialmnn = backend("spatialmnn", "spatialMNN", "Pixel-Dream/spatialMNN", "spatialMNN"),
+    mistyr = backend("mistyr", "mistyR", symbols = c("create_initial_view", "run_misty")),
+    semla = backend(
+      "semla",
+      "semla",
+      symbols = "UpdateSeuratForSemla",
+      method_symbols = list(
+        RunSemlaSpatialNetwork = "GetSpatialNetwork",
+        RunSemlaLocalG = "RunLocalG",
+        RunSemlaRegionNeighbors = "RegionNeighbors",
+        RunSemlaRadialDistance = "RadialDistance"
+      )
+    )
   )
 }
 
@@ -1251,6 +1300,7 @@ spatial_backend_required_symbols <- function(
 ) {
   symbols <- spec$symbols
   symbol_sets <- spec$symbol_sets %||% list()
+  method_symbols <- spec$method_symbols %||% list()
   if (length(symbol_sets) > 0L) {
     if (is.null(exports)) {
       symbols <- symbol_sets[[1L]]
@@ -1272,6 +1322,15 @@ spatial_backend_required_symbols <- function(
       }
     }
   }
+  if (length(method_symbols) > 0L) {
+    selected <- if (is.null(method)) {
+      unlist(method_symbols, use.names = FALSE)
+    } else {
+      matched <- intersect(as.character(method), names(method_symbols))
+      unlist(method_symbols[matched], use.names = FALSE)
+    }
+    symbols <- c(symbols, selected)
+  }
   if (
     identical(spec$id, "giotto_class") &&
       !is.null(method) &&
@@ -1280,6 +1339,15 @@ spatial_backend_required_symbols <- function(
     symbols <- c(symbols, spatial_giotto_converter_name())
   }
   unique(symbols)
+}
+
+spatial_backend_resolve_package <- function(spec, installed = NULL) {
+  candidates <- unique(spec$package_candidates %||% spec$package)
+  if (is.null(installed)) {
+    installed <- rownames(utils::installed.packages())
+  }
+  available <- candidates[candidates %in% installed]
+  if (length(available) > 0L) available[[1L]] else spec$package
 }
 
 #' @title Inspect spatial backend availability
@@ -1350,30 +1418,48 @@ SpatialBackendStatus <- function(
       stringsAsFactors = FALSE
     ))
   }
-  installed <- rownames(utils::installed.packages())
-  rows <- lapply(backends, function(spec) {
-    if (identical(spec$runtime, "python")) {
-      return(spatial_python_backend_status(
-        spec = spec,
-        envname = envname,
-        conda = conda,
-        api_check = api_check
-      ))
-    }
-    package <- spec$package
-    symbols <- spatial_backend_required_symbols(spec, method = method)
-    is_core <- identical(spec$runtime, "core")
-    is_installed <- is_core || package %in% installed
-    namespace_error <- NA_character_
-    missing_symbols <- character()
-    if (!is_installed) {
-      availability <- "missing"
-    } else if (isTRUE(api_check) && length(symbols) > 0L) {
-      exports <- tryCatch(
-        getNamespaceExports(package),
-        error = function(e) {
-          namespace_error <<- conditionMessage(e)
-          NULL
+
+  cache_key <- spatial_backend_cache_key(api_check, backend_ids, method, envname, conda)
+  if (isTRUE(refresh) && exists(cache_key, envir = .spatial_backend_cache, inherits = FALSE)) {
+    rm(list = cache_key, envir = .spatial_backend_cache)
+  }
+  if (!exists(cache_key, envir = .spatial_backend_cache, inherits = FALSE)) {
+    installed <- rownames(utils::installed.packages())
+    rows <- lapply(backends, function(spec) {
+      if (identical(spec$runtime, "python")) {
+        return(spatial_python_backend_status(
+          spec = spec,
+          envname = envname,
+          conda = conda,
+          api_check = api_check
+        ))
+      }
+      package <- spatial_backend_resolve_package(spec, installed = installed)
+      symbols <- spatial_backend_required_symbols(spec, method = method)
+      is_core <- identical(spec$runtime, "core")
+      is_installed <- is_core || package %in% installed
+      namespace_error <- NA_character_
+      missing_symbols <- character()
+      if (!is_installed) {
+        availability <- "missing"
+      } else if (isTRUE(api_check) && length(symbols) > 0L) {
+        namespace_symbols <- tryCatch(
+          ls(asNamespace(package), all.names = TRUE),
+          error = function(e) {
+            namespace_error <<- conditionMessage(e)
+            NULL
+          }
+        )
+        if (is.null(namespace_symbols)) {
+          availability <- "namespace_error"
+        } else {
+          symbols <- spatial_backend_required_symbols(
+            spec,
+            method = method,
+            exports = namespace_symbols
+          )
+          missing_symbols <- setdiff(symbols, namespace_symbols)
+          availability <- if (length(missing_symbols) == 0L) "available" else "api_incompatible"
         }
       )
       if (is.null(exports)) {
@@ -1418,25 +1504,19 @@ spatial_result_backend_versions <- function(backend_id) {
   ids <- spatial_registry_split_backends(backend_id %||% character())
   registry <- spatial_backend_registry()
   selected <- registry[intersect(ids, names(registry))]
-  selected <- selected[vapply(
+
+  selected <- selected[vapply(selected, function(spec) identical(spec$runtime, "r"), logical(1))]
+  installed <- rownames(utils::installed.packages())
+  packages <- vapply(
     selected,
-    function(spec) identical(spec$runtime, "r"),
-    logical(1)
-  )]
-  packages <- vapply(selected, `[[`, character(1), "package")
-  versions <- vapply(
-    packages,
-    function(package) {
-      if (identical(package, "scop")) {
-        return(NA_character_)
-      }
-      tryCatch(
-        as.character(utils::packageVersion(package)),
-        error = function(e) NA_character_
-      )
-    },
-    character(1)
+    spatial_backend_resolve_package,
+    character(1),
+    installed = installed
   )
+  versions <- vapply(packages, function(package) {
+    if (identical(package, "scop")) return(NA_character_)
+    tryCatch(as.character(utils::packageVersion(package)), error = function(e) NA_character_)
+  }, character(1))
   versions[!is.na(versions)]
 }
 
