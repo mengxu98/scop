@@ -317,12 +317,16 @@ RunMonocle2 <- function(
   }
 
   if (is.null(root_state)) {
-    root_state <- utils::select.list(
-      sort(unique(cds[["State"]])),
-      title = "Select the root state to order cells:"
-    )
-    if (root_state == "" || length(root_state) == 0) {
-      root_state <- NULL
+    if (interactive()) {
+      root_state <- utils::select.list(
+        sort(unique(cds[["State"]])),
+        title = "Select the root state to order cells:"
+      )
+      if (root_state == "" || length(root_state) == 0) {
+        root_state <- NULL
+      }
+    } else {
+      root_state <- sort(unique(cds[["State"]]))[1]
     }
   }
   cds <- get_namespace_fun("monocle", "orderCells")(
@@ -1236,11 +1240,15 @@ RunMonocle3 <- function(
   srt[["Monocle3_partitions"]] <- cds@clusters[["UMAP"]]$partitions
 
   if (is.null(use_partition)) {
-    use_partition <- utils::select.list(
-      c(TRUE, FALSE),
-      title = "Whether to use partitions to learn disjoint graph in each partition?"
-    )
-    if (use_partition == "" || length(use_partition) == 0) {
+    if (interactive()) {
+      use_partition <- utils::select.list(
+        c(TRUE, FALSE),
+        title = "Whether to use partitions to learn disjoint graph in each partition?"
+      )
+      if (use_partition == "" || length(use_partition) == 0) {
+        use_partition <- TRUE
+      }
+    } else {
       use_partition <- TRUE
     }
   }
@@ -1368,13 +1376,17 @@ RunMonocle3 <- function(
   }
 
   if (is.null(root_pr_nodes) && is.null(root_cells)) {
-    root_pr_nodes <- utils::select.list(
-      names(pps),
-      title = "Select the root nodes to order cells, or leave blank for interactive selection:",
-      multiple = TRUE
-    )
-    if (root_pr_nodes == "" || length(root_pr_nodes) == 0) {
-      root_pr_nodes <- NULL
+    if (interactive()) {
+      root_pr_nodes <- utils::select.list(
+        names(pps),
+        title = "Select the root nodes to order cells, or leave blank for interactive selection:",
+        multiple = TRUE
+      )
+      if (root_pr_nodes == "" || length(root_pr_nodes) == 0) {
+        root_pr_nodes <- NULL
+      }
+    } else {
+      root_pr_nodes <- names(pps)[1]
     }
   }
   cds <- get_namespace_fun("monocle3", "order_cells")(
