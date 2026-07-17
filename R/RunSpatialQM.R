@@ -44,7 +44,7 @@
 #'   spatial,
 #'   assay = "Spatial",
 #'   layer = "counts",
-#'   metrics = c("n_cells", "tx_per_cell", "sparsity", "entropy"),
+#'   metrics = "n_cells",
 #'   platform = "Visium",
 #'   verbose = FALSE
 #' )
@@ -104,11 +104,12 @@ RunSpatialQM <- function(
     )
     metric_result <- tryCatch(
       spatialqm_run_metric(
-        seu_obj = input$object,
-        metric = metric,
-        spec = spec,
-        features = features,
-        extra_args = extra_args
+      seu_obj = input$object,
+      metric = metric,
+      spec = spec,
+      features = features,
+      platform = input$platform,
+      extra_args = extra_args
       ),
       error = function(e) e
     )
@@ -265,11 +266,21 @@ spatialqm_prepare_object <- function(
   )
 }
 
-spatialqm_run_metric <- function(seu_obj, metric, spec, features = NULL, extra_args = list()) {
+spatialqm_run_metric <- function(
+  seu_obj,
+  metric,
+  spec,
+  features = NULL,
+  platform = NULL,
+  extra_args = list()
+) {
   fun <- get_namespace_fun("SpatialQM", spec$fun)
   args <- list(seu_obj = seu_obj)
   if (isTRUE(spec$pass_features)) {
     args$features <- features
+  }
+  if (!is.null(platform)) {
+    args$platform <- platform
   }
   args <- spatialqm_merge_supported_args(fun, args, extra_args)
   do.call(fun, args)

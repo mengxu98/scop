@@ -126,7 +126,7 @@ RunGiottoCellProximity <- function(
   gobject <- spatial_network$gobject
   network_name <- spatial_network$network_name
 
-  cellProximityEnrichment <- giotto_get_fun("cellProximityEnrichment")
+  cellProximityEnrichment <- get_namespace_fun("Giotto", "cellProximityEnrichment")
   enrichment <- giotto_call(
     cellProximityEnrichment,
     giotto_merge_args(
@@ -296,7 +296,7 @@ RunGiottoSpatialGenes <- function(
   )
   expression_values <- giotto_expression_values(layer)
   if (identical(expression_values, "raw")) {
-    normalizeGiotto <- giotto_get_fun("normalizeGiotto")
+    normalizeGiotto <- get_namespace_fun("Giotto", "normalizeGiotto")
     gobject <- giotto_call(normalizeGiotto, list(gobject = gobject, verbose = FALSE))
     expression_values <- "normalized"
   }
@@ -315,7 +315,7 @@ RunGiottoSpatialGenes <- function(
   gobject <- spatial_network$gobject
   network_name <- spatial_network$network_name
 
-  binSpect <- giotto_get_fun("binSpect")
+  binSpect <- get_namespace_fun("Giotto", "binSpect")
   result <- giotto_call(
     binSpect,
     giotto_merge_args(
@@ -495,7 +495,7 @@ RunGiottoSpatialModules <- function(
   )
   expression_values <- giotto_expression_values(layer)
   if (identical(expression_values, "raw")) {
-    normalizeGiotto <- giotto_get_fun("normalizeGiotto")
+    normalizeGiotto <- get_namespace_fun("Giotto", "normalizeGiotto")
     gobject <- giotto_call(normalizeGiotto, list(gobject = gobject, verbose = FALSE))
     expression_values <- "normalized"
   }
@@ -514,7 +514,7 @@ RunGiottoSpatialModules <- function(
   gobject <- spatial_network$gobject
   network_name <- spatial_network$network_name
 
-  detectSpatialCorFeats <- giotto_get_fun("detectSpatialCorFeats")
+  detectSpatialCorFeats <- get_namespace_fun("Giotto", "detectSpatialCorFeats")
   spat_cor <- giotto_call(
     detectSpatialCorFeats,
     giotto_merge_args(
@@ -532,7 +532,7 @@ RunGiottoSpatialModules <- function(
       arg_name = "detect_params"
     )
   )
-  clusterSpatialCorFeats <- giotto_get_fun("clusterSpatialCorFeats")
+  clusterSpatialCorFeats <- get_namespace_fun("Giotto", "clusterSpatialCorFeats")
   modules <- giotto_call(
     clusterSpatialCorFeats,
     giotto_merge_args(
@@ -593,7 +593,7 @@ giotto_spatial_network_name <- function(network_method, network_name = NULL, net
 }
 
 giotto_create_spatial_network <- function(gobject, network_name, network_method, network_params = list(), verbose = TRUE) {
-  createSpatialNetwork <- giotto_get_fun("createSpatialNetwork")
+  createSpatialNetwork <- get_namespace_fun("GiottoClass", "createSpatialNetwork")
   args <- giotto_merge_args(
     list(
       gobject = gobject,

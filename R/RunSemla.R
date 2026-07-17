@@ -73,7 +73,7 @@ RunSemlaSpatialNetwork <- function(
     image_type = image_type,
     verbose = verbose
   )
-  spatial_network <- semla_get_fun("GetSpatialNetwork")(
+  spatial_network <- get_namespace_fun("semla", "GetSpatialNetwork")(
     srt,
     nNeighbors = nNeighbors,
     maxDist = maxDist,
@@ -169,7 +169,7 @@ RunSemlaLocalG <- function(
     verbose = verbose
   )
   before_metadata <- colnames(srt@meta.data)
-  out <- semla_get_fun("RunLocalG")(
+  out <- get_namespace_fun("semla", "RunLocalG")(
     srt,
     features = features,
     alternative = alternative,
@@ -254,7 +254,7 @@ RunSemlaRegionNeighbors <- function(
     verbose = verbose
   )
   before_metadata <- colnames(srt@meta.data)
-  out <- semla_get_fun("RegionNeighbors")(
+  out <- get_namespace_fun("semla", "RegionNeighbors")(
     srt,
     column_name = column_name,
     column_labels = column_labels,
@@ -340,7 +340,7 @@ RunSemlaRadialDistance <- function(
     verbose = verbose
   )
   before_metadata <- colnames(srt@meta.data)
-  out <- semla_get_fun("RadialDistance")(
+  out <- get_namespace_fun("semla", "RadialDistance")(
     srt,
     column_name = column_name,
     selected_groups = selected_groups,
@@ -373,7 +373,7 @@ semla_prepare_srt <- function(
     "Preparing {.cls Seurat} object for {.pkg semla}",
     verbose = verbose
   )
-  semla_get_fun("UpdateSeuratForSemla")(
+  get_namespace_fun("semla", "UpdateSeuratForSemla")(
     srt,
     image_type = image_type,
     verbose = verbose
@@ -381,35 +381,8 @@ semla_prepare_srt <- function(
 }
 
 semla_require <- function(verbose = TRUE) {
-  status <- tryCatch(
-    check_r("spatial-research/semla", verbose = FALSE),
-    error = function(e) FALSE
-  )
-  if (isTRUE(unname(unlist(status))[1])) {
-    return(invisible(TRUE))
-  }
-  log_message(
-    paste(
-      "The optional R package {.pkg semla} is required.",
-      "Install it with {.code thisutils::check_r('spatial-research/semla')}",
-      "or {.code pak::pak('spatial-research/semla')}."
-    ),
-    message_type = "error",
-    verbose = verbose
-  )
-}
-
-semla_get_fun <- function(fun) {
-  semla_require(verbose = FALSE)
-  tryCatch(
-    get_namespace_fun("semla", fun),
-    error = function(e) {
-      log_message(
-        "{.pkg semla} does not export {.fn {fun}} in the installed version",
-        message_type = "error"
-      )
-    }
-  )
+  check_r("spatial-research/semla", verbose = FALSE)
+  invisible(TRUE)
 }
 
 semla_validate_srt <- function(srt) {

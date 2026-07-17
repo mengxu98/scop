@@ -207,21 +207,16 @@ spatial_dwls_signatures <- function(ref_expr, labels) {
 spatial_dwls_fit_weights <- function(signatures, spatial_expr) {
   signatures <- as.matrix(signatures)
   spatial_expr <- as.matrix(spatial_expr)
-  weights <- matrix(
-    0,
-    nrow = ncol(spatial_expr),
-    ncol = ncol(signatures),
-    dimnames = list(colnames(spatial_expr), colnames(signatures))
-  )
   qr_sig <- qr(signatures)
-  for (spot in colnames(spatial_expr)) {
-    coef <- tryCatch(
-      qr.coef(qr_sig, spatial_expr[, spot]),
-      error = function(e) rep(0, ncol(signatures))
-    )
-    coef[!is.finite(coef) | coef < 0] <- 0
-    weights[spot, ] <- coef
-  }
+  coefficients <- tryCatch(
+    qr.coef(qr_sig, spatial_expr),
+    error = function(e) matrix(0, nrow = ncol(signatures), ncol = ncol(spatial_expr))
+  )
+  coefficients <- as.matrix(coefficients)
+  coefficients[!is.finite(coefficients) | coefficients < 0] <- 0
+  weights <- t(coefficients)
+  rownames(weights) <- colnames(spatial_expr)
+  colnames(weights) <- colnames(signatures)
   weights
 }
 

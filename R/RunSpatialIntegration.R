@@ -77,8 +77,14 @@
 #' SpatialIntegrationPlot(spatial, plot_type = "alignment")
 #' SpatialIntegrationPlot(spatial, plot_type = "composition")
 #'
+#' # Keep a balanced, executable multi-sample PRECAST example.
+#' run_cells <- unlist(lapply(
+#'   split(colnames(spatial), spatial$sample[colnames(spatial)]),
+#'   head,
+#'   n = 150L
+#' ), use.names = FALSE)
 #' srt <- RunSpatialIntegration(
-#'   object = spatial,
+#'   object = spatial[, run_cells],
 #'   method = "PRECAST",
 #'   sample.by = "sample",
 #'   assay = "Spatial",
@@ -577,12 +583,17 @@ spatial_integration_run_precast <- function(input, params, verbose = TRUE) {
   par_fun <- get_namespace_fun("PRECAST", "AddParSetting")
   run_fun <- get_namespace_fun("PRECAST", "PRECAST")
   select_fun <- get_namespace_fun("PRECAST", "SelectModel")
+  create_args <- utils::modifyList(
+    list(
+      seuList = spatial_integration_precast_seurat_list(input),
+      project = "scop_spatial_integration",
+      gene.number = length(input$features)
+    ),
+    params$create_params %||% list()
+  )
   obj <- spatial_integration_call(
     create_fun,
-    c(
-      list(seuList = input$srt_list, project = "scop_spatial_integration"),
-      params$create_params %||% list()
-    )
+    create_args
   )
   obj <- spatial_integration_call(
     adj_fun,
@@ -598,12 +609,35 @@ spatial_integration_run_precast <- function(input, params, verbose = TRUE) {
   )
   obj <- spatial_integration_call(
     select_fun,
-    c(list(PRECASTObj = obj), params$select_params %||% list())
+    c(list(obj = obj), params$select_params %||% list())
   )
   spatial_integration_extract_backend(
     raw_result = obj,
     method = "PRECAST",
     input = input
+  )
+}
+
+spatial_integration_precast_seurat_list <- function(input) {
+  Map(
+    function(srt, coords) {
+      cells <- intersect(colnames(srt), rownames(coords))
+      if (length(cells) != ncol(srt)) {
+        log_message(
+          "PRECAST input cells do not all have spatial coordinates",
+          message_type = "error"
+        )
+      }
+      coord_meta <- data.frame(
+        row = as.numeric(coords[cells, "y"]),
+        col = as.numeric(coords[cells, "x"]),
+        row.names = cells
+      )
+      srt <- srt[input$features, cells, drop = FALSE]
+      Seurat::AddMetaData(srt, metadata = coord_meta)
+    },
+    input$srt_list,
+    input$coords_list
   )
 }
 
@@ -660,6 +694,9 @@ spatial_integration_extract_backend <- function(raw_result, method, input) {
     raw_result$raw_result <- raw_result$raw_result %||% raw_result
     return(raw_result)
   }
+  if (identical(method, "PRECAST")) {
+    return(spatial_integration_extract_precast(raw_result, input))
+  }
   if (identical(method, "BASS")) {
     domains <- tryCatch(raw_result@results$z, error = function(e) NULL)
     if (is.matrix(domains)) {
@@ -677,6 +714,45 @@ spatial_integration_extract_backend <- function(raw_result, method, input) {
     return(merged)
   }
   list(raw_result = raw_result)
+}
+
+spatial_integration_extract_precast <- function(raw_result, input) {
+  res_list <- tryCatch(raw_result@resList, error = function(e) NULL)
+  seu_list <- tryCatch(raw_result@seulist, error = function(e) NULL)
+  if (is.null(seu_list) || length(seu_list) == 0L) {
+    seu_list <- tryCatch(raw_result@seuList, error = function(e) NULL)
+  }
+  if (is.null(res_list) || is.null(res_list$hZ) || is.null(res_list$cluster) ||
+      is.null(seu_list) || length(seu_list) == 0L) {
+    return(list(raw_result = raw_result))
+  }
+
+  n_samples <- min(length(seu_list), length(res_list$hZ), length(res_list$cluster))
+  embedding_list <- vector("list", n_samples)
+  domain_list <- vector("list", n_samples)
+  for (i in seq_len(n_samples)) {
+    cells <- colnames(seu_list[[i]])
+    embedding <- as.matrix(res_list$hZ[[i]])
+    domains <- as.vector(res_list$cluster[[i]])
+    if (is.null(cells) || nrow(embedding) != length(cells) || length(domains) != length(cells)) {
+      log_message(
+        "PRECAST result dimensions do not match its retained Seurat cells",
+        message_type = "error"
+      )
+    }
+    rownames(embedding) <- cells
+    colnames(embedding) <- paste0("PRECAST_", seq_len(ncol(embedding)))
+    domains <- as.character(domains)
+    names(domains) <- cells
+    embedding_list[[i]] <- embedding
+    domain_list[[i]] <- domains
+  }
+
+  list(
+    embedding = do.call(rbind, embedding_list),
+    domains = unlist(domain_list, use.names = TRUE),
+    raw_result = raw_result
+  )
 }
 
 spatial_integration_extract_spatialmnn_list <- function(raw_result, input) {

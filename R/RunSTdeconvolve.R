@@ -53,6 +53,13 @@
 #'   overlay_image = FALSE,
 #'   coord.cols = c("x", "y")
 #' )
+#' spatial <- RunSTdeconvolve(
+#'   spatial,
+#'   assay = "Spatial",
+#'   features = rownames(spatial)[1:300],
+#'   k = 3,
+#'   verbose = FALSE
+#' )
 #' STdeconvolvePlot(
 #'   spatial,
 #'   topics = 1:2,
@@ -65,14 +72,6 @@
 #'     overlay_image = FALSE,
 #'     coord.cols = c("x", "y")
 #'   )
-#'
-#' spatial <- RunSTdeconvolve(
-#'   spatial,
-#'   assay = "Spatial",
-#'   features = rownames(spatial)[1:300],
-#'   k = 3,
-#'   verbose = FALSE
-#' )
 RunSTdeconvolve <- function(
   srt,
   assay = NULL,
@@ -163,7 +162,9 @@ RunSTdeconvolve <- function(
     weights = theta,
     all_spots = colnames(srt)
   )
-  theta <- weight_summary$weights
+  # Retain all original spots in the stored result.  Spots removed after
+  # corpus restriction have unknown topic weights and are represented by NA.
+  theta <- weight_summary$full_weights
   srt <- scop_spatial_add_deconv_metadata(
     srt,
     weights = theta,
@@ -461,6 +462,10 @@ stdeconvolve_run_backend <- function(
     corpus <- do.call(restrict_fun, c(list(counts = corpus), restrict_corpus_params))
   }
   corpus_mat <- stdeconvolve_extract_corpus(corpus)
+  # `restrictCorpus()` can remove every retained gene from individual spots.
+  # Drop those spots before fitLDA(), which requires a non-zero row per spot
+  # after the matrix is transposed below.
+  corpus_mat <- corpus_mat[, Matrix::colSums(corpus_mat) > 0, drop = FALSE]
   if (nrow(corpus_mat) == 0L || ncol(corpus_mat) == 0L) {
     log_message(
       "{.pkg STdeconvolve} corpus is empty after preprocessing",
