@@ -473,7 +473,7 @@ spot_sweeper_run_local_outliers <- function(
       verbose = verbose
     )
   }
-  local_fun <- spot_sweeper_get_fun("localOutliers")
+  local_fun <- get_namespace_fun("SpotSweeper", "localOutliers")
   result <- list()
   for (metric in metrics) {
     log_message(
@@ -510,7 +510,7 @@ spot_sweeper_run_artifacts <- function(
   extra_args,
   verbose = TRUE
 ) {
-  artifact_fun <- spot_sweeper_get_fun("findArtifacts")
+  artifact_fun <- get_namespace_fun("SpotSweeper", "findArtifacts")
   cdata <- spot_sweeper_coldata(spe)
   samples <- unique(as.character(cdata[[sample_col]]))
   combined <- cdata
@@ -736,10 +736,6 @@ spot_sweeper_filter_args <- function(fun, args) {
   }
   keep <- intersect(names(args), names(formals(fun)))
   args[keep]
-}
-
-spot_sweeper_get_fun <- function(fun) {
-  get_namespace_fun("SpotSweeper", fun)
 }
 
 spot_sweeper_coldata <- function(spe) {

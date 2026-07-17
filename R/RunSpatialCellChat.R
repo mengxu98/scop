@@ -43,16 +43,6 @@ spatialcellchat_check_r <- function(analysis.level, verbose = FALSE) {
   invisible(TRUE)
 }
 
-spatialcellchat_get_fun <- function(symbol, analysis.level = NULL) {
-  if (!is.null(analysis.level) && !symbol %in% spatialcellchat_required_symbols(analysis.level)) {
-    log_message(
-      "Function {.fn {symbol}} is not registered for SpatialCellChat analysis level {.val {analysis.level}}",
-      message_type = "error"
-    )
-  }
-  get_namespace_fun(.spatialcellchat_package, symbol)
-}
-
 spatialcellchat_remote_info <- function() {
   desc <- tryCatch(utils::packageDescription(.spatialcellchat_package), error = function(e) NULL)
   list(
@@ -438,7 +428,7 @@ spatialcellchat_database <- function(species, database, custom.db = NULL) {
     log_message("Cannot load SpatialCellChat database {.val {data_name}}", message_type = "error")
   }
   if (identical(database, "protein")) {
-    db <- spatialcellchat_get_fun("subsetDB")(
+    db <- get_namespace_fun(.spatialcellchat_package, "subsetDB")(
       db,
       search = c("Secreted Signaling", "ECM-Receptor", "Cell-Cell Contact"),
       non_protein = FALSE
@@ -448,7 +438,13 @@ spatialcellchat_database <- function(species, database, custom.db = NULL) {
 }
 
 spatialcellchat_call <- function(symbol, args, analysis.level) {
-  fun <- spatialcellchat_get_fun(symbol, analysis.level = analysis.level)
+  if (!symbol %in% spatialcellchat_required_symbols(analysis.level)) {
+    log_message(
+      "Function {.fn {symbol}} is not registered for SpatialCellChat analysis level {.val {analysis.level}}",
+      message_type = "error"
+    )
+  }
+  fun <- get_namespace_fun(.spatialcellchat_package, symbol)
   formals_names <- names(formals(fun))
   unsupported <- setdiff(names(args), c(formals_names, if ("..." %in% formals_names) names(args) else character()))
   if (length(unsupported) > 0L && !"..." %in% formals_names) {
@@ -461,7 +457,7 @@ spatialcellchat_call <- function(symbol, args, analysis.level) {
 }
 
 spatialcellchat_extract_table <- function(chat, sample, analysis.level, do.permutation) {
-  table <- spatialcellchat_get_fun("subsetCommunication")(chat)
+  table <- get_namespace_fun(.spatialcellchat_package, "subsetCommunication")(chat)
   table <- as.data.frame(table, stringsAsFactors = FALSE)
   if (nrow(table) == 0L) {
     log_message("SpatialCellChat returned no group-level communication records", message_type = "error")
