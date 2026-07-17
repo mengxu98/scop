@@ -38,3 +38,5 @@ test
 tmaps
 tmp
 /.posit
+_problems/
+testthat-problems.rds
