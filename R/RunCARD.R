@@ -248,6 +248,8 @@ RunCARD <- function(
   if (isTRUE(store_results)) {
     srt@tools[[tool_name]] <- list(
       weights = weights,
+      proportions = weight_summary$full_weights,
+      cells = colnames(srt),
       coords = coords,
       features = rownames(st_counts),
       reference_metadata = ref_meta,
