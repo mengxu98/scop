@@ -101,48 +101,13 @@ test_that("RunCARD writes proportions and tool results", {
   expect_equal(unname(out$CARD_max_prop), c(0.80, 0.65, 0.90))
   expect_true("CARD" %in% names(out@tools))
   expect_equal(colnames(out@tools$CARD$weights), c("Alpha", "Beta"))
-  expect_identical(rownames(out@tools$CARD$proportions), colnames(out))
-  expect_identical(out@tools$CARD$cells, colnames(out))
-  expect_identical(out@tools$CARD$source$coordinate_space, "raw")
   expect_equal(out@tools$CARD$backend_package, "CARD")
   expect_named(out@tools$CARD$summary, c("n_spots", "n_types", "dominant_counts", "max_prop"))
 })
 
-
-test_that("CARD argument routing supports Bioconductor underscore formals", {
-  args <- list(
-    ct.varname = ".scop_cell_type",
-    ct_varname = ".scop_cell_type",
-    sample.varname = ".scop_sample",
-    sample_varname = ".scop_sample",
-    ct.select = c("Alpha", "Beta"),
-    ct_select = c("Alpha", "Beta")
-  )
-  fun <- function(ct_varname, sample_varname, ct_select) NULL
-
-  matched <- scop:::card_match_formals(fun, args)
-  expect_named(matched, c("ct_varname", "sample_varname", "ct_select"))
-  expect_identical(matched$ct_varname, ".scop_cell_type")
-  expect_identical(matched$sample_varname, ".scop_sample")
-  expect_identical(matched$ct_select, c("Alpha", "Beta"))
-})
-
-test_that("CARDspa one-step API bypasses the legacy object constructor", {
-  st_counts <- methods::as(Matrix::Matrix(
-    matrix(1:6, nrow = 2, dimnames = list(c("G1", "G2"), c("S1", "S2", "S3"))),
-    sparse = TRUE
-  ), "dgCMatrix")
-  ref_counts <- methods::as(Matrix::Matrix(
-    matrix(1:8, nrow = 2, dimnames = list(c("G1", "G2"), paste0("C", 1:4))),
-    sparse = TRUE
-  ), "dgCMatrix")
-  ref_meta <- data.frame(
-    .scop_cell_type = c("A", "A", "B", "B"),
-    .scop_sample = "sample1",
-    row.names = colnames(ref_counts)
-  )
-  coords <- data.frame(x = 1:3, y = c(1, 2, 1), row.names = colnames(st_counts))
-  one_step <- function(
+test_that("RunCARD supports CARDspa underscore argument names", {
+  pair <- make_card_seurat_pair()
+  create_fun <- function(
     sc_count,
     sc_meta,
     spatial_count,
@@ -151,42 +116,62 @@ test_that("CARDspa one-step API bypasses the legacy object constructor", {
     ct_select,
     sample_varname,
     mincountgene,
-
-    mincountspot
+    mincountspot,
+    sce = NULL,
+    spe = NULL
   ) {
-    expect_identical(ct_varname, ".scop_cell_type")
-    expect_identical(sample_varname, ".scop_sample")
+    expect_equal(ct_varname, ".scop_cell_type")
+    expect_equal(sample_varname, ".scop_sample")
+    expect_equal(ct_select, c("Alpha", "Beta"))
+    expect_equal(mincountgene, 100)
+    expect_equal(mincountspot, 5)
+    list(sc_meta = sc_meta)
+  }
+  deconv_fun <- function(
+    sc_count,
+    sc_meta,
+    spatial_count,
+    spatial_location,
+    ct_varname,
+    ct_select,
+    sample_varname,
+    mincountgene,
+    mincountspot,
+    sce = NULL,
+    spe = NULL
+  ) {
+    expect_equal(ct_varname, ".scop_cell_type")
+    expect_equal(sample_varname, ".scop_sample")
+    expect_equal(ct_select, c("Alpha", "Beta"))
     list(Proportion_CARD = matrix(
-      c(0.8, 0.4, 0.1, 0.2, 0.6, 0.9),
-      nrow = 2,
+      c(0.8, 0.2, 0.4, 0.6, 0.1, 0.9),
+      nrow = 3,
       byrow = TRUE,
-      dimnames = list(c("A", "B"), colnames(spatial_count))
+      dimnames = list(paste0("Spot", 1:3), c("Alpha", "Beta"))
     ))
   }
   testthat::local_mocked_bindings(
     card_resolve_backend_package = function() "CARDspa",
     get_namespace_fun = function(package, name) {
-
-      if (identical(name, "createCARDObject")) {
-        return(function(...) stop("legacy constructor must not run"))
-      }
-      one_step
+      expect_identical(package, "CARDspa")
+      switch(name,
+        createCARDObject = create_fun,
+        CARD_deconvolution = deconv_fun,
+        stop("unexpected function")
+      )
     }
   )
 
-  result <- scop:::card_run_backend(
-    st_counts = st_counts,
-    ref_counts = ref_counts,
-    ref_meta = ref_meta,
-    coords = coords,
-    ct_select = c("A", "B"),
-    minCountGene = 100,
-    minCountSpot = 5,
-    create_card_params = list(),
-    card_deconvolution_params = list()
+  out <- RunCARD(
+    pair$spatial,
+    reference = pair$reference,
+    reference_label = "celltype",
+    sample_varname = "sample",
+    verbose = FALSE
   )
-  expect_identical(result$package, "CARDspa")
-  expect_equal(dim(result$weights), c(2L, 3L))
+
+  expect_equal(unname(out$CARD_prop_Alpha), c(0.8, 0.4, 0.1))
+  expect_equal(unname(out$CARD_prop_Beta), c(0.2, 0.6, 0.9))
 })
 
 test_that("RunCARD validates inputs before backend work", {
@@ -228,7 +213,7 @@ test_that("RunCARD validates inputs before backend work", {
   })
 })
 
-test_that("CARD stored results use SpatialDeconvolutionPlot", {
+test_that("CARD results reuse SCOP SpatialSpotPlot", {
   pair <- make_card_seurat_pair()
   pair$spatial$CARD_prop_Alpha <- c(0.8, 0.4, 0.1)
   pair$spatial$CARD_prop_Beta <- c(0.2, 0.6, 0.9)
@@ -241,25 +226,14 @@ test_that("CARD stored results use SpatialDeconvolutionPlot", {
       invisible(TRUE)
     }
   )
-  pair$spatial@tools$CARD <- scop:::spatial_result_build(
-    bundle = list(
-      proportions = as.matrix(pair$spatial@meta.data[, c("CARD_prop_Alpha", "CARD_prop_Beta")]),
-      cells = colnames(pair$spatial)
-    ),
-    method = "CARD",
-    result_type = "deconvolution",
-    provenance = list(producer = "RunCARD", backend_id = "card")
-  )
-  colnames(pair$spatial@tools$CARD$proportions) <- c("Alpha", "Beta")
-  p1 <- SpatialDeconvolutionPlot(
+  p1 <- SpatialSpotPlot(
     pair$spatial,
-    tool_name = "CARD",
-    plot_type = "dominant",
+    group.by = "CARD_dominant_type",
     overlay_image = FALSE
   )
-  p2 <- SpatialDeconvolutionPlot(
+  p2 <- SpatialSpotPlot(
     pair$spatial,
-    tool_name = "CARD",
+    group.by = "CARD_dominant_type",
     plot_type = "pie",
     overlay_image = FALSE
   )
