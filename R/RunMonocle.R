@@ -263,10 +263,7 @@ RunMonocle2 <- function(
     ddrtree_tol = ddrtree_tol
   )
   cds <- do.call(get_namespace_fun("monocle", "reduceDimension"), reduce_args)
-  if (is.null(root_state) && !interactive()) {
-    root_state <- 1
-  }
-  cds <- get_namespace_fun("monocle", "orderCells")(cds, root_state = root_state)
+  cds <- get_namespace_fun("monocle", "orderCells")(cds)
 
   embeddings <- Matrix::t(cds@reducedDimS)
   colnames(embeddings) <- paste0(
@@ -326,6 +323,11 @@ RunMonocle2 <- function(
       print(p1 + p3)
     }
   }
+
+  if (is.null(root_state)) {
+    root_state <- sort(unique(cds[["State"]]))[1]
+  }
+  cds <- get_namespace_fun("monocle", "orderCells")(cds, root_state = root_state)
   srt[["Monocle2_Pseudotime"]] <- cds[["Pseudotime"]]
   srt@tools$Monocle2 <- list(
     cds = cds,
@@ -853,14 +855,8 @@ monocle2_cpp_extract_ordering <- function(cds, root_cell, reorder_to_cells = TRU
 }
 
 monocle2_cpp_resolve_root_state <- function(srt, root_state = NULL, group.by = NULL, initial_state = NULL) {
-  if (is.null(root_state) && !is.null(initial_state) && interactive()) {
-    root_state <- utils::select.list(
-      sort(unique(as.character(initial_state))),
-      title = "Select the root state to order cells:"
-    )
-    if (root_state == "" || length(root_state) == 0L) {
-      root_state <- NULL
-    }
+  if (is.null(root_state) && !is.null(initial_state)) {
+    root_state <- sort(unique(as.character(initial_state)))[1]
   }
   if (!is.null(root_state) && !is.null(group.by) && group.by %in% colnames(srt@meta.data)) {
     group_cells <- which(as.character(srt@meta.data[[group.by]]) %in% as.character(root_state))
@@ -1198,17 +1194,7 @@ RunMonocle3 <- function(
   srt[["Monocle3_partitions"]] <- cds@clusters[["UMAP"]]$partitions
 
   if (is.null(use_partition)) {
-    if (interactive()) {
-      use_partition <- utils::select.list(
-        c(TRUE, FALSE),
-        title = "Whether to use partitions to learn disjoint graph in each partition?"
-      )
-      if (use_partition == "" || length(use_partition) == 0) {
-        use_partition <- TRUE
-      }
-    } else {
-      use_partition <- TRUE
-    }
+    use_partition <- TRUE
   }
   cds <- get_namespace_fun("monocle3", "learn_graph")(
     cds = cds,
@@ -1333,20 +1319,7 @@ RunMonocle3 <- function(
     )
   }
 
-  if (is.null(root_pr_nodes) && is.null(root_cells)) {
-    if (interactive()) {
-      root_pr_nodes <- utils::select.list(
-        names(pps),
-        title = "Select the root nodes to order cells, or leave blank for interactive selection:",
-        multiple = TRUE
-      )
-      if (root_pr_nodes == "" || length(root_pr_nodes) == 0) {
-        root_pr_nodes <- NULL
-      }
-    } else {
-      root_pr_nodes <- names(pps)[1]
-    }
-  }
+
   cds <- get_namespace_fun("monocle3", "order_cells")(
     cds,
     root_pr_nodes = root_pr_nodes,
