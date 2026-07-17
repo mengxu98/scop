@@ -49,7 +49,7 @@ RunSpatialGradientFeatures(
   set_variable_features = FALSE,
   store_results = TRUE,
   verbose = TRUE,
-  coordinate_space = c("legacy_display", "raw"),
+  coordinate_space = c("raw", "legacy_display"),
   ...
 )
 }
@@ -128,7 +128,10 @@ variable features.}
 Default is \code{TRUE}.}
 
 \item{coordinate_space}{Coordinate system used by the native distance
-calculations.}
+calculations. The default is raw acquisition coordinates, so \code{start},
+\code{end}, trajectory positions, widths, and native distances share raw
+coordinate units. Use \code{"legacy_display"} explicitly for pre-0.9.0 display
+coordinates. SPATA2-backed runs retain backend-native units.}
 
 \item{...}{Additional arguments forwarded to the SPATA2 screening function.}
 }

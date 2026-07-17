@@ -83,6 +83,7 @@ test_that("RunBANKSY writes cluster metadata and tool results", {
   expect_true("BANKSY" %in% names(out@tools))
   expect_equal(out@tools$BANKSY$cluster_source, "BANKSY_leiden")
   expect_equal(out@tools$BANKSY$parameters$group, "sample")
+  expect_identical(out@tools$BANKSY$source$coordinate_space, "raw")
   expect_named(out@tools$BANKSY$summary, c("n_spots", "domains"))
 })
 

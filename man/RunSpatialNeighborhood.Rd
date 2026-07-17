@@ -23,7 +23,7 @@ RunSpatialNeighborhood(
   tool_name = "SpatialNeighborhood",
   store_results = TRUE,
   verbose = TRUE,
-  coordinate_space = c("legacy_display", "raw"),
+  coordinate_space = c("raw", "legacy_display"),
   ...
 )
 }
@@ -57,11 +57,11 @@ differential neighborhood statistics.}
 that support paired or repeated designs.}
 
 \item{radius}{Optional spatial radius used for scop-native neighborhood
-summaries.}
+summaries, expressed in the selected coordinate units.}
 
 \item{k}{Optional number of nearest neighbors used for scop-native
-neighborhood summaries. When both \code{radius} and \code{k} are \code{NULL}, \code{k = 6} is
-used.}
+neighborhood summaries. This is a unitless count. When both \code{radius} and
+\code{k} are \code{NULL}, \code{k = 6} is used.}
 
 \item{features}{Optional features to extract into the backend input table.}
 
@@ -74,7 +74,9 @@ used.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{coordinate_space}{Coordinate system used to build neighbor distances.}
+\item{coordinate_space}{Coordinate system used to build neighbor distances.
+The default is raw acquisition coordinates; \code{"legacy_display"} remains an
+explicit compatibility option.}
 
 \item{...}{Additional arguments passed to the selected backend.}
 }

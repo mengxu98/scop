@@ -183,6 +183,7 @@ test_that("RunRCTD writes custom-key plot-ready proportions", {
     coord.cols = c("col", "row"),
     verbose = FALSE
   )
+  expect_identical(out@tools$RCTDCustom$source$coordinate_space, "raw")
   expect_false("RCTD" %in% names(out@tools))
   expect_identical(rownames(out@tools$RCTDCustom$proportions), colnames(out))
   expect_s3_class(SpatialDeconvolutionPlot(

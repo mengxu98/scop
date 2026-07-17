@@ -90,7 +90,7 @@ RunCARD <- function(
   card_deconvolution_params = list(),
   verbose = TRUE,
   ...,
-  coordinate_space = c("legacy_display", "raw")
+  coordinate_space = c("raw", "legacy_display")
 ) {
   if (!inherits(srt, "Seurat")) {
     log_message(

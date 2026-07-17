@@ -24,7 +24,7 @@ RunCytoSPACE(
   verbose = TRUE,
   image = NULL,
   coord.cols = c("col", "row"),
-  coordinate_space = c("legacy_display", "raw")
+  coordinate_space = c("raw", "legacy_display")
 )
 }
 \arguments{
@@ -81,7 +81,8 @@ Default is \code{TRUE}.}
 \item{coord.cols}{Metadata coordinate columns used when no image is selected.}
 
 \item{coordinate_space}{Coordinate space used for assignment locations. The
-default preserves the historical coordinate behavior.}
+default is raw acquisition coordinates. Use \code{"legacy_display"} explicitly
+to reproduce the display-scaled locations used before scop 0.9.0.}
 }
 \value{
 A \code{Seurat} object with CytoSPACE metadata columns and detailed

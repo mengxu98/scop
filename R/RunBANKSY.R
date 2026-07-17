@@ -12,7 +12,7 @@
 #' @param coord.cols Metadata coordinate columns used when no image coordinate
 #' source is available.
 #' @param lambda BANKSY spatial weighting parameter.
-#' @param k_geom Number of spatial neighbors used by BANKSY.
+#' @param k_geom Unitless number of spatial neighbors used by BANKSY.
 #' @param M Highest azimuthal Fourier harmonic passed to BANKSY.
 #' @param npcs Number of principal components to compute.
 #' @param use_agf Whether to use azimuthal Gabor filters.
@@ -36,7 +36,9 @@
 #' @param store_results Whether to store detailed BANKSY results in
 #' `srt@tools`.
 #' @param coordinate_space Coordinate space used for BANKSY spatial input.
-#'   The default preserves the historical coordinate behavior.
+#' The default is raw acquisition coordinates, so geometry and distance
+#' weighting use raw coordinate units. Use `"legacy_display"` explicitly to
+#' reproduce the display-scaled coordinates used before scop 0.9.0.
 #'
 #' @return A `Seurat` object with BANKSY clusters in metadata. When
 #' `store_results = TRUE`, detailed results are stored in
@@ -94,7 +96,7 @@ RunBANKSY <- function(
   tool_name = "BANKSY",
   store_results = TRUE,
   verbose = TRUE,
-  coordinate_space = c("legacy_display", "raw")
+  coordinate_space = c("raw", "legacy_display")
 ) {
   if (!inherits(srt, "Seurat")) {
     log_message(
