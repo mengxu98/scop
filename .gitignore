@@ -24,6 +24,7 @@
 *.pyc
 *.so
 *.tar.gz
+src/Makevars
 deepscore_logs
 dev
 docs
@@ -36,3 +37,4 @@ scripts
 test
 tmaps
 tmp
+/.posit

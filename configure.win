@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# scop configure.win — Windows configuration
+# Generates src/Makevars from src/Makevars.win.in if present,
+# otherwise copies src/Makevars.win directly.
+
+R_HOME=${R_HOME:-$(R RHOME 2>/dev/null)}
+RSCRIPT="${R_HOME}/bin${R_ARCH_BIN}/Rscript"
+
+if [ -f src/Makevars.win.in ]; then
+  RCPP_PARALLEL_CXXFLAGS=$("${RSCRIPT}" --vanilla -e "cat(RcppParallel::CxxFlags())" 2>/dev/null || echo "")
+  RCPP_PARALLEL_LIBS=$("${RSCRIPT}" --vanilla -e "cat(RcppParallel::LdFlags())" 2>/dev/null || echo "")
+  RCPP_PARALLEL_LIBDIR=$("${RSCRIPT}" --vanilla -e "cat(system.file('lib', package='RcppParallel'))" 2>/dev/null || echo "")
+
+  sed \
+    -e "s|@RCPP_PARALLEL_CXXFLAGS@|${RCPP_PARALLEL_CXXFLAGS}|g" \
+    -e "s|@RCPP_PARALLEL_LIBS@|${RCPP_PARALLEL_LIBS}|g" \
+    -e "s|@RCPP_PARALLEL_LIBDIR@|${RCPP_PARALLEL_LIBDIR}|g" \
+    -e "s|@R_HOME@|${R_HOME}|g" \
+    src/Makevars.win.in > src/Makevars.win
+elif [ -f src/Makevars.win ]; then
+  echo "scop configure.win: using existing src/Makevars.win"
+fi
