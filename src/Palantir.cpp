@@ -713,3 +713,34 @@ NumericMatrix palantir_absorption_cpp(
 
   return bp;
 }
+
+// [[Rcpp::export]]
+NumericVector palantir_row_entropy_cpp(NumericMatrix probabilities)
+{
+  const int n_rows = probabilities.nrow();
+  const int n_cols = probabilities.ncol();
+  NumericVector out(n_rows);
+  for (int i = 0; i < n_rows; ++i) {
+    int selected = 0;
+    bool missing_selected = false;
+    double entropy = 0.0;
+    for (int j = 0; j < n_cols; ++j) {
+      const double probability = probabilities(i, j);
+      if (R_IsNA(probability) || R_IsNaN(probability)) {
+        ++selected;
+        missing_selected = true;
+      } else if (probability > 0.0) {
+        ++selected;
+        entropy += probability * std::log(probability);
+      }
+    }
+    if (selected < 2) {
+      out[i] = 0.0;
+    } else if (missing_selected) {
+      out[i] = NA_REAL;
+    } else {
+      out[i] = -entropy;
+    }
+  }
+  return out;
+}

@@ -1162,9 +1162,10 @@ NumericMatrix zscore_dense(
         gene_sds[gene] = R_NaN;
         continue;
       }
-      // GSVA < 2.6 scales only stored dgCMatrix values. GSVA >= 2.6 uses
-      // complete-row statistics but still omits structural zeros from the
-      // sparse accumulation. Dense callers include those zero contributions.
+      // GSVA < 2.6 scales only stored dgCMatrix values. GSVA >= 2.6 and
+      // dense callers standardize the complete row, treating structural zeros
+      // as genuine zero observations. GSVA >= 2.6 additionally drops genes
+      // whose stored (non-zero) values are constant.
       const int standardize_count = sparse_standardize ? gene_nonzero_counts[gene] : n_cells;
       const bool constant_nonzero = gene_nonzero_counts[gene] > 0 &&
         gene_nonzero_mins[gene] == gene_nonzero_maxs[gene];
@@ -1351,9 +1352,14 @@ NumericMatrix plage_dense(
       }
       // GSVA < 2.6 scales only stored dgCMatrix values; GSVA >= 2.6 and
       // dense input standardize the complete row. The R caller selects the
-      // matching contract through dense_standardize.
+      // matching contract through dense_standardize. GSVA >= 2.6 additionally
+      // drops genes whose stored (non-zero) values are constant, so exclude
+      // them under the dense contract even when the complete row still varies
+      // because of its structural zeros.
+      const bool constant_nonzero = row_counts[gene] > 0 &&
+        row_nonzero_mins[gene] == row_nonzero_maxs[gene];
       const int standardize_count = dense_standardize ? n_cells : row_counts[gene];
-      if (standardize_count > 1) {
+      if (standardize_count > 1 && !(dense_standardize && constant_nonzero)) {
         const double mean = row_sums[gene] / static_cast<double>(standardize_count);
         double var = (row_sq_sums[gene] - static_cast<double>(standardize_count) * mean * mean) /
           static_cast<double>(standardize_count - 1);
@@ -2377,4 +2383,67 @@ NumericMatrix gsva_poisson_dense(
     tau,
     chunk_size
   );
+}
+
+// [[Rcpp::export]]
+LogicalVector dense_row_has_variable_finite(NumericMatrix expr) {
+  const int n_rows = expr.nrow();
+  const int n_cols = expr.ncol();
+  LogicalVector out(n_rows);
+
+  for (int row = 0; row < n_rows; ++row) {
+    int n_finite = 0;
+    double row_min = R_PosInf;
+    double row_max = R_NegInf;
+    for (int col = 0; col < n_cols; ++col) {
+      const double value = expr(row, col);
+      if (!R_finite(value)) {
+        continue;
+      }
+      ++n_finite;
+      if (value < row_min) {
+        row_min = value;
+      }
+      if (value > row_max) {
+        row_max = value;
+      }
+    }
+    out[row] = n_finite > 1 && row_max > row_min;
+  }
+  return out;
+}
+
+// Mirrors gene_set_scoring_keep_variable_rows() for dgCMatrix inputs.  This
+// deliberately evaluates only stored entries: the R implementation groups
+// expr@x by expr@i and does not add structural zeros to each row.
+// [[Rcpp::export]]
+LogicalVector sparse_row_has_variable_finite(S4 expr) {
+  const IntegerVector row_index = expr.slot("i");
+  const NumericVector values = expr.slot("x");
+  const IntegerVector dimensions = expr.slot("Dim");
+  const int n_rows = dimensions[0];
+  LogicalVector out(n_rows);
+  IntegerVector n_finite(n_rows);
+  NumericVector row_min(n_rows, R_PosInf);
+  NumericVector row_max(n_rows, R_NegInf);
+
+  for (R_xlen_t entry = 0; entry < values.size(); ++entry) {
+    const double value = values[entry];
+    if (!R_finite(value)) {
+      continue;
+    }
+    const int row = row_index[entry];
+    ++n_finite[row];
+    if (value < row_min[row]) {
+      row_min[row] = value;
+    }
+    if (value > row_max[row]) {
+      row_max[row] = value;
+    }
+  }
+
+  for (int row = 0; row < n_rows; ++row) {
+    out[row] = n_finite[row] > 1 && row_max[row] > row_min[row];
+  }
+  return out;
 }
