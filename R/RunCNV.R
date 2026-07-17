@@ -379,7 +379,7 @@ cnv_run_fastcnv <- function(
   verbose = TRUE,
   ...
 ) {
-  check_r("fastCNV", verbose = FALSE)
+  check_r("must-bioinfo/fastCNV", verbose = FALSE)
   if (identical(genome, "mm10")) {
     log_message(
       "{.pkg fastCNV} currently supports human data only; use {.arg genome = 'hg38'} or {.arg genome = 'hg19'}",
@@ -417,12 +417,18 @@ cnv_run_scevan <- function(
   verbose = TRUE,
   ...
 ) {
-  check_r("SCEVAN", verbose = FALSE)
+  check_r(c("miccec/yaGST", "AntonioDeFalco/SCEVAN"), verbose = FALSE)
   sample_name <- "scop_cnv"
-  scevan_fun <- cnv_get_first_namespace_fun(
-    "SCEVAN",
-    c("pipelineCNA", "SCEVAN")
-  )
+  scevan_fun <- get_namespace_fun("SCEVAN", "pipelineCNA")
+  if (!is.function(scevan_fun)) {
+    scevan_fun <- get_namespace_fun("SCEVAN", "SCEVAN")
+  }
+  if (!is.function(scevan_fun)) {
+    log_message(
+      "{.pkg SCEVAN} does not expose {.fn pipelineCNA} or {.fn SCEVAN}",
+      message_type = "error"
+    )
+  }
   args <- utils::modifyList(
     list(
       count_mtx = as.matrix(counts),
@@ -461,7 +467,7 @@ cnv_run_infercnv <- function(
   verbose = TRUE,
   ...
 ) {
-  check_r("infercnv", verbose = FALSE)
+  check_r("broadinstitute/infercnv", verbose = FALSE)
   log_message(
     "{.pkg infercnv} upstream README states the project is no longer supported; consider {.pkg copykat}, {.pkg fastCNV}, or {.pkg Numbat} for new analyses",
     message_type = "warning",
@@ -1823,19 +1829,6 @@ cnv_first_name <- function(names, candidates) {
     return(NULL)
   }
   hit[[1L]]
-}
-
-cnv_get_first_namespace_fun <- function(package, names) {
-  for (nm in names) {
-    fun <- tryCatch(get_namespace_fun(package, nm), error = function(e) NULL)
-    if (is.function(fun)) {
-      return(fun)
-    }
-  }
-  log_message(
-    "{.pkg {package}} does not expose one of {.val {names}}",
-    message_type = "error"
-  )
 }
 
 cnv_call_backend_fun <- function(fun, args) {

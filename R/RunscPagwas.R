@@ -107,24 +107,13 @@ scpagwas_check_r <- function(verbose = TRUE) {
   invisible(TRUE)
 }
 
-scpagwas_get_fun <- function(fun, error = TRUE) {
-  out <- tryCatch(
-    suppressWarnings(get_namespace_fun("scPagwas", fun)),
-    error = function(e) NULL
-  )
-  if (!is.function(out) && isTRUE(error)) {
-    log_message(
-      "Could not find {.pkg scPagwas} function {.val {fun}}",
-      message_type = "error"
-    )
-  }
-  out
-}
-
 scpagwas_find_runner <- function(error = TRUE) {
   candidates <- c("scPagwas_main", "scPagwas")
   for (fun in candidates) {
-    runner <- scpagwas_get_fun(fun, error = FALSE)
+    runner <- tryCatch(
+      suppressWarnings(get_namespace_fun("scPagwas", fun)),
+      error = function(e) NULL
+    )
     if (is.function(runner)) {
       return(runner)
     }

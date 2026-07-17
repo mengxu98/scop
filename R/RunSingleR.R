@@ -152,21 +152,11 @@ RunSingleR <- function(
     method <- "SingleRCell"
   }
 
-  status_query <- CheckDataType(
-    object = GetAssayData5(
-      srt_query,
-      layer = "data",
-      assay = query_assay
-    )
-  )
+  query_logcounts <- GetAssayData5(srt_query, layer = "data", assay = query_assay)
+  ref_logcounts <- GetAssayData5(srt_ref, layer = "data", assay = ref_assay)
+  status_query <- CheckDataType(object = query_logcounts)
   log_message("Detected {.arg srt_query} data type: {.val {status_query}}")
-  status_ref <- CheckDataType(
-    object = GetAssayData5(
-      srt_ref,
-      layer = "data",
-      assay = ref_assay
-    )
-  )
+  status_ref <- CheckDataType(object = ref_logcounts)
   log_message("Detected {.arg srt_ref} data type: {.val {status_ref}}")
   if (
     status_ref != status_query ||
@@ -185,11 +175,7 @@ RunSingleR <- function(
       assay = query_assay,
       layer = "counts"
     ),
-    logcounts = GetAssayData5(
-      object = srt_query,
-      assay = query_assay,
-      layer = "data"
-    )
+    logcounts = query_logcounts
   )
   sce_query <- SingleCellExperiment::SingleCellExperiment(
     assays = assays_query
@@ -205,11 +191,7 @@ RunSingleR <- function(
       assay = ref_assay,
       layer = "counts"
     ),
-    logcounts = GetAssayData5(
-      object = srt_ref,
-      assay = ref_assay,
-      layer = "data"
-    )
+    logcounts = ref_logcounts
   )
   sce_ref <- SingleCellExperiment::SingleCellExperiment(
     assays = assays_ref
@@ -319,19 +301,19 @@ RunSingleR <- function(
       srt_query$singler_annotation <- cell_results$labels
     }
 
-    cell_scores <- numeric(ncol(srt_query))
-    for (i in seq_len(ncol(srt_query))) {
-      if (isTRUE(prune)) {
-        annotation <- cell_results$pruned.labels[i]
-      } else {
-        annotation <- cell_results$labels[i]
-      }
-
-      if (!is.na(annotation) && annotation %in% colnames(cell_results$scores)) {
-        cell_scores[i] <- cell_results$scores[i, annotation]
-      } else {
-        cell_scores[i] <- NA
-      }
+    annotations <- if (isTRUE(prune)) {
+      cell_results$pruned.labels
+    } else {
+      cell_results$labels
+    }
+    score_columns <- match(annotations, colnames(cell_results$scores))
+    cell_scores <- rep(NA_real_, length(annotations))
+    valid_scores <- !is.na(score_columns)
+    if (any(valid_scores)) {
+      cell_scores[valid_scores] <- cell_results$scores[cbind(
+        which(valid_scores),
+        score_columns[valid_scores]
+      )]
     }
     srt_query$singler_score <- cell_scores
   }

@@ -1244,23 +1244,25 @@ scenicplus_add_tfg_cor <- function(
     return(adjacency)
   }
   expr <- as_matrix(rna_counts[genes, , drop = FALSE])
-  corr <- suppressWarnings(stats::cor(
-    t(expr),
-    method = "pearson",
-    use = "pairwise.complete.obs"
-  ))
-  rho <- vapply(
-    seq_len(nrow(adjacency)),
-    function(i) {
-      tf <- adjacency[["TF"]][[i]]
-      target <- adjacency[["target"]][[i]]
-      if (!tf %in% rownames(corr) || !target %in% colnames(corr)) {
-        return(NA_real_)
-      }
-      as.numeric(corr[tf, target])
-    },
-    numeric(1)
-  )
+  tf_index <- match(adjacency[["TF"]], rownames(expr))
+  target_index <- match(adjacency[["target"]], rownames(expr))
+  matched <- !is.na(tf_index) & !is.na(target_index)
+  if (all(is.finite(expr))) {
+    rho <- rep(NA_real_, nrow(adjacency))
+    rho[matched] <- scenic_edge_correlation_cpp(
+      expr = t(expr),
+      tf_index = tf_index[matched],
+      target_index = target_index[matched]
+    )
+  } else {
+    corr <- suppressWarnings(stats::cor(
+      t(expr),
+      method = "pearson",
+      use = "pairwise.complete.obs"
+    ))
+    rho <- rep(NA_real_, nrow(adjacency))
+    rho[matched] <- corr[cbind(tf_index[matched], target_index[matched])]
+  }
   adjacency[["regulation"]] <- ifelse(
     is.finite(rho) & rho > rho_threshold,
     1L,

@@ -51,6 +51,7 @@ RunSymphonyMap <- function(
   verbose = TRUE
 ) {
   check_r("immunogenomics/symphony", verbose = FALSE)
+  check_r("matrixStats", verbose = FALSE)
   query_assay <- query_assay %||% SeuratObject::DefaultAssay(srt_query)
   ref_assay <- ref_assay %||% SeuratObject::DefaultAssay(srt_ref)
   if (!is.null(ref_group)) {
@@ -148,13 +149,8 @@ RunSymphonyMap <- function(
     )
   }
 
-  status_query <- CheckDataType(
-    object = GetAssayData5(
-      srt_query,
-      layer = "data",
-      assay = query_assay
-    )
-  )
+  query_data <- GetAssayData5(srt_query, layer = "data", assay = query_assay)
+  status_query <- CheckDataType(object = query_data)
   log_message("Detected {.arg srt_query} data type: {.val {status_query}}", verbose = verbose)
   status_ref <- CheckDataType(
     object = GetAssayData5(
@@ -186,11 +182,7 @@ RunSymphonyMap <- function(
   )
   log_message("Run mapQuery", verbose = verbose)
   res <- mapQuery(
-    exp_query = GetAssayData5(
-      srt_query,
-      layer = "data",
-      assay = query_assay
-    ),
+    exp_query = query_data,
     metadata_query = srt_query@meta.data,
     ref_obj = ref,
     vars = NULL,
@@ -204,13 +196,13 @@ RunSymphonyMap <- function(
   srt_query[["ref.pca"]] <- SeuratObject::CreateDimReducObject(
     embeddings = Matrix::t(Z_pca_query),
     loadings = ref$loadings,
-    stdev = as.numeric(apply(Z_pca_query, 1, stats::sd)),
+    stdev = as.numeric(matrixStats::rowSds(Z_pca_query)),
     assay = query_assay,
     key = "refpca_"
   )
   srt_query[["ref.harmony"]] <- SeuratObject::CreateDimReducObject(
     embeddings = Matrix::t(Zq_corr),
-    stdev = as.numeric(apply(Zq_corr, 1, stats::sd)),
+    stdev = as.numeric(matrixStats::rowSds(Zq_corr)),
     assay = query_assay,
     key = "refharmony_",
     misc = list(R = R_query)
@@ -376,47 +368,33 @@ buildReferenceFromSeurat <- function(
   )
 
   if (assay == "RNA") {
+    var_feature_data <- GetAssayData5(
+      obj,
+      assay = assay,
+      layer = "data"
+    )[var_features, , drop = FALSE]
     vargenes_means_sds <- data.frame(
       symbol = var_features,
-      mean = Matrix::rowMeans(
-        GetAssayData5(
-          obj,
-          assay = assay,
-          layer = "data"
-        )[
-          var_features,
-        ]
-      )
+      mean = Matrix::rowMeans(var_feature_data)
     )
 
     row_sds <- get_namespace_fun("symphony", "rowSDs")
     vargenes_means_sds$stddev <- row_sds(
-      A = GetAssayData5(
-        obj,
-        assay = assay,
-        layer = "data"
-      )[var_features, ],
+      A = var_feature_data,
       row_means = vargenes_means_sds$mean
     )
   } else if (assay == "SCT") {
+    var_feature_data <- GetAssayData5(
+      obj,
+      assay = assay,
+      layer = "scale.data"
+    )[var_features, , drop = FALSE]
     vargenes_means_sds <- data.frame(
       symbol = var_features,
-      mean = Matrix::rowMeans(
-        GetAssayData5(
-          obj,
-          assay = assay,
-          layer = "scale.data"
-        )[
-          var_features,
-        ]
-      )
+      mean = Matrix::rowMeans(var_feature_data)
     )
     asdgc <- Matrix::Matrix(
-      GetAssayData5(
-        obj,
-        assay = assay,
-        layer = "scale.data"
-      )[var_features, ],
+      var_feature_data,
       sparse = TRUE
     )
     row_sds <- get_namespace_fun("symphony", "rowSDs")

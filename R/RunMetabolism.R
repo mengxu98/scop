@@ -58,7 +58,8 @@
 #'   db = c("KEGG", "REACTOME"),
 #'   group.by = "CellType",
 #'   species = "Mus_musculus",
-#'   method = "AUCell"
+#'   method = "AUCell",
+#'   use_preparedb = FALSE
 #' )
 #' ht <- MetabolismPlot(
 #'   pancreas_sub,
@@ -316,12 +317,9 @@ RunMetabolism <- function(
         verbose = verbose
       )
       conv <- tryCatch(
-        GeneConvert(
-          geneID = all_human_genes,
-          geneID_from_IDtype = "symbol",
-          geneID_to_IDtype = "symbol",
-          species_from = "Homo_sapiens",
-          species_to = species,
+        scmetabolism_convert_genes(
+          all_human_genes = all_human_genes,
+          species = species,
           Ensembl_version = Ensembl_version,
           biomart = biomart,
           mirror = mirror,
@@ -637,6 +635,50 @@ scmetabolism_gmt_sources <- function() {
   use_local <- file.exists(local) & nzchar(local)
   out[use_local] <- local[use_local]
   out
+}
+
+.scmetabolism_conversion_cache <- new.env(parent = emptyenv())
+
+scmetabolism_convert_genes <- function(
+  all_human_genes,
+  species,
+  Ensembl_version = NULL,
+  biomart = NULL,
+  mirror = NULL,
+  max_tries = 5,
+  verbose = TRUE
+) {
+  all_human_genes <- unique(as.character(all_human_genes))
+  cache_key <- paste(
+    c(
+      species,
+      Ensembl_version %||% "",
+      biomart %||% "",
+      mirror %||% "",
+      as.character(max_tries),
+      all_human_genes
+    ),
+    collapse = "\r"
+  )
+  if (exists(cache_key, envir = .scmetabolism_conversion_cache, inherits = FALSE)) {
+    return(get(cache_key, envir = .scmetabolism_conversion_cache, inherits = FALSE))
+  }
+  conversion <- GeneConvert(
+    geneID = all_human_genes,
+    geneID_from_IDtype = "symbol",
+    geneID_to_IDtype = "symbol",
+    species_from = "Homo_sapiens",
+    species_to = species,
+    Ensembl_version = Ensembl_version,
+    biomart = biomart,
+    mirror = mirror,
+    max_tries = max_tries,
+    verbose = verbose
+  )
+  if (!is.null(conversion)) {
+    assign(cache_key, conversion, envir = .scmetabolism_conversion_cache)
+  }
+  conversion
 }
 
 load_scmetabolism_gmt <- function(source, db_name, verbose = TRUE) {

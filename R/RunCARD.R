@@ -56,15 +56,13 @@
 #'     coord.cols = c("x", "y")
 #'   )
 #'
-#' data(pancreas_sub)
-#' features_use <- head(intersect(rownames(spatial), rownames(pancreas_sub)), 300)
+#' data(panc8_sub)
 #' spatial <- RunCARD(
 #'   spatial,
-#'   reference = pancreas_sub,
-#'   reference_label = "CellType",
+#'   reference = panc8_sub,
+#'   reference_label = "celltype",
 #'   assay = "Spatial",
 #'   reference_assay = "RNA",
-#'   features = features_use,
 #'   verbose = FALSE
 #' )
 RunCARD <- function(
@@ -316,6 +314,9 @@ card_run_backend <- function(
       ct.varname = ".scop_cell_type",
       sample.varname = ".scop_sample",
       ct.select = ct_select,
+      ct_varname = ".scop_cell_type",
+      sample_varname = ".scop_sample",
+      ct_select = ct_select,
       minCountGene = minCountGene,
       minCountSpot = minCountSpot,
       mincountgene = minCountGene,
@@ -323,12 +324,17 @@ card_run_backend <- function(
     ),
     create_card_params
   )
-  card_obj <- do.call(create_fun, card_match_formals(create_fun, create_args))
-  deconv_args <- c(
-    list(CARD_object = card_obj),
-    card_deconvolution_params
-  )
-  card_obj <- do.call(deconv_fun, card_match_formals(deconv_fun, deconv_args))
+  if ("CARD_object" %in% names(formals(deconv_fun))) {
+    card_obj <- do.call(create_fun, card_match_formals(create_fun, create_args))
+    deconv_args <- c(
+      list(CARD_object = card_obj),
+      card_deconvolution_params
+    )
+    card_obj <- do.call(deconv_fun, card_match_formals(deconv_fun, deconv_args))
+  } else {
+    deconv_args <- c(create_args, card_deconvolution_params)
+    card_obj <- do.call(deconv_fun, card_match_formals(deconv_fun, deconv_args))
+  }
   weights <- card_extract_weights(card_obj)
   list(
     package = package,
@@ -389,6 +395,10 @@ card_extract_weights <- function(card_obj) {
   weights <- NULL
   weights <- weights %||% tryCatch(methods::slot(card_obj, "Proportion_CARD"), error = function(e) NULL)
   weights <- weights %||% tryCatch(card_obj$Proportion_CARD, error = function(e) NULL)
+  weights <- weights %||% tryCatch(
+    SummarizedExperiment::colData(card_obj)$Proportion_CARD,
+    error = function(e) NULL
+  )
   weights <- weights %||% tryCatch(card_obj$proportion_card, error = function(e) NULL)
   weights <- weights %||% tryCatch(card_obj$proportion, error = function(e) NULL)
   if (is.null(weights)) {

@@ -192,7 +192,8 @@ add_prediction_meta <- function(
     rownames(prob_df) <- colnames(srt)
     srt <- SeuratObject::AddMetaData(srt, metadata = prob_df)
     prob_col <- paste0(prediction_prefix, "score.max")
-    srt[[prob_col]] <- apply(prob_df, 1, max, na.rm = TRUE)
+    check_r("matrixStats", verbose = FALSE)
+    srt[[prob_col]] <- matrixStats::rowMaxs(as.matrix(prob_df), na.rm = TRUE)
   }
   list(
     srt = srt,
@@ -501,14 +502,7 @@ run_scomm_subprocess <- function(
     check.names = FALSE
   ))
   colnames(probs) <- class_names
-  predicted <- apply(probs, 1, function(x) {
-    valid <- x >= threshold_vec[names(x)]
-    if (any(valid)) {
-      names(which.max(x[valid]))[[1]]
-    } else {
-      "unclassified"
-    }
-  })
+  predicted <- scomm_assign_labels(probs, threshold_vec)
   list(
     ids = factor(predicted),
     probabilities = as.data.frame(
@@ -552,6 +546,36 @@ scomm_python_script <- function() {
     "probs = model.predict(query_x, verbose=0)",
     "np.savetxt(prob_file, probs, delimiter=',')"
   )
+}
+
+scomm_assign_labels <- function(
+  probabilities,
+  threshold_vec,
+  unclassified = "unclassified"
+) {
+  probabilities <- as.matrix(probabilities)
+  thresholds <- threshold_vec[colnames(probabilities)]
+  if (anyNA(probabilities) || anyNA(thresholds)) {
+    return(apply(probabilities, 1, function(x) {
+      valid <- x >= thresholds[names(x)]
+      if (any(valid)) {
+        names(which.max(x[valid]))[[1]]
+      } else {
+        unclassified
+      }
+    }))
+  }
+  valid <- sweep(probabilities, 2, thresholds, FUN = ">=")
+  has_valid <- rowSums(valid) > 0L
+  out <- rep(unclassified, nrow(probabilities))
+  if (any(has_valid)) {
+    masked <- probabilities[has_valid, , drop = FALSE]
+    masked[!valid[has_valid, , drop = FALSE]] <- -Inf
+    out[has_valid] <- colnames(probabilities)[
+      max.col(masked, ties.method = "first")
+    ]
+  }
+  out
 }
 
 scomm_subprocess_env <- function(python) {
@@ -825,14 +849,7 @@ predict_scomm <- function(
     threshold_vec <- threshold_vec[class_names]
   }
 
-  predicted <- apply(probs_use, 1, function(x) {
-    valid <- x >= threshold_vec[names(x)]
-    if (any(valid)) {
-      names(which.max(x[valid]))[[1]]
-    } else {
-      "unclassified"
-    }
-  })
+  predicted <- scomm_assign_labels(probs_use, threshold_vec)
 
   list(
     ids = factor(predicted),

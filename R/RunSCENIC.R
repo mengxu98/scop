@@ -1813,7 +1813,6 @@ scenic_add_correlation <- function(
   expr_mtx,
   rho_threshold = 0.03
 ) {
-  expr_mtx <- as.matrix(expr_mtx)
   tfs <- intersect(unique(adjacency[["TF"]]), colnames(expr_mtx))
   targets <- intersect(unique(adjacency[["target"]]), colnames(expr_mtx))
   adjacency <- adjacency[
@@ -1827,16 +1826,30 @@ scenic_add_correlation <- function(
     return(adjacency)
   }
 
-  corr_mtx <- stats::cor(
-    expr_mtx[, tfs, drop = FALSE],
-    expr_mtx[, targets, drop = FALSE]
+  genes <- unique(c(tfs, targets))
+  expr_mtx <- as.matrix(expr_mtx[, genes, drop = FALSE])
+  tf_index <- match(adjacency[["TF"]], genes)
+  target_index <- match(adjacency[["target"]], genes)
+  rho <- tryCatch(
+    scenic_edge_correlation_cpp(
+      expr = expr_mtx,
+      tf_index = tf_index,
+      target_index = target_index
+    ),
+    error = function(e) NULL
   )
-  rho <- mapply(
-    function(tf, target) corr_mtx[tf, target],
-    adjacency[["TF"]],
-    adjacency[["target"]],
-    USE.NAMES = FALSE
-  )
+  if (is.null(rho)) {
+    corr_mtx <- stats::cor(
+      expr_mtx[, tfs, drop = FALSE],
+      expr_mtx[, targets, drop = FALSE]
+    )
+    rho <- mapply(
+      function(tf, target) corr_mtx[tf, target],
+      adjacency[["TF"]],
+      adjacency[["target"]],
+      USE.NAMES = FALSE
+    )
+  }
   rho[is.na(rho)] <- 0
   adjacency[["rho"]] <- rho
   adjacency[["regulation"]] <- as.integer(rho > rho_threshold) -

@@ -884,7 +884,7 @@ scissor_fit_cox <- function(
   temi[is.na(temi)] <- 0.0
   out$Beta <- Matrix::Matrix(temi, sparse = TRUE)
   out$BetaSTD <- Matrix::Matrix(out$BetaSTD[, 1:nlambdai], sparse = TRUE)
-  out$nzero <- apply(out$Beta != 0, 2, sum)
+  out$nzero <- as.numeric(Matrix::colSums(out$Beta != 0))
   out$flag <- out$flag[1:nlambdai]
 
   if (nfolds == 1 & is.null(foldid)) {
@@ -985,13 +985,13 @@ scissor_fit_cox <- function(
         outi[[i]]$ll[1:outi[[i]]$nlambda]
     }
 
-    temi <- apply(abs(cvPL) == Inf, 2, sum, na.rm = TRUE)
+    temi <- colSums(is.infinite(cvPL))
     if (any(temi > 0)) {
       nlambdai <- max(min(which(temi > 0)) - 1, 1)
     }
 
     cvraw <- cvPL / weighti
-    nfoldi <- apply(!is.na(cvraw), 2, sum) # rm(cvPL) #
+    nfoldi <- colSums(!is.na(cvraw)) # rm(cvPL) #
     cvm <- apply(cvraw, 2, stats::weighted.mean, w = weighti, na.rm = TRUE)
     cvse <- sqrt(
       apply(
@@ -1059,7 +1059,7 @@ scissor_fit_cox <- function(
         x$BetaSTD[, il0]
       })
 
-      Betao <- apply(Betai != 0, 2, sum)
+      Betao <- colSums(Betai != 0)
       numi2 <- min(max(Betao), numi)
 
       if (numi2 > 0) {
@@ -1146,7 +1146,7 @@ scissor_fit_cox <- function(
       }
 
       cvraw <- cvPL / weighti
-      nfoldi <- apply(!is.na(cvraw), 2, sum)
+      nfoldi <- colSums(!is.na(cvraw))
       rm(cvPL)
       cvm[[il0]] <- apply(cvraw, 2, stats::weighted.mean, w = weighti, na.rm = TRUE)
       temi <- cvm[[il0]]
@@ -1173,7 +1173,7 @@ scissor_fit_cox <- function(
               x$BetaSTD[, il1[j]]
             })
 
-            Betao <- apply(Betai != 0, 2, sum)
+            Betao <- colSums(Betai != 0)
             numi2 <- min(max(Betao), numi)
 
             if (numi2 > 0) {
@@ -1262,7 +1262,7 @@ scissor_fit_cox <- function(
             }
 
             cvraw <- cvPL / weighti
-            nfoldi <- apply(!is.na(cvraw), 2, sum)
+            nfoldi <- colSums(!is.na(cvraw))
             rm(cvPL)
             cvm[[il1[j]]] <- apply(
               cvraw,

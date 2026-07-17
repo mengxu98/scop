@@ -738,13 +738,7 @@ run_palantir_cpp <- function(
   rownames(branch_probs_all) <- cell_names
   colnames(branch_probs_all) <- colnames(branch_probs)
 
-  ent <- apply(branch_probs_all, 1, function(p) {
-    p <- p[p > 0]
-    if (length(p) < 2L) {
-      return(0)
-    }
-    -sum(p * log(p))
-  })
+  ent <- palantir_row_entropy_cpp(branch_probs_all)
   srt[["palantir_pseudotime"]] <- pseudotime[colnames(srt)]
   srt[["palantir_diff_potential"]] <- ent[colnames(srt)]
   branch_meta <- as.data.frame(branch_probs_all[colnames(srt), , drop = FALSE])

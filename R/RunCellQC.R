@@ -25,17 +25,10 @@
 #'   pancreas_sub,
 #'   db_method = "scDblFinder"
 #' )
-#' CellDimPlot(
-#'   pancreas_sub,
-#'   reduction = "umap",
-#'   group.by = "db.scDblFinder_class"
-#' )
-#'
-#' FeatureDimPlot(
-#'   pancreas_sub,
-#'   reduction = "umap",
-#'   features = "db.scDblFinder_score"
-#' )
+#' table(pancreas_sub$db.scDblFinder_class)
+#' head(pancreas_sub@meta.data[, c(
+#'   "db.scDblFinder_class", "db.scDblFinder_score"
+#' )])
 RunDoubletCalling <- function(
   srt,
   assay = "RNA",
@@ -1003,25 +996,7 @@ RunCellQC <- function(
       verbose = verbose
     )
   }
-  if (!paste0("nCount_", assay) %in% colnames(srt@meta.data)) {
-    srt@meta.data[[paste0("nCount_", assay)]] <- Matrix::colSums(
-      GetAssayData5(
-        srt,
-        assay = assay,
-        layer = "counts"
-      )
-    )
-  }
-  if (!paste0("nFeature_", assay) %in% colnames(srt@meta.data)) {
-    srt@meta.data[[paste0("nFeature_", assay)]] <- Matrix::colSums(
-      GetAssayData5(
-        srt,
-        assay = assay,
-        layer = "counts"
-      ) >
-        0
-    )
-  }
+  srt <- cellqc_initialize_count_metrics(srt, assay = assay)
   srt_raw <- srt
   if (!is.null(split.by)) {
     split_cells <- split(colnames(srt), srt@meta.data[[split.by]])
@@ -1553,4 +1528,21 @@ RunCellQC <- function(
   }
 
   return(srt_raw)
+}
+
+cellqc_initialize_count_metrics <- function(srt, assay) {
+  ncount_col <- paste0("nCount_", assay)
+  nfeature_col <- paste0("nFeature_", assay)
+  need_ncount <- !ncount_col %in% colnames(srt@meta.data)
+  need_nfeature <- !nfeature_col %in% colnames(srt@meta.data)
+  if (need_ncount || need_nfeature) {
+    counts <- GetAssayData5(srt, assay = assay, layer = "counts")
+    if (need_ncount) {
+      srt@meta.data[[ncount_col]] <- Matrix::colSums(counts)
+    }
+    if (need_nfeature) {
+      srt@meta.data[[nfeature_col]] <- Matrix::colSums(counts > 0)
+    }
+  }
+  srt
 }

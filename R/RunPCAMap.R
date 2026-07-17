@@ -126,21 +126,11 @@ RunPCAMap <- function(
   }
 
   pca.out <- srt_ref[[ref_pca]]
-  status_query <- CheckDataType(
-    object = GetAssayData5(
-      srt_query,
-      layer = "data",
-      assay = query_assay
-    )
-  )
+  query_data <- GetAssayData5(srt_query, layer = "data", assay = query_assay)
+  ref_data <- GetAssayData5(srt_ref, layer = "data", assay = ref_assay)
+  status_query <- CheckDataType(object = query_data)
   log_message("Detected srt_query data type: ", status_query, verbose = verbose)
-  status_ref <- CheckDataType(
-    object = GetAssayData5(
-      srt_ref,
-      layer = "data",
-      assay = ref_assay
-    )
-  )
+  status_ref <- CheckDataType(object = ref_data)
   log_message("Detected srt_ref data type: ", status_ref, verbose = verbose)
   if (
     status_ref != status_query ||
@@ -155,29 +145,10 @@ RunPCAMap <- function(
 
   log_message("Run PCA projection", verbose = verbose)
   features <- rownames(pca.out@feature.loadings)
-  center <- apply(
-    GetAssayData5(
-      object = srt_ref,
-      layer = "data",
-      assay = ref_assay
-    )[
-      features,
-    ],
-    1,
-    mean
-  )
+  ref_pca_data <- ref_data[features, , drop = FALSE]
+  center <- Matrix::rowMeans(ref_pca_data)
   names(center) <- features
-  sds <- apply(
-    GetAssayData5(
-      object = srt_ref,
-      layer = "data",
-      assay = ref_assay
-    )[
-      features,
-    ],
-    1,
-    stats::sd
-  )
+  sds <- sqrt(fast_row_vars(ref_pca_data))
   names(sds) <- features
   rotation <- pca.out@feature.loadings
 
@@ -191,13 +162,7 @@ RunPCAMap <- function(
   )
   log_message("Use ", length(features_common), " features to calculate PC.", verbose = verbose)
   query_data <- Matrix::t(
-    GetAssayData5(
-      srt_query,
-      layer = "data",
-      assay = query_assay
-    )[
-      features_common,
-    ]
+    query_data[features_common, ]
   )
   query_pca <- scale(
     query_data[, features_common],
