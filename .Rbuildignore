@@ -9,6 +9,7 @@
 ^docs$
 ^pkgdown$
 ^\.github$
+^\.posit$
 ^\.claude$
 ^README\.Rmd$
 ^LICENSE\.md$
@@ -41,6 +42,7 @@
 (^|/)\.pytest_cache($|/)
 (^|/)__pycache__($|/)
 ^\.git$
+^src/Makevars$
 ^\.gitignore$
 ^\.reasonix$
 ^\.env$
