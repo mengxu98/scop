@@ -608,13 +608,6 @@ standard_scop <- function(
           "Perform {.fn Seurat::FindClusters} with {.arg cluster_algorithm = '{cluster_algorithm}'} and {.arg cluster_resolution = {cluster_resolution}}",
           verbose = verbose
         )
-        cluster_args <- list(
-          object = srt,
-          resolution = cluster_resolution,
-          algorithm = cluster_algorithm_index,
-          graph.name = paste0(prefix, lr, "_SNN"),
-          verbose = FALSE
-        )
         find_clusters_method <- utils::getS3method(
           "FindClusters",
           "Seurat",
@@ -624,9 +617,23 @@ standard_scop <- function(
           identical(tolower(cluster_algorithm), "leiden") &&
             "leiden_method" %in% names(formals(find_clusters_method))
         ) {
-          cluster_args$leiden_method <- "igraph"
+          srt <- Seurat::FindClusters(
+            object = srt,
+            resolution = cluster_resolution,
+            algorithm = cluster_algorithm_index,
+            graph.name = paste0(prefix, lr, "_SNN"),
+            verbose = FALSE,
+            leiden_method = "igraph"
+          )
+        } else {
+          srt <- Seurat::FindClusters(
+            object = srt,
+            resolution = cluster_resolution,
+            algorithm = cluster_algorithm_index,
+            graph.name = paste0(prefix, lr, "_SNN"),
+            verbose = FALSE
+          )
         }
-        srt <- do.call(Seurat::FindClusters, cluster_args)
         log_message("Reorder clusters...", verbose = verbose)
         srt <- srt_reorder(
           srt,
