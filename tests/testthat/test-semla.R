@@ -8,6 +8,27 @@ make_semla_spatial_seurat <- function(nspots = 80, nfeatures = 30) {
   srt
 }
 
+make_semla_multi_image_object <- function() {
+  counts <- matrix(
+    1:12,
+    nrow = 3,
+    dimnames = list(paste0("Gene", 1:3), paste0("Spot", 1:4))
+  )
+  srt <- SeuratObject::CreateSeuratObject(
+    methods::as(Matrix::Matrix(counts, sparse = TRUE), "dgCMatrix")
+  )
+  assay <- SeuratObject::DefaultAssay(srt)
+  srt[["slice1"]] <- SeuratObject::CreateFOV(
+    data.frame(x = c(0, 1), y = c(0, 0), row.names = c("Spot1", "Spot2")),
+    type = "centroids", assay = assay, key = "sm1_"
+  )
+  srt[["slice2"]] <- SeuratObject::CreateFOV(
+    data.frame(x = c(2, 3), y = c(1, 1), row.names = c("Spot3", "Spot4")),
+    type = "centroids", assay = assay, key = "sm2_"
+  )
+  srt
+}
+
 semla_installed_without_loading <- function() {
   requireNamespace("semla", quietly = TRUE)
 }
@@ -70,6 +91,12 @@ test_that("RunSemlaSpatialNetwork stores semla network results", {
   expect_equal(out@tools[["SemlaSpatialNetwork"]][["parameters"]][["nNeighbors"]], 3)
   expect_equal(out@tools[["SemlaSpatialNetwork"]][["schema_version"]], 1L)
   expect_equal(out@tools[["SemlaSpatialNetwork"]][["provenance"]][["backend_id"]], "semla")
+  expect_identical(out@tools$SemlaSpatialNetwork$source$coordinate_space, "raw")
+  expect_identical(
+    out@tools$SemlaSpatialNetwork$source$unit,
+    "full_resolution_pixel"
+  )
+  expect_identical(out@tools$SemlaSpatialNetwork$cells, colnames(out))
 })
 
 test_that("RunSemlaLocalG writes local G metadata", {
@@ -86,6 +113,7 @@ test_that("RunSemlaLocalG writes local G metadata", {
   expect_true(all(paste0("Gi[", features, "]") %in% colnames(out@meta.data)))
   expect_equal(out@tools[["SemlaLocalG"]][["schema_version"]], 1L)
   expect_equal(out@tools[["SemlaLocalG"]][["provenance"]][["producer"]], "RunSemlaLocalG")
+  expect_identical(out@tools$SemlaLocalG$source$coordinate_space, "raw")
 })
 
 test_that("Semla distance producers store schema-v1 provenance", {
@@ -97,6 +125,10 @@ test_that("Semla distance producers store schema-v1 provenance", {
   )
   expect_equal(neighbors@tools[["SemlaRegionNeighbors"]][["schema_version"]], 1L)
   expect_equal(neighbors@tools[["SemlaRegionNeighbors"]][["provenance"]][["backend_id"]], "semla")
+  expect_identical(
+    neighbors@tools$SemlaRegionNeighbors$source$coordinate_space,
+    "raw"
+  )
 
   radial <- RunSemlaRadialDistance(
     srt, column_name = "semla_region", selected_groups = "A",
@@ -104,4 +136,26 @@ test_that("Semla distance producers store schema-v1 provenance", {
   )
   expect_equal(radial@tools[["SemlaRadialDistance"]][["schema_version"]], 1L)
   expect_equal(radial@tools[["SemlaRadialDistance"]][["provenance"]][["producer"]], "RunSemlaRadialDistance")
+  expect_identical(radial@tools$SemlaRadialDistance$source$unit, "full_resolution_pixel")
+})
+
+test_that("semla provenance records native multi-image partitioning", {
+  srt <- make_semla_multi_image_object()
+  staffli <- list(
+    meta_data = data.frame(
+      barcode = colnames(srt),
+      sampleID = c("1", "1", "2", "2")
+    )
+  )
+  srt@tools[["Staffli"]] <- staffli
+
+  source <- semla_spatial_source(srt, coords = "pixels")
+  expect_identical(source$image, NA_character_)
+  expect_identical(source$images, c("slice1", "slice2"))
+  expect_identical(source$image_policy, "native_multi_image")
+  expect_identical(
+    source$selection_strategy,
+    "all_images_partitioned_by_staffli_sampleID"
+  )
+  expect_identical(source$sample_ids, c("1", "2"))
 })

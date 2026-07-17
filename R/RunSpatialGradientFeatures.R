@@ -829,30 +829,12 @@ sgf_cpp_coords <- function(srt, image, coord.cols, coordinate_space = "legacy_di
     log_message("{.arg coord.cols} must contain at least two coordinate columns", message_type = "error")
   }
   coord.cols <- coord.cols[seq_len(2L)]
-  if (
-    identical(coordinate_space, "legacy_display") &&
-      is.null(image) &&
-      all(coord.cols %in% colnames(srt@meta.data))
-  ) {
-    out <- data.frame(
-      x = srt@meta.data[[coord.cols[1L]]],
-      y = srt@meta.data[[coord.cols[2L]]],
-      row.names = rownames(srt@meta.data),
-      stringsAsFactors = FALSE
-    )
-    attr(out, "spatial_source") <- list(
-      image = NULL,
-      coord.cols = coord.cols,
-      image_policy = "strict",
-      coordinate_space = coordinate_space
-    )
-    return(out)
-  }
   resolved <- spatial_analysis_coords(
     srt = srt,
     image = image,
     coord.cols = coord.cols,
-    coordinate_space = coordinate_space
+    coordinate_space = coordinate_space,
+    image_policy = "strict"
   )
   out <- resolved$data
   attr(out, "spatial_source") <- resolved$source

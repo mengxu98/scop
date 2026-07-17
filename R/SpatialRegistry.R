@@ -93,9 +93,9 @@ spatial_method_registry <- function() {
       "RunSpatialQM.R",
       "SpatialQM",
       "spatialqm",
-      coordinate_space_current = "legacy_display",
-      coordinate_space_target = "raw",
-      coordinate_requirement = "distance_sensitive",
+      coordinate_space_current = "mixed",
+      coordinate_space_target = "mixed",
+      coordinate_requirement = "backend_managed",
       plot_function = "SpatialSpotPlot"
     ),
     entry(
@@ -390,9 +390,9 @@ spatial_method_registry <- function() {
       "RunCSIDE.R",
       "CSIDE",
       "spacexr",
-      coordinate_space_current = "legacy_display",
-      coordinate_space_target = "raw",
-      coordinate_requirement = "distance_sensitive",
+      coordinate_space_current = "mixed",
+      coordinate_space_target = "mixed",
+      coordinate_requirement = "backend_managed",
       plot_function = "DeconvolutionPlot"
     ),
     entry(
@@ -638,8 +638,7 @@ spatial_method_registry <- function() {
       "RunSemla.R",
       "SemlaSpatialNetwork",
       "semla",
-      coordinate_space_current = "legacy_display",
-      coordinate_space_target = "raw",
+      coordinate_space_current = "raw",
       coordinate_requirement = "distance_sensitive"
     ),
     entry(
@@ -649,8 +648,7 @@ spatial_method_registry <- function() {
       "RunSemla.R",
       "SemlaLocalG",
       "semla",
-      coordinate_space_current = "legacy_display",
-      coordinate_space_target = "raw",
+      coordinate_space_current = "raw",
       coordinate_requirement = "distance_sensitive"
     ),
     entry(
@@ -660,8 +658,7 @@ spatial_method_registry <- function() {
       "RunSemla.R",
       "SemlaRadialDistance",
       "semla",
-      coordinate_space_current = "legacy_display",
-      coordinate_space_target = "raw",
+      coordinate_space_current = "raw",
       coordinate_requirement = "distance_sensitive"
     ),
     entry(
@@ -671,8 +668,7 @@ spatial_method_registry <- function() {
       "RunSemla.R",
       "SemlaRegionNeighbors",
       "semla",
-      coordinate_space_current = "legacy_display",
-      coordinate_space_target = "raw",
+      coordinate_space_current = "raw",
       coordinate_requirement = "distance_sensitive"
     ),
 
