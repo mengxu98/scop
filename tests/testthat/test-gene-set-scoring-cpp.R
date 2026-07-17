@@ -77,6 +77,12 @@ reference_plage_scores <- function(expr, gene_sets, min_size = 1L, max_size = .M
     if (sum(is.finite(values)) <= 1L) {
       next
     }
+    nonzero <- values[is.finite(values) & values != 0]
+    if (length(nonzero) > 0L && min(nonzero) == max(nonzero)) {
+      # GSVA >= 2.6 drops genes whose stored (non-zero) values are constant,
+      # even when the complete row still varies because of structural zeros.
+      next
+    }
     scaled <- scale(values)
     if (all(is.finite(scaled))) {
       z[gene, ] <- scaled
@@ -105,6 +111,48 @@ reference_plage_scores <- function(expr, gene_sets, min_size = 1L, max_size = .M
 
   scores
 }
+
+test_that("dense gene-set variable-row filtering matches the R reference", {
+  expr <- rbind(
+    variable = c(0, 2, NA_real_, Inf),
+    constant = c(3, 3, 3, 3),
+    one_finite = c(NA_real_, 1, NA_real_, Inf),
+    no_finite = c(NA_real_, NaN, Inf, -Inf)
+  )
+  legacy_keep <- apply(expr, 1L, function(x) {
+    x <- x[is.finite(x)]
+    length(x) > 1L && diff(range(x)) > 0
+  })
+
+  expect_identical(
+    scop:::gene_set_scoring_keep_variable_rows(expr),
+    expr[legacy_keep, , drop = FALSE]
+  )
+})
+
+test_that("sparse gene-set variable-row filtering matches stored-value semantics", {
+  expr <- methods::as(Matrix::Matrix(
+    rbind(
+      variable = c(0, 2, NA_real_, Inf),
+      constant = c(3, 3, 3, 3),
+      one_finite = c(NA_real_, 1, NA_real_, Inf),
+      no_finite = c(NA_real_, NaN, Inf, -Inf),
+      structural_zero = c(0, 4, 0, 0)
+    ),
+    sparse = TRUE
+  ), "dgCMatrix")
+  legacy_keep <- vapply(split(expr@x, expr@i + 1L), function(x) {
+    x <- x[is.finite(x)]
+    length(x) > 1L && diff(range(x)) > 0
+  }, logical(1))
+  expected_keep <- rep(FALSE, nrow(expr))
+  expected_keep[as.integer(names(legacy_keep))] <- legacy_keep
+
+  expect_identical(
+    scop:::gene_set_scoring_keep_variable_rows(expr),
+    expr[expected_keep, , drop = FALSE]
+  )
+})
 
 test_that("ssGSEA sparse ranking matches full ranking with negative values", {
   expr <- matrix(

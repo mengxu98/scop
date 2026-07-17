@@ -1,3 +1,30 @@
+test_that("RunCellQC initializes count metrics from one counts-layer read", {
+  counts <- methods::as(Matrix::Matrix(
+    matrix(c(1, 0, 2, 0, 3, 0, 0, 4, 1, 2, 0, 5), nrow = 3),
+    sparse = TRUE
+  ), "dgCMatrix")
+  rownames(counts) <- paste0("g", seq_len(nrow(counts)))
+  colnames(counts) <- paste0("c", seq_len(ncol(counts)))
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  srt_missing <- srt
+  srt_missing@meta.data[, c("nCount_RNA", "nFeature_RNA")] <- NULL
+
+  calls <- 0L
+  testthat::local_mocked_bindings(
+    GetAssayData5 = function(...) {
+      calls <<- calls + 1L
+      counts
+    },
+    .package = "scop"
+  )
+
+  out <- cellqc_initialize_count_metrics(srt_missing, assay = "RNA")
+
+  expect_equal(calls, 1L)
+  expect_equal(unname(out$nCount_RNA), as.numeric(Matrix::colSums(counts)))
+  expect_equal(unname(out$nFeature_RNA), as.numeric(Matrix::colSums(counts > 0)))
+})
+
 test_that("db_scds cxds path does not run hybrid backend", {
   skip_if_not_installed("scds")
   skip_if_not_installed("SingleCellExperiment")

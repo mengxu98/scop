@@ -27,6 +27,63 @@ make_scenic_plot_mock <- function(seed = 1) {
   list(srt = srt, auc = auc)
 }
 
+test_that("SCENIC row scaling matches the legacy apply standard deviations", {
+  mat <- rbind(
+    c(1, 2, 3, 4),
+    c(4, NA, 6, 8),
+    c(5, 5, 5, 5),
+    c(NA, NA, NA, NA)
+  )
+  rownames(mat) <- paste0("Regulon", seq_len(nrow(mat)))
+  old_scale <- function(x) {
+    means <- rowMeans(x, na.rm = TRUE)
+    sds <- apply(x, 1, stats::sd, na.rm = TRUE)
+    variable <- is.finite(sds) & sds > sqrt(.Machine$double.eps)
+    out <- x
+    if (any(variable)) {
+      out[variable, ] <- sweep(sweep(x[variable, , drop = FALSE], 1, means[variable], "-"), 1, sds[variable], "/")
+    }
+    if (any(!variable)) out[!variable, ] <- 0
+    attr(out, "constant_rows") <- rownames(x)[!variable]
+    out
+  }
+
+  expect_equal(scenic_scale_rows(mat), old_scale(mat), tolerance = 1e-12)
+})
+
+test_that("SCENIC group heatmap order matches legacy row-wise maxima", {
+  mat <- rbind(
+    RegulonA = c(A = 0.8, B = 0.8, C = 0.2),
+    RegulonB = c(A = NA_real_, B = 0.4, C = 0.9),
+    RegulonC = c(A = NA_real_, B = NA_real_, C = NA_real_)
+  )
+  features <- rownames(mat)
+  legacy <- function(x, features) {
+    x <- as.matrix(x[features, , drop = FALSE])
+    x[!is.finite(x)] <- NA_real_
+    max_group_idx <- apply(x, 1L, function(values) {
+      if (all(is.na(values))) return(NA_integer_)
+      which.max(replace(values, is.na(values), -Inf))
+    })
+    max_value <- apply(x, 1L, function(values) {
+      out <- suppressWarnings(max(values, na.rm = TRUE))
+      if (is.finite(out)) out else NA_real_
+    })
+    max_group <- colnames(x)[max_group_idx]
+    features[order(
+      factor(max_group, levels = colnames(x)),
+      -max_value,
+      features,
+      na.last = TRUE
+    )]
+  }
+
+  expect_identical(
+    scenic_order_heatmap_features(mat, features, heatmap_order = "group"),
+    legacy(mat, features)
+  )
+})
+
 test_that("SCENICPlot rss heatmap returns drawable plot object", {
   dat <- make_scenic_plot_mock()
   out <- SCENICPlot(

@@ -404,7 +404,7 @@ test_that("infercnv runner avoids subclusters by default and filters passthrough
 
   testthat::local_mocked_bindings(
     check_r = function(package, ...) {
-      expect_identical(package, "infercnv")
+      expect_identical(package, "broadinstitute/infercnv")
       TRUE
     },
     get_namespace_fun = function(package, name) {

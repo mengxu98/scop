@@ -116,6 +116,24 @@ test_that("SeuratToScopGiotto returns standalone object without modifying Seurat
   expect_equal(SeuratObject::VariableFeatures(srt), before_variable_features)
 })
 
+test_that("SeuratToScopGiotto honours requested feature subsets", {
+  testthat::skip_if_not_installed("Giotto")
+  srt <- make_giotto2_seurat(with_sct = TRUE)
+  features <- rownames(srt)[1:3]
+
+  g <- SeuratToScopGiotto(
+    srt,
+    assay = "RNA",
+    layer = "counts",
+    features = features,
+    use_official = TRUE,
+    verbose = FALSE
+  )
+
+  expect_false(isTRUE(g$source$used_official_converter))
+  expect_equal(g$source$features, features)
+})
+
 test_that("SeuratToScopGiotto can use SCT counts as fallback", {
   testthat::skip_if_not_installed("Giotto")
   srt <- make_giotto2_seurat(with_sct = TRUE)

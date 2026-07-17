@@ -475,6 +475,72 @@ test_that("RunNichenetr aggregate_cluster_de maps receivers to upstream argument
   expect_equal(out@tools$Nichenetr$parameters$backend, "cpp")
 })
 
+test_that("RunNichenetr aggregate_cluster_de passes distinct receiver_affected and receiver_reference", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("Matrix")
+
+  counts <- Matrix::sparseMatrix(
+    i = c(1, 2, 3, 1, 2, 3, 1, 2),
+    j = c(1, 1, 2, 3, 3, 4, 5, 6),
+    x = c(5, 2, 4, 3, 6, 2, 1, 4),
+    dims = c(3, 6)
+  )
+  rownames(counts) <- c("L1", "R1", "G1")
+  colnames(counts) <- paste0("Cell", seq_len(ncol(counts)))
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  srt$celltype <- rep(c("Sender", "ReceiverA", "ReceiverB"), times = 2)
+  srt$condition <- rep(c("case", "control"), times = 3)
+
+  captured <- list()
+  testthat::local_mocked_bindings(
+    check_r = function(...) TRUE,
+    get_namespace_fun = function(package, name) {
+      if (identical(package, "nichenetr") && identical(name, "nichenet_seuratobj_aggregate_cluster_de")) {
+        return(function(...) {
+          captured$args <<- list(...)
+          list(
+            ligand_activities = data.frame(test_ligand = "L1", pearson = 0.8),
+            ligand_receptor_df = data.frame(from = "L1", to = "R1"),
+            ligand_target_df = data.frame(ligand = "L1", target = "G1", weight = 0.4),
+            geneset_oi = "G1"
+          )
+        })
+      }
+      stop("Unexpected mocked namespace lookup: ", package, "::", name)
+    },
+    load_nichenetr_models = function(...) {
+      list(
+        lr_network = data.frame(from = "L1", to = "R1"),
+        ligand_target_matrix = matrix(1, nrow = 1, ncol = 1, dimnames = list("G1", "L1")),
+        weighted_networks = list()
+      )
+    },
+    .package = "scop"
+  )
+
+  out <- scop::RunNichenetr(
+    srt = srt,
+    group.by = "celltype",
+    receiver = "ReceiverA",
+    receiver_affected = "ReceiverA",
+    receiver_reference = "ReceiverB",
+    sender = "Sender",
+    condition.by = "condition",
+    condition_oi = "case",
+    condition_reference = "control",
+    mode = "aggregate_cluster_de",
+    backend = "cpp",
+    verbose = FALSE
+  )
+
+  expect_s4_class(out, "Seurat")
+  expect_equal(captured$args$receiver_affected, "ReceiverA")
+  expect_equal(captured$args$receiver_reference, "ReceiverB")
+  expect_false("receiver" %in% names(captured$args))
+  expect_equal(out@tools$Nichenetr$parameters$receiver_affected, "ReceiverA")
+  expect_equal(out@tools$Nichenetr$parameters$receiver_reference, "ReceiverB")
+})
+
 test_that("resolve_nichenetr_object downloads fallback RDS before reading", {
   skip_if_not_installed("R.cache")
 

@@ -20,6 +20,57 @@ make_cell_dim_plot_srt <- function() {
   srt
 }
 
+test_that("FeatureDimPlot reuses the expression layer for co-expression", {
+  srt <- make_cell_dim_plot_srt()
+  counts <- GetAssayData5(srt, assay = "RNA", layer = "counts")
+  calls <- 0L
+  testthat::local_mocked_bindings(
+    GetAssayData5 = function(...) {
+      calls <<- calls + 1L
+      counts
+    },
+    CheckDataType = function(...) "raw_counts",
+    .package = "scop"
+  )
+
+  expect_no_error(
+    FeatureDimPlot(
+      srt,
+      features = c("gene1", "gene2"),
+      reduction = "umap",
+      layer = "counts",
+      calculate_coexp = TRUE,
+      force = TRUE,
+      verbose = FALSE
+    )
+  )
+  expect_identical(calls, 1L)
+})
+
+test_that("FeatureDimPlot3D supports sparse co-expression", {
+  srt <- make_cell_dim_plot_srt()
+  embedding <- cbind(
+    srt[["umap"]]@cell.embeddings,
+    UMAP_3 = seq_len(ncol(srt)) / ncol(srt)
+  )
+  srt[["umap3d"]] <- SeuratObject::CreateDimReducObject(
+    embeddings = embedding,
+    key = "UMAP3D_",
+    assay = SeuratObject::DefaultAssay(srt)
+  )
+
+  plot <- FeatureDimPlot3D(
+    srt,
+    features = c("gene1", "gene2"),
+    reduction = "umap3d",
+    layer = "counts",
+    calculate_coexp = TRUE,
+    force = TRUE,
+    verbose = FALSE
+  )
+  expect_s3_class(plot, "plotly")
+})
+
 test_that("CellDimPlot supports atlas-style grid and marked groups", {
   srt <- make_cell_dim_plot_srt()
 

@@ -22,6 +22,22 @@ make_gsva_stat_srt <- function() {
   srt
 }
 
+test_that("GSVAPlot score filters match the legacy row-wise calculations", {
+  scores <- rbind(
+    PathwayA = c(NA_real_, NA_real_, NA_real_),
+    PathwayB = c(1, NA_real_, 3),
+    PathwayC = c(-2, 0, 1)
+  )
+
+  legacy_var <- apply(scores, 1, stats::var, na.rm = TRUE)
+  fast_var <- scop:::gsva_plot_row_variances(scores)
+  expect_equal(fast_var, legacy_var, tolerance = 1e-14)
+
+  legacy_keep <- suppressWarnings(apply(abs(scores), 1, max, na.rm = TRUE) >= 1.5)
+  fast_keep <- scop:::gsva_plot_score_cutoff_keep(scores, 1.5)
+  expect_identical(fast_keep, legacy_keep)
+})
+
 test_that("GSVAPlot score mode ranks without placeholder p-values", {
   srt <- make_gsva_stat_srt()
 

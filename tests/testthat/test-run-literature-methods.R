@@ -21,6 +21,25 @@ make_literature_method_srt <- function(n_genes = 80, n_cells = 40, seed = 1) {
   srt
 }
 
+test_that("FitDevo sparse scaling matches the legacy dense sweep", {
+  mat <- methods::as(Matrix::Matrix(rbind(
+    GeneA = c(0, 2, 0, 3),
+    GeneB = c(1, 1, 1, 1),
+    GeneC = c(0, 0, 0, 0)
+  ), sparse = TRUE), "dgCMatrix")
+  legacy <- function(x) {
+    mu <- Matrix::rowMeans(x)
+    mu2 <- Matrix::rowMeans(x^2)
+    sd <- sqrt(pmax(mu2 - mu^2, 1e-8))
+    out <- sweep(as.matrix(x), 1, mu, "-")
+    out <- sweep(out, 1, sd, "/")
+    out[!is.finite(out)] <- 0
+    out
+  }
+
+  expect_identical(scop_scale_features(mat), legacy(mat))
+})
+
 test_that("RunFitDevo and RunFWP write metadata and reusable weights", {
   srt <- make_literature_method_srt()
   out <- RunFitDevo(
@@ -50,6 +69,33 @@ test_that("RunFitDevo and RunFWP write metadata and reusable weights", {
   expect_true(all(c("Score", "Relative", "Phenotype", "Boxplot") %in% names(fitdevo_plots)))
   expect_s3_class(fitdevo_plots$Score, "ggplot")
   expect_s3_class(fitdevo_plots$Boxplot, "ggplot")
+})
+
+test_that("FitDevo vectorized Spearman weights match the legacy row-wise path", {
+  scaled <- rbind(
+    GeneA = c(-1, 0, 1, 0, 1),
+    GeneB = c(2, 2, 1, 0, 0),
+    GeneC = c(0, 0, 0, 0, 0)
+  )
+  target <- c(1, 2, 2, 3, 4)
+  legacy <- suppressWarnings(apply(
+    scaled,
+    1L,
+    stats::cor,
+    y = target,
+    method = "spearman"
+  ))
+  legacy[!is.finite(legacy)] <- 0
+
+  expect_equal(
+    fitdevo_spearman_weights(scaled, target),
+    legacy,
+    tolerance = 1e-14
+  )
+  expect_identical(
+    fitdevo_spearman_weights(scaled, c(1, 2, NA_real_, 3, 4)),
+    stats::setNames(numeric(nrow(scaled)), rownames(scaled))
+  )
 })
 
 test_that("RunVECTOR stores cell scores and grid arrows", {

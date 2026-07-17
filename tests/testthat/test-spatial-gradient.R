@@ -100,9 +100,9 @@ test_that("numeric annotation thresholds are converted for SPATA2", {
 
 test_that("SPATA2 trajectory preparation does not forward unsupported verbose", {
   testthat::local_mocked_bindings(
-    sgf_spata_fun = function(fun, required = TRUE) {
+    get_namespace_fun = function(pkg, fun) {
+      expect_identical(pkg, "SPATA2")
       force(fun)
-      force(required)
       function(...) list(...)
     }
   )
@@ -250,6 +250,40 @@ test_that("cpp backend stores trajectory gradient result tables", {
   expect_true(nrow(stored$significance) > 0)
   expect_true(nrow(stored$model_fits) > 0)
   expect_equal(unique(stored$screening$mode), "trajectory")
+})
+
+test_that("cpp spatial gradient screening reuses the expression layer", {
+  srt <- make_spatial_gradient_seurat()
+  expr <- GetAssayData5(srt, assay = "RNA", layer = "counts")
+  calls <- 0L
+  testthat::local_mocked_bindings(
+    GetAssayData5 = function(...) {
+      calls <<- calls + 1L
+      expr
+    },
+    .package = "scop"
+  )
+
+  expect_no_error(
+    RunSpatialGradientFeatures(
+      srt,
+      reference = "trajectory",
+      backend = "cpp",
+      result_name = "cached_expr",
+      variables = c("Gene1", "Gene2"),
+      start = c(1, 1),
+      end = c(2, 2),
+      layer = "counts",
+      coord.cols = c("x", "y"),
+      n_random = 0,
+      n_bins = 3,
+      min_spots = 1,
+      sign_threshold = 1,
+      nfeatures = 2,
+      verbose = FALSE
+    )
+  )
+  expect_identical(calls, 1L)
 })
 
 test_that("SpatialGradientPlot handles stored results and missing tables clearly", {

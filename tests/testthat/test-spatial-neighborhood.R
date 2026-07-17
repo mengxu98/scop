@@ -204,3 +204,19 @@ test_that("RunSpatialNeighborhood validates spatial inputs clearly", {
     "should be one of"
   )
 })
+
+test_that("spatial neighborhood feature preparation preserves bulk expression columns", {
+  srt <- make_spatial_neighborhood_seurat()
+  out <- scop:::spatial_neighborhood_input(
+    srt,
+    group.by = "CellType",
+    coord.cols = c("x", "y"),
+    features = c("Gene1", "Gene3")
+  )$cells
+  expected <- as.matrix(
+    GetAssayData5(srt, layer = "data")[c("Gene1", "Gene3"), rownames(out), drop = FALSE]
+  )
+
+  expect_identical(colnames(out)[(ncol(out) - 1L):ncol(out)], c("Gene1", "Gene3"))
+  expect_equal(as.matrix(out[, c("Gene1", "Gene3")]), t(expected), tolerance = 1e-12)
+})

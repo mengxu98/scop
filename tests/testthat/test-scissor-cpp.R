@@ -56,3 +56,18 @@ test_that("Scissor network wrappers run on real-data-derived inputs", {
   expect_true(all(is.finite(binomial$Beta)))
   expect_equal(nrow(binomial$fit), length(lambda))
 })
+
+test_that("Scissor status-difference range matches legacy row-wise extrema", {
+  means <- rbind(
+    FeatureA = c(0.2, 0.7, 0.4),
+    FeatureB = c(NA_real_, 0.5, 0.5),
+    FeatureC = c(NA_real_, NA_real_, NA_real_)
+  )
+  legacy <- suppressWarnings(apply(
+    means,
+    1L,
+    function(x) max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
+  ))
+
+  expect_identical(scissor_feature_group_range(means), legacy)
+})

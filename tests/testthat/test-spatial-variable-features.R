@@ -17,6 +17,36 @@ make_spatial_variable_seurat <- function() {
   srt
 }
 
+test_that("native spatial Moran and Geary scores match the reference loop", {
+  expr <- rbind(
+    c(2, 5, 4, 1, 0),
+    c(1, NA, 3, 2, 4),
+    rep(3, 5),
+    c(NA, NA, 1, NA, 2)
+  )
+  edges <- data.frame(
+    from = c(1L, 2L, 3L, 4L, 5L, 1L),
+    to = c(2L, 3L, 4L, 5L, 1L, 3L)
+  )
+  for (method in c("moran", "geary")) {
+    actual <- spatial_variable_score_matrix(expr, edges, method = method)
+    expected <- spatial_variable_score_matrix_r(expr, edges, method = method)
+    expect_equal(actual$statistic, expected$statistic, tolerance = 1e-12)
+    expect_equal(actual$score, expected$score, tolerance = 1e-12)
+    expect_true(all(is.na(actual$p_value)))
+  }
+})
+
+test_that("spatial permutation scoring retains the reference random stream", {
+  expr <- rbind(c(2, 5, 4, 1, 0), c(1, 4, 3, 2, 5))
+  edges <- data.frame(from = 1:5, to = c(2L, 3L, 4L, 5L, 1L))
+  set.seed(47)
+  actual <- spatial_variable_score_matrix(expr, edges, method = "moran", nperm = 11L)
+  set.seed(47)
+  expected <- spatial_variable_score_matrix_r(expr, edges, method = "moran", nperm = 11L)
+  expect_equal(actual, expected)
+})
+
 test_that("native spatial variable feature results keep normalized columns", {
   srt <- RunSpatialVariableFeatures(
     make_spatial_variable_seurat(),
@@ -42,7 +72,7 @@ test_that("native spatial variable feature results keep normalized columns", {
 test_that("SPARKX backend output is normalized without storing backend objects", {
   srt <- make_spatial_variable_seurat()
   testthat::local_mocked_bindings(
-    spatial_variable_get_fun = function(pkg, fun) {
+    get_namespace_fun = function(pkg, fun) {
       expect_identical(pkg, "SPARK")
       expect_identical(fun, "sparkx")
       function(count_in, locus_in, ...) {
@@ -83,7 +113,7 @@ test_that("nnSVG backend output is normalized through lightweight helpers", {
     spatial_variable_make_spe = function(expr, coords, assay = NULL) {
       list(expr = expr, coords = coords, assay = assay)
     },
-    spatial_variable_get_fun = function(pkg, fun) {
+    get_namespace_fun = function(pkg, fun) {
       expect_identical(pkg, "nnSVG")
       expect_identical(fun, "nnSVG")
       function(spe, assay_name = "counts", ...) {

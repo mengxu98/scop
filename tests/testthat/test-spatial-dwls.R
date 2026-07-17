@@ -54,3 +54,36 @@ test_that("RunSpatialDWLS writes standard deconvolution metadata and summary", {
   expect_named(out@tools$SpatialDWLS$summary, c("n_spots", "n_types", "dominant_counts", "max_prop"))
   expect_equal(out@tools$SpatialDWLS$summary$n_spots, 3)
 })
+
+test_that("SpatialDWLS batched QR fitting matches per-spot fitting", {
+  signatures <- rbind(
+    c(1, 0, 2),
+    c(0, 1, 1),
+    c(2, 1, 0),
+    c(1, 2, 1)
+  )
+  spatial_expr <- rbind(
+    c(2, 1, 3, 0),
+    c(1, 3, 0, 2),
+    c(4, 2, 1, 1),
+    c(3, 4, 2, 3)
+  )
+  colnames(signatures) <- paste0("Type", 1:3)
+  colnames(spatial_expr) <- paste0("Spot", 1:4)
+
+  qr_sig <- qr(signatures)
+  expected <- vapply(
+    seq_len(ncol(spatial_expr)),
+    function(i) {
+      coefficients <- qr.coef(qr_sig, spatial_expr[, i])
+      coefficients[!is.finite(coefficients) | coefficients < 0] <- 0
+      coefficients
+    },
+    numeric(ncol(signatures))
+  )
+  expected <- t(expected)
+  rownames(expected) <- colnames(spatial_expr)
+  colnames(expected) <- colnames(signatures)
+
+  expect_equal(spatial_dwls_fit_weights(signatures, spatial_expr), expected)
+})

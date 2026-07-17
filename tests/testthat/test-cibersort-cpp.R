@@ -52,6 +52,85 @@ test_that("RunCIBERSORT cpp backend returns a valid bundle", {
   expect_true(nrow(out$results) > 0)
 })
 
+test_that("RunCIBERSORT defaults to the native cpp backend", {
+  dat <- make_cibersort_mock(seed = 11)
+  out <- RunCIBERSORT(
+    count_matrix = dat$mixture,
+    sig_matrix = dat$signature,
+    perm = 0,
+    QN = FALSE,
+    verbose = FALSE
+  )
+
+  expect_equal(out$status, "success")
+  expect_equal(out$parameters$backend, "cpp")
+  expect_false(out$details$package_backend)
+})
+
+test_that("RunDeconvolution selects cpp for CIBERSORT by default", {
+  skip_if_not_installed("SummarizedExperiment")
+  dat <- make_cibersort_mock(seed = 12)
+  se <- SummarizedExperiment::SummarizedExperiment(
+    assays = list(counts = dat$mixture)
+  )
+
+  out <- RunDeconvolution(
+    se,
+    method = "CIBERSORT",
+    sig_matrix = dat$signature,
+    perm = 0,
+    QN = FALSE,
+    verbose = FALSE
+  )
+
+  store <- S4Vectors::metadata(out)[["Deconvolution"]]
+  expect_equal(store$input$backend, "cpp")
+  expect_equal(store$status$status, "success")
+})
+
+test_that("RunCIBERSORT r backend installs Moonerss/CIBERSORT with check_r", {
+  dat <- make_cibersort_mock(seed = 13)
+  calls <- list()
+  testthat::local_mocked_bindings(
+    check_r = function(packages, verbose = TRUE, ...) {
+      calls[[length(calls) + 1L]] <<- list(
+        packages = packages,
+        verbose = verbose
+      )
+      TRUE
+    },
+    get_namespace_fun = function(pkg, fun) {
+      expect_identical(pkg, "CIBERSORT")
+      expect_identical(fun, "cibersort")
+      function(sig_matrix, mixture_file, ...) {
+        fit <- as.data.frame(matrix(
+          1 / ncol(sig_matrix),
+          nrow = ncol(mixture_file),
+          ncol = ncol(sig_matrix),
+          dimnames = list(colnames(mixture_file), colnames(sig_matrix))
+        ))
+        fit[["P-value"]] <- 0
+        fit[["Correlation"]] <- 1
+        fit[["RMSE"]] <- 0
+        fit
+      }
+    }
+  )
+
+  out <- RunCIBERSORT(
+    count_matrix = dat$mixture,
+    sig_matrix = dat$signature,
+    backend = "r",
+    perm = 0,
+    QN = FALSE,
+    verbose = FALSE
+  )
+  expect_equal(out$status, "success")
+  expect_length(calls, 1L)
+  expect_identical(calls[[1]]$packages, "Moonerss/CIBERSORT")
+  expect_false(calls[[1]]$verbose)
+})
+
 test_that("RunCIBERSORT cpp backend supports permutations and quantile normalization", {
   dat <- make_cibersort_mock(seed = 2)
   out <- RunCIBERSORT(

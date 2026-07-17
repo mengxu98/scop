@@ -105,6 +105,75 @@ test_that("RunCARD writes proportions and tool results", {
   expect_named(out@tools$CARD$summary, c("n_spots", "n_types", "dominant_counts", "max_prop"))
 })
 
+test_that("RunCARD supports CARDspa underscore argument names", {
+  pair <- make_card_seurat_pair()
+  create_fun <- function(
+    sc_count,
+    sc_meta,
+    spatial_count,
+    spatial_location,
+    ct_varname,
+    ct_select,
+    sample_varname,
+    mincountgene,
+    mincountspot,
+    sce = NULL,
+    spe = NULL
+  ) {
+    expect_equal(ct_varname, ".scop_cell_type")
+    expect_equal(sample_varname, ".scop_sample")
+    expect_equal(ct_select, c("Alpha", "Beta"))
+    expect_equal(mincountgene, 100)
+    expect_equal(mincountspot, 5)
+    list(sc_meta = sc_meta)
+  }
+  deconv_fun <- function(
+    sc_count,
+    sc_meta,
+    spatial_count,
+    spatial_location,
+    ct_varname,
+    ct_select,
+    sample_varname,
+    mincountgene,
+    mincountspot,
+    sce = NULL,
+    spe = NULL
+  ) {
+    expect_equal(ct_varname, ".scop_cell_type")
+    expect_equal(sample_varname, ".scop_sample")
+    expect_equal(ct_select, c("Alpha", "Beta"))
+    list(Proportion_CARD = matrix(
+      c(0.8, 0.2, 0.4, 0.6, 0.1, 0.9),
+      nrow = 3,
+      byrow = TRUE,
+      dimnames = list(paste0("Spot", 1:3), c("Alpha", "Beta"))
+    ))
+  }
+  testthat::local_mocked_bindings(
+    card_resolve_backend_package = function() "CARDspa",
+    get_namespace_fun = function(package, name) {
+      expect_identical(package, "CARDspa")
+      switch(name,
+        createCARDObject = create_fun,
+        CARD_deconvolution = deconv_fun,
+        stop("unexpected function")
+      )
+    }
+  )
+
+  out <- RunCARD(
+    pair$spatial,
+    reference = pair$reference,
+    reference_label = "celltype",
+    sample_varname = "sample",
+    verbose = FALSE
+  )
+
+  expect_equal(unname(out$CARD_prop_Alpha), c(0.8, 0.4, 0.1))
+  expect_equal(unname(out$CARD_prop_Beta), c(0.2, 0.6, 0.9))
+})
+
 test_that("RunCARD validates inputs before backend work", {
   pair <- make_card_seurat_pair()
   expect_error(

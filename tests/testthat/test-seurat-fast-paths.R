@@ -32,6 +32,30 @@ test_that("NormalizeData uses the fast path for Assay5 objects", {
   )
 })
 
+test_that("GetAssayData5 bypasses JoinLayers for an exact single layer", {
+  obj <- make_fast_path_object()
+  expected <- SeuratObject::GetAssayData(obj[["RNA"]], layer = "data")
+  testthat::local_mocked_bindings(
+    JoinLayers = function(...) stop("JoinLayers should not run for a single exact layer"),
+    .package = "SeuratObject"
+  )
+
+  actual <- GetAssayData5(obj, assay = "RNA", layer = "data")
+  expect_identical(actual, expected)
+})
+
+test_that("GetAssayData5 still joins split Assay5 layers", {
+  obj <- make_fast_path_object()
+  obj[["RNA"]] <- split(obj[["RNA"]], f = rep(c("A", "B"), length.out = ncol(obj)))
+  expected <- SeuratObject::GetAssayData(
+    SeuratObject::JoinLayers(obj[["RNA"]]),
+    layer = "data"
+  )
+
+  actual <- GetAssayData5(obj, assay = "RNA", layer = "data")
+  expect_identical(actual, expected)
+})
+
 test_that("FindNeighbors fast path stores Seurat-compatible graphs", {
   obj <- make_fast_path_object()
   out <- FindNeighbors(

@@ -93,6 +93,53 @@ test_that("RunSpatialIntegration supports list input and preserves sample labels
   expect_true(all(grepl("^S[12]_", colnames(out))))
 })
 
+test_that("PRECAST adapter supplies backend row and col coordinates without mutating input", {
+  srt <- make_spatial_integration_seurat()
+  srt$x <- srt$col * 10
+  srt$y <- srt$row * 10
+  srt[["row"]] <- NULL
+  srt[["col"]] <- NULL
+  input <- scop:::spatial_integration_prepare_input(
+    object = srt,
+    sample.by = "sample",
+    assay = "RNA",
+    layer = "counts",
+    features = NULL,
+    image = NULL,
+    coord.cols = c("x", "y")
+  )
+  input$features <- input$features[seq_len(2L)]
+
+  adapted <- scop:::spatial_integration_precast_seurat_list(input)
+
+  expect_false(any(c("row", "col") %in% colnames(input$srt_list[[1L]]@meta.data)))
+  expect_identical(rownames(adapted[[1L]][[input$assay]]), input$features)
+  expect_equal(
+    unname(adapted[[1L]]$row),
+    unname(input$coords_list[[1L]][colnames(adapted[[1L]]), "y"])
+  )
+  expect_equal(
+    unname(adapted[[1L]]$col),
+    unname(input$coords_list[[1L]][colnames(adapted[[1L]]), "x"])
+  )
+})
+
+test_that("PRECAST extractor maps its selected latent embedding and domains to cells", {
+  skip_if_not_installed("PRECAST")
+  data("PRECASTObj", package = "PRECAST")
+  selected <- PRECAST::SelectModel(PRECASTObj)
+  cells <- unlist(lapply(selected@seulist, colnames), use.names = FALSE)
+  input <- list(cells = cells)
+
+  extracted <- scop:::spatial_integration_extract_precast(selected, input)
+
+  expect_equal(rownames(extracted$embedding), cells)
+  expect_equal(names(extracted$domains), cells)
+  expect_equal(nrow(extracted$embedding), length(cells))
+  expect_equal(length(extracted$domains), length(cells))
+  expect_match(colnames(extracted$embedding)[1L], "^PRECAST_")
+})
+
 test_that("RunSpatialIntegration validates required inputs before backend work", {
   srt <- make_spatial_integration_seurat()
   testthat::local_mocked_bindings(
