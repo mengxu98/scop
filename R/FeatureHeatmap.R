@@ -1080,49 +1080,37 @@ FeatureHeatmap <- function(
         )
       } else {
         if (split_method == "mfuzz") {
-          status <- tryCatch(
-            check_r("e1071", verbose = FALSE),
-            error = identity
-          )
-          if (inherits(status, "error")) {
-            log_message(
-              "The {.pkg e1071} package was not found. Switch {.arg split_method} to {.val kmeans}",
-              message_type = "warning",
-              verbose = verbose
-            )
-            split_method <- "kmeans"
+          check_r("e1071", verbose = FALSE)
+          mat_split_tmp <- mat_split
+          colnames(mat_split_tmp) <- make.unique(colnames(mat_split_tmp))
+          mat_split_tmp <- standardise(mat_split_tmp)
+          min_fuzzification <- mestimate(mat_split_tmp)
+          if (is.null(fuzzification)) {
+            fuzzification <- min_fuzzification + 0.1
           } else {
-            mat_split_tmp <- mat_split
-            colnames(mat_split_tmp) <- make.unique(colnames(mat_split_tmp))
-            mat_split_tmp <- standardise(mat_split_tmp)
-            min_fuzzification <- mestimate(mat_split_tmp)
-            if (is.null(fuzzification)) {
-              fuzzification <- min_fuzzification + 0.1
-            } else {
-              if (fuzzification <= min_fuzzification) {
-                log_message(
-                  "{.arg fuzzification} value is samller than estimated: {.val {round(min_fuzzification, 2)}}",
-                  message_type = "warning",
-                  verbose = verbose
-                )
-              }
-            }
-            cl <- e1071::cmeans(
-              mat_split_tmp,
-              centers = n_split,
-              method = "cmeans",
-              m = fuzzification
-            )
-            if (length(cl$cluster) == 0) {
+            if (fuzzification <= min_fuzzification) {
               log_message(
-                "Clustering with mfuzz failed (fuzzification=",
-                round(fuzzification, 2),
-                "). Please set a larger fuzzification parameter manually.",
-                message_type = "error"
+                "{.arg fuzzification} value is samller than estimated: {.val {round(min_fuzzification, 2)}}",
+                message_type = "warning",
+                verbose = verbose
               )
             }
-            row_split <- feature_split <- cl$cluster
           }
+          cl <- e1071::cmeans(
+            mat_split_tmp,
+            centers = n_split,
+            method = "cmeans",
+            m = fuzzification
+          )
+          if (length(cl$cluster) == 0) {
+            log_message(
+              "Clustering with mfuzz failed (fuzzification=",
+              round(fuzzification, 2),
+              "). Please set a larger fuzzification parameter manually.",
+              message_type = "error"
+            )
+          }
+          row_split <- feature_split <- cl$cluster
         }
         if (split_method == "kmeans") {
           km <- stats::kmeans(

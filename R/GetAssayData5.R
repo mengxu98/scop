@@ -62,6 +62,14 @@ GetAssayData5.Assay5 <- function(
   layer = "counts",
   ...
 ) {
+  matching_layers <- SeuratObject::Layers(object, search = layer)
+  if (length(matching_layers) == 1L && identical(matching_layers, layer)) {
+    return(SeuratObject::GetAssayData(
+      object,
+      layer = layer,
+      ...
+    ))
+  }
   object <- SeuratObject::JoinLayers(object)
   data <- SeuratObject::GetAssayData(
     object,

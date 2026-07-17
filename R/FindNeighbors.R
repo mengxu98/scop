@@ -160,6 +160,29 @@ FindNeighbors.Seurat <- function(
   return(SeuratObject::LogSeuratCommand(object = object))
 }
 
+# Convert a nearest-neighbour index matrix to reference cell names without an
+# element-wise `apply()` call.  Matrix indexing is column-major just like the
+# index matrices returned by Seurat, so this preserves both values and
+# dimnames while avoiding one R closure invocation per neighbour.
+knn_indices_to_names <- function(indices, reference_names) {
+  out <- matrix(
+    reference_names[as.integer(indices)],
+    nrow = nrow(indices),
+    ncol = ncol(indices),
+    dimnames = dimnames(indices)
+  )
+  out
+}
+
+# `knn_cross_topk_native()` has already rejected non-finite values before this
+# helper is reached.  `matrixStats::rowRanks()` therefore has the same ranking
+# semantics as `rank()` here (including average tie ranks), while avoiding an
+# R-level `apply()` call for every reference/query vector.
+knn_rank_rows <- function(x) {
+  check_r("matrixStats", verbose = FALSE)
+  matrixStats::rowRanks(as.matrix(x), ties.method = "average")
+}
+
 #' Find nearest neighbors
 #'
 #' @param object Object containing reduced-dimensional data.
@@ -174,4 +197,45 @@ FindNeighbors <- function(object, ...) {
 #' @export
 FindNeighbors.default <- function(object, ...) {
   stop("FindNeighbors supports Seurat objects.", call. = FALSE)
+}
+
+knn_cross_topk_native <- function(reference, query, k, distance_metric) {
+  if (
+    !is.matrix(reference) || !is.matrix(query) ||
+      !is.numeric(reference) || !is.numeric(query) ||
+      ncol(reference) != ncol(query) || nrow(reference) == 0L ||
+      nrow(query) == 0L || k < 1L || k > nrow(reference) ||
+      !distance_metric %in% c("cosine", "euclidean", "pearson", "spearman")
+  ) {
+    return(NULL)
+  }
+  if (distance_metric %in% c("pearson", "spearman")) {
+    if (any(!is.finite(reference)) || any(!is.finite(query))) {
+      return(NULL)
+    }
+    if (identical(distance_metric, "spearman")) {
+      reference <- knn_rank_rows(reference)
+      query <- knn_rank_rows(query)
+    }
+    reference <- reference - rowMeans(reference)
+    query <- query - rowMeans(query)
+    if (any(rowSums(reference * reference) <= 0) ||
+        any(rowSums(query * query) <= 0)) {
+      return(NULL)
+    }
+    distance_metric <- "cosine"
+  }
+  cores <- suppressWarnings(parallel::detectCores(logical = TRUE))
+  if (length(cores) != 1L || is.na(cores) || cores < 1L) cores <- 1L
+  cores <- max(1L, min(8L, as.integer(cores)))
+  tryCatch(
+    cross_knn_f32(
+      reference = reference,
+      query = query,
+      k = as.integer(k),
+      metric = distance_metric,
+      cores = cores
+    ),
+    error = function(e) NULL
+  )
 }

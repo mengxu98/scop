@@ -62,15 +62,7 @@ GeneImmuneCorPlot <- function(
   theme_args = list(),
   verbose = TRUE
 ) {
-  if (!isTRUE(check_r("Hy4m/linkET", verbose = FALSE))) {
-    log_message(
-      paste(
-        "{.pkg linkET} is required for {.fn GeneImmuneCorPlot}.",
-        "Install it with {.code check_r('Hy4m/linkET')} before drawing the butterfly plot."
-      ),
-      message_type = "error"
-    )
-  }
+  check_r("Hy4m/linkET", verbose = FALSE)
   qcorrplot <- get_namespace_fun("linkET", "qcorrplot")
   correlate <- get_namespace_fun("linkET", "correlate")
   geom_couple <- get_namespace_fun("linkET", "geom_couple")
@@ -113,8 +105,9 @@ GeneImmuneCorPlot <- function(
   }
   gene_mat <- gene_mat[common_samples, , drop = FALSE]
   immune_mat <- immune_mat[common_samples, , drop = FALSE]
-  keep_immune <- apply(immune_mat, 2, function(x) stats::var(x, na.rm = TRUE) > 0)
-  keep_gene <- apply(gene_mat, 2, function(x) stats::var(x, na.rm = TRUE) > 0)
+  check_r("matrixStats", verbose = FALSE)
+  keep_immune <- gene_immune_variable_columns(immune_mat)
+  keep_gene <- gene_immune_variable_columns(gene_mat)
   if (!all(keep_immune)) {
     log_message(
       "Drop immune columns with zero variance: {.val {colnames(immune_mat)[!keep_immune]}}",
@@ -182,6 +175,10 @@ GeneImmuneCorPlot <- function(
     ) +
     ggplot2::labs(title = title, subtitle = subtitle) +
     theme_obj
+}
+
+gene_immune_variable_columns <- function(x) {
+  matrixStats::colVars(as.matrix(x), na.rm = TRUE) > 0
 }
 
 resolve_gene_expression_matrix <- function(

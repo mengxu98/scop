@@ -1248,14 +1248,7 @@ EnrichmentPlot <- function(
       rownames(df) <- df[["ID"]]
 
       nodes <- df
-      edges <- as.data.frame(Matrix::t(combn(nodes$ID, 2)))
-      colnames(edges) <- c("from", "to")
-      edges[["weight"]] <- mapply(
-        function(x, y) length(intersect(df[[x, "geneID"]], df[[y, "geneID"]])),
-        edges$from,
-        edges$to
-      )
-      edges <- edges[edges[["weight"]] > 0, , drop = FALSE]
+      edges <- enrichment_overlap_edges(nodes$ID, df[["geneID"]])
       graph <- igraph::graph_from_data_frame(
         d = edges,
         vertices = nodes,
@@ -1690,6 +1683,35 @@ EnrichmentPlot <- function(
   } else {
     return(plist)
   }
+}
+
+enrichment_overlap_edges <- function(ids, gene_sets) {
+  ids <- as.character(ids)
+  gene_sets <- lapply(gene_sets, unique)
+  if (length(ids) < 2L || length(gene_sets) != length(ids)) {
+    return(data.frame(from = character(), to = character(), weight = numeric()))
+  }
+  genes <- unique(unlist(gene_sets, use.names = FALSE))
+  if (length(genes) == 0L) {
+    return(data.frame(from = character(), to = character(), weight = numeric()))
+  }
+  incidence <- Matrix::sparseMatrix(
+    i = rep.int(seq_along(gene_sets), lengths(gene_sets)),
+    j = match(unlist(gene_sets, use.names = FALSE), genes),
+    x = 1,
+    dims = c(length(ids), length(genes))
+  )
+  overlap <- Matrix::triu(Matrix::tcrossprod(incidence), k = 1L)
+  edge_idx <- Matrix::summary(overlap)
+  if (nrow(edge_idx) == 0L) {
+    return(data.frame(from = character(), to = character(), weight = numeric()))
+  }
+  data.frame(
+    from = ids[edge_idx$i],
+    to = ids[edge_idx$j],
+    weight = edge_idx$x,
+    stringsAsFactors = FALSE
+  )
 }
 
 enrichment_metric_weight <- function(x, score_mode = FALSE) {

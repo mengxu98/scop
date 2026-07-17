@@ -355,22 +355,11 @@ RunDynamicFeatures <- function(
 }
 
 dynamic_row_unique_counts <- function(x) {
-  if (!inherits(x, "sparseMatrix")) {
-    return(apply(x, 1, function(row) length(unique(row))))
+  out <- if (inherits(x, "sparseMatrix")) {
+    dynamic_row_unique_counts_sparse_cpp(methods::as(x, "dgCMatrix"))
+  } else {
+    dynamic_row_unique_counts_dense_cpp(as.matrix(x))
   }
-  x <- methods::as(x, "TsparseMatrix")
-  n_rows <- nrow(x)
-  n_cols <- ncol(x)
-  out <- integer(n_rows)
-  if (length(x@x) > 0) {
-    nonzero_values <- split(x@x, x@i + 1L)
-    idx <- as.integer(names(nonzero_values))
-    out[idx] <- vapply(nonzero_values, function(v) {
-      length(unique(v))
-    }, integer(1))
-  }
-  row_nnz <- tabulate(x@i + 1L, nbins = n_rows)
-  out <- out + as.integer(row_nnz < n_cols)
   names(out) <- rownames(x)
   out
 }
@@ -732,18 +721,25 @@ pretsa_one_block <- function(
   max_knot_allowed,
   padjust_method
 ) {
+  basis_models <- pretsa_basis_models(
+    pseudotime = pseudotime_vec,
+    knot = knot,
+    max_knot_allowed = max_knot_allowed
+  )
   test_res <- pretsa_temporal(
     expr,
     pseudotime_vec,
     knot = knot,
     max_knot_allowed = max_knot_allowed,
-    padjust_method = padjust_method
+    padjust_method = padjust_method,
+    basis_models = basis_models
   )
   fit_mat <- pretsa_temporalFit(
     expr,
     pseudotime_vec,
     knot = knot,
-    max_knot_allowed = max_knot_allowed
+    max_knot_allowed = max_knot_allowed,
+    basis_models = basis_models
   )
   SSE <- Matrix::rowSums((expr - fit_mat)^2)
   SST <- Matrix::rowSums(sweep(expr, 1, Matrix::rowMeans(expr), "-")^2)
@@ -783,12 +779,55 @@ pretsa_Calbic <- function(
   expr
 ) {
   B <- Blist[[as.character(numknot)]][["B"]]
-  tBB <- Blist[[as.character(numknot)]][["tBB"]]
-  beta <- as.matrix(tcrossprod(chol2inv(chol(tBB)), B) %*% expr)
+  invB <- Blist[[as.character(numknot)]][["invB"]]
+  if (is.null(invB)) {
+    tBB <- Blist[[as.character(numknot)]][["tBB"]]
+    invB <- chol2inv(chol(tBB))
+  }
+  beta <- as.matrix(tcrossprod(invB, B) %*% expr)
   pred <- B %*% beta
   mse <- Matrix::colMeans((expr - pred)^2)
   bic <- nrow(B) * (1 + log(2 * pi) + log(mse)) + log(nrow(B)) * (ncol(B) + 1)
   return(bic)
+}
+
+pretsa_basis_models <- function(pseudotime, knot, max_knot_allowed) {
+  knotnum0 <- if (identical(knot, "auto")) {
+    0:max_knot_allowed
+  } else {
+    as.integer(knot)
+  }
+  names(knotnum0) <- knotnum0
+  Blist <- lapply(knotnum0, function(numknot) {
+    B <- splines::bs(pseudotime, intercept = FALSE, df = numknot + 3)
+    B <- B[, which(apply(B, 2, stats::sd) > 0), drop = FALSE]
+    B <- cbind(1, B)
+    rownames(B) <- names(pseudotime)
+    colnames(B) <- NULL
+    tBB <- crossprod(B)
+    rownames(tBB) <- colnames(tBB) <- NULL
+    list(B = B, tBB = tBB)
+  })
+  names(Blist) <- as.character(knotnum0)
+
+  if (identical(knot, "auto")) {
+    testpos <- vapply(
+      Blist,
+      function(model) !inherits(try(chol(model$tBB), silent = TRUE), "try-error"),
+      logical(1)
+    )
+    if (mean(testpos) != 1) {
+      maxknot <- which(!testpos)[1] - 2L
+      knotnum0 <- 0:maxknot
+      names(knotnum0) <- knotnum0
+      Blist <- Blist[as.character(knotnum0)]
+    }
+  }
+  Blist <- lapply(Blist, function(model) {
+    model$invB <- chol2inv(chol(model$tBB))
+    model
+  })
+  list(knotnum0 = knotnum0, Blist = Blist)
 }
 
 pretsa_Calfstat <- function(
@@ -872,20 +911,19 @@ pretsa_temporal <- function(
   pseudotime,
   knot,
   max_knot_allowed,
-  padjust_method
+  padjust_method,
+  basis_models = NULL
 ) {
   expr <- expr[, names(pseudotime), drop = FALSE]
+  basis_models <- basis_models %||% pretsa_basis_models(
+    pseudotime, knot, max_knot_allowed
+  )
   if (knot != "auto") {
     knotnum <- rep(knot, nrow(expr))
     names(knotnum) <- rownames(expr)
-    B <- splines::bs(pseudotime, intercept = FALSE, df = knot + 3)
-    B <- B[, which(apply(B, 2, stats::sd) > 0), drop = FALSE]
-    B <- cbind(1, B)
-    rownames(B) <- colnames(expr)
-    colnames(B) <- NULL
-    tBB <- crossprod(B)
-    rownames(tBB) <- colnames(tBB) <- NULL
-    pred <- as.matrix(expr %*% B %*% tcrossprod(chol2inv(chol(tBB)), B))
+    model <- basis_models$Blist[[as.character(knot)]]
+    B <- model$B
+    pred <- as.matrix(expr %*% B %*% tcrossprod(model$invB, B))
     SSE <- Matrix::rowSums((expr - pred)^2)
     SST <- Matrix::rowSums(sweep(expr, 1, Matrix::rowMeans(expr), FUN = "-")^2)
     fstat <- ((SST - SSE) / (ncol(B) - 1)) / (SSE / (nrow(B) - ncol(B)))
@@ -909,39 +947,17 @@ pretsa_temporal <- function(
       logpval = logpval
     )
   } else {
-    knotnum0 <- 0:max_knot_allowed
-    names(knotnum0) <- knotnum0
-    Blist <- lapply(knotnum0, function(numknot) {
-      B <- splines::bs(pseudotime, intercept = FALSE, df = numknot + 3)
-      B <- B[, which(apply(B, 2, stats::sd) > 0), drop = FALSE]
-      B <- cbind(1, B)
-      rownames(B) <- colnames(expr)
-      colnames(B) <- NULL
-      tBB <- crossprod(B)
-      rownames(tBB) <- colnames(tBB) <- NULL
-      list(B = B, tBB = tBB)
-    })
-    names(Blist) <- as.character(knotnum0)
-    testpos <- sapply(knotnum0, function(numknot) {
-      tBB <- Blist[[as.character(numknot)]][["tBB"]]
-      !"try-error" %in% class(try(chol(tBB), silent = TRUE))
-    })
-    if (mean(testpos) != 1) {
-      maxknot <- which(testpos == FALSE)[1] - 2
-      knotnum0 <- 0:maxknot
-      names(knotnum0) <- knotnum0
-    }
+    knotnum0 <- basis_models$knotnum0
+    Blist <- basis_models$Blist
     expr <- Matrix::t(expr)
     bic <- sapply(knotnum0, pretsa_Calbic, Blist = Blist, expr = expr)
     knotnum <- knotnum0[apply(bic, 1, which.min)]
     names(knotnum) <- rownames(bic)
     res <- lapply(unique(knotnum), function(k) {
       B <- Blist[[as.character(k)]][["B"]]
-      tBB <- Blist[[as.character(k)]][["tBB"]]
+      invB <- Blist[[as.character(k)]][["invB"]]
       beta <- as.matrix(
-        tcrossprod(
-          chol2inv(chol(tBB)), B
-        ) %*% expr[, which(knotnum == k), drop = FALSE]
+        tcrossprod(invB, B) %*% expr[, which(knotnum == k), drop = FALSE]
       )
       pred <- B %*% beta
       expr.sub <- expr[, colnames(pred), drop = FALSE]
@@ -987,43 +1003,22 @@ pretsa_temporalFit <- function(
   expr,
   pseudotime,
   knot = 0,
-  max_knot_allowed = 10
+  max_knot_allowed = 10,
+  basis_models = NULL
 ) {
   expr <- expr[, names(pseudotime), drop = FALSE]
+  basis_models <- basis_models %||% pretsa_basis_models(
+    pseudotime, knot, max_knot_allowed
+  )
   if (knot != "auto") {
-    B <- splines::bs(pseudotime, intercept = FALSE, df = knot + 3)
-    B <- B[, which(apply(B, 2, stats::sd) > 0), drop = FALSE]
-    B <- cbind(1, B)
-    rownames(B) <- colnames(expr)
-    colnames(B) <- NULL
-    tBB <- crossprod(B)
-    rownames(tBB) <- colnames(tBB) <- NULL
-    invB <- chol2inv(chol(tBB))
+    model <- basis_models$Blist[[as.character(knot)]]
+    B <- model$B
+    invB <- model$invB
     pred <- as.matrix(expr %*% B %*% invB %*% t(B))
     return(pred)
   } else {
-    knotnum0 <- 0:max_knot_allowed
-    names(knotnum0) <- knotnum0
-    Blist <- lapply(knotnum0, function(numknot) {
-      B <- splines::bs(pseudotime, intercept = FALSE, df = numknot + 3)
-      B <- B[, which(apply(B, 2, stats::sd) > 0), drop = FALSE]
-      B <- cbind(1, B)
-      rownames(B) <- colnames(expr)
-      colnames(B) <- NULL
-      tBB <- crossprod(B)
-      rownames(tBB) <- colnames(tBB) <- NULL
-      list(B = B, tBB = tBB)
-    })
-    names(Blist) <- as.character(knotnum0)
-    testpos <- sapply(knotnum0, function(numknot) {
-      tBB <- Blist[[as.character(numknot)]][["tBB"]]
-      !"try-error" %in% class(try(chol(tBB), silent = TRUE))
-    })
-    if (mean(testpos) != 1) {
-      maxknot <- which(testpos == FALSE)[1] - 2
-      knotnum0 <- 0:maxknot
-      names(knotnum0) <- knotnum0
-    }
+    knotnum0 <- basis_models$knotnum0
+    Blist <- basis_models$Blist
     expr_t <- Matrix::t(expr)
     bic <- sapply(knotnum0, pretsa_Calbic, Blist = Blist, expr = expr_t)
     knotnum <- knotnum0[apply(bic, 1, which.min)]
@@ -1031,8 +1026,7 @@ pretsa_temporalFit <- function(
     pred_list <- list()
     for (k in unique(knotnum)) {
       B <- Blist[[as.character(k)]][["B"]]
-      tBB <- Blist[[as.character(k)]][["tBB"]]
-      invB <- chol2inv(chol(tBB))
+      invB <- Blist[[as.character(k)]][["invB"]]
       idx <- which(knotnum == k)
       beta <- as.matrix(
         tcrossprod(invB, B) %*% expr_t[, idx, drop = FALSE]

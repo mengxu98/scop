@@ -494,7 +494,9 @@ FeatureDimPlot <- function(
     )
   }
 
+  assay_data <- NULL
   if (isTRUE(calculate_coexp) && length(features_gene) > 0) {
+    assay_data <- GetAssayData5(srt, assay = assay, layer = layer)
     if (length(features_meta) > 0) {
       log_message(
         "{.val {features_meta}} is not used when calculating co-expression",
@@ -506,26 +508,14 @@ FeatureDimPlot <- function(
     status <- CheckDataType(srt, layer = layer, assay = assay)
     log_message("Data type detected in {.val {layer}} layer: {.val {status}}", verbose = verbose)
     if (status %in% c("raw_counts", "raw_normalized_counts")) {
-      srt@meta.data[["CoExp"]] <- apply(
-        GetAssayData5(
-          srt,
-          assay = assay,
-          layer = layer
-        )[features_gene, , drop = FALSE],
-        2,
-        function(x) exp(mean(log(x)))
+      srt@meta.data[["CoExp"]] <- feature_cor_geometric_mean(
+        assay_data[features_gene, , drop = FALSE],
+        log_normalized = FALSE
       )
     } else if (status == "log_normalized_counts") {
-      srt@meta.data[["CoExp"]] <- apply(
-        expm1(
-          GetAssayData5(
-            srt,
-            assay = assay,
-            layer = layer
-          )[features_gene, , drop = FALSE]
-        ),
-        2,
-        function(x) log1p(exp(mean(log(x))))
+      srt@meta.data[["CoExp"]] <- feature_cor_geometric_mean(
+        assay_data[features_gene, , drop = FALSE],
+        log_normalized = TRUE
       )
     } else {
       log_message(
@@ -538,24 +528,21 @@ FeatureDimPlot <- function(
   }
 
   if (length(features_gene) > 0) {
+    assay_data <- assay_data %||% GetAssayData5(
+      srt,
+      assay = assay,
+      layer = layer
+    )
     if (all(rownames(srt@assays[[assay]]) %in% features_gene)) {
       dat_gene <- Matrix::t(
         as_matrix(
-          GetAssayData5(
-            srt,
-            assay = assay,
-            layer = layer
-          )
+          assay_data
         )
       )
     } else {
       dat_gene <- Matrix::t(
         as_matrix(
-          GetAssayData5(
-            srt,
-            assay = assay,
-            layer = layer
-          )[features_gene, , drop = FALSE]
+          assay_data[features_gene, , drop = FALSE]
         )
       )
     }
@@ -1201,6 +1188,7 @@ FeatureDimPlot <- function(
           if (i %% legend_nrow != 0 && i == total) {
             ncol_insert <- dim(leg_list[[n - 1]])[2] - dim(leg)[2]
             for (col_insert in 1:ncol_insert) {
+              check_r("gtable", verbose = FALSE)
               leg <- gtable::gtable_add_cols(
                 leg,
                 sum(leg_list[[n - 1]]$widths) / ncol_insert,
@@ -1922,7 +1910,9 @@ FeatureDimPlot3D <- function(
     )
   }
 
+  assay_data <- NULL
   if (isTRUE(calculate_coexp) && length(features_gene) > 0) {
+    assay_data <- GetAssayData5(srt, assay = assay, layer = layer)
     if (length(features_meta) > 0) {
       log_message(
         paste(features_meta, collapse = ","),
@@ -1934,26 +1924,14 @@ FeatureDimPlot3D <- function(
     status <- CheckDataType(srt, layer = layer, assay = assay)
     log_message("Data type detected in ", layer, " layer: ", status, verbose = verbose)
     if (status %in% c("raw_counts", "raw_normalized_counts")) {
-      srt@meta.data[["CoExp"]] <- apply(
-        GetAssayData5(
-          srt,
-          assay = assay,
-          layer = layer
-        )[features_gene, , drop = FALSE],
-        2,
-        function(x) exp(mean(log(x)))
+      srt@meta.data[["CoExp"]] <- feature_cor_geometric_mean(
+        assay_data[features_gene, , drop = FALSE],
+        log_normalized = FALSE
       )
     } else if (status == "log_normalized_counts") {
-      srt@meta.data[["CoExp"]] <- apply(
-        expm1(
-          GetAssayData5(
-            srt,
-            assay = assay,
-            layer = layer
-          )[features_gene, , drop = FALSE]
-        ),
-        2,
-        function(x) log1p(exp(mean(log(x))))
+      srt@meta.data[["CoExp"]] <- feature_cor_geometric_mean(
+        assay_data[features_gene, , drop = FALSE],
+        log_normalized = TRUE
       )
     } else {
       log_message(
@@ -1966,24 +1944,21 @@ FeatureDimPlot3D <- function(
   }
 
   if (length(features_gene) > 0) {
+    assay_data <- assay_data %||% GetAssayData5(
+      srt,
+      assay = assay,
+      layer = layer
+    )
     if (all(rownames(srt@assays[[assay]]) %in% features_gene)) {
       dat_gene <- Matrix::t(
         as_matrix(
-          GetAssayData5(
-            srt,
-            assay = assay,
-            layer = layer
-          )
+          assay_data
         )
       )
     } else {
       dat_gene <- Matrix::t(
         as_matrix(
-          GetAssayData5(
-            srt,
-            assay = assay,
-            layer = layer
-          )[features_gene, , drop = FALSE]
+          assay_data[features_gene, , drop = FALSE]
         )
       )
     }

@@ -83,6 +83,21 @@ gsva_plot_find_tool_name <- function(srt, assay_name, group.by = NULL) {
   hit[[1]]
 }
 
+# The score matrix is already materialized by GSVAPlot before its presentation
+# filters run.  Keep the row-wise calculations in one vectorized pass instead
+# of dispatching an R closure for every gene set.
+gsva_plot_row_variances <- function(scores) {
+  check_r("matrixStats", verbose = FALSE)
+  out <- matrixStats::rowVars(as.matrix(scores), na.rm = TRUE)
+  names(out) <- rownames(scores)
+  out
+}
+
+gsva_plot_score_cutoff_keep <- function(scores, score_cutoff) {
+  check_r("matrixStats", verbose = FALSE)
+  matrixStats::rowMaxs(abs(as.matrix(scores)), na.rm = TRUE) >= abs(score_cutoff)
+}
+
 gsva_plot_match_features <- function(features, scores, enrichment = NULL) {
   features <- unique(as.character(unlist(features)))
   features <- features[!is.na(features) & nzchar(features)]

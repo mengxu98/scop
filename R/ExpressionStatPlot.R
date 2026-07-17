@@ -287,19 +287,17 @@ ExpressionStatPlot <- function(
     }
     status <- CheckDataType(exp.data)
     log_message(
-      "Data type: {.val {status}}",
+      "Data type: {.val {status}}"
     )
     if (status %in% c("raw_counts", "raw_normalized_counts")) {
-      meta.data[["CoExp"]] <- apply(
+      meta.data[["CoExp"]] <- feature_cor_geometric_mean(
         exp.data[features_gene, , drop = FALSE],
-        2,
-        function(x) exp(mean(log(x)))
+        log_normalized = FALSE
       )
     } else if (status == "log_normalized_counts") {
-      meta.data[["CoExp"]] <- apply(
-        expm1(exp.data[features_gene, , drop = FALSE]),
-        2,
-        function(x) log1p(exp(mean(log(x))))
+      meta.data[["CoExp"]] <- feature_cor_geometric_mean(
+        exp.data[features_gene, , drop = FALSE],
+        log_normalized = TRUE
       )
     } else {
       log_message(
@@ -945,8 +943,8 @@ ExpressionStatPlot <- function(
                 )
             }
           } else {
-            p <- p +
-              ggpubr::stat_compare_means(
+              p <- p +
+                ggpubr::stat_compare_means(
                 mapping = aes(
                   x = .data[["group.by"]],
                   y = .data[["value"]],
@@ -960,9 +958,9 @@ ExpressionStatPlot <- function(
                 vjust = 0,
                 comparisons = comparisons_use,
                 ref.group = ref_group_use,
-                method = pairwise_method
-              )
-          }
+                  method = pairwise_method
+                )
+            }
           y_max_use <- layer_scales(p)$y$range$range[1] +
             (layer_scales(p)$y$range$range[2] -
               layer_scales(p)$y$range$range[1]) *
@@ -984,6 +982,19 @@ ExpressionStatPlot <- function(
             vjust = 1.2,
             hjust = 0
           )
+        if (
+          identical(sig_label, "p.format") &&
+            exists("create_p_label", envir = asNamespace("ggpubr"), inherits = FALSE)
+        ) {
+          # See the pairwise-comparison branch above.
+          label_env <- rlang::env(
+            create_p_label = getFromNamespace("create_p_label", "ggpubr")
+          )
+          p$layers[[length(p$layers)]]$mapping$label <- rlang::new_quosure(
+            quote(ggplot2::after_stat(create_p_label(p.format))),
+            env = label_env
+          )
+        }
         y_max_use <- layer_scales(p)$y$range$range[1] +
           (layer_scales(p)$y$range$range[2] - layer_scales(p)$y$range$range[1]) *
             1.15

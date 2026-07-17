@@ -1848,26 +1848,11 @@ ccc_ligand_target_heatmap <- function(
     unique(as.character(plot_df$ligand))
   target_levels <- levels(plot_df$target) %||%
     unique(as.character(plot_df$target))
-  mat <- matrix(
-    NA_real_,
-    nrow = length(ligand_levels),
-    ncol = length(target_levels),
-    dimnames = list(ligand_levels, target_levels)
+  mat <- ccc_ligand_target_matrix(
+    plot_df = plot_df,
+    ligand_levels = ligand_levels,
+    target_levels = target_levels
   )
-  for (k in seq_len(nrow(plot_df))) {
-    ligand_k <- as.character(plot_df$ligand[k])
-    target_k <- as.character(plot_df$target[k])
-    weight_k <- as.numeric(plot_df$weight[k])
-    if (is.na(ligand_k) || is.na(target_k) || !is.finite(weight_k)) {
-      next
-    }
-    existing <- mat[ligand_k, target_k]
-    mat[ligand_k, target_k] <- if (is.na(existing)) {
-      weight_k
-    } else {
-      existing + weight_k
-    }
-  }
 
   add_text_eff <- if (is.null(add_text)) TRUE else isTRUE(add_text)
   top_bar_vec <- if (ccc_side_has_bar(top_anno, bottom_anno)) {
@@ -3929,6 +3914,27 @@ ccc_heatmap_capture_size <- function(
   )
 }
 
+ccc_ligand_target_matrix <- function(plot_df, ligand_levels, target_levels) {
+  mat <- matrix(
+    NA_real_,
+    nrow = length(ligand_levels),
+    ncol = length(target_levels),
+    dimnames = list(ligand_levels, target_levels)
+  )
+  ligand_index <- match(as.character(plot_df$ligand), ligand_levels)
+  target_index <- match(as.character(plot_df$target), target_levels)
+  weights <- as.numeric(plot_df$weight)
+  valid <- !is.na(ligand_index) & !is.na(target_index) & is.finite(weights)
+  if (!any(valid)) {
+    return(mat)
+  }
+  matrix_index <- ligand_index[valid] +
+    (target_index[valid] - 1L) * nrow(mat)
+  sums <- rowsum(weights[valid], group = matrix_index, reorder = FALSE)
+  mat[as.integer(rownames(sums))] <- sums[, 1L]
+  mat
+}
+
 ccc_pivot_matrix <- function(df, row_var, col_var, val_var) {
   ordered_levels <- function(x) {
     if (is.factor(x)) {
@@ -3948,6 +3954,19 @@ ccc_pivot_matrix <- function(df, row_var, col_var, val_var) {
     ncol = length(cols),
     dimnames = list(rows, cols)
   )
+
+  row_index <- match(as.character(df[[row_var]]), rows)
+  col_index <- match(as.character(df[[col_var]]), cols)
+  valid <- !is.na(row_index) & !is.na(col_index)
+  values <- df[[val_var]]
+  if (any(valid) && is.numeric(values) && !anyNA(values[valid])) {
+    matrix_index <- row_index[valid] +
+      (col_index[valid] - 1L) * nrow(mat)
+    sums <- rowsum(values[valid], group = matrix_index, reorder = FALSE)
+    mat[as.integer(rownames(sums))] <- sums[, 1L]
+    return(mat)
+  }
+
   for (k in seq_len(nrow(df))) {
     r <- as.character(df[[row_var]][k])
     c <- as.character(df[[col_var]][k])

@@ -432,14 +432,14 @@ GSVAPlot <- function(
       }
       gsva_scores <- gsva_scores[features, , drop = FALSE]
     } else if (!is.null(heatmap_topTerm) && is.finite(heatmap_topTerm) && heatmap_topTerm < nrow(gsva_scores)) {
-      geneset_var <- apply(gsva_scores, 1, stats::var, na.rm = TRUE)
+      geneset_var <- gsva_plot_row_variances(gsva_scores)
       top_genesets <- names(sort(geneset_var, decreasing = TRUE))[seq_len(min(heatmap_topTerm, length(geneset_var)))]
       gsva_scores <- gsva_scores[top_genesets, , drop = FALSE]
     }
   }
 
   if (!is.null(score_cutoff)) {
-    keep <- apply(abs(gsva_scores), 1, max, na.rm = TRUE) >= abs(score_cutoff)
+    keep <- gsva_plot_score_cutoff_keep(gsva_scores, score_cutoff)
     gsva_scores <- gsva_scores[keep, , drop = FALSE]
     if (nrow(gsva_scores) == 0) {
       log_message(

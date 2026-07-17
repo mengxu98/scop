@@ -1872,8 +1872,9 @@ scenic_call_with_args <- function(fun, args, extra_args = list()) {
 }
 
 scenic_scale_rows <- function(mat) {
+  check_r("matrixStats", verbose = FALSE)
   row_mean <- rowMeans(mat, na.rm = TRUE)
-  row_sd <- apply(mat, 1, stats::sd, na.rm = TRUE)
+  row_sd <- matrixStats::rowSds(mat, na.rm = TRUE)
   variable_rows <- is.finite(row_sd) & row_sd > sqrt(.Machine$double.eps)
   out <- mat
   if (any(variable_rows)) {
@@ -2086,6 +2087,20 @@ scenic_top_regulon_source <- function(top_table, regulons) {
   )
 }
 
+scenic_group_row_maxima <- function(mat) {
+  check_r("matrixStats", verbose = FALSE)
+  has_value <- rowSums(!is.na(mat)) > 0L
+  mat_for_max <- mat
+  mat_for_max[is.na(mat_for_max)] <- -Inf
+  max_group_idx <- max.col(mat_for_max, ties.method = "first")
+  max_group_idx[!has_value] <- NA_integer_
+  max_value <- matrixStats::rowMaxs(mat_for_max)
+  max_value[!has_value] <- NA_real_
+  names(max_group_idx) <- rownames(mat)
+  names(max_value) <- rownames(mat)
+  list(group_idx = max_group_idx, value = max_value)
+}
+
 scenic_order_heatmap_features <- function(
   mat,
   features,
@@ -2098,16 +2113,9 @@ scenic_order_heatmap_features <- function(
 
   mat <- as.matrix(mat[features, , drop = FALSE])
   mat[!is.finite(mat)] <- NA_real_
-  max_group_idx <- apply(mat, 1L, function(x) {
-    if (all(is.na(x))) {
-      return(NA_integer_)
-    }
-    which.max(replace(x, is.na(x), -Inf))
-  })
-  max_value <- apply(mat, 1L, function(x) {
-    out <- suppressWarnings(max(x, na.rm = TRUE))
-    if (is.finite(out)) out else NA_real_
-  })
+  maxima <- scenic_group_row_maxima(mat)
+  max_group_idx <- maxima[["group_idx"]]
+  max_value <- maxima[["value"]]
   max_group <- colnames(mat)[max_group_idx]
   features[
     order(
