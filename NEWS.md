@@ -1,6 +1,8 @@
 # scop 0.9.0
 
 * **feat**:
+  * Added `RunBenchmark()` for isolated, failure-tolerant comparison of stable spatial-domain clustering methods against a gold standard, with ARI/NMI/purity, runtime, and sampled process-tree peak memory. Explicit `GiottoCluster` and `methods = "all"` selection add the supported legacy baseline without mixing it into the stable default, and result tables/plots label its tier. `BenchmarkPlot()` now provides publication-oriented quality, efficiency, overview, and direction-aware heatmap views for `scop_benchmark` objects.
+  * Fixed Giotto runtime checks to use the current `drieslab/Giotto` repository registered by `SpatialBackendStatus()`, eliminating a false available-in-registry but unavailable-at-execution state.
   * `RunSpatialNeighborhood()` now defaults to truthful native observed summaries; `method = "spicyR"` requires `split.by` and records spicyR provenance only after the backend runs. The standard spatial workflow now records per-stage requested/completed/skipped/failed state and reports partial completion when a requested stage is skipped.
   * Registered `RunCell2location()` as a stable Python spatial deconvolution producer with schema-v1 results, read-only environment diagnostics in `SpatialBackendStatus()`, and bidirectional producer registry contracts.
   * Spatial analysis, plotting, and framework conversion now share strict image selection: objects with multiple spatial images must provide `image`, preventing silent first-slice truncation. Fifteen distance-sensitive producers now default to raw acquisition coordinates; their explicit `coordinate_space = "legacy_display"` path remains available for reproducing older display-scaled analyses.
