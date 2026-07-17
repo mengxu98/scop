@@ -263,7 +263,10 @@ RunMonocle2 <- function(
     ddrtree_tol = ddrtree_tol
   )
   cds <- do.call(get_namespace_fun("monocle", "reduceDimension"), reduce_args)
-  cds <- get_namespace_fun("monocle", "orderCells")(cds)
+  if (is.null(root_state) && !interactive()) {
+    root_state <- 1
+  }
+  cds <- get_namespace_fun("monocle", "orderCells")(cds, root_state = root_state)
 
   embeddings <- Matrix::t(cds@reducedDimS)
   colnames(embeddings) <- paste0(
@@ -286,58 +289,6 @@ RunMonocle2 <- function(
   trajectory <- ggplot2::geom_segment(
     data = edge_df,
     aes(x = x, y = y, xend = xend, yend = yend)
-  )
-
-  if (isTRUE(show_plot)) {
-    p1 <- CellDimPlot(
-      srt,
-      group.by = "Monocle2_State",
-      reduction = cds@dim_reduce_type,
-      label = TRUE,
-      force = TRUE,
-      xlab = xlab,
-      ylab = ylab
-    ) +
-      trajectory
-    if (!is.null(group.by)) {
-      p2 <- CellDimPlot(
-        srt,
-        group.by = group.by,
-        reduction = cds@dim_reduce_type,
-        label = TRUE,
-        force = TRUE,
-        xlab = xlab,
-        ylab = ylab
-      ) +
-        trajectory
-      print(p1 + p2)
-    } else {
-      print(p1)
-    }
-  }
-
-  if (is.null(root_state)) {
-    if (interactive()) {
-      root_state <- utils::select.list(
-        sort(unique(cds[["State"]])),
-        title = "Select the root state to order cells:"
-      )
-      if (root_state == "" || length(root_state) == 0) {
-        root_state <- NULL
-      }
-    } else {
-      root_state <- sort(unique(cds[["State"]]))[1]
-    }
-  }
-  cds <- get_namespace_fun("monocle", "orderCells")(
-    cds, root_state = root_state
-  )
-  srt[["Monocle2_State"]] <- cds[["State"]]
-  srt[["Monocle2_Pseudotime"]] <- cds[["Pseudotime"]]
-  srt@tools$Monocle2 <- list(
-    cds = cds,
-    features = features,
-    trajectory = trajectory
   )
 
   if (isTRUE(show_plot)) {
@@ -375,6 +326,13 @@ RunMonocle2 <- function(
       print(p1 + p3)
     }
   }
+  srt[["Monocle2_Pseudotime"]] <- cds[["Pseudotime"]]
+  srt@tools$Monocle2 <- list(
+    cds = cds,
+    features = features,
+    trajectory = trajectory
+  )
+
   log_message(
     "{.pkg monocle2} completed",
     message_type = "success",
