@@ -145,6 +145,51 @@ test_that("CytoSPACE resolves coordinates before assignment work", {
   )
 })
 
+test_that("CytoSPACE composition estimation matches pairwise correlations", {
+  st_expr <- rbind(
+    c(4, 1, 2, 5),
+    c(1, 3, 2, 1),
+    c(2, 2, 4, 1),
+    c(0, 1, 0, 2),
+    c(3, 2, 1, 4)
+  )
+  ref_expr <- rbind(
+    c(4, 1, 2, 5, 3, 1),
+    c(1, 3, 2, 1, 2, 4),
+    c(2, 2, 4, 1, 3, 2),
+    c(0, 1, 0, 2, 1, 0),
+    c(3, 2, 1, 4, 2, 3)
+  )
+  colnames(st_expr) <- paste0("Spot", seq_len(ncol(st_expr)))
+  labels <- c("A", "A", "B", "B", "C", "C")
+  cell_types <- unique(labels)
+  n_cells <- c(2, 3, 2, 1)
+
+  norm_st <- scop:::cytospace_log_cpm_r(st_expr)
+  norm_ref <- scop:::cytospace_log_cpm_r(ref_expr)
+  profiles <- vapply(cell_types, function(ct) {
+    rowMeans(norm_ref[, labels == ct, drop = FALSE])
+  }, numeric(nrow(norm_ref)))
+  reference_scores <- vapply(seq_len(ncol(norm_st)), function(spot) {
+    vapply(seq_along(cell_types), function(ct) {
+      value <- suppressWarnings(stats::cor(norm_st[, spot], profiles[, ct]))
+      if (is.finite(value)) max(value, 0) else 0
+    }, numeric(1))
+  }, numeric(length(cell_types)))
+  reference_scores <- t(reference_scores)
+  row_sums <- rowSums(reference_scores)
+  reference_scores[row_sums <= 0, ] <- 1 / ncol(reference_scores)
+  reference_scores <- sweep(reference_scores, 1, rowSums(reference_scores), "/")
+  expected <- colSums(reference_scores * n_cells) / sum(n_cells)
+  names(expected) <- cell_types
+
+  expect_equal(
+    scop:::cytospace_estimate_fractions(st_expr, ref_expr, labels, cell_types, n_cells),
+    expected,
+    tolerance = 1e-12
+  )
+})
+
 test_that("SpatialCoordinates makes multi-image selection explicit", {
   counts <- matrix(
     seq_len(12), nrow = 3,

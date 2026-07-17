@@ -150,6 +150,39 @@ test_that("velocity kernel handles zero-velocity cells", {
   for (i in seq_len(n_cells)) expect_equal(T[i, i], 1)
 })
 
+test_that("connectivity kernel cpp matches legacy neighbor weighting", {
+  knn_idx <- matrix(
+    c(2L, 2L, 1L, 3L, NA_integer_, 2L, 4L, 1L, 3L, 2L, 4L, 3L),
+    nrow = 4,
+    byrow = TRUE
+  )
+  knn_dist <- matrix(
+    c(0.4, 0.8, 0.2, 0.5, NA, NA, 0.3, 0.6, 0.5, 0.9, 0.7, 0.1),
+    nrow = 4,
+    byrow = TRUE
+  )
+  legacy <- matrix(0, 4, 4)
+  for (i in seq_len(nrow(knn_idx))) {
+    row_sum <- 0
+    distances <- knn_dist[i, ][!is.na(knn_dist[i, ])]
+    sigma <- if (length(distances) > 0L) stats::median(distances) + 1e-10 else 1
+    for (k in seq_len(ncol(knn_idx))) {
+      neighbor <- knn_idx[i, k]
+      if (is.na(neighbor) || neighbor < 1L || neighbor > 4L || neighbor == i) next
+      distance <- knn_dist[i, k]
+      if (is.na(distance)) next
+      weight <- exp(-(distance * distance) / (2 * sigma * sigma))
+      legacy[i, neighbor] <- weight
+      row_sum <- row_sum + weight
+    }
+    if (row_sum > 0) legacy[i, ] <- legacy[i, ] / row_sum else legacy[i, i] <- 1
+  }
+
+  out <- scop:::cellrank_connectivity_kernel_cpp(knn_idx, knn_dist)
+
+  expect_equal(out, legacy, tolerance = 1e-12)
+})
+
 # ---------------------------------------------------------------------------
 # 6. Pseudotime kernel
 # ---------------------------------------------------------------------------

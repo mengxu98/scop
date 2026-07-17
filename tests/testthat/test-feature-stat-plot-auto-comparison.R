@@ -19,6 +19,33 @@ get_stat_compare_layer <- function(plot) {
   compare_layers[[1]]
 }
 
+test_that("ExpressionStatPlot supports sparse co-expression", {
+  cells <- paste0("Cell", seq_len(8))
+  expr <- methods::as(Matrix::Matrix(
+    rbind(
+      gene1 = c(1, 0, 2, 0, 3, 0, 1, 0),
+      gene2 = c(2, 0, 1, 0, 4, 0, 2, 0)
+    ),
+    sparse = TRUE,
+    dimnames = list(c("gene1", "gene2"), cells)
+  ), "dgCMatrix")
+  meta <- data.frame(
+    cells = cells,
+    group = rep(c("A", "B"), each = 4),
+    row.names = cells
+  )
+
+  expect_no_error(ExpressionStatPlot(
+    exp.data = expr,
+    meta.data = meta,
+    stat.by = c("gene1", "gene2"),
+    group.by = "group",
+    calculate_coexp = TRUE,
+    plot_type = "box",
+    force = TRUE
+  ))
+})
+
 test_that("auto_comparison selects the group with the highest median", {
   skip_if_not_installed("ggpubr")
 
@@ -43,6 +70,48 @@ test_that("auto_comparison selects the group with the highest median", {
     compare_layer$stat_params$comparisons,
     list(c("B", "A"), c("B", "C"))
   )
+})
+
+test_that("multiple-group p.format labels build with current ggpubr", {
+  skip_if_not_installed("ggpubr")
+
+  meta <- make_feature_stat_meta(
+    score = c(1, 2, 3, 8, 9, 10, 4, 5, 6),
+    group = rep(c("A", "B", "C"), each = 3),
+    group_levels = c("A", "B", "C")
+  )
+  plots <- ExpressionStatPlot(
+    meta.data = meta,
+    stat.by = "score",
+    group.by = "group",
+    plot_type = "box",
+    multiplegroup_comparisons = TRUE,
+    sig_label = "p.format",
+    force = TRUE
+  )
+
+  expect_no_error(ggplot2::ggplot_build(plots[[1L]]))
+})
+
+test_that("pairwise p.format labels build with current ggpubr", {
+  skip_if_not_installed("ggpubr")
+
+  meta <- make_feature_stat_meta(
+    score = c(1, 2, 3, 8, 9, 10, 4, 5, 6),
+    group = rep(c("A", "B", "C"), each = 3),
+    group_levels = c("A", "B", "C")
+  )
+  plots <- ExpressionStatPlot(
+    meta.data = meta,
+    stat.by = "score",
+    group.by = "group",
+    plot_type = "box",
+    comparisons = list(c("A", "B"), c("A", "C")),
+    sig_label = "p.format",
+    force = TRUE
+  )
+
+  expect_no_error(ggplot2::ggplot_build(plots[[1L]]))
 })
 
 test_that("auto_comparison breaks median ties by mean", {

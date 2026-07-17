@@ -60,6 +60,47 @@ test_that("dynamic feature sparse row unique counts match dense apply", {
   expect_equal(dynamic_row_unique_counts(as.matrix(sparse)), dense_counts)
 })
 
+test_that("dynamic feature row unique counts preserve special numeric values", {
+  mat <- matrix(
+    c(
+      0, NA_real_, NaN, Inf,
+      -0, 0, -Inf, NA_real_,
+      2, 2, 2, 2
+    ),
+    nrow = 3,
+    byrow = TRUE,
+    dimnames = list(paste0("gene", 1:3), NULL)
+  )
+
+  expected <- apply(mat, 1, function(row) length(unique(row)))
+  expect_equal(dynamic_row_unique_counts(mat), expected)
+  expect_equal(dynamic_row_unique_counts(Matrix::Matrix(mat, sparse = TRUE)), expected)
+})
+
+test_that("dynamic feature sparse row unique counts retain explicit-zero semantics", {
+  sparse <- methods::new(
+    "dgCMatrix",
+    i = as.integer(c(0, 0)),
+    p = as.integer(c(0, 1, 2, 2)),
+    Dim = as.integer(c(1, 3)),
+    x = c(0, 1),
+    Dimnames = list("gene1", paste0("cell", 1:3))
+  )
+  legacy <- function(x) {
+    x <- methods::as(x, "TsparseMatrix")
+    out <- integer(nrow(x))
+    values <- split(x@x, x@i + 1L)
+    out[as.integer(names(values))] <- vapply(values, function(v) {
+      length(unique(v))
+    }, integer(1))
+    out <- out + as.integer(tabulate(x@i + 1L, nbins = nrow(x)) < ncol(x))
+    names(out) <- rownames(x)
+    out
+  }
+
+  expect_equal(dynamic_row_unique_counts(sparse), legacy(sparse))
+})
+
 test_that("dynamic raw matrix matches legacy construction", {
   t_ordered <- stats::setNames(c(0.2, 0.5, 0.9), paste0("cell", 1:3))
   y_ordered <- matrix(

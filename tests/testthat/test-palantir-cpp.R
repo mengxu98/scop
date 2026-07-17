@@ -529,3 +529,26 @@ test_that("palantir_absorption_cpp all cells terminal", {
   # Identity matrix
   expect_equal(diag(bp), rep(1, 5))
 })
+
+test_that("palantir_row_entropy_cpp matches Palantir branch post-processing", {
+  probabilities <- matrix(
+    c(
+      1, 0, 0,
+      0.5, 0.5, 0,
+      -0.2, 0.8, 0.4,
+      NA_real_, 0.7, 0.3
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+  legacy <- apply(probabilities, 1, function(p) {
+    p <- p[p > 0]
+    if (length(p) < 2L) 0 else -sum(p * log(p))
+  })
+
+  expect_equal(
+    scop:::palantir_row_entropy_cpp(probabilities),
+    legacy,
+    tolerance = 1e-12
+  )
+})

@@ -9,7 +9,7 @@ make_semla_spatial_seurat <- function(nspots = 80, nfeatures = 30) {
 }
 
 semla_installed_without_loading <- function() {
-  "semla" %in% rownames(utils::installed.packages())
+  requireNamespace("semla", quietly = TRUE)
 }
 
 skip_if_no_semla_backend <- function() {
