@@ -41,7 +41,7 @@ jobs:
         env:
           GITHUB_PAT: ${{ github.token }}
         with:
-          extra-packages: any::rcmdcheck any::pkgload
+          extra-packages: any::rcmdcheck
           needs: check
           cache: true
           cache-version: 2
@@ -51,10 +51,7 @@ jobs:
         shell: bash
         run: |
           manifest_path="${RUNNER_TEMP}/scop-optional-r-deps.txt"
-          SCOP_DEP_MANIFEST="$manifest_path" Rscript -e '
-            pkgload::load_all(".", quiet = TRUE, compile = FALSE)
-            writeLines(sort(scop:::env_r_packages()), Sys.getenv("SCOP_DEP_MANIFEST"))
-          '
+          SCOP_DEP_MANIFEST="$manifest_path" Rscript tools/ci/optional-r-deps.R
           manifest_hash="$(shasum -a 256 "$manifest_path" | cut -d ' ' -f 1)"
           echo "r-version=$(Rscript -e 'cat(as.character(getRversion()))')" >> "$GITHUB_OUTPUT"
           echo "hash=$manifest_hash" >> "$GITHUB_OUTPUT"
@@ -74,8 +71,8 @@ jobs:
           user_lib <- Sys.getenv("R_LIBS_USER")
           dir.create(optional_lib, recursive = TRUE, showWarnings = FALSE)
           .libPaths(c(optional_lib, .libPaths()))
-          pkgload::load_all(".", quiet = TRUE, compile = FALSE)
-          scop::PrepareEnv(components = "r", verbose = TRUE)
+          source("tools/ci/optional-r-deps.R", local = TRUE)
+          thisutils::check_r(optional_r_packages(), dependencies = NA, verbose = TRUE)
           combined_libs <- paste(c(optional_lib, user_lib), collapse = .Platform$path.sep)
           cat("R_LIBS_USER=", combined_libs, "\n", sep = "", file = Sys.getenv("GITHUB_ENV"), append = TRUE)
         shell: Rscript {0}
