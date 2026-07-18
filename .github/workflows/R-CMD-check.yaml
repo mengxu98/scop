@@ -52,7 +52,7 @@ jobs:
         run: |
           manifest_path="${RUNNER_TEMP}/scop-optional-r-deps.txt"
           SCOP_DEP_MANIFEST="$manifest_path" Rscript tools/ci/optional-r-deps.R
-          manifest_hash="$(shasum -a 256 "$manifest_path" | cut -d ' ' -f 1)"
+          manifest_hash="$(SCOP_DEP_MANIFEST="$manifest_path" Rscript -e 'cat(unname(tools::md5sum(Sys.getenv("SCOP_DEP_MANIFEST"))))')"
           echo "r-version=$(Rscript -e 'cat(as.character(getRversion()))')" >> "$GITHUB_OUTPUT"
           echo "hash=$manifest_hash" >> "$GITHUB_OUTPUT"
 
