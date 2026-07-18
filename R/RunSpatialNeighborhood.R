@@ -481,7 +481,9 @@ spatial_neighborhood_input <- function(
       )
     }
     expr <- as.matrix(expr[features, out$cell, drop = FALSE])
-    out[features] <- as.data.frame(Matrix::t(expr), check.names = FALSE)
+    for (feature in features) {
+      out[[feature]] <- as.numeric(expr[feature, out$cell, drop = TRUE])
+    }
   }
 
   list(cells = out, assay = assay)

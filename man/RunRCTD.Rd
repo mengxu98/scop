@@ -69,10 +69,10 @@ matrices; this defaults to \code{TRUE} so bundled example data with scaled
 non-integer reference counts can run directly.}
 
 \item{create_rctd_params}{Additional parameters passed to
-\code{spacexr::create.RCTD()}.}
+\code{spacexr::createRctd()} or \code{spacexr::create.RCTD()}.}
 
 \item{run_rctd_params}{Additional parameters passed to
-\code{spacexr::run.RCTD()}.}
+\code{spacexr::runRctd()} or \code{spacexr::run.RCTD()}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
@@ -127,13 +127,13 @@ SpatialSpotPlot(
     coord.cols = c("x", "y")
   )
 
-data(panc8_sub)
-features_use <- head(intersect(rownames(spatial), rownames(panc8_sub)), 300)
+data(pancreas_sub)
+features_use <- head(intersect(rownames(spatial), rownames(pancreas_sub)), 300)
 
 spatial <- RunRCTD(
   srt = spatial,
-  reference = panc8_sub,
-  reference_label = "celltype",
+  reference = pancreas_sub,
+  reference_label = "CellType",
   assay = "Spatial",
   reference_assay = "RNA",
   layer = "counts",
@@ -141,6 +141,7 @@ spatial <- RunRCTD(
   features = features_use,
   rctd_mode = "full",
   max_cores = 1,
+  min_cells = 5,
   prefix = "RCTD"
 )
 

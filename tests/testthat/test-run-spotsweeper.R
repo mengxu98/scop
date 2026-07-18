@@ -93,14 +93,14 @@ with_mock_spotsweeper <- function(code) {
       if (identical(package, "SpatialExperiment")) {
         return(getExportedValue(package, name))
       }
-      if (identical(package, "SpotSweeper")) {
-        return(switch(name,
+      stop("unexpected namespace function")
+    },
+    spot_sweeper_get_fun = function(fun) {
+      switch(fun,
         localOutliers = fake_local,
         findArtifacts = fake_artifact,
         stop("unexpected SpotSweeper function")
-        ))
-      }
-      stop("unexpected namespace function")
+      )
     }
   )
   force(code)

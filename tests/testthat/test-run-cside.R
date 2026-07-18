@@ -90,10 +90,10 @@ test_that("RunCSIDE validates Seurat and stored old RCTD inputs", {
     RunCSIDE(srt, verbose = FALSE),
     "No RCTD object"
   )
-  srt@tools$RCTD <- list(object = list(not_rctd = TRUE))
+  srt@tools$RCTD <- list(object = list(new_api = TRUE))
   expect_error(
     RunCSIDE(srt, verbose = FALSE),
-    "RCTD"
+    "old-api"
   )
 })
 
@@ -227,7 +227,7 @@ test_that("RunCSIDE intercept mode and backend availability errors are clear", {
   with_mock_cside(list(), {
     expect_error(
       RunCSIDE(srt, condition.by = "condition", verbose = FALSE),
-      "missing backend"
+      "dmcable/spacexr"
     )
   })
 })
