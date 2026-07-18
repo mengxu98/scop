@@ -556,10 +556,12 @@ PrepareDB <- function(
         if (any(db == "KEGG") && (!"KEGG" %in% names(db_list[[sps]]))) {
           log_message("Preparing {.pkg KEGG} database", verbose = verbose)
           check_r("httr", verbose = FALSE)
-          orgs <- kegg_get("https://rest.kegg.jp/list/organism")
-          kegg_sp <- orgs[
-            grep(gsub(pattern = "_", replacement = " ", x = sps), orgs[, 3]),
-            2
+          orgs <- kegg_get("https://rest.kegg.jp/list/genome")
+          orgs_parsed <- strsplit(orgs[, 2], "; ")
+          orgs_code <- vapply(orgs_parsed, `[`, "", 1)
+          orgs_species <- vapply(orgs_parsed, `[`, "", 2)
+          kegg_sp <- orgs_code[
+            grep(gsub(pattern = "_", replacement = " ", x = sps), orgs_species)
           ]
           if (length(kegg_sp) == 0) {
             db_species_name <- db_species["KEGG"]
