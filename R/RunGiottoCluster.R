@@ -180,7 +180,7 @@ RunGiottoCluster <- function(
   )
   expression_values <- giotto_expression_values(layer)
   if (identical(expression_values, "raw")) {
-    normalizeGiotto <- get_namespace_fun("Giotto", "normalizeGiotto")
+    normalizeGiotto <- giotto_get_fun("normalizeGiotto")
     gobject <- giotto_call(
       normalizeGiotto,
       giotto_merge_args(
@@ -191,7 +191,7 @@ RunGiottoCluster <- function(
     expression_values <- "normalized"
   }
 
-  runPCA <- get_namespace_fun("Giotto", "runPCA")
+  runPCA <- giotto_get_fun("runPCA")
   pca_args <- giotto_merge_args(
     list(
       gobject = gobject,
@@ -212,7 +212,7 @@ RunGiottoCluster <- function(
   giotto_validate_scalar_string(pca_name, "preprocess_params$name")
 
   network_name <- network_params[["name"]] %||% "scop_NN"
-  createNearestNetwork <- get_namespace_fun("GiottoClass", "createNearestNetwork")
+  createNearestNetwork <- giotto_get_fun("createNearestNetwork")
   network_args <- giotto_merge_args(
     list(
       gobject = gobject,
@@ -231,8 +231,7 @@ RunGiottoCluster <- function(
   gobject <- giotto_call(createNearestNetwork, network_args)
 
   giotto_cluster_name <- cluster_params[["name"]] %||% paste0(method, "_clus")
-  cluster_fun <- get_namespace_fun(
-    "Giotto",
+  cluster_fun <- giotto_get_fun(
     if (identical(method, "leiden")) "doLeidenCluster" else "doLouvainCluster"
   )
   cluster_args <- giotto_merge_args(
@@ -302,7 +301,17 @@ RunGiottoCluster <- function(
 }
 
 giotto_require <- function(verbose = TRUE) {
-  check_r("giotto-suite/Giotto", verbose = FALSE)
+  status <- tryCatch(
+    check_r("drieslab/Giotto", verbose = FALSE),
+    error = function(e) FALSE
+  )
+  if (!isTRUE(unname(unlist(status))[1])) {
+    log_message(
+      "Please install {.pkg Giotto} before running this function: {.code check_r('drieslab/Giotto')}",
+      message_type = "error",
+      verbose = verbose
+    )
+  }
   invisible(TRUE)
 }
 
@@ -436,7 +445,7 @@ giotto_create_object <- function(
   conversion_params = list(),
   verbose = TRUE
 ) {
-  createGiottoObject <- get_namespace_fun("GiottoClass", "createGiottoObject")
+  createGiottoObject <- giotto_get_fun("createGiottoObject")
   args <- list(
     expression = input$raw_expr,
     spatial_locs = input$spatial_locs,
@@ -454,7 +463,7 @@ giotto_create_object <- function(
     )
   }
   if (!identical(layer, "counts")) {
-    createExprObj <- get_namespace_fun("GiottoClass", "createExprObj")
+    createExprObj <- giotto_get_fun("createExprObj")
     expr_obj <- giotto_suppress_known_warnings(
       giotto_call(
         createExprObj,
@@ -467,7 +476,7 @@ giotto_create_object <- function(
         )
       )
     )
-    setExpression <- get_namespace_fun("GiottoClass", "setExpression")
+    setExpression <- giotto_get_fun("setExpression")
     gobject <- giotto_call(
       setExpression,
       list(
@@ -481,7 +490,7 @@ giotto_create_object <- function(
 }
 
 giotto_get_cell_metadata <- function(gobject) {
-  pDataDT <- get_namespace_fun("GiottoClass", "pDataDT")
+  pDataDT <- giotto_get_fun("pDataDT")
   meta <- giotto_call(pDataDT, list(gobject = gobject))
   as.data.frame(meta, stringsAsFactors = FALSE)
 }
@@ -550,6 +559,21 @@ giotto_expression_values <- function(layer) {
     return("raw")
   }
   "normalized"
+}
+
+giotto_get_fun <- function(name) {
+  routing <- spatial_giotto_symbol_registry()
+  matched <- match(name, routing$symbol)
+  pkg <- if (is.na(matched)) "Giotto" else routing$package[[matched]]
+  tryCatch(
+    get_namespace_fun(pkg, name),
+    error = function(e) {
+      log_message(
+        "Function {.val {name}} was not found in the installed {.pkg {pkg}} namespace",
+        message_type = "error"
+      )
+    }
+  )
 }
 
 giotto_call <- function(fun, args) {

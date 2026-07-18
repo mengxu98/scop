@@ -11,7 +11,12 @@ BenchmarkPlot(
   metrics = NULL,
   tool_name = NULL,
   reduction = NULL,
-  plot_type = c("auto", "feature", "boxplot", "bar", "funkyheatmap"),
+  plot_type = c("auto", "overview", "quality", "efficiency", "heatmap", "feature",
+    "boxplot", "bar", "funkyheatmap"),
+  sort_by = c("quality", "method", "runtime", "memory"),
+  show_values = TRUE,
+  show_status = TRUE,
+  resource_scale = c("auto", "linear", "log10"),
   plot_boxplot = TRUE,
   boxplot_jitter = FALSE,
   combine = TRUE,
@@ -31,8 +36,9 @@ BenchmarkPlot(
 \arguments{
 \item{srt}{A \code{Seurat} object.}
 
-\item{data}{Optional summary benchmark \code{data.frame} containing at least
-\code{metric} and \code{value}, and optionally \code{method} and \code{workflow}.}
+\item{data}{Optional \code{scop_benchmark} object or summary benchmark
+\code{data.frame} containing at least \code{metric} and \code{value}, and optionally
+\code{method}, \code{workflow}, and \code{direction}.}
 
 \item{features}{Metadata columns containing per-cell benchmark scores.
 Default is \code{NULL}.}
@@ -49,8 +55,22 @@ entries containing \code{summary} or \code{metrics$summary} are used.}
 Default is \code{NULL}, which uses the reduction stored in \code{tool_name} when
 available, otherwise \code{\link[=DefaultReduction]{DefaultReduction()}}.}
 
-\item{plot_type}{Plot type. One of \code{"auto"}, \code{"feature"}, \code{"boxplot"},
-\code{"bar"}, or \code{"funkyheatmap"}.}
+\item{plot_type}{Plot type. \code{"overview"}, \code{"quality"}, \code{"efficiency"}, and
+\code{"heatmap"} consume \code{scop_benchmark} results. Existing \code{"feature"},
+\code{"boxplot"}, \code{"bar"}, and \code{"funkyheatmap"} modes remain supported.}
+
+\item{sort_by}{Method ordering for spatial benchmark plots. \code{"quality"}
+sorts by the mean selected quality metric; other choices sort by method,
+runtime, or peak memory.}
+
+\item{show_values}{Whether to print raw metric values on quality and heatmap
+panels.}
+
+\item{show_status}{Whether the overview should add a status strip for
+failed, unavailable, or timed-out methods.}
+
+\item{resource_scale}{Resource-axis transformation. \code{"auto"} independently
+uses log10 for runtime or memory when positive values span at least tenfold.}
 
 \item{plot_boxplot}{Whether to add the summary boxplot when per-cell metrics
 are shown. Default is \code{TRUE}.}
@@ -99,10 +119,11 @@ mode. If \code{combine = FALSE} in per-cell mode, a named list of plots is
 returned.
 }
 \description{
-Visualize benchmark results stored in a \code{Seurat} object or a summary
-\code{data.frame}. Per-cell metrics such as LISI are shown as feature plots and/or
-boxplots. Summary metrics such as integration or mapping benchmark scores are
-shown as barplots or a \code{funkyheatmap}.
+Visualize benchmark results stored in a \code{Seurat} object, a summary
+\code{data.frame}, or a \code{scop_benchmark} object created by \code{\link[=RunBenchmark]{RunBenchmark()}}.
+Spatial benchmark results default to a publication-oriented overview that
+pairs clustering quality with runtime and peak-memory efficiency. Per-cell
+metrics such as LISI remain available as feature plots and boxplots.
 }
 \examples{
 metrics_df <- data.frame(

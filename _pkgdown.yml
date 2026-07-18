@@ -449,6 +449,7 @@ reference:
 
 - subtitle: "Other"
 - contents:
+  - RunBenchmark
   - BenchmarkPlot
   - CoverageTrackPlot
   - LISIPlot
