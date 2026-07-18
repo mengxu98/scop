@@ -43,8 +43,8 @@ articles:
   - articles/trajectory-dynamic-workflow
   - articles/differential-enrichment-workflow
   - articles/interactive-scexplorer-workflow
-- title: Spatial transcriptomics
-  navbar: Spatial transcriptomics
+- title: Spatial Analysis
+  navbar: Spatial Analysis
   contents:
   - articles/spatial-main-workflow
   - articles/spatial-framework-bridges
@@ -63,7 +63,6 @@ reference:
 - subtitle: "Package and Environment Management"
 - contents:
   - check_python
-  - env_info
   - env_requirements
   - ListEnv
   - PrepareEnv
@@ -117,7 +116,7 @@ reference:
 - subtitle: "Metacell Plots"
 - contents:
   - MetaCellPlot
-  
+
 - subtitle: "Data Integration and Batch Effect Removal"
 - contents:
   - Uncorrected_integrate

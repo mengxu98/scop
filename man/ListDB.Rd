@@ -21,11 +21,9 @@ including a \code{Species} column and a \code{DB} column.
 Retrieves information about databases based on a given species and database name.
 }
 \examples{
-if (requireNamespace("R.cache", quietly = TRUE)) {
-  ListDB(species = "Homo_sapiens")
-  ListDB(species = c("Homo_sapiens", "Mus_musculus"))
-  ListDB(species = "Mus_musculus", db = "GO_BP")
-}
+ListDB(species = "Homo_sapiens")
+ListDB(species = c("Homo_sapiens", "Mus_musculus"))
+ListDB(species = "Mus_musculus", db = "GO_BP")
 }
 \seealso{
 \link{PrepareDB}

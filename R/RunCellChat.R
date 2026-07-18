@@ -592,7 +592,7 @@ cellchat_database <- function(species) {
   )
 }
 
-.SubsetCellChatMod <- function(
+subset_cellchat_mod <- function(
   object,
   idents.use,
   thresh = 0.05,

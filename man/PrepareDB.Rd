@@ -115,8 +115,7 @@ head(
 
 # Based on homologous gene conversion,
 # prepare a gene annotation database that originally does not exist in the species.
-if (interactive()) {
-  db_list <- PrepareDB(
+db_list <- PrepareDB(
     species = "Homo_sapiens",
     db = "MP"
   )
@@ -127,7 +126,6 @@ if (interactive()) {
   head(
     db_list[["Homo_sapiens"]][["MP"]][["TERM2GENE"]]
   )
-}
 
 # You can also build a custom database based on the gene sets you have
 ccgenes <- CycGenePrefetch("Homo_sapiens")

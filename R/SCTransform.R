@@ -163,10 +163,10 @@ sct_vst <- function(
   sct_cluster = NULL,
   sct_cores = 1L
 ) {
-  make_cell_attr <- utils::getFromNamespace("make_cell_attr", "sctransform")
-  reg_model_pars <- utils::getFromNamespace("reg_model_pars", "sctransform")
-  row_gmean <- utils::getFromNamespace("row_gmean", "sctransform")
-  row_var <- utils::getFromNamespace("row_var", "sctransform")
+  make_cell_attr <- get_namespace_fun("sctransform", "make_cell_attr")
+  reg_model_pars <- get_namespace_fun("sctransform", "reg_model_pars")
+  row_gmean <- get_namespace_fun("sctransform", "row_gmean")
+  row_var <- get_namespace_fun("sctransform", "row_var")
   get_model_pars <- function(
     genes_step1,
     bin_size,
@@ -208,7 +208,8 @@ sct_vst <- function(
   if (!is.null(vst.flavor)) {
     if (vst.flavor == "v2") {
       glmGamPoi_pkg <- paste0("glm", "GamPoi")
-      glmGamPoi_check <- requireNamespace(glmGamPoi_pkg, quietly = TRUE)
+      check_r(glmGamPoi_pkg, verbose = FALSE)
+      glmGamPoi_check <- TRUE
       method <- "glmGamPoi_offset"
       if (!glmGamPoi_check) {
         method <- "nb_offset"
@@ -474,6 +475,8 @@ SCTransform.default <- function(
       call. = FALSE
     )
   }
+  check_r("sctransform", verbose = FALSE)
+  check_r("glmGamPoi", verbose = FALSE)
   sct_cluster <- NULL
   sct_cores <- 1L
   requested_cores <- suppressWarnings(as.integer(cores))
@@ -495,12 +498,6 @@ SCTransform.default <- function(
             sct_cores,
             port = 20000L + sample.int(1000L, 1L)
           )
-          parallel::clusterCall(cl, function() {
-            sctransform_pkg <- paste0("sctran", "sform")
-            glmGamPoi_pkg <- paste0("glm", "GamPoi")
-            requireNamespace(sctransform_pkg, quietly = TRUE)
-            requireNamespace(glmGamPoi_pkg, quietly = TRUE)
-          })
           message(sprintf(
             "[scop] SCTransform PSOCK ready (%d cores / %d available)",
             sct_cores,
@@ -534,8 +531,6 @@ SCTransform.default <- function(
   if (!is.null(seed.use)) {
     set.seed(seed.use)
   }
-  check_r("sctransform", verbose = FALSE)
-  check_r("glmGamPoi", verbose = FALSE)
   vst.args <- list(...)
   object <- SeuratObject::as.sparse(object)
   umi <- object

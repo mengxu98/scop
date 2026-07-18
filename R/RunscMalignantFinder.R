@@ -97,24 +97,9 @@ RunscMalignantFinder <- function(
     message_type = "running",
     verbose = verbose
   )
-  if (!((nzchar(Sys.getenv("RETICULATE_PYTHON")) || reticulate::py_available(initialize = FALSE)) &&
-    isTRUE(scmf_python_classifier_available()))) {
-    PrepareEnv(modules = "scanpy", verbose = verbose)
-    if (!isTRUE(scmf_python_classifier_available())) {
-      ok <- check_python("scMalignantFinder", pip = TRUE, verbose = verbose)
-      if (isFALSE(ok) || !isTRUE(scmf_python_classifier_available())) {
-        scmf_install_python_github(verbose = verbose)
-      }
-    }
-    if (!isTRUE(scmf_python_classifier_available())) {
-      log_message(
-        "Failed to install or locate a usable {.pkg scMalignantFinder} classifier module. Install it manually in the active {.pkg scop} Python environment.",
-        message_type = "error"
-      )
-    }
-  }
+  scmf_prepare_python(verbose = verbose)
   if (is.null(pretrain_dir) && identical(model_method, "XGBoost")) {
-    scmf_check_xgboost_python(verbose = verbose)
+    check_python("xgboost", verbose = verbose)
   }
 
   if (!is.null(srt)) {
@@ -286,22 +271,7 @@ RunscMalignantRegion <- function(
     message_type = "running",
     verbose = verbose
   )
-  if (!((nzchar(Sys.getenv("RETICULATE_PYTHON")) || reticulate::py_available(initialize = FALSE)) &&
-    isTRUE(scmf_python_classifier_available()))) {
-    PrepareEnv(modules = "scanpy", verbose = verbose)
-    if (!isTRUE(scmf_python_classifier_available())) {
-      ok <- check_python("scMalignantFinder", pip = TRUE, verbose = verbose)
-      if (isFALSE(ok) || !isTRUE(scmf_python_classifier_available())) {
-        scmf_install_python_github(verbose = verbose)
-      }
-    }
-    if (!isTRUE(scmf_python_classifier_available())) {
-      log_message(
-        "Failed to install or locate a usable {.pkg scMalignantFinder} classifier module. Install it manually in the active {.pkg scop} Python environment.",
-        message_type = "error"
-      )
-    }
-  }
+  scmf_prepare_python(verbose = verbose)
 
   spatial_coordinates <- NULL
   if (!is.null(srt)) {
@@ -441,22 +411,7 @@ RunscMalignantStates <- function(
     message_type = "running",
     verbose = verbose
   )
-  if (!((nzchar(Sys.getenv("RETICULATE_PYTHON")) || reticulate::py_available(initialize = FALSE)) &&
-    isTRUE(scmf_python_classifier_available()))) {
-    PrepareEnv(modules = "scanpy", verbose = verbose)
-    if (!isTRUE(scmf_python_classifier_available())) {
-      ok <- check_python("scMalignantFinder", pip = TRUE, verbose = verbose)
-      if (isFALSE(ok) || !isTRUE(scmf_python_classifier_available())) {
-        scmf_install_python_github(verbose = verbose)
-      }
-    }
-    if (!isTRUE(scmf_python_classifier_available())) {
-      log_message(
-        "Failed to install or locate a usable {.pkg scMalignantFinder} classifier module. Install it manually in the active {.pkg scop} Python environment.",
-        message_type = "error"
-      )
-    }
-  }
+  scmf_prepare_python(verbose = verbose)
 
   if (!is.null(srt)) {
     scmf_assert_seurat(srt)
@@ -523,82 +478,30 @@ RunscMalignantStates <- function(
   srt
 }
 
-scmf_install_python_github <- function(verbose = TRUE) {
-  python <- tryCatch(reticulate::py_config()$python, error = function(e) "")
-  if (!nzchar(python)) {
-    python <- Sys.which("python3")
+scmf_prepare_python <- function(verbose = TRUE) {
+  if (isTRUE(scmf_python_classifier_available())) {
+    return(invisible(TRUE))
   }
-  if (!nzchar(python)) {
-    return(invisible(FALSE))
-  }
-  log_message(
-    "Installing {.pkg scMalignantFinder} from GitHub with active Python...",
-    message_type = "running",
-    verbose = verbose
-  )
-  out <- tryCatch(
-    system2(
-      python,
-      c(
-        "-m", "pip", "install",
-        "--no-cache-dir",
-        "git+https://github.com/Jonyyqn/scMalignantFinder.git"
-      ),
-      stdout = TRUE,
-      stderr = TRUE
-    ),
-    error = function(e) structure(conditionMessage(e), status = 1L)
-  )
-  status <- attr(out, "status") %||% 0L
-  if (!identical(status, 0L)) {
+  PrepareEnv(modules = "scmalignantfinder", verbose = verbose)
+  ok <- check_python("scMalignantFinder", pip = TRUE, verbose = verbose)
+  if (isFALSE(ok) || !isTRUE(scmf_python_classifier_available())) {
     log_message(
-      "GitHub installation of {.pkg scMalignantFinder} failed: {.val {paste(out, collapse = '; ')}}",
-      message_type = "warning",
-      verbose = verbose
-    )
-    return(invisible(FALSE))
-  }
-  invisible(TRUE)
-}
-
-scmf_python_classifier_available <- function() {
-  code <- paste(
-    "import importlib.util, pathlib, sys",
-    "spec = importlib.util.find_spec('scMalignantFinder')",
-    "assert spec is not None and spec.submodule_search_locations",
-    "pkg_dir = pathlib.Path(list(spec.submodule_search_locations)[0])",
-    "module_path = pkg_dir / 'classifier.py'",
-    "assert module_path.exists()",
-    "module_spec = importlib.util.spec_from_file_location('_scop_scmf_classifier_check', module_path)",
-    "module = importlib.util.module_from_spec(module_spec)",
-    "sys.modules['_scop_scmf_classifier_check'] = module",
-    "module_spec.loader.exec_module(module)",
-    "assert hasattr(module, 'scMalignantFinder')",
-    sep = "\n"
-  )
-  isTRUE(tryCatch({
-    reticulate::py_run_string(code, local = TRUE)
-    TRUE
-  }, error = function(e) FALSE))
-}
-
-scmf_check_xgboost_python <- function(verbose = TRUE) {
-  ok <- check_python("xgboost", pip = TRUE, verbose = verbose)
-  if (isFALSE(ok)) {
-    log_message(
-      "{.pkg xgboost} is required when training {.pkg scMalignantFinder} with {.val XGBoost}",
+      "Failed to locate a usable {.pkg scMalignantFinder} classifier module in the active Python environment.",
       message_type = "error"
     )
   }
   invisible(TRUE)
 }
 
+scmf_python_classifier_available <- function() {
+  isTRUE(tryCatch(
+    reticulate::py_module_available("scmalignantfinder.classifier"),
+    error = function(e) FALSE
+  ))
+}
+
 import_scmalignantfinder <- function(convert = TRUE) {
-  reticulate::import_from_path(
-    "scmalignantfinder",
-    path = system.file("python", package = "scop", mustWork = TRUE),
-    convert = convert
-  )
+  reticulate::import("scmalignantfinder.classifier", convert = convert)
 }
 
 scmf_check_one_input <- function(srt = NULL, adata = NULL, h5ad = NULL) {

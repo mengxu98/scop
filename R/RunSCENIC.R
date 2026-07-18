@@ -926,7 +926,6 @@ scenic_cpp <- function(
           max_targets = max_regulon_targets,
           min_regulon_size = min_regulon_size,
           include_negative_regulons = include_negative_regulons,
-          fallback = FALSE,
           cores = cores,
           verbose = verbose
         )
@@ -1125,7 +1124,6 @@ cistarget2 <- function(
   nes_threshold = 3.0,
   auc_threshold = 0.05,
   include_negative_regulons = FALSE,
-  fallback = FALSE,
   cores = 1,
   verbose = TRUE
 ) {
@@ -1510,16 +1508,12 @@ cistarget2 <- function(
   }
 
   module_cores <- max(1L, as.integer(cores))
-  if (.Platform[["OS.type"]] == "unix" && module_cores > 1L && length(modules) > 1L) {
-    module_results <- parallel::mclapply(
-      modules,
-      process_module,
-      mc.cores = module_cores,
-      mc.preschedule = TRUE
-    )
-  } else {
-    module_results <- lapply(modules, process_module)
-  }
+  module_results <- thisutils::parallelize_fun(
+    modules,
+    process_module,
+    cores = module_cores,
+    verbose = verbose
+  )
   for (module_result in module_results) {
     if (is.null(module_result)) {
       next
@@ -1539,24 +1533,15 @@ cistarget2 <- function(
   regulons <- regulons[lengths(regulons) >= min_regulon_size]
   positive_regulon_names <- scenic_regulon_name(tfs, suffix = "(+)")
   missing_tfs <- tfs[!positive_regulon_names %in% names(regulons)]
-  if (length(missing_tfs) > 0 && isTRUE(fallback)) {
+  if (length(missing_tfs) > 0) {
     log_message(
-      "  {.val {length(missing_tfs)}} TFs had no enriched motifs; using top-N importance as fallback",
-      verbose = verbose
+      "{.val {length(missing_tfs)}} TFs had no enriched motifs",
+      message_type = "warning"
     )
-    fallback_regulons <- build_regulons(
-      adjacency[adjacency[["TF"]] %in% missing_tfs, , drop = FALSE],
-      max_targets,
-      min_regulon_size,
-      suffix = "(+)"
-    )
-    regulons <- c(regulons, fallback_regulons)
   }
 
-  motif_enriched_n <- length(setdiff(tfs, missing_tfs))
-  fallback_n <- if (isTRUE(fallback)) length(missing_tfs) else 0L
   log_message(
-    "{.pkg cisTarget} produced {.val {length(regulons)}} regulons (motif-enriched: {.val {motif_enriched_n}}, fallback: {.val {fallback_n}})",
+    "{.pkg cisTarget} produced {.val {length(regulons)}} regulons",
     verbose = verbose
   )
   log_message(

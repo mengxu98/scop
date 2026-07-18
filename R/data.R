@@ -13,9 +13,6 @@
 #'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   library(Seurat)
-#'   library(reticulate)
 #'   PrepareEnv()
 #'   check_python("scvelo")
 #'   scv <- import("scvelo")
@@ -60,7 +57,6 @@
 #'     overwrite = TRUE
 #'   )
 #' }
-#' }
 #' @name pancreas_sub
 NULL
 
@@ -82,10 +78,10 @@ NULL
 #' \href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE86469}{GSE86469}
 #'
 #' @examples
-#' if (interactive()) {
+#'
 #'   data(pancreas_sub)
 #'   check_r("satijalab/seurat-data")
-#'   library(Seurat)
+#'
 #'   InstallData <- get_namespace_fun("SeuratData", "InstallData")
 #'   InstallData("panc8")
 #'   data(panc8)
@@ -120,7 +116,6 @@ NULL
 #'     compress = "xz",
 #'     overwrite = TRUE
 #'   )
-#' }
 #' @name panc8_sub
 NULL
 
@@ -145,7 +140,7 @@ NULL
 #' `test/data/pbmc_multiome_1k.rds` in this repository.
 #'
 #' @examples
-#' if (interactive()) {
+#'
 #'   source("test/data/create_pbmcmultiome_sub.R")
 #'   pbmcmultiome_sub <- create_pbmcmultiome_sub()
 #'   use_data <- get_namespace_fun("usethis", "use_data")
@@ -154,7 +149,6 @@ NULL
 #'     compress = "xz",
 #'     overwrite = TRUE
 #'   )
-#' }
 #' @name pbmcmultiome_sub
 NULL
 
@@ -304,7 +298,7 @@ NULL
 #'
 #' @concept data
 #' @examples
-#' if (interactive()) {
+#'
 #'   words_excluded <- c(
 #'     "the", "is", "and", "or", "a",
 #'     "in", "on", "under", "between", "of",
@@ -318,7 +312,6 @@ NULL
 #'   )
 #'   use_data <- get_namespace_fun("usethis", "use_data")
 #'   use_data(words_excluded, compress = "xz")
-#' }
 #' @name words_excluded
 NULL
 
@@ -328,13 +321,12 @@ NULL
 #' @source
 #' \href{https://github.com/ggjlab/scMCA}{scMCA}
 #' @examples
-#' if (interactive()) {
-#'   library(Seurat)
+#'
+#'
 #'   check_r(c("ggjlab/scMCA"))
 #'   ref_scMCA <- NormalizeData(get("ref.expr", envir = asNamespace("scMCA")))
 #'   Encoding(colnames(ref_scMCA)) <- "latin1"
 #'   colnames(ref_scMCA) <- iconv(colnames(ref_scMCA), "latin1", "UTF-8")
 #'   # get_namespace_fun("usethis", "use_data")(ref_scMCA, compress = "xz")
-#' }
 #' @name ref_scMCA
 NULL

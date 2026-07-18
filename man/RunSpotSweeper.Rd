@@ -27,7 +27,8 @@ RunSpotSweeper(
   tool_name = "SpotSweeper",
   return_filtered = FALSE,
   store_results = TRUE,
-  workers = 1,
+  cores = 1,
+  workers = NULL,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
   ...
@@ -85,8 +86,9 @@ detection. If \code{NULL}, mitochondrial counts are computed.}
 
 \item{store_results}{Whether to store detailed results in \code{srt@tools}.}
 
-\item{workers}{Number of workers passed to SpotSweeper local outlier
-detection.}
+\item{cores}{Number of workers passed to SpotSweeper local outlier detection.}
+
+\item{workers}{Deprecated alias for \code{cores}.}
 
 \item{verbose}{Whether to print progress messages.}
 

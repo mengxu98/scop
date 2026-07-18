@@ -19,10 +19,10 @@ from \href{https://github.com/satijalab/seurat-data}{SeuratData} package.
 For each data set in \code{panc8}, 200 cells were downsampled to form the \code{panc8_sub} dataset.
 }
 \examples{
-if (interactive()) {
+
   data(pancreas_sub)
   check_r("satijalab/seurat-data")
-  library(Seurat)
+
   InstallData <- get_namespace_fun("SeuratData", "InstallData")
   InstallData("panc8")
   data(panc8)
@@ -57,6 +57,5 @@ if (interactive()) {
     compress = "xz",
     overwrite = TRUE
   )
-}
 }
 \concept{data}

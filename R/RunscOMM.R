@@ -218,8 +218,7 @@ run_scomm <- function(
   seed = 11,
   verbose = TRUE
 ) {
-  python <- python %||% Sys.getenv("SCOP_SCOMM_PYTHON", unset = "")
-  if (!nzchar(python)) {
+  if (is.null(python)) {
     cached_modules <- tryCatch(
       getOption("scop_env_cache", default = NULL)[["modules"]],
       error = function(...) NULL
@@ -314,7 +313,7 @@ run_scomm <- function(
   }
   patch_keras_categorical()
   if (
-    requireNamespace("keras", quietly = TRUE) &&
+    check_r("keras", verbose = FALSE) &&
       "py_require_legacy_keras" %in% getNamespaceExports("keras")
   ) {
     tryCatch(
@@ -648,9 +647,7 @@ scomm_subprocess_env <- function(python) {
 }
 
 patch_keras_categorical <- function() {
-  if (!requireNamespace("keras", quietly = TRUE)) {
-    return(invisible(NULL))
-  }
+  check_r("keras", verbose = FALSE)
   ns <- asNamespace("keras")
   to_categorical_compat <- function(
     y = NULL,

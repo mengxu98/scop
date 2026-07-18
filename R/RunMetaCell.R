@@ -659,22 +659,16 @@ metacell_metacell <- function(
 
     adj <- metacell_knn_adjacency(knn_idx, n)
 
-    if (!requireNamespace("igraph", quietly = TRUE)) {
-      clusters <- as.integer(stats::cutree(
-        stats::hclust(stats::dist(emb), method = "ward.D2"),
-        k = max(2L, as.integer(n / k_use))
-      ))
-    } else {
-      g <- igraph::graph_from_adjacency_matrix(
-        adj,
-        mode = "undirected",
-        weighted = NULL
-      )
-      clusters <- igraph::membership(
-        igraph::cluster_louvain(g)
-      )
-      clusters <- as.integer(clusters)
-    }
+    check_r("igraph", verbose = FALSE)
+    g <- igraph::graph_from_adjacency_matrix(
+      adj,
+      mode = "undirected",
+      weighted = NULL
+    )
+    clusters <- igraph::membership(
+      igraph::cluster_louvain(g)
+    )
+    clusters <- as.integer(clusters)
 
     membership <- as.character(clusters)
     if (!is.null(grp_label)) {

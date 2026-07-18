@@ -213,7 +213,8 @@ RunUMAP2.Seurat <- function(
     repulsion.strength = repulsion.strength,
     seed.use = seed.use,
     verbose = verbose,
-    reduction.key = reduction.key
+    reduction.key = reduction.key,
+    n_threads = n_threads
   )
   object <- Seurat::LogSeuratCommand(object = object)
   return(object)

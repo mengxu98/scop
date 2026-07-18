@@ -97,7 +97,7 @@ patterning, not automatically domain markers.
 ```{r inspect-results}
 names(spatial@tools)
 spatial@tools$SpatialVariableFeatures$summary
-head(spatial@misc$SpatialVariableFeatures)
+head(spatial@tools$SpatialVariableFeatures$summary$top_features)
 ```
 
 ## Plot the First Results
@@ -297,7 +297,7 @@ spatial <- RunMistyR(
   spatial,
   assay = "Spatial",
   layer = "data",
-  features = head(spatial@misc$SpatialVariableFeatures, 20),
+  features = head(spatial@tools$SpatialVariableFeatures$summary$top_features, 20),
   coord.cols = c("x", "y"),
   views = "para"
 )

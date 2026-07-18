@@ -105,16 +105,6 @@ gene_set_scoring_subset_to_index_union <- function(expr, gene_set_idx) {
   )
 }
 
-gene_set_scoring_require_namespace <- function(pkg, install_hint = pkg) {
-  if (!requireNamespace(pkg, quietly = TRUE)) {
-    log_message(
-      "{.pkg {install_hint}} is required for gene-set scoring",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
-}
-
 gene_set_scoring_drop_invalid_score_sets <- function(scores) {
   keep <- colSums(!is.na(scores)) > 0
   scores[, keep, drop = FALSE]
@@ -228,7 +218,7 @@ run_aucell_official_scores <- function(
   tie_method = c("first", "random"),
   ...
 ) {
-  gene_set_scoring_require_namespace("AUCell")
+  check_r("AUCell", verbose = FALSE)
   tie_method <- match.arg(tie_method)
   expr_rank <- if (identical(tie_method, "first")) {
     expr_mat <- as_matrix(expr_counts)
@@ -267,7 +257,7 @@ run_aucell_scores_from_official_rankings <- function(
   auc_max_rank = ceiling(0.05 * nrow(rankings)),
   norm_auc = TRUE
 ) {
-  gene_set_scoring_require_namespace("AUCell")
+  check_r("AUCell", verbose = FALSE)
   if (!methods::is(rankings, "aucellResults")) {
     stop("rankings must be an aucellResults object from AUCell_buildRankings()", call. = FALSE)
   }
@@ -489,7 +479,7 @@ run_gsva_scores <- function(
     return(scores)
   }
 
-  gene_set_scoring_require_namespace("GSVA")
+  check_r("GSVA", verbose = FALSE)
   gene_sets_exact <- lapply(gene_set_idx, function(idx) {
     rownames(expr_counts)[idx]
   })
@@ -659,13 +649,13 @@ run_plage_scores <- function(
 gene_set_scoring_plage_dense_standardize <- function() {
   # GSVA 2.6 began standardizing structural dgCMatrix zeros in PLAGE. When
   # GSVA is not installed, prefer the current full-row definition.
-  !requireNamespace("GSVA", quietly = TRUE) ||
-    utils::packageVersion("GSVA") >= "2.6.0"
+  check_r("GSVA", verbose = FALSE)
+  utils::packageVersion("GSVA") >= "2.6.0"
 }
 
 gene_set_scoring_zscore_sparse_standardize_full <- function() {
-  requireNamespace("GSVA", quietly = TRUE) &&
-    utils::packageVersion("GSVA") >= "2.6.0"
+  check_r("GSVA", verbose = FALSE)
+  utils::packageVersion("GSVA") >= "2.6.0"
 }
 
 orient_plage_scores <- function(scores, expr, gene_sets) {
@@ -733,7 +723,7 @@ run_vision_scores <- function(
   scale_by_library = FALSE,
   sig_gene_importance = FALSE
 ) {
-  gene_set_scoring_require_namespace("VISION", install_hint = "YosefLab/VISION")
+  check_r("YosefLab/VISION", verbose = FALSE)
   Vision_fun <- get_namespace_fun("VISION", "Vision")
   calc_signature_scores_fun <- get_namespace_fun(
     "VISION",
@@ -785,4 +775,6 @@ run_vision_scores <- function(
 }
 
 run_metabolism_gene_set_indices <- gene_set_scoring_indices
-run_metabolism_require_namespace <- gene_set_scoring_require_namespace
+run_metabolism_require_namespace <- function(pkg, ...) {
+  check_r(pkg, verbose = FALSE)
+}

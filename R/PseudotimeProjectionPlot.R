@@ -684,7 +684,7 @@ compute_pseudotime_on_knn <- function(
 
   k_use <- min(k, max(vapply(neighbors_list, length, integer(1)), 0))
   if (k_use > 0) {
-    neighbors_mat <- .neighbors_list_to_matrix(neighbors_list, k_use)
+    neighbors_mat <- neighbors_list_to_matrix(neighbors_list, k_use)
     v_emb <- run_pseudotime_velocity_knn(
       x_emb = x_emb,
       pseudotime = pseudotime,

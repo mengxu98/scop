@@ -160,7 +160,7 @@ BenchmarkPlot <- function(
     )
     if (identical(plot_type, "auto")) {
       plot_type <- if (
-        requireNamespace("funkyheatmap", quietly = TRUE) &&
+        isTRUE(check_r("funkyheatmap", verbose = FALSE)) &&
           length(unique(summary_df$method)) > 1 &&
           length(unique(summary_df$metric)) > 1
       ) {
@@ -1071,12 +1071,7 @@ benchmark_summary_funkyheatmap <- function(
   verbose = TRUE
 ) {
   check_r("funkyheatmap", verbose = FALSE)
-  if (!requireNamespace("funkyheatmap", quietly = TRUE)) {
-    log_message(
-      "{.pkg funkyheatmap} is required for {.arg plot_type = 'funkyheatmap'}",
-      message_type = "error"
-    )
-  }
+  check_r("funkyheatmap", verbose = FALSE)
 
   metrics_use <- metrics %||% levels(summary_df$metric)
   metrics_use <- metrics_use[metrics_use %in% as.character(summary_df$metric)]

@@ -252,12 +252,6 @@ RunSCVELO <- function(
   args <- args[!names(args) %in% params]
 
   if (!is.null(srt)) {
-    old_skip_python_prepare <- getOption("scop_skip_python_prepare", FALSE)
-    options(scop_skip_python_prepare = TRUE)
-    on.exit(
-      options(scop_skip_python_prepare = old_skip_python_prepare),
-      add = TRUE
-    )
     args[["adata"]] <- srt_to_adata(
       srt = srt,
       assay_x = assay_x,

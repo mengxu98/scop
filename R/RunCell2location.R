@@ -187,9 +187,6 @@ RunCell2location <- function(
   dir.create(workdir, recursive = TRUE)
   on.exit(unlink(workdir, recursive = TRUE, force = TRUE), add = TRUE)
 
-  # The cell2location environment was prepared above. Keep both h5ad exports on
-  # that exact interpreter instead of letting srt_to_h5ad prepare/switch to a
-  # second scanpy-only environment; restore the existing option on every exit.
   old_skip_prepare <- getOption("scop_skip_python_prepare", FALSE)
   options(scop_skip_python_prepare = TRUE)
   on.exit(

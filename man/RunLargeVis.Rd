@@ -29,6 +29,7 @@ RunLargeVis(object, ...)
   nn_method = NULL,
   n_trees = 50,
   search_k = 2 * n_neighbors * n_trees,
+  cores = NULL,
   n_threads = NULL,
   n_sgd_threads = 0,
   grain_size = 1,
@@ -65,6 +66,7 @@ RunLargeVis(object, ...)
   nn_method = NULL,
   n_trees = 50,
   search_k = 2 * n_neighbors * n_trees,
+  cores = NULL,
   n_threads = NULL,
   n_sgd_threads = 0,
   grain_size = 1,
@@ -315,6 +317,9 @@ Annoy nearest neighbor search. Only used if the \code{nn_method} is
 larger k, the more the accurate results, but the longer the search takes.
 With \code{n_trees}, determines the accuracy of the Annoy nearest neighbor
 search. Only used if the \code{nn_method} is \code{"annoy"}.}
+
+\item{cores}{The spread parameter for UMAP, used during automatic estimation of a/b parameters.
+Default is \code{1}.}
 
 \item{n_threads}{Number of threads to use (except during stochastic gradient
 descent). Default is half the number of concurrent threads supported by the

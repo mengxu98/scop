@@ -167,7 +167,7 @@ CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
   reduction = "UMAP",
-  paga = pancreas_sub@misc$paga
+  paga = pancreas_sub@tools[["PAGA"]]
 )
 }
 \seealso{

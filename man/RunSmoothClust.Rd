@@ -17,7 +17,8 @@ RunSmoothClust(
   bandwidth = 0.05,
   k = 18,
   truncate = 0.05,
-  n_threads = 1,
+  cores = 1,
+  n_threads = NULL,
   n_clusters,
   n_pcs = 15,
   center = TRUE,
@@ -60,10 +61,14 @@ for a feature to be used.}
 
 \item{smooth_method}{Smoothing method passed to \code{smoothclust::smoothclust()}.}
 
-\item{bandwidth, k, truncate, n_threads}{Smoothing parameters passed to
+\item{bandwidth, k, truncate}{Smoothing parameters passed to
 \code{smoothclust::smoothclust()}. \code{bandwidth} uses the selected coordinate
 units; \code{truncate} is the backend's dimensionless kernel cutoff, and \code{k} and
-\code{n_threads} are unitless counts.}
+are unitless counts.}
+
+\item{cores}{Number of workers passed to \code{smoothclust::smoothclust()}.}
+
+\item{n_threads}{Deprecated alias for \code{cores}.}
 
 \item{n_clusters}{Number of spatial domains for k-means clustering. This
 must be supplied explicitly.}

@@ -135,10 +135,8 @@ app <- RunSCExplorer(
 list.files("./SCExplorer")
 
 # Run shiny app
-if (interactive()) {
-  check_r("shiny")
-  get_namespace_fun("shiny", "runApp")(app)
-}
+check_r("shiny", verbose = FALSE)
+get_namespace_fun("shiny", "runApp")(app)
 # Note: If scop installed in the isolated environment using renv,
 # add `renv::activate(project = "path/to/scop_env")` to the app.R script.
 

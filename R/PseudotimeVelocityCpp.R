@@ -36,7 +36,7 @@ run_pseudotime_velocity_gradient <- function(x_emb, pseudotime, neighbors, smoot
   )
 }
 
-.neighbors_list_to_matrix <- function(neighbors_list, k) {
+neighbors_list_to_matrix <- function(neighbors_list, k) {
   # Convert a list of neighbor index vectors to an n x k integer matrix
   n <- length(neighbors_list)
   k_use <- min(k, max(vapply(neighbors_list, length, integer(1)), 0))

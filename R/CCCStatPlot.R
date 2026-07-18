@@ -950,8 +950,8 @@ ccc_cellchat_stat_comparison <- function(
   comparison = c(1, 2),
   min_n = 1L
 ) {
-  cmp <- .cc_get_cmp(srt = srt, condition = condition)
-  comp_idx <- .cc_resolve_dataset_index(cmp, comparison = comparison)
+  cmp <- cc_get_cmp(srt = srt, condition = condition)
+  comp_idx <- cc_resolve_dataset_index(cmp, comparison = comparison)
   if (length(comp_idx) < min_n) {
     log_message(
       "At least {min_n} dataset(s) are required for this CellChat comparison plot",

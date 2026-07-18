@@ -1,4 +1,6 @@
 #include <Rcpp.h>
+#include <R_ext/Print.h>
+#define __ERROR_PRINTER_OVERRIDE__(...) Rprintf(__VA_ARGS__)
 #include "annoylib.h"
 #include "kissrandom.h"
 #include <algorithm>

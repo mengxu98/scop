@@ -306,12 +306,7 @@ RunscTenifoldKnk <- function(
     backend,
     cpp = {
       for (pkg in c("scTenifoldNet", "RSpectra", "RhpcBLASctl", "MASS")) {
-        if (!requireNamespace(pkg, quietly = TRUE)) {
-          log_message(
-            "Package {.pkg {pkg}} is required for {.arg backend = 'cpp'}",
-            message_type = "error"
-          )
-        }
+        check_r(pkg, verbose = FALSE)
       }
 
       log_message(

@@ -7,7 +7,7 @@
 #' @inheritParams CellDimPlot
 #' @inheritParams thisplot::GraphPlot
 #' @param paga The PAGA result from the Seurat object.
-#' Default is `srt@misc$paga`.
+#' Default is `srt@tools[["PAGA"]]`.
 #' @param type The type of plot to generate.
 #' Possible values are `"connectivities"` (default) and `"connectivities_tree"`.
 #' @param show_transition Whether to display transitions between different cell states.
@@ -97,7 +97,7 @@
 #' )
 PAGAPlot <- function(
   srt,
-  paga = srt@misc$paga,
+  paga = srt@tools[["PAGA"]],
   type = "connectivities",
   reduction = NULL,
   dims = c(1, 2),

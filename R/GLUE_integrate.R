@@ -71,12 +71,7 @@ GLUE_integrate <- function(
   verbose = TRUE,
   seed = 11
 ) {
-  if (!requireNamespace("Signac", quietly = TRUE)) {
-    log_message(
-      "{.pkg GLUE} integration requires {.pkg Signac}",
-      message_type = "error"
-    )
-  }
+  check_r("Signac", verbose = FALSE)
   if (!is.list(GLUE_params)) {
     log_message(
       "{.arg GLUE_params} must be a list",

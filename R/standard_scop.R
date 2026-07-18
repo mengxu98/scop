@@ -202,7 +202,7 @@
 #' SpatialSpotPlot(spatial, group.by = "SpotQC")
 #' SpatialSpotPlot(
 #'   spatial,
-#'   features = spatial@misc[["SpatialVariableFeatures"]][1:2]
+#'   features = spatial@tools[["SpatialVariableFeatures"]]$summary$top_features[1:2]
 #' )
 #'
 #' spatial_bayes <- standard_scop(
@@ -1040,10 +1040,23 @@ standard_spatial_scop <- function(
         message_type = "error"
       )
     }
-    spatial_q_use <- spatial_q %||% standard_spatial_infer_q(
-      srt = srt,
-      cluster_col = cluster_col
-    )
+    spatial_q_use <- spatial_q
+    if (is.null(spatial_q_use)) {
+      if (!cluster_col %in% colnames(srt@meta.data)) {
+        log_message(
+          "Unable to infer {.arg spatial_q}; metadata column {.val {cluster_col}} was not found",
+          message_type = "error"
+        )
+      }
+      clusters <- as.character(srt[[cluster_col, drop = TRUE]])
+      spatial_q_use <- length(unique(stats::na.omit(clusters)))
+      if (spatial_q_use < 2L) {
+        log_message(
+          "Unable to infer {.arg spatial_q}; {.val {cluster_col}} contains fewer than 2 clusters",
+          message_type = "error"
+        )
+      }
+    }
     bayesspace_args <- list(
       srt = srt,
       q = spatial_q_use,
@@ -1221,24 +1234,6 @@ standard_scop_merge_args <- function(defaults, extra) {
     defaults[[nm]] <- extra[[nm]]
   }
   defaults
-}
-
-standard_spatial_infer_q <- function(srt, cluster_col) {
-  if (!cluster_col %in% colnames(srt@meta.data)) {
-    log_message(
-      "Unable to infer {.arg spatial_q}; metadata column {.val {cluster_col}} was not found",
-      message_type = "error"
-    )
-  }
-  clusters <- as.character(srt[[cluster_col, drop = TRUE]])
-  q <- length(unique(stats::na.omit(clusters)))
-  if (q < 2L) {
-    log_message(
-      "Unable to infer {.arg spatial_q}; {.val {cluster_col}} contains fewer than 2 clusters",
-      message_type = "error"
-    )
-  }
-  q
 }
 
 standard_spatial_prepare_rctd_params <- function(
