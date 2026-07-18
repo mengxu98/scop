@@ -460,8 +460,7 @@ EnrichmentPlot(
   theme_args = list(add_coord = FALSE)
 ) |> thisplot::panel_fix(height = 4)
 
-if (interactive()) {
-  pancreas_sub <- RunEnrichment(
+pancreas_sub <- RunEnrichment(
     pancreas_sub,
     db = c("MP", "DO"),
     group.by = "CellType",
@@ -476,7 +475,6 @@ if (interactive()) {
     group_use = "Ductal",
     ncol = 1
   )
-}
 }
 \seealso{
 \link{RunEnrichment}

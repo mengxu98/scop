@@ -28,23 +28,20 @@
 #' data(pancreas_sub)
 #' srt <- pancreas_sub[, 1:80]
 #'
-#' if (requireNamespace("scran", quietly = TRUE)) {
-#'   srt <- RunCellCycle(
-#'     srt,
-#'     method = "cyclone",
-#'     species = "Mus_musculus",
-#'     name = "Cyclone"
-#'   )
-#' }
+#' srt <- RunCellCycle(
+#'   srt,
+#'   method = "cyclone",
+#'   species = "Mus_musculus",
+#'   name = "Cyclone"
+#' )
 #'
-#' if (requireNamespace("tricycle", quietly = TRUE)) {
-#'   srt <- RunCellCycle(
-#'     srt,
-#'     method = "tricycle",
-#'     species = "Mus_musculus",
-#'     name = "Tricycle"
-#'   )
-#'   if ("Cyclone_cyclone_Phase" %in% colnames(srt@meta.data)) {
+#' srt <- RunCellCycle(
+#'   srt,
+#'   method = "tricycle",
+#'   species = "Mus_musculus",
+#'   name = "Tricycle"
+#' )
+#' if ("Cyclone_cyclone_Phase" %in% colnames(srt@meta.data)) {
 #'     CellDimPlot(
 #'       srt,
 #'       reduction = "Tricycle_tricycleEmbedding",
@@ -56,7 +53,6 @@
 #'     reduction = "Tricycle_tricycleEmbedding",
 #'     features = "Tricycle_tricyclePosition"
 #'   )
-#' }
 RunCellCycle <- function(
   srt,
   method = c("Seurat", "cyclone", "tricycle"),

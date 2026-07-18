@@ -51,7 +51,7 @@
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
 #'   reduction = "UMAP",
-#'   paga = pancreas_sub@misc$paga
+#'   paga = pancreas_sub@tools[["PAGA"]]
 #' )
 RunPAGA <- function(
   srt = NULL,
@@ -386,7 +386,7 @@ run_paga_cpp <- function(
     threshold = threshold
   )
 
-  srt@misc[["paga"]] <- list(
+  srt@tools[["PAGA"]] <- list(
     connectivities = paga[["connectivities"]],
     connectivities_tree = paga[["connectivities_tree"]],
     groups = group.by,
@@ -427,13 +427,13 @@ run_paga_cpp <- function(
       group_sizes = as.numeric(paga[["group_sizes"]]),
       min_group_size = min_group_size
     )
-    srt@misc[["paga"]]$pseudotime <- dpt$pseudotime
-    srt@misc[["paga"]]$diffusion_components <- dpt$diffusion_components
-    srt@misc[["paga"]]$diffusion_eigenvalues <- dpt$diffusion_eigenvalues
-    srt@misc[["paga"]]$root_group <- dpt$root_group
-    srt@misc[["paga"]]$parameters$n_dcs <- n_dcs
-    srt@misc[["paga"]]$parameters$infer_pseudotime <- TRUE
-    srt@misc[["paga"]]$parameters$n_branchings <- n_branchings
+    srt@tools[["PAGA"]]$pseudotime <- dpt$pseudotime
+    srt@tools[["PAGA"]]$diffusion_components <- dpt$diffusion_components
+    srt@tools[["PAGA"]]$diffusion_eigenvalues <- dpt$diffusion_eigenvalues
+    srt@tools[["PAGA"]]$root_group <- dpt$root_group
+    srt@tools[["PAGA"]]$parameters$n_dcs <- n_dcs
+    srt@tools[["PAGA"]]$parameters$infer_pseudotime <- TRUE
+    srt@tools[["PAGA"]]$parameters$n_branchings <- n_branchings
     names(dpt$pseudotime) <- group_levels
     log_message(
       "{.pkg PAGA} diffusion pseudotime computed (root: {.val {group_levels[root_grp]}})",
@@ -465,9 +465,9 @@ run_paga_cpp <- function(
         groups = as.integer(groups),
         n_groups = nlevels(groups)
       )
-      srt@misc[["paga"]]$velocity_transitions <- vel_trans[["transitions_confidence"]]
-      srt@misc[["paga"]]$velocity_transitions_tree <- vel_trans[["transitions_confidence_tree"]]
-      srt@misc[["paga"]]$velocity_group_sizes <- vel_trans[["group_sizes"]]
+      srt@tools[["PAGA"]]$velocity_transitions <- vel_trans[["transitions_confidence"]]
+      srt@tools[["PAGA"]]$velocity_transitions_tree <- vel_trans[["transitions_confidence_tree"]]
+      srt@tools[["PAGA"]]$velocity_group_sizes <- vel_trans[["group_sizes"]]
       names(vel_trans[["group_sizes"]]) <- group_levels
       log_message(
         "{.pkg PAGA} velocity transitions computed",
@@ -488,7 +488,7 @@ run_paga_cpp <- function(
       groups = as.integer(groups),
       root_group = as.integer(root_grp_idx[1])
     )
-    srt@misc[["paga"]]$root_cells <- root_cells
+    srt@tools[["PAGA"]]$root_cells <- root_cells
     log_message(
       "PAGA root cell candidates: {.val {head(root_cells, 5)}}",
       message_type = "success",

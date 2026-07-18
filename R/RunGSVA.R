@@ -222,7 +222,7 @@ RunGSVA <- function(
       )
     }
   } else {
-    gene_set_scoring_require_namespace("GSVA")
+    check_r("GSVA", verbose = FALSE)
   }
 
   if (is.null(srt)) {

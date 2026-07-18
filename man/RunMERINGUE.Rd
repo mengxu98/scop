@@ -56,7 +56,7 @@ spatial autocorrelation, \code{"cross_correlation"} computes pairwise spatial
 cross-correlation, and \code{"modules"} detects spatial gene modules.}
 
 \item{nfeatures}{Number of top spatial features stored in
-\code{srt@misc[["SpatialVariableFeatures"]]}.}
+\code{srt@tools[["SpatialVariableFeatures"]]}.}
 
 \item{min_spots}{Minimum number of spots with non-zero expression required
 for a feature to be tested.}
@@ -96,8 +96,8 @@ explicit compatibility option.}
 }
 \value{
 A \code{Seurat} object with MERINGUE results stored in
-\code{srt@tools[["MERINGUE"]]} and top autocorrelated features stored in
-\code{srt@misc[["MERINGUEFeatures"]]}.
+\code{srt@tools[["MERINGUE"]]}. Top autocorrelated features are available at
+\code{srt@tools[["MERINGUE"]]$summary$top_features}.
 }
 \description{
 Run \code{MERINGUE} spatial autocorrelation, spatial cross-correlation, and
@@ -107,7 +107,6 @@ spatial module analysis for a spatial \code{Seurat} object.
 data(visium_human_pancreas_sub)
 spatial <- visium_human_pancreas_sub
 spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
-spatial@misc[["MERINGUEFeatures"]] <- rownames(spatial)[1:4]
 spatial@tools[["MERINGUE"]] <- list(
   autocorrelation = data.frame(
     feature = rownames(spatial)[1:4],
@@ -120,7 +119,7 @@ spatial@tools[["MERINGUE"]] <- list(
 head(spatial@tools[["MERINGUE"]]$autocorrelation)
 SpatialSpotPlot(
   spatial,
-  features = spatial@misc[["MERINGUEFeatures"]][1:2],
+  features = spatial@tools[["MERINGUE"]]$summary$top_features[1:2],
   overlay_image = FALSE,
   coord.cols = c("x", "y")
 )

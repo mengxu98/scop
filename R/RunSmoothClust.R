@@ -21,10 +21,12 @@
 #' @param min_spots Minimum number of spots with non-zero expression required
 #' for a feature to be used.
 #' @param smooth_method Smoothing method passed to `smoothclust::smoothclust()`.
-#' @param bandwidth,k,truncate,n_threads Smoothing parameters passed to
+#' @param bandwidth,k,truncate Smoothing parameters passed to
 #' `smoothclust::smoothclust()`. `bandwidth` uses the selected coordinate
 #' units; `truncate` is the backend's dimensionless kernel cutoff, and `k` and
-#' `n_threads` are unitless counts.
+#' are unitless counts.
+#' @param cores Number of workers passed to `smoothclust::smoothclust()`.
+#' @param n_threads Deprecated alias for `cores`.
 #' @param n_clusters Number of spatial domains for k-means clustering. This
 #' must be supplied explicitly.
 #' @param n_pcs Number of principal components used for k-means.
@@ -95,7 +97,8 @@ RunSmoothClust <- function(
   bandwidth = 0.05,
   k = 18,
   truncate = 0.05,
-  n_threads = 1,
+  cores = 1,
+  n_threads = NULL,
   n_clusters,
   n_pcs = 15,
   center = TRUE,
@@ -125,7 +128,11 @@ RunSmoothClust <- function(
   nfeatures <- smoothclust_assert_positive_integer(nfeatures, "nfeatures")
   min_spots <- smoothclust_assert_positive_integer(min_spots, "min_spots")
   k <- smoothclust_assert_positive_integer(k, "k")
-  n_threads <- smoothclust_assert_positive_integer(n_threads, "n_threads")
+  if (!is.null(n_threads)) {
+    .Deprecated(msg = "'n_threads' is deprecated; use 'cores' instead")
+    cores <- n_threads
+  }
+  cores <- smoothclust_assert_positive_integer(cores, "cores")
   if (missing(n_clusters)) {
     log_message(
       "{.arg n_clusters} must be supplied explicitly",
@@ -217,7 +224,7 @@ RunSmoothClust <- function(
   expr_use[!is.finite(expr_use)] <- 0
 
   check_r("lmweber/smoothclust", verbose = FALSE)
-  smooth_fun <- smoothclust_get_fun("smoothclust")
+  smooth_fun <- get_namespace_fun("smoothclust", "smoothclust")
   smooth_args <- c(
     list(
       input = expr_use,
@@ -226,7 +233,7 @@ RunSmoothClust <- function(
       bandwidth = bandwidth,
       k = k,
       truncate = truncate,
-      n_threads = n_threads
+      n_threads = cores
     ),
     list(...)
   )
@@ -307,7 +314,7 @@ RunSmoothClust <- function(
         bandwidth = bandwidth,
         k = k,
         truncate = truncate,
-        n_threads = n_threads,
+        cores = cores,
         n_clusters = n_clusters,
         n_pcs = pca$n_pcs,
         center = center,
@@ -478,7 +485,7 @@ smoothclust_smoothness_metric <- function(coords, labels, k = 6L) {
     return(list(n_discordant = rep(NA_real_, length(labels)), mean_discordant = NA_real_))
   }
   smooth_metric <- tryCatch(
-    smoothclust_get_fun("smoothness_metric"),
+    get_namespace_fun("smoothclust", "smoothness_metric"),
     error = function(e) NULL
   )
   if (!is.null(smooth_metric)) {
@@ -510,18 +517,6 @@ smoothclust_native_smoothness <- function(coords, labels, k = 6L) {
   list(
     n_discordant = as.integer(n_discordant),
     mean_discordant = mean(n_discordant)
-  )
-}
-
-smoothclust_get_fun <- function(fun) {
-  tryCatch(
-    get_namespace_fun("smoothclust", fun),
-    error = function(e) {
-      log_message(
-        "{.pkg smoothclust} does not export required function {.fn {fun}}",
-        message_type = "error"
-      )
-    }
   )
 }
 

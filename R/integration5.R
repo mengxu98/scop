@@ -1118,10 +1118,8 @@ run_integration5 <- function(
     "Perform {.pkg Seurat v5} integration with {.fn {method_label}}",
     verbose = verbose
   )
-  if (
-    method_label %in% c("CCAIntegration", "RPCAIntegration") &&
-      requireNamespace("future", quietly = TRUE)
-  ) {
+  if (method_label %in% c("CCAIntegration", "RPCAIntegration")) {
+    check_r("future", verbose = FALSE)
     old_future_plan <- future::plan()
     old_future_max_size <- getOption("future.globals.maxSize")
     on.exit(future::plan(old_future_plan), add = TRUE)

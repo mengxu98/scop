@@ -138,7 +138,7 @@ Default is \code{FALSE}.}
 
 \item{backend}{Backend used to compute Palantir. \code{"python"} keeps the
 original Palantir workflow and remains the default. \code{"cpp"} uses the
-C++ implementation and stores results in \code{srt@misc$palantir}. Default is \code{"cpp"}.}
+C++ implementation and stores results in \code{srt@tools[["Palantir"]]}. Default is \code{"cpp"}.}
 
 \item{return_seurat}{Whether to return a Seurat object instead of an anndata object.
 Default is \code{TRUE}.}

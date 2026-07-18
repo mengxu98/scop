@@ -526,10 +526,6 @@ RunBayesPrism <- function(
     method_label = "BayesPrism"
   )
   check_r("BayesPrism", verbose = FALSE)
-  suppressPackageStartupMessages(base::library(
-    "BayesPrism",
-    character.only = TRUE
-  ))
   ref_info <- prep_ref(
     reference_srt = reference_srt,
     group.by = group.by,
@@ -1275,7 +1271,6 @@ RunTOAST <- function(
   )
   transform <- match.arg(transform)
   check_r("TOAST", verbose = FALSE)
-  suppressPackageStartupMessages(base::library("TOAST", character.only = TRUE))
 
   pair <- tryCatch(
     resolve_condition_pair(

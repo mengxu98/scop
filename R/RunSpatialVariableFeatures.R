@@ -19,7 +19,7 @@
 #' coordinate units; `k` is a unitless neighbor count.
 #' @param k Number of nearest spatial neighbors per spot.
 #' @param nfeatures Number of top spatial features stored in
-#' `srt@misc[["SpatialVariableFeatures"]]`.
+#' `srt@tools[["SpatialVariableFeatures"]]`.
 #' @param min_spots Minimum number of spots with non-zero expression required
 #' for a feature to be tested.
 #' @param nperm Number of label permutations used for empirical p values. The
@@ -31,8 +31,8 @@
 #' @param ... Additional arguments passed to external backends.
 #'
 #' @return A `Seurat` object with spatial variable feature results stored in
-#' `srt@tools[["SpatialVariableFeatures"]]` and top feature names stored in
-#' `srt@misc[["SpatialVariableFeatures"]]`.
+#' `srt@tools[["SpatialVariableFeatures"]]`. Top feature names are available
+#' at `srt@tools[["SpatialVariableFeatures"]]$summary$top_features`.
 #' @concept spatial-producer
 #' @export
 #'
@@ -216,7 +216,6 @@ RunSpatialVariableFeatures <- function(
     method = method
   )
   top_features <- utils::head(result$feature[is.finite(result$score)], nfeatures)
-  srt@misc[["SpatialVariableFeatures"]] <- top_features
   if (isTRUE(set_variable_features) && length(top_features) > 0L) {
     SeuratObject::VariableFeatures(srt, assay = assay) <- top_features
   }
@@ -228,7 +227,8 @@ RunSpatialVariableFeatures <- function(
       edges = edges,
       summary = list(
         n_features = nrow(result),
-        top_features = scop_spatial_feature_summary(top_features, scores = score_lookup)
+        top_features = top_features,
+        top_feature_summary = scop_spatial_feature_summary(top_features, scores = score_lookup)
       ),
       parameters = list(
         assay = assay,
@@ -285,7 +285,8 @@ spatial_variable_run_knn <- function(expr, edges, method, nperm = 0) {
 }
 
 spatial_variable_run_sparkx <- function(expr, coords, ...) {
-  sparkx <- spatial_variable_get_fun("SPARK", "sparkx")
+  check_r("xzhoulab/SPARK", verbose = FALSE)
+  sparkx <- get_namespace_fun("SPARK", "sparkx")
   out <- sparkx(
     count_in = expr,
     locus_in = as.matrix(coords[, c("x", "y"), drop = FALSE]),
@@ -318,17 +319,17 @@ spatial_variable_run_sparkx <- function(expr, coords, ...) {
 }
 
 spatial_variable_run_nnsvg <- function(expr, coords, assay, ...) {
-  spatial_variable_require_package("SpatialExperiment")
-  spatial_variable_require_package("SummarizedExperiment")
-  spatial_variable_require_package("S4Vectors")
-  spatial_variable_require_package("nnSVG")
+  check_r("SpatialExperiment", verbose = FALSE)
+  check_r("SummarizedExperiment", verbose = FALSE)
+  check_r("S4Vectors", verbose = FALSE)
+  check_r("nnSVG", verbose = FALSE)
   spe <- spatial_variable_make_spe(expr = expr, coords = coords, assay = assay)
   extra_args <- list(...)
   args <- c(list(spe), extra_args)
   if (!"assay_name" %in% names(extra_args)) {
     args$assay_name <- "counts"
   }
-  out <- do.call(spatial_variable_get_fun("nnSVG", "nnSVG"), args)
+  out <- do.call(get_namespace_fun("nnSVG", "nnSVG"), args)
   res <- spatial_variable_row_data(out)
   features <- spatial_variable_result_features(res, rownames(expr))
   statistic <- spatial_variable_pick_numeric(res, c("LR_stat", "LR.stat", "statistic", "score", "prop_sv", "prop.sv"))
@@ -346,7 +347,7 @@ spatial_variable_run_nnsvg <- function(expr, coords, assay, ...) {
 }
 
 spatial_variable_make_spe <- function(expr, coords, assay = NULL) {
-  spatial_variable_require_package("SpatialExperiment")
+  check_r("SpatialExperiment", verbose = FALSE)
   SpatialExperiment <- get_namespace_fun("SpatialExperiment", "SpatialExperiment")
   spe <- SpatialExperiment(
     assays = list(counts = expr),
@@ -453,30 +454,6 @@ spatial_variable_reorder_cols <- function(df, first_cols) {
   df[, c(first_cols, setdiff(colnames(df), first_cols)), drop = FALSE]
 }
 
-spatial_variable_require_package <- function(pkg) {
-  repo <- if (identical(pkg, "SPARK")) "xzhoulab/SPARK" else pkg
-  status <- tryCatch(check_r(repo, verbose = FALSE), error = function(e) FALSE)
-  if (!isTRUE(unname(unlist(status))[1])) {
-    log_message(
-      "Please install required package before running this function: {.val {pkg}}",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
-}
-
-spatial_variable_get_fun <- function(pkg, fun) {
-  spatial_variable_require_package(pkg)
-  tryCatch(
-    get_namespace_fun(pkg, fun),
-    error = function(e) {
-      log_message(
-        "{.pkg {pkg}} does not export required function {.fn {fun}}",
-        message_type = "error"
-      )
-    }
-  )
-}
 
 #' @title Plot spatial variable feature results
 #'
@@ -585,7 +562,7 @@ SpatialVariableFeaturePlot <- function(
       byrow = byrow
     ))
   }
-  spatial_variable_require_package("patchwork")
+  check_r("patchwork", verbose = FALSE)
   summary_plot <- spatial_variable_summary_plot(
     result = result,
     features = features,
@@ -619,7 +596,7 @@ SpatialVariableFeaturePlot <- function(
     ncol = ncol,
     byrow = byrow
   )
-  wrap_plots <- spatial_variable_get_fun("patchwork", "wrap_plots")
+  wrap_plots <- get_namespace_fun("patchwork", "wrap_plots")
   wrap_plots(summary_plot, surface_plot, ncol = 1)
 }
 

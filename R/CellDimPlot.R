@@ -472,14 +472,14 @@
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
 #'   reduction = "UMAP",
-#'   paga = pancreas_sub@misc$paga
+#'   paga = pancreas_sub@tools[["PAGA"]]
 #' )
 #'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
 #'   reduction = "UMAP",
-#'   paga = pancreas_sub@misc$paga,
+#'   paga = pancreas_sub@tools[["PAGA"]],
 #'   paga_type = "connectivities_tree"
 #' )
 #'
@@ -493,7 +493,7 @@
 #'   label_repel = TRUE,
 #'   label_insitu = TRUE,
 #'   label_segment_color = "transparent",
-#'   paga = pancreas_sub@misc$paga,
+#'   paga = pancreas_sub@tools[["PAGA"]],
 #'   paga_edge_threshold = 0.1,
 #'   paga_edge_color = "black",
 #'   paga_edge_alpha = 1,

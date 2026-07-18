@@ -39,14 +39,18 @@ test_that("native spatial variable feature results keep normalized columns", {
   ) %in% colnames(result)))
   expect_equal(unique(result$method), "moran")
   expect_equal(result$rank, seq_len(nrow(result)))
-  expect_equal(length(srt@misc[["SpatialVariableFeatures"]]), 3)
-  expect_named(srt@tools[["SpatialVariableFeatures"]]$summary, c("n_features", "top_features"))
+  expect_equal(length(srt@tools[["SpatialVariableFeatures"]]$summary$top_features), 3)
+  expect_named(
+    srt@tools[["SpatialVariableFeatures"]]$summary,
+    c("n_features", "top_features", "top_feature_summary")
+  )
 })
 
 test_that("SPARKX backend output is normalized without storing backend objects", {
   srt <- make_spatial_variable_seurat()
   testthat::local_mocked_bindings(
-    spatial_variable_get_fun = function(pkg, fun) {
+    check_r = function(...) invisible(TRUE),
+    get_namespace_fun = function(pkg, fun) {
       expect_identical(pkg, "SPARK")
       expect_identical(fun, "sparkx")
       function(count_in, locus_in, ...) {
@@ -76,18 +80,21 @@ test_that("SPARKX backend output is normalized without storing backend objects",
   result <- out@tools[["SpatialVariableFeatures"]][["result"]]
   expect_equal(unique(result$method), "SPARKX")
   expect_equal(result$feature[[1]], "Gene2")
-  expect_equal(out@misc[["SpatialVariableFeatures"]], c("Gene2", "Gene3"))
+  expect_equal(
+    out@tools[["SpatialVariableFeatures"]]$summary$top_features,
+    c("Gene2", "Gene3")
+  )
   expect_false(any(vapply(out@tools[["SpatialVariableFeatures"]], methods::is, logical(1), class2 = "SPARK")))
 })
 
 test_that("nnSVG backend output is normalized through lightweight helpers", {
   srt <- make_spatial_variable_seurat()
   testthat::local_mocked_bindings(
-    spatial_variable_require_package = function(pkg) invisible(TRUE),
+    check_r = function(...) invisible(TRUE),
     spatial_variable_make_spe = function(expr, coords, assay = NULL) {
       list(expr = expr, coords = coords, assay = assay)
     },
-    spatial_variable_get_fun = function(pkg, fun) {
+    get_namespace_fun = function(pkg, fun) {
       expect_identical(pkg, "nnSVG")
       expect_identical(fun, "nnSVG")
       function(spe, assay_name = "counts", ...) {
@@ -118,7 +125,10 @@ test_that("nnSVG backend output is normalized through lightweight helpers", {
   result <- out@tools[["SpatialVariableFeatures"]][["result"]]
   expect_equal(unique(result$method), "nnSVG")
   expect_equal(result$feature[[1]], "Gene2")
-  expect_equal(out@misc[["SpatialVariableFeatures"]], c("Gene2", "Gene4"))
+  expect_equal(
+    out@tools[["SpatialVariableFeatures"]]$summary$top_features,
+    c("Gene2", "Gene4")
+  )
 })
 
 test_that("SpatialVariableFeaturePlot uses stored result and SCOP spatial plotting", {

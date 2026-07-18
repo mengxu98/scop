@@ -42,8 +42,8 @@
 #' @param tool_name Name used to store detailed results in `srt@tools`.
 #' @param return_filtered Whether to return only spots passing SpotSweeper QC.
 #' @param store_results Whether to store detailed results in `srt@tools`.
-#' @param workers Number of workers passed to SpotSweeper local outlier
-#' detection.
+#' @param cores Number of workers passed to SpotSweeper local outlier detection.
+#' @param workers Deprecated alias for `cores`.
 #' @param verbose Whether to print progress messages.
 #' @param ... Additional named arguments passed to matching SpotSweeper backend
 #' functions when those arguments are supported by the installed version.
@@ -114,12 +114,17 @@ RunSpotSweeper <- function(
   tool_name = "SpotSweeper",
   return_filtered = FALSE,
   store_results = TRUE,
-  workers = 1,
+  cores = 1,
+  workers = NULL,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
   ...
 ) {
   coordinate_space <- match.arg(coordinate_space)
+  if (!is.null(workers)) {
+    .Deprecated(msg = "'workers' is deprecated; use 'cores' instead")
+    cores <- workers
+  }
   log_message(
     "Running SpotSweeper spatial quality control",
     message_type = "running",
@@ -142,7 +147,7 @@ RunSpotSweeper <- function(
   spot_sweeper_assert_flag(store_results, "store_results")
   n_neighbors <- spot_sweeper_assert_positive_integer(n_neighbors, "n_neighbors")
   n_order <- spot_sweeper_assert_positive_integer(n_order, "n_order")
-  workers <- spot_sweeper_assert_positive_integer(workers, "workers")
+  cores <- spot_sweeper_assert_positive_integer(cores, "cores")
   cutoff <- spot_sweeper_assert_number(cutoff, "cutoff")
   extra_args <- list(...)
   spot_sweeper_validate_named_list(extra_args, "...")
@@ -188,7 +193,7 @@ RunSpotSweeper <- function(
     n_neighbors = n_neighbors,
     cutoff = cutoff,
     log = log,
-    workers = workers,
+    cores = cores,
     extra_args = extra_args,
     verbose = verbose
   )
@@ -251,7 +256,7 @@ RunSpotSweeper <- function(
         prefix = prefix,
         tool_name = tool_name,
         return_filtered = return_filtered,
-        workers = workers,
+        cores = cores,
         backend_args = extra_args
       ),
       backend = list(
@@ -457,7 +462,7 @@ spot_sweeper_run_local_outliers <- function(
   n_neighbors,
   cutoff,
   log,
-  workers,
+  cores,
   extra_args,
   verbose = TRUE
 ) {
@@ -492,7 +497,7 @@ spot_sweeper_run_local_outliers <- function(
         samples = sample_col,
         log = log,
         cutoff = cutoff,
-        workers = workers
+        workers = cores
       ),
       spot_sweeper_filter_args(local_fun, extra_args)
     )

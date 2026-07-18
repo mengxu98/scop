@@ -145,8 +145,10 @@ gradient_result <- list(
     value = c("RNA", "data", "ductal_axis")
   )
 )
-srt@tools[["SpatialGradientFeatures"]] <- list(ductal_axis = gradient_result)
-srt@misc[["SpatialGradientFeaturesResult"]] <- "ductal_axis"
+srt@tools[["SpatialGradientFeatures"]] <- list(
+  ductal_axis = gradient_result,
+  summary = list(active_result = "ductal_axis")
+)
 
 SpatialGradientPlot(srt, plot_type = "summary", nfeatures = 2)
 SpatialGradientPlot(srt, plot_type = "line", nfeatures = 2)

@@ -77,7 +77,7 @@ additional \code{ChromatinAssay} will be preprocessed sequentially.}
 \item{layer}{Assay layer used for expression values.}
 
 \item{variables}{Numeric variables or genes passed to SPATA2. If \code{NULL},
-\code{srt@misc[["SpatialVariableFeatures"]]} is used first, then variable
+\code{srt@tools[["SpatialVariableFeatures"]]} is used first, then variable
 features, then all assay features.}
 
 \item{sample_name, platform, img_scale_fct, assay_modality}{Arguments forwarded

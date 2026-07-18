@@ -29,9 +29,8 @@
 #' @export
 #'
 #' @examples
-#' if (requireNamespace("R.cache", quietly = TRUE)) {
-#'   data(pancreas_sub)
-#'   pancreas_sub <- AnnotateFeatures(
+#' data(pancreas_sub)
+#' pancreas_sub <- AnnotateFeatures(
 #'     pancreas_sub,
 #'     species = "Mus_musculus",
 #'     db = "TF"
@@ -41,7 +40,6 @@
 #'       pancreas_sub
 #'     )
 #'   )
-#' }
 #'
 #' # Annotate features using a GTF file
 #' gtf_file <- "/refdata-gex-mm10-2020-A/genes/genes.gtf"

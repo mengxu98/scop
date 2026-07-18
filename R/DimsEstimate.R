@@ -17,8 +17,6 @@
 #' available. Default is `"scree"`.
 #' @param min_dims Minimum number of dimensions kept when intrinsic-dimension estimation succeeds.
 #' Default is `5`.
-#' @param fallback_max_dims Maximum number of dimensions kept when no valid estimate is available.
-#' Default is `50`.
 #' @param variance_threshold Cumulative variance threshold used by
 #' `method = "scree"`. Default is `0.8`.
 #' @param marginal_gain_threshold Stop point for marginal variance gain
@@ -46,7 +44,6 @@ RunDimsEstimate <- function(
   k = 30L,
   method = c("scree", "intrinsic", "ensemble"),
   min_dims = 5L,
-  fallback_max_dims = 50L,
   variance_threshold = 0.8,
   marginal_gain_threshold = 0.5,
   skip_first = FALSE,
@@ -186,15 +183,6 @@ RunDimsEstimate <- function(
   }
 
   if (length(dims_use) == 0L) {
-    dims_use <- dims_estimate_fallback(
-      reduction_ncol = reduction_ncol,
-      fallback_max_dims = as.integer(fallback_max_dims),
-      skip_first = skip_first
-    )
-    dims_source <- "fallback"
-  }
-
-  if (length(dims_use) == 0L) {
     log_message(
       "No valid dimensions can be estimated for {.pkg {reduction}}",
       message_type = "error"
@@ -243,18 +231,6 @@ dims_estimate_validate <- function(
   dims_use <- dims_use[!is.na(dims_use)]
   lower_bound <- if (isTRUE(skip_first)) 2L else 1L
   dims_use[dims_use >= lower_bound & dims_use <= reduction_ncol]
-}
-
-dims_estimate_fallback <- function(
-  reduction_ncol,
-  fallback_max_dims = 50L,
-  skip_first = FALSE
-) {
-  lower_bound <- if (isTRUE(skip_first)) 2L else 1L
-  if (reduction_ncol < lower_bound) {
-    return(integer())
-  }
-  seq.int(lower_bound, min(reduction_ncol, fallback_max_dims))
 }
 
 dims_estimate_upgrade <- function(

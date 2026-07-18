@@ -179,9 +179,8 @@ test_that("RunscMalignantFinder respects an already usable explicit Python", {
   expect_length(calls, 0)
 })
 
-test_that("RunscMalignantFinder falls back to GitHub install when package check is insufficient", {
+test_that("RunscMalignantFinder errors when the configured environment lacks the classifier", {
   checks <- character()
-  installed <- FALSE
   obs <- data.frame(
     scMalignantFinder_prediction = "Normal",
     malignancy_probability = 0.1,
@@ -195,27 +194,24 @@ test_that("RunscMalignantFinder falls back to GitHub install when package check 
       invisible(FALSE)
     },
     scmf_python_classifier_available = function() {
-      installed
-    },
-    scmf_install_python_github = function(...) {
-      installed <<- TRUE
-      invisible(TRUE)
+      FALSE
     },
     import_scmalignantfinder = function(convert = TRUE) {
       list(run_scmalignantfinder = function(...) obs)
     }
   )
 
-  out <- RunscMalignantFinder(
-    h5ad = "input.h5ad",
-    pretrain_dir = "model_dir",
-    return_seurat = FALSE,
-    verbose = FALSE
+  expect_error(
+    RunscMalignantFinder(
+      h5ad = "input.h5ad",
+      pretrain_dir = "model_dir",
+      return_seurat = FALSE,
+      verbose = FALSE
+    ),
+    "scMalignantFinder"
   )
 
-  expect_true(installed)
   expect_true("scMalignantFinder" %in% checks)
-  expect_equal(out$malignancy_probability, 0.1)
 })
 
 test_that("RunscMalignantRegion appends spatial region outputs", {

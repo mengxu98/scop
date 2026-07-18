@@ -298,7 +298,7 @@ spatial <- standard_scop(
 SpatialSpotPlot(spatial, group.by = "SpotQC")
 SpatialSpotPlot(
   spatial,
-  features = spatial@misc[["SpatialVariableFeatures"]][1:2]
+  features = spatial@tools[["SpatialVariableFeatures"]]$summary$top_features[1:2]
 )
 
 spatial_bayes <- standard_scop(

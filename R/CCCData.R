@@ -286,10 +286,8 @@ ccc_to_adata <- function(
     )
   }
 
-  if (!isTRUE(getOption("scop_skip_python_prepare", FALSE))) {
-    PrepareEnv(modules = "scanpy")
-    check_python(c("anndata", "numpy"), verbose = FALSE)
-  }
+  PrepareEnv(modules = "scanpy")
+  check_python(c("anndata", "numpy"), verbose = FALSE)
   ad <- reticulate::import("anndata", convert = FALSE)
   np <- reticulate::import("numpy", convert = FALSE)
 

@@ -82,9 +82,8 @@ Default is \code{TRUE}.}
 Annotate features in a Seurat object with additional metadata from databases or a GTF file.
 }
 \examples{
-if (requireNamespace("R.cache", quietly = TRUE)) {
-  data(pancreas_sub)
-  pancreas_sub <- AnnotateFeatures(
+data(pancreas_sub)
+pancreas_sub <- AnnotateFeatures(
     pancreas_sub,
     species = "Mus_musculus",
     db = "TF"
@@ -94,7 +93,6 @@ if (requireNamespace("R.cache", quietly = TRUE)) {
       pancreas_sub
     )
   )
-}
 
 # Annotate features using a GTF file
 gtf_file <- "/refdata-gex-mm10-2020-A/genes/genes.gtf"

@@ -264,7 +264,9 @@ RunNMF.default <- function(
   nbes <- min(nbes, nrow(x = object) - 1)
   if (nmf.method == "RcppML") {
     check_r("zdebruine/RcppML", verbose = FALSE)
+    old_rcppml_verbose <- getOption("RcppML.verbose", default = TRUE)
     options("RcppML.verbose" = FALSE)
+    on.exit(options("RcppML.verbose" = old_rcppml_verbose), add = TRUE)
     set_threads <- get0(
       "setRcppMLthreads",
       envir = asNamespace("RcppML"),

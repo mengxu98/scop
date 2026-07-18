@@ -396,11 +396,7 @@ card_reference_metadata <- function(reference, labels, sample_varname = NULL) {
 }
 
 card_extract_weights <- function(card_obj) {
-  weights <- NULL
-  weights <- weights %||% tryCatch(methods::slot(card_obj, "Proportion_CARD"), error = function(e) NULL)
-  weights <- weights %||% tryCatch(card_obj$Proportion_CARD, error = function(e) NULL)
-  weights <- weights %||% tryCatch(card_obj$proportion_card, error = function(e) NULL)
-  weights <- weights %||% tryCatch(card_obj$proportion, error = function(e) NULL)
+  weights <- tryCatch(card_obj$Proportion_CARD, error = function(e) NULL)
   if (is.null(weights)) {
     log_message(
       "{.pkg CARD} did not return {.val Proportion_CARD}",

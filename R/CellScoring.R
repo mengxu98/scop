@@ -440,7 +440,7 @@ CellScoring <- function(
       )
       use_official_rankings <- any(names(dots) %in% aucell_option_names)
       if (isTRUE(use_official_rankings)) {
-        gene_set_scoring_require_namespace("AUCell")
+        check_r("AUCell", verbose = FALSE)
         build_names <- c(
           "featureType", "plotStats", "splitByBlocks", "BPPARAM",
           "keepZeroesAsNA", "nCores", "mctype"
@@ -558,7 +558,7 @@ CellScoring <- function(
           !names(features) %in% colnames(gs_scores)
         ]
       } else {
-        gene_set_scoring_require_namespace("GSVA")
+        check_r("GSVA", verbose = FALSE)
         expr_mat <- as_matrix(expr_sp)
         expr_mat <- expr_mat[rowSums(expr_mat) > 0, , drop = FALSE]
         gene_sets_filtered <- lapply(features, function(gs) {

@@ -49,7 +49,7 @@ when no image is available.}
 \item{k}{Number of nearest spatial neighbors per spot.}
 
 \item{nfeatures}{Number of top spatial features stored in
-\code{srt@misc[["SpatialVariableFeatures"]]}.}
+\code{srt@tools[["SpatialVariableFeatures"]]}.}
 
 \item{min_spots}{Minimum number of spots with non-zero expression required
 for a feature to be tested.}
@@ -77,8 +77,8 @@ coordinate units; \code{k} is a unitless neighbor count.}
 }
 \value{
 A \code{Seurat} object with spatial variable feature results stored in
-\code{srt@tools[["SpatialVariableFeatures"]]} and top feature names stored in
-\code{srt@misc[["SpatialVariableFeatures"]]}.
+\code{srt@tools[["SpatialVariableFeatures"]]}. Top feature names are available
+at \code{srt@tools[["SpatialVariableFeatures"]]$summary$top_features}.
 }
 \description{
 Score genes by spot-level spatial autocorrelation. The native \code{"moran"} and

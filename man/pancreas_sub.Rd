@@ -16,9 +16,6 @@ A total of 1000 cells were downsampled to form the \code{pancreas_sub} dataset.
 }
 \examples{
 \dontrun{
-if (interactive()) {
-  library(Seurat)
-  library(reticulate)
   PrepareEnv()
   check_python("scvelo")
   scv <- import("scvelo")
@@ -62,7 +59,6 @@ if (interactive()) {
     compress = "xz",
     overwrite = TRUE
   )
-}
 }
 }
 \concept{data}

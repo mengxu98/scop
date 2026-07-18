@@ -11,7 +11,6 @@ RunDimsEstimate(
   k = 30L,
   method = c("scree", "intrinsic", "ensemble"),
   min_dims = 5L,
-  fallback_max_dims = 50L,
   variance_threshold = 0.8,
   marginal_gain_threshold = 0.5,
   skip_first = FALSE,
@@ -40,9 +39,6 @@ available. Default is \code{"scree"}.}
 
 \item{min_dims}{Minimum number of dimensions kept when intrinsic-dimension estimation succeeds.
 Default is \code{5}.}
-
-\item{fallback_max_dims}{Maximum number of dimensions kept when no valid estimate is available.
-Default is \code{50}.}
 
 \item{variance_threshold}{Cumulative variance threshold used by
 \code{method = "scree"}. Default is \code{0.8}.}

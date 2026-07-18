@@ -22,7 +22,7 @@ derived from \code{EnsDb.Hsapiens.v86} and collapsed to the longest transcript
 per gene.
 }
 \examples{
-if (interactive()) {
+
   source("test/data/create_pbmcmultiome_sub.R")
   pbmcmultiome_sub <- create_pbmcmultiome_sub()
   use_data <- get_namespace_fun("usethis", "use_data")
@@ -31,6 +31,5 @@ if (interactive()) {
     compress = "xz",
     overwrite = TRUE
   )
-}
 }
 \concept{data}

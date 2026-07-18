@@ -436,7 +436,7 @@ RunMetabolism <- function(
         )
       }
     } else {
-      gene_set_scoring_require_namespace("GSVA")
+      check_r("GSVA", verbose = FALSE)
       expr_mat <- as_matrix(expr_counts)
       expr_mat <- expr_mat[rowSums(expr_mat) > 0, , drop = FALSE]
       gene_sets_filt <- lapply(gene_sets, function(gs) intersect(gs, rownames(expr_mat)))
@@ -465,7 +465,7 @@ RunMetabolism <- function(
       scores_mat <- Matrix::t(gsva_es)
     }
   } else if (method == "VISION") {
-    gene_set_scoring_require_namespace("VISION", install_hint = "YosefLab/VISION")
+    check_r("YosefLab/VISION", verbose = FALSE)
     Vision_fun <- get_namespace_fun("VISION", "Vision")
     calc_signature_scores_fun <- get_namespace_fun("VISION", "calcSignatureScores")
 

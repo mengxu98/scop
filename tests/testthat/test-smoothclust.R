@@ -47,7 +47,8 @@ with_mock_smoothclust <- function(code) {
       expect_identical(packages, "lmweber/smoothclust")
       invisible(TRUE)
     },
-    smoothclust_get_fun = function(fun) {
+    get_namespace_fun = function(package, fun) {
+      expect_identical(package, "smoothclust")
       switch(fun,
         smoothclust = fake_smooth,
         smoothness_metric = fake_smoothness,

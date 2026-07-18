@@ -23,7 +23,8 @@ RunSecAct(
   is.group.cor = 0.9,
   lambda = 5e+05,
   nrand = 1000,
-  ncores = 1L,
+  cores = 1L,
+  ncores = NULL,
   backend = "auto",
   rng_method = "mt19937",
   batch_size = NULL,
@@ -70,7 +71,11 @@ rather than cell-state activity for Seurat input.}
 
 \item{sigMatrix}{SecAct signature matrix name.}
 
-\item{is.filter.sig, is.group.sig, is.group.cor, lambda, nrand, ncores, backend, rng_method}{Parameters passed to SecAct activity inference.}
+\item{is.filter.sig, is.group.sig, is.group.cor, lambda, nrand, backend, rng_method}{Parameters passed to SecAct activity inference.}
+
+\item{cores}{Number of workers passed to SecAct activity inference.}
+
+\item{ncores}{Deprecated alias for \code{cores}.}
 
 \item{batch_size, output_h5}{Optional large-matrix controls passed only to
 \code{SecAct.activity.inference}.}

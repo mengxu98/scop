@@ -136,7 +136,7 @@ get_single_cc_obj <- function(srt, condition = NULL) {
   store$results[[condition]]$cellchat_object
 }
 
-.cc_get_cmp <- function(srt, condition = NULL) {
+cc_get_cmp <- function(srt, condition = NULL) {
   store <- get_cc_obj(srt)
   cmp_names <- comparison_cc_names(srt)
   if (is.null(condition)) {
@@ -178,8 +178,8 @@ get_dataset_object <- function(srt, condition = NULL, dataset = 1) {
   }
 
   if (!is.null(condition) && condition %in% cmp_names) {
-    cmp <- .cc_get_cmp(srt, condition = condition)
-    ds_name <- .cc_pick_dataset_name(cmp, dataset)
+    cmp <- cc_get_cmp(srt, condition = condition)
+    ds_name <- cc_pick_dataset_name(cmp, dataset)
     seu_object <- NULL
     if (
       !is.null(store$results[[ds_name]]) &&
@@ -214,8 +214,8 @@ get_dataset_object <- function(srt, condition = NULL, dataset = 1) {
   }
 
   if (is.null(condition) && length(cmp_names) == 1L) {
-    cmp <- .cc_get_cmp(srt, condition = cmp_names[1])
-    ds_name <- .cc_pick_dataset_name(cmp, dataset)
+    cmp <- cc_get_cmp(srt, condition = cmp_names[1])
+    ds_name <- cc_pick_dataset_name(cmp, dataset)
     seu_object <- NULL
     if (
       !is.null(store$results[[ds_name]]) &&
@@ -237,7 +237,7 @@ get_dataset_object <- function(srt, condition = NULL, dataset = 1) {
   )
 }
 
-.cc_resolve_dataset_index <- function(cmp, comparison = c(1, 2)) {
+cc_resolve_dataset_index <- function(cmp, comparison = c(1, 2)) {
   ds_names <- names(cmp$object.list)
   if (is.numeric(comparison)) {
     idx <- as.integer(comparison)
@@ -259,7 +259,7 @@ get_dataset_object <- function(srt, condition = NULL, dataset = 1) {
   idx
 }
 
-.cc_pick_dataset_name <- function(cmp, dataset = 1) {
+cc_pick_dataset_name <- function(cmp, dataset = 1) {
   nm <- names(cmp$object.list)
   if (is.character(dataset)) {
     if (!dataset %in% nm) {
@@ -2459,8 +2459,8 @@ ccc_cellchat_diff_network_data <- function(
   top_n = 20,
   edge_threshold = 0
 ) {
-  cmp <- .cc_get_cmp(srt = srt, condition = condition)
-  comp_idx <- .cc_resolve_dataset_index(cmp, comparison = comparison)
+  cmp <- cc_get_cmp(srt = srt, condition = condition)
+  comp_idx <- cc_resolve_dataset_index(cmp, comparison = comparison)
   if (length(comp_idx) < 2L) {
     log_message(
       "{.arg comparison} must contain at least two datasets for {.val plot_type = 'diff_network'}",

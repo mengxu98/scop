@@ -177,7 +177,10 @@ test_that("spatial gradient storage keeps only plain data frames", {
   expect_equal(names(stored), c("screening", "significance", "model_fits", "top_variables", "parameters"))
   expect_true(all(vapply(stored, is.data.frame, logical(1))))
   expect_false(any(vapply(stored, methods::is, logical(1), class2 = "SPATA2")))
-  expect_equal(srt@misc[["SpatialGradientFeatures"]], c("Gene1", "Gene2"))
+  expect_equal(
+    srt@tools[["SpatialGradientFeatures"]]$summary$top_features,
+    c("Gene1", "Gene2")
+  )
 })
 
 test_that("cpp backend stores annotation gradient result tables", {

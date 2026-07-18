@@ -5,7 +5,7 @@
 #' @inheritParams RunCellRank
 #' @param backend Backend used to compute Palantir. `"python"` keeps the
 #' original Palantir workflow and remains the default. `"cpp"` uses the
-#' C++ implementation and stores results in `srt@misc$palantir`. Default is `"cpp"`.
+#' C++ implementation and stores results in `srt@tools[["Palantir"]]`. Default is `"cpp"`.
 #' @param dm_n_components The number of diffusion components to calculate.
 #' @param dm_alpha Normalization parameter for the diffusion operator.
 #' @param dm_n_eigs Number of eigen vectors to use.
@@ -178,6 +178,11 @@ RunPalantir <- function(
     ))
   }
 
+  old_env <- Sys.getenv(c(
+    "OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",
+    "VECLIB_MAXIMUM_THREADS", "NUMEXPR_NUM_THREADS",
+    "KMP_WARNINGS", "KMP_DUPLICATE_LIB_OK"
+  ), unset = NA_character_, names = TRUE)
   Sys.setenv(
     OMP_NUM_THREADS = "1",
     OPENBLAS_NUM_THREADS = "1",
@@ -187,6 +192,11 @@ RunPalantir <- function(
     KMP_WARNINGS = "0",
     KMP_DUPLICATE_LIB_OK = "TRUE"
   )
+  on.exit({
+    for (nm in names(old_env)) {
+      if (is.na(old_env[nm])) Sys.unsetenv(nm) else Sys.setenv(nm = old_env[nm])
+    }
+  }, add = TRUE)
   PrepareEnv(modules = "palantir")
   check_python("palantir", verbose = verbose)
   if (all(is.null(srt), is.null(adata))) {
@@ -749,7 +759,7 @@ run_palantir_cpp <- function(
   colnames(branch_meta) <- branch_meta_names
   srt <- Seurat::AddMetaData(srt, metadata = branch_meta)
 
-  srt@misc[["palantir"]] <- list(
+  srt@tools[["Palantir"]] <- list(
     pseudotime = pseudotime,
     pseudotime_raw = pseudotime_raw,
     entropy = ent,

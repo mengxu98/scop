@@ -21,7 +21,7 @@
 #' @param spata_object Optional pre-built SPATA2 object. If `NULL`, `srt` is
 #' converted with `SPATA2::asSPATA2()`.
 #' @param variables Numeric variables or genes passed to SPATA2. If `NULL`,
-#' `srt@misc[["SpatialVariableFeatures"]]` is used first, then variable
+#' `srt@tools[["SpatialVariableFeatures"]]` is used first, then variable
 #' features, then all assay features.
 #' @param sample_name,platform,img_scale_fct,assay_modality Arguments forwarded
 #' to `SPATA2::asSPATA2()` when `spata_object` is `NULL`.
@@ -468,8 +468,10 @@ RunSpatialGradientFeatures <- function(
 #'     value = c("RNA", "data", "ductal_axis")
 #'   )
 #' )
-#' srt@tools[["SpatialGradientFeatures"]] <- list(ductal_axis = gradient_result)
-#' srt@misc[["SpatialGradientFeaturesResult"]] <- "ductal_axis"
+#' srt@tools[["SpatialGradientFeatures"]] <- list(
+#'   ductal_axis = gradient_result,
+#'   summary = list(active_result = "ductal_axis")
+#' )
 #'
 #' SpatialGradientPlot(srt, plot_type = "summary", nfeatures = 2)
 #' SpatialGradientPlot(srt, plot_type = "line", nfeatures = 2)
@@ -584,7 +586,7 @@ SpatialGradientPlot <- function(
     ))
   }
 
-  sgf_require_package("patchwork")
+  check_r("patchwork", verbose = FALSE)
   surface <- sgf_surface_plot(
     srt = srt,
     result = result,
@@ -622,26 +624,11 @@ SpatialGradientPlot <- function(
     nrow = nrow,
     ncol = ncol
   )
-  sgf_require_package("patchwork")
+  check_r("patchwork", verbose = FALSE)
   wrap_plots <- get_namespace_fun("patchwork", "wrap_plots")
   wrap_plots(surface, line, ncol = 1)
 }
 
-sgf_require_package <- function(pkg) {
-  repo <- if (identical(pkg, "SPATA2")) "theMILOlab/SPATA2" else pkg
-  status <- tryCatch(check_r(repo, verbose = FALSE), error = function(e) FALSE)
-  if (!isTRUE(unname(unlist(status))[1])) {
-    log_message(
-      "Please install required package before running this function: {.val {pkg}}",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
-}
-
-sgf_spata2_pkg <- function() {
-  "SPATA2"
-}
 
 sgf_require_spata2 <- function() {
   if (!sgf_spata2_available()) {
@@ -665,7 +652,7 @@ sgf_spata2_available <- function() {
 }
 
 sgf_spata_fun <- function(fun, required = TRUE) {
-  pkg <- sgf_spata2_pkg()
+  pkg <- "SPATA2"
   if (!sgf_spata2_available()) {
     if (isTRUE(required)) {
       sgf_require_spata2()
@@ -692,7 +679,7 @@ sgf_try_spata_call <- function(fun, args, required = FALSE) {
 
 sgf_resolve_variables <- function(srt, assay, layer, variables = NULL) {
   if (is.null(variables)) {
-    variables <- srt@misc[["SpatialVariableFeatures"]]
+    variables <- srt@tools[["SpatialVariableFeatures"]]$summary$top_features
   }
   if (is.null(variables) || length(variables) == 0L) {
     variables <- SeuratObject::VariableFeatures(srt, assay = assay)
@@ -1427,6 +1414,8 @@ sgf_store_result <- function(
       )
     }
   }
+  vars <- result$top_variables$variable
+  vars <- vars[!is.na(vars) & nzchar(vars)]
   if (is.null(srt@tools[["SpatialGradientFeatures"]])) {
     srt@tools[["SpatialGradientFeatures"]] <- list()
   }
@@ -1443,15 +1432,15 @@ sgf_store_result <- function(
       backend_id = if (identical(backend, "cpp")) "core" else "spata2"
     ),
     parameters = list(result_name = result_name, assay = assay, backend = backend),
-    summary = list(active_result = result_name, n_results = length(setdiff(
-      names(srt@tools[["SpatialGradientFeatures"]]),
-      c("method", "schema_version", "result_type", "source", "provenance", "parameters", "summary")
-    )))
+    summary = list(
+      active_result = result_name,
+      top_features = vars,
+      n_results = length(setdiff(
+        names(srt@tools[["SpatialGradientFeatures"]]),
+        c("method", "schema_version", "result_type", "source", "provenance", "parameters", "summary")
+      ))
+    )
   )
-  vars <- result$top_variables$variable
-  vars <- vars[!is.na(vars) & nzchar(vars)]
-  srt@misc[["SpatialGradientFeatures"]] <- vars
-  srt@misc[["SpatialGradientFeaturesResult"]] <- result_name
   if (isTRUE(set_variable_features) && length(vars) > 0L) {
     SeuratObject::VariableFeatures(srt, assay = assay) <- vars
   }
@@ -1472,7 +1461,7 @@ sgf_get_result <- function(srt, result_name = NULL) {
   )
   result_names <- setdiff(names(all_results), metadata_names)
   if (is.null(result_name)) {
-    result_name <- srt@misc[["SpatialGradientFeaturesResult"]] %||% result_names[length(result_names)]
+    result_name <- all_results$summary$active_result %||% result_names[length(result_names)]
   }
   if (!result_name %in% result_names) {
     log_message(
@@ -1744,7 +1733,7 @@ sgf_gradient_colors <- function(palette = "Spectral", palcolor = NULL) {
 
 sgf_parameters_df <- function(parameters) {
   parameters$scop_version <- sgf_package_version("scop")
-  parameters$spata2_version <- sgf_package_version(sgf_spata2_pkg())
+  parameters$spata2_version <- sgf_package_version("SPATA2")
   data.frame(
     key = names(parameters),
     value = vapply(parameters, sgf_collapse_value, character(1)),
