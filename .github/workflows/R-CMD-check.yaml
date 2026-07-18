@@ -18,7 +18,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macos-latest, r: 'release', check-args: 'c("--no-manual", "--as-cran", "--no-examples", "--no-tests")'}
+          - {os: macos-latest, r: 'release', check-args: 'c("--no-manual", "--as-cran", "--no-examples")'}
           - {os: windows-latest, r: 'release', check-args: 'c("--no-manual", "--as-cran", "--no-examples")'}
           - {os: ubuntu-latest, r: 'release', check-args: 'c("--no-manual", "--as-cran", "--no-examples")'}
 
@@ -27,7 +27,7 @@ jobs:
       _R_CHECK_FORCE_SUGGESTS_: false
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: r-lib/actions/setup-pandoc@v2
 
@@ -41,9 +41,50 @@ jobs:
         env:
           GITHUB_PAT: ${{ github.token }}
         with:
-          extra-packages: any::rcmdcheck
+          extra-packages: any::rcmdcheck any::pkgload
           needs: check
           cache: true
+
+      - name: Compute optional R dependency cache key
+        id: optional-r-deps
+        shell: bash
+        run: |
+          manifest_path="${RUNNER_TEMP}/scop-optional-r-deps.txt"
+          SCOP_DEP_MANIFEST="$manifest_path" Rscript -e '
+            pkgload::load_all(".", quiet = TRUE, compile = FALSE)
+            writeLines(sort(scop:::env_r_packages()), Sys.getenv("SCOP_DEP_MANIFEST"))
+          '
+          manifest_hash="$(shasum -a 256 "$manifest_path" | cut -d ' ' -f 1)"
+          echo "r-version=$(Rscript -e 'cat(getRversion())')" >> "$GITHUB_OUTPUT"
+          echo "hash=$manifest_hash" >> "$GITHUB_OUTPUT"
+
+      - name: Restore optional R package cache
+        id: optional-r-cache
+        uses: actions/cache/restore@v5
+        with:
+          path: ${{ runner.temp }}/scop-optional-r-library
+          key: scop-optional-r-v1-${{ runner.os }}-r${{ steps.optional-r-deps.outputs.r-version }}-${{ steps.optional-r-deps.outputs.hash }}
+
+      - name: Install optional R backends
+        env:
+          SCOP_OPTIONAL_R_LIB: ${{ runner.temp }}/scop-optional-r-library
+        run: |
+          optional_lib <- Sys.getenv("SCOP_OPTIONAL_R_LIB")
+          user_lib <- Sys.getenv("R_LIBS_USER")
+          dir.create(optional_lib, recursive = TRUE, showWarnings = FALSE)
+          .libPaths(c(optional_lib, .libPaths()))
+          pkgload::load_all(".", quiet = TRUE, compile = FALSE)
+          scop::PrepareEnv(components = "r", verbose = TRUE)
+          combined_libs <- paste(c(optional_lib, user_lib), collapse = .Platform$path.sep)
+          cat("R_LIBS_USER=", combined_libs, "\n", sep = "", file = Sys.getenv("GITHUB_ENV"), append = TRUE)
+        shell: Rscript {0}
+
+      - name: Save optional R package cache
+        if: steps.optional-r-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: ${{ runner.temp }}/scop-optional-r-library
+          key: scop-optional-r-v1-${{ runner.os }}-r${{ steps.optional-r-deps.outputs.r-version }}-${{ steps.optional-r-deps.outputs.hash }}
 
       - uses: r-lib/actions/check-r-package@v2
         with:
