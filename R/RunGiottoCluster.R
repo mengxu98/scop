@@ -302,12 +302,12 @@ RunGiottoCluster <- function(
 
 giotto_require <- function(verbose = TRUE) {
   status <- tryCatch(
-    check_r("giotto-suite/Giotto", verbose = FALSE),
+    check_r("drieslab/Giotto", verbose = FALSE),
     error = function(e) FALSE
   )
   if (!isTRUE(unname(unlist(status))[1])) {
     log_message(
-      "Please install {.pkg Giotto} before running this function: {.code check_r('giotto-suite/Giotto')}",
+      "Please install {.pkg Giotto} before running this function: {.code check_r('drieslab/Giotto')}",
       message_type = "error",
       verbose = verbose
     )
