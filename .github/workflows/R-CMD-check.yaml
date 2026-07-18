@@ -44,8 +44,9 @@ jobs:
           extra-packages: any::rcmdcheck any::pkgload
           needs: check
           cache: true
+          cache-version: 2
 
-      - name: Compute optional R dependency cache key
+      - name: Compute optional R dependency cache key 🔑
         id: optional-r-deps
         shell: bash
         run: |
@@ -55,17 +56,17 @@ jobs:
             writeLines(sort(scop:::env_r_packages()), Sys.getenv("SCOP_DEP_MANIFEST"))
           '
           manifest_hash="$(shasum -a 256 "$manifest_path" | cut -d ' ' -f 1)"
-          echo "r-version=$(Rscript -e 'cat(getRversion())')" >> "$GITHUB_OUTPUT"
+          echo "r-version=$(Rscript -e 'cat(as.character(getRversion()))')" >> "$GITHUB_OUTPUT"
           echo "hash=$manifest_hash" >> "$GITHUB_OUTPUT"
 
-      - name: Restore optional R package cache
+      - name: Restore optional R package cache ♻️
         id: optional-r-cache
         uses: actions/cache/restore@v5
         with:
           path: ${{ runner.temp }}/scop-optional-r-library
           key: scop-optional-r-v1-${{ runner.os }}-r${{ steps.optional-r-deps.outputs.r-version }}-${{ steps.optional-r-deps.outputs.hash }}
 
-      - name: Install optional R backends
+      - name: Install optional R backends 📦
         env:
           SCOP_OPTIONAL_R_LIB: ${{ runner.temp }}/scop-optional-r-library
         run: |
@@ -79,7 +80,7 @@ jobs:
           cat("R_LIBS_USER=", combined_libs, "\n", sep = "", file = Sys.getenv("GITHUB_ENV"), append = TRUE)
         shell: Rscript {0}
 
-      - name: Save optional R package cache
+      - name: Save optional R package cache 💾
         if: steps.optional-r-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v5
         with:
