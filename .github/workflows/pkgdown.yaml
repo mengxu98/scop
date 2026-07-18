@@ -55,7 +55,7 @@ jobs:
           # changes are covered by R-CMD-check; their documentation is
           # regenerated when the corresponding man pages are committed.
           if printf '%s\n' "$files" |
-            grep -E '^(README\.md|NEWS\.md|DESCRIPTION|_pkgdown\.yml|man/|vignettes/|articles/|pkgdown/|inst/pkgdown/)' |
+            grep -E '^(README[.](md|Rmd|qmd)|NEWS\.md|DESCRIPTION|_pkgdown\.yml|man/|vignettes/|articles/|pkgdown/|inst/pkgdown/|[.]github/workflows/pkgdown\.yaml|tools/ci/optional-r-deps\.R)' |
             grep -q .; then
             echo "package_changed=true" >> "$GITHUB_OUTPUT"
           else
@@ -87,7 +87,7 @@ jobs:
         env:
           GITHUB_PAT: ${{ github.token }}
         with:
-          extra-packages: any::pkgdown any::pkgload, local::.
+          extra-packages: any::pkgdown, local::.
           needs: website
           cache: true
           cache-version: 2
@@ -97,10 +97,7 @@ jobs:
         shell: bash
         run: |
           manifest_path="${RUNNER_TEMP}/scop-optional-r-deps.txt"
-          SCOP_DEP_MANIFEST="$manifest_path" Rscript -e '
-            pkgload::load_all(".", quiet = TRUE, compile = FALSE)
-            writeLines(sort(scop:::env_r_packages()), Sys.getenv("SCOP_DEP_MANIFEST"))
-          '
+          SCOP_DEP_MANIFEST="$manifest_path" Rscript tools/ci/optional-r-deps.R
           manifest_hash="$(shasum -a 256 "$manifest_path" | cut -d ' ' -f 1)"
           echo "r-version=$(Rscript -e 'cat(as.character(getRversion()))')" >> "$GITHUB_OUTPUT"
           echo "hash=$manifest_hash" >> "$GITHUB_OUTPUT"
@@ -163,7 +160,7 @@ jobs:
           git diff --name-status "$base" "$head" > changed-files.txt
           cat changed-files.txt
 
-          awk '$2 !~ /^(scripts\/|tests\/|[.]github\/workflows\/(pkgdown|test-coverage)[.]yaml$)/ { print }' changed-files.txt > pkgdown-files.txt
+          awk '$2 !~ /^(scripts\/|tests\/|[.]github\/workflows\/test-coverage[.]yaml$)/ { print }' changed-files.txt > pkgdown-files.txt
           if [[ ! -s pkgdown-files.txt ]]; then
             echo "full_build=false" >> "$GITHUB_OUTPUT"
             echo "article_build=false" >> "$GITHUB_OUTPUT"
