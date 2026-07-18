@@ -285,7 +285,7 @@ spatial_variable_run_knn <- function(expr, edges, method, nperm = 0) {
 }
 
 spatial_variable_run_sparkx <- function(expr, coords, ...) {
-  sparkx <- get_namespace_fun("SPARK", "sparkx")
+  sparkx <- spatial_variable_get_fun("SPARK", "sparkx")
   out <- sparkx(
     count_in = expr,
     locus_in = as.matrix(coords[, c("x", "y"), drop = FALSE]),
@@ -328,7 +328,7 @@ spatial_variable_run_nnsvg <- function(expr, coords, assay, ...) {
   if (!"assay_name" %in% names(extra_args)) {
     args$assay_name <- "counts"
   }
-  out <- do.call(get_namespace_fun("nnSVG", "nnSVG"), args)
+  out <- do.call(spatial_variable_get_fun("nnSVG", "nnSVG"), args)
   res <- spatial_variable_row_data(out)
   features <- spatial_variable_result_features(res, rownames(expr))
   statistic <- spatial_variable_pick_numeric(res, c("LR_stat", "LR.stat", "statistic", "score", "prop_sv", "prop.sv"))
@@ -455,8 +455,27 @@ spatial_variable_reorder_cols <- function(df, first_cols) {
 
 spatial_variable_require_package <- function(pkg) {
   repo <- if (identical(pkg, "SPARK")) "xzhoulab/SPARK" else pkg
-  check_r(repo, verbose = FALSE)
+  status <- tryCatch(check_r(repo, verbose = FALSE), error = function(e) FALSE)
+  if (!isTRUE(unname(unlist(status))[1])) {
+    log_message(
+      "Please install required package before running this function: {.val {pkg}}",
+      message_type = "error"
+    )
+  }
   invisible(TRUE)
+}
+
+spatial_variable_get_fun <- function(pkg, fun) {
+  spatial_variable_require_package(pkg)
+  tryCatch(
+    get_namespace_fun(pkg, fun),
+    error = function(e) {
+      log_message(
+        "{.pkg {pkg}} does not export required function {.fn {fun}}",
+        message_type = "error"
+      )
+    }
+  )
 }
 
 #' @title Plot spatial variable feature results
@@ -600,7 +619,7 @@ SpatialVariableFeaturePlot <- function(
     ncol = ncol,
     byrow = byrow
   )
-  wrap_plots <- get_namespace_fun("patchwork", "wrap_plots")
+  wrap_plots <- spatial_variable_get_fun("patchwork", "wrap_plots")
   wrap_plots(summary_plot, surface_plot, ncol = 1)
 }
 
@@ -776,41 +795,6 @@ spatial_variable_knn_edges <- function(coords, k = 6) {
 }
 
 spatial_variable_score_matrix <- function(
-  expr,
-  edges,
-  method = c("moran", "geary"),
-  nperm = 0
-) {
-  method <- match.arg(method)
-  if (nperm == 0L && is.matrix(expr) && is.numeric(expr) &&
-      is.data.frame(edges) && all(c("from", "to") %in% colnames(edges))) {
-    native <- tryCatch(
-      spatial_variable_score_dense_cpp(
-        expr = expr,
-        from = as.integer(edges$from),
-        to = as.integer(edges$to),
-        method = method
-      ),
-      error = function(e) NULL
-    )
-    if (!is.null(native)) {
-      statistic <- as.numeric(native)
-      return(list(
-        statistic = statistic,
-        score = if (identical(method, "moran")) statistic else 1 - statistic,
-        p_value = rep(NA_real_, length(statistic))
-      ))
-    }
-  }
-  spatial_variable_score_matrix_r(
-    expr = expr,
-    edges = edges,
-    method = method,
-    nperm = nperm
-  )
-}
-
-spatial_variable_score_matrix_r <- function(
   expr,
   edges,
   method = c("moran", "geary"),

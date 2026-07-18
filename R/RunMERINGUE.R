@@ -55,7 +55,6 @@
 #'   spatial,
 #'   assay = "Spatial",
 #'   coord.cols = c("x", "y"),
-#'   features = rownames(spatial)[seq_len(min(50L, nrow(spatial)))],
 #'   mode = c("autocorrelation", "cross_correlation"),
 #'   nfeatures = 50,
 #'   verbose = FALSE
@@ -126,16 +125,7 @@ RunMERINGUE <- function(
     message_type = "running",
     verbose = verbose
   )
-  meringue_status <- tryCatch(
-    check_r("JEFworks-Lab/MERINGUE", verbose = FALSE),
-    error = function(e) FALSE
-  )
-  if (!isTRUE(unname(meringue_status)[[1L]])) {
-    log_message(
-      "Please install MERINGUE before running {.fn RunMERINGUE}: {.val JEFworks-Lab/MERINGUE}",
-      message_type = "error"
-    )
-  }
+  meringue_require_package("MERINGUE")
   set.seed(seed)
 
   inputs <- meringue_prepare_inputs(
@@ -364,7 +354,7 @@ meringue_run_neighbors <- function(
     ),
     neighbor_params
   )
-  do.call(get_namespace_fun("MERINGUE", "getSpatialNeighbors"), args)
+  do.call(meringue_get_fun("getSpatialNeighbors"), args)
 }
 
 meringue_run_autocorrelation <- function(
@@ -392,7 +382,7 @@ meringue_run_autocorrelation <- function(
         ),
         moran_params
       )
-      do.call(get_namespace_fun("MERINGUE", "moranPermutationTest"), args)
+      do.call(meringue_get_fun("moranPermutationTest"), args)
     } else {
       args <- utils::modifyList(
         list(
@@ -402,7 +392,7 @@ meringue_run_autocorrelation <- function(
         ),
         moran_params
       )
-      do.call(get_namespace_fun("MERINGUE", "moranTest"), args)
+      do.call(meringue_get_fun("moranTest"), args)
     }
     meringue_normalize_moran_result(out, feature = feature)
   })
@@ -557,7 +547,7 @@ meringue_run_cross_correlation_matrix <- function(expr, weight, features) {
       message_type = "error"
     )
   }
-  spatial_cross_cor <- get_namespace_fun("MERINGUE", "spatialCrossCorMatrix")
+  spatial_cross_cor <- meringue_get_fun("spatialCrossCorMatrix")
   scc <- spatial_cross_cor(
     mat = expr[features, , drop = FALSE],
     weight = weight
@@ -593,7 +583,7 @@ meringue_run_cross_correlation_tests <- function(
   ncores = 1,
   test_params = list()
 ) {
-  cross_test <- get_namespace_fun("MERINGUE", "spatialCrossCorTest")
+  cross_test <- meringue_get_fun("spatialCrossCorTest")
   vapply(seq_len(nrow(result)), function(i) {
     args <- utils::modifyList(
       list(
@@ -651,7 +641,7 @@ meringue_run_modules <- function(
     module_params
   )
   out <- tryCatch(
-    do.call(get_namespace_fun("MERINGUE", "groupSigSpatialPatterns"), args),
+    do.call(meringue_get_fun("groupSigSpatialPatterns"), args),
     error = function(e) {
       log_message(
         "{.pkg MERINGUE} module analysis failed: {.val {conditionMessage(e)}}",
@@ -740,6 +730,31 @@ meringue_empty_modules <- function() {
     module_size = integer(),
     rank = integer(),
     stringsAsFactors = FALSE
+  )
+}
+
+meringue_require_package <- function(pkg) {
+  install_spec <- if (identical(pkg, "MERINGUE")) "JEFworks-Lab/MERINGUE" else pkg
+  status <- tryCatch(check_r(install_spec, verbose = FALSE), error = function(e) FALSE)
+  if (!isTRUE(unname(unlist(status))[1])) {
+    log_message(
+      "Please install required package before running {.fn RunMERINGUE}: {.val {pkg}}",
+      message_type = "error"
+    )
+  }
+  invisible(TRUE)
+}
+
+meringue_get_fun <- function(fun) {
+  meringue_require_package("MERINGUE")
+  tryCatch(
+    get_namespace_fun("MERINGUE", fun),
+    error = function(e) {
+      log_message(
+        "{.pkg MERINGUE} does not export required function {.fn {fun}}",
+        message_type = "error"
+      )
+    }
   )
 }
 

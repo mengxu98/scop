@@ -129,13 +129,15 @@ SpatialSpotPlot(
     coord.cols = c("x", "y")
   )
 
-data(panc8_sub)
+data(pancreas_sub)
+features_use <- head(intersect(rownames(spatial), rownames(pancreas_sub)), 300)
 spatial <- RunCARD(
   spatial,
-  reference = panc8_sub,
-  reference_label = "celltype",
+  reference = pancreas_sub,
+  reference_label = "CellType",
   assay = "Spatial",
   reference_assay = "RNA",
+  features = features_use,
   verbose = FALSE
 )
 }

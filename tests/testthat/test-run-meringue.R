@@ -17,7 +17,7 @@ make_meringue_seurat <- function() {
   srt
 }
 
-mock_meringue_function <- function(fun) {
+mock_meringue_get_fun <- function(fun) {
   switch(fun,
     getSpatialNeighbors = function(pos, filterDist = NA, binary = TRUE, verbose = FALSE) {
       out <- matrix(1, nrow = nrow(pos), ncol = nrow(pos))
@@ -62,8 +62,8 @@ mock_meringue_function <- function(fun) {
 
 test_that("RunMERINGUE stores normalized autocorrelation, cross-correlation, and module tables", {
   testthat::local_mocked_bindings(
-    check_r = function(...) list(MERINGUE = TRUE),
-    get_namespace_fun = function(pkg, fun) mock_meringue_function(fun),
+    meringue_require_package = function(pkg) invisible(TRUE),
+    meringue_get_fun = mock_meringue_get_fun,
     meringue_package_version = function(pkg) "mock"
   )
 
@@ -101,8 +101,8 @@ test_that("RunMERINGUE stores normalized autocorrelation, cross-correlation, and
 
 test_that("MERINGUE retains permutation p values when permutations are requested", {
   testthat::local_mocked_bindings(
-    check_r = function(...) list(MERINGUE = TRUE),
-    get_namespace_fun = function(pkg, fun) mock_meringue_function(fun),
+    meringue_require_package = function(pkg) invisible(TRUE),
+    meringue_get_fun = mock_meringue_get_fun,
     meringue_package_version = function(pkg) "mock"
   )
 
@@ -135,8 +135,8 @@ test_that("MERINGUE module output with groups is normalized", {
 
 test_that("pairwise_features controls cross-correlation scope without implicit O(n^2) expansion", {
   testthat::local_mocked_bindings(
-    check_r = function(...) list(MERINGUE = TRUE),
-    get_namespace_fun = function(pkg, fun) mock_meringue_function(fun),
+    meringue_require_package = function(pkg) invisible(TRUE),
+    meringue_get_fun = mock_meringue_get_fun,
     meringue_package_version = function(pkg) "mock"
   )
 
@@ -160,8 +160,8 @@ test_that("pairwise_features controls cross-correlation scope without implicit O
 
 test_that("RunMERINGUE can compute optional cross-correlation p values", {
   testthat::local_mocked_bindings(
-    check_r = function(...) list(MERINGUE = TRUE),
-    get_namespace_fun = function(pkg, fun) mock_meringue_function(fun),
+    meringue_require_package = function(pkg) invisible(TRUE),
+    meringue_get_fun = mock_meringue_get_fun,
     meringue_package_version = function(pkg) "mock"
   )
 
@@ -181,8 +181,8 @@ test_that("RunMERINGUE can compute optional cross-correlation p values", {
 
 test_that("RunMERINGUE top features are directly plottable with SpatialSpotPlot", {
   testthat::local_mocked_bindings(
-    check_r = function(...) list(MERINGUE = TRUE),
-    get_namespace_fun = function(pkg, fun) mock_meringue_function(fun),
+    meringue_require_package = function(pkg) invisible(TRUE),
+    meringue_get_fun = mock_meringue_get_fun,
     meringue_package_version = function(pkg) "mock"
   )
 

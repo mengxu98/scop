@@ -28,7 +28,10 @@
 #' @param coord.cols Metadata coordinate columns used by the native `"cpp"`
 #' backend when no image coordinates are available.
 #' @param coordinate_space Coordinate system used by the native distance
-#'   calculations.
+#' calculations. The default is raw acquisition coordinates, so `start`,
+#' `end`, trajectory positions, widths, and native distances share raw
+#' coordinate units. Use `"legacy_display"` explicitly for pre-0.9.0 display
+#' coordinates. SPATA2-backed runs retain backend-native units.
 #' @param trajectory_id,start,end,traj_df,width Trajectory setup passed to
 #' `SPATA2::addSpatialTrajectory()` and `SPATA2::spatialTrajectoryScreening()`.
 #' @param annotation_ids Existing SPATA2 spatial annotation ids. If `NULL`,
@@ -135,7 +138,7 @@ RunSpatialGradientFeatures <- function(
   set_variable_features = FALSE,
   store_results = TRUE,
   verbose = TRUE,
-  coordinate_space = c("legacy_display", "raw"),
+  coordinate_space = c("raw", "legacy_display"),
   ...
 ) {
   if (!inherits(srt, "Seurat")) {
@@ -180,17 +183,11 @@ RunSpatialGradientFeatures <- function(
     verbose = verbose
   )
 
-  expr <- if (identical(backend, "cpp")) {
-    GetAssayData5(srt, assay = assay, layer = layer)
-  } else {
-    NULL
-  }
   variables <- sgf_resolve_variables(
     srt = srt,
     assay = assay,
     layer = layer,
-    variables = variables,
-    expr = expr
+    variables = variables
   )
   result_name <- result_name %||% paste0(reference, "_", format(Sys.time(), "%Y%m%d%H%M%S"))
 
@@ -200,7 +197,6 @@ RunSpatialGradientFeatures <- function(
       reference = reference,
       assay = assay,
       layer = layer,
-      expr = expr,
       variables = variables,
       image = image,
       coord.cols = coord.cols,
@@ -242,19 +238,7 @@ RunSpatialGradientFeatures <- function(
       )
     )
   } else {
-    spata2_status <- tryCatch(
-      check_r("theMILOlab/SPATA2", verbose = FALSE),
-      error = function(e) FALSE
-    )
-    if (!isTRUE(unname(spata2_status)[[1L]])) {
-      log_message(
-        paste(
-          "Please install SPATA2 before running {.fn RunSpatialGradientFeatures}.",
-          "Official installation uses {.code remotes::install_github('theMILOlab/SPATA2')}."
-        ),
-        message_type = "error"
-      )
-    }
+    sgf_require_spata2()
     if (is.null(spata_object)) {
       resolved_image <- spatial_image_resolve(
         srt = srt,
@@ -600,10 +584,7 @@ SpatialGradientPlot <- function(
     ))
   }
 
-  patchwork_status <- tryCatch(check_r("patchwork", verbose = FALSE), error = function(e) FALSE)
-  if (!isTRUE(unname(patchwork_status)[[1L]])) {
-    log_message("Please install {.pkg patchwork} before creating a combined plot", message_type = "error")
-  }
+  sgf_require_package("patchwork")
   surface <- sgf_surface_plot(
     srt = srt,
     result = result,
@@ -641,31 +622,82 @@ SpatialGradientPlot <- function(
     nrow = nrow,
     ncol = ncol
   )
-  patchwork_status <- tryCatch(check_r("patchwork", verbose = FALSE), error = function(e) FALSE)
-  if (!isTRUE(unname(patchwork_status)[[1L]])) {
-    log_message("Please install {.pkg patchwork} before creating a combined plot", message_type = "error")
-  }
+  sgf_require_package("patchwork")
   wrap_plots <- get_namespace_fun("patchwork", "wrap_plots")
   wrap_plots(surface, line, ncol = 1)
 }
 
+sgf_require_package <- function(pkg) {
+  repo <- if (identical(pkg, "SPATA2")) "theMILOlab/SPATA2" else pkg
+  status <- tryCatch(check_r(repo, verbose = FALSE), error = function(e) FALSE)
+  if (!isTRUE(unname(unlist(status))[1])) {
+    log_message(
+      "Please install required package before running this function: {.val {pkg}}",
+      message_type = "error"
+    )
+  }
+  invisible(TRUE)
+}
+
+sgf_spata2_pkg <- function() {
+  "SPATA2"
+}
+
+sgf_require_spata2 <- function() {
+  if (!sgf_spata2_available()) {
+    log_message(
+      paste(
+        "Please install SPATA2 before running spatial gradient screening.",
+        "Official installation uses devtools::install_github('theMILOlab/SPATA2')."
+      ),
+      message_type = "error"
+    )
+  }
+  invisible(TRUE)
+}
+
+sgf_spata2_available <- function() {
+  status <- tryCatch(
+    check_r("theMILOlab/SPATA2", verbose = FALSE),
+    error = function(e) FALSE
+  )
+  isTRUE(unname(unlist(status))[1])
+}
+
+sgf_spata_fun <- function(fun, required = TRUE) {
+  pkg <- sgf_spata2_pkg()
+  if (!sgf_spata2_available()) {
+    if (isTRUE(required)) {
+      sgf_require_spata2()
+    }
+    return(NULL)
+  }
+  out <- tryCatch(get_namespace_fun(pkg, fun), error = function(e) NULL)
+  if (is.null(out) && isTRUE(required)) {
+    log_message(
+      "Installed SPATA2 does not provide required function {.fn {fun}}",
+      message_type = "error"
+    )
+  }
+  out
+}
+
 sgf_try_spata_call <- function(fun, args, required = FALSE) {
-  check_r("theMILOlab/SPATA2", verbose = FALSE)
-  f <- tryCatch(get_namespace_fun("SPATA2", fun), error = function(e) NULL)
+  f <- sgf_spata_fun(fun, required = required)
   if (is.null(f)) {
     return(NULL)
   }
   tryCatch(do.call(f, args), error = function(e) NULL)
 }
 
-sgf_resolve_variables <- function(srt, assay, layer, variables = NULL, expr = NULL) {
+sgf_resolve_variables <- function(srt, assay, layer, variables = NULL) {
   if (is.null(variables)) {
     variables <- srt@misc[["SpatialVariableFeatures"]]
   }
   if (is.null(variables) || length(variables) == 0L) {
     variables <- SeuratObject::VariableFeatures(srt, assay = assay)
   }
-  expr <- expr %||% GetAssayData5(srt, assay = assay, layer = layer)
+  expr <- GetAssayData5(srt, assay = assay, layer = layer)
   if (is.null(variables) || length(variables) == 0L) {
     variables <- rownames(expr)
   }
@@ -702,7 +734,7 @@ sgf_as_spata2 <- function(
     transfer_dim_red = FALSE,
     verbose = verbose
   ))
-  do.call(get_namespace_fun("SPATA2", "asSPATA2"), args)
+  do.call(sgf_spata_fun("asSPATA2"), args)
 }
 
 sgf_run_cpp_gradient <- function(
@@ -711,7 +743,6 @@ sgf_run_cpp_gradient <- function(
   assay,
   layer,
   variables,
-  expr = NULL,
   image,
   coord.cols,
   coordinate_space,
@@ -763,7 +794,7 @@ sgf_run_cpp_gradient <- function(
     log_message("At least three spots with finite coordinates are required", message_type = "error")
   }
 
-  expr <- expr %||% GetAssayData5(srt, assay = assay, layer = layer)
+  expr <- GetAssayData5(srt, assay = assay, layer = layer)
   expr <- expr[variables, spots, drop = FALSE]
   if (!methods::is(expr, "dgCMatrix")) {
     expr <- methods::as(Matrix::Matrix(expr, sparse = TRUE), "dgCMatrix")
@@ -824,7 +855,7 @@ sgf_run_cpp_gradient <- function(
   )
 }
 
-sgf_cpp_coords <- function(srt, image, coord.cols, coordinate_space = "legacy_display") {
+sgf_cpp_coords <- function(srt, image, coord.cols, coordinate_space = "raw") {
   if (length(coord.cols) < 2L) {
     log_message("{.arg coord.cols} must contain at least two coordinate columns", message_type = "error")
   }
@@ -968,7 +999,7 @@ sgf_prepare_trajectory <- function(object, trajectory_id, start, end, traj_df, w
     end = end,
     overwrite = TRUE
   ))
-  do.call(get_namespace_fun("SPATA2", "addSpatialTrajectory"), args)
+  do.call(sgf_spata_fun("addSpatialTrajectory"), args)
 }
 
 sgf_prepare_annotations <- function(
@@ -985,7 +1016,7 @@ sgf_prepare_annotations <- function(
     return(list(object = object, annotation_ids = as.character(annotation_ids)))
   }
   if (!is.null(annotation.by) && !is.null(annotation.groups)) {
-    object <- do.call(get_namespace_fun("SPATA2", "createGroupAnnotations"), sgf_drop_nulls(list(
+    object <- do.call(sgf_spata_fun("createGroupAnnotations"), sgf_drop_nulls(list(
       object = object,
       grouping = annotation.by,
       group = annotation.groups,
@@ -1001,7 +1032,7 @@ sgf_prepare_annotations <- function(
   }
   if (!is.null(annotation.variable) && !is.null(annotation.threshold)) {
     annotation.threshold <- sgf_format_annotation_threshold(annotation.threshold)
-    object <- do.call(get_namespace_fun("SPATA2", "createNumericAnnotations"), sgf_drop_nulls(list(
+    object <- do.call(sgf_spata_fun("createNumericAnnotations"), sgf_drop_nulls(list(
       object = object,
       variable = annotation.variable,
       threshold = annotation.threshold,
@@ -1107,7 +1138,7 @@ sgf_run_trajectory_screening <- function(
     ),
     list(...)
   ))
-  do.call(get_namespace_fun("SPATA2", "spatialTrajectoryScreening"), args)
+  do.call(sgf_spata_fun("spatialTrajectoryScreening"), args)
 }
 
 sgf_run_annotation_screening <- function(
@@ -1152,7 +1183,7 @@ sgf_run_annotation_screening <- function(
     ),
     list(...)
   ))
-  do.call(get_namespace_fun("SPATA2", "spatialAnnotationScreening"), args)
+  do.call(sgf_spata_fun("spatialAnnotationScreening"), args)
 }
 
 sgf_normalize_screening_result <- function(
@@ -1260,7 +1291,7 @@ sgf_extract_screening_df <- function(
 }
 
 sgf_try_spata_candidates <- function(fun, candidates) {
-  f <- get_namespace_fun("SPATA2", fun)
+  f <- sgf_spata_fun(fun, required = FALSE)
   if (is.null(f)) {
     return(data.frame())
   }
@@ -1713,7 +1744,7 @@ sgf_gradient_colors <- function(palette = "Spectral", palcolor = NULL) {
 
 sgf_parameters_df <- function(parameters) {
   parameters$scop_version <- sgf_package_version("scop")
-  parameters$spata2_version <- sgf_package_version("SPATA2")
+  parameters$spata2_version <- sgf_package_version(sgf_spata2_pkg())
   data.frame(
     key = names(parameters),
     value = vapply(parameters, sgf_collapse_value, character(1)),

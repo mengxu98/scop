@@ -11,7 +11,7 @@
 #' @md
 #' @inheritParams RunRCTD
 #' @param layer Assay layer used as the spatial expression source.
-#' @param rctd_result Optional `spacexr` RCTD object. If `NULL`,
+#' @param rctd_result Optional old-api `spacexr` RCTD object. If `NULL`,
 #' `srt@tools[["RCTD"]]$object` from [RunRCTD()] is used.
 #' @param explanatory.variable Named numeric vector used by
 #' `spacexr::run.CSIDE.single()`. Names must match spatial spot names.
@@ -81,7 +81,6 @@
 #'   coord.cols = c("x", "y")
 #' )
 #'
-#' if (FALSE) { # requires a spacexr RCTD result from RunRCTD()
 #'   spatial <- RunCSIDE(
 #'     spatial,
 #'     group.by = "region",
@@ -89,7 +88,6 @@
 #'     gene_threshold = 0.00005,
 #'     cell_type_threshold = 125
 #'   )
-#' }
 RunCSIDE <- function(
   srt,
   rctd_result = NULL,
@@ -150,17 +148,7 @@ RunCSIDE <- function(
     region_list = region_list,
     barcodes = barcodes
   )
-  check_r("dmcable/spacexr", verbose = FALSE)
-  backend_fun <- get_namespace_fun(
-    "spacexr",
-    switch(
-      mode,
-      single = "run.CSIDE.single",
-      regions = "run.CSIDE.regions",
-      general = "run.CSIDE",
-      intercept = "run.CSIDE.intercept"
-    )
-  )
+  backend_fun <- cside_get_backend_fun(mode)
 
   inputs <- cside_prepare_backend_inputs(
     srt = srt,
@@ -325,7 +313,7 @@ cside_resolve_rctd_result <- function(srt, rctd_result = NULL) {
     log_message(
       paste(
         "No RCTD object was supplied.",
-        "Run {.fn RunRCTD} first,",
+        "Run {.fn RunRCTD} with an old-api {.pkg spacexr} backend first,",
         "or provide {.arg rctd_result} explicitly."
       ),
       message_type = "error"
@@ -338,7 +326,9 @@ cside_validate_rctd_result <- function(rctd_result) {
   if (!inherits(rctd_result, "RCTD")) {
     log_message(
       paste(
-        "{.arg rctd_result} must be a {.pkg spacexr} {.cls RCTD} object"
+        "{.arg rctd_result} must be an old-api {.pkg spacexr} {.cls RCTD}",
+        "object. C-SIDE is not available for the Bioconductor",
+        "{.pkg spacexr} createRctd/runRctd result object."
       ),
       message_type = "error"
     )
@@ -603,6 +593,30 @@ cside_run_backend <- function(
     )
   }
   do.call(backend_fun, c(base_args, extra_args))
+}
+
+cside_get_backend_fun <- function(mode) {
+  check_r("dmcable/spacexr", verbose = FALSE)
+  fun <- switch(
+    mode,
+    single = "run.CSIDE.single",
+    regions = "run.CSIDE.regions",
+    general = "run.CSIDE",
+    intercept = "run.CSIDE.intercept"
+  )
+  tryCatch(
+    get_namespace_fun("spacexr", fun),
+    error = function(e) {
+      log_message(
+        paste(
+          "{.pkg spacexr} does not expose {.fn {fun}}.",
+          "Install the original C-SIDE backend with",
+          "{.code thisutils::check_r('dmcable/spacexr')}."
+        ),
+        message_type = "error"
+      )
+    }
+  )
 }
 
 cside_extract_result <- function(result, mode, features = NULL) {

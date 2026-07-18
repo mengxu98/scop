@@ -35,9 +35,9 @@
 #' matrices; this defaults to `TRUE` so bundled example data with scaled
 #' non-integer reference counts can run directly.
 #' @param create_rctd_params Additional parameters passed to
-#' `spacexr::create.RCTD()`.
+#' `spacexr::createRctd()` or `spacexr::create.RCTD()`.
 #' @param run_rctd_params Additional parameters passed to
-#' `spacexr::run.RCTD()`.
+#' `spacexr::runRctd()` or `spacexr::run.RCTD()`.
 #' @param ... Additional parameters passed to the RCTD run step.
 #'
 #' @return A `Seurat` object with RCTD proportion columns in metadata and
@@ -78,13 +78,13 @@
 #'     coord.cols = c("x", "y")
 #'   )
 #'
-#' data(panc8_sub)
-#' features_use <- head(intersect(rownames(spatial), rownames(panc8_sub)), 300)
+#' data(pancreas_sub)
+#' features_use <- head(intersect(rownames(spatial), rownames(pancreas_sub)), 300)
 #'
 #' spatial <- RunRCTD(
 #'   srt = spatial,
-#'   reference = panc8_sub,
-#'   reference_label = "celltype",
+#'   reference = pancreas_sub,
+#'   reference_label = "CellType",
 #'   assay = "Spatial",
 #'   reference_assay = "RNA",
 #'   layer = "counts",
@@ -92,6 +92,7 @@
 #'   features = features_use,
 #'   rctd_mode = "full",
 #'   max_cores = 1,
+#'   min_cells = 5,
 #'   prefix = "RCTD"
 #' )
 #'
@@ -160,11 +161,7 @@ RunRCTD <- function(
   rctd_assert_scalar_string(tool_name, "tool_name")
   max_cores <- rctd_check_max_cores(max_cores)
   min_cells <- rctd_check_min_cells(min_cells)
-  if (
-    length(round_counts) != 1L ||
-      !is.logical(round_counts) ||
-      is.na(round_counts)
-  ) {
+  if (length(round_counts) != 1L || !is.logical(round_counts) || is.na(round_counts)) {
     log_message(
       "{.arg round_counts} must be TRUE or FALSE",
       message_type = "error"
@@ -276,10 +273,7 @@ RunRCTD <- function(
     )
     ref_counts <- ref_counts[, names(labels), drop = FALSE]
     ref_numi <- ref_numi[names(labels)]
-    labels <- factor(
-      as.character(labels),
-      levels = unique(as.character(labels))
-    )
+    labels <- factor(as.character(labels), levels = unique(as.character(labels)))
     names(labels) <- colnames(ref_counts)
     label_map <- rctd_backend_label_map(labels)
   }
@@ -374,9 +368,9 @@ RunRCTD <- function(
         layer = layer,
         reference_layer = reference_layer,
         reference_label = reference_label,
-        image = image,
-        coord.cols = coord.cols,
-        coordinate_space = coordinate_space,
+          image = image,
+          coord.cols = coord.cols,
+          coordinate_space = coordinate_space,
         rctd_mode = rctd_mode,
         max_cores = max_cores,
         min_cells = min_cells,
@@ -491,12 +485,7 @@ rctd_filter_labels_by_min_cells <- function(labels, min_cells, verbose = TRUE) {
     stringsAsFactors = FALSE
   )
   if (length(drop_types) > 0L) {
-    drop_summary <- paste0(
-      drop_types,
-      "=",
-      unname(label_counts[drop_types]),
-      collapse = ", "
-    )
+    drop_summary <- paste0(drop_types, "=", unname(label_counts[drop_types]), collapse = ", ")
     log_message(
       "Drop reference cell types with fewer than {.val {min_cells}} cells: {.val {drop_summary}}",
       verbose = verbose
@@ -642,7 +631,139 @@ rctd_run_spacexr <- function(
   create_rctd_params,
   run_rctd_params
 ) {
-  check_r("dmcable/spacexr", verbose = FALSE)
+  rctd_require_namespaces("spacexr")
+  exports <- getNamespaceExports("spacexr")
+  spec <- spatial_backend_registry()[["spacexr"]]
+  selected_api <- spatial_backend_required_symbols(spec, exports = exports)
+  new_api <- spec$symbol_sets[["new"]]
+  legacy_api <- spec$symbol_sets[["legacy"]]
+
+  if (all(new_api %in% exports) && identical(selected_api, new_api)) {
+    return(rctd_run_spacexr_new(
+      st_counts = st_counts,
+      coords = coords,
+      st_numi = st_numi,
+      ref_counts = ref_counts,
+      ref_labels = ref_labels,
+      ref_numi = ref_numi,
+      rctd_mode = rctd_mode,
+      max_cores = max_cores,
+      create_rctd_params = create_rctd_params,
+      run_rctd_params = run_rctd_params
+    ))
+  }
+  if (all(legacy_api %in% exports) && identical(selected_api, legacy_api)) {
+    return(rctd_run_spacexr_old(
+      st_counts = st_counts,
+      coords = coords,
+      st_numi = st_numi,
+      ref_counts = ref_counts,
+      ref_labels = ref_labels,
+      ref_numi = ref_numi,
+      rctd_mode = rctd_mode,
+      max_cores = max_cores,
+      create_rctd_params = create_rctd_params,
+      run_rctd_params = run_rctd_params
+    ))
+  }
+
+  log_message(
+    "{.pkg spacexr} does not expose a supported RCTD API",
+    message_type = "error"
+  )
+}
+
+rctd_run_spacexr_new <- function(
+  st_counts,
+  coords,
+  st_numi,
+  ref_counts,
+  ref_labels,
+  ref_numi,
+  rctd_mode,
+  max_cores,
+  create_rctd_params,
+  run_rctd_params
+) {
+  rctd_require_namespaces(c("SpatialExperiment", "SummarizedExperiment", "S4Vectors"))
+  spatial_coldata <- S4Vectors::DataFrame(nUMI = st_numi)
+  rownames(spatial_coldata) <- colnames(st_counts)
+  reference_coldata <- S4Vectors::DataFrame(cell_type = ref_labels, nUMI = ref_numi)
+  rownames(reference_coldata) <- colnames(ref_counts)
+  spatial_experiment <- get_namespace_fun("SpatialExperiment", "SpatialExperiment")
+  spatial_spe <- spatial_experiment(
+    assays = list(counts = st_counts),
+    colData = spatial_coldata,
+    spatialCoords = as.matrix(coords)
+  )
+  reference_se <- SummarizedExperiment::SummarizedExperiment(
+    assays = list(counts = ref_counts),
+    colData = reference_coldata
+  )
+  create_rctd <- get_namespace_fun("spacexr", "createRctd")
+  run_rctd <- get_namespace_fun("spacexr", "runRctd")
+  create_args <- c(
+    list(spatial_spe, reference_se),
+    utils::modifyList(list(cell_type_col = "cell_type"), create_rctd_params)
+  )
+  rctd_data <- do.call(create_rctd, create_args)
+  run_args <- c(
+    list(rctd_data),
+    utils::modifyList(
+      list(rctd_mode = rctd_mode, max_cores = max_cores),
+      run_rctd_params
+    )
+  )
+  result <- do.call(run_rctd, run_args)
+  weights <- SummarizedExperiment::assay(result, "weights")
+  metadata <- as.data.frame(SummarizedExperiment::colData(result))
+  list(
+    api = "createRctd/runRctd",
+    weights = weights,
+    metadata = metadata,
+    object = result
+  )
+}
+
+rctd_require_namespaces <- function(pkgs) {
+  install_specs <- pkgs
+  install_specs[install_specs == "spacexr"] <- "dmcable/spacexr"
+  available <- unlist(
+    check_r(install_specs, verbose = FALSE),
+    use.names = TRUE
+  )
+  if (
+    !is.logical(available) || length(available) != length(pkgs) ||
+      is.null(names(available)) || anyNA(available) ||
+      !setequal(names(available), pkgs)
+  ) {
+    log_message(
+      "Package availability checks returned an invalid result for {.fn RunRCTD}",
+      message_type = "error"
+    )
+  }
+  available <- available[match(pkgs, names(available))]
+  if (!all(available)) {
+    log_message(
+      "Please install required package(s) before running {.fn RunRCTD}: {.val {paste(pkgs[!available], collapse = ', ')}}",
+      message_type = "error"
+    )
+  }
+  invisible(TRUE)
+}
+
+rctd_run_spacexr_old <- function(
+  st_counts,
+  coords,
+  st_numi,
+  ref_counts,
+  ref_labels,
+  ref_numi,
+  rctd_mode,
+  max_cores,
+  create_rctd_params,
+  run_rctd_params
+) {
   spatial_rna <- get_namespace_fun("spacexr", "SpatialRNA")
   reference_fun <- get_namespace_fun("spacexr", "Reference")
   create_rctd <- get_namespace_fun("spacexr", "create.RCTD")
@@ -678,16 +799,8 @@ rctd_run_spacexr <- function(
 
 rctd_orient_weights <- function(weights, spot_ids, label_map) {
   mat <- as.matrix(weights)
-  rn_match <- if (is.null(rownames(mat))) {
-    0L
-  } else {
-    sum(rownames(mat) %in% spot_ids)
-  }
-  cn_match <- if (is.null(colnames(mat))) {
-    0L
-  } else {
-    sum(colnames(mat) %in% spot_ids)
-  }
+  rn_match <- if (is.null(rownames(mat))) 0L else sum(rownames(mat) %in% spot_ids)
+  cn_match <- if (is.null(colnames(mat))) 0L else sum(colnames(mat) %in% spot_ids)
   if (cn_match > rn_match) {
     mat <- t(mat)
   }
