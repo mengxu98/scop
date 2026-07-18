@@ -124,7 +124,13 @@ RunMERINGUE <- function(
     message_type = "running",
     verbose = verbose
   )
-  check_r("JEFworks-Lab/MERINGUE", verbose = FALSE)
+  meringue_status <- check_r("JEFworks-Lab/MERINGUE", verbose = FALSE)
+  if (!isTRUE(unname(unlist(meringue_status))[1L])) {
+    log_message(
+      "RunMERINGUE requires the optional {.pkg MERINGUE} package. Install it with {.code thisutils::check_r('JEFworks-Lab/MERINGUE')}.",
+      message_type = "error"
+    )
+  }
   set.seed(seed)
 
   inputs <- meringue_prepare_inputs(
