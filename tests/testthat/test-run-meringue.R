@@ -216,7 +216,12 @@ test_that("RunMERINGUE top features are directly plottable with SpatialSpotPlot"
 })
 
 test_that("RunMERINGUE has a clear optional dependency error", {
-  testthat::skip_if(requireNamespace("MERINGUE", quietly = TRUE))
+  testthat::local_mocked_bindings(
+    check_r = function(packages, ...) {
+      expect_identical(packages, "JEFworks-Lab/MERINGUE")
+      stats::setNames(FALSE, "MERINGUE")
+    }
+  )
 
   expect_error(
     RunMERINGUE(
