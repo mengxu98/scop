@@ -1,17 +1,19 @@
 #' @title Plot benchmark metrics
 #'
 #' @description
-#' Visualize benchmark results stored in a `Seurat` object or a summary
-#' `data.frame`. Per-cell metrics such as LISI are shown as feature plots and/or
-#' boxplots. Summary metrics such as integration or mapping benchmark scores are
-#' shown as barplots or a `funkyheatmap`.
+#' Visualize benchmark results stored in a `Seurat` object, a summary
+#' `data.frame`, or a `scop_benchmark` object created by [RunBenchmark()].
+#' Spatial benchmark results default to a publication-oriented overview that
+#' pairs clustering quality with runtime and peak-memory efficiency. Per-cell
+#' metrics such as LISI remain available as feature plots and boxplots.
 #'
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams CellDimPlot
 #' @param srt A `Seurat` object.
-#' @param data Optional summary benchmark `data.frame` containing at least
-#' `metric` and `value`, and optionally `method` and `workflow`.
+#' @param data Optional `scop_benchmark` object or summary benchmark
+#' `data.frame` containing at least `metric` and `value`, and optionally
+#' `method`, `workflow`, and `direction`.
 #' @param features Metadata columns containing per-cell benchmark scores.
 #' Default is `NULL`.
 #' @param metrics One or more summary metric names to visualize. Default is
@@ -23,8 +25,18 @@
 #' @param reduction Dimensional reduction used for per-cell feature plots.
 #' Default is `NULL`, which uses the reduction stored in `tool_name` when
 #' available, otherwise [DefaultReduction()].
-#' @param plot_type Plot type. One of `"auto"`, `"feature"`, `"boxplot"`,
-#' `"bar"`, or `"funkyheatmap"`.
+#' @param plot_type Plot type. `"overview"`, `"quality"`, `"efficiency"`, and
+#' `"heatmap"` consume `scop_benchmark` results. Existing `"feature"`,
+#' `"boxplot"`, `"bar"`, and `"funkyheatmap"` modes remain supported.
+#' @param sort_by Method ordering for spatial benchmark plots. `"quality"`
+#' sorts by the mean selected quality metric; other choices sort by method,
+#' runtime, or peak memory.
+#' @param show_values Whether to print raw metric values on quality and heatmap
+#' panels.
+#' @param show_status Whether the overview should add a status strip for
+#' failed, unavailable, or timed-out methods.
+#' @param resource_scale Resource-axis transformation. `"auto"` independently
+#' uses log10 for runtime or memory when positive values span at least tenfold.
 #' @param plot_boxplot Whether to add the summary boxplot when per-cell metrics
 #' are shown. Default is `TRUE`.
 #' @param boxplot_jitter Whether to overlay jittered points on the boxplot.
@@ -65,7 +77,14 @@ BenchmarkPlot <- function(
   metrics = NULL,
   tool_name = NULL,
   reduction = NULL,
-  plot_type = c("auto", "feature", "boxplot", "bar", "funkyheatmap"),
+  plot_type = c(
+    "auto", "overview", "quality", "efficiency", "heatmap",
+    "feature", "boxplot", "bar", "funkyheatmap"
+  ),
+  sort_by = c("quality", "method", "runtime", "memory"),
+  show_values = TRUE,
+  show_status = TRUE,
+  resource_scale = c("auto", "linear", "log10"),
   plot_boxplot = TRUE,
   boxplot_jitter = FALSE,
   combine = TRUE,
@@ -82,6 +101,42 @@ BenchmarkPlot <- function(
   ...
 ) {
   plot_type <- match.arg(plot_type)
+  sort_by <- match.arg(sort_by)
+  resource_scale <- match.arg(resource_scale)
+  benchmark_assert_flag(show_values, "show_values")
+  benchmark_assert_flag(show_status, "show_status")
+
+  benchmark_result <- if (inherits(data, "scop_benchmark")) data else NULL
+  if (!is.null(benchmark_result)) {
+    if (identical(plot_type, "auto")) plot_type <- "overview"
+    if (plot_type %in% c("overview", "quality", "efficiency", "heatmap")) {
+      return(benchmark_result_plot(
+        result = benchmark_result,
+        plot_type = plot_type,
+        metrics = metrics,
+        sort_by = sort_by,
+        show_values = show_values,
+        show_status = show_status,
+        resource_scale = resource_scale,
+        palette = palette,
+        palcolor = palcolor,
+        theme_use = theme_use,
+        theme_args = theme_args
+      ))
+    }
+    if (plot_type %in% c("feature", "boxplot")) {
+      log_message(
+        "{.arg plot_type = '{plot_type}'} requires per-cell metadata, not a {.cls scop_benchmark}",
+        message_type = "error"
+      )
+    }
+    data <- benchmark_result$metrics
+  } else if (plot_type %in% c("overview", "quality", "efficiency", "heatmap")) {
+    log_message(
+      "{.arg plot_type = '{plot_type}'} requires a {.cls scop_benchmark} object",
+      message_type = "error"
+    )
+  }
 
   if (is.null(data)) {
     if (!inherits(srt, "Seurat")) {
@@ -151,6 +206,530 @@ BenchmarkPlot <- function(
     verbose = verbose,
     ...
   )
+}
+
+benchmark_result_plot <- function(
+  result,
+  plot_type,
+  metrics,
+  sort_by,
+  show_values,
+  show_status,
+  resource_scale,
+  palette,
+  palcolor,
+  theme_use,
+  theme_args
+) {
+  quality_metrics <- benchmark_plot_quality_metrics(result, metrics)
+  method_levels <- benchmark_plot_method_levels(
+    result = result,
+    metrics = quality_metrics,
+    sort_by = sort_by
+  )
+  if (identical(plot_type, "quality")) {
+    return(benchmark_quality_plot(
+      result, quality_metrics, method_levels, show_values,
+      palette, palcolor, theme_use, theme_args
+    ))
+  }
+  if (identical(plot_type, "efficiency")) {
+    return(benchmark_efficiency_plot(
+      result, quality_metrics, method_levels, resource_scale,
+      theme_use, theme_args
+    ))
+  }
+  if (identical(plot_type, "heatmap")) {
+    return(benchmark_metric_heatmap(
+      result, quality_metrics, method_levels, show_values,
+      theme_use, theme_args
+    ))
+  }
+
+  quality <- benchmark_quality_plot(
+    result, quality_metrics, method_levels, show_values,
+    palette, palcolor, theme_use, theme_args
+  )
+  efficiency <- benchmark_efficiency_plot(
+    result, quality_metrics, method_levels, resource_scale,
+    theme_use, theme_args
+  )
+  overview <- patchwork::wrap_plots(
+    quality, efficiency,
+    nrow = 1,
+    widths = c(1.2, 1)
+  )
+  failed <- result$summary$status != "success"
+  if (isTRUE(show_status) && any(failed)) {
+    status <- benchmark_status_plot(result$summary[failed, , drop = FALSE])
+    overview <- patchwork::wrap_plots(
+      overview, status,
+      ncol = 1,
+      heights = c(4, max(0.7, 0.42 * sum(failed)))
+    )
+  }
+  overview + patchwork::plot_annotation(
+    title = "Spatial clustering benchmark",
+    subtitle = "Agreement: higher is better  |  Runtime and peak memory: lower is better",
+    tag_levels = "a",
+    theme = ggplot2::theme(
+      plot.title = ggplot2::element_text(face = "bold", size = 10),
+      plot.subtitle = ggplot2::element_text(color = "#5F6368", size = 7.5),
+      plot.tag = ggplot2::element_text(face = "bold", size = 8)
+    )
+  )
+}
+
+benchmark_plot_quality_metrics <- function(result, metrics) {
+  available <- c("ARI", "NMI", "purity")
+  selected <- benchmark_resolve_metrics(metrics %||% available)
+  selected <- selected[selected %in% available]
+  if (length(selected) == 0L) {
+    log_message("No quality metrics are available for benchmark plotting", message_type = "error")
+  }
+  selected
+}
+
+benchmark_plot_method_levels <- function(result, metrics, sort_by) {
+  summary <- result$summary
+  quality <- rowMeans(summary[, metrics, drop = FALSE], na.rm = TRUE)
+  quality[!is.finite(quality)] <- -Inf
+  order_index <- switch(sort_by,
+    quality = order(quality, decreasing = TRUE, na.last = TRUE),
+    method = order(tolower(summary$method)),
+    runtime = order(summary$runtime_s, na.last = TRUE),
+    memory = order(summary$peak_memory_mb, na.last = TRUE)
+  )
+  summary$method[order_index]
+}
+
+benchmark_quality_plot <- function(
+  result,
+  metrics,
+  method_levels,
+  show_values,
+  palette,
+  palcolor,
+  theme_use,
+  theme_args
+) {
+  rows <- lapply(metrics, function(metric) {
+    data.frame(
+      method = result$summary$method,
+      metric = metric,
+      value = result$summary[[metric]],
+      status = result$summary$status,
+      stringsAsFactors = FALSE
+    )
+  })
+  data <- do.call(rbind, rows)
+  data$metric <- factor(data$metric, levels = metrics)
+  method_breaks <- seq_along(rev(method_levels))
+  names(method_breaks) <- rev(method_levels)
+  method_labels <- benchmark_plot_method_labels(result, names(method_breaks))
+  metric_offsets <- stats::setNames(
+    seq(-0.22, 0.22, length.out = length(metrics)),
+    metrics
+  )
+  data$method_position <- unname(method_breaks[data$method]) +
+    unname(metric_offsets[as.character(data$metric)])
+  values <- data$value[is.finite(data$value)]
+  lower <- if (length(values) > 0L && min(values) < 0) min(-0.05, min(values) - 0.04) else 0
+  metric_colors <- palette_colors(
+    metrics,
+    palette = palette,
+    palcolor = palcolor
+  )
+  p <- ggplot2::ggplot(
+    data,
+    ggplot2::aes(
+      x = .data[["value"]],
+      y = .data[["method_position"]],
+      color = .data[["metric"]]
+    )
+  ) +
+    ggplot2::geom_vline(
+      xintercept = 0,
+      linewidth = 0.35,
+      color = "#D9DDE3"
+    ) +
+    ggplot2::geom_segment(
+      ggplot2::aes(
+        x = 0,
+        xend = .data[["value"]],
+        yend = .data[["method_position"]]
+      ),
+      linewidth = 0.8,
+      alpha = 0.22,
+      na.rm = TRUE,
+      show.legend = FALSE
+    ) +
+    ggplot2::geom_point(
+      size = 2.8,
+      stroke = 0.25,
+      na.rm = TRUE
+    ) +
+    ggplot2::scale_color_manual(values = metric_colors, drop = FALSE) +
+    ggplot2::scale_x_continuous(
+      limits = c(lower, 1.12),
+      breaks = scales::breaks_width(0.25),
+      expand = ggplot2::expansion(mult = c(0, 0.01))
+    ) +
+    ggplot2::scale_y_continuous(
+      breaks = method_breaks,
+      labels = benchmark_wrap_method(method_labels),
+      expand = ggplot2::expansion(add = 0.55)
+    ) +
+    ggplot2::labs(
+      title = "Clustering agreement",
+      subtitle = paste0("n = ", max(result$summary$n_evaluated, na.rm = TRUE), " aligned spots"),
+      x = "Agreement score (higher is better)",
+      y = NULL,
+      color = NULL
+    ) +
+    do.call(theme_use, theme_args) +
+    benchmark_publication_theme() +
+    ggplot2::theme(
+      panel.grid.major.y = ggplot2::element_blank(),
+      panel.grid.minor = ggplot2::element_blank(),
+      panel.grid.major.x = ggplot2::element_line(color = "#EEF0F3", linewidth = 0.3),
+      axis.line.y = ggplot2::element_blank(),
+      axis.ticks.y = ggplot2::element_blank(),
+      legend.position = "top",
+      legend.justification = "left",
+      legend.box.margin = ggplot2::margin(0, 0, 1, 0),
+      plot.title = ggplot2::element_text(face = "bold", size = 9),
+      plot.subtitle = ggplot2::element_text(color = "#6B7280", size = 7)
+    )
+  if (isTRUE(show_values)) {
+    p <- p + ggplot2::geom_text(
+      ggplot2::aes(label = ifelse(is.finite(.data[["value"]]), sprintf("%.2f", .data[["value"]]), "")),
+      hjust = -0.35,
+      size = 2.4,
+      show.legend = FALSE,
+      na.rm = TRUE
+    )
+  }
+  p + ggplot2::coord_cartesian(clip = "off") +
+    ggplot2::theme(plot.margin = ggplot2::margin(5, 12, 5, 5))
+}
+
+benchmark_efficiency_plot <- function(
+  result,
+  metrics,
+  method_levels,
+  resource_scale,
+  theme_use,
+  theme_args
+) {
+  data <- result$summary
+  data$quality <- rowMeans(data[, metrics, drop = FALSE], na.rm = TRUE)
+  data$quality[!is.finite(data$quality)] <- NA_real_
+  data <- data[
+    data$status == "success" &
+      is.finite(data$runtime_s) & data$runtime_s > 0 &
+      is.finite(data$peak_memory_mb) & data$peak_memory_mb > 0,
+    ,
+    drop = FALSE
+  ]
+  if (nrow(data) == 0L) {
+    return(benchmark_empty_panel(
+      "Computational efficiency",
+      "No successful run has both\nruntime and memory measurements"
+    ))
+  }
+  memory_in_gb <- max(data$peak_memory_mb, na.rm = TRUE) >= 1024
+  if (memory_in_gb) data$memory_display <- data$peak_memory_mb / 1024 else data$memory_display <- data$peak_memory_mb
+  x_log <- benchmark_resource_log(data$runtime_s, resource_scale)
+  y_log <- benchmark_resource_log(data$memory_display, resource_scale)
+  data$method <- factor(data$method, levels = method_levels)
+  data$method_label <- benchmark_wrap_method(
+    benchmark_plot_method_labels(result, as.character(data$method)),
+    width = 18L
+  )
+  data$resource_label <- paste0(
+    data$method_label,
+    "\n",
+    benchmark_format_metric(data$runtime_s, "runtime_s"),
+    " | ",
+    benchmark_format_metric(data$peak_memory_mb, "peak_memory_mb")
+  )
+  p <- ggplot2::ggplot(
+    data,
+    ggplot2::aes(
+      x = .data[["runtime_s"]],
+      y = .data[["memory_display"]],
+      fill = .data[["quality"]]
+    )
+  ) +
+    ggplot2::geom_point(
+      shape = 21,
+      size = 4,
+      stroke = 0.45,
+      color = "#263238"
+    ) +
+    ggrepel::geom_text_repel(
+      ggplot2::aes(label = .data[["resource_label"]]),
+      size = 2.45,
+      color = "#263238",
+      lineheight = 0.95,
+      box.padding = 0.45,
+      point.padding = 0.25,
+      min.segment.length = 0,
+      segment.color = "#AAB2BD",
+      segment.size = 0.25,
+      show.legend = FALSE,
+      max.overlaps = Inf,
+      seed = 1
+    ) +
+    ggplot2::scale_fill_gradientn(
+      colors = c("#DDE7F2", "#7FA9D1", "#174A7E"),
+      limits = c(0, 1),
+      oob = scales::squish,
+      na.value = "#D6D8DC"
+    ) +
+    ggplot2::labs(
+      title = "Computational efficiency",
+      subtitle = "Lower-left is better; labels show resource use",
+      x = if (x_log) "Runtime (s, log10)" else "Runtime (s)",
+      y = paste0("Peak memory (", if (memory_in_gb) "GB" else "MB", if (y_log) ", log10" else "", ")"),
+      fill = "Mean quality"
+    ) +
+    do.call(theme_use, theme_args) +
+    benchmark_publication_theme() +
+    ggplot2::theme(
+      panel.grid = ggplot2::element_blank(),
+      legend.position = "bottom",
+      legend.direction = "horizontal",
+      legend.justification = "left",
+      plot.title = ggplot2::element_text(face = "bold", size = 9),
+      plot.subtitle = ggplot2::element_text(color = "#6B7280", size = 7)
+    )
+  if (x_log) {
+    p <- p + ggplot2::scale_x_log10(
+      labels = scales::label_number(),
+      expand = ggplot2::expansion(mult = c(0.08, 0.18))
+    )
+  } else {
+    p <- p + ggplot2::scale_x_continuous(
+      expand = ggplot2::expansion(mult = c(0.08, 0.18))
+    )
+  }
+  if (y_log) {
+    p <- p + ggplot2::scale_y_log10(
+      labels = scales::label_number(),
+      expand = ggplot2::expansion(mult = c(0.10, 0.18))
+    )
+  } else {
+    p <- p + ggplot2::scale_y_continuous(
+      expand = ggplot2::expansion(mult = c(0.10, 0.18))
+    )
+  }
+  p + ggplot2::coord_cartesian(clip = "off") +
+    ggplot2::theme(plot.margin = ggplot2::margin(5, 8, 5, 5))
+}
+
+benchmark_wrap_method <- function(x, width = 22L) {
+  vapply(
+    x,
+    function(label) paste(strwrap(label, width = width), collapse = "\n"),
+    character(1),
+    USE.NAMES = FALSE
+  )
+}
+
+benchmark_plot_method_labels <- function(result, methods) {
+  if (!"tier" %in% colnames(result$summary)) return(methods)
+  tiers <- stats::setNames(as.character(result$summary$tier), result$summary$method)
+  ifelse(tiers[methods] == "legacy", paste0(methods, " [legacy]"), methods)
+}
+
+benchmark_publication_theme <- function() {
+  ggplot2::theme(
+    text = ggplot2::element_text(color = "#263238"),
+    axis.text = ggplot2::element_text(size = 7, color = "#263238"),
+    axis.title = ggplot2::element_text(size = 7.5, color = "#263238"),
+    axis.line = ggplot2::element_line(linewidth = 0.35, color = "#343A40"),
+    panel.border = ggplot2::element_blank(),
+    plot.background = ggplot2::element_rect(fill = "white", color = NA),
+    panel.background = ggplot2::element_rect(fill = "white", color = NA),
+    axis.ticks = ggplot2::element_line(linewidth = 0.3, color = "#343A40"),
+    axis.ticks.length = grid::unit(1.3, "mm"),
+    legend.text = ggplot2::element_text(size = 7),
+    legend.title = ggplot2::element_text(size = 7),
+    legend.key.height = grid::unit(3.2, "mm"),
+    legend.key.width = grid::unit(4.2, "mm"),
+    legend.background = ggplot2::element_blank(),
+    legend.box.background = ggplot2::element_blank()
+  )
+}
+
+benchmark_resource_log <- function(values, resource_scale) {
+  if (identical(resource_scale, "log10")) return(TRUE)
+  if (identical(resource_scale, "linear")) return(FALSE)
+  values <- values[is.finite(values) & values > 0]
+  length(values) >= 2L && max(values) / min(values) >= 10
+}
+
+benchmark_metric_heatmap <- function(
+  result,
+  quality_metrics,
+  method_levels,
+  show_values,
+  theme_use,
+  theme_args
+) {
+  metrics <- c(quality_metrics, "runtime_s", "peak_memory_mb")
+  directions <- stats::setNames(
+    c(rep("higher", length(quality_metrics)), "lower", "lower"),
+    metrics
+  )
+  rows <- lapply(metrics, function(metric) {
+    values <- result$summary[[metric]]
+    score <- benchmark_normalize_metric(values, directions[[metric]])
+    data.frame(
+      method = result$summary$method,
+      metric = metric,
+      value = values,
+      score = score,
+      label = benchmark_format_metric(values, metric),
+      stringsAsFactors = FALSE
+    )
+  })
+  data <- do.call(rbind, rows)
+  data$method <- factor(data$method, levels = rev(method_levels))
+  labels <- c(
+    ARI = "ARI", NMI = "NMI", purity = "Purity",
+    runtime_s = "Runtime", peak_memory_mb = "Peak memory"
+  )
+  data$metric <- factor(data$metric, levels = metrics, labels = labels[metrics])
+  p <- ggplot2::ggplot(data, ggplot2::aes(
+    x = .data[["metric"]], y = .data[["method"]], fill = .data[["score"]]
+  )) +
+    ggplot2::geom_tile(color = "white", linewidth = 0.8) +
+    ggplot2::scale_fill_gradientn(
+      colors = c("#F4F7FA", "#B5CBE1", "#4F83B3", "#123B63"),
+      limits = c(0, 1),
+      na.value = "#F1F2F4"
+    ) +
+    ggplot2::scale_y_discrete(labels = function(x) {
+      benchmark_wrap_method(benchmark_plot_method_labels(result, x))
+    }) +
+    ggplot2::labs(
+      title = "Direction-aware benchmark matrix",
+      subtitle = "Color is normalized within each metric; labels show raw values",
+      x = NULL,
+      y = NULL,
+      fill = "Relative\nperformance"
+    ) +
+    do.call(theme_use, theme_args) +
+    benchmark_publication_theme() +
+    ggplot2::theme(
+      panel.grid = ggplot2::element_blank(),
+      axis.line = ggplot2::element_blank(),
+      axis.ticks = ggplot2::element_blank(),
+      axis.text.x = ggplot2::element_text(angle = 30, hjust = 1, vjust = 1),
+      plot.title = ggplot2::element_text(face = "bold", size = 9),
+      plot.subtitle = ggplot2::element_text(color = "#6B7280", size = 7)
+    )
+  if (isTRUE(show_values)) {
+    p <- p + ggplot2::geom_text(
+      ggplot2::aes(
+        label = .data[["label"]],
+        color = ifelse(is.finite(.data[["score"]]) & .data[["score"]] > 0.68, "light", "dark")
+      ),
+      size = 2.5,
+      show.legend = FALSE
+    ) +
+      ggplot2::scale_color_manual(values = c(light = "white", dark = "#263238"))
+  }
+  p
+}
+
+benchmark_normalize_metric <- function(values, direction) {
+  finite <- is.finite(values)
+  out <- rep(NA_real_, length(values))
+  if (!any(finite)) return(out)
+  limits <- range(values[finite])
+  if (diff(limits) == 0) {
+    out[finite] <- 0.5
+  } else {
+    out[finite] <- (values[finite] - limits[[1]]) / diff(limits)
+  }
+  if (identical(direction, "lower")) out[finite] <- 1 - out[finite]
+  out
+}
+
+benchmark_format_metric <- function(values, metric) {
+  if (metric %in% c("ARI", "NMI", "purity")) {
+    return(ifelse(is.finite(values), sprintf("%.2f", values), "NA"))
+  }
+  if (identical(metric, "runtime_s")) {
+    return(ifelse(is.finite(values), paste0(scales::number(values, accuracy = 0.1), " s"), "NA"))
+  }
+  ifelse(
+    is.finite(values),
+    ifelse(
+      values >= 1024,
+      paste0(scales::number(values / 1024, accuracy = 0.01), " GB"),
+      paste0(scales::number(values, accuracy = 1), " MB")
+    ),
+    "NA"
+  )
+}
+
+benchmark_status_plot <- function(data) {
+  status_colors <- c(
+    failed = "#C95D63",
+    unavailable = "#D89A45",
+    timeout = "#8B6FAE"
+  )
+  data$method <- factor(data$method, levels = rev(data$method))
+  data$label <- paste0(
+    data$method, "  |  ", data$status,
+    ifelse(nzchar(data$error), paste0("  -  ", benchmark_trim_text(data$error, 72L)), "")
+  )
+  ggplot2::ggplot(data, ggplot2::aes(
+    x = 1, y = .data[["method"]], fill = .data[["status"]]
+  )) +
+    ggplot2::geom_tile(width = 1, height = 0.78, color = "white", linewidth = 0.6) +
+    ggplot2::geom_text(
+      ggplot2::aes(label = .data[["label"]]),
+      x = 0.53,
+      hjust = 0,
+      color = "white",
+      size = 2.2
+    ) +
+    ggplot2::scale_fill_manual(values = status_colors, drop = FALSE) +
+    ggplot2::coord_cartesian(xlim = c(0.5, 1.5), clip = "off") +
+    ggplot2::labs(title = "Incomplete runs") +
+    ggplot2::theme_void() +
+    ggplot2::theme(
+      legend.position = "none",
+      plot.title = ggplot2::element_text(face = "bold", size = 8, hjust = 0),
+      plot.margin = ggplot2::margin(1, 4, 1, 4)
+    )
+}
+
+benchmark_trim_text <- function(x, width) {
+  x <- gsub("[\r\n]+", " ", x)
+  ifelse(nchar(x) > width, paste0(substr(x, 1L, width - 3L), "..."), x)
+}
+
+benchmark_empty_panel <- function(title, subtitle) {
+  ggplot2::ggplot() +
+    ggplot2::annotate(
+      "text", x = 0.5, y = 0.5,
+      label = subtitle,
+      color = "#6B7280",
+      size = 3,
+      lineheight = 1.1
+    ) +
+    ggplot2::xlim(0, 1) +
+    ggplot2::ylim(0, 1) +
+    ggplot2::labs(title = title) +
+    ggplot2::theme_void() +
+    ggplot2::theme(plot.title = ggplot2::element_text(face = "bold", size = 9))
 }
 
 benchmark_feature_plot <- function(

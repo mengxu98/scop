@@ -84,6 +84,7 @@ spatial_method_registry <- function() {
     entry("RunBANKSY", "analysis", "domain", "RunBANKSY.R", "BANKSY", "banksy", coordinate_space_current = "raw", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "SpatialSpotPlot"),
     entry("RunCytoSPACE", "analysis", "mapping", "RunCytoSPACE.R", "CytoSPACE", "core", coordinate_space_current = "raw", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "SpatialSpotPlot"),
     entry("RunSmoothClust", "analysis", "domain", "RunSmoothClust.R", "SmoothClust", "smoothclust", coordinate_space_current = "raw", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", scalability = "sparse_required", plot_function = "SpatialSpotPlot"),
+    entry("RunBenchmark", "workflow", "benchmark", "RunBenchmark.R", backend_id = "bayesspace;banksy;smoothclust", coordinate_space_current = "mixed", coordinate_space_target = "mixed", coordinate_requirement = "backend_managed", plot_function = "BenchmarkPlot", backend_requirement = "any"),
     entry("RunMERINGUE", "analysis", "feature_pattern", "RunMERINGUE.R", "MERINGUE", "meringue", coordinate_space_current = "raw", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "SpatialVariableFeaturePlot"),
     entry("RunSpatialVariableFeatures", "analysis", "feature_pattern", "RunSpatialVariableFeatures.R", "SpatialVariableFeatures", "core;sparkx;nnsvg", coordinate_space_current = "raw", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", scalability = "sparse_required", plot_function = "SpatialVariableFeaturePlot", backend_requirement = "any"),
     entry("RunSpatialGradientFeatures", "analysis", "feature_pattern", "RunSpatialGradientFeatures.R", "SpatialGradientFeatures", "core;spata2", coordinate_space_current = "raw", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "SpatialGradientPlot", backend_requirement = "any"),
@@ -116,6 +117,7 @@ spatial_method_registry <- function() {
     entry("StatialKontextualPlot", "plot", "visualization", "RunStatialKontextual.R", coordinate_space_current = "none"),
     entry("STdeconvolvePlot", "plot", "visualization", "RunSTdeconvolve.R", backend_id = "stdeconvolve", coordinate_space_current = "none"),
     entry("Cell2locationPlot", "plot", "visualization", "RunCell2location.R", backend_id = "cell2location", coordinate_space_current = "display", coordinate_requirement = "display_only"),
+    entry("BenchmarkPlot", "plot", "visualization", "BenchmarkPlot.R", backend_id = "core", coordinate_space_current = "none"),
     entry("standard_scop", "workflow", "recommended_workflow", "standard_scop.R", backend_id = "core", coordinate_space_current = "mixed", coordinate_space_target = "mixed", coordinate_requirement = "backend_managed")
   )
   registry <- do.call(rbind, rows)
