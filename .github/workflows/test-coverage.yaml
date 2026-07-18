@@ -14,7 +14,7 @@ jobs:
     outputs:
       package_changed: ${{ steps.filter.outputs.package_changed }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -36,6 +36,13 @@ jobs:
             exit 0
           fi
 
+          # `github.event.before` may be unreachable after a force-push.
+          # In that case, run coverage rather than failing while filtering.
+          if ! git cat-file -e "$base^{commit}" 2>/dev/null; then
+            echo "package_changed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
           files="$(git diff --name-only "$base" "$head")"
           echo "$files"
           if printf '%s\n' "$files" |
@@ -52,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: r-lib/actions/setup-r@v2
         with:
@@ -62,9 +69,39 @@ jobs:
         env:
           GITHUB_PAT: ${{ github.token }}
         with:
-          extra-packages: any::covr
+          extra-packages: any::covr any::pkgload
           needs: coverage
           cache: true
+
+      - name: Compute optional R dependency cache key
+        id: optional-r-deps
+        shell: bash
+        run: |
+          manifest_path="${RUNNER_TEMP}/scop-optional-r-deps.txt"
+          SCOP_DEP_MANIFEST="$manifest_path" Rscript -e '
+            pkgload::load_all(".", quiet = TRUE, compile = FALSE)
+            writeLines(sort(scop:::env_r_packages()), Sys.getenv("SCOP_DEP_MANIFEST"))
+          '
+          manifest_hash="$(shasum -a 256 "$manifest_path" | cut -d ' ' -f 1)"
+          echo "r-version=$(Rscript -e 'cat(getRversion())')" >> "$GITHUB_OUTPUT"
+          echo "hash=$manifest_hash" >> "$GITHUB_OUTPUT"
+
+      - name: Restore optional R package cache
+        uses: actions/cache/restore@v5
+        with:
+          path: ${{ runner.temp }}/scop-optional-r-library
+          key: scop-optional-r-v1-${{ runner.os }}-r${{ steps.optional-r-deps.outputs.r-version }}-${{ steps.optional-r-deps.outputs.hash }}
+
+      - name: Use optional R package cache
+        env:
+          SCOP_OPTIONAL_R_LIB: ${{ runner.temp }}/scop-optional-r-library
+        run: |
+          optional_lib <- Sys.getenv("SCOP_OPTIONAL_R_LIB")
+          user_lib <- Sys.getenv("R_LIBS_USER")
+          dir.create(optional_lib, recursive = TRUE, showWarnings = FALSE)
+          combined_libs <- paste(c(optional_lib, user_lib[nzchar(user_lib)]), collapse = .Platform$path.sep)
+          cat("R_LIBS_USER=", combined_libs, "\n", sep = "", file = Sys.getenv("GITHUB_ENV"), append = TRUE)
+        shell: Rscript {0}
 
       - name: Test coverage
         continue-on-error: true
