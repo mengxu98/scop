@@ -86,6 +86,18 @@ test_that("RunGiottoCluster errors before mutating non-Seurat input", {
   )
 })
 
+test_that("Giotto availability uses the repository registered by SCOP", {
+  checked <- NULL
+  testthat::local_mocked_bindings(
+    check_r = function(repository, verbose = FALSE) {
+      checked <<- repository
+      list(Giotto = TRUE)
+    }
+  )
+  expect_true(giotto_require(verbose = FALSE))
+  expect_identical(checked, "drieslab/Giotto")
+})
+
 test_that("RunGiottoCluster runs with installed Giotto", {
   testthat::skip_if_not_installed("Giotto")
   srt <- make_giotto_cluster_seurat()
