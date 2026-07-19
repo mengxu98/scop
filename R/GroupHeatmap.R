@@ -2526,34 +2526,3 @@ group_heatmap_expression_fraction <- function(mat, groups, exp_cutoff = 0) {
     all_levels = levels(groups)
   )
 }
-
-heatmap_border_enabled <- function(border) {
-  !is.null(border) && !isFALSE(border)
-}
-
-heatmap_border_color <- function(border, palcolor = "black") {
-  if (is.character(border) && length(border) > 0 && nzchar(border[[1]])) {
-    return(border[[1]])
-  }
-  palcolor %||% "black"
-}
-
-heatmap_border_size_value <- function(size) {
-  size <- suppressWarnings(as.numeric(size)[1])
-  if (!is.finite(size) || size < 0) {
-    size <- 1
-  }
-  size
-}
-
-heatmap_border_gp <- function(border, color, size = 1) {
-  grid::gpar(col = if (isTRUE(border)) color else NA, lwd = size)
-}
-
-heatmap_legend_border <- function(border, color) {
-  if (isTRUE(border)) {
-    color
-  } else {
-    FALSE
-  }
-}

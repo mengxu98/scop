@@ -1,5 +1,0 @@
-PKG_CPPFLAGS = -I.
-PKG_CFLAGS   = -pthread
-PKG_CXXFLAGS = -DARMA_64BIT_WORD=1  -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -DRCPP_PARALLEL_USE_TBB=1 $(SHLIB_OPENMP_CXXFLAGS)
-PKG_LIBS     = -L/Users/mx/Library/Caches/org.R-project.R/R/renv/library/scop-a16bd911/macos/R-4.5/aarch64-apple-darwin25.3.0/RcppParallel/lib -ltbb -ltbbmalloc -Wl,-rpath,/Users/mx/Library/Caches/org.R-project.R/R/renv/library/scop-a16bd911/macos/R-4.5/aarch64-apple-darwin25.3.0/RcppParallel/lib $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) $(SHLIB_OPENMP_CXXFLAGS) /opt/homebrew/opt/libomp/lib/libomp.dylib -Wl,-rpath,/opt/homebrew/opt/libomp/lib
-CXX_STD      = CXX17

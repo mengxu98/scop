@@ -2,7 +2,7 @@ Package: scop
 Type: Package
 Title: Spatial and single-cell omics analysis pipeline
 Version: 0.8.9
-Date: 2026-07-18
+Date: 2026-07-19
 Authors@R: c(
     person(given = "Xu", family = "Meng", email = "mengxu98@qq.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-8300-1054")),
     person(given = "Haoliang", family = "Zhu", email = "hurry060215@gmail.com", role = c("aut"), comment = c(ORCID = "0009-0004-9766-5179")),
