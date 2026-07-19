@@ -222,7 +222,7 @@ major_grid <- function(
   grid_major_linetype = 2,
   grid_major_linewidth = 0.3
 ) {
-  thisplot::major_grid(
+  major_grid(
     plot = plot,
     grid_major = grid_major,
     grid_major_colour = grid_major_colour,

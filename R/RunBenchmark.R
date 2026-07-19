@@ -1201,7 +1201,7 @@ benchmark_align_prediction <- function(prediction, cells) {
 }
 
 benchmark_compute_metrics <- function(prediction, truth) {
-  computed <- thisutils::classification_metrics_compute(
+  computed <- classification_metrics_compute(
     predicted = prediction,
     truth = truth
   )
