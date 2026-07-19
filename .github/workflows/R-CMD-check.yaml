@@ -77,7 +77,7 @@ jobs:
           .libPaths(c(optional_lib, .libPaths()))
           source("tools/ci/optional-r-deps.R", local = TRUE)
           thisutils::check_r(optional_r_packages(), dependencies = NA, verbose = TRUE)
-          combined_libs <- paste(c(optional_lib, user_lib), collapse = .Platform$path.sep)
+          combined_libs <- paste(c(user_lib[nzchar(user_lib)], optional_lib), collapse = .Platform$path.sep)
           cat("R_LIBS_USER=", combined_libs, "\n", sep = "", file = Sys.getenv("GITHUB_ENV"), append = TRUE)
         shell: Rscript {0}
 

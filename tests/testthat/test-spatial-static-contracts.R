@@ -34,7 +34,10 @@ test_that("documented stable spatial producers and registry agree both ways", {
   rd_db <- if (file.exists(file.path(package_root, "DESCRIPTION"))) {
     tools::Rd_db(dir = package_root)
   } else {
-    tools::Rd_db(package = "scop")
+    list()
+  }
+  if (length(rd_db) == 0L) {
+    rd_db <- tools::Rd_db(package = "scop")
   }
   rd_values <- function(rd, tag) {
     nodes <- rd[vapply(
