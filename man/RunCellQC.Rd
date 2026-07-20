@@ -213,7 +213,7 @@ pancreas_sub <- RunCellQC(
   qc_features = list(
     example_set = list(
       features = head(rownames(pancreas_sub), 5),
-      range = c(0, 100)
+      range = c(0, 0)
     )
   )
 )
