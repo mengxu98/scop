@@ -18,8 +18,21 @@
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Spatial transcriptomics</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Basic workflows</h6></li>
+    <li><a class="dropdown-item" href="../articles/single-cell-main-workflow.html">Single-cell main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/reproduce-pancreatic-endocrinogenesis.html">Reproducing pancreatic endocrinogenesis</a></li>
+    <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/interactive-scexplorer-workflow.html">Interactive SCExplorer workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges and Giotto compatibility</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Cell-cell communication</h6></li>
+    <li><a class="dropdown-item" href="../articles/cell-cell-communication-workflow.html">Cell-cell communication workflow</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -88,7 +101,11 @@
 <span>  species_gene_prefix <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  species_percent <span class="op">=</span> <span class="fl">95</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">11</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  hb_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">5</span><span class="op">)</span>,</span>
+<span>  hb_pattern <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"HB[^P]"</span>, <span class="st">"Hb[^p]"</span>, <span class="st">"hb[^p]"</span><span class="op">)</span>,</span>
+<span>  hb_gene <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  qc_features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -125,7 +142,8 @@ Default is <code>FALSE</code>.</p></dd>
 <dt id="arg-qc-metrics">qc_metrics<a class="anchor" aria-label="anchor" href="#arg-qc-metrics"></a></dt>
 <dd><p>A character vector specifying the quality control metrics to be applied.
 Available metrics are <code>"doublets"</code>, <code>"decontX"</code>, <code>"atac"</code>, <code>"outlier"</code>, <code>"umi"</code>, <code>"gene"</code>,
-<code>"mito"</code>, <code>"ribo"</code>, <code>"ribo_mito_ratio"</code>, and <code>"species"</code>.
+<code>"mito"</code>, <code>"ribo"</code>, <code>"hb"</code>, <code>"ribo_mito_ratio"</code>, <code>"species"</code>, and any
+rule name supplied in <code>qc_features</code>.
 Default is <code>c("doublets", "decontX", "outlier", "umi", "gene", "mito", "ribo", "ribo_mito_ratio", "species")</code>.
 For <code>ChromatinAssay</code>, if <code>.arg qc_metrics</code> is not supplied, the default is <code>"atac"</code>.</p></dd>
 
@@ -292,6 +310,34 @@ Default is <code>11</code>.</p></dd>
 <dd><p>Whether to print the message.
 Default is <code>TRUE</code>.</p></dd>
 
+
+<dt id="arg-hb-range">hb_range<a class="anchor" aria-label="anchor" href="#arg-hb-range"></a></dt>
+<dd><p>A numeric vector specifying the accepted percentage range for
+hemoglobin features. Values outside the range fail <code>hb_qc</code> when <code>"hb"</code> is
+included in <code>qc_metrics</code>. Default is <code>c(0, 5)</code>.</p></dd>
+
+
+<dt id="arg-hb-pattern">hb_pattern<a class="anchor" aria-label="anchor" href="#arg-hb-pattern"></a></dt>
+<dd><p>Regex patterns used to match hemoglobin features. The
+defaults match common human, mouse, and lower-case symbols while excluding
+<code>HBP</code>/<code>hbp</code> genes. Default is <code>c("HB[^P]", "Hb[^p]", "hb[^p]")</code>.</p></dd>
+
+
+<dt id="arg-hb-gene">hb_gene<a class="anchor" aria-label="anchor" href="#arg-hb-gene"></a></dt>
+<dd><p>A defined set of hemoglobin features. When supplied, these
+features are used instead of <code>hb_pattern</code>. Default is <code>NULL</code>.</p></dd>
+
+
+<dt id="arg-qc-features">qc_features<a class="anchor" aria-label="anchor" href="#arg-qc-features"></a></dt>
+<dd><p>A named list defining additional feature-percentage QC
+rules. Each rule must contain exactly one of <code>features</code> (a character vector)
+or <code>pattern</code> (one or more regex patterns), plus a numeric <code>range</code> of length
+two. Providing a rule computes <code>percent.&lt;name&gt;</code>; the rule filters cells and
+creates <code>&lt;name&gt;_qc</code> only when <code>&lt;name&gt;</code> is included in <code>qc_metrics</code>.
+Patterns are matched directly against assay feature names and do not receive
+species prefixes. Rule names cannot collide with built-in QC columns.
+Default is <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -302,66 +348,64 @@ Default is <code>TRUE</code>.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:27:23] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:27:24] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-07-02 09:27:24] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:27:24] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:27:24] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:27:24] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:27:24] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:27:24] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:27:24] Perform `ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:27:24] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:27:25] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:27:25] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:27:25] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:27:26] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:27:26] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-07-02 09:27:32] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-20 18:34:33] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-20 18:34:33] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-07-20 18:34:33] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-20 18:34:33] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-20 18:34:33] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-20 18:34:33] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-20 18:34:33] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-20 18:34:33] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-20 18:34:33] Perform `ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-20 18:34:34] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-20 18:34:35] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-20 18:34:36] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-20 18:34:36] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-20 18:34:36] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-20 18:34:36] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-07-20 18:34:40] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunCellQC</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  db_method <span class="op">=</span> <span class="st">"scds_cxds"</span></span></span>
+<span class="r-in"><span>  qc_metrics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"umi"</span>, <span class="st">"gene"</span>, <span class="st">"example_set"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  qc_features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    example_set <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>      features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span>, <span class="fl">5</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>      range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">◌</span> [2026-07-02 09:27:32] Running cell-level quality control</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:27:32] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:27:32] Running <span style="color: #0000BB;">scds</span> with method <span style="color: #0000BB;">"cxds"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Registered S3 method overwritten by 'pROC':</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   method   from            </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   plot.roc spatstat.explore</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-07-02 09:27:51] Skip <span style="color: #0000BB;">"atac"</span> QC because `assay = 'RNA'` is not a <span style="color: #0000BB;">&lt;ChromatinAssay&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:27:51] Running <span style="color: #0000BB;">decontX</span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'librarySizeFactors' is deprecated.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> Use 'scrapper::centerSizeFactors' instead.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> See help("Deprecated")</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'normalizeCounts' is deprecated.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> Use 'scrapper::normalizeCounts' instead.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> See help("Deprecated")</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:31:01] decontX contamination (median/mean/max): 0.0136 / 0.1628 / 0.7465</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:31:01] decontX assay stored as decontXcounts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-07-02 09:31:01] <span style="color: #0000BB;">decontX</span> decontamination completed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-07-02 09:31:01] ● Total cells: <span style="color: #0000BB;">1000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◉ <span style="color: #0000BB;">967</span> cells remained</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯ <span style="color: #0000BB;">33</span> cells filtered out:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">10</span> potential doublets</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> ATAC QC failed cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> high-contamination cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">23</span> outlier cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">◌</span> [2026-07-20 18:34:40] Running cell-level quality control</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-20 18:34:40] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-07-20 18:34:41] ● Total cells: <span style="color: #0000BB;">1000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◉ <span style="color: #0000BB;">849</span> cells remained</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯ <span style="color: #0000BB;">151</span> cells filtered out:</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> low-UMI cells</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> low-gene cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> high-mito cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> high-ribo cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> ribo_mito_ratio outlier cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> species-contaminated cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   151 example_set feature-QC outlier cells</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">meta.data</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"percent.hb"</span>, <span class="st">"percent.example_set"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  percent.hb percent.example_set</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGAGCCTTGAT 0.00000000          0.01414227</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGGTAAGTGGC 0.00000000          0.00000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGAGATATGGT 0.01614466          0.00000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGCAAAGAATC 0.00000000          0.00000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGGTACAGTTC 0.01089087          0.00000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGTCAGCTCTC 0.00000000          0.00000000</span>
+<span class="r-in"><span><span class="co"># Hemoglobin expression can be biological signal in erythroid samples;</span></span></span>
+<span class="r-in"><span><span class="co"># include "hb" in qc_metrics only when HB-based filtering is appropriate.</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="CellStatPlot.html">CellStatPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="st">"db_qc"</span>, <span class="st">"outlier_qc"</span></span></span>
+<span class="r-in"><span>    <span class="st">"umi_qc"</span>, <span class="st">"gene_qc"</span>, <span class="st">"example_set_qc"</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"upset"</span>,</span></span>
 <span class="r-in"><span>  stat_level <span class="op">=</span> <span class="st">"Fail"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-07-02 09:31:01] `stat_type` is forcibly set to <span style="color: #0000BB;">"count"</span> when plot <span style="color: #0000BB;">"sankey"</span>, <span style="color: #0000BB;">"chord"</span>, <span style="color: #0000BB;">"venn"</span>, and <span style="color: #0000BB;">"upset"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-07-20 18:34:41] `stat_type` is forcibly set to <span style="color: #0000BB;">"count"</span> when plot <span style="color: #0000BB;">"sankey"</span>, <span style="color: #0000BB;">"chord"</span>, <span style="color: #0000BB;">"venn"</span>, and <span style="color: #0000BB;">"upset"</span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Please use `linewidth` instead.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The deprecated feature was likely used in the <span style="color: #0000BB;">ggupset</span> package.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>   Please report the issue at <span style="color: #0000BB; font-style: italic;">&lt;https://github.com/const-ae/ggupset/issues&gt;</span>.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `geom_line()`: Each group consists of only one observation.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Do you need to adjust the <span style="color: #00BB00;">group</span> aesthetic?</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `geom_line()`: Each group consists of only one observation.</span>
@@ -378,7 +422,7 @@ Default is <code>TRUE</code>.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>
