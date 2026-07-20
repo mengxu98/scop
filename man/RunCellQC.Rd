@@ -37,16 +37,16 @@ RunCellQC(
   ribo_pattern = c("RP[SL]\\\\d+\\\\w{0,1}\\\\d*$", "Rp[sl]\\\\d+\\\\w{0,1}\\\\d*$",
     "rp[sl]\\\\d+\\\\w{0,1}\\\\d*$"),
   ribo_gene = NULL,
-  hb_range = c(0, 5),
-  hb_pattern = c("HB[^P]", "Hb[^p]", "hb[^p]"),
-  hb_gene = NULL,
-  qc_features = list(),
   ribo_mito_ratio_range = c(1, Inf),
   species = NULL,
   species_gene_prefix = NULL,
   species_percent = 95,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  hb_range = c(0, 5),
+  hb_pattern = c("HB[^P]", "Hb[^p]", "hb[^p]"),
+  hb_gene = NULL,
+  qc_features = list()
 )
 }
 \arguments{
@@ -158,25 +158,6 @@ Default is \code{c("RP[SL]\\\\d+\\\\w{0,1}\\\\d*$", "Rp[sl]\\\\d+\\\\w{0,1}\\\\d
 \item{ribo_gene}{A defined ribosomal genes. If features provided, will ignore the \code{ribo_pattern} matching.
 Default is \code{NULL}.}
 
-\item{hb_range}{A numeric vector specifying the accepted percentage range for
-hemoglobin features. Values outside the range fail \code{hb_qc} when \code{"hb"} is
-included in \code{qc_metrics}. Default is \code{c(0, 5)}.}
-
-\item{hb_pattern}{Regex patterns used to match hemoglobin features. The
-defaults match common human, mouse, and lower-case symbols while excluding
-\code{HBP}/\code{hbp} genes. Default is \code{c("HB[^P]", "Hb[^p]", "hb[^p]")}.}
-
-\item{hb_gene}{A defined set of hemoglobin features. When supplied, these
-features are used instead of \code{hb_pattern}. Default is \code{NULL}.}
-
-\item{qc_features}{A named list defining additional feature-percentage QC
-rules. Each rule must contain exactly one of \code{features} (a character vector)
-or \code{pattern} (one or more regex patterns), plus a numeric \code{range} of length
-two. Providing a rule computes \verb{percent.<name>}; the rule filters cells and
-creates \verb{<name>_qc} only when \verb{<name>} is included in \code{qc_metrics}.
-Patterns are matched directly against assay feature names and do not receive
-species prefixes. Default is \code{list()}.}
-
 \item{ribo_mito_ratio_range}{A numeric vector specifying the range of ribosomal/mitochondrial gene expression ratios for ribo_mito_ratio outlier cells.
 Default is \code{c(1, Inf)}.}
 
@@ -196,6 +177,26 @@ Default is \code{11}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{hb_range}{A numeric vector specifying the accepted percentage range for
+hemoglobin features. Values outside the range fail \code{hb_qc} when \code{"hb"} is
+included in \code{qc_metrics}. Default is \code{c(0, 5)}.}
+
+\item{hb_pattern}{Regex patterns used to match hemoglobin features. The
+defaults match common human, mouse, and lower-case symbols while excluding
+\code{HBP}/\code{hbp} genes. Default is \code{c("HB[^P]", "Hb[^p]", "hb[^p]")}.}
+
+\item{hb_gene}{A defined set of hemoglobin features. When supplied, these
+features are used instead of \code{hb_pattern}. Default is \code{NULL}.}
+
+\item{qc_features}{A named list defining additional feature-percentage QC
+rules. Each rule must contain exactly one of \code{features} (a character vector)
+or \code{pattern} (one or more regex patterns), plus a numeric \code{range} of length
+two. Providing a rule computes \verb{percent.<name>}; the rule filters cells and
+creates \verb{<name>_qc} only when \verb{<name>} is included in \code{qc_metrics}.
+Patterns are matched directly against assay feature names and do not receive
+species prefixes. Rule names cannot collide with built-in QC columns.
+Default is \code{list()}.}
 }
 \value{
 Returns Seurat object with the QC results stored in the meta.data layer.

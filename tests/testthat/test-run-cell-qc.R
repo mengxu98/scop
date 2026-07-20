@@ -92,6 +92,7 @@ test_that("RunCellQC supports HB feature overrides", {
       srt,
       qc_metrics = character(),
       hb_gene = c("HBP1", "MISSING"),
+      hb_pattern = NULL,
       verbose = FALSE
     )),
     "hb_gene ignored missing features"
@@ -181,7 +182,7 @@ test_that("RunCellQC applies HB patterns per species", {
   expect_equal(unname(out$percent.hb.mouse), c(0, 10))
 })
 
-test_that("qc_features validates rule names, definitions, and matches", {
+test_that("qc_features validates generated columns, definitions, and matches", {
   srt <- cellqc_feature_test_object()
 
   expect_error(
@@ -191,7 +192,36 @@ test_that("qc_features validates rule names, definitions, and matches", {
       qc_features = list(hb = list(features = "HBA1", range = c(0, 5))),
       verbose = FALSE
     ),
-    "conflict with built-in"
+    "generate columns that conflict"
+  )
+  expect_error(
+    RunCellQC(
+      srt,
+      qc_metrics = character(),
+      qc_features = list(genome = list(features = "HBA1", range = c(0, 5))),
+      verbose = FALSE
+    ),
+    "percent.genome"
+  )
+  expect_error(
+    RunCellQC(
+      srt,
+      qc_metrics = character(),
+      qc_features = list(db = list(features = "HBA1", range = c(0, 5))),
+      verbose = FALSE
+    ),
+    "db_qc"
+  )
+  expect_error(
+    RunCellQC(
+      srt,
+      qc_metrics = character(),
+      species = "human",
+      species_gene_prefix = "human",
+      qc_features = list(hb.human = list(features = "HBA1", range = c(0, 5))),
+      verbose = FALSE
+    ),
+    "percent.hb.human"
   )
   expect_error(
     RunCellQC(
@@ -224,17 +254,31 @@ test_that("qc_features validates rule names, definitions, and matches", {
     ),
     "lower <= upper"
   )
-  expect_warning(
-    prepared <- cellqc_prepare_qc_features(
+  out <- expect_warning(
+    RunCellQC(
+      srt,
+      qc_metrics = character(),
       qc_features = list(ok = list(
         features = c("HBA1", "NOT_PRESENT"),
         range = c(0, 5)
       )),
-      assay_features = rownames(srt)
+      verbose = FALSE
     ),
     "ignored missing features"
   )
-  expect_identical(prepared$ok$features, "HBA1")
+  expect_equal(unname(out$percent.ok), c(10, 0, 5, 0))
+})
+
+test_that("RunCellQC appends feature-QC arguments after legacy arguments", {
+  arguments <- names(formals(RunCellQC))
+  expect_lt(
+    match("ribo_mito_ratio_range", arguments),
+    match("hb_range", arguments)
+  )
+  expect_identical(
+    tail(arguments, 4),
+    c("hb_range", "hb_pattern", "hb_gene", "qc_features")
+  )
 })
 
 test_that("db_scds cxds path does not run hybrid backend", {
