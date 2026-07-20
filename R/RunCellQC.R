@@ -759,7 +759,8 @@ RunDecontX <- function(
 #' Default is `FALSE`.
 #' @param qc_metrics A character vector specifying the quality control metrics to be applied.
 #' Available metrics are `"doublets"`, `"decontX"`, `"atac"`, `"outlier"`, `"umi"`, `"gene"`,
-#' `"mito"`, `"ribo"`, `"ribo_mito_ratio"`, and `"species"`.
+#' `"mito"`, `"ribo"`, `"hb"`, `"ribo_mito_ratio"`, `"species"`, and any
+#' rule name supplied in `qc_features`.
 #' Default is `c("doublets", "decontX", "outlier", "umi", "gene", "mito", "ribo", "ribo_mito_ratio", "species")`.
 #' For `ChromatinAssay`, if `.arg qc_metrics` is not supplied, the default is `"atac"`.
 #' @param db_method Method used for doublet-calling.
@@ -835,6 +836,22 @@ RunDecontX <- function(
 #' @param species_percent Percentage of UMI counts of the first species.
 #' Cells that exceed this threshold will be considered as kept.
 #' Default is `95`.
+#' @param hb_range A numeric vector specifying the accepted percentage range for
+#' hemoglobin features. Values outside the range fail `hb_qc` when `"hb"` is
+#' included in `qc_metrics`. Default is `c(0, 5)`.
+#' @param hb_pattern Regex patterns used to match hemoglobin features. The
+#' defaults match common human, mouse, and lower-case symbols while excluding
+#' `HBP`/`hbp` genes. Default is `c("HB[^P]", "Hb[^p]", "hb[^p]")`.
+#' @param hb_gene A defined set of hemoglobin features. When supplied, these
+#' features are used instead of `hb_pattern`. Default is `NULL`.
+#' @param qc_features A named list defining additional feature-percentage QC
+#' rules. Each rule must contain exactly one of `features` (a character vector)
+#' or `pattern` (one or more regex patterns), plus a numeric `range` of length
+#' two. Providing a rule computes `percent.<name>`; the rule filters cells and
+#' creates `<name>_qc` only when `<name>` is included in `qc_metrics`.
+#' Patterns are matched directly against assay feature names and do not receive
+#' species prefixes. Rule names cannot collide with built-in QC columns.
+#' Default is `list()`.
 #'
 #' @return Returns Seurat object with the QC results stored in the meta.data layer.
 #'
@@ -845,13 +862,22 @@ RunDecontX <- function(
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunCellQC(
 #'   pancreas_sub,
-#'   db_method = "scds_cxds"
+#'   qc_metrics = c("umi", "gene", "example_set"),
+#'   qc_features = list(
+#'     example_set = list(
+#'       features = head(rownames(pancreas_sub), 5),
+#'       range = c(0, 0)
+#'     )
+#'   )
 #' )
+#' head(pancreas_sub@meta.data[, c("percent.hb", "percent.example_set")])
+#' # Hemoglobin expression can be biological signal in erythroid samples;
+#' # include "hb" in qc_metrics only when HB-based filtering is appropriate.
 #'
 #' CellStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c(
-#'     "db_qc", "outlier_qc"
+#'     "umi_qc", "gene_qc", "example_set_qc"
 #'   ),
 #'   plot_type = "upset",
 #'   stat_level = "Fail"
@@ -912,7 +938,11 @@ RunCellQC <- function(
   species_gene_prefix = NULL,
   species_percent = 95,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  hb_range = c(0, 5),
+  hb_pattern = c("HB[^P]", "Hb[^p]", "hb[^p]"),
+  hb_gene = NULL,
+  qc_features = list()
 ) {
   log_message(
     "Running cell-level quality control",
@@ -976,6 +1006,249 @@ RunCellQC <- function(
   if (isTRUE(is_atac_assay) && missing(qc_metrics)) {
     qc_metrics <- "atac"
   }
+  if (!is.character(qc_metrics) || anyNA(qc_metrics)) {
+    log_message(
+      "{.arg qc_metrics} must be a character vector without missing values",
+      message_type = "error"
+    )
+  }
+  if (
+    isTRUE(is_atac_assay) &&
+      ("hb" %in% qc_metrics || !is.null(hb_gene) || length(qc_features) > 0)
+  ) {
+    log_message(
+      "{.arg hb} and {.arg qc_features} require an RNA-like assay, not a {.cls ChromatinAssay}",
+      message_type = "error"
+    )
+  }
+  assay_features <- rownames(Seurat::GetAssay(srt, assay = assay))
+  if (!is.list(qc_features)) {
+    stop("qc_features must be a named list", call. = FALSE)
+  }
+  if (length(qc_features) > 0) {
+    rule_names <- names(qc_features)
+    if (
+      is.null(rule_names) ||
+        anyNA(rule_names) ||
+        any(!nzchar(rule_names)) ||
+        anyDuplicated(rule_names)
+    ) {
+      stop("qc_features must have unique, non-empty names", call. = FALSE)
+    }
+    if (any(make.names(rule_names) != rule_names)) {
+      stop("qc_features names must be syntactically valid R names", call. = FALSE)
+    }
+    species_suffix <- c("", paste0(".", species))
+    built_in_columns <- c(
+      unlist(lapply(species_suffix, function(suffix) {
+        paste0(
+          c("percent.mito", "percent.ribo", "percent.hb", "percent.genome"),
+          suffix
+        )
+      }), use.names = FALSE),
+      "db_qc", "atac_qc", "decontX_qc", "outlier_qc", "umi_qc",
+      "gene_qc", "mito_qc", "ribo_qc", "hb_qc", "ribo_mito_ratio_qc",
+      "species_qc", "CellQC"
+    )
+    generated_columns <- c(
+      paste0("percent.", rule_names),
+      paste0(rule_names, "_qc")
+    )
+    conflicting_columns <- intersect(generated_columns, built_in_columns)
+    if (length(conflicting_columns) > 0) {
+      stop(
+        sprintf(
+          "qc_features names generate columns that conflict with built-in QC columns: %s",
+          paste(conflicting_columns, collapse = ", ")
+        ),
+        call. = FALSE
+      )
+    }
+
+    qc_features_validated <- vector("list", length(qc_features))
+    names(qc_features_validated) <- rule_names
+    for (rule_name in rule_names) {
+      rule <- qc_features[[rule_name]]
+      if (!is.list(rule)) {
+        stop(
+          sprintf("qc_features rule '%s' must be a list", rule_name),
+          call. = FALSE
+        )
+      }
+      unknown_fields <- setdiff(names(rule), c("features", "pattern", "range"))
+      if (length(unknown_fields) > 0) {
+        stop(
+          sprintf(
+            "qc_features rule '%s' contains unsupported fields: %s",
+            rule_name,
+            paste(unknown_fields, collapse = ", ")
+          ),
+          call. = FALSE
+        )
+      }
+      has_features <- !is.null(rule[["features"]])
+      has_pattern <- !is.null(rule[["pattern"]])
+      if (has_features == has_pattern) {
+        stop(
+          sprintf(
+            "qc_features rule '%s' must provide exactly one of features or pattern",
+            rule_name
+          ),
+          call. = FALSE
+        )
+      }
+      rule_range <- cellqc_validate_range(
+        rule[["range"]],
+        sprintf("qc_features[['%s']]$range", rule_name)
+      )
+      if (has_features) {
+        requested <- rule[["features"]]
+        if (
+          !is.character(requested) ||
+            length(requested) == 0 ||
+            anyNA(requested) ||
+            any(!nzchar(requested))
+        ) {
+          stop(
+            sprintf(
+              "qc_features rule '%s' features must be a non-empty character vector",
+              rule_name
+            ),
+            call. = FALSE
+          )
+        }
+        requested <- unique(requested)
+        resolved <- intersect(requested, assay_features)
+        missing_features <- setdiff(requested, resolved)
+        if (length(missing_features) > 0 && length(resolved) > 0) {
+          warning(
+            sprintf(
+              "qc_features rule '%s' ignored missing features: %s",
+              rule_name,
+              paste(missing_features, collapse = ", ")
+            ),
+            call. = FALSE
+          )
+        }
+      } else {
+        patterns <- rule[["pattern"]]
+        if (
+          !is.character(patterns) ||
+            length(patterns) == 0 ||
+            anyNA(patterns) ||
+            any(!nzchar(patterns))
+        ) {
+          stop(
+            sprintf(
+              "qc_features rule '%s' pattern must be a non-empty character vector",
+              rule_name
+            ),
+            call. = FALSE
+          )
+        }
+        resolved <- tryCatch(
+          unique(unlist(lapply(
+            patterns,
+            function(pattern) grep(pattern, assay_features, value = TRUE)
+          ))),
+          error = function(e) {
+            stop(
+              sprintf(
+                "qc_features rule '%s' has an invalid pattern: %s",
+                rule_name,
+                conditionMessage(e)
+              ),
+              call. = FALSE
+            )
+          }
+        )
+      }
+      if (length(resolved) == 0) {
+        stop(
+          sprintf(
+            "qc_features rule '%s' did not match any assay features",
+            rule_name
+          ),
+          call. = FALSE
+        )
+      }
+      qc_features_validated[[rule_name]] <- list(
+        features = resolved,
+        range = rule_range
+      )
+    }
+    qc_features <- qc_features_validated
+  }
+  hb_range <- cellqc_validate_range(hb_range, "hb_range")
+  if (
+    !is.null(hb_gene) &&
+      (
+        !is.character(hb_gene) ||
+          length(hb_gene) == 0 ||
+          anyNA(hb_gene) ||
+          any(!nzchar(hb_gene))
+      )
+  ) {
+    log_message(
+      "{.arg hb_gene} must be NULL or a non-empty character vector",
+      message_type = "error"
+    )
+  }
+  if (is.null(hb_gene)) {
+    if (
+      !is.character(hb_pattern) ||
+        length(hb_pattern) == 0 ||
+        anyNA(hb_pattern) ||
+        any(!nzchar(hb_pattern))
+    ) {
+      log_message(
+        "{.arg hb_pattern} must be a non-empty character vector",
+        message_type = "error"
+      )
+    }
+    tryCatch(
+      lapply(hb_pattern, grep, x = assay_features),
+      error = function(e) {
+        stop(
+          sprintf("hb_pattern contains an invalid regex: %s", conditionMessage(e)),
+          call. = FALSE
+        )
+      }
+    )
+  }
+  if (!is.null(hb_gene)) {
+    hb_gene <- unique(hb_gene)
+    hb_gene_found <- intersect(hb_gene, assay_features)
+    hb_gene_missing <- setdiff(hb_gene, hb_gene_found)
+    if (length(hb_gene_found) == 0) {
+      log_message(
+        "{.arg hb_gene} did not match any assay features",
+        message_type = "error"
+      )
+    }
+    if (length(hb_gene_missing) > 0) {
+      warning(
+        sprintf(
+          "hb_gene ignored missing features: %s",
+          paste(hb_gene_missing, collapse = ", ")
+        ),
+        call. = FALSE
+      )
+    }
+    hb_gene <- hb_gene_found
+  }
+  qc_metrics_available <- c(
+    "doublets", "decontX", "atac", "outlier", "umi", "gene",
+    "mito", "ribo", "hb", "ribo_mito_ratio", "species",
+    names(qc_features)
+  )
+  if (any(!qc_metrics %in% qc_metrics_available)) {
+    log_message(
+      "{.arg qc_metrics} contains unsupported values: {.val {setdiff(qc_metrics, qc_metrics_available)}}",
+      message_type = "error"
+    )
+  }
+  active_qc_features <- intersect(names(qc_features), qc_metrics)
   decontX_assay_name_use <- decontX_args[["assay_name"]] %||% "decontXcounts"
   if (!decontX_assay_name_missing) {
     decontX_assay_name_use <- decontX_assay_name
@@ -1164,6 +1437,12 @@ RunCellQC <- function(
 
     assay_genes <- rownames(Seurat::GetAssay(srt, assay = assay))
     counts_mat <- GetAssayData5(srt, assay = assay, layer = "counts")
+    for (rule_name in names(qc_features)) {
+      srt[[paste0("percent.", rule_name)]] <- cellqc_feature_percentage(
+        counts = counts_mat,
+        features = qc_features[[rule_name]][["features"]]
+      )
+    }
     outlier_qc <- c()
     for (n in 1:length(species)) {
       if (n == 0) {
@@ -1213,6 +1492,30 @@ RunCellQC <- function(
         ),
         features = ribo_gene
       )
+      if (!isTRUE(is_atac_assay)) {
+        hb_features_use <- if (!is.null(hb_gene)) {
+          intersect(hb_gene, sp_genes)
+        } else {
+          hb_pattern_use <- paste0(
+            "(",
+            paste0("^", prefix, "-*", hb_pattern),
+            ")",
+            collapse = "|"
+          )
+          assay_genes[grep(pattern = hb_pattern_use, x = assay_genes)]
+        }
+        if (n == 1 && "hb" %in% qc_metrics && length(hb_features_use) == 0) {
+          log_message(
+            "The hemoglobin feature definition did not match any assay features",
+            message_type = "error"
+          )
+        }
+        srt[[paste0(c("percent.hb", sp), collapse = ".")]] <-
+          cellqc_feature_percentage(
+            counts = counts_mat,
+            features = hb_features_use
+          )
+      }
       percent.genome <- srt[[paste0(
         c("percent.genome", sp),
         collapse = "."
@@ -1285,7 +1588,8 @@ RunCellQC <- function(
       }
     }
 
-    umi_qc <- gene_qc <- mito_qc <- ribo_qc <- ribo_mito_ratio_qc <- species_qc <- c()
+    umi_qc <- gene_qc <- mito_qc <- ribo_qc <- hb_qc <-
+      ribo_mito_ratio_qc <- species_qc <- c()
     if ("umi" %in% qc_metrics) {
       umi_qc <- colnames(srt)[which(
         srt[[
@@ -1322,6 +1626,16 @@ RunCellQC <- function(
           ribo_threshold
       )]
     }
+    if ("hb" %in% qc_metrics) {
+      hb_percent <- srt[[
+        paste0(c("percent.hb", species[1]), collapse = "."),
+        drop = TRUE
+      ]]
+      hb_qc <- colnames(srt)[which(
+        hb_percent < hb_range[1] |
+          hb_percent > hb_range[2]
+      )]
+    }
     if ("ribo_mito_ratio" %in% qc_metrics) {
       ribo_mito_ratio_qc <- colnames(srt)[which(
         srt[[
@@ -1345,6 +1659,18 @@ RunCellQC <- function(
           species_percent
       )]
     }
+    feature_qc_cells <- setNames(
+      vector("list", length(active_qc_features)),
+      active_qc_features
+    )
+    for (rule_name in active_qc_features) {
+      feature_percent <- srt[[paste0("percent.", rule_name), drop = TRUE]]
+      feature_range <- qc_features[[rule_name]][["range"]]
+      feature_qc_cells[[rule_name]] <- colnames(srt)[which(
+        feature_percent < feature_range[1] |
+          feature_percent > feature_range[2]
+      )]
+    }
 
     CellQC <- unique(
       c(
@@ -1356,8 +1682,10 @@ RunCellQC <- function(
         gene_qc,
         mito_qc,
         ribo_qc,
+        hb_qc,
         ribo_mito_ratio_qc,
-        species_qc
+        species_qc,
+        unlist(feature_qc_cells, use.names = FALSE)
       )
     )
     qc_summary <- c(
@@ -1388,12 +1716,24 @@ RunCellQC <- function(
       if ("ribo" %in% qc_metrics) {
         "{cli::symbol$circle}   {.pkg {length(ribo_qc)}} high-ribo cells\n"
       },
+      if ("hb" %in% qc_metrics) {
+        "{cli::symbol$circle}   {.pkg {length(hb_qc)}} HB feature-QC outlier cells\n"
+      },
       if ("ribo_mito_ratio" %in% qc_metrics) {
         "{cli::symbol$circle}   {.pkg {length(ribo_mito_ratio_qc)}} ribo_mito_ratio outlier cells\n"
       },
       if ("species" %in% qc_metrics) {
         "{cli::symbol$circle}   {.pkg {length(species_qc)}} species-contaminated cells"
-      }
+      },
+      unname(vapply(active_qc_features, function(rule_name) {
+        paste0(
+          "{cli::symbol$circle}   ",
+          length(feature_qc_cells[[rule_name]]),
+          " ",
+          rule_name,
+          " feature-QC outlier cells\n"
+        )
+      }, character(1)))
     )
     qc_summary <- Filter(Negate(is.null), qc_summary)
     do.call(
@@ -1429,6 +1769,9 @@ RunCellQC <- function(
       if ("ribo" %in% qc_metrics) {
         "ribo_qc"
       },
+      if ("hb" %in% qc_metrics) {
+        "hb_qc"
+      },
       if ("ribo_mito_ratio" %in% qc_metrics) {
         "ribo_mito_ratio_qc"
       },
@@ -1448,6 +1791,20 @@ RunCellQC <- function(
         levels = c("Pass", "Fail")
       )
     }
+    feature_qc_nm <- paste0(active_qc_features, "_qc")
+    for (i_rule in seq_along(active_qc_features)) {
+      rule_name <- active_qc_features[[i_rule]]
+      qc_col <- feature_qc_nm[[i_rule]]
+      srt[[qc_col]] <- factor(
+        ifelse(
+          colnames(srt) %in% feature_qc_cells[[rule_name]],
+          "Fail",
+          "Pass"
+        ),
+        levels = c("Pass", "Fail")
+      )
+    }
+    qc_nm <- c(qc_nm, feature_qc_nm)
 
     if (return_filtered) {
       srt <- srt[, srt$CellQC == "Pass"]
@@ -1545,4 +1902,29 @@ cellqc_initialize_count_metrics <- function(srt, assay) {
     }
   }
   srt
+}
+
+cellqc_validate_range <- function(x, arg) {
+  if (
+    !is.numeric(x) ||
+      length(x) != 2 ||
+      anyNA(x) ||
+      x[[1]] > x[[2]]
+  ) {
+    stop(
+      sprintf("%s must be a numeric vector of length two with lower <= upper", arg),
+      call. = FALSE
+    )
+  }
+  as.numeric(x)
+}
+
+cellqc_feature_percentage <- function(counts, features) {
+  totals <- Matrix::colSums(counts)
+  feature_totals <- Matrix::colSums(counts[features, , drop = FALSE])
+  percent <- numeric(length(totals))
+  nonzero <- totals > 0
+  percent[nonzero] <- feature_totals[nonzero] / totals[nonzero] * 100
+  names(percent) <- colnames(counts)
+  percent
 }
