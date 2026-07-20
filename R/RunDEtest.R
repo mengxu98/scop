@@ -2327,6 +2327,27 @@ RunDEtest.Seurat <- function(
     check_r("immunogenomics/presto", verbose = FALSE)
   }
 
+  data_layer <- suppressWarnings(tryCatch(
+    GetAssayData5(srt, layer = layer, assay = assay),
+    error = function(e) NULL
+  ))
+  if (
+    identical(layer, "data") &&
+      (is.null(data_layer) || any(dim(data_layer) == 0L))
+  ) {
+    log_message(
+      "The {.arg data} layer is missing. Performing {.fun NormalizeData}({.val LogNormalize}).",
+      message_type = "warning",
+      verbose = verbose
+    )
+    srt <- NormalizeData(
+      object = srt,
+      assay = assay,
+      normalization.method = "LogNormalize",
+      verbose = FALSE
+    )
+  }
+
   status <- CheckDataType(srt, layer = layer, assay = assay)
   if (layer == "counts" && status != "raw_counts") {
     log_message(

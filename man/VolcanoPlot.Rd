@@ -71,8 +71,9 @@ The data.frame must contain columns: \code{gene}, \code{group1} (factor or chara
 Default is \code{NULL} (all groups).}
 
 \item{DE_threshold}{A character string specifying the threshold for differential expression (used to highlight significant genes in all plot types).
-Default is \code{"p_val < 0.05"} for sample-level methods (\code{"edgeR"} and \code{"limma"})
-and \code{"avg_log2FC > 0 & p_val_adj < 0.05"} otherwise.}
+Default is \code{"p_val < 0.05"} for sample-level methods (\code{"edgeR"} and \code{"limma"}).
+For cell-level volcano plots, it is \code{"abs(avg_log2FC) > 0 & p_val_adj < 0.05"}
+when \code{only.pos = FALSE}, and \code{"avg_log2FC > 0 & p_val_adj < 0.05"} otherwise.}
 
 \item{x_metric}{A character string specifying the metric to use for the x-axis (only for volcano plot).
 Default is \code{NULL}, which uses \code{"avg_log2FC"} for sample-level methods (\code{"edgeR"} and \code{"limma"})

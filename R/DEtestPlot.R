@@ -15,8 +15,9 @@
 #' @param group_use Groups to plot.
 #' Default is `NULL` (all groups).
 #' @param DE_threshold A character string specifying the threshold for differential expression (used to highlight significant genes in all plot types).
-#' Default is `"p_val < 0.05"` for sample-level methods (`"edgeR"` and `"limma"`)
-#' and `"avg_log2FC > 0 & p_val_adj < 0.05"` otherwise.
+#' Default is `"p_val < 0.05"` for sample-level methods (`"edgeR"` and `"limma"`).
+#' For cell-level volcano plots, it is `"abs(avg_log2FC) > 0 & p_val_adj < 0.05"`
+#' when `only.pos = FALSE`, and `"avg_log2FC > 0 & p_val_adj < 0.05"` otherwise.
 #' @param x_metric A character string specifying the metric to use for the x-axis (only for volcano plot).
 #' Default is `NULL`, which uses `"avg_log2FC"` for sample-level methods (`"edgeR"` and `"limma"`)
 #' and `"diff_pct"` otherwise.
@@ -301,11 +302,14 @@ DEtestPlot <- function(
   label.by <- match.arg(label.by)
 
   if (plot_type == "volcano") {
-    DE_threshold_use <- if (
-      DE_threshold_missing &&
-        test.use %in% c("edgeR", "limma")
-    ) {
-      "p_val < 0.05"
+    DE_threshold_use <- if (DE_threshold_missing) {
+      if (test.use %in% c("edgeR", "limma")) {
+        "p_val < 0.05"
+      } else if (!isTRUE(only.pos)) {
+        "abs(avg_log2FC) > 0 & p_val_adj < 0.05"
+      } else {
+        DE_threshold
+      }
     } else {
       DE_threshold
     }
@@ -1686,11 +1690,12 @@ VolcanoPlot <- function(
   DE_threshold_missing <- missing(DE_threshold)
   threshold_method <- match.arg(threshold_method)
   label.by <- match.arg(label.by)
-  if (
-    DE_threshold_missing &&
-      test.use %in% c("edgeR", "limma")
-  ) {
-    DE_threshold <- "p_val < 0.05"
+  if (DE_threshold_missing) {
+    if (test.use %in% c("edgeR", "limma")) {
+      DE_threshold <- "p_val < 0.05"
+    } else if (!isTRUE(only.pos)) {
+      DE_threshold <- "abs(avg_log2FC) > 0 & p_val_adj < 0.05"
+    }
   }
   x_metric <- x_metric %||% ifelse(
     test.use %in% c("edgeR", "limma") || threshold_method == "hyperbolic",
