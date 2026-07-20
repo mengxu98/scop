@@ -41,7 +41,7 @@
 ^outputs$
 (^|/)\.pytest_cache($|/)
 (^|/)__pycache__($|/)
-^\.git$
+^\.git($|/)
 ^src/Makevars$
 ^\.gitignore$
 ^\.reasonix$

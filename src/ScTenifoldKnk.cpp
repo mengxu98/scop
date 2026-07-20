@@ -1,5 +1,5 @@
 #include <RcppArmadillo.h>
-#include "log_message.h"
+#include <thisutils/cli_progress.h>
 #include <Spectra/MatOp/DenseSymMatProd.h>
 #include <Spectra/SymEigsSolver.h>
 #include <algorithm>
@@ -773,14 +773,14 @@ NumericMatrix sctenifold_tensor_decomposition(
   double prev_resid = NA_REAL;
   bool converged = false;
   int curr_iter = 1;
-  scop::CliProgress progress(
+  thisutils::cli_progress progress(
     max_iter,
     verbose,
     "Denoise network ensemble with tensor decomposition"
   );
 
   while (curr_iter < max_iter && !converged) {
-    if (scop::should_check_interrupt(curr_iter, max_iter, verbose)) {
+    if (thisutils::should_check_interrupt(curr_iter, max_iter, verbose)) {
       Rcpp::checkUserInterrupt();
     }
     progress.set(curr_iter);

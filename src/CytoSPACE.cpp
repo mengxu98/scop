@@ -1,6 +1,6 @@
 // [[Rcpp::depends(RcppArmadillo, cli)]]
 #include <RcppArmadillo.h>
-#include "log_message.h"
+#include <thisutils/cli_progress.h>
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -38,14 +38,14 @@ long long min_cost_flow(
   std::vector<long long> potential(n, 0), dist(n);
   std::vector<int> prev_node(n), prev_edge(n);
   long long total_cost = 0;
-  scop::CliProgress progress(
+  thisutils::cli_progress progress(
     flow,
     verbose,
     "Assign sampled reference cells to spatial spots"
   );
 
   for (int pushed = 0; pushed < flow; ++pushed) {
-    if (scop::should_check_interrupt(pushed, flow, verbose)) {
+    if (thisutils::should_check_interrupt(pushed, flow, verbose)) {
       Rcpp::checkUserInterrupt();
     }
     progress.set(pushed);
