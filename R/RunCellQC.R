@@ -826,6 +826,16 @@ RunDecontX <- function(
 #' Default is `c("RP[SL]\\d+\\w{0,1}\\d*$", "Rp[sl]\\d+\\w{0,1}\\d*$", "rp[sl]\\d+\\w{0,1}\\d*$")`.
 #' @param ribo_gene A defined ribosomal genes. If features provided, will ignore the `ribo_pattern` matching.
 #' Default is `NULL`.
+#' @param ribo_mito_ratio_range A numeric vector specifying the range of ribosomal/mitochondrial gene expression ratios for ribo_mito_ratio outlier cells.
+#' Default is `c(1, Inf)`.
+#' @param species Species used as the suffix of the QC metrics.
+#' The first is the species of interest.
+#' Default is `NULL`.
+#' @param species_gene_prefix Species gene prefix used to calculate QC metrics for each species.
+#' Default is `NULL`.
+#' @param species_percent Percentage of UMI counts of the first species.
+#' Cells that exceed this threshold will be considered as kept.
+#' Default is `95`.
 #' @param hb_range A numeric vector specifying the accepted percentage range for
 #' hemoglobin features. Values outside the range fail `hb_qc` when `"hb"` is
 #' included in `qc_metrics`. Default is `c(0, 5)`.
@@ -840,17 +850,8 @@ RunDecontX <- function(
 #' two. Providing a rule computes `percent.<name>`; the rule filters cells and
 #' creates `<name>_qc` only when `<name>` is included in `qc_metrics`.
 #' Patterns are matched directly against assay feature names and do not receive
-#' species prefixes. Default is `list()`.
-#' @param ribo_mito_ratio_range A numeric vector specifying the range of ribosomal/mitochondrial gene expression ratios for ribo_mito_ratio outlier cells.
-#' Default is `c(1, Inf)`.
-#' @param species Species used as the suffix of the QC metrics.
-#' The first is the species of interest.
-#' Default is `NULL`.
-#' @param species_gene_prefix Species gene prefix used to calculate QC metrics for each species.
-#' Default is `NULL`.
-#' @param species_percent Percentage of UMI counts of the first species.
-#' Cells that exceed this threshold will be considered as kept.
-#' Default is `95`.
+#' species prefixes. Rule names cannot collide with built-in QC columns.
+#' Default is `list()`.
 #'
 #' @return Returns Seurat object with the QC results stored in the meta.data layer.
 #'
@@ -932,16 +933,16 @@ RunCellQC <- function(
     "rp[sl]\\d+\\w{0,1}\\d*$"
   ),
   ribo_gene = NULL,
-  hb_range = c(0, 5),
-  hb_pattern = c("HB[^P]", "Hb[^p]", "hb[^p]"),
-  hb_gene = NULL,
-  qc_features = list(),
   ribo_mito_ratio_range = c(1, Inf),
   species = NULL,
   species_gene_prefix = NULL,
   species_percent = 95,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  hb_range = c(0, 5),
+  hb_pattern = c("HB[^P]", "Hb[^p]", "hb[^p]"),
+  hb_gene = NULL,
+  qc_features = list()
 ) {
   log_message(
     "Running cell-level quality control",
@@ -1021,22 +1022,164 @@ RunCellQC <- function(
     )
   }
   assay_features <- rownames(Seurat::GetAssay(srt, assay = assay))
-  qc_features <- cellqc_prepare_qc_features(
-    qc_features = qc_features,
-    assay_features = assay_features
-  )
-  hb_range <- cellqc_validate_range(hb_range, "hb_range")
-  if (
-    !is.character(hb_pattern) ||
-      length(hb_pattern) == 0 ||
-      anyNA(hb_pattern) ||
-      any(!nzchar(hb_pattern))
-  ) {
-    log_message(
-      "{.arg hb_pattern} must be a non-empty character vector",
-      message_type = "error"
-    )
+  if (!is.list(qc_features)) {
+    stop("qc_features must be a named list", call. = FALSE)
   }
+  if (length(qc_features) > 0) {
+    rule_names <- names(qc_features)
+    if (
+      is.null(rule_names) ||
+        anyNA(rule_names) ||
+        any(!nzchar(rule_names)) ||
+        anyDuplicated(rule_names)
+    ) {
+      stop("qc_features must have unique, non-empty names", call. = FALSE)
+    }
+    if (any(make.names(rule_names) != rule_names)) {
+      stop("qc_features names must be syntactically valid R names", call. = FALSE)
+    }
+    species_suffix <- c("", paste0(".", species))
+    built_in_columns <- c(
+      unlist(lapply(species_suffix, function(suffix) {
+        paste0(
+          c("percent.mito", "percent.ribo", "percent.hb", "percent.genome"),
+          suffix
+        )
+      }), use.names = FALSE),
+      "db_qc", "atac_qc", "decontX_qc", "outlier_qc", "umi_qc",
+      "gene_qc", "mito_qc", "ribo_qc", "hb_qc", "ribo_mito_ratio_qc",
+      "species_qc", "CellQC"
+    )
+    generated_columns <- c(
+      paste0("percent.", rule_names),
+      paste0(rule_names, "_qc")
+    )
+    conflicting_columns <- intersect(generated_columns, built_in_columns)
+    if (length(conflicting_columns) > 0) {
+      stop(
+        sprintf(
+          "qc_features names generate columns that conflict with built-in QC columns: %s",
+          paste(conflicting_columns, collapse = ", ")
+        ),
+        call. = FALSE
+      )
+    }
+
+    qc_features_validated <- vector("list", length(qc_features))
+    names(qc_features_validated) <- rule_names
+    for (rule_name in rule_names) {
+      rule <- qc_features[[rule_name]]
+      if (!is.list(rule)) {
+        stop(
+          sprintf("qc_features rule '%s' must be a list", rule_name),
+          call. = FALSE
+        )
+      }
+      unknown_fields <- setdiff(names(rule), c("features", "pattern", "range"))
+      if (length(unknown_fields) > 0) {
+        stop(
+          sprintf(
+            "qc_features rule '%s' contains unsupported fields: %s",
+            rule_name,
+            paste(unknown_fields, collapse = ", ")
+          ),
+          call. = FALSE
+        )
+      }
+      has_features <- !is.null(rule[["features"]])
+      has_pattern <- !is.null(rule[["pattern"]])
+      if (has_features == has_pattern) {
+        stop(
+          sprintf(
+            "qc_features rule '%s' must provide exactly one of features or pattern",
+            rule_name
+          ),
+          call. = FALSE
+        )
+      }
+      rule_range <- cellqc_validate_range(
+        rule[["range"]],
+        sprintf("qc_features[['%s']]$range", rule_name)
+      )
+      if (has_features) {
+        requested <- rule[["features"]]
+        if (
+          !is.character(requested) ||
+            length(requested) == 0 ||
+            anyNA(requested) ||
+            any(!nzchar(requested))
+        ) {
+          stop(
+            sprintf(
+              "qc_features rule '%s' features must be a non-empty character vector",
+              rule_name
+            ),
+            call. = FALSE
+          )
+        }
+        requested <- unique(requested)
+        resolved <- intersect(requested, assay_features)
+        missing_features <- setdiff(requested, resolved)
+        if (length(missing_features) > 0 && length(resolved) > 0) {
+          warning(
+            sprintf(
+              "qc_features rule '%s' ignored missing features: %s",
+              rule_name,
+              paste(missing_features, collapse = ", ")
+            ),
+            call. = FALSE
+          )
+        }
+      } else {
+        patterns <- rule[["pattern"]]
+        if (
+          !is.character(patterns) ||
+            length(patterns) == 0 ||
+            anyNA(patterns) ||
+            any(!nzchar(patterns))
+        ) {
+          stop(
+            sprintf(
+              "qc_features rule '%s' pattern must be a non-empty character vector",
+              rule_name
+            ),
+            call. = FALSE
+          )
+        }
+        resolved <- tryCatch(
+          unique(unlist(lapply(
+            patterns,
+            function(pattern) grep(pattern, assay_features, value = TRUE)
+          ))),
+          error = function(e) {
+            stop(
+              sprintf(
+                "qc_features rule '%s' has an invalid pattern: %s",
+                rule_name,
+                conditionMessage(e)
+              ),
+              call. = FALSE
+            )
+          }
+        )
+      }
+      if (length(resolved) == 0) {
+        stop(
+          sprintf(
+            "qc_features rule '%s' did not match any assay features",
+            rule_name
+          ),
+          call. = FALSE
+        )
+      }
+      qc_features_validated[[rule_name]] <- list(
+        features = resolved,
+        range = rule_range
+      )
+    }
+    qc_features <- qc_features_validated
+  }
+  hb_range <- cellqc_validate_range(hb_range, "hb_range")
   if (
     !is.null(hb_gene) &&
       (
@@ -1051,15 +1194,28 @@ RunCellQC <- function(
       message_type = "error"
     )
   }
-  tryCatch(
-    lapply(hb_pattern, grep, x = assay_features),
-    error = function(e) {
-      stop(
-        sprintf("hb_pattern contains an invalid regex: %s", conditionMessage(e)),
-        call. = FALSE
+  if (is.null(hb_gene)) {
+    if (
+      !is.character(hb_pattern) ||
+        length(hb_pattern) == 0 ||
+        anyNA(hb_pattern) ||
+        any(!nzchar(hb_pattern))
+    ) {
+      log_message(
+        "{.arg hb_pattern} must be a non-empty character vector",
+        message_type = "error"
       )
     }
-  )
+    tryCatch(
+      lapply(hb_pattern, grep, x = assay_features),
+      error = function(e) {
+        stop(
+          sprintf("hb_pattern contains an invalid regex: %s", conditionMessage(e)),
+          call. = FALSE
+        )
+      }
+    )
+  }
   if (!is.null(hb_gene)) {
     hb_gene <- unique(hb_gene)
     hb_gene_found <- intersect(hb_gene, assay_features)
@@ -1761,158 +1917,6 @@ cellqc_validate_range <- function(x, arg) {
     )
   }
   as.numeric(x)
-}
-
-cellqc_prepare_qc_features <- function(qc_features, assay_features) {
-  if (!is.list(qc_features)) {
-    stop("qc_features must be a named list", call. = FALSE)
-  }
-  if (length(qc_features) == 0) {
-    return(qc_features)
-  }
-  rule_names <- names(qc_features)
-  if (
-    is.null(rule_names) ||
-      anyNA(rule_names) ||
-      any(!nzchar(rule_names)) ||
-      anyDuplicated(rule_names)
-  ) {
-    stop("qc_features must have unique, non-empty names", call. = FALSE)
-  }
-  if (any(make.names(rule_names) != rule_names)) {
-    stop("qc_features names must be syntactically valid R names", call. = FALSE)
-  }
-  reserved_names <- c(
-    "doublets", "decontX", "atac", "outlier", "umi", "gene",
-    "mito", "ribo", "hb", "ribo_mito_ratio", "species", "CellQC",
-    "db_qc", "atac_qc", "decontX_qc", "outlier_qc", "umi_qc",
-    "gene_qc", "mito_qc", "ribo_qc", "hb_qc",
-    "ribo_mito_ratio_qc", "species_qc"
-  )
-  conflicting <- intersect(rule_names, reserved_names)
-  if (length(conflicting) > 0) {
-    stop(
-      sprintf(
-        "qc_features names conflict with built-in QC names: %s",
-        paste(conflicting, collapse = ", ")
-      ),
-      call. = FALSE
-    )
-  }
-
-  out <- vector("list", length(qc_features))
-  names(out) <- rule_names
-  for (rule_name in rule_names) {
-    rule <- qc_features[[rule_name]]
-    if (!is.list(rule)) {
-      stop(
-        sprintf("qc_features rule '%s' must be a list", rule_name),
-        call. = FALSE
-      )
-    }
-    unknown_fields <- setdiff(names(rule), c("features", "pattern", "range"))
-    if (length(unknown_fields) > 0) {
-      stop(
-        sprintf(
-          "qc_features rule '%s' contains unsupported fields: %s",
-          rule_name,
-          paste(unknown_fields, collapse = ", ")
-        ),
-        call. = FALSE
-      )
-    }
-    has_features <- !is.null(rule[["features"]])
-    has_pattern <- !is.null(rule[["pattern"]])
-    if (has_features == has_pattern) {
-      stop(
-        sprintf(
-          "qc_features rule '%s' must provide exactly one of features or pattern",
-          rule_name
-        ),
-        call. = FALSE
-      )
-    }
-    rule_range <- cellqc_validate_range(
-      rule[["range"]],
-      sprintf("qc_features[['%s']]$range", rule_name)
-    )
-    if (has_features) {
-      requested <- rule[["features"]]
-      if (
-        !is.character(requested) ||
-          length(requested) == 0 ||
-          anyNA(requested) ||
-          any(!nzchar(requested))
-      ) {
-        stop(
-          sprintf(
-            "qc_features rule '%s' features must be a non-empty character vector",
-            rule_name
-          ),
-          call. = FALSE
-        )
-      }
-      requested <- unique(requested)
-      resolved <- intersect(requested, assay_features)
-      missing_features <- setdiff(requested, resolved)
-      if (length(missing_features) > 0 && length(resolved) > 0) {
-        warning(
-          sprintf(
-            "qc_features rule '%s' ignored missing features: %s",
-            rule_name,
-            paste(missing_features, collapse = ", ")
-          ),
-          call. = FALSE
-        )
-      }
-    } else {
-      patterns <- rule[["pattern"]]
-      if (
-        !is.character(patterns) ||
-          length(patterns) == 0 ||
-          anyNA(patterns) ||
-          any(!nzchar(patterns))
-      ) {
-        stop(
-          sprintf(
-            "qc_features rule '%s' pattern must be a non-empty character vector",
-            rule_name
-          ),
-          call. = FALSE
-        )
-      }
-      resolved <- tryCatch(
-        unique(unlist(lapply(
-          patterns,
-          function(pattern) grep(pattern, assay_features, value = TRUE)
-        ))),
-        error = function(e) {
-          stop(
-            sprintf(
-              "qc_features rule '%s' has an invalid pattern: %s",
-              rule_name,
-              conditionMessage(e)
-            ),
-            call. = FALSE
-          )
-        }
-      )
-    }
-    if (length(resolved) == 0) {
-      stop(
-        sprintf(
-          "qc_features rule '%s' did not match any assay features",
-          rule_name
-        ),
-        call. = FALSE
-      )
-    }
-    out[[rule_name]] <- list(
-      features = resolved,
-      range = rule_range
-    )
-  }
-  out
 }
 
 cellqc_feature_percentage <- function(counts, features) {
