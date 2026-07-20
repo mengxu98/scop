@@ -1,6 +1,6 @@
 // [[Rcpp::depends(RcppArmadillo, cli)]]
 #include <RcppArmadillo.h>
-#include "log_message.h"
+#include <thisutils/cli_progress.h>
 #include <algorithm>
 #include <cmath>
 #include <map>
@@ -723,13 +723,13 @@ DataFrame proportion_permutation(
   std::vector<int> perm_labels(labels);
   std::vector<int> perm_1(n_clusters, 0);
   std::vector<int> perm_2(n_clusters, 0);
-  scop::CliProgress progress(
+  thisutils::cli_progress progress(
     2 * n_permutations,
     verbose,
     "Run proportion permutation and bootstrap"
   );
   for (int perm = 0; perm < n_permutations; ++perm) {
-    if (scop::should_check_interrupt(perm, 2 * n_permutations, verbose)) {
+    if (thisutils::should_check_interrupt(perm, 2 * n_permutations, verbose)) {
       Rcpp::checkUserInterrupt();
     }
     progress.set(perm);
@@ -764,7 +764,7 @@ DataFrame proportion_permutation(
   std::vector<int> boot_2(n_clusters, 0);
   for (int perm = 0; perm < n_permutations; ++perm) {
     const int progress_value = n_permutations + perm;
-    if (scop::should_check_interrupt(progress_value, 2 * n_permutations, verbose)) {
+    if (thisutils::should_check_interrupt(progress_value, 2 * n_permutations, verbose)) {
       Rcpp::checkUserInterrupt();
     }
     progress.set(progress_value);

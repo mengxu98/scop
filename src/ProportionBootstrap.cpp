@@ -1,6 +1,6 @@
 // [[Rcpp::depends(RcppArmadillo, cli)]]
 #include <RcppArmadillo.h>
-#include "log_message.h"
+#include <thisutils/cli_progress.h>
 #include <cmath>
 #include <random>
 #include <vector>
@@ -103,14 +103,14 @@ NumericVector proportion_bootstrap_log2fd(
   std::mt19937 rng(seed);
 
   NumericVector boot(n_bootstrap);
-  scop::CliProgress progress(
+  thisutils::cli_progress progress(
     n_bootstrap,
     verbose,
     "Bootstrap proportion log2 fold differences"
   );
 
   for (int b = 0; b < n_bootstrap; ++b) {
-    if (scop::should_check_interrupt(b, n_bootstrap, verbose)) {
+    if (thisutils::should_check_interrupt(b, n_bootstrap, verbose)) {
       Rcpp::checkUserInterrupt();
     }
     progress.set(b);
