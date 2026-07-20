@@ -189,6 +189,35 @@ test_that("LIANA C++ aggregation preserves a custom sample key and first non-emp
   expect_equal(cpp_out, r_out, tolerance = 1e-12)
 })
 
+test_that("LIANA C++ aggregation supports method as a large-table sample key", {
+  n <- 1000L
+  df <- data.frame(
+    source = rep(c("A", "B"), length.out = n),
+    target = rep(c("X", "Y"), length.out = n),
+    ligand_complex = paste0("L", seq_len(n)),
+    receptor_complex = paste0("R", seq_len(n)),
+    score = seq_len(n) / n,
+    pvalue = rep(c(0.01, 0.02), length.out = n),
+    classification = "Signal",
+    method = "CellChat",
+    stringsAsFactors = FALSE
+  )
+
+  r_out <- getFromNamespace("ccc_aggregate_liana_table", "scop")(
+    df,
+    sample_col = "method",
+    backend = "r"
+  )
+  cpp_out <- getFromNamespace("ccc_aggregate_liana_table", "scop")(
+    df,
+    sample_col = "method",
+    backend = "cpp"
+  )
+
+  expect_true(all(names(r_out) %in% names(cpp_out)))
+  expect_equal(cpp_out[, names(r_out), drop = FALSE], r_out, tolerance = 1e-12)
+})
+
 test_that("aggregate_ccc_long cpp backend handles mismatched vector lengths with error", {
   df <- data.frame(
     sender = c("A", "B"),
