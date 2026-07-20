@@ -837,7 +837,7 @@ ccc_aggregate_liana_table <- function(out, sample_col = NULL, backend = c("cpp",
         cpp_result[[col]] <- out[[col]][key_to_idx]
       }
       cpp_result <- cpp_result[, union(colnames(out), colnames(cpp_result)), drop = FALSE]
-      cpp_order <- do.call(order, c(cpp_result[key_cols], list(na.last = TRUE)))
+      cpp_order <- do.call(order, c(unname(cpp_result[key_cols]), list(na.last = TRUE)))
       cpp_result <- cpp_result[cpp_order, , drop = FALSE]
       rownames(cpp_result) <- NULL
       return(cpp_result)
