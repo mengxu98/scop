@@ -26,7 +26,7 @@ make_scpagwas_gwas <- function() {
   )
 }
 
-with_mock_scpagwas <- function(fun, code) {
+with_mock_scpagwas <- function(fun, code, backend_funs = list()) {
   testthat::local_mocked_bindings(
     .package = "scop",
     check_r = function(packages, ...) {
@@ -35,8 +35,11 @@ with_mock_scpagwas <- function(fun, code) {
     },
     get_namespace_fun = function(pkg, name) {
       expect_identical(pkg, "scPagwas")
-      if (identical(name, "scPagwas_main")) {
+      if (identical(name, "scPagwas_main2")) {
         return(fun)
+      }
+      if (name %in% names(backend_funs)) {
+        return(backend_funs[[name]])
       }
       stop("not found")
     }
@@ -62,11 +65,22 @@ test_that("RunscPagwas passes Seurat input and stores tools metadata", {
     quote = FALSE,
     row.names = FALSE
   )
-  runner <- function(Single_data, gwas_data, block_annotation, output.dirs) {
+  runner <- function(
+    Single_data,
+    gwas_data,
+    block_annotation,
+    output.dirs,
+    seurat_return,
+    singlecell,
+    celltype
+  ) {
     expect_s4_class(Single_data, "Seurat")
     expect_identical(gwas_data, gwas)
     expect_s3_class(block_annotation, "data.frame")
     expect_true(grepl("^(/|[A-Za-z]:/)", output.dirs))
+    expect_identical(seurat_return, TRUE)
+    expect_identical(singlecell, FALSE)
+    expect_identical(celltype, TRUE)
     Single_data
   }
 
@@ -75,6 +89,8 @@ test_that("RunscPagwas passes Seurat input and stores tools metadata", {
       srt = srt,
       gwas_data = gwas,
       celltype_meta = "celltype",
+      singlecell = FALSE,
+      celltype = TRUE,
       block_annotation = block,
       output.dirs = "relative-output",
       cleanup_soar = FALSE,
@@ -84,12 +100,14 @@ test_that("RunscPagwas passes Seurat input and stores tools metadata", {
 
   expect_s4_class(out, "Seurat")
   expect_true("scPagwas" %in% names(out@tools))
+  expect_null(out@tools$scPagwas$result)
   expect_equal(as.character(SeuratObject::Idents(out)), c("A", "A", "B"))
 })
 
 test_that("RunscPagwas supports RDS paths, custom block annotation, and list attr", {
   gwas <- make_scpagwas_gwas()
   single_data <- tempfile(fileext = ".rds")
+  saveRDS(make_scpagwas_seurat(), single_data)
   block <- tempfile(fileext = ".tsv")
   write.table(
     data.frame(chrom = "chr1", start = 1, end = 2, label = "Gene1"),
@@ -98,14 +116,15 @@ test_that("RunscPagwas supports RDS paths, custom block annotation, and list att
     quote = FALSE,
     row.names = FALSE
   )
-  runner <- function(Single_data, block_annotation, unused = NULL) {
-    expect_identical(Single_data, normalizePath(single_data, mustWork = FALSE, winslash = "/"))
+  runner <- function(Single_data, block_annotation, seurat_return, unused = NULL) {
+    expect_s4_class(Single_data, "Seurat")
     expect_s3_class(block_annotation, "data.frame")
+    expect_identical(seurat_return, FALSE)
     list(score = 1)
   }
 
   with_mock_scpagwas(runner, {
-    out <- RunscPaGWAS(
+    out <- RunscPagwas(
       single_data = single_data,
       gwas_data = gwas,
       block_annotation = block,
@@ -118,6 +137,62 @@ test_that("RunscPagwas supports RDS paths, custom block annotation, and list att
 
   expect_equal(out$score, 1)
   expect_type(attr(out, "scPagwas"), "list")
+})
+
+test_that("RunscPagwas accepts and validates GWAS file paths", {
+  gwas_file <- tempfile(fileext = ".tsv")
+  write.table(
+    make_scpagwas_gwas(),
+    gwas_file,
+    sep = "\t",
+    quote = FALSE,
+    row.names = FALSE
+  )
+  single_data <- tempfile(fileext = ".rds")
+  saveRDS(make_scpagwas_seurat(), single_data)
+  block <- tempfile(fileext = ".tsv")
+  write.table(
+    data.frame(chrom = "chr1", start = 1, end = 2, label = "Gene1"),
+    block,
+    sep = "\t",
+    quote = FALSE,
+    row.names = FALSE
+  )
+  runner <- function(gwas_data, ...) {
+    expect_identical(
+      gwas_data,
+      normalizePath(gwas_file, mustWork = TRUE, winslash = "/")
+    )
+    list(ok = TRUE)
+  }
+
+  with_mock_scpagwas(runner, {
+    out <- RunscPagwas(
+      single_data = single_data,
+      gwas_data = gwas_file,
+      block_annotation = block,
+      return_seurat = FALSE,
+      verbose = FALSE
+    )
+  })
+
+  expect_identical(out$ok, TRUE)
+})
+
+test_that("RunscPagwas rejects GWAS files with missing columns early", {
+  gwas_file <- tempfile(fileext = ".tsv")
+  write.table(
+    data.frame(chrom = "1", pos = 123),
+    gwas_file,
+    sep = "\t",
+    quote = FALSE,
+    row.names = FALSE
+  )
+
+  expect_error(
+    RunscPagwas(single_data = "input.rds", gwas_data = gwas_file),
+    "missing required"
+  )
 })
 
 test_that("RunscPagwas supplies upstream default package data explicitly", {
@@ -170,4 +245,87 @@ test_that("RunscPagwas does not accept bare custom block selector", {
     ),
     "custom annotation path"
   )
+})
+
+test_that("scPagwas compatibility runner updates current Seurat calls", {
+  runner <- function() {
+    result <- Seurat::AddModuleScore(
+      object,
+      assay = assay,
+      scPagwas_topgenes,
+      name = "scPagwas.TRS.Score"
+    )
+    Seurat::FindAllMarkers(result, slot = "data")
+  }
+  single_input <- function() {
+    GetAssayData(object, slot = "data", assay = assay)
+  }
+  correct_bg <- function() {
+    GetAssayData(object, slot = "data", assay = assay)
+  }
+
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    get_namespace_fun = function(pkg, name) {
+      expect_identical(pkg, "scPagwas")
+      switch(name,
+        Single_data_input = single_input,
+        Get_CorrectBg_p = correct_bg,
+        stop("not found")
+      )
+    }
+  )
+  patched <- scpagwas_prepare_runner(runner)
+  runner_code <- paste(deparse(body(patched)), collapse = " ")
+  single_code <- paste(
+    deparse(body(get("Single_data_input", envir = environment(patched)))),
+    collapse = " "
+  )
+
+  expect_match(runner_code, "features = list\\(scPagwas_topgenes\\)")
+  expect_match(runner_code, "layer = \\\"data\\\"")
+  expect_match(single_code, "layer = \\\"data\\\"")
+})
+
+test_that("RunscPaGWAS is a deprecated compatibility alias", {
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    RunscPagwas = function(...) "ok"
+  )
+
+  expect_warning(out <- RunscPaGWAS(), "deprecated")
+  expect_identical(out, "ok")
+})
+
+test_that("PlotScPagwas returns score and significance plots", {
+  srt <- make_scpagwas_seurat()
+  embeddings <- matrix(
+    c(0, 0, 1, 0, 0, 1),
+    ncol = 2,
+    byrow = TRUE,
+    dimnames = list(colnames(srt), c("UMAP_1", "UMAP_2"))
+  )
+  srt[["umap"]] <- SeuratObject::CreateDimReducObject(
+    embeddings = embeddings,
+    key = "UMAP_",
+    assay = "RNA"
+  )
+  srt$scPagwas.gPAS.score <- c(0.1, 0.5, 0.9)
+  srt$scPagwas.TRS.Score1 <- c(-0.2, 0.3, 0.7)
+  srt$Random_Correct_BG_adjp <- c(0.01, 0.2, 0.03)
+  output_dir <- tempfile()
+
+  plots <- PlotScPagwas(
+    srt,
+    reduction = "umap",
+    output.dir = output_dir,
+    do_plot = FALSE
+  )
+
+  expect_named(
+    plots,
+    c("scPagwas.gPAS.score", "scPagwas.TRS.Score1", "significant_cells")
+  )
+  expect_s3_class(plots[[1]], "ggplot")
+  expect_length(list.files(output_dir, pattern = "\\.pdf$"), 3)
 })
