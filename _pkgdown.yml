@@ -426,7 +426,7 @@ reference:
 - subtitle: "GWAS Integration"
 - contents:
   - RunscPagwas
-  - PlotScPagwas
+  - PlotscPagwas
 
 - subtitle: "Cell-Cell Communication Plots"
 - contents:

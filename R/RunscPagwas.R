@@ -14,7 +14,7 @@
 #' @param single_data Optional Seurat object or path to a Seurat `.rds` file.
 #' @param gwas_data GWAS summary statistics as a data frame or delimited text
 #' file. Required columns are `chrom`, `pos`, `rsid`, `se`, `beta`, and `maf`.
-#' @param celltype_meta Optional Seurat metadata column used to set identities.
+#' @param group.by Optional Seurat metadata column used to set cell identities.
 #' @param singlecell Whether to calculate single-cell results.
 #' @param celltype Whether to calculate cell-type results.
 #' @param assay Assay used by `scPagwas`. Defaults to the active assay for a
@@ -29,13 +29,13 @@
 #' after filtering by its formal arguments.
 #'
 #' @return A Seurat object or upstream result list.
-#' @seealso [PlotScPagwas()]
+#' @seealso [PlotscPagwas()]
 #' @export
 RunscPagwas <- function(
   srt = NULL,
   single_data = NULL,
   gwas_data,
-  celltype_meta = NULL,
+  group.by = NULL,
   singlecell = TRUE,
   celltype = TRUE,
   assay = NULL,
@@ -61,7 +61,7 @@ RunscPagwas <- function(
   }
   output.dirs <- scpagwas_abs_path(output.dirs)
   dir.create(output.dirs, recursive = TRUE, showWarnings = FALSE)
-  single_data <- scpagwas_prepare_seurat(single_data, celltype_meta, assay)
+  single_data <- scpagwas_prepare_seurat(single_data, group.by, assay)
   scpagwas_check_r(verbose = verbose)
   block_annotation <- scpagwas_resolve_block_annotation(block_annotation)
 
@@ -99,7 +99,7 @@ RunscPagwas <- function(
     method = "scPagwas",
     backend_runner = attr(fun, "scpagwas_runner", exact = TRUE),
     parameters = list(
-      celltype_meta = celltype_meta,
+      group.by = group.by,
       singlecell = singlecell,
       celltype = celltype,
       assay = assay,
@@ -122,24 +122,6 @@ RunscPagwas <- function(
   res
 }
 
-#' @title Deprecated scPagwas Alias
-#'
-#' @description
-#' `RunscPaGWAS()` is retained for compatibility. Use [RunscPagwas()] for new
-#' code.
-#'
-#' @md
-#' @param ... Arguments passed to [RunscPagwas()].
-#'
-#' @return The value returned by [RunscPagwas()].
-#' @name RunscPaGWAS-deprecated
-#' @keywords internal
-#' @export
-RunscPaGWAS <- function(...) {
-  .Deprecated("RunscPagwas")
-  RunscPagwas(...)
-}
-
 #' @title Plot scPagwas Scores
 #'
 #' @description
@@ -156,13 +138,16 @@ RunscPaGWAS <- function(...) {
 #' cells. Set to `NULL` to omit the significance plot.
 #' @param output.dir Optional directory in which to save PDF files.
 #' @param width,height PDF dimensions in inches.
-#' @param point_size Point size passed to Seurat plotting functions.
-#' @param low,high Colors for low and high score values.
+#' @param point_size Point size passed to [FeatureDimPlot()] and [CellDimPlot()].
+#' @param palette,palcolor Palette used for continuous scPagwas scores, passed
+#' to [FeatureDimPlot()].
+#' @param significance_palette,significance_palcolor Palette used for the
+#' significance groups, passed to [CellDimPlot()].
 #' @param do_plot Whether to print each plot.
 #'
 #' @return A named list of ggplot objects.
 #' @export
-PlotScPagwas <- function(
+PlotscPagwas <- function(
   srt,
   reduction = c("umap", "tsne"),
   features = NULL,
@@ -171,8 +156,10 @@ PlotScPagwas <- function(
   width = 7,
   height = 7,
   point_size = NULL,
-  low = "#000957",
-  high = "#EBE645",
+  palette = "Spectral",
+  palcolor = NULL,
+  significance_palette = "Chinese",
+  significance_palcolor = NULL,
   do_plot = TRUE
 ) {
   if (!inherits(srt, "Seurat")) {
@@ -215,12 +202,14 @@ PlotScPagwas <- function(
   }
 
   plots <- lapply(features, function(feature) {
-    Seurat::FeaturePlot(
+    FeatureDimPlot(
       srt,
       features = feature,
       reduction = reduction,
-      cols = c(low, high),
+      palette = palette,
+      palcolor = palcolor,
       pt.size = point_size,
+      show_stat = FALSE,
       combine = FALSE
     )[[1]]
   })
@@ -250,12 +239,14 @@ PlotScPagwas <- function(
       ),
       levels = c("Not significant", "Significant")
     )
-    plots$significant_cells <- Seurat::DimPlot(
+    plots$significant_cells <- CellDimPlot(
       plot_srt,
       reduction = reduction,
       group.by = ".scPagwas_significant",
-      cols = c("#E4DCCF", "#EA5455"),
+      palette = significance_palette,
+      palcolor = significance_palcolor,
       pt.size = point_size,
+      show_stat = FALSE,
       combine = FALSE
     )[[1]] +
       ggplot2::ggtitle(
@@ -458,7 +449,7 @@ scpagwas_resolve_single_data <- function(srt = NULL, single_data = NULL) {
   single_data
 }
 
-scpagwas_prepare_seurat <- function(single_data, celltype_meta = NULL, assay = NULL) {
+scpagwas_prepare_seurat <- function(single_data, group.by = NULL, assay = NULL) {
   if (!inherits(single_data, "Seurat")) {
     return(single_data)
   }
@@ -475,13 +466,13 @@ scpagwas_prepare_seurat <- function(single_data, celltype_meta = NULL, assay = N
   if (is.null(data_layer) || any(dim(data_layer) == 0L)) {
     single_data <- Seurat::NormalizeData(single_data, assay = assay, verbose = FALSE)
   }
-  if (is.null(celltype_meta)) {
+  if (is.null(group.by)) {
     return(single_data)
   }
-  if (!celltype_meta %in% colnames(single_data[[]])) {
-    log_message("Missing metadata column: {.val {celltype_meta}}", message_type = "error")
+  if (!group.by %in% colnames(single_data[[]])) {
+    log_message("Missing metadata column: {.val {group.by}}", message_type = "error")
   }
-  SeuratObject::Idents(single_data) <- single_data[[celltype_meta]][, 1]
+  SeuratObject::Idents(single_data) <- single_data[[group.by]][, 1]
   single_data
 }
 
