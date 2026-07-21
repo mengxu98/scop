@@ -8,7 +8,7 @@ RunSpatialQM(
   srt,
   assay = NULL,
   layer = "counts",
-  metrics = c("n_cells", "tx_per_cell", "sparsity", "entropy"),
+  metrics = c("n_cells", "tx_per_cell", "max_detection"),
   features = NULL,
   sample_id = NULL,
   platform = NULL,
@@ -31,7 +31,9 @@ used.}
 \code{"n_cells"}, \code{"tx_per_cell"}, \code{"tx_per_area"}, \code{"tx_per_nuc"},
 \code{"mean_expression"}, \code{"mean_signal_ratio"}, \code{"cell_tx_fraction"},
 \code{"max_ratio"}, \code{"max_detection"}, \code{"mecr"}, \code{"morans"}, \code{"silhouette"},
-\code{"sparsity"}, and \code{"entropy"}.}
+\code{"sparsity"}, and \code{"entropy"}. The defaults are the object-first metrics
+supported by the current upstream API without raw transcript or control-probe
+inputs; other metrics remain explicitly selectable.}
 
 \item{features}{Optional feature vector passed to metrics that support a
 \code{features} argument.}

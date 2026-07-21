@@ -254,6 +254,7 @@ RunCARD <- function(
       features = rownames(st_counts),
       reference_metadata = ref_meta,
       backend_package = backend$package,
+      dropped_spots = backend$dropped_spots,
       object = backend$object,
       summary = scop_spatial_weight_summary(weights),
       parameters = list(
@@ -329,6 +330,7 @@ card_run_backend <- function(
     create_card_params
   )
   deconv_formals <- names(formals(deconv_fun))
+  dropped_spots <- character()
   if ("CARD_object" %in% deconv_formals) {
     card_obj <- do.call(create_fun, card_match_formals(create_fun, create_args))
     deconv_args <- c(
@@ -336,6 +338,80 @@ card_run_backend <- function(
       card_deconvolution_params
     )
   } else {
+    if (identical(package, "CARDspa")) {
+      create_ref_fun <- get_namespace_fun(package, "create_ref")
+      select_info_fun <- get_namespace_fun(package, "select_info")
+      if (!is.function(create_ref_fun) || !is.function(select_info_fun)) {
+        log_message(
+          "The installed {.pkg CARDspa} one-step API is incompatible; required preprocessing functions are unavailable",
+          message_type = "error"
+        )
+      }
+      preflight <- do.call(create_fun, card_match_formals(create_fun, create_args))
+      info <- tryCatch(
+        methods::slot(preflight, "info_parameters"),
+        error = function(e) preflight[["info_parameters"]]
+      )
+      sc_eset <- tryCatch(
+        methods::slot(preflight, "sc_eset"),
+        error = function(e) preflight[["sc_eset"]]
+      )
+      spatial_count_mat <- tryCatch(
+        methods::slot(preflight, "spatial_countMat"),
+        error = function(e) preflight[["spatial_countMat"]]
+      )
+      ct_use <- info[["ct.select"]] %||% ct_select
+      ct_varname <- info[["ct.varname"]] %||% ".scop_cell_type"
+      sample_varname <- info[["sample.varname"]] %||% ".scop_sample"
+      basis <- create_ref_fun(
+        sc_eset,
+        ct_use,
+        ct_varname,
+        sample_varname
+      )[["basis"]]
+      basis <- basis[, colnames(basis) %in% ct_use, drop = FALSE]
+      common_genes <- intersect(rownames(spatial_count_mat), rownames(basis))
+      informative_genes <- select_info_fun(
+        basis,
+        sc_eset,
+        common_genes,
+        ct_use,
+        ct_varname
+      )
+      informative_counts <- spatial_count_mat[
+        rownames(spatial_count_mat) %in% informative_genes,
+        ,
+        drop = FALSE
+      ]
+      informative_counts <- informative_counts[
+        Matrix::rowSums(informative_counts) > 0,
+        ,
+        drop = FALSE
+      ]
+      supported_spots <- if (nrow(informative_counts) == 0L) {
+        character()
+      } else {
+        colnames(informative_counts)[Matrix::colSums(informative_counts) > 0]
+      }
+      supported_spots <- intersect(colnames(st_counts), supported_spots)
+      dropped_spots <- setdiff(colnames(st_counts), supported_spots)
+      if (length(supported_spots) == 0L) {
+        log_message(
+          "{.pkg CARDspa} found no spatial spots with counts in its informative genes",
+          message_type = "error"
+        )
+      }
+      if (length(dropped_spots) > 0L) {
+        log_message(
+          "{.pkg CARDspa} excludes {.val {length(dropped_spots)}} spot{?s} with zero counts across backend-selected informative genes",
+          message_type = "warning"
+        )
+        st_counts <- st_counts[, supported_spots, drop = FALSE]
+        coords <- coords[supported_spots, , drop = FALSE]
+        create_args[["spatial_count"]] <- st_counts
+        create_args[["spatial_location"]] <- coords
+      }
+    }
     deconv_args <- c(create_args, card_deconvolution_params)
   }
   card_obj <- do.call(deconv_fun, card_match_formals(deconv_fun, deconv_args))
@@ -343,25 +419,29 @@ card_run_backend <- function(
   list(
     package = package,
     object = card_obj,
-    weights = weights
+    weights = weights,
+    dropped_spots = dropped_spots
   )
 }
 
 card_resolve_backend_package <- function() {
+  check_r("YingMa0107/CARD", verbose = FALSE)
   packages <- c("CARD", "CARDspa")
   available <- vapply(
     packages,
-    function(pkg) !is.null(tryCatch(asNamespace(pkg), error = function(e) NULL)),
+    function(pkg) {
+      create_fun <- suppressWarnings(tryCatch(
+        get_namespace_fun(pkg, "createCARDObject"),
+        error = function(e) NULL
+      ))
+      deconv_fun <- suppressWarnings(tryCatch(
+        get_namespace_fun(pkg, "CARD_deconvolution"),
+        error = function(e) NULL
+      ))
+      is.function(create_fun) && is.function(deconv_fun)
+    },
     logical(1)
   )
-  if (!any(available)) {
-    invisible(lapply(packages, function(pkg) check_r(pkg, verbose = FALSE)))
-    available <- vapply(
-      packages,
-      function(pkg) !is.null(tryCatch(asNamespace(pkg), error = function(e) NULL)),
-      logical(1)
-    )
-  }
   if (!any(available)) {
     log_message(
       "Please install {.pkg CARD} or {.pkg CARDspa} before running {.fn RunCARD}",
