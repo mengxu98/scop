@@ -81,8 +81,18 @@ RunscPagwas <- function(
   )
   extra_args <- extra_args[setdiff(names(extra_args), names(args))]
   args <- c(args, extra_args)
-  restore_wd <- scpagwas_set_absolute_output_wd(output.dirs)
-  on.exit(restore_wd(), add = TRUE)
+  output_context <- scpagwas_output_context(output.dirs)
+  args$output.dirs <- output_context$backend_dir
+  on.exit(output_context$restore(), add = TRUE)
+  old_r_local_cache <- Sys.getenv("R_LOCAL_CACHE", unset = NA_character_)
+  on.exit(
+    if (is.na(old_r_local_cache)) {
+      Sys.unsetenv("R_LOCAL_CACHE")
+    } else {
+      Sys.setenv(R_LOCAL_CACHE = old_r_local_cache)
+    },
+    add = TRUE
+  )
   res <- do.call(fun, scpagwas_filter_args(fun, args))
 
   meta <- list(
@@ -342,8 +352,7 @@ scpagwas_rewrite_seurat_calls <- function(fun) {
     if (call_name %in% c(
       "GetAssayData",
       "Seurat::GetAssayData",
-      "SeuratObject::GetAssayData",
-      "Seurat::FindAllMarkers"
+      "SeuratObject::GetAssayData"
     )) {
       names(expr)[which(arg_names == "slot")] <- "layer"
     }
@@ -402,16 +411,18 @@ scpagwas_add_default_data_args <- function(fun, args) {
   args
 }
 
-scpagwas_set_absolute_output_wd <- function(output.dirs) {
-  if (!grepl("^/", output.dirs)) {
-    return(function() invisible(FALSE))
-  }
+scpagwas_output_context <- function(output.dirs) {
   old_wd <- getwd()
-  setwd("/")
-  function() {
-    setwd(old_wd)
-    invisible(TRUE)
-  }
+  # scPagwas prefixes output.dirs with "./", so call it from the parent and
+  # pass only the directory name to keep Windows drive paths valid.
+  setwd(dirname(output.dirs))
+  list(
+    backend_dir = basename(output.dirs),
+    restore = function() {
+      setwd(old_wd)
+      invisible(TRUE)
+    }
+  )
 }
 
 scpagwas_resolve_single_data <- function(srt = NULL, single_data = NULL) {

@@ -57,6 +57,7 @@ test_that("RunscPagwas validates required GWAS columns early", {
 test_that("RunscPagwas passes Seurat input and stores tools metadata", {
   srt <- make_scpagwas_seurat()
   gwas <- make_scpagwas_gwas()
+  output_dir <- tempfile("scpagwas-output-")
   block <- tempfile(fileext = ".tsv")
   write.table(
     data.frame(chrom = "chr1", start = 1, end = 2, label = "Gene1"),
@@ -77,7 +78,8 @@ test_that("RunscPagwas passes Seurat input and stores tools metadata", {
     expect_s4_class(Single_data, "Seurat")
     expect_identical(gwas_data, gwas)
     expect_s3_class(block_annotation, "data.frame")
-    expect_true(grepl("^(/|[A-Za-z]:/)", output.dirs))
+    expect_false(grepl("^(/|[A-Za-z]:/)", output.dirs))
+    writeLines("backend output", file.path(".", output.dirs, "probe.txt"))
     expect_identical(seurat_return, TRUE)
     expect_identical(singlecell, FALSE)
     expect_identical(celltype, TRUE)
@@ -92,7 +94,7 @@ test_that("RunscPagwas passes Seurat input and stores tools metadata", {
       singlecell = FALSE,
       celltype = TRUE,
       block_annotation = block,
-      output.dirs = "relative-output",
+      output.dirs = output_dir,
       cleanup_soar = FALSE,
       verbose = FALSE
     )
@@ -102,6 +104,7 @@ test_that("RunscPagwas passes Seurat input and stores tools metadata", {
   expect_true("scPagwas" %in% names(out@tools))
   expect_null(out@tools$scPagwas$result)
   expect_equal(as.character(SeuratObject::Idents(out)), c("A", "A", "B"))
+  expect_true(file.exists(file.path(output_dir, "probe.txt")))
 })
 
 test_that("RunscPagwas supports RDS paths, custom block annotation, and list attr", {
@@ -283,8 +286,68 @@ test_that("scPagwas compatibility runner updates current Seurat calls", {
   )
 
   expect_match(runner_code, "features = list\\(scPagwas_topgenes\\)")
-  expect_match(runner_code, "layer = \\\"data\\\"")
+  expect_match(runner_code, "slot = \\\"data\\\"")
   expect_match(single_code, "layer = \\\"data\\\"")
+})
+
+test_that("RunscPagwas restores R_LOCAL_CACHE after backend errors", {
+  srt <- make_scpagwas_seurat()
+  gwas <- make_scpagwas_gwas()
+  block <- tempfile(fileext = ".tsv")
+  write.table(
+    data.frame(chrom = "chr1", start = 1, end = 2, label = "Gene1"),
+    block,
+    sep = "\t",
+    quote = FALSE,
+    row.names = FALSE
+  )
+  old_cache <- Sys.getenv("R_LOCAL_CACHE", unset = NA_character_)
+  on.exit(
+    if (is.na(old_cache)) {
+      Sys.unsetenv("R_LOCAL_CACHE")
+    } else {
+      Sys.setenv(R_LOCAL_CACHE = old_cache)
+    },
+    add = TRUE
+  )
+  Sys.setenv(R_LOCAL_CACHE = "scop-test-original")
+  old_wd <- getwd()
+  runner <- function(...) {
+    Sys.setenv(R_LOCAL_CACHE = "scpagwas-backend-value")
+    stop("backend failed")
+  }
+
+  with_mock_scpagwas(runner, {
+    expect_error(
+      RunscPagwas(
+        srt = srt,
+        gwas_data = gwas,
+        block_annotation = block,
+        output.dirs = tempfile("scpagwas-output-"),
+        verbose = FALSE
+      ),
+      "backend failed"
+    )
+  })
+
+  expect_identical(Sys.getenv("R_LOCAL_CACHE"), "scop-test-original")
+  expect_identical(getwd(), old_wd)
+
+  Sys.unsetenv("R_LOCAL_CACHE")
+  with_mock_scpagwas(runner, {
+    expect_error(
+      RunscPagwas(
+        srt = srt,
+        gwas_data = gwas,
+        block_annotation = block,
+        output.dirs = tempfile("scpagwas-output-"),
+        verbose = FALSE
+      ),
+      "backend failed"
+    )
+  })
+  expect_true(is.na(Sys.getenv("R_LOCAL_CACHE", unset = NA_character_)))
+  expect_identical(getwd(), old_wd)
 })
 
 test_that("RunscPaGWAS is a deprecated compatibility alias", {
