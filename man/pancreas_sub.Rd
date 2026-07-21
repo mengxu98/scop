@@ -53,7 +53,7 @@ A total of 1000 cells were downsampled to form the \code{pancreas_sub} dataset.
   pancreas_sub$SubCellType <- gsub(" ", "-", pancreas_sub$SubCellType)
   pancreas_sub@reductions$X_pca <- NULL
   pancreas_sub@reductions$X_umap <- NULL
-  use_data <- get_namespace_fun("usethis", "use_data")
+  use_data <- thisutils::get_namespace_fun("usethis", "use_data")
   use_data(
     pancreas_sub,
     compress = "xz",

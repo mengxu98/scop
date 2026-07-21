@@ -324,21 +324,24 @@ Choose the analysis level from the observation represented by each column:
   direct cell-type communication;
 - `"composition"` for Visium spots with a spot-by-cell-type proportion matrix.
 
-Distance parameters are always interpreted in microns. For Visium full-image
-pixel coordinates, provide the conversion ratio from
-`65 / spot_diameter_fullres`; do not substitute low-resolution display scales.
-Multiple samples are run independently and require an explicit `sample.by`
-and image mapping.
+Distance parameters are always interpreted in microns. Micron coordinates use
+`ratio = 1`. For Visium full-image pixel coordinates, `RunSpatialCellChat()`
+can derive the conversion ratio as `65 / spot_diameter_fullres` when the
+selected image contains exactly one trusted full-resolution spot diameter;
+otherwise provide `ratio` explicitly. Never substitute a low-resolution display
+scale. Multiple samples are run independently and require an explicit
+`sample.by` and named image mapping. Check the optional backend without changing
+the environment with `SpatialBackendStatus(backend = "spatialcellchat")`.
 
 ```{r spatial-cellchat, eval=FALSE}
 spatial <- RunSpatialCellChat(
   spatial,
   group.by = "spatial_domain",
-  image = "slice1",
+  sample.by = "sample",
+  image = c(section1 = "slice1", section2 = "slice2"),
   technology = "visium",
   analysis.level = "spot",
   coordinate.unit = "pixel",
-  ratio = 65 / spot_diameter_fullres,
   tol = 32.5,
   species = "Homo_sapiens",
   database = "protein",
@@ -347,8 +350,9 @@ spatial <- RunSpatialCellChat(
 
 CCCNetworkPlot(spatial, method = "SpatialCellChat", plot_type = "circle")
 CCCHeatmap(spatial, method = "SpatialCellChat", plot_type = "bubble")
-SpatialCellChatPlot(spatial, plot_type = "incoming")
-GetSpatialResult(spatial, method = "RunSpatialCellChat")
+SpatialCellChatPlot(spatial, sample = "section1", plot_type = "incoming")
+SpatialResultInfo(spatial, method = "RunSpatialCellChat")
+result <- GetSpatialResult(spatial, method = "RunSpatialCellChat")
 ```
 
 `store.object = "minimal"` stores normalized interaction, pathway, network,

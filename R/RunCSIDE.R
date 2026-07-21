@@ -596,7 +596,7 @@ cside_run_backend <- function(
 }
 
 cside_get_backend_fun <- function(mode) {
-  check_r("dmcable/spacexr", verbose = FALSE)
+  thisutils::check_r("dmcable/spacexr", verbose = FALSE)
   fun <- switch(
     mode,
     single = "run.CSIDE.single",
