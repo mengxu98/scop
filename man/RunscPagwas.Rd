@@ -8,7 +8,7 @@ RunscPagwas(
   srt = NULL,
   single_data = NULL,
   gwas_data,
-  celltype_meta = NULL,
+  group.by = NULL,
   singlecell = TRUE,
   celltype = TRUE,
   assay = NULL,
@@ -28,7 +28,7 @@ RunscPagwas(
 \item{gwas_data}{GWAS summary statistics as a data frame or delimited text
 file. Required columns are \code{chrom}, \code{pos}, \code{rsid}, \code{se}, \code{beta}, and \code{maf}.}
 
-\item{celltype_meta}{Optional Seurat metadata column used to set identities.}
+\item{group.by}{Optional Seurat metadata column used to set cell identities.}
 
 \item{singlecell}{Whether to calculate single-cell results.}
 
@@ -65,5 +65,5 @@ applies Seurat 5 compatibility to local function copies without modifying
 the installed backend namespace.
 }
 \seealso{
-\code{\link[=PlotScPagwas]{PlotScPagwas()}}
+\code{\link[=PlotscPagwas]{PlotscPagwas()}}
 }

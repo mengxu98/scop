@@ -90,7 +90,7 @@ test_that("RunscPagwas passes Seurat input and stores tools metadata", {
     out <- RunscPagwas(
       srt = srt,
       gwas_data = gwas,
-      celltype_meta = "celltype",
+      group.by = "celltype",
       singlecell = FALSE,
       celltype = TRUE,
       block_annotation = block,
@@ -350,17 +350,7 @@ test_that("RunscPagwas restores R_LOCAL_CACHE after backend errors", {
   expect_identical(getwd(), old_wd)
 })
 
-test_that("RunscPaGWAS is a deprecated compatibility alias", {
-  testthat::local_mocked_bindings(
-    .package = "scop",
-    RunscPagwas = function(...) "ok"
-  )
-
-  expect_warning(out <- RunscPaGWAS(), "deprecated")
-  expect_identical(out, "ok")
-})
-
-test_that("PlotScPagwas returns score and significance plots", {
+test_that("PlotscPagwas returns score and significance plots", {
   srt <- make_scpagwas_seurat()
   embeddings <- matrix(
     c(0, 0, 1, 0, 0, 1),
@@ -378,7 +368,7 @@ test_that("PlotScPagwas returns score and significance plots", {
   srt$Random_Correct_BG_adjp <- c(0.01, 0.2, 0.03)
   output_dir <- tempfile()
 
-  plots <- PlotScPagwas(
+  plots <- PlotscPagwas(
     srt,
     reduction = "umap",
     output.dir = output_dir,
@@ -391,4 +381,12 @@ test_that("PlotScPagwas returns score and significance plots", {
   )
   expect_s3_class(plots[[1]], "ggplot")
   expect_length(list.files(output_dir, pattern = "\\.pdf$"), 3)
+})
+
+test_that("scPagwas exposes only the current SCOP API", {
+  expect_true("group.by" %in% names(formals(RunscPagwas)))
+  expect_false("celltype_meta" %in% names(formals(RunscPagwas)))
+  expect_true(is.function(PlotscPagwas))
+  expect_false("PlotScPagwas" %in% getNamespaceExports("scop"))
+  expect_false("RunscPaGWAS" %in% getNamespaceExports("scop"))
 })
