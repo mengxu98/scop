@@ -20,7 +20,7 @@ These mainly include words that are excessively redundant or of little value.
     "regulation", "regulated", "positive", "negative",
     "response", "process", "processing", "small", "large", "change"
   )
-  use_data <- get_namespace_fun("usethis", "use_data")
+  use_data <- thisutils::get_namespace_fun("usethis", "use_data")
   use_data(words_excluded, compress = "xz")
 }
 \concept{data}

@@ -729,7 +729,7 @@ rctd_require_namespaces <- function(pkgs) {
   install_specs <- pkgs
   install_specs[install_specs == "spacexr"] <- "dmcable/spacexr"
   available <- unlist(
-    check_r(install_specs, verbose = FALSE),
+    thisutils::check_r(install_specs, verbose = FALSE),
     use.names = TRUE
   )
   if (

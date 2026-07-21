@@ -40,71 +40,161 @@ RunSpatialCellChat(
 )
 }
 \arguments{
-\item{srt}{A `Seurat` object.}
+\item{srt}{A `Seurat` object with normalized, non-negative expression and
+spatial coordinates.}
 
-\item{group.by}{Metadata column defining cell types or spot domains.}
+\item{group.by}{One metadata column defining cell types for cell-level runs,
+or spot/domain labels for spot- and composition-level runs. Values must be
+complete and non-empty.}
 
-\item{sample.by}{Optional metadata column defining independent spatial samples.}
+\item{sample.by}{Optional metadata column defining independent spatial
+samples. Samples are processed separately. When omitted, all observations
+are treated as one sample.}
 
-\item{assay, layer}{Assay and normalized expression layer.}
+\item{assay, layer}{Assay and normalized expression layer. `assay = NULL`
+uses the default assay.}
 
 \item{image}{Spatial image name, or a named character vector mapping samples
-to images. Multi-image objects require an explicit selection.}
+to images, for example `c(section1 = "slice1", section2 = "slice2")`.
+Multi-image objects never silently select the first image.}
 
-\item{coord.cols}{Metadata coordinate columns when no image is present.}
+\item{coord.cols}{Two metadata coordinate columns used when image coordinates
+are unavailable.}
 
-\item{species}{Species database.}
+\item{species}{Species used to select the human or mouse signaling database.}
 
-\item{database}{Signaling database scope.}
+\item{database}{Signaling database scope: protein interactions, the complete
+database, or a user-supplied custom database.}
 
-\item{custom.db}{Custom SpatialCellChat database used with `database = "custom"`.}
+\item{custom.db}{Custom SpatialCellChat database used only with
+`database = "custom"`.}
 
-\item{technology}{Spatial technology. Automatic detection is strict.}
+\item{technology}{Spatial technology. `"auto"` requires exactly one
+unambiguous technology inferred from the selected image or metadata.}
 
-\item{analysis.level}{Scientific interpretation of observations.}
+\item{analysis.level}{Scientific interpretation of each observation.
+`"auto"` uses segmentation, technology, and `composition` evidence and
+errors when the result is ambiguous.}
 
-\item{composition}{Spot-by-cell-type composition matrix for composition mode.}
+\item{composition}{Numeric spot-by-cell-type matrix for composition mode.
+Row names must match selected spots and columns must match `group.by`
+labels.}
 
-\item{composition.normalize}{Normalize composition rows to one when needed.}
+\item{composition.normalize}{Whether to normalize positive composition rows
+to sum to one. When `FALSE`, rows must already sum to one.}
 
-\item{coordinate.unit}{Unit of the raw coordinates.}
+\item{coordinate.unit}{Unit of the raw input coordinates. Automatic unit
+selection uses technology-specific rules.}
 
-\item{ratio}{Raw-coordinate to micron multiplier.}
+\item{ratio}{Positive raw-coordinate-to-micron multiplier. It must be `1`
+for micron coordinates. For Visium pixels, it may be omitted when one
+trusted `spot_diameter_fullres` value is available.}
 
-\item{tol}{Spatial tolerance in microns.}
+\item{tol}{Positive spatial tolerance in microns. Visium defaults to `32.5`;
+cell-resolved and generic technologies require an explicit value.}
 
 \item{interaction.range}{Maximum signaling range in microns.}
 
-\item{contact.dependent}{Whether to infer contact-dependent signaling.}
+\item{contact.dependent}{Whether to infer contact-dependent signaling. This
+is rejected for spot-level analysis.}
 
 \item{contact.range}{Contact range in microns. Required when contact signaling
 is enabled for cell-level data.}
 
-\item{scale.distance}{SpatialCellChat distance scaling parameter.}
+\item{scale.distance}{Positive SpatialCellChat distance scaling parameter.}
 
-\item{min.cells, min.links}{Minimum group sizes and individual links.}
+\item{min.cells, min.links}{Positive minimum group size and individual-link
+count used by backend filtering.}
 
 \item{avg.type}{Group-level probability aggregation method.}
 
-\item{do.permutation, nboot, seed.use}{Group permutation settings.}
+\item{do.permutation}{Whether to run the spatial permutation procedure.}
 
-\item{result.name}{Stored result name.}
+\item{nboot}{Number of permutation replicates.}
 
-\item{store.object}{Store only normalized results or also native backend objects.}
+\item{seed.use}{Random seed passed to the backend.}
 
-\item{overwrite}{Whether an existing named result may be replaced.}
+\item{result.name}{Name used within the stored SpatialCellChat result bundle.}
 
-\item{backend}{Backend for scop's unified CCC post-processing only.}
+\item{store.object}{`"minimal"` stores normalized tables, coordinates, and
+diagnostics. `"full"` additionally stores each native backend object.}
+
+\item{overwrite}{Whether an existing result with the same `result.name` may
+be replaced.}
+
+\item{backend}{Backend for scop's unified CCC post-processing only; it does
+not change the SpatialCellChat inference engine.}
 
 \item{verbose}{Whether to print progress messages.}
 }
 \value{
-The input `Seurat` object with SpatialCellChat and unified CCC results.
+The input `Seurat` object with a schema-v1 SpatialCellChat bundle in
+  `srt@tools$SpatialCellChat` and standardized CCC results under the distinct
+  method name `"SpatialCellChat"`.
 }
 \description{
 Run the SpatialCellChat v3 backend with explicit micron-scale coordinates,
 sample isolation, truthful provenance, and schema-v1 storage. Cell-, spot-,
 and composition-level results retain distinct interpretations.
+}
+\details{
+`RunSpatialCellChat()` keeps spatial and non-spatial communication results
+separate. The normalized SpatialCellChat interaction table is stored under
+the CCC method name `"SpatialCellChat"`; it does not replace a result from
+[RunCellChat()]. Each spatial sample is analyzed independently so that
+distances are never calculated across tissue sections.
+
+The analysis level describes what one expression column represents:
+
+- `"cell"` is for segmented cells, including Xenium, CosMx, and MERFISH;
+- `"spot"` is for capture spots or spatial domains and must not be
+  interpreted as direct cell-to-cell communication;
+- `"composition"` combines spot expression with a spot-by-cell-type
+  composition matrix.
+
+Distance-sensitive calculations use raw coordinates converted to microns.
+Micron coordinates use `ratio = 1`. Pixel coordinates require a positive
+raw-unit-to-micron `ratio`; for Visium data, the function can derive this as
+`65 / spot_diameter_fullres` when exactly one trusted full-resolution spot
+diameter is available. `tol`, `interaction.range`, and `contact.range` are
+always expressed in microns. Display coordinates are retained only for
+plotting stored results.
+
+Objects with multiple images require an explicit `image` selection. When
+`sample.by` contains multiple samples, supply a named character vector that
+maps every sample to one image. Native backend objects are omitted by default
+because they can be large; use `store.object = "full"` only if subsequent
+SpatialCellChat-native analysis is needed.
+}
+\examples{
+# SpatialCellChat is a runtime-optional backend and a full run can be slow.
+# The following example uses constructed domain labels only to demonstrate
+# the multi-slice interface.
+\dontrun{
+if (thisutils::check_r("jinworks/SpatialCellChat", verbose = FALSE)) {
+  data(visium_mouse_brain_slices_sub)
+  spatial <- visium_mouse_brain_slices_sub
+  spatial$spatial_domain <- ifelse(
+    spatial$x <= stats::median(spatial$x), "left", "right"
+  )
+  spatial <- RunSpatialCellChat(
+    spatial,
+    group.by = "spatial_domain",
+    sample.by = "sample",
+    assay = "Spatial",
+    image = c(anterior1 = "anterior1", anterior2 = "anterior2"),
+    technology = "visium",
+    analysis.level = "spot",
+    coordinate.unit = "pixel",
+    species = "Mus_musculus",
+    store.object = "minimal"
+  )
+  SpatialBackendStatus(backend = "spatialcellchat")
+  SpatialResultInfo(spatial, method = "RunSpatialCellChat")
+  SpatialCellChatPlot(spatial, sample = "anterior1", plot_type = "incoming")
+}
+}
+
 }
 \references{
 [SpatialCellChat](https://github.com/jinworks/SpatialCellChat)
