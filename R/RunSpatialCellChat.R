@@ -445,6 +445,107 @@ spatialcellchat_call <- function(symbol, args, analysis.level) {
     )
   }
   fun <- get_namespace_fun(.spatialcellchat_package, symbol)
+  original_sparse_fun <- get_namespace_fun(.spatialcellchat_package, "my_as_sparse3Darray")
+  sparse3d_fun <- get_namespace_fun("spatstat.sparse", "sparse3Darray")
+  compatibility_env <- new.env(parent = environment(fun))
+  compatibility_env[["my_future_lapply"]] <- function(
+    X,
+    FUN,
+    ...,
+    future.seed = TRUE,
+    simplify = FALSE,
+    hint.message = "Computing...",
+    strategy.message = TRUE,
+    future.label = "future_lapply-%d"
+  ) {
+    result <- lapply(X = X, FUN = FUN, ...)
+    if (isTRUE(simplify)) unlist(result) else result
+  }
+  compatibility_env[["my_future_sapply"]] <- function(
+    X,
+    FUN,
+    ...,
+    simplify = TRUE,
+    USE.NAMES = TRUE,
+    future.envir = parent.frame(),
+    future.seed = TRUE,
+    future.label = "future_sapply-%d",
+    hint.message = "Computing...",
+    strategy.message = TRUE
+  ) {
+    answer <- lapply(X = X, FUN = match.fun(FUN), ...)
+    if (isTRUE(USE.NAMES) && is.character(X) && is.null(names(answer))) {
+      names(answer) <- X
+    }
+    if (!isFALSE(simplify) && length(answer)) {
+      simplify2array(answer, higher = identical(simplify, "array"))
+    } else {
+      answer
+    }
+  }
+  compatibility_env[["my_as_sparse3Darray"]] <- function(
+    x,
+    ...,
+    strict = FALSE,
+    nonzero = FALSE
+  ) {
+    is_sparse_list <- is.list(x) && length(x) > 0L &&
+      all(vapply(x, inherits, logical(1), what = "sparseMatrix"))
+    if (!is_sparse_list) {
+      return(original_sparse_fun(x, ..., strict = strict, nonzero = nonzero))
+    }
+    dims <- lapply(x, dim)
+    if (!all(vapply(dims, identical, logical(1), dims[[1L]]))) {
+      log_message("SpatialCellChat sparse matrices have inconsistent dimensions", message_type = "error")
+    }
+    dim_names <- lapply(x, dimnames)
+    non_null_names <- Filter(Negate(is.null), dim_names)
+    if (length(non_null_names) > 1L &&
+      !all(vapply(non_null_names, identical, logical(1), non_null_names[[1L]]))) {
+      log_message("SpatialCellChat sparse matrices have inconsistent dimnames", message_type = "error")
+    }
+    pieces <- lapply(seq_along(x), function(k) {
+      matrix_k <- methods::as(x[[k]], "TsparseMatrix")
+      data.frame(
+        i = matrix_k@i + 1L,
+        j = matrix_k@j + 1L,
+        k = rep.int(k, length(matrix_k@x)),
+        x = matrix_k@x
+      )
+    })
+    indices <- do.call(rbind, pieces)
+    sparse3d_fun(
+      i = indices$i,
+      j = indices$j,
+      k = indices$k,
+      x = indices$x,
+      dims = c(dims[[1L]], length(x)),
+      dimnames = if (length(non_null_names) == 0L) NULL else c(non_null_names[[1L]], list(NULL)),
+      strict = strict,
+      nonzero = nonzero
+    )
+  }
+  compatibility_symbols <- c(
+    "computeAvgCommunProb", "computeAvgCommunProb_Visium", "computeCommunField",
+    "computeCommunProb", "computeCommunProbPathway", "computeExpr_LR",
+    "computeExpr_complex", "computeExpr_coreceptor", "filterCommunication", "filterProbability",
+    "identifyOverExpressedGenes", "identifyOverExpressedInteractions",
+    "identifyOverExpressedLigandReceptor"
+  )
+  for (backend_symbol in compatibility_symbols) {
+    backend_fun <- get_namespace_fun(.spatialcellchat_package, backend_symbol)
+    if (is.function(backend_fun)) {
+      backend_fun <- eval(
+        call("function", formals(backend_fun), body(backend_fun)),
+        envir = compatibility_env
+      )
+      compatibility_env[[backend_symbol]] <- backend_fun
+    }
+  }
+  fun <- eval(
+    call("function", formals(fun), body(fun)),
+    envir = compatibility_env
+  )
   formals_names <- names(formals(fun))
   unsupported <- setdiff(names(args), c(formals_names, if ("..." %in% formals_names) names(args) else character()))
   if (length(unsupported) > 0L && !"..." %in% formals_names) {
@@ -457,18 +558,106 @@ spatialcellchat_call <- function(symbol, args, analysis.level) {
 }
 
 spatialcellchat_extract_table <- function(chat, sample, analysis.level, do.permutation) {
-  table <- get_namespace_fun(.spatialcellchat_package, "subsetCommunication")(chat)
+  net <- tryCatch(
+    methods::slot(chat, "net"),
+    error = function(e) if (is.list(chat)) chat[["net"]] else NULL
+  )
+  lr_prob <- if (is.list(net)) net[["prob"]] else NULL
+  lr_available <- if (is.data.frame(net)) {
+    nrow(net) > 0L
+  } else {
+    length(lr_prob) > 0L && (is.null(dim(lr_prob)) || all(dim(lr_prob) > 0L))
+  }
+  table_level <- "ligand_receptor"
+  table <- NULL
+  lr_error <- NULL
+  if (isTRUE(lr_available)) {
+    subset_fun <- get_namespace_fun(.spatialcellchat_package, "subsetCommunication")
+    table <- tryCatch(subset_fun(chat), error = identity)
+    if (inherits(table, "error")) {
+      lr_error <- conditionMessage(table)
+      table <- NULL
+    } else {
+      table <- as.data.frame(table, stringsAsFactors = FALSE)
+      if (nrow(table) == 0L) table <- NULL
+    }
+  }
+  if (is.null(table)) {
+    net_pathway <- tryCatch(
+      methods::slot(chat, "netP"),
+      error = function(e) if (is.list(chat)) chat[["netP"]] else NULL
+    )
+    pathway_prob <- if (is.list(net_pathway)) net_pathway[["prob"]] else NULL
+    pathway_available <- if (is.data.frame(net_pathway)) {
+      nrow(net_pathway) > 0L
+    } else {
+      length(pathway_prob) > 0L &&
+        (is.null(dim(pathway_prob)) || all(dim(pathway_prob) > 0L))
+    }
+    if (!isTRUE(pathway_available)) {
+      detail <- if (is.null(lr_error)) "" else paste0("; ligand-receptor extraction failed: ", lr_error)
+      log_message(
+        "SpatialCellChat returned neither ligand-receptor nor pathway-level communication records{detail}",
+        message_type = "error"
+      )
+    }
+    pathway_array <- tryCatch(as.array(pathway_prob), error = identity)
+    if (inherits(pathway_array, "error") || length(dim(pathway_array)) != 3L) {
+      log_message(
+        "SpatialCellChat pathway probabilities cannot be converted to a three-dimensional array",
+        message_type = "error"
+      )
+    }
+    pathway_dimnames <- dimnames(pathway_array)
+    pathway_names <- pathway_dimnames[[3L]] %||% net_pathway[["pathways"]]
+    if (
+      is.null(pathway_dimnames[[1L]]) || is.null(pathway_dimnames[[2L]]) ||
+        is.null(pathway_names) || length(pathway_names) != dim(pathway_array)[[3L]]
+    ) {
+      log_message(
+        "SpatialCellChat pathway probabilities are missing sender, receiver, or pathway identities",
+        message_type = "error"
+      )
+    }
+    positive <- is.finite(pathway_array) & pathway_array > 0
+    index <- which(positive, arr.ind = TRUE)
+    if (nrow(index) == 0L) {
+      log_message(
+        "SpatialCellChat returned no positive pathway-level communication records",
+        message_type = "error"
+      )
+    }
+    table <- data.frame(
+      source = pathway_dimnames[[1L]][index[, 1L]],
+      target = pathway_dimnames[[2L]][index[, 2L]],
+      pathway_name = pathway_names[index[, 3L]],
+      prob = as.numeric(pathway_array[index]),
+      pval = NA_real_,
+      stringsAsFactors = FALSE
+    )
+    table_level <- "pathway"
+  }
   table <- as.data.frame(table, stringsAsFactors = FALSE)
   if (nrow(table) == 0L) {
-    log_message("SpatialCellChat returned no group-level communication records", message_type = "error")
+    log_message(
+      "SpatialCellChat returned no {.val {table_level}} communication records",
+      message_type = "error"
+    )
   }
   table <- standardize_long_df(table)
+  table$result_level <- table_level
   table$method <- "SpatialCellChat"
   table$sample <- sample
   table$modality <- "spatial"
   table$analysis_level <- analysis.level
   table$spatially_constrained <- TRUE
-  table$significance_basis <- if (isTRUE(do.permutation)) "spatial_permutation" else "not_tested"
+  table$significance_basis <- if (identical(table_level, "pathway")) {
+    "aggregated_ligand_receptor_probability"
+  } else if (isTRUE(do.permutation)) {
+    "spatial_permutation"
+  } else {
+    "not_tested"
+  }
   table$passes_filter <- TRUE
   if (!isTRUE(do.permutation)) {
     table$pvalue <- NA_real_
@@ -895,7 +1084,8 @@ RunSpatialCellChat <- function(
         ),
         composition_normalized = composition_normalized,
         n_observations = length(cells),
-        n_interactions = nrow(table)
+        n_interactions = nrow(table),
+        result_level = unique(as.character(table$result_level))
       ),
       source = metric$source
     )

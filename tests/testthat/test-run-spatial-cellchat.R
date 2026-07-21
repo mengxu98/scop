@@ -165,6 +165,116 @@ test_that("expression validation rejects scientifically invalid backend input", 
   )
 })
 
+test_that("pathway-level output is retained when ligand-receptor extraction fails", {
+  chat <- list(
+    net = list(prob = array(0.4, dim = c(1, 1, 1))),
+    netP = list(prob = array(
+      0.8,
+      dim = c(1, 1, 1),
+      dimnames = list("A", "B", "PATH1")
+    ))
+  )
+  testthat::local_mocked_bindings(
+    get_namespace_fun = function(package, name) {
+      expect_identical(package, "SpatialCellChat")
+      expect_identical(name, "subsetCommunication")
+      function(object, slot.name = "net") {
+        stop("'names' attribute [1] must be the same length as the vector [0]")
+      }
+    }
+  )
+  table <- scop:::spatialcellchat_extract_table(
+    chat,
+    sample = "sample1",
+    analysis.level = "spot",
+    do.permutation = TRUE
+  )
+  expect_identical(table$result_level, "pathway")
+  expect_identical(table$pathway_name, "PATH1")
+  expect_true(is.na(table$interaction_name))
+  expect_identical(
+    table$significance_basis,
+    "aggregated_ligand_receptor_probability"
+  )
+})
+
+test_that("empty SpatialCellChat ligand-receptor and pathway outputs fail explicitly", {
+  chat <- list(
+    net = list(prob = array(numeric(), dim = c(2, 2, 0))),
+    netP = list(prob = array(numeric(), dim = c(2, 2, 0)))
+  )
+  testthat::local_mocked_bindings(
+    get_namespace_fun = function(...) stop("subsetCommunication must not run")
+  )
+  expect_error(
+    scop:::spatialcellchat_extract_table(
+      chat,
+      sample = "sample1",
+      analysis.level = "spot",
+      do.permutation = TRUE
+    ),
+    "neither ligand-receptor nor pathway-level"
+  )
+})
+
+test_that("SpatialCellChat backend calls avoid global progress handlers", {
+  testthat::local_mocked_bindings(
+    get_namespace_fun = function(package, name) {
+      if (identical(package, "future.apply")) {
+        stop("future.apply must not be used by the compatibility path")
+      }
+      if (identical(package, "spatstat.sparse")) {
+        return(function(...) structure(list(...), class = "mock_sparse3d"))
+      }
+      expect_identical(package, "SpatialCellChat")
+      if (identical(name, "identifyOverExpressedGenes")) {
+        return(compiler::cmpfun(function(object) {
+          computeExpr_LR(object)
+        }))
+      }
+      if (identical(name, "computeExpr_LR")) {
+        return(compiler::cmpfun(function(object) {
+          computeExpr_complex(object)
+        }))
+      }
+      if (identical(name, "computeExpr_complex")) {
+        return(compiler::cmpfun(function(object) {
+          sum(my_future_sapply(1:3, identity, strategy.message = FALSE)) + object
+        }))
+      }
+      if (identical(name, "computeCommunProb")) {
+        return(compiler::cmpfun(function(object) {
+          my_as_sparse3Darray(object)
+        }))
+      }
+      if (identical(name, "my_as_sparse3Darray")) {
+        return(function(x, ...) x)
+      }
+      function(...) NULL
+    }
+  )
+  expect_equal(
+    scop:::spatialcellchat_call(
+      "identifyOverExpressedGenes",
+      list(object = 1),
+      analysis.level = "cell"
+    ),
+    7
+  )
+  sparse_input <- list(
+    Matrix::Matrix(diag(c(1, 0)), sparse = TRUE),
+    Matrix::Matrix(diag(c(0, 2)), sparse = TRUE)
+  )
+  sparse_output <- scop:::spatialcellchat_call(
+    "computeCommunProb",
+    list(object = sparse_input),
+    analysis.level = "cell"
+  )
+  expect_s3_class(sparse_output, "mock_sparse3d")
+  expect_identical(sparse_output$dims, c(2L, 2L, 2L))
+  expect_identical(sparse_output$k, c(1L, 2L))
+})
+
 test_that("RunSpatialCellChat stores truthful schema and unified CCC rows", {
   local_mock_spatialcellchat_backend()
   srt <- make_spatialcellchat_test_object()

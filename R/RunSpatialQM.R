@@ -18,7 +18,9 @@
 #' `"n_cells"`, `"tx_per_cell"`, `"tx_per_area"`, `"tx_per_nuc"`,
 #' `"mean_expression"`, `"mean_signal_ratio"`, `"cell_tx_fraction"`,
 #' `"max_ratio"`, `"max_detection"`, `"mecr"`, `"morans"`, `"silhouette"`,
-#' `"sparsity"`, and `"entropy"`.
+#' `"sparsity"`, and `"entropy"`. The defaults are the object-first metrics
+#' supported by the current upstream API without raw transcript or control-probe
+#' inputs; other metrics remain explicitly selectable.
 #' @param features Optional feature vector passed to metrics that support a
 #' `features` argument.
 #' @param sample_id,platform Optional values used to populate missing
@@ -53,7 +55,7 @@ RunSpatialQM <- function(
   srt,
   assay = NULL,
   layer = "counts",
-  metrics = c("n_cells", "tx_per_cell", "sparsity", "entropy"),
+  metrics = c("n_cells", "tx_per_cell", "max_detection"),
   features = NULL,
   sample_id = NULL,
   platform = NULL,
@@ -85,7 +87,7 @@ RunSpatialQM <- function(
   extra_args <- list(...)
   spatialqm_validate_named_list(extra_args, "...")
 
-  check_r("SpatialQM", verbose = FALSE)
+  check_r("Center-for-Spatial-OMICs/SpatialQM", verbose = FALSE)
   input <- spatialqm_prepare_object(
     srt = srt,
     assay = assay,
@@ -129,8 +131,15 @@ RunSpatialQM <- function(
   }
 
   if (length(results) == 0L) {
+    failure_details <- paste(
+      paste0(names(errors), ": ", unlist(errors, use.names = FALSE)),
+      collapse = "; "
+    )
     log_message(
-      "No SpatialQM metrics completed successfully",
+      paste0(
+        "No SpatialQM metrics completed successfully",
+        if (nzchar(failure_details)) paste0(": ", failure_details) else ""
+      ),
       message_type = "error"
     )
   }
@@ -261,6 +270,22 @@ spatialqm_prepare_object <- function(
   )
   SeuratObject::DefaultAssay(qobj) <- "RNA"
 
+  if (
+    !"tissue" %in% names(qobj@reductions) &&
+      all(c("x", "y") %in% colnames(qobj@meta.data))
+  ) {
+    coordinates <- as.matrix(qobj@meta.data[, c("x", "y"), drop = FALSE])
+    storage.mode(coordinates) <- "double"
+    if (all(is.finite(coordinates))) {
+      colnames(coordinates) <- c("Tissue_1", "Tissue_2")
+      qobj[["tissue"]] <- SeuratObject::CreateDimReducObject(
+        embeddings = coordinates,
+        key = "Tissue_",
+        assay = "RNA"
+      )
+    }
+  }
+
   resolved_sample_id <- sample_id %||% spatialqm_meta_scalar(qobj, "sample_id", "sample1")
   resolved_platform <- platform %||% spatialqm_meta_scalar(qobj, "platform", "scop")
   qobj$sample_id <- resolved_sample_id
@@ -282,10 +307,18 @@ spatialqm_run_metric <- function(
 ) {
   fun <- get_namespace_fun("SpatialQM", spec$fun)
   args <- list(seu_obj = seu_obj)
-  if (isTRUE(spec$pass_features)) {
+  formal_names <- names(formals(fun))
+  accepts_dots <- "..." %in% formal_names
+  if (
+    isTRUE(spec$pass_features) &&
+      ("features" %in% formal_names || accepts_dots)
+  ) {
     args$features <- features
   }
-  if (!is.null(platform)) {
+  if (
+    !is.null(platform) &&
+      ("platform" %in% formal_names || accepts_dots)
+  ) {
     args$platform <- platform
   }
   args <- spatialqm_merge_supported_args(fun, args, extra_args)
