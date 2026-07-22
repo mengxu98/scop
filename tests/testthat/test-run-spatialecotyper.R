@@ -30,7 +30,12 @@ with_mock_spatialecotyper <- function(funs, code) {
       invisible(TRUE)
     },
     get_namespace_fun = function(package, name) {
-      expect_identical(package, "SpatialEcoTyper")
+      if (!identical(package, "SpatialEcoTyper")) {
+        return(get(name, envir = asNamespace(package), inherits = FALSE))
+      }
+      if (name %in% c("mostFrequent", "GetSpatialMetacells", "GetPCList")) {
+        return(function(...) NULL)
+      }
       expect_true(name %in% names(funs))
       funs[[name]]
     }
@@ -68,6 +73,29 @@ test_that("RunSpatialEcoTyper writes single-sample SE labels and tool results", 
   expect_true("SET_tool" %in% names(out@tools))
   expect_equal(out@tools$SET_tool$parameters$mode, "single")
   expect_equal(out@tools$SET_tool$parameters$prefix, "SET")
+})
+
+test_that("RunSpatialEcoTyper supplies locally scoped dplyr compatibility symbols", {
+  srt <- make_spatialecotyper_seurat()
+  fake_fun <- function(normdata, metadata, ...) {
+    grouped <- metadata %>%
+      dplyr::group_by(CellType) %>%
+      summarise(n = dplyr::n(), .groups = "drop")
+    expect_equal(sum(grouped$n), nrow(metadata))
+    list(metadata = data.frame(
+      SE = rep(c("SE1", "SE2"), length.out = nrow(metadata)),
+      row.names = rownames(metadata)
+    ))
+  }
+  with_mock_spatialecotyper(fake_fun, {
+    out <- RunSpatialEcoTyper(
+      srt,
+      celltype.by = "CellType",
+      ncores = 1,
+      verbose = FALSE
+    )
+  })
+  expect_true(all(!is.na(out$SpatialEcoTyper_SE)))
 })
 
 test_that("RunSpatialEcoTyper errors on partial returned metadata by default", {

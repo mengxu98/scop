@@ -126,9 +126,50 @@ test_that("CARD argument routing supports Bioconductor underscore formals", {
   expect_identical(matched$ct_select, c("Alpha", "Beta"))
 })
 
-test_that("CARDspa one-step API bypasses the legacy object constructor", {
+test_that("CARD uses an installed CARDspa backend without installing CARD", {
+  testthat::local_mocked_bindings(
+    check_r = function(...) stop("CARD installation must not be attempted"),
+    get_namespace_fun = function(package, name) {
+      if (identical(package, "CARD")) stop("CARD is not installed")
+      expect_identical(package, "CARDspa")
+      expect_true(name %in% c("createCARDObject", "CARD_deconvolution"))
+      function(...) NULL
+    },
+    .package = "scop"
+  )
+
+  expect_identical(scop:::card_resolve_backend_package(), "CARDspa")
+})
+
+test_that("CARD checks its repository only when no installed backend is usable", {
+  installed <- FALSE
+  testthat::local_mocked_bindings(
+    check_r = function(repository, verbose = FALSE) {
+      expect_identical(repository, "YingMa0107/CARD")
+      expect_false(verbose)
+      installed <<- TRUE
+      invisible(TRUE)
+    },
+    get_namespace_fun = function(package, name) {
+      if (isTRUE(installed) && identical(package, "CARD")) {
+        return(function(...) NULL)
+      }
+      stop("backend unavailable")
+    },
+    .package = "scop"
+  )
+
+  expect_identical(scop:::card_resolve_backend_package(), "CARD")
+  expect_true(installed)
+})
+
+test_that("CARDspa one-step API removes backend-unsupported informative-zero spots", {
   st_counts <- methods::as(Matrix::Matrix(
-    matrix(1:6, nrow = 2, dimnames = list(c("G1", "G2"), c("S1", "S2", "S3"))),
+    matrix(
+      c(1, 2, 3, 4, 0, 6),
+      nrow = 2,
+      dimnames = list(c("G1", "G2"), c("S1", "S2", "S3"))
+    ),
     sparse = TRUE
   ), "dgCMatrix")
   ref_counts <- methods::as(Matrix::Matrix(
@@ -154,20 +195,43 @@ test_that("CARDspa one-step API bypasses the legacy object constructor", {
   ) {
     expect_identical(ct_varname, ".scop_cell_type")
     expect_identical(sample_varname, ".scop_sample")
+    expect_identical(colnames(spatial_count), c("S1", "S2"))
+    expect_identical(rownames(spatial_location), c("S1", "S2"))
     list(Proportion_CARD = matrix(
-      c(0.8, 0.4, 0.1, 0.2, 0.6, 0.9),
+      c(0.8, 0.4, 0.2, 0.6),
       nrow = 2,
       byrow = TRUE,
-      dimnames = list(c("A", "B"), colnames(spatial_count))
+      dimnames = list(c("A", "B"), c("S1", "S2"))
+    ))
+  }
+  create_one_step <- function(spatial_count, ...) {
+    list(
+      info_parameters = list(
+        ct.select = c("A", "B"),
+        ct.varname = ".scop_cell_type",
+        sample.varname = ".scop_sample"
+      ),
+      sc_eset = ref_counts,
+      spatial_countMat = spatial_count
+    )
+  }
+  create_ref <- function(...) {
+    list(basis = matrix(
+      c(1, 0, 0, 1),
+      nrow = 2,
+      dimnames = list(c("G1", "G2"), c("A", "B"))
     ))
   }
   testthat::local_mocked_bindings(
     card_resolve_backend_package = function() "CARDspa",
     get_namespace_fun = function(package, name) {
-      if (identical(name, "createCARDObject")) {
-        return(function(...) stop("legacy constructor must not run"))
-      }
-      one_step
+      switch(name,
+        createCARDObject = create_one_step,
+        CARD_deconvolution = one_step,
+        create_ref = create_ref,
+        select_info = function(...) "G1",
+        stop("unexpected CARDspa function")
+      )
     }
   )
 
@@ -183,7 +247,8 @@ test_that("CARDspa one-step API bypasses the legacy object constructor", {
     card_deconvolution_params = list()
   )
   expect_identical(result$package, "CARDspa")
-  expect_equal(dim(result$weights), c(2L, 3L))
+  expect_equal(dim(result$weights), c(2L, 2L))
+  expect_identical(result$dropped_spots, "S3")
 })
 
 test_that("RunCARD validates inputs before backend work", {

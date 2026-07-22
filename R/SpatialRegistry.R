@@ -208,6 +208,7 @@ spatial_backend_registry <- function() {
     spatialqm = backend(
       "spatialqm",
       "SpatialQM",
+      "Center-for-Spatial-OMICs/SpatialQM",
       symbols = c(
         "getNcells", "getTxPerCell", "getTxPerArea", "getTxPerNuc",
         "getMeanExpression", "getMeanSignalRatio", "getCellTxFraction",
