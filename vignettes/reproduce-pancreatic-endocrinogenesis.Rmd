@@ -6,31 +6,13 @@ title: "Reproducing pancreatic endocrinogenesis"
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  eval = TRUE,
+  eval = FALSE,
   message = FALSE,
   warning = FALSE,
   fig.align = "center",
   dpi = 144,
   out.width = "92%"
 )
-
-install_article_packages <- function(pkg_specs) {
-  missing <- names(pkg_specs)[
-    !vapply(names(pkg_specs), requireNamespace, logical(1), quietly = TRUE)
-  ]
-  if (length(missing) == 0) {
-    return(invisible(TRUE))
-  }
-  if (!requireNamespace("pak", quietly = TRUE)) {
-    install.packages("pak", repos = "https://cloud.r-project.org")
-  }
-  pak::pak(unname(pkg_specs[missing]), ask = FALSE, upgrade = FALSE)
-  invisible(TRUE)
-}
-
-install_article_packages(c(
-  monocle3 = "cole-trapnell-lab/monocle3"
-))
 
 print_scop_plot <- function(x) {
   if (is.list(x) && "plot" %in% names(x)) {
@@ -45,6 +27,11 @@ This article reproduces the main analytical logic of a pancreatic
 endocrinogenesis study using the bundled `pancreas_sub` object. The biological
 reference is the mouse embryonic pancreas single-cell study by
 Bastidas-Ponce et al. (2019, *Development*, DOI: 10.1242/dev.173849).
+
+The website displays this end-to-end workflow without evaluating its code
+chunks because trajectory, velocity, and regulatory-network steps create and
+use external R and Python environments. Run the chunks interactively in order
+when reproducing the analysis locally.
 
 The goal is a compact, runnable reproduction rather than a one-to-one rebuild
 of every original figure. The workflow keeps the same evidence chain: identify

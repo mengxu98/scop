@@ -718,7 +718,10 @@ spatialcellchat_run_one <- function(
 #' # The following example uses constructed domain labels only to demonstrate
 #' # the multi-slice interface.
 #' \dontrun{
-#' if (thisutils::check_r("jinworks/SpatialCellChat", verbose = FALSE)) {
+#' if (all(unlist(
+#'   thisutils::check_r("jinworks/SpatialCellChat", verbose = FALSE),
+#'   use.names = FALSE
+#' ))) {
 #'   data(visium_mouse_brain_slices_sub)
 #'   spatial <- visium_mouse_brain_slices_sub
 #'   spatial$spatial_domain <- ifelse(
