@@ -249,9 +249,19 @@ spatialcellchat_visium_spot_diameter <- function(srt, image) {
   } else {
     list()
   }
+  image_scale_factors <- if (!is.null(image) && image %in% tryCatch(SeuratObject::Images(srt), error = function(e) character())) {
+    tryCatch(methods::slot(srt[[image]], "scale.factors"), error = function(e) list())
+  } else {
+    list()
+  }
   candidates <- c(
     candidates,
-    list(image_misc$spot_diameter_fullres, image_misc$scalefactors$spot_diameter_fullres)
+    list(
+      image_misc$spot_diameter_fullres,
+      image_misc$scalefactors$spot_diameter_fullres,
+      image_scale_factors$spot_diameter_fullres,
+      image_scale_factors$spot
+    )
   )
   values <- suppressWarnings(as.numeric(unlist(candidates, use.names = FALSE)))
   values <- unique(values[is.finite(values) & values > 0])

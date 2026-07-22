@@ -1,7 +1,8 @@
 args <- commandArgs(trailingOnly = TRUE)
 mode <- if (length(args) == 0L) "check" else args[[1L]]
+full_build <- length(args) >= 2L && identical(args[[2L]], "true")
 if (!mode %in% c("outputs", "check")) {
-  stop("Usage: pkgdown-page-audit.R [outputs|check]", call. = FALSE)
+  stop("Usage: pkgdown-page-audit.R [outputs|check] [true|false]", call. = FALSE)
 }
 
 config <- yaml::read_yaml("_pkgdown.yml")
@@ -103,7 +104,7 @@ local <- if (dir.exists("docs")) {
   character()
 }
 local <- gsub("\\\\", "/", local)
-available <- unique(c(published, local))
+available <- if (full_build) local else unique(c(published, local))
 missing <- c(
   expected_reference[!expected_reference %in% available],
   expected_articles[!expected_articles %in% available]
@@ -116,6 +117,8 @@ if (length(missing) > 0L) {
   )
 }
 message(
-  "Pkgdown page audit passed: ", length(expected_reference),
-  " reference and ", length(expected_articles), " article pages"
+  "Pkgdown page audit passed against ",
+  if (full_build) "this full build" else "published and local output",
+  ": ", length(expected_reference), " reference and ",
+  length(expected_articles), " article pages"
 )

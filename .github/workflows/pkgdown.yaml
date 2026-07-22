@@ -286,7 +286,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Audit configured pkgdown pages
-        run: Rscript tools/ci/pkgdown-page-audit.R check
+        run: Rscript tools/ci/pkgdown-page-audit.R check "${{ steps.scope.outputs.full_build }}"
 
       - name: Deploy to GitHub pages 🚀
         if: github.event_name != 'pull_request'
