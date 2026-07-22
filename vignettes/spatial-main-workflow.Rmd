@@ -329,16 +329,16 @@ Distance parameters are always interpreted in microns. Micron coordinates use
 can derive the conversion ratio as `65 / spot_diameter_fullres` when the
 selected image contains exactly one trusted full-resolution spot diameter;
 otherwise provide `ratio` explicitly. Never substitute a low-resolution display
-scale. Multiple samples are run independently and require an explicit
-`sample.by` and named image mapping. Check the optional backend without changing
-the environment with `SpatialBackendStatus(backend = "spatialcellchat")`.
+scale. This article uses one slice; multi-sample objects are run independently
+and require an explicit `sample.by` and named image mapping. Check the optional
+backend without changing the environment with
+`SpatialBackendStatus(backend = "spatialcellchat")`.
 
 ```{r spatial-cellchat, eval=FALSE}
 spatial <- RunSpatialCellChat(
   spatial,
-  group.by = "spatial_domain",
-  sample.by = "sample",
-  image = c(section1 = "slice1", section2 = "slice2"),
+  group.by = "coda_label",
+  image = "slice1",
   technology = "visium",
   analysis.level = "spot",
   coordinate.unit = "pixel",
@@ -350,7 +350,7 @@ spatial <- RunSpatialCellChat(
 
 CCCNetworkPlot(spatial, method = "SpatialCellChat", plot_type = "circle")
 CCCHeatmap(spatial, method = "SpatialCellChat", plot_type = "bubble")
-SpatialCellChatPlot(spatial, sample = "section1", plot_type = "incoming")
+SpatialCellChatPlot(spatial, plot_type = "incoming")
 SpatialResultInfo(spatial, method = "RunSpatialCellChat")
 result <- GetSpatialResult(spatial, method = "RunSpatialCellChat")
 ```
