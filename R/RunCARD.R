@@ -355,7 +355,7 @@ card_resolve_backend_package <- function() {
     logical(1)
   )
   if (!any(available)) {
-    invisible(lapply(packages, function(pkg) thisutils::check_r(pkg, verbose = FALSE)))
+    invisible(lapply(packages, function(pkg) check_r(pkg, verbose = FALSE)))
     available <- vapply(
       packages,
       function(pkg) !is.null(tryCatch(asNamespace(pkg), error = function(e) NULL)),
