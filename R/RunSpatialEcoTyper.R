@@ -555,6 +555,24 @@ spatialecotyper_run_single <- function(
     "SpatialEcoTyper",
     "SpatialEcoTyper"
   )
+  compatibility_env <- new.env(parent = environment(spatialecotyper_fun))
+  for (symbol in c("summarise", "summarize", "across", "slice", "desc")) {
+    compatibility_env[[symbol]] <- get_namespace_fun("dplyr", symbol)
+  }
+  compatibility_env[["where"]] <- get_namespace_fun("tidyselect", "where")
+  compatibility_env[["%>%"]] <- get_namespace_fun("magrittr", "%>%")
+  for (symbol in c("mostFrequent", "GetSpatialMetacells", "GetPCList")) {
+    backend_fun <- get_namespace_fun("SpatialEcoTyper", symbol)
+    if (!is.function(backend_fun)) {
+      log_message(
+        "The installed {.pkg SpatialEcoTyper} API is incompatible; missing function {.fn {symbol}}",
+        message_type = "error"
+      )
+    }
+    environment(backend_fun) <- compatibility_env
+    compatibility_env[[symbol]] <- backend_fun
+  }
+  environment(spatialecotyper_fun) <- compatibility_env
   result <- spatialecotyper_fun(
     normdata = normdata,
     metadata = metadata,

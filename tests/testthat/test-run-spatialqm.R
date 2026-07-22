@@ -24,9 +24,13 @@ with_mock_spatialqm <- function(code, fail_entropy = FALSE) {
       },
       getTxPerCell = function(seu_obj, features = NULL, sample.p = NULL, ...) {
         expect_equal(features, c("Gene1", "Gene2"))
-        expect_equal(sample.p, 0.25)
+        if (!is.null(sample.p)) expect_equal(sample.p, 0.25)
         mat <- GetAssayData5(seu_obj, assay = "RNA", layer = "counts")
         mean(Matrix::colSums(mat[features, , drop = FALSE]))
+      },
+      getMaxDetection = function(seu_obj, features = NULL, ...) {
+        mat <- GetAssayData5(seu_obj, assay = "RNA", layer = "counts")
+        matrixStats::rowMaxs(as.matrix(mat[features, , drop = FALSE]))
       },
       getSparsity = function(seu_obj, features = NULL, ...) 0.5,
       getEntropy = function(seu_obj, features = NULL, ...) {
@@ -40,7 +44,7 @@ with_mock_spatialqm <- function(code, fail_entropy = FALSE) {
   }
   testthat::local_mocked_bindings(
     check_r = function(packages, ...) {
-      expect_identical(packages, "SpatialQM")
+      expect_identical(packages, "Center-for-Spatial-OMICs/SpatialQM")
       invisible(TRUE)
     },
     get_namespace_fun = function(package, name) {
@@ -82,12 +86,46 @@ test_that("RunSpatialQM stores metric results and summary", {
   expect_identical(bundle$source$coordinate_space, "mixed")
 })
 
+test_that("RunSpatialQM defaults to live-compatible object metrics", {
+  srt <- make_spatialqm_seurat()
+  with_mock_spatialqm({
+    out <- RunSpatialQM(
+      srt,
+      assay = "Spatial",
+      features = c("Gene1", "Gene2"),
+      verbose = FALSE
+    )
+  })
+  expect_named(
+    out@tools$SpatialQM$results,
+    c("n_cells", "tx_per_cell", "max_detection")
+  )
+})
+
 test_that("SpatialQM registry records backend-managed coordinate semantics", {
   row <- spatial_method_registry()
   row <- row[row$method == "RunSpatialQM", , drop = FALSE]
   expect_identical(row$coordinate_space_current, "mixed")
   expect_identical(row$coordinate_space_target, "mixed")
   expect_identical(row$coordinate_requirement, "backend_managed")
+})
+
+test_that("SpatialQM input preparation maps finite metadata coordinates locally", {
+  srt <- make_spatialqm_seurat()
+  srt$x <- seq_len(ncol(srt))
+  srt$y <- rev(seq_len(ncol(srt)))
+  prepared <- scop:::spatialqm_prepare_object(
+    srt,
+    assay = "Spatial",
+    layer = "counts",
+    platform = "Xenium"
+  )
+  expect_true("tissue" %in% names(prepared$object@reductions))
+  expect_identical(
+    rownames(SeuratObject::Embeddings(prepared$object, "tissue")),
+    colnames(srt)
+  )
+  expect_false("tissue" %in% names(srt@reductions))
 })
 
 test_that("RunSpatialQM can record failed metrics without stopping", {
@@ -106,6 +144,23 @@ test_that("RunSpatialQM can record failed metrics without stopping", {
   expect_equal(names(out@tools$SpatialQM$results), "n_cells")
   expect_equal(out@tools$SpatialQM$summary$status, c("ok", "error"))
   expect_equal(out@tools$SpatialQM$errors$entropy, "entropy failed")
+})
+
+test_that("RunSpatialQM reports the backend cause when every metric fails", {
+  srt <- make_spatialqm_seurat()
+  with_mock_spatialqm(fail_entropy = TRUE, {
+    expect_error(
+      RunSpatialQM(
+        srt,
+        assay = "Spatial",
+        metrics = "entropy",
+        on_error = "warning",
+        verbose = FALSE
+      ),
+      "entropy: entropy failed"
+    )
+  })
+  expect_false("SpatialQM" %in% names(srt@tools))
 })
 
 test_that("RunSpatialQM validates inputs clearly", {
@@ -152,4 +207,26 @@ test_that("RunSpatialQM accepts SpatialQM function-name metric aliases", {
 
   expect_equal(names(out@tools$SpatialQM$results), "n_cells")
   expect_equal(out@tools$SpatialQM$results$n_cells, 4)
+})
+
+test_that("SpatialQM metrics receive only formals supported by the live API", {
+  testthat::local_mocked_bindings(
+    get_namespace_fun = function(package, name) {
+      expect_identical(package, "SpatialQM")
+      expect_identical(name, "getSilhouetteWidth")
+      function(seu_obj) ncol(seu_obj)
+    }
+  )
+  srt <- make_spatialqm_seurat()
+  expect_equal(
+    scop:::spatialqm_run_metric(
+      seu_obj = srt,
+      metric = "silhouette",
+      spec = scop:::spatialqm_metric_specs()$silhouette,
+      features = c("Gene1", "Gene2"),
+      platform = "Xenium",
+      extra_args = list(unused = TRUE)
+    ),
+    4L
+  )
 })
