@@ -7,7 +7,7 @@
 A \code{Seurat} object.
 }
 \source{
-\href{https://scvelo.readthedocs.io/scvelo.datasets.pancreas/}{scvelo.datasets.pancreas},
+\href{https://scvelo.readthedocs.io/en/stable/scvelo.datasets.pancreas.html}{scvelo.datasets.pancreas},
 \href{https://github.com/theislab/scvelo_notebooks/raw/master/data/Pancreas/endocrinogenesis_day15.h5ad}{endocrinogenesis_day15.h5ad}
 }
 \description{
@@ -53,7 +53,7 @@ A total of 1000 cells were downsampled to form the \code{pancreas_sub} dataset.
   pancreas_sub$SubCellType <- gsub(" ", "-", pancreas_sub$SubCellType)
   pancreas_sub@reductions$X_pca <- NULL
   pancreas_sub@reductions$X_umap <- NULL
-  use_data <- get_namespace_fun("usethis", "use_data")
+  use_data <- thisutils::get_namespace_fun("usethis", "use_data")
   use_data(
     pancreas_sub,
     compress = "xz",

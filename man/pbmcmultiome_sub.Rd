@@ -25,7 +25,7 @@ per gene.
 
   source("test/data/create_pbmcmultiome_sub.R")
   pbmcmultiome_sub <- create_pbmcmultiome_sub()
-  use_data <- get_namespace_fun("usethis", "use_data")
+  use_data <- thisutils::get_namespace_fun("usethis", "use_data")
   use_data(
     pbmcmultiome_sub,
     compress = "xz",

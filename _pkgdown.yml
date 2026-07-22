@@ -36,22 +36,22 @@ articles:
 - title: Basic workflows
   navbar: Basic workflows
   contents:
-  - articles/single-cell-main-workflow
-  - articles/reproduce-pancreatic-endocrinogenesis
-  - articles/integration-workflow
-  - articles/cell-annotation-workflow
-  - articles/trajectory-dynamic-workflow
-  - articles/differential-enrichment-workflow
-  - articles/interactive-scexplorer-workflow
+  - single-cell-main-workflow
+  - reproduce-pancreatic-endocrinogenesis
+  - integration-workflow
+  - cell-annotation-workflow
+  - trajectory-dynamic-workflow
+  - differential-enrichment-workflow
+  - interactive-scexplorer-workflow
 - title: Spatial Analysis
   navbar: Spatial Analysis
   contents:
-  - articles/spatial-main-workflow
-  - articles/spatial-framework-bridges
+  - spatial-main-workflow
+  - spatial-framework-bridges
 - title: Cell-cell communication
   navbar: Cell-cell communication
   contents:
-  - articles/cell-cell-communication-workflow
+  - cell-cell-communication-workflow
 
 reference:
 - subtitle: "Spatial and Cellular Omics Analysis Pipeline"

@@ -8,7 +8,7 @@
 #' @format A `Seurat` object.
 #' @concept data
 #' @source
-#' \href{https://scvelo.readthedocs.io/scvelo.datasets.pancreas/}{scvelo.datasets.pancreas},
+#' \href{https://scvelo.readthedocs.io/en/stable/scvelo.datasets.pancreas.html}{scvelo.datasets.pancreas},
 #' \href{https://github.com/theislab/scvelo_notebooks/raw/master/data/Pancreas/endocrinogenesis_day15.h5ad}{endocrinogenesis_day15.h5ad}
 #'
 #' @examples
@@ -50,7 +50,7 @@
 #'   pancreas_sub$SubCellType <- gsub(" ", "-", pancreas_sub$SubCellType)
 #'   pancreas_sub@reductions$X_pca <- NULL
 #'   pancreas_sub@reductions$X_umap <- NULL
-#'   use_data <- get_namespace_fun("usethis", "use_data")
+#'   use_data <- thisutils::get_namespace_fun("usethis", "use_data")
 #'   use_data(
 #'     pancreas_sub,
 #'     compress = "xz",
@@ -80,9 +80,9 @@ NULL
 #' @examples
 #'
 #'   data(pancreas_sub)
-#'   check_r("satijalab/seurat-data")
+#'   thisutils::check_r("satijalab/seurat-data")
 #'
-#'   InstallData <- get_namespace_fun("SeuratData", "InstallData")
+#'   InstallData <- thisutils::get_namespace_fun("SeuratData", "InstallData")
 #'   InstallData("panc8")
 #'   data(panc8)
 #'   panc8 <- UpdateSeuratObject(panc8)
@@ -110,7 +110,7 @@ NULL
 #'   ), ]
 #'   panc8_sub$celltype <- gsub("_", "-", panc8_sub$celltype)
 #'   panc8_sub$celltype <- gsub(" ", "-", panc8_sub$celltype)
-#'   use_data <- get_namespace_fun("usethis", "use_data")
+#'   use_data <- thisutils::get_namespace_fun("usethis", "use_data")
 #'   use_data(
 #'     panc8_sub,
 #'     compress = "xz",
@@ -143,7 +143,7 @@ NULL
 #'
 #'   source("test/data/create_pbmcmultiome_sub.R")
 #'   pbmcmultiome_sub <- create_pbmcmultiome_sub()
-#'   use_data <- get_namespace_fun("usethis", "use_data")
+#'   use_data <- thisutils::get_namespace_fun("usethis", "use_data")
 #'   use_data(
 #'     pbmcmultiome_sub,
 #'     compress = "xz",
@@ -310,7 +310,7 @@ NULL
 #'     "regulation", "regulated", "positive", "negative",
 #'     "response", "process", "processing", "small", "large", "change"
 #'   )
-#'   use_data <- get_namespace_fun("usethis", "use_data")
+#'   use_data <- thisutils::get_namespace_fun("usethis", "use_data")
 #'   use_data(words_excluded, compress = "xz")
 #' @name words_excluded
 NULL
@@ -323,10 +323,10 @@ NULL
 #' @examples
 #'
 #'
-#'   check_r(c("ggjlab/scMCA"))
+#'   thisutils::check_r(c("ggjlab/scMCA"))
 #'   ref_scMCA <- NormalizeData(get("ref.expr", envir = asNamespace("scMCA")))
 #'   Encoding(colnames(ref_scMCA)) <- "latin1"
 #'   colnames(ref_scMCA) <- iconv(colnames(ref_scMCA), "latin1", "UTF-8")
-#'   # get_namespace_fun("usethis", "use_data")(ref_scMCA, compress = "xz")
+#'   # thisutils::get_namespace_fun("usethis", "use_data")(ref_scMCA, compress = "xz")
 #' @name ref_scMCA
 NULL
