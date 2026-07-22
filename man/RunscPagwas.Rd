@@ -2,27 +2,16 @@
 % Please edit documentation in R/RunscPagwas.R
 \name{RunscPagwas}
 \alias{RunscPagwas}
-\alias{RunscPaGWAS}
-\title{Run scPagwas/scPaGWAS}
+\title{Run scPagwas}
 \usage{
 RunscPagwas(
   srt = NULL,
   single_data = NULL,
   gwas_data,
-  celltype_meta = NULL,
-  block_annotation = c("hg38", "hg37", "custom"),
-  output.dirs = tempdir(),
-  cleanup_soar = TRUE,
-  return_seurat = !is.null(srt) || inherits(single_data, "Seurat"),
-  verbose = TRUE,
-  ...
-)
-
-RunscPaGWAS(
-  srt = NULL,
-  single_data = NULL,
-  gwas_data,
-  celltype_meta = NULL,
+  group.by = NULL,
+  singlecell = TRUE,
+  celltype = TRUE,
+  assay = NULL,
   block_annotation = c("hg38", "hg37", "custom"),
   output.dirs = tempdir(),
   cleanup_soar = TRUE,
@@ -34,12 +23,19 @@ RunscPaGWAS(
 \arguments{
 \item{srt}{Optional Seurat object used as single-cell input.}
 
-\item{single_data}{Optional Seurat object or path to an \code{.rds} file used by
-\code{scPagwas}.}
+\item{single_data}{Optional Seurat object or path to a Seurat \code{.rds} file.}
 
-\item{gwas_data}{GWAS summary statistics as a data frame.}
+\item{gwas_data}{GWAS summary statistics as a data frame or delimited text
+file. Required columns are \code{chrom}, \code{pos}, \code{rsid}, \code{se}, \code{beta}, and \code{maf}.}
 
-\item{celltype_meta}{Optional Seurat metadata column used to set identities.}
+\item{group.by}{Optional Seurat metadata column used to set cell identities.}
+
+\item{singlecell}{Whether to calculate single-cell results.}
+
+\item{celltype}{Whether to calculate cell-type results.}
+
+\item{assay}{Assay used by \code{scPagwas}. Defaults to the active assay for a
+Seurat object and to \code{"RNA"} for other inputs.}
 
 \item{block_annotation}{Genome build for bundled upstream annotations
 (\code{"hg38"} or \code{"hg37"}) or a custom annotation path.}
@@ -64,5 +60,10 @@ A Seurat object or upstream result list.
 Run the optional \code{scPagwas} package from \code{scop} without bundling LD,
 pathway, or block-annotation resources. The wrapper validates required GWAS
 columns, normalizes output paths, and records provenance in Seurat tools or
-a result attribute.
+a result attribute. It prefers the upstream \code{scPagwas_main2} runner and
+applies Seurat 5 compatibility to local function copies without modifying
+the installed backend namespace.
+}
+\seealso{
+\code{\link[=PlotscPagwas]{PlotscPagwas()}}
 }
