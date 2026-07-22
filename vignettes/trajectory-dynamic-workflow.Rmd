@@ -6,12 +6,17 @@ title: "Trajectory and dynamic feature workflow"
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  eval = TRUE,
+  eval = FALSE,
   fig.align = "center",
   dpi = 144,
   out.width = "92%"
 )
 ```
+
+This article displays a complete workflow without executing it during the
+website build. Trajectory and velocity backends can install Python environments
+and require method-specific inputs, so run the relevant sections explicitly in
+the environment used for the analysis.
 
 This article shows how to organize trajectory, RNA-velocity, and dynamic-feature
 analyses in `scop`. These methods answer related but distinct questions:

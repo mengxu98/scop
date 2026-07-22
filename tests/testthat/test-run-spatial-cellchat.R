@@ -118,6 +118,15 @@ test_that("Visium scale evidence and multi-image selection are strict", {
   )
 })
 
+test_that("standard Seurat Visium scale factors provide the full-resolution diameter", {
+  data(visium_mouse_brain_slices_sub)
+  diameter <- scop:::spatialcellchat_visium_spot_diameter(
+    visium_mouse_brain_slices_sub,
+    "anterior1"
+  )
+  expect_equal(diameter, 89.4779, tolerance = 1e-6)
+})
+
 test_that("composition validation aligns and normalizes spots", {
   cells <- paste0("spot", 1:3)
   composition <- matrix(

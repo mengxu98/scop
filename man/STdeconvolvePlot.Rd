@@ -53,7 +53,7 @@ Multi-topic point maps use one shared proportion scale and reserve title
 space above the automatic layout.
 }
 \examples{
-check_r("JEFworks-Lab/STdeconvolve", verbose = FALSE)
+thisutils::check_r("JEFworks-Lab/STdeconvolve", verbose = FALSE)
 data(visium_human_pancreas_sub)
 spatial <- RunSTdeconvolve(
   visium_human_pancreas_sub,

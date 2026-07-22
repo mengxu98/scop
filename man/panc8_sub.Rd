@@ -21,9 +21,9 @@ For each data set in \code{panc8}, 200 cells were downsampled to form the \code{
 \examples{
 
   data(pancreas_sub)
-  check_r("satijalab/seurat-data")
+  thisutils::check_r("satijalab/seurat-data")
 
-  InstallData <- get_namespace_fun("SeuratData", "InstallData")
+  InstallData <- thisutils::get_namespace_fun("SeuratData", "InstallData")
   InstallData("panc8")
   data(panc8)
   panc8 <- UpdateSeuratObject(panc8)
@@ -51,7 +51,7 @@ For each data set in \code{panc8}, 200 cells were downsampled to form the \code{
   ), ]
   panc8_sub$celltype <- gsub("_", "-", panc8_sub$celltype)
   panc8_sub$celltype <- gsub(" ", "-", panc8_sub$celltype)
-  use_data <- get_namespace_fun("usethis", "use_data")
+  use_data <- thisutils::get_namespace_fun("usethis", "use_data")
   use_data(
     panc8_sub,
     compress = "xz",

@@ -55,7 +55,7 @@ jobs:
           # changes are covered by R-CMD-check; their documentation is
           # regenerated when the corresponding man pages are committed.
           if printf '%s\n' "$files" |
-            grep -E '^(README[.](md|Rmd|qmd)|NEWS\.md|DESCRIPTION|_pkgdown\.yml|man/|vignettes/|articles/|pkgdown/|inst/pkgdown/|[.]github/workflows/pkgdown\.yaml|tools/ci/optional-r-deps\.R)' |
+            grep -E '^(README[.](md|Rmd|qmd)|NEWS\.md|DESCRIPTION|_pkgdown\.yml|man/|vignettes/|articles/|pkgdown/|inst/pkgdown/|[.]github/workflows/pkgdown\.yaml|tools/ci/(optional-r-deps|pkgdown-page-audit)\.R)' |
             grep -q .; then
             echo "package_changed=true" >> "$GITHUB_OUTPUT"
           else
@@ -181,21 +181,16 @@ jobs:
             exit 0
           fi
 
-          if awk '$2 !~ /^vignettes\/.*[.](Rmd|qmd)$/ { found = 1 } END { exit found ? 0 : 1 }' pkgdown-files.txt; then
-            article_only=false
-          else
-            article_only=true
-          fi
-
-          if [[ "$article_only" == "true" ]]; then
-            echo "full_build=false" >> "$GITHUB_OUTPUT"
-            echo "article_build=true" >> "$GITHUB_OUTPUT"
+          # Global pkgdown configuration can affect every generated page.
+          if awk '$2 == "_pkgdown.yml" { found = 1 } END { exit found ? 0 : 1 }' pkgdown-files.txt; then
+            echo "full_build=true" >> "$GITHUB_OUTPUT"
+            echo "article_build=false" >> "$GITHUB_OUTPUT"
             echo "topics=" >> "$GITHUB_OUTPUT"
             echo "news_build=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          if awk '$2 !~ /^(R\/.*[.]R|man\/.*[.]Rd|NEWS[.]md)$/ { found = 1 } END { exit found ? 0 : 1 }' pkgdown-files.txt; then
+          if awk '$2 !~ /^(R\/.*[.]R|man\/.*[.]Rd|vignettes\/.*[.](Rmd|qmd)|NEWS[.]md|_pkgdown[.]yml|[.]github\/workflows\/pkgdown[.]yaml|tools\/ci\/pkgdown-page-audit[.]R)$/ { found = 1 } END { exit found ? 0 : 1 }' pkgdown-files.txt; then
             echo "full_build=true" >> "$GITHUB_OUTPUT"
             echo "article_build=false" >> "$GITHUB_OUTPUT"
             echo "topics=" >> "$GITHUB_OUTPUT"
@@ -209,27 +204,29 @@ jobs:
             paste -sd, -
           )"
 
+          if awk '$2 ~ /^vignettes\/.*[.](Rmd|qmd)$/ || $2 == "_pkgdown.yml" { found = 1 } END { exit found ? 0 : 1 }' pkgdown-files.txt; then
+            article_build=true
+          else
+            article_build=false
+          fi
+
           if awk '$2 == "NEWS.md" { found = 1 } END { exit found ? 0 : 1 }' pkgdown-files.txt; then
             news_build=true
           else
             news_build=false
           fi
 
-          if [[ -z "$topics" && "$news_build" == "false" ]]; then
-            echo "full_build=true" >> "$GITHUB_OUTPUT"
-            echo "article_build=false" >> "$GITHUB_OUTPUT"
-            echo "topics=" >> "$GITHUB_OUTPUT"
-            echo "news_build=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
           echo "full_build=false" >> "$GITHUB_OUTPUT"
-          echo "article_build=false" >> "$GITHUB_OUTPUT"
+          echo "article_build=$article_build" >> "$GITHUB_OUTPUT"
           echo "topics=$topics" >> "$GITHUB_OUTPUT"
           echo "news_build=$news_build" >> "$GITHUB_OUTPUT"
 
-      - name: Check reference index
-        if: github.event_name == 'pull_request'
+      - name: Find missing published pages
+        id: missing
+        run: Rscript tools/ci/pkgdown-page-audit.R outputs
+
+      - name: Build reference index
+        if: github.event_name == 'pull_request' || steps.scope.outputs.full_build == 'false'
         run: |
           if (!requireNamespace("future", quietly = TRUE) ||
                 !requireNamespace("future.apply", quietly = TRUE)) {
@@ -240,27 +237,34 @@ jobs:
         shell: Rscript {0}
 
       - name: Build changed reference topics
-        if: github.event_name != 'pull_request' && steps.scope.outputs.full_build == 'false' && steps.scope.outputs.article_build == 'false' && steps.scope.outputs.topics != ''
+        if: steps.scope.outputs.full_build != 'true' && (steps.scope.outputs.topics != '' || steps.missing.outputs.reference_topics != '')
         run: |
           if (!requireNamespace("future", quietly = TRUE) ||
                 !requireNamespace("future.apply", quietly = TRUE)) {
             install.packages(c("future", "future.apply"), quiet = TRUE)
           }
           future::plan("sequential", gc = TRUE)
-          topics <- strsplit(Sys.getenv("PKGDOWN_TOPICS"), ",", fixed = TRUE)[[1]]
+          split_topics <- function(x) {
+            if (!nzchar(x)) character() else strsplit(x, ",", fixed = TRUE)[[1]]
+          }
+          topics <- unique(c(
+            split_topics(Sys.getenv("PKGDOWN_TOPICS")),
+            split_topics(Sys.getenv("PKGDOWN_MISSING_TOPICS"))
+          ))
           pkgdown::build_reference(topics = topics, lazy = FALSE)
         shell: Rscript {0}
         env:
           PKGDOWN_TOPICS: ${{ steps.scope.outputs.topics }}
+          PKGDOWN_MISSING_TOPICS: ${{ steps.missing.outputs.reference_topics }}
 
       - name: Build news
-        if: github.event_name != 'pull_request' && steps.scope.outputs.full_build == 'false' && steps.scope.outputs.article_build == 'false' && steps.scope.outputs.news_build == 'true'
+        if: github.event_name != 'pull_request' && steps.scope.outputs.full_build == 'false' && steps.scope.outputs.news_build == 'true'
         run: |
           pkgdown::build_news(preview = FALSE)
         shell: Rscript {0}
 
       - name: Build articles
-        if: github.event_name != 'pull_request' && steps.scope.outputs.full_build == 'false' && steps.scope.outputs.article_build == 'true'
+        if: steps.scope.outputs.full_build != 'true' && (steps.scope.outputs.article_build == 'true' || steps.missing.outputs.article_topics != '')
         run: |
           if (!requireNamespace("future", quietly = TRUE) ||
                 !requireNamespace("future.apply", quietly = TRUE)) {
@@ -281,10 +285,13 @@ jobs:
           pkgdown::build_site(lazy = Sys.getenv("GITHUB_EVENT_NAME") != "schedule")
         shell: Rscript {0}
 
+      - name: Audit configured pkgdown pages
+        run: Rscript tools/ci/pkgdown-page-audit.R check "${{ steps.scope.outputs.full_build }}"
+
       - name: Deploy to GitHub pages 🚀
         if: github.event_name != 'pull_request'
         uses: JamesIves/github-pages-deploy-action@v4.4.1
         with:
-          clean: ${{ github.event_name == 'schedule' }}
+          clean: ${{ steps.scope.outputs.full_build == 'true' }}
           branch: gh-pages
           folder: docs
