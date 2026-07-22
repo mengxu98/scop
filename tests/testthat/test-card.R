@@ -126,6 +126,43 @@ test_that("CARD argument routing supports Bioconductor underscore formals", {
   expect_identical(matched$ct_select, c("Alpha", "Beta"))
 })
 
+test_that("CARD uses an installed CARDspa backend without installing CARD", {
+  testthat::local_mocked_bindings(
+    check_r = function(...) stop("CARD installation must not be attempted"),
+    get_namespace_fun = function(package, name) {
+      if (identical(package, "CARD")) stop("CARD is not installed")
+      expect_identical(package, "CARDspa")
+      expect_true(name %in% c("createCARDObject", "CARD_deconvolution"))
+      function(...) NULL
+    },
+    .package = "scop"
+  )
+
+  expect_identical(scop:::card_resolve_backend_package(), "CARDspa")
+})
+
+test_that("CARD checks its repository only when no installed backend is usable", {
+  installed <- FALSE
+  testthat::local_mocked_bindings(
+    check_r = function(repository, verbose = FALSE) {
+      expect_identical(repository, "YingMa0107/CARD")
+      expect_false(verbose)
+      installed <<- TRUE
+      invisible(TRUE)
+    },
+    get_namespace_fun = function(package, name) {
+      if (isTRUE(installed) && identical(package, "CARD")) {
+        return(function(...) NULL)
+      }
+      stop("backend unavailable")
+    },
+    .package = "scop"
+  )
+
+  expect_identical(scop:::card_resolve_backend_package(), "CARD")
+  expect_true(installed)
+})
+
 test_that("CARDspa one-step API removes backend-unsupported informative-zero spots", {
   st_counts <- methods::as(Matrix::Matrix(
     matrix(

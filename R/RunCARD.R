@@ -425,23 +425,29 @@ card_run_backend <- function(
 }
 
 card_resolve_backend_package <- function() {
-  check_r("YingMa0107/CARD", verbose = FALSE)
   packages <- c("CARD", "CARDspa")
-  available <- vapply(
-    packages,
-    function(pkg) {
-      create_fun <- suppressWarnings(tryCatch(
-        get_namespace_fun(pkg, "createCARDObject"),
-        error = function(e) NULL
-      ))
-      deconv_fun <- suppressWarnings(tryCatch(
-        get_namespace_fun(pkg, "CARD_deconvolution"),
-        error = function(e) NULL
-      ))
-      is.function(create_fun) && is.function(deconv_fun)
-    },
-    logical(1)
-  )
+  probe_backends <- function() {
+    vapply(
+      packages,
+      function(pkg) {
+        create_fun <- suppressWarnings(tryCatch(
+          get_namespace_fun(pkg, "createCARDObject"),
+          error = function(e) NULL
+        ))
+        deconv_fun <- suppressWarnings(tryCatch(
+          get_namespace_fun(pkg, "CARD_deconvolution"),
+          error = function(e) NULL
+        ))
+        is.function(create_fun) && is.function(deconv_fun)
+      },
+      logical(1)
+    )
+  }
+  available <- probe_backends()
+  if (!any(available)) {
+    check_r("YingMa0107/CARD", verbose = FALSE)
+    available <- probe_backends()
+  }
   if (!any(available)) {
     log_message(
       "Please install {.pkg CARD} or {.pkg CARDspa} before running {.fn RunCARD}",

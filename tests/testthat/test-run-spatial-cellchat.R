@@ -275,6 +275,27 @@ test_that("SpatialCellChat backend calls avoid global progress handlers", {
   expect_identical(sparse_output$k, c(1L, 2L))
 })
 
+test_that("SpatialCellChat ignores unavailable private compatibility helpers", {
+  testthat::local_mocked_bindings(
+    get_namespace_fun = function(package, name) {
+      if (identical(package, "SpatialCellChat") && identical(name, "subsetData")) {
+        return(function(object) object + 1)
+      }
+      stop("private helper is unavailable")
+    },
+    .package = "scop"
+  )
+
+  expect_equal(
+    scop:::spatialcellchat_call(
+      "subsetData",
+      list(object = 1),
+      analysis.level = "cell"
+    ),
+    2
+  )
+})
+
 test_that("RunSpatialCellChat stores truthful schema and unified CCC rows", {
   local_mock_spatialcellchat_backend()
   srt <- make_spatialcellchat_test_object()
