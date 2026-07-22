@@ -622,7 +622,7 @@ FeatureDimPlot <- function(
   if (is.null(pt.size)) {
     pt.size <- dim_plot_default_pt_size(nrow(dat_use))
   }
-  raster <- raster %||% (nrow(dat_use) > 1e5)
+  raster <- raster %||% dim_plot_auto_raster(nrow(dat_use))
   if (isTRUE(raster)) {
     check_r("scattermore", verbose = FALSE)
   }

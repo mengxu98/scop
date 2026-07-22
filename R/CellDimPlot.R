@@ -25,7 +25,9 @@
 #' @param palcolor Custom colors used to create a color palette.
 #' Default is `NULL`.
 #' @param bg_color Color value for background(NA) points.
-#' @param pt.size The size of the points in the plot.
+#' @param pt.size The size of the points in the plot. Default is `NULL`, which
+#' automatically scales point diameter with the square root of the number of
+#' plotted cells.
 #' @param pt.alpha The transparency of the data points.
 #' Default is `1`.
 #' @param cells.highlight A logical or character vector specifying the cells to highlight in the plot.
@@ -833,7 +835,7 @@ CellDimPlot <- function(
   if (is.null(pt.size)) {
     pt.size <- dim_plot_default_pt_size(nrow(dat_use))
   }
-  raster <- raster %||% (nrow(dat_use) > 1e5)
+  raster <- raster %||% dim_plot_auto_raster(nrow(dat_use))
   if (isTRUE(raster)) {
     check_r("scattermore", verbose = FALSE)
   }
@@ -2734,5 +2736,9 @@ CellDimPlot3D <- function(
 }
 
 dim_plot_default_pt_size <- function(n) {
-  min(3000 / n, 1)
+  min(1, 0.6 * sqrt(5000 / n))
+}
+
+dim_plot_auto_raster <- function(n) {
+  n > 1e5
 }
