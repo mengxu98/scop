@@ -445,8 +445,14 @@ spatialcellchat_call <- function(symbol, args, analysis.level) {
     )
   }
   fun <- get_namespace_fun(.spatialcellchat_package, symbol)
-  original_sparse_fun <- get_namespace_fun(.spatialcellchat_package, "my_as_sparse3Darray")
-  sparse3d_fun <- get_namespace_fun("spatstat.sparse", "sparse3Darray")
+  optional_fun <- function(package, name) {
+    suppressWarnings(tryCatch(
+      get_namespace_fun(package, name),
+      error = function(e) NULL
+    ))
+  }
+  original_sparse_fun <- optional_fun(.spatialcellchat_package, "my_as_sparse3Darray")
+  sparse3d_fun <- optional_fun("spatstat.sparse", "sparse3Darray")
   compatibility_env <- new.env(parent = environment(fun))
   compatibility_env[["my_future_lapply"]] <- function(
     X,
@@ -483,47 +489,49 @@ spatialcellchat_call <- function(symbol, args, analysis.level) {
       answer
     }
   }
-  compatibility_env[["my_as_sparse3Darray"]] <- function(
-    x,
-    ...,
-    strict = FALSE,
-    nonzero = FALSE
-  ) {
-    is_sparse_list <- is.list(x) && length(x) > 0L &&
-      all(vapply(x, inherits, logical(1), what = "sparseMatrix"))
-    if (!is_sparse_list) {
-      return(original_sparse_fun(x, ..., strict = strict, nonzero = nonzero))
-    }
-    dims <- lapply(x, dim)
-    if (!all(vapply(dims, identical, logical(1), dims[[1L]]))) {
-      log_message("SpatialCellChat sparse matrices have inconsistent dimensions", message_type = "error")
-    }
-    dim_names <- lapply(x, dimnames)
-    non_null_names <- Filter(Negate(is.null), dim_names)
-    if (length(non_null_names) > 1L &&
-      !all(vapply(non_null_names, identical, logical(1), non_null_names[[1L]]))) {
-      log_message("SpatialCellChat sparse matrices have inconsistent dimnames", message_type = "error")
-    }
-    pieces <- lapply(seq_along(x), function(k) {
-      matrix_k <- methods::as(x[[k]], "TsparseMatrix")
-      data.frame(
-        i = matrix_k@i + 1L,
-        j = matrix_k@j + 1L,
-        k = rep.int(k, length(matrix_k@x)),
-        x = matrix_k@x
+  if (is.function(original_sparse_fun) && is.function(sparse3d_fun)) {
+    compatibility_env[["my_as_sparse3Darray"]] <- function(
+      x,
+      ...,
+      strict = FALSE,
+      nonzero = FALSE
+    ) {
+      is_sparse_list <- is.list(x) && length(x) > 0L &&
+        all(vapply(x, inherits, logical(1), what = "sparseMatrix"))
+      if (!is_sparse_list) {
+        return(original_sparse_fun(x, ..., strict = strict, nonzero = nonzero))
+      }
+      dims <- lapply(x, dim)
+      if (!all(vapply(dims, identical, logical(1), dims[[1L]]))) {
+        log_message("SpatialCellChat sparse matrices have inconsistent dimensions", message_type = "error")
+      }
+      dim_names <- lapply(x, dimnames)
+      non_null_names <- Filter(Negate(is.null), dim_names)
+      if (length(non_null_names) > 1L &&
+        !all(vapply(non_null_names, identical, logical(1), non_null_names[[1L]]))) {
+        log_message("SpatialCellChat sparse matrices have inconsistent dimnames", message_type = "error")
+      }
+      pieces <- lapply(seq_along(x), function(k) {
+        matrix_k <- methods::as(x[[k]], "TsparseMatrix")
+        data.frame(
+          i = matrix_k@i + 1L,
+          j = matrix_k@j + 1L,
+          k = rep.int(k, length(matrix_k@x)),
+          x = matrix_k@x
+        )
+      })
+      indices <- do.call(rbind, pieces)
+      sparse3d_fun(
+        i = indices$i,
+        j = indices$j,
+        k = indices$k,
+        x = indices$x,
+        dims = c(dims[[1L]], length(x)),
+        dimnames = if (length(non_null_names) == 0L) NULL else c(non_null_names[[1L]], list(NULL)),
+        strict = strict,
+        nonzero = nonzero
       )
-    })
-    indices <- do.call(rbind, pieces)
-    sparse3d_fun(
-      i = indices$i,
-      j = indices$j,
-      k = indices$k,
-      x = indices$x,
-      dims = c(dims[[1L]], length(x)),
-      dimnames = if (length(non_null_names) == 0L) NULL else c(non_null_names[[1L]], list(NULL)),
-      strict = strict,
-      nonzero = nonzero
-    )
+    }
   }
   compatibility_symbols <- c(
     "computeAvgCommunProb", "computeAvgCommunProb_Visium", "computeCommunField",
@@ -533,7 +541,7 @@ spatialcellchat_call <- function(symbol, args, analysis.level) {
     "identifyOverExpressedLigandReceptor"
   )
   for (backend_symbol in compatibility_symbols) {
-    backend_fun <- get_namespace_fun(.spatialcellchat_package, backend_symbol)
+    backend_fun <- optional_fun(.spatialcellchat_package, backend_symbol)
     if (is.function(backend_fun)) {
       backend_fun <- eval(
         call("function", formals(backend_fun), body(backend_fun)),
