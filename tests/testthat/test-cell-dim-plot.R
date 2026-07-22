@@ -1,14 +1,16 @@
-make_cell_dim_plot_srt <- function() {
-  counts <- matrix(rpois(60, lambda = 5), nrow = 6)
+make_cell_dim_plot_srt <- function(n_cells = 10L) {
+  counts <- matrix(rpois(6L * n_cells, lambda = 5), nrow = 6)
   rownames(counts) <- paste0("gene", seq_len(nrow(counts)))
   colnames(counts) <- paste0("cell", seq_len(ncol(counts)))
   counts <- Matrix::Matrix(counts, sparse = TRUE)
   srt <- Seurat::CreateSeuratObject(counts = counts)
-  srt$celltype <- rep(c("A1", "A2", "B1", "B2"), length.out = 10)
+  srt$celltype <- rep(c("A1", "A2", "B1", "B2"), length.out = n_cells)
   srt$major_type <- ifelse(grepl("^A", srt$celltype), "A", "B")
+  n_left <- ceiling(n_cells / 2)
+  n_right <- n_cells - n_left
   embedding <- cbind(
-    c(seq(0, 0.4, length.out = 5), seq(2, 2.4, length.out = 5)),
-    c(seq(0, 0.4, length.out = 5), seq(2, 2.4, length.out = 5))
+    c(seq(0, 0.4, length.out = n_left), seq(2, 2.4, length.out = n_right)),
+    c(seq(0, 0.4, length.out = n_left), seq(2, 2.4, length.out = n_right))
   )
   rownames(embedding) <- colnames(srt)
   colnames(embedding) <- c("UMAP_1", "UMAP_2")
@@ -296,6 +298,78 @@ test_that("CellDimPlot uses readable default point size", {
   point_layer <- point_layers[[length(point_layers)]]
   expect_equal(point_layer$aes_params$size, 1)
   expect_equal(point_layer$aes_params$stroke, 0)
+})
+
+test_that("dimension plot defaults use calibrated square-root scaling", {
+  cell_counts <- c(1000L, 3000L, 5000L, 10000L, 50000L, 100000L)
+
+  expect_equal(
+    vapply(cell_counts, dim_plot_default_pt_size, numeric(1)),
+    c(
+      1,
+      0.6 * sqrt(5000 / 3000),
+      0.6,
+      0.6 * sqrt(5000 / 10000),
+      0.6 * sqrt(5000 / 50000),
+      0.6 * sqrt(5000 / 100000)
+    )
+  )
+})
+
+test_that("dimension plots auto-rasterize high-density data", {
+  expect_false(dim_plot_auto_raster(100000L))
+  expect_true(dim_plot_auto_raster(100001L))
+})
+
+test_that("CellDimPlot applies scaled and explicit point sizes", {
+  srt <- make_cell_dim_plot_srt(n_cells = 5000L)
+
+  default_plot <- CellDimPlot(
+    srt = srt,
+    group.by = "celltype",
+    reduction = "umap",
+    raster = FALSE,
+    force = TRUE
+  )
+  explicit_plot <- CellDimPlot(
+    srt = srt,
+    group.by = "celltype",
+    reduction = "umap",
+    pt.size = 1,
+    raster = FALSE,
+    force = TRUE
+  )
+  point_size <- function(plot) {
+    point_layers <- Filter(
+      function(layer) inherits(layer$geom, "GeomPoint"),
+      plot$layers
+    )
+    point_layers[[length(point_layers)]]$aes_params$size
+  }
+
+  expect_equal(point_size(default_plot), 0.6)
+  expect_equal(point_size(explicit_plot), 1)
+})
+
+test_that("CellDimPlot scales large non-raster plots consistently", {
+  srt <- make_cell_dim_plot_srt(n_cells = 50000L)
+
+  plot <- CellDimPlot(
+    srt = srt,
+    group.by = "celltype",
+    reduction = "umap",
+    raster = FALSE,
+    force = TRUE
+  )
+  point_layers <- Filter(
+    function(layer) inherits(layer$geom, "GeomPoint"),
+    plot$layers
+  )
+
+  expect_equal(
+    point_layers[[length(point_layers)]]$aes_params$size,
+    0.6 * sqrt(5000 / 50000)
+  )
 })
 
 test_that("CellDimPlot validates atlas grid density", {
