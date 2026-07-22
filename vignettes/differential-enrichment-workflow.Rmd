@@ -200,7 +200,7 @@ ORA depends on a marker cutoff, while GSEA uses a ranked gene list. Use GSEA
 when many genes shift modestly and a binary marker threshold would discard
 useful signal.
 
-```{r gsea}
+```{r gsea, eval=FALSE}
 pancreas_sub <- RunGSEA(
   pancreas_sub,
   group.by = "CellType",
