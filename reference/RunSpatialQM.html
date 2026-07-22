@@ -28,8 +28,21 @@ installable with remotes::install_github("Center-for-Spatial-OMICs/SpatialQM").'
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Spatial transcriptomics</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Basic workflows</h6></li>
+    <li><a class="dropdown-item" href="../articles/single-cell-main-workflow.html">Single-cell main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/reproduce-pancreatic-endocrinogenesis.html">Reproducing pancreatic endocrinogenesis</a></li>
+    <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/interactive-scexplorer-workflow.html">Interactive SCExplorer workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges and Giotto compatibility</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Cell-cell communication</h6></li>
+    <li><a class="dropdown-item" href="../articles/cell-cell-communication-workflow.html">Cell-cell communication workflow</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -69,7 +82,7 @@ installable with <code>remotes::install_github("Center-for-Spatial-OMICs/Spatial
 <span>  <span class="va">srt</span>,</span>
 <span>  assay <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span>
-<span>  metrics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"n_cells"</span>, <span class="st">"tx_per_cell"</span>, <span class="st">"sparsity"</span>, <span class="st">"entropy"</span><span class="op">)</span>,</span>
+<span>  metrics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"n_cells"</span>, <span class="st">"tx_per_cell"</span>, <span class="st">"max_detection"</span><span class="op">)</span>,</span>
 <span>  features <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  sample_id <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  platform <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -103,7 +116,9 @@ used.</p></dd>
 <code>"n_cells"</code>, <code>"tx_per_cell"</code>, <code>"tx_per_area"</code>, <code>"tx_per_nuc"</code>,
 <code>"mean_expression"</code>, <code>"mean_signal_ratio"</code>, <code>"cell_tx_fraction"</code>,
 <code>"max_ratio"</code>, <code>"max_detection"</code>, <code>"mecr"</code>, <code>"morans"</code>, <code>"silhouette"</code>,
-<code>"sparsity"</code>, and <code>"entropy"</code>.</p></dd>
+<code>"sparsity"</code>, and <code>"entropy"</code>. The defaults are the object-first metrics
+supported by the current upstream API without raw transcript or control-probe
+inputs; other metrics remain explicitly selectable.</p></dd>
 
 
 <dt id="arg-features">features<a class="anchor" aria-label="anchor" href="#arg-features"></a></dt>
@@ -151,20 +166,18 @@ when the installed function exposes matching formal arguments.</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="va">visium_human_pancreas_sub</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/Logic.html" class="external-link">isTRUE</a></span><span class="op">(</span><span class="fu">check_r</span><span class="op">(</span><span class="st">"SpatialQM"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">RunSpatialQM</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">spatial</span>,</span></span>
-<span class="r-in"><span>    assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span></span>
-<span class="r-in"><span>    layer <span class="op">=</span> <span class="st">"counts"</span>,</span></span>
-<span class="r-in"><span>    metrics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"n_cells"</span>, <span class="st">"tx_per_cell"</span>, <span class="st">"sparsity"</span>, <span class="st">"entropy"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    platform <span class="op">=</span> <span class="st">"Visium"</span>,</span></span>
-<span class="r-in"><span>    verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">SpatialQM</span><span class="op">$</span><span class="va">summary</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in check_r("SpatialQM", verbose = FALSE):</span> could not find function "check_r"</span>
+<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">RunSpatialQM</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">spatial</span>,</span></span>
+<span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span></span>
+<span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span></span>
+<span class="r-in"><span>  metrics <span class="op">=</span> <span class="st">"n_cells"</span>,</span></span>
+<span class="r-in"><span>  platform <span class="op">=</span> <span class="st">"Visium"</span>,</span></span>
+<span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in RunSpatialQM(spatial, assay = "Spatial", layer = "counts", metrics = "n_cells",     platform = "Visium", verbose = FALSE):</span> SpatialQM metric <span style="color: #0000BB;">"n_cells"</span> failed: there is no package called</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> ‘SpatialQM’</span>
+<span class="r-in"><span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">SpatialQM</span><span class="op">$</span><span class="va">summary</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -176,7 +189,7 @@ when the installed function exposes matching formal arguments.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>
