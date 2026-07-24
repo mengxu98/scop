@@ -1,4 +1,5 @@
 test_that("RunSingleR reuses checked logcounts when constructing SCE inputs", {
+  skip_if_not_installed("SingleR")
   counts <- Matrix::Matrix(
     matrix(
       c(2, 0, 1, 3, 1, 4),

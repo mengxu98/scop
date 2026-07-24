@@ -592,6 +592,7 @@ test_that("resolve_nichenetr_object downloads fallback RDS before reading", {
 test_that("RunMultiNichenetr preserves user contrast table semantics", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("Matrix")
+  skip_if_not_installed("SingleCellExperiment")
 
   counts <- Matrix::sparseMatrix(
     i = rep(1:3, 4),

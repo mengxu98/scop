@@ -124,7 +124,9 @@ Default is \code{"Chinese"}.}
 \item{palcolor}{Custom colors used to create a color palette.
 Default is \code{NULL}.}
 
-\item{pt.size}{The size of the points in the plot. Default is \code{NULL}, which automatically scales point diameter with the square root of the number of plotted cells.}
+\item{pt.size}{The size of the points in the plot. Default is \code{NULL}, which
+automatically scales point diameter with the square root of the number of
+plotted cells.}
 
 \item{pt.alpha}{The transparency of the data points.
 Default is \code{1}.}

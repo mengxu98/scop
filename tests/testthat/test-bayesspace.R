@@ -61,6 +61,7 @@ mock_bayesspace_complete <- function(sce, ...) {
 }
 
 test_that("RunBayesSpace stores raw coordinate provenance and aligned cells", {
+  skip_if_not_installed("SingleCellExperiment")
   srt <- make_bayesspace_object()
   with_mock_bayesspace(mock_bayesspace_complete, {
     out <- RunBayesSpace(
@@ -86,6 +87,7 @@ test_that("RunBayesSpace stores raw coordinate provenance and aligned cells", {
 })
 
 test_that("RunBayesSpace rejects ambiguous or partial image selection atomically", {
+  skip_if_not_installed("SpatialExperiment")
   srt <- make_bayesspace_multi_image_object()
   metadata_before <- srt[[]]
   tools_before <- srt@tools
@@ -119,6 +121,7 @@ test_that("RunBayesSpace rejects ambiguous or partial image selection atomically
 })
 
 test_that("RunBayesSpace validates backend spot alignment before mutation", {
+  skip_if_not_installed("SpatialExperiment")
   srt <- make_bayesspace_object()
   metadata_before <- srt[[]]
   tools_before <- srt@tools
@@ -145,6 +148,7 @@ test_that("RunBayesSpace validates backend spot alignment before mutation", {
 })
 
 test_that("RunBayesSpace realigns reordered backend output by spot ID", {
+  skip_if_not_installed("SingleCellExperiment")
   srt <- make_bayesspace_object()
   reordered_backend <- function(sce, ...) {
     cdata <- as.data.frame(SummarizedExperiment::colData(sce))
@@ -174,6 +178,7 @@ test_that("RunBayesSpace realigns reordered backend output by spot ID", {
 })
 
 test_that("RunBayesSpace rejects missing cluster labels before mutation", {
+  skip_if_not_installed("SpatialExperiment")
   srt <- make_bayesspace_object()
   metadata_before <- srt[[]]
   empty_label_backend <- function(sce, ...) {

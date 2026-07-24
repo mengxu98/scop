@@ -2,9 +2,13 @@
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 on:
   push:
-    branches: [main, master, dev]
+    branches: [main, master]
   pull_request:
-    branches: [main, master, dev]
+    branches: [main, master]
+  schedule:
+    # 02:00 Monday Asia/Shanghai, expressed in UTC for GitHub Actions.
+    - cron: '0 18 * * 0'
+  workflow_dispatch:
 
 name: test-coverage
 
@@ -65,14 +69,43 @@ jobs:
         with:
           use-public-rspm: true
 
+      - name: Capture R library path 🔍
+        id: r-info
+        shell: bash
+        run: |
+          echo "r-version=$(Rscript -e 'cat(as.character(getRversion()))')" >> "$GITHUB_OUTPUT"
+          echo "r-lib=$(Rscript -e 'cat(.libPaths()[1])')" >> "$GITHUB_OUTPUT"
+
+      # Custom cache key (OS + R version only) survives DESCRIPTION
+      # bumps that would invalidate setup-r-dependencies' built-in
+      # cache.  Without this, Ubuntu recompiles 80+ bioinformatics
+      # Suggests from source (~1-2 hr) and frequently OOMs.
+      - name: Restore R package cache ♻️
+        id: r-pkg-cache
+        uses: actions/cache/restore@v5
+        with:
+          path: ${{ steps.r-info.outputs.r-lib }}
+          key: r-full-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            r-full-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         env:
           GITHUB_PAT: ${{ github.token }}
         with:
-          extra-packages: any::covr
+          extra-packages: any::covr, any::testthat
           needs: coverage
-          cache: true
-          cache-version: 2
+          cache: false
+
+      - name: Save R package cache 💾
+        uses: actions/cache/save@v5
+        with:
+          path: ${{ steps.r-info.outputs.r-lib }}
+          key: r-full-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Preserve base R library path 🔒
+        shell: bash
+        run: echo "SCOP_BASE_R_LIBS_USER=$R_LIBS_USER" >> "$GITHUB_ENV"
 
       - name: Compute optional R dependency cache key 🔑
         id: optional-r-deps
@@ -106,12 +139,18 @@ jobs:
           cat("R_LIBS_USER=", combined_libs, "\n", sep = "", file = Sys.getenv("GITHUB_ENV"), append = TRUE)
         shell: Rscript {0}
 
+      - name: Save optional R package cache 💾
+        if: steps.optional-r-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: ${{ runner.temp }}/scop-optional-r-library
+          key: scop-optional-r-v1-${{ runner.os }}-r${{ steps.optional-r-deps.outputs.r-version }}-${{ steps.optional-r-deps.outputs.hash }}
+
       - name: Report optional R cache status 🔎
         run: |
           echo "optional R cache hit: ${{ steps.optional-r-cache.outputs.cache-hit }}"
 
       - name: Test coverage 📊
-        continue-on-error: true
         run: |
           covr_flags <- getOption("covr.flags")
           options(covr.flags = stats::setNames(rep("", length(covr_flags)), names(covr_flags)))
@@ -135,3 +174,8 @@ jobs:
         with:
           name: coverage-test-failures
           path: ${{ runner.temp }}/package
+
+      - name: Restore base R library path for cache 💾
+        if: always()
+        shell: bash
+        run: echo "R_LIBS_USER=$SCOP_BASE_R_LIBS_USER" >> "$GITHUB_ENV"

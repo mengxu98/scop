@@ -83,14 +83,39 @@ jobs:
         with:
           use-public-rspm: true
 
+      - name: Capture R library path 🔍
+        id: r-info
+        shell: bash
+        run: |
+          echo "r-version=$(Rscript -e 'cat(as.character(getRversion()))')" >> "$GITHUB_OUTPUT"
+          echo "r-lib=$(Rscript -e 'cat(.libPaths()[1])')" >> "$GITHUB_OUTPUT"
+
+      - name: Restore R package cache ♻️
+        id: r-pkg-cache
+        uses: actions/cache/restore@v5
+        with:
+          path: ${{ steps.r-info.outputs.r-lib }}
+          key: r-full-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            r-full-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         env:
           GITHUB_PAT: ${{ github.token }}
         with:
           extra-packages: any::pkgdown, local::.
           needs: website
-          cache: true
-          cache-version: 2
+          cache: false
+
+      - name: Save R package cache 💾
+        uses: actions/cache/save@v5
+        with:
+          path: ${{ steps.r-info.outputs.r-lib }}
+          key: r-full-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Preserve base R library path 🔒
+        shell: bash
+        run: echo "SCOP_BASE_R_LIBS_USER=$R_LIBS_USER" >> "$GITHUB_ENV"
 
       - name: Compute optional R dependency cache key 🔑
         id: optional-r-deps
@@ -295,3 +320,8 @@ jobs:
           clean: ${{ steps.scope.outputs.full_build == 'true' }}
           branch: gh-pages
           folder: docs
+
+      - name: Restore base R library path for cache 💾
+        if: always()
+        shell: bash
+        run: echo "R_LIBS_USER=$SCOP_BASE_R_LIBS_USER" >> "$GITHUB_ENV"
