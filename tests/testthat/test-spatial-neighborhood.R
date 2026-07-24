@@ -52,6 +52,7 @@ with_mock_spicyr <- function(code) {
 }
 
 test_that("RunSpatialNeighborhood stores standardized spicyR results", {
+  skip_if_not_installed("BiocNeighbors")
   srt <- make_spatial_neighborhood_seurat()
   with_mock_spicyr({
     out <- RunSpatialNeighborhood(
@@ -82,6 +83,7 @@ test_that("RunSpatialNeighborhood stores standardized spicyR results", {
 })
 
 test_that("RunSpatialNeighborhood defaults to native observed summaries", {
+  skip_if_not_installed("BiocNeighbors")
   srt <- make_spatial_neighborhood_seurat()
   out <- RunSpatialNeighborhood(
     srt,
@@ -151,6 +153,7 @@ test_that("spicyR empty and malformed outputs cannot impersonate observed result
 })
 
 test_that("SpatialNeighborhoodPlot returns scop-style ggplot objects", {
+  skip_if_not_installed("BiocNeighbors")
   srt <- make_spatial_neighborhood_seurat()
   with_mock_spicyr({
     srt <- RunSpatialNeighborhood(

@@ -18,6 +18,7 @@ make_spatial_variable_seurat <- function() {
 }
 
 test_that("native spatial variable feature results keep normalized columns", {
+  skip_if_not_installed("BiocNeighbors")
   srt <- RunSpatialVariableFeatures(
     make_spatial_variable_seurat(),
     method = "moran",
@@ -132,6 +133,7 @@ test_that("nnSVG backend output is normalized through lightweight helpers", {
 })
 
 test_that("SpatialVariableFeaturePlot uses stored result and SCOP spatial plotting", {
+  skip_if_not_installed("BiocNeighbors")
   srt <- RunSpatialVariableFeatures(
     make_spatial_variable_seurat(),
     method = "moran",
@@ -165,6 +167,7 @@ test_that("SpatialVariableFeaturePlot uses stored result and SCOP spatial plotti
 })
 
 test_that("SpatialVariableFeaturePlot combined returns patchwork when available", {
+  skip_if_not_installed("BiocNeighbors")
   testthat::skip_if_not_installed("patchwork")
   srt <- RunSpatialVariableFeatures(
     make_spatial_variable_seurat(),

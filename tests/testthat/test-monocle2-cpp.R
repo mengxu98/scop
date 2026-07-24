@@ -376,6 +376,8 @@ test_that("RunMonocle2 cpp backend produces plot-compatible tools and metadata",
   skip_if_not_installed("DDRTree")
 
   srt <- make_monocle2_branching_srt(n_per_branch = 30L)
+  grDevices::pdf(tempfile(fileext = ".pdf"), width = 12, height = 4)
+  on.exit(grDevices::dev.off(), add = TRUE)
   out <- RunMonocle2(
     srt,
     features = rownames(srt)[1:70],

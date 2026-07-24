@@ -118,7 +118,9 @@ Default is \code{"zscore"}.}
 \item{nrow, ncol, byrow}{Layout parameters passed to \code{patchwork::wrap_plots()}
 or \link[thisplot:StatPlot]{thisplot::StatPlot}.}
 
-\item{pt.size}{The size of the points in the plot.}
+\item{pt.size}{The size of the points in the plot. Default is \code{NULL}, which
+automatically scales point diameter with the square root of the number of
+plotted cells.}
 
 \item{pt.alpha}{The transparency of the data points.
 Default is \code{1}.}

@@ -37,56 +37,43 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
+      - name: Capture R library path 🔍
+        id: r-info
+        shell: bash
+        run: |
+          echo "r-version=$(Rscript -e 'cat(as.character(getRversion()))')" >> "$GITHUB_OUTPUT"
+          echo "r-lib=$(Rscript -e 'cat(.libPaths()[1])')" >> "$GITHUB_OUTPUT"
+
+      # We manage the cache ourselves instead of relying on
+      # setup-r-dependencies' built-in cache, whose key includes the
+      # DESCRIPTION hash.  During active development the hash changes
+      # frequently, so the built-in cache almost always misses and
+      # Ubuntu is forced to recompile heavy bioinfomatics packages
+      # from source (~60 min).  With a stable key (OS + R version
+      # only), the cache survives DESCRIPTION-only bumps.
+      - name: Restore R package cache ♻️
+        id: r-pkg-cache
+        uses: actions/cache/restore@v5
+        with:
+          path: ${{ steps.r-info.outputs.r-lib }}
+          key: r-hard-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            r-hard-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         env:
           GITHUB_PAT: ${{ github.token }}
         with:
-          extra-packages: any::rcmdcheck
+          extra-packages: any::rcmdcheck, any::testthat
           needs: check
-          cache: true
-          cache-version: 2
+          dependencies: '"hard"'
+          cache: false
 
-      - name: Compute optional R dependency cache key 🔑
-        id: optional-r-deps
-        shell: bash
-        run: |
-          manifest_path="${RUNNER_TEMP}/scop-optional-r-deps.txt"
-          SCOP_DEP_MANIFEST="$manifest_path" Rscript tools/ci/optional-r-deps.R
-          if command -v shasum >/dev/null 2>&1; then
-            manifest_hash="$(shasum -a 256 "$manifest_path" | cut -d ' ' -f 1)"
-          else
-            manifest_hash="$(SCOP_DEP_MANIFEST="$manifest_path" Rscript -e 'cat(unname(tools::md5sum(Sys.getenv("SCOP_DEP_MANIFEST"))))')"
-          fi
-          echo "r-version=$(Rscript -e 'cat(as.character(getRversion()))')" >> "$GITHUB_OUTPUT"
-          echo "hash=$manifest_hash" >> "$GITHUB_OUTPUT"
-
-      - name: Restore optional R package cache ♻️
-        id: optional-r-cache
-        uses: actions/cache/restore@v5
-        with:
-          path: ${{ runner.temp }}/scop-optional-r-library
-          key: scop-optional-r-v1-${{ runner.os }}-r${{ steps.optional-r-deps.outputs.r-version }}-${{ steps.optional-r-deps.outputs.hash }}
-
-      - name: Install optional R backends 📦
-        env:
-          SCOP_OPTIONAL_R_LIB: ${{ runner.temp }}/scop-optional-r-library
-        run: |
-          optional_lib <- Sys.getenv("SCOP_OPTIONAL_R_LIB")
-          user_lib <- Sys.getenv("R_LIBS_USER")
-          dir.create(optional_lib, recursive = TRUE, showWarnings = FALSE)
-          .libPaths(c(optional_lib, .libPaths()))
-          source("tools/ci/optional-r-deps.R", local = TRUE)
-          thisutils::check_r(optional_r_packages(), dependencies = NA, verbose = TRUE)
-          combined_libs <- paste(c(user_lib[nzchar(user_lib)], optional_lib), collapse = .Platform$path.sep)
-          cat("R_LIBS_USER=", combined_libs, "\n", sep = "", file = Sys.getenv("GITHUB_ENV"), append = TRUE)
-        shell: Rscript {0}
-
-      - name: Save optional R package cache 💾
-        if: steps.optional-r-cache.outputs.cache-hit != 'true'
+      - name: Save R package cache 💾
         uses: actions/cache/save@v5
         with:
-          path: ${{ runner.temp }}/scop-optional-r-library
-          key: scop-optional-r-v1-${{ runner.os }}-r${{ steps.optional-r-deps.outputs.r-version }}-${{ steps.optional-r-deps.outputs.hash }}
+          path: ${{ steps.r-info.outputs.r-lib }}
+          key: r-hard-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - uses: r-lib/actions/check-r-package@v2
         with:
