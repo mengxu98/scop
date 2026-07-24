@@ -49,6 +49,7 @@ test_that("registry advertises the migrated raw coordinate contract", {
 })
 
 test_that("raw is the real public default on an image-backed Visium object", {
+  skip_if_not_installed("BiocNeighbors")
   data("visium_human_pancreas_sub", package = "scop")
   srt <- visium_human_pancreas_sub
   image <- SeuratObject::Images(srt)[[1L]]
@@ -107,6 +108,7 @@ test_that("raw is the real public default on an image-backed Visium object", {
 })
 
 test_that("legacy display coordinates remain an explicit compatibility path", {
+  skip_if_not_installed("BiocNeighbors")
   data("visium_human_pancreas_sub", package = "scop")
   srt <- visium_human_pancreas_sub
   image <- SeuratObject::Images(srt)[[1L]]

@@ -52,7 +52,9 @@ additional \code{ChromatinAssay} will be preprocessed sequentially.}
 
 \item{calculate_coexp}{Whether to calculate the co-expression value (geometric mean) of the features.}
 
-\item{pt.size}{The size of the points in the plot.}
+\item{pt.size}{The size of the points in the plot. Default is \code{NULL}, which
+automatically scales point diameter with the square root of the number of
+plotted cells.}
 
 \item{cells.highlight}{A logical or character vector specifying the cells to highlight in the plot.
 If \code{TRUE}, all cells are highlighted. If \code{FALSE}, no cells are highlighted.

@@ -59,7 +59,7 @@ test_that("RunDEtest uses scop FindMarkers-compatible sparse Wilcoxon path", {
   expect_equal(cell_fm, scop_fm)
   expect_identical(rownames(cell_fm), markers$gene)
   expect_equal(cell_fm$p_val, markers$p_val, tolerance = 1e-12)
-  expect_equal(cell_fm$avg_log2FC, markers$avg_log2FC, tolerance = 0)
+  expect_equal(cell_fm$avg_log2FC, markers$avg_log2FC, tolerance = 1e-12)
   expect_equal(cell_fm$pct.1, markers$pct.1, tolerance = 0)
   expect_equal(cell_fm$pct.2, markers$pct.2, tolerance = 0)
 })

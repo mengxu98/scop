@@ -111,7 +111,9 @@ Default is \code{"RdBu"}.}
 
 \item{cor_range}{A two-length numeric vector specifying the range for the correlation.}
 
-\item{pt.size}{The size of the points in the plot.}
+\item{pt.size}{The size of the points in the plot. Default is \code{NULL}, which
+automatically scales point diameter with the square root of the number of
+plotted cells.}
 
 \item{pt.alpha}{The transparency of the data points.
 Default is \code{1}.}

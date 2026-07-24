@@ -14,6 +14,7 @@ make_scmap_cache_objects <- function() {
 }
 
 test_that("RunScmap reuses checked logcounts when constructing SCE inputs", {
+  skip_if_not_installed("scmap")
   objects <- make_scmap_cache_objects()
   query_data <- Matrix::Matrix(matrix(seq_len(12), nrow = 4), sparse = TRUE)
   ref_data <- Matrix::Matrix(matrix(seq_len(12) + 10, nrow = 4), sparse = TRUE)

@@ -2,9 +2,13 @@
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 on:
   push:
-    branches: [main, master, dev]
+    branches: [main, master]
   pull_request:
-    branches: [main, master, dev]
+    branches: [main, master]
+  schedule:
+    # 02:00 Monday Asia/Shanghai, expressed in UTC for GitHub Actions.
+    - cron: '0 18 * * 0'
+  workflow_dispatch:
 
 name: test-coverage
 
@@ -69,10 +73,14 @@ jobs:
         env:
           GITHUB_PAT: ${{ github.token }}
         with:
-          extra-packages: any::covr
+          extra-packages: any::covr, any::testthat
           needs: coverage
           cache: true
           cache-version: 2
+
+      - name: Preserve base R library path 🔒
+        shell: bash
+        run: echo "SCOP_BASE_R_LIBS_USER=$R_LIBS_USER" >> "$GITHUB_ENV"
 
       - name: Compute optional R dependency cache key 🔑
         id: optional-r-deps
@@ -95,23 +103,32 @@ jobs:
           path: ${{ runner.temp }}/scop-optional-r-library
           key: scop-optional-r-v1-${{ runner.os }}-r${{ steps.optional-r-deps.outputs.r-version }}-${{ steps.optional-r-deps.outputs.hash }}
 
-      - name: Use optional R package cache 📦
+      - name: Install optional R backends 📦
         env:
           SCOP_OPTIONAL_R_LIB: ${{ runner.temp }}/scop-optional-r-library
         run: |
           optional_lib <- Sys.getenv("SCOP_OPTIONAL_R_LIB")
           user_lib <- Sys.getenv("R_LIBS_USER")
           dir.create(optional_lib, recursive = TRUE, showWarnings = FALSE)
+          .libPaths(c(optional_lib, .libPaths()))
+          source("tools/ci/optional-r-deps.R", local = TRUE)
+          thisutils::check_r(optional_r_packages(), dependencies = NA, verbose = TRUE)
           combined_libs <- paste(c(user_lib[nzchar(user_lib)], optional_lib), collapse = .Platform$path.sep)
           cat("R_LIBS_USER=", combined_libs, "\n", sep = "", file = Sys.getenv("GITHUB_ENV"), append = TRUE)
         shell: Rscript {0}
+
+      - name: Save optional R package cache 💾
+        if: steps.optional-r-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: ${{ runner.temp }}/scop-optional-r-library
+          key: scop-optional-r-v1-${{ runner.os }}-r${{ steps.optional-r-deps.outputs.r-version }}-${{ steps.optional-r-deps.outputs.hash }}
 
       - name: Report optional R cache status 🔎
         run: |
           echo "optional R cache hit: ${{ steps.optional-r-cache.outputs.cache-hit }}"
 
       - name: Test coverage 📊
-        continue-on-error: true
         run: |
           covr_flags <- getOption("covr.flags")
           options(covr.flags = stats::setNames(rep("", length(covr_flags)), names(covr_flags)))
@@ -135,3 +152,8 @@ jobs:
         with:
           name: coverage-test-failures
           path: ${{ runner.temp }}/package
+
+      - name: Restore base R library path for cache 💾
+        if: always()
+        shell: bash
+        run: echo "R_LIBS_USER=$SCOP_BASE_R_LIBS_USER" >> "$GITHUB_ENV"

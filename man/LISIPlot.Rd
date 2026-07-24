@@ -55,7 +55,9 @@ Default is \code{NULL}, which means determined automatically based on the number
 \item{byrow}{Whether to arrange the plots by row in the combined plot.
 Default is \code{TRUE}.}
 
-\item{pt.size}{The size of the points in the plot.}
+\item{pt.size}{The size of the points in the plot. Default is \code{NULL}, which
+automatically scales point diameter with the square root of the number of
+plotted cells.}
 
 \item{pt.alpha}{The transparency of the data points.
 Default is \code{1}.}

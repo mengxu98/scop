@@ -92,6 +92,10 @@ jobs:
           cache: true
           cache-version: 2
 
+      - name: Preserve base R library path 🔒
+        shell: bash
+        run: echo "SCOP_BASE_R_LIBS_USER=$R_LIBS_USER" >> "$GITHUB_ENV"
+
       - name: Compute optional R dependency cache key 🔑
         id: optional-r-deps
         shell: bash
@@ -295,3 +299,8 @@ jobs:
           clean: ${{ steps.scope.outputs.full_build == 'true' }}
           branch: gh-pages
           folder: docs
+
+      - name: Restore base R library path for cache 💾
+        if: always()
+        shell: bash
+        run: echo "R_LIBS_USER=$SCOP_BASE_R_LIBS_USER" >> "$GITHUB_ENV"

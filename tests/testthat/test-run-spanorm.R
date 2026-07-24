@@ -38,6 +38,7 @@ with_mock_spanorm <- function(code) {
 }
 
 test_that("RunSpaNorm creates a new assay and stores normalized schema", {
+  skip_if_not_installed("SpatialExperiment")
   srt <- make_spanorm_seurat()
   original_counts <- GetAssayData5(srt, assay = "RNA", layer = "counts")
 
@@ -76,6 +77,7 @@ test_that("RunSpaNorm creates a new assay and stores normalized schema", {
 })
 
 test_that("RunSpaNorm can skip tool storage", {
+  skip_if_not_installed("SpatialExperiment")
   srt <- make_spanorm_seurat()
   with_mock_spanorm({
     out <- RunSpaNorm(
@@ -94,6 +96,7 @@ test_that("RunSpaNorm can skip tool storage", {
 })
 
 test_that("RunSpaNorm validates coordinates and backend output clearly", {
+  skip_if_not_installed("SpatialExperiment")
   srt <- make_spanorm_seurat()
   expect_error(
     RunSpaNorm(
