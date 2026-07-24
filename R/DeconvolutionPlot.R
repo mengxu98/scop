@@ -137,7 +137,7 @@ DeconvolutionPlot <- function(
         panel.grid.major.x = ggplot2::element_blank(),
         panel.grid.minor = ggplot2::element_blank()
       )
-    return(major_grid(plot = plot, grid_major = grid_major))
+    return(thisplot::major_grid(plot = plot, grid_major = grid_major))
   }
 
   if (identical(plot_type, "heatmap")) {
@@ -201,7 +201,7 @@ DeconvolutionPlot <- function(
       panel.grid.major.x = ggplot2::element_blank(),
       panel.grid.minor = ggplot2::element_blank()
     )
-  major_grid(plot = plot, grid_major = grid_major)
+  thisplot::major_grid(plot = plot, grid_major = grid_major)
 }
 
 bulk_plot_theme <- function(theme_use = "theme_scop", theme_args = list()) {
@@ -213,22 +213,6 @@ bulk_plot_theme <- function(theme_use = "theme_scop", theme_args = list()) {
     return(ggplot2::theme_bw())
   }
   do.call(theme_fun, theme_args)
-}
-
-major_grid <- function(
-  plot,
-  grid_major = TRUE,
-  grid_major_colour = "grey80",
-  grid_major_linetype = 2,
-  grid_major_linewidth = 0.3
-) {
-  major_grid(
-    plot = plot,
-    grid_major = grid_major,
-    grid_major_colour = grid_major_colour,
-    grid_major_linetype = grid_major_linetype,
-    grid_major_linewidth = grid_major_linewidth
-  )
 }
 
 bulk_match_levels <- function(x, levels_use = NULL) {
