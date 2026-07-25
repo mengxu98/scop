@@ -58,7 +58,9 @@ method-specific workflows.}
 \code{"r"}, and \code{"all"}; \code{"all"} expands to both Python and R. The default,
 \code{"python"}, preserves the existing Python-only behavior. The R component
 collects packages declared through \code{check_r()} and checks/installs them,
-including optional workflow dependencies not listed in \code{DESCRIPTION}.}
+including optional workflow dependencies not listed in \code{DESCRIPTION}.
+CHOIR is R-only, so \code{PrepareEnv(modules = "choir")} prepares its pinned
+optional R backend without creating a Python environment.}
 
 \item{cores}{Number of workers for R-package installation. Use \code{NULL} (the
 default) to let pak select its worker count automatically.}

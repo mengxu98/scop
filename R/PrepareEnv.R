@@ -38,6 +38,8 @@
 #' `"python"`, preserves the existing Python-only behavior. The R component
 #' collects packages declared through `check_r()` and checks/installs them,
 #' including optional workflow dependencies not listed in `DESCRIPTION`.
+#' CHOIR is R-only, so `PrepareEnv(modules = "choir")` prepares its pinned
+#' optional R backend without creating a Python environment.
 #' @param cores Number of workers for R-package installation. Use `NULL` (the
 #' default) to let pak select its worker count automatically.
 #' @param ... Additional arguments passed to package installation functions.
@@ -56,8 +58,15 @@ PrepareEnv <- function(
   verbose = TRUE,
   ...
 ) {
+  components_missing <- missing(components)
   components <- norm_env_components(components)
   modules <- normalize_env_modules(modules = modules)
+  if (
+    identical(modules, "choir") &&
+      (components_missing || identical(components, "r"))
+  ) {
+    return(invisible(choir_check_r(verbose = verbose)))
+  }
   r_status <- NULL
   if ("r" %in% components) {
     r_status <- ensure_env_r_packages(
@@ -454,6 +463,7 @@ supported_env_modules <- function() {
     "scmalignantfinder",
     "secact",
     "scpagwas",
+    "choir",
     "external_wrappers"
   )
 }
@@ -471,6 +481,7 @@ default_env_modules <- function() {
     "scmalignantfinder",
     "secact",
     "scpagwas",
+    "choir",
     "external_wrappers"
   )
   if (is_windows()) {
@@ -573,7 +584,8 @@ normalize_env_modules <- function(modules = NULL, include_optional = FALSE) {
       setdiff(modules, "external_wrappers"),
       "scmalignantfinder",
       "secact",
-      "scpagwas"
+      "scpagwas",
+      "choir"
     )
   }
 
@@ -606,7 +618,8 @@ normalize_env_modules <- function(modules = NULL, include_optional = FALSE) {
 ensure_external_wrapper_r_packages <- function(modules, verbose = TRUE) {
   repos <- c(
     secact = "data2intelligence/SecAct",
-    scpagwas = "sulab-wmu/scPagwas"
+    scpagwas = "sulab-wmu/scPagwas",
+    choir = "corceslab/CHOIR"
   )
   modules <- intersect(names(repos), modules)
   if (length(modules) == 0) {
@@ -614,6 +627,10 @@ ensure_external_wrapper_r_packages <- function(modules, verbose = TRUE) {
   }
 
   for (module in modules) {
+    if (identical(module, "choir")) {
+      choir_check_r(verbose = verbose)
+      next
+    }
     repo <- unname(repos[[module]])
     check_r(repo, dependencies = NA, verbose = verbose)
   }
@@ -662,7 +679,8 @@ env_r_packages <- function(modules = NULL) {
 
   module_packages <- c(
     secact = "data2intelligence/SecAct",
-    scpagwas = "sulab-wmu/scPagwas"
+    scpagwas = "sulab-wmu/scPagwas",
+    choir = "corceslab/CHOIR"
   )
   unique(c(
     description_packages,
@@ -1423,7 +1441,7 @@ env_info <- function(conda, envname, verbose = TRUE) {
 #' `"sccoda"`, `"doublet"`, `"palantir"`, `"scvelo"`, `"cellrank"`, `"wot"`,
 #' `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`,
 #' `"scomm"`, `"scenic"`, `"seacells"`, `"tage"`,
-#' `"scmalignantfinder"`, `"secact"`, `"scpagwas"`, and
+#' `"scmalignantfinder"`, `"secact"`, `"scpagwas"`, `"choir"`, and
 #' `"external_wrappers"`. If `NULL`, the default environment is returned. The default
 #' excludes `"cell2location"`, `"cell2fate"`, `"sccoda"`, `"scomm"`, and
 #' `"scenic"` because these workflows
