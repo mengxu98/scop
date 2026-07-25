@@ -3,7 +3,7 @@ test_that("external_wrappers expands to external wrapper modules", {
 
   expect_setequal(
     modules,
-    c("scmalignantfinder", "secact", "scpagwas", "scanpy")
+    c("scmalignantfinder", "secact", "scpagwas", "choir", "scanpy")
   )
 })
 
@@ -31,23 +31,59 @@ test_that("external wrapper R packages remain optional explicit installs", {
         verbose = verbose
       )
       invisible(TRUE)
+    },
+    choir_check_r = function(verbose) {
+      calls[[length(calls) + 1]] <<- list(
+        packages = "corceslab/CHOIR",
+        dependencies = NA,
+        verbose = verbose
+      )
+      invisible(TRUE)
     }
   )
 
   ok <- getFromNamespace("ensure_external_wrapper_r_packages", "scop")(
-    modules = c("scmalignantfinder", "secact", "scpagwas"),
+    modules = c("scmalignantfinder", "secact", "scpagwas", "choir"),
     verbose = FALSE
   )
 
   expect_equal(ok, TRUE)
   expect_equal(
     vapply(calls, `[[`, character(1), "packages"),
-    c("data2intelligence/SecAct", "sulab-wmu/scPagwas")
+    c(
+      "data2intelligence/SecAct",
+      "sulab-wmu/scPagwas",
+      "corceslab/CHOIR"
+    )
   )
   expect_equal(
     vapply(calls, `[[`, logical(1), "dependencies"),
-    c(NA, NA)
+    c(NA, NA, NA)
   )
+})
+
+test_that("PrepareEnv exposes CHOIR as an optional R module", {
+  packages <- getFromNamespace("env_r_packages", "scop")("choir")
+
+  expect_true("corceslab/CHOIR" %in% packages)
+})
+
+test_that("PrepareEnv prepares the R-only CHOIR module without Python", {
+  calls <- 0L
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    choir_check_r = function(verbose) {
+      calls <<- calls + 1L
+      expect_false(verbose)
+      invisible("pinned-commit")
+    }
+  )
+
+  expect_identical(
+    PrepareEnv(modules = "choir", verbose = FALSE),
+    "pinned-commit"
+  )
+  expect_identical(calls, 1L)
 })
 
 test_that("PrepareEnv supports explicit R and Python components", {
