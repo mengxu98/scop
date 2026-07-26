@@ -42,12 +42,12 @@ Default is \code{FALSE}.}
 \item{modules}{Optional Python dependency modules to install in addition to
 the default scientific stack.
 If \code{NULL} or omitted in \code{\link[=PrepareEnv]{PrepareEnv()}}, the default environment is installed.
-The default excludes \code{"cell2location"}, \code{"sccoda"}, and \code{"scomm"} because
-cell2location is a long-running explicit workflow and the TensorFlow stacks
-are not compatible with the default JAX/scVI stack in the same environment;
-request them explicitly for scCODA/scOMM workflows. \code{"scenic"} is also
-excluded from the default environment and is prepared in \code{"scenic_env"} by
-default because SCENIC requires an older Python/numpy stack. On Windows, the
+The default excludes \code{"cell2location"}, \code{"cell2fate"}, \code{"sccoda"}, and
+\code{"scomm"} because these workflows use long-running or incompatible dependency
+stacks. Cell2fate is prepared in a standalone \code{"cell2fate_env"} with Python
+3.9. \code{"scenic"} is also excluded from the default environment and is prepared
+in \code{"scenic_env"} by default because SCENIC requires an older Python/numpy
+stack. On Windows, the
 default also excludes \code{"scvi"}, \code{"glue"}, and \code{"multimap"} because those
 upstream stacks are more reliable when requested explicitly for
 method-specific workflows.}

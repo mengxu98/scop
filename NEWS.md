@@ -1,6 +1,7 @@
 # scop 0.9.0
 
 * **feat**:
+  * Added `RunCell2fate()` for runtime-optional RNA-velocity modeling from raw spliced and unspliced Seurat assays. The wrapper prepares an isolated Python 3.9 environment, persists resumable model/posterior artifacts, writes Cell2fate time and module states to metadata, and keeps dense velocity output optional in `srt@tools`.
   * Renamed `standard_scop()` to `RunStandardWorkflow()` and `integration_scop()` to `RunIntegration()`. The old entry points now emit deprecation warnings and will be removed in version 1.0.0.
   * Standardized the internal spatial-integration sample column as `.spatial_integration_sample`.
   * Added `RunBenchmark()` for isolated, failure-tolerant comparison of stable spatial-domain clustering methods against a gold standard, with ARI/NMI/purity, runtime, and sampled process-tree peak memory. Explicit `GiottoCluster` and `methods = "all"` selection add the supported legacy baseline without mixing it into the stable default, and result tables/plots label its tier. `BenchmarkPlot()` now provides publication-oriented quality, efficiency, overview, and direction-aware heatmap views for `benchmark_result` objects.
