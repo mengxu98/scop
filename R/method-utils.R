@@ -26,7 +26,7 @@ resolve_scop_features <- function(mat, features = NULL, nfeatures = 2000) {
     }
     return(features)
   }
-  vars <- sparse_row_vars(mat)
+  vars <- fast_row_vars(mat, unbiased = FALSE)
   head(
     names(sort(vars, decreasing = TRUE)),
     min(length(vars), as.integer(nfeatures))
@@ -45,15 +45,6 @@ scop_scale_features <- function(mat) {
   )
   dimnames(x) <- dimnames(mat)
   x
-}
-
-sparse_row_vars <- function(mat) {
-  mat <- methods::as(Matrix::Matrix(mat, sparse = TRUE), "dgCMatrix")
-  mu <- Matrix::rowMeans(mat)
-  mu2 <- Matrix::rowMeans(mat^2)
-  out <- pmax(mu2 - mu^2, 0)
-  names(out) <- rownames(mat)
-  out
 }
 
 fitdevo_spearman_weights <- function(scaled, target) {
@@ -79,7 +70,8 @@ fitdevo_score <- function(mat, target = NULL) {
     detection <- Matrix::rowMeans(
       methods::as(Matrix::Matrix(mat, sparse = TRUE), "dgCMatrix") > 0
     )
-    weights <- sqrt(pmax(sparse_row_vars(mat), 0)) * (1 - pmin(detection, 0.99))
+    weights <- sqrt(pmax(fast_row_vars(mat, unbiased = FALSE), 0)) *
+      (1 - pmin(detection, 0.99))
   } else {
     weights <- fitdevo_spearman_weights(scaled, target)
   }
