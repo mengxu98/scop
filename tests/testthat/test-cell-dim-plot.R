@@ -301,7 +301,16 @@ test_that("CellDimPlot uses readable default point size", {
 })
 
 test_that("dimension plot defaults use calibrated square-root scaling", {
-  cell_counts <- c(1000L, 3000L, 5000L, 10000L, 50000L, 100000L)
+  cell_counts <- c(
+    1000L,
+    3000L,
+    5000L,
+    10000L,
+    20000L,
+    30000L,
+    50000L,
+    100000L
+  )
 
   expect_equal(
     vapply(cell_counts, dim_plot_default_pt_size, numeric(1)),
@@ -310,10 +319,63 @@ test_that("dimension plot defaults use calibrated square-root scaling", {
       0.6 * sqrt(5000 / 3000),
       0.6,
       0.6 * sqrt(5000 / 10000),
-      0.6 * sqrt(5000 / 50000),
-      0.6 * sqrt(5000 / 100000)
+      0.3,
+      0.3,
+      0.3,
+      0.3
     )
   )
+})
+
+test_that("dimension plot defaults remain raster-readable at common PNG resolutions", {
+  point_size_mm <- dim_plot_default_pt_size(30000L)
+
+  expect_equal(point_size_mm, 0.3)
+  expect_gte(point_size_mm / 25.4 * 300, 3.5)
+  expect_gte(point_size_mm / 25.4 * 600, 7)
+})
+
+test_that("automatic raster point sizes stay visible and explicit sizes remain exact", {
+  expect_equal(dim_plot_raster_pt_size(0.3, auto = TRUE), 2)
+  expect_equal(dim_plot_raster_pt_size(0.3, auto = FALSE), 1)
+  expect_equal(dim_plot_raster_pt_size(1.2, auto = TRUE), 2)
+  expect_equal(dim_plot_raster_pt_size(2.2, auto = TRUE), 3)
+})
+
+test_that("CellDimPlot applies the automatic raster point-size floor", {
+  skip_if_not_installed("scattermore")
+  srt <- make_cell_dim_plot_srt()
+
+  default_plot <- CellDimPlot(
+    srt = srt,
+    group.by = "celltype",
+    reduction = "umap",
+    raster = TRUE,
+    show_stat = FALSE,
+    force = TRUE
+  )
+  explicit_plot <- CellDimPlot(
+    srt = srt,
+    group.by = "celltype",
+    reduction = "umap",
+    pt.size = 0.3,
+    raster = TRUE,
+    show_stat = FALSE,
+    force = TRUE
+  )
+  raster_point_sizes <- function(plot) {
+    unname(vapply(
+      Filter(
+        function(layer) inherits(layer$geom, "GeomScattermore"),
+        plot$layers
+      ),
+      function(layer) layer$geom_params$pointsize,
+      numeric(1)
+    ))
+  }
+
+  expect_equal(raster_point_sizes(default_plot), c(2, 2))
+  expect_equal(raster_point_sizes(explicit_plot), c(1, 1))
 })
 
 test_that("dimension plots auto-rasterize high-density data", {
@@ -368,7 +430,7 @@ test_that("CellDimPlot scales large non-raster plots consistently", {
 
   expect_equal(
     point_layers[[length(point_layers)]]$aes_params$size,
-    0.6 * sqrt(5000 / 50000)
+    0.3
   )
 })
 

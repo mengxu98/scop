@@ -619,12 +619,18 @@ FeatureDimPlot <- function(
     dat_use <- dat_use[intersect(rownames(dat_use), cells), , drop = FALSE]
   }
 
-  if (is.null(pt.size)) {
+  pt.size_auto <- is.null(pt.size)
+  if (pt.size_auto) {
     pt.size <- dim_plot_default_pt_size(nrow(dat_use))
   }
   raster <- raster %||% dim_plot_auto_raster(nrow(dat_use))
   if (isTRUE(raster)) {
     check_r("scattermore", verbose = FALSE)
+  }
+  raster_pt_size <- if (isTRUE(raster)) {
+    dim_plot_raster_pt_size(pt.size, auto = pt.size_auto)
+  } else {
+    NULL
   }
   if (!is.null(raster.dpi)) {
     if (!is.numeric(x = raster.dpi) || length(raster.dpi) != 2) {
@@ -925,7 +931,7 @@ FeatureDimPlot <- function(
                 y = .data[["y"]],
                 color = .data[["color_blend"]]
               ),
-              pointsize = ceiling(pt.size),
+              pointsize = raster_pt_size,
               alpha = pt.alpha,
               pixels = raster.dpi
             ) +
@@ -936,7 +942,7 @@ FeatureDimPlot <- function(
                 y = .data[["y"]],
                 color = .data[["color_blend"]]
               ),
-              pointsize = ceiling(pt.size),
+              pointsize = raster_pt_size,
               alpha = pt.alpha,
               pixels = raster.dpi
             ) +
@@ -1454,7 +1460,7 @@ FeatureDimPlot <- function(
                 y = .data[["y"]],
                 color = .data[["value"]]
               ),
-              pointsize = ceiling(pt.size),
+              pointsize = raster_pt_size,
               alpha = pt.alpha,
               pixels = raster.dpi
             ) +
@@ -1465,7 +1471,7 @@ FeatureDimPlot <- function(
                 y = .data[["y"]],
                 color = .data[["value"]]
               ),
-              pointsize = ceiling(pt.size),
+              pointsize = raster_pt_size,
               alpha = pt.alpha,
               pixels = raster.dpi
             )
