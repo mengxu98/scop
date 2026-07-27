@@ -27,7 +27,8 @@
 #' @param bg_color Color value for background(NA) points.
 #' @param pt.size The size of the points in the plot. Default is `NULL`, which
 #' automatically scales point diameter with the square root of the number of
-#' plotted cells.
+#' plotted cells while keeping a readable minimum size of `0.3`. Automatically
+#' sized raster plots use at least a two-pixel point diameter.
 #' @param pt.alpha The transparency of the data points.
 #' Default is `1`.
 #' @param cells.highlight A logical or character vector specifying the cells to highlight in the plot.
@@ -832,12 +833,18 @@ CellDimPlot <- function(
   if (!is.null(cells)) {
     dat_use <- dat_use[intersect(rownames(dat_use), cells), , drop = FALSE]
   }
-  if (is.null(pt.size)) {
+  pt.size_auto <- is.null(pt.size)
+  if (pt.size_auto) {
     pt.size <- dim_plot_default_pt_size(nrow(dat_use))
   }
   raster <- raster %||% dim_plot_auto_raster(nrow(dat_use))
   if (isTRUE(raster)) {
     check_r("scattermore", verbose = FALSE)
+  }
+  raster_pt_size <- if (isTRUE(raster)) {
+    dim_plot_raster_pt_size(pt.size, auto = pt.size_auto)
+  } else {
+    NULL
   }
   if (!is.null(raster.dpi)) {
     if (!is.numeric(x = raster.dpi) || length(raster.dpi) != 2) {
@@ -1260,7 +1267,7 @@ CellDimPlot <- function(
             data = dat[is.na(dat[, "group.by"]), , drop = FALSE],
             mapping = aes(x = .data[["x"]], y = .data[["y"]]),
             color = bg_color,
-            pointsize = ceiling(pt.size),
+            pointsize = raster_pt_size,
             alpha = pt.alpha,
             pixels = raster.dpi
           ) +
@@ -1271,7 +1278,7 @@ CellDimPlot <- function(
               y = .data[["y"]],
               color = .data[["group.by"]]
             ),
-            pointsize = ceiling(pt.size),
+            pointsize = raster_pt_size,
             alpha = pt.alpha,
             pixels = raster.dpi
           )
@@ -2736,7 +2743,15 @@ CellDimPlot3D <- function(
 }
 
 dim_plot_default_pt_size <- function(n) {
-  min(1, 0.6 * sqrt(5000 / n))
+  max(0.3, min(1, 0.6 * sqrt(5000 / n)))
+}
+
+dim_plot_raster_pt_size <- function(pt.size, auto = FALSE) {
+  pointsize <- ceiling(pt.size)
+  if (isTRUE(auto)) {
+    pointsize <- max(2, pointsize)
+  }
+  pointsize
 }
 
 dim_plot_auto_raster <- function(n) {
