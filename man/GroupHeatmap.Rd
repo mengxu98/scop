@@ -510,7 +510,7 @@ If not provided, the width will be automatically determined based on the number 
 \item{units}{The units to use for the width and height of the heatmap.
 Default is \code{"inch"}, Options are \code{"mm"}, \code{"cm"}, or \code{"inch"}.}
 
-\item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
+\item{cores}{The number of worker processes to use for parallelization.
 Default is \code{1}.}
 
 \item{seed}{Random seed for reproducibility.
