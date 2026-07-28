@@ -619,7 +619,8 @@ FeatureDimPlot <- function(
     dat_use <- dat_use[intersect(rownames(dat_use), cells), , drop = FALSE]
   }
 
-  if (is.null(pt.size)) {
+  pt.size_auto <- is.null(pt.size)
+  if (pt.size_auto) {
     pt.size <- dim_plot_default_pt_size(nrow(dat_use))
   }
   raster <- raster %||% dim_plot_auto_raster(nrow(dat_use))
@@ -627,12 +628,21 @@ FeatureDimPlot <- function(
     check_r("scattermore", verbose = FALSE)
   }
   if (!is.null(raster.dpi)) {
-    if (!is.numeric(x = raster.dpi) || length(raster.dpi) != 2) {
+    if (!is.numeric(raster.dpi) || length(raster.dpi) != 2) {
       log_message(
         "{.arg raster.dpi} must be a two-length numeric vector",
         message_type = "error"
       )
     }
+  }
+  raster_scale <- if (is.null(raster.dpi)) {
+    1
+  } else {
+    sqrt(prod(raster.dpi / c(512, 512)))
+  }
+  raster_pt_size <- pt.size * raster_scale
+  if (pt.size_auto) {
+    raster_pt_size <- max(2 * raster_scale, raster_pt_size)
   }
 
   if (!is.null(lineages)) {
@@ -925,7 +935,7 @@ FeatureDimPlot <- function(
                 y = .data[["y"]],
                 color = .data[["color_blend"]]
               ),
-              pointsize = ceiling(pt.size),
+              pointsize = raster_pt_size,
               alpha = pt.alpha,
               pixels = raster.dpi
             ) +
@@ -936,7 +946,7 @@ FeatureDimPlot <- function(
                 y = .data[["y"]],
                 color = .data[["color_blend"]]
               ),
-              pointsize = ceiling(pt.size),
+              pointsize = raster_pt_size,
               alpha = pt.alpha,
               pixels = raster.dpi
             ) +
@@ -1454,7 +1464,7 @@ FeatureDimPlot <- function(
                 y = .data[["y"]],
                 color = .data[["value"]]
               ),
-              pointsize = ceiling(pt.size),
+              pointsize = raster_pt_size,
               alpha = pt.alpha,
               pixels = raster.dpi
             ) +
@@ -1465,7 +1475,7 @@ FeatureDimPlot <- function(
                 y = .data[["y"]],
                 color = .data[["value"]]
               ),
-              pointsize = ceiling(pt.size),
+              pointsize = raster_pt_size,
               alpha = pt.alpha,
               pixels = raster.dpi
             )

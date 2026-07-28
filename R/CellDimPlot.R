@@ -27,7 +27,8 @@
 #' @param bg_color Color value for background(NA) points.
 #' @param pt.size The size of the points in the plot. Default is `NULL`, which
 #' automatically scales point diameter with the square root of the number of
-#' plotted cells.
+#' plotted cells, with a minimum of `0.3`. Raster point sizes scale with
+#' `raster.dpi`; explicitly supplied values remain unchanged.
 #' @param pt.alpha The transparency of the data points.
 #' Default is `1`.
 #' @param cells.highlight A logical or character vector specifying the cells to highlight in the plot.
@@ -832,7 +833,8 @@ CellDimPlot <- function(
   if (!is.null(cells)) {
     dat_use <- dat_use[intersect(rownames(dat_use), cells), , drop = FALSE]
   }
-  if (is.null(pt.size)) {
+  pt.size_auto <- is.null(pt.size)
+  if (pt.size_auto) {
     pt.size <- dim_plot_default_pt_size(nrow(dat_use))
   }
   raster <- raster %||% dim_plot_auto_raster(nrow(dat_use))
@@ -840,12 +842,21 @@ CellDimPlot <- function(
     check_r("scattermore", verbose = FALSE)
   }
   if (!is.null(raster.dpi)) {
-    if (!is.numeric(x = raster.dpi) || length(raster.dpi) != 2) {
+    if (!is.numeric(raster.dpi) || length(raster.dpi) != 2) {
       log_message(
         "'{.arg raster.dpi}' must be a two-length numeric vector",
         message_type = "error"
       )
     }
+  }
+  raster_scale <- if (is.null(raster.dpi)) {
+    1
+  } else {
+    sqrt(prod(raster.dpi / c(512, 512)))
+  }
+  raster_pt_size <- pt.size * raster_scale
+  if (pt.size_auto) {
+    raster_pt_size <- max(2 * raster_scale, raster_pt_size)
   }
   if (!is.null(stat.by)) {
     srt_stat <- srt
@@ -1260,7 +1271,7 @@ CellDimPlot <- function(
             data = dat[is.na(dat[, "group.by"]), , drop = FALSE],
             mapping = aes(x = .data[["x"]], y = .data[["y"]]),
             color = bg_color,
-            pointsize = ceiling(pt.size),
+            pointsize = raster_pt_size,
             alpha = pt.alpha,
             pixels = raster.dpi
           ) +
@@ -1271,7 +1282,7 @@ CellDimPlot <- function(
               y = .data[["y"]],
               color = .data[["group.by"]]
             ),
-            pointsize = ceiling(pt.size),
+            pointsize = raster_pt_size,
             alpha = pt.alpha,
             pixels = raster.dpi
           )
@@ -2736,7 +2747,7 @@ CellDimPlot3D <- function(
 }
 
 dim_plot_default_pt_size <- function(n) {
-  min(1, 0.6 * sqrt(5000 / n))
+  max(0.3, min(1, 0.6 * sqrt(5000 / n)))
 }
 
 dim_plot_auto_raster <- function(n) {
