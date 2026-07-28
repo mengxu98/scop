@@ -76,6 +76,11 @@
 #' Default is `FALSE`.
 #' @param show_row_names Whether to show row names in the heatmap.
 #' Default is `FALSE`.
+#' @param row_names_wrap Maximum number of characters per displayed row-name
+#' line. When set to a positive number, underscores are displayed as spaces and
+#' labels are wrapped without changing the underlying feature identifiers.
+#' This also applies to feature labels selected by `nlabel` or
+#' `features_label`. `NULL` disables wrapping.
 #' @param show_column_names Whether to show column names in the heatmap.
 #' Default is `FALSE`.
 #' @param row_names_side A character vector specifying the side to place row names.
@@ -475,6 +480,7 @@ GroupHeatmap <- function(
   cluster_row_slices = FALSE,
   cluster_column_slices = FALSE,
   show_row_names = FALSE,
+  row_names_wrap = NULL,
   show_column_names = FALSE,
   row_names_side = ifelse(flip, "left", "right"),
   column_names_side = ifelse(flip, "bottom", "top"),
@@ -1886,13 +1892,20 @@ GroupHeatmap <- function(
   }
 
   if (length(index) > 0) {
+    mark_labels <- feature_metadata[
+      which(rownames(feature_metadata) %in% features_ordered[index]),
+      "features"
+    ]
+    if (!is.null(row_names_wrap)) {
+      mark_labels <- heatmap_wrap_row_labels(
+        mark_labels,
+        width = row_names_wrap
+      )
+    }
     ha_mark <- ComplexHeatmap::HeatmapAnnotation(
       gene = ComplexHeatmap::anno_mark(
         at = which(rownames(feature_metadata) %in% features_ordered[index]),
-        labels = feature_metadata[
-          which(rownames(feature_metadata) %in% features_ordered[index]),
-          "features"
-        ],
+        labels = mark_labels,
         side = ifelse(flip, "top", "left"),
         labels_gp = grid::gpar(fontsize = label_size, col = label_color),
         link_gp = grid::gpar(fontsize = label_size, col = label_color),
@@ -2237,13 +2250,14 @@ GroupHeatmap <- function(
       ),
       envir = environment()
     )
+    matrix_use <- if (flip) {
+      Matrix::t(mat_list[[cell_group]])
+    } else {
+      mat_list[[cell_group]]
+    }
     ht_args <- list(
       name = cell_group,
-      matrix = if (flip) {
-        Matrix::t(mat_list[[cell_group]])
-      } else {
-        mat_list[[cell_group]]
-      },
+      matrix = matrix_use,
       col = colors,
       layer_fun = methods::getFunction(
         "layer_fun",
@@ -2326,6 +2340,19 @@ GroupHeatmap <- function(
         NULL
       }
     )
+    if (!is.null(row_names_wrap)) {
+      row_labels <- heatmap_wrap_row_labels(
+        rownames(matrix_use),
+        width = row_names_wrap
+      )
+      ht_args[["row_labels"]] <- row_labels
+      if (!"row_names_max_width" %in% names(ht_params)) {
+        ht_args[["row_names_max_width"]] <- heatmap_row_labels_max_width(
+          row_labels,
+          gp = ht_params[["row_names_gp"]]
+        )
+      }
+    }
 
     if (any(names(ht_params) %in% names(ht_args))) {
       log_message(

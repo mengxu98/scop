@@ -17,6 +17,10 @@
 #' cell mode.
 #' @param feature_annotation Feature metadata columns to show as column
 #' annotations in feature mode.
+#' @param row_names_wrap Maximum number of characters per displayed row-name
+#' line. When set to a positive number, underscores are displayed as spaces and
+#' labels are wrapped without changing the underlying item identifiers.
+#' `NULL` disables wrapping.
 #' @param cluster_palette Palette used for NMF cluster/program annotations.
 #' @param cluster_palcolor Optional custom colors for NMF cluster/program
 #' annotations.
@@ -87,6 +91,7 @@ NMFHeatmap <- function(
   cell_annotation_border_size = 1,
   feature_annotation_border_size = 1,
   show_row_names = FALSE,
+  row_names_wrap = NULL,
   show_column_names = FALSE,
   row_names_side = "left",
   column_names_side = "top",
@@ -374,38 +379,57 @@ NMFHeatmap <- function(
     "Building {.pkg ComplexHeatmap} object for {.fn NMFHeatmap} ...",
     verbose = verbose
   )
-  ht_args <- c(
-    list(
-      matrix = similarity,
-      name = ht_name,
-      col = heatmap_col,
-      top_annotation = top_annotation,
-      left_annotation = left_annotation,
-      right_annotation = enrichment[["ha_right"]],
-      cluster_rows = FALSE,
-      cluster_columns = FALSE,
-      show_row_names = show_row_names,
-      show_column_names = show_column_names,
-      show_row_dend = FALSE,
-      show_column_dend = FALSE,
-      row_names_side = row_names_side,
-      column_names_side = column_names_side,
-      row_names_rot = row_names_rot,
-      column_names_rot = column_names_rot,
-      row_title = row_title,
-      column_title = column_title,
-      border = heatmap_border,
-      border_gp = heatmap_border_gp(heatmap_border, heatmap_border_color, heatmap_border_size),
-      use_raster = use_raster,
-      raster_device = raster_device,
-      raster_by_magick = raster_by_magick,
-      heatmap_legend_param = list(
-        at = c(0, 0.5, 1),
-        labels = c("0", "0.5", "1.0")
-      )
-    ),
-    ht_params
+  ht_args <- list(
+    matrix = similarity,
+    name = ht_name,
+    col = heatmap_col,
+    top_annotation = top_annotation,
+    left_annotation = left_annotation,
+    right_annotation = enrichment[["ha_right"]],
+    cluster_rows = FALSE,
+    cluster_columns = FALSE,
+    show_row_names = show_row_names,
+    show_column_names = show_column_names,
+    show_row_dend = FALSE,
+    show_column_dend = FALSE,
+    row_names_side = row_names_side,
+    column_names_side = column_names_side,
+    row_names_rot = row_names_rot,
+    column_names_rot = column_names_rot,
+    row_title = row_title,
+    column_title = column_title,
+    border = heatmap_border,
+    border_gp = heatmap_border_gp(heatmap_border, heatmap_border_color, heatmap_border_size),
+    use_raster = use_raster,
+    raster_device = raster_device,
+    raster_by_magick = raster_by_magick,
+    heatmap_legend_param = list(
+      at = c(0, 0.5, 1),
+      labels = c("0", "0.5", "1.0")
+    )
   )
+  if (!is.null(row_names_wrap)) {
+    row_labels <- heatmap_wrap_row_labels(
+      rownames(similarity),
+      width = row_names_wrap
+    )
+    ht_args[["row_labels"]] <- row_labels
+    if (!"row_names_max_width" %in% names(ht_params)) {
+      ht_args[["row_names_max_width"]] <- heatmap_row_labels_max_width(
+        row_labels,
+        gp = ht_params[["row_names_gp"]]
+      )
+    }
+  }
+  if (any(names(ht_params) %in% names(ht_args))) {
+    log_message(
+      "ht_params: ",
+      paste0(intersect(names(ht_params), names(ht_args)), collapse = ","),
+      " were duplicated and will not be used.",
+      message_type = "warning"
+    )
+  }
+  ht_args <- c(ht_args, ht_params[setdiff(names(ht_params), names(ht_args))])
   ht_list <- do.call(ComplexHeatmap::Heatmap, args = ht_args)
 
   plot <- nmf_heatmap_render_plot(
