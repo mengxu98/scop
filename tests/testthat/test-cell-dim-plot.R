@@ -335,14 +335,30 @@ test_that("dimension plot defaults remain raster-readable at common PNG resoluti
   expect_gte(point_size_mm / 25.4 * 600, 7)
 })
 
-test_that("automatic raster point sizes stay visible and explicit sizes remain exact", {
+test_that("raster point sizes stay continuous and scale with raster resolution", {
   expect_equal(dim_plot_raster_pt_size(0.3, auto = TRUE), 2)
-  expect_equal(dim_plot_raster_pt_size(0.3, auto = FALSE), 1)
+  expect_equal(dim_plot_raster_pt_size(0.3, auto = FALSE), 0.3)
   expect_equal(dim_plot_raster_pt_size(1.2, auto = TRUE), 2)
-  expect_equal(dim_plot_raster_pt_size(2.2, auto = TRUE), 3)
+  expect_equal(dim_plot_raster_pt_size(2.2, auto = TRUE), 2.2)
+  expect_equal(
+    dim_plot_raster_pt_size(
+      0.3,
+      auto = FALSE,
+      pixels = c(2048, 2048)
+    ),
+    1.2
+  )
+  expect_equal(
+    dim_plot_raster_pt_size(
+      0.3,
+      auto = TRUE,
+      pixels = c(2048, 2048)
+    ),
+    8
+  )
 })
 
-test_that("CellDimPlot applies the automatic raster point-size floor", {
+test_that("CellDimPlot applies continuous resolution-aware raster point sizes", {
   skip_if_not_installed("scattermore")
   srt <- make_cell_dim_plot_srt()
 
@@ -360,6 +376,7 @@ test_that("CellDimPlot applies the automatic raster point-size floor", {
     reduction = "umap",
     pt.size = 0.3,
     raster = TRUE,
+    raster.dpi = c(2048, 2048),
     show_stat = FALSE,
     force = TRUE
   )
@@ -375,7 +392,58 @@ test_that("CellDimPlot applies the automatic raster point-size floor", {
   }
 
   expect_equal(raster_point_sizes(default_plot), c(2, 2))
-  expect_equal(raster_point_sizes(explicit_plot), c(1, 1))
+  expect_equal(raster_point_sizes(explicit_plot), c(1.2, 1.2))
+})
+
+test_that("FeatureDimPlot shares resolution-aware raster point sizing", {
+  skip_if_not_installed("scattermore")
+  srt <- make_cell_dim_plot_srt()
+  srt <- Seurat::NormalizeData(srt, verbose = FALSE)
+  plot <- FeatureDimPlot(
+    srt,
+    features = "gene1",
+    reduction = "umap",
+    pt.size = 0.6,
+    raster = TRUE,
+    raster.dpi = c(2048, 2048),
+    force = TRUE,
+    theme_use = theme_blank
+  )
+  point_sizes <- vapply(
+    Filter(
+      function(layer) inherits(layer$geom, "GeomScattermore"),
+      plot$layers
+    ),
+    function(layer) layer$geom_params$pointsize,
+    numeric(1)
+  )
+
+  expect_true(length(point_sizes) > 0L)
+  expect_true(all(point_sizes == 2.4))
+})
+
+test_that("dimension plot raster settings are shared and validated", {
+  expect_equal(
+    dim_plot_point_config(
+      n = 1000L,
+      raster = TRUE,
+      raster.dpi = c(1024, 2048)
+    ),
+    list(
+      pt.size = 1,
+      raster = TRUE,
+      raster_pt_size = 2 * sqrt(8),
+      raster.dpi = c(1024, 2048)
+    )
+  )
+  expect_error(
+    dim_plot_point_config(
+      n = 1000L,
+      raster = TRUE,
+      raster.dpi = c(512, 0)
+    ),
+    "positive finite"
+  )
 })
 
 test_that("dimension plots auto-rasterize high-density data", {
