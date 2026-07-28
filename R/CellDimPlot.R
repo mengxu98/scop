@@ -28,7 +28,11 @@
 #' @param pt.size The size of the points in the plot. Default is `NULL`, which
 #' automatically scales point diameter with the square root of the number of
 #' plotted cells while keeping a readable minimum size of `0.3`. Automatically
-#' sized raster plots use at least a two-pixel point diameter.
+#' sized raster plots use at least a two-pixel radius at the reference
+#' `raster.dpi = c(512, 512)`. Point sizes are scaled with `raster.dpi`, so their
+#' relative appearance remains stable when the raster resolution changes.
+#' Non-raster point sizes use fixed physical units; increase `pt.size`
+#' proportionally when exporting to an unusually large canvas.
 #' @param pt.alpha The transparency of the data points.
 #' Default is `1`.
 #' @param cells.highlight A logical or character vector specifying the cells to highlight in the plot.
@@ -833,26 +837,18 @@ CellDimPlot <- function(
   if (!is.null(cells)) {
     dat_use <- dat_use[intersect(rownames(dat_use), cells), , drop = FALSE]
   }
-  pt.size_auto <- is.null(pt.size)
-  if (pt.size_auto) {
-    pt.size <- dim_plot_default_pt_size(nrow(dat_use))
-  }
-  raster <- raster %||% dim_plot_auto_raster(nrow(dat_use))
+  point_config <- dim_plot_point_config(
+    n = nrow(dat_use),
+    pt.size = pt.size,
+    raster = raster,
+    raster.dpi = raster.dpi
+  )
+  pt.size <- point_config$pt.size
+  raster <- point_config$raster
+  raster_pt_size <- point_config$raster_pt_size
+  raster.dpi <- point_config$raster.dpi
   if (isTRUE(raster)) {
     check_r("scattermore", verbose = FALSE)
-  }
-  raster_pt_size <- if (isTRUE(raster)) {
-    dim_plot_raster_pt_size(pt.size, auto = pt.size_auto)
-  } else {
-    NULL
-  }
-  if (!is.null(raster.dpi)) {
-    if (!is.numeric(x = raster.dpi) || length(raster.dpi) != 2) {
-      log_message(
-        "'{.arg raster.dpi}' must be a two-length numeric vector",
-        message_type = "error"
-      )
-    }
   }
   if (!is.null(stat.by)) {
     srt_stat <- srt
@@ -2746,10 +2742,67 @@ dim_plot_default_pt_size <- function(n) {
   max(0.3, min(1, 0.6 * sqrt(5000 / n)))
 }
 
-dim_plot_raster_pt_size <- function(pt.size, auto = FALSE) {
-  pointsize <- ceiling(pt.size)
+dim_plot_point_config <- function(
+  n,
+  pt.size = NULL,
+  raster = NULL,
+  raster.dpi = c(512, 512)
+) {
+  pt.size_auto <- is.null(pt.size)
+  if (pt.size_auto) {
+    pt.size <- dim_plot_default_pt_size(n)
+  }
+  raster <- raster %||% dim_plot_auto_raster(n)
+  raster.dpi <- dim_plot_validate_raster_dpi(raster.dpi)
+  raster_pt_size <- if (isTRUE(raster)) {
+    dim_plot_raster_pt_size(
+      pt.size,
+      auto = pt.size_auto,
+      pixels = raster.dpi
+    )
+  } else {
+    NULL
+  }
+  list(
+    pt.size = pt.size,
+    raster = raster,
+    raster_pt_size = raster_pt_size,
+    raster.dpi = raster.dpi
+  )
+}
+
+dim_plot_validate_raster_dpi <- function(raster.dpi) {
+  if (
+    !is.null(raster.dpi) &&
+      (
+        !is.numeric(raster.dpi) ||
+          length(raster.dpi) != 2L ||
+          anyNA(raster.dpi) ||
+          any(!is.finite(raster.dpi)) ||
+          any(raster.dpi <= 0)
+      )
+  ) {
+    log_message(
+      "'{.arg raster.dpi}' must contain two positive finite numbers",
+      message_type = "error"
+    )
+  }
+  raster.dpi
+}
+
+dim_plot_raster_pt_size <- function(
+  pt.size,
+  auto = FALSE,
+  pixels = c(512, 512)
+) {
+  resolution_scale <- if (is.null(pixels)) {
+    1
+  } else {
+    sqrt(prod(pixels / c(512, 512)))
+  }
+  pointsize <- pt.size * resolution_scale
   if (isTRUE(auto)) {
-    pointsize <- max(2, pointsize)
+    pointsize <- max(2 * resolution_scale, pointsize)
   }
   pointsize
 }

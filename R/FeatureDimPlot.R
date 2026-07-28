@@ -619,26 +619,18 @@ FeatureDimPlot <- function(
     dat_use <- dat_use[intersect(rownames(dat_use), cells), , drop = FALSE]
   }
 
-  pt.size_auto <- is.null(pt.size)
-  if (pt.size_auto) {
-    pt.size <- dim_plot_default_pt_size(nrow(dat_use))
-  }
-  raster <- raster %||% dim_plot_auto_raster(nrow(dat_use))
+  point_config <- dim_plot_point_config(
+    n = nrow(dat_use),
+    pt.size = pt.size,
+    raster = raster,
+    raster.dpi = raster.dpi
+  )
+  pt.size <- point_config$pt.size
+  raster <- point_config$raster
+  raster_pt_size <- point_config$raster_pt_size
+  raster.dpi <- point_config$raster.dpi
   if (isTRUE(raster)) {
     check_r("scattermore", verbose = FALSE)
-  }
-  raster_pt_size <- if (isTRUE(raster)) {
-    dim_plot_raster_pt_size(pt.size, auto = pt.size_auto)
-  } else {
-    NULL
-  }
-  if (!is.null(raster.dpi)) {
-    if (!is.numeric(x = raster.dpi) || length(raster.dpi) != 2) {
-      log_message(
-        "{.arg raster.dpi} must be a two-length numeric vector",
-        message_type = "error"
-      )
-    }
   }
 
   if (!is.null(lineages)) {
