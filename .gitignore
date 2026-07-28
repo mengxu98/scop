@@ -37,6 +37,11 @@ scripts
 test
 tmaps
 tmp
+grill/
 /.posit
 _problems/
 testthat-problems.rds
+/.agents
+/.claude
+skills-lock.json
+AGENTS.md

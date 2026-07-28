@@ -206,7 +206,7 @@ Default is \code{11}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
+\item{cores}{The number of worker processes to use for parallelization.
 Default is \code{1}.}
 }
 \description{
