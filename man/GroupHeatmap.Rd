@@ -46,6 +46,7 @@ GroupHeatmap(
   cluster_row_slices = FALSE,
   cluster_column_slices = FALSE,
   show_row_names = FALSE,
+  row_names_wrap = NULL,
   show_column_names = FALSE,
   row_names_side = ifelse(flip, "left", "right"),
   column_names_side = ifelse(flip, "bottom", "top"),
@@ -256,6 +257,12 @@ Default is \code{FALSE}.}
 
 \item{show_row_names}{Whether to show row names in the heatmap.
 Default is \code{FALSE}.}
+
+\item{row_names_wrap}{Maximum number of characters per displayed row-name
+line. When set to a positive number, underscores are displayed as spaces and
+labels are wrapped without changing the underlying feature identifiers.
+This also applies to feature labels selected by \code{nlabel} or
+\code{features_label}. \code{NULL} disables wrapping.}
 
 \item{show_column_names}{Whether to show column names in the heatmap.
 Default is \code{FALSE}.}
