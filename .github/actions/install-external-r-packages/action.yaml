@@ -1,0 +1,146 @@
+name: Install external R packages
+description: Install pinned CI or optional packages outside the locked project library.
+
+inputs:
+  packages:
+    description: Newline-separated package specifications accepted by renv::install().
+    required: true
+  required-packages:
+    description: Newline-separated installed package names to verify.
+    required: true
+  library-name:
+    description: Runner-temporary library directory name.
+    required: true
+  cache-version:
+    description: Cache namespace for this external package set.
+    required: true
+
+outputs:
+  cache-hit:
+    description: Whether the exact external-library cache was restored.
+    value: ${{ steps.cache.outputs.cache-hit }}
+  library:
+    description: Absolute path to the external R library.
+    value: ${{ steps.metadata.outputs.library }}
+
+runs:
+  using: composite
+  steps:
+    - name: Compute external library metadata 🔑
+      id: metadata
+      shell: Rscript {0}
+      env:
+        SCOP_EXTERNAL_PACKAGES: ${{ inputs.packages }}
+        SCOP_EXTERNAL_REQUIRED: ${{ inputs.required-packages }}
+        SCOP_EXTERNAL_LIBRARY_NAME: ${{ inputs.library-name }}
+      run: |
+        split_lines <- function(value) {
+          values <- trimws(strsplit(value, "\n", fixed = TRUE)[[1]])
+          values[nzchar(values)]
+        }
+
+        packages <- split_lines(Sys.getenv("SCOP_EXTERNAL_PACKAGES"))
+        required <- split_lines(Sys.getenv("SCOP_EXTERNAL_REQUIRED"))
+        library_name <- Sys.getenv("SCOP_EXTERNAL_LIBRARY_NAME")
+        if (!length(packages) || !length(required)) {
+          stop("External package specifications and required package names cannot be empty.")
+        }
+        if (!grepl("^[A-Za-z0-9._-]+$", library_name)) {
+          stop("The external R library name contains unsupported characters.")
+        }
+
+        library <- file.path(Sys.getenv("RUNNER_TEMP"), library_name)
+        dir.create(library, recursive = TRUE, showWarnings = FALSE)
+        manifest <- tempfile("scop-external-packages-")
+        writeLines(c(packages, "-- required --", required), manifest)
+        manifest_hash <- unname(tools::md5sum(manifest))
+
+        cat(
+          "library=", library, "\n",
+          "packages-hash=", manifest_hash, "\n",
+          "r-version=", as.character(getRversion()), "\n",
+          sep = "",
+          file = Sys.getenv("GITHUB_OUTPUT"),
+          append = TRUE
+        )
+
+    - name: Restore external R package cache ♻️
+      id: cache
+      uses: actions/cache@v5
+      with:
+        path: ${{ steps.metadata.outputs.library }}
+        key: ${{ inputs.cache-version }}-${{ runner.os }}-${{ runner.arch }}-r${{ steps.metadata.outputs.r-version }}-${{ hashFiles('renv.lock') }}-${{ steps.metadata.outputs.packages-hash }}
+
+    - name: Install external R packages 📦
+      if: steps.cache.outputs.cache-hit != 'true'
+      shell: Rscript {0}
+      env:
+        RENV_CONFIG_CACHE_ENABLED: "FALSE"
+        SCOP_EXTERNAL_PACKAGES: ${{ inputs.packages }}
+        SCOP_EXTERNAL_LIBRARY: ${{ steps.metadata.outputs.library }}
+      run: |
+        packages <- trimws(strsplit(
+          Sys.getenv("SCOP_EXTERNAL_PACKAGES"),
+          "\n",
+          fixed = TRUE
+        )[[1]])
+        packages <- packages[nzchar(packages)]
+        renv::install(
+          packages,
+          library = Sys.getenv("SCOP_EXTERNAL_LIBRARY"),
+          lock = FALSE,
+          prompt = FALSE
+        )
+
+    - name: Verify and expose external R library 🔎
+      shell: Rscript {0}
+      env:
+        SCOP_EXTERNAL_REQUIRED: ${{ inputs.required-packages }}
+        SCOP_EXTERNAL_LIBRARY: ${{ steps.metadata.outputs.library }}
+      run: |
+        library <- normalizePath(
+          Sys.getenv("SCOP_EXTERNAL_LIBRARY"),
+          winslash = "/",
+          mustWork = TRUE
+        )
+        required <- trimws(strsplit(
+          Sys.getenv("SCOP_EXTERNAL_REQUIRED"),
+          "\n",
+          fixed = TRUE
+        )[[1]])
+        required <- required[nzchar(required)]
+        installed <- rownames(installed.packages(lib.loc = library))
+        missing <- setdiff(required, installed)
+        if (length(missing)) {
+          stop(
+            "External R library is missing required packages: ",
+            paste(missing, collapse = ", ")
+          )
+        }
+
+        package_dirs <- file.path(library, installed)
+        linked <- package_dirs[nzchar(Sys.readlink(package_dirs))]
+        if (length(linked)) {
+          stop(
+            "External R packages must not link into the locked renv cache: ",
+            paste(basename(linked), collapse = ", ")
+          )
+        }
+
+        existing <- Sys.getenv("RENV_CONFIG_EXTERNAL_LIBRARIES")
+        external <- unique(c(
+          library,
+          if (nzchar(existing)) {
+            strsplit(existing, .Platform$path.sep, fixed = TRUE)[[1]]
+          } else {
+            character()
+          }
+        ))
+        cat(
+          "RENV_CONFIG_EXTERNAL_LIBRARIES=",
+          paste(external, collapse = .Platform$path.sep),
+          "\n",
+          sep = "",
+          file = Sys.getenv("GITHUB_ENV"),
+          append = TRUE
+        )
