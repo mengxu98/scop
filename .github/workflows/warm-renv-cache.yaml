@@ -1,0 +1,21 @@
+name: warm-renv-cache
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  prepare-environment:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: scop-full-${{ github.sha }}-ubuntu-latest
+      cancel-in-progress: false
+      queue: max
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Prepare locked R environment 🧰
+        uses: ./.github/actions/prepare-renv

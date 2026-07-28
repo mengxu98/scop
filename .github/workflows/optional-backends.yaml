@@ -1,0 +1,74 @@
+name: optional-backends
+
+on:
+  schedule:
+    # 02:00 Wednesday Asia/Shanghai, expressed in UTC.
+    - cron: '0 18 * * 2'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prepare-environment:
+    uses: ./.github/workflows/warm-renv-cache.yaml
+
+  optional-backend:
+    needs: prepare-environment
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - suite: monocle2
+            filter: monocle2-cpp
+            packages: |-
+              mengxu98/monocle@ed3e7698f80ebdda8fb86be94a948e0c1353a769
+              DDRTree@0.1.6
+            required: |-
+              monocle
+              DDRTree
+          - suite: giotto
+            filter: giotto
+            packages: giotto-suite/Giotto@080d2e206c2f8b567a9ec2527297b6abd463ee64
+            required: Giotto
+          - suite: spatialqm
+            filter: spatialqm-platform
+            packages: Center-for-Spatial-OMICs/SpatialQM@36e1a59d4ca3f8f360a1d826f5e999d9f40c6760
+            required: SpatialQM
+          - suite: tage
+            filter: runtage-preprocessing
+            packages: Gladyshev-Lab/tAge@d2bae09a2409deb42031f2b31aa3d9f391d5e2ab
+            required: tAge
+          - suite: cibersort
+            filter: cibersort-cpp
+            packages: Moonerss/CIBERSORT@583877726927327fad6417be49abe4eb8c3d02f6
+            required: CIBERSORT
+
+    name: optional (${{ matrix.suite }})
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Restore locked R environment 🧰
+        uses: ./.github/actions/prepare-renv
+
+      - name: Install optional backend 📦
+        uses: ./.github/actions/install-external-r-packages
+        with:
+          packages: ${{ matrix.packages }}
+          required-packages: ${{ matrix.required }}
+          library-name: scop-optional-${{ matrix.suite }}
+          cache-version: scop-optional-${{ matrix.suite }}
+
+      - name: Run optional backend tests 🧪
+        shell: Rscript {0}
+        env:
+          SCOP_OPTIONAL_TEST_FILTER: ${{ matrix.filter }}
+        run: |
+          testthat::test_local(
+            filter = Sys.getenv("SCOP_OPTIONAL_TEST_FILTER"),
+            reporter = "summary",
+            load_package = "source"
+          )
