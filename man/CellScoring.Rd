@@ -111,7 +111,7 @@ while database-derived results stay assay-only when \code{new_assay = TRUE}.}
 \item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
 
-\item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
+\item{cores}{The number of worker processes to use for parallelization.
 Default is \code{1}.}
 
 \item{verbose}{Whether to print the message.

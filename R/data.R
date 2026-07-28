@@ -78,7 +78,6 @@ NULL
 #' \href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE86469}{GSE86469}
 #'
 #' @examples
-#'
 #'   data(pancreas_sub)
 #'   thisutils::check_r("satijalab/seurat-data")
 #'
@@ -140,7 +139,6 @@ NULL
 #' `test/data/pbmc_multiome_1k.rds` in this repository.
 #'
 #' @examples
-#'
 #'   source("test/data/create_pbmcmultiome_sub.R")
 #'   pbmcmultiome_sub <- create_pbmcmultiome_sub()
 #'   use_data <- thisutils::get_namespace_fun("usethis", "use_data")
@@ -298,7 +296,6 @@ NULL
 #'
 #' @concept data
 #' @examples
-#'
 #'   words_excluded <- c(
 #'     "the", "is", "and", "or", "a",
 #'     "in", "on", "under", "between", "of",
@@ -321,8 +318,6 @@ NULL
 #' @source
 #' \href{https://github.com/ggjlab/scMCA}{scMCA}
 #' @examples
-#'
-#'
 #'   thisutils::check_r(c("ggjlab/scMCA"))
 #'   ref_scMCA <- NormalizeData(get("ref.expr", envir = asNamespace("scMCA")))
 #'   Encoding(colnames(ref_scMCA)) <- "latin1"

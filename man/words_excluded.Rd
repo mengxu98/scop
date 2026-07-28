@@ -8,7 +8,6 @@ The variable \code{words_excluded} represents the words that are excluded during
 These mainly include words that are excessively redundant or of little value.
 }
 \examples{
-
   words_excluded <- c(
     "the", "is", "and", "or", "a",
     "in", "on", "under", "between", "of",

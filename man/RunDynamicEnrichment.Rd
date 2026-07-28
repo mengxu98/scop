@@ -110,7 +110,7 @@ hypergeometric ORA implementation and returns the enrichment table without
 \code{enrichResult} objects. \code{"r"} uses \code{\link[clusterProfiler:enricher]{clusterProfiler::enricher()}} and returns
 \code{enrichResult} objects in \code{results}. \code{GO_simplify = TRUE} currently uses the R backend.}
 
-\item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
+\item{cores}{The number of worker processes to use for parallelization.
 Default is \code{1}.}
 
 \item{verbose}{Whether to print the message.

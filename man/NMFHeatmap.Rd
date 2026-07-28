@@ -26,6 +26,7 @@ NMFHeatmap(
   cell_annotation_border_size = 1,
   feature_annotation_border_size = 1,
   show_row_names = FALSE,
+  row_names_wrap = NULL,
   show_column_names = FALSE,
   row_names_side = "left",
   column_names_side = "top",
@@ -138,6 +139,11 @@ Default is \code{1}.}
 
 \item{show_row_names}{Whether to show row names in the heatmap.
 Default is \code{FALSE}.}
+
+\item{row_names_wrap}{Maximum number of characters per displayed row-name
+line. When set to a positive number, underscores are displayed as spaces and
+labels are wrapped without changing the underlying item identifiers.
+\code{NULL} disables wrapping.}
 
 \item{show_column_names}{Whether to show column names in the heatmap.
 Default is \code{FALSE}.}
@@ -315,7 +321,7 @@ If not provided, the width will be automatically determined based on the number 
 \item{units}{The units to use for the width and height of the heatmap.
 Default is \code{"inch"}, Options are \code{"mm"}, \code{"cm"}, or \code{"inch"}.}
 
-\item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
+\item{cores}{The number of worker processes to use for parallelization.
 Default is \code{1}.}
 
 \item{seed}{Random seed for reproducibility.

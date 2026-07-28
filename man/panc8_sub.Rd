@@ -19,7 +19,6 @@ from \href{https://github.com/satijalab/seurat-data}{SeuratData} package.
 For each data set in \code{panc8}, 200 cells were downsampled to form the \code{panc8_sub} dataset.
 }
 \examples{
-
   data(pancreas_sub)
   thisutils::check_r("satijalab/seurat-data")
 

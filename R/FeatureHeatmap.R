@@ -158,6 +158,7 @@ FeatureHeatmap <- function(
   cluster_row_slices = FALSE,
   cluster_column_slices = FALSE,
   show_row_names = FALSE,
+  row_names_wrap = NULL,
   show_column_names = FALSE,
   row_names_side = ifelse(flip, "left", "right"),
   column_names_side = ifelse(flip, "bottom", "top"),
@@ -1324,13 +1325,20 @@ FeatureHeatmap <- function(
     }
   }
   if (length(index) > 0) {
+    mark_labels <- feature_metadata[
+      which(rownames(feature_metadata) %in% features_ordered[index]),
+      "features"
+    ]
+    if (!is.null(row_names_wrap)) {
+      mark_labels <- heatmap_wrap_row_labels(
+        mark_labels,
+        width = row_names_wrap
+      )
+    }
     ha_mark <- ComplexHeatmap::HeatmapAnnotation(
       gene = ComplexHeatmap::anno_mark(
         at = which(rownames(feature_metadata) %in% features_ordered[index]),
-        labels = feature_metadata[
-          which(rownames(feature_metadata) %in% features_ordered[index]),
-          "features"
-        ],
+        labels = mark_labels,
         side = ifelse(flip, "top", "left"),
         labels_gp = grid::gpar(fontsize = label_size, col = label_color),
         link_gp = grid::gpar(fontsize = label_size, col = label_color),
@@ -1512,9 +1520,14 @@ FeatureHeatmap <- function(
       right_annotation <- NULL
     }
 
+    matrix_use <- if (flip) {
+      Matrix::t(mat_list[[cell_group]])
+    } else {
+      mat_list[[cell_group]]
+    }
     ht_args <- list(
       name = cell_group,
-      matrix = if (flip) Matrix::t(mat_list[[cell_group]]) else mat_list[[cell_group]],
+      matrix = matrix_use,
       col = colors,
       row_title = row_title %||%
         if (flip) {
@@ -1585,6 +1598,19 @@ FeatureHeatmap <- function(
         NULL
       }
     )
+    if (!is.null(row_names_wrap)) {
+      row_labels <- heatmap_wrap_row_labels(
+        rownames(matrix_use),
+        width = row_names_wrap
+      )
+      ht_args[["row_labels"]] <- row_labels
+      if (!"row_names_max_width" %in% names(ht_params)) {
+        ht_args[["row_names_max_width"]] <- heatmap_row_labels_max_width(
+          row_labels,
+          gp = ht_params[["row_names_gp"]]
+        )
+      }
+    }
     if (!is.null(split.by) && isFALSE(cluster_column_slices)) {
       n_slices <- length(levels(column_split_list[[cell_group]]))
       groups_order <- sapply(

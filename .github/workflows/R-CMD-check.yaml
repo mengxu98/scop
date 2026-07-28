@@ -18,9 +18,14 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macos-latest, r: 'release', check-args: 'c("--no-manual", "--as-cran", "--no-examples")'}
-          - {os: windows-latest, r: 'release', check-args: 'c("--no-manual", "--as-cran", "--no-examples")'}
-          - {os: ubuntu-latest, r: 'release', check-args: 'c("--no-manual", "--as-cran", "--no-examples")'}
+          - {os: macos-latest, r: 'renv', check-args: 'c("--no-manual", "--as-cran", "--no-examples", "--no-tests")'}
+          - {os: windows-latest, r: 'renv', check-args: 'c("--no-manual", "--as-cran", "--no-examples", "--no-tests")'}
+          - {os: ubuntu-latest, r: 'renv', check-args: 'c("--no-manual", "--as-cran", "--no-examples", "--no-tests")'}
+
+    concurrency:
+      group: scop-full-${{ github.sha }}-${{ matrix.config.os }}
+      cancel-in-progress: false
+      queue: max
 
     env:
       R_KEEP_PKG_SOURCE: yes
@@ -31,49 +36,20 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@v2
 
-      - uses: r-lib/actions/setup-r@v2
-        with:
-          r-version: ${{ matrix.config.r }}
-          http-user-agent: ${{ matrix.config.http-user-agent }}
-          use-public-rspm: true
+      - name: Prepare locked R environment 🧰
+        uses: ./.github/actions/prepare-renv
 
-      - name: Capture R library path 🔍
-        id: r-info
-        shell: bash
-        run: |
-          echo "r-version=$(Rscript -e 'cat(as.character(getRversion()))')" >> "$GITHUB_OUTPUT"
-          echo "r-lib=$(Rscript -e 'cat(.libPaths()[1])')" >> "$GITHUB_OUTPUT"
-
-      # We manage the cache ourselves instead of relying on
-      # setup-r-dependencies' built-in cache, whose key includes the
-      # DESCRIPTION hash.  During active development the hash changes
-      # frequently, so the built-in cache almost always misses and
-      # Ubuntu is forced to recompile heavy bioinfomatics packages
-      # from source (~60 min).  With a stable key (OS + R version
-      # only), the cache survives DESCRIPTION-only bumps.
-      - name: Restore R package cache ♻️
-        id: r-pkg-cache
-        uses: actions/cache/restore@v5
+      - name: Install R CMD check tooling 🔧
+        uses: ./.github/actions/install-external-r-packages
         with:
-          path: ${{ steps.r-info.outputs.r-lib }}
-          key: r-hard-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys: |
-            r-hard-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-
-
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        env:
-          GITHUB_PAT: ${{ github.token }}
-        with:
-          extra-packages: any::rcmdcheck, any::testthat
-          needs: check
-          dependencies: '"hard"'
-          cache: false
-
-      - name: Save R package cache 💾
-        uses: actions/cache/save@v5
-        with:
-          path: ${{ steps.r-info.outputs.r-lib }}
-          key: r-hard-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-${{ github.run_id }}-${{ github.run_attempt }}
+          packages: |-
+            rcmdcheck@1.4.0
+            xopen@1.0.1
+          required-packages: |-
+            rcmdcheck
+            xopen
+          library-name: scop-ci-rcmdcheck
+          cache-version: scop-ci-rcmdcheck
 
       - uses: r-lib/actions/check-r-package@v2
         with:

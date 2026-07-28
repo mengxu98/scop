@@ -74,7 +74,7 @@ Default is \code{10}.}
 \item{padjust_method}{The method used for p-value adjustment.
 Default is \code{"fdr"}.}
 
-\item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
+\item{cores}{The number of worker processes to use for parallelization.
 Default is \code{1}.}
 
 \item{verbose}{Whether to print the message.
