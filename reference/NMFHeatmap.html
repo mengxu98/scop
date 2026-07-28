@@ -18,8 +18,21 @@
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Spatial transcriptomics</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Basic workflows</h6></li>
+    <li><a class="dropdown-item" href="../articles/single-cell-main-workflow.html">Single-cell main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/reproduce-pancreatic-endocrinogenesis.html">Reproducing pancreatic endocrinogenesis</a></li>
+    <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/interactive-scexplorer-workflow.html">Interactive SCExplorer workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges and Giotto compatibility</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Cell-cell communication</h6></li>
+    <li><a class="dropdown-item" href="../articles/cell-cell-communication-workflow.html">Cell-cell communication workflow</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -72,6 +85,7 @@
 <span>  cell_annotation_border_size <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  feature_annotation_border_size <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  show_row_names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  row_names_wrap <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  show_column_names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  row_names_side <span class="op">=</span> <span class="st">"left"</span>,</span>
 <span>  column_names_side <span class="op">=</span> <span class="st">"top"</span>,</span>
@@ -217,6 +231,13 @@ Default is <code>1</code>.</p></dd>
 <dt id="arg-show-row-names">show_row_names<a class="anchor" aria-label="anchor" href="#arg-show-row-names"></a></dt>
 <dd><p>Whether to show row names in the heatmap.
 Default is <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-row-names-wrap">row_names_wrap<a class="anchor" aria-label="anchor" href="#arg-row-names-wrap"></a></dt>
+<dd><p>Maximum number of characters per displayed row-name
+line. When set to a positive number, underscores are displayed as spaces and
+labels are wrapped without changing the underlying item identifiers.
+<code>NULL</code> disables wrapping.</p></dd>
 
 
 <dt id="arg-show-column-names">show_column_names<a class="anchor" aria-label="anchor" href="#arg-show-column-names"></a></dt>
@@ -568,7 +589,7 @@ otherwise <code>NULL</code>.</p></li>
 <span class="r-in"><span>  nbes <span class="op">=</span> <span class="fl">5</span>,</span></span>
 <span class="r-in"><span>  maxit <span class="op">=</span> <span class="fl">50</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:17:34] Running <span style="color: #0000BB;">NMF</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:33:13] Running <span style="color: #0000BB;">NMF</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> BE_ 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Positive:  Spp1, Clu, Krt18, Ttr, Ptma, Rpl12, Sparc, Dbi, Gapdh, Mt1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Cd24a, Mgst1, H19, Pebp1, Myl12a, Gnas, Cldn3, Clps, Sox4, Atp1b1 </span>
@@ -604,18 +625,18 @@ otherwise <code>NULL</code>.</p></li>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Negative:  Lrrc6, Ccl28, 1810034E14Rik, Spock1, Tmem100, Fam71b, Sycp3, Kiss1r, Il1r2, Gng4 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Prodh2, Lingo1, Angptl4, Gm8113, C2cd4c, Dpysl3, Ucn3, Entpd3, Col1a1, Rem2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Acvr1c, Kctd8, Nrp2, Mmel1, Gm28875, Serpinb6b, Camk2n1, Pax6os1, Nrsn1, Tyrobp </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-07-02 09:17:38] <span style="color: #0000BB;">NMF</span> compute completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-07-28 03:33:13] <span style="color: #0000BB;">NMF</span> compute completed</span>
 <span class="r-in"><span><span class="va">ht_cells</span> <span class="op">&lt;-</span> <span class="fu">NMFHeatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"cells"</span>,</span></span>
 <span class="r-in"><span>  cell_annotation <span class="op">=</span> <span class="st">"CellType"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:17:38] `NMFHeatmap()` input: <span style="color: #0000BB;">1000</span> cells x <span style="color: #0000BB;">5</span> NMF dimensions. Computing a <span style="color: #0000BB;">1000</span> x <span style="color: #0000BB;">1000</span> similarity matrix (~0.01 GiB dense numeric matrix).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:17:38] Ordering `NMFHeatmap()` rows and columns ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:17:38] Building <span style="color: #0000BB;">ComplexHeatmap</span> object for `NMFHeatmap()` ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:17:38] Calculating `NMFHeatmap()` render size ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:17:38] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:17:39] Assembling `NMFHeatmap()` plot object ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:33:13] `NMFHeatmap()` input: <span style="color: #0000BB;">1000</span> cells x <span style="color: #0000BB;">5</span> NMF dimensions. Computing a <span style="color: #0000BB;">1000</span> x <span style="color: #0000BB;">1000</span> similarity matrix (~0.01 GiB dense numeric matrix).</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:33:13] Ordering `NMFHeatmap()` rows and columns ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:33:13] Building <span style="color: #0000BB;">ComplexHeatmap</span> object for `NMFHeatmap()` ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:33:13] Calculating `NMFHeatmap()` render size ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:33:13] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:33:14] Assembling `NMFHeatmap()` plot object ...</span>
 <span class="r-in"><span><span class="va">ht_cells</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-plt img"><img src="NMFHeatmap-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -623,12 +644,12 @@ otherwise <code>NULL</code>.</p></li>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"features"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:17:40] `NMFHeatmap()` input: <span style="color: #0000BB;">1000</span> features x <span style="color: #0000BB;">5</span> NMF dimensions. Computing a <span style="color: #0000BB;">1000</span> x <span style="color: #0000BB;">1000</span> similarity matrix (~0.01 GiB dense numeric matrix).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:17:40] Ordering `NMFHeatmap()` rows and columns ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:17:40] Building <span style="color: #0000BB;">ComplexHeatmap</span> object for `NMFHeatmap()` ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:17:40] Calculating `NMFHeatmap()` render size ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:17:40] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:17:41] Assembling `NMFHeatmap()` plot object ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:33:15] `NMFHeatmap()` input: <span style="color: #0000BB;">1000</span> features x <span style="color: #0000BB;">5</span> NMF dimensions. Computing a <span style="color: #0000BB;">1000</span> x <span style="color: #0000BB;">1000</span> similarity matrix (~0.01 GiB dense numeric matrix).</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:33:15] Ordering `NMFHeatmap()` rows and columns ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:33:15] Building <span style="color: #0000BB;">ComplexHeatmap</span> object for `NMFHeatmap()` ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:33:15] Calculating `NMFHeatmap()` render size ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:33:15] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:33:16] Assembling `NMFHeatmap()` plot object ...</span>
 <span class="r-in"><span><span class="va">ht_features</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-plt img"><img src="NMFHeatmap-2.png" alt="" width="700" height="433"></span>
 </code></pre></div>
@@ -642,7 +663,7 @@ otherwise <code>NULL</code>.</p></li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>
