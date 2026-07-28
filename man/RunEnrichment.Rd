@@ -124,7 +124,7 @@ This argument is only used if \code{GO_simplify} is \code{TRUE}.}
 \item{simplify_similarityCutoff}{The similarity cutoff for simplification of GO terms.
 This argument is only used if \code{GO_simplify} is \code{TRUE}.}
 
-\item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
+\item{cores}{The number of worker processes to use for parallelization.
 Default is \code{1}.}
 
 \item{verbose}{Whether to print the message.
