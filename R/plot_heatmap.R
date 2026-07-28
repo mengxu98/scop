@@ -20,6 +20,48 @@ compact_heatmap_feature_annotation <- function(values, annotation_name) {
   out
 }
 
+heatmap_wrap_row_labels <- function(labels, width = NULL) {
+  if (is.null(width)) {
+    return(labels)
+  }
+  if (
+    length(width) != 1L ||
+      !is.numeric(width) ||
+      is.na(width) ||
+      !is.finite(width) ||
+      width < 1
+  ) {
+    cli::cli_abort(
+      "{.arg row_names_wrap} must be a single positive number or {.code NULL}."
+    )
+  }
+  width <- as.integer(floor(width))
+  wrapped <- vapply(as.character(labels), function(label) {
+    if (is.na(label)) {
+      return(NA_character_)
+    }
+    display_label <- gsub("_", " ", label, fixed = TRUE)
+    paragraphs <- strsplit(display_label, "\n", fixed = TRUE)[[1]]
+    lines <- unlist(lapply(paragraphs, function(paragraph) {
+      out <- strwrap(paragraph, width = width)
+      if (length(out) == 0L) "" else out
+    }), use.names = FALSE)
+    paste(lines, collapse = "\n")
+  }, character(1))
+  names(wrapped) <- names(labels)
+  wrapped
+}
+
+heatmap_row_labels_max_width <- function(labels, gp = NULL) {
+  gp <- gp %||% grid::gpar(fontsize = 10)
+  lines <- unlist(strsplit(as.character(labels), "\n", fixed = TRUE), use.names = FALSE)
+  lines <- lines[!is.na(lines)]
+  if (length(lines) == 0L) {
+    return(grid::unit(0, "mm"))
+  }
+  ComplexHeatmap::max_text_width(lines, gp = gp) + grid::unit(2, "mm")
+}
+
 heatmap_enrichment <- function(
   geneID,
   geneID_groups,
