@@ -2,17 +2,17 @@ pandoc: 3.8.3
 pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
-  articles/cell-annotation-workflow: cell-annotation-workflow.html
-  articles/cell-cell-communication-workflow: cell-cell-communication-workflow.html
-  articles/differential-enrichment-workflow: differential-enrichment-workflow.html
-  articles/integration-workflow: integration-workflow.html
-  articles/interactive-scexplorer-workflow: interactive-scexplorer-workflow.html
-  articles/reproduce-pancreatic-endocrinogenesis: reproduce-pancreatic-endocrinogenesis.html
-  articles/single-cell-main-workflow: single-cell-main-workflow.html
-  articles/spatial-framework-bridges: spatial-framework-bridges.html
-  articles/spatial-main-workflow: spatial-main-workflow.html
-  articles/trajectory-dynamic-workflow: trajectory-dynamic-workflow.html
-last_built: 2026-07-22T10:26Z
+  cell-annotation-workflow: cell-annotation-workflow.html
+  cell-cell-communication-workflow: cell-cell-communication-workflow.html
+  differential-enrichment-workflow: differential-enrichment-workflow.html
+  integration-workflow: integration-workflow.html
+  interactive-scexplorer-workflow: interactive-scexplorer-workflow.html
+  reproduce-pancreatic-endocrinogenesis: reproduce-pancreatic-endocrinogenesis.html
+  single-cell-main-workflow: single-cell-main-workflow.html
+  spatial-framework-bridges: spatial-framework-bridges.html
+  spatial-main-workflow: spatial-main-workflow.html
+  trajectory-dynamic-workflow: trajectory-dynamic-workflow.html
+last_built: 2026-07-28T03:20Z
 urls:
   reference: https://mengxu98.github.io/scop/reference
   article: https://mengxu98.github.io/scop/articles
