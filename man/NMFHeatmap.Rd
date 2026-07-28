@@ -26,6 +26,7 @@ NMFHeatmap(
   cell_annotation_border_size = 1,
   feature_annotation_border_size = 1,
   show_row_names = FALSE,
+  row_names_wrap = NULL,
   show_column_names = FALSE,
   row_names_side = "left",
   column_names_side = "top",
@@ -138,6 +139,11 @@ Default is \code{1}.}
 
 \item{show_row_names}{Whether to show row names in the heatmap.
 Default is \code{FALSE}.}
+
+\item{row_names_wrap}{Maximum number of characters per displayed row-name
+line. When set to a positive number, underscores are displayed as spaces and
+labels are wrapped without changing the underlying item identifiers.
+\code{NULL} disables wrapping.}
 
 \item{show_column_names}{Whether to show column names in the heatmap.
 Default is \code{FALSE}.}
