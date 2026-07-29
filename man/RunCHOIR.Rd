@@ -62,8 +62,9 @@ RunCHOIR(
 \item{min_accuracy}{Minimum classifier accuracy required to keep clusters
 separate.}
 
-\item{max_clusters}{Maximum extent of the initial clustering tree. The
-upstream default \code{"auto"} is recommended.}
+\item{max_clusters}{Must be \code{"auto"}. Numeric limits are rejected because
+the pinned upstream backend can fail to terminate when the number of
+clusters plateaus.}
 
 \item{normalization_method}{Normalization performed inside CHOIR. Use
 \code{"none"} for previously normalized data or \code{"SCTransform"} with a counts

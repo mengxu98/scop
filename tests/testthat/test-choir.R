@@ -100,6 +100,10 @@ test_that("RunCHOIR validates inputs before checking the backend", {
     RunCHOIR(srt, batch.by = "missing", verbose = FALSE),
     "cell metadata"
   )
+  expect_error(
+    RunCHOIR(srt, max_clusters = 2L, verbose = FALSE),
+    "may not terminate"
+  )
 })
 
 test_that("RunCHOIR calls the optional backend and standardizes results", {
