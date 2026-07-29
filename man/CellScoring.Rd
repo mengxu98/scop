@@ -126,7 +126,7 @@ and/or a score assay, depending on \code{new_assay} and \code{store_metadata}.
 }
 \examples{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 features_all <- rownames(pancreas_sub)
 pancreas_sub <- CellScoring(
   pancreas_sub,

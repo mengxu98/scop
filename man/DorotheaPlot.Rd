@@ -92,7 +92,7 @@ a signed bar plot. Bar height is the mean activity difference
 }
 \examples{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub, verbose = FALSE)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub, verbose = FALSE)
 pancreas_sub <- RunDorothea(
   pancreas_sub,
   layer = "counts",

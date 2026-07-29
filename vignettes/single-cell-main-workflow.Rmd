@@ -56,12 +56,12 @@ SeuratObject::Reductions(pancreas_sub)
 
 ## Run the Standard Workflow
 
-`standard_scop()` runs the common preprocessing path: normalization, variable
+`RunStandardWorkflow()` runs the common preprocessing path: normalization, variable
 feature selection, scaling, dimensional reduction, neighbor graph construction,
 clustering, and UMAP. The result stays in the same Seurat object.
 
 ```{r standard-workflow}
-pancreas_sub <- standard_scop(
+pancreas_sub <- RunStandardWorkflow(
   pancreas_sub,
   assay = "RNA",
   nHVF = 2000,

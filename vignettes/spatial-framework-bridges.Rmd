@@ -18,7 +18,7 @@ framework objects without wrapping every Giotto or SPATA2 analysis step.
 
 | Goal | Interface | Returned object | Plotting |
 |---|---|---|---|
-| Keep an existing scop Giotto pipeline | `SeuratToScopGiotto()`, `RunGiottoWorkflow()`, `GiottoPlot()`, `AddGiottoToSeurat()` | scop's legacy `giotto2` workflow wrapper | `GiottoPlot()` |
+| Keep an existing scop Giotto pipeline | `SeuratToGiotto2()`, `RunGiottoWorkflow()`, `GiottoPlot()`, `AddGiottoToSeurat()` | scop's legacy `giotto2` workflow wrapper | `GiottoPlot()` |
 | Move one Seurat image into Giotto | `srt_to_giotto()` | Native Giotto object | Giotto's native plotting API |
 | Move a native Giotto object into Seurat | `giotto_to_srt()` | New Seurat object | scop or Seurat plotting |
 | Move between Seurat and SPATA2 | `srt_to_spata2()`, `spata2_to_srt()` | Native SPATA2 or Seurat object | Framework-native plotting |

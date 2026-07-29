@@ -73,7 +73,7 @@ is used.}
 \item{tag}{Optional phenotype labels for printed/stored summaries.}
 
 \item{graph}{Existing Seurat graph used by the \code{"cpp"} backend. If \code{NULL},
-an assay SNN graph or \code{standard_scop()} graph is reused when present,
+an assay SNN graph or \code{RunStandardWorkflow()} graph is reused when present,
 otherwise a temporary Scissor-like graph is built.}
 
 \item{dims}{PCA dimensions used when a temporary graph is built.}
@@ -103,7 +103,7 @@ Run Scissor phenotype-associated cell selection
 \examples{
 data(panc8_sub)
 data(islet_bulk)
-panc8_sub <- standard_scop(panc8_sub, verbose = FALSE)
+panc8_sub <- RunStandardWorkflow(panc8_sub, verbose = FALSE)
 panc8_sub <- RunScissor(
   panc8_sub,
   bulk_dataset = islet_bulk,

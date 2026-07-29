@@ -99,10 +99,10 @@ The function maps cells from the srt_query dataset to the srt_ref dataset based 
 }
 \examples{
 data(panc8_sub)
-panc8_sub <- standard_scop(panc8_sub)
+panc8_sub <- RunStandardWorkflow(panc8_sub)
 srt_ref <- panc8_sub[, panc8_sub$tech != "fluidigmc1"]
 srt_query <- panc8_sub[, panc8_sub$tech == "fluidigmc1"]
-srt_ref <- integration_scop(
+srt_ref <- RunIntegration(
   srt_ref,
   batch = "tech",
   integration_method = "Uncorrected"

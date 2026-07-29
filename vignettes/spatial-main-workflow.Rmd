@@ -65,13 +65,13 @@ SpatialSpotPlot(
 
 ## Run the Basic Spatial Workflow
 
-`standard_scop(workflow = "spatial")` is the shortest entry point for a
+`RunStandardWorkflow(workflow = "spatial")` is the shortest entry point for a
 first-pass spatial analysis. Keep optional domain clustering and deconvolution
 off at first. This makes the first run fast and gives you QC and spatial
 variable features before choosing heavier backends.
 
 ```{r standard-spatial}
-spatial <- standard_scop(
+spatial <- RunStandardWorkflow(
   spatial,
   workflow = "spatial",
   assay = "Spatial",
@@ -136,7 +136,7 @@ tissue regions, but they need marker genes, histology, or reference labels
 before being named biologically.
 
 ```r
-spatial_bayes <- standard_scop(
+spatial_bayes <- RunStandardWorkflow(
   spatial,
   workflow = "spatial",
   assay = "Spatial",

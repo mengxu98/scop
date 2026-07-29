@@ -52,7 +52,7 @@ Run FWP feature-weight phenotype scoring
 }
 \examples{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 pancreas_sub$IsEndocrine <- pancreas_sub$CellType == "Endocrine"
 pancreas_sub <- RunFWP(
   pancreas_sub,

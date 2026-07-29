@@ -119,7 +119,7 @@ Run metabolism pathway scoring
 }
 \examples{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 pancreas_sub <- RunMetabolism(
   pancreas_sub,
   assay = "RNA",

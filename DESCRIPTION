@@ -1,6 +1,6 @@
 Package: scop
 Type: Package
-Title: Spatial and single-cell omics analysis pipeline
+Title: Single-cell and Spatial omics analysis pipeline
 Version: 0.8.9
 Date: 2026-07-20
 Authors@R: c(
@@ -10,7 +10,7 @@ Authors@R: c(
     person(given = "Hao", family = "Zhang", email = "haozhang@njmu.edu.cn", role = c("aut"))
     )
 Maintainer: Meng Xu <mengxu98@qq.com>
-Description: An R package for spatial and single-cell omics analysis, integration, visualization, and interactive exploration.
+Description: An R package for single-cell and spatial omics analysis, integration, visualization, and interactive exploration.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: True

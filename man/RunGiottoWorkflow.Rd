@@ -37,7 +37,7 @@ If `FALSE`, returns the internal `giotto2` workflow object.}
 
 \item{seed}{Random seed for reproducible Giotto calls.}
 
-\item{...}{Passed to [SeuratToScopGiotto()] when `x` is Seurat.}
+\item{...}{Passed to [SeuratToGiotto2()] when `x` is Seurat.}
 }
 \value{
 A Seurat object by default for Seurat input, otherwise a `giotto2`
@@ -45,7 +45,7 @@ workflow object.
 }
 \description{
 Run basic or full Giotto analysis on a `giotto2` object. Seurat input is
-converted first with [SeuratToScopGiotto()].
+converted first with [SeuratToGiotto2()].
 }
 \examples{
 data(visium_human_pancreas_sub)

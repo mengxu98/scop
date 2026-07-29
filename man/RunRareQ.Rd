@@ -90,7 +90,7 @@ RareQ rare-cell population detection
 }
 \examples{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(
+pancreas_sub <- RunStandardWorkflow(
   pancreas_sub,
   verbose = FALSE
 )

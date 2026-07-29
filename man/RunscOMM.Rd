@@ -73,7 +73,7 @@ evaluate predictions against a truth label.
 \examples{
 \dontrun{
 data("pbmcmultiome_sub", package = "scop")
-pbmcmultiome_sub <- standard_scop(pbmcmultiome_sub, assay = "RNA")
+pbmcmultiome_sub <- RunStandardWorkflow(pbmcmultiome_sub, assay = "RNA")
 ref_cells <- colnames(pbmcmultiome_sub)[1:250]
 query_cells <- colnames(pbmcmultiome_sub)[251:500]
 reference <- subset(pbmcmultiome_sub, cells = ref_cells)

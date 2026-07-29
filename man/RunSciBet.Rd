@@ -98,7 +98,7 @@ pancreas_sub <- RunSciBet(
   ref_group = "celltype",
   nfeatures = 200
 )
-pancreas_sub <- standard_scop(pancreas_sub, verbose = FALSE)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub, verbose = FALSE)
 CellDimPlot(
   pancreas_sub,
   group.by = c("SubCellType", "scibet_annotation"),

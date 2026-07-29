@@ -113,7 +113,12 @@ Default is \code{"RdBu"}.}
 
 \item{pt.size}{The size of the points in the plot. Default is \code{NULL}, which
 automatically scales point diameter with the square root of the number of
-plotted cells.}
+plotted cells while keeping a readable minimum size of \code{0.3}. Automatically
+sized raster plots use at least a two-pixel radius at the reference
+\code{raster.dpi = c(512, 512)}. Point sizes are scaled with \code{raster.dpi}, so their
+relative appearance remains stable when the raster resolution changes.
+Non-raster point sizes use fixed physical units; increase \code{pt.size}
+proportionally when exporting to an unusually large canvas.}
 
 \item{pt.alpha}{The transparency of the data points.
 Default is \code{1}.}
@@ -186,7 +191,7 @@ This function creates a correlation plot to visualize the pairwise correlations 
 }
 \examples{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 FeatureCorPlot(
   pancreas_sub,
   features = rownames(pancreas_sub)[1:5],

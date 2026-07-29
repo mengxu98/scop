@@ -206,7 +206,7 @@ but uses pseudotime data instead of RNA velocity analysis results.
 }
 \examples{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   reduction = "UMAP",

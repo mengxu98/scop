@@ -56,14 +56,14 @@ Default is \code{TRUE}.}
 A metacell-level \code{Seurat} object. The original single-cell Seurat
 is stored in \verb{@misc[["original_srt"]]} and the cell-to-metacell membership
 vector in \verb{@misc[["cell_membership"]]}. The returned object can be passed
-directly to any scop function (\code{standard_scop()}, \code{CellDimPlot()}, etc.).
+directly to any scop function (\code{RunStandardWorkflow()}, \code{CellDimPlot()}, etc.).
 }
 \description{
 Run metacell partitioning for single-cell data
 }
 \examples{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(
+pancreas_sub <- RunStandardWorkflow(
   pancreas_sub,
   nHVF = 500,
   linear_reduction_dims = 20,

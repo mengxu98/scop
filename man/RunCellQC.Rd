@@ -206,7 +206,7 @@ Run cell-level quality control
 }
 \examples{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 pancreas_sub <- RunCellQC(
   pancreas_sub,
   qc_metrics = c("umi", "gene", "example_set"),

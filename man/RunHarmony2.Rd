@@ -62,7 +62,7 @@ This is a modified version of \link[harmony:RunHarmony]{harmony::RunHarmony} spe
 }
 \examples{
 data(panc8_sub)
-panc8_sub <- standard_scop(panc8_sub)
+panc8_sub <- RunStandardWorkflow(panc8_sub)
 panc8_sub <- RunHarmony2(
   panc8_sub,
   group.by.vars = "tech",
@@ -81,7 +81,7 @@ CellDimPlot(
   reduction = "Harmony"
 )
 
-panc8_sub <- standard_scop(
+panc8_sub <- RunStandardWorkflow(
   panc8_sub,
   prefix = "Harmony",
   linear_reduction = "Harmony"

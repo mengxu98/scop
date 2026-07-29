@@ -52,7 +52,7 @@ g <- structure(
 )
 GiottoPlot(g, plot_type = "spatial")
 
-g <- SeuratToScopGiotto(
+g <- SeuratToGiotto2(
   spatial,
   assay = "Spatial",
   coord.cols = c("x", "y"),

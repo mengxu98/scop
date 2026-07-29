@@ -120,7 +120,12 @@ or \link[thisplot:StatPlot]{thisplot::StatPlot}.}
 
 \item{pt.size}{The size of the points in the plot. Default is \code{NULL}, which
 automatically scales point diameter with the square root of the number of
-plotted cells.}
+plotted cells while keeping a readable minimum size of \code{0.3}. Automatically
+sized raster plots use at least a two-pixel radius at the reference
+\code{raster.dpi = c(512, 512)}. Point sizes are scaled with \code{raster.dpi}, so their
+relative appearance remains stable when the raster resolution changes.
+Non-raster point sizes use fixed physical units; increase \code{pt.size}
+proportionally when exporting to an unusually large canvas.}
 
 \item{pt.alpha}{The transparency of the data points.
 Default is \code{1}.}
@@ -195,7 +200,7 @@ panc8_sub <- RunScissor(
   alpha = 0.2,
   cutoff = 0.5
 )
-panc8_sub <- standard_scop(panc8_sub, verbose = FALSE)
+panc8_sub <- RunStandardWorkflow(panc8_sub, verbose = FALSE)
 
 ScissorPlot(
   panc8_sub,

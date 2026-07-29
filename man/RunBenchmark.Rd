@@ -62,7 +62,7 @@ process start and result serialization. \code{Inf} disables the timeout.}
 Default is \code{TRUE}.}
 }
 \value{
-A \code{scop_benchmark} object. Use \code{as.data.frame()} for its summary,
+A \code{benchmark_result} object. Use \code{as.data.frame()} for its summary,
 \code{plot()} or \code{\link[=BenchmarkPlot]{BenchmarkPlot()}} for visualization, and \verb{$predictions} for the
 aligned labels.
 }

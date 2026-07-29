@@ -12,8 +12,8 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{dplyr}{\code{\link[dplyr:\%>\%]{\%>\%}}}
+  \item{dplyr}{\code{\link[dplyr:reexports]{\%>\%}}}
 
-  \item{rlang}{\code{\link[rlang:\%||\%]{\%||\%}}}
+  \item{rlang}{\code{\link[rlang:op-null-default]{\%||\%}}}
 }}
 

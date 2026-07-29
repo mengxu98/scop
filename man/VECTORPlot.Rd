@@ -82,7 +82,7 @@ by \code{\link[=RunVECTOR]{RunVECTOR()}}.
 }
 \examples{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 pancreas_sub <- RunVECTOR(pancreas_sub, verbose = FALSE)
 VECTORPlot(pancreas_sub, plot_type = "grid")
 VECTORPlot(pancreas_sub, plot_type = "raw", group.by = "SubCellType")

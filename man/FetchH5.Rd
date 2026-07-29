@@ -49,7 +49,7 @@ Fetch data from the hdf5 file and returns a Seurat object
 \examples{
 \dontrun{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 PrepareSCExplorer(pancreas_sub, base_dir = "./SCExplorer")
 srt <- FetchH5(
   data_file = "./SCExplorer/data.hdf5",

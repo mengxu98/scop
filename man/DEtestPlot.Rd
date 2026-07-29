@@ -170,22 +170,22 @@ Default is \code{NULL}.}
 
 \item{ylab}{A character string specifying the y-axis label.}
 
-\item{theme_use}{Theme to use for the plot.
+\item{theme_use}{Theme used. Can be a character string or a theme function.
 Default is \code{"theme_scop"}.}
 
-\item{theme_args}{A list of additional arguments to pass to the theme function.
+\item{theme_args}{Other arguments passed to the \code{theme_use}.
 Default is \code{list()}.}
 
-\item{combine}{Whether to combine multiple plots into one.
-Default is \code{TRUE}.}
+\item{combine}{Combine plots into a single \code{patchwork} object.
+If \code{FALSE}, return a list of ggplot objects.}
 
-\item{nrow}{Number of rows for combined plots.
-Default is \code{NULL}.}
+\item{nrow}{Number of rows in the combined plot.
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
 
-\item{ncol}{Number of columns for combined plots.
-Default is \code{NULL}.}
+\item{ncol}{Number of columns in the combined plot.
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
 
-\item{byrow}{Whether to fill plots by row.
+\item{byrow}{Whether to arrange the plots by row in the combined plot.
 Default is \code{TRUE}.}
 
 \item{manhattan.bg}{Background color for Manhattan plot.
@@ -257,7 +257,7 @@ Differential Expression Test Plot
 }
 \examples{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",

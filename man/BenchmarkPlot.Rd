@@ -36,7 +36,7 @@ BenchmarkPlot(
 \arguments{
 \item{srt}{A \code{Seurat} object.}
 
-\item{data}{Optional \code{scop_benchmark} object or summary benchmark
+\item{data}{Optional \code{benchmark_result} object or summary benchmark
 \code{data.frame} containing at least \code{metric} and \code{value}, and optionally
 \code{method}, \code{workflow}, and \code{direction}.}
 
@@ -56,7 +56,7 @@ Default is \code{NULL}, which uses the reduction stored in \code{tool_name} when
 available, otherwise \code{\link[=DefaultReduction]{DefaultReduction()}}.}
 
 \item{plot_type}{Plot type. \code{"overview"}, \code{"quality"}, \code{"efficiency"}, and
-\code{"heatmap"} consume \code{scop_benchmark} results. Existing \code{"feature"},
+\code{"heatmap"} consume \code{benchmark_result} results. Existing \code{"feature"},
 \code{"boxplot"}, \code{"bar"}, and \code{"funkyheatmap"} modes remain supported.}
 
 \item{sort_by}{Method ordering for spatial benchmark plots. \code{"quality"}
@@ -92,7 +92,12 @@ Default is \code{TRUE}.}
 
 \item{pt.size}{The size of the points in the plot. Default is \code{NULL}, which
 automatically scales point diameter with the square root of the number of
-plotted cells.}
+plotted cells while keeping a readable minimum size of \code{0.3}. Automatically
+sized raster plots use at least a two-pixel radius at the reference
+\code{raster.dpi = c(512, 512)}. Point sizes are scaled with \code{raster.dpi}, so their
+relative appearance remains stable when the raster resolution changes.
+Non-raster point sizes use fixed physical units; increase \code{pt.size}
+proportionally when exporting to an unusually large canvas.}
 
 \item{pt.alpha}{The transparency of the data points.
 Default is \code{1}.}
@@ -122,7 +127,7 @@ returned.
 }
 \description{
 Visualize benchmark results stored in a \code{Seurat} object, a summary
-\code{data.frame}, or a \code{scop_benchmark} object created by \code{\link[=RunBenchmark]{RunBenchmark()}}.
+\code{data.frame}, or a \code{benchmark_result} object created by \code{\link[=RunBenchmark]{RunBenchmark()}}.
 Spatial benchmark results default to a publication-oriented overview that
 pairs clustering quality with runtime and peak-memory efficiency. Per-cell
 metrics such as LISI remain available as feature plots and boxplots.

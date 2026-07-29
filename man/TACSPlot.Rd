@@ -141,7 +141,7 @@ Default is \code{NULL}, which means determined automatically based on the number
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Additional parameters passed to \link[ggplot2:stat_density2d]{ggplot2::stat_density2d}.}
+\item{...}{Additional parameters passed to \link[ggplot2:geom_density_2d]{ggplot2::stat_density2d}.}
 }
 \description{
 TACS is a method for plotting a FACS-like plot for two features based on sc-RNA-seq data.
@@ -152,7 +152,7 @@ This function is based on a simple scheme: choose features similar to the ones s
 }
 \examples{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 TACSPlot(
   pancreas_sub,
   feature1 = "H3f3b",

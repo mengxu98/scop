@@ -38,10 +38,25 @@ NMFHeatmap(
   anno_keys = FALSE,
   anno_features = FALSE,
   terms_width = grid::unit(4, "in"),
+  terms_stat_width = grid::unit(1.35, "in"),
   terms_fontsize = 8,
   terms_stat = "none",
   terms_stat_digits = 2,
-  terms_stat_test = TRUE,
+  terms_stat_label = "value",
+  terms_stat_axis = FALSE,
+  terms_stat_background_palcolor = NULL,
+  terms_stat_border = NULL,
+  terms_stat_border_palcolor = NULL,
+  terms_stat_border_size = NULL,
+  terms_stat_label_palcolor = NULL,
+  terms_group_background = FALSE,
+  terms_background_palcolor = "grey98",
+  terms_background_alpha = 1,
+  terms_border = TRUE,
+  terms_border_palcolor = "black",
+  terms_border_size = 0.8,
+  terms_text_palcolor = NULL,
+  terms_bar_palcolor = NULL,
   keys_width = grid::unit(2, "in"),
   keys_fontsize = c(6, 10),
   features_width = grid::unit(2, "in"),
@@ -176,20 +191,61 @@ Default is \code{FALSE}.}
 \item{terms_width}{A unit specifying the width of term annotations.
 Default is \code{unit(4, "in")}.}
 
+\item{terms_stat_width}{A unit specifying the width of the independent
+term-statistic bar-chart annotation.}
+
 \item{terms_fontsize}{A numeric vector specifying the font size(s) for term annotations.
 Default is \code{8}.}
 
-\item{terms_stat}{Which enrichment statistic to show after each term.
+\item{terms_stat}{Which enrichment statistic controls the term bars.
 Use \code{"none"} to hide the bar background, \code{"score"} for \code{-log10} of the
 active p-value metric, or any column from the enrichment result such as
 \code{"p.adjust"}, \code{"pvalue"}, \code{"qvalue"},
 \code{"GeneRatio"}, \code{"RichFactor"}, \code{"FoldEnrichment"}, \code{"zScore"}, or \code{"Count"}.}
 
-\item{terms_stat_digits}{Number of significant digits for numeric term
-statistics.}
+\item{terms_stat_digits}{Number of significant digits for statistic labels
+and axis tick labels.}
 
-\item{terms_stat_test}{Logical. Whether to show the numeric term statistic
-value at the right side of each term when \code{terms_stat} is enabled.}
+\item{terms_stat_label}{Label placed on or beside each statistic bar:
+\code{"none"}, \code{"value"}, \code{"significance"}, or \code{"both"}.}
+
+\item{terms_stat_axis}{Logical. Whether to draw a shared statistic axis
+outside and below the final enrichment block.}
+
+\item{terms_stat_background_palcolor}{Background color of the independent
+statistic panels. \code{NULL} inherits the corresponding term-panel background.}
+
+\item{terms_stat_border}{Logical. Whether to draw borders around statistic
+panels. \code{NULL} inherits \code{terms_border}.}
+
+\item{terms_stat_border_palcolor}{Border color of statistic panels. \code{NULL}
+inherits \code{terms_border_palcolor}.}
+
+\item{terms_stat_border_size}{Border line width of statistic panels. \code{NULL}
+inherits \code{terms_border_size}.}
+
+\item{terms_stat_label_palcolor}{Color of labels drawn on statistic bars.
+\code{NULL} automatically uses black or white according to bar luminance.}
+
+\item{terms_group_background}{Logical. Whether term blocks use translucent
+\code{feature_split} colors as their backgrounds.}
+
+\item{terms_background_palcolor}{Background color used when
+\code{terms_group_background = FALSE}.}
+
+\item{terms_background_alpha}{Alpha transparency of term-block backgrounds.}
+
+\item{terms_border}{Logical. Whether to draw borders around term blocks.}
+
+\item{terms_border_palcolor}{Border color of term blocks.}
+
+\item{terms_border_size}{Border line width of term blocks.}
+
+\item{terms_text_palcolor}{Fixed term text color. \code{NULL} retains colors mapped
+from enrichment significance.}
+
+\item{terms_bar_palcolor}{Fixed statistic-bar color. \code{NULL} makes each bar
+use the same color as its corresponding term text.}
 
 \item{keys_width}{A unit specifying the width of key annotations.
 Default is \code{unit(2, "in")}.}

@@ -165,7 +165,7 @@ Run UMAP (Uniform Manifold Approximation and Projection)
 }
 \examples{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 pancreas_sub <- RunUMAP2(pancreas_sub, dims = 1:30)
 CellDimPlot(
   pancreas_sub,

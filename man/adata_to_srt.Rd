@@ -19,7 +19,7 @@ Convert an anndata object to a seurat object
 \examples{
 \dontrun{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 adata <- srt_to_adata(pancreas_sub)
 adata <- RunPAGA(
   adata = adata,

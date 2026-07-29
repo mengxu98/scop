@@ -463,7 +463,7 @@ Plotting cell points on a reduced 2D plane and coloring according to the groups.
 }
 \examples{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 p1 <- CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",

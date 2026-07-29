@@ -65,7 +65,12 @@ Default is "Chinese".}
 
 \item{pt.size}{The size of the points in the plot. Default is \code{NULL}, which
 automatically scales point diameter with the square root of the number of
-plotted cells.}
+plotted cells while keeping a readable minimum size of \code{0.3}. Automatically
+sized raster plots use at least a two-pixel radius at the reference
+\code{raster.dpi = c(512, 512)}. Point sizes are scaled with \code{raster.dpi}, so their
+relative appearance remains stable when the raster resolution changes.
+Non-raster point sizes use fixed physical units; increase \code{pt.size}
+proportionally when exporting to an unusually large canvas.}
 
 \item{pt.alpha}{The transparency of the data points.
 Default is \code{1}.}
@@ -104,7 +109,7 @@ Default is \code{list()}.}
 layers/scales (\code{cells}, \code{fill_scale}, \code{centroids}, \code{scale_fill},
 \code{scale_size}, \code{labels}) instead of a complete plot.}
 
-\item{...}{Additional arguments passed to \code{\link[ggplot2:geom_point]{geom_point()}} for metacell
+\item{...}{Additional arguments passed to \code{\link[ggplot2:geom_point]{ggplot2::geom_point()}} for metacell
 centroids.}
 }
 \value{
@@ -116,7 +121,7 @@ Visualize metacell partitions on a dimensionality reduction
 }
 \examples{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub, verbose = FALSE)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub, verbose = FALSE)
 mc <- RunMetaCell(
   pancreas_sub,
   method = "supercell",

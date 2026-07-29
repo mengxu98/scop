@@ -11,7 +11,7 @@ srt_to_giotto(srt, image = NULL, ...)
 
 \item{image}{Seurat image name. Multi-image objects require an explicit name.}
 
-\item{...}{Additional arguments passed to [SeuratToScopGiotto()].}
+\item{...}{Additional arguments passed to [SeuratToGiotto2()].}
 }
 \value{
 A native Giotto object.
@@ -21,7 +21,7 @@ Convert one Seurat spatial image into a native Giotto object without running
 a Giotto workflow or changing the input object.
 }
 \details{
-This bridge is separate from the legacy [SeuratToScopGiotto()] and
+This bridge is separate from the legacy [SeuratToGiotto2()] and
 [RunGiottoWorkflow()] interface. It returns only the native Giotto object.
 The scop-controlled converter is used by default to preserve exact
 single-image selection across Giotto versions; pass `use_official = TRUE`
