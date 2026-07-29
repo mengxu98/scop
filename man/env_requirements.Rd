@@ -23,7 +23,7 @@ Default is \code{"3.10-1"}.}
 \code{"sccoda"}, \code{"doublet"}, \code{"palantir"}, \code{"scvelo"}, \code{"cellrank"}, \code{"wot"},
 \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"multimap"},
 \code{"scomm"}, \code{"scenic"}, \code{"seacells"}, \code{"tage"},
-\code{"scmalignantfinder"}, \code{"secact"}, \code{"scpagwas"}, and
+\code{"scmalignantfinder"}, \code{"secact"}, \code{"scpagwas"}, \code{"choir"}, and
 \code{"external_wrappers"}. If \code{NULL}, the default environment is returned. The default
 excludes \code{"cell2location"}, \code{"cell2fate"}, \code{"sccoda"}, \code{"scomm"}, and
 \code{"scenic"} because these workflows

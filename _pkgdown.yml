@@ -163,6 +163,7 @@ reference:
   - SCTransform
   - RunDimsEstimate
   - RunDimsReduction
+  - RunCHOIR
   - RunDM
   - RunFR
   - RunGLMPCA
