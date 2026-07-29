@@ -1,6 +1,6 @@
-# Internal spatial helpers shared by SCOP spatial wrappers.
+# Internal helpers shared by spatial workflow wrappers.
 
-scop_spatial_resolve_coord_cols <- function(srt, coord.cols = c("col", "row")) {
+spatial_resolve_coord_cols <- function(srt, coord.cols = c("col", "row")) {
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }
@@ -43,8 +43,8 @@ scop_spatial_resolve_coord_cols <- function(srt, coord.cols = c("col", "row")) {
   )
 }
 
-scop_spatial_metadata_coords <- function(srt, coord.cols = c("col", "row")) {
-  coord.cols <- scop_spatial_resolve_coord_cols(srt, coord.cols = coord.cols)
+spatial_metadata_coords <- function(srt, coord.cols = c("col", "row")) {
+  coord.cols <- spatial_resolve_coord_cols(srt, coord.cols = coord.cols)
   data.frame(
     x = suppressWarnings(as.numeric(srt@meta.data[[coord.cols[1L]]])),
     y = suppressWarnings(as.numeric(srt@meta.data[[coord.cols[2L]]])),
@@ -53,13 +53,13 @@ scop_spatial_metadata_coords <- function(srt, coord.cols = c("col", "row")) {
   )
 }
 
-scop_spatial_empty_plot <- function(
+spatial_empty_plot <- function(
   message,
   title = NULL,
   theme_use = "theme_blank",
   theme_args = list()
 ) {
-  theme_obj <- scop_spatial_theme(theme_use = theme_use, theme_args = theme_args)
+  theme_obj <- spatial_theme(theme_use = theme_use, theme_args = theme_args)
   ggplot2::ggplot(data.frame(x = 0, y = 0, label = message), ggplot2::aes(x, y)) +
     ggplot2::geom_text(ggplot2::aes(label = .data$label), size = 3.6, color = "grey35") +
     ggplot2::labs(title = title, x = NULL, y = NULL) +
@@ -67,18 +67,15 @@ scop_spatial_empty_plot <- function(
     theme_obj
 }
 
-scop_spatial_theme <- function(
+spatial_theme <- function(
   theme_use = "theme_blank",
   theme_args = list(),
   show_axes = FALSE
 ) {
-  if (is.null(theme_use)) {
-    theme_obj <- ggplot2::theme_minimal()
-  } else if (is.function(theme_use)) {
-    theme_obj <- do.call(theme_use, theme_args)
-  } else {
-    theme_obj <- do.call(theme_use, theme_args)
-  }
+  theme_obj <- resolve_method_plot_theme(
+    theme_use = theme_use,
+    theme_args = theme_args
+  )
   if (isFALSE(show_axes)) {
     theme_obj <- theme_obj +
       ggplot2::theme(
@@ -91,7 +88,7 @@ scop_spatial_theme <- function(
   theme_obj
 }
 
-scop_spatial_crop_limits <- function(x, y, pad_fraction = 0.04, min_pad = 0) {
+spatial_crop_limits <- function(x, y, pad_fraction = 0.04, min_pad = 0) {
   xr <- range(x, na.rm = TRUE)
   yr <- range(y, na.rm = TRUE)
   xpad <- diff(xr) * pad_fraction
@@ -105,7 +102,7 @@ scop_spatial_crop_limits <- function(x, y, pad_fraction = 0.04, min_pad = 0) {
   list(xlim = xr + c(-xpad, xpad), ylim = yr + c(-ypad, ypad))
 }
 
-scop_spatial_weight_summary <- function(weights) {
+spatial_weight_summary <- function(weights) {
   weights <- as.data.frame(weights, check.names = FALSE)
   if (nrow(weights) == 0L || ncol(weights) == 0L) {
     return(list(
@@ -133,7 +130,7 @@ scop_spatial_weight_summary <- function(weights) {
   )
 }
 
-scop_spatial_normalize_weights <- function(weights) {
+spatial_normalize_weights <- function(weights) {
   weights <- as.matrix(weights)
   weights[!is.finite(weights) | weights < 0] <- 0
   totals <- rowSums(weights)
@@ -143,8 +140,8 @@ scop_spatial_normalize_weights <- function(weights) {
   weights
 }
 
-scop_spatial_finalize_weights <- function(weights, all_spots) {
-  weights <- scop_spatial_normalize_weights(weights)
+spatial_finalize_weights <- function(weights, all_spots) {
+  weights <- spatial_normalize_weights(weights)
   if (is.null(rownames(weights)) || is.null(colnames(weights))) {
     log_message("Deconvolution weights must have row and column names", message_type = "error")
   }
@@ -183,9 +180,9 @@ scop_spatial_finalize_weights <- function(weights, all_spots) {
   )
 }
 
-scop_spatial_add_deconv_metadata <- function(srt, weights, prefix, metadata = NULL) {
+spatial_add_deconv_metadata <- function(srt, weights, prefix, metadata = NULL) {
   if (is.null(metadata)) {
-    metadata <- scop_spatial_finalize_weights(weights, all_spots = colnames(srt))
+    metadata <- spatial_finalize_weights(weights, all_spots = colnames(srt))
   }
   full_weights <- metadata$full_weights
   meta <- as.data.frame(full_weights, check.names = FALSE)
@@ -200,7 +197,7 @@ scop_spatial_add_deconv_metadata <- function(srt, weights, prefix, metadata = NU
   Seurat::AddMetaData(srt, metadata = meta)
 }
 
-scop_spatial_domain_summary <- function(labels) {
+spatial_domain_summary <- function(labels) {
   labels <- as.character(labels)
   labels <- labels[!is.na(labels) & nzchar(labels)]
   tab <- as.data.frame(table(labels), stringsAsFactors = FALSE)
@@ -208,7 +205,7 @@ scop_spatial_domain_summary <- function(labels) {
   tab[order(tab$count, decreasing = TRUE), , drop = FALSE]
 }
 
-scop_spatial_feature_summary <- function(features, scores = NULL, n = 20L) {
+spatial_feature_summary <- function(features, scores = NULL, n = 20L) {
   features <- as.character(features)
   features <- features[!is.na(features) & nzchar(features)]
   features <- utils::head(features, n)
@@ -219,7 +216,7 @@ scop_spatial_feature_summary <- function(features, scores = NULL, n = 20L) {
   out
 }
 
-scop_spatial_neighborhood_summary <- function(pair_table, edge_table = NULL) {
+spatial_neighborhood_summary <- function(pair_table, edge_table = NULL) {
   list(
     n_pairs = nrow(pair_table),
     n_edges = if (is.null(edge_table)) NA_integer_ else nrow(edge_table),

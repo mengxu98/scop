@@ -115,7 +115,7 @@
 #' @param ... Additional parameters to pass to the dimensionality reduction methods.
 #'
 #' @return A `Seurat` object. Completed or partial spatial workflows store the
-#' per-stage state in `srt@tools[["standard_spatial_scop"]]`. The spatial
+#' per-stage state in `srt@tools[["run_standard_spatial_workflow"]]`. The spatial
 #' variable-feature stage records its effective `set_variable_features` value
 #' and the before/after feature counts. If a stage fails,
 #' the signaled error carries the same table in its `standard_spatial_stages`
@@ -127,7 +127,7 @@
 #' @examples
 #' library(Matrix)
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType"
@@ -138,7 +138,7 @@
 #' linear_reductions <- c(
 #'   "pca", "nmf", "mds"
 #' )
-#' pancreas_sub <- standard_scop(
+#' pancreas_sub <- RunStandardWorkflow(
 #'   pancreas_sub,
 #'   linear_reduction = linear_reductions,
 #'   nonlinear_reduction = "umap"
@@ -163,7 +163,7 @@
 #' nonlinear_reductions <- c(
 #'   "umap", "tsne", "fr"
 #' )
-#' pancreas_sub <- standard_scop(
+#' pancreas_sub <- RunStandardWorkflow(
 #'   pancreas_sub,
 #'   linear_reduction = "pca",
 #'   nonlinear_reduction = nonlinear_reductions
@@ -186,7 +186,7 @@
 #' patchwork::wrap_plots(plist2)
 #'
 #' data(visium_human_pancreas_sub)
-#' spatial <- standard_scop(
+#' spatial <- RunStandardWorkflow(
 #'   visium_human_pancreas_sub,
 #'   workflow = "spatial",
 #'   assay = "Spatial",
@@ -205,7 +205,7 @@
 #'   features = spatial@tools[["SpatialVariableFeatures"]]$summary$top_features[1:2]
 #' )
 #'
-#' spatial_bayes <- standard_scop(
+#' spatial_bayes <- RunStandardWorkflow(
 #'   visium_human_pancreas_sub,
 #'   workflow = "spatial",
 #'   assay = "Spatial",
@@ -227,7 +227,7 @@
 #'   )
 #' )
 #' SpatialSpotPlot(spatial_bayes, group.by = "BayesSpace_cluster")
-standard_scop <- function(
+RunStandardWorkflow <- function(
   srt,
   prefix = "Standard",
   workflow = c("single_cell", "spatial"),
@@ -277,7 +277,7 @@ standard_scop <- function(
 ) {
   workflow <- match.arg(workflow)
   if (identical(workflow, "spatial")) {
-    return(standard_spatial_scop(
+    return(run_standard_spatial_workflow(
       srt = srt,
       prefix = prefix,
       assay = assay,
@@ -338,7 +338,7 @@ standard_scop <- function(
     )
   }
 
-  assays_to_run <- standard_scop_resolve_assays(
+  assays_to_run <- resolve_standard_assays(
     srt = srt,
     assay = assay
   )
@@ -350,14 +350,14 @@ standard_scop <- function(
     )
     for (i in seq_along(assays_to_run)) {
       assay_i <- assays_to_run[[i]]
-      prefix_i <- standard_scop_resolve_prefix(
+      prefix_i <- resolve_standard_prefix(
         srt = srt,
         assay = assay_i,
         prefix = prefix,
         multi_assay = TRUE,
         primary_assay = assays_to_run[[1]]
       )
-      srt <- standard_scop(
+      srt <- RunStandardWorkflow(
         srt = srt,
         prefix = prefix_i,
         assay = assay_i,
@@ -458,20 +458,7 @@ standard_scop <- function(
       message_type = "error"
     )
   }
-  cluster_algorithms <- c("louvain", "slm", "leiden")
-  if (!cluster_algorithm %in% cluster_algorithms) {
-    log_message(
-      "{.arg cluster_algorithm} must be one of {.val {cluster_algorithms}}",
-      message_type = "error"
-    )
-  }
-  cluster_algorithm_index <- switch(
-    EXPR = tolower(cluster_algorithm),
-    "louvain" = 1,
-    "louvain_refined" = 2,
-    "slm" = 3,
-    "leiden" = 4
-  )
+  cluster_algorithm_index <- resolve_cluster_algorithm_index(cluster_algorithm)
 
   set.seed(seed)
 
@@ -766,7 +753,7 @@ standard_scop <- function(
   return(srt)
 }
 
-standard_spatial_scop <- function(
+run_standard_spatial_workflow <- function(
   srt,
   prefix = "Standard",
   assay = NULL,
@@ -837,13 +824,13 @@ standard_spatial_scop <- function(
     )
   }
 
-  standard_scop_validate_named_list(spot_qc_params, "spot_qc_params")
-  standard_scop_validate_named_list(
+  validate_named_list(spot_qc_params, "spot_qc_params")
+  validate_named_list(
     spatial_variable_features_params,
     "spatial_variable_features_params"
   )
-  standard_scop_validate_named_list(bayesspace_params, "bayesspace_params")
-  standard_scop_validate_named_list(
+  validate_named_list(bayesspace_params, "bayesspace_params")
+  validate_named_list(
     deconvolution_params,
     "deconvolution_params"
   )
@@ -952,7 +939,7 @@ standard_spatial_scop <- function(
   }
 
   if (isTRUE(do_spot_qc)) {
-    spot_qc_args <- standard_scop_merge_args(
+    spot_qc_args <- merge_call_args(
       list(
         srt = srt,
         assay = assay,
@@ -968,7 +955,7 @@ standard_spatial_scop <- function(
     )
   }
 
-  srt <- standard_scop(
+  srt <- RunStandardWorkflow(
     srt = srt,
     prefix = prefix,
     workflow = "single_cell",
@@ -1003,7 +990,7 @@ standard_spatial_scop <- function(
   cluster_col <- paste0(prefix, "clusters")
   if (isTRUE(do_spatial_variable_features)) {
     variable_features_before <- length(SeuratObject::VariableFeatures(srt, assay = assay))
-    svf_args <- standard_scop_merge_args(
+    svf_args <- merge_call_args(
       list(
         srt = srt,
         assay = assay,
@@ -1081,7 +1068,7 @@ standard_spatial_scop <- function(
         bayesspace_args[["dims"]] <- dims_use[dims_use <= ncol(emb)]
       }
     }
-    bayesspace_args <- standard_scop_merge_args(
+    bayesspace_args <- merge_call_args(
       bayesspace_args,
       bayesspace_params
     )
@@ -1143,7 +1130,7 @@ standard_spatial_scop <- function(
             deconv_defaults$coord.cols <- coord.cols
             deconv_defaults$coordinate_space <- "raw"
           }
-          deconv_args <- standard_scop_merge_args(
+          deconv_args <- merge_call_args(
             deconv_defaults,
             deconvolution_params
           )
@@ -1166,7 +1153,7 @@ standard_spatial_scop <- function(
   } else {
     "completed"
   }
-  srt@tools[["standard_spatial_scop"]] <- list(
+  srt@tools[["run_standard_spatial_workflow"]] <- list(
     status = workflow_status,
     stages = stages,
     parameters = list(
@@ -1207,26 +1194,7 @@ standard_spatial_scop <- function(
   srt
 }
 
-standard_scop_validate_named_list <- function(x, arg_name) {
-  if (!is.list(x)) {
-    log_message(
-      "{.arg {arg_name}} must be a named list",
-      message_type = "error"
-    )
-  }
-  if (
-    length(x) > 0L &&
-      (is.null(names(x)) || any(is.na(names(x)) | !nzchar(names(x))))
-  ) {
-    log_message(
-      "{.arg {arg_name}} must be a named list",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
-}
-
-standard_scop_merge_args <- function(defaults, extra) {
+merge_call_args <- function(defaults, extra) {
   if (length(extra) == 0L) {
     return(defaults)
   }
@@ -1257,7 +1225,7 @@ standard_spatial_prepare_rctd_params <- function(
   deconvolution_params
 }
 
-standard_scop_resolve_assays <- function(srt, assay = NULL) {
+resolve_standard_assays <- function(srt, assay = NULL) {
   assays_available <- SeuratObject::Assays(srt)
   if (is.null(assay)) {
     assay_default <- SeuratObject::DefaultAssay(srt)
@@ -1278,7 +1246,7 @@ standard_scop_resolve_assays <- function(srt, assay = NULL) {
   assay
 }
 
-standard_scop_assay_prefix <- function(srt, assay) {
+resolve_assay_prefix <- function(srt, assay) {
   if (inherits(srt[[assay]], "ChromatinAssay")) {
     if (identical(tolower(assay), "peaks")) {
       return("ATAC")
@@ -1288,7 +1256,7 @@ standard_scop_assay_prefix <- function(srt, assay) {
   assay
 }
 
-standard_scop_resolve_prefix <- function(
+resolve_standard_prefix <- function(
   srt,
   assay,
   prefix = "Standard",
@@ -1299,12 +1267,12 @@ standard_scop_resolve_prefix <- function(
     return(prefix)
   }
   if (identical(prefix, "Standard")) {
-    return(standard_scop_assay_prefix(srt = srt, assay = assay))
+    return(resolve_assay_prefix(srt = srt, assay = assay))
   }
   if (!is.null(primary_assay) && identical(assay, primary_assay)) {
     return(prefix)
   }
-  standard_scop_assay_prefix(srt = srt, assay = assay)
+  resolve_assay_prefix(srt = srt, assay = assay)
 }
 
 atac_defaults <- function(

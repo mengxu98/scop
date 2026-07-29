@@ -5,6 +5,7 @@
 #' spatial metadata, GSVA-like scores, or user-provided matrices.
 #'
 #' @md
+#' @inheritParams CellDimPlot
 #' @param object Optional `SummarizedExperiment`, `Seurat`, deconvolution bundle,
 #' or matrix-like object.
 #' @param immune.data Optional abundance matrix with samples/spots/cells in rows
@@ -40,10 +41,6 @@
 #' @param heatmap_palette Continuous palette name for heatmaps.
 #' @param heatmap_palcolor Optional custom continuous colors.
 #' @param title,subtitle Plot title and subtitle.
-#' @param legend.position Legend position.
-#' @param legend.direction Legend direction.
-#' @param theme_use Theme function name.
-#' @param theme_args Additional theme arguments.
 #'
 #' @return A `ggplot` object.
 #'
@@ -107,14 +104,17 @@ ImmuneAbundancePlot <- function(
     cell_type_order = cell_type_order
   )
 
-  theme_obj <- immune_plot_theme(theme_use = theme_use, theme_args = theme_args)
+  theme_obj <- resolve_legacy_plot_theme(
+    theme_use = theme_use,
+    theme_args = theme_args
+  )
   if (identical(plot_type, "cor")) {
     cor_mat <- stats::cor(mat,
       method = cor_method,
       use = "pairwise.complete.obs"
     )
     cor_mat[!is.finite(cor_mat)] <- 0
-    df <- immune_matrix_long(cor_mat, "cell_type_1", "cell_type_2", "cor")
+    df <- matrix_to_long(cor_mat, "cell_type_1", "cell_type_2", "cor")
     fill_cols <- immune_continuous_colors(
       palette = "RdBu",
       palcolor = heatmap_palcolor,
@@ -153,7 +153,7 @@ ImmuneAbundancePlot <- function(
 
   if (identical(plot_type, "heatmap")) {
     mat_plot <- immune_scale_matrix(mat, scale = scale)
-    df <- immune_matrix_long(mat_plot, "sample", "cell_type", "value")
+    df <- matrix_to_long(mat_plot, "sample", "cell_type", "value")
     fill_cols <- immune_continuous_colors(
       palette = heatmap_palette,
       palcolor = heatmap_palcolor
@@ -191,7 +191,7 @@ ImmuneAbundancePlot <- function(
     )
   }
 
-  df <- immune_matrix_long(mat, "sample", "cell_type", "abundance")
+  df <- matrix_to_long(mat, "sample", "cell_type", "abundance")
   group_df <- resolve_immune_groups(
     object = object,
     samples = rownames(mat),
@@ -459,14 +459,6 @@ immune_numeric_matrix <- function(x, row_label = "matrix") {
   mat
 }
 
-immune_matrix_long <- function(mat, row_name, col_name, value_name) {
-  df <- as.data.frame(as.table(mat), stringsAsFactors = FALSE)
-  colnames(df) <- c(row_name, col_name, value_name)
-  df[[row_name]] <- factor(df[[row_name]], levels = rownames(mat))
-  df[[col_name]] <- factor(df[[col_name]], levels = colnames(mat))
-  df
-}
-
 immune_scale_matrix <- function(mat, scale = "none") {
   if (identical(scale, "none")) {
     return(mat)
@@ -546,17 +538,6 @@ resolve_immune_groups <- function(
     ))
   }
   data.frame(sample = samples, group = "All", stringsAsFactors = FALSE)
-}
-
-immune_plot_theme <- function(theme_use = "theme_scop", theme_args = list()) {
-  if (identical(theme_use, "theme_scop")) {
-    theme_use <- "theme_this"
-  }
-  theme_fun <- tryCatch(get(theme_use, mode = "function"), error = function(e) NULL)
-  if (is.null(theme_fun)) {
-    return(ggplot2::theme_bw())
-  }
-  do.call(theme_fun, theme_args)
 }
 
 immune_continuous_colors <- function(

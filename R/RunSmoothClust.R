@@ -121,7 +121,7 @@ RunSmoothClust <- function(
     message_type = "running",
     verbose = verbose
   )
-  smoothclust_validate_srt(srt)
+  validate_seurat_object(srt)
   smooth_method <- match.arg(smooth_method)
   smoothclust_assert_string(cluster_colname, "cluster_colname")
   smoothclust_assert_string(tool_name, "tool_name")
@@ -347,16 +347,6 @@ RunSmoothClust <- function(
   srt
 }
 
-smoothclust_validate_srt <- function(srt) {
-  if (!inherits(srt, "Seurat")) {
-    log_message(
-      "{.arg srt} must be a {.cls Seurat} object",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
-}
-
 smoothclust_select_features <- function(
   srt,
   expr,
@@ -529,23 +519,15 @@ smoothclust_filter_backend_args <- function(fun, args) {
 }
 
 smoothclust_assert_string <- function(x, arg) {
-  if (!is.character(x) || length(x) != 1L || is.na(x) || !nzchar(x)) {
-    log_message(
-      "{.arg {arg}} must be a non-empty character string",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
+  validate_scalar_string(
+    x,
+    arg,
+    message = "must be a non-empty character string"
+  )
 }
 
 smoothclust_assert_flag <- function(x, arg) {
-  if (!is.logical(x) || length(x) != 1L || is.na(x)) {
-    log_message(
-      "{.arg {arg}} must be TRUE or FALSE",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
+  validate_scalar_flag(x, arg)
 }
 
 smoothclust_assert_positive_integer <- function(

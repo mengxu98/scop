@@ -123,7 +123,7 @@ RunSPOTlight <- function(
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   reference_assay <- reference_assay %||% SeuratObject::DefaultAssay(reference)
 
-  labels <- spotlight_reference_labels(reference, reference_label)
+  labels <- resolve_reference_labels(reference, reference_label)
   names(labels) <- colnames(reference)
   keep_ref <- !is.na(labels) & nzchar(as.character(labels))
   if (!all(keep_ref)) {
@@ -143,7 +143,7 @@ RunSPOTlight <- function(
     )
   }
 
-  features_use <- spotlight_common_features(
+  features_use <- resolve_common_features(
     srt = srt,
     reference = reference,
     assay = assay,
@@ -220,12 +220,12 @@ RunSPOTlight <- function(
   )
 
   weights <- spotlight_extract_weights(result, spot_ids = colnames(st_counts))
-  weight_summary <- scop_spatial_finalize_weights(
+  weight_summary <- spatial_finalize_weights(
     weights = weights,
     all_spots = colnames(srt)
   )
   weights <- weight_summary$weights
-  srt <- scop_spatial_add_deconv_metadata(
+  srt <- spatial_add_deconv_metadata(
     srt,
     weights = weights,
     prefix = prefix,
@@ -241,7 +241,7 @@ RunSPOTlight <- function(
       marker_genes = mgs,
       features = features_use,
       result = result,
-      summary = scop_spatial_weight_summary(weights),
+      summary = spatial_weight_summary(weights),
       parameters = list(
         assay = assay,
         reference_assay = reference_assay,
@@ -272,43 +272,6 @@ RunSPOTlight <- function(
     verbose = verbose
   )
   srt
-}
-
-spotlight_reference_labels <- function(reference, reference_label) {
-  if (
-    missing(reference_label) ||
-      is.null(reference_label) ||
-      length(reference_label) != 1L
-  ) {
-    log_message(
-      "{.arg reference_label} must be a single reference metadata column",
-      message_type = "error"
-    )
-  }
-  if (!reference_label %in% colnames(reference[[]])) {
-    log_message(
-      "{.arg reference_label} {.val {reference_label}} is not present in {.arg reference}",
-      message_type = "error"
-    )
-  }
-  reference[[reference_label, drop = TRUE]]
-}
-
-spotlight_common_features <- function(
-  srt,
-  reference,
-  assay,
-  reference_assay,
-  features = NULL
-) {
-  common <- intersect(
-    rownames(srt[[assay]]),
-    rownames(reference[[reference_assay]])
-  )
-  if (!is.null(features)) {
-    common <- intersect(features, common)
-  }
-  common
 }
 
 spotlight_get_matrix <- function(
@@ -547,15 +510,5 @@ spotlight_extract_weights <- function(result, spot_ids) {
 }
 
 spotlight_assert_scalar_string <- function(x, arg) {
-  if (
-    is.null(x) ||
-      length(x) != 1L ||
-      is.na(x) ||
-      !nzchar(x)
-  ) {
-    log_message(
-      "{.arg {arg}} must be a single non-empty string",
-      message_type = "error"
-    )
-  }
+  validate_scalar_string(x, arg, require_character = FALSE)
 }

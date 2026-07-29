@@ -1818,7 +1818,7 @@ RunDEtest_pseudobulk <- function(
 #' @md
 #' @inheritParams thisutils::parallelize_fun
 #' @inheritParams Seurat::FindMarkers
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams FeatureDimPlot
 #' @param object A `Seurat` object or a `SummarizedExperiment` object.
 #' @param srt Compatibility alias for `object`.
@@ -1877,7 +1877,7 @@ RunDEtest_pseudobulk <- function(
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunDEtest(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -1928,7 +1928,7 @@ RunDEtest_pseudobulk <- function(
 #' ht3$plot
 #'
 #' data(panc8_sub)
-#' panc8_sub <- integration_scop(
+#' panc8_sub <- RunIntegration(
 #'   panc8_sub,
 #'   batch = "tech",
 #'   integration_method = "Uncorrected"

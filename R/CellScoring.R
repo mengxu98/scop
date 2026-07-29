@@ -9,7 +9,7 @@
 #' @inheritParams thisutils::parallelize_fun
 #' @inheritParams CellDimPlot
 #' @inheritParams RunEnrichment
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams FeatureDimPlot
 #' @inheritParams RunGSVA
 #' @param features A named list of feature lists for scoring.
@@ -39,7 +39,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' features_all <- rownames(pancreas_sub)
 #' pancreas_sub <- CellScoring(
 #'   pancreas_sub,

@@ -3,7 +3,7 @@
 #' @md
 #' @inheritParams RunEnrichment
 #' @inheritParams CellDimPlot
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @param group.by Name of metadata column to group cells by for averaging expression.
 #' If provided, expression will be averaged within each group before GSVA analysis (cell-type level).
 #' If `NULL`, GSVA is performed on each cell individually (single-cell level).
@@ -58,7 +58,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #'
 #' pancreas_sub <- RunGSVA(
 #'   pancreas_sub,

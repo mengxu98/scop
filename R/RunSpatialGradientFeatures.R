@@ -1638,7 +1638,7 @@ sgf_line_plot <- function(
     ggplot2::facet_wrap(~variable, scales = "free_y", nrow = nrow, ncol = ncol) +
     ggplot2::scale_color_manual(values = cols) +
     ggplot2::labs(x = "Gradient distance", y = "Expression", color = "Variable") +
-    sgf_plot_theme(theme_use = theme_use, theme_args = theme_args) +
+    resolve_method_plot_theme(theme_use = theme_use, theme_args = theme_args) +
     ggplot2::theme(legend.position = legend.position)
   p
 }
@@ -1670,7 +1670,7 @@ sgf_summary_plot <- function(
     ggplot2::scale_color_manual(values = cols) +
     ggplot2::scale_y_discrete(drop = FALSE) +
     ggplot2::labs(x = "Rank", y = NULL, color = "Variable", size = "RMSE") +
-    sgf_plot_theme(theme_use = theme_use, theme_args = theme_args) +
+    resolve_method_plot_theme(theme_use = theme_use, theme_args = theme_args) +
     ggplot2::theme(legend.position = legend.position)
 }
 
@@ -1699,26 +1699,11 @@ sgf_model_plot <- function(
     ggplot2::geom_tile(color = "white", linewidth = 0.2) +
     ggplot2::scale_fill_gradientn(colors = rev(sgf_gradient_colors(palette, palcolor)), na.value = "grey85") +
     ggplot2::labs(x = "Model", y = NULL, fill = "RMSE") +
-    sgf_plot_theme(theme_use = theme_use, theme_args = theme_args) +
+    resolve_method_plot_theme(theme_use = theme_use, theme_args = theme_args) +
     ggplot2::theme(
       legend.position = legend.position,
       axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)
     )
-}
-
-sgf_plot_theme <- function(theme_use = "theme_scop", theme_args = list()) {
-  if (is.null(theme_use)) {
-    return(ggplot2::theme_minimal())
-  }
-  if (inherits(theme_use, "theme")) {
-    return(theme_use)
-  }
-  theme_fun <- if (is.character(theme_use)) {
-    get(theme_use, mode = "function", inherits = TRUE)
-  } else {
-    theme_use
-  }
-  do.call(theme_fun, theme_args)
 }
 
 sgf_feature_colors <- function(features, palette = "Spectral", palcolor = NULL) {
@@ -1736,23 +1721,13 @@ sgf_parameters_df <- function(parameters) {
   parameters$spata2_version <- sgf_package_version("SPATA2")
   data.frame(
     key = names(parameters),
-    value = vapply(parameters, sgf_collapse_value, character(1)),
+    value = vapply(parameters, collapse_parameter_value, character(1)),
     stringsAsFactors = FALSE
   )
 }
 
 sgf_package_version <- function(pkg) {
   tryCatch(as.character(utils::packageVersion(pkg)), error = function(e) NA_character_)
-}
-
-sgf_collapse_value <- function(x) {
-  if (is.null(x)) {
-    return(NA_character_)
-  }
-  if (length(x) == 0L) {
-    return("")
-  }
-  paste(as.character(x), collapse = ",")
 }
 
 sgf_drop_nulls <- function(x) {

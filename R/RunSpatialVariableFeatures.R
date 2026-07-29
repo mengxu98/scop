@@ -6,7 +6,7 @@
 #' `"nnSVG"` use optional external backends when their packages are installed.
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
 #' @param layer Assay layer used for expression values.
 #' @param features Features to score. If `NULL`, current variable features are
@@ -228,7 +228,7 @@ RunSpatialVariableFeatures <- function(
       summary = list(
         n_features = nrow(result),
         top_features = top_features,
-        top_feature_summary = scop_spatial_feature_summary(top_features, scores = score_lookup)
+        top_feature_summary = spatial_feature_summary(top_features, scores = score_lookup)
       ),
       parameters = list(
         assay = assay,
@@ -306,9 +306,9 @@ spatial_variable_run_sparkx <- function(expr, coords, ...) {
   }
   res <- as.data.frame(res, stringsAsFactors = FALSE, check.names = FALSE)
   features <- spatial_variable_result_features(res, rownames(expr))
-  p_value <- spatial_variable_pick_numeric(res, c("combinedPval", "combined_pvalue", "p_value", "pvalue", "pval"))
-  q_value <- spatial_variable_pick_numeric(res, c("adjustedPval", "adjusted_pvalue", "q_value", "qvalue", "padj", "fdr"))
-  statistic <- spatial_variable_pick_numeric(res, c("statistic", "score", "combinedStat", "combined_stat"))
+  p_value <- pick_numeric_column(res, c("combinedPval", "combined_pvalue", "p_value", "pvalue", "pval"))
+  q_value <- pick_numeric_column(res, c("adjustedPval", "adjusted_pvalue", "q_value", "qvalue", "padj", "fdr"))
+  statistic <- pick_numeric_column(res, c("statistic", "score", "combinedStat", "combined_stat"))
   data.frame(
     feature = features,
     statistic = statistic,
@@ -332,10 +332,10 @@ spatial_variable_run_nnsvg <- function(expr, coords, assay, ...) {
   out <- do.call(get_namespace_fun("nnSVG", "nnSVG"), args)
   res <- spatial_variable_row_data(out)
   features <- spatial_variable_result_features(res, rownames(expr))
-  statistic <- spatial_variable_pick_numeric(res, c("LR_stat", "LR.stat", "statistic", "score", "prop_sv", "prop.sv"))
-  p_value <- spatial_variable_pick_numeric(res, c("pval", "p_value", "p.value"))
-  q_value <- spatial_variable_pick_numeric(res, c("padj", "q_value", "q.value", "fdr"))
-  rank <- spatial_variable_pick_numeric(res, c("rank", "Rank"))
+  statistic <- pick_numeric_column(res, c("LR_stat", "LR.stat", "statistic", "score", "prop_sv", "prop.sv"))
+  p_value <- pick_numeric_column(res, c("pval", "p_value", "p.value"))
+  q_value <- pick_numeric_column(res, c("padj", "q_value", "q.value", "fdr"))
+  rank <- pick_numeric_column(res, c("rank", "Rank"))
   data.frame(
     feature = features,
     statistic = statistic,
@@ -439,14 +439,6 @@ spatial_variable_result_features <- function(df, fallback) {
     return(as.character(rn))
   }
   utils::head(fallback, nrow(df))
-}
-
-spatial_variable_pick_numeric <- function(df, candidates) {
-  hit <- intersect(candidates, colnames(df))
-  if (length(hit) == 0L) {
-    return(rep(NA_real_, nrow(df)))
-  }
-  suppressWarnings(as.numeric(df[[hit[[1L]]]]))
 }
 
 spatial_variable_reorder_cols <- function(df, first_cols) {
@@ -678,7 +670,7 @@ spatial_variable_summary_plot <- function(
       y = NULL,
       color = "Feature"
     ) +
-    spatial_variable_plot_theme(theme_use = theme_use, theme_args = theme_args) +
+    resolve_method_plot_theme(theme_use = theme_use, theme_args = theme_args) +
     ggplot2::theme(legend.position = legend.position)
   if (isTRUE(has_significance)) {
     p <- p +
@@ -742,21 +734,6 @@ spatial_variable_surface_plot <- function(
     ncol = ncol,
     byrow = byrow
   )
-}
-
-spatial_variable_plot_theme <- function(theme_use = "theme_scop", theme_args = list()) {
-  if (is.null(theme_use)) {
-    return(ggplot2::theme_minimal())
-  }
-  if (inherits(theme_use, "theme")) {
-    return(theme_use)
-  }
-  theme_fun <- if (is.character(theme_use)) {
-    get(theme_use, mode = "function", inherits = TRUE)
-  } else {
-    theme_use
-  }
-  do.call(theme_fun, theme_args)
 }
 
 spatial_variable_knn_edges <- function(coords, k = 6) {

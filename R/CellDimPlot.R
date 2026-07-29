@@ -5,7 +5,7 @@
 #' Plotting cell points on a reduced 2D plane and coloring according to the groups.
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @param group.by Name of one or more meta.data columns to group (color) cells by.
 #' @param label.by Name of a meta.data column used to place group labels. If
 #' `NULL`, labels use `group.by`.
@@ -192,7 +192,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' p1 <- CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -1158,66 +1158,21 @@ CellDimPlot <- function(
         mark <- NULL
       }
 
-      if (!is.null(graph)) {
-        net_mat <- as_matrix(graph)[rownames(dat), rownames(dat)]
-        net_mat[net_mat == 0] <- NA
-        net_mat[upper.tri(net_mat)] <- NA
-        net_df <- reshape2::melt(net_mat, na.rm = TRUE, stringsAsFactors = FALSE)
-        net_df[, "value"] <- as.numeric(net_df[, "value"])
-        net_df[, "Var1"] <- as.character(net_df[, "Var1"])
-        net_df[, "Var2"] <- as.character(net_df[, "Var2"])
-        net_df[, "x"] <- dat[net_df[, "Var1"], "x"]
-        net_df[, "y"] <- dat[net_df[, "Var1"], "y"]
-        net_df[, "xend"] <- dat[net_df[, "Var2"], "x"]
-        net_df[, "yend"] <- dat[net_df[, "Var2"], "y"]
-        net <- list(
-          geom_segment(
-            data = net_df,
-            mapping = aes(
-              x = x,
-              y = y,
-              xend = xend,
-              yend = yend,
-              linewidth = value
-            ),
-            color = edge_color,
-            alpha = edge_alpha,
-            show.legend = FALSE
-          ),
-          scale_linewidth_continuous(range = edge_size)
-        )
-      } else {
-        net <- NULL
-      }
-
-      if (isTRUE(add_density)) {
-        if (isTRUE(density_filled)) {
-          filled_color <- palette_colors(
-            palette = density_filled_palette,
-            palcolor = density_filled_palcolor
-          )
-          density <- list(
-            stat_density_2d(
-              geom = "raster",
-              aes(x = .data[["x"]], y = .data[["y"]], fill = after_stat(density)),
-              contour = FALSE,
-              inherit.aes = FALSE,
-              show.legend = FALSE
-            ),
-            scale_fill_gradientn(name = "Density", colours = filled_color),
-            ggnewscale::new_scale_fill()
-          )
-        } else {
-          density <- geom_density_2d(
-            aes(x = .data[["x"]], y = .data[["y"]]),
-            color = density_color,
-            inherit.aes = FALSE,
-            show.legend = FALSE
-          )
-        }
-      } else {
-        density <- NULL
-      }
+      net <- dim_plot_graph_layers(
+        graph = graph,
+        dat = dat,
+        edge_color = edge_color,
+        edge_alpha = edge_alpha,
+        edge_size = edge_size
+      )
+      density <- dim_plot_density_layers(
+        add_density = add_density,
+        density_filled = density_filled,
+        density_color = density_color,
+        density_filled_palette = density_filled_palette,
+        density_filled_palcolor = density_filled_palcolor,
+        line_show_legend = FALSE
+      )
 
       grid_layer <- cell_dim_grid_layer(
         dat = dat,
@@ -1619,21 +1574,9 @@ CellDimPlot <- function(
     }
   )
 
-  if (isTRUE(combine)) {
-    if (length(plist) > 1) {
-      plot <- patchwork::wrap_plots(
-        plotlist = plist,
-        nrow = nrow,
-        ncol = ncol,
-        byrow = byrow
-      )
-    } else {
-      plot <- plist[[1]]
-    }
-    return(plot)
-  } else {
-    return(plist)
-  }
+  combine_plot_list(
+    plist, combine = combine, nrow = nrow, ncol = ncol, byrow = byrow
+  )
 }
 
 cell_dim_grid_layer <- function(
@@ -1671,6 +1614,87 @@ cell_dim_grid_layer <- function(
     size = grid_size,
     alpha = grid_alpha,
     show.legend = FALSE
+  )
+}
+
+dim_plot_graph_layers <- function(
+  graph,
+  dat,
+  edge_color,
+  edge_alpha,
+  edge_size
+) {
+  if (is.null(graph)) {
+    return(NULL)
+  }
+
+  net_cells <- rownames(dat)
+  net_mat <- as_matrix(graph[net_cells, net_cells, drop = FALSE])
+  net_mat[net_mat == 0] <- NA
+  net_mat[upper.tri(net_mat)] <- NA
+  net_df <- reshape2::melt(net_mat, na.rm = TRUE, stringsAsFactors = FALSE)
+  net_df[, "value"] <- as.numeric(net_df[, "value"])
+  net_df[, "Var1"] <- as.character(net_df[, "Var1"])
+  net_df[, "Var2"] <- as.character(net_df[, "Var2"])
+  net_df[, "x"] <- dat[net_df[, "Var1"], "x"]
+  net_df[, "y"] <- dat[net_df[, "Var1"], "y"]
+  net_df[, "xend"] <- dat[net_df[, "Var2"], "x"]
+  net_df[, "yend"] <- dat[net_df[, "Var2"], "y"]
+
+  list(
+    geom_segment(
+      data = net_df,
+      mapping = aes(
+        x = x,
+        y = y,
+        xend = xend,
+        yend = yend,
+        linewidth = value
+      ),
+      color = edge_color,
+      alpha = edge_alpha,
+      show.legend = FALSE
+    ),
+    scale_linewidth_continuous(range = edge_size)
+  )
+}
+
+dim_plot_density_layers <- function(
+  add_density,
+  density_filled,
+  density_color,
+  density_filled_palette,
+  density_filled_palcolor,
+  line_show_legend = NA
+) {
+  if (!isTRUE(add_density)) {
+    return(NULL)
+  }
+  if (!isTRUE(density_filled)) {
+    return(
+      geom_density_2d(
+        aes(x = .data[["x"]], y = .data[["y"]]),
+        color = density_color,
+        inherit.aes = FALSE,
+        show.legend = line_show_legend
+      )
+    )
+  }
+
+  filled_color <- palette_colors(
+    palette = density_filled_palette,
+    palcolor = density_filled_palcolor
+  )
+  list(
+    stat_density_2d(
+      geom = "raster",
+      aes(x = .data[["x"]], y = .data[["y"]], fill = after_stat(density)),
+      contour = FALSE,
+      inherit.aes = FALSE,
+      show.legend = FALSE
+    ),
+    scale_fill_gradientn(name = "Density", colours = filled_color),
+    ggnewscale::new_scale_fill()
   )
 }
 
@@ -1980,7 +2004,7 @@ cell_dim_nested_legend_data <- function(
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(
+#' pancreas_sub <- RunStandardWorkflow(
 #'   pancreas_sub,
 #'   nonlinear_reduction_dims = 3
 #' )

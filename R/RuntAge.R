@@ -1,7 +1,7 @@
 #' @title Run tAge transcriptomic aging-clock prediction
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
 #' @param object A `Seurat` object, `ExpressionSet`, or expression matrix-like
 #' object with genes in rows and pseudobulk/bulk samples in columns.
@@ -236,7 +236,7 @@ RuntAge <- function(
         message_type = "error"
       )
     }
-    predictions <- run_tage_by_group_scop(
+    predictions <- run_tage_by_group(
       eset = eset,
       split_by = split.by,
       model_paths = model_paths,
@@ -415,7 +415,7 @@ fetch_tage_r_model_paths <- function(
 }
 
 read_tage_datasets_manifest <- function(datasets_base_url) {
-  manifest_ref <- tage_resource_ref(datasets_base_url, "manifest.tsv")
+  manifest_ref <- resource_ref(datasets_base_url, "manifest.tsv")
   tryCatch(
     utils::read.delim(manifest_ref, check.names = FALSE, stringsAsFactors = FALSE),
     error = function(e) {
@@ -479,7 +479,7 @@ download_tage_r_model_file <- function(
     )
     return(dest)
   }
-  source <- tage_resource_ref(datasets_base_url, row$rds_file)
+  source <- resource_ref(datasets_base_url, row$rds_file)
   log_message(
     "Download converted tAge model {.file {key}} to {.file {model_cache_dir}}",
     verbose = verbose
@@ -517,14 +517,6 @@ download_tage_r_model_file <- function(
   }
   file.rename(tmp, dest)
   dest
-}
-
-tage_resource_ref <- function(base, path) {
-  path <- gsub("^/+", "", path)
-  if (dir.exists(base)) {
-    return(file.path(base, path))
-  }
-  paste0(sub("/+$", "", base), "/", path)
 }
 
 fetch_tage_model_paths <- function(
@@ -1112,7 +1104,7 @@ make_tage_eset <- function(
   )
 }
 
-run_tage_by_group_scop <- function(
+run_tage_by_group <- function(
   eset,
   split_by,
   model_paths,

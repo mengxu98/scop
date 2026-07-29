@@ -1,7 +1,7 @@
 #' @title Run metabolism pathway scoring
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams PrepareDB
 #' @inheritParams RunEnrichment
 #' @param assay Assay to use as expression matrix. Default is `DefaultAssay(srt)`.
@@ -50,7 +50,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunMetabolism(
 #'   pancreas_sub,
 #'   assay = "RNA",

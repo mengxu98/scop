@@ -27,7 +27,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunGLMPCA(pancreas_sub)
 #' CellDimPlot(
 #'   pancreas_sub,
@@ -138,17 +138,11 @@ RunGLMPCA.Assay5 <- function(
   seed.use = 11,
   ...
 ) {
-  features <- features %||% SeuratObject::VariableFeatures(object = object)
-  data.use <- GetAssayData5(
+  RunGLMPCA.Assay(
     object = object,
-    layer = layer,
-    ...
-  )
-  data.use <- filter_nonzero_variance_features(data.use, features)
-  reduction.data <- RunGLMPCA(
-    object = data.use,
     assay = assay,
     layer = layer,
+    features = features,
     L = L,
     fam = fam,
     rev.gmlpca = rev.gmlpca,
@@ -156,9 +150,9 @@ RunGLMPCA.Assay5 <- function(
     nfeatures.print = nfeatures.print,
     reduction.key = reduction.key,
     verbose = verbose,
+    seed.use = seed.use,
     ...
   )
-  return(reduction.data)
 }
 
 #' @rdname RunGLMPCA

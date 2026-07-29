@@ -23,10 +23,10 @@
 #'
 #' @examples
 #' data(panc8_sub)
-#' panc8_sub <- standard_scop(panc8_sub)
+#' panc8_sub <- RunStandardWorkflow(panc8_sub)
 #' srt_ref <- panc8_sub[, panc8_sub$tech != "fluidigmc1"]
 #' srt_query <- panc8_sub[, panc8_sub$tech == "fluidigmc1"]
-#' srt_ref <- integration_scop(
+#' srt_ref <- RunIntegration(
 #'   srt_ref,
 #'   batch = "tech",
 #'   integration_method = "Uncorrected"
@@ -84,10 +84,10 @@ RunSeuratMap <- function(
       )[1]
     } else {
       log_message(
-        "'ref_pca' is NUll and no pca reduction detected. Run standard_scop first.\n",
+        "'ref_pca' is NUll and no pca reduction detected. Run RunStandardWorkflow first.\n",
         verbose = verbose
       )
-      srt_ref <- standard_scop(srt_ref)
+      srt_ref <- RunStandardWorkflow(srt_ref)
       ref_pca <- "Standardpca"
     }
     log_message("Set the ref_pca to '", ref_pca, "'", verbose = verbose)

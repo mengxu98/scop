@@ -25,7 +25,7 @@
 #'
 #' @examples
 #' data(panc8_sub)
-#' panc8_sub <- standard_scop(panc8_sub)
+#' panc8_sub <- RunStandardWorkflow(panc8_sub)
 #' panc8_sub <- RunHarmony2(
 #'   panc8_sub,
 #'   group.by.vars = "tech",
@@ -44,7 +44,7 @@
 #'   reduction = "Harmony"
 #' )
 #'
-#' panc8_sub <- standard_scop(
+#' panc8_sub <- RunStandardWorkflow(
 #'   panc8_sub,
 #'   prefix = "Harmony",
 #'   linear_reduction = "Harmony"

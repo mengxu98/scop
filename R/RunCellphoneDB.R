@@ -2,7 +2,7 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams CellDimPlot
 #' @param species Species of the input data. CellphoneDB is human-centric; when a
 #' non-human species is supplied and `convert_to_human = TRUE`, gene symbols will

@@ -198,7 +198,7 @@ RunBANKSY <- function(
       se = backend$se,
       summary = list(
         n_spots = nrow(cluster_df),
-        domains = scop_spatial_domain_summary(cluster_df[[cluster_colname]])
+        domains = spatial_domain_summary(cluster_df[[cluster_colname]])
       ),
       parameters = list(
         assay = assay,
@@ -399,30 +399,9 @@ banksy_do_call <- function(fun, se, args) {
 }
 
 banksy_validate_param_list <- function(x, arg_name) {
-  if (!is.list(x)) {
-    log_message(
-      "{.arg {arg_name}} must be a list",
-      message_type = "error"
-    )
-  }
-  if (length(x) == 0L) {
-    return(invisible(TRUE))
-  }
-  nms <- names(x)
-  if (is.null(nms) || any(is.na(nms) | !nzchar(nms))) {
-    log_message(
-      "{.arg {arg_name}} must contain named arguments only",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
+  validate_named_param_list(x, arg_name, require_list = TRUE)
 }
 
 banksy_assert_scalar_string <- function(x, arg) {
-  if (is.null(x) || length(x) != 1L || is.na(x) || !nzchar(x)) {
-    log_message(
-      "{.arg {arg}} must be a single non-empty string",
-      message_type = "error"
-    )
-  }
+  validate_scalar_string(x, arg, require_character = FALSE)
 }

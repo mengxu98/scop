@@ -1,7 +1,7 @@
 #' @title Find Expressed Markers
 #'
 #' @inheritParams FeatureDimPlot
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams Seurat::FindMarkers
 #' @param min.expression The min.expression used.
 #'
@@ -12,7 +12,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' markers <- FindExpressedMarkers(
 #'   pancreas_sub,
 #'   cells.1 = SeuratObject::WhichCells(

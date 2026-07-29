@@ -1,7 +1,7 @@
 #' @title Run mcRigor metacell partition assessment
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
 #' @param srt A `Seurat` object containing the original single-cell data.
 #' @param cell_membership A data frame or matrix with cells in rows and one or
@@ -47,7 +47,7 @@
 #' @examples
 #' data(pancreas_sub)
 #' set.seed(11)
-#' pancreas_sub <- standard_scop(
+#' pancreas_sub <- RunStandardWorkflow(
 #'   pancreas_sub,
 #'   nHVF = 500,
 #'   linear_reduction_dims = 20,

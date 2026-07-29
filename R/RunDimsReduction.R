@@ -3,7 +3,7 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams GroupHeatmap
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @param prefix The prefix used to name the result.
 #' @param linear_reduction_dims Total number of dimensions to compute and store for `linear_reduction`.
 #' @param linear_reduction_params Other parameters passed to the `linear_reduction` method.

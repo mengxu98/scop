@@ -21,7 +21,7 @@
 #' @export
 #' @examples
 #' data(pbmcmultiome_sub)
-#' pbmcmultiome_sub <- standard_scop(
+#' pbmcmultiome_sub <- RunStandardWorkflow(
 #'   pbmcmultiome_sub,
 #'   assay = c("RNA", "peaks"),
 #'   linear_reduction_dims = 20

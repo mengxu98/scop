@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-#' @title Spatial and single-cell omics analysis pipeline
+#' @title Single-cell and Spatial omics analysis pipeline
 #'
 #' @description
-#' An R package for spatial and single-cell omics analysis, integration, visualization, and interactive exploration.
+#' An R package for single-cell and spatial omics analysis, integration, visualization, and interactive exploration.
 #'
 #' @author Meng xu (Maintainer), \email{mengxu98@qq.com}
 #'
@@ -27,6 +27,7 @@
 #' @references
 #'  \url{https://github.com/tidyverse/tidyverse/blob/main/R/logo.R}
 #'
+#' @rdname scop_logo
 #' @export
 #' @examples
 #' scop_logo()
@@ -72,6 +73,7 @@ scop_logo <- function(
 #' @param x Input infromation.
 #' @param ... Other parameters.
 #'
+#' @rdname scop_logo
 #' @method print scop_logo
 #'
 #' @export

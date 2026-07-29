@@ -6,7 +6,7 @@
 #' scRNA-seq reference via gene activity.
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @param reference RNA reference `Seurat` object used for label transfer.
 #' @param method Label-transfer backend. One of `"Seurat"` or `"scOMM"`.
 #' @param prefix Prefix used to resolve ATAC reductions. Default is `"ATAC"`.
@@ -43,14 +43,14 @@
 #' @export
 #' @examples
 #' data("pbmcmultiome_sub", package = "scop")
-#' pbmcmultiome_sub <- standard_scop(
+#' pbmcmultiome_sub <- RunStandardWorkflow(
 #'   pbmcmultiome_sub,
 #'   assay = "RNA",
 #'   linear_reduction_dims = 20
 #' )
 #' reference <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[1:250])
 #' query <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[251:350])
-#' query <- standard_scop(
+#' query <- RunStandardWorkflow(
 #'   query,
 #'   assay = "peaks",
 #'   normalization_method = "TFIDF",

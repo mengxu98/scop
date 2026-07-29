@@ -33,7 +33,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' RunDimsEstimate(pancreas_sub)
 #'
 #' DimsEstimatePlot(pancreas_sub)
@@ -512,7 +512,7 @@ pc_selection_stats <- function(
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' DimsEstimatePlot(pancreas_sub)
 DimsEstimatePlot <- function(
   srt,

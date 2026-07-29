@@ -2,7 +2,7 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @param group.by Metadata column defining cell types.
 #' @param receiver Receiver cell type(s).
 #' @param sender Sender cell type(s). Use `"all"` to use all non-receiver cell types.

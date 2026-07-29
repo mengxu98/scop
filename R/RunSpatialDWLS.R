@@ -138,10 +138,10 @@ RunSpatialDWLS <- function(
   )
 
   weights <- spatial_dwls_fit_weights(signatures = signatures, spatial_expr = st_expr)
-  weight_summary <- scop_spatial_finalize_weights(weights = weights, all_spots = colnames(srt))
+  weight_summary <- spatial_finalize_weights(weights = weights, all_spots = colnames(srt))
   weights <- weight_summary$weights
-  srt <- scop_spatial_add_deconv_metadata(srt, weights = weights, prefix = prefix, metadata = weight_summary)
-  summary <- scop_spatial_weight_summary(weights)
+  srt <- spatial_add_deconv_metadata(srt, weights = weights, prefix = prefix, metadata = weight_summary)
+  summary <- spatial_weight_summary(weights)
 
   if (isTRUE(store_results)) {
     srt@tools[[tool_name]] <- list(
@@ -230,7 +230,5 @@ spatial_dwls_fit_weights <- function(signatures, spatial_expr) {
 }
 
 spatial_dwls_assert_string <- function(x, arg) {
-  if (!is.character(x) || length(x) != 1L || is.na(x) || !nzchar(x)) {
-    log_message("{.arg {arg}} must be a single non-empty string", message_type = "error")
-  }
+  validate_scalar_string(x, arg)
 }

@@ -27,7 +27,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunFitDevo(
 #'   pancreas_sub,
 #'   nfeatures = 300
@@ -51,9 +51,9 @@ RunFitDevo <- function(
   tool_name = "FitDevo",
   verbose = TRUE
 ) {
-  input <- scop_expr_input(object, assay = assay, layer = layer)
+  input <- resolve_expression_input(object, assay = assay, layer = layer)
   mat <- input$matrix
-  features <- resolve_scop_features(mat, features, nfeatures)
+  features <- resolve_method_features(mat, features, nfeatures)
   mat <- mat[features, , drop = FALSE]
   target <- NULL
   if (!is.null(reference.by)) {
@@ -116,7 +116,7 @@ RunFitDevo <- function(
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunFitDevo(pancreas_sub, verbose = FALSE)
 #' FitDevoPlot(pancreas_sub)
 FitDevoPlot <- function(

@@ -51,7 +51,7 @@ spatial_coords_raw <- function(
   image_policy <- resolved_image$image_policy
   selected_image <- resolved_image$image
   if (is.null(selected_image)) {
-    coords <- scop_spatial_metadata_coords(srt, coord.cols = coord.cols)
+    coords <- spatial_metadata_coords(srt, coord.cols = coord.cols)
     cells <- rownames(coords)
     source_coord_cols <- coord.cols[1:2]
     transform <- list(

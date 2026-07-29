@@ -2,7 +2,7 @@
 #'
 #' @description
 #' Visualize benchmark results stored in a `Seurat` object, a summary
-#' `data.frame`, or a `scop_benchmark` object created by [RunBenchmark()].
+#' `data.frame`, or a `benchmark_result` object created by [RunBenchmark()].
 #' Spatial benchmark results default to a publication-oriented overview that
 #' pairs clustering quality with runtime and peak-memory efficiency. Per-cell
 #' metrics such as LISI remain available as feature plots and boxplots.
@@ -11,7 +11,7 @@
 #' @inheritParams thisutils::log_message
 #' @inheritParams CellDimPlot
 #' @param srt A `Seurat` object.
-#' @param data Optional `scop_benchmark` object or summary benchmark
+#' @param data Optional `benchmark_result` object or summary benchmark
 #' `data.frame` containing at least `metric` and `value`, and optionally
 #' `method`, `workflow`, and `direction`.
 #' @param features Metadata columns containing per-cell benchmark scores.
@@ -26,7 +26,7 @@
 #' Default is `NULL`, which uses the reduction stored in `tool_name` when
 #' available, otherwise [DefaultReduction()].
 #' @param plot_type Plot type. `"overview"`, `"quality"`, `"efficiency"`, and
-#' `"heatmap"` consume `scop_benchmark` results. Existing `"feature"`,
+#' `"heatmap"` consume `benchmark_result` results. Existing `"feature"`,
 #' `"boxplot"`, `"bar"`, and `"funkyheatmap"` modes remain supported.
 #' @param sort_by Method ordering for spatial benchmark plots. `"quality"`
 #' sorts by the mean selected quality metric; other choices sort by method,
@@ -106,7 +106,7 @@ BenchmarkPlot <- function(
   benchmark_assert_flag(show_values, "show_values")
   benchmark_assert_flag(show_status, "show_status")
 
-  benchmark_result <- if (inherits(data, "scop_benchmark")) data else NULL
+  benchmark_result <- if (inherits(data, "benchmark_result")) data else NULL
   if (!is.null(benchmark_result)) {
     if (identical(plot_type, "auto")) plot_type <- "overview"
     if (plot_type %in% c("overview", "quality", "efficiency", "heatmap")) {
@@ -126,14 +126,14 @@ BenchmarkPlot <- function(
     }
     if (plot_type %in% c("feature", "boxplot")) {
       log_message(
-        "{.arg plot_type = '{plot_type}'} requires per-cell metadata, not a {.cls scop_benchmark}",
+        "{.arg plot_type = '{plot_type}'} requires per-cell metadata, not a {.cls benchmark_result}",
         message_type = "error"
       )
     }
     data <- benchmark_result$metrics
   } else if (plot_type %in% c("overview", "quality", "efficiency", "heatmap")) {
     log_message(
-      "{.arg plot_type = '{plot_type}'} requires a {.cls scop_benchmark} object",
+      "{.arg plot_type = '{plot_type}'} requires a {.cls benchmark_result} object",
       message_type = "error"
     )
   }
@@ -1126,7 +1126,7 @@ benchmark_summary_funkyheatmap <- function(
   )
 }
 
-benchmark_clean_feature_labels <- function(features) {
+feature_boxplot_labels <- function(features) {
   clean_method_label <- function(x) {
     x <- gsub("_+", "_", x)
     x <- gsub("^_+|_+$", "", x)
@@ -1194,7 +1194,21 @@ benchmark_clean_feature_labels <- function(features) {
   stats::setNames(feature_labels, features)
 }
 
-benchmark_feature_boxplot <- function(
+benchmark_clean_feature_labels <- feature_boxplot_labels
+
+feature_boxplot_data <- function(meta_data, features) {
+  plot_list <- lapply(features, function(feature) {
+    data.frame(
+      feature = feature,
+      score = meta_data[[feature]],
+      stringsAsFactors = FALSE
+    )
+  })
+  plot_df <- do.call(rbind, plot_list)
+  plot_df[!is.na(plot_df$score), , drop = FALSE]
+}
+
+feature_boxplot <- function(
   srt,
   features,
   palette = "Chinese",
@@ -1202,21 +1216,15 @@ benchmark_feature_boxplot <- function(
   boxplot_jitter = FALSE,
   theme_use = "theme_scop",
   theme_args = list(),
-  verbose = TRUE
+  verbose = TRUE,
+  y_label = "Score",
+  empty_message = "No valid observations available for benchmark boxplot"
 ) {
-  plot_list <- lapply(features, function(feature) {
-    data.frame(
-      feature = feature,
-      score = srt@meta.data[[feature]],
-      stringsAsFactors = FALSE
-    )
-  })
-  plot_df <- do.call(rbind, plot_list)
-  plot_df <- plot_df[!is.na(plot_df$score), , drop = FALSE]
+  plot_df <- feature_boxplot_data(srt@meta.data, features)
 
   if (nrow(plot_df) == 0) {
     log_message(
-      "No valid observations available for benchmark boxplot",
+      empty_message,
       message_type = "warning",
       verbose = verbose
     )
@@ -1224,7 +1232,7 @@ benchmark_feature_boxplot <- function(
       ggplot2::theme_void())
   }
 
-  label_map <- benchmark_clean_feature_labels(features)
+  label_map <- feature_boxplot_labels(features)
   plot_df$feature_label <- label_map[plot_df$feature]
   mean_df <- stats::aggregate(
     score ~ feature_label,
@@ -1293,7 +1301,7 @@ benchmark_feature_boxplot <- function(
     ggplot2::scale_fill_manual(values = fill_cols, drop = FALSE) +
     ggplot2::labs(
       x = "",
-      y = "Score"
+      y = y_label
     ) +
     do.call(theme_use, theme_args) +
     ggplot2::theme(
@@ -1304,4 +1312,28 @@ benchmark_feature_boxplot <- function(
       panel.grid.minor = ggplot2::element_blank(),
       plot.title = ggplot2::element_text(hjust = 0.5)
     )
+}
+
+benchmark_feature_boxplot <- function(
+  srt,
+  features,
+  palette = "Chinese",
+  palcolor = NULL,
+  boxplot_jitter = FALSE,
+  theme_use = "theme_scop",
+  theme_args = list(),
+  verbose = TRUE
+) {
+  feature_boxplot(
+    srt = srt,
+    features = features,
+    palette = palette,
+    palcolor = palcolor,
+    boxplot_jitter = boxplot_jitter,
+    theme_use = theme_use,
+    theme_args = theme_args,
+    verbose = verbose,
+    y_label = "Score",
+    empty_message = "No valid observations available for benchmark boxplot"
+  )
 }

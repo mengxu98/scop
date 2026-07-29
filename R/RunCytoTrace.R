@@ -23,7 +23,7 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams GroupHeatmap
 #' @param object An object.
 #' This can be a Seurat object or a matrix-like object (genes as rows, cells as columns).
@@ -91,7 +91,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunCytoTRACE(
 #'   pancreas_sub,
 #'   species = "Mus_musculus"

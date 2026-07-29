@@ -6,7 +6,7 @@
 #' the official SCENIC+ Python workflow.
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @param srt A Seurat object containing RNA and chromatin assays.
 #' @param rna_assay RNA assay name.
 #' @param atac_assay Chromatin assay name.

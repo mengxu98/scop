@@ -176,7 +176,7 @@ RunSpatialNeighborhood <- function(
     edge_table = observed$edge_table,
     raw = backend$raw,
     input = input$cells,
-    summary = scop_spatial_neighborhood_summary(pair_table, observed$edge_table),
+    summary = spatial_neighborhood_summary(pair_table, observed$edge_table),
     parameters = list(
       method = method,
       group.by = group.by,
@@ -351,7 +351,7 @@ SpatialNeighborhoodPlot <- function(
     condition = condition
   )
   if (nrow(df) == 0L) {
-    return(scop_spatial_empty_plot(
+    return(spatial_empty_plot(
       "No spatial neighborhood records remain after filtering",
       title = legend.title %||% value,
       theme_use = theme_use,
@@ -1135,10 +1135,9 @@ spatial_neighborhood_linewidth_arg <- function(value) {
 }
 
 spatial_neighborhood_assert_string <- function(x, arg) {
-  if (!is.character(x) || length(x) != 1L || is.na(x) || !nzchar(x)) {
-    log_message(
-      "{.arg {arg}} must be a non-empty character string",
-      message_type = "error"
-    )
-  }
+  validate_scalar_string(
+    x,
+    arg,
+    message = "must be a non-empty character string"
+  )
 }

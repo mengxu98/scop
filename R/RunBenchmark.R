@@ -37,7 +37,7 @@
 #' process start and result serialization. `Inf` disables the timeout.
 #' @param poll_interval Seconds between process-tree memory samples.
 #'
-#' @return A `scop_benchmark` object. Use `as.data.frame()` for its summary,
+#' @return A `benchmark_result` object. Use `as.data.frame()` for its summary,
 #' `plot()` or [BenchmarkPlot()] for visualization, and `$predictions` for the
 #' aligned labels.
 #' @concept spatial-producer
@@ -198,8 +198,8 @@ RunBenchmark <- function(
 }
 
 #' @export
-print.scop_benchmark <- function(x, ...) {
-  cat("<scop_benchmark>\n")
+print.benchmark_result <- function(x, ...) {
+  cat("<benchmark_result>\n")
   cat("  workflow: spatial domain clustering\n")
   cat("  methods: ", nrow(x$summary), "\n", sep = "")
   status_text <- paste(
@@ -214,12 +214,12 @@ print.scop_benchmark <- function(x, ...) {
 }
 
 #' @export
-as.data.frame.scop_benchmark <- function(x, row.names = NULL, optional = FALSE, ...) {
+as.data.frame.benchmark_result <- function(x, row.names = NULL, optional = FALSE, ...) {
   as.data.frame(x$summary, row.names = row.names, optional = optional, ...)
 }
 
 #' @export
-plot.scop_benchmark <- function(x, ...) {
+plot.benchmark_result <- function(x, ...) {
   BenchmarkPlot(data = x, plot_type = "overview", ...)
 }
 
@@ -464,10 +464,7 @@ benchmark_resolve_metrics <- function(metrics) {
 }
 
 benchmark_assert_flag <- function(x, arg) {
-  if (!is.logical(x) || length(x) != 1L || is.na(x)) {
-    log_message("{.arg {arg}} must be TRUE or FALSE", message_type = "error")
-  }
-  invisible(TRUE)
+  validate_scalar_flag(x, arg)
 }
 
 benchmark_assert_number <- function(
@@ -1175,7 +1172,7 @@ benchmark_build_result <- function(
         poll_interval = poll_interval
       )
     ),
-    class = c("scop_benchmark", "list")
+    class = c("benchmark_result", "list")
   )
 }
 

@@ -19,7 +19,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub$IsEndocrine <- pancreas_sub$CellType == "Endocrine"
 #' pancreas_sub <- RunFWP(
 #'   pancreas_sub,
@@ -48,9 +48,9 @@ RunFWP <- function(
   tool_name = "FWP",
   verbose = TRUE
 ) {
-  input <- scop_expr_input(object, assay = assay, layer = layer)
+  input <- resolve_expression_input(object, assay = assay, layer = layer)
   mat <- input$matrix
-  features <- resolve_scop_features(mat, features, nfeatures)
+  features <- resolve_method_features(mat, features, nfeatures)
   mat <- mat[features, , drop = FALSE]
   y <- NULL
   if (is.null(weights)) {

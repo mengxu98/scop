@@ -10,7 +10,7 @@
 #' @md
 #' @inheritParams CheckDataList
 #' @inheritParams CheckDataMerge
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
 #' @param scale_within_batch Whether to scale data within each batch.
 #' Only valid when the `integration_method` is one of `"Uncorrected"`,
@@ -84,7 +84,7 @@
 #' @export
 #' @examples
 #' data(panc8_sub)
-#' panc8_sub <- integration_scop(
+#' panc8_sub <- RunIntegration(
 #'   panc8_sub,
 #'   batch = "tech",
 #'   integration_method = "Harmony",
@@ -104,12 +104,12 @@
 #'
 #' LISIPlot(panc8_sub)
 #'
-#' panc8_sub <- integration_scop(
+#' panc8_sub <- RunIntegration(
 #'   panc8_sub,
 #'   batch = "tech",
 #'   integration_method = "LIGER"
 #' )
-#' panc8_sub <- integration_scop(
+#' panc8_sub <- RunIntegration(
 #'   panc8_sub,
 #'   batch = "tech",
 #'   integration_method = "Harmony",
@@ -123,7 +123,7 @@
 #'
 #' data("pbmcmultiome_sub", package = "scop")
 #' pbmcmultiome_sub$batch <- rep(c("batch1", "batch2"), length.out = ncol(pbmcmultiome_sub))
-#' pbmcmultiome_sub <- integration_scop(
+#' pbmcmultiome_sub <- RunIntegration(
 #'   pbmcmultiome_sub,
 #'   batch = "batch",
 #'   assay = "peaks",
@@ -138,7 +138,7 @@
 #' )
 #' p_list <- list()
 #' for (method in integration_methods) {
-#'   panc8_sub <- integration_scop(
+#'   panc8_sub <- RunIntegration(
 #'     panc8_sub,
 #'     batch = "tech",
 #'     integration_method = method,
@@ -159,14 +159,14 @@
 #' \dontrun{
 #' # Python-backed methods prepare a scVI/scvi-tools environment and run model
 #' # training, so keep them separate from ordinary example checks.
-#' panc8_sub <- integration_scop(
+#' panc8_sub <- RunIntegration(
 #'   panc8_sub,
 #'   batch = "tech",
 #'   integration_method = "scVI",
 #'   train_params = list(max_epochs = 2L),
 #'   nonlinear_reduction = "umap"
 #' )
-#' panc8_sub <- integration_scop(
+#' panc8_sub <- RunIntegration(
 #'   panc8_sub,
 #'   batch = "tech",
 #'   integration_method = "scVI5",
@@ -179,7 +179,7 @@
 #'   "umap", "tsne", "dm", "phate",
 #'   "pacmap", "trimap", "largevis", "fr"
 #' )
-#' panc8_sub <- integration_scop(
+#' panc8_sub <- RunIntegration(
 #'   panc8_sub,
 #'   batch = "tech",
 #'   integration_method = "Seurat",
@@ -197,7 +197,7 @@
 #'     )
 #'   )
 #' }
-integration_scop <- function(
+RunIntegration <- function(
   srt_merge = NULL,
   batch,
   append = TRUE,
@@ -883,6 +883,67 @@ collect_integration_metrics <- function(
     stringsAsFactors = FALSE,
     row.names = NULL
   )
+}
+
+resolve_cluster_algorithm_index <- function(cluster_algorithm) {
+  cluster_algorithms <- c("louvain", "slm", "leiden")
+  if (!cluster_algorithm %in% cluster_algorithms) {
+    log_message(
+      "{.arg cluster_algorithm} must be one of {.val {cluster_algorithms}}",
+      message_type = "error"
+    )
+  }
+
+  switch(
+    EXPR = tolower(cluster_algorithm),
+    "louvain" = 1,
+    "slm" = 3,
+    "leiden" = 4
+  )
+}
+
+validate_nonlinear_reductions <- function(
+  nonlinear_reduction,
+  allowed = c(
+    "umap",
+    "umap-naive",
+    "tsne",
+    "dm",
+    "phate",
+    "pacmap",
+    "trimap",
+    "largevis",
+    "fr"
+  )
+) {
+  if (any(!nonlinear_reduction %in% allowed)) {
+    log_message(
+      "{.arg nonlinear_reduction} must be one of {.val {allowed}}",
+      message_type = "error"
+    )
+  }
+
+  invisible(nonlinear_reduction)
+}
+
+validate_integration_input_cells <- function(srt_list, srt_merge) {
+  if (is.null(srt_list) && is.null(srt_merge)) {
+    log_message(
+      "{.arg srt_list} and {.arg srt_merge} were all empty",
+      message_type = "error"
+    )
+  }
+  if (!is.null(srt_list) && !is.null(srt_merge)) {
+    list_cells <- sort(unique(unlist(lapply(srt_list, colnames))))
+    merge_cells <- sort(unique(colnames(srt_merge)))
+    if (!identical(list_cells, merge_cells)) {
+      log_message(
+        "{.arg srt_list} and {.arg srt_merge} have different cells",
+        message_type = "error"
+      )
+    }
+  }
+  invisible(TRUE)
 }
 
 find_neighbors_and_clusters <- function(

@@ -2,6 +2,7 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
+#' @inheritParams CellDimPlot
 #' @param object A `SummarizedExperiment` object containing deconvolution
 #' results in `metadata(object)[["Deconvolution"]]`.
 #' @param res A deconvolution result data frame. When provided, `object` is
@@ -27,10 +28,6 @@
 #' `"heatmap"` mode.
 #' @param show_row_names,show_column_names Whether to show row or column names in
 #' `"heatmap"` mode.
-#' @param theme_use Theme function name. Default is `"theme_scop"`.
-#' @param theme_args Additional theme arguments passed to `theme_use`.
-#' @param legend.position Legend position. Default is `"right"`.
-#' @param legend.direction Legend direction. Default is `"vertical"`.
 #' @param grid_major Whether to show major grid lines for `"bar"` and `"box"`
 #' plots. Default is `FALSE`.
 #' @param ... Reserved for future use.
@@ -103,7 +100,10 @@ DeconvolutionPlot <- function(
     palette = palette,
     palcolor = palcolor
   )
-  theme_obj <- bulk_plot_theme(theme_use = theme_use, theme_args = theme_args)
+  theme_obj <- resolve_legacy_plot_theme(
+    theme_use = theme_use,
+    theme_args = theme_args
+  )
 
   if (identical(plot_type, "bar")) {
     plot <- ggplot2::ggplot(df, ggplot2::aes(
@@ -202,17 +202,6 @@ DeconvolutionPlot <- function(
       panel.grid.minor = ggplot2::element_blank()
     )
   thisplot::major_grid(plot = plot, grid_major = grid_major)
-}
-
-bulk_plot_theme <- function(theme_use = "theme_scop", theme_args = list()) {
-  if (identical(theme_use, "theme_scop")) {
-    theme_use <- "theme_this"
-  }
-  theme_fun <- tryCatch(get(theme_use, mode = "function"), error = function(e) NULL)
-  if (is.null(theme_fun)) {
-    return(ggplot2::theme_bw())
-  }
-  do.call(theme_fun, theme_args)
 }
 
 bulk_match_levels <- function(x, levels_use = NULL) {

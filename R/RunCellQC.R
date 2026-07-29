@@ -1,7 +1,7 @@
 #' @title Run doublet-calling for single cell RNA-seq data.
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @param assay The name of the assay to be used for doublet-calling.
 #' Default is `"RNA"`.
 #' @param db_method Method used for doublet-calling.
@@ -20,7 +20,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunDoubletCalling(
 #'   pancreas_sub,
 #'   db_method = "scDblFinder"
@@ -148,7 +148,7 @@ db_scDblFinder <- function(
 #' @export
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- db_scds(pancreas_sub, method = "hybrid")
 #' CellDimPlot(
 #'   pancreas_sub,
@@ -216,7 +216,7 @@ db_scds <- function(
 #' @examples
 #' \dontrun{
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- db_Scrublet(pancreas_sub)
 #' CellDimPlot(
 #'   pancreas_sub,
@@ -342,7 +342,7 @@ db_Scrublet <- function(
 #' @examples
 #' \dontrun{
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- db_DoubletDetection(pancreas_sub)
 #' CellDimPlot(
 #'   pancreas_sub,
@@ -470,7 +470,7 @@ db_DoubletDetection <- function(
 #' @title Run ambient RNA decontamination with decontX
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @param assay The name of the assay to be used for decontamination.
 #' Default is `"RNA"`.
 #' @param group.by Cell cluster labels passed to [decontX::decontX()].
@@ -507,7 +507,7 @@ db_DoubletDetection <- function(
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunDecontX(
 #'   pancreas_sub,
 #'   group.by = "CellType"
@@ -751,7 +751,7 @@ RunDecontX <- function(
 #' @md
 #' @inheritParams CellDimPlot
 #' @inheritParams RunDoubletCalling
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @param split.by Name of a meta.data column used to split the object before QC.
 #' Default is `NULL`. When specified, QC and doublet-calling are performed
 #' separately within each split object and merged back afterward.
@@ -859,7 +859,7 @@ RunDecontX <- function(
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunCellQC(
 #'   pancreas_sub,
 #'   qc_metrics = c("umi", "gene", "example_set"),

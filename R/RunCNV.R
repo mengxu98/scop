@@ -5,7 +5,7 @@
 #' and store the results in a unified SCOP schema.
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
 #' @param srt A `Seurat` object.
 #' @param method CNA/CNV backend. Supported backends are `"copykat"`,
@@ -102,7 +102,7 @@ RunCNV <- function(
   verbose = TRUE,
   ...
 ) {
-  cnv_assert_seurat(srt)
+  validate_seurat_object(srt)
   method <- cnv_match_method(method)
   genome <- match.arg(genome)
   cnv_assert_scalar_string(prefix, "prefix")
@@ -1254,24 +1254,8 @@ cnv_match_method <- function(method) {
   unname(method_map[[method_key]])
 }
 
-cnv_assert_seurat <- function(srt) {
-  if (!inherits(srt, "Seurat")) {
-    log_message(
-      "{.arg srt} must be a {.cls Seurat} object",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
-}
-
 cnv_assert_scalar_string <- function(x, arg) {
-  if (is.null(x) || length(x) != 1L || is.na(x) || !nzchar(x)) {
-    log_message(
-      "{.arg {arg}} must be a single non-empty string",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
+  validate_scalar_string(x, arg, require_character = FALSE)
 }
 
 cnv_validate_metadata <- function(srt, column, arg) {

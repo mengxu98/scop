@@ -32,7 +32,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub, verbose = FALSE)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub, verbose = FALSE)
 #' mc <- RunMetaCell(
 #'   pancreas_sub,
 #'   method = "supercell",
@@ -126,7 +126,7 @@ MetaCellPlot <- function(
   }
   if (!reduction %in% names(embedding_src@reductions)) {
     log_message(
-      "{.val {reduction}} is not in the reduction names of the data source. Run {.fn standard_scop} on the original Seurat first.",
+      "{.val {reduction}} is not in the reduction names of the data source. Run {.fn RunStandardWorkflow} on the original Seurat first.",
       message_type = "error"
     )
   }

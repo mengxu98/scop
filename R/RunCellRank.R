@@ -7,7 +7,7 @@
 #' @inheritParams thisutils::log_message
 #' @inheritParams CellDimPlot
 #' @inheritParams srt_to_adata
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @param srt A Seurat object. Default is `NULL`.
 #' If provided, `adata` will be ignored.
 #' @param adata An anndata object. Default is `NULL`.
@@ -95,7 +95,7 @@
 #' @examples
 #' \dontrun{
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunCellRank(
 #'   srt = pancreas_sub,
 #'   group.by = "SubCellType"

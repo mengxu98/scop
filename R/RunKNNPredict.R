@@ -73,7 +73,7 @@
 #' # Annotate cells using bulk RNA-seq data
 #' data(pancreas_sub)
 #' data(ref_scMCA)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #'
 #' pancreas_sub <- RunKNNPredict(
 #'   srt_query = pancreas_sub,

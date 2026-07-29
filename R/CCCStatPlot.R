@@ -1,6 +1,7 @@
 #' @title CCC statistical distribution and summary plots
 #'
 #' @md
+#' @inheritParams CellDimPlot
 #' @param srt A `Seurat` object.
 #' @param method Communication result type to use.
 #' @param plot_type Plot type. One of:
@@ -48,20 +49,13 @@
 #' @param link_palcolor Custom link palette colors.
 #' @param title Plot title.
 #' @param subtitle Plot subtitle.
-#' @param legend.position Legend position.
-#' @param legend.direction Legend direction.
 #' @param font.size Base font size.
-#' @param theme_use Theme function used for styling.
-#' @param theme_args Arguments passed to the theme function.
 #' @param grid_major Whether to show major panel grid lines for applicable statistical panels.
 #' Default is `TRUE`.
 #' @param grid_major_colour Color of major panel grid lines.
 #' @param grid_major_linetype Linetype of major panel grid lines.
 #' @param grid_major_linewidth Line width of major panel grid lines.
 #' @param verbose Whether to print messages.
-#' @param combine Whether to combine multiple panels.
-#' @param nrow Number of rows in combined layout.
-#' @param ncol Number of columns in combined layout.
 #' @param ... Additional plot-specific options.
 #' @param stat_type For `"bar"`: what to summarize per interaction. One of
 #'   `"score"` (total aggregated score) or `"count"` (number of significant
@@ -72,7 +66,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #'
 #' pc1 <- Seurat::Embeddings(pancreas_sub, "Standardpca")[, 1]
 #' ct <- as.character(pancreas_sub$CellType)

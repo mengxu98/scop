@@ -56,7 +56,7 @@
 #' @examples
 #' \dontrun{
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunCellTypist(
 #'   pancreas_sub,
 #'   model = "Developing_Mouse_Brain.pkl"
@@ -300,7 +300,7 @@ RunCellTypist <- function(
 #' @examples
 #' \dontrun{
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #'
 #' model_info <- TrainCellTypist(
 #'   srt = pancreas_sub,
@@ -320,7 +320,7 @@ RunCellTypist <- function(
 #'   panc8_sub,
 #'   newnames = genenames
 #' )
-#' panc8_sub <- standard_scop(panc8_sub)
+#' panc8_sub <- RunStandardWorkflow(panc8_sub)
 #'
 #' pancreas_sub <- RunCellTypist(
 #'   srt = pancreas_sub,

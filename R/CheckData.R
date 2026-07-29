@@ -20,7 +20,7 @@ CheckDataType <- function(object, ...) {
 }
 
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams FeatureDimPlot
 #'
 #' @rdname CheckDataType
@@ -124,7 +124,7 @@ CheckDataType.default <- function(
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @param srt_list A list of `Seurat` objects to be checked and preprocessed.
 #' @param batch A character string specifying the batch variable name.
 #' @param do_normalization Whether data normalization should be performed.
@@ -782,7 +782,7 @@ find_hvf_scran_seurat <- function(
 #' This function checks and preprocesses a merged seurat object.
 #'
 #' @inheritParams CheckDataList
-#' @inheritParams integration_scop
+#' @inheritParams RunIntegration
 #' @param srt_merge A merged `Seurat` object that includes the batch information.
 #'
 #' @seealso [CheckDataList]

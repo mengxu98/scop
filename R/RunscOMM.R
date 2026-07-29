@@ -6,7 +6,7 @@
 #' evaluate predictions against a truth label.
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @param reference Reference `Seurat` object used for supervision.
 #' @param reference_assay Assay used in the reference object.
 #' @param query_assay Assay used in the query object.
@@ -33,7 +33,7 @@
 #' @examples
 #' \dontrun{
 #' data("pbmcmultiome_sub", package = "scop")
-#' pbmcmultiome_sub <- standard_scop(pbmcmultiome_sub, assay = "RNA")
+#' pbmcmultiome_sub <- RunStandardWorkflow(pbmcmultiome_sub, assay = "RNA")
 #' ref_cells <- colnames(pbmcmultiome_sub)[1:250]
 #' query_cells <- colnames(pbmcmultiome_sub)[251:500]
 #' reference <- subset(pbmcmultiome_sub, cells = ref_cells)

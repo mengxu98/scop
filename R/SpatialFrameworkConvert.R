@@ -5,7 +5,7 @@
 #' a Giotto workflow or changing the input object.
 #'
 #' @details
-#' This bridge is separate from the legacy [SeuratToScopGiotto()] and
+#' This bridge is separate from the legacy [SeuratToGiotto2()] and
 #' [RunGiottoWorkflow()] interface. It returns only the native Giotto object.
 #' The scop-controlled converter is used by default to preserve exact
 #' single-image selection across Giotto versions; pass `use_official = TRUE`
@@ -13,7 +13,7 @@
 #'
 #' @param srt A `Seurat` object.
 #' @param image Seurat image name. Multi-image objects require an explicit name.
-#' @param ... Additional arguments passed to [SeuratToScopGiotto()].
+#' @param ... Additional arguments passed to [SeuratToGiotto2()].
 #'
 #' @return A native Giotto object.
 #'
@@ -26,7 +26,7 @@ srt_to_giotto <- function(srt, image = NULL, ...) {
     extra$use_official <- FALSE
   }
   converted <- do.call(
-    SeuratToScopGiotto,
+    SeuratToGiotto2,
     c(list(srt = srt_use, image = image), extra)
   )
   converted$giotto

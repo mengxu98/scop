@@ -42,7 +42,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #'
 #' pc1 <- Seurat::Embeddings(pancreas_sub, "Standardpca")[, 1]
 #' ct <- as.character(pancreas_sub$CellType)

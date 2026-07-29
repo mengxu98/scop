@@ -62,6 +62,94 @@ heatmap_row_labels_max_width <- function(labels, gp = NULL) {
   ComplexHeatmap::max_text_width(lines, gp = gp) + grid::unit(2, "mm")
 }
 
+build_heatmap_feature_annotation <- function(
+  annotation_name,
+  values,
+  palette,
+  palcolor = NULL,
+  flip = FALSE,
+  border = TRUE,
+  annotation_border = border,
+  border_color = "black",
+  border_size = 1,
+  discrete_legend_border = TRUE,
+  discrete_legend_gp_border = FALSE,
+  params = list()
+) {
+  values <- compact_heatmap_feature_annotation(values, annotation_name)
+  which <- ifelse(flip, "column", "row")
+  annotation <- list()
+
+  if (!is.numeric(values)) {
+    if (is.logical(values)) {
+      values <- factor(values, levels = c(TRUE, FALSE))
+    } else if (!is.factor(values)) {
+      values <- factor(values, levels = unique(values))
+    }
+    annotation[[annotation_name]] <- ComplexHeatmap::anno_simple(
+      x = as.character(values),
+      col = palette_colors(values, palette = palette, palcolor = palcolor),
+      which = which,
+      na_col = "transparent",
+      border = annotation_border
+    )
+    levels <- levels(values)
+    levels <- levels[!is.na(levels) & nzchar(levels)]
+    legend <- if (length(levels) > 0) {
+      legend_gp <- list(
+        fill = palette_colors(levels, palette = palette, palcolor = palcolor)
+      )
+      if (isTRUE(discrete_legend_gp_border)) {
+        legend_gp <- c(
+          legend_gp,
+          col = border_color,
+          lwd = border_size
+        )
+      }
+      ComplexHeatmap::Legend(
+        title = annotation_name,
+        labels = levels,
+        legend_gp = do.call(grid::gpar, legend_gp),
+        border = discrete_legend_border
+      )
+    } else {
+      NULL
+    }
+  } else {
+    col_fun <- circlize::colorRamp2(
+      breaks = seq(
+        min(values, na.rm = TRUE),
+        max(values, na.rm = TRUE),
+        length = 100
+      ),
+      colors = palette_colors(palette = palette, palcolor = palcolor)
+    )
+    annotation[[annotation_name]] <- ComplexHeatmap::anno_simple(
+      x = values,
+      col = col_fun,
+      which = which,
+      na_col = "transparent",
+      border = annotation_border
+    )
+    legend <- ComplexHeatmap::Legend(
+      title = annotation_name,
+      col_fun = col_fun,
+      legend_gp = heatmap_border_gp(border, border_color, border_size),
+      border = heatmap_legend_border(border, border_color)
+    )
+  }
+
+  annotation <- build_heatmap_annotation(
+    annotations = annotation,
+    which = which,
+    show_annotation_name = TRUE,
+    annotation_name_side = ifelse(flip, "left", "top"),
+    border = annotation_border,
+    params = params
+  )
+  list(annotation = annotation, legend = legend)
+}
+
 heatmap_enrichment <- function(
   geneID,
   geneID_groups,
@@ -73,10 +161,25 @@ heatmap_enrichment <- function(
   anno_keys = FALSE,
   anno_features = FALSE,
   terms_width = grid::unit(4, "in"),
+  terms_stat_width = grid::unit(1.35, "in"),
   terms_fontsize = 8,
   terms_stat = "none",
   terms_stat_digits = 2,
-  terms_stat_test = TRUE,
+  terms_stat_label = "value",
+  terms_stat_axis = FALSE,
+  terms_stat_background_palcolor = NULL,
+  terms_stat_border = NULL,
+  terms_stat_border_palcolor = NULL,
+  terms_stat_border_size = NULL,
+  terms_stat_label_palcolor = NULL,
+  terms_group_background = FALSE,
+  terms_background_palcolor = "grey98",
+  terms_background_alpha = 1,
+  terms_border = TRUE,
+  terms_border_palcolor = "black",
+  terms_border_size = 0.8,
+  terms_text_palcolor = NULL,
+  terms_bar_palcolor = NULL,
   keys_width = grid::unit(2, "in"),
   keys_fontsize = c(6, 10),
   features_width = grid::unit(2, "in"),
@@ -222,22 +325,44 @@ heatmap_enrichment <- function(
                 topTerm = topTerm,
                 show_termid = show_termid,
                 terms_fontsize = terms_fontsize,
-                terms_stat = if (isTRUE(use_graphic_terms)) terms_stat else "none",
-                terms_stat_digits = terms_stat_digits
+                terms_stat = if (isTRUE(use_graphic_terms)) terms_stat else "none"
               )
             })
             names(terms_list) <- unlist(lapply(nm, function(x) x[[2]]))
-            lgd[[paste0(enrich, "_terms_score")]] <- heatmap_enrichment_score_legend_from_terms(
-              terms = terms_list,
-              title = paste0(enrich, " terms\n-log10(", metric, ")")
-            )
+            uses_term_score_colors <-
+              !isTRUE(use_graphic_terms) ||
+                is.null(terms_text_palcolor)
+            if (isTRUE(uses_term_score_colors)) {
+              lgd[[paste0(enrich, "_terms_score")]] <-
+                heatmap_enrichment_score_legend_from_terms(
+                  terms = terms_list,
+                  title = paste0(enrich, " terms\n-log10(", metric, ")")
+                )
+            }
             terms_annotation <- if (isTRUE(use_graphic_terms)) {
               terms_list <- heatmap_enrichment_rescale_terms_stats(terms_list)
               heatmap_enrichment_terms_annotation(
                 align_to = geneID_groups,
                 terms = terms_list,
                 width = terms_width,
-                show_stat_text = terms_stat_test,
+                stat_width = terms_stat_width,
+                axis_digits = terms_stat_digits,
+                stat_label = terms_stat_label,
+                group_colors = fill_split,
+                show_axis = terms_stat_axis,
+                stat_background = terms_stat_background_palcolor,
+                stat_border = terms_stat_border,
+                stat_border_color = terms_stat_border_palcolor,
+                stat_border_size = terms_stat_border_size,
+                stat_label_color = terms_stat_label_palcolor,
+                group_background = terms_group_background,
+                background_color = terms_background_palcolor,
+                background_alpha = terms_background_alpha,
+                border = terms_border,
+                border_color = terms_border_palcolor,
+                border_size = terms_border_size,
+                text_color = terms_text_palcolor,
+                bar_color = terms_bar_palcolor,
                 which = "row"
               )
             } else {
@@ -254,7 +379,7 @@ heatmap_enrichment <- function(
               )
             }
             if (length(intersect(geneID_groups, names(terms_list))) > 0) {
-              ha_terms <- ComplexHeatmap::HeatmapAnnotation(
+              ha_terms_args <- list(
                 "terms_empty" = ComplexHeatmap::anno_empty(
                   width = grid::unit(0.05, "in"),
                   border = FALSE,
@@ -265,9 +390,21 @@ heatmap_enrichment <- function(
                   width = grid::unit(0.1, "in"),
                   which = "row"
                 ),
-                "terms" = terms_annotation,
+                "terms" = if (is.list(terms_annotation)) {
+                  terms_annotation[["terms"]]
+                } else {
+                  terms_annotation
+                },
                 which = "row",
                 gap = grid::unit(0, "points")
+              )
+              if (is.list(terms_annotation)) {
+                ha_terms_args[["terms_stat"]] <- terms_annotation[["stat"]]
+                ha_terms_args[["gap"]] <- grid::unit(c(0, 0, 1), "mm")
+              }
+              ha_terms <- do.call(
+                ComplexHeatmap::HeatmapAnnotation,
+                ha_terms_args
               )
               names(ha_terms) <- paste0(names(ha_terms), "_", enrich)
             }
@@ -492,8 +629,7 @@ heatmap_enrichment_terms_data <- function(
   topTerm,
   show_termid,
   terms_fontsize,
-  terms_stat = "none",
-  terms_stat_digits = 2
+  terms_stat = "none"
 ) {
   df <- utils::head(df, topTerm)
   terms <- if (isTRUE(show_termid)) {
@@ -501,14 +637,14 @@ heatmap_enrichment_terms_data <- function(
   } else {
     capitalize(df[["Description"]])
   }
-  score <- -log10(df[[metric]])
+  metric_value <- suppressWarnings(as.numeric(df[[metric]]))
+  score <- -log10(pmax(metric_value, .Machine$double.xmin))
   term_col <- heatmap_enrichment_score_colors(score)
   stat <- heatmap_enrichment_term_stat(
     df = df,
     metric = metric,
     score = score,
-    terms_stat = terms_stat,
-    digits = terms_stat_digits
+    terms_stat = terms_stat
   )
   if (is.null(stat)) {
     return(data.frame(
@@ -517,7 +653,8 @@ heatmap_enrichment_terms_data <- function(
       term_score = score,
       fontsize = rep(terms_fontsize, length(terms)),
       stat_label = NA_character_,
-      stat_display = NA_character_,
+      stat_signif = NA_character_,
+      stat_axis_label = NA_character_,
       stat_strength = NA_real_,
       stat_scaled = NA_real_,
       stringsAsFactors = FALSE
@@ -538,45 +675,12 @@ heatmap_enrichment_terms_data <- function(
     term_score = score,
     fontsize = rep(terms_fontsize, length(terms)),
     stat_label = stat[["label"]],
-    stat_display = stat[["display"]],
+    stat_signif = heatmap_enrichment_p_significance(stat[["pvalue"]]),
+    stat_axis_label = stat[["axis_label"]],
     stat_strength = strength,
     stat_scaled = scaled,
     stringsAsFactors = FALSE
   )
-}
-
-heatmap_enrichment_terms_df <- function(
-  df,
-  metric,
-  topTerm,
-  show_termid,
-  terms_fontsize,
-  terms_stat = "none",
-  terms_stat_digits = 2
-) {
-  data <- heatmap_enrichment_terms_data(
-    df = df,
-    metric = metric,
-    topTerm = topTerm,
-    show_termid = show_termid,
-    terms_fontsize = terms_fontsize,
-    terms_stat = terms_stat,
-    terms_stat_digits = terms_stat_digits
-  )
-  keyword <- data[["term"]]
-  has_stat <- !is.na(data[["stat_label"]])
-  keyword[has_stat] <- paste0(
-    keyword[has_stat],
-    " (",
-    data[["stat_label"]][has_stat],
-    "=",
-    data[["stat_display"]][has_stat],
-    ")"
-  )
-  df_out <- data.frame(keyword = keyword, stringsAsFactors = FALSE)
-  df_out[["col"]] <- data[["col"]]
-  df_out[["fontsize"]] <- data[["fontsize"]]
-  df_out
 }
 
 heatmap_enrichment_terms_textbox_df <- function(data) {
@@ -593,11 +697,7 @@ heatmap_enrichment_rescale_terms_stats <- function(terms) {
   finite_strength <- strength[is.finite(strength)]
   if (length(finite_strength) == 0 || max(finite_strength) <= 0) {
     return(lapply(terms, function(data) {
-      data[["stat_scaled"]] <- ifelse(
-        is.finite(data[["stat_strength"]]),
-        1,
-        0
-      )
+      data[["stat_scaled"]] <- rep(0, nrow(data))
       data
     }))
   }
@@ -614,12 +714,34 @@ heatmap_enrichment_terms_annotation <- function(
   align_to,
   terms,
   width,
-  show_stat_text = TRUE,
+  stat_width = grid::unit(1.35, "in"),
+  axis_digits = 2,
+  stat_label = "value",
+  group_colors = NULL,
+  show_axis = FALSE,
+  stat_background = NULL,
+  stat_border = NULL,
+  stat_border_color = NULL,
+  stat_border_size = NULL,
+  stat_label_color = NULL,
+  group_background = FALSE,
+  background_color = "grey98",
+  background_alpha = 1,
+  border = TRUE,
+  border_color = "black",
+  border_size = 0.8,
+  text_color = NULL,
+  bar_color = NULL,
   which = "row"
 ) {
   force(width)
-  force(show_stat_text)
+  force(stat_width)
+  force(axis_digits)
   force(which)
+  stat_label <- match.arg(
+    as.character(stat_label %||% "none")[[1]],
+    c("none", "value", "significance", "both")
+  )
   align_to <- heatmap_enrichment_terms_align_to(
     align_to = align_to,
     terms = terms
@@ -628,23 +750,51 @@ heatmap_enrichment_terms_annotation <- function(
   if (length(terms) == 0) {
     return(ComplexHeatmap::anno_empty(width = width, border = FALSE, which = which))
   }
-  stat_width_npc <- 0.995
+  term_groups <- names(terms)
+  last_group <- names(which.max(vapply(
+    align_to,
+    function(index) max(index, na.rm = TRUE),
+    numeric(1)
+  )))
+  panel_colors <- if (isTRUE(group_background)) {
+    heatmap_enrichment_group_colors(
+      groups = term_groups,
+      colors = group_colors,
+      alpha = background_alpha
+    )
+  } else {
+    colors <- rep(background_color, length(term_groups))
+    colors <- grDevices::adjustcolor(colors, alpha.f = background_alpha)
+    stats::setNames(as.list(colors), term_groups)
+  }
+  stat_strength <- unlist(lapply(terms, function(data) {
+    data[["stat_strength"]]
+  }), use.names = FALSE)
+  stat_strength <- stat_strength[is.finite(stat_strength)]
+  stat_max <- if (length(stat_strength) == 0) 1 else max(stat_strength)
+  stat_axis_label <- unique(unlist(lapply(terms, function(data) {
+    data[["stat_axis_label"]]
+  }), use.names = FALSE))
+  stat_axis_label <- stat_axis_label[
+    !is.na(stat_axis_label) & nzchar(stat_axis_label)
+  ]
+  stat_axis_label <- if (length(stat_axis_label) == 0) "" else stat_axis_label[[1]]
   size <- heatmap_enrichment_terms_size(
+    terms = terms,
+    max_width = width,
+    axis_group = if (isTRUE(show_axis)) last_group else NULL
+  )
+  terms_width <- heatmap_enrichment_terms_width(
     terms = terms,
     max_width = width
   )
-  width <- heatmap_enrichment_terms_width(
-    terms = terms,
-    max_width = width,
-    show_stat_text = show_stat_text
-  )
-  ComplexHeatmap::anno_link(
+  terms_annotation <- ComplexHeatmap::anno_link(
     align_to = align_to,
     which = which,
     side = "right",
     size = size,
     gap = grid::unit(2, "mm"),
-    width = width,
+    width = terms_width,
     link_gp = grid::gpar(fill = "grey98", col = "black", lwd = 0.8),
     internal_line = FALSE,
     panel_fun = function(index, nm = NULL) {
@@ -657,13 +807,56 @@ heatmap_enrichment_terms_annotation <- function(
       }
       heatmap_enrichment_draw_terms_box(
         data = data,
-        stat_width_npc = stat_width_npc,
-        max_width = width,
-        show_stat_text = show_stat_text
+        max_width = terms_width,
+        background = panel_colors[[nm]],
+        border_color = if (isTRUE(border)) border_color else NA,
+        border_size = border_size,
+        term_color = text_color,
+        reserve_axis = isTRUE(show_axis) && identical(nm, last_group)
       )
       invisible(NULL)
     }
   )
+  stat_annotation <- ComplexHeatmap::anno_link(
+    align_to = align_to,
+    which = which,
+    side = "right",
+    size = size,
+    gap = grid::unit(2, "mm"),
+    link_width = grid::unit(0, "mm"),
+    width = stat_width,
+    link_gp = grid::gpar(fill = NA, col = NA),
+    internal_line = FALSE,
+    panel_fun = function(index, nm = NULL) {
+      if (is.null(nm) || !nm %in% names(terms)) {
+        return(invisible(NULL))
+      }
+      data <- terms[[nm]]
+      if (is.null(data) || nrow(data) == 0) {
+        return(invisible(NULL))
+      }
+      heatmap_enrichment_draw_stat_box(
+        data = data,
+        max_width = width,
+        background = stat_background %||% panel_colors[[nm]],
+        border_color = if (isTRUE(stat_border %||% border)) {
+          stat_border_color %||% border_color
+        } else {
+          NA
+        },
+        border_size = stat_border_size %||% border_size,
+        bar_color = bar_color %||% text_color,
+        label_mode = stat_label,
+        label_color = stat_label_color,
+        show_axis = isTRUE(show_axis) && identical(nm, last_group),
+        axis_max = stat_max,
+        axis_label = stat_axis_label,
+        axis_digits = axis_digits
+      )
+      invisible(NULL)
+    }
+  )
+  list(terms = terms_annotation, stat = stat_annotation)
 }
 
 heatmap_enrichment_terms_align_to <- function(align_to, terms) {
@@ -681,19 +874,37 @@ heatmap_enrichment_terms_align_to <- function(align_to, terms) {
   split(seq_along(align_to_names), align_to_names)[term_names]
 }
 
-heatmap_enrichment_terms_size <- function(terms, max_width) {
-  sizes <- lapply(terms, function(data) {
+heatmap_enrichment_group_colors <- function(groups, colors = NULL, alpha = 0.16) {
+  groups <- as.character(groups)
+  if (is.null(colors) || length(colors) == 0) {
+    colors <- palette_colors(groups, type = "discrete", palette = "simspec")
+  }
+  if (!is.null(names(colors))) {
+    colors <- colors[groups]
+  } else {
+    colors <- rep(colors, length.out = length(groups))
+  }
+  colors[is.na(colors) | !nzchar(colors)] <- "grey85"
+  colors <- grDevices::adjustcolor(colors, alpha.f = alpha)
+  stats::setNames(as.list(colors), groups)
+}
+
+heatmap_enrichment_terms_size <- function(terms, max_width, axis_group = NULL) {
+  sizes <- lapply(names(terms), function(group) {
+    data <- terms[[group]]
     fontsize <- data[["fontsize"]]
     n_lines <- heatmap_enrichment_terms_n_lines(data, max_width = max_width)
     grid::unit(
-      sum(n_lines * fontsize * 1.55) + 10,
+      sum(n_lines * fontsize * 1.55) +
+        10 +
+        ifelse(group %in% axis_group, 24, 0),
       "pt"
     )
   })
   do.call(grid::unit.c, sizes)
 }
 
-heatmap_enrichment_terms_width <- function(terms, max_width, show_stat_text = TRUE) {
+heatmap_enrichment_terms_width <- function(terms, max_width) {
   widths <- lapply(terms, function(data) {
     label_widths <- lapply(seq_len(nrow(data)), function(i) {
       grid::grobWidth(grid::textGrob(
@@ -702,30 +913,9 @@ heatmap_enrichment_terms_width <- function(terms, max_width, show_stat_text = TR
       ))
     })
     label_widths <- do.call(grid::unit.c, label_widths)
-    text_width <- min(max(label_widths) + grid::unit(8, "mm"), max_width)
-    stat_width <- if (isTRUE(show_stat_text)) {
-      heatmap_enrichment_terms_stat_width(data)
-    } else {
-      grid::unit(0, "mm")
-    }
-    text_width + stat_width
+    min(max(label_widths) + grid::unit(8, "mm"), max_width)
   })
   max(do.call(grid::unit.c, widths))
-}
-
-heatmap_enrichment_terms_stat_width <- function(data) {
-  has_stat <- !is.na(data[["stat_label"]])
-  if (!any(has_stat)) {
-    return(grid::unit(0, "mm"))
-  }
-  stat_widths <- lapply(which(has_stat), function(i) {
-    grid::grobWidth(grid::textGrob(
-      label = data[["stat_display"]][[i]],
-      gp = grid::gpar(fontsize = data[["fontsize"]][[i]])
-    ))
-  })
-  stat_widths <- do.call(grid::unit.c, stat_widths)
-  max(stat_widths) + grid::unit(7, "mm")
 }
 
 heatmap_enrichment_terms_n_lines <- function(data, max_width) {
@@ -746,95 +936,143 @@ heatmap_enrichment_terms_wrap_chars <- function(width_in, fontsize) {
 
 heatmap_enrichment_draw_terms_box <- function(
   data,
-  stat_width_npc = 0.3,
   max_width = NULL,
-  show_stat_text = TRUE
+  background = "grey98",
+  border_color = "black",
+  border_size = 0.8,
+  term_color = NULL,
+  reserve_axis = FALSE
 ) {
   grid::grid.rect(
     x = grid::unit(0.5, "npc"),
     y = grid::unit(0.5, "npc"),
     width = grid::unit(1, "npc"),
     height = grid::unit(1, "npc"),
-    gp = grid::gpar(fill = "grey98", col = NA)
+    gp = grid::gpar(fill = background, col = border_color, lwd = border_size)
   )
-  grid::grid.lines(
-    x = c(0, 1, 1, 0),
-    y = c(0, 0, 1, 1),
-    default.units = "npc",
-    gp = grid::gpar(col = "black", lwd = 0.8)
+  layout <- heatmap_enrichment_terms_layout(
+    data = data,
+    max_width = max_width,
+    reserve_axis = reserve_axis
   )
-  box_width_in <- grid::convertWidth(grid::unit(1, "npc"), "in", valueOnly = TRUE)
   fontsize <- data[["fontsize"]]
-  stat_width_in <- if (isTRUE(show_stat_text)) {
-    grid::convertWidth(
-      heatmap_enrichment_terms_stat_width(data),
-      "in",
-      valueOnly = TRUE
-    )
-  } else {
-    0
-  }
-  value_width_npc <- if (box_width_in > 0) {
-    min(0.35, stat_width_in / box_width_in)
-  } else {
-    0
-  }
-  term_width <- max(0.4, 0.98 - value_width_npc)
-  bar_width_npc <- max(0.2, 0.97 - value_width_npc)
-  wrap_width <- pmax(16L, floor(box_width_in * 72 * term_width / (fontsize * 0.35)))
-  term_lines <- lapply(seq_len(nrow(data)), function(i) {
-    term <- data[["term"]][[i]]
-    out <- strwrap(term, width = wrap_width[[i]])
-    if (length(out) == 0) {
-      out <- ""
-    }
-    out
-  })
-  has_graphic <- !is.na(data[["stat_label"]])
-  block_units <- vapply(term_lines, length, integer(1))
-  gap_units <- rep(0, length(block_units))
-  total_units <- sum(block_units) + sum(gap_units[-length(gap_units)])
-  if (!is.finite(total_units) || total_units <= 0) {
-    total_units <- 1
-  }
-  bottom_reserved <- 0.04
-  line_height <- (0.95 - bottom_reserved) / total_units
-  y <- 0.95
   x_text <- 0.005
 
   for (i in seq_len(nrow(data))) {
-    block_top <- y
-    block_lines <- length(term_lines[[i]])
-    block_bottom <- y - line_height * block_lines
-    if (isTRUE(has_graphic[[i]])) {
-      heatmap_enrichment_draw_term_stat(
-        data = data[i, , drop = FALSE],
-        y = block_top - line_height / 2,
-        height_npc = max(line_height * 0.82, 0.016),
-        stat_width_npc = bar_width_npc
-      )
-    }
-    for (line in term_lines[[i]]) {
-      y <- y - line_height / 2
+    y <- layout[["block_top"]][[i]]
+    for (line in layout[["term_lines"]][[i]]) {
+      y <- y - layout[["line_height"]] / 2
       grid::grid.text(
         label = line,
         x = grid::unit(x_text, "npc"),
         y = grid::unit(y, "npc"),
         just = c("left", "center"),
-        gp = grid::gpar(col = data[["col"]][[i]], fontsize = fontsize[[i]])
+        gp = grid::gpar(
+          col = term_color %||% data[["col"]][[i]],
+          fontsize = fontsize[[i]]
+        )
       )
-      y <- y - line_height / 2
+      y <- y - layout[["line_height"]] / 2
     }
-    if (isTRUE(show_stat_text) && isTRUE(has_graphic[[i]])) {
-      grid::grid.text(
-        label = data[["stat_display"]][[i]],
-        x = grid::unit(0.97, "npc"),
-        y = grid::unit(block_top - line_height / 2, "npc"),
-        just = c("right", "center"),
-        gp = grid::gpar(col = "grey20", fontsize = fontsize[[i]])
-      )
+  }
+}
+
+heatmap_enrichment_terms_layout <- function(
+  data,
+  max_width,
+  reserve_axis = FALSE
+) {
+  width_in <- grid::convertWidth(max_width, "in", valueOnly = TRUE)
+  fontsize <- data[["fontsize"]]
+  wrap_width <- pmax(16L, floor(width_in * 72 * 0.95 / (fontsize * 0.35)))
+  term_lines <- lapply(seq_len(nrow(data)), function(i) {
+    out <- strwrap(data[["term"]][[i]], width = wrap_width[[i]])
+    if (length(out) == 0) "" else out
+  })
+  block_units <- vapply(term_lines, length, integer(1))
+  total_units <- sum(block_units)
+  if (!is.finite(total_units) || total_units <= 0) {
+    total_units <- 1
+  }
+  bottom_reserved <- if (isTRUE(reserve_axis)) 0.42 else 0.04
+  line_height <- (0.95 - bottom_reserved) / total_units
+  block_top <- numeric(length(block_units))
+  block_center <- numeric(length(block_units))
+  y <- 0.95
+  for (i in seq_along(block_units)) {
+    block_top[[i]] <- y
+    block_height <- line_height * block_units[[i]]
+    block_center[[i]] <- y - block_height / 2
+    y <- y - block_height
+  }
+  list(
+    term_lines = term_lines,
+    line_height = line_height,
+    block_top = block_top,
+    block_center = block_center
+  )
+}
+
+heatmap_enrichment_draw_stat_box <- function(
+  data,
+  max_width,
+  background = "white",
+  border_color = "grey60",
+  border_size = 0.8,
+  bar_color = NULL,
+  label_mode = "value",
+  label_color = NULL,
+  show_axis = FALSE,
+  axis_max = NULL,
+  axis_label = "",
+  axis_digits = 2
+) {
+  # The statistic chart is an independent annotation panel. Its shared scale
+  # occupies an unfilled strip outside the bordered plotting region.
+  panel_bottom <- if (isTRUE(show_axis)) 0.34 else 0
+  grid::grid.rect(
+    x = grid::unit(0.5, "npc"),
+    y = grid::unit(panel_bottom + (1 - panel_bottom) / 2, "npc"),
+    width = grid::unit(1, "npc"),
+    height = grid::unit(1 - panel_bottom, "npc"),
+    gp = grid::gpar(fill = background, col = border_color, lwd = border_size)
+  )
+  layout <- heatmap_enrichment_terms_layout(
+    data = data,
+    max_width = max_width,
+    reserve_axis = show_axis
+  )
+  labels <- heatmap_enrichment_stat_labels(
+    data = data,
+    mode = label_mode,
+    digits = axis_digits
+  )
+  has_graphic <- !is.na(data[["stat_label"]])
+  for (i in seq_len(nrow(data))) {
+    if (!isTRUE(has_graphic[[i]])) {
+      next
     }
-    y <- y
+    heatmap_enrichment_draw_term_stat(
+      data = data[i, , drop = FALSE],
+      y = layout[["block_center"]][[i]],
+      height_npc = max(layout[["line_height"]] * 0.72, 0.016),
+      stat_x_npc = 0.04,
+      stat_width_npc = 0.91,
+      bar_color = bar_color,
+      label = labels[[i]],
+      label_color = label_color,
+      fontsize = data[["fontsize"]][[i]]
+    )
+  }
+  if (isTRUE(show_axis)) {
+    heatmap_enrichment_draw_stat_axis(
+      x_npc = 0.04,
+      width_npc = 0.91,
+      max_value = axis_max,
+      label = axis_label,
+      fontsize = min(data[["fontsize"]]),
+      digits = axis_digits
+    )
   }
 }
 
@@ -842,7 +1080,12 @@ heatmap_enrichment_draw_term_stat <- function(
   data,
   y,
   height_npc = NULL,
-  stat_width_npc = 0.3
+  stat_x_npc = 0,
+  stat_width_npc = 0.3,
+  bar_color = NULL,
+  label = "",
+  label_color = NULL,
+  fontsize = 8
 ) {
   scaled <- data[["stat_scaled"]][[1]]
   if (!is.finite(scaled)) {
@@ -850,7 +1093,8 @@ heatmap_enrichment_draw_term_stat <- function(
   }
   scaled <- max(0, min(1, scaled))
   col <- data[["col"]][[1]]
-  x0 <- 0
+  fill_color <- bar_color %||% col
+  x0 <- stat_x_npc
   x1 <- min(0.96, x0 + stat_width_npc)
   grid::grid.rect(
     x = grid::unit(x0, "npc"),
@@ -858,16 +1102,109 @@ heatmap_enrichment_draw_term_stat <- function(
     width = grid::unit((x1 - x0) * scaled, "npc"),
     height = grid::unit(height_npc %||% 0.03, "npc"),
     just = c("left", "center"),
-    gp = grid::gpar(fill = col, col = NA, alpha = 0.18)
+    gp = grid::gpar(
+      fill = fill_color,
+      col = NA,
+      alpha = 1
+    )
   )
+  if (!is.null(label) && !is.na(label) && nzchar(label)) {
+    bar_length <- (x1 - x0) * scaled
+    label_inside <- bar_length >= 0.24
+    resolved_label_color <- label_color
+    if (is.null(resolved_label_color) || is.na(resolved_label_color)) {
+      resolved_label_color <- if (isTRUE(label_inside)) {
+        heatmap_enrichment_contrast_color(fill_color)
+      } else {
+        "black"
+      }
+    }
+    grid::grid.text(
+      label = label,
+      x = grid::unit(
+        if (isTRUE(label_inside)) {
+          x0 + bar_length / 2
+        } else {
+          min(x1, x0 + bar_length + 0.025)
+        },
+        "npc"
+      ),
+      y = grid::unit(y, "npc"),
+      just = if (isTRUE(label_inside)) "center" else c("left", "center"),
+      gp = grid::gpar(
+        col = resolved_label_color,
+        fontsize = max(fontsize - 1, 5)
+      )
+    )
+  }
+}
+
+heatmap_enrichment_contrast_color <- function(
+  color,
+  dark = "black",
+  light = "white",
+  threshold = 0.45
+) {
+  rgb <- grDevices::col2rgb(color)[, 1] / 255
+  rgb <- ifelse(
+    rgb <= 0.04045,
+    rgb / 12.92,
+    ((rgb + 0.055) / 1.055)^2.4
+  )
+  luminance <- sum(c(0.2126, 0.7152, 0.0722) * rgb)
+  if (luminance < threshold) light else dark
+}
+
+heatmap_enrichment_draw_stat_axis <- function(
+  x_npc = 0,
+  width_npc,
+  max_value,
+  label,
+  fontsize = 8,
+  digits = 2
+) {
+  if (!is.finite(max_value) || max_value <= 0) {
+    max_value <- 1
+  }
+  at <- c(0, 0.5, 1)
+  values <- at * max_value
+  y <- 0.24
+  grid::grid.lines(
+    x = grid::unit(x_npc + c(0, width_npc), "npc"),
+    y = grid::unit(c(y, y), "npc"),
+    gp = grid::gpar(col = "grey25", lwd = 0.8)
+  )
+  for (i in seq_along(at)) {
+    x <- x_npc + width_npc * at[[i]]
+    grid::grid.lines(
+      x = grid::unit(c(x, x), "npc"),
+      y = grid::unit(c(y, y + 0.035), "npc"),
+      gp = grid::gpar(col = "grey25", lwd = 0.8)
+    )
+    grid::grid.text(
+      label = heatmap_enrichment_format_stat(values[[i]], digits = digits),
+      x = grid::unit(x, "npc"),
+      y = grid::unit(y - 0.06, "npc"),
+      just = c("center", "top"),
+      gp = grid::gpar(col = "grey20", fontsize = max(fontsize - 1, 5))
+    )
+  }
+  if (!is.null(label) && nzchar(label)) {
+    grid::grid.text(
+      label = label,
+      x = grid::unit(x_npc + width_npc / 2, "npc"),
+      y = grid::unit(0.055, "npc"),
+      just = c("center", "center"),
+      gp = grid::gpar(col = "grey20", fontsize = max(fontsize - 2, 5))
+    )
+  }
 }
 
 heatmap_enrichment_term_stat <- function(
   df,
   metric,
   score,
-  terms_stat = "none",
-  digits = 2
+  terms_stat = "none"
 ) {
   if (identical(terms_stat, FALSE) || identical(terms_stat, "none")) {
     return(NULL)
@@ -894,7 +1231,12 @@ heatmap_enrichment_term_stat <- function(
     value <- score
     strength <- score
     label <- paste0("-log10(", metric, ")")
-    display_value <- strength
+    pvalue <- if (metric %in% colnames(df)) {
+      suppressWarnings(as.numeric(df[[metric]]))
+    } else {
+      rep(NA_real_, length(score))
+    }
+    axis_label <- heatmap_enrichment_p_axis_label(metric)
   } else {
     if (!stat_key %in% colnames(df)) {
       log_message(
@@ -904,20 +1246,69 @@ heatmap_enrichment_term_stat <- function(
       )
     }
     value <- df[[stat_key]]
-    strength <- if (stat_key %in% c("pvalue", "p.adjust", "qvalue")) {
-      -log10(suppressWarnings(as.numeric(value)))
+    is_pvalue <- stat_key %in% c("pvalue", "p.adjust", "qvalue")
+    pvalue <- if (is_pvalue) {
+      suppressWarnings(as.numeric(value))
+    } else {
+      rep(NA_real_, length(value))
+    }
+    strength <- if (is_pvalue) {
+      -log10(pmax(pvalue, .Machine$double.xmin))
     } else {
       suppressWarnings(as.numeric(value))
     }
     label <- stat_key
-    display_value <- if (stat_key %in% c("pvalue", "p.adjust", "qvalue")) {
-      strength
+    axis_label <- if (is_pvalue) {
+      heatmap_enrichment_p_axis_label(stat_key)
     } else {
-      value
+      stat_key
     }
   }
-  display <- heatmap_enrichment_format_stat(display_value, digits = digits)
-  list(label = label, display = display, strength = strength)
+  list(
+    label = label,
+    strength = strength,
+    pvalue = pvalue,
+    axis_label = axis_label
+  )
+}
+
+heatmap_enrichment_p_axis_label <- function(metric) {
+  if (metric %in% c("p.adjust", "qvalue")) {
+    return("-log10(Q)")
+  }
+  if (metric %in% "pvalue") {
+    return("-log10(P)")
+  }
+  paste0("-log10(", metric, ")")
+}
+
+heatmap_enrichment_p_significance <- function(
+  pvalue,
+  cutoffs = c(`*` = 5e-2, `**` = 1e-2, `***` = 1e-3, `****` = 1e-4)
+) {
+  pvalue <- suppressWarnings(as.numeric(pvalue))
+  out <- rep("", length(pvalue))
+  for (label in names(cutoffs)) {
+    out[!is.na(pvalue) & pvalue < cutoffs[[label]]] <- label
+  }
+  out
+}
+
+heatmap_enrichment_stat_labels <- function(data, mode = "value", digits = 2) {
+  mode <- match.arg(
+    as.character(mode %||% "none")[[1]],
+    c("none", "value", "significance", "both")
+  )
+  value <- heatmap_enrichment_format_stat(data[["stat_strength"]], digits = digits)
+  significance <- data[["stat_signif"]]
+  significance[is.na(significance)] <- ""
+  switch(
+    mode,
+    none = rep("", nrow(data)),
+    value = value,
+    significance = significance,
+    both = trimws(paste(value, significance))
+  )
 }
 
 heatmap_enrichment_terms_stat_none <- function(terms_stat) {

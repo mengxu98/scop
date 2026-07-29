@@ -78,11 +78,11 @@ RunGiottoCellProximity <- function(
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }
-  giotto_validate_scalar_string(group.by, "group.by")
-  giotto_validate_scalar_string(tool_name, "tool_name")
-  giotto_validate_named_list(conversion_params, "conversion_params")
-  giotto_validate_named_list(network_params, "network_params")
-  giotto_validate_named_list(enrichment_params, "enrichment_params")
+  validate_scalar_string(group.by, "group.by", message = "must be a non-empty string")
+  validate_scalar_string(tool_name, "tool_name", message = "must be a non-empty string")
+  validate_named_list(conversion_params, "conversion_params")
+  validate_named_list(network_params, "network_params")
+  validate_named_list(enrichment_params, "enrichment_params")
   if (!group.by %in% colnames(srt@meta.data)) {
     log_message("{.arg group.by} {.val {group.by}} is not present in {.cls Seurat} metadata", message_type = "error")
   }
@@ -265,10 +265,10 @@ RunGiottoSpatialGenes <- function(
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }
-  giotto_validate_scalar_string(tool_name, "tool_name")
-  giotto_validate_named_list(conversion_params, "conversion_params")
-  giotto_validate_named_list(network_params, "network_params")
-  giotto_validate_named_list(binSpect_params, "binSpect_params")
+  validate_scalar_string(tool_name, "tool_name", message = "must be a non-empty string")
+  validate_named_list(conversion_params, "conversion_params")
+  validate_named_list(network_params, "network_params")
+  validate_named_list(binSpect_params, "binSpect_params")
   if (!is.numeric(top_n) || length(top_n) != 1L || is.na(top_n) || top_n < 1) {
     log_message("{.arg top_n} must be a positive number", message_type = "error")
   }
@@ -463,11 +463,11 @@ RunGiottoSpatialModules <- function(
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }
-  giotto_validate_scalar_string(tool_name, "tool_name")
-  giotto_validate_named_list(conversion_params, "conversion_params")
-  giotto_validate_named_list(network_params, "network_params")
-  giotto_validate_named_list(detect_params, "detect_params")
-  giotto_validate_named_list(cluster_params, "cluster_params")
+  validate_scalar_string(tool_name, "tool_name", message = "must be a non-empty string")
+  validate_named_list(conversion_params, "conversion_params")
+  validate_named_list(network_params, "network_params")
+  validate_named_list(detect_params, "detect_params")
+  validate_named_list(cluster_params, "cluster_params")
   if (!is.numeric(k) || length(k) != 1L || is.na(k) || k < 2) {
     log_message("{.arg k} must be a single number >= 2", message_type = "error")
   }
@@ -693,23 +693,14 @@ giotto_top_features <- function(result_table, n = 100) {
   if (nrow(result_table) == 0L) {
     return(character())
   }
-  feature_col <- giotto_pick_col(result_table, c("feat_ID", "feats", "feature", "gene", "gene_ID", "name"))
+  feature_col <- pick_case_insensitive_column(result_table, c("feat_ID", "feats", "feature", "gene", "gene_ID", "name"))
   if (is.null(feature_col)) {
     return(character())
   }
-  p_col <- giotto_pick_col(result_table, c("adj.p.value", "p.adj", "p_adj", "pvalue_adj", "p.value", "pval", "p_val"))
+  p_col <- pick_case_insensitive_column(result_table, c("adj.p.value", "p.adj", "p_adj", "pvalue_adj", "p.value", "pval", "p_val"))
   if (!is.null(p_col)) {
     result_table <- result_table[order(result_table[[p_col]], na.last = TRUE), , drop = FALSE]
   }
   features <- unique(as.character(result_table[[feature_col]]))
   features[seq_len(min(n, length(features)))]
-}
-
-giotto_pick_col <- function(x, candidates) {
-  nm <- colnames(x)
-  hit <- candidates[tolower(candidates) %in% tolower(nm)][1]
-  if (is.na(hit)) {
-    return(NULL)
-  }
-  nm[match(tolower(hit), tolower(nm))]
 }

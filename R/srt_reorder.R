@@ -2,7 +2,7 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams FeatureDimPlot
 #' @inheritParams CellCorHeatmap
 #' @param reorder_by Reorder groups instead of idents.
@@ -15,7 +15,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- srt_reorder(
 #'   pancreas_sub,
 #'   reorder_by = "SubCellType",

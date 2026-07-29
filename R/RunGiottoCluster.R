@@ -6,7 +6,7 @@
 #' `Seurat` object is not modified.
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
 #' @param layer Assay layer used as the expression matrix.
 #' @param features Features used for PCA and clustering. If `NULL`, current
@@ -110,12 +110,12 @@ RunGiottoCluster <- function(
       message_type = "error"
     )
   }
-  giotto_validate_scalar_string(cluster_colname, "cluster_colname")
-  giotto_validate_scalar_string(tool_name, "tool_name")
-  giotto_validate_named_list(conversion_params, "conversion_params")
-  giotto_validate_named_list(preprocess_params, "preprocess_params")
-  giotto_validate_named_list(network_params, "network_params")
-  giotto_validate_named_list(cluster_params, "cluster_params")
+  validate_scalar_string(cluster_colname, "cluster_colname", message = "must be a non-empty string")
+  validate_scalar_string(tool_name, "tool_name", message = "must be a non-empty string")
+  validate_named_list(conversion_params, "conversion_params")
+  validate_named_list(preprocess_params, "preprocess_params")
+  validate_named_list(network_params, "network_params")
+  validate_named_list(cluster_params, "cluster_params")
   if (!is.numeric(k) || length(k) != 1L || is.na(k) || k < 1) {
     log_message(
       "{.arg k} must be a positive number",
@@ -209,7 +209,7 @@ RunGiottoCluster <- function(
   )
   gobject <- giotto_call(runPCA, pca_args)
   pca_name <- pca_args[["name"]] %||% "pca"
-  giotto_validate_scalar_string(pca_name, "preprocess_params$name")
+  validate_scalar_string(pca_name, "preprocess_params$name", message = "must be a non-empty string")
 
   network_name <- network_params[["name"]] %||% "scop_NN"
   createNearestNetwork <- get_namespace_fun("GiottoClass", "createNearestNetwork")
@@ -605,26 +605,6 @@ giotto_merge_args <- function(defaults, extra, arg_name = "params", reserved = c
     )
   }
   utils::modifyList(defaults, extra)
-}
-
-giotto_validate_scalar_string <- function(x, arg_name) {
-  if (!is.character(x) || length(x) != 1L || is.na(x) || !nzchar(x)) {
-    log_message(
-      "{.arg {arg_name}} must be a non-empty string",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
-}
-
-giotto_validate_named_list <- function(x, arg_name) {
-  if (!is.list(x) || (length(x) > 0L && (is.null(names(x)) || any(!nzchar(names(x)))))) {
-    log_message(
-      "{.arg {arg_name}} must be a named list",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
 }
 
 giotto_result <- function(result_type, giotto, ...) {

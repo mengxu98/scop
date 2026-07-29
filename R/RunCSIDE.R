@@ -688,8 +688,8 @@ cside_build_result_table <- function(all_gene_list, sig_gene_list, mode) {
     df <- as.data.frame(df, stringsAsFactors = FALSE, check.names = FALSE)
     feature <- cside_result_features(df)
     sig_features <- cside_sig_features(sig_gene_list, celltype)
-    p_value <- cside_pick_numeric(df, c("p_value", "p_val", "p", "p_val_best"))
-    q_value <- cside_pick_numeric(df, c("q_value", "q_val", "padj", "fdr"))
+    p_value <- pick_numeric_column(df, c("p_value", "p_val", "p", "p_val_best"))
+    q_value <- pick_numeric_column(df, c("q_value", "q_val", "padj", "fdr"))
     if (all(is.na(q_value)) && any(is.finite(p_value))) {
       q_value <- stats::p.adjust(p_value, method = "BH")
     }
@@ -697,8 +697,8 @@ cside_build_result_table <- function(all_gene_list, sig_gene_list, mode) {
       feature = feature,
       celltype = celltype,
       parameter = cside_result_parameter(df),
-      logFC = cside_pick_numeric(df, c("logFC", "log_fc", "log_fc_best", "log_fc_est")),
-      statistic = cside_pick_numeric(df, c("statistic", "Z_score", "z_score", "Z_est")),
+      logFC = pick_numeric_column(df, c("logFC", "log_fc", "log_fc_best", "log_fc_est")),
+      statistic = pick_numeric_column(df, c("statistic", "Z_score", "z_score", "Z_est")),
       p_value = p_value,
       q_value = q_value,
       significant = feature %in% sig_features,
@@ -727,16 +727,16 @@ cside_normalize_result_table <- function(result_table, mode) {
     df$parameter <- NA_character_
   }
   if (!"logFC" %in% colnames(df)) {
-    df$logFC <- cside_pick_numeric(df, c("log_fc", "log_fc_best", "log_fc_est"))
+    df$logFC <- pick_numeric_column(df, c("log_fc", "log_fc_best", "log_fc_est"))
   }
   if (!"statistic" %in% colnames(df)) {
-    df$statistic <- cside_pick_numeric(df, c("Z_score", "z_score", "Z_est"))
+    df$statistic <- pick_numeric_column(df, c("Z_score", "z_score", "Z_est"))
   }
   if (!"p_value" %in% colnames(df)) {
-    df$p_value <- cside_pick_numeric(df, c("p_val", "p", "p_val_best"))
+    df$p_value <- pick_numeric_column(df, c("p_val", "p", "p_val_best"))
   }
   if (!"q_value" %in% colnames(df)) {
-    df$q_value <- cside_pick_numeric(df, c("q_val", "padj", "fdr"))
+    df$q_value <- pick_numeric_column(df, c("q_val", "padj", "fdr"))
   }
   if (!"significant" %in% colnames(df)) {
     df$significant <- is.finite(df$q_value) & df$q_value < 0.05
@@ -785,14 +785,6 @@ cside_result_parameter <- function(df) {
     return(paste(df$paramindex1_best, df$paramindex2_best, sep = "-"))
   }
   rep(NA_character_, nrow(df))
-}
-
-cside_pick_numeric <- function(df, candidates) {
-  hit <- intersect(candidates, colnames(df))
-  if (length(hit) == 0L) {
-    return(rep(NA_real_, nrow(df)))
-  }
-  suppressWarnings(as.numeric(df[[hit[[1L]]]]))
 }
 
 cside_sig_features <- function(sig_gene_list, celltype) {
@@ -888,31 +880,11 @@ cside_validate_barcodes <- function(barcodes, cells) {
 }
 
 cside_validate_named_param_list <- function(x, arg_name) {
-  if (length(x) == 0L) {
-    return(invisible(TRUE))
-  }
-  nms <- names(x)
-  if (is.null(nms) || any(is.na(nms) | !nzchar(nms))) {
-    log_message(
-      "{.arg {arg_name}} must contain named arguments only",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
+  validate_named_param_list(x, arg_name)
 }
 
 cside_assert_scalar_string <- function(x, arg) {
-  if (
-    is.null(x) ||
-      length(x) != 1L ||
-      is.na(x) ||
-      !nzchar(x)
-  ) {
-    log_message(
-      "{.arg {arg}} must be a single non-empty string",
-      message_type = "error"
-    )
-  }
+  validate_scalar_string(x, arg, require_character = FALSE)
 }
 
 cside_assert_null_or_scalar_string <- function(x, arg) {

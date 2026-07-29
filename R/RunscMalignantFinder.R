@@ -103,7 +103,7 @@ RunscMalignantFinder <- function(
   }
 
   if (!is.null(srt)) {
-    scmf_assert_seurat(srt)
+    validate_seurat_object(srt)
     cells <- scmf_cells(srt, cells)
     srt_input <- if (length(cells) == ncol(srt)) {
       srt
@@ -256,7 +256,7 @@ RunscMalignantRegion <- function(
     }
   }
   if (!is.null(srt) && !is.null(spatial.cols)) {
-    scmf_assert_seurat(srt)
+    validate_seurat_object(srt)
     precheck_cells <- scmf_cells(srt, cells)
     precheck_srt <- if (length(precheck_cells) == ncol(srt)) {
       srt
@@ -275,7 +275,7 @@ RunscMalignantRegion <- function(
 
   spatial_coordinates <- NULL
   if (!is.null(srt)) {
-    scmf_assert_seurat(srt)
+    validate_seurat_object(srt)
     cells <- scmf_cells(srt, cells)
     srt_input <- if (length(cells) == ncol(srt)) {
       srt
@@ -414,7 +414,7 @@ RunscMalignantStates <- function(
   scmf_prepare_python(verbose = verbose)
 
   if (!is.null(srt)) {
-    scmf_assert_seurat(srt)
+    validate_seurat_object(srt)
     cells <- scmf_cells(srt, cells)
     srt_input <- if (length(cells) == ncol(srt)) {
       srt
@@ -555,13 +555,6 @@ scmf_get_spatial_coordinates <- function(srt, spatial.cols = NULL) {
   }
   storage.mode(spatial_coordinates) <- "double"
   spatial_coordinates
-}
-
-scmf_assert_seurat <- function(srt) {
-  if (!inherits(srt, "Seurat")) {
-    log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
-  }
-  invisible(TRUE)
 }
 
 scmf_cells <- function(srt, cells = NULL) {

@@ -5,7 +5,7 @@
 #'
 #' @md
 #' @inheritParams CellDimPlot
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @param features A character vector or a named list of features to plot.
 #' Features can be gene names in Assay or names of numeric columns in meta.data.
 #' @param layer Which layer to use.
@@ -33,7 +33,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = "G2M_score", reduction = "UMAP"
@@ -820,70 +820,20 @@ FeatureDimPlot <- function(
         if (isTRUE(cells.highlight_use)) {
           cells.highlight_use <- rownames(dat)[dat[["color_blend"]] != bg_color]
         }
-        if (!is.null(graph)) {
-          net_cells <- rownames(dat)
-          net_mat <- as_matrix(graph[net_cells, net_cells, drop = FALSE])
-          net_mat[net_mat == 0] <- NA
-          net_mat[upper.tri(net_mat)] <- NA
-          net_df <- reshape2::melt(net_mat, na.rm = TRUE, stringsAsFactors = FALSE)
-          net_df[, "value"] <- as.numeric(net_df[, "value"])
-          net_df[, "Var1"] <- as.character(net_df[, "Var1"])
-          net_df[, "Var2"] <- as.character(net_df[, "Var2"])
-          net_df[, "x"] <- dat[net_df[, "Var1"], "x"]
-          net_df[, "y"] <- dat[net_df[, "Var1"], "y"]
-          net_df[, "xend"] <- dat[net_df[, "Var2"], "x"]
-          net_df[, "yend"] <- dat[net_df[, "Var2"], "y"]
-          net <- list(
-            geom_segment(
-              data = net_df,
-              mapping = aes(
-                x = x,
-                y = y,
-                xend = xend,
-                yend = yend,
-                linewidth = value
-              ),
-              color = edge_color,
-              alpha = edge_alpha,
-              show.legend = FALSE
-            ),
-            scale_linewidth_continuous(range = edge_size)
-          )
-        } else {
-          net <- NULL
-        }
-
-        if (isTRUE(add_density)) {
-          if (isTRUE(density_filled)) {
-            filled_color <- palette_colors(
-              palette = density_filled_palette,
-              palcolor = density_filled_palcolor
-            )
-            density <- list(
-              stat_density_2d(
-                geom = "raster",
-                aes(
-                  x = .data[["x"]],
-                  y = .data[["y"]],
-                  fill = after_stat(density)
-                ),
-                contour = FALSE,
-                inherit.aes = FALSE,
-                show.legend = FALSE
-              ),
-              scale_fill_gradientn(name = "Density", colours = filled_color),
-              ggnewscale::new_scale_fill()
-            )
-          } else {
-            density <- geom_density_2d(
-              aes(x = .data[["x"]], y = .data[["y"]]),
-              color = density_color,
-              inherit.aes = FALSE
-            )
-          }
-        } else {
-          density <- NULL
-        }
+        net <- dim_plot_graph_layers(
+          graph = graph,
+          dat = dat,
+          edge_color = edge_color,
+          edge_alpha = edge_alpha,
+          edge_size = edge_size
+        )
+        density <- dim_plot_density_layers(
+          add_density = add_density,
+          density_filled = density_filled,
+          density_color = density_color,
+          density_filled_palette = density_filled_palette,
+          density_filled_palcolor = density_filled_palcolor
+        )
 
         p <- ggplot(dat) +
           net +
@@ -1358,69 +1308,20 @@ FeatureDimPlot <- function(
           which(dat[, "value"] < min(colors_value, na.rm = TRUE)),
           "value"
         ] <- min(colors_value, na.rm = TRUE)
-        if (!is.null(graph)) {
-          net_cells <- rownames(dat)
-          net_mat <- as_matrix(graph[net_cells, net_cells, drop = FALSE])
-          net_mat[net_mat == 0] <- NA
-          net_mat[upper.tri(net_mat)] <- NA
-          net_df <- reshape2::melt(net_mat, na.rm = TRUE, stringsAsFactors = FALSE)
-          net_df[, "value"] <- as.numeric(net_df[, "value"])
-          net_df[, "Var1"] <- as.character(net_df[, "Var1"])
-          net_df[, "Var2"] <- as.character(net_df[, "Var2"])
-          net_df[, "x"] <- dat[net_df[, "Var1"], "x"]
-          net_df[, "y"] <- dat[net_df[, "Var1"], "y"]
-          net_df[, "xend"] <- dat[net_df[, "Var2"], "x"]
-          net_df[, "yend"] <- dat[net_df[, "Var2"], "y"]
-          net <- list(
-            geom_segment(
-              data = net_df,
-              mapping = aes(
-                x = x,
-                y = y,
-                xend = xend,
-                yend = yend,
-                linewidth = value
-              ),
-              color = edge_color,
-              alpha = edge_alpha,
-              show.legend = FALSE
-            ),
-            scale_linewidth_continuous(range = edge_size)
-          )
-        } else {
-          net <- NULL
-        }
-        if (isTRUE(add_density)) {
-          if (isTRUE(density_filled)) {
-            filled_color <- palette_colors(
-              palette = density_filled_palette,
-              palcolor = density_filled_palcolor
-            )
-            density <- list(
-              stat_density_2d(
-                geom = "raster",
-                aes(
-                  x = .data[["x"]],
-                  y = .data[["y"]],
-                  fill = after_stat(density)
-                ),
-                contour = FALSE,
-                inherit.aes = FALSE,
-                show.legend = FALSE
-              ),
-              scale_fill_gradientn(name = "Density", colours = filled_color),
-              ggnewscale::new_scale_fill()
-            )
-          } else {
-            density <- geom_density_2d(
-              aes(x = .data[["x"]], y = .data[["y"]]),
-              color = density_color,
-              inherit.aes = FALSE
-            )
-          }
-        } else {
-          density <- NULL
-        }
+        net <- dim_plot_graph_layers(
+          graph = graph,
+          dat = dat,
+          edge_color = edge_color,
+          edge_alpha = edge_alpha,
+          edge_size = edge_size
+        )
+        density <- dim_plot_density_layers(
+          add_density = add_density,
+          density_filled = density_filled,
+          density_color = density_color,
+          density_filled_palette = density_filled_palette,
+          density_filled_palcolor = density_filled_palcolor
+        )
         p <- ggplot(dat) +
           net +
           density +
@@ -1722,21 +1623,9 @@ FeatureDimPlot <- function(
     )
   }
 
-  if (isTRUE(combine)) {
-    if (length(plist) > 1) {
-      plot <- patchwork::wrap_plots(
-        plotlist = plist,
-        nrow = nrow,
-        ncol = ncol,
-        byrow = byrow
-      )
-    } else {
-      plot <- plist[[1]]
-    }
-    return(plot)
-  } else {
-    return(plist)
-  }
+  combine_plot_list(
+    plist, combine = combine, nrow = nrow, ncol = ncol, byrow = byrow
+  )
 }
 
 #' @title 3D-Dimensional reduction plot for gene expression visualization.
@@ -1744,7 +1633,7 @@ FeatureDimPlot <- function(
 #' @md
 #' @inheritParams FeatureDimPlot
 #' @inheritParams CellDimPlot3D
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #'
 #' @seealso [FeatureDimPlot], [CellDimPlot3D]
 #'
@@ -1752,7 +1641,7 @@ FeatureDimPlot <- function(
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' FeatureDimPlot3D(
 #'   pancreas_sub,
 #'   features = c("Ghrl", "Ins1", "Gcg", "Ins2"),

@@ -60,7 +60,7 @@ CNVPlot <- function(
   theme_args = list(),
   ...
 ) {
-  cnv_assert_seurat(srt)
+  validate_seurat_object(srt)
   plot_type <- match.arg(plot_type)
   cluster_tree_by <- match.arg(cluster_tree_by)
   bundle <- cnv_get_method_bundle(srt, tool_name = tool_name, method = method)

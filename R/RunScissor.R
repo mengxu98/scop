@@ -1,7 +1,7 @@
 #' @title Run Scissor phenotype-associated cell selection
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
 #' @param srt A `Seurat` object containing single-cell expression data.
 #' @param bulk_dataset A bulk expression matrix-like object or a
@@ -28,7 +28,7 @@
 #' @param cutoff Maximum selected-cell fraction used by Scissor's alpha search.
 #' @param tag Optional phenotype labels for printed/stored summaries.
 #' @param graph Existing Seurat graph used by the `"cpp"` backend. If `NULL`,
-#' an assay SNN graph or `standard_scop()` graph is reused when present,
+#' an assay SNN graph or `RunStandardWorkflow()` graph is reused when present,
 #' otherwise a temporary Scissor-like graph is built.
 #' @param dims PCA dimensions used when a temporary graph is built.
 #' @param nfeatures Number of variable features used when a temporary graph is
@@ -53,7 +53,7 @@
 #' @examples
 #' data(panc8_sub)
 #' data(islet_bulk)
-#' panc8_sub <- standard_scop(panc8_sub, verbose = FALSE)
+#' panc8_sub <- RunStandardWorkflow(panc8_sub, verbose = FALSE)
 #' panc8_sub <- RunScissor(
 #'   panc8_sub,
 #'   bulk_dataset = islet_bulk,

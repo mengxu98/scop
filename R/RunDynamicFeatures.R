@@ -2,7 +2,7 @@
 #'
 #' @md
 #' @inheritParams thisutils::parallelize_fun
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams GroupHeatmap
 #' @param lineages A character vector specifying the lineage names for which dynamic features should be calculated.
 #' @param features A character vector of features to use.
@@ -47,7 +47,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunSlingshot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
