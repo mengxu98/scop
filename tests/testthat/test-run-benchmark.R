@@ -278,7 +278,7 @@ test_that("RunBenchmark aligns spots and retains metrics and resource measuremen
     )
   })
 
-  expect_s3_class(result, "scop_benchmark")
+  expect_s3_class(result, "benchmark_result")
   expect_identical(result$summary$method, c("BayesSpace", "BANKSY"))
   expect_equal(result$summary$ARI[[1]], 1)
   expect_equal(result$summary$NMI[[1]], 1)

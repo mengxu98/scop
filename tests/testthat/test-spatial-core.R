@@ -1,28 +1,28 @@
 test_that("spatial graph core handles sparse edge cases", {
   skip_if_not_installed("BiocNeighbors")
   collinear <- data.frame(cell_id = letters[1:5], x = 1:5, y = 0)
-  graph <- scop:::spatial_graph_compute(collinear, k = 2)
+  graph <- spatial_graph_compute(collinear, k = 2)
   expect_true(all(graph$edges$from < graph$edges$to))
   expect_equal(anyDuplicated(paste(graph$edges$from, graph$edges$to)), 0L)
   expect_true(all(graph$edges$distance > 0))
 
   duplicate <- data.frame(cell_id = letters[1:4], x = c(0, 0, 1, 2), y = 0)
-  duplicate_graph <- scop:::spatial_graph_compute(duplicate, k = 1)
+  duplicate_graph <- spatial_graph_compute(duplicate, k = 1)
   expect_true(any(duplicate_graph$edges$distance == 0))
 
-  empty <- scop:::spatial_graph_compute(collinear, method = "radius", radius = 0.1)
+  empty <- spatial_graph_compute(collinear, method = "radius", radius = 0.1)
   expect_equal(nrow(empty$nodes), 5L)
   expect_equal(nrow(empty$edges), 0L)
-  expect_error(scop:::spatial_graph_compute(collinear[1, ], k = 1), "At least two")
-  expect_error(scop:::spatial_graph_compute(collinear, k = 5), "number of nodes minus one")
+  expect_error(spatial_graph_compute(collinear[1, ], k = 1), "At least two")
+  expect_error(spatial_graph_compute(collinear, k = 5), "number of nodes minus one")
 })
 
 test_that("spatial graph weights preserve raw distance", {
   skip_if_not_installed("BiocNeighbors")
   coords <- data.frame(cell_id = letters[1:3], x = c(0, 3, 0), y = c(0, 0, 4))
-  binary <- scop:::spatial_graph_compute(coords, k = 1, directed = TRUE)
-  inverse <- scop:::spatial_graph_compute(coords, k = 1, directed = TRUE, weight = "inverse_distance")
-  gaussian <- scop:::spatial_graph_compute(coords, k = 1, directed = TRUE, weight = "gaussian", sigma = 2)
+  binary <- spatial_graph_compute(coords, k = 1, directed = TRUE)
+  inverse <- spatial_graph_compute(coords, k = 1, directed = TRUE, weight = "inverse_distance")
+  gaussian <- spatial_graph_compute(coords, k = 1, directed = TRUE, weight = "gaussian", sigma = 2)
   expect_equal(binary$edges$distance, inverse$edges$distance)
   expect_equal(inverse$edges$weight, 1 / (1 + inverse$edges$distance))
   expect_equal(gaussian$edges$weight, exp(-(gaussian$edges$distance^2) / 8))
@@ -31,10 +31,10 @@ test_that("spatial graph weights preserve raw distance", {
 test_that("raw and display coordinate transforms round trip", {
   raw <- data.frame(cell_id = c("a", "b"), x = c(2, 8), y = c(4, 10))
   transform <- list(scale = 0.5, y_flip = TRUE, image_height = 20)
-  display <- scop:::spatial_coords_to_display(raw, transform)
+  display <- spatial_coords_to_display(raw, transform)
   expect_equal(display$x, c(1, 4))
   expect_equal(display$y, c(18, 15))
-  expect_equal(scop:::spatial_coords_to_raw(display, transform), raw)
+  expect_equal(spatial_coords_to_raw(display, transform), raw)
 })
 
 test_that("RunSpatialNetwork uses deterministic slots and collision protection", {
@@ -105,8 +105,8 @@ test_that("analysis coordinates keep one payload contract across spaces", {
   srt$col <- c(2, 0, 3, 1)
   srt$row <- c(0, 1, 1, 0)
 
-  legacy <- scop:::spatial_analysis_coords(srt, coordinate_space = "legacy_display")
-  raw <- scop:::spatial_analysis_coords(srt, coordinate_space = "raw")
+  legacy <- spatial_analysis_coords(srt, coordinate_space = "legacy_display")
+  raw <- spatial_analysis_coords(srt, coordinate_space = "raw")
   required <- c("cell_id", "x", "y", "image")
   expect_identical(colnames(legacy$data), required)
   expect_identical(colnames(raw$data), required)
@@ -119,12 +119,12 @@ test_that("CytoSPACE resolves coordinates before assignment work", {
   data("visium_human_pancreas_sub", package = "scop")
   srt <- visium_human_pancreas_sub
   spot_ids <- colnames(srt)
-  legacy <- scop:::cytospace_get_spatial_coords(
+  legacy <- cytospace_get_spatial_coords(
     srt,
     spot_ids,
     coordinate_space = "legacy_display"
   )
-  raw <- scop:::cytospace_get_spatial_coords(
+  raw <- cytospace_get_spatial_coords(
     srt,
     spot_ids,
     coordinate_space = "raw"
@@ -140,7 +140,7 @@ test_that("CytoSPACE resolves coordinates before assignment work", {
   bad$col <- c(0, 1, NA_real_, 3)
   bad$row <- c(0, 1, 2, 3)
   expect_error(
-    scop:::cytospace_get_spatial_coords(bad, colnames(bad)),
+    cytospace_get_spatial_coords(bad, colnames(bad)),
     "non-finite"
   )
 })
@@ -165,8 +165,8 @@ test_that("CytoSPACE composition estimation matches pairwise correlations", {
   cell_types <- unique(labels)
   n_cells <- c(2, 3, 2, 1)
 
-  norm_st <- scop:::cytospace_log_cpm_r(st_expr)
-  norm_ref <- scop:::cytospace_log_cpm_r(ref_expr)
+  norm_st <- cytospace_log_cpm_r(st_expr)
+  norm_ref <- cytospace_log_cpm_r(ref_expr)
   profiles <- vapply(cell_types, function(ct) {
     rowMeans(norm_ref[, labels == ct, drop = FALSE])
   }, numeric(nrow(norm_ref)))
@@ -184,7 +184,7 @@ test_that("CytoSPACE composition estimation matches pairwise correlations", {
   names(expected) <- cell_types
 
   expect_equal(
-    scop:::cytospace_estimate_fractions(st_expr, ref_expr, labels, cell_types, n_cells),
+    cytospace_estimate_fractions(st_expr, ref_expr, labels, cell_types, n_cells),
     expected,
     tolerance = 1e-12
   )
@@ -221,13 +221,13 @@ test_that("analysis and plotting never silently select the first spatial image",
   expect_identical(length(SeuratObject::Images(srt)), 2L)
   expect_equal(ncol(srt), 2000L)
 
-  expect_error(scop:::spatial_analysis_coords(srt), "Multiple spatial images")
+  expect_error(spatial_analysis_coords(srt), "Multiple spatial images")
   expect_error(
     SpatialSpotPlot(srt, group.by = "orig.ident"),
     "Multiple spatial images"
   )
 
-  selected <- scop:::spatial_analysis_coords(srt, image = "anterior2")
+  selected <- spatial_analysis_coords(srt, image = "anterior2")
   expect_identical(nrow(selected$data), 1000L)
   expect_identical(selected$source$image, "anterior2")
   expect_identical(selected$source$coordinate_space, "legacy_display")
@@ -250,7 +250,7 @@ test_that("schema-v1 results support custom keys and legacy read-only views", {
     dimnames = list(paste0("gene", 1:3), paste0("spot", 1:4))
   )
   srt <- suppressWarnings(SeuratObject::CreateSeuratObject(counts))
-  srt@tools$custom_misty <- scop:::spatial_result_build(
+  srt@tools$custom_misty <- spatial_result_build(
     bundle = list(results = list(table = data.frame(value = 1))),
     method = "MistyR",
     result_type = "neighborhood",
@@ -309,8 +309,8 @@ test_that("boundary validator preserves polygon and ring order", {
     x = c(1, 0, 0, 1, 0.8, 0.2, 0.2, 0.8),
     y = c(1, 0, 1, 0, 0.8, 0.2, 0.8, 0.2)
   )
-  valid <- scop:::spatial_boundary_validate(boundaries, image = "slice1")
+  valid <- spatial_boundary_validate(boundaries, image = "slice1")
   expect_identical(unique(valid$image), "slice1")
   expect_true(all(diff(valid$vertex_order[valid$ring_id == "outer"]) >= 0))
-  expect_error(scop:::spatial_boundary_validate(boundaries[, setdiff(names(boundaries), "x")]), "required column")
+  expect_error(spatial_boundary_validate(boundaries[, setdiff(names(boundaries), "x")]), "required column")
 })

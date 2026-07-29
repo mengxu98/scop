@@ -119,7 +119,7 @@ test_that("CARD argument routing supports Bioconductor underscore formals", {
   )
   fun <- function(ct_varname, sample_varname, ct_select) NULL
 
-  matched <- scop:::card_match_formals(fun, args)
+  matched <- card_match_formals(fun, args)
   expect_named(matched, c("ct_varname", "sample_varname", "ct_select"))
   expect_identical(matched$ct_varname, ".scop_cell_type")
   expect_identical(matched$sample_varname, ".scop_sample")
@@ -138,7 +138,7 @@ test_that("CARD uses an installed CARDspa backend without installing CARD", {
     .package = "scop"
   )
 
-  expect_identical(scop:::card_resolve_backend_package(), "CARDspa")
+  expect_identical(card_resolve_backend_package(), "CARDspa")
 })
 
 test_that("CARD checks its repository only when no installed backend is usable", {
@@ -159,7 +159,7 @@ test_that("CARD checks its repository only when no installed backend is usable",
     .package = "scop"
   )
 
-  expect_identical(scop:::card_resolve_backend_package(), "CARD")
+  expect_identical(card_resolve_backend_package(), "CARD")
   expect_true(installed)
 })
 
@@ -235,7 +235,7 @@ test_that("CARDspa one-step API removes backend-unsupported informative-zero spo
     }
   )
 
-  result <- scop:::card_run_backend(
+  result <- card_run_backend(
     st_counts = st_counts,
     ref_counts = ref_counts,
     ref_meta = ref_meta,
@@ -303,7 +303,7 @@ test_that("CARD stored results use SpatialDeconvolutionPlot", {
       invisible(TRUE)
     }
   )
-  pair$spatial@tools$CARD <- scop:::spatial_result_build(
+  pair$spatial@tools$CARD <- spatial_result_build(
     bundle = list(
       proportions = as.matrix(pair$spatial@meta.data[, c("CARD_prop_Alpha", "CARD_prop_Beta")]),
       cells = colnames(pair$spatial)

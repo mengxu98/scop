@@ -114,7 +114,7 @@ test_that("SpatialQM input preparation maps finite metadata coordinates locally"
   srt <- make_spatialqm_seurat()
   srt$x <- seq_len(ncol(srt))
   srt$y <- rev(seq_len(ncol(srt)))
-  prepared <- scop:::spatialqm_prepare_object(
+  prepared <- spatialqm_prepare_object(
     srt,
     assay = "Spatial",
     layer = "counts",
@@ -219,10 +219,10 @@ test_that("SpatialQM metrics receive only formals supported by the live API", {
   )
   srt <- make_spatialqm_seurat()
   expect_equal(
-    scop:::spatialqm_run_metric(
+    spatialqm_run_metric(
       seu_obj = srt,
       metric = "silhouette",
-      spec = scop:::spatialqm_metric_specs()$silhouette,
+      spec = spatialqm_metric_specs()$silhouette,
       features = c("Gene1", "Gene2"),
       platform = "Xenium",
       extra_args = list(unused = TRUE)

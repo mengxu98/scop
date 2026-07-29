@@ -27,7 +27,7 @@ make_giotto2_seurat <- function(with_sct = FALSE) {
 
 make_mock_giotto2 <- function() {
   cells <- paste0("Spot", 1:4)
-  scop:::new_giotto2(
+  new_giotto2(
     giotto = list(mock = TRUE),
     source = list(
       cells = cells,
@@ -90,14 +90,14 @@ test_that("GiottoPlot supports giotto2 without original Seurat", {
   expect_s3_class(plot(g, plot_type = "cluster"), "ggplot")
 })
 
-test_that("SeuratToScopGiotto returns standalone object without modifying Seurat", {
+test_that("SeuratToGiotto2 returns standalone object without modifying Seurat", {
   testthat::skip_if_not_installed("Giotto")
   srt <- make_giotto2_seurat(with_sct = TRUE)
   before_meta <- srt@meta.data
   before_tools <- srt@tools
   before_variable_features <- SeuratObject::VariableFeatures(srt)
 
-  g <- SeuratToScopGiotto(
+  g <- SeuratToGiotto2(
     srt,
     assay = "RNA",
     layer = "counts",
@@ -116,12 +116,12 @@ test_that("SeuratToScopGiotto returns standalone object without modifying Seurat
   expect_equal(SeuratObject::VariableFeatures(srt), before_variable_features)
 })
 
-test_that("SeuratToScopGiotto honours requested feature subsets", {
+test_that("SeuratToGiotto2 honours requested feature subsets", {
   testthat::skip_if_not_installed("Giotto")
   srt <- make_giotto2_seurat(with_sct = TRUE)
   features <- rownames(srt)[1:3]
 
-  g <- SeuratToScopGiotto(
+  g <- SeuratToGiotto2(
     srt,
     assay = "RNA",
     layer = "counts",
@@ -134,13 +134,13 @@ test_that("SeuratToScopGiotto honours requested feature subsets", {
   expect_equal(g$source$features, features)
 })
 
-test_that("SeuratToScopGiotto can use SCT counts as fallback", {
+test_that("SeuratToGiotto2 can use SCT counts as fallback", {
   testthat::skip_if_not_installed("Giotto")
   srt <- make_giotto2_seurat(with_sct = TRUE)
   SeuratObject::DefaultAssay(srt) <- "SCT"
   srt[["RNA"]] <- NULL
 
-  g <- SeuratToScopGiotto(
+  g <- SeuratToGiotto2(
     srt,
     layer = "counts",
     use_official = FALSE,
@@ -149,7 +149,7 @@ test_that("SeuratToScopGiotto can use SCT counts as fallback", {
 
   expect_s3_class(g, "giotto2")
   expect_equal(g$source$assay, "SCT")
-  expect_true(any(vapply(g$history, function(x) identical(x$step, "SeuratToScopGiotto"), logical(1))))
+  expect_true(any(vapply(g$history, function(x) identical(x$step, "SeuratToGiotto2"), logical(1))))
 })
 
 test_that("AddGiottoToSeurat is the explicit bridge back to Seurat", {
@@ -166,7 +166,7 @@ test_that("AddGiottoToSeurat is the explicit bridge back to Seurat", {
 test_that("giotto2 single-step preprocessing and reduction run", {
   testthat::skip_if_not_installed("Giotto")
   srt <- make_giotto2_seurat()
-  g <- SeuratToScopGiotto(
+  g <- SeuratToGiotto2(
     srt,
     assay = "RNA",
     layer = "counts",

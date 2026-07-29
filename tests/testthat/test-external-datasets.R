@@ -1,4 +1,4 @@
-make_scop_dataset_fixture <- function() {
+make_external_dataset_fixture <- function() {
   base <- tempfile("scop-datasets-")
   collection_dir <- file.path(base, "Xenium")
   dir.create(collection_dir, recursive = TRUE)
@@ -28,9 +28,9 @@ make_scop_dataset_fixture <- function() {
   list(base = base, object = object)
 }
 
-test_that("ListScopDatasets reads a local datasets manifest", {
-  fixture <- make_scop_dataset_fixture()
-  manifest <- ListScopDatasets(
+test_that("ListExternalDatasets reads a local datasets manifest", {
+  fixture <- make_external_dataset_fixture()
+  manifest <- ListExternalDatasets(
     collection = "Xenium",
     datasets_base_url = fixture$base
   )
@@ -40,17 +40,17 @@ test_that("ListScopDatasets reads a local datasets manifest", {
   expect_true("sha256" %in% colnames(manifest))
 })
 
-test_that("LoadScopDataset downloads, validates, caches, and loads an object", {
-  fixture <- make_scop_dataset_fixture()
+test_that("LoadExternalDataset downloads, validates, caches, and loads an object", {
+  fixture <- make_external_dataset_fixture()
   cache_dir <- tempfile("scop-cache-")
-  object <- LoadScopDataset(
+  object <- LoadExternalDataset(
     "example_dataset",
     collection = "Xenium",
     cache_dir = cache_dir,
     datasets_base_url = fixture$base,
     verbose = FALSE
   )
-  path <- LoadScopDataset(
+  path <- LoadExternalDataset(
     "example_dataset",
     collection = "Xenium",
     cache_dir = cache_dir,
@@ -64,13 +64,13 @@ test_that("LoadScopDataset downloads, validates, caches, and loads an object", {
   expect_equal(basename(path), "example.rds")
 })
 
-test_that("LoadScopDataset rejects files that do not match the manifest", {
-  fixture <- make_scop_dataset_fixture()
+test_that("LoadExternalDataset rejects files that do not match the manifest", {
+  fixture <- make_external_dataset_fixture()
   rds_file <- file.path(fixture$base, "Xenium", "example.rds")
   saveRDS(list(name = "changed"), rds_file)
 
   expect_error(
-    LoadScopDataset(
+    LoadExternalDataset(
       "example_dataset",
       collection = "Xenium",
       cache_dir = tempfile("scop-cache-"),

@@ -52,7 +52,7 @@ test_that("C++ AUCell AUC matches official random and blocked rankings", {
     expected <- suppressWarnings(AUCell::getAUC(AUCell::AUCell_calcAUC(
       geneSets = gene_sets, rankings = rankings, aucMaxRank = 12L, verbose = FALSE
     )))
-    observed <- scop:::run_aucell_scores_from_official_rankings(
+    observed <- run_aucell_scores_from_official_rankings(
       rankings, gene_sets, auc_max_rank = 12L, norm_auc = TRUE
     )
 
@@ -72,10 +72,10 @@ test_that("AUCell top-k ranks preserve the full native AUC", {
     set_c = rownames(expr)[180:280]
   )
 
-  full <- scop:::run_aucell_scores(
+  full <- run_aucell_scores(
     expr, gene_sets, strategy = "full", tie_method = "first"
   )
-  topk <- scop:::run_aucell_scores(
+  topk <- run_aucell_scores(
     expr, gene_sets, strategy = "topk", tie_method = "first"
   )
 
@@ -302,7 +302,7 @@ test_that("prepared metabolism gene sets retain Term alignment after missing gen
     .package = "scop"
   )
 
-  out <- scop:::build_metabolism_gene_sets_from_preparedb(
+  out <- build_metabolism_gene_sets_from_preparedb(
     species = "Homo_sapiens",
     db_prepare = "KEGG",
     IDtype = "symbol",

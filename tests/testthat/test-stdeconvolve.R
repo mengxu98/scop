@@ -174,7 +174,7 @@ test_that("STdeconvolvePlot uses readable automatic layouts and supports lists",
     bundle = list(
       theta = theta,
       parameters = list(prefix = "STSeven"),
-      summary = scop_spatial_weight_summary(theta)
+      summary = spatial_weight_summary(theta)
     ),
     method = "STdeconvolve",
     result_type = "deconvolution",

@@ -88,8 +88,8 @@ test_that("RunSpatialIntegration supports list input and preserves sample labels
     )
   })
 
-  expect_true(".scop_spatial_sample" %in% colnames(out@meta.data))
-  expect_equal(sort(unique(out$.scop_spatial_sample)), c("S1", "S2"))
+  expect_true(".spatial_integration_sample" %in% colnames(out@meta.data))
+  expect_equal(sort(unique(out$.spatial_integration_sample)), c("S1", "S2"))
   expect_true("SpatialIntegration_PRECAST" %in% SeuratObject::Reductions(out))
   expect_true(all(grepl("^S[12]_", colnames(out))))
 })
@@ -230,7 +230,7 @@ test_that("PRECAST receives selected features and its SelectModel object argumen
     spatial_integration_extract_backend = function(raw_result, method, input) raw_result
   )
 
-  out <- scop:::spatial_integration_run_precast(input, params = list(), verbose = FALSE)
+  out <- spatial_integration_run_precast(input, params = list(), verbose = FALSE)
   expect_identical(observed$features, input$features)
   expect_identical(observed$selected, list(step = "created"))
   expect_identical(out, list(step = "created"))
@@ -248,7 +248,7 @@ test_that("SpatialMNN installation discovery uses the actual package name", {
     }
   )
 
-  expect_invisible(scop:::spatialmnn_check_r())
+  expect_invisible(spatialmnn_check_r())
   expect_identical(calls, c("atlasClustering", "Pixel-Dream/spatialMNN"))
 })
 
@@ -267,23 +267,23 @@ test_that("BASS discovery rejects the unrelated package-name collision", {
     }
   )
 
-  expect_invisible(scop:::bass_check_r())
+  expect_invisible(bass_check_r())
   expect_identical(installs, "zhengli09/BASS")
 })
 
 test_that("integration backends declare all producer entry points", {
-  registry <- scop:::spatial_backend_registry()
+  registry <- spatial_backend_registry()
   expect_setequal(
-    scop:::spatial_backend_required_symbols(registry$precast),
+    spatial_backend_required_symbols(registry$precast),
     c("CreatePRECASTObject", "AddAdjList", "AddParSetting", "PRECAST", "SelectModel")
   )
   expect_setequal(
-    scop:::spatial_backend_required_symbols(registry$bass),
+    spatial_backend_required_symbols(registry$bass),
     c("createBASSObject", "BASS.preprocess", "BASS.run")
   )
   expect_identical(registry$spatialmnn$package, "atlasClustering")
   expect_setequal(
-    scop:::spatial_backend_required_symbols(registry$spatialmnn),
+    spatial_backend_required_symbols(registry$spatialmnn),
     c("stage_1", "stage_2")
   )
 })

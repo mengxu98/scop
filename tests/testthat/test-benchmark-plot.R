@@ -1,4 +1,4 @@
-make_scop_benchmark_plot_result <- function(status = c("success", "success", "failed")) {
+make_benchmark_plot_result <- function(status = c("success", "success", "failed")) {
   summary <- data.frame(
     method = c("BayesSpace", "BANKSY", "A very long unavailable method name"),
     ARI = c(0.82, 0.63, NA),
@@ -35,12 +35,12 @@ make_scop_benchmark_plot_result <- function(status = c("success", "success", "fa
       objects = list(),
       parameters = list(metrics = c("ARI", "NMI"))
     ),
-    class = c("scop_benchmark", "list")
+    class = c("benchmark_result", "list")
   )
 }
 
 test_that("BenchmarkPlot selects publication benchmark views", {
-  result <- make_scop_benchmark_plot_result()
+  result <- make_benchmark_plot_result()
   expect_s3_class(BenchmarkPlot(data = result, plot_type = "quality"), "ggplot")
   expect_s3_class(BenchmarkPlot(data = result, plot_type = "efficiency"), "ggplot")
   expect_s3_class(BenchmarkPlot(data = result, plot_type = "heatmap"), "ggplot")
@@ -49,7 +49,7 @@ test_that("BenchmarkPlot selects publication benchmark views", {
 })
 
 test_that("quality ordering and automatic log scales are explicit", {
-  result <- make_scop_benchmark_plot_result()
+  result <- make_benchmark_plot_result()
   expect_identical(
     benchmark_plot_method_levels(result, c("ARI", "NMI"), "quality")[[1]],
     "BayesSpace"
@@ -64,7 +64,7 @@ test_that("quality ordering and automatic log scales are explicit", {
 
 test_that("quality view uses score tracks and explicit direction", {
   quality <- BenchmarkPlot(
-    data = make_scop_benchmark_plot_result(),
+    data = make_benchmark_plot_result(),
     plot_type = "quality"
   )
   expect_identical(quality$labels$x, "Agreement score (higher is better)")
@@ -74,7 +74,7 @@ test_that("quality view uses score tracks and explicit direction", {
 })
 
 test_that("legacy benchmark tiers are visible without changing method identity", {
-  result <- make_scop_benchmark_plot_result(rep("success", 3))
+  result <- make_benchmark_plot_result(rep("success", 3))
   result$summary$tier <- c("stable", "stable", "legacy")
   labels <- benchmark_plot_method_labels(result, result$summary$method)
   expect_identical(labels[[1]], "BayesSpace")
@@ -88,7 +88,7 @@ test_that("heatmap normalization respects metric direction", {
   expect_equal(benchmark_normalize_metric(c(2, 2), "higher"), c(0.5, 0.5))
 
   heatmap <- BenchmarkPlot(
-    data = make_scop_benchmark_plot_result(),
+    data = make_benchmark_plot_result(),
     plot_type = "heatmap"
   )
   expect_gte(length(heatmap$layers), 2L)
@@ -97,8 +97,8 @@ test_that("heatmap normalization respects metric direction", {
 })
 
 test_that("status strip appears only for incomplete runs", {
-  incomplete <- make_scop_benchmark_plot_result()
-  complete <- make_scop_benchmark_plot_result(rep("success", 3))
+  incomplete <- make_benchmark_plot_result()
+  complete <- make_benchmark_plot_result(rep("success", 3))
   incomplete_plot <- BenchmarkPlot(data = incomplete)
   complete_plot <- BenchmarkPlot(data = complete)
   expect_identical(incomplete_plot[[2]]$labels$title, "Incomplete runs")
@@ -113,7 +113,7 @@ test_that("legacy benchmark bar mode remains available", {
 })
 
 test_that("all-unavailable benchmark results render truthful empty panels", {
-  result <- make_scop_benchmark_plot_result(rep("unavailable", 3))
+  result <- make_benchmark_plot_result(rep("unavailable", 3))
   result$summary[, c(
     "ARI", "NMI", "purity", "runtime_s", "baseline_memory_mb",
     "peak_memory_mb", "memory_delta_mb"
@@ -138,7 +138,7 @@ test_that("all-unavailable benchmark results render truthful empty panels", {
 })
 
 test_that("zero or missing resource measurements do not fabricate efficiency points", {
-  result <- make_scop_benchmark_plot_result(rep("success", 3))
+  result <- make_benchmark_plot_result(rep("success", 3))
   result$summary$runtime_s <- c(0, NA, Inf)
   result$summary$peak_memory_mb <- c(100, NA, 200)
   plot <- BenchmarkPlot(data = result, plot_type = "efficiency")

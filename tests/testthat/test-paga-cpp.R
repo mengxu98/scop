@@ -44,7 +44,7 @@ make_paga_mock <- function(
 
 test_that("paga_connectivities_cpp returns a named list with correct fields", {
   dat <- make_paga_mock()
-  out <- scop:::paga_connectivities_cpp(
+  out <- paga_connectivities_cpp(
     knn_idx = dat$knn_idx,
     groups = dat$groups,
     n_groups = dat$n_groups
@@ -76,7 +76,7 @@ test_that("paga_connectivities_cpp returns a named list with correct fields", {
 
 test_that("connectivities are symmetric and bounded [0, 1]", {
   dat <- make_paga_mock(seed = 7)
-  out <- scop:::paga_connectivities_cpp(
+  out <- paga_connectivities_cpp(
     knn_idx = dat$knn_idx,
     groups = dat$groups,
     n_groups = dat$n_groups
@@ -89,7 +89,7 @@ test_that("connectivities are symmetric and bounded [0, 1]", {
 
 test_that("connectivities_tree is a maximum spanning tree (n_groups-1 non-zero edges)", {
   dat <- make_paga_mock(n_cells = 30, n_groups = 5, seed = 1)
-  out <- scop:::paga_connectivities_cpp(
+  out <- paga_connectivities_cpp(
     knn_idx = dat$knn_idx,
     groups = dat$groups,
     n_groups = dat$n_groups
@@ -105,7 +105,7 @@ test_that("connectivities_tree is a maximum spanning tree (n_groups-1 non-zero e
 
 test_that("directed_edges counts are non-negative integers", {
   dat <- make_paga_mock(seed = 3)
-  out <- scop:::paga_connectivities_cpp(
+  out <- paga_connectivities_cpp(
     knn_idx = dat$knn_idx,
     groups = dat$groups,
     n_groups = dat$n_groups
@@ -128,7 +128,7 @@ test_that("paga_connectivities_cpp works with exactly 2 groups", {
     candidates <- setdiff(seq_len(n_cells), i)
     knn_idx[i, ] <- sort(sample(candidates, 4))
   }
-  out <- scop:::paga_connectivities_cpp(
+  out <- paga_connectivities_cpp(
     knn_idx = knn_idx, groups = groups, n_groups = 2
   )
   expect_equal(dim(out$connectivities), c(2, 2))
@@ -148,7 +148,7 @@ test_that("paga_connectivities_cpp handles single group gracefully", {
     knn_idx[i, ] <- sort(sample(candidates, 3))
   }
   expect_error(
-    scop:::paga_connectivities_cpp(knn_idx = knn_idx, groups = groups, n_groups = 1),
+    paga_connectivities_cpp(knn_idx = knn_idx, groups = groups, n_groups = 1),
     NA  # should not error
   )
 })
@@ -167,7 +167,7 @@ test_that("paga_connectivities_cpp handles many-groups-sparse scenario", {
     candidates <- setdiff(seq_len(n_cells), i)
     knn_idx[i, ] <- sort(sample(candidates, 3))
   }
-  out <- scop:::paga_connectivities_cpp(
+  out <- paga_connectivities_cpp(
     knn_idx = knn_idx, groups = groups, n_groups = n_groups
   )
   expect_equal(dim(out$connectivities), c(n_groups, n_groups))
@@ -188,7 +188,7 @@ test_that("paga_connectivities_cpp handles single-cell groups", {
     candidates <- setdiff(seq_len(n_cells), i)
     knn_idx[i, ] <- sort(sample(candidates, min(3, length(candidates))))
   }
-  out <- scop:::paga_connectivities_cpp(
+  out <- paga_connectivities_cpp(
     knn_idx = knn_idx, groups = groups, n_groups = n_groups
   )
   expect_equal(dim(out$connectivities), c(6, 6))
@@ -201,10 +201,10 @@ test_that("paga_connectivities_cpp handles single-cell groups", {
 
 test_that("paga_connectivities_cpp is deterministic", {
   dat <- make_paga_mock(seed = 1)
-  out1 <- scop:::paga_connectivities_cpp(
+  out1 <- paga_connectivities_cpp(
     knn_idx = dat$knn_idx, groups = dat$groups, n_groups = dat$n_groups
   )
-  out2 <- scop:::paga_connectivities_cpp(
+  out2 <- paga_connectivities_cpp(
     knn_idx = dat$knn_idx, groups = dat$groups, n_groups = dat$n_groups
   )
   expect_equal(out1, out2)
@@ -216,7 +216,7 @@ test_that("paga_connectivities_cpp is deterministic", {
 
 test_that("group_sizes sum to n_cells and match groups input", {
   dat <- make_paga_mock(n_cells = 25, n_groups = 4, seed = 99)
-  out <- scop:::paga_connectivities_cpp(
+  out <- paga_connectivities_cpp(
     knn_idx = dat$knn_idx, groups = dat$groups, n_groups = dat$n_groups
   )
   expect_equal(sum(out$group_sizes), dat$n_cells)
@@ -233,7 +233,7 @@ test_that("group_sizes sum to n_cells and match groups input", {
 test_that("paga_connectivities_cpp rejects mismatched dimensions", {
   dat <- make_paga_mock()
   expect_error(
-    scop:::paga_connectivities_cpp(
+    paga_connectivities_cpp(
       knn_idx = dat$knn_idx[1:10, , drop = FALSE],
       groups = dat$groups,
       n_groups = dat$n_groups
@@ -245,7 +245,7 @@ test_that("paga_connectivities_cpp rejects mismatched dimensions", {
 test_that("paga_connectivities_cpp rejects negative n_groups", {
   dat <- make_paga_mock()
   expect_error(
-    scop:::paga_connectivities_cpp(
+    paga_connectivities_cpp(
       knn_idx = dat$knn_idx,
       groups = dat$groups,
       n_groups = -1L
@@ -259,7 +259,7 @@ test_that("paga_connectivities_cpp rejects groups with invalid indices", {
   bad_groups <- dat$groups
   bad_groups[1] <- 99L  # > n_groups
   expect_error(
-    scop:::paga_connectivities_cpp(
+    paga_connectivities_cpp(
       knn_idx = dat$knn_idx,
       groups = bad_groups,
       n_groups = dat$n_groups
@@ -287,7 +287,7 @@ test_that("directed_edges diagonal counts intra-group KNN edges", {
     candidates <- setdiff(candidates, i)
     knn_idx[i, ] <- sample(candidates, 3)
   }
-  out <- scop:::paga_connectivities_cpp(
+  out <- paga_connectivities_cpp(
     knn_idx = knn_idx, groups = groups, n_groups = 2L
   )
   # Directed edges between different groups should be 0

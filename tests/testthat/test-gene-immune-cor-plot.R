@@ -6,7 +6,7 @@ test_that("GeneImmuneCorPlot variable-column filtering matches legacy variance c
   )
 
   legacy <- apply(values, 2, function(x) stats::var(x, na.rm = TRUE) > 0)
-  fast <- scop:::gene_immune_variable_columns(values)
+  fast <- gene_immune_variable_columns(values)
 
   expect_identical(fast, legacy)
 })

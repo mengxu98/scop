@@ -23,7 +23,7 @@ test_that("Seurat and SpatialExperiment converters preserve coordinates", {
 })
 
 test_that("SpatialExperiment bridges are registered and discoverable", {
-  registry <- scop:::spatial_method_registry()
+  registry <- spatial_method_registry()
   bridges <- registry[registry$method %in% c("srt_to_spe", "spe_to_srt"), ]
   expect_setequal(bridges$method, c("srt_to_spe", "spe_to_srt"))
   expect_true(all(bridges$kind == "bridge"))

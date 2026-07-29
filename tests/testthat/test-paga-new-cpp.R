@@ -27,7 +27,7 @@ make_paga_mock <- function(n_cells = 20, n_groups = 3, n_neighbors = 5, seed = 4
 
 test_that("paga_velocity_transitions_cpp returns valid structure", {
   dat <- make_paga_mock()
-  out <- scop:::paga_velocity_transitions_cpp(
+  out <- paga_velocity_transitions_cpp(
     velocity_embedding = dat$velocity_embedding,
     knn_idx = dat$knn_idx,
     groups = dat$groups,
@@ -47,10 +47,10 @@ test_that("paga_velocity_transitions_cpp returns valid structure", {
 
 test_that("paga velocity transitions is deterministic", {
   dat <- make_paga_mock(seed = 11)
-  out1 <- scop:::paga_velocity_transitions_cpp(
+  out1 <- paga_velocity_transitions_cpp(
     dat$velocity_embedding, dat$knn_idx, dat$groups, dat$n_groups
   )
-  out2 <- scop:::paga_velocity_transitions_cpp(
+  out2 <- paga_velocity_transitions_cpp(
     dat$velocity_embedding, dat$knn_idx, dat$groups, dat$n_groups
   )
   expect_equal(out1$transitions_confidence, out2$transitions_confidence)
@@ -58,10 +58,10 @@ test_that("paga velocity transitions is deterministic", {
 
 test_that("velocity transitions with softmax_scale parameter", {
   dat <- make_paga_mock()
-  out1 <- scop:::paga_velocity_transitions_cpp(
+  out1 <- paga_velocity_transitions_cpp(
     dat$velocity_embedding, dat$knn_idx, dat$groups, dat$n_groups, softmax_scale = 4.0
   )
-  out2 <- scop:::paga_velocity_transitions_cpp(
+  out2 <- paga_velocity_transitions_cpp(
     dat$velocity_embedding, dat$knn_idx, dat$groups, dat$n_groups, softmax_scale = 1.0
   )
   expect_equal(dim(out1$transitions_confidence), dim(out2$transitions_confidence))
@@ -71,7 +71,7 @@ test_that("velocity transitions with softmax_scale parameter", {
 
 test_that("group_sizes from velocity transitions match input", {
   dat <- make_paga_mock(n_cells = 30, n_groups = 4, seed = 5)
-  out <- scop:::paga_velocity_transitions_cpp(
+  out <- paga_velocity_transitions_cpp(
     dat$velocity_embedding, dat$knn_idx, dat$groups, dat$n_groups
   )
   expect_length(out$group_sizes, dat$n_groups)
@@ -84,7 +84,7 @@ test_that("group_sizes from velocity transitions match input", {
 
 test_that("paga_root_cell_cpp returns valid cell indices", {
   dat <- make_paga_mock()
-  root_cells <- scop:::paga_root_cell_cpp(
+  root_cells <- paga_root_cell_cpp(
     embedding = dat$embedding,
     groups = dat$groups,
     root_group = 1L
@@ -106,7 +106,7 @@ test_that("root cell first entry is in specified group", {
 
   for (g in 1:n_groups) {
     if (any(groups == g)) {
-      root_cells <- scop:::paga_root_cell_cpp(embedding, as.integer(groups), as.integer(g))
+      root_cells <- paga_root_cell_cpp(embedding, as.integer(groups), as.integer(g))
       expect_equal(groups[root_cells[1]], g)
     }
   }
@@ -114,8 +114,8 @@ test_that("root cell first entry is in specified group", {
 
 test_that("root cell is deterministic for same input", {
   dat <- make_paga_mock(seed = 42)
-  root1 <- scop:::paga_root_cell_cpp(dat$embedding, dat$groups, 1L)
-  root2 <- scop:::paga_root_cell_cpp(dat$embedding, dat$groups, 1L)
+  root1 <- paga_root_cell_cpp(dat$embedding, dat$groups, 1L)
+  root2 <- paga_root_cell_cpp(dat$embedding, dat$groups, 1L)
   expect_equal(root1, root2)
 })
 
@@ -130,7 +130,7 @@ test_that("paga_diffusion_pseudotime_cpp returns valid structure", {
   con <- (con + t(con)) / 2
   diag(con) <- 1
 
-  out <- scop:::paga_diffusion_pseudotime_cpp(
+  out <- paga_diffusion_pseudotime_cpp(
     connectivities = con, root_group = 1L, n_dcs = 3L,
     n_branchings = 0L, min_group_size = 0.01
   )
@@ -152,7 +152,7 @@ test_that("DPT root group has pseudotime 0", {
   con <- (con + t(con)) / 2
   diag(con) <- 1
 
-  out <- scop:::paga_diffusion_pseudotime_cpp(con, root_group = 1L, n_dcs = 3L)
+  out <- paga_diffusion_pseudotime_cpp(con, root_group = 1L, n_dcs = 3L)
   # Root group (group 1, index 1) should have pseudotime 0
   expect_equal(out$pseudotime[out$root_group], 0, tolerance = 1e-10)
 })
@@ -168,6 +168,6 @@ test_that("DPT with n_branchings returns branch count", {
     if (con[i, j] == 0 && i != j) con[i, j] <- 0.05
   }
 
-  out <- scop:::paga_diffusion_pseudotime_cpp(con, 1L, n_dcs = 3L, n_branchings = 2L, min_group_size = 0.01)
+  out <- paga_diffusion_pseudotime_cpp(con, 1L, n_dcs = 3L, n_branchings = 2L, min_group_size = 0.01)
   expect_true(out$n_branchings_found >= 0)
 })

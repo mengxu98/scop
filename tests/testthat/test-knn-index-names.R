@@ -7,7 +7,7 @@ test_that("KNN index-to-name conversion preserves the apply reference result", {
   reference_names <- paste0("ref_", 1:4)
 
   expected <- apply(indices, c(1, 2), function(i) reference_names[i])
-  actual <- scop:::knn_indices_to_names(indices, reference_names)
+  actual <- knn_indices_to_names(indices, reference_names)
 
   expect_identical(actual, expected)
 })
@@ -18,7 +18,7 @@ test_that("KNN index-to-name conversion is vectorized for large index matrices",
   reference_names <- paste0("ref_", seq_len(5000L))
 
   expect_identical(
-    scop:::knn_indices_to_names(indices, reference_names),
+    knn_indices_to_names(indices, reference_names),
     apply(indices, c(1, 2), function(i) reference_names[i])
   )
 })

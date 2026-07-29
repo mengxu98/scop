@@ -23,7 +23,7 @@ add_spatial_deconvolution_result <- function(srt, key, method, producer) {
     byrow = TRUE,
     dimnames = list(colnames(srt), c("Alpha", "Beta"))
   )
-  srt@tools[[key]] <- scop:::spatial_result_build(
+  srt@tools[[key]] <- spatial_result_build(
     bundle = list(proportions = proportions, cells = colnames(srt)),
     method = method,
     result_type = "deconvolution",

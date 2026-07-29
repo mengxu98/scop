@@ -125,7 +125,7 @@ test_that("dense gene-set variable-row filtering matches the R reference", {
   })
 
   expect_identical(
-    scop:::gene_set_scoring_keep_variable_rows(expr),
+    gene_set_scoring_keep_variable_rows(expr),
     expr[legacy_keep, , drop = FALSE]
   )
 })
@@ -149,7 +149,7 @@ test_that("sparse gene-set variable-row filtering matches stored-value semantics
   expected_keep[as.integer(names(legacy_keep))] <- legacy_keep
 
   expect_identical(
-    scop:::gene_set_scoring_keep_variable_rows(expr),
+    gene_set_scoring_keep_variable_rows(expr),
     expr[expected_keep, , drop = FALSE]
   )
 })
@@ -169,7 +169,7 @@ test_that("ssGSEA sparse ranking matches full ranking with negative values", {
   )
   gene_sets <- list(c(1L, 3L, 5L), c(2L, 4L, 6L), c(1L, 2L, 6L))
 
-  cpp <- scop:::ssgsea_rank_dense(
+  cpp <- ssgsea_rank_dense(
     methods::as(Matrix::Matrix(expr, sparse = TRUE), "dgCMatrix"),
     gene_sets,
     alpha = 0.25,
@@ -186,7 +186,7 @@ test_that("PLAGE gene-gene covariance path matches right singular vector scores"
   expr[expr < 2] <- 0
   gene_sets <- list(1:8, 5:20, 1:35)
 
-  cpp <- scop:::plage_dense(
+  cpp <- plage_dense(
     methods::as(Matrix::Matrix(expr, sparse = TRUE), "dgCMatrix"),
     gene_sets,
     min_size = 1L,
@@ -208,9 +208,9 @@ test_that("PLAGE sparse standardization matches GSVA", {
   expr <- methods::as(Matrix::Matrix(expr, sparse = TRUE), "dgCMatrix")
   gene_sets <- list(a = rownames(expr)[1:7], b = rownames(expr)[5:15])
 
-  cpp <- t(scop:::run_plage_scores(
+  cpp <- t(run_plage_scores(
     expr, gene_sets, min_gs_size = 1L, max_gs_size = 50L,
-    dense_standardize = scop:::gene_set_scoring_plage_dense_standardize()
+    dense_standardize = gene_set_scoring_plage_dense_standardize()
   ))
   reference <- GSVA::gsva(
     GSVA::plageParam(
@@ -234,21 +234,21 @@ test_that("PLAGE dense standardization matches the CellScoring GSVA contract", {
   colnames(expr) <- paste0("c", seq_len(ncol(expr)))
   gene_sets <- list(a = rownames(expr)[1:8], b = rownames(expr)[6:16])
 
-  cpp <- t(scop:::run_plage_scores(
+  cpp <- t(run_plage_scores(
     methods::as(Matrix::Matrix(expr, sparse = TRUE), "dgCMatrix"),
     gene_sets,
     min_gs_size = 1L,
     max_gs_size = 50L,
     dense_standardize = TRUE
   ))
-  cpp <- scop:::orient_plage_scores(cpp, expr, gene_sets)
+  cpp <- orient_plage_scores(cpp, expr, gene_sets)
   reference <- GSVA::gsva(
     GSVA::plageParam(
       exprData = expr, geneSets = gene_sets, minSize = 1L, maxSize = 50L
     ),
     verbose = FALSE
   )
-  reference <- scop:::orient_plage_scores(reference, expr, gene_sets)
+  reference <- orient_plage_scores(reference, expr, gene_sets)
 
   expect_identical(dim(cpp), dim(reference))
   expect_equal(as.numeric(cpp), as.numeric(reference), tolerance = 1e-10)
@@ -264,13 +264,13 @@ test_that("z-score sparse standardization matches the RunGSVA GSVA contract", {
   expr_sparse <- methods::as(Matrix::Matrix(expr, sparse = TRUE), "dgCMatrix")
   gene_sets <- list(a = rownames(expr)[1:8], b = rownames(expr)[6:16])
 
-  cpp <- t(scop:::run_zscore_scores(
+  cpp <- t(run_zscore_scores(
     expr_sparse,
     gene_sets,
     min_gs_size = 1L,
     max_gs_size = 50L,
-    sparse_standardize = !scop:::gene_set_scoring_zscore_sparse_standardize_full(),
-    sparse_standardize_full = scop:::gene_set_scoring_zscore_sparse_standardize_full()
+    sparse_standardize = !gene_set_scoring_zscore_sparse_standardize_full(),
+    sparse_standardize_full = gene_set_scoring_zscore_sparse_standardize_full()
   ))
   reference <- GSVA::gsva(
     GSVA::zscoreParam(
@@ -293,7 +293,7 @@ test_that("GSVA sparse delegated kernel preserves the GSVA default contract", {
   expr_sparse <- methods::as(Matrix::Matrix(expr, sparse = TRUE), "dgCMatrix")
   gene_sets <- list(a = rownames(expr)[1:8], b = rownames(expr)[6:16])
 
-  delegated <- t(scop:::run_gsva_scores(
+  delegated <- t(run_gsva_scores(
     expr_sparse,
     gene_sets,
     kcdf = "Gaussian",
@@ -326,7 +326,7 @@ test_that("native Gaussian GSVA is an opt-in result-compatible kernel", {
   expr_sparse <- methods::as(Matrix::Matrix(expr, sparse = TRUE), "dgCMatrix")
   gene_sets <- list(a = rownames(expr)[1:12], b = rownames(expr)[14:32])
 
-  native <- scop:::run_gsva_scores(
+  native <- run_gsva_scores(
     expr_sparse,
     gene_sets,
     kcdf = "Gaussian",
@@ -335,7 +335,7 @@ test_that("native Gaussian GSVA is an opt-in result-compatible kernel", {
     sparse = FALSE,
     kernel = "native"
   )
-  delegated <- scop:::run_gsva_scores(
+  delegated <- run_gsva_scores(
     expr_sparse,
     gene_sets,
     kcdf = "Gaussian",
@@ -351,7 +351,7 @@ test_that("native Gaussian GSVA is an opt-in result-compatible kernel", {
   }, numeric(1L))
   expect_gte(min(correlations), 0.95)
   expect_error(
-    scop:::run_gsva_scores(
+    run_gsva_scores(
       expr_sparse,
       gene_sets,
       kcdf = "Poisson",

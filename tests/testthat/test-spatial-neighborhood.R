@@ -127,7 +127,7 @@ test_that("spicyR empty and malformed outputs cannot impersonate observed result
     fraction = 0.5, stringsAsFactors = FALSE
   )
   expect_error(
-    scop:::spatial_neighborhood_standardize_pair_table(
+    spatial_neighborhood_standardize_pair_table(
       list(raw = list(), table = data.frame()),
       observed,
       "spicyR"
@@ -135,7 +135,7 @@ test_that("spicyR empty and malformed outputs cannot impersonate observed result
     "returned no"
   )
   expect_error(
-    scop:::spatial_neighborhood_standardize_pair_table(
+    spatial_neighborhood_standardize_pair_table(
       list(raw = list(), table = data.frame(estimate = 1)),
       observed,
       "spicyR"
@@ -143,7 +143,7 @@ test_that("spicyR empty and malformed outputs cannot impersonate observed result
     "incompatible result"
   )
   expect_identical(
-    scop:::spatial_neighborhood_standardize_pair_table(
+    spatial_neighborhood_standardize_pair_table(
       list(raw = NULL, table = NULL),
       observed,
       "observed"

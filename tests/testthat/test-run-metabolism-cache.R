@@ -1,5 +1,5 @@
 test_that("RunMetabolism caches repeated BioMart conversion inputs", {
-  cache <- scop:::.scmetabolism_conversion_cache
+  cache <- .scmetabolism_conversion_cache
   rm(list = ls(envir = cache, all.names = TRUE), envir = cache)
   calls <- 0L
   expected <- list(
@@ -16,13 +16,13 @@ test_that("RunMetabolism caches repeated BioMart conversion inputs", {
     .package = "scop"
   )
 
-  first <- scop:::scmetabolism_convert_genes(
+  first <- scmetabolism_convert_genes(
     all_human_genes = c("GAPDH", "ACTB"),
     species = "Mus_musculus",
     Ensembl_version = 116,
     verbose = FALSE
   )
-  second <- scop:::scmetabolism_convert_genes(
+  second <- scmetabolism_convert_genes(
     all_human_genes = c("GAPDH", "ACTB"),
     species = "Mus_musculus",
     Ensembl_version = 116,

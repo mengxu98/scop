@@ -144,11 +144,11 @@ test_that("RunGiottoCluster runs with installed Giotto", {
   expect_false(getOption("giotto.no_python_warn"))
 })
 
-test_that("standard_spatial_scop does not dispatch to standalone Giotto results", {
+test_that("run_standard_spatial_workflow does not dispatch to standalone Giotto results", {
   srt <- make_giotto_cluster_seurat()
 
   expect_error(
-    standard_scop(
+    RunStandardWorkflow(
       srt,
       workflow = "spatial",
       assay = "RNA",
