@@ -51,6 +51,27 @@ test_that("scalar validation helpers preserve supported backend rules", {
   expect_invisible(validate_scalar_flag(TRUE, "flag"))
   expect_error(validate_scalar_flag(1, "flag"), "flag.*TRUE or FALSE")
   expect_error(validate_scalar_flag(NA, "flag"), "flag.*TRUE or FALSE")
+
+  expect_identical(validate_scalar_integer(2L, "count"), 2L)
+  expect_identical(
+    validate_scalar_integer(
+      0,
+      "count",
+      minimum = 0L,
+      message = "must be a non-negative integer"
+    ),
+    0L
+  )
+  expect_error(validate_scalar_integer(2.8, "count"), "positive integer")
+  expect_error(
+    validate_scalar_integer(
+      -1,
+      "count",
+      minimum = 0L,
+      message = "must be a non-negative integer"
+    ),
+    "non-negative integer"
+  )
 })
 
 test_that("shared Seurat validation preserves backend errors", {

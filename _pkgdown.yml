@@ -381,6 +381,7 @@ reference:
 
 - subtitle: "Dynamic Trajectory Analysis"
 - contents:
+  - RunCell2fate
   - RunCellRank
   - RunMonocle2
   - RunMonocle3

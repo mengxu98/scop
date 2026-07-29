@@ -23,12 +23,12 @@
 #' @param modules Optional Python dependency modules to install in addition to
 #' the default scientific stack.
 #' If `NULL` or omitted in [PrepareEnv()], the default environment is installed.
-#' The default excludes `"cell2location"`, `"sccoda"`, and `"scomm"` because
-#' cell2location is a long-running explicit workflow and the TensorFlow stacks
-#' are not compatible with the default JAX/scVI stack in the same environment;
-#' request them explicitly for scCODA/scOMM workflows. `"scenic"` is also
-#' excluded from the default environment and is prepared in `"scenic_env"` by
-#' default because SCENIC requires an older Python/numpy stack. On Windows, the
+#' The default excludes `"cell2location"`, `"cell2fate"`, `"sccoda"`, and
+#' `"scomm"` because these workflows use long-running or incompatible dependency
+#' stacks. Cell2fate is prepared in a standalone `"cell2fate_env"` with Python
+#' 3.9. `"scenic"` is also excluded from the default environment and is prepared
+#' in `"scenic_env"` by default because SCENIC requires an older Python/numpy
+#' stack. On Windows, the
 #' default also excludes `"scvi"`, `"glue"`, and `"multimap"` because those
 #' upstream stacks are more reliable when requested explicitly for
 #' method-specific workflows.
@@ -90,6 +90,24 @@ PrepareEnv <- function(
         message_type = "warning"
       )
       version <- "3.10-1"
+    }
+  }
+  if ("cell2fate" %in% modules) {
+    if (length(setdiff(modules, "cell2fate")) > 0) {
+      log_message(
+        "{.arg modules = 'cell2fate'} must be prepared as a standalone environment.",
+        message_type = "error"
+      )
+    }
+    if (is.null(envname)) {
+      envname <- "cell2fate_env"
+    }
+    if (!identical(version, "3.9-1")) {
+      log_message(
+        "{.pkg cell2fate} requires its upstream Python 3.9 dependency stack; using {.val 3.9-1} in {.val {envname}}.",
+        message_type = "warning"
+      )
+      version <- "3.9-1"
     }
   }
   envname <- get_envname(envname)
@@ -321,12 +339,21 @@ PrepareEnv <- function(
       packages = pip_packages,
       envname = envname,
       conda = conda,
-      force = force,
+      force = if ("cell2fate" %in% modules) FALSE else force,
       pip = TRUE,
       pip_options = pip_options,
       verbose = FALSE,
       ...
     )) && install_ok
+  }
+
+  if ("cell2fate" %in% modules) {
+    install_ok <- all(exist_python_pkgs(
+      packages = packages,
+      envname = envname,
+      conda = conda,
+      verbose = FALSE
+    ))
   }
 
   if ("scvi" %in% modules) {
@@ -404,6 +431,7 @@ supported_env_modules <- function() {
     "celltypist",
     "cellphonedb",
     "cell2location",
+    "cell2fate",
     "magic",
     "scfea",
     "scrublet",
@@ -434,6 +462,7 @@ default_env_modules <- function() {
   excluded <- c(
     "scfea",
     "cell2location",
+    "cell2fate",
     "sccoda",
     "scomm",
     "scenic",
@@ -489,6 +518,7 @@ env_module_requirements <- function() {
     celltypist = celltypist_python_requirements(),
     cellphonedb = cellphonedb_python_requirements(),
     cell2location = cell2location_python_requirements(),
+    cell2fate = cell2fate_python_requirements(),
     magic = magic_python_requirements(),
     scfea = scfea_python_requirements(),
     scrublet = scrublet_python_requirements(),
@@ -544,6 +574,13 @@ normalize_env_modules <- function(modules = NULL, include_optional = FALSE) {
       "scmalignantfinder",
       "secact",
       "scpagwas"
+    )
+  }
+
+  if ("cell2fate" %in% modules && length(setdiff(modules, "cell2fate")) > 0) {
+    log_message(
+      "{.arg modules = 'cell2fate'} must be used as a standalone environment module.",
+      message_type = "error"
     )
   }
 
@@ -1382,13 +1419,14 @@ env_info <- function(conda, envname, verbose = TRUE) {
 #' @param include_optional Whether to include optional Python dependencies.
 #' @param modules Optional requirement modules to include. Supported values are
 #' `"scanpy"`, `"scvi"`, `"scanorama"`, `"bbknn"`, `"celltypist"`,
-#' `"cellphonedb"`, `"cell2location"`, `"magic"`, `"scrublet"`, `"doubletdetection"`,
+#' `"cellphonedb"`, `"cell2location"`, `"cell2fate"`, `"magic"`, `"scrublet"`, `"doubletdetection"`,
 #' `"sccoda"`, `"doublet"`, `"palantir"`, `"scvelo"`, `"cellrank"`, `"wot"`,
 #' `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`,
 #' `"scomm"`, `"scenic"`, `"seacells"`, `"tage"`,
 #' `"scmalignantfinder"`, `"secact"`, `"scpagwas"`, and
 #' `"external_wrappers"`. If `NULL`, the default environment is returned. The default
-#' excludes `"cell2location"`, `"sccoda"`, `"scomm"`, and `"scenic"` because these workflows
+#' excludes `"cell2location"`, `"cell2fate"`, `"sccoda"`, `"scomm"`, and
+#' `"scenic"` because these workflows
 #' require dependency stacks that should be prepared explicitly. The
 #' `"scenic"` module is standalone and always uses Python `"3.10-1"`.
 #'
@@ -1411,7 +1449,7 @@ env_requirements <- function(
 ) {
   version <- match.arg(
     version,
-    choices = c("3.10-1", "3.11-1")
+    choices = c("3.9-1", "3.10-1", "3.11-1")
   )
   modules <- normalize_env_modules(
     modules = modules,
@@ -1427,8 +1465,17 @@ env_requirements <- function(
     }
     version <- "3.10-1"
   }
+  if ("cell2fate" %in% modules) {
+    if (length(setdiff(modules, "cell2fate")) > 0) {
+      log_message(
+        "{.arg modules = 'cell2fate'} must be used as a standalone environment module.",
+        message_type = "error"
+      )
+    }
+    version <- "3.9-1"
+  }
 
-  base_requirements <- if ("scenic" %in% modules) {
+  base_requirements <- if (any(c("scenic", "cell2fate") %in% modules)) {
     scenic_core_python_requirements()
   } else {
     core_python_requirements()
@@ -1586,6 +1633,23 @@ cell2location_python_requirements <- function() {
     ),
     install_methods = c(
       "cell2location" = "pip"
+    ),
+    package_aliases = list()
+  )
+}
+
+cell2fate_python_requirements <- function() {
+  list(
+    packages = c(
+      "jaxlib" = "jaxlib==0.4.10",
+      "cell2fate" = paste0(
+        "git+https://github.com/BayraktarLab/cell2fate.git@",
+        "c03d1ca0bb963f550001c6070d4986a61ec8456a"
+      )
+    ),
+    install_methods = c(
+      "jaxlib" = "conda",
+      "cell2fate" = "pip"
     ),
     package_aliases = list()
   )
