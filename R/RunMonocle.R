@@ -2,7 +2,7 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams GroupHeatmap
 #' @inheritParams CellDimPlot
 #' @param expressionFamily The distribution family to use for modeling gene expression.
@@ -62,7 +62,7 @@
 #' @examples
 #' if (interactive()) {
 #'   data(pancreas_sub)
-#'   pancreas_sub <- standard_scop(pancreas_sub)
+#'   pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #'   pancreas_sub <- RunMonocle2(
 #'     pancreas_sub,
 #'     group.by = "SubCellType"
@@ -874,7 +874,7 @@ monocle2_cpp_resolve_root_state <- function(srt, root_state = NULL, group.by = N
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams FeatureDimPlot
 #' @inheritParams GroupHeatmap
 #' @inheritParams CellDimPlot
@@ -911,7 +911,7 @@ monocle2_cpp_resolve_root_state <- function(srt, root_state = NULL, group.by = N
 #' @examples
 #' if (interactive()) {
 #'   data(pancreas_sub)
-#'   pancreas_sub <- standard_scop(pancreas_sub)
+#'   pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #'   pancreas_sub <- RunMonocle3(
 #'     pancreas_sub,
 #'     reduction = "UMAP"
@@ -975,7 +975,7 @@ monocle2_cpp_resolve_root_state <- function(srt, root_state = NULL, group.by = N
 #'   }
 #'
 #'   # Use Seurat clusters to infer the trajectories
-#'   pancreas_sub <- standard_scop(pancreas_sub)
+#'   pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #'   CellDimPlot(
 #'     pancreas_sub,
 #'     group.by = c("Standardclusters", "CellType"),
@@ -1011,7 +1011,7 @@ monocle2_cpp_resolve_root_state <- function(srt, root_state = NULL, group.by = N
 #'
 #'   # Use custom graphs and cell clusters to infer
 #'   # the partitions and trajectories, respectively
-#'   pancreas_sub <- standard_scop(
+#'   pancreas_sub <- RunStandardWorkflow(
 #'     pancreas_sub,
 #'     cluster_resolution = 5
 #'   )

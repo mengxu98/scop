@@ -347,7 +347,7 @@ spatial_dim_long_plot <- function(
     pt.size <- min(3000 / nrow(df), 2)
   }
 
-  theme_obj <- scop_spatial_theme(
+  theme_obj <- spatial_theme(
     theme_use = theme_use,
     theme_args = theme_args,
     show_axes = show_axes
@@ -439,7 +439,7 @@ spatial_dim_long_plot <- function(
     p <- p + ggplot2::facet_wrap(stats::as.formula(paste("~", split.by)))
   }
   if (isTRUE(crop)) {
-    limits <- scop_spatial_crop_limits(df$x, df$y)
+    limits <- spatial_crop_limits(df$x, df$y)
     p <- p +
       ggplot2::coord_equal(
         xlim = limits$xlim,
@@ -503,7 +503,7 @@ spatial_dim_pie_plot <- function(
   mat <- mat[keep, , drop = FALSE]
   if (nrow(dat) == 0L) {
     return(
-      scop_spatial_empty_plot(
+      spatial_empty_plot(
         "No spots with positive pie values",
         title = legend.title %||% "Proportion",
         theme_use = theme_use,
@@ -534,7 +534,7 @@ spatial_dim_pie_plot <- function(
     palette = palette,
     palcolor = palcolor
   )
-  theme_obj <- scop_spatial_theme(
+  theme_obj <- spatial_theme(
     theme_use = theme_use,
     theme_args = theme_args,
     show_axes = show_axes
@@ -573,7 +573,7 @@ spatial_dim_pie_plot <- function(
   }
   if (isTRUE(crop)) {
     radius_max <- max(plot_dat[[".radius"]], na.rm = TRUE)
-    limits <- scop_spatial_crop_limits(plot_dat$x, plot_dat$y, min_pad = radius_max)
+    limits <- spatial_crop_limits(plot_dat$x, plot_dat$y, min_pad = radius_max)
     p <- p +
       ggplot2::coord_equal(
         xlim = limits$xlim,
@@ -914,7 +914,7 @@ spatial_dim_single_plot <- function(
   theme_args = list(),
   show_axes = FALSE
 ) {
-  theme_obj <- scop_spatial_theme(
+  theme_obj <- spatial_theme(
     theme_use = theme_use,
     theme_args = theme_args,
     show_axes = show_axes
@@ -933,7 +933,7 @@ spatial_dim_single_plot <- function(
 
   values <- plot_dat[[value_col]]
   if (nrow(plot_dat) == 0L || all(is.na(values))) {
-    return(scop_spatial_empty_plot(
+    return(spatial_empty_plot(
       "No values available for plotting",
       title = value_name,
       theme_use = theme_use,
@@ -985,7 +985,7 @@ spatial_dim_single_plot <- function(
     p <- p + ggplot2::scale_y_reverse()
   }
   if (isTRUE(crop)) {
-    limits <- scop_spatial_crop_limits(plot_dat$x, plot_dat$y)
+    limits <- spatial_crop_limits(plot_dat$x, plot_dat$y)
     p <- p +
       ggplot2::coord_equal(
         xlim = limits$xlim,

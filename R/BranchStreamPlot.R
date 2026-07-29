@@ -57,8 +57,6 @@
 #' @param title Plot title. `NULL` hides the title for merged/single panels.
 #' When multiple lineages are plotted and `title` is `NULL`, each panel is
 #' titled with its lineage column.
-#' @param combine Whether to combine multiple lineage plots with `patchwork`.
-#' @param nrow,ncol,byrow Layout controls for combined lineage plots.
 #'
 #' @return A `ggplot` object.
 #' @export

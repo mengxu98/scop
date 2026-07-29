@@ -1,7 +1,7 @@
 #' @title Run scTenifoldKnk in-silico knockout analysis
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
 #' @param layer Assay layer used as the count matrix.
 #' @param gKO Gene symbol or symbols to knock out. All genes must be present
@@ -625,7 +625,7 @@ sctenifold_dregulation <- function(manifold_output, gko) {
 #' @title Run scTenifoldNet network comparison
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
 #' @param object A `Seurat` object or a raw count matrix with genes in rows and
 #' cells in columns.

@@ -1,4 +1,4 @@
-scop_expr_input <- function(object, assay = NULL, layer = "data") {
+resolve_expression_input <- function(object, assay = NULL, layer = "data") {
   if (inherits(object, "Seurat")) {
     assay <- assay %||% SeuratObject::DefaultAssay(object)
     return(list(
@@ -15,7 +15,195 @@ scop_expr_input <- function(object, assay = NULL, layer = "data") {
   )
 }
 
-resolve_scop_features <- function(mat, features = NULL, nfeatures = 2000) {
+validate_named_param_list <- function(
+  x,
+  arg,
+  require_list = FALSE,
+  type_message = "must be a list",
+  names_message = "must contain named arguments only"
+) {
+  if (isTRUE(require_list) && !is.list(x)) {
+    log_message(
+      paste("{.arg {arg}}", type_message),
+      message_type = "error"
+    )
+  }
+  if (length(x) == 0L) {
+    return(invisible(TRUE))
+  }
+  nms <- names(x)
+  if (is.null(nms) || any(is.na(nms) | !nzchar(nms))) {
+    log_message(
+      paste("{.arg {arg}}", names_message),
+      message_type = "error"
+    )
+  }
+  invisible(TRUE)
+}
+
+validate_named_list <- function(x, arg) {
+  validate_named_param_list(
+    x,
+    arg,
+    require_list = TRUE,
+    type_message = "must be a named list",
+    names_message = "must be a named list"
+  )
+}
+
+validate_scalar_string <- function(
+  x,
+  arg,
+  require_character = TRUE,
+  message = "must be a single non-empty string"
+) {
+  if (
+    (isTRUE(require_character) && !is.character(x)) ||
+      is.null(x) ||
+      length(x) != 1L ||
+      is.na(x) ||
+      !nzchar(x)
+  ) {
+    log_message(
+      paste("{.arg {arg}}", message),
+      message_type = "error"
+    )
+  }
+  invisible(TRUE)
+}
+
+validate_scalar_flag <- function(x, arg) {
+  if (!is.logical(x) || length(x) != 1L || is.na(x)) {
+    log_message(
+      "{.arg {arg}} must be TRUE or FALSE",
+      message_type = "error"
+    )
+  }
+  invisible(TRUE)
+}
+
+validate_seurat_object <- function(srt) {
+  if (!inherits(srt, "Seurat")) {
+    log_message(
+      "{.arg srt} must be a {.cls Seurat} object",
+      message_type = "error"
+    )
+  }
+  invisible(TRUE)
+}
+
+validate_positive_integer <- function(x, arg) {
+  if (length(x) != 1L || is.na(x) || !is.finite(x) || x < 1) {
+    log_message(
+      "{.arg {arg}} must be a positive integer",
+      message_type = "error"
+    )
+  }
+  as.integer(x)
+}
+
+resolve_reference_labels <- function(reference, reference_label) {
+  if (
+    missing(reference_label) ||
+      is.null(reference_label) ||
+      length(reference_label) != 1L
+  ) {
+    log_message(
+      "{.arg reference_label} must be a single reference metadata column",
+      message_type = "error"
+    )
+  }
+  if (!reference_label %in% colnames(reference[[]])) {
+    log_message(
+      "{.arg reference_label} {.val {reference_label}} is not present in {.arg reference}",
+      message_type = "error"
+    )
+  }
+  reference[[reference_label, drop = TRUE]]
+}
+
+resolve_common_features <- function(
+  srt,
+  reference,
+  assay,
+  reference_assay,
+  features = NULL
+) {
+  common <- intersect(
+    rownames(srt[[assay]]),
+    rownames(reference[[reference_assay]])
+  )
+  if (!is.null(features)) {
+    common <- intersect(features, common)
+  }
+  common
+}
+
+resolve_spatial_spot_coords <- function(
+  srt,
+  spot_ids,
+  image = NULL,
+  coord.cols = c("x", "y"),
+  coordinate_space = c("raw", "legacy_display")
+) {
+  coordinate_space <- match.arg(coordinate_space)
+  resolved <- spatial_analysis_coords(
+    srt = srt,
+    image = image,
+    coord.cols = coord.cols,
+    coordinate_space = coordinate_space,
+    image_policy = "strict"
+  )
+  matched <- match(spot_ids, resolved$data$cell_id)
+  if (anyNA(matched)) {
+    log_message(
+      "Spatial coordinates are missing for one or more requested spots",
+      message_type = "error"
+    )
+  }
+  coords <- resolved$data[matched, c("x", "y"), drop = FALSE]
+  rownames(coords) <- spot_ids
+  attr(coords, "spatial_source") <- resolved$source
+  attr(coords, "spatial_transform") <- resolved$transform
+  coords
+}
+
+collapse_parameter_value <- function(x) {
+  if (is.null(x)) {
+    return(NA_character_)
+  }
+  if (length(x) == 0L) {
+    return("")
+  }
+  paste(as.character(x), collapse = ",")
+}
+
+pick_case_insensitive_column <- function(x, candidates) {
+  nm <- colnames(x)
+  hit <- candidates[tolower(candidates) %in% tolower(nm)][1]
+  if (is.na(hit)) {
+    return(NULL)
+  }
+  nm[match(tolower(hit), tolower(nm))]
+}
+
+pick_numeric_column <- function(df, candidates) {
+  hit <- intersect(candidates, colnames(df))
+  if (length(hit) == 0L) {
+    return(rep(NA_real_, nrow(df)))
+  }
+  suppressWarnings(as.numeric(df[[hit[[1L]]]]))
+}
+
+resource_ref <- function(base, path) {
+  path <- gsub("^/+", "", path)
+  if (dir.exists(base)) {
+    return(file.path(base, path))
+  }
+  paste0(sub("/+$", "", base), "/", path)
+}
+
+resolve_method_features <- function(mat, features = NULL, nfeatures = 2000) {
   if (!is.null(features)) {
     features <- intersect(features, rownames(mat))
     if (length(features) == 0L) {
@@ -33,7 +221,7 @@ resolve_scop_features <- function(mat, features = NULL, nfeatures = 2000) {
   )
 }
 
-scop_scale_features <- function(mat) {
+scale_feature_matrix <- function(mat) {
   mat <- methods::as(Matrix::Matrix(mat, sparse = TRUE), "dgCMatrix")
   mu <- Matrix::rowMeans(mat)
   mu2 <- Matrix::rowMeans(mat^2)
@@ -65,7 +253,7 @@ fitdevo_spearman_weights <- function(scaled, target) {
 }
 
 fitdevo_score <- function(mat, target = NULL) {
-  scaled <- scop_scale_features(mat)
+  scaled <- scale_feature_matrix(mat)
   if (is.null(target)) {
     detection <- Matrix::rowMeans(
       methods::as(Matrix::Matrix(mat, sparse = TRUE), "dgCMatrix") > 0
@@ -198,7 +386,7 @@ vector_weighted_arrows <- function(grid_df, emb, p = 0.9, ol = 1.5) {
 }
 
 fwp_score <- function(mat, y = NULL, weights = NULL) {
-  scaled <- scop_scale_features(mat)
+  scaled <- scale_feature_matrix(mat)
   if (is.null(weights)) {
     weights <- rowMeans(scaled[, y == 1, drop = FALSE]) -
       rowMeans(scaled[, y == 0, drop = FALSE])

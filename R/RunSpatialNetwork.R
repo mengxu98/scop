@@ -53,9 +53,7 @@ RunSpatialNetwork <- function(
   if (!is.null(image) && (!is.character(image) || length(image) != 1L || is.na(image) || !nzchar(image))) {
     log_message("{.arg image} must be one non-empty image name", message_type = "error")
   }
-  if (!is.logical(overwrite) || length(overwrite) != 1L || is.na(overwrite)) {
-    log_message("{.arg overwrite} must be TRUE or FALSE", message_type = "error")
-  }
+  validate_scalar_flag(overwrite, "overwrite")
   method <- match.arg(method)
   coord_result <- spatial_coords_raw(
     srt = srt,

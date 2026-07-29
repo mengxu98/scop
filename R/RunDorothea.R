@@ -1,7 +1,7 @@
 #' @title Run DoRothEA transcription factor activity inference
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
 #' @param layer Assay layer used as the expression matrix.
 #' @param species Species used to select bundled DoRothEA regulons. DoRothEA
@@ -53,7 +53,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(
+#' pancreas_sub <- RunStandardWorkflow(
 #'   pancreas_sub,
 #'   verbose = FALSE
 #' )
@@ -397,7 +397,7 @@ dorothea_get_run_fun <- function(method) {
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub, verbose = FALSE)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub, verbose = FALSE)
 #' pancreas_sub <- RunDorothea(
 #'   pancreas_sub,
 #'   layer = "counts",

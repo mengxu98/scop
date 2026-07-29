@@ -62,7 +62,7 @@ RunSemlaSpatialNetwork <- function(
   verbose = TRUE,
   ...
 ) {
-  semla_validate_srt(srt)
+  validate_seurat_object(srt)
   semla_require(verbose = verbose)
   image_type <- match.arg(image_type, c("tissue_lowres", "tissue_hires"))
   coords <- match.arg(coords, c("pixels", "array"))
@@ -160,7 +160,7 @@ RunSemlaLocalG <- function(
   verbose = TRUE,
   ...
 ) {
-  semla_validate_srt(srt)
+  validate_seurat_object(srt)
   semla_require(verbose = verbose)
   image_type <- match.arg(image_type, c("tissue_lowres", "tissue_hires"))
   srt <- semla_prepare_srt(
@@ -263,7 +263,7 @@ RunSemlaRegionNeighbors <- function(
   verbose = TRUE,
   ...
 ) {
-  semla_validate_srt(srt)
+  validate_seurat_object(srt)
   semla_require(verbose = verbose)
   image_type <- match.arg(image_type, c("tissue_lowres", "tissue_hires"))
   mode <- match.arg(mode, c("outer", "inner", "inner_outer", "all_inner_outer"))
@@ -369,7 +369,7 @@ RunSemlaRadialDistance <- function(
   verbose = TRUE,
   ...
 ) {
-  semla_validate_srt(srt)
+  validate_seurat_object(srt)
   semla_require(verbose = verbose)
   image_type <- match.arg(image_type, c("tissue_lowres", "tissue_hires"))
   srt <- semla_prepare_srt(
@@ -490,7 +490,7 @@ semla_prepare_srt <- function(
   image_type = "tissue_lowres",
   verbose = TRUE
 ) {
-  semla_validate_srt(srt)
+  validate_seurat_object(srt)
   semla_require(verbose = verbose)
   image_type <- match.arg(image_type, c("tissue_lowres", "tissue_hires"))
   if (!is.null(srt@tools[["Staffli"]])) {
@@ -509,16 +509,6 @@ semla_prepare_srt <- function(
 
 semla_require <- function(verbose = TRUE) {
   check_r("spatial-research/semla", verbose = FALSE)
-  invisible(TRUE)
-}
-
-semla_validate_srt <- function(srt) {
-  if (!inherits(srt, "Seurat")) {
-    log_message(
-      "{.arg srt} must be a {.cls Seurat} object",
-      message_type = "error"
-    )
-  }
   invisible(TRUE)
 }
 

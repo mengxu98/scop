@@ -5,6 +5,7 @@
 #' plot the top regulons for each group.
 #'
 #' @md
+#' @inheritParams CellDimPlot
 #' @param srt A Seurat object containing SCENIC results from
 #' [RunSCENIC()].
 #' @param group.by Metadata column used as the cell group annotation.
@@ -94,8 +95,6 @@
 #' @param label_nodes Which nodes to label in network plots.
 #' @param network_label_top_n Maximum number of high-degree TF nodes labeled in
 #' `plot_type = "network_graph"` when `label_nodes = "tfs"`.
-#' @param combine Whether to combine group plots with [patchwork::wrap_plots()].
-#' @param ncol Number of columns used when `combine = TRUE`.
 #' @param return_data Whether to return RSS matrices and ranking tables together
 #' with plots. If `FALSE`, only the plot object or plot list is returned.
 #' @param title Optional title added to the combined plot.
@@ -127,7 +126,7 @@
 #' @examples
 #' \dontrun{
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunSCENIC(
 #'   pancreas_sub,
 #'   species = "Mus_musculus",

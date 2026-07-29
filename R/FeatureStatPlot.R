@@ -1,7 +1,7 @@
 #' @title Statistical plot of features
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams CellDimPlot
 #' @inheritParams FeatureDimPlot
 #' @param stat.by A character vector specifying the features to plot.
@@ -143,7 +143,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c("G2M_score", "Fev"),
@@ -524,6 +524,81 @@ FeatureStatPlot <- function(
     layer = layer
   )
   plot.by <- match.arg(plot.by)
+  expression_stat_args <- list(
+    split.by = split.by,
+    plot.by = "group",
+    fill.by = fill.by,
+    keep_empty = keep_empty,
+    individual = individual,
+    plot_type = plot_type,
+    palette = palette,
+    palcolor = palcolor,
+    alpha = alpha,
+    bg_palette = bg_palette,
+    bg_palcolor = bg_palcolor,
+    bg_alpha = bg_alpha,
+    add_box = add_box,
+    box_color = box_color,
+    box_width = box_width,
+    box_ptsize = box_ptsize,
+    add_point = add_point,
+    pt.color = pt.color,
+    pt.size = pt.size,
+    pt.alpha = pt.alpha,
+    jitter.width = jitter.width,
+    jitter.height = jitter.height,
+    add_trend = add_trend,
+    trend_color = trend_color,
+    trend_linewidth = trend_linewidth,
+    trend_ptsize = trend_ptsize,
+    add_stat = add_stat,
+    stat_color = stat_color,
+    stat_size = stat_size,
+    stat_stroke = stat_stroke,
+    stat_shape = stat_shape,
+    add_line = add_line,
+    line_color = line_color,
+    line_size = line_size,
+    line_type = line_type,
+    cells.highlight = cells.highlight,
+    cols.highlight = cols.highlight,
+    sizes.highlight = sizes.highlight,
+    alpha.highlight = alpha.highlight,
+    calculate_coexp = calculate_coexp,
+    same.y.lims = same.y.lims,
+    y.min = y.min,
+    y.max = y.max,
+    y.trans = y.trans,
+    y.nbreaks = y.nbreaks,
+    sort = sort,
+    stack = stack,
+    flip = flip,
+    comparisons = comparisons,
+    ref_group = ref_group,
+    auto_comparison = auto_comparison,
+    pairwise_method = pairwise_method,
+    multiplegroup_comparisons = multiplegroup_comparisons,
+    multiple_method = multiple_method,
+    sig_label = sig_label,
+    sig_labelsize = sig_labelsize,
+    aspect.ratio = aspect.ratio,
+    title = title,
+    subtitle = subtitle,
+    xlab = xlab,
+    ylab = ylab,
+    legend.position = legend.position,
+    legend.direction = legend.direction,
+    legend.title = legend.title,
+    theme_use = theme_use,
+    theme_args = theme_args,
+    grid_major = grid_major,
+    grid_major_colour = grid_major_colour,
+    grid_major_linetype = grid_major_linetype,
+    grid_major_linewidth = grid_major_linewidth,
+    force = force,
+    seed = seed,
+    x_text_angle = x_text_angle
+  )
 
   if (plot.by == "feature") {
     if (length(group.by) > 1) {
@@ -575,172 +650,38 @@ FeatureStatPlot <- function(
         meta_use <- meta_reshape
         meta_use[[group.by]] <- NULL
         colnames(meta_use)[colnames(meta_use) == "Stat.by"] <- g
-        p <- ExpressionStatPlot(
-          exp.data = exp.data,
-          meta.data = meta_use,
-          stat.by = g,
-          group.by = "Features",
-          split.by = split.by,
-          bg.by = NULL,
-          plot.by = "group",
-          fill.by = fill.by,
-          cells = cells_g,
-          keep_empty = keep_empty,
-          individual = individual,
-          plot_type = plot_type,
-          palette = palette,
-          palcolor = palcolor,
-          alpha = alpha,
-          bg_palette = bg_palette,
-          bg_palcolor = bg_palcolor,
-          bg_alpha = bg_alpha,
-          add_box = add_box,
-          box_color = box_color,
-          box_width = box_width,
-          box_ptsize = box_ptsize,
-          add_point = add_point,
-          pt.color = pt.color,
-          pt.size = pt.size,
-          pt.alpha = pt.alpha,
-          jitter.width = jitter.width,
-          jitter.height = jitter.height,
-          add_trend = add_trend,
-          trend_color = trend_color,
-          trend_linewidth = trend_linewidth,
-          trend_ptsize = trend_ptsize,
-          add_stat = add_stat,
-          stat_color = stat_color,
-          stat_size = stat_size,
-          stat_stroke = stat_stroke,
-          stat_shape = stat_shape,
-          add_line = add_line,
-          line_color = line_color,
-          line_size = line_size,
-          line_type = line_type,
-          cells.highlight = cells.highlight,
-          cols.highlight = cols.highlight,
-          sizes.highlight = sizes.highlight,
-          alpha.highlight = alpha.highlight,
-          calculate_coexp = calculate_coexp,
-          same.y.lims = same.y.lims,
-          y.min = y.min,
-          y.max = y.max,
-          y.trans = y.trans,
-          y.nbreaks = y.nbreaks,
-          sort = sort,
-          stack = stack,
-          flip = flip,
-          comparisons = comparisons,
-          ref_group = ref_group,
-          auto_comparison = auto_comparison,
-          pairwise_method = pairwise_method,
-          multiplegroup_comparisons = multiplegroup_comparisons,
-          multiple_method = multiple_method,
-          sig_label = sig_label,
-          sig_labelsize = sig_labelsize,
-          aspect.ratio = aspect.ratio,
-          title = title,
-          subtitle = subtitle,
-          xlab = xlab,
-          ylab = ylab,
-          legend.position = legend.position,
-          legend.direction = legend.direction,
-          legend.title = legend.title,
-          theme_use = theme_use,
-          theme_args = theme_args,
-          grid_major = grid_major,
-          grid_major_colour = grid_major_colour,
-          grid_major_linetype = grid_major_linetype,
-          grid_major_linewidth = grid_major_linewidth,
-          force = force,
-          seed = seed,
-          x_text_angle = x_text_angle
+        p <- do.call(
+          ExpressionStatPlot,
+          c(
+            list(
+              exp.data = exp.data,
+              meta.data = meta_use,
+              stat.by = g,
+              group.by = "Features",
+              bg.by = NULL,
+              cells = cells_g
+            ),
+            expression_stat_args
+          )
         )
         plist <- append(plist, p)
       }
     }
     group.by <- "Features"
   } else {
-    plist <- ExpressionStatPlot(
-      exp.data = exp.data,
-      meta.data = meta.data,
-      stat.by = stat.by,
-      group.by = group.by,
-      split.by = split.by,
-      bg.by = bg.by,
-      plot.by = "group",
-      fill.by = fill.by,
-      cells = cells,
-      keep_empty = keep_empty,
-      individual = individual,
-      plot_type = plot_type,
-      palette = palette,
-      palcolor = palcolor,
-      alpha = alpha,
-      bg_palette = bg_palette,
-      bg_palcolor = bg_palcolor,
-      bg_alpha = bg_alpha,
-      add_box = add_box,
-      box_color = box_color,
-      box_width = box_width,
-      box_ptsize = box_ptsize,
-      add_point = add_point,
-      pt.color = pt.color,
-      pt.size = pt.size,
-      pt.alpha = pt.alpha,
-      jitter.width = jitter.width,
-      jitter.height = jitter.height,
-      add_trend = add_trend,
-      trend_color = trend_color,
-      trend_linewidth = trend_linewidth,
-      trend_ptsize = trend_ptsize,
-      add_stat = add_stat,
-      stat_color = stat_color,
-      stat_size = stat_size,
-      stat_stroke = stat_stroke,
-      stat_shape = stat_shape,
-      add_line = add_line,
-      line_color = line_color,
-      line_size = line_size,
-      line_type = line_type,
-      cells.highlight = cells.highlight,
-      cols.highlight = cols.highlight,
-      sizes.highlight = sizes.highlight,
-      alpha.highlight = alpha.highlight,
-      calculate_coexp = calculate_coexp,
-      same.y.lims = same.y.lims,
-      y.min = y.min,
-      y.max = y.max,
-      y.trans = y.trans,
-      y.nbreaks = y.nbreaks,
-      sort = sort,
-      stack = stack,
-      flip = flip,
-      comparisons = comparisons,
-      ref_group = ref_group,
-      auto_comparison = auto_comparison,
-      pairwise_method = pairwise_method,
-      multiplegroup_comparisons = multiplegroup_comparisons,
-      multiple_method = multiple_method,
-      sig_label = sig_label,
-      sig_labelsize = sig_labelsize,
-      aspect.ratio = aspect.ratio,
-      title = title,
-      subtitle = subtitle,
-      xlab = xlab,
-      ylab = ylab,
-      legend.position = legend.position,
-      legend.direction = legend.direction,
-      legend.title = legend.title,
-      theme_use = theme_use,
-      theme_args = theme_args,
-      grid_major = grid_major,
-      grid_major_colour = grid_major_colour,
-      grid_major_linetype = grid_major_linetype,
-      grid_major_linewidth = grid_major_linewidth,
-      force = force,
-      seed = seed,
-      x_text_angle = x_text_angle
+    plist <- do.call(
+      ExpressionStatPlot,
+      c(
+        list(
+          exp.data = exp.data,
+          meta.data = meta.data,
+          stat.by = stat.by,
+          group.by = group.by,
+          bg.by = bg.by,
+          cells = cells
+        ),
+        expression_stat_args
+      )
     )
   }
 
@@ -935,19 +876,7 @@ FeatureStatPlot <- function(
   if (length(plist_stack) > 0) {
     plist <- plist_stack
   }
-  if (isTRUE(combine)) {
-    if (length(plist) > 1) {
-      plot <- patchwork::wrap_plots(
-        plotlist = plist,
-        nrow = nrow,
-        ncol = ncol,
-        byrow = byrow
-      )
-    } else {
-      plot <- plist[[1]]
-    }
-    return(plot)
-  } else {
-    return(plist)
-  }
+  combine_plot_list(
+    plist, combine = combine, nrow = nrow, ncol = ncol, byrow = byrow
+  )
 }

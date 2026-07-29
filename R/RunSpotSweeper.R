@@ -130,7 +130,7 @@ RunSpotSweeper <- function(
     message_type = "running",
     verbose = verbose
   )
-  spot_sweeper_validate_srt(srt)
+  validate_seurat_object(srt)
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   if (!assay %in% SeuratObject::Assays(srt)) {
     log_message(
@@ -760,34 +760,12 @@ spot_sweeper_pass_fail <- function(fail) {
   factor(ifelse(fail, "Fail", "Pass"), levels = c("Pass", "Fail"))
 }
 
-spot_sweeper_validate_srt <- function(srt) {
-  if (!inherits(srt, "Seurat")) {
-    log_message(
-      "{.arg srt} must be a {.cls Seurat} object",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
-}
-
 spot_sweeper_assert_string <- function(x, arg) {
-  if (!is.character(x) || length(x) != 1L || is.na(x) || !nzchar(x)) {
-    log_message(
-      "{.arg {arg}} must be a single non-empty string",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
+  validate_scalar_string(x, arg)
 }
 
 spot_sweeper_assert_flag <- function(x, arg) {
-  if (!is.logical(x) || length(x) != 1L || is.na(x)) {
-    log_message(
-      "{.arg {arg}} must be TRUE or FALSE",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
+  validate_scalar_flag(x, arg)
 }
 
 spot_sweeper_assert_positive_integer <- function(x, arg) {

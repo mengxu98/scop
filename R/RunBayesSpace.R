@@ -1,7 +1,7 @@
 #' @title Run BayesSpace spatial clustering
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
 #' @param q Number of BayesSpace clusters.
 #' @param platform Spatial sequencing platform.
@@ -424,13 +424,13 @@ bayesspace_get_seurat_coords <- function(srt, image = NULL) {
 
 bayesspace_normalize_coords <- function(coords, platform = "Visium") {
   coords <- as.data.frame(coords)
-  row_col <- bayesspace_pick_col(coords, c("array_row", "row", "arrayrow"))
-  col_col <- bayesspace_pick_col(coords, c("array_col", "col", "arraycol"))
-  pxl_row_col <- bayesspace_pick_col(
+  row_col <- pick_case_insensitive_column(coords, c("array_row", "row", "arrayrow"))
+  col_col <- pick_case_insensitive_column(coords, c("array_col", "col", "arraycol"))
+  pxl_row_col <- pick_case_insensitive_column(
     coords,
     c("pxl_row_in_fullres", "imagerow", "image_row", "y")
   )
-  pxl_col_col <- bayesspace_pick_col(
+  pxl_col_col <- pick_case_insensitive_column(
     coords,
     c("pxl_col_in_fullres", "imagecol", "image_col", "x")
   )
@@ -443,11 +443,11 @@ bayesspace_normalize_coords <- function(coords, platform = "Visium") {
     )
     row_col <- "array_row"
     col_col <- "array_col"
-    pxl_row_col <- bayesspace_pick_col(
+    pxl_row_col <- pick_case_insensitive_column(
       coords,
       c("pxl_row_in_fullres", "imagerow", "image_row", "y")
     )
-    pxl_col_col <- bayesspace_pick_col(
+    pxl_col_col <- pick_case_insensitive_column(
       coords,
       c("pxl_col_in_fullres", "imagecol", "image_col", "x")
     )
@@ -573,13 +573,4 @@ bayesspace_nearest_regular_step <- function(diffs) {
     low <- diffs
   }
   stats::median(low, na.rm = TRUE)
-}
-
-bayesspace_pick_col <- function(x, candidates) {
-  nm <- colnames(x)
-  hit <- candidates[tolower(candidates) %in% tolower(nm)][1]
-  if (is.na(hit)) {
-    return(NULL)
-  }
-  nm[match(tolower(hit), tolower(nm))]
 }

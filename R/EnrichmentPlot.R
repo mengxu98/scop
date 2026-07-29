@@ -5,7 +5,7 @@
 #'
 #' @md
 #' @inheritParams CellDimPlot
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @param srt A Seurat object containing the results of RunDEtest and RunEnrichment.
 #' If specified, enrichment results will be extracted from the `Seurat` object automatically.
 #' If not specified, the `res` arguments must be provided.
@@ -97,7 +97,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunDEtest(
 #'   pancreas_sub,
 #'   group.by = "CellType"
@@ -1666,21 +1666,9 @@ EnrichmentPlot <- function(
     })
   }
 
-  if (isTRUE(combine)) {
-    if (length(plist) > 1) {
-      plot <- patchwork::wrap_plots(
-        plotlist = plist,
-        nrow = nrow,
-        ncol = ncol,
-        byrow = byrow
-      )
-    } else {
-      plot <- plist[[1]]
-    }
-    return(plot)
-  } else {
-    return(plist)
-  }
+  combine_plot_list(
+    plist, combine = combine, nrow = nrow, ncol = ncol, byrow = byrow
+  )
 }
 
 enrichment_overlap_edges <- function(ids, gene_sets) {

@@ -253,26 +253,16 @@ GSEAPlot <- function(
       ids <- NULL
       for (i in group_use) {
         df <- enrichment[enrichment[["Groups"]] == i, , drop = FALSE]
-        df <- df[df[[metric]] < metric_value, , drop = FALSE]
-        df <- df[order(df[[metric]]), , drop = FALSE]
-        df_up <- df[df[["NES"]] > 0, , drop = FALSE]
-        ID_up <- df_up[utils::head(order(df_up[[metric]]), topTerm), "ID"]
-        df_down <- df[df[["NES"]] < 0, , drop = FALSE]
-        ID_down <- df_down[utils::head(order(df_down[[metric]]), topTerm), "ID"]
-        ids <- switch(direction,
-          "pos" = unique(c(ids, utils::head(ID_up, topTerm))),
-          "neg" = unique(c(ids, utils::head(ID_down, topTerm))),
-          "both" = unique(c(
-            ids,
-            utils::head(
-              c(
-                utils::head(ID_up, ceiling(topTerm / 2)),
-                utils::head(ID_down, ceiling(topTerm / 2))
-              ),
-              topTerm
-            )
-          ))
-        )
+        ids <- unique(c(
+          ids,
+          select_gsea_term_ids(
+            result = df,
+            metric = metric,
+            metric_value = metric_value,
+            top_term = topTerm,
+            direction = direction
+          )
+        ))
       }
     }
 
@@ -382,40 +372,12 @@ GSEAPlot <- function(
     for (nm in names(res)) {
       res_enrich <- res[[nm]]
       if (is.null(id_use)) {
-        geneSetID_filter <- res_enrich@result[
-          res_enrich@result[[metric]] < metric_value, ,
-          drop = FALSE
-        ]
-        geneSetID_filter <- geneSetID_filter[
-          order(geneSetID_filter[[metric]]), ,
-          drop = FALSE
-        ]
-        geneSetID_up <- geneSetID_filter[
-          geneSetID_filter[["NES"]] > 0, ,
-          drop = FALSE
-        ]
-        geneSetID_up <- geneSetID_up[
-          utils::head(order(geneSetID_up[[metric]]), topTerm),
-          "ID"
-        ]
-        geneSetID_down <- geneSetID_filter[
-          geneSetID_filter[["NES"]] < 0, ,
-          drop = FALSE
-        ]
-        geneSetID_down <- geneSetID_down[
-          utils::head(order(geneSetID_down[[metric]]), topTerm),
-          "ID"
-        ]
-        geneSetID_use <- switch(direction,
-          "pos" = unique(utils::head(geneSetID_up, topTerm)),
-          "neg" = unique(utils::head(geneSetID_down, topTerm)),
-          "both" = unique(utils::head(
-            c(
-              utils::head(geneSetID_up, ceiling(topTerm / 2)),
-              utils::head(geneSetID_down, ceiling(topTerm / 2))
-            ),
-            topTerm
-          ))
+        geneSetID_use <- select_gsea_term_ids(
+          result = res_enrich@result,
+          metric = metric,
+          metric_value = metric_value,
+          top_term = topTerm,
+          direction = direction
         )
       } else {
         if (is.list(id_use)) {
@@ -864,40 +826,12 @@ GSEAPlot <- function(
     for (nm in names(res)) {
       res_enrich <- res[[nm]]
       if (is.null(id_use)) {
-        geneSetID_filter <- res_enrich@result[
-          res_enrich@result[[metric]] < metric_value, ,
-          drop = FALSE
-        ]
-        geneSetID_filter <- geneSetID_filter[
-          order(geneSetID_filter[[metric]]), ,
-          drop = FALSE
-        ]
-        geneSetID_up <- geneSetID_filter[
-          geneSetID_filter[["NES"]] > 0, ,
-          drop = FALSE
-        ]
-        geneSetID_up <- geneSetID_up[
-          utils::head(order(geneSetID_up[[metric]]), topTerm),
-          "ID"
-        ]
-        geneSetID_down <- geneSetID_filter[
-          geneSetID_filter[["NES"]] < 0, ,
-          drop = FALSE
-        ]
-        geneSetID_down <- geneSetID_down[
-          utils::head(order(geneSetID_down[[metric]]), topTerm),
-          "ID"
-        ]
-        geneSetID_use <- switch(direction,
-          "pos" = unique(utils::head(geneSetID_up, topTerm)),
-          "neg" = unique(utils::head(geneSetID_down, topTerm)),
-          "both" = unique(utils::head(
-            c(
-              utils::head(geneSetID_up, ceiling(topTerm / 2)),
-              utils::head(geneSetID_down, ceiling(topTerm / 2))
-            ),
-            topTerm
-          ))
+        geneSetID_use <- select_gsea_term_ids(
+          result = res_enrich@result,
+          metric = metric,
+          metric_value = metric_value,
+          top_term = topTerm,
+          direction = direction
         )
       } else {
         if (is.list(id_use)) {
@@ -999,40 +933,12 @@ GSEAPlot <- function(
     for (nm in names(res)) {
       res_enrich <- res[[nm]]
       if (is.null(id_use)) {
-        geneSetID_filter <- res_enrich@result[
-          res_enrich@result[[metric]] < metric_value, ,
-          drop = FALSE
-        ]
-        geneSetID_filter <- geneSetID_filter[
-          order(geneSetID_filter[[metric]]), ,
-          drop = FALSE
-        ]
-        geneSetID_up <- geneSetID_filter[
-          geneSetID_filter[["NES"]] > 0, ,
-          drop = FALSE
-        ]
-        geneSetID_up <- geneSetID_up[
-          utils::head(order(geneSetID_up[[metric]]), topTerm),
-          "ID"
-        ]
-        geneSetID_down <- geneSetID_filter[
-          geneSetID_filter[["NES"]] < 0, ,
-          drop = FALSE
-        ]
-        geneSetID_down <- geneSetID_down[
-          utils::head(order(geneSetID_down[[metric]]), topTerm),
-          "ID"
-        ]
-        geneSetID_use <- switch(direction,
-          "pos" = unique(utils::head(geneSetID_up, topTerm)),
-          "neg" = unique(utils::head(geneSetID_down, topTerm)),
-          "both" = unique(utils::head(
-            c(
-              utils::head(geneSetID_up, ceiling(topTerm / 2)),
-              utils::head(geneSetID_down, ceiling(topTerm / 2))
-            ),
-            topTerm
-          ))
+        geneSetID_use <- select_gsea_term_ids(
+          result = res_enrich@result,
+          metric = metric,
+          metric_value = metric_value,
+          top_term = topTerm,
+          direction = direction
         )
       } else {
         if (is.list(id_use)) {
@@ -1265,40 +1171,12 @@ GSEAPlot <- function(
     for (nm in names(res)) {
       res_enrich <- res[[nm]]
       if (is.null(id_use)) {
-        geneSetID_filter <- res_enrich@result[
-          res_enrich@result[[metric]] < metric_value, ,
-          drop = FALSE
-        ]
-        geneSetID_filter <- geneSetID_filter[
-          order(geneSetID_filter[[metric]]), ,
-          drop = FALSE
-        ]
-        geneSetID_up <- geneSetID_filter[
-          geneSetID_filter[["NES"]] > 0, ,
-          drop = FALSE
-        ]
-        geneSetID_up <- geneSetID_up[
-          utils::head(order(geneSetID_up[[metric]]), topTerm),
-          "ID"
-        ]
-        geneSetID_down <- geneSetID_filter[
-          geneSetID_filter[["NES"]] < 0, ,
-          drop = FALSE
-        ]
-        geneSetID_down <- geneSetID_down[
-          utils::head(order(geneSetID_down[[metric]]), topTerm),
-          "ID"
-        ]
-        geneSetID_use <- switch(direction,
-          "pos" = unique(utils::head(geneSetID_up, topTerm)),
-          "neg" = unique(utils::head(geneSetID_down, topTerm)),
-          "both" = unique(utils::head(
-            c(
-              utils::head(geneSetID_up, ceiling(topTerm / 2)),
-              utils::head(geneSetID_down, ceiling(topTerm / 2))
-            ),
-            topTerm
-          ))
+        geneSetID_use <- select_gsea_term_ids(
+          result = res_enrich@result,
+          metric = metric,
+          metric_value = metric_value,
+          top_term = topTerm,
+          direction = direction
         )
       } else {
         if (is.list(id_use)) {
@@ -1591,20 +1469,11 @@ GSEAPlot <- function(
     for (nm in names(res)) {
       res_enrich <- res[[nm]]
       if (is.null(id_use)) {
-        geneSetID_filter <- res_enrich@result[
-          res_enrich@result[[metric]] < metric_value, ,
-          drop = FALSE
-        ]
-        geneSetID_filter <- geneSetID_filter[
-          order(geneSetID_filter[[metric]]), ,
-          drop = FALSE
-        ]
-        geneSetID_up <- geneSetID_filter[geneSetID_filter[["NES"]] > 0, "ID"]
-        geneSetID_down <- geneSetID_filter[geneSetID_filter[["NES"]] < 0, "ID"]
-        geneSetID_use <- switch(direction,
-          "pos" = unique(geneSetID_up),
-          "neg" = unique(geneSetID_down),
-          "both" = unique(c(geneSetID_up, geneSetID_down))
+        geneSetID_use <- select_gsea_term_ids(
+          result = res_enrich@result,
+          metric = metric,
+          metric_value = metric_value,
+          direction = direction
         )
       } else {
         if (is.list(id_use)) {
@@ -1789,16 +1658,35 @@ GSEAPlot <- function(
     }
   }
 
-  if (isTRUE(combine)) {
-    if (length(plist) > 1) {
-      plot <- patchwork::wrap_plots(plotlist = plist, nrow = nrow, ncol = ncol)
-    } else {
-      plot <- plist[[1]]
-    }
-    return(plot)
-  } else {
-    return(plist)
-  }
+  combine_plot_list(plist, combine = combine, nrow = nrow, ncol = ncol)
+}
+
+select_gsea_term_ids <- function(
+  result,
+  metric,
+  metric_value,
+  top_term = NULL,
+  direction = c("pos", "neg", "both")
+) {
+  direction <- match.arg(direction)
+  top_term <- top_term %||% Inf
+
+  result <- result[result[[metric]] < metric_value, , drop = FALSE]
+  result <- result[order(result[[metric]]), , drop = FALSE]
+  ids_pos <- result[result[["NES"]] > 0, "ID"]
+  ids_neg <- result[result[["NES"]] < 0, "ID"]
+
+  switch(direction,
+    "pos" = unique(utils::head(ids_pos, top_term)),
+    "neg" = unique(utils::head(ids_neg, top_term)),
+    "both" = unique(utils::head(
+      c(
+        utils::head(ids_pos, ceiling(top_term / 2)),
+        utils::head(ids_neg, ceiling(top_term / 2))
+      ),
+      top_term
+    ))
+  )
 }
 
 gsInfo <- function(object, id_use) {

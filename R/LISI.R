@@ -35,7 +35,7 @@
 #'
 #' @examples
 #' data(panc8_sub)
-#' panc8_sub <- integration_scop(
+#' panc8_sub <- RunIntegration(
 #'   panc8_sub,
 #'   batch = "tech",
 #'   integration_method = "Harmony5"
@@ -86,7 +86,7 @@ RunLISI <- function(
   }
   if (is.null(label_colnames) || length(label_colnames) == 0) {
     log_message(
-      "{.arg label_colnames} must contain at least one metadata column, or {.val integration_batch} must be stored in {.arg srt@misc}. Objects returned by {.fn integration_scop} store this automatically.",
+      "{.arg label_colnames} must contain at least one metadata column, or {.val integration_batch} must be stored in {.arg srt@misc}. Objects returned by {.fn RunIntegration} store this automatically.",
       message_type = "error"
     )
   }
@@ -278,169 +278,16 @@ lisi_feature_boxplot <- function(
   theme_args = list(),
   verbose = TRUE
 ) {
-  clean_method_label <- function(x) {
-    x <- gsub("_+", "_", x)
-    x <- gsub("^_+|_+$", "", x)
-    raw_index <- grepl(
-      "pca(UMAP2D|TSNE2D|DM2D|PHATE2D|PACMAP2D|TRIMAP2D|LARGEVIS2D|FR2D)?$",
-      x,
-      ignore.case = FALSE
-    )
-    x <- sub("UMAP2D$", "", x, ignore.case = TRUE)
-    x <- sub("TSNE2D$", "", x, ignore.case = TRUE)
-    x <- sub("DM2D$", "", x, ignore.case = TRUE)
-    x <- sub("PHATE2D$", "", x, ignore.case = TRUE)
-    x <- sub("PACMAP2D$", "", x, ignore.case = TRUE)
-    x <- sub("TRIMAP2D$", "", x, ignore.case = TRUE)
-    x <- sub("LARGEVIS2D$", "", x, ignore.case = TRUE)
-    x <- sub("FR2D$", "", x, ignore.case = TRUE)
-    x <- sub("(?<![A-Za-z])pca$", "", x, perl = TRUE)
-    x <- sub("(?<![A-Za-z])PCA$", "", x, perl = TRUE)
-    x <- sub("lsi$", "", x, ignore.case = FALSE)
-    x <- sub("LSI$", "", x, ignore.case = FALSE)
-    x <- gsub("^_+|_+$", "", x)
-    x[raw_index | grepl("^pca$", x, ignore.case = TRUE)] <- "Raw"
-    x[nchar(x) == 0] <- NA_character_
-    x
-  }
-
-  common_suffix <- function(x) {
-    if (length(x) == 0) {
-      return("")
-    }
-    rev_split <- lapply(x, function(val) {
-      strsplit(paste(rev(strsplit(val, "")[[1]]), collapse = ""), "")[[1]]
-    })
-    min_len <- min(vapply(rev_split, length, integer(1)))
-    chars <- character(0)
-    for (i in seq_len(min_len)) {
-      current <- vapply(rev_split, `[`, character(1), i)
-      if (length(unique(current)) != 1) {
-        break
-      }
-      chars <- c(chars, current[1])
-    }
-    if (length(chars) == 0) {
-      return("")
-    }
-    paste(rev(chars), collapse = "")
-  }
-
-  plot_list <- lapply(features, function(feature) {
-    data.frame(
-      feature = feature,
-      score = srt@meta.data[[feature]],
-      stringsAsFactors = FALSE
-    )
-  })
-  plot_df <- do.call(rbind, plot_list)
-  plot_df <- plot_df[!is.na(plot_df$score), , drop = FALSE]
-
-  if (nrow(plot_df) == 0) {
-    log_message(
-      "No valid observations available for LISI boxplot",
-      message_type = "warning",
-      verbose = verbose
-    )
-    return(
-      ggplot2::ggplot() +
-        ggplot2::theme_void()
-    )
-  }
-
-  feature_suffix <- common_suffix(features)
-  feature_labels <- features
-  if (nzchar(feature_suffix)) {
-    feature_labels <- sub(
-      paste0(gsub("([][{}()+*^$|\\\\?.])", "\\\\\\1", feature_suffix), "$"),
-      "",
-      features
-    )
-  }
-  feature_labels <- gsub("_+$", "", feature_labels)
-  feature_labels <- clean_method_label(feature_labels)
-  feature_labels[is.na(feature_labels)] <- features[is.na(feature_labels)]
-  feature_labels[!nzchar(feature_labels)] <- features[!nzchar(feature_labels)]
-  label_map <- stats::setNames(feature_labels, features)
-  plot_df$feature_label <- label_map[plot_df$feature]
-
-  mean_df <- stats::aggregate(
-    score ~ feature_label,
-    data = plot_df,
-    FUN = mean
-  )
-  mean_df <- mean_df[order(mean_df$score, decreasing = FALSE), , drop = FALSE]
-  plot_df$feature_label <- factor(
-    plot_df$feature_label,
-    levels = mean_df$feature_label
-  )
-
-  fill_cols <- palette_colors(
-    levels(plot_df$feature_label),
+  feature_boxplot(
+    srt = srt,
+    features = features,
     palette = palette,
-    palcolor = palcolor
+    palcolor = palcolor,
+    boxplot_jitter = boxplot_jitter,
+    theme_use = theme_use,
+    theme_args = theme_args,
+    verbose = verbose,
+    y_label = "LISI",
+    empty_message = "No valid observations available for LISI boxplot"
   )
-
-  p <- ggplot2::ggplot(
-    plot_df,
-    ggplot2::aes(
-      x = .data[["feature_label"]],
-      y = .data[["score"]],
-      fill = .data[["feature_label"]]
-    )
-  ) +
-    ggplot2::geom_boxplot(
-      width = 0.5,
-      outlier.shape = NA,
-      linewidth = 0.4,
-      alpha = 0.9
-    )
-
-  if (isTRUE(boxplot_jitter)) {
-    p <- p +
-      ggplot2::geom_jitter(
-        width = 0.12,
-        size = 0.25,
-        alpha = 0.12,
-        color = "grey50"
-      )
-  }
-
-  if (
-    length(levels(plot_df$feature_label)) >= 2 &&
-      "Raw" %in% levels(plot_df$feature_label)
-  ) {
-    check_r("ggpubr", verbose = FALSE)
-    comparisons <- lapply(
-      setdiff(levels(plot_df$feature_label), "Raw"),
-      function(method) c("Raw", method)
-    )
-    y_top <- max(plot_df$score, na.rm = TRUE) * 1.2
-    p <- p +
-      ggpubr::stat_compare_means(
-        comparisons = comparisons,
-        method = "wilcox.test",
-        label = "p.signif",
-        step.increase = 0.08,
-        tip.length = 0.03,
-        size = 3
-      ) +
-      ggplot2::coord_cartesian(ylim = c(0, y_top))
-  }
-
-  p +
-    ggplot2::scale_fill_manual(values = fill_cols, drop = FALSE) +
-    ggplot2::labs(
-      x = "",
-      y = "LISI"
-    ) +
-    do.call(theme_use, theme_args) +
-    ggplot2::theme(
-      aspect.ratio = 1,
-      axis.text.x = ggplot2::element_text(angle = 45, hjust = 1, vjust = 1),
-      legend.position = "none",
-      panel.grid.major = ggplot2::element_blank(),
-      panel.grid.minor = ggplot2::element_blank(),
-      plot.title = ggplot2::element_text(hjust = 0.5)
-    )
 }

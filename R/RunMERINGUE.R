@@ -741,23 +741,13 @@ meringue_parameters_df <- function(parameters) {
   parameters$MERINGUE_version <- meringue_package_version("MERINGUE")
   data.frame(
     key = names(parameters),
-    value = vapply(parameters, meringue_collapse_value, character(1)),
+    value = vapply(parameters, collapse_parameter_value, character(1)),
     stringsAsFactors = FALSE
   )
 }
 
 meringue_package_version <- function(pkg) {
   tryCatch(as.character(utils::packageVersion(pkg)), error = function(e) NA_character_)
-}
-
-meringue_collapse_value <- function(x) {
-  if (is.null(x)) {
-    return(NA_character_)
-  }
-  if (length(x) == 0L) {
-    return("")
-  }
-  paste(as.character(x), collapse = ",")
 }
 
 meringue_rename_first <- function(df, target, candidates) {
@@ -795,31 +785,14 @@ meringue_check_nonnegative_integer <- function(x, arg_name) {
 }
 
 meringue_check_scalar_logical <- function(x, arg_name) {
-  if (!is.logical(x) || length(x) != 1L || is.na(x)) {
-    log_message(
-      "{.arg {arg_name}} must be TRUE or FALSE",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
+  validate_scalar_flag(x, arg_name)
 }
 
 meringue_validate_named_param_list <- function(x, arg_name) {
-  if (!is.list(x)) {
-    log_message(
-      "{.arg {arg_name}} must be a named list",
-      message_type = "error"
-    )
-  }
-  if (length(x) == 0L) {
-    return(invisible(TRUE))
-  }
-  nms <- names(x)
-  if (is.null(nms) || any(is.na(nms) | !nzchar(nms))) {
-    log_message(
-      "{.arg {arg_name}} must contain named arguments only",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
+  validate_named_param_list(
+    x,
+    arg_name,
+    require_list = TRUE,
+    type_message = "must be a named list"
+  )
 }

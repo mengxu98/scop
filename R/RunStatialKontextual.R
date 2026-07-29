@@ -93,7 +93,7 @@ RunStatialKontextual <- function(
     message_type = "running",
     verbose = verbose
   )
-  statial_validate_srt(srt)
+  validate_seurat_object(srt)
   statial_assert_string(group.by, "group.by")
   statial_assert_string(tool_name, "tool_name")
   statial_assert_flag(inhom, "inhom")
@@ -103,7 +103,7 @@ RunStatialKontextual <- function(
   statial_assert_flag(store_input, "store_input")
   window <- match.arg(window)
   r <- statial_validate_radius(r)
-  cores <- statial_validate_positive_integer(cores, "cores")
+  cores <- validate_positive_integer(cores, "cores")
   statial_validate_kontextual_relationship(
     parent_df = parent_df,
     from = from,
@@ -111,7 +111,7 @@ RunStatialKontextual <- function(
     parent = parent
   )
   extra_args <- list(...)
-  statial_validate_named_list(extra_args, "...")
+  validate_named_param_list(extra_args, "...")
 
   cells <- statial_prepare_cells(
     srt = srt,
@@ -394,41 +394,10 @@ statial_validate_radius <- function(r) {
   unique(r)
 }
 
-statial_validate_positive_integer <- function(x, arg) {
-  if (length(x) != 1L || is.na(x) || !is.finite(x) || x < 1) {
-    log_message("{.arg {arg}} must be a positive integer", message_type = "error")
-  }
-  as.integer(x)
-}
-
-statial_validate_srt <- function(srt) {
-  if (!inherits(srt, "Seurat")) {
-    log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
-  }
-  invisible(TRUE)
-}
-
 statial_assert_string <- function(x, arg) {
-  if (length(x) != 1L || !is.character(x) || is.na(x) || !nzchar(x)) {
-    log_message("{.arg {arg}} must be a single non-empty string", message_type = "error")
-  }
-  invisible(TRUE)
+  validate_scalar_string(x, arg)
 }
 
 statial_assert_flag <- function(x, arg) {
-  if (length(x) != 1L || !is.logical(x) || is.na(x)) {
-    log_message("{.arg {arg}} must be TRUE or FALSE", message_type = "error")
-  }
-  invisible(TRUE)
-}
-
-statial_validate_named_list <- function(x, arg) {
-  if (length(x) == 0L) {
-    return(invisible(TRUE))
-  }
-  nms <- names(x)
-  if (is.null(nms) || any(is.na(nms) | !nzchar(nms))) {
-    log_message("{.arg {arg}} must contain named arguments only", message_type = "error")
-  }
-  invisible(TRUE)
+  validate_scalar_flag(x, arg)
 }

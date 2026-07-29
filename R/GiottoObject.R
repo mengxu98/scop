@@ -29,7 +29,7 @@ print.giotto2 <- function(x, ...) {
   invisible(x)
 }
 
-giotto_validate_scop_object <- function(x, allow_seurat = FALSE) {
+giotto_validate_object <- function(x, allow_seurat = FALSE) {
   if (inherits(x, "giotto2")) {
     return(invisible(TRUE))
   }
@@ -43,13 +43,7 @@ giotto_validate_scop_object <- function(x, allow_seurat = FALSE) {
 }
 
 giotto_validate_flag <- function(x, arg) {
-  if (!is.logical(x) || length(x) != 1L || is.na(x)) {
-    log_message(
-      "{.arg {arg}} must be TRUE or FALSE",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
+  validate_scalar_flag(x, arg)
 }
 
 giotto_append_history <- function(x, step, parameters = list()) {
@@ -165,7 +159,7 @@ giotto_do_call <- function(name, args) {
 #' GiottoPlot(g, plot_type = "network")
 #'
 #' spatial <- subset(spatial, cells = colnames(spatial)[seq_len(min(200L, ncol(spatial)))])
-#' g <- SeuratToScopGiotto(
+#' g <- SeuratToGiotto2(
 #'   spatial,
 #'   assay = "Spatial",
 #'   layer = "counts",
@@ -173,7 +167,7 @@ giotto_do_call <- function(name, args) {
 #'   verbose = FALSE
 #' )
 #' @export
-SeuratToScopGiotto <- function(
+SeuratToGiotto2 <- function(
   srt,
   assay = NULL,
   layer = "counts",
@@ -191,7 +185,7 @@ SeuratToScopGiotto <- function(
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }
   use_sct <- match.arg(use_sct)
-  giotto_validate_named_list(conversion_params, "conversion_params")
+  validate_named_list(conversion_params, "conversion_params")
   giotto_require(verbose = verbose)
   giotto_old_options <- giotto_disable_r_only_options()
   on.exit(options(giotto_old_options), add = TRUE)
@@ -273,7 +267,7 @@ SeuratToScopGiotto <- function(
   )
   out <- giotto_append_history(
     out,
-    step = "SeuratToScopGiotto",
+    step = "SeuratToGiotto2",
     parameters = list(
       assay = assay,
       layer = layer,
@@ -416,7 +410,7 @@ giotto_validate_runtime_object <- function(x, verbose = TRUE) {
 #'
 #' @description
 #' Run basic or full Giotto analysis on a `giotto2` object. Seurat input is
-#' converted first with [SeuratToScopGiotto()].
+#' converted first with [SeuratToGiotto2()].
 #'
 #' @param x A `giotto2` or Seurat object.
 #' @param steps `"basic"` runs preprocessing, PCA/UMAP, nearest-network
@@ -430,7 +424,7 @@ giotto_validate_runtime_object <- function(x, verbose = TRUE) {
 #' @param tool_name Name used to store the Giotto workflow object in `srt@tools`.
 #' @param verbose Whether to print progress messages.
 #' @param seed Random seed for reproducible Giotto calls.
-#' @param ... Passed to [SeuratToScopGiotto()] when `x` is Seurat.
+#' @param ... Passed to [SeuratToGiotto2()] when `x` is Seurat.
 #'
 #' @return A Seurat object by default for Seurat input, otherwise a `giotto2`
 #' workflow object.
@@ -489,12 +483,12 @@ RunGiottoWorkflow <- function(
   steps <- match.arg(steps)
   giotto_validate_flag(return_seurat, "return_seurat")
   giotto_validate_flag(store_results, "store_results")
-  giotto_validate_scalar_string(tool_name, "tool_name")
+  validate_scalar_string(tool_name, "tool_name", message = "must be a non-empty string")
   if (inherits(x, "Seurat")) {
     srt <- x
     dots <- list(...)
     x <- do.call(
-      SeuratToScopGiotto,
+      SeuratToGiotto2,
       c(list(srt = srt, verbose = verbose, seed = seed), dots)
     )
     cluster_formals <- names(formals(RunGiottoCluster))
@@ -665,7 +659,7 @@ RunGiottoWorkflow <- function(
     }
     return(x)
   }
-  giotto_validate_scop_object(x)
+  giotto_validate_object(x)
   x <- GiottoPreprocess(x, verbose = verbose, seed = seed)
   x <- GiottoReduce(x, reduction = "pca", verbose = verbose, seed = seed)
   x <- GiottoReduce(x, reduction = "umap", verbose = verbose, seed = seed)
@@ -711,7 +705,7 @@ RunGiottoWorkflow <- function(
 #' )
 #' GiottoPlot(g, plot_type = "spatial")
 #'
-#' g <- SeuratToScopGiotto(
+#' g <- SeuratToGiotto2(
 #'   spatial,
 #'   assay = "Spatial",
 #'   coord.cols = c("x", "y"),
@@ -729,11 +723,11 @@ GiottoPreprocess <- function(
   verbose = TRUE,
   seed = 11
 ) {
-  giotto_validate_scop_object(x)
-  giotto_validate_named_list(filter_params, "filter_params")
-  giotto_validate_named_list(norm_params, "norm_params")
-  giotto_validate_named_list(stat_params, "stat_params")
-  giotto_validate_named_list(hvf_params, "hvf_params")
+  giotto_validate_object(x)
+  validate_named_list(filter_params, "filter_params")
+  validate_named_list(norm_params, "norm_params")
+  validate_named_list(stat_params, "stat_params")
+  validate_named_list(hvf_params, "hvf_params")
   normalizeGiotto <- get_namespace_fun("Giotto", "normalizeGiotto")
   normalized <- FALSE
   x$giotto <- tryCatch(
@@ -878,7 +872,7 @@ GiottoPreprocess <- function(
 #' GiottoPlot(g, plot_type = "dim")
 #'
 #'   spatial <- subset(spatial, cells = colnames(spatial)[seq_len(min(200L, ncol(spatial)))])
-#'   g <- SeuratToScopGiotto(
+#'   g <- SeuratToGiotto2(
 #'     spatial,
 #'     coord.cols = c("x", "y"),
 #'     features = rownames(spatial)[seq_len(min(200L, nrow(spatial)))]
@@ -897,9 +891,9 @@ GiottoReduce <- function(
   verbose = TRUE,
   seed = 11
 ) {
-  giotto_validate_scop_object(x)
+  giotto_validate_object(x)
   reduction <- match.arg(reduction)
-  giotto_validate_named_list(params, "params")
+  validate_named_list(params, "params")
   cells_n <- length(x$source$cells %||% character())
   features_n <- length(x$source$features %||% character())
   dims <- unique(as.integer(dims))
@@ -1008,7 +1002,7 @@ GiottoReduce <- function(
 #' GiottoPlot(g, plot_type = "cluster")
 #'
 #'   spatial <- subset(spatial, cells = colnames(spatial)[seq_len(min(200L, ncol(spatial)))])
-#'   g <- SeuratToScopGiotto(
+#'   g <- SeuratToGiotto2(
 #'     spatial,
 #'     coord.cols = c("x", "y"),
 #'     features = rownames(spatial)[seq_len(min(200L, nrow(spatial)))]
@@ -1029,9 +1023,9 @@ GiottoCluster <- function(
   verbose = TRUE,
   seed = 11
 ) {
-  giotto_validate_scop_object(x)
+  giotto_validate_object(x)
   method <- match.arg(method)
-  giotto_validate_named_list(params, "params")
+  validate_named_list(params, "params")
   cells_n <- length(x$source$cells %||% character())
   k <- min(as.integer(k), max(1L, cells_n - 1L))
   dims <- unique(as.integer(dims))
@@ -1140,7 +1134,7 @@ GiottoCluster <- function(
 #' GiottoPlot(g, plot_type = "network")
 #'
 #'   spatial <- subset(spatial, cells = colnames(spatial)[seq_len(min(200L, ncol(spatial)))])
-#'   g <- SeuratToScopGiotto(
+#'   g <- SeuratToGiotto2(
 #'     spatial,
 #'     coord.cols = c("x", "y"),
 #'     features = rownames(spatial)[seq_len(min(200L, nrow(spatial)))]
@@ -1154,9 +1148,9 @@ GiottoSpatialNetwork <- function(
   params = list(),
   verbose = TRUE
 ) {
-  giotto_validate_scop_object(x)
+  giotto_validate_object(x)
   network_method <- match.arg(network_method)
-  giotto_validate_named_list(params, "params")
+  validate_named_list(params, "params")
   network_name <- network_name %||% params[["name"]] %||% paste0(network_method, "_network")
   spatial_network <- giotto_create_spatial_network(
     gobject = x$giotto,
@@ -1252,7 +1246,7 @@ giotto_get_spatial_network_table <- function(gobject, network_name, spat_unit = 
 #' GiottoPlot(g, plot_type = "spatial_genes", top_n = 6)
 #'
 #'   spatial <- subset(spatial, cells = colnames(spatial)[seq_len(min(200L, ncol(spatial)))])
-#'   g <- SeuratToScopGiotto(
+#'   g <- SeuratToGiotto2(
 #'     spatial,
 #'     coord.cols = c("x", "y"),
 #'     features = rownames(spatial)[seq_len(min(200L, nrow(spatial)))]
@@ -1272,7 +1266,7 @@ GiottoSpatialGenes <- function(
   verbose = TRUE,
   seed = 11
 ) {
-  giotto_validate_scop_object(x)
+  giotto_validate_object(x)
   network_method <- match.arg(network_method)
   bin_method <- match.arg(bin_method)
   features <- features %||% x$source$features
@@ -1364,7 +1358,7 @@ GiottoSpatialGenes <- function(
 #' GiottoPlot(g, plot_type = "spatial_modules", top_n = 6)
 #'
 #'   spatial <- subset(spatial, cells = colnames(spatial)[seq_len(min(200L, ncol(spatial)))])
-#'   g <- SeuratToScopGiotto(
+#'   g <- SeuratToGiotto2(
 #'     spatial,
 #'     coord.cols = c("x", "y"),
 #'     features = rownames(spatial)[seq_len(min(200L, nrow(spatial)))]
@@ -1385,11 +1379,11 @@ GiottoSpatialModules <- function(
   verbose = TRUE,
   seed = 11
 ) {
-  giotto_validate_scop_object(x)
+  giotto_validate_object(x)
   network_method <- match.arg(network_method)
   cor_method <- match.arg(cor_method)
-  giotto_validate_named_list(detect_params, "detect_params")
-  giotto_validate_named_list(cluster_params, "cluster_params")
+  validate_named_list(detect_params, "detect_params")
+  validate_named_list(cluster_params, "cluster_params")
   features <- features %||% x$results$spatial_genes$top_features %||% x$source$features
   k <- min(as.integer(k), max(2L, length(unique(features)) - 1L))
   network_info <- giotto_ensure_spatial_network(
@@ -1480,7 +1474,7 @@ GiottoSpatialModules <- function(
 #'   data(visium_human_pancreas_sub)
 #'   spatial <- visium_human_pancreas_sub
 #'   spatial <- subset(spatial, cells = colnames(spatial)[seq_len(min(200L, ncol(spatial)))])
-#'   g <- SeuratToScopGiotto(
+#'   g <- SeuratToGiotto2(
 #'     spatial,
 #'     coord.cols = c("x", "y"),
 #'     features = rownames(spatial)[seq_len(min(200L, nrow(spatial)))]
@@ -1499,8 +1493,8 @@ GiottoCellProximity <- function(
   verbose = TRUE,
   seed = 11
 ) {
-  giotto_validate_scop_object(x)
-  giotto_validate_scalar_string(group.by, "group.by")
+  giotto_validate_object(x)
+  validate_scalar_string(group.by, "group.by", message = "must be a non-empty string")
   network_method <- match.arg(network_method)
   adjust_method <- match.arg(adjust_method, c("none", "fdr", "bonferroni", "BH", "holm", "hochberg", "hommel", "BY"))
   network_info <- giotto_ensure_spatial_network(
@@ -1588,7 +1582,7 @@ GiottoCellProximity <- function(
 #' GiottoPlot(g, plot_type = "hmrf")
 #'
 #'   spatial <- subset(spatial, cells = colnames(spatial)[seq_len(min(200L, ncol(spatial)))])
-#'   g <- SeuratToScopGiotto(
+#'   g <- SeuratToGiotto2(
 #'     spatial,
 #'     coord.cols = c("x", "y"),
 #'     features = rownames(spatial)[seq_len(min(200L, nrow(spatial)))]
@@ -1614,8 +1608,8 @@ GiottoHMRF <- function(
   verbose = TRUE,
   seed = 11
 ) {
-  giotto_validate_scop_object(x)
-  giotto_validate_named_list(params, "params")
+  giotto_validate_object(x)
+  validate_named_list(params, "params")
   network_info <- giotto_ensure_spatial_network(
     x = x,
     network_method = "Delaunay",
@@ -1751,7 +1745,7 @@ AddGiottoToSeurat <- function(
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }
-  giotto_validate_scop_object(x)
+  giotto_validate_object(x)
   result <- match.arg(result)
   if (identical(result, "cluster")) {
     table <- x$results$cluster$table
@@ -1807,12 +1801,12 @@ GiottoPlot.giotto2 <- function(
   subtitle = NULL,
   ...
 ) {
-  giotto_validate_scop_object(x)
+  giotto_validate_object(x)
   plot_type <- match.arg(plot_type)
   if (plot_type %in% c("spatial", "cluster", "hmrf")) {
     dat <- giotto_plot_spatial_data(x, plot_type = plot_type, result = result)
     color_col <- if (plot_type == "spatial") NULL else ".value"
-    return(giotto_scop_spatial_points(
+    return(giotto_spatial_points_plot(
       dat = dat,
       color_col = color_col,
       palette = palette,
@@ -1830,7 +1824,7 @@ GiottoPlot.giotto2 <- function(
   }
   if (identical(plot_type, "dim")) {
     dat <- giotto_dim_plot_data(x, result = result)
-    return(giotto_scop_spatial_points(
+    return(giotto_spatial_points_plot(
       dat = dat,
       color_col = ".value",
       x_col = "dim1",
@@ -1849,17 +1843,17 @@ GiottoPlot.giotto2 <- function(
     ))
   }
   if (identical(plot_type, "spatial_genes")) {
-    return(giotto_plot_spatial_genes_scop(x, top_n = top_n, palette = palette, palcolor = palcolor, theme_use = theme_use, theme_args = theme_args, title = title, subtitle = subtitle))
+    return(giotto_plot_spatial_genes(x, top_n = top_n, palette = palette, palcolor = palcolor, theme_use = theme_use, theme_args = theme_args, title = title, subtitle = subtitle))
   }
   if (identical(plot_type, "cell_proximity")) {
-    return(giotto_plot_proximity_scop(x, heatmap_palette = heatmap_palette, heatmap_palcolor = heatmap_palcolor, theme_use = theme_use, theme_args = theme_args, title = title, subtitle = subtitle))
+    return(giotto_plot_proximity(x, heatmap_palette = heatmap_palette, heatmap_palcolor = heatmap_palcolor, theme_use = theme_use, theme_args = theme_args, title = title, subtitle = subtitle))
   }
   if (identical(plot_type, "spatial_modules")) {
-    return(giotto_plot_modules_scop(x, top_n = top_n, heatmap_palette = heatmap_palette, heatmap_palcolor = heatmap_palcolor, theme_use = theme_use, theme_args = theme_args, title = title, subtitle = subtitle))
+    return(giotto_plot_modules(x, top_n = top_n, heatmap_palette = heatmap_palette, heatmap_palcolor = heatmap_palcolor, theme_use = theme_use, theme_args = theme_args, title = title, subtitle = subtitle))
   }
   if (identical(plot_type, "network")) {
     network_dat <- giotto_network_plot_data(x, result = result)
-    return(giotto_scop_network(
+    return(giotto_spatial_network_plot(
       nodes = network_dat$nodes,
       edges = network_dat$edges,
       pt.size = pt.size,
@@ -1951,7 +1945,7 @@ giotto_network_plot_data <- function(x, result = NULL) {
   list(nodes = nodes, edges = edges)
 }
 
-giotto_scop_spatial_points <- function(
+giotto_spatial_points_plot <- function(
   dat,
   color_col = NULL,
   x_col = "x",
@@ -1992,7 +1986,7 @@ giotto_scop_spatial_points <- function(
     )
 }
 
-giotto_scop_network <- function(
+giotto_spatial_network_plot <- function(
   nodes,
   edges = NULL,
   pt.size = NULL,
@@ -2156,7 +2150,7 @@ giotto_get_reduction_matrix <- function(gobject, cells, reduction = "umap") {
   NULL
 }
 
-giotto_plot_spatial_genes_scop <- function(x, top_n = 20, palette = "Chinese", palcolor = NULL, theme_use = "theme_scop", theme_args = list(), title = NULL, subtitle = NULL) {
+giotto_plot_spatial_genes <- function(x, top_n = 20, palette = "Chinese", palcolor = NULL, theme_use = "theme_scop", theme_args = list(), title = NULL, subtitle = NULL) {
   table <- x$results$spatial_genes$table
   if (is.null(table) || nrow(table) == 0L) {
     log_message("No Giotto spatial gene result is available", message_type = "error")
@@ -2182,7 +2176,7 @@ giotto_plot_spatial_genes_scop <- function(x, top_n = 20, palette = "Chinese", p
     ggplot2::theme(panel.grid.major.y = ggplot2::element_blank())
 }
 
-giotto_plot_proximity_scop <- function(x, heatmap_palette = "RdBu", heatmap_palcolor = NULL, theme_use = "theme_scop", theme_args = list(), title = NULL, subtitle = NULL) {
+giotto_plot_proximity <- function(x, heatmap_palette = "RdBu", heatmap_palcolor = NULL, theme_use = "theme_scop", theme_args = list(), title = NULL, subtitle = NULL) {
   table <- x$results$cell_proximity$table
   if (is.null(table) || nrow(table) == 0L) {
     log_message("No Giotto cell proximity result is available", message_type = "error")
@@ -2204,7 +2198,7 @@ giotto_plot_proximity_scop <- function(x, heatmap_palette = "RdBu", heatmap_palc
   )
 }
 
-giotto_plot_modules_scop <- function(x, top_n = 20, heatmap_palette = "RdBu", heatmap_palcolor = NULL, theme_use = "theme_scop", theme_args = list(), title = NULL, subtitle = NULL) {
+giotto_plot_modules <- function(x, top_n = 20, heatmap_palette = "RdBu", heatmap_palcolor = NULL, theme_use = "theme_scop", theme_args = list(), title = NULL, subtitle = NULL) {
   pseudo <- giotto_result(
     result_type = "spatial_modules",
     giotto = x$giotto,

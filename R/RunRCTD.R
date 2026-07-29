@@ -161,16 +161,11 @@ RunRCTD <- function(
   rctd_assert_scalar_string(tool_name, "tool_name")
   max_cores <- rctd_check_max_cores(max_cores)
   min_cells <- rctd_check_min_cells(min_cells)
-  if (length(round_counts) != 1L || !is.logical(round_counts) || is.na(round_counts)) {
-    log_message(
-      "{.arg round_counts} must be TRUE or FALSE",
-      message_type = "error"
-    )
-  }
+  validate_scalar_flag(round_counts, "round_counts")
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   reference_assay <- reference_assay %||% SeuratObject::DefaultAssay(reference)
 
-  labels <- rctd_resolve_reference_labels(reference, reference_label)
+  labels <- resolve_reference_labels(reference, reference_label)
   names(labels) <- colnames(reference)
   keep_ref <- !is.na(labels) & nzchar(as.character(labels))
   if (!all(keep_ref)) {
@@ -199,7 +194,7 @@ RunRCTD <- function(
   names(labels) <- colnames(reference)
   label_map <- rctd_backend_label_map(labels)
 
-  features_use <- rctd_common_features(
+  features_use <- resolve_common_features(
     srt = srt,
     reference = reference,
     assay = assay,
@@ -337,12 +332,12 @@ RunRCTD <- function(
     spot_ids = colnames(st_counts),
     label_map = label_map
   )
-  weight_summary <- scop_spatial_finalize_weights(
+  weight_summary <- spatial_finalize_weights(
     weights = weights,
     all_spots = colnames(srt)
   )
   weights <- weight_summary$weights
-  srt <- scop_spatial_add_deconv_metadata(
+  srt <- spatial_add_deconv_metadata(
     srt,
     weights = weights,
     prefix = prefix,
@@ -360,7 +355,7 @@ RunRCTD <- function(
       cell_types = label_map$cell_types,
       cell_type_map = label_map$map,
       dropped_cell_types = dropped_cell_types,
-      summary = scop_spatial_weight_summary(weights),
+      summary = spatial_weight_summary(weights),
       backend_api = backend$api,
       parameters = list(
         assay = assay,
@@ -402,13 +397,7 @@ RunRCTD <- function(
 }
 
 rctd_assert_scalar_string <- function(x, arg_name) {
-  if (length(x) != 1L || !is.character(x) || is.na(x) || !nzchar(x)) {
-    log_message(
-      "{.arg {arg_name}} must be a single non-empty string",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
+  validate_scalar_string(x, arg_name)
 }
 
 rctd_check_max_cores <- function(max_cores) {
@@ -442,37 +431,7 @@ rctd_check_min_cells <- function(min_cells) {
 }
 
 rctd_validate_named_param_list <- function(x, arg_name) {
-  if (length(x) == 0L) {
-    return(invisible(TRUE))
-  }
-  nms <- names(x)
-  if (is.null(nms) || any(is.na(nms) | !nzchar(nms))) {
-    log_message(
-      "{.arg {arg_name}} must contain named arguments only",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
-}
-
-rctd_resolve_reference_labels <- function(reference, reference_label) {
-  if (
-    missing(reference_label) ||
-      is.null(reference_label) ||
-      length(reference_label) != 1L
-  ) {
-    log_message(
-      "{.arg reference_label} must be a single reference metadata column",
-      message_type = "error"
-    )
-  }
-  if (!reference_label %in% colnames(reference[[]])) {
-    log_message(
-      "{.arg reference_label} {.val {reference_label}} is not present in {.arg reference}",
-      message_type = "error"
-    )
-  }
-  reference[[reference_label, drop = TRUE]]
+  validate_named_param_list(x, arg_name)
 }
 
 rctd_filter_labels_by_min_cells <- function(labels, min_cells, verbose = TRUE) {
@@ -528,23 +487,6 @@ rctd_backend_label_map <- function(labels) {
   )
 }
 
-rctd_common_features <- function(
-  srt,
-  reference,
-  assay,
-  reference_assay,
-  features = NULL
-) {
-  common <- intersect(
-    rownames(srt[[assay]]),
-    rownames(reference[[reference_assay]])
-  )
-  if (!is.null(features)) {
-    common <- intersect(features, common)
-  }
-  common
-}
-
 rctd_get_count_matrix <- function(
   srt,
   assay,
@@ -597,26 +539,13 @@ rctd_get_spatial_coords <- function(
   coord.cols = c("x", "y"),
   coordinate_space = c("raw", "legacy_display")
 ) {
-  coordinate_space <- match.arg(coordinate_space)
-  resolved <- spatial_analysis_coords(
+  resolve_spatial_spot_coords(
     srt = srt,
+    spot_ids = spot_ids,
     image = image,
     coord.cols = coord.cols,
-    coordinate_space = coordinate_space,
-    image_policy = "strict"
+    coordinate_space = coordinate_space
   )
-  matched <- match(spot_ids, resolved$data$cell_id)
-  if (anyNA(matched)) {
-    log_message(
-      "Spatial coordinates are missing for one or more requested spots",
-      message_type = "error"
-    )
-  }
-  coords <- resolved$data[matched, c("x", "y"), drop = FALSE]
-  rownames(coords) <- spot_ids
-  attr(coords, "spatial_source") <- resolved$source
-  attr(coords, "spatial_transform") <- resolved$transform
-  coords
 }
 
 rctd_run_spacexr <- function(

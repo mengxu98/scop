@@ -26,7 +26,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunMDS(pancreas_sub)
 #' CellDimPlot(
 #'   pancreas_sub,
@@ -136,26 +136,20 @@ RunMDS.Assay5 <- function(
   seed.use = 11,
   ...
 ) {
-  features <- features %||% SeuratObject::VariableFeatures(object = object)
-  data_use <- GetAssayData5(
+  RunMDS.Assay(
     object = object,
-    layer = layer
-  )
-  data_use <- filter_nonzero_variance_features(data_use, features)
-  reduction_data <- RunMDS(
-    object = data_use,
     assay = assay,
     layer = layer,
+    features = features,
     nmds = nmds,
     dist.method = dist.method,
     mds.method = mds.method,
     rev.mds = rev.mds,
-    verbose = verbose,
     reduction.key = reduction.key,
+    verbose = verbose,
     seed.use = seed.use,
     ...
   )
-  return(reduction_data)
 }
 
 #' @rdname RunMDS

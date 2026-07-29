@@ -54,7 +54,7 @@ spatial_method_registry <- function() {
     entry("spata2_to_srt", "bridge", "framework_bridge", "SpatialFrameworkConvert.R", backend_id = "spata2", coordinate_space_current = "raw", coordinate_requirement = "backend_managed"),
     entry("srt_to_spe", "bridge", "framework_bridge", "SpatialDataConvert.R", backend_id = "core", coordinate_space_current = "raw", coordinate_requirement = "backend_managed"),
     entry("spe_to_srt", "bridge", "framework_bridge", "SpatialDataConvert.R", backend_id = "core", coordinate_space_current = "raw", coordinate_requirement = "backend_managed"),
-    entry("SeuratToScopGiotto", "bridge", "framework_bridge", "GiottoObject.R", "Giotto", "giotto;giotto_class", "legacy", "legacy_display", "legacy_display", "backend_managed"),
+    entry("SeuratToGiotto2", "bridge", "framework_bridge", "GiottoObject.R", "Giotto", "giotto;giotto_class", "legacy", "legacy_display", "legacy_display", "backend_managed"),
     entry("RunGiottoWorkflow", "workflow", "framework_workflow", "GiottoObject.R", "Giotto", "giotto;giotto_class", "legacy", "legacy_display", "legacy_display", "backend_managed", plot_function = "GiottoPlot"),
     entry("GiottoPreprocess", "analysis", "framework_workflow", "GiottoObject.R", "Giotto", "giotto", "legacy", "legacy_display", "legacy_display", "backend_managed", plot_function = "GiottoPlot"),
     entry("GiottoReduce", "analysis", "framework_workflow", "GiottoObject.R", "Giotto", "giotto", "legacy", "legacy_display", "legacy_display", "backend_managed", plot_function = "GiottoPlot"),
@@ -118,7 +118,7 @@ spatial_method_registry <- function() {
     entry("STdeconvolvePlot", "plot", "visualization", "RunSTdeconvolve.R", backend_id = "stdeconvolve", coordinate_space_current = "none"),
     entry("Cell2locationPlot", "plot", "visualization", "RunCell2location.R", backend_id = "cell2location", coordinate_space_current = "display", coordinate_requirement = "display_only"),
     entry("BenchmarkPlot", "plot", "visualization", "BenchmarkPlot.R", backend_id = "core", coordinate_space_current = "none"),
-    entry("standard_scop", "workflow", "recommended_workflow", "standard_scop.R", backend_id = "core", coordinate_space_current = "mixed", coordinate_space_target = "mixed", coordinate_requirement = "backend_managed")
+    entry("RunStandardWorkflow", "workflow", "recommended_workflow", "RunStandardWorkflow.R", backend_id = "core", coordinate_space_current = "mixed", coordinate_space_target = "mixed", coordinate_requirement = "backend_managed")
   )
   registry <- do.call(rbind, rows)
   rownames(registry) <- NULL
@@ -572,12 +572,8 @@ SpatialBackendStatus <- function(
   envname = NULL,
   conda = "auto"
 ) {
-  if (!is.logical(api_check) || length(api_check) != 1L || is.na(api_check)) {
-    log_message("{.arg api_check} must be TRUE or FALSE", message_type = "error")
-  }
-  if (!is.logical(refresh) || length(refresh) != 1L || is.na(refresh)) {
-    log_message("{.arg refresh} must be TRUE or FALSE", message_type = "error")
-  }
+  validate_scalar_flag(api_check, "api_check")
+  validate_scalar_flag(refresh, "refresh")
   backends <- spatial_backend_registry()
   envname <- get_envname(envname)
   backend_ids <- names(backends)
@@ -985,9 +981,7 @@ SpatialResultInfo <- function(
   if (!inherits(object, "Seurat")) {
     log_message("{.arg object} must be a {.cls Seurat} object", message_type = "error")
   }
-  if (!is.logical(include_empty) || length(include_empty) != 1L || is.na(include_empty)) {
-    log_message("{.arg include_empty} must be TRUE or FALSE", message_type = "error")
-  }
+  validate_scalar_flag(include_empty, "include_empty")
   detail <- match.arg(detail)
   index <- spatial_result_index(object)
   if (!is.null(method)) {

@@ -584,7 +584,7 @@ spatial_integration_run_precast <- function(input, params, verbose = TRUE) {
     utils::modifyList(
       list(
         seuList = input$srt_list,
-        project = "scop_spatial_integration",
+        project = "spatial_integration",
         customGenelist = input$features
       ),
       params$create_params %||% list()
@@ -1068,7 +1068,7 @@ spatial_integration_apply_result <- function(
     raw_result = result$raw_result,
     summary = list(
       n_cells = length(all_cells),
-      domains = scop_spatial_domain_summary(result$domains),
+      domains = spatial_domain_summary(result$domains),
       samples = sample_summary
     ),
     parameters = parameters
@@ -1243,7 +1243,7 @@ spatial_integration_resolve_sample_by <- function(object, sample.by) {
       message_type = "error"
     )
   }
-  ".scop_spatial_sample"
+  ".spatial_integration_sample"
 }
 
 spatial_integration_reduction_key <- function(reduction.name) {
@@ -1255,11 +1255,5 @@ spatial_integration_reduction_key <- function(reduction.name) {
 }
 
 spatial_integration_assert_scalar_string <- function(x, arg) {
-  if (is.null(x) || !is.character(x) || length(x) != 1L || is.na(x) || !nzchar(x)) {
-    log_message(
-      "{.arg {arg}} must be a single non-empty string",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
+  validate_scalar_string(x, arg)
 }

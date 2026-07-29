@@ -34,7 +34,7 @@ EstimateScorePlot <- function(
   resolved <- resolve_estimate_scores(object = object, score.data = score.data)
   mat <- estimate_select_scores(resolved$matrix, scores = scores)
   dots <- list(...)
-  theme_obj <- immune_plot_theme(
+  theme_obj <- resolve_legacy_plot_theme(
     theme_use = dots$theme_use %||% "theme_scop",
     theme_args = dots$theme_args %||% list()
   )
@@ -46,7 +46,7 @@ EstimateScorePlot <- function(
     cor_method <- dots$cor_method %||% "spearman"
     cor_mat <- stats::cor(mat, method = cor_method, use = "pairwise.complete.obs")
     cor_mat[!is.finite(cor_mat)] <- 0
-    df <- estimate_matrix_long(cor_mat, "score_type_1", "score_type_2", "cor")
+    df <- matrix_to_long(cor_mat, "score_type_1", "score_type_2", "cor")
     return(
       ggplot2::ggplot(df, ggplot2::aes(score_type_2, score_type_1, fill = cor)) +
         ggplot2::geom_tile(color = "white", linewidth = 0.5) +
@@ -80,7 +80,7 @@ EstimateScorePlot <- function(
     scale <- dots$scale %||% "none"
     scale <- match.arg(scale, c("none", "row", "column"))
     mat_plot <- immune_scale_matrix(mat, scale = scale)
-    df <- estimate_matrix_long(mat_plot, "sample", "score_type", "score")
+    df <- matrix_to_long(mat_plot, "sample", "score_type", "score")
     return(
       ggplot2::ggplot(df, ggplot2::aes(score_type, sample, fill = score)) +
         ggplot2::geom_tile(color = "white", linewidth = 0.35) +
@@ -117,7 +117,7 @@ EstimateScorePlot <- function(
     )
   }
 
-  df <- estimate_matrix_long(mat, "sample", "score_type", "score")
+  df <- matrix_to_long(mat, "sample", "score_type", "score")
   group_df <- resolve_estimate_groups(
     object = object,
     bundle = resolved$bundle,
@@ -269,15 +269,15 @@ EstimateGenePlot <- function(
   gene_mat <- gene_mat[common_samples, , drop = FALSE]
 
   dots <- list(...)
-  theme_obj <- immune_plot_theme(
+  theme_obj <- resolve_legacy_plot_theme(
     theme_use = dots$theme_use %||% "theme_scop",
     theme_args = dots$theme_args %||% list()
   )
 
   if (identical(plot_type, "scatter")) {
     df <- merge(
-      estimate_matrix_long(score_mat, "sample", "score_type", "score"),
-      estimate_matrix_long(gene_mat, "sample", "feature", "expression"),
+      matrix_to_long(score_mat, "sample", "score_type", "score"),
+      matrix_to_long(gene_mat, "sample", "feature", "expression"),
       by = "sample"
     )
     label_df <- estimate_gene_cor_labels(
@@ -322,7 +322,7 @@ EstimateGenePlot <- function(
     quantile = quantile
   )
   df <- merge(
-    estimate_matrix_long(score_mat, "sample", "score_type", "score"),
+    matrix_to_long(score_mat, "sample", "score_type", "score"),
     group_df,
     by = "sample"
   )
@@ -449,14 +449,6 @@ estimate_numeric_matrix <- function(x, row_label = "matrix") {
   }
   mat[!is.finite(mat)] <- NA_real_
   mat
-}
-
-estimate_matrix_long <- function(mat, row_name, col_name, value_name) {
-  df <- as.data.frame(as.table(mat), stringsAsFactors = FALSE)
-  colnames(df) <- c(row_name, col_name, value_name)
-  df[[row_name]] <- factor(df[[row_name]], levels = rownames(mat))
-  df[[col_name]] <- factor(df[[col_name]], levels = colnames(mat))
-  df
 }
 
 resolve_estimate_groups <- function(

@@ -3,7 +3,7 @@
 #' @description Get the data from the `Assay`, `Assay5` or `Seurat` object.
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @param object A `Assay`, `Assay5` or `Seurat` object.
 #' @param ... Additional arguments passed to the method.
 #'

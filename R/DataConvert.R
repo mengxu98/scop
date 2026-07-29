@@ -2,7 +2,7 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @param assay_x Assay to convert as the main data matrix in the anndata object.
 #' Default is `"RNA"`.
 #' @param layer_x Layer name for assay_x in the Seurat object.
@@ -412,7 +412,7 @@ srt_to_h5ad <- function(
 #' @examples
 #' \dontrun{
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' adata <- srt_to_adata(pancreas_sub)
 #' adata <- RunPAGA(
 #'   adata = adata,

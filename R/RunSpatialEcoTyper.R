@@ -6,7 +6,7 @@
 #' object when possible.
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
 #' @param srt A `Seurat` object. For `mode = "deconvolute"`, a numeric
 #' expression matrix can also be supplied.
@@ -1055,17 +1055,7 @@ spatialecotyper_seurat_metadata <- function(
 }
 
 spatialecotyper_assert_scalar_string <- function(x, arg) {
-  if (
-    is.null(x) ||
-      length(x) != 1L ||
-      is.na(x) ||
-      !nzchar(x)
-  ) {
-    log_message(
-      "{.arg {arg}} must be a single non-empty string",
-      message_type = "error"
-    )
-  }
+  validate_scalar_string(x, arg, require_character = FALSE)
 }
 
 spatialecotyper_check_meta_columns <- function(meta, cols) {

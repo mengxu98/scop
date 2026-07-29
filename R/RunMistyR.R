@@ -97,7 +97,7 @@ RunMistyR <- function(
     message_type = "running",
     verbose = verbose
   )
-  mistyr_validate_srt(srt)
+  validate_seurat_object(srt)
   mistyr_assert_string(tool_name, "tool_name")
   mistyr_assert_flag(view_cached, "view_cached")
   mistyr_assert_flag(bypass_intra, "bypass_intra")
@@ -111,12 +111,12 @@ RunMistyR <- function(
   para_zoi <- mistyr_assert_nonnegative_number(para_zoi, "para_zoi")
   para_approx <- mistyr_assert_positive_number(para_approx, "para_approx")
   if (!is.null(para_nn)) {
-    para_nn <- mistyr_validate_positive_integer(para_nn, "para_nn")
+    para_nn <- validate_positive_integer(para_nn, "para_nn")
   }
   juxta_neighbor_thr <- mistyr_assert_positive_number(juxta_neighbor_thr, "juxta_neighbor_thr")
-  cv_folds <- mistyr_validate_positive_integer(cv_folds, "cv_folds")
+  cv_folds <- validate_positive_integer(cv_folds, "cv_folds")
   extra_args <- list(...)
-  mistyr_validate_named_list(extra_args, "...")
+  validate_named_param_list(extra_args, "...")
 
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   if (!assay %in% SeuratObject::Assays(srt)) {
@@ -399,25 +399,12 @@ mistyr_validate_views <- function(views) {
   views
 }
 
-mistyr_validate_srt <- function(srt) {
-  if (!inherits(srt, "Seurat")) {
-    log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
-  }
-  invisible(TRUE)
-}
-
 mistyr_assert_string <- function(x, arg) {
-  if (length(x) != 1L || !is.character(x) || is.na(x) || !nzchar(x)) {
-    log_message("{.arg {arg}} must be a single non-empty string", message_type = "error")
-  }
-  invisible(TRUE)
+  validate_scalar_string(x, arg)
 }
 
 mistyr_assert_flag <- function(x, arg) {
-  if (length(x) != 1L || !is.logical(x) || is.na(x)) {
-    log_message("{.arg {arg}} must be TRUE or FALSE", message_type = "error")
-  }
-  invisible(TRUE)
+  validate_scalar_flag(x, arg)
 }
 
 mistyr_assert_positive_number <- function(x, arg) {
@@ -426,28 +413,9 @@ mistyr_assert_positive_number <- function(x, arg) {
   }
   as.numeric(x)
 }
-
 mistyr_assert_nonnegative_number <- function(x, arg) {
   if (length(x) != 1L || is.na(x) || !is.finite(x) || x < 0) {
     log_message("{.arg {arg}} must be a non-negative finite number", message_type = "error")
   }
   as.numeric(x)
-}
-
-mistyr_validate_positive_integer <- function(x, arg) {
-  if (length(x) != 1L || is.na(x) || !is.finite(x) || x < 1) {
-    log_message("{.arg {arg}} must be a positive integer", message_type = "error")
-  }
-  as.integer(x)
-}
-
-mistyr_validate_named_list <- function(x, arg) {
-  if (length(x) == 0L) {
-    return(invisible(TRUE))
-  }
-  nms <- names(x)
-  if (is.null(nms) || any(is.na(nms) | !nzchar(nms))) {
-    log_message("{.arg {arg}} must contain named arguments only", message_type = "error")
-  }
-  invisible(TRUE)
 }

@@ -1010,15 +1010,9 @@ RunSpatialCellChat <- function(
   spatialcellchat_validate_scalar(min.cells, "min.cells", positive = TRUE)
   spatialcellchat_validate_scalar(min.links, "min.links", positive = TRUE)
   spatialcellchat_validate_scalar(nboot, "nboot", positive = TRUE)
-  if (!is.logical(contact.dependent) || length(contact.dependent) != 1L || is.na(contact.dependent)) {
-    log_message("{.arg contact.dependent} must be TRUE or FALSE", message_type = "error")
-  }
-  if (!is.logical(do.permutation) || length(do.permutation) != 1L || is.na(do.permutation)) {
-    log_message("{.arg do.permutation} must be TRUE or FALSE", message_type = "error")
-  }
-  if (!is.logical(overwrite) || length(overwrite) != 1L || is.na(overwrite)) {
-    log_message("{.arg overwrite} must be TRUE or FALSE", message_type = "error")
-  }
+  validate_scalar_flag(contact.dependent, "contact.dependent")
+  validate_scalar_flag(do.permutation, "do.permutation")
+  validate_scalar_flag(overwrite, "overwrite")
   existing <- srt@tools[["SpatialCellChat"]]
   if (!is.null(existing$results[[result.name]]) && !isTRUE(overwrite)) {
     log_message(

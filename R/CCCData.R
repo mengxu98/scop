@@ -2,7 +2,7 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @param group.by Metadata column defining cell groups. Passed to
 #' `liana::liana_wrap()` as `idents_col`.
 #' @param method LIANA methods to run. Defaults to LIANA's internal methods.

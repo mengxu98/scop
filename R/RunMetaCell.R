@@ -1,7 +1,7 @@
 #' @title Run metacell partitioning for single-cell data
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
 #' @param method Metacell construction method. One of `"supercell"`,
 #' `"seacells"`, or `"metacell"`.
@@ -24,7 +24,7 @@
 #' @return A metacell-level `Seurat` object. The original single-cell Seurat
 #' is stored in `@misc[["original_srt"]]` and the cell-to-metacell membership
 #' vector in `@misc[["cell_membership"]]`. The returned object can be passed
-#' directly to any scop function (`standard_scop()`, `CellDimPlot()`, etc.).
+#' directly to any scop function (`RunStandardWorkflow()`, `CellDimPlot()`, etc.).
 #' @export
 #'
 #' @references
@@ -39,7 +39,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(
+#' pancreas_sub <- RunStandardWorkflow(
 #'   pancreas_sub,
 #'   nHVF = 500,
 #'   linear_reduction_dims = 20,
@@ -419,7 +419,7 @@ metacell_seacells <- function(
   )
   if (is.null(pca_reduction)) {
     log_message(
-      "{.pkg SEACells} requires PCA. Run {.fn standard_scop} or {.fn RunPCA} first to compute PCA on the original Seurat.",
+      "{.pkg SEACells} requires PCA. Run {.fn RunStandardWorkflow} or {.fn RunPCA} first to compute PCA on the original Seurat.",
       message_type = "error"
     )
   }

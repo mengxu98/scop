@@ -2,7 +2,7 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams FeatureDimPlot
 #' @param object An object.
 #' This can be a Seurat object, a matrix-like object, a Neighbor object, or a Graph object.
@@ -64,7 +64,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunUMAP2(pancreas_sub, dims = 1:30)
 #' CellDimPlot(
 #'   pancreas_sub,

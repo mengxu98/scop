@@ -52,7 +52,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #'
 #' pancreas_sub <- RunSlingshot(
 #'   pancreas_sub,
@@ -298,10 +298,25 @@ DynamicHeatmap <- function(
   anno_keys = FALSE,
   anno_features = FALSE,
   terms_width = grid::unit(4, "in"),
+  terms_stat_width = grid::unit(1.35, "in"),
   terms_fontsize = 8,
   terms_stat = "none",
   terms_stat_digits = 2,
-  terms_stat_test = TRUE,
+  terms_stat_label = "value",
+  terms_stat_axis = FALSE,
+  terms_stat_background_palcolor = NULL,
+  terms_stat_border = NULL,
+  terms_stat_border_palcolor = NULL,
+  terms_stat_border_size = NULL,
+  terms_stat_label_palcolor = NULL,
+  terms_group_background = FALSE,
+  terms_background_palcolor = "grey98",
+  terms_background_alpha = 1,
+  terms_border = TRUE,
+  terms_border_palcolor = "black",
+  terms_border_size = 0.8,
+  terms_text_palcolor = NULL,
+  terms_bar_palcolor = NULL,
   keys_width = grid::unit(2, "in"),
   keys_fontsize = c(6, 10),
   features_width = grid::unit(2, "in"),
@@ -1740,125 +1755,29 @@ DynamicHeatmap <- function(
       featan <- feature_annotation[i]
       palette <- feature_annotation_palette[i]
       palcolor <- feature_annotation_palcolor[[i]]
-      featan_values <- feature_metadata[, featan]
-      featan_values <- compact_heatmap_feature_annotation(featan_values, featan)
-      if (!is.numeric(featan_values)) {
-        if (is.logical(featan_values)) {
-          featan_values <- factor(featan_values, levels = c(TRUE, FALSE))
-        } else if (!is.factor(featan_values)) {
-          featan_values <- factor(featan_values, levels = unique(featan_values))
-        }
-        ha_feature <- list()
-        ha_feature[[featan]] <- ComplexHeatmap::anno_simple(
-          x = as.character(featan_values),
-          col = palette_colors(
-            featan_values,
-            palette = palette,
-            palcolor = palcolor
-          ),
-          which = ifelse(flip, "column", "row"),
-          na_col = "transparent",
-          border = FALSE
-        )
-        anno_args <- c(
-          ha_feature,
-          which = ifelse(flip, "column", "row"),
-          show_annotation_name = TRUE,
-          annotation_name_side = ifelse(flip, "left", "top"),
-          border = FALSE
-        )
-        anno_args <- c(
-          anno_args,
-          feature_annotation_params[setdiff(
-            names(feature_annotation_params),
-            names(anno_args)
-          )]
-        )
-        ha_feature <- do.call(
-          ComplexHeatmap::HeatmapAnnotation,
-          args = anno_args
-        )
-        if (is.null(ha_right)) {
-          ha_right <- ha_feature
-        } else {
-          ha_right <- c(ha_right, ha_feature)
-        }
-        featan_levels <- levels(featan_values)
-        featan_levels <- featan_levels[!is.na(featan_levels) & nzchar(featan_levels)]
-        if (length(featan_levels) > 0) {
-          lgd[[featan]] <- ComplexHeatmap::Legend(
-            title = featan,
-            labels = featan_levels,
-            legend_gp = grid::gpar(
-              fill = palette_colors(
-                featan_levels,
-                palette = palette,
-                palcolor = palcolor
-              ),
-              col = feature_annotation_border_color,
-              lwd = feature_annotation_border_size
-            ),
-            border = heatmap_legend_border(
-              feature_annotation_border,
-              feature_annotation_border_color
-            )
-          )
-        } else {
-          lgd[[featan]] <- NULL
-        }
+      feature <- build_heatmap_feature_annotation(
+        annotation_name = featan,
+        values = feature_metadata[, featan],
+        palette = palette,
+        palcolor = palcolor,
+        flip = flip,
+        border = feature_annotation_border,
+        annotation_border = FALSE,
+        border_color = feature_annotation_border_color,
+        border_size = feature_annotation_border_size,
+        discrete_legend_border = heatmap_legend_border(
+          feature_annotation_border,
+          feature_annotation_border_color
+        ),
+        discrete_legend_gp_border = TRUE,
+        params = feature_annotation_params
+      )
+      ha_right <- if (is.null(ha_right)) {
+        feature$annotation
       } else {
-        col_fun <- circlize::colorRamp2(
-          breaks = seq(
-            min(featan_values, na.rm = TRUE),
-            max(featan_values, na.rm = TRUE),
-            length = 100
-          ),
-          colors = palette_colors(
-            palette = palette, palcolor = palcolor
-          )
-        )
-        ha_feature <- list()
-        ha_feature[[featan]] <- ComplexHeatmap::anno_simple(
-          x = featan_values,
-          col = col_fun,
-          which = ifelse(flip, "column", "row"),
-          na_col = "transparent",
-          border = FALSE
-        )
-        anno_args <- c(
-          ha_feature,
-          which = ifelse(flip, "column", "row"),
-          show_annotation_name = TRUE,
-          annotation_name_side = ifelse(flip, "left", "top"),
-          border = FALSE
-        )
-        anno_args <- c(
-          anno_args,
-          feature_annotation_params[setdiff(
-            names(feature_annotation_params),
-            names(anno_args)
-          )]
-        )
-        ha_feature <- do.call(ComplexHeatmap::HeatmapAnnotation, args = anno_args)
-        if (is.null(ha_right)) {
-          ha_right <- ha_feature
-        } else {
-          ha_right <- c(ha_right, ha_feature)
-        }
-        lgd[[featan]] <- ComplexHeatmap::Legend(
-          title = featan,
-          col_fun = col_fun,
-          legend_gp = heatmap_border_gp(
-            feature_annotation_border,
-            feature_annotation_border_color,
-            feature_annotation_border_size
-          ),
-          border = heatmap_legend_border(
-            feature_annotation_border,
-            feature_annotation_border_color
-          )
-        )
+        c(ha_right, feature$annotation)
       }
+      lgd[[featan]] <- feature$legend
     }
   }
 
@@ -1873,10 +1792,25 @@ DynamicHeatmap <- function(
     anno_keys = anno_keys,
     anno_features = anno_features,
     terms_width = terms_width,
+    terms_stat_width = terms_stat_width,
     terms_fontsize = terms_fontsize,
     terms_stat = terms_stat,
     terms_stat_digits = terms_stat_digits,
-    terms_stat_test = terms_stat_test,
+    terms_stat_label = terms_stat_label,
+    terms_stat_axis = terms_stat_axis,
+    terms_stat_background_palcolor = terms_stat_background_palcolor,
+    terms_stat_border = terms_stat_border,
+    terms_stat_border_palcolor = terms_stat_border_palcolor,
+    terms_stat_border_size = terms_stat_border_size,
+    terms_stat_label_palcolor = terms_stat_label_palcolor,
+    terms_group_background = terms_group_background,
+    terms_background_palcolor = terms_background_palcolor,
+    terms_background_alpha = terms_background_alpha,
+    terms_border = terms_border,
+    terms_border_palcolor = terms_border_palcolor,
+    terms_border_size = terms_border_size,
+    terms_text_palcolor = terms_text_palcolor,
+    terms_bar_palcolor = terms_bar_palcolor,
     keys_width = keys_width,
     keys_fontsize = keys_fontsize,
     features_width = features_width,

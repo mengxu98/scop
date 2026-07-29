@@ -819,13 +819,7 @@ secact_assert_spacet <- function(x) {
 }
 
 secact_assert_scalar_string <- function(x, arg) {
-  if (is.null(x) || length(x) != 1L || is.na(x) || !nzchar(x)) {
-    log_message(
-      "{.arg {arg}} must be a single non-empty string",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
+  validate_scalar_string(x, arg, require_character = FALSE)
 }
 
 secact_check_assay <- function(srt, assay) {

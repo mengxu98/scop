@@ -1,6 +1,6 @@
 #' @title The Uncorrected integration function
 #'
-#' @inheritParams integration_scop
+#' @inheritParams RunIntegration
 #'
 #' @export
 Uncorrected_integrate <- function(
@@ -62,60 +62,12 @@ Uncorrected_integrate <- function(
     linear_reduction_dims <- max(linear_reduction_dims_use)
   }
 
-  nonlinear_reductions <- c(
-    "umap",
-    "umap-naive",
-    "tsne",
-    "dm",
-    "phate",
-    "pacmap",
-    "trimap",
-    "largevis",
-    "fr"
-  )
-  if (any(!nonlinear_reduction %in% nonlinear_reductions)) {
-    log_message(
-      "{.arg nonlinear_reduction} must be one of {.val {nonlinear_reductions}}",
-      message_type = "error"
-    )
-  }
-  cluster_algorithms <- c("louvain", "slm", "leiden")
-  if (!cluster_algorithm %in% cluster_algorithms) {
-    log_message(
-      "{.arg cluster_algorithm} must be one of {.val {cluster_algorithms}}",
-      message_type = "error"
-    )
-  }
-  cluster_algorithm_index <- switch(
-    EXPR = tolower(cluster_algorithm),
-    "louvain" = 1,
-    "louvain_refined" = 2,
-    "slm" = 3,
-    "leiden" = 4
-  )
+  validate_nonlinear_reductions(nonlinear_reduction)
+  cluster_algorithm_index <- resolve_cluster_algorithm_index(cluster_algorithm)
 
   set.seed(seed)
-  if (is.null(srt_list) && is.null(srt_merge)) {
-    log_message(
-      "{.arg srt_list} and {.arg srt_merge} were all empty",
-      message_type = "error"
-    )
-  }
-  if (!is.null(srt_list) && !is.null(srt_merge)) {
-    cell1 <- sort(unique(unlist(lapply(srt_list, colnames))))
-    cell2 <- sort(unique(colnames(srt_merge)))
-    if (!identical(cell1, cell2)) {
-      log_message(
-        "{.arg srt_list} and {.arg srt_merge} have different cells",
-        message_type = "error"
-      )
-    }
-  }
-  if (!is.null(srt_merge)) {
-    srt_merge_raw <- srt_merge
-  } else {
-    srt_merge_raw <- NULL
-  }
+  validate_integration_input_cells(srt_list, srt_merge)
+  srt_merge_raw <- srt_merge
   if (!is.null(srt_list)) {
     checked <- CheckDataList(
       srt_list = srt_list,
@@ -283,7 +235,7 @@ Uncorrected_integrate <- function(
 
 #' @title The WNN integration function
 #'
-#' @inheritParams integration_scop
+#' @inheritParams RunIntegration
 #'
 #' @export
 #' @examples
@@ -329,20 +281,7 @@ WNN_integrate <- function(
   verbose = TRUE,
   seed = 11
 ) {
-  cluster_algorithms <- c("louvain", "slm", "leiden")
-  if (!cluster_algorithm %in% cluster_algorithms) {
-    log_message(
-      "{.arg cluster_algorithm} must be one of {.val {cluster_algorithms}}",
-      message_type = "error"
-    )
-  }
-  cluster_algorithm_index <- switch(
-    EXPR = tolower(cluster_algorithm),
-    "louvain" = 1,
-    "louvain_refined" = 2,
-    "slm" = 3,
-    "leiden" = 4
-  )
+  cluster_algorithm_index <- resolve_cluster_algorithm_index(cluster_algorithm)
 
   set.seed(seed)
   if (is.null(srt_merge) && is.null(srt_list)) {
@@ -362,10 +301,10 @@ WNN_integrate <- function(
   )
   rna_assay <- assay_pair[["rna"]]
   atac_assay <- assay_pair[["atac"]]
-  rna_prefix <- standard_scop_assay_prefix(srt = srt_merge, assay = rna_assay)
-  atac_prefix <- standard_scop_assay_prefix(srt = srt_merge, assay = atac_assay)
+  rna_prefix <- resolve_assay_prefix(srt = srt_merge, assay = rna_assay)
+  atac_prefix <- resolve_assay_prefix(srt = srt_merge, assay = atac_assay)
 
-  srt_merge <- standard_scop(
+  srt_merge <- RunStandardWorkflow(
     srt = srt_merge,
     prefix = "Standard",
     assay = c(rna_assay, atac_assay),
@@ -527,7 +466,7 @@ WNN_integrate <- function(
 
 #' @title The MultiMAP integration function
 #'
-#' @inheritParams integration_scop
+#' @inheritParams RunIntegration
 #' @param gene_activity_assay Name of the gene activity assay used to provide
 #' a shared feature space for RNA-ATAC integration. Default is `"ACTIVITY"`.
 #' @param MultiMAP_params A list of parameters passed to `MultiMAP::Integration`.
@@ -601,20 +540,7 @@ MultiMAP_integrate <- function(
     )
   }
 
-  cluster_algorithms <- c("louvain", "slm", "leiden")
-  if (!cluster_algorithm %in% cluster_algorithms) {
-    log_message(
-      "{.arg cluster_algorithm} must be one of {.val {cluster_algorithms}}",
-      message_type = "error"
-    )
-  }
-  cluster_algorithm_index <- switch(
-    EXPR = tolower(cluster_algorithm),
-    "louvain" = 1,
-    "louvain_refined" = 2,
-    "slm" = 3,
-    "leiden" = 4
-  )
+  cluster_algorithm_index <- resolve_cluster_algorithm_index(cluster_algorithm)
 
   set.seed(seed)
   if (is.null(srt_merge) && is.null(srt_list)) {
@@ -634,8 +560,8 @@ MultiMAP_integrate <- function(
   )
   rna_assay <- assay_pair[["rna"]]
   atac_assay <- assay_pair[["atac"]]
-  rna_prefix <- standard_scop_assay_prefix(srt = srt_merge, assay = rna_assay)
-  atac_prefix <- standard_scop_assay_prefix(srt = srt_merge, assay = atac_assay)
+  rna_prefix <- resolve_assay_prefix(srt = srt_merge, assay = rna_assay)
+  atac_prefix <- resolve_assay_prefix(srt = srt_merge, assay = atac_assay)
 
   PrepareEnv(modules = "multimap")
   check_python(c("multimap", "scanpy"))
@@ -647,7 +573,7 @@ MultiMAP_integrate <- function(
     verbose = verbose
   )
 
-  srt_merge <- standard_scop(
+  srt_merge <- RunStandardWorkflow(
     srt = srt_merge,
     prefix = "Standard",
     assay = c(rna_assay, atac_assay),
@@ -1130,7 +1056,7 @@ run_wnn_reduction <- function(
 
 #' @title The Seurat integration function
 #'
-#' @inheritParams integration_scop
+#' @inheritParams RunIntegration
 #' @param FindIntegrationAnchors_params A list of parameters for the Seurat::FindIntegrationAnchors function.
 #' Default is `list()`.
 #' @param IntegrateData_params A list of parameters for the Seurat::IntegrateData function.
@@ -1199,60 +1125,12 @@ Seurat_integrate <- function(
   ) {
     linear_reduction_dims <- max(linear_reduction_dims_use)
   }
-  nonlinear_reductions <- c(
-    "umap",
-    "umap-naive",
-    "tsne",
-    "dm",
-    "phate",
-    "pacmap",
-    "trimap",
-    "largevis",
-    "fr"
-  )
-  if (any(!nonlinear_reduction %in% nonlinear_reductions)) {
-    log_message(
-      "{.arg nonlinear_reduction} must be one of {.val {nonlinear_reductions}}",
-      message_type = "error"
-    )
-  }
-  cluster_algorithms <- c("louvain", "slm", "leiden")
-  if (!cluster_algorithm %in% cluster_algorithms) {
-    log_message(
-      "{.arg cluster_algorithm} must be one of {.val {cluster_algorithms}}",
-      message_type = "error"
-    )
-  }
-  cluster_algorithm_index <- switch(
-    EXPR = tolower(cluster_algorithm),
-    "louvain" = 1,
-    "louvain_refined" = 2,
-    "slm" = 3,
-    "leiden" = 4
-  )
+  validate_nonlinear_reductions(nonlinear_reduction)
+  cluster_algorithm_index <- resolve_cluster_algorithm_index(cluster_algorithm)
 
   set.seed(seed)
-  if (is.null(srt_list) && is.null(srt_merge)) {
-    log_message(
-      "{.arg srt_list} and {.arg srt_merge} were all empty",
-      message_type = "error"
-    )
-  }
-  if (!is.null(srt_list) && !is.null(srt_merge)) {
-    cell1 <- sort(unique(unlist(lapply(srt_list, colnames))))
-    cell2 <- sort(unique(colnames(srt_merge)))
-    if (!identical(cell1, cell2)) {
-      log_message(
-        "{.arg srt_list} and {.arg srt_merge} have different cells",
-        message_type = "error"
-      )
-    }
-  }
-  if (!is.null(srt_merge)) {
-    srt_merge_raw <- srt_merge
-  } else {
-    srt_merge_raw <- NULL
-  }
+  validate_integration_input_cells(srt_list, srt_merge)
+  srt_merge_raw <- srt_merge
   if (!is.null(srt_list)) {
     checked <- CheckDataList(
       srt_list = srt_list,
@@ -1599,7 +1477,7 @@ Seurat_integrate <- function(
 
 #' @title The scVI integration function
 #'
-#' @inheritParams integration_scop
+#' @inheritParams RunIntegration
 #' @param scVI_dims_use A vector specifying the dimensions returned by scVI that will be utilized for downstream cell cluster finding and nonlinear reduction.
 #' If set to NULL, all the returned dimensions will be used by default.
 #' @param model A string indicating the scVI model to be used.
@@ -1674,36 +1552,8 @@ scVI_integrate <- function(
       message_type = "error"
     )
   }
-  nonlinear_reductions <- c(
-    "umap",
-    "umap-naive",
-    "tsne",
-    "dm",
-    "phate",
-    "pacmap",
-    "trimap",
-    "largevis",
-    "fr"
-  )
-  if (any(!nonlinear_reduction %in% nonlinear_reductions)) {
-    log_message(
-      "{.arg nonlinear_reduction} must be one of {.val {nonlinear_reductions}}",
-      message_type = "error"
-    )
-  }
-  cluster_algorithms <- c("louvain", "slm", "leiden")
-  if (!cluster_algorithm %in% cluster_algorithms) {
-    log_message(
-      "{.arg cluster_algorithm} must be one of {.val {cluster_algorithms}}",
-      message_type = "error"
-    )
-  }
-  cluster_algorithm_index <- switch(tolower(cluster_algorithm),
-    "louvain" = 1,
-    "louvain_refined" = 2,
-    "slm" = 3,
-    "leiden" = 4
-  )
+  validate_nonlinear_reductions(nonlinear_reduction)
+  cluster_algorithm_index <- resolve_cluster_algorithm_index(cluster_algorithm)
 
   PrepareEnv(modules = "scvi")
   check_python("scvi-tools")
@@ -1713,27 +1563,8 @@ scVI_integrate <- function(
 
   scvi$settings$num_threads <- as.integer(cores)
 
-  if (is.null(srt_list) && is.null(srt_merge)) {
-    log_message(
-      "{.arg srt_list} and {.arg srt_merge} were all empty",
-      message_type = "error"
-    )
-  }
-  if (!is.null(srt_list) && !is.null(srt_merge)) {
-    cell1 <- sort(unique(unlist(lapply(srt_list, colnames))))
-    cell2 <- sort(unique(colnames(srt_merge)))
-    if (!identical(cell1, cell2)) {
-      log_message(
-        "{.arg srt_list} and {.arg srt_merge} have different cells",
-        message_type = "error"
-      )
-    }
-  }
-  if (!is.null(srt_merge)) {
-    srt_merge_raw <- srt_merge
-  } else {
-    srt_merge_raw <- NULL
-  }
+  validate_integration_input_cells(srt_list, srt_merge)
+  srt_merge_raw <- srt_merge
   if (!is.null(srt_list)) {
     checked <- CheckDataList(
       srt_list = srt_list,
@@ -1928,7 +1759,7 @@ scVI_integrate <- function(
 
 #' @title The MNN integration function
 #'
-#' @inheritParams integration_scop
+#' @inheritParams RunIntegration
 #' @param mnnCorrect_params A list of parameters for the batchelor::mnnCorrect function,
 #' default is an empty list.
 #' @export
@@ -1990,61 +1821,14 @@ MNN_integrate <- function(
   ) {
     linear_reduction_dims <- max(linear_reduction_dims_use)
   }
-  nonlinear_reductions <- c(
-    "umap",
-    "umap-naive",
-    "tsne",
-    "dm",
-    "phate",
-    "pacmap",
-    "trimap",
-    "largevis",
-    "fr"
-  )
-  if (any(!nonlinear_reduction %in% nonlinear_reductions)) {
-    log_message(
-      "{.arg nonlinear_reduction} must be one of {.val {nonlinear_reductions}}",
-      message_type = "error"
-    )
-  }
-  cluster_algorithms <- c("louvain", "slm", "leiden")
-  if (!cluster_algorithm %in% cluster_algorithms) {
-    log_message(
-      "{.arg cluster_algorithm} must be one of {.val {cluster_algorithms}}",
-      message_type = "error"
-    )
-  }
-  cluster_algorithm_index <- switch(tolower(cluster_algorithm),
-    "louvain" = 1,
-    "louvain_refined" = 2,
-    "slm" = 3,
-    "leiden" = 4
-  )
+  validate_nonlinear_reductions(nonlinear_reduction)
+  cluster_algorithm_index <- resolve_cluster_algorithm_index(cluster_algorithm)
 
   check_r("batchelor", verbose = FALSE)
   set.seed(seed)
 
-  if (is.null(srt_list) && is.null(srt_merge)) {
-    log_message(
-      "{.arg srt_list} and {.arg srt_merge} were all empty",
-      message_type = "error"
-    )
-  }
-  if (!is.null(srt_list) && !is.null(srt_merge)) {
-    cell1 <- sort(unique(unlist(lapply(srt_list, colnames))))
-    cell2 <- sort(unique(colnames(srt_merge)))
-    if (!identical(cell1, cell2)) {
-      log_message(
-        "srt_list and srt_merge have different cells.",
-        message_type = "error"
-      )
-    }
-  }
-  if (!is.null(srt_merge)) {
-    srt_merge_raw <- srt_merge
-  } else {
-    srt_merge_raw <- NULL
-  }
+  validate_integration_input_cells(srt_list, srt_merge)
+  srt_merge_raw <- srt_merge
   if (!is.null(srt_list)) {
     checked <- CheckDataList(
       srt_list = srt_list,
@@ -2270,7 +2054,7 @@ MNN_integrate <- function(
 
 #' @title The fastMNN integration function
 #'
-#' @inheritParams integration_scop
+#' @inheritParams RunIntegration
 #' @param fastMNN_dims_use A vector specifying the dimensions returned by fastMNN that will be utilized for downstream cell cluster finding and nonlinear reduction.
 #' If set to NULL, all the returned dimensions will be used by default.
 #' @param fastMNN_params A list of parameters for the batchelor::fastMNN function, default is an empty list.
@@ -2330,37 +2114,13 @@ fastMNN_integrate <- function(
       message_type = "error"
     )
   }
-  cluster_algorithm_index <- switch(tolower(cluster_algorithm),
-    "louvain" = 1,
-    "louvain_refined" = 2,
-    "slm" = 3,
-    "leiden" = 4
-  )
+  cluster_algorithm_index <- resolve_cluster_algorithm_index(cluster_algorithm)
 
   check_r("batchelor", verbose = FALSE)
   set.seed(seed)
 
-  if (is.null(srt_list) && is.null(srt_merge)) {
-    log_message(
-      "{.arg srt_list} and {.arg srt_merge} were all empty",
-      message_type = "error"
-    )
-  }
-  if (!is.null(srt_list) && !is.null(srt_merge)) {
-    cell1 <- sort(unique(unlist(lapply(srt_list, colnames))))
-    cell2 <- sort(unique(colnames(srt_merge)))
-    if (!identical(cell1, cell2)) {
-      log_message(
-        "srt_list and srt_merge have different cells.",
-        message_type = "error"
-      )
-    }
-  }
-  if (!is.null(srt_merge)) {
-    srt_merge_raw <- srt_merge
-  } else {
-    srt_merge_raw <- NULL
-  }
+  validate_integration_input_cells(srt_list, srt_merge)
+  srt_merge_raw <- srt_merge
   if (!is.null(srt_list)) {
     checked <- CheckDataList(
       srt_list = srt_list,
@@ -2530,7 +2290,7 @@ fastMNN_integrate <- function(
 
 #' @title The Harmony integration function
 #'
-#' @inheritParams integration_scop
+#' @inheritParams RunIntegration
 #' @param harmony_dims_use A vector specifying the dimensions returned by RunHarmony that will be utilized for downstream cell cluster finding and nonlinear reduction.
 #' If set to NULL, all the returned dimensions will be used by default.
 #' @param RunHarmony_params A list of parameters for [harmony::RunHarmony], default is an empty list.
@@ -2596,61 +2356,13 @@ Harmony_integrate <- function(
   ) {
     linear_reduction_dims <- max(linear_reduction_dims_use)
   }
-  nonlinear_reductions <- c(
-    "umap",
-    "umap-naive",
-    "tsne",
-    "dm",
-    "phate",
-    "pacmap",
-    "trimap",
-    "largevis",
-    "fr"
-  )
-  if (any(!nonlinear_reduction %in% nonlinear_reductions)) {
-    log_message(
-      "{.arg nonlinear_reduction} must be one of {.val {nonlinear_reductions}}",
-      message_type = "error"
-    )
-  }
-  cluster_algorithms <- c("louvain", "slm", "leiden")
-  if (!cluster_algorithm %in% cluster_algorithms) {
-    log_message(
-      "{.arg cluster_algorithm} must be one of {.val {cluster_algorithms}}",
-      message_type = "error"
-    )
-  }
-  cluster_algorithm_index <- switch(
-    EXPR = tolower(cluster_algorithm),
-    "louvain" = 1,
-    "louvain_refined" = 2,
-    "slm" = 3,
-    "leiden" = 4
-  )
+  validate_nonlinear_reductions(nonlinear_reduction)
+  cluster_algorithm_index <- resolve_cluster_algorithm_index(cluster_algorithm)
 
   set.seed(seed)
 
-  if (is.null(srt_list) && is.null(srt_merge)) {
-    log_message(
-      "{.arg srt_list} and {.arg srt_merge} were all empty",
-      message_type = "error"
-    )
-  }
-  if (!is.null(srt_list) && !is.null(srt_merge)) {
-    cell1 <- sort(unique(unlist(lapply(srt_list, colnames))))
-    cell2 <- sort(unique(colnames(srt_merge)))
-    if (!identical(cell1, cell2)) {
-      log_message(
-        "{.arg srt_list} and {.arg srt_merge} have different cells",
-        message_type = "error"
-      )
-    }
-  }
-  if (!is.null(srt_merge)) {
-    srt_merge_raw <- srt_merge
-  } else {
-    srt_merge_raw <- NULL
-  }
+  validate_integration_input_cells(srt_list, srt_merge)
+  srt_merge_raw <- srt_merge
   if (!is.null(srt_list)) {
     checked <- CheckDataList(
       srt_list = srt_list,
@@ -2854,7 +2566,7 @@ Harmony_integrate <- function(
 
 #' @title The Scanorama integration function
 #'
-#' @inheritParams integration_scop
+#' @inheritParams RunIntegration
 #' @param Scanorama_dims_use  A vector specifying the dimensions returned by Scanorama that will be utilized for downstream cell cluster finding and nonlinear reduction.
 #' If set to NULL, all the returned dimensions will be used by default.
 #' @param return_corrected Logical indicating whether to return the corrected data.
@@ -2920,39 +2632,14 @@ Scanorama_integrate <- function(
       message_type = "error"
     )
   }
-  cluster_algorithm_index <- switch(
-    EXPR = tolower(cluster_algorithm),
-    "louvain" = 1,
-    "louvain_refined" = 2,
-    "slm" = 3,
-    "leiden" = 4
-  )
+  cluster_algorithm_index <- resolve_cluster_algorithm_index(cluster_algorithm)
 
   check_python("scanorama")
   scanorama <- reticulate::import("scanorama")
   set.seed(seed)
 
-  if (is.null(srt_list) && is.null(srt_merge)) {
-    log_message(
-      "srt_list and srt_merge were all empty.",
-      message_type = "error"
-    )
-  }
-  if (!is.null(srt_list) && !is.null(srt_merge)) {
-    cell1 <- sort(unique(unlist(lapply(srt_list, colnames))))
-    cell2 <- sort(unique(colnames(srt_merge)))
-    if (!identical(cell1, cell2)) {
-      log_message(
-        "srt_list and srt_merge have different cells.",
-        message_type = "error"
-      )
-    }
-  }
-  if (!is.null(srt_merge)) {
-    srt_merge_raw <- srt_merge
-  } else {
-    srt_merge_raw <- NULL
-  }
+  validate_integration_input_cells(srt_list, srt_merge)
+  srt_merge_raw <- srt_merge
   if (!is.null(srt_list)) {
     checked <- CheckDataList(
       srt_list = srt_list,
@@ -3121,7 +2808,7 @@ Scanorama_integrate <- function(
 
 #' @title The BBKNN integration function
 #'
-#' @inheritParams integration_scop
+#' @inheritParams RunIntegration
 #' @param bbknn_params A list of parameters for the bbknn.matrix.bbknn function, default is an empty list.
 #'
 #' @export
@@ -3190,53 +2877,18 @@ BBKNN_integrate <- function(
   ) {
     linear_reduction_dims <- max(linear_reduction_dims_use)
   }
-  nonlinear_reductions <- c("umap", "umap-naive", "fr")
-  if (any(!nonlinear_reduction %in% nonlinear_reductions)) {
-    log_message(
-      "{.arg nonlinear_reduction} must be one of {.val {nonlinear_reductions}}",
-      message_type = "error"
-    )
-  }
-  cluster_algorithms <- c("louvain", "slm", "leiden")
-  if (!cluster_algorithm %in% cluster_algorithms) {
-    log_message(
-      "{.arg cluster_algorithm} must be one of {.val {cluster_algorithms}}",
-      message_type = "error"
-    )
-  }
-  cluster_algorithm_index <- switch(
-    EXPR = tolower(cluster_algorithm),
-    "louvain" = 1,
-    "louvain_refined" = 2,
-    "slm" = 3,
-    "leiden" = 4
+  validate_nonlinear_reductions(
+    nonlinear_reduction,
+    allowed = c("umap", "umap-naive", "fr")
   )
+  cluster_algorithm_index <- resolve_cluster_algorithm_index(cluster_algorithm)
 
   check_python("bbknn")
   bbknn <- reticulate::import("bbknn")
   set.seed(seed)
 
-  if (is.null(srt_list) && is.null(srt_merge)) {
-    log_message(
-      "{.arg srt_list} and {.arg srt_merge} were all empty",
-      message_type = "error"
-    )
-  }
-  if (!is.null(srt_list) && !is.null(srt_merge)) {
-    cell1 <- sort(unique(unlist(lapply(srt_list, colnames))))
-    cell2 <- sort(unique(colnames(srt_merge)))
-    if (!identical(cell1, cell2)) {
-      log_message(
-        "{.arg srt_list} and {.arg srt_merge} have different cells",
-        message_type = "error"
-      )
-    }
-  }
-  if (!is.null(srt_merge)) {
-    srt_merge_raw <- srt_merge
-  } else {
-    srt_merge_raw <- NULL
-  }
+  validate_integration_input_cells(srt_list, srt_merge)
+  srt_merge_raw <- srt_merge
   if (!is.null(srt_list)) {
     checked <- CheckDataList(
       srt_list = srt_list,
@@ -3481,7 +3133,7 @@ BBKNN_integrate <- function(
 
 #' @title The CSS integration function
 #'
-#' @inheritParams integration_scop
+#' @inheritParams RunIntegration
 #' @param CSS_dims_use A vector specifying the dimensions returned by CSS that will be utilized for downstream cell cluster finding and nonlinear reduction.
 #' If set to NULL, all the returned dimensions will be used by default.
 #' @param CSS_params A list of parameters for the [simspec::cluster_sim_spectrum](https://github.com/quadbio/simspec) function.
@@ -3524,27 +3176,8 @@ CSS_integrate <- function(
   verbose = TRUE,
   seed = 11
 ) {
-  if (is.null(srt_list) && is.null(srt_merge)) {
-    log_message(
-      "{.arg srt_list} and {.arg srt_merge} were all empty",
-      message_type = "error"
-    )
-  }
-  if (!is.null(srt_list) && !is.null(srt_merge)) {
-    cell1 <- sort(unique(unlist(lapply(srt_list, colnames))))
-    cell2 <- sort(unique(colnames(srt_merge)))
-    if (!identical(cell1, cell2)) {
-      log_message(
-        "{.arg srt_list} and {.arg srt_merge} have different cells",
-        message_type = "error"
-      )
-    }
-  }
-  if (!is.null(srt_merge)) {
-    srt_merge_raw <- srt_merge
-  } else {
-    srt_merge_raw <- NULL
-  }
+  validate_integration_input_cells(srt_list, srt_merge)
+  srt_merge_raw <- srt_merge
   if (!is.null(srt_list)) {
     checked <- CheckDataList(
       srt_list = srt_list,
@@ -3614,37 +3247,8 @@ CSS_integrate <- function(
   ) {
     linear_reduction_dims <- max(linear_reduction_dims_use)
   }
-  nonlinear_reductions <- c(
-    "umap",
-    "umap-naive",
-    "tsne",
-    "dm",
-    "phate",
-    "pacmap",
-    "trimap",
-    "largevis",
-    "fr"
-  )
-  if (any(!nonlinear_reduction %in% nonlinear_reductions)) {
-    log_message(
-      "{.arg nonlinear_reduction} must be one of {.val {nonlinear_reductions}}",
-      message_type = "error"
-    )
-  }
-  cluster_algorithms <- c("louvain", "slm", "leiden")
-  if (!cluster_algorithm %in% cluster_algorithms) {
-    log_message(
-      "{.arg cluster_algorithm} must be one of {.val {cluster_algorithms}}",
-      message_type = "error"
-    )
-  }
-  cluster_algorithm_index <- switch(
-    EXPR = tolower(cluster_algorithm),
-    "louvain" = 1,
-    "louvain_refined" = 2,
-    "slm" = 3,
-    "leiden" = 4
-  )
+  validate_nonlinear_reductions(nonlinear_reduction)
+  cluster_algorithm_index <- resolve_cluster_algorithm_index(cluster_algorithm)
 
   check_r(c("quadbio/simspec", "qlcMatrix"), verbose = FALSE)
   set.seed(seed)
@@ -3802,7 +3406,7 @@ CSS_integrate <- function(
 #' @title The LIGER integration function
 #'
 #' @md
-#' @inheritParams integration_scop
+#' @inheritParams RunIntegration
 #' @param liger_dims_use A vector specifying the dimensions returned by LIGER that will be utilized for downstream cell cluster finding and nonlinear reduction.
 #' If set to NULL, all the returned dimensions will be used by default.
 #' @param optimizeALS_params A list of parameters for the [rliger::runIntegration] function.
@@ -3853,62 +3457,14 @@ LIGER_integrate <- function(
   verbose = TRUE,
   seed = 11
 ) {
-  nonlinear_reductions <- c(
-    "umap",
-    "umap-naive",
-    "tsne",
-    "dm",
-    "phate",
-    "pacmap",
-    "trimap",
-    "largevis",
-    "fr"
-  )
-  if (any(!nonlinear_reduction %in% nonlinear_reductions)) {
-    log_message(
-      "{.arg nonlinear_reduction} must be one of {.val {nonlinear_reductions}}",
-      message_type = "error"
-    )
-  }
-  cluster_algorithms <- c("louvain", "slm", "leiden")
-  if (!cluster_algorithm %in% cluster_algorithms) {
-    log_message(
-      "{.arg cluster_algorithm} must be one of {.val {cluster_algorithms}}",
-      message_type = "error"
-    )
-  }
-  cluster_algorithm_index <- switch(
-    EXPR = tolower(cluster_algorithm),
-    "louvain" = 1,
-    "louvain_refined" = 2,
-    "slm" = 3,
-    "leiden" = 4
-  )
+  validate_nonlinear_reductions(nonlinear_reduction)
+  cluster_algorithm_index <- resolve_cluster_algorithm_index(cluster_algorithm)
 
   check_r("rliger", verbose = FALSE)
   set.seed(seed)
 
-  if (is.null(srt_list) && is.null(srt_merge)) {
-    log_message(
-      "{.arg srt_list} and {.arg srt_merge} were all empty",
-      message_type = "error"
-    )
-  }
-  if (!is.null(srt_list) && !is.null(srt_merge)) {
-    cell1 <- sort(unique(unlist(lapply(srt_list, colnames))))
-    cell2 <- sort(unique(colnames(srt_merge)))
-    if (!identical(cell1, cell2)) {
-      log_message(
-        "{.arg srt_list} and {.arg srt_merge} have different cells",
-        message_type = "error"
-      )
-    }
-  }
-  if (!is.null(srt_merge)) {
-    srt_merge_raw <- srt_merge
-  } else {
-    srt_merge_raw <- NULL
-  }
+  validate_integration_input_cells(srt_list, srt_merge)
+  srt_merge_raw <- srt_merge
   if (!is.null(srt_list)) {
     checked <- CheckDataList(
       srt_list = srt_list,
@@ -4119,7 +3675,7 @@ LIGER_integrate <- function(
 
 #' @title The Conos integration function
 #'
-#' @inheritParams integration_scop
+#' @inheritParams RunIntegration
 #' @param buildGraph_params A list of parameters for the buildGraph function.
 #' Default is `list()`.
 #' @param cores  An integer setting the number of threads for `Conos`.
@@ -4183,52 +3739,17 @@ Conos_integrate <- function(
   ) {
     linear_reduction_dims <- max(linear_reduction_dims_use)
   }
-  nonlinear_reductions <- c("umap", "umap-naive", "fr")
-  if (any(!nonlinear_reduction %in% nonlinear_reductions)) {
-    log_message(
-      "{.arg nonlinear_reduction} must be one of {.val {nonlinear_reductions}}",
-      message_type = "error"
-    )
-  }
-  cluster_algorithms <- c("louvain", "slm", "leiden")
-  if (!cluster_algorithm %in% cluster_algorithms) {
-    log_message(
-      "{.arg cluster_algorithm} must be one of {.val {cluster_algorithms}}",
-      message_type = "error"
-    )
-  }
-  cluster_algorithm_index <- switch(
-    EXPR = tolower(cluster_algorithm),
-    "louvain" = 1,
-    "louvain_refined" = 2,
-    "slm" = 3,
-    "leiden" = 4
+  validate_nonlinear_reductions(
+    nonlinear_reduction,
+    allowed = c("umap", "umap-naive", "fr")
   )
+  cluster_algorithm_index <- resolve_cluster_algorithm_index(cluster_algorithm)
 
   check_r("conos", verbose = FALSE)
   set.seed(seed)
 
-  if (is.null(srt_list) && is.null(srt_merge)) {
-    log_message(
-      "{.arg srt_list} and {.arg srt_merge} were all empty",
-      message_type = "error"
-    )
-  }
-  if (!is.null(srt_list) && !is.null(srt_merge)) {
-    cell1 <- sort(unique(unlist(lapply(srt_list, colnames))))
-    cell2 <- sort(unique(colnames(srt_merge)))
-    if (!identical(cell1, cell2)) {
-      log_message(
-        "{.arg srt_list} and {.arg srt_merge} have different cells",
-        message_type = "error"
-      )
-    }
-  }
-  if (!is.null(srt_merge)) {
-    srt_merge_raw <- srt_merge
-  } else {
-    srt_merge_raw <- NULL
-  }
+  validate_integration_input_cells(srt_list, srt_merge)
+  srt_merge_raw <- srt_merge
   if (!is.null(srt_list)) {
     checked <- CheckDataList(
       srt_list = srt_list,
@@ -4478,7 +3999,7 @@ Conos_integrate <- function(
 
 #' @title The ComBat integration function
 #'
-#' @inheritParams integration_scop
+#' @inheritParams RunIntegration
 #' @param ComBat_params A list of parameters for the sva::ComBat function.
 #' Default is `list()`.
 #'
@@ -4542,62 +4063,14 @@ ComBat_integrate <- function(
   ) {
     linear_reduction_dims <- max(linear_reduction_dims_use)
   }
-  nonlinear_reductions <- c(
-    "umap",
-    "umap-naive",
-    "tsne",
-    "dm",
-    "phate",
-    "pacmap",
-    "trimap",
-    "largevis",
-    "fr"
-  )
-  if (any(!nonlinear_reduction %in% nonlinear_reductions)) {
-    log_message(
-      "{.arg nonlinear_reduction} must be one of {.val {nonlinear_reductions}}",
-      message_type = "error"
-    )
-  }
-  cluster_algorithms <- c("louvain", "slm", "leiden")
-  if (!cluster_algorithm %in% cluster_algorithms) {
-    log_message(
-      "{.arg cluster_algorithm} must be one of {.val {cluster_algorithms}}",
-      message_type = "error"
-    )
-  }
-  cluster_algorithm_index <- switch(
-    EXPR = tolower(cluster_algorithm),
-    "louvain" = 1,
-    "louvain_refined" = 2,
-    "slm" = 3,
-    "leiden" = 4
-  )
+  validate_nonlinear_reductions(nonlinear_reduction)
+  cluster_algorithm_index <- resolve_cluster_algorithm_index(cluster_algorithm)
 
   check_r("sva", verbose = FALSE)
   set.seed(seed)
 
-  if (is.null(srt_list) && is.null(srt_merge)) {
-    log_message(
-      "{.arg srt_list} and {.arg srt_merge} were all empty",
-      message_type = "error"
-    )
-  }
-  if (!is.null(srt_list) && !is.null(srt_merge)) {
-    cell1 <- sort(unique(unlist(lapply(srt_list, colnames))))
-    cell2 <- sort(unique(colnames(srt_merge)))
-    if (!identical(cell1, cell2)) {
-      log_message(
-        "{.arg srt_list} and {.arg srt_merge} have different cells",
-        message_type = "error"
-      )
-    }
-  }
-  if (!is.null(srt_merge)) {
-    srt_merge_raw <- srt_merge
-  } else {
-    srt_merge_raw <- NULL
-  }
+  validate_integration_input_cells(srt_list, srt_merge)
+  srt_merge_raw <- srt_merge
   if (!is.null(srt_list)) {
     checked <- CheckDataList(
       srt_list = srt_list,
@@ -4776,7 +4249,7 @@ ComBat_integrate <- function(
 
 #' @title The Coralysis integration function
 #'
-#' @inheritParams integration_scop
+#' @inheritParams RunIntegration
 #' @inheritParams CCA_integrate
 #' @param coralysis_dims_use A vector specifying the dimensions returned by Coralysis PCA
 #' that will be utilized for downstream cell cluster finding and nonlinear reduction.
@@ -4829,60 +4302,12 @@ Coralysis_integrate <- function(
     )
   }
 
-  nonlinear_reductions <- c(
-    "umap",
-    "umap-naive",
-    "tsne",
-    "dm",
-    "phate",
-    "pacmap",
-    "trimap",
-    "largevis",
-    "fr"
-  )
-  if (any(!nonlinear_reduction %in% nonlinear_reductions)) {
-    log_message(
-      "{.arg nonlinear_reduction} must be one of {.val {nonlinear_reductions}}",
-      message_type = "error"
-    )
-  }
-  cluster_algorithms <- c("louvain", "slm", "leiden")
-  if (!cluster_algorithm %in% cluster_algorithms) {
-    log_message(
-      "{.arg cluster_algorithm} must be one of {.val {cluster_algorithms}}",
-      message_type = "error"
-    )
-  }
-  cluster_algorithm_index <- switch(
-    EXPR = tolower(cluster_algorithm),
-    "louvain" = 1,
-    "louvain_refined" = 2,
-    "slm" = 3,
-    "leiden" = 4
-  )
+  validate_nonlinear_reductions(nonlinear_reduction)
+  cluster_algorithm_index <- resolve_cluster_algorithm_index(cluster_algorithm)
 
   set.seed(seed)
-  if (is.null(srt_list) && is.null(srt_merge)) {
-    log_message(
-      "{.arg srt_list} and {.arg srt_merge} were all empty",
-      message_type = "error"
-    )
-  }
-  if (!is.null(srt_list) && !is.null(srt_merge)) {
-    cell1 <- sort(unique(unlist(lapply(srt_list, colnames))))
-    cell2 <- sort(unique(colnames(srt_merge)))
-    if (!identical(cell1, cell2)) {
-      log_message(
-        "{.arg srt_list} and {.arg srt_merge} have different cells",
-        message_type = "error"
-      )
-    }
-  }
-  if (!is.null(srt_merge)) {
-    srt_merge_raw <- srt_merge
-  } else {
-    srt_merge_raw <- NULL
-  }
+  validate_integration_input_cells(srt_list, srt_merge)
+  srt_merge_raw <- srt_merge
   if (!is.null(srt_list)) {
     checked <- CheckDataList(
       srt_list = srt_list,

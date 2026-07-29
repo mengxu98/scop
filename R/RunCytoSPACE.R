@@ -1,7 +1,7 @@
 #' @title Run CytoSPACE spatial assignment
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
 #' @param reference Reference `Seurat` object containing annotated single cells.
 #' @param reference_label Metadata column in `reference` with cell type labels.
@@ -111,7 +111,7 @@ RunCytoSPACE <- function(
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   reference_assay <- reference_assay %||% SeuratObject::DefaultAssay(reference)
 
-  labels <- cytospace_resolve_reference_labels(reference, reference_label)
+  labels <- resolve_reference_labels(reference, reference_label)
   keep_ref <- !is.na(labels)
   if (!all(keep_ref)) {
     log_message(
@@ -130,7 +130,7 @@ RunCytoSPACE <- function(
     )
   }
 
-  features_use <- cytospace_common_features(
+  features_use <- resolve_common_features(
     srt,
     reference,
     assay,
@@ -275,43 +275,6 @@ RunCytoSPACE <- function(
     verbose = verbose
   )
   srt
-}
-
-cytospace_resolve_reference_labels <- function(reference, reference_label) {
-  if (
-    missing(reference_label) ||
-      is.null(reference_label) ||
-      length(reference_label) != 1L
-  ) {
-    log_message(
-      "{.arg reference_label} must be a single reference metadata column",
-      message_type = "error"
-    )
-  }
-  if (!reference_label %in% colnames(reference[[]])) {
-    log_message(
-      "{.arg reference_label} {.val {reference_label}} is not present in {.arg reference}",
-      message_type = "error"
-    )
-  }
-  reference[[reference_label, drop = TRUE]]
-}
-
-cytospace_common_features <- function(
-  srt,
-  reference,
-  assay,
-  reference_assay,
-  features = NULL
-) {
-  common <- intersect(
-    rownames(srt[[assay]]),
-    rownames(reference[[reference_assay]])
-  )
-  if (!is.null(features)) {
-    common <- intersect(features, common)
-  }
-  common
 }
 
 cytospace_get_expr_matrix <- function(srt, assay, layer, features) {
@@ -636,23 +599,13 @@ cytospace_get_spatial_coords <- function(
   coord.cols = c("col", "row"),
   coordinate_space = c("raw", "legacy_display")
 ) {
-  coordinate_space <- match.arg(coordinate_space)
-  resolved <- spatial_analysis_coords(
+  resolve_spatial_spot_coords(
     srt = srt,
+    spot_ids = spot_ids,
     image = image,
     coord.cols = coord.cols,
-    coordinate_space = coordinate_space,
-    image_policy = "strict"
+    coordinate_space = coordinate_space
   )
-  matched <- match(spot_ids, resolved$data$cell_id)
-  if (anyNA(matched)) {
-    log_message("Spatial coordinates are missing for one or more requested spots", message_type = "error")
-  }
-  coords <- resolved$data[matched, c("x", "y"), drop = FALSE]
-  rownames(coords) <- spot_ids
-  attr(coords, "spatial_source") <- resolved$source
-  attr(coords, "spatial_transform") <- resolved$transform
-  coords
 }
 
 cytospace_build_assignment_table <- function(

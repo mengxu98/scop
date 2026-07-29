@@ -70,7 +70,7 @@ RunSpatialQM <- function(
     message_type = "running",
     verbose = verbose
   )
-  spatialqm_validate_srt(srt)
+  validate_seurat_object(srt)
   spatialqm_assert_string(tool_name, "tool_name")
   spatialqm_assert_flag(store_results, "store_results")
   on_error <- match.arg(on_error)
@@ -85,7 +85,7 @@ RunSpatialQM <- function(
   metrics <- spatialqm_resolve_metrics(metrics)
   features <- spatialqm_resolve_features(srt, assay = assay, features = features)
   extra_args <- list(...)
-  spatialqm_validate_named_list(extra_args, "...")
+  validate_named_param_list(extra_args, "...")
 
   check_r("Center-for-Spatial-OMICs/SpatialQM", verbose = FALSE)
   input <- spatialqm_prepare_object(
@@ -431,34 +431,10 @@ spatialqm_meta_scalar <- function(srt, column, fallback) {
   }
 }
 
-spatialqm_validate_srt <- function(srt) {
-  if (!inherits(srt, "Seurat")) {
-    log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
-  }
-  invisible(TRUE)
-}
-
 spatialqm_assert_string <- function(x, arg) {
-  if (length(x) != 1L || !is.character(x) || is.na(x) || !nzchar(x)) {
-    log_message("{.arg {arg}} must be a single non-empty string", message_type = "error")
-  }
-  invisible(TRUE)
+  validate_scalar_string(x, arg)
 }
 
 spatialqm_assert_flag <- function(x, arg) {
-  if (length(x) != 1L || !is.logical(x) || is.na(x)) {
-    log_message("{.arg {arg}} must be TRUE or FALSE", message_type = "error")
-  }
-  invisible(TRUE)
-}
-
-spatialqm_validate_named_list <- function(x, arg) {
-  if (length(x) == 0L) {
-    return(invisible(TRUE))
-  }
-  nms <- names(x)
-  if (is.null(nms) || any(is.na(nms) | !nzchar(nms))) {
-    log_message("{.arg {arg}} must contain named arguments only", message_type = "error")
-  }
-  invisible(TRUE)
+  validate_scalar_flag(x, arg)
 }

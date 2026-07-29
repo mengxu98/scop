@@ -1,6 +1,6 @@
 #' @title Find the default reduction name in a Seurat object
 #'
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @param pattern Character string containing a regular expression to search for.
 #' @param min_dim Minimum dimension threshold.
 #' @param max_distance Maximum distance allowed for a match.
@@ -11,7 +11,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' names(pancreas_sub@reductions)
 #'
 #' DefaultReduction(pancreas_sub)

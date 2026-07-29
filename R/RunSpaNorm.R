@@ -76,7 +76,7 @@ RunSpaNorm <- function(
     message_type = "running",
     verbose = verbose
   )
-  spanorm_validate_srt(srt)
+  validate_seurat_object(srt)
   spanorm_assert_string(new_assay, "new_assay")
   spanorm_assert_string(tool_name, "tool_name")
   spanorm_assert_flag(store_results, "store_results")
@@ -155,16 +155,6 @@ RunSpaNorm <- function(
     verbose = verbose
   )
   srt
-}
-
-spanorm_validate_srt <- function(srt) {
-  if (!inherits(srt, "Seurat")) {
-    log_message(
-      "{.arg srt} must be a {.cls Seurat} object",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
 }
 
 spanorm_prepare_input <- function(
@@ -284,28 +274,11 @@ spanorm_extract_logcounts <- function(result, features, cells) {
 }
 
 spanorm_assert_string <- function(x, arg) {
-  if (
-    is.null(x) ||
-      length(x) != 1L ||
-      is.na(x) ||
-      !nzchar(x)
-  ) {
-    log_message(
-      "{.arg {arg}} must be a single non-empty string",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
+  validate_scalar_string(x, arg, require_character = FALSE)
 }
 
 spanorm_assert_flag <- function(x, arg) {
-  if (length(x) != 1L || !is.logical(x) || is.na(x)) {
-    log_message(
-      "{.arg {arg}} must be TRUE or FALSE",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
+  validate_scalar_flag(x, arg)
 }
 
 spanorm_validate_named_args <- function(x) {

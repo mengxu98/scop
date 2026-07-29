@@ -6,7 +6,7 @@
 #' @md
 #' @inheritParams CellDimPlot
 #' @inheritParams FeatureDimPlot
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @param features A character vector specifying the features to compare.
 #' Should be present in both the assay data and the metadata of the Seurat object.
 #' @param cor_method A character string specifying the correlation method to use.
@@ -42,7 +42,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' FeatureCorPlot(
 #'   pancreas_sub,
 #'   features = rownames(pancreas_sub)[1:5],
@@ -696,21 +696,9 @@ FeatureCorPlot <- function(
     p <- patchwork::wrap_plots(gtable)
     plist[[paste0(s)]] <- p
   }
-  if (isTRUE(combine)) {
-    if (length(plist) > 1) {
-      plot <- patchwork::wrap_plots(
-        plotlist = plist,
-        nrow = nrow,
-        ncol = ncol,
-        byrow = byrow
-      )
-    } else {
-      plot <- plist[[1]]
-    }
-    return(plot)
-  } else {
-    return(plist)
-  }
+  combine_plot_list(
+    plist, combine = combine, nrow = nrow, ncol = ncol, byrow = byrow
+  )
 }
 
 feature_cor_geometric_mean <- function(x, log_normalized = FALSE) {

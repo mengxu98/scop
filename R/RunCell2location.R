@@ -318,11 +318,11 @@ RunCell2location <- function(
     make.unique(make.names(colnames(full_abundance)), sep = "_")
   )
   srt_out <- Seurat::AddMetaData(srt, metadata = abundance_meta)
-  weight_summary <- scop_spatial_finalize_weights(
+  weight_summary <- spatial_finalize_weights(
     proportions,
     all_spots = colnames(srt_out)
   )
-  srt_out <- scop_spatial_add_deconv_metadata(
+  srt_out <- spatial_add_deconv_metadata(
     srt_out,
     weights = proportions,
     prefix = prefix,
@@ -380,7 +380,7 @@ RunCell2location <- function(
         backend_versions = backend_versions
       ),
       parameters = result_parameters,
-      summary = scop_spatial_weight_summary(proportions)
+      summary = spatial_weight_summary(proportions)
     )
   }
 
@@ -486,7 +486,7 @@ Cell2locationPlot <- function(
     defaults$values <- values
     defaults$plot_type <- if (identical(plot_type, "pie")) "pie" else "point"
   }
-  do.call(SpatialSpotPlot, standard_scop_merge_args(defaults, list(...)))
+  do.call(SpatialSpotPlot, merge_call_args(defaults, list(...)))
 }
 
 cell2location_run_system2 <- function(command, args, env, stdout, stderr) {
@@ -814,27 +814,21 @@ cell2location_validate_unique_names <- function(srt, arg) {
 }
 
 cell2location_validate_param_list <- function(x, arg) {
-  if (
-    !is.list(x) ||
-      (
-        length(x) > 0L &&
-          (is.null(names(x)) || any(is.na(names(x)) | !nzchar(names(x))))
-      )
-  ) {
-    log_message("{.arg {arg}} must be a named list", message_type = "error")
-  }
+  validate_named_param_list(
+    x,
+    arg,
+    require_list = TRUE,
+    type_message = "must be a named list",
+    names_message = "must be a named list"
+  )
 }
 
 cell2location_assert_flag <- function(x, arg) {
-  if (!is.logical(x) || length(x) != 1L || is.na(x)) {
-    log_message("{.arg {arg}} must be TRUE or FALSE", message_type = "error")
-  }
+  validate_scalar_flag(x, arg)
 }
 
 cell2location_assert_string <- function(x, arg) {
-  if (!is.character(x) || length(x) != 1L || is.na(x) || !nzchar(x)) {
-    log_message("{.arg {arg}} must be one non-empty string", message_type = "error")
-  }
+  validate_scalar_string(x, arg, message = "must be one non-empty string")
 }
 
 cell2location_positive_integer <- function(x, arg) {

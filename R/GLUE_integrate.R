@@ -7,7 +7,7 @@
 #' original cells by averaging the paired RNA/ATAC embeddings.
 #'
 #' @md
-#' @inheritParams integration_scop
+#' @inheritParams RunIntegration
 #' @param gene_annotation_by How RNA feature names are matched to gene
 #' annotation. One of `"auto"`, `"gene_name"`, or `"gene_id"`.
 #' Default is `"auto"`.
@@ -17,7 +17,7 @@
 #'
 #' @return A `Seurat` object.
 #'
-#' @seealso [integration_scop]
+#' @seealso [RunIntegration]
 #'
 #' @export
 #'
@@ -106,14 +106,14 @@ GLUE_integrate <- function(
   )
   rna_assay <- assay_pair[["rna"]]
   atac_assay <- assay_pair[["atac"]]
-  rna_prefix <- standard_scop_assay_prefix(srt = srt_merge, assay = rna_assay)
-  atac_prefix <- standard_scop_assay_prefix(srt = srt_merge, assay = atac_assay)
+  rna_prefix <- resolve_assay_prefix(srt = srt_merge, assay = rna_assay)
+  atac_prefix <- resolve_assay_prefix(srt = srt_merge, assay = atac_assay)
 
   PrepareEnv(modules = "glue")
   check_python(c("scglue", "scanpy"))
 
   t_standard <- Sys.time()
-  srt_merge <- standard_scop(
+  srt_merge <- RunStandardWorkflow(
     srt = srt_merge,
     prefix = "Standard",
     assay = c(rna_assay, atac_assay),
@@ -143,7 +143,7 @@ GLUE_integrate <- function(
     seed = seed
   )
   log_message(
-    "GLUE standard_scop completed in {round(as.numeric(difftime(Sys.time(), t_standard, units = 'secs')), 1)}s",
+    "GLUE RunStandardWorkflow completed in {round(as.numeric(difftime(Sys.time(), t_standard, units = 'secs')), 1)}s",
     verbose = verbose
   )
 

@@ -5,7 +5,7 @@
 #' or [tricycle](https://bioconductor.org/packages/tricycle).
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams CycGenePrefetch
 #' @inheritParams thisutils::log_message
 #' @param method Cell cycle estimation method. One of `"Seurat"`, `"cyclone"`,

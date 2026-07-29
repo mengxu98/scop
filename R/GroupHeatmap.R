@@ -3,7 +3,7 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams thisutils::parallelize_fun
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams CellDimPlot
 #' @inheritParams PrepareDB
 #' @param features A character vector of features to use.
@@ -108,17 +108,43 @@
 #' Default is `FALSE`.
 #' @param terms_width A unit specifying the width of term annotations.
 #' Default is `unit(4, "in")`.
+#' @param terms_stat_width A unit specifying the width of the independent
+#' term-statistic bar-chart annotation.
 #' @param terms_fontsize A numeric vector specifying the font size(s) for term annotations.
 #' Default is `8`.
-#' @param terms_stat Which enrichment statistic to show after each term.
+#' @param terms_stat Which enrichment statistic controls the term bars.
 #' Use `"none"` to hide the bar background, `"score"` for `-log10` of the
 #' active p-value metric, or any column from the enrichment result such as
 #' `"p.adjust"`, `"pvalue"`, `"qvalue"`,
 #' `"GeneRatio"`, `"RichFactor"`, `"FoldEnrichment"`, `"zScore"`, or `"Count"`.
-#' @param terms_stat_digits Number of significant digits for numeric term
-#' statistics.
-#' @param terms_stat_test Logical. Whether to show the numeric term statistic
-#' value at the right side of each term when `terms_stat` is enabled.
+#' @param terms_stat_digits Number of significant digits for statistic labels
+#' and axis tick labels.
+#' @param terms_stat_label Label placed on or beside each statistic bar:
+#' `"none"`, `"value"`, `"significance"`, or `"both"`.
+#' @param terms_stat_axis Logical. Whether to draw a shared statistic axis
+#' outside and below the final enrichment block.
+#' @param terms_stat_background_palcolor Background color of the independent
+#' statistic panels. `NULL` inherits the corresponding term-panel background.
+#' @param terms_stat_border Logical. Whether to draw borders around statistic
+#' panels. `NULL` inherits `terms_border`.
+#' @param terms_stat_border_palcolor Border color of statistic panels. `NULL`
+#' inherits `terms_border_palcolor`.
+#' @param terms_stat_border_size Border line width of statistic panels. `NULL`
+#' inherits `terms_border_size`.
+#' @param terms_stat_label_palcolor Color of labels drawn on statistic bars.
+#' `NULL` automatically uses black or white according to bar luminance.
+#' @param terms_group_background Logical. Whether term blocks use translucent
+#' `feature_split` colors as their backgrounds.
+#' @param terms_background_palcolor Background color used when
+#' `terms_group_background = FALSE`.
+#' @param terms_background_alpha Alpha transparency of term-block backgrounds.
+#' @param terms_border Logical. Whether to draw borders around term blocks.
+#' @param terms_border_palcolor Border color of term blocks.
+#' @param terms_border_size Border line width of term blocks.
+#' @param terms_text_palcolor Fixed term text color. `NULL` retains colors mapped
+#' from enrichment significance.
+#' @param terms_bar_palcolor Fixed statistic-bar color. `NULL` makes each bar
+#' use the same color as its corresponding term text.
 #' @param keys_width A unit specifying the width of key annotations.
 #' Default is `unit(2, "in")`.
 #' @param keys_fontsize A two-length numeric vector specifying the minimum and maximum font size(s) for key annotations.
@@ -270,7 +296,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' ht1 <- GroupHeatmap(
 #'   pancreas_sub,
 #'   features = c(
@@ -496,10 +522,25 @@ GroupHeatmap <- function(
   anno_keys = FALSE,
   anno_features = FALSE,
   terms_width = grid::unit(4, "in"),
+  terms_stat_width = grid::unit(1.35, "in"),
   terms_fontsize = 8,
   terms_stat = "none",
   terms_stat_digits = 2,
-  terms_stat_test = TRUE,
+  terms_stat_label = "value",
+  terms_stat_axis = FALSE,
+  terms_stat_background_palcolor = NULL,
+  terms_stat_border = NULL,
+  terms_stat_border_palcolor = NULL,
+  terms_stat_border_size = NULL,
+  terms_stat_label_palcolor = NULL,
+  terms_group_background = FALSE,
+  terms_background_palcolor = "grey98",
+  terms_background_alpha = 1,
+  terms_border = TRUE,
+  terms_border_palcolor = "black",
+  terms_border_size = 0.8,
+  terms_text_palcolor = NULL,
+  terms_bar_palcolor = NULL,
   keys_width = grid::unit(2, "in"),
   keys_fontsize = c(6, 10),
   features_width = grid::unit(2, "in"),
@@ -1927,103 +1968,23 @@ GroupHeatmap <- function(
       featan <- feature_annotation[i]
       palette <- feature_annotation_palette[i]
       palcolor <- feature_annotation_palcolor[[i]]
-      featan_values <- feature_metadata[, featan]
-      featan_values <- compact_heatmap_feature_annotation(featan_values, featan)
-      if (!is.numeric(featan_values)) {
-        if (is.logical(featan_values)) {
-          featan_values <- factor(featan_values, levels = c(TRUE, FALSE))
-        } else if (!is.factor(featan_values)) {
-          featan_values <- factor(featan_values, levels = unique(featan_values))
-        }
-        ha_feature <- list()
-        ha_feature[[featan]] <- ComplexHeatmap::anno_simple(
-          x = as.character(featan_values),
-          col = palette_colors(
-            featan_values,
-            palette = palette,
-            palcolor = palcolor
-          ),
-          which = ifelse(flip, "column", "row"),
-          na_col = "transparent",
-          border = feature_annotation_border
-        )
-        ha_feature <- build_heatmap_annotation(
-          annotations = ha_feature,
-          which = ifelse(flip, "column", "row"),
-          show_annotation_name = TRUE,
-          annotation_name_side = ifelse(flip, "left", "top"),
-          border = feature_annotation_border,
-          params = feature_annotation_params
-        )
-        if (is.null(ha_right)) {
-          ha_right <- ha_feature
-        } else {
-          ha_right <- c(ha_right, ha_feature)
-        }
-        featan_levels <- levels(featan_values)
-        featan_levels <- featan_levels[
-          !is.na(featan_levels) & nzchar(featan_levels)
-        ]
-        if (length(featan_levels) > 0) {
-          lgd[[featan]] <- ComplexHeatmap::Legend(
-            title = featan,
-            labels = featan_levels,
-            legend_gp = grid::gpar(
-              fill = palette_colors(
-                featan_levels,
-                palette = palette,
-                palcolor = palcolor
-              )
-            ),
-            border = TRUE
-          )
-        } else {
-          lgd[[featan]] <- NULL
-        }
+      feature <- build_heatmap_feature_annotation(
+        annotation_name = featan,
+        values = feature_metadata[, featan],
+        palette = palette,
+        palcolor = palcolor,
+        flip = flip,
+        border = feature_annotation_border,
+        border_color = feature_annotation_border_color,
+        border_size = feature_annotation_border_size,
+        params = feature_annotation_params
+      )
+      ha_right <- if (is.null(ha_right)) {
+        feature$annotation
       } else {
-        col_fun <- circlize::colorRamp2(
-          breaks = seq(
-            min(featan_values, na.rm = TRUE),
-            max(featan_values, na.rm = TRUE),
-            length = 100
-          ),
-          colors = palette_colors(palette = palette[i], palcolor = palcolor)
-        )
-        ha_feature <- list()
-        ha_feature[[featan]] <- ComplexHeatmap::anno_simple(
-          x = featan_values,
-          col = col_fun,
-          which = ifelse(flip, "column", "row"),
-          na_col = "transparent",
-          border = feature_annotation_border
-        )
-        ha_feature <- build_heatmap_annotation(
-          annotations = ha_feature,
-          which = ifelse(flip, "column", "row"),
-          show_annotation_name = TRUE,
-          annotation_name_side = ifelse(flip, "left", "top"),
-          border = feature_annotation_border,
-          params = feature_annotation_params
-        )
-        if (is.null(ha_right)) {
-          ha_right <- ha_feature
-        } else {
-          ha_right <- c(ha_right, ha_feature)
-        }
-        lgd[[featan]] <- ComplexHeatmap::Legend(
-          title = featan,
-          col_fun = col_fun,
-          legend_gp = heatmap_border_gp(
-            feature_annotation_border,
-            feature_annotation_border_color,
-            feature_annotation_border_size
-          ),
-          border = heatmap_legend_border(
-            feature_annotation_border,
-            feature_annotation_border_color
-          )
-        )
+        c(ha_right, feature$annotation)
       }
+      lgd[[featan]] <- feature$legend
     }
   }
 
@@ -2038,10 +1999,25 @@ GroupHeatmap <- function(
     anno_keys = anno_keys,
     anno_features = anno_features,
     terms_width = terms_width,
+    terms_stat_width = terms_stat_width,
     terms_fontsize = terms_fontsize,
     terms_stat = terms_stat,
     terms_stat_digits = terms_stat_digits,
-    terms_stat_test = terms_stat_test,
+    terms_stat_label = terms_stat_label,
+    terms_stat_axis = terms_stat_axis,
+    terms_stat_background_palcolor = terms_stat_background_palcolor,
+    terms_stat_border = terms_stat_border,
+    terms_stat_border_palcolor = terms_stat_border_palcolor,
+    terms_stat_border_size = terms_stat_border_size,
+    terms_stat_label_palcolor = terms_stat_label_palcolor,
+    terms_group_background = terms_group_background,
+    terms_background_palcolor = terms_background_palcolor,
+    terms_background_alpha = terms_background_alpha,
+    terms_border = terms_border,
+    terms_border_palcolor = terms_border_palcolor,
+    terms_border_size = terms_border_size,
+    terms_text_palcolor = terms_text_palcolor,
+    terms_bar_palcolor = terms_bar_palcolor,
     keys_width = keys_width,
     keys_fontsize = keys_fontsize,
     features_width = features_width,

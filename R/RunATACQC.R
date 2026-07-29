@@ -4,7 +4,7 @@
 #' Calculate common scATAC QC metrics and optionally filter cells by thresholds.
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @param tss.positions TSS positions passed to `Signac::TSSEnrichment`.
 #' @param blacklist A `GRanges` blacklist used to compute `blacklist_ratio`.
 #' @param fast Whether to use the fast mode in `Signac::TSSEnrichment`.

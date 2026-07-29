@@ -2,7 +2,7 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams CellDimPlot
 #' @param species The species of the data, either `"Homo_sapiens"`, `"Mus_musculus"`, or `"zebrafish"`.
 #' @param annotation_selected A vector of cell annotations of interest for running the `CellChat` analysis.
@@ -29,7 +29,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunCellChat(
 #'   pancreas_sub,
 #'   group.by = "CellType",

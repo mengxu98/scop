@@ -56,7 +56,7 @@
 #'   alpha = 0.2,
 #'   cutoff = 0.5
 #' )
-#' panc8_sub <- standard_scop(panc8_sub, verbose = FALSE)
+#' panc8_sub <- RunStandardWorkflow(panc8_sub, verbose = FALSE)
 #'
 #' ScissorPlot(
 #'   panc8_sub,

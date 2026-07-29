@@ -113,7 +113,7 @@ RunCARD <- function(
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   reference_assay <- reference_assay %||% SeuratObject::DefaultAssay(reference)
 
-  labels <- rctd_resolve_reference_labels(reference, reference_label)
+  labels <- resolve_reference_labels(reference, reference_label)
   names(labels) <- colnames(reference)
   keep_ref <- !is.na(labels) & nzchar(as.character(labels))
   if (!all(keep_ref)) {
@@ -133,7 +133,7 @@ RunCARD <- function(
     )
   }
 
-  features_use <- rctd_common_features(
+  features_use <- resolve_common_features(
     srt = srt,
     reference = reference,
     assay = assay,
@@ -233,12 +233,12 @@ RunCARD <- function(
     weights = backend$weights,
     spot_ids = colnames(st_counts)
   )
-  weight_summary <- scop_spatial_finalize_weights(
+  weight_summary <- spatial_finalize_weights(
     weights = weights,
     all_spots = colnames(srt)
   )
   weights <- weight_summary$weights
-  srt <- scop_spatial_add_deconv_metadata(
+  srt <- spatial_add_deconv_metadata(
     srt,
     weights = weights,
     prefix = prefix,
@@ -256,7 +256,7 @@ RunCARD <- function(
       backend_package = backend$package,
       dropped_spots = backend$dropped_spots,
       object = backend$object,
-      summary = scop_spatial_weight_summary(weights),
+      summary = spatial_weight_summary(weights),
       parameters = list(
         assay = assay,
         reference_assay = reference_assay,
@@ -529,30 +529,9 @@ card_match_formals <- function(fun, args) {
 }
 
 card_validate_param_list <- function(x, arg_name) {
-  if (!is.list(x)) {
-    log_message(
-      "{.arg {arg_name}} must be a list",
-      message_type = "error"
-    )
-  }
-  if (length(x) == 0L) {
-    return(invisible(TRUE))
-  }
-  nms <- names(x)
-  if (is.null(nms) || any(is.na(nms) | !nzchar(nms))) {
-    log_message(
-      "{.arg {arg_name}} must contain named arguments only",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
+  validate_named_param_list(x, arg_name, require_list = TRUE)
 }
 
 card_assert_scalar_string <- function(x, arg) {
-  if (is.null(x) || length(x) != 1L || is.na(x) || !nzchar(x)) {
-    log_message(
-      "{.arg {arg}} must be a single non-empty string",
-      message_type = "error"
-    )
-  }
+  validate_scalar_string(x, arg, require_character = FALSE)
 }

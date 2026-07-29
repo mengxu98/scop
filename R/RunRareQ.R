@@ -1,7 +1,7 @@
 #' @title RareQ rare-cell population detection
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
 #' @param reduction Reduction used to build nearest neighbors when the required
 #' `{assay}.nn` neighbor slot is absent or `force_recalc = TRUE`. If `NULL`,
@@ -42,7 +42,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(
+#' pancreas_sub <- RunStandardWorkflow(
 #'   pancreas_sub,
 #'   verbose = FALSE
 #' )

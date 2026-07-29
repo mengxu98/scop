@@ -1,7 +1,7 @@
 #' @title Run SCENIC gene regulatory network analysis
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams PrepareEnv
 #' @param srt A Seurat object.
 #' @param layer Assay layer used as the count matrix.
@@ -68,7 +68,7 @@
 #' @examples
 #' \dontrun{
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunSCENIC(
 #'   pancreas_sub,
 #'   species = "Mus_musculus"

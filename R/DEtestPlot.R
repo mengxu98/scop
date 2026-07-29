@@ -95,18 +95,6 @@
 #' Default is `NULL`.
 #' @param xlab A character string specifying the x-axis label.
 #' @param ylab A character string specifying the y-axis label.
-#' @param theme_use Theme to use for the plot.
-#' Default is `"theme_scop"`.
-#' @param theme_args A list of additional arguments to pass to the theme function.
-#' Default is `list()`.
-#' @param combine Whether to combine multiple plots into one.
-#' Default is `TRUE`.
-#' @param nrow Number of rows for combined plots.
-#' Default is `NULL`.
-#' @param ncol Number of columns for combined plots.
-#' Default is `NULL`.
-#' @param byrow Whether to fill plots by row.
-#' Default is `TRUE`.
 #' @param manhattan.bg Background color for Manhattan plot.
 #' Default is `"white"`.
 #' @param group_track_width Width of the centered cell-type track in Manhattan plot.
@@ -132,7 +120,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunDEtest(
 #'   pancreas_sub,
 #'   group.by = "CellType",
@@ -1096,7 +1084,7 @@ collect_volcano_enrichment_annotations <- function(
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunDEtest(
 #'   pancreas_sub,
 #'   group.by = "CellType",
@@ -1362,7 +1350,7 @@ DEtestManhattanPlot <- function(
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunDEtest(
 #'   pancreas_sub,
 #'   group.by = "CellType",
@@ -1581,7 +1569,7 @@ DEtestRingPlot <- function(
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunDEtest(
 #'   pancreas_sub,
 #'   group.by = "CellType"
@@ -2011,19 +1999,7 @@ VolcanoPlot <- function(
     }
     plist[[group]] <- p
   }
-  if (isTRUE(combine)) {
-    if (length(plist) > 1) {
-      plot <- patchwork::wrap_plots(
-        plotlist = plist,
-        nrow = nrow,
-        ncol = ncol,
-        byrow = byrow
-      )
-    } else {
-      plot <- plist[[1]]
-    }
-    return(plot)
-  } else {
-    return(plist)
-  }
+  combine_plot_list(
+    plist, combine = combine, nrow = nrow, ncol = ncol, byrow = byrow
+  )
 }

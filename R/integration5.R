@@ -1,6 +1,6 @@
 #' @title Seurat v5 CCA integration
 #'
-#' @inheritParams integration_scop
+#' @inheritParams RunIntegration
 #' @param IntegrateLayers_params A list of parameters passed to [Seurat::IntegrateLayers].
 #'
 #' @export
@@ -84,7 +84,7 @@ CCA_integrate <- function(
 
 #' @title Seurat v5 RPCA integration
 #'
-#' @inheritParams integration_scop
+#' @inheritParams RunIntegration
 #' @inheritParams CCA_integrate
 #'
 #' @export
@@ -168,7 +168,7 @@ RPCA_integrate <- function(
 
 #' @title Seurat v5 fastMNN integration
 #'
-#' @inheritParams integration_scop
+#' @inheritParams RunIntegration
 #' @inheritParams CCA_integrate
 #' @param fastMNN_dims_use A vector specifying the integrated dimensions used for downstream clustering and nonlinear reduction.
 #'
@@ -248,7 +248,7 @@ fastMNN5_integrate <- function(
 
 #' @title Seurat v5 Harmony integration
 #'
-#' @inheritParams integration_scop
+#' @inheritParams RunIntegration
 #' @inheritParams CCA_integrate
 #' @param harmony_dims_use A vector specifying the integrated dimensions used for downstream clustering and nonlinear reduction.
 #'
@@ -336,7 +336,7 @@ Harmony5_integrate <- function(
 #' @title Seurat v5 scVI integration
 #'
 #' @md
-#' @inheritParams integration_scop
+#' @inheritParams RunIntegration
 #' @inheritParams CCA_integrate
 #' @param scVI_dims_use A vector specifying the integrated dimensions used for downstream clustering and nonlinear reduction.
 #' @param cores Number of DataLoader worker processes for `scVI` training.
@@ -570,55 +570,11 @@ run_integration5 <- function(
     )
   }
 
-  nonlinear_reductions <- c(
-    "umap",
-    "umap-naive",
-    "tsne",
-    "dm",
-    "phate",
-    "pacmap",
-    "trimap",
-    "largevis",
-    "fr"
-  )
-  if (any(!nonlinear_reduction %in% nonlinear_reductions)) {
-    log_message(
-      "{.arg nonlinear_reduction} must be one of {.val {nonlinear_reductions}}",
-      message_type = "error"
-    )
-  }
-  cluster_algorithms <- c("louvain", "slm", "leiden")
-  if (!cluster_algorithm %in% cluster_algorithms) {
-    log_message(
-      "{.arg cluster_algorithm} must be one of {.val {cluster_algorithms}}",
-      message_type = "error"
-    )
-  }
-  cluster_algorithm_index <- switch(
-    EXPR = tolower(cluster_algorithm),
-    "louvain" = 1,
-    "louvain_refined" = 2,
-    "slm" = 3,
-    "leiden" = 4
-  )
+  validate_nonlinear_reductions(nonlinear_reduction)
+  cluster_algorithm_index <- resolve_cluster_algorithm_index(cluster_algorithm)
 
   set.seed(seed)
-  if (is.null(srt_list) && is.null(srt_merge)) {
-    log_message(
-      "{.arg srt_list} and {.arg srt_merge} were all empty",
-      message_type = "error"
-    )
-  }
-  if (!is.null(srt_list) && !is.null(srt_merge)) {
-    cell1 <- sort(unique(unlist(lapply(srt_list, colnames))))
-    cell2 <- sort(unique(colnames(srt_merge)))
-    if (!identical(cell1, cell2)) {
-      log_message(
-        "{.arg srt_list} and {.arg srt_merge} have different cells",
-        message_type = "error"
-      )
-    }
-  }
+  validate_integration_input_cells(srt_list, srt_merge)
 
   srt_merge_raw <- srt_merge
   if (!is.null(srt_list)) {

@@ -5,7 +5,7 @@
 #' `SummarizedExperiment` object, using a `Seurat` reference.
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @param object A `SummarizedExperiment` object containing bulk-like counts.
 #' @param reference A `Seurat` reference object used to build cell-type
 #' profiles. Not required for `"CIBERSORT"`.

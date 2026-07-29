@@ -15,15 +15,15 @@
 #'
 #' @examples
 #' \dontrun{
-#' ListScopDatasets("Xenium")
+#' ListExternalDatasets("Xenium")
 #' }
-ListScopDatasets <- function(
+ListExternalDatasets <- function(
   collection = "Xenium",
   datasets_base_url = "https://raw.githubusercontent.com/mengxu98/datasets/main"
 ) {
-  scop_dataset_assert_string(collection, "collection")
-  scop_dataset_assert_string(datasets_base_url, "datasets_base_url")
-  scop_dataset_read_manifest(
+  validate_scalar_string(collection, "collection")
+  validate_scalar_string(datasets_base_url, "datasets_base_url")
+  dataset_read_manifest(
     collection = collection,
     datasets_base_url = datasets_base_url
   )
@@ -54,10 +54,10 @@ ListScopDatasets <- function(
 #'
 #' @examples
 #' \dontrun{
-#' xenium <- LoadScopDataset("xenium_human_pancreas_sub", collection = "Xenium")
+#' xenium <- LoadExternalDataset("xenium_human_pancreas_sub", collection = "Xenium")
 #' SpatialSpotPlot(xenium, group.by = "nCount_Xenium")
 #' }
-LoadScopDataset <- function(
+LoadExternalDataset <- function(
   dataset,
   collection = "Xenium",
   cache_dir = NULL,
@@ -66,19 +66,19 @@ LoadScopDataset <- function(
   return_path = FALSE,
   verbose = TRUE
 ) {
-  scop_dataset_assert_string(dataset, "dataset")
-  scop_dataset_assert_string(collection, "collection")
-  scop_dataset_assert_string(datasets_base_url, "datasets_base_url")
+  validate_scalar_string(dataset, "dataset")
+  validate_scalar_string(collection, "collection")
+  validate_scalar_string(datasets_base_url, "datasets_base_url")
   cache_dir <- cache_dir %||%
     file.path(tools::R_user_dir("scop", "data"), "datasets", collection)
   dir.create(cache_dir, recursive = TRUE, showWarnings = FALSE)
 
-  manifest <- scop_dataset_read_manifest(
+  manifest <- dataset_read_manifest(
     collection = collection,
     datasets_base_url = datasets_base_url
   )
-  row <- scop_dataset_select_row(manifest, dataset = dataset)
-  path <- scop_dataset_download_file(
+  row <- dataset_select_row(manifest, dataset = dataset)
+  path <- dataset_download_file(
     row = row,
     collection = collection,
     cache_dir = cache_dir,
@@ -92,8 +92,8 @@ LoadScopDataset <- function(
   readRDS(path)
 }
 
-scop_dataset_read_manifest <- function(collection, datasets_base_url) {
-  manifest_ref <- scop_dataset_resource_ref(
+dataset_read_manifest <- function(collection, datasets_base_url) {
+  manifest_ref <- resource_ref(
     datasets_base_url,
     file.path(collection, "manifest.tsv")
   )
@@ -123,7 +123,7 @@ scop_dataset_read_manifest <- function(collection, datasets_base_url) {
   manifest
 }
 
-scop_dataset_select_row <- function(manifest, dataset) {
+dataset_select_row <- function(manifest, dataset) {
   idx <- which(manifest$dataset == dataset)
   if (length(idx) != 1L) {
     candidates <- manifest[
@@ -142,7 +142,7 @@ scop_dataset_select_row <- function(manifest, dataset) {
   manifest[idx, , drop = FALSE]
 }
 
-scop_dataset_download_file <- function(
+dataset_download_file <- function(
   row,
   collection,
   cache_dir,
@@ -156,13 +156,13 @@ scop_dataset_download_file <- function(
   if (
     file.exists(dest) &&
       !isTRUE(update) &&
-      scop_dataset_validate_file(dest, sha256 = row$sha256, size = row$size_bytes)
+      dataset_validate_file(dest, sha256 = row$sha256, size = row$size_bytes)
   ) {
     log_message("Use cached SCOP dataset: {.file {dest}}", verbose = verbose)
     return(dest)
   }
 
-  source <- scop_dataset_resource_ref(
+  source <- resource_ref(
     datasets_base_url,
     file.path(collection, row$file)
   )
@@ -197,7 +197,7 @@ scop_dataset_download_file <- function(
       message_type = "error"
     )
   }
-  if (!scop_dataset_validate_file(tmp, sha256 = row$sha256, size = row$size_bytes)) {
+  if (!dataset_validate_file(tmp, sha256 = row$sha256, size = row$size_bytes)) {
     unlink(tmp)
     log_message(
       "Downloaded SCOP dataset failed size or sha256 validation: {.file {key}}",
@@ -217,7 +217,7 @@ scop_dataset_download_file <- function(
   dest
 }
 
-scop_dataset_validate_file <- function(path, sha256 = NA_character_, size = NA_real_) {
+dataset_validate_file <- function(path, sha256 = NA_character_, size = NA_real_) {
   if (!file.exists(path)) {
     return(FALSE)
   }
@@ -232,19 +232,4 @@ scop_dataset_validate_file <- function(path, sha256 = NA_character_, size = NA_r
     }
   }
   TRUE
-}
-
-scop_dataset_resource_ref <- function(base, path) {
-  path <- gsub("^/+", "", path)
-  if (dir.exists(base)) {
-    return(file.path(base, path))
-  }
-  paste0(sub("/+$", "", base), "/", path)
-}
-
-scop_dataset_assert_string <- function(x, arg) {
-  if (!is.character(x) || length(x) != 1L || is.na(x) || !nzchar(x)) {
-    log_message("{.arg {arg}} must be a single non-empty string", message_type = "error")
-  }
-  invisible(TRUE)
 }

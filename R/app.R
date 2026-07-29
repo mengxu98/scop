@@ -1,7 +1,7 @@
 #' @title Create HDF5 data file from Seurat object
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @param data_file Path to the output data file.
 #' If not provided, the file will be named `"data.hdf5"` in the current directory.
 #' @param name Name of the dataset.
@@ -173,7 +173,7 @@ CreateDataFile <- function(
 #' @title Create Meta File in HDF5 format from Seurat object
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @param meta_file Path to the output meta file.
 #' If not provided, the file will be named `"meta.hdf5"` in the current directory.
 #' @param name Name of the dataset.
@@ -470,7 +470,7 @@ CreateMetaFile <- function(
 #' @examples
 #' \dontrun{
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' PrepareSCExplorer(pancreas_sub, base_dir = "./SCExplorer")
 #' }
 PrepareSCExplorer <- function(
@@ -597,7 +597,7 @@ PrepareSCExplorer <- function(
 #' @examples
 #' \dontrun{
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' PrepareSCExplorer(pancreas_sub, base_dir = "./SCExplorer")
 #' srt <- FetchH5(
 #'   data_file = "./SCExplorer/data.hdf5",
@@ -937,14 +937,14 @@ CreateSeuratObject2 <- function(
 #' @examples
 #' \dontrun{
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' data(panc8_sub)
-#' panc8_sub <- integration_scop(
+#' panc8_sub <- RunIntegration(
 #'   panc8_sub,
 #'   batch = "tech",
 #'   integration_method = "Harmony"
 #' )
-#' panc8_sub <- standard_scop(panc8_sub)
+#' panc8_sub <- RunStandardWorkflow(panc8_sub)
 #'
 #' PrepareSCExplorer(
 #'   list(

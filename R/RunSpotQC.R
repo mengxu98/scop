@@ -6,7 +6,7 @@
 #' doublet calling or ambient RNA decontamination.
 #'
 #' @md
-#' @inheritParams standard_scop
+#' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
 #' @param return_filtered Logical indicating whether to return a spot-filtered
 #' Seurat object. Default is `FALSE`.
