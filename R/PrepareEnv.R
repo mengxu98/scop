@@ -1433,7 +1433,8 @@ env_info <- function(conda, envname, verbose = TRUE) {
 #' @md
 #' @inheritParams thisutils::log_message
 #' @param version The Python version of the environment.
-#' Default is `"3.10-1"`.
+#' Default is `"3.10-1"`. Python `"3.9-1"` is reserved for the standalone
+#' `"cell2fate"` module.
 #' @param include_optional Whether to include optional Python dependencies.
 #' @param modules Optional requirement modules to include. Supported values are
 #' `"scanpy"`, `"scvi"`, `"scanorama"`, `"bbknn"`, `"celltypist"`,
@@ -1491,6 +1492,12 @@ env_requirements <- function(
       )
     }
     version <- "3.9-1"
+  }
+  if (identical(version, "3.9-1") && !"cell2fate" %in% modules) {
+    log_message(
+      "{.arg version = '3.9-1'} is only supported for the standalone {.val cell2fate} module.",
+      message_type = "error"
+    )
   }
 
   base_requirements <- if (any(c("scenic", "cell2fate") %in% modules)) {

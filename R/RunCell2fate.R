@@ -233,11 +233,9 @@ RunCell2fate <- function(
     )
   }
 
-  metadata <- utils::read.csv(
+  metadata <- cell2fate_read_csv(
     files$cell_metadata,
-    row.names = 1,
-    check.names = FALSE,
-    stringsAsFactors = FALSE
+    "posterior metadata"
   )
   metadata <- cell2fate_align_cells(
     metadata,
@@ -595,12 +593,7 @@ cell2fate_result_files <- function(result_dir) {
 }
 
 cell2fate_read_numeric_csv <- function(path, label) {
-  value <- utils::read.csv(
-    path,
-    row.names = 1,
-    check.names = FALSE,
-    stringsAsFactors = FALSE
-  )
+  value <- cell2fate_read_csv(path, label)
   value <- as.matrix(value)
   storage.mode(value) <- "double"
   if (
@@ -615,6 +608,68 @@ cell2fate_read_numeric_csv <- function(path, label) {
       message_type = "error"
     )
   }
+  value
+}
+
+cell2fate_read_csv <- function(path, label) {
+  header <- tryCatch(
+    utils::read.csv(
+      path,
+      nrows = 0L,
+      row.names = NULL,
+      check.names = FALSE,
+      stringsAsFactors = FALSE
+    ),
+    error = function(e) {
+      log_message(
+        "Unable to read {.pkg Cell2fate} {.val {label}} output: {conditionMessage(e)}",
+        message_type = "error"
+      )
+    }
+  )
+  if (ncol(header) < 2L) {
+    log_message(
+      "{.pkg Cell2fate} returned invalid {.val {label}} output",
+      message_type = "error"
+    )
+  }
+  column_classes <- rep(NA_character_, ncol(header))
+  column_classes[[1L]] <- "character"
+  value <- tryCatch(
+    utils::read.csv(
+      path,
+      row.names = NULL,
+      check.names = FALSE,
+      stringsAsFactors = FALSE,
+      colClasses = column_classes,
+      na.strings = character()
+    ),
+    error = function(e) {
+      log_message(
+        "Unable to read {.pkg Cell2fate} {.val {label}} output: {conditionMessage(e)}",
+        message_type = "error"
+      )
+    }
+  )
+  cell_names <- value[[1L]]
+  value <- value[-1L]
+  value[] <- lapply(
+    value,
+    utils::type.convert,
+    na.strings = "NA",
+    as.is = TRUE
+  )
+  if (
+    anyNA(cell_names) ||
+      any(!nzchar(cell_names)) ||
+      anyDuplicated(cell_names)
+  ) {
+    log_message(
+      "{.pkg Cell2fate} {.val {label}} must have unique non-empty cell names",
+      message_type = "error"
+    )
+  }
+  rownames(value) <- cell_names
   value
 }
 
@@ -654,11 +709,16 @@ cell2fate_expand_metadata <- function(metadata, cells, prefix) {
 cell2fate_runner_error <- function(status, stdout_path, stderr_path) {
   stderr <- if (file.exists(stderr_path)) readLines(stderr_path, warn = FALSE) else character()
   stdout <- if (file.exists(stdout_path)) readLines(stdout_path, warn = FALSE) else character()
-  details <- c(stderr, stdout)
-  details <- details[nzchar(trimws(details))]
-  if (length(details) > 20L) {
-    details <- utils::tail(details, 20L)
-  }
+  stderr <- stderr[nzchar(trimws(stderr))]
+  stdout <- stdout[nzchar(trimws(stdout))]
+  details <- c(
+    if (length(stderr) > 0L) {
+      c("Python stderr:", utils::tail(stderr, 20L))
+    },
+    if (length(stdout) > 0L) {
+      c("Python stdout:", utils::tail(stdout, 20L))
+    }
+  )
   message <- if (length(details) > 0L) {
     paste(details, collapse = "\n")
   } else {
