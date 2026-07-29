@@ -502,6 +502,38 @@ test_that("CellDimPlot scales large non-raster plots consistently", {
   )
 })
 
+test_that("CellDimPlot scales raster points with resolution", {
+  skip_if_not_installed("scattermore")
+  srt <- make_cell_dim_plot_srt()
+  plot_args <- list(
+    srt = srt,
+    group.by = "celltype",
+    reduction = "umap",
+    raster = TRUE,
+    raster.dpi = c(2048, 2048),
+    show_stat = FALSE,
+    force = TRUE
+  )
+  auto_plot <- do.call(CellDimPlot, plot_args)
+  explicit_plot <- do.call(
+    CellDimPlot,
+    c(plot_args, list(pt.size = 0.3))
+  )
+  point_sizes <- function(plot) {
+    vapply(
+      Filter(
+        function(layer) inherits(layer$geom, "GeomScattermore"),
+        plot$layers
+      ),
+      function(layer) layer$geom_params$pointsize,
+      numeric(1)
+    )
+  }
+
+  expect_true(all(point_sizes(auto_plot) == 8))
+  expect_true(all(point_sizes(explicit_plot) == 1.2))
+})
+
 test_that("CellDimPlot validates atlas grid density", {
   srt <- make_cell_dim_plot_srt()
 
