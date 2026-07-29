@@ -38,8 +38,8 @@ library(scop)
 data(pancreas_sub)
 data(panc8_sub)
 
-pancreas_sub <- standard_scop(pancreas_sub, verbose = FALSE)
-panc8_sub <- integration_scop(
+pancreas_sub <- RunStandardWorkflow(pancreas_sub, verbose = FALSE)
+panc8_sub <- RunIntegration(
   srt_merge = panc8_sub,
   batch = "tech",
   integration_method = "Harmony"

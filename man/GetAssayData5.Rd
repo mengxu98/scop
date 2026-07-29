@@ -18,7 +18,7 @@ GetAssayData5(object, ...)
 \arguments{
 \item{object}{An object}
 
-\item{...}{Additional arguments passed to \link[SeuratObject:GetAssayData]{SeuratObject::GetAssayData}.}
+\item{...}{Additional arguments passed to \link[SeuratObject:AssayData]{SeuratObject::GetAssayData}.}
 
 \item{layer}{Name of layer to get or set}
 
@@ -29,7 +29,7 @@ defaults to the \link[SeuratObject:DefaultAssay]{default assay}}
 A matrix or data frame containing the assay data.
 }
 \description{
-A re-implementation of the \link[SeuratObject:GetAssayData]{SeuratObject::GetAssayData} function to compatible with Assay5 objects.
+A re-implementation of the \link[SeuratObject:AssayData]{SeuratObject::GetAssayData} function to compatible with Assay5 objects.
 }
 \examples{
 data(pancreas_sub)
@@ -47,5 +47,5 @@ GetAssayData5(
 )[1:5, 1:5]
 }
 \seealso{
-\link[SeuratObject:GetAssayData]{SeuratObject::GetAssayData}
+\link[SeuratObject:AssayData]{SeuratObject::GetAssayData}
 }

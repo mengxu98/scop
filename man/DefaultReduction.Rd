@@ -32,7 +32,7 @@ Find the default reduction name in a Seurat object
 }
 \examples{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 names(pancreas_sub@reductions)
 
 DefaultReduction(pancreas_sub)

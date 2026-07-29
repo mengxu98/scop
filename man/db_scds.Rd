@@ -40,7 +40,7 @@ Run doublet-calling with scds
 }
 \examples{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 pancreas_sub <- db_scds(pancreas_sub, method = "hybrid")
 CellDimPlot(
   pancreas_sub,

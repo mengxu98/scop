@@ -2,13 +2,20 @@
 % Please edit documentation in R/scop-package.R
 \name{scop_logo}
 \alias{scop_logo}
+\alias{print.scop_logo}
 \title{scop logo}
 \usage{
 scop_logo(unicode = cli::is_utf8_output())
+
+\method{print}{scop_logo}(x, ...)
 }
 \arguments{
 \item{unicode}{Whether to use Unicode symbols on UTF-8 platforms.
 Default is \link[cli:is_utf8_output]{cli::is_utf8_output}.}
+
+\item{x}{Input infromation.}
+
+\item{...}{Other parameters.}
 }
 \description{
 The scop logo, using ASCII or Unicode characters

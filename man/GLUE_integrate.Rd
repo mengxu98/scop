@@ -181,5 +181,5 @@ pbmcmultiome_sub <- GLUE_integrate(
 }
 }
 \seealso{
-\link{integration_scop}
+\link{RunIntegration}
 }

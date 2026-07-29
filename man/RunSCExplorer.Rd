@@ -107,14 +107,14 @@ Run SCExplorer
 \examples{
 \dontrun{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 data(panc8_sub)
-panc8_sub <- integration_scop(
+panc8_sub <- RunIntegration(
   panc8_sub,
   batch = "tech",
   integration_method = "Harmony"
 )
-panc8_sub <- standard_scop(panc8_sub)
+panc8_sub <- RunStandardWorkflow(panc8_sub)
 
 PrepareSCExplorer(
   list(

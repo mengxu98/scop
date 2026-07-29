@@ -81,7 +81,7 @@ Prioritize perturbed cell types using Augur
 \examples{
 data(panc8_sub)
 panc8_sub <- subset(panc8_sub, subset = tech \%in\% c("celseq", "celseq2"))
-panc8_sub <- standard_scop(panc8_sub, verbose = FALSE)
+panc8_sub <- RunStandardWorkflow(panc8_sub, verbose = FALSE)
 panc8_sub <- RunAugur(
   panc8_sub,
   celltype.by = "celltype",

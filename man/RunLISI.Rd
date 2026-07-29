@@ -62,7 +62,7 @@ of a \code{Seurat} object.
 }
 \examples{
 data(panc8_sub)
-panc8_sub <- integration_scop(
+panc8_sub <- RunIntegration(
   panc8_sub,
   batch = "tech",
   integration_method = "Harmony5"

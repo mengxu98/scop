@@ -37,7 +37,7 @@ Run doublet-calling with Scrublet
 \examples{
 \dontrun{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 pancreas_sub <- db_Scrublet(pancreas_sub)
 CellDimPlot(
   pancreas_sub,

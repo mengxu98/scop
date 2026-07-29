@@ -63,7 +63,7 @@ Run CellChat analysis
 }
 \examples{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 pancreas_sub <- RunCellChat(
   pancreas_sub,
   group.by = "CellType",

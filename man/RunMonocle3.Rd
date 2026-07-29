@@ -101,7 +101,7 @@ Run Monocle3 analysis
 \examples{
 if (interactive()) {
   data(pancreas_sub)
-  pancreas_sub <- standard_scop(pancreas_sub)
+  pancreas_sub <- RunStandardWorkflow(pancreas_sub)
   pancreas_sub <- RunMonocle3(
     pancreas_sub,
     reduction = "UMAP"
@@ -165,7 +165,7 @@ if (interactive()) {
   }
 
   # Use Seurat clusters to infer the trajectories
-  pancreas_sub <- standard_scop(pancreas_sub)
+  pancreas_sub <- RunStandardWorkflow(pancreas_sub)
   CellDimPlot(
     pancreas_sub,
     group.by = c("Standardclusters", "CellType"),
@@ -201,7 +201,7 @@ if (interactive()) {
 
   # Use custom graphs and cell clusters to infer
   # the partitions and trajectories, respectively
-  pancreas_sub <- standard_scop(
+  pancreas_sub <- RunStandardWorkflow(
     pancreas_sub,
     cluster_resolution = 5
   )

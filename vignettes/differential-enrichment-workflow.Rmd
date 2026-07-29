@@ -28,7 +28,7 @@ layers separate in the text of a report.
 library(scop)
 
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub, verbose = FALSE)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub, verbose = FALSE)
 
 table(pancreas_sub$CellType)
 ```

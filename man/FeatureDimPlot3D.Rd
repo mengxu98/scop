@@ -54,7 +54,12 @@ additional \code{ChromatinAssay} will be preprocessed sequentially.}
 
 \item{pt.size}{The size of the points in the plot. Default is \code{NULL}, which
 automatically scales point diameter with the square root of the number of
-plotted cells.}
+plotted cells while keeping a readable minimum size of \code{0.3}. Automatically
+sized raster plots use at least a two-pixel radius at the reference
+\code{raster.dpi = c(512, 512)}. Point sizes are scaled with \code{raster.dpi}, so their
+relative appearance remains stable when the raster resolution changes.
+Non-raster point sizes use fixed physical units; increase \code{pt.size}
+proportionally when exporting to an unusually large canvas.}
 
 \item{cells.highlight}{A logical or character vector specifying the cells to highlight in the plot.
 If \code{TRUE}, all cells are highlighted. If \code{FALSE}, no cells are highlighted.
@@ -84,7 +89,7 @@ Default is \code{TRUE}.}
 }
 \examples{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 FeatureDimPlot3D(
   pancreas_sub,
   features = c("Ghrl", "Ins1", "Gcg", "Ins2"),

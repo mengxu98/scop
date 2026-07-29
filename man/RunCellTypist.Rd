@@ -104,7 +104,7 @@ on a Seurat object or AnnData object.
 \examples{
 \dontrun{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 pancreas_sub <- RunCellTypist(
   pancreas_sub,
   model = "Developing_Mouse_Brain.pkl"

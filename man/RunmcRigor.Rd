@@ -98,7 +98,7 @@ Run mcRigor metacell partition assessment
 \examples{
 data(pancreas_sub)
 set.seed(11)
-pancreas_sub <- standard_scop(
+pancreas_sub <- RunStandardWorkflow(
   pancreas_sub,
   nHVF = 500,
   linear_reduction_dims = 20,

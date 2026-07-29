@@ -18,7 +18,7 @@ Integration should be used when technical batches, platforms, donors, or
 experiments obscure the biological structure that should be compared across
 datasets.
 
-`integration_scop()` provides a common entry point for several integration
+`RunIntegration()` provides a common entry point for several integration
 methods. The key practical decisions are the batch column, the integration
 method, the reduction names to inspect, and whether the integrated structure
 preserves known biology.
@@ -47,7 +47,7 @@ baseline for deciding whether integration removes technical structure without
 erasing cell-type structure.
 
 ```{r unintegrated-check}
-panc8_sub <- standard_scop(panc8_sub, verbose = FALSE)
+panc8_sub <- RunStandardWorkflow(panc8_sub, verbose = FALSE)
 
 CellDimPlot(
   panc8_sub,
@@ -63,7 +63,7 @@ Harmony is a common first pass when the object is already a merged Seurat
 object with a batch column.
 
 ```{r run-harmony}
-panc8_harmony <- integration_scop(
+panc8_harmony <- RunIntegration(
   srt_merge = panc8_sub,
   batch = "tech",
   integration_method = "Harmony"
@@ -101,7 +101,7 @@ Use method choice to match the data and dependency budget:
   showing that integration changed the object.
 
 ```{r method-examples}
-panc8_uncorrected <- integration_scop(
+panc8_uncorrected <- RunIntegration(
   srt_merge = panc8_harmony,
   batch = "tech",
   integration_method = "Uncorrected",
@@ -113,13 +113,13 @@ Other methods follow the same entry-point pattern, but may require additional
 runtime dependencies or matrix backends:
 
 ```r
-panc8_rpca <- integration_scop(
+panc8_rpca <- RunIntegration(
   srt_merge = panc8_sub,
   batch = "tech",
   integration_method = "RPCA"
 )
 
-panc8_fastmnn <- integration_scop(
+panc8_fastmnn <- RunIntegration(
   srt_merge = panc8_sub,
   batch = "tech",
   integration_method = "fastMNN"

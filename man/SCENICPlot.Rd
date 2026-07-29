@@ -184,9 +184,11 @@ force-directed Fruchterman-Reingold layout used in Pando examples.}
 \item{network_label_top_n}{Maximum number of high-degree TF nodes labeled in
 \code{plot_type = "network_graph"} when \code{label_nodes = "tfs"}.}
 
-\item{combine}{Whether to combine group plots with \code{\link[patchwork:wrap_plots]{patchwork::wrap_plots()}}.}
+\item{combine}{Combine plots into a single \code{patchwork} object.
+If \code{FALSE}, return a list of ggplot objects.}
 
-\item{ncol}{Number of columns used when \code{combine = TRUE}.}
+\item{ncol}{Number of columns in the combined plot.
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
 
 \item{return_data}{Whether to return RSS matrices and ranking tables together
 with plots. If \code{FALSE}, only the plot object or plot list is returned.}
@@ -239,7 +241,7 @@ plot the top regulons for each group.
 \examples{
 \dontrun{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 pancreas_sub <- RunSCENIC(
   pancreas_sub,
   species = "Mus_musculus",

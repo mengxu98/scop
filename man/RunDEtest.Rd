@@ -217,7 +217,7 @@ various options for DE analysis.
 }
 \examples{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "SubCellType",
@@ -268,7 +268,7 @@ ht3 <- GroupHeatmap(
 ht3$plot
 
 data(panc8_sub)
-panc8_sub <- integration_scop(
+panc8_sub <- RunIntegration(
   panc8_sub,
   batch = "tech",
   integration_method = "Uncorrected"

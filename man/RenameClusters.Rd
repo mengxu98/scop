@@ -34,7 +34,7 @@ Rename clusters for the Seurat object
 data(pancreas_sub)
 
 # Rename all clusters
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 levels(pancreas_sub@meta.data[["SubCellType"]]) <- unique(
   pancreas_sub@meta.data[["SubCellType"]]
 )

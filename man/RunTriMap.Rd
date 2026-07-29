@@ -116,7 +116,7 @@ Run TriMap (Large-scale Dimensionality Reduction Using Triplets)
 \examples{
 \dontrun{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 pancreas_sub <- RunTriMap(
   object = pancreas_sub,
   features = SeuratObject::VariableFeatures(pancreas_sub)

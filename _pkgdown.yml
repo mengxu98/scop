@@ -54,7 +54,7 @@ articles:
   - cell-cell-communication-workflow
 
 reference:
-- subtitle: "Spatial and Cellular Omics Analysis Pipeline"
+- subtitle: "Single-cell and Spatial omics analysis pipeline"
 - contents:
   - scop-package
   - scop_logo
@@ -106,8 +106,8 @@ reference:
 
 - subtitle: "scop Pipeline"
 - contents:
-  - standard_scop
-  - integration_scop
+  - RunStandardWorkflow
+  - RunIntegration
 
 - subtitle: "Metacell Analysis"
 - contents:
@@ -210,7 +210,7 @@ reference:
   - giotto_to_srt
   - srt_to_spata2
   - spata2_to_srt
-  - SeuratToScopGiotto
+  - SeuratToGiotto2
   - RunGiottoWorkflow
   - GiottoPreprocess
   - GiottoReduce
@@ -477,8 +477,8 @@ reference:
 
 - subtitle: "External Datasets"
 - contents:
-  - ListScopDatasets
-  - LoadScopDataset
+  - ListExternalDatasets
+  - LoadExternalDataset
 
 - subtitle: "Data Processing"
 - contents:

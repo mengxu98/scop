@@ -95,7 +95,7 @@ producing regulons (TF + enriched target gene sets).
 \examples{
 \dontrun{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 
 # First run GRN inference
 grn <- RunGRNBoost2(

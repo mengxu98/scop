@@ -303,7 +303,7 @@ Plotting cell points on a reduced 2D plane and coloring according to the values 
 }
 \examples{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 FeatureDimPlot(
   pancreas_sub,
   features = "G2M_score", reduction = "UMAP"

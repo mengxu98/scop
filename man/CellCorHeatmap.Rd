@@ -378,7 +378,7 @@ It takes in Seurat objects or expression matrices as input and calculates pairwi
 }
 \examples{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 ht1 <- CellCorHeatmap(
   srt_query = pancreas_sub,
   query_group = "SubCellType"
@@ -398,7 +398,7 @@ panc8_sub <- RenameFeatures(
   panc8_sub,
   newnames = genenames
 )
-panc8_sub <- standard_scop(panc8_sub)
+panc8_sub <- RunStandardWorkflow(panc8_sub)
 
 ht2 <- CellCorHeatmap(
   srt_query = pancreas_sub,

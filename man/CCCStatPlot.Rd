@@ -148,15 +148,20 @@ the right side unreadable.}
 
 \item{subtitle}{Plot subtitle.}
 
-\item{legend.position}{Legend position.}
+\item{legend.position}{The position of legends,
+one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
+Default is \code{"right"}.}
 
-\item{legend.direction}{Legend direction.}
+\item{legend.direction}{The direction of the legend in the plot.
+Can be one of \code{"vertical"} or \code{"horizontal"}.}
 
 \item{font.size}{Base font size.}
 
-\item{theme_use}{Theme function used for styling.}
+\item{theme_use}{Theme used. Can be a character string or a theme function.
+Default is \code{"theme_scop"}.}
 
-\item{theme_args}{Arguments passed to the theme function.}
+\item{theme_args}{Other arguments passed to the \code{theme_use}.
+Default is \code{list()}.}
 
 \item{grid_major}{Whether to show major panel grid lines for applicable statistical panels.
 Default is \code{TRUE}.}
@@ -167,11 +172,14 @@ Default is \code{TRUE}.}
 
 \item{grid_major_linewidth}{Line width of major panel grid lines.}
 
-\item{combine}{Whether to combine multiple panels.}
+\item{combine}{Combine plots into a single \code{patchwork} object.
+If \code{FALSE}, return a list of ggplot objects.}
 
-\item{nrow}{Number of rows in combined layout.}
+\item{nrow}{Number of rows in the combined plot.
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
 
-\item{ncol}{Number of columns in combined layout.}
+\item{ncol}{Number of columns in the combined plot.
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
 
 \item{verbose}{Whether to print messages.}
 
@@ -185,7 +193,7 @@ CCC statistical distribution and summary plots
 }
 \examples{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 
 pc1 <- Seurat::Embeddings(pancreas_sub, "Standardpca")[, 1]
 ct <- as.character(pancreas_sub$CellType)

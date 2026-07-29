@@ -1,4 +1,4 @@
-# scop: Spatial and single-cell omics analysis pipeline
+# scop: Single-cell and Spatial omics analysis pipeline
 
 <!-- badges: start -->
 
@@ -7,7 +7,7 @@
 <!-- badges: end -->
 
 ## Introduction
-[scop](https://github.com/mengxu98/scop) is an *R* package for comprehensive spatial and single-cell omics analysis, providing modular workflows for analyzing, integrating, visualizing, and interactively exploring spatial, and single-cell omics data.
+[scop](https://github.com/mengxu98/scop) is an *R* package for comprehensive single-cell and spatial omics analysis, providing modular workflows for analyzing, integrating, visualizing, and interactively exploring single-cell and spatial omics data.
 
 > Documentation: https://mengxu98.github.io/scop/
 >
@@ -36,7 +36,7 @@
 
 ## Table of Contents
 
-- [scop: Spatial and Cellular Omics analysis Pipeline](#scop-single-cell-omics-analysis-pipeline)
+- [scop: Single-cell and Spatial omics analysis pipeline](#scop-single-cell-and-spatial-omics-analysis-pipeline)
   - [Introduction](#introduction)
   - [Table of Contents](#table-of-contents)
   - [Credits](#credits)
@@ -159,7 +159,7 @@ print(pancreas_sub)
 ```
 
 ``` r
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 print(pancreas_sub)
 #>  An object of class Seurat 
 #>  47994 features across 1000 samples within 3 assays 
@@ -296,7 +296,7 @@ Example data for integration is a subsetted version of [panc8(eight human pancre
 
 ``` r
 data(panc8_sub)
-panc8_sub <- integration_scop(
+panc8_sub <- RunIntegration(
   srt_merge = panc8_sub,
   batch = "tech",
   integration_method = "Harmony"
@@ -309,7 +309,7 @@ CellDimPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/integration_scop-1.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunIntegration-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ### Cell annotation
 
@@ -896,4 +896,4 @@ if (interactive()) {
 
 [**GroupHeatmap**](https://mengxu98.github.io/scop/reference/GroupHeatmap.html)![Example3](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Example-4.png)
 
-You can also find more examples in the documentation of the function: [integration_scop](https://mengxu98.github.io/scop/reference/integration_scop.html), [RunKNNMap](https://mengxu98.github.io/scop/reference/RunKNNMap.html), [RunPalantir](https://mengxu98.github.io/scop/reference/RunPalantir.html), etc.
+You can also find more examples in the documentation of the function: [RunIntegration](https://mengxu98.github.io/scop/reference/RunIntegration.html), [RunKNNMap](https://mengxu98.github.io/scop/reference/RunKNNMap.html), [RunPalantir](https://mengxu98.github.io/scop/reference/RunPalantir.html), etc.

@@ -64,7 +64,7 @@ Dimension estimate diagnostic plot
 }
 \examples{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 DimsEstimatePlot(pancreas_sub)
 }
 \seealso{

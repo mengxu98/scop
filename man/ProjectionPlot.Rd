@@ -49,7 +49,12 @@ If not provided, the limits will be calculated based on the data.}
 
 \item{pt.size}{The size of the points in the plot. Default is \code{NULL}, which
 automatically scales point diameter with the square root of the number of
-plotted cells.}
+plotted cells while keeping a readable minimum size of \code{0.3}. Automatically
+sized raster plots use at least a two-pixel radius at the reference
+\code{raster.dpi = c(512, 512)}. Point sizes are scaled with \code{raster.dpi}, so their
+relative appearance remains stable when the raster resolution changes.
+Non-raster point sizes use fixed physical units; increase \code{pt.size}
+proportionally when exporting to an unusually large canvas.}
 
 \item{stroke.highlight}{The size of the stroke highlight for cells.}
 
@@ -62,10 +67,10 @@ which can be used to compare two groups of cells in a dimensionality reduction s
 }
 \examples{
 data(panc8_sub)
-panc8_sub <- standard_scop(panc8_sub)
+panc8_sub <- RunStandardWorkflow(panc8_sub)
 srt_ref <- panc8_sub[, panc8_sub$tech != "fluidigmc1"]
 srt_query <- panc8_sub[, panc8_sub$tech == "fluidigmc1"]
-srt_ref <- integration_scop(
+srt_ref <- RunIntegration(
   srt_ref,
   batch = "tech",
   integration_method = "Uncorrected"
