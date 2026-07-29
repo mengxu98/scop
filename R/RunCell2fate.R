@@ -101,30 +101,37 @@ RunCell2fate <- function(
   store_velocity = FALSE,
   verbose = TRUE
 ) {
-  cell2fate_assert_flag(resume, "resume")
-  cell2fate_assert_flag(overwrite, "overwrite")
-  cell2fate_assert_flag(store_velocity, "store_velocity")
-  cell2fate_assert_string(result_dir, "result_dir")
-  cell2fate_assert_string(cluster.by, "cluster.by")
-  cell2fate_assert_string(prefix, "prefix")
-  cell2fate_assert_string(tool_name, "tool_name")
-  cell2fate_validate_param_list(model_params, "model_params")
-  cell2fate_validate_param_list(train_params, "train_params")
-  cell2fate_validate_param_list(posterior_params, "posterior_params")
-  min_shared_counts <- cell2fate_nonnegative_integer(
+  validate_scalar_flag(resume, "resume")
+  validate_scalar_flag(overwrite, "overwrite")
+  validate_scalar_flag(store_velocity, "store_velocity")
+  validate_scalar_string(result_dir, "result_dir")
+  validate_scalar_string(cluster.by, "cluster.by")
+  validate_scalar_string(prefix, "prefix")
+  validate_scalar_string(tool_name, "tool_name")
+  validate_named_list(model_params, "model_params")
+  validate_named_list(train_params, "train_params")
+  validate_named_list(posterior_params, "posterior_params")
+  min_shared_counts <- validate_scalar_integer(
     min_shared_counts,
-    "min_shared_counts"
+    "min_shared_counts",
+    minimum = 0L,
+    message = "must be a non-negative integer"
   )
-  n_var_genes <- cell2fate_positive_integer(n_var_genes, "n_var_genes")
-  seed <- cell2fate_nonnegative_integer(seed, "seed")
+  n_var_genes <- validate_scalar_integer(n_var_genes, "n_var_genes")
+  seed <- validate_scalar_integer(
+    seed,
+    "seed",
+    minimum = 0L,
+    message = "must be a non-negative integer"
+  )
   if (!is.null(cells_per_cluster)) {
-    cells_per_cluster <- cell2fate_positive_integer(
+    cells_per_cluster <- validate_scalar_integer(
       cells_per_cluster,
       "cells_per_cluster"
     )
   }
   if (!is.null(n_modules)) {
-    n_modules <- cell2fate_positive_integer(n_modules, "n_modules")
+    n_modules <- validate_scalar_integer(n_modules, "n_modules")
   }
   if (!is.null(remove_clusters)) {
     remove_clusters <- unique(as.character(remove_clusters))
@@ -389,8 +396,8 @@ cell2fate_prepare_input <- function(
 }
 
 cell2fate_counts <- function(srt, assay, layer, label) {
-  cell2fate_assert_string(assay, paste0(label, "_assay"))
-  cell2fate_assert_string(layer, paste0(label, "_layer"))
+  validate_scalar_string(assay, paste0(label, "_assay"))
+  validate_scalar_string(layer, paste0(label, "_layer"))
   if (!assay %in% names(srt@assays)) {
     log_message(
       "{.arg {label}_assay} {.val {assay}} was not found",
@@ -658,62 +665,4 @@ cell2fate_runner_error <- function(status, stdout_path, stderr_path) {
     paste0("Cell2fate runner exited with status ", status)
   }
   log_message(message, message_type = "error")
-}
-
-cell2fate_validate_param_list <- function(x, arg) {
-  if (!is.list(x) || (length(x) > 0L && (is.null(names(x)) || any(!nzchar(names(x)))))) {
-    log_message(
-      "{.arg {arg}} must be a named list",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
-}
-
-cell2fate_assert_flag <- function(x, arg) {
-  if (!is.logical(x) || length(x) != 1L || is.na(x)) {
-    log_message("{.arg {arg}} must be TRUE or FALSE", message_type = "error")
-  }
-  invisible(TRUE)
-}
-
-cell2fate_assert_string <- function(x, arg) {
-  if (!is.character(x) || length(x) != 1L || is.na(x) || !nzchar(x)) {
-    log_message(
-      "{.arg {arg}} must be one non-empty string",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
-}
-
-cell2fate_positive_integer <- function(x, arg) {
-  if (
-    !is.numeric(x) ||
-      length(x) != 1L ||
-      is.na(x) ||
-      !is.finite(x) ||
-      x < 1 ||
-      x != as.integer(x)
-  ) {
-    log_message("{.arg {arg}} must be a positive integer", message_type = "error")
-  }
-  as.integer(x)
-}
-
-cell2fate_nonnegative_integer <- function(x, arg) {
-  if (
-    !is.numeric(x) ||
-      length(x) != 1L ||
-      is.na(x) ||
-      !is.finite(x) ||
-      x < 0 ||
-      x != as.integer(x)
-  ) {
-    log_message(
-      "{.arg {arg}} must be a non-negative integer",
-      message_type = "error"
-    )
-  }
-  as.integer(x)
 }

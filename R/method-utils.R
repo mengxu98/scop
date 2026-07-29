@@ -92,6 +92,28 @@ validate_seurat_object <- function(srt) {
   invisible(TRUE)
 }
 
+validate_scalar_integer <- function(
+  x,
+  arg,
+  minimum = 1L,
+  message = "must be a positive integer"
+) {
+  if (
+    !is.numeric(x) ||
+      length(x) != 1L ||
+      is.na(x) ||
+      !is.finite(x) ||
+      x < minimum ||
+      x != as.integer(x)
+  ) {
+    log_message(
+      paste("{.arg {arg}}", message),
+      message_type = "error"
+    )
+  }
+  as.integer(x)
+}
+
 validate_positive_integer <- function(x, arg) {
   if (length(x) != 1L || is.na(x) || !is.finite(x) || x < 1) {
     log_message(
