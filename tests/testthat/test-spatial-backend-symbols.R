@@ -25,11 +25,11 @@ spatial_api_symbol_expectations <- list(
 )
 
 test_that("stable spatial backends declare the APIs their wrappers consume", {
-  registry <- scop:::spatial_backend_registry()
+  registry <- spatial_backend_registry()
 
   for (backend_id in names(spatial_api_symbol_expectations)) {
     expect_setequal(
-      scop:::spatial_backend_required_symbols(registry[[backend_id]]),
+      spatial_backend_required_symbols(registry[[backend_id]]),
       spatial_api_symbol_expectations[[backend_id]]
     )
   }
@@ -52,7 +52,7 @@ test_that("api_check is real for all ten diagnosed backends", {
 })
 
 test_that("semla diagnostics use producer-specific symbols", {
-  spec <- scop:::spatial_backend_registry()$semla
+  spec <- spatial_backend_registry()$semla
   expected <- list(
     RunSemlaSpatialNetwork = c("UpdateSeuratForSemla", "GetSpatialNetwork"),
     RunSemlaLocalG = c("UpdateSeuratForSemla", "RunLocalG"),
@@ -62,15 +62,15 @@ test_that("semla diagnostics use producer-specific symbols", {
 
   for (method in names(expected)) {
     expect_setequal(
-      scop:::spatial_backend_required_symbols(spec, method = method),
+      spatial_backend_required_symbols(spec, method = method),
       expected[[method]]
     )
   }
 })
 
 test_that("missing exports are classified as API incompatibility", {
-  spec <- scop:::spatial_backend_registry()$bayesspace
-  required <- scop:::spatial_backend_required_symbols(spec)
+  spec <- spatial_backend_registry()$bayesspace
+  required <- spatial_backend_required_symbols(spec)
   exports <- setdiff(required, "spatialCluster")
 
   expect_identical(
@@ -80,30 +80,30 @@ test_that("missing exports are classified as API incompatibility", {
 })
 
 test_that("alternative API generations still select a complete symbol set", {
-  spec <- scop:::spatial_backend_registry()$spacexr
+  spec <- spatial_backend_registry()$spacexr
 
   for (symbols in spec$symbol_sets) {
     expect_identical(
-      scop:::spatial_backend_required_symbols(spec, exports = symbols),
+      spatial_backend_required_symbols(spec, exports = symbols),
       symbols
     )
   }
 })
 
 test_that("CARD diagnostics resolve the installed implementation", {
-  spec <- scop:::spatial_backend_registry()$card
+  spec <- spatial_backend_registry()$card
 
   expect_identical(spec$package_candidates, c("CARD", "CARDspa"))
   expect_identical(
-    scop:::spatial_backend_resolve_package(spec, installed = "CARDspa"),
+    spatial_backend_resolve_package(spec, installed = "CARDspa"),
     "CARDspa"
   )
   expect_identical(
-    scop:::spatial_backend_resolve_package(spec, installed = c("CARDspa", "CARD")),
+    spatial_backend_resolve_package(spec, installed = c("CARDspa", "CARD")),
     "CARD"
   )
   expect_identical(
-    scop:::spatial_backend_resolve_package(spec, installed = character()),
+    spatial_backend_resolve_package(spec, installed = character()),
     "CARD"
   )
 })

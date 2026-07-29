@@ -6,11 +6,11 @@ test_that("GetSimilarFeatures min/max aggregation matches legacy apply", {
   )
 
   expect_identical(
-    scop:::get_similar_features_aggregate(correlations, "min"),
+    get_similar_features_aggregate(correlations, "min"),
     apply(correlations, 1, min)
   )
   expect_identical(
-    scop:::get_similar_features_aggregate(correlations, "max"),
+    get_similar_features_aggregate(correlations, "max"),
     apply(correlations, 1, max)
   )
 })

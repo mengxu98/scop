@@ -547,7 +547,7 @@ test_that("palantir_row_entropy_cpp matches Palantir branch post-processing", {
   })
 
   expect_equal(
-    scop:::palantir_row_entropy_cpp(probabilities),
+    palantir_row_entropy_cpp(probabilities),
     legacy,
     tolerance = 1e-12
   )

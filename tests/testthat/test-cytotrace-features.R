@@ -13,7 +13,7 @@ test_that("CytoTRACE2 model loading tolerates duplicated CSV row indexes", {
   )
 
   expect_identical(
-    scop:::load_cytotrace2_data(data_dir, verbose = FALSE)$features,
+    load_cytotrace2_data(data_dir, verbose = FALSE)$features,
     c("A1bg", "A1cf", "A4galt")
   )
 })
@@ -32,7 +32,7 @@ test_that("CytoTRACE2 model loading rejects duplicated feature names", {
   )
 
   expect_error(
-    scop:::load_cytotrace2_data(data_dir, verbose = FALSE),
+    load_cytotrace2_data(data_dir, verbose = FALSE),
     "duplicated feature names"
   )
 })

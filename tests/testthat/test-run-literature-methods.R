@@ -37,7 +37,7 @@ test_that("FitDevo sparse scaling matches the legacy dense sweep", {
     out
   }
 
-  expect_identical(scop_scale_features(mat), legacy(mat))
+  expect_identical(scale_feature_matrix(mat), legacy(mat))
 })
 
 test_that("RunFitDevo and RunFWP write metadata and reusable weights", {
@@ -129,16 +129,16 @@ test_that("native FWP vectorization matches a naive reference and is faster", {
       mat,
       features = features,
       phenotype.by = NULL,
-      weights = scop:::fwp_score(mat[features, ], y = y)$weights,
+      weights = fwp_score(mat[features, ], y = y)$weights,
       verbose = FALSE
     )
   })[["elapsed"]]
 
   naive_time <- system.time({
-    dense <- scop:::scop_scale_features(mat[features, ])
+    dense <- scale_feature_matrix(mat[features, ])
     weights <- rowMeans(dense[, y == 1, drop = FALSE]) - rowMeans(dense[, y == 0, drop = FALSE])
     weights <- weights / (sqrt(sum(weights^2)) + 1e-8)
-    naive <- scop:::scale01(as.numeric(crossprod(weights, dense)))
+    naive <- scale01(as.numeric(crossprod(weights, dense)))
     names(naive) <- colnames(dense)
   })[["elapsed"]]
 

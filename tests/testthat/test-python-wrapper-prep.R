@@ -36,13 +36,13 @@ test_that("GRN Python wrappers bootstrap their isolated SCENIC environments", {
   )
 
   expect_error(
-    scop:::grnboost_python(expr, regulators = "g1", work_dir = tempdir()),
+    grnboost_python(expr, regulators = "g1", work_dir = tempdir()),
     "prepared"
   )
   expect_identical(modules, "scenic")
 
   expect_error(
-    scop:::regdiffusion_python(expr, regulators = "g1", work_dir = tempdir()),
+    regdiffusion_python(expr, regulators = "g1", work_dir = tempdir()),
     "prepared"
   )
   expect_identical(modules, c("scenic", "regdiffusion"))
@@ -88,7 +88,7 @@ test_that("SCENICPlus only prepares Python when an official object is supplied",
   )
 
   expect_error(
-    scop:::run_scenicplus_python(
+    run_scenicplus_python(
       srt = NULL,
       envname = "scenicplus_env",
       conda = "auto",

@@ -45,3 +45,5 @@ testthat-problems.rds
 /.claude
 skills-lock.json
 AGENTS.md
+/artifacts
+/tests/validation/

@@ -267,11 +267,11 @@ test_that("standard spatial workflow dispatches cell2location signatures", {
     ncol = 2,
     dimnames = list(paste0("Gene", 1:4), c("Alpha", "Beta"))
   )
-  original <- getFromNamespace("standard_spatial_scop", "scop")
+  original <- getFromNamespace("run_standard_spatial_workflow", "scop")
   called <- FALSE
   testthat::local_mocked_bindings(
     .package = "scop",
-    standard_scop = function(srt, ...) srt,
+    RunStandardWorkflow = function(srt, ...) srt,
     RunCell2location = function(srt, result_dir, reference_signatures, ...) {
       called <<- TRUE
       expect_identical(result_dir, "c2l")
@@ -299,7 +299,7 @@ test_that("standard spatial workflow dispatches cell2location signatures", {
   expect_true(called)
   expect_equal(unique(out$Cell2location_dominant_type), "Alpha")
   expect_identical(
-    out@tools$standard_spatial_scop$parameters$deconvolution_method,
+    out@tools$run_standard_spatial_workflow$parameters$deconvolution_method,
     "Cell2location"
   )
 })

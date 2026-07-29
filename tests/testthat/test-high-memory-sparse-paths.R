@@ -35,7 +35,7 @@ test_that("spatial sparse matrix coercion preserves matrix values", {
   rownames(mat) <- c("g1", "g2")
   colnames(mat) <- paste0("c", seq_len(ncol(mat)))
 
-  out <- scop:::spatial_integration_sparse_matrix(mat)
+  out <- spatial_integration_sparse_matrix(mat)
 
   expect_s4_class(out, "dgCMatrix")
   expect_equal(dimnames(out), dimnames(mat))
@@ -70,7 +70,7 @@ test_that("spatial integration prepares merged objects without SplitObject", {
     .package = "Seurat"
   )
 
-  input <- scop:::spatial_integration_prepare_input(
+  input <- spatial_integration_prepare_input(
     object = srt,
     sample.by = "sample",
     assay = "RNA",
@@ -137,7 +137,7 @@ test_that("CIBERSORT matrix validation handles sparse matrices once", {
   rownames(mat) <- c("GeneA", "GeneB")
   colnames(mat) <- c("Sample1", "Sample2", "Sample3")
 
-  out <- scop:::cibersort_check_matrix(mat, "count_matrix")
+  out <- cibersort_check_matrix(mat, "count_matrix")
 
   expect_type(out, "double")
   expect_equal(dimnames(out), dimnames(mat))
@@ -170,7 +170,7 @@ test_that("scTenifold network plot subsets sparse networks before dense conversi
     )
   )
 
-  p <- scop:::sctenifold_plot_network(
+  p <- sctenifold_plot_network(
     bundle = bundle,
     dr = dr,
     top_n = 3,

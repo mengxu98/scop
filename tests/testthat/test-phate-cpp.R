@@ -53,7 +53,7 @@ test_that("PHATE C++ helpers reject invalid matrix contracts", {
 
 test_that("RunPHATE cpp backend stores a finite reduction", {
   data("pancreas_sub", package = "scop")
-  srt <- suppressWarnings(standard_scop(pancreas_sub[, seq_len(60)], verbose = FALSE))
+  srt <- suppressWarnings(RunStandardWorkflow(pancreas_sub[, seq_len(60)], verbose = FALSE))
 
   out <- RunPHATE(
     srt,

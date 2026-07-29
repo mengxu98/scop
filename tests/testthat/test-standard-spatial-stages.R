@@ -11,10 +11,10 @@ make_standard_spatial_stage_object <- function() {
 }
 
 test_that("standard spatial workflow records completed and skipped stages truthfully", {
-  original <- getFromNamespace("standard_spatial_scop", "scop")
+  original <- getFromNamespace("run_standard_spatial_workflow", "scop")
   testthat::local_mocked_bindings(
     .package = "scop",
-    standard_scop = function(srt, ...) srt,
+    RunStandardWorkflow = function(srt, ...) srt,
     RunSpotQC = function(srt, ...) {
       srt$SpotQC <- "Pass"
       srt
@@ -39,7 +39,7 @@ test_that("standard spatial workflow records completed and skipped stages truthf
     reference = NULL,
     verbose = FALSE
   ))
-  workflow <- out@tools$standard_spatial_scop
+  workflow <- out@tools$run_standard_spatial_workflow
   expect_identical(workflow$status, "partial")
   expect_identical(
     workflow$stages$status,
@@ -65,10 +65,10 @@ test_that("standard spatial workflow records completed and skipped stages truthf
 })
 
 test_that("standard spatial workflow exposes failed stage diagnostics on errors", {
-  original <- getFromNamespace("standard_spatial_scop", "scop")
+  original <- getFromNamespace("run_standard_spatial_workflow", "scop")
   testthat::local_mocked_bindings(
     .package = "scop",
-    standard_scop = function(srt, ...) srt,
+    RunStandardWorkflow = function(srt, ...) srt,
     RunSpatialVariableFeatures = function(...) stop("synthetic SVF failure")
   )
   condition <- tryCatch(
@@ -93,10 +93,10 @@ test_that("standard spatial workflow exposes failed stage diagnostics on errors"
 })
 
 test_that("standard spatial workflow marks deconvolution preflight failures", {
-  original <- getFromNamespace("standard_spatial_scop", "scop")
+  original <- getFromNamespace("run_standard_spatial_workflow", "scop")
   testthat::local_mocked_bindings(
     .package = "scop",
-    standard_scop = function(srt, ...) srt
+    RunStandardWorkflow = function(srt, ...) srt
   )
   srt <- make_standard_spatial_stage_object()
   condition <- tryCatch(

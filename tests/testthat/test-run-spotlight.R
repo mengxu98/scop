@@ -191,7 +191,7 @@ test_that("SPOTlight stored results use SpatialDeconvolutionPlot", {
       invisible(TRUE)
     }
   )
-  pair$spatial@tools$SPOTlight <- scop:::spatial_result_build(
+  pair$spatial@tools$SPOTlight <- spatial_result_build(
     bundle = list(
       proportions = as.matrix(pair$spatial@meta.data[, c("SPOTlight_prop_Alpha", "SPOTlight_prop_Beta")]),
       cells = colnames(pair$spatial)
@@ -223,7 +223,7 @@ test_that("standard spatial workflow dispatches to RunSPOTlight", {
     "SPOTlight backend is installed; avoid running real deconvolution in dispatch test"
   )
   pair <- make_spotlight_seurat_pair()
-  original_standard_scop <- getFromNamespace("standard_scop", "scop")
+  original_RunStandardWorkflow <- getFromNamespace("RunStandardWorkflow", "scop")
   testthat::local_mocked_bindings(
     .package = "scop",
     RunSpotQC = function(srt, ...) srt,
@@ -238,7 +238,7 @@ test_that("standard spatial workflow dispatches to RunSPOTlight", {
   )
 
   out <- suppressWarnings(
-    original_standard_scop(
+    original_RunStandardWorkflow(
       pair$spatial,
       workflow = "spatial",
       assay = "RNA",
@@ -255,5 +255,5 @@ test_that("standard spatial workflow dispatches to RunSPOTlight", {
   )
 
   expect_equal(unique(out$SPOTlight_dominant_type), "Alpha")
-  expect_equal(out@tools$standard_spatial_scop$parameters$deconvolution_method, "SPOTlight")
+  expect_equal(out@tools$run_standard_spatial_workflow$parameters$deconvolution_method, "SPOTlight")
 })

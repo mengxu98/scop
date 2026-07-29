@@ -30,11 +30,11 @@ test_that("GSVAPlot score filters match the legacy row-wise calculations", {
   )
 
   legacy_var <- apply(scores, 1, stats::var, na.rm = TRUE)
-  fast_var <- scop:::gsva_plot_row_variances(scores)
+  fast_var <- gsva_plot_row_variances(scores)
   expect_equal(fast_var, legacy_var, tolerance = 1e-14)
 
   legacy_keep <- suppressWarnings(apply(abs(scores), 1, max, na.rm = TRUE) >= 1.5)
-  fast_keep <- scop:::gsva_plot_score_cutoff_keep(scores, 1.5)
+  fast_keep <- gsva_plot_score_cutoff_keep(scores, 1.5)
   expect_identical(fast_keep, legacy_keep)
 })
 
@@ -128,7 +128,7 @@ test_that("GSVAPlot network passes scores without placeholder p-values", {
 
 test_that("score metric weights are absolute scores, not p-value transforms", {
   expect_equal(
-    scop:::enrichment_metric_weight(c(-2, 0.5), score_mode = TRUE),
+    enrichment_metric_weight(c(-2, 0.5), score_mode = TRUE),
     c(2, 0.5)
   )
 })

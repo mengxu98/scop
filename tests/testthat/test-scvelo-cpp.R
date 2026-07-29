@@ -71,7 +71,7 @@ make_scvelo_mock <- function(
 
 test_that("scvelo_stochastic_embedding_cpp returns a named list with correct fields", {
   dat <- make_scvelo_mock()
-  out <- scop:::scvelo_stochastic_embedding_cpp(
+  out <- scvelo_stochastic_embedding_cpp(
     spliced = dat$spliced,
     unspliced = dat$unspliced,
     knn_idx = dat$knn_idx,
@@ -122,7 +122,7 @@ test_that("scvelo handles all-zero expression", {
   set.seed(1)
   embedding <- matrix(rnorm(n_cells * 2), nrow = n_cells, ncol = 2)
 
-  out <- scop:::scvelo_stochastic_embedding_cpp(
+  out <- scvelo_stochastic_embedding_cpp(
     spliced = spliced,
     unspliced = unspliced,
     knn_idx = knn_idx,
@@ -156,7 +156,7 @@ test_that("scvelo estimates gamma ~ 1 when unspliced = spliced", {
   set.seed(1)
   embedding <- matrix(rnorm(n_cells * 2), nrow = n_cells, ncol = 2)
 
-  out <- scop:::scvelo_stochastic_embedding_cpp(
+  out <- scvelo_stochastic_embedding_cpp(
     spliced = spliced,
     unspliced = unspliced,
     knn_idx = knn_idx,
@@ -183,7 +183,7 @@ test_that("scvelo handles single cell gracefully", {
   embedding <- matrix(runif(2), nrow = 1, ncol = 2)
 
   expect_error(
-    scop:::scvelo_stochastic_embedding_cpp(
+    scvelo_stochastic_embedding_cpp(
       spliced = spliced,
       unspliced = unspliced,
       knn_idx = knn_idx,
@@ -210,7 +210,7 @@ test_that("scvelo works with 1 neighbor", {
   }
   embedding <- matrix(rnorm(n_cells * 2), nrow = n_cells, ncol = 2)
 
-  out <- scop:::scvelo_stochastic_embedding_cpp(
+  out <- scvelo_stochastic_embedding_cpp(
     spliced = spliced,
     unspliced = unspliced,
     knn_idx = knn_idx,
@@ -227,13 +227,13 @@ test_that("scvelo works with 1 neighbor", {
 
 test_that("scvelo_stochastic_embedding_cpp is deterministic", {
   dat <- make_scvelo_mock(seed = 42)
-  out1 <- scop:::scvelo_stochastic_embedding_cpp(
+  out1 <- scvelo_stochastic_embedding_cpp(
     spliced = dat$spliced,
     unspliced = dat$unspliced,
     knn_idx = dat$knn_idx,
     embedding = dat$embedding
   )
-  out2 <- scop:::scvelo_stochastic_embedding_cpp(
+  out2 <- scvelo_stochastic_embedding_cpp(
     spliced = dat$spliced,
     unspliced = dat$unspliced,
     knn_idx = dat$knn_idx,
@@ -264,7 +264,7 @@ test_that("scvelo gamma reflects relationship between spliced and unspliced", {
   }
   embedding <- matrix(rnorm(n_cells * 2), nrow = n_cells, ncol = 2)
 
-  out <- scop:::scvelo_stochastic_embedding_cpp(
+  out <- scvelo_stochastic_embedding_cpp(
     spliced = spliced,
     unspliced = unspliced,
     knn_idx = knn_idx,
@@ -282,7 +282,7 @@ test_that("scvelo gamma reflects relationship between spliced and unspliced", {
 test_that("scvelo rejects mismatched spliced/unspliced dimensions", {
   dat <- make_scvelo_mock()
   expect_error(
-    scop:::scvelo_stochastic_embedding_cpp(
+    scvelo_stochastic_embedding_cpp(
       spliced = dat$spliced[1:5, , drop = FALSE],  # different n_genes
       unspliced = dat$unspliced,
       knn_idx = dat$knn_idx,
@@ -295,7 +295,7 @@ test_that("scvelo rejects mismatched spliced/unspliced dimensions", {
 test_that("scvelo rejects mismatched knn_idx rows vs cells", {
   dat <- make_scvelo_mock()
   expect_error(
-    scop:::scvelo_stochastic_embedding_cpp(
+    scvelo_stochastic_embedding_cpp(
       spliced = dat$spliced,
       unspliced = dat$unspliced,
       knn_idx = dat$knn_idx[1:5, , drop = FALSE],
@@ -308,7 +308,7 @@ test_that("scvelo rejects mismatched knn_idx rows vs cells", {
 test_that("scvelo rejects mismatched embedding rows vs cells", {
   dat <- make_scvelo_mock()
   expect_error(
-    scop:::scvelo_stochastic_embedding_cpp(
+    scvelo_stochastic_embedding_cpp(
       spliced = dat$spliced,
       unspliced = dat$unspliced,
       knn_idx = dat$knn_idx,
@@ -343,7 +343,7 @@ test_that("scvelo embedding output is finite and well-scaled", {
   set.seed(99)
   embedding <- matrix(rnorm(n_cells * 2), nrow = n_cells, ncol = 2)
 
-  out <- scop:::scvelo_stochastic_embedding_cpp(
+  out <- scvelo_stochastic_embedding_cpp(
     spliced = spliced,
     unspliced = unspliced,
     knn_idx = knn_idx,

@@ -1,5 +1,5 @@
 test_that("spatial registry covers the complete public surface", {
-  registry <- scop:::spatial_method_registry()
+  registry <- spatial_method_registry()
   expect_equal(nrow(registry), length(unique(registry$method)))
   expect_gte(nrow(registry), 60L)
   expect_true(all(registry$method %in% getNamespaceExports("scop")))
@@ -12,7 +12,7 @@ test_that("spatial registry covers the complete public surface", {
   )))
   expect_true(all(registry$backend_requirement %in% c("all", "any")))
   backend_ids <- unique(unlist(strsplit(registry$backend_id, ";", fixed = TRUE)))
-  backend_registry <- scop:::spatial_backend_registry()
+  backend_registry <- spatial_backend_registry()
   expect_true(all(backend_ids %in% names(backend_registry)))
   expect_true(all(vapply(
     backend_registry,
@@ -22,7 +22,7 @@ test_that("spatial registry covers the complete public surface", {
 })
 
 test_that("documented stable spatial producers and registry agree both ways", {
-  registry <- scop:::spatial_method_registry()
+  registry <- spatial_method_registry()
   registered <- registry$method[
     registry$kind %in% c("analysis", "workflow") & registry$status == "stable"
   ]
@@ -82,7 +82,7 @@ test_that("spatial code does not bypass strict image resolution", {
 })
 
 test_that("registered small analyses emit schema-v1 result families", {
-  registry <- scop:::spatial_method_registry()
+  registry <- spatial_method_registry()
   target <- registry[
     registry$kind == "analysis" &
       registry$status == "stable" &
@@ -120,7 +120,7 @@ test_that("registered small analyses emit schema-v1 result families", {
 
 test_that("spatial discovery APIs share the registry contract", {
   methods <- ListSpatialMethods()
-  expect_equal(methods$method, scop:::spatial_method_registry()$method)
+  expect_equal(methods$method, spatial_method_registry()$method)
   expect_true(all(c("analysis", "plot", "bridge", "workflow") %in% methods$kind))
   expect_true(all(ListSpatialMethods(kind = "bridge")$kind == "bridge"))
   expect_true(all(grepl("network", ListSpatialMethods(pattern = "network")$method, ignore.case = TRUE) |
@@ -133,8 +133,8 @@ test_that("spatial discovery APIs share the registry contract", {
 })
 
 test_that("Giotto diagnostics and runtime routing share one symbol registry", {
-  routing <- scop:::spatial_giotto_symbol_registry()
-  backends <- scop:::spatial_backend_registry()
+  routing <- spatial_giotto_symbol_registry()
+  backends <- spatial_backend_registry()
   expect_equal(
     backends$giotto$symbols,
     routing$symbol[routing$package == "Giotto" & routing$required]
@@ -157,7 +157,7 @@ test_that("Giotto diagnostics and runtime routing share one symbol registry", {
     refresh = TRUE
   )
   class_row <- reverse_bridge[reverse_bridge$backend_id == "giotto_class", , drop = FALSE]
-  expect_match(class_row$required_symbols, scop:::spatial_giotto_converter_name())
+  expect_match(class_row$required_symbols, spatial_giotto_converter_name())
 })
 
 test_that("SpatialResultInfo distinguishes ready empty partial and stale results", {

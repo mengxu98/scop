@@ -65,7 +65,7 @@ local_mock_spatialcellchat_backend <- function(fail = FALSE) {
 
 test_that("coordinate conversion is explicit and micron based", {
   srt <- make_spatialcellchat_test_object()
-  metric <- scop:::spatialcellchat_metric_coordinates(
+  metric <- spatialcellchat_metric_coordinates(
     srt,
     cells = colnames(srt),
     image = NULL,
@@ -83,7 +83,7 @@ test_that("coordinate conversion is explicit and micron based", {
   expect_equal(metric$source$scale_to_micron, 0.5)
   expect_equal(metric$spatial.factors, list(ratio = 1, tol = 5))
   expect_error(
-    scop:::spatialcellchat_metric_coordinates(
+    spatialcellchat_metric_coordinates(
       srt, colnames(srt), NULL, c("col", "row"), "generic", "pixel", NULL, 5
     ),
     "explicit positive"
@@ -93,11 +93,11 @@ test_that("coordinate conversion is explicit and micron based", {
 test_that("strict auto detection refuses ambiguous generic data", {
   srt <- make_spatialcellchat_test_object()
   expect_error(
-    scop:::spatialcellchat_detect_technology(srt, "auto"),
+    spatialcellchat_detect_technology(srt, "auto"),
     "Supply.*technology"
   )
   expect_error(
-    scop:::spatialcellchat_detect_level(srt, "auto", "generic", NULL),
+    spatialcellchat_detect_level(srt, "auto", "generic", NULL),
     "Cannot determine"
   )
 })
@@ -107,20 +107,20 @@ test_that("Visium scale evidence and multi-image selection are strict", {
   srt@misc$scalefactors_json <- list(
     slice1 = list(spot_diameter_fullres = 130)
   )
-  expect_equal(scop:::spatialcellchat_visium_spot_diameter(srt, "slice1"), 130)
+  expect_equal(spatialcellchat_visium_spot_diameter(srt, "slice1"), 130)
   testthat::local_mocked_bindings(
     Images = function(object) c("slice1", "slice2"),
     .package = "SeuratObject"
   )
   expect_error(
-    scop:::spatialcellchat_image_map(srt, "ALL", image = NULL),
+    spatialcellchat_image_map(srt, "ALL", image = NULL),
     "Multiple spatial images"
   )
 })
 
 test_that("standard Seurat Visium scale factors provide the full-resolution diameter", {
   data(visium_mouse_brain_slices_sub)
-  diameter <- scop:::spatialcellchat_visium_spot_diameter(
+  diameter <- spatialcellchat_visium_spot_diameter(
     visium_mouse_brain_slices_sub,
     "anterior1"
   )
@@ -134,7 +134,7 @@ test_that("composition validation aligns and normalizes spots", {
     nrow = 3,
     dimnames = list(cells, c("A", "B"))
   )
-  out <- scop:::spatialcellchat_validate_composition(
+  out <- spatialcellchat_validate_composition(
     composition[, c("B", "A")],
     cells,
     groups = c("A", "B"),
@@ -144,7 +144,7 @@ test_that("composition validation aligns and normalizes spots", {
   expect_equal(unname(rowSums(out$data)), rep(1, 3))
   expect_identical(colnames(out$data), c("A", "B"))
   expect_error(
-    scop:::spatialcellchat_validate_composition(composition[-1, ], cells),
+    spatialcellchat_validate_composition(composition[-1, ], cells),
     "missing selected spots"
   )
 })
@@ -152,24 +152,24 @@ test_that("composition validation aligns and normalizes spots", {
 test_that("expression validation rejects scientifically invalid backend input", {
   srt <- make_spatialcellchat_test_object()
   expression <- GetAssayData5(srt, assay = "RNA", layer = "data")
-  expect_true(scop:::spatialcellchat_validate_expression(expression, colnames(srt)))
+  expect_true(spatialcellchat_validate_expression(expression, colnames(srt)))
 
   negative <- as.matrix(expression)
   negative[[1L]] <- -1
   expect_error(
-    scop:::spatialcellchat_validate_expression(negative, colnames(srt)),
+    spatialcellchat_validate_expression(negative, colnames(srt)),
     "non-negative"
   )
 
   non_finite <- as.matrix(expression)
   non_finite[[1L]] <- Inf
   expect_error(
-    scop:::spatialcellchat_validate_expression(non_finite, colnames(srt)),
+    spatialcellchat_validate_expression(non_finite, colnames(srt)),
     "non-finite"
   )
 
   expect_error(
-    scop:::spatialcellchat_validate_expression(expression, rev(colnames(srt))),
+    spatialcellchat_validate_expression(expression, rev(colnames(srt))),
     "do not align"
   )
 })
@@ -192,7 +192,7 @@ test_that("pathway-level output is retained when ligand-receptor extraction fail
       }
     }
   )
-  table <- scop:::spatialcellchat_extract_table(
+  table <- spatialcellchat_extract_table(
     chat,
     sample = "sample1",
     analysis.level = "spot",
@@ -216,7 +216,7 @@ test_that("empty SpatialCellChat ligand-receptor and pathway outputs fail explic
     get_namespace_fun = function(...) stop("subsetCommunication must not run")
   )
   expect_error(
-    scop:::spatialcellchat_extract_table(
+    spatialcellchat_extract_table(
       chat,
       sample = "sample1",
       analysis.level = "spot",
@@ -263,7 +263,7 @@ test_that("SpatialCellChat backend calls avoid global progress handlers", {
     }
   )
   expect_equal(
-    scop:::spatialcellchat_call(
+    spatialcellchat_call(
       "identifyOverExpressedGenes",
       list(object = 1),
       analysis.level = "cell"
@@ -274,7 +274,7 @@ test_that("SpatialCellChat backend calls avoid global progress handlers", {
     Matrix::Matrix(diag(c(1, 0)), sparse = TRUE),
     Matrix::Matrix(diag(c(0, 2)), sparse = TRUE)
   )
-  sparse_output <- scop:::spatialcellchat_call(
+  sparse_output <- spatialcellchat_call(
     "computeCommunProb",
     list(object = sparse_input),
     analysis.level = "cell"
@@ -296,7 +296,7 @@ test_that("SpatialCellChat ignores unavailable private compatibility helpers", {
   )
 
   expect_equal(
-    scop:::spatialcellchat_call(
+    spatialcellchat_call(
       "subsetData",
       list(object = 1),
       analysis.level = "cell"

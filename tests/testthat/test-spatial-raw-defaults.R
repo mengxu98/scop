@@ -32,7 +32,7 @@ test_that("distance-sensitive spatial producers default to raw coordinates", {
 })
 
 test_that("registry advertises the migrated raw coordinate contract", {
-  registry <- scop:::spatial_method_registry()
+  registry <- spatial_method_registry()
   rows <- registry[match(raw_default_spatial_methods, registry$method), , drop = FALSE]
 
   expect_false(anyNA(rows$method))
@@ -54,12 +54,12 @@ test_that("raw is the real public default on an image-backed Visium object", {
   srt <- visium_human_pancreas_sub
   image <- SeuratObject::Images(srt)[[1L]]
 
-  raw <- scop:::spatial_analysis_coords(
+  raw <- spatial_analysis_coords(
     srt,
     image = image,
     coordinate_space = "raw"
   )
-  legacy <- scop:::spatial_analysis_coords(
+  legacy <- spatial_analysis_coords(
     srt,
     image = image,
     coordinate_space = "legacy_display"
@@ -82,7 +82,7 @@ test_that("raw is the real public default on an image-backed Visium object", {
   expect_identical(sum(raw_distance > 0 & raw_distance <= 50), 0L)
   expect_gt(sum(legacy_distance > 0 & legacy_distance <= 50), 0L)
 
-  cytospace_coords <- scop:::cytospace_get_spatial_coords(
+  cytospace_coords <- cytospace_get_spatial_coords(
     srt,
     spot_ids = cells,
     image = image

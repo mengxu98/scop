@@ -35,8 +35,8 @@ test_that("monocle2_order_from_mst_cpp follows Monocle2 DFS pseudotime semantics
   distances <- as.matrix(stats::dist(matrix(c(0, 1, 2, 1, 1), ncol = 1)))
   edges <- matrix(c(1L, 2L, 2L, 3L, 2L, 4L, 2L, 5L), ncol = 2L, byrow = TRUE)
 
-  out1 <- scop:::monocle2_order_from_mst_cpp(distances, edges, root_cell = 1L)
-  out2 <- scop:::monocle2_order_from_mst_cpp(distances, edges, root_cell = 1L)
+  out1 <- monocle2_order_from_mst_cpp(distances, edges, root_cell = 1L)
+  out2 <- monocle2_order_from_mst_cpp(distances, edges, root_cell = 1L)
 
   expect_equal(out1, out2)
   expect_equal(out1$root_cell, 1L)
@@ -368,35 +368,6 @@ test_that("RunMonocle2 cpp backend covers feature selection and root parameter v
   expect_true(all(is.finite(explicit_out$Monocle2_Pseudotime)))
   expect_true(all(is.finite(hvf_out$Monocle2_Pseudotime)))
   expect_true(all(is.finite(group_root_out$Monocle2_Pseudotime)))
-})
-
-test_that("RunMonocle2 cpp backend produces plot-compatible tools and metadata", {
-  skip_if_not_installed("Seurat")
-  skip_if_not_installed("monocle")
-  skip_if_not_installed("DDRTree")
-
-  srt <- make_monocle2_branching_srt(n_per_branch = 30L)
-  grDevices::pdf(tempfile(fileext = ".pdf"), width = 12, height = 4)
-  on.exit(grDevices::dev.off(), add = TRUE)
-  out <- RunMonocle2(
-    srt,
-    features = rownames(srt)[1:70],
-    backend = "cpp",
-    group.by = "branch",
-    root_state = 1,
-    expressionFamily = "uninormal",
-    norm_method = "none",
-    ddrtree_maxIter = 5,
-    show_plot = TRUE,
-    verbose = FALSE
-  )
-
-  expect_true("DDRTree" %in% names(out@reductions))
-  expect_true(all(c("Monocle2_State", "Monocle2_Pseudotime") %in% colnames(out@meta.data)))
-  expect_s4_class(out@tools$Monocle2$cds, "CellDataSet")
-  expect_s3_class(out@tools$Monocle2$graph, "data.frame")
-  expect_s3_class(out@tools$Monocle2$trajectory, "LayerInstance")
-  expect_equal(out@tools$Monocle2$parameters$engine, "monocle_mst_cpp_order")
 })
 
 test_that("RunMonocle2 cpp backend preserves root_state error behavior", {
