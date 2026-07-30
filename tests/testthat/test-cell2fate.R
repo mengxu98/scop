@@ -57,6 +57,14 @@ test_that("cell2fate environment is isolated and pinned to the upstream stack", 
     ),
     "standalone"
   )
+  expect_error(
+    env_requirements(version = "3.9-1"),
+    "only supported"
+  )
+  expect_error(
+    env_requirements(version = "3.9-1", modules = "scanpy"),
+    "only supported"
+  )
 })
 
 test_that("cell2fate environment check uses the pinned GitHub backend", {
@@ -108,7 +116,7 @@ test_that("Cell2fate subprocess environment supports paths with spaces", {
   output <- tempfile()
   error_output <- tempfile()
   old_value <- Sys.getenv("CELL2FATE_SPACE_TEST", unset = NA_character_)
-  status <- getFromNamespace("cell2fate_run_system2", "scop")(
+  status <- getFromNamespace("runner_system2", "scop")(
     command = rscript,
     args = c(
       "-e",
@@ -220,13 +228,13 @@ test_that("RunCell2fate maps posterior summaries back to Seurat", {
   testthat::local_mocked_bindings(
     .package = "scop",
     cell2fate_check_python = function(...) "python",
-    cell2fate_runner_path = function() "cell2fate_runner.py",
+    runner_script_path = function(...) "cell2fate_runner.py",
     cell2fate_write_input = function(prepared, path, ...) {
       file.create(path)
       invisible(path)
     },
-    cell2fate_write_json = function(...) invisible(NULL),
-    cell2fate_run_system2 = function(command, args, env, stdout, stderr) {
+    runner_write_json = function(...) invisible(NULL),
+    runner_system2 = function(command, args, env, stdout, stderr) {
       files <- getFromNamespace("cell2fate_result_files", "scop")(result_dir)
       dir.create(dirname(files$cell_metadata), recursive = TRUE, showWarnings = FALSE)
       dir.create(dirname(files$posterior), recursive = TRUE, showWarnings = FALSE)
@@ -282,6 +290,138 @@ test_that("RunCell2fate maps posterior summaries back to Seurat", {
   )
 })
 
+test_that("Cell2fate CSV readers preserve character cell names", {
+  metadata_path <- tempfile(fileext = ".csv")
+  velocity_path <- tempfile(fileext = ".csv")
+  writeLines(
+    c(
+      ",Cell2fate_time,Cell2fate_module_0_state",
+      "NA,0.5,Induction",
+      "001,1.5,ON",
+      "010,2.5,OFF"
+    ),
+    metadata_path
+  )
+  writeLines(
+    c(
+      ",Gene1,Gene2",
+      "NA,0.5,1.5",
+      "001,1.5,2.5",
+      "010,3.5,4.5"
+    ),
+    velocity_path
+  )
+
+  metadata <- getFromNamespace("runner_read_csv", "scop")(
+    metadata_path,
+    "posterior metadata",
+    backend = "Cell2fate"
+  )
+  velocity <- getFromNamespace("runner_read_numeric_csv", "scop")(
+    velocity_path,
+    "velocity",
+    backend = "Cell2fate"
+  )
+
+  expect_identical(rownames(metadata), c("NA", "001", "010"))
+  expect_identical(metadata$Cell2fate_time, c(0.5, 1.5, 2.5))
+  expect_identical(rownames(velocity), c("NA", "001", "010"))
+  expect_identical(unname(velocity[, "Gene1"]), c(0.5, 1.5, 3.5))
+})
+
+test_that("Cell2fate runner errors retain stderr when stdout is long", {
+  stdout_path <- tempfile()
+  stderr_path <- tempfile()
+  writeLines(paste("stdout line", seq_len(40)), stdout_path)
+  writeLines(
+    c("Traceback (most recent call last):", "cell2fate traceback sentinel"),
+    stderr_path
+  )
+
+  expect_error(
+    getFromNamespace("runner_error", "scop")(
+      2L,
+      stdout_path,
+      stderr_path,
+      backend = "Cell2fate"
+    ),
+    "cell2fate traceback\\s+sentinel"
+  )
+})
+
+test_that("Cell2fate runner treats a malformed resume manifest as a cache miss", {
+  python <- unname(Sys.which(c("python3", "python")))
+  python <- python[nzchar(python)][1]
+  skip_if(is.na(python), "Python is not available")
+  python_version <- suppressWarnings(
+    system2(python, "--version", stdout = TRUE, stderr = TRUE)
+  )
+  skip_if(
+    length(python_version) == 0L || is.na(python_version[[1L]]),
+    "Python version could not be determined"
+  )
+  version_match <- regmatches(
+    python_version[[1L]],
+    regexec("^Python ([0-9]+)\\.([0-9]+)", python_version[[1L]])
+  )[[1]]
+  skip_if(length(version_match) < 3L, "Python version could not be determined")
+  python_major <- as.integer(version_match[[2L]])
+  python_minor <- as.integer(version_match[[3L]])
+  skip_if(
+    python_major < 3L || (python_major == 3L && python_minor < 9L),
+    "Python 3.9 or newer is required"
+  )
+
+  runner <- getFromNamespace("runner_script_path", "scop")(
+    "cell2fate_runner.py",
+    "Cell2fate"
+  )
+  script <- tempfile(fileext = ".py")
+  output <- tempfile()
+  writeLines(
+    c(
+      "import runpy",
+      "import sys",
+      "import tempfile",
+      "import types",
+      "from pathlib import Path",
+      "for name in ('anndata', 'numpy', 'pandas'):",
+      "    sys.modules[name] = types.ModuleType(name)",
+      "module = runpy.run_path(sys.argv[1], run_name='cell2fate_runner_test')",
+      "with tempfile.TemporaryDirectory() as temporary:",
+      "    paths = module['_output_paths'](Path(temporary))",
+      "    paths['model'].mkdir(parents=True)",
+      "    paths['posterior'].mkdir(parents=True)",
+      "    paths['tables'].mkdir(parents=True)",
+      "    module['_write_json']({",
+      "        'producer': module['PRODUCER'],",
+      "        'runner_schema_version': module['RUNNER_SCHEMA_VERSION'],",
+      "        'backend_commit': module['BACKEND_COMMIT'],",
+      "    }, paths['owner'])",
+      "    (paths['posterior'] / 'cell2fate_posterior.h5ad').touch()",
+      "    (paths['tables'] / 'cell_metadata.csv').touch()",
+      "    paths['complete'].touch()",
+      "    paths['manifest'].write_text('{', encoding='utf-8')",
+      "    assert module['_can_resume'](",
+      "        paths, 'fingerprint', {}, require_velocity=False",
+      "    ) is False"
+    ),
+    script
+  )
+  status <- system2(
+    python,
+    c(shQuote(script), shQuote(runner)),
+    stdout = output,
+    stderr = output
+  )
+
+  expect_identical(
+    status,
+    0L,
+    info = paste(readLines(output, warn = FALSE), collapse = "\n")
+  )
+})
+
 test_that("Cell2fate marks cells excluded from backend training", {
   metadata <- data.frame(
     Cell2fate_time = c(1, 2),
@@ -308,13 +448,13 @@ test_that("RunCell2fate leaves the input unchanged when Python fails", {
   testthat::local_mocked_bindings(
     .package = "scop",
     cell2fate_check_python = function(...) "python",
-    cell2fate_runner_path = function() "cell2fate_runner.py",
+    runner_script_path = function(...) "cell2fate_runner.py",
     cell2fate_write_input = function(prepared, path, ...) {
       file.create(path)
       invisible(path)
     },
-    cell2fate_write_json = function(...) invisible(NULL),
-    cell2fate_run_system2 = function(command, args, env, stdout, stderr) {
+    runner_write_json = function(...) invisible(NULL),
+    runner_system2 = function(command, args, env, stdout, stderr) {
       writeLines("synthetic Cell2fate backend failure", stderr)
       file.create(stdout)
       2L
@@ -328,7 +468,7 @@ test_that("RunCell2fate leaves the input unchanged when Python fails", {
       cluster.by = "celltype",
       verbose = FALSE
     ),
-    "[Ss]ynthetic Cell2fate backend failure"
+    "[Ss]ynthetic\\s+Cell2fate\\s+backend\\s+failure"
   )
   expect_identical(before@meta.data, srt@meta.data)
   expect_identical(before@tools, srt@tools)

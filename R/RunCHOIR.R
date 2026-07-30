@@ -27,8 +27,9 @@
 #' @param n_trees Number of trees in each random forest.
 #' @param min_accuracy Minimum classifier accuracy required to keep clusters
 #'   separate.
-#' @param max_clusters Maximum extent of the initial clustering tree. The
-#'   upstream default `"auto"` is recommended.
+#' @param max_clusters Must be `"auto"`. Numeric limits are rejected because
+#'   the pinned upstream backend can fail to terminate when the number of
+#'   clusters plateaus.
 #' @param normalization_method Normalization performed inside CHOIR. Use
 #'   `"none"` for previously normalized data or `"SCTransform"` with a counts
 #'   layer.
@@ -113,6 +114,7 @@ RunCHOIR <- function(
   p_adjust <- match.arg(p_adjust)
   feature_set <- match.arg(feature_set)
   normalization_method <- match.arg(normalization_method)
+  max_clusters <- choir_validate_max_clusters(max_clusters)
   alpha <- choir_assert_probability(alpha, "alpha", open = TRUE)
   min_accuracy <- choir_assert_probability(min_accuracy, "min_accuracy")
   n_iterations <- validate_scalar_integer(n_iterations, "n_iterations")
@@ -694,6 +696,24 @@ choir_assert_probability <- function(x, arg, open = FALSE) {
     )
   }
   as.numeric(x)
+}
+
+choir_validate_max_clusters <- function(x) {
+  if (is.character(x) && length(x) == 1L && !is.na(x) &&
+      identical(x, "auto")) {
+    return(x)
+  }
+  if (is.numeric(x) && length(x) == 1L && is.finite(x) &&
+      x >= 1 && x == floor(x)) {
+    log_message(
+      "Numeric {.arg max_clusters} is unsafe with the pinned {.pkg CHOIR} backend because its full-tree loop may not terminate when the cluster count plateaus. Use {.val 'auto'}.",
+      message_type = "error"
+    )
+  }
+  log_message(
+    "{.arg max_clusters} must be {.val 'auto'}",
+    message_type = "error"
+  )
 }
 
 choir_escape_regex <- function(x) {
