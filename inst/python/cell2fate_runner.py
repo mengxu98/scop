@@ -176,7 +176,12 @@ def _can_resume(
         for path in _expected_outputs(paths, require_velocity=require_velocity)
     ):
         return False
-    manifest = _read_json(paths["manifest"])
+    try:
+        manifest = _read_json(paths["manifest"])
+    except (OSError, TypeError, ValueError):
+        return False
+    if not isinstance(manifest, dict):
+        return False
     return (
         manifest.get("producer") == PRODUCER
         and manifest.get("runner_schema_version") == RUNNER_SCHEMA_VERSION

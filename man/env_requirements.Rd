@@ -13,7 +13,8 @@ env_requirements(
 }
 \arguments{
 \item{version}{The Python version of the environment.
-Default is \code{"3.10-1"}.}
+Default is \code{"3.10-1"}. Python \code{"3.9-1"} is reserved for the standalone
+\code{"cell2fate"} module.}
 
 \item{include_optional}{Whether to include optional Python dependencies.}
 

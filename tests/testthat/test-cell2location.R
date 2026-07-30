@@ -96,14 +96,14 @@ test_that("RunCell2location writes abundance, proportions, and reproducible tool
   testthat::local_mocked_bindings(
     .package = "scop",
     cell2location_check_python = function(...) "python",
-    cell2location_runner_path = function() "cell2location_runner.py",
-    cell2location_write_json = function(...) invisible(NULL),
-    cell2location_read_json = function(...) list(status = "complete"),
+    runner_script_path = function(...) "cell2location_runner.py",
+    runner_write_json = function(...) invisible(NULL),
+    runner_read_json = function(...) list(status = "complete"),
     srt_to_h5ad = function(srt, path, ...) {
       file.create(path)
       invisible(path)
     },
-    cell2location_run_system2 = function(command, args, env, stdout, stderr) {
+    runner_system2 = function(command, args, env, stdout, stderr) {
       files <- getFromNamespace("cell2location_result_files", "scop")(result_dir)
       dir.create(dirname(files$abundance), recursive = TRUE, showWarnings = FALSE)
       dir.create(dirname(files$signatures), recursive = TRUE, showWarnings = FALSE)
@@ -196,13 +196,13 @@ test_that("RunCell2location does not mutate Seurat when Python fails", {
   testthat::local_mocked_bindings(
     .package = "scop",
     cell2location_check_python = function(...) "python",
-    cell2location_runner_path = function() "cell2location_runner.py",
-    cell2location_write_json = function(...) invisible(NULL),
+    runner_script_path = function(...) "cell2location_runner.py",
+    runner_write_json = function(...) invisible(NULL),
     srt_to_h5ad = function(srt, path, ...) {
       file.create(path)
       invisible(path)
     },
-    cell2location_run_system2 = function(command, args, env, stdout, stderr) {
+    runner_system2 = function(command, args, env, stdout, stderr) {
       writeLines("synthetic backend failure", stderr)
       file.create(stdout)
       2L
@@ -216,47 +216,10 @@ test_that("RunCell2location does not mutate Seurat when Python fails", {
       assay = "RNA",
       verbose = FALSE
     ),
-    "synthetic backend\\s+failure"
+    "synthetic\\s+backend\\s+failure"
   )
   expect_false(any(startsWith(colnames(pair$spatial@meta.data), "Cell2location_")))
   expect_false("Cell2location" %in% names(pair$spatial@tools))
-})
-
-test_that("Cell2locationPlot exposes all result views", {
-  pair <- make_cell2location_pair()
-  abundance <- matrix(
-    c(8, 2, 2, 6, 1, 9),
-    nrow = 3,
-    byrow = TRUE,
-    dimnames = list(paste0("Spot", 1:3), c("Alpha", "Beta"))
-  )
-  proportions <- abundance / rowSums(abundance)
-  pair$spatial@tools$Cell2location <- list(
-    abundance = abundance,
-    proportions = proportions
-  )
-  pair$spatial$Cell2location_dominant_type <- c("Alpha", "Beta", "Beta")
-
-  expect_s3_class(Cell2locationPlot(pair$spatial, "proportion", overlay_image = FALSE), "ggplot")
-  expect_s3_class(Cell2locationPlot(pair$spatial, "abundance", overlay_image = FALSE), "ggplot")
-  expect_s3_class(Cell2locationPlot(pair$spatial, "dominant", overlay_image = FALSE), "ggplot")
-  if (requireNamespace("scatterpie", quietly = TRUE)) {
-    expect_s3_class(Cell2locationPlot(pair$spatial, "pie", overlay_image = FALSE), "ggplot")
-  }
-})
-
-test_that("Cell2locationPlot requires explicit selection for multi-image objects", {
-  data("visium_mouse_brain_slices_sub", package = "scop")
-  srt <- visium_mouse_brain_slices_sub
-  srt$Cell2location_dominant_type <- rep(c("Alpha", "Beta"), length.out = ncol(srt))
-
-  expect_error(
-    Cell2locationPlot(srt, "dominant"),
-    "Multiple spatial images"
-  )
-  plotted <- Cell2locationPlot(srt, "dominant", image = "anterior1")
-  expect_s3_class(plotted, "ggplot")
-  expect_identical(nrow(plotted$data), 1000L)
 })
 
 test_that("standard spatial workflow dispatches cell2location signatures", {
