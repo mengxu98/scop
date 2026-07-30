@@ -63,6 +63,198 @@ runs:
           zlib1g-dev
         sudo R CMD javareconf
 
+    - name: Keep legacy Linux packages on C++17 🛠️
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        makevars_path="${RUNNER_TEMP}/scop-Makevars"
+        printf '%s\n' 'override CXXFLAGS += -std=gnu++17' > "$makevars_path"
+        echo "R_MAKEVARS_USER=$makevars_path" >> "$GITHUB_ENV"
+
+    # A clean Unix restore can otherwise leave RcppParallel in a dependency
+    # cycle with Seurat and thisplot. On macOS, OmnipathR's load hook also
+    # triggers a sessioninfo external-library probe that segfaults inside
+    # libcurlVersion(). Bootstrap the exact locked roots and disable only that
+    # diagnostic in the CI copy of sessioninfo.
+    - name: Bootstrap locked Unix roots 🧩
+      if: runner.os != 'Windows'
+      shell: Rscript --vanilla {0}
+      env:
+        GITHUB_PAT: ${{ github.token }}
+        RENV_PATHS_ROOT: ${{ runner.temp }}/renv
+      run: |
+        bootstrap_library <- file.path(
+          Sys.getenv("RUNNER_TEMP"),
+          "scop-renv-bootstrap"
+        )
+        dir.create(bootstrap_library, recursive = TRUE, showWarnings = FALSE)
+        utils::install.packages(
+          "renv",
+          lib = bootstrap_library,
+          repos = Sys.getenv(
+            "RSPM",
+            unset = "https://cloud.r-project.org"
+          )
+        )
+        .libPaths(c(bootstrap_library, .libPaths()))
+        loadNamespace("renv", lib.loc = bootstrap_library)
+        lockfile <- renv::lockfile_read("renv.lock")
+        library_root <- file.path(
+          Sys.getenv("RUNNER_TEMP"),
+          "scop-renv-library"
+        )
+        Sys.setenv(RENV_PATHS_LIBRARY = library_root)
+        cat(
+          "RENV_PATHS_LIBRARY=",
+          library_root,
+          "\n",
+          file = Sys.getenv("GITHUB_ENV"),
+          append = TRUE,
+          sep = ""
+        )
+        project_library <- renv::paths$library(project = getwd())
+        dir.create(project_library, recursive = TRUE, showWarnings = FALSE)
+        .libPaths(c(project_library, .libPaths()))
+
+        download_locked_source <- function(package) {
+          record <- lockfile$Packages[[package]]
+          repository <- lockfile$R$Repositories[[record$Repository]]
+          archive <- paste0(
+            record$Package,
+            "_",
+            record$Version,
+            ".tar.gz"
+          )
+          source_file <- file.path(Sys.getenv("RUNNER_TEMP"), archive)
+          source_urls <- paste0(
+            sub("/+$", "", repository),
+            c(
+              "/src/contrib/",
+              paste0(
+                "/src/contrib/Archive/",
+                record$Package,
+                "/"
+              )
+            ),
+            archive
+          )
+          for (source_url in source_urls) {
+            status <- suppressWarnings(tryCatch(
+              utils::download.file(
+                source_url,
+                source_file,
+                mode = "wb",
+                quiet = TRUE
+              ),
+              error = function(error) 1L
+            ))
+            if (identical(status, 0L)) {
+              return(source_file)
+            }
+          }
+          stop("Failed to download locked ", archive)
+        }
+
+        install_locked_source <- function(package, source_file) {
+          record <- lockfile$Packages[[package]]
+          utils::install.packages(
+            source_file,
+            lib = project_library,
+            repos = NULL,
+            type = "source"
+          )
+          installed_version <- as.character(utils::packageVersion(
+            package,
+            lib.loc = project_library
+          ))
+          if (!identical(installed_version, record$Version)) {
+            stop(
+              "Installed ",
+              package,
+              " ",
+              installed_version,
+              " instead of locked ",
+              record$Version
+            )
+          }
+        }
+
+        install_locked_source(
+          "RcppParallel",
+          download_locked_source("RcppParallel")
+        )
+
+        if (identical(Sys.info()[["sysname"]], "Darwin")) {
+          install_locked_source(
+            "cli",
+            download_locked_source("cli")
+          )
+          sessioninfo_archive <- download_locked_source("sessioninfo")
+          sessioninfo_root <- file.path(
+            Sys.getenv("RUNNER_TEMP"),
+            "sessioninfo-source"
+          )
+          dir.create(
+            sessioninfo_root,
+            recursive = TRUE,
+            showWarnings = FALSE
+          )
+          utils::untar(sessioninfo_archive, exdir = sessioninfo_root)
+          descriptions <- list.files(
+            sessioninfo_root,
+            pattern = "^DESCRIPTION$",
+            recursive = TRUE,
+            full.names = TRUE
+          )
+          if (length(descriptions) != 1L) {
+            stop("Unable to locate the locked sessioninfo source")
+          }
+          sessioninfo_source <- dirname(descriptions)
+          external_info_file <- file.path(
+            sessioninfo_source,
+            "R",
+            "external-info.R"
+          )
+          external_info <- readLines(
+            external_info_file,
+            warn = FALSE
+          )
+          function_start <- grep(
+            "^external_info <- function\\(\\) \\{$",
+            external_info
+          )
+          function_ends <- which(
+            seq_along(external_info) > function_start &
+              external_info == "}"
+          )
+          if (length(function_start) != 1L ||
+              length(function_ends) == 0L) {
+            stop("Unable to patch sessioninfo::external_info")
+          }
+          function_end <- function_ends[[1L]]
+          replacement <- c(
+            "external_info <- function() {",
+            "  structure(list(), class = c(\"external_info\", \"list\"))",
+            "}"
+          )
+          external_info <- c(
+            external_info[seq_len(function_start - 1L)],
+            replacement,
+            external_info[
+              seq.int(function_end + 1L, length(external_info))
+            ]
+          )
+          writeLines(external_info, external_info_file)
+          file.remove(file.path(sessioninfo_source, "MD5"))
+          install_locked_source(
+            "sessioninfo",
+            sessioninfo_source
+          )
+          if (length(sessioninfo::external_info()) != 0L) {
+            stop("The macOS sessioninfo patch was not applied")
+          }
+        }
+
     - name: Restore locked R environment ♻️
       uses: r-lib/actions/setup-renv@v2
       env:
