@@ -193,9 +193,9 @@ RunCell2fate <- function(
     store_velocity = store_velocity
   )
   config_path <- file.path(workdir, "config.json")
-  cell2fate_write_json(config, config_path)
+  runner_write_json(config, config_path)
 
-  runner <- cell2fate_runner_path()
+  runner <- runner_script_path("cell2fate_runner.py", "Cell2fate")
   stdout_path <- file.path(logs_dir, "cell2fate_stdout.log")
   stderr_path <- file.path(logs_dir, "cell2fate_stderr.log")
   cache_dir <- file.path(result_dir, ".cache")
@@ -205,7 +205,7 @@ RunCell2fate <- function(
     "Run {.pkg Cell2fate} with {.val {length(prepared$features)}} genes and {.val {ncol(prepared$spliced)}} cells",
     verbose = verbose
   )
-  status <- cell2fate_run_system2(
+  status <- runner_system2(
     command = python,
     args = c(shQuote(runner), "--config", shQuote(config_path)),
     env = c(
@@ -216,7 +216,12 @@ RunCell2fate <- function(
     stderr = stderr_path
   )
   if (!identical(status, 0L)) {
-    cell2fate_runner_error(status, stdout_path, stderr_path)
+    runner_error(
+      status,
+      stdout_path,
+      stderr_path,
+      backend = "Cell2fate"
+    )
   }
 
   files <- cell2fate_result_files(result_dir)
@@ -233,9 +238,10 @@ RunCell2fate <- function(
     )
   }
 
-  metadata <- cell2fate_read_csv(
+  metadata <- runner_read_csv(
     files$cell_metadata,
-    "posterior metadata"
+    "posterior metadata",
+    backend = "Cell2fate"
   )
   metadata <- cell2fate_align_cells(
     metadata,
@@ -258,14 +264,18 @@ RunCell2fate <- function(
 
   velocity <- NULL
   if (isTRUE(store_velocity)) {
-    velocity <- cell2fate_read_numeric_csv(files$velocity, "velocity")
+    velocity <- runner_read_numeric_csv(
+      files$velocity,
+      "velocity",
+      backend = "Cell2fate"
+    )
     velocity <- cell2fate_align_cells(
       velocity,
       cells = colnames(srt),
       label = "velocity"
     )
   }
-  manifest <- cell2fate_read_json(files$manifest)
+  manifest <- runner_read_json(files$manifest)
   srt_out@tools[[tool_name]] <- list(
     method = "Cell2fate",
     result_type = "rna_velocity",
@@ -518,70 +528,6 @@ cell2fate_check_python <- function(envname = NULL, verbose = TRUE) {
   normalizePath(python, winslash = "/", mustWork = TRUE)
 }
 
-cell2fate_runner_path <- function() {
-  candidates <- c(
-    system.file("python", "cell2fate_runner.py", package = "scop", mustWork = FALSE),
-    file.path("inst", "python", "cell2fate_runner.py")
-  )
-  candidates <- candidates[nzchar(candidates) & file.exists(candidates)]
-  if (length(candidates) == 0L) {
-    log_message(
-      "Bundled Cell2fate Python runner was not found",
-      message_type = "error"
-    )
-  }
-  normalizePath(candidates[[1]], winslash = "/", mustWork = TRUE)
-}
-
-cell2fate_write_json <- function(x, path) {
-  check_r("jsonlite", verbose = FALSE)
-  to_json <- get_namespace_fun("jsonlite", "toJSON")
-  writeLines(
-    as.character(to_json(
-      x,
-      auto_unbox = TRUE,
-      null = "null",
-      digits = NA,
-      pretty = TRUE
-    )),
-    con = path,
-    useBytes = TRUE
-  )
-}
-
-cell2fate_read_json <- function(path) {
-  check_r("jsonlite", verbose = FALSE)
-  get_namespace_fun("jsonlite", "fromJSON")(path, simplifyVector = FALSE)
-}
-
-cell2fate_run_system2 <- function(command, args, env, stdout, stderr) {
-  if (is.null(names(env)) || any(!nzchar(names(env)))) {
-    log_message(
-      "Cell2fate subprocess environment variables must be named",
-      message_type = "error"
-    )
-  }
-  env_names <- names(env)
-  old_env <- Sys.getenv(env_names, unset = NA_character_)
-  names(old_env) <- env_names
-  do.call(Sys.setenv, as.list(env))
-  on.exit({
-    restore <- !is.na(old_env)
-    if (any(restore)) {
-      do.call(Sys.setenv, as.list(old_env[restore]))
-    }
-    if (any(!restore)) {
-      Sys.unsetenv(names(old_env)[!restore])
-    }
-  }, add = TRUE)
-  system2(
-    command = command,
-    args = args,
-    stdout = stdout,
-    stderr = stderr
-  )
-}
-
 cell2fate_result_files <- function(result_dir) {
   list(
     cell_metadata = file.path(result_dir, "tables", "cell_metadata.csv"),
@@ -590,87 +536,6 @@ cell2fate_result_files <- function(result_dir) {
     model = file.path(result_dir, "model"),
     manifest = file.path(result_dir, "manifest.json")
   )
-}
-
-cell2fate_read_numeric_csv <- function(path, label) {
-  value <- cell2fate_read_csv(path, label)
-  value <- as.matrix(value)
-  storage.mode(value) <- "double"
-  if (
-    is.null(rownames(value)) ||
-      is.null(colnames(value)) ||
-      anyDuplicated(rownames(value)) ||
-      anyDuplicated(colnames(value)) ||
-      any(!is.finite(value))
-  ) {
-    log_message(
-      "{.pkg Cell2fate} returned invalid {.val {label}} output",
-      message_type = "error"
-    )
-  }
-  value
-}
-
-cell2fate_read_csv <- function(path, label) {
-  header <- tryCatch(
-    utils::read.csv(
-      path,
-      nrows = 0L,
-      row.names = NULL,
-      check.names = FALSE,
-      stringsAsFactors = FALSE
-    ),
-    error = function(e) {
-      log_message(
-        "Unable to read {.pkg Cell2fate} {.val {label}} output: {conditionMessage(e)}",
-        message_type = "error"
-      )
-    }
-  )
-  if (ncol(header) < 2L) {
-    log_message(
-      "{.pkg Cell2fate} returned invalid {.val {label}} output",
-      message_type = "error"
-    )
-  }
-  column_classes <- rep(NA_character_, ncol(header))
-  column_classes[[1L]] <- "character"
-  value <- tryCatch(
-    utils::read.csv(
-      path,
-      row.names = NULL,
-      check.names = FALSE,
-      stringsAsFactors = FALSE,
-      colClasses = column_classes,
-      na.strings = character()
-    ),
-    error = function(e) {
-      log_message(
-        "Unable to read {.pkg Cell2fate} {.val {label}} output: {conditionMessage(e)}",
-        message_type = "error"
-      )
-    }
-  )
-  cell_names <- value[[1L]]
-  value <- value[-1L]
-  value[] <- lapply(
-    value,
-    utils::type.convert,
-    na.strings = "NA",
-    as.is = TRUE
-  )
-  if (
-    anyNA(cell_names) ||
-      any(!nzchar(cell_names)) ||
-      anyDuplicated(cell_names)
-  ) {
-    log_message(
-      "{.pkg Cell2fate} {.val {label}} must have unique non-empty cell names",
-      message_type = "error"
-    )
-  }
-  rownames(value) <- cell_names
-  value
 }
 
 cell2fate_align_cells <- function(x, cells, label) {
@@ -704,25 +569,4 @@ cell2fate_expand_metadata <- function(metadata, cells, prefix) {
   }
   output[[paste0(prefix, "_selected")]] <- cells %in% rownames(metadata)
   output
-}
-
-cell2fate_runner_error <- function(status, stdout_path, stderr_path) {
-  stderr <- if (file.exists(stderr_path)) readLines(stderr_path, warn = FALSE) else character()
-  stdout <- if (file.exists(stdout_path)) readLines(stdout_path, warn = FALSE) else character()
-  stderr <- stderr[nzchar(trimws(stderr))]
-  stdout <- stdout[nzchar(trimws(stdout))]
-  details <- c(
-    if (length(stderr) > 0L) {
-      c("Python stderr:", utils::tail(stderr, 20L))
-    },
-    if (length(stdout) > 0L) {
-      c("Python stdout:", utils::tail(stdout, 20L))
-    }
-  )
-  message <- if (length(details) > 0L) {
-    paste(details, collapse = "\n")
-  } else {
-    paste0("Cell2fate runner exited with status ", status)
-  }
-  log_message(message, message_type = "error")
 }

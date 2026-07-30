@@ -256,8 +256,8 @@ RunCell2location <- function(
     overwrite = overwrite
   )
   config_path <- file.path(workdir, "config.json")
-  cell2location_write_json(config, config_path)
-  runner <- cell2location_runner_path()
+  runner_write_json(config, config_path)
+  runner <- runner_script_path("cell2location_runner.py", "cell2location")
   stdout_path <- file.path(logs_dir, "cell2location_stdout.log")
   stderr_path <- file.path(logs_dir, "cell2location_stderr.log")
   cache_dir <- file.path(result_dir, ".cache")
@@ -268,19 +268,24 @@ RunCell2location <- function(
     "Run {.pkg cell2location} with {.val {length(prepared$features)}} shared genes and {.val {ncol(prepared$spatial)}} spatial locations",
     verbose = verbose
   )
-  status <- cell2location_run_system2(
+  status <- runner_system2(
     command = python,
     args = c(shQuote(runner), "--config", shQuote(config_path)),
     env = c(
-      "PYTHONNOUSERSITE=1",
-      paste0("NUMBA_CACHE_DIR=", file.path(cache_dir, "numba")),
-      paste0("MPLCONFIGDIR=", file.path(cache_dir, "matplotlib"))
+      PYTHONNOUSERSITE = "1",
+      NUMBA_CACHE_DIR = file.path(cache_dir, "numba"),
+      MPLCONFIGDIR = file.path(cache_dir, "matplotlib")
     ),
     stdout = stdout_path,
     stderr = stderr_path
   )
   if (!identical(status, 0L)) {
-    cell2location_runner_error(status, stdout_path, stderr_path)
+    runner_error(
+      status,
+      stdout_path,
+      stderr_path,
+      backend = "cell2location"
+    )
   }
 
   files <- cell2location_result_files(result_dir)
@@ -292,9 +297,21 @@ RunCell2location <- function(
       message_type = "error"
     )
   }
-  abundance <- cell2location_read_numeric_csv(files$abundance, "abundance")
-  proportions <- cell2location_read_numeric_csv(files$proportions, "proportions")
-  signatures <- cell2location_read_numeric_csv(files$signatures, "reference signatures")
+  abundance <- runner_read_numeric_csv(
+    files$abundance,
+    "abundance",
+    backend = "cell2location"
+  )
+  proportions <- runner_read_numeric_csv(
+    files$proportions,
+    "proportions",
+    backend = "cell2location"
+  )
+  signatures <- runner_read_numeric_csv(
+    files$signatures,
+    "reference signatures",
+    backend = "cell2location"
+  )
   abundance <- cell2location_align_result(abundance, colnames(prepared$spatial), "abundance")
   proportions <- cell2location_align_result(proportions, colnames(prepared$spatial), "proportions")
   if (!identical(colnames(abundance), colnames(proportions))) {
@@ -330,7 +347,7 @@ RunCell2location <- function(
   )
 
   if (isTRUE(store_results)) {
-    manifest <- cell2location_read_json(files$manifest)
+    manifest <- runner_read_json(files$manifest)
     result_parameters <- list(
       assay = prepared$assay,
       reference_assay = prepared$reference_assay,
@@ -487,30 +504,6 @@ Cell2locationPlot <- function(
     defaults$plot_type <- if (identical(plot_type, "pie")) "pie" else "point"
   }
   do.call(SpatialSpotPlot, merge_call_args(defaults, list(...)))
-}
-
-cell2location_run_system2 <- function(command, args, env, stdout, stderr) {
-  env_names <- sub("=.*$", "", env)
-  env_values <- sub("^[^=]*=", "", env)
-  old_values <- Sys.getenv(env_names, unset = NA_character_)
-  names(old_values) <- env_names
-  do.call(Sys.setenv, stats::setNames(as.list(env_values), env_names))
-  on.exit({
-    restore <- old_values[!is.na(old_values)]
-    remove <- names(old_values)[is.na(old_values)]
-    if (length(restore) > 0L) {
-      do.call(Sys.setenv, as.list(restore))
-    }
-    if (length(remove) > 0L) {
-      Sys.unsetenv(remove)
-    }
-  }, add = TRUE)
-  system2(
-    command = command,
-    args = args,
-    stdout = stdout,
-    stderr = stderr
-  )
 }
 
 cell2location_prepare_inputs <- function(
@@ -702,33 +695,6 @@ cell2location_check_python <- function(envname = NULL, verbose = TRUE) {
   normalizePath(python, winslash = "/", mustWork = TRUE)
 }
 
-cell2location_runner_path <- function() {
-  candidates <- c(
-    system.file("python", "cell2location_runner.py", package = "scop", mustWork = FALSE),
-    file.path("inst", "python", "cell2location_runner.py")
-  )
-  candidates <- candidates[nzchar(candidates) & file.exists(candidates)]
-  if (length(candidates) == 0L) {
-    log_message("Bundled cell2location Python runner was not found", message_type = "error")
-  }
-  normalizePath(candidates[1L], winslash = "/", mustWork = TRUE)
-}
-
-cell2location_write_json <- function(x, path) {
-  check_r("jsonlite", verbose = FALSE)
-  to_json <- get_namespace_fun("jsonlite", "toJSON")
-  writeLines(
-    as.character(to_json(x, auto_unbox = TRUE, null = "null", digits = NA, pretty = TRUE)),
-    con = path,
-    useBytes = TRUE
-  )
-}
-
-cell2location_read_json <- function(path) {
-  check_r("jsonlite", verbose = FALSE)
-  get_namespace_fun("jsonlite", "fromJSON")(path, simplifyVector = FALSE)
-}
-
 cell2location_result_files <- function(result_dir) {
   list(
     abundance = file.path(result_dir, "tables", "abundance_q05.csv"),
@@ -744,17 +710,6 @@ cell2location_result_files <- function(result_dir) {
   )
 }
 
-cell2location_read_numeric_csv <- function(path, label) {
-  x <- utils::read.csv(path, row.names = 1, check.names = FALSE)
-  if (nrow(x) == 0L || ncol(x) == 0L || any(!vapply(x, is.numeric, logical(1)))) {
-    log_message("cell2location {.val {label}} output must be a non-empty numeric table", message_type = "error")
-  }
-  if (any(!is.finite(as.matrix(x))) || is.null(rownames(x)) || is.null(colnames(x))) {
-    log_message("cell2location {.val {label}} output contains invalid values or names", message_type = "error")
-  }
-  x
-}
-
 cell2location_align_result <- function(x, spot_ids, label) {
   if (anyDuplicated(rownames(x)) || anyDuplicated(colnames(x))) {
     log_message("cell2location {.val {label}} output names must be unique", message_type = "error")
@@ -768,19 +723,6 @@ cell2location_align_result <- function(x, spot_ids, label) {
     )
   }
   x[spot_ids, , drop = FALSE]
-}
-
-cell2location_runner_error <- function(status, stdout_path, stderr_path) {
-  read_tail <- function(path) {
-    if (!file.exists(path)) return(character())
-    utils::tail(readLines(path, warn = FALSE), 30L)
-  }
-  lines <- c(read_tail(stderr_path), read_tail(stdout_path))
-  if (length(lines) == 0L) lines <- "<no Python output captured>"
-  log_message(
-    "{.pkg cell2location} Python runner failed with status {.val {status}}:\n{.code {paste(lines, collapse = '\n')}}",
-    message_type = "error"
-  )
 }
 
 cell2location_metadata_matrix <- function(srt, prefix) {
