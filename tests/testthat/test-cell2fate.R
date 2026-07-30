@@ -116,7 +116,7 @@ test_that("Cell2fate subprocess environment supports paths with spaces", {
   output <- tempfile()
   error_output <- tempfile()
   old_value <- Sys.getenv("CELL2FATE_SPACE_TEST", unset = NA_character_)
-  status <- getFromNamespace("cell2fate_run_system2", "scop")(
+  status <- getFromNamespace("runner_system2", "scop")(
     command = rscript,
     args = c(
       "-e",
@@ -228,13 +228,13 @@ test_that("RunCell2fate maps posterior summaries back to Seurat", {
   testthat::local_mocked_bindings(
     .package = "scop",
     cell2fate_check_python = function(...) "python",
-    cell2fate_runner_path = function() "cell2fate_runner.py",
+    runner_script_path = function(...) "cell2fate_runner.py",
     cell2fate_write_input = function(prepared, path, ...) {
       file.create(path)
       invisible(path)
     },
-    cell2fate_write_json = function(...) invisible(NULL),
-    cell2fate_run_system2 = function(command, args, env, stdout, stderr) {
+    runner_write_json = function(...) invisible(NULL),
+    runner_system2 = function(command, args, env, stdout, stderr) {
       files <- getFromNamespace("cell2fate_result_files", "scop")(result_dir)
       dir.create(dirname(files$cell_metadata), recursive = TRUE, showWarnings = FALSE)
       dir.create(dirname(files$posterior), recursive = TRUE, showWarnings = FALSE)
@@ -312,13 +312,15 @@ test_that("Cell2fate CSV readers preserve character cell names", {
     velocity_path
   )
 
-  metadata <- getFromNamespace("cell2fate_read_csv", "scop")(
+  metadata <- getFromNamespace("runner_read_csv", "scop")(
     metadata_path,
-    "posterior metadata"
+    "posterior metadata",
+    backend = "Cell2fate"
   )
-  velocity <- getFromNamespace("cell2fate_read_numeric_csv", "scop")(
+  velocity <- getFromNamespace("runner_read_numeric_csv", "scop")(
     velocity_path,
-    "velocity"
+    "velocity",
+    backend = "Cell2fate"
   )
 
   expect_identical(rownames(metadata), c("NA", "001", "010"))
@@ -337,10 +339,11 @@ test_that("Cell2fate runner errors retain stderr when stdout is long", {
   )
 
   expect_error(
-    getFromNamespace("cell2fate_runner_error", "scop")(
+    getFromNamespace("runner_error", "scop")(
       2L,
       stdout_path,
-      stderr_path
+      stderr_path,
+      backend = "Cell2fate"
     ),
     "cell2fate traceback\\s+sentinel"
   )
@@ -369,7 +372,10 @@ test_that("Cell2fate runner treats a malformed resume manifest as a cache miss",
     "Python 3.9 or newer is required"
   )
 
-  runner <- getFromNamespace("cell2fate_runner_path", "scop")()
+  runner <- getFromNamespace("runner_script_path", "scop")(
+    "cell2fate_runner.py",
+    "Cell2fate"
+  )
   script <- tempfile(fileext = ".py")
   output <- tempfile()
   writeLines(
@@ -442,13 +448,13 @@ test_that("RunCell2fate leaves the input unchanged when Python fails", {
   testthat::local_mocked_bindings(
     .package = "scop",
     cell2fate_check_python = function(...) "python",
-    cell2fate_runner_path = function() "cell2fate_runner.py",
+    runner_script_path = function(...) "cell2fate_runner.py",
     cell2fate_write_input = function(prepared, path, ...) {
       file.create(path)
       invisible(path)
     },
-    cell2fate_write_json = function(...) invisible(NULL),
-    cell2fate_run_system2 = function(command, args, env, stdout, stderr) {
+    runner_write_json = function(...) invisible(NULL),
+    runner_system2 = function(command, args, env, stdout, stderr) {
       writeLines("synthetic Cell2fate backend failure", stderr)
       file.create(stdout)
       2L
@@ -462,7 +468,7 @@ test_that("RunCell2fate leaves the input unchanged when Python fails", {
       cluster.by = "celltype",
       verbose = FALSE
     ),
-    "[Ss]ynthetic Cell2fate backend failure"
+    "[Ss]ynthetic\\s+Cell2fate\\s+backend\\s+failure"
   )
   expect_identical(before@meta.data, srt@meta.data)
   expect_identical(before@tools, srt@tools)

@@ -77,6 +77,12 @@ with_mock_choir <- function(code, backend = NULL) {
   list(received = received, checked = checked)
 }
 
+test_that("CHOIR rejects unsafe numeric cluster limits", {
+  validate <- getFromNamespace("choir_validate_max_clusters", "scop")
+  expect_identical(validate("auto"), "auto")
+  expect_error(validate(2L), "may not terminate")
+})
+
 test_that("RunCHOIR validates inputs before checking the backend", {
   expect_error(
     RunCHOIR(matrix(1, nrow = 2, ncol = 2), verbose = FALSE),
@@ -99,10 +105,6 @@ test_that("RunCHOIR validates inputs before checking the backend", {
   expect_error(
     RunCHOIR(srt, batch.by = "missing", verbose = FALSE),
     "cell metadata"
-  )
-  expect_error(
-    RunCHOIR(srt, max_clusters = 2L, verbose = FALSE),
-    "may not terminate"
   )
 })
 
