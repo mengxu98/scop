@@ -75,6 +75,7 @@ runs:
       if: steps.cache.outputs.cache-hit != 'true'
       shell: Rscript {0}
       env:
+        GITHUB_PAT: ${{ github.token }}
         RENV_CONFIG_CACHE_ENABLED: "FALSE"
         SCOP_EXTERNAL_PACKAGES: ${{ inputs.packages }}
         SCOP_EXTERNAL_LIBRARY: ${{ steps.metadata.outputs.library }}
@@ -85,11 +86,17 @@ runs:
           fixed = TRUE
         )[[1]])
         packages <- packages[nzchar(packages)]
+        install_project <- file.path(
+          Sys.getenv("RUNNER_TEMP"),
+          "scop-external-install-project"
+        )
+        dir.create(install_project, recursive = TRUE, showWarnings = FALSE)
         renv::install(
           packages,
           library = Sys.getenv("SCOP_EXTERNAL_LIBRARY"),
           lock = FALSE,
-          prompt = FALSE
+          prompt = FALSE,
+          project = install_project
         )
 
     - name: Verify and expose external R library 🔎
