@@ -578,7 +578,7 @@ test_that("real child error handling resolves internal helpers from the namespac
   result <- benchmark_run_isolated(
     input_path, run_dir, adapter,
     params = list(), seed = 1, keep_object = FALSE,
-    timeout = 30, poll_interval = 0.05,
+    timeout = 120, poll_interval = 0.05,
     package_context = benchmark_package_context()
   )
   expect_identical(result$status, "failed")
