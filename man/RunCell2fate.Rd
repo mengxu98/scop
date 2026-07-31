@@ -36,8 +36,9 @@ RunCell2fate(
 \arguments{
 \item{srt}{A \code{Seurat} object containing raw spliced and unspliced counts.}
 
-\item{result_dir}{Directory used to persist inputs, model files, posterior
-output, tables, logs, and the run manifest.}
+\item{result_dir}{Empty directory, or a directory owned by an earlier
+\code{RunCell2fate()} run, used to persist inputs, model files, posterior output,
+per-attempt logs, and the run manifest.}
 
 \item{spliced_assay, unspliced_assay}{Assays containing raw spliced and
 unspliced counts.}
@@ -78,14 +79,17 @@ required for a gene.}
 \item{envname}{Name of the isolated Cell2fate environment. If \code{NULL},
 \code{"cell2fate_env"} is used.}
 
-\item{resume}{Reuse a completed run only when its input fingerprint and
-parameters match.}
+\item{resume}{Reuse a completed run only when its input fingerprint,
+parameters, and artifact hashes match.}
 
-\item{overwrite}{Permit replacement of incompatible existing artifacts.}
+\item{overwrite}{Permit replacement of incompatible artifacts in an owned
+\code{result_dir}.}
 
-\item{prefix}{Prefix used for Cell2fate metadata columns.}
+\item{prefix}{Prefix used for Cell2fate metadata columns. Existing columns
+without matching Cell2fate provenance are rejected.}
 
-\item{tool_name}{Name of the \code{srt@tools} result entry.}
+\item{tool_name}{Name of the \code{srt@tools} result entry. An existing unrelated
+entry is rejected.}
 
 \item{store_velocity}{Whether to write the dense posterior velocity matrix
 to CSV and read it into \code{srt@tools}. The posterior \code{.h5ad}, including its
@@ -106,6 +110,11 @@ from a \code{Seurat} object. Cell2fate uses an isolated Python 3.9 environment
 because its upstream dependency stack is not compatible with the default
 scvi-tools environment. Inputs, model files, posterior output, logs, and a
 reproducible manifest are persisted under \code{result_dir}.
+
+A returned object can be passed back to the function for a matching resumed
+run. Output previously recorded by the same \code{tool_name} and \code{prefix} is
+replaced in the returned copy; unrelated metadata or tool entries are never
+overwritten.
 }
 \examples{
 \dontrun{

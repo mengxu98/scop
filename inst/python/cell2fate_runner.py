@@ -3,12 +3,15 @@
 from __future__ import annotations
 
 import argparse
+from contextlib import contextmanager
 import hashlib
 import importlib.metadata
 import json
+import os
 import random
 import re
 import shutil
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -29,11 +32,60 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 def _write_json(value: dict[str, Any], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_suffix(path.suffix + ".tmp")
-    with temporary.open("w", encoding="utf-8") as handle:
-        json.dump(value, handle, indent=2, sort_keys=True)
-        handle.write("\n")
-    temporary.replace(path)
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=path.name + ".",
+        suffix=".tmp",
+        dir=path.parent,
+    )
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+            json.dump(value, handle, indent=2, sort_keys=True)
+            handle.write("\n")
+        temporary.replace(path)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+@contextmanager
+def _result_lock(result_dir: Path):
+    result_dir.mkdir(parents=True, exist_ok=True)
+    lock_path = result_dir / ".cell2fate.lock"
+    try:
+        descriptor = os.open(
+            lock_path,
+            os.O_CREAT | os.O_EXCL | os.O_WRONLY,
+            0o600,
+        )
+    except FileExistsError as error:
+        raise RuntimeError(
+            "Another Cell2fate run is using result_dir. If no run is active, "
+            "remove the stale .cell2fate.lock file."
+        ) from error
+    token = f"{os.getpid()}-{os.urandom(16).hex()}"
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+            handle.write(token + "\n")
+        yield token
+    finally:
+        try:
+            observed = lock_path.read_text(encoding="utf-8").strip()
+        except OSError:
+            observed = None
+        if observed == token:
+            lock_path.unlink(missing_ok=True)
+
+
+def _assert_external_lock(result_dir: Path, token: Any) -> None:
+    if not isinstance(token, str) or not token:
+        raise RuntimeError("Cell2fate external result lock token is missing")
+    lock_path = result_dir / ".cell2fate.lock"
+    try:
+        observed = lock_path.read_text(encoding="utf-8").strip()
+    except OSError as error:
+        raise RuntimeError("Cell2fate external result lock is missing") from error
+    if observed != token:
+        raise RuntimeError("Cell2fate external result lock owner changed")
 
 
 def _sha256(path: Path) -> str:
@@ -104,6 +156,17 @@ def _stable_parameters(config: dict[str, Any]) -> dict[str, Any]:
     return {key: config.get(key) for key in keys}
 
 
+def _parameter_fingerprint(parameters: dict[str, Any]) -> str:
+    encoded = json.dumps(
+        parameters,
+        allow_nan=False,
+        ensure_ascii=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
 def _output_paths(result_dir: Path) -> dict[str, Path]:
     paths = {
         "inputs": result_dir / "inputs",
@@ -113,8 +176,36 @@ def _output_paths(result_dir: Path) -> dict[str, Path]:
         "manifest": result_dir / "manifest.json",
         "complete": result_dir / ".complete",
         "owner": result_dir / ".cell2fate.json",
+        "lock": result_dir / ".cell2fate.lock",
+        "logs": result_dir / "logs",
     }
     return paths
+
+
+def _assert_safe_result_paths(result_dir: Path) -> None:
+    if result_dir.is_symlink():
+        raise RuntimeError("Cell2fate result_dir must not be a symbolic link")
+    root = result_dir.resolve(strict=False)
+    paths = _output_paths(result_dir)
+    managed = tuple(paths.values()) + (
+        paths["inputs"] / "input.h5ad",
+        paths["model"] / "model.pt",
+        paths["model"] / "adata.h5ad",
+        paths["posterior"] / "cell2fate_posterior.h5ad",
+        paths["tables"] / "cell_metadata.csv",
+        paths["tables"] / "velocity.csv",
+    )
+    for path in managed:
+        if path.is_symlink():
+            raise RuntimeError(
+                f"Cell2fate managed path must not be a symbolic link: {path}"
+            )
+        try:
+            path.resolve(strict=False).relative_to(root)
+        except ValueError as error:
+            raise RuntimeError(
+                f"Cell2fate managed path escapes result_dir: {path}"
+            ) from error
 
 
 def _ensure_output_directories(paths: dict[str, Path]) -> None:
@@ -126,17 +217,70 @@ def _expected_outputs(
     paths: dict[str, Path],
     require_velocity: bool,
 ) -> tuple[Path, ...]:
-    outputs = [
-        paths["model"],
-        paths["posterior"] / "cell2fate_posterior.h5ad",
-        paths["tables"] / "cell_metadata.csv",
+    outputs = list(_artifact_paths(paths, require_velocity).values())
+    outputs.extend([
         paths["manifest"],
         paths["complete"],
         paths["owner"],
-    ]
-    if require_velocity:
-        outputs.append(paths["tables"] / "velocity.csv")
+    ])
     return tuple(outputs)
+
+
+def _artifact_paths(
+    paths: dict[str, Path],
+    require_velocity: bool,
+) -> dict[str, Path]:
+    artifacts = {
+        "inputs/input.h5ad": paths["inputs"] / "input.h5ad",
+        "model/model.pt": paths["model"] / "model.pt",
+        "model/adata.h5ad": paths["model"] / "adata.h5ad",
+        "posterior/cell2fate_posterior.h5ad": (
+            paths["posterior"] / "cell2fate_posterior.h5ad"
+        ),
+        "tables/cell_metadata.csv": paths["tables"] / "cell_metadata.csv",
+    }
+    if require_velocity:
+        artifacts["tables/velocity.csv"] = paths["tables"] / "velocity.csv"
+    return artifacts
+
+
+def _artifact_records(
+    paths: dict[str, Path],
+    require_velocity: bool,
+) -> dict[str, dict[str, Any]]:
+    records: dict[str, dict[str, Any]] = {}
+    for name, path in _artifact_paths(paths, require_velocity).items():
+        size = path.stat().st_size
+        if size <= 0:
+            raise RuntimeError(f"Cell2fate artifact is empty: {name}")
+        records[name] = {"size": size, "sha256": _sha256(path)}
+    return records
+
+
+def _artifacts_match(
+    manifest: dict[str, Any],
+    paths: dict[str, Path],
+    require_velocity: bool,
+) -> bool:
+    expected = _artifact_paths(paths, require_velocity)
+    observed = manifest.get("artifacts")
+    if not isinstance(observed, dict) or set(observed) != set(expected):
+        return False
+    for name, path in expected.items():
+        record = observed.get(name)
+        if not isinstance(record, dict) or not path.is_file():
+            return False
+        try:
+            size = path.stat().st_size
+        except OSError:
+            return False
+        try:
+            digest = _sha256(path)
+        except OSError:
+            return False
+        if record.get("size") != size or size <= 0 or record.get("sha256") != digest:
+            return False
+    return True
 
 
 def _is_owned_result(paths: dict[str, Path]) -> bool:
@@ -146,21 +290,70 @@ def _is_owned_result(paths: dict[str, Path]) -> bool:
         owner = _read_json(paths["owner"])
     except (OSError, ValueError, TypeError):
         return False
+    if not isinstance(owner, dict):
+        return False
     return (
         owner.get("producer") == PRODUCER
         and owner.get("runner_schema_version") == RUNNER_SCHEMA_VERSION
-        and owner.get("backend_commit") == BACKEND_COMMIT
     )
 
 
 def _clear_outputs(paths: dict[str, Path]) -> None:
+    _remove_outputs(paths)
+    _ensure_output_directories(paths)
+
+
+def _remove_outputs(paths: dict[str, Path]) -> None:
     for key in ("inputs", "model", "posterior", "tables"):
         target = paths[key]
-        if target.exists():
+        if target.is_dir():
             shutil.rmtree(target)
+        elif target.exists():
+            target.unlink()
     for key in ("manifest", "complete"):
         paths[key].unlink(missing_ok=True)
-    _ensure_output_directories(paths)
+
+
+@contextmanager
+def _staged_output_paths(result_dir: Path):
+    stage_dir = Path(
+        tempfile.mkdtemp(prefix=".cell2fate-stage-", dir=result_dir)
+    )
+    try:
+        yield _output_paths(stage_dir)
+    finally:
+        shutil.rmtree(stage_dir, ignore_errors=True)
+
+
+def _stale_stage_paths(result_dir: Path) -> tuple[Path, ...]:
+    return tuple(result_dir.glob(".cell2fate-stage-*"))
+
+
+def _cleanup_stale_stages(result_dir: Path, lock_token: str) -> None:
+    for stage_dir in _stale_stage_paths(result_dir):
+        _assert_external_lock(result_dir, lock_token)
+        if stage_dir.is_symlink() or stage_dir.is_file():
+            stage_dir.unlink(missing_ok=True)
+        elif stage_dir.is_dir():
+            shutil.rmtree(stage_dir)
+        _assert_external_lock(result_dir, lock_token)
+
+
+def _publish_staged_outputs(
+    staged: dict[str, Path],
+    final: dict[str, Path],
+    result_dir: Path,
+    lock_token: str,
+) -> None:
+    _assert_external_lock(result_dir, lock_token)
+    _assert_safe_result_paths(result_dir)
+    _remove_outputs(final)
+    _assert_external_lock(result_dir, lock_token)
+    for key in ("inputs", "model", "posterior", "tables", "manifest"):
+        os.replace(staged[key], final[key])
+        _assert_external_lock(result_dir, lock_token)
+    os.replace(staged["complete"], final["complete"])
+    _assert_external_lock(result_dir, lock_token)
 
 
 def _can_resume(
@@ -182,13 +375,29 @@ def _can_resume(
         return False
     if not isinstance(manifest, dict):
         return False
+    manifest_parameters = manifest.get("parameters")
+    if not isinstance(manifest_parameters, dict):
+        return False
+    observed_parameter_fingerprint = manifest.get("parameters_sha256")
+    if not isinstance(observed_parameter_fingerprint, str):
+        try:
+            observed_parameter_fingerprint = _parameter_fingerprint(
+                manifest_parameters
+            )
+        except (TypeError, ValueError):
+            return False
     return (
         manifest.get("producer") == PRODUCER
         and manifest.get("runner_schema_version") == RUNNER_SCHEMA_VERSION
         and manifest.get("input_sha256") == fingerprint
-        and manifest.get("parameters") == parameters
+        and observed_parameter_fingerprint == _parameter_fingerprint(parameters)
         and manifest.get("backend_commit") == BACKEND_COMMIT
         and manifest.get("status") == "complete"
+        and _artifacts_match(
+            manifest,
+            paths,
+            require_velocity=require_velocity,
+        )
     )
 
 
@@ -220,6 +429,7 @@ def _posterior_metadata(
     adata: ad.AnnData,
     original_columns: set[str],
     prefix: str,
+    n_modules: int,
 ) -> pd.DataFrame:
     selected = [
         column
@@ -232,7 +442,45 @@ def _posterior_metadata(
     ]
     if "Time (hours)" not in selected:
         raise KeyError("Cell2fate posterior did not contain 'Time (hours)'")
+    uncertainty = [
+        column for column in selected if column.startswith("Time Uncertainty")
+    ]
+    if len(uncertainty) != 1:
+        raise KeyError(
+            "Cell2fate posterior did not contain one time uncertainty column"
+        )
+    expected_modules = {
+        f"Module {module} {metric}"
+        for module in range(n_modules)
+        for metric in ("Activation", "State")
+    }
+    observed_modules = {
+        column
+        for column in selected
+        if re.fullmatch(r"Module\s+\d+\s+(Activation|State)", column)
+    }
+    if observed_modules != expected_modules:
+        raise KeyError(
+            "Cell2fate posterior module summaries do not match the fitted modules"
+        )
+    expected_columns = {"Time (hours)", uncertainty[0], *expected_modules}
+    if set(selected) != expected_columns:
+        raise KeyError("Cell2fate posterior contained unexpected summary columns")
     output = adata.obs.loc[:, selected].copy()
+    continuous = [
+        column
+        for column in selected
+        if column == "Time (hours)"
+        or column.startswith("Time Uncertainty")
+        or re.fullmatch(r"Module\s+\d+\s+Activation", column)
+    ]
+    for column in continuous:
+        try:
+            output[column] = pd.to_numeric(output[column], errors="raise").astype(float)
+        except (TypeError, ValueError) as error:
+            raise ValueError(
+                f"Cell2fate posterior metadata {column!r} must be numeric"
+            ) from error
     output.columns = [_safe_metadata_name(column, prefix) for column in selected]
     if output.columns.duplicated().any():
         raise ValueError("Cell2fate posterior metadata names are not unique")
@@ -284,10 +532,26 @@ def _add_velocity_from_posterior(adata: ad.AnnData, model: Any) -> None:
         raise ValueError(
             "Cell2fate posterior kinetic parameters do not match the data"
         )
+    if not np.isfinite(velocity).all():
+        raise ValueError("Cell2fate posterior velocity contains non-finite values")
     adata.layers["velocity"] = velocity
 
 
 def run(config: dict[str, Any]) -> None:
+    result_dir = Path(config["result_dir"])
+    _assert_safe_result_paths(result_dir)
+    external_token = config.get("lock_token")
+    if external_token is not None:
+        _assert_external_lock(result_dir, external_token)
+        _run_locked(config, lock_token=external_token)
+        _assert_external_lock(result_dir, external_token)
+        return
+    with _result_lock(result_dir) as lock_token:
+        _assert_safe_result_paths(result_dir)
+        _run_locked(config, lock_token=lock_token)
+
+
+def _run_locked(config: dict[str, Any], lock_token: str) -> None:
     import cell2fate as c2f
 
     observed_commit = _installed_backend_commit()
@@ -296,7 +560,17 @@ def run(config: dict[str, Any]) -> None:
     paths = _output_paths(result_dir)
     fingerprint = _sha256(input_path)
     parameters = _stable_parameters(config)
+    parameter_fingerprint = _parameter_fingerprint(parameters)
     store_velocity = bool(config.get("store_velocity", False))
+    owned_result = _is_owned_result(paths)
+    stale_stages = _stale_stage_paths(result_dir)
+    if stale_stages and not owned_result:
+        raise RuntimeError(
+            "result_dir contains unowned Cell2fate staging paths; refusing "
+            "to remove them"
+        )
+    if owned_result:
+        _cleanup_stale_stages(result_dir, lock_token)
 
     if bool(config.get("resume", True)) and _can_resume(
         paths,
@@ -304,6 +578,12 @@ def run(config: dict[str, Any]) -> None:
         parameters,
         require_velocity=store_velocity,
     ):
+        _assert_external_lock(result_dir, lock_token)
+        manifest = _read_json(paths["manifest"])
+        manifest["request_id"] = config.get("request_id")
+        manifest["reused"] = True
+        manifest["parameters_sha256"] = parameter_fingerprint
+        _write_json(manifest, paths["manifest"])
         print("Reuse matching Cell2fate result")
         return
     managed_paths = tuple(
@@ -321,8 +601,6 @@ def run(config: dict[str, Any]) -> None:
             "Existing Cell2fate artifacts do not match the current input or "
             "parameters; set overwrite=TRUE to replace them"
         )
-    if existing:
-        _clear_outputs(paths)
     result_dir.mkdir(parents=True, exist_ok=True)
     _write_json(
         {
@@ -332,95 +610,114 @@ def run(config: dict[str, Any]) -> None:
         },
         paths["owner"],
     )
-    _ensure_output_directories(paths)
+    with _staged_output_paths(result_dir) as staged:
+        _ensure_output_directories(staged)
 
-    seed = int(config.get("seed", 1))
-    _set_seed(seed)
-    adata = ad.read_h5ad(input_path)
-    if "unspliced" not in adata.layers:
-        raise KeyError("Input AnnData is missing the 'unspliced' layer")
-    adata.layers["spliced"] = adata.X.copy()
-    original_columns = set(str(column) for column in adata.obs.columns)
+        seed = int(config.get("seed", 1))
+        _set_seed(seed)
+        adata = ad.read_h5ad(input_path)
+        if "unspliced" not in adata.layers:
+            raise KeyError("Input AnnData is missing the 'unspliced' layer")
+        adata.layers["spliced"] = adata.X.copy()
+        original_columns = set(str(column) for column in adata.obs.columns)
 
-    cluster_column = str(config["cluster_column"])
-    if cluster_column not in adata.obs:
-        raise KeyError(f"Input AnnData is missing cluster column {cluster_column!r}")
-    cells_per_cluster = config.get("cells_per_cluster")
-    if cells_per_cluster is None:
-        cells_per_cluster = adata.n_obs
-    n_var_genes = min(int(config["n_var_genes"]), adata.n_vars)
-    adata = c2f.utils.get_training_data(
-        adata,
-        cells_per_cluster=int(cells_per_cluster),
-        cluster_column=cluster_column,
-        remove_clusters=[str(value) for value in config.get("remove_clusters", [])],
-        min_shared_counts=int(config["min_shared_counts"]),
-        n_var_genes=n_var_genes,
-    )
-    if adata.n_obs < 2 or adata.n_vars < 2:
-        raise ValueError(
-            "Cell2fate preprocessing retained fewer than two cells or genes"
+        cluster_column = str(config["cluster_column"])
+        if cluster_column not in adata.obs:
+            raise KeyError(
+                f"Input AnnData is missing cluster column {cluster_column!r}"
+            )
+        cells_per_cluster = config.get("cells_per_cluster")
+        if cells_per_cluster is None:
+            cells_per_cluster = adata.n_obs
+        n_var_genes = min(int(config["n_var_genes"]), adata.n_vars)
+        adata = c2f.utils.get_training_data(
+            adata,
+            cells_per_cluster=int(cells_per_cluster),
+            cluster_column=cluster_column,
+            remove_clusters=[
+                str(value) for value in config.get("remove_clusters", [])
+            ],
+            min_shared_counts=int(config["min_shared_counts"]),
+            n_var_genes=n_var_genes,
         )
+        if adata.n_obs < 2 or adata.n_vars < 2:
+            raise ValueError(
+                "Cell2fate preprocessing retained fewer than two cells or genes"
+            )
 
-    n_modules = config.get("n_modules")
-    if n_modules is None:
-        n_modules = int(c2f.utils.get_max_modules(adata))
-    if int(n_modules) < 1:
-        raise ValueError("Cell2fate requires at least one module")
+        n_modules = config.get("n_modules")
+        if n_modules is None:
+            n_modules = int(c2f.utils.get_max_modules(adata))
+        if int(n_modules) < 1:
+            raise ValueError("Cell2fate requires at least one module")
 
-    c2f.Cell2fate_DynamicalModel.setup_anndata(
-        adata,
-        spliced_label="spliced",
-        unspliced_label="unspliced",
-    )
-    model = c2f.Cell2fate_DynamicalModel(
-        adata,
-        n_modules=int(n_modules),
-        **dict(config.get("model_params") or {}),
-    )
-    model.train(**dict(config.get("train_params") or {}))
-    posterior_params = dict(config.get("posterior_params") or {})
-    posterior_params.setdefault("num_samples", 30)
-    posterior_params.setdefault("batch_size", None)
-    posterior_params.setdefault("use_gpu", False)
-    posterior_params.setdefault("return_samples", False)
-    adata = model.export_posterior(
-        adata,
-        sample_kwargs=posterior_params,
-    )
-    adata = model.compute_module_summary_statistics(adata)
-    _add_velocity_from_posterior(adata, model)
+        c2f.Cell2fate_DynamicalModel.setup_anndata(
+            adata,
+            spliced_label="spliced",
+            unspliced_label="unspliced",
+        )
+        model = c2f.Cell2fate_DynamicalModel(
+            adata,
+            n_modules=int(n_modules),
+            **dict(config.get("model_params") or {}),
+        )
+        model.train(**dict(config.get("train_params") or {}))
+        posterior_params = dict(config.get("posterior_params") or {})
+        posterior_params.setdefault("num_samples", 30)
+        posterior_params.setdefault("batch_size", None)
+        posterior_params.setdefault("use_gpu", False)
+        posterior_params.setdefault("return_samples", False)
+        adata = model.export_posterior(
+            adata,
+            sample_kwargs=posterior_params,
+        )
+        adata = model.compute_module_summary_statistics(adata)
+        _add_velocity_from_posterior(adata, model)
 
-    paths["model"].parent.mkdir(parents=True, exist_ok=True)
-    model.save(str(paths["model"]), overwrite=True, save_anndata=True)
-    posterior_path = paths["posterior"] / "cell2fate_posterior.h5ad"
-    adata.write_h5ad(posterior_path)
-    shutil.copy2(input_path, paths["inputs"] / "input.h5ad")
+        staged["model"].parent.mkdir(parents=True, exist_ok=True)
+        model.save(str(staged["model"]), overwrite=True, save_anndata=True)
+        posterior_path = staged["posterior"] / "cell2fate_posterior.h5ad"
+        adata.write_h5ad(posterior_path)
+        shutil.copy2(input_path, staged["inputs"] / "input.h5ad")
 
-    metadata = _posterior_metadata(
-        adata,
-        original_columns=original_columns,
-        prefix=str(config.get("prefix", "Cell2fate")),
-    )
-    metadata.to_csv(paths["tables"] / "cell_metadata.csv")
-    if store_velocity:
-        velocity = _velocity_table(adata)
-        velocity.to_csv(paths["tables"] / "velocity.csv")
+        metadata = _posterior_metadata(
+            adata,
+            original_columns=original_columns,
+            prefix=str(config.get("prefix", "Cell2fate")),
+            n_modules=int(n_modules),
+        )
+        metadata.to_csv(staged["tables"] / "cell_metadata.csv")
+        if store_velocity:
+            velocity = _velocity_table(adata)
+            velocity.to_csv(staged["tables"] / "velocity.csv")
 
-    manifest = {
-        "producer": PRODUCER,
-        "runner_schema_version": RUNNER_SCHEMA_VERSION,
-        "status": "complete",
-        "backend_commit": observed_commit,
-        "input_sha256": fingerprint,
-        "parameters": parameters,
-        "versions": _versions(),
-        "n_modules": int(n_modules),
-        "cells": adata.obs_names.astype(str).tolist(),
-        "features": adata.var_names.astype(str).tolist(),
-    }
-    _write_json(manifest, paths["manifest"])
-    paths["complete"].write_text("complete\n", encoding="utf-8")
+        manifest = {
+            "producer": PRODUCER,
+            "runner_schema_version": RUNNER_SCHEMA_VERSION,
+            "status": "complete",
+            "request_id": config.get("request_id"),
+            "reused": False,
+            "backend_commit": observed_commit,
+            "input_sha256": fingerprint,
+            "parameters": parameters,
+            "parameters_sha256": parameter_fingerprint,
+            "versions": _versions(),
+            "n_modules": int(n_modules),
+            "cells": adata.obs_names.astype(str).tolist(),
+            "features": adata.var_names.astype(str).tolist(),
+            "artifacts": _artifact_records(
+                staged,
+                require_velocity=store_velocity,
+            ),
+        }
+        _write_json(manifest, staged["manifest"])
+        staged["complete"].write_text("complete\n", encoding="utf-8")
+        _publish_staged_outputs(
+            staged,
+            final=paths,
+            result_dir=result_dir,
+            lock_token=lock_token,
+        )
 
 
 def main() -> None:
