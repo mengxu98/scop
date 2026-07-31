@@ -2,11 +2,13 @@
 #'
 #' @md
 #' @inheritParams RunCellChat
-#' @param methods Cell-cell communication methods to run. Currently supports
-#' `"CellChat"`, `"CellphoneDB"`, and `"LIANA"` in the unified scheduler.
-#' NicheNet and MultiNicheNet require explicit receiver/sender/contrast design
-#' arguments and should be called through [RunNichenetr()] or
-#' [RunMultiNichenetr()].
+#' @param methods Registered cell-cell communication methods to run. The
+#' default core methods are `"CellChat"`, `"CellphoneDB"`, and `"LIANA"`.
+#' NicheNet, MultiNicheNet, SpatialCellChat, and MDIC3 can be selected when
+#' their design-specific arguments are supplied through `method_params`.
+#' LIANA's default internal method set includes its CellPhoneDB scorer, so
+#' standalone CellphoneDB and LIANA consensus results are not statistically
+#' independent evidence.
 #' @param method_params Named list of method-specific arguments passed to the
 #' corresponding wrapper. For example, use `method_params$CellphoneDB$pvalue`
 #' for CellphoneDB-specific parameters.
@@ -49,22 +51,24 @@ RunCCC <- function(
   }
 
   methods <- unique(vapply(methods, normalize_ccc_method, character(1)))
-  supported <- c("CellChat", "CellphoneDB", "LIANA")
+  registry <- ccc_method_registry()
+  supported <- names(registry)
   unsupported <- setdiff(methods, supported)
   if (length(unsupported) > 0L) {
     log_message(
-      paste0(
-        "{.fn RunCCC} currently supports {.val CellChat}, ",
-        "{.val CellphoneDB}, and {.val LIANA}. Call ",
-        "{.fn RunNichenetr} or {.fn RunMultiNichenetr} directly for methods ",
-        "that require experiment-specific receiver/sender/contrast design: ",
-        paste(unsupported, collapse = ", ")
-      ),
+      "Unsupported CCC methods: {.val {unsupported}}. Use {.fn ListCCCMethods} to inspect registered methods.",
       message_type = "error"
     )
   }
 
   method_params <- ccc_normalize_run_params(method_params)
+  for (method in methods) {
+    ccc_preflight_method(
+      method = method,
+      srt = srt,
+      params = method_params[[method]] %||% list()
+    )
+  }
   status <- list()
   completed_methods <- character(0)
   started_at <- Sys.time()
@@ -83,12 +87,7 @@ RunCCC <- function(
       thresh = thresh,
       params = method_params[[method]] %||% list()
     )
-    fun <- switch(
-      method,
-      CellChat = RunCellChat,
-      CellphoneDB = RunCellphoneDB,
-      LIANA = RunLIANA
-    )
+    fun <- get(registry[[method]]$producer, mode = "function")
 
     start <- proc.time()[["elapsed"]]
     result <- tryCatch(
@@ -210,7 +209,8 @@ ccc_run_method_args <- function(
   thresh,
   params = list()
 ) {
-  protected <- intersect(c("srt", "group.by", "backend"), names(params))
+  entry <- ccc_registry_entry(method)
+  protected <- intersect(c("srt", "object", "group.by"), names(params))
   if (length(protected) > 0L) {
     log_message(
       "Ignoring protected {.arg method_params} entries for {.val {method}}: {.val {protected}}",
@@ -220,16 +220,56 @@ ccc_run_method_args <- function(
     params[protected] <- NULL
   }
 
-  base <- list(
-    srt = srt,
-    group.by = group.by,
-    backend = backend,
-    verbose = verbose
-  )
+  base <- list(group.by = group.by, verbose = verbose)
+  base[[entry$object_arg]] <- srt
+  if (!identical(method, "MDIC3") && !"backend" %in% names(params)) {
+    base$backend <- backend
+  }
   if (identical(method, "CellChat") && !"thresh" %in% names(params)) {
     base$thresh <- thresh
   }
   utils::modifyList(base, params, keep.null = TRUE)
+}
+
+ccc_preflight_method <- function(method, srt, params = list()) {
+  entry <- ccc_registry_entry(method)
+  required <- if (identical(method, "MDIC3")) character(0) else entry$required
+  missing <- required[
+    !required %in% names(params) |
+      vapply(required, function(nm) {
+        value <- params[[nm]]
+        is.null(value) || length(value) == 0L ||
+          (is.character(value) && all(is.na(value) | !nzchar(value)))
+      }, logical(1))
+  ]
+  if (length(missing) > 0L) {
+    log_message(
+      "CCC method {.val {method}} requires method_params fields: {.val {missing}}",
+      message_type = "error"
+    )
+  }
+  if (
+    identical(method, "MDIC3") &&
+      is.null(params$grn) &&
+      is.null(params$grn_method)
+  ) {
+    log_message(
+      "{.val MDIC3} requires an explicit {.arg grn} or {.arg grn_method} in {.arg method_params$MDIC3}",
+      message_type = "error"
+    )
+  }
+  if (identical(method, "SpatialCellChat")) {
+    coord_cols <- params$coord.cols %||% c("col", "row")
+    has_coords <- all(coord_cols %in% colnames(srt[[]]))
+    has_images <- length(srt@images) > 0L
+    if (!has_coords && !has_images) {
+      log_message(
+        "{.val SpatialCellChat} requires a spatial image or metadata coordinate columns supplied through {.arg method_params$SpatialCellChat$coord.cols}",
+        message_type = "error"
+      )
+    }
+  }
+  invisible(TRUE)
 }
 
 ccc_run_status_df <- function(status) {

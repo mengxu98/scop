@@ -409,6 +409,9 @@ reference:
 - subtitle: "Cell-Cell Communication Analysis"
 - contents:
   - RunCCC
+  - ListCCCMethods
+  - CCCResultInfo
+  - GetCCCResult
   - RunSecAct
   - RunSecActCCC
   - RunSecActSignalingPattern
@@ -418,6 +421,7 @@ reference:
   - GetCCCObject
   - RunCellphoneDB
   - RunLIANA
+  - ListLIANAResources
   - RunMDIC3
   - RunNichenetr
   - RunMultiNichenetr
