@@ -6,7 +6,17 @@
 #' @param group.by Metadata column defining cell groups. Passed to
 #' `liana::liana_wrap()` as `idents_col`.
 #' @param method LIANA methods to run. Defaults to LIANA's internal methods.
-#' @param resource LIANA ligand-receptor resource(s). Default is `"Consensus"`.
+#' @param resource LIANA ligand-receptor resource(s). If `NULL`, `"Consensus"`
+#' is used for human data and `"MouseConsensus"` for mouse data. This is a
+#' ligand-receptor resource choice, not a multi-method result consensus.
+#' @param species Species used to select the default ligand-receptor resource.
+#' @param consensus Multi-method result aggregation. `"auto"` uses
+#' `rank_aggregate()` when at least two methods are requested and does not
+#' invent a consensus for a single method. `"rank"` returns magnitude and
+#' specificity consensus ranks, `"aggregate"` uses `liana_aggregate()`, and
+#' `"none"` keeps only method-specific results.
+#' @param consensus_args Named arguments passed to the selected LIANA
+#' aggregation function.
 #' @param assay Assay used by LIANA. If `NULL`, LIANA uses the default assay.
 #' @param min_cells Minimum cells per identity retained by LIANA.
 #' @param return_all Whether LIANA should return all possible interactions.
@@ -21,7 +31,10 @@ RunLIANA <- function(
   srt,
   group.by,
   method = c("natmi", "connectome", "logfc", "sca", "cellphonedb"),
-  resource = "Consensus",
+  resource = NULL,
+  species = c("human", "mouse"),
+  consensus = c("auto", "rank", "aggregate", "none"),
+  consensus_args = list(),
   assay = NULL,
   min_cells = 5,
   return_all = FALSE,
@@ -30,7 +43,9 @@ RunLIANA <- function(
   ...
 ) {
   backend <- match.arg(backend)
-  check_r(c("saezlab/liana", "SingleCellExperiment"), verbose = FALSE)
+  species <- match.arg(species)
+  consensus <- match.arg(consensus)
+  liana_check_r(verbose = FALSE)
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",
@@ -43,6 +58,19 @@ RunLIANA <- function(
       message_type = "error"
     )
   }
+  if (!is.character(method) || length(method) == 0L || anyNA(method) || any(!nzchar(method))) {
+    log_message(
+      "{.arg method} must contain at least one LIANA method name",
+      message_type = "error"
+    )
+  }
+  if (!is.list(consensus_args) || is.data.frame(consensus_args)) {
+    log_message(
+      "{.arg consensus_args} must be a named list",
+      message_type = "error"
+    )
+  }
+  resource <- liana_resolve_resources(resource = resource, species = species)
 
   log_message(
     "Running {.pkg LIANA} cell-cell communication analysis...",
@@ -59,7 +87,7 @@ RunLIANA <- function(
     assay = assay %||% SeuratObject::DefaultAssay(srt),
     layer = "data"
   )
-  sce <- SingleCellExperiment::SingleCellExperiment(
+  sce <- liana_get_fun("SingleCellExperiment", package = "SingleCellExperiment")(
     assays = list(
       counts = counts,
       logcounts = logcounts
@@ -72,7 +100,7 @@ RunLIANA <- function(
     dots$base <- exp(1)
   }
   res <- do.call(
-    getExportedValue("liana", "liana_wrap"),
+    liana_get_fun("liana_wrap"),
     c(
       list(
         sce = sce,
@@ -91,17 +119,45 @@ RunLIANA <- function(
   long_table <- standardize_liana_result(res)
   liana_table <- ccc_long_to_liana(long_table)
   pair_table <- aggregate_ccc_long(long_table, backend = backend)
+  consensus_result <- liana_build_consensus(
+    res = res,
+    method = method,
+    resource = resource,
+    consensus = consensus,
+    consensus_args = consensus_args,
+    verbose = verbose
+  )
+  consensus_table <- consensus_result$table
+  primary_table <- if (nrow(consensus_table) > 0L) {
+    consensus_table
+  } else {
+    ccc_semantic_long_table(long_table, method = "LIANA")
+  }
+  primary_pair_table <- aggregate_ccc_long(primary_table, backend = backend)
 
-  srt@tools[["LIANA"]] <- list(
+  bundle <- list(
     method = "LIANA",
     results = res,
     long_table = long_table,
     liana_table = liana_table,
     pair_table = pair_table,
+    consensus_by_resource = consensus_result$by_resource,
+    consensus_table = consensus_table,
+    primary_table = primary_table,
+    primary_pair_table = primary_pair_table,
+    provenance = list(
+      producer = "RunLIANA",
+      backend = "liana",
+      backend_version = liana_package_version()
+    ),
     parameters = list(
       group.by = group.by,
       method = method,
       resource = resource,
+      species = species,
+      consensus = consensus_result$mode,
+      consensus_status = consensus_result$status,
+      consensus_args = consensus_args,
       assay = assay,
       min_cells = min_cells,
       return_all = return_all,
@@ -109,10 +165,11 @@ RunLIANA <- function(
       backend_scope = "result aggregation and unified-table construction"
     )
   )
+  srt@tools[["LIANA"]] <- bundle
   srt <- ccc_update_unified_bundle(
     srt = srt,
     method = "LIANA",
-    bundle = srt@tools[["LIANA"]],
+    bundle = bundle,
     backend = backend
   )
 
@@ -122,6 +179,248 @@ RunLIANA <- function(
     verbose = verbose
   )
   srt
+}
+
+#' @title List LIANA ligand-receptor resources
+#'
+#' @description
+#' Lists the resources exposed by the installed LIANA backend. `Consensus` and
+#' `MouseConsensus` are curated ligand-receptor resources; they are distinct
+#' from LIANA's multi-method rank aggregation.
+#'
+#' @param species Optional species filter.
+#'
+#' @return A data frame describing the resources available from LIANA.
+#' @export
+ListLIANAResources <- function(species = NULL) {
+  liana_check_r(verbose = FALSE)
+  if (!is.null(species)) {
+    species <- match.arg(species, c("human", "mouse"))
+  }
+  resources <- unique(as.character(liana_get_fun("show_resources")()))
+  resources <- resources[!is.na(resources) & nzchar(resources)]
+  out <- data.frame(
+    resource = resources,
+    species = ifelse(resources == "MouseConsensus", "mouse", "human"),
+    default = resources %in% c("Consensus", "MouseConsensus"),
+    status = "available",
+    description = vapply(resources, liana_resource_description, character(1)),
+    stringsAsFactors = FALSE
+  )
+  if (!is.null(species)) {
+    out <- out[out$species == species, , drop = FALSE]
+  }
+  rownames(out) <- NULL
+  out
+}
+
+liana_check_r <- function(verbose = FALSE) {
+  check_r(c("saezlab/liana", "SingleCellExperiment"), verbose = verbose)
+  invisible(TRUE)
+}
+
+liana_get_fun <- function(fun, package = "liana") {
+  get_namespace_fun(package, fun)
+}
+
+liana_package_version <- function() {
+  version_fun <- liana_get_fun("packageVersion", package = "utils")
+  as.character(version_fun("liana"))
+}
+
+liana_resource_description <- function(resource) {
+  switch(resource,
+    Consensus = "Curated human consensus ligand-receptor resource",
+    MouseConsensus = "Mouse orthology-converted consensus ligand-receptor resource",
+    Default = "Alias selected by the installed LIANA version",
+    OmniPath = "Composite OmniPath ligand-receptor resource",
+    paste0("LIANA upstream resource: ", resource)
+  )
+}
+
+liana_resolve_resources <- function(resource = NULL, species = c("human", "mouse")) {
+  species <- match.arg(species)
+  resource <- resource %||% if (species == "mouse") "MouseConsensus" else "Consensus"
+  if (!is.character(resource) || length(resource) == 0L || anyNA(resource) || any(!nzchar(resource))) {
+    log_message(
+      "{.arg resource} must contain valid LIANA resource names",
+      message_type = "error"
+    )
+  }
+  available <- ListLIANAResources()
+  valid <- c(available$resource, "all", "custom")
+  invalid <- setdiff(resource, valid)
+  if (length(invalid) > 0L) {
+    log_message(
+      "Unknown LIANA resources: {.val {invalid}}. Use {.fn ListLIANAResources} to inspect available resources.",
+      message_type = "error"
+    )
+  }
+  if (species == "mouse" && any(resource == "all")) {
+    log_message(
+      "{.val resource = 'all'} contains human resources. Use {.val MouseConsensus} or a custom mouse resource.",
+      message_type = "error"
+    )
+  }
+  if (species == "mouse" && any(resource %in% available$resource[available$species == "human"])) {
+    log_message(
+      "Human LIANA resources cannot be selected with {.val species = 'mouse'}. Use {.val MouseConsensus} or {.val custom}.",
+      message_type = "error"
+    )
+  }
+  unique(resource)
+}
+
+liana_result_resources <- function(res, requested) {
+  if (!is.list(res) || length(res) == 0L) {
+    return(character(0))
+  }
+  first <- res[[1]]
+  if (is.data.frame(first)) {
+    return(if (identical(requested, "all")) "Consensus" else requested[1])
+  }
+  if (is.list(first)) {
+    out <- names(first)
+    return(out[!is.na(out) & nzchar(out)])
+  }
+  character(0)
+}
+
+liana_bind_rows <- function(x) {
+  x <- Filter(function(el) is.data.frame(el) && nrow(el) > 0L, x)
+  if (length(x) == 0L) {
+    return(data.frame())
+  }
+  cols <- Reduce(union, lapply(x, colnames))
+  x <- lapply(x, function(el) {
+    missing <- setdiff(cols, colnames(el))
+    for (nm in missing) el[[nm]] <- NA
+    el[, cols, drop = FALSE]
+  })
+  out <- do.call(rbind, x)
+  rownames(out) <- NULL
+  out
+}
+
+liana_standardize_consensus <- function(df, resource, mode) {
+  if (is.null(df) || !is.data.frame(df) || nrow(df) == 0L) {
+    return(data.frame())
+  }
+  magnitude_rank <- if ("magnitude_rank" %in% colnames(df)) {
+    suppressWarnings(as.numeric(df$magnitude_rank))
+  } else {
+    rep(NA_real_, nrow(df))
+  }
+  specificity_rank <- if ("specificity_rank" %in% colnames(df)) {
+    suppressWarnings(as.numeric(df$specificity_rank))
+  } else {
+    rep(NA_real_, nrow(df))
+  }
+  aggregate_rank <- if ("aggregate_rank" %in% colnames(df)) {
+    suppressWarnings(as.numeric(df$aggregate_rank))
+  } else {
+    rep(NA_real_, nrow(df))
+  }
+  out <- standardize_long_df(df)
+  out$magnitude_rank <- magnitude_rank
+  out$specificity_rank <- specificity_rank
+  out$aggregate_rank <- aggregate_rank
+  out$priority_rank <- if (identical(mode, "rank")) magnitude_rank else aggregate_rank
+  finite <- is.finite(out$priority_rank)
+  out$priority_score <- NA_real_
+  if (any(finite)) {
+    vals <- out$priority_rank[finite]
+    out$priority_score[finite] <- if (all(vals >= 0 & vals <= 1)) {
+      1 - vals
+    } else {
+      1 - rank(vals, ties.method = "average") / length(vals)
+    }
+  }
+  out$score <- out$priority_score
+  out$pvalue <- if (identical(mode, "rank")) specificity_rank else aggregate_rank
+  out$method <- "LIANA"
+  out$resource <- resource
+  out$score_type <- "liana_consensus_priority"
+  out$score_direction <- "higher_better"
+  out$pvalue_type <- if (identical(mode, "rank")) {
+    "specificity_rank_not_pvalue"
+  } else {
+    "aggregate_rank_not_pvalue"
+  }
+  out$significance_basis <- "not_tested"
+  out$support_type <- if (identical(mode, "rank")) {
+    "liana_rank_aggregate"
+  } else {
+    "liana_aggregate"
+  }
+  ccc_mark_significance(out)
+}
+
+liana_build_consensus <- function(
+  res,
+  method,
+  resource,
+  consensus,
+  consensus_args = list(),
+  verbose = TRUE
+) {
+  mode <- consensus
+  if (identical(mode, "auto")) {
+    mode <- if (length(unique(tolower(method))) >= 2L) "rank" else "none"
+  }
+  if (mode %in% c("rank", "aggregate") && length(unique(tolower(method))) < 2L) {
+    log_message(
+      "LIANA multi-method consensus requires at least two methods",
+      message_type = "error"
+    )
+  }
+  if (identical(mode, "none")) {
+    return(list(
+      mode = "none",
+      status = if (length(unique(tolower(method))) < 2L) {
+        "not_applicable_single_method"
+      } else {
+        "disabled"
+      },
+      by_resource = list(),
+      table = data.frame()
+    ))
+  }
+  forbidden <- intersect("resource", names(consensus_args))
+  if (length(forbidden) > 0L) {
+    log_message(
+      "{.arg consensus_args} cannot override {.arg resource}",
+      message_type = "error"
+    )
+  }
+  resources <- liana_result_resources(res, requested = resource)
+  if (length(resources) == 0L) {
+    log_message(
+      "LIANA returned no resource results to aggregate",
+      message_type = "error"
+    )
+  }
+  nested <- is.list(res[[1]]) && !is.data.frame(res[[1]])
+  fun <- liana_get_fun(if (identical(mode, "rank")) "rank_aggregate" else "liana_aggregate")
+  by_resource <- lapply(resources, function(resource_name) {
+    args <- c(list(liana_res = res), consensus_args)
+    if (nested) args$resource <- resource_name
+    do.call(fun, args)
+  })
+  names(by_resource) <- resources
+  table <- liana_bind_rows(Map(
+    function(df, resource_name) {
+      liana_standardize_consensus(df, resource = resource_name, mode = mode)
+    },
+    by_resource,
+    names(by_resource)
+  ))
+  list(
+    mode = mode,
+    status = "completed",
+    by_resource = by_resource,
+    table = table
+  )
 }
 
 #' @title Convert CCC results to a LIANA-like table
@@ -136,6 +435,9 @@ RunLIANA <- function(
 #' `"condition"`, and `"dataset"` is used.
 #' @param score_col Column used as the exported communication score.
 #' @param pvalue_col Column used as the exported p-value/rank-like support.
+#' @param result LIANA result representation to export. `"primary"` prefers the
+#' official consensus, `"consensus"` requires it, `"legacy"` uses scop's
+#' historical post-processing, and `"raw"` uses method-specific rows.
 #'
 #' @return A data frame with LIANA/LIANA+ compatible columns:
 #' `source`, `target`, `ligand_complex`, `receptor_complex`, `score`, and
@@ -155,26 +457,54 @@ ccc_to_liana <- function(
   receptor.use = NULL,
   interaction.use = NULL,
   thresh = 0.05,
+  result = c("primary", "consensus", "legacy", "raw"),
   aggregate = TRUE,
   sample_col = NULL,
   score_col = "score",
   pvalue_col = "pvalue"
 ) {
-  df <- ccc_result_long_table(
-    srt = srt,
-    method = method,
-    condition = condition,
-    dataset = dataset,
-    slot.name = slot.name,
-    signaling = signaling,
-    pairLR.use = pairLR.use,
-    sender.use = sender.use,
-    receiver.use = receiver.use,
-    ligand.use = ligand.use,
-    receptor.use = receptor.use,
-    interaction.use = interaction.use,
-    thresh = thresh
-  )
+  result <- match.arg(result)
+  method <- detect_method(srt = srt, method = method)
+  if (identical(method, "LIANA") && !identical(result, "primary")) {
+    bundle <- get_bundle(srt, "LIANA")
+    df <- switch(result,
+      consensus = bundle$consensus_table %||% data.frame(),
+      legacy = bundle$long_table %||% data.frame(),
+      raw = bundle$long_table %||% data.frame()
+    )
+    if (identical(result, "consensus") && nrow(df) == 0L) {
+      log_message(
+        "No LIANA consensus result is stored; rerun with at least two methods and consensus enabled",
+        message_type = "error"
+      )
+    }
+    df <- filter_long_df(
+      standardize_long_df(df),
+      sender.use = sender.use,
+      receiver.use = receiver.use,
+      ligand.use = ligand.use,
+      receptor.use = receptor.use,
+      interaction.use = interaction.use,
+      signaling = signaling,
+      pairLR.use = pairLR.use
+    )
+  } else {
+    df <- ccc_result_long_table(
+      srt = srt,
+      method = method,
+      condition = condition,
+      dataset = dataset,
+      slot.name = slot.name,
+      signaling = signaling,
+      pairLR.use = pairLR.use,
+      sender.use = sender.use,
+      receiver.use = receiver.use,
+      ligand.use = ligand.use,
+      receptor.use = receptor.use,
+      interaction.use = interaction.use,
+      thresh = thresh
+    )
+  }
   if (
     is.null(sample_col) &&
       "method" %in% colnames(df) &&
@@ -574,6 +904,17 @@ ccc_long_to_liana <- function(
   if ("resource" %in% colnames(df)) {
     out$resource <- as.character(df$resource)
   }
+  semantic_cols <- intersect(
+    c(
+      "score_type", "score_direction", "pvalue_type", "support_type",
+      "priority_rank", "priority_score", "magnitude_rank",
+      "specificity_rank", "aggregate_rank"
+    ),
+    colnames(df)
+  )
+  for (nm in semantic_cols) {
+    out[[nm]] <- df[[nm]]
+  }
   if (!is.null(sample_col)) {
     out[[sample_col]] <- as.character(df[[sample_col]])
   }
@@ -590,13 +931,19 @@ ccc_long_to_liana <- function(
   if (isTRUE(aggregate)) {
     out <- ccc_aggregate_liana_table(out, sample_col = sample_col)
   }
-  out$specificity_rank <- rank(-out$score, ties.method = "average", na.last = "keep")
-  out$magnitude_rank <- out$specificity_rank
-  out$aggregate_rank <- ifelse(
-    is.finite(out$pvalue),
-    out$pvalue,
-    out$specificity_rank
-  )
+  if (!"specificity_rank" %in% colnames(out)) {
+    out$specificity_rank <- rank(-out$score, ties.method = "average", na.last = "keep")
+  }
+  if (!"magnitude_rank" %in% colnames(out)) {
+    out$magnitude_rank <- out$specificity_rank
+  }
+  if (!"aggregate_rank" %in% colnames(out)) {
+    out$aggregate_rank <- ifelse(
+      is.finite(out$pvalue),
+      out$pvalue,
+      out$specificity_rank
+    )
+  }
   rownames(out) <- NULL
   out
 }
