@@ -275,12 +275,22 @@ test_that("RunCell2fate maps posterior summaries back to Seurat", {
         "tables/cell_metadata.csv" = files$cell_metadata,
         "tables/velocity.csv" = files$velocity
       )
+      sha256sum <- get0(
+        "sha256sum",
+        envir = asNamespace("tools"),
+        mode = "function",
+        inherits = FALSE
+      )
       artifacts <- lapply(
         artifact_paths,
         function(path) {
           list(
             size = unname(file.info(path)$size),
-            sha256 = unname(tools::sha256sum(path))
+            sha256 = if (is.null(sha256sum)) {
+              paste(rep("0", 64L), collapse = "")
+            } else {
+              unname(sha256sum(path))
+            }
           )
         }
       )
