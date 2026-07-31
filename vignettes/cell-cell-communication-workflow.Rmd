@@ -13,16 +13,7 @@ knitr::opts_chunk$set(
 )
 
 install_article_packages <- function(pkg_specs) {
-  missing <- names(pkg_specs)[
-    !vapply(names(pkg_specs), requireNamespace, logical(1), quietly = TRUE)
-  ]
-  if (length(missing) == 0) {
-    return(invisible(TRUE))
-  }
-  if (!requireNamespace("pak", quietly = TRUE)) {
-    install.packages("pak", repos = "https://cloud.r-project.org")
-  }
-  pak::pak(unname(pkg_specs[missing]), ask = FALSE, upgrade = FALSE)
+  thisutils::check_r(unname(pkg_specs), verbose = FALSE)
   invisible(TRUE)
 }
 
@@ -115,8 +106,12 @@ table(pancreas_ccc$CellType)
 ```
 
 ```{r ccc-backend-check, echo=FALSE, results='asis'}
-ccc_examples_available <- requireNamespace("CellChat", quietly = TRUE) &&
-  requireNamespace("liana", quietly = TRUE)
+ccc_examples_available <- isTRUE(
+  thisutils::check_r(
+    c("jinworks/CellChat", "saezlab/liana"),
+    verbose = FALSE
+  )
+)
 
 if (!ccc_examples_available) {
   cat(
@@ -565,20 +560,79 @@ pancreas_cellchat <- RunCellChat(
 )
 ```
 
-LIANA is useful when you want several ligand-receptor scoring methods and a
-consensus-style table:
+LIANA is useful when you want several ligand-receptor scoring methods and an
+official cross-method rank consensus. The resource consensus and result
+consensus are different concepts: `MouseConsensus` is a curated mouse
+ligand-receptor resource, while `rank_aggregate()` combines the rankings
+returned by multiple LIANA scoring methods.
 
 ```r
 pancreas_liana <- RunLIANA(
   pancreas_ccc,
   group.by = "CellType",
   method = c("natmi", "connectome", "logfc", "cellphonedb"),
-  resource = "Consensus",
+  species = "mouse",
+  consensus = "auto",
   min_cells = 5
 )
 
 liana_tbl <- ccc_to_liana(pancreas_liana, method = "LIANA")
+GetCCCResult(pancreas_liana, method = "LIANA", type = "consensus")
 ```
+
+Use `ListLIANAResources()` to inspect the ligand-receptor resources exposed by
+the installed LIANA version. Human data default to `Consensus`; mouse data
+default to `MouseConsensus`. Multiple resources are aggregated independently
+and are never mixed into one rank aggregation.
+
+## Unified CCC Discovery and Plotting
+
+SCOP registers CellChat, CellPhoneDB, LIANA, NicheNet, MultiNicheNet,
+SpatialCellChat, and MDIC3 in one Seurat-centered result platform:
+
+```r
+ListCCCMethods()
+CCCResultInfo(pancreas_liana)
+
+CCCHeatmap(
+  pancreas_liana,
+  method = "LIANA",
+  plot_type = "dot",
+  display_by = "interaction",
+  value = "priority_score",
+  top_n = 20
+)
+```
+
+When several backends are stored, `method = "CCC"` returns separate
+method-specific panels by default. This avoids adding CellChat probabilities,
+LIANA ranks, NicheNet activities, and other backend scores on incompatible
+scales. Explicit alternatives are:
+
+```r
+CCCNetworkPlot(
+  pancreas_liana,
+  method = "CCC",
+  combine_methods = "support",
+  plot_type = "circle"
+)
+
+CCCStatPlot(
+  pancreas_liana,
+  method = "CCC",
+  combine_methods = "rank",
+  plot_type = "bar"
+)
+```
+
+`combine_methods = "support"` counts the methods supporting an exact
+sender-receiver-ligand-receptor key. `"rank"` combines within-method
+percentile ranks for visualization; it is not LIANA's Robust Rank Aggregation
+and should not be reported as an experimental significance test. LIANA's
+default internal method set includes its CellPhoneDB scorer. Consequently,
+standalone CellPhoneDB and the LIANA consensus are correlated backends rather
+than independent validation experiments; SCOP warns when they are combined
+with `"support"` or `"rank"`.
 
 For condition comparisons, store the condition in metadata and run CellChat per
 condition. The comparison output can then be used by differential heatmaps,

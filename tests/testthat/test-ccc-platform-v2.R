@@ -1,0 +1,640 @@
+test_that("CCC registry covers all integrated Seurat producers", {
+  registry <- scop::ListCCCMethods()
+  expect_equal(
+    registry$method,
+    c(
+      "CellChat", "CellphoneDB", "LIANA", "Nichenetr",
+      "MultiNichenetr", "SpatialCellChat", "MDIC3"
+    )
+  )
+  expect_true(all(registry$producer %in% getNamespaceExports("scop")))
+  expect_equal(registry$method[registry$default], c("CellChat", "CellphoneDB", "LIANA"))
+})
+
+test_that("LIANA resources are discovered from the optional backend", {
+  testthat::local_mocked_bindings(
+    liana_check_r = function(...) invisible(TRUE),
+    liana_get_fun = function(fun, package = "liana") {
+      expect_equal(package, "liana")
+      expect_equal(fun, "show_resources")
+      function() c("Consensus", "CellChatDB", "MouseConsensus", "OmniPath")
+    },
+    .package = "scop"
+  )
+
+  resources <- scop::ListLIANAResources()
+  expect_equal(resources$resource, c("Consensus", "CellChatDB", "MouseConsensus", "OmniPath"))
+  expect_equal(resources$species, c("human", "human", "mouse", "human"))
+  expect_equal(resources$status[resources$resource == "OmniPath"], "available")
+})
+
+test_that("RunLIANA stores official consensus and keeps legacy tables", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("Matrix")
+
+  counts <- Matrix::sparseMatrix(
+    i = c(1, 2, 1, 2),
+    j = c(1, 1, 2, 2),
+    x = c(2, 1, 3, 4),
+    dims = c(2, 2)
+  )
+  rownames(counts) <- c("L1", "R1")
+  colnames(counts) <- c("Cell1", "Cell2")
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  srt <- Seurat::NormalizeData(srt, verbose = FALSE)
+  srt$celltype <- c("A", "B")
+
+  raw <- list(
+    natmi = data.frame(
+      source = "A", target = "B", ligand.complex = "L1",
+      receptor.complex = "R1", score = 0.6, pvalue = 0.2
+    ),
+    sca = data.frame(
+      source = "A", target = "B", ligand.complex = "L1",
+      receptor.complex = "R1", score = 0.8, pvalue = 0.1
+    )
+  )
+  consensus <- data.frame(
+    source = "A", target = "B", ligand.complex = "L1",
+    receptor.complex = "R1", magnitude_rank = 0.05,
+    specificity_rank = 0.02
+  )
+  calls <- character(0)
+
+  testthat::local_mocked_bindings(
+    liana_check_r = function(...) invisible(TRUE),
+    liana_get_fun = function(fun, package = "liana") {
+      if (identical(package, "SingleCellExperiment")) {
+        return(function(...) list(...))
+      }
+      if (identical(package, "utils")) {
+        return(function(...) numeric_version("0.1.14"))
+      }
+      switch(fun,
+        show_resources = function() c("Consensus", "MouseConsensus"),
+        liana_wrap = function(...) raw,
+        rank_aggregate = function(liana_res, ...) {
+          calls <<- c(calls, "rank_aggregate")
+          consensus
+        },
+        stop("Unexpected LIANA function: ", fun)
+      )
+    },
+    .package = "scop"
+  )
+
+  out <- scop::RunLIANA(
+    srt,
+    group.by = "celltype",
+    method = c("natmi", "sca"),
+    species = "human",
+    backend = "r",
+    verbose = FALSE
+  )
+
+  expect_equal(calls, "rank_aggregate")
+  expect_true(all(c(
+    "results", "long_table", "liana_table", "pair_table",
+    "consensus_by_resource", "consensus_table", "primary_table",
+    "primary_pair_table"
+  ) %in% names(out@tools$LIANA)))
+  expect_equal(out@tools$LIANA$consensus_table$magnitude_rank, 0.05)
+  expect_equal(out@tools$LIANA$consensus_table$specificity_rank, 0.02)
+  expect_equal(out@tools$LIANA$primary_table$score_type, "liana_consensus_priority")
+  expect_equal(out@tools$LIANA$primary_table$pvalue_type, "specificity_rank_not_pvalue")
+  expect_true(all(is.na(out@tools$LIANA$primary_table$significant)))
+  expect_equal(out@tools$LIANA$parameters$consensus, "rank")
+  expect_equal(out@tools$CCC$metadata$schema, "scop_ccc_unified_v2")
+  expect_equal(unique(out@tools$CCC$long_table$score_type), "liana_consensus_priority")
+})
+
+test_that("LIANA consensus failure does not mutate the Seurat object", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("Matrix")
+
+  counts <- Matrix::Diagonal(2)
+  rownames(counts) <- c("L1", "R1")
+  colnames(counts) <- c("Cell1", "Cell2")
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  srt <- Seurat::NormalizeData(srt, verbose = FALSE)
+  srt$celltype <- c("A", "B")
+  before <- names(srt@tools)
+
+  raw <- list(
+    natmi = data.frame(source = "A", target = "B", ligand.complex = "L1", receptor.complex = "R1", score = 1),
+    sca = data.frame(source = "A", target = "B", ligand.complex = "L1", receptor.complex = "R1", score = 1)
+  )
+  testthat::local_mocked_bindings(
+    liana_check_r = function(...) invisible(TRUE),
+    liana_get_fun = function(fun, package = "liana") {
+      if (identical(package, "SingleCellExperiment")) return(function(...) list(...))
+      switch(fun,
+        show_resources = function() c("Consensus", "MouseConsensus"),
+        liana_wrap = function(...) raw,
+        rank_aggregate = function(...) stop("aggregate failed"),
+        stop("Unexpected function")
+      )
+    },
+    .package = "scop"
+  )
+
+  expect_error(
+    scop::RunLIANA(
+      srt, group.by = "celltype", method = c("natmi", "sca"),
+      backend = "r", verbose = FALSE
+    ),
+    "aggregate failed"
+  )
+  expect_identical(names(srt@tools), before)
+})
+
+test_that("single-method LIANA auto mode does not invent consensus", {
+  result <- getFromNamespace("liana_build_consensus", "scop")(
+    res = list(natmi = data.frame(x = 1)),
+    method = "natmi",
+    resource = "Consensus",
+    consensus = "auto",
+    verbose = FALSE
+  )
+  expect_equal(result$mode, "none")
+  expect_equal(result$status, "not_applicable_single_method")
+  expect_equal(nrow(result$table), 0)
+
+  expect_error(
+    getFromNamespace("liana_build_consensus", "scop")(
+      res = list(natmi = data.frame(x = 1)),
+      method = "natmi",
+      resource = "Consensus",
+      consensus = "rank",
+      verbose = FALSE
+    ),
+    "at least two"
+  )
+})
+
+test_that("LIANA aggregates multiple resources independently", {
+  raw <- list(
+    natmi = list(
+      Consensus = data.frame(x = 1),
+      CellChatDB = data.frame(x = 2)
+    ),
+    sca = list(
+      Consensus = data.frame(x = 3),
+      CellChatDB = data.frame(x = 4)
+    )
+  )
+  seen <- character(0)
+  testthat::local_mocked_bindings(
+    liana_get_fun = function(fun, package = "liana") {
+      expect_equal(fun, "rank_aggregate")
+      function(liana_res, resource, ...) {
+        seen <<- c(seen, resource)
+        data.frame(
+          source = "A", target = "B", ligand.complex = paste0("L_", resource),
+          receptor.complex = "R", magnitude_rank = 0.1,
+          specificity_rank = 0.2
+        )
+      }
+    },
+    .package = "scop"
+  )
+  out <- getFromNamespace("liana_build_consensus", "scop")(
+    res = raw,
+    method = c("natmi", "sca"),
+    resource = c("Consensus", "CellChatDB"),
+    consensus = "rank",
+    verbose = FALSE
+  )
+  expect_equal(seen, c("Consensus", "CellChatDB"))
+  expect_equal(names(out$by_resource), c("Consensus", "CellChatDB"))
+  expect_equal(sort(unique(out$table$resource)), c("CellChatDB", "Consensus"))
+})
+
+test_that("cross-method combination separates support and visualization rank semantics", {
+  df <- data.frame(
+    sender = c("A", "A", "A", "A"),
+    receiver = c("B", "B", "B", "B"),
+    ligand = c("L1", "L1", "L1", "L2"),
+    receptor = c("R1", "R1", "R1", "R2"),
+    interaction_name = c("L1_R1", "L1_R1", "L1_R1", "L2_R2"),
+    score = c(10, 9, 0.2, 5),
+    pvalue = c(0.01, 0.02, 0.2, 0.03),
+    method = c("CellChat", "CellChat", "LIANA", "CellChat"),
+    stringsAsFactors = FALSE
+  )
+
+  support <- getFromNamespace("ccc_combine_methods", "scop")(df, "support")
+  shared <- support[support$ligand == "L1", , drop = FALSE]
+  expect_equal(shared$support_count, 2)
+  expect_equal(shared$support_fraction, 1)
+  expect_equal(shared$score_type, "method_support_count")
+
+  ranked <- getFromNamespace("ccc_combine_methods", "scop")(df, "rank")
+  expect_true(all(ranked$priority_rank >= 0 & ranked$priority_rank <= 1))
+  expect_true(all(ranked$support_type == "scop_visualization_consensus"))
+  expect_true(all(is.na(ranked$pvalue)))
+  expect_equal(ranked$priority_rank[ranked$ligand == "L1"], 0.75)
+})
+
+test_that("dependent CellphoneDB evidence is disclosed before combination", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("Matrix")
+
+  counts <- Matrix::sparseMatrix(i = 1:2, j = 1:2, x = 1, dims = c(2, 2))
+  rownames(counts) <- c("L1", "R1")
+  colnames(counts) <- c("Cell1", "Cell2")
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  long <- data.frame(
+    sender = c("A", "A"), receiver = c("B", "B"),
+    ligand = c("L1", "L1"), receptor = c("R1", "R1"),
+    interaction_name = c("L1_R1", "L1_R1"), score = c(1, 0.8),
+    pvalue = c(0.01, 0.02), method = c("CellphoneDB", "LIANA")
+  )
+  srt@tools$LIANA <- list(parameters = list(method = c("natmi", "cellphonedb")))
+  srt@tools$CCC <- list(
+    methods = c("CellphoneDB", "LIANA"), long_table = long,
+    metadata = list(schema = "scop_ccc_unified_v2")
+  )
+
+  expect_warning(
+    getFromNamespace("ccc_prepare_combined_object", "scop")(
+      srt, method = "CCC", combine_methods = "support"
+    ),
+    "not independent"
+  )
+})
+
+test_that("RunCCC preflights extended method requirements", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("Matrix")
+
+  counts <- Matrix::Diagonal(2)
+  rownames(counts) <- c("L1", "R1")
+  colnames(counts) <- c("Cell1", "Cell2")
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  srt$celltype <- c("A", "B")
+
+  expect_error(
+    scop::RunCCC(
+      srt, group.by = "celltype", methods = "Nichenetr",
+      method_params = list(), verbose = FALSE
+    ),
+    "receiver"
+  )
+  expect_error(
+    scop::RunCCC(
+      srt, group.by = "celltype", methods = "MultiNichenetr",
+      method_params = list(MultiNichenetr = list(sample.by = "sample")),
+      verbose = FALSE
+    ),
+    "condition.by"
+  )
+  expect_error(
+    scop::RunCCC(
+      srt, group.by = "celltype", methods = "SpatialCellChat",
+      method_params = list(), verbose = FALSE
+    ),
+    "spatial image"
+  )
+  expect_error(
+    scop::RunCCC(
+      srt, group.by = "celltype", methods = "MDIC3",
+      method_params = list(), verbose = FALSE
+    ),
+    "grn.*grn_method"
+  )
+})
+
+test_that("RunCCC dispatches all four design-specific registered methods", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("Matrix")
+
+  counts <- Matrix::sparseMatrix(
+    i = c(1, 2), j = c(1, 2), x = c(1, 1), dims = c(2, 2)
+  )
+  rownames(counts) <- c("L1", "R1")
+  colnames(counts) <- c("Cell1", "Cell2")
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  srt$celltype <- c("A", "B")
+  srt$sample <- c("S1", "S2")
+  srt$condition <- c("case", "control")
+  srt$col <- c(1, 2)
+  srt$row <- c(1, 2)
+
+  seen <- list()
+  mock_srt_method <- function(method) {
+    function(srt, group.by, backend = "r", verbose = TRUE, ...) {
+      seen[[method]] <<- list(group.by = group.by, backend = backend, args = list(...))
+      long <- data.frame(
+        sender = "A", receiver = "B", ligand = paste0("L_", method),
+        receptor = paste0("R_", method), interaction_name = paste0("L_R_", method),
+        score = 1, pvalue = 0.01, method = method, stringsAsFactors = FALSE
+      )
+      srt@tools[[method]] <- list(
+        method = method, long_table = long, primary_table = long,
+        pair_table = getFromNamespace("aggregate_ccc_long", "scop")(long, backend = "r"),
+        parameters = list(group.by = group.by)
+      )
+      srt
+    }
+  }
+  mock_mdic3 <- function(object, group.by, verbose = TRUE, ...) {
+    seen$MDIC3 <<- list(group.by = group.by, args = list(...))
+    long <- data.frame(
+      sender = "A", receiver = "B", ligand = "L_MDIC3", receptor = "R_MDIC3",
+      interaction_name = "L_R_MDIC3", score = 1, pvalue = NA_real_,
+      method = "MDIC3", stringsAsFactors = FALSE
+    )
+    object@tools$MDIC3 <- list(
+      method = "MDIC3", long_table = long, primary_table = long,
+      pair_table = getFromNamespace("aggregate_ccc_long", "scop")(long, backend = "r"),
+      parameters = list(group.by = group.by)
+    )
+    object
+  }
+
+  testthat::local_mocked_bindings(
+    RunNichenetr = mock_srt_method("Nichenetr"),
+    RunMultiNichenetr = mock_srt_method("MultiNichenetr"),
+    RunSpatialCellChat = mock_srt_method("SpatialCellChat"),
+    RunMDIC3 = mock_mdic3,
+    .package = "scop"
+  )
+
+  out <- scop::RunCCC(
+    srt,
+    group.by = "celltype",
+    methods = c("Nichenetr", "MultiNichenetr", "SpatialCellChat", "MDIC3"),
+    method_params = list(
+      Nichenetr = list(receiver = "B"),
+      MultiNichenetr = list(
+        sample.by = "sample", condition.by = "condition",
+        condition_oi = "case", condition_reference = "control",
+        receiver_celltypes = "B"
+      ),
+      SpatialCellChat = list(coord.cols = c("col", "row")),
+      MDIC3 = list(grn_method = "correlation")
+    ),
+    backend = "r",
+    verbose = FALSE
+  )
+
+  expect_equal(
+    names(seen),
+    c("Nichenetr", "MultiNichenetr", "SpatialCellChat", "MDIC3")
+  )
+  expect_false("backend" %in% names(seen$MDIC3$args))
+  expect_equal(
+    sort(unique(out@tools$CCC$long_table$method)),
+    sort(c("Nichenetr", "MultiNichenetr", "SpatialCellChat", "MDIC3"))
+  )
+  expect_equal(out@tools$CCC$metadata$schema, "scop_ccc_unified_v2")
+})
+
+test_that("unified CCC plotting separates methods by default", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("Matrix")
+
+  counts <- Matrix::sparseMatrix(i = 1:2, j = 1:2, x = 1, dims = c(2, 2))
+  rownames(counts) <- c("L1", "R1")
+  colnames(counts) <- c("Cell1", "Cell2")
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  long <- data.frame(
+    sender = c("A", "A"), receiver = c("B", "B"),
+    ligand = c("L1", "L1"), receptor = c("R1", "R1"),
+    interaction_name = c("L1_R1", "L1_R1"),
+    score = c(2, 0.8), pvalue = c(0.01, 0.02),
+    method = c("CellphoneDB", "LIANA"), stringsAsFactors = FALSE
+  )
+  for (method in c("CellphoneDB", "LIANA")) {
+    method_long <- long[long$method == method, , drop = FALSE]
+    srt@tools[[method]] <- list(
+      method = method, long_table = method_long, primary_table = method_long,
+      parameters = list(group.by = "celltype")
+    )
+  }
+  srt@tools$CCC <- list(
+    method = "CCC", methods = c("CellphoneDB", "LIANA"),
+    long_table = long, metadata = list(schema = "scop_ccc_unified_v2")
+  )
+
+  plots <- scop::CCCStatPlot(
+    srt, method = "CCC", plot_type = "bar",
+    display_by = "interaction", top_n = 5, return.data = TRUE
+  )
+  expect_named(plots, c("CellphoneDB", "LIANA"))
+
+  support <- getFromNamespace("ccc_prepare_combined_object", "scop")(
+    srt, method = "CCC", combine_methods = "support"
+  )
+  expect_equal(unique(support@tools$CCC$long_table$score_type), "method_support_count")
+})
+
+test_that("all seven registered methods enter generic heatmap, network, and stat plots", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("Matrix")
+  skip_if_not_installed("ggplot2")
+
+  counts <- Matrix::sparseMatrix(i = 1:2, j = 1:2, x = 1, dims = c(2, 2))
+  rownames(counts) <- c("L1", "R1")
+  colnames(counts) <- c("Cell1", "Cell2")
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  methods <- scop::ListCCCMethods()$method
+  long <- do.call(rbind, lapply(seq_along(methods), function(i) {
+    data.frame(
+      sender = "A", receiver = "B", ligand = paste0("L", i),
+      receptor = paste0("R", i), interaction_name = paste0("L", i, "_R", i),
+      score = i / length(methods), pvalue = 0.01, method = methods[i],
+      stringsAsFactors = FALSE
+    )
+  }))
+  for (method in methods) {
+    method_long <- long[long$method == method, , drop = FALSE]
+    srt@tools[[method]] <- list(
+      method = method, long_table = method_long, primary_table = method_long,
+      parameters = list(group.by = "celltype")
+    )
+  }
+  srt@tools$CCC <- list(
+    method = "CCC", methods = methods, long_table = long,
+    metadata = list(schema = "scop_ccc_unified_v2")
+  )
+
+  for (method in methods) {
+    heat <- scop::CCCHeatmap(
+      srt, method = method, plot_type = "dot",
+      display_by = "interaction", top_n = 2
+    )
+    network <- scop::CCCNetworkPlot(
+      srt, method = method, plot_type = "circle",
+      display_by = "interaction", top_n = 2
+    )
+    stat <- scop::CCCStatPlot(
+      srt, method = method, plot_type = "bar",
+      display_by = "interaction", top_n = 2
+    )
+    expect_true(inherits(heat, c("ggplot", "Heatmap", "HeatmapList", "grob")))
+    expect_true(inherits(network, c("ggplot", "recordedplot")))
+    expect_true(inherits(stat, c("ggplot", "recordedplot")))
+  }
+})
+
+test_that("CCC discovery and access adapt v1 long tables without rewriting objects", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("Matrix")
+
+  counts <- Matrix::sparseMatrix(i = 1:2, j = 1:2, x = 1, dims = c(2, 2))
+  rownames(counts) <- c("L1", "R1")
+  colnames(counts) <- c("Cell1", "Cell2")
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  legacy <- data.frame(
+    sender = "A", receiver = "B", ligand = "L1", receptor = "R1",
+    interaction_name = "L1_R1", score = 0.7, pvalue = 0.02,
+    stringsAsFactors = FALSE
+  )
+  srt@tools$CellphoneDB <- list(
+    method = "CellphoneDB", long_table = legacy,
+    metadata = list(schema = "scop_ccc_unified_v1")
+  )
+
+  before <- srt@tools$CellphoneDB$long_table
+  info <- scop::CCCResultInfo(srt)
+  expect_equal(info$status[info$method == "CellphoneDB"], "completed")
+  adapted <- scop::GetCCCResult(srt, "CellphoneDB", type = "primary")
+  expect_true(all(c(
+    "method", "resource", "score_type", "score_direction",
+    "priority_rank", "priority_score", "pvalue_type", "support_type",
+    "producer", "backend_version"
+  ) %in% colnames(adapted)))
+  expect_equal(adapted$method, "CellphoneDB")
+  expect_identical(srt@tools$CellphoneDB$long_table, before)
+})
+
+test_that("LIANA result accessor preserves official consensus ranks", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("Matrix")
+
+  counts <- Matrix::sparseMatrix(i = 1:2, j = 1:2, x = 1, dims = c(2, 2))
+  rownames(counts) <- c("L1", "R1")
+  colnames(counts) <- c("Cell1", "Cell2")
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  consensus <- data.frame(
+    sender = "A", receiver = "B", ligand = "L1", receptor = "R1",
+    interaction_name = "L1_R1", magnitude_rank = 0.05,
+    specificity_rank = 0.02, resource = "Consensus"
+  )
+  srt@tools$LIANA <- list(
+    method = "LIANA", consensus_table = consensus,
+    consensus_by_resource = list(Consensus = consensus),
+    primary_table = consensus, long_table = consensus
+  )
+
+  expect_equal(
+    scop::GetCCCResult(
+      srt, "LIANA", type = "consensus", resource = "Consensus"
+    )$magnitude_rank,
+    0.05
+  )
+})
+
+test_that("native access never substitutes a raw result", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("Matrix")
+
+  counts <- Matrix::sparseMatrix(i = 1:2, j = 1:2, x = 1, dims = c(2, 2))
+  rownames(counts) <- c("L1", "R1")
+  colnames(counts) <- c("Cell1", "Cell2")
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  srt@tools$CellphoneDB <- list(
+    long_table = data.frame(
+      sender = "A", receiver = "B", ligand = "L1", receptor = "R1",
+      score = 1, pvalue = 0.01
+    ),
+    raw_result = list(not_native = TRUE)
+  )
+
+  expect_error(
+    scop::GetCCCResult(srt, "CellphoneDB", type = "native"),
+    "not available"
+  )
+  expect_true(scop::GetCCCResult(
+    srt, "CellphoneDB", type = "raw"
+  )$not_native)
+})
+
+test_that("unified resource and sample filters are exact and explicit", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("Matrix")
+
+  counts <- Matrix::sparseMatrix(i = 1:2, j = 1:2, x = 1, dims = c(2, 2))
+  rownames(counts) <- c("L1", "R1")
+  colnames(counts) <- c("Cell1", "Cell2")
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  long <- data.frame(
+    sender = "A", receiver = "B", ligand = c("L1", "L2"),
+    receptor = c("R1", "R2"), interaction_name = c("L1_R1", "L2_R2"),
+    score = c(0.8, 0.6), pvalue = c(0.01, 0.02), method = "LIANA",
+    resource = c("Consensus", "CellChatDB"), sample = c("S1", "S2")
+  )
+  srt@tools$LIANA <- list(long_table = long, primary_table = long)
+  srt@tools$CCC <- list(
+    methods = "LIANA", long_table = long,
+    metadata = list(schema = "scop_ccc_unified_v2")
+  )
+
+  filtered <- getFromNamespace("ccc_prepare_filtered_object", "scop")(
+    srt, method = "LIANA", resource = "Consensus", sample = "S1"
+  )
+  expect_equal(nrow(filtered@tools$CCC$long_table), 1)
+  expect_equal(filtered@tools$CCC$long_table$ligand, "L1")
+
+  no_provenance <- srt
+  no_provenance@tools$CCC$long_table$resource <- NA_character_
+  expect_error(
+    getFromNamespace("ccc_prepare_filtered_object", "scop")(
+      no_provenance, method = "CCC", resource = "Consensus"
+    ),
+    "does not provide.*resource"
+  )
+})
+
+test_that("SpatialCellChat diffusion delegates to the native communication field", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("Matrix")
+  skip_if_not_installed("ggplot2")
+
+  counts <- Matrix::sparseMatrix(i = 1:2, j = 1:2, x = 1, dims = c(2, 2))
+  rownames(counts) <- c("L1", "R1")
+  colnames(counts) <- c("Cell1", "Cell2")
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  srt@tools$SpatialCellChat <- list(method = "SpatialCellChat")
+  seen <- list()
+
+  testthat::local_mocked_bindings(
+    check_r = function(...) invisible(TRUE),
+    GetCCCObject = function(...) structure(list(), class = "native_scc"),
+    get_namespace_fun = function(package, fun) {
+      expect_equal(package, "SpatialCellChat")
+      expect_equal(fun, "netVisual_CommunField")
+      function(object, signaling, pattern = "outgoing", ...) {
+        seen <<- list(
+          object = object, signaling = signaling, pattern = pattern
+        )
+        ggplot2::ggplot()
+      }
+    },
+    .package = "scop"
+  )
+
+  plot <- scop::CCCNetworkPlot(
+    srt,
+    method = "SpatialCellChat",
+    plot_type = "diffusion",
+    signaling = "CXCL",
+    pattern = "incoming"
+  )
+  expect_s3_class(plot, "ggplot")
+  expect_s3_class(seen$object, "native_scc")
+  expect_equal(seen$signaling, "CXCL")
+  expect_equal(seen$pattern, "incoming")
+})

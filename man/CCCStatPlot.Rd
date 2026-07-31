@@ -7,7 +7,10 @@
 CCCStatPlot(
   srt,
   method = NULL,
+  combine_methods = c("separate", "support", "rank", "legacy"),
   condition = NULL,
+  resource = NULL,
+  sample = NULL,
   dataset = 1,
   comparison = c(1, 2),
   plot_type = c("bar", "sankey", "box", "violin", "role_scatter", "role_network",
@@ -64,7 +67,15 @@ CCCStatPlot(
 
 \item{method}{Communication result type to use.}
 
+\item{combine_methods}{Behavior when \code{method = "CCC"}. \code{"separate"} returns
+one panel per backend, \code{"support"} counts supporting backends, \code{"rank"}
+combines within-method percentile ranks for visualization, and \code{"legacy"}
+retains the deprecated raw-score aggregation.}
+
 \item{condition}{Result name or comparison name.}
+
+\item{resource, sample}{Optional resource and sample/context filters for
+unified CCC results.}
 
 \item{dataset}{Dataset index or name.}
 

@@ -21,11 +21,13 @@ RunCCC(
 
 \item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
 
-\item{methods}{Cell-cell communication methods to run. Currently supports
-\code{"CellChat"}, \code{"CellphoneDB"}, and \code{"LIANA"} in the unified scheduler.
-NicheNet and MultiNicheNet require explicit receiver/sender/contrast design
-arguments and should be called through \code{\link[=RunNichenetr]{RunNichenetr()}} or
-\code{\link[=RunMultiNichenetr]{RunMultiNichenetr()}}.}
+\item{methods}{Registered cell-cell communication methods to run. The
+default core methods are \code{"CellChat"}, \code{"CellphoneDB"}, and \code{"LIANA"}.
+NicheNet, MultiNicheNet, SpatialCellChat, and MDIC3 can be selected when
+their design-specific arguments are supplied through \code{method_params}.
+LIANA's default internal method set includes its CellPhoneDB scorer, so
+standalone CellphoneDB and LIANA consensus results are not statistically
+independent evidence.}
 
 \item{method_params}{Named list of method-specific arguments passed to the
 corresponding wrapper. For example, use \code{method_params$CellphoneDB$pvalue}

@@ -4,6 +4,12 @@
 #' @inheritParams CellDimPlot
 #' @param srt A `Seurat` object.
 #' @param method Communication result type to use.
+#' @param combine_methods Behavior when `method = "CCC"`. `"separate"` returns
+#' one panel per backend, `"support"` counts supporting backends, `"rank"`
+#' combines within-method percentile ranks for visualization, and `"legacy"`
+#' retains the deprecated raw-score aggregation.
+#' @param resource,sample Optional resource and sample/context filters for
+#' unified CCC results.
 #' @param plot_type Plot type. One of:
 #' - `"bar"` — horizontal bar chart of top pairs or interactions according to
 #'   `display_by`.
@@ -189,7 +195,10 @@
 CCCStatPlot <- function(
   srt,
   method = NULL,
+  combine_methods = c("separate", "support", "rank", "legacy"),
   condition = NULL,
+  resource = NULL,
+  sample = NULL,
   dataset = 1,
   comparison = c(1, 2),
   plot_type = c(
@@ -278,6 +287,22 @@ CCCStatPlot <- function(
   )
 
   method <- detect_method(srt = srt, method = method)
+  combine_methods <- match.arg(combine_methods)
+  if (identical(method, "CCC") && identical(combine_methods, "separate")) {
+    return(ccc_plot_methods_separately(match.call(), srt = srt, env = parent.frame()))
+  }
+  srt <- ccc_prepare_combined_object(
+    srt = srt,
+    method = method,
+    combine_methods = combine_methods
+  )
+  srt <- ccc_prepare_filtered_object(
+    srt = srt,
+    method = method,
+    resource = resource,
+    condition = if (identical(method, "CellChat")) NULL else condition,
+    sample = sample
+  )
   dots <- list(...)
   finish_plot <- function(plot) {
     plot
