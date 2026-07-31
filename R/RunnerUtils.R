@@ -16,17 +16,28 @@ runner_script_path <- function(script, backend) {
 runner_write_json <- function(x, path) {
   check_r("jsonlite", verbose = FALSE)
   to_json <- get_namespace_fun("jsonlite", "toJSON")
-  writeLines(
-    as.character(to_json(
-      x,
-      auto_unbox = TRUE,
-      null = "null",
-      digits = NA,
-      pretty = TRUE
-    )),
-    con = path,
-    useBytes = TRUE
+  content <- as.character(to_json(
+    x,
+    auto_unbox = TRUE,
+    null = "null",
+    digits = NA,
+    pretty = TRUE
+  ))
+  dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
+  temporary <- tempfile(
+    pattern = paste0(".", basename(path), "."),
+    tmpdir = dirname(path)
   )
+  on.exit(unlink(temporary, force = TRUE), add = TRUE)
+  writeLines(content, con = temporary, useBytes = TRUE)
+  renamed <- suppressWarnings(file.rename(temporary, path))
+  if (!isTRUE(renamed)) {
+    log_message(
+      "Unable to atomically write JSON file {.file {path}}",
+      message_type = "error"
+    )
+  }
+  invisible(path)
 }
 
 runner_read_json <- function(path) {
@@ -40,6 +51,14 @@ runner_system2 <- function(command, args, env, stdout, stderr) {
       "Subprocess environment variables must be named",
       message_type = "error"
     )
+  }
+  if (!length(env)) {
+    return(system2(
+      command = command,
+      args = args,
+      stdout = stdout,
+      stderr = stderr
+    ))
   }
   old_env <- Sys.getenv(names(env), unset = NA_character_)
   names(old_env) <- names(env)
@@ -61,6 +80,59 @@ runner_system2 <- function(command, args, env, stdout, stderr) {
     stdout = stdout,
     stderr = stderr
   )
+}
+
+runner_request_id <- function() {
+  paste0(
+    Sys.getpid(),
+    "-",
+    basename(tempfile("request_"))
+  )
+}
+
+runner_acquire_lock <- function(path, backend) {
+  dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
+  token <- runner_request_id()
+  connection <- suppressWarnings(tryCatch(
+    file(path, open = "wx", encoding = "UTF-8"),
+    error = function(...) NULL
+  ))
+  if (is.null(connection)) {
+    log_message(
+      "Another {.pkg {backend}} run is using {.arg result_dir}. If no run is active, remove the stale lock file {.file {path}}.",
+      message_type = "error"
+    )
+  }
+  wrote <- tryCatch(
+    {
+      writeLines(token, connection, useBytes = TRUE)
+      TRUE
+    },
+    error = function(...) FALSE
+  )
+  close(connection)
+  if (!wrote) {
+    unlink(path, force = TRUE)
+    log_message(
+      "Unable to create the {.pkg {backend}} result lock",
+      message_type = "error"
+    )
+  }
+  list(path = path, token = token)
+}
+
+runner_release_lock <- function(lock) {
+  if (!file.exists(lock$path)) {
+    return(invisible(FALSE))
+  }
+  observed <- tryCatch(
+    readLines(lock$path, n = 1L, warn = FALSE),
+    error = function(...) character()
+  )
+  if (!identical(observed, lock$token)) {
+    return(invisible(FALSE))
+  }
+  invisible(unlink(lock$path, force = TRUE) == 0L)
 }
 
 runner_read_csv <- function(path, label, backend) {
@@ -147,21 +219,14 @@ runner_error <- function(
   backend,
   max_lines = 20L
 ) {
-  read_output <- function(path) {
-    if (!file.exists(path)) {
-      return(character())
-    }
-    lines <- readLines(path, warn = FALSE)
-    lines[nzchar(trimws(lines))]
-  }
-  stderr <- read_output(stderr_path)
-  stdout <- read_output(stdout_path)
+  stderr <- runner_tail_lines(stderr_path, max_lines = max_lines)
+  stdout <- runner_tail_lines(stdout_path, max_lines = max_lines)
   details <- c(
     if (length(stderr)) {
-      c("Python stderr:", utils::tail(stderr, max_lines))
+      c("Python stderr:", stderr)
     },
     if (length(stdout)) {
-      c("Python stdout:", utils::tail(stdout, max_lines))
+      c("Python stdout:", stdout)
     }
   )
   if (!length(details)) {
@@ -171,4 +236,22 @@ runner_error <- function(
     "{.pkg {backend}} Python runner failed with status {.val {status}}:\n{.code {paste(details, collapse = '\n')}}",
     message_type = "error"
   )
+}
+
+runner_tail_lines <- function(path, max_lines = 20L, chunk_size = 1000L) {
+  if (!file.exists(path)) {
+    return(character())
+  }
+  connection <- file(path, open = "r", encoding = "UTF-8")
+  on.exit(close(connection), add = TRUE)
+  output <- character()
+  repeat {
+    lines <- readLines(connection, n = chunk_size, warn = FALSE)
+    if (!length(lines)) {
+      break
+    }
+    lines <- lines[nzchar(trimws(lines))]
+    output <- utils::tail(c(output, lines), max_lines)
+  }
+  output
 }
