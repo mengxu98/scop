@@ -257,24 +257,37 @@ scale_feature_matrix <- function(mat) {
   x
 }
 
-fitdevo_spearman_weights <- function(scaled, target) {
+fitdevo_spearman_weights <- function(
+  scaled,
+  target,
+  backend = c("cpp", "r")
+) {
+  backend <- match.arg(backend)
   if (any(!is.finite(target))) {
     return(stats::setNames(numeric(nrow(scaled)), rownames(scaled)))
   }
-  check_r("matrixStats", verbose = FALSE)
   target_rank <- rank(target, ties.method = "average")
   target_centered <- target_rank - mean(target_rank)
-  ranked <- matrixStats::rowRanks(as.matrix(scaled), ties.method = "average")
-  rank_sum <- rowSums(ranked)
-  rank_sumsq <- rowSums(ranked^2)
-  rank_ss <- rank_sumsq - rank_sum^2 / ncol(ranked)
-  out <- as.vector(ranked %*% target_centered) /
-    sqrt(rank_ss * sum(target_centered^2))
+  if (identical(backend, "cpp")) {
+    out <- fitdevo_spearman_weights_cpp(
+      scaled = as.matrix(scaled),
+      target_centered = target_centered
+    )
+  } else {
+    check_r("matrixStats", verbose = FALSE)
+    ranked <- matrixStats::rowRanks(as.matrix(scaled), ties.method = "average")
+    rank_sum <- rowSums(ranked)
+    rank_sumsq <- rowSums(ranked^2)
+    rank_ss <- rank_sumsq - rank_sum^2 / ncol(ranked)
+    out <- as.vector(ranked %*% target_centered) /
+      sqrt(rank_ss * sum(target_centered^2))
+  }
   out[!is.finite(out)] <- 0
   stats::setNames(out, rownames(scaled))
 }
 
-fitdevo_score <- function(mat, target = NULL) {
+fitdevo_score <- function(mat, target = NULL, backend = c("cpp", "r")) {
+  backend <- match.arg(backend)
   scaled <- scale_feature_matrix(mat)
   if (is.null(target)) {
     detection <- Matrix::rowMeans(
@@ -283,7 +296,7 @@ fitdevo_score <- function(mat, target = NULL) {
     weights <- sqrt(pmax(fast_row_vars(mat, unbiased = FALSE), 0)) *
       (1 - pmin(detection, 0.99))
   } else {
-    weights <- fitdevo_spearman_weights(scaled, target)
+    weights <- fitdevo_spearman_weights(scaled, target, backend = backend)
   }
   names(weights) <- rownames(mat)
   weights <- weights / (sqrt(sum(weights^2)) + 1e-8)
@@ -300,7 +313,15 @@ fitdevo_score <- function(mat, target = NULL) {
   )
 }
 
-vector_field <- function(emb, pca, grid.n = 30, arrow.p = 0.9, arrow.ol = 1.5) {
+vector_field <- function(
+  emb,
+  pca,
+  grid.n = 30,
+  arrow.p = 0.9,
+  arrow.ol = 1.5,
+  backend = c("cpp", "r")
+) {
+  backend <- match.arg(backend)
   common <- intersect(rownames(emb), rownames(pca))
   emb <- emb[common, , drop = FALSE]
   pca <- pca[common, , drop = FALSE]
@@ -341,7 +362,13 @@ vector_field <- function(emb, pca, grid.n = 30, arrow.p = 0.9, arrow.ol = 1.5) {
       )
     })
   )
-  arrows <- vector_weighted_arrows(grid_df, emb, p = arrow.p, ol = arrow.ol)
+  arrows <- vector_weighted_arrows(
+    grid_df,
+    emb,
+    p = arrow.p,
+    ol = arrow.ol,
+    backend = backend
+  )
   list(
     score = signal,
     embedding = emb,
@@ -352,12 +379,46 @@ vector_field <- function(emb, pca, grid.n = 30, arrow.p = 0.9, arrow.ol = 1.5) {
   )
 }
 
-vector_weighted_arrows <- function(grid_df, emb, p = 0.9, ol = 1.5) {
+vector_weighted_arrows <- function(
+  grid_df,
+  emb,
+  p = 0.9,
+  ol = 1.5,
+  backend = c("cpp", "r")
+) {
+  backend <- match.arg(backend)
   if (nrow(grid_df) < 2L) {
     return(NULL)
   }
   centers <- as.matrix(grid_df[, c("x", "y"), drop = FALSE])
   scores <- grid_df$score
+  if (identical(backend, "cpp")) {
+    emb_range <- c(
+      min(emb[, 1], na.rm = TRUE),
+      max(emb[, 1], na.rm = TRUE),
+      min(emb[, 2], na.rm = TRUE),
+      max(emb[, 2], na.rm = TRUE)
+    )
+    native <- vector_weighted_arrows_cpp(
+      centers = centers,
+      scores = scores,
+      embedding_range = emb_range,
+      p = p,
+      arrow_length = ol
+    )
+    if (nrow(native) == 0L) {
+      return(NULL)
+    }
+    native <- as.data.frame(native)
+    colnames(native) <- c(
+      "index", "x", "y", "dx", "dy", "xend", "yend", "length"
+    )
+    native$grid <- grid_df$grid[as.integer(native$index)]
+    native$index <- NULL
+    return(native[, c(
+      "grid", "x", "y", "dx", "dy", "xend", "yend", "length"
+    ), drop = FALSE])
+  }
   dist_mat <- as.matrix(stats::dist(centers))
   positive_dist <- dist_mat[dist_mat > 0]
   if (length(positive_dist) == 0L) {

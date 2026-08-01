@@ -1125,6 +1125,7 @@ cistarget2 <- function(
   auc_threshold = 0.05,
   include_negative_regulons = FALSE,
   cores = 1,
+  diagnostics = FALSE,
   verbose = TRUE
 ) {
   check_r("arrow", verbose = FALSE)
@@ -1333,11 +1334,16 @@ cistarget2 <- function(
   tfs <- unique(adjacency[["TF"]])
   regulons <- list()
   profiled <- profile_time({
+    module_top_n_targets <- if (is.finite(max_targets)) {
+      as.integer(max_targets)
+    } else {
+      50L
+    }
     scenic_modules_from_adjacencies(
       adjacency = adjacency,
       expr_mtx = expr_mtx,
       min_genes = 20,
-      top_n_targets = max_targets,
+      top_n_targets = module_top_n_targets,
       keep_only_activating = !isTRUE(include_negative_regulons),
       verbose = verbose
     )
@@ -1430,7 +1436,13 @@ cistarget2 <- function(
         ,
         drop = FALSE
       ]
-      py_row_idx <- enriched_idx[seq_len(min(length(enriched_idx), nrow(annotated_features)))]
+      # ctxcore sorts annotated enriched motifs ahead of unannotated rows, then
+      # applies that annotation mask positionally to the original recovery
+      # matrix. Reproduce that ordering here so leading edges remain identical
+      # to pySCENIC 0.12.x for clustered motif databases.
+      py_row_idx <- enriched_idx[
+        seq_len(min(length(enriched_idx), nrow(annotated_features)))
+      ]
       avg_recovery <- cistarget_stats[["avg2sd_recovery"]]
 
       for (row_i in seq_along(py_row_idx)) {
@@ -1462,7 +1474,12 @@ cistarget2 <- function(
     }
 
     if (length(cluster_score_list) == 0L) {
-      return(list(tf = NULL, genes = NULL, profile = local_profile))
+      return(list(
+        tf = NULL,
+        genes = NULL,
+        profile = local_profile,
+        diagnostics = NULL
+      ))
     }
     cluster_scores <- do.call(rbind, cluster_score_list)
 
@@ -1501,10 +1518,25 @@ cistarget2 <- function(
         tf = tf,
         regulon = regulon_name,
         genes = regulon_genes,
-        profile = local_profile
+        profile = local_profile,
+        diagnostics = if (isTRUE(diagnostics)) {
+          list(
+            tf = tf,
+            context = module[["context"]],
+            motifs = cluster_scores[["cluster"]],
+            genes = regulon_genes
+          )
+        } else {
+          NULL
+        }
       ))
     }
-    list(tf = NULL, genes = NULL, profile = local_profile)
+    list(
+      tf = NULL,
+      genes = NULL,
+      profile = local_profile,
+      diagnostics = NULL
+    )
   }
 
   module_cores <- max(1L, as.integer(cores))
@@ -1514,11 +1546,16 @@ cistarget2 <- function(
     cores = module_cores,
     verbose = verbose
   )
+  diagnostics_out <- list()
   for (module_result in module_results) {
     if (is.null(module_result)) {
       next
     }
     profile <- profile + module_result[["profile"]]
+    if (!is.null(module_result[["diagnostics"]])) {
+      diagnostics_out[[length(diagnostics_out) + 1L]] <-
+        module_result[["diagnostics"]]
+    }
     if (is.null(module_result[["tf"]])) {
       next
     }
@@ -1551,10 +1588,16 @@ cistarget2 <- function(
 
   if (length(regulons) == 0L) {
     attr(regulons, "profile_sec") <- profile
+    if (isTRUE(diagnostics)) {
+      attr(regulons, "diagnostics") <- diagnostics_out
+    }
     return(regulons)
   }
   regulons <- regulons[order(names(regulons))]
   attr(regulons, "profile_sec") <- profile
+  if (isTRUE(diagnostics)) {
+    attr(regulons, "diagnostics") <- diagnostics_out
+  }
   regulons
 }
 

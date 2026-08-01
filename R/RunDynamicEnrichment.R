@@ -93,7 +93,9 @@ RunDynamicEnrichment <- function(
     arg_name = "score_method"
   ))
   backend <- match.arg(backend)
-  cpp_supported_methods <- c("AUCell", "Seurat", "GSVA", "ssGSEA", "zscore", "PLAGE")
+  cpp_supported_methods <- c(
+    "AUCell", "UCell", "Seurat", "GSVA", "ssGSEA", "zscore", "PLAGE"
+  )
   score_method_cpp_unsupported <- setdiff(score_method, cpp_supported_methods)
   if (!identical(backend, "r") && length(score_method_cpp_unsupported) > 0L && !isTRUE(backend_missing)) {
     log_message(

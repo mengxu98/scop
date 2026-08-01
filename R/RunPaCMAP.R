@@ -15,7 +15,7 @@
 #' Default is `2`.
 #' @param distance_method The distance metric to be used.
 #' Default is `"euclidean"`.
-#' @param lr The learning rate of the AdaGrad optimizer.
+#' @param lr The learning rate of the Adam optimizer.
 #' Default is `1`.
 #' @param num_iters The number of iterations for PaCMAP optimization.
 #' Default is `450`.
@@ -30,6 +30,8 @@
 #' Default is `"pacmap"`.
 #' @param reduction.key The prefix for the column names of the PaCMAP embeddings.
 #' Default is `"PaCMAP_"`.
+#' @param backend PaCMAP backend. `"cpp"` uses a compiled pair sampler and
+#' Adam optimizer; `"python"` retains the official pacmap package.
 #' @param ... Additional arguments to be passed to pacmap.PaCMAP.
 #'
 #' @rdname RunPaCMAP
@@ -76,6 +78,7 @@ RunPaCMAP.Seurat <- function(
   reduction.key = "PaCMAP_",
   verbose = TRUE,
   seed.use = 11L,
+  backend = c("cpp", "python"),
   ...
 ) {
   if (sum(c(is.null(dims), is.null(features))) < 1) {
@@ -139,7 +142,9 @@ RunPaCMAP.Seurat <- function(
     init = init,
     reduction.key = reduction.key,
     verbose = verbose,
-    seed.use = seed.use
+    seed.use = seed.use,
+    backend = backend,
+    ...
   )
   object <- Seurat::LogSeuratCommand(object = object)
   return(object)
@@ -163,29 +168,74 @@ RunPaCMAP.default <- function(
   reduction.key = "PaCMAP_",
   verbose = TRUE,
   seed.use = 11L,
+  backend = c("cpp", "python"),
   ...
 ) {
+  backend <- match.arg(backend)
   if (!is.null(seed.use)) {
     set.seed(seed = seed.use)
   }
 
-  PrepareEnv(modules = "pacmap")
-  check_python("pacmap", verbose = verbose)
-  pacmap <- reticulate::import("pacmap")
+  if (identical(backend, "python")) {
+    PrepareEnv(modules = "pacmap")
+    check_python("pacmap", verbose = verbose)
+    pacmap <- reticulate::import("pacmap")
 
-  operator <- pacmap$PaCMAP(
-    n_components = as.integer(n_components),
-    n_neighbors = n.neighbors,
-    MN_ratio = MN_ratio,
-    FP_ratio = FP_ratio,
-    distance = distance_method,
-    lr = lr,
-    num_iters = num_iters,
-    apply_pca = apply_pca,
-    verbose = verbose,
-    random_state = as.integer(seed.use)
-  )
-  embedding <- operator$fit_transform(object, init = init)
+    operator <- pacmap$PaCMAP(
+      n_components = as.integer(n_components),
+      n_neighbors = n.neighbors,
+      MN_ratio = MN_ratio,
+      FP_ratio = FP_ratio,
+      distance = distance_method,
+      lr = lr,
+      num_iters = num_iters,
+      apply_pca = apply_pca,
+      verbose = verbose,
+      random_state = as.integer(seed.use)
+    )
+    embedding <- operator$fit_transform(object, init = init)
+  } else {
+    dots <- list(...)
+    if (length(dots) > 0L) {
+      cli::cli_warn(
+        "Additional PaCMAP arguments are used only by {.arg backend = 'python'}."
+      )
+    }
+    data <- native_pacmap_prepare_data(object, apply_pca = apply_pca)
+    n.neighbors <- n.neighbors %||% if (nrow(data) <= 10000L) {
+      10L
+    } else {
+      as.integer(round(10 + 15 * (log10(nrow(data)) - 4)))
+    }
+    n.neighbors <- min(as.integer(n.neighbors), nrow(data) - 1L)
+    metric_id <- native_manifold_metric_id(distance_method)
+    knn <- manifold_exact_knn_cpp(
+      data,
+      k = n.neighbors + 1L,
+      metric = metric_id
+    )
+    initial <- native_manifold_initialization(
+      data,
+      n_components = as.integer(n_components),
+      init = match.arg(init, c("pca", "random")),
+      seed = seed.use %||% 0L
+    )
+    embedding <- pacmap_optimize_cpp(
+      data = data,
+      initial = initial,
+      knn_index = knn[["idx"]],
+      n_mid = max(1L, as.integer(round(n.neighbors * MN_ratio))),
+      n_far = max(1L, as.integer(round(n.neighbors * FP_ratio))),
+      learning_rate = as.numeric(lr),
+      iterations = if (length(num_iters) == 1L) {
+        as.integer(200L + num_iters)
+      } else {
+        as.integer(sum(num_iters))
+      },
+      seed = as.integer(seed.use %||% 0L),
+      metric = metric_id
+    )
+  }
 
   colnames(x = embedding) <- paste0(reduction.key, seq_len(ncol(embedding)))
   rownames(x = embedding) <- rownames(object)

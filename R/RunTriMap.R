@@ -28,6 +28,8 @@
 #' Default is `"trimap"`.
 #' @param reduction.key A character string specifying the prefix for the column names of the TriMap embeddings.
 #' Default is `"TriMap_"`.
+#' @param backend TriMap backend. `"cpp"` uses a compiled triplet sampler
+#' and optimizer; `"python"` retains the official trimap package.
 #' @param ... Additional arguments to be passed to the trimap.TRIMAP function.
 #'
 #' @rdname RunTriMap
@@ -74,6 +76,7 @@ RunTriMap.Seurat <- function(
   reduction.key = "TriMap_",
   verbose = TRUE,
   seed.use = 11L,
+  backend = c("cpp", "python"),
   ...
 ) {
   if (sum(c(is.null(dims), is.null(features))) == 2) {
@@ -137,7 +140,9 @@ RunTriMap.Seurat <- function(
     opt_method = opt_method,
     reduction.key = reduction.key,
     verbose = verbose,
-    seed.use = seed.use
+    seed.use = seed.use,
+    backend = backend,
+    ...
   )
   object <- Seurat::LogSeuratCommand(object = object)
   return(object)
@@ -161,28 +166,68 @@ RunTriMap.default <- function(
   reduction.key = "TriMap_",
   verbose = TRUE,
   seed.use = 11L,
+  backend = c("cpp", "python"),
   ...
 ) {
+  backend <- match.arg(backend)
   set.seed(seed = seed.use)
 
-  PrepareEnv(modules = "trimap")
-  check_python("trimap", verbose = verbose)
-  trimap <- reticulate::import("trimap")
+  if (identical(backend, "python")) {
+    PrepareEnv(modules = "trimap")
+    check_python("trimap", verbose = verbose)
+    trimap <- reticulate::import("trimap")
 
-  operator <- trimap$TRIMAP(
-    n_dims = as.integer(n_components),
-    n_inliers = as.integer(n_inliers),
-    n_outliers = as.integer(n_outliers),
-    n_random = as.integer(n_random),
-    distance = distance_method,
-    lr = lr,
-    n_iters = as.integer(n_iters),
-    apply_pca = apply_pca,
-    opt_method = opt_method,
-    verbose = verbose,
-    ...
-  )
-  embedding <- operator$fit_transform(object)
+    operator <- trimap$TRIMAP(
+      n_dims = as.integer(n_components),
+      n_inliers = as.integer(n_inliers),
+      n_outliers = as.integer(n_outliers),
+      n_random = as.integer(n_random),
+      distance = distance_method,
+      lr = lr,
+      n_iters = as.integer(n_iters),
+      apply_pca = apply_pca,
+      opt_method = opt_method,
+      verbose = verbose,
+      ...
+    )
+    embedding <- operator$fit_transform(object)
+  } else {
+    dots <- list(...)
+    if (length(dots) > 0L) {
+      cli::cli_warn(
+        "Additional TriMap arguments are used only by {.arg backend = 'python'}."
+      )
+    }
+    data <- native_manifold_prepare_data(object, apply_pca = apply_pca)
+    n_inliers <- min(as.integer(n_inliers), nrow(data) - 1L)
+    metric_id <- native_manifold_metric_id(distance_method)
+    knn <- manifold_exact_knn_cpp(
+      data,
+      k = n_inliers + 1L,
+      metric = metric_id
+    )
+    initial <- native_manifold_initialization(
+      data,
+      n_components = as.integer(n_components),
+      init = "pca",
+      seed = seed.use %||% 0L
+    )
+    embedding <- trimap_optimize_cpp(
+      data = data,
+      initial = initial,
+      knn_index = knn[["idx"]],
+      n_outliers = as.integer(n_outliers),
+      n_random = as.integer(n_random),
+      learning_rate = as.numeric(lr),
+      iterations = as.integer(n_iters),
+      optimizer = match(
+        match.arg(opt_method, c("dbd", "sd", "momentum")),
+        c("dbd", "sd", "momentum")
+      ),
+      seed = as.integer(seed.use %||% 0L),
+      metric = metric_id
+    )
+  }
   colnames(x = embedding) <- paste0(reduction.key, seq_len(ncol(embedding)))
   if (inherits(x = object, what = "dist")) {
     rownames(x = embedding) <- attr(object, "Labels")

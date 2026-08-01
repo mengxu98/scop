@@ -2,6 +2,7 @@
 #include <RcppArmadillo.h>
 #include <thisutils/cli_progress.h>
 #include <algorithm>
+#include <cstdint>
 #include <cmath>
 #include <map>
 #include <numeric>
@@ -19,6 +20,71 @@ struct AucEntry {
   double tiebreak;
 };
 
+struct UCellEntry {
+  int gene;
+  double value;
+};
+
+static bool ucell_entry_before(const UCellEntry& a, const UCellEntry& b) {
+  if (a.value > b.value) {
+    return true;
+  }
+  if (a.value < b.value) {
+    return false;
+  }
+  return a.gene < b.gene;
+}
+
+static inline double ucell_group_rank(
+  int start_rank,
+  int end_rank,
+  int tie_method,
+  int dense_rank
+) {
+  if (tie_method == 2) {
+    return static_cast<double>(start_rank);
+  }
+  if (tie_method == 3) {
+    return static_cast<double>(end_rank);
+  }
+  if (tie_method == 4) {
+    return static_cast<double>(dense_rank);
+  }
+  return (static_cast<double>(start_rank) +
+    static_cast<double>(end_rank)) / 2.0;
+}
+
+static double ucell_signature_score(
+  const std::vector<int>& genes,
+  int missing,
+  const std::vector<double>& ranks,
+  int max_rank
+) {
+  const int signature_size = static_cast<int>(genes.size()) + missing;
+  if (signature_size <= 0) {
+    return 0.0;
+  }
+  double rank_sum = static_cast<double>(missing) *
+    static_cast<double>(max_rank);
+  for (std::vector<int>::const_iterator it = genes.begin();
+       it != genes.end(); ++it) {
+    const double rank = ranks[*it];
+    if (!R_finite(rank)) {
+      return NA_REAL;
+    }
+    rank_sum += rank >= static_cast<double>(max_rank) ?
+      static_cast<double>(max_rank) : rank;
+  }
+  const double minimum = static_cast<double>(signature_size) *
+    static_cast<double>(signature_size + 1) / 2.0;
+  const double denominator = static_cast<double>(signature_size) *
+    static_cast<double>(max_rank) - minimum;
+  if (denominator <= 0.0) {
+    return NA_REAL;
+  }
+  return 1.0 - (rank_sum - minimum) / denominator;
+}
+
 // Deterministic gene-index hash for tie-breaking.
 // Replaces unif_rand() so that the same gene always gets the same tiebreaker
 // regardless of strategy (sparse / topk / full), making them produce identical
@@ -35,6 +101,95 @@ static inline double gene_hash_tiebreak(int gene, int seed = 0) {
   x = (x ^ (x >> 27)) * 0x94d049bb133111ebULL;
   x = x ^ (x >> 31);
   return static_cast<double>(x & 0x7fffffffffffffffULL) / static_cast<double>(0x8000000000000000ULL);
+}
+
+// NumPy's legacy RandomState uses the original MT19937 initialization and
+// randomkit's rejection-sampled integer intervals.  Reproducing it here makes
+// the native AUCell ranking identical to pySCENIC's create_rankings(), which
+// first applies pandas.DataFrame.sample(..., random_state = seed) and then
+// resolves expression ties in that shuffled column order.
+class NumpyLegacyMT19937 {
+ public:
+  explicit NumpyLegacyMT19937(std::uint32_t seed) : pos_(624) {
+    state_[0] = seed;
+    for (int i = 1; i < 624; ++i) {
+      state_[i] = static_cast<std::uint32_t>(
+        1812433253U * (state_[i - 1] ^ (state_[i - 1] >> 30)) +
+        static_cast<std::uint32_t>(i)
+      );
+    }
+  }
+
+  std::uint32_t next_uint32() {
+    if (pos_ >= 624) {
+      twist();
+    }
+    std::uint32_t y = state_[pos_++];
+    y ^= y >> 11;
+    y ^= (y << 7) & 0x9d2c5680U;
+    y ^= (y << 15) & 0xefc60000U;
+    y ^= y >> 18;
+    return y;
+  }
+
+  std::uint32_t interval(std::uint32_t max_value) {
+    std::uint32_t mask = max_value;
+    mask |= mask >> 1;
+    mask |= mask >> 2;
+    mask |= mask >> 4;
+    mask |= mask >> 8;
+    mask |= mask >> 16;
+    std::uint32_t value;
+    do {
+      value = next_uint32() & mask;
+    } while (value > max_value);
+    return value;
+  }
+
+ private:
+  void twist() {
+    static const std::uint32_t matrix_a = 0x9908b0dfU;
+    static const std::uint32_t upper_mask = 0x80000000U;
+    static const std::uint32_t lower_mask = 0x7fffffffU;
+    for (int i = 0; i < 624; ++i) {
+      const std::uint32_t y =
+        (state_[i] & upper_mask) |
+        (state_[(i + 1) % 624] & lower_mask);
+      state_[i] = state_[(i + 397) % 624] ^ (y >> 1);
+      if ((y & 1U) != 0U) {
+        state_[i] ^= matrix_a;
+      }
+    }
+    pos_ = 0;
+  }
+
+  std::uint32_t state_[624];
+  int pos_;
+};
+
+static std::vector<double> aucell_tiebreaks(int n_genes, int seed) {
+  std::vector<double> out(n_genes);
+  if (seed <= -2) {
+    const std::uint32_t numpy_seed =
+      static_cast<std::uint32_t>(-(static_cast<long long>(seed) + 2LL));
+    NumpyLegacyMT19937 rng(numpy_seed);
+    std::vector<int> permutation(n_genes);
+    std::iota(permutation.begin(), permutation.end(), 0);
+    for (int i = n_genes - 1; i > 0; --i) {
+      const int j = static_cast<int>(
+        rng.interval(static_cast<std::uint32_t>(i))
+      );
+      std::swap(permutation[i], permutation[j]);
+    }
+    for (int position = 0; position < n_genes; ++position) {
+      out[permutation[position]] = static_cast<double>(position);
+    }
+    return out;
+  }
+  for (int gene = 0; gene < n_genes; ++gene) {
+    out[gene] = gene_hash_tiebreak(gene, seed);
+  }
+  return out;
 }
 
 static bool aucell_entry_before(const AucEntry& a, const AucEntry& b) {
@@ -176,13 +331,14 @@ NumericMatrix aucell_auc_sparse(
   std::vector<int> touched_values;
   std::vector<int> touched_ranks;
   std::vector<AucEntry> entries;
+  const std::vector<double> tie_by_gene = aucell_tiebreaks(n_genes, seed);
   entries.reserve(n_genes);
   const int top_n = std::max(0, std::min(n_genes, auc_threshold - 1));
-  if (strategy == 1 && top_n > 0) {
+  if ((strategy == 1 || strategy == 2) && top_n > 0) {
     zero_order.resize(n_genes);
     std::iota(zero_order.begin(), zero_order.end(), 0);
-    std::sort(zero_order.begin(), zero_order.end(), [seed](int a, int b) {
-      return gene_hash_tiebreak(a, seed) < gene_hash_tiebreak(b, seed);
+    std::sort(zero_order.begin(), zero_order.end(), [&tie_by_gene](int a, int b) {
+      return tie_by_gene[a] < tie_by_gene[b];
     });
   }
 
@@ -198,7 +354,7 @@ NumericMatrix aucell_auc_sparse(
         continue;
       }
       if (strategy == 2) {
-        entries.push_back(AucEntry{gene, value, gene_hash_tiebreak(gene, seed)});
+        entries.push_back(AucEntry{gene, value, tie_by_gene[gene]});
       } else {
         value_by_gene[gene] = value;
         touched_values.push_back(gene);
@@ -215,14 +371,17 @@ NumericMatrix aucell_auc_sparse(
       }
 
       if (static_cast<int>(entries.size()) < auc_threshold) {
-        const int n_zero = n_genes - static_cast<int>(entries.size());
-        for (std::vector<int>::const_iterator it = set_gene_union.begin(); it != set_gene_union.end(); ++it) {
+        int zero_rank = static_cast<int>(entries.size()) + 1;
+        for (std::vector<int>::const_iterator it = zero_order.begin();
+             it != zero_order.end() && zero_rank < auc_threshold; ++it) {
           const int gene = *it;
-          if (rank_by_gene[gene] == 0 && n_zero > 0) {
-            // Deterministic zero-gene rank: hash-based offset into [K+1, n_genes]
-            const int offset = static_cast<int>(gene_hash_tiebreak(gene + 7777777, seed) * static_cast<double>(n_zero));
-            rank_by_gene[gene] = static_cast<int>(entries.size()) + 1 + offset;
-            touched_ranks.push_back(gene);
+          if (rank_by_gene[gene] == 0) {
+            if (std::binary_search(
+                  set_gene_union.begin(), set_gene_union.end(), gene)) {
+              rank_by_gene[gene] = zero_rank;
+              touched_ranks.push_back(gene);
+            }
+            ++zero_rank;
           }
         }
       }
@@ -232,7 +391,7 @@ NumericMatrix aucell_auc_sparse(
           entries.reserve(touched_values.size() + top_n);
           for (std::vector<int>::const_iterator it = touched_values.begin(); it != touched_values.end(); ++it) {
             const int gene = *it;
-            entries.push_back(AucEntry{gene, value_by_gene[gene], gene_hash_tiebreak(gene, seed)});
+            entries.push_back(AucEntry{gene, value_by_gene[gene], tie_by_gene[gene]});
           }
           if (top_n < static_cast<int>(entries.size())) {
             std::nth_element(entries.begin(), entries.begin() + top_n, entries.end(), aucell_entry_before);
@@ -241,7 +400,7 @@ NumericMatrix aucell_auc_sparse(
             for (std::vector<int>::const_iterator it = zero_order.begin(); it != zero_order.end() && static_cast<int>(entries.size()) < top_n; ++it) {
               const int gene = *it;
               if (value_by_gene[gene] == 0.0) {
-                entries.push_back(AucEntry{gene, 0.0, gene_hash_tiebreak(gene, seed)});
+                entries.push_back(AucEntry{gene, 0.0, tie_by_gene[gene]});
               }
             }
           }
@@ -249,7 +408,7 @@ NumericMatrix aucell_auc_sparse(
         }
       } else {
         for (int gene = 0; gene < n_genes; ++gene) {
-          entries.push_back(AucEntry{gene, value_by_gene[gene], gene_hash_tiebreak(gene, seed)});
+          entries.push_back(AucEntry{gene, value_by_gene[gene], tie_by_gene[gene]});
         }
         std::sort(entries.begin(), entries.end(), aucell_entry_before);
       }
@@ -286,6 +445,229 @@ NumericMatrix aucell_auc_sparse(
     }
     for (std::vector<int>::const_iterator it = touched_values.begin(); it != touched_values.end(); ++it) {
       value_by_gene[*it] = 0.0;
+    }
+  }
+
+  return scores;
+}
+
+// [[Rcpp::export]]
+NumericMatrix ucell_scores_sparse(
+  S4 expr,
+  List positive_sets,
+  IntegerVector positive_missing,
+  List negative_sets,
+  IntegerVector negative_missing,
+  int max_rank = 1500,
+  double negative_weight = 1.0,
+  int tie_method = 1
+) {
+  IntegerVector dims = expr.slot("Dim");
+  const int n_genes = dims[0];
+  const int n_cells = dims[1];
+  const int n_sets = positive_sets.size();
+  if (negative_sets.size() != n_sets ||
+      positive_missing.size() != n_sets ||
+      negative_missing.size() != n_sets) {
+    stop("UCell signature inputs must have matching lengths.");
+  }
+  if (max_rank <= 0 || !R_finite(negative_weight) ||
+      negative_weight < 0.0) {
+    stop("Invalid UCell max rank or negative signature weight.");
+  }
+  if (tie_method < 1 || tie_method > 6) {
+    stop("Unsupported UCell tie method.");
+  }
+  max_rank = std::min(max_rank, n_genes);
+
+  std::vector<std::vector<int> > positive(n_sets);
+  std::vector<std::vector<int> > negative(n_sets);
+  for (int set_index = 0; set_index < n_sets; ++set_index) {
+    IntegerVector positive_index = positive_sets[set_index];
+    IntegerVector negative_index = negative_sets[set_index];
+    positive[set_index].reserve(positive_index.size());
+    negative[set_index].reserve(negative_index.size());
+    for (int index = 0; index < positive_index.size(); ++index) {
+      const int gene = positive_index[index] - 1;
+      if (gene >= 0 && gene < n_genes) {
+        positive[set_index].push_back(gene);
+      }
+    }
+    for (int index = 0; index < negative_index.size(); ++index) {
+      const int gene = negative_index[index] - 1;
+      if (gene >= 0 && gene < n_genes) {
+        negative[set_index].push_back(gene);
+      }
+    }
+  }
+
+  IntegerVector row_index = expr.slot("i");
+  IntegerVector column_ptr = expr.slot("p");
+  NumericVector sparse_value = expr.slot("x");
+  NumericMatrix scores(n_cells, n_sets);
+  double* score_ptr = scores.begin();
+  const int* row_ptr = row_index.begin();
+  const int* col_ptr = column_ptr.begin();
+  const double* value_ptr = sparse_value.begin();
+
+#ifdef _OPENMP
+#pragma omp parallel
+#endif
+  {
+    std::vector<double> ranks(n_genes, 0.0);
+    std::vector<unsigned char> state(n_genes, 0);
+    std::vector<UCellEntry> entries;
+    std::vector<int> zero_genes;
+    entries.reserve(n_genes);
+    zero_genes.reserve(n_genes);
+
+#ifdef _OPENMP
+#pragma omp for schedule(static)
+#endif
+    for (int cell = 0; cell < n_cells; ++cell) {
+      std::fill(ranks.begin(), ranks.end(), 0.0);
+      std::fill(state.begin(), state.end(), 0);
+      entries.clear();
+      zero_genes.clear();
+
+      for (int pointer = col_ptr[cell]; pointer < col_ptr[cell + 1]; ++pointer) {
+        const int gene = row_ptr[pointer];
+        const double value = value_ptr[pointer];
+        if (!R_finite(value)) {
+          state[gene] = 2;
+          ranks[gene] = NA_REAL;
+        } else if (value != 0.0) {
+          state[gene] = 1;
+          entries.push_back(UCellEntry{gene, value});
+        }
+      }
+      std::sort(entries.begin(), entries.end(), ucell_entry_before);
+
+      int positive_count = 0;
+      while (positive_count < static_cast<int>(entries.size()) &&
+             entries[positive_count].value > 0.0) {
+        ++positive_count;
+      }
+      int negative_start = positive_count;
+      while (negative_start < static_cast<int>(entries.size()) &&
+             entries[negative_start].value == 0.0) {
+        ++negative_start;
+      }
+      for (int gene = 0; gene < n_genes; ++gene) {
+        if (state[gene] == 0) {
+          zero_genes.push_back(gene);
+        }
+      }
+      const int zero_count = static_cast<int>(zero_genes.size());
+
+      int dense_rank = 0;
+      int group_start = 0;
+      while (group_start < positive_count) {
+        int group_end = group_start + 1;
+        while (group_end < positive_count &&
+               entries[group_end].value == entries[group_start].value) {
+          ++group_end;
+        }
+        ++dense_rank;
+        if (tie_method == 5 || tie_method == 6) {
+          for (int offset = 0; offset < group_end - group_start; ++offset) {
+            const int entry_index = tie_method == 5 ?
+              group_start + offset : group_end - 1 - offset;
+            ranks[entries[entry_index].gene] =
+              static_cast<double>(group_start + offset + 1);
+          }
+        } else {
+          const double rank = ucell_group_rank(
+            group_start + 1,
+            group_end,
+            tie_method,
+            dense_rank
+          );
+          for (int entry_index = group_start;
+               entry_index < group_end; ++entry_index) {
+            ranks[entries[entry_index].gene] = rank;
+          }
+        }
+        group_start = group_end;
+      }
+
+      if (zero_count > 0) {
+        ++dense_rank;
+        if (tie_method == 5 || tie_method == 6) {
+          for (int offset = 0; offset < zero_count; ++offset) {
+            const int zero_index = tie_method == 5 ?
+              offset : zero_count - 1 - offset;
+            ranks[zero_genes[zero_index]] =
+              static_cast<double>(positive_count + offset + 1);
+          }
+        } else {
+          const double zero_rank = ucell_group_rank(
+            positive_count + 1,
+            positive_count + zero_count,
+            tie_method,
+            dense_rank
+          );
+          for (std::vector<int>::const_iterator it = zero_genes.begin();
+               it != zero_genes.end(); ++it) {
+            ranks[*it] = zero_rank;
+          }
+        }
+      }
+
+      group_start = negative_start;
+      int negative_offset = 0;
+      while (group_start < static_cast<int>(entries.size())) {
+        int group_end = group_start + 1;
+        while (group_end < static_cast<int>(entries.size()) &&
+               entries[group_end].value == entries[group_start].value) {
+          ++group_end;
+        }
+        ++dense_rank;
+        const int actual_start = positive_count + zero_count +
+          negative_offset + 1;
+        const int actual_end = actual_start + group_end - group_start - 1;
+        if (tie_method == 5 || tie_method == 6) {
+          for (int offset = 0; offset < group_end - group_start; ++offset) {
+            const int entry_index = tie_method == 5 ?
+              group_start + offset : group_end - 1 - offset;
+            ranks[entries[entry_index].gene] =
+              static_cast<double>(actual_start + offset);
+          }
+        } else {
+          const double rank = ucell_group_rank(
+            actual_start,
+            actual_end,
+            tie_method,
+            dense_rank
+          );
+          for (int entry_index = group_start;
+               entry_index < group_end; ++entry_index) {
+            ranks[entries[entry_index].gene] = rank;
+          }
+        }
+        negative_offset += group_end - group_start;
+        group_start = group_end;
+      }
+
+      for (int set_index = 0; set_index < n_sets; ++set_index) {
+        const double positive_score = ucell_signature_score(
+          positive[set_index],
+          positive_missing[set_index],
+          ranks,
+          max_rank
+        );
+        const double negative_score = ucell_signature_score(
+          negative[set_index],
+          negative_missing[set_index],
+          ranks,
+          max_rank
+        );
+        double combined = positive_score - negative_weight * negative_score;
+        if (R_finite(combined) && combined < 0.0) {
+          combined = 0.0;
+        }
+        score_ptr[cell + n_cells * set_index] = combined;
+      }
     }
   }
 

@@ -275,6 +275,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// combine_conserved_pvalues_cpp
+NumericVector combine_conserved_pvalues_cpp(const NumericMatrix& pvalues, const std::string& method);
+RcppExport SEXP _scop_combine_conserved_pvalues_cpp(SEXP pvaluesSEXP, SEXP methodSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type pvalues(pvaluesSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type method(methodSEXP);
+    rcpp_result_gen = Rcpp::wrap(combine_conserved_pvalues_cpp(pvalues, method));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cytospace_assign
 List cytospace_assign(NumericMatrix sc_expr, NumericMatrix st_expr, IntegerVector spot_capacities, int seed, bool upstream_tie_break, bool verbose);
 RcppExport SEXP _scop_cytospace_assign(SEXP sc_exprSEXP, SEXP st_exprSEXP, SEXP spot_capacitiesSEXP, SEXP seedSEXP, SEXP upstream_tie_breakSEXP, SEXP verboseSEXP) {
@@ -418,6 +430,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// fitdevo_spearman_weights_cpp
+Rcpp::NumericVector fitdevo_spearman_weights_cpp(Rcpp::NumericMatrix scaled, Rcpp::NumericVector target_centered);
+RcppExport SEXP _scop_fitdevo_spearman_weights_cpp(SEXP scaledSEXP, SEXP target_centeredSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type scaled(scaledSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type target_centered(target_centeredSEXP);
+    rcpp_result_gen = Rcpp::wrap(fitdevo_spearman_weights_cpp(scaled, target_centered));
+    return rcpp_result_gen;
+END_RCPP
+}
 // gniplr_cpp
 List gniplr_cpp(arma::mat expression, IntegerVector target_idx, double correlation_threshold, int lasso_degree, double lasso_alpha, int max_lag);
 RcppExport SEXP _scop_gniplr_cpp(SEXP expressionSEXP, SEXP target_idxSEXP, SEXP correlation_thresholdSEXP, SEXP lasso_degreeSEXP, SEXP lasso_alphaSEXP, SEXP max_lagSEXP) {
@@ -448,6 +472,24 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type algorithm(algorithmSEXP);
     Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
     rcpp_result_gen = Rcpp::wrap(aucell_auc_sparse(expr, gene_sets, auc_max_rank, norm_auc, strategy, algorithm, seed));
+    return rcpp_result_gen;
+END_RCPP
+}
+// ucell_scores_sparse
+NumericMatrix ucell_scores_sparse(S4 expr, List positive_sets, IntegerVector positive_missing, List negative_sets, IntegerVector negative_missing, int max_rank, double negative_weight, int tie_method);
+RcppExport SEXP _scop_ucell_scores_sparse(SEXP exprSEXP, SEXP positive_setsSEXP, SEXP positive_missingSEXP, SEXP negative_setsSEXP, SEXP negative_missingSEXP, SEXP max_rankSEXP, SEXP negative_weightSEXP, SEXP tie_methodSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< S4 >::type expr(exprSEXP);
+    Rcpp::traits::input_parameter< List >::type positive_sets(positive_setsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type positive_missing(positive_missingSEXP);
+    Rcpp::traits::input_parameter< List >::type negative_sets(negative_setsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type negative_missing(negative_missingSEXP);
+    Rcpp::traits::input_parameter< int >::type max_rank(max_rankSEXP);
+    Rcpp::traits::input_parameter< double >::type negative_weight(negative_weightSEXP);
+    Rcpp::traits::input_parameter< int >::type tie_method(tie_methodSEXP);
+    rcpp_result_gen = Rcpp::wrap(ucell_scores_sparse(expr, positive_sets, positive_missing, negative_sets, negative_missing, max_rank, negative_weight, tie_method));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -623,6 +665,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// knn_vote_labels_cpp
+List knn_vote_labels_cpp(const IntegerMatrix& labels, int n_levels);
+RcppExport SEXP _scop_knn_vote_labels_cpp(SEXP labelsSEXP, SEXP n_levelsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const IntegerMatrix& >::type labels(labelsSEXP);
+    Rcpp::traits::input_parameter< int >::type n_levels(n_levelsSEXP);
+    rcpp_result_gen = Rcpp::wrap(knn_vote_labels_cpp(labels, n_levels));
+    return rcpp_result_gen;
+END_RCPP
+}
 // mdic3_score_cpp
 List mdic3_score_cpp(NumericMatrix expression, NumericMatrix grn, IntegerVector group);
 RcppExport SEXP _scop_mdic3_score_cpp(SEXP expressionSEXP, SEXP grnSEXP, SEXP groupSEXP) {
@@ -633,6 +687,58 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericMatrix >::type grn(grnSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type group(groupSEXP);
     rcpp_result_gen = Rcpp::wrap(mdic3_score_cpp(expression, grn, group));
+    return rcpp_result_gen;
+END_RCPP
+}
+// manifold_exact_knn_cpp
+Rcpp::List manifold_exact_knn_cpp(Rcpp::NumericMatrix data, int k, int metric);
+RcppExport SEXP _scop_manifold_exact_knn_cpp(SEXP dataSEXP, SEXP kSEXP, SEXP metricSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< int >::type metric(metricSEXP);
+    rcpp_result_gen = Rcpp::wrap(manifold_exact_knn_cpp(data, k, metric));
+    return rcpp_result_gen;
+END_RCPP
+}
+// pacmap_optimize_cpp
+Rcpp::NumericMatrix pacmap_optimize_cpp(Rcpp::NumericMatrix data, Rcpp::NumericMatrix initial, Rcpp::IntegerMatrix knn_index, int n_mid, int n_far, double learning_rate, int iterations, int seed, int metric);
+RcppExport SEXP _scop_pacmap_optimize_cpp(SEXP dataSEXP, SEXP initialSEXP, SEXP knn_indexSEXP, SEXP n_midSEXP, SEXP n_farSEXP, SEXP learning_rateSEXP, SEXP iterationsSEXP, SEXP seedSEXP, SEXP metricSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type initial(initialSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type knn_index(knn_indexSEXP);
+    Rcpp::traits::input_parameter< int >::type n_mid(n_midSEXP);
+    Rcpp::traits::input_parameter< int >::type n_far(n_farSEXP);
+    Rcpp::traits::input_parameter< double >::type learning_rate(learning_rateSEXP);
+    Rcpp::traits::input_parameter< int >::type iterations(iterationsSEXP);
+    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
+    Rcpp::traits::input_parameter< int >::type metric(metricSEXP);
+    rcpp_result_gen = Rcpp::wrap(pacmap_optimize_cpp(data, initial, knn_index, n_mid, n_far, learning_rate, iterations, seed, metric));
+    return rcpp_result_gen;
+END_RCPP
+}
+// trimap_optimize_cpp
+Rcpp::NumericMatrix trimap_optimize_cpp(Rcpp::NumericMatrix data, Rcpp::NumericMatrix initial, Rcpp::IntegerMatrix knn_index, int n_outliers, int n_random, double learning_rate, int iterations, int optimizer, int seed, int metric);
+RcppExport SEXP _scop_trimap_optimize_cpp(SEXP dataSEXP, SEXP initialSEXP, SEXP knn_indexSEXP, SEXP n_outliersSEXP, SEXP n_randomSEXP, SEXP learning_rateSEXP, SEXP iterationsSEXP, SEXP optimizerSEXP, SEXP seedSEXP, SEXP metricSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type initial(initialSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type knn_index(knn_indexSEXP);
+    Rcpp::traits::input_parameter< int >::type n_outliers(n_outliersSEXP);
+    Rcpp::traits::input_parameter< int >::type n_random(n_randomSEXP);
+    Rcpp::traits::input_parameter< double >::type learning_rate(learning_rateSEXP);
+    Rcpp::traits::input_parameter< int >::type iterations(iterationsSEXP);
+    Rcpp::traits::input_parameter< int >::type optimizer(optimizerSEXP);
+    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
+    Rcpp::traits::input_parameter< int >::type metric(metricSEXP);
+    rcpp_result_gen = Rcpp::wrap(trimap_optimize_cpp(data, initial, knn_index, n_outliers, n_random, learning_rate, iterations, optimizer, seed, metric));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -753,6 +859,65 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< IntegerVector >::type closest_vertex(closest_vertexSEXP);
     Rcpp::traits::input_parameter< bool >::type use_min_pseudotime(use_min_pseudotimeSEXP);
     rcpp_result_gen = Rcpp::wrap(monocle2_select_root_by_state_cpp(coords, candidate_cells, pseudotime, closest_vertex, use_min_pseudotime));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vector_weighted_arrows_cpp
+NumericMatrix vector_weighted_arrows_cpp(const NumericMatrix& centers, const NumericVector& scores, const NumericVector& embedding_range, double p, double arrow_length);
+RcppExport SEXP _scop_vector_weighted_arrows_cpp(SEXP centersSEXP, SEXP scoresSEXP, SEXP embedding_rangeSEXP, SEXP pSEXP, SEXP arrow_lengthSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type centers(centersSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type scores(scoresSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type embedding_range(embedding_rangeSEXP);
+    Rcpp::traits::input_parameter< double >::type p(pSEXP);
+    Rcpp::traits::input_parameter< double >::type arrow_length(arrow_lengthSEXP);
+    rcpp_result_gen = Rcpp::wrap(vector_weighted_arrows_cpp(centers, scores, embedding_range, p, arrow_length));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cytospace_estimate_fractions_cpp
+NumericVector cytospace_estimate_fractions_cpp(const NumericMatrix& st_expr, const NumericMatrix& ref_expr, const IntegerVector& labels, int n_types, const NumericVector& spot_weights);
+RcppExport SEXP _scop_cytospace_estimate_fractions_cpp(SEXP st_exprSEXP, SEXP ref_exprSEXP, SEXP labelsSEXP, SEXP n_typesSEXP, SEXP spot_weightsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type st_expr(st_exprSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type ref_expr(ref_exprSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type labels(labelsSEXP);
+    Rcpp::traits::input_parameter< int >::type n_types(n_typesSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type spot_weights(spot_weightsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cytospace_estimate_fractions_cpp(st_expr, ref_expr, labels, n_types, spot_weights));
+    return rcpp_result_gen;
+END_RCPP
+}
+// spatial_pair_count_cpp
+DataFrame spatial_pair_count_cpp(const CharacterVector& sample, const CharacterVector& condition, const CharacterVector& subject, const CharacterVector& from, const CharacterVector& to);
+RcppExport SEXP _scop_spatial_pair_count_cpp(SEXP sampleSEXP, SEXP conditionSEXP, SEXP subjectSEXP, SEXP fromSEXP, SEXP toSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const CharacterVector& >::type sample(sampleSEXP);
+    Rcpp::traits::input_parameter< const CharacterVector& >::type condition(conditionSEXP);
+    Rcpp::traits::input_parameter< const CharacterVector& >::type subject(subjectSEXP);
+    Rcpp::traits::input_parameter< const CharacterVector& >::type from(fromSEXP);
+    Rcpp::traits::input_parameter< const CharacterVector& >::type to(toSEXP);
+    rcpp_result_gen = Rcpp::wrap(spatial_pair_count_cpp(sample, condition, subject, from, to));
+    return rcpp_result_gen;
+END_RCPP
+}
+// bbknn_fuzzy_membership_cpp
+List bbknn_fuzzy_membership_cpp(const IntegerMatrix& index, const NumericMatrix& distance, double local_connectivity, double bandwidth);
+RcppExport SEXP _scop_bbknn_fuzzy_membership_cpp(SEXP indexSEXP, SEXP distanceSEXP, SEXP local_connectivitySEXP, SEXP bandwidthSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const IntegerMatrix& >::type index(indexSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type distance(distanceSEXP);
+    Rcpp::traits::input_parameter< double >::type local_connectivity(local_connectivitySEXP);
+    Rcpp::traits::input_parameter< double >::type bandwidth(bandwidthSEXP);
+    rcpp_result_gen = Rcpp::wrap(bbknn_fuzzy_membership_cpp(index, distance, local_connectivity, bandwidth));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1029,6 +1194,33 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type probabilities(probabilitiesSEXP);
     rcpp_result_gen = Rcpp::wrap(palantir_row_entropy_cpp(probabilities));
+    return rcpp_result_gen;
+END_RCPP
+}
+// pretsa_fit_block_cpp
+List pretsa_fit_block_cpp(const NumericMatrix& expression, const List& bases, const List& inverses, const IntegerVector& knots);
+RcppExport SEXP _scop_pretsa_fit_block_cpp(SEXP expressionSEXP, SEXP basesSEXP, SEXP inversesSEXP, SEXP knotsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type expression(expressionSEXP);
+    Rcpp::traits::input_parameter< const List& >::type bases(basesSEXP);
+    Rcpp::traits::input_parameter< const List& >::type inverses(inversesSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type knots(knotsSEXP);
+    rcpp_result_gen = Rcpp::wrap(pretsa_fit_block_cpp(expression, bases, inverses, knots));
+    return rcpp_result_gen;
+END_RCPP
+}
+// pretsa_curve_summary_cpp
+List pretsa_curve_summary_cpp(const NumericMatrix& fitted, const NumericMatrix& expression, const NumericVector& pseudotime);
+RcppExport SEXP _scop_pretsa_curve_summary_cpp(SEXP fittedSEXP, SEXP expressionSEXP, SEXP pseudotimeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type fitted(fittedSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type expression(expressionSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type pseudotime(pseudotimeSEXP);
+    rcpp_result_gen = Rcpp::wrap(pretsa_curve_summary_cpp(fitted, expression, pseudotime));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -2471,17 +2663,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// spatial_variable_score_dense_cpp
-NumericVector spatial_variable_score_dense_cpp(NumericMatrix expr, IntegerVector from, IntegerVector to, std::string method);
-RcppExport SEXP _scop_spatial_variable_score_dense_cpp(SEXP exprSEXP, SEXP fromSEXP, SEXP toSEXP, SEXP methodSEXP) {
+// spatial_variable_score_cpp
+Rcpp::List spatial_variable_score_cpp(SEXP expr, Rcpp::IntegerVector edge_from, Rcpp::IntegerVector edge_to, int method, int n_permutations);
+RcppExport SEXP _scop_spatial_variable_score_cpp(SEXP exprSEXP, SEXP edge_fromSEXP, SEXP edge_toSEXP, SEXP methodSEXP, SEXP n_permutationsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type expr(exprSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type from(fromSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type to(toSEXP);
-    Rcpp::traits::input_parameter< std::string >::type method(methodSEXP);
-    rcpp_result_gen = Rcpp::wrap(spatial_variable_score_dense_cpp(expr, from, to, method));
+    Rcpp::traits::input_parameter< SEXP >::type expr(exprSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type edge_from(edge_fromSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type edge_to(edge_toSEXP);
+    Rcpp::traits::input_parameter< int >::type method(methodSEXP);
+    Rcpp::traits::input_parameter< int >::type n_permutations(n_permutationsSEXP);
+    rcpp_result_gen = Rcpp::wrap(spatial_variable_score_cpp(expr, edge_from, edge_to, method, n_permutations));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -2509,6 +2702,22 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type n_trees(n_treesSEXP);
     Rcpp::traits::input_parameter< int >::type cores(coresSEXP);
     rcpp_result_gen = Rcpp::wrap(annoy_build_search(data, k, n_trees, cores));
+    return rcpp_result_gen;
+END_RCPP
+}
+// annoy_cross_knn
+Rcpp::List annoy_cross_knn(Rcpp::NumericMatrix reference, Rcpp::NumericMatrix query, int k, int n_trees, std::string metric, int cores);
+RcppExport SEXP _scop_annoy_cross_knn(SEXP referenceSEXP, SEXP querySEXP, SEXP kSEXP, SEXP n_treesSEXP, SEXP metricSEXP, SEXP coresSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type reference(referenceSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type query(querySEXP);
+    Rcpp::traits::input_parameter< int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< int >::type n_trees(n_treesSEXP);
+    Rcpp::traits::input_parameter< std::string >::type metric(metricSEXP);
+    Rcpp::traits::input_parameter< int >::type cores(coresSEXP);
+    rcpp_result_gen = Rcpp::wrap(annoy_cross_knn(reference, query, k, n_trees, metric, cores));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -2747,6 +2956,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_cellrank_cflare_cpp", (DL_FUNC) &_scop_cellrank_cflare_cpp, 4},
     {"_scop_cellrank_gpcca_cpp", (DL_FUNC) &_scop_cellrank_gpcca_cpp, 4},
     {"_scop_cellrank_lineage_drivers_cpp", (DL_FUNC) &_scop_cellrank_lineage_drivers_cpp, 3},
+    {"_scop_combine_conserved_pvalues_cpp", (DL_FUNC) &_scop_combine_conserved_pvalues_cpp, 2},
     {"_scop_cytospace_assign", (DL_FUNC) &_scop_cytospace_assign, 6},
     {"_scop_cytotrace2_preprocess_numeric", (DL_FUNC) &_scop_cytotrace2_preprocess_numeric, 1},
     {"_scop_cytotrace2_preprocess_sparse_numeric", (DL_FUNC) &_scop_cytotrace2_preprocess_sparse_numeric, 1},
@@ -2757,8 +2967,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_scvelo_dynamical_velocity_cpp", (DL_FUNC) &_scop_scvelo_dynamical_velocity_cpp, 8},
     {"_scop_scvelo_dynamical_em_cpp", (DL_FUNC) &_scop_scvelo_dynamical_em_cpp, 9},
     {"_scop_feature_cor_geometric_mean_sparse_cpp", (DL_FUNC) &_scop_feature_cor_geometric_mean_sparse_cpp, 2},
+    {"_scop_fitdevo_spearman_weights_cpp", (DL_FUNC) &_scop_fitdevo_spearman_weights_cpp, 2},
     {"_scop_gniplr_cpp", (DL_FUNC) &_scop_gniplr_cpp, 6},
     {"_scop_aucell_auc_sparse", (DL_FUNC) &_scop_aucell_auc_sparse, 7},
+    {"_scop_ucell_scores_sparse", (DL_FUNC) &_scop_ucell_scores_sparse, 8},
     {"_scop_aucell_auc_ranked", (DL_FUNC) &_scop_aucell_auc_ranked, 3},
     {"_scop_aucell_auc_ranked_full", (DL_FUNC) &_scop_aucell_auc_ranked_full, 4},
     {"_scop_ora_hypergeom", (DL_FUNC) &_scop_ora_hypergeom, 7},
@@ -2771,7 +2983,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_gsva_poisson_dense", (DL_FUNC) &_scop_gsva_poisson_dense, 6},
     {"_scop_dense_row_has_variable_finite", (DL_FUNC) &_scop_dense_row_has_variable_finite, 1},
     {"_scop_sparse_row_has_variable_finite", (DL_FUNC) &_scop_sparse_row_has_variable_finite, 1},
+    {"_scop_knn_vote_labels_cpp", (DL_FUNC) &_scop_knn_vote_labels_cpp, 2},
     {"_scop_mdic3_score_cpp", (DL_FUNC) &_scop_mdic3_score_cpp, 3},
+    {"_scop_manifold_exact_knn_cpp", (DL_FUNC) &_scop_manifold_exact_knn_cpp, 3},
+    {"_scop_pacmap_optimize_cpp", (DL_FUNC) &_scop_pacmap_optimize_cpp, 9},
+    {"_scop_trimap_optimize_cpp", (DL_FUNC) &_scop_trimap_optimize_cpp, 10},
     {"_scop_wilcox_rank_sum_sparse", (DL_FUNC) &_scop_wilcox_rank_sum_sparse, 3},
     {"_scop_wilcox_rank_sum_sparse_all_cells", (DL_FUNC) &_scop_wilcox_rank_sum_sparse_all_cells, 2},
     {"_scop_milo_neighborhood_medians_cpp", (DL_FUNC) &_scop_milo_neighborhood_medians_cpp, 2},
@@ -2781,6 +2997,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_monocle2_order_from_weighted_edges_cpp", (DL_FUNC) &_scop_monocle2_order_from_weighted_edges_cpp, 4},
     {"_scop_monocle2_project_cells_to_mst_cpp", (DL_FUNC) &_scop_monocle2_project_cells_to_mst_cpp, 4},
     {"_scop_monocle2_select_root_by_state_cpp", (DL_FUNC) &_scop_monocle2_select_root_by_state_cpp, 5},
+    {"_scop_vector_weighted_arrows_cpp", (DL_FUNC) &_scop_vector_weighted_arrows_cpp, 5},
+    {"_scop_cytospace_estimate_fractions_cpp", (DL_FUNC) &_scop_cytospace_estimate_fractions_cpp, 5},
+    {"_scop_spatial_pair_count_cpp", (DL_FUNC) &_scop_spatial_pair_count_cpp, 5},
+    {"_scop_bbknn_fuzzy_membership_cpp", (DL_FUNC) &_scop_bbknn_fuzzy_membership_cpp, 4},
     {"_scop_paga_connectivities_cpp", (DL_FUNC) &_scop_paga_connectivities_cpp, 3},
     {"_scop_paga_diffusion_pseudotime_cpp", (DL_FUNC) &_scop_paga_diffusion_pseudotime_cpp, 6},
     {"_scop_paga_velocity_transitions_cpp", (DL_FUNC) &_scop_paga_velocity_transitions_cpp, 5},
@@ -2801,6 +3021,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_palantir_terminal_states_cpp", (DL_FUNC) &_scop_palantir_terminal_states_cpp, 5},
     {"_scop_palantir_absorption_cpp", (DL_FUNC) &_scop_palantir_absorption_cpp, 5},
     {"_scop_palantir_row_entropy_cpp", (DL_FUNC) &_scop_palantir_row_entropy_cpp, 1},
+    {"_scop_pretsa_fit_block_cpp", (DL_FUNC) &_scop_pretsa_fit_block_cpp, 4},
+    {"_scop_pretsa_curve_summary_cpp", (DL_FUNC) &_scop_pretsa_curve_summary_cpp, 3},
     {"_scop_scvelo_filter_genes_scanpy_cpp", (DL_FUNC) &_scop_scvelo_filter_genes_scanpy_cpp, 4},
     {"_scop_scvelo_normalize_scanpy_cpp", (DL_FUNC) &_scop_scvelo_normalize_scanpy_cpp, 4},
     {"_scop_scvelo_pca_scanpy_cpp", (DL_FUNC) &_scop_scvelo_pca_scanpy_cpp, 2},
@@ -2883,9 +3105,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_scissor_gaussian_net_fit_cpp", (DL_FUNC) &_scop_scissor_gaussian_net_fit_cpp, 12},
     {"_scop_scissor_binomial_net_fit_cpp", (DL_FUNC) &_scop_scissor_binomial_net_fit_cpp, 12},
     {"_scop_spatial_gradient_screening_cpp", (DL_FUNC) &_scop_spatial_gradient_screening_cpp, 10},
-    {"_scop_spatial_variable_score_dense_cpp", (DL_FUNC) &_scop_spatial_variable_score_dense_cpp, 4},
+    {"_scop_spatial_variable_score_cpp", (DL_FUNC) &_scop_spatial_variable_score_cpp, 5},
     {"_scop_parallel_all_in_one_dgc", (DL_FUNC) &_scop_parallel_all_in_one_dgc, 3},
     {"_scop_annoy_build_search", (DL_FUNC) &_scop_annoy_build_search, 4},
+    {"_scop_annoy_cross_knn", (DL_FUNC) &_scop_annoy_cross_knn, 6},
     {"_scop_exact_knn_f32", (DL_FUNC) &_scop_exact_knn_f32, 3},
     {"_scop_cross_knn_f32", (DL_FUNC) &_scop_cross_knn_f32, 5},
     {"_scop_log_normalize_dgc", (DL_FUNC) &_scop_log_normalize_dgc, 3},

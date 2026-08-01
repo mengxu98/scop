@@ -30,6 +30,8 @@
 #' Default is `0`.
 #' @param max_knot_allowed For `fit_method = "pretsa"` when `knot = "auto"`: max knots.
 #' Default is `10`.
+#' @param pretsa_backend PreTSA fitting backend. `"cpp"` batches model selection
+#' and fitting; `"r"` retains the reference implementation.
 #' @param padjust_method The method used for p-value adjustment.
 #' Default is `"fdr"`.
 #'
@@ -125,6 +127,7 @@ RunDynamicFeatures <- function(
   fit_method = c("gam", "pretsa"),
   knot = 0,
   max_knot_allowed = 10,
+  pretsa_backend = c("cpp", "r"),
   padjust_method = "fdr",
   cores = 1,
   verbose = TRUE,
@@ -133,6 +136,7 @@ RunDynamicFeatures <- function(
   set.seed(seed)
   assay <- assay %||% DefaultAssay(srt)
   fit_method <- match.arg(fit_method)
+  pretsa_backend <- match.arg(pretsa_backend)
 
   log_message(
     "Start find dynamic features",
@@ -328,6 +332,7 @@ RunDynamicFeatures <- function(
         family = family,
         knot = knot,
         max_knot_allowed = max_knot_allowed,
+        pretsa_backend = pretsa_backend,
         padjust_method = padjust_method,
         verbose = verbose
       )
@@ -591,6 +596,7 @@ dynamic_features_pretsa <- function(
   family,
   knot,
   max_knot_allowed,
+  pretsa_backend,
   padjust_method,
   verbose
 ) {
@@ -610,6 +616,7 @@ dynamic_features_pretsa <- function(
       pseudotime_vec,
       knot,
       max_knot_allowed,
+      pretsa_backend,
       padjust_method
     )
     DynamicFeatures <- out$DynamicFeatures[features, ]
@@ -654,6 +661,7 @@ dynamic_features_pretsa <- function(
     pseudotime_vec,
     knot,
     max_knot_allowed,
+    pretsa_backend,
     padjust_method
   )
   DynamicFeatures_gene <- out_gene$DynamicFeatures
@@ -674,6 +682,7 @@ dynamic_features_pretsa <- function(
       pseudotime_vec,
       knot,
       max_knot_allowed,
+      pretsa_backend,
       padjust_method
     )
     DynamicFeatures <- rbind(
@@ -719,39 +728,91 @@ pretsa_one_block <- function(
   pseudotime_vec,
   knot,
   max_knot_allowed,
+  backend,
   padjust_method
 ) {
+  SSE <- NULL
+  SST <- NULL
   basis_models <- pretsa_basis_models(
     pseudotime = pseudotime_vec,
     knot = knot,
     max_knot_allowed = max_knot_allowed
   )
-  test_res <- pretsa_temporal(
-    expr,
-    pseudotime_vec,
-    knot = knot,
-    max_knot_allowed = max_knot_allowed,
-    padjust_method = padjust_method,
-    basis_models = basis_models
-  )
-  fit_mat <- pretsa_temporalFit(
-    expr,
-    pseudotime_vec,
-    knot = knot,
-    max_knot_allowed = max_knot_allowed,
-    basis_models = basis_models
-  )
-  SSE <- Matrix::rowSums((expr - fit_mat)^2)
-  SST <- Matrix::rowSums(sweep(expr, 1, Matrix::rowMeans(expr), "-")^2)
+  if (identical(backend, "cpp")) {
+    native <- pretsa_fit_block_cpp(
+      expression = expr,
+      bases = lapply(basis_models$Blist, `[[`, "B"),
+      inverses = lapply(basis_models$Blist, `[[`, "invB"),
+      knots = as.integer(basis_models$knotnum0)
+    )
+    fit_mat <- native$fit
+    dimnames(fit_mat) <- dimnames(expr)
+    knotnum <- native$knotnum
+    names(knotnum) <- feats
+    SSE <- Matrix::rowSums((expr - fit_mat)^2)
+    SST <- Matrix::rowSums(sweep(expr, 1, Matrix::rowMeans(expr), "-")^2)
+    fstat <- ((SST - SSE) / native$df1) / (SSE / native$df2)
+    fstat[which(Matrix::rowSums(expr) == 0)] <- 0
+    names(fstat) <- feats
+    pval <- stats::pf(
+      q = fstat,
+      df1 = native$df1,
+      df2 = native$df2,
+      lower.tail = FALSE
+    )
+    logpval <- stats::pf(
+      q = fstat,
+      df1 = native$df1,
+      df2 = native$df2,
+      lower.tail = FALSE,
+      log.p = TRUE
+    )
+    test_res <- data.frame(
+      fdr = stats::p.adjust(pval, method = padjust_method),
+      logpval = logpval,
+      pval = pval,
+      fstat = fstat,
+      knotnum = knotnum,
+      row.names = feats
+    )
+    test_res <- test_res[order(test_res$pval, -test_res$fstat), , drop = FALSE]
+  } else {
+    test_res <- pretsa_temporal(
+      expr,
+      pseudotime_vec,
+      knot = knot,
+      max_knot_allowed = max_knot_allowed,
+      padjust_method = padjust_method,
+      basis_models = basis_models
+    )
+    fit_mat <- pretsa_temporalFit(
+      expr,
+      pseudotime_vec,
+      knot = knot,
+      max_knot_allowed = max_knot_allowed,
+      basis_models = basis_models
+    )
+  }
+  if (is.null(SSE)) {
+    SSE <- Matrix::rowSums((expr - fit_mat)^2)
+    SST <- Matrix::rowSums(sweep(expr, 1, Matrix::rowMeans(expr), "-")^2)
+  }
   r_sq_vec <- 1 - SSE / SST
   r_sq_vec[!is.finite(r_sq_vec) | r_sq_vec < 0] <- 0
-  peaktime_vec <- apply(fit_mat, 1, function(v) {
-    stats::median(t_ordered[v >= stats::quantile(v, 0.99, na.rm = TRUE)])
-  })
-  valleytime_vec <- apply(fit_mat, 1, function(v) {
-    stats::median(t_ordered[v <= stats::quantile(v, 0.01, na.rm = TRUE)])
-  })
-  exp_ncells_vec <- apply(expr, 1, function(v) sum(v > min(v), na.rm = TRUE))
+  if (identical(backend, "cpp") && !anyNA(fit_mat) && !anyNA(expr)) {
+    curve_summary <- pretsa_curve_summary_cpp(fit_mat, expr, t_ordered)
+    peaktime_vec <- curve_summary$peaktime
+    valleytime_vec <- curve_summary$valleytime
+    exp_ncells_vec <- curve_summary$exp_ncells
+  } else {
+    peaktime_vec <- apply(fit_mat, 1, function(v) {
+      stats::median(t_ordered[v >= stats::quantile(v, 0.99, na.rm = TRUE)])
+    })
+    valleytime_vec <- apply(fit_mat, 1, function(v) {
+      stats::median(t_ordered[v <= stats::quantile(v, 0.01, na.rm = TRUE)])
+    })
+    exp_ncells_vec <- apply(expr, 1, function(v) sum(v > min(v), na.rm = TRUE))
+  }
   DF <- data.frame(
     features = feats,
     exp_ncells = exp_ncells_vec,
