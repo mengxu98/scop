@@ -392,8 +392,35 @@ RunMultiNichenetr <- function(
     )
   }
 
+  design <- unique(srt[[]][, c(sample.by, condition.by), drop = FALSE])
+  focus_conditions <- c(condition_oi, condition_reference)
+  sample_counts <- vapply(
+    focus_conditions,
+    function(condition_value) {
+      length(unique(design[
+        as.character(design[[condition.by]]) == condition_value,
+        sample.by
+      ]))
+    },
+    integer(1)
+  )
+  if (any(sample_counts < 2L)) {
+    log_message(
+      paste0(
+        "MultiNicheNet pseudobulk differential expression requires at ",
+        "least two independent samples in each compared condition; found ",
+        paste(names(sample_counts), sample_counts, sep = "=", collapse = ", "),
+        ". {.arg sample_agnostic} removes pairing assumptions but does not ",
+        "create biological replicates."
+      ),
+      message_type = "error"
+    )
+  }
+
   assay <- assay %||% DefaultAssay(srt)
   species <- match.arg(species)
+  min_cells <- as.numeric(min_cells)[1]
+  fraction_cutoff <- as.numeric(fraction_cutoff)[1]
   sender_celltypes_original <- sender_celltypes
   receiver_celltypes_original <- receiver_celltypes
   if (is.null(sender_celltypes_original)) {
@@ -413,6 +440,7 @@ RunMultiNichenetr <- function(
     lr_network = lr_network,
     ligand_target_matrix = ligand_target_matrix,
     weighted_networks = NULL,
+    include_weighted = FALSE,
     verbose = verbose
   )
 
@@ -605,6 +633,7 @@ load_nichenetr_models <- function(
   lr_network = NULL,
   ligand_target_matrix = NULL,
   weighted_networks = NULL,
+  include_weighted = TRUE,
   verbose = TRUE
 ) {
   species <- match.arg(species)
@@ -651,22 +680,26 @@ load_nichenetr_models <- function(
     verbose = verbose
   )
 
-  weighted_networks <- resolve_nichenetr_object(
-    x = weighted_networks,
-    package = "nichenetr",
-    object_candidates = if (species == "Mus_musculus") {
-      c(
-        "weighted_networks_nsga2r_final_mouse",
-        "weighted_networks_mouse",
-        "weighted_networks"
-      )
-    } else {
-      c("weighted_networks", "weighted_networks_human")
-    },
-    fallback_url = url_map[[species]][["weighted_networks"]],
-    allow_null = TRUE,
-    verbose = verbose
-  )
+  if (isTRUE(include_weighted)) {
+    weighted_networks <- resolve_nichenetr_object(
+      x = weighted_networks,
+      package = "nichenetr",
+      object_candidates = if (species == "Mus_musculus") {
+        c(
+          "weighted_networks_nsga2r_final_mouse",
+          "weighted_networks_mouse",
+          "weighted_networks"
+        )
+      } else {
+        c("weighted_networks", "weighted_networks_human")
+      },
+      fallback_url = url_map[[species]][["weighted_networks"]],
+      allow_null = TRUE,
+      verbose = verbose
+    )
+  } else {
+    weighted_networks <- NULL
+  }
 
   if (is.null(weighted_networks)) {
     sig_network <- resolve_nichenetr_object(

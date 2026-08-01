@@ -991,8 +991,15 @@ ccc_build_cellchat_long_table <- function(srt, thresh = 0.05) {
 ccc_bundle_long_table <- function(srt, method, bundle = NULL, thresh = 0.05) {
   method <- normalize_ccc_method(method)
   if (identical(method, "CellChat")) {
+    bundle <- bundle %||% srt@tools[[method]]
+    stored <- bundle$primary_table %||% bundle$long_table
+    source <- if (is.data.frame(stored) && nrow(stored) > 0L) {
+      stored
+    } else {
+      ccc_build_cellchat_long_table(srt, thresh = thresh)
+    }
     df <- ccc_semantic_long_table(
-      ccc_build_cellchat_long_table(srt, thresh = thresh),
+      source,
       method = method
     )
     if (nrow(df) > 0L) df$producer <- "RunCellChat"
