@@ -65,11 +65,8 @@ RunNichenetr <- function(
   verbose = TRUE
 ) {
   backend <- match.arg(backend)
-  check_r("saeyslab/nichenetr", verbose = FALSE)
-
   mode <- match.arg(mode)
   species <- match.arg(species)
-  assay <- assay %||% DefaultAssay(srt)
 
   if (!inherits(srt, "Seurat")) {
     log_message(
@@ -77,11 +74,45 @@ RunNichenetr <- function(
       message_type = "error"
     )
   }
-  if (!group.by %in% colnames(srt[[]])) {
+  if (
+    !is.character(group.by) || length(group.by) != 1L ||
+      !group.by %in% colnames(srt[[]])
+  ) {
     log_message(
       "{.arg group.by} must be a valid metadata column in {.cls Seurat}",
       message_type = "error"
     )
+  }
+  assay <- assay %||% DefaultAssay(srt)
+  if (!assay %in% names(srt)) {
+    log_message(
+      "{.arg assay} ({.val {assay}}) is not available in {.arg srt}",
+      message_type = "error"
+    )
+  }
+  if (!is.character(receiver) || length(receiver) == 0L || anyNA(receiver)) {
+    log_message(
+      "{.arg receiver} must contain at least one cell type",
+      message_type = "error"
+    )
+  }
+  groups <- unique(as.character(srt[[group.by]][, 1]))
+  missing_receivers <- setdiff(as.character(receiver), groups)
+  if (length(missing_receivers) > 0L) {
+    log_message(
+      "Unknown receiver cell types in {.arg group.by}: {.val {missing_receivers}}",
+      message_type = "error"
+    )
+  }
+  if (!identical(mode, "custom")) {
+    required <- c("condition.by", "condition_oi", "condition_reference")
+    missing_req <- required[vapply(mget(required), is.null, logical(1))]
+    if (length(missing_req) > 0L) {
+      log_message(
+        "For {.val mode = {mode}}, the following arguments are required: {.val {missing_req}}",
+        message_type = "error"
+      )
+    }
   }
   if (!is.null(condition.by)) {
     if (!condition.by %in% colnames(srt[[]])) {
@@ -106,6 +137,8 @@ RunNichenetr <- function(
       )
     }
   }
+
+  check_r("saeyslab/nichenetr", verbose = FALSE)
 
   sender_use <- resolve_sender_groups(
     srt = srt,
@@ -163,7 +196,11 @@ RunNichenetr <- function(
       weighted_networks = model$weighted_networks,
       assay_oi = assay,
       expression_pct = expression_pct,
-      lfc_cutoff = lfc_cutoff
+      lfc_cutoff = lfc_cutoff,
+      top_n_ligands = top_n_ligands,
+      top_n_targets = top_n_targets,
+      cutoff_visualization = cutoff_visualization,
+      verbose = verbose
     )
     ligand_activities <- raw_result$ligand_activities %||% NULL
     ligand_target_df <- raw_result$ligand_target_df %||% NULL
@@ -209,7 +246,11 @@ RunNichenetr <- function(
       weighted_networks = model$weighted_networks,
       assay_oi = assay,
       expression_pct = expression_pct,
-      lfc_cutoff = lfc_cutoff
+      lfc_cutoff = lfc_cutoff,
+      top_n_ligands = top_n_ligands,
+      top_n_targets = top_n_targets,
+      cutoff_visualization = cutoff_visualization,
+      verbose = verbose
     )
     ligand_activities <- raw_result$ligand_activities %||% NULL
     ligand_target_df <- raw_result$ligand_target_df %||% NULL
@@ -286,12 +327,21 @@ RunNichenetr <- function(
     )
   }
 
+  sender_ligand_support <- nichenetr_sender_ligand_support(
+    srt = srt,
+    sender_use = sender_use,
+    ligand_receptor_df = ligand_receptor_df,
+    assay = assay,
+    expression_pct = expression_pct
+  )
+
   bundle <- standardize_nichenetr_result(
     raw_result = raw_result,
     ligand_activities = ligand_activities,
     ligand_target_df = ligand_target_df,
     ligand_receptor_df = ligand_receptor_df,
     sender_use = sender_use,
+    sender_ligand_support = sender_ligand_support,
     receiver = receiver,
     receiver_affected = receiver_affected_use,
     receiver_reference = receiver_reference_use,
@@ -392,8 +442,45 @@ RunMultiNichenetr <- function(
     )
   }
 
+  design <- unique(srt[[]][, c(sample.by, condition.by), drop = FALSE])
+  focus_conditions <- c(condition_oi, condition_reference)
+  focus_rows <- as.character(design[[condition.by]]) %in% focus_conditions
+  sample_values <- trimws(as.character(design[[sample.by]]))
+  condition_values <- trimws(as.character(design[[condition.by]]))
+  if (
+    any(is.na(condition_values) | !nzchar(condition_values)) ||
+      any(focus_rows & (is.na(sample_values) | !nzchar(sample_values)))
+  ) {
+    log_message(
+      "{.arg sample.by} and {.arg condition.by} must not contain missing or empty values for MultiNicheNet contrasts",
+      message_type = "error"
+    )
+  }
+  sample_counts <- vapply(
+    focus_conditions,
+    function(condition_value) {
+      samples <- sample_values[condition_values == condition_value]
+      length(unique(samples[!is.na(samples) & nzchar(samples)]))
+    },
+    integer(1)
+  )
+  if (any(sample_counts < 2L)) {
+    log_message(
+      paste0(
+        "MultiNicheNet pseudobulk differential expression requires at ",
+        "least two independent samples in each compared condition; found ",
+        paste(names(sample_counts), sample_counts, sep = "=", collapse = ", "),
+        ". {.arg sample_agnostic} removes pairing assumptions but does not ",
+        "create biological replicates."
+      ),
+      message_type = "error"
+    )
+  }
+
   assay <- assay %||% DefaultAssay(srt)
   species <- match.arg(species)
+  min_cells <- as.numeric(min_cells)[1]
+  fraction_cutoff <- as.numeric(fraction_cutoff)[1]
   sender_celltypes_original <- sender_celltypes
   receiver_celltypes_original <- receiver_celltypes
   if (is.null(sender_celltypes_original)) {
@@ -413,6 +500,7 @@ RunMultiNichenetr <- function(
     lr_network = lr_network,
     ligand_target_matrix = ligand_target_matrix,
     weighted_networks = NULL,
+    include_weighted = FALSE,
     verbose = verbose
   )
 
@@ -557,7 +645,57 @@ resolve_sender_groups <- function(
   } else {
     sender_use <- unique(as.character(sender))
   }
+  missing_senders <- setdiff(sender_use, all_groups)
+  if (length(missing_senders) > 0L) {
+    log_message(
+      "Unknown sender cell types in {.arg group.by}: {.val {missing_senders}}",
+      message_type = "error"
+    )
+  }
+  if (length(sender_use) == 0L) {
+    log_message(
+      "No sender cell types remain after excluding receiver groups",
+      message_type = "error"
+    )
+  }
   sender_use
+}
+
+nichenetr_sender_ligand_support <- function(
+  srt,
+  sender_use,
+  ligand_receptor_df,
+  assay,
+  expression_pct
+) {
+  ligand_receptor_df <- standardize_df(ligand_receptor_df)
+  ligand_col <- ccc_pick_col(
+    ligand_receptor_df,
+    c("from", "ligand", "test_ligand")
+  )
+  ligands <- if (!is.null(ligand_col)) {
+    unique(as.character(ligand_receptor_df[[ligand_col]]))
+  } else {
+    character(0)
+  }
+  if (length(sender_use) == 1L) {
+    return(stats::setNames(list(ligands), sender_use))
+  }
+  get_expressed_genes <- get_namespace_fun("nichenetr", "get_expressed_genes")
+  stats::setNames(
+    lapply(sender_use, function(sender_i) {
+      intersect(
+        ligands,
+        get_expressed_genes(
+          sender_i,
+          srt,
+          pct = expression_pct,
+          assay_oi = assay
+        )
+      )
+    }),
+    sender_use
+  )
 }
 
 normalize_lr_network_for_multinichenetr <- function(lr_network) {
@@ -605,6 +743,7 @@ load_nichenetr_models <- function(
   lr_network = NULL,
   ligand_target_matrix = NULL,
   weighted_networks = NULL,
+  include_weighted = TRUE,
   verbose = TRUE
 ) {
   species <- match.arg(species)
@@ -651,24 +790,28 @@ load_nichenetr_models <- function(
     verbose = verbose
   )
 
-  weighted_networks <- resolve_nichenetr_object(
-    x = weighted_networks,
-    package = "nichenetr",
-    object_candidates = if (species == "Mus_musculus") {
-      c(
-        "weighted_networks_nsga2r_final_mouse",
-        "weighted_networks_mouse",
-        "weighted_networks"
-      )
-    } else {
-      c("weighted_networks", "weighted_networks_human")
-    },
-    fallback_url = url_map[[species]][["weighted_networks"]],
-    allow_null = TRUE,
-    verbose = verbose
-  )
+  if (isTRUE(include_weighted)) {
+    weighted_networks <- resolve_nichenetr_object(
+      x = weighted_networks,
+      package = "nichenetr",
+      object_candidates = if (species == "Mus_musculus") {
+        c(
+          "weighted_networks_nsga2r_final_mouse",
+          "weighted_networks_mouse",
+          "weighted_networks"
+        )
+      } else {
+        c("weighted_networks", "weighted_networks_human")
+      },
+      fallback_url = url_map[[species]][["weighted_networks"]],
+      allow_null = TRUE,
+      verbose = verbose
+    )
+  } else {
+    weighted_networks <- NULL
+  }
 
-  if (is.null(weighted_networks)) {
+  if (isTRUE(include_weighted) && is.null(weighted_networks)) {
     sig_network <- resolve_nichenetr_object(
       x = NULL,
       package = "nichenetr",
@@ -699,19 +842,15 @@ load_nichenetr_models <- function(
         !is.null(gr_network) &&
         !is.null(source_weights_df)
     ) {
-      construct_weighted_networks <- get0(
-        "construct_weighted_networks",
-        envir = asNamespace("nichenetr"),
-        inherits = FALSE
+      weighted_networks <- get_namespace_fun(
+        "nichenetr",
+        "construct_weighted_networks"
+      )(
+        lr_network = lr_network,
+        sig_network = sig_network,
+        gr_network = gr_network,
+        source_weights_df = source_weights_df
       )
-      if (!is.null(construct_weighted_networks)) {
-        weighted_networks <- construct_weighted_networks(
-          lr_network = lr_network,
-          sig_network = sig_network,
-          gr_network = gr_network,
-          source_weights_df = source_weights_df
-        )
-      }
     }
   }
 
@@ -737,10 +876,13 @@ resolve_nichenetr_object <- function(
     return(x)
   }
 
-  ns <- asNamespace(package)
+  data_env <- new.env(parent = emptyenv())
   for (nm in object_candidates) {
+    suppressWarnings(
+      utils::data(list = nm, package = package, envir = data_env)
+    )
     obj <- tryCatch(
-      get0(nm, envir = ns, inherits = FALSE),
+      get0(nm, envir = data_env, inherits = FALSE),
       error = function(e) NULL
     )
     if (!is.null(obj)) {
@@ -818,6 +960,7 @@ standardize_nichenetr_result <- function(
   ligand_target_df,
   ligand_receptor_df,
   sender_use,
+  sender_ligand_support = NULL,
   receiver,
   receiver_affected = NULL,
   receiver_reference = NULL,
@@ -857,18 +1000,39 @@ standardize_nichenetr_result <- function(
   act_ligand_col <- ccc_pick_col(ligand_activities, c("test_ligand", "ligand"))
   act_score_col <- ccc_pick_col(
     ligand_activities,
-    c("pearson", "aupr_corrected", "aupr", "activity", "score")
+    c("aupr_corrected", "pearson", "aupr", "activity", "score")
   )
+  act_rank_col <- ccc_pick_col(ligand_activities, c("rank", "activity_rank"))
   lr_table <- data.frame()
   if (!is.null(ligand_receptor_df) && nrow(ligand_receptor_df) > 0L) {
     lr_table <- ligand_receptor_df
     if (!is.null(act_ligand_col) && !is.null(act_score_col)) {
       match_idx <- match(lr_table$ligand, ligand_activities[[act_ligand_col]])
       lr_table$score <- ligand_activities[[act_score_col]][match_idx]
+      for (activity_col in intersect(
+        c("aupr_corrected", "pearson", "aupr", "rank"),
+        colnames(ligand_activities)
+      )) {
+        lr_table[[activity_col]] <- ligand_activities[[activity_col]][match_idx]
+      }
+      if (!is.null(act_rank_col)) {
+        lr_table$priority_rank <- ligand_activities[[act_rank_col]][match_idx]
+      }
     } else {
       lr_table$score <- NA_real_
     }
-    lr_table$sender <- I(lapply(lr_table$ligand, function(x) sender_use))
+    lr_table$score_type <- paste0("ligand_activity_", act_score_col %||% "unknown")
+    lr_table$score_direction <- "higher_is_better"
+    lr_table$support_type <- "sender_expressed_ligand"
+    lr_table$sender <- I(lapply(lr_table$ligand, function(ligand_i) {
+      supported <- names(sender_ligand_support)[vapply(
+        sender_ligand_support,
+        function(sender_ligands) ligand_i %in% sender_ligands,
+        logical(1)
+      )]
+      supported
+    }))
+    lr_table <- lr_table[lengths(lr_table$sender) > 0L, , drop = FALSE]
     lr_table <- expand_sender_lr_table(lr_table)
     lr_table$receiver <- paste(receiver, collapse = ",")
     lr_table$interaction_name <- paste(

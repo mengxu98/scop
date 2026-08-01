@@ -793,6 +793,16 @@ pretsa_one_block <- function(
       basis_models = basis_models
     )
   }
+  fit_mat <- as.matrix(fit_mat)
+  dimnames(fit_mat) <- dimnames(expr)
+  expr_max <- apply(expr, 1L, max, na.rm = TRUE)
+  expr_min <- apply(expr, 1L, min, na.rm = TRUE)
+  flat_scale <- pmax(1, abs(expr_max), abs(expr_min))
+  flat <- is.finite(expr_max) & is.finite(expr_min) &
+    (expr_max - expr_min) <= sqrt(.Machine$double.eps) * flat_scale
+  if (any(flat)) {
+    fit_mat[flat, ] <- Matrix::rowMeans(expr[flat, , drop = FALSE])
+  }
   if (is.null(SSE)) {
     SSE <- Matrix::rowSums((expr - fit_mat)^2)
     SST <- Matrix::rowSums(sweep(expr, 1, Matrix::rowMeans(expr), "-")^2)

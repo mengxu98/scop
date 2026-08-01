@@ -127,6 +127,26 @@
 
 # scop 0.8.9
 
+* Cell-cell communication:
+  * `RunLIANA()` now stores LIANA's official multi-method consensus from
+    `rank_aggregate()` or `liana_aggregate()` alongside the historical
+    method-stacked and scop-postprocessed tables. Human and mouse defaults use
+    the `Consensus` and `MouseConsensus` ligand-receptor resources,
+    respectively, and multiple resources are aggregated independently.
+  * Added `ListLIANAResources()`, `ListCCCMethods()`, `CCCResultInfo()`, and
+    `GetCCCResult()` for resource discovery and Seurat-centered CCC result
+    access.
+  * `RunCCC()` now registers all seven SCOP CCC producers while retaining
+    CellChat, CellPhoneDB, and LIANA as the default core run. Unified CCC
+    plotting separates backends by default and provides explicit
+    support-count and within-method percentile-rank views.
+  * Hardened unified CCC plotting and access semantics: context filters are
+    applied before cross-method support/rank combinations, CellChat cached
+    rows honor the requested significance threshold, LIANA resources remain
+    separate during export, and unified retrieval preserves backend labels.
+    `RunCCC(skip_failed = TRUE)` now records preflight failures without
+    aborting otherwise runnable methods.
+
 * **fix**:
   * `RunGSVA()`: Removed redundant dense `as.matrix()` conversion in single-cell mode for `backend = "r"`; sparse expression matrices now stay sparse through row filtering, reducing peak memory and avoiding unnecessary dense materialization.
   * `RunCellQC()`: Replaced `Seurat::SplitObject()` with lazy cell-name-based subsetting, avoiding full-object duplication per split group. Added caching of `GetAssay()` gene names, `GetAssayData5()` counts, and per-cell QC metrics (`nCount` / `nFeature`) outside the species-check loop to eliminate repeated data extraction.

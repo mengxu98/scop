@@ -262,6 +262,9 @@ CCCNetworkPlot <- function(
   theme_use = "theme_scop",
   theme_args = list(),
   verbose = TRUE,
+  combine_methods = c("separate", "support", "rank", "legacy"),
+  resource = NULL,
+  sample = NULL,
   ...
 ) {
   if (!inherits(srt, "Seurat")) {
@@ -405,20 +408,34 @@ CCCNetworkPlot <- function(
     )
   }
   if (identical(plot_type, "diffusion")) {
-    ccc_assert_unsupported(
-      plot_type = "diffusion",
-      sender.use = sender.use,
-      receiver.use = receiver.use,
-      signaling = signaling,
-      interaction.use = interaction.use,
-      pairLR.use = pairLR.use,
-      ligand.use = ligand.use,
-      receptor.use = receptor.use,
-      ligand = ligand,
-      receptor = receptor
-    )
+    diffusion_method <- detect_method(srt = srt, method = method)
+    if (identical(diffusion_method, "SpatialCellChat")) {
+      if (is.null(signaling)) {
+        log_message(
+          "{.arg signaling} is required for a SpatialCellChat diffusion field",
+          message_type = "error"
+        )
+      }
+      check_r(.spatialcellchat_repository, verbose = FALSE)
+      native <- GetCCCObject(
+        object = srt,
+        method = "SpatialCellChat",
+        result.name = condition,
+        sample = sample
+      )
+      diffusion_fun <- get_namespace_fun(
+        .spatialcellchat_package,
+        "netVisual_CommunField"
+      )
+      native_formals <- names(formals(diffusion_fun))
+      native_dots <- dots[intersect(names(dots), native_formals)]
+      native_dots$object <- native
+      native_dots$signaling <- signaling
+      native_dots$pattern <- native_dots$pattern %||% "outgoing"
+      return(do.call(diffusion_fun, native_dots))
+    }
     log_message(
-      "{.val plot_type = 'diffusion'} has no direct R backend in {.pkg scop}; use {.val plot_type = 'circle'} or {.val plot_type = 'diff_network'}",
+      "{.val plot_type = 'diffusion'} requires stored full SpatialCellChat results",
       message_type = "error"
     )
   }
@@ -432,6 +449,22 @@ CCCNetworkPlot <- function(
   )
 
   method <- detect_method(srt = srt, method = method)
+  combine_methods <- match.arg(combine_methods)
+  srt <- ccc_prepare_filtered_object(
+    srt = srt,
+    method = method,
+    resource = resource,
+    condition = if (identical(method, "CellChat")) NULL else condition,
+    sample = sample
+  )
+  if (identical(method, "CCC") && identical(combine_methods, "separate")) {
+    return(ccc_plot_methods_separately(match.call(), srt = srt, env = parent.frame()))
+  }
+  srt <- ccc_prepare_combined_object(
+    srt = srt,
+    method = method,
+    combine_methods = combine_methods
+  )
 
   if (identical(plot_type, "pathway") && is.null(signaling)) {
     log_message(

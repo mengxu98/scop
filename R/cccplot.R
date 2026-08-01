@@ -781,7 +781,7 @@ custom_cc_bubble_plot <- function(
 }
 
 ccc_method_candidates <- function() {
-  c("CellphoneDB", "Nichenetr", "MultiNichenetr", "LIANA", "CellChat", "SpatialCellChat")
+  names(ccc_method_registry())
 }
 
 normalize_ccc_method <- function(method) {
@@ -793,7 +793,8 @@ normalize_ccc_method <- function(method) {
     "liana" = "LIANA",
     "NicheNet" = "Nichenetr",
     "MultiNicheNet" = "MultiNichenetr",
-    "SpatialCellChat" = "SpatialCellChat"
+    "SpatialCellChat" = "SpatialCellChat",
+    "MDIC3" = "MDIC3"
   )
   alias_map_lower <- c(
     "ccc" = "CCC",
@@ -809,7 +810,8 @@ normalize_ccc_method <- function(method) {
     "nichenet" = "Nichenetr",
     "nichenetr" = "Nichenetr",
     "multinichenet" = "MultiNichenetr",
-    "multinichenetr" = "MultiNichenetr"
+    "multinichenetr" = "MultiNichenetr",
+    "mdic3" = "MDIC3"
   )
   method_chr <- as.character(method)[1]
   if (is.na(method_chr) || !nzchar(method_chr)) {
@@ -989,10 +991,27 @@ ccc_build_cellchat_long_table <- function(srt, thresh = 0.05) {
 ccc_bundle_long_table <- function(srt, method, bundle = NULL, thresh = 0.05) {
   method <- normalize_ccc_method(method)
   if (identical(method, "CellChat")) {
-    return(ccc_build_cellchat_long_table(srt, thresh = thresh))
+    bundle <- bundle %||% srt@tools[[method]]
+    stored <- bundle$primary_table %||% bundle$long_table
+    rebuilt <- ccc_build_cellchat_long_table(srt, thresh = thresh)
+    source <- if (is.data.frame(rebuilt) && nrow(rebuilt) > 0L) rebuilt else stored
+    df <- ccc_semantic_long_table(
+      source,
+      method = method
+    )
+    df <- ccc_mark_significance(df, thresh = thresh)
+    if ("pvalue" %in% colnames(df)) {
+      pvalue <- suppressWarnings(as.numeric(df$pvalue))
+      df <- df[!is.finite(pvalue) | pvalue <= thresh, , drop = FALSE]
+    }
+    if (nrow(df) > 0L) df$producer <- "RunCellChat"
+    return(df)
   }
   bundle <- bundle %||% get_bundle(srt, method = method)
-  df <- standardize_long_df(bundle$long_table %||% data.frame())
+  df <- ccc_semantic_long_table(
+    bundle$primary_table %||% bundle$long_table %||% data.frame(),
+    method = method
+  )
   if (nrow(df) == 0L) {
     return(df)
   }
@@ -1000,6 +1019,17 @@ ccc_bundle_long_table <- function(srt, method, bundle = NULL, thresh = 0.05) {
     df$method <- method
   }
   df$method <- method
+  provenance <- bundle$provenance %||% list()
+  df$producer <- provenance$producer %||% ccc_registry_entry(method)$producer
+  backend_version <- provenance$backend_version %||%
+    provenance$backend_versions %||% NA_character_
+  if (length(backend_version) > 1L) {
+    backend_version <- paste(
+      paste(names(backend_version), backend_version, sep = "="),
+      collapse = ";"
+    )
+  }
+  df$backend_version <- as.character(backend_version)[1]
   ccc_mark_significance(df, thresh = thresh)
 }
 
@@ -1021,23 +1051,8 @@ ccc_build_unified_bundle <- function(
       thresh = thresh
     )
   })
-  pieces <- Filter(function(x) is.data.frame(x) && nrow(x) > 0L, pieces)
-  long_table <- if (length(pieces) == 0L) {
-    data.frame()
-  } else {
-    common <- Reduce(union, lapply(pieces, colnames))
-    pieces <- lapply(pieces, function(x) {
-      missing <- setdiff(common, colnames(x))
-      for (nm in missing) {
-        x[[nm]] <- NA
-      }
-      x[, common, drop = FALSE]
-    })
-    out <- do.call(rbind, pieces)
-    rownames(out) <- NULL
-    out
-  }
-  long_table <- standardize_long_df(long_table)
+  long_table <- ccc_bind_long_tables(pieces)
+  long_table <- ccc_semantic_long_table(long_table)
   pair_table <- aggregate_ccc_long(long_table, backend = backend)
   liana_sample_col <- if ("method" %in% colnames(long_table)) "method" else NULL
   liana_table <- ccc_long_to_liana(long_table, sample_col = liana_sample_col)
@@ -1052,7 +1067,7 @@ ccc_build_unified_bundle <- function(
       updated_at = as.character(Sys.time()),
       backend = backend,
       backend_scope = "result aggregation and unified-table construction",
-      schema = "scop_ccc_unified_v1"
+      schema = "scop_ccc_unified_v2"
     )
   )
 }
@@ -1081,23 +1096,8 @@ ccc_update_unified_bundle <- function(
   if (nrow(old_long) > 0L && "method" %in% colnames(old_long)) {
     old_long <- old_long[as.character(old_long$method) != method, , drop = FALSE]
   }
-  pieces <- Filter(function(x) is.data.frame(x) && nrow(x) > 0L, list(old_long, new_long))
-  long_table <- if (length(pieces) == 0L) {
-    data.frame()
-  } else {
-    common <- Reduce(union, lapply(pieces, colnames))
-    pieces <- lapply(pieces, function(x) {
-      missing <- setdiff(common, colnames(x))
-      for (nm in missing) {
-        x[[nm]] <- NA
-      }
-      x[, common, drop = FALSE]
-    })
-    out <- do.call(rbind, pieces)
-    rownames(out) <- NULL
-    out
-  }
-  long_table <- standardize_long_df(long_table)
+  long_table <- ccc_bind_long_tables(list(old_long, new_long))
+  long_table <- ccc_semantic_long_table(long_table)
   old_methods <- if (!is.null(old$methods)) {
     setdiff(as.character(old$methods), method)
   } else {
@@ -1123,7 +1123,7 @@ ccc_update_unified_bundle <- function(
       updated_at = as.character(Sys.time()),
       backend = backend,
       backend_scope = "result aggregation and unified-table construction",
-      schema = "scop_ccc_unified_v1"
+      schema = "scop_ccc_unified_v2"
     )
   )
   srt
@@ -1135,7 +1135,7 @@ ccc_get_unified_long_table <- function(srt, method = NULL, thresh = 0.05) {
   if (is.null(bundle)) {
     bundle <- ccc_build_unified_bundle(srt = srt, thresh = thresh)
   }
-  df <- standardize_long_df(bundle$long_table %||% data.frame())
+  df <- ccc_semantic_long_table(bundle$long_table %||% data.frame())
   if (nrow(df) == 0L) {
     return(df)
   }

@@ -60,6 +60,9 @@ CCCHeatmap(
   theme_use = "theme_scop",
   theme_args = list(),
   verbose = TRUE,
+  combine_methods = c("separate", "support", "rank", "legacy"),
+  resource = NULL,
+  sample = NULL,
   ...
 )
 }
@@ -183,6 +186,14 @@ Default is \code{"theme_scop"}.}
 Default is \code{list()}.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{combine_methods}{Behavior when \code{method = "CCC"}. \code{"separate"} returns
+one panel per backend, \code{"support"} counts supporting backends, \code{"rank"}
+combines within-method percentile ranks for visualization, and \code{"legacy"}
+retains the deprecated raw-score aggregation.}
+
+\item{resource, sample}{Optional resource and sample/context filters for
+unified CCC results.}
 
 \item{...}{Additional plot-specific options.}
 }
