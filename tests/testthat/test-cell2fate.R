@@ -46,6 +46,10 @@ test_that("cell2fate environment is isolated and pinned to the upstream stack", 
 
   req <- env_requirements(modules = "cell2fate")
   expect_identical(req$python, "3.9-1")
+  expect_identical(
+    unname(req$packages[["setuptools"]]),
+    "setuptools<81"
+  )
   expect_identical(unname(req$packages[["jaxlib"]]), "jaxlib==0.4.10")
   expect_match(
     unname(req$packages[["cell2fate"]]),
@@ -101,7 +105,10 @@ test_that("cell2fate environment check uses the pinned GitHub backend", {
 
   expect_identical(prepared$version, "3.9-1")
   expect_identical(prepared$modules, "cell2fate")
-  expect_identical(checked[[1]]$packages, "jaxlib==0.4.10")
+  expect_setequal(
+    checked[[1]]$packages,
+    c("setuptools<81", "jaxlib==0.4.10")
+  )
   expect_false(checked[[1]]$pip)
   expect_match(checked[[2]]$packages[[1]], "^git\\+https://")
   expect_match(checked[[2]]$packages[[1]], "cell2fate.git@c03d1ca0")
@@ -233,12 +240,17 @@ test_that("RunCell2fate maps posterior summaries back to Seurat", {
       file.create(path)
       invisible(path)
     },
+    runner_request_id = function() "test-request",
     runner_write_json = function(...) invisible(NULL),
     runner_system2 = function(command, args, env, stdout, stderr) {
       files <- getFromNamespace("cell2fate_result_files", "scop")(result_dir)
+      dir.create(dirname(files$input), recursive = TRUE, showWarnings = FALSE)
       dir.create(dirname(files$cell_metadata), recursive = TRUE, showWarnings = FALSE)
       dir.create(dirname(files$posterior), recursive = TRUE, showWarnings = FALSE)
       dir.create(files$model, recursive = TRUE, showWarnings = FALSE)
+      writeLines("model", file.path(files$model, "model.pt"))
+      writeLines("model data", file.path(files$model, "adata.h5ad"))
+      writeLines("input", files$input)
       metadata <- data.frame(
         Cell2fate_time = seq_len(8),
         Cell2fate_time_uncertainty = seq(0.1, 0.8, 0.1),
@@ -254,11 +266,67 @@ test_that("RunCell2fate maps posterior summaries back to Seurat", {
       )
       utils::write.csv(metadata, files$cell_metadata)
       utils::write.csv(velocity, files$velocity)
-      file.create(files$posterior)
+      writeLines("posterior", files$posterior)
+      artifact_paths <- c(
+        "inputs/input.h5ad" = files$input,
+        "model/model.pt" = file.path(files$model, "model.pt"),
+        "model/adata.h5ad" = file.path(files$model, "adata.h5ad"),
+        "posterior/cell2fate_posterior.h5ad" = files$posterior,
+        "tables/cell_metadata.csv" = files$cell_metadata,
+        "tables/velocity.csv" = files$velocity
+      )
+      sha256sum <- get0(
+        "sha256sum",
+        envir = asNamespace("tools"),
+        mode = "function",
+        inherits = FALSE
+      )
+      artifacts <- lapply(
+        artifact_paths,
+        function(path) {
+          list(
+            size = unname(file.info(path)$size),
+            sha256 = if (is.null(sha256sum)) {
+              paste(rep("0", 64L), collapse = "")
+            } else {
+              unname(sha256sum(path))
+            }
+          )
+        }
+      )
+      manifest <- list(
+        producer = "RunCell2fate",
+        runner_schema_version = 1L,
+        backend_commit = "c03d1ca0bb963f550001c6070d4986a61ec8456a",
+        status = "complete",
+        request_id = "test-request",
+        features = paste0("Gene", 1:3),
+        cells = paste0("Cell", 1:8),
+        artifacts = artifacts,
+        n_modules = 1L,
+        versions = list(cell2fate = "0.1a0")
+      )
+      to_json <- getExportedValue(
+        "thisutils",
+        "get_namespace_fun"
+      )("jsonlite", "toJSON")
       writeLines(
-        '{"status":"complete","n_modules":1,"versions":{"cell2fate":"0.1a0"}}',
+        as.character(to_json(
+          manifest,
+          auto_unbox = TRUE,
+          null = "null",
+          digits = NA
+        )),
         files$manifest
       )
+      writeLines(
+        paste0(
+          '{"producer":"RunCell2fate","runner_schema_version":1,',
+          '"backend_commit":"c03d1ca0bb963f550001c6070d4986a61ec8456a"}'
+        ),
+        file.path(result_dir, ".cell2fate.json")
+      )
+      file.create(file.path(result_dir, ".complete"))
       file.create(stdout)
       file.create(stderr)
       0L
@@ -283,11 +351,13 @@ test_that("RunCell2fate maps posterior summaries back to Seurat", {
   expect_identical(out@tools$Cell2fate$result_type, "rna_velocity")
   expect_identical(out@tools$Cell2fate$cells, colnames(srt))
   expect_identical(dim(out@tools$Cell2fate$velocity), c(8L, 3L))
+  expect_identical(out@tools$Cell2fate$features, paste0("Gene", 1:3))
   expect_identical(out@tools$Cell2fate$manifest$status, "complete")
   expect_identical(
     out@tools$Cell2fate$provenance$backend_commit,
     "c03d1ca0bb963f550001c6070d4986a61ec8456a"
   )
+  expect_false(file.exists(file.path(result_dir, ".cell2fate.lock")))
 })
 
 test_that("Cell2fate CSV readers preserve character cell names", {
@@ -327,6 +397,201 @@ test_that("Cell2fate CSV readers preserve character cell names", {
   expect_identical(metadata$Cell2fate_time, c(0.5, 1.5, 2.5))
   expect_identical(rownames(velocity), c("NA", "001", "010"))
   expect_identical(unname(velocity[, "Gene1"]), c(0.5, 1.5, 3.5))
+})
+
+test_that("Cell2fate manifest features are always a character vector", {
+  manifest <- list(features = as.list(c("Gene1", "Gene2")))
+  features <- getFromNamespace("cell2fate_manifest_features", "scop")(
+    manifest,
+    input_features = c("Gene1", "Gene2", "Gene3")
+  )
+
+  expect_identical(features, c("Gene1", "Gene2"))
+  expect_error(
+    getFromNamespace("cell2fate_manifest_features", "scop")(
+      manifest,
+      input_features = c("Gene1", "Gene3")
+    ),
+    "absent from the prepared input"
+  )
+})
+
+test_that("Cell2fate validates artifact sizes and checksums", {
+  result_dir <- tempfile("cell2fate artifact ")
+  path <- file.path(result_dir, "inputs", "input.h5ad")
+  dir.create(dirname(path), recursive = TRUE)
+  writeBin(charToRaw("first"), path)
+  sha256sum <- get0(
+    "sha256sum",
+    envir = asNamespace("tools"),
+    mode = "function",
+    inherits = FALSE
+  )
+  manifest <- list(
+    artifacts = list(
+      "inputs/input.h5ad" = list(
+        size = unname(file.info(path)$size),
+        sha256 = if (is.null(sha256sum)) {
+          paste(rep("0", 64L), collapse = "")
+        } else {
+          unname(sha256sum(path))
+        }
+      )
+    )
+  )
+  validate <- getFromNamespace("cell2fate_validate_artifacts", "scop")
+  expect_invisible(validate(manifest, result_dir))
+
+  writeBin(charToRaw("other"), path)
+  if (!is.null(sha256sum)) {
+    expect_error(
+      validate(manifest, result_dir),
+      "failed integrity validation"
+    )
+  }
+  writeBin(charToRaw("longer"), path)
+  expect_error(
+    validate(manifest, result_dir),
+    "failed integrity validation"
+  )
+})
+
+test_that("Cell2fate rejects non-finite or inconsistent result tables", {
+  validate <- getFromNamespace("cell2fate_validate_result_tables", "scop")
+  metadata <- data.frame(
+    Cell2fate_time = c(1, 2),
+    Cell2fate_time_uncertainty = c(0.1, 0.2),
+    Cell2fate_module_0_activation = c(0.2, 0.3),
+    Cell2fate_module_0_state = c("ON", "OFF"),
+    row.names = c("Cell1", "Cell2")
+  )
+  expect_invisible(validate(
+    metadata,
+    velocity = NULL,
+    manifest_cells = c("Cell1", "Cell2"),
+    manifest_features = c("Gene1", "Gene2"),
+    n_modules = 1L,
+    prefix = "Cell2fate"
+  ))
+
+  invalid <- metadata
+  invalid$Cell2fate_time[[2L]] <- NaN
+  expect_error(
+    validate(
+      invalid,
+      velocity = NULL,
+      manifest_cells = c("Cell1", "Cell2"),
+      manifest_features = c("Gene1", "Gene2"),
+      n_modules = 1L,
+      prefix = "Cell2fate"
+    ),
+    "inconsistent posterior metadata"
+  )
+  character_time <- metadata
+  character_time$Cell2fate_time <- c("early", "late")
+  expect_error(
+    validate(
+      character_time,
+      velocity = NULL,
+      manifest_cells = c("Cell1", "Cell2"),
+      manifest_features = c("Gene1", "Gene2"),
+      n_modules = 1L,
+      prefix = "Cell2fate"
+    ),
+    "inconsistent posterior metadata"
+  )
+  expect_error(
+    validate(
+      metadata,
+      velocity = matrix(
+        1,
+        nrow = 2,
+        ncol = 2,
+        dimnames = list(c("Cell2", "Cell1"), c("Gene1", "Gene2"))
+      ),
+      manifest_cells = c("Cell1", "Cell2"),
+      manifest_features = c("Gene1", "Gene2"),
+      n_modules = 1L,
+      prefix = "Cell2fate"
+    ),
+    "inconsistent with its manifest"
+  )
+  missing_state <- metadata
+  missing_state$Cell2fate_module_0_state <- NULL
+  expect_error(
+    validate(
+      missing_state,
+      velocity = NULL,
+      manifest_cells = c("Cell1", "Cell2"),
+      manifest_features = c("Gene1", "Gene2"),
+      n_modules = 1L,
+      prefix = "Cell2fate"
+    ),
+    "inconsistent posterior metadata"
+  )
+})
+
+test_that("Cell2fate recognizes an older backend owner for safe replacement", {
+  result_dir <- tempfile("older cell2fate owner ")
+  dir.create(result_dir)
+  writeLines(
+    paste0(
+      '{"producer":"RunCell2fate","runner_schema_version":1,',
+      '"backend_commit":"older-backend"}'
+    ),
+    file.path(result_dir, ".cell2fate.json")
+  )
+
+  expect_true(
+    getFromNamespace("cell2fate_result_dir_is_owned", "scop")(result_dir)
+  )
+})
+
+test_that("Cell2fate refuses a non-empty unowned result directory", {
+  srt <- make_cell2fate_srt()
+  result_dir <- tempfile("unowned cell2fate ")
+  logs_dir <- file.path(result_dir, "logs")
+  dir.create(logs_dir, recursive = TRUE)
+  stdout_path <- file.path(logs_dir, "cell2fate_stdout.log")
+  writeLines("user-owned log", stdout_path)
+  python_checked <- FALSE
+
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    cell2fate_check_python = function(...) {
+      python_checked <<- TRUE
+      "python"
+    }
+  )
+
+  expect_error(
+    RunCell2fate(
+      srt,
+      result_dir = result_dir,
+      cluster.by = "celltype",
+      verbose = FALSE
+    ),
+    "empty or owned"
+  )
+  expect_false(python_checked)
+  expect_identical(readLines(stdout_path), "user-owned log")
+})
+
+test_that("Cell2fate rejects symbolic links in managed result paths", {
+  result_dir <- tempfile("cell2fate symlink ")
+  outside <- tempfile("cell2fate outside ")
+  dir.create(result_dir)
+  dir.create(outside)
+  linked <- suppressWarnings(
+    file.symlink(outside, file.path(result_dir, "logs"))
+  )
+  skip_if(!isTRUE(linked), "Symbolic links are not available")
+
+  expect_error(
+    getFromNamespace("cell2fate_prepare_result_dir", "scop")(result_dir),
+    "symbolic links"
+  )
+  expect_length(list.files(outside, all.files = TRUE, no.. = TRUE), 0L)
 })
 
 test_that("Cell2fate runner errors retain stderr when stdout is long", {
@@ -381,29 +646,187 @@ test_that("Cell2fate runner treats a malformed resume manifest as a cache miss",
   writeLines(
     c(
       "import runpy",
+      "import json",
+      "import os",
       "import sys",
       "import tempfile",
       "import types",
+      "from concurrent.futures import ThreadPoolExecutor",
       "from pathlib import Path",
       "for name in ('anndata', 'numpy', 'pandas'):",
       "    sys.modules[name] = types.ModuleType(name)",
+      "class FakeArray:",
+      "    def __init__(self, shape, finite=True):",
+      "        self.shape = shape",
+      "        self.finite = finite",
+      "    def __getitem__(self, key):",
+      "        return FakeArray((1, 1), self.finite)",
+      "    def __mul__(self, other):",
+      "        return FakeArray((1, 1), self.finite and other.finite)",
+      "    def __sub__(self, other):",
+      "        return FakeArray((1, 1), self.finite and other.finite)",
+      "numpy = sys.modules['numpy']",
+      "numpy.asarray = lambda value, dtype=None: value",
+      "numpy.isfinite = lambda value: types.SimpleNamespace(all=lambda: value.finite)",
       "module = runpy.run_path(sys.argv[1], run_name='cell2fate_runner_test')",
+      "model = types.SimpleNamespace(samples={'post_sample_means': {",
+      "    'mu_expression': FakeArray((1, 1, 2), finite=False),",
+      "    'beta_g': FakeArray((1, 1)),",
+      "    'gamma_g': FakeArray((1, 1)),",
+      "}})",
+      "adata = types.SimpleNamespace(n_obs=1, n_vars=1, layers={})",
+      "try:",
+      "    module['_add_velocity_from_posterior'](adata, model)",
+      "except ValueError as error:",
+      "    assert 'non-finite' in str(error)",
+      "else:",
+      "    raise AssertionError('non-finite velocity was accepted')",
       "with tempfile.TemporaryDirectory() as temporary:",
       "    paths = module['_output_paths'](Path(temporary))",
+      "    with module['_result_lock'](Path(temporary)):",
+      "        try:",
+      "            with module['_result_lock'](Path(temporary)):",
+      "                pass",
+      "        except RuntimeError as error:",
+      "            assert 'Another Cell2fate run' in str(error)",
+      "        else:",
+      "            raise AssertionError('concurrent result lock was accepted')",
+      "    foreign_lock = Path(temporary) / '.cell2fate.lock'",
+      "    with module['_result_lock'](Path(temporary)):",
+      "        foreign_lock.unlink()",
+      "        foreign_lock.write_text('foreign-owner\\n', encoding='utf-8')",
+      "    assert foreign_lock.read_text(encoding='utf-8').strip() == 'foreign-owner'",
+      "    foreign_lock.unlink()",
+      "    external_lock = Path(temporary) / '.cell2fate.lock'",
+      "    external_lock.write_text('owner-token\\n', encoding='utf-8')",
+      "    module['_assert_external_lock'](Path(temporary), 'owner-token')",
+      "    try:",
+      "        module['_assert_external_lock'](Path(temporary), 'other-token')",
+      "    except RuntimeError as error:",
+      "        assert 'owner changed' in str(error)",
+      "    else:",
+      "        raise AssertionError('foreign external lock was accepted')",
+      "    stale_stage = Path(temporary) / '.cell2fate-stage-stale'",
+      "    stale_stage.mkdir()",
+      "    (stale_stage / 'partial').write_text('partial', encoding='utf-8')",
+      "    module['_cleanup_stale_stages'](",
+      "        Path(temporary), 'owner-token'",
+      "    )",
+      "    assert not stale_stage.exists()",
+      "    if hasattr(os, 'symlink'):",
+      "        outside_stage = Path(temporary) / 'outside-stage'",
+      "        outside_stage.mkdir()",
+      "        outside_marker = outside_stage / 'keep'",
+      "        outside_marker.write_text('keep', encoding='utf-8')",
+      "        stage_link = Path(temporary) / '.cell2fate-stage-link'",
+      "        try:",
+      "            stage_link.symlink_to(outside_stage, target_is_directory=True)",
+      "        except OSError:",
+      "            pass",
+      "        else:",
+      "            module['_cleanup_stale_stages'](",
+      "                Path(temporary), 'owner-token'",
+      "            )",
+      "            assert not stage_link.exists()",
+      "            assert outside_marker.read_text(encoding='utf-8') == 'keep'",
       "    paths['model'].mkdir(parents=True)",
+      "    old_marker = paths['model'] / 'old-result'",
+      "    old_marker.write_text('keep', encoding='utf-8')",
+      "    with module['_staged_output_paths'](Path(temporary)) as staged:",
+      "        for key in ('inputs', 'model', 'posterior', 'tables'):",
+      "            staged[key].mkdir(parents=True)",
+      "        staged['manifest'].write_text('{}', encoding='utf-8')",
+      "        staged['complete'].write_text('complete', encoding='utf-8')",
+      "        external_lock.write_text('foreign-owner\\n', encoding='utf-8')",
+      "        try:",
+      "            module['_publish_staged_outputs'](",
+      "                staged, paths, Path(temporary), 'owner-token'",
+      "            )",
+      "        except RuntimeError as error:",
+      "            assert 'owner changed' in str(error)",
+      "        else:",
+      "            raise AssertionError('lost lock published staged output')",
+      "    assert old_marker.read_text(encoding='utf-8') == 'keep'",
+      "    old_marker.unlink()",
+      "    paths['model'].rmdir()",
+      "    external_lock.unlink()",
+      "    concurrent_json = Path(temporary) / 'concurrent.json'",
+      "    with ThreadPoolExecutor(max_workers=8) as executor:",
+      "        list(executor.map(",
+      "            lambda value: module['_write_json']({'value': value}, concurrent_json),",
+      "            range(40),",
+      "        ))",
+      "    assert isinstance(json.loads(concurrent_json.read_text()), dict)",
+      "    paths['model'].mkdir(parents=True)",
+      "    paths['inputs'].mkdir(parents=True)",
       "    paths['posterior'].mkdir(parents=True)",
       "    paths['tables'].mkdir(parents=True)",
+      "    paths['owner'].write_text('[]', encoding='utf-8')",
+      "    assert module['_is_owned_result'](paths) is False",
+      "    module['_write_json']({",
+      "        'producer': module['PRODUCER'],",
+      "        'runner_schema_version': module['RUNNER_SCHEMA_VERSION'],",
+      "        'backend_commit': 'older-backend',",
+      "    }, paths['owner'])",
+      "    assert module['_is_owned_result'](paths) is True",
+      "    (paths['model'] / 'model.pt').write_bytes(b'model')",
+      "    (paths['inputs'] / 'input.h5ad').write_bytes(b'input')",
+      "    (paths['model'] / 'adata.h5ad').write_bytes(b'adata')",
+      "    (paths['posterior'] / 'cell2fate_posterior.h5ad').write_bytes(b'posterior')",
+      "    (paths['tables'] / 'cell_metadata.csv').write_bytes(b'metadata')",
+      "    paths['complete'].write_text('complete')",
+      "    paths['manifest'].write_text('{', encoding='utf-8')",
+      "    assert module['_can_resume'](",
+      "        paths, 'fingerprint', {}, require_velocity=False",
+      "    ) is False",
       "    module['_write_json']({",
       "        'producer': module['PRODUCER'],",
       "        'runner_schema_version': module['RUNNER_SCHEMA_VERSION'],",
       "        'backend_commit': module['BACKEND_COMMIT'],",
-      "    }, paths['owner'])",
-      "    (paths['posterior'] / 'cell2fate_posterior.h5ad').touch()",
-      "    (paths['tables'] / 'cell_metadata.csv').touch()",
-      "    paths['complete'].touch()",
-      "    paths['manifest'].write_text('{', encoding='utf-8')",
+      "        'input_sha256': 'fingerprint',",
+      "        'parameters': {},",
+      "        'status': 'complete',",
+      "        'artifacts': module['_artifact_records'](",
+      "            paths, require_velocity=False",
+      "        ),",
+      "    }, paths['manifest'])",
       "    assert module['_can_resume'](",
       "        paths, 'fingerprint', {}, require_velocity=False",
+      "    ) is True",
+      "    strict_parameters = {'flag': False}",
+      "    module['_write_json']({",
+      "        'producer': module['PRODUCER'],",
+      "        'runner_schema_version': module['RUNNER_SCHEMA_VERSION'],",
+      "        'backend_commit': module['BACKEND_COMMIT'],",
+      "        'input_sha256': 'fingerprint',",
+      "        'parameters': strict_parameters,",
+      "        'parameters_sha256': module['_parameter_fingerprint'](strict_parameters),",
+      "        'status': 'complete',",
+      "        'artifacts': module['_artifact_records'](",
+      "            paths, require_velocity=False",
+      "        ),",
+      "    }, paths['manifest'])",
+      "    assert module['_can_resume'](",
+      "        paths, 'fingerprint', {'flag': 0}, require_velocity=False",
+      "    ) is False",
+      "    if hasattr(os, 'symlink'):",
+      "        outside = Path(temporary) / 'outside'",
+      "        outside.mkdir()",
+      "        try:",
+      "            paths['logs'].symlink_to(outside, target_is_directory=True)",
+      "        except OSError:",
+      "            pass",
+      "        else:",
+      "            try:",
+      "                module['_assert_safe_result_paths'](Path(temporary))",
+      "            except RuntimeError as error:",
+      "                assert 'symbolic link' in str(error)",
+      "            else:",
+      "                raise AssertionError('managed symlink was accepted')",
+      "            paths['logs'].unlink()",
+      "    (paths['model'] / 'model.pt').write_bytes(b'corrupt')",
+      "    assert module['_can_resume'](",
+      "        paths, 'fingerprint', strict_parameters, require_velocity=False",
       "    ) is False"
     ),
     script
@@ -440,6 +863,62 @@ test_that("Cell2fate marks cells excluded from backend training", {
   )
 })
 
+test_that("Cell2fate only replaces its own prior Seurat output", {
+  srt <- make_cell2fate_srt()
+  metadata <- data.frame(
+    Cell2fate_time = seq_len(ncol(srt)),
+    Cell2fate_module_0_activation = seq_len(ncol(srt)) / 10,
+    Cell2fate_module_0_state = rep(c("ON", "OFF"), 4),
+    row.names = colnames(srt),
+    check.names = FALSE
+  )
+  srt <- Seurat::AddMetaData(srt, metadata)
+  srt$Cell2fate_selected <- TRUE
+  srt@tools$Cell2fate <- list(
+    method = "Cell2fate",
+    cell_metadata = metadata,
+    parameters = list(prefix = "Cell2fate"),
+    provenance = list(producer = "RunCell2fate")
+  )
+
+  cleaned <- getFromNamespace(
+    "cell2fate_prepare_seurat_output",
+    "scop"
+  )(
+    srt,
+    prefix = "Cell2fate",
+    tool_name = "Cell2fate"
+  )
+  expect_length(
+    grep("^Cell2fate_", colnames(cleaned@meta.data), value = TRUE),
+    0L
+  )
+  expect_false("Cell2fate" %in% names(cleaned@tools))
+  expect_true("celltype" %in% colnames(cleaned@meta.data))
+
+  unrelated <- make_cell2fate_srt()
+  unrelated@tools$Cell2fate <- list(user = "keep")
+  expect_error(
+    getFromNamespace("cell2fate_prepare_seurat_output", "scop")(
+      unrelated,
+      prefix = "Cell2fate",
+      tool_name = "Cell2fate"
+    ),
+    "unrelated result"
+  )
+
+  unowned_metadata <- make_cell2fate_srt()
+  unowned_metadata$Cell2fate_time <- seq_len(ncol(unowned_metadata))
+  expect_error(
+    getFromNamespace("cell2fate_prepare_seurat_output", "scop")(
+      unowned_metadata,
+      prefix = "Cell2fate",
+      tool_name = "Cell2fate"
+    ),
+    "without matching provenance"
+  )
+})
+
 test_that("RunCell2fate leaves the input unchanged when Python fails", {
   srt <- make_cell2fate_srt()
   before <- srt
@@ -472,6 +951,7 @@ test_that("RunCell2fate leaves the input unchanged when Python fails", {
   )
   expect_identical(before@meta.data, srt@meta.data)
   expect_identical(before@tools, srt@tools)
+  expect_false(file.exists(file.path(result_dir, ".cell2fate.lock")))
 })
 
 test_that("RunCell2fate validates parameter lists and output paths", {

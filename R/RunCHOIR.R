@@ -32,7 +32,8 @@
 #'   clusters plateaus.
 #' @param normalization_method Normalization performed inside CHOIR. Use
 #'   `"none"` for previously normalized data or `"SCTransform"` with a counts
-#'   layer.
+#'   layer. The pinned backend does not support `"SCTransform"` for Seurat v5
+#'   `Assay5` objects.
 #' @param batch.by Optional metadata column containing batch labels.
 #' @param batch_correction_method Batch correction performed by CHOIR. If
 #'   `NULL`, `"Harmony"` is selected when `batch.by` is supplied and `"none"`
@@ -42,11 +43,14 @@
 #' @param var_features Features associated with `reduction`. If `NULL` and a
 #'   reduction is supplied, variable features from `assay` are used.
 #' @param atac Whether the selected assay contains ATAC-seq data.
-#' @param n_cores Number of cores used by CHOIR.
+#' @param n_cores Number of cores used by CHOIR. The pinned backend supports
+#'   macOS and Linux; Windows execution is rejected before installation.
 #' @param seed Random seed passed to CHOIR.
 #' @param store_tool Whether to store a lightweight result summary in
 #'   `srt@tools[[tool_name]]`.
 #' @param verbose Whether to print progress messages.
+#' @param overwrite Whether to replace existing CHOIR metadata, reduction, and
+#'   `misc` entries, plus the `tools` entry when `store_tool = TRUE`.
 #' @param ... Additional named arguments passed to the installed CHOIR entry
 #'   point. Unsupported arguments produce an error rather than being silently
 #'   ignored.
@@ -101,6 +105,7 @@ RunCHOIR <- function(
   seed = 1,
   store_tool = TRUE,
   verbose = TRUE,
+  overwrite = FALSE,
   ...
 ) {
   validate_seurat_object(srt)
@@ -110,6 +115,7 @@ RunCHOIR <- function(
   validate_scalar_flag(atac, "atac")
   validate_scalar_flag(store_tool, "store_tool")
   validate_scalar_flag(verbose, "verbose")
+  validate_scalar_flag(overwrite, "overwrite")
 
   p_adjust <- match.arg(p_adjust)
   feature_set <- match.arg(feature_set)
@@ -123,8 +129,8 @@ RunCHOIR <- function(
   seed <- validate_scalar_integer(
     seed,
     "seed",
-    minimum = -Inf,
-    message = "must be a finite integer"
+    minimum = 1L,
+    message = "must be a positive integer"
   )
 
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
@@ -149,6 +155,22 @@ RunCHOIR <- function(
 
   dots <- list(...)
   choir_validate_dots(dots)
+  expected_cluster_col <- paste0("CHOIR_clusters_", alpha)
+  if (identical(batch$labels, expected_cluster_col)) {
+    log_message(
+      "{.arg batch.by} cannot use CHOIR's managed cluster column {.val {expected_cluster_col}}",
+      message_type = "error"
+    )
+  }
+  backend_input <- choir_prepare_output(
+    srt = srt,
+    key = key,
+    expected_cluster_col = expected_cluster_col,
+    cluster_colname = cluster_colname,
+    tool_name = tool_name,
+    store_tool = store_tool,
+    overwrite = overwrite
+  )
 
   log_message(
     "Running {.pkg CHOIR} clustering",
@@ -157,10 +179,6 @@ RunCHOIR <- function(
   )
   backend_commit <- choir_check_r(verbose = FALSE)
   choir_fun <- choir_get_fun("CHOIR")
-  backend_input <- srt
-  expected_cluster_col <- paste0("CHOIR_clusters_", alpha)
-  backend_input@meta.data[[expected_cluster_col]] <- NULL
-  backend_input@misc[[key]] <- NULL
 
   args <- c(
     list(
@@ -194,7 +212,8 @@ RunCHOIR <- function(
     result = result,
     input_cells = colnames(srt),
     input_metadata = colnames(backend_input@meta.data),
-    alpha = alpha
+    alpha = alpha,
+    key = key
   )
 
   backend_cluster_col <- attr(result, "choir_cluster_column")
@@ -239,7 +258,8 @@ RunCHOIR <- function(
         reduction = reduction_input$name,
         atac = atac,
         n_cores = n_cores,
-        seed = seed
+        seed = seed,
+        overwrite = overwrite
       )
     )
   }
@@ -256,26 +276,59 @@ RunCHOIR <- function(
 .choir_repository <- "corceslab/CHOIR"
 .choir_package <- "CHOIR"
 .choir_commit <- "e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc"
+.choir_reduction <- "CHOIR_P0_reduction"
+.choir_dependencies <- c(
+  "BiocGenerics",
+  "bluster",
+  "dplyr",
+  "ggplot2",
+  "ggtree",
+  "harmony",
+  "magrittr",
+  "Matrix",
+  "pengminshi/mrtree",
+  "plyr",
+  "progress",
+  "ranger",
+  "Seurat",
+  "spatstat.univar",
+  "stringr",
+  "tidyr"
+)
 
 choir_check_r <- function(verbose = FALSE) {
+  choir_validate_platform()
+  if (choir_namespace_loaded()) {
+    observed_commit <- choir_loaded_commit()
+    if (identical(observed_commit, .choir_commit)) {
+      return(invisible(.choir_commit))
+    }
+    log_message(
+      "A different or unverifiable {.pkg CHOIR} backend is already loaded. Restart R before using the pinned backend.",
+      message_type = "error"
+    )
+  }
   status <- check_r(
-    paste0(.choir_repository, "@", .choir_commit),
+    .choir_package,
     dependencies = NA,
-    verbose = verbose
+    install = FALSE,
+    verbose = FALSE
   )
   available <- isTRUE(status) || isTRUE(unlist(status)[.choir_package])
-  if (available && identical(choir_installed_commit(), .choir_commit)) {
+  observed_commit <- choir_installed_commit()
+  if (available && identical(observed_commit, .choir_commit)) {
     return(invisible(.choir_commit))
   }
 
   log_message(
-    "Retrying {.pkg CHOIR} installation without its upstream configure telemetry",
-    message_type = "warning",
+    "Installing the pinned {.pkg CHOIR} backend without its upstream configure telemetry",
     verbose = verbose
   )
+  choir_check_dependencies(verbose = verbose)
   choir_install_without_configure(verbose = verbose)
   status <- check_r(
     .choir_package,
+    dependencies = NA,
     install = FALSE,
     verbose = FALSE
   )
@@ -288,6 +341,64 @@ choir_check_r <- function(verbose = FALSE) {
     )
   }
   invisible(observed_commit)
+}
+
+choir_namespace_loaded <- function() {
+  isNamespaceLoaded(.choir_package)
+}
+
+choir_loaded_commit <- function() {
+  if (!choir_namespace_loaded()) {
+    return(NULL)
+  }
+  namespace <- tryCatch(
+    asNamespace(.choir_package),
+    error = function(...) NULL
+  )
+  package_path <- tryCatch(
+    getNamespaceInfo(namespace, "path"),
+    error = function(...) NULL
+  )
+  if (is.null(package_path) || !nzchar(package_path)) {
+    return(NULL)
+  }
+  description <- tryCatch(
+    base::read.dcf(
+      file.path(package_path, "DESCRIPTION"),
+      fields = "RemoteSha"
+    ),
+    error = function(...) NULL
+  )
+  if (is.null(description) || length(description) != 1L) {
+    return(NULL)
+  }
+  commit <- unname(description[[1L]])
+  if (is.na(commit) || !nzchar(commit)) {
+    return(NULL)
+  }
+  commit
+}
+
+choir_check_dependencies <- function(verbose = FALSE) {
+  status <- check_r(
+    .choir_dependencies,
+    dependencies = NA,
+    verbose = verbose
+  )
+  available <- unlist(status, use.names = FALSE)
+  if (
+    !isTRUE(status) &&
+      (
+        length(available) != length(.choir_dependencies) ||
+          !all(available %in% TRUE)
+      )
+  ) {
+    log_message(
+      "Unable to prepare dependencies for the optional {.pkg CHOIR} backend",
+      message_type = "error"
+    )
+  }
+  invisible(TRUE)
 }
 
 choir_installed_commit <- function() {
@@ -315,6 +426,9 @@ choir_install_without_configure <- function(verbose = FALSE) {
     "https://codeload.github.com/corceslab/CHOIR/tar.gz/",
     .choir_commit
   )
+  current_timeout <- getOption("timeout", 60)
+  old_options <- options(timeout = max(300, current_timeout))
+  on.exit(options(old_options), add = TRUE)
   utils::download.file(url, archive, mode = "wb", quiet = !isTRUE(verbose))
   utils::untar(archive, exdir = workdir)
   descriptions <- list.files(
@@ -336,6 +450,11 @@ choir_install_without_configure <- function(verbose = FALSE) {
     description[, "RemoteSha"] <- .choir_commit
   }
   base::write.dcf(description, file = descriptions[[1]])
+  source_dir <- dirname(descriptions[[1]])
+  unlink(
+    file.path(source_dir, c("configure", "configure.win")),
+    force = TRUE
+  )
 
   lib <- .libPaths()[[1]]
   dir.create(lib, recursive = TRUE, showWarnings = FALSE)
@@ -347,20 +466,16 @@ choir_install_without_configure <- function(verbose = FALSE) {
       "INSTALL",
       "--no-configure",
       paste0("--library=", shQuote(lib)),
-      shQuote(dirname(descriptions[[1]]))
+      shQuote(source_dir)
     ),
     stdout = log,
     stderr = log
   )
   if (!identical(status, 0L)) {
-    details <- if (file.exists(log)) {
-      utils::tail(readLines(log, warn = FALSE), 20L)
-    } else {
-      character()
-    }
+    details <- runner_tail_lines(log, max_lines = 20L)
     log_message(
       paste(
-        c("CHOIR fallback installation failed", details),
+        c("CHOIR installation failed", details),
         collapse = "\n"
       ),
       message_type = "error"
@@ -370,7 +485,64 @@ choir_install_without_configure <- function(verbose = FALSE) {
 }
 
 choir_get_fun <- function(fun) {
-  get_namespace_fun(.choir_package, fun)
+  value <- get_namespace_fun(.choir_package, fun)
+  if (!identical(choir_loaded_commit(), .choir_commit)) {
+    log_message(
+      "The loaded {.pkg CHOIR} namespace could not be matched to the pinned backend. Restart R and try again.",
+      message_type = "error"
+    )
+  }
+  value
+}
+
+choir_validate_platform <- function(os_type = .Platform$OS.type) {
+  if (identical(os_type, "windows")) {
+    log_message(
+      "The pinned {.pkg CHOIR} backend supports macOS and Linux, but not Windows",
+      message_type = "error"
+    )
+  }
+  invisible(TRUE)
+}
+
+choir_prepare_output <- function(
+  srt,
+  key,
+  expected_cluster_col,
+  cluster_colname,
+  tool_name,
+  store_tool,
+  overwrite
+) {
+  metadata_names <- unique(c(expected_cluster_col, cluster_colname))
+  metadata_conflicts <- intersect(metadata_names, colnames(srt@meta.data))
+  conflicts <- c(
+    if (length(metadata_conflicts) > 0L) {
+      paste0("metadata:", metadata_conflicts)
+    },
+    if (.choir_reduction %in% names(srt@reductions)) {
+      paste0("reduction:", .choir_reduction)
+    },
+    if (key %in% names(srt@misc)) paste0("misc:", key),
+    if (isTRUE(store_tool) && tool_name %in% names(srt@tools)) {
+      paste0("tools:", tool_name)
+    }
+  )
+  if (length(conflicts) > 0L && !isTRUE(overwrite)) {
+    log_message(
+      "Existing CHOIR output would be replaced ({.val {conflicts}}). Set {.arg overwrite = TRUE} to replace it.",
+      message_type = "error"
+    )
+  }
+  if (isTRUE(overwrite)) {
+    srt@meta.data[[expected_cluster_col]] <- NULL
+    srt@reductions[[.choir_reduction]] <- NULL
+    srt@misc[[key]] <- NULL
+    if (isTRUE(store_tool)) {
+      srt@tools[[tool_name]] <- NULL
+    }
+  }
+  srt
 }
 
 choir_resolve_layer <- function(
@@ -452,6 +624,15 @@ choir_resolve_layer <- function(
       !identical(layer, "counts")) {
     log_message(
       "{.arg normalization_method = 'SCTransform'} requires {.arg layer = 'counts'}",
+      message_type = "error"
+    )
+  }
+  if (
+    identical(normalization_method, "SCTransform") &&
+      inherits(srt[[assay]], "Assay5")
+  ) {
+    log_message(
+      "The pinned {.pkg CHOIR} backend does not support {.arg normalization_method = 'SCTransform'} with Seurat v5 {.cls Assay5} objects. Normalize the assay first and use {.arg normalization_method = 'none'}.",
       message_type = "error"
     )
   }
@@ -642,7 +823,8 @@ choir_validate_result <- function(
   result,
   input_cells,
   input_metadata,
-  alpha
+  alpha,
+  key
 ) {
   if (!inherits(result, "Seurat")) {
     log_message(
@@ -671,9 +853,27 @@ choir_validate_result <- function(
     )
   }
   clusters <- result@meta.data[[cluster_col]]
-  if (length(clusters) != length(input_cells) || anyNA(clusters)) {
+  labels <- if (is.atomic(clusters)) as.character(clusters) else character()
+  invalid_numeric <- is.numeric(clusters) && any(!is.finite(clusters))
+  if (
+    length(clusters) != length(input_cells) ||
+      length(labels) != length(input_cells) ||
+      anyNA(clusters) ||
+      any(!nzchar(labels)) ||
+      invalid_numeric
+  ) {
     log_message(
       "{.pkg CHOIR} returned invalid final cluster labels",
+      message_type = "error"
+    )
+  }
+  records <- result@misc[[key]]
+  if (
+    !is.list(records) ||
+      !all(c("clusters", "records") %in% names(records))
+  ) {
+    log_message(
+      "{.pkg CHOIR} did not return complete records under {.arg key} {.val {key}}",
       message_type = "error"
     )
   }
