@@ -26,7 +26,7 @@ test_that("legacy integration scaling handles split Assay5 data layers", {
       RunIntegration(
         srt_merge = srt,
         batch = "batch",
-        integration_method = "Uncorrected",
+        integration_methods = "Uncorrected",
         nHVF = 20,
         linear_reduction_dims = 5,
         linear_reduction_dims_use = 1:3,

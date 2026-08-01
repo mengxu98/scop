@@ -379,6 +379,10 @@ test_that("RunCCC dispatches methods, forwards backend, and rebuilds unified CCC
   expect_equal(seen$CellChat$args$thresh, 0.2)
   expect_equal(out@tools$RunCCC$completed_methods, c("CellChat", "CellphoneDB", "LIANA"))
   expect_equal(out@tools$CCC$metadata$backend, "cpp")
+  expect_identical(
+    out@tools$CCC$metadata$backend_scope,
+    "result aggregation and unified-table construction"
+  )
   expect_equal(sort(unique(out@tools$CCC$long_table$method)), c("CellChat", "CellphoneDB", "LIANA"))
   expect_equal(out@tools$CCC$pair_table$sum, 6)
   expect_equal(out@tools$CCC$pair_table$count, 3)

@@ -72,6 +72,34 @@ test_that("GSVAPlot score bar uses the public score plotting contract", {
   expect_equal(p$labels$y, "GSVA score")
 })
 
+test_that("EnrichmentHeatmap supports one-dimensional score boundaries", {
+  one_pathway <- matrix(
+    c(0.8, -0.4),
+    nrow = 1,
+    dimnames = list("PathwayA", c("A", "B"))
+  )
+  one_group <- matrix(
+    c(0.8, -0.4),
+    ncol = 1,
+    dimnames = list(c("PathwayA", "PathwayB"), "A")
+  )
+
+  expect_no_error(
+    suppressWarnings(EnrichmentHeatmap(
+      scores = one_pathway,
+      group.by = "condition",
+      verbose = FALSE
+    ))
+  )
+  expect_no_error(
+    suppressWarnings(EnrichmentHeatmap(
+      scores = one_group,
+      group.by = "condition",
+      verbose = FALSE
+    ))
+  )
+})
+
 test_that("GSVAPlot score mode rejects significance cutoffs", {
   srt <- make_gsva_stat_srt()
 

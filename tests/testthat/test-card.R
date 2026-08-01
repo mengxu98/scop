@@ -251,6 +251,79 @@ test_that("CARDspa one-step API removes backend-unsupported informative-zero spo
   expect_identical(result$dropped_spots, "S3")
 })
 
+test_that("CARDspa informative-gene failures have an actionable diagnostic", {
+  st_counts <- Matrix::Matrix(
+    matrix(
+      c(3, 0, 2, 0, 0, 0),
+      nrow = 2,
+      dimnames = list(c("G1", "G2"), c("S1", "S2", "S3"))
+    ),
+    sparse = TRUE
+  )
+  ref_counts <- Matrix::Matrix(
+    matrix(
+      c(4, 3, 0, 0, 0, 0, 5, 4),
+      nrow = 2,
+      dimnames = list(c("G1", "G2"), paste0("C", 1:4))
+    ),
+    sparse = TRUE
+  )
+  ref_meta <- data.frame(
+    .scop_cell_type = c("A", "A", "B", "B"),
+    .scop_sample = "sample1",
+    row.names = colnames(ref_counts)
+  )
+  coords <- data.frame(
+    x = seq_len(3),
+    y = seq_len(3),
+    row.names = colnames(st_counts)
+  )
+  create_one_step <- function(spatial_count, ...) {
+    list(
+      info_parameters = list(
+        ct.select = c("A", "B"),
+        ct.varname = ".scop_cell_type",
+        sample.varname = ".scop_sample"
+      ),
+      sc_eset = ref_counts,
+      spatial_countMat = spatial_count
+    )
+  }
+  testthat::local_mocked_bindings(
+    card_resolve_backend_package = function() "CARDspa",
+    get_namespace_fun = function(package, name) {
+      switch(name,
+        createCARDObject = create_one_step,
+        CARD_deconvolution = function(...) stop("should not run"),
+        create_ref = function(...) {
+          list(basis = matrix(
+            c(1, 0, 0, 1),
+            nrow = 2,
+            dimnames = list(c("G1", "G2"), c("A", "B"))
+          ))
+        },
+        select_info = function(...) stop("invalid 'length' argument"),
+        stop("unexpected CARDspa function")
+      )
+    }
+  )
+
+  expect_error(
+    card_run_backend(
+      st_counts = st_counts,
+      ref_counts = ref_counts,
+      ref_meta = ref_meta,
+      coords = coords,
+      ct_select = c("A", "B"),
+      minCountGene = 100,
+      minCountSpot = 5,
+      create_card_params = list(),
+      card_deconvolution_params = list()
+    ),
+    "broader.*features.*invalid 'length' argument"
+  )
+})
+
 test_that("RunCARD validates inputs before backend work", {
   pair <- make_card_seurat_pair()
   expect_error(

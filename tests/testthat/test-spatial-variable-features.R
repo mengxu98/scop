@@ -47,6 +47,110 @@ test_that("native spatial variable feature results keep normalized columns", {
   )
 })
 
+test_that("C++ spatial scores agree with the R reference", {
+  score_matrix <- getFromNamespace("spatial_variable_score_matrix", "scop")
+  run_knn <- getFromNamespace("spatial_variable_run_knn", "scop")
+  expr <- matrix(
+    c(
+      1, 0, 2, 0, 4, 1,
+      3, NA, 1, 2, 0, 4,
+      2, 2, 2, 2, 2, 2,
+      0, 1, 0, 3, 0, 5
+    ),
+    nrow = 4,
+    byrow = TRUE,
+    dimnames = list(paste0("Gene", 1:4), paste0("Spot", 1:6))
+  )
+  edges <- data.frame(
+    from = c(1L, 2L, 3L, 4L, 5L, 6L, 1L, 3L),
+    to = c(2L, 3L, 4L, 5L, 6L, 1L, 4L, 6L)
+  )
+
+  for (method in c("moran", "geary")) {
+    reference <- score_matrix(expr, edges, method = method)
+    dense <- run_knn(expr, edges, method = method, backend = "cpp")
+    sparse <- run_knn(
+      methods::as(Matrix::Matrix(expr, sparse = TRUE), "dgCMatrix"),
+      edges,
+      method = method,
+      backend = "cpp"
+    )
+
+    expect_equal(dense$statistic, reference$statistic, tolerance = 1e-12)
+    expect_equal(dense$score, reference$score, tolerance = 1e-12)
+    expect_equal(sparse$statistic, reference$statistic, tolerance = 1e-12)
+    expect_equal(sparse$score, reference$score, tolerance = 1e-12)
+    expect_true(all(is.na(dense$p_value)))
+  }
+})
+
+test_that("native backend selection is explicit and reproducible", {
+  skip_if_not_installed("BiocNeighbors")
+  args <- list(
+    srt = make_spatial_variable_seurat(),
+    method = "geary",
+    layer = "counts",
+    coord.cols = c("x", "y"),
+    min_spots = 1,
+    nfeatures = 3,
+    verbose = FALSE
+  )
+  cpp <- do.call(RunSpatialVariableFeatures, c(args, backend = "cpp"))
+  reference <- do.call(RunSpatialVariableFeatures, c(args, backend = "r"))
+  cpp_result <- cpp@tools$SpatialVariableFeatures$result
+  reference_result <- reference@tools$SpatialVariableFeatures$result
+  cpp_result <- cpp_result[order(cpp_result$feature), ]
+  reference_result <- reference_result[order(reference_result$feature), ]
+
+  expect_equal(cpp_result$statistic, reference_result$statistic, tolerance = 1e-12)
+  expect_identical(cpp@tools$SpatialVariableFeatures$parameters$backend, "cpp")
+  expect_identical(reference@tools$SpatialVariableFeatures$parameters$backend, "r")
+  permutation_args <- c(args, nperm = 20, seed = 20260730)
+  cpp_permutation <- do.call(
+    RunSpatialVariableFeatures,
+    c(permutation_args, backend = "cpp")
+  )
+  r_permutation <- do.call(
+    RunSpatialVariableFeatures,
+    c(permutation_args, backend = "r")
+  )
+  cpp_p <- cpp_permutation@tools$SpatialVariableFeatures$result
+  r_p <- r_permutation@tools$SpatialVariableFeatures$result
+  cpp_p <- cpp_p[order(cpp_p$feature), ]
+  r_p <- r_p[order(r_p$feature), ]
+  expect_equal(
+    cpp_p$p_value,
+    r_p$p_value,
+    tolerance = 0
+  )
+})
+
+test_that("large sparse permutation boundaries agree exactly", {
+  run_knn <- getFromNamespace("spatial_variable_run_knn", "scop")
+  set.seed(20260731)
+  expr <- Matrix::rsparsematrix(12, 5000, density = 0.01)
+  expr@x <- abs(round(expr@x * 5))
+  rownames(expr) <- paste0("Gene", seq_len(nrow(expr)))
+  edges <- data.frame(
+    from = rep(seq_len(ncol(expr)), each = 6L),
+    to = as.integer((rep(seq_len(ncol(expr)), each = 6L) +
+      rep(seq_len(6L), times = ncol(expr)) - 1L) %% ncol(expr) + 1L)
+  )
+
+  for (method in c("moran", "geary")) {
+    set.seed(91)
+    reference <- run_knn(
+      expr, edges, method = method, nperm = 10L, backend = "r"
+    )
+    set.seed(91)
+    candidate <- run_knn(
+      expr, edges, method = method, nperm = 10L, backend = "cpp"
+    )
+    expect_identical(candidate$statistic, reference$statistic)
+    expect_identical(candidate$p_value, reference$p_value)
+  }
+})
+
 test_that("SPARKX backend output is normalized without storing backend objects", {
   srt <- make_spatial_variable_seurat()
   testthat::local_mocked_bindings(

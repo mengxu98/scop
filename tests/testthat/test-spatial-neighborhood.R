@@ -191,6 +191,7 @@ test_that("SpatialNeighborhoodPlot returns scop-style ggplot objects", {
   expect_s3_class(p_network, "ggplot")
   expect_s3_class(p_empty, "ggplot")
   expect_s3_class(p_spatial, "ggplot")
+  expect_silent(print(p_network))
 })
 
 test_that("RunSpatialNeighborhood validates spatial inputs clearly", {

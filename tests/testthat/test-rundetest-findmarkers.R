@@ -63,3 +63,32 @@ test_that("RunDEtest uses scop FindMarkers-compatible sparse Wilcoxon path", {
   expect_equal(cell_fm$pct.1, markers$pct.1, tolerance = 0)
   expect_equal(cell_fm$pct.2, markers$pct.2, tolerance = 0)
 })
+
+test_that("RunDEtest exports internal marker workers to parallel processes", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("Matrix")
+
+  set.seed(2)
+  counts <- Matrix::Matrix(rpois(50 * 30, lambda = 2), nrow = 50, sparse = TRUE)
+  rownames(counts) <- paste0("g", seq_len(nrow(counts)))
+  colnames(counts) <- paste0("c", seq_len(ncol(counts)))
+  srt <- Seurat::CreateSeuratObject(counts)
+  srt <- Seurat::NormalizeData(srt, verbose = FALSE)
+  srt$group <- rep(c("A", "B", "C"), each = 10)
+
+  out <- RunDEtest(
+    srt,
+    group.by = "group",
+    markers_type = "paired",
+    features = rownames(srt)[1:30],
+    cores = 2,
+    fc.threshold = 1,
+    min.pct = 0,
+    only.pos = FALSE,
+    verbose = FALSE
+  )
+
+  markers <- out@tools$DEtest_group$PairedMarkers_wilcox
+  expect_s3_class(markers, "data.frame")
+  expect_true(all(c("gene", "group1", "group2") %in% colnames(markers)))
+})
