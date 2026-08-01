@@ -1,6 +1,3 @@
-#include <R.h>
-#include <Rdefines.h>
-
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,6 +11,12 @@
 #include <mutex>
 #include <string>
 #include <vector>
+
+// R defines a legacy length(x) macro. Include the C++ standard library first so
+// that the macro cannot rewrite std::codecvt::length declarations in libc++.
+#include <R.h>
+#include <Rdefines.h>
+
 #include "cibersort_libsvm.h"
 
 namespace {
