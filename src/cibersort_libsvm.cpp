@@ -10,9 +10,59 @@
 #include <stdarg.h>
 #include <limits.h>
 #include <locale.h>
+#include <algorithm>
+#include <mutex>
+#include <string>
+#include <vector>
 #include "cibersort_libsvm.h"
 
-static void cibersort_libsvm_reprintf(const char *, ...) {}
+namespace {
+
+std::mutex cibersort_diagnostic_mutex;
+std::vector<std::string> cibersort_diagnostics;
+
+}
+
+static void cibersort_libsvm_reprintf(const char *format, ...)
+{
+	char buffer[4096];
+	va_list args;
+	va_start(args, format);
+	vsnprintf(buffer, sizeof(buffer), format, args);
+	va_end(args);
+
+	std::lock_guard<std::mutex> lock(cibersort_diagnostic_mutex);
+	const std::string message(buffer);
+	if (
+		!message.empty() &&
+		cibersort_diagnostics.size() < 64 &&
+		std::find(cibersort_diagnostics.begin(), cibersort_diagnostics.end(), message) ==
+			cibersort_diagnostics.end()
+	) {
+		cibersort_diagnostics.push_back(message);
+	}
+}
+
+void cibersort_svm_clear_diagnostics(void)
+{
+	std::lock_guard<std::mutex> lock(cibersort_diagnostic_mutex);
+	cibersort_diagnostics.clear();
+}
+
+void cibersort_svm_flush_diagnostics(void)
+{
+	std::vector<std::string> pending;
+	{
+		std::lock_guard<std::mutex> lock(cibersort_diagnostic_mutex);
+		pending.swap(cibersort_diagnostics);
+	}
+	for (std::size_t i = 0; i < pending.size(); ++i) {
+		REprintf("%s", pending[i].c_str());
+		if (pending[i].empty() || pending[i][pending[i].size() - 1] != '\n') {
+			REprintf("\n");
+		}
+	}
+}
 int cibersort_libsvm_version = LIBSVM_VERSION;
 typedef float Qfloat;
 typedef signed char schar;

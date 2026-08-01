@@ -1051,6 +1051,7 @@ ccc_build_unified_bundle <- function(
       methods = methods,
       updated_at = as.character(Sys.time()),
       backend = backend,
+      backend_scope = "result aggregation and unified-table construction",
       schema = "scop_ccc_unified_v1"
     )
   )
@@ -1121,6 +1122,7 @@ ccc_update_unified_bundle <- function(
       updated_method = method,
       updated_at = as.character(Sys.time()),
       backend = backend,
+      backend_scope = "result aggregation and unified-table construction",
       schema = "scop_ccc_unified_v1"
     )
   )

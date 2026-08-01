@@ -844,6 +844,117 @@ find_conda_shared_library <- function(env_path, names) {
   normalizePath(candidates[[1]], mustWork = FALSE)
 }
 
+find_conda_cuda_libraries <- function(env_path) {
+  python_site_packages <- c(
+    Sys.glob(file.path(env_path, "lib", "python*", "site-packages")),
+    file.path(env_path, "Lib", "site-packages")
+  )
+  python_site_packages <- unique(
+    python_site_packages[dir.exists(python_site_packages)]
+  )
+  torch_dirs <- file.path(python_site_packages, "torch")
+  if (!any(dir.exists(torch_dirs))) {
+    return(character())
+  }
+
+  library_dirs <- c(
+    file.path(
+      env_path,
+      c("lib", "lib64", file.path("Library", "lib"), file.path("Library", "bin"))
+    ),
+    Sys.glob(file.path(env_path, "targets", "*", "lib")),
+    unlist(
+      lapply(
+        python_site_packages,
+        function(path) {
+          Sys.glob(file.path(path, "nvidia", "*", "lib"))
+        }
+      ),
+      use.names = FALSE
+    )
+  )
+  library_dirs <- unique(library_dirs[dir.exists(library_dirs)])
+  if (length(library_dirs) == 0L) {
+    return(character())
+  }
+
+  # Dependency-aware order for the CUDA libraries loaded by PyTorch. The
+  # unversioned/SONAME symlink is preferred over a longer, fully versioned path.
+  patterns <- c(
+    "libnvJitLink.so*",
+    "libcudart.so*",
+    "libcublasLt.so*",
+    "libcublas.so*",
+    "libcudnn.so*",
+    "libnvrtc-builtins.so*",
+    "libnvrtc.so*",
+    "libcupti.so*",
+    "libcufft.so*",
+    "libcurand.so*",
+    "libcusparseLt.so*",
+    "libcusparse.so*",
+    "libcusolver.so*",
+    "libnccl.so*",
+    "libnvshmem_host.so*",
+    "libcufile.so*"
+  )
+
+  libraries <- vapply(
+    patterns,
+    function(pattern) {
+      candidates <- unlist(
+        lapply(library_dirs, function(path) Sys.glob(file.path(path, pattern))),
+        use.names = FALSE
+      )
+      candidates <- unique(candidates[file.exists(candidates)])
+      if (length(candidates) == 0L) {
+        return(NA_character_)
+      }
+      candidates <- candidates[order(nchar(basename(candidates)), candidates)]
+      normalizePath(candidates[[1]], mustWork = FALSE)
+    },
+    character(1)
+  )
+  unname(libraries[!is.na(libraries) & nzchar(libraries)])
+}
+
+load_shared_library <- function(lib) {
+  dyn.load(lib, local = FALSE, now = TRUE)
+}
+
+preload_shared_libraries <- function(libraries, max_passes = 3L) {
+  libraries <- unique(libraries[file.exists(libraries)])
+  if (length(libraries) == 0L) {
+    return(invisible(character()))
+  }
+
+  prepend_path_var("LD_PRELOAD", libraries)
+  pending <- libraries
+  loaded <- character()
+  for (pass in seq_len(max_passes)) {
+    loaded_this_pass <- vapply(
+      pending,
+      function(lib) {
+        tryCatch(
+          {
+            load_shared_library(lib)
+            TRUE
+          },
+          error = function(...) FALSE
+        )
+      },
+      logical(1)
+    )
+    loaded <- c(loaded, pending[loaded_this_pass])
+    pending <- pending[!loaded_this_pass]
+    if (length(pending) == 0L || !any(loaded_this_pass)) {
+      break
+    }
+  }
+
+  invisible(unique(loaded))
+}
+
 configure_linux_cpp_runtime <- function(env_path) {
   if (isFALSE(is_linux())) {
     return(invisible(FALSE))
@@ -859,16 +970,22 @@ configure_linux_cpp_runtime <- function(env_path) {
     return(invisible(FALSE))
   }
 
-  prepend_path_var("LD_PRELOAD", runtime_libs)
-
-  for (lib in runtime_libs) {
-    tryCatch(
-      dyn.load(lib, local = FALSE, now = TRUE),
-      error = function(...) NULL
-    )
-  }
+  preload_shared_libraries(runtime_libs)
 
   invisible(TRUE)
+}
+
+configure_linux_cuda_runtime <- function(env_path) {
+  if (isFALSE(is_linux())) {
+    return(invisible(FALSE))
+  }
+
+  runtime_libs <- find_conda_cuda_libraries(env_path)
+  if (length(runtime_libs) == 0L) {
+    return(invisible(FALSE))
+  }
+
+  length(preload_shared_libraries(runtime_libs)) > 0L
 }
 
 normalize_python_runtime_path <- function(path) {
@@ -1019,6 +1136,7 @@ configure_python_runtime <- function(python_path) {
       )
     )
     configure_linux_cpp_runtime(env_path)
+    configure_linux_cuda_runtime(env_path)
   }
 
   if (is_osx()) {

@@ -1807,15 +1807,43 @@ EnrichmentHeatmap <- function(
 
   matrix_group_name <- group.by %||% "Group"
 
-  srt_tmp <- Seurat::CreateSeuratObject(counts = scores)
+  scores_for_seurat <- scores
+  if (nrow(scores_for_seurat) == 1L) {
+    padding_feature <- make.unique(
+      c(rownames(scores_for_seurat), ".enrichment-padding-feature")
+    )[[nrow(scores_for_seurat) + 1L]]
+    scores_for_seurat <- rbind(
+      scores_for_seurat,
+      stats::setNames(
+        rep(0, ncol(scores_for_seurat)),
+        colnames(scores_for_seurat)
+      )
+    )
+    rownames(scores_for_seurat)[[nrow(scores_for_seurat)]] <- padding_feature
+  }
+  if (ncol(scores_for_seurat) == 1L) {
+    padding_group <- make.unique(
+      c(colnames(scores_for_seurat), ".enrichment-padding-group")
+    )[[ncol(scores_for_seurat) + 1L]]
+    scores_for_seurat <- cbind(
+      scores_for_seurat,
+      stats::setNames(
+        rep(0, nrow(scores_for_seurat)),
+        rownames(scores_for_seurat)
+      )
+    )
+    colnames(scores_for_seurat)[[ncol(scores_for_seurat)]] <- padding_group
+  }
+
+  srt_tmp <- Seurat::CreateSeuratObject(counts = scores_for_seurat)
   srt_tmp <- Seurat::NormalizeData(
     object = srt_tmp,
     normalization.method = "LogNormalize",
     verbose = FALSE
   )
   srt_tmp@meta.data[[matrix_group_name]] <- factor(
-    colnames(scores),
-    levels = colnames(scores)
+    colnames(scores_for_seurat),
+    levels = colnames(scores_for_seurat)
   )
 
   base_args <- list(

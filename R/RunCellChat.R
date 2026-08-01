@@ -13,7 +13,7 @@
 #' @param min.cells the minmum number of expressed cells required for the genes that are considered for cell-cell communication analysis. Default is `10`.
 #' @param do.fast Whether to use CellChat's fast Wilcoxon implementation backed
 #' by `presto`. Set to `TRUE` only when `presto` is installed.
-#' @param backend Backend used for scop post-processing and unified CCC table
+#' @param backend Backend used only for result post-processing and unified CCC table
 #' aggregation. Upstream CellChat inference is unchanged.
 #' @param assay Which assay to use. If `NULL`, the default assay of the `Seurat` object will be used.
 #' @param layer The layer to use for the expression data. Default is `"data"`.
@@ -193,6 +193,7 @@ RunCellChat <- function(
       min.cells = min.cells,
       do.fast = do.fast,
       backend = backend,
+      backend_scope = "result aggregation and unified-table construction",
       assay = assay,
       layer = layer
     )

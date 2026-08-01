@@ -1,9 +1,9 @@
-#' @title Run SCENICPlus-style eGRN analysis
+#' @title Run an approximate SCENICPlus-compatible eGRN analysis
 #'
 #' @description
-#' Build a SCENICPlus-style eRegulon result from paired RNA and chromatin assays.
-#' The native backend is a `scop` implementation and is not an exact re-run of
-#' the official SCENIC+ Python workflow.
+#' Build an approximate eRegulon result from paired RNA and chromatin assays.
+#' The C++ workflow is not an exact re-run of the official SCENIC+ Python
+#' workflow and requires explicit opt-in.
 #'
 #' @md
 #' @inheritParams RunStandardWorkflow
@@ -12,27 +12,29 @@
 #' @param atac_assay Chromatin assay name.
 #' @param rna_layer RNA count layer used for TF-gene inference and AUC scoring.
 #' @param atac_layer ATAC count layer used for peak-gene correlations.
-#' @param backend Runtime backend. `"cpp"` uses the native package workflow.
-#' `"python"` checks the official Python environment but does not silently
-#' substitute the native result.
-#' @param grn_method GRN method used for TF-gene inference. The native backend
+#' @param backend Runtime backend. `"python"` reads or extracts official
+#' SCENIC+ result tables and remains the default. `"cpp"` runs the approximate
+#' package workflow.
+#' @param allow_approximate Whether to allow the approximate C++ workflow. This
+#' must be `TRUE` when `backend = "cpp"`.
+#' @param grn_method GRN method used for TF-gene inference. The C++ workflow
 #' can call `RunGRNBoost2()`, `RunGENIE3()`, or `RunGNIPLR()`;
 #' RegDiffusion and GNIPLR are supported through the Python backend.
 #' @param regulators Candidate transcription factors. If `NULL`, motif TF names
 #' are used when available; otherwise all RNA genes are considered.
-#' @param rna_expr Optional expression matrix used for native TF-gene and
+#' @param rna_expr Optional expression matrix used for C++ TF-gene and
 #' region-gene inference. Rows should be genes and columns should be cells; a
 #' cell-by-gene matrix is accepted and transposed when cell names make the
 #' orientation unambiguous.
-#' @param atac_expr Optional accessibility matrix used for native region-gene
+#' @param atac_expr Optional accessibility matrix used for C++ region-gene
 #' inference. Rows should be regions and columns should be cells; a cell-by-region
 #' matrix is accepted and transposed when cell names make the orientation
 #' unambiguous.
 #' @param tf_gene_prior Optional precomputed TF-gene table with columns `TF`,
-#' `target`, and `importance`. When supplied with `backend = "cpp"`, native
+#' `target`, and `importance`. When supplied with `backend = "cpp"`, C++
 #' GRN inference is skipped and the table is used as the TF-gene evidence layer.
 #' @param region_gene_prior Optional precomputed region-gene table with columns
-#' `region`, `gene`, and `score`. When supplied with `backend = "cpp"`, native
+#' `region`, `gene`, and `score`. When supplied with `backend = "cpp"`, C++
 #' peak-to-gene correlation is skipped.
 #' @param tf_region_prior Optional precomputed TF-region table with columns
 #' `TF`, `region`, and `score`. When supplied with `backend = "cpp"`, existing
@@ -44,23 +46,23 @@
 #' `regulon` and `target`. When supplied with `backend = "cpp"`, eRegulon names
 #' and gene sets are taken from this table.
 #' @param auc_expr Optional expression matrix used only for eRegulon AUCell
-#' scoring in the native backend. Rows should be genes and columns should be
+#' scoring in the C++ workflow. Rows should be genes and columns should be
 #' cells; a cell-by-gene matrix is accepted and transposed when cell names make
 #' the orientation unambiguous.
 #' @param auc_rankings Optional precomputed 0-based ranking matrix used only for
-#' eRegulon AUCell scoring in the native backend. Rows should be cells and
+#' eRegulon AUCell scoring in the C++ workflow. Rows should be cells and
 #' columns should be genes; a gene-by-cell matrix is accepted and transposed when
 #' cell names make the orientation unambiguous. This is mainly useful for
 #' official SCENIC+ parity tests because SCENIC+ uses seeded random tie-breaking.
 #' @param region_gene_window Maximum peak-to-gene distance in base pairs.
 #' @param region_gene_search_space Optional search-space table with columns
-#' `region`/`Name` and `gene`/`Gene`. When supplied, native region-gene scoring
+#' `region`/`Name` and `gene`/`Gene`. When supplied, C++ region-gene scoring
 #' is limited to these candidate pairs.
-#' @param region_gene_method Native region-gene scoring method. `"gbm"` follows
+#' @param region_gene_method C++ region-gene scoring method. `"gbm"` follows
 #' the official SCENIC+ region-to-gene strategy more closely by combining
 #' boosting feature importance with Spearman correlation; `"correlation"` keeps
 #' the older correlation-only approximation.
-#' @param region_gene_n_rounds Number of boosting rounds for native
+#' @param region_gene_n_rounds Number of boosting rounds for C++
 #' region-gene importance scoring.
 #' @param max_region_gene Maximum region-gene links retained per gene.
 #' @param max_tf_region Maximum motif-supported regions retained per TF.
@@ -78,26 +80,26 @@
 #' @param grn_top_targets Maximum TF-gene edges retained per target. The
 #' default `Inf` keeps all positive links to match arboreto GRNBoost2 output.
 #' @param max_grn_targets Maximum genes used as TF-gene GRN targets in the
-#' native backend. With `grn_target_scope = "region_gene"`, genes are ranked by
+#' C++ workflow. With `grn_target_scope = "region_gene"`, genes are ranked by
 #' strongest absolute peak-to-gene correlation. Set to `Inf` to keep the full
 #' selected target universe.
-#' @param grn_target_scope TF-gene target universe for the native backend.
+#' @param grn_target_scope TF-gene target universe for the C++ workflow.
 #' `"all"` follows official SCENIC+ TF-to-gene inference by scoring every RNA
 #' gene; `"region_gene"` restricts TF-gene inference to genes with peak links.
-#' @param grn_n_rounds Number of native tree boosting rounds for TF-gene
+#' @param grn_n_rounds Number of C++ tree boosting rounds for TF-gene
 #' inference. The default follows arboreto `SGBM_KWARGS`.
-#' @param grn_learning_rate Native tree boosting learning rate.
-#' @param grn_max_depth Maximum depth of each native TF-gene regression tree.
-#' @param grn_max_features Fraction of candidate TFs sampled at each native
+#' @param grn_learning_rate C++ tree boosting learning rate.
+#' @param grn_max_depth Maximum depth of each C++ TF-gene regression tree.
+#' @param grn_max_features Fraction of candidate TFs sampled at each C++
 #' tree split.
-#' @param grn_subsample Fraction of cells sampled for each native boosting
+#' @param grn_subsample Fraction of cells sampled for each C++ boosting
 #' round.
 #' @param grn_early_stop_window_length Out-of-bag improvement window used for
-#' native GRNBoost2 early stopping. The RunSCENICPlus default is `0`, which
+#' C++ GRNBoost2 early stopping. The RunSCENICPlus default is `0`, which
 #' disables early stopping to match official SCENIC+ `SGBM_KWARGS`.
-#' @param seed Random seed used by native stochastic boosting backends. The
+#' @param seed Random seed used by the C++ stochastic boosting code. The
 #' default matches official SCENIC+ command-line wrappers.
-#' @param cores Number of workers used by native TF-gene GRN inference.
+#' @param cores Number of workers used by C++ TF-gene GRN inference.
 #' @param assay_name Assay used to store eRegulon AUC scores.
 #' @param tool_name Name of the `srt@tools` result entry.
 #' @param python_result_dir Directory containing official SCENIC+ outputs already
@@ -117,7 +119,8 @@ RunSCENICPlus <- function(
   atac_assay = "peaks",
   rna_layer = "counts",
   atac_layer = "counts",
-  backend = c("cpp", "python"),
+  backend = c("python", "cpp"),
+  allow_approximate = FALSE,
   grn_method = c("grnboost2", "regdiffusion", "genie3", "gniplr"),
   regulators = NULL,
   rna_expr = NULL,
@@ -170,6 +173,12 @@ RunSCENICPlus <- function(
   grn_method <- match.arg(grn_method)
   region_gene_method <- match.arg(region_gene_method)
   grn_target_scope <- match.arg(grn_target_scope)
+  if (identical(backend, "cpp")) {
+    assert_cpp_approximation_opt_in(
+      allow_approximate,
+      "RunSCENICPlus(backend = \"cpp\")"
+    )
+  }
   if (identical(backend, "python")) {
     return(run_scenicplus_python(
       srt = srt,
@@ -437,7 +446,9 @@ RunSCENICPlus <- function(
     scores = scores,
     parameters = list(
       backend = backend,
-      method = "scenicplus_style_native_approx",
+      method = "scenicplus_approximation",
+      exact_reference = FALSE,
+      scope = "package eGRN approximation",
       grn_method = grn_method,
       rna_assay = rna_assay,
       atac_assay = atac_assay,
@@ -474,7 +485,7 @@ RunSCENICPlus <- function(
     tool_name = tool_name
   )
   log_message(
-    "{.pkg SCENICPlus}-style results stored in assay {.val {assay_name}} and tools slot {.val {tool_name}}",
+    "Approximate {.pkg SCENICPlus} results stored in assay {.val {assay_name}} and tools slot {.val {tool_name}}",
     verbose = verbose
   )
   srt
@@ -529,7 +540,7 @@ run_scenicplus_python <- function(
   }
   if (is.null(python_result_dir)) {
     log_message(
-      "{.arg backend = 'python'} for {.fn RunSCENICPlus} standardizes official SCENIC+ outputs only. Provide {.arg python_result_dir} with exported official tables or {.arg scplus_object} to extract them; the native approximation is not used as a substitute.",
+      "{.arg backend = 'python'} for {.fn RunSCENICPlus} standardizes official SCENIC+ outputs only. Provide {.arg python_result_dir} with exported official tables or {.arg scplus_object} to extract them; the approximate C++ workflow is not used as a substitute.",
       message_type = "error"
     )
   }
@@ -1455,7 +1466,7 @@ scenicplus_rg_gbm <- function(
   ]
   if (nrow(hits) == 0L) {
     log_message(
-      "No region-gene candidates remain for native GBM scoring",
+      "No region-gene candidates remain for C++ GBM scoring",
       message_type = "error"
     )
   }
@@ -1525,7 +1536,7 @@ scenicplus_rg_gbm <- function(
   out <- do.call(rbind, rows[!vapply(rows, is.null, logical(1))])
   if (is.null(out) || nrow(out) == 0L) {
     log_message(
-      "Native GBM region-gene scoring returned no finite links",
+      "C++ GBM region-gene scoring returned no finite links",
       message_type = "error"
     )
   }
@@ -1601,7 +1612,7 @@ scenicplus_tfr_motifs <- function(
   )
   if (is.null(motif_mat) || nrow(motif_mat) == 0L || ncol(motif_mat) == 0L) {
     log_message(
-      "{.fn RunSCENICPlus} native backend requires existing motif annotations in the chromatin assay; de novo motif scanning is not performed.",
+      "{.fn RunSCENICPlus} with {.arg backend = 'cpp'} requires existing motif annotations in the chromatin assay; de novo motif scanning is not performed.",
       message_type = "error"
     )
   }

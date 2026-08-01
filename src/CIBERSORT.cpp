@@ -453,6 +453,7 @@ List cibersort_cpp(
   if (perm < 0) {
     stop("perm must be non-negative");
   }
+  cibersort_svm_clear_diagnostics();
 
   arma::mat x(signature.begin(), n_genes, n_cell_types, true);
   arma::mat y(mixture.begin(), n_genes, n_samples, true);
@@ -490,6 +491,7 @@ List cibersort_cpp(
     stats(s, 1) = result.correlation;
     stats(s, 2) = result.rmse;
   });
+  cibersort_svm_flush_diagnostics();
 
   NumericMatrix fraction_out(n_samples, n_cell_types);
   NumericMatrix stats_out(n_samples, 3);

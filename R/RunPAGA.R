@@ -8,7 +8,7 @@
 #' @inheritParams thisutils::log_message
 #' @inheritParams RunCellRank
 #' @param backend Backend used to compute PAGA. `"python"` keeps the original
-#' scanpy workflow and remains the default. `"cpp"` uses the native C++
+#' scanpy workflow and remains the default. `"cpp"` uses the package C++
 #' implementation for the standard connectivity graph and tree, plus an
 #' approximate R igraph layout stored in `paga$pos`.
 #' @param use_rna_velocity Whether to use RNA velocity for PAGA analysis.
@@ -148,10 +148,9 @@ RunPAGA <- function(
       unsupported_cpp <- c(unsupported_cpp, "save_plot")
     }
     if (length(unsupported_cpp) > 0L) {
-      unsupported_text <- paste0(unsupported_cpp, collapse = ", ")
-      log_message(
-        "{.arg backend = 'cpp'} currently does not support {.arg {unsupported_text}}; use {.arg backend = 'python'} for those features",
-        message_type = "warning"
+      reject_unsupported_cpp_arguments(
+        unsupported_cpp,
+        "RunPAGA(backend = \"cpp\")"
       )
     }
     srt <- run_paga_cpp(
@@ -392,6 +391,10 @@ run_paga_cpp <- function(
     groups = group.by,
     pos = pos,
     backend = "cpp",
+    implementation = list(
+      exact_reference = FALSE,
+      scope = "connectivity graph and tree with an approximate R layout"
+    ),
     parameters = list(
       linear_reduction = linear_reduction,
       n_pcs = length(dims_use),

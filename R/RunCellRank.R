@@ -138,7 +138,12 @@
 #' }
 #' @param backward Whether to compute backward transitions. Default is `FALSE`.
 #' @param backend Backend for computation: `"python"` (default) or `"cpp"`.
-#' When `"cpp"`, uses the native C++ implementation.
+#' The C++ path is an explicitly opted-in approximation and does not reproduce
+#' the complete CellRank estimator.
+#' @param allow_approximate Whether to allow the approximate C++ path. This must
+#' be `TRUE` when `backend = "cpp"`.
+#' @param max_dense_gib Maximum estimated GiB allowed for the dense
+#' cell-by-cell working matrices used by the C++ path.
 RunCellRank <- function(
   srt = NULL,
   assay_x = "RNA",
@@ -183,6 +188,8 @@ RunCellRank <- function(
   n_cells_terminal = 10,
   backward = FALSE,
   backend = c("python", "cpp"),
+  allow_approximate = FALSE,
+  max_dense_gib = 8,
   show_plot = TRUE,
   save_plot = FALSE,
   plot_format = c("pdf", "png", "svg"),
@@ -199,8 +206,31 @@ RunCellRank <- function(
   backend <- match.arg(backend)
   estimator_type_upper <- toupper(match.arg(estimator_type))
 
-  # ── C++ backend ──
   if (identical(backend, "cpp")) {
+    assert_cpp_approximation_opt_in(
+      allow_approximate,
+      "RunCellRank(backend = \"cpp\")"
+    )
+    unsupported_cpp <- character()
+    if (isTRUE(show_plot)) {
+      unsupported_cpp <- c(unsupported_cpp, "show_plot")
+    }
+    if (isTRUE(save_plot)) {
+      unsupported_cpp <- c(unsupported_cpp, "save_plot")
+    }
+    reject_unsupported_cpp_arguments(
+      unsupported_cpp,
+      "RunCellRank(backend = \"cpp\")"
+    )
+    if (!is.null(srt)) {
+      assert_cpp_dense_budget(
+        n_rows = ncol(srt),
+        n_cols = ncol(srt),
+        copies = 8,
+        max_dense_gib = max_dense_gib,
+        context = "RunCellRank(backend = \"cpp\")"
+      )
+    }
     if (identical(kernel_type, "wot")) {
       log_message(
         "{.arg backend = 'cpp'} does not support {.arg kernel_type = 'wot'}; use {.arg backend = 'python'} for Waddington-OT",
@@ -221,6 +251,7 @@ RunCellRank <- function(
       n_cells_terminal = n_cells_terminal,
       estimator_type = tolower(estimator_type_upper),
       backward = backward,
+      max_dense_gib = max_dense_gib,
       cores = cores, return_seurat = return_seurat,
       verbose = verbose
     ))
@@ -505,6 +536,7 @@ run_cellrank_cpp <- function(
   softmax_scale, n_macrostates, n_cells_terminal,
   estimator_type = c("gpcca", "cflare"),
   backward = FALSE,
+  max_dense_gib = 8,
   cores, return_seurat, verbose
 ) {
   estimator_type <- match.arg(estimator_type)
@@ -523,6 +555,13 @@ run_cellrank_cpp <- function(
   storage.mode(nonlinear_embedding) <- "double"
   n_cells <- nrow(nonlinear_embedding)
   n_dims <- ncol(nonlinear_embedding)
+  dense_estimate_gib <- assert_cpp_dense_budget(
+    n_rows = n_cells,
+    n_cols = n_cells,
+    copies = 8,
+    max_dense_gib = max_dense_gib,
+    context = "RunCellRank(backend = \"cpp\")"
+  )
 
   velocity_reduction <- paste0(mode, "_", nonlinear_reduction)
   pt_key <- paste0(mode, "_pseudotime")
@@ -799,7 +838,12 @@ run_cellrank_cpp <- function(
 
   srt@tools[["CellRank"]] <- c(srt@tools[["CellRank"]], list(
     backend = "cpp",
-    estimator = estimator_type,
+    implementation = list(
+      exact_reference = FALSE,
+      scope = "transition-kernel and approximate macrostate estimation",
+      dense_working_set_gib_lower_bound = dense_estimate_gib
+    ),
+    estimator = paste0(estimator_type, "_approximation"),
     kernel = kernel_used,
     n_macrostates = result[["n_macrostates"]],
     eigenvalues = result[["eigenvalues"]],
@@ -809,7 +853,8 @@ run_cellrank_cpp <- function(
       mode = mode, kernel_type = kernel_type, estimator_type = estimator_type,
       softmax_scale = softmax_scale, n_macrostates = n_mac,
       n_cells_terminal = as.integer(n_cells_terminal),
-      backward = backward
+      backward = backward,
+      max_dense_gib = max_dense_gib
     )
   ))
   log_message("{.pkg CellRank} cpp backend ({.val {estimator_type}} + {.val {kernel_used}} kernel) completed",

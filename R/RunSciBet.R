@@ -1,7 +1,7 @@
-#' @title Annotate single cells using native SciBet
+#' @title Annotate single cells with a C++ SciBet-compatible classifier
 #'
 #' @description
-#' Run a native `scop` implementation of the core SciBet classifier using a
+#' Run a C++ implementation of the core SciBet classifier using a
 #' labeled reference `Seurat` object.
 #'
 #' @md
@@ -170,7 +170,7 @@ RunSciBet <- function(
     )
   }
   log_message(
-    "Run native SciBet with {.val {length(common_features)}} candidate features and {.val {nlevels(ref_labels)}} reference classes",
+    "Run C++ SciBet-compatible classification with {.val {length(common_features)}} candidate features and {.val {nlevels(ref_labels)}} reference classes",
     verbose = verbose
   )
 

@@ -854,9 +854,9 @@ spatialcellchat_run_one <- function(
 #'
 #' Objects with multiple images require an explicit `image` selection. When
 #' `sample.by` contains multiple samples, supply a named character vector that
-#' maps every sample to one image. Native backend objects are omitted by default
+#' maps every sample to one image. Upstream backend objects are omitted by default
 #' because they can be large; use `store.object = "full"` only if subsequent
-#' SpatialCellChat-native analysis is needed.
+#' additional analysis with the upstream SpatialCellChat object is needed.
 #'
 #' @param srt A `Seurat` object with normalized, non-negative expression and
 #'   spatial coordinates.
@@ -909,10 +909,10 @@ spatialcellchat_run_one <- function(
 #' @param seed.use Random seed passed to the backend.
 #' @param result.name Name used within the stored SpatialCellChat result bundle.
 #' @param store.object `"minimal"` stores normalized tables, coordinates, and
-#'   diagnostics. `"full"` additionally stores each native backend object.
+#'   diagnostics. `"full"` additionally stores each upstream backend object.
 #' @param overwrite Whether an existing result with the same `result.name` may
 #'   be replaced.
-#' @param backend Backend for scop's unified CCC post-processing only; it does
+#' @param backend Backend for unified CCC post-processing only; it does
 #'   not change the SpatialCellChat inference engine.
 #' @param verbose Whether to print progress messages.
 #'
@@ -1166,7 +1166,7 @@ RunSpatialCellChat <- function(
       size <- as.numeric(utils::object.size(native_object))
       if (is.finite(size) && size > 500 * 1024^2) {
         log_message(
-          "Native SpatialCellChat object for sample {.val {sample_name}} is {.val {round(size / 1024^2, 1)}} MiB and will enlarge serialized Seurat objects",
+          "Upstream SpatialCellChat object for sample {.val {sample_name}} is {.val {round(size / 1024^2, 1)}} MiB and will enlarge serialized Seurat objects",
           message_type = "warning",
           verbose = verbose
         )
@@ -1223,7 +1223,9 @@ RunSpatialCellChat <- function(
     nboot = nboot,
     seed.use = seed.use,
     result.name = result.name,
-    store.object = store.object
+    store.object = store.object,
+    backend = backend,
+    backend_scope = "unified CCC result aggregation"
   )
   remote <- spatialcellchat_remote_info()
   bundle <- spatial_result_build(
@@ -1271,14 +1273,14 @@ RunSpatialCellChat <- function(
   srt
 }
 
-#' @title Get a native CellChat-family object
+#' @title Get an upstream CellChat-family object
 #'
 #' @param object A `Seurat` object.
 #' @param method Either `"CellChat"` or `"SpatialCellChat"`.
 #' @param result.name A CellChat condition or SpatialCellChat named result.
 #' @param sample Spatial sample for SpatialCellChat results.
 #'
-#' @return A native backend object.
+#' @return An upstream backend object.
 #' @export
 GetCCCObject <- function(
   object,
@@ -1310,7 +1312,7 @@ GetCCCObject <- function(
   native <- result[[sample]]$native_object
   if (is.null(native)) {
     log_message(
-      "Native SpatialCellChat object was not stored. Rerun with {.arg store.object = 'full'}",
+      "Upstream SpatialCellChat object was not stored. Rerun with {.arg store.object = 'full'}",
       message_type = "error"
     )
   }

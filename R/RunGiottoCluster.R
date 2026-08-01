@@ -301,7 +301,14 @@ RunGiottoCluster <- function(
   result
 }
 
+giotto_is_installed <- function() {
+  nzchar(system.file(package = "Giotto"))
+}
+
 giotto_require <- function(verbose = TRUE) {
+  if (giotto_is_installed()) {
+    return(invisible(TRUE))
+  }
   status <- tryCatch(
     check_r("drieslab/Giotto", verbose = FALSE),
     error = function(e) FALSE

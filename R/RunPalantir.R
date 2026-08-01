@@ -4,8 +4,10 @@
 #' @inheritParams thisutils::log_message
 #' @inheritParams RunCellRank
 #' @param backend Backend used to compute Palantir. `"python"` keeps the
-#' original Palantir workflow and remains the default. `"cpp"` uses the
-#' C++ implementation and stores results in `srt@tools[["Palantir"]]`. Default is `"cpp"`.
+#' reference Palantir workflow and remains the default. `"cpp"` uses an
+#' approximate C++ workflow and stores results in `srt@tools[["Palantir"]]`.
+#' @param allow_approximate Whether to allow the approximate C++ workflow. This
+#' must be `TRUE` when `backend = "cpp"`.
 #' @param dm_n_components The number of diffusion components to calculate.
 #' @param dm_alpha Normalization parameter for the diffusion operator.
 #' @param dm_n_eigs Number of eigen vectors to use.
@@ -37,7 +39,9 @@
 #'   linear_reduction = "PCA",
 #'   nonlinear_reduction = "UMAP",
 #'   early_group = "Ductal",
-#'   terminal_groups = c("Alpha", "Beta", "Delta", "Epsilon")
+#'   terminal_groups = c("Alpha", "Beta", "Delta", "Epsilon"),
+#'   backend = "cpp",
+#'   allow_approximate = TRUE
 #' )
 #'
 #' FeatureDimPlot(
@@ -103,7 +107,8 @@ RunPalantir <- function(
   plot_dpi = 300,
   plot_prefix = "palantir",
   dirpath = "./",
-  backend = c("cpp", "python"),
+  backend = c("python", "cpp"),
+  allow_approximate = FALSE,
   return_seurat = !is.null(srt),
   verbose = TRUE
 ) {
@@ -111,6 +116,10 @@ RunPalantir <- function(
   plot_format <- match.arg(plot_format)
 
   if (identical(backend, "cpp")) {
+    assert_cpp_approximation_opt_in(
+      allow_approximate,
+      "RunPalantir(backend = \"cpp\")"
+    )
     if (is.null(srt)) {
       log_message(
         "{.arg backend = 'cpp'} requires {.arg srt}; use {.arg backend = 'python'} for AnnData input",
@@ -149,11 +158,9 @@ RunPalantir <- function(
       unsupported_cpp <- c(unsupported_cpp, "save_plot")
     }
     if (length(unsupported_cpp) > 0L) {
-      unsupported_text <- paste0(unsupported_cpp, collapse = ", ")
-      log_message(
-        "{.arg backend = 'cpp'} currently does not support {.arg {unsupported_text}}; use {.arg backend = 'python'} for those features",
-        message_type = "warning",
-        verbose = verbose
+      reject_unsupported_cpp_arguments(
+        unsupported_cpp,
+        "RunPalantir(backend = \"cpp\")"
       )
     }
     return(run_palantir_cpp(
@@ -769,6 +776,10 @@ run_palantir_cpp <- function(
     start_cell = start_cell,
     diffusion_components = ms_data_scaled,
     backend = "cpp",
+    implementation = list(
+      exact_reference = FALSE,
+      scope = "diffusion map, waypoint pseudotime, and branch probabilities"
+    ),
     parameters = list(
       reduction = analysis_reduction,
       basis_reduction = basis_reduction,

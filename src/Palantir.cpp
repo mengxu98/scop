@@ -289,7 +289,7 @@ static void dijkstra_graph(
     int source,
     std::vector<double>& dist)
 {
-  dist.assign(n, std::numeric_limits<double>::max());
+  dist.assign(n, std::numeric_limits<double>::infinity());
   dist[source] = 0.0;
   std::priority_queue<std::pair<double,int>, std::vector<std::pair<double,int>>, DijkstraCmp> pq;
   pq.push({0.0, source});
@@ -387,8 +387,15 @@ List palantir_pseudotime_cpp(
   for (int s = 0; s < n_wp; ++s) {
     std::vector<double> dists_v;
     dijkstra_graph(n, graph, wp_offsets[s], dists_v);
-    for (int i = 0; i < n; ++i)
+    for (int i = 0; i < n; ++i) {
+      if (!std::isfinite(dists_v[i])) {
+        stop(
+          "Palantir kNN graph is disconnected; increase knn or provide "
+          "a connected embedding"
+        );
+      }
       D(s, i) = dists_v[i];
+    }
   }
 
   // Bandwidth for weight matrix
