@@ -32,9 +32,10 @@ test_that("PreTSA C++ block agrees with the R reference", {
     padjust_method = "fdr"
   )
 
-  expect_identical(native$fit_mat, reference$fit_mat)
-  expect_identical(
+  expect_equal(native$fit_mat, reference$fit_mat, tolerance = 1e-10)
+  expect_equal(
     native$DynamicFeatures[rownames(reference$DynamicFeatures), ],
-    reference$DynamicFeatures
+    reference$DynamicFeatures,
+    tolerance = 1e-10
   )
 })

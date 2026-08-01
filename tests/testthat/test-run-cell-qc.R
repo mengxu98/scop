@@ -419,7 +419,7 @@ test_that("RunDoubletCalling dispatches to Run-prefixed backends", {
   counts <- methods::as(Matrix::Matrix(
     matrix(c(1, 0, 2, 3), nrow = 2),
     sparse = TRUE
-  ), "dgCMatrix")
+  ), "generalMatrix")
   rownames(counts) <- c("g1", "g2")
   colnames(counts) <- c("c1", "c2")
   srt <- Seurat::CreateSeuratObject(counts = counts)

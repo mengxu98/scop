@@ -18,6 +18,7 @@ ccc_to_liana(
   receptor.use = NULL,
   interaction.use = NULL,
   thresh = 0.05,
+  result = c("primary", "consensus", "legacy", "raw"),
   aggregate = TRUE,
   sample_col = NULL,
   score_col = "score",
@@ -50,6 +51,10 @@ ccc_to_liana(
 \item{interaction.use}{Interaction names to keep.}
 
 \item{thresh}{Significance threshold used when extracting communication results.}
+
+\item{result}{LIANA result representation to export. \code{"primary"} prefers the
+official consensus, \code{"consensus"} requires it, \code{"legacy"} uses scop's
+historical post-processing, and \code{"raw"} uses method-specific rows.}
 
 \item{aggregate}{Whether to aggregate duplicate
 \code{source-target-ligand-receptor} rows. This should usually stay \code{TRUE} for

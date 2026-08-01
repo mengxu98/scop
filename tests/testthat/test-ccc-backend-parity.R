@@ -505,6 +505,10 @@ test_that("RunNichenetr aggregate_cluster_de maps receivers to upstream argument
   expect_equal(captured$args$receiver_affected, "Receiver")
   expect_equal(captured$args$receiver_reference, "Receiver")
   expect_false("receiver" %in% names(captured$args))
+  expect_equal(captured$args$top_n_ligands, 30)
+  expect_equal(captured$args$top_n_targets, 200)
+  expect_equal(captured$args$cutoff_visualization, 0.33)
+  expect_false(captured$args$verbose)
   expect_equal(out@tools$Nichenetr$parameters$backend, "cpp")
 })
 
@@ -574,6 +578,42 @@ test_that("RunNichenetr aggregate_cluster_de passes distinct receiver_affected a
   expect_equal(out@tools$Nichenetr$parameters$receiver_reference, "ReceiverB")
 })
 
+test_that("NicheNet standardization preserves official ranks and sender support", {
+  standardize <- getFromNamespace("standardize_nichenetr_result", "scop")
+  out <- standardize(
+    raw_result = list(),
+    ligand_activities = data.frame(
+      test_ligand = c("L1", "L2"),
+      aupr_corrected = c(0.9, 0.6),
+      pearson = c(0.5, 0.8),
+      rank = c(1, 2)
+    ),
+    ligand_target_df = data.frame(
+      ligand = c("L1", "L2"), target = c("G1", "G2"), weight = c(1, 0.5)
+    ),
+    ligand_receptor_df = data.frame(
+      from = c("L1", "L2"), to = c("R1", "R2")
+    ),
+    sender_use = c("SenderA", "SenderB"),
+    sender_ligand_support = list(SenderA = "L1", SenderB = "L2"),
+    receiver = "Receiver",
+    mode = "aggregate",
+    group.by = "celltype",
+    condition.by = "condition",
+    condition_oi = "case",
+    condition_reference = "control",
+    assay = "RNA",
+    species = "Mus_musculus",
+    backend = "r"
+  )
+
+  expect_equal(out$long_table$sender, c("SenderA", "SenderB"))
+  expect_equal(out$long_table$score, c(0.9, 0.6))
+  expect_equal(out$long_table$priority_rank, c(1, 2))
+  expect_equal(out$long_table$pearson, c(0.5, 0.8))
+  expect_equal(out$long_table$support_type, rep("sender_expressed_ligand", 2))
+})
+
 test_that("resolve_nichenetr_object downloads fallback RDS before reading", {
   skip_if_not_installed("R.cache")
 
@@ -599,17 +639,17 @@ test_that("RunMultiNichenetr preserves user contrast table semantics", {
   skip_if_not_installed("SingleCellExperiment")
 
   counts <- Matrix::sparseMatrix(
-    i = rep(1:3, 4),
-    j = rep(1:4, each = 3),
-    x = seq_len(12),
-    dims = c(3, 4)
+    i = rep(1:3, 8),
+    j = rep(1:8, each = 3),
+    x = seq_len(24),
+    dims = c(3, 8)
   )
   rownames(counts) <- c("L1", "R1", "G1")
   colnames(counts) <- paste0("Cell", seq_len(ncol(counts)))
   srt <- Seurat::CreateSeuratObject(counts = counts)
-  srt$celltype <- c("sender cell", "receiver cell", "sender cell", "receiver cell")
-  srt$sample <- c("sample 1", "sample 1", "sample 2", "sample 2")
-  srt$condition <- c("condition A", "condition A", "condition B", "condition B")
+  srt$celltype <- rep(c("sender cell", "receiver cell"), 4)
+  srt$sample <- rep(paste("sample", 1:4), each = 2)
+  srt$condition <- rep(c("condition A", "condition B"), each = 4)
 
   user_contrast <- data.frame(
     contrast = "condition A-condition B",
@@ -638,6 +678,7 @@ test_that("RunMultiNichenetr preserves user contrast table semantics", {
       stop("Unexpected mocked namespace lookup: ", package, "::", name)
     },
     load_nichenetr_models = function(...) {
+      captured$model_args <<- list(...)
       list(
         lr_network = data.frame(from = "L1", to = "R1"),
         ligand_target_matrix = matrix(1, nrow = 1, ncol = 1, dimnames = list("G1", "L1")),
@@ -658,6 +699,7 @@ test_that("RunMultiNichenetr preserves user contrast table semantics", {
       receiver_celltypes = "receiver cell",
       sender_celltypes = "sender cell",
       contrast_tbl = user_contrast,
+      min_cells = 10L,
       backend = "cpp",
       verbose = FALSE
     )
@@ -667,11 +709,82 @@ test_that("RunMultiNichenetr preserves user contrast table semantics", {
   expect_equal(captured$args$contrast_tbl$contrast, "condition.A-condition.B")
   expect_equal(captured$args$contrast_tbl$group, "condition.A")
   expect_equal(captured$args$contrasts_oi, "'condition.A-condition.B'")
+  expect_type(captured$args$min_cells, "double")
+  expect_type(captured$args$fraction_cutoff, "double")
+  expect_false(captured$model_args$include_weighted)
   expect_equal(out@tools$MultiNichenetr$parameters$receiver_celltypes, "receiver cell")
   expect_equal(out@tools$MultiNichenetr$parameters$sender_celltypes, "sender cell")
   expect_equal(out@tools$MultiNichenetr$parameters$receiver_celltypes_safe, "receiver.cell")
   expect_equal(out@tools$MultiNichenetr$parameters$sender_celltypes_safe, "sender.cell")
   expect_equal(out@tools$MultiNichenetr$parameters$backend, "cpp")
+})
+
+test_that("RunMultiNichenetr rejects unreplicated contrasts before inference", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("Matrix")
+
+  counts <- Matrix::sparseMatrix(
+    i = rep(1:2, 4), j = rep(1:4, each = 2), x = 1,
+    dims = c(2, 4)
+  )
+  rownames(counts) <- c("L1", "R1")
+  colnames(counts) <- paste0("Cell", seq_len(ncol(counts)))
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  srt$celltype <- rep(c("sender", "receiver"), 2)
+  srt$sample <- rep(c("sample A", "sample B"), each = 2)
+  srt$condition <- rep(c("condition A", "condition B"), each = 2)
+  before <- srt@tools
+
+  testthat::local_mocked_bindings(
+    check_r = function(...) TRUE,
+    .package = "scop"
+  )
+
+  expect_error(
+    scop::RunMultiNichenetr(
+      srt = srt,
+      group.by = "celltype",
+      sample.by = "sample",
+      condition.by = "condition",
+      condition_oi = "condition A",
+      condition_reference = "condition B",
+      receiver_celltypes = "receiver",
+      sample_agnostic = TRUE,
+      verbose = FALSE
+    ),
+    "at least two\\s+independent samples.*condition A=1, condition\\s+B=1"
+  )
+  expect_identical(srt@tools, before)
+})
+
+test_that("RunMultiNichenetr rejects missing sample identifiers", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("Matrix")
+
+  counts <- Matrix::sparseMatrix(
+    i = rep(1:2, 8), j = rep(1:8, each = 2), x = 1,
+    dims = c(2, 8)
+  )
+  rownames(counts) <- c("L1", "R1")
+  colnames(counts) <- paste0("Cell", seq_len(ncol(counts)))
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  srt$celltype <- rep(c("sender", "receiver"), 4)
+  srt$sample <- c(NA, "A2", "B1", "B2", NA, "A2", "B1", "B2")
+  srt$condition <- rep(c("A", "A", "B", "B"), 2)
+
+  testthat::local_mocked_bindings(
+    check_r = function(...) TRUE,
+    .package = "scop"
+  )
+  expect_error(
+    scop::RunMultiNichenetr(
+      srt = srt, group.by = "celltype", sample.by = "sample",
+      condition.by = "condition", condition_oi = "A",
+      condition_reference = "B", receiver_celltypes = "receiver",
+      verbose = FALSE
+    ),
+    "must not contain missing or empty values"
+  )
 })
 
 test_that("CellChat method-specific CCC data honors condition instead of cached unified table", {

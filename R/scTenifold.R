@@ -1,6 +1,7 @@
 #' @title Run scTenifoldKnk in-silico knockout analysis
 #'
 #' @md
+#' @name RunScTenifoldKnk
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
 #' @param layer Assay layer used as the count matrix.

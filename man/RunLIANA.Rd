@@ -8,12 +8,15 @@ RunLIANA(
   srt,
   group.by,
   method = c("natmi", "connectome", "logfc", "sca", "cellphonedb"),
-  resource = "Consensus",
+  resource = NULL,
   assay = NULL,
   min_cells = 5,
   return_all = FALSE,
   backend = c("cpp", "r"),
   verbose = TRUE,
+  species = c("human", "mouse"),
+  consensus = c("auto", "rank", "aggregate", "none"),
+  consensus_args = list(),
   ...
 )
 }
@@ -25,7 +28,9 @@ RunLIANA(
 
 \item{method}{LIANA methods to run. Defaults to LIANA's internal methods.}
 
-\item{resource}{LIANA ligand-receptor resource(s). Default is \code{"Consensus"}.}
+\item{resource}{LIANA ligand-receptor resource(s). If \code{NULL}, \code{"Consensus"}
+is used for human data and \code{"MouseConsensus"} for mouse data. This is a
+ligand-receptor resource choice, not a multi-method result consensus.}
 
 \item{assay}{Assay used by LIANA. If \code{NULL}, LIANA uses the default assay.}
 
@@ -38,6 +43,17 @@ aggregation. Upstream LIANA inference is unchanged.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{species}{Species used to select the default ligand-receptor resource.}
+
+\item{consensus}{Multi-method result aggregation. \code{"auto"} uses
+\code{rank_aggregate()} when at least two methods are requested and does not
+invent a consensus for a single method. \code{"rank"} returns magnitude and
+specificity consensus ranks, \code{"aggregate"} uses \code{liana_aggregate()}, and
+\code{"none"} keeps only method-specific results.}
+
+\item{consensus_args}{Named arguments passed to the selected LIANA
+aggregation function.}
 
 \item{...}{Additional arguments passed to \code{liana::liana_wrap()}.}
 }

@@ -200,6 +200,20 @@ RunCellChat <- function(
   )
 
   srt@tools[["CellChat"]] <- bundle
+  cellchat_long <- ccc_build_cellchat_long_table(srt, thresh = thresh)
+  bundle$long_table <- cellchat_long
+  bundle$primary_table <- cellchat_long
+  bundle$pair_table <- aggregate_ccc_long(cellchat_long, backend = backend)
+  bundle$metadata <- list(
+    schema = "scop_ccc_unified_v2",
+    updated_at = as.character(Sys.time()),
+    backend = backend
+  )
+  bundle$provenance <- list(
+    producer = "RunCellChat",
+    backend_version = as.character(utils::packageVersion("CellChat"))
+  )
+  srt@tools[["CellChat"]] <- bundle
   srt <- ccc_update_unified_bundle(
     srt = srt,
     method = "CellChat",
