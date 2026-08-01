@@ -157,8 +157,9 @@ struct MarkerSummaryWorker : public Worker {
           z += 0.5;
         }
         const double sigma = std::sqrt(pairs * variance_component);
-        p_value(feature, group) = 2.0 *
-          R::pnorm5(-std::abs(z / sigma), 0.0, 1.0, 1, 0);
+        p_value(feature, group) =
+          (!std::isfinite(sigma) || sigma <= 0.0) ? 1.0 :
+          2.0 * R::pnorm5(-std::abs(z / sigma), 0.0, 1.0, 1, 0);
       }
     }
   }

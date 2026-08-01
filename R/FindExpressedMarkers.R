@@ -538,8 +538,9 @@ FindConservedMarkers2 <- function(
         )
         next
       }
-      marker.test[[level.use]] <- Seurat::FindMarkers(
-        object = Seurat::GetAssay(object, assay),
+      marker.test[[level.use]] <- FindMarkers(
+        object = object,
+        assay = assay,
         layer = layer,
         cells.1 = cells.1.use,
         cells.2 = cells.2.use,
@@ -588,8 +589,9 @@ FindConservedMarkers2 <- function(
         "Testing group {.val {level.use}}: ({.val {cells.1}}) vs ({.val {cells.2}})",
         verbose = verbose
       )
-      marker.test[[level.use]] <- Seurat::FindMarkers(
-        object = Seurat::GetAssay(object, assay),
+      marker.test[[level.use]] <- FindMarkers(
+        object = object,
+        assay = assay,
         layer = layer,
         cells.1 = cells.1.use,
         cells.2 = cells.2.use,
