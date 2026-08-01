@@ -117,6 +117,12 @@ RunLIANA <- function(
   )
 
   long_table <- standardize_liana_result(res)
+  result_resources <- liana_result_resources(res, requested = resource)
+  if (nrow(long_table) > 0L && length(result_resources) == 1L) {
+    missing_resource <- is.na(long_table$resource) |
+      !nzchar(as.character(long_table$resource))
+    long_table$resource[missing_resource] <- result_resources[[1L]]
+  }
   liana_table <- ccc_long_to_liana(long_table)
   pair_table <- aggregate_ccc_long(long_table, backend = backend)
   consensus_result <- liana_build_consensus(
@@ -298,22 +304,6 @@ liana_result_resources <- function(res, requested) {
   character(0)
 }
 
-liana_bind_rows <- function(x) {
-  x <- Filter(function(el) is.data.frame(el) && nrow(el) > 0L, x)
-  if (length(x) == 0L) {
-    return(data.frame())
-  }
-  cols <- Reduce(union, lapply(x, colnames))
-  x <- lapply(x, function(el) {
-    missing <- setdiff(cols, colnames(el))
-    for (nm in missing) el[[nm]] <- NA
-    el[, cols, drop = FALSE]
-  })
-  out <- do.call(rbind, x)
-  rownames(out) <- NULL
-  out
-}
-
 liana_standardize_consensus <- function(df, resource, mode) {
   if (is.null(df) || !is.data.frame(df) || nrow(df) == 0L) {
     return(data.frame())
@@ -420,7 +410,7 @@ liana_build_consensus <- function(
     do.call(fun, args)
   })
   names(by_resource) <- resources
-  table <- liana_bind_rows(Map(
+  table <- ccc_bind_long_tables(Map(
     function(df, resource_name) {
       liana_standardize_consensus(df, resource = resource_name, mode = mode)
     },
@@ -1038,21 +1028,7 @@ ccc_flatten_liana_result <- function(x, path = character()) {
     }
     ccc_flatten_liana_result(x[[i]], path = c(path, nm))
   })
-  pieces <- Filter(function(el) is.data.frame(el) && nrow(el) > 0L, pieces)
-  if (length(pieces) == 0L) {
-    return(data.frame())
-  }
-  common <- Reduce(union, lapply(pieces, colnames))
-  pieces <- lapply(pieces, function(el) {
-    missing_cols <- setdiff(common, colnames(el))
-    for (nm in missing_cols) {
-      el[[nm]] <- NA
-    }
-    el[, common, drop = FALSE]
-  })
-  out <- do.call(rbind, pieces)
-  rownames(out) <- NULL
-  out
+  ccc_bind_long_tables(pieces)
 }
 
 ccc_parse_lr_label <- function(x) {
@@ -1146,7 +1122,7 @@ ccc_aggregate_liana_table <- function(out, sample_col = NULL, backend = c("cpp",
   }
   key_cols <- c("source", "target", "ligand_complex", "receptor_complex")
   has_resource_context <- "resource" %in% colnames(out) &&
-    length(unique(stats::na.omit(as.character(out$resource)))) > 1L
+    any(!is.na(out$resource) & nzchar(as.character(out$resource)))
   if (has_resource_context) {
     key_cols <- c(key_cols, "resource")
   }

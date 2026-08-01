@@ -195,10 +195,7 @@
 CCCStatPlot <- function(
   srt,
   method = NULL,
-  combine_methods = c("separate", "support", "rank", "legacy"),
   condition = NULL,
-  resource = NULL,
-  sample = NULL,
   dataset = 1,
   comparison = c(1, 2),
   plot_type = c(
@@ -260,6 +257,9 @@ CCCStatPlot <- function(
   nrow = NULL,
   ncol = NULL,
   verbose = TRUE,
+  combine_methods = c("separate", "support", "rank", "legacy"),
+  resource = NULL,
+  sample = NULL,
   ...
 ) {
   if (!inherits(srt, "Seurat")) {
@@ -288,9 +288,6 @@ CCCStatPlot <- function(
 
   method <- detect_method(srt = srt, method = method)
   combine_methods <- match.arg(combine_methods)
-  if (identical(method, "CCC") && identical(combine_methods, "separate")) {
-    return(ccc_plot_methods_separately(match.call(), srt = srt, env = parent.frame()))
-  }
   srt <- ccc_prepare_filtered_object(
     srt = srt,
     method = method,
@@ -298,6 +295,9 @@ CCCStatPlot <- function(
     condition = if (identical(method, "CellChat")) NULL else condition,
     sample = sample
   )
+  if (identical(method, "CCC") && identical(combine_methods, "separate")) {
+    return(ccc_plot_methods_separately(match.call(), srt = srt, env = parent.frame()))
+  }
   srt <- ccc_prepare_combined_object(
     srt = srt,
     method = method,

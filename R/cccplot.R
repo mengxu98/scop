@@ -1051,22 +1051,7 @@ ccc_build_unified_bundle <- function(
       thresh = thresh
     )
   })
-  pieces <- Filter(function(x) is.data.frame(x) && nrow(x) > 0L, pieces)
-  long_table <- if (length(pieces) == 0L) {
-    data.frame()
-  } else {
-    common <- Reduce(union, lapply(pieces, colnames))
-    pieces <- lapply(pieces, function(x) {
-      missing <- setdiff(common, colnames(x))
-      for (nm in missing) {
-        x[[nm]] <- NA
-      }
-      x[, common, drop = FALSE]
-    })
-    out <- do.call(rbind, pieces)
-    rownames(out) <- NULL
-    out
-  }
+  long_table <- ccc_bind_long_tables(pieces)
   long_table <- ccc_semantic_long_table(long_table)
   pair_table <- aggregate_ccc_long(long_table, backend = backend)
   liana_sample_col <- if ("method" %in% colnames(long_table)) "method" else NULL
@@ -1111,22 +1096,7 @@ ccc_update_unified_bundle <- function(
   if (nrow(old_long) > 0L && "method" %in% colnames(old_long)) {
     old_long <- old_long[as.character(old_long$method) != method, , drop = FALSE]
   }
-  pieces <- Filter(function(x) is.data.frame(x) && nrow(x) > 0L, list(old_long, new_long))
-  long_table <- if (length(pieces) == 0L) {
-    data.frame()
-  } else {
-    common <- Reduce(union, lapply(pieces, colnames))
-    pieces <- lapply(pieces, function(x) {
-      missing <- setdiff(common, colnames(x))
-      for (nm in missing) {
-        x[[nm]] <- NA
-      }
-      x[, common, drop = FALSE]
-    })
-    out <- do.call(rbind, pieces)
-    rownames(out) <- NULL
-    out
-  }
+  long_table <- ccc_bind_long_tables(list(old_long, new_long))
   long_table <- ccc_semantic_long_table(long_table)
   old_methods <- if (!is.null(old$methods)) {
     setdiff(as.character(old$methods), method)
