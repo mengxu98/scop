@@ -510,6 +510,33 @@ test_that("CCC discovery and access adapt v1 long tables without rewriting objec
   expect_identical(srt@tools$CellphoneDB$long_table, before)
 })
 
+test_that("stored CellChat primary tables enter unified results without native re-extraction", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("Matrix")
+
+  counts <- Matrix::sparseMatrix(i = 1:2, j = 1:2, x = 1, dims = c(2, 2))
+  rownames(counts) <- c("L1", "R1")
+  colnames(counts) <- c("Cell1", "Cell2")
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  primary <- data.frame(
+    sender = "A", receiver = "B", ligand = "L1", receptor = "R1",
+    interaction_name = "L1_R1", score = 0.8, pvalue = 0.01,
+    stringsAsFactors = FALSE
+  )
+  srt@tools$CellChat <- list(
+    results = list(), primary_table = primary, long_table = primary,
+    metadata = list(schema = "scop_ccc_unified_v2")
+  )
+
+  unified <- ccc_build_unified_bundle(srt, methods = "CellChat")
+  expect_equal(nrow(unified$long_table), 1L)
+  expect_equal(unified$long_table$method, "CellChat")
+  expect_equal(
+    scop::GetCCCResult(srt, "CellChat", type = "primary")$score,
+    0.8
+  )
+})
+
 test_that("LIANA result accessor preserves official consensus ranks", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("Matrix")

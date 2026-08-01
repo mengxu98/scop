@@ -169,6 +169,18 @@ GetCCCResult <- function(
   method <- normalize_ccc_method(method)
   type <- match.arg(type)
   bundle <- get_bundle(srt, method)
+  if (
+    identical(method, "CellChat") && type %in% c("primary", "long", "pair")
+  ) {
+    cellchat_long <- bundle$primary_table %||% bundle$long_table
+    if (!is.data.frame(cellchat_long) || nrow(cellchat_long) == 0L) {
+      cellchat_long <- ccc_build_cellchat_long_table(srt)
+    }
+    if (identical(type, "pair")) {
+      return(bundle$pair_table %||% aggregate_ccc_long(cellchat_long))
+    }
+    return(ccc_semantic_long_table(cellchat_long, method = method))
+  }
   out <- switch(type,
     primary = ccc_semantic_long_table(
       bundle$primary_table %||% bundle$long_table,
