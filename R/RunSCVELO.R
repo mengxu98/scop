@@ -11,6 +11,8 @@
 #' @param backend Backend used to compute RNA velocity. `"python"` keeps the
 #' original scVelo workflow. `"cpp"` uses the package C++ implementation for a
 #' stochastic velocity embedding that is compatible with [VelocityPlot].
+#' @param max_dense_gib Maximum estimated GiB allowed for the dense expression
+#' working matrices used by the C++ path.
 #' @param filter_genes Whether to filter genes based on minimum counts.
 #' @param min_counts Minimum counts for gene filtering.
 #' @param min_counts_u Minimum unspliced counts for gene filtering.
@@ -42,7 +44,8 @@
 #'   group.by = "SubCellType",
 #'   linear_reduction = "PCA",
 #'   nonlinear_reduction = "UMAP",
-#'   backend = "cpp"
+#'   backend = "cpp",
+#'   show_plot = FALSE
 #' )
 #'
 #' FeatureDimPlot(
@@ -119,6 +122,7 @@ RunSCVELO <- function(
   plot_prefix = "scvelo",
   dirpath = "./scvelo",
   backend = c("python", "cpp"),
+  max_dense_gib = 8,
   return_seurat = !is.null(srt),
   verbose = TRUE
 ) {
@@ -126,6 +130,38 @@ RunSCVELO <- function(
   plot_format <- match.arg(plot_format)
 
   if (identical(backend, "cpp")) {
+    unsupported_cpp <- character()
+    if (isTRUE(magic_impute)) {
+      unsupported_cpp <- c(unsupported_cpp, "magic_impute")
+    }
+    if (isTRUE(use_raw)) {
+      unsupported_cpp <- c(unsupported_cpp, "use_raw")
+    }
+    if (isTRUE(diff_kinetics)) {
+      unsupported_cpp <- c(unsupported_cpp, "diff_kinetics")
+    }
+    if (isTRUE(denoise)) {
+      unsupported_cpp <- c(unsupported_cpp, "denoise")
+    }
+    if (isTRUE(kinetics)) {
+      unsupported_cpp <- c(unsupported_cpp, "kinetics")
+    }
+    if (isTRUE(calculate_velocity_genes)) {
+      unsupported_cpp <- c(unsupported_cpp, "calculate_velocity_genes")
+    }
+    if (isTRUE(compute_paga)) {
+      unsupported_cpp <- c(unsupported_cpp, "compute_paga")
+    }
+    if (isTRUE(show_plot)) {
+      unsupported_cpp <- c(unsupported_cpp, "show_plot")
+    }
+    if (isTRUE(save_plot)) {
+      unsupported_cpp <- c(unsupported_cpp, "save_plot")
+    }
+    reject_unsupported_cpp_arguments(
+      unsupported_cpp,
+      "RunSCVELO(backend = \"cpp\")"
+    )
     return(run_scvelo_cpp(
       srt = srt,
       assay_x = assay_x,
@@ -141,11 +177,14 @@ RunSCVELO <- function(
       min_counts = min_counts,
       min_counts_u = min_counts_u,
       min_shared_counts = min_shared_counts,
+      normalize_per_cell = normalize_per_cell,
+      log_transform = log_transform,
       compute_terminal_states = compute_terminal_states,
       compute_pseudotime = compute_pseudotime,
       compute_velocity_confidence = compute_velocity_confidence,
       compute_velocity_graph = compute_velocity_graph,
       fitting_by = fitting_by,
+      max_dense_gib = max_dense_gib,
       cores = cores,
       return_seurat = return_seurat,
       verbose = verbose
@@ -327,6 +366,7 @@ run_scvelo_cpp <- function(
   compute_velocity_confidence = FALSE,
   compute_velocity_graph = NULL,
   fitting_by = c("stochastic", "deterministic", "em", "nm"),
+  max_dense_gib = 8,
   cores,
   return_seurat,
   verbose = TRUE
@@ -432,6 +472,13 @@ run_scvelo_cpp <- function(
     )
   }
   features_out <- features[keep]
+  dense_estimate_gib <- assert_cpp_dense_budget(
+    n_rows = length(features_out),
+    n_cols = length(cells),
+    copies = 6 + 3 * length(mode_use),
+    max_dense_gib = max_dense_gib,
+    context = "RunSCVELO(backend = \"cpp\")"
+  )
   spliced <- as.matrix(spliced_raw[keep, , drop = FALSE])
   unspliced <- as.matrix(unspliced_raw[keep, , drop = FALSE])
   storage.mode(spliced) <- "double"
@@ -505,6 +552,11 @@ run_scvelo_cpp <- function(
   # ── Per-mode velocity computation ──
   srt@tools[["SCVELO"]] <- list(
     backend = "cpp",
+    implementation = list(
+      exact_reference = FALSE,
+      scope = "velocity estimation, graph projection, and optional terminal-state calculations",
+      dense_working_set_gib_lower_bound = dense_estimate_gib
+    ),
     group.by = group.by,
     features = features_out,
     parameters = list(
@@ -521,7 +573,8 @@ run_scvelo_cpp <- function(
       normalize_per_cell = normalize_per_cell,
       log_transform = log_transform,
       compute_velocity_graph = isTRUE(compute_velocity_graph),
-      n_genes_filtered = as.integer(length(features_out))
+      n_genes_filtered = as.integer(length(features_out)),
+      max_dense_gib = max_dense_gib
     )
   )
 

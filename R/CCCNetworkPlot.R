@@ -444,7 +444,7 @@ CCCNetworkPlot <- function(
     if (identical(method, "CellChat")) {
       if (!identical(layout, "circle")) {
         log_message(
-          "{.arg layout} is ignored for {.val plot_type = {plot_type}}; scop-native CellChat pathway/LR networks use the circle layout",
+          "{.arg layout} is ignored for {.val plot_type = {plot_type}}; CellChat pathway/LR networks use the circle layout",
           message_type = "warning"
         )
       }

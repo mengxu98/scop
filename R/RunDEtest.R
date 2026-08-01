@@ -2707,6 +2707,10 @@ RunDEtest.Seurat <- function(
       " groups..."
     )
 
+    find_markers_fun <- RunDEtestFindMarkers
+    find_conserved_markers_fun <- FindConservedMarkers2
+    run_detest_fun <- RunDEtest
+
     if (markers_type == "all") {
       AllMarkers <- parallelize_fun(
         levels(cell_group),
@@ -2718,7 +2722,7 @@ RunDEtest.Seurat <- function(
           } else {
             args1[["cells.1"]] <- cells.1
             args1[["cells.2"]] <- cells.2
-            markers <- do.call(RunDEtestFindMarkers, args1)
+            markers <- do.call(find_markers_fun, args1)
             if (!is.null(markers) && nrow(markers) > 0) {
               markers[, "gene"] <- rownames(markers)
               markers[, "group1"] <- as.character(group)
@@ -2784,7 +2788,7 @@ RunDEtest.Seurat <- function(
           } else {
             args1[["cells.1"]] <- cells.1
             args1[["cells.2"]] <- cells.2
-            markers <- do.call(RunDEtestFindMarkers, args1)
+            markers <- do.call(find_markers_fun, args1)
             if (!is.null(markers) && nrow(markers) > 0) {
               markers[, "gene"] <- rownames(markers)
               markers[, "group1"] <- as.character(pair[i, 1])
@@ -2866,7 +2870,7 @@ RunDEtest.Seurat <- function(
             args1[["assay"]] <- assay
             args1[["grouping.var"]] <- grouping.var
             args1[["meta.method"]] <- meta.method
-            markers <- do.call(FindConservedMarkers2, args1)
+            markers <- do.call(find_conserved_markers_fun, args1)
             if (!is.null(markers) && nrow(markers) > 0) {
               markers[, "gene"] <- rownames(markers)
               markers[, "group1"] <- as.character(group)
@@ -2978,7 +2982,7 @@ RunDEtest.Seurat <- function(
           ) {
             return(NULL)
           } else {
-            srt_tmp <- RunDEtest(
+            srt_tmp <- run_detest_fun(
               object = srt_tmp,
               assay = assay,
               layer = layer,

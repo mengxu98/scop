@@ -166,15 +166,26 @@ MetaCellPlot <- function(
   metacell_size_range <- metacell_size_range %||%
     c(pt.size, pt.size * 2.5)
 
-  centroid_counts <- Matrix::Matrix(
-    0,
-    nrow = 1,
-    ncol = nrow(centroids),
-    sparse = TRUE
+  centroid_counts <- Matrix::sparseMatrix(
+    i = integer(),
+    j = integer(),
+    x = numeric(),
+    dims = c(2L, max(2L, nrow(centroids)))
   )
-  rownames(centroid_counts) <- "MetaCellPlot"
-  colnames(centroid_counts) <- centroids[["metacell"]]
+  rownames(centroid_counts) <- c(
+    "MetaCellPlot",
+    ".metacell-plot-padding"
+  )
+  centroid_cell_names <- centroids[["metacell"]]
+  if (length(centroid_cell_names) == 1L) {
+    centroid_cell_names <- c(
+      centroid_cell_names,
+      ".metacell-plot-padding"
+    )
+  }
+  colnames(centroid_counts) <- centroid_cell_names
   centroid_srt <- Seurat::CreateSeuratObject(counts = centroid_counts)
+  centroid_srt <- centroid_srt[, centroids[["metacell"]]]
   centroid_srt[["metacell_size"]] <- centroids[["size"]]
   centroid_srt[["metacell"]] <- centroids[["metacell"]]
   if (!is.null(color.by) && color.by %in% colnames(mc_meta)) {

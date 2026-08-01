@@ -96,6 +96,8 @@ void cibersort_svm_destroy_param(struct cibersort_svm_parameter *param);
 
 const char *cibersort_svm_check_parameter(const struct cibersort_svm_problem *prob, const struct cibersort_svm_parameter *param);
 int cibersort_svm_check_probability_model(const struct cibersort_svm_model *model);
+void cibersort_svm_clear_diagnostics(void);
+void cibersort_svm_flush_diagnostics(void);
 
 //void cibersort_svm_set_print_string_function(void (*print_func)(const char *));
 

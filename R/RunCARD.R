@@ -56,17 +56,6 @@
 #'     coord.cols = c("x", "y")
 #'   )
 #'
-#' data(pancreas_sub)
-#' features_use <- head(intersect(rownames(spatial), rownames(pancreas_sub)), 300)
-#' spatial <- RunCARD(
-#'   spatial,
-#'   reference = pancreas_sub,
-#'   reference_label = "CellType",
-#'   assay = "Spatial",
-#'   reference_assay = "RNA",
-#'   features = features_use,
-#'   verbose = FALSE
-#' )
 RunCARD <- function(
   srt,
   reference,
@@ -371,12 +360,24 @@ card_run_backend <- function(
       )[["basis"]]
       basis <- basis[, colnames(basis) %in% ct_use, drop = FALSE]
       common_genes <- intersect(rownames(spatial_count_mat), rownames(basis))
-      informative_genes <- select_info_fun(
-        basis,
-        sc_eset,
-        common_genes,
-        ct_use,
-        ct_varname
+      informative_genes <- tryCatch(
+        select_info_fun(
+          basis,
+          sc_eset,
+          common_genes,
+          ct_use,
+          ct_varname
+        ),
+        error = function(e) {
+          log_message(
+            paste0(
+              "{.pkg CARDspa} could not select informative genes from the supplied feature set. ",
+              "Try a broader {.arg features} set or less restrictive filtering. ",
+              "Backend error: {conditionMessage(e)}"
+            ),
+            message_type = "error"
+          )
+        }
       )
       informative_counts <- spatial_count_mat[
         rownames(spatial_count_mat) %in% informative_genes,

@@ -235,7 +235,7 @@ RunLargeVis.default <- function(
     nn_method = nn_method,
     n_trees = n_trees,
     search_k = search_k,
-    cores = cores,
+    n_threads = cores,
     n_sgd_threads = n_sgd_threads,
     grain_size = grain_size,
     kernel = kernel,

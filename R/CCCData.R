@@ -10,7 +10,7 @@
 #' @param assay Assay used by LIANA. If `NULL`, LIANA uses the default assay.
 #' @param min_cells Minimum cells per identity retained by LIANA.
 #' @param return_all Whether LIANA should return all possible interactions.
-#' @param backend Backend used for scop post-processing and unified CCC table
+#' @param backend Backend used only for result post-processing and unified CCC table
 #' aggregation. Upstream LIANA inference is unchanged.
 #' @param ... Additional arguments passed to `liana::liana_wrap()`.
 #'
@@ -105,7 +105,8 @@ RunLIANA <- function(
       assay = assay,
       min_cells = min_cells,
       return_all = return_all,
-      backend = backend
+      backend = backend,
+      backend_scope = "result aggregation and unified-table construction"
     )
   )
   srt <- ccc_update_unified_bundle(

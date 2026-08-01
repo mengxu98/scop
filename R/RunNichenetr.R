@@ -945,7 +945,8 @@ standardize_nichenetr_result <- function(
       cutoff_visualization = cutoff_visualization,
       top_n_ligands = top_n_ligands,
       top_n_targets = top_n_targets,
-      backend = backend
+      backend = backend,
+      backend_scope = "result aggregation and unified-table construction"
     )
   )
 }
@@ -1029,7 +1030,8 @@ standardize_multinichenetr_result <- function(
       assay = assay,
       species = species,
       sample_agnostic = sample_agnostic,
-      backend = backend
+      backend = backend,
+      backend_scope = "result aggregation and unified-table construction"
     )
   )
 }

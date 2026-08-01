@@ -10,7 +10,7 @@
 #' @param method_params Named list of method-specific arguments passed to the
 #' corresponding wrapper. For example, use `method_params$CellphoneDB$pvalue`
 #' for CellphoneDB-specific parameters.
-#' @param backend Backend used for scop post-processing and unified CCC table
+#' @param backend Backend used only for result post-processing and unified CCC table
 #' aggregation. The upstream CellChat, CellphoneDB, and LIANA inference logic is
 #' unchanged.
 #' @param skip_failed Whether to keep running remaining methods if one method
@@ -146,6 +146,7 @@ RunCCC <- function(
       methods = methods,
       method_params = method_params,
       backend = backend,
+      backend_scope = "result aggregation and unified-table construction",
       skip_failed = skip_failed,
       rebuild_unified = rebuild_unified,
       thresh = thresh

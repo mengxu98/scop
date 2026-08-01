@@ -44,7 +44,7 @@
 #' @param output_suffix Optional output suffix passed to CellphoneDB.
 #' @param keep_output Whether to keep temporary output files when `output_path` is
 #' not supplied.
-#' @param backend Backend used for scop post-processing and unified CCC table
+#' @param backend Backend used only for result post-processing and unified CCC table
 #' aggregation. Upstream CellphoneDB inference is unchanged.
 #'
 #' @return A Seurat object with results stored in `srt@tools[["CellphoneDB"]]`.
@@ -301,6 +301,7 @@ standardize_cellphonedb_result <- function(
       method = method,
       separator = separator,
       backend = backend,
+      backend_scope = "result aggregation and unified-table construction",
       converted_to_human = converted_to_human
     ),
     output_path = res[["output_path"]] %||% NULL,

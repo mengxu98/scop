@@ -3,8 +3,8 @@
 #' @description
 #' Predicts cellular developmental potential from single-cell RNA-seq data
 #' using the CytoTRACE 2 algorithm (Kang et al., 2025).
-#' By default, this function uses the native `scop` R/C++ implementation. Set
-#' `backend = "r"` to call the official `CytoTRACE2` R package.
+#' By default, this function uses the official `CytoTRACE2` R package. Set
+#' `backend = "cpp"` to use the package R/C++ implementation.
 #'
 #' The algorithm consists of five stages:
 #' \enumerate{
@@ -44,9 +44,9 @@
 #' binned CytoTRACE2 output.
 #' @param cores Number of cores for parallel processing.
 #' Default is `1`.
-#' @param backend Backend used to run CytoTRACE2. `"cpp"` uses the native
-#' `scop` R/C++ backend and is the default. `"r"` calls the official
-#' `CytoTRACE2::cytotrace2()` implementation.
+#' @param backend Backend used to run CytoTRACE2. `"r"` calls the official
+#' `CytoTRACE2::cytotrace2()` implementation and is the default. `"cpp"` uses
+#' the package R/C++ implementation.
 #' @param seed Random seed for reproducibility. Default is `14`.
 #' @param data_dir Path to the directory containing CytoTRACE2 model data files.
 #' Used only by `backend = "cpp"`. If `NULL`, uses model data prepared by
@@ -94,7 +94,8 @@
 #' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunCytoTRACE(
 #'   pancreas_sub,
-#'   species = "Mus_musculus"
+#'   species = "Mus_musculus",
+#'   backend = "cpp"
 #' )
 #'
 #' CytoTRACEPlot(
@@ -119,7 +120,7 @@ RunCytoTRACE.Seurat <- function(
   smooth_batch_size = 1000,
   compute_knn_smoothing = TRUE,
   cores = 1,
-  backend = c("cpp", "r"),
+  backend = c("r", "cpp"),
   seed = 14,
   data_dir = NULL,
   verbose = TRUE,
@@ -230,7 +231,7 @@ RunCytoTRACE.default <- function(
   smooth_batch_size = 1000,
   compute_knn_smoothing = TRUE,
   cores = 1,
-  backend = c("cpp", "r"),
+  backend = c("r", "cpp"),
   seed = 14,
   data_dir = NULL,
   verbose = TRUE,
