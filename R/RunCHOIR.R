@@ -278,9 +278,6 @@ RunCHOIR <- function(
 .choir_package <- "CHOIR"
 .choir_commit <- "e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc"
 .choir_reduction <- "CHOIR_P0_reduction"
-.choir_runtime_state <- new.env(parent = emptyenv())
-.choir_runtime_state$verified_commit <- NULL
-.choir_runtime_state$namespace <- NULL
 .choir_dependencies <- c(
   "BiocGenerics",
   "bluster",
@@ -305,8 +302,6 @@ choir_check_r <- function(verbose = FALSE) {
   if (choir_namespace_loaded()) {
     observed_commit <- choir_loaded_commit()
     if (identical(observed_commit, .choir_commit)) {
-      choir_mark_backend_verified(observed_commit)
-      choir_mark_namespace_trusted()
       return(invisible(.choir_commit))
     }
     log_message(
@@ -323,7 +318,6 @@ choir_check_r <- function(verbose = FALSE) {
   available <- isTRUE(status) || isTRUE(unlist(status)[.choir_package])
   observed_commit <- choir_installed_commit()
   if (available && identical(observed_commit, .choir_commit)) {
-    choir_mark_backend_verified(observed_commit)
     return(invisible(.choir_commit))
   }
 
@@ -347,7 +341,6 @@ choir_check_r <- function(verbose = FALSE) {
       message_type = "error"
     )
   }
-  choir_mark_backend_verified(observed_commit)
   invisible(observed_commit)
 }
 
@@ -385,42 +378,6 @@ choir_loaded_commit <- function() {
     return(NULL)
   }
   commit
-}
-
-choir_namespace_is_trusted <- function() {
-  if (
-    !choir_namespace_loaded() ||
-      !identical(.choir_runtime_state$verified_commit, .choir_commit) ||
-      !is.environment(.choir_runtime_state$namespace)
-  ) {
-    return(FALSE)
-  }
-  namespace <- tryCatch(
-    asNamespace(.choir_package),
-    error = function(...) NULL
-  )
-  identical(namespace, .choir_runtime_state$namespace)
-}
-
-choir_mark_backend_verified <- function(commit) {
-  .choir_runtime_state$verified_commit <- commit
-  .choir_runtime_state$namespace <- NULL
-  invisible(commit)
-}
-
-choir_mark_namespace_trusted <- function() {
-  if (
-    !choir_namespace_loaded() ||
-      !identical(.choir_runtime_state$verified_commit, .choir_commit) ||
-      !identical(choir_loaded_commit(), .choir_commit)
-  ) {
-    log_message(
-      "The loaded {.pkg CHOIR} namespace could not be matched to the pinned backend. Restart R and try again.",
-      message_type = "error"
-    )
-  }
-  .choir_runtime_state$namespace <- asNamespace(.choir_package)
-  invisible(TRUE)
 }
 
 choir_check_dependencies <- function(verbose = FALSE) {
@@ -516,11 +473,7 @@ choir_install_without_configure <- function(verbose = FALSE) {
     stderr = log
   )
   if (!identical(status, 0L)) {
-    details <- if (file.exists(log)) {
-      utils::tail(readLines(log, warn = FALSE), 20L)
-    } else {
-      character()
-    }
+    details <- runner_tail_lines(log, max_lines = 20L)
     log_message(
       paste(
         c("CHOIR installation failed", details),
@@ -534,7 +487,12 @@ choir_install_without_configure <- function(verbose = FALSE) {
 
 choir_get_fun <- function(fun) {
   value <- get_namespace_fun(.choir_package, fun)
-  choir_mark_namespace_trusted()
+  if (!identical(choir_loaded_commit(), .choir_commit)) {
+    log_message(
+      "The loaded {.pkg CHOIR} namespace could not be matched to the pinned backend. Restart R and try again.",
+      message_type = "error"
+    )
+  }
   value
 }
 

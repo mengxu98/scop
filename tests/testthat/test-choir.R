@@ -73,7 +73,9 @@ with_mock_choir <- function(code, backend = NULL) {
       "e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc"
     },
     choir_namespace_loaded = function() FALSE,
-    choir_mark_namespace_trusted = function() invisible(TRUE),
+    choir_loaded_commit = function() {
+      "e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc"
+    },
     choir_validate_platform = function(...) invisible(TRUE)
   )
   force(code)
@@ -434,7 +436,8 @@ test_that("CHOIR helper reuses the installed pinned backend", {
     choir_installed_commit = function() {
       "e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc"
     },
-    choir_namespace_loaded = function() FALSE
+    choir_namespace_loaded = function() FALSE,
+    choir_validate_platform = function(...) invisible(TRUE)
   )
   expect_invisible(choir_check_r(verbose = FALSE))
   expect_identical(checked$packages, "CHOIR")
@@ -463,6 +466,7 @@ test_that("CHOIR helper always skips the upstream telemetry configure", {
       expect_false(verbose)
       invisible(TRUE)
     },
+    choir_validate_platform = function(...) invisible(TRUE),
     choir_namespace_loaded = function() FALSE,
     choir_installed_commit = function() {
       if (fallback_calls == 0L) {
@@ -497,6 +501,7 @@ test_that("CHOIR helper stops before source installation when dependencies fail"
     },
     choir_namespace_loaded = function() FALSE,
     choir_installed_commit = function() NULL,
+    choir_validate_platform = function(...) invisible(TRUE),
     choir_install_without_configure = function(...) {
       fallback_calls <<- fallback_calls + 1L
     }
@@ -517,6 +522,7 @@ test_that("CHOIR helper refuses to replace a loaded stale namespace", {
     choir_installed_commit = function() "stale",
     choir_namespace_loaded = function() TRUE,
     choir_loaded_commit = function() "stale",
+    choir_validate_platform = function(...) invisible(TRUE),
     choir_install_without_configure = function(...) {
       fallback_calls <<- fallback_calls + 1L
     }
@@ -531,7 +537,6 @@ test_that("CHOIR helper refuses to replace a loaded stale namespace", {
 
 test_that("CHOIR helper accepts a loaded pinned namespace on the fast path", {
   checked <- FALSE
-  marked <- character()
   testthat::local_mocked_bindings(
     .package = "scop",
     check_r = function(...) {
@@ -542,23 +547,11 @@ test_that("CHOIR helper accepts a loaded pinned namespace on the fast path", {
     choir_loaded_commit = function() {
       "e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc"
     },
-    choir_mark_backend_verified = function(commit) {
-      marked <<- c(marked, commit)
-    },
-    choir_mark_namespace_trusted = function() {
-      marked <<- c(marked, "namespace")
-    }
+    choir_validate_platform = function(...) invisible(TRUE)
   )
 
   expect_invisible(getFromNamespace("choir_check_r", "scop")(verbose = FALSE))
   expect_false(checked)
-  expect_identical(
-    marked,
-    c(
-      "e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc",
-      "namespace"
-    )
-  )
 })
 
 test_that("CHOIR helper rejects Windows before checking dependencies", {

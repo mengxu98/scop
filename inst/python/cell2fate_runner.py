@@ -298,11 +298,6 @@ def _is_owned_result(paths: dict[str, Path]) -> bool:
     )
 
 
-def _clear_outputs(paths: dict[str, Path]) -> None:
-    _remove_outputs(paths)
-    _ensure_output_directories(paths)
-
-
 def _remove_outputs(paths: dict[str, Path]) -> None:
     for key in ("inputs", "model", "posterior", "tables"):
         target = paths[key]
@@ -591,7 +586,7 @@ def _run_locked(config: dict[str, Any], lock_token: str) -> None:
         for key in ("inputs", "model", "posterior", "tables", "manifest", "complete")
     )
     existing = any(path.exists() for path in managed_paths)
-    if existing and not _is_owned_result(paths):
+    if existing and not owned_result:
         raise RuntimeError(
             "result_dir contains paths managed by Cell2fate but has no valid "
             "RunCell2fate ownership marker; refusing to replace them"
