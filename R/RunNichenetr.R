@@ -444,13 +444,23 @@ RunMultiNichenetr <- function(
 
   design <- unique(srt[[]][, c(sample.by, condition.by), drop = FALSE])
   focus_conditions <- c(condition_oi, condition_reference)
+  focus_rows <- as.character(design[[condition.by]]) %in% focus_conditions
+  sample_values <- trimws(as.character(design[[sample.by]]))
+  condition_values <- trimws(as.character(design[[condition.by]]))
+  if (
+    any(is.na(condition_values) | !nzchar(condition_values)) ||
+      any(focus_rows & (is.na(sample_values) | !nzchar(sample_values)))
+  ) {
+    log_message(
+      "{.arg sample.by} and {.arg condition.by} must not contain missing or empty values for MultiNicheNet contrasts",
+      message_type = "error"
+    )
+  }
   sample_counts <- vapply(
     focus_conditions,
     function(condition_value) {
-      length(unique(design[
-        as.character(design[[condition.by]]) == condition_value,
-        sample.by
-      ]))
+      samples <- sample_values[condition_values == condition_value]
+      length(unique(samples[!is.na(samples) & nzchar(samples)]))
     },
     integer(1)
   )
@@ -801,7 +811,7 @@ load_nichenetr_models <- function(
     weighted_networks <- NULL
   }
 
-  if (is.null(weighted_networks)) {
+  if (isTRUE(include_weighted) && is.null(weighted_networks)) {
     sig_network <- resolve_nichenetr_object(
       x = NULL,
       package = "nichenetr",

@@ -481,17 +481,17 @@ CCCHeatmap <- function(
   if (identical(method, "CCC") && identical(combine_methods, "separate")) {
     return(ccc_plot_methods_separately(match.call(), srt = srt, env = parent.frame()))
   }
-  srt <- ccc_prepare_combined_object(
-    srt = srt,
-    method = method,
-    combine_methods = combine_methods
-  )
   srt <- ccc_prepare_filtered_object(
     srt = srt,
     method = method,
     resource = resource,
     condition = if (identical(method, "CellChat")) NULL else condition,
     sample = sample
+  )
+  srt <- ccc_prepare_combined_object(
+    srt = srt,
+    method = method,
+    combine_methods = combine_methods
   )
 
   if (

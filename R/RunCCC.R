@@ -62,13 +62,6 @@ RunCCC <- function(
   }
 
   method_params <- ccc_normalize_run_params(method_params)
-  for (method in methods) {
-    ccc_preflight_method(
-      method = method,
-      srt = srt,
-      params = method_params[[method]] %||% list()
-    )
-  }
   status <- list()
   completed_methods <- character(0)
   started_at <- Sys.time()
@@ -78,6 +71,32 @@ RunCCC <- function(
       "Running CCC method: {.val {method}}",
       verbose = verbose
     )
+    preflight <- tryCatch(
+      {
+        ccc_preflight_method(
+          method = method,
+          srt = srt,
+          params = method_params[[method]] %||% list()
+        )
+        NULL
+      },
+      error = function(e) e
+    )
+    if (inherits(preflight, "error")) {
+      status[[method]] <- list(
+        method = method,
+        status = "failed",
+        elapsed = 0,
+        message = conditionMessage(preflight)
+      )
+      if (!isTRUE(skip_failed)) stop(preflight)
+      log_message(
+        "CCC method {.val {method}} failed preflight and was skipped: {conditionMessage(preflight)}",
+        message_type = "warning",
+        verbose = verbose
+      )
+      next
+    }
     args <- ccc_run_method_args(
       method = method,
       srt = srt,

@@ -140,6 +140,12 @@
     CellChat, CellPhoneDB, and LIANA as the default core run. Unified CCC
     plotting separates backends by default and provides explicit
     support-count and within-method percentile-rank views.
+  * Hardened unified CCC plotting and access semantics: context filters are
+    applied before cross-method support/rank combinations, CellChat cached
+    rows honor the requested significance threshold, LIANA resources remain
+    separate during export, and unified retrieval preserves backend labels.
+    `RunCCC(skip_failed = TRUE)` now records preflight failures without
+    aborting otherwise runnable methods.
 
 * **fix**:
   * `RunGSVA()`: Removed redundant dense `as.matrix()` conversion in single-cell mode for `backend = "r"`; sparse expression matrices now stay sparse through row filtering, reducing peak memory and avoiding unnecessary dense materialization.

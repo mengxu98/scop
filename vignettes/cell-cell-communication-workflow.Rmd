@@ -106,7 +106,7 @@ table(pancreas_ccc$CellType)
 ```
 
 ```{r ccc-backend-check, echo=FALSE, results='asis'}
-ccc_examples_available <- isTRUE(
+ccc_examples_available <- all(
   thisutils::check_r(
     c("jinworks/CellChat", "saezlab/liana"),
     verbose = FALSE

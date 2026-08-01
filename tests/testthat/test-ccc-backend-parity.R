@@ -757,6 +757,36 @@ test_that("RunMultiNichenetr rejects unreplicated contrasts before inference", {
   expect_identical(srt@tools, before)
 })
 
+test_that("RunMultiNichenetr rejects missing sample identifiers", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("Matrix")
+
+  counts <- Matrix::sparseMatrix(
+    i = rep(1:2, 8), j = rep(1:8, each = 2), x = 1,
+    dims = c(2, 8)
+  )
+  rownames(counts) <- c("L1", "R1")
+  colnames(counts) <- paste0("Cell", seq_len(ncol(counts)))
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  srt$celltype <- rep(c("sender", "receiver"), 4)
+  srt$sample <- c(NA, "A2", "B1", "B2", NA, "A2", "B1", "B2")
+  srt$condition <- rep(c("A", "A", "B", "B"), 2)
+
+  testthat::local_mocked_bindings(
+    check_r = function(...) TRUE,
+    .package = "scop"
+  )
+  expect_error(
+    scop::RunMultiNichenetr(
+      srt = srt, group.by = "celltype", sample.by = "sample",
+      condition.by = "condition", condition_oi = "A",
+      condition_reference = "B", receiver_celltypes = "receiver",
+      verbose = FALSE
+    ),
+    "must not contain missing or empty values"
+  )
+})
+
 test_that("CellChat method-specific CCC data honors condition instead of cached unified table", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("Matrix")

@@ -9,14 +9,14 @@ RunLIANA(
   group.by,
   method = c("natmi", "connectome", "logfc", "sca", "cellphonedb"),
   resource = NULL,
-  species = c("human", "mouse"),
-  consensus = c("auto", "rank", "aggregate", "none"),
-  consensus_args = list(),
   assay = NULL,
   min_cells = 5,
   return_all = FALSE,
   backend = c("cpp", "r"),
   verbose = TRUE,
+  species = c("human", "mouse"),
+  consensus = c("auto", "rank", "aggregate", "none"),
+  consensus_args = list(),
   ...
 )
 }
@@ -32,17 +32,6 @@ RunLIANA(
 is used for human data and \code{"MouseConsensus"} for mouse data. This is a
 ligand-receptor resource choice, not a multi-method result consensus.}
 
-\item{species}{Species used to select the default ligand-receptor resource.}
-
-\item{consensus}{Multi-method result aggregation. \code{"auto"} uses
-\code{rank_aggregate()} when at least two methods are requested and does not
-invent a consensus for a single method. \code{"rank"} returns magnitude and
-specificity consensus ranks, \code{"aggregate"} uses \code{liana_aggregate()}, and
-\code{"none"} keeps only method-specific results.}
-
-\item{consensus_args}{Named arguments passed to the selected LIANA
-aggregation function.}
-
 \item{assay}{Assay used by LIANA. If \code{NULL}, LIANA uses the default assay.}
 
 \item{min_cells}{Minimum cells per identity retained by LIANA.}
@@ -54,6 +43,17 @@ aggregation. Upstream LIANA inference is unchanged.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{species}{Species used to select the default ligand-receptor resource.}
+
+\item{consensus}{Multi-method result aggregation. \code{"auto"} uses
+\code{rank_aggregate()} when at least two methods are requested and does not
+invent a consensus for a single method. \code{"rank"} returns magnitude and
+specificity consensus ranks, \code{"aggregate"} uses \code{liana_aggregate()}, and
+\code{"none"} keeps only method-specific results.}
+
+\item{consensus_args}{Named arguments passed to the selected LIANA
+aggregation function.}
 
 \item{...}{Additional arguments passed to \code{liana::liana_wrap()}.}
 }
