@@ -249,6 +249,28 @@ ccc_preflight_method <- function(method, srt, params = list()) {
       message_type = "error"
     )
   }
+  if (identical(method, "Nichenetr")) {
+    mode <- params$mode %||% "aggregate"
+    if (!identical(mode, "custom")) {
+      design_required <- c(
+        "condition.by", "condition_oi", "condition_reference"
+      )
+      design_missing <- design_required[
+        !design_required %in% names(params) |
+          vapply(design_required, function(nm) {
+            value <- params[[nm]]
+            is.null(value) || length(value) == 0L ||
+              (is.character(value) && all(is.na(value) | !nzchar(value)))
+          }, logical(1))
+      ]
+      if (length(design_missing) > 0L) {
+        log_message(
+          "CCC method {.val Nichenetr} in {.val {mode}} mode requires method_params fields: {.val {design_missing}}",
+          message_type = "error"
+        )
+      }
+    }
+  }
   if (
     identical(method, "MDIC3") &&
       is.null(params$grn) &&
