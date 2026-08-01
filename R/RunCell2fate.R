@@ -252,6 +252,7 @@ RunCell2fate <- function(
     )
   }
 
+  cell2fate_assert_safe_result_paths(result_dir)
   files <- cell2fate_result_files(result_dir)
   required_names <- c("input", "cell_metadata", "posterior", "manifest")
   if (isTRUE(store_velocity)) {
@@ -361,7 +362,7 @@ RunCell2fate <- function(
       producer = .cell2fate_producer,
       backend_id = "cell2fate",
       backend_repository = .cell2fate_repository,
-      backend_commit = manifest$backend_commit %||% .cell2fate_commit
+      backend_commit = manifest$backend_commit
     )
   )
 

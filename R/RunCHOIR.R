@@ -155,7 +155,6 @@ RunCHOIR <- function(
 
   dots <- list(...)
   choir_validate_dots(dots)
-  choir_validate_platform()
   expected_cluster_col <- paste0("CHOIR_clusters_", alpha)
   if (identical(batch$labels, expected_cluster_col)) {
     log_message(
