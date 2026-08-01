@@ -149,6 +149,7 @@ marker_pair_parallel <- function(
     groups = as.integer(group),
     group_sizes = as.integer(group_sizes)
   )
+  marker_result$pval_by_group[is.nan(marker_result$pval_by_group)] <- 1
   n1 <- group_sizes[[1L]]
   n2 <- group_sizes[[2L]]
   sums1 <- marker_result$sum_by_group[, 1L]

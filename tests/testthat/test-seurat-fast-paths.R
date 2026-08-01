@@ -139,3 +139,54 @@ test_that("Seurat fast paths support legacy Assay preprocessing", {
   expect_s3_class(markers, "data.frame")
   expect_s3_class(all_markers, "data.frame")
 })
+
+test_that("FindAllMarkers supports feature subsets with Seurat parity", {
+  obj <- make_fast_path_object(seed = 13)
+  SeuratObject::Idents(obj) <- rep(c("A", "B", "C", "D"), each = 20)
+  features <- rownames(obj)[1:40]
+
+  expected <- suppressWarnings(Seurat::FindAllMarkers(
+    obj,
+    features = features,
+    logfc.threshold = 0,
+    min.pct = 0,
+    only.pos = FALSE,
+    return.thresh = Inf,
+    verbose = FALSE
+  ))
+  actual <- suppressWarnings(FindAllMarkers(
+    obj,
+    features = features,
+    logfc.threshold = 0,
+    min.pct = 0,
+    only.pos = FALSE,
+    return.thresh = Inf,
+    verbose = FALSE
+  ))
+
+  rownames(expected) <- NULL
+  rownames(actual) <- NULL
+  expect_equal(actual, expected, tolerance = 1e-12)
+})
+
+test_that("sparse Wilcoxon returns finite p-values for zero-variance genes", {
+  counts <- Matrix::Matrix(1, nrow = 5, ncol = 12, sparse = TRUE)
+  rownames(counts) <- paste0("g", seq_len(nrow(counts)))
+  colnames(counts) <- paste0("c", seq_len(ncol(counts)))
+  obj <- Seurat::CreateSeuratObject(counts)
+  obj <- Seurat::NormalizeData(obj, verbose = FALSE)
+  SeuratObject::Idents(obj) <- rep(c("A", "B"), each = 6)
+
+  markers <- FindMarkers(
+    obj,
+    ident.1 = "A",
+    ident.2 = "B",
+    logfc.threshold = 0,
+    min.pct = 0,
+    only.pos = FALSE,
+    verbose = FALSE
+  )
+
+  expect_false(any(is.nan(markers$p_val)))
+  expect_true(all(markers$p_val == 1))
+})

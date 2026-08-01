@@ -90,7 +90,9 @@ RunDEtest(object = NULL, ..., srt = NULL)
 \arguments{
 \item{object}{A \code{Seurat} object or a \code{SummarizedExperiment} object.}
 
-\item{...}{Additional arguments to pass to the \link[Seurat:FindMarkers]{Seurat::FindMarkers} function.}
+\item{...}{Additional arguments passed to the marker backend. Arguments not
+supported by scop's sparse Wilcoxon path are delegated to
+\link[Seurat:FindMarkers]{Seurat::FindMarkers}.}
 
 \item{srt}{Compatibility alias for \code{object}.}
 

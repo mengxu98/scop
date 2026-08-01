@@ -1135,19 +1135,48 @@ WilcoxDETest <- function(
   )
 }
 
-RunDEtestFindMarkers <- function(
+RunDEtestCanReuseSymmetricWilcox <- function(
+  test.use,
+  layer,
+  latent.vars,
+  mean.fxn,
+  norm.method,
+  features,
+  min.cells.feature,
+  min.cells.group,
+  pseudocount.use,
+  extra_args
+) {
+  identical(test.use, "wilcox") &&
+    is.null(latent.vars) &&
+    is.null(mean.fxn) &&
+    layer %in% c("data", "counts") &&
+    identical(norm.method, "LogNormalize") &&
+    (is.null(features) || is.character(features)) &&
+    is.numeric(min.cells.feature) &&
+    length(min.cells.feature) == 1L &&
+    is.finite(min.cells.feature) &&
+    is.numeric(min.cells.group) &&
+    length(min.cells.group) == 1L &&
+    is.finite(min.cells.group) &&
+    is.numeric(pseudocount.use) &&
+    length(pseudocount.use) == 1L &&
+    is.finite(pseudocount.use) &&
+    pseudocount.use > 0 &&
+    length(extra_args) == 0L
+}
+
+RunDEtestFindAllMarkers <- function(
   srt,
   assay,
   layer,
-  cells.1,
-  cells.2,
+  cell_group,
   features,
   test.use,
   logfc.threshold,
   base,
   min.pct,
   min.diff.pct,
-  max.cells.per.ident,
   min.cells.feature,
   min.cells.group,
   latent.vars,
@@ -1155,70 +1184,72 @@ RunDEtestFindMarkers <- function(
   norm.method,
   pseudocount.use,
   mean.fxn,
-  verbose,
-  random.seed = 1,
+  p.adjust.method,
   ...
 ) {
-  extra_args <- list(...)
-  use_sparse_wilcox <- identical(test.use, "wilcox") &&
+  supported <- identical(test.use, "wilcox") &&
+    identical(layer, "data") &&
     is.null(latent.vars) &&
     is.null(mean.fxn) &&
-    layer %in% c("data", "counts") &&
     identical(norm.method, "LogNormalize") &&
-    length(extra_args) == 0 &&
-    !requireNamespace(paste0("pre", "sto"), quietly = TRUE)
-  if (isTRUE(use_sparse_wilcox)) {
-    return(FindMarkers(
-      object = srt,
-      assay = assay,
-      layer = layer,
-      cells.1 = cells.1,
-      cells.2 = cells.2,
-      features = features,
-      test.use = test.use,
-      logfc.threshold = logfc.threshold,
-      base = base,
-      min.pct = min.pct,
-      min.diff.pct = min.diff.pct,
-      max.cells.per.ident = max.cells.per.ident,
-      min.cells.feature = min.cells.feature,
-      min.cells.group = min.cells.group,
-      only.pos = only.pos,
-      norm.method = norm.method,
-      pseudocount.use = pseudocount.use,
-      random.seed = random.seed,
-      verbose = verbose
-    ))
+    identical(min.diff.pct, -Inf) &&
+    isTRUE(base == 2) &&
+    isTRUE(pseudocount.use == 1) &&
+    is.numeric(min.cells.feature) &&
+    length(min.cells.feature) == 1L &&
+    is.finite(min.cells.feature) &&
+    identical(as.numeric(min.cells.feature), 3) &&
+    is.numeric(min.cells.group) &&
+    length(min.cells.group) == 1L &&
+    is.finite(min.cells.group) &&
+    (is.null(features) || is.character(features)) &&
+    length(list(...)) == 0L
+  if (!isTRUE(supported)) {
+    return(NULL)
   }
 
-  do.call(
-    Seurat::FindMarkers,
-    c(
-      list(
-        object = Seurat::GetAssay(srt, assay),
-        layer = layer,
-        cells.1 = cells.1,
-        cells.2 = cells.2,
-        features = features,
-        test.use = test.use,
-        logfc.threshold = logfc.threshold,
-        base = base,
-        min.pct = min.pct,
-        min.diff.pct = min.diff.pct,
-        max.cells.per.ident = max.cells.per.ident,
-        min.cells.feature = min.cells.feature,
-        min.cells.group = min.cells.group,
-        latent.vars = latent.vars,
-        only.pos = only.pos,
-        norm.method = norm.method,
-        pseudocount.use = pseudocount.use,
-        mean.fxn = mean.fxn,
-        verbose = verbose,
-        random.seed = random.seed
-      ),
-      extra_args
-    )
+  ctx <- marker_context(
+    object = srt,
+    assay = assay,
+    slot = layer,
+    base = base,
+    fc.name = NULL,
+    features = features,
+    groups = cell_group
   )
+  if (is.null(ctx)) {
+    return(NULL)
+  }
+
+  markers <- marker_all_from_context(
+    ctx = ctx,
+    min.cells.group = min.cells.group,
+    min.pct = min.pct,
+    logfc.threshold = logfc.threshold,
+    only.pos = only.pos,
+    return.thresh = Inf,
+    base = base,
+    p.adjust.method = p.adjust.method
+  )
+  if (nrow(markers) == 0L) {
+    return(markers)
+  }
+  markers[["group1"]] <- factor(
+    as.character(markers[["cluster"]]),
+    levels = ctx$labels
+  )
+  markers[["group2"]] <- "others"
+  markers[["cluster"]] <- NULL
+  markers[, c(
+    "p_val",
+    paste0("avg_log", base, "FC"),
+    "pct.1",
+    "pct.2",
+    "p_val_adj",
+    "gene",
+    "group1",
+    "group2"
+  ), drop = FALSE]
 }
 
 RunDEtestSparseWilcoxMarkers <- function(
@@ -1868,7 +1899,9 @@ RunDEtest_pseudobulk <- function(
 #' `"edgeR"`, `"limma"`, `"DESeq2"`, and `"dream"` run sample-level
 #' pseudobulk differential testing on `Seurat` input and bulk DE on
 #' `SummarizedExperiment` input.
-#' @param ... Additional arguments to pass to the [Seurat::FindMarkers] function.
+#' @param ... Additional arguments passed to the marker backend. Arguments not
+#'   supported by scop's sparse Wilcoxon path are delegated to
+#'   [Seurat::FindMarkers].
 #'
 #' @export
 #'
@@ -2316,17 +2349,6 @@ RunDEtest.Seurat <- function(
     }
   }
 
-  skip_presto_check <- identical(test.use, "wilcox") &&
-    markers_type %in% c("all", "paired") &&
-    is.null(latent.vars) &&
-    is.null(mean.fxn) &&
-    layer %in% c("data", "counts") &&
-    identical(norm.method, "LogNormalize") &&
-    length(list(...)) == 0
-  if (!isTRUE(skip_presto_check)) {
-    check_r("immunogenomics/presto", verbose = FALSE)
-  }
-
   data_layer <- suppressWarnings(tryCatch(
     GetAssayData5(srt, layer = layer, assay = assay),
     error = function(e) NULL
@@ -2448,8 +2470,8 @@ RunDEtest.Seurat <- function(
     )
 
     if (markers_type == "all") {
-      markers <- RunDEtestFindMarkers(
-        srt = srt,
+      markers <- FindMarkers(
+        object = srt,
         assay = assay,
         layer = layer,
         cells.1 = cells1,
@@ -2676,7 +2698,7 @@ RunDEtest.Seurat <- function(
     )
 
     args1 <- list(
-      srt = srt,
+      object = srt,
       assay = assay,
       layer = layer,
       features = features,
@@ -2707,42 +2729,65 @@ RunDEtest.Seurat <- function(
       " groups..."
     )
 
-    find_markers_fun <- RunDEtestFindMarkers
+    find_markers_fun <- FindMarkers
     find_conserved_markers_fun <- FindConservedMarkers2
     run_detest_fun <- RunDEtest
 
     if (markers_type == "all") {
-      AllMarkers <- parallelize_fun(
-        levels(cell_group),
-        function(group) {
-          cells.1 <- names(cell_group)[which(cell_group == group)]
-          cells.2 <- names(cell_group)[which(cell_group != group)]
-          if (length(cells.1) < 3 || length(cells.2) < 3) {
-            return(NULL)
-          } else {
-            args1[["cells.1"]] <- cells.1
-            args1[["cells.2"]] <- cells.2
-            markers <- do.call(find_markers_fun, args1)
-            if (!is.null(markers) && nrow(markers) > 0) {
-              markers[, "gene"] <- rownames(markers)
-              markers[, "group1"] <- as.character(group)
-              markers[, "group2"] <- "others"
-              if ("p_val" %in% colnames(markers)) {
-                markers[, "p_val_adj"] <- stats::p.adjust(
-                  markers[, "p_val"],
-                  method = p.adjust.method
-                )
-              }
-              return(markers)
-            } else {
-              return(NULL)
-            }
-          }
-        },
-        cores = cores,
-        verbose = verbose
+      AllMarkers <- RunDEtestFindAllMarkers(
+        srt = srt,
+        assay = assay,
+        layer = layer,
+        cell_group = cell_group,
+        features = features,
+        test.use = test.use,
+        logfc.threshold = log(fc.threshold, base = base),
+        base = base,
+        min.pct = min.pct,
+        min.diff.pct = min.diff.pct,
+        min.cells.feature = min.cells.feature,
+        min.cells.group = min.cells.group,
+        latent.vars = latent.vars,
+        only.pos = only.pos,
+        norm.method = norm.method,
+        pseudocount.use = pseudocount.use,
+        mean.fxn = mean.fxn,
+        p.adjust.method = p.adjust.method,
+        ...
       )
-      AllMarkers <- do.call(rbind.data.frame, AllMarkers)
+      if (is.null(AllMarkers)) {
+        AllMarkers <- parallelize_fun(
+          levels(cell_group),
+          function(group) {
+            cells.1 <- names(cell_group)[which(cell_group == group)]
+            cells.2 <- names(cell_group)[which(cell_group != group)]
+            if (length(cells.1) < 3 || length(cells.2) < 3) {
+              return(NULL)
+            } else {
+              args1[["cells.1"]] <- cells.1
+              args1[["cells.2"]] <- cells.2
+              markers <- do.call(find_markers_fun, args1)
+              if (!is.null(markers) && nrow(markers) > 0) {
+                markers[, "gene"] <- rownames(markers)
+                markers[, "group1"] <- as.character(group)
+                markers[, "group2"] <- "others"
+                if ("p_val" %in% colnames(markers)) {
+                  markers[, "p_val_adj"] <- stats::p.adjust(
+                    markers[, "p_val"],
+                    method = p.adjust.method
+                  )
+                }
+                return(markers)
+              } else {
+                return(NULL)
+              }
+            }
+          },
+          cores = cores,
+          verbose = verbose
+        )
+        AllMarkers <- do.call(rbind.data.frame, AllMarkers)
+      }
       if (!is.null(AllMarkers) && nrow(AllMarkers) > 0) {
         rownames(AllMarkers) <- NULL
         AllMarkers[, "group1"] <- factor(
@@ -2778,36 +2823,111 @@ RunDEtest.Seurat <- function(
       pair <- expand.grid(x = levels(cell_group), y = levels(cell_group))
       pair <- pair[pair[, 1] != pair[, 2], , drop = FALSE]
       cell_index <- split(names(cell_group), cell_group)
-      PairedMarkers <- parallelize_fun(
-        seq_len(nrow(pair)),
-        function(i) {
-          cells.1 <- cell_index[[as.character(pair[i, 1])]]
-          cells.2 <- cell_index[[as.character(pair[i, 2])]]
-          if (length(cells.1) < 3 || length(cells.2) < 3) {
+      format_pair_markers <- function(markers, group1, group2) {
+        if (is.null(markers) || nrow(markers) == 0L) {
+          return(NULL)
+        }
+        if (isTRUE(only.pos)) {
+          fc_col <- paste0("avg_log", base, "FC")
+          markers <- markers[markers[[fc_col]] > 0, , drop = FALSE]
+          if (nrow(markers) == 0L) {
             return(NULL)
-          } else {
+          }
+        }
+        markers[, "gene"] <- rownames(markers)
+        markers[, "group1"] <- group1
+        markers[, "group2"] <- group2
+        if ("p_val" %in% colnames(markers)) {
+          markers[, "p_val_adj"] <- stats::p.adjust(
+            markers[, "p_val"],
+            method = p.adjust.method
+          )
+        }
+        markers
+      }
+      symmetric_wilcox <- RunDEtestCanReuseSymmetricWilcox(
+        test.use = test.use,
+        layer = layer,
+        latent.vars = latent.vars,
+        mean.fxn = mean.fxn,
+        norm.method = norm.method,
+        features = features,
+        min.cells.feature = min.cells.feature,
+        min.cells.group = min.cells.group,
+        pseudocount.use = pseudocount.use,
+        extra_args = list(...)
+      )
+      if (isTRUE(symmetric_wilcox)) {
+        unordered_pair <- utils::combn(levels(cell_group), 2)
+        pair_results <- parallelize_fun(
+          seq_len(ncol(unordered_pair)),
+          function(i) {
+            group1 <- unordered_pair[1, i]
+            group2 <- unordered_pair[2, i]
+            if (
+              length(cell_index[[group1]]) < 3 ||
+                length(cell_index[[group2]]) < 3
+            ) {
+              return(list(group1 = group1, group2 = group2, markers = NULL))
+            }
+            pair_args <- args1
+            pair_args[["cells.1"]] <- cell_index[[group1]]
+            pair_args[["cells.2"]] <- cell_index[[group2]]
+            pair_args[["only.pos"]] <- FALSE
+            list(
+              group1 = group1,
+              group2 = group2,
+              markers = do.call(find_markers_fun, pair_args)
+            )
+          },
+          cores = cores,
+          verbose = verbose
+        )
+        marker_lookup <- list()
+        fc_col <- paste0("avg_log", base, "FC")
+        for (result in pair_results) {
+          if (inherits(result, "parallelize_error")) {
+            next
+          }
+          forward <- result$markers
+          if (is.null(forward) || nrow(forward) == 0L) {
+            next
+          }
+          reverse <- forward
+          reverse[[fc_col]] <- -reverse[[fc_col]]
+          reverse_pct <- reverse[["pct.1"]]
+          reverse[["pct.1"]] <- reverse[["pct.2"]]
+          reverse[["pct.2"]] <- reverse_pct
+          marker_lookup[[result$group1]][[result$group2]] <- forward
+          marker_lookup[[result$group2]][[result$group1]] <- reverse
+        }
+        PairedMarkers <- lapply(seq_len(nrow(pair)), function(i) {
+          group1 <- as.character(pair[i, 1])
+          group2 <- as.character(pair[i, 2])
+          format_pair_markers(marker_lookup[[group1]][[group2]], group1, group2)
+        })
+      } else {
+        PairedMarkers <- parallelize_fun(
+          seq_len(nrow(pair)),
+          function(i) {
+            cells.1 <- cell_index[[as.character(pair[i, 1])]]
+            cells.2 <- cell_index[[as.character(pair[i, 2])]]
+            if (length(cells.1) < 3 || length(cells.2) < 3) {
+              return(NULL)
+            }
             args1[["cells.1"]] <- cells.1
             args1[["cells.2"]] <- cells.2
             markers <- do.call(find_markers_fun, args1)
-            if (!is.null(markers) && nrow(markers) > 0) {
-              markers[, "gene"] <- rownames(markers)
-              markers[, "group1"] <- as.character(pair[i, 1])
-              markers[, "group2"] <- as.character(pair[i, 2])
-              if ("p_val" %in% colnames(markers)) {
-                markers[, "p_val_adj"] <- stats::p.adjust(
-                  markers[, "p_val"],
-                  method = p.adjust.method
-                )
-              }
-              return(markers)
-            } else {
-              return(NULL)
-            }
-          }
-        },
-        cores = cores,
-        verbose = verbose
-      )
+            format_pair_markers(
+              markers,
+              as.character(pair[i, 1]),
+              as.character(pair[i, 2])
+            )
+          },
+          cores = cores,
+          verbose = verbose
+        )
+      }
       PairedMarkers <- do.call(rbind.data.frame, PairedMarkers)
       if (!is.null(PairedMarkers) && nrow(PairedMarkers) > 0) {
         rownames(PairedMarkers) <- NULL
@@ -2864,13 +2984,15 @@ RunDEtest.Seurat <- function(
           if (length(cells.1) < 3 || length(cells.2) < 3) {
             return(NULL)
           } else {
-            args1[["cells.1"]] <- cells.1
-            args1[["cells.2"]] <- cells.2
-            args1[["object"]] <- srt
-            args1[["assay"]] <- assay
-            args1[["grouping.var"]] <- grouping.var
-            args1[["meta.method"]] <- meta.method
-            markers <- do.call(find_conserved_markers_fun, args1)
+            conserved_args <- args1
+            conserved_args[["srt"]] <- NULL
+            conserved_args[["cells.1"]] <- cells.1
+            conserved_args[["cells.2"]] <- cells.2
+            conserved_args[["object"]] <- srt
+            conserved_args[["assay"]] <- assay
+            conserved_args[["grouping.var"]] <- grouping.var
+            conserved_args[["meta.method"]] <- meta.method
+            markers <- do.call(find_conserved_markers_fun, conserved_args)
             if (!is.null(markers) && nrow(markers) > 0) {
               markers[, "gene"] <- rownames(markers)
               markers[, "group1"] <- as.character(group)

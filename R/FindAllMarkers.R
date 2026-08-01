@@ -43,7 +43,7 @@ marker_all_supported <- function(
 ) {
   identical(test.use, "wilcox") &&
     identical(slot, "data") &&
-    is.null(features) &&
+    (is.null(features) || is.character(features)) &&
     is.null(node) &&
     is.null(latent.vars) &&
     is.null(mean.fxn) &&
@@ -56,7 +56,15 @@ marker_all_supported <- function(
     (is.null(group.by) || identical(group.by, "ident"))
 }
 
-marker_context <- function(object, assay, slot, base, fc.name) {
+marker_context <- function(
+  object,
+  assay,
+  slot,
+  base,
+  fc.name,
+  features = NULL,
+  groups = NULL
+) {
   assay <- assay %||% SeuratObject::DefaultAssay(object)
   assay_obj <- object[[assay]]
   data_use <- marker_get_data(object, assay_obj, slot)
@@ -64,15 +72,45 @@ marker_context <- function(object, assay, slot, base, fc.name) {
     return(NULL)
   }
   dimnames(data_use) <- list(rownames(assay_obj), colnames(assay_obj))
-
-  cell_names <- colnames(data_use)
-  ident <- SeuratObject::Idents(object)
-  if (is.null(names(ident)) || !all(cell_names %in% names(ident))) {
-    return(NULL)
+  if (!is.null(features)) {
+    if (!all(features %in% rownames(data_use))) {
+      return(NULL)
+    }
+    data_use <- data_use[features, , drop = FALSE]
   }
 
-  labels <- as.character(sort(unique(ident[cell_names])))
-  group <- factor(as.character(ident[cell_names]), levels = labels)
+  cell_names <- colnames(data_use)
+  if (is.null(groups)) {
+    groups <- SeuratObject::Idents(object)
+    if (is.null(names(groups)) || !all(cell_names %in% names(groups))) {
+      return(NULL)
+    }
+    labels <- as.character(sort(unique(groups[cell_names])))
+  } else {
+    if (is.null(names(groups))) {
+      return(NULL)
+    }
+    cell_names <- cell_names[cell_names %in% names(groups)]
+    if (length(cell_names) == 0L) {
+      return(NULL)
+    }
+    data_use <- data_use[, cell_names, drop = FALSE]
+    labels <- if (is.factor(groups)) {
+      levels(groups)
+    } else {
+      unique(as.character(groups))
+    }
+    labels <- labels[labels %in% as.character(groups[cell_names])]
+  }
+
+  group <- factor(as.character(groups[cell_names]), levels = labels)
+  keep <- !is.na(group)
+  if (!all(keep)) {
+    data_use <- data_use[, keep, drop = FALSE]
+    cell_names <- cell_names[keep]
+    group <- droplevels(group[keep])
+    labels <- levels(group)
+  }
   sizes <- tabulate(as.integer(group), nbins = length(labels))
   list(
     data = data_use,
@@ -106,7 +144,9 @@ marker_one_cluster <- function(
   logfc.threshold,
   only.pos,
   return.thresh,
-  base
+  base,
+  p.adjust.method = "bonferroni",
+  p.adjust.n = ctx$feature_count
 ) {
   n1 <- ctx$sizes[[label_index]]
   n2 <- ctx$cells - n1
@@ -147,8 +187,8 @@ marker_one_cluster <- function(
   out <- out[order(out$p_val, -abs(out$pct.1 - out$pct.2)), , drop = FALSE]
   out$p_val_adj <- p.adjust(
     out$p_val,
-    method = "bonferroni",
-    n = ctx$feature_count
+    method = p.adjust.method,
+    n = p.adjust.n
   )
   out <- out[out$p_val < return.thresh, , drop = FALSE]
   if (nrow(out) == 0L) {
@@ -157,6 +197,48 @@ marker_one_cluster <- function(
   out$cluster <- factor(rep(label, nrow(out)), levels = ctx$labels)
   out$gene <- rownames(out)
   out
+}
+
+marker_all_from_context <- function(
+  ctx,
+  min.cells.group,
+  min.pct,
+  logfc.threshold,
+  only.pos,
+  return.thresh,
+  base,
+  p.adjust.method = "bonferroni",
+  p.adjust.n = ctx$feature_count
+) {
+  marker_result <- parallel_all_in_one_dgc(
+    x_sexp = ctx$data,
+    groups = as.integer(ctx$group),
+    group_sizes = as.integer(ctx$sizes)
+  )
+  marker_result$pval_by_group[is.nan(marker_result$pval_by_group)] <- 1
+  stats <- list(
+    sum = marker_result$sum_by_group,
+    detected = marker_result$detected_by_group,
+    p = marker_result$pval_by_group
+  )
+  totals <- list(sum = rowSums(stats$sum), detected = rowSums(stats$detected))
+  marker_bind(lapply(seq_along(ctx$labels), function(i) {
+    marker_one_cluster(
+      label = ctx$labels[[i]],
+      label_index = i,
+      ctx = ctx,
+      totals = totals,
+      stats = stats,
+      min.cells.group = min.cells.group,
+      min.pct = min.pct,
+      logfc.threshold = logfc.threshold,
+      only.pos = only.pos,
+      return.thresh = return.thresh,
+      base = base,
+      p.adjust.method = p.adjust.method,
+      p.adjust.n = p.adjust.n
+    )
+  }))
 }
 
 #' @export
@@ -205,36 +287,27 @@ FindAllMarkers.Seurat <- function(
     stop("FindAllMarkers.Seurat received unsupported arguments for the scop implementation.", call. = FALSE)
   }
 
-  ctx <- marker_context(object, assay, slot, base, fc.name)
+  ctx <- marker_context(
+    object,
+    assay,
+    slot,
+    base,
+    fc.name,
+    features = features
+  )
   if (is.null(ctx)) {
     stop("FindAllMarkers.Seurat could not prepare marker context.", call. = FALSE)
   }
-  marker_result <- parallel_all_in_one_dgc(
-    x_sexp = ctx$data,
-    groups = as.integer(ctx$group),
-    group_sizes = as.integer(ctx$sizes)
+  marker_all_from_context(
+    ctx = ctx,
+    min.cells.group = min.cells.group,
+    min.pct = min.pct,
+    logfc.threshold = logfc.threshold,
+    only.pos = only.pos,
+    return.thresh = return.thresh,
+    base = base,
+    p.adjust.n = nrow(object[[assay %||% SeuratObject::DefaultAssay(object)]])
   )
-  stats <- list(
-    sum = marker_result$sum_by_group,
-    detected = marker_result$detected_by_group,
-    p = marker_result$pval_by_group
-  )
-  totals <- list(sum = rowSums(stats$sum), detected = rowSums(stats$detected))
-  marker_bind(lapply(seq_along(ctx$labels), function(i) {
-    marker_one_cluster(
-      label = ctx$labels[[i]],
-      label_index = i,
-      ctx = ctx,
-      totals = totals,
-      stats = stats,
-      min.cells.group = min.cells.group,
-      min.pct = min.pct,
-      logfc.threshold = logfc.threshold,
-      only.pos = only.pos,
-      return.thresh = return.thresh,
-      base = base
-    )
-  }))
 }
 
 #' Find markers for all groups
