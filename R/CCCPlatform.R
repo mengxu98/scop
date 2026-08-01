@@ -18,7 +18,7 @@ ListCCCMethods <- function() {
         c(
           "long", "pair", "primary", "raw",
           if (identical(x$method, "LIANA")) "consensus",
-          if (length(x$native_plots)) "native"
+          if (isTRUE(x$native_result)) "native"
         ),
         collapse = ", "
       ),
@@ -41,7 +41,8 @@ ccc_method_registry <- function() {
       method = "CellChat", producer = "RunCellChat", default = TRUE,
       required = character(0), object_arg = "srt",
       generic_plots = generic,
-      native_plots = c("pathway", "role", "ranknet", "diff_network")
+      native_plots = c("pathway", "role", "ranknet", "diff_network"),
+      native_result = TRUE
     ),
     CellphoneDB = list(
       method = "CellphoneDB", producer = "RunCellphoneDB", default = TRUE,
@@ -75,7 +76,8 @@ ccc_method_registry <- function() {
       native_plots = c(
         "spatial_network", "lr_spatial", "pathway", "incoming", "outgoing",
         "diffusion"
-      )
+      ),
+      native_result = TRUE
     ),
     MDIC3 = list(
       method = "MDIC3", producer = "RunMDIC3", default = FALSE,
@@ -169,6 +171,7 @@ GetCCCResult <- function(
   method <- normalize_ccc_method(method)
   type <- match.arg(type)
   bundle <- get_bundle(srt, method)
+  semantic_method <- if (identical(method, "CCC")) NULL else method
   if (
     identical(method, "CellChat") && type %in% c("primary", "long", "pair")
   ) {
@@ -184,9 +187,9 @@ GetCCCResult <- function(
   out <- switch(type,
     primary = ccc_semantic_long_table(
       bundle$primary_table %||% bundle$long_table,
-      method = method
+      method = semantic_method
     ),
-    long = ccc_semantic_long_table(bundle$long_table, method = method),
+    long = ccc_semantic_long_table(bundle$long_table, method = semantic_method),
     pair = bundle$primary_pair_table %||% bundle$pair_table,
     consensus = {
       if (!is.null(resource)) {
@@ -393,6 +396,17 @@ ccc_combine_methods <- function(
   }
   methods <- unique(as.character(df$method))
   methods <- methods[!is.na(methods) & nzchar(methods)]
+  df$.ccc_method_percentile <- 1
+  for (method_i in methods) {
+    idx <- which(as.character(df$method) == method_i)
+    raw_rank <- suppressWarnings(as.numeric(df$priority_rank[idx]))
+    finite <- is.finite(raw_rank)
+    if (any(finite)) {
+      percentile <- (rank(raw_rank[finite], ties.method = "average") - 1) /
+        max(1, sum(finite) - 1)
+      df$.ccc_method_percentile[idx[finite]] <- percentile
+    }
+  }
   key_cols <- c("sender", "receiver", "ligand", "receptor")
   key <- do.call(paste, c(lapply(df[key_cols], as.character), sep = "\r"))
   split_idx <- split(seq_len(nrow(df)), key, drop = TRUE)
@@ -412,7 +426,7 @@ ccc_combine_methods <- function(
       row$score_type <- "method_support_count"
       row$support_type <- "cross_method_support"
     } else {
-      rank_values <- suppressWarnings(as.numeric(x$priority_rank))
+      rank_values <- suppressWarnings(as.numeric(x$.ccc_method_percentile))
       ranks <- tapply(
         rank_values,
         as.character(x$method),
@@ -431,6 +445,7 @@ ccc_combine_methods <- function(
       row$score_type <- "mean_within_method_percentile"
       row$support_type <- "scop_visualization_consensus"
     }
+    row$.ccc_method_percentile <- NULL
     row$pvalue <- NA_real_
     row$pvalue_type <- "not_available"
     row$significant <- row$support_count > 0L

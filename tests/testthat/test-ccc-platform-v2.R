@@ -9,6 +9,27 @@ test_that("CCC registry covers all integrated Seurat producers", {
   )
   expect_true(all(registry$producer %in% getNamespaceExports("scop")))
   expect_equal(registry$method[registry$default], c("CellChat", "CellphoneDB", "LIANA"))
+  expect_equal(
+    registry$method[grepl("(^|, )native($|,)", registry$result_types)],
+    c("CellChat", "SpatialCellChat")
+  )
+})
+
+test_that("RunLIANA keeps legacy positional arguments and accepts custom resources", {
+  expect_equal(
+    names(formals(scop::RunLIANA))[1:9],
+    c(
+      "srt", "group.by", "method", "resource", "assay", "min_cells",
+      "return_all", "backend", "verbose"
+    )
+  )
+  custom <- data.frame(ligand = "L1", receptor = "R1")
+  expect_identical(
+    getFromNamespace("liana_resolve_resources", "scop")(
+      custom, species = "mouse"
+    ),
+    custom
+  )
 })
 
 test_that("LIANA resources are discovered from the optional backend", {
@@ -233,7 +254,61 @@ test_that("cross-method combination separates support and visualization rank sem
   expect_true(all(ranked$priority_rank >= 0 & ranked$priority_rank <= 1))
   expect_true(all(ranked$support_type == "scop_visualization_consensus"))
   expect_true(all(is.na(ranked$pvalue)))
-  expect_equal(ranked$priority_rank[ranked$ligand == "L1"], 0.75)
+  expect_equal(ranked$priority_rank[ranked$ligand == "L1"], 0.125)
+  expect_true(all(ranked$priority_score >= 0 & ranked$priority_score <= 1))
+})
+
+test_that("LIANA export aggregation keeps resources separate", {
+  df <- data.frame(
+    sender = c("A", "A"), receiver = c("B", "B"),
+    ligand = c("L1", "L1"), receptor = c("R1", "R1"),
+    score = c(0.7, 0.8), pvalue = c(0.1, 0.2),
+    method = "LIANA", resource = c("Consensus", "CellChatDB")
+  )
+  out <- getFromNamespace("ccc_long_to_liana", "scop")(
+    df, aggregate = TRUE
+  )
+  expect_equal(nrow(out), 2)
+  expect_equal(sort(out$resource), c("CellChatDB", "Consensus"))
+})
+
+test_that("unified retrieval preserves backend method labels", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("Matrix")
+  counts <- Matrix::Diagonal(2)
+  rownames(counts) <- c("L1", "R1")
+  colnames(counts) <- c("Cell1", "Cell2")
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  long <- data.frame(
+    sender = c("A", "A"), receiver = c("B", "B"),
+    ligand = c("L1", "L1"), receptor = c("R1", "R1"),
+    score = c(1, 0.5), pvalue = c(0.01, 0.02),
+    method = c("CellChat", "LIANA")
+  )
+  srt@tools$CCC <- list(long_table = long, primary_table = long)
+  expect_equal(
+    scop::GetCCCResult(srt, "CCC", type = "primary")$method,
+    c("CellChat", "LIANA")
+  )
+})
+
+test_that("CellChat cached rows honor the requested threshold", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("Matrix")
+  counts <- Matrix::Diagonal(2)
+  rownames(counts) <- c("L1", "R1")
+  colnames(counts) <- c("Cell1", "Cell2")
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  srt@tools$CellChat <- list(primary_table = data.frame(
+    sender = c("A", "A"), receiver = c("B", "B"),
+    ligand = c("L1", "L2"), receptor = c("R1", "R2"),
+    score = c(1, 1), pvalue = c(0.01, 0.08)
+  ))
+  out <- getFromNamespace("ccc_bundle_long_table", "scop")(
+    srt, method = "CellChat", thresh = 0.05
+  )
+  expect_equal(out$ligand, "L1")
+  expect_true(out$significant)
 })
 
 test_that("dependent CellphoneDB evidence is disclosed before combination", {
@@ -262,6 +337,52 @@ test_that("dependent CellphoneDB evidence is disclosed before combination", {
     ),
     "not independent"
   )
+})
+
+test_that("CCC context filters are applied before cross-method combination", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("Matrix")
+  counts <- Matrix::Diagonal(2)
+  rownames(counts) <- c("L1", "R1")
+  colnames(counts) <- c("Cell1", "Cell2")
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  srt@tools$CCC <- list(
+    methods = c("CellChat", "LIANA"),
+    long_table = data.frame(
+      sender = "A", receiver = "B", ligand = "L1", receptor = "R1",
+      score = c(1, 0.5), pvalue = c(0.01, 0.02),
+      method = c("CellChat", "LIANA"),
+      resource = c("Consensus", "Other")
+    ),
+    metadata = list(schema = "scop_ccc_unified_v2")
+  )
+  filtered <- getFromNamespace("ccc_prepare_filtered_object", "scop")(
+    srt, method = "CCC", resource = "Consensus"
+  )
+  combined <- getFromNamespace("ccc_prepare_combined_object", "scop")(
+    filtered, method = "CCC", combine_methods = "support"
+  )
+  expect_equal(combined@tools$CCC$long_table$support_count, 1)
+  expect_equal(combined@tools$CCC$long_table$resource, "Consensus")
+})
+
+test_that("MultiNicheNet model loading does not build unused weighted networks", {
+  testthat::local_mocked_bindings(
+    resolve_nichenetr_object = function(x, object_candidates, ...) {
+      if (grepl("ligand_target", object_candidates[[1]])) {
+        return(matrix(1, nrow = 1, ncol = 1))
+      }
+      data.frame(from = "L1", to = "R1")
+    },
+    get_namespace_fun = function(...) {
+      stop("construct_weighted_networks must not be resolved")
+    },
+    .package = "scop"
+  )
+  out <- getFromNamespace("load_nichenetr_models", "scop")(
+    species = "Mus_musculus", include_weighted = FALSE, verbose = FALSE
+  )
+  expect_null(out$weighted_networks)
 })
 
 test_that("RunCCC preflights extended method requirements", {
@@ -311,6 +432,33 @@ test_that("RunCCC preflights extended method requirements", {
     ),
     "grn.*grn_method"
   )
+})
+
+test_that("RunCCC skip_failed records preflight failures and continues", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("Matrix")
+  counts <- Matrix::Diagonal(2)
+  rownames(counts) <- c("L1", "R1")
+  colnames(counts) <- c("Cell1", "Cell2")
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  srt$celltype <- c("A", "B")
+
+  testthat::local_mocked_bindings(
+    RunCellChat = function(srt, ...) {
+      srt@tools$CellChat <- list(primary_table = data.frame(
+        sender = "A", receiver = "B", ligand = "L1", receptor = "R1",
+        score = 1, pvalue = 0.01, method = "CellChat"
+      ))
+      srt
+    },
+    .package = "scop"
+  )
+  out <- suppressWarnings(scop::RunCCC(
+    srt, group.by = "celltype", methods = c("CellChat", "Nichenetr"),
+    skip_failed = TRUE, backend = "r", verbose = FALSE
+  ))
+  expect_equal(out@tools$RunCCC$status$status, c("completed", "failed"))
+  expect_match(out@tools$RunCCC$status$message[2], "receiver")
 })
 
 test_that("RunCCC dispatches all four design-specific registered methods", {

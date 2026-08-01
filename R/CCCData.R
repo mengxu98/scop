@@ -32,14 +32,14 @@ RunLIANA <- function(
   group.by,
   method = c("natmi", "connectome", "logfc", "sca", "cellphonedb"),
   resource = NULL,
-  species = c("human", "mouse"),
-  consensus = c("auto", "rank", "aggregate", "none"),
-  consensus_args = list(),
   assay = NULL,
   min_cells = 5,
   return_all = FALSE,
   backend = c("cpp", "r"),
   verbose = TRUE,
+  species = c("human", "mouse"),
+  consensus = c("auto", "rank", "aggregate", "none"),
+  consensus_args = list(),
   ...
 ) {
   backend <- match.arg(backend)
@@ -241,6 +241,15 @@ liana_resource_description <- function(resource) {
 liana_resolve_resources <- function(resource = NULL, species = c("human", "mouse")) {
   species <- match.arg(species)
   resource <- resource %||% if (species == "mouse") "MouseConsensus" else "Consensus"
+  if (is.data.frame(resource)) {
+    if (nrow(resource) == 0L || ncol(resource) < 2L) {
+      log_message(
+        "A custom LIANA resource must be a non-empty ligand-receptor data frame",
+        message_type = "error"
+      )
+    }
+    return(resource)
+  }
   if (!is.character(resource) || length(resource) == 0L || anyNA(resource) || any(!nzchar(resource))) {
     log_message(
       "{.arg resource} must contain valid LIANA resource names",
@@ -276,6 +285,9 @@ liana_result_resources <- function(res, requested) {
     return(character(0))
   }
   first <- res[[1]]
+  if (is.data.frame(requested)) {
+    return("custom")
+  }
   if (is.data.frame(first)) {
     return(if (identical(requested, "all")) "Consensus" else requested[1])
   }
@@ -1133,10 +1145,15 @@ ccc_aggregate_liana_table <- function(out, sample_col = NULL, backend = c("cpp",
     return(out)
   }
   key_cols <- c("source", "target", "ligand_complex", "receptor_complex")
+  has_resource_context <- "resource" %in% colnames(out) &&
+    length(unique(stats::na.omit(as.character(out$resource)))) > 1L
+  if (has_resource_context) {
+    key_cols <- c(key_cols, "resource")
+  }
   if (!is.null(sample_col) && sample_col %in% colnames(out)) {
     key_cols <- c(key_cols, sample_col)
   }
-  if (identical(backend, "cpp") && nrow(out) >= 1000L &&
+  if (identical(backend, "cpp") && !has_resource_context && nrow(out) >= 1000L &&
     all(c("source", "target", "ligand_complex", "receptor_complex", "score", "pvalue") %in% colnames(out))) {
     has_sample <- !is.null(sample_col) && sample_col %in% colnames(out)
     score_vals <- suppressWarnings(as.numeric(out$score))
