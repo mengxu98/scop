@@ -136,6 +136,7 @@ Suggests:
     tricycle,
     umap,
     UCell,
+    xgboost,
     yardstick,
     Banksy,
     CARDspa,
@@ -163,3 +164,4 @@ Config/Needs/website: mengxu98/thistemplate
 URL: https://mengxu98.github.io/scop/
 BugReports: https://github.com/mengxu98/scop/issues
 Config/roxygen2/version: 8.0.0
+RoxygenNote: 7.3.3

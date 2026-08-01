@@ -110,13 +110,19 @@ RunscMalignantFinder <- function(
     } else {
       subset(srt, cells = cells)
     }
-    adata <- srt_to_adata(
-      srt = srt_input,
-      assay_x = assay,
-      layer_x = layer,
-      assay_y = character(0),
-      verbose = verbose
-    )
+    adata <- if (isTRUE(use_raw)) {
+      srt_to_adata(
+        srt = srt_input,
+        assay_x = assay,
+        layer_x = layer,
+        assay_y = character(0),
+        verbose = verbose
+      )
+    } else {
+      python_anndata_from_matrix(
+        GetAssayData5(srt_input, assay = assay, layer = layer)
+      )
+    }
   }
 
   test_input <- adata %||% h5ad
@@ -198,6 +204,11 @@ RunscMalignantFinder <- function(
 #' @param image Whether to call `scMalignantFinder.spatial.image_cal`.
 #' Default is `FALSE` because Seurat-to-AnnData conversion does not generally
 #' carry histology images.
+#' @param backend Region-inference backend. `"cpp"` uses a compiled sparse
+#' AUCell scorer, Ward clustering, and spatial-neighbor refinement for Seurat
+#' input when `image = FALSE`. `"python"` retains the official
+#' scMalignantFinder/Squidpy path and is required for image features, AnnData,
+#' and h5ad input.
 #'
 #' @return A Seurat object with malignant region metadata, or a data frame when
 #' `return_seurat = FALSE`.
@@ -228,9 +239,23 @@ RunscMalignantRegion <- function(
   norm_type = NULL,
   prefix = "scMalignantFinder_",
   return_seurat = !is.null(srt),
-  verbose = TRUE
+  verbose = TRUE,
+  backend = c("cpp", "python")
 ) {
+  backend_missing <- missing(backend)
   scmf_check_one_input(srt = srt, adata = adata, h5ad = h5ad)
+  backend <- match.arg(backend)
+  if (is.null(srt) || isTRUE(image)) {
+    if (backend_missing) {
+      backend <- "python"
+    } else if (identical(backend, "cpp")) {
+      reason <- if (isTRUE(image)) "image feature extraction" else "AnnData or h5ad input"
+      log_message(
+        "{.arg backend = 'cpp'} does not support {reason}; use {.arg backend = 'python'}",
+        message_type = "error"
+      )
+    }
+  }
   norm_type <- scmf_resolve_norm_type(norm_type, srt = srt, layer = layer)
   h5ad <- scmf_expand_path(h5ad)
   signature_gmt <- scmf_expand_path(signature_gmt)
@@ -266,13 +291,6 @@ RunscMalignantRegion <- function(
     scmf_get_spatial_coordinates(precheck_srt, spatial.cols)
   }
 
-  log_message(
-    "Running {.pkg scMalignantFinder} malignant region identification...",
-    message_type = "running",
-    verbose = verbose
-  )
-  scmf_prepare_python(verbose = verbose)
-
   spatial_coordinates <- NULL
   if (!is.null(srt)) {
     validate_seurat_object(srt)
@@ -283,32 +301,58 @@ RunscMalignantRegion <- function(
       subset(srt, cells = cells)
     }
     spatial_coordinates <- scmf_get_spatial_coordinates(srt_input, spatial.cols)
-    adata <- srt_to_adata(
-      srt = srt_input,
-      assay_x = assay,
-      layer_x = layer,
-      assay_y = character(0),
-      verbose = verbose
-    )
   }
 
-  test_input <- adata %||% h5ad
-  scmf <- import_scmalignantfinder(convert = TRUE)
-  obs <- scmf$run_scmalignant_region(
-    test_input = test_input,
-    signature_gmt = signature_gmt,
-    features = features,
-    nclus = as.integer(nclus),
-    define_feature = define_feature,
-    spatial_nn = spatial_nn,
-    spatial_coordinates = spatial_coordinates,
-    spatial_key = spatial_key,
-    image = image,
-    norm_type = norm_type,
-    return_obs = TRUE,
+  log_message(
+    "Running {.pkg scMalignantFinder} malignant region identification with the {.val {backend}} backend...",
+    message_type = "running",
     verbose = verbose
   )
-  obs <- as.data.frame(obs)
+  if (identical(backend, "cpp")) {
+    expr <- GetAssayData5(
+      srt_input,
+      assay = assay,
+      layer = layer
+    )
+    obs <- scmf_native_region(
+      expr = expr,
+      metadata = srt_input[[]],
+      signature_gmt = signature_gmt,
+      features = features,
+      nclus = nclus,
+      define_feature = define_feature,
+      spatial_nn = spatial_nn,
+      spatial_coordinates = spatial_coordinates
+    )
+  } else {
+    scmf_prepare_python(verbose = verbose)
+    if (!is.null(srt)) {
+      adata <- srt_to_adata(
+        srt = srt_input,
+        assay_x = assay,
+        layer_x = layer,
+        assay_y = character(0),
+        verbose = verbose
+      )
+    }
+    test_input <- adata %||% h5ad
+    scmf <- import_scmalignantfinder(convert = TRUE)
+    obs <- scmf$run_scmalignant_region(
+      test_input = test_input,
+      signature_gmt = signature_gmt,
+      features = features,
+      nclus = as.integer(nclus),
+      define_feature = define_feature,
+      spatial_nn = spatial_nn,
+      spatial_coordinates = spatial_coordinates,
+      spatial_key = spatial_key,
+      image = image,
+      norm_type = norm_type,
+      return_obs = TRUE,
+      verbose = verbose
+    )
+    obs <- as.data.frame(obs)
+  }
 
   if (!isTRUE(return_seurat)) {
     return(obs)
@@ -348,7 +392,8 @@ RunscMalignantRegion <- function(
       spatial.cols = spatial.cols,
       spatial_key = spatial_key,
       image = image,
-      norm_type = norm_type
+      norm_type = norm_type,
+      backend = backend
     )
   )
   srt
@@ -365,6 +410,9 @@ RunscMalignantRegion <- function(
 #' @param gene_sets Path to a `.gmt` file containing cancer cell state gene
 #' sets, such as `Malignant_MPs.Gavish_2023.gmt` from the scMalignantFinder
 #' resources.
+#' @param backend State-scoring backend. `"cpp"` uses a compiled sparse
+#' AUCell implementation for Seurat input. `"python"` retains the official
+#' scMalignantFinder path and is used for AnnData or h5ad input.
 #'
 #' @return A Seurat object with cancer-state AUCell scores, or a data frame when
 #' `return_seurat = FALSE`.
@@ -387,9 +435,22 @@ RunscMalignantStates <- function(
   norm_type = NULL,
   prefix = "scMalignantState_",
   return_seurat = !is.null(srt),
-  verbose = TRUE
+  verbose = TRUE,
+  backend = c("cpp", "python")
 ) {
+  backend_missing <- missing(backend)
   scmf_check_one_input(srt = srt, adata = adata, h5ad = h5ad)
+  backend <- match.arg(backend)
+  if (is.null(srt)) {
+    if (backend_missing) {
+      backend <- "python"
+    } else if (identical(backend, "cpp")) {
+      log_message(
+        "{.arg backend = 'cpp'} requires {.arg srt}; use {.arg backend = 'python'} for AnnData or h5ad input",
+        message_type = "error"
+      )
+    }
+  }
   norm_type <- scmf_resolve_norm_type(norm_type, srt = srt, layer = layer)
   h5ad <- scmf_expand_path(h5ad)
   gene_sets <- scmf_expand_path(gene_sets)
@@ -411,35 +472,59 @@ RunscMalignantStates <- function(
     message_type = "running",
     verbose = verbose
   )
-  scmf_prepare_python(verbose = verbose)
-
   if (!is.null(srt)) {
     validate_seurat_object(srt)
     cells <- scmf_cells(srt, cells)
-    srt_input <- if (length(cells) == ncol(srt)) {
-      srt
-    } else {
-      subset(srt, cells = cells)
-    }
-    adata <- srt_to_adata(
-      srt = srt_input,
-      assay_x = assay,
-      layer_x = layer,
-      assay_y = character(0),
-      verbose = verbose
-    )
   }
 
-  test_input <- adata %||% h5ad
-  scmf <- import_scmalignantfinder(convert = TRUE)
-  obs <- scmf$run_scmalignant_states(
-    test_input = test_input,
-    gene_sets = gene_sets,
-    norm_type = norm_type,
-    return_obs = TRUE,
-    verbose = verbose
-  )
-  obs <- as.data.frame(obs)
+  if (identical(backend, "cpp")) {
+    expr <- GetAssayData5(
+      srt,
+      assay = assay,
+      layer = layer
+    )[, cells, drop = FALSE]
+    state_sets <- scmf_adapt_gene_sets(
+      scmf_read_gene_sets(gene_sets),
+      rownames(expr)
+    )
+    obs <- as.data.frame(run_aucell_scores(
+      expr_counts = expr,
+      gene_sets = state_sets,
+      strategy = "topk",
+      algorithm = "ctxcore",
+      seed = 2L,
+      tie_method = "numpy",
+      auc_threshold = max(1 / nrow(expr), scmf_auc_threshold(expr)),
+      normalize_by_signature_max = TRUE
+    ))
+  } else {
+    scmf_prepare_python(verbose = verbose)
+    if (!is.null(srt)) {
+      srt_input <- if (length(cells) == ncol(srt)) {
+        srt
+      } else {
+        subset(srt, cells = cells)
+      }
+      adata <- srt_to_adata(
+        srt = srt_input,
+        assay_x = assay,
+        layer_x = layer,
+        assay_y = character(0),
+        verbose = verbose
+      )
+    }
+
+    test_input <- adata %||% h5ad
+    scmf <- import_scmalignantfinder(convert = TRUE)
+    obs <- scmf$run_scmalignant_states(
+      test_input = test_input,
+      gene_sets = gene_sets,
+      norm_type = norm_type,
+      return_obs = TRUE,
+      verbose = verbose
+    )
+    obs <- as.data.frame(obs)
+  }
 
   if (!isTRUE(return_seurat)) {
     return(obs)
@@ -472,10 +557,191 @@ RunscMalignantStates <- function(
       layer = layer,
       cells = cells,
       gene_sets = gene_sets,
-      norm_type = norm_type
+      norm_type = norm_type,
+      backend = backend
     )
   )
   srt
+}
+
+scmf_read_gene_sets <- function(path) {
+  lines <- readLines(path, warn = FALSE)
+  parsed <- lapply(lines, function(line) {
+    fields <- strsplit(line, "\t", fixed = TRUE)[[1]]
+    if (length(fields) < 3L) {
+      return(NULL)
+    }
+    list(
+      name = fields[[1L]],
+      genes = unique(fields[-c(1L, 2L)])
+    )
+  })
+  parsed <- Filter(Negate(is.null), parsed)
+  gene_sets <- lapply(parsed, `[[`, "genes")
+  names(gene_sets) <- make.unique(vapply(parsed, `[[`, character(1), "name"))
+  gene_sets <- lapply(gene_sets, function(genes) {
+    genes[!is.na(genes) & nzchar(genes)]
+  })
+  gene_sets <- gene_sets[lengths(gene_sets) > 0L]
+  if (length(gene_sets) == 0L) {
+    log_message(
+      "{.arg gene_sets} contains no non-empty GMT records",
+      message_type = "error"
+    )
+  }
+  gene_sets
+}
+
+scmf_adapt_gene_sets <- function(gene_sets, feature_names, min_fraction = 0.5) {
+  adapted <- lapply(gene_sets, function(genes) {
+    genes <- unique(as.character(genes))
+    overlap <- intersect(genes, feature_names)
+    if (length(genes) > 0L && length(overlap) / length(genes) >= min_fraction) {
+      overlap
+    } else {
+      NULL
+    }
+  })
+  adapted <- Filter(Negate(is.null), adapted)
+  if (length(adapted) == 0L) {
+    log_message(
+      "No signatures retain at least 50% gene overlap with the expression matrix",
+      message_type = "error"
+    )
+  }
+  adapted
+}
+
+scmf_auc_threshold <- function(expr) {
+  detected <- if (inherits(expr, "sparseMatrix")) {
+    Matrix::colSums(expr != 0)
+  } else {
+    colSums(expr != 0)
+  }
+  as.numeric(stats::quantile(
+    detected,
+    probs = 0.01,
+    names = FALSE,
+    type = 7
+  )) / nrow(expr)
+}
+
+scmf_native_region <- function(
+  expr,
+  metadata,
+  signature_gmt,
+  features,
+  nclus,
+  define_feature,
+  spatial_nn,
+  spatial_coordinates
+) {
+  expr <- gene_set_scoring_to_dgC(expr)
+  gene_sets <- scmf_adapt_gene_sets(
+    scmf_read_gene_sets(signature_gmt),
+    rownames(expr)
+  )
+  auc_threshold <- max(1 / nrow(expr), scmf_auc_threshold(expr))
+  auc_scores <- run_aucell_scores(
+    expr_counts = expr,
+    gene_sets = gene_sets,
+    strategy = "topk",
+    algorithm = "ctxcore",
+    seed = 2L,
+    tie_method = "numpy",
+    auc_threshold = auc_threshold,
+    normalize_by_signature_max = TRUE
+  )
+  obs <- as.data.frame(metadata, stringsAsFactors = FALSE)
+  obs <- obs[colnames(expr), , drop = FALSE]
+  for (score_name in colnames(auc_scores)) {
+    obs[[score_name]] <- auc_scores[, score_name]
+  }
+  missing_features <- setdiff(unique(c(features, define_feature)), colnames(obs))
+  if (length(missing_features) > 0L) {
+    log_message(
+      "Region feature(s) not found after AUCell scoring: {.val {missing_features}}",
+      message_type = "error"
+    )
+  }
+  feature_matrix <- as.matrix(obs[, features, drop = FALSE])
+  storage.mode(feature_matrix) <- "double"
+  if (ncol(feature_matrix) < 2L || any(!is.finite(feature_matrix))) {
+    log_message(
+      "{.arg features} must contain at least two finite numeric columns",
+      message_type = "error"
+    )
+  }
+  nclus <- suppressWarnings(as.integer(nclus)[1L])
+  if (is.na(nclus) || nclus < 1L || nclus > nrow(feature_matrix)) {
+    log_message(
+      "{.arg nclus} must be between 1 and the number of selected cells",
+      message_type = "error"
+    )
+  }
+  cluster <- if (nclus == 1L) {
+    rep.int(0L, nrow(feature_matrix))
+  } else {
+    as.integer(stats::cutree(
+      stats::hclust(stats::dist(feature_matrix), method = "ward.D2"),
+      k = nclus
+    )) - 1L
+  }
+  cluster_means <- tapply(obs[[define_feature]], cluster, mean)
+  malignant_cluster <- as.integer(names(cluster_means)[which.max(cluster_means)])
+  prediction <- ifelse(cluster == malignant_cluster, "Malignant", "Normal")
+
+  if (isTRUE(spatial_nn)) {
+    if (is.null(spatial_coordinates)) {
+      log_message(
+        "{.arg spatial_nn = TRUE} with the C++ backend requires {.arg spatial.cols}",
+        message_type = "error"
+      )
+    }
+    if (nrow(spatial_coordinates) >= 2L) {
+      coords <- data.frame(
+        cell_id = rownames(obs),
+        x = spatial_coordinates[, 1L],
+        y = spatial_coordinates[, 2L]
+      )
+      graph <- spatial_graph_compute(
+        coords = coords,
+        method = "knn",
+        k = min(6L, nrow(coords) - 1L),
+        directed = TRUE,
+        weight = "binary"
+      )
+      raw_prediction <- prediction
+      split_neighbors <- split(graph$edges$to, graph$edges$from)
+      for (cell_i in seq_along(prediction)) {
+        neighbors <- split_neighbors[[as.character(cell_i)]]
+        if (length(neighbors) < 2L) {
+          next
+        }
+        neighbor_labels <- raw_prediction[neighbors]
+        counts <- table(factor(
+          neighbor_labels,
+          levels = c("Malignant", "Normal")
+        ))
+        winner <- which.max(counts)
+        if (counts[[winner]] / length(neighbor_labels) > 0.5) {
+          prediction[[cell_i]] <- names(counts)[[winner]]
+        }
+      }
+    }
+  }
+  obs$cluster <- factor(cluster)
+  obs$region_prediction <- factor(
+    prediction,
+    levels = c("Normal", "Malignant")
+  )
+  keep <- unique(c(
+    "cluster",
+    "region_prediction",
+    colnames(auc_scores),
+    features
+  ))
+  obs[, keep, drop = FALSE]
 }
 
 scmf_prepare_python <- function(verbose = TRUE) {

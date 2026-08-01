@@ -424,12 +424,10 @@ metacell_seacells <- function(
     )
   }
 
-  adata_full <- srt_to_adata(
-    srt = srt,
-    assay_x = assay,
-    layer_x = layer,
-    reductions = pca_reduction,
-    verbose = verbose
+  pca_embedding <- SeuratObject::Embeddings(srt, reduction = pca_reduction)
+  adata_full <- python_anndata_from_matrix(
+    x = counts,
+    embeddings = stats::setNames(list(pca_embedding), pca_reduction)
   )
 
   pca_ok <- tryCatch(
