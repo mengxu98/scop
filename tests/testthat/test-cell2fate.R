@@ -582,7 +582,9 @@ test_that("Cell2fate rejects symbolic links in managed result paths", {
   outside <- tempfile("cell2fate outside ")
   dir.create(result_dir)
   dir.create(outside)
-  linked <- file.symlink(outside, file.path(result_dir, "logs"))
+  linked <- suppressWarnings(
+    file.symlink(outside, file.path(result_dir, "logs"))
+  )
   skip_if(!isTRUE(linked), "Symbolic links are not available")
 
   expect_error(

@@ -358,10 +358,10 @@ RunCell2fate <- function(
       c("input_path", "result_dir", "request_id", "lock_token")
     )],
     provenance = list(
-      producer = "RunCell2fate",
+      producer = .cell2fate_producer,
       backend_id = "cell2fate",
-      backend_repository = cell2fate_repository(),
-      backend_commit = manifest$backend_commit %||% cell2fate_backend_commit()
+      backend_repository = .cell2fate_repository,
+      backend_commit = manifest$backend_commit %||% .cell2fate_commit
     )
   )
 
@@ -373,13 +373,10 @@ RunCell2fate <- function(
   srt_out
 }
 
-cell2fate_repository <- function() {
-  "BayraktarLab/cell2fate"
-}
-
-cell2fate_backend_commit <- function() {
-  "c03d1ca0bb963f550001c6070d4986a61ec8456a"
-}
+.cell2fate_repository <- "BayraktarLab/cell2fate"
+.cell2fate_commit <- "c03d1ca0bb963f550001c6070d4986a61ec8456a"
+.cell2fate_producer <- "RunCell2fate"
+.cell2fate_schema_version <- 1L
 
 cell2fate_result_dir_is_owned <- function(result_dir) {
   owner_path <- file.path(result_dir, ".cell2fate.json")
@@ -397,11 +394,11 @@ cell2fate_result_dir_is_owned <- function(result_dir) {
     return(FALSE)
   }
   schema <- owner[["runner_schema_version"]]
-  identical(owner[["producer"]], "RunCell2fate") &&
+  identical(owner[["producer"]], .cell2fate_producer) &&
     is.numeric(schema) &&
     length(schema) == 1L &&
     !is.na(schema) &&
-    schema == 1
+    schema == .cell2fate_schema_version
 }
 
 cell2fate_prepare_result_dir <- function(result_dir) {
@@ -444,9 +441,9 @@ cell2fate_claim_result_dir <- function(result_dir) {
     }
     runner_write_json(
       list(
-        producer = "RunCell2fate",
-        runner_schema_version = 1L,
-        backend_commit = cell2fate_backend_commit()
+        producer = .cell2fate_producer,
+        runner_schema_version = .cell2fate_schema_version,
+        backend_commit = .cell2fate_commit
       ),
       file.path(result_dir, ".cell2fate.json")
     )
@@ -519,13 +516,13 @@ cell2fate_validate_manifest <- function(
     if (isTRUE(store_velocity)) "tables/velocity.csv"
   )
   valid <- is.list(manifest) &&
-    identical(manifest[["producer"]], "RunCell2fate") &&
+    identical(manifest[["producer"]], .cell2fate_producer) &&
     is.numeric(schema) &&
     length(schema) == 1L &&
     !is.na(schema) &&
-    schema == 1 &&
+    schema == .cell2fate_schema_version &&
     identical(manifest[["status"]], "complete") &&
-    identical(manifest[["backend_commit"]], cell2fate_backend_commit()) &&
+    identical(manifest[["backend_commit"]], .cell2fate_commit) &&
     identical(manifest[["request_id"]], request_id) &&
     is.list(artifacts) &&
     !is.null(names(artifacts)) &&
@@ -731,15 +728,6 @@ cell2fate_validate_result_tables <- function(
   invisible(TRUE)
 }
 
-cell2fate_requirement <- function() {
-  paste0(
-    "git+https://github.com/",
-    cell2fate_repository(),
-    ".git@",
-    cell2fate_backend_commit()
-  )
-}
-
 cell2fate_managed_metadata <- function(metadata_names, prefix) {
   prefix_with_separator <- paste0(prefix, "_")
   prefixed <- startsWith(metadata_names, prefix_with_separator)
@@ -751,13 +739,6 @@ cell2fate_managed_metadata <- function(metadata_names, prefix) {
     suffixes %in% c("time", "time_uncertainty", "selected") |
       grepl("^module_[0-9]+_(activation|state)$", suffixes)
   ]
-}
-
-cell2fate_tool_is_owned <- function(tool) {
-  is.list(tool) &&
-    identical(tool[["method"]], "Cell2fate") &&
-    is.list(tool[["provenance"]]) &&
-    identical(tool[["provenance"]][["producer"]], "RunCell2fate")
 }
 
 cell2fate_prepare_seurat_output <- function(srt, prefix, tool_name) {
@@ -775,7 +756,14 @@ cell2fate_prepare_seurat_output <- function(srt, prefix, tool_name) {
     }
     return(srt)
   }
-  if (!cell2fate_tool_is_owned(existing_tool)) {
+  tool_is_owned <- is.list(existing_tool) &&
+    identical(existing_tool[["method"]], "Cell2fate") &&
+    is.list(existing_tool[["provenance"]]) &&
+    identical(
+      existing_tool[["provenance"]][["producer"]],
+      .cell2fate_producer
+    )
+  if (!tool_is_owned) {
     log_message(
       "{.arg tool_name} {.val {tool_name}} is already used by an unrelated result. Use a different {.arg tool_name}.",
       message_type = "error"
@@ -999,7 +987,12 @@ cell2fate_check_python <- function(envname = NULL, verbose = TRUE) {
   )
   runtime_ok <- check_python(
     c(
-      cell2fate_requirement(),
+      paste0(
+        "git+https://github.com/",
+        .cell2fate_repository,
+        ".git@",
+        .cell2fate_commit
+      ),
       "scvi-tools==0.16.1",
       "anndata==0.8.0",
       "scanpy==1.9.1",
