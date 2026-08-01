@@ -50,7 +50,7 @@
 #' If "rann" is selected, the function will use the RANN library for approximate nearest neighbor search.
 #' If not provided, the function will choose the search method based on the size of the query and reference datasets.
 #' For finite dense inputs using cosine or Euclidean distance, the raw path
-#' uses scop's bounded-memory native top-k kernel unless the full distance
+#' uses a bounded-memory compiled top-k kernel unless the full distance
 #' matrix is requested. Other metrics and sparse inputs retain the existing
 #' proxyC path.
 #' @param distance_metric A character vector specifying the distance metric to be used for calculating similarity between cells.
@@ -788,32 +788,10 @@ RunKNNPredict <- function(
         ncol = ncol(match_k_cell)
       )
       rownames(match_k_cell) <- rn
-      match_freq <- apply(match_k_cell, 1, table)
-      if (!inherits(match_freq, "list")) {
-        match_freq <- as.list(
-          stats::setNames(
-            object = rep(k, nrow(match_k_cell)), rn
-          )
-        )
-        match_freq <- lapply(
-          stats::setNames(
-            names(match_freq),
-            names(match_freq)
-          ),
-          function(x) stats::setNames(k, match_k_cell[x, 1])
-        )
-      }
-      match_prob <- do.call(
-        rbind,
-        lapply(match_freq, function(x) {
-          x[level[!level %in% names(x)]] <- 0
-          x <- x / sum(x)
-          return(x)
-        })
-      )
-      match_prob <- as_matrix(match_prob)
-      rownames(match_prob) <- names(match_freq)
-      match_best <- knn_match_best_labels(match_prob)
+      vote <- knn_vote_labels(match_k_cell, levels = level)
+      match_prob <- vote$probability
+      rownames(match_prob) <- rn
+      match_best <- vote$best
     }
   } else {
     match_best <- match_k_cell[, 1]
@@ -925,6 +903,25 @@ knn_match_prob_max <- function(match_prob) {
   out <- matrixStats::rowMaxs(as.matrix(match_prob))
   names(out) <- rownames(match_prob)
   out
+}
+
+knn_vote_labels <- function(labels, levels = unique(as.character(labels))) {
+  labels <- as.matrix(labels)
+  levels <- as.character(levels)
+  codes <- matrix(
+    match(as.character(labels), levels),
+    nrow = nrow(labels),
+    ncol = ncol(labels),
+    dimnames = dimnames(labels)
+  )
+  out <- knn_vote_labels_cpp(codes, length(levels))
+  probability <- out$probability
+  dimnames(probability) <- list(rownames(labels), levels)
+  best <- rep(NA_character_, nrow(labels))
+  keep <- !is.na(out$best)
+  best[keep] <- levels[out$best[keep]]
+  names(best) <- rownames(labels)
+  list(probability = probability, best = best)
 }
 
 knn_match_best_labels <- function(match_prob) {

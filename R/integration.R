@@ -2689,14 +2689,12 @@ Scanorama_integrate <- function(
   assaylist <- list()
   genelist <- list()
   for (i in seq_along(srt_list)) {
-    assaylist[[i]] <- Matrix::t(
-      as_matrix(
-        GetAssayData5(
-          object = srt_list[[i]],
-          layer = "data",
-          assay = SeuratObject::DefaultAssay(srt_list[[i]])
-        )[HVF, , drop = FALSE]
-      )
+    assaylist[[i]] <- python_cells_by_features(
+      GetAssayData5(
+        object = srt_list[[i]],
+        layer = "data",
+        assay = SeuratObject::DefaultAssay(srt_list[[i]])
+      )[HVF, , drop = FALSE]
     )
     genelist[[i]] <- HVF
   }
@@ -2810,6 +2808,8 @@ Scanorama_integrate <- function(
 #'
 #' @inheritParams RunIntegration
 #' @param bbknn_params A list of parameters for the bbknn.matrix.bbknn function, default is an empty list.
+#' @param backend BBKNN graph backend. `"cpp"` uses the compiled cross-batch
+#' KNN graph implementation; `"python"` retains the official bbknn package.
 #'
 #' @export
 BBKNN_integrate <- function(
@@ -2843,9 +2843,15 @@ BBKNN_integrate <- function(
   cluster_resolution = 0.6,
   bbknn_params = list(),
   verbose = TRUE,
-  seed = 11
+  seed = 11,
+  backend = c("cpp", "python")
 ) {
-  PrepareEnv(modules = "bbknn")
+  backend <- match.arg(backend)
+  if (identical(backend, "python")) {
+    PrepareEnv(modules = "bbknn")
+    check_python("bbknn")
+    bbknn <- reticulate::import("bbknn")
+  }
 
   if (length(linear_reduction) > 1) {
     log_message(
@@ -2883,8 +2889,6 @@ BBKNN_integrate <- function(
   )
   cluster_algorithm_index <- resolve_cluster_algorithm_index(cluster_algorithm)
 
-  check_python("bbknn")
-  bbknn <- reticulate::import("bbknn")
   set.seed(seed)
 
   validate_integration_input_cells(srt_list, srt_merge)
@@ -2995,7 +2999,7 @@ BBKNN_integrate <- function(
   }
 
   log_message(
-    "Perform {.pkg BBKNN} integration with the original python backend",
+    "Perform {.pkg BBKNN} integration with the {.val {backend}} backend",
     verbose = verbose
   )
   log_message(
@@ -3006,14 +3010,22 @@ BBKNN_integrate <- function(
     linear_reduction_dims_use,
     drop = FALSE
   ]
-  params <- list(
-    pca = emb,
-    batch_list = srt_merge[[batch, drop = TRUE]]
-  )
-  for (nm in names(bbknn_params)) {
-    params[[nm]] <- bbknn_params[[nm]]
+  if (identical(backend, "python")) {
+    params <- list(
+      pca = emb,
+      batch_list = srt_merge[[batch, drop = TRUE]]
+    )
+    for (nm in names(bbknn_params)) {
+      params[[nm]] <- bbknn_params[[nm]]
+    }
+    bem <- invoke_fun(bbknn$matrix$bbknn, params)
+  } else {
+    bem <- bbknn_native_matrix(
+      embedding = emb,
+      batches = srt_merge[[batch, drop = TRUE]],
+      params = bbknn_params
+    )
   }
-  bem <- invoke_fun(bbknn$matrix$bbknn, params)
   n.neighbors <- bem[[3]]$n_neighbors
   srt_integrated <- srt_merge
 
@@ -3114,7 +3126,7 @@ BBKNN_integrate <- function(
   SeuratObject::VariableFeatures(srt_integrated) <- srt_integrated@misc[[
     "BBKNN_HVF"
   ]] <- HVF
-  srt_integrated@misc[["BBKNN_backend"]] <- "python"
+  srt_integrated@misc[["BBKNN_backend"]] <- backend
   srt_integrated@misc[["BBKNN_parameters"]] <- bem[[3]]
 
   if (isTRUE(append) && !is.null(srt_merge_raw)) {
@@ -3129,6 +3141,206 @@ BBKNN_integrate <- function(
   } else {
     return(srt_integrated)
   }
+}
+
+bbknn_native_matrix <- function(embedding, batches, params = list()) {
+  embedding <- as.matrix(embedding)
+  batches <- as.factor(batches)
+  if (anyNA(batches)) {
+    log_message("{.arg batch} contains missing values", message_type = "error")
+  }
+  neighbors_within_batch <- as.integer(
+    params[["neighbors_within_batch"]] %||% 3L
+  )
+  n_pcs <- min(
+    ncol(embedding),
+    as.integer(params[["n_pcs"]] %||% 50L)
+  )
+  if (n_pcs < 1L) {
+    log_message("{.arg n_pcs} must be positive", message_type = "error")
+  }
+  embedding <- embedding[, seq_len(n_pcs), drop = FALSE]
+  computation <- tolower(params[["computation"]] %||% "annoy")
+  if (computation %in% c("ckdtree", "kdtree", "faiss")) {
+    computation <- "exact"
+  }
+  if (!computation %in% c("annoy", "exact")) {
+    log_message(
+      "Native BBKNN supports {.val annoy} and {.val exact} computation",
+      message_type = "error"
+    )
+  }
+  metric <- tolower(params[["metric"]] %||% "euclidean")
+  supported_metrics <- if (identical(computation, "annoy")) {
+    c("euclidean", "angular", "manhattan")
+  } else {
+    c("euclidean", "cosine", "angular")
+  }
+  if (!metric %in% supported_metrics) {
+    log_message(
+      "Unsupported native BBKNN metric {.val {metric}} for {.val {computation}}",
+      message_type = "error"
+    )
+  }
+  annoy_n_trees <- as.integer(params[["annoy_n_trees"]] %||% 10L)
+  if (annoy_n_trees < 1L) {
+    log_message(
+      "{.arg annoy_n_trees} must be positive",
+      message_type = "error"
+    )
+  }
+  cores <- as.integer(
+    params[["cores"]] %||%
+      max(1L, min(8L, parallel::detectCores(logical = TRUE)))
+  )
+  batch_indices <- split(seq_len(nrow(embedding)), batches, drop = TRUE)
+  if (any(lengths(batch_indices) < neighbors_within_batch)) {
+    log_message(
+      "Each batch must contain at least {.val {neighbors_within_batch}} cells",
+      message_type = "error"
+    )
+  }
+
+  neighbor_blocks <- lapply(batch_indices, function(reference_index) {
+    result <- if (identical(computation, "annoy")) {
+      annoy_cross_knn(
+        reference = embedding[reference_index, , drop = FALSE],
+        query = embedding,
+        k = neighbors_within_batch,
+        n_trees = annoy_n_trees,
+        metric = metric,
+        cores = cores
+      )
+    } else {
+      exact_metric <- if (identical(metric, "angular")) "cosine" else metric
+      cross_knn_f32(
+        reference = embedding[reference_index, , drop = FALSE],
+        query = embedding,
+        k = neighbors_within_batch,
+        metric = exact_metric,
+        cores = cores
+      )
+    }
+    list(
+      idx = matrix(
+        reference_index[result[["idx"]]],
+        nrow = nrow(embedding),
+        ncol = neighbors_within_batch
+      ),
+      dist = result[["distance"]]
+    )
+  })
+  idx <- do.call(cbind, lapply(neighbor_blocks, `[[`, "idx"))
+  dist <- do.call(cbind, lapply(neighbor_blocks, `[[`, "dist"))
+  fuzzy <- bbknn_fuzzy_membership_cpp(
+    index = idx,
+    distance = dist,
+    local_connectivity = as.numeric(params[["local_connectivity"]] %||% 1),
+    bandwidth = as.numeric(params[["bandwidth"]] %||% 1)
+  )
+  idx <- fuzzy[["idx"]]
+  dist <- fuzzy[["distance"]]
+  membership <- fuzzy[["membership"]]
+  n_neighbors <- ncol(idx)
+  rows <- rep(seq_len(nrow(idx)), times = ncol(idx))
+  cols <- as.integer(idx)
+  distance_values <- as.numeric(dist)
+  nonself <- rows != cols & is.finite(distance_values)
+  rows <- rows[nonself]
+  cols <- cols[nonself]
+  distance_values <- distance_values[nonself]
+
+  connectivity_values <- as.numeric(membership)[nonself]
+  distance_graph <- Matrix::sparseMatrix(
+    i = rows,
+    j = cols,
+    x = distance_values,
+    dims = c(nrow(embedding), nrow(embedding))
+  )
+  connectivity <- Matrix::sparseMatrix(
+    i = rows,
+    j = cols,
+    x = connectivity_values,
+    dims = c(nrow(embedding), nrow(embedding))
+  )
+  connectivity_transpose <- Matrix::t(connectivity)
+  connectivity_product <- connectivity * connectivity_transpose
+  set_op_mix_ratio <- as.numeric(params[["set_op_mix_ratio"]] %||% 1)
+  if (!is.finite(set_op_mix_ratio) ||
+      set_op_mix_ratio < 0 ||
+      set_op_mix_ratio > 1) {
+    log_message(
+      "{.arg set_op_mix_ratio} must be between 0 and 1",
+      message_type = "error"
+    )
+  }
+  connectivity_union <-
+    connectivity + connectivity_transpose - connectivity_product
+  connectivity <- set_op_mix_ratio * connectivity_union +
+    (1 - set_op_mix_ratio) * connectivity_product
+  connectivity <- Matrix::drop0(connectivity)
+  trim <- params[["trim"]]
+  if (is.null(trim)) {
+    trim <- 10L * n_neighbors
+  }
+  trim <- as.integer(trim)
+  if (trim < 0L) {
+    log_message("{.arg trim} must be non-negative", message_type = "error")
+  }
+  if (trim > 0L) {
+    connectivity <- methods::as(connectivity, "dgCMatrix")
+    connectivity_summary <- list(
+      i = connectivity@i + 1L,
+      j = rep.int(
+        seq_len(ncol(connectivity)),
+        diff(connectivity@p)
+      ),
+      x = connectivity@x
+    )
+    thresholds <- numeric(nrow(connectivity))
+    split_values <- split(
+      connectivity_summary$x,
+      factor(connectivity_summary$i, levels = seq_len(nrow(connectivity)))
+    )
+    thresholds <- vapply(split_values, function(values) {
+      if (length(values) <= trim) {
+        0
+      } else {
+        sort(values, partial = length(values) - trim + 1L)[
+          length(values) - trim + 1L
+        ]
+      }
+    }, numeric(1))
+    keep <- connectivity_summary$x >= thresholds[connectivity_summary$i] &
+      connectivity_summary$x >= thresholds[connectivity_summary$j]
+    connectivity <- Matrix::sparseMatrix(
+      i = connectivity_summary$i[keep],
+      j = connectivity_summary$j[keep],
+      x = connectivity_summary$x[keep],
+      dims = dim(connectivity)
+    )
+  }
+  rownames(connectivity) <- colnames(connectivity) <- rownames(embedding)
+  rownames(distance_graph) <- colnames(distance_graph) <- rownames(embedding)
+
+  list(
+    distance_graph,
+    connectivity,
+    list(
+      n_neighbors = n_neighbors,
+      neighbors_within_batch = neighbors_within_batch,
+      metric = metric,
+      n_pcs = n_pcs,
+      trim = trim,
+      computation = computation,
+      annoy_n_trees = if (identical(computation, "annoy")) {
+        annoy_n_trees
+      } else {
+        NULL
+      },
+      backend = paste0("cpp_", computation)
+    )
+  )
 }
 
 #' @title The CSS integration function

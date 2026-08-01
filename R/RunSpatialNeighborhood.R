@@ -1,7 +1,7 @@
 #' @title Run spatial neighborhood statistics
 #'
 #' @description
-#' Build a scop-style spatial neighborhood result bundle and optionally dispatch
+#' Build a standardized spatial neighborhood result bundle and optionally dispatch
 #' to a supported backend for colocalization or local-effect statistics.
 #'
 #' @md
@@ -10,7 +10,7 @@
 #' @param group.by Metadata column containing spatial cell or spot labels.
 #' @param method Neighborhood calculation. `NULL` preserves compatibility by
 #' choosing `"observed"` when `split.by` is absent and `"spicyR"` when it is
-#' supplied. `"observed"` returns native KNN or radius summaries. `"spicyR"`
+#' supplied. `"observed"` returns package KNN or radius summaries. `"spicyR"`
 #' runs differential neighborhood statistics and requires `split.by`.
 #' @param assay Assay used when `features` are requested.
 #' @param layer Assay layer used when `features` are requested.
@@ -27,15 +27,18 @@
 #' differential neighborhood statistics.
 #' @param subject.by Optional metadata column identifying subjects for backends
 #' that support paired or repeated designs.
-#' @param radius Optional spatial radius used for scop-native neighborhood
+#' @param radius Optional spatial radius used for package neighborhood
 #' summaries, expressed in the selected coordinate units.
-#' @param k Optional number of nearest neighbors used for scop-native
+#' @param k Optional number of nearest neighbors used for package
 #' neighborhood summaries. This is a unitless count. When both `radius` and
 #' `k` are `NULL`, `k = 6` is used.
 #' @param features Optional features to extract into the backend input table.
 #' @param from,to Optional cell or spot label filters.
 #' @param tool_name Name used to store results in `srt@tools`.
 #' @param store_results Whether to store results in `srt@tools`.
+#' @param backend Backend for observed label-pair aggregation.
+#' `"cpp"` avoids repeated data-frame aggregation; `"r"` retains the reference
+#' implementation. This does not alter the external `"spicyR"` method.
 #' @param ... Additional arguments passed to the selected backend.
 #'
 #' @return A `Seurat` object with results stored in `srt@tools[[tool_name]]`.
@@ -82,8 +85,11 @@ RunSpatialNeighborhood <- function(
   store_results = TRUE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
+  backend = c("cpp", "r"),
   ...
 ) {
+  backend <- match.arg(backend)
+  aggregation_backend <- backend
   method <- if (is.null(method)) {
     if (is.null(split.by)) "observed" else "spicyR"
   } else {
@@ -121,10 +127,11 @@ RunSpatialNeighborhood <- function(
   observed <- spatial_neighborhood_observed_pairs(
     cells = input$cells,
     radius = radius,
-    k = k
+    k = k,
+    backend = aggregation_backend
   )
 
-  backend <- switch(method,
+  method_backend <- switch(method,
     observed = list(raw = NULL, table = NULL),
     spicyR = spatial_neighborhood_run_spicyr(
       cells = input$cells,
@@ -138,7 +145,7 @@ RunSpatialNeighborhood <- function(
   )
 
   pair_table <- spatial_neighborhood_standardize_pair_table(
-    backend = backend,
+    backend = method_backend,
     observed = observed$pair_table,
     method = method
   )
@@ -174,7 +181,7 @@ RunSpatialNeighborhood <- function(
     long_table = long_table,
     observed_table = observed$pair_table,
     edge_table = observed$edge_table,
-    raw = backend$raw,
+    raw = method_backend$raw,
     input = input$cells,
     summary = spatial_neighborhood_summary(pair_table, observed$edge_table),
     parameters = list(
@@ -190,6 +197,7 @@ RunSpatialNeighborhood <- function(
       subject.by = subject.by,
       radius = radius,
       k = k %||% if (is.null(radius)) 6L else NULL,
+      backend = aggregation_backend,
       features = features,
       from = from,
       to = to
@@ -231,7 +239,7 @@ RunSpatialNeighborhood <- function(
 #' @title Spatial neighborhood plot
 #'
 #' @description
-#' Visualize results produced by [RunSpatialNeighborhood()] using scop spatial,
+#' Visualize results produced by [RunSpatialNeighborhood()] using spatial,
 #' statistical, and network plotting conventions.
 #'
 #' @md
@@ -515,7 +523,13 @@ spatial_neighborhood_filter_edges <- function(df, from = NULL, to = NULL) {
   df
 }
 
-spatial_neighborhood_observed_pairs <- function(cells, radius = NULL, k = NULL) {
+spatial_neighborhood_observed_pairs <- function(
+  cells,
+  radius = NULL,
+  k = NULL,
+  backend = c("cpp", "r")
+) {
+  backend <- match.arg(backend)
   if (is.null(k) && is.null(radius)) {
     k <- 6L
   }
@@ -586,12 +600,22 @@ spatial_neighborhood_observed_pairs <- function(cells, radius = NULL, k = NULL) 
   }
   rownames(edge_table) <- NULL
 
-  count_df <- stats::aggregate(
-    distance ~ sample + condition + subject + from + to,
-    data = edge_table,
-    FUN = length
-  )
-  colnames(count_df)[colnames(count_df) == "distance"] <- "count"
+  if (identical(backend, "cpp")) {
+    count_df <- spatial_pair_count_cpp(
+      sample = as.character(edge_table$sample),
+      condition = as.character(edge_table$condition),
+      subject = as.character(edge_table$subject),
+      from = as.character(edge_table$from),
+      to = as.character(edge_table$to)
+    )
+  } else {
+    count_df <- stats::aggregate(
+      distance ~ sample + condition + subject + from + to,
+      data = edge_table,
+      FUN = length
+    )
+    colnames(count_df)[colnames(count_df) == "distance"] <- "count"
+  }
   total_df <- stats::aggregate(
     count ~ sample + condition,
     data = count_df,
@@ -839,6 +863,17 @@ spatial_neighborhood_network_plot <- function(
   if (all(!is.finite(edge_plot$abs_weight))) {
     edge_plot$abs_weight <- 1
   }
+  loop_plot <- edge_plot[edge_plot$from == edge_plot$to, , drop = FALSE]
+  edge_plot <- edge_plot[edge_plot$from != edge_plot$to, , drop = FALSE]
+  if (nrow(loop_plot) > 0L) {
+    loop_range <- range(loop_plot$abs_weight, finite = TRUE)
+    if (!all(is.finite(loop_range)) || diff(loop_range) == 0) {
+      loop_plot$loop_stroke <- mean(edge_size)
+    } else {
+      loop_plot$loop_stroke <- edge_size[1] +
+        (loop_plot$abs_weight - loop_range[1]) * diff(edge_size) / diff(loop_range)
+    }
+  }
   edge_aes <- ggplot2::aes(
     x = .data$x,
     y = .data$y,
@@ -853,7 +888,7 @@ spatial_neighborhood_network_plot <- function(
     ggplot2::scale_size_continuous(range = edge_size, guide = "none")
   }
 
-  p <- ggplot2::ggplot() +
+  curve_layer <- if (nrow(edge_plot) > 0L) {
     ggplot2::geom_curve(
       data = edge_plot,
       edge_aes,
@@ -861,7 +896,28 @@ spatial_neighborhood_network_plot <- function(
       alpha = 0.7,
       arrow = grid::arrow(type = "closed", length = grid::unit(0.018, "npc")),
       lineend = "round"
-    ) +
+    )
+  }
+  loop_layer <- if (nrow(loop_plot) > 0L) {
+    ggplot2::geom_point(
+      data = loop_plot,
+      ggplot2::aes(
+        x = .data$x,
+        y = .data$y,
+        color = .data$direction,
+        stroke = .data$loop_stroke
+      ),
+      shape = 21,
+      size = 7,
+      fill = NA,
+      alpha = 0.7,
+      show.legend = FALSE
+    )
+  }
+
+  p <- ggplot2::ggplot() +
+    curve_layer +
+    loop_layer +
     ggplot2::geom_point(
       data = node_plot,
       ggplot2::aes(x = .data$x, y = .data$y),
@@ -885,6 +941,7 @@ spatial_neighborhood_network_plot <- function(
       ),
       drop = FALSE
     ) +
+    ggplot2::scale_continuous_identity(aesthetics = "stroke", guide = "none") +
     edge_scale +
     ggplot2::coord_equal() +
     ggplot2::labs(x = NULL, y = NULL, color = legend.title %||% "Direction") +

@@ -73,6 +73,10 @@ cellrank_lineage_drivers_cpp <- function(expression, abs_probs, lineage_idx = in
     .Call(`_scop_cellrank_lineage_drivers_cpp`, expression, abs_probs, lineage_idx)
 }
 
+combine_conserved_pvalues_cpp <- function(pvalues, method) {
+    .Call(`_scop_combine_conserved_pvalues_cpp`, pvalues, method)
+}
+
 cytospace_assign <- function(sc_expr, st_expr, spot_capacities, seed = 1L, upstream_tie_break = TRUE, verbose = FALSE) {
     .Call(`_scop_cytospace_assign`, sc_expr, st_expr, spot_capacities, seed, upstream_tie_break, verbose)
 }
@@ -113,12 +117,20 @@ feature_cor_geometric_mean_sparse_cpp <- function(x, log_normalized) {
     .Call(`_scop_feature_cor_geometric_mean_sparse_cpp`, x, log_normalized)
 }
 
+fitdevo_spearman_weights_cpp <- function(scaled, target_centered) {
+    .Call(`_scop_fitdevo_spearman_weights_cpp`, scaled, target_centered)
+}
+
 gniplr_cpp <- function(expression, target_idx, correlation_threshold = 0.3, lasso_degree = 30L, lasso_alpha = 0.1, max_lag = 3L) {
     .Call(`_scop_gniplr_cpp`, expression, target_idx, correlation_threshold, lasso_degree, lasso_alpha, max_lag)
 }
 
 aucell_auc_sparse <- function(expr, gene_sets, auc_max_rank, norm_auc = TRUE, strategy = 1L, algorithm = 1L, seed = 0L) {
     .Call(`_scop_aucell_auc_sparse`, expr, gene_sets, auc_max_rank, norm_auc, strategy, algorithm, seed)
+}
+
+ucell_scores_sparse <- function(expr, positive_sets, positive_missing, negative_sets, negative_missing, max_rank = 1500L, negative_weight = 1.0, tie_method = 1L) {
+    .Call(`_scop_ucell_scores_sparse`, expr, positive_sets, positive_missing, negative_sets, negative_missing, max_rank, negative_weight, tie_method)
 }
 
 aucell_auc_ranked <- function(rankings, gene_sets, auc_max_rank) {
@@ -169,8 +181,24 @@ sparse_row_has_variable_finite <- function(expr) {
     .Call(`_scop_sparse_row_has_variable_finite`, expr)
 }
 
+knn_vote_labels_cpp <- function(labels, n_levels) {
+    .Call(`_scop_knn_vote_labels_cpp`, labels, n_levels)
+}
+
 mdic3_score_cpp <- function(expression, grn, group) {
     .Call(`_scop_mdic3_score_cpp`, expression, grn, group)
+}
+
+manifold_exact_knn_cpp <- function(data, k, metric = 1L) {
+    .Call(`_scop_manifold_exact_knn_cpp`, data, k, metric)
+}
+
+pacmap_optimize_cpp <- function(data, initial, knn_index, n_mid, n_far, learning_rate, iterations, seed, metric = 1L) {
+    .Call(`_scop_pacmap_optimize_cpp`, data, initial, knn_index, n_mid, n_far, learning_rate, iterations, seed, metric)
+}
+
+trimap_optimize_cpp <- function(data, initial, knn_index, n_outliers, n_random, learning_rate, iterations, optimizer, seed, metric = 1L) {
+    .Call(`_scop_trimap_optimize_cpp`, data, initial, knn_index, n_outliers, n_random, learning_rate, iterations, optimizer, seed, metric)
 }
 
 wilcox_rank_sum_sparse <- function(mat, n_group1, min_expression = 0.0) {
@@ -207,6 +235,22 @@ monocle2_project_cells_to_mst_cpp <- function(z, y, graph_edges, closest_vertex)
 
 monocle2_select_root_by_state_cpp <- function(coords, candidate_cells, pseudotime, closest_vertex, use_min_pseudotime = FALSE) {
     .Call(`_scop_monocle2_select_root_by_state_cpp`, coords, candidate_cells, pseudotime, closest_vertex, use_min_pseudotime)
+}
+
+vector_weighted_arrows_cpp <- function(centers, scores, embedding_range, p, arrow_length) {
+    .Call(`_scop_vector_weighted_arrows_cpp`, centers, scores, embedding_range, p, arrow_length)
+}
+
+cytospace_estimate_fractions_cpp <- function(st_expr, ref_expr, labels, n_types, spot_weights) {
+    .Call(`_scop_cytospace_estimate_fractions_cpp`, st_expr, ref_expr, labels, n_types, spot_weights)
+}
+
+spatial_pair_count_cpp <- function(sample, condition, subject, from, to) {
+    .Call(`_scop_spatial_pair_count_cpp`, sample, condition, subject, from, to)
+}
+
+bbknn_fuzzy_membership_cpp <- function(index, distance, local_connectivity = 1.0, bandwidth = 1.0) {
+    .Call(`_scop_bbknn_fuzzy_membership_cpp`, index, distance, local_connectivity, bandwidth)
 }
 
 paga_connectivities_cpp <- function(knn_idx, groups, n_groups) {
@@ -287,6 +331,14 @@ palantir_absorption_cpp <- function(T_i, T_j, T_x, n, terminal_state_indices) {
 
 palantir_row_entropy_cpp <- function(probabilities) {
     .Call(`_scop_palantir_row_entropy_cpp`, probabilities)
+}
+
+pretsa_fit_block_cpp <- function(expression, bases, inverses, knots) {
+    .Call(`_scop_pretsa_fit_block_cpp`, expression, bases, inverses, knots)
+}
+
+pretsa_curve_summary_cpp <- function(fitted, expression, pseudotime) {
+    .Call(`_scop_pretsa_curve_summary_cpp`, fitted, expression, pseudotime)
 }
 
 scvelo_filter_genes_scanpy_cpp <- function(spliced, unspliced, min_counts = 3L, min_counts_u = 3L) {
@@ -617,8 +669,8 @@ spatial_gradient_screening_cpp <- function(expr, coords, reference_spots, trajec
     .Call(`_scop_spatial_gradient_screening_cpp`, expr, coords, reference_spots, trajectory, variables, mode, n_bins, n_random, seed, min_spots)
 }
 
-spatial_variable_score_dense_cpp <- function(expr, from, to, method) {
-    .Call(`_scop_spatial_variable_score_dense_cpp`, expr, from, to, method)
+spatial_variable_score_cpp <- function(expr, edge_from, edge_to, method, n_permutations = 0L) {
+    .Call(`_scop_spatial_variable_score_cpp`, expr, edge_from, edge_to, method, n_permutations)
 }
 
 parallel_all_in_one_dgc <- function(x_sexp, groups, group_sizes) {
@@ -627,6 +679,10 @@ parallel_all_in_one_dgc <- function(x_sexp, groups, group_sizes) {
 
 annoy_build_search <- function(data, k, n_trees, cores) {
     .Call(`_scop_annoy_build_search`, data, k, n_trees, cores)
+}
+
+annoy_cross_knn <- function(reference, query, k, n_trees, metric, cores) {
+    .Call(`_scop_annoy_cross_knn`, reference, query, k, n_trees, metric, cores)
 }
 
 exact_knn_f32 <- function(data, k, cores) {

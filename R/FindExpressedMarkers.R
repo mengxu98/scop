@@ -435,11 +435,13 @@ FindConservedMarkers2 <- function(
     "sump",
     "votep"
   ),
+  meta_backend = c("cpp", "r"),
   norm.method = "LogNormalize",
   verbose = TRUE,
   ...
 ) {
   meta.method <- match.arg(meta.method)
+  meta_backend <- match.arg(meta_backend)
   object.var <- SeuratObject::FetchData(object = object, vars = grouping.var)
   levels.split <- names(x = sort(x = table(object.var[, 1])))
   num.groups <- length(levels.split)
@@ -671,15 +673,11 @@ FindConservedMarkers2 <- function(
     markers.combined[["max_pval"]] <- find_conserved_marker_max_pval(
       markers.combined[, pval.codes, drop = FALSE]
     )
-    combined.pval <- data.frame(
-      cp = apply(
-        X = markers.combined[, pval.codes, drop = FALSE],
-        MARGIN = 1,
-        FUN = function(x) {
-          return(metap(x, method = meta.method)$p)
-        }
-      )
-    )
+    combined.pval <- data.frame(cp = find_conserved_marker_combine_pval(
+      markers.combined[, pval.codes, drop = FALSE],
+      method = meta.method,
+      backend = meta_backend
+    ))
     meta.method.name <- meta.method
     colnames(x = combined.pval) <- paste0(meta.method.name, "_p_val")
     markers.combined <- cbind(markers.combined, combined.pval)
@@ -723,6 +721,30 @@ find_conserved_marker_sign_keep <- function(logfc, only.pos = FALSE) {
 find_conserved_marker_max_pval <- function(pvalues) {
   check_r("matrixStats", verbose = FALSE)
   out <- matrixStats::rowMaxs(as.matrix(pvalues))
+  names(out) <- rownames(pvalues)
+  out
+}
+
+find_conserved_marker_combine_pval <- function(
+  pvalues,
+  method = c(
+    "maximump",
+    "minimump",
+    "wilkinsonp",
+    "meanp",
+    "sump",
+    "votep"
+  ),
+  backend = c("cpp", "r")
+) {
+  method <- match.arg(method)
+  backend <- match.arg(backend)
+  pvalues <- as.matrix(pvalues)
+  out <- if (identical(backend, "cpp")) {
+    combine_conserved_pvalues_cpp(pvalues, method)
+  } else {
+    apply(pvalues, 1, function(x) metap(x, method = method)$p)
+  }
   names(out) <- rownames(pvalues)
   out
 }

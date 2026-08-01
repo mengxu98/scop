@@ -470,27 +470,10 @@ RunKNNMap <- function(
         ncol = ncol(match_k_cell)
       )
       rownames(match_k_cell) <- rn
-      match_freq <- apply(match_k_cell, 1, table)
-      if (!inherits(match_freq, "list")) {
-        match_freq <- as.list(
-          stats::setNames(object = rep(k, nrow(match_k_cell)), rn)
-        )
-        match_freq <- lapply(
-          stats::setNames(names(match_freq), names(match_freq)),
-          function(x) stats::setNames(k, match_k_cell[x, 1])
-        )
-      }
-      match_prob <- lapply(
-        match_freq, function(x) {
-          x[level[!level %in% names(x)]] <- 0
-          x <- x / sum(x)
-          return(x)
-        }
-      ) |>
-        dplyr::bind_rows()
-      match_prob <- as_matrix(match_prob)
-      rownames(match_prob) <- names(match_freq)
-      match_best <- knn_match_best_labels(match_prob)
+      vote <- knn_vote_labels(match_k_cell, levels = level)
+      match_prob <- vote$probability
+      rownames(match_prob) <- rn
+      match_best <- vote$best
     }
     srt_query[[paste0("predicted_", ref_group)]] <- match_best[colnames(
       srt_query

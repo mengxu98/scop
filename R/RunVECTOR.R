@@ -11,6 +11,9 @@
 #' weighting. Larger values keep more distant grid centers influential.
 #' @param arrow.ol Arrow vector length multiplier relative to grid spacing.
 #' @param score.name Metadata column for the VECTOR score.
+#' @param backend Numerical backend for grid-arrow aggregation. `"cpp"` avoids
+#' materializing the full grid-to-grid distance matrix; `"r"` is retained as
+#' the reference implementation.
 #'
 #' @return A modified `Seurat` object.
 #'
@@ -51,8 +54,10 @@ RunVECTOR <- function(
   arrow.ol = 1.5,
   score.name = "VECTOR_Score",
   tool_name = "VECTOR",
-  verbose = TRUE
+  verbose = TRUE,
+  backend = c("cpp", "r")
 ) {
+  backend <- match.arg(backend)
   if (!inherits(object, "Seurat")) {
     log_message("{.arg object} must be a {.cls Seurat} object.", message_type = "error")
   }
@@ -73,7 +78,14 @@ RunVECTOR <- function(
     "Run VECTOR field on {.val {nrow(emb)}} cells using {.val {ncol(pca)}} PC dimensions",
     verbose = verbose
   )
-  bundle <- vector_field(emb = emb, pca = pca, grid.n = grid.n, arrow.p = arrow.p, arrow.ol = arrow.ol)
+  bundle <- vector_field(
+    emb = emb,
+    pca = pca,
+    grid.n = grid.n,
+    arrow.p = arrow.p,
+    arrow.ol = arrow.ol,
+    backend = backend
+  )
   object <- Seurat::AddMetaData(
     object,
     data.frame(VECTOR_Score = bundle$score[colnames(object)], row.names = colnames(object))
@@ -88,7 +100,8 @@ RunVECTOR <- function(
     pca.dims = pca.dims,
     grid.n = grid.n,
     arrow.p = arrow.p,
-    arrow.ol = arrow.ol
+    arrow.ol = arrow.ol,
+    backend = backend
   )
   object@tools[[tool_name]] <- bundle
   object <- suppressWarnings(Seurat::LogSeuratCommand(object))

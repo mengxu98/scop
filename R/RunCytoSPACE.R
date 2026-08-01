@@ -33,6 +33,12 @@
 #' @param coordinate_space Coordinate space used for assignment locations. The
 #' default is raw acquisition coordinates. Use `"legacy_display"` explicitly
 #' to reproduce the display-scaled locations used before scop 0.9.0.
+#' @param backend Numerical backend used to estimate cell-type fractions when
+#' `cell_fractions` is not supplied. `"cpp"` fuses normalization, reference
+#' centroid construction, correlation, and weighted aggregation; `"r"` keeps
+#' the reference implementation. Spot assignment uses C++ in both cases.
+#' @param max_dense_gib Maximum estimated GiB allowed for dense expression
+#' working matrices.
 #'
 #' @return A `Seurat` object with CytoSPACE metadata columns and detailed
 #' results stored in `srt@tools[["CytoSPACE"]]`.
@@ -85,8 +91,11 @@ RunCytoSPACE <- function(
   verbose = TRUE,
   image = NULL,
   coord.cols = c("col", "row"),
-  coordinate_space = c("raw", "legacy_display")
+  coordinate_space = c("raw", "legacy_display"),
+  backend = c("cpp", "r"),
+  max_dense_gib = 8
 ) {
+  backend <- match.arg(backend)
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",
@@ -143,6 +152,13 @@ RunCytoSPACE <- function(
       message_type = "error"
     )
   }
+  dense_estimate_gib <- assert_cpp_dense_budget(
+    n_rows = length(features_use),
+    n_cols = ncol(srt) + ncol(reference),
+    copies = 3,
+    max_dense_gib = max_dense_gib,
+    context = "RunCytoSPACE"
+  )
 
   st_expr <- cytospace_get_expr_matrix(srt, assay, layer, features_use)
   ref_expr <- cytospace_get_expr_matrix(
@@ -167,7 +183,8 @@ RunCytoSPACE <- function(
     ref_expr = ref_expr,
     labels = labels,
     cell_types = cell_types,
-    n_cells_per_spot = n_cells
+    n_cells_per_spot = n_cells,
+    backend = backend
   )
   target_cell_type_counts <- cytospace_fraction_to_cell_type_counts(
     fractions,
@@ -246,14 +263,19 @@ RunCytoSPACE <- function(
         reference_assay = reference_assay,
         layer = layer,
         reference_layer = reference_layer,
-          reference_label = reference_label,
-          image = image,
-          coord.cols = coord.cols,
-          coordinate_space = coordinate_space,
+        reference_label = reference_label,
+        image = image,
+        coord.cols = coord.cols,
+        coordinate_space = coordinate_space,
         mean_cell_numbers = mean_cell_numbers,
         scRNA_max_transcripts_per_cell = scRNA_max_transcripts_per_cell,
         sampling_method = sampling_method,
         distance_metric = "Pearson_correlation",
+        backend = backend,
+        fraction_backend = backend,
+        assignment_backend = "cpp",
+        dense_working_set_gib_lower_bound = dense_estimate_gib,
+        max_dense_gib = max_dense_gib,
         seed = seed,
         prefix = prefix
       )
@@ -266,7 +288,7 @@ RunCytoSPACE <- function(
         attr(coords, "spatial_source") %||% list(),
         list(transform = attr(coords, "spatial_transform"))
       ),
-      provenance = list(producer = "RunCytoSPACE", backend_id = "core")
+      provenance = list(producer = "RunCytoSPACE", backend_id = "cpp_assignment")
     )
   }
 
@@ -361,8 +383,10 @@ cytospace_resolve_cell_fractions <- function(
   ref_expr,
   labels,
   cell_types,
-  n_cells_per_spot
+  n_cells_per_spot,
+  backend = c("cpp", "r")
 ) {
+  backend <- match.arg(backend)
   if (!is.null(cell_fractions)) {
     fractions <- cytospace_parse_cell_fractions(
       cell_fractions,
@@ -376,7 +400,8 @@ cytospace_resolve_cell_fractions <- function(
       ref_expr,
       labels,
       cell_types,
-      n_cells_per_spot
+      n_cells_per_spot,
+      backend = backend
     )
   }
   fractions[!is.finite(fractions) | fractions < 0] <- 0
@@ -462,8 +487,22 @@ cytospace_estimate_fractions <- function(
   ref_expr,
   labels,
   cell_types,
-  n_cells_per_spot
+  n_cells_per_spot,
+  backend = c("cpp", "r")
 ) {
+  backend <- match.arg(backend)
+  if (identical(backend, "cpp")) {
+    label_factor <- factor(labels, levels = cell_types)
+    fractions <- cytospace_estimate_fractions_cpp(
+      st_expr = as.matrix(st_expr),
+      ref_expr = as.matrix(ref_expr),
+      labels = as.integer(label_factor),
+      n_types = length(cell_types),
+      spot_weights = as.numeric(n_cells_per_spot)
+    )
+    names(fractions) <- cell_types
+    return(fractions)
+  }
   norm_st <- cytospace_log_cpm_r(st_expr)
   norm_ref <- cytospace_log_cpm_r(ref_expr)
   profiles <- vapply(

@@ -13,15 +13,19 @@
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
 #' @param scale_within_batch Whether to scale data within each batch.
-#' Only valid when the `integration_method` is one of `"Uncorrected"`,
+#' Only valid when the active method in `integration_methods` is one of `"Uncorrected"`,
 #' `"Seurat"`, `"MNN"`, `"Harmony"`, `"BBKNN"`, `"CSS"`, `"ComBat"`.
-#' @param integration_method A character vector specifying the integration method to use.
+#' @param integration_methods A character vector specifying the integration method(s) to use.
 #' Supported methods are: `"Uncorrected"`, `"Seurat"`, `"CCA"`, `"RPCA"`, `"scVI"`,
 #' `"PeakVI"`, `"PoissonVI"`, `"WNN"`, `"MultiMAP"`, `"GLUE"`, `"scVI5"`, `"MNN"`,
 #' `"fastMNN"`, `"fastMNN5"`, `"Harmony"`, `"Harmony5"`,
 #' `"Scanorama"`, `"BBKNN"`, `"CSS"`, `"Coralysis"`, `"LIGER"`, `"Conos"`, `"ComBat"`.
+#' When multiple methods are supplied, they are run sequentially and their
+#' outputs are appended to one object; this requires `append = TRUE`.
 #' Default is `"Uncorrected"`. For `ChromatinAssay`, prefer `"Uncorrected"` or
 #' `"Harmony5"`; the latter is automatically switched to `"Harmony"`.
+#' @param integration_method Deprecated compatibility alias for
+#' `integration_methods`. It will be removed in scop 1.0.0.
 #' @param compute_lisi Whether to compute LISI scores on the integrated result.
 #' Default is `FALSE`.
 #' @param lisi_label_colnames Character vector of metadata columns used to compute
@@ -52,7 +56,7 @@
 #' `celltype_NMI`, `celltype_ARI`, and `celltype_purity`. Default is `NULL`,
 #' which resolves the integrated cluster column automatically when possible.
 #' @param metrics_tool_name Name of the tool entry used to store integration
-#' metrics. Default is `NULL`, which uses `paste0(integration_method, "_metrics")`.
+#' metrics. Default is `NULL`, which uses the active method followed by `"_metrics"`.
 #' @param metrics_k_graph Number of neighbors used for graph-connectivity
 #' computation. Default is `15`.
 #' @param append Whether the integrated data will be appended to the original Seurat object (`srt_merge`).
@@ -87,7 +91,7 @@
 #' panc8_sub <- RunIntegration(
 #'   panc8_sub,
 #'   batch = "tech",
-#'   integration_method = "Harmony",
+#'   integration_methods = "Harmony",
 #'   nHVF = 500,
 #'   linear_reduction_dims = 20,
 #'   linear_reduction_dims_use = 1:10,
@@ -103,107 +107,13 @@
 #' )
 #'
 #' LISIPlot(panc8_sub)
-#'
-#' panc8_sub <- RunIntegration(
-#'   panc8_sub,
-#'   batch = "tech",
-#'   integration_method = "LIGER"
-#' )
-#' panc8_sub <- RunIntegration(
-#'   panc8_sub,
-#'   batch = "tech",
-#'   integration_method = "Harmony",
-#'   compute_lisi = TRUE,
-#'   lisi_label_colnames = "tech"
-#' )
-#' LISIPlot(
-#'   panc8_sub,
-#'   features = c("HarmonypcaUMAP2D_tech_LISI", "HarmonyUMAP2D_tech_LISI")
-#' )
-#'
-#' data("pbmcmultiome_sub", package = "scop")
-#' pbmcmultiome_sub$batch <- rep(c("batch1", "batch2"), length.out = ncol(pbmcmultiome_sub))
-#' pbmcmultiome_sub <- RunIntegration(
-#'   pbmcmultiome_sub,
-#'   batch = "batch",
-#'   assay = "peaks",
-#'   integration_method = "Harmony5",
-#'   normalization_method = "TFIDF"
-#' )
-#'
-#' integration_methods <- c(
-#'   "Uncorrected", "Seurat", "CCA", "RPCA",
-#'   "MNN", "fastMNN", "fastMNN5", "Harmony", "Harmony5",
-#'   "Scanorama", "BBKNN", "CSS", "Coralysis", "LIGER", "Conos", "ComBat"
-#' )
-#' p_list <- list()
-#' for (method in integration_methods) {
-#'   panc8_sub <- RunIntegration(
-#'     panc8_sub,
-#'     batch = "tech",
-#'     integration_method = method,
-#'     linear_reduction_dims_use = 1:50,
-#'     nonlinear_reduction = "umap"
-#'   )
-#'   p_list[[method]] <- CellDimPlot(
-#'     panc8_sub,
-#'     group.by = c("tech", "celltype"),
-#'     reduction = paste0(method, "UMAP2D"),
-#'     xlab = "", ylab = "",
-#'     title = method,
-#'     legend.position = "none",
-#'     theme_use = "theme_blank"
-#'   )
-#' }
-#'
-#' \dontrun{
-#' # Python-backed methods prepare a scVI/scvi-tools environment and run model
-#' # training, so keep them separate from ordinary example checks.
-#' panc8_sub <- RunIntegration(
-#'   panc8_sub,
-#'   batch = "tech",
-#'   integration_method = "scVI",
-#'   train_params = list(max_epochs = 2L),
-#'   nonlinear_reduction = "umap"
-#' )
-#' panc8_sub <- RunIntegration(
-#'   panc8_sub,
-#'   batch = "tech",
-#'   integration_method = "scVI5",
-#'   IntegrateLayers_params = list(max_epochs = 2L),
-#'   nonlinear_reduction = "umap"
-#' )
-#' }
-#'
-#' nonlinear_reductions <- c(
-#'   "umap", "tsne", "dm", "phate",
-#'   "pacmap", "trimap", "largevis", "fr"
-#' )
-#' panc8_sub <- RunIntegration(
-#'   panc8_sub,
-#'   batch = "tech",
-#'   integration_method = "Seurat",
-#'   linear_reduction_dims_use = 1:50,
-#'   nonlinear_reduction = nonlinear_reductions
-#' )
-#' for (nr in nonlinear_reductions) {
-#'   print(
-#'     CellDimPlot(
-#'       panc8_sub,
-#'       group.by = c("tech", "celltype"),
-#'       reduction = paste0("Seurat", nr, "2D"),
-#'       xlab = "", ylab = "", title = nr,
-#'       legend.position = "none", theme_use = "theme_blank"
-#'     )
-#'   )
-#' }
 RunIntegration <- function(
   srt_merge = NULL,
   batch,
   append = TRUE,
   srt_list = NULL,
   assay = NULL,
-  integration_method = c(
+  integration_methods = c(
     "Uncorrected",
     "Seurat",
     "CCA",
@@ -271,8 +181,30 @@ RunIntegration <- function(
   cluster_resolution = 0.6,
   seed = 11,
   verbose = TRUE,
+  integration_method = NULL,
   ...
 ) {
+  integration_methods_missing <- missing(integration_methods)
+  integration_method_missing <- missing(integration_method)
+
+  if (!isTRUE(integration_method_missing)) {
+    if (!isTRUE(integration_methods_missing)) {
+      stop(
+        "Supply only one of `integration_methods` and the deprecated `integration_method`.",
+        call. = FALSE
+      )
+    }
+    .Deprecated(
+      new = "integration_methods",
+      package = "scop",
+      msg = paste0(
+        "`integration_method` is deprecated; use `integration_methods` instead. ",
+        "It will be removed in scop 1.0.0."
+      )
+    )
+    integration_methods <- integration_method
+  }
+
   log_message(
     "Run integration workflow...",
     message_type = "running",
@@ -286,7 +218,6 @@ RunIntegration <- function(
       message_type = "error"
     )
   }
-  integration_method <- match.arg(integration_method)
 
   args <- as.list(match.call())[-1]
   new_env <- new.env(parent = parent.frame())
@@ -295,6 +226,38 @@ RunIntegration <- function(
   formals <- mget(names(formals()))
   formals <- formals[names(formals) != "..."]
   args <- utils::modifyList(formals, args)
+
+  integration_method_choices <- eval(
+    base::formals(RunIntegration)[["integration_methods"]]
+  )
+  integration_methods <- if (
+    isTRUE(integration_methods_missing) &&
+      isTRUE(integration_method_missing)
+  ) {
+    integration_method_choices[[1]]
+  } else {
+    match.arg(
+      args[["integration_methods"]],
+      choices = integration_method_choices,
+      several.ok = TRUE
+    )
+  }
+  args[["integration_method"]] <- NULL
+  args[["integration_methods"]] <- integration_methods
+
+  if (length(integration_methods) > 1L) {
+    if (!isTRUE(args[["append"]])) {
+      log_message(
+        "Multiple {.arg integration_methods} values require {.arg append = TRUE}",
+        message_type = "error"
+      )
+    }
+    return(run_integration_methods(args, integration_methods))
+  }
+
+  integration_method <- integration_methods[[1]]
+  args[["integration_methods"]] <- NULL
+  args[["integration_method"]] <- integration_method
 
   assay_requested <- args[["assay"]] %||% NULL
   assay_source <- args[["srt_merge"]] %||% NULL
@@ -806,6 +769,27 @@ RunIntegration <- function(
   )
 
   return(srt_integrated)
+}
+
+run_integration_methods <- function(
+  args,
+  integration_methods,
+  runner = RunIntegration
+) {
+  result <- NULL
+
+  for (i in seq_along(integration_methods)) {
+    method_args <- args
+    if (i > 1L) {
+      method_args[["srt_merge"]] <- result
+      method_args[["srt_list"]] <- NULL
+    }
+    method_args[["integration_method"]] <- NULL
+    method_args[["integration_methods"]] <- integration_methods[[i]]
+    result <- do.call(runner, method_args)
+  }
+
+  result
 }
 
 collect_integration_metrics <- function(

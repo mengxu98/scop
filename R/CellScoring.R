@@ -23,10 +23,10 @@
 #' @param backend Scoring backend. `"cpp"` is the default for supported methods.
 #' `"r"` uses the original package implementation. `"cpp"` currently supports
 #' `method = "Seurat"`, `method = "AUCell"`, `method = "GSVA"`,
-#' `method = "ssGSEA"`, `method = "zscore"`, and `method = "PLAGE"`.
-#' `method = "UCell"` and `method = "VISION"` fall back to `"r"` when
+#' `method = "UCell"`, `method = "ssGSEA"`, `method = "zscore"`, and
+#' `method = "PLAGE"`. `method = "VISION"` falls back to `"r"` when
 #' `backend` is not explicitly set. For `method = "GSVA"` with
-#' `kcdf = "Gaussian"`, `backend = "cpp"` uses the native C++ kernel.
+#' `kcdf = "Gaussian"`, `backend = "cpp"` uses the package C++ kernel.
 #' @param classification Whether to perform classification based on the scores. Default is `TRUE`.
 #' @param name The name of the assay to store the scores in. Only used if new_assay is TRUE. Default is `""`.
 #' @param new_assay Whether to create a new assay for storing the scores. Default is `FALSE`.
@@ -168,6 +168,7 @@ CellScoring <- function(
   cpp_supported_methods <- c(
     "Seurat",
     "AUCell",
+    "UCell",
     "GSVA",
     "ssGSEA",
     "zscore",
@@ -327,7 +328,12 @@ CellScoring <- function(
   features <- lapply(
     stats::setNames(names(features), names(features)),
     function(x) {
-      features[[x]][features[[x]] %in% features_expressed]
+      feature_ids <- if (identical(method, "UCell")) {
+        gsub("[+-]$", "", features[[x]], perl = TRUE)
+      } else {
+        features[[x]]
+      }
+      features[[x]][feature_ids %in% features_expressed]
     }
   )
   features_none <- names(which(sapply(features, length) == 0))
@@ -409,19 +415,49 @@ CellScoring <- function(
         features_nm <- features_raw
       }
     } else if (method == "UCell") {
-      check_r("UCell", verbose = FALSE)
-      srt_sp <- srt[, cells_sp, drop = FALSE]
-      srt_tmp <- UCell::AddModuleScore_UCell(
-        srt_sp,
-        features = features,
-        name = name,
-        slot = layer,
-        assay = assay,
-        ...
-      )
-      filtered <- names(features)[
-        !paste0(names(features), name) %in% colnames(srt_tmp@meta.data)
-      ]
+      if (identical(backend, "cpp")) {
+        ties_method <- dots[["ties.method"]] %||% "average"
+        if (identical(ties_method, "random")) {
+          log_message(
+            "{.arg ties.method = 'random'} requires {.arg backend = 'r'}",
+            message_type = "error"
+          )
+        }
+        expr_sp <- expr_data[, cells_sp, drop = FALSE]
+        ucell_scores <- run_ucell_scores(
+          expr_counts = expr_sp,
+          gene_sets = features,
+          max_rank = dots[["maxRank"]] %||% 1500,
+          negative_weight = dots[["w_neg"]] %||% 1,
+          missing_genes = dots[["missing_genes"]] %||% "impute",
+          ties_method = ties_method
+        )
+        filtered <- names(features)[
+          !names(features) %in% colnames(ucell_scores)
+        ]
+        features_keep <- features[!names(features) %in% filtered]
+        features_nm <- features_raw[!names(features) %in% filtered]
+        scores <- as.data.frame(
+          as_matrix(ucell_scores)
+        )[, names(features_keep), drop = FALSE]
+      } else {
+        check_r("UCell", verbose = FALSE)
+        srt_sp <- srt[, cells_sp, drop = FALSE]
+        srt_tmp <- UCell::AddModuleScore_UCell(
+          srt_sp,
+          features = features,
+          name = name,
+          slot = layer,
+          assay = assay,
+          ...
+        )
+        filtered <- names(features)[
+          !paste0(names(features), name) %in% colnames(srt_tmp@meta.data)
+        ]
+        features_keep <- features[!names(features) %in% filtered]
+        features_nm <- features_raw[!names(features) %in% filtered]
+        scores <- srt_tmp[[paste0(names(features_keep), name)]]
+      }
       if (length(filtered) > 0) {
         log_message(
           "The following features were filtered when scoring: {.val {filtered}}",
@@ -429,9 +465,6 @@ CellScoring <- function(
           verbose = verbose
         )
       }
-      features_keep <- features[!names(features) %in% filtered]
-      features_nm <- features_raw[!names(features) %in% filtered]
-      scores <- srt_tmp[[paste0(names(features_keep), name)]]
     } else if (method == "AUCell") {
       expr_sp <- expr_data[, cells_sp, drop = FALSE]
       aucell_option_names <- c(
@@ -470,7 +503,7 @@ CellScoring <- function(
           expr_counts = expr_sp,
           gene_sets = features,
           # AUCell AUC only consumes ranks above aucMaxRank (5% by default).
-          # The native top-k path preserves those ranks exactly while avoiding
+          # The C++ top-k path preserves those ranks exactly while avoiding
           # a full n_features sort for every cell.
           strategy = "topk",
           tie_method = "first"

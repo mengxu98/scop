@@ -15,6 +15,9 @@
 #' \describe{
 #'   \item{`"python"`}{Uses the pySCENIC/ctxcore Python pipeline. This is the
 #'     most tested backend and produces results identical to official SCENIC.}
+#'   \item{`"cpp"`}{Uses a compiled cisTarget workflow with recovery, AUC/NES,
+#'     and leading-edge kernels while retaining the same ranking
+#'     database and motif annotation inputs.}
 #'   \item{`"r"`}{Uses the `RcisTarget` Bioconductor package. Requires the
 #'     cisTarget ranking databases and motif annotations to be available in
 #'     the same format as the Python backend (feather files and motif2tf
@@ -64,7 +67,7 @@
 RunCisTarget <- function(
   adj,
   species = c("Homo_sapiens", "Mus_musculus", "Drosophila_melanogaster"),
-  backend = c("python", "r"),
+  backend = c("python", "cpp", "r"),
   ranking_dbs = NULL,
   motif_annotations = NULL,
   expression_mtx = NULL,
@@ -127,6 +130,13 @@ RunCisTarget <- function(
       message_type = "error"
     )
   }
+  if (!"importance" %in% colnames(adj)) {
+    adj[["importance"]] <- 1
+    adj_file <- file.path(work_dir, paste0(prefix, "_adj.tsv"))
+    utils::write.table(
+      adj, adj_file, sep = "\t", row.names = FALSE, quote = FALSE
+    )
+  }
 
   # Output files
   ctx_output <- ctx_output %||% file.path(
@@ -160,6 +170,20 @@ RunCisTarget <- function(
       verbose = verbose,
       ...
     ),
+    cpp = cisTarget_cpp(
+      adj = adj,
+      ranking_dbs = ranking_dbs,
+      motif_annotations = motif_annotations,
+      expression_mtx = expression_mtx,
+      ctx_output = ctx_output,
+      gmt_output = gmt_output,
+      txt_output = txt_output,
+      min_regulon_size = min_regulon_size,
+      cores = cores,
+      force = force,
+      verbose = verbose,
+      ...
+    ),
     r = cisTarget_r(
       adj = adj,
       ranking_dbs = ranking_dbs,
@@ -168,10 +192,108 @@ RunCisTarget <- function(
       gmt_output = gmt_output,
       txt_output = txt_output,
       min_regulon_size = min_regulon_size,
+      cores = cores,
       force = force,
       verbose = verbose,
       ...
     )
+  )
+}
+
+# ── Native C++ backend ────────────────────────────────────────────────────
+
+cisTarget_cpp <- function(
+  adj,
+  ranking_dbs,
+  motif_annotations,
+  expression_mtx,
+  ctx_output,
+  gmt_output,
+  txt_output,
+  min_regulon_size,
+  cores,
+  force,
+  verbose,
+  ...
+) {
+  if (
+    !isTRUE(force) &&
+      file.exists(ctx_output) &&
+      file.exists(gmt_output) &&
+      file.exists(txt_output)
+  ) {
+    return(list(
+      regulons = read_regulons_from_gmt(gmt_output, min_regulon_size),
+      ctx_file = ctx_output,
+      gmt_file = gmt_output,
+      txt_file = txt_output
+    ))
+  }
+  if (is.data.frame(motif_annotations)) {
+    motif_file <- tempfile("scop_motif_annotations_", fileext = ".tsv")
+    utils::write.table(
+      motif_annotations,
+      motif_file,
+      sep = "\t",
+      row.names = FALSE,
+      quote = FALSE
+    )
+    motif_annotations <- motif_file
+  }
+  expr_mtx <- if (is.null(expression_mtx)) {
+    NULL
+  } else if (is.character(expression_mtx) && length(expression_mtx) == 1L) {
+    as.matrix(utils::read.csv(
+      expression_mtx,
+      row.names = 1,
+      check.names = FALSE
+    ))
+  } else {
+    as.matrix(expression_mtx)
+  }
+  args <- c(
+    list(
+      adjacency = adj,
+      expr_mtx = expr_mtx,
+      ranking_dbs = ranking_dbs,
+      motif_annotations = motif_annotations,
+      min_regulon_size = as.integer(min_regulon_size),
+      cores = as.integer(cores),
+      verbose = verbose
+    ),
+    list(...)
+  )
+  regulons <- do.call(cistarget2, args)
+  regulons <- regulons[lengths(regulons) >= min_regulon_size]
+  write_regulons_to_gmt(regulons, gmt_output)
+  write_regulons_to_txt(regulons, txt_output)
+
+  ctx <- if (length(regulons) == 0L) {
+    data.frame(
+      regulon = character(),
+      target = character(),
+      stringsAsFactors = FALSE
+    )
+  } else {
+    do.call(rbind, lapply(names(regulons), function(regulon) {
+      data.frame(
+        regulon = regulon,
+        target = regulons[[regulon]],
+        stringsAsFactors = FALSE
+      )
+    }))
+  }
+  utils::write.csv(ctx, ctx_output, row.names = FALSE)
+  log_message(
+    "{.fn RunCisTarget} (cpp) produced {.val {length(regulons)}} regulons",
+    message_type = "success",
+    verbose = verbose
+  )
+  list(
+    regulons = regulons,
+    ctx_file = ctx_output,
+    gmt_file = gmt_output,
+    txt_file = txt_output
   )
 }
 
@@ -304,6 +426,7 @@ cisTarget_r <- function(
   gmt_output,
   txt_output,
   min_regulon_size,
+  cores,
   force,
   verbose,
   ...
@@ -349,7 +472,9 @@ cisTarget_r <- function(
   motif_enrichment <- cisTarget(
     tf_targets,
     motif_rankings,
-    motifAnnot = motif_annotations_dt
+    motifAnnot = motif_annotations_dt,
+    nCores = as.integer(cores),
+    ...
   )
 
   # Build regulons from RcisTarget output
@@ -364,7 +489,8 @@ cisTarget_r <- function(
       target_genes <- unique(unlist(strsplit(top_row[["enrichedGenes"]], ";")))
       target_genes <- target_genes[nzchar(target_genes)]
       if (length(target_genes) >= min_regulon_size) {
-        regulons[[tf_name]] <- target_genes
+        regulons[[scenic_regulon_name(tf_name, suffix = "(+)")]] <-
+          target_genes
       }
     }
   } else {
@@ -378,7 +504,8 @@ cisTarget_r <- function(
       target_genes <- unique(unlist(strsplit(top_row[["enrichedGenes"]], ";")))
       target_genes <- target_genes[nzchar(target_genes)]
       if (length(target_genes) >= min_regulon_size) {
-        regulons[[tf_name]] <- target_genes
+        regulons[[scenic_regulon_name(tf_name, suffix = "(+)")]] <-
+          target_genes
       }
     }
   }

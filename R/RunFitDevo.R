@@ -14,6 +14,9 @@
 #' @param relative.name Metadata column for the relative rank.
 #' @param tool_name Name used in `srt@tools`.
 #' @param verbose Whether to print progress messages.
+#' @param backend Computation backend. `"cpp"` avoids materializing the full
+#' feature-by-cell rank matrix for supervised scoring; `"r"` retains the
+#' reference implementation.
 #'
 #' @return A modified `Seurat` object or a result bundle for matrix input.
 #'
@@ -49,8 +52,10 @@ RunFitDevo <- function(
   score.name = "FitDevo_Score",
   relative.name = "FitDevo_Relative",
   tool_name = "FitDevo",
-  verbose = TRUE
+  verbose = TRUE,
+  backend = c("cpp", "r")
 ) {
+  backend <- match.arg(backend)
   input <- resolve_expression_input(object, assay = assay, layer = layer)
   mat <- input$matrix
   features <- resolve_method_features(mat, features, nfeatures)
@@ -66,13 +71,14 @@ RunFitDevo <- function(
     "Run FitDevo scoring with {.val {length(features)}} features and {.val {ncol(mat)}} cells",
     verbose = verbose
   )
-  bundle <- fitdevo_score(mat, target = target)
+  bundle <- fitdevo_score(mat, target = target, backend = backend)
   bundle$parameters <- list(
     assay = input$assay,
     layer = layer,
     features = features,
     nfeatures = nfeatures,
-    reference.by = reference.by
+    reference.by = reference.by,
+    backend = backend
   )
 
   if (inherits(object, "Seurat")) {

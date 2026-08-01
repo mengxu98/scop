@@ -1,6 +1,7 @@
 #include <Rcpp.h>
 #include <R_ext/Print.h>
 #define __ERROR_PRINTER_OVERRIDE__(...) Rprintf(__VA_ARGS__)
+#define ANNOYLIB_MULTITHREADED_BUILD
 #include "annoylib.h"
 #include "kissrandom.h"
 #include <algorithm>
@@ -15,11 +16,20 @@
 #endif
 
 using Annoy::AnnoyIndex;
+using Annoy::AnnoyIndexMultiThreadedBuildPolicy;
 using Annoy::AnnoyIndexSingleThreadedBuildPolicy;
+using Annoy::Angular;
 using Annoy::Euclidean;
+using Annoy::Manhattan;
 
 typedef AnnoyIndex<int, float, Euclidean, Kiss64Random,
   AnnoyIndexSingleThreadedBuildPolicy> EuclideanAnnoyIndex;
+typedef AnnoyIndex<int, float, Angular, Kiss64Random,
+  AnnoyIndexMultiThreadedBuildPolicy> AngularAnnoyIndex;
+typedef AnnoyIndex<int, float, Manhattan, Kiss64Random,
+  AnnoyIndexMultiThreadedBuildPolicy> ManhattanAnnoyIndex;
+typedef AnnoyIndex<int, float, Euclidean, Kiss64Random,
+  AnnoyIndexMultiThreadedBuildPolicy> EuclideanCrossAnnoyIndex;
 
 static int core_count(int requested, int jobs) {
   int n = requested > 0 ? requested :
@@ -324,6 +334,110 @@ Rcpp::IntegerMatrix annoy_build_search(Rcpp::NumericMatrix data,
   }
   for (std::thread& worker : pool) worker.join();
   return neighbors;
+}
+
+template <typename Index>
+static Rcpp::List annoy_cross_knn_impl(
+    const std::vector<float>& reference,
+    const std::vector<float>& query,
+    int reference_rows,
+    int query_rows,
+    int dims,
+    int k,
+    int n_trees,
+    int cores) {
+  Index index(dims);
+  for (int row = 0; row < reference_rows; ++row) {
+    index.add_item(
+      row, reference.data() + static_cast<size_t>(row) * dims);
+  }
+  index.build(n_trees, -1);
+
+  Rcpp::IntegerMatrix neighbors(query_rows, k);
+  Rcpp::NumericMatrix distances(query_rows, k);
+  int* neighbor_out = INTEGER(neighbors);
+  double* distance_out = REAL(distances);
+  const int workers = core_count(cores, query_rows);
+  std::vector<std::thread> pool;
+  pool.reserve(static_cast<size_t>(workers));
+  for (int worker = 0; worker < workers; ++worker) {
+    const int begin = static_cast<int>(
+      static_cast<int64_t>(worker) * query_rows / workers);
+    const int end = static_cast<int>(
+      static_cast<int64_t>(worker + 1) * query_rows / workers);
+    pool.emplace_back([&, begin, end]() {
+      std::vector<int> found;
+      std::vector<float> found_distances;
+      found.reserve(static_cast<size_t>(k));
+      found_distances.reserve(static_cast<size_t>(k));
+      for (int row = begin; row < end; ++row) {
+        found.clear();
+        found_distances.clear();
+        index.get_nns_by_vector(
+          query.data() + static_cast<size_t>(row) * dims,
+          k, -1, &found, &found_distances);
+        if (static_cast<int>(found.size()) != k ||
+            static_cast<int>(found_distances.size()) != k) {
+          continue;
+        }
+        for (int rank = 0; rank < k; ++rank) {
+          neighbor_out[row + rank * query_rows] = found[rank] + 1;
+          distance_out[row + rank * query_rows] =
+            static_cast<double>(found_distances[rank]);
+        }
+      }
+    });
+  }
+  for (std::thread& worker : pool) worker.join();
+  return Rcpp::List::create(
+    Rcpp::Named("idx") = neighbors,
+    Rcpp::Named("distance") = distances
+  );
+}
+
+// [[Rcpp::export]]
+Rcpp::List annoy_cross_knn(Rcpp::NumericMatrix reference,
+                           Rcpp::NumericMatrix query,
+                           int k,
+                           int n_trees,
+                           std::string metric,
+                           int cores) {
+  const int reference_rows = reference.nrow();
+  const int query_rows = query.nrow();
+  const int dims = reference.ncol();
+  if (reference_rows <= 0 || query_rows <= 0 || dims <= 0 ||
+      query.ncol() != dims || k <= 0 || k > reference_rows ||
+      n_trees <= 0) {
+    Rcpp::stop("invalid Annoy cross-kNN dimensions");
+  }
+  std::vector<float> reference_packed = matrix_as_row_float(reference);
+  std::vector<float> query_packed = matrix_as_row_float(query);
+  for (size_t i = 0; i < reference_packed.size(); ++i) {
+    if (!std::isfinite(reference_packed[i])) {
+      Rcpp::stop("Annoy cross-kNN requires finite reference values");
+    }
+  }
+  for (size_t i = 0; i < query_packed.size(); ++i) {
+    if (!std::isfinite(query_packed[i])) {
+      Rcpp::stop("Annoy cross-kNN requires finite query values");
+    }
+  }
+  if (metric == "euclidean") {
+    return annoy_cross_knn_impl<EuclideanCrossAnnoyIndex>(
+      reference_packed, query_packed, reference_rows, query_rows, dims,
+      k, n_trees, cores);
+  }
+  if (metric == "angular") {
+    return annoy_cross_knn_impl<AngularAnnoyIndex>(
+      reference_packed, query_packed, reference_rows, query_rows, dims,
+      k, n_trees, cores);
+  }
+  if (metric == "manhattan") {
+    return annoy_cross_knn_impl<ManhattanAnnoyIndex>(
+      reference_packed, query_packed, reference_rows, query_rows, dims,
+      k, n_trees, cores);
+  }
+  Rcpp::stop("Annoy cross-kNN supports euclidean, angular, and manhattan");
 }
 
 // [[Rcpp::export]]

@@ -1,7 +1,7 @@
 #' @title Run spatial variable feature detection
 #'
 #' @description
-#' Score genes by spot-level spatial autocorrelation. The native `"moran"` and
+#' Score genes by spot-level spatial autocorrelation. The package `"moran"` and
 #' `"geary"` methods use a lightweight coordinate KNN graph. `"SPARKX"` and
 #' `"nnSVG"` use optional external backends when their packages are installed.
 #'
@@ -28,6 +28,8 @@
 #' variable features for `assay`.
 #' @param store_results Whether to store the full result in `srt@tools`.
 #' @param seed Random seed used for permutation tests.
+#' @param backend Backend used by the package `"moran"` and `"geary"` methods.
+#' `"cpp"` is the default; use `"r"` for the reference implementation.
 #' @param ... Additional arguments passed to external backends.
 #'
 #' @return A `Seurat` object with spatial variable feature results stored in
@@ -78,8 +80,10 @@ RunSpatialVariableFeatures <- function(
   verbose = TRUE,
   seed = 11,
   coordinate_space = c("raw", "legacy_display"),
+  backend = c("cpp", "r"),
   ...
 ) {
+  backend_missing <- missing(backend)
   coordinate_space <- match.arg(coordinate_space)
   log_message(
     "Running spatial variable feature detection",
@@ -100,6 +104,8 @@ RunSpatialVariableFeatures <- function(
     )
   }
   method <- match.arg(method)
+  backend <- match.arg(backend)
+  native_method <- method %in% c("moran", "geary")
   if (!is.numeric(k) || length(k) != 1L || is.na(k) || k < 1) {
     log_message(
       "{.arg k} must be a positive number",
@@ -128,6 +134,15 @@ RunSpatialVariableFeatures <- function(
   nfeatures <- as.integer(nfeatures)
   min_spots <- as.integer(min_spots)
   nperm <- as.integer(nperm)
+  if (!native_method) {
+    if (!backend_missing && identical(backend, "cpp")) {
+      log_message(
+        "{.arg backend = \"cpp\"} is only available for {.val moran} and {.val geary}",
+        message_type = "error"
+      )
+    }
+    backend <- "r"
+  }
   set.seed(seed)
 
   coords <- spatial_analysis_coords(
@@ -185,25 +200,34 @@ RunSpatialVariableFeatures <- function(
   expr <- expr[keep_features, , drop = FALSE]
   expressed_spots <- expressed_spots[keep_features]
 
-  expr_mat <- as.matrix(expr)
+  expr_input <- if (native_method && identical(backend, "cpp")) {
+    if (inherits(expr, "sparseMatrix") && !inherits(expr, "dgCMatrix")) {
+      methods::as(expr, "dgCMatrix")
+    } else {
+      expr
+    }
+  } else {
+    as.matrix(expr)
+  }
   edges <- NULL
-  if (method %in% c("moran", "geary")) {
+  if (native_method) {
     edges <- spatial_variable_knn_edges(coords, k = k)
     result <- spatial_variable_run_knn(
-      expr = expr_mat,
+      expr = expr_input,
       edges = edges,
       method = method,
-      nperm = nperm
+      nperm = nperm,
+      backend = backend
     )
   } else if (identical(method, "SPARKX")) {
     result <- spatial_variable_run_sparkx(
-      expr = expr_mat,
+      expr = expr_input,
       coords = coords,
       ...
     )
   } else {
     result <- spatial_variable_run_nnsvg(
-      expr = expr_mat,
+      expr = expr_input,
       coords = coords,
       assay = assay,
       ...
@@ -211,7 +235,7 @@ RunSpatialVariableFeatures <- function(
   }
   result <- spatial_variable_finalize_result(
     result = result,
-    expr = expr_mat,
+    expr = expr_input,
     expressed_spots = expressed_spots,
     method = method
   )
@@ -242,6 +266,7 @@ RunSpatialVariableFeatures <- function(
         min_spots = min_spots,
         nperm = nperm,
         seed = seed,
+        backend = backend,
         set_variable_features = set_variable_features
       )
     )
@@ -251,7 +276,7 @@ RunSpatialVariableFeatures <- function(
       result_type = "feature_pattern",
       provenance = list(
         producer = "RunSpatialVariableFeatures",
-        backend_id = if (identical(method, "moran")) "core" else method
+        backend_id = if (native_method) backend else method
       )
     )
   }
@@ -263,13 +288,30 @@ RunSpatialVariableFeatures <- function(
   srt
 }
 
-spatial_variable_run_knn <- function(expr, edges, method, nperm = 0) {
-  scores <- spatial_variable_score_matrix(
-    expr = expr,
-    edges = edges,
-    method = method,
-    nperm = nperm
-  )
+spatial_variable_run_knn <- function(
+  expr,
+  edges,
+  method,
+  nperm = 0,
+  backend = c("cpp", "r")
+) {
+  backend <- match.arg(backend)
+  scores <- if (identical(backend, "cpp")) {
+    spatial_variable_score_cpp(
+      expr = expr,
+      edge_from = as.integer(edges$from) - 1L,
+      edge_to = as.integer(edges$to) - 1L,
+      method = match(method, c("moran", "geary")),
+      n_permutations = as.integer(nperm)
+    )
+  } else {
+    spatial_variable_score_matrix(
+      expr = expr,
+      edges = edges,
+      method = method,
+      nperm = nperm
+    )
+  }
   data.frame(
     feature = rownames(expr),
     statistic = scores$statistic,
@@ -398,7 +440,7 @@ spatial_variable_finalize_result <- function(result, expr, expressed_spots, meth
       rank = result$rank
     )
   }
-  result$mean <- rowMeans(expr[result$feature, , drop = FALSE])
+  result$mean <- Matrix::rowMeans(expr[result$feature, , drop = FALSE])
   result$variance <- fast_row_vars(expr[result$feature, , drop = FALSE])
   result$n_spots <- as.integer(expressed_spots[result$feature])
   result$method <- method

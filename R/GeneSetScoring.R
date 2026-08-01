@@ -175,7 +175,9 @@ run_aucell_scores <- function(
   strategy = c("sparse", "topk", "full"),
   algorithm = c("aucell", "ctxcore"),
   seed = 0L,
-  tie_method = c("first", "hash")
+  tie_method = c("first", "hash", "numpy"),
+  auc_threshold = 0.05,
+  normalize_by_signature_max = FALSE
 ) {
   strategy <- match.arg(strategy)
   algorithm <- match.arg(algorithm)
@@ -196,8 +198,20 @@ run_aucell_scores <- function(
   }
 
   expr_counts <- gene_set_scoring_to_dgC(expr_counts)
-  auc_max_rank <- ceiling(0.05 * nrow(expr_counts))
-  rank_seed <- if (identical(tie_method, "first")) -1L else as.integer(seed %||% 0L)
+  auc_threshold <- suppressWarnings(as.numeric(auc_threshold)[1L])
+  if (!is.finite(auc_threshold) || auc_threshold <= 0 || auc_threshold > 1) {
+    log_message(
+      "{.arg auc_threshold} must be one finite number in (0, 1]",
+      message_type = "error"
+    )
+  }
+  auc_max_rank <- ceiling(auc_threshold * nrow(expr_counts))
+  rank_seed <- switch(
+    tie_method,
+    "first" = -1L,
+    "hash" = as.integer(seed %||% 0L),
+    "numpy" = -as.integer(seed %||% 0L) - 2L
+  )
   scores <- aucell_auc_sparse(
     expr = expr_counts,
     gene_sets = gene_set_idx,
@@ -208,6 +222,101 @@ run_aucell_scores <- function(
     seed = rank_seed
   )
   dimnames(scores) <- list(colnames(expr_counts), names(gene_set_idx))
+  names(dimnames(scores)) <- c("cells", "gene sets")
+  if (isTRUE(normalize_by_signature_max)) {
+    maxima <- apply(scores, 2L, max, na.rm = TRUE)
+    valid <- is.finite(maxima) & maxima > 0
+    if (any(valid)) {
+      scores[, valid] <- sweep(
+        scores[, valid, drop = FALSE],
+        2L,
+        maxima[valid],
+        "/"
+      )
+    }
+  }
+  scores
+}
+
+run_ucell_scores <- function(
+  expr_counts,
+  gene_sets,
+  max_rank = 1500,
+  negative_weight = 1,
+  missing_genes = c("impute", "skip"),
+  ties_method = c("average", "min", "max", "dense", "first", "last")
+) {
+  missing_genes <- match.arg(missing_genes)
+  ties_method <- match.arg(ties_method)
+  max_rank <- suppressWarnings(as.integer(max_rank)[1])
+  negative_weight <- suppressWarnings(as.numeric(negative_weight)[1])
+  if (is.na(max_rank) || max_rank <= 0L) {
+    log_message("{.arg max_rank} must be a positive integer", message_type = "error")
+  }
+  if (!is.finite(negative_weight) || negative_weight < 0) {
+    log_message("{.arg negative_weight} must be a non-negative number", message_type = "error")
+  }
+  if (!is.list(gene_sets) || length(gene_sets) == 0L) {
+    log_message("{.arg gene_sets} must be a non-empty list", message_type = "error")
+  }
+  if (is.null(names(gene_sets))) {
+    names(gene_sets) <- paste0("signature_", seq_along(gene_sets))
+  } else {
+    invalid_names <- !nzchar(names(gene_sets)) | duplicated(names(gene_sets))
+    names(gene_sets)[invalid_names] <- paste0(
+      "signature_",
+      which(invalid_names)
+    )
+  }
+
+  expr_counts <- gene_set_scoring_to_dgC(expr_counts)
+  max_rank <- min(max_rank, nrow(expr_counts))
+  signature_lengths <- lengths(gene_sets)
+  if (any(signature_lengths > max_rank)) {
+    log_message(
+      "One or more signatures contain more genes than {.arg max_rank}",
+      message_type = "error"
+    )
+  }
+
+  feature_index <- stats::setNames(seq_len(nrow(expr_counts)), rownames(expr_counts))
+  positive_sets <- vector("list", length(gene_sets))
+  negative_sets <- vector("list", length(gene_sets))
+  positive_missing <- integer(length(gene_sets))
+  negative_missing <- integer(length(gene_sets))
+  for (set_index in seq_along(gene_sets)) {
+    signature <- as.character(gene_sets[[set_index]])
+    negative <- grep("-$", signature, perl = TRUE, value = TRUE)
+    positive <- setdiff(signature, negative)
+    positive <- gsub("\\+$", "", positive, perl = TRUE)
+    negative <- gsub("-$", "", negative, perl = TRUE)
+
+    positive_index <- unname(feature_index[positive])
+    negative_index <- unname(feature_index[negative])
+    if (identical(missing_genes, "impute")) {
+      positive_missing[[set_index]] <- sum(is.na(positive_index))
+      negative_missing[[set_index]] <- sum(is.na(negative_index))
+    }
+    positive_sets[[set_index]] <- as.integer(positive_index[!is.na(positive_index)])
+    negative_sets[[set_index]] <- as.integer(negative_index[!is.na(negative_index)])
+  }
+  names(positive_sets) <- names(gene_sets)
+  names(negative_sets) <- names(gene_sets)
+
+  scores <- ucell_scores_sparse(
+    expr = expr_counts,
+    positive_sets = positive_sets,
+    positive_missing = positive_missing,
+    negative_sets = negative_sets,
+    negative_missing = negative_missing,
+    max_rank = max_rank,
+    negative_weight = negative_weight,
+    tie_method = match(
+      ties_method,
+      c("average", "min", "max", "dense", "first", "last")
+    )
+  )
+  dimnames(scores) <- list(colnames(expr_counts), names(gene_sets))
   names(dimnames(scores)) <- c("cells", "gene sets")
   scores
 }
