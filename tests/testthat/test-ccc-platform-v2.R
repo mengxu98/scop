@@ -1,3 +1,7 @@
+make_ccc_identity_counts <- function() {
+  methods::as(Matrix::Diagonal(2), "generalMatrix")
+}
+
 test_that("CCC registry covers all integrated Seurat producers", {
   registry <- scop::ListCCCMethods()
   expect_equal(
@@ -134,7 +138,7 @@ test_that("LIANA consensus failure does not mutate the Seurat object", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("Matrix")
 
-  counts <- Matrix::Diagonal(2)
+  counts <- make_ccc_identity_counts()
   rownames(counts) <- c("L1", "R1")
   colnames(counts) <- c("Cell1", "Cell2")
   srt <- Seurat::CreateSeuratObject(counts = counts)
@@ -277,7 +281,7 @@ test_that("LIANA export aggregation keeps resources separate", {
 test_that("unified retrieval preserves backend method labels", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("Matrix")
-  counts <- Matrix::Diagonal(2)
+  counts <- make_ccc_identity_counts()
   rownames(counts) <- c("L1", "R1")
   colnames(counts) <- c("Cell1", "Cell2")
   srt <- Seurat::CreateSeuratObject(counts = counts)
@@ -297,7 +301,7 @@ test_that("unified retrieval preserves backend method labels", {
 test_that("CellChat cached rows honor the requested threshold", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("Matrix")
-  counts <- Matrix::Diagonal(2)
+  counts <- make_ccc_identity_counts()
   rownames(counts) <- c("L1", "R1")
   colnames(counts) <- c("Cell1", "Cell2")
   srt <- Seurat::CreateSeuratObject(counts = counts)
@@ -344,7 +348,7 @@ test_that("dependent CellphoneDB evidence is disclosed before combination", {
 test_that("CCC context filters are applied before cross-method combination", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("Matrix")
-  counts <- Matrix::Diagonal(2)
+  counts <- make_ccc_identity_counts()
   rownames(counts) <- c("L1", "R1")
   colnames(counts) <- c("Cell1", "Cell2")
   srt <- Seurat::CreateSeuratObject(counts = counts)
@@ -391,7 +395,7 @@ test_that("RunCCC preflights extended method requirements", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("Matrix")
 
-  counts <- Matrix::Diagonal(2)
+  counts <- make_ccc_identity_counts()
   rownames(counts) <- c("L1", "R1")
   colnames(counts) <- c("Cell1", "Cell2")
   srt <- Seurat::CreateSeuratObject(counts = counts)
@@ -439,7 +443,7 @@ test_that("RunCCC preflights extended method requirements", {
 test_that("RunCCC skip_failed records preflight failures and continues", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("Matrix")
-  counts <- Matrix::Diagonal(2)
+  counts <- make_ccc_identity_counts()
   rownames(counts) <- c("L1", "R1")
   colnames(counts) <- c("Cell1", "Cell2")
   srt <- Seurat::CreateSeuratObject(counts = counts)
@@ -620,7 +624,7 @@ test_that("current producer bundles override stale RunCCC failures", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("Matrix")
 
-  counts <- Matrix::Diagonal(2)
+  counts <- make_ccc_identity_counts()
   rownames(counts) <- c("L1", "R1")
   colnames(counts) <- c("Cell1", "Cell2")
   srt <- Seurat::CreateSeuratObject(counts = counts)
