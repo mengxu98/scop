@@ -2,7 +2,7 @@
 % Please edit documentation in R/RunSCENICPlus.R
 \name{RunSCENICPlus}
 \alias{RunSCENICPlus}
-\title{Run SCENICPlus-style eGRN analysis}
+\title{Run an approximate SCENICPlus-compatible eGRN analysis}
 \usage{
 RunSCENICPlus(
   srt,
@@ -10,7 +10,8 @@ RunSCENICPlus(
   atac_assay = "peaks",
   rna_layer = "counts",
   atac_layer = "counts",
-  backend = c("cpp", "python"),
+  backend = c("python", "cpp"),
+  allow_approximate = FALSE,
   grn_method = c("grnboost2", "regdiffusion", "genie3", "gniplr"),
   regulators = NULL,
   rna_expr = NULL,
@@ -65,33 +66,36 @@ RunSCENICPlus(
 
 \item{atac_layer}{ATAC count layer used for peak-gene correlations.}
 
-\item{backend}{Runtime backend. \code{"cpp"} uses the native package workflow.
-\code{"python"} checks the official Python environment but does not silently
-substitute the native result.}
+\item{backend}{Runtime backend. \code{"python"} reads or extracts official
+SCENIC+ result tables and remains the default. \code{"cpp"} runs the approximate
+package workflow.}
 
-\item{grn_method}{GRN method used for TF-gene inference. The native backend
+\item{allow_approximate}{Whether to allow the approximate C++ workflow. This
+must be \code{TRUE} when \code{backend = "cpp"}.}
+
+\item{grn_method}{GRN method used for TF-gene inference. The C++ workflow
 can call \code{RunGRNBoost2()}, \code{RunGENIE3()}, or \code{RunGNIPLR()};
 RegDiffusion and GNIPLR are supported through the Python backend.}
 
 \item{regulators}{Candidate transcription factors. If \code{NULL}, motif TF names
 are used when available; otherwise all RNA genes are considered.}
 
-\item{rna_expr}{Optional expression matrix used for native TF-gene and
+\item{rna_expr}{Optional expression matrix used for C++ TF-gene and
 region-gene inference. Rows should be genes and columns should be cells; a
 cell-by-gene matrix is accepted and transposed when cell names make the
 orientation unambiguous.}
 
-\item{atac_expr}{Optional accessibility matrix used for native region-gene
+\item{atac_expr}{Optional accessibility matrix used for C++ region-gene
 inference. Rows should be regions and columns should be cells; a cell-by-region
 matrix is accepted and transposed when cell names make the orientation
 unambiguous.}
 
 \item{tf_gene_prior}{Optional precomputed TF-gene table with columns \code{TF},
-\code{target}, and \code{importance}. When supplied with \code{backend = "cpp"}, native
+\code{target}, and \code{importance}. When supplied with \code{backend = "cpp"}, C++
 GRN inference is skipped and the table is used as the TF-gene evidence layer.}
 
 \item{region_gene_prior}{Optional precomputed region-gene table with columns
-\code{region}, \code{gene}, and \code{score}. When supplied with \code{backend = "cpp"}, native
+\code{region}, \code{gene}, and \code{score}. When supplied with \code{backend = "cpp"}, C++
 peak-to-gene correlation is skipped.}
 
 \item{tf_region_prior}{Optional precomputed TF-region table with columns
@@ -107,12 +111,12 @@ triplets are read directly instead of assembled from the three edge layers.}
 and gene sets are taken from this table.}
 
 \item{auc_expr}{Optional expression matrix used only for eRegulon AUCell
-scoring in the native backend. Rows should be genes and columns should be
+scoring in the C++ workflow. Rows should be genes and columns should be
 cells; a cell-by-gene matrix is accepted and transposed when cell names make
 the orientation unambiguous.}
 
 \item{auc_rankings}{Optional precomputed 0-based ranking matrix used only for
-eRegulon AUCell scoring in the native backend. Rows should be cells and
+eRegulon AUCell scoring in the C++ workflow. Rows should be cells and
 columns should be genes; a gene-by-cell matrix is accepted and transposed when
 cell names make the orientation unambiguous. This is mainly useful for
 official SCENIC+ parity tests because SCENIC+ uses seeded random tie-breaking.}
@@ -120,15 +124,15 @@ official SCENIC+ parity tests because SCENIC+ uses seeded random tie-breaking.}
 \item{region_gene_window}{Maximum peak-to-gene distance in base pairs.}
 
 \item{region_gene_search_space}{Optional search-space table with columns
-\code{region}/\code{Name} and \code{gene}/\code{Gene}. When supplied, native region-gene scoring
+\code{region}/\code{Name} and \code{gene}/\code{Gene}. When supplied, C++ region-gene scoring
 is limited to these candidate pairs.}
 
-\item{region_gene_method}{Native region-gene scoring method. \code{"gbm"} follows
+\item{region_gene_method}{C++ region-gene scoring method. \code{"gbm"} follows
 the official SCENIC+ region-to-gene strategy more closely by combining
 boosting feature importance with Spearman correlation; \code{"correlation"} keeps
 the older correlation-only approximation.}
 
-\item{region_gene_n_rounds}{Number of boosting rounds for native
+\item{region_gene_n_rounds}{Number of boosting rounds for C++
 region-gene importance scoring.}
 
 \item{max_region_gene}{Maximum region-gene links retained per gene.}
@@ -156,35 +160,35 @@ specificity scores.}
 default \code{Inf} keeps all positive links to match arboreto GRNBoost2 output.}
 
 \item{max_grn_targets}{Maximum genes used as TF-gene GRN targets in the
-native backend. With \code{grn_target_scope = "region_gene"}, genes are ranked by
+C++ workflow. With \code{grn_target_scope = "region_gene"}, genes are ranked by
 strongest absolute peak-to-gene correlation. Set to \code{Inf} to keep the full
 selected target universe.}
 
-\item{grn_target_scope}{TF-gene target universe for the native backend.
+\item{grn_target_scope}{TF-gene target universe for the C++ workflow.
 \code{"all"} follows official SCENIC+ TF-to-gene inference by scoring every RNA
 gene; \code{"region_gene"} restricts TF-gene inference to genes with peak links.}
 
-\item{grn_n_rounds}{Number of native tree boosting rounds for TF-gene
+\item{grn_n_rounds}{Number of C++ tree boosting rounds for TF-gene
 inference. The default follows arboreto \code{SGBM_KWARGS}.}
 
-\item{grn_learning_rate}{Native tree boosting learning rate.}
+\item{grn_learning_rate}{C++ tree boosting learning rate.}
 
-\item{grn_max_depth}{Maximum depth of each native TF-gene regression tree.}
+\item{grn_max_depth}{Maximum depth of each C++ TF-gene regression tree.}
 
-\item{grn_max_features}{Fraction of candidate TFs sampled at each native
+\item{grn_max_features}{Fraction of candidate TFs sampled at each C++
 tree split.}
 
-\item{grn_subsample}{Fraction of cells sampled for each native boosting
+\item{grn_subsample}{Fraction of cells sampled for each C++ boosting
 round.}
 
 \item{grn_early_stop_window_length}{Out-of-bag improvement window used for
-native GRNBoost2 early stopping. The RunSCENICPlus default is \code{0}, which
+C++ GRNBoost2 early stopping. The RunSCENICPlus default is \code{0}, which
 disables early stopping to match official SCENIC+ \code{SGBM_KWARGS}.}
 
-\item{seed}{Random seed used by native stochastic boosting backends. The
+\item{seed}{Random seed used by the C++ stochastic boosting code. The
 default matches official SCENIC+ command-line wrappers.}
 
-\item{cores}{Number of workers used by native TF-gene GRN inference.}
+\item{cores}{Number of workers used by C++ TF-gene GRN inference.}
 
 \item{assay_name}{Assay used to store eRegulon AUC scores.}
 
@@ -209,7 +213,7 @@ Default is \code{TRUE}.}
 A Seurat object with SCENICPlus-style results.
 }
 \description{
-Build a SCENICPlus-style eRegulon result from paired RNA and chromatin assays.
-The native backend is a \code{scop} implementation and is not an exact re-run of
-the official SCENIC+ Python workflow.
+Build an approximate eRegulon result from paired RNA and chromatin assays.
+The C++ workflow is not an exact re-run of the official SCENIC+ Python
+workflow and requires explicit opt-in.
 }

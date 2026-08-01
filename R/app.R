@@ -942,7 +942,7 @@ CreateSeuratObject2 <- function(
 #' panc8_sub <- RunIntegration(
 #'   panc8_sub,
 #'   batch = "tech",
-#'   integration_method = "Harmony"
+#'   integration_methods = "Harmony"
 #' )
 #' panc8_sub <- RunStandardWorkflow(panc8_sub)
 #'

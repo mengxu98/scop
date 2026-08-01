@@ -70,6 +70,7 @@
 #'   linear_reduction = "pca",
 #'   nonlinear_reduction = "umap",
 #'   backend = "cpp",
+#'   show_plot = FALSE,
 #'   return_seurat = TRUE
 #' )
 #' VelocityPlot(

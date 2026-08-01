@@ -14,7 +14,8 @@ RunFitDevo(
   score.name = "FitDevo_Score",
   relative.name = "FitDevo_Relative",
   tool_name = "FitDevo",
-  verbose = TRUE
+  verbose = TRUE,
+  backend = c("cpp", "r")
 )
 }
 \arguments{
@@ -40,6 +41,10 @@ labels. Numeric values are used directly; factors use their level order.}
 \item{tool_name}{Name used in \code{srt@tools}.}
 
 \item{verbose}{Whether to print progress messages.}
+
+\item{backend}{Computation backend. \code{"cpp"} avoids materializing the full
+feature-by-cell rank matrix for supervised scoring; \code{"r"} retains the
+reference implementation.}
 }
 \value{
 A modified \code{Seurat} object or a result bundle for matrix input.

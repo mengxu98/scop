@@ -10,7 +10,7 @@ RunIntegration(
   append = TRUE,
   srt_list = NULL,
   assay = NULL,
-  integration_method = c("Uncorrected", "Seurat", "CCA", "RPCA", "scVI", "PeakVI",
+  integration_methods = c("Uncorrected", "Seurat", "CCA", "RPCA", "scVI", "PeakVI",
     "PoissonVI", "WNN", "MultiMAP", "GLUE", "scVI5", "MNN", "fastMNN", "fastMNN5",
     "Harmony", "Harmony5", "Scanorama", "BBKNN", "CSS", "Coralysis", "LIGER", "Conos",
     "ComBat"),
@@ -57,6 +57,7 @@ RunIntegration(
   cluster_resolution = 0.6,
   seed = 11,
   verbose = TRUE,
+  integration_method = NULL,
   ...
 )
 }
@@ -75,11 +76,13 @@ If \code{NULL}, the default assay of the Seurat object will be used.
 When the object also contains \code{ChromatinAssay}, the default assay and
 additional \code{ChromatinAssay} will be preprocessed sequentially.}
 
-\item{integration_method}{A character vector specifying the integration method to use.
+\item{integration_methods}{A character vector specifying the integration method(s) to use.
 Supported methods are: \code{"Uncorrected"}, \code{"Seurat"}, \code{"CCA"}, \code{"RPCA"}, \code{"scVI"},
 \code{"PeakVI"}, \code{"PoissonVI"}, \code{"WNN"}, \code{"MultiMAP"}, \code{"GLUE"}, \code{"scVI5"}, \code{"MNN"},
 \code{"fastMNN"}, \code{"fastMNN5"}, \code{"Harmony"}, \code{"Harmony5"},
 \code{"Scanorama"}, \code{"BBKNN"}, \code{"CSS"}, \code{"Coralysis"}, \code{"LIGER"}, \code{"Conos"}, \code{"ComBat"}.
+When multiple methods are supplied, they are run sequentially and their
+outputs are appended to one object; this requires \code{append = TRUE}.
 Default is \code{"Uncorrected"}. For \code{ChromatinAssay}, prefer \code{"Uncorrected"} or
 \code{"Harmony5"}; the latter is automatically switched to \code{"Harmony"}.}
 
@@ -127,7 +130,7 @@ Default is \code{NULL}, which uses \code{\link[=DefaultReduction]{DefaultReducti
 which resolves the integrated cluster column automatically when possible.}
 
 \item{metrics_tool_name}{Name of the tool entry used to store integration
-metrics. Default is \code{NULL}, which uses \code{paste0(integration_method, "_metrics")}.}
+metrics. Default is \code{NULL}, which uses the active method followed by \code{"_metrics"}.}
 
 \item{metrics_k_graph}{Number of neighbors used for graph-connectivity
 computation. Default is \code{15}.}
@@ -171,7 +174,7 @@ Options are \code{"linear"}, \code{"poisson"}, or \code{"negativebinomial"}.
 Default is \code{"linear"}.}
 
 \item{scale_within_batch}{Whether to scale data within each batch.
-Only valid when the \code{integration_method} is one of \code{"Uncorrected"},
+Only valid when the active method in \code{integration_methods} is one of \code{"Uncorrected"},
 \code{"Seurat"}, \code{"MNN"}, \code{"Harmony"}, \code{"BBKNN"}, \code{"CSS"}, \code{"ComBat"}.}
 
 \item{linear_reduction}{The linear dimensionality reduction method to use.
@@ -224,6 +227,9 @@ Default is \code{11}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
+\item{integration_method}{Deprecated compatibility alias for
+\code{integration_methods}. It will be removed in scop 1.0.0.}
+
 \item{...}{Additional arguments to be passed to the integration method functions.}
 }
 \value{
@@ -245,7 +251,7 @@ data(panc8_sub)
 panc8_sub <- RunIntegration(
   panc8_sub,
   batch = "tech",
-  integration_method = "Harmony",
+  integration_methods = "Harmony",
   nHVF = 500,
   linear_reduction_dims = 20,
   linear_reduction_dims_use = 1:10,
@@ -265,12 +271,12 @@ LISIPlot(panc8_sub)
 panc8_sub <- RunIntegration(
   panc8_sub,
   batch = "tech",
-  integration_method = "LIGER"
+  integration_methods = "LIGER"
 )
 panc8_sub <- RunIntegration(
   panc8_sub,
   batch = "tech",
-  integration_method = "Harmony",
+  integration_methods = "Harmony",
   compute_lisi = TRUE,
   lisi_label_colnames = "tech"
 )
@@ -285,7 +291,7 @@ pbmcmultiome_sub <- RunIntegration(
   pbmcmultiome_sub,
   batch = "batch",
   assay = "peaks",
-  integration_method = "Harmony5",
+  integration_methods = "Harmony5",
   normalization_method = "TFIDF"
 )
 
@@ -299,7 +305,7 @@ for (method in integration_methods) {
   panc8_sub <- RunIntegration(
     panc8_sub,
     batch = "tech",
-    integration_method = method,
+    integration_methods = method,
     linear_reduction_dims_use = 1:50,
     nonlinear_reduction = "umap"
   )
@@ -314,24 +320,22 @@ for (method in integration_methods) {
   )
 }
 
-\dontrun{
 # Python-backed methods prepare a scVI/scvi-tools environment and run model
 # training, so keep them separate from ordinary example checks.
 panc8_sub <- RunIntegration(
   panc8_sub,
   batch = "tech",
-  integration_method = "scVI",
+  integration_methods = "scVI",
   train_params = list(max_epochs = 2L),
   nonlinear_reduction = "umap"
 )
 panc8_sub <- RunIntegration(
   panc8_sub,
   batch = "tech",
-  integration_method = "scVI5",
+  integration_methods = "scVI5",
   IntegrateLayers_params = list(max_epochs = 2L),
   nonlinear_reduction = "umap"
 )
-}
 
 nonlinear_reductions <- c(
   "umap", "tsne", "dm", "phate",
@@ -340,7 +344,7 @@ nonlinear_reductions <- c(
 panc8_sub <- RunIntegration(
   panc8_sub,
   batch = "tech",
-  integration_method = "Seurat",
+  integration_methods = "Seurat",
   linear_reduction_dims_use = 1:50,
   nonlinear_reduction = nonlinear_reductions
 )

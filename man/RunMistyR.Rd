@@ -89,7 +89,7 @@ when \code{store_results = TRUE}.
 }
 \description{
 Build a small \code{mistyR} view composition from a spatial \code{Seurat} object,
-train MISTy models, collect results, and store a SCOP-style result bundle in
+train MISTy models, collect results, and store a standardized result bundle in
 \code{srt@tools}. The intraview is always created from the selected assay layer;
 optional juxtaview and paraview components describe local and broader spatial
 context. \code{mistyR} is an optional Bioconductor dependency installable with

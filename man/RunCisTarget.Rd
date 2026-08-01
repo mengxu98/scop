@@ -7,7 +7,7 @@
 RunCisTarget(
   adj,
   species = c("Homo_sapiens", "Mus_musculus", "Drosophila_melanogaster"),
-  backend = c("python", "r"),
+  backend = c("python", "cpp", "r"),
   ranking_dbs = NULL,
   motif_annotations = NULL,
   expression_mtx = NULL,
@@ -40,6 +40,9 @@ values are \code{"Homo_sapiens"}, \code{"Mus_musculus"}, and
 \describe{
 \item{\code{"python"}}{Uses the pySCENIC/ctxcore Python pipeline. This is the
 most tested backend and produces results identical to official SCENIC.}
+\item{\code{"cpp"}}{Uses a compiled cisTarget workflow with recovery, AUC/NES,
+and leading-edge kernels while retaining the same ranking
+database and motif annotation inputs.}
 \item{\code{"r"}}{Uses the \code{RcisTarget} Bioconductor package. Requires the
 cisTarget ranking databases and motif annotations to be available in
 the same format as the Python backend (feather files and motif2tf

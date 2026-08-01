@@ -107,6 +107,98 @@
 #' )
 #'
 #' LISIPlot(panc8_sub)
+#'
+#' panc8_sub <- RunIntegration(
+#'   panc8_sub,
+#'   batch = "tech",
+#'   integration_methods = "LIGER"
+#' )
+#' panc8_sub <- RunIntegration(
+#'   panc8_sub,
+#'   batch = "tech",
+#'   integration_methods = "Harmony",
+#'   compute_lisi = TRUE,
+#'   lisi_label_colnames = "tech"
+#' )
+#' LISIPlot(
+#'   panc8_sub,
+#'   features = c("HarmonypcaUMAP2D_tech_LISI", "HarmonyUMAP2D_tech_LISI")
+#' )
+#'
+#' data("pbmcmultiome_sub", package = "scop")
+#' pbmcmultiome_sub$batch <- rep(c("batch1", "batch2"), length.out = ncol(pbmcmultiome_sub))
+#' pbmcmultiome_sub <- RunIntegration(
+#'   pbmcmultiome_sub,
+#'   batch = "batch",
+#'   assay = "peaks",
+#'   integration_methods = "Harmony5",
+#'   normalization_method = "TFIDF"
+#' )
+#'
+#' integration_methods <- c(
+#'   "Uncorrected", "Seurat", "CCA", "RPCA",
+#'   "MNN", "fastMNN", "fastMNN5", "Harmony", "Harmony5",
+#'   "Scanorama", "BBKNN", "CSS", "Coralysis", "LIGER", "Conos", "ComBat"
+#' )
+#' p_list <- list()
+#' for (method in integration_methods) {
+#'   panc8_sub <- RunIntegration(
+#'     panc8_sub,
+#'     batch = "tech",
+#'     integration_methods = method,
+#'     linear_reduction_dims_use = 1:50,
+#'     nonlinear_reduction = "umap"
+#'   )
+#'   p_list[[method]] <- CellDimPlot(
+#'     panc8_sub,
+#'     group.by = c("tech", "celltype"),
+#'     reduction = paste0(method, "UMAP2D"),
+#'     xlab = "", ylab = "",
+#'     title = method,
+#'     legend.position = "none",
+#'     theme_use = "theme_blank"
+#'   )
+#' }
+#'
+#' # Python-backed methods prepare a scVI/scvi-tools environment and run model
+#' # training, so keep them separate from ordinary example checks.
+#' panc8_sub <- RunIntegration(
+#'   panc8_sub,
+#'   batch = "tech",
+#'   integration_methods = "scVI",
+#'   train_params = list(max_epochs = 2L),
+#'   nonlinear_reduction = "umap"
+#' )
+#' panc8_sub <- RunIntegration(
+#'   panc8_sub,
+#'   batch = "tech",
+#'   integration_methods = "scVI5",
+#'   IntegrateLayers_params = list(max_epochs = 2L),
+#'   nonlinear_reduction = "umap"
+#' )
+#'
+#' nonlinear_reductions <- c(
+#'   "umap", "tsne", "dm", "phate",
+#'   "pacmap", "trimap", "largevis", "fr"
+#' )
+#' panc8_sub <- RunIntegration(
+#'   panc8_sub,
+#'   batch = "tech",
+#'   integration_methods = "Seurat",
+#'   linear_reduction_dims_use = 1:50,
+#'   nonlinear_reduction = nonlinear_reductions
+#' )
+#' for (nr in nonlinear_reductions) {
+#'   print(
+#'     CellDimPlot(
+#'       panc8_sub,
+#'       group.by = c("tech", "celltype"),
+#'       reduction = paste0("Seurat", nr, "2D"),
+#'       xlab = "", ylab = "", title = nr,
+#'       legend.position = "none", theme_use = "theme_blank"
+#'     )
+#'   )
+#' }
 RunIntegration <- function(
   srt_merge = NULL,
   batch,

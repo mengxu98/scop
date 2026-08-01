@@ -22,7 +22,7 @@
 #' @param ref_assay Assay name in `reference` used for the reference profiles.
 #' @param ref_layer Layer name in `reference` used for reference counts.
 #' @param backend Deconvolution engine backend. `"r"` uses the original method
-#' package implementation. `"cpp"` is reserved for native SCOP implementations
+#' package implementation. `"cpp"` selects package C++ implementations
 #' when available.
 #' @param ... Additional parameters forwarded to the internal deconvolution
 #' backend.
@@ -782,8 +782,8 @@ RunBayesPrism <- function(
 #'
 #' @description
 #' Estimate immune cell proportions from a bulk expression matrix using the
-#' optional GitHub `Moonerss/CIBERSORT` package or the native `scop` C++
-#' backend. The native backend is the default and has no external R-package
+#' optional GitHub `Moonerss/CIBERSORT` package or the package C++
+#' backend. The C++ backend is the default and has no external R-package
 #' dependency.
 #' `sig_matrix = "LM22"` downloads the LM22 signature matrix from
 #' `mengxu98/datasets` and caches it locally.
@@ -799,8 +799,8 @@ RunBayesPrism <- function(
 #' @param perm Number of CIBERSORT permutations.
 #' @param QN Whether CIBERSORT should use quantile normalization.
 #' @param absolute Passed to CIBERSORT when supported by the installed package.
-#' The native C++ backend currently returns relative fractions.
-#' @param backend CIBERSORT backend. `"cpp"` uses the native `scop` LIBSVM
+#' The C++ backend currently returns relative fractions.
+#' @param backend CIBERSORT backend. `"cpp"` uses the package LIBSVM
 #' implementation. `"r"` is an optional reference backend from
 #' `Moonerss/CIBERSORT`.
 #' @param cores Number of CPU cores used by the C++ backend. `NULL` uses up to

@@ -48,6 +48,8 @@ RunCellRank(
   n_cells_terminal = 10,
   backward = FALSE,
   backend = c("python", "cpp"),
+  allow_approximate = FALSE,
+  max_dense_gib = 8,
   show_plot = TRUE,
   save_plot = FALSE,
   plot_format = c("pdf", "png", "svg"),
@@ -186,7 +188,14 @@ Default is \code{10}.}
 \item{backward}{Whether to compute backward transitions. Default is \code{FALSE}.}
 
 \item{backend}{Backend for computation: \code{"python"} (default) or \code{"cpp"}.
-When \code{"cpp"}, uses the native C++ implementation.}
+The C++ path is an explicitly opted-in approximation and does not reproduce
+the complete CellRank estimator.}
+
+\item{allow_approximate}{Whether to allow the approximate C++ path. This must
+be \code{TRUE} when \code{backend = "cpp"}.}
+
+\item{max_dense_gib}{Maximum estimated GiB allowed for the dense
+cell-by-cell working matrices used by the C++ path.}
 
 \item{show_plot}{Whether to show the plot.
 Default is \code{FALSE}.}

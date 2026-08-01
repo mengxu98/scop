@@ -2,7 +2,7 @@
 #'
 #' @description
 #' Run selected `SpatialQM` quality-control metrics on a spatial `Seurat`
-#' object and store a compact, scop-style result bundle in `srt@tools`.
+#' object and store a compact standardized result bundle in `srt@tools`.
 #' `SpatialQM` currently expects a `RNA` assay for object-first metrics, so this
 #' wrapper maps the selected assay layer to a temporary `RNA` assay without
 #' modifying the returned object. `SpatialQM` is an optional GitHub dependency

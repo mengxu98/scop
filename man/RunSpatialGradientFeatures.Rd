@@ -59,7 +59,7 @@ RunSpatialGradientFeatures(
 \item{reference}{Spatial reference type: \code{"trajectory"} for STS or
 \code{"annotation"} for SAS.}
 
-\item{backend}{Computation backend. \code{"cpp"} uses SCOP's native fast spatial
+\item{backend}{Computation backend. \code{"cpp"} uses a compiled fast spatial
 gradient implementation and avoids SPATA2 object construction. \code{"r"}
 uses SPATA2 directly for full upstream SAS/STS behavior.}
 
@@ -87,7 +87,7 @@ to \code{SPATA2::asSPATA2()} when \code{spata_object} is \code{NULL}.}
 Required when multiple images are present; a single image is selected
 automatically when \code{NULL}.}
 
-\item{coord.cols}{Metadata coordinate columns used by the native \code{"cpp"}
+\item{coord.cols}{Metadata coordinate columns used by the \code{"cpp"}
 backend when no image coordinates are available.}
 
 \item{trajectory_id, start, end, traj_df, width}{Trajectory setup passed to
@@ -110,11 +110,11 @@ interpreted as \code{">{threshold}"}.}
 
 \item{resolution, unit, sign_var, sign_threshold, model_add, model_subset, model_remove, n_random, seed, control}{SPATA2 screening parameters.}
 
-\item{n_bins}{Number of distance bins used for the native \code{"cpp"} backend
+\item{n_bins}{Number of distance bins used for the \code{"cpp"} backend
 screening curve.}
 
 \item{min_spots}{Minimum number of non-zero spots required for a variable in
-the native \code{"cpp"} backend.}
+the \code{"cpp"} backend.}
 
 \item{nfeatures}{Number of top gradient variables retained in
 \code{top_variables} and optionally set as Seurat variable features.}
@@ -127,9 +127,9 @@ variable features.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{coordinate_space}{Coordinate system used by the native distance
+\item{coordinate_space}{Coordinate system used by the C++ distance
 calculations. The default is raw acquisition coordinates, so \code{start},
-\code{end}, trajectory positions, widths, and native distances share raw
+\code{end}, trajectory positions, widths, and C++ distances share raw
 coordinate units. Use \code{"legacy_display"} explicitly for pre-0.9.0 display
 coordinates. SPATA2-backed runs retain backend-native units.}
 
@@ -141,7 +141,7 @@ A \code{Seurat} object with spatial gradient screening results stored in
 }
 \description{
 Run spatial trajectory or annotation gradient screening for Seurat objects.
-The native \code{"cpp"} backend avoids SPATA2 object construction for fast
+The \code{"cpp"} backend avoids SPATA2 object construction for fast
 distance-based screening, while the \code{"r"} backend keeps full upstream
 SPATA2 SAS/STS behavior. Results are normalized into plain data.frames and
 stored in \code{srt@tools[["SpatialGradientFeatures"]]}; the SPATA2 object itself

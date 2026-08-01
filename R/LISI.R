@@ -35,16 +35,24 @@
 #'
 #' @examples
 #' data(panc8_sub)
-#' panc8_sub <- RunIntegration(
-#'   panc8_sub,
-#'   batch = "tech",
-#'   integration_method = "Harmony5"
+#' set.seed(1)
+#' demo_embedding <- matrix(
+#'   stats::rnorm(ncol(panc8_sub) * 5),
+#'   nrow = ncol(panc8_sub),
+#'   dimnames = list(colnames(panc8_sub), paste0("DEMO_", 1:5))
+#' )
+#' panc8_sub[["demo"]] <- SeuratObject::CreateDimReducObject(
+#'   embeddings = demo_embedding,
+#'   key = "DEMO_",
+#'   assay = SeuratObject::DefaultAssay(panc8_sub)
 #' )
 #' names(panc8_sub@reductions)
 #'
 #' panc8_sub <- RunLISI(
 #'   panc8_sub,
-#'   reductions = c("pcaUMAP2D", "Harmony5UMAP2D")
+#'   reductions = "demo",
+#'   label_colnames = "tech",
+#'   perplexity = 10
 #' )
 #' LISIPlot(
 #'   panc8_sub,

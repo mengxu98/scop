@@ -117,12 +117,12 @@ count used by backend filtering.}
 \item{result.name}{Name used within the stored SpatialCellChat result bundle.}
 
 \item{store.object}{`"minimal"` stores normalized tables, coordinates, and
-diagnostics. `"full"` additionally stores each native backend object.}
+diagnostics. `"full"` additionally stores each upstream backend object.}
 
 \item{overwrite}{Whether an existing result with the same `result.name` may
 be replaced.}
 
-\item{backend}{Backend for scop's unified CCC post-processing only; it does
+\item{backend}{Backend for unified CCC post-processing only; it does
 not change the SpatialCellChat inference engine.}
 
 \item{verbose}{Whether to print progress messages.}
@@ -162,9 +162,9 @@ plotting stored results.
 
 Objects with multiple images require an explicit `image` selection. When
 `sample.by` contains multiple samples, supply a named character vector that
-maps every sample to one image. Native backend objects are omitted by default
+maps every sample to one image. Upstream backend objects are omitted by default
 because they can be large; use `store.object = "full"` only if subsequent
-SpatialCellChat-native analysis is needed.
+additional analysis with the upstream SpatialCellChat object is needed.
 }
 \examples{
 # SpatialCellChat is a runtime-optional backend and a full run can be slow.

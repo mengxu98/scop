@@ -136,7 +136,7 @@ Default is \code{FALSE}.}
 \item{dirpath}{The directory to save the plots. Default is \code{"./cellrank"}.}
 
 \item{backend}{Backend used to compute PAGA. \code{"python"} keeps the original
-scanpy workflow and remains the default. \code{"cpp"} uses the native C++
+scanpy workflow and remains the default. \code{"cpp"} uses the package C++
 implementation for the standard connectivity graph and tree, plus an
 approximate R igraph layout stored in \code{paga$pos}.}
 

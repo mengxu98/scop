@@ -44,7 +44,7 @@ Default is \code{"theme_scop"}.}
 A \code{ggplot}, \code{patchwork}, or list of \code{ggplot} objects.
 }
 \description{
-Plot SpatialEcoTyper labels on spatial coordinates using scop's spatial
+Plot SpatialEcoTyper labels on spatial coordinates using the spatial
 plotting style.
 }
 \examples{

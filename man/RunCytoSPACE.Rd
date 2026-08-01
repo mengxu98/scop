@@ -24,7 +24,9 @@ RunCytoSPACE(
   verbose = TRUE,
   image = NULL,
   coord.cols = c("col", "row"),
-  coordinate_space = c("raw", "legacy_display")
+  coordinate_space = c("raw", "legacy_display"),
+  backend = c("cpp", "r"),
+  max_dense_gib = 8
 )
 }
 \arguments{
@@ -83,6 +85,14 @@ Default is \code{TRUE}.}
 \item{coordinate_space}{Coordinate space used for assignment locations. The
 default is raw acquisition coordinates. Use \code{"legacy_display"} explicitly
 to reproduce the display-scaled locations used before scop 0.9.0.}
+
+\item{backend}{Numerical backend used to estimate cell-type fractions when
+\code{cell_fractions} is not supplied. \code{"cpp"} fuses normalization, reference
+centroid construction, correlation, and weighted aggregation; \code{"r"} keeps
+the reference implementation. Spot assignment uses C++ in both cases.}
+
+\item{max_dense_gib}{Maximum estimated GiB allowed for dense expression
+working matrices.}
 }
 \value{
 A \code{Seurat} object with CytoSPACE metadata columns and detailed

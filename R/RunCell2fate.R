@@ -3,7 +3,7 @@
 #' @description
 #' Run the official Python Cell2fate model on raw spliced and unspliced counts
 #' from a `Seurat` object. Cell2fate uses an isolated Python 3.9 environment
-#' because its upstream dependency stack is not compatible with SCOP's default
+#' because its upstream dependency stack is not compatible with the default
 #' scvi-tools environment. Inputs, model files, posterior output, logs, and a
 #' reproducible manifest are persisted under `result_dir`.
 #'

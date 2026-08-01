@@ -121,7 +121,7 @@ Default is \code{TRUE}.}
 A \code{ggplot}, \code{patchwork}, or list of \code{ggplot} objects.
 }
 \description{
-Visualize results produced by \code{\link[=RunSpatialNeighborhood]{RunSpatialNeighborhood()}} using scop spatial,
+Visualize results produced by \code{\link[=RunSpatialNeighborhood]{RunSpatialNeighborhood()}} using spatial,
 statistical, and network plotting conventions.
 }
 \examples{

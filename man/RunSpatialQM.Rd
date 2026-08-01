@@ -61,7 +61,7 @@ A \code{Seurat} object. When \code{store_results = TRUE}, results are stored in
 }
 \description{
 Run selected \code{SpatialQM} quality-control metrics on a spatial \code{Seurat}
-object and store a compact, scop-style result bundle in \code{srt@tools}.
+object and store a compact standardized result bundle in \code{srt@tools}.
 \code{SpatialQM} currently expects a \code{RNA} assay for object-first metrics, so this
 wrapper maps the selected assay layer to a temporary \code{RNA} assay without
 modifying the returned object. \code{SpatialQM} is an optional GitHub dependency

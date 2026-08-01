@@ -45,7 +45,7 @@
 #' head(spatial@tools[["MERINGUE"]]$autocorrelation)
 #' SpatialSpotPlot(
 #'   spatial,
-#'   features = spatial@tools[["MERINGUE"]]$summary$top_features[1:2],
+#'   features = spatial@tools[["MERINGUE"]]$autocorrelation$feature[1:2],
 #'   overlay_image = FALSE,
 #'   coord.cols = c("x", "y")
 #' )

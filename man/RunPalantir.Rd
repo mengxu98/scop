@@ -41,7 +41,8 @@ RunPalantir(
   plot_dpi = 300,
   plot_prefix = "palantir",
   dirpath = "./",
-  backend = c("cpp", "python"),
+  backend = c("python", "cpp"),
+  allow_approximate = FALSE,
   return_seurat = !is.null(srt),
   verbose = TRUE
 )
@@ -137,8 +138,11 @@ Default is \code{FALSE}.}
 \item{dirpath}{The directory to save the plots. Default is \code{"./"}.}
 
 \item{backend}{Backend used to compute Palantir. \code{"python"} keeps the
-original Palantir workflow and remains the default. \code{"cpp"} uses the
-C++ implementation and stores results in \code{srt@tools[["Palantir"]]}. Default is \code{"cpp"}.}
+reference Palantir workflow and remains the default. \code{"cpp"} uses an
+approximate C++ workflow and stores results in \code{srt@tools[["Palantir"]]}.}
+
+\item{allow_approximate}{Whether to allow the approximate C++ workflow. This
+must be \code{TRUE} when \code{backend = "cpp"}.}
 
 \item{return_seurat}{Whether to return a Seurat object instead of an anndata object.
 Default is \code{TRUE}.}
@@ -158,7 +162,9 @@ pancreas_sub <- RunPalantir(
   linear_reduction = "PCA",
   nonlinear_reduction = "UMAP",
   early_group = "Ductal",
-  terminal_groups = c("Alpha", "Beta", "Delta", "Epsilon")
+  terminal_groups = c("Alpha", "Beta", "Delta", "Epsilon"),
+  backend = "cpp",
+  allow_approximate = TRUE
 )
 
 FeatureDimPlot(

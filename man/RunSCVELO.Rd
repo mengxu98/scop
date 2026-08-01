@@ -57,6 +57,7 @@ RunSCVELO(
   plot_prefix = "scvelo",
   dirpath = "./scvelo",
   backend = c("python", "cpp"),
+  max_dense_gib = 8,
   return_seurat = !is.null(srt),
   verbose = TRUE
 )
@@ -198,6 +199,9 @@ Default is \code{FALSE}.}
 original scVelo workflow. \code{"cpp"} uses the package C++ implementation for a
 stochastic velocity embedding that is compatible with \link{VelocityPlot}.}
 
+\item{max_dense_gib}{Maximum estimated GiB allowed for the dense expression
+working matrices used by the C++ path.}
+
 \item{return_seurat}{Whether to return a Seurat object instead of an anndata object.
 Default is \code{TRUE}.}
 
@@ -218,7 +222,8 @@ pancreas_sub <- RunSCVELO(
   group.by = "SubCellType",
   linear_reduction = "PCA",
   nonlinear_reduction = "UMAP",
-  backend = "cpp"
+  backend = "cpp",
+  show_plot = FALSE
 )
 
 FeatureDimPlot(

@@ -109,7 +109,7 @@ A \code{Seurat} object with SpotSweeper QC metadata. When
 Run \code{SpotSweeper} spatially aware spot-level quality control on a spatial
 \code{Seurat} object. The wrapper computes standard spot QC metrics, runs local
 outlier detection for each metric, optionally runs regional artifact
-detection per sample, and writes scop-style pass/fail metadata that can be
+detection per sample, and writes standardized pass/fail metadata that can be
 visualized with \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}}.
 }
 \examples{

@@ -28,6 +28,7 @@ RunPaCMAP(object, ...)
   reduction.key = "PaCMAP_",
   verbose = TRUE,
   seed.use = 11L,
+  backend = c("cpp", "python"),
   ...
 )
 
@@ -46,6 +47,7 @@ RunPaCMAP(object, ...)
   reduction.key = "PaCMAP_",
   verbose = TRUE,
   seed.use = 11L,
+  backend = c("cpp", "python"),
   ...
 )
 }
@@ -85,7 +87,7 @@ Default is \code{2}.}
 \item{distance_method}{The distance metric to be used.
 Default is \code{"euclidean"}.}
 
-\item{lr}{The learning rate of the AdaGrad optimizer.
+\item{lr}{The learning rate of the Adam optimizer.
 Default is \code{1}.}
 
 \item{num_iters}{The number of iterations for PaCMAP optimization.
@@ -111,6 +113,9 @@ Default is \code{TRUE}.}
 
 \item{seed.use}{Random seed for reproducibility.
 Default is \code{11}.}
+
+\item{backend}{PaCMAP backend. \code{"cpp"} uses a compiled pair sampler and
+Adam optimizer; \code{"python"} retains the official pacmap package.}
 }
 \description{
 Run PaCMAP (Pairwise Controlled Manifold Approximation)

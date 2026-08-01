@@ -56,6 +56,17 @@
 #'     coord.cols = c("x", "y")
 #'   )
 #'
+#' data(pancreas_sub)
+#' features_use <- head(intersect(rownames(spatial), rownames(pancreas_sub)), 300)
+#' spatial <- RunCARD(
+#'   spatial,
+#'   reference = pancreas_sub,
+#'   reference_label = "CellType",
+#'   assay = "Spatial",
+#'   reference_assay = "RNA",
+#'   features = features_use,
+#'   verbose = FALSE
+#' )
 RunCARD <- function(
   srt,
   reference,

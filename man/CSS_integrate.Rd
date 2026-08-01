@@ -95,7 +95,7 @@ Options are \code{"linear"}, \code{"poisson"}, or \code{"negativebinomial"}.
 Default is \code{"linear"}.}
 
 \item{scale_within_batch}{Whether to scale data within each batch.
-Only valid when the \code{integration_method} is one of \code{"Uncorrected"},
+Only valid when the active method in \code{integration_methods} is one of \code{"Uncorrected"},
 \code{"Seurat"}, \code{"MNN"}, \code{"Harmony"}, \code{"BBKNN"}, \code{"CSS"}, \code{"ComBat"}.}
 
 \item{linear_reduction}{The linear dimensionality reduction method to use.

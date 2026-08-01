@@ -21,6 +21,7 @@ RunSpatialVariableFeatures(
   verbose = TRUE,
   seed = 11,
   coordinate_space = c("raw", "legacy_display"),
+  backend = c("cpp", "r"),
   ...
 )
 }
@@ -73,6 +74,9 @@ analysis. The default is raw, unscaled acquisition coordinates. Use
 used before scop 0.9.0. Distance thresholds and weights use the selected
 coordinate units; \code{k} is a unitless neighbor count.}
 
+\item{backend}{Backend used by the package \code{"moran"} and \code{"geary"} methods.
+\code{"cpp"} is the default; use \code{"r"} for the reference implementation.}
+
 \item{...}{Additional arguments passed to external backends.}
 }
 \value{
@@ -81,7 +85,7 @@ A \code{Seurat} object with spatial variable feature results stored in
 at \code{srt@tools[["SpatialVariableFeatures"]]$summary$top_features}.
 }
 \description{
-Score genes by spot-level spatial autocorrelation. The native \code{"moran"} and
+Score genes by spot-level spatial autocorrelation. The package \code{"moran"} and
 \code{"geary"} methods use a lightweight coordinate KNN graph. \code{"SPARKX"} and
 \code{"nnSVG"} use optional external backends when their packages are installed.
 }

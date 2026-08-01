@@ -46,7 +46,7 @@ A \code{ggplot} object.
 }
 \description{
 Plot SpatialEcoTyper composition across cell types, samples, or other
-metadata groups using scop's default plotting theme and palettes.
+metadata groups using the default plotting theme and palettes.
 }
 \examples{
 counts <- matrix(

@@ -15,7 +15,8 @@ RunVECTOR(
   arrow.ol = 1.5,
   score.name = "VECTOR_Score",
   tool_name = "VECTOR",
-  verbose = TRUE
+  verbose = TRUE,
+  backend = c("cpp", "r")
 )
 }
 \arguments{
@@ -42,6 +43,10 @@ weighting. Larger values keep more distant grid centers influential.}
 \item{tool_name}{Name used in \code{srt@tools}.}
 
 \item{verbose}{Whether to print progress messages.}
+
+\item{backend}{Numerical backend for grid-arrow aggregation. \code{"cpp"} avoids
+materializing the full grid-to-grid distance matrix; \code{"r"} is retained as
+the reference implementation.}
 }
 \value{
 A modified \code{Seurat} object.

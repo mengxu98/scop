@@ -787,6 +787,7 @@ pancreas_sub <- RunSCVELO(
   nonlinear_reduction = "UMAP",
   mode = "stochastic",
   backend = "cpp",
+  show_plot = FALSE,
   return_seurat = TRUE
 )
 
