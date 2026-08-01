@@ -80,7 +80,7 @@ RunDoubletCalling <- function(
     tryCatch(
       expr = {
         srt <- do.call(
-          what = paste0("db_", method1),
+          what = paste0("Run", method1),
           args = args1
         )
       },
@@ -107,7 +107,7 @@ RunDoubletCalling <- function(
 #' @param ... Additional arguments to be passed to [scDblFinder::scDblFinder()].
 #'
 #' @export
-db_scDblFinder <- function(
+RunscDblFinder <- function(
   srt,
   assay = "RNA",
   db_rate = ncol(srt) / 1000 * 0.01,
@@ -149,7 +149,7 @@ db_scDblFinder <- function(
 #' @examples
 #' data(pancreas_sub)
 #' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#' pancreas_sub <- db_scds(pancreas_sub, method = "hybrid")
+#' pancreas_sub <- Runscds(pancreas_sub, method = "hybrid")
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   reduction = "umap",
@@ -161,7 +161,7 @@ db_scDblFinder <- function(
 #'   reduction = "umap",
 #'   features = "db.scds_hybrid_score"
 #' )
-db_scds <- function(
+Runscds <- function(
   srt,
   assay = "RNA",
   db_rate = ncol(srt) / 1000 * 0.01,
@@ -187,11 +187,21 @@ db_scds <- function(
   check_r("scds", verbose = FALSE)
   method <- match.arg(method)
   sce <- Seurat::as.SingleCellExperiment(srt, assay = assay)
+  scds_args <- list(...)
+  new_xgboost_api <- "y" %in% names(formals(getExportedValue("xgboost", "xgboost")))
   sce <- switch(
     method,
-    cxds = scds::cxds(sce, ...),
-    bcds = scds::bcds(sce, ...),
-    hybrid = scds::cxds_bcds_hybrid(sce, ...)
+    cxds = do.call(scds::cxds, c(list(sce = sce), scds_args)),
+    bcds = if (new_xgboost_api) {
+      do.call(scds_bcds_xgboost_compat, c(list(sce = sce), scds_args))
+    } else {
+      do.call(scds::bcds, c(list(sce = sce), scds_args))
+    },
+    hybrid = if (new_xgboost_api) {
+      do.call(scds_hybrid_xgboost_compat, c(list(sce = sce), scds_args))
+    } else {
+      do.call(scds::cxds_bcds_hybrid, c(list(sce = sce), scds_args))
+    }
   )
   score_col <- paste0(method, "_score")
   srt[[paste0("db.scds_", method, "_score")]] <- sce[[score_col]]
@@ -205,6 +215,177 @@ db_scds <- function(
   return(srt)
 }
 
+scds_bcds_xgboost_compat <- function(
+  sce,
+  ntop = 500,
+  srat = 1,
+  verb = FALSE,
+  retRes = FALSE,
+  nmax = "tune",
+  varImp = FALSE,
+  estNdbl = FALSE
+) {
+  counts <- SummarizedExperiment::assay(sce, "counts")
+  if (!inherits(counts, "sparseMatrix")) {
+    counts <- Matrix::Matrix(counts, sparse = TRUE)
+  }
+  informative <- Matrix::rowSums(counts > 0) > 0.01 * ncol(sce)
+  lc <- Matrix::t(log1p(counts[informative, , drop = FALSE]))
+  lc <- lc / Matrix::rowMeans(lc)
+  variances <- apply(lc, 2, stats::var)
+  hvg <- head(order(variances, decreasing = TRUE, na.last = NA), ntop)
+  if (length(hvg) == 0L) {
+    log_message("No variable genes are available for scds bcds", message_type = "error")
+  }
+  lc <- lc[, hvg, drop = FALSE]
+  lc <- lc / Matrix::rowMeans(lc)
+  p1 <- sample(seq_len(ncol(sce)), srat * ncol(sce), replace = TRUE)
+  p2 <- sample(seq_len(ncol(sce)), srat * ncol(sce), replace = TRUE)
+  simulated <- Matrix::t(log1p(
+    counts[informative, p1, drop = FALSE][hvg, , drop = FALSE] +
+      counts[informative, p2, drop = FALSE][hvg, , drop = FALSE]
+  ))
+  simulated <- simulated / Matrix::rowMeans(simulated)
+  x <- rbind(lc, simulated)
+  colnames(x) <- paste0("GEN_", seq_len(ncol(x)))
+  labels <- c(rep(0, nrow(lc)), rep(1, nrow(simulated)))
+  dmatrix <- xgboost::xgb.DMatrix(x, label = labels)
+  params <- list(
+    tree_method = "hist",
+    nthread = 2,
+    subsample = 0.5,
+    objective = "binary:logistic",
+    eval_metric = "error"
+  )
+
+  cv <- NULL
+  if (identical(nmax, "tune")) {
+    cv <- xgboost::xgb.cv(
+      params = params,
+      data = dmatrix,
+      nrounds = 500,
+      nfold = 5,
+      prediction = TRUE,
+      metrics = "error",
+      early_stopping_rounds = 2,
+      verbose = FALSE
+    )
+    best <- cv$best_iteration %||% which.min(cv$evaluation_log$test_error_mean)
+    cutoff <- cv$evaluation_log$test_error_mean[best] +
+      cv$evaluation_log$test_error_std[best]
+    eligible <- which(cv$evaluation_log$test_error_mean <= cutoff)
+    nmax <- if (length(eligible) > 0L) min(eligible) else best
+  }
+  nmax <- as.integer(nmax)
+  model <- xgboost::xgb.train(
+    params = params,
+    data = dmatrix,
+    nrounds = nmax,
+    verbose = 0
+  )
+  predictions <- if (is.null(cv)) {
+    as.numeric(stats::predict(model, dmatrix))
+  } else {
+    as.numeric(cv$pred %||% cv$cv_predict$pred)
+  }
+  sce$bcds_score <- predictions[seq_len(ncol(sce))]
+
+  if (estNdbl) {
+    simulated_scores <- as.numeric(stats::predict(model, dmatrix))[
+      seq.int(ncol(sce) + 1L, nrow(x))
+    ]
+    estimate_calls <- getFromNamespace("get_dblCalls_ALL", "scds")
+    estimate <- estimate_calls(sce$bcds_score, simulated_scores, rel_loss = srat)
+    metadata <- S4Vectors::metadata(sce)
+    metadata$bcds <- metadata$bcds %||% list()
+    metadata$bcds$ndbl <- estimate
+    metadata$bcds$sim_scores <- simulated_scores
+    S4Vectors::metadata(sce) <- metadata
+    sce$bcds_call <- sce$bcds_score >= estimate["balanced", "threshold"]
+  }
+
+  if (retRes) {
+    hvg_bool <- seq_len(nrow(sce)) %in% which(informative)
+    hvg_bool[hvg_bool] <- seq_len(sum(hvg_bool)) %in% hvg
+    hvg_order <- rep(NA_integer_, nrow(sce))
+    hvg_order[hvg_bool] <- which(informative)[hvg]
+    S4Vectors::mcols(sce)$bcds_hvg_bool <- hvg_bool
+    S4Vectors::mcols(sce)$bcds_hvg_ordr <- hvg_order
+    metadata <- S4Vectors::metadata(sce)
+    metadata$bcds_res_cv <- cv
+    metadata$bcds_res_all <- model
+    metadata$bcds_nmax <- nmax
+    if (varImp) {
+      importance <- xgboost::xgb.importance(model = model)
+      importance$col_index <- match(importance$Feature, colnames(x))
+      importance$gene_index <- hvg_order[hvg_bool][importance$col_index]
+      metadata$bcds_vimp <- importance[
+        seq_len(min(100L, nrow(importance))),
+        setdiff(colnames(importance), c("Cover", "col_index")),
+        drop = FALSE
+      ]
+    }
+    S4Vectors::metadata(sce) <- metadata
+  }
+  sce
+}
+
+scds_hybrid_xgboost_compat <- function(
+  sce,
+  cxdsArgs = NULL,
+  bcdsArgs = NULL,
+  verb = FALSE,
+  estNdbl = FALSE,
+  force = FALSE
+) {
+  cxdsArgs <- cxdsArgs %||% list()
+  bcdsArgs <- bcdsArgs %||% list()
+  cxdsArgs$estNdbl <- estNdbl
+  bcdsArgs$estNdbl <- estNdbl
+  metadata <- S4Vectors::metadata(sce)
+  run_cxds <- is.null(sce$cxds_score) ||
+    (estNdbl && is.null(metadata$cxds$ndbl)) || force
+  run_bcds <- is.null(sce$bcds_score) ||
+    (estNdbl && is.null(metadata$bcds$ndbl)) || force
+  if (run_cxds) {
+    sce <- do.call(scds::cxds, c(list(sce = sce), cxdsArgs))
+  }
+  if (run_bcds) {
+    sce <- do.call(scds_bcds_xgboost_compat, c(list(sce = sce), bcdsArgs))
+  }
+  squish <- function(x) {
+    finite <- is.finite(x)
+    if (!any(finite)) {
+      return(rep(0, length(x)))
+    }
+    limits <- range(x[finite])
+    if (diff(limits) == 0) {
+      return(rep(0, length(x)))
+    }
+    out <- (x - limits[1]) / diff(limits)
+    out[!finite] <- 0
+    out
+  }
+  sce$hybrid_score <- squish(sce$cxds_score) + squish(sce$bcds_score)
+  if (estNdbl) {
+    metadata <- S4Vectors::metadata(sce)
+    cxds_sim <- metadata$cxds$sim_scores
+    bcds_sim <- metadata$bcds$sim_scores
+    target_length <- min(length(cxds_sim), length(bcds_sim))
+    cxds_sim <- sample(cxds_sim, target_length)
+    bcds_sim <- sample(bcds_sim, target_length)
+    hybrid_sim <- squish(cxds_sim) + squish(bcds_sim)
+    estimate_calls <- getFromNamespace("get_dblCalls_ALL", "scds")
+    estimate <- estimate_calls(sce$hybrid_score, hybrid_sim)
+    metadata$hybrid <- metadata$hybrid %||% list()
+    metadata$hybrid$ndbl <- estimate
+    metadata$hybrid$sim_scores <- hybrid_sim
+    S4Vectors::metadata(sce) <- metadata
+    sce$hybrid_call <- sce$hybrid_score >= estimate["balanced", "threshold"]
+  }
+  sce
+}
+
 #' @title Run doublet-calling with Scrublet
 #'
 #' @md
@@ -214,10 +395,9 @@ db_scds <- function(
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#' pancreas_sub <- db_Scrublet(pancreas_sub)
+#' pancreas_sub <- RunScrublet(pancreas_sub)
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   reduction = "umap",
@@ -229,8 +409,7 @@ db_scds <- function(
 #'   reduction = "umap",
 #'   features = "db.Scrublet_score"
 #' )
-#' }
-db_Scrublet <- function(
+RunScrublet <- function(
   srt,
   assay = "RNA",
   db_rate = ncol(srt) / 1000 * 0.01,
@@ -259,7 +438,7 @@ db_Scrublet <- function(
     assay = assay,
     layer = "counts"
   )
-  raw_counts <- Matrix::t(as_matrix(counts))
+  raw_counts <- python_cells_by_features(counts)
   check_python("scrublet", verbose = FALSE)
   scr <- reticulate::import("scrublet")
   scrub_doublets_args <- c(
@@ -300,7 +479,9 @@ db_Scrublet <- function(
       as.numeric(reticulate::py_to_r(scrub$threshold_))
     )[1]
   }
-  parameters <- list()
+  parameters <- list(
+    input_storage = if (inherits(raw_counts, "sparseMatrix")) "sparse" else "dense"
+  )
   detected_doublet_rate <- mean(predicted_doublets)
 
   srt[["db.Scrublet_score"]] <- doublet_scores
@@ -340,10 +521,9 @@ db_Scrublet <- function(
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#' pancreas_sub <- db_DoubletDetection(pancreas_sub)
+#' pancreas_sub <- RunDoubletDetection(pancreas_sub)
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   reduction = "umap",
@@ -355,8 +535,7 @@ db_Scrublet <- function(
 #'   reduction = "umap",
 #'   features = "db.DoubletDetection_score"
 #' )
-#' }
-db_DoubletDetection <- function(
+RunDoubletDetection <- function(
   srt,
   assay = "RNA",
   db_rate = ncol(srt) / 1000 * 0.01,

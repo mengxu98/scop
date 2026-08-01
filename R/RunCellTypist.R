@@ -187,10 +187,8 @@ RunCellTypist <- function(
   }
 
   if (!is.null(srt)) {
-    args[["adata"]] <- srt_to_adata(
-      srt = srt,
-      assay_x = assay,
-      layer_x = layer
+    args[["adata"]] <- python_anndata_from_matrix(
+      GetAssayData5(srt, assay = assay, layer = layer)
     )
     if (!is.null(over_clustering) &&
       is.character(over_clustering) &&
