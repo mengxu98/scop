@@ -122,7 +122,10 @@ CCCResultInfo <- function(srt) {
     } else {
       "incomplete"
     }
-    if (nrow(run_status) > 0L && entry$method %in% run_status$method) {
+    if (
+      !identical(status, "completed") &&
+        nrow(run_status) > 0L && entry$method %in% run_status$method
+    ) {
       run_value <- run_status$status[match(entry$method, run_status$method)]
       if (!is.na(run_value) && nzchar(run_value)) status <- run_value
     }
@@ -190,7 +193,16 @@ GetCCCResult <- function(
       method = semantic_method
     ),
     long = ccc_semantic_long_table(bundle$long_table, method = semantic_method),
-    pair = bundle$primary_pair_table %||% bundle$pair_table,
+    pair = {
+      pair_table <- bundle$primary_pair_table %||% bundle$pair_table
+      if (is.null(pair_table)) {
+        long_table <- bundle$primary_table %||% bundle$long_table
+        if (is.data.frame(long_table)) {
+          pair_table <- aggregate_ccc_long(long_table, backend = "r")
+        }
+      }
+      pair_table
+    },
     consensus = {
       if (!is.null(resource)) {
         bundle$consensus_by_resource[[resource]]
@@ -198,7 +210,21 @@ GetCCCResult <- function(
         bundle$consensus_table
       }
     },
-    raw = bundle$results %||% bundle$raw_result %||% bundle$raw,
+    raw = {
+      raw_result <- bundle$results %||% bundle$raw_result %||% bundle$raw
+      if (is.null(raw_result) && identical(method, "MDIC3")) {
+        raw_fields <- intersect(
+          c(
+            "mdic3_matrix", "cellular_communication",
+            "cellular_communication_log", "celltype_communication_raw",
+            "celltype_communication"
+          ),
+          names(bundle)
+        )
+        if (length(raw_fields) > 0L) raw_result <- bundle[raw_fields]
+      }
+      raw_result
+    },
     native = {
       if (identical(method, "CellChat")) {
         GetCCCObject(
@@ -343,6 +369,7 @@ ccc_prepare_filtered_object <- function(
   sample = NULL
 ) {
   if (is.null(resource) && is.null(condition) && is.null(sample)) return(srt)
+  method <- normalize_ccc_method(method)
   targets <- unique(c("CCC", if (!identical(method, "CCC")) method))
   targets <- targets[targets %in% names(srt@tools)]
   for (target in targets) {
@@ -394,6 +421,10 @@ ccc_combine_methods <- function(
   if (!all(required %in% colnames(df))) {
     log_message("Unified CCC data are missing method or interaction identifiers", message_type = "error")
   }
+  has_interaction <- !is.na(df$ligand) & nzchar(trimws(as.character(df$ligand))) &
+    !is.na(df$receptor) & nzchar(trimws(as.character(df$receptor)))
+  df <- df[has_interaction, , drop = FALSE]
+  if (nrow(df) == 0L) return(df)
   methods <- unique(as.character(df$method))
   methods <- methods[!is.na(methods) & nzchar(methods)]
   df$.ccc_method_percentile <- 1
@@ -493,12 +524,24 @@ ccc_prepare_combined_object <- function(
 }
 
 ccc_plot_methods_separately <- function(call, srt, env) {
-  methods <- ccc_unified_methods(srt)
-  methods <- methods[methods != "CCC"]
+  unified <- ccc_semantic_long_table(srt@tools[["CCC"]]$long_table)
+  methods <- unique(as.character(unified$method))
+  methods <- methods[!is.na(methods) & nzchar(methods) & methods != "CCC"]
   plots <- lapply(methods, function(method) {
+    method_table <- unified[as.character(unified$method) == method, , drop = FALSE]
+    bundle <- srt@tools[[method]] %||% list(method = method)
+    bundle$long_table <- method_table
+    bundle$primary_table <- method_table
+    bundle$pair_table <- aggregate_ccc_long(method_table, backend = "r")
+    method_object <- srt
+    method_object@tools[[method]] <- bundle
     next_call <- call
+    next_call$srt <- method_object
     next_call$method <- method
     next_call$combine_methods <- "legacy"
+    next_call$resource <- NULL
+    next_call$condition <- NULL
+    next_call$sample <- NULL
     eval(next_call, envir = env)
   })
   names(plots) <- methods

@@ -7,10 +7,7 @@
 CCCHeatmap(
   srt,
   method = NULL,
-  combine_methods = c("separate", "support", "rank", "legacy"),
   condition = NULL,
-  resource = NULL,
-  sample = NULL,
   dataset = 1,
   comparison = c(1, 2),
   plot_type = c("heatmap", "focused_heatmap", "dot", "matrix_dot", "tile",
@@ -63,6 +60,9 @@ CCCHeatmap(
   theme_use = "theme_scop",
   theme_args = list(),
   verbose = TRUE,
+  combine_methods = c("separate", "support", "rank", "legacy"),
+  resource = NULL,
+  sample = NULL,
   ...
 )
 }
@@ -71,15 +71,7 @@ CCCHeatmap(
 
 \item{method}{Communication result type to use.}
 
-\item{combine_methods}{Behavior when \code{method = "CCC"}. \code{"separate"} returns
-one panel per backend, \code{"support"} counts supporting backends, \code{"rank"}
-combines within-method percentile ranks for visualization, and \code{"legacy"}
-retains the deprecated raw-score aggregation.}
-
 \item{condition}{Result name or comparison name.}
-
-\item{resource, sample}{Optional resource and sample/context filters for
-unified CCC results.}
 
 \item{dataset}{Dataset index or name.}
 
@@ -194,6 +186,14 @@ Default is \code{"theme_scop"}.}
 Default is \code{list()}.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{combine_methods}{Behavior when \code{method = "CCC"}. \code{"separate"} returns
+one panel per backend, \code{"support"} counts supporting backends, \code{"rank"}
+combines within-method percentile ranks for visualization, and \code{"legacy"}
+retains the deprecated raw-score aggregation.}
+
+\item{resource, sample}{Optional resource and sample/context filters for
+unified CCC results.}
 
 \item{...}{Additional plot-specific options.}
 }

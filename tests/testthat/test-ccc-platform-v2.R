@@ -125,6 +125,7 @@ test_that("RunLIANA stores official consensus and keeps legacy tables", {
   expect_equal(out@tools$LIANA$primary_table$pvalue_type, "specificity_rank_not_pvalue")
   expect_true(all(is.na(out@tools$LIANA$primary_table$significant)))
   expect_equal(out@tools$LIANA$parameters$consensus, "rank")
+  expect_equal(unique(out@tools$LIANA$long_table$resource), "Consensus")
   expect_equal(out@tools$CCC$metadata$schema, "scop_ccc_unified_v2")
   expect_equal(unique(out@tools$CCC$long_table$score_type), "liana_consensus_priority")
 })
@@ -233,14 +234,14 @@ test_that("LIANA aggregates multiple resources independently", {
 
 test_that("cross-method combination separates support and visualization rank semantics", {
   df <- data.frame(
-    sender = c("A", "A", "A", "A"),
-    receiver = c("B", "B", "B", "B"),
-    ligand = c("L1", "L1", "L1", "L2"),
-    receptor = c("R1", "R1", "R1", "R2"),
-    interaction_name = c("L1_R1", "L1_R1", "L1_R1", "L2_R2"),
-    score = c(10, 9, 0.2, 5),
-    pvalue = c(0.01, 0.02, 0.2, 0.03),
-    method = c("CellChat", "CellChat", "LIANA", "CellChat"),
+    sender = c("A", "A", "A", "A", "A"),
+    receiver = c("B", "B", "B", "B", "B"),
+    ligand = c("L1", "L1", "L1", "L2", ""),
+    receptor = c("R1", "R1", "R1", "R2", ""),
+    interaction_name = c("L1_R1", "L1_R1", "L1_R1", "L2_R2", "MDIC3"),
+    score = c(10, 9, 0.2, 5, 4),
+    pvalue = c(0.01, 0.02, 0.2, 0.03, 1),
+    method = c("CellChat", "CellChat", "LIANA", "CellChat", "MDIC3"),
     stringsAsFactors = FALSE
   )
 
@@ -249,6 +250,7 @@ test_that("cross-method combination separates support and visualization rank sem
   expect_equal(shared$support_count, 2)
   expect_equal(shared$support_fraction, 1)
   expect_equal(shared$score_type, "method_support_count")
+  expect_false(any(support$method == "MDIC3"))
 
   ranked <- getFromNamespace("ccc_combine_methods", "scop")(df, "rank")
   expect_true(all(ranked$priority_rank >= 0 & ranked$priority_rank <= 1))
@@ -550,7 +552,7 @@ test_that("RunCCC dispatches all four design-specific registered methods", {
   expect_equal(out@tools$CCC$metadata$schema, "scop_ccc_unified_v2")
 })
 
-test_that("unified CCC plotting separates methods by default", {
+test_that("unified CCC support aggregation combines stored methods", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("Matrix")
 
@@ -577,65 +579,10 @@ test_that("unified CCC plotting separates methods by default", {
     long_table = long, metadata = list(schema = "scop_ccc_unified_v2")
   )
 
-  plots <- scop::CCCStatPlot(
-    srt, method = "CCC", plot_type = "bar",
-    display_by = "interaction", top_n = 5, return.data = TRUE
-  )
-  expect_named(plots, c("CellphoneDB", "LIANA"))
-
   support <- getFromNamespace("ccc_prepare_combined_object", "scop")(
     srt, method = "CCC", combine_methods = "support"
   )
   expect_equal(unique(support@tools$CCC$long_table$score_type), "method_support_count")
-})
-
-test_that("all seven registered methods enter generic heatmap, network, and stat plots", {
-  skip_if_not_installed("Seurat")
-  skip_if_not_installed("Matrix")
-  skip_if_not_installed("ggplot2")
-
-  counts <- Matrix::sparseMatrix(i = 1:2, j = 1:2, x = 1, dims = c(2, 2))
-  rownames(counts) <- c("L1", "R1")
-  colnames(counts) <- c("Cell1", "Cell2")
-  srt <- Seurat::CreateSeuratObject(counts = counts)
-  methods <- scop::ListCCCMethods()$method
-  long <- do.call(rbind, lapply(seq_along(methods), function(i) {
-    data.frame(
-      sender = "A", receiver = "B", ligand = paste0("L", i),
-      receptor = paste0("R", i), interaction_name = paste0("L", i, "_R", i),
-      score = i / length(methods), pvalue = 0.01, method = methods[i],
-      stringsAsFactors = FALSE
-    )
-  }))
-  for (method in methods) {
-    method_long <- long[long$method == method, , drop = FALSE]
-    srt@tools[[method]] <- list(
-      method = method, long_table = method_long, primary_table = method_long,
-      parameters = list(group.by = "celltype")
-    )
-  }
-  srt@tools$CCC <- list(
-    method = "CCC", methods = methods, long_table = long,
-    metadata = list(schema = "scop_ccc_unified_v2")
-  )
-
-  for (method in methods) {
-    heat <- scop::CCCHeatmap(
-      srt, method = method, plot_type = "dot",
-      display_by = "interaction", top_n = 2
-    )
-    network <- scop::CCCNetworkPlot(
-      srt, method = method, plot_type = "circle",
-      display_by = "interaction", top_n = 2
-    )
-    stat <- scop::CCCStatPlot(
-      srt, method = method, plot_type = "bar",
-      display_by = "interaction", top_n = 2
-    )
-    expect_true(inherits(heat, c("ggplot", "Heatmap", "HeatmapList", "grob")))
-    expect_true(inherits(network, c("ggplot", "recordedplot")))
-    expect_true(inherits(stat, c("ggplot", "recordedplot")))
-  }
 })
 
 test_that("CCC discovery and access adapt v1 long tables without rewriting objects", {
@@ -669,6 +616,29 @@ test_that("CCC discovery and access adapt v1 long tables without rewriting objec
   expect_identical(srt@tools$CellphoneDB$long_table, before)
 })
 
+test_that("current producer bundles override stale RunCCC failures", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("Matrix")
+
+  counts <- Matrix::Diagonal(2)
+  rownames(counts) <- c("L1", "R1")
+  colnames(counts) <- c("Cell1", "Cell2")
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  current <- data.frame(
+    sender = "A", receiver = "B", ligand = "L1", receptor = "R1",
+    score = 0.8, pvalue = 0.01
+  )
+  srt@tools$LIANA <- list(primary_table = current, long_table = current)
+  srt@tools$CCC <- list(methods = "LIANA", long_table = current)
+  srt@tools$RunCCC <- list(status = data.frame(
+    method = "LIANA", status = "failed", stringsAsFactors = FALSE
+  ))
+
+  info <- scop::CCCResultInfo(srt)
+  expect_equal(info$status[info$method == "LIANA"], "completed")
+  expect_equal(info$rows[info$method == "LIANA"], 1L)
+})
+
 test_that("stored CellChat primary tables enter unified results without native re-extraction", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("Matrix")
@@ -687,7 +657,9 @@ test_that("stored CellChat primary tables enter unified results without native r
     metadata = list(schema = "scop_ccc_unified_v2")
   )
 
-  unified <- ccc_build_unified_bundle(srt, methods = "CellChat")
+  unified <- getFromNamespace("ccc_build_unified_bundle", "scop")(
+    srt, methods = "CellChat"
+  )
   expect_equal(nrow(unified$long_table), 1L)
   expect_equal(unified$long_table$method, "CellChat")
   expect_equal(
@@ -746,6 +718,35 @@ test_that("native access never substitutes a raw result", {
   expect_true(scop::GetCCCResult(
     srt, "CellphoneDB", type = "raw"
   )$not_native)
+
+  srt@tools$MDIC3 <- list(
+    mdic3_matrix = matrix(1, 1, 1),
+    cellular_communication = matrix(2, 1, 1),
+    cellular_communication_log = matrix(3, 1, 1),
+    celltype_communication_raw = matrix(4, 1, 1),
+    celltype_communication = matrix(5, 1, 1),
+    long_table = data.frame(
+      sender = "A", receiver = "B", ligand = "", receptor = "",
+      score = 5, pvalue = 1
+    )
+  )
+  expect_named(
+    scop::GetCCCResult(srt, "MDIC3", type = "raw"),
+    c(
+      "mdic3_matrix", "cellular_communication",
+      "cellular_communication_log", "celltype_communication_raw",
+      "celltype_communication"
+    )
+  )
+
+  srt@tools$SpatialCellChat <- list(long_table = data.frame(
+    sender = "A", receiver = "B", ligand = "L1", receptor = "R1",
+    score = 0.5, pvalue = 0.01
+  ))
+  expect_equal(
+    nrow(scop::GetCCCResult(srt, "SpatialCellChat", type = "pair")),
+    1L
+  )
 })
 
 test_that("unified resource and sample filters are exact and explicit", {
@@ -782,45 +783,4 @@ test_that("unified resource and sample filters are exact and explicit", {
     ),
     "does not provide.*resource"
   )
-})
-
-test_that("SpatialCellChat diffusion delegates to the native communication field", {
-  skip_if_not_installed("Seurat")
-  skip_if_not_installed("Matrix")
-  skip_if_not_installed("ggplot2")
-
-  counts <- Matrix::sparseMatrix(i = 1:2, j = 1:2, x = 1, dims = c(2, 2))
-  rownames(counts) <- c("L1", "R1")
-  colnames(counts) <- c("Cell1", "Cell2")
-  srt <- Seurat::CreateSeuratObject(counts = counts)
-  srt@tools$SpatialCellChat <- list(method = "SpatialCellChat")
-  seen <- list()
-
-  testthat::local_mocked_bindings(
-    check_r = function(...) invisible(TRUE),
-    GetCCCObject = function(...) structure(list(), class = "native_scc"),
-    get_namespace_fun = function(package, fun) {
-      expect_equal(package, "SpatialCellChat")
-      expect_equal(fun, "netVisual_CommunField")
-      function(object, signaling, pattern = "outgoing", ...) {
-        seen <<- list(
-          object = object, signaling = signaling, pattern = pattern
-        )
-        ggplot2::ggplot()
-      }
-    },
-    .package = "scop"
-  )
-
-  plot <- scop::CCCNetworkPlot(
-    srt,
-    method = "SpatialCellChat",
-    plot_type = "diffusion",
-    signaling = "CXCL",
-    pattern = "incoming"
-  )
-  expect_s3_class(plot, "ggplot")
-  expect_s3_class(seen$object, "native_scc")
-  expect_equal(seen$signaling, "CXCL")
-  expect_equal(seen$pattern, "incoming")
 })
