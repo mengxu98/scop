@@ -168,8 +168,8 @@ runs:
             lib.loc = project_library
           ))
           if (!isTRUE(
-            utils::package_version(installed_version) ==
-              utils::package_version(record$Version)
+            base::package_version(installed_version) ==
+              base::package_version(record$Version)
           )) {
             stop(
               "Installed ",
