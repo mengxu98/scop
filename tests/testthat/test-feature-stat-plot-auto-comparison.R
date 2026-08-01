@@ -19,6 +19,44 @@ get_stat_compare_layer <- function(plot) {
   compare_layers[[1]]
 }
 
+get_boxplot_layer <- function(plot) {
+  boxplot_layers <- Filter(
+    function(layer) inherits(layer$geom, "GeomBoxplot"),
+    plot$layers
+  )
+  if (length(boxplot_layers) == 0) {
+    return(NULL)
+  }
+  boxplot_layers[[1]]
+}
+
+test_that("ExpressionStatPlot honors box_width for standalone box plots", {
+  meta <- make_feature_stat_meta(
+    score = seq_len(6),
+    group = rep(c("A", "B"), each = 3)
+  )
+
+  narrow_plot <- ExpressionStatPlot(
+    meta.data = meta,
+    stat.by = "score",
+    group.by = "group",
+    plot_type = "box",
+    box_width = 0.2,
+    force = TRUE
+  )[[1]]
+  wide_plot <- ExpressionStatPlot(
+    meta.data = meta,
+    stat.by = "score",
+    group.by = "group",
+    plot_type = "box",
+    box_width = 0.9,
+    force = TRUE
+  )[[1]]
+
+  expect_equal(get_boxplot_layer(narrow_plot)$aes_params$width, 0.2)
+  expect_equal(get_boxplot_layer(wide_plot)$aes_params$width, 0.9)
+})
+
 test_that("ExpressionStatPlot supports sparse co-expression", {
   cells <- paste0("Cell", seq_len(8))
   expr <- methods::as(Matrix::Matrix(

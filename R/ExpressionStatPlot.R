@@ -728,7 +728,7 @@ ExpressionStatPlot <- function(
             mapping = aes(group = .data[["group.unique"]]),
             position = position_dodge(width = 0.9),
             color = "black",
-            width = 0.8,
+            width = box_width,
             outlier.shape = NA
           ) +
           stat_summary(
