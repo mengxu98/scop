@@ -185,6 +185,12 @@ runs:
         )
 
         if (identical(Sys.info()[["sysname"]], "Darwin")) {
+          # Break the locked Seurat/Signac dependency cycle observed by renv's
+          # macOS restore planner before the transactional restore begins.
+          install_locked_source(
+            "bitops",
+            download_locked_source("bitops")
+          )
           install_locked_source(
             "cli",
             download_locked_source("cli")

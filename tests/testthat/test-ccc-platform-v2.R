@@ -283,6 +283,14 @@ test_that("RunCCC preflights extended method requirements", {
   )
   expect_error(
     scop::RunCCC(
+      srt, group.by = "celltype", methods = "Nichenetr",
+      method_params = list(Nichenetr = list(receiver = "B")),
+      verbose = FALSE
+    ),
+    "condition.by.*condition_oi.*condition_reference"
+  )
+  expect_error(
+    scop::RunCCC(
       srt, group.by = "celltype", methods = "MultiNichenetr",
       method_params = list(MultiNichenetr = list(sample.by = "sample")),
       verbose = FALSE
@@ -366,7 +374,10 @@ test_that("RunCCC dispatches all four design-specific registered methods", {
     group.by = "celltype",
     methods = c("Nichenetr", "MultiNichenetr", "SpatialCellChat", "MDIC3"),
     method_params = list(
-      Nichenetr = list(receiver = "B"),
+      Nichenetr = list(
+        receiver = "B", condition.by = "condition",
+        condition_oi = "case", condition_reference = "control"
+      ),
       MultiNichenetr = list(
         sample.by = "sample", condition.by = "condition",
         condition_oi = "case", condition_reference = "control",

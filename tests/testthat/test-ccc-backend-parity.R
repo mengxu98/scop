@@ -505,6 +505,10 @@ test_that("RunNichenetr aggregate_cluster_de maps receivers to upstream argument
   expect_equal(captured$args$receiver_affected, "Receiver")
   expect_equal(captured$args$receiver_reference, "Receiver")
   expect_false("receiver" %in% names(captured$args))
+  expect_equal(captured$args$top_n_ligands, 30)
+  expect_equal(captured$args$top_n_targets, 200)
+  expect_equal(captured$args$cutoff_visualization, 0.33)
+  expect_false(captured$args$verbose)
   expect_equal(out@tools$Nichenetr$parameters$backend, "cpp")
 })
 
@@ -572,6 +576,42 @@ test_that("RunNichenetr aggregate_cluster_de passes distinct receiver_affected a
   expect_false("receiver" %in% names(captured$args))
   expect_equal(out@tools$Nichenetr$parameters$receiver_affected, "ReceiverA")
   expect_equal(out@tools$Nichenetr$parameters$receiver_reference, "ReceiverB")
+})
+
+test_that("NicheNet standardization preserves official ranks and sender support", {
+  standardize <- getFromNamespace("standardize_nichenetr_result", "scop")
+  out <- standardize(
+    raw_result = list(),
+    ligand_activities = data.frame(
+      test_ligand = c("L1", "L2"),
+      aupr_corrected = c(0.9, 0.6),
+      pearson = c(0.5, 0.8),
+      rank = c(1, 2)
+    ),
+    ligand_target_df = data.frame(
+      ligand = c("L1", "L2"), target = c("G1", "G2"), weight = c(1, 0.5)
+    ),
+    ligand_receptor_df = data.frame(
+      from = c("L1", "L2"), to = c("R1", "R2")
+    ),
+    sender_use = c("SenderA", "SenderB"),
+    sender_ligand_support = list(SenderA = "L1", SenderB = "L2"),
+    receiver = "Receiver",
+    mode = "aggregate",
+    group.by = "celltype",
+    condition.by = "condition",
+    condition_oi = "case",
+    condition_reference = "control",
+    assay = "RNA",
+    species = "Mus_musculus",
+    backend = "r"
+  )
+
+  expect_equal(out$long_table$sender, c("SenderA", "SenderB"))
+  expect_equal(out$long_table$score, c(0.9, 0.6))
+  expect_equal(out$long_table$priority_rank, c(1, 2))
+  expect_equal(out$long_table$pearson, c(0.5, 0.8))
+  expect_equal(out$long_table$support_type, rep("sender_expressed_ligand", 2))
 })
 
 test_that("resolve_nichenetr_object downloads fallback RDS before reading", {
