@@ -33,7 +33,7 @@ RunLIANA(
 
 \item{return_all}{Whether LIANA should return all possible interactions.}
 
-\item{backend}{Backend used for scop post-processing and unified CCC table
+\item{backend}{Backend used only for result post-processing and unified CCC table
 aggregation. Upstream LIANA inference is unchanged.}
 
 \item{verbose}{Whether to print the message.

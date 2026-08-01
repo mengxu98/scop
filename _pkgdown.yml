@@ -89,10 +89,10 @@ reference:
 
 - subtitle: "Quality Control"
 - contents:
-  - db_DoubletDetection
-  - db_scDblFinder
-  - db_scds
-  - db_Scrublet
+  - RunDoubletDetection
+  - RunscDblFinder
+  - Runscds
+  - RunScrublet
   - RunATACQC
   - RunCellQC
   - RunDecontX

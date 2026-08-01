@@ -327,7 +327,7 @@ RunSpatialEcoTyper <- function(
 #' @title SpatialEcoTyper spatial plot
 #'
 #' @description
-#' Plot SpatialEcoTyper labels on spatial coordinates using scop's spatial
+#' Plot SpatialEcoTyper labels on spatial coordinates using the spatial
 #' plotting style.
 #'
 #' @md
@@ -391,7 +391,7 @@ SpatialEcoTyperSpatialPlot <- function(
 #'
 #' @description
 #' Plot SpatialEcoTyper composition across cell types, samples, or other
-#' metadata groups using scop's default plotting theme and palettes.
+#' metadata groups using the default plotting theme and palettes.
 #'
 #' @md
 #' @inheritParams thisutils::log_message

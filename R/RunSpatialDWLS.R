@@ -3,7 +3,7 @@
 #' @description
 #' Estimate spot-level cell-type proportions by fitting spatial expression to
 #' reference cell-type signatures with non-negative least squares-style
-#' coefficients. The output follows SCOP's deconvolution metadata convention so
+#' coefficients. The output follows the package deconvolution metadata convention so
 #' it can be plotted directly with [SpatialSpotPlot()].
 #'
 #' @md

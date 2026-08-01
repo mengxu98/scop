@@ -28,6 +28,7 @@ RunTriMap(object, ...)
   reduction.key = "TriMap_",
   verbose = TRUE,
   seed.use = 11L,
+  backend = c("cpp", "python"),
   ...
 )
 
@@ -46,6 +47,7 @@ RunTriMap(object, ...)
   reduction.key = "TriMap_",
   verbose = TRUE,
   seed.use = 11L,
+  backend = c("cpp", "python"),
   ...
 )
 }
@@ -109,6 +111,9 @@ Default is \code{TRUE}.}
 
 \item{seed.use}{Random seed for reproducibility.
 Default is \code{11}.}
+
+\item{backend}{TriMap backend. \code{"cpp"} uses a compiled triplet sampler
+and optimizer; \code{"python"} retains the official trimap package.}
 }
 \description{
 Run TriMap (Large-scale Dimensionality Reduction Using Triplets)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/RunSciBet.R
 \name{RunSciBet}
 \alias{RunSciBet}
-\title{Annotate single cells using native SciBet}
+\title{Annotate single cells with a C++ SciBet-compatible classifier}
 \usage{
 RunSciBet(
   srt_query,
@@ -74,7 +74,7 @@ A \code{Seurat} object with SciBet annotations in metadata and results in
 \code{srt_query@tools[["SciBet"]]}.
 }
 \description{
-Run a native \code{scop} implementation of the core SciBet classifier using a
+Run a C++ implementation of the core SciBet classifier using a
 labeled reference \code{Seurat} object.
 }
 \examples{

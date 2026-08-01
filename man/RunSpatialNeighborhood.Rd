@@ -24,6 +24,7 @@ RunSpatialNeighborhood(
   store_results = TRUE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
+  backend = c("cpp", "r"),
   ...
 )
 }
@@ -34,7 +35,7 @@ RunSpatialNeighborhood(
 
 \item{method}{Neighborhood calculation. \code{NULL} preserves compatibility by
 choosing \code{"observed"} when \code{split.by} is absent and \code{"spicyR"} when it is
-supplied. \code{"observed"} returns native KNN or radius summaries. \code{"spicyR"}
+supplied. \code{"observed"} returns package KNN or radius summaries. \code{"spicyR"}
 runs differential neighborhood statistics and requires \code{split.by}.}
 
 \item{assay}{Assay used when \code{features} are requested.}
@@ -56,10 +57,10 @@ differential neighborhood statistics.}
 \item{subject.by}{Optional metadata column identifying subjects for backends
 that support paired or repeated designs.}
 
-\item{radius}{Optional spatial radius used for scop-native neighborhood
+\item{radius}{Optional spatial radius used for package neighborhood
 summaries, expressed in the selected coordinate units.}
 
-\item{k}{Optional number of nearest neighbors used for scop-native
+\item{k}{Optional number of nearest neighbors used for package
 neighborhood summaries. This is a unitless count. When both \code{radius} and
 \code{k} are \code{NULL}, \code{k = 6} is used.}
 
@@ -78,13 +79,17 @@ Default is \code{TRUE}.}
 The default is raw acquisition coordinates; \code{"legacy_display"} remains an
 explicit compatibility option.}
 
+\item{backend}{Backend for observed label-pair aggregation.
+\code{"cpp"} avoids repeated data-frame aggregation; \code{"r"} retains the reference
+implementation. This does not alter the external \code{"spicyR"} method.}
+
 \item{...}{Additional arguments passed to the selected backend.}
 }
 \value{
 A \code{Seurat} object with results stored in \code{srt@tools[[tool_name]]}.
 }
 \description{
-Build a scop-style spatial neighborhood result bundle and optionally dispatch
+Build a standardized spatial neighborhood result bundle and optionally dispatch
 to a supported backend for colocalization or local-effect statistics.
 }
 \examples{

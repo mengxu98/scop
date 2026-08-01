@@ -299,7 +299,7 @@ data(panc8_sub)
 panc8_sub <- RunIntegration(
   srt_merge = panc8_sub,
   batch = "tech",
-  integration_method = "Harmony"
+  integration_methods = "Harmony"
 )
 CellDimPlot(
   panc8_sub,

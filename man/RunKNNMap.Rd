@@ -70,7 +70,7 @@ If "annoy" is selected, the function will use the Annoy library for approximate 
 If "rann" is selected, the function will use the RANN library for approximate nearest neighbor search.
 If not provided, the function will choose the search method based on the size of the query and reference datasets.
 For finite dense inputs using cosine or Euclidean distance, the raw path
-uses scop's bounded-memory native top-k kernel unless the full distance
+uses a bounded-memory compiled top-k kernel unless the full distance
 matrix is requested. Other metrics and sparse inputs retain the existing
 proxyC path.}
 

@@ -2,7 +2,7 @@
 #'
 #' @description
 #' Build a small `mistyR` view composition from a spatial `Seurat` object,
-#' train MISTy models, collect results, and store a SCOP-style result bundle in
+#' train MISTy models, collect results, and store a standardized result bundle in
 #' `srt@tools`. The intraview is always created from the selected assay layer;
 #' optional juxtaview and paraview components describe local and broader spatial
 #' context. `mistyR` is an optional Bioconductor dependency installable with

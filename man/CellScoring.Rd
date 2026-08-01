@@ -93,10 +93,10 @@ separately and stored with a method suffix such as \code{"GO_AUCell"} or
 \item{backend}{Scoring backend. \code{"cpp"} is the default for supported methods.
 \code{"r"} uses the original package implementation. \code{"cpp"} currently supports
 \code{method = "Seurat"}, \code{method = "AUCell"}, \code{method = "GSVA"},
-\code{method = "ssGSEA"}, \code{method = "zscore"}, and \code{method = "PLAGE"}.
-\code{method = "UCell"} and \code{method = "VISION"} fall back to \code{"r"} when
+\code{method = "UCell"}, \code{method = "ssGSEA"}, \code{method = "zscore"}, and
+\code{method = "PLAGE"}. \code{method = "VISION"} falls back to \code{"r"} when
 \code{backend} is not explicitly set. For \code{method = "GSVA"} with
-\code{kcdf = "Gaussian"}, \code{backend = "cpp"} uses the native C++ kernel.}
+\code{kcdf = "Gaussian"}, \code{backend = "cpp"} uses the package C++ kernel.}
 
 \item{classification}{Whether to perform classification based on the scores. Default is \code{TRUE}.}
 

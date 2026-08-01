@@ -15,7 +15,8 @@ RunscMalignantStates(
   norm_type = NULL,
   prefix = "scMalignantState_",
   return_seurat = !is.null(srt),
-  verbose = TRUE
+  verbose = TRUE,
+  backend = c("cpp", "python")
 )
 }
 \arguments{
@@ -48,6 +49,10 @@ supplied. If \code{FALSE}, returns a data frame of predictions.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{backend}{State-scoring backend. \code{"cpp"} uses a compiled sparse
+AUCell implementation for Seurat input. \code{"python"} retains the official
+scMalignantFinder path and is used for AnnData or h5ad input.}
 }
 \value{
 A Seurat object with cancer-state AUCell scores, or a data frame when

@@ -22,7 +22,8 @@ RunscMalignantRegion(
   norm_type = NULL,
   prefix = "scMalignantFinder_",
   return_seurat = !is.null(srt),
-  verbose = TRUE
+  verbose = TRUE,
+  backend = c("cpp", "python")
 )
 }
 \arguments{
@@ -73,6 +74,12 @@ supplied. If \code{FALSE}, returns a data frame of predictions.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{backend}{Region-inference backend. \code{"cpp"} uses a compiled sparse
+AUCell scorer, Ward clustering, and spatial-neighbor refinement for Seurat
+input when \code{image = FALSE}. \code{"python"} retains the official
+scMalignantFinder/Squidpy path and is required for image features, AnnData,
+and h5ad input.}
 }
 \value{
 A Seurat object with malignant region metadata, or a data frame when

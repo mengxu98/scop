@@ -36,9 +36,9 @@ in columns. Used when \code{object} is not provided as a matrix.}
 \item{QN}{Whether CIBERSORT should use quantile normalization.}
 
 \item{absolute}{Passed to CIBERSORT when supported by the installed package.
-The native C++ backend currently returns relative fractions.}
+The C++ backend currently returns relative fractions.}
 
-\item{backend}{CIBERSORT backend. \code{"cpp"} uses the native \code{scop} LIBSVM
+\item{backend}{CIBERSORT backend. \code{"cpp"} uses the package LIBSVM
 implementation. \code{"r"} is an optional reference backend from
 \code{Moonerss/CIBERSORT}.}
 
@@ -60,8 +60,8 @@ A deconvolution result bundle for matrix input, or the modified
 }
 \description{
 Estimate immune cell proportions from a bulk expression matrix using the
-optional GitHub \code{Moonerss/CIBERSORT} package or the native \code{scop} C++
-backend. The native backend is the default and has no external R-package
+optional GitHub \code{Moonerss/CIBERSORT} package or the package C++
+backend. The C++ backend is the default and has no external R-package
 dependency.
 \code{sig_matrix = "LM22"} downloads the LM22 signature matrix from
 \code{mengxu98/datasets} and caches it locally.

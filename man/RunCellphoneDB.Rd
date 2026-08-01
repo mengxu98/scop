@@ -110,7 +110,7 @@ considered.}
 \item{keep_output}{Whether to keep temporary output files when \code{output_path} is
 not supplied.}
 
-\item{backend}{Backend used for scop post-processing and unified CCC table
+\item{backend}{Backend used only for result post-processing and unified CCC table
 aggregation. Upstream CellphoneDB inference is unchanged.}
 
 \item{verbose}{Whether to print the message.

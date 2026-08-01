@@ -17,7 +17,7 @@ RunCytoTRACE(object, ...)
   smooth_batch_size = 1000,
   compute_knn_smoothing = TRUE,
   cores = 1,
-  backend = c("cpp", "r"),
+  backend = c("r", "cpp"),
   seed = 14,
   data_dir = NULL,
   verbose = TRUE,
@@ -31,7 +31,7 @@ RunCytoTRACE(object, ...)
   smooth_batch_size = 1000,
   compute_knn_smoothing = TRUE,
   cores = 1,
-  backend = c("cpp", "r"),
+  backend = c("r", "cpp"),
   seed = 14,
   data_dir = NULL,
   verbose = TRUE,
@@ -75,9 +75,9 @@ binned CytoTRACE2 output.}
 \item{cores}{Number of cores for parallel processing.
 Default is \code{1}.}
 
-\item{backend}{Backend used to run CytoTRACE2. \code{"cpp"} uses the native
-\code{scop} R/C++ backend and is the default. \code{"r"} calls the official
-\code{CytoTRACE2::cytotrace2()} implementation.}
+\item{backend}{Backend used to run CytoTRACE2. \code{"r"} calls the official
+\code{CytoTRACE2::cytotrace2()} implementation and is the default. \code{"cpp"} uses
+the package R/C++ implementation.}
 
 \item{seed}{Random seed for reproducibility. Default is \code{14}.}
 
@@ -107,8 +107,8 @@ with cell IDs as row names.
 \description{
 Predicts cellular developmental potential from single-cell RNA-seq data
 using the CytoTRACE 2 algorithm (Kang et al., 2025).
-By default, this function uses the native \code{scop} R/C++ implementation. Set
-\code{backend = "r"} to call the official \code{CytoTRACE2} R package.
+By default, this function uses the official \code{CytoTRACE2} R package. Set
+\code{backend = "cpp"} to use the package R/C++ implementation.
 
 The algorithm consists of five stages:
 \enumerate{
@@ -140,7 +140,8 @@ data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 pancreas_sub <- RunCytoTRACE(
   pancreas_sub,
-  species = "Mus_musculus"
+  species = "Mus_musculus",
+  backend = "cpp"
 )
 
 CytoTRACEPlot(

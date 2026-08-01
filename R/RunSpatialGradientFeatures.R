@@ -2,7 +2,7 @@
 #'
 #' @description
 #' Run spatial trajectory or annotation gradient screening for Seurat objects.
-#' The native `"cpp"` backend avoids SPATA2 object construction for fast
+#' The `"cpp"` backend avoids SPATA2 object construction for fast
 #' distance-based screening, while the `"r"` backend keeps full upstream
 #' SPATA2 SAS/STS behavior. Results are normalized into plain data.frames and
 #' stored in `srt@tools[["SpatialGradientFeatures"]]`; the SPATA2 object itself
@@ -13,7 +13,7 @@
 #' @inheritParams SpatialSpotPlot
 #' @param reference Spatial reference type: `"trajectory"` for STS or
 #' `"annotation"` for SAS.
-#' @param backend Computation backend. `"cpp"` uses SCOP's native fast spatial
+#' @param backend Computation backend. `"cpp"` uses a compiled fast spatial
 #' gradient implementation and avoids SPATA2 object construction. `"r"`
 #' uses SPATA2 directly for full upstream SAS/STS behavior.
 #' @param result_name Name used to store this result. If `NULL`, a name is
@@ -25,11 +25,11 @@
 #' features, then all assay features.
 #' @param sample_name,platform,img_scale_fct,assay_modality Arguments forwarded
 #' to `SPATA2::asSPATA2()` when `spata_object` is `NULL`.
-#' @param coord.cols Metadata coordinate columns used by the native `"cpp"`
+#' @param coord.cols Metadata coordinate columns used by the `"cpp"`
 #' backend when no image coordinates are available.
-#' @param coordinate_space Coordinate system used by the native distance
+#' @param coordinate_space Coordinate system used by the C++ distance
 #' calculations. The default is raw acquisition coordinates, so `start`,
-#' `end`, trajectory positions, widths, and native distances share raw
+#' `end`, trajectory positions, widths, and C++ distances share raw
 #' coordinate units. Use `"legacy_display"` explicitly for pre-0.9.0 display
 #' coordinates. SPATA2-backed runs retain backend-native units.
 #' @param trajectory_id,start,end,traj_df,width Trajectory setup passed to
@@ -46,10 +46,10 @@
 #' @param core,distance,angle_span SAS parameters forwarded to SPATA2.
 #' @param resolution,unit,sign_var,sign_threshold,model_add,model_subset,model_remove,n_random,seed,control
 #' SPATA2 screening parameters.
-#' @param n_bins Number of distance bins used for the native `"cpp"` backend
+#' @param n_bins Number of distance bins used for the `"cpp"` backend
 #' screening curve.
 #' @param min_spots Minimum number of non-zero spots required for a variable in
-#' the native `"cpp"` backend.
+#' the `"cpp"` backend.
 #' @param nfeatures Number of top gradient variables retained in
 #' `top_variables` and optionally set as Seurat variable features.
 #' @param set_variable_features Whether to set top gradient variables as Seurat

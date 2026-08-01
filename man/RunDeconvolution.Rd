@@ -51,7 +51,7 @@ the \code{r} backend of \code{BayesPrism}. If \code{NULL}, \code{group.by} is re
 \item{ref_layer}{Layer name in \code{reference} used for reference counts.}
 
 \item{backend}{Deconvolution engine backend. \code{"r"} uses the original method
-package implementation. \code{"cpp"} is reserved for native SCOP implementations
+package implementation. \code{"cpp"} selects package C++ implementations
 when available.}
 
 \item{verbose}{Whether to print the message.

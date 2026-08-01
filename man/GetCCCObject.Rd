@@ -2,7 +2,7 @@
 % Please edit documentation in R/RunSpatialCellChat.R
 \name{GetCCCObject}
 \alias{GetCCCObject}
-\title{Get a native CellChat-family object}
+\title{Get an upstream CellChat-family object}
 \usage{
 GetCCCObject(
   object,
@@ -21,8 +21,8 @@ GetCCCObject(
 \item{sample}{Spatial sample for SpatialCellChat results.}
 }
 \value{
-A native backend object.
+An upstream backend object.
 }
 \description{
-Get a native CellChat-family object
+Get an upstream CellChat-family object
 }

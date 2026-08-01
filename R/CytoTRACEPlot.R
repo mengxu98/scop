@@ -25,7 +25,8 @@
 #' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunCytoTRACE(
 #'   pancreas_sub,
-#'   species = "Mus_musculus"
+#'   species = "Mus_musculus",
+#'   backend = "cpp"
 #' )
 #'
 #' CytoTRACEPlot(

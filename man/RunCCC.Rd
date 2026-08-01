@@ -31,7 +31,7 @@ arguments and should be called through \code{\link[=RunNichenetr]{RunNichenetr()
 corresponding wrapper. For example, use \code{method_params$CellphoneDB$pvalue}
 for CellphoneDB-specific parameters.}
 
-\item{backend}{Backend used for scop post-processing and unified CCC table
+\item{backend}{Backend used only for result post-processing and unified CCC table
 aggregation. The upstream CellChat, CellphoneDB, and LIANA inference logic is
 unchanged.}
 

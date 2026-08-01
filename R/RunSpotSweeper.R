@@ -4,7 +4,7 @@
 #' Run `SpotSweeper` spatially aware spot-level quality control on a spatial
 #' `Seurat` object. The wrapper computes standard spot QC metrics, runs local
 #' outlier detection for each metric, optionally runs regional artifact
-#' detection per sample, and writes scop-style pass/fail metadata that can be
+#' detection per sample, and writes standardized pass/fail metadata that can be
 #' visualized with [SpatialSpotPlot()].
 #'
 #' @md
