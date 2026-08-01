@@ -135,7 +135,7 @@ test_that("CellScoring Seurat backends receive the same public seed", {
   )
 })
 
-test_that("CytoTRACE2 defaults to cpp backend", {
-  expect_identical(eval(formals(RunCytoTRACE.Seurat)$backend)[[1]], "cpp")
-  expect_identical(eval(formals(RunCytoTRACE.default)$backend)[[1]], "cpp")
+test_that("CytoTRACE2 defaults to the official R backend", {
+  expect_identical(eval(formals(RunCytoTRACE.Seurat)$backend)[[1]], "r")
+  expect_identical(eval(formals(RunCytoTRACE.default)$backend)[[1]], "r")
 })

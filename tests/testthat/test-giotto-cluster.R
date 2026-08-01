@@ -86,9 +86,10 @@ test_that("RunGiottoCluster errors before mutating non-Seurat input", {
   )
 })
 
-test_that("Giotto availability uses the repository registered by SCOP", {
+test_that("Giotto availability uses the configured repository fallback", {
   checked <- NULL
   testthat::local_mocked_bindings(
+    giotto_is_installed = function() FALSE,
     check_r = function(repository, verbose = FALSE) {
       checked <<- repository
       list(Giotto = TRUE)

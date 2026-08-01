@@ -281,7 +281,7 @@ test_that("RunCellQC appends feature-QC arguments after legacy arguments", {
   )
 })
 
-test_that("db_scds cxds path does not run hybrid backend", {
+test_that("Runscds cxds path does not run hybrid backend", {
   skip_if_not_installed("scds")
   skip_if_not_installed("SingleCellExperiment")
 
@@ -311,7 +311,7 @@ test_that("db_scds cxds path does not run hybrid backend", {
   )
 
   out <- suppressWarnings(
-    db_scds(
+    Runscds(
       srt,
       method = "cxds",
       db_rate = 0.5,
@@ -325,7 +325,34 @@ test_that("db_scds cxds path does not run hybrid backend", {
   expect_false("db.scds_hybrid_score" %in% colnames(out[[]]))
 })
 
-test_that("db_Scrublet passes integer PCA component arguments", {
+test_that("Runscds bcds supports the current xgboost interface", {
+  skip_if_not_installed("scds")
+  skip_if_not_installed("xgboost")
+
+  set.seed(42)
+  counts <- Matrix::rsparsematrix(30, 20, density = 0.35)
+  counts@x <- pmax(1, round(abs(counts@x) * 4))
+  rownames(counts) <- paste0("g", seq_len(nrow(counts)))
+  colnames(counts) <- paste0("c", seq_len(ncol(counts)))
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+
+  out <- suppressWarnings(
+    Runscds(
+      srt,
+      method = "bcds",
+      db_rate = 0.1,
+      data_type = "raw_counts",
+      ntop = 20,
+      nmax = 2,
+      verbose = FALSE
+    )
+  )
+
+  expect_true(all(is.finite(out$db.scds_bcds_score)))
+  expect_setequal(unique(out$db.scds_bcds_class), c("singlet", "doublet"))
+})
+
+test_that("RunScrublet passes integer PCA component arguments", {
   counts <- Matrix::Matrix(
     c(
       1, 0, 2, 0,
@@ -349,6 +376,7 @@ test_that("db_Scrublet passes integer PCA component arguments", {
   }
   scrublet <- list(
     Scrublet = function(...) {
+      observed$constructor_args <- list(...)
       scrub
     }
   )
@@ -369,7 +397,7 @@ test_that("db_Scrublet passes integer PCA component arguments", {
     .package = "reticulate"
   )
 
-  out <- db_Scrublet(
+  out <- RunScrublet(
     srt,
     db_rate = 0.01,
     n_prin_comps = 10,
@@ -382,5 +410,67 @@ test_that("db_Scrublet passes integer PCA component arguments", {
   expect_type(observed$args$n_prin_comps, "integer")
   expect_type(observed$args$min_counts, "integer")
   expect_type(observed$args$min_cells, "integer")
+  expect_s4_class(observed$constructor_args[[1]], "sparseMatrix")
+  expect_equal(dim(observed$constructor_args[[1]]), c(ncol(srt), nrow(srt)))
   expect_true("db.Scrublet_score" %in% colnames(out[[]]))
+})
+
+test_that("RunDoubletCalling dispatches to Run-prefixed backends", {
+  counts <- methods::as(Matrix::Matrix(
+    matrix(c(1, 0, 2, 3), nrow = 2),
+    sparse = TRUE
+  ), "dgCMatrix")
+  rownames(counts) <- c("g1", "g2")
+  colnames(counts) <- c("c1", "c2")
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  observed <- new.env(parent = emptyenv())
+
+  testthat::local_mocked_bindings(
+    RunScrublet = function(srt, db_rate, data_type, ...) {
+      observed$db_rate <- db_rate
+      observed$data_type <- data_type
+      srt$dispatch <- "RunScrublet"
+      srt
+    },
+    .package = "scop"
+  )
+
+  out <- RunDoubletCalling(
+    srt,
+    db_method = "Scrublet",
+    db_rate = 0.02,
+    data_type = "raw_counts",
+    verbose = FALSE
+  )
+
+  expect_identical(observed$db_rate, 0.02)
+  expect_identical(observed$data_type, "raw_counts")
+  expect_identical(unique(out$dispatch), "RunScrublet")
+})
+
+test_that("deprecated doublet callers forward to Run-prefixed replacements", {
+  testthat::local_mocked_bindings(
+    RunscDblFinder = function(...) "RunscDblFinder",
+    Runscds = function(...) "Runscds",
+    RunScrublet = function(...) "RunScrublet",
+    RunDoubletDetection = function(...) "RunDoubletDetection",
+    .package = "scop"
+  )
+
+  expect_warning(
+    expect_identical(db_scDblFinder(value = 1), "RunscDblFinder"),
+    "removed in scop 1.0.0"
+  )
+  expect_warning(
+    expect_identical(db_scds(value = 1), "Runscds"),
+    "removed in scop 1.0.0"
+  )
+  expect_warning(
+    expect_identical(db_Scrublet(value = 1), "RunScrublet"),
+    "removed in scop 1.0.0"
+  )
+  expect_warning(
+    expect_identical(db_DoubletDetection(value = 1), "RunDoubletDetection"),
+    "removed in scop 1.0.0"
+  )
 })

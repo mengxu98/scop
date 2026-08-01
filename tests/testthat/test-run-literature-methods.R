@@ -88,12 +88,21 @@ test_that("FitDevo vectorized Spearman weights match the legacy row-wise path", 
   legacy[!is.finite(legacy)] <- 0
 
   expect_equal(
-    fitdevo_spearman_weights(scaled, target),
+    fitdevo_spearman_weights(scaled, target, backend = "r"),
+    legacy,
+    tolerance = 1e-14
+  )
+  expect_equal(
+    fitdevo_spearman_weights(scaled, target, backend = "cpp"),
     legacy,
     tolerance = 1e-14
   )
   expect_identical(
-    fitdevo_spearman_weights(scaled, c(1, 2, NA_real_, 3, 4)),
+    fitdevo_spearman_weights(
+      scaled,
+      c(1, 2, NA_real_, 3, 4),
+      backend = "cpp"
+    ),
     stats::setNames(numeric(nrow(scaled)), rownames(scaled))
   )
 })

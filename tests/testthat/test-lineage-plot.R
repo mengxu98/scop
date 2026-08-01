@@ -1,11 +1,11 @@
 make_lineage_plot_srt <- function(ncells = 3000L) {
   cells <- paste0("cell", seq_len(ncells))
   counts <- Matrix::sparseMatrix(
-    i = rep.int(1L, ncells),
-    j = seq_len(ncells),
+    i = rep.int(1:2, ncells),
+    j = rep(seq_len(ncells), each = 2L),
     x = 1,
-    dims = c(1L, ncells),
-    dimnames = list("gene1", cells)
+    dims = c(2L, ncells),
+    dimnames = list(c("gene1", "gene2"), cells)
   )
   srt <- Seurat::CreateSeuratObject(counts = counts)
   embedding <- cbind(

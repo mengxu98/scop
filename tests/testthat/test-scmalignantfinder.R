@@ -35,6 +35,9 @@ with_mock_scmalignantfinder <- function(funs, code) {
       expect_identical(layer_x, "counts")
       list(cells = colnames(srt))
     },
+    python_anndata_from_matrix = function(x, ...) {
+      list(cells = colnames(x))
+    },
     import_scmalignantfinder = function(convert = TRUE) {
       funs
     }
@@ -245,6 +248,7 @@ test_that("RunscMalignantRegion appends spatial region outputs", {
       signature_gmt = gmt,
       spatial.cols = c("x", "y"),
       spatial_key = "custom_spatial",
+      backend = "python",
       verbose = FALSE
     )
   })
@@ -268,6 +272,7 @@ test_that("RunscMalignantRegion rejects invalid spatial metadata", {
       srt,
       signature_gmt = gmt,
       spatial.cols = c("x", "bad"),
+      backend = "python",
       verbose = FALSE
     ),
     "finite numeric"
@@ -277,6 +282,7 @@ test_that("RunscMalignantRegion rejects invalid spatial metadata", {
       srt,
       signature_gmt = gmt,
       spatial.cols = "x",
+      backend = "python",
       verbose = FALSE
     ),
     "exactly two"
@@ -307,6 +313,7 @@ test_that("RunscMalignantStates appends cancer state scores", {
     out <- RunscMalignantStates(
       srt,
       gene_sets = gmt,
+      backend = "python",
       verbose = FALSE
     )
   })
@@ -316,6 +323,119 @@ test_that("RunscMalignantStates appends cancer state scores", {
   expect_identical(anyDuplicated(state_cols), 0L)
   expect_equal(unname(out[[state_cols[[1]]]][, 1]), c(0.1, 0.2, 0.3))
   expect_true("scMalignantFinder_states" %in% names(out@tools))
+})
+
+test_that("RunscMalignantRegion native backend scores, clusters, and smooths", {
+  set.seed(20260730)
+  counts <- matrix(
+    rpois(80 * 12, lambda = 2),
+    nrow = 80,
+    dimnames = list(paste0("Gene", 1:80), paste0("Cell", 1:12))
+  )
+  counts[1:8, 1:6] <- counts[1:8, 1:6] + 10
+  srt <- Seurat::CreateSeuratObject(
+    methods::as(Matrix::Matrix(counts, sparse = TRUE), "dgCMatrix")
+  )
+  srt$malignancy_probability <- c(rep(0.9, 6), rep(0.1, 6))
+  srt$x <- rep(1:6, 2)
+  srt$y <- rep(c(1, 10), each = 6)
+  gmt <- tempfile(fileext = ".gmt")
+  writeLines(
+    paste(
+      "Malignant_up",
+      "na",
+      paste0("Gene", 1:8),
+      sep = intToUtf8(9)
+    ),
+    gmt
+  )
+
+  out <- RunscMalignantRegion(
+    srt,
+    signature_gmt = gmt,
+    spatial.cols = c("x", "y"),
+    nclus = 2,
+    backend = "cpp",
+    verbose = FALSE
+  )
+
+  expect_true(all(c(
+    "scMalignantFinder_region_cluster",
+    "scMalignantFinder_region_prediction",
+    "scMalignantFinder_Malignant_up"
+  ) %in% colnames(out[[]])))
+  expect_gt(mean(out$scMalignantFinder_Malignant_up[1:6]), mean(
+    out$scMalignantFinder_Malignant_up[7:12]
+  ))
+  expect_identical(
+    out@tools$scMalignantFinder_region$parameters$backend,
+    "cpp"
+  )
+})
+
+test_that("RunscMalignantRegion routes unsupported native inputs to Python", {
+  gmt <- tempfile(fileext = ".gmt")
+  writeLines(
+    paste("Malignant_up", "na", "Gene1", "Gene2", sep = intToUtf8(9)),
+    gmt
+  )
+  expect_error(
+    RunscMalignantRegion(
+      h5ad = "input.h5ad",
+      signature_gmt = gmt,
+      backend = "cpp",
+      return_seurat = FALSE,
+      verbose = FALSE
+    ),
+    "does not support"
+  )
+  expect_error(
+    RunscMalignantRegion(
+      make_scmf_seurat(),
+      signature_gmt = gmt,
+      image = TRUE,
+      backend = "cpp",
+      verbose = FALSE
+    ),
+    "does not support"
+  )
+})
+
+test_that("RunscMalignantStates native backend scores GMT signatures", {
+  set.seed(20260730)
+  counts <- matrix(
+    sample(0:6, 30 * 3, replace = TRUE),
+    nrow = 30,
+    dimnames = list(paste0("Gene", 1:30), paste0("Cell", 1:3))
+  )
+  srt <- Seurat::CreateSeuratObject(
+    methods::as(Matrix::Matrix(counts, sparse = TRUE), "dgCMatrix")
+  )
+  gmt <- tempfile(fileext = ".gmt")
+  writeLines(
+    c(
+      paste("StateA", "na", "Gene1", "Gene2", sep = intToUtf8(9)),
+      paste("StateB", "na", "Gene3", "Gene4", sep = intToUtf8(9))
+    ),
+    gmt
+  )
+
+  out <- RunscMalignantStates(
+    srt,
+    gene_sets = gmt,
+    backend = "cpp",
+    verbose = FALSE
+  )
+  state_cols <- c(
+    "scMalignantState_StateA",
+    "scMalignantState_StateB"
+  )
+  expect_true(all(state_cols %in% colnames(out[[]])))
+  expect_true(all(is.finite(as.matrix(out[[]][, state_cols]))))
+  expect_identical(
+    out@tools$scMalignantFinder_states$parameters$backend,
+    "cpp"
+  )
 })
 
 test_that("scMalignantFinder Python bridge is installed as an isolated module", {
@@ -331,8 +451,19 @@ test_that("scMalignantFinder Python bridge is installed as an isolated module", 
   expect_match(source, "def run_scmalignant_region", fixed = TRUE)
   expect_match(source, "def run_scmalignant_states", fixed = TRUE)
 
-  python <- Sys.which("python3")
-  skip_if(!nzchar(python), "python3 is not available")
+  python <- unname(Sys.which(c("python3", "python")))
+  python <- python[nzchar(python)][1]
+  skip_if(is.na(python), "Python is not available")
+  probe <- suppressWarnings(system2(
+    python,
+    "--version",
+    stdout = TRUE,
+    stderr = TRUE
+  ))
+  skip_if(
+    !is.null(attr(probe, "status")) && attr(probe, "status") != 0L,
+    "The configured Python launcher is not executable"
+  )
   out <- system2(
     python,
     c("-m", "py_compile", py_file),

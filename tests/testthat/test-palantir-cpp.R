@@ -397,6 +397,23 @@ test_that("palantir_pseudotime_cpp rejects invalid start_cell", {
   )
 })
 
+test_that("palantir_pseudotime_cpp rejects disconnected waypoint graphs", {
+  cluster_a <- cbind(seq(0, 0.05, length.out = 6), 0)
+  cluster_b <- cbind(seq(10, 10.05, length.out = 6), 10)
+  ms_data <- rbind(cluster_a, cluster_b)
+
+  expect_error(
+    palantir_pseudotime_cpp(
+      ms_data = ms_data,
+      start_cell = 0L,
+      waypoints = as.integer(c(1, 4, 7, 10)),
+      knn = 3L,
+      max_iterations = 5L
+    ),
+    "kNN graph is disconnected"
+  )
+})
+
 test_that("palantir_pseudotime_cpp is deterministic", {
   n <- 12
   d <- 2

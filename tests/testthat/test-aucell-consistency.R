@@ -82,6 +82,47 @@ test_that("AUCell top-k ranks preserve the full native AUC", {
   expect_equal(topk, full, tolerance = 1e-12)
 })
 
+test_that("AUCell numpy ties reproduce pySCENIC RandomState column order", {
+  expr <- methods::as(
+    Matrix::Matrix(matrix(0, nrow = 10L, ncol = 1L), sparse = TRUE),
+    "dgCMatrix"
+  )
+  rownames(expr) <- paste0("gene", seq_len(nrow(expr)))
+  colnames(expr) <- "cell1"
+  gene_sets <- stats::setNames(
+    lapply(rownames(expr), function(gene) gene),
+    rownames(expr)
+  )
+
+  observed <- run_aucell_scores(
+    expr,
+    gene_sets,
+    strategy = "topk",
+    algorithm = "ctxcore",
+    seed = 2L,
+    tie_method = "numpy",
+    auc_threshold = 1
+  )
+  sparse_observed <- run_aucell_scores(
+    expr,
+    gene_sets,
+    strategy = "sparse",
+    algorithm = "ctxcore",
+    seed = 2L,
+    tie_method = "numpy",
+    auc_threshold = 1
+  )
+
+  # np.random.RandomState(2).permutation(10):
+  # 4, 1, 5, 0, 7, 2, 3, 6, 9, 8 (zero-based gene indices).
+  expect_equal(
+    unname(observed[1L, ]),
+    c(0.6, 0.8, 0.4, 0.3, 0.9, 0.7, 0.2, 0.5, 0, 0.1),
+    tolerance = 1e-12
+  )
+  expect_equal(sparse_observed, observed, tolerance = 1e-12)
+})
+
 test_that("CellScoring AUCell backend switch controls R and C++ paths", {
   skip_if_not_installed("AUCell")
   skip_if_not_installed("Seurat")
