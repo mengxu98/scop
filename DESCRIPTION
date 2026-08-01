@@ -48,6 +48,7 @@ Suggests:
     batchelor,
     Biobase,
     BiocNeighbors,
+    BiocParallel,
     biomaRt,
     callr,
     cluster,
