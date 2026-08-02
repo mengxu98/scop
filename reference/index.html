@@ -25,14 +25,10 @@
     <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
     <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
     <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/interactive-scexplorer-workflow.html">Interactive SCExplorer workflow</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
     <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges and Giotto compatibility</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Cell-cell communication</h6></li>
-    <li><a class="dropdown-item" href="../articles/cell-cell-communication-workflow.html">Cell-cell communication workflow</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -57,7 +53,7 @@
 
     <div class="section level2">
 
-      <h3 id="spatial-and-cellular-omics-analysis-pipeline">Spatial and Cellular Omics Analysis Pipeline<a class="anchor" aria-label="anchor" href="#spatial-and-cellular-omics-analysis-pipeline"></a></h3>
+      <h3 id="single-cell-and-spatial-omics-analysis-pipeline">Single-cell and Spatial omics analysis pipeline<a class="anchor" aria-label="anchor" href="#single-cell-and-spatial-omics-analysis-pipeline"></a></h3>
 
 
       <dl></dl></div><div class="section level2">
@@ -70,21 +66,14 @@
           <code><a href="scop-package.html">scop</a></code> <code><a href="scop-package.html">scop-package</a></code>
 
         </dt>
-        <dd>Spatial and single-cell omics analysis pipeline</dd>
+        <dd>Single-cell and Spatial omics analysis pipeline</dd>
 
         <dt>
 
-          <code><a href="scop_logo.html">scop_logo()</a></code>
+          <code><a href="scop_logo.html">scop_logo()</a></code> <code><a href="scop_logo.html">print(<i>&lt;scop_logo&gt;</i>)</a></code>
 
         </dt>
         <dd>scop logo</dd>
-
-        <dt>
-
-          <code><a href="print.scop_logo.html">print(<i>&lt;scop_logo&gt;</i>)</a></code>
-
-        </dt>
-        <dd>print scop logo</dd>
       </dl></div><div class="section level2">
 
       <h3 id="package-and-environment-management">Package and Environment Management<a class="anchor" aria-label="anchor" href="#package-and-environment-management"></a></h3>
@@ -250,28 +239,28 @@
 
       <dl><dt>
 
-          <code><a href="db_DoubletDetection.html">db_DoubletDetection()</a></code>
+          <code><a href="RunDoubletDetection.html">RunDoubletDetection()</a></code>
 
         </dt>
         <dd>Run doublet-calling with DoubletDetection</dd>
 
         <dt>
 
-          <code><a href="db_scDblFinder.html">db_scDblFinder()</a></code>
+          <code><a href="RunscDblFinder.html">RunscDblFinder()</a></code>
 
         </dt>
         <dd>Run doublet-calling with scDblFinder</dd>
 
         <dt>
 
-          <code><a href="db_scds.html">db_scds()</a></code>
+          <code><a href="Runscds.html">Runscds()</a></code>
 
         </dt>
         <dd>Run doublet-calling with scds</dd>
 
         <dt>
 
-          <code><a href="db_Scrublet.html">db_Scrublet()</a></code>
+          <code><a href="RunScrublet.html">RunScrublet()</a></code>
 
         </dt>
         <dd>Run doublet-calling with Scrublet</dd>
@@ -345,14 +334,14 @@
 
       <dl><dt>
 
-          <code><a href="standard_scop.html">standard_scop()</a></code>
+          <code><a href="RunStandardWorkflow.html">RunStandardWorkflow()</a></code>
 
         </dt>
         <dd>Standard workflow for scop</dd>
 
         <dt>
 
-          <code><a href="integration_scop.html">integration_scop()</a></code>
+          <code><a href="RunIntegration.html">RunIntegration()</a></code>
 
         </dt>
         <dd>The integration workflow</dd>
@@ -684,6 +673,13 @@
 
         <dt>
 
+          <code><a href="RunCHOIR.html">RunCHOIR()</a></code>
+
+        </dt>
+        <dd>Run CHOIR clustering</dd>
+
+        <dt>
+
           <code><a href="RunDM.html">RunDM()</a></code>
 
         </dt>
@@ -956,7 +952,7 @@
 
         <dt>
 
-          <code><a href="SeuratToScopGiotto.html">SeuratToScopGiotto()</a></code>
+          <code><a href="SeuratToGiotto2.html">SeuratToGiotto2()</a></code>
 
         </dt>
         <dd>Convert Seurat to an internal Giotto workflow object</dd>
@@ -1452,7 +1448,7 @@
           <code><a href="RunSciBet.html">RunSciBet()</a></code>
 
         </dt>
-        <dd>Annotate single cells using native SciBet</dd>
+        <dd>Annotate single cells with a C++ SciBet-compatible classifier</dd>
 
         <dt>
 
@@ -1973,6 +1969,13 @@
 
       <dl><dt>
 
+          <code><a href="RunCell2fate.html">RunCell2fate()</a></code>
+
+        </dt>
+        <dd>Run Cell2fate RNA velocity analysis</dd>
+
+        <dt>
+
           <code><a href="RunCellRank.html">RunCellRank()</a></code>
 
         </dt>
@@ -2131,6 +2134,27 @@
 
         <dt>
 
+          <code><a href="ListCCCMethods.html">ListCCCMethods()</a></code>
+
+        </dt>
+        <dd>List SCOP cell-cell communication methods</dd>
+
+        <dt>
+
+          <code><a href="CCCResultInfo.html">CCCResultInfo()</a></code>
+
+        </dt>
+        <dd>Inspect CCC results stored in a Seurat object</dd>
+
+        <dt>
+
+          <code><a href="GetCCCResult.html">GetCCCResult()</a></code>
+
+        </dt>
+        <dd>Get a standardized or native CCC result</dd>
+
+        <dt>
+
           <code><a href="RunSecAct.html">RunSecAct()</a></code>
 
         </dt>
@@ -2176,7 +2200,7 @@
           <code><a href="GetCCCObject.html">GetCCCObject()</a></code>
 
         </dt>
-        <dd>Get a native CellChat-family object</dd>
+        <dd>Get an upstream CellChat-family object</dd>
 
         <dt>
 
@@ -2191,6 +2215,13 @@
 
         </dt>
         <dd>Run LIANA cell-cell communication analysis</dd>
+
+        <dt>
+
+          <code><a href="ListLIANAResources.html">ListLIANAResources()</a></code>
+
+        </dt>
+        <dd>List LIANA ligand-receptor resources</dd>
 
         <dt>
 
@@ -2336,7 +2367,7 @@
           <code><a href="RunSCENICPlus.html">RunSCENICPlus()</a></code>
 
         </dt>
-        <dd>Run SCENICPlus-style eGRN analysis</dd>
+        <dd>Run an approximate SCENICPlus-compatible eGRN analysis</dd>
       </dl></div><div class="section level2">
 
       <h3 id="gene-regulatory-network-plots">Gene Regulatory Network Plots<a class="anchor" aria-label="anchor" href="#gene-regulatory-network-plots"></a></h3>
@@ -2525,14 +2556,14 @@
 
       <dl><dt>
 
-          <code><a href="ListScopDatasets.html">ListScopDatasets()</a></code>
+          <code><a href="ListExternalDatasets.html">ListExternalDatasets()</a></code>
 
         </dt>
         <dd>List SCOP external datasets</dd>
 
         <dt>
 
-          <code><a href="LoadScopDataset.html">LoadScopDataset()</a></code>
+          <code><a href="LoadExternalDataset.html">LoadExternalDataset()</a></code>
 
         </dt>
         <dd>Load a SCOP external dataset</dd>
