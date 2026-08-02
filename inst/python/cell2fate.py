@@ -18,6 +18,23 @@ from typing import Any
 import anndata as ad
 import numpy as np
 import pandas as pd
+from pathlib import Path
+import importlib.util
+
+_LOG_MESSAGE_ENV = os.environ.get("SCOP_LOG_MESSAGE_PATH")
+_LOG_MESSAGE_PATH = (
+    Path(_LOG_MESSAGE_ENV)
+    if _LOG_MESSAGE_ENV
+    else Path(__file__).resolve().parent / "log_message.py"
+)
+if not _LOG_MESSAGE_PATH.exists():
+    raise ImportError(f"Cannot load log_message module from {_LOG_MESSAGE_PATH}")
+_LOG_MESSAGE_SPEC = importlib.util.spec_from_file_location(
+    "scop_log_message", _LOG_MESSAGE_PATH
+)
+_LOG_MESSAGE_MODULE = importlib.util.module_from_spec(_LOG_MESSAGE_SPEC)
+_LOG_MESSAGE_SPEC.loader.exec_module(_LOG_MESSAGE_MODULE)
+log_message = _LOG_MESSAGE_MODULE.log_message
 
 
 BACKEND_COMMIT = "c03d1ca0bb963f550001c6070d4986a61ec8456a"
@@ -58,10 +75,10 @@ def _result_lock(result_dir: Path):
             0o600,
         )
     except FileExistsError as error:
-        raise RuntimeError(
+        log_message(
             "Another Cell2fate run is using result_dir. If no run is active, "
-            "remove the stale .cell2fate.lock file."
-        ) from error
+            "remove the stale .cell2fate.lock file.",
+          message_type="error")
     token = f"{os.getpid()}-{os.urandom(16).hex()}"
     try:
         with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
@@ -78,14 +95,14 @@ def _result_lock(result_dir: Path):
 
 def _assert_external_lock(result_dir: Path, token: Any) -> None:
     if not isinstance(token, str) or not token:
-        raise RuntimeError("Cell2fate external result lock token is missing")
+        log_message("Cell2fate external result lock token is missing", message_type="error")
     lock_path = result_dir / ".cell2fate.lock"
     try:
         observed = lock_path.read_text(encoding="utf-8").strip()
     except OSError as error:
-        raise RuntimeError("Cell2fate external result lock is missing") from error
+        log_message("Cell2fate external result lock is missing", message_type="error")
     if observed != token:
-        raise RuntimeError("Cell2fate external result lock owner changed")
+        log_message("Cell2fate external result lock owner changed", message_type="error")
 
 
 def _sha256(path: Path) -> str:
@@ -123,18 +140,18 @@ def _installed_backend_commit() -> str:
     distribution = importlib.metadata.distribution("cell2fate")
     direct_url = distribution.read_text("direct_url.json")
     if direct_url is None:
-        raise RuntimeError(
+        log_message(
             "Cell2fate installation has no Git provenance; recreate the "
-            "cell2fate_env with scop::PrepareEnv(modules = 'cell2fate', force = TRUE)"
-        )
+            "cell2fate_env with scop::PrepareEnv(modules = 'cell2fate', force = TRUE)",
+          message_type="error")
     metadata = json.loads(direct_url)
     observed = metadata.get("vcs_info", {}).get("commit_id")
     if observed != BACKEND_COMMIT:
-        raise RuntimeError(
+        log_message(
             "Cell2fate backend commit mismatch: expected "
             f"{BACKEND_COMMIT}, observed {observed or 'unknown'}. Recreate the "
-            "cell2fate_env with scop::PrepareEnv(modules = 'cell2fate', force = TRUE)"
-        )
+            "cell2fate_env with scop::PrepareEnv(modules = 'cell2fate', force = TRUE)",
+          message_type="error")
     return observed
 
 
@@ -184,7 +201,7 @@ def _output_paths(result_dir: Path) -> dict[str, Path]:
 
 def _assert_safe_result_paths(result_dir: Path) -> None:
     if result_dir.is_symlink():
-        raise RuntimeError("Cell2fate result_dir must not be a symbolic link")
+        log_message("Cell2fate result_dir must not be a symbolic link", message_type="error")
     root = result_dir.resolve(strict=False)
     paths = _output_paths(result_dir)
     managed = tuple(paths.values()) + (
@@ -197,15 +214,15 @@ def _assert_safe_result_paths(result_dir: Path) -> None:
     )
     for path in managed:
         if path.is_symlink():
-            raise RuntimeError(
-                f"Cell2fate managed path must not be a symbolic link: {path}"
-            )
+            log_message(
+                f"Cell2fate managed path must not be a symbolic link: {path}",
+              message_type="error")
         try:
             path.resolve(strict=False).relative_to(root)
         except ValueError as error:
-            raise RuntimeError(
-                f"Cell2fate managed path escapes result_dir: {path}"
-            ) from error
+            log_message(
+                f"Cell2fate managed path escapes result_dir: {path}",
+              message_type="error")
 
 
 def _ensure_output_directories(paths: dict[str, Path]) -> None:
@@ -252,7 +269,7 @@ def _artifact_records(
     for name, path in _artifact_paths(paths, require_velocity).items():
         size = path.stat().st_size
         if size <= 0:
-            raise RuntimeError(f"Cell2fate artifact is empty: {name}")
+            log_message(f"Cell2fate artifact is empty: {name}", message_type="error")
         records[name] = {"size": size, "sha256": _sha256(path)}
     return records
 
@@ -436,14 +453,14 @@ def _posterior_metadata(
         )
     ]
     if "Time (hours)" not in selected:
-        raise KeyError("Cell2fate posterior did not contain 'Time (hours)'")
+        log_message("Cell2fate posterior did not contain 'Time (hours)'", message_type="error")
     uncertainty = [
         column for column in selected if column.startswith("Time Uncertainty")
     ]
     if len(uncertainty) != 1:
-        raise KeyError(
-            "Cell2fate posterior did not contain one time uncertainty column"
-        )
+        log_message(
+            "Cell2fate posterior did not contain one time uncertainty column",
+          message_type="error")
     expected_modules = {
         f"Module {module} {metric}"
         for module in range(n_modules)
@@ -455,12 +472,12 @@ def _posterior_metadata(
         if re.fullmatch(r"Module\s+\d+\s+(Activation|State)", column)
     }
     if observed_modules != expected_modules:
-        raise KeyError(
-            "Cell2fate posterior module summaries do not match the fitted modules"
-        )
+        log_message(
+            "Cell2fate posterior module summaries do not match the fitted modules",
+          message_type="error")
     expected_columns = {"Time (hours)", uncertainty[0], *expected_modules}
     if set(selected) != expected_columns:
-        raise KeyError("Cell2fate posterior contained unexpected summary columns")
+        log_message("Cell2fate posterior contained unexpected summary columns", message_type="error")
     output = adata.obs.loc[:, selected].copy()
     continuous = [
         column
@@ -473,32 +490,32 @@ def _posterior_metadata(
         try:
             output[column] = pd.to_numeric(output[column], errors="raise").astype(float)
         except (TypeError, ValueError) as error:
-            raise ValueError(
-                f"Cell2fate posterior metadata {column!r} must be numeric"
-            ) from error
+            log_message(
+                f"Cell2fate posterior metadata {column!r} must be numeric",
+              message_type="error")
     output.columns = [_safe_metadata_name(column, prefix) for column in selected]
     if output.columns.duplicated().any():
-        raise ValueError("Cell2fate posterior metadata names are not unique")
+        log_message("Cell2fate posterior metadata names are not unique", message_type="error")
     for column in output.select_dtypes(include=[np.number]).columns:
         if not np.isfinite(output[column].to_numpy(dtype=float)).all():
-            raise ValueError(
-                f"Cell2fate posterior metadata {column!r} contains non-finite values"
-            )
+            log_message(
+                f"Cell2fate posterior metadata {column!r} contains non-finite values",
+              message_type="error")
     output.index = output.index.astype(str)
     return output
 
 
 def _velocity_table(adata: ad.AnnData) -> pd.DataFrame:
     if "velocity" not in adata.layers:
-        raise KeyError("Cell2fate posterior did not contain a velocity layer")
+        log_message("Cell2fate posterior did not contain a velocity layer", message_type="error")
     values = adata.layers["velocity"]
     if hasattr(values, "toarray"):
         values = values.toarray()
     values = np.asarray(values, dtype=float)
     if values.shape != (adata.n_obs, adata.n_vars):
-        raise ValueError("Cell2fate velocity dimensions do not match the posterior")
+        log_message("Cell2fate velocity dimensions do not match the posterior", message_type="error")
     if not np.isfinite(values).all():
-        raise ValueError("Cell2fate velocity contains non-finite values")
+        log_message("Cell2fate velocity contains non-finite values", message_type="error")
     return pd.DataFrame(
         values,
         index=adata.obs_names.astype(str),
@@ -511,24 +528,24 @@ def _add_velocity_from_posterior(adata: ad.AnnData, model: Any) -> None:
     required = ("mu_expression", "beta_g", "gamma_g")
     missing = [key for key in required if key not in means]
     if missing:
-        raise KeyError(
+        log_message(
             "Cell2fate posterior is missing values required for velocity: "
-            + ", ".join(missing)
-        )
+            + ", ".join(missing),
+          message_type="error")
     expression = np.asarray(means["mu_expression"], dtype=float)
     beta = np.asarray(means["beta_g"], dtype=float)
     gamma = np.asarray(means["gamma_g"], dtype=float)
     if expression.shape != (adata.n_obs, adata.n_vars, 2):
-        raise ValueError(
-            "Cell2fate posterior expression dimensions do not match the data"
-        )
+        log_message(
+            "Cell2fate posterior expression dimensions do not match the data",
+          message_type="error")
     velocity = beta * expression[..., 0] - gamma * expression[..., 1]
     if velocity.shape != (adata.n_obs, adata.n_vars):
-        raise ValueError(
-            "Cell2fate posterior kinetic parameters do not match the data"
-        )
+        log_message(
+            "Cell2fate posterior kinetic parameters do not match the data",
+          message_type="error")
     if not np.isfinite(velocity).all():
-        raise ValueError("Cell2fate posterior velocity contains non-finite values")
+        log_message("Cell2fate posterior velocity contains non-finite values", message_type="error")
     adata.layers["velocity"] = velocity
 
 
@@ -560,10 +577,10 @@ def _run_locked(config: dict[str, Any], lock_token: str) -> None:
     owned_result = _is_owned_result(paths)
     stale_stages = _stale_stage_paths(result_dir)
     if stale_stages and not owned_result:
-        raise RuntimeError(
+        log_message(
             "result_dir contains unowned Cell2fate staging paths; refusing "
-            "to remove them"
-        )
+            "to remove them",
+          message_type="error")
     if owned_result:
         _cleanup_stale_stages(result_dir, lock_token)
 
@@ -579,7 +596,7 @@ def _run_locked(config: dict[str, Any], lock_token: str) -> None:
         manifest["reused"] = True
         manifest["parameters_sha256"] = parameter_fingerprint
         _write_json(manifest, paths["manifest"])
-        print("Reuse matching Cell2fate result")
+        log_message("Reuse matching Cell2fate result")
         return
     managed_paths = tuple(
         paths[key]
@@ -587,15 +604,15 @@ def _run_locked(config: dict[str, Any], lock_token: str) -> None:
     )
     existing = any(path.exists() for path in managed_paths)
     if existing and not owned_result:
-        raise RuntimeError(
+        log_message(
             "result_dir contains paths managed by Cell2fate but has no valid "
-            "RunCell2fate ownership marker; refusing to replace them"
-        )
+            "RunCell2fate ownership marker; refusing to replace them",
+          message_type="error")
     if existing and not bool(config.get("overwrite", False)):
-        raise RuntimeError(
+        log_message(
             "Existing Cell2fate artifacts do not match the current input or "
-            "parameters; set overwrite=TRUE to replace them"
-        )
+            "parameters; set overwrite=TRUE to replace them",
+          message_type="error")
     result_dir.mkdir(parents=True, exist_ok=True)
     _write_json(
         {
@@ -612,15 +629,15 @@ def _run_locked(config: dict[str, Any], lock_token: str) -> None:
         _set_seed(seed)
         adata = ad.read_h5ad(input_path)
         if "unspliced" not in adata.layers:
-            raise KeyError("Input AnnData is missing the 'unspliced' layer")
+            log_message("Input AnnData is missing the 'unspliced' layer", message_type="error")
         adata.layers["spliced"] = adata.X.copy()
         original_columns = set(str(column) for column in adata.obs.columns)
 
         cluster_column = str(config["cluster_column"])
         if cluster_column not in adata.obs:
-            raise KeyError(
-                f"Input AnnData is missing cluster column {cluster_column!r}"
-            )
+            log_message(
+                f"Input AnnData is missing cluster column {cluster_column!r}",
+              message_type="error")
         cells_per_cluster = config.get("cells_per_cluster")
         if cells_per_cluster is None:
             cells_per_cluster = adata.n_obs
@@ -636,15 +653,15 @@ def _run_locked(config: dict[str, Any], lock_token: str) -> None:
             n_var_genes=n_var_genes,
         )
         if adata.n_obs < 2 or adata.n_vars < 2:
-            raise ValueError(
-                "Cell2fate preprocessing retained fewer than two cells or genes"
-            )
+            log_message(
+                "Cell2fate preprocessing retained fewer than two cells or genes",
+              message_type="error")
 
         n_modules = config.get("n_modules")
         if n_modules is None:
             n_modules = int(c2f.utils.get_max_modules(adata))
         if int(n_modules) < 1:
-            raise ValueError("Cell2fate requires at least one module")
+            log_message("Cell2fate requires at least one module", message_type="error")
 
         c2f.Cell2fate_DynamicalModel.setup_anndata(
             adata,

@@ -524,13 +524,13 @@ ccc_prepare_combined_object <- function(
       all(c("CellphoneDB", "LIANA") %in% (bundle$methods %||% character(0))) &&
       "cellphonedb" %in% liana_methods
   ) {
-    warning(
+    log_message(
       paste0(
         "Standalone CellphoneDB and the LIANA consensus are not independent ",
         "evidence because LIANA includes its CellPhoneDB scoring method; ",
         "interpret this as backend agreement, not independent validation"
       ),
-      call. = FALSE
+      message_type = "warning"
     )
   }
   bundle$long_table <- ccc_combine_methods(bundle$long_table, mode = combine_methods)

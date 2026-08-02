@@ -1,5 +1,6 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 #include <RcppArmadillo.h>
+#include <thisutils/log_message.h>
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -256,10 +257,10 @@ NumericMatrix pseudotime_velocity_knn(
   const int k_use = neighbors.ncol();
 
   if (pseudotime.size() != n_cells) {
-    stop("pseudotime length must equal number of rows in x_emb");
+    thisutils::log_message("pseudotime length must equal number of rows in x_emb", "error");
   }
   if (neighbors.nrow() != n_cells) {
-    stop("neighbors must have the same number of rows as x_emb");
+    thisutils::log_message("neighbors must have the same number of rows as x_emb", "error");
   }
 
   // Convert to Armadillo
@@ -305,10 +306,10 @@ NumericMatrix pseudotime_velocity_gradient(
   const int k_use = neighbors.ncol();
 
   if (pseudotime.size() != n_cells) {
-    stop("pseudotime length must equal number of rows in x_emb");
+    thisutils::log_message("pseudotime length must equal number of rows in x_emb", "error");
   }
   if (neighbors.nrow() != n_cells) {
-    stop("neighbors must have the same number of rows as x_emb");
+    thisutils::log_message("neighbors must have the same number of rows as x_emb", "error");
   }
 
   arma::mat emb(x_emb.begin(), n_cells, n_dims, false);

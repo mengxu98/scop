@@ -1,5 +1,6 @@
 // [[Rcpp::depends(Rcpp)]]
 #include <Rcpp.h>
+#include <thisutils/log_message.h>
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -129,10 +130,10 @@ List bayesprism_gibbs_initial_cpp(
   const int n_genes = mixture.ncol();
   const int n_states = phi.nrow();
   if (phi.ncol() != n_genes) {
-    stop("phi columns must match mixture columns.");
+    thisutils::log_message("phi columns must match mixture columns.", "error");
   }
   if (gibbs_idx.size() == 0) {
-    stop("gibbs_idx must contain at least one iteration.");
+    thisutils::log_message("gibbs_idx must contain at least one iteration.", "error");
   }
 
   int max_iter = 0;
@@ -142,7 +143,7 @@ List bayesprism_gibbs_initial_cpp(
     }
   }
   if (max_iter < 1) {
-    stop("gibbs_idx must contain positive iteration indices.");
+    thisutils::log_message("gibbs_idx must contain positive iteration indices.", "error");
   }
 
   std::vector<unsigned char> keep_flag(static_cast<std::size_t>(max_iter + 1), 0);
@@ -154,7 +155,7 @@ List bayesprism_gibbs_initial_cpp(
   }
   const int n_kept = std::count(keep_flag.begin(), keep_flag.end(), static_cast<unsigned char>(1));
   if (n_kept == 0) {
-    stop("No retained Gibbs iterations after applying gibbs_idx.");
+    thisutils::log_message("No retained Gibbs iterations after applying gibbs_idx.", "error");
   }
 
   const double* mixture_ptr = REAL(mixture);
@@ -288,10 +289,10 @@ List bayesprism_gibbs_final_cpp(
   const int n_genes = mixture.ncol();
   const int n_types = phi.nrow();
   if (phi.ncol() != n_genes) {
-    stop("phi columns must match mixture columns.");
+    thisutils::log_message("phi columns must match mixture columns.", "error");
   }
   if (gibbs_idx.size() == 0) {
-    stop("gibbs_idx must contain at least one iteration.");
+    thisutils::log_message("gibbs_idx must contain at least one iteration.", "error");
   }
 
   int max_iter = 0;
@@ -301,7 +302,7 @@ List bayesprism_gibbs_final_cpp(
     }
   }
   if (max_iter < 1) {
-    stop("gibbs_idx must contain positive iteration indices.");
+    thisutils::log_message("gibbs_idx must contain positive iteration indices.", "error");
   }
 
   std::vector<unsigned char> keep_flag(static_cast<std::size_t>(max_iter + 1), 0);
@@ -313,7 +314,7 @@ List bayesprism_gibbs_final_cpp(
   }
   const int n_kept = std::count(keep_flag.begin(), keep_flag.end(), static_cast<unsigned char>(1));
   if (n_kept == 0) {
-    stop("No retained Gibbs iterations after applying gibbs_idx.");
+    thisutils::log_message("No retained Gibbs iterations after applying gibbs_idx.", "error");
   }
 
   const double* mixture_ptr = REAL(mixture);

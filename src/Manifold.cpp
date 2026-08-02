@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <thisutils/log_message.h>
 
 #include <algorithm>
 #include <cmath>
@@ -138,7 +139,7 @@ Rcpp::List manifold_exact_knn_cpp(
   const int rows = data.nrow();
   const int cols = data.ncol();
   if (rows < 2 || cols < 1 || k < 1 || k > rows || metric < 1 || metric > 4) {
-    Rcpp::stop("Invalid native manifold KNN inputs.");
+    thisutils::log_message("Invalid native manifold KNN inputs.", "error");
   }
   const double* matrix = data.begin();
   Rcpp::IntegerMatrix index(rows, k);
@@ -211,7 +212,7 @@ Rcpp::NumericMatrix pacmap_optimize_cpp(
     dimensions < 1 ||
     iterations < 1
   ) {
-    Rcpp::stop("Invalid PaCMAP native optimizer inputs.");
+    thisutils::log_message("Invalid PaCMAP native optimizer inputs.", "error");
   }
   const double* input = data.begin();
   std::mt19937 generator(static_cast<unsigned int>(seed));
@@ -357,7 +358,7 @@ Rcpp::NumericMatrix trimap_optimize_cpp(
     optimizer < 1 ||
     optimizer > 3
   ) {
-    Rcpp::stop("Invalid TriMap native optimizer inputs.");
+    thisutils::log_message("Invalid TriMap native optimizer inputs.", "error");
   }
   const double* input = data.begin();
   std::mt19937 generator(static_cast<unsigned int>(seed));
@@ -448,7 +449,7 @@ Rcpp::NumericMatrix trimap_optimize_cpp(
 
   double minimum_weight = R_PosInf;
   if (triplets.empty()) {
-    Rcpp::stop("TriMap requires at least one sampled triplet.");
+    thisutils::log_message("TriMap requires at least one sampled triplet.", "error");
   }
   for (std::vector<Triplet>::const_iterator it = triplets.begin();
        it != triplets.end(); ++it) {

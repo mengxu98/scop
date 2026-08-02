@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <thisutils/log_message.h>
 #include <algorithm>
 #include <cmath>
 #include <map>
@@ -19,7 +20,7 @@ NumericMatrix vector_weighted_arrows_cpp(
   const int n = centers.nrow();
   if (centers.ncol() != 2 || scores.size() != n ||
       embedding_range.size() != 4) {
-    stop("invalid VECTOR kernel dimensions");
+    thisutils::log_message("invalid VECTOR kernel dimensions", "error");
   }
   if (n < 2) {
     return NumericMatrix(0, 8);
@@ -133,7 +134,7 @@ NumericVector cytospace_estimate_fractions_cpp(
   const int cells = ref_expr.ncol();
   if (ref_expr.nrow() != genes || labels.size() != cells ||
       spot_weights.size() != spots || n_types < 1) {
-    stop("invalid CytoSPACE fraction kernel dimensions");
+    thisutils::log_message("invalid CytoSPACE fraction kernel dimensions", "error");
   }
 
   std::vector<double> st_totals(spots, 0.0);
@@ -145,7 +146,7 @@ NumericVector cytospace_estimate_fractions_cpp(
   }
   for (int j = 0; j < cells; ++j) {
     if (labels[j] < 1 || labels[j] > n_types) {
-      stop("labels contains an out-of-range cell type code");
+      thisutils::log_message("labels contains an out-of-range cell type code", "error");
     }
     for (int g = 0; g < genes; ++g) {
       ref_totals[j] += ref_expr(g, j);
@@ -163,7 +164,7 @@ NumericVector cytospace_estimate_fractions_cpp(
   }
   for (int type = 0; type < n_types; ++type) {
     if (type_counts[type] == 0) {
-      stop("every cell type must contain at least one reference cell");
+      thisutils::log_message("every cell type must contain at least one reference cell", "error");
     }
     for (int g = 0; g < genes; ++g) {
       profiles(g, type) /= static_cast<double>(type_counts[type]);
@@ -230,7 +231,7 @@ NumericVector cytospace_estimate_fractions_cpp(
     }
   }
   if (total_weight <= 0.0) {
-    stop("spot_weights must have a positive finite sum");
+    thisutils::log_message("spot_weights must have a positive finite sum", "error");
   }
   for (int type = 0; type < n_types; ++type) {
     fractions[type] /= total_weight;
@@ -248,7 +249,7 @@ DataFrame spatial_pair_count_cpp(
   const R_xlen_t n = sample.size();
   if (condition.size() != n || subject.size() != n || from.size() != n ||
       to.size() != n) {
-    stop("spatial pair columns must have equal length");
+    thisutils::log_message("spatial pair columns must have equal length", "error");
   }
   typedef std::tuple<std::string, std::string, std::string, std::string,
                      std::string>
@@ -303,7 +304,7 @@ List bbknn_fuzzy_membership_cpp(
   const int k = index.ncol();
   if (distance.nrow() != n || distance.ncol() != k || n < 2 || k < 2 ||
       local_connectivity < 0.0 || bandwidth <= 0.0) {
-    stop("invalid BBKNN fuzzy-membership inputs");
+    thisutils::log_message("invalid BBKNN fuzzy-membership inputs", "error");
   }
   IntegerMatrix sorted_index(n, k);
   NumericMatrix sorted_distance(n, k);
@@ -318,7 +319,7 @@ List bbknn_fuzzy_membership_cpp(
       const int neighbor = index(row, column);
       const double d = distance(row, column);
       if (neighbor < 1 || neighbor > n || !R_finite(d) || d < 0.0) {
-        stop("BBKNN neighbors contain invalid indices or distances");
+        thisutils::log_message("BBKNN neighbors contain invalid indices or distances", "error");
       }
       neighbors[column] = std::make_pair(d, neighbor);
     }

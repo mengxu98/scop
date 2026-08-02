@@ -1,5 +1,6 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 #include <RcppArmadillo.h>
+#include <thisutils/log_message.h>
 #include <algorithm>
 #include <cmath>
 #include <vector>
@@ -484,7 +485,7 @@ arma::vec cytotrace2_diffusion_smooth(
   int n_cells = log2_data.n_rows;
   int n_genes = log2_data.n_cols;
   if (smooth_groups.size() != n_cells) {
-    stop("smooth_groups must have one entry per cell");
+    thisutils::log_message("smooth_groups must have one entry per cell", "error");
   }
 
   // Select top 1000 most variable genes by dispersion

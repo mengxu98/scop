@@ -524,7 +524,7 @@ sctenifold_make_networks_cpp <- function(
   n_genes <- length(gene_names)
   n_col <- ncol(X)
   if (!n_genes || is.null(gene_names)) {
-    stop("Gene names are required", call. = FALSE)
+    log_message("Gene names are required", message_type = "error")
   }
   lapply(seq_len(nNet), function(i) {
     z <- sample(x = seq_len(n_col), size = nCells, replace = TRUE)
@@ -532,9 +532,9 @@ sctenifold_make_networks_cpp <- function(
     keep <- rowSums(sampled) > 0
     sampled <- sampled[keep, , drop = FALSE]
     if (nComp <= 1 || nComp >= nrow(sampled)) {
-      stop(
+      log_message(
         "nComp should be greater or equal than 2 and lower than the total number of genes",
-        call. = FALSE
+        message_type = "error"
       )
     }
     net <- sctenifold_pcnet_covariance_sparse(

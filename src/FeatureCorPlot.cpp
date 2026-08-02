@@ -1,5 +1,6 @@
 // [[Rcpp::plugins(cpp14)]]
 #include <Rcpp.h>
+#include <thisutils/log_message.h>
 
 using namespace Rcpp;
 
@@ -11,14 +12,14 @@ using namespace Rcpp;
 NumericVector feature_cor_geometric_mean_sparse_cpp(S4 x, bool log_normalized) {
   IntegerVector dims = x.slot("Dim");
   if (dims.size() != 2) {
-    stop("x must have a two-dimensional Dim slot");
+    thisutils::log_message("x must have a two-dimensional Dim slot", "error");
   }
   const int n_rows = dims[0];
   const int n_cols = dims[1];
   IntegerVector pointers = x.slot("p");
   NumericVector values = x.slot("x");
   if (pointers.size() != n_cols + 1) {
-    stop("sparse matrix p slot is incompatible with Dim");
+    thisutils::log_message("sparse matrix p slot is incompatible with Dim", "error");
   }
 
   NumericVector out(n_cols);
@@ -26,7 +27,7 @@ NumericVector feature_cor_geometric_mean_sparse_cpp(S4 x, bool log_normalized) {
     const int begin = pointers[col_i];
     const int end = pointers[col_i + 1];
     if (begin < 0 || end < begin || end > values.size()) {
-      stop("sparse matrix contains invalid column pointers");
+      thisutils::log_message("sparse matrix contains invalid column pointers", "error");
     }
     if (end - begin < n_rows) {
       out[col_i] = 0.0;

@@ -1,4 +1,5 @@
 #include <RcppArmadillo.h>
+#include <thisutils/log_message.h>
 #include <thisutils/cli_progress.h>
 #include <Spectra/MatOp/DenseSymMatProd.h>
 #include <Spectra/SymEigsSolver.h>
@@ -238,7 +239,7 @@ static Eigen::MatrixXd sctenifold_scaled_cell_gene_matrix(NumericMatrix x) {
   const int n_genes = x.nrow();
   const int n_cells = x.ncol();
   if (n_cells < 3) {
-    stop("x must contain at least three cells");
+    thisutils::log_message("x must contain at least three cells", "error");
   }
 
   Eigen::MatrixXd scaled(n_cells, n_genes);
@@ -256,7 +257,7 @@ static Eigen::MatrixXd sctenifold_scaled_cell_gene_matrix(NumericMatrix x) {
     }
     const double scale = std::sqrt(ss / static_cast<double>(n_cells - 1));
     if (scale == 0.0 || !std::isfinite(scale)) {
-      stop("all retained genes must have finite non-zero variance");
+      thisutils::log_message("all retained genes must have finite non-zero variance", "error");
     }
     for (int c = 0; c < n_cells; ++c) {
       scaled(c, g) = (x(g, c) - mean) / scale;
@@ -267,7 +268,7 @@ static Eigen::MatrixXd sctenifold_scaled_cell_gene_matrix(NumericMatrix x) {
 
 static int sctenifold_ncv_eff(int requested, int n_comp, int dimension) {
   if (dimension <= n_comp) {
-    stop("n_comp must be lower than the decomposition dimension");
+    thisutils::log_message("n_comp must be lower than the decomposition dimension", "error");
   }
   if (requested > n_comp) {
     return std::min(requested, dimension);
@@ -286,10 +287,10 @@ static Eigen::MatrixXd sctenifold_pcnet_dual_raw_eigen(
   const int n_genes = x.nrow();
   const int n_cells = x.ncol();
   if (n_cells < 3) {
-    stop("x must contain at least three cells");
+    thisutils::log_message("x must contain at least three cells", "error");
   }
   if (n_comp < 2 || n_comp >= n_genes || n_comp >= n_cells) {
-    stop("n_comp must be >= 2 and lower than the number of genes and cells");
+    thisutils::log_message("n_comp must be >= 2 and lower than the number of genes and cells", "error");
   }
 
   const Eigen::MatrixXd scaled = sctenifold_scaled_cell_gene_matrix(x);
@@ -371,10 +372,10 @@ static Eigen::MatrixXd sctenifold_pcnet_dual_raw_eigen(
     if (failed.load(std::memory_order_relaxed) != 0) {
       for (const std::string& error : errors) {
         if (!error.empty()) {
-          stop(error);
+          thisutils::log_message(error, "error");
         }
       }
-      stop("Unknown error while constructing pcNet");
+      thisutils::log_message("Unknown error while constructing pcNet", "error");
     }
   }
 
@@ -392,10 +393,10 @@ static Eigen::MatrixXd sctenifold_pcnet_primal_raw_eigen(
   const int n_genes = x.nrow();
   const int n_cells = x.ncol();
   if (n_cells < 3) {
-    stop("x must contain at least three cells");
+    thisutils::log_message("x must contain at least three cells", "error");
   }
   if (n_comp < 2 || n_comp >= n_genes) {
-    stop("n_comp must be >= 2 and lower than the number of genes");
+    thisutils::log_message("n_comp must be >= 2 and lower than the number of genes", "error");
   }
 
   const Eigen::MatrixXd scaled = sctenifold_scaled_cell_gene_matrix(x);
@@ -478,10 +479,10 @@ static Eigen::MatrixXd sctenifold_pcnet_primal_raw_eigen(
     if (failed.load(std::memory_order_relaxed) != 0) {
       for (const std::string& error : errors) {
         if (!error.empty()) {
-          stop(error);
+          thisutils::log_message(error, "error");
         }
       }
-      stop("Unknown error while constructing pcNet");
+      thisutils::log_message("Unknown error while constructing pcNet", "error");
     }
   }
   return out;
@@ -497,10 +498,10 @@ static Eigen::MatrixXd sctenifold_pcnet_global_raw_eigen(
   const int n_genes = x.nrow();
   const int n_cells = x.ncol();
   if (n_cells < 3) {
-    stop("x must contain at least three cells");
+    thisutils::log_message("x must contain at least three cells", "error");
   }
   if (n_comp < 2 || n_comp >= n_genes) {
-    stop("n_comp must be >= 2 and lower than the number of genes");
+    thisutils::log_message("n_comp must be >= 2 and lower than the number of genes", "error");
   }
 
   const Eigen::MatrixXd scaled = sctenifold_scaled_cell_gene_matrix(x);
@@ -515,7 +516,7 @@ static Eigen::MatrixXd sctenifold_pcnet_global_raw_eigen(
   eigs.init();
   const int nconv = eigs.compute(maxit, tol, Spectra::LARGEST_ALGE);
   if (eigs.info() != Spectra::SUCCESSFUL || nconv < n_comp) {
-    stop("Spectra failed to converge while constructing fast pcNet");
+    thisutils::log_message("Spectra failed to converge while constructing fast pcNet", "error");
   }
 
   const Eigen::VectorXd values = eigs.eigenvalues();
@@ -579,7 +580,7 @@ static double sctenifold_order_statistic(std::vector<double>& values, std::size_
 
 static double sctenifold_quantile_type7(std::vector<double>& values, double prob) {
   if (values.empty()) {
-    stop("cannot compute quantile of an empty vector");
+    thisutils::log_message("cannot compute quantile of an empty vector", "error");
   }
   if (prob <= 0.0) {
     return sctenifold_order_statistic(values, 0);
@@ -611,10 +612,10 @@ static S4 sctenifold_dgCMatrix_from_dense_threshold(
 ) {
   const int n = coefficients.rows();
   if (n != coefficients.cols()) {
-    stop("coefficients must be a square matrix");
+    thisutils::log_message("coefficients must be a square matrix", "error");
   }
   if (q < 0.0 || q > 1.0 || !std::isfinite(q)) {
-    stop("q must be a finite number between 0 and 1");
+    thisutils::log_message("q must be a finite number between 0 and 1", "error");
   }
   Eigen::MatrixXd work = symmetric ?
     ((coefficients + coefficients.transpose()) / 2.0).eval() :
@@ -729,7 +730,7 @@ NumericMatrix sctenifold_tensor_decomposition(
 ) {
   const int n_net_int = x_list.size();
   if (n_net_int < 1) {
-    stop("x_list must contain at least one network");
+    thisutils::log_message("x_list must contain at least one network", "error");
   }
   const arma::uword n_net = static_cast<arma::uword>(n_net_int);
 
@@ -738,7 +739,7 @@ NumericMatrix sctenifold_tensor_decomposition(
   NumericMatrix first_mat = Rcpp::as<NumericMatrix>(x_list[0]);
   const arma::uword n_genes = first_mat.nrow();
   if (n_genes != static_cast<arma::uword>(first_mat.ncol())) {
-    stop("all networks must be square matrices");
+    thisutils::log_message("all networks must be square matrices", "error");
   }
 
   double tensor_ss = 0.0;
@@ -746,7 +747,7 @@ NumericMatrix sctenifold_tensor_decomposition(
     NumericMatrix xm = Rcpp::as<NumericMatrix>(x_list[l]);
     if (static_cast<arma::uword>(xm.nrow()) != n_genes ||
         static_cast<arma::uword>(xm.ncol()) != n_genes) {
-      stop("all networks must have the same dimensions");
+      thisutils::log_message("all networks must have the same dimensions", "error");
     }
     arma::mat x(xm.begin(), n_genes, n_genes, false);
     tensors.push_back(x);
@@ -754,7 +755,7 @@ NumericMatrix sctenifold_tensor_decomposition(
   }
   const double tensor_norm = std::sqrt(tensor_ss);
   if (tensor_norm == 0.0 || !std::isfinite(tensor_norm)) {
-    stop("tensor norm must be finite and non-zero");
+    thisutils::log_message("tensor norm must be finite and non-zero", "error");
   }
 
   arma::mat u1 = as<arma::mat>(init_u[0]);
@@ -765,7 +766,7 @@ NumericMatrix sctenifold_tensor_decomposition(
       u3.n_rows != 1 || u4.n_rows != n_net ||
       u1.n_cols != u2.n_cols || u1.n_cols != u3.n_cols ||
       u1.n_cols != u4.n_cols) {
-    stop("init_u dimensions do not match tensor dimensions");
+    thisutils::log_message("init_u dimensions do not match tensor dimensions", "error");
   }
 
   const arma::uword k = u1.n_cols;
@@ -836,7 +837,7 @@ NumericMatrix sctenifold_strict_direction(NumericMatrix x, double lambda = 1.0) 
   const R_xlen_t nr = x.nrow();
   const R_xlen_t nc = x.ncol();
   if (nr != nc) {
-    stop("x must be a square matrix");
+    thisutils::log_message("x must be a square matrix", "error");
   }
   if (lambda == 0.0) {
     NumericMatrix out = clone(x);
@@ -862,7 +863,7 @@ NumericMatrix sctenifold_strict_direction(NumericMatrix x, double lambda = 1.0) 
 NumericMatrix sctenifold_manifold_matrix(NumericMatrix x, NumericMatrix y) {
   const R_xlen_t n = x.nrow();
   if (n != x.ncol() || n != y.nrow() || n != y.ncol()) {
-    stop("x and y must be square matrices with matching dimensions");
+    thisutils::log_message("x and y must be square matrices with matching dimensions", "error");
   }
 
   double sum_x = 0.0;
@@ -905,7 +906,7 @@ NumericVector sctenifold_pair_distances(NumericMatrix aligned) {
   const R_xlen_t nr = aligned.nrow();
   const R_xlen_t nc = aligned.ncol();
   if (nr % 2 != 0) {
-    stop("aligned must contain X genes followed by Y genes");
+    thisutils::log_message("aligned must contain X genes followed by Y genes", "error");
   }
   const R_xlen_t n_genes = nr / 2;
   NumericVector distances(n_genes);

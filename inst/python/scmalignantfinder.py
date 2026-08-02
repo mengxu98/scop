@@ -1,5 +1,22 @@
 import os
 from pathlib import Path
+from pathlib import Path
+import importlib.util
+
+_LOG_MESSAGE_ENV = os.environ.get("SCOP_LOG_MESSAGE_PATH")
+_LOG_MESSAGE_PATH = (
+    Path(_LOG_MESSAGE_ENV)
+    if _LOG_MESSAGE_ENV
+    else Path(__file__).resolve().parent / "log_message.py"
+)
+if not _LOG_MESSAGE_PATH.exists():
+    raise ImportError(f"Cannot load log_message module from {_LOG_MESSAGE_PATH}")
+_LOG_MESSAGE_SPEC = importlib.util.spec_from_file_location(
+    "scop_log_message", _LOG_MESSAGE_PATH
+)
+_LOG_MESSAGE_MODULE = importlib.util.module_from_spec(_LOG_MESSAGE_SPEC)
+_LOG_MESSAGE_SPEC.loader.exec_module(_LOG_MESSAGE_MODULE)
+log_message = _LOG_MESSAGE_MODULE.log_message
 
 
 def _expand_path(path):
@@ -76,7 +93,7 @@ def _obs_frame(adata, columns=None, before=None):
     if not columns and before is not None:
         columns = [c for c in adata.obs.columns if c not in before]
     if not columns:
-        raise ValueError("No expected scMalignantFinder result columns were returned")
+        log_message("No expected scMalignantFinder result columns were returned", message_type="error")
     return adata.obs.loc[:, columns].copy()
 
 
@@ -150,9 +167,9 @@ def run_scmalignant_region(
     if spatial_coordinates is not None:
         spatial_coordinates = np.asarray(spatial_coordinates, dtype=float)
         if spatial_coordinates.shape[0] != adata.n_obs:
-            raise ValueError(
-                "spatial_coordinates must have one row for each observation"
-            )
+            log_message(
+                "spatial_coordinates must have one row for each observation",
+              message_type="error")
         adata.obsm[spatial_key] = spatial_coordinates
 
     adata = _run_aucell(adata, signature_gmt, norm_type=norm_type)
@@ -170,7 +187,7 @@ def run_scmalignant_region(
     old_spatial = None
     if alias_spatial:
         if spatial_key not in adata.obsm:
-            raise ValueError(f"spatial_key '{spatial_key}' was not found in adata.obsm")
+            log_message(f"spatial_key '{spatial_key}' was not found in adata.obsm", message_type="error")
         had_spatial = "spatial" in adata.obsm
         if had_spatial:
             old_spatial = _copy_obsm_value(adata.obsm["spatial"])

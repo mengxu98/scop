@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <thisutils/log_message.h>
 #include <cstdint>
 #include <cstdlib>
 
@@ -72,7 +73,7 @@ Rcpp::List runumap_knn(Rcpp::NumericMatrix X,
   const int rows = X.nrow();
   const int dims = X.ncol();
   if (rows <= 1 || dims <= 0 || k <= 0 || k >= rows) {
-    Rcpp::stop("invalid kNN dimensions");
+    thisutils::log_message("invalid kNN dimensions", "error");
   }
 
   std::vector<float> input = numeric_matrix_to_float(X);
@@ -82,7 +83,7 @@ Rcpp::List runumap_knn(Rcpp::NumericMatrix X,
     rows, dims, k, input.data(), n_trees, n_iters, leaf_size,
     static_cast<uint64_t>(seed), indices.data(), distances.data(), cores);
   if (code != 0) {
-    Rcpp::stop("kNN failed with code %d", code);
+    thisutils::log_message_fmt("error", "kNN failed with code %d",  code);
   }
 
   Rcpp::IntegerMatrix idx(rows, k);
@@ -117,10 +118,10 @@ Rcpp::NumericMatrix runumap_layout(Rcpp::NumericMatrix init,
   const int dims = init.ncol();
   const R_xlen_t edges = head.size();
   if (tail.size() != edges || epochs_per_sample.size() != edges) {
-    Rcpp::stop("head, tail, and epochs_per_sample must have equal length");
+    thisutils::log_message("head, tail, and epochs_per_sample must have equal length", "error");
   }
   if (rows <= 0 || dims <= 0 || edges <= 0 || n_epochs <= 0) {
-    Rcpp::stop("invalid UMAP layout dimensions");
+    thisutils::log_message("invalid UMAP layout dimensions", "error");
   }
 
   std::vector<float> embedding = numeric_matrix_to_float(init);

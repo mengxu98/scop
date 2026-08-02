@@ -432,7 +432,7 @@ dynamic_features_gam <- function(
           message_type = "warning",
           verbose = verbose
         )
-        stop("insufficient finite observations")
+        log_message("insufficient finite observations", message_type = "error")
       }
       sizefactror <- stats::median(y_libsize) / l_use
       mod <- mgcv::gam(

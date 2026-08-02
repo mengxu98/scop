@@ -540,7 +540,7 @@ benchmark_method_availability_safe <- function(adapter) {
           !is.character(availability$detail) || length(availability$detail) != 1L ||
           is.na(availability$detail)
       ) {
-        stop("backend availability diagnostic returned an invalid result", call. = FALSE)
+        log_message("backend availability diagnostic returned an invalid result", message_type = "error")
       }
       if (is.null(availability$versions)) availability$versions <- character()
       availability
@@ -880,7 +880,9 @@ benchmark_execute_adapter <- function(srt, adapter, params) {
         !is.data.frame(output$clusters) ||
         !"cluster" %in% colnames(output$clusters)
     ) {
-      stop(adapter$function_name, " did not return a valid giotto2_cluster result", call. = FALSE)
+      log_message(adapter$function_name, " did not return a valid giotto2_cluster result",
+        message_type = "error"
+      )
     }
     cells <- colnames(srt)
     output_cells <- rownames(output$clusters)
@@ -888,16 +890,18 @@ benchmark_execute_adapter <- function(srt, adapter, params) {
       is.null(output_cells) || length(output_cells) != length(cells) ||
         anyDuplicated(output_cells) || !setequal(cells, output_cells)
     ) {
-      stop(
+      log_message(
         adapter$function_name, " returned a non-identical set of spot identifiers",
-        call. = FALSE
+        message_type = "error"
       )
     }
     prediction <- output$clusters[cells, "cluster", drop = TRUE]
     prediction <- stats::setNames(as.character(prediction), cells)
     prediction[is.na(prediction) | !nzchar(prediction)] <- NA_character_
     if (all(is.na(prediction))) {
-      stop(adapter$function_name, " returned no usable cluster assignments", call. = FALSE)
+      log_message(adapter$function_name, " returned no usable cluster assignments",
+        message_type = "error"
+      )
     }
     return(list(
       object = output,
@@ -908,15 +912,17 @@ benchmark_execute_adapter <- function(srt, adapter, params) {
     ))
   }
   if (!inherits(output, "Seurat")) {
-    stop(adapter$function_name, " did not return a Seurat object", call. = FALSE)
+    log_message(adapter$function_name, " did not return a Seurat object",
+      message_type = "error"
+    )
   }
   cluster_colname <- benchmark_param_string(
     params, "cluster_colname", adapter$cluster_colname
   )
   if (!cluster_colname %in% colnames(output@meta.data)) {
-    stop(
+    log_message(
       adapter$function_name, " did not create cluster column ", cluster_colname,
-      call. = FALSE
+      message_type = "error"
     )
   }
   cells <- colnames(srt)
@@ -925,16 +931,18 @@ benchmark_execute_adapter <- function(srt, adapter, params) {
     length(output_cells) != length(cells) || anyDuplicated(output_cells) ||
       !setequal(cells, output_cells)
   ) {
-    stop(
+    log_message(
       adapter$function_name, " returned a non-identical set of spot identifiers",
-      call. = FALSE
+      message_type = "error"
     )
   }
   prediction <- output@meta.data[cells, cluster_colname, drop = TRUE]
   prediction <- stats::setNames(as.character(prediction), cells)
   prediction[is.na(prediction) | !nzchar(prediction)] <- NA_character_
   if (all(is.na(prediction))) {
-    stop(adapter$function_name, " returned no usable cluster assignments", call. = FALSE)
+    log_message(adapter$function_name, " returned no usable cluster assignments",
+      message_type = "error"
+    )
   }
   list(object = output, prediction = prediction, cluster_colname = cluster_colname)
 }
@@ -1191,16 +1199,16 @@ benchmark_align_prediction <- function(prediction, cells) {
     is.null(prediction) || is.list(prediction) || is.matrix(prediction) ||
       is.data.frame(prediction) || length(prediction) == 0L
   ) {
-    stop("predictions must be a named atomic vector", call. = FALSE)
+    log_message("predictions must be a named atomic vector", message_type = "error")
   }
   ids <- names(prediction)
   if (is.null(ids) || anyNA(ids) || any(!nzchar(ids)) || anyDuplicated(ids)) {
-    stop("prediction spot identifiers must be unique and non-empty", call. = FALSE)
+    log_message("prediction spot identifiers must be unique and non-empty", message_type = "error")
   }
   missing <- setdiff(cells, ids)
   extra <- setdiff(ids, cells)
   if (length(missing) > 0L || length(extra) > 0L) {
-    stop("prediction spot identifiers must exactly match the benchmark input", call. = FALSE)
+    log_message("prediction spot identifiers must exactly match the benchmark input", message_type = "error")
   }
   aligned <- as.character(prediction[cells])
   aligned[is.na(aligned) | !nzchar(aligned)] <- NA_character_
@@ -1214,23 +1222,23 @@ benchmark_compute_metrics <- function(prediction, truth) {
   )
   required <- c("ari", "nmi", "purity")
   if (!is.list(computed) && !is.atomic(computed)) {
-    stop("classification metric output must be a named vector or list", call. = FALSE)
+    log_message("classification metric output must be a named vector or list", message_type = "error")
   }
   if (is.null(names(computed)) || !all(required %in% names(computed))) {
-    stop("classification metric output is missing ARI, NMI, or purity", call. = FALSE)
+    log_message("classification metric output is missing ARI, NMI, or purity", message_type = "error")
   }
   values <- vapply(required, function(metric) {
     value <- computed[[metric]]
     if (!is.numeric(value) || length(value) != 1L || !is.finite(value)) {
-      stop("classification metric output contains a non-finite scalar", call. = FALSE)
+      log_message("classification metric output contains a non-finite scalar", message_type = "error")
     }
     as.numeric(value)
   }, numeric(1))
   if (values[["ari"]] < -1 - 1e-8 || values[["ari"]] > 1 + 1e-8) {
-    stop("ARI is outside [-1, 1]", call. = FALSE)
+    log_message("ARI is outside [-1, 1]", message_type = "error")
   }
   if (any(values[c("nmi", "purity")] < -1e-8 | values[c("nmi", "purity")] > 1 + 1e-8)) {
-    stop("NMI or purity is outside [0, 1]", call. = FALSE)
+    log_message("NMI or purity is outside [0, 1]", message_type = "error")
   }
   c(ARI = values[["ari"]], NMI = values[["nmi"]], purity = values[["purity"]])
 }

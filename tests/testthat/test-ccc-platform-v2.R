@@ -38,7 +38,7 @@ test_that("RunLIANA keeps legacy positional arguments and accepts custom resourc
 
 test_that("LIANA resources are discovered from the optional backend", {
   testthat::local_mocked_bindings(
-    liana_check_r = function(...) invisible(TRUE),
+    check_r = function(...) invisible(TRUE),
     liana_get_fun = function(fun, package = "liana") {
       expect_equal(package, "liana")
       expect_equal(fun, "show_resources")
@@ -87,7 +87,7 @@ test_that("RunLIANA stores official consensus and keeps legacy tables", {
   calls <- character(0)
 
   testthat::local_mocked_bindings(
-    liana_check_r = function(...) invisible(TRUE),
+    check_r = function(...) invisible(TRUE),
     liana_get_fun = function(fun, package = "liana") {
       if (identical(package, "SingleCellExperiment")) {
         return(function(...) list(...))
@@ -151,7 +151,7 @@ test_that("LIANA consensus failure does not mutate the Seurat object", {
     sca = data.frame(source = "A", target = "B", ligand.complex = "L1", receptor.complex = "R1", score = 1)
   )
   testthat::local_mocked_bindings(
-    liana_check_r = function(...) invisible(TRUE),
+    check_r = function(...) invisible(TRUE),
     liana_get_fun = function(fun, package = "liana") {
       if (identical(package, "SingleCellExperiment")) {
         return(function(...) list(...))
@@ -340,7 +340,7 @@ test_that("dependent CellphoneDB evidence is disclosed before combination", {
     metadata = list(schema = "scop_ccc_unified_v2")
   )
 
-  expect_warning(
+  expect_message(
     getFromNamespace("ccc_prepare_combined_object", "scop")(
       srt, method = "CCC", combine_methods = "support"
     ),

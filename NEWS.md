@@ -1,4 +1,4 @@
-# scop 0.9.0
+# scop 0.9.0 (2026-08-02)
 
 * **feat**:
   * New optional-backend wrappers: `RunCHOIR()` for significance-based hierarchical clustering and `RunCell2fate()` for RNA-velocity modeling, both with pinned backend provenance, strict result validation, metadata writeback, and resumable artifacts.

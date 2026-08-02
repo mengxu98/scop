@@ -177,7 +177,38 @@ RunCHOIR <- function(
     message_type = "running",
     verbose = verbose
   )
-  backend_commit <- choir_check_r(verbose = FALSE)
+  if (identical(.Platform$OS.type, "windows")) {
+    log_message(
+      "The pinned {.pkg CHOIR} backend supports macOS and Linux, but not Windows",
+      message_type = "error"
+    )
+  }
+  if (choir_namespace_loaded()) {
+    observed_commit <- choir_loaded_commit()
+    if (identical(observed_commit, .choir_commit)) {
+      backend_commit <- observed_commit
+    } else {
+      log_message(
+        "A different or unverifiable {.pkg CHOIR} backend is already loaded. Restart R before using the pinned backend.",
+        message_type = "error"
+      )
+    }
+  } else {
+    check_r(
+      c(.choir_repository, .choir_dependencies),
+      dependencies = NA,
+      install = TRUE,
+      verbose = FALSE
+    )
+    observed_commit <- choir_installed_commit()
+    if (!identical(observed_commit, .choir_commit)) {
+      log_message(
+        "Unable to install the pinned optional {.pkg CHOIR} backend",
+        message_type = "error"
+      )
+    }
+    backend_commit <- observed_commit
+  }
   choir_fun <- choir_get_fun("CHOIR")
 
   args <- c(
@@ -296,53 +327,6 @@ RunCHOIR <- function(
   "tidyr"
 )
 
-choir_check_r <- function(verbose = FALSE) {
-  choir_validate_platform()
-  if (choir_namespace_loaded()) {
-    observed_commit <- choir_loaded_commit()
-    if (identical(observed_commit, .choir_commit)) {
-      return(invisible(.choir_commit))
-    }
-    log_message(
-      "A different or unverifiable {.pkg CHOIR} backend is already loaded. Restart R before using the pinned backend.",
-      message_type = "error"
-    )
-  }
-  status <- check_r(
-    .choir_package,
-    dependencies = NA,
-    install = FALSE,
-    verbose = FALSE
-  )
-  available <- isTRUE(status) || isTRUE(unlist(status)[.choir_package])
-  observed_commit <- choir_installed_commit()
-  if (available && identical(observed_commit, .choir_commit)) {
-    return(invisible(.choir_commit))
-  }
-
-  log_message(
-    "Installing the pinned {.pkg CHOIR} backend without its upstream configure telemetry",
-    verbose = verbose
-  )
-  choir_check_dependencies(verbose = verbose)
-  choir_install_without_configure(verbose = verbose)
-  status <- check_r(
-    .choir_package,
-    dependencies = NA,
-    install = FALSE,
-    verbose = FALSE
-  )
-  available <- isTRUE(status) || isTRUE(unlist(status)[.choir_package])
-  observed_commit <- choir_installed_commit()
-  if (!available || !identical(observed_commit, .choir_commit)) {
-    log_message(
-      "Unable to install the pinned optional {.pkg CHOIR} backend",
-      message_type = "error"
-    )
-  }
-  invisible(observed_commit)
-}
-
 choir_namespace_loaded <- function() {
   isNamespaceLoaded(.choir_package)
 }
@@ -379,28 +363,6 @@ choir_loaded_commit <- function() {
   commit
 }
 
-choir_check_dependencies <- function(verbose = FALSE) {
-  status <- check_r(
-    .choir_dependencies,
-    dependencies = NA,
-    verbose = verbose
-  )
-  available <- unlist(status, use.names = FALSE)
-  if (
-    !isTRUE(status) &&
-      (
-        length(available) != length(.choir_dependencies) ||
-          !all(available %in% TRUE)
-      )
-  ) {
-    log_message(
-      "Unable to prepare dependencies for the optional {.pkg CHOIR} backend",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
-}
-
 choir_installed_commit <- function() {
   description <- tryCatch(
     utils::packageDescription(.choir_package),
@@ -416,74 +378,6 @@ choir_installed_commit <- function() {
   as.character(commit)
 }
 
-choir_install_without_configure <- function(verbose = FALSE) {
-  workdir <- tempfile("choir_source_")
-  dir.create(workdir, recursive = TRUE)
-  on.exit(unlink(workdir, recursive = TRUE, force = TRUE), add = TRUE)
-
-  archive <- file.path(workdir, "CHOIR.tar.gz")
-  url <- paste0(
-    "https://codeload.github.com/corceslab/CHOIR/tar.gz/",
-    .choir_commit
-  )
-  current_timeout <- getOption("timeout", 60)
-  old_options <- options(timeout = max(300, current_timeout))
-  on.exit(options(old_options), add = TRUE)
-  utils::download.file(url, archive, mode = "wb", quiet = !isTRUE(verbose))
-  utils::untar(archive, exdir = workdir)
-  descriptions <- list.files(
-    workdir,
-    pattern = "^DESCRIPTION$",
-    recursive = TRUE,
-    full.names = TRUE
-  )
-  if (length(descriptions) != 1L) {
-    log_message(
-      "Unable to locate the downloaded {.pkg CHOIR} source",
-      message_type = "error"
-    )
-  }
-  description <- base::read.dcf(descriptions[[1]])
-  if (!"RemoteSha" %in% colnames(description)) {
-    description <- cbind(description, RemoteSha = .choir_commit)
-  } else {
-    description[, "RemoteSha"] <- .choir_commit
-  }
-  base::write.dcf(description, file = descriptions[[1]])
-  source_dir <- dirname(descriptions[[1]])
-  unlink(
-    file.path(source_dir, c("configure", "configure.win")),
-    force = TRUE
-  )
-
-  lib <- .libPaths()[[1]]
-  dir.create(lib, recursive = TRUE, showWarnings = FALSE)
-  log <- file.path(workdir, "install.log")
-  status <- system2(
-    command = file.path(R.home("bin"), "R"),
-    args = c(
-      "CMD",
-      "INSTALL",
-      "--no-configure",
-      paste0("--library=", shQuote(lib)),
-      shQuote(source_dir)
-    ),
-    stdout = log,
-    stderr = log
-  )
-  if (!identical(status, 0L)) {
-    details <- runner_tail_lines(log, max_lines = 20L)
-    log_message(
-      paste(
-        c("CHOIR installation failed", details),
-        collapse = "\n"
-      ),
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
-}
-
 choir_get_fun <- function(fun) {
   value <- get_namespace_fun(.choir_package, fun)
   if (!identical(choir_loaded_commit(), .choir_commit)) {
@@ -493,16 +387,6 @@ choir_get_fun <- function(fun) {
     )
   }
   value
-}
-
-choir_validate_platform <- function(os_type = .Platform$OS.type) {
-  if (identical(os_type, "windows")) {
-    log_message(
-      "The pinned {.pkg CHOIR} backend supports macOS and Linux, but not Windows",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
 }
 
 choir_prepare_output <- function(
@@ -582,7 +466,7 @@ choir_resolve_layer <- function(
   layers <- SeuratObject::Layers(srt[[assay]])
   if (!layer %in% layers) {
     split_layers <- grep(
-      paste0("^", choir_escape_regex(layer), "\\."),
+      paste0("^", gsub("([][{}()+*^$|\\\\?.])", "\\\\\\1", layer), "\\."),
       layers,
       value = TRUE
     )
@@ -914,8 +798,4 @@ choir_validate_max_clusters <- function(x) {
     "{.arg max_clusters} must be {.val 'auto'}",
     message_type = "error"
   )
-}
-
-choir_escape_regex <- function(x) {
-  gsub("([][{}()+*^$|\\\\?.])", "\\\\\\1", x)
 }

@@ -22,20 +22,20 @@ NormalizeData.Seurat <- function(
       !is.null(block.size) ||
       length(dots_call) != 0L
   ) {
-    stop("NormalizeData.Seurat supports LogNormalize, margin = 1, and no extra arguments.", call. = FALSE)
+    log_message("NormalizeData.Seurat supports LogNormalize, margin = 1, and no extra arguments.", message_type = "error")
   }
 
   assay <- if (is.null(assay)) {
     SeuratObject::DefaultAssay(object)
   } else {
     if (!is.character(assay) || length(assay) != 1L || is.na(assay)) {
-      stop("NormalizeData.Seurat requires a single assay name.", call. = FALSE)
+      log_message("NormalizeData.Seurat requires a single assay name.", message_type = "error")
     }
     assay
   }
   assays <- methods::slot(object, "assays")
   if (!assay %in% names(assays)) {
-    stop(sprintf("Assay '%s' is not present in object.", assay), call. = FALSE)
+    log_message(sprintf("Assay '%s' is not present in object.", assay), message_type = "error")
   }
   assay_obj <- assays[[assay]]
   if (inherits(assay_obj, "Assay") && !inherits(assay_obj, "StdAssay")) {
@@ -46,7 +46,7 @@ NormalizeData.Seurat <- function(
         error = function(e) NULL
       )
       if (is.null(counts)) {
-        stop("NormalizeData.Seurat requires counts convertible to dgCMatrix.", call. = FALSE)
+        log_message("NormalizeData.Seurat requires counts convertible to dgCMatrix.", message_type = "error")
       }
     }
     data_mat <- counts
@@ -62,7 +62,7 @@ NormalizeData.Seurat <- function(
     !inherits(assay_obj, "StdAssay") ||
       !all(c("layers", "cells", "features") %in% assay_slots)
   ) {
-    stop("NormalizeData.Seurat requires an assay with layers, cells, and features slots.", call. = FALSE)
+    log_message("NormalizeData.Seurat requires an assay with layers, cells, and features slots.", message_type = "error")
   }
   counts_layers <- tryCatch(
     SeuratObject::Layers(assay_obj, search = "counts"),
@@ -73,7 +73,7 @@ NormalizeData.Seurat <- function(
       anyNA(counts_layers) ||
       !all(grepl("^counts(\\.|$)", counts_layers))
   ) {
-    stop("NormalizeData.Seurat requires counts layers named 'counts' or 'counts.*'.", call. = FALSE)
+    log_message("NormalizeData.Seurat requires counts layers named 'counts' or 'counts.*'.", message_type = "error")
   }
   layers <- methods::slot(assay_obj, "layers")
   data_layers <- sub("^counts", "data", counts_layers)
@@ -82,7 +82,7 @@ NormalizeData.Seurat <- function(
     data_layer <- data_layers[[i]]
     counts <- layers[[counts_layer]]
     if (is.null(counts)) {
-      stop("NormalizeData.Seurat requires a counts layer.", call. = FALSE)
+      log_message("NormalizeData.Seurat requires a counts layer.", message_type = "error")
     }
     if (!inherits(counts, "dgCMatrix")) {
       counts <- tryCatch(
@@ -90,7 +90,7 @@ NormalizeData.Seurat <- function(
         error = function(e) NULL
       )
       if (is.null(counts)) {
-        stop("NormalizeData.Seurat requires counts convertible to dgCMatrix.", call. = FALSE)
+        log_message("NormalizeData.Seurat requires counts convertible to dgCMatrix.", message_type = "error")
       }
     }
 
@@ -151,5 +151,5 @@ NormalizeData <- function(object, ...) {
 
 #' @export
 NormalizeData.default <- function(object, ...) {
-  stop("NormalizeData supports Seurat objects.", call. = FALSE)
+  log_message("NormalizeData supports Seurat objects.", message_type = "error")
 }

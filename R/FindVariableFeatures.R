@@ -39,7 +39,7 @@ variable_features_vst_from_stats <- function(
   sd_vec <- sqrt(var_expected)
   vmax <- if (is.null(clip)) sqrt(n_cells) else clip
   if (is.null(var_std)) {
-    stop("variable_features_vst_from_stats requires standardized variance.", call. = FALSE)
+    log_message("variable_features_vst_from_stats requires standardized variance.", message_type = "error")
   }
 
   hvf.info <- SeuratObject::EmptyDF(n = nfeatures)
@@ -137,16 +137,16 @@ variable_features_vst_sparse_layers <- function(
   ...
 ) {
   if (!length(layers)) {
-    stop("No sparse layers were supplied.", call. = FALSE)
+    log_message("No sparse layers were supplied.", message_type = "error")
   }
   nfeatures <- nrow(layers[[1L]])
   feature_names <- rownames(layers[[1L]])
   for (layer in layers) {
     if (!inherits(layer, "dgCMatrix")) {
-      stop("variable_features_vst_sparse_layers requires dgCMatrix layers.", call. = FALSE)
+      log_message("variable_features_vst_sparse_layers requires dgCMatrix layers.", message_type = "error")
     }
     if (nrow(layer) != nfeatures || !identical(rownames(layer), feature_names)) {
-      stop("All sparse layers must have identical feature rows.", call. = FALSE)
+      log_message("All sparse layers must have identical feature rows.", message_type = "error")
     }
   }
   mv <- sparse_row_mean_var_dgc_list(layers, nfeatures)
@@ -217,7 +217,7 @@ FindVariableFeatures.StdAssay <- function(
   ...
 ) {
   if (!identical(selection.method, "vst")) {
-    stop("FindVariableFeatures.StdAssay supports selection.method = 'vst'.", call. = FALSE)
+    log_message("FindVariableFeatures.StdAssay supports selection.method = 'vst'.", message_type = "error")
   }
   if (inherits(object, "Assay") && !inherits(object, "StdAssay")) {
     data <- methods::slot(object, "counts")
@@ -227,7 +227,7 @@ FindVariableFeatures.StdAssay <- function(
         error = function(e) NULL
       )
       if (is.null(data)) {
-        stop("FindVariableFeatures.StdAssay requires counts convertible to dgCMatrix.", call. = FALSE)
+        log_message("FindVariableFeatures.StdAssay requires counts convertible to dgCMatrix.", message_type = "error")
       }
     }
     hvf.info <- variable_features_vst_sparse(
@@ -255,12 +255,12 @@ FindVariableFeatures.StdAssay <- function(
     !inherits(object, "Assay5") ||
       length(SeuratObject::Layers(object, search = "counts")) == 0L
   ) {
-    stop("FindVariableFeatures.StdAssay requires an Assay5 object with a counts layer.", call. = FALSE)
+    log_message("FindVariableFeatures.StdAssay requires an Assay5 object with a counts layer.", message_type = "error")
   }
   counts_layers <- SeuratObject::Layers(object, search = "counts")
   counts_layers <- counts_layers[grepl("^counts(\\.|$)", counts_layers)]
   if (length(counts_layers) == 0L) {
-    stop("FindVariableFeatures.StdAssay requires an Assay5 object with a counts layer.", call. = FALSE)
+    log_message("FindVariableFeatures.StdAssay requires an Assay5 object with a counts layer.", message_type = "error")
   }
   layers <- methods::slot(object, "layers")
   if (length(counts_layers) == 1L) {
@@ -271,7 +271,7 @@ FindVariableFeatures.StdAssay <- function(
         error = function(e) NULL
       )
       if (is.null(data)) {
-        stop("FindVariableFeatures.StdAssay requires counts convertible to dgCMatrix.", call. = FALSE)
+        log_message("FindVariableFeatures.StdAssay requires counts convertible to dgCMatrix.", message_type = "error")
       }
     }
     hvf.info <- variable_features_vst_sparse(
@@ -291,7 +291,7 @@ FindVariableFeatures.StdAssay <- function(
         error = function(e) NULL
       )
       if (is.null(out)) {
-        stop("FindVariableFeatures.StdAssay requires counts convertible to dgCMatrix.", call. = FALSE)
+        log_message("FindVariableFeatures.StdAssay requires counts convertible to dgCMatrix.", message_type = "error")
       }
       out
     })
@@ -333,7 +333,7 @@ FindVariableFeatures.Seurat <- function(
   ...
 ) {
   if (!identical(selection.method, "vst")) {
-    stop("FindVariableFeatures.Seurat supports selection.method = 'vst'.", call. = FALSE)
+    log_message("FindVariableFeatures.Seurat supports selection.method = 'vst'.", message_type = "error")
   }
   assay <- if (is.null(assay)) {
     SeuratObject::DefaultAssay(object)
@@ -345,7 +345,7 @@ FindVariableFeatures.Seurat <- function(
     !inherits(assay_obj, "Assay") && !inherits(assay_obj, "Assay5") ||
       length(SeuratObject::Layers(assay_obj, search = "counts")) == 0L
   ) {
-    stop("FindVariableFeatures.Seurat requires an assay with a counts layer.", call. = FALSE)
+    log_message("FindVariableFeatures.Seurat requires an assay with a counts layer.", message_type = "error")
   }
   assay_obj <- FindVariableFeatures.StdAssay(
     object = assay_obj,
@@ -371,5 +371,5 @@ FindVariableFeatures <- function(object, ...) {
 
 #' @export
 FindVariableFeatures.default <- function(object, ...) {
-  stop("FindVariableFeatures supports Seurat and StdAssay objects.", call. = FALSE)
+  log_message("FindVariableFeatures supports Seurat and StdAssay objects.", message_type = "error")
 }

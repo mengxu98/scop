@@ -1,5 +1,6 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 #include <Rcpp.h>
+#include <thisutils/log_message.h>
 #include <algorithm>
 #include <cmath>
 #include <vector>
@@ -247,7 +248,7 @@ NumericVector wilcox_rank_sum_sparse(
   const int n_rows = dims[0];
   const int n_cols = dims[1];
   if (n_group1 < 0 || n_group1 > n_cols) {
-    stop("n_group1 must be between 0 and ncol(mat)");
+    thisutils::log_message("n_group1 must be between 0 and ncol(mat)", "error");
   }
 
   IntegerVector row_idx = mat.slot("i");
@@ -282,7 +283,7 @@ NumericVector wilcox_rank_sum_sparse_all_cells(
   const int n_rows = dims[0];
   const int n_cols = dims[1];
   if (n_group1 < 0 || n_group1 > n_cols) {
-    stop("n_group1 must be between 0 and ncol(mat)");
+    thisutils::log_message("n_group1 must be between 0 and ncol(mat)", "error");
   }
 
   IntegerVector row_idx = mat.slot("i");

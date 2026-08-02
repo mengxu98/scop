@@ -1128,8 +1128,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // palantir_pseudotime_cpp
-List palantir_pseudotime_cpp(NumericMatrix ms_data, int start_cell, IntegerVector waypoints, int knn, int max_iterations, int n_jobs);
-RcppExport SEXP _scop_palantir_pseudotime_cpp(SEXP ms_dataSEXP, SEXP start_cellSEXP, SEXP waypointsSEXP, SEXP knnSEXP, SEXP max_iterationsSEXP, SEXP n_jobsSEXP) {
+List palantir_pseudotime_cpp(NumericMatrix ms_data, int start_cell, IntegerVector waypoints, int knn, int max_iterations, int n_jobs, IntegerMatrix knn_idx, NumericMatrix knn_dist);
+RcppExport SEXP _scop_palantir_pseudotime_cpp(SEXP ms_dataSEXP, SEXP start_cellSEXP, SEXP waypointsSEXP, SEXP knnSEXP, SEXP max_iterationsSEXP, SEXP n_jobsSEXP, SEXP knn_idxSEXP, SEXP knn_distSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1139,7 +1139,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type knn(knnSEXP);
     Rcpp::traits::input_parameter< int >::type max_iterations(max_iterationsSEXP);
     Rcpp::traits::input_parameter< int >::type n_jobs(n_jobsSEXP);
-    rcpp_result_gen = Rcpp::wrap(palantir_pseudotime_cpp(ms_data, start_cell, waypoints, knn, max_iterations, n_jobs));
+    Rcpp::traits::input_parameter< IntegerMatrix >::type knn_idx(knn_idxSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type knn_dist(knn_distSEXP);
+    rcpp_result_gen = Rcpp::wrap(palantir_pseudotime_cpp(ms_data, start_cell, waypoints, knn, max_iterations, n_jobs, knn_idx, knn_dist));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -3016,7 +3018,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_palantir_multiscale_space_cpp", (DL_FUNC) &_scop_palantir_multiscale_space_cpp, 2},
     {"_scop_palantir_numpy_random_sample_cpp", (DL_FUNC) &_scop_palantir_numpy_random_sample_cpp, 2},
     {"_scop_palantir_maxmin_waypoints_cpp", (DL_FUNC) &_scop_palantir_maxmin_waypoints_cpp, 3},
-    {"_scop_palantir_pseudotime_cpp", (DL_FUNC) &_scop_palantir_pseudotime_cpp, 6},
+    {"_scop_palantir_pseudotime_cpp", (DL_FUNC) &_scop_palantir_pseudotime_cpp, 8},
     {"_scop_palantir_markov_chain_cpp", (DL_FUNC) &_scop_palantir_markov_chain_cpp, 3},
     {"_scop_palantir_terminal_states_cpp", (DL_FUNC) &_scop_palantir_terminal_states_cpp, 5},
     {"_scop_palantir_absorption_cpp", (DL_FUNC) &_scop_palantir_absorption_cpp, 5},

@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <thisutils/log_message.h>
 #include "velocity_utils.h"
 
 using namespace Rcpp;
@@ -6,8 +7,8 @@ using namespace Rcpp;
 // [[Rcpp::export]]
 List paga_connectivities_cpp(IntegerMatrix knn_idx, IntegerVector groups, int n_groups) {
   const int n_cells = groups.size();
-  if (knn_idx.nrow() != n_cells) stop("knn_idx rows must match groups length");
-  if (n_groups < 1) stop("n_groups must be positive");
+  if (knn_idx.nrow() != n_cells) thisutils::log_message("knn_idx rows must match groups length", "error");
+  if (n_groups < 1) thisutils::log_message("n_groups must be positive", "error");
 
   NumericMatrix directed_edges(n_groups, n_groups);
   NumericMatrix expected_n_edges_random(n_groups, n_groups);
@@ -15,7 +16,7 @@ List paga_connectivities_cpp(IntegerMatrix knn_idx, IntegerVector groups, int n_
   NumericVector edge_totals(n_groups);
   for (int cell = 0; cell < n_cells; ++cell) {
     const int group = groups[cell] - 1;
-    if (group < 0 || group >= n_groups) stop("groups must be 1-based integers within n_groups");
+    if (group < 0 || group >= n_groups) thisutils::log_message("groups must be 1-based integers within n_groups", "error");
     group_sizes[group] += 1.0;
   }
   for (int cell = 0; cell < n_cells; ++cell) {
@@ -92,7 +93,7 @@ List paga_diffusion_pseudotime_cpp(
 {
   const int n_groups = connectivities.nrow();
   if (connectivities.ncol() != n_groups)
-    stop("connectivities must be square");
+    thisutils::log_message("connectivities must be square", "error");
 
   std::vector<double> row_sum(n_groups, 0.0);
   for (int i = 0; i < n_groups; ++i)
@@ -231,7 +232,7 @@ List paga_velocity_transitions_cpp(
   const int n_neighbors = knn_idx.ncol();
 
   if (groups.size() != n_cells)
-    stop("groups length must match number of cells");
+    thisutils::log_message("groups length must match number of cells", "error");
 
   // Build group-level transition matrix
   NumericMatrix transitions(n_groups, n_groups);

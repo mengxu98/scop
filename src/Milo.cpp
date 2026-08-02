@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <thisutils/log_message.h>
 #include <algorithm>
 #include <cmath>
 #include <unordered_set>
@@ -67,13 +68,13 @@ List milo_nhood_counts_cpp(
   const int k = knn_idx.ncol();
   const int n_nhoods = sampled_vertices.size();
   if (sample_id.size() != n_cells) {
-    stop("sample_id length must match knn_idx rows");
+    thisutils::log_message("sample_id length must match knn_idx rows", "error");
   }
   if (k_dist.size() != n_cells) {
-    stop("k_dist length must match knn_idx rows");
+    thisutils::log_message("k_dist length must match knn_idx rows", "error");
   }
   if (n_samples < 1) {
-    stop("n_samples must be positive");
+    thisutils::log_message("n_samples must be positive", "error");
   }
 
   std::vector<std::vector<int>> adjacency(n_cells);
@@ -105,7 +106,7 @@ List milo_nhood_counts_cpp(
   for (int nh = 0; nh < n_nhoods; ++nh) {
     const int seed = sampled_vertices[nh] - 1;
     if (seed < 0 || seed >= n_cells) {
-      stop("sampled_vertices must be 1-based cell indices");
+      thisutils::log_message("sampled_vertices must be 1-based cell indices", "error");
     }
     members.clear();
     for (int member : adjacency[seed]) {
@@ -120,7 +121,7 @@ List milo_nhood_counts_cpp(
       }
       const int sid0 = sid - 1;
       if (sid0 < 0 || sid0 >= n_samples) {
-        stop("sample_id must be 1-based sample indices within n_samples");
+        thisutils::log_message("sample_id must be 1-based sample indices within n_samples", "error");
       }
       counts(nh, sid0) += 1;
     }
@@ -146,7 +147,7 @@ List milo_nhood_counts_cpp(
 NumericVector milo_weighted_fdr_cpp(NumericVector pvalues, NumericVector weights) {
   const int n = pvalues.size();
   if (weights.size() != n) {
-    stop("weights length must match pvalues length");
+    thisutils::log_message("weights length must match pvalues length", "error");
   }
 
   std::vector<int> valid;

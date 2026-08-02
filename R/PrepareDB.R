@@ -438,10 +438,10 @@ PrepareDB <- function(
               "Stop the preparation",
               message_type = "error"
             )
-            stop(
+            log_message(
               "Required annotation package is not available: ",
               org_sp,
-              call. = FALSE
+              message_type = "error"
             )
           }
         }

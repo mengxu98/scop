@@ -655,18 +655,18 @@ resolve_condition_pair <- function(
   condition <- factor(condition)
   levels_use <- levels(droplevels(condition))
   if (length(levels_use) < 2L) {
-    stop("At least two condition levels are required.", call. = FALSE)
+    log_message("At least two condition levels are required.", message_type = "error")
   }
   if (isTRUE(strict_two_levels) && length(levels_use) != 2L && (is.null(condition1) || is.null(condition2))) {
-    stop("Exactly two condition levels are required unless condition1 and condition2 are provided.", call. = FALSE)
+    log_message("Exactly two condition levels are required unless condition1 and condition2 are provided.", message_type = "error")
   }
   condition1 <- condition1 %||% levels_use[[1]]
   condition2 <- condition2 %||% levels_use[[2]]
   if (!all(c(condition1, condition2) %in% levels_use)) {
-    stop("condition1 and condition2 must be present in condition.", call. = FALSE)
+    log_message("condition1 and condition2 must be present in condition.", message_type = "error")
   }
   if (identical(condition1, condition2)) {
-    stop("condition1 and condition2 must be different.", call. = FALSE)
+    log_message("condition1 and condition2 must be different.", message_type = "error")
   }
   list(condition1 = condition1, condition2 = condition2)
 }
@@ -3599,7 +3599,7 @@ RunDEtest_dream <- function(
         coef_use <- grep("^condition", coef_names, value = TRUE)
       }
       if (length(coef_use) == 0) {
-        stop("Cannot find condition coefficient in dream model.")
+        log_message("Cannot find condition coefficient in dream model.", message_type = "error")
       }
       tt <- topTable(
         fit = fit,

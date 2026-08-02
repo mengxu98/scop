@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <thisutils/log_message.h>
 
 #include <algorithm>
 #include <cmath>
@@ -53,7 +54,7 @@ struct DgcMatrixView {
 DgcMatrixView dgc_view(S4 x) {
   IntegerVector dims = x.slot("Dim");
   if (dims.size() != 2) {
-    stop("sparse matrix must have two dimensions");
+    thisutils::log_message("sparse matrix must have two dimensions", "error");
   }
   DgcMatrixView out;
   out.n_gene = dims[0];
@@ -573,16 +574,16 @@ List scibet_fit_predict(
     int additional_per_label = 0,
     bool return_probabilities = true) {
   if (ref.nrow() != query.nrow()) {
-    stop("ref and query must have the same number of rows");
+    thisutils::log_message("ref and query must have the same number of rows", "error");
   }
   if (ref.ncol() != labels.size()) {
-    stop("labels must have one value per reference cell");
+    thisutils::log_message("labels must have one value per reference cell", "error");
   }
   if (n_labels < 2) {
-    stop("at least two labels are required");
+    thisutils::log_message("at least two labels are required", "error");
   }
   if (n_top < 1) {
-    stop("n_top must be positive");
+    thisutils::log_message("n_top must be positive", "error");
   }
 
   std::vector<int> genes = selected_gene_indices(
@@ -593,7 +594,7 @@ List scibet_fit_predict(
     additional_per_label
   );
   if (genes.empty()) {
-    stop("no SciBet features were selected");
+    thisutils::log_message("no SciBet features were selected", "error");
   }
 
   NumericMatrix core = build_log_probability_core(ref, labels, genes, n_labels);
@@ -630,16 +631,16 @@ List scibet_fit_predict_sparse(
   DgcMatrixView ref_view = dgc_view(ref);
   DgcMatrixView query_view = dgc_view(query);
   if (ref_view.n_gene != query_view.n_gene) {
-    stop("ref and query must have the same number of rows");
+    thisutils::log_message("ref and query must have the same number of rows", "error");
   }
   if (ref_view.n_cell != labels.size()) {
-    stop("labels must have one value per reference cell");
+    thisutils::log_message("labels must have one value per reference cell", "error");
   }
   if (n_labels < 2) {
-    stop("at least two labels are required");
+    thisutils::log_message("at least two labels are required", "error");
   }
   if (n_top < 1) {
-    stop("n_top must be positive");
+    thisutils::log_message("n_top must be positive", "error");
   }
 
   std::vector<int> genes = selected_gene_indices_sparse(
@@ -650,7 +651,7 @@ List scibet_fit_predict_sparse(
     additional_per_label
   );
   if (genes.empty()) {
-    stop("no SciBet features were selected");
+    thisutils::log_message("no SciBet features were selected", "error");
   }
 
   NumericMatrix core = build_log_probability_core_sparse(ref_view, labels, genes, n_labels);

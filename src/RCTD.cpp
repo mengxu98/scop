@@ -1,5 +1,6 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 #include <RcppArmadillo.h>
+#include <thisutils/log_message.h>
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -25,13 +26,13 @@ DgCSlots get_dgc_slots(S4 mat, const char* arg_name) {
   IntegerVector col_ptr = mat.slot("p");
   NumericVector values = mat.slot("x");
   if (dims.size() != 2) {
-    stop("%s must have two dimensions.", arg_name);
+    thisutils::log_message_fmt("error", "%s must have two dimensions.",  arg_name);
   }
   if (col_ptr.size() != dims[1] + 1) {
-    stop("%s must be a valid dgCMatrix.", arg_name);
+    thisutils::log_message_fmt("error", "%s must be a valid dgCMatrix.",  arg_name);
   }
   if (row_idx.size() != values.size()) {
-    stop("%s has inconsistent sparse matrix slots.", arg_name);
+    thisutils::log_message_fmt("error", "%s has inconsistent sparse matrix slots.",  arg_name);
   }
   return DgCSlots{
     dims[0],
@@ -54,7 +55,7 @@ void mark_positive_rows(const DgCSlots& mat, std::vector<unsigned char>& has_val
     for (int ptr = mat.col_ptr[col]; ptr < mat.col_ptr[col + 1]; ++ptr) {
       const int row = mat.row_idx[ptr];
       if (row < 0 || row >= mat.n_rows) {
-        stop("dgCMatrix row index is out of bounds.");
+        thisutils::log_message("dgCMatrix row index is out of bounds.", "error");
       }
       if (is_positive_count(mat.values[ptr])) {
         has_value[static_cast<std::size_t>(row)] = 1;
@@ -114,14 +115,14 @@ NumericMatrix normalize_weights_copy(NumericMatrix weights) {
 List metadata_from_weights(NumericMatrix weights, CharacterVector all_spots) {
   List dimnames = weights.attr("dimnames");
   if (dimnames.size() < 2 || dimnames[0] == R_NilValue || dimnames[1] == R_NilValue) {
-    stop("weights must have row and column names.");
+    thisutils::log_message("weights must have row and column names.", "error");
   }
   CharacterVector weight_spots = dimnames[0];
   CharacterVector cell_types = dimnames[1];
   const int n_spots = all_spots.size();
   const int n_types = weights.ncol();
   if (n_types == 0) {
-    stop("weights must contain at least one cell type.");
+    thisutils::log_message("weights must contain at least one cell type.", "error");
   }
 
   std::unordered_map<std::string, int> weight_index;
@@ -193,7 +194,7 @@ List rctd_sparse_quality_cpp(S4 st_counts, S4 ref_counts) {
   DgCSlots st = get_dgc_slots(st_counts, "st_counts");
   DgCSlots ref = get_dgc_slots(ref_counts, "ref_counts");
   if (st.n_rows != ref.n_rows) {
-    stop("st_counts and ref_counts must have the same number of rows.");
+    thisutils::log_message("st_counts and ref_counts must have the same number of rows.", "error");
   }
 
   std::vector<unsigned char> st_has(static_cast<std::size_t>(st.n_rows), 0);

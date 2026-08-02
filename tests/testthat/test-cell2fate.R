@@ -76,6 +76,8 @@ test_that("cell2fate environment check uses the pinned GitHub backend", {
   prepared <- NULL
   python <- Sys.which("python3")
   skip_if(!nzchar(python))
+  srt <- make_cell2fate_srt()
+  result_dir <- tempfile("cell2fate check ")
 
   testthat::local_mocked_bindings(
     .package = "scop",
@@ -95,16 +97,116 @@ test_that("cell2fate environment check uses the pinned GitHub backend", {
       TRUE
     },
     conda_python = function(...) python,
-    resolve_conda = function(...) "mamba"
+    resolve_conda = function(...) "mamba",
+    runner_script_path = function(...) "cell2fate.py",
+    runner_request_id = function() "test-request",
+    runner_write_json = function(...) invisible(NULL),
+    cell2fate_write_input = function(prepared, path, ...) {
+      file.create(path)
+      invisible(path)
+    },
+    runner_system2 = function(command, args, env, stdout, stderr) {
+      files <- list(
+        input = file.path(result_dir, "inputs", "input.h5ad"),
+        cell_metadata = file.path(result_dir, "tables", "cell_metadata.csv"),
+        posterior = file.path(result_dir, "posterior", "cell2fate_posterior.h5ad"),
+        model = file.path(result_dir, "model"),
+        manifest = file.path(result_dir, "manifest.json")
+      )
+      dir.create(dirname(files$input), recursive = TRUE, showWarnings = FALSE)
+      dir.create(dirname(files$cell_metadata), recursive = TRUE, showWarnings = FALSE)
+      dir.create(dirname(files$posterior), recursive = TRUE, showWarnings = FALSE)
+      dir.create(files$model, recursive = TRUE, showWarnings = FALSE)
+      writeLines("model", file.path(files$model, "model.pt"))
+      writeLines("model data", file.path(files$model, "adata.h5ad"))
+      writeLines("input", files$input)
+      metadata <- data.frame(
+        Cell2fate_time = seq_len(8),
+        Cell2fate_time_uncertainty = seq(0.1, 0.8, 0.1),
+        Cell2fate_module_0_activation = seq(0.2, 0.9, 0.1),
+        Cell2fate_module_0_state = rep(c("ON", "OFF"), 4),
+        row.names = paste0("Cell", 1:8),
+        check.names = FALSE
+      )
+      utils::write.csv(metadata, files$cell_metadata)
+      writeLines("posterior", files$posterior)
+      artifact_paths <- c(
+        "inputs/input.h5ad" = files$input,
+        "model/model.pt" = file.path(files$model, "model.pt"),
+        "model/adata.h5ad" = file.path(files$model, "adata.h5ad"),
+        "posterior/cell2fate_posterior.h5ad" = files$posterior,
+        "tables/cell_metadata.csv" = files$cell_metadata
+      )
+      sha256sum <- get0(
+        "sha256sum",
+        envir = asNamespace("tools"),
+        mode = "function",
+        inherits = FALSE
+      )
+      artifacts <- lapply(
+        artifact_paths,
+        function(path) {
+          list(
+            size = unname(file.info(path)$size),
+            sha256 = if (is.null(sha256sum)) {
+              paste(rep("0", 64L), collapse = "")
+            } else {
+              unname(sha256sum(path))
+            }
+          )
+        }
+      )
+      manifest <- list(
+        producer = "RunCell2fate",
+        runner_schema_version = 1L,
+        backend_commit = "c03d1ca0bb963f550001c6070d4986a61ec8456a",
+        status = "complete",
+        request_id = "test-request",
+        features = paste0("Gene", 1:3),
+        cells = paste0("Cell", 1:8),
+        artifacts = artifacts,
+        n_modules = 1L,
+        versions = list(cell2fate = "0.1a0")
+      )
+      to_json <- getExportedValue(
+        "thisutils",
+        "get_namespace_fun"
+      )("jsonlite", "toJSON")
+      writeLines(
+        as.character(to_json(
+          manifest,
+          auto_unbox = TRUE,
+          null = "null",
+          digits = NA
+        )),
+        files$manifest
+      )
+      writeLines(
+        paste0(
+          '{"producer":"RunCell2fate","runner_schema_version":1,',
+          '"backend_commit":"c03d1ca0bb963f550001c6070d4986a61ec8456a"}'
+        ),
+        file.path(result_dir, ".cell2fate.json")
+      )
+      file.create(file.path(result_dir, ".complete"))
+      file.create(stdout)
+      file.create(stderr)
+      0L
+    }
   )
 
-  found <- getFromNamespace("cell2fate_check_python", "scop")(
+  out <- RunCell2fate(
+    srt,
+    result_dir = result_dir,
+    cluster.by = "celltype",
     envname = "cell2fate_test",
+    n_modules = 1L,
     verbose = FALSE
   )
 
   expect_identical(prepared$version, "3.9-1")
   expect_identical(prepared$modules, "cell2fate")
+  expect_identical(prepared$envname, "cell2fate_test")
   expect_setequal(
     checked[[1]]$packages,
     c("setuptools<81", "jaxlib==0.4.10")
@@ -113,7 +215,7 @@ test_that("cell2fate environment check uses the pinned GitHub backend", {
   expect_match(checked[[2]]$packages[[1]], "^git\\+https://")
   expect_match(checked[[2]]$packages[[1]], "cell2fate.git@c03d1ca0")
   expect_true(checked[[2]]$pip)
-  expect_identical(found, normalizePath(python, winslash = "/", mustWork = TRUE))
+  expect_equal(unname(out$Cell2fate_time), seq_len(8))
 })
 
 test_that("Cell2fate subprocess environment supports paths with spaces", {
@@ -234,8 +336,11 @@ test_that("RunCell2fate maps posterior summaries back to Seurat", {
 
   testthat::local_mocked_bindings(
     .package = "scop",
-    cell2fate_check_python = function(...) "python",
-    runner_script_path = function(...) "cell2fate_runner.py",
+    PrepareEnv = function(...) invisible(NULL),
+    check_python = function(...) TRUE,
+    conda_python = function(...) Sys.which("python3"),
+    resolve_conda = function(...) "mamba",
+    runner_script_path = function(...) "cell2fate.py",
     cell2fate_write_input = function(prepared, path, ...) {
       file.create(path)
       invisible(path)
@@ -243,7 +348,14 @@ test_that("RunCell2fate maps posterior summaries back to Seurat", {
     runner_request_id = function() "test-request",
     runner_write_json = function(...) invisible(NULL),
     runner_system2 = function(command, args, env, stdout, stderr) {
-      files <- getFromNamespace("cell2fate_result_files", "scop")(result_dir)
+      files <- list(
+        input = file.path(result_dir, "inputs", "input.h5ad"),
+        cell_metadata = file.path(result_dir, "tables", "cell_metadata.csv"),
+        velocity = file.path(result_dir, "tables", "velocity.csv"),
+        posterior = file.path(result_dir, "posterior", "cell2fate_posterior.h5ad"),
+        model = file.path(result_dir, "model"),
+        manifest = file.path(result_dir, "manifest.json")
+      )
       dir.create(dirname(files$input), recursive = TRUE, showWarnings = FALSE)
       dir.create(dirname(files$cell_metadata), recursive = TRUE, showWarnings = FALSE)
       dir.create(dirname(files$posterior), recursive = TRUE, showWarnings = FALSE)
@@ -558,9 +670,9 @@ test_that("Cell2fate refuses a non-empty unowned result directory", {
 
   testthat::local_mocked_bindings(
     .package = "scop",
-    cell2fate_check_python = function(...) {
+    PrepareEnv = function(...) {
       python_checked <<- TRUE
-      "python"
+      invisible(NULL)
     }
   )
 
@@ -642,7 +754,7 @@ test_that("Cell2fate runner treats a malformed resume manifest as a cache miss",
   )
 
   runner <- getFromNamespace("runner_script_path", "scop")(
-    "cell2fate_runner.py",
+    "cell2fate.py",
     "Cell2fate"
   )
   script <- tempfile(fileext = ".py")
@@ -672,7 +784,7 @@ test_that("Cell2fate runner treats a malformed resume manifest as a cache miss",
       "numpy = sys.modules['numpy']",
       "numpy.asarray = lambda value, dtype=None: value",
       "numpy.isfinite = lambda value: types.SimpleNamespace(all=lambda: value.finite)",
-      "module = runpy.run_path(sys.argv[1], run_name='cell2fate_runner_test')",
+      "module = runpy.run_path(sys.argv[1], run_name='cell2fate_test')",
       "model = types.SimpleNamespace(samples={'post_sample_means': {",
       "    'mu_expression': FakeArray((1, 1, 2), finite=False),",
       "    'beta_g': FakeArray((1, 1)),",
@@ -681,7 +793,7 @@ test_that("Cell2fate runner treats a malformed resume manifest as a cache miss",
       "adata = types.SimpleNamespace(n_obs=1, n_vars=1, layers={})",
       "try:",
       "    module['_add_velocity_from_posterior'](adata, model)",
-      "except ValueError as error:",
+      "except RuntimeError as error:",
       "    assert 'non-finite' in str(error)",
       "else:",
       "    raise AssertionError('non-finite velocity was accepted')",
@@ -934,8 +1046,11 @@ test_that("RunCell2fate leaves the input unchanged when Python fails", {
 
   testthat::local_mocked_bindings(
     .package = "scop",
-    cell2fate_check_python = function(...) "python",
-    runner_script_path = function(...) "cell2fate_runner.py",
+    PrepareEnv = function(...) invisible(NULL),
+    check_python = function(...) TRUE,
+    conda_python = function(...) Sys.which("python3"),
+    resolve_conda = function(...) "mamba",
+    runner_script_path = function(...) "cell2fate.py",
     cell2fate_write_input = function(prepared, path, ...) {
       file.create(path)
       invisible(path)

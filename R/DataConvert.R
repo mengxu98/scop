@@ -487,14 +487,14 @@ adata_to_srt <- function(
         {
           raw <- get_adata_element(adata$layers, k, missing = "null")
           if (is.null(raw)) {
-            stop("cannot access layer", call. = FALSE)
+            log_message("cannot access layer", message_type = "error")
           }
           layer <- adata_matrix_to_r(raw)
           if (!inherits(layer, c("Matrix", "matrix"))) {
-            stop(
+            log_message(
               "not a matrix: ",
               paste(class(layer), collapse = ", "),
-              call. = FALSE
+              message_type = "error"
             )
           }
           layer <- Matrix::t(layer)

@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <thisutils/log_message.h>
 #include <algorithm>
 #include <cmath>
 #include <vector>
@@ -70,7 +71,7 @@ NumericVector combine_conserved_pvalues_cpp(
       const int votes = positive + negative;
       result[row] = votes == 0 ? 1.0 : R::pbinom(positive - 1, votes, 0.5, false, false);
     } else {
-      stop("unsupported conserved-marker p-value method");
+      thisutils::log_message("unsupported conserved-marker p-value method", "error");
     }
   }
   return result;

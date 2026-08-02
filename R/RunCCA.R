@@ -67,14 +67,14 @@ RunCCA.Seurat <- function(
   ...
 ) {
   if (!inherits(object2, "Seurat")) {
-    stop("RunCCA.Seurat requires two Seurat objects.", call. = FALSE)
+    log_message("RunCCA.Seurat requires two Seurat objects.", message_type = "error")
   }
   if (
     isTRUE(renormalize) || isTRUE(rescale) || !isTRUE(compute.gene.loadings)
   ) {
-    stop(
+    log_message(
       "RunCCA.Seurat supports renormalize = FALSE, rescale = FALSE, and compute.gene.loadings = TRUE.",
-      call. = FALSE
+      message_type = "error"
     )
   }
   op <- options(

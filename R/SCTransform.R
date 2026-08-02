@@ -470,9 +470,9 @@ SCTransform.default <- function(
       !isTRUE(return.only.var.genes) ||
       length(extra_args) != 0L
   ) {
-    stop(
+    log_message(
       "SCTransform.default received unsupported arguments for the scop implementation.",
-      call. = FALSE
+      message_type = "error"
     )
   }
   check_r("sctransform", verbose = FALSE)
@@ -743,7 +743,7 @@ SCTransform.Seurat <- function(
   ...
 ) {
   if (is.null(assay) || length(assay) != 1L || identical(assay, "SCT")) {
-    stop("SCTransform.Seurat requires a single non-SCT assay.", call. = FALSE)
+    log_message("SCTransform.Seurat requires a single non-SCT assay.", message_type = "error")
   }
   extra_args <- list(...)
   if (
@@ -769,9 +769,9 @@ SCTransform.Seurat <- function(
       !isTRUE(return.only.var.genes) ||
       length(extra_args) != 0L
   ) {
-    stop(
+    log_message(
       "SCTransform.Seurat received unsupported arguments for the scop implementation.",
-      call. = FALSE
+      message_type = "error"
     )
   }
   if (!is.null(seed.use)) {

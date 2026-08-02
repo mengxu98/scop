@@ -1201,7 +1201,7 @@ RunCellQC <- function(
   }
   assay_features <- rownames(Seurat::GetAssay(srt, assay = assay))
   if (!is.list(qc_features)) {
-    stop("qc_features must be a named list", call. = FALSE)
+    log_message("qc_features must be a named list", message_type = "error")
   }
   if (length(qc_features) > 0) {
     rule_names <- names(qc_features)
@@ -1211,10 +1211,10 @@ RunCellQC <- function(
         any(!nzchar(rule_names)) ||
         anyDuplicated(rule_names)
     ) {
-      stop("qc_features must have unique, non-empty names", call. = FALSE)
+      log_message("qc_features must have unique, non-empty names", message_type = "error")
     }
     if (any(make.names(rule_names) != rule_names)) {
-      stop("qc_features names must be syntactically valid R names", call. = FALSE)
+      log_message("qc_features names must be syntactically valid R names", message_type = "error")
     }
     species_suffix <- c("", paste0(".", species))
     built_in_columns <- c(
@@ -1234,12 +1234,12 @@ RunCellQC <- function(
     )
     conflicting_columns <- intersect(generated_columns, built_in_columns)
     if (length(conflicting_columns) > 0) {
-      stop(
+      log_message(
         sprintf(
           "qc_features names generate columns that conflict with built-in QC columns: %s",
           paste(conflicting_columns, collapse = ", ")
         ),
-        call. = FALSE
+        message_type = "error"
       )
     }
 
@@ -1248,31 +1248,31 @@ RunCellQC <- function(
     for (rule_name in rule_names) {
       rule <- qc_features[[rule_name]]
       if (!is.list(rule)) {
-        stop(
+        log_message(
           sprintf("qc_features rule '%s' must be a list", rule_name),
-          call. = FALSE
+          message_type = "error"
         )
       }
       unknown_fields <- setdiff(names(rule), c("features", "pattern", "range"))
       if (length(unknown_fields) > 0) {
-        stop(
+        log_message(
           sprintf(
             "qc_features rule '%s' contains unsupported fields: %s",
             rule_name,
             paste(unknown_fields, collapse = ", ")
           ),
-          call. = FALSE
+          message_type = "error"
         )
       }
       has_features <- !is.null(rule[["features"]])
       has_pattern <- !is.null(rule[["pattern"]])
       if (has_features == has_pattern) {
-        stop(
+        log_message(
           sprintf(
             "qc_features rule '%s' must provide exactly one of features or pattern",
             rule_name
           ),
-          call. = FALSE
+          message_type = "error"
         )
       }
       rule_range <- cellqc_validate_range(
@@ -1287,25 +1287,25 @@ RunCellQC <- function(
             anyNA(requested) ||
             any(!nzchar(requested))
         ) {
-          stop(
+          log_message(
             sprintf(
               "qc_features rule '%s' features must be a non-empty character vector",
               rule_name
             ),
-            call. = FALSE
+            message_type = "error"
           )
         }
         requested <- unique(requested)
         resolved <- intersect(requested, assay_features)
         missing_features <- setdiff(requested, resolved)
         if (length(missing_features) > 0 && length(resolved) > 0) {
-          warning(
+          log_message(
             sprintf(
               "qc_features rule '%s' ignored missing features: %s",
               rule_name,
               paste(missing_features, collapse = ", ")
             ),
-            call. = FALSE
+            message_type = "warning"
           )
         }
       } else {
@@ -1316,12 +1316,12 @@ RunCellQC <- function(
             anyNA(patterns) ||
             any(!nzchar(patterns))
         ) {
-          stop(
+          log_message(
             sprintf(
               "qc_features rule '%s' pattern must be a non-empty character vector",
               rule_name
             ),
-            call. = FALSE
+            message_type = "error"
           )
         }
         resolved <- tryCatch(
@@ -1330,24 +1330,24 @@ RunCellQC <- function(
             function(pattern) grep(pattern, assay_features, value = TRUE)
           ))),
           error = function(e) {
-            stop(
+            log_message(
               sprintf(
                 "qc_features rule '%s' has an invalid pattern: %s",
                 rule_name,
                 conditionMessage(e)
               ),
-              call. = FALSE
+              message_type = "error"
             )
           }
         )
       }
       if (length(resolved) == 0) {
-        stop(
+        log_message(
           sprintf(
             "qc_features rule '%s' did not match any assay features",
             rule_name
           ),
-          call. = FALSE
+          message_type = "error"
         )
       }
       qc_features_validated[[rule_name]] <- list(
@@ -1387,9 +1387,9 @@ RunCellQC <- function(
     tryCatch(
       lapply(hb_pattern, grep, x = assay_features),
       error = function(e) {
-        stop(
+        log_message(
           sprintf("hb_pattern contains an invalid regex: %s", conditionMessage(e)),
-          call. = FALSE
+          message_type = "error"
         )
       }
     )
@@ -1405,12 +1405,12 @@ RunCellQC <- function(
       )
     }
     if (length(hb_gene_missing) > 0) {
-      warning(
+      log_message(
         sprintf(
           "hb_gene ignored missing features: %s",
           paste(hb_gene_missing, collapse = ", ")
         ),
-        call. = FALSE
+        message_type = "warning"
       )
     }
     hb_gene <- hb_gene_found
@@ -2089,9 +2089,9 @@ cellqc_validate_range <- function(x, arg) {
       anyNA(x) ||
       x[[1]] > x[[2]]
   ) {
-    stop(
+    log_message(
       sprintf("%s must be a numeric vector of length two with lower <= upper", arg),
-      call. = FALSE
+      message_type = "error"
     )
   }
   as.numeric(x)

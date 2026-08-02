@@ -1,5 +1,6 @@
 // [[Rcpp::plugins(cpp14)]]
 #include <Rcpp.h>
+#include <thisutils/log_message.h>
 #include <vector>
 
 using namespace Rcpp;
@@ -12,7 +13,7 @@ NumericMatrix estimate_ssgsea_scores_cpp(
   const int n_genes = ranked.nrow();
   const int n_samples = ranked.ncol();
   if (sample_order.nrow() != n_genes || sample_order.ncol() != n_samples) {
-    stop("sample_order must have the same dimensions as ranked");
+    thisutils::log_message("sample_order must have the same dimensions as ranked", "error");
   }
 
   NumericMatrix scores(n_samples, gene_sets.size());
@@ -35,7 +36,7 @@ NumericMatrix estimate_ssgsea_scores_cpp(
       for (int position = 0; position < n_genes; ++position) {
         const int gene = sample_order(position, sample_i) - 1;
         if (gene < 0 || gene >= n_genes) {
-          stop("sample_order contains an out-of-bounds gene index");
+          thisutils::log_message("sample_order contains an out-of-bounds gene index", "error");
         }
         if (in_set[gene]) {
           hit_weight_total += R_pow(ranked(gene, sample_i), 0.25);

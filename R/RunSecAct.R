@@ -102,7 +102,13 @@ RunSecAct <- function(
     .Deprecated(msg = "'ncores' is deprecated; use 'cores' instead")
     cores <- ncores
   }
-  secact_check_r(verbose = verbose)
+  check_r("data2intelligence/SecAct", dependencies = NA, verbose = verbose)
+  if (!is.function(get_namespace_fun("SecAct", "SecAct.activity.inference"))) {
+    log_message(
+      "Failed to install or load {.pkg SecAct}. Install it manually with {.code pak::pkg_install('data2intelligence/SecAct')}",
+      message_type = "error"
+    )
+  }
 
   if (identical(mode, "auto")) {
     mode <- secact_resolve_mode(srt = srt, inputProfile = inputProfile)
@@ -230,7 +236,13 @@ RunSecActCCC <- function(
   verbose = TRUE
 ) {
   mode <- match.arg(mode)
-  secact_check_r(verbose = verbose)
+  check_r("data2intelligence/SecAct", dependencies = NA, verbose = verbose)
+  if (!is.function(get_namespace_fun("SecAct", "SecAct.activity.inference"))) {
+    log_message(
+      "Failed to install or load {.pkg SecAct}. Install it manually with {.code pak::pkg_install('data2intelligence/SecAct')}",
+      message_type = "error"
+    )
+  }
   if (missing(cellType_meta) || is.null(cellType_meta) || !nzchar(cellType_meta)) {
     log_message("{.arg cellType_meta} is required", message_type = "error")
   }
@@ -241,9 +253,9 @@ RunSecActCCC <- function(
     secact_check_meta_columns(obj, c(cellType_meta, condition_meta))
     if (is.null(condition_meta)) {
       if (!is.null(conditionCase) || !is.null(conditionControl)) {
-        warning(
+        log_message(
           "conditionCase and conditionControl are ignored when condition_meta is NULL",
-          call. = FALSE
+          message_type = "warning"
         )
       }
       conditionCase <- NULL
@@ -318,7 +330,13 @@ RunSecActSignalingPattern <- function(
   k,
   verbose = TRUE
 ) {
-  secact_check_r(verbose = verbose)
+  check_r("data2intelligence/SecAct", dependencies = NA, verbose = verbose)
+  if (!is.function(get_namespace_fun("SecAct", "SecAct.activity.inference"))) {
+    log_message(
+      "Failed to install or load {.pkg SecAct}. Install it manually with {.code pak::pkg_install('data2intelligence/SecAct')}",
+      message_type = "error"
+    )
+  }
   secact_assert_spacet(SpaCET_obj)
   if (missing(k) || is.null(k)) {
     log_message("{.arg k} is required", message_type = "error")
@@ -351,7 +369,13 @@ RunSecActPatternGenes <- function(
   n,
   verbose = TRUE
 ) {
-  secact_check_r(verbose = verbose)
+  check_r("data2intelligence/SecAct", dependencies = NA, verbose = verbose)
+  if (!is.function(get_namespace_fun("SecAct", "SecAct.activity.inference"))) {
+    log_message(
+      "Failed to install or load {.pkg SecAct}. Install it manually with {.code pak::pkg_install('data2intelligence/SecAct')}",
+      message_type = "error"
+    )
+  }
   secact_assert_spacet(SpaCET_obj)
   if (missing(n) || length(n) != 1L || is.na(n)) {
     log_message("{.arg n} must be a single pattern index", message_type = "error")
@@ -410,7 +434,13 @@ RunSecActVelocity <- function(
   verbose = TRUE
 ) {
   mode <- match.arg(mode)
-  secact_check_r(verbose = verbose)
+  check_r("data2intelligence/SecAct", dependencies = NA, verbose = verbose)
+  if (!is.function(get_namespace_fun("SecAct", "SecAct.activity.inference"))) {
+    log_message(
+      "Failed to install or load {.pkg SecAct}. Install it manually with {.code pak::pkg_install('data2intelligence/SecAct')}",
+      message_type = "error"
+    )
+  }
   secact_assert_spacet(SpaCET_obj)
 
   if (identical(mode, "spotST")) {
@@ -456,17 +486,6 @@ RunSecActVelocity <- function(
     arrow.width = arrow.width,
     arrow.size = arrow.size
   )
-}
-
-secact_check_r <- function(verbose = TRUE) {
-  check_r("data2intelligence/SecAct", dependencies = NA, verbose = verbose)
-  if (!is.function(get_namespace_fun("SecAct", "SecAct.activity.inference"))) {
-    log_message(
-      "Failed to install or load {.pkg SecAct}. Install it manually with {.code pak::pkg_install('data2intelligence/SecAct')}",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
 }
 
 secact_resolve_mode <- function(srt = NULL, inputProfile = NULL) {

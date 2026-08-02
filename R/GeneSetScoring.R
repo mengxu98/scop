@@ -367,36 +367,36 @@ run_aucell_scores_from_official_rankings <- function(
 ) {
   check_r("AUCell", verbose = FALSE)
   if (!methods::is(rankings, "aucellResults")) {
-    stop("rankings must be an aucellResults object from AUCell_buildRankings()", call. = FALSE)
+    log_message("rankings must be an aucellResults object from AUCell_buildRankings()", message_type = "error")
   }
   if (!is.list(gene_sets) || is.null(names(gene_sets))) {
-    stop("gene_sets must be a named list", call. = FALSE)
+    log_message("gene_sets must be a named list", message_type = "error")
   }
   auc_max_rank <- suppressWarnings(as.integer(round(auc_max_rank[[1L]])))
   if (is.na(auc_max_rank) || auc_max_rank <= 0L) {
-    stop("auc_max_rank must be a positive value", call. = FALSE)
+    log_message("auc_max_rank must be a positive value", message_type = "error")
   }
 
   rank_mat <- AUCell::getRanking(rankings)
   gene_sets <- lapply(gene_sets, unique)
   gene_sets <- gene_sets[lengths(gene_sets) > 0L]
   if (length(gene_sets) == 0L) {
-    stop("No gene sets provided or remaining.", call. = FALSE)
+    log_message("No gene sets provided or remaining.", message_type = "error")
   }
   gene_set_idx <- gene_set_scoring_indices(gene_sets, rownames(rank_mat))
   n_genes <- lengths(gene_sets)
   missing_percent <- (n_genes - lengths(gene_set_idx)) / n_genes
   if (all(missing_percent >= 0.8)) {
-    stop(
+    log_message(
       "Fewer than 20% of the genes in the gene sets are included in the rankings.",
       " Check whether the gene IDs in the rankings and gene sets match.",
-      call. = FALSE
+      message_type = "error"
     )
   }
   keep <- missing_percent < 0.8
   gene_set_idx <- gene_set_idx[keep]
   if (length(gene_set_idx) == 0L) {
-    stop("No gene sets remain after AUCell gene-ID filtering.", call. = FALSE)
+    log_message("No gene sets remain after AUCell gene-ID filtering.", message_type = "error")
   }
 
   scores <- aucell_auc_ranked_full(

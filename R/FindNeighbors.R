@@ -196,7 +196,7 @@ FindNeighbors <- function(object, ...) {
 
 #' @export
 FindNeighbors.default <- function(object, ...) {
-  stop("FindNeighbors supports Seurat objects.", call. = FALSE)
+  log_message("FindNeighbors supports Seurat objects.", message_type = "error")
 }
 
 knn_cross_topk_native <- function(reference, query, k, distance_metric) {

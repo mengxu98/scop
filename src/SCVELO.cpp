@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <thisutils/log_message.h>
 #include "velocity_utils.h"
 #ifdef _OPENMP
 #include <omp.h>
@@ -19,7 +20,7 @@ IntegerVector scvelo_filter_genes_cpp(
   const int n_genes = spliced.nrow();
   const int n_cells = spliced.ncol();
   if (unspliced.nrow() != n_genes || unspliced.ncol() != n_cells)
-    stop("spliced and unspliced must have identical dimensions");
+    thisutils::log_message("spliced and unspliced must have identical dimensions", "error");
 
   IntegerVector keep(n_genes, 1);
   #ifdef _OPENMP
@@ -48,7 +49,7 @@ List scvelo_normalize_log_cpp(
   const int n_genes = spliced.nrow();
   const int n_cells = spliced.ncol();
   if (unspliced.nrow() != n_genes || unspliced.ncol() != n_cells)
-    stop("spliced and unspliced must have identical dimensions");
+    thisutils::log_message("spliced and unspliced must have identical dimensions", "error");
 
   NumericMatrix ns(n_genes, n_cells);
   NumericMatrix nu(n_genes, n_cells);
@@ -80,9 +81,9 @@ List scvelo_moments_cpp(
   const int n_neighbors = knn_idx.ncol();
 
   if (unspliced.nrow() != n_genes || unspliced.ncol() != n_cells)
-    stop("spliced and unspliced must have identical dimensions");
+    thisutils::log_message("spliced and unspliced must have identical dimensions", "error");
   if (knn_idx.nrow() != n_cells)
-    stop("knn_idx rows must match number of cells");
+    thisutils::log_message("knn_idx rows must match number of cells", "error");
 
   NumericMatrix Ms(n_genes, n_cells);
   NumericMatrix Mu(n_genes, n_cells);
@@ -124,9 +125,9 @@ List scvelo_moments_connectivities_cpp(
   const int n_neighbors = knn_idx.ncol();
 
   if (unspliced.nrow() != n_genes || unspliced.ncol() != n_cells)
-    stop("spliced and unspliced must have identical dimensions");
+    thisutils::log_message("spliced and unspliced must have identical dimensions", "error");
   if (knn_idx.nrow() != n_cells)
-    stop("knn_idx rows must match number of cells");
+    thisutils::log_message("knn_idx rows must match number of cells", "error");
 
   std::vector<std::vector<int> > adj(n_cells);
   for (int cell = 0; cell < n_cells; ++cell) {
@@ -199,9 +200,9 @@ List scvelo_second_order_moments_cpp(
   const int n_neighbors = knn_idx.ncol();
 
   if (unspliced.nrow() != n_genes || unspliced.ncol() != n_cells)
-    stop("spliced and unspliced must have identical dimensions");
+    thisutils::log_message("spliced and unspliced must have identical dimensions", "error");
   if (knn_idx.nrow() != n_cells)
-    stop("knn_idx rows must match number of cells");
+    thisutils::log_message("knn_idx rows must match number of cells", "error");
 
   std::vector<std::vector<int> > adj(n_cells);
   for (int cell = 0; cell < n_cells; ++cell) {
@@ -255,11 +256,11 @@ List scvelo_deterministic_cpp(
   const int n_dims = embedding.ncol();
 
   if (Mu.nrow() != n_genes || Mu.ncol() != n_cells)
-    stop("Ms and Mu must have identical dimensions");
+    thisutils::log_message("Ms and Mu must have identical dimensions", "error");
   if (knn_idx.nrow() != n_cells)
-    stop("knn_idx rows must match number of cells");
+    thisutils::log_message("knn_idx rows must match number of cells", "error");
   if (embedding.nrow() != n_cells)
-    stop("embedding rows must match number of cells");
+    thisutils::log_message("embedding rows must match number of cells", "error");
 
   // --- Estimate gamma per gene ---
   NumericVector gamma(n_genes);
@@ -400,15 +401,15 @@ List scvelo_stochastic_cpp(
   const int n_dims = embedding.ncol();
 
   if (Mu.nrow() != n_genes || Mu.ncol() != n_cells)
-    stop("Ms and Mu must have identical dimensions");
+    thisutils::log_message("Ms and Mu must have identical dimensions", "error");
   if (Mss.nrow() != n_genes || Mss.ncol() != n_cells)
-    stop("Mss dimensions must match Ms");
+    thisutils::log_message("Mss dimensions must match Ms", "error");
   if (Mus.nrow() != n_genes || Mus.ncol() != n_cells)
-    stop("Mus dimensions must match Ms");
+    thisutils::log_message("Mus dimensions must match Ms", "error");
   if (knn_idx.nrow() != n_cells)
-    stop("knn_idx rows must match number of cells");
+    thisutils::log_message("knn_idx rows must match number of cells", "error");
   if (embedding.nrow() != n_cells)
-    stop("embedding rows must match number of cells");
+    thisutils::log_message("embedding rows must match number of cells", "error");
 
   const double* Ms_ptr = REAL(Ms);
   const double* Mu_ptr = REAL(Mu);
@@ -865,9 +866,9 @@ NumericMatrix scvelo_velocity_transition_cpp(
   const int n_cells = Ms.ncol();
   const int n_neighbors = knn_idx.ncol();
   if (residual.nrow() != n_genes || residual.ncol() != n_cells)
-    stop("Ms and residual must have identical dimensions");
+    thisutils::log_message("Ms and residual must have identical dimensions", "error");
   if (knn_idx.nrow() != n_cells)
-    stop("knn_idx rows must match number of cells");
+    thisutils::log_message("knn_idx rows must match number of cells", "error");
   if (n_neighbors_velo <= 0) n_neighbors_velo = n_neighbors;
 
   NumericMatrix T(n_cells, n_cells);
@@ -998,9 +999,9 @@ List scvelo_terminal_states_transition_cpp(
 {
   const int n_cells = transition_matrix.nrow();
   if (transition_matrix.ncol() != n_cells)
-    stop("transition_matrix must be square");
+    thisutils::log_message("transition_matrix must be square", "error");
   if (knn_idx.nrow() != n_cells)
-    stop("knn_idx rows must match transition_matrix");
+    thisutils::log_message("knn_idx rows must match transition_matrix", "error");
 
   NumericMatrix T_forward(clone(transition_matrix));
   for (int i = 0; i < n_cells; ++i) {
@@ -1046,7 +1047,7 @@ List scvelo_terminal_states_cpp(
   const int n_dims = embedding.ncol();
 
   if (velocity_embedding.nrow() != n_cells || velocity_embedding.ncol() != n_dims)
-    stop("velocity_embedding must have same dimensions as embedding");
+    thisutils::log_message("velocity_embedding must have same dimensions as embedding", "error");
 
   // Build velocity transition matrix (embedding-space cosine)
   std::vector<double> T;
@@ -1249,11 +1250,11 @@ List scvelo_pseudotime_transition_cpp(
 {
   const int n_cells = transition_matrix.nrow();
   if (transition_matrix.ncol() != n_cells)
-    stop("transition_matrix must be square");
+    thisutils::log_message("transition_matrix must be square", "error");
   if (root_cells.size() != n_cells)
-    stop("root_cells length must match n_cells");
+    thisutils::log_message("root_cells length must match n_cells", "error");
   if (end_points.size() != n_cells)
-    stop("end_points length must match n_cells");
+    thisutils::log_message("end_points length must match n_cells", "error");
 
   NumericMatrix T(clone(transition_matrix));
   for (int i = 0; i < n_cells; ++i) {
@@ -1360,11 +1361,11 @@ List scvelo_pseudotime_cpp(
   const int n_dims = embedding.ncol();
 
   if (velocity_embedding.nrow() != n_cells || velocity_embedding.ncol() != n_dims)
-    stop("velocity_embedding dimensions mismatch");
+    thisutils::log_message("velocity_embedding dimensions mismatch", "error");
   if (root_cells.size() != n_cells)
-    stop("root_cells length must match n_cells");
+    thisutils::log_message("root_cells length must match n_cells", "error");
   if (end_points.size() != n_cells)
-    stop("end_points length must match n_cells");
+    thisutils::log_message("end_points length must match n_cells", "error");
 
   // Build velocity transition matrix (embedding-space cosine)
   std::vector<double> T;
@@ -1470,9 +1471,9 @@ List scvelo_pseudotime_graph_cpp(
 {
   const int n_cells = knn_idx.nrow();
   if (root_cells.size() != n_cells)
-    stop("root_cells length must match number of cells");
+    thisutils::log_message("root_cells length must match number of cells", "error");
   if (end_points.size() != n_cells)
-    stop("end_points length must match number of cells");
+    thisutils::log_message("end_points length must match number of cells", "error");
 
   NumericMatrix C(n_cells, n_cells);
   for (int k = 0; k < graph_rows.size(); ++k) {
@@ -1636,7 +1637,7 @@ NumericVector scvelo_velocity_genes_cpp(
   const int n_genes = Ms.nrow();
   const int n_cells = Ms.ncol();
   if (velocity.nrow() != n_genes || velocity.ncol() != n_cells)
-    stop("Ms and velocity must have identical dimensions");
+    thisutils::log_message("Ms and velocity must have identical dimensions", "error");
 
   // For each gene, compute absolute correlation between velocity and Ms
   NumericVector scores(n_genes);

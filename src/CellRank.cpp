@@ -1,5 +1,6 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 #include <RcppArmadillo.h>
+#include <thisutils/log_message.h>
 #include "velocity_utils.h"
 
 using namespace Rcpp;
@@ -14,7 +15,7 @@ List cellrank_validate_transition_matrix_cpp(
     double min_self_loop = 0.01)
 {
   int n = T_.nrow();
-  if (T_.ncol() != n) stop("Transition matrix must be square");
+  if (T_.ncol() != n) thisutils::log_message("Transition matrix must be square", "error");
 
   NumericMatrix T = clone(T_);
   int nans = 0, negs = 0, zeros = 0, loops = 0;
@@ -202,7 +203,7 @@ NumericMatrix cellrank_connectivity_kernel_cpp(
   const int n_cells = knn_idx.nrow();
   const int n_neighbors = knn_idx.ncol();
   if (knn_dist.nrow() != n_cells || knn_dist.ncol() != n_neighbors) {
-    stop("knn_idx and knn_dist must have the same dimensions");
+    thisutils::log_message("knn_idx and knn_dist must have the same dimensions", "error");
   }
 
   NumericMatrix T(n_cells, n_cells);

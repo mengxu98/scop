@@ -16,10 +16,10 @@ RunPCA.default <- function(
   ...
 ) {
   if (!is.matrix(object) && !inherits(object, "Matrix")) {
-    stop("RunPCA supports Seurat, assay, matrix, and Matrix objects.", call. = FALSE)
+    log_message("RunPCA supports Seurat, assay, matrix, and Matrix objects.", message_type = "error")
   }
   if (isTRUE(rev.pca) || !isTRUE(approx)) {
-    stop("RunPCA.default supports rev.pca = FALSE and approx = TRUE.", call. = FALSE)
+    log_message("RunPCA.default supports rev.pca = FALSE and approx = TRUE.", message_type = "error")
   }
   if (!is.null(seed.use)) {
     set.seed(seed = seed.use)
@@ -92,7 +92,7 @@ RunPCA.StdAssay <- function(
     (!is.null(layer) && !identical(as.character(layer), "scale.data")) ||
       isFALSE(list(...)[["approx"]])
   ) {
-    stop("RunPCA.StdAssay supports layer = 'scale.data' and approx = TRUE.", call. = FALSE)
+    log_message("RunPCA.StdAssay supports layer = 'scale.data' and approx = TRUE.", message_type = "error")
   }
   if (inherits(object, "Assay5")) {
     layer <- SeuratObject::Layers(object, search = layer)

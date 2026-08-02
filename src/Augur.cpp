@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <thisutils/log_message.h>
 
 #include <vector>
 
@@ -10,7 +11,7 @@ NumericMatrix augur_subsample_cpp(S4 mat, IntegerVector cols) {
   int n_features = dims[0];
   int n_selected = cols.size();
   if (n_selected < 1) {
-    stop("At least one column must be selected");
+    thisutils::log_message("At least one column must be selected", "error");
   }
 
   IntegerVector p = mat.slot("p");
@@ -24,7 +25,7 @@ NumericMatrix augur_subsample_cpp(S4 mat, IntegerVector cols) {
   for (int k = 0; k < n_selected; ++k) {
     int col = cols[k] - 1;
     if (col < 0 || col >= dims[1]) {
-      stop("Column index out of bounds");
+      thisutils::log_message("Column index out of bounds", "error");
     }
     selected_cols[k] = col;
   }

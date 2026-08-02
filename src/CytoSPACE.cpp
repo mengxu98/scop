@@ -1,5 +1,6 @@
 // [[Rcpp::depends(RcppArmadillo, cli)]]
 #include <RcppArmadillo.h>
+#include <thisutils/log_message.h>
 #include <thisutils/cli_progress.h>
 #include <algorithm>
 #include <cmath>
@@ -79,7 +80,7 @@ long long min_cost_flow(
     }
 
     if (dist[sink] == INF) {
-      stop("Unable to find a complete CytoSPACE assignment for the current target counts.");
+      thisutils::log_message("Unable to find a complete CytoSPACE assignment for the current target counts.", "error");
     }
 
     for (int v = 0; v < n; ++v) {
@@ -182,10 +183,10 @@ List cytospace_assign(
   bool verbose = false
 ) {
   if (sc_expr.nrow() != st_expr.nrow()) {
-    stop("sc_expr and st_expr must have the same number of genes.");
+    thisutils::log_message("sc_expr and st_expr must have the same number of genes.", "error");
   }
   if (spot_capacities.size() != st_expr.ncol()) {
-    stop("spot_capacities must have one value per spatial spot.");
+    thisutils::log_message("spot_capacities must have one value per spatial spot.", "error");
   }
 
   arma::mat sc_norm = normalize_log_cpm(sc_expr);
@@ -197,12 +198,12 @@ List cytospace_assign(
   int total_capacity = 0;
   for (int spot = 0; spot < n_spots; ++spot) {
     if (spot_capacities[spot] < 0) {
-      stop("spot_capacities cannot contain negative values.");
+      thisutils::log_message("spot_capacities cannot contain negative values.", "error");
     }
     total_capacity += spot_capacities[spot];
   }
   if (total_capacity != n_cells) {
-    stop("spot_capacities must sum to the number of sampled reference cells.");
+    thisutils::log_message("spot_capacities must sum to the number of sampled reference cells.", "error");
   }
 
   std::vector<int> out_cell(n_cells);
@@ -266,7 +267,7 @@ List cytospace_assign(
       }
     }
     if (assigned_spot < 0) {
-      stop("Internal CytoSPACE assignment recovery failed.");
+      thisutils::log_message("Internal CytoSPACE assignment recovery failed.", "error");
     }
     out_cell[cell] = cell + 1;
     out_spot[cell] = assigned_spot + 1;
