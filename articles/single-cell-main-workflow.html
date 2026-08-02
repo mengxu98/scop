@@ -40,14 +40,10 @@
     <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
     <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
     <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/interactive-scexplorer-workflow.html">Interactive SCExplorer workflow</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
     <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges and Giotto compatibility</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Cell-cell communication</h6></li>
-    <li><a class="dropdown-item" href="../articles/cell-cell-communication-workflow.html">Cell-cell communication workflow</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
@@ -172,12 +168,12 @@ without stating where it came from.</p>
 <div class="section level2">
 <h2 id="run-the-standard-workflow">Run the Standard Workflow<a class="anchor" aria-label="anchor" href="#run-the-standard-workflow"></a>
 </h2>
-<p><code><a href="../reference/standard_scop.html">standard_scop()</a></code> runs the common preprocessing path:
-normalization, variable feature selection, scaling, dimensional
+<p><code><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow()</a></code> runs the common preprocessing
+path: normalization, variable feature selection, scaling, dimensional
 reduction, neighbor graph construction, clustering, and UMAP. The result
 stays in the same Seurat object.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/standard_scop.html">standard_scop</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span></span>
 <span>  <span class="va">pancreas_sub</span>,</span>
 <span>  assay <span class="op">=</span> <span class="st">"RNA"</span>,</span>
 <span>  nHVF <span class="op">=</span> <span class="fl">2000</span>,</span>
@@ -185,7 +181,7 @@ stays in the same Seurat object.</p>
 <span>  cluster_resolution <span class="op">=</span> <span class="fl">0.8</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:40:34] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:05:16] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span>
 <span></span>
 <span><span class="va">pancreas_sub</span></span>
 <span><span class="co">#&gt; An object of class Seurat </span></span>
@@ -215,21 +211,21 @@ summary columns to metadata, and keeps details under the object tools
 slot.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunCellQC.html">RunCellQC</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #FFAF00;">◌</span> [2026-07-28 03:40:38] Running cell-level quality control</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:40:38] Data type is raw counts</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:40:38] Running <span style="color: #0000BB;">scDblFinder</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-07-28 03:41:37] Skip <span style="color: #0000BB;">"atac"</span> QC because `assay = 'RNA'` is not a <span style="color: #0000BB;">&lt;ChromatinAssay&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:41:37] Running <span style="color: #0000BB;">decontX</span></span></span>
+<span><span class="co">#&gt; <span style="color: #FFAF00;">◌</span> [2026-08-02 13:05:19] Running cell-level quality control</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:05:20] Data type is raw counts</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:05:20] Running <span style="color: #0000BB;">scDblFinder</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-08-02 13:06:17] Skip <span style="color: #0000BB;">"atac"</span> QC because `assay = 'RNA'` is not a <span style="color: #0000BB;">&lt;ChromatinAssay&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:06:17] Running <span style="color: #0000BB;">decontX</span></span></span>
 <span><span class="co">#&gt; Warning in .library_size_factors(assay(x, assay.type), ...): 'librarySizeFactors' is deprecated.</span></span>
 <span><span class="co">#&gt; Use 'scrapper::centerSizeFactors' instead.</span></span>
 <span><span class="co">#&gt; See help("Deprecated")</span></span>
 <span><span class="co">#&gt; Warning in .local(x, ...): 'normalizeCounts' is deprecated.</span></span>
 <span><span class="co">#&gt; Use 'scrapper::normalizeCounts' instead.</span></span>
 <span><span class="co">#&gt; See help("Deprecated")</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:41:48] decontX contamination (median/mean/max): 0.0136 / 0.1628 / 0.7465</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:41:48] decontX assay stored as decontXcounts</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-07-28 03:41:48] <span style="color: #0000BB;">decontX</span> decontamination completed</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-07-28 03:41:48] ● Total cells: <span style="color: #0000BB;">1000</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:06:27] decontX contamination (median/mean/max): 0.0136 / 0.1628 / 0.7465</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:06:27] decontX assay stored as decontXcounts</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-08-02 13:06:27] <span style="color: #0000BB;">decontX</span> decontamination completed</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-08-02 13:06:27] ● Total cells: <span style="color: #0000BB;">1000</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span>                       ◉ <span style="color: #0000BB;">957</span> cells remained</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span>                       ◯ <span style="color: #0000BB;">43</span> cells filtered out:</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">20</span> potential doublets</span></span>
@@ -270,7 +266,7 @@ categories when too many cells fail.</p>
 <span>  plot_type <span class="op">=</span> <span class="st">"upset"</span>,</span>
 <span>  stat_level <span class="op">=</span> <span class="st">"Fail"</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-07-28 03:41:49] `stat_type` is forcibly set to <span style="color: #0000BB;">"count"</span> when plot <span style="color: #0000BB;">"sankey"</span>, <span style="color: #0000BB;">"chord"</span>, <span style="color: #0000BB;">"venn"</span>, and <span style="color: #0000BB;">"upset"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-08-02 13:06:28] `stat_type` is forcibly set to <span style="color: #0000BB;">"count"</span> when plot <span style="color: #0000BB;">"sankey"</span>, <span style="color: #0000BB;">"chord"</span>, <span style="color: #0000BB;">"venn"</span>, and <span style="color: #0000BB;">"upset"</span></span></span>
 <span><span class="co">#&gt; Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Please use `linewidth` instead.</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> The deprecated feature was likely used in the <span style="color: #0000BB;">ggupset</span> package.</span></span>

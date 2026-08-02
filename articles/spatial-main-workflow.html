@@ -40,14 +40,10 @@
     <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
     <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
     <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/interactive-scexplorer-workflow.html">Interactive SCExplorer workflow</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
     <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges and Giotto compatibility</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Cell-cell communication</h6></li>
-    <li><a class="dropdown-item" href="../articles/cell-cell-communication-workflow.html">Cell-cell communication workflow</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
@@ -163,13 +159,13 @@ interpret even if the model runs.</p>
 <div class="section level2">
 <h2 id="run-the-basic-spatial-workflow">Run the Basic Spatial Workflow<a class="anchor" aria-label="anchor" href="#run-the-basic-spatial-workflow"></a>
 </h2>
-<p><code>standard_scop(workflow = "spatial")</code> is the shortest
-entry point for a first-pass spatial analysis. Keep optional domain
-clustering and deconvolution off at first. This makes the first run fast
-and gives you QC and spatial variable features before choosing heavier
-backends.</p>
+<p><code>RunStandardWorkflow(workflow = "spatial")</code> is the
+shortest entry point for a first-pass spatial analysis. Keep optional
+domain clustering and deconvolution off at first. This makes the first
+run fast and gives you QC and spatial variable features before choosing
+heavier backends.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/standard_scop.html">standard_scop</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span></span>
 <span>  <span class="va">spatial</span>,</span>
 <span>  workflow <span class="op">=</span> <span class="st">"spatial"</span>,</span>
 <span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span>
@@ -184,28 +180,28 @@ backends.</p>
 <span>  do_spatial_cluster <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  do_deconvolution <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:42:22] <span style="color: #0000BB;">Start standard spot-level spatial workflow...</span></span></span>
-<span><span class="co">#&gt; <span style="color: #FFAF00;">◌</span> [2026-07-28 03:42:22] Running spot-level quality control</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-07-28 03:42:22] <span style="color: #0000BB;">1907</span> spots passed QC and <span style="color: #0000BB;">79</span> spots failed QC</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:42:22] <span style="color: #0000BB;">Start standard processing workflow...</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:42:22] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-07-28 03:42:22] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:42:22] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:42:22] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:42:22] Use the separate HVF from `srt_list`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:42:23] Number of available HVF: <span style="color: #0000BB;">2000</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:42:23] Finished check</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:42:23] Perform `ScaleData()`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:42:23] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:42:24] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">30</span> for <span style="color: #0000BB;">Standardpca</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:42:24] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:42:25] Reorder clusters...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:42:25] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:42:25] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-07-28 03:42:29] <span style="color: #00BB00;">Standard processing workflow completed</span></span></span>
-<span><span class="co">#&gt; <span style="color: #FFAF00;">◌</span> [2026-07-28 03:42:29] Running spatial variable feature detection</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-07-28 03:42:31] Stored <span style="color: #0000BB;">50</span> spatial variable features</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-07-28 03:42:31] <span style="color: #00BB00;">Standard spot-level spatial workflow completed</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:07:06] <span style="color: #0000BB;">Start standard spot-level spatial workflow...</span></span></span>
+<span><span class="co">#&gt; <span style="color: #FFAF00;">◌</span> [2026-08-02 13:07:06] Running spot-level quality control</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-08-02 13:07:06] <span style="color: #0000BB;">1907</span> spots passed QC and <span style="color: #0000BB;">79</span> spots failed QC</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:07:06] <span style="color: #0000BB;">Start standard processing workflow...</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:07:06] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-08-02 13:07:06] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:07:06] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:07:06] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:07:06] Use the separate HVF from `srt_list`</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:07:07] Number of available HVF: <span style="color: #0000BB;">2000</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:07:07] Finished check</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:07:07] Perform `ScaleData()`</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:07:07] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:07:08] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">30</span> for <span style="color: #0000BB;">Standardpca</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:07:08] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:07:09] Reorder clusters...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:07:09] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:07:09] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-08-02 13:07:13] <span style="color: #00BB00;">Standard processing workflow completed</span></span></span>
+<span><span class="co">#&gt; <span style="color: #FFAF00;">◌</span> [2026-08-02 13:07:13] Running spatial variable feature detection</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-08-02 13:07:13] Stored <span style="color: #0000BB;">50</span> spatial variable features</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-08-02 13:07:13] <span style="color: #00BB00;">Standard spot-level spatial workflow completed</span></span></span></code></pre></div>
 <p>After the run, look at the stable result locations before making more
 plots. Most spatial wrappers write method parameters and summaries under
 <code>srt@tools</code>. Spatial variable features are genes whose
@@ -214,8 +210,8 @@ method. They are candidates for spatial patterning, not automatically
 domain markers.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "GSE254829_coda_table"    "SpatialVariableFeatures"</span></span>
-<span><span class="co">#&gt; [3] "standard_spatial_scop"</span></span>
+<span><span class="co">#&gt; [1] "GSE254829_coda_table"          "SpatialVariableFeatures"      </span></span>
+<span><span class="co">#&gt; [3] "run_standard_spatial_workflow"</span></span>
 <span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">SpatialVariableFeatures</span><span class="op">$</span><span class="va">summary</span></span>
 <span><span class="co">#&gt; $n_features</span></span>
 <span><span class="co">#&gt; [1] 2000</span></span>
@@ -298,7 +294,7 @@ clusters. They are useful for segmenting tissue regions, but they need
 marker genes, histology, or reference labels before being named
 biologically.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">spatial_bayes</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/standard_scop.html">standard_scop</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">spatial_bayes</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span></span>
 <span>  <span class="va">spatial</span>,</span>
 <span>  workflow <span class="op">=</span> <span class="st">"spatial"</span>,</span>
 <span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span>
@@ -378,7 +374,7 @@ clustering, or deconvolution.</p>
 <span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>,</span>
 <span>  k <span class="op">=</span> <span class="fl">6</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-07-28 03:42:35] Spatial neighborhood analysis completed (<span style="color: #0000BB;">"observed"</span>)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-08-02 13:07:16] Spatial neighborhood analysis completed (<span style="color: #0000BB;">"observed"</span>)</span></span>
 <span></span>
 <span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">SpatialNeighborhood</span><span class="op">$</span><span class="va">summary</span></span>
 <span><span class="co">#&gt; $n_pairs</span></span>
@@ -390,33 +386,33 @@ clustering, or deconvolution.</p>
 <span><span class="co">#&gt; $top_pairs</span></span>
 <span><span class="co">#&gt;      method comparison condition              from                to   estimate</span></span>
 <span><span class="co">#&gt; 7  observed        all       all          collagen          collagen 0.70955018</span></span>
-<span><span class="co">#&gt; 31 observed        all       all          collagen     smooth muscle 0.04170863</span></span>
-<span><span class="co">#&gt; 12 observed        all       all     smooth muscle          collagen 0.04162471</span></span>
-<span><span class="co">#&gt; 9  observed        all       all            islets          collagen 0.03423968</span></span>
-<span><span class="co">#&gt; 17 observed        all       all          collagen            islets 0.03407184</span></span>
-<span><span class="co">#&gt; 2  observed        all       all          collagen             acini 0.02626720</span></span>
-<span><span class="co">#&gt; 6  observed        all       all             acini          collagen 0.02526015</span></span>
+<span><span class="co">#&gt; 12 observed        all       all          collagen     smooth muscle 0.04170863</span></span>
+<span><span class="co">#&gt; 31 observed        all       all     smooth muscle          collagen 0.04162471</span></span>
+<span><span class="co">#&gt; 17 observed        all       all            islets          collagen 0.03423968</span></span>
+<span><span class="co">#&gt; 9  observed        all       all          collagen            islets 0.03407184</span></span>
+<span><span class="co">#&gt; 6  observed        all       all          collagen             acini 0.02626720</span></span>
+<span><span class="co">#&gt; 2  observed        all       all             acini          collagen 0.02526015</span></span>
 <span><span class="co">#&gt; 35 observed        all       all     smooth muscle     smooth muscle 0.01602887</span></span>
-<span><span class="co">#&gt; 10 observed        all       all normal epithelium          collagen 0.01216851</span></span>
-<span><span class="co">#&gt; 22 observed        all       all          collagen normal epithelium 0.01166499</span></span>
+<span><span class="co">#&gt; 22 observed        all       all normal epithelium          collagen 0.01216851</span></span>
+<span><span class="co">#&gt; 10 observed        all       all          collagen normal epithelium 0.01166499</span></span>
 <span><span class="co">#&gt;    statistic pval FDR direction  sample subject count total   fraction</span></span>
 <span><span class="co">#&gt; 7         NA   NA  NA  observed sample1 sample1  8455 11916 0.70955018</span></span>
-<span><span class="co">#&gt; 31        NA   NA  NA  observed sample1 sample1   497 11916 0.04170863</span></span>
-<span><span class="co">#&gt; 12        NA   NA  NA  observed sample1 sample1   496 11916 0.04162471</span></span>
-<span><span class="co">#&gt; 9         NA   NA  NA  observed sample1 sample1   408 11916 0.03423968</span></span>
-<span><span class="co">#&gt; 17        NA   NA  NA  observed sample1 sample1   406 11916 0.03407184</span></span>
-<span><span class="co">#&gt; 2         NA   NA  NA  observed sample1 sample1   313 11916 0.02626720</span></span>
-<span><span class="co">#&gt; 6         NA   NA  NA  observed sample1 sample1   301 11916 0.02526015</span></span>
+<span><span class="co">#&gt; 12        NA   NA  NA  observed sample1 sample1   497 11916 0.04170863</span></span>
+<span><span class="co">#&gt; 31        NA   NA  NA  observed sample1 sample1   496 11916 0.04162471</span></span>
+<span><span class="co">#&gt; 17        NA   NA  NA  observed sample1 sample1   408 11916 0.03423968</span></span>
+<span><span class="co">#&gt; 9         NA   NA  NA  observed sample1 sample1   406 11916 0.03407184</span></span>
+<span><span class="co">#&gt; 6         NA   NA  NA  observed sample1 sample1   313 11916 0.02626720</span></span>
+<span><span class="co">#&gt; 2         NA   NA  NA  observed sample1 sample1   301 11916 0.02526015</span></span>
 <span><span class="co">#&gt; 35        NA   NA  NA  observed sample1 sample1   191 11916 0.01602887</span></span>
-<span><span class="co">#&gt; 10        NA   NA  NA  observed sample1 sample1   145 11916 0.01216851</span></span>
-<span><span class="co">#&gt; 22        NA   NA  NA  observed sample1 sample1   139 11916 0.01166499</span></span>
+<span><span class="co">#&gt; 22        NA   NA  NA  observed sample1 sample1   145 11916 0.01216851</span></span>
+<span><span class="co">#&gt; 10        NA   NA  NA  observed sample1 sample1   139 11916 0.01166499</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/SpatialNeighborhoodPlot.html">SpatialNeighborhoodPlot</a></span><span class="op">(</span><span class="va">spatial</span>, plot_type <span class="op">=</span> <span class="st">"heatmap"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="spatial-main-workflow_files/figure-html/spatial-neighborhood-1.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/SpatialNeighborhoodPlot.html">SpatialNeighborhoodPlot</a></span><span class="op">(</span><span class="va">spatial</span>, plot_type <span class="op">=</span> <span class="st">"stat"</span>, top_n <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span></code></pre></div>
 <p><img src="spatial-main-workflow_files/figure-html/spatial-neighborhood-2.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
-<p>With <code>method = NULL</code>, SCOP computes native observed KNN or
+<p>With <code>method = NULL</code>, the package computes observed KNN or
 radius summaries when <code>split.by</code> is absent and preserves the
 historical spicyR route when <code>split.by</code> is supplied. For new
 differential neighborhood analyses, request spicyR explicitly and
